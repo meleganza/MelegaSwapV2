@@ -1777,6 +1777,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://basescan.org/token/images/mim_32.png"
+    },
+    {
+      "name": "Dai Stablecoin",
+      "symbol": "DAI",
+      "address": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://basescan.org/token/images/daistablecoin_32.png"
     }
   ]
 }

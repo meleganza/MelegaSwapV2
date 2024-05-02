@@ -166,8 +166,8 @@ const base : Chain = {
   },
   contracts: {
     multicall3: {
-      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
-      blockCreated: 5022
+      address: "0x4fe5CBf4658d6Ca76431dD05D2D7aD6BbCD20891",
+      blockCreated: 13912277
     }
   }
 };

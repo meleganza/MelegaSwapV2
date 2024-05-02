@@ -1,19 +1,19 @@
-import Pools from 'views/Pools'
-
-export default Pools
-
-
 // import Pools from 'views/Pools'
-// import { SUPPORT_FARMS } from 'config/constants/supportChains'
 
-// const PoolsPage = () => {
+// export default Pools
 
-// }
 
-// // export default Pools
+import Pools from 'views/Pools'
+import { SUPPORT_ILO } from 'config/constants/supportChains'
 
-// PoolsPage.Layout = Pools
+const PoolsPage = () => {
 
-// PoolsPage.chains = SUPPORT_FARMS
+}
 
-// export default PoolsPage
+// export default Pools
+
+PoolsPage.Layout = Pools
+
+PoolsPage.chains = SUPPORT_ILO
+
+export default PoolsPage
