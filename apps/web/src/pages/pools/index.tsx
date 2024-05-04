@@ -1,16 +1,11 @@
-// import Pools from 'views/Pools'
-
-// export default Pools
-
-
 import Pools from 'views/Pools'
 import { SUPPORT_ILO } from 'config/constants/supportChains'
 
 const PoolsPage = () => {
-
-}
-
-// export default Pools
+    return (
+      <Pools />
+    )
+  }
 
 PoolsPage.Layout = Pools
 
