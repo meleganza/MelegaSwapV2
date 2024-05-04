@@ -22,13 +22,15 @@ export const stakeFarm = async (masterChefContract: Contract, pid, amount, gasPr
       ...options,
       gasPrice,
     })
-    const receipt = await tx.wait()
-    return receipt.status
+    // const receipt = await tx.wait()
+    // return receipt.status
+    return tx
   }
 
   const tx = await masterChefContract.deposit(pid, value, options)
-  const receipt = await tx.wait()
-  return receipt.status
+  // const receipt = await tx.wait()
+  // return receipt.status
+  return tx
 }
 
 export const unstakeFarm = async (masterChefContract, pid, amount, gasPrice?: string, gasLimit?: number) => {
