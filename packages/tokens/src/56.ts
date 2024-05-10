@@ -3802,7 +3802,7 @@ export const bscTokens = {
   ),
   bullstar: new ERC20Token(
     ChainId.BSC,
-    '0x39541a42b5085f3cf69b2258eaeb5bb3ee8c823c',
+    '0x39541a42B5085F3cf69b2258EAEb5bB3Ee8C823c',
     18,
     'BSF',
     'BULL STAR FINANCE',
