@@ -1785,6 +1785,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://basescan.org/token/images/daistablecoin_32.png"
+     },
+    {
+      "name": "BULL STAR FINANCE",
+      "symbol": "BSF",
+      "address": "0x39541a42B5085F3cf69b2258EAEb5bB3Ee8C823c",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x39541a42B5085F3cf69b2258EAEb5bB3Ee8C823c.png"
     }
   ]
 }
