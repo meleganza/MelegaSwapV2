@@ -2708,7 +2708,7 @@ const finishedPools = [
     isFinished: true,
    },
   {
-    sousId: 102,
+    sousId: 203,
     stakingToken: bscTokens.cake,
     earningToken: bscTokens.bullstar,
     contractAddress: {
