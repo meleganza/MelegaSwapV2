@@ -2718,7 +2718,7 @@ const finishedPools = [
     poolCategory: PoolCategory.CORE,
     harvest: true,
     tokenPerBlock: '0.495',
-    isFinished: true,
+    isFinished: false,
   }
 ].map((p) => ({
   ...p,
