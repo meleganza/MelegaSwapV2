@@ -2719,7 +2719,7 @@ const finishedPools = [
     harvest: true,
     tokenPerBlock: '115000000',
     isFinished: true,
-   }  
+  }
 ].map((p) => ({
   ...p,
   isFinished: true,
