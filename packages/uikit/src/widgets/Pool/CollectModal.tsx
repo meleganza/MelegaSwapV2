@@ -48,7 +48,7 @@ export function CollectModal({
   earningsDollarValue,
   sousId,
   isBnbPool,
-  isCompoundPool = true,
+  isCompoundPool,
   onDismiss,
   handleHarvestConfirm,
   pendingTx,
