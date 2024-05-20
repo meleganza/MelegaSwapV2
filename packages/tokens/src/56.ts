@@ -1313,7 +1313,7 @@ export const bscTokens = {
     '0x055135F0470C4C8d7C88a576f892ac60c3f70316',
     18,
     'BABYMARCO',
-    'https://www.melega.finance/babymarco',
+    'https://www.melegaswap.finance/babymarco',
   ),
   blink: new ERC20Token(
     ChainId.BSC,

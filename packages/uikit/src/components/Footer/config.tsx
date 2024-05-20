@@ -19,19 +19,19 @@ export const footerLinks: FooterLinkType[] = [
     items: [
       {
         label: "Contact",
-        href: "https://docs.cyberglow.finance",
+        href: "https://docs.melegaswap.finance",
       },
       {
         label: "Blog",
-        href: "https://medium.com/pancakeswap",
+        href: "https://medium.com/melegaswap",
       },
       {
         label: "Community",
-        href: "https://docs.cyberglow.finance",
+        href: "https://docs.melega.finance",
       },
       {
         label: "CAKE",
-        href: "https://docs.cyberglow.finance/tokenomics/cgt-token",
+        href: "https://docs.melega.finance/tokenomics/cgt-token",
       },
       {
         label: "—",

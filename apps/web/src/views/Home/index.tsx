@@ -109,7 +109,7 @@ const Nft: React.FC = () => {
     <a href="/ilo">
       <img className="item" alt="b3" src="./banners/b3.png" />
     </a>,
-    <a href="https://www.melega.finance/apply">
+    <a href="https://www.melegaswap.finance/apply">
       <img className="item" alt="b2" src="./banners/b2.png" />
     </a>,
   ]

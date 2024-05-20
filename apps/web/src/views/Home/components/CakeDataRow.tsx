@@ -166,13 +166,13 @@ const CakeDataRow = () => {
           <a style={{ margin: '0.5rem' }} href="mailto:hello@melegaswap.finance">
             Info
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/about">
+          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/about">
             Docs
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/marco-token">
+          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/marco-token">
             MARCO Token
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/babymarco">
+          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/babymarco">
             BabyMarco
           </a>
         </Flex>
@@ -180,7 +180,7 @@ const CakeDataRow = () => {
         <Flex flexDirection="column" style={{ textAlign: 'center', minWidth: '33.333%' }}>
           <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>Services</h1>
           <br />
-          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/apply">
+          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/apply">
             Apply for listing
           </a>
           <a style={{ margin: '0.5rem' }} href="https://melega.space/">
