@@ -7,11 +7,11 @@ const BLOCK_COUNTRIES = { BY: 'BY', CU: 'CU', CD: 'CD', IR: 'IR', IQ: 'IQ', KP: 
 const BLOCK_REGIONS = { 'UA-43': 'UA-43' }
 
 export async function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone();
-  if (url.protocol === 'http:') {
-    url.protocol = 'https:';
-    return NextResponse.redirect(url);
-  }
+  // const url = req.nextUrl.clone();
+  // if (url.protocol === 'http:') {
+  //   url.protocol = 'https:';
+  //   return NextResponse.redirect(url);
+  // }
   const res = NextResponse.next()
   const { geo } = req
   const { country, region } = geo
