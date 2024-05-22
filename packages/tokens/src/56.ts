@@ -3808,4 +3808,12 @@ export const bscTokens = {
     'BULL STAR FINANCE',
     'https://beta.ultimate-bsf.com/',
   ),
+  plz: new ERC20Token(
+    ChainId.BSC,
+    '0x10dB504450B0C937BDa55194b3b688b5fe8D57D3',
+    18,
+    'PLZ',
+    'PLUNZ',
+    'https://plunztoken.com/',
+  ),
 }

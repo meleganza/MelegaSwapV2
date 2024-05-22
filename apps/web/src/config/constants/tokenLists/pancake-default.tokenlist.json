@@ -1793,6 +1793,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://basescan.org/token/images/daistablecoin_32.png"
+     },
+    {
+      "name": "PLUNZ",
+      "symbol": "PLZ",
+      "address": "0x10dB504450B0C937BDa55194b3b688b5fe8D57D3",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x10dB504450B0C937BDa55194b3b688b5fe8D57D3.png"
      }
   ]
 }
