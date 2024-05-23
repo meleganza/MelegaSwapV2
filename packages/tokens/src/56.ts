@@ -3816,4 +3816,12 @@ export const bscTokens = {
     'PLUNZ',
     'https://plunztoken.com/',
   ),
+  butt: new ERC20Token(
+    ChainId.BSC,
+    '0x5B58ec00De39d5886F7C6ec325B01b38d1cC4acc',
+    9,
+    'BUTT',
+    'BOOTYCOIN',
+    'https://bootycoin.finance.blog',
+  ),
 }
