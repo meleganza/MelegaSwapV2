@@ -1809,6 +1809,14 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x5B58ec00De39d5886F7C6ec325B01b38d1cC4acc.png"
+    },
+    {
+      "name": "BabyFox",
+      "symbol": "BABYFOX",
+      "address": "0x8FFfED722C699848d0c0dA9ECfEde20e8ACEf7cE",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x8FFfED722C699848d0c0dA9ECfEde20e8ACEf7cE.png"
      }
   ]
 }
