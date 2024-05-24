@@ -3824,4 +3824,12 @@ export const bscTokens = {
     'BOOTYCOIN',
     'https://bootycoin.finance.blog',
   ),
+  babyfox: new ERC20Token(
+    ChainId.BSC,
+    '0x8FFfED722C699848d0c0dA9ECfEde20e8ACEf7cE',
+    18,
+    'BABYFOX',
+    'BabyFox',
+    'https://www.babyfoxtoken.com/',
+  ),
 }
