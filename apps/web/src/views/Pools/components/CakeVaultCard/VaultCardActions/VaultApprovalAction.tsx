@@ -11,7 +11,7 @@ interface ApprovalActionProps {
 const VaultApprovalAction: React.FC<ApprovalActionProps> = ({ isLoading = false, setLastUpdated }) => {
   const { t } = useTranslation()
 
-  const { handleApprove, requestedApproval } = useVaultApprove(setLastUpdated)
+  const { requestedApproval, handleApprove } = useVaultApprove(setLastUpdated)
 
   return (
     <>

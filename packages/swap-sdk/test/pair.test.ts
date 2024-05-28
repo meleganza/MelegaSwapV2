@@ -12,7 +12,7 @@ describe('Pair', () => {
         () =>
           new Pair(
             CurrencyAmount.fromRawAmount(USDC, '100'),
-            CurrencyAmount.fromRawAmount(WNATIVE[ChainId.BSC_TESTNET], '100')
+            CurrencyAmount.fromRawAmount(WNATIVE[ChainId.BSC], '100')
           )
       ).toThrow('CHAIN_IDS')
     })

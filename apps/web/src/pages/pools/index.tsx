@@ -1,5 +1,5 @@
 import Pools from 'views/Pools'
-import { SUPPORT_ILO } from 'config/constants/supportChains'
+import { SUPPORT_FARMS } from 'config/constants/supportChains'
 
 const PoolsPage = () => {
     return (
@@ -9,6 +9,6 @@ const PoolsPage = () => {
 
 PoolsPage.Layout = Pools
 
-PoolsPage.chains = SUPPORT_ILO
+PoolsPage.chains = SUPPORT_FARMS
 
 export default PoolsPage

@@ -13,7 +13,7 @@ export const CAKE_BASE = new ERC20Token(
   '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7',
   18,
   'MARCO',
-  'Meleta Token',
+  'Melega Token',
   'https://melega.finance/',
 )
 export const CAKE_POLYGON = new ERC20Token(

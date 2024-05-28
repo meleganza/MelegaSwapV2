@@ -5,6 +5,7 @@ import Trans from 'components/Trans'
 import { VaultKey } from 'state/types'
 import { bscTokens } from '@pancakeswap/tokens'
 import { PoolCategory } from './types'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export const MAX_LOCK_DURATION = 31536000
 export const UNLOCK_FREE_DURATION = 604800
@@ -63,6 +64,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     contractAddress: {
       97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',
       56: '0x41D5487836452d23f2c467070244E5842B412794',
+      8453: '0x857aB281073883B9d365D75534d2D0Ef979E2B0B',
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,

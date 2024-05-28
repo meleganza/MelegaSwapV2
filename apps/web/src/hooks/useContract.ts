@@ -68,12 +68,13 @@ export const useERC20 = (address: string, withSignerIfPossible = true) => {
 
 export const useCake = (): { reader: Cake; signer: Cake } => {
   const providerOrSigner = useProviderOrSigner(true, true)
+  const { chainId } = useActiveChainId()
   return useMemo(
     () => ({
-      reader: getCakeContract(null),
-      signer: getCakeContract(providerOrSigner),
+      reader: getCakeContract(null, chainId),
+      signer: getCakeContract(providerOrSigner, chainId),
     }),
-    [providerOrSigner],
+    [providerOrSigner, chainId],
   )
 }
 

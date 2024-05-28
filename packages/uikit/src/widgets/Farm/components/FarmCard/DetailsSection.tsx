@@ -4,6 +4,7 @@ import { Flex } from "../../../../components/Box";
 import { LinkExternal } from "../../../../components/Link";
 import { Skeleton } from "../../../../components/Skeleton";
 import { Text } from "../../../../components/Text";
+import { useWeb3React } from "@pancakeswap/wagmi";
 
 export interface ExpandableSectionProps {
   scanAddressLink?: string;
@@ -34,6 +35,7 @@ export const DetailsSection: React.FC<React.PropsWithChildren<ExpandableSectionP
   isCommunity,
   auctionHostingEndDate,
 }) => {
+  const chainId = useWeb3React()
   const {
     t,
     currentLanguage: { locale },

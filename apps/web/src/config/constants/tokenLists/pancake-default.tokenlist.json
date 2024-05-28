@@ -1771,30 +1771,6 @@
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x39541a42B5085F3cf69b2258EAEb5bB3Ee8C823c.png"
     },
     {
-      "name": "Wrapped Ether",
-      "symbol": "WETH",
-      "address": "0x4200000000000000000000000000000000000006",
-      "chainId": 8453,
-      "decimals": 18,
-      "logoURI": "https://basescan.org/token/images/weth_28.png"
-    },
-    {
-      "name": "Magic Internet Money",
-      "symbol": "MIM",
-      "address": "0x4A3A6Dd60A34bB2Aba60D73B4C88315E9CeB6A3D",
-      "chainId": 8453,
-      "decimals": 18,
-      "logoURI": "https://basescan.org/token/images/mim_32.png"
-    },
-    {
-      "name": "Dai Stablecoin",
-      "symbol": "DAI",
-      "address": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
-      "chainId": 8453,
-      "decimals": 18,
-      "logoURI": "https://basescan.org/token/images/daistablecoin_32.png"
-     },
-    {
       "name": "PLUNZ",
       "symbol": "PLZ",
       "address": "0x10dB504450B0C937BDa55194b3b688b5fe8D57D3",
@@ -1817,6 +1793,38 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x8FFfED722C699848d0c0dA9ECfEde20e8ACEf7cE.png"
-     }
+     },
+     {
+      "name": "Wrapped Ether",
+      "symbol": "WETH",
+      "address": "0x4200000000000000000000000000000000000006",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://basescan.org/token/images/weth_28.png"
+    },
+    {
+      "name": "Magic Internet Money",
+      "symbol": "MIM",
+      "address": "0x4A3A6Dd60A34bB2Aba60D73B4C88315E9CeB6A3D",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://basescan.org/token/images/mim_32.png"
+    },
+    {
+      "name": "Dai Stablecoin",
+      "symbol": "DAI",
+      "address": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://basescan.org/token/images/daistablecoin_32.png"
+    },
+    {
+      "name": "MELEGA",
+      "symbol": "MARCO",
+      "address": "0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://www.melega.finance/images/melega.png"
+    }
   ]
 }

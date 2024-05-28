@@ -5,7 +5,7 @@ import { Box, CardBody, Flex, Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { bscTokens } from '@pancakeswap/tokens'
+import { bscTokens, baseTokens } from '@pancakeswap/tokens'
 import { useCakeVault1 } from 'state/pools/hooks'
 import { Pool } from 'state/types'
 import { convertSharesToCake } from 'views/Pools/helpers'
@@ -16,6 +16,7 @@ import StyledCardHeader from '../PoolCard/StyledCardHeader'
 import VaultCardActions from './VaultCardActions'
 import UnstakingFeeCountdownRow from './UnstakingFeeCountdownRow'
 import RecentCakeProfitRow from './RecentCakeProfitRow'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StyledCardBody = styled(CardBody)<{ isLoading: boolean }>`
   min-height: ${({ isLoading }) => (isLoading ? '0' : '254px')};
@@ -39,6 +40,7 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
   const accountHasSharesStaked = userShares && userShares.gt(0)
   const isLoading = !pool.userData || isVaultUserDataLoading
   const performanceFeeAsDecimal = performanceFee && performanceFee / 100
+  const { chainId } = useActiveChainId()
 
   if (showStakedOnly && !accountHasSharesStaked) {
     return null
@@ -49,8 +51,8 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
       <StyledCardHeader
         isStaking={accountHasSharesStaked}
         isAutoVault
-        earningToken={bscTokens.cake}
-        stakingToken={bscTokens.cake}
+        earningToken={chainId == 56 ? bscTokens.cake : baseTokens.cake}
+        stakingToken={chainId == 56 ? bscTokens.cake : baseTokens.cake}
       />
       <StyledCardBody isLoading={isLoading}>
         <AprRow pool={pool} stakedBalance={cakeAsBigNumber} performanceFee={performanceFeeAsDecimal} />

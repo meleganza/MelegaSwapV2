@@ -11,7 +11,7 @@ import {
   ERC20Token,
 } from '@pancakeswap/sdk'
 import { FAST_INTERVAL } from 'config/constants'
-import { BUSD, CAKE, USDT} from '@pancakeswap/tokens'
+import { BUSD, CAKE, USDC, USDT} from '@pancakeswap/tokens'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import getLpAddress from 'utils/getLpAddress'
@@ -168,7 +168,7 @@ export const useCakeBusdPrice = (
   { forceMainnet } = { forceMainnet: false },
 ): Price<ERC20Token, ERC20Token> | undefined => {
   const { chainId } = useActiveChainId()
-  return usePriceByPairs(USDT[chainId], CAKE[chainId])
+  return usePriceByPairs(chainId == 56 ? USDT[chainId] : USDC[chainId], CAKE[chainId])
 }
 
 // @Note: only fetch from one pair

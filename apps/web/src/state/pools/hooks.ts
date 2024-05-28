@@ -58,14 +58,25 @@ const getActiveFarms = async (chainId: number) => {
 
 const getCakePriceFarms = async (chainId: number) => {
   const farmsConfig = await getFarmConfig(chainId)
-  return farmsConfig
-    .filter(
-      ({ token, pid, quoteToken }) =>
-        pid !== 0 &&
-        ((token.symbol === 'CAKE' && quoteToken.symbol === 'WBNB') ||
-          (token.symbol === 'BUSD' && quoteToken.symbol === 'WBNB')),
-    )
-    .map((farm) => farm.pid)
+  if (chainId == 56) {
+    return farmsConfig
+      .filter(
+        ({ token, pid, quoteToken }) =>
+          pid !== 0 &&
+          ((token.symbol === 'CAKE' && quoteToken.symbol === 'WBNB') ||
+            (token.symbol === 'BUSD' && quoteToken.symbol === 'WBNB')),
+      )
+      .map((farm) => farm.pid)
+  } else {
+    return farmsConfig
+      .filter(
+        ({ token, pid, quoteToken }) =>
+          pid !== 0 &&
+          ((token.symbol === 'CAKE' && quoteToken.symbol === 'WETH') ||
+            (token.symbol === 'USDC' && quoteToken.symbol === 'WETH')),
+      )
+      .map((farm) => farm.pid)
+  }
 }
 
 export const useFetchPublicPoolsData = () => {
@@ -77,6 +88,7 @@ export const useFetchPublicPoolsData = () => {
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
         const activeFarms = await getActiveFarms(chainId)
+        console.log
         await dispatch(fetchFarmsPublicDataAsync({ pids: activeFarms, chainId, flag: farmFlag }))
         batch(() => {
           dispatch(fetchPoolsPublicDataAsync(currentBlock, chainId))

@@ -12,7 +12,6 @@ const useCakeApprove = (setLastUpdated: () => void, spender, successMsg) => {
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
   const { callWithGasPrice } = useCallWithGasPrice()
   const { signer: cakeContract } = useCake()
-
   const handleApprove = async () => {
     const receipt = await fetchWithCatchTxError(() => {
       return callWithGasPrice(cakeContract, 'approve', [spender, MaxUint256])

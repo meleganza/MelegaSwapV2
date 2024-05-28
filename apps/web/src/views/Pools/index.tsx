@@ -38,7 +38,6 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
   const { t } = useTranslation()
   const { address: account } = useAccount()
   const { pools, userDataLoaded } = usePoolsWithVault()
-  
   usePoolsPageFetch()
 
   return (

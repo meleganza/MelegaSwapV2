@@ -58,11 +58,12 @@ import type {
   NFTStaking,
 } from 'config/abi/types'
 import { ChainId } from '@pancakeswap/sdk'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export const getContract = ({
   abi,
   address,
-  chainId = ChainId.BSC,
+  chainId,
   signer,
 }: {
   abi: any
@@ -110,6 +111,7 @@ export const getCakeContract = (signer?: Signer | Provider, chainId?: number) =>
   return getContract({
     abi: cakeAbi,
     address: chainId ? CAKE[chainId].address : CAKE[ChainId.BSC].address,
+    chainId,
     signer,
   }) as Cake
 }

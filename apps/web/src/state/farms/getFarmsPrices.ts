@@ -164,6 +164,11 @@ const nativeStableLpMap = {
     wNative: 'WBNB',
     stable: 'BUSD',
   },
+  [ChainId.BASE]: {
+    address: '0xf2157F527Ad7572691d25371838cbE040e93cDD3',
+    wNative: 'WETH',
+    stable: 'USDC',
+  },
   [ChainId.ARBITRUM]: {
     address: '0x5822a1DDD394172c201876938c5Fed459288554D',
     wNative: 'WETH',
