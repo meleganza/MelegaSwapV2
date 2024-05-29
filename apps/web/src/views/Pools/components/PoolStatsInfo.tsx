@@ -13,6 +13,7 @@ import {
 } from '@pancakeswap/uikit'
 import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
 import { bsc } from 'wagmi/chains'
+import { base } from '../../../utils/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import { ChainId, Token } from '@pancakeswap/sdk'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
@@ -25,6 +26,7 @@ import { getAddress, getVaultPoolAddress } from 'utils/addressHelpers'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
 import MaxStakeRow from './MaxStakeRow'
 import { AprInfo, DurationAvg, PerformanceFee, TotalLocked } from './Stat'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface ExpandedFooterProps {
   pool: Pool.DeserializedPool<Token>
@@ -56,9 +58,8 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
     isFinished,
     userData: poolUserData,
   } = pool
-
   const stakedBalance = poolUserData?.stakedBalance ? poolUserData.stakedBalance : BIG_ZERO
-
+  const { chainId } = useActiveChainId()
   const {
     totalDexTokenInVault,
     totalLockedAmount,
@@ -67,9 +68,8 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
   } = useVaultPoolByKey(vaultKey ? vaultKey : VaultKey.CakeVault)
 
   const tokenAddress = earningToken?.address || ''
-  const poolContractAddress = getAddress(contractAddress)
-  const cakeVaultContractAddress = getVaultPoolAddress(vaultKey)
-
+  const poolContractAddress = getAddress(contractAddress, chainId)
+  const cakeVaultContractAddress = getVaultPoolAddress(vaultKey, chainId)
   const { shouldShowBlockCountdown, blocksUntilStart, blocksRemaining, hasPoolStarted, blocksToDisplay } =
     getPoolBlockInfo(pool, currentBlock)
 
@@ -164,7 +164,7 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
         <Flex mb="2px" justifyContent={alignLinksToRight ? 'flex-end' : 'flex-start'}>
           <LinkExternal
             isBscScan
-            href={`${bsc.blockExplorers.default.url}/address/${
+            href={`${chainId == 56 ? bsc.blockExplorers.default.url : base.blockExplorers.default.url}/address/${
               vaultKey ? cakeVaultContractAddress : poolContractAddress
             }`}
             bold={false}

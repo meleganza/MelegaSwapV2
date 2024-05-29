@@ -38,11 +38,11 @@ export const getICakeAddress = () => {
   return getAddress(addresses.iCake)
 }
 
-export const getVaultPoolAddress = (vaultKey: VaultKey) => {
+export const getVaultPoolAddress = (vaultKey: VaultKey, chainId?: number) => {
   if (!vaultKey) {
     return null
   }
-  return getAddress(addresses[vaultKey])
+  return getAddress(addresses[vaultKey], chainId)
 }
 
 export const getDNFTcraneAddress = () => {

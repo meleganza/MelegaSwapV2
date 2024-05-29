@@ -8,7 +8,7 @@ import { featureFarmApiAtom, useFeatureFlag } from 'hooks/useFeatureFlag'
 import { FAST_INTERVAL } from 'config/constants'
 import useSWRImmutable from 'swr/immutable'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
-import { livePools } from 'config/constants/pools'
+import { livePools, livePools56 } from 'config/constants/pools'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 
@@ -43,7 +43,7 @@ import BigNumber from 'bignumber.js'
 const lPoolAddresses = livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 
 // Only fetch farms for live pools
-const getActiveFarms = async (chainId: number) => {
+const getActiveFarms = async (chainId: number, lPoolAddresses: string[]) => {
   const farmsConfig = await getFarmConfig(chainId)
   return farmsConfig
     .filter(
@@ -84,10 +84,12 @@ export const useFetchPublicPoolsData = () => {
   const { chainId } = useActiveChainId()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
 
+  const lPoolAddresses = (chainId === 56 ? livePools56 : livePools).filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+
   useSlowRefreshEffect(
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
-        const activeFarms = await getActiveFarms(chainId)
+        const activeFarms = await getActiveFarms(chainId, lPoolAddresses)
         console.log
         await dispatch(fetchFarmsPublicDataAsync({ pids: activeFarms, chainId, flag: farmFlag }))
         batch(() => {

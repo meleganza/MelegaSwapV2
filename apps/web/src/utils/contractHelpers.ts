@@ -96,7 +96,7 @@ export const getDNFTcraneContract = (address: string, signer?: Signer | Provider
 }
 
 export const getBep20Contract = (address: string, signer?: Signer | Provider, chainId?: number) => {
-  return getContract({ abi: bep20Abi, address, signer }) as Erc20
+  return getContract({ abi: bep20Abi, address, signer, chainId }) as Erc20
 }
 
 export const getIfoV3Contract = (address: string, signer?: Signer | Provider, chainId?: number) => {

@@ -146,6 +146,7 @@ const ActionPanel: React.FunctionComponent<React.PropsWithChildren<ActionPanelPr
   })
   const { lpAddress } = farm
   const bsc = getBlockExploreLink(lpAddress, 'address', chainId)
+  const base = getBlockExploreLink(lpAddress, 'address', chainId)
   const { stakedBalance, tokenBalance, proxy } = farm.userData
 
   const infoUrl = useMemo(() => {
@@ -196,7 +197,7 @@ const ActionPanel: React.FunctionComponent<React.PropsWithChildren<ActionPanelPr
           </StakeContainer>
         )}
         {/* <StyledLinkExternal href={infoUrl}>{t('See Pair Info')}</StyledLinkExternal> */}
-        <StyledLinkExternal isBscScan href={bsc}>
+        <StyledLinkExternal isBscScan href={chainId == 56 ? bsc : base}>
           {t('View Contract')}
         </StyledLinkExternal>
         <Box style={{ marginRight: '16px', marginTop: '16px' }}>

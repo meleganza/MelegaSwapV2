@@ -148,7 +148,7 @@ const cronos : Chain = {
   }
 };
 
-const base : Chain = {
+export const base : Chain = {
   id: 8453,
   name: "Base",
   network: "base",
