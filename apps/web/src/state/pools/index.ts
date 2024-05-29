@@ -300,9 +300,9 @@ export const updateUserStakedBalance = createAsyncThunk<
 
 export const updateUserPendingReward = createAsyncThunk<
   { sousId: number; field: string; value: any },
-  { sousId: number; account: string }
->('pool/updateUserPendingReward', async ({ sousId, account }) => {
-  const pendingRewards = await fetchUserPendingRewards(account)
+  { sousId: number; account: string; chainId: number }
+>('pool/updateUserPendingReward', async ({ sousId, account, chainId }) => {
+  const pendingRewards = await fetchUserPendingRewards(account, chainId)
   return { sousId, field: 'pendingReward', value: pendingRewards[sousId] }
 })
 
@@ -399,7 +399,7 @@ export const PoolsSlice = createSlice({
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
       const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
-      console.log(livePoolsSousIdMap)
+      
       state.data = state.data.map((pool) => {
         const livePoolData = livePoolsSousIdMap[pool.sousId]
         return { ...pool, ...livePoolData }

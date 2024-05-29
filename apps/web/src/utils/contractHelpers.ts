@@ -2,7 +2,7 @@ import type { Signer } from '@ethersproject/abstract-signer'
 import type { Provider } from '@ethersproject/providers'
 import { provider } from 'utils/wagmi'
 import { Contract } from '@ethersproject/contracts'
-import poolsConfig from 'config/constants/pools'
+import poolsConfig, { livePools8453 } from 'config/constants/pools'
 import { PoolCategory } from 'config/constants/types'
 import { CAKE } from '@pancakeswap/tokens'
 
@@ -146,9 +146,10 @@ export const getIfoCreditAddressContract = (signer?: Signer | Provider) => {
   return getContract({ abi: iCakeAbi, address: getICakeAddress(), signer }) as ICake
 }
 
-export const getSouschefContract = (id: number, signer?: Signer | Provider) => {
+export const getSouschefContract = (id: number, signer?: Signer | Provider, chainId?: number) => {
+  // const Pools = chainId === 8453 ? live
   const config = poolsConfig.find((pool) => pool.sousId === id)
   const abi = config.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
-  return getContract({ abi, address: getAddress(config.contractAddress), signer }) as SousChef
+  return getContract({ abi, address: getAddress(config.contractAddress, chainId), signer }) as SousChef
 }
 

@@ -84,9 +84,9 @@ export const useMasterchef = (withSignerIfPossible = true) => {
   return useMemo(() => getMasterchefContract(providerOrSigner, chainId), [providerOrSigner, chainId])
 }
 
-export const useSousChef = (id) => {
+export const useSousChef = (id, chainId?: number) => {
   const { data: signer } = useSigner()
-  return useMemo(() => getSouschefContract(id, signer), [id, signer])
+  return useMemo(() => getSouschefContract(id, signer, chainId), [id, signer])
 }
 
 export const useIfoV3Contract = (address, withSignerIfPossible = true) => {

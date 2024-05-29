@@ -14,6 +14,7 @@ import { useAccount } from 'wagmi'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import { MaxUint256 } from '@ethersproject/constants'
 import useCakeApprove from 'hooks/useCakeApprove'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 // export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol) => {
 //   const [requestedApproval, setRequestedApproval] = useState(false)
@@ -56,8 +57,9 @@ export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol)
   const { callWithGasPrice } = useCallWithGasPrice()
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const { chainId } = useActiveChainId()
   const { address: account } = useAccount()
-  const sousChefContract = useSousChef(sousId)
+  const sousChefContract = useSousChef(sousId, chainId)
 
   const handleApprove = useCallback(async () => {
     const receipt = await fetchWithCatchTxError(() => {

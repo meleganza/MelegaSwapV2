@@ -1,18 +1,17 @@
 /* eslint-disable import/prefer-default-export */
 import BigNumber from 'bignumber.js'
-import poolsConfig from 'config/constants/pools'
+import poolsConfig, { livePools8453 } from 'config/constants/pools'
 import sousChefV2 from 'config/abi/sousChefV2.json'
 import chunk from 'lodash/chunk'
 import { multicallv3 } from '../multicall'
 import { getAddress, getMulticallAddress } from '../addressHelpers'
 import multiCallAbi from '../../config/abi/Multicall.json'
 
-const multicallAddress = getMulticallAddress()
-
 /**
  * Returns the total number of pools that were active at a given block
  */
-export const getActivePools = async (block?: number) => {
+export const getActivePools = async (block?: number, chainId) => {
+  const multicallAddress = getMulticallAddress(chainId)
   const eligiblePools = poolsConfig
     .filter((pool) => pool.sousId !== 0)
     .filter((pool) => pool.isFinished === false || pool.isFinished === undefined)

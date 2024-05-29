@@ -4,9 +4,9 @@ import { useMasterchef, useSousChef } from 'hooks/useContract'
 import { DEFAULT_GAS_LIMIT } from 'config'
 import { useGasPrice } from 'state/user/hooks'
 import { harvestFarm } from 'utils/calls'
-import { getMasterchefContract } from 'utils/contractHelpers'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { updateUserBalance, updateUserPendingReward } from 'state/pools'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const options = {
   gasLimit: DEFAULT_GAS_LIMIT,
@@ -28,6 +28,7 @@ const useHarvestPool = (sousId, isUsingBnb = false) => {
   const { account } = useWeb3React()
   const sousChefContract = useSousChef(sousId)
   const masterChefContract = useMasterchef()
+  const { chainId } = useActiveChainId()
   const gasPrice = useGasPrice()
 
   const handleHarvest = useCallback(async () => {
@@ -38,8 +39,8 @@ const useHarvestPool = (sousId, isUsingBnb = false) => {
     } else {
       return harvestPool(sousChefContract, gasPrice)
     }
-    dispatch(updateUserPendingReward({ sousId, account }))
-    dispatch(updateUserBalance({ sousId, account }))
+    dispatch(updateUserPendingReward({ sousId, account, chainId }))
+    dispatch(updateUserBalance({ sousId, account, chainId }))
   }, [isUsingBnb, sousChefContract, gasPrice])
 
   return { onReward: handleHarvest }

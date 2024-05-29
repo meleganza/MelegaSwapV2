@@ -15,7 +15,7 @@ import { ChainId } from '@pancakeswap/sdk'
 // BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)
 const nonBnbPools = poolsConfig.filter((pool) => pool.stakingToken.symbol !== 'WBNB')
 const bnbPools = poolsConfig.filter((pool) => pool.stakingToken.symbol === 'WBNB')
-const nonMasterPools = poolsConfig.filter((pool) => pool.sousId !== 0)
+const nonMasterPoolsBnb = poolsConfig.filter((pool) => pool.sousId !== 0)
 // base
 const nonBnbPoolsOnBase = livePools8453.filter((pool) => pool.stakingToken.symbol !== 'WETH')
 const bnbPoolsOnBase = livePools8453.filter((pool) => pool.stakingToken.symbol === 'WETH')
@@ -24,13 +24,13 @@ const nonMasterPoolsOnBase = livePools8453.filter((pool) => pool.sousId !== 0)
 const multicallAddress = getMulticallAddress()
 
 export const fetchUserMasterChefStakeBalance = async (account, chainId) => {
-  const masterChefContract = getMasterchefContract(chainId)
+  const masterChefContract = getMasterchefContract(undefined, chainId)
   const { amount: masterChefPoolAmount } = await masterChefContract.userInfo('0', account)
   return { '0': new BigNumber(masterChefPoolAmount.toString()).toJSON() }
 }
 
 export const fetchUserMasterChefPendingReward = async (account, chainId) => {
-  const masterChefContract = getMasterchefContract(chainId)
+  const masterChefContract = getMasterchefContract(undefined, chainId)
   const pendingReward = await masterChefContract.pendingDexToken('0', account)
   return { '0': new BigNumber(pendingReward.toString()).toJSON() }
 }
@@ -66,7 +66,6 @@ export const fetchUserBalances = async (account, chainId) => {
     params: [account],
   }
   const tokenBnbBalancesRaw = await multicallv3({ calls: [...tokenBalanceCalls, bnbBalanceCall] })
-  console.log(tokenBnbBalancesRaw)
   const bnbBalance = tokenBnbBalancesRaw.pop()
   const tokenBalances = fromPairs(tokens.map((token, index) => [token, tokenBnbBalancesRaw[index]]))
 
@@ -80,10 +79,10 @@ export const fetchUserBalances = async (account, chainId) => {
   )
 
   // BNB pools
+  const nativePools = chainId === 8453 ? bnbPoolsOnBase : bnbPools
   const bnbBalanceJson = new BigNumber(bnbBalance.toString()).toJSON()
-
-  const bnbBalances = fromPairs(bnbPools.map((pool) => [pool.sousId, bnbBalanceJson]))
-  if (bnbPools.length == 0) {
+  const bnbBalances = fromPairs(nativePools.map((pool) => [pool.sousId, bnbBalanceJson]))
+  if (nativePools.length == 0) {
     return { ...poolTokenBalances }
   } else {
     return { ...poolTokenBalances, ...bnbBalances }
@@ -91,8 +90,9 @@ export const fetchUserBalances = async (account, chainId) => {
 }
 
 export const fetchUserStakeBalances = async (account, chainId) => {
+  const nonMasterPools = chainId === 8453 ? nonMasterPoolsOnBase : nonMasterPoolsBnb
   const calls = nonMasterPools.map((p) => ({
-    address: getAddress(p.contractAddress),
+    address: getAddress(p.contractAddress, chainId),
     name: 'userInfo',
     params: [account],
   }))
@@ -108,8 +108,9 @@ export const fetchUserStakeBalances = async (account, chainId) => {
 }
 
 export const fetchUserPendingRewards = async (account, chainId) => {
+  const nonMasterPools = chainId === 8453 ? nonMasterPoolsOnBase : nonMasterPoolsBnb
   const calls = nonMasterPools.map((p) => ({
-    address: getAddress(p.contractAddress),
+    address: getAddress(p.contractAddress, chainId),
     name: 'pendingReward',
     params: [account],
   }))
