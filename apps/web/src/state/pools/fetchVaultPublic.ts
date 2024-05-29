@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { multicallv2, multicallv3 } from 'utils/multicall'
+import erc20Abi from 'config/abi/erc20.json'
 import cakeAbi from 'config/abi/cake.json'
 import cakeVaultAbi from 'config/abi/cakeVaultV2.json'
 import { getCakeVaultAddress, getCakeFlexibleSideVaultAddress } from 'utils/addressHelpers'
@@ -49,7 +50,7 @@ const cakeFlexibleSideVaultV2 = getCakeFlexibleSideVaultAddress()
 //   }
 // }
 
-export const fetchPublicVaultData = async () => {
+export const fetchPublicVaultData = async (chainId: number) => {
   try {
     const calls = [
       'getPricePerFullShare',
@@ -57,16 +58,18 @@ export const fetchPublicVaultData = async () => {
       'calculateHarvestDexTokenRewards',
       'calculateTotalPendingDexTokenRewards',
     ].map((method) => ({
-      address: getCakeVaultAddress(),
+      address: getCakeVaultAddress(chainId),
       name: method,
     }))
     const [[sharePrice], [shares], [estimatedDexTokenBountyReward], [totalPendingDexTokenHarvest]] = await multicallv2({
+      chainId,
       abi: cakeVaultAbi, 
       calls 
     })
     const totalSharesAsBigNumber = shares ? new BigNumber(shares.toString()) : BIG_ZERO
     const sharePriceAsBigNumber = sharePrice ? new BigNumber(sharePrice.toString()) : BIG_ZERO
     const totalDexTokenInVaultEstimate = convertSharesToCake(totalSharesAsBigNumber, sharePriceAsBigNumber)
+    console.log("totalDexTokenInVaultEstimate", totalDexTokenInVaultEstimate)
     return {
       totalShares: totalSharesAsBigNumber.toJSON(),
       pricePerFullShare: sharePriceAsBigNumber.toJSON(),
@@ -85,25 +88,36 @@ export const fetchPublicVaultData = async () => {
   }
 }
 
-export const fetchPublicFlexibleSideVaultData = async () => {
+export const fetchPublicFlexibleSideVaultData = async (chainId: number) => {
   try {
     const calls = ['getPricePerFullShare', 'totalShares'].map((method) => ({
-      abi: cakeVaultAbi,
-      address: getCakeVaultAddress(),
+      address: getCakeVaultAddress(chainId),
       name: method,
     }))
 
     const cakeBalanceOfCall = {
-      abi: cakeAbi,
-      address: CAKE[ChainId.BSC].address,
+      address: CAKE[chainId].address,
       name: 'balanceOf',
-      params: [getCakeVaultAddress()],
+      params: [getCakeVaultAddress(chainId)],
     }
 
-    const [[sharePrice], [shares], [totalDexTokenInVault]] = await multicallv3({
-      calls: [...calls, cakeBalanceOfCall],
-      allowFailure: true,
+    const [[sharePrice], [shares]] = await multicallv2({
+      chainId,
+      abi: cakeVaultAbi, 
+      calls 
     })
+
+    const [[totalDexTokenInVault]] = await multicallv2({
+      chainId,
+      abi: erc20Abi, 
+      calls: [cakeBalanceOfCall]
+    })
+
+    // const [[sharePrice], [shares], [totalDexTokenInVault]] = await multicallv3({
+    //   chainId,
+    //   calls: [...calls, cakeBalanceOfCall],
+    //   allowFailure: true,
+    // })
 
     const totalSharesAsBigNumber = shares ? new BigNumber(shares.toString()) : BIG_ZERO
     const sharePriceAsBigNumber = sharePrice ? new BigNumber(sharePrice.toString()) : BIG_ZERO
@@ -113,6 +127,7 @@ export const fetchPublicFlexibleSideVaultData = async () => {
       totalDexTokenInVault: new BigNumber(totalDexTokenInVault.toString()).toJSON(),
     }
   } catch (error) {
+    console.log(error)
     return {
       totalShares: null,
       pricePerFullShare: null,

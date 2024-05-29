@@ -3,7 +3,7 @@ import { multicallAddresses } from '@pancakeswap/multicall'
 export default {
   marco: {
     56: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
-    8454: '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7',
+    8453: '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7',
   },
   masterChef: {
     56: '0x41D5487836452d23f2c467070244E5842B412794',

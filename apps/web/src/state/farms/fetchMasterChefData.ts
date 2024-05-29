@@ -9,8 +9,11 @@ import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { SerializedFarm } from '@pancakeswap/farms'
 import { SerializedFarmConfig } from '../../config/constants/types'
 import { getMasterChefAddress } from '../../utils/addressHelpers'
+import { getMasterchefContract } from 'utils/contractHelpers'
 
 export const fetchMasterChefFarmPoolLength = async (chainId: number) => {
+  console.log(111)
+  console.log(getMasterChefAddress(chainId))
   try {
     const [poolLength] = await multicallv2({
       abi: masterchefABI,

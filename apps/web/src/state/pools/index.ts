@@ -168,13 +168,18 @@ export const fetchPoolsPublicDataAsync =
         activePriceHelperLpsConfig.length > 0 ? await fetchFarms(priceHelperLpsConfig, chainId) : []
       const farmsData = getState().farms.data
       const bnbBusdFarm =
-        activePriceHelperLpsConfig.length > 0
-          ? farmsData.find((farm) => farm.token.symbol === 'WBNB' && farm.quoteToken.symbol === 'BUSD')
+        chainId == 56
+          ? activePriceHelperLpsConfig.length > 0
+            ? farmsData.find((farm) => farm.token.symbol === 'WBNB' && farm.quoteToken.symbol === 'BUSD')
+            : null
+          : activePriceHelperLpsConfig.length > 0
+          ? farmsData.find((farm) => farm.token.symbol === 'WETH' && farm.quoteToken.symbol === 'USDC')
           : null
+
       const farmsWithPricesOfDifferentTokenPools = bnbBusdFarm
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
         : []
-      
+
       const prices = getTokenPricesFromFarm([...farmsData, ...farmsWithPricesOfDifferentTokenPools])
       const liveData = poolsConfig.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
@@ -300,18 +305,18 @@ export const updateUserPendingReward = createAsyncThunk<
   return { sousId, field: 'pendingReward', value: pendingRewards[sousId] }
 })
 
-export const fetchCakeVaultPublicData = createAsyncThunk<SerializedLockedCakeVault>(
+export const fetchCakeVaultPublicData = createAsyncThunk<SerializedLockedCakeVault, { chainId: number }>(
   'cakeVault/fetchPublicData',
-  async () => {
-    const publicVaultInfo = await fetchPublicVaultData()
+  async ({ chainId }) => {
+    const publicVaultInfo = await fetchPublicVaultData(chainId)
     return publicVaultInfo
   },
 )
 
-export const fetchCakeFlexibleSideVaultPublicData = createAsyncThunk<SerializedCakeVault>(
+export const fetchCakeFlexibleSideVaultPublicData = createAsyncThunk<SerializedCakeVault, { chainId: number }>(
   'cakeFlexibleSideVault/fetchPublicData',
-  async () => {
-    const publicVaultInfo = await fetchPublicFlexibleSideVaultData()
+  async ({ chainId }) => {
+    const publicVaultInfo = await fetchPublicFlexibleSideVaultData(chainId)
     return publicVaultInfo
   },
 )
@@ -494,4 +499,3 @@ export const PoolsSlice = createSlice({
 export const { setPoolsPublicData, setPoolPublicData, setPoolUserData, setIfoUserCreditData } = PoolsSlice.actions
 
 export default PoolsSlice.reducer
-

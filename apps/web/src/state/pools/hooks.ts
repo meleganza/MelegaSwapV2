@@ -8,7 +8,7 @@ import { featureFarmApiAtom, useFeatureFlag } from 'hooks/useFeatureFlag'
 import { FAST_INTERVAL } from 'config/constants'
 import useSWRImmutable from 'swr/immutable'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
-import { livePools, livePools56 } from 'config/constants/pools'
+import { livePools, livePools8453 } from 'config/constants/pools'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 
@@ -40,7 +40,7 @@ import {
 } from './selectors'
 import BigNumber from 'bignumber.js'
 
-const lPoolAddresses = livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+// const lPoolAddresses = livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 
 // Only fetch farms for live pools
 const getActiveFarms = async (chainId: number, lPoolAddresses: string[]) => {
@@ -83,14 +83,15 @@ export const useFetchPublicPoolsData = () => {
   const dispatch = useAppDispatch()
   const { chainId } = useActiveChainId()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
-
-  const lPoolAddresses = (chainId === 56 ? livePools56 : livePools).filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-
+  const lPoolAddresses =
+    chainId == 56
+      ? livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+      : livePools8453.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+      
   useSlowRefreshEffect(
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
         const activeFarms = await getActiveFarms(chainId, lPoolAddresses)
-        console.log
         await dispatch(fetchFarmsPublicDataAsync({ pids: activeFarms, chainId, flag: farmFlag }))
         batch(() => {
           dispatch(fetchPoolsPublicDataAsync(currentBlock, chainId))
@@ -109,7 +110,7 @@ export const usePool = (sousId: number): { pool: Pool.DeserializedPool<Token>; u
   return useSelector(poolWithUserDataLoadingSelector)
 }
 
-export const usePoolsWithVault = () => {
+export const usePoolsWithVault = (chainId?: number) => {
   return useSelector(poolsWithVaultSelector)
 }
 
@@ -121,14 +122,15 @@ export const useDeserializedPoolByVaultKey = (vaultKey) => {
 
 export const usePoolsPageFetch = () => {
   const { address: account } = useAccount()
+  const { chainId } = useActiveChainId()
   const dispatch = useAppDispatch()
-  
+
   useFetchPublicPoolsData()
 
   useFastRefreshEffect(() => {
     batch(() => {
-      dispatch(fetchCakeVaultPublicData())
-      dispatch(fetchCakeFlexibleSideVaultPublicData())
+      dispatch(fetchCakeVaultPublicData({ chainId }))
+      dispatch(fetchCakeFlexibleSideVaultPublicData({ chainId }))
       dispatch(fetchIfoPublicDataAsync())
       if (account) {
         dispatch(fetchPoolsUserDataAsync(account))
@@ -159,8 +161,9 @@ export const useCakeVaultUserData = () => {
 
 export const useCakeVaultPublicData = () => {
   const dispatch = useAppDispatch()
+  const { account, chainId } = useWeb3React()
   useFastRefreshEffect(() => {
-    dispatch(fetchCakeVaultPublicData())
+    dispatch(fetchCakeVaultPublicData({ chainId }))
   }, [dispatch])
 }
 
@@ -176,7 +179,7 @@ export const useFetchIfo = () => {
       await dispatch(fetchFarmsPublicDataAsync({ pids: cakePriceFarms, chainId, flag: farmFlag }))
       batch(() => {
         dispatch(fetchCakePoolPublicDataAsync())
-        dispatch(fetchCakeVaultPublicData())
+        dispatch(fetchCakeVaultPublicData({ chainId }))
         dispatch(fetchIfoPublicDataAsync())
       })
     },
@@ -273,7 +276,6 @@ export const useCakeVault1 = () => {
     },
   }
 }
-
 
 export const useVaultPoolByKey = (key: VaultKey) => {
   const vaultPoolByKey = useMemo(() => makeVaultPoolByKey(key), [key])

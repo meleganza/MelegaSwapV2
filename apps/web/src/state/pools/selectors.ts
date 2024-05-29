@@ -42,6 +42,7 @@ export const poolsWithVaultSelector = createSelector(
   ],
   (poolsWithUserDataLoading, deserializedLockedCakeVault, deserializedFlexibleSideCakeVault) => {
     const { pools, userDataLoaded } = poolsWithUserDataLoading
+    
     const cakePool = pools?.find((pool) => !pool.isFinished && pool.sousId === 0)
     const withoutCakePool = pools?.filter((pool) => pool)
 
@@ -51,6 +52,7 @@ export const poolsWithVaultSelector = createSelector(
       vaultKey: VaultKey.CakeVault,
       userData: { ...cakePool?.userData, ...deserializedLockedCakeVault.userData },
     }
+    console.log('debug Pools', cakeAutoVault)
     const lockedVaultPosition = getVaultPosition(deserializedLockedCakeVault.userData)
     const hasFlexibleSideSharesStaked = deserializedFlexibleSideCakeVault.userData.userShares.gt(0)
 

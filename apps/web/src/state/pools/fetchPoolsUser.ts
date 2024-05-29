@@ -8,8 +8,10 @@ import BigNumber from 'bignumber.js'
 import uniq from 'lodash/uniq'
 import fromPairs from 'lodash/fromPairs'
 import multiCallAbi from 'config/abi/Multicall.json'
-const masterChefContract = getMasterchefContract()
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
+// const { chainId } = useActiveChainId()
+const masterChefContract = getMasterchefContract()
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
 // BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)
 const nonBnbPools = poolsConfig.filter((pool) => pool.stakingToken.symbol !== 'WBNB')

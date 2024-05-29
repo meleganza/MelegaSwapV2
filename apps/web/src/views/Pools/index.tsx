@@ -15,6 +15,7 @@ import CakeVaultCard from './components/CakeVaultCard'
 import PoolControls from './components/PoolControls'
 import PoolRow, { VaultPoolRow } from './components/PoolsTable/PoolRow'
 import BountyCard from './components/BountyCard'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 const CardLayout = styled(FlexLayout)`
   justify-content: center;
@@ -37,9 +38,10 @@ const FinishedTextLink = styled(Link)`
 const Pools: React.FC<React.PropsWithChildren> = () => {
   const { t } = useTranslation()
   const { address: account } = useAccount()
-  const { pools, userDataLoaded } = usePoolsWithVault()
+  const { chainId } = useActiveWeb3React()
+  const { pools, userDataLoaded } = usePoolsWithVault(chainId)
   usePoolsPageFetch()
-
+  
   return (
     <>
       <PageHeader>
