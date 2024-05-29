@@ -76,19 +76,17 @@ export const initialIfoState = Object.freeze({
 })
 
 const initialState: PoolsState = {
-  data: [...poolsConfig],
+  data: [...poolsConfig, ...livePools8453],
   userDataLoaded: false,
   cakeVault: initialPoolVaultState,
   ifo: initialIfoState,
   // cakeFlexibleSideVault: initialPoolVaultState,
 }
 
-const cakeVaultAddress = getCakeVaultAddress()
-
-export const fetchCakePoolPublicDataAsync = () => async (dispatch, getState) => {
+export const fetchCakePoolPublicDataAsync = (chainId?: number ) => async (dispatch, getState) => {
   const farmsData = getState().farms.data
   const prices = getTokenPricesFromFarm(farmsData)
-
+  const pools = chainId 
   const cakePool = poolsConfig.filter((p) => p.sousId === 0)[0]
 
   const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
@@ -108,11 +106,11 @@ export const fetchCakePoolPublicDataAsync = () => async (dispatch, getState) => 
   )
 }
 
-export const fetchCakePoolUserDataAsync = (account: string) => async (dispatch) => {
+export const fetchCakePoolUserDataAsync = (account: string, chainId: number) => async (dispatch) => {
   const allowanceCall = {
     address: bscTokens.cake.address,
     name: 'allowance',
-    params: [account, cakeVaultAddress],
+    params: [account, getCakeVaultAddress(chainId)],
   }
   const balanceOfCall = {
     address: bscTokens.cake.address,
@@ -335,10 +333,10 @@ export const fetchCakeFlexibleSideVaultFees = createAsyncThunk<SerializedVaultFe
   },
 )
 
-export const fetchCakeVaultUserData = createAsyncThunk<SerializedLockedVaultUser, { account: string }>(
+export const fetchCakeVaultUserData = createAsyncThunk<SerializedLockedVaultUser, { account: string, chainId?: number }>(
   'cakeVault/fetchUser',
-  async ({ account }) => {
-    const userData = await fetchVaultUser(account)
+  async ({ account, chainId }) => {
+    const userData = await fetchVaultUser(account, chainId)
     return userData
   },
 )
@@ -356,10 +354,10 @@ export const fetchUserIfoCreditDataAsync = (account: string) => async (dispatch)
     console.error('[Ifo Credit Action] Error fetching user Ifo credit data', error)
   }
 }
-export const fetchCakeFlexibleSideVaultUserData = createAsyncThunk<SerializedVaultUser, { account: string }>(
+export const fetchCakeFlexibleSideVaultUserData = createAsyncThunk<SerializedVaultUser, { account: string, chainId?: number }>(
   'cakeFlexibleSideVault/fetchUser',
-  async ({ account }) => {
-    const userData = await fetchFlexibleSideVaultUser(account)
+  async ({ account, chainId }) => {
+    const userData = await fetchFlexibleSideVaultUser(account, chainId)
     return userData
   },
 )

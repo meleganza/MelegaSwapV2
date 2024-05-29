@@ -9,6 +9,7 @@ import {
   Text,
   CopyAddress,
 } from '@pancakeswap/uikit'
+import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { ChainId, WNATIVE } from '@pancakeswap/sdk'
 import { FetchStatus } from 'config/constants/types'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -38,9 +39,10 @@ interface WalletInfoProps {
 const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
   const { t } = useTranslation()
   const { account, chainId, chain } = useWeb3React()
+  
   const isBSC = chainId === ChainId.BSC
   // const bnbBalance = useBalance({ address: account, chainId: ChainId.BSC })
-  const nativeBalance = useBalance({ address: account, enabled: false })
+  const nativeBalance = useBalance({ address: account, chainId })
   
   const native = useNativeCurrency()
   // const wNativeToken = !isBSC ? WNATIVE[chainId] : null
@@ -141,7 +143,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
           {!nativeBalance.isFetched ? (
             <Skeleton height="22px" width="60px" />
           ) : (
-            <Text>{formatBigNumber(nativeBalance.data.value, 6)}</Text>
+            <Text>{formatBigNumber(nativeBalance?.data?.value, 6)}</Text>
           )}
         </Flex>
         {/* {chainId !== ChainId.ETHEREUM && <Flex alignItems="center" justifyContent="space-between">

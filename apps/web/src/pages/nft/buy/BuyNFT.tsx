@@ -60,7 +60,6 @@ const BuyNFT: React.FC = () => {
       const res = await marketcontract.NftInfos(tid)
       setIsOnSale(res.isOnSale)
       setSellPrice(Number(res.price))
-      console.log(res.owner === account)
       if (account && tid) {
         const uri = await contract.tokenURI(Number(tid))
 

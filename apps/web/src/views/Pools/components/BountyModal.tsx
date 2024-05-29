@@ -26,10 +26,10 @@ const Divider = styled.div`
 
 const BountyModal: React.FC<BountyModalProps> = ({ onDismiss, TooltipComponent }) => {
   const { t } = useTranslation();
-  const { account } = useWeb3React();
+  const { account, chainId } = useWeb3React();
   const theme = useTheme();
   const { toastError, toastSuccess } = useToast();
-  const cakeVaultContract = useCakeVaultContract();
+  const cakeVaultContract = useCakeVaultContract(undefined, chainId);
   const [pendingTx, setPendingTx] = useState(false);
   const {
     estimatedDexTokenBountyReward,

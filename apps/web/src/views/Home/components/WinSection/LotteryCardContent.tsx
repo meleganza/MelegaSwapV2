@@ -31,7 +31,6 @@ const LotteryCardContent = () => {
   
   const cakePrizesText = t('%cakePrizeInUsd% in MARCO prizes this round', { cakePrizeInUsd: cakePriceBusdAsString })
   const [pretext, prizesThisRound] = cakePrizesText.split(cakePriceBusdAsString)
-console.log(cakePrizesText)
   const cakePriceBusd = useMemo(() => {
     return new BigNumber(cakePriceBusdAsString)
   }, [cakePriceBusdAsString])
@@ -60,7 +59,6 @@ console.log(cakePrizesText)
       const { amountCollectedInDexToken } = await fetchLottery(lotteryId)
       
       const prizeInBusd = cakePriceBusd.times(amountCollectedInDexToken)
-      console.log(prizeInBusd)
       setCurrentLotteryPrize(prizeInBusd)
     }
 

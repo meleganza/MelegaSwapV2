@@ -106,7 +106,6 @@ export function createMulticall<TProvider extends Provider>(
   }
 
   const multicallv3 = async ({ calls, chainId = ChainId.BSC, allowFailure, overrides }: MulticallV3Params) => {
-    console.log(chainId)
     const multi = getMulticallContract(chainId, provider({ chainId }))
     if (!multi) throw new Error(`Multicall Provider missing for ${chainId}`)
     const interfaceCache = new WeakMap()

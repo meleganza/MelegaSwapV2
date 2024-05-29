@@ -33,10 +33,8 @@ const ContributeButtonBNB: React.FC<Props> = ({ publicIfoData }) => {
   useEffect(()=>{
     async function loadData() {
       
-      console.log(publicIfoData.isWhitelistOn[0])
       if(publicIfoData.isWhitelistOn[0])
       {
-        console.log("asdasd")
         const tx = await contract.isInList(account);
         if(tx.toString()==="true")
           setIswhite(true);
@@ -77,7 +75,6 @@ if((ctime>Number(publicIfoData.startPresaleTime)&&countdownToUse>0)&&(!publicIfo
     </Button>
   )
   }
-  console.log("asda",ctime-Number(publicIfoData.startPresaleTime),countdownToUse)
   if(!(ctime>Number(publicIfoData.startPresaleTime)&&countdownToUse>0))
   {return (
     <div style={{textAlign:"center"}}>Coming soon</div>

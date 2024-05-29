@@ -38,7 +38,6 @@ const BuyModal: React.FC<Props> = ({ tid, onDismiss, onSuccess }) => {
   const [approved, setApproved] = useState(false)
   const [sellPrice, setSellPrice] = useState('')
 
-  console.log(tid)
   const { t } = useTranslation()
   useEffect(() => {
     async function loaddata() {
@@ -80,7 +79,6 @@ const BuyModal: React.FC<Props> = ({ tid, onDismiss, onSuccess }) => {
           <Button
             onClick={async () => {
               try {
-                console.log(sellPrice)
                 const tx = await currency.approve(getNftMarketAddress(), sellPrice)
                 const receipt = await tx.wait()
 

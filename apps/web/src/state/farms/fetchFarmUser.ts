@@ -79,7 +79,6 @@ export const fetchFarmUserStakedBalances = async (
 export const fetchFarmUserEarnings = async (account: string, farmsToFetch: SerializedFarmConfig[], chainId: number) => {
   const userAddress = account
   const masterChefAddress = getMasterChefAddress(chainId)
-
   const calls = farmsToFetch.map((farm) => {
     return {
       address: masterChefAddress,
@@ -88,7 +87,7 @@ export const fetchFarmUserEarnings = async (account: string, farmsToFetch: Seria
       params: [farm.pid, userAddress],
     }
   })
-
+  
   const rawEarnings = await multicallv2({ abi: masterchefABI, calls, chainId, options: { requireSuccess: false } })
   const parsedEarnings = rawEarnings.map((earnings) => {
     return new BigNumber(earnings).toJSON()

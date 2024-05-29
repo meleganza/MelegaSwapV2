@@ -26,9 +26,9 @@ const harvestPoolBnb = async (sousChefContract, gasPrice) => {
 
 const useHarvestPool = (sousId, isUsingBnb = false) => {
   const { account } = useWeb3React()
-  const sousChefContract = useSousChef(sousId)
-  const masterChefContract = useMasterchef()
   const { chainId } = useActiveChainId()
+  const sousChefContract = useSousChef(sousId)
+  const masterChefContract = useMasterchef(undefined, chainId)
   const gasPrice = useGasPrice()
 
   const handleHarvest = useCallback(async () => {

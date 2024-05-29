@@ -130,14 +130,14 @@ export const getBridgeContract = (signer?: Signer | Provider, chainId?: number) 
   return getContract({ abi: bridge, address: getBridgeAddress(chainId), signer }) as Bridge
 }
 
-export const getCakeVaultV2Contract = (signer?: Signer | Provider) => {
-  return getContract({ abi: cakeVaultV2Abi, address: getCakeVaultAddress(), signer }) as CakeVaultV2
+export const getCakeVaultV2Contract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({ abi: cakeVaultV2Abi, address: getCakeVaultAddress(chainId), signer }) as CakeVaultV2
 }
 
-export const getCakeFlexibleSideVaultV2Contract = (signer?: Signer | Provider) => {
+export const getCakeFlexibleSideVaultV2Contract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({
     abi: cakeFlexibleSideVaultV2Abi,
-    address: getCakeFlexibleSideVaultAddress(),
+    address: getCakeFlexibleSideVaultAddress(chainId),
     signer,
   }) as CakeFlexibleSideVaultV2
 }

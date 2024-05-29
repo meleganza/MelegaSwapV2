@@ -13,9 +13,7 @@ const Timer: React.FC<Props> = ({ publicIfoData }) => {
   const ctime= Number((new Date().getTime()/1000).toFixed(0));
   
   const countdownToUse = ctime<Number(publicIfoData.startPresaleTime) ? Number(publicIfoData.startPresaleTime)-ctime :  ctime<Number(publicIfoData.endPresaleTime)?Number(publicIfoData.endPresaleTime)-ctime:0
-  console.log(Number(publicIfoData.endPresaleTime),countdownToUse, Number(publicIfoData.startPresaleTime),ctime,Number(publicIfoData.endPresaleTime))
   const timeUntil = getTimePeriods(countdownToUse)
-  console.log(timeUntil)
   const suffix = ctime<Number(publicIfoData.startPresaleTime) ? t('Start') : countdownToUse!==0 ? t('Finish'):"Finished"
   return (
     <Flex justifyContent="center" mb="32px">

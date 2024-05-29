@@ -36,12 +36,9 @@ const MintModal: React.FC<Props> = ({
 }) => {
   const [value, setValue] = useState('')
   const { account } = useWeb3React()
-  console.log("------------------")
   const { balance: userCurrencyBalance } = useGetBabyMarcoBalance()
 
   const { toastError, toastSuccess } = useToast()
-  console.log(userCurrencyBalance)
-  console.log("------------------1")
   const contract = useDNFTContract(getDNFTAddress());
   const currencyETH = useERC20(bscTokens.babymarco.address);
 

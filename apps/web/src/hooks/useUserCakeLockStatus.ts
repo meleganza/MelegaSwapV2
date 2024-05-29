@@ -4,11 +4,10 @@ import useSWRImmutable from 'swr/immutable'
 import { useCakeVaultContract } from 'hooks/useContract'
 import { useActiveChainId } from './useActiveChainId'
 
-export const useUserCakeLockStatus = () => {
+export const useUserCakeLockStatus = (chainId) => {
   const { address: account } = useAccount()
-  const { chainId } = useActiveChainId()
-  const cakeVaultContract = useCakeVaultContract()
-
+  // const { chainId } = useActiveChainId()
+  const cakeVaultContract = useCakeVaultContract(undefined, chainId)
   const { data: userCakeLockStatus = null } = useSWRImmutable(
     account && chainId === ChainId.BSC ? ['userCakeLockStatus', account] : null,
     async () => {

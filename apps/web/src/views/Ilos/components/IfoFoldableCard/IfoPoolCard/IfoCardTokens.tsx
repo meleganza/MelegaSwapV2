@@ -74,15 +74,12 @@ const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
     async function loadData() {
       const bnbBalBigNumber=await ifocontract.bnbCommitted(account)
       const bnbBal=getFullDisplayBalance(new BigNumber(bnbBalBigNumber.toString()),18,2)
-      console.log(bnbBalBigNumber,bnbBal)
       setbnbcommited(bnbBal === "NaN"? "0": bnbBal)
-      console.log((bnbBalBigNumber/publicIfoData.costPresaleBNB).toString())
       settokenRecieved((bnbBalBigNumber/publicIfoData.costPresaleBNB).toString()==="NaN"?"0":(bnbBalBigNumber/publicIfoData.costPresaleBNB).toString())
     }
     if(account)
     {
-      console.log(account)
-       loadData();
+      loadData();
     }
   },[account, ifocontract, publicIfoData]);
   const renderTokenSection = () => {

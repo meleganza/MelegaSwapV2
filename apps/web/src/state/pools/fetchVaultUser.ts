@@ -5,10 +5,8 @@ import cakeVaultAbi from 'config/abi/cakeVaultV2.json'
 import { multicallv2 } from 'utils/multicall'
 import { getCakeFlexibleSideVaultV2Contract } from '../../utils/contractHelpers'
 
-const cakeVaultAddress = getCakeVaultAddress()
-const flexibleSideVaultContract = getCakeFlexibleSideVaultV2Contract()
-
-export const fetchVaultUser = async (account: string): Promise<SerializedVaultUser> => {
+export const fetchVaultUser = async (account: string, chainId: number): Promise<SerializedVaultUser> => {
+  const cakeVaultAddress = getCakeVaultAddress(chainId)
   try {
     const calls = ['userInfo'].map((method) => ({
       address: cakeVaultAddress,
@@ -53,7 +51,8 @@ export const fetchVaultUser = async (account: string): Promise<SerializedVaultUs
   }
 }
 
-export const fetchFlexibleSideVaultUser = async (account: string): Promise<SerializedVaultUser> => {
+export const fetchFlexibleSideVaultUser = async (account: string, chainId?: number): Promise<SerializedVaultUser> => {
+  const flexibleSideVaultContract = getCakeFlexibleSideVaultV2Contract(undefined, chainId)
   try {
     const userContractResponse = await flexibleSideVaultContract.userInfo(account)
     return {

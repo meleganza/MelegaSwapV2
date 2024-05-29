@@ -24,7 +24,6 @@ const BottomNav: React.FC<React.PropsWithChildren<BottomNavProps>> = ({
             { label, items: menuItems, href, icon, fillIcon, showOnMobile = true, showItemsOnMobile = true, disabled },
             index
           ) => {
-            console.log(menuItems)
             const statusColor = menuItems?.find((menuItem) => menuItem.status !== undefined)?.status?.color;
             return (
               showOnMobile && (

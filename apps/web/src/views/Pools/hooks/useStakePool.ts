@@ -9,6 +9,7 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import { stakeFarm } from 'utils/calls'
 import { updateUserBalance, updateUserStakedBalance } from 'state/pools'
 import { BIG_TEN } from '@pancakeswap/utils/bigNumber'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const options = {
   gasLimit: DEFAULT_GAS_LIMIT,
@@ -35,7 +36,8 @@ const sousStakeBnb = async (sousChefContract, amount, gasPrice?: string) => {
 const useStakePool = (sousId: number, isUsingBnb = false) => {
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
-  const masterChefContract = useMasterchef()
+  const { chainId } = useActiveChainId()
+  const masterChefContract = useMasterchef(undefined, chainId)
   const sousChefContract = useSousChef(sousId)
   const gasPrice = useGasPrice()
   

@@ -28,6 +28,7 @@ import useApproveFarm from '../../../hooks/useApproveFarm'
 import useStakeFarms from '../../../hooks/useStakeFarms'
 import useUnstakeFarms from '../../../hooks/useUnstakeFarms'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface StackedActionProps extends FarmWithStakedValue {
   userDataReady: boolean
@@ -44,8 +45,8 @@ interface StackedActionProps extends FarmWithStakedValue {
 
 export function useStakedActions(lpContract, pid) {
   const { account, chainId } = useWeb3React()
-  const { onStake } = useStakeFarms(pid)
-  const { onUnstake } = useUnstakeFarms(pid)
+  const { onStake } = useStakeFarms(pid, chainId)
+  const { onUnstake } = useUnstakeFarms(pid, chainId)
   const dispatch = useAppDispatch()
 
   const { onApprove } = useApproveFarm(lpContract, chainId)
@@ -65,7 +66,7 @@ export function useStakedActions(lpContract, pid) {
 
 export const StakedContainer = ({ children, ...props }) => {
   const { address: account } = useAccount()
-
+  const { chainId } = useActiveChainId()
   const { lpAddress } = props
   const lpContract = useERC20(lpAddress)
   const { onStake, onUnstake, onApprove, onDone } = useStakedActions(lpContract, props.pid)

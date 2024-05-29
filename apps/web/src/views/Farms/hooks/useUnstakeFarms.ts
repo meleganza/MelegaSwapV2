@@ -3,9 +3,9 @@ import { unstakeFarm } from 'utils/calls'
 import { useMasterchef } from 'hooks/useContract'
 import { useGasPrice } from 'state/user/hooks'
 
-const useUnstakeFarms = (pid: number) => {
+const useUnstakeFarms = (pid: number, chainId) => {
   const gasPrice = useGasPrice()
-  const masterChefContract = useMasterchef()
+  const masterChefContract = useMasterchef(undefined, chainId)
 
   const handleUnstake = useCallback(
     async (amount: string) => {

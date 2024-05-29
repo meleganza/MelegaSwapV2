@@ -44,7 +44,6 @@ const IfoCardDetails: React.FC<IfoCardDetailsProps> = ({  publicIfoData }) => {
     
   
 if(status!==-2)
-  {console.log(publicIfoData.maxUserAmount.toString())
     return <Box paddingTop="24px">
     <FooterEntry label={t('Max BNB entry:')} value={publicIfoData.maxUserAmount.toString()!=="0"?(publicIfoData.maxUserAmount/1000000000000000000).toString().concat(" BNB"):"No Limit"} />
   

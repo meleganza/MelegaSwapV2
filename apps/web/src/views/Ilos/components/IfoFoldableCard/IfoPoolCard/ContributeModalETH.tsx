@@ -38,7 +38,6 @@ const ContributeModalETH: React.FC<Props> = ({
   const { account } = useWeb3React()
   const { balance: userCurrencyBalance } = useGetETHBalance()
   const { toastError, toastSuccess } = useToast()
-  console.log(userCurrencyBalance)
   const contract = useIfoV3Contract(getIfov3Address());
   const currencyETH = useERC20(bscTokens.eth.address);
   const { t } = useTranslation()
@@ -60,8 +59,6 @@ const ContributeModalETH: React.FC<Props> = ({
             setIsDisable(Number(getDecimalAmount(new BigNumber(e), 18)) < Number(publicIfoData.costPresaleETH));
             // setAllownce(await currencyETH.allowance(account, getIfov3Address()))
             // setAllownce(await currencyBNB.allowance(account,getIfov3Address()))
-            console.log(Number(allownce), " ----- ", Number(getDecimalAmount(new BigNumber(e), 18)))
-
 
             if (Number(allownce) >= Number(getDecimalAmount(new BigNumber(e), 18))) {
               setSteps(2)

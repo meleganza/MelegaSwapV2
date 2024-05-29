@@ -9,6 +9,7 @@ import { useMasterchef } from 'hooks/useContract'
 import { harvestFarm } from 'utils/calls'
 import Balance from 'components/Balance'
 import useFarmsWithBalance from 'views/Home/hooks/useFarmsWithBalance'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StyledCard = styled(Card)`
   width: 100%;
@@ -19,9 +20,10 @@ const HarvestCard = () => {
   const [pendingTx, setPendingTx] = useState(false)
   const { t } = useTranslation()
   const { toastSuccess, toastError } = useToast()
-  const { farmsWithStakedBalance, earningsSum: farmEarningsSum } = useFarmsWithBalance()
+  const { chainId } = useActiveChainId()
+  const { farmsWithStakedBalance, earningsSum: farmEarningsSum } = useFarmsWithBalance(chainId)
 
-  const masterChefContract = useMasterchef()
+  const masterChefContract = useMasterchef(undefined, chainId)
   const cakePriceBusd = usePriceCakeBusd()
   const earningsBusd = new BigNumber(farmEarningsSum).multipliedBy(cakePriceBusd)
   const numFarmsToCollect = farmsWithStakedBalance.length

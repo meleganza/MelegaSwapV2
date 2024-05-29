@@ -79,7 +79,6 @@ const ViewNFTs: React.FC = () => {
       if (gmarketcontract) {
         const res = await gmarketcontract.getList()
         const alldata = []
-        console.log(res.length)
         if (res.length === 0)
           setMystate(
             <div style={{ textAlign: 'center', width: '100%' }}>

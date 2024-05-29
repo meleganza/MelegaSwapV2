@@ -37,7 +37,6 @@ const ContributeModalBNB: React.FC<Props> = ({
   const { account } = useWeb3React()
   const { balance: userCurrencyBalance } = useGetBnbBalance()
   const { toastError, toastSuccess } = useToast()
-  console.log(userCurrencyBalance)
   const contract=useIfoV3Contract(getIfov3Address());
   const currencyBNB=useWNativeContract();
   const { t } = useTranslation()
@@ -60,7 +59,6 @@ const ContributeModalBNB: React.FC<Props> = ({
             
             setWbnbBal(await currencyBNB.balanceOf(account))
             setAllownce(await currencyBNB.allowance(account, getIfov3Address()))
-            console.log(Number(wbnbBal),Number(allownce)," ----- ",Number(getDecimalAmount(new BigNumber(e),18)))
             
             if(Number(wbnbBal)>=Number(getDecimalAmount(new BigNumber(e),18))||Number(allownce)>=Number(getDecimalAmount(new BigNumber(e),18)))
             {

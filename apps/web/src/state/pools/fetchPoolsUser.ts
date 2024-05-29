@@ -21,8 +21,6 @@ const nonBnbPoolsOnBase = livePools8453.filter((pool) => pool.stakingToken.symbo
 const bnbPoolsOnBase = livePools8453.filter((pool) => pool.stakingToken.symbol === 'WETH')
 const nonMasterPoolsOnBase = livePools8453.filter((pool) => pool.sousId !== 0)
 
-const multicallAddress = getMulticallAddress()
-
 export const fetchUserMasterChefStakeBalance = async (account, chainId) => {
   const masterChefContract = getMasterchefContract(undefined, chainId)
   const { amount: masterChefPoolAmount } = await masterChefContract.userInfo('0', account)
@@ -42,9 +40,8 @@ export const fetchPoolsAllowance = async (account, chainId) => {
     name: 'allowance',
     params: [account, getAddress(pool.contractAddress, chainId)],
   }))
-
+  
   const allowances = await multicall(erc20ABI, calls, chainId)
-  console.log(allowances)
   return fromPairs(nonNativePools.map((pool, index) => [pool.sousId, new BigNumber(allowances[index]).toJSON()]))
 }
 
@@ -61,11 +58,12 @@ export const fetchUserBalances = async (account, chainId) => {
   }))
   const bnbBalanceCall = {
     abi: multiCallAbi,
-    address: multicallAddress,
+    address: getMulticallAddress(chainId),
     name: 'getEthBalance',
     params: [account],
   }
-  const tokenBnbBalancesRaw = await multicallv3({ calls: [...tokenBalanceCalls, bnbBalanceCall] })
+  const tokenBnbBalancesRaw = await multicallv3({ calls: [...tokenBalanceCalls, bnbBalanceCall], chainId })
+  
   const bnbBalance = tokenBnbBalancesRaw.pop()
   const tokenBalances = fromPairs(tokens.map((token, index) => [token, tokenBnbBalancesRaw[index]]))
 
@@ -96,7 +94,7 @@ export const fetchUserStakeBalances = async (account, chainId) => {
     name: 'userInfo',
     params: [account],
   }))
-  const userInfo = await multicall(sousChefABI, calls)
+  const userInfo = await multicall(sousChefABI, calls, chainId)
 
   const masterChefStakeBalance = await fetchUserMasterChefStakeBalance(account, chainId)
   return {
@@ -114,7 +112,8 @@ export const fetchUserPendingRewards = async (account, chainId) => {
     name: 'pendingReward',
     params: [account],
   }))
-  const res = await multicall(sousChefABI, calls)
+  
+  const res = await multicall(sousChefABI, calls, chainId)
   const masterChefPendingReward = await fetchUserMasterChefPendingReward(account, chainId)
   return {
     ...fromPairs(nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(res[index]).toJSON()])),

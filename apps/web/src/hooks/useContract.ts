@@ -50,8 +50,8 @@ export const useDNFTContract = (address: string, withSignerIfPossible = true) =>
   return useMemo(() => getDNFTContract(address, providerOrSigner, chainId), [address, providerOrSigner, chainId])
 }
 
-export const useCakeVaultContract = (withSignerIfPossible = true) => {
-  const { chainId } = useActiveChainId()
+export const useCakeVaultContract = (withSignerIfPossible = true, chainId?: number) => {
+  // const { chainId } = useActiveChainId()
   const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
   return useMemo(() => getCakeVaultContract(providerOrSigner, chainId), [providerOrSigner, chainId])
 }
@@ -78,8 +78,7 @@ export const useCake = (): { reader: Cake; signer: Cake } => {
   )
 }
 
-export const useMasterchef = (withSignerIfPossible = true) => {
-  const { chainId } = useActiveChainId()
+export const useMasterchef = (withSignerIfPossible = true, chainId: number) => {
   const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
   return useMemo(() => getMasterchefContract(providerOrSigner, chainId), [providerOrSigner, chainId])
 }

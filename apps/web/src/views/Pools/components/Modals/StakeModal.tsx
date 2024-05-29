@@ -15,6 +15,7 @@ import { usePool } from 'state/pools/hooks'
 
 import useStakePool from '../../hooks/useStakePool'
 import useUnstakePool from '../../hooks/useUnstakePool'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StakeModalContainer = ({
   isBnbPool,
@@ -25,7 +26,7 @@ const StakeModalContainer = ({
   stakingTokenPrice,
 }: Pool.StakeModalPropsType<Token>) => {
   const { t } = useTranslation()
-
+  const { chainId } = useActiveChainId()
   const {
     sousId,
     earningToken,
@@ -36,9 +37,11 @@ const StakeModalContainer = ({
     stakingLimit,
     enableEmergencyWithdraw,
   } = pool
+  console.log('debug stakingToken', stakingToken)
   const { address: account } = useAccount()
   const { toastSuccess } = useToast()
   const { pool: singlePool } = usePool(sousId)
+  console.log('debug', pool)
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
   const [amount, setAmount] = useState('')
 
@@ -54,9 +57,9 @@ const StakeModalContainer = ({
   )
 
   const onDone = useCallback(() => {
-    dispatch(updateUserStakedBalance({ sousId, account }))
-    dispatch(updateUserPendingReward({ sousId, account }))
-    dispatch(updateUserBalance({ sousId, account }))
+    dispatch(updateUserStakedBalance({ sousId, account, chainId }))
+    dispatch(updateUserPendingReward({ sousId, account, chainId }))
+    dispatch(updateUserBalance({ sousId, account, chainId }))
   }, [dispatch, sousId, account])
 
   const handleConfirmClick = useCallback(
@@ -118,7 +121,7 @@ const StakeModalContainer = ({
 
   const handleEnableApprove = async () => {
     await handleApprove()
-    dispatch(updateUserAllowance({ sousId, account }))
+    dispatch(updateUserAllowance({ sousId, account, chainId }))
   }
 
   return (

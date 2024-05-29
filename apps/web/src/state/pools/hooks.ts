@@ -87,7 +87,7 @@ export const useFetchPublicPoolsData = () => {
     chainId == 56
       ? livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
       : livePools8453.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-      
+  
   useSlowRefreshEffect(
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
@@ -135,7 +135,7 @@ export const usePoolsPageFetch = () => {
       if (account) {
         dispatch(fetchPoolsUserDataAsync({account, chainId}))
         dispatch(fetchCakeVaultUserData({ account }))
-        dispatch(fetchCakeFlexibleSideVaultUserData({ account }))
+        dispatch(fetchCakeFlexibleSideVaultUserData({ account, chainId }))
       }
     })
   }, [account, dispatch])
@@ -148,13 +148,13 @@ export const usePoolsPageFetch = () => {
   }, [dispatch])
 }
 
-export const useCakeVaultUserData = () => {
+export const useCakeVaultUserData = (chainId) => {
   const { address: account } = useAccount()
   const dispatch = useAppDispatch()
 
   useFastRefreshEffect(() => {
     if (account) {
-      dispatch(fetchCakeVaultUserData({ account }))
+      dispatch(fetchCakeVaultUserData({ account, chainId }))
     }
   }, [account, dispatch])
 }
@@ -178,7 +178,7 @@ export const useFetchIfo = () => {
       const cakePriceFarms = await getCakePriceFarms(chainId)
       await dispatch(fetchFarmsPublicDataAsync({ pids: cakePriceFarms, chainId, flag: farmFlag }))
       batch(() => {
-        dispatch(fetchCakePoolPublicDataAsync())
+        dispatch(fetchCakePoolPublicDataAsync(chainId))
         dispatch(fetchCakeVaultPublicData({ chainId }))
         dispatch(fetchIfoPublicDataAsync())
       })
@@ -192,7 +192,7 @@ export const useFetchIfo = () => {
     account && ['fetchIfoUserData', account],
     async () => {
       batch(() => {
-        dispatch(fetchCakePoolUserDataAsync(account))
+        dispatch(fetchCakePoolUserDataAsync(account, chainId))
         dispatch(fetchCakeVaultUserData({ account }))
         dispatch(fetchUserIfoCreditDataAsync(account))
       })
