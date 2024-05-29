@@ -133,7 +133,7 @@ export const usePoolsPageFetch = () => {
       dispatch(fetchCakeFlexibleSideVaultPublicData({ chainId }))
       dispatch(fetchIfoPublicDataAsync())
       if (account) {
-        dispatch(fetchPoolsUserDataAsync(account))
+        dispatch(fetchPoolsUserDataAsync({account, chainId}))
         dispatch(fetchCakeVaultUserData({ account }))
         dispatch(fetchCakeFlexibleSideVaultUserData({ account }))
       }

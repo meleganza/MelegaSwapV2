@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import fromPairs from 'lodash/fromPairs'
 // import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
-import poolsConfig from 'config/constants/pools'
+import poolsConfig, { livePools8453 } from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
 import multicall, { multicallv2 } from 'utils/multicall'
@@ -12,6 +12,7 @@ import { getAddress } from 'utils/addressHelpers'
 // import sousChefV3 from '../../config/abi/sousChefV3.json'
 
 const livePoolsWithEnd = poolsConfig.filter((p) => p?.sousId !== 0 && !p?.isFinished)
+const livePoolsOnBase  = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFinished)
 
 const startEndBlockCalls = livePoolsWithEnd.flatMap((poolConfig) => {
   return [
@@ -26,8 +27,21 @@ const startEndBlockCalls = livePoolsWithEnd.flatMap((poolConfig) => {
   ]
 })
 
-export const fetchPoolsBlockLimits = async () => {
-  const startEndBlockRaw = await multicall(sousChefABI, startEndBlockCalls)
+const startEndBlockCallsOnBase = livePoolsOnBase.flatMap((poolConfig) => {
+  return [
+    {
+      address: getAddress(poolConfig?.contractAddress, 8453),
+      name: 'startBlock',
+    },
+    {
+      address: getAddress(poolConfig.contractAddress, 8453),
+      name: 'bonusEndBlock',
+    },
+  ]
+})
+
+export const fetchPoolsBlockLimits = async (chainId) => {
+  const startEndBlockRaw = await multicall(sousChefABI, chainId === 8453 ? startEndBlockCallsOnBase : startEndBlockCalls, chainId)
   
   const startEndBlockResult = startEndBlockRaw.reduce((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / 2)
@@ -41,7 +55,8 @@ export const fetchPoolsBlockLimits = async () => {
 
     return resultArray
   }, [])
-  return livePoolsWithEnd.map((cakePoolConfig, index) => {
+  const livePools = chainId === 8453 ? livePoolsOnBase : livePoolsWithEnd
+  return livePools.map((cakePoolConfig, index) => {
     const [[startBlock], [endBlock]] = startEndBlockResult[index]
     return {
       sousId: cakePoolConfig.sousId,
@@ -59,10 +74,20 @@ const poolsBalanceOf = poolsConfig.map((poolConfig) => {
   }
 })
 
-export const fetchPoolsTotalStaking = async () => {
-  const poolsTotalStaked = await multicall(erc20ABI, poolsBalanceOf)
+const poolsBalanceOfOnBase = livePools8453.map((poolConfig) => {
+  return {
+    address: poolConfig.stakingToken.address,
+    name: 'balanceOf',
+    params: [getAddress(poolConfig.contractAddress, 8453)],
+  }
+})
 
-  return poolsConfig.map((p, index) => ({
+export const fetchPoolsTotalStaking = async (chainId) => {
+  const poolsTotalStaked = await multicall(erc20ABI, chainId === 8453 ? poolsBalanceOfOnBase : poolsBalanceOf, chainId)
+
+  const pools = chainId === 8453 ? livePools8453 : poolsConfig
+
+  return pools.map((p, index) => ({
     sousId: p.sousId,
     totalStaked: new BigNumber(poolsTotalStaked[index]).toJSON(),
   }))

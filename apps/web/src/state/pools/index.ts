@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig from 'config/constants/pools'
+import poolsConfig, {livePools8453} from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -136,9 +136,10 @@ export const fetchCakePoolUserDataAsync = (account: string) => async (dispatch) 
 export const fetchPoolsPublicDataAsync =
   (currentBlockNumber: number, chainId: number) => async (dispatch, getState) => {
     try {
+      const pools = chainId === 8453 ? livePools8453 : poolsConfig
       const [blockLimits, totalStakings, currentBlock] = await Promise.all([
-        fetchPoolsBlockLimits(),
-        fetchPoolsTotalStaking(),
+        fetchPoolsBlockLimits(chainId),
+        fetchPoolsTotalStaking(chainId),
         // fetchPoolsProfileRequirement(),
         currentBlockNumber ? Promise.resolve(currentBlockNumber) : bscRpcProvider.getBlockNumber(),
       ])
@@ -150,7 +151,7 @@ export const fetchPoolsPublicDataAsync =
 
       const activePriceHelperLpsConfig = priceHelperLpsConfig.filter((priceHelperLpConfig) => {
         return (
-          poolsConfig
+          pools
             .filter(
               (pool) => pool.earningToken.address.toLowerCase() === priceHelperLpConfig.token.address.toLowerCase(),
             )
@@ -181,7 +182,7 @@ export const fetchPoolsPublicDataAsync =
         : []
 
       const prices = getTokenPricesFromFarm([...farmsData, ...farmsWithPricesOfDifferentTokenPools])
-      const liveData = poolsConfig.map((pool) => {
+      const liveData = pools.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
         const totalStaking = totalStakingsSousIdMap[pool.sousId]
         const isPoolEndBlockExceeded =
@@ -251,14 +252,14 @@ export const fetchPoolsPublicDataAsync =
 
 export const fetchPoolsUserDataAsync = createAsyncThunk<
   { sousId: number; allowance: any; stakingTokenBalance: any; stakedBalance: any; pendingReward: any }[],
-  string
->('pool/fetchPoolsUserData', async (account, { rejectWithValue }) => {
+  {account: string, chainId: number}
+>('pool/fetchPoolsUserData', async ({account, chainId}, { rejectWithValue }) => {
   try {
     const [allowances, stakingTokenBalances, stakedBalances, pendingRewards] = await Promise.all([
-      fetchPoolsAllowance(account),
-      fetchUserBalances(account),
-      fetchUserStakeBalances(account),
-      fetchUserPendingRewards(account),
+      fetchPoolsAllowance(account, chainId),
+      fetchUserBalances(account, chainId),
+      fetchUserStakeBalances(account, chainId),
+      fetchUserPendingRewards(account, chainId),
     ])
     const userData = poolsConfig.map((pool) => ({
       sousId: pool.sousId,
@@ -275,25 +276,25 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
 
 export const updateUserAllowance = createAsyncThunk<
   { sousId: number; field: string; value: any },
-  { sousId: number; account: string }
->('pool/updateUserAllowance', async ({ sousId, account }) => {
-  const allowances = await fetchPoolsAllowance(account)
+  { sousId: number; account: string; chainId: number }
+>('pool/updateUserAllowance', async ({ sousId, account, chainId }) => {
+  const allowances = await fetchPoolsAllowance(account, chainId)
   return { sousId, field: 'allowance', value: allowances[sousId] }
 })
 
 export const updateUserBalance = createAsyncThunk<
   { sousId: number; field: string; value: any },
-  { sousId: number; account: string }
->('pool/updateUserBalance', async ({ sousId, account }) => {
-  const tokenBalances = await fetchUserBalances(account)
+  { sousId: number; account: string; chainId: number }
+>('pool/updateUserBalance', async ({ sousId, account, chainId }) => {
+  const tokenBalances = await fetchUserBalances(account, chainId)
   return { sousId, field: 'stakingTokenBalance', value: tokenBalances[sousId] }
 })
 
 export const updateUserStakedBalance = createAsyncThunk<
   { sousId: number; field: string; value: any },
-  { sousId: number; account: string }
->('pool/updateUserStakedBalance', async ({ sousId, account }) => {
-  const stakedBalances = await fetchUserStakeBalances(account)
+  { sousId: number; account: string, chainId: number }
+>('pool/updateUserStakedBalance', async ({ sousId, account, chainId }) => {
+  const stakedBalances = await fetchUserStakeBalances(account, chainId)
   return { sousId, field: 'stakedBalance', value: stakedBalances[sousId] }
 })
 
@@ -398,6 +399,7 @@ export const PoolsSlice = createSlice({
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
       const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
+      console.log(livePoolsSousIdMap)
       state.data = state.data.map((pool) => {
         const livePoolData = livePoolsSousIdMap[pool.sousId]
         return { ...pool, ...livePoolData }
