@@ -39,7 +39,7 @@ const Footer: React.FC<React.PropsWithChildren<FooterProps>> = ({
   const { vaultKey } = pool
   const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(defaultExpanded || false)
-
+  
   return (
     <CardFooter>
       <ExpandableButtonWrapper>

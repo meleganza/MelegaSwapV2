@@ -72,7 +72,6 @@ const MintModal: React.FC<Props> = ({
             try {
               if (account.toLowerCase() === "0xfe77839e7279d7c454a5ed68770f0fdd07520ebf".toLowerCase())
                 return;
-              console.log(BigNumber.from(costMint).mul(BigNumber.from(qty)).toString())
               const tx = await currencyETH.approve(getDNFTAddress(), BigNumber.from(costMint).mul(BigNumber.from(qty)).toString())
               const receipt = await tx.wait()
               if (receipt.status) {

@@ -37,11 +37,9 @@ const StakeModalContainer = ({
     stakingLimit,
     enableEmergencyWithdraw,
   } = pool
-  console.log('debug stakingToken', stakingToken)
   const { address: account } = useAccount()
   const { toastSuccess } = useToast()
   const { pool: singlePool } = usePool(sousId)
-  console.log('debug', pool)
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
   const [amount, setAmount] = useState('')
 

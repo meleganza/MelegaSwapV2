@@ -12,7 +12,6 @@ export const fetchFarmUserAllowances = async (
   chainId: number,
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId)
-
   const calls = farmsToFetch.map((farm) => {
     const lpContractAddress = farm.lpAddress
     // return { address: lpContractAddress, name: 'allowance', params: [account, proxyAddress || masterChefAddress] }
@@ -87,7 +86,6 @@ export const fetchFarmUserEarnings = async (account: string, farmsToFetch: Seria
       params: [farm.pid, userAddress],
     }
   })
-  
   const rawEarnings = await multicallv2({ abi: masterchefABI, calls, chainId, options: { requireSuccess: false } })
   const parsedEarnings = rawEarnings.map((earnings) => {
     return new BigNumber(earnings).toJSON()

@@ -46,7 +46,6 @@ const BuyModal: React.FC<Props> = ({ tid, onDismiss, onSuccess }) => {
         const allowance = await cur.allowance(account, getNftMarketAddress())
         const nftmarket = getNftMarketContract(getNftMarketAddress())
         const res = await nftmarket.NftInfos(tid)
-        console.log('check1 ', Number(allowance) >= Number(res.price))
         if (new BigNumber(''.concat(allowance.toString())).gte(res.price)) setApproved(true)
         else setApproved(false)
         setSellPrice(new BigNumber(''.concat(res.price.toString())).toString())

@@ -41,7 +41,6 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
   const isLoading = !pool.userData || isVaultUserDataLoading
   const performanceFeeAsDecimal = performanceFee && performanceFee / 100
   const { chainId } = useActiveChainId()
-
   if (showStakedOnly && !accountHasSharesStaked) {
     return null
   }

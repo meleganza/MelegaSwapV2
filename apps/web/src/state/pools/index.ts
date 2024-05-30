@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, {livePools8453} from 'config/constants/pools'
+import poolsConfig, {livePools, livePools8453} from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -49,6 +49,7 @@ export const initialPoolVaultState = Object.freeze({
   totalDexTokenInVault: null,
   fees: {
     performanceFee: null,
+    callFee: null,
     withdrawalFee: null,
     withdrawalFeePeriod: null,
   },
@@ -76,7 +77,7 @@ export const initialIfoState = Object.freeze({
 })
 
 const initialState: PoolsState = {
-  data: [...poolsConfig, ...livePools8453],
+  data: [],
   userDataLoaded: false,
   cakeVault: initialPoolVaultState,
   ifo: initialIfoState,
@@ -86,8 +87,8 @@ const initialState: PoolsState = {
 export const fetchCakePoolPublicDataAsync = (chainId?: number ) => async (dispatch, getState) => {
   const farmsData = getState().farms.data
   const prices = getTokenPricesFromFarm(farmsData)
-  const pools = chainId 
-  const cakePool = poolsConfig.filter((p) => p.sousId === 0)[0]
+  const pools = chainId === 8453 ? livePools8453 : poolsConfig
+  const cakePool = pools.filter((p) => p.sousId === 0)[0]
 
   const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
   const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
@@ -259,7 +260,9 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
-    const userData = poolsConfig.map((pool) => ({
+    console.log('debug fetchPools-ff')
+    const pools = chainId === 8453 ? livePools8453 : poolsConfig
+    const userData = pools.map((pool) => ({
       sousId: pool.sousId,
       allowance: allowances[pool.sousId],
       stakingTokenBalance: stakingTokenBalances[pool.sousId],
@@ -320,8 +323,8 @@ export const fetchCakeFlexibleSideVaultPublicData = createAsyncThunk<SerializedC
   },
 )
 
-export const fetchCakeVaultFees = createAsyncThunk<SerializedVaultFees>('cakeVault/fetchFees', async () => {
-  const vaultFees = await fetchVaultFees(getCakeVaultAddress())
+export const fetchCakeVaultFees = createAsyncThunk<SerializedVaultFees, { chainId: number }>('cakeVault/fetchFees', async ({ chainId }) => {
+  const vaultFees = await fetchVaultFees(getCakeVaultAddress(chainId))
   return vaultFees
 })
 
@@ -333,7 +336,7 @@ export const fetchCakeFlexibleSideVaultFees = createAsyncThunk<SerializedVaultFe
   },
 )
 
-export const fetchCakeVaultUserData = createAsyncThunk<SerializedLockedVaultUser, { account: string, chainId?: number }>(
+export const fetchCakeVaultUserData = createAsyncThunk<SerializedVaultUser, { account: string, chainId?: number }>(
   'cakeVault/fetchUser',
   async ({ account, chainId }) => {
     const userData = await fetchVaultUser(account, chainId)

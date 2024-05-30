@@ -185,8 +185,8 @@ export interface PublicIfoData {
 export interface PoolsState {
   data: SerializedPool[]
   ifo: IfoState
-  // cakeVault: SerializedLockedCakeVault
-  cakeVault: SerializedCakeVault
+  cakeVault: SerializedLockedCakeVault
+  // cakeVault: SerializedCakeVault
   userDataLoaded: boolean
 }
 

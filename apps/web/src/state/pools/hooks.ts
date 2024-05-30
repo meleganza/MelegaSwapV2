@@ -87,7 +87,7 @@ export const useFetchPublicPoolsData = () => {
     chainId == 56
       ? livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
       : livePools8453.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-  
+
   useSlowRefreshEffect(
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
@@ -142,7 +142,7 @@ export const usePoolsPageFetch = () => {
 
   useEffect(() => {
     batch(() => {
-      dispatch(fetchCakeVaultFees())
+      dispatch(fetchCakeVaultFees({chainId}))
       dispatch(fetchCakeFlexibleSideVaultFees())
     })
   }, [dispatch])
@@ -203,7 +203,7 @@ export const useFetchIfo = () => {
   )
 
   useSWRImmutable('fetchCakeVaultFees', async () => {
-    dispatch(fetchCakeVaultFees())
+    dispatch(fetchCakeVaultFees({chainId}))
   })
 }
 

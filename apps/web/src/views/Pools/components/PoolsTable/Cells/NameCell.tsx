@@ -43,7 +43,7 @@ const NameCell: React.FC<React.PropsWithChildren<NameCellProps>> = ({ pool }) =>
   const isStaked = stakedBalance.gt(0)
 
   const showStakedTag = vaultKey ? hasVaultShares : isStaked
-  const isCakePool = earningToken.symbol === 'MARCO' && stakingToken.symbol === 'MARCO'
+  const isCakePool = earningToken?.symbol === 'MARCO' && stakingToken?.symbol === 'MARCO'
 
   const getHeadingPrefix = () => {
     if (isCakePool) {
@@ -80,8 +80,8 @@ const NameCell: React.FC<React.PropsWithChildren<NameCellProps>> = ({ pool }) =>
   }, [pool.vaultKey, totalDexTokenInVault, totalStaked])
 
   const getImageUrlFromToken = (token: Token) => {
-    const address = token?.isNative ? token.wrapped.address : token.address
-    return `/images/${token.chainId}/tokens/${address}.png`
+    const address = token?.isNative ? token.wrapped.address : token?.address
+    return `/images/${token?.chainId}/tokens/${address}.png`
   }  
 
   return (

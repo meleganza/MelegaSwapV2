@@ -163,7 +163,7 @@ const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
   const isArchived = pathname.includes('archived')
   const isInactive = pathname.includes('history')
   const isActive = !isInactive && !isArchived
-
+  
   usePollFarmsWithUserData()
 
   // Users with no wallet connected should see 0 as Earned amount
