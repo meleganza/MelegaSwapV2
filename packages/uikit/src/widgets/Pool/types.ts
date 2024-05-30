@@ -20,6 +20,7 @@ export interface PoolConfigBaseProps {
   isFinished?: boolean;
   enableEmergencyWithdraw?: boolean;
   version?: number;
+  chainId?: number;
 }
 
 interface GenericToken {

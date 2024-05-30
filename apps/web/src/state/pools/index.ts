@@ -204,6 +204,7 @@ export const fetchPoolsPublicDataAsync =
         // const profileRequirement = profileRequirements[pool.sousId] ? profileRequirements[pool.sousId] : undefined
 
         return {
+          ...pool,
           ...blockLimit,
           ...totalStaking,
           // profileRequirement,
@@ -271,6 +272,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
     }))
     return userData
   } catch (e) {
+    console.log(e)
     return rejectWithValue(e)
   }
 })
@@ -400,11 +402,15 @@ export const PoolsSlice = createSlice({
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
       const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
+
+      console.log(livePoolsData)
+
+      state.data = livePoolsData;
       
-      state.data = state.data.map((pool) => {
-        const livePoolData = livePoolsSousIdMap[pool.sousId]
-        return { ...pool, ...livePoolData }
-      })
+      // state.data = state.data.map((pool) => {
+      //   const livePoolData = livePoolsSousIdMap[pool.sousId]
+      //   return { ...pool, ...livePoolData }
+      // })
     },
     // IFO
     setIfoUserCreditData: (state, action) => {

@@ -1,4 +1,5 @@
 import poolsConfig, { livePools8453 } from 'config/constants/pools'
+import masterChef from 'config/abi/masterchef.json'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
 import multicall, { multicallv3 } from 'utils/multicall'
@@ -23,8 +24,16 @@ const nonMasterPoolsOnBase = livePools8453.filter((pool) => pool.sousId !== 0)
 
 export const fetchUserMasterChefStakeBalance = async (account, chainId) => {
   const masterChefContract = getMasterchefContract(undefined, chainId)
-  const { amount: masterChefPoolAmount } = await masterChefContract.userInfo('0', account)
-  return { '0': new BigNumber(masterChefPoolAmount.toString()).toJSON() }
+  const calls = [{
+    address: masterChefContract.address,
+    name: 'userInfo',
+    params: ['0', account]
+  }]
+
+  const res = await multicall(masterChef, calls, chainId);
+  // console.log('debug masterChefContract-0', masterChefContract.address)
+  // const { amount: masterChefPoolAmount } = await masterChefContract.userInfo('0', account)
+  return { '0': new BigNumber(res?.[0]?.[0]?._hex).toJSON() }
 }
 
 export const fetchUserMasterChefPendingReward = async (account, chainId) => {
@@ -62,6 +71,7 @@ export const fetchUserBalances = async (account, chainId) => {
     params: [account],
   }
   const tokenBnbBalancesRaw = await multicallv3({ calls: [...tokenBalanceCalls, bnbBalanceCall], chainId })
+  
   const bnbBalance = tokenBnbBalancesRaw.pop()
   const tokenBalances = fromPairs(tokens.map((token, index) => [token, tokenBnbBalancesRaw[index]]))
   
