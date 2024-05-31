@@ -11,7 +11,6 @@ const withShownApr = (AprComp) => (props) => {
   const currentBlock = useCurrentBlock()
 
   const { shouldShowBlockCountdown, hasPoolStarted } = getPoolBlockInfo(props.pool, currentBlock)
-  // console.log(props.pool)
   const autoCompoundFrequency = vaultPoolConfig[props.pool.vaultKey]?.autoCompoundFrequency ?? 0
 
   return (

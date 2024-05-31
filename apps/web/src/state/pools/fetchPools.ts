@@ -12,7 +12,7 @@ import { getAddress } from 'utils/addressHelpers'
 // import sousChefV3 from '../../config/abi/sousChefV3.json'
 
 const livePoolsWithEnd = poolsConfig.filter((p) => p?.sousId !== 0 && !p?.isFinished)
-const livePoolsOnBase  = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFinished)
+const livePoolsWithEndBase  = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFinished)
 
 const startEndBlockCalls = livePoolsWithEnd.flatMap((poolConfig) => {
   return [
@@ -27,7 +27,7 @@ const startEndBlockCalls = livePoolsWithEnd.flatMap((poolConfig) => {
   ]
 })
 
-const startEndBlockCallsOnBase = livePoolsOnBase.flatMap((poolConfig) => {
+const startEndBlockCallsOnBase = livePoolsWithEndBase.flatMap((poolConfig) => {
   return [
     {
       address: getAddress(poolConfig?.contractAddress, 8453),
@@ -55,7 +55,7 @@ export const fetchPoolsBlockLimits = async (chainId) => {
 
     return resultArray
   }, [])
-  const livePools = chainId === 8453 ? livePoolsOnBase : livePoolsWithEnd
+  const livePools = chainId === 8453 ? livePoolsWithEndBase : livePoolsWithEnd
   return livePools.map((cakePoolConfig, index) => {
     const [[startBlock], [endBlock]] = startEndBlockResult[index]
     return {

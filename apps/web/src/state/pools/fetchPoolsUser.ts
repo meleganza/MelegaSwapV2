@@ -59,7 +59,7 @@ export const fetchPoolsAllowance = async (account, chainId) => {
   return fromPairs(nonNativePools.map((pool, index) => [pool.sousId, new BigNumber(allowances[index]).toJSON()]))
 }
 
-export const fetchUserBalances = async (account, chainId) => {
+export const fetchUserBalances = async (account, chainId?: number) => {
   // Non BNB pools
   const nonNativePools = chainId === 8453 ? nonBnbPoolsOnBase : nonBnbPools
   const tokens = uniq(nonNativePools.map((pool) => pool.stakingToken.address))
@@ -77,7 +77,6 @@ export const fetchUserBalances = async (account, chainId) => {
     params: [account],
   }
   const tokenBnbBalancesRaw = await multicallv3({ calls: [...tokenBalanceCalls, bnbBalanceCall], chainId })
-  
   const bnbBalance = tokenBnbBalancesRaw.pop()
   const tokenBalances = fromPairs(tokens.map((token, index) => [token, tokenBnbBalancesRaw[index]]))
   
