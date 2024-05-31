@@ -1763,7 +1763,7 @@ export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] 
     earningToken: baseTokens.cake,
     contractAddress: {
       56: '',
-      8453: '0x489133EEC483F43868514d8663873718A7199E2e',
+      8453: '0x69B8dd884aC559e6BB0F6Bf25d765801e4471F5F',
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,

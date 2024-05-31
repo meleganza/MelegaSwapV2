@@ -150,6 +150,6 @@ export const getSouschefContract = (id: number, signer?: Signer | Provider, chai
   const pools = chainId === 8453 ? livePools8453 : poolsConfig
   const config = pools.find((pool) => pool.sousId === id)
   const abi = config?.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
-  return getContract({ abi, address: getAddress(config.contractAddress, chainId), signer }) as SousChef
+  return getContract({ abi, address: getAddress(config?.contractAddress, chainId), signer }) as SousChef
 }
 

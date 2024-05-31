@@ -17,11 +17,11 @@ const livePoolsOnBase  = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFi
 const startEndBlockCalls = livePoolsWithEnd.flatMap((poolConfig) => {
   return [
     {
-      address: getAddress(poolConfig?.contractAddress),
+      address: getAddress(poolConfig?.contractAddress, 56),
       name: 'startBlock',
     },
     {
-      address: getAddress(poolConfig.contractAddress),
+      address: getAddress(poolConfig.contractAddress, 56),
       name: 'bonusEndBlock',
     },
   ]
@@ -42,7 +42,7 @@ const startEndBlockCallsOnBase = livePoolsOnBase.flatMap((poolConfig) => {
 
 export const fetchPoolsBlockLimits = async (chainId) => {
   const startEndBlockRaw = await multicall(sousChefABI, chainId === 8453 ? startEndBlockCallsOnBase : startEndBlockCalls, chainId)
-  
+  console.log("startEndBlockRaw", startEndBlockRaw)
   const startEndBlockResult = startEndBlockRaw.reduce((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / 2)
 

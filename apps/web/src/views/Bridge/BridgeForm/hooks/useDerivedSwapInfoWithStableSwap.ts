@@ -88,7 +88,6 @@ export function useDerivedBridgeInfoWithStableSwap(
     currencyBalances[Field.INPUT],
     // slippageAdjustedAmounts ? slippageAdjustedAmounts[Field.INPUT] : null,
   ]
-  // console.log(balanceIn.lessThan(parsedAmount?? 0))
   if (balanceIn && balanceIn.lessThan(parsedAmount?? 0)) {
     inputError = t('Insufficient %symbol% balance', { symbol: balanceIn.currency.symbol })
   }

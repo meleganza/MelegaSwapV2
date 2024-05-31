@@ -122,7 +122,7 @@ export interface DeserializedVaultUser {
   dexTokenAtLastUserAction?: BigNumber
   lastDepositedTime?: string
   lastUserActionTime: string
-  balance: {
+  balance?: {
     cakeAsNumberBalance: number
     cakeAsBigNumber: BigNumber
     cakeAsDisplayBalance: string
@@ -135,7 +135,7 @@ export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
   lastUserActionTime: string
   lockStartTime: string
   lockEndTime: string
-  burnStartTime: string
+  burnStartTime?: string
   userBoostedShare: BigNumber
   locked: boolean
   lockedAmount: BigNumber

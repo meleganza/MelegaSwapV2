@@ -17,6 +17,7 @@ import {
 import { useTranslation } from '@pancakeswap/localization'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import Balance from 'components/Balance'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useCakeVault, useCakeVault1 } from 'state/pools/hooks'
 import BountyModal from './BountyModal'
@@ -36,6 +37,7 @@ const StyledCard = styled(Card)`
 
 const BountyCard = () => {
   const { t } = useTranslation()
+  const {chainId} = useActiveChainId()
   const {
     estimatedDexTokenBountyReward,
     fees: { callFee },
@@ -45,12 +47,12 @@ const BountyCard = () => {
   const estimatedDollarBountyReward = useMemo(() => {
     return new BigNumber(estimatedDexTokenBountyReward).multipliedBy(cakePriceBusd)
   }, [cakePriceBusd, estimatedDexTokenBountyReward])
-
   const hasFetchedDollarBounty = estimatedDollarBountyReward.gte(0)
+  
   const hasFetchedCakeBounty = estimatedDexTokenBountyReward ? estimatedDexTokenBountyReward.gte(0) : false
   const dollarBountyToDisplay = hasFetchedDollarBounty ? getBalanceNumber(estimatedDollarBountyReward, 18) : 0
+  
   const cakeBountyToDisplay = hasFetchedCakeBounty ? getBalanceNumber(estimatedDexTokenBountyReward, 18) : 0
-
   const TooltipComponent = ({ fee }: { fee: number }) => (
     <>
       <Text color='#000' mb="16px">{t('This bounty is given as a reward for providing a service to other users.')}</Text>
@@ -112,7 +114,7 @@ const BountyCard = () => {
               )}
             </Flex>
             <Button
-              disabled={!dollarBountyToDisplay || !cakeBountyToDisplay || !callFee}
+              disabled={!dollarBountyToDisplay || !cakeBountyToDisplay || (chainId === 56 && !callFee)}
               onClick={onPresentBountyModal}
               scale="sm"
               id="clickClaimVaultBounty"

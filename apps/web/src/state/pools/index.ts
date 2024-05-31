@@ -20,7 +20,7 @@ import { multicallv2 } from 'utils/multicall'
 import { bscTokens } from '@pancakeswap/tokens'
 import { isAddress } from 'utils'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import { bscRpcProvider } from 'utils/providers'
+import { bscRpcProvider, baseRpcProvider } from 'utils/providers'
 import { getPoolsPriceHelperLpFiles } from 'config/constants/priceHelperLps/index'
 import fetchFarms from '../farms/fetchFarms'
 import getFarmsPrices from '../farms/getFarmsPrices'
@@ -140,7 +140,7 @@ export const fetchPoolsPublicDataAsync =
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
         // fetchPoolsProfileRequirement(),
-        currentBlockNumber ? Promise.resolve(currentBlockNumber) : bscRpcProvider.getBlockNumber(),
+        currentBlockNumber ? Promise.resolve(currentBlockNumber) : chainId === 56 ? bscRpcProvider.getBlockNumber() : baseRpcProvider.getBlockNumber(),
       ])
 
       const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')

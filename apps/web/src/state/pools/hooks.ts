@@ -142,7 +142,8 @@ export const usePoolsPageFetch = () => {
   useEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultFees({ chainId }))
-      dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
+      if (chainId === 56)
+        dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
     })
   }, [dispatch])
 }

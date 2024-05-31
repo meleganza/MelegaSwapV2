@@ -45,7 +45,6 @@ const useStakePool = (sousId: number, isUsingBnb = false) => {
       let tx
       if (sousId === 0) {
         // const amount_ = amount.mul(BIG_TEN)
-        console.log(sousId)
         tx = await stakeFarm(masterChefContract, 0, amount, gasPrice)
       } else if (isUsingBnb) {
         tx = await sousStakeBnb(sousChefContract, amount)
