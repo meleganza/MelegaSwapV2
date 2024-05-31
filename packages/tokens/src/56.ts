@@ -3832,4 +3832,12 @@ export const bscTokens = {
     'BabyFox',
     'https://www.babyfoxtoken.com/',
   ),
+  mgc: new ERC20Token(
+    ChainId.BSC,
+    '0xbb73BB2505AC4643d5C0a99c2A1F34B3DfD09D11',
+    9,
+    'MGC',
+    'Meta Games Coin',
+    'https://metagamescoin.io',
+  ),
 }
