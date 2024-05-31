@@ -63,13 +63,11 @@ const StakeModalContainer = ({
   const handleConfirmClick = useCallback(
     async (stakeAmount: string) => {
       const receipt = await fetchWithCatchTxError(() => {
-        console.log(isRemovingStake)
         if (isRemovingStake) {
           return onUnstake(stakeAmount, stakingToken.decimals)
         }
         return onStake(stakeAmount, stakingToken.decimals)
       })
-      
       if (receipt?.status) {
         if (isRemovingStake) {
           toastSuccess(

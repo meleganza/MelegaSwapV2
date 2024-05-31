@@ -42,17 +42,19 @@ const useStakePool = (sousId: number, isUsingBnb = false) => {
   
   const handleStake = useCallback(
     async (amount: string, decimals: any) => {
+      let tx
       if (sousId === 0) {
         // const amount_ = amount.mul(BIG_TEN)
         console.log(sousId)
-        await stakeFarm(masterChefContract, 0, amount, gasPrice)
+        tx = await stakeFarm(masterChefContract, 0, amount, gasPrice)
       } else if (isUsingBnb) {
-        await sousStakeBnb(sousChefContract, amount)
+        tx = await sousStakeBnb(sousChefContract, amount)
       } else {
         return sousStake(sousChefContract, amount, gasPrice, decimals)
       }
       dispatch(updateUserStakedBalance({ sousId, account, chainId }))
       dispatch(updateUserBalance({ sousId, account, chainId }))
+      return tx
     },
     [account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId],
   )

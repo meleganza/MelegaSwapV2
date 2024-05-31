@@ -38,12 +38,12 @@ export const unstakeFarm = async (masterChefContract, pid, amount, gasPrice?: st
   if (pid === 0) {
     const tx = await masterChefContract.leaveStaking(value, options)
     const receipt = await tx.wait()
-    return receipt
+    return tx
   }
 
   const tx = await masterChefContract.withdraw(pid, value, options)
   const receipt = await tx.wait()
-  return receipt.status
+  return tx
 }
 
 export const harvestFarm = async (masterChefContract, pid, gasPrice?: string) => {

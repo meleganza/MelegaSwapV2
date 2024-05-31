@@ -20,13 +20,13 @@ import useHarvestPool from "../../../../../apps/web/src/views/Pools/hooks/useHar
 import useStakePool from "../../../../../apps/web/src/views/Pools/hooks/useStakePool";
 
 export interface CollectModalProps {
-  formattedBalance: string;
+  formattedBalance?: string;
   fullBalance: string;
   earningTokenSymbol: string;
-  earningTokenDecimals: number;
+  earningTokenDecimals?: number;
   earningsDollarValue: number;
-  sousId: number;
-  isBnbPool: boolean;
+  sousId?: number;
+  isBnbPool?: boolean;
   isCompoundPool?: boolean;
   onDismiss?: () => void;
   poolAddress?: {
