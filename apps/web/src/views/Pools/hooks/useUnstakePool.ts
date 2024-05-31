@@ -1,8 +1,9 @@
 import { useCallback } from 'react'
 import { DEFAULT_GAS_LIMIT } from 'config'
 import { parseUnits } from '@ethersproject/units'
-import { useSousChef } from 'hooks/useContract'
+import { useMasterchef, useSousChef } from 'hooks/useContract'
 import { useGasPrice } from 'state/user/hooks'
+import { unstakeFarm } from 'utils/calls'
 
 const options = {
   gasLimit: DEFAULT_GAS_LIMIT,
@@ -21,13 +22,15 @@ const sousEmergencyUnstake = (sousChefContract: any, gasPrice: string) => {
   return sousChefContract.emergencyWithdraw({ ...options, gasPrice })
 }
 
-const useUnstakePool = (sousId: number, enableEmergencyWithdraw = false) => {
-  const sousChefContract = useSousChef(sousId)
+const useUnstakePool = (sousId: number, enableEmergencyWithdraw = false, chainId?: number) => {
+  const sousChefContract = sousId === 0 ? useMasterchef(undefined, chainId) : useSousChef(sousId, chainId)
   const gasPrice = useGasPrice()
 
   const handleUnstake = useCallback(
     async (amount: string, decimals: number) => {
-      if (enableEmergencyWithdraw) {
+      if (sousId === 0) {
+        await unstakeFarm(sousChefContract, 0, amount)
+      } else if (enableEmergencyWithdraw) {
         return sousEmergencyUnstake(sousChefContract, gasPrice)
       }
 

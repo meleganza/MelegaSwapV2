@@ -43,7 +43,7 @@ const StakeModalContainer = ({
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
   const [amount, setAmount] = useState('')
 
-  const { onUnstake } = useUnstakePool(sousId, enableEmergencyWithdraw)
+  const { onUnstake } = useUnstakePool(sousId, enableEmergencyWithdraw, chainId)
   const { onStake } = useStakePool(sousId, isBnbPool)
   const dispatch = useAppDispatch()
 
@@ -63,6 +63,7 @@ const StakeModalContainer = ({
   const handleConfirmClick = useCallback(
     async (stakeAmount: string) => {
       const receipt = await fetchWithCatchTxError(() => {
+        console.log(isRemovingStake)
         if (isRemovingStake) {
           return onUnstake(stakeAmount, stakingToken.decimals)
         }

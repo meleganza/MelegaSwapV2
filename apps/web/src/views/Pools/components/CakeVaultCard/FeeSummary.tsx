@@ -18,7 +18,7 @@ const FeeSummary: React.FC<FeeSummaryProps> = ({ stakingTokenSymbol, stakeAmount
   const feeInCake = (parseFloat(stakeAmount) * (feeAsDecimal / 100)).toFixed(4)
   const { targetRef, tooltip, tooltipVisible } = useTooltip(
     <>
-      <Text bold mb="4px">
+      <Text bold mb="4px" color='#000'>
         {t('Unstaking fee: %fee%%', { fee: feeAsDecimal })}
       </Text>
       <Text>

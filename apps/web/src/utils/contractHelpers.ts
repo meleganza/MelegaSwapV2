@@ -149,7 +149,7 @@ export const getIfoCreditAddressContract = (signer?: Signer | Provider) => {
 export const getSouschefContract = (id: number, signer?: Signer | Provider, chainId?: number) => {
   const pools = chainId === 8453 ? livePools8453 : poolsConfig
   const config = pools.find((pool) => pool.sousId === id)
-  const abi = config.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
+  const abi = config?.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
   return getContract({ abi, address: getAddress(config.contractAddress, chainId), signer }) as SousChef
 }
 
