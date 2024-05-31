@@ -70,6 +70,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
     profileRequirement,
     userDataLoaded,
   } = pool
+  console.log(userData)
   const { t } = useTranslation()
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()

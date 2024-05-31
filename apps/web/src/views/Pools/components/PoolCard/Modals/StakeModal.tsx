@@ -26,6 +26,7 @@ import PercentageButton from './PercentageButton'
 import useStakePool from '../../../hooks/useStakePool'
 import useUnstakePool from '../../../hooks/useUnstakePool'
 import { Token } from '@pancakeswap/sdk'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface StakeModalProps {
   isBnbPool: boolean
@@ -63,6 +64,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
   const { sousId, stakingToken, earningTokenPrice, apr, userData, stakingLimit, earningToken } = pool
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const { chainId } = useActiveChainId()
   const { onStake } = useStakePool(sousId, isBnbPool)
   const { onUnstake } = useUnstakePool(sousId, pool.enableEmergencyWithdraw)
   const { toastSuccess, toastError } = useToast()
@@ -194,7 +196,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">
           <Image
-            src={`/images/tokens/${getAddress(stakingToken.address)}.png`}
+            src={`/images/${chainId}/tokens/${stakingToken.address}.png`}
             width={24}
             height={24}
             alt={stakingToken.symbol}

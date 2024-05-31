@@ -4,6 +4,7 @@ import { Button } from '@pancakeswap/uikit'
 
 interface PercentageButtonProps {
   onClick: () => void
+  children: any
 }
 
 const StyledButton = styled(Button)`
