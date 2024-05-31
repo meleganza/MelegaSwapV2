@@ -72,7 +72,7 @@ export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol)
           {t('You can now stake in the %symbol% pool!', { symbol: earningTokenSymbol })}
         </ToastDescriptionWithTx>,
       )
-      dispatch(updateUserAllowance({ sousId, account }))
+      dispatch(updateUserAllowance({ sousId, account, chainId }))
     }
   }, [
     account,
@@ -92,22 +92,23 @@ export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol)
 
 // Approve MARCO auto pool
 export const useVaultApprove = (setLastUpdated: () => void) => {
-  const vaultPoolContract = useCakeVaultContract()
+  const { chainId } = useActiveChainId()
+  const vaultPoolContract = useCakeVaultContract(undefined, chainId)
   const { t } = useTranslation()
 
   return useCakeApprove(
     setLastUpdated,
     vaultPoolContract?.address,
-    t('You can now stake in the %symbol% vault!', { symbol: 'CAKE' }),
+    t('You can now stake in the %symbol% vault!', { symbol: 'MARCO' }),
   )
 }
 
-export const useCheckVaultApprovalStatus = () => {
+export const useCheckVaultApprovalStatus = (chainId?: number) => {
   const [isVaultApproved, setIsVaultApproved] = useState(false)
   const { account } = useWeb3React()
   // const cakeContract = useCake()
   const { reader: cakeContract } = useCake()
-  const cakeVaultContract = useCakeVaultContract()
+  const cakeVaultContract = useCakeVaultContract(undefined, chainId)
   const { lastUpdated, setLastUpdated } = useLastUpdated()
   useEffect(() => {
     const checkApprovalStatus = async () => {

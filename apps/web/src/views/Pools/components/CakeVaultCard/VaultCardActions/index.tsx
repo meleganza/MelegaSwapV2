@@ -20,13 +20,13 @@ const CakeVaultCardActions: React.FC<{
   accountHasSharesStaked: boolean
   isLoading: boolean
   performanceFee: number
-}> = ({ pool, accountHasSharesStaked, performanceFee }) => {
+  chainId: number
+}> = ({ pool, accountHasSharesStaked, performanceFee, chainId }) => {
   const { stakingToken, userData } = pool
   const { t } = useTranslation()
   const stakingTokenBalance = userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO
   const isLoading = !userData
-  const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus()
-
+  const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus(chainId)
   return (
     <Flex flexDirection="column">
       <Flex flexDirection="column">
@@ -37,7 +37,7 @@ const CakeVaultCardActions: React.FC<{
             bold
             fontSize="12px"
           >
-            {accountHasSharesStaked ? stakingToken.symbol : t('Stake')}{' '}
+            {accountHasSharesStaked ? stakingToken?.symbol : t('Stake')}{' '}
           </InlineText>
           <InlineText
             color={accountHasSharesStaked ? 'textSubtle' : 'secondary'}

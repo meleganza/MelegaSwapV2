@@ -126,15 +126,14 @@ export const usePoolsPageFetch = () => {
   const dispatch = useAppDispatch()
 
   useFetchPublicPoolsData()
-
   useFastRefreshEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultPublicData({ chainId }))
       dispatch(fetchCakeFlexibleSideVaultPublicData({ chainId }))
       dispatch(fetchIfoPublicDataAsync())
       if (account) {
-        dispatch(fetchPoolsUserDataAsync({account, chainId}))
-        dispatch(fetchCakeVaultUserData({ account }))
+        dispatch(fetchPoolsUserDataAsync({ account, chainId }))
+        dispatch(fetchCakeVaultUserData({ account, chainId }))
         dispatch(fetchCakeFlexibleSideVaultUserData({ account, chainId }))
       }
     })
@@ -142,8 +141,8 @@ export const usePoolsPageFetch = () => {
 
   useEffect(() => {
     batch(() => {
-      dispatch(fetchCakeVaultFees({chainId}))
-      dispatch(fetchCakeFlexibleSideVaultFees())
+      dispatch(fetchCakeVaultFees({ chainId }))
+      dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
     })
   }, [dispatch])
 }
@@ -193,7 +192,7 @@ export const useFetchIfo = () => {
     async () => {
       batch(() => {
         dispatch(fetchCakePoolUserDataAsync(account, chainId))
-        dispatch(fetchCakeVaultUserData({ account }))
+        dispatch(fetchCakeVaultUserData({ account, chainId }))
         dispatch(fetchUserIfoCreditDataAsync(account))
       })
     },

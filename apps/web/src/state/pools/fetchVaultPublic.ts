@@ -9,7 +9,6 @@ import { ChainId } from '@pancakeswap/sdk'
 import { CAKE } from '@pancakeswap/tokens'
 import { convertSharesToCake } from '@pancakeswap/uikit/src/widgets/Pool/helpers/getCakeVaultEarnings'
 
-const cakeVaultV2 = getCakeVaultAddress()
 const cakeFlexibleSideVaultV2 = getCakeFlexibleSideVaultAddress()
 // export const fetchPublicVaultData = async (cakeVaultAddress = cakeVaultV2) => {
 //   try {
@@ -135,7 +134,7 @@ export const fetchPublicFlexibleSideVaultData = async (chainId: number) => {
   }
 }
 
-export const fetchVaultFees = async (cakeVaultAddress = cakeVaultV2) => {
+export const fetchVaultFees = async (cakeVaultAddress) => {
   try {
     const calls = ['performanceFee', 'callFee', 'withdrawFee', 'withdrawFeePeriod'].map((method) => ({
       address: cakeVaultAddress,

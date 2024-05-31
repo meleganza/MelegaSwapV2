@@ -6,13 +6,13 @@ import { useVaultApprove } from '../../../hooks/useApprove'
 interface ApprovalActionProps {
   setLastUpdated: () => void
   isLoading?: boolean
+  requestedApproval?: boolean
 }
 
 const VaultApprovalAction: React.FC<ApprovalActionProps> = ({ isLoading = false, setLastUpdated }) => {
   const { t } = useTranslation()
 
   const { requestedApproval, handleApprove } = useVaultApprove(setLastUpdated)
-
   return (
     <>
       {isLoading ? (

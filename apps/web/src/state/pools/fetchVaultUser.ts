@@ -17,6 +17,7 @@ export const fetchVaultUser = async (account: string, chainId: number): Promise<
     const [userContractResponse] = await multicallv2({
       abi: cakeVaultAbi,
       calls,
+      chainId,
     })
 
     return {

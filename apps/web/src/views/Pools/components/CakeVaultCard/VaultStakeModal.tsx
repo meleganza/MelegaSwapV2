@@ -70,6 +70,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { stakingToken, earningToken, apr, stakingTokenPrice, earningTokenPrice } = pool
+  console.log('stakingToken', stakingToken.address)
   const { account, chainId } = useWeb3React()
   const cakeVaultContract = useCakeVaultContract(undefined, chainId)
   const {
@@ -222,7 +223,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">
           <Image
-            src={`/images/tokens/${getAddress(stakingToken.address)}.png`}
+            src={`/images/${chainId}/tokens/${stakingToken.address}.png`}
             width={24}
             height={24}
             alt={stakingToken.symbol}

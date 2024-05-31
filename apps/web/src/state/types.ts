@@ -117,10 +117,10 @@ export interface SerializedVaultUser {
 }
 
 export interface DeserializedVaultUser {
-  isLoading: boolean
-  userShares: BigNumber
-  dexTokenAtLastUserAction: BigNumber
-  lastDepositedTime: string
+  isLoading?: boolean
+  userShares?: BigNumber
+  dexTokenAtLastUserAction?: BigNumber
+  lastDepositedTime?: string
   lastUserActionTime: string
   balance: {
     cakeAsNumberBalance: number
@@ -130,7 +130,8 @@ export interface DeserializedVaultUser {
 }
 
 export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
-  lastDepositedTime: string
+  credit?: any
+  lastDepositedTime?: string
   lastUserActionTime: string
   lockStartTime: string
   lockEndTime: string

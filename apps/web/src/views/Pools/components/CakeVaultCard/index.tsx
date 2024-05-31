@@ -30,6 +30,7 @@ interface CakeVaultProps {
 const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
   const { t } = useTranslation()
   const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const {
     userData: { userShares, isLoading: isVaultUserDataLoading },
     fees: { performanceFee },
@@ -37,10 +38,11 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
   } = useCakeVault1()
   
   const { cakeAsBigNumber } = convertSharesToCake(userShares, pricePerFullShare)
+  // console.log(userShares.gt(0))
   const accountHasSharesStaked = userShares && userShares.gt(0)
   const isLoading = !pool.userData || isVaultUserDataLoading
   const performanceFeeAsDecimal = performanceFee && performanceFee / 100
-  const { chainId } = useActiveChainId()
+  
   if (showStakedOnly && !accountHasSharesStaked) {
     return null
   }
@@ -68,6 +70,7 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
               accountHasSharesStaked={accountHasSharesStaked}
               isLoading={isLoading}
               performanceFee={performanceFeeAsDecimal}
+              chainId={chainId}
             />
           ) : (
             <>

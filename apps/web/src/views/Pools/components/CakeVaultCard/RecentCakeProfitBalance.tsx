@@ -18,10 +18,10 @@ const RecentCakeProfitBalance: React.FC<RecentCakeProfitBalanceProps> = ({
 
   const { targetRef, tooltip, tooltipVisible } = useTooltip(
     <>
-      <Balance fontSize="16px" value={cakeToDisplay} decimals={3} bold unit=" MARCO" />
-      <Balance fontSize="16px" value={dollarValueToDisplay} decimals={2} bold prefix="~$" />
+      <Balance fontSize="16px" color='#000' value={cakeToDisplay} decimals={3} bold prefix='' unit=" MARCO" />
+      <Balance fontSize="16px" color='#000' value={dollarValueToDisplay} decimals={2} bold unit='' prefix="~$" />
       {t('Earned since your last action')}
-      <Text>{dateStringToDisplay}</Text>
+      <Text color='#000'>{dateStringToDisplay}</Text>
     </>,
     {
       placement: 'bottom-end',

@@ -10,6 +10,7 @@ import uniq from 'lodash/uniq'
 import fromPairs from 'lodash/fromPairs'
 import multiCallAbi from 'config/abi/Multicall.json'
 import { ChainId } from '@pancakeswap/sdk'
+import { Masterchef__factory } from 'config/abi/types'
 
 // const masterChefContract = getMasterchefContract()
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
@@ -30,15 +31,20 @@ export const fetchUserMasterChefStakeBalance = async (account, chainId) => {
     params: ['0', account]
   }]
 
-  const res = await multicall(masterChef, calls, chainId);
-  // console.log('debug masterChefContract-0', masterChefContract.address)
+  const masterChefPoolAmount = await multicall(masterChef, calls, chainId);
   // const { amount: masterChefPoolAmount } = await masterChefContract.userInfo('0', account)
-  return { '0': new BigNumber(res?.[0]?.[0]?._hex).toJSON() }
+  return { '0': new BigNumber(masterChefPoolAmount?.[0]?.[0]?._hex).toJSON() }
 }
 
-export const fetchUserMasterChefPendingReward = async (account, chainId) => {
+export const fetchUserMasterChefPendingReward = async (account, chainId?: number) => {
   const masterChefContract = getMasterchefContract(undefined, chainId)
-  const pendingReward = await masterChefContract.pendingDexToken('0', account)
+  const calls = [{
+    address: masterChefContract.address,
+    name: 'pendingDexToken',
+    params: ['0', account]
+  }]
+  const pendingReward = await multicall(masterChef, calls, chainId)
+  // const pendingReward = await masterChefContract.pendingDexToken('0', account)
   return { '0': new BigNumber(pendingReward.toString()).toJSON() }
 }
 
@@ -104,7 +110,6 @@ export const fetchUserStakeBalances = async (account, chainId: number) => {
   }))
   const userInfo = await multicall(sousChefABI, calls, chainId)
   const masterChefStakeBalance = await fetchUserMasterChefStakeBalance(account, chainId)
-  console.log(masterChefStakeBalance)
   return {
     ...fromPairs(
       nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(userInfo[index].amount._hex).toJSON()]),
@@ -113,14 +118,13 @@ export const fetchUserStakeBalances = async (account, chainId: number) => {
   }
 }
 
-export const fetchUserPendingRewards = async (account, chainId) => {
+export const fetchUserPendingRewards = async (account, chainId?: number) => {
   const nonMasterPools = chainId === 8453 ? nonMasterPoolsOnBase : nonMasterPoolsBnb
   const calls = nonMasterPools.map((p) => ({
     address: getAddress(p.contractAddress, chainId),
     name: 'pendingReward',
     params: [account],
   }))
-  
   const res = await multicall(sousChefABI, calls, chainId)
   const masterChefPendingReward = await fetchUserMasterChefPendingReward(account, chainId)
   return {

@@ -261,7 +261,6 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
-    console.log('debug fetchPools-ff')
     const pools = chainId === 8453 ? livePools8453 : poolsConfig
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,
@@ -272,7 +271,6 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
     }))
     return userData
   } catch (e) {
-    console.log(e)
     return rejectWithValue(e)
   }
 })
@@ -330,10 +328,10 @@ export const fetchCakeVaultFees = createAsyncThunk<SerializedVaultFees, { chainI
   return vaultFees
 })
 
-export const fetchCakeFlexibleSideVaultFees = createAsyncThunk<SerializedVaultFees>(
+export const fetchCakeFlexibleSideVaultFees = createAsyncThunk<SerializedVaultFees, { chainId: number}>(
   'cakeFlexibleSideVault/fetchFees',
-  async () => {
-    const vaultFees = await fetchVaultFees(getCakeFlexibleSideVaultAddress())
+  async ({ chainId }) => {
+    const vaultFees = await fetchVaultFees(getCakeFlexibleSideVaultAddress(chainId))
     return vaultFees
   },
 )
@@ -402,8 +400,6 @@ export const PoolsSlice = createSlice({
     setPoolsPublicData: (state, action) => {
       const livePoolsData: SerializedPool[] = action.payload
       const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
-
-      console.log(livePoolsData)
 
       state.data = livePoolsData;
       

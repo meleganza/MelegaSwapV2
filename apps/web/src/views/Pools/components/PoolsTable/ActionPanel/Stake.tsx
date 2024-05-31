@@ -45,6 +45,7 @@ import ExtendButton from '../../LockedPool/Buttons/ExtendDurationButton'
 // import AfterLockedActions from '../../LockedPool/Common/AfterLockedActions'
 import ConvertToLock from '../../LockedPool/Common/ConvertToLock'
 import BurningCountDown from '../../LockedPool/Common/BurningCountDown'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 // import LockedStakedModal from '../../LockedPool/Modals/LockedStakeModal'
 
 const IconButtonWrapper = styled.div`
@@ -71,6 +72,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   } = pool
   const { t } = useTranslation()
   const { address: account } = useAccount()
+  const { chainId } = useActiveChainId()
   const { isMobile } = useMatchBreakpoints()
 
   const stakingTokenContract = useERC20(stakingToken.address || '')
@@ -80,7 +82,8 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
     earningToken.symbol,
   )
 
-  const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus()
+  const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus(chainId)
+  console.log(isVaultApproved)
   const { handleApprove: handleVaultApprove, pendingTx: pendingVaultTx } = useVaultApprove(setLastUpdated)
   
   const handleApprove = vaultKey ? handleVaultApprove : handlePoolApprove

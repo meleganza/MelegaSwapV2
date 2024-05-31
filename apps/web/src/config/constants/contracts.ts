@@ -80,11 +80,12 @@ export default {
   },
   cakeVault: {
     56: '0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C',
-    8453: '0xE8FAc5a2dE8Aaf0690cE79E01D52329cC3DB6AC2',
+    8453: '0x887fcf99d18af0ec7e03acac436a9656f9171e1a',
   },
   cakeFlexibleSideVault: {
     56: '0x615e896A8C2CA8470A2e9dc2E9552998f8658Ea0',
     97: '',
+    8453: '',
   },
   iCake: {
     56: '0x3C458828D1622F5f4d526eb0d24Da8C4Eb8F07b1',
