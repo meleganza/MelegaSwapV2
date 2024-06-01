@@ -15,6 +15,7 @@ import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
 import { getBalanceAmount } from '@pancakeswap/utils/formatBalance'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import useHarvestFarm from '../../../hooks/useHarvestFarm'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const { FarmTableHarvestAction } = FarmUI.FarmTable
 
@@ -26,8 +27,8 @@ interface HarvestActionProps extends FarmWithStakedValue {
 }
 
 export const HarvestActionContainer = ({ children, ...props }) => {
-  const { onReward } = useHarvestFarm(props.pid)
   const { account, chainId } = useWeb3React()
+  const { onReward } = useHarvestFarm(props.pid, chainId)
   const dispatch = useAppDispatch()
 
   const onDone = useCallback(
