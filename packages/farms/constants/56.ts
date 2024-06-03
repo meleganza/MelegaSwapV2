@@ -2513,6 +2513,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x52C435b262781E488B674821606D0dB5dff23bd7',
     token: bscTokens.mgc,
     quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 308,
+    lpSymbol: 'BNB-JIMBO LP',
+    lpAddress: '0xA6b84C1Af74fB10718C31AC521ce69801856b08c',
+    token: bscTokens.jimbo,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
