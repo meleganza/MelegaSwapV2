@@ -3839,5 +3839,13 @@ export const bscTokens = {
     'MGC',
     'Meta Games Coin',
     'https://metagamescoin.io',
+   ),
+  jimbo: new ERC20Token(
+    ChainId.BSC,
+    '0x3F5D6657Ca5cf2d7657948Aff4887184063e78B8',
+    9,
+    'JIMBO',
+    'JIMBO',
+    'https://jimbos.xyz/',
   ),
 }
