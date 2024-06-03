@@ -1833,6 +1833,14 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0xbb73BB2505AC4643d5C0a99c2A1F34B3DfD09D11.png"
+    },
+    {
+      "name": "JIMBO",
+      "symbol": "JIMBO",
+      "address": "0x3F5D6657Ca5cf2d7657948Aff4887184063e78B8",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x3F5D6657Ca5cf2d7657948Aff4887184063e78B8.png"
     }
   ]
 }
