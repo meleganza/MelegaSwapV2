@@ -1841,6 +1841,14 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x3F5D6657Ca5cf2d7657948Aff4887184063e78B8.png"
+    },
+    {
+      "name": "Wrapped KFX",
+      "symbol": "wKFX",
+      "address": "0xA9b1E2542024AC5527aFF797469B57457Bb12886",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0xA9b1E2542024AC5527aFF797469B57457Bb12886.png"
     }
   ]
 }
