@@ -3848,4 +3848,12 @@ export const bscTokens = {
     'JIMBO',
     'https://jimbos.xyz/',
   ),
+  wkfx: new ERC20Token(
+    ChainId.BSC,
+    '0xA9b1E2542024AC5527aFF797469B57457Bb12886',
+    9,
+    'wKFX',
+    'Wrapped KFX',
+    'https://www.knoxfs.com',
+  ),
 }
