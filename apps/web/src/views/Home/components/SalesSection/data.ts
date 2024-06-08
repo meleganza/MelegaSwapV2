@@ -2,7 +2,7 @@ import { SalesSectionProps } from '.'
 
 export const swapSectionData: SalesSectionProps = {
   headingText: 'MelegaSwap',
-  bodyText: 'The best AMM DEX on Binance Smart Chain (BSC) providing friendly trading and better project support.',
+  bodyText: 'The best AMM DEX on Binance Smart Chain and BASE Chain providing friendly trading and better project support.',
   reverse: false,
   primaryButton: {
     to: '/swap',

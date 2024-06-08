@@ -26,7 +26,7 @@ export const Default: React.FC<React.PropsWithChildren> = () => {
         </BreadCrumbs>
         <BreadCrumbs>
           <Text>PancakeSwap</Text>
-          <Text>The #1 AMM and yield farm on Binance Smart Chain.</Text>
+          <Text>The #1 AMM and yield farm on Binance Smart Chain and BASE Chain.</Text>
         </BreadCrumbs>
       </Text>
     </BrowserRouter>

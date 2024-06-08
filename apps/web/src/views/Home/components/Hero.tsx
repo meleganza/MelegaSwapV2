@@ -88,7 +88,7 @@ const starsImage: CompositeImageProps = {
 
 const Hero = () => {
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const { theme } = useTheme()
 
   return (
@@ -109,7 +109,7 @@ const Hero = () => {
             {t('MelegaSwap')}
           </Heading>
           <Text width="500px" color="#fff" mb="24px">
-            {t('The best AMM DEX on Binance Smart Chain (BSC) providing friendly trading and better project support')}
+            {t('The best AMM DEX on Binance Smart Chain and BASE Chain providing friendly trading and better project support')}
           </Text>
           <Flex>
             {!account && <ConnectWalletButton mr="8px" />}
