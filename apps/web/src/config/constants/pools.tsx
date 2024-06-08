@@ -1749,6 +1749,45 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '1',
     isFinished: false,
+  },
+  {
+    sousId: 208,
+    stakingToken: bscTokens.cake,
+    earningToken: bscTokens.jimbo,
+    contractAddress: {
+      97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',
+      56: '0x96AAa4Dc50cE16C3658b38c588196193F778b01d',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '90000000000',
+    isFinished: false,
+  },
+  {
+    sousId: 209,
+    stakingToken: bscTokens.cake,
+    earningToken: bscTokens.wkfx,
+    contractAddress: {
+      97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',
+      56: '0x24ddB11082424addE5bd94927Ce22F9A705210ba',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '6',
+    isFinished: false,
+  },
+  {
+    sousId: 210,
+    stakingToken: bscTokens.cake,
+    earningToken: bscTokens.arct,
+    contractAddress: {
+      97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',
+      56: '0x96475EcF66A2cF742278BE47A46a88aa4698fefb',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '1',
+    isFinished: false,
   }
 ].map((p) => ({
   ...p,

@@ -1833,6 +1833,30 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0xbb73BB2505AC4643d5C0a99c2A1F34B3DfD09D11.png"
+    },
+    {
+      "name": "JIMBO",
+      "symbol": "JIMBO",
+      "address": "0x3F5D6657Ca5cf2d7657948Aff4887184063e78B8",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x3F5D6657Ca5cf2d7657948Aff4887184063e78B8.png"
+    },
+    {
+      "name": "Wrapped KFX",
+      "symbol": "wKFX",
+      "address": "0xA9b1E2542024AC5527aFF797469B57457Bb12886",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0xA9b1E2542024AC5527aFF797469B57457Bb12886.png"
+    },
+    {
+      "name": "Arcturus Token",
+      "symbol": "ARCT",
+      "address": "0xf94E9f88C0Ae095088138CAc9272401A0b92Df89",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0xf94E9f88C0Ae095088138CAc9272401A0b92Df89.png"
     }
   ]
 }
