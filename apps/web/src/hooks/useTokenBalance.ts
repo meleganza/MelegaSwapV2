@@ -48,10 +48,11 @@ const useTokenBalance = (tokenAddress: string, forceBSC?: boolean) => {
 export const useBurnedBalance = (tokenAddress: string) => {
   const [balance, setBalance] = useState(BIG_ZERO)
   const { slowRefresh } = useRefresh()
+  const { chainId } = useActiveChainId()
 
   useEffect(() => {
     const fetchBalance = async () => {
-      const contract = getBep20Contract(tokenAddress)
+      const contract = getBep20Contract(tokenAddress, undefined, chainId)
       const res = await contract.balanceOf('0x000000000000000000000000000000000000dEaD')
       setBalance(new BigNumber(res.toString()))
     }

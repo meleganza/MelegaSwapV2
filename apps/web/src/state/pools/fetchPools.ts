@@ -42,7 +42,6 @@ const startEndBlockCallsOnBase = livePoolsWithEndBase.flatMap((poolConfig) => {
 
 export const fetchPoolsBlockLimits = async (chainId) => {
   const startEndBlockRaw = await multicall(sousChefABI, chainId === 8453 ? startEndBlockCallsOnBase : startEndBlockCalls, chainId)
-  console.log("startEndBlockRaw", startEndBlockRaw)
   const startEndBlockResult = startEndBlockRaw.reduce((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / 2)
 

@@ -11,6 +11,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import BigNumber from 'bignumber.js'
 import Balance from 'components/Balance'
 import { useMatchBreakpoints } from '@pancakeswap/uikit'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const OuterDiv = styled('div')`
   display: flex;
@@ -78,15 +79,16 @@ const emissionsPerBlock = 0.162118
 
 const CakeDataRow = () => {
   const { t } = useTranslation()
-  const tokenTotalSupply = new BigNumber(useTotalSupply(useToken(getMarcoAddress()))?.toFixed(0))
+  const { chainId } = useActiveChainId()
+  const tokenTotalSupply = new BigNumber(useTotalSupply(useToken(getMarcoAddress(chainId)))?.toFixed(0))
   const totalSupply = tokenTotalSupply ? new BigNumber(tokenTotalSupply.toFixed(0)) : 0
-  const burnedBalance = getBalanceNumber(useBurnedBalance(getMarcoAddress()))
+  const burnedBalance = getBalanceNumber(useBurnedBalance(getMarcoAddress(chainId)))
   const cakeSupply = totalSupply ? totalSupply.toNumber() - burnedBalance : 0
   const cakePriceBusd = usePriceCakeBusd()
   const mcap = cakePriceBusd.times(cakeSupply)
   const mcapString = formatLocalisedCompactNumber(mcap.toNumber())
   const { isMobile } = useMatchBreakpoints()
-
+  
   return (
     <OuterDiv style={{ textAlign: 'center' }}>
       <InnerDiv1 style={{ padding: '0.5rem', textAlign: 'center', border: '1px solid', borderRadius: '1rem' }}>

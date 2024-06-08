@@ -12,9 +12,10 @@ const FarmsPage = () => {
   const lpFarms = chosenFarmsMemoized.filter((farm) => !farm.isTokenOnly)
   const cakePrice = usePriceCakeBusd()
   const activeFarms = lpFarms.filter((farm) => (farm.apr !== 0 && farm.apr !== null && farm.apr !== undefined) || farm.lpRewardsApr !== 0)
+  
   return (
     <>
-      {lpFarms.map(farm => (
+      {activeFarms.map(farm => (
         <FarmCard
           key={farm.pid}
           farm={farm}
