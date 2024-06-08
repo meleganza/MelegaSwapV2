@@ -3856,4 +3856,12 @@ export const bscTokens = {
     'Wrapped KFX',
     'https://www.knoxfs.com',
   ),
+  arct: new ERC20Token(
+    ChainId.BSC,
+    '0xf94E9f88C0Ae095088138CAc9272401A0b92Df89',
+    18,
+    'ARCT',
+    'Arcturus Token',
+    'https://arcturuschain.io',
+  ),
 }
