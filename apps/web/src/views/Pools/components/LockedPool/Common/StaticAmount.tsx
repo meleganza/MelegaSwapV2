@@ -2,6 +2,7 @@ import { Text, Flex, Image, Box, BalanceWithLoading } from '@pancakeswap/uikit'
 import Divider from 'components/Divider'
 import { useTranslation } from '@pancakeswap/localization'
 import { StaticAmountPropsType } from '../types'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StaticAmount: React.FC<React.PropsWithChildren<StaticAmountPropsType>> = ({
   stakingSymbol,
@@ -10,6 +11,7 @@ const StaticAmount: React.FC<React.PropsWithChildren<StaticAmountPropsType>> = (
   usdValueStaked,
 }) => {
   const { t } = useTranslation()
+  const { chainId } = useActiveChainId()
 
   return (
     <>
@@ -29,7 +31,7 @@ const StaticAmount: React.FC<React.PropsWithChildren<StaticAmountPropsType>> = (
           />
         </Box>
         <Flex alignItems="center" minWidth="70px">
-          <Image src={`/images/tokens/${stakingAddress}.png`} width={24} height={24} alt={stakingSymbol} />
+          <Image src={`/images/tokens/${chainId}/${stakingAddress}.png`} width={24} height={24} alt={stakingSymbol} />
           <Text ml="4px" bold>
             {stakingSymbol}
           </Text>

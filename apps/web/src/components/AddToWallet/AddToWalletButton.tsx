@@ -12,6 +12,7 @@ import {
 import { useAccount } from 'wagmi'
 import { canRegisterToken } from '../../utils/wallet'
 import { BAD_SRCS } from '../Logo/constants'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export enum AddToWalletTextOptions {
   NO_TEXT,
@@ -81,6 +82,7 @@ const AddToWalletButton: React.FC<AddToWalletButtonProps & ButtonProps> = ({
   ...props
 }) => {
   const { t } = useTranslation()
+  const { chainId } = useActiveChainId()
   const { connector, isConnected } = useAccount()
   const isCanRegisterToken = canRegisterToken()
 
@@ -94,7 +96,9 @@ const AddToWalletButton: React.FC<AddToWalletButtonProps & ButtonProps> = ({
     <Button
       {...props}
       onClick={() => {
-        const image = tokenLogo ? (BAD_SRCS[tokenLogo] ? undefined : tokenLogo) : undefined
+        // const image = tokenLogo ? (BAD_SRCS[tokenLogo] ? undefined : tokenLogo) : undefined
+        const image = `http://melega.finance/images/${chainId}/tokens/0x0A7b96846aFB37029543d52122a2D2C011A0627c.png`
+        console.log(image)
         connector.watchAsset?.({
           address: tokenAddress,
           symbol,

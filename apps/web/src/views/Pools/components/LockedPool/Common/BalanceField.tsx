@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { getFullDisplayBalance } from '@pancakeswap/utils/formatBalance'
 import { getFullDecimalMultiplier } from '@pancakeswap/utils/getFullDecimalMultiplier'
 import { useUserEnoughCakeValidator } from '../hooks/useUserEnoughCakeValidator'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const StyledButton = styled(Button)`
   flex-grow: 1;
@@ -35,6 +36,7 @@ const BalanceField: React.FC<React.PropsWithChildren<PropsType>> = ({
   needApprove,
 }) => {
   const { t } = useTranslation()
+  const { chainId } = useActiveChainId()
   const { userNotEnoughCake, notEnoughErrorMessage } = useUserEnoughCakeValidator(lockedAmount, stakingTokenBalance)
 
   const percent = useMemo(() => {
@@ -75,7 +77,7 @@ const BalanceField: React.FC<React.PropsWithChildren<PropsType>> = ({
           {t('CAKE to lock')}
         </Text>
         <Flex alignItems="center" minWidth="70px">
-          <Image src={`/images/tokens/${stakingAddress}.png`} width={24} height={24} alt={stakingSymbol} />
+          <Image src={`/images/${chainId}/tokens/${stakingAddress}.png`} width={24} height={24} alt={stakingSymbol} />
           <Text ml="4px" bold>
             {stakingSymbol}
           </Text>

@@ -5,6 +5,8 @@ import { useTranslation } from '@pancakeswap/localization'
 import { Token } from 'config/constants/types'
 import { TokenPairImage } from 'components/TokenImage'
 import { isAutoAccessorPropertyDeclaration } from 'typescript'
+import { useChainId } from 'wagmi'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const Wrapper = styled(CardHeader)<{ isFinished?: boolean; background?: string }>`
   background: black;
@@ -19,6 +21,7 @@ const StyledCardHeader: React.FC<{
   isStaking?: boolean
 }> = ({ earningToken, stakingToken, isFinished = false, isAutoVault = false, isStaking = false }) => {
   const { t } = useTranslation()
+  const { chainId } = useActiveChainId()
   const isCakePool = earningToken.symbol === 'MARCO' && stakingToken.symbol === 'MARCO'
   const background = isStaking ? 'darkColor' : 'bubblegum'
 
@@ -47,7 +50,7 @@ const StyledCardHeader: React.FC<{
 
   const getImageUrlFromToken = (token: Token) => {
     const address = token?.isNative ? token.wrapped.address : token.address
-    return `/images/${token.chainId}/tokens/${address}.png`
+    return `/images/${chainId}/tokens/${address}.png`
   }  
 
   return (

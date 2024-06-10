@@ -167,7 +167,7 @@ const RoiCalculatorModal: React.FC<React.PropsWithChildren<RoiCalculatorModalPro
 
   const isDisableMyBalance = useMemo(() => {
     return (
-      !Number.isFinite(stakingTokenPrice) || !stakingTokenBalance.isFinite() || stakingTokenBalance.lte(0) || !account
+      !Number.isFinite(stakingTokenPrice) || !stakingTokenBalance?.isFinite() || stakingTokenBalance.lte(0) || !account
     );
   }, [account, stakingTokenBalance, stakingTokenPrice]);
 
