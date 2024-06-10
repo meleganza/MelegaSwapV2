@@ -97,7 +97,7 @@ const AddToWalletButton: React.FC<AddToWalletButtonProps & ButtonProps> = ({
       {...props}
       onClick={() => {
         // const image = tokenLogo ? (BAD_SRCS[tokenLogo] ? undefined : tokenLogo) : undefined
-        const image = `http://melega.finance/images/${chainId}/tokens/0x0A7b96846aFB37029543d52122a2D2C011A0627c.png`
+        const image = `http://melega.finance/images/${chainId}/tokens/${tokenAddress}.png`
         console.log(image)
         connector.watchAsset?.({
           address: tokenAddress,
