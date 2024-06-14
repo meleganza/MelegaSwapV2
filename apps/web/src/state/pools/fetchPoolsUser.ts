@@ -56,6 +56,7 @@ export const fetchPoolsAllowance = async (account, chainId) => {
     params: [account, getAddress(pool.contractAddress, chainId)],
   }))
   const allowances = await multicall(erc20ABI, calls, chainId)
+  
   return fromPairs(nonNativePools.map((pool, index) => [pool.sousId, new BigNumber(allowances[index]).toJSON()]))
 }
 
@@ -93,6 +94,7 @@ export const fetchUserBalances = async (account, chainId?: number) => {
   const nativePools = chainId === 8453 ? bnbPoolsOnBase : bnbPools
   const bnbBalanceJson = new BigNumber(bnbBalance.toString()).toJSON()
   const bnbBalances = fromPairs(nativePools.map((pool) => [pool.sousId, bnbBalanceJson]))
+  
   if (nativePools.length == 0) {
     return { ...poolTokenBalances }
   } else {

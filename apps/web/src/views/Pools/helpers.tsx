@@ -79,6 +79,7 @@ export const getCakeVaultEarnings = (
 export const getPoolBlockInfo = memoize(
   (pool: Pool.DeserializedPool<Token>, currentBlock: number) => {
     const { startBlock, endBlock, isFinished } = pool
+    // console.log(startBlock, endBlock, isFinished)
     const shouldShowBlockCountdown = Boolean(!isFinished && startBlock && endBlock)
     const blocksUntilStart = Math.max(startBlock - currentBlock, 0)
     const blocksRemaining = Math.max(endBlock - currentBlock, 0)

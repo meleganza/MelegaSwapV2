@@ -9,10 +9,10 @@ const withShownApr = (AprComp) => (props) => {
   const { account } = useWeb3React()
 
   const currentBlock = useCurrentBlock()
-
+  
   const { shouldShowBlockCountdown, hasPoolStarted } = getPoolBlockInfo(props.pool, currentBlock)
   const autoCompoundFrequency = vaultPoolConfig[props.pool.vaultKey]?.autoCompoundFrequency ?? 0
-
+  // console.log(hasPoolStarted)
   return (
     <AprComp
       {...props}

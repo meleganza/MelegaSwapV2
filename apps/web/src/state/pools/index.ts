@@ -261,6 +261,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
+    
     const pools = chainId === 8453 ? livePools8453 : poolsConfig
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,

@@ -17,7 +17,7 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import { useAppDispatch } from 'state'
 import { BIG_TEN } from 'utils/bigNumber'
 import { usePriceCakeBusd } from 'state/farms/hooks'
-import { useCakeVault } from 'state/pools/hooks'
+import { useCakeVault, useCakeVault1 } from 'state/pools/hooks'
 import { useCakeVaultContract } from 'hooks/useContract'
 import useTheme from 'hooks/useTheme'
 import useWithdrawalFeeTimer from 'views/Pools/hooks/useWithdrawalFeeTimer'
@@ -75,7 +75,8 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   const {
     userData: { lastDepositedTime, userShares },
     pricePerFullShare,
-  } = useCakeVault()
+  } = useCakeVault1()
+  
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { toastSuccess, toastError } = useToast()
@@ -129,6 +130,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
     // trigger withdrawAll function if the withdrawal will leave 0.000001 MARCO or less
     const triggerWithdrawAllThreshold = new BigNumber(1000000000000)
     const sharesRemaining = userShares.minus(shareStakeToWithdraw.sharesAsBigNumber)
+
     const isWithdrawingAll = sharesRemaining.lte(triggerWithdrawAllThreshold)
 
     if (isWithdrawingAll) {
@@ -149,7 +151,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
       // .toString() being called to fix a BigNumber error in prod
       // as suggested here https://github.com/ChainSafe/web3.js/issues/2077
       try {
-        const tx = await cakeVaultContract.withdraw(shareStakeToWithdraw.sharesAsBigNumber.toString(), callOptions)
+        const tx = await cakeVaultContract.withdraw(Math.round(Number(shareStakeToWithdraw.sharesAsBigNumber.toString())), callOptions)
         const receipt = await tx.wait()
         if (receipt.status) {
           toastSuccess(t('Unstaked!'), t('Your earnings have also been harvested to your wallet'))
@@ -158,6 +160,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
           dispatch(fetchCakeVaultUserData({ account }))
         }
       } catch (error) {
+        console.log(error)
         toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
         setPendingTx(false)
       }
@@ -185,6 +188,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
 
   const handleConfirmClick = async () => {
     const convertedStakeAmount = getDecimalAmount(new BigNumber(stakeAmount), stakingToken.decimals)
+    
     if (isRemovingStake) {
       // unstaking
       handleWithdrawal(convertedStakeAmount)

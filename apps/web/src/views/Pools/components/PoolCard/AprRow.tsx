@@ -17,6 +17,7 @@ const AprRow: React.FC<React.PropsWithChildren<AprRowProps>> = ({
   performanceFee = 0,
   showIcon = true,
 }) => {
+  
   return (
     <Pool.AprRowWithToolTip pool={pool}>
       <Apr pool={pool} stakedBalance={stakedBalance} performanceFee={performanceFee} showIcon={showIcon} />
