@@ -20,7 +20,7 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   const [topPools, setTopPools] = useState<Pool.DeserializedPool<Token>[]>([null, null, null, null, null])
   const initialBlock = useInitialBlock()
   
-  const { pools } = usePoolsWithVault()
+  const { pools } = usePoolsWithVault(chainId)
 
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
@@ -29,8 +29,8 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
       try {
         // It should all be blocking calls since data only fetched once
         await Promise.all([
-          dispatch(fetchCakeVaultFees()),
-          dispatch(fetchCakeVaultPublicData()),
+          dispatch(fetchCakeVaultFees({chainId})),
+          dispatch(fetchCakeVaultPublicData({chainId})),
           dispatch(fetchPoolsPublicDataAsync(initialBlock, chainId)),
         ])
         setFetchStatus(FetchStatus.Fetched)
@@ -48,8 +48,9 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   useEffect(() => {
     const [cakePools, otherPools] = partition(pools, (pool) => pool.sousId === 0)
     const masterCakePool = cakePools.filter((cakePool) => cakePool.vaultKey === VaultKey.CakeVault)
-    
+    console.log(pools, otherPools)
     const getTopPoolsByApr = (activePools: Pool.DeserializedPool<Token>[]) => {
+      
       const sortedByApr = orderBy(activePools, (pool: Pool.DeserializedPool<Token>) => pool.apr || 0, 'desc')
       
       setTopPools([...sortedByApr.slice(0, 5)])
