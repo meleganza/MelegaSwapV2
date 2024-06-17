@@ -99,12 +99,12 @@ const walletsConfig = ({
       },
       qrCode,
     },
-    {
-      id: 'walletconnect',
-      title: 'WalletConnect',
-      icon: '/images/wallets/walletconnect.png',
-      connectorId: ConnectorNames.WalletConnect,
-    },
+    // {
+    //   id: 'walletconnect',
+    //   title: 'WalletConnect',
+    //   icon: '/images/wallets/walletconnect.png',
+    //   connectorId: ConnectorNames.WalletConnect,
+    // },
     // {
     //   id: 'opera',
     //   title: 'Opera Wallet',

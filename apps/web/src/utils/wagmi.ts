@@ -7,7 +7,7 @@ import memoize from 'lodash/memoize'
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+// import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { LedgerConnector } from 'wagmi/connectors/ledger'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { SafeConnector } from './safeConnector'
@@ -235,19 +235,19 @@ export const coinbaseConnector = new CoinbaseWalletConnector({
   },
 })
 
-export const walletConnectConnector = new WalletConnectConnector({
-  chains,
-  options: {
-    qrcode: true,
-  },
-})
+// export const walletConnectConnector = new WalletConnectConnector({
+//   chains,
+//   options: {
+//     qrcode: true,
+//   },
+// })
 
-export const walletConnectNoQrCodeConnector = new WalletConnectConnector({
-  chains,
-  options: {
-    qrcode: false,
-  },
-})
+// export const walletConnectNoQrCodeConnector = new WalletConnectConnector({
+//   chains,
+//   options: {
+//     qrcode: false,
+//   },
+// })
 
 export const metaMaskConnector = new MetaMaskConnector({
   chains,
@@ -287,7 +287,7 @@ export const client = createClient({
     metaMaskConnector,
     injectedConnector,
     coinbaseConnector,
-    walletConnectConnector,
+    // walletConnectConnector,
     bscConnector,
     bloctoConnector,
     ledgerConnector,

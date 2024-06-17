@@ -167,7 +167,7 @@ export const fetchPoolsPublicDataAsync =
       const poolsWithDifferentFarmToken =
         activePriceHelperLpsConfig.length > 0 ? await fetchFarms(priceHelperLpsConfig, chainId) : []
       const farmsData = getState().farms.data
-      console.log(farmsData)
+      
       const bnbBusdFarm =
         chainId == 56
             ? farmsData.find((farm) => farm.token.symbol === 'WBNB' && farm.quoteToken.symbol === 'BUSD')
