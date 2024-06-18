@@ -36,6 +36,7 @@ import CakeDataRow from './components/CakeDataRow'
 import { WedgeTopLeft, InnerWedgeWrapper, OuterWedgeWrapper, WedgeTopRight } from './components/WedgeSvgs'
 import UserBanner from './components/UserBanner'
 import FarmAuctionsBanner from './components/Banners/FarmAuctionsBanner'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 
 const Nft: React.FC = () => {
@@ -43,7 +44,8 @@ const Nft: React.FC = () => {
   const [amountMint, setAmountMint] = useState(1)
   const [userquota, setUserquota] = useState(0)
   const writeContract = useDNFTContract(getDNFTAddress())
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const [costMint, setCostMint] = useState('0')
   const [maxmint, setMaxmint] = useState('0')
   const [isdisable, setIsdisable] = useState(true)
