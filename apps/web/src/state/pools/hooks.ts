@@ -161,14 +161,16 @@ export const useCakeVaultUserData = (chainId) => {
 
 export const useCakeVaultPublicData = () => {
   const dispatch = useAppDispatch()
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   useFastRefreshEffect(() => {
     dispatch(fetchCakeVaultPublicData({ chainId }))
   }, [dispatch])
 }
 
 export const useFetchIfo = () => {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const dispatch = useAppDispatch()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
 

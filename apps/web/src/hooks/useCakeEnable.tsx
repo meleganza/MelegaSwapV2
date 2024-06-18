@@ -11,9 +11,11 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import { useSwapCallArguments } from 'hooks/useSwapCallArguments'
 import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants'
 import BigNumber from 'bignumber.js'
+import { useActiveChainId } from './useActiveChainId'
 
 export const useCakeEnable = (enableAmount: BigNumber) => {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const dispatch = useAppDispatch()
   const [pendingEnableTx, setPendingEnableTx] = useState(false)
   const [transactionHash, setTransactionHash] = useState<string>()

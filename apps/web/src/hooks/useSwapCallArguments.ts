@@ -6,6 +6,7 @@ import { BIPS_BASE } from 'config/constants/exchange'
 import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants'
 import { useRouterContract } from 'utils/exchange'
 import useTransactionDeadline from './useTransactionDeadline'
+import { useActiveChainId } from './useActiveChainId'
 
 export interface SwapCall {
   contract: Contract
@@ -23,7 +24,8 @@ export function useSwapCallArguments(
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddress: string | null, // the address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapCall[] {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
 
   const recipient = recipientAddress === null ? account : recipientAddress
   const deadline = useTransactionDeadline()

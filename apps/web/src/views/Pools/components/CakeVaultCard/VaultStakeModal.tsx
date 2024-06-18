@@ -70,7 +70,8 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { stakingToken, earningToken, apr, stakingTokenPrice, earningTokenPrice } = pool
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const cakeVaultContract = useCakeVaultContract(undefined, chainId)
   const {
     userData: { lastDepositedTime, userShares },

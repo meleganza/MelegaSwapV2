@@ -48,6 +48,7 @@ import { useDerivedSwapInfoWithStableSwap, useIsSmartRouterBetter, useTradeInfo 
 import SettingsModal from '../../../components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: Currency) => void }> = ({
   handleOutputSelect,
@@ -58,7 +59,8 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
   const warningSwapHandler = useWarningImport()
   const tokenMap = useAtomValue(combinedTokenMapFromOfficialsUrlsAtom)
 
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   
   // for expert mode
   const [isExpertMode] = useExpertModeManager()

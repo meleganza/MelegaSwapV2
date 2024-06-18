@@ -18,8 +18,8 @@ export function PageNetworkSupportModal() {
   const { t } = useTranslation()
   const { switchNetworkAsync, isLoading, canSwitch } = useSwitchNetwork()
   const switchNetworkLocal = useSwitchNetworkLocal()
-  const { chainId, isConnected } = useWeb3React()
-  const { isWrongNetwork } = useActiveChainId()
+  const { isConnected } = useWeb3React()
+  const { isWrongNetwork, chainId } = useActiveChainId()
   const { logout } = useAuth()
 
   const foundChain = useMemo(() => chains.find((c) => c.id === chainId), [chainId])

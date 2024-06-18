@@ -88,7 +88,7 @@ const starsImage: CompositeImageProps = {
 
 const Hero = () => {
   const { t } = useTranslation()
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
   const { theme } = useTheme()
 
   return (

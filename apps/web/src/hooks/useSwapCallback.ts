@@ -15,6 +15,7 @@ import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, isAddress } from '../utils'
 import { basisPointsToPercent } from '../utils/exchange'
 import { transactionErrorToUserReadableMessage } from '../utils/transactionErrorToUserReadableMessage'
+import { useActiveChainId } from './useActiveChainId'
 
 export enum SwapCallbackState {
   INVALID,
@@ -47,7 +48,8 @@ export function useSwapCallback(
   recipientAddress: string | null, // the address of the recipient of the trade, or null if swap should be returned to sender
   swapCalls: SwapCall[],
 ): { state: SwapCallbackState; callback: null | (() => Promise<string>); error: string | null } {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const gasPrice = useGasPrice()
 
   const { t } = useTranslation()

@@ -26,7 +26,8 @@ const Divider = styled.div`
 
 const BountyModal: React.FC<BountyModalProps> = ({ onDismiss, TooltipComponent }) => {
   const { t } = useTranslation();
-  const { account, chainId } = useWeb3React();
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const theme = useTheme();
   const { toastError, toastSuccess } = useToast();
   const cakeVaultContract = useCakeVaultContract(undefined, chainId);

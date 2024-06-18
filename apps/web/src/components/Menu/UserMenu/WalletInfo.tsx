@@ -24,6 +24,7 @@ import { ChainLogo } from 'components/Logo/ChainLogo'
 import { getBlockExploreLink, getBlockExploreName } from 'utils'
 import { formatBigNumber } from '@pancakeswap/utils/formatBalance'
 import { useBalance } from 'wagmi'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 // const COLORS = {
 //   ETH: '#627EEA',
@@ -38,12 +39,11 @@ interface WalletInfoProps {
 
 const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
   const { t } = useTranslation()
-  const { account, chainId, chain } = useWeb3React()
-  
+  const { account, chain } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const isBSC = chainId === ChainId.BSC
   // const bnbBalance = useBalance({ address: account, chainId: ChainId.BSC })
   const nativeBalance = useBalance({ address: account, chainId })
-  
   const native = useNativeCurrency()
   // const wNativeToken = !isBSC ? WNATIVE[chainId] : null
   // const wBNBToken = WNATIVE[ChainId.BSC]

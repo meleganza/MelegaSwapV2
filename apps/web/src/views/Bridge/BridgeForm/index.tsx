@@ -54,7 +54,8 @@ export const BridgeForm: React.FC<Record<string, never>> = () => {
   const warningSwapHandler = useWarningImport()
   const tokenMap = useAtomValue(combinedTokenMapFromOfficialsUrlsAtom)
 
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
 
   const sourceChain = chainId === ChainId.ETHEREUM ? chainId : ChainId.ARBITRUM
   const targetChain = sourceChain === ChainId.ETHEREUM ? ChainId.ARBITRUM : ChainId.ETHEREUM

@@ -27,7 +27,8 @@ interface HarvestActionProps extends FarmWithStakedValue {
 }
 
 export const HarvestActionContainer = ({ children, ...props }) => {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const { onReward } = useHarvestFarm(props.pid, chainId)
   const dispatch = useAppDispatch()
 

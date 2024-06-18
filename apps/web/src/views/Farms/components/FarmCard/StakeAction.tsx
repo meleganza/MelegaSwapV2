@@ -21,6 +21,7 @@ import { FarmTransactionStatus, NonBscFarmStepType } from 'state/transactions/ac
 import WalletModal, { WalletView } from 'components/Menu/UserMenu/WalletModal'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface FarmCardActionsProps extends FarmWithStakedValue {
   lpLabel?: string
@@ -68,7 +69,8 @@ const StakeAction: React.FC<React.PropsWithChildren<FarmCardActionsProps>> = ({
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const addTransaction = useTransactionAdder()
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const native = useNativeCurrency()
   const { tokenBalance, stakedBalance, allowance } = userData
   const cakePrice = usePriceCakeBusd()

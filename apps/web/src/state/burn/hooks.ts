@@ -11,6 +11,7 @@ import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { AppState, useAppDispatch } from '../index'
 import { useTokenBalances } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 export function useBurnState(): AppState['burn'] {
   return useSelector<AppState, AppState['burn']>((state) => state.burn)
@@ -34,7 +35,8 @@ export function useDerivedBurnInfo(
   tokenToReceive?: string
   estimateZapOutAmount?: CurrencyAmount<Token>
 } {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
 
   const { independentField, typedValue } = useBurnState()
 

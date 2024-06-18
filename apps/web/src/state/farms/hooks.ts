@@ -35,7 +35,8 @@ export function useFarmsLength() {
 
 export const usePollFarmsWithUserData = () => {
   const dispatch = useAppDispatch()
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   // const {
   //   proxyAddress,
   //   proxyCreated,

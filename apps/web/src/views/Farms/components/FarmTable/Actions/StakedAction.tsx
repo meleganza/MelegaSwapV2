@@ -44,7 +44,8 @@ interface StackedActionProps extends FarmWithStakedValue {
 }
 
 export function useStakedActions(lpContract, pid) {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const { onStake } = useStakeFarms(pid, chainId)
   const { onUnstake } = useUnstakeFarms(pid, chainId)
   const dispatch = useAppDispatch()
@@ -117,7 +118,8 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   const addTransaction = useTransactionAdder()
   const isBloctoETH = useIsBloctoETH()
   const { fetchWithCatchTxError, fetchTxResponse, loading: pendingTx } = useCatchTxError()
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
 
   const { tokenBalance, stakedBalance, allowance } = userData || {}
 
