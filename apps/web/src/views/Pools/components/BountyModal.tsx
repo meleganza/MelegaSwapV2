@@ -11,6 +11,7 @@ import Balance from "components/Balance";
 import { usePriceCakeBusd } from "state/farms/hooks";
 import { useCakeVault, useCakeVault1 } from "state/pools/hooks";
 import { useWeb3React } from "@pancakeswap/wagmi";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 interface BountyModalProps {
   onDismiss?: () => void;

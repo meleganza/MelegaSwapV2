@@ -32,6 +32,7 @@ import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { convertCakeToShares, convertSharesToCake } from '../../helpers'
 import FeeSummary from './FeeSummary'
 import { Token } from '@pancakeswap/sdk'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 interface VaultStakeModalProps {
   pool: Pool.DeserializedPool<Token>
