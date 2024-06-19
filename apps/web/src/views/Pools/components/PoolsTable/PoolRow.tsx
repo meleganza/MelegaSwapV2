@@ -34,13 +34,13 @@ export const VaultPoolRow: React.FC<
       <NameCell pool={pool} />
       <EarningsCell pool={pool} account={account} />
       <AprCell pool={pool} />
-      {isLargerScreen && (
+      {/* {isLargerScreen && (
         <TotalStakedCell
           stakingToken={stakingToken}
           totalStaked={totalStaked}
           totalStakedBalance={totalStakedBalance}
         />
-      )}
+      )} */}
       {isDesktop && <EndsInCell pool={pool} />}
     </Pool.ExpandRow>
   )

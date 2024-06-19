@@ -83,7 +83,6 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
   )
 
   const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus(chainId)
-  console.log(isVaultApproved)
   const { handleApprove: handleVaultApprove, pendingTx: pendingVaultTx } = useVaultApprove(setLastUpdated)
   
   const handleApprove = vaultKey ? handleVaultApprove : handlePoolApprove

@@ -11,7 +11,6 @@ const options = {
 
 const sousUnstake = (sousChefContract: any, amount: string, decimals: number, gasPrice: string) => {
   const units = parseUnits(amount, decimals)
-  console.log(units.toString())
   return sousChefContract.withdraw(units.toString(), {
     ...options,
     gasPrice,
@@ -23,7 +22,6 @@ const sousEmergencyUnstake = (sousChefContract: any, gasPrice: string) => {
 }
 
 const useUnstakePool = (sousId: number, enableEmergencyWithdraw = false, chainId?: number) => {
-  console.log(sousId)
   const sousChefContract = sousId === 0 ? useMasterchef(undefined, chainId) : useSousChef(sousId, chainId)
   const gasPrice = useGasPrice()
   

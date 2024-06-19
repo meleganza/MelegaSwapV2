@@ -32,7 +32,6 @@ const SellModal: React.FC<Props> = ({ tid, onDismiss, onSuccess }) => {
   const hist = useHistory()
   const [approved, setApproved] = useState(false)
 
-  console.log(tid)
   const { t } = useTranslation()
   useEffect(() => {
     async function loaddata() {

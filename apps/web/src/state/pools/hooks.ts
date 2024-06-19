@@ -51,6 +51,8 @@ const getActiveFarms = async (chainId: number, lPoolAddresses: string[]) => {
         pid !== 0 &&
         ((token.symbol === 'MARCO' && quoteToken.symbol === 'BNB') ||
           (token.symbol === 'BNB' && quoteToken.symbol === 'BUSD') ||
+          (token.symbol === 'MARCO' && quoteToken.symbol === 'WETH') ||
+          (token.symbol === 'WETH' && quoteToken.symbol === 'USDC') ||
           lPoolAddresses.find((poolAddress) => poolAddress === token.address)),
     )
     .map((farm) => farm.pid)
