@@ -84,7 +84,7 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
 
   const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus(chainId)
   const { handleApprove: handleVaultApprove, pendingTx: pendingVaultTx } = useVaultApprove(setLastUpdated)
-  
+
   const handleApprove = vaultKey ? handleVaultApprove : handlePoolApprove
   const pendingTx = vaultKey ? pendingVaultTx : pendingPoolTx
 
@@ -470,22 +470,22 @@ const Staked: React.FunctionComponent<React.PropsWithChildren<StackedActionProps
         </Text>
       </ActionTitles>
       <ActionContent>
-        {vaultKey ? (
+        {/* {vaultKey ? (
           // <VaultStakeButtonGroup
           //   onFlexibleClick={stakingTokenBalance.gt(0) ? onStake : onPresentTokenRequired}
           //   onLockedClick={vaultKey === VaultKey.CakeVault ? openPresentLockedStakeModal : null}
           // />
           <></>
-        ) : (
-          <Button
-            width="100%"
-            onClick={stakingTokenBalance.gt(0) ? onStake : onPresentTokenRequired}
-            variant="secondary"
-            disabled={isFinished}
-          >
-            {t('Stake')}
-          </Button>
-        )}
+        ) : ( */}
+        <Button
+          width="100%"
+          onClick={stakingTokenBalance.gt(0) ? onStake : onPresentTokenRequired}
+          variant="secondary"
+          disabled={isFinished}
+        >
+          {t('Stake')}
+        </Button>
+        {/* )} */}
       </ActionContent>
     </ActionContainer>
   )
