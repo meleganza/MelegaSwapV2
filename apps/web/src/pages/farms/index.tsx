@@ -10,12 +10,13 @@ const FarmsPage = () => {
   const { address: account } = useAccount()
   const { chosenFarmsMemoized } = useContext(FarmsContext)
   const lpFarms = chosenFarmsMemoized.filter((farm) => !farm.isTokenOnly)
+  console.log(lpFarms)
   const cakePrice = usePriceCakeBusd()
   const activeFarms = lpFarms.filter((farm) => (farm.apr !== 0 && farm.apr !== null && farm.apr !== undefined) || farm.lpRewardsApr !== 0)
   
   return (
     <>
-      {activeFarms.map(farm => (
+      {lpFarms.map(farm => (
         <FarmCard
           key={farm.pid}
           farm={farm}

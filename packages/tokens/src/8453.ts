@@ -8,7 +8,7 @@ export const baseTokens = {
   cake: CAKE[ChainId.BASE],
   syrup: new ERC20Token(
     ChainId.BASE,
-    '0xE00D9037552C537200DA56DC009A21b81bB8b298',
+    '0x816ddF4e751dfE6A5e65837F721C5fD971108eDE',
     18,
     'MRT',
     'MARCO Reward Token',

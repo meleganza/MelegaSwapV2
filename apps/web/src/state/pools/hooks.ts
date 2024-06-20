@@ -81,9 +81,9 @@ const getCakePriceFarms = async (chainId: number) => {
   }
 }
 
-export const useFetchPublicPoolsData = () => {
+export const useFetchPublicPoolsData = (chainId: number) => {
   const dispatch = useAppDispatch()
-  const { chainId } = useActiveChainId()
+  // const { chainId } = useActiveChainId()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
   const lPoolAddresses =
     chainId == 56
@@ -127,7 +127,7 @@ export const usePoolsPageFetch = () => {
   const { chainId } = useActiveChainId()
   const dispatch = useAppDispatch()
 
-  useFetchPublicPoolsData()
+  useFetchPublicPoolsData(chainId)
   useFastRefreshEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultPublicData({ chainId }))
