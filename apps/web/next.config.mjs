@@ -65,6 +65,7 @@ const config = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  trailingSlash: true,
   images: {
     remotePatterns: [
       {
