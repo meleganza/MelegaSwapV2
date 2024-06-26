@@ -1827,6 +1827,14 @@
       "logoURI": "https://www.melega.finance/images/melega.png"
     },
     {
+      "name": "YUP",
+      "symbol": "YUP",
+      "address": "0x12418743a0AbdE7EEB5cb83185DaB9431278dA09",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x12418743a0AbdE7EEB5cb83185DaB9431278dA09.png"
+    },
+    {
       "name": "Meta Games Coin",
       "symbol": "MGC",
       "address": "0xbb73BB2505AC4643d5C0a99c2A1F34B3DfD09D11",
