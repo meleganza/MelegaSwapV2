@@ -23,6 +23,13 @@ const farms: SerializedFarmConfig[] = [
     token: baseTokens.weth,
     quoteToken: baseTokens.usdc,
   },
+  {
+    pid: 3,
+    lpSymbol: 'YUP-WETH LP',
+    lpAddress: '0x6B1D4A9746339a982bAb0461D1c16107C39463B8',
+    token: baseTokens.weth,
+    quoteToken: baseTokens.yup,
+  },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
 export default farms
