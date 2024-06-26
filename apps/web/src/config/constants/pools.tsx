@@ -1811,8 +1811,8 @@ export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] 
   },
   {
     sousId: 1,
-    stakingToken: baseTokens.yup,
-    earningToken: baseTokens.cake,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.yup,
     contractAddress: {
       56: '',
       8453: '0xA1495fc35E021984d427539c8F82CEeE8fd46066',
