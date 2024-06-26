@@ -14,7 +14,7 @@ export const baseTokens = {
     'MARCO Reward Token',
     'https://melega.finance/',
   ),
-  syrup: new ERC20Token(
+  yup: new ERC20Token(
     ChainId.BASE,
     '0x12418743a0AbdE7EEB5cb83185DaB9431278dA09',
     18,
