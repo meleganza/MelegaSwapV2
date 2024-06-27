@@ -27,8 +27,8 @@ const farms: SerializedFarmConfig[] = [
     pid: 3,
     lpSymbol: 'YUP-WETH LP',
     lpAddress: '0x6B1D4A9746339a982bAb0461D1c16107C39463B8',
-    token: baseTokens.weth,
-    quoteToken: baseTokens.yup,
+    token: baseTokens.yup,
+    quoteToken: baseTokens.weth,
   },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
