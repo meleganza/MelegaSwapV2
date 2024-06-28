@@ -112,8 +112,8 @@ const farms: SerializedFarmConfig[] = [
     pid: 2,
     lpSymbol: 'BUSD-BNB LP',
     lpAddress: '0x564863b0267d9fed9c7d414113d7dd60cf4b253e',
-    token: bscTokens.wbnb,
-    quoteToken: bscTokens.busd,
+    token: bscTokens.busd,
+    quoteToken: bscTokens.wbnb,
   },
   {
     pid: 3,

@@ -7,8 +7,8 @@ export const bscTokens = {
     ChainId.BSC,
     '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     18,
-    'BNB',
-    'BNB',
+    'WBNB',
+    'WBNB',
     'https://www.binance.com/',
   ),
   bnb: new ERC20Token(
