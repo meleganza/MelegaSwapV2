@@ -20,8 +20,8 @@ const farms: SerializedFarmConfig[] = [
     pid: 2,
     lpSymbol: 'USDC-WETH LP',
     lpAddress: '0xf2157F527Ad7572691d25371838cbE040e93cDD3',
-    token: baseTokens.weth,
-    quoteToken: baseTokens.usdc,
+    token: baseTokens.usdc,
+    quoteToken: baseTokens.weth,
   },
   {
     pid: 3,

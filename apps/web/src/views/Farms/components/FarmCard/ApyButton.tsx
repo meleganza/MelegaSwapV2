@@ -86,17 +86,17 @@ const ApyButton: React.FC<React.PropsWithChildren<ApyButtonProps>> = ({
 
   const { targetRef, tooltip, tooltipVisible } = useTooltip(
     <>
-      {isTokenOnly ? <></> : <Text small>
+      {isTokenOnly ? <></> : <Text small color='#000'>
         {t('APR (incl. LP rewards)')}:{' '}
         <Text style={{ display: 'inline-block' }} color={strikethrough && 'secondary'} small>
           {`${displayApr}%`}
         </Text>
       </Text>}
-      <Text ml="5px" small>
+      <Text ml="5px" small color='#000'>
         *{t('Base APR (MARCO yield only)')}:{' '}
         {`${apr.toFixed(2)}%`}
       </Text>
-      {isTokenOnly ? <></> : <Text ml="5px" small>
+      {isTokenOnly ? <></> : <Text ml="5px" small color='#000'>
         *{t('LP Rewards APR')}: {lpRewardsApr === 0 ? '-' : lpRewardsApr}%
       </Text>}
     </>,

@@ -18,11 +18,11 @@ import CardHeading from './CardHeading'
 
 const { DetailsSection } = FarmUI.FarmCard
 
-export interface FarmWithStakedValue {
-  apr?: number
-  lpRewardsApr?: number
-  liquidity?: BigNumber
-}
+// export interface FarmWithStakedValue {
+//   apr?: number
+//   lpRewardsApr?: number
+//   liquidity?: BigNumber
+// }
 
 const StyledCard = styled(Card)`
   align-self: baseline;
@@ -72,12 +72,13 @@ const FarmCard: React.FC<React.PropsWithChildren<FarmCardProps>> = ({
 
   const liquidity =
     farm?.liquidity && originalLiquidity?.gt(0) ? farm.liquidity.plus(originalLiquidity) : farm.liquidity
-
+  
+    console.log(farm)
   const totalValueFormatted =
-    liquidity && liquidity.gt(0)
+    liquidity && liquidity?.gt(0)
       ? `$${liquidity.toNumber().toLocaleString(undefined, { maximumFractionDigits: 0 })}`
       : ''
-
+  
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
   const earnLabel = farm.dual ? farm.dual.earnLabel : t('MARCO + Fees')
 
