@@ -40,7 +40,6 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
   const { address: account } = useAccount()
   const { chainId } = useActiveWeb3React()
   const { pools, userDataLoaded } = usePoolsWithVault(chainId)
-  console.log(pools)
   usePoolsPageFetch()
   
   return (

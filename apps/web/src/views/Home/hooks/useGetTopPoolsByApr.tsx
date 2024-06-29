@@ -10,11 +10,13 @@ import { FetchStatus } from 'config/constants/types'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { usePollFarmsWithUserData } from 'state/farms/hooks'
 
 const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   const dispatch = useAppDispatch()
   const account = useActiveChainId()
   const { chainId } = useActiveChainId()
+  usePollFarmsWithUserData()
 
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.Idle)
   const [topPools, setTopPools] = useState<Pool.DeserializedPool<Token>[]>([null, null, null, null, null])

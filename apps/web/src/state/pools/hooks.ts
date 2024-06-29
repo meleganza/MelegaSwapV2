@@ -39,6 +39,7 @@ import {
   makeVaultPoolWithKeySelector,
 } from './selectors'
 import BigNumber from 'bignumber.js'
+import { usePollFarmsWithUserData } from 'state/farms/hooks'
 
 // const lPoolAddresses = livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 
@@ -92,8 +93,10 @@ export const useFetchPublicPoolsData = (chainId: number) => {
 
   useSlowRefreshEffect(
     (currentBlock) => {
+      
       const fetchPoolsDataWithFarms = async () => {
         const activeFarms = await getActiveFarms(chainId, lPoolAddresses)
+        
         await dispatch(fetchFarmsPublicDataAsync({ pids: activeFarms, chainId, flag: farmFlag }))
         batch(() => {
           dispatch(fetchPoolsPublicDataAsync(currentBlock, chainId))
@@ -128,9 +131,11 @@ export const usePoolsPageFetch = () => {
   const dispatch = useAppDispatch()
 
   useFetchPublicPoolsData(chainId)
+  usePollFarmsWithUserData()
   useFastRefreshEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultPublicData({ chainId }))
+      dispatch(fetchCakePoolPublicDataAsync(chainId))
       dispatch(fetchCakeFlexibleSideVaultPublicData({ chainId }))
       dispatch(fetchIfoPublicDataAsync())
       if (account) {
@@ -144,8 +149,8 @@ export const usePoolsPageFetch = () => {
   useEffect(() => {
     batch(() => {
       dispatch(fetchCakeVaultFees({ chainId }))
-      if (chainId === 56)
-        dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
+      // if (chainId === 56)
+      dispatch(fetchCakeFlexibleSideVaultFees({ chainId }))
     })
   }, [dispatch])
 }
@@ -207,7 +212,7 @@ export const useFetchIfo = () => {
   )
 
   useSWRImmutable('fetchCakeVaultFees', async () => {
-    dispatch(fetchCakeVaultFees({chainId}))
+    dispatch(fetchCakeVaultFees({ chainId }))
   })
 }
 

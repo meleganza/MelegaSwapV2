@@ -21,6 +21,11 @@ const evmNativeStableLpMap = {
     wNative: 'WBNB',
     stable: 'USDT',
   },
+  [ChainId.BASE]: {
+    address: '0xd92E0767473D1E3FF11Ac036f2b1DB90aD0aE55F',
+    wNative: 'WETH',
+    stable: 'USDT',
+  },
   [ChainId.ARBITRUM]: {
     address: '0x5822a1DDD394172c201876938c5Fed459288554D',
     wNative: 'WETH',
