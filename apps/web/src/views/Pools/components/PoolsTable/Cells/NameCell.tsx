@@ -82,7 +82,7 @@ const NameCell: React.FC<React.PropsWithChildren<NameCellProps>> = ({ pool }) =>
   const getImageUrlFromToken = (token: Token) => {
     const address = token?.isNative ? token.wrapped.address : token?.address
     return `/images/${token?.chainId}/tokens/${address}.png`
-  }  
+  }
 
   return (
     <StyledCell role="cell">
@@ -112,9 +112,26 @@ const NameCell: React.FC<React.PropsWithChildren<NameCellProps>> = ({ pool }) =>
                   {t('Staked')}
                 </Text>
               ))}
-            <Text bold={!isMobile} small={isMobile}>
-              {title}
-            </Text>
+            {vaultKey ?
+              <Text bold={!isMobile} small={isMobile}>
+                {title}
+              </Text> :
+              <>
+                {isMobile ?
+                  <>
+                    <Text bold={!isMobile} small={isMobile}>
+                      {`${getHeadingPrefix()}`}
+                    </Text>
+                    <Text bold={!isMobile} small={isMobile}>
+                      {earningTokenSymbol}
+                    </Text>
+                  </> :
+                  <Text bold={!isMobile} small={isMobile}>
+                    {title}
+                  </Text>
+                }
+              </>
+            }
             {showSubtitle && (
               <Text fontSize="12px" color="textSubtle">
                 {subtitle}
