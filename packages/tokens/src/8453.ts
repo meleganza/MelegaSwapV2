@@ -32,7 +32,7 @@ export const baseTokens = {
   ),
   brett: new ERC20Token(
     ChainId.BASE,
-    '0x532f27101965dd16442E59d40670FaF5eBB142E4',
+    '0x532f27101965dd16442e59d40670faf5ebb142e4',
     18,
     'BRETT',
     'Brett',
