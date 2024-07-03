@@ -38,4 +38,12 @@ export const baseTokens = {
     'Brett',
     'https://www.basedbrett.com/',
   ),
+  clonereth: new ERC20Token(
+    ChainId.BASE,
+    '0xb145510f535D964994ee595100a32Fb1Ec057D85',
+    18,
+    'RETH',
+    'Rocket Pool ETH',
+    'https://www.clonedtokens.fun/',
+  ),
 }
