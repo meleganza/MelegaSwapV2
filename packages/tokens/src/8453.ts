@@ -22,4 +22,12 @@ export const baseTokens = {
     'YUP',
     'https://www.yuptoken.fun/',
   ),
+  aero: new ERC20Token(
+    ChainId.BASE,
+    '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+    18,
+    'AERO',
+    'Aerodrome',
+    'https://aerodrome.finance/',
+  ),
 }
