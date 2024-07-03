@@ -30,4 +30,12 @@ export const baseTokens = {
     'Aerodrome',
     'https://aerodrome.finance/',
   ),
+  brett: new ERC20Token(
+    ChainId.BASE,
+    '0x532f27101965dd16442E59d40670FaF5eBB142E4',
+    18,
+    'BRETT',
+    'Brett',
+    'https://www.basedbrett.com/',
+  ),
 }
