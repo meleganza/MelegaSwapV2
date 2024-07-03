@@ -46,4 +46,12 @@ export const baseTokens = {
     'Rocket Pool ETH',
     'https://www.clonedtokens.fun/',
   ),
+  clonezro: new ERC20Token(
+    ChainId.BASE,
+    '0x7d78269Ba8c29561335590882CbBe39B4Ba92CF3',
+    18,
+    'ZRO',
+    'LayerZero',
+    'https://www.clonedtokens.fun/',
+  ),
 }
