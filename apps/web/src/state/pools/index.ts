@@ -170,14 +170,15 @@ export const fetchPoolsPublicDataAsync =
       
       const bnbBusdFarm =
         chainId == 56
-            ? farmsData.find((farm) => farm.token.symbol === 'WBNB' && farm.quoteToken.symbol === 'BUSD')
-          : farmsData.find((farm) => farm.token.symbol === 'WETH' && farm.quoteToken.symbol === 'USDC')
+          ? farmsData.find((farm) => farm.token.symbol === 'BUSD' && farm.quoteToken.symbol === 'WBNB')
+          : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
 
       const farmsWithPricesOfDifferentTokenPools = bnbBusdFarm
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
         : []
 
       const prices = getTokenPricesFromFarm([...farmsData, ...farmsWithPricesOfDifferentTokenPools])
+      
       const liveData = pools.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
         const totalStaking = totalStakingsSousIdMap[pool.sousId]
