@@ -1865,6 +1865,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0xf94E9f88C0Ae095088138CAc9272401A0b92Df89.png"
+    },
+    {
+      "name": "Aerodrome",
+      "symbol": "AERO",
+      "address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x940181a94A35A4569E4529A3CDfB74e38FD98631.png"
     }
   ]
 }
