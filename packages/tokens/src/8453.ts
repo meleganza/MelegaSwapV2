@@ -54,4 +54,12 @@ export const baseTokens = {
     'LayerZero',
     'https://www.clonedtokens.fun/',
   ),
+  npc: new ERC20Token(
+    ChainId.BASE,
+    '0xB166E8B140D35D9D8226E40C09f757BAC5A4d87d',
+    18,
+    'NPC',
+    'Non-Playable Coin',
+    'https://www.nonplayablecoin.io/',
+  ),
 }
