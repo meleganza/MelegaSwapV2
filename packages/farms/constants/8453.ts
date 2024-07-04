@@ -65,6 +65,13 @@ const farms: SerializedFarmConfig[] = [
     token: baseTokens.clonezro,
     quoteToken: baseTokens.weth,
   },
+  {
+    pid: 9,
+    lpSymbol: 'NPC-WETH LP',
+    lpAddress: '0x3E1D630670Ca58D320C33979ED640a7333d0A156',
+    token: baseTokens.npc,
+    quoteToken: baseTokens.weth,
+  },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
 export default farms
