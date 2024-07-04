@@ -8,6 +8,7 @@ import BigNumber from 'bignumber.js'
 import { orderBy } from 'lodash'
 import { DeserializedFarm, FarmWithStakedValue } from '@pancakeswap/farms'
 import { Farm } from 'state/types'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -18,6 +19,7 @@ enum FetchStatus {
 
 const useGetTopFarmsByApr = (isIntersecting: boolean) => {
   const dispatch = useAppDispatch()
+  const {chainId} = useActiveChainId()
   const { data: farms, regularCakePerBlock } = useFarms()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [topFarms, setTopFarms] = useState<FarmWithStakedValue[]>([null, null, null, null, null])
@@ -33,7 +35,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         await dispatch(
           fetchFarmsPublicDataAsync({
             pids: activeFarms.map((farm) => farm.pid),
-            chainId: ChainId.BSC,
+            chainId: chainId === 56 ? ChainId.BSC : ChainId.BASE,
             flag: 'pkg',
           }),
         )
