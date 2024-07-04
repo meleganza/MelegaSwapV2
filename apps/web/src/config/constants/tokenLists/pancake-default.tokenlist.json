@@ -1897,6 +1897,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x7d78269Ba8c29561335590882CbBe39B4Ba92CF3.png"
+    },
+    {
+      "name": "Non-Playable Coin",
+      "symbol": "NPC",
+      "address": "0xB166E8B140D35D9D8226E40C09f757BAC5A4d87d",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0xB166E8B140D35D9D8226E40C09f757BAC5A4d87d.png"
     }
   ]
 }
