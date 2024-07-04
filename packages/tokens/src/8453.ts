@@ -62,4 +62,12 @@ export const baseTokens = {
     'Non-Playable Coin',
     'https://www.nonplayablecoin.io/',
   ),
+  degen: new ERC20Token(
+    ChainId.BASE,
+    '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed',
+    18,
+    'DEGEN',
+    'Degen',
+    'https://www.degen.tips/',
+  ),
 }
