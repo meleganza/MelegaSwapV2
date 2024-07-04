@@ -72,6 +72,13 @@ const farms: SerializedFarmConfig[] = [
     token: baseTokens.npc,
     quoteToken: baseTokens.weth,
   },
+  {
+    pid: 10,
+    lpSymbol: 'DEGEN-WETH LP',
+    lpAddress: '0xBaEadE4e24e58345E688821435d11e5d2d9C6CF7',
+    token: baseTokens.degen,
+    quoteToken: baseTokens.weth,
+  },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
 export default farms
