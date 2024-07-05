@@ -70,4 +70,12 @@ export const baseTokens = {
     'Degen',
     'https://www.degen.tips/',
   ),
+  rsr: new ERC20Token(
+    ChainId.BASE,
+    '0xaB36452DbAC151bE02b16Ca17d8919826072f64a',
+    18,
+    'RSR',
+    'Reserve Rights',
+    'https://reserve.org/',
+  ),
 }
