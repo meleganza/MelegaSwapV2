@@ -1913,6 +1913,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed.png"
+    },
+    {
+      "name": "Reserve Rights",
+      "symbol": "RSR",
+      "address": "0xaB36452DbAC151bE02b16Ca17d8919826072f64a",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0xaB36452DbAC151bE02b16Ca17d8919826072f64a.png"
     }
   ]
 }
