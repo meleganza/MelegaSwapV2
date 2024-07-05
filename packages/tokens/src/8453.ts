@@ -78,4 +78,12 @@ export const baseTokens = {
     'Reserve Rights',
     'https://reserve.org/',
   ),
+  hoe: new ERC20Token(
+    ChainId.BASE,
+    '0x73F573a255B8a047BF756b0cf5FB6EFFe884815b',
+    18,
+    'HOE',
+    'HOE',
+    'https://hoetoken.fun/',
+  ),
 }
