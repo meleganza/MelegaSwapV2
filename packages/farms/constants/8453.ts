@@ -122,7 +122,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: baseTokens.weth,
   },
   {
-    pid: 14,
+    pid: 17,
     lpSymbol: 'PEPE-MARCO LP',
     lpAddress: '0x8F6F753dD0211a3b6E4FC58D2de9A464CA102e61',
     token: baseTokens.pepe1,
