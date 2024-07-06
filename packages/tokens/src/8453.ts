@@ -86,4 +86,12 @@ export const baseTokens = {
     'HOE',
     'https://hoetoken.fun/',
   ),
+  pepe1: new ERC20Token(
+    ChainId.BASE,
+    '0xe9DAC855D1b8C0E2a1cF2a2D67cfd937A00502ec',
+    18,
+    'PEPE',
+    'PEPE on Base',
+    'https://www.pepe.vip',
+  ),
 }
