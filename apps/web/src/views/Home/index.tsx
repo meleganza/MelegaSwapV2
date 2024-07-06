@@ -169,18 +169,18 @@ const Nft: React.FC = () => {
     <a href="/pools">
       <img className="item" alt="b1" src={`./banners/${chainId}/sb1.png`} />
     </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b2" src={`./banners/${chainId}/sb2.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b4" src={`./banners/${chainId}/sb4.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b5" src={`./banners/${chainId}/sb5.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b6" src={`./banners/${chainId}/sb6.png`} />
-    // </a>,
+    <a href="/pools">
+      <img className="item" alt="b2" src={`./banners/${chainId}/sb2.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b4" src={`./banners/${chainId}/sb4.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b5" src={`./banners/${chainId}/sb5.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b6" src={`./banners/${chainId}/sb6.png`} />
+    </a>,
     // <a href="/pools">
     //   <img className="item" alt="b7" src={`./banners/${chainId}/sb7.png`} />
     // </a>,
