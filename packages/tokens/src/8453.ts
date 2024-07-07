@@ -94,4 +94,12 @@ export const baseTokens = {
     'PEPE on Base',
     'https://www.pepe.vip',
   ),
+  mxmxbase: new ERC20Token(
+    ChainId.BASE,
+    '0x15ecA4211099f89FD84bB6db59532670e2817FA3',
+    18,
+    'MXMX',
+    'MASTERM',
+    'https://linktr.ee/mastermworld',
+  ),
 }
