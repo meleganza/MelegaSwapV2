@@ -1937,6 +1937,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0xe9DAC855D1b8C0E2a1cF2a2D67cfd937A00502ec.png"
+    },
+    {
+      "name": "MASTERM",
+      "symbol": "MXMX",
+      "address": "0x15ecA4211099f89FD84bB6db59532670e2817FA3",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x15ecA4211099f89FD84bB6db59532670e2817FA3.png"
     }
   ]
 }
