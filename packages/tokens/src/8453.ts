@@ -102,4 +102,12 @@ export const baseTokens = {
     'MASTERM',
     'https://linktr.ee/mastermworld',
   ),
+  gizmo: new ERC20Token(
+    ChainId.BASE,
+    '0x3ee8679F4803AD85d00DC32aE40f62b930aC164b',
+    18,
+    '$Gizmo',
+    'Chef Gizmo Token',
+    'https://chefgizmotoken.org/',
+  ),
 }
