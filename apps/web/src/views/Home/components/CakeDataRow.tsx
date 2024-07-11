@@ -201,7 +201,7 @@ const CakeDataRow = () => {
           <a style={{ margin: '0.5rem' }} href="https://www.instagram.com/melega.finance/">
             <img alt="logo" src="/instaicon.png" style={{ width: '16px' }} />
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://twitter.com/meleganza">
+          <a style={{ margin: '0.5rem' }} href="https://twitter.com/meleganews">
             <img alt="logo" src="/twiticon.png" style={{ width: '16px' }} />
           </a>
           <a style={{ margin: '0.5rem' }} href="https://medium.com/@melega">

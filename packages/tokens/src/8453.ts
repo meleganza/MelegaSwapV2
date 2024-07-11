@@ -86,4 +86,28 @@ export const baseTokens = {
     'HOE',
     'https://hoetoken.fun/',
   ),
+  pepe1: new ERC20Token(
+    ChainId.BASE,
+    '0xe9DAC855D1b8C0E2a1cF2a2D67cfd937A00502ec',
+    18,
+    'PEPE',
+    'PEPE on Base',
+    'https://www.pepe.vip',
+  ),
+  mxmxbase: new ERC20Token(
+    ChainId.BASE,
+    '0x15ecA4211099f89FD84bB6db59532670e2817FA3',
+    18,
+    'MXMX',
+    'MASTERM',
+    'https://linktr.ee/mastermworld',
+  ),
+  gizmo: new ERC20Token(
+    ChainId.BASE,
+    '0x3ee8679F4803AD85d00DC32aE40f62b930aC164b',
+    18,
+    '$Gizmo',
+    'Chef Gizmo Token',
+    'https://chefgizmotoken.org/',
+  ),
 }

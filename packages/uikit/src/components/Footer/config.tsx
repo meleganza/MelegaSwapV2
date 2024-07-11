@@ -19,7 +19,7 @@ export const footerLinks: FooterLinkType[] = [
     items: [
       {
         label: "Contact",
-        href: "https://docs.melegaswap.finance",
+        href: "https://www.melegaswap.finance/apply",
       },
       {
         label: "Blog",
@@ -27,11 +27,11 @@ export const footerLinks: FooterLinkType[] = [
       },
       {
         label: "Community",
-        href: "https://docs.melega.finance",
+        href: "https://t.me/melegacommunity",
       },
       {
         label: "CAKE",
-        href: "https://docs.melega.finance/tokenomics/cgt-token",
+        href: "https://www.melegaswap.finance/marco-token",
       },
       {
         label: "—",
@@ -96,7 +96,7 @@ export const socials = [
   {
     label: "Twitter",
     icon: TwitterIcon,
-    href: "https://twitter.com/meleganza",
+    href: "https://twitter.com/meleganews",
   },
   {
     label: "Discord",

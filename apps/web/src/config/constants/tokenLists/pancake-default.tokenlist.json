@@ -1929,6 +1929,38 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x73F573a255B8a047BF756b0cf5FB6EFFe884815b.png"
+    },
+    {
+      "name": "PEPE on Base",
+      "symbol": "PEPE",
+      "address": "0xe9DAC855D1b8C0E2a1cF2a2D67cfd937A00502ec",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0xe9DAC855D1b8C0E2a1cF2a2D67cfd937A00502ec.png"
+    },
+    {
+      "name": "MASTERM",
+      "symbol": "MXMX",
+      "address": "0x15ecA4211099f89FD84bB6db59532670e2817FA3",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x15ecA4211099f89FD84bB6db59532670e2817FA3.png"
+    },
+    {
+      "name": "Chef Gizmo Token",
+      "symbol": "$Gizmo",
+      "address": "0x3ee8679F4803AD85d00DC32aE40f62b930aC164b",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x3ee8679F4803AD85d00DC32aE40f62b930aC164b.png"
+    },
+    {
+      "name": "AIVOICE",
+      "symbol": "AIV",
+      "address": "0x581C124D0F4b9D365c06e30d37ea8352d5F3a2aF",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x581C124D0F4b9D365c06e30d37ea8352d5F3a2aF.png"
     }
   ]
 }
