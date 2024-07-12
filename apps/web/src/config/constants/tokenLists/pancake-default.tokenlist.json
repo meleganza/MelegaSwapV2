@@ -1969,6 +1969,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://polygonscan.com/token/images/binanceusd_32.png"
+    },
+    {
+      "name": "MELEGA",
+      "symbol": "MARCO",
+      "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://www.melega.finance/images/melega.png"
     }
   ]
 }

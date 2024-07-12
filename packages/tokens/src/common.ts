@@ -18,7 +18,7 @@ export const CAKE_BASE = new ERC20Token(
 )
 export const CAKE_POLYGON = new ERC20Token(
   ChainId.POLYGON,
-  '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+  '0xD3e28c74177B812d1543A406aD1A97ee3C398AC2',
   18,
   'MARCO',
   'Meleta Token',
