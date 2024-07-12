@@ -16,6 +16,7 @@ export { default as AutoRenewIcon } from "./Icons/AutoRenew";
 export { default as BackForwardIcon } from "./Icons/BackForwardIcon";
 export { default as BinanceChainIcon } from "./Icons/BinanceChain";
 export { default as BinanceIcon } from "./Icons/Binance";
+export { default as PolygonIcon } from "./Icons/Polygon";
 export { default as BlockIcon } from "./Icons/Block";
 export { default as BnbUsdtPairTokenIcon } from "./Icons/BnbUsdtPairToken";
 export { default as BscScanIcon } from "./Icons/BscScan";

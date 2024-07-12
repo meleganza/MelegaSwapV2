@@ -36,6 +36,7 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
     () => chains.filter((chain) => !chain.testnet && pageSupportedChains?.includes(chain.id)),
     [pageSupportedChains],
   )
+  console.log("supportedMainnetChains", supportedMainnetChains)
 
   return (
     <Modal title={t('Check your network')} hideCloseButton>

@@ -9,7 +9,7 @@ import { metaMaskConnector, walletConnectNoQrCodeConnector } from '../utils/wagm
 export enum ConnectorNames {
   MetaMask = 'metaMask',
   Injected = 'injected',
-  // WalletConnect = 'walletConnect',
+  WalletConnect = 'walletConnect',
   BSC = 'bsc',
   Blocto = 'blocto',
   WalletLink = 'coinbaseWallet',

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, {livePools, livePools8453} from 'config/constants/pools'
+import poolsConfig, {livePools, livePools8453, livePools137} from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -87,7 +87,7 @@ const initialState: PoolsState = {
 export const fetchCakePoolPublicDataAsync = (chainId?: number ) => async (dispatch, getState) => {
   const farmsData = getState().farms.data
   const prices = getTokenPricesFromFarm(farmsData)
-  const pools = chainId === 8453 ? livePools8453 : poolsConfig
+  const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
   const cakePool = pools.filter((p) => p.sousId === 0)[0]
 
   const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
@@ -135,7 +135,7 @@ export const fetchCakePoolUserDataAsync = (account: string, chainId: number) => 
 export const fetchPoolsPublicDataAsync =
   (currentBlockNumber: number, chainId: number) => async (dispatch, getState) => {
     try {
-      const pools = chainId === 8453 ? livePools8453 : poolsConfig
+      const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
       const [blockLimits, totalStakings, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
@@ -260,7 +260,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserPendingRewards(account, chainId),
     ])
     
-    const pools = chainId === 8453 ? livePools8453 : poolsConfig
+    const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,
       allowance: allowances[pool.sousId],

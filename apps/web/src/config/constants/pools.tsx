@@ -1808,6 +1808,91 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
   earningToken: p.earningToken.serialize,
 }))
 
+export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
+  {
+    sousId: 0,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.cake,
+    contractAddress: {
+      56: '',
+      8453: '0x149EE9245E5eD52a89Ea777d19AD3A5D87873680',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.00958000',
+    isFinished: false,
+  },
+  {
+    sousId: 1,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.yup,
+    contractAddress: {
+      56: '',
+      8453: '0xA1495fc35E021984d427539c8F82CEeE8fd46066',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '2.9',
+    isFinished: false,
+  },
+  {
+    sousId: 2,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.clonereth,
+    contractAddress: {
+      56: '',
+      8453: '0xBE957e62DcFa99911B76DF6A8Fd228664bC1B026',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.0000003',
+    isFinished: false,
+  },
+  {
+    sousId: 3,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.clonezro,
+    contractAddress: {
+      56: '',
+      8453: '0xDf7a2ea5F94ca53caa9e398f0c1ab423D22B5098',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.0001',
+    isFinished: false,
+  },
+  {
+    sousId: 4,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.hoe,
+    contractAddress: {
+      56: '',
+      8453: '0x44Ce48B005835A497405BE5871BEd6c00600747F',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.1',
+    isFinished: false,
+  },
+  {
+    sousId: 5,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.pepe1,
+    contractAddress: {
+      56: '',
+      8453: '0x1eAD2b47353635dA469f1F507E6910Fe1ECF8304',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '300',
+    isFinished: false,
+  },
+].map((p) => ({
+  ...p,
+  stakingToken: p.stakingToken.serialize,
+  earningToken: p.earningToken.serialize,
+}))
+
 export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
   {
     sousId: 0,

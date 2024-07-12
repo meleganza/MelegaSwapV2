@@ -1961,6 +1961,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0x581C124D0F4b9D365c06e30d37ea8352d5F3a2aF.png"
+    },
+    {
+      "name": "binance-usd",
+      "symbol": "BUSD",
+      "address": "0xdAb529f40E671A1D4bF91361c21bf9f0C9712ab7",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://polygonscan.com/token/images/binanceusd_32.png"
     }
   ]
 }

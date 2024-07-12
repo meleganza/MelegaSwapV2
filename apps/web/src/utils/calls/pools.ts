@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import BigNumber from 'bignumber.js'
-import poolsConfig, { livePools8453 } from 'config/constants/pools'
+import poolsConfig, { livePools8453, livePools137 } from 'config/constants/pools'
 import sousChefV2 from 'config/abi/sousChefV2.json'
 import chunk from 'lodash/chunk'
 import { multicallv3 } from '../multicall'

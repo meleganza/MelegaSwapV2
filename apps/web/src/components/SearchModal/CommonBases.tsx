@@ -56,7 +56,7 @@ export default function CommonBases({
   onSelect: (currency: Currency) => void
 }) {
   const native = useNativeCurrency()
-
+  console.log('native', native)
   const { t } = useTranslation()
   const pinTokenDescText = commonBasesType === CommonBasesType.SWAP_LIMITORDER ? t('Common tokens') : t('Common bases')
 
@@ -87,6 +87,7 @@ export default function CommonBases({
         </ButtonWrapper>  
         {(chainId ? FIRST_LINE || [] : []).map((token: Token) => {
           const selected = selectedCurrency?.equals(token)
+          
           return (
             <ButtonWrapper key={`buttonBase#${token.address}`}>
               <BaseWrapper onClick={() => !selected && onSelect(token)} disable={selected}>

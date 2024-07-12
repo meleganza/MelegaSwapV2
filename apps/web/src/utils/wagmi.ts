@@ -62,7 +62,8 @@ const polygon1 : Chain = {
   rpcUrls: {
     alchemy: { http: ['https://polygon-mainnet.g.alchemy.com/v2'], webSocket: ['wss://polygon-mainnet.g.alchemy.com/v2'] },
     infura: { http: ['https://polygon-mainnet.infura.io/v3'], webSocket: ['wss://polygon-mainnet.infura.io/ws/v3'] },
-    default: { http: ['https://polygon.llamarpc.com'] }
+    // default: { http: ['https://polygon.llamarpc.com'] }
+    default: { http: ['https://polygon-pokt.nodies.app	'] }
   },
   blockExplorers: {
     etherscan: { name: 'PolygonScan', url: 'https://polygonscan.com' },
@@ -173,7 +174,7 @@ export const base : Chain = {
 };
 
 // const CHAINS = [bsc1, mainnet, polygon, base]
-const CHAINS = [bsc1, base]
+const CHAINS = [bsc1, base, polygon1]
 
 const getNodeRealUrl = (networkName: string) => {
   let host = null

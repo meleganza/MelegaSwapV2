@@ -1,5 +1,5 @@
 import { ChainId, Currency } from '@pancakeswap/sdk'
-import { BinanceIcon, TokenLogo } from '@pancakeswap/uikit'
+import { BinanceIcon, PolygonIcon, TokenLogo } from '@pancakeswap/uikit'
 import { useMemo } from 'react'
 import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import styled from 'styled-components'
@@ -8,7 +8,7 @@ import { BAD_SRCS } from './constants'
 import getTokenLogoURL, { getTokenLogoPosition } from '../../utils/getTokenLogoURL'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
-const StyledLogo = styled(TokenLogo)<{ size: string }>`
+const StyledLogo = styled(TokenLogo) <{ size: string }>`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
   border-radius: 50%;
@@ -31,7 +31,7 @@ export default function CurrencyLogo({
     if (currency?.isToken) {
       const tokenLogoURL = getTokenLogoURL(currency)
       const tokenLogoPosition = getTokenLogoPosition(currency)
-      
+
       if (currency instanceof WrappedTokenInfo) {
         if (!tokenLogoURL) return [...uriLocations]
         return [...uriLocations, tokenLogoURL, tokenLogoPosition]
@@ -45,6 +45,26 @@ export default function CurrencyLogo({
   if (currency?.isNative) {
     if (currency.chainId === ChainId.BSC) {
       return <BinanceIcon width={size} style={style} />
+    } else if (currency.chainId === ChainId.BASE) {
+      return (
+        <StyledLogo
+          badSrcs={BAD_SRCS}
+          size={size}
+          srcs={[`/images/chains/8453.png`]}
+          width={size}
+          style={style}
+        />
+      )
+    } else if (currency.chainId === ChainId.POLYGON) {
+      return (
+        <StyledLogo
+          badSrcs={BAD_SRCS}
+          size={size}
+          srcs={[`/images/chains/137.png`]}
+          width={size}
+          style={style}
+        />
+      )
     }
     return (
       <StyledLogo

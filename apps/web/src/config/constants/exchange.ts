@@ -7,7 +7,7 @@ export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.ETHEREUM]: '0xac6495Faa2f209B7d07A4e5E0595df8221626DFA',
   [ChainId.BSC]: '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3',
   [ChainId.BASE]: '0x1B30D21354a082EeBC66c4C5E56320759f7994e5',
-  [ChainId.POLYGON]: '0xac6495Faa2f209B7d07A4e5E0595df8221626DFA',
+  [ChainId.POLYGON]: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe',
 }
 
 // used to construct intermediary pairs for trading

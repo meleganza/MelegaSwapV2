@@ -25,7 +25,7 @@ export const FACTORY_ADDRESS_MAP: Record<number, string> = {
   [ChainId.ETHEREUM]: FACTORY_ADDRESS,
   [ChainId.BSC]: FACTORY_ADDRESS,
   [ChainId.BASE]: "0x78fA7Fa39CF6544DD9768A75d8Ad8C45854aE530",
-  [ChainId.POLYGON]: FACTORY_ADDRESS,
+  [ChainId.POLYGON]: "0x2541DBEa199a22501D75EA141627776Bd4EefC80",
 }
 export const INIT_CODE_HASH = '0x5547397b1a1ae1e97b89728e7a77fdc2a6b167647566f81793b3b72fb8fde0f5'
 
@@ -33,7 +33,7 @@ export const INIT_CODE_HASH_MAP: Record<number, string> = {
   [ChainId.ETHEREUM]: INIT_CODE_HASH,
   [ChainId.BSC]: INIT_CODE_HASH,
   [ChainId.BASE]: "0x1e6e24914b2abfdd5ec33609095c9b570a9e1dc137992c0995bb45f57cf1932a",
-  [ChainId.POLYGON]: INIT_CODE_HASH,
+  [ChainId.POLYGON]: "0x8c114e6d042bd14975f9a4dfbeb0c15c35a0b30acf8e0bd3432b551b131c46b1",
 }
 
 export const WETH9 = {
