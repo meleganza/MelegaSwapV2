@@ -165,6 +165,24 @@ const Nft: React.FC = () => {
       <img className="item" alt="b17" src={`./banners/${chainId}/sb17.png`} />
     </a>,
   ]
+  const items137 = [
+    <a href="/pools">
+      <img className="item" alt="b1" src={`./banners/${chainId}/sb1.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b2" src={`./banners/${chainId}/sb2.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b4" src={`./banners/${chainId}/sb4.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b5" src={`./banners/${chainId}/sb5.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b6" src={`./banners/${chainId}/sb6.png`} />
+    </a>,
+  ]
+
   const items8453 = [
     <a href="/pools">
       <img className="item" alt="b1" src={`./banners/${chainId}/sb1.png`} />
@@ -181,39 +199,6 @@ const Nft: React.FC = () => {
     <a href="/pools">
       <img className="item" alt="b6" src={`./banners/${chainId}/sb6.png`} />
     </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b7" src={`./banners/${chainId}/sb7.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b8" src={`./banners/${chainId}/sb8.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b9" src={`./banners/${chainId}/sb9.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b10" src={`./banners/${chainId}/sb10.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b11" src={`./banners/${chainId}/sb11.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b12" src={`./banners/${chainId}/sb12.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b13" src={`./banners/${chainId}/sb13.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b14" src={`./banners/${chainId}/sb14.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b15" src={`./banners/${chainId}/sb15.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b16" src={`./banners/${chainId}/sb16.png`} />
-    // </a>,
-    // <a href="/pools">
-    //   <img className="item" alt="b17" src={`./banners/${chainId}/sb17.png`} />
-    // </a>,
   ]
   const responsive = {
     1024: {
@@ -263,7 +248,7 @@ const Nft: React.FC = () => {
             autoPlayInterval={0}
             animationDuration={2000}
             infinite={true}
-            items={chainId == 56 ? items56 : items8453}
+            items={chainId == 56 ? items56 : chainId == 8453 ? items8453 : items137}
           />
         </div>
         <br />

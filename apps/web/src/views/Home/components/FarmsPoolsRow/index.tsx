@@ -69,8 +69,8 @@ const FarmsPoolsRow = () => {
     }
 
     return t('Stake %stakingSymbol% - Earn %earningSymbol%', {
-      earningSymbol: pool.earningToken.symbol,
-      stakingSymbol: pool.stakingToken.symbol,
+      earningSymbol: pool.earningToken?.symbol,
+      stakingSymbol: pool.stakingToken?.symbol,
     })
   }
 
