@@ -56,7 +56,7 @@ export default function CommonBases({
   onSelect: (currency: Currency) => void
 }) {
   const native = useNativeCurrency()
-  console.log('native', native)
+  
   const { t } = useTranslation()
   const pinTokenDescText = commonBasesType === CommonBasesType.SWAP_LIMITORDER ? t('Common tokens') : t('Common bases')
 
