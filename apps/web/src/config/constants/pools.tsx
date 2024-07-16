@@ -1834,9 +1834,6 @@ export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] =
     harvest: true,
     tokenPerBlock: '2.9',
     isFinished: false,
-<<<<<<< HEAD
-  }
-=======
   },
   {
     sousId: 2,
@@ -1903,7 +1900,6 @@ export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] =
     tokenPerBlock: '6',
     isFinished: false,
   },
->>>>>>> a31ce947fa0cc7a18fb18a0235e8a1c684175ebe
 ].map((p) => ({
   ...p,
   stakingToken: p.stakingToken.serialize,

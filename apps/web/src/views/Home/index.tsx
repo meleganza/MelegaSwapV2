@@ -199,7 +199,14 @@ const Nft: React.FC = () => {
     <a href="/pools">
       <img className="item" alt="b6" src={`./banners/${chainId}/sb6.png`} />
     </a>,
+    <a href="/pools">
+      <img className="item" alt="b7" src={`./banners/${chainId}/sb7.png`} />
+    </a>,
+    <a href="/pools">
+      <img className="item" alt="b8" src={`./banners/${chainId}/sb8.png`} />
+    </a>,
   ]
+  console.log(items8453)
   const responsive = {
     1024: {
       items: 3,
