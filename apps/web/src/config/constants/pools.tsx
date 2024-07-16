@@ -1834,7 +1834,76 @@ export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] =
     harvest: true,
     tokenPerBlock: '2.9',
     isFinished: false,
+<<<<<<< HEAD
   }
+=======
+  },
+  {
+    sousId: 2,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.clonereth,
+    contractAddress: {
+      56: '',
+      8453: '0xBE957e62DcFa99911B76DF6A8Fd228664bC1B026',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.0000003',
+    isFinished: false,
+  },
+  {
+    sousId: 3,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.clonezro,
+    contractAddress: {
+      56: '',
+      8453: '0xDf7a2ea5F94ca53caa9e398f0c1ab423D22B5098',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.0001',
+    isFinished: false,
+  },
+  {
+    sousId: 4,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.hoe,
+    contractAddress: {
+      56: '',
+      8453: '0x44Ce48B005835A497405BE5871BEd6c00600747F',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.1',
+    isFinished: false,
+  },
+  {
+    sousId: 5,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.pepe1,
+    contractAddress: {
+      56: '',
+      8453: '0x1eAD2b47353635dA469f1F507E6910Fe1ECF8304',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '300',
+    isFinished: false,
+  },
+  {
+    sousId: 6,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.mxmxbase,
+    contractAddress: {
+      56: '',
+      8453: '0xC635DB82dD479b433cad8b05064b67a41172c80e',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '6',
+    isFinished: false,
+  },
+>>>>>>> a31ce947fa0cc7a18fb18a0235e8a1c684175ebe
 ].map((p) => ({
   ...p,
   stakingToken: p.stakingToken.serialize,
