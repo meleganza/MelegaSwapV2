@@ -3182,7 +3182,14 @@ export const bscTokens = {
     'Dragon Kart',
     'https://dragonkart.com/',
   ),
-  qi: new ERC20Token(ChainId.BSC, '0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5', 18, 'QI', 'BENQI', 'https://benqi.fi/'),
+  qi: new ERC20Token(
+    ChainId.BSC, 
+    '0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5', 
+    18, 
+    'QI', 
+    'BENQI', 
+    'https://benqi.fi/'
+  ),
   sheesha: new ERC20Token(
     ChainId.BSC,
     '0x232FB065D9d24c34708eeDbF03724f2e95ABE768',
@@ -3711,7 +3718,14 @@ export const bscTokens = {
     'Chibi Dinos',
     'https://www.chibidinos.io/',
   ),
-  co: new ERC20Token(ChainId.BSC, '0x936B6659Ad0C1b244Ba8Efe639092acae30dc8d6', 6, 'CO', 'CO', 'https://corite.com/'),
+  co: new ERC20Token(
+    ChainId.BSC, 
+    '0x936B6659Ad0C1b244Ba8Efe639092acae30dc8d6', 
+    6, 
+    'CO', 
+    'CO', 
+    'https://corite.com/'
+  ),
   krs: new ERC20Token(
     ChainId.BSC,
     '0x37b53894e7429f794B56F22a32E1695567Ee9913',
@@ -3874,7 +3888,7 @@ export const bscTokens = {
   ),
   ifnet: new ERC20Token(
     ChainId.BSC,
-    '0x3fC84ecF9192bF6f2d12f204C50276aF0984267D,
+    '0x3fC84ecF9192bF6f2d12f204C50276aF0984267D',
     18,
     'IFNET',
     'Inter Finance Network',
