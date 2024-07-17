@@ -3872,4 +3872,12 @@ export const bscTokens = {
     'AIVOICE',
     'https://ai-v.ai/',
   ),
+  ifnet: new ERC20Token(
+    ChainId.BSC,
+    '0x3fC84ecF9192bF6f2d12f204C50276aF0984267D,
+    18,
+    'IFNET',
+    'Inter Finance Network',
+    'https://interfinance.net',
+  ),
 }
