@@ -1985,6 +1985,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x3fC84ecF9192bF6f2d12f204C50276aF0984267D.png"
+    },
+     {
+      "name": "Trump live",
+      "symbol": "$TRUMP",
+      "address": "0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359.png"
      }
   ]
 }

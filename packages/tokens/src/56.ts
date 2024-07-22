@@ -3894,4 +3894,12 @@ export const bscTokens = {
     'Inter Finance Network',
     'https://interfinance.net',
   ),
+  trump: new ERC20Token(
+    ChainId.BSC,
+    '0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359',
+    18,
+    '$TRUMP',
+    'Trump live',
+    'https://trumplive.vip',
+  ),
 }
