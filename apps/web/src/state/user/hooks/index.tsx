@@ -222,7 +222,7 @@ export function useUserPoolStakedOnly(): [boolean, (stakedOnly: boolean) => void
   const userPoolStakedOnly = useSelector<AppState, AppState['user']['userPoolStakedOnly']>((state) => {
     return state.user.userPoolStakedOnly
   })
-
+  
   const setUserPoolStakedOnly = useCallback(
     (stakedOnly: boolean) => {
       dispatch(updateUserPoolStakedOnly({ userPoolStakedOnly: stakedOnly }))

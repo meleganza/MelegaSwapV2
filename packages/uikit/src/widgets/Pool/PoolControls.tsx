@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 import PoolTabButtons from "./PoolTabButtons";
 import { ViewMode } from "../../components/ToggleView/ToggleView";
-import { Flex, Text, SearchInput, Select, OptionProps } from "../../components";
+import { Flex, Text, SearchInput, Select, OptionProps, PolygonIcon } from "../../components";
 
 import { DeserializedPool, DeserializedPoolVault } from "./types";
 import { sortPools } from "./helpers";
@@ -102,32 +102,57 @@ export function PoolControls<T>({
   const searchQuery = normalizedUrlSearch && !_searchQuery ? normalizedUrlSearch : _searchQuery;
   const [sortOption, setSortOption] = useState("hot");
   const chosenPoolsLength = useRef(0);
-
   const [finishedPools, openPools] = useMemo(() => partition(pools, (pool) => pool.isFinished), [pools]);
+
   const openPoolsWithStartBlockFilter = useMemo(
     () => openPools.filter((pool) => (threshHold > 0 && pool.startBlock ? Number(pool.startBlock) < threshHold : true)),
     [threshHold, openPools]
   );
-  const stakedOnlyFinishedPools = useMemo(
-    () =>
-      finishedPools.filter((pool) => {
-        if (pool.vaultKey) {
-          const vault = pool as DeserializedPoolVault<T>;
-          return vault?.userData?.userShares?.gt(0);
-        }
-        return pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0);
-      }),
-    [finishedPools]
-  );
-  const stakedOnlyOpenPools = useCallback(() => {
-    return openPoolsWithStartBlockFilter.filter((pool) => {
+
+  const [maxStakedBalances, setMaxStakedBalances] = useState<{ [key: string]: number }>({});
+
+  const stakedOnlyFinishedPools = useMemo(() => {
+    return finishedPools.filter((pool, index) => {
       if (pool.vaultKey) {
         const vault = pool as DeserializedPoolVault<T>;
         return vault?.userData?.userShares?.gt(0);
       }
-      return pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0);
+      const currentStakedBalance = pool.userData ? new BigNumber(pool.userData.stakedBalance).toNumber() : 0;
+      const maxStakedBalance = maxStakedBalances[index] || 0;
+      if (currentStakedBalance > maxStakedBalance) {
+        setMaxStakedBalances((prev) => {
+          const newBalances = { ...prev };
+          newBalances[index] = currentStakedBalance;
+          return newBalances;
+        });
+      }
+      return (
+        (pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)) || maxStakedBalances[index] > 0
+      );
     });
-  }, [openPoolsWithStartBlockFilter]);
+  }, [finishedPools, maxStakedBalances]);
+
+  const stakedOnlyOpenPools = useCallback(() => {
+    return openPoolsWithStartBlockFilter.filter((pool, index) => {
+      if (pool.vaultKey) {
+        const vault = pool as DeserializedPoolVault<T>;
+        return vault?.userData?.userShares?.gt(0);
+      }
+      const currentStakedBalance = pool.userData ? new BigNumber(pool.userData.stakedBalance).toNumber() : 0;
+      const maxStakedBalance = maxStakedBalances[index] || 0;
+      if (currentStakedBalance > maxStakedBalance) {
+        setMaxStakedBalances((prev) => {
+          const newBalances = { ...prev };
+          newBalances[index] = currentStakedBalance;
+          return newBalances;
+        });
+      }
+      return (
+        (pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)) || maxStakedBalances[index] > 0
+      );
+    });
+  }, [openPoolsWithStartBlockFilter, maxStakedBalances]);
+
   const hasStakeInFinishedPools = stakedOnlyFinishedPools.length > 0;
 
   useEffect(() => {

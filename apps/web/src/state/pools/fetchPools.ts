@@ -12,8 +12,8 @@ import { getAddress } from 'utils/addressHelpers'
 // import sousChefV3 from '../../config/abi/sousChefV3.json'
 
 const livePoolsWithEnd = poolsConfig.filter((p) => p?.sousId !== 0 && !p?.isFinished)
-const livePoolsWithEndBase  = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFinished)
-const livePoolsWithEndPolygon  = livePools137.filter((p) => p?.sousId !== 0 && !p?.isFinished)
+const livePoolsWithEndBase = livePools8453.filter((p) => p?.sousId !== 0 && !p?.isFinished)
+const livePoolsWithEndPolygon = livePools137.filter((p) => p?.sousId !== 0 && !p?.isFinished)
 
 const startEndBlockCalls = livePoolsWithEnd.flatMap((poolConfig) => {
   return [
@@ -55,7 +55,11 @@ const startEndBlockCallsOnBase = livePoolsWithEndBase.flatMap((poolConfig) => {
 })
 
 export const fetchPoolsBlockLimits = async (chainId) => {
-  const startEndBlockRaw = await multicall(sousChefABI, chainId === 137 ? startEndBlockCallsOnPolygon : chainId === 8453 ? startEndBlockCallsOnBase : startEndBlockCalls, chainId)
+  const startEndBlockRaw = await multicall(
+    sousChefABI,
+    chainId === 137 ? startEndBlockCallsOnPolygon : chainId === 8453 ? startEndBlockCallsOnBase : startEndBlockCalls,
+    chainId,
+  )
   const startEndBlockResult = startEndBlockRaw.reduce((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / 2)
 
@@ -68,7 +72,8 @@ export const fetchPoolsBlockLimits = async (chainId) => {
 
     return resultArray
   }, [])
-  const livePools = chainId === 8453 ? livePoolsWithEndBase : livePoolsWithEnd
+  const livePools =
+    chainId === 8453 ? livePoolsWithEndBase : chainId === 137 ? livePoolsWithEndPolygon : livePoolsWithEnd
   return livePools.map((cakePoolConfig, index) => {
     const [[startBlock], [endBlock]] = startEndBlockResult[index]
     return {
@@ -104,7 +109,11 @@ const poolsBalanceOfOnBase = livePools8453.map((poolConfig) => {
 })
 
 export const fetchPoolsTotalStaking = async (chainId) => {
-  const poolsTotalStaked = await multicall(erc20ABI, chainId === 137 ? poolsBalanceOfOnPolygon : chainId === 8453 ? poolsBalanceOfOnBase : poolsBalanceOf, chainId)
+  const poolsTotalStaked = await multicall(
+    erc20ABI,
+    chainId === 137 ? poolsBalanceOfOnPolygon : chainId === 8453 ? poolsBalanceOfOnBase : poolsBalanceOf,
+    chainId,
+  )
 
   const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
 
@@ -121,7 +130,7 @@ export const fetchPoolsTotalStaking = async (chainId) => {
 //     .filter((p) => p.stakingToken.symbol !== 'BNB' && !p.isFinished)
 //     .filter((p) => !poolsWithStakingLimit.includes(p.sousId))
 
-  // Get the staking limit for each valid pool
+// Get the staking limit for each valid pool
 //   const poolStakingCalls = validPools
 //     .map((validPool) => {
 //       const contractAddress = getAddress(validPool.contractAddress)
