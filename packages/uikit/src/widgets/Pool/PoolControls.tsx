@@ -110,6 +110,7 @@ export function PoolControls<T>({
   );
 
   const [maxStakedBalances, setMaxStakedBalances] = useState<{ [key: string]: number }>({});
+  const [finishedStakedBalances, setFinishedStakedBalances] = useState<{ [key: string]: number }>({});
 
   const stakedOnlyFinishedPools = useMemo(() => {
     return finishedPools.filter((pool, index) => {
@@ -118,19 +119,22 @@ export function PoolControls<T>({
         return vault?.userData?.userShares?.gt(0);
       }
       const currentStakedBalance = pool.userData ? new BigNumber(pool.userData.stakedBalance).toNumber() : 0;
-      const maxStakedBalance = maxStakedBalances[index] || 0;
-      if (currentStakedBalance > maxStakedBalance) {
-        setMaxStakedBalances((prev) => {
+      const finishedStakedBalance = finishedStakedBalances[index] || 0;
+
+      if (currentStakedBalance > finishedStakedBalance) {
+        setFinishedStakedBalances((prev) => {
           const newBalances = { ...prev };
           newBalances[index] = currentStakedBalance;
           return newBalances;
         });
       }
+
       return (
-        (pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)) || maxStakedBalances[index] > 0
+        (pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)) ||
+        finishedStakedBalances[index] > 0
       );
     });
-  }, [finishedPools, maxStakedBalances]);
+  }, [finishedPools, finishedStakedBalances]);
 
   const stakedOnlyOpenPools = useCallback(() => {
     return openPoolsWithStartBlockFilter.filter((pool, index) => {
@@ -140,6 +144,7 @@ export function PoolControls<T>({
       }
       const currentStakedBalance = pool.userData ? new BigNumber(pool.userData.stakedBalance).toNumber() : 0;
       const maxStakedBalance = maxStakedBalances[index] || 0;
+
       if (currentStakedBalance > maxStakedBalance) {
         setMaxStakedBalances((prev) => {
           const newBalances = { ...prev };
@@ -147,13 +152,16 @@ export function PoolControls<T>({
           return newBalances;
         });
       }
+
       return (
         (pool.userData && new BigNumber(pool.userData.stakedBalance).isGreaterThan(0)) || maxStakedBalances[index] > 0
       );
     });
   }, [openPoolsWithStartBlockFilter, maxStakedBalances]);
 
-  const hasStakeInFinishedPools = stakedOnlyFinishedPools.length > 0;
+  const hasStakeInFinishedPools = useMemo(() => {
+    return stakedOnlyFinishedPools.length > 0;
+  }, [stakedOnlyFinishedPools]);
 
   useEffect(() => {
     if (isIntersecting) {
