@@ -13,14 +13,14 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 1,
     lpSymbol: 'MARCO-MATIC LP',
-    lpAddress: '0x0E66F5EC1249f94F205Ab4CfEb226DA2d568b1Ff',
+    lpAddress: '0xD072576d3FD16f7112d11E4c7DA394939eC8c970',
     quoteToken: polygonTokens.wmatic,
     token: polygonTokens.cake,
   },
   {
     pid: 2,
     lpSymbol: 'USDT-MATIC LP',
-    lpAddress: '0x7c6D4c120F9aBE57C3ea0C7cDBF9280CB937456b',
+    lpAddress: '0x762a784E1906E5d630d8C46883eA03c0cbF486A8',
     quoteToken: polygonTokens.weth,
     token: polygonTokens.usdc,
   },

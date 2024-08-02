@@ -60,10 +60,10 @@ const polygon1 : Chain = {
   network: 'matic',
   nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
   rpcUrls: {
-    alchemy: { http: ['https://polygon-mainnet.g.alchemy.com/v2'], webSocket: ['wss://polygon-mainnet.g.alchemy.com/v2'] },
-    infura: { http: ['https://polygon-mainnet.infura.io/v3'], webSocket: ['wss://polygon-mainnet.infura.io/ws/v3'] },
+    // alchemy: { http: ['https://polygon-mainnet.g.alchemy.com/v2'], webSocket: ['wss://polygon-mainnet.g.alchemy.com/v2'] },
+    // infura: { http: ['https://polygon-mainnet.infura.io/v3'], webSocket: ['wss://polygon-mainnet.infura.io/ws/v3'] },
     // default: { http: ['https://polygon.llamarpc.com'] }
-    default: { http: ['https://polygon-pokt.nodies.app	'] }
+    default: { http: ['https://polygon-bor-rpc.publicnode.com'] }
   },
   blockExplorers: {
     etherscan: { name: 'PolygonScan', url: 'https://polygonscan.com' },
@@ -72,7 +72,7 @@ const polygon1 : Chain = {
   contracts: {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 25770160
+      blockCreated: 60101024
     }
   }
 }

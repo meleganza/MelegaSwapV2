@@ -3896,7 +3896,7 @@ export const bscTokens = {
   ),
   trump: new ERC20Token(
     ChainId.BSC,
-    '0x53b8c83c4b788e571c5d3cb22ec807471dab4359',
+    '0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359',
     18,
     '$TRUMP',
     'Trump live',

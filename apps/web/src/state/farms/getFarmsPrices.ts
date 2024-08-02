@@ -175,7 +175,7 @@ const nativeStableLpMap = {
     stable: 'USDT',
   },
   [ChainId.POLYGON]: {
-    address: '0x6D65adF782C202788b1814E39cad2221547C1900',
+    address: '0x762a784E1906E5d630d8C46883eA03c0cbF486A8',
     wNative: 'WMATIC',
     stable: 'USDT',
   },

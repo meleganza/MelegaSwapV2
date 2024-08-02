@@ -39,6 +39,7 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
   const { t } = useTranslation()
   const { address: account } = useAccount()
   const { chainId } = useActiveWeb3React()
+  console.log('chainId', chainId)
   const { pools, userDataLoaded } = usePoolsWithVault(chainId)
 
   usePoolsPageFetch()
