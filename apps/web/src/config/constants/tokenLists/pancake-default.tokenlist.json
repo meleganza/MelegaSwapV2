@@ -1993,6 +1993,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359.png"
+    },
+     {
+      "name": "Godyence",
+      "symbol": "GODEN",
+      "address": "0xb9fcc18e1a65608Fd4337bf183f9d031c4d8C10B",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb9fcc18e1a65608Fd4337bf183f9d031c4d8C10B.png"
      }
   ]
 }
