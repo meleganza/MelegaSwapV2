@@ -75,16 +75,16 @@ const RoiCalculatorFooter: React.FC<React.PropsWithChildren<RoiCalculatorFooterP
     <>
       {rewardCakePerSecond ? (
         <>
-          <Text small>
+          <Text small color="#000">
             {t(
               "The Multiplier represents the proportion of MARCO rewards each farm receives, as a proportion of the MARCO produced each second."
             )}
           </Text>
-          <Text my="24px" small>
+          <Text my="24px" small color="#000">
             {" "}
             {t("For example, if a 1x farm received 1 MARCO per second, a 40x farm would receive 40 MARCO per second.")}
           </Text>
-          <Text small>{t("This amount is already included in all APR calculations for the farm.")}</Text>
+          <Text small color="#000">{t("This amount is already included in all APR calculations for the farm.")}</Text>
         </>
       ) : (
         <>
