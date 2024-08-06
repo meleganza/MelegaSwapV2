@@ -3902,4 +3902,12 @@ export const bscTokens = {
     'Trump live',
     'https://trumplive.vip',
   ),
+  goden: new ERC20Token(
+    ChainId.BSC,
+    '0xb9fcc18e1a65608Fd4337bf183f9d031c4d8C10B',
+    18,
+    'GODEN',
+    'Godyence',
+    'https://godyence.io/',
+  ),
 }
