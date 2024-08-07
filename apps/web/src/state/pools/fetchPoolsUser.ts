@@ -98,7 +98,6 @@ export const fetchUserBalances = async (account, chainId?: number) => {
       .map((pool) => {
         
         if (!tokenBalances[pool.stakingToken.address]) return null
-        // console.log('token balance native', pool.sousId, new BigNumber(tokenBalances[pool.stakingToken.address]).toJSON())
         return [pool.sousId, new BigNumber(tokenBalances[pool.stakingToken.address]).toJSON()]
       })
       .filter(Boolean),
@@ -127,6 +126,7 @@ export const fetchUserStakeBalances = async (account, chainId: number) => {
   }))
   const userInfo = await multicall(sousChefABI, calls, chainId)
   const masterChefStakeBalance = await fetchUserMasterChefStakeBalance(account, chainId)
+  
   return {
     ...fromPairs(
       nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(userInfo[index].amount._hex).toJSON()]),
@@ -137,7 +137,7 @@ export const fetchUserStakeBalances = async (account, chainId: number) => {
 
 export const fetchUserPendingRewards = async (account, chainId?: number) => {
   const nonMasterPools =
-    chainId === 8453 ? nonMasterPoolsOnPolygon : chainId === 8453 ? nonMasterPoolsOnBase : nonMasterPoolsBnb
+    chainId === 137 ? nonMasterPoolsOnPolygon : chainId === 8453 ? nonMasterPoolsOnBase : nonMasterPoolsBnb
   const calls = nonMasterPools.map((p) => ({
     address: getAddress(p.contractAddress, chainId),
     name: 'pendingReward',
@@ -145,6 +145,7 @@ export const fetchUserPendingRewards = async (account, chainId?: number) => {
   }))
   const res = await multicall(sousChefABI, calls, chainId)
   const masterChefPendingReward = await fetchUserMasterChefPendingReward(account, chainId)
+  
   return {
     ...fromPairs(nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(res[index]).toJSON()])),
     ...masterChefPendingReward,
