@@ -117,6 +117,7 @@ export const fetchUserBalances = async (account, chainId?: number) => {
 }
 
 export const fetchUserStakeBalances = async (account, chainId: number) => {
+  
   const nonMasterPools =
     chainId === 137 ? nonMasterPoolsOnPolygon : chainId === 8453 ? nonMasterPoolsOnBase : nonMasterPoolsBnb
   const calls = nonMasterPools.map((p) => ({
@@ -124,9 +125,9 @@ export const fetchUserStakeBalances = async (account, chainId: number) => {
     name: 'userInfo',
     params: [account],
   }))
+  
   const userInfo = await multicall(sousChefABI, calls, chainId)
   const masterChefStakeBalance = await fetchUserMasterChefStakeBalance(account, chainId)
-  
   return {
     ...fromPairs(
       nonMasterPools.map((pool, index) => [pool.sousId, new BigNumber(userInfo[index].amount._hex).toJSON()]),

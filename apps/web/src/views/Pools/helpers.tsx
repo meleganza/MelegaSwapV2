@@ -100,7 +100,7 @@ export const getEarningToken = (chainId: number) => {
   let earningToken;
   if (chainId == 137) {
     earningToken = polygonTokens.cake;
-  } else if (chainId == 8435) {
+  } else if (chainId == 8453) {
     earningToken = baseTokens.cake;
   } else {
     earningToken = bscTokens.cake;

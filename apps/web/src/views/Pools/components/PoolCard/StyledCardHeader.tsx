@@ -47,7 +47,7 @@ const StyledCardHeader: React.FC<{
     }
     return t('Stake %symbol%', { symbol: stakingToken.symbol })
   }
-
+  
   const getImageUrlFromToken = (token?: Token) => {
     const address = token?.isNative ? token.wrapped.address : token.address
     return `/images/${chainId}/tokens/${address}.png`
