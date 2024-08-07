@@ -78,6 +78,7 @@ const fetchFarms = async (farmsToFetch: SerializedFarmConfig[], chainId: number)
     fetchPublicFarmsData(farmsToFetch, chainId),
     fetchMasterChefData(farmsToFetch, chainId),
   ])
+
   return farmsToFetch.map(farmLpTransformer(farmResult, masterChefResult))
 }
 

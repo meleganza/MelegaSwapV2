@@ -3067,4 +3067,4 @@ const finishedPools = [
   earningToken: p.earningToken.serialize,
 }))
 
-export default [...livePools, ...finishedPools] as Pool.SerializedPoolConfig<SerializedWrappedToken>[]
+export default [...livePools, ...finishedPools, ...livePools8453, ...livePools137] as Pool.SerializedPoolConfig<SerializedWrappedToken>[]

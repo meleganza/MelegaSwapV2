@@ -30,7 +30,7 @@ import {
 } from './fetchFarmUser'
 import { fetchMasterChefFarmPoolLength } from './fetchMasterChefData'
 import getFarmsPrices from './getFarmsPrices'
-import getFarmsAprs from './getFarmsAprs'
+// import getFarmsAprs from './getFarmsAprs'
 
 // /**
 //  * @deprecated
@@ -55,9 +55,9 @@ const fetchFarmPublicDataOld = async ({ pids, chainId }): Promise<[SerializedFar
   const farmsCanFetch = farmsConfig.filter(
     (farmConfig) => pids.includes(farmConfig.pid) && poolLengthAsBigNumber.gt(farmConfig.pid),
   )
-  // const priceHelperLpsConfig = getFarmsPriceHelperLpFiles(chainId)
   const farms = await fetchFarms(farmsCanFetch, chainId)
   const farmsWithPrices = farms.length > 0 ? getFarmsPrices(farms, chainId) : []
+  
   return [farmsWithPrices, poolLengthAsBigNumber.toNumber(), regularCakePerBlock.toNumber()]
 }
 
