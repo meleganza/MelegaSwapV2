@@ -4,12 +4,12 @@ import memoize from 'lodash/memoize'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const getLpAddress = memoize(
-  // (token1: string | ERC20Token, token2: string | ERC20Token, chainId: number = ChainId.BSC) => {
-  (token1: string | ERC20Token, token2: string | ERC20Token) => {
+  (token1: string | ERC20Token, token2: string | ERC20Token, chainId: number = ChainId.BSC) => {
+  // (token1: string | ERC20Token, token2: string | ERC20Token) => {
     let token1AsTokenInstance = token1
     let token2AsTokenInstance = token2
 
-    const { chainId } = useActiveChainId()
+    // const { chainId } = useActiveChainId()
     if (!token1 || !token2) {
       return null
     }
@@ -29,8 +29,8 @@ const getLpAddress = memoize(
     }
     return Pair.getAddress(token1AsTokenInstance as ERC20Token, token2AsTokenInstance as ERC20Token)
   },
-  (token1, token2) => {
-    const { chainId } = useActiveChainId()
+  (token1, token2, chainId) => {
+    // const { chainId } = useActiveChainId()
     // @ts-ignore
     return `${token1?.address || token1}#${token2?.address || token2}#${chainId}`
   },

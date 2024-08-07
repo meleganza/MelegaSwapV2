@@ -8,7 +8,7 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import { bscTokens, baseTokens } from '@pancakeswap/tokens'
 import { useCakeVault1 } from 'state/pools/hooks'
 import { Pool } from 'state/types'
-import { convertSharesToCake } from 'views/Pools/helpers'
+import { convertSharesToCake, getEarningToken } from 'views/Pools/helpers'
 import AprRow from '../PoolCard/AprRow'
 import { StyledCard } from '../PoolCard/StyledCard'
 import CardFooter from '../PoolCard/CardFooter'
@@ -50,8 +50,8 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
       <StyledCardHeader
         isStaking={accountHasSharesStaked}
         isAutoVault
-        earningToken={chainId == 56 ? bscTokens.cake : baseTokens.cake}
-        stakingToken={chainId == 56 ? bscTokens.cake : baseTokens.cake}
+        earningToken={getEarningToken(chainId)}
+        stakingToken={getEarningToken(chainId)}
       />
       <StyledCardBody isLoading={isLoading}>
         <AprRow pool={pool} stakedBalance={cakeAsBigNumber} performanceFee={performanceFeeAsDecimal} />

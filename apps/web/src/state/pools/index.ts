@@ -136,6 +136,7 @@ export const fetchPoolsPublicDataAsync =
   (currentBlockNumber: number, chainId: number) => async (dispatch, getState) => {
     try {
       const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
+      console.log('pools', pools)
       const [blockLimits, totalStakings, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
@@ -259,7 +260,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
-    
+    console.log('fetchPoolsUser', allowances)
     const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,
@@ -287,6 +288,7 @@ export const updateUserBalance = createAsyncThunk<
   { sousId: number; account: string; chainId: number }
 >('pool/updateUserBalance', async ({ sousId, account, chainId }) => {
   const tokenBalances = await fetchUserBalances(account, chainId)
+  console.log('tokenBalance -1', tokenBalances)
   return { sousId, field: 'stakingTokenBalance', value: tokenBalances[sousId] }
 })
 

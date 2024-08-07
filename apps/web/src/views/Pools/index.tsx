@@ -42,6 +42,7 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
   const { pools, userDataLoaded } = usePoolsWithVault(chainId)
 
   usePoolsPageFetch()
+  // console.log(pools)
   
   return (
     <>

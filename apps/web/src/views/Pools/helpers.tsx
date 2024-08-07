@@ -6,6 +6,8 @@ import { getBalanceNumber, getFullDisplayBalance, getDecimalAmount } from '@panc
 import memoize from 'lodash/memoize'
 import { Token } from '@pancakeswap/sdk'
 import { Pool } from '@pancakeswap/uikit'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { baseTokens, bscTokens, polygonTokens } from '@pancakeswap/tokens'
 
 // min deposit and withdraw amount
 export const MIN_LOCK_AMOUNT = new BigNumber(10000000000000)
@@ -79,7 +81,6 @@ export const getCakeVaultEarnings = (
 export const getPoolBlockInfo = memoize(
   (pool: Pool.DeserializedPool<Token>, currentBlock: number) => {
     const { startBlock, endBlock, isFinished } = pool
-    // console.log(startBlock, endBlock, isFinished)
     const shouldShowBlockCountdown = Boolean(!isFinished && startBlock && endBlock)
     const blocksUntilStart = Math.max(startBlock - currentBlock, 0)
     const blocksRemaining = Math.max(endBlock - currentBlock, 0)
@@ -93,4 +94,17 @@ export const getPoolBlockInfo = memoize(
 export const getICakeWeekDisplay = (ceiling: BigNumber) => {
   const weeks = new BigNumber(ceiling).div(60).div(60).div(24).div(7)
   return Math.round(weeks.toNumber())
+}
+
+export const getEarningToken = (chainId: number) => {
+  let earningToken;
+  if (chainId == 137) {
+    earningToken = polygonTokens.cake;
+  } else if (chainId == 8435) {
+    earningToken = baseTokens.cake;
+  } else {
+    earningToken = bscTokens.cake;
+  }
+  
+  return earningToken
 }

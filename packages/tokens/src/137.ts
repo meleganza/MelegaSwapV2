@@ -23,4 +23,11 @@ export const polygonTokens = {
     'Wrapped Ether',
   ),
   cake: CAKE[ChainId.POLYGON],
+  xoxo: new ERC20Token(
+    ChainId.POLYGON,
+    '0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB',
+    18,
+    'XOXO',
+    'XOXO'
+  )
 }
