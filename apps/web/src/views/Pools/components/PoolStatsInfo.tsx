@@ -13,7 +13,7 @@ import {
 } from '@pancakeswap/uikit'
 import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
 import { bsc } from 'wagmi/chains'
-import { base } from '../../../utils/wagmi'
+import { base, polygon1 } from '../../../utils/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
 import { ChainId, Token } from '@pancakeswap/sdk'
 import { BIG_ZERO } from '@pancakeswap/utils/bigNumber'
@@ -97,7 +97,7 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
       )}
       {showTotalStaked && (
         <Flex alignItems="center">
-          
+
           <Pool.TotalStaked
             totalStaked={vaultKey ? totalDexTokenInVault : (pool.sousId === 0 ? totalStaked.minus(totalDexTokenInVault) : totalStaked)}
             tokenDecimals={stakingToken.decimals}
@@ -164,9 +164,10 @@ const PoolStatsInfo: React.FC<React.PropsWithChildren<ExpandedFooterProps>> = ({
         <Flex mb="2px" justifyContent={alignLinksToRight ? 'flex-end' : 'flex-start'}>
           <LinkExternal
             isBscScan
-            href={`${chainId == 56 ? bsc.blockExplorers.default.url : base.blockExplorers.default.url}/address/${
-              vaultKey ? cakeVaultContractAddress : poolContractAddress
-            }`}
+            href={`${chainId == 56 ? bsc.blockExplorers.default.url :
+              chainId == 137 ? polygon1.blockExplorers.default.url :
+                base.blockExplorers.default.url}/address/${vaultKey ? cakeVaultContractAddress : poolContractAddress
+              }`}
             bold={false}
             small
           >

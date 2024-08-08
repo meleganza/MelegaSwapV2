@@ -54,7 +54,7 @@ const bsc1 : Chain = {
   }
 }
 
-const polygon1 : Chain = {
+export const polygon1 : Chain = {
   id: 137,
   name: 'Polygon',
   network: 'matic',

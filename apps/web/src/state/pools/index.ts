@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, {livePools, livePools8453, livePools137} from 'config/constants/pools'
+import poolsConfig, { livePools, livePools8453, livePools137 } from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -20,7 +20,7 @@ import { multicallv2 } from 'utils/multicall'
 import { bscTokens } from '@pancakeswap/tokens'
 import { isAddress } from 'utils'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import { bscRpcProvider, baseRpcProvider } from 'utils/providers'
+import { bscRpcProvider, baseRpcProvider, polygonRpcProvider } from 'utils/providers'
 import { getPoolsPriceHelperLpFiles } from 'config/constants/priceHelperLps/index'
 import fetchFarms from '../farms/fetchFarms'
 import getFarmsPrices from '../farms/getFarmsPrices'
@@ -84,7 +84,7 @@ const initialState: PoolsState = {
   // cakeFlexibleSideVault: initialPoolVaultState,
 }
 
-export const fetchCakePoolPublicDataAsync = (chainId?: number ) => async (dispatch, getState) => {
+export const fetchCakePoolPublicDataAsync = (chainId?: number) => async (dispatch, getState) => {
   const farmsData = getState().farms.data
   const prices = getTokenPricesFromFarm(farmsData)
   const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
@@ -140,7 +140,7 @@ export const fetchPoolsPublicDataAsync =
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
         // fetchPoolsProfileRequirement(),
-        currentBlockNumber ? Promise.resolve(currentBlockNumber) : chainId === 56 ? bscRpcProvider.getBlockNumber() : baseRpcProvider.getBlockNumber(),
+        currentBlockNumber ? Promise.resolve(currentBlockNumber) : chainId === 56 ? bscRpcProvider.getBlockNumber() : chainId === 137 ? polygonRpcProvider.getBlockNumber() : baseRpcProvider.getBlockNumber(),
       ])
 
       const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')
@@ -167,11 +167,12 @@ export const fetchPoolsPublicDataAsync =
       const poolsWithDifferentFarmToken =
         activePriceHelperLpsConfig.length > 0 ? await fetchFarms(priceHelperLpsConfig, chainId) : []
       const farmsData = getState().farms.data
-      
+
       const bnbBusdFarm =
         chainId == 56
           ? farmsData.find((farm) => farm.token.symbol === 'BUSD' && farm.quoteToken.symbol === 'WBNB')
-          : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
+          : chainId == 137 ? farmsData.find((farm) => farm.token.symbol === 'USDT' && farm.quoteToken.symbol === 'WMATIC')
+            : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
 
       const farmsWithPricesOfDifferentTokenPools = bnbBusdFarm
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
@@ -190,13 +191,14 @@ export const fetchPoolsPublicDataAsync =
         const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
         const earningTokenAddress = isAddress(pool.earningToken.address)
         const earningTokenPrice = earningTokenAddress ? prices[earningTokenAddress] : 0
+        
         const apr = !isPoolFinished
           ? getPoolApr(
-              stakingTokenPrice,
-              earningTokenPrice,
-              getBalanceNumber(new BigNumber(totalStaking.totalStaked), pool.stakingToken.decimals),
-              parseFloat(pool.tokenPerBlock),
-            )
+            stakingTokenPrice,
+            earningTokenPrice,
+            getBalanceNumber(new BigNumber(totalStaking.totalStaked), pool.stakingToken.decimals),
+            parseFloat(pool.tokenPerBlock),
+          )
           : 0
 
         // const profileRequirement = profileRequirements[pool.sousId] ? profileRequirements[pool.sousId] : undefined
@@ -250,8 +252,8 @@ export const fetchPoolsPublicDataAsync =
 
 export const fetchPoolsUserDataAsync = createAsyncThunk<
   { sousId: number; allowance: any; stakingTokenBalance: any; stakedBalance: any; pendingReward: any }[],
-  {account: string, chainId: number}
->('pool/fetchPoolsUserData', async ({account, chainId}, { rejectWithValue }) => {
+  { account: string, chainId: number }
+>('pool/fetchPoolsUserData', async ({ account, chainId }, { rejectWithValue }) => {
   try {
     const [allowances, stakingTokenBalances, stakedBalances, pendingRewards] = await Promise.all([
       fetchPoolsAllowance(account, chainId),
@@ -259,7 +261,7 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
-    
+
     const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,
@@ -287,7 +289,7 @@ export const updateUserBalance = createAsyncThunk<
   { sousId: number; account: string; chainId: number }
 >('pool/updateUserBalance', async ({ sousId, account, chainId }) => {
   const tokenBalances = await fetchUserBalances(account, chainId)
-  
+
   return { sousId, field: 'stakingTokenBalance', value: tokenBalances[sousId] }
 })
 
@@ -328,7 +330,7 @@ export const fetchCakeVaultFees = createAsyncThunk<SerializedVaultFees, { chainI
   return vaultFees
 })
 
-export const fetchCakeFlexibleSideVaultFees = createAsyncThunk<SerializedVaultFees, { chainId: number}>(
+export const fetchCakeFlexibleSideVaultFees = createAsyncThunk<SerializedVaultFees, { chainId: number }>(
   'cakeFlexibleSideVault/fetchFees',
   async ({ chainId }) => {
     const vaultFees = await fetchVaultFees(getCakeFlexibleSideVaultAddress(chainId))
@@ -402,7 +404,7 @@ export const PoolsSlice = createSlice({
       const livePoolsSousIdMap = keyBy(livePoolsData, 'sousId')
 
       state.data = livePoolsData;
-      
+
       // state.data = state.data.map((pool) => {
       //   const livePoolData = livePoolsSousIdMap[pool.sousId]
       //   return { ...pool, ...livePoolData }
