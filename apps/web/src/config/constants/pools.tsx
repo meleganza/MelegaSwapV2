@@ -1867,11 +1867,15 @@ export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] =
     earningToken: polygonTokens.xoxo,
     contractAddress: {
       56: '',
-      137: '0xD7Ed387c8c7fA52a828691754A29Da2Dc8D52C90',
+      137: '0x59dE1391400baAC1c1A918C971DD49919b48FB7c',
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,
+<<<<<<< HEAD
     tokenPerBlock: '233333333333333.9',
+=======
+    tokenPerBlock: '0.02',
+>>>>>>> ec9a58cd60b28c55710ce0adddfbce5aa273d82f
     isFinished: false,
   },
   // {

@@ -2001,6 +2001,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb9fcc18e1a65608Fd4337bf183f9d031c4d8C10B.png"
+   },
+     {
+      "name": "XOXO",
+      "symbol": "XOXO",
+      "address": "0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB.png"
      }
   ]
 }
