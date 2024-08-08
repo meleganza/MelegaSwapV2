@@ -101,6 +101,13 @@ const farms: SerializedFarmConfig[] = [
   //   quoteToken: polygonTokens.usdt,
   //   token: polygonTokens.weth,
   // },
+  // {
+  //   pid: 14,
+  //   lpSymbol: 'XOXO-MATIC LP',
+  //   lpAddress: '0xC2bbd56962933a6150C954Ce7655F36EC77be164',
+  //   quoteToken: polygonTokens.xoxo,
+  //   token: polygonTokens.wmatic,
+  // },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
 export default farms
