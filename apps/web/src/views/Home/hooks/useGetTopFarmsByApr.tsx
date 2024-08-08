@@ -35,7 +35,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         await dispatch(
           fetchFarmsPublicDataAsync({
             pids: activeFarms.map((farm) => farm.pid),
-            chainId: chainId === 56 ? ChainId.BSC : ChainId.BASE,
+            chainId: chainId === 137 ? ChainId.POLYGON : chainId === 56 ? ChainId.BSC : ChainId.BASE,
             flag: 'pkg',
           }),
         )
@@ -49,15 +49,16 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
     if (isIntersecting && fetchStatus === FetchStatus.NOT_FETCHED) {
       fetchFarmData()
     }
-  }, [dispatch, setFetchStatus, fetchStatus, topFarms, isIntersecting])
+  }, [dispatch, setFetchStatus, fetchStatus, topFarms, isIntersecting, chainId])
 
   useEffect(() => {
     const getTopFarmsByApr = (farmsState: DeserializedFarm[]) => {
       const farmsWithPrices = farmsState.filter((farm) => farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) // FIME: Property 'busdPrice' does not exist on type 'Token'
       const farmsWithApr: FarmWithStakedValue[] = farmsWithPrices.map((farm) => {
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd) // FIXME: Property 'busdPrice' does not exist on type 'Token'
+        const ChainID = chainId === 137 ? ChainId.POLYGON : chainId === 56 ? ChainId.BSC : ChainId.BASE
         const { cakeRewardsApr, lpRewardsApr } = getFarmApr(
-          ChainId.BSC,
+          ChainID,
           new BigNumber(farm.poolWeight),
           cakePriceBusd,
           totalLiquidity,
@@ -75,7 +76,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
       getTopFarmsByApr(farms) // FIXME: Argument of type 'DeserializedFarm[]' is not assignable to parameter of type 'Farm[]'
     }
 
-  }, [setTopFarms, farms, fetchStatus, cakePriceBusd, regularCakePerBlock, topFarms])
+  }, [setTopFarms, farms, fetchStatus, cakePriceBusd, regularCakePerBlock, topFarms, chainId])
 
   return { topFarms }
 }
