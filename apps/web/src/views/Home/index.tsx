@@ -173,6 +173,9 @@ const Nft: React.FC = () => {
       <img className="item" alt="b2" src={`./banners/${chainId}/sb2.png`} />
     </a>,
     <a href="/pools">
+      <img className="item" alt="b3" src={`./banners/${chainId}/sb3.png`} />
+    </a>,
+    <a href="/pools">
       <img className="item" alt="b4" src={`./banners/${chainId}/sb4.png`} />
     </a>,
     <a href="/pools">
