@@ -2009,6 +2009,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB.png"
+   },
+     {
+      "name": "BabyMarco",
+      "symbol": "BabyMarco",
+      "address": "0x055135F0470C4C8d7C88a576f892ac60c3f70316",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x055135F0470C4C8d7C88a576f892ac60c3f70316.png"
      }
   ]
 }
