@@ -2477,6 +2477,27 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x31d500a5354cC4B6F2FfE5DcCfab924507CE4Bd6',
     token: bscTokens.goden,
     quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 316,
+    lpSymbol: 'BNB-CSOL LP',
+    lpAddress: '0x75Ee27D5542C6022f9Fc377cf05528Fcae5232f0',
+    token: bscTokens.csol,
+    quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 317,
+    lpSymbol: 'CSOL-AIV LP',
+    lpAddress: '0x3Bbc17d1e40F5C622D0b9AA205CE7C1E48c2A87a',
+    token: bscTokens.aiv,
+    quoteToken: bscTokens.csol,
+  },
+  {
+    pid: 318,
+    lpSymbol: 'CBNB-AIV LP',
+    lpAddress: '0x59Fa95f4266A83C31B94Cf6ae2d2A86BAD37D13c',
+    token: bscTokens.aiv,
+    quoteToken: bscTokens.cbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
