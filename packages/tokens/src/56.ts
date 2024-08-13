@@ -3909,7 +3909,7 @@ export const bscTokens = {
     'GODEN',
     'Godyence',
     'https://godyence.io/',
-   ),
+  ),
   babymarco: new ERC20Token(
     ChainId.BSC,
     '0x055135F0470C4C8d7C88a576f892ac60c3f70316',
@@ -3917,5 +3917,13 @@ export const bscTokens = {
     'BabyMarco',
     'BabyMarco',
     'https://www.melegaswap.finance/babymarco',
+  ),
+  csol: new ERC20Token(
+    ChainId.BSC,
+    '0x65E67F36CE25aE8B415eaE002Ad9b64dE9C11d18',
+    18,
+    'CSOL',
+    'Crafted SOL',
+    'http://cbnb.site',
   ),
 }
