@@ -3924,6 +3924,6 @@ export const bscTokens = {
     18,
     'CSOL',
     'Crafted SOL',
-    'http://cbnb.site',
+    'http://csol.site',
   ),
 }
