@@ -3878,12 +3878,12 @@ export const bscTokens = {
     'Arcturus Token',
     'https://arcturuschain.io',
   ),
-  aiv: new ERC20Token(
+  aivold: new ERC20Token(
     ChainId.BSC,
     '0x581C124D0F4b9D365c06e30d37ea8352d5F3a2aF',
     18,
     'AIV',
-    'AIVOICE',
+    'AIVOICE OLD',
     'https://ai-v.ai/',
   ),
   ifnet: new ERC20Token(
