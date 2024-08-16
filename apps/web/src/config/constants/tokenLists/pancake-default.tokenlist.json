@@ -20,7 +20,8 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c.png"
-    },{
+    },
+    {
       "name": "BUSD Token",
       "symbol": "BUSD",
       "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
@@ -396,7 +397,6 @@
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xB705CFFb90A1169C56D5Bf78a5a25B439CD4d381.png"
     },
-    
     {
       "name": "Community Inu",
       "symbol": "CTI",
@@ -413,7 +413,6 @@
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xa1611E8D4070dee36EF308952CF34255c92a01c5.png"
     },
-    
     {
       "name": "CryptoVerseLand",
       "symbol": "CVL",
@@ -422,7 +421,6 @@
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x9C845ed620C4AECfB7C4EA1693e135663A55cFc1.png"
     },
-    
     {
       "name": "Crypto 4 A Cause Fund v2",
       "symbol": "C4Cv2",
@@ -806,22 +804,24 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x39C6dB7f07146A9C4ccdF7e2F7d7A02B5BF61910.png"
-    }
-    ,{
+    },
+    {
       "name": "Gem Wallet Token",
       "symbol": "GWT",
       "address": "0x0cf1460Cceb0a6DE0722E9f932C1ea6F7c54AA35",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x0cf1460Cceb0a6DE0722E9f932C1ea6F7c54AA35.png"
-    },{
+    },
+    {
       "name": "QATAR CHAMPS WORLD CUP",
       "symbol": "QCWC",
       "address": "0x1Bd7A9D9675385ad78628ec6Bb87e11F578264E8",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x1Bd7A9D9675385ad78628ec6Bb87e11F578264E8.png"
-    },{
+    },
+    {
       "name": "Ostrich",
       "symbol": "OSTRICH",
       "address": "0xFd0a4f965a6F70426053B575FD190E464aa3C5AE",
@@ -844,71 +844,72 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xA1217C0cce65A37E77cF43Af277c0B29D808652c.png"
-    }
-    ,{
+    },
+    {
       "name": "EverFrogeInu",
       "symbol": "FROGE",
       "address": "0xe875E0d597A0b71715da182B9A2277bDB4353ADD",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xe875E0d597A0b71715da182B9A2277bDB4353ADD.png"
-    }
-    ,{
+    },
+    {
       "name": "Rottoken",
       "symbol": "ROTTO",
       "address": "0x9Ae58314b3e11Bc836eCa62302264b617641c6ed",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x9Ae58314b3e11Bc836eCa62302264b617641c6ed.png"
-    }
-    ,{
+    },
+    {
       "name": "Global payment currency electronic",
       "symbol": "GPAY",
       "address": "0xaA3ECC6D3e77Dd33cF259859b0cA58CA93A07A9c",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xaA3ECC6D3e77Dd33cF259859b0cA58CA93A07A9c.png"
-    }
-    ,{
+    },
+    {
       "name": "Snowflake Token",
       "symbol": "SFE",
       "address": "0x02878FFf5d7CD4F8dc8eCB6701fc98c560fDC1b4",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x02878FFf5d7CD4F8dc8eCB6701fc98c560fDC1b4.png"
-    }
-    ,{
+    },
+    {
       "name": "Belifex",
       "symbol": "BEFX",
       "address": "0x75B2fdd95418e093fCA7DB858B36549e5e412076",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x75B2fdd95418e093fCA7DB858B36549e5e412076.png"
-    }
-    ,{
+    },
+    {
       "name": "Football World Community",
       "symbol": "Fwc",
       "address": "0x6D3a160B86eDcD46D8F9bBa25c2F88ccCADe19fc",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x6D3a160B86eDcD46D8F9bBa25c2F88ccCADe19fc.png"
-    }
-    ,{
+    },
+    {
       "name": "Borzoi Inu",
       "symbol": "BORZ",
       "address": "0x08DA9EB6147694e671A455d946A620A70d721EaE",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x08DA9EB6147694e671A455d946A620A70d721EaE.png"
-    }
-    ,{
+    },
+    {
       "name": "GoogWai",
       "symbol": "GGW",
       "address": "0x9Acda5B7Ba829172036D030d5A664298eA0a7129",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x9Acda5B7Ba829172036D030d5A664298eA0a7129.png"
-    } ,{
+    },
+    {
       "name": "HashBit-Peg HBIT Token",
       "symbol": "HBIT",
       "address": "0xEda3866f07566d9379a91A07F8D62e19C03183e0",
@@ -955,8 +956,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x488907d99cE2ac919A47AcFac896e825Fd23598f.png"
-    }
-     ,
+    },
     {
       "name": "ROCKET",
       "symbol": "ROCKET",
@@ -964,8 +964,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x87374baef80590f5274bAE9C2533e10b6A3A79b8.png"
-    }
-     ,
+    },
     {
       "name": "The Success Kid",
       "symbol": "SKID",
@@ -997,8 +996,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x31B5BE085aF875B675392f5B37a1d0B8c3860222.png"
-    }
-     ,
+    },
     {
       "name": "Mong 2.0",
       "symbol": "MONG2.0",
@@ -1038,8 +1036,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x8c51D12f06C61af01D0D9f80401e8351733D54a0.png"
-    }
-     ,
+    },
     {
       "name": "Chameleon",
       "symbol": "Chame",
@@ -1047,8 +1044,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x5b44B1b9576AfEb8941b01e0aed4aF624cD981DE.png"
-    }
-     ,
+    },
     {
       "name": "Prosperity Truth Coalition",
       "symbol": "PTC",
@@ -1072,8 +1068,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x7D1481568c72891bb87A964c3a6E6213Bd73d114.png"
-    }
-     ,
+    },
     {
       "name": "WATCH DOGS",
       "symbol": "WDT",
@@ -1081,8 +1076,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x1D2da66c065683c05B678AEEa70Cb635dEcA491f.png"
-    }
-     ,
+    },
     {
       "name": "RAKY",
       "symbol": "RAKY",
@@ -1090,8 +1084,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x5f7cc946aBF0c853a2367ac436755dE6AA8D48Bd.png"
-    }
-     ,
+    },
     {
       "name": "BodeCoin",
       "symbol": "BODE",
@@ -1123,8 +1116,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x2A23ba69221c5e16c343009ECE4138f2EC5c5A27.png"
-    }
-     ,
+    },
     {
       "name": "Alterand",
       "symbol": "ALTER",
@@ -1132,8 +1124,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x8b1FbfD453Ede87914CAE9999486406669980281.png"
-    }
-     ,
+    },
     {
       "name": "RAIDERS",
       "symbol": "RDRS",
@@ -1141,8 +1132,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xd78FEeae52B50F7927FC76e2eeA7FB10856B8d14.png"
-    }
-      ,
+    },
     {
       "name": "TRUST AI",
       "symbol": "TRT",
@@ -1150,8 +1140,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x50C7584be73D20760f1947fFcbF7942822C968C8.png"
-    }
-     ,
+    },
     {
       "name": "ApeMax",
       "symbol": "APEX",
@@ -1159,8 +1148,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xb8021F48CaE5200Ee29b687c9b44129e50Ab4E18.png"
-    }
-     ,
+    },
     {
       "name": "PEPE Crazy Burn",
       "symbol": "PEPECB",
@@ -1168,8 +1156,7 @@
       "chainId": 56,
       "decimals": 12,
       "logoURI": "https://melega.finance/images/tokens/0x7566730e023C5A735680DB3f782B9C596Ee6Bd64.png"
-    }
-     ,
+    },
     {
       "name": "CHOCOBO",
       "symbol": "CHOCO",
@@ -1185,8 +1172,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xE0Ac1449Fda4Ea53e1A42caF5951112ccb38cEC1.png"
-    }
-     ,
+    },
     {
       "name": "Cat",
       "symbol": "CAT",
@@ -1194,8 +1180,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x0173295183685F27C84db046B5F0bea3e683c24b.png"
-    }
-     ,
+    },
     {
       "name": "ITs CORN",
       "symbol": "ICN",
@@ -1235,8 +1220,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x4b8B1Af70CFc9F5efb13938326Ad4371b51E7c00.png"
-    }
-     ,
+    },
     {
       "name": "The Clan",
       "symbol": "CLAN",
@@ -1260,8 +1244,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x61d9f522B332d1F2ab25d5803371E5EaC6cf8808.png"
-    }
-     ,
+    },
     {
       "name": "Mix",
       "symbol": "MX",
@@ -1293,8 +1276,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x0A7b96846aFB37029543d52122a2D2C011A0627c.png"
-    }
-     ,
+    },
     {
       "name": "DogeReaperAI",
       "symbol": "DRAI",
@@ -1310,8 +1292,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x532A252F457BB04127e01cEBe9bF394b93283999.png"
-    }
-     ,
+    },
     {
       "name": "PSPAY",
       "symbol": "PSPAY",
@@ -1319,8 +1300,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x275fE1709Dc07112BcAF56A3465ECE683c5Fb04c.png"
-    }
-     ,
+    },
     {
       "name": "Clowncoin",
       "symbol": "CLOWNS",
@@ -1328,8 +1308,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0x17F6EFdde59C5e92C106b589fFE5f0480A3B602B.png"
-    }
-     ,
+    },
     {
       "name": "Hacienda",
       "symbol": "HADA",
@@ -1337,8 +1316,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x7BDaf7a6E6eAa846b69Da14ED2C7CA7457069df3.png"
-    }
-     ,
+    },
     {
       "name": "CAVEA",
       "symbol": "CAVEA",
@@ -1346,8 +1324,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x52f8a735F74857e40562b57cc8Bd2947EA905805.png"
-    }
-     ,
+    },
     {
       "name": "Crafted BNB",
       "symbol": "CBNB",
@@ -1355,8 +1332,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x92fE93300624f16EdCC6bC4205E9DC836660Ba3f.png"
-    }
-      ,
+    },
     {
       "name": "TechGecko",
       "symbol": "GECK",
@@ -1388,8 +1364,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xb28E1b90b983f86BB2Ca94389449173ff8655bB7.png"
-    }
-     ,
+    },
     {
       "name": "Barbie Cat",
       "symbol": "BGCAT",
@@ -1397,8 +1372,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xc24B983a769Aed490D78708001790f7AC6D62b1F.png"
-    }
-     ,
+    },
     {
       "name": "VOC Colonizer Token",
       "symbol": "VOC",
@@ -1406,8 +1380,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xf86b9dd76Cc6ab6Becfef564346245836bEdF978.png"
-    }
-     ,
+    },
     {
       "name": "XRP GROW",
       "symbol": "XRPGROW",
@@ -1415,8 +1388,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xe8648F4beDaB4064826fE36A67288BbEB69E9b52.png"
-    }
-     ,
+    },
     {
       "name": "Rick Inu",
       "symbol": "rickinu",
@@ -1424,8 +1396,7 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://melega.finance/images/tokens/0xAa7947d248bcE1F8D7a99f2081f1AaeAd2143d49.png"
-    }
-     ,
+    },
     {
       "name": "FUGGING CRABBY",
       "symbol": "FUGC",
@@ -1433,8 +1404,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x02B90b0f324972B3E9F1F58E71A701DE258f6592.png"
-    }
-     ,
+    },
     {
       "name": "Captain Pepe",
       "symbol": "CPEPE",
@@ -1466,8 +1436,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xeDE11c43598c814D39548423eb2d2a66a4Db3Cc2.png"
-    }
-     ,
+    },
     {
       "name": "Baby ULTRON",
       "symbol": "BULX",
@@ -1475,8 +1444,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xA4BbE200dbE4248aEfaf18E6ECFE17973d9c7688.png"
-    }
-     ,
+    },
     {
       "name": "BUSD Token",
       "symbol": "BUSD",
@@ -1500,8 +1468,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x508EbA399d39B84e46c2E78cB0580c06A1930E1B.png"
-    }
-     ,
+    },
     {
       "name": "Ethereum Token",
       "symbol": "ETH",
@@ -1525,8 +1492,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x01C0bD183e7027b421BFF30946f54Bf297713027.png"
-    }
-     ,
+    },
     {
       "name": "PEPEBURN",
       "symbol": "PEPEBURN",
@@ -1534,8 +1500,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0x6747B9b9fBe031F72826D459c7ECe705b62E1D80.png"
-    }
-     ,
+    },
     {
       "name": "Chonker Inu",
       "symbol": "$CHONKY",
@@ -1543,8 +1508,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xd00138ccf5F0b55351646D5C5FE2D95Ea32A63b9.png"
-    }
-     ,
+    },
     {
       "name": "Burn King Protocol",
       "symbol": "BKP",
@@ -1664,8 +1628,7 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://melega.finance/images/tokens/0xabCAd2648fD27538e44BBd91109835aadaF981Bc.png"
-    }
-     ,
+    },
     {
       "name": "Meal Buddy Finance",
       "symbol": "MLB",
@@ -1793,8 +1756,8 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/melegaswap/blob/master/public/images/tokens/0x8FFfED722C699848d0c0dA9ECfEde20e8ACEf7cE.png"
-     },
-     {
+    },
+    {
       "name": "Wrapped Ether",
       "symbol": "WETH",
       "address": "0x4200000000000000000000000000000000000006",
@@ -1977,8 +1940,8 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://www.melega.finance/images/melega.png"
-     },
-     {
+    },
+    {
       "name": "Inter Finance Network",
       "symbol": "IFNET",
       "address": "0x3fC84ecF9192bF6f2d12f204C50276aF0984267D",
@@ -1986,7 +1949,7 @@
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x3fC84ecF9192bF6f2d12f204C50276aF0984267D.png"
     },
-     {
+    {
       "name": "Trump live",
       "symbol": "$TRUMP",
       "address": "0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359",
@@ -1994,45 +1957,45 @@
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x53B8c83c4b788e571C5D3cB22Ec807471Dab4359.png"
     },
-     {
+    {
       "name": "Godyence",
       "symbol": "GODEN",
       "address": "0xb9fcc18e1a65608Fd4337bf183f9d031c4d8C10B",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb9fcc18e1a65608Fd4337bf183f9d031c4d8C10B.png"
-   },
-     {
+    },
+    {
       "name": "XOXO",
       "symbol": "XOXO",
       "address": "0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB",
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x0d15DCEe3923AaaB74aAF7E1f70Fd964FC2a0deB.png"
-   },
-     {
+    },
+    {
       "name": "BabyMarco",
       "symbol": "BabyMarco",
       "address": "0x055135F0470C4C8d7C88a576f892ac60c3f70316",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x055135F0470C4C8d7C88a576f892ac60c3f70316.png"
-   },
-     {
+    },
+    {
       "name": "Crafted SOL",
       "symbol": "CSOL",
       "address": "0x65E67F36CE25aE8B415eaE002Ad9b64dE9C11d18",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x65E67F36CE25aE8B415eaE002Ad9b64dE9C11d18.png"
-   },
-     {
+    },
+    {
       "name": "AIVOICE",
       "symbol": "AIV",
       "address": "0xD257914bd3312f46e38eA896F5d91D33552569Bf",
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xD257914bd3312f46e38eA896F5d91D33552569Bf.png"
-     }
+    }
   ]
 }

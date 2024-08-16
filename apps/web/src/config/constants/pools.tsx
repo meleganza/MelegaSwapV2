@@ -1788,7 +1788,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '1',
     isFinished: false,
-    },
+  },
   {
     sousId: 211,
     stakingToken: bscTokens.cake,
@@ -1801,7 +1801,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '10000',
     isFinished: false,
-   },
+  },
   {
     sousId: 212,
     stakingToken: bscTokens.cake,
@@ -1814,7 +1814,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '19791',
     isFinished: false,
-    },
+  },
   {
     sousId: 213,
     stakingToken: bscTokens.cake,
@@ -1827,7 +1827,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '10',
     isFinished: false,
-    },
+  },
   {
     sousId: 214,
     stakingToken: bscTokens.cake,
@@ -1840,6 +1840,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '61',
     isFinished: false,
+  },
   {
     sousId: 215,
     stakingToken: bscTokens.cake,
@@ -1852,6 +1853,7 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     harvest: true,
     tokenPerBlock: '1',
     isFinished: false,
+  },
   {
     sousId: 216,
     stakingToken: bscTokens.cake,
