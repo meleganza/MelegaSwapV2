@@ -2447,14 +2447,14 @@ const farms: SerializedFarmConfig[] = [
     pid: 311,
     lpSymbol: 'BNB-AIV LP',
     lpAddress: '0x5108C05F51fB03fc89F4818DE68497D885fD25f7',
-    token: bscTokens.aiv,
+    token: bscTokens.aivold,
     quoteToken: bscTokens.wbnb,
   },
   {
     pid: 312,
     lpSymbol: 'MARCO-AIV LP',
     lpAddress: '0x5c12591c540036f5bdb638d66FFDE9b18841a144',
-    token: bscTokens.aiv,
+    token: bscTokens.aivold,
     quoteToken: bscTokens.cake,
   },
   {
@@ -2489,14 +2489,14 @@ const farms: SerializedFarmConfig[] = [
     pid: 317,
     lpSymbol: 'CSOL-AIV LP',
     lpAddress: '0x3Bbc17d1e40F5C622D0b9AA205CE7C1E48c2A87a',
-    token: bscTokens.aiv,
+    token: bscTokens.aivold,
     quoteToken: bscTokens.csol,
   },
   {
     pid: 318,
     lpSymbol: 'CBNB-AIV LP',
     lpAddress: '0x59Fa95f4266A83C31B94Cf6ae2d2A86BAD37D13c',
-    token: bscTokens.aiv,
+    token: bscTokens.aivold,
     quoteToken: bscTokens.cbnb,
    },
   {
