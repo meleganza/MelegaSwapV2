@@ -3926,4 +3926,12 @@ export const bscTokens = {
     'Crafted SOL',
     'http://csol.site',
   ),
+  aivnew: new ERC20Token(
+    ChainId.BSC,
+    '0xD257914bd3312f46e38eA896F5d91D33552569Bf',
+    18,
+    'AIV',
+    'AIVOICE',
+    'https://ai-v.ai/',
+  ),
 }
