@@ -2025,6 +2025,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x65E67F36CE25aE8B415eaE002Ad9b64dE9C11d18.png"
+   },
+     {
+      "name": "AIVOICE",
+      "symbol": "AIV",
+      "address": "0xD257914bd3312f46e38eA896F5d91D33552569Bf",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xD257914bd3312f46e38eA896F5d91D33552569Bf.png"
      }
   ]
 }
