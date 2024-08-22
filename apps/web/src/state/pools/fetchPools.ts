@@ -77,6 +77,7 @@ export const fetchPoolsBlockLimits = async (chainId) => {
           : startEndBlockCallsOnBsc,
     chainId,
   )
+  
   const startEndBlockResult = startEndBlockRaw.reduce((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / 2)
 
@@ -94,7 +95,7 @@ export const fetchPoolsBlockLimits = async (chainId) => {
       : chainId === 137 ? livePoolsWithEndPolygon
         : chainId === 8453 ? livePoolsWithEndBase
           : livePoolsWithEndBsc
-
+  
   return livePools.map((cakePoolConfig, index) => {
     const [[startBlock], [endBlock]] = startEndBlockResult[index]
     return {

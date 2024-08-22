@@ -35,9 +35,7 @@ export const useActiveHandle = () => {
     /**
      *  backward
      */
-    console.log('~ before getAccount')
     const address = await getAccount()
-    console.log('~ after getAccount', address)
     return new Promise((resolve) => {
       handleActive().then(resolve)
     })

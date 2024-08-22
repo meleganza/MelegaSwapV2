@@ -3,7 +3,7 @@ import { Pool } from '@pancakeswap/uikit'
 import { SerializedWrappedToken } from '@pancakeswap/token-lists'
 import Trans from 'components/Trans'
 import { VaultKey } from 'state/types'
-import { bscTokens, baseTokens, polygonTokens } from '@pancakeswap/tokens'
+import { bscTokens, baseTokens, polygonTokens, ethereumTokens } from '@pancakeswap/tokens'
 import { PoolCategory } from './types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
@@ -59,10 +59,10 @@ export const vaultPoolConfig = {
 export const livePools1: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
   {
     sousId: 0,
-    stakingToken: polygonTokens.cake,
-    earningToken: polygonTokens.cake,
+    stakingToken: ethereumTokens.cake,
+    earningToken: ethereumTokens.cake,
     contractAddress: {
-      1: '0x130d2BD998767B6091352dd71fEABa4460846D94',
+      1: '0x585364c747CaF6cF6441656F803796230fb1d61c',
       56: '',
     },
     poolCategory: PoolCategory.CORE,
@@ -70,19 +70,19 @@ export const livePools1: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     tokenPerBlock: '0.000958000',
     isFinished: false,
   },
-  {
-    sousId: 1,
-    stakingToken: polygonTokens.cake,
-    earningToken: polygonTokens.xoxo,
-    contractAddress: {
-      1: '0x59dE1391400baAC1c1A918C971DD49919b48FB7c',
-      56: '',
-    },
-    poolCategory: PoolCategory.CORE,
-    harvest: true,
-    tokenPerBlock: '0.009',
-    isFinished: false,
-  },
+  // {
+  //   sousId: 1,
+  //   stakingToken: ethereumTokens.cake,
+  //   earningToken: ethereumTokens.weth,
+  //   contractAddress: {
+  //     1: '0x59dE1391400baAC1c1A918C971DD49919b48FB7c',
+  //     56: '',
+  //   },
+  //   poolCategory: PoolCategory.CORE,
+  //   harvest: true,
+  //   tokenPerBlock: '0.009',
+  //   isFinished: false,
+  // },
 ].map((p) => ({
   ...p,
   stakingToken: p.stakingToken.serialize,

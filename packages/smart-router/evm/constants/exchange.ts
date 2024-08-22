@@ -4,7 +4,7 @@ import { bscTokens, BUSD, USDC, USDT } from '@pancakeswap/tokens'
 import { ChainMap, ChainTokenList } from '../types'
 
 export const ROUTER_ADDRESS: ChainMap<string> = {
-  [ChainId.ETHEREUM]: '0x3BC722f252C7bAE2f55647e49aDcB9d33Ff6eBcC',
+  [ChainId.ETHEREUM]: '0xFF8EBf8edf1C533A02d066f852788773BdCD631C',
   [ChainId.ARBITRUM]: '0x3BC722f252C7bAE2f55647e49aDcB9d33Ff6eBcC',
   [ChainId.POLYGON]: '0x3BC722f252C7bAE2f55647e49aDcB9d33Ff6eBcC',
   [ChainId.BSC]: '0x10ED43C718714eb63d5aA57B78B54704E256024E',

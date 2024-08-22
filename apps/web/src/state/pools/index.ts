@@ -144,6 +144,7 @@ export const fetchPoolsPublicDataAsync =
           : chainId === 137 ? livePools137
             : chainId === 8453 ? livePools8453
               : poolsConfig
+      
       const [blockLimits, totalStakings, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
@@ -154,7 +155,7 @@ export const fetchPoolsPublicDataAsync =
               : chainId === 137 ? polygonRpcProvider.getBlockNumber()
                 : baseRpcProvider.getBlockNumber(),
       ])
-
+      
       const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')
       const totalStakingsSousIdMap = keyBy(totalStakings, 'sousId')
 
@@ -185,7 +186,7 @@ export const fetchPoolsPublicDataAsync =
           : chainId == 56 ? farmsData.find((farm) => farm.token.symbol === 'BUSD' && farm.quoteToken.symbol === 'WBNB')
             : chainId == 137 ? farmsData.find((farm) => farm.token.symbol === 'USDT' && farm.quoteToken.symbol === 'WMATIC')
               : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
-
+      
       const farmsWithPricesOfDifferentTokenPools = bnbBusdFarm
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
         : []
@@ -273,7 +274,6 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserStakeBalances(account, chainId),
       fetchUserPendingRewards(account, chainId),
     ])
-
     const pools =
       chainId === 1 ? livePools1
         : chainId === 137 ? livePools137

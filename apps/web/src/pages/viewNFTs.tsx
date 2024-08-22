@@ -69,7 +69,7 @@ const ViewNFTs: React.FC = () => {
         else {
           for (let i = 0; i < len; i++) {
             const uri = await contract.tokenURI(nftsids[i])
-            console.log(nftsids[i])
+            
             try {
               const resp = await axios.get(uri, {
                 headers: {

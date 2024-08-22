@@ -12,16 +12,16 @@ const farms: SerializedFarmConfig[] = [
   },
   {
     pid: 1,
-    lpSymbol: 'MARCO-MATIC LP',
-    lpAddress: '0xD072576d3FD16f7112d11E4c7DA394939eC8c970',
+    lpSymbol: 'MARCO-WETH LP',
+    lpAddress: '0x7f0183D7C1B0365A3580ecBdB2f0D8DB2D693c5E',
     token: ethereumTokens.cake,
     quoteToken: ethereumTokens.weth,
   },
   {
     pid: 2,
-    lpSymbol: 'USDT-MATIC LP',
-    lpAddress: '0x762a784E1906E5d630d8C46883eA03c0cbF486A8',
-    token: ethereumTokens.usdt,
+    lpSymbol: 'USDC-WETH LP',
+    lpAddress: '0x15F6b6B609Cc2e3d8E4a355c76C99B3956954664',
+    token: ethereumTokens.usdc,
     quoteToken: ethereumTokens.weth,
    },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))

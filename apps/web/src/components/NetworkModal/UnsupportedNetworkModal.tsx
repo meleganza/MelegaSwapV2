@@ -36,7 +36,6 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
     () => chains.filter((chain) => !chain.testnet && pageSupportedChains?.includes(chain.id)),
     [pageSupportedChains],
   )
-  console.log("supportedMainnetChains", supportedMainnetChains)
 
   return (
     <Modal title={t('Check your network')} hideCloseButton>
@@ -48,7 +47,6 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
         <Flex justifyContent="center">
           {supportedMainnetChains?.map((chain) => {
             const chainId_ = [1, 8453, 42161, 324, 10].includes(chain.id) ? `${chain.id}-1` : chain.id
-            console.log('chainId', chainId_)
             return <Box p="5px" key={chain.name}>
               <Image
                 layout="fixed"

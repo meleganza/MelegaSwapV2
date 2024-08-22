@@ -74,7 +74,7 @@ export const fetchPoolsAllowance = async (account, chainId) => {
     params: [account, getAddress(pool.contractAddress, chainId)],
   }))
   const allowances = await multicall(erc20ABI, calls, chainId)
-
+  
   return fromPairs(nonNativePools.map((pool, index) => [pool.sousId, new BigNumber(allowances[index]).toJSON()]))
 }
 
