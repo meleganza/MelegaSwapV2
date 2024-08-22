@@ -19,12 +19,12 @@ enum FetchStatus {
 
 const useGetTopFarmsByApr = (isIntersecting: boolean) => {
   const dispatch = useAppDispatch()
-  const {chainId} = useActiveChainId()
+  const { chainId } = useActiveChainId()
   const { data: farms, regularCakePerBlock } = useFarms()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [topFarms, setTopFarms] = useState<FarmWithStakedValue[]>([null, null, null, null, null])
   const cakePriceBusd = usePriceCakeBusd()
-  
+
   useEffect(() => {
     const fetchFarmData = async () => {
       setFetchStatus(FetchStatus.FETCHING)
@@ -35,7 +35,11 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
         await dispatch(
           fetchFarmsPublicDataAsync({
             pids: activeFarms.map((farm) => farm.pid),
-            chainId: chainId === 137 ? ChainId.POLYGON : chainId === 56 ? ChainId.BSC : ChainId.BASE,
+            chainId:
+              chainId === 1 ? ChainId.ETHEREUM
+                : chainId === 56 ? ChainId.BSC
+                  : chainId === 137 ? ChainId.POLYGON
+                    : ChainId.BASE,
             flag: 'pkg',
           }),
         )
@@ -56,7 +60,12 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
       const farmsWithPrices = farmsState.filter((farm) => farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) // FIME: Property 'busdPrice' does not exist on type 'Token'
       const farmsWithApr: FarmWithStakedValue[] = farmsWithPrices.map((farm) => {
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd) // FIXME: Property 'busdPrice' does not exist on type 'Token'
-        const ChainID = chainId === 137 ? ChainId.POLYGON : chainId === 56 ? ChainId.BSC : ChainId.BASE
+        const ChainID =
+          chainId === 1 ? ChainId.ETHEREUM
+            : chainId === 56 ? ChainId.BSC
+              : chainId === 137 ? ChainId.POLYGON
+                : ChainId.BASE
+                
         const { cakeRewardsApr, lpRewardsApr } = getFarmApr(
           ChainID,
           new BigNumber(farm.poolWeight),
@@ -71,7 +80,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
       const sortedByApr = orderBy(farmsWithApr, (farm) => farm.apr + farm.lpRewardsApr, 'desc')
       setTopFarms(sortedByApr.slice(0, 5))
     }
-    
+
     if (fetchStatus === FetchStatus.SUCCESS && !topFarms[0]) {
       getTopFarmsByApr(farms) // FIXME: Argument of type 'DeserializedFarm[]' is not assignable to parameter of type 'Farm[]'
     }

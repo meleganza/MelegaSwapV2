@@ -8,7 +8,7 @@ import { featureFarmApiAtom, useFeatureFlag } from 'hooks/useFeatureFlag'
 import { FAST_INTERVAL } from 'config/constants'
 import useSWRImmutable from 'swr/immutable'
 import { getFarmConfig } from '@pancakeswap/farms/constants'
-import { livePools, livePools8453, livePools137 } from 'config/constants/pools'
+import { livePools1, livePools56, livePools8453, livePools137 } from 'config/constants/pools'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 
@@ -41,7 +41,7 @@ import {
 import BigNumber from 'bignumber.js'
 import { usePollFarmsWithUserData } from 'state/farms/hooks'
 
-// const lPoolAddresses = livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+// const lPoolAddresses = livePools56.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 
 // Only fetch farms for live pools
 const getActiveFarms = async (chainId: number, lPoolAddresses: string[]) => {
@@ -87,11 +87,10 @@ export const useFetchPublicPoolsData = (chainId: number) => {
   // const { chainId } = useActiveChainId()
   const farmFlag = useFeatureFlag(featureFarmApiAtom)
   const lPoolAddresses =
-    chainId == 56
-      ? livePools.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-      : chainId == 137
-      ? livePools137.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
-      : livePools8453.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+    chainId == 1 ? livePools1.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+    : chainId == 56 ? livePools56.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+      : chainId == 137 ? livePools137.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
+          : livePools8453.filter(({ sousId }) => sousId !== 0).map(({ earningToken }) => earningToken.address)
 
   useSlowRefreshEffect(
     (currentBlock) => {

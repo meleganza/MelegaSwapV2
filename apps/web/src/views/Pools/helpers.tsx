@@ -7,7 +7,7 @@ import memoize from 'lodash/memoize'
 import { Token } from '@pancakeswap/sdk'
 import { Pool } from '@pancakeswap/uikit'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { baseTokens, bscTokens, polygonTokens } from '@pancakeswap/tokens'
+import { baseTokens, bscTokens, ethereumTokens, polygonTokens } from '@pancakeswap/tokens'
 
 // min deposit and withdraw amount
 export const MIN_LOCK_AMOUNT = new BigNumber(10000000000000)
@@ -98,7 +98,9 @@ export const getICakeWeekDisplay = (ceiling: BigNumber) => {
 
 export const getEarningToken = (chainId: number) => {
   let earningToken;
-  if (chainId == 137) {
+  if (chainId == 1) {
+    earningToken = ethereumTokens.cake;
+  } else if (chainId == 137) {
     earningToken = polygonTokens.cake;
   } else if (chainId == 8453) {
     earningToken = baseTokens.cake;

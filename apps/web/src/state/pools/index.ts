@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, { livePools, livePools8453, livePools137 } from 'config/constants/pools'
+import poolsConfig, { livePools1, livePools56, livePools8453, livePools137 } from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -20,7 +20,7 @@ import { multicallv2 } from 'utils/multicall'
 import { bscTokens } from '@pancakeswap/tokens'
 import { isAddress } from 'utils'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import { bscRpcProvider, baseRpcProvider, polygonRpcProvider } from 'utils/providers'
+import { bscRpcProvider, baseRpcProvider, polygonRpcProvider, ethRpcProvider } from 'utils/providers'
 import { getPoolsPriceHelperLpFiles } from 'config/constants/priceHelperLps/index'
 import fetchFarms from '../farms/fetchFarms'
 import getFarmsPrices from '../farms/getFarmsPrices'
@@ -87,7 +87,11 @@ const initialState: PoolsState = {
 export const fetchCakePoolPublicDataAsync = (chainId?: number) => async (dispatch, getState) => {
   const farmsData = getState().farms.data
   const prices = getTokenPricesFromFarm(farmsData)
-  const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
+  const pools =
+    chainId === 1 ? livePools1
+      : chainId === 137 ? livePools137
+        : chainId === 8453 ? livePools8453
+          : poolsConfig
   const cakePool = pools.filter((p) => p.sousId === 0)[0]
 
   const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
@@ -135,12 +139,20 @@ export const fetchCakePoolUserDataAsync = (account: string, chainId: number) => 
 export const fetchPoolsPublicDataAsync =
   (currentBlockNumber: number, chainId: number) => async (dispatch, getState) => {
     try {
-      const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
+      const pools =
+        chainId === 1 ? livePools1
+          : chainId === 137 ? livePools137
+            : chainId === 8453 ? livePools8453
+              : poolsConfig
       const [blockLimits, totalStakings, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
         // fetchPoolsProfileRequirement(),
-        currentBlockNumber ? Promise.resolve(currentBlockNumber) : chainId === 56 ? bscRpcProvider.getBlockNumber() : chainId === 137 ? polygonRpcProvider.getBlockNumber() : baseRpcProvider.getBlockNumber(),
+        currentBlockNumber ? Promise.resolve(currentBlockNumber)
+          : chainId === 1 ? ethRpcProvider.getBlockNumber()
+            : chainId === 56 ? bscRpcProvider.getBlockNumber()
+              : chainId === 137 ? polygonRpcProvider.getBlockNumber()
+                : baseRpcProvider.getBlockNumber(),
       ])
 
       const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')
@@ -169,17 +181,17 @@ export const fetchPoolsPublicDataAsync =
       const farmsData = getState().farms.data
 
       const bnbBusdFarm =
-        chainId == 56
-          ? farmsData.find((farm) => farm.token.symbol === 'BUSD' && farm.quoteToken.symbol === 'WBNB')
-          : chainId == 137 ? farmsData.find((farm) => farm.token.symbol === 'USDT' && farm.quoteToken.symbol === 'WMATIC')
-            : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
+        chainId == 1 ? farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
+          : chainId == 56 ? farmsData.find((farm) => farm.token.symbol === 'BUSD' && farm.quoteToken.symbol === 'WBNB')
+            : chainId == 137 ? farmsData.find((farm) => farm.token.symbol === 'USDT' && farm.quoteToken.symbol === 'WMATIC')
+              : farmsData.find((farm) => farm.token.symbol === 'USDC' && farm.quoteToken.symbol === 'WETH')
 
       const farmsWithPricesOfDifferentTokenPools = bnbBusdFarm
         ? getFarmsPrices([bnbBusdFarm, ...poolsWithDifferentFarmToken], chainId)
         : []
 
       const prices = getTokenPricesFromFarm([...farmsData, ...farmsWithPricesOfDifferentTokenPools])
-      
+
       const liveData = pools.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
         const totalStaking = totalStakingsSousIdMap[pool.sousId]
@@ -191,7 +203,7 @@ export const fetchPoolsPublicDataAsync =
         const stakingTokenPrice = stakingTokenAddress ? prices[stakingTokenAddress] : 0
         const earningTokenAddress = isAddress(pool.earningToken.address)
         const earningTokenPrice = earningTokenAddress ? prices[earningTokenAddress] : 0
-        
+
         const apr = !isPoolFinished
           ? getPoolApr(
             stakingTokenPrice,
@@ -262,7 +274,12 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
       fetchUserPendingRewards(account, chainId),
     ])
 
-    const pools = chainId === 137 ? livePools137 : chainId === 8453 ? livePools8453 : poolsConfig
+    const pools =
+      chainId === 1 ? livePools1
+        : chainId === 137 ? livePools137
+          : chainId === 8453 ? livePools8453
+            : poolsConfig
+            
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,
       allowance: allowances[pool.sousId],

@@ -34,7 +34,7 @@ const arbitrum1 : Chain = {
   }
 }
 
-const ethereum : Chain = {
+export const ethereum : Chain = {
   id: 1,
   name: 'Ethereum Chain',
   network: 'ethereum',

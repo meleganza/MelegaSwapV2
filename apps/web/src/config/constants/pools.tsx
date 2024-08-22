@@ -56,7 +56,40 @@ export const vaultPoolConfig = {
   },
 } as const
 
-export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
+export const livePools1: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
+  {
+    sousId: 0,
+    stakingToken: polygonTokens.cake,
+    earningToken: polygonTokens.cake,
+    contractAddress: {
+      1: '0x130d2BD998767B6091352dd71fEABa4460846D94',
+      56: '',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.000958000',
+    isFinished: false,
+  },
+  {
+    sousId: 1,
+    stakingToken: polygonTokens.cake,
+    earningToken: polygonTokens.xoxo,
+    contractAddress: {
+      1: '0x59dE1391400baAC1c1A918C971DD49919b48FB7c',
+      56: '',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '0.009',
+    isFinished: false,
+  },
+].map((p) => ({
+  ...p,
+  stakingToken: p.stakingToken.serialize,
+  earningToken: p.earningToken.serialize,
+}))
+
+export const livePools56: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
   {
     sousId: 0,
     stakingToken: bscTokens.cake,
@@ -1873,6 +1906,8 @@ export const livePools: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
   earningToken: p.earningToken.serialize,
 }))
 
+
+
 export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
   {
     sousId: 0,
@@ -3106,4 +3141,4 @@ const finishedPools = [
   earningToken: p.earningToken.serialize,
 }))
 
-export default [...livePools, ...finishedPools] as Pool.SerializedPoolConfig<SerializedWrappedToken>[]
+export default [...livePools56, ...finishedPools] as Pool.SerializedPoolConfig<SerializedWrappedToken>[]
