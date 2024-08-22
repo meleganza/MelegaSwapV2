@@ -7,4 +7,20 @@ export const ethereumTokens = {
   usdc: USDC[ChainId.ETHEREUM],
   wbtc: WBTC_ETH,
   dai: DAI_ETH,
+  cake: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76',
+    18,
+    'MARCO',
+    'MELEGA',
+    'https://melega.finance/',
+  ),
+  syrup: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0x816ddF4e751dfE6A5e65837F721C5fD971108eDE',
+    18,
+    'MRT',
+    'MARCO Reward Token',
+    'https://melega.finance/',
+  ),
 }

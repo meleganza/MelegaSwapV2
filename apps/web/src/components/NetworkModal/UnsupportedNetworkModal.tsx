@@ -47,7 +47,8 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
         </Text>
         <Flex justifyContent="center">
           {supportedMainnetChains?.map((chain) => {
-            const chainId_ = [8453, 42161, 324, 10].includes(chain.id) ? `${chain.id}-1` : chain.id
+            const chainId_ = [1, 8453, 42161, 324, 10].includes(chain.id) ? `${chain.id}-1` : chain.id
+            console.log('chainId', chainId_)
             return <Box p="5px" key={chain.name}>
               <Image
                 layout="fixed"

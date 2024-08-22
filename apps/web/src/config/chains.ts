@@ -17,7 +17,7 @@ export const CHAIN_QUERY_NAME = {
   [ChainId.PULSE]: 'pulse',
 } satisfies Record<ChainId, string>
 
-export const SUPPORTED_CHAINS = [ChainId.BSC, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.OPTIMISM, ChainId.AVAX, ChainId.FANTOM, ChainId.BASE, ChainId.CRONOS, ChainId.ZKSYNC, ChainId.PULSE]
+export const SUPPORTED_CHAINS = [ChainId.ETHEREUM, ChainId.BSC, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.OPTIMISM, ChainId.AVAX, ChainId.FANTOM, ChainId.BASE, ChainId.CRONOS, ChainId.ZKSYNC, ChainId.PULSE]
 
 const CHAIN_QUERY_NAME_TO_ID = invert(CHAIN_QUERY_NAME)
 

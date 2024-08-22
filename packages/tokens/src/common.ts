@@ -1,12 +1,20 @@
 import { ChainId, ERC20Token } from '@pancakeswap/sdk'
 
+export const CAKE_ETH = new ERC20Token(
+  ChainId.ETHEREUM,
+  '0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76',
+  18,
+  'MARCO',
+  'Meleta Token',
+  'https://melega.finance/',
+)
 export const CAKE_BSC = new ERC20Token(
   ChainId.BSC,
   '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
   18,
   'MARCO',
   'Meleta Token',
-  'https://meleta.com/',
+  'https://melega.finance/',
 )
 export const CAKE_BASE = new ERC20Token(
   ChainId.BASE,
@@ -246,7 +254,7 @@ export const CAKE = {
   [ChainId.POLYGON]: CAKE_POLYGON,
   [ChainId.BSC]: CAKE_BSC,
   [ChainId.BASE]: CAKE_BASE,
-  [ChainId.ETHEREUM]: USDC_ETH,
+  [ChainId.ETHEREUM]: CAKE_ETH,
   [ChainId.SHIMMER2]: CAKE_SMR,
 }
 

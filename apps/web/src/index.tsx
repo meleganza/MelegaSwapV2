@@ -7,6 +7,7 @@ import TransactionUpdater from './state/transactions/updater'
 import { chains } from './utils/wagmi'
 
 export function Updaters() {
+  console.log('chains', chains)
   return (
     <>
       <ListsUpdater />

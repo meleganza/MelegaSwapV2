@@ -34,6 +34,26 @@ const arbitrum1 : Chain = {
   }
 }
 
+const ethereum : Chain = {
+  id: 1,
+  name: 'Ethereum Chain',
+  network: 'ethereum',
+  nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://eth.llamarpc.com'] }
+  },
+  blockExplorers: {
+    etherscan: { name: 'EtherScan', url: 'https://etherscan.io' },
+    default: { name: 'EtherScan', url: 'https://etherscan.io/' }
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 15921452      
+    }
+  }
+}
+
 const bsc1 : Chain = {
   id: 56,
   name: 'BNB Smart Chain',
@@ -174,7 +194,7 @@ export const base : Chain = {
 };
 
 // const CHAINS = [bsc1, mainnet, polygon, base]
-const CHAINS = [bsc1, base, polygon1]
+const CHAINS = [bsc1, base, polygon1, ethereum]
 
 const getNodeRealUrl = (networkName: string) => {
   let host = null

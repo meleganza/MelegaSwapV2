@@ -1,5 +1,5 @@
 import { useTranslation } from '@pancakeswap/localization'
-import { Currency, CurrencyAmount, NativeCurrency, Trade, TradeType } from '@pancakeswap/sdk'
+import { ChainId, Currency, CurrencyAmount, NativeCurrency, Trade, TradeType } from '@pancakeswap/sdk'
 import { CAKE, USDC, USDT } from '@pancakeswap/tokens'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import IPancakePairABI from 'config/abi/IPancakePair.json'
@@ -325,6 +325,7 @@ export const useFetchPairPrices = ({
 }: useFetchPairPricesParams) => {
   const [pairId, setPairId] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { chainId } = useActiveChainId()
   const pairData = useSelector(pairByDataIdSelector({ pairId, timeWindow }))
   const derivedPairData = useSelector(derivedPairByDataIdSelector({ pairId, timeWindow }))
   const dispatch = useDispatch()
@@ -423,7 +424,7 @@ export const useFetchPairPrices = ({
   useEffect(() => {
     const updatePairId = () => {
       try {
-        const pairAddress = getLpAddress(token0Address, token1Address)?.toLowerCase()
+        const pairAddress = getLpAddress(token0Address, token1Address, chainId)?.toLowerCase()
         if (pairAddress !== pairId) {
           setPairId(pairAddress)
         }

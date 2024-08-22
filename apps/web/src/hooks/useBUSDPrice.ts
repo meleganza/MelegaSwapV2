@@ -117,7 +117,9 @@ export default function useBUSDPrice(currency?: Currency): Price<Currency, Curre
 
 export const usePriceByPairs = (currencyA?: Currency, currencyB?: Currency) => {
   const [tokenA, tokenB] = [currencyA?.wrapped, currencyB?.wrapped]
-  const pairAddress = getLpAddress(tokenA, tokenB)
+  const { chainId } = useActiveChainId()
+  const pairAddress = getLpAddress(tokenA, tokenB, chainId)
+
   const pairContract = usePairContract(pairAddress)
   const provider = useProvider({ chainId: currencyA?.chainId })
 
