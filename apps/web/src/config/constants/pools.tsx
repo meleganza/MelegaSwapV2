@@ -67,7 +67,7 @@ export const livePools1: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,
-    tokenPerBlock: '0.000958000',
+    tokenPerBlock: '0.00000000958000',
     isFinished: false,
   },
   // {
