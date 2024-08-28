@@ -70,6 +70,19 @@ export const livePools1: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = [
     tokenPerBlock: '0.00000000958000',
     isFinished: false,
   },
+   {
+    sousId: 1,
+    stakingToken: ethereumTokens.cake,
+    earningToken: ethereumTokens.loco,
+    contractAddress: {
+      1: '0x7bEF06FbF542B928bB3C70981d5667e81cB95c36',
+      56: '',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '1',
+    isFinished: false,
+  },
   // {
   //   sousId: 1,
   //   stakingToken: ethereumTokens.cake,
