@@ -23,4 +23,12 @@ export const ethereumTokens = {
     'MARCO Reward Token',
     'https://melega.finance/',
   ),
+  loco: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0x3F6bd76e4D5289D63F72ef46Dfb53048985f9bA8',
+    18,
+    'LOCO',
+    'LOCO',
+    'https://locotoken.fun/',
+  ),
 }
