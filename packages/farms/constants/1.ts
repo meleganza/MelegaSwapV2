@@ -23,6 +23,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x15F6b6B609Cc2e3d8E4a355c76C99B3956954664',
     token: ethereumTokens.usdc,
     quoteToken: ethereumTokens.weth,
+  },
+  {
+    pid: 3,
+    lpSymbol: 'LOCO-WETH LP',
+    lpAddress: '0x2ee39e16735B194006739C79785EF6F20ADBB007',
+    token: ethereumTokens.loco,
+    quoteToken: ethereumTokens.weth,
    },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
