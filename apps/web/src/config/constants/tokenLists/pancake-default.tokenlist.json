@@ -1996,6 +1996,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xD257914bd3312f46e38eA896F5d91D33552569Bf.png"
+    },
+    {
+      "name": "LOCO",
+      "symbol": "LOCO",
+      "address": "0x3F6bd76e4D5289D63F72ef46Dfb53048985f9bA8",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x3F6bd76e4D5289D63F72ef46Dfb53048985f9bA8.png"
     }
   ]
 }
