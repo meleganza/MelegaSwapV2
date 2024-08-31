@@ -3926,4 +3926,12 @@ export const bscTokens = {
     'AIVOICE',
     'https://ai-v.ai/',
   ),
+  tongue: new ERC20Token(
+    ChainId.BSC,
+    '0x900419079EE0Fe2Ae4a4990F80217fB146e9Adeb',
+    18,
+    'TONGUE',
+    'TONGUE',
+    'https://tongue.cloud',
+  ),
 }
