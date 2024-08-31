@@ -2004,6 +2004,14 @@
       "chainId": 1,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x3F6bd76e4D5289D63F72ef46Dfb53048985f9bA8.png"
+    },
+    {
+      "name": "TONGUE",
+      "symbol": "TONGUE",
+      "address": "0x900419079EE0Fe2Ae4a4990F80217fB146e9Adeb",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x900419079EE0Fe2Ae4a4990F80217fB146e9Adeb.png"
     }
   ]
 }
