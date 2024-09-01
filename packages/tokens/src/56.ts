@@ -1310,7 +1310,7 @@ export const bscTokens = {
   ),
   babymarco: new ERC20Token(
     ChainId.BSC,
-    '0x055135F0470C4C8d7C88a576f892ac60c3f70316',
+    '0x7d48423Feac5AA05380Db98a1f24cE17D641754D',
     18,
     'BABYMARCO',
     'https://www.melegaswap.finance/babymarco',
