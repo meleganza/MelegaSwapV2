@@ -3934,4 +3934,12 @@ export const bscTokens = {
     'TONGUE',
     'https://tongue.cloud',
   ),
+  wax: new ERC20Token(
+    ChainId.BSC,
+    '0xb9162e3113f02b881F55E1d74e2EdEFAc92b0314',
+    18,
+    'WAX',
+    'WAXCHAIN',
+    'https://waxchain.io',
+  ),
 }
