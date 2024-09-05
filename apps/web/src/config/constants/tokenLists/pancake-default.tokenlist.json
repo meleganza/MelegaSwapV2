@@ -2012,6 +2012,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x900419079EE0Fe2Ae4a4990F80217fB146e9Adeb.png"
+    },
+    {
+      "name": "WAXCHAIN",
+      "symbol": "WAX",
+      "address": "0xb9162e3113f02b881f55e1d74e2edefac92b0314",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb9162e3113f02b881f55e1d74e2edefac92b0314.png"
     }
   ]
 }
