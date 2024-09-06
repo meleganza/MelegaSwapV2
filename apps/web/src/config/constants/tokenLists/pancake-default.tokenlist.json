@@ -2020,6 +2020,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb9162e3113f02b881f55e1d74e2edefac92b0314.png"
+    },
+    {
+      "name": "Code Token",
+      "symbol": "CODE",
+      "address": "0x283344eEA472f0fE04d6f722595A2fFFEfE1901A",
+      "chainId": 1,
+      "decimals": 13,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x283344eEA472f0fE04d6f722595A2fFFEfE1901A.png"
     }
   ]
 }
