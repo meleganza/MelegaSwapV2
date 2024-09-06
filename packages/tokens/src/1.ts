@@ -31,4 +31,12 @@ export const ethereumTokens = {
     'LOCO',
     'https://locotoken.fun/',
   ),
+  code: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0x283344eEA472f0fE04d6f722595A2fFFEfE1901A',
+    13,
+    'CODE',
+    'Code Token',
+    'http://code0x.io/',
+  ),
 }
