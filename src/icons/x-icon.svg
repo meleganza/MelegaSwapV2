@@ -1,0 +1,13 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 965 964" width="965" height="964">
+	<title>x-icon-svg</title>
+	<style>
+		.s0 { fill: #f3cc2f } 
+		.s1 { fill: #0f2c22 } 
+	</style>
+	<g id="Layer">
+		<path id="Layer" class="s0" d="m482.8 963.2c-266.1 0-481.3-215.2-481.3-481.4 0-266.1 215.2-481.3 481.3-481.3 266.2 0 481.4 215.2 481.4 481.3 0 266.2-215.2 481.4-481.4 481.4z"/>
+		<g id="layer1">
+			<path id="Layer" fill-rule="evenodd" class="s1" d="m363.7 203l150.8 201.6 186.7-201.6h52.1l-215.5 232.8 243 324.9h-177.3l-163.8-219-202.7 219h-52.1l231.5-250.1-230.1-307.6zm259.1 519.3h81.4l-359.7-481h-81.5z"/>
+		</g>
+	</g>
+</svg>

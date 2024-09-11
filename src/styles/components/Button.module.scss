@@ -1,0 +1,48 @@
+.ButtonContainer {
+    text-align: center;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    .Button {
+        display: flex;
+        width: 100%;
+        margin: 0 0 0 0;
+        outline: none;
+        background: linear-gradient(#272727, #222222) padding-box, linear-gradient(to right, #5d5d5d, #272727) border-box;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        //background: radial-gradient(270.43% 776.49% at -237.67% 802.86%, #545454 78.03%, #272727 148.94%);
+        border-image-slice: 1;
+        padding: 0.5rem 0.7rem 0.5rem 0.7rem;
+        text-align: center;
+        align-items: center;
+        font-size: 17px;
+        font-weight: 700;
+        background-color: transparent;
+        color: #D9D9D9;
+        transition: 0.1s ease-in-out;
+        height: 60%;
+        backdrop-filter: blur(57px);
+        &:hover {
+            background-color: transparent;
+            transform: scale(1);
+            cursor: pointer;
+        }
+        &:active {
+            background-color: transparent;
+            // box-shadow: 0 0 0 1pt #26c5eb;
+            color: #26c5eb;
+            transform: scale(1);
+            //    border: 1px solid #d4af37;
+            cursor: pointer;
+        }
+        &:disabled {
+            background-color: #a6a6a6;
+            box-shadow: none;
+            cursor: no-drop;
+        }
+        .img {
+            width: 7%;
+        }
+    }
+}
