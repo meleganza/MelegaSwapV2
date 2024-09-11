@@ -1,0 +1,8 @@
+{
+  "plugins": [], // "transform-jsbi-to-bigint"
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ]
+}
