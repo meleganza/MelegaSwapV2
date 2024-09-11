@@ -2028,6 +2028,14 @@
       "chainId": 1,
       "decimals": 13,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x283344eEA472f0fE04d6f722595A2fFFEfE1901A.png"
+    },
+    {
+      "name": "Mojo",
+      "symbol": "MOJO",
+      "address": "0x6dba065721435cfCa05CAa508f3316B637861373",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x6dba065721435cfCa05CAa508f3316B637861373.png"
     }
   ]
 }
