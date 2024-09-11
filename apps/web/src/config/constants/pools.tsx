@@ -2173,7 +2173,7 @@ export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] 
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,
-    tokenPerBlock: '1',
+    tokenPerBlock: '874',
     isFinished: false,
   },
 ].map((p) => ({
