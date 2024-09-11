@@ -118,4 +118,12 @@ export const baseTokens = {
     'Mojo',
     'https://mojoonbase.netlify.app/',
   ),
+  hanc: new ERC20Token(
+    ChainId.BASE,
+    '0x6dba065721435cfca05caa508f3316b637861373',
+    16,
+    'HANC',
+    'Tha Hanuman Coin',
+    'https://thehanumancoin.com/',
+  ),
 }
