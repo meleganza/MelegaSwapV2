@@ -110,4 +110,12 @@ export const baseTokens = {
     'Chef Gizmo Token',
     'https://chefgizmotoken.org/',
   ),
+  mojo: new ERC20Token(
+    ChainId.BASE,
+    '0x6dba065721435cfca05caa508f3316b637861373',
+    18,
+    'MOJO',
+    'Mojo',
+    'https://mojoonbase.netlify.app/',
+  ),
 }
