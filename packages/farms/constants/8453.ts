@@ -149,6 +149,13 @@ const farms: SerializedFarmConfig[] = [
     token: baseTokens.mojo,
     quoteToken: baseTokens.weth,
   },
+  {
+    pid: 21,
+    lpSymbol: 'HANC-WETH LP',
+    lpAddress: '0x1F46b1D1749Eb5b73F7490C3cb7766e056b05669',
+    token: baseTokens.hanc,
+    quoteToken: baseTokens.weth,
+  },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
 export default farms
