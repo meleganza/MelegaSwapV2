@@ -2036,6 +2036,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x6dba065721435cfCa05CAa508f3316B637861373.png"
+    },
+    {
+      "name": "The Hanuman Coin",
+      "symbol": "HANC",
+      "address": "0xa5c5867B40f8eA477D1A114B822b51ddba98a11f",
+      "chainId": 8453,
+      "decimals": 16,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xa5c5867B40f8eA477D1A114B822b51ddba98a11f.png"
     }
   ]
 }
