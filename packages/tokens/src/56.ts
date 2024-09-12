@@ -3950,4 +3950,12 @@ export const bscTokens = {
     'Tether USD Bridged ZED20',
     'https://zedscan.net',
   ),
+  nesg: new ERC20Token(
+    ChainId.BSC,
+    '0xFCcf5Becfcc0978A3A766476Bb58d5F13565d999',
+    18,
+    'NESG',
+    'NESGCOIN',
+    'https://nesgswap.com/',
+  ),
 }
