@@ -3942,4 +3942,12 @@ export const bscTokens = {
     'WAXCHAIN',
     'https://waxchain.io',
   ),
+  zed20usdt: new ERC20Token(
+    ChainId.BSC,
+    '0x4BE35Ec329343d7d9F548d42B0F8c17FFfe07db4',
+    18,
+    'USDT.z',
+    'Tether USD Bridged ZED20',
+    'https://zedscan.net',
+  ),
 }
