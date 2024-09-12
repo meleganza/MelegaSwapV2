@@ -2052,6 +2052,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/56aad588ae0769503ae366b050e14ec711d5ba65/apps/web/public/images/56/tokens/0x4BE35Ec329343d7d9F548d42B0F8c17FFfe07db4.png"
+    },
+    {
+      "name": "NESGCOIN",
+      "symbol": "NESG",
+      "address": "0xFCcf5Becfcc0978A3A766476Bb58d5F13565d999",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/1d899e86b665755491e8687710a4714d2e8af274/apps/web/public/images/56/tokens/0xFCcf5Becfcc0978A3A766476Bb58d5F13565d999.png"
     }
   ]
 }
