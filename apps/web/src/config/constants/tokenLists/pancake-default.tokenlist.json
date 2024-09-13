@@ -2060,6 +2060,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/1d899e86b665755491e8687710a4714d2e8af274/apps/web/public/images/56/tokens/0xFCcf5Becfcc0978A3A766476Bb58d5F13565d999.png"
+    },
+    {
+      "name": "USDC Gold",
+      "symbol": "USDCG",
+      "address": "0x0CDc97deD6e45fc42A94F41aF9e4c8467E7E13b9",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/3eff4f292900855d8e582b235d4b2dd9d517c67c/apps/web/public/images/56/tokens/0x0CDc97deD6e45fc42A94F41aF9e4c8467E7E13b9.png"
     }
   ]
 }
