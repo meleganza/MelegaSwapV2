@@ -120,7 +120,7 @@ export const baseTokens = {
   ),
   hanc: new ERC20Token(
     ChainId.BASE,
-    '0x6dba065721435cfCa05CAa508f3316B637861373',
+    '0xa5c5867B40f8eA477D1A114B822b51ddba98a11f',
     16,
     'HANC',
     'Tha Hanuman Coin',
