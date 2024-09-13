@@ -1967,11 +1967,11 @@ export const livePools56: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = 
   },
   {
     sousId: 221,
-    stakingToken: bscTokens.aivnew,
+    stakingToken: bscTokens.cake,
     earningToken: bscTokens.usdcg,
     contractAddress: {
       97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',
-      56: '0x41e965498646065bd0093A2FEE1591C489859237',
+      56: '0x9C51f3c39699BEB77eC5a81dB0f43f74280411b1',
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,
