@@ -3958,4 +3958,12 @@ export const bscTokens = {
     'NESGCOIN',
     'https://nesgswap.com/',
   ),
+  usdcg: new ERC20Token(
+    ChainId.BSC,
+    '0x0CDc97deD6e45fc42A94F41aF9e4c8467E7E13b9',
+    18,
+    'USDCG',
+    'USDCG',
+    'https://usdcgold.xyz/',
+  ),
 }
