@@ -3974,4 +3974,12 @@ export const bscTokens = {
     'Mogul Productions Entertainment Token',
     'https://www.mogulproductions.com/',
   ),
+  mel: new ERC20Token(
+    ChainId.BSC,
+    '0x13f8dFDc76D782646800D9EBaEFba5f9C8ba8597',
+    18,
+    'MEL',
+    'Memelord Token',
+    'https://memelord.cloud',
+  ),
 }
