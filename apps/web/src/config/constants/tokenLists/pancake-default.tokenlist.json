@@ -2068,6 +2068,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/3eff4f292900855d8e582b235d4b2dd9d517c67c/apps/web/public/images/56/tokens/0x0CDc97deD6e45fc42A94F41aF9e4c8467E7E13b9.png"
+     },
+    {
+      "name": "Mogul Productions Entertainment Token",
+      "symbol": "MOGUL",
+      "address": "0x88fd59e1DD3715A98bb66149DA9c944d9E795c12",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x88fd59e1dd3715a98bb66149da9c944d9e795c12.png?raw=true"
     }
   ]
 }
