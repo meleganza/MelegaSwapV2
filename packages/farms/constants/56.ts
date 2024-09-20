@@ -2554,6 +2554,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0xD2fbae736e4C83dF8f2591FAe3f479305940dA1A',
     token: bscTokens.mogul,
     quoteToken: bscTokens.wbnb,
+   },
+  {
+    pid: 327,
+    lpSymbol: 'BNB-MEL LP',
+    lpAddress: '0x97EC5409fE28E3046063F270d414db1E82731F04',
+    token: bscTokens.mel,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
