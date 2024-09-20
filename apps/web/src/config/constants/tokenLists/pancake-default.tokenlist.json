@@ -2076,6 +2076,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x88fd59e1dd3715a98bb66149da9c944d9e795c12.png?raw=true"
+     },
+    {
+      "name": "Memelord Token",
+      "symbol": "MEL",
+      "address": "0x13f8dFDc76D782646800D9EBaEFba5f9C8ba8597",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x13f8dFDc76D782646800D9EBaEFba5f9C8ba8597.png?raw=true"
     }
   ]
 }
