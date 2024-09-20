@@ -3966,4 +3966,12 @@ export const bscTokens = {
     'USDCG',
     'https://usdcgold.xyz/',
   ),
+  mogul: new ERC20Token(
+    ChainId.BSC,
+    '0x88fd59e1dd3715a98bb66149da9c944d9e795c12',
+    18,
+    'MOGUL',
+    'Mogul Productions Entertainment Token',
+    'https://www.mogulproductions.com/',
+  ),
 }
