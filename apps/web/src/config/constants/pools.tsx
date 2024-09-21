@@ -2241,6 +2241,19 @@ export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] 
     tokenPerBlock: '1600',
     isFinished: false,
   },
+  {
+    sousId: 9,
+    stakingToken: baseTokens.cake,
+    earningToken: baseTokens.farmbase,
+    contractAddress: {
+      56: '',
+      8453: '0x02aEe84BA84bcb6363c3342E28AAbC70b6f1F039',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '1',
+    isFinished: false,
+  },
 ].map((p) => ({
   ...p,
   stakingToken: p.stakingToken.serialize,
