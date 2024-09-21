@@ -2084,6 +2084,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x13f8dFDc76D782646800D9EBaEFba5f9C8ba8597.png?raw=true"
+     },
+    {
+      "name": "Farmer Coin",
+      "symbol": "FARM",
+      "address": "0x6E0f931D6c5a214de0245032cd6f3200Ec44b162",
+      "chainId": 8453,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x6E0f931D6c5a214de0245032cd6f3200Ec44b162.png?raw=true"
     }
   ]
 }
