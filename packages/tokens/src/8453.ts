@@ -126,4 +126,12 @@ export const baseTokens = {
     'Tha Hanuman Coin',
     'https://thehanumancoin.com/',
   ),
+  farmbase: new ERC20Token(
+    ChainId.BASE,
+    '0x6E0f931D6c5a214de0245032cd6f3200Ec44b162',
+    9,
+    'FARM',
+    'Farmer Coin',
+    'https://www.farmercoin.space/',
+  ),
 }
