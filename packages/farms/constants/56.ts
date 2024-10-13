@@ -2565,7 +2565,7 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 328,
     lpSymbol: 'MARCO-BabyMarco LP',
-    lpAddress: '0x97EC5409fE28E3046063F270d414db1E82731F04',
+    lpAddress: '0x2e608A635A7af675162F41cDB9B29d217010c9d3',
     token: bscTokens.babymarco,
     quoteToken: bscTokens.cake,
   }
