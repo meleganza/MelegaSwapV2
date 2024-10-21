@@ -3982,4 +3982,12 @@ export const bscTokens = {
     'Memelord Token',
     'https://memelord.cloud',
   ),
+  cbs: new ERC20Token(
+    ChainId.BSC,
+    '0x33C2bbE69bbcE890045c54A34A8470Ac9Cd0D546',
+    18,
+    'CBS',
+    'CYBER CHESS',
+    'https://www.cyberchess.com.br/',
+  ),
 }
