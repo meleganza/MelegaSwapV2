@@ -2568,6 +2568,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x2e608A635A7af675162F41cDB9B29d217010c9d3',
     token: bscTokens.babymarco,
     quoteToken: bscTokens.cake,
+  },
+  {
+    pid: 329,
+    lpSymbol: 'BNB-CBS LP',
+    lpAddress: '0x56a24BE4fCAaBaa4B79245a818D4B1A4aDEf363e',
+    token: bscTokens.cbs,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
