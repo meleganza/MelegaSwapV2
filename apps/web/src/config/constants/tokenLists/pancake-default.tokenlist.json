@@ -2100,6 +2100,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x07287971C67c5FD87B9421D17e12162f2b952Cc5.png?raw=true"
+    },
+    {
+      "name": "CYBER CHESS",
+      "symbol": "CBS",
+      "address": "0x33C2bbE69bbcE890045c54A34A8470Ac9Cd0D546",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x33C2bbE69bbcE890045c54A34A8470Ac9Cd0D546.png?raw=true"
     }
   ]
 }
