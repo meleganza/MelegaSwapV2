@@ -2108,6 +2108,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x33c2bbe69bbce890045c54a34a8470ac9cd0d546.png?raw=true"
+    },
+    {
+      "name": "GameXT",
+      "symbol": "GMX",
+      "address": "0x6961974d3bC7f26F3488C64330111C8ecFE75bF3",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6961974d3bC7f26F3488C64330111C8ecFE75bF3.png?raw=true"
     }
   ]
 }
