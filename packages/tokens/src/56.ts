@@ -3990,4 +3990,12 @@ export const bscTokens = {
     'CYBER CHESS',
     'https://www.cyberchess.com.br/',
   ),
+  cbs: new ERC20Token(
+    ChainId.BSC,
+    '0x6961974d3bC7f26F3488C64330111C8ecFE75bF3',
+    18,
+    'GMX',
+    'GameXT',
+    'https://gamexlabs.com/',
+  ),
 }
