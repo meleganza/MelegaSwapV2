@@ -163,6 +163,13 @@ const farms: SerializedFarmConfig[] = [
     token: baseTokens.farmbase,
     quoteToken: baseTokens.weth,
   },
+  {
+    pid: 23,
+    lpSymbol: 'MXMX-MARCO LP',
+    lpAddress: '0x6adb253495A9Fbee551Eda838B16d9C64003d3b9',
+    token: baseTokens.mxmxbase,
+    quoteToken: baseTokens.cake,
+  },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
 export default farms
