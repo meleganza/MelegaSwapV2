@@ -30,7 +30,7 @@ export const CAKE_POLYGON = new ERC20Token(
   18,
   'MARCO',
   'Meleta Token',
-  'https://meleta.com/',
+  ' https://www.melegaswap.finance/marco-token',
 )
 export const CAKE_ARB = new ERC20Token(
   ChainId.ARBITRUM,
@@ -38,7 +38,7 @@ export const CAKE_ARB = new ERC20Token(
   18,
   'MARCO',
   'Meleta Token',
-  'https://meleta.com/',
+  ' https://www.melegaswap.finance/marco-token',
 )
 
 export const CAKE_SMR = new ERC20Token(
