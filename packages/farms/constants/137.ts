@@ -66,6 +66,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.nexo,
     quoteToken: polygonTokens.wmatic,
   },
+  {
+    pid: 9,
+    lpSymbol: 'NEXO-MARCO LP',
+    lpAddress: '0xc79B303D3f979Dc7CFf9B352181083838A5FeFAD',
+    token: polygonTokens.nexo,
+    quoteToken: polygonTokens.cake,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
