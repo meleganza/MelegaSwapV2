@@ -2116,6 +2116,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6961974d3bC7f26F3488C64330111C8ecFE75bF3.png?raw=true"
+    },
+    {
+      "name": "TEDDY",
+      "symbol": "BEAR",
+      "address": "0x9f673304965ce717a068f2361bDBf0e81443038d",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x9f673304965ce717a068f2361bDBf0e81443038d.png?raw=true"
     }
   ]
 }
