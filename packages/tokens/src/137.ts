@@ -37,5 +37,13 @@ export const polygonTokens = {
     18,
     '4DC',
     '4DC'
+  ),
+  cake: CAKE[ChainId.POLYGON],
+  teddy: new ERC20Token(
+    ChainId.POLYGON,
+    '0x9f673304965ce717a068f2361bDBf0e81443038d',
+    18,
+    'BEAR',
+    'TEDDY'
   )
 }
