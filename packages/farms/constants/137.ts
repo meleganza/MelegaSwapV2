@@ -38,6 +38,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.dc4,
     quoteToken: polygonTokens.wmatic,
   },
+  {
+    pid: 5,
+    lpSymbol: 'XOXO-MARCO LP',
+    lpAddress: '0x4462dd71Bc23CBFc2d70E563aDae7f67a349aE10',
+    token: polygonTokens.xoxo,
+    quoteToken: polygonTokens.cake,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
