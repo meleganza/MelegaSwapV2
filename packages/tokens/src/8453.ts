@@ -120,10 +120,18 @@ export const baseTokens = {
   ),
   hanc: new ERC20Token(
     ChainId.BASE,
-    '0x6dba065721435cfCa05CAa508f3316B637861373',
+    '0xa5c5867B40f8eA477D1A114B822b51ddba98a11f',
     16,
     'HANC',
     'Tha Hanuman Coin',
     'https://thehanumancoin.com/',
+  ),
+  farmbase: new ERC20Token(
+    ChainId.BASE,
+    '0x6E0f931D6c5a214de0245032cd6f3200Ec44b162',
+    9,
+    'FARM',
+    'Farmer Coin',
+    'https://www.farmercoin.space/',
   ),
 }

@@ -29,5 +29,29 @@ export const polygonTokens = {
     18,
     'XOXO',
     'XOXO'
+  ),
+  cake: CAKE[ChainId.POLYGON],
+  dc4: new ERC20Token(
+    ChainId.POLYGON,
+    '0x07287971C67c5FD87B9421D17e12162f2b952Cc5',
+    18,
+    '4DC',
+    '4DC'
+  ),
+  cake: CAKE[ChainId.POLYGON],
+  teddy: new ERC20Token(
+    ChainId.POLYGON,
+    '0x9f673304965ce717a068f2361bDBf0e81443038d',
+    18,
+    'BEAR',
+    'TEDDY'
+  ),
+  cake: CAKE[ChainId.POLYGON],
+  nexo: new ERC20Token(
+    ChainId.POLYGON,
+    '0x41b3966B4FF7b427969ddf5da3627d6AEAE9a48E',
+    18,
+    'NEXO',
+    'Nexo'
   )
 }

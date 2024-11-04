@@ -2044,6 +2044,94 @@
       "chainId": 8453,
       "decimals": 16,
       "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/main/apps/web/public/images/8453/tokens/0xa5c5867B40f8eA477D1A114B822b51ddba98a11f.png"
+    },
+    {
+      "name": "Tether USD Bridged ZED20",
+      "symbol": "USDT.z",
+      "address": "0x4BE35Ec329343d7d9F548d42B0F8c17FFfe07db4",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/56aad588ae0769503ae366b050e14ec711d5ba65/apps/web/public/images/56/tokens/0x4BE35Ec329343d7d9F548d42B0F8c17FFfe07db4.png"
+    },
+    {
+      "name": "NESGCOIN",
+      "symbol": "NESG",
+      "address": "0xFCcf5Becfcc0978A3A766476Bb58d5F13565d999",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/1d899e86b665755491e8687710a4714d2e8af274/apps/web/public/images/56/tokens/0xFCcf5Becfcc0978A3A766476Bb58d5F13565d999.png"
+    },
+    {
+      "name": "USDC Gold",
+      "symbol": "USDCG",
+      "address": "0x0CDc97deD6e45fc42A94F41aF9e4c8467E7E13b9",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/meleganza/MelegaSwapV2/3eff4f292900855d8e582b235d4b2dd9d517c67c/apps/web/public/images/56/tokens/0x0CDc97deD6e45fc42A94F41aF9e4c8467E7E13b9.png"
+     },
+    {
+      "name": "Mogul Productions Entertainment Token",
+      "symbol": "MOGUL",
+      "address": "0x88fd59e1DD3715A98bb66149DA9c944d9E795c12",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x88fd59e1dd3715a98bb66149da9c944d9e795c12.png?raw=true"
+     },
+    {
+      "name": "Memelord Token",
+      "symbol": "MEL",
+      "address": "0x13f8dFDc76D782646800D9EBaEFba5f9C8ba8597",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x13f8dFDc76D782646800D9EBaEFba5f9C8ba8597.png?raw=true"
+     },
+    {
+      "name": "Farmer Coin",
+      "symbol": "FARM",
+      "address": "0x6E0f931D6c5a214de0245032cd6f3200Ec44b162",
+      "chainId": 8453,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x6E0f931D6c5a214de0245032cd6f3200Ec44b162.png?raw=true"
+     },
+    {
+      "name": "4DC",
+      "symbol": "4DC",
+      "address": "0x07287971C67c5FD87B9421D17e12162f2b952Cc5",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x07287971C67c5FD87B9421D17e12162f2b952Cc5.png?raw=true"
+    },
+    {
+      "name": "CYBER CHESS",
+      "symbol": "CBS",
+      "address": "0x33C2bbE69bbcE890045c54A34A8470Ac9Cd0D546",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x33c2bbe69bbce890045c54a34a8470ac9cd0d546.png?raw=true"
+    },
+    {
+      "name": "GameXT",
+      "symbol": "GMX",
+      "address": "0x6961974d3bC7f26F3488C64330111C8ecFE75bF3",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6961974d3bC7f26F3488C64330111C8ecFE75bF3.png?raw=true"
+    },
+    {
+      "name": "TEDDY",
+      "symbol": "BEAR",
+      "address": "0x9f673304965ce717a068f2361bDBf0e81443038d",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x9f673304965ce717a068f2361bDBf0e81443038d.png?raw=true"
+    },
+    {
+      "name": "Nexo",
+      "symbol": "NEXO",
+      "address": "0x41b3966B4FF7b427969ddf5da3627d6AEAE9a48E",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x41b3966b4ff7b427969ddf5da3627d6aeae9a48e.png?raw=true"
     }
   ]
 }
