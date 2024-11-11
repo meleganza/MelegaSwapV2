@@ -3998,4 +3998,12 @@ export const bscTokens = {
     'GameXT',
     'https://gamexlabs.com/',
   ),
+  firo: new ERC20Token(
+    ChainId.BSC,
+    '0xd5d0322b6bab6a762c79f8c81a0b674778e13aed',
+    8,
+    'FIRO',
+    'Binance-Peg Firo Token',
+    'https://firo.org/',
+  ),
 }
