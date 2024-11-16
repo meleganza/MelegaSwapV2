@@ -39,4 +39,12 @@ export const ethereumTokens = {
     'Code Token',
     'http://code0x.io/',
   ),
+  rkit: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0xbcBf0609abDb86c00f71c9D471905D3C1981B835',
+    18,
+    'RKIT',
+    'Rawkit',
+    'http://www.rawkit.xyz/',
+  ),
 }
