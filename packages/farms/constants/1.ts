@@ -30,6 +30,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x2ee39e16735B194006739C79785EF6F20ADBB007',
     token: ethereumTokens.loco,
     quoteToken: ethereumTokens.weth,
+  },
+  {
+    pid: 4,
+    lpSymbol: 'RKIT-WETH LP',
+    lpAddress: '0xD3871eDa34472Dd428B24d9A5051f9665D73E1C5',
+    token: ethereumTokens.rkit,
+    quoteToken: ethereumTokens.weth,
    },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
