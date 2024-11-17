@@ -2148,6 +2148,14 @@
       "chainId": 1,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/1/tokens/0xbcBf0609abDb86c00f71c9D471905D3C1981B835.png?raw=true"
+    },
+    {
+      "name": "Big Coin",
+      "symbol": "BCX",
+      "address": "0xE12359D6858402d10bCBF1Bb1c75Cf8e7E25270b",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xe12359d6858402d10bcbf1bb1c75cf8e7e25270b.png?raw=true"
     }
   ]
 }
