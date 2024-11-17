@@ -4006,4 +4006,12 @@ export const bscTokens = {
     'Binance-Peg Firo Token',
     'https://firo.org/',
   ),
+  bcx: new ERC20Token(
+    ChainId.BSC,
+    '0xE12359D6858402d10bCBF1Bb1c75Cf8e7E25270b',
+    18,
+    'BCX',
+    'Big Coin',
+    'https://www.bigcoin.blog',
+  ),
 }
