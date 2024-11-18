@@ -4008,7 +4008,7 @@ export const bscTokens = {
   ),
   bcx: new ERC20Token(
     ChainId.BSC,
-    '0xE12359D6858402d10bCBF1Bb1c75Cf8e7E25270b',
+    '0xe12359d6858402d10bcbf1bb1c75cf8e7e25270b',
     18,
     'BCX',
     'Big Coin',
