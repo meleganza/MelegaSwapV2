@@ -2601,8 +2601,8 @@ const farms: SerializedFarmConfig[] = [
     pid: 333,
     lpSymbol: 'USDT-BCX LP',
     lpAddress: '0x53DCc326af11B3867a600d2000Dd66a159958000',
-    token: bscTokens.bcx,
-    quoteToken: bscTokens.usdt,
+    token: bscTokens.usdt,
+    quoteToken: bscTokens.bcx,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
