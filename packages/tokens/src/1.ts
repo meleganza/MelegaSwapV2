@@ -47,4 +47,12 @@ export const ethereumTokens = {
     'Rawkit',
     'http://www.rawkit.xyz/',
   ),
+  andyman: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0x68aaa0D94eA163B9BBf659Dc3766dEFB4c0Ac7BE',
+    9,
+    'ANDYMAN',
+    'Andyman',
+    'https://andymancto.com',
+  ),
 }
