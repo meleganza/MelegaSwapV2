@@ -43,7 +43,7 @@ class MyDocument extends Document {
           {/* Open Graph tags */}
           <meta property="og:title" content="Melega Finance" />
           <meta property="og:description" content="Melega Finance" />
-          <meta property="og:image" content="https://melega.finance/logo.png" />
+          <meta property="og:image" content="https://melega.finance/main.jpg" />
           <meta property="og:url" content="https://melega.finance" />
           <meta property="og:type" content="website" />
 
@@ -51,13 +51,13 @@ class MyDocument extends Document {
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content="Melega Finance" />
           <meta name="twitter:description" content="Melega Finance" />
-          <meta name="twitter:image" content="https://melega.finance/logo.png" />
+          <meta name="twitter:image" content="https://melega.finance/main.jpg" />
           <meta name="twitter:url" content="https://melega.finance" />
 
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&amp;display=swap" rel="stylesheet" />
           <link rel="shortcut icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" href="/logo.png" />
+          <link rel="apple-touch-icon" href="/main.jpg" />
           <link rel="manifest" href="/manifest.json" />
         </Head>
         <body>

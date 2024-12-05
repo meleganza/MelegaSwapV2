@@ -14,6 +14,6 @@ export const SEO: DefaultSeoProps = {
     title: 'Melega',
     description:
       '',
-    images: [{ url: 'https://melega.finance/logo.png' }],
+    images: [{ url: 'https://melega.finance/main.jpg' }],
   },
 }

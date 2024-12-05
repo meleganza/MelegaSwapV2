@@ -94,7 +94,7 @@ const config = {
   async headers() {
     return [
       {
-        source: '/logo.png',
+        source: '/main.jpg',
         headers: [
           {
             key: 'Cache-Control',

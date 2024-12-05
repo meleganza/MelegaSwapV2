@@ -11,6 +11,9 @@ If you want to contribute, please refer to the [contributing guidelines](./CONTR
 
 > Install dependencies using **yarn**
 
+## `Invironment`
+<node.js@18.0.0>
+
 ## `apps/web`
 <details>
 <summary>

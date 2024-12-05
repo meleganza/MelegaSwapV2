@@ -75,7 +75,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           // eslint-disable-next-line @next/next/no-sync-scripts
           <script src="https://public.bnbstatic.com/static/js/mp-webview-sdk/webview-v1.0.0.min.js" id="mp-webview" />
         )}
-        <meta name="twitter:image" content="https://melega.finance/logo.png" />
+        <meta name="twitter:image" content="https://melega.finance/main.jpg" />
       </Head>
       <DefaultSeo {...SEO} />
       <Providers store={store}>
