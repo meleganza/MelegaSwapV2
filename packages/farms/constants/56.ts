@@ -2603,6 +2603,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x53DCc326af11B3867a600d2000Dd66a159958000',
     token: bscTokens.usdt,
     quoteToken: bscTokens.bcx,
+  },
+  {
+    pid: 334,
+    lpSymbol: 'BNB-TWT LP',
+    lpAddress: '0x725Cd2359e06b0Bea3f950069f3336aa24778fB1',
+    token: bscTokens.twt,
+    quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 335,
+    lpSymbol: 'MARCO-TWT LP',
+    lpAddress: '0xc4f21E0B834Da30f54d7f063fDA6F1624635470f',
+    token: bscTokens.twt,
+    quoteToken: bscTokens.cake,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
