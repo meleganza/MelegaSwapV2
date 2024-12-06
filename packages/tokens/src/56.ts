@@ -4022,4 +4022,12 @@ export const bscTokens = {
     'Cboin',
     'http://www.cboin.biz/',
   ),
+  twt: new ERC20Token(
+    ChainId.BSC,
+    '0x4B0F1812e5Df2A09796481Ff14017e6005508003',
+    18,
+    'TWT',
+    'Trust Wallet',
+    'https://trustwallet.com/',
+  ),
 }
