@@ -4014,4 +4014,12 @@ export const bscTokens = {
     'Big Coin',
     'https://www.bigcoin.blog',
   ),
+  cbn: new ERC20Token(
+    ChainId.BSC,
+    '0x511953922c61b0c8fdA962cBE87B37d8713C8121',
+    18,
+    'CBN',
+    'Cboin',
+    'http://www.cboin.biz/',
+  ),
 }
