@@ -2631,6 +2631,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0xDc553122b085c6B7523b1735e67f3B4c897c99AB',
     token: bscTokens.ftm,
     quoteToken: bscTokens.cake,
+  },
+  {
+    pid: 338,
+    lpSymbol: 'BNB-GMT LP',
+    lpAddress: '0x45d67E88ebCd4f0A24aF01ae323b3FDC62F22a49',
+    token: bscTokens.gmt,
+    quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 339,
+    lpSymbol: 'MARCO-GMT LP',
+    lpAddress: '0xC3bEF97FdF49441D014EaE36d310B93A54663F85',
+    token: bscTokens.gmt,
+    quoteToken: bscTokens.cake,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
