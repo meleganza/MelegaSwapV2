@@ -4030,4 +4030,12 @@ export const bscTokens = {
     'Trust Wallet',
     'https://trustwallet.com/',
   ),
+  ftm: new ERC20Token(
+    ChainId.BSC,
+    '0xAD29AbB318791D579433D831ed122aFeAf29dcfe',
+    18,
+    'FTM',
+    'Fantom',
+    'http://fantom.foundation/',
+  ),
 }
