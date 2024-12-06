@@ -2164,6 +2164,14 @@
       "chainId": 1,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/1/tokens/0x68aaa0D94eA163B9BBf659Dc3766dEFB4c0Ac7BE.png?raw=true"
+    },
+    {
+      "name": "Cboin",
+      "symbol": "CBN",
+      "address": "0x511953922c61b0c8fdA962cBE87B37d8713C8121",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x511953922c61b0c8fdA962cBE87B37d8713C8121.png?raw=true"
     }
   ]
 }
