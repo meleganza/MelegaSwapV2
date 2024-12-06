@@ -4032,7 +4032,7 @@ export const bscTokens = {
   ),
   ftm: new ERC20Token(
     ChainId.BSC,
-    '0xAD29AbB318791D579433D831ed122aFeAf29dcfe',
+    '0xad29abb318791d579433d831ed122afeaf29dcfe',
     18,
     'FTM',
     'Fantom',
