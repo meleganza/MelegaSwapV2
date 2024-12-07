@@ -180,14 +180,14 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 25,
     lpSymbol: 'SPEC-WETH LP',
-    lpAddress: '0x13980DAC5BbB2F830f5E8765441C7b5ec90751C3',
+    lpAddress: '0x13980dac5bbb2f830f5e8765441c7b5ec90751c3',
     token: baseTokens.spec,
     quoteToken: baseTokens.weth,
   },
   {
     pid: 26,
     lpSymbol: 'SPEC-MARCO LP',
-    lpAddress: '0xB02778B413E43c56e13Dc0780C7a27A498358199',
+    lpAddress: '0xb02778b413e43c56e13dc0780c7a27a498358199',
     token: baseTokens.spec,
     quoteToken: baseTokens.cake,
   },
