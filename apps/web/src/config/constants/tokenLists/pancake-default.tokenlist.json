@@ -2196,6 +2196,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xe17d93138442c6ea22fc55758fce6fd765d07acd.png?raw=true"
+    },
+    {
+      "name": "Cronos",
+      "symbol": "CRO",
+      "address": "0xada58df0f643d959c2a47c9d4d4c1a4defe3f11c",
+      "chainId": 137,
+      "decimals": 8,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xada58df0f643d959c2a47c9d4d4c1a4defe3f11c.png?raw=true"
     }
   ]
 }
