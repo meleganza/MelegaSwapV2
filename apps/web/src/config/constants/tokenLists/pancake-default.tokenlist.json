@@ -2180,6 +2180,14 @@
       "chainId": 56,
       "decimals": 8,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x3019BF2a2eF8040C242C9a4c5c4BD4C81678b2A1.png?raw=true"
+    },
+    {
+      "name": "Spectral Token",
+      "symbol": "SPEC",
+      "address": "0x96419929d7949d6A801a6909c145C8eef6a40431",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x96419929d7949D6A801A6909c145C8EEf6A40431.png?raw=true"
     }
   ]
 }
