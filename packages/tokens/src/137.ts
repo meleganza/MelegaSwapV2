@@ -50,5 +50,12 @@ export const polygonTokens = {
     18,
     'NEXO',
     'Nexo'
+  ),
+  enj: new ERC20Token(
+    ChainId.POLYGON,
+    '0xe17d93138442c6ea22fc55758fce6fd765d07Acd',
+    18,
+    'ENJ',
+    'Enjincoin'
   )
 }
