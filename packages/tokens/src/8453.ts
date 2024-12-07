@@ -134,4 +134,12 @@ export const baseTokens = {
     'Farmer Coin',
     'https://www.farmercoin.space/',
   ),
+  spec: new ERC20Token(
+    ChainId.BASE,
+    '0x96419929d7949D6A801A6909c145C8EEf6A40431',
+    18,
+    'SPEC',
+    'Spectral Token',
+    'https://www.spectrallabs.xyz/',
+  ),
 }
