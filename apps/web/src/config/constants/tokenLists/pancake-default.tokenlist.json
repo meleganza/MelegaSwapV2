@@ -2192,7 +2192,7 @@
     {
       "name": "Enjincoin",
       "symbol": "ENJ",
-      "address": "0xe17d93138442c6ea22fc55758fce6fd765d07Acd",
+      "address": "0xe17d93138442c6ea22fc55758fce6fd765d07acd",
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xe17d93138442c6ea22fc55758fce6fd765d07acd.png?raw=true"
