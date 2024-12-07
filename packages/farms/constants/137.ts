@@ -76,14 +76,14 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 10,
     lpSymbol: 'ENJ-MATIC LP',
-    lpAddress: '0xd77eD37727c0C20630E6f78143F96cC184A0d4e3',
+    lpAddress: '0xd77ed37727c0c20630e6f78143f96cc184a0d4e3',
     token: polygonTokens.enj,
     quoteToken: polygonTokens.wmatic,
   },
   {
     pid: 11,
     lpSymbol: 'ENJ-MARCO LP',
-    lpAddress: '0x4Eb413C031246EcE4C42Cbbc2678572abdfaa7D8',
+    lpAddress: '0x4eb413c031246ece4c42cbbc2678572abdfaa7d8',
     token: polygonTokens.enj,
     quoteToken: polygonTokens.cake,
   },
