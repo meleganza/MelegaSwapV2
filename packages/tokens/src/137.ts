@@ -57,5 +57,12 @@ export const polygonTokens = {
     18,
     'ENJ',
     'Enjincoin'
+  ),
+  cro: new ERC20Token(
+    ChainId.POLYGON,
+    '0xada58df0f643d959c2a47c9d4d4c1a4defe3f11c',
+    8,
+    'CRO',
+    'Cronos'
   )
 }
