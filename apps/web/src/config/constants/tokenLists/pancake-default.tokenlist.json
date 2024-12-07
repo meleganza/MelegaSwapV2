@@ -2188,6 +2188,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x96419929d7949d6a801a6909c145c8eef6a40431.png?raw=true"
+    },
+    {
+      "name": "Enjincoin",
+      "symbol": "ENJ",
+      "address": "0xe17d93138442c6ea22fc55758fce6fd765d07Acd",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xe17d93138442c6ea22fc55758fce6fd765d07acd.png?raw=true"
     }
   ]
 }
