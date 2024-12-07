@@ -87,6 +87,20 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.enj,
     quoteToken: polygonTokens.cake,
   },
+  {
+    pid: 12,
+    lpSymbol: 'CRO-MATIC LP',
+    lpAddress: '0x78BF55F37Ae30f8e040A61faC72F9A1Afc974c58',
+    token: polygonTokens.cro,
+    quoteToken: polygonTokens.wmatic,
+  },
+  {
+    pid: 13,
+    lpSymbol: 'CRO-MARCO LP',
+    lpAddress: '0xD11a1D727f219BaaB4e899dc4e3735D0Bbb6EA62',
+    token: polygonTokens.cro,
+    quoteToken: polygonTokens.cake,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
