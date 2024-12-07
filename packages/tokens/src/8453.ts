@@ -136,7 +136,7 @@ export const baseTokens = {
   ),
   spec: new ERC20Token(
     ChainId.BASE,
-    '0x96419929d7949d6A801a6909c145c8eef6a40431',
+    '0x96419929d7949d6a801a6909c145c8eef6a40431',
     18,
     'SPEC',
     'Spectral Token',
