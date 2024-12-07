@@ -2650,7 +2650,7 @@ const farms: SerializedFarmConfig[] = [
     pid: 340,
     lpSymbol: 'MARCO-PEPA LP',
     lpAddress: '0xbC2F31B7f41F83A2B52DABC2BC866f4e6530cF10',
-    token: bscTokens.pepa,
+    token: bscTokens.PEPA,
     quoteToken: bscTokens.cake,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
