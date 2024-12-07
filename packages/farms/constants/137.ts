@@ -84,7 +84,7 @@ const farms: SerializedFarmConfig[] = [
     pid: 11,
     lpSymbol: 'ENJ-MARCO LP',
     lpAddress: '0x4Eb413C031246EcE4C42Cbbc2678572abdfaa7D8',
-    token: polygonTokens.nexo,
+    token: polygonTokens.enj,
     quoteToken: polygonTokens.cake,
   },
   // {
