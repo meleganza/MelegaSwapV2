@@ -2212,6 +2212,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xE06Bd4F5aAc8D0aA337D13eC88dB6defC6eAEefE.png?raw=true"
+    },
+    {
+      "name": "StargateToken",
+      "symbol": "STG",
+      "address": "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590.png?raw=true"
     }
   ]
 }
