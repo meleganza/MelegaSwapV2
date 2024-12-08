@@ -71,5 +71,12 @@ export const polygonTokens = {
     18,
     'IXT',
     'PlanetIX'
+  ),
+  stg: new ERC20Token(
+    ChainId.POLYGON,
+    '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    18,
+    'STG',
+    'StargateToken'
   )
 }
