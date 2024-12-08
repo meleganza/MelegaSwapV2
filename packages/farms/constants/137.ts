@@ -115,6 +115,20 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.ixt,
     quoteToken: polygonTokens.cake,
   },
+  {
+    pid: 16,
+    lpSymbol: 'STG-MATIC LP',
+    lpAddress: '0xc60F31B238D66F352d000c1344a78BBB29fd28d8',
+    token: polygonTokens.stg,
+    quoteToken: polygonTokens.wmatic,
+  },
+  {
+    pid: 17,
+    lpSymbol: 'STG-MARCO LP',
+    lpAddress: '0x910Fe103cDECC081098434AdDE7da451693c63DD,
+    token: polygonTokens.stg,
+    quoteToken: polygonTokens.cake,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
