@@ -53,7 +53,7 @@ export const polygonTokens = {
   ),
   enj: new ERC20Token(
     ChainId.POLYGON,
-    '0xe17d93138442c6ea22fc55758fce6fd765d07acd',
+    '0xE17d93138442c6Ea22Fc55758FCe6FD765D07Acd',
     18,
     'ENJ',
     'Enjincoin'
