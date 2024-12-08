@@ -125,7 +125,7 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 17,
     lpSymbol: 'STG-MARCO LP',
-    lpAddress: '0x910Fe103cDECC081098434AdDE7da451693c63DD,
+    lpAddress: '0x910Fe103cDECC081098434AdDE7da451693c63DD',
     token: polygonTokens.stg,
     quoteToken: polygonTokens.cake,
   },
