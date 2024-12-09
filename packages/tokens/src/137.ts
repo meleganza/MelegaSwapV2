@@ -78,5 +78,12 @@ export const polygonTokens = {
     18,
     'STG',
     'StargateToken'
+  ),
+  polydoge: new ERC20Token(
+    ChainId.POLYGON,
+    '0x8A953CfE442c5E8855cc6c61b1293FA648BAE472',
+    18,
+    'Polydoge',
+    'Polydoge'
   )
 }
