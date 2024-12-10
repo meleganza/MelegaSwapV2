@@ -4046,4 +4046,12 @@ export const bscTokens = {
     'Green Metaverse Token',
     'https://www.stepn.com/',
   ),
+  traff: new ERC20Token(
+    ChainId.BSC,
+    '0x8B0c9785a4C211b345AB2F8D88B6D021AC6DD5bF',
+    18,
+    'TRAFF',
+    'Web Traffic',
+    'https://traffcoin.site/',
+  ),
 }
