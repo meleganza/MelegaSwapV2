@@ -2055,6 +2055,19 @@ export const livePools56: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = 
     harvest: true,
     tokenPerBlock: '0.03',
     isFinished: false,
+   },
+  {
+    sousId: 228,
+    stakingToken: bscTokens.cake,
+    earningToken: bscTokens.traff,
+    contractAddress: {
+      97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',
+      56: '0x36E7358973d543FC139c3dd1F65C310420b062E6',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '7000',
+    isFinished: false,
   }
 ].map((p) => ({
   ...p,
