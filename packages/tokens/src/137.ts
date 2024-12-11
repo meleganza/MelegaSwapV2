@@ -85,5 +85,12 @@ export const polygonTokens = {
     18,
     'Polydoge',
     'Polydoge'
+  ),
+  sand: new ERC20Token(
+    ChainId.POLYGON,
+    '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
+    18,
+    'SAND',
+    'SAND'
   )
 }
