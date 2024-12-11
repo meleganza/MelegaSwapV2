@@ -2236,6 +2236,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x8B0c9785a4C211b345AB2F8D88B6D021AC6DD5bF.png?raw=true"
+     },
+    {
+      "name": "SAND",
+      "symbol": "SAND",
+      "address": "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683.png?raw=true"
     }
   ]
 }
