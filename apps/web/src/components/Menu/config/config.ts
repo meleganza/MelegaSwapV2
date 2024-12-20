@@ -298,24 +298,24 @@ const config: (
         }
       ],
     },
-    {
-      label: t('Solana MelegaFi'),
-      href: 'https://solana.melega.finance/',
-      icon: TrophyIcon,
-      fillIcon: TrophyIcon,
-      image: '/images/cgt.png',
-      showItemsOnMobile: false,
-      // items: [
-      //   {
-      //     label: t('Coingecko'),
-      //     href: 'https://www.coingecko.com/en/exchanges/melegaswap',
-      //   },
-      //   {
-      //     label: t('Dex Guru'),
-      //     href: 'https://dex.guru/markets/melegaswap/tvl',
-      //   }
-      // ],
-    },
+    // {
+    //   label: t('Solana MelegaFi'),
+    //   href: 'https://solana.melega.finance/',
+    //   icon: TrophyIcon,
+    //   fillIcon: TrophyIcon,
+    //   image: '/images/cgt.png',
+    //   showItemsOnMobile: false,
+    //   // items: [
+    //   //   {
+    //   //     label: t('Coingecko'),
+    //   //     href: 'https://www.coingecko.com/en/exchanges/melegaswap',
+    //   //   },
+    //   //   {
+    //   //     label: t('Dex Guru'),
+    //   //     href: 'https://dex.guru/markets/melegaswap/tvl',
+    //   //   }
+    //   // ],
+    // },
     // {
     //   label: t('About'),
     //   href: '/about',

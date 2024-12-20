@@ -14,7 +14,14 @@ import { SubMenuItems } from "../../components/SubMenuItems";
 import { useMatchBreakpoints } from "../../contexts";
 import Logo from "./components/Logo";
 import Panel from "./components/Panel";
-import { MENU_HEIGHT, MOBILE_MENU_HEIGHT, TOP_BANNER_HEIGHT, TOP_BANNER_HEIGHT_MOBILE, SIDEBAR_WIDTH_REDUCED, SIDEBAR_WIDTH_FULL } from "./config";
+import {
+  MENU_HEIGHT,
+  MOBILE_MENU_HEIGHT,
+  TOP_BANNER_HEIGHT,
+  TOP_BANNER_HEIGHT_MOBILE,
+  SIDEBAR_WIDTH_REDUCED,
+  SIDEBAR_WIDTH_FULL,
+} from "./config";
 import { MenuContext } from "./context";
 import { NavProps } from "./types";
 import { SkeletonV2 } from "../../components/Skeleton";
@@ -65,7 +72,7 @@ const TopBannerContainer = styled.div<{ height: number }>`
 
 const BodyWrapper = styled(Box)`
   position: relative;
-  display: flex;;
+  display: flex;
 `;
 
 const Inner = styled.div<{ isPushed: boolean; showMenu: boolean; isHome: boolean }>`
@@ -74,8 +81,10 @@ const Inner = styled.div<{ isPushed: boolean; showMenu: boolean; isHome: boolean
   transform: translate3d(0, 0, 0);
   max-width: 100%;
   ${({ theme }) => theme.mediaQueries.lg} {
-    margin-left: ${({ isPushed, isHome }) => `${isHome ? 0 : isPushed ? SIDEBAR_WIDTH_FULL + 10 : SIDEBAR_WIDTH_REDUCED}px`};
-    max-width: ${({ isPushed, isHome }) => `calc(100% - ${isHome ? 0 : isPushed ? SIDEBAR_WIDTH_FULL + 10 : SIDEBAR_WIDTH_REDUCED}px)`};
+    margin-left: ${({ isPushed, isHome }) =>
+      `${isHome ? 0 : isPushed ? SIDEBAR_WIDTH_FULL + 10 : SIDEBAR_WIDTH_REDUCED}px`};
+    max-width: ${({ isPushed, isHome }) =>
+      `calc(100% - ${isHome ? 0 : isPushed ? SIDEBAR_WIDTH_FULL + 10 : SIDEBAR_WIDTH_REDUCED}px)`};
   }
 `;
 
@@ -152,9 +161,9 @@ const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
   // Find the home link if provided
   const homeLink = links.find((link) => link.label === "Home");
 
-  const isHome = activeItem === '/disabled'; // isHome logic causes issues with responsiveness at the home page
-  const isRoot = activeItem === '/';
-  const isNft = (activeItem === '/nft' || activeItem === '/viewNFTs' || activeItem === '/nftmarket');
+  const isHome = activeItem === "/disabled"; // isHome logic causes issues with responsiveness at the home page
+  const isRoot = activeItem === "/";
+  const isNft = activeItem === "/nft" || activeItem === "/viewNFTs" || activeItem === "/nftmarket";
   // const isIlo = activeItem === '/ilo';
 
   const subLinksWithoutMobile = subLinks?.filter((subLink) => !subLink.isMobileOnly);
@@ -174,15 +183,15 @@ const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
             {/* {banner && isMounted && <TopBannerContainer height={topBannerHeight}>{banner}</TopBannerContainer>} */}
             <StyledNav>
               {/* <Flex width="100%"> */}
-                <Logo
-                  isHome={isHome}
-                  isPushed={isPushed}
-                  togglePush={() => setIsPushed((prevState: boolean) => !prevState)}
-                  isDark={isDark}
-                  // href={homeLink?.href ?? "/"}
-                  href="/"
-                />
-                {/* <AtomBox display={{ xs: "none", md: "block" }}>
+              <Logo
+                isHome={isHome}
+                isPushed={isPushed}
+                togglePush={() => setIsPushed((prevState: boolean) => !prevState)}
+                isDark={isDark}
+                // href={homeLink?.href ?? "/"}
+                href="/"
+              />
+              {/* <AtomBox display={{ xs: "none", md: "block" }}>
                   <MenuItems items={links} activeItem={activeItem} activeSubItem={activeSubItem} />
                 </AtomBox> */}
               {/* </Flex> */}
@@ -190,7 +199,7 @@ const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
                 <AtomBox mr="12px" display={{ xs: "none", lg: "block" }}>
                   <CakePrice buyCakeLink={buyCakeLink} showSkeleton={false} cakePriceUsd={cakePriceUsd} />
                 </AtomBox> */}
-                {/* <Box mt="4px">
+              {/* <Box mt="4px">
                   <LangSelector
                     currentLang={currentLang}
                     langs={langs}
@@ -200,13 +209,13 @@ const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
                     hideLanguage
                   />
                 </Box> */}
-                {/* <SkeletonV2 variant="round" width="32px" height="32px" isDataReady={isMounted} ml="8px" >
+              {/* <SkeletonV2 variant="round" width="32px" height="32px" isDataReady={isMounted} ml="8px" >
                   <ThemeSwitcher isDark={isDark} toggleTheme={toggleTheme} />
                 </SkeletonV2> */}
-                <Flex>
+              <Flex>
                 {/* {leftSide} */}
                 {rightSide}
-                </Flex>
+              </Flex>
               {/* </Flex> */}
             </StyledNav>
           </FixedContainer>
