@@ -60,9 +60,37 @@ export const polygonTokens = {
   ),
   cro: new ERC20Token(
     ChainId.POLYGON,
-    '0xada58df0f643d959c2a47c9d4d4c1a4defe3f11c',
+    '0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C',
     8,
     'CRO',
     'Cronos'
+  ),
+  ixt: new ERC20Token(
+    ChainId.POLYGON,
+    '0xE06Bd4F5aAc8D0aA337D13eC88dB6defC6eAEefE',
+    18,
+    'IXT',
+    'PlanetIX'
+  ),
+  stg: new ERC20Token(
+    ChainId.POLYGON,
+    '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    18,
+    'STG',
+    'StargateToken'
+  ),
+  polydoge: new ERC20Token(
+    ChainId.POLYGON,
+    '0x8A953CfE442c5E8855cc6c61b1293FA648BAE472',
+    18,
+    'Polydoge',
+    'Polydoge'
+  ),
+  sand: new ERC20Token(
+    ChainId.POLYGON,
+    '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
+    18,
+    'SAND',
+    'SAND'
   )
 }

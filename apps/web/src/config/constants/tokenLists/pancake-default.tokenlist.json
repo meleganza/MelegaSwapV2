@@ -2184,10 +2184,10 @@
     {
       "name": "Spectral Token",
       "symbol": "SPEC",
-      "address": "0x96419929d7949d6a801a6909c145c8eef6a40431",
+      "address": "0x96419929d7949D6A801A6909c145C8EEf6A40431",
       "chainId": 8453,
       "decimals": 18,
-      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x96419929d7949d6a801a6909c145c8eef6a40431.png?raw=true"
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x96419929d7949D6A801A6909c145C8EEf6A40431.png?raw=true"
     },
     {
       "name": "Enjincoin",
@@ -2200,10 +2200,50 @@
     {
       "name": "Cronos",
       "symbol": "CRO",
-      "address": "0xada58df0f643d959c2a47c9d4d4c1a4defe3f11c",
+      "address": "0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C",
       "chainId": 137,
       "decimals": 8,
-      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xada58df0f643d959c2a47c9d4d4c1a4defe3f11c.png?raw=true"
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C.png?raw=true"
+    },
+    {
+      "name": "PlanetIX",
+      "symbol": "IXT",
+      "address": "0xE06Bd4F5aAc8D0aA337D13eC88dB6defC6eAEefE",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xE06Bd4F5aAc8D0aA337D13eC88dB6defC6eAEefE.png?raw=true"
+    },
+    {
+      "name": "StargateToken",
+      "symbol": "STG",
+      "address": "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590.png?raw=true"
+    },
+    {
+      "name": "Polydoge",
+      "symbol": "Polydoge",
+      "address": "0x8A953CfE442c5E8855cc6c61b1293FA648BAE472",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x8A953CfE442c5E8855cc6c61b1293FA648BAE472.png?raw=true"
+     },
+    {
+      "name": "Web Traffic",
+      "symbol": "TRAFF",
+      "address": "0x8B0c9785a4C211b345AB2F8D88B6D021AC6DD5bF",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x8B0c9785a4C211b345AB2F8D88B6D021AC6DD5bF.png?raw=true"
+     },
+    {
+      "name": "SAND",
+      "symbol": "SAND",
+      "address": "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683.png?raw=true"
     }
   ]
 }
