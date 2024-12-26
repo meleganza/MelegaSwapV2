@@ -4054,4 +4054,12 @@ export const bscTokens = {
     'Web Traffic',
     'https://traffcoin.site/',
   ),
+  srt: new ERC20Token(
+    ChainId.BSC,
+    '0x6dd1C1c6E1c9EBeF0C82221aBAB30bf648756005',
+    18,
+    'SRT',
+    'Saitareward Token',
+    'https://saitarewards.com/',
+  ),
 }
