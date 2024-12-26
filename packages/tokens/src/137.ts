@@ -92,5 +92,12 @@ export const polygonTokens = {
     18,
     'SAND',
     'SAND'
+  ),
+  edx: new ERC20Token(
+    ChainId.POLYGON,
+    '0x45a1E48dAF3f6a55efBbD067380f4601300baA7A',
+    18,
+    'EDX',
+    'EADX Token'
   )
 }
