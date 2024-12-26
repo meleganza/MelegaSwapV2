@@ -2260,6 +2260,14 @@
       "chainId": 1,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/1/tokens/0xCf7922249A71cdCf9DA3e0e211792d87cF28f689.png?raw=true"
+    },
+    {
+      "name": "Saitareward Token",
+      "symbol": "SRT",
+      "address": "0x6dd1C1c6E1c9EBeF0C82221aBAB30bf648756005,
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6dd1C1c6E1c9EBeF0C82221aBAB30bf648756005.png?raw=true"
     }
   ]
 }
