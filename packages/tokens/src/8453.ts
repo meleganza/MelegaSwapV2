@@ -158,4 +158,12 @@ export const baseTokens = {
     'AetherX',
     'https://www.aetx.io/',
   ),
+  fork: new ERC20Token(
+    ChainId.BASE,
+    '0xc51cdE9D74da8953881BB719E14889978E755763',
+    18,
+    'FORK',
+    'Fork Dog',
+    'http://forkdog.io',
+  ),
 }
