@@ -2252,6 +2252,14 @@
       "chainId": 8453,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4.png?raw=true"
+     },
+    {
+      "name": "Leonado Coin",
+      "symbol": "LEON",
+      "address": "0xCf7922249A71cdCf9DA3e0e211792d87cF28f689",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/1/tokens/0xCf7922249A71cdCf9DA3e0e211792d87cF28f689.png?raw=true"
     }
   ]
 }
