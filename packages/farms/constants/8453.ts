@@ -190,6 +190,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0xb02778b413e43c56e13dc0780c7a27a498358199',
     token: baseTokens.spec,
     quoteToken: baseTokens.cake,
+   },
+  {
+    pid: 27,
+    lpSymbol: 'AETX-WETH LP',
+    lpAddress: '0x6705e198C4048c80CA94ED20Ef918172A42ca8aA',
+    token: baseTokens.aetx,
+    quoteToken: baseTokens.weth,
   },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
