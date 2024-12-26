@@ -55,4 +55,12 @@ export const ethereumTokens = {
     'Andyman',
     'https://andymancto.com',
   ),
+  leon: new ERC20Token(
+    ChainId.ETHEREUM,
+    '0xCf7922249A71cdCf9DA3e0e211792d87cF28f689',
+    18,
+    'LEON',
+    'Leonado Coin',
+    'https://leon.cash/',
+  ),
 }
