@@ -2276,6 +2276,14 @@
       "chainId": 56,
       "decimals": 8,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b.png?raw=true"
+     },
+    {
+      "name": "Fork Dog",
+      "symbol": "FORK",
+      "address": "0xc51cdE9D74da8953881BB719E14889978E755763",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xc51cdE9D74da8953881BB719E14889978E755763.png?raw=true"
     }
   ]
 }
