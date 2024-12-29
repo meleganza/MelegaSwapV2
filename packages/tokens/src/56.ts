@@ -4062,4 +4062,12 @@ export const bscTokens = {
     'Saitareward Token',
     'https://saitarewards.com/',
   ),
+  tenco: new ERC20Token(
+    ChainId.BSC,
+    '0xE77e8a1A68eDeF172FF15945688402Ed4Dfa5e77',
+    18,
+    'TENCO',
+    'Tenniscoin',
+    'https://www.tenniscoin.eu',
+  ),
 }
