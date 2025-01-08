@@ -2673,6 +2673,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0xabcB96ADBcBB9e61ae6DcfCCBb38E169218EC838',
     token: bscTokens.tenco,
     quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 344,
+    lpSymbol: 'BNB-THEPUG LP',
+    lpAddress: '0x678e9607059b91A366e0849b322B418081005f5b',
+    token: bscTokens.thepug,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
