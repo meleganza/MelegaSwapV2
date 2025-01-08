@@ -4070,4 +4070,12 @@ export const bscTokens = {
     'Tenniscoin',
     'https://www.tenniscoin.eu',
   ),
+  thepug: new ERC20Token(
+    ChainId.BSC,
+    '0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86',
+    18,
+    'THEPUG',
+    'The Pug',
+    'https://thepug.online/',
+  ),
 }
