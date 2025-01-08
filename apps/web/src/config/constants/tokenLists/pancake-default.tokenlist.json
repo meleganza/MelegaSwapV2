@@ -2300,6 +2300,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xE77e8a1A68eDeF172FF15945688402Ed4Dfa5e77.png?raw=true"
+    },
+    {
+      "name": "The Pug",
+      "symbol": "THEPUG",
+      "address": "0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86.png?raw=true"
     }
   ]
 }
