@@ -142,4 +142,28 @@ export const baseTokens = {
     'Spectral Token',
     'https://www.spectrallabs.xyz/',
   ),
+  alb: new ERC20Token(
+    ChainId.BASE,
+    '0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4',
+    18,
+    'ALB',
+    'AlienBase Token',
+    'http://alienbase.xyz/',
+  ),
+  aetx: new ERC20Token(
+    ChainId.BASE,
+    '0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b',
+    8,
+    'AETX',
+    'AetherX',
+    'https://www.aetx.io/',
+  ),
+  fork: new ERC20Token(
+    ChainId.BASE,
+    '0xc51cdE9D74da8953881BB719E14889978E755763',
+    18,
+    'FORK',
+    'Fork Dog',
+    'http://forkdog.io',
+  ),
 }

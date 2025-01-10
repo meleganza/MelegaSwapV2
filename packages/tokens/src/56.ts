@@ -4054,4 +4054,28 @@ export const bscTokens = {
     'Web Traffic',
     'https://traffcoin.site/',
   ),
+  saita: new ERC20Token(
+    ChainId.BSC,
+    '0x6dd1C1c6E1c9EBeF0C82221aBAB30bf648756005',
+    18,
+    'SRT',
+    'Saitareward Token',
+    'https://saitarewards.com/',
+  ),
+  tenco: new ERC20Token(
+    ChainId.BSC,
+    '0xE77e8a1A68eDeF172FF15945688402Ed4Dfa5e77',
+    18,
+    'TENCO',
+    'Tenniscoin',
+    'https://www.tenniscoin.eu',
+  ),
+  thepug: new ERC20Token(
+    ChainId.BSC,
+    '0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86',
+    18,
+    'THEPUG',
+    'The Pug',
+    'https://thepug.online/',
+  ),
 }

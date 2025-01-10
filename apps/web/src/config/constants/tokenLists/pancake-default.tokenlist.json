@@ -2244,6 +2244,70 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683.png?raw=true"
+     },
+    {
+      "name": "AlienBase Token",
+      "symbol": "ALB",
+      "address": "0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4.png?raw=true"
+     },
+    {
+      "name": "Leonado Coin",
+      "symbol": "LEON",
+      "address": "0xCf7922249A71cdCf9DA3e0e211792d87cF28f689",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/1/tokens/0xCf7922249A71cdCf9DA3e0e211792d87cF28f689.png?raw=true"
+    },
+    {
+      "name": "Saitareward Token",
+      "symbol": "SRT",
+      "address": "0x6dd1C1c6E1c9EBeF0C82221aBAB30bf648756005",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6dd1C1c6E1c9EBeF0C82221aBAB30bf648756005.png?raw=true"
+    },
+    {
+      "name": "AetherX",
+      "symbol": "AETX",
+      "address": "0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b",
+      "chainId": 56,
+      "decimals": 8,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b.png?raw=true"
+     },
+    {
+      "name": "Fork Dog",
+      "symbol": "FORK",
+      "address": "0xc51cdE9D74da8953881BB719E14889978E755763",
+      "chainId": 8453,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xc51cdE9D74da8953881BB719E14889978E755763.png?raw=true"
+     },
+    {
+      "name": "EADX Token",
+      "symbol": "EDX",
+      "address": "0x45a1E48dAF3f6a55efBbD067380f4601300baA7A",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x45a1E48dAF3f6a55efBbD067380f4601300baA7A.png?raw=true"
+    },
+    {
+      "name": "Tenniscoin",
+      "symbol": "TENCO",
+      "address": "0xE77e8a1A68eDeF172FF15945688402Ed4Dfa5e77",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xE77e8a1A68eDeF172FF15945688402Ed4Dfa5e77.png?raw=true"
+    },
+    {
+      "name": "The Pug",
+      "symbol": "THEPUG",
+      "address": "0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86.png"
     }
   ]
 }
