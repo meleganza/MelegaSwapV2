@@ -11,6 +11,7 @@ import {
   UserMenu,
   UserMenuDivider,
   UserMenuItem,
+  useMatchBreakpoints,
   useModal,
   useTooltip,
 } from '@pancakeswap/uikit'
@@ -130,6 +131,7 @@ const WrongNetworkSelect = ({ switchNetwork, chainId }) => {
 export const NetworkSwitcher = () => {
   const { t } = useTranslation()
   const { chainId, isWrongNetwork, isNotMatched } = useActiveChainId()
+  const { isMobile } = useMatchBreakpoints()
   const { pendingChainId, isLoading, canSwitch, switchNetworkAsync } = useSwitchNetwork()
   const router = useRouter()
   const { address: account } = useAccount()
@@ -146,12 +148,12 @@ export const NetworkSwitcher = () => {
   }
 
   const [onPresentNetworkModal] = useModal(
-  <NetworkSwitchModal 
-    isOpen={open}
-    onDismiss={() => setOpen(false)}
-    switchNetwork={switchNetworkAsync} 
-    chainId={chainId} 
-  />
+    <NetworkSwitchModal
+      isOpen={open}
+      onDismiss={() => setOpen(false)}
+      switchNetwork={switchNetworkAsync}
+      chainId={chainId}
+    />,
   )
 
   useNetworkConnectorUpdater()
@@ -176,24 +178,25 @@ export const NetworkSwitcher = () => {
     <Box ref={cannotChangeNetwork ? targetRef : null} height="100%">
       {cannotChangeNetwork && tooltipVisible && tooltip}
       <UserMenu
-        mr="8px"
+        // mr="8px"
         placement="bottom"
         variant={isLoading ? 'pending' : isWrongNetwork ? 'danger' : 'default'}
         avatarSrc={`/images/chains/${[8453, 42161, 10, 324].includes(chainId) ? `${chainId}-1` : chainId}.png`}
         disabled={cannotChangeNetwork}
         text={
-          isLoading ? (
+          !isMobile &&
+          (isLoading ? (
             t('Requesting')
           ) : isWrongNetwork ? (
             t('Network')
           ) : foundChain ? (
             <>
               <Box display={['none', null, null, null, null, 'block']}>{foundChain.name}</Box>
-              <Box display={['block', null, null, null, null, 'none']}>{chainId === 42161 ? "ARB" : symbol}</Box>
+              <Box display={['block', null, null, null, null, 'none']}>{chainId === 42161 ? 'ARB' : symbol}</Box>
             </>
           ) : (
             t('Select a Network')
-          )
+          ))
         }
         onClick={handleClick}
       >
@@ -205,11 +208,11 @@ export const NetworkSwitcher = () => {
           )
         }
       </UserMenu>
-      <NetworkSwitchModal 
+      <NetworkSwitchModal
         isOpen={open}
         onDismiss={() => setOpen(false)}
-        switchNetwork={switchNetworkAsync} 
-        chainId={chainId} 
+        switchNetwork={switchNetworkAsync}
+        chainId={chainId}
       />
     </Box>
   )

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { Menu as UikitMenu, NextLinkFromReactRouter, footerLinks, Button } from '@pancakeswap/uikit'
+import { Menu as UikitMenu, NextLinkFromReactRouter, footerLinks, Button, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { useTranslation, languageList } from '@pancakeswap/localization'
 import PhishingWarningBanner from 'components/PhishingWarningBanner'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
@@ -16,17 +16,18 @@ import { useMenuItems } from './hooks/useMenuItems'
 import { getActiveMenuItem, getActiveSubMenuItem } from './utils'
 import GlobalSettings from './GlobalSettings'
 import { SettingsMode } from './GlobalSettings/types'
+
 // import { SettingsMode } from './GlobalSettings/types'
 
 const Menu = (props) => {
   const { isDark, setTheme } = useTheme()
+  const { isMobile } = useMatchBreakpoints()
   const cakePriceUsd = useCakeBusdPrice({ forceMainnet: true })
   const { currentLanguage, setLanguage, t } = useTranslation()
   const { pathname } = useRouter()
   const [showPhishingWarningBanner] = usePhishingBannerManager()
 
   const { chainId } = useActiveChainId()
-
   const menuItems = useMenuItems()
   // const topMenuItems = useTopMenuItems()
 
@@ -50,10 +51,26 @@ const Menu = (props) => {
         leftSide={<NetworkSwitcher />}
         rightSide={
           <>
-            <Button className="" style={{ background: '#000', color: '#fff', marginRight: '20px', alignItems: "center", border: "1px solid #fff", height: "32px" }}>
-              <a href="https://solana.melega.finance/" target='_blank' className="">
-                Solana MelegaFi
-              </a>
+            <Button
+              className=""
+              style={{
+                background: '#000',
+                color: '#fff',
+                // marginRight: '20px',
+                alignItems: 'center',
+                border: '1px solid #fff',
+                height: '32px',
+              }}
+            >
+              {isMobile ? (
+                <a href="https://solana.melega.finance/" target="_blank" className="">
+                  SolanaFi
+                </a>
+              ) : (
+                <a href="https://solana.melega.finance/" target="_blank" className="">
+                  Solana MelegaFi
+                </a>
+              )}
             </Button>
             <NetworkSwitcher />
             <GlobalSettings mode={SettingsMode.GLOBAL} />

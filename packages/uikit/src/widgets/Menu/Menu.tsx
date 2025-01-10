@@ -28,6 +28,7 @@ import { SkeletonV2 } from "../../components/Skeleton";
 import { ThemeSwitcher } from "../../components/ThemeSwitcher";
 import { PageOverlay } from "../../components/PageOverlay";
 import { Button, NextLinkFromReactRouter } from "../../components";
+import { paddingRight } from "styled-system";
 
 const Wrapper = styled.div`
   position: relative;
@@ -48,9 +49,12 @@ const StyledNav = styled.nav`
   border-bottom: 2px solid #0e0e0e;
   transform: translate3d(0, 0, 0);
 
-  // padding-top: 16px;
   padding-left: 16px;
-  padding-right: 16px;
+  // padding-right: 8px;
+
+  ${({ theme }) => theme.mediaQueries.sm} {
+    padding-right: 6px;
+  }
 `;
 
 const FixedContainer = styled.div<{ showMenu: boolean; height: number }>`
@@ -181,7 +185,7 @@ const Menu: React.FC<React.PropsWithChildren<NavProps>> = ({
         <Wrapper>
           <FixedContainer showMenu={showMenu} height={totalTopMenuHeight}>
             {/* {banner && isMounted && <TopBannerContainer height={topBannerHeight}>{banner}</TopBannerContainer>} */}
-            <StyledNav>
+            <StyledNav style={{ paddingRight: isMobile ? "4px" : "16px" }}>
               {/* <Flex width="100%"> */}
               <Logo
                 isHome={isHome}
