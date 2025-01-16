@@ -4078,4 +4078,12 @@ export const bscTokens = {
     'The Pug',
     'https://thepug.online/',
   ),
+  rtime: new ERC20Token(
+    ChainId.BSC,
+    '0xcA39370ab6cf858343CEA824a1c784964e5bf247',
+    9,
+    'Rtime',
+    'RecTime',
+    'https://linktr.ee/rectime',
+  ),
 }
