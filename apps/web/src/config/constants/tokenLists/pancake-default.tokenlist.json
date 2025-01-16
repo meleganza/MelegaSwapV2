@@ -2308,6 +2308,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xd0a5fc79Cc1f56BE6c58e1cf41983818b3F9Fc86.png"
+     },
+    {
+      "name": "RecTime",
+      "symbol": "Rtime",
+      "address": "0xcA39370ab6cf858343CEA824a1c784964e5bf247",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xcA39370ab6cf858343CEA824a1c784964e5bf247.png?raw=true"
     }
   ]
 }
