@@ -2324,6 +2324,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x580C887178A6dcFc323afB8D204651125BAc6712.png?raw=true"
+    },
+    {
+      "name": "M.E.G.A.",
+      "symbol": "MEGA",
+      "address": "0x2F6B84B7293Be28A5e81D120e3971F020aaf5Eb9",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x2F6B84B7293Be28A5e81D120e3971F020aaf5Eb9.png?raw=true"
     }
   ]
 }
