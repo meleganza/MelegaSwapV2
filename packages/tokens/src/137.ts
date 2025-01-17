@@ -106,5 +106,12 @@ export const polygonTokens = {
     18,
     'JONKY',
     'Call me Jonky'
+  ),
+  mega: new ERC20Token(
+    ChainId.POLYGON,
+    '0x2F6B84B7293Be28A5e81D120e3971F020aaf5Eb9',
+    18,
+    'MEGA',
+    'M.E.G.A.'
   )
 }
