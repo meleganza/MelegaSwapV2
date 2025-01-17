@@ -99,5 +99,12 @@ export const polygonTokens = {
     18,
     'EDX',
     'EADX Token'
+  ),
+  jonky: new ERC20Token(
+    ChainId.POLYGON,
+    '0x580C887178A6dcFc323afB8D204651125BAc6712',
+    18,
+    'JONKY',
+    'Call me Jonky'
   )
 }
