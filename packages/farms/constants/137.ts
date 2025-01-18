@@ -167,7 +167,7 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 23,
     lpSymbol: 'ELON-MARCO LP',
-    lpAddress: '0xE9b32669CE4f72dC9d1dE24b96A520944E2ecAEa',
+    lpAddress: '0x06950179Ed7484f21c60B89e4019CdB308865B1A',
     token: polygonTokens.dogelon,
     quoteToken: polygonTokens.cake,
   },
