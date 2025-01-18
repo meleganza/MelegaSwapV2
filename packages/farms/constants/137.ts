@@ -170,7 +170,7 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x06950179Ed7484f21c60B89e4019CdB308865B1A',
     token: polygonTokens.dogelon,
     quoteToken: polygonTokens.cake,
-   },
+  },
   {
     pid: 24,
     lpSymbol: 'NAKA-MATIC LP',
@@ -183,6 +183,20 @@ const farms: SerializedFarmConfig[] = [
     lpSymbol: 'NAKA-MARCO LP',
     lpAddress: '0x1839967a4f067F2A5561E19C5d2aAD163c10B1e7',
     token: polygonTokens.naka,
+    quoteToken: polygonTokens.cake,
+  },
+  {
+    pid: 26,
+    lpSymbol: 'DIMO-MATIC LP',
+    lpAddress: '0x43Fb2e79a4B7555fa2eeE041bfdb3B3E2eaFA96a',
+    token: polygonTokens.dimo,
+    quoteToken: polygonTokens.wmatic,
+  },
+  {
+    pid: 27,
+    lpSymbol: 'DIMO-MARCO LP',
+    lpAddress: '0x5a298100100a38897aa4738Fd209b99484184b8d',
+    token: polygonTokens.dimo,
     quoteToken: polygonTokens.cake,
   },
   // {
