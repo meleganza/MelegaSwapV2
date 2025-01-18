@@ -120,5 +120,12 @@ export const polygonTokens = {
     18,
     'ELON',
     'Dogelon'
+  ),
+  naka: new ERC20Token(
+    ChainId.POLYGON,
+    '0x311434160D7537be358930def317AfB606C0D737',
+    18,
+    'NAKA',
+    'Nakamoto Games'
   )
 }
