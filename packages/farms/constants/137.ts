@@ -170,6 +170,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x06950179Ed7484f21c60B89e4019CdB308865B1A',
     token: polygonTokens.dogelon,
     quoteToken: polygonTokens.cake,
+   },
+  {
+    pid: 24,
+    lpSymbol: 'NAKA-MATIC LP',
+    lpAddress: '0x96f0f4512c695ac6c8Cf4438276F58DB7dF82F95',
+    token: polygonTokens.naka,
+    quoteToken: polygonTokens.wmatic,
+  },
+  {
+    pid: 25,
+    lpSymbol: 'NAKA-MARCO LP',
+    lpAddress: '0x1839967a4f067F2A5561E19C5d2aAD163c10B1e7',
+    token: polygonTokens.naka,
+    quoteToken: polygonTokens.cake,
   },
   // {
   //   pid: 3,
