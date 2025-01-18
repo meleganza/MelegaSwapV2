@@ -113,5 +113,12 @@ export const polygonTokens = {
     18,
     'MEGA',
     'M.E.G.A.'
+  ),
+  dogelon: new ERC20Token(
+    ChainId.POLYGON,
+    '0xE0339c80fFDE91F3e20494Df88d4206D86024cdF',
+    18,
+    'ELON',
+    'Dogelon'
   )
 }
