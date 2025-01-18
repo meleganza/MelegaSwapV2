@@ -127,5 +127,12 @@ export const polygonTokens = {
     18,
     'NAKA',
     'Nakamoto Games'
+  ),
+  dimo: new ERC20Token(
+    ChainId.POLYGON,
+    '0xE261D618a959aFfFd53168Cd07D12E37B26761db',
+    18,
+    'DIMO',
+    'Dimo'
   )
 }
