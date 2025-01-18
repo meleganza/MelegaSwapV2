@@ -156,6 +156,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x532E02d9202FA96A3dF2C2B6e7F8158206dE648F',
     token: polygonTokens.sand,
     quoteToken: polygonTokens.cake,
+ },
+  {
+    pid: 22,
+    lpSymbol: 'ELON-MATIC LP',
+    lpAddress: '0xE9b32669CE4f72dC9d1dE24b96A520944E2ecAEa',
+    token: polygonTokens.dogelon,
+    quoteToken: polygonTokens.wmatic,
+  },
+  {
+    pid: 23,
+    lpSymbol: 'ELON-MARCO LP',
+    lpAddress: '0xE9b32669CE4f72dC9d1dE24b96A520944E2ecAEa',
+    token: polygonTokens.dogelon,
+    quoteToken: polygonTokens.cake,
   },
   // {
   //   pid: 3,
