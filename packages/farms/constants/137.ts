@@ -198,6 +198,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x5a298100100a38897aa4738Fd209b99484184b8d',
     token: polygonTokens.dimo,
     quoteToken: polygonTokens.cake,
+    },
+  {
+    pid: 28,
+    lpSymbol: 'TRUMP-MATIC LP',
+    lpAddress: '0xCE53E7aF43E5e4C374B809667574DD7e538FAC92',
+    token: polygonTokens.trump,
+    quoteToken: polygonTokens.wmatic,
+  },
+  {
+    pid: 29,
+    lpSymbol: 'TRUMP-MARCO LP',
+    lpAddress: '0xC623a255cE56D2af91aE414F125269d725192E00',
+    token: polygonTokens.trump,
+    quoteToken: polygonTokens.cake,
   },
   // {
   //   pid: 3,
