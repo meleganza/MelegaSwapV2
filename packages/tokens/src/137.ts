@@ -137,7 +137,7 @@ export const polygonTokens = {
   ),
   trump: new ERC20Token(
     ChainId.POLYGON,
-    '0x5D71Eb13f59FfcBcEC79a676c43BCB2440242e47,
+    '0x5D71Eb13f59FfcBcEC79a676c43BCB2440242e47',
     18,
     'TRUMP',
     'OFFICIAL TRUMP'
