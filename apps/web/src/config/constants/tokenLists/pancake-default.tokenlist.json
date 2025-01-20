@@ -2364,6 +2364,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x5D71Eb13f59FfcBcEC79a676c43BCB2440242e47.png?raw=true"
+    },
+    {
+      "name": "Melania Meme",
+      "symbol": "MELANIA",
+      "address": "0x00849e5eCDe4927a0Eb7213793B5D26C5562c185",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x00849e5eCDe4927a0Eb7213793B5D26C5562c185.png?raw=true"
     }
   ]
 }
