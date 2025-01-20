@@ -213,6 +213,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.trump,
     quoteToken: polygonTokens.cake,
   },
+  {
+    pid: 30,
+    lpSymbol: 'MELANIA-MATIC LP',
+    lpAddress: '0x374f259b3f1D7C7236f042EA9c90a022f709841A',
+    token: polygonTokens.melania,
+    quoteToken: polygonTokens.wmatic,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
