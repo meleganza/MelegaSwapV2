@@ -227,6 +227,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.jonky,
     quoteToken: polygonTokens.wmatic,
   },
+  {
+    pid: 32,
+    lpSymbol: 'JONKY-MARCO LP',
+    lpAddress: '0xEB85472486a4227555726449ebF973640596c3Eb',
+    token: polygonTokens.jonky,
+    quoteToken: polygonTokens.cake,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
