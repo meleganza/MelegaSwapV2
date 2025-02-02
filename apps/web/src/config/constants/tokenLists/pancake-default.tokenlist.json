@@ -2372,6 +2372,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x00849e5eCDe4927a0Eb7213793B5D26C5562c185.png?raw=true"
+    },
+    {
+      "name": "TRUMPET",
+      "symbol": "TRUMPET",
+      "address": "0x5844cbFaD5702fF56A489C99dD791D748dE39E5D",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x5844cbFaD5702fF56A489C99dD791D748dE39E5D.png?raw=true"
     }
   ]
 }
