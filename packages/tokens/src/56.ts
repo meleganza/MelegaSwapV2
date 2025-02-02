@@ -4086,4 +4086,12 @@ export const bscTokens = {
     'RecTime',
     'https://linktr.ee/rectime',
   ),
+  trumpet: new ERC20Token(
+    ChainId.BSC,
+    '0x5844cbFaD5702fF56A489C99dD791D748dE39E5D',
+    18,
+    'TRUMPET',
+    'TRUMPET',
+    'https://www.gettrumpet.fun/',
+  ),
 }
