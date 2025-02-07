@@ -148,5 +148,12 @@ export const polygonTokens = {
     18,
     'MELANIA',
     'Melania Meme'
+  ),
+  pm: new ERC20Token(
+    ChainId.POLYGON,
+    '0xe5ba666e81fE2c351999Cf98B9a0AA15d384bE8e',
+    18,
+    'PM',
+    'Positive Mind'
   )
 }
