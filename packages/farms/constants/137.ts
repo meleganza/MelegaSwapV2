@@ -251,14 +251,14 @@ const farms: SerializedFarmConfig[] = [
   {
     pid: 35,
     lpSymbol: 'PM-MATIC LP',
-    lpAddress: '0x31Ea1c7EfA9f853eB51b06B5640F6D8466C0be45',
+    lpAddress: '0x4f7CBF02bF7B67A68771D46891AAdFb8b2B8F80c',
     token: polygonTokens.pm,
     quoteToken: polygonTokens.wmatic,
   },
   {
     pid: 36,
     lpSymbol: 'PM-MARCO LP',
-    lpAddress: '0x31Ea1c7EfA9f853eB51b06B5640F6D8466C0be45',
+    lpAddress: '0x689372694586d85ebB7DFA27B5f2a92D58Db4C97',
     token: polygonTokens.pm,
     quoteToken: polygonTokens.cake,
   },
