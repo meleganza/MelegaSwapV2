@@ -2247,6 +2247,19 @@ export const livePools137: Pool.SerializedPoolConfig<SerializedWrappedToken>[] =
     tokenPerBlock: '100',
     isFinished: false,
   },
+  {
+    sousId: 9,
+    stakingToken: polygonTokens.cake,
+    earningToken: polygonTokens.pm,
+    contractAddress: {
+      56: '',
+      137: '0xFcaA53E3f4Aa4949Fb9f39Afb97845240970495e',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    tokenPerBlock: '100',
+    isFinished: false,
+  },
   // {
   //   sousId: 2,
   //   stakingToken: baseTokens.cake,
