@@ -4096,7 +4096,7 @@ export const bscTokens = {
   ),
   tst: new ERC20Token(
     ChainId.BSC,
-    '0x86bb94ddd16efc8bc58e6b056e8df71d9e666429',
+    '0x86Bb94DdD16Efc8bc58e6b056e8df71D9e666429',
     18,
     'TST',
     'Test',
