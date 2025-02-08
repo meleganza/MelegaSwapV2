@@ -4094,4 +4094,12 @@ export const bscTokens = {
     'TRUMPET',
     'https://www.gettrumpet.fun/',
   ),
+  tst: new ERC20Token(
+    ChainId.BSC,
+    '0x86bb94ddd16efc8bc58e6b056e8df71d9e666429',
+    18,
+    'TST',
+    'Test',
+    'https://testtoken.vip/',
+  ),
 }
