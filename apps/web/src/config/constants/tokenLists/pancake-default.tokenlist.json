@@ -2396,6 +2396,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x86Bb94DdD16Efc8bc58e6b056e8df71D9e666429.png?raw=true"
+    },
+    {
+      "name": "MMUSD",
+      "symbol": "MMUSD",
+      "address": "0xe68dcd041Dd931Ef6a9ff447DD761F8A5876b321",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xe68dcd041Dd931Ef6a9ff447DD761F8A5876b321.png?raw=true"
     }
   ]
 }
