@@ -4102,4 +4102,12 @@ export const bscTokens = {
     'Test',
     'https://testtoken.vip/',
   ),
+  mmusd: new ERC20Token(
+    ChainId.BSC,
+    '0xe68dcd041Dd931Ef6a9ff447DD761F8A5876b321',
+    18,
+    'MMUSD',
+    'MMUSD',
+    'https://mmusd.top/',
+  ),
 }
