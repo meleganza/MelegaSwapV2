@@ -4110,4 +4110,12 @@ export const bscTokens = {
     'MMUSD',
     'https://mmusd.top/',
   ),
+  broccoli: new ERC20Token(
+    ChainId.BSC,
+    '0x6d5AD1592ed9D6D1dF9b93c793AB759573Ed6714',
+    18,
+    'Broccoli',
+    'CZs Dog',
+    'https://four.meme/token/0x6d5ad1592ed9d6d1df9b93c793ab759573ed6714',
+  ),
 }
