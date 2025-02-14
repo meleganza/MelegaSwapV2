@@ -2404,6 +2404,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xe68dcd041Dd931Ef6a9ff447DD761F8A5876b321.png?raw=true"
+    },
+    {
+      "name": "CZs Dog",
+      "symbol": "Broccoli",
+      "address": "0x6d5AD1592ed9D6D1dF9b93c793AB759573Ed6714",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6d5AD1592ed9D6D1dF9b93c793AB759573Ed6714.png?raw=true"
     }
   ]
 }
