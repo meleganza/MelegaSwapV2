@@ -2412,6 +2412,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x6d5AD1592ed9D6D1dF9b93c793AB759573Ed6714.png?raw=true"
+    },
+    {
+      "name": "GRIZZGANGFOREVER",
+      "symbol": "GGFT",
+      "address": "0x46a800947009eBBD2d40C6b5ab5BE9A3B1Ae9c2a",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x46a800947009eBBD2d40C6b5ab5BE9A3B1Ae9c2a.png?raw=true"
     }
   ]
 }
