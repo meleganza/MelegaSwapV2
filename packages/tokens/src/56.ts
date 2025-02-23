@@ -4118,4 +4118,12 @@ export const bscTokens = {
     'CZs Dog',
     'https://four.meme/token/0x6d5ad1592ed9d6d1df9b93c793ab759573ed6714',
   ),
+  ggft: new ERC20Token(
+    ChainId.BSC,
+    '0x46a800947009eBBD2d40C6b5ab5BE9A3B1Ae9c2a',
+    9,
+    'GGFT',
+    'GRIZZGANGFOREVER',
+    'https://GGFtoken.com',
+  ),
 }
