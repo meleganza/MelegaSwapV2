@@ -4126,4 +4126,12 @@ export const bscTokens = {
     'GRIZZGANGFOREVER',
     'https://GGFtoken.com',
   ),
+  bnbdog: new ERC20Token(
+    ChainId.BSC,
+    '0x52ABb09Ceb590f04c7d70bE9d6aA420177E94744',
+    18,
+    'BNBDOG',
+    'BNBDog',
+    'https://www.bnbdoginu.com/',
+  ),
 }
