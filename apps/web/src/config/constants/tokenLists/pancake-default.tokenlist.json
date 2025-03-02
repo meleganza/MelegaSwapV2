@@ -2420,6 +2420,14 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x46a800947009eBBD2d40C6b5ab5BE9A3B1Ae9c2a.png?raw=true"
+    },
+    {
+      "name": "BNBDog",
+      "symbol": "BNBDOG",
+      "address": "0x52ABb09Ceb590f04c7d70bE9d6aA420177E94744",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x52abb09ceb590f04c7d70be9d6aa420177e94744.png?raw=true"
     }
   ]
 }
