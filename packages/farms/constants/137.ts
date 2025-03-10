@@ -269,6 +269,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.kong,
     quoteToken: polygonTokens.wmatic,
   },
+  {
+    pid: 38,
+    lpSymbol: 'KONG-MARCO LP',
+    lpAddress: '0x1173530Ee7Da912518e03062DE2499f8E4bA6aAd',
+    token: polygonTokens.kong,
+    quoteToken: polygonTokens.cake,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
