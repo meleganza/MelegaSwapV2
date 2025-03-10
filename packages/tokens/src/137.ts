@@ -155,5 +155,12 @@ export const polygonTokens = {
     18,
     'PM',
     'Positive Mind'
+  ),
+  kong: new ERC20Token(
+    ChainId.POLYGON,
+    '0x9e5f008F477797654D4c34b19A77478dD9664814',
+    18,
+    'KONG',
+    'KONG'
   )
 }
