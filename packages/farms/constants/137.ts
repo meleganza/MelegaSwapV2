@@ -261,6 +261,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x689372694586d85ebB7DFA27B5f2a92D58Db4C97',
     token: polygonTokens.pm,
     quoteToken: polygonTokens.cake,
+ },
+  {
+    pid: 37,
+    lpSymbol: 'KONG-MATIC LP',
+    lpAddress: '0xEe437aEEeA33aED4FF22b525120e1dAd0C9E2411',
+    token: polygonTokens.kong,
+    quoteToken: polygonTokens.wmatic,
   },
   // {
   //   pid: 3,
