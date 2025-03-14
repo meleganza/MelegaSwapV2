@@ -4134,4 +4134,12 @@ export const bscTokens = {
     'BNBDog',
     'https://www.bnbdoginu.com/',
   ),
+  wmn: new ERC20Token(
+    ChainId.BSC,
+    '0xb51d09B75193C35C1eb72D5714453a04051a80bC',
+    18,
+    'WMN',
+    'WebMid Network',
+    'https://www.watermalones.com',
+  ),
 }
