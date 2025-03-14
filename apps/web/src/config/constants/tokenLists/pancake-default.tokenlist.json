@@ -2436,6 +2436,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x9e5f008F477797654D4c34b19A77478dD9664814.png?raw=true"
+   },
+    {
+      "name": "WebMind Network",
+      "symbol": "WMN",
+      "address": "0xb51d09B75193C35C1eb72D5714453a04051a80bC",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb51d09B75193C35C1eb72D5714453a04051a80bC.png?raw=true"
     }
   ]
 }
