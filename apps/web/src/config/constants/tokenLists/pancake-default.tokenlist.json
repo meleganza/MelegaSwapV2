@@ -2444,6 +2444,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xb51d09B75193C35C1eb72D5714453a04051a80bC.png?raw=true"
+    },
+    {
+      "name": "USDO",
+      "symbol": "USDO",
+      "address": "0xF58C031630f90Fcfe9B285e193835E65A0604957",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xF58C031630f90Fcfe9B285e193835E65A0604957.png?raw=true"
     }
   ]
 }
