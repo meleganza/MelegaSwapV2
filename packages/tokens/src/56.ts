@@ -4142,4 +4142,12 @@ export const bscTokens = {
     'WebMid Network',
     'https://www.watermalones.com',
   ),
+  usdo: new ERC20Token(
+    ChainId.BSC,
+    '0xF58C031630f90Fcfe9B285e193835E65A0604957',
+    18,
+    'USDO',
+    'USDO',
+    'https://www.usdo.in',
+  ),
 }
