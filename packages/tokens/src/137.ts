@@ -162,5 +162,12 @@ export const polygonTokens = {
     18,
     'KONG',
     'KONG'
+   ),
+  saudi: new ERC20Token(
+    ChainId.POLYGON,
+    '0x198F6496a3F67A2376f6FdFad145B4b51e3Fd63A',
+    18,
+    'SAUDI',
+    'SAUDI'
   )
 }
