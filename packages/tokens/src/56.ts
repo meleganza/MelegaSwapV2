@@ -4150,4 +4150,12 @@ export const bscTokens = {
     'USDO',
     'https://www.usdo.in',
   ),
+  puffcat: new ERC20Token(
+    ChainId.BSC,
+    '0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c',
+    9,
+    '$PUFFCAT',
+    'PUFFCAT',
+    'http://puffcat.io/',
+  ),
 }
