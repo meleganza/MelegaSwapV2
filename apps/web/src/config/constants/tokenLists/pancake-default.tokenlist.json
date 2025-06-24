@@ -2460,6 +2460,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x198F6496a3F67A2376f6FdFad145B4b51e3Fd63A.png?raw=true"
+    },
+    {
+      "name": "PUFFCAT",
+      "symbol": "$PUFFCAT",
+      "address": "0x14a8d0AC8Fc456899F2DD33C3f4E32403A78126c",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c.png?raw=true"
     }
   ]
 }
