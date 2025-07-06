@@ -204,6 +204,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x7AA0000fBc6cc263a5bcd1F58A7FF2664243967D',
     token: baseTokens.fork,
     quoteToken: baseTokens.weth,
+   },
+  {
+    pid: 29,
+    lpSymbol: 'FORK-MARCO LP',
+    lpAddress: '0xdd11f78B35E2C344424094a590dF88B0b93e5145',
+    token: baseTokens.fork,
+    quoteToken: baseTokens.cake,
   },
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
