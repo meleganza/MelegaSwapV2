@@ -2468,6 +2468,14 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c.png?raw=true"
+    },
+    {
+      "name": "naiive",
+      "symbol": "naiive",
+      "address": "0xB21b24F12c6125487a33fCF96aB06a5c74114444",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xB21b24F12c6125487a33fCF96aB06a5c74114444.png?raw=true"
     }
   ]
 }
