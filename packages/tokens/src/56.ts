@@ -4158,4 +4158,11 @@ export const bscTokens = {
     'PUFFCAT',
     'http://puffcat.io/',
   ),
+  naiive: new ERC20Token(
+    ChainId.BSC,
+    '0xB21b24F12c6125487a33fCF96aB06a5c74114444',
+    'naiive',
+    'naiive',
+    'https://www.naiive.lol',
+  ),
 }
