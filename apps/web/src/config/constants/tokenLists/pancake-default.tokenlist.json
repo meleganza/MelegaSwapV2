@@ -2476,6 +2476,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xB21b24F12c6125487a33fCF96aB06a5c74114444.png?raw=true"
+    },
+    {
+      "name": "2G Digital Dollar",
+      "symbol": "2GDD",
+      "address": "0xCFaEE544821Ac604b8CaFE8004529FfAcaE0cbe2",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xCFaEE544821Ac604b8CaFE8004529FfAcaE0cbe2.png?raw=true"
     }
   ]
 }
