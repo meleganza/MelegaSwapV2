@@ -4166,4 +4166,12 @@ export const bscTokens = {
     'naiive',
     'https://www.naiive.lol',
   ),
+  gdd2: new ERC20Token(
+    ChainId.BSC,
+    '0xCFaEE544821Ac604b8CaFE8004529FfAcaE0cbe2',
+    18,
+    '2GDD',
+    '2G Digital Dollar',
+    'https://www.2gcc.eu',
+  ),
 }
