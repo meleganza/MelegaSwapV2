@@ -4174,4 +4174,12 @@ export const bscTokens = {
     '2G Digital Dollar',
     'https://www.2gcc.eu',
   ),
+  okzoo: new ERC20Token(
+    ChainId.BSC,
+    '0x55ad16Bd573B3365f43A9dAeB0Cc66A73821b4a5',
+    18,
+    'AIOT',
+    'OKZOO',
+    'https://www.okzoo.app',
+  ),
 }
