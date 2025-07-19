@@ -4182,4 +4182,12 @@ export const bscTokens = {
     'OKZOO',
     'https://www.okzoo.app',
   ),
+  pepecoin: new ERC20Token(
+    ChainId.BSC,
+    '0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00',
+    18,
+    'PEPE',
+    'Pepe',
+    'https://www.pepe.vip/',
+  ),
 }
