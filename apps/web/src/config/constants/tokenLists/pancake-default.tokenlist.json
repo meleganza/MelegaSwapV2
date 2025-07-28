@@ -2500,6 +2500,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00.png?raw=true"
+    },
+    {
+      "name": "qwadroX",
+      "symbol": "qwrx",
+      "address": "0x75a658568dFd94335861F6610bE3E5A5fFF4C16C",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x75a658568dfd94335861f6610be3e5a5fff4c16c.png?raw=true"
     }
   ]
 }
