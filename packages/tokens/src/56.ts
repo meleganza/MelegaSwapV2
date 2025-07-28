@@ -4190,4 +4190,12 @@ export const bscTokens = {
     'Pepe',
     'https://www.pepe.vip/',
   ),
+  qwrx: new ERC20Token(
+    ChainId.BSC,
+    '0x75a658568dFd94335861F6610bE3E5A5fFF4C16C',
+    18,
+    'qwrx',
+    'QwadroX',
+    'https://qwadrox.fun/',
+  ),
 }
