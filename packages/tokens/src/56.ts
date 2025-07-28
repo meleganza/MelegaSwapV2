@@ -4195,7 +4195,7 @@ export const bscTokens = {
     '0x75a658568dFd94335861F6610bE3E5A5fFF4C16C',
     18,
     'qwrx',
-    'QwadroX',
+    'qwadroX',
     'https://qwadrox.fun/',
   ),
 }
