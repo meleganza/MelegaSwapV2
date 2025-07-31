@@ -4200,7 +4200,7 @@ export const bscTokens = {
   ),
   babydoge: new ERC20Token(
     ChainId.BSC,
-    '0xc748673057861a797275cd8a068abb95a902e8de',
+    '0xc748673057861a797275CD8A068AbB95A902e8de',
     9,
     'BabyDoge',
     'Baby Doge Coin',
