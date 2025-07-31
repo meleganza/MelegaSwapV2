@@ -4198,4 +4198,12 @@ export const bscTokens = {
     'qwadroX',
     'https://qwadrox.fun/',
   ),
+  babydoge: new ERC20Token(
+    ChainId.BSC,
+    '0xc748673057861a797275cd8a068abb95a902e8de',
+    9,
+    'BabyDoge',
+    'Baby Doge Coin',
+    'https://babydoge.com/',
+  ),
 }
