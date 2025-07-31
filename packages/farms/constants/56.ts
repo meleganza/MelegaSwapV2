@@ -2844,14 +2844,14 @@ const farms: SerializedFarmConfig[] = [
    },
   {
     pid: 368,
-    lpSymbol: 'BNB-BABYDOGE LP',
+    lpSymbol: 'BNB-BabyDoge LP',
     lpAddress: '0x568e6C7CfD6aD7e7Ab0dA83fBf3A8731960BE4e6',
     token: bscTokens.babydoge,
     quoteToken: bscTokens.wbnb,
   },
   {
     pid: 369,
-    lpSymbol: 'MARCO-BABYDOGE LP',
+    lpSymbol: 'MARCO-BabyDoge LP',
     lpAddress: '0xFDD44032c64e192C49081C715B15cCfaF92ddfe7',
     token: bscTokens.babydoge,
     quoteToken: bscTokens.cake,
