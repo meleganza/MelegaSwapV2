@@ -2512,10 +2512,10 @@
     {
       "name": "Baby Doge Coin",
       "symbol": "BabyDOge",
-      "address": "0xc748673057861a797275cd8a068abb95a902e8de",
+      "address": "0xc748673057861a797275CD8A068AbB95A902e8de",
       "chainId": 56,
       "decimals": 9,
-      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xc748673057861a797275cd8a068abb95a902e8de.png?raw=true"
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xc748673057861a797275CD8A068AbB95A902e8de.png?raw=true"
     }
   ]
 }
