@@ -4206,4 +4206,12 @@ export const bscTokens = {
     'Baby Doge Coin',
     'https://babydoge.com/',
   ),
+  bonk: new ERC20Token(
+    ChainId.BSC,
+    '0xA697e272a73744b343528C3Bc4702F2565b2F422',
+    5,
+    'BONK',
+    'Bonk',
+    'https://www.bonkcoin.com/',
+  ),
 }
