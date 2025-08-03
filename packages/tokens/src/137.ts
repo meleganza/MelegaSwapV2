@@ -169,5 +169,12 @@ export const polygonTokens = {
     18,
     'SAUDI',
     'SAUDI'
+  ),
+  saudi: new ERC20Token(
+    ChainId.POLYGON,
+    '0x17A13A4ABA33fB0ca76CeC97580CDadd9df18738',
+    18,
+    'CSN',
+    'Crypto Smart Network'
   )
 }
