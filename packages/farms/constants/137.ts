@@ -276,6 +276,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.kong,
     quoteToken: polygonTokens.cake,
   },
+  {
+    pid: 39,
+    lpSymbol: 'CSN-MATIC LP',
+    lpAddress: '0x24440A667910A85Bc8f08b4168e1f0130b801F85',
+    token: polygonTokens.csn,
+    quoteToken: polygonTokens.wmatic,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
