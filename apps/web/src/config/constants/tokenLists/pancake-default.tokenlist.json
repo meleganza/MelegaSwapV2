@@ -2532,6 +2532,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0x17A13A4ABA33fB0ca76CeC97580CDadd9df18738.png?raw=true"
+    },
+    {
+      "name": "First Digital USD",
+      "symbol": "FDUSD",
+      "address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409.png?raw=true"
     }
   ]
 }
