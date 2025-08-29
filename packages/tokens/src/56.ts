@@ -4222,4 +4222,12 @@ export const bscTokens = {
     'First Digital USD',
     'https://firstdigitallabs.com/',
   ),
+  floki: new ERC20Token(
+    ChainId.BSC,
+    '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E',
+    9,
+    'FLOKI',
+    'FLOKI',
+    'https://www.floki.com/',
+  ),
 }
