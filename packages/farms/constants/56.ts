@@ -2878,7 +2878,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: bscTokens.wbnb,
   },
   {
-    pid: 371,
+    pid: 373,
     lpSymbol: 'MARCO-FDUSD LP',
     lpAddress: '0xE0f08D9F3013aE579b6e34AE976FD2df0C41bf02',
     token: bscTokens.fdusd,
