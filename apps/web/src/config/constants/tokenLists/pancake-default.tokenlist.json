@@ -2540,6 +2540,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409.png?raw=true"
+    },
+    {
+      "name": "FLOKI",
+      "symbol": "FLOKI",
+      "address": "0xfb5B838b6cfEEdC2873aB27866079AC55363D37E",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xfb5B838b6cfEEdC2873aB27866079AC55363D37E.png?raw=true"
     }
   ]
 }
