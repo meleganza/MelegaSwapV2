@@ -2883,6 +2883,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0xE0f08D9F3013aE579b6e34AE976FD2df0C41bf02',
     token: bscTokens.fdusd,
     quoteToken: bscTokens.cake,
+   },
+  {
+    pid: 374,
+    lpSymbol: 'BNB-FLOKI LP',
+    lpAddress: '0x9E508570e9E15D32bdDA47e64c670Dbc64CBeA12',
+    token: bscTokens.floki,
+    quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 375,
+    lpSymbol: 'MARCO-FLOKI LP',
+    lpAddress: '0x719918408E43262A5A3C39c196B8315025006Bcd',
+    token: bscTokens.floki,
+    quoteToken: bscTokens.cake,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
