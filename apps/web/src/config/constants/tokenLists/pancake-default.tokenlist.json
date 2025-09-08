@@ -2548,6 +2548,14 @@
       "chainId": 56,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xfb5B838b6cfEEdC2873aB27866079AC55363D37E.png?raw=true"
+    },
+    {
+      "name": "World Liberty Financial",
+      "symbol": "WLFI",
+      "address": "0x47474747477b199288bF72a1D702f7Fe0Fb1DEeA",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x47474747477b199288bF72a1D702f7Fe0Fb1DEeA.png?raw=true"
     }
   ]
 }
