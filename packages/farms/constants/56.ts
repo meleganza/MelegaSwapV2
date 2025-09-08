@@ -2897,6 +2897,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x719918408E43262A5A3C39c196B8315025006Bcd',
     token: bscTokens.floki,
     quoteToken: bscTokens.cake,
+  },
+  {
+    pid: 376,
+    lpSymbol: 'BNB-WLFI LP',
+    lpAddress: '0x195Ea44aB3d1d6344E9427717853a36caD3A8946',
+    token: bscTokens.wlfi,
+    quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 377,
+    lpSymbol: 'MARCO-WLFI LP',
+    lpAddress: '0xaC1390e7fACDf02A40909FA4947742F52c75EC7f',
+    token: bscTokens.wlfi,
+    quoteToken: bscTokens.cake,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
