@@ -4230,4 +4230,12 @@ export const bscTokens = {
     'FLOKI',
     'https://www.floki.com/',
   ),
+  wlfi: new ERC20Token(
+    ChainId.BSC,
+    '0x47474747477b199288bF72a1D702f7Fe0Fb1DEeA',
+    18,
+    'WLFI',
+    'World Liberty Financial',
+    'https://www.worldlibertyfinancial.com/',
+  ),
 }
