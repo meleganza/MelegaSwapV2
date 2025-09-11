@@ -2556,6 +2556,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x47474747477b199288bF72a1D702f7Fe0Fb1DEeA.png?raw=true"
+    },
+    {
+      "name": "ePowerX",
+      "symbol": "EPWX",
+      "address": "0xeF5f5751cf3eCA6cC3572768298B7783d33D60Eb",
+      "chainId": 8453,
+      "decimals": 9,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xef5f5751cf3eca6cc3572768298b7783d33d60eb.png?raw=true"
     }
   ]
 }
