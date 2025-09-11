@@ -166,4 +166,12 @@ export const baseTokens = {
     'Fork Dog',
     'http://forkdog.io',
   ),
+  epwx: new ERC20Token(
+    ChainId.BASE,
+    '0xeF5f5751cf3eCA6cC3572768298B7783d33D60Eb',
+    9,
+    'EPWX',
+    'ePowerX',
+    'https://epowex.com/',
+  ),
 }
