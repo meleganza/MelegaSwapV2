@@ -176,5 +176,12 @@ export const polygonTokens = {
     18,
     'CSN',
     'Crypto Smart Network'
+  ),
+  vtr: new ERC20Token(
+    ChainId.POLYGON,
+    '0xd47bD26496DC8f902512851244d67910b64d4727',
+    18,
+    'VTR',
+    'VaultRise'
   )
 }
