@@ -283,6 +283,13 @@ const farms: SerializedFarmConfig[] = [
     token: polygonTokens.csn,
     quoteToken: polygonTokens.wmatic,
   },
+  {
+    pid: 40,
+    lpSymbol: 'VTR-MATIC LP',
+    lpAddress: '0x0007B57Dd0edA94d3fd793d0240c87cc514A0F18',
+    token: polygonTokens.vtr,
+    quoteToken: polygonTokens.wmatic,
+  },
   // {
   //   pid: 3,
   //   lpSymbol: 'MARCO-USDC LP',
