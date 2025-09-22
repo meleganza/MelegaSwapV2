@@ -2564,6 +2564,14 @@
       "chainId": 8453,
       "decimals": 9,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/8453/tokens/0xef5f5751cf3eca6cc3572768298b7783d33d60eb.png?raw=true"
+     },
+    {
+      "name": "VaultRise",
+      "symbol": "VTR",
+      "address": "0xd47bD26496DC8f902512851244d67910b64d4727",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xd47bD26496DC8f902512851244d67910b64d4727.png?raw=true"
     }
   ]
 }
