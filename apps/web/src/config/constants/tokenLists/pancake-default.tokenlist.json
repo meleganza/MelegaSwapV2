@@ -2572,6 +2572,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/137/tokens/0xd47bD26496DC8f902512851244d67910b64d4727.png?raw=true"
+     },
+    {
+      "name": "Aster",
+      "symbol": "ASTER",
+      "address": "0x000ae314e2a2172a039b26378814c252734f556a",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x000ae314e2a2172a039b26378814c252734f556a.png?raw=true"
     }
   ]
 }
