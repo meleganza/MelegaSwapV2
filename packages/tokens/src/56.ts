@@ -4237,5 +4237,13 @@ export const bscTokens = {
     'WLFI',
     'World Liberty Financial',
     'https://www.worldlibertyfinancial.com/',
+   ),
+  aster: new ERC20Token(
+    ChainId.BSC,
+    '0x000ae314e2a2172a039b26378814c252734f556a',
+    18,
+    'ASTER',
+    'Aster',
+    'https://www.asterdex.com/',
   ),
 }
