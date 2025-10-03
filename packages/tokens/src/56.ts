@@ -4240,7 +4240,7 @@ export const bscTokens = {
    ),
   aster: new ERC20Token(
     ChainId.BSC,
-    '0x000ae314e2a2172a039b26378814c252734f556a',
+    '0x000Ae314E2A2172a039B26378814C252734f556A',
     18,
     'ASTER',
     'Aster',
