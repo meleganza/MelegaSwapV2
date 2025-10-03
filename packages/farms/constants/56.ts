@@ -2911,6 +2911,20 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0xaC1390e7fACDf02A40909FA4947742F52c75EC7f',
     token: bscTokens.wlfi,
     quoteToken: bscTokens.cake,
+  },
+  {
+    pid: 378,
+    lpSymbol: 'BNB-ASTER LP',
+    lpAddress: '0x24CB75B68d40A48fB10a3e22aB08a1157842e9d6',
+    token: bscTokens.aster,
+    quoteToken: bscTokens.wbnb,
+  },
+  {
+    pid: 379,
+    lpSymbol: 'MARCO-ASTER LP',
+    lpAddress: '0x3286c21F9bbdC859b902Fd0d7ABEac1D1B6Cb9a0',
+    token: bscTokens.aster,
+    quoteToken: bscTokens.cake,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
