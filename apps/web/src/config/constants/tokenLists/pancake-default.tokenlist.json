@@ -2580,6 +2580,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x000Ae314E2A2172a039B26378814C252734f556A.png?raw=true"
+     },
+    {
+      "name": "Plasma",
+      "symbol": "XPL",
+      "address": "0x405FBc9004D857903bFD6b3357792D71a50726b0",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x405FBc9004D857903bFD6b3357792D71a50726b0.png?raw=true"
     }
   ]
 }
