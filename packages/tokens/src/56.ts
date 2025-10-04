@@ -4245,5 +4245,13 @@ export const bscTokens = {
     'ASTER',
     'Aster',
     'https://www.asterdex.com/',
+   ),
+  plasma: new ERC20Token(
+    ChainId.BSC,
+    '0x405FBc9004D857903bFD6b3357792D71a50726b0',
+    18,
+    'XPL',
+    'Plasma',
+    'https://www.plasma.to/',
   ),
 }
