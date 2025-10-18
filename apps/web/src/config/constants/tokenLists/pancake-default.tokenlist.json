@@ -2588,6 +2588,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x405FBc9004D857903bFD6b3357792D71a50726b0.png?raw=true"
+    },
+    {
+      "name": "Quali",
+      "symbol": "QLM",
+      "address": "0xeeDD108C43A55723e7F310367b2Ced053166D75C",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xeeDD108C43A55723e7F310367b2Ced053166D75C.png?raw=true"
     }
   ]
 }
