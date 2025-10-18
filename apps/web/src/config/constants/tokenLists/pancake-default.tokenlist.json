@@ -2596,6 +2596,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xeeDD108C43A55723e7F310367b2Ced053166D75C.png?raw=true"
+     },
+    {
+      "name": "Binance 狮子",
+      "symbol": "BLION",
+      "address": "0xd1Ff6De8297DB3839DFC3356F020d63a2E72BbD2",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xd1Ff6De8297DB3839DFC3356F020d63a2E72BbD2.png?raw=true"
     }
   ]
 }
