@@ -2939,6 +2939,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x0725499DC76083F5500feF7E83280ECF25Be31D9',
     token: bscTokens.plasma,
     quoteToken: bscTokens.cake,
+  },
+  {
+    pid: 382,
+    lpSymbol: 'MARCO-QLM LP',
+    lpAddress: '0x558fBcAd70142B30Da1d02660b26246e5Cf51CA4',
+    token: bscTokens.qlm,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
