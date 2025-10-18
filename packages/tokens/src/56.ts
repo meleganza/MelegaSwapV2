@@ -4261,5 +4261,13 @@ export const bscTokens = {
     'QLM',
     'Quali',
     'https://qualitoken.com',
+   ),
+  blion: new ERC20Token(
+    ChainId.BSC,
+    '0xd1Ff6De8297DB3839DFC3356F020d63a2E72BbD2',
+    18,
+    'BLION',
+    'Binance 狮子',
+    'https://blion.fun',
   ),
 }
