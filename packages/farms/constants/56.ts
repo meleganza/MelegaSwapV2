@@ -2942,7 +2942,7 @@ const farms: SerializedFarmConfig[] = [
   },
   {
     pid: 382,
-    lpSymbol: 'MARCO-QLM LP',
+    lpSymbol: 'BNB-QLM LP',
     lpAddress: '0x558fBcAd70142B30Da1d02660b26246e5Cf51CA4',
     token: bscTokens.qlm,
     quoteToken: bscTokens.wbnb,
