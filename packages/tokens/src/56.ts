@@ -4253,5 +4253,13 @@ export const bscTokens = {
     'XPL',
     'Plasma',
     'https://www.plasma.to/',
+   ),
+  qlm: new ERC20Token(
+    ChainId.BSC,
+    '0xeeDD108C43A55723e7F310367b2Ced053166D75C',
+    18,
+    'QLM',
+    'Quali',
+    'https://qualitoken.com',
   ),
 }
