@@ -2604,6 +2604,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xd1Ff6De8297DB3839DFC3356F020d63a2E72BbD2.png?raw=true"
+    },
+    {
+      "name": "EVOLUS ORBE",
+      "symbol": "ORBE",
+      "address": "0x179d64c9824D307dc999F34B543fa3b3b7f0c863",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x179d64c9824D307dc999F34B543fa3b3b7f0c863.png?raw=true"
     }
   ]
 }
