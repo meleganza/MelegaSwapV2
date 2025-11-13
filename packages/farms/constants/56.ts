@@ -2960,6 +2960,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x2EC7DBc87342d725cd01888df3D1634bC9111c56',
     token: bscTokens.qlm,
     quoteToken: bscTokens.cake,
+   },
+  {
+    pid: 385,
+    lpSymbol: 'BNB-ORBE LP',
+    lpAddress: '0x409123971641bAeFa0FC06C3E943A4576C2F602D',
+    token: bscTokens.orbe,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
