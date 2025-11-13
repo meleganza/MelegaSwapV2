@@ -4270,4 +4270,12 @@ export const bscTokens = {
     'Binance 狮子',
     'https://blion.fun',
   ),
+  orbe: new ERC20Token(
+    ChainId.BSC,
+    '0x179d64c9824D307dc999F34B543fa3b3b7f0c863',
+    18,
+    'ORBE',
+    'EVOLUS ORBE',
+    'https://evolusorbe.com/',
+  ),
 }
