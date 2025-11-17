@@ -2967,6 +2967,13 @@ const farms: SerializedFarmConfig[] = [
     lpAddress: '0x409123971641bAeFa0FC06C3E943A4576C2F602D',
     token: bscTokens.orbe,
     quoteToken: bscTokens.wbnb,
+   },
+  {
+    pid: 386,
+    lpSymbol: 'BNB-ZANNA LP',
+    lpAddress: '0x677bc4419505C88DD693F5ec8cd8B2fc0521Ec70',
+    token: bscTokens.zanna,
+    quoteToken: bscTokens.wbnb,
   }
 ].map((p) => ({ ...p, token: p.token.serialize, quoteToken: p.quoteToken.serialize }))
 
