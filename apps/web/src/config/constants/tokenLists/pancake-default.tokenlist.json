@@ -2612,6 +2612,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x179d64c9824D307dc999F34B543fa3b3b7f0c863.png?raw=true"
+    },
+    {
+      "name": "Zannachain",
+      "symbol": "ZANNA",
+      "address": "0x517599e694e4506544129f91f2d8C27F3bba80C7",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0x517599e694e4506544129f91f2d8C27F3bba80C7.png?raw=true"
     }
   ]
 }
