@@ -4278,4 +4278,12 @@ export const bscTokens = {
     'EVOLUS ORBE',
     'https://evolusorbe.com/',
   ),
+  zanna: new ERC20Token(
+    ChainId.BSC,
+    '0x517599e694e4506544129f91f2d8C27F3bba80C7',
+    18,
+    'ZANNA',
+    'Zannachain',
+    'https://www.zannachain.com/',
+  ),
 }
