@@ -182,7 +182,7 @@ const CakeDataRow = () => {
         <Flex flexDirection="column" style={{ textAlign: 'center', minWidth: '33.333%' }}>
           <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>Services</h1>
           <br />
-          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/apply">
+          <a style={{ margin: '0.5rem' }} href="https://t.me/markmelly">
             Apply for listing
           </a>
           <a style={{ margin: '0.5rem' }} href="https://melega.space/">
