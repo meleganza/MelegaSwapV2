@@ -19,7 +19,7 @@ export const footerLinks: FooterLinkType[] = [
     items: [
       {
         label: "Contact",
-        href: "https://www.melegaswap.finance/apply",
+        href: "https://www.melega.finance/apply",
       },
       {
         label: "Blog",
@@ -30,16 +30,8 @@ export const footerLinks: FooterLinkType[] = [
         href: "https://t.me/melegacommunity",
       },
       {
-        label: "CAKE",
-        href: "https://www.melegaswap.finance/marco-token",
-      },
-      {
-        label: "—",
-      },
-      {
-        label: "Online Store",
-        href: "https://pancakeswap.creator-spring.com/",
-        isHighlighted: true,
+        label: "MARCO",
+        href: "https://www.melega.finance/marco-token",
       },
     ],
   },
@@ -47,16 +39,12 @@ export const footerLinks: FooterLinkType[] = [
     label: "Help",
     items: [
       {
-        label: "Customer",
-        href: "Support https://docs.pancakeswap.finance/contact-us/customer-support",
+        label: "Documentation",
+        href: "https://www.melega.finance/about",
       },
       {
-        label: "Troubleshooting",
-        href: "https://docs.pancakeswap.finance/help/troubleshooting",
-      },
-      {
-        label: "Guides",
-        href: "https://docs.pancakeswap.finance/get-started",
+        label: "Support",
+        href: "mailto:support@melega.finance",
       },
     ],
   },
@@ -65,23 +53,11 @@ export const footerLinks: FooterLinkType[] = [
     items: [
       {
         label: "Github",
-        href: "https://github.com/pancakeswap",
+        href: "https://github.com/meleganza/MelegaSwapV2",
       },
       {
-        label: "Documentation",
-        href: "https://docs.pancakeswap.finance",
-      },
-      {
-        label: "Bug Bounty",
-        href: "https://app.gitbook.com/@pancakeswap-1/s/pancakeswap/code/bug-bounty",
-      },
-      {
-        label: "Audits",
-        href: "https://docs.pancakeswap.finance/help/faq#is-pancakeswap-safe-has-pancakeswap-been-audited",
-      },
-      {
-        label: "Careers",
-        href: "https://docs.pancakeswap.finance/hiring/become-a-chef",
+        label: "Melega DEX",
+        href: "https://melega.finance",
       },
     ],
   },
@@ -103,21 +79,6 @@ export const socials = [
     icon: InstagramIcon,
     href: "https://www.instagram.com/melega.finance/",
   },
-  // {
-  //   label: "Github",
-  //   icon: GithubIcon,
-  //   href: "/",
-  // },
-  // {
-  //   label: "Medium",
-  //   icon: MediumIcon,
-  //   href: "https://medium.com/@CyberglowCS",
-  // },
-  // {
-  //   label: "Docs",
-  //   icon: ResourcesIcon,
-  //   href: "https://docs.cyberglow.finance",
-  // },
 ];
 
 export const langs: Language[] = range(20).map((_, i) => ({

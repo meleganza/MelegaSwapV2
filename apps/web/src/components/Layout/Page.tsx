@@ -24,7 +24,7 @@ const StyledPage = styled(Container)`
 `
 
 const formatTitle = (pageMetaTitle: string, cakePriceBusd?: number) =>
-  `${pageMetaTitle} | Melega${cakePriceBusd ? ` | $${cakePriceBusd.toFixed(4)}` : ''}`
+  `${pageMetaTitle} | Melega DEX${cakePriceBusd ? ` | $${cakePriceBusd.toFixed(4)}` : ''}`
 
 export const PageMeta: React.FC<React.PropsWithChildren> = () => {
   const {

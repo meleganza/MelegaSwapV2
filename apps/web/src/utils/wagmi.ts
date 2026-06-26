@@ -251,8 +251,8 @@ export const injectedConnector = new InjectedConnector({
 export const coinbaseConnector = new CoinbaseWalletConnector({
   chains,
   options: {
-    appName: 'PancakeSwap',
-    appLogoUrl: 'https://pancakeswap.com/logo.png',
+    appName: 'Melega DEX',
+    appLogoUrl: 'https://melega.finance/main.jpg',
   },
 })
 

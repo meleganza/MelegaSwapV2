@@ -1,7 +1,7 @@
 {
-  "short_name": "Melega",
-  "name": "Melega",
-  "description": "",
+  "short_name": "Melega DEX",
+  "name": "Melega DEX",
+  "description": "AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools.",
   "homepage_url": "https://melega.finance",
   "start_url": ".",
   "display": "standalone",

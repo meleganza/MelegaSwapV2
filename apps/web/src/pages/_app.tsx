@@ -69,7 +69,10 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, viewport-fit=cover"
         />
-        <meta name="description" content="" />
+        <meta
+          name="description"
+          content="Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility."
+        />
         <meta name="theme-color" content="#1FC7D4" />
         {(Component as NextPageWithLayout).mp && (
           // eslint-disable-next-line @next/next/no-sync-scripts

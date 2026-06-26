@@ -55,7 +55,7 @@ const NeedHelp = () => {
             id="clickExchangeHelp"
             as="a"
             external
-            href="mailto:support@melegaswap.finance"
+            href="mailto:support@melega.finance"
             variant="subtle"
           >
             {t('Need help ?')}
