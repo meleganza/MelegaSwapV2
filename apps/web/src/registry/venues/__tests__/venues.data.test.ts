@@ -4,7 +4,7 @@ import { getProjectBySlug } from '../../projects/getProjectBySlug'
 import { STATIC_VENUES } from '../venues.data'
 import { getAllVenues } from '../getAllVenues'
 import { getVenueBySlug, getVenuesByAssetSlug, getVenuesByProjectSlug } from '../getVenueBySlug'
-import { serializeVenueManifest, serializeVenueRegistryIndex } from '../manifest'
+import { serializeVenueManifest, serializeVenueRegistryIndex, stripUndefinedDeep } from '../manifest'
 
 describe('venues.data', () => {
   it('binds venues to melega-dex project', () => {
@@ -49,6 +49,25 @@ describe('manifest', () => {
   it('serializes registry index', () => {
     const index = serializeVenueRegistryIndex()
     expect((index.venues as unknown[]).length).toBe(getAllVenues().length)
+  })
+
+  it('serializes venue manifests without undefined values', () => {
+    getAllVenues().forEach((venue) => {
+      const manifest = serializeVenueManifest(venue)
+      expect(() => JSON.stringify(manifest)).not.toThrow()
+      expect(JSON.stringify(manifest)).not.toContain('undefined')
+
+      const hasUndefined = (value: unknown): boolean => {
+        if (value === undefined) return true
+        if (value && typeof value === 'object') {
+          return Object.values(value as Record<string, unknown>).some(hasUndefined)
+        }
+        return false
+      }
+
+      expect(hasUndefined(manifest)).toBe(false)
+      expect(hasUndefined(stripUndefinedDeep(venue))).toBe(false)
+    })
   })
 })
 

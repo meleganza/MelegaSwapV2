@@ -2,7 +2,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { NotFound } from '@pancakeswap/uikit'
 import { CHAIN_IDS } from 'utils/wagmi'
 import { getAllVenueSlugs, getVenueBySlug } from 'registry/venues/getVenueBySlug'
-import { serializeVenueManifest } from 'registry/venues/manifest'
+import { serializeVenueManifest, stripUndefinedDeep } from 'registry/venues/manifest'
 import { StaticVenueRecord } from 'registry/venues/types'
 import Page from 'components/Layout/Page'
 import VenueDetail from 'views/Venues/VenueDetail'
@@ -39,7 +39,7 @@ export const getStaticProps: GetStaticProps<VenuePageProps> = async ({ params })
 
   return {
     props: {
-      venue,
+      venue: stripUndefinedDeep(venue),
       manifest: serializeVenueManifest(venue),
     },
   }

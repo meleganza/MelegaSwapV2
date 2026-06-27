@@ -2,46 +2,68 @@ import { VENUE_REGISTRY_API_VERSION, VENUE_REGISTRY_AS_OF, VENUE_REGISTRY_DISCLA
 import { getAllVenues } from './getAllVenues'
 import { StaticVenueRecord } from './types'
 
-export const serializeVenueManifest = (venue: StaticVenueRecord): Record<string, unknown> => ({
-  $schema: 'https://melega.finance/schemas/venue/v1',
-  uvi: venue.uvi,
-  slug: venue.slug,
-  venue_type: venue.venueType,
-  lifecycle: venue.lifecycle,
-  display_name: venue.displayName,
-  description: venue.description,
-  tags: venue.tags,
-  chain_id: venue.chainId,
-  contract_address: venue.contractAddress,
-  legacy_ref: venue.legacyRef,
-  pid: venue.pid,
-  sous_id: venue.sousId,
-  project_binding: {
-    project_upi: venue.projectBinding.projectUpi,
-    project_slug: venue.projectBinding.projectSlug,
-    binding_source: venue.projectBinding.bindingSource,
-    bound_at: venue.projectBinding.boundAt,
-  },
-  asset_bindings: venue.assetBindings.map((binding) => ({
-    asset_uai: binding.assetUai,
-    asset_slug: binding.assetSlug,
-    role: binding.role,
-  })),
-  trust: {
-    badges: venue.trust.badges,
-    verification_status: venue.trust.verificationStatus,
-  },
-  capabilities: venue.capabilities,
-  metrics: {
-    status: venue.metrics.status,
-    notes: venue.metrics.notes,
-  },
-  deep_links: venue.deepLinks,
-  mvp_static: venue.mvpStatic,
-  data_source: venue.dataSource,
-  as_of: venue.asOf,
-  disclaimer: venue.disclaimer,
-})
+export const stripUndefinedDeep = <T>(value: T): T => {
+  if (value === undefined) {
+    return value
+  }
+  if (value === null || typeof value !== 'object') {
+    return value
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => stripUndefinedDeep(item)) as T
+  }
+  return Object.entries(value as Record<string, unknown>).reduce(
+    (acc, [key, val]) => {
+      if (val !== undefined) {
+        acc[key] = stripUndefinedDeep(val)
+      }
+      return acc
+    },
+    {} as Record<string, unknown>,
+  ) as T
+}
+
+export const serializeVenueManifest = (venue: StaticVenueRecord): Record<string, unknown> =>
+  stripUndefinedDeep({
+    $schema: 'https://melega.finance/schemas/venue/v1',
+    uvi: venue.uvi,
+    slug: venue.slug,
+    venue_type: venue.venueType,
+    lifecycle: venue.lifecycle,
+    display_name: venue.displayName,
+    description: venue.description,
+    tags: venue.tags,
+    chain_id: venue.chainId,
+    contract_address: venue.contractAddress,
+    legacy_ref: venue.legacyRef,
+    pid: venue.pid,
+    sous_id: venue.sousId,
+    project_binding: {
+      project_upi: venue.projectBinding.projectUpi,
+      project_slug: venue.projectBinding.projectSlug,
+      binding_source: venue.projectBinding.bindingSource,
+      bound_at: venue.projectBinding.boundAt,
+    },
+    asset_bindings: venue.assetBindings.map((binding) => ({
+      asset_uai: binding.assetUai,
+      asset_slug: binding.assetSlug,
+      role: binding.role,
+    })),
+    trust: {
+      badges: venue.trust.badges,
+      verification_status: venue.trust.verificationStatus,
+    },
+    capabilities: venue.capabilities,
+    metrics: {
+      status: venue.metrics.status,
+      notes: venue.metrics.notes,
+    },
+    deep_links: venue.deepLinks,
+    mvp_static: venue.mvpStatic,
+    data_source: venue.dataSource,
+    as_of: venue.asOf,
+    disclaimer: venue.disclaimer,
+  })
 
 export const serializeVenueRegistryIndex = (): Record<string, unknown> => {
   const venues = getAllVenues()
