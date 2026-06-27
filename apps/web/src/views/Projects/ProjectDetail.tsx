@@ -10,6 +10,7 @@ import ProjectHealthSummary from './components/ProjectHealthSummary'
 import ProjectManifestViewer from './components/ProjectManifestViewer'
 import ProjectRelationshipsSection from './components/ProjectRelationshipsSection'
 import ProjectTokenList from './components/ProjectTokenList'
+import ProjectAssetsSection from './components/ProjectAssetsSection'
 import ProjectResourceLinks from './components/ProjectResourceLinks'
 import ProjectDisclaimer from './components/ProjectDisclaimer'
 
@@ -36,6 +37,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, manifest }) => {
         <ProjectIntelligenceCard project={project} />
         <ProjectHealthSummary health={health} />
         <ProjectManifestViewer manifest={manifest} slug={project.slug} />
+        <ProjectAssetsSection projectSlug={project.slug} />
         <ProjectTokenList tokens={project.resources.tokens} />
         <ProjectRelationshipsSection project={project} />
         <ProjectResourceLinks project={project} />

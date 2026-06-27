@@ -1,0 +1,8 @@
+{
+  "name": "Melega DEX Asset Registry",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/assets/index.json",
+  "project_registry": "/registry/projects/index.json",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/blob/organ02-asset-registry-spec/docs/ORGAN_02_ASSET_REGISTRY_CORE_SPEC_V1.md"
+}
