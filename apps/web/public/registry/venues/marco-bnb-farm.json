@@ -1,0 +1,57 @@
+{
+  "$schema": "https://melega.finance/schemas/venue/v1",
+  "uvi": "uvi://melega/venue/farm/56/pid-1@1",
+  "slug": "marco-bnb-farm",
+  "venue_type": "farm",
+  "lifecycle": "observed",
+  "display_name": "MARCO-BNB Farm",
+  "description": "MasterChef farm pid 1 for MARCO-BNB LP on BSC.",
+  "tags": ["marco", "bnb", "farm"],
+  "chain_id": 56,
+  "contract_address": "0x41D5487836452d23f2c467070244E5842B412794",
+  "legacy_ref": "farm://56/0x41D5487836452d23f2c467070244E5842B412794/pid/1",
+  "pid": 1,
+  "project_binding": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "binding_source": "legacy_import",
+    "bound_at": "2026-06-26"
+  },
+  "asset_bindings": [
+    {
+      "asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+      "asset_slug": "marco",
+      "role": "base"
+    },
+    {
+      "asset_uai": "uvi://melega/venue/spot_lp/56/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e@1",
+      "asset_slug": "marco-bnb-lp",
+      "role": "lp"
+    }
+  ],
+  "trust": {
+    "badges": ["observed"],
+    "verification_status": "observed"
+  },
+  "capabilities": {
+    "swap": { "status": "planned", "notes": "Routing quotes — Smart Routing organ" },
+    "liquidity": { "status": "planned", "notes": "Depth metrics not indexed in MVP" },
+    "farm": { "status": "live", "notes": "Legacy MasterChef via /farms" },
+    "stake": { "status": "planned", "notes": "Stake metrics not indexed in MVP" },
+    "launch": { "status": "planned", "notes": "Campaign metrics not indexed in MVP" },
+    "lock": { "status": "planned", "notes": "Lock Center — Phase 2" },
+    "treasury": { "status": "planned", "notes": "Treasury SKU attribution — Phase 2" },
+    "radar": { "status": "planned", "notes": "Radar feed — Phase 2" }
+  },
+  "metrics": {
+    "status": "not_indexed",
+    "notes": "No APR or emission data in static MVP."
+  },
+  "deep_links": {
+    "farms": "/farms"
+  },
+  "mvp_static": true,
+  "data_source": "venue-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Venue listed ≠ audited. Static venue registry MVP — no live TVL, APR, or volume. Observed = legacy-config indexed only."
+}

@@ -1,0 +1,58 @@
+{
+  "manifest": "manifest://melega/platform/venue-registry@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/venue/v1",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "venues": [
+    {
+      "uvi": "uvi://melega/venue/spot_lp/56/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e@1",
+      "slug": "marco-bnb-lp",
+      "venue_type": "spot_lp",
+      "lifecycle": "observed",
+      "display_name": "MARCO-BNB LP",
+      "project_upi": "upi://melega/project/melega-dex@1",
+      "project_slug": "melega-dex",
+      "chain_id": 56,
+      "manifest_url": "/registry/venues/marco-bnb-lp.json"
+    },
+    {
+      "uvi": "uvi://melega/venue/farm/56/pid-1@1",
+      "slug": "marco-bnb-farm",
+      "venue_type": "farm",
+      "lifecycle": "observed",
+      "display_name": "MARCO-BNB Farm",
+      "project_upi": "upi://melega/project/melega-dex@1",
+      "project_slug": "melega-dex",
+      "chain_id": 56,
+      "manifest_url": "/registry/venues/marco-bnb-farm.json"
+    },
+    {
+      "uvi": "uvi://melega/venue/stake_pool/56/sous-0@1",
+      "slug": "marco-stake-sous-0",
+      "venue_type": "stake_pool",
+      "lifecycle": "observed",
+      "display_name": "MARCO Stake Pool (sousId 0)",
+      "project_upi": "upi://melega/project/melega-dex@1",
+      "project_slug": "melega-dex",
+      "chain_id": 56,
+      "manifest_url": "/registry/venues/marco-stake-sous-0.json"
+    },
+    {
+      "uvi": "uvi://melega/venue/launch/56/0xabb5176ad486019fb0f7564d9f7c9510999c779a@1",
+      "slug": "melega-ilo-bsc",
+      "venue_type": "launch",
+      "lifecycle": "observed",
+      "display_name": "Melega ILO (BSC)",
+      "project_upi": "upi://melega/project/melega-dex@1",
+      "project_slug": "melega-dex",
+      "chain_id": 56,
+      "manifest_url": "/registry/venues/melega-ilo-bsc.json"
+    }
+  ],
+  "disclaimer": "Venue listed ≠ audited. Static venue registry MVP — no live TVL, APR, or volume. Observed = legacy-config indexed only.",
+  "data_source": "venue-registry-static",
+  "as_of": "2026-06-26"
+}

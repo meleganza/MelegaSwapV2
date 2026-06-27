@@ -1,0 +1,51 @@
+{
+  "$schema": "https://melega.finance/schemas/venue/v1",
+  "uvi": "uvi://melega/venue/launch/56/0xabb5176ad486019fb0f7564d9f7c9510999c779a@1",
+  "slug": "melega-ilo-bsc",
+  "venue_type": "launch",
+  "lifecycle": "observed",
+  "display_name": "Melega ILO (BSC)",
+  "description": "Legacy IFOv3 launch surface on BSC — contract from platform config snapshot.",
+  "tags": ["launch", "ilo", "bsc"],
+  "chain_id": 56,
+  "contract_address": "0xabB5176ad486019fb0F7564d9F7C9510999c779A",
+  "legacy_ref": "launch://56/0xabB5176ad486019fb0F7564d9F7C9510999c779A",
+  "project_binding": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "binding_source": "legacy_import",
+    "bound_at": "2026-06-26"
+  },
+  "asset_bindings": [
+    {
+      "asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+      "asset_slug": "marco",
+      "role": "base"
+    }
+  ],
+  "trust": {
+    "badges": ["observed"],
+    "verification_status": "observed"
+  },
+  "capabilities": {
+    "swap": { "status": "planned", "notes": "Routing quotes — Smart Routing organ" },
+    "liquidity": { "status": "planned", "notes": "Depth metrics not indexed in MVP" },
+    "farm": { "status": "planned", "notes": "Reward rates not indexed in MVP" },
+    "stake": { "status": "planned", "notes": "Stake metrics not indexed in MVP" },
+    "launch": { "status": "partial", "notes": "ILO route /ilo on BSC" },
+    "lock": { "status": "planned", "notes": "Lock Center — Phase 2" },
+    "treasury": { "status": "planned", "notes": "Treasury SKU attribution — Phase 2" },
+    "radar": { "status": "planned", "notes": "Radar feed — Phase 2" }
+  },
+  "metrics": {
+    "status": "not_indexed",
+    "notes": "No sale metrics in static MVP."
+  },
+  "deep_links": {
+    "launch": "/ilo"
+  },
+  "mvp_static": true,
+  "data_source": "venue-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Venue listed ≠ audited. Static venue registry MVP — no live TVL, APR, or volume. Observed = legacy-config indexed only."
+}
