@@ -1,12 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Flex, Text } from '@pancakeswap/uikit'
-import { useTranslation } from '@pancakeswap/localization'
+import { Flex } from '@pancakeswap/uikit'
 import Page from 'components/Layout/Page'
 import { StaticProjectRecord } from 'registry/projects/types'
+import { computeHealthMetrics } from 'registry/projects/intelligence'
 import ProjectHero from './components/ProjectHero'
+import ProjectIntelligenceCard from './components/ProjectIntelligenceCard'
+import ProjectHealthSummary from './components/ProjectHealthSummary'
+import ProjectManifestViewer from './components/ProjectManifestViewer'
+import ProjectRelationshipsSection from './components/ProjectRelationshipsSection'
 import ProjectTokenList from './components/ProjectTokenList'
-import ProjectCapabilityMatrix from './components/ProjectCapabilityMatrix'
 import ProjectResourceLinks from './components/ProjectResourceLinks'
 import ProjectDisclaimer from './components/ProjectDisclaimer'
 
@@ -20,23 +23,22 @@ const Stack = styled(Flex)`
 
 interface ProjectDetailProps {
   project: StaticProjectRecord
+  manifest: Record<string, unknown>
 }
 
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ project }) => {
-  const { t } = useTranslation()
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, manifest }) => {
+  const health = computeHealthMetrics(project)
 
   return (
     <Page>
       <Stack px="16px">
         <ProjectHero project={project} />
+        <ProjectIntelligenceCard project={project} />
+        <ProjectHealthSummary health={health} />
+        <ProjectManifestViewer manifest={manifest} slug={project.slug} />
         <ProjectTokenList tokens={project.resources.tokens} />
-        <ProjectCapabilityMatrix capabilities={project.capabilities} />
+        <ProjectRelationshipsSection project={project} />
         <ProjectResourceLinks project={project} />
-        {project.verificationStatus === 'unverified' && (
-          <Text fontSize="12px" color="textDisabled" textAlign="center">
-            {t('Unverified badge tooltip')}
-          </Text>
-        )}
         <ProjectDisclaimer />
       </Stack>
     </Page>

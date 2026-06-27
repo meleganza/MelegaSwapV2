@@ -3,8 +3,9 @@ import styled from 'styled-components'
 import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { CAPABILITY_LABELS } from 'registry/projects/constants'
-import { getCapabilityStatusLabel } from 'registry/projects/capabilities'
+import { mapCapabilityToDisplayStatus } from 'registry/projects/intelligence'
 import { ProjectCapabilities } from 'registry/projects/types'
+import CapabilityStatus from './CapabilityStatus'
 
 const Grid = styled(Flex)`
   flex-wrap: wrap;
@@ -16,10 +17,11 @@ const Cell = styled(Flex)`
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  min-height: 72px;
+  min-height: 88px;
   flex: 1 1 200px;
   max-width: 100%;
   background: rgba(255, 255, 255, 0.02);
+  gap: 8px;
 `
 
 interface ProjectCapabilityMatrixProps {
@@ -32,18 +34,16 @@ const ProjectCapabilityMatrix: React.FC<ProjectCapabilityMatrixProps> = ({ capab
 
   return (
     <Flex flexDirection="column" width="100%">
-      <Heading as="h2" scale="md" color="secondary" mb="16px">
-        {t('Capabilities')}
+      <Heading as="h3" scale="sm" color="secondary" mb="16px">
+        {t('Capability matrix')}
       </Heading>
       <Grid>
         {entries.map(([key, cell]) => (
           <Cell key={key}>
-            <Text fontSize="14px" fontWeight={600} color="text" mb="4px">
+            <Text fontSize="14px" fontWeight={600} color="text">
               {t(CAPABILITY_LABELS[key])}
             </Text>
-            <Text fontSize="12px" color="secondary" mb="4px">
-              {t(getCapabilityStatusLabel(cell.status))}
-            </Text>
+            <CapabilityStatus status={mapCapabilityToDisplayStatus(cell.status)} />
             {cell.notes && (
               <Text fontSize="11px" color="textSubtle">
                 {cell.notes}
