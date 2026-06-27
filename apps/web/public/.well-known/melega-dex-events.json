@@ -1,0 +1,10 @@
+{
+  "name": "Melega DEX Economic Event Registry",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/events/index.json",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "venue_registry": "/registry/venues/index.json",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/blob/organ03-economic-venue-registry/docs/ORGAN_04_ECONOMIC_EVENT_REGISTRY_MVP.md"
+}

@@ -9,6 +9,7 @@ import AssetLifecycleBadge from './components/AssetLifecycleBadge'
 import AssetCapabilityMatrix from './components/AssetCapabilityMatrix'
 import AssetManifestViewer from './components/AssetManifestViewer'
 import AssetVenuesSection from './components/AssetVenuesSection'
+import AssetEventsSection from './components/AssetEventsSection'
 
 const Stack = styled(Flex)`
   flex-direction: column;
@@ -108,6 +109,8 @@ const AssetDetail: React.FC<AssetDetailProps> = ({ asset, manifest }) => {
       <AssetCapabilityMatrix capabilities={asset.capabilities} />
 
       <AssetVenuesSection assetSlug={asset.slug} />
+
+      <AssetEventsSection assetSlug={asset.slug} />
 
       <Section>
         <Heading as="h2" scale="md" color="secondary">

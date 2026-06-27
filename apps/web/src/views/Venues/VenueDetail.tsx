@@ -9,6 +9,7 @@ import { StaticVenueRecord } from 'registry/venues/types'
 import VenueTypeBadge from './components/VenueTypeBadge'
 import VenueLifecycleBadge from './components/VenueLifecycleBadge'
 import VenueCapabilityMatrix from './components/VenueCapabilityMatrix'
+import VenueEventsSection from './components/VenueEventsSection'
 import VenueManifestViewer from './components/VenueManifestViewer'
 
 const Stack = styled(Flex)`
@@ -150,6 +151,8 @@ const VenueDetail: React.FC<VenueDetailProps> = ({ venue, manifest }) => {
       </Section>
 
       <VenueCapabilityMatrix capabilities={venue.capabilities} />
+
+      <VenueEventsSection venueSlug={venue.slug} />
 
       <VenueManifestViewer manifest={manifest} slug={venue.slug} />
 

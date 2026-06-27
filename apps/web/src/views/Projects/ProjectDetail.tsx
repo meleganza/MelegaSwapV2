@@ -12,6 +12,7 @@ import ProjectRelationshipsSection from './components/ProjectRelationshipsSectio
 import ProjectTokenList from './components/ProjectTokenList'
 import ProjectAssetsSection from './components/ProjectAssetsSection'
 import ProjectVenuesSection from './components/ProjectVenuesSection'
+import ProjectEventsSection from './components/ProjectEventsSection'
 import ProjectResourceLinks from './components/ProjectResourceLinks'
 import ProjectDisclaimer from './components/ProjectDisclaimer'
 
@@ -40,6 +41,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, manifest }) => {
         <ProjectManifestViewer manifest={manifest} slug={project.slug} />
         <ProjectAssetsSection projectSlug={project.slug} />
         <ProjectVenuesSection projectSlug={project.slug} />
+        <ProjectEventsSection projectSlug={project.slug} />
         <ProjectTokenList tokens={project.resources.tokens} />
         <ProjectRelationshipsSection project={project} />
         <ProjectResourceLinks project={project} />
