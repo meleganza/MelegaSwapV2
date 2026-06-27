@@ -56,6 +56,18 @@ export const footerLinks: FooterLinkType[] = [
         href: "https://github.com/meleganza/MelegaSwapV2",
       },
       {
+        label: "Project Registry",
+        href: "/projects",
+      },
+      {
+        label: "DEX Manifest",
+        href: "/.well-known/melega-dex-manifest.json",
+      },
+      {
+        label: "Machine API (Phase 2)",
+        href: "https://github.com/meleganza/MelegaSwapV2/blob/main/docs/MELEGA_DEX_AI_PROTOCOL_V1.md",
+      },
+      {
         label: "Melega DEX",
         href: "https://melega.finance",
       },

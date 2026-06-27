@@ -1,0 +1,17 @@
+{
+  "manifest": "manifest://melega/platform/project-registry@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/project/v1",
+  "projects": [
+    {
+      "upi": "upi://melega/project/melega-dex@1",
+      "slug": "melega-dex",
+      "manifest_url": "/registry/projects/melega-dex.json"
+    }
+  ],
+  "disclaimer": "Listed ≠ audited. MVP static registry — not live verification.",
+  "data_source": "project-registry-static",
+  "as_of": "2026-06-26"
+}

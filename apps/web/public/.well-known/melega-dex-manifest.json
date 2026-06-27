@@ -1,0 +1,8 @@
+{
+  "name": "Melega DEX",
+  "version": "0.1.0",
+  "status": "phase_2_pending",
+  "description": "Machine-readable manifest placeholder. Full registry and API surfaces ship in a later phase.",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/tree/main/docs",
+  "project_registry": "/.well-known/melega-dex-projects.json"
+}
