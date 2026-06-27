@@ -15,6 +15,7 @@ import CakeVaultCard from './components/CakeVaultCard'
 import PoolControls from './components/PoolControls'
 import PoolRow, { VaultPoolRow } from './components/PoolsTable/PoolRow'
 import BountyCard from './components/BountyCard'
+import DexDisclaimer from 'components/Dex/DexDisclaimer'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 const CardLayout = styled(FlexLayout)`
@@ -53,10 +54,10 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
               {t('MARCO Pools')}
             </Heading>
             <Heading scale="md" color="text">
-              {t('Just stake some tokens to earn.')}
+              {t('Stake MARCO and partner tokens to earn.')}
             </Heading>
-            <Heading scale="md" color="text">
-              {t('High APR, low risk.')}
+            <Heading scale="md" color="textSubtle">
+              {t('APR varies with reward price and pool utilization.')}
             </Heading>
           </Flex>
           <br/>
@@ -152,6 +153,7 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
             </>
           )}
         </PoolControls>
+        <DexDisclaimer mt="32px" />
       </Page>
     </>
   )

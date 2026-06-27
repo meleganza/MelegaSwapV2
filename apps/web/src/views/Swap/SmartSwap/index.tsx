@@ -38,6 +38,7 @@ import { combinedTokenMapFromOfficialsUrlsAtom } from '../../../state/lists/hook
 import AddressInputPanel from '../components/AddressInputPanel'
 import AdvancedSwapDetailsDropdown from '../components/AdvancedSwapDetailsDropdown'
 import CurrencyInputHeader from '../components/CurrencyInputHeader'
+import DexDisclaimer from 'components/Dex/DexDisclaimer'
 import { ArrowWrapper, Wrapper } from '../components/styleds'
 import SwapCommitButton from '../components/SwapCommitButton'
 import useRefreshBlockNumberID from '../hooks/useRefreshBlockNumber'
@@ -238,8 +239,8 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
   return (
     <>
       <CurrencyInputHeader
-        title={t('Exchange')}
-        subtitle={t('Trade tokens in an instant')}
+        title={t('Swap')}
+        subtitle={t('Trade tokens on Melega DEX')}
         hasAmount={hasAmount}
         onRefreshPrice={onRefreshPrice}
       />
@@ -427,6 +428,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
           )}
         </Box>
       </Wrapper>
+      <DexDisclaimer />
     </>
   )
 }

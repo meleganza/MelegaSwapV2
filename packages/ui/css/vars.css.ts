@@ -19,7 +19,7 @@ const makeColorScheme = (mode: Mode = 'light') => {
     textSubtle: '#b8add2',
     textDisabled: '#666171',
     dropdownDeep: '#100c18',
-    cardBorder: '#ffffff',
+    cardBorder: 'rgba(255, 255, 255, 0.12)',
     secondary: '#ffffff',
     tertiary: '#353547',
     bg: '#31d0aa',

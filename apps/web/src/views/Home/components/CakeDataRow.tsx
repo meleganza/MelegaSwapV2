@@ -146,12 +146,12 @@ const CakeDataRow = () => {
       <br />
       <InnerDiv2>
         <Flex flexDirection="column" style={{ textAlign: 'center', minWidth: '33.333%' }}>
-          <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>Products</h1>
+          <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>Melega DEX</h1>
           <br />
           <a style={{ margin: '0.5rem' }} href="/swap">
-            Exchange
+            Swap
           </a>
-          <a style={{ margin: '0.5rem' }} href="/add">
+          <a style={{ margin: '0.5rem' }} href="/liquidity">
             Liquidity
           </a>
           <a style={{ margin: '0.5rem' }} href="/farms">
@@ -165,16 +165,16 @@ const CakeDataRow = () => {
         <Flex flexDirection="column" style={{ textAlign: 'center', minWidth: '33.333%' }}>
           <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>About</h1>
           <br />
-          <a style={{ margin: '0.5rem' }} href="mailto:hello@melegaswap.finance">
+          <a style={{ margin: '0.5rem' }} href="mailto:hello@melega.finance">
             Info
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/about">
+          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/about">
             Docs
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/marco-token">
+          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/marco-token">
             MARCO Token
           </a>
-          <a style={{ margin: '0.5rem' }} href="https://www.melegaswap.finance/babymarco">
+          <a style={{ margin: '0.5rem' }} href="https://www.melega.finance/babymarco">
             BabyMarco
           </a>
         </Flex>

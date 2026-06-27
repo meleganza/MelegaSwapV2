@@ -17,6 +17,7 @@ import {
 } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import Page from 'components/Layout/Page'
+import DexPageIntro from 'components/Dex/DexPageIntro'
 import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import { useIntersectionObserver } from '@pancakeswap/hooks'
 import { DeserializedFarm, FarmWithStakedValue, filterFarmsByQuery } from '@pancakeswap/farms'
@@ -349,6 +350,10 @@ const Farms: React.FC<React.PropsWithChildren> = ({ children }) => {
         </FarmFlexWrapper>
       </PageHeader> */}
       <Page>
+        <DexPageIntro
+          title={t('Farms')}
+          subtitle={t('Stake LP tokens to earn MARCO rewards on Melega DEX.')}
+        />
         <ControlContainer>
           <div style={{ marginTop: '8px' }}>
             <ViewControls>

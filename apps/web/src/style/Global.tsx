@@ -11,12 +11,18 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Kanit', sans-serif;
   }
   body {
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color: #0a0a0f;
 
     img {
       height: auto;
       max-width: 100%;
     }
+  }
+
+  button,
+  a[role="button"],
+  [data-testid="wallet-connect-button"] {
+    min-height: 44px;
   }
 `
 

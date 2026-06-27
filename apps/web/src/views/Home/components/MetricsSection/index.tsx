@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heading, Flex, Text, Skeleton, ChartIcon, CommunityIcon, SwapIcon } from '@pancakeswap/uikit'
+import { Heading, Flex, Text, ChartIcon } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useGetStats } from 'hooks/api'
 import useTheme from 'hooks/useTheme'
@@ -8,36 +8,19 @@ import IconCard, { IconCardData } from '../IconCard'
 import StatCardContent from './StatCardContent'
 import GradientLogo from '../GradientLogoSvg'
 
-// Values fetched from bitQuery effective 6/8/21
-const txCount = 38392695
-const addressCount = 2319694
-
 const Stats = () => {
   const { t } = useTranslation()
   const data = useGetStats()
   const { theme } = useTheme()
 
-  const tvlString = data ? formatLocalisedCompactNumber(data.tvl) : '-'
-  const trades = formatLocalisedCompactNumber(txCount)
-  const users = formatLocalisedCompactNumber(addressCount)
-
-  const tvlText = t('And those users are now entrusting the platform with over $%tvl% in funds.', { tvl: tvlString })
-  const [entrusting, inFunds] = tvlText.split(tvlString)
-
-  const UsersCardData: IconCardData = {
-    icon: <CommunityIcon color="secondary" width="36px" />,
-  }
-
-  const TradesCardData: IconCardData = {
-    icon: <SwapIcon color="primary" width="36px" />,
-  }
+  const tvlString = data ? formatLocalisedCompactNumber(data.tvl) : '—'
 
   const StakedCardData: IconCardData = {
     icon: <ChartIcon color="failure" width="36px" />,
   }
 
   return (
-    <Flex justifyContent="center" alignItems="center" flexDirection="column">
+    <Flex justifyContent="center" alignItems="center" flexDirection="column" px="16px">
       <GradientLogo height="48px" width="48px" mb="24px" />
       <Heading textAlign="center" scale="xl">
         {t('Multi-chain liquidity.')}
@@ -45,44 +28,24 @@ const Stats = () => {
       <Heading textAlign="center" scale="xl" mb="32px">
         {t('Classic DEX tools.')}
       </Heading>
-      <Text textAlign="center" color="textSubtle">
+      <Text textAlign="center" color="textSubtle" mb="24px">
         {t('Melega DEX connects swap, liquidity, farms, and pools across supported networks.')}
       </Text>
-      <Flex flexWrap="wrap">
-        <Text display="inline" textAlign="center" color="textSubtle" mb="20px">
-          {entrusting}
-          <>{data ? <>{tvlString}</> : <Skeleton display="inline-block" height={16} width={70} mt="2px" />}</>
-          {inFunds}
-        </Text>
-      </Flex>
 
-      <Text textAlign="center" color="textSubtle" bold mb="32px">
-        {t('Will you join them?')}
-      </Text>
-
-      <Flex flexDirection={['column', null, null, 'row']}>
-        <IconCard {...UsersCardData} mr={[null, null, null, '16px']} mb={['16px', null, null, '0']}>
-          <StatCardContent
-            headingText={t('%users% users', { users })}
-            bodyText={t('in the last 30 days')}
-            highlightColor={theme.colors.secondary}
-          />
-        </IconCard>
-        <IconCard {...TradesCardData} mr={[null, null, null, '16px']} mb={['16px', null, null, '0']}>
-          <StatCardContent
-            headingText={t('%trades% trades', { trades })}
-            bodyText={t('made in the last 30 days')}
-            highlightColor={theme.colors.primary}
-          />
-        </IconCard>
+      <Flex flexDirection={['column', null, null, 'row']} justifyContent="center">
         <IconCard {...StakedCardData}>
           <StatCardContent
-            headingText={t('$%tvl% staked', { tvl: tvlString })}
+            headingText={data ? t('$%tvl% TVL', { tvl: tvlString }) : t('TVL unavailable')}
             bodyText={t('Total Value Locked')}
             highlightColor={theme.colors.failure}
           />
         </IconCard>
       </Flex>
+
+      <Text textAlign="center" color="textDisabled" fontSize="12px" mt="16px">
+        {t('Source: on-chain aggregate')}
+        {!data && ` · ${t('Loading live data')}`}
+      </Text>
     </Flex>
   )
 }

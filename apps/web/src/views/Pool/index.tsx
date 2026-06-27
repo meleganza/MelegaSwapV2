@@ -13,6 +13,7 @@ import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
+import DexDisclaimer from 'components/Dex/DexDisclaimer'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
@@ -114,7 +115,7 @@ export default function Pool() {
     <Page>
       <Flex width={['328px', '100%']} height="100%" justifyContent="center" position="relative" alignItems="flex-start">
         <AppBody>
-          <AppHeader title={t('Your Liquidity')} subtitle={t('Remove liquidity to receive tokens back')} />
+          <AppHeader title={t('Your Liquidity')} subtitle={t('Manage LP positions and add liquidity on Melega DEX')} />
           <Body>
             {renderBody()}
             {account && !v2IsLoading && (
@@ -137,6 +138,7 @@ export default function Pool() {
               </Button>
             </Link>
           </CardFooter>
+          <DexDisclaimer mt="8px" />
         </AppBody>
       </Flex>
     </Page>

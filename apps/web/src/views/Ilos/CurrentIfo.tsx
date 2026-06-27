@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js'
 import { getBalanceAmount, getBalanceNumber, getDecimalAmount, getFullDisplayBalance } from 'utils/formatBalance'
 import IfoFoldableCard from './components/IfoFoldableCard'
 import IfoLayout from './components/IfoLayout'
+import IfoEmptyState from './components/IfoEmptyState'
 import { PublicIfoData3 } from './types'
 
 
@@ -32,7 +33,9 @@ const Ifo = () => {
   )
  }
   return (
-    <IfoLayout/>
+    <IfoLayout>
+      <IfoEmptyState />
+    </IfoLayout>
   )
 }
 

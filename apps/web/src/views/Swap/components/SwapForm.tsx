@@ -225,7 +225,7 @@ export default function SwapForm() {
     <>
       <CurrencyInputHeader
         title={t('Swap')}
-        subtitle={t('Trade tokens in an instant')}
+        subtitle={t('Trade tokens on Melega DEX')}
         hasAmount={hasAmount}
         onRefreshPrice={onRefreshPrice} />
       <Wrapper id="swap-page" style={{ minHeight: '412px' }}>

@@ -24,6 +24,7 @@ import Container from 'components/Layout/Container'
 import AliceCarousel from 'react-alice-carousel'
 import 'react-alice-carousel/lib/alice-carousel.css'
 import { Link } from 'react-router-dom'
+import QuickActionsRow from './components/QuickActionsRow'
 import Hero from './components/Hero'
 import Page from 'components/Layout/Page'
 import { swapSectionData, earnSectionData, cakeSectionData } from './components/SalesSection/data'
@@ -41,6 +42,7 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 
 const Nft: React.FC = () => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [amountMint, setAmountMint] = useState(1)
   const [userquota, setUserquota] = useState(0)
   const writeContract = useDNFTContract(getDNFTAddress())
@@ -111,7 +113,7 @@ const Nft: React.FC = () => {
     <a href="/ilo">
       <img className="item" alt="b3" src="./banners/b3.png" />
     </a>,
-    <a href="https://www.melegaswap.finance/apply">
+    <a href="https://www.melega.finance/apply">
       <img className="item" alt="b2" src="./banners/b2.png" />
     </a>,
   ]
@@ -276,49 +278,84 @@ const Nft: React.FC = () => {
   return (
     <>
       <PageHeader background="black">
-        <SalesSection {...swapSectionData} />
+        <Hero />
       </PageHeader>
 
-      <div ref={pageRef} style={{ margin: "0" }}>
-      <Page
-        style={{
-          textAlign: 'center',
-          maxWidth: '1920px',
-          width: containerWidth,
-        }}
-      >
-        <AliceCarousel
-          name="banner"
-          disableButtonsControls={true}
-          disableDotsControls={true}
-          responsive={responsive}
-          autoPlay={true}
-          items={items}
-        />
-        <div style={{ margin: '1.5rem' }}>
-          <FarmsPoolsRow />
-        </div>
-        <div>
+      <div ref={pageRef} style={{ margin: '0' }}>
+        <Page
+          style={{
+            textAlign: 'center',
+            maxWidth: '1920px',
+            width: containerWidth,
+          }}
+        >
+          <QuickActionsRow />
+
           <AliceCarousel
-            name="subbanner"
+            name="banner"
             disableButtonsControls={true}
             disableDotsControls={true}
-            responsive={responsive2}
+            responsive={responsive}
             autoPlay={true}
-            autoPlayInterval={0}
-            animationDuration={2000}
-            infinite={true}
-            items={
-              chainId == 1 ? items1 
-              : chainId == 137 ? items137
-              : chainId == 8453 ? items8453 
-              : items56}
+            items={items}
           />
-        </div>
-        <br />
 
-        <CakeDataRow />
-      </Page>
+          <PageSection
+            innerProps={{ style: { margin: '0', width: '100%' } }}
+            background={theme.isDark ? '#000000' : 'linear-gradient(#7645D9 0%, #5121B1 100%)'}
+            index={2}
+            hasCurvedDivider={false}
+          >
+            <SalesSection {...earnSectionData} />
+          </PageSection>
+
+          <PageSection
+            innerProps={{ style: { margin: '0', width: '100%' } }}
+            background="#000000"
+            index={3}
+            hasCurvedDivider={false}
+          >
+            <SalesSection {...cakeSectionData} />
+          </PageSection>
+
+          <PageSection
+            innerProps={{ style: { margin: '0', width: '100%' } }}
+            background="#000000"
+            index={4}
+            hasCurvedDivider={false}
+          >
+            <MetricsSection />
+          </PageSection>
+
+          <div style={{ margin: '1.5rem' }}>
+            <FarmsPoolsRow />
+          </div>
+
+          <div>
+            <AliceCarousel
+              name="subbanner"
+              disableButtonsControls={true}
+              disableDotsControls={true}
+              responsive={responsive2}
+              autoPlay={true}
+              autoPlayInterval={0}
+              animationDuration={2000}
+              infinite={true}
+              items={
+                chainId == 1
+                  ? items1
+                  : chainId == 137
+                    ? items137
+                    : chainId == 8453
+                      ? items8453
+                      : items56
+              }
+            />
+          </div>
+          <br />
+
+          <CakeDataRow />
+        </Page>
       </div>
     </>
   )
