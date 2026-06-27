@@ -1,0 +1,11 @@
+{
+  "name": "Melega DEX Registry Integration Graph",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/graph/index.json",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "venue_registry": "/registry/venues/index.json",
+  "event_registry": "/registry/events/index.json",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/blob/organ04-economic-event-registry/docs/ORGAN_04_ECONOMIC_EVENT_REGISTRY_MVP.md"
+}

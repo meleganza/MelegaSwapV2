@@ -10,6 +10,7 @@ import AssetCapabilityMatrix from './components/AssetCapabilityMatrix'
 import AssetManifestViewer from './components/AssetManifestViewer'
 import AssetVenuesSection from './components/AssetVenuesSection'
 import AssetEventsSection from './components/AssetEventsSection'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;
@@ -125,6 +126,8 @@ const AssetDetail: React.FC<AssetDetailProps> = ({ asset, manifest }) => {
       </Section>
 
       <AssetManifestViewer manifest={manifest} slug={asset.slug} />
+
+      <GraphExploreLink />
 
       <Text fontSize="12px" color="textDisabled" textAlign="center">
         {asset.disclaimer}

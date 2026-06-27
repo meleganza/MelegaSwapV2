@@ -15,6 +15,7 @@ import ProjectVenuesSection from './components/ProjectVenuesSection'
 import ProjectEventsSection from './components/ProjectEventsSection'
 import ProjectResourceLinks from './components/ProjectResourceLinks'
 import ProjectDisclaimer from './components/ProjectDisclaimer'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;
@@ -45,6 +46,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, manifest }) => {
         <ProjectTokenList tokens={project.resources.tokens} />
         <ProjectRelationshipsSection project={project} />
         <ProjectResourceLinks project={project} />
+        <GraphExploreLink />
         <ProjectDisclaimer />
       </Stack>
     </Page>

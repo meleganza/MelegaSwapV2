@@ -8,6 +8,7 @@ import EventTypeBadge from './components/EventTypeBadge'
 import EventStatusBadge from './components/EventStatusBadge'
 import EventRelationshipsSection from './components/EventRelationshipsSection'
 import EventManifestViewer from './components/EventManifestViewer'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;
@@ -90,6 +91,8 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, manifest }) => {
       </Section>
 
       <EventManifestViewer manifest={manifest} slug={event.slug} />
+
+      <GraphExploreLink />
 
       <Text fontSize="12px" color="textDisabled" textAlign="center">
         {event.disclaimer}

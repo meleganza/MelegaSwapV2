@@ -10,6 +10,7 @@ import VenueTypeBadge from './components/VenueTypeBadge'
 import VenueLifecycleBadge from './components/VenueLifecycleBadge'
 import VenueCapabilityMatrix from './components/VenueCapabilityMatrix'
 import VenueEventsSection from './components/VenueEventsSection'
+import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 import VenueManifestViewer from './components/VenueManifestViewer'
 
 const Stack = styled(Flex)`
@@ -155,6 +156,8 @@ const VenueDetail: React.FC<VenueDetailProps> = ({ venue, manifest }) => {
       <VenueEventsSection venueSlug={venue.slug} />
 
       <VenueManifestViewer manifest={manifest} slug={venue.slug} />
+
+      <GraphExploreLink />
 
       <Text fontSize="12px" color="textDisabled" textAlign="center">
         {venue.disclaimer}
