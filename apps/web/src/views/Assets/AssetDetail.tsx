@@ -4,10 +4,10 @@ import { Flex, Text, Heading, Link } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { ASSET_TYPE_LABELS, CHAIN_EXPLORER_TOKEN_URL, CHAIN_LABELS } from 'registry/assets/constants'
 import { StaticAssetRecord } from 'registry/assets/types'
-import AssetTrustBadge from './AssetTrustBadge'
-import AssetLifecycleBadge from './AssetLifecycleBadge'
-import AssetCapabilityMatrix from './AssetCapabilityMatrix'
-import AssetManifestViewer from './AssetManifestViewer'
+import AssetTrustBadge from './components/AssetTrustBadge'
+import AssetLifecycleBadge from './components/AssetLifecycleBadge'
+import AssetCapabilityMatrix from './components/AssetCapabilityMatrix'
+import AssetManifestViewer from './components/AssetManifestViewer'
 
 const Stack = styled(Flex)`
   flex-direction: column;
