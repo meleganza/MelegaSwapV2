@@ -11,6 +11,7 @@
       "manifest_url": "/registry/projects/melega-dex.json"
     }
   ],
+  "discovery_url": "/registry/projects/discovery.json",
   "disclaimer": "Listed ≠ audited. MVP static registry — not live verification.",
   "data_source": "project-registry-static",
   "as_of": "2026-06-26"

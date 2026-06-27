@@ -1,0 +1,80 @@
+{
+  "$schema": "https://melega.finance/schemas/project-discovery/v1",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "data_source": "project-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Discovery index derived from static registry. Civilization readiness measures ecosystem integration only — not price, quality, or investment merit.",
+  "civilization_readiness_formula": {
+    "description": "Weighted ecosystem integration score (0–100). Not financial advice.",
+    "weights": {
+      "identity": 0.15,
+      "capabilities": 0.3,
+      "ecosystemSurfaces": 0.25,
+      "machineReadiness": 0.15,
+      "multiChain": 0.1,
+      "trustSignals": 0.05
+    },
+    "components": [
+      "identity_completeness",
+      "capability_integration",
+      "ecosystem_surfaces",
+      "machine_agent_readiness",
+      "multi_chain_presence",
+      "trust_registry_signals"
+    ]
+  },
+  "sort": "alphabetical",
+  "filters_applied": {},
+  "summary": {
+    "total_projects": 1,
+    "matching_projects": 1,
+    "live_capability_types": 5,
+    "unique_chains": 4,
+    "machine_ready_projects": 1,
+    "treasury_compatible_projects": 0
+  },
+  "sort_options": [
+    "alphabetical",
+    "recently_added",
+    "capability_completeness",
+    "civilization_readiness"
+  ],
+  "filter_schema": {
+    "query": "full-text over name, slug, ticker, description, tags, ecosystem surfaces",
+    "chains": [56, 1, 137, 8453],
+    "capabilities": [
+      "tradable",
+      "liquidity",
+      "farm",
+      "pool",
+      "smartdrop",
+      "radar",
+      "space",
+      "labs",
+      "treasuryCompatible"
+    ],
+    "trust_badges": ["canonical", "observed", "unverified", "planned"],
+    "lifecycle": ["listed", "archived", "all"],
+    "treasury": ["any", "live", "partial_or_live", "planned", "none"],
+    "machine_manifest": ["any", "live", "not_live"]
+  },
+  "projects": [
+    {
+      "upi": "upi://melega/project/melega-dex@1",
+      "slug": "melega-dex",
+      "display_name": "Melega DEX",
+      "tickers": ["MARCO"],
+      "civilization_readiness": 56,
+      "capability_completeness": 50,
+      "registry_status": "listed",
+      "phase": "legacy_import",
+      "trust_badges": ["canonical", "observed"],
+      "supported_chains": [56, 1, 137, 8453],
+      "capabilities_live": ["tradable", "liquidity", "farm", "pool", "space"],
+      "machine_ready": true,
+      "treasury_compatible": false,
+      "manifest_url": "/registry/projects/melega-dex.json"
+    }
+  ]
+}
