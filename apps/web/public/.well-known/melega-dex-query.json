@@ -1,0 +1,8 @@
+{
+  "name": "Melega DEX Economic Query Layer",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/query/index.json",
+  "graph_registry": "/registry/graph/index.json",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/blob/mission05-registry-integration-layer/docs/ORGAN_04_ECONOMIC_EVENT_REGISTRY_MVP.md"
+}
