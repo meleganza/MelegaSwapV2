@@ -1,0 +1,230 @@
+{
+  "manifest": "manifest://melega/platform/user-workspace@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "user_workspace_read_model",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-28",
+  "disclaimer": "User Economic Workspace read model only. Registry-indexed surfaces — no wallet balances, TVL, or on-chain execution in this view.",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "sections": [
+    {
+      "section_id": "projects",
+      "label": "Projects",
+      "module_href": "/projects",
+      "indexed_count": 1,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "melega-dex",
+          "label": "Melega DEX",
+          "href": "/projects/melega-dex",
+          "status": "listed",
+          "notes": "upi://melega/project/melega-dex@1"
+        }
+      ]
+    },
+    {
+      "section_id": "assets",
+      "label": "Assets",
+      "module_href": "/assets",
+      "indexed_count": 4,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "marco",
+          "label": "MARCO (BSC)",
+          "href": "/assets/marco",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1"
+        },
+        {
+          "id": "marco-ethereum",
+          "label": "MARCO (Ethereum)",
+          "href": "/assets/marco-ethereum",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/1/0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76@1"
+        },
+        {
+          "id": "marco-polygon",
+          "label": "MARCO (Polygon)",
+          "href": "/assets/marco-polygon",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2@1"
+        },
+        {
+          "id": "marco-base",
+          "label": "MARCO (Base)",
+          "href": "/assets/marco-base",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/8453/0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7@1"
+        }
+      ]
+    },
+    {
+      "section_id": "liquidity",
+      "label": "Liquidity",
+      "module_href": "/liquidity",
+      "indexed_count": 1,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "marco-bnb-lp",
+          "label": "MARCO-BNB LP",
+          "href": "/liquidity",
+          "status": "not_indexed",
+          "notes": "No TVL, volume, or APR in static MVP."
+        }
+      ]
+    },
+    {
+      "section_id": "pools",
+      "label": "Pools",
+      "module_href": "/pools",
+      "indexed_count": 1,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "marco-stake-sous-0",
+          "label": "MARCO Stake Pool (sousId 0)",
+          "href": "/pools",
+          "status": "observed",
+          "notes": "No APR or TVL in static MVP."
+        }
+      ]
+    },
+    {
+      "section_id": "farms",
+      "label": "Farms",
+      "module_href": "/farms",
+      "indexed_count": 1,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "marco-bnb-farm",
+          "label": "MARCO-BNB Farm",
+          "href": "/farms",
+          "status": "observed",
+          "notes": "No APR or emission data in static MVP."
+        }
+      ]
+    },
+    {
+      "section_id": "presence",
+      "label": "Presence",
+      "module_href": "/presence",
+      "indexed_count": 5,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "marco-bnb-canonical",
+          "label": "MARCO on BNB Chain",
+          "href": "/presence/marco-bnb-canonical",
+          "status": "LIVE",
+          "notes": "Canonical"
+        },
+        {
+          "id": "marco-ethereum-presence",
+          "label": "MARCO on Ethereum",
+          "href": "/presence/marco-ethereum-presence",
+          "status": "OBSERVED",
+          "notes": "NOT CANONICAL"
+        },
+        {
+          "id": "marco-polygon-presence",
+          "label": "MARCO on Polygon",
+          "href": "/presence/marco-polygon-presence",
+          "status": "OBSERVED",
+          "notes": "NOT CANONICAL"
+        },
+        {
+          "id": "marco-base-presence",
+          "label": "MARCO on Base",
+          "href": "/presence/marco-base-presence",
+          "status": "OBSERVED",
+          "notes": "NOT CANONICAL"
+        },
+        {
+          "id": "solana-melega-planned",
+          "label": "Solana Melega Surface",
+          "href": "/presence/solana-melega-planned",
+          "status": "PLANNED",
+          "notes": "NOT CANONICAL"
+        }
+      ]
+    },
+    {
+      "section_id": "activation",
+      "label": "Activation",
+      "module_href": "/new-project",
+      "indexed_count": 0,
+      "has_activity": false,
+      "items": []
+    },
+    {
+      "section_id": "execution",
+      "label": "Execution",
+      "module_href": "/execution",
+      "indexed_count": 2,
+      "has_activity": true,
+      "items": [
+        {
+          "id": "melega-v2-canonical",
+          "label": "Melega V2 Canonical Pool",
+          "href": "/execution",
+          "status": "RECOMMENDED",
+          "notes": "Execution quality 91 — illustrative"
+        },
+        {
+          "id": "melega-v2-alt-route",
+          "label": "Melega V2 Alt Route",
+          "href": "/execution",
+          "status": "ALTERNATIVE",
+          "notes": "Gap 5 — illustrative"
+        }
+      ]
+    }
+  ],
+  "future_surfaces": [
+    {
+      "id": "treasury",
+      "label": "Treasury",
+      "status": "PLANNED",
+      "manifest": "manifest://melega/platform/treasury-runtime@0.2.0",
+      "notes": "Treasury Runtime — Phase 2. No amounts indexed."
+    },
+    {
+      "id": "labs",
+      "label": "Labs",
+      "status": "PLANNED",
+      "manifest": "labs://narrative/validated",
+      "notes": "Labs handoff — narrative validation not indexed in this build."
+    },
+    {
+      "id": "radar",
+      "label": "Radar",
+      "status": "PLANNED",
+      "manifest": "manifest://melega/platform/radar@0.2.0",
+      "notes": "Incident feed — Phase 2."
+    },
+    {
+      "id": "space",
+      "label": "Space",
+      "status": "PLANNED",
+      "manifest": "manifest://melega/platform/space@0.2.0",
+      "notes": "Community bind — Phase 2."
+    },
+    {
+      "id": "smartdrop",
+      "label": "SmartDrop",
+      "status": "PLANNED",
+      "manifest": "manifest://melega/platform/smartdrop@0.2.0",
+      "notes": "Campaign runtime — Phase 2."
+    }
+  ]
+}

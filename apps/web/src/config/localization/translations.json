@@ -1732,5 +1732,13 @@
   "Launch future surfaces title": "Registry Surfaces",
   "Launch future surfaces note": "Treasury Runtime — Phase 2. Surfaces above are indexed read models unless linked to legacy on-chain flows.",
   "Launch manifest title": "Machine Manifest",
-  "Launch manifest note": "User launch manifest"
+  "Launch manifest note": "User launch manifest",
+  "Workspace page title": "User Economic Workspace",
+  "Workspace page subtitle": "Operational center for your economy. Registry-indexed surfaces only — links to existing modules. No fake balances, TVL, or farms.",
+  "Workspace canonical title": "Constitutional Canonical Economy",
+  "Workspace sections title": "Economic Sections",
+  "Workspace open module": "Open module",
+  "Workspace future title": "Future Surfaces",
+  "Workspace manifest title": "Machine Manifest",
+  "Workspace manifest note": "User workspace manifest"
 }
