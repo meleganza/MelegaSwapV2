@@ -1,0 +1,463 @@
+{
+  "manifest": "manifest://melega/platform/economic-runtime@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "labs_dex_runtime_read_model",
+  "session_id": "activation:labs_preview",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-28",
+  "progress": {
+    "totalStages": 11,
+    "readyCount": 0,
+    "waitingCount": 5,
+    "blockedCount": 1,
+    "plannedCount": 5,
+    "percentReady": 0,
+    "currentFocusStageId": "narrative",
+    "phaseLabel": "Labs handoff"
+  },
+  "stages": [
+    {
+      "stage_id": "narrative",
+      "state": "WAITING",
+      "reason": "Melega Labs → DEX handoff not indexed in this build",
+      "next_requirement": "Indexed Labs narrative required",
+      "evidence": [
+        {
+          "id": "narrative:surface",
+          "kind": "manifest",
+          "source": "labs://narrative/validated",
+          "summary": "Machine surface for Narrative"
+        },
+        {
+          "id": "narrative:labs",
+          "kind": "labs",
+          "source": "labs://narrative/validated",
+          "summary": "Labs narrative not indexed in this build"
+        },
+        {
+          "id": "narrative:observation",
+          "kind": "observation",
+          "source": "read-model://narrative",
+          "summary": "Awaiting validated Labs narrative"
+        },
+        {
+          "id": "narrative:notes",
+          "kind": "observation",
+          "source": "read-model://narrative/notes",
+          "summary": "Melega Labs → DEX handoff not indexed in this build"
+        }
+      ]
+    },
+    {
+      "stage_id": "validation",
+      "state": "BLOCKED",
+      "reason": "Requires indexed Labs narrative",
+      "next_requirement": "Unblock Narrative (WAITING)",
+      "evidence": [
+        {
+          "id": "validation:surface",
+          "kind": "manifest",
+          "source": "labs://validation/constitutional",
+          "summary": "Machine surface for Validation"
+        },
+        {
+          "id": "validation:constitutional",
+          "kind": "constitutional",
+          "source": "MELEGA_DEX_CONSTITUTION_V1",
+          "summary": "Canonical MARCO on BNB Chain"
+        },
+        {
+          "id": "validation:observation",
+          "kind": "observation",
+          "source": "read-model://validation",
+          "summary": "Constitutional validation blocked"
+        },
+        {
+          "id": "validation:notes",
+          "kind": "observation",
+          "source": "read-model://validation/notes",
+          "summary": "Requires indexed Labs narrative"
+        }
+      ]
+    },
+    {
+      "stage_id": "project_registry",
+      "state": "WAITING",
+      "reason": "Follows successful narrative validation",
+      "next_requirement": "Complete Validation first",
+      "evidence": [
+        {
+          "id": "project_registry:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/project-registry@0.1.0",
+          "summary": "Machine surface for Project Registry"
+        },
+        {
+          "id": "project_registry:href",
+          "kind": "registry",
+          "source": "/projects",
+          "summary": "Registry route — Project Registry entry pending",
+          "href": "/projects"
+        },
+        {
+          "id": "project_registry:observation",
+          "kind": "observation",
+          "source": "read-model://project_registry",
+          "summary": "Project Registry entry pending"
+        },
+        {
+          "id": "project_registry:notes",
+          "kind": "observation",
+          "source": "read-model://project_registry/notes",
+          "summary": "Follows successful narrative validation"
+        }
+      ]
+    },
+    {
+      "stage_id": "canonical_asset",
+      "state": "WAITING",
+      "reason": "Constitutional MARCO on BNB Chain remains immutable",
+      "next_requirement": "Complete Project Registry first",
+      "evidence": [
+        {
+          "id": "canonical_asset:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/asset-registry@0.1.0",
+          "summary": "Machine surface for Canonical Asset"
+        },
+        {
+          "id": "canonical_asset:href",
+          "kind": "registry",
+          "source": "/assets",
+          "summary": "Registry route — Project asset registration pending",
+          "href": "/assets"
+        },
+        {
+          "id": "canonical_asset:constitutional",
+          "kind": "constitutional",
+          "source": "manifest://melega/platform/asset-registry@0.1.0#canonical",
+          "summary": "MARCO constitutional binding — immutable"
+        },
+        {
+          "id": "canonical_asset:observation",
+          "kind": "observation",
+          "source": "read-model://canonical_asset",
+          "summary": "Project asset registration pending"
+        },
+        {
+          "id": "canonical_asset:notes",
+          "kind": "observation",
+          "source": "read-model://canonical_asset/notes",
+          "summary": "Constitutional MARCO on BNB Chain remains immutable"
+        }
+      ]
+    },
+    {
+      "stage_id": "economic_presence",
+      "state": "PLANNED",
+      "reason": "BNB · Ethereum · Polygon · Base · Solana — presence only",
+      "next_requirement": "BNB · Ethereum · Polygon · Base · Solana — presence only",
+      "evidence": [
+        {
+          "id": "economic_presence:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/asset-registry@0.1.0#presence",
+          "summary": "Machine surface for Economic Presence"
+        },
+        {
+          "id": "presence:bnb",
+          "kind": "presence",
+          "source": "presence://bnb",
+          "summary": "BNB Chain — READY (canonical)"
+        },
+        {
+          "id": "presence:ethereum",
+          "kind": "presence",
+          "source": "presence://ethereum",
+          "summary": "Ethereum — READY (presence)"
+        },
+        {
+          "id": "presence:polygon",
+          "kind": "presence",
+          "source": "presence://polygon",
+          "summary": "Polygon — READY (presence)"
+        },
+        {
+          "id": "presence:base",
+          "kind": "presence",
+          "source": "presence://base",
+          "summary": "Base — READY (presence)"
+        },
+        {
+          "id": "presence:solana",
+          "kind": "presence",
+          "source": "presence://solana",
+          "summary": "Solana — PLANNED (presence)"
+        },
+        {
+          "id": "economic_presence:observation",
+          "kind": "observation",
+          "source": "read-model://economic_presence",
+          "summary": "Economic Presence targets staged"
+        },
+        {
+          "id": "economic_presence:notes",
+          "kind": "observation",
+          "source": "read-model://economic_presence/notes",
+          "summary": "BNB · Ethereum · Polygon · Base · Solana — presence only"
+        }
+      ]
+    },
+    {
+      "stage_id": "venue_activation",
+      "state": "WAITING",
+      "reason": "Requires project + asset registry",
+      "next_requirement": "Complete Economic Presence first",
+      "evidence": [
+        {
+          "id": "venue_activation:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/venue-registry@0.1.0",
+          "summary": "Machine surface for Venue Activation"
+        },
+        {
+          "id": "venue_activation:href",
+          "kind": "registry",
+          "source": "/venues",
+          "summary": "Registry route — Venue activation pending",
+          "href": "/venues"
+        },
+        {
+          "id": "venue_activation:observation",
+          "kind": "observation",
+          "source": "read-model://venue_activation",
+          "summary": "Venue activation pending"
+        },
+        {
+          "id": "venue_activation:notes",
+          "kind": "observation",
+          "source": "read-model://venue_activation/notes",
+          "summary": "Requires project + asset registry"
+        }
+      ]
+    },
+    {
+      "stage_id": "economic_events",
+      "state": "WAITING",
+      "reason": "Derived from venue graph",
+      "next_requirement": "Complete Venue Activation first",
+      "evidence": [
+        {
+          "id": "economic_events:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/event-registry@0.1.0",
+          "summary": "Machine surface for Economic Events"
+        },
+        {
+          "id": "economic_events:href",
+          "kind": "registry",
+          "source": "/events",
+          "summary": "Registry route — Economic events pending",
+          "href": "/events"
+        },
+        {
+          "id": "economic_events:observation",
+          "kind": "observation",
+          "source": "read-model://economic_events",
+          "summary": "Economic events pending"
+        },
+        {
+          "id": "economic_events:notes",
+          "kind": "observation",
+          "source": "read-model://economic_events/notes",
+          "summary": "Derived from venue graph"
+        }
+      ]
+    },
+    {
+      "stage_id": "treasury_runtime",
+      "state": "PLANNED",
+      "reason": "No treasury amounts indexed",
+      "next_requirement": "Phase 2 runtime surface — indexed read model only, no execution",
+      "evidence": [
+        {
+          "id": "treasury_runtime:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/treasury-runtime@0.2.0",
+          "summary": "Machine surface for Treasury Runtime"
+        },
+        {
+          "id": "treasury_runtime:observation",
+          "kind": "observation",
+          "source": "read-model://treasury_runtime",
+          "summary": "Treasury Runtime — Phase 2"
+        },
+        {
+          "id": "treasury_runtime:notes",
+          "kind": "observation",
+          "source": "read-model://treasury_runtime/notes",
+          "summary": "No treasury amounts indexed"
+        },
+        {
+          "id": "treasury_runtime:phase2",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/treasury-runtime@0.2.0",
+          "summary": "Phase 2 runtime surface — read model compatibility only"
+        }
+      ]
+    },
+    {
+      "stage_id": "radar",
+      "state": "PLANNED",
+      "reason": "Incident feed not indexed",
+      "next_requirement": "Phase 2 runtime surface — indexed read model only, no execution",
+      "evidence": [
+        {
+          "id": "radar:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/radar@0.2.0",
+          "summary": "Machine surface for Radar"
+        },
+        {
+          "id": "radar:observation",
+          "kind": "observation",
+          "source": "read-model://radar",
+          "summary": "Radar — Phase 2"
+        },
+        {
+          "id": "radar:notes",
+          "kind": "observation",
+          "source": "read-model://radar/notes",
+          "summary": "Incident feed not indexed"
+        },
+        {
+          "id": "radar:phase2",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/radar@0.2.0",
+          "summary": "Phase 2 runtime surface — read model compatibility only"
+        }
+      ]
+    },
+    {
+      "stage_id": "space",
+      "state": "PLANNED",
+      "reason": "Community bind not live for new activations",
+      "next_requirement": "Phase 2 runtime surface — indexed read model only, no execution",
+      "evidence": [
+        {
+          "id": "space:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/space@0.2.0",
+          "summary": "Machine surface for Space"
+        },
+        {
+          "id": "space:observation",
+          "kind": "observation",
+          "source": "read-model://space",
+          "summary": "Space — Phase 2"
+        },
+        {
+          "id": "space:notes",
+          "kind": "observation",
+          "source": "read-model://space/notes",
+          "summary": "Community bind not live for new activations"
+        },
+        {
+          "id": "space:phase2",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/space@0.2.0",
+          "summary": "Phase 2 runtime surface — read model compatibility only"
+        }
+      ]
+    },
+    {
+      "stage_id": "smartdrop",
+      "state": "PLANNED",
+      "reason": "Campaign runtime not indexed",
+      "next_requirement": "Phase 2 runtime surface — indexed read model only, no execution",
+      "evidence": [
+        {
+          "id": "smartdrop:surface",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/smartdrop@0.2.0",
+          "summary": "Machine surface for SmartDrop"
+        },
+        {
+          "id": "smartdrop:observation",
+          "kind": "observation",
+          "source": "read-model://smartdrop",
+          "summary": "SmartDrop — Phase 2"
+        },
+        {
+          "id": "smartdrop:notes",
+          "kind": "observation",
+          "source": "read-model://smartdrop/notes",
+          "summary": "Campaign runtime not indexed"
+        },
+        {
+          "id": "smartdrop:phase2",
+          "kind": "manifest",
+          "source": "manifest://melega/platform/smartdrop@0.2.0",
+          "summary": "Phase 2 runtime surface — read model compatibility only"
+        },
+        {
+          "id": "execution:future",
+          "kind": "execution",
+          "source": "manifest://melega/platform/execution@0.2.0",
+          "summary": "Execution runtime reserved — no on-chain execution in this phase"
+        }
+      ]
+    }
+  ],
+  "journal_tail": [
+    {
+      "id": "journal:radar:requirement",
+      "at": "2026-06-28",
+      "stageId": "radar",
+      "kind": "requirement",
+      "message": "Phase 2 runtime surface — indexed read model only, no execution",
+      "state": "PLANNED"
+    },
+    {
+      "id": "journal:space:state",
+      "at": "2026-06-28",
+      "stageId": "space",
+      "kind": "observation",
+      "message": "Space: PLANNED — Community bind not live for new activations",
+      "state": "PLANNED"
+    },
+    {
+      "id": "journal:space:requirement",
+      "at": "2026-06-28",
+      "stageId": "space",
+      "kind": "requirement",
+      "message": "Phase 2 runtime surface — indexed read model only, no execution",
+      "state": "PLANNED"
+    },
+    {
+      "id": "journal:smartdrop:state",
+      "at": "2026-06-28",
+      "stageId": "smartdrop",
+      "kind": "observation",
+      "message": "SmartDrop: PLANNED — Campaign runtime not indexed",
+      "state": "PLANNED"
+    },
+    {
+      "id": "journal:smartdrop:requirement",
+      "at": "2026-06-28",
+      "stageId": "smartdrop",
+      "kind": "requirement",
+      "message": "Phase 2 runtime surface — indexed read model only, no execution",
+      "state": "PLANNED"
+    },
+    {
+      "id": "journal:session:progress",
+      "at": "2026-06-28",
+      "stageId": "session",
+      "kind": "progress",
+      "message": "Activation progress: 0/11 stages READY",
+      "state": "RUNTIME"
+    }
+  ]
+}
