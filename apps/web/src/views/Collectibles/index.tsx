@@ -63,6 +63,11 @@ const Collectibles: React.FC = () => {
         </Grid>
 
         <Text fontSize="12px" color="textDisabled" textAlign="center">
+          {t('Identity cross link')}:{' '}
+          <a href="/identity" style={{ color: 'inherit' }}>
+            /identity
+          </a>
+          {' · '}
           {t('Machine discovery index')}:{' '}
           <a href="/registry/collectibles/index.json" style={{ color: 'inherit' }}>
             /registry/collectibles/index.json

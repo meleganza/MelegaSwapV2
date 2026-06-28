@@ -241,6 +241,12 @@ const UserWorkspaceConsole: React.FC = () => {
               </a>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Identity cross link')}:{' '}
+              <Link href="/identity" style={{ color: tokens.gold }}>
+                /identity
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>
