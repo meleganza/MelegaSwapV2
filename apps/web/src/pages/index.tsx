@@ -3,15 +3,11 @@ import { getUnixTime, sub } from 'date-fns'
 import { gql } from 'graphql-request'
 import { GetStaticProps } from 'next'
 import { SWRConfig } from 'swr'
-import { NotFound } from '@pancakeswap/uikit'
 import { getCakeContract } from 'utils/contractHelpers'
 import { getBlocksFromTimestamps } from 'utils/getBlocksFromTimestamps'
 import { bitQueryServerClient, infoServerClient } from 'utils/graphql'
 import { CHAIN_IDS } from 'utils/wagmi'
-import Home from 'views/Home'
-import Swap from 'views/Swap'
-import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
-import NeedHelp from 'components/Menu/NeedHelp'
+import EconomicCommandConsole from 'views/Home/EconomicCommandConsole'
 
 const IndexPage = ({ totalTx30Days, addressCount30Days, tvl }) => {
   return (
@@ -24,12 +20,7 @@ const IndexPage = ({ totalTx30Days, addressCount30Days, tvl }) => {
         },
       }}
     >
-      <Home />
-      {/* <SwapFeaturesProvider>
-        <Swap />
-      </SwapFeaturesProvider> */}
-      {/* <NotFound /> */}
-      {/* <NeedHelp /> */}
+      <EconomicCommandConsole />
     </SWRConfig>
   )
 }
@@ -118,5 +109,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
 // IndexPage.chains = []
 IndexPage.chains = CHAIN_IDS
+IndexPage.pure = true
+IndexPage.isShowScrollToTopButton = false
 
 export default IndexPage
