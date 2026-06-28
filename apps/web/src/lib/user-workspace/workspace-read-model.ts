@@ -2,6 +2,7 @@ import { getConstitutionalCanonicalEconomy } from 'lib/economic-activation'
 import { resolveActivationSession } from 'lib/economic-runtime'
 import { resolveSmartExecutionReadModel } from 'lib/smart-execution'
 import { getAllAssets } from 'registry/assets/getAllAssets'
+import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
 import { getAllPresence } from 'registry/presence/getAllPresence'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { getAllVenues } from 'registry/venues/getAllVenues'
@@ -29,6 +30,7 @@ export const resolveUserWorkspaceReadModel = (): UserWorkspaceReadModel => {
   const assets = getAllAssets()
   const venues = getAllVenues()
   const presence = getAllPresence()
+  const collectibles = getAllCollectibles()
   const activation = resolveActivationSession()
   const execution = resolveSmartExecutionReadModel()
 
@@ -113,6 +115,19 @@ export const resolveUserWorkspaceReadModel = (): UserWorkspaceReadModel => {
         href: `/presence/${record.slug}`,
         status: record.status,
         notes: record.isCanonical ? 'Canonical' : 'NOT CANONICAL',
+      })),
+    }),
+    buildSection({
+      id: 'collectibles',
+      label: 'Collectibles',
+      description: 'Civilization collectibles read model — no ownership counts indexed.',
+      moduleHref: '/collectibles',
+      items: collectibles.map((record) => ({
+        id: record.slug,
+        label: record.displayName,
+        href: `/collectibles/${record.slug}`,
+        status: record.status,
+        notes: record.mint.route ? `Mint: ${record.mint.route}` : 'No mint route indexed',
       })),
     }),
     buildSection({

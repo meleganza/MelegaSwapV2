@@ -7,6 +7,7 @@ export type WorkspaceSectionId =
   | 'pools'
   | 'farms'
   | 'presence'
+  | 'collectibles'
   | 'activation'
   | 'execution'
 

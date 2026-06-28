@@ -14,6 +14,7 @@ export const WORKSPACE_SECTION_ORDER = [
   'pools',
   'farms',
   'presence',
+  'collectibles',
   'activation',
   'execution',
 ] as const

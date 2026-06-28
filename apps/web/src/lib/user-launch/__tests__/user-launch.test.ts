@@ -61,11 +61,19 @@ describe('user launch read model', () => {
     })
   })
 
+  it('links BabyMarco collectible mint to legacy /nft/ flow', () => {
+    const mint = getLaunchCapabilityById('mint_civilization_collectible')!
+    expect(mint.status).toBe('AVAILABLE_EXISTING_FLOW')
+    expect(mint.existingFlowHref).toBe('/nft/')
+    expect(mint.registryHref).toBe('/collectibles')
+    expect(mint.warnings.some((warning) => warning.includes('fake'))).toBe(true)
+  })
+
   it('serializes machine manifest as read-only', () => {
     const manifest = serializeUserLaunchManifest(resolveUserLaunchReadModel())
     expect(manifest.manifest).toContain('user-launch')
     expect(manifest.read_only).toBe(true)
     expect(manifest.execution_enabled).toBe(false)
-    expect(manifest.capabilities.length).toBe(9)
+    expect(manifest.capabilities.length).toBe(10)
   })
 })

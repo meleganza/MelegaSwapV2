@@ -36,6 +36,7 @@ export const LAUNCH_CAPABILITY_IDS = [
   'create_pool',
   'create_farm',
   'create_staking_pool',
+  'mint_civilization_collectible',
   'launch_through_labs',
   'activate_economic_presence',
 ] as const

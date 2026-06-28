@@ -37,6 +37,15 @@ export const LAUNCH_REQUIREMENTS: Record<LaunchCapabilityId, LaunchRequiredInput
     { id: 'staking_token', label: 'Staking token', required: true },
     { id: 'reward_token', label: 'Reward token', required: true, notes: 'Sous Chef pool — protocol indexed' },
   ],
+  mint_civilization_collectible: [
+    {
+      id: 'collectible_class',
+      label: 'Collectible class',
+      required: true,
+      notes: 'BabyMarco Genesis live on legacy /nft/ — others planned',
+    },
+    { id: 'wallet', label: 'Connected wallet', required: true, notes: 'BSC only for BabyMarco mint' },
+  ],
   launch_through_labs: [
     { id: 'labs_narrative', label: 'Validated Labs narrative', required: true },
     { id: 'project_slug', label: 'Project slug', required: false },

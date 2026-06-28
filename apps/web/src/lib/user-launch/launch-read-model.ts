@@ -201,6 +201,41 @@ const LAUNCH_CAPABILITIES: LaunchCapability[] = [
     machineManifest: manifestFor('create_staking_pool'),
   }),
   buildCapability({
+    id: 'mint_civilization_collectible',
+    label: 'Mint Civilization Collectible',
+    description:
+      'Reframed ecosystem collectibles — BabyMarco Genesis mint exists on legacy /nft/ (BSC). Read model at /collectibles; no new mint surface here.',
+    status: 'AVAILABLE_EXISTING_FLOW',
+    availability: statusToAvailability('AVAILABLE_EXISTING_FLOW'),
+    requiredInputs: LAUNCH_REQUIREMENTS.mint_civilization_collectible,
+    walletRequirement: 'required',
+    chainSupport: {
+      chains: ['BNB Chain'],
+      canonicalChain: 'BNB Chain',
+      notes: 'BabyMarco DNFT mint is BSC-only per SUPPORT_CHAIN_NFT',
+    },
+    contractDependency: {
+      kind: 'contract',
+      label: 'BabyMarco Genesis DNFT (detected)',
+      reference: 'legacy://nft/dnft-bsc',
+      status: 'LIVE',
+    },
+    executionDependency: {
+      kind: 'registry',
+      label: 'Civilization Collectibles registry',
+      reference: 'manifest://melega/platform/collectibles-registry@0.1.0',
+      status: 'indexed',
+    },
+    warnings: [
+      'BabyMarco mint is legacy flow at /nft/ — not generic NFT launch',
+      'MasterM and achievement collectibles are planned — no fake mint',
+      'Read model does not execute mints',
+    ],
+    existingFlowHref: '/nft/',
+    registryHref: '/collectibles',
+    machineManifest: manifestFor('mint_civilization_collectible'),
+  }),
+  buildCapability({
     id: 'launch_through_labs',
     label: 'Launch through Labs',
     description: 'Labs → DEX constitutional handoff for project narrative validation and listing.',

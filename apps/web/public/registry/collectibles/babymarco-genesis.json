@@ -1,0 +1,60 @@
+{
+  "$schema": "https://melega.finance/schemas/collectibles/v1",
+  "collectible_id": "collectible://melega/civilization/babymarco-genesis@0.1.0",
+  "slug": "babymarco-genesis",
+  "display_name": "BabyMarco Genesis",
+  "description": "Legacy ecosystem mascot collectible. Existing DNFT collection on BNB Chain — reframed as a Civilization Collectible, not generic NFT minting. Historical mint, wallet, and market surfaces remain at their original routes.",
+  "status": "live_or_legacy_existing",
+  "category": "mascot_ecosystem",
+  "role": "Human engagement and ecosystem identity — priority airdrop participation and DAO voting rights per legacy marketing copy.",
+  "contract": {
+    "indexed": true,
+    "chainId": 56,
+    "address": "0x2A0356b52d33c5e359eF289B8Da37eD73A6C9CE5",
+    "label": "DNFT (Nft) — detected from contracts.ts",
+    "notes": "Contract reference only — minting logic untouched. BSC mainnet address from legacy config."
+  },
+  "metadata": {
+    "status": "pinata_ipfs",
+    "gateway": "https://red-wonderful-stork-305.mypinata.cloud/ipfs/QmRqb3TUnbxjLPzJqhgKkzpysfFmdsvSdiUBqVYFCKSYxb",
+    "ipfsCid": "QmRqb3TUnbxjLPzJqhgKkzpysfFmdsvSdiUBqVYFCKSYxb",
+    "imagePattern": "DOG{tokenId}.png",
+    "tokenUriSource": "on_chain",
+    "notes": "Legacy UI uses Pinata gateway for PNG previews; JSON metadata fetched from on-chain tokenURI. No fake metadata URIs in this read model."
+  },
+  "supply": {
+    "mode": "existing_collection",
+    "statedMaxSupply": 1000,
+    "supplySource": "ui_marketing_copy",
+    "mintedCountIndexed": false,
+    "notes": "1,000-piece cap stated on legacy /nft/ marketing copy. Minted count not indexed in this read model — no fake totals."
+  },
+  "mint": {
+    "status": "indexed",
+    "route": "/nft/",
+    "chainLabel": "BNB Chain",
+    "notes": "Real mint via legacy /nft/ page (BSC only). This registry does not execute mints."
+  },
+  "related_routes": [
+    "/nft/",
+    "/viewNFTs/",
+    "/nftmarket/"
+  ],
+  "warnings": [
+    "Legacy mint surface — not a new launch mechanism",
+    "No ownership or mint counts indexed here",
+    "Mint cost and quota are on-chain dynamic values on /nft/"
+  ],
+  "links": {
+    "detail": "/collectibles/babymarco-genesis",
+    "mint": "/nft/",
+    "wallet": "/viewNFTs/",
+    "market": "/nftmarket/",
+    "external": "https://www.melegaswap.finance/babymarco",
+    "collectiblesRegistry": "/collectibles"
+  },
+  "mvp_static": true,
+  "data_source": "collectibles-registry-static-audit",
+  "as_of": "2026-06-28",
+  "disclaimer": "Civilization Collectibles read model only. No ownership counts, mint buttons, or on-chain writes on /collectibles. Legacy mint flows remain on their original routes."
+}

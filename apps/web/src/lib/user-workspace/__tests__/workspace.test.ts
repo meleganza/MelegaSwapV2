@@ -7,9 +7,9 @@ import {
 } from '../index'
 
 describe('user economic workspace', () => {
-  it('exposes all eight workspace sections', () => {
+  it('exposes all nine workspace sections', () => {
     const model = resolveUserWorkspaceReadModel()
-    expect(model.sections).toHaveLength(8)
+    expect(model.sections).toHaveLength(9)
     expect(model.sections.map((section) => section.id)).toEqual([...WORKSPACE_SECTION_ORDER])
   })
 
@@ -30,6 +30,7 @@ describe('user economic workspace', () => {
     expect(hrefs.pools).toBe('/pools')
     expect(hrefs.farms).toBe('/farms')
     expect(hrefs.presence).toBe('/presence')
+    expect(hrefs.collectibles).toBe('/collectibles')
     expect(hrefs.activation).toBe('/new-project')
     expect(hrefs.execution).toBe('/execution')
   })
@@ -71,6 +72,6 @@ describe('user economic workspace', () => {
     const manifest = serializeUserWorkspaceManifest()
     expect(manifest.manifest).toContain('user-workspace')
     expect(manifest.read_only).toBe(true)
-    expect(manifest.sections).toHaveLength(8)
+    expect(manifest.sections).toHaveLength(9)
   })
 })

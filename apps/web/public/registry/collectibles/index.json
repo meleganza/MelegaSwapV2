@@ -1,0 +1,38 @@
+{
+  "manifest": "manifest://melega/platform/collectibles-registry@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/collectibles/v1",
+  "framing": "Civilization Collectibles — not generic NFT minting",
+  "collectibles": [
+    {
+      "collectible_id": "collectible://melega/civilization/babymarco-genesis@0.1.0",
+      "slug": "babymarco-genesis",
+      "display_name": "BabyMarco Genesis",
+      "status": "live_or_legacy_existing",
+      "category": "mascot_ecosystem",
+      "mint_route": "/nft/",
+      "manifest_url": "/registry/collectibles/babymarco-genesis.json"
+    },
+    {
+      "collectible_id": "collectible://melega/civilization/masterm-identity@0.1.0",
+      "slug": "masterm-identity",
+      "display_name": "MasterM Identity",
+      "status": "planned_or_external",
+      "category": "identity",
+      "manifest_url": "/registry/collectibles/masterm-identity.json"
+    },
+    {
+      "collectible_id": "collectible://melega/civilization/achievement-collectibles@0.1.0",
+      "slug": "achievement-collectibles",
+      "display_name": "Future Achievement & Participation Collectibles",
+      "status": "planned",
+      "category": "participation_proof",
+      "manifest_url": "/registry/collectibles/achievement-collectibles.json"
+    }
+  ],
+  "disclaimer": "Civilization Collectibles read model only. No ownership counts, mint buttons, or on-chain writes on /collectibles. Legacy mint flows remain on their original routes.",
+  "data_source": "collectibles-registry-static",
+  "as_of": "2026-06-28"
+}
