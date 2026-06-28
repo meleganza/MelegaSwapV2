@@ -1740,5 +1740,14 @@
   "Workspace open module": "Open module",
   "Workspace future title": "Future Surfaces",
   "Workspace manifest title": "Machine Manifest",
-  "Workspace manifest note": "User workspace manifest"
+  "Workspace manifest note": "User workspace manifest",
+  "Legacy ILO retired badge": "RETIRED",
+  "Legacy ILO retirement title": "Legacy ILO Superseded",
+  "Legacy ILO retirement subtitle": "This route is preserved for link compatibility. Legacy ILO is no longer the active launch mechanism.",
+  "Legacy ILO supersession title": "Superseded by Economic Activation",
+  "Legacy ILO activation note": "Use /launch for creation and listing capabilities, /new-project for activation runtime, and /workspace for economic management.",
+  "Legacy ILO cta title": "Continue to active surfaces",
+  "Legacy ILO compatibility title": "Route compatibility",
+  "Legacy ILO historical module": "Historical module (not rendered)",
+  "Legacy ILO manifest note": "Retirement manifest"
 }

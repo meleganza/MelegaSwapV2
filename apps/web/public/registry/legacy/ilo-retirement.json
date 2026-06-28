@@ -1,0 +1,43 @@
+{
+  "manifest": "manifest://melega/platform/legacy-ilo-retirement@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "legacy_surface_retirement",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-28",
+  "disclaimer": "Legacy ILO route preserved for link compatibility only. No active launch mechanism. Historical IFO code remains in repository but is not rendered at /ilo.",
+  "legacy_route": "/ilo",
+  "status": "retired",
+  "surface": {
+    "id": "legacy_ilo",
+    "legacyRoute": "/ilo",
+    "label": "Legacy ILO",
+    "status": "retired",
+    "retiredAsOf": "2026-06-28",
+    "summary": "The legacy ILO/IFO pad has been superseded by Economic Activation and the User Launch layer. This route no longer exposes active launch functionality.",
+    "historicalModule": "views/Ilos",
+    "contractLogicUntouched": true,
+    "supersededBy": [
+      {
+        "route": "/launch",
+        "label": "Operational Launch Console",
+        "purpose": "User creation and listing capabilities"
+      },
+      {
+        "route": "/new-project",
+        "label": "Economic Activation Runtime",
+        "purpose": "Labs → DEX activation read model"
+      },
+      {
+        "route": "/workspace",
+        "label": "User Economic Workspace",
+        "purpose": "Operational center for indexed economic activity"
+      }
+    ],
+    "warnings": [
+      "Do not treat /ilo as an active launch mechanism",
+      "No fake launch buttons or execution on this route",
+      "IFO contract logic and views/Ilos/ historical code not removed"
+    ]
+  }
+}

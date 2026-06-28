@@ -1,12 +1,10 @@
-import { ChainId } from '@pancakeswap/sdk'
-import { CHAIN_IDS } from 'utils/wagmi'
 import { SUPPORT_ILO } from 'config/constants/supportChains'
-import Ilos from 'views/Ilos'
+import LegacyIloRetirement from 'views/LegacyIloRetirement/LegacyIloRetirement'
 
-const IloPage = () => {
-  return <Ilos />
-}
+const IloPage = () => <LegacyIloRetirement />
 
 IloPage.chains = SUPPORT_ILO
+IloPage.pure = true
+IloPage.isShowScrollToTopButton = false
 
 export default IloPage
