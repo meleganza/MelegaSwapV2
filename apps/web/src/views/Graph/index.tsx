@@ -9,6 +9,7 @@ import GraphNodeCard from './components/GraphNodeCard'
 import GraphRelationshipList from './components/GraphRelationshipList'
 import RegistryGraphSummary from './components/RegistryGraphSummary'
 import MachineGraphManifestViewer from './components/MachineGraphManifestViewer'
+import PresenceExploreLink from 'views/Presence/components/PresenceExploreLink'
 
 const Stack = styled(Flex)`
   flex-direction: column;
@@ -113,6 +114,8 @@ const Graph: React.FC = () => {
         </Layer>
 
         <MachineGraphManifestViewer manifest={manifest} />
+
+        <PresenceExploreLink />
 
         <Text fontSize="12px" color="textDisabled" textAlign="center">
           {t('Machine discovery index')}:{' '}

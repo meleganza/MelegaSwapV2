@@ -1693,5 +1693,22 @@
   "Gap from recommended": "Gap from recommended",
   "Execution rejections title": "Rejection Reasons",
   "Execution manifest title": "Machine Manifest",
-  "Execution manifest note": "Smart execution manifest"
+  "Execution manifest note": "Smart execution manifest",
+  "Presence page title": "Economic Presence Registry",
+  "Presence page subtitle": "Where projects, assets, and venues have economic presence outside the Canonical Economy. Presence is NOT Canonical Economy.",
+  "Presence registry disclaimer": "MARCO on BNB Chain remains the immutable Canonical Economy. Economic Presence layers never replace it.",
+  "Presence canonical banner title": "Constitutional Canonical Economy",
+  "Presence canonical banner note": "BNB Chain · MARCO · LIVE — immutable. All other chains are Economic Presence only.",
+  "Presence identity": "Presence identity",
+  "Canonical relationship": "Canonical relationship",
+  "Canonical asset UAI": "Canonical asset UAI",
+  "View asset": "View asset",
+  "Venue source": "Venue source",
+  "Presence warnings": "Warnings",
+  "Registry cross-links": "Registry cross-links",
+  "Smart Economic Execution": "Smart Economic Execution",
+  "Presence manifest title": "Machine Manifest",
+  "View economic presence registry": "View economic presence registry",
+  "Economic presence": "Economic presence",
+  "Asset presence intro": "Economic Presence for this asset — not Canonical Economy unless marked canonical on BNB Chain."
 }

@@ -10,6 +10,7 @@ import AssetCapabilityMatrix from './components/AssetCapabilityMatrix'
 import AssetManifestViewer from './components/AssetManifestViewer'
 import AssetVenuesSection from './components/AssetVenuesSection'
 import AssetEventsSection from './components/AssetEventsSection'
+import AssetPresenceSection from './components/AssetPresenceSection'
 import GraphExploreLink from 'views/Graph/components/GraphExploreLink'
 
 const Stack = styled(Flex)`
@@ -110,6 +111,8 @@ const AssetDetail: React.FC<AssetDetailProps> = ({ asset, manifest }) => {
       <AssetCapabilityMatrix capabilities={asset.capabilities} />
 
       <AssetVenuesSection assetSlug={asset.slug} />
+
+      <AssetPresenceSection assetSlug={asset.slug} />
 
       <AssetEventsSection assetSlug={asset.slug} />
 

@@ -372,6 +372,12 @@ const SmartExecutionExplorer: React.FC = () => {
             <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · illustrative samples · as of {model.asOf}
             </Meta>
+            <Meta style={{ marginTop: 8 }}>
+              {t('View economic presence registry')}:{' '}
+              <a href="/presence" style={{ color: tokens.gold }}>
+                /presence
+              </a>
+            </Meta>
           </Panel>
         </Shell>
       </Root>

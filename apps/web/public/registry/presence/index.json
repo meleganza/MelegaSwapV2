@@ -1,0 +1,75 @@
+{
+  "manifest": "manifest://melega/platform/presence-registry@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/presence/v1",
+  "constitutional": {
+    "canonical_chain": "BNB Chain",
+    "canonical_asset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "presence": [
+    {
+      "presence_id": "presence://melega/presence/marco-bnb-canonical@1",
+      "slug": "marco-bnb-canonical",
+      "display_name": "MARCO on BNB Chain",
+      "chain_label": "BNB Chain",
+      "presence_type": "canonical",
+      "status": "LIVE",
+      "liquidity_confidence": "canonical",
+      "is_canonical": true,
+      "manifest_url": "/registry/presence/marco-bnb-canonical.json"
+    },
+    {
+      "presence_id": "presence://melega/presence/marco-ethereum-presence@1",
+      "slug": "marco-ethereum-presence",
+      "display_name": "MARCO on Ethereum",
+      "chain_label": "Ethereum",
+      "presence_type": "economic_presence",
+      "status": "OBSERVED",
+      "liquidity_confidence": "low",
+      "is_canonical": false,
+      "manifest_url": "/registry/presence/marco-ethereum-presence.json"
+    },
+    {
+      "presence_id": "presence://melega/presence/marco-polygon-presence@1",
+      "slug": "marco-polygon-presence",
+      "display_name": "MARCO on Polygon",
+      "chain_label": "Polygon",
+      "presence_type": "economic_presence",
+      "status": "OBSERVED",
+      "liquidity_confidence": "low",
+      "is_canonical": false,
+      "manifest_url": "/registry/presence/marco-polygon-presence.json"
+    },
+    {
+      "presence_id": "presence://melega/presence/marco-base-presence@1",
+      "slug": "marco-base-presence",
+      "display_name": "MARCO on Base",
+      "chain_label": "Base",
+      "presence_type": "economic_presence",
+      "status": "OBSERVED",
+      "liquidity_confidence": "low",
+      "is_canonical": false,
+      "manifest_url": "/registry/presence/marco-base-presence.json"
+    },
+    {
+      "presence_id": "presence://melega/presence/solana-melega-planned@1",
+      "slug": "solana-melega-planned",
+      "display_name": "Solana Melega Surface",
+      "chain_label": "Solana",
+      "presence_type": "planned_surface",
+      "status": "PLANNED",
+      "liquidity_confidence": "planned",
+      "is_canonical": false,
+      "manifest_url": "/registry/presence/solana-melega-planned.json"
+    }
+  ],
+  "disclaimer": "Economic Presence describes where a project, asset, or venue has presence outside the Canonical Economy. Presence is NOT Canonical Economy. MARCO on BNB Chain remains immutable.",
+  "data_source": "presence-registry-static",
+  "as_of": "2026-06-28"
+}
