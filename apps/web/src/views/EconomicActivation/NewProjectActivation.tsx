@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Head from 'next/head'
 import Link from 'next/link'
-import { cmd } from 'views/Home/EconomicCommandConsole/tokens'
+import { melegaOperational as tokens } from 'ui/tokens'
 import { ActivationStageStatus, resolveActivationReadModel } from 'lib/economic-activation'
 import {
   resolveActivationSession,
@@ -15,9 +15,9 @@ const t = (key: string) => (translations as Record<string, string>)[key] ?? key
 
 const Root = styled.div`
   min-height: 100vh;
-  background: ${cmd.bg};
-  color: ${cmd.text};
-  font-family: ${cmd.fontBody};
+  background: ${tokens.bg};
+  color: ${tokens.text};
+  font-family: ${tokens.fontBody};
   padding: 24px 24px 48px;
 `
 
@@ -31,44 +31,44 @@ const Shell = styled.div`
 
 const Title = styled.h1`
   margin: 0;
-  font-family: ${cmd.fontDisplay};
+  font-family: ${tokens.fontDisplay};
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: ${cmd.goldHighlight};
+  color: ${tokens.goldHighlight};
 `
 
 const Subtitle = styled.p`
   margin: 8px 0 0;
   font-size: 13px;
-  color: ${cmd.textSecondary};
+  color: ${tokens.textSecondary};
   line-height: 1.6;
 `
 
 const Panel = styled.section`
-  background: ${cmd.surfaceGlass};
+  background: ${tokens.surfaceGlass};
   backdrop-filter: blur(14px);
-  border: 1px solid ${cmd.borderGold};
-  border-radius: ${cmd.radius};
+  border: 1px solid ${tokens.borderGold};
+  border-radius: ${tokens.radius};
   padding: 20px;
 `
 
 const PanelTitle = styled.h2`
   margin: 0 0 16px;
-  font-family: ${cmd.fontDisplay};
+  font-family: ${tokens.fontDisplay};
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: ${cmd.gold};
+  color: ${tokens.gold};
 `
 
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid ${cmd.border};
+  border-bottom: 1px solid ${tokens.border};
   font-size: 13px;
 
   &:last-child {
@@ -76,11 +76,11 @@ const Row = styled.div`
   }
 
   span:first-child {
-    color: ${cmd.textSecondary};
+    color: ${tokens.textSecondary};
   }
 
   strong {
-    color: ${cmd.text};
+    color: ${tokens.text};
     font-weight: 500;
   }
 `
@@ -89,7 +89,7 @@ const LiveDot = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: ${cmd.success};
+  color: ${tokens.success};
   font-weight: 600;
 
   &::before {
@@ -97,7 +97,7 @@ const LiveDot = styled.span`
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: ${cmd.success};
+    background: ${tokens.success};
     animation: pulse 2s ease-in-out infinite;
   }
 
@@ -127,20 +127,20 @@ const ProgressTrack = styled.div`
   height: 6px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.45);
-  border: 1px solid ${cmd.border};
+  border: 1px solid ${tokens.border};
   overflow: hidden;
 `
 
 const ProgressFill = styled.div<{ $percent: number }>`
   height: 100%;
   width: ${({ $percent }) => $percent}%;
-  background: linear-gradient(90deg, ${cmd.gold}, ${cmd.success});
+  background: linear-gradient(90deg, ${tokens.gold}, ${tokens.success});
   transition: width 0.4s ease;
 `
 
 const ProgressMeta = styled.div`
   font-size: 11px;
-  color: ${cmd.textSecondary};
+  color: ${tokens.textSecondary};
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
@@ -161,15 +161,15 @@ const TimelineDot = styled.div<{ $active: boolean; $complete: boolean; $status: 
   border: 1px solid
     ${({ $status, $complete, $active }) =>
       $active
-        ? cmd.goldHighlight
+        ? tokens.goldHighlight
         : $complete
-          ? cmd.success
+          ? tokens.success
           : $status === 'BLOCKED'
             ? '#f87171'
-            : cmd.border};
+            : tokens.border};
   background: ${({ $complete, $active }) =>
-    $complete ? cmd.success : $active ? cmd.gold : 'transparent'};
-  box-shadow: ${({ $active }) => ($active ? `0 0 8px ${cmd.gold}` : 'none')};
+    $complete ? tokens.success : $active ? tokens.gold : 'transparent'};
+  box-shadow: ${({ $active }) => ($active ? `0 0 8px ${tokens.gold}` : 'none')};
 `
 
 const Pipeline = styled.div`
@@ -184,7 +184,7 @@ const StageRow = styled.div<{ $status: ActivationStageStatus; $focused: boolean 
   gap: 12px;
   align-items: start;
   padding: 16px 0;
-  border-bottom: 1px solid ${cmd.border};
+  border-bottom: 1px solid ${tokens.border};
   position: relative;
 
   &:last-child {
@@ -200,14 +200,14 @@ const StageRow = styled.div<{ $status: ActivationStageStatus; $focused: boolean 
     width: 2px;
     background: ${({ $status, $focused }) =>
       $focused
-        ? cmd.goldHighlight
+        ? tokens.goldHighlight
         : $status === 'READY'
-          ? cmd.success
+          ? tokens.success
           : $status === 'WAITING'
-            ? cmd.gold
+            ? tokens.gold
             : $status === 'BLOCKED'
               ? '#ef4444'
-              : cmd.textSecondary};
+              : tokens.textSecondary};
     opacity: ${({ $focused }) => ($focused ? 1 : 0.7)};
   }
 
@@ -215,11 +215,11 @@ const StageRow = styled.div<{ $status: ActivationStageStatus; $focused: boolean 
 `
 
 const StageLabel = styled.div`
-  font-family: ${cmd.fontDisplay};
+  font-family: ${tokens.fontDisplay};
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${cmd.text};
+  color: ${tokens.text};
   margin-bottom: 4px;
 `
 
@@ -231,16 +231,16 @@ const StageField = styled.div`
     font-size: 9px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: ${cmd.gold};
+    color: ${tokens.gold};
     margin-bottom: 4px;
-    font-family: ${cmd.fontDisplay};
+    font-family: ${tokens.fontDisplay};
   }
 
   p,
   ul {
     margin: 0;
     font-size: 11px;
-    color: ${cmd.textSecondary};
+    color: ${tokens.textSecondary};
     line-height: 1.5;
   }
 
@@ -254,7 +254,7 @@ const StageField = styled.div`
 `
 
 const StatusBadge = styled.span<{ $status: ActivationStageStatus }>`
-  font-family: ${cmd.fontDisplay};
+  font-family: ${tokens.fontDisplay};
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -263,21 +263,21 @@ const StatusBadge = styled.span<{ $status: ActivationStageStatus }>`
   white-space: nowrap;
   color: ${({ $status }) =>
     $status === 'READY'
-      ? cmd.success
+      ? tokens.success
       : $status === 'WAITING'
-        ? cmd.goldHighlight
+        ? tokens.goldHighlight
         : $status === 'BLOCKED'
           ? '#f87171'
-          : cmd.textSecondary};
+          : tokens.textSecondary};
   border: 1px solid
     ${({ $status }) =>
       $status === 'READY'
-        ? cmd.success
+        ? tokens.success
         : $status === 'WAITING'
-          ? cmd.gold
+          ? tokens.gold
           : $status === 'BLOCKED'
             ? '#f87171'
-            : cmd.border};
+            : tokens.border};
 `
 
 const EvidenceKind = styled.span<{ $kind: ActivationEvidenceKind }>`
@@ -286,12 +286,12 @@ const EvidenceKind = styled.span<{ $kind: ActivationEvidenceKind }>`
   text-transform: uppercase;
   color: ${({ $kind }) =>
     $kind === 'constitutional'
-      ? cmd.goldHighlight
+      ? tokens.goldHighlight
       : $kind === 'labs'
-        ? cmd.gold
+        ? tokens.gold
         : $kind === 'execution'
           ? '#f87171'
-          : cmd.textSecondary};
+          : tokens.textSecondary};
 `
 
 const JournalList = styled.div`
@@ -304,12 +304,12 @@ const JournalList = styled.div`
 
 const JournalEntry = styled.div<{ $kind: ActivationJournalKind }>`
   padding: 8px 10px;
-  border-radius: ${cmd.radiusSm};
-  border: 1px solid ${cmd.border};
+  border-radius: ${tokens.radiusSm};
+  border: 1px solid ${tokens.border};
   background: rgba(0, 0, 0, 0.25);
   font-size: 11px;
   line-height: 1.45;
-  color: ${cmd.textSecondary};
+  color: ${tokens.textSecondary};
 
   span {
     display: block;
@@ -320,12 +320,12 @@ const JournalEntry = styled.div<{ $kind: ActivationJournalKind }>`
       $kind === 'gate'
         ? '#f87171'
         : $kind === 'requirement'
-          ? cmd.gold
+          ? tokens.gold
           : $kind === 'constitutional'
-            ? cmd.goldHighlight
-            : cmd.textSecondary};
+            ? tokens.goldHighlight
+            : tokens.textSecondary};
     margin-bottom: 4px;
-    font-family: ${cmd.fontDisplay};
+    font-family: ${tokens.fontDisplay};
   }
 `
 
@@ -337,8 +337,8 @@ const PresenceGrid = styled.div`
 
 const PresenceCell = styled.div`
   padding: 12px;
-  border: 1px solid ${cmd.border};
-  border-radius: ${cmd.radiusSm};
+  border: 1px solid ${tokens.border};
+  border-radius: ${tokens.radiusSm};
   background: rgba(0, 0, 0, 0.35);
 
   strong {
@@ -349,13 +349,13 @@ const PresenceCell = styled.div`
 
   span {
     font-size: 10px;
-    color: ${cmd.textSecondary};
+    color: ${tokens.textSecondary};
   }
 `
 
 const StageNotes = styled.div`
   font-size: 11px;
-  color: ${cmd.textSecondary};
+  color: ${tokens.textSecondary};
   opacity: 0.85;
   margin-top: 4px;
 `
@@ -363,7 +363,7 @@ const StageNotes = styled.div`
 const Meta = styled.p`
   margin: 0;
   font-size: 11px;
-  color: ${cmd.textSecondary};
+  color: ${tokens.textSecondary};
   line-height: 1.5;
 `
 
@@ -372,11 +372,11 @@ const LinkRow = styled.div`
   font-size: 11px;
 
   a {
-    color: ${cmd.gold};
+    color: ${tokens.gold};
     text-decoration: none;
 
     &:hover {
-      color: ${cmd.goldHighlight};
+      color: ${tokens.goldHighlight};
     }
   }
 `
@@ -534,13 +534,13 @@ const NewProjectActivation: React.FC<Props> = ({ projectSlug }) => {
             <PanelTitle>{t('Activation manifest title')}</PanelTitle>
             <Meta>
               {t('Activation manifest note')}:{' '}
-              <a href="/registry/activation/preview.json" style={{ color: cmd.gold }}>
+              <a href="/registry/activation/preview.json" style={{ color: tokens.gold }}>
                 /registry/activation/preview.json
               </a>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
               {t('Activation runtime manifest note')}:{' '}
-              <a href="/registry/activation/runtime.json" style={{ color: cmd.gold }}>
+              <a href="/registry/activation/runtime.json" style={{ color: tokens.gold }}>
                 /registry/activation/runtime.json
               </a>
             </Meta>
@@ -552,10 +552,10 @@ const NewProjectActivation: React.FC<Props> = ({ projectSlug }) => {
 
           <Meta>
             {t('Activation reference note')}{' '}
-            <Link href="/new-project?reference=melega-dex" style={{ color: cmd.gold }}>
+            <Link href="/new-project?reference=melega-dex" style={{ color: tokens.gold }}>
               melega-dex
             </Link>{' '}
-            · <Link href="/projects/melega-dex" style={{ color: cmd.gold }}>/projects/melega-dex</Link>
+            · <Link href="/projects/melega-dex" style={{ color: tokens.gold }}>/projects/melega-dex</Link>
           </Meta>
         </Shell>
       </Root>
