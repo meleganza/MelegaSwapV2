@@ -358,6 +358,7 @@ const EconomicIdentityConsole: React.FC<EconomicIdentityConsoleProps> = ({ optio
               <Link href={model.crossLinks.presence}>Presence</Link>
               <Link href={model.crossLinks.activation}>Activation</Link>
               <Link href={model.crossLinks.execution}>Execution</Link>
+              <Link href="/map">Surface Map</Link>
               <Link href={model.crossLinks.graph}>Graph</Link>
               <Link href={model.crossLinks.query}>Query</Link>
             </CrossLinkRow>

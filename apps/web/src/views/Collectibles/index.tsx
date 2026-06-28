@@ -68,6 +68,11 @@ const Collectibles: React.FC = () => {
             /identity
           </a>
           {' · '}
+          {t('Surface map cross link')}:{' '}
+          <a href="/map" style={{ color: 'inherit' }}>
+            /map
+          </a>
+          {' · '}
           {t('Machine discovery index')}:{' '}
           <a href="/registry/collectibles/index.json" style={{ color: 'inherit' }}>
             /registry/collectibles/index.json

@@ -247,6 +247,12 @@ const UserWorkspaceConsole: React.FC = () => {
               </Link>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Surface map cross link')}:{' '}
+              <Link href="/map" style={{ color: tokens.gold }}>
+                /map
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>

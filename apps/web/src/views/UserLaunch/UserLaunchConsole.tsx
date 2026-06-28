@@ -358,6 +358,7 @@ const UserLaunchConsole: React.FC = () => {
               <Link href="/presence">Economic Presence</Link>
               <Link href="/execution">Execution</Link>
               <Link href="/identity">Economic Identity</Link>
+              <Link href="/map">Surface Map</Link>
               <Link href="/graph">Graph</Link>
               <Link href="/query">Query</Link>
             </FutureLinks>

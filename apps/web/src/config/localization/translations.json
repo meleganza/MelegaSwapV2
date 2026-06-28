@@ -1788,5 +1788,21 @@
   "Identity cross links title": "Cross-Linked Surfaces",
   "Identity manifest title": "Machine Manifest",
   "Identity manifest note": "Economic identity manifest",
-  "Identity cross link": "Economic Identity"
+  "Identity cross link": "Economic Identity",
+  "Surface map page title": "Surface Map",
+  "Surface map page subtitle": "Unified navigation index for humans and AI agents — grouped routes, statuses, and machine manifests. Read model only.",
+  "Surface map summary title": "Map Summary",
+  "Surface map total surfaces": "Total surfaces",
+  "Surface map with manifest": "With manifest",
+  "Surface map retired": "Retired",
+  "Surface map live on chain": "Live on-chain",
+  "Surface map agent summary": "Agent summary",
+  "Surface map human purpose": "Human purpose",
+  "Surface map agent purpose": "Agent purpose",
+  "Surface map data source": "Data source",
+  "Surface map manifest": "Manifest",
+  "Surface map replacement": "Replacement route",
+  "Surface map manifest title": "Machine Manifest",
+  "Surface map manifest note": "Surface map manifest",
+  "Surface map cross link": "Surface Map"
 }
