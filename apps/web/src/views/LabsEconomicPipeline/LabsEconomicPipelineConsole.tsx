@@ -383,6 +383,7 @@ const LabsEconomicPipelineConsole: React.FC = () => {
                   {link.label}
                 </CrossLink>
               ))}
+              <CrossLink href="/runtime/labs">{t('Runtime cross link')}</CrossLink>
             </CrossLinkGrid>
           </Panel>
 

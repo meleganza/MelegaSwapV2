@@ -344,6 +344,12 @@ const SurfaceMapConsole: React.FC = () => {
               </Link>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Runtime cross link')}:{' '}
+              <Link href="/runtime/labs" style={{ color: tokens.gold }}>
+                /runtime/labs
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>

@@ -1,0 +1,519 @@
+{
+  "manifest": "manifest://melega/platform/labs-runtime@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_labs_runtime_connector",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-29",
+  "disclaimer": "Labs Runtime Connector (Mission 24) — observation and synchronization read model only. No blockchain writes, token deployment, or liquidity execution. Labs unavailable surfaces as waiting or not_indexed — no fake connection or narratives.",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "session": {
+    "sessionId": "labs-runtime-observer@0.1.0",
+    "labsConnected": false,
+    "connectionStatus": "waiting",
+    "labsEndpoint": "labs://runtime/observer",
+    "lastObserved": null,
+    "lastEvent": null,
+    "observedNarrativeCount": 0
+  },
+  "labs_connected": false,
+  "last_observed": null,
+  "last_event": null,
+  "pipeline_state": [
+    {
+      "stageId": "narrative",
+      "stageLabel": "Narrative",
+      "pipelineStatus": "planned",
+      "syncStatus": "waiting",
+      "notes": "Awaiting Labs runtime observation — pipeline stage planned until Labs event received."
+    },
+    {
+      "stageId": "validation",
+      "stageLabel": "Validation",
+      "pipelineStatus": "planned",
+      "syncStatus": "waiting",
+      "notes": "Awaiting Labs runtime observation — pipeline stage planned until Labs event received."
+    },
+    {
+      "stageId": "project",
+      "stageLabel": "Project",
+      "pipelineStatus": "ready",
+      "syncStatus": "ready",
+      "notes": "Indexed in Economic OS — Labs observation not required for this stage."
+    },
+    {
+      "stageId": "asset",
+      "stageLabel": "Asset",
+      "pipelineStatus": "ready",
+      "syncStatus": "ready",
+      "notes": "Indexed in Economic OS — Labs observation not required for this stage."
+    },
+    {
+      "stageId": "metadata",
+      "stageLabel": "Metadata",
+      "pipelineStatus": "not_indexed",
+      "syncStatus": "waiting",
+      "notes": "Awaiting Labs runtime observation — pipeline stage not_indexed until Labs event received."
+    },
+    {
+      "stageId": "liquidity",
+      "stageLabel": "Liquidity",
+      "pipelineStatus": "waiting",
+      "syncStatus": "waiting",
+      "notes": "Awaiting Labs runtime observation — pipeline stage waiting until Labs event received."
+    },
+    {
+      "stageId": "registry",
+      "stageLabel": "Registry",
+      "pipelineStatus": "ready",
+      "syncStatus": "ready",
+      "notes": "Indexed in Economic OS — Labs observation not required for this stage."
+    },
+    {
+      "stageId": "presence",
+      "stageLabel": "Presence",
+      "pipelineStatus": "ready",
+      "syncStatus": "ready",
+      "notes": "Indexed in Economic OS — Labs observation not required for this stage."
+    },
+    {
+      "stageId": "execution",
+      "stageLabel": "Execution",
+      "pipelineStatus": "planned",
+      "syncStatus": "waiting",
+      "notes": "Awaiting Labs runtime observation — pipeline stage planned until Labs event received."
+    },
+    {
+      "stageId": "workspace",
+      "stageLabel": "Workspace",
+      "pipelineStatus": "ready",
+      "syncStatus": "ready",
+      "notes": "Indexed in Economic OS — Labs observation not required for this stage."
+    }
+  ],
+  "observed_narratives": [],
+  "recent_events": [],
+  "event_definitions": [
+    {
+      "id": "narrative_created",
+      "label": "Narrative Created",
+      "description": "Labs emits when a new project narrative draft is created.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "narrative",
+          "label": "Pipeline: Narrative",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        },
+        {
+          "kind": "workspace",
+          "id": "workspace",
+          "label": "Workspace",
+          "route": "/workspace",
+          "manifestUri": "/registry/workspace/index.json"
+        }
+      ]
+    },
+    {
+      "id": "narrative_updated",
+      "label": "Narrative Updated",
+      "description": "Labs emits when narrative content or metadata changes.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "narrative",
+          "label": "Pipeline: Narrative",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        }
+      ]
+    },
+    {
+      "id": "narrative_validated",
+      "label": "Narrative Validated",
+      "description": "Labs constitutional validation passed — ready for registry binding.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "validation",
+          "label": "Pipeline: Validation",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "pipeline_stage",
+          "id": "project",
+          "label": "Pipeline: Project",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "project_registry",
+          "id": "project_registry",
+          "label": "Project Registry",
+          "route": "/projects",
+          "manifestUri": "/registry/projects/index.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        }
+      ]
+    },
+    {
+      "id": "narrative_rejected",
+      "label": "Narrative Rejected",
+      "description": "Labs validation failed — pipeline stage blocked until narrative is revised.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "validation",
+          "label": "Pipeline: Validation",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "pipeline_stage",
+          "id": "narrative",
+          "label": "Pipeline: Narrative",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        }
+      ]
+    },
+    {
+      "id": "narrative_ready",
+      "label": "Narrative Ready",
+      "description": "Narrative approved for economic indexing handoff.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "validation",
+          "label": "Pipeline: Validation",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "pipeline_stage",
+          "id": "project",
+          "label": "Pipeline: Project",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "project_registry",
+          "id": "project_registry",
+          "label": "Project Registry",
+          "route": "/projects",
+          "manifestUri": "/registry/projects/index.json"
+        },
+        {
+          "kind": "workspace",
+          "id": "workspace",
+          "label": "Workspace",
+          "route": "/workspace",
+          "manifestUri": "/registry/workspace/index.json"
+        }
+      ]
+    },
+    {
+      "id": "project_created",
+      "label": "Project Created",
+      "description": "Indexed project identity bound after validation.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "project",
+          "label": "Pipeline: Project",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "project_registry",
+          "id": "project_registry",
+          "label": "Project Registry",
+          "route": "/projects",
+          "manifestUri": "/registry/projects/index.json"
+        },
+        {
+          "kind": "workspace",
+          "id": "workspace",
+          "label": "Workspace",
+          "route": "/workspace",
+          "manifestUri": "/registry/workspace/index.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        }
+      ]
+    },
+    {
+      "id": "asset_planned",
+      "label": "Asset Planned",
+      "description": "Asset binding planned — UAI assignment pending registry write.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "asset",
+          "label": "Pipeline: Asset",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "asset_registry",
+          "id": "asset_registry",
+          "label": "Asset Registry",
+          "route": "/assets",
+          "manifestUri": "/registry/assets/index.json"
+        },
+        {
+          "kind": "project_registry",
+          "id": "project_registry",
+          "label": "Project Registry",
+          "route": "/projects",
+          "manifestUri": "/registry/projects/index.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        }
+      ]
+    },
+    {
+      "id": "metadata_missing",
+      "label": "Metadata Missing",
+      "description": "Required metadata not indexed — surfaces as not_indexed in pipeline.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "metadata",
+          "label": "Pipeline: Metadata",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "asset_registry",
+          "id": "asset_registry",
+          "label": "Asset Registry",
+          "route": "/assets",
+          "manifestUri": "/registry/assets/index.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        }
+      ]
+    },
+    {
+      "id": "liquidity_waiting",
+      "label": "Liquidity Waiting",
+      "description": "On-chain liquidity not provisioned — waiting for wallet action via /add.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "liquidity",
+          "label": "Pipeline: Liquidity",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "launch",
+          "id": "launch",
+          "label": "Launch",
+          "route": "/launch",
+          "manifestUri": "/registry/launch/index.json"
+        },
+        {
+          "kind": "workspace",
+          "id": "workspace",
+          "label": "Workspace",
+          "route": "/workspace",
+          "manifestUri": "/registry/workspace/index.json"
+        }
+      ]
+    },
+    {
+      "id": "presence_waiting",
+      "label": "Presence Waiting",
+      "description": "Economic presence targets staged but not fully synchronized.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "presence",
+          "label": "Pipeline: Presence",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "presence",
+          "id": "presence",
+          "label": "Presence",
+          "route": "/presence",
+          "manifestUri": "/registry/presence/index.json"
+        },
+        {
+          "kind": "workspace",
+          "id": "workspace",
+          "label": "Workspace",
+          "route": "/workspace",
+          "manifestUri": "/registry/workspace/index.json"
+        },
+        {
+          "kind": "project_registry",
+          "id": "project_registry",
+          "label": "Project Registry",
+          "route": "/projects",
+          "manifestUri": "/registry/projects/index.json"
+        }
+      ]
+    },
+    {
+      "id": "execution_waiting",
+      "label": "Execution Waiting",
+      "description": "Execution decision layer not ready — illustrative /execution only.",
+      "mapsTo": [
+        {
+          "kind": "pipeline_stage",
+          "id": "execution",
+          "label": "Pipeline: Execution",
+          "route": "/pipeline",
+          "manifestUri": "/registry/pipeline/labs-economic-pipeline.json"
+        },
+        {
+          "kind": "execution",
+          "id": "execution",
+          "label": "Execution",
+          "route": "/execution",
+          "manifestUri": "/registry/execution/index.json"
+        },
+        {
+          "kind": "workspace",
+          "id": "workspace",
+          "label": "Workspace",
+          "route": "/workspace",
+          "manifestUri": "/registry/workspace/index.json"
+        }
+      ]
+    }
+  ],
+  "pending_requirements": [
+    {
+      "id": "labs_endpoint",
+      "label": "Labs runtime endpoint indexed",
+      "status": "waiting",
+      "notes": "labs://runtime/observer not reachable in this build."
+    },
+    {
+      "id": "narrative_stream",
+      "label": "Narrative event stream subscription",
+      "status": "not_indexed",
+      "notes": "No narrative_created or narrative_updated events observed."
+    },
+    {
+      "id": "validation_handoff",
+      "label": "Validation handoff channel",
+      "status": "planned",
+      "notes": "Constitutional validation sync planned for Phase C."
+    },
+    {
+      "id": "registry_sync",
+      "label": "Registry write-back observer",
+      "status": "not_indexed",
+      "notes": "Observation only — no registry writes from connector."
+    }
+  ],
+  "blocked_reasons": [
+    "Labs runtime not connected — cannot observe narrative state changes.",
+    "No fake narratives or projects will be synthesized while disconnected.",
+    "Pipeline synchronization paused until Labs endpoint is indexed."
+  ],
+  "future_actions": [
+    {
+      "id": "subscribe_narrative_events",
+      "label": "Subscribe to Labs narrative event stream",
+      "kind": "future",
+      "reason": "Requires indexed Labs runtime endpoint."
+    },
+    {
+      "id": "sync_pipeline_on_event",
+      "label": "Auto-sync pipeline stages on runtime events",
+      "kind": "future",
+      "route": "/pipeline",
+      "reason": "Event → stage mapping defined; observer not live."
+    },
+    {
+      "id": "surface_workspace_alerts",
+      "label": "Push pending requirements to Workspace",
+      "kind": "future",
+      "route": "/workspace"
+    },
+    {
+      "id": "route_launch_capabilities",
+      "label": "Update Launch capability status from Labs validation",
+      "kind": "future",
+      "route": "/launch"
+    }
+  ],
+  "cross_links": [
+    {
+      "label": "Labs Pipeline",
+      "route": "/pipeline"
+    },
+    {
+      "label": "Workspace",
+      "route": "/workspace"
+    },
+    {
+      "label": "Launch",
+      "route": "/launch"
+    },
+    {
+      "label": "Surface Map",
+      "route": "/map"
+    },
+    {
+      "label": "Activation Preview",
+      "route": "/new-project"
+    }
+  ]
+}

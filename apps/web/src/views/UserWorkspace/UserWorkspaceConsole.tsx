@@ -247,6 +247,12 @@ const UserWorkspaceConsole: React.FC = () => {
               </Link>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Runtime cross link')}:{' '}
+              <Link href="/runtime/labs" style={{ color: tokens.gold }}>
+                /runtime/labs
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               {t('Identity cross link')}:{' '}
               <Link href="/identity" style={{ color: tokens.gold }}>
                 /identity
