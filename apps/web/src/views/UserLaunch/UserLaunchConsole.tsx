@@ -355,6 +355,7 @@ const UserLaunchConsole: React.FC = () => {
             <PanelTitle>{t('Launch future surfaces title')}</PanelTitle>
             <FutureLinks>
               <Link href="/new-project">Labs / Activation</Link>
+              <Link href="/pipeline">{t('Pipeline cross link')}</Link>
               <Link href="/presence">Economic Presence</Link>
               <Link href="/execution">Execution</Link>
               <Link href="/identity">Economic Identity</Link>

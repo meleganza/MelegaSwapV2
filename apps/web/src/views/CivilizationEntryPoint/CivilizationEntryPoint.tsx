@@ -17,6 +17,7 @@ const t = (key: string) => (translations as Record<string, string>)[key] ?? key
 
 const MACHINE_DISCOVERY = [
   { label: 'Surface Map', uri: '/map' },
+  { label: 'Labs Economic Pipeline', uri: '/registry/pipeline/labs-economic-pipeline.json' },
   { label: 'Mainnet Readiness Gate', uri: '/registry/readiness/mainnet-gate.json' },
   { label: 'Homepage Blueprint', uri: '/registry/blueprints/homepage-entry-point.json' },
   { label: 'Homepage Manifest', uri: '/registry/homepage/index.json' },

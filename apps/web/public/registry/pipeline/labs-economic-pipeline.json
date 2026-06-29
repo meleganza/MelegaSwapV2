@@ -1,0 +1,159 @@
+{
+  "manifest": "manifest://melega/platform/labs-economic-pipeline@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_labs_pipeline",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-29",
+  "disclaimer": "Labs → Economic Pipeline read model only. No token deployment, liquidity execution, contract interaction, or router modification. Missing data surfaces as not_indexed; future execution surfaces as planned.",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "pipelines": [
+    {
+      "pipeline_id": "labs-preview-to-marco-economy",
+      "label": "Labs Preview → MARCO Economy",
+      "description": "Reference pipeline explaining how a Labs narrative preview becomes an indexed economic project inside Melega DEX. MARCO on BNB Chain is the constitutional end-state example — new narratives remain planned/waiting where data is missing.",
+      "seed_type": "reference",
+      "readiness": {
+        "total": 10,
+        "ready": 5,
+        "waiting": 1,
+        "blocked": 0,
+        "planned": 3,
+        "notIndexed": 1
+      },
+      "stages": [
+        {
+          "stage_id": "narrative",
+          "label": "Narrative",
+          "status": "planned",
+          "linked_surface": "/new-project",
+          "manifest_uri": "/registry/activation/runtime.json",
+          "output_artifact": "labs://narrative/preview",
+          "planned_reason": "Labs narrative handoff pipeline not indexed in this build."
+        },
+        {
+          "stage_id": "validation",
+          "label": "Validation",
+          "status": "planned",
+          "linked_surface": "/new-project",
+          "manifest_uri": "/registry/readiness/mainnet-gate.json",
+          "output_artifact": "labs://validation/constitutional",
+          "planned_reason": "Automated Labs validation handoff is Phase C — read model only."
+        },
+        {
+          "stage_id": "project",
+          "label": "Project",
+          "status": "ready",
+          "linked_surface": "/projects",
+          "manifest_uri": "/registry/projects/index.json",
+          "output_artifact": "manifest://melega/platform/project/melega-dex@0.1.0"
+        },
+        {
+          "stage_id": "asset",
+          "label": "Asset",
+          "status": "ready",
+          "linked_surface": "/assets",
+          "manifest_uri": "/registry/assets/index.json",
+          "output_artifact": "manifest://melega/platform/asset/marco@0.1.0"
+        },
+        {
+          "stage_id": "metadata",
+          "label": "Metadata",
+          "status": "not_indexed",
+          "linked_surface": "/assets",
+          "output_artifact": "labs://metadata/submission"
+        },
+        {
+          "stage_id": "liquidity",
+          "label": "Liquidity",
+          "status": "waiting",
+          "linked_surface": "/launch",
+          "output_artifact": "legacy://add-liquidity"
+        },
+        {
+          "stage_id": "registry",
+          "label": "Registry",
+          "status": "ready",
+          "linked_surface": "/graph",
+          "manifest_uri": "/registry/graph/index.json",
+          "output_artifact": "manifest://melega/platform/registry-graph@0.1.0"
+        },
+        {
+          "stage_id": "presence",
+          "label": "Presence",
+          "status": "ready",
+          "linked_surface": "/presence",
+          "manifest_uri": "/registry/presence/index.json",
+          "output_artifact": "manifest://melega/platform/presence-registry@0.1.0"
+        },
+        {
+          "stage_id": "execution",
+          "label": "Execution",
+          "status": "planned",
+          "linked_surface": "/execution",
+          "manifest_uri": "/registry/execution/index.json",
+          "output_artifact": "manifest://melega/platform/execution@0.2.0",
+          "planned_reason": "Execution surface is illustrative — not a live trading router."
+        },
+        {
+          "stage_id": "workspace",
+          "label": "Workspace",
+          "status": "ready",
+          "linked_surface": "/workspace",
+          "manifest_uri": "/registry/workspace/index.json",
+          "output_artifact": "manifest://melega/platform/user-workspace@0.1.0"
+        }
+      ]
+    }
+  ],
+  "linked_surfaces": [
+    "/launch",
+    "/new-project",
+    "/projects",
+    "/assets",
+    "/presence",
+    "/execution",
+    "/workspace",
+    "/map",
+    "/pipeline"
+  ],
+  "cross_links": [
+    {
+      "label": "Launch",
+      "route": "/launch"
+    },
+    {
+      "label": "Activation Preview",
+      "route": "/new-project"
+    },
+    {
+      "label": "Projects",
+      "route": "/projects"
+    },
+    {
+      "label": "Assets",
+      "route": "/assets"
+    },
+    {
+      "label": "Presence",
+      "route": "/presence"
+    },
+    {
+      "label": "Execution",
+      "route": "/execution"
+    },
+    {
+      "label": "Workspace",
+      "route": "/workspace"
+    },
+    {
+      "label": "Surface Map",
+      "route": "/map"
+    }
+  ]
+}

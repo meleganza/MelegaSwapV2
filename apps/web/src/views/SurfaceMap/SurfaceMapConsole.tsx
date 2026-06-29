@@ -338,6 +338,12 @@ const SurfaceMapConsole: React.FC = () => {
               </a>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Pipeline cross link')}:{' '}
+              <Link href="/pipeline" style={{ color: tokens.gold }}>
+                /pipeline
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>
