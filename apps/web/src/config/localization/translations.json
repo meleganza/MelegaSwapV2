@@ -1865,5 +1865,22 @@
   "Runtime cross links title": "Linked Surfaces",
   "Runtime manifest title": "Machine Manifest",
   "Runtime manifest note": "Labs runtime manifest",
-  "Runtime cross link": "Labs Runtime"
+  "Runtime cross link": "Labs Runtime",
+  "Orchestrator page title": "Economic Orchestrator",
+  "Orchestrator page subtitle": "Read-only decision service — observes the Economic OS and recommends the next best action for humans, AI agents, and projects. No blockchain writes.",
+  "Orchestrator state title": "Current Economic State",
+  "Orchestrator inputs title": "Observed Inputs",
+  "Orchestrator next actions title": "Next Actions (Critical & High)",
+  "Orchestrator queue title": "Recommendation Queue",
+  "Orchestrator dependency title": "Dependency Graph",
+  "Orchestrator blocked title": "Blocked Reasons",
+  "Orchestrator cross links title": "Linked Surfaces",
+  "Orchestrator manifest title": "Machine Manifest",
+  "Orchestrator manifest note": "Economic orchestrator manifest",
+  "Orchestrator cross link": "Orchestrator",
+  "Orchestrator missing": "Missing",
+  "Orchestrator human action": "Human",
+  "Orchestrator ai action": "AI",
+  "Orchestrator blocking": "Blocking",
+  "Orchestrator future": "Future"
 }

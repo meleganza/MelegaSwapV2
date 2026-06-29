@@ -384,6 +384,7 @@ const LabsEconomicPipelineConsole: React.FC = () => {
                 </CrossLink>
               ))}
               <CrossLink href="/runtime/labs">{t('Runtime cross link')}</CrossLink>
+              <CrossLink href="/orchestrator">{t('Orchestrator cross link')}</CrossLink>
             </CrossLinkGrid>
           </Panel>
 

@@ -350,6 +350,12 @@ const SurfaceMapConsole: React.FC = () => {
               </Link>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Orchestrator cross link')}:{' '}
+              <Link href="/orchestrator" style={{ color: tokens.gold }}>
+                /orchestrator
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>
