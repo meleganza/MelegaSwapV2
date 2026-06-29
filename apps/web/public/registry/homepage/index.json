@@ -1,0 +1,72 @@
+{
+  "manifest": "manifest://melega/platform/homepage-entry-point@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_entry_point",
+  "as_of": "2026-06-29",
+  "implementation": "live",
+  "mission": "Mission 22 — Civilization Entry Point Implementation",
+  "blueprint_uri": "/registry/blueprints/homepage-entry-point.json",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "framing": "Canonical Economy — not replaceable by Economic Presence layers"
+  },
+  "core_routes": [
+    "/swap",
+    "/workspace",
+    "/launch",
+    "/map"
+  ],
+  "secondary_routes": [
+    "/projects",
+    "/assets",
+    "/graph",
+    "/presence"
+  ],
+  "advanced_routes": [
+    "/query",
+    "/execution",
+    "/identity",
+    "/collectibles",
+    "/new-project"
+  ],
+  "legacy_routes": [
+    "/ilo",
+    "/nft",
+    "/nftmarket",
+    "/viewNFTs"
+  ],
+  "machine_discovery": [
+    {
+      "label": "Surface Map",
+      "uri": "/map"
+    },
+    {
+      "label": "Mainnet Readiness Gate",
+      "uri": "/registry/readiness/mainnet-gate.json"
+    },
+    {
+      "label": "Homepage Blueprint",
+      "uri": "/registry/blueprints/homepage-entry-point.json"
+    },
+    {
+      "label": "Homepage Manifest",
+      "uri": "/registry/homepage/index.json"
+    },
+    {
+      "label": "Surface Index",
+      "uri": "/registry/surfaces/index.json"
+    }
+  ],
+  "removed_from_homepage": [
+    "BabyMarco NFT mint block (MintModal, Timer, quota UI)",
+    "ILO carousel banner linking to /ilo",
+    "AliceCarousel primary banner with /ilo and legacy apply images",
+    "Pool-only subbanner carousel dominance (17+ pool banners)",
+    "Pancake-era CakeDataRow as primary hero metric",
+    "Component named/exported as Nft for homepage",
+    "IFO success toast copy on homepage"
+  ],
+  "disclaimer": "Civilization Entry Point (Mission 22) — orientation layer only. No on-chain execution on homepage."
+}
