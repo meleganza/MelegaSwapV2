@@ -1,0 +1,565 @@
+{
+  "manifest": "manifest://melega/platform/submission-review-intake@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_submission_review_intake_bridge",
+  "read_only": true,
+  "execution_enabled": false,
+  "persistence_enabled": false,
+  "as_of": "2026-06-30",
+  "disclaimer": "Submission Review Intake Bridge (Mission 29) — read-only observable mapping from submission categories through review to event intake and orchestrator recommendations. No persistence, approval execution, registry mutation, or blockchain interaction. Schema examples only.",
+  "live_bridge_events": 0,
+  "flow": [
+    "submission",
+    "review",
+    "intake",
+    "orchestrator"
+  ],
+  "mappings": [
+    {
+      "submissionCategory": "token_metadata",
+      "submissionCategoryLabel": "Token Metadata",
+      "requiredReviewType": "human_metadata_review",
+      "requiredEvidence": [
+        "token_name",
+        "token_symbol",
+        "decimals",
+        "asset_slug"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "asset_metadata",
+      "resultingIntakeEventType": "metadata_submitted",
+      "safetyClassification": "human_review_required",
+      "orchestratorImpact": "Orchestrator observes metadata gaps and recommends Launch capability review — no auto-index.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/assets",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "intakeRoutingTargets": [
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "token_logo",
+      "submissionCategoryLabel": "Token Logo",
+      "requiredReviewType": "asset_branding_review",
+      "requiredEvidence": [
+        "asset_slug",
+        "logo_uri"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "asset_metadata",
+      "resultingIntakeEventType": "metadata_submitted",
+      "safetyClassification": "human_review_required",
+      "orchestratorImpact": "Orchestrator observes metadata gaps and recommends Launch capability review — no auto-index.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/launch",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "intakeRoutingTargets": [
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "website",
+      "submissionCategoryLabel": "Website",
+      "requiredReviewType": "presence_link_review",
+      "requiredEvidence": [
+        "project_slug",
+        "website_url"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "project_registry",
+      "resultingIntakeEventType": "project_updated",
+      "safetyClassification": "observation_only",
+      "orchestratorImpact": "Orchestrator syncs project registry strip and workspace project section recommendations.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/projects",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ],
+      "intakeRoutingTargets": [
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "social_links",
+      "submissionCategoryLabel": "Social Links",
+      "requiredReviewType": "presence_social_review",
+      "requiredEvidence": [
+        "project_slug"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "project_registry",
+      "resultingIntakeEventType": "project_updated",
+      "safetyClassification": "observation_only",
+      "orchestratorImpact": "Orchestrator syncs project registry strip and workspace project section recommendations.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/projects",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ],
+      "intakeRoutingTargets": [
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "project_narrative",
+      "submissionCategoryLabel": "Project Narrative",
+      "requiredReviewType": "constitutional_narrative_review",
+      "requiredEvidence": [
+        "narrative_title",
+        "narrative_summary",
+        "constitutional_fit"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "labs_narrative",
+      "resultingIntakeEventType": "narrative_created",
+      "safetyClassification": "human_review_required",
+      "orchestratorImpact": "Orchestrator coordinates Labs narrative handoff with pipeline and runtime observations.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/new-project",
+        "/submit",
+        "/review",
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator",
+        "/map"
+      ],
+      "intakeRoutingTargets": [
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator",
+        "/map"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "whitepaper",
+      "submissionCategoryLabel": "Whitepaper",
+      "requiredReviewType": "documentation_review",
+      "requiredEvidence": [
+        "project_slug",
+        "whitepaper_uri"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "labs_narrative",
+      "resultingIntakeEventType": "narrative_updated",
+      "safetyClassification": "human_review_required",
+      "orchestratorImpact": "Orchestrator coordinates Labs narrative handoff with pipeline and runtime observations.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/projects",
+        "/submit",
+        "/review",
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator",
+        "/map"
+      ],
+      "intakeRoutingTargets": [
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator",
+        "/map"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "audit_reference",
+      "submissionCategoryLabel": "Audit Reference",
+      "requiredReviewType": "audit_evidence_review",
+      "requiredEvidence": [
+        "asset_slug",
+        "audit_uri",
+        "auditor_name"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "asset_metadata",
+      "resultingIntakeEventType": "metadata_submitted",
+      "safetyClassification": "human_review_required",
+      "orchestratorImpact": "Orchestrator observes metadata gaps and recommends Launch capability review — no auto-index.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/assets",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "intakeRoutingTargets": [
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "category_classification",
+      "submissionCategoryLabel": "Category / Classification",
+      "requiredReviewType": "economic_classification_review",
+      "requiredEvidence": [
+        "asset_slug",
+        "taxonomy_ids"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "asset_metadata",
+      "resultingIntakeEventType": "asset_planned",
+      "safetyClassification": "observation_only",
+      "orchestratorImpact": "Orchestrator observes metadata gaps and recommends Launch capability review — no auto-index.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/assets",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "intakeRoutingTargets": [
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "economic_presence_request",
+      "submissionCategoryLabel": "Economic Presence Request",
+      "requiredReviewType": "canonical_safety_review",
+      "requiredEvidence": [
+        "presence_slug",
+        "chain_role",
+        "target_chain"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "presence_update",
+      "resultingIntakeEventType": "presence_staged",
+      "safetyClassification": "human_review_required",
+      "orchestratorImpact": "Orchestrator confirms presence is not canonical economy override — MARCO on BNB remains LIVE.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/presence",
+        "/submit",
+        "/review",
+        "/pipeline",
+        "/workspace",
+        "/map"
+      ],
+      "intakeRoutingTargets": [
+        "/presence",
+        "/pipeline",
+        "/workspace",
+        "/map"
+      ],
+      "blockedReason": "Canonical economy override attempts are blocked — chain_role must not replace MARCO on BNB Chain.",
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "launch_request",
+      "submissionCategoryLabel": "Launch Request",
+      "requiredReviewType": "launch_capability_review",
+      "requiredEvidence": [
+        "capability_type",
+        "project_slug"
+      ],
+      "reviewQueueGroup": "waiting_review",
+      "allowedReviewDecisions": [
+        "approve",
+        "reject",
+        "request_information",
+        "defer",
+        "blocked"
+      ],
+      "resultingIntakeFamily": "liquidity_readiness",
+      "resultingIntakeEventType": "liquidity_waiting",
+      "safetyClassification": "future_execution",
+      "orchestratorImpact": "Orchestrator recommends Launch index review — never marks PLANNED as LIVE.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/launch",
+        "/submit",
+        "/review",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "intakeRoutingTargets": [
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "blockedReason": "Launch requests must not route to /ilo or carry execution payloads.",
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    },
+    {
+      "submissionCategory": "future_ai_review",
+      "submissionCategoryLabel": "Future AI Review",
+      "requiredReviewType": "future_ai_assist_review",
+      "requiredEvidence": [
+        "review_subject"
+      ],
+      "reviewQueueGroup": "future_review",
+      "allowedReviewDecisions": [
+        "reject",
+        "blocked",
+        "defer"
+      ],
+      "resultingIntakeFamily": "orchestrator_recommendation",
+      "resultingIntakeEventType": "recommendation_issued",
+      "safetyClassification": "blocked",
+      "orchestratorImpact": "Orchestrator emits advisory recommendation only — human governance required.",
+      "orchestratorRecommendationSurface": "/orchestrator",
+      "targetSurfaces": [
+        "/orchestrator",
+        "/submit",
+        "/review",
+        "/map"
+      ],
+      "intakeRoutingTargets": [
+        "/orchestrator",
+        "/map"
+      ],
+      "blockedReason": "AI reviewer path not active — human governance required before intake handoff.",
+      "machineManifestUri": "/registry/bridges/submission-review-intake.json",
+      "linkedSubmissionManifest": "/registry/submission/economic-submission.json",
+      "linkedReviewManifest": "/registry/review/economic-review.json",
+      "linkedIntakeManifest": "/registry/intake/real-event-intake.json",
+      "sampleKind": "schema_example"
+    }
+  ],
+  "flow_examples": [
+    {
+      "id": "schema://bridge/flow/token_metadata",
+      "submissionCategory": "token_metadata",
+      "flow": [
+        "submission",
+        "review",
+        "intake",
+        "orchestrator"
+      ],
+      "description": "Token metadata submission → human metadata review → asset_metadata intake → orchestrator Launch gap recommendation.",
+      "sampleKind": "schema_example",
+      "liveIndexed": false
+    },
+    {
+      "id": "schema://bridge/flow/project_narrative",
+      "submissionCategory": "project_narrative",
+      "flow": [
+        "submission",
+        "review",
+        "intake",
+        "orchestrator"
+      ],
+      "description": "Project narrative → constitutional review → labs_narrative intake → orchestrator Labs handoff observation.",
+      "sampleKind": "schema_example",
+      "liveIndexed": false
+    },
+    {
+      "id": "schema://bridge/flow/economic_presence_blocked",
+      "submissionCategory": "economic_presence_request",
+      "flow": [
+        "submission",
+        "review",
+        "intake",
+        "orchestrator"
+      ],
+      "description": "Presence request with canonical override risk → blocked review → intake halted → orchestrator safety observation only.",
+      "sampleKind": "schema_example",
+      "liveIndexed": false
+    },
+    {
+      "id": "schema://bridge/flow/future_ai_review",
+      "submissionCategory": "future_ai_review",
+      "flow": [
+        "submission",
+        "review",
+        "intake",
+        "orchestrator"
+      ],
+      "description": "Future AI review placeholder → future_review queue → orchestrator_recommendation intake schema example only.",
+      "sampleKind": "schema_example",
+      "liveIndexed": false
+    }
+  ],
+  "validation_rules": [
+    "Bridge is read-only — no persistence, approval execution, or registry mutation.",
+    "approve decision does not emit live intake events in this build.",
+    "reject and blocked decisions halt intake propagation.",
+    "request_information returns flow to /submit — no automatic re-queue.",
+    "All bridge mappings are schema examples — liveBridgeEvents remains 0.",
+    "Forbidden payloads (signed_tx, router_execute, deploy_contract) block bridge handoff.",
+    "Canonical economy MARCO on BNB Chain cannot be overridden via presence submissions.",
+    "AI reviewer cannot issue approve without human governance in future missions."
+  ],
+  "cross_links": [
+    {
+      "label": "Submission",
+      "route": "/submit"
+    },
+    {
+      "label": "Review Queue",
+      "route": "/review"
+    },
+    {
+      "label": "Event Intake Spec",
+      "route": "/registry/intake/real-event-intake.json"
+    },
+    {
+      "label": "Orchestrator",
+      "route": "/orchestrator"
+    },
+    {
+      "label": "Surface Map",
+      "route": "/map"
+    },
+    {
+      "label": "Bridge Manifest",
+      "route": "/registry/bridges/submission-review-intake.json"
+    }
+  ]
+}
