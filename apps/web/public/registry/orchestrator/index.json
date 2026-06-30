@@ -1,0 +1,421 @@
+{
+  "manifest": "manifest://melega/platform/economic-orchestrator@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_economic_orchestrator",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-29",
+  "disclaimer": "Economic Orchestrator (Mission 25) — read-only decision service. Observes Economic OS state and recommends next steps. No blockchain writes, router changes, or contract interaction. Missing evidence surfaces as waiting — no fake recommendations.",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "session": {
+    "sessionId": "economic-orchestrator@0.1.0",
+    "asOf": "2026-06-29",
+    "readOnly": true,
+    "executionEnabled": false
+  },
+  "inputs": [
+    {
+      "id": "pipeline",
+      "label": "Labs Economic Pipeline",
+      "status": "ready",
+      "route": "/pipeline",
+      "manifestUri": "/registry/pipeline/labs-economic-pipeline.json",
+      "notes": "5/10 stages ready in reference pipeline."
+    },
+    {
+      "id": "labs_runtime",
+      "label": "Labs Runtime",
+      "status": "waiting",
+      "route": "/runtime/labs",
+      "manifestUri": "/registry/runtime/labs-runtime.json",
+      "notes": "Labs runtime not indexed — observation waiting."
+    },
+    {
+      "id": "workspace",
+      "label": "Workspace",
+      "status": "ready",
+      "route": "/workspace",
+      "manifestUri": "/registry/workspace/index.json",
+      "notes": "8 active sections."
+    },
+    {
+      "id": "launch",
+      "label": "Launch",
+      "status": "ready",
+      "route": "/launch",
+      "manifestUri": "/registry/launch/index.json",
+      "notes": "4 live or existing-flow capabilities."
+    },
+    {
+      "id": "projects",
+      "label": "Projects",
+      "status": "ready",
+      "route": "/projects",
+      "manifestUri": "/registry/projects/index.json",
+      "notes": "1 indexed projects."
+    },
+    {
+      "id": "assets",
+      "label": "Assets",
+      "status": "ready",
+      "route": "/assets",
+      "manifestUri": "/registry/assets/index.json",
+      "notes": "4 indexed assets."
+    },
+    {
+      "id": "presence",
+      "label": "Presence",
+      "status": "ready",
+      "route": "/presence",
+      "manifestUri": "/registry/presence/index.json",
+      "notes": "5 presence targets indexed."
+    },
+    {
+      "id": "execution",
+      "label": "Execution",
+      "status": "planned",
+      "route": "/execution",
+      "manifestUri": "/registry/execution/index.json",
+      "notes": "Illustrative execution surface — live swaps route to /swap."
+    },
+    {
+      "id": "identity",
+      "label": "Identity",
+      "status": "not_indexed",
+      "route": "/identity",
+      "manifestUri": "/registry/identity/index.json",
+      "notes": "Wallet integration not used in this read model. Connect flows remain on legacy surfaces."
+    }
+  ],
+  "current_state": {
+    "summary": "Economic OS indexed with 1 projects and 4 assets. Labs narrative observation waiting — recommendations derived from pipeline evidence only.",
+    "labsConnected": false,
+    "pipelineStages": [
+      {
+        "stageId": "narrative",
+        "label": "Narrative",
+        "status": "planned"
+      },
+      {
+        "stageId": "validation",
+        "label": "Validation",
+        "status": "planned"
+      },
+      {
+        "stageId": "project",
+        "label": "Project",
+        "status": "ready"
+      },
+      {
+        "stageId": "asset",
+        "label": "Asset",
+        "status": "ready"
+      },
+      {
+        "stageId": "metadata",
+        "label": "Metadata",
+        "status": "not_indexed"
+      },
+      {
+        "stageId": "liquidity",
+        "label": "Liquidity",
+        "status": "waiting"
+      },
+      {
+        "stageId": "registry",
+        "label": "Registry",
+        "status": "ready"
+      },
+      {
+        "stageId": "presence",
+        "label": "Presence",
+        "status": "ready"
+      },
+      {
+        "stageId": "execution",
+        "label": "Execution",
+        "status": "planned"
+      },
+      {
+        "stageId": "workspace",
+        "label": "Workspace",
+        "status": "ready"
+      }
+    ],
+    "projectsIndexed": 1,
+    "assetsIndexed": 4,
+    "presenceIndexed": 5,
+    "launchCapabilitiesLive": 4
+  },
+  "recommendations": [
+    {
+      "blockingDependencies": [
+        "labs_runtime"
+      ],
+      "id": "labs_runtime_waiting",
+      "currentState": "Labs runtime disconnected",
+      "missingRequirement": "Labs runtime observation",
+      "reason": "Narrative events cannot be observed — orchestration evidence incomplete.",
+      "priority": "critical",
+      "status": "waiting",
+      "targetSurface": "Labs Runtime",
+      "targetRoute": "/runtime/labs",
+      "humanAction": "Open Labs Runtime and verify connection status before narrative-driven steps.",
+      "aiAction": "Probe labs://runtime/observer — do not invent narrative_created events.",
+      "futureDependency": "narrative_created event stream"
+    },
+    {
+      "blockingDependencies": [
+        "asset"
+      ],
+      "id": "asset_ready_liquidity_missing",
+      "currentState": "Asset READY — liquidity missing",
+      "missingRequirement": "On-chain liquidity provision",
+      "reason": "Liquidity requires wallet action via existing /add flow — not automated.",
+      "priority": "high",
+      "status": "waiting",
+      "targetSurface": "Launch",
+      "targetRoute": "/launch",
+      "humanAction": "Open Launch and use Create Liquidity / Create Pool links to /add.",
+      "aiAction": "Route live liquidity to legacy /add — never fake TVL or pool state."
+    },
+    {
+      "blockingDependencies": [
+        "labs_runtime",
+        "narrative"
+      ],
+      "id": "narrative_planned_handoff",
+      "currentState": "Narrative stage planned",
+      "missingRequirement": "Labs narrative handoff",
+      "reason": "No validated narrative indexed — pipeline cannot advance past narrative stage.",
+      "priority": "high",
+      "status": "planned",
+      "targetSurface": "Activation Preview",
+      "targetRoute": "/new-project",
+      "humanAction": "Review Activation preview and Labs pipeline — narrative not live.",
+      "aiAction": "Resolve labs://narrative/preview — status planned, not ready.",
+      "futureDependency": "narrative_ready event"
+    },
+    {
+      "blockingDependencies": [
+        "asset"
+      ],
+      "id": "metadata_not_indexed",
+      "currentState": "Asset indexed — metadata missing",
+      "missingRequirement": "Token list metadata and brand assets",
+      "reason": "Metadata stage is not_indexed — no auto-submission from narrative.",
+      "priority": "normal",
+      "status": "not_indexed",
+      "targetSurface": "Launch",
+      "targetRoute": "/launch",
+      "humanAction": "Review Launch capabilities for metadata submission — planned handoff only.",
+      "aiAction": "Do not invent token list entries — show not_indexed until indexed.",
+      "futureDependency": "labs://metadata/submit"
+    },
+    {
+      "blockingDependencies": [
+        "presence"
+      ],
+      "id": "presence_ready_execution_waiting",
+      "currentState": "Presence READY — execution waiting",
+      "missingRequirement": "Execution decision review",
+      "reason": "Execution surface is illustrative — pre-swap decision layer only.",
+      "priority": "normal",
+      "status": "planned",
+      "targetSurface": "Execution",
+      "targetRoute": "/execution",
+      "humanAction": "Review Execution samples — route live swaps to /swap.",
+      "aiAction": "Never execute trades on /execution — illustrative read model only.",
+      "futureDependency": "manifest://melega/platform/execution@0.2.0"
+    },
+    {
+      "blockingDependencies": [],
+      "id": "orient_surface_map",
+      "currentState": "Economic OS multi-surface",
+      "missingRequirement": "Orientation",
+      "reason": "Surface map provides constitutional compass for humans and agents.",
+      "priority": "low",
+      "status": "ready",
+      "targetSurface": "Surface Map",
+      "targetRoute": "/map",
+      "humanAction": "Open Map to understand all surfaces and manifest links.",
+      "aiAction": "Fetch /registry/surfaces/index.json before routing execution."
+    }
+  ],
+  "next_actions": [
+    {
+      "blockingDependencies": [
+        "labs_runtime"
+      ],
+      "id": "labs_runtime_waiting",
+      "currentState": "Labs runtime disconnected",
+      "missingRequirement": "Labs runtime observation",
+      "reason": "Narrative events cannot be observed — orchestration evidence incomplete.",
+      "priority": "critical",
+      "status": "waiting",
+      "targetSurface": "Labs Runtime",
+      "targetRoute": "/runtime/labs",
+      "humanAction": "Open Labs Runtime and verify connection status before narrative-driven steps.",
+      "aiAction": "Probe labs://runtime/observer — do not invent narrative_created events.",
+      "futureDependency": "narrative_created event stream"
+    },
+    {
+      "blockingDependencies": [
+        "asset"
+      ],
+      "id": "asset_ready_liquidity_missing",
+      "currentState": "Asset READY — liquidity missing",
+      "missingRequirement": "On-chain liquidity provision",
+      "reason": "Liquidity requires wallet action via existing /add flow — not automated.",
+      "priority": "high",
+      "status": "waiting",
+      "targetSurface": "Launch",
+      "targetRoute": "/launch",
+      "humanAction": "Open Launch and use Create Liquidity / Create Pool links to /add.",
+      "aiAction": "Route live liquidity to legacy /add — never fake TVL or pool state."
+    },
+    {
+      "blockingDependencies": [
+        "labs_runtime",
+        "narrative"
+      ],
+      "id": "narrative_planned_handoff",
+      "currentState": "Narrative stage planned",
+      "missingRequirement": "Labs narrative handoff",
+      "reason": "No validated narrative indexed — pipeline cannot advance past narrative stage.",
+      "priority": "high",
+      "status": "planned",
+      "targetSurface": "Activation Preview",
+      "targetRoute": "/new-project",
+      "humanAction": "Review Activation preview and Labs pipeline — narrative not live.",
+      "aiAction": "Resolve labs://narrative/preview — status planned, not ready.",
+      "futureDependency": "narrative_ready event"
+    }
+  ],
+  "dependency_graph": [
+    {
+      "id": "narrative",
+      "label": "Narrative",
+      "status": "planned",
+      "route": "/new-project",
+      "dependsOn": []
+    },
+    {
+      "id": "validation",
+      "label": "Validation",
+      "status": "planned",
+      "route": "/new-project",
+      "dependsOn": [
+        "narrative"
+      ]
+    },
+    {
+      "id": "project",
+      "label": "Project",
+      "status": "ready",
+      "route": "/projects",
+      "dependsOn": [
+        "validation"
+      ]
+    },
+    {
+      "id": "asset",
+      "label": "Asset",
+      "status": "ready",
+      "route": "/assets",
+      "dependsOn": [
+        "project"
+      ]
+    },
+    {
+      "id": "metadata",
+      "label": "Metadata",
+      "status": "not_indexed",
+      "route": "/assets",
+      "dependsOn": [
+        "asset"
+      ]
+    },
+    {
+      "id": "liquidity",
+      "label": "Liquidity",
+      "status": "waiting",
+      "route": "/launch",
+      "dependsOn": [
+        "asset",
+        "metadata"
+      ]
+    },
+    {
+      "id": "registry",
+      "label": "Registry",
+      "status": "ready",
+      "route": "/graph",
+      "dependsOn": [
+        "project",
+        "asset"
+      ]
+    },
+    {
+      "id": "presence",
+      "label": "Presence",
+      "status": "ready",
+      "route": "/presence",
+      "dependsOn": [
+        "registry",
+        "asset"
+      ]
+    },
+    {
+      "id": "execution",
+      "label": "Execution",
+      "status": "planned",
+      "route": "/execution",
+      "dependsOn": [
+        "presence"
+      ]
+    },
+    {
+      "id": "workspace",
+      "label": "Workspace",
+      "status": "ready",
+      "route": "/workspace",
+      "dependsOn": [
+        "registry",
+        "presence"
+      ]
+    }
+  ],
+  "blocked_reasons": [
+    "Orchestrator is read-only — no blockchain writes or contract interaction.",
+    "Labs runtime not connected — narrative-driven recommendations use waiting/planned status.",
+    "Some requirements are not_indexed — recommendations will not claim fake completion."
+  ],
+  "cross_links": [
+    {
+      "label": "Labs Pipeline",
+      "route": "/pipeline"
+    },
+    {
+      "label": "Labs Runtime",
+      "route": "/runtime/labs"
+    },
+    {
+      "label": "Workspace",
+      "route": "/workspace"
+    },
+    {
+      "label": "Launch",
+      "route": "/launch"
+    },
+    {
+      "label": "Surface Map",
+      "route": "/map"
+    }
+  ]
+}

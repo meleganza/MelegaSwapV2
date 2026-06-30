@@ -1,0 +1,653 @@
+{
+  "manifest": "manifest://melega/platform/economic-identity@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "economic_identity_read_model",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-28",
+  "disclaimer": "Economic Identity read model only. Not a social profile, KYC, or account system. No wallet balances, NFT holdings, or on-chain writes indexed in this build.",
+  "framing": {
+    "is_social_profile": false,
+    "is_kyc": false,
+    "is_account_creation": false
+  },
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "wallet": {
+    "status": "wallet_not_connected",
+    "address": null,
+    "addressIndexed": false,
+    "holdingsIndexed": false,
+    "notes": "Wallet integration not used in this read model. Connect flows remain on legacy surfaces."
+  },
+  "primary_archetype": "observer",
+  "archetypes": [
+    {
+      "id": "human_operator",
+      "label": "Human Operator",
+      "description": "A person navigating Melega economic surfaces — workspace, launch, and activation.",
+      "status": "available",
+      "notes": "Default archetype when no wallet binding is indexed."
+    },
+    {
+      "id": "ai_agent",
+      "label": "AI Agent",
+      "description": "Future autonomous economic actor — agent-readiness scored from indexed surfaces only.",
+      "status": "planned",
+      "notes": "No agent wallet binding in this build. Readiness score is illustrative."
+    },
+    {
+      "id": "project_operator",
+      "label": "Project Operator",
+      "description": "Operates project registry entries, activation handoffs, and economic presence targets.",
+      "status": "indexed",
+      "notes": "Project registry indexed — operator binding not wallet-verified."
+    },
+    {
+      "id": "liquidity_provider",
+      "label": "Liquidity Provider",
+      "description": "Provides liquidity via legacy DEX flows — venue registry indexed, balances not.",
+      "status": "available",
+      "notes": "LP venues indexed in workspace — no TVL or balance figures."
+    },
+    {
+      "id": "collector",
+      "label": "Collector",
+      "description": "Civilization collectible holder archetype — BabyMarco Genesis and future participation proofs.",
+      "status": "indexed",
+      "notes": "Collectibles registry indexed — ownership not verified without wallet reads."
+    },
+    {
+      "id": "launcher",
+      "label": "Launcher",
+      "description": "Uses launch capabilities for token, pool, farm, and collectible surfaces.",
+      "status": "indexed",
+      "notes": "Launch layer indexed — execution remains on existing flows only."
+    },
+    {
+      "id": "observer",
+      "label": "Observer",
+      "description": "Read-only participant — graph, query, presence, and identity surfaces without execution.",
+      "status": "available",
+      "notes": "Default when wallet_not_connected."
+    }
+  ],
+  "agent_readiness": {
+    "score": 85,
+    "label": "agent_ready_planned",
+    "maxScore": 100,
+    "illustrative": true,
+    "dimensions": [
+      {
+        "id": "identity_role",
+        "label": "Identity Role",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "wallet",
+        "label": "Connected Wallet Status",
+        "status": "not_indexed",
+        "weight": 1,
+        "contribution": 0
+      },
+      {
+        "id": "workspace",
+        "label": "Workspace Links",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "projects",
+        "label": "Projects",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "assets",
+        "label": "Assets",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "liquidity",
+        "label": "Liquidity",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "collectibles",
+        "label": "Collectibles",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "launch",
+        "label": "Launch Capabilities",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "activation",
+        "label": "Activation State",
+        "status": "planned",
+        "weight": 1,
+        "contribution": 0.35
+      },
+      {
+        "id": "presence",
+        "label": "Economic Presence",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      },
+      {
+        "id": "execution",
+        "label": "Execution Readiness",
+        "status": "indexed",
+        "weight": 1,
+        "contribution": 1
+      }
+    ],
+    "notes": "Illustrative agent-readiness from indexed economic surfaces only — not wallet-verified, not on-chain."
+  },
+  "sections": [
+    {
+      "section_id": "identity_role",
+      "label": "Identity Role",
+      "module_href": "/identity",
+      "status": "indexed",
+      "indexed_count": 7,
+      "items": [
+        {
+          "id": "human_operator",
+          "label": "Human Operator",
+          "href": "/identity",
+          "status": "available",
+          "notes": "A person navigating Melega economic surfaces — workspace, launch, and activation."
+        },
+        {
+          "id": "ai_agent",
+          "label": "AI Agent",
+          "href": "/identity",
+          "status": "planned",
+          "notes": "Future autonomous economic actor — agent-readiness scored from indexed surfaces only."
+        },
+        {
+          "id": "project_operator",
+          "label": "Project Operator",
+          "href": "/identity",
+          "status": "indexed",
+          "notes": "Operates project registry entries, activation handoffs, and economic presence targets."
+        },
+        {
+          "id": "liquidity_provider",
+          "label": "Liquidity Provider",
+          "href": "/identity",
+          "status": "available",
+          "notes": "Provides liquidity via legacy DEX flows — venue registry indexed, balances not."
+        },
+        {
+          "id": "collector",
+          "label": "Collector",
+          "href": "/identity",
+          "status": "indexed",
+          "notes": "Civilization collectible holder archetype — BabyMarco Genesis and future participation proofs."
+        },
+        {
+          "id": "launcher",
+          "label": "Launcher",
+          "href": "/identity",
+          "status": "indexed",
+          "notes": "Uses launch capabilities for token, pool, farm, and collectible surfaces."
+        },
+        {
+          "id": "observer",
+          "label": "Observer",
+          "href": "/identity",
+          "status": "available",
+          "notes": "Read-only participant — graph, query, presence, and identity surfaces without execution."
+        }
+      ]
+    },
+    {
+      "section_id": "wallet",
+      "label": "Connected Wallet Status",
+      "module_href": "/identity",
+      "status": "not_indexed",
+      "indexed_count": 1,
+      "items": [
+        {
+          "id": "wallet_status",
+          "label": "wallet_not_connected",
+          "href": "/identity",
+          "notes": "Wallet integration not used in this read model. Connect flows remain on legacy surfaces."
+        }
+      ]
+    },
+    {
+      "section_id": "workspace",
+      "label": "Workspace Links",
+      "module_href": "/workspace",
+      "status": "indexed",
+      "indexed_count": 9,
+      "items": [
+        {
+          "id": "projects",
+          "label": "Projects",
+          "href": "/projects",
+          "status": "indexed",
+          "notes": "1 indexed"
+        },
+        {
+          "id": "assets",
+          "label": "Assets",
+          "href": "/assets",
+          "status": "indexed",
+          "notes": "4 indexed"
+        },
+        {
+          "id": "liquidity",
+          "label": "Liquidity",
+          "href": "/liquidity",
+          "status": "indexed",
+          "notes": "1 indexed"
+        },
+        {
+          "id": "pools",
+          "label": "Pools",
+          "href": "/pools",
+          "status": "indexed",
+          "notes": "1 indexed"
+        },
+        {
+          "id": "farms",
+          "label": "Farms",
+          "href": "/farms",
+          "status": "indexed",
+          "notes": "1 indexed"
+        },
+        {
+          "id": "presence",
+          "label": "Presence",
+          "href": "/presence",
+          "status": "indexed",
+          "notes": "5 indexed"
+        },
+        {
+          "id": "collectibles",
+          "label": "Collectibles",
+          "href": "/collectibles",
+          "status": "indexed",
+          "notes": "3 indexed"
+        },
+        {
+          "id": "activation",
+          "label": "Activation",
+          "href": "/new-project",
+          "status": "not_indexed",
+          "notes": "0 indexed"
+        },
+        {
+          "id": "execution",
+          "label": "Execution",
+          "href": "/execution",
+          "status": "indexed",
+          "notes": "2 indexed"
+        }
+      ]
+    },
+    {
+      "section_id": "projects",
+      "label": "Projects",
+      "module_href": "/projects",
+      "status": "indexed",
+      "indexed_count": 1,
+      "items": [
+        {
+          "id": "melega-dex",
+          "label": "Melega DEX",
+          "href": "/projects/melega-dex",
+          "status": "listed",
+          "notes": "upi://melega/project/melega-dex@1"
+        }
+      ]
+    },
+    {
+      "section_id": "assets",
+      "label": "Assets",
+      "module_href": "/assets",
+      "status": "indexed",
+      "indexed_count": 4,
+      "items": [
+        {
+          "id": "marco",
+          "label": "MARCO (BSC)",
+          "href": "/assets/marco",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1"
+        },
+        {
+          "id": "marco-ethereum",
+          "label": "MARCO (Ethereum)",
+          "href": "/assets/marco-ethereum",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/1/0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76@1"
+        },
+        {
+          "id": "marco-polygon",
+          "label": "MARCO (Polygon)",
+          "href": "/assets/marco-polygon",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2@1"
+        },
+        {
+          "id": "marco-base",
+          "label": "MARCO (Base)",
+          "href": "/assets/marco-base",
+          "status": "observed",
+          "notes": "uai://melega/asset/fungible/8453/0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7@1"
+        }
+      ]
+    },
+    {
+      "section_id": "liquidity",
+      "label": "Liquidity",
+      "module_href": "/liquidity",
+      "status": "indexed",
+      "indexed_count": 1,
+      "items": [
+        {
+          "id": "marco-bnb-lp",
+          "label": "MARCO-BNB LP",
+          "href": "/liquidity",
+          "status": "not_indexed",
+          "notes": "No TVL, volume, or APR in static MVP."
+        }
+      ]
+    },
+    {
+      "section_id": "collectibles",
+      "label": "Collectibles",
+      "module_href": "/collectibles",
+      "status": "indexed",
+      "indexed_count": 3,
+      "items": [
+        {
+          "id": "babymarco-genesis",
+          "label": "BabyMarco Genesis",
+          "href": "/collectibles/babymarco-genesis",
+          "status": "live_or_legacy_existing",
+          "notes": "Mint: /nft/"
+        },
+        {
+          "id": "masterm-identity",
+          "label": "MasterM Identity",
+          "href": "/collectibles/masterm-identity",
+          "status": "planned_or_external",
+          "notes": "No mint route"
+        },
+        {
+          "id": "achievement-collectibles",
+          "label": "Future Achievement & Participation Collectibles",
+          "href": "/collectibles/achievement-collectibles",
+          "status": "planned",
+          "notes": "No mint route"
+        }
+      ]
+    },
+    {
+      "section_id": "launch",
+      "label": "Launch Capabilities",
+      "module_href": "/launch",
+      "status": "indexed",
+      "indexed_count": 10,
+      "items": [
+        {
+          "id": "create_token",
+          "label": "Create a Token",
+          "href": "/launch",
+          "status": "PLANNED",
+          "notes": "planned"
+        },
+        {
+          "id": "submit_token_metadata",
+          "label": "Submit Token Metadata",
+          "href": "/assets",
+          "status": "PLANNED",
+          "notes": "planned"
+        },
+        {
+          "id": "upload_logo",
+          "label": "Upload Logo",
+          "href": "/launch",
+          "status": "PLANNED",
+          "notes": "planned"
+        },
+        {
+          "id": "create_liquidity",
+          "label": "Create Liquidity",
+          "href": "/add",
+          "status": "AVAILABLE_EXISTING_FLOW",
+          "notes": "available"
+        },
+        {
+          "id": "create_pool",
+          "label": "Create Pool",
+          "href": "/add",
+          "status": "AVAILABLE_EXISTING_FLOW",
+          "notes": "available"
+        },
+        {
+          "id": "create_farm",
+          "label": "Create Farm",
+          "href": "/farms",
+          "status": "BLOCKED",
+          "notes": "blocked"
+        },
+        {
+          "id": "create_staking_pool",
+          "label": "Create Staking Pool",
+          "href": "/pools",
+          "status": "PLANNED",
+          "notes": "planned"
+        },
+        {
+          "id": "mint_civilization_collectible",
+          "label": "Mint Civilization Collectible",
+          "href": "/nft/",
+          "status": "AVAILABLE_EXISTING_FLOW",
+          "notes": "available"
+        },
+        {
+          "id": "launch_through_labs",
+          "label": "Launch through Labs",
+          "href": "/new-project",
+          "status": "PLANNED",
+          "notes": "planned"
+        },
+        {
+          "id": "activate_economic_presence",
+          "label": "Activate Economic Presence",
+          "href": "/new-project",
+          "status": "LIVE",
+          "notes": "available"
+        }
+      ]
+    },
+    {
+      "section_id": "activation",
+      "label": "Activation State",
+      "module_href": "/new-project",
+      "status": "planned",
+      "indexed_count": 11,
+      "items": [
+        {
+          "id": "narrative",
+          "label": "Narrative",
+          "href": "/new-project",
+          "status": "WAITING",
+          "notes": "Melega Labs → DEX handoff not indexed in this build"
+        },
+        {
+          "id": "validation",
+          "label": "Validation",
+          "href": "/new-project",
+          "status": "BLOCKED",
+          "notes": "Requires indexed Labs narrative"
+        },
+        {
+          "id": "project_registry",
+          "label": "Project Registry",
+          "href": "/projects",
+          "status": "WAITING",
+          "notes": "Follows successful narrative validation"
+        },
+        {
+          "id": "canonical_asset",
+          "label": "Canonical Asset",
+          "href": "/assets",
+          "status": "WAITING",
+          "notes": "Constitutional MARCO on BNB Chain remains immutable"
+        },
+        {
+          "id": "economic_presence",
+          "label": "Economic Presence",
+          "href": "/new-project",
+          "status": "PLANNED",
+          "notes": "BNB · Ethereum · Polygon · Base · Solana — presence only"
+        },
+        {
+          "id": "venue_activation",
+          "label": "Venue Activation",
+          "href": "/venues",
+          "status": "WAITING",
+          "notes": "Requires project + asset registry"
+        },
+        {
+          "id": "economic_events",
+          "label": "Economic Events",
+          "href": "/events",
+          "status": "WAITING",
+          "notes": "Derived from venue graph"
+        },
+        {
+          "id": "treasury_runtime",
+          "label": "Treasury Runtime",
+          "href": "/new-project",
+          "status": "PLANNED",
+          "notes": "No treasury amounts indexed"
+        },
+        {
+          "id": "radar",
+          "label": "Radar",
+          "href": "/new-project",
+          "status": "PLANNED",
+          "notes": "Incident feed not indexed"
+        },
+        {
+          "id": "space",
+          "label": "Space",
+          "href": "/new-project",
+          "status": "PLANNED",
+          "notes": "Community bind not live for new activations"
+        },
+        {
+          "id": "smartdrop",
+          "label": "SmartDrop",
+          "href": "/new-project",
+          "status": "PLANNED",
+          "notes": "Campaign runtime not indexed"
+        }
+      ]
+    },
+    {
+      "section_id": "presence",
+      "label": "Economic Presence",
+      "module_href": "/presence",
+      "status": "indexed",
+      "indexed_count": 5,
+      "items": [
+        {
+          "id": "marco-bnb-canonical",
+          "label": "MARCO on BNB Chain",
+          "href": "/presence/marco-bnb-canonical",
+          "status": "LIVE",
+          "notes": "Canonical"
+        },
+        {
+          "id": "marco-ethereum-presence",
+          "label": "MARCO on Ethereum",
+          "href": "/presence/marco-ethereum-presence",
+          "status": "OBSERVED",
+          "notes": "NOT CANONICAL"
+        },
+        {
+          "id": "marco-polygon-presence",
+          "label": "MARCO on Polygon",
+          "href": "/presence/marco-polygon-presence",
+          "status": "OBSERVED",
+          "notes": "NOT CANONICAL"
+        },
+        {
+          "id": "marco-base-presence",
+          "label": "MARCO on Base",
+          "href": "/presence/marco-base-presence",
+          "status": "OBSERVED",
+          "notes": "NOT CANONICAL"
+        },
+        {
+          "id": "solana-melega-planned",
+          "label": "Solana Melega Surface",
+          "href": "/presence/solana-melega-planned",
+          "status": "PLANNED",
+          "notes": "NOT CANONICAL"
+        }
+      ]
+    },
+    {
+      "section_id": "execution",
+      "label": "Execution Readiness",
+      "module_href": "/execution",
+      "status": "indexed",
+      "indexed_count": 2,
+      "items": [
+        {
+          "id": "melega-v2-canonical",
+          "label": "Melega V2 Canonical Pool",
+          "href": "/execution",
+          "status": "RECOMMENDED",
+          "notes": "Quality 91 — illustrative"
+        },
+        {
+          "id": "melega-v2-alt-route",
+          "label": "Melega V2 Alt Route",
+          "href": "/execution",
+          "status": "ALTERNATIVE",
+          "notes": "Gap 5"
+        }
+      ]
+    }
+  ],
+  "cross_links": {
+    "workspace": "/workspace",
+    "launch": "/launch",
+    "collectibles": "/collectibles",
+    "presence": "/presence",
+    "activation": "/new-project",
+    "execution": "/execution",
+    "graph": "/graph",
+    "query": "/query"
+  }
+}

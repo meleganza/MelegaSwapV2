@@ -1,8 +1,9 @@
 import { SalesSectionProps } from '.'
 
 export const swapSectionData: SalesSectionProps = {
-  headingText: 'MelegaSwap',
-  bodyText: 'The best AMM DEX on Binance Smart Chain and BASE Chain providing friendly trading and better project support.',
+  headingText: 'Melega DEX',
+  bodyText:
+    'AI-native liquidity on BSC, Base, Ethereum, and Polygon. Classic swap and LP flows today, with smart routing on the roadmap.',
   reverse: false,
   primaryButton: {
     to: '/swap',
@@ -20,7 +21,7 @@ export const swapSectionData: SalesSectionProps = {
 
 export const earnSectionData: SalesSectionProps = {
   headingText: 'Earn passive income with crypto.',
-  bodyText: 'MelegaSwap makes it easy to make your crypto work for you.',
+  bodyText: 'Stake LP tokens and MARCO in farms and pools to earn on Melega DEX.',
   reverse: true,
   primaryButton: {
     to: '/farms',
@@ -41,7 +42,7 @@ export const earnSectionData: SalesSectionProps = {
 export const cakeSectionData: SalesSectionProps = {
   headingText: 'MARCO makes our world go round.',
   bodyText:
-    'MARCO token is at the heart of the MelegaSwap Melega Space. Buy it, win it, farm it, spend it, stake it... heck, you can even vote with it!',
+    'MARCO powers rewards across Melega DEX — the liquidity surface of MELEGA AI | KIRI CIVILIZATION. Trade it, farm it, stake it, and govern with it.',
   reverse: false,
   primaryButton: {
     to: '/swap?outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b',

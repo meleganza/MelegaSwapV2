@@ -1,0 +1,41 @@
+{
+  "$schema": "https://melega.finance/schemas/presence/v1",
+  "presence_id": "presence://melega/presence/marco-polygon-presence@1",
+  "slug": "marco-polygon-presence",
+  "display_name": "MARCO on Polygon",
+  "description": "Observed Economic Presence on Polygon. Presence layer only — not Canonical Economy.",
+  "project_upi": "upi://melega/project/melega-dex@1",
+  "project_slug": "melega-dex",
+  "canonical_asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+  "asset_slug": "marco-polygon",
+  "chain_id": 137,
+  "chain_label": "Polygon",
+  "venue_source": "Legacy token list / bridge surface",
+  "presence_type": "economic_presence",
+  "status": "OBSERVED",
+  "liquidity_confidence": "low",
+  "execution_eligibility": "conditional",
+  "canonical_relationship": "economic_presence_only",
+  "is_canonical": false,
+  "warnings": [
+    "NOT CANONICAL — Economic Presence only",
+    "Low liquidity confidence — no fake liquidity numbers",
+    "Does not replace MARCO on BNB Chain"
+  ],
+  "links": {
+    "graph": "/graph",
+    "query": "/query",
+    "asset": "/assets/marco-polygon",
+    "execution": "/execution"
+  },
+  "constitutional": {
+    "canonical_chain": "BNB Chain",
+    "canonical_asset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "mvp_static": true,
+  "data_source": "presence-registry-static",
+  "as_of": "2026-06-28",
+  "disclaimer": "Economic Presence describes where a project, asset, or venue has presence outside the Canonical Economy. Presence is NOT Canonical Economy. MARCO on BNB Chain remains immutable."
+}

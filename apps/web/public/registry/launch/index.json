@@ -1,0 +1,137 @@
+{
+  "manifest": "manifest://melega/platform/user-launch@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "user_launch_read_model",
+  "read_only": true,
+  "execution_enabled": false,
+  "as_of": "2026-06-28",
+  "disclaimer": "User Launch & Listing read model only. No blockchain writes, fake buttons, or hidden capabilities. Links to existing flows where already implemented.",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "summary": {
+    "total": 9,
+    "live": 1,
+    "availableExistingFlow": 2,
+    "planned": 5,
+    "blocked": 1,
+    "notSupported": 0
+  },
+  "capabilities": [
+    {
+      "capability_id": "create_token",
+      "label": "Create a Token",
+      "status": "PLANNED",
+      "availability": "planned",
+      "wallet_requirement": "required",
+      "machine_manifest": "manifest://melega/platform/user-launch/create_token@0.1.0",
+      "warnings": [
+        "NOT LIVE on DEX — no fake deploy button",
+        "Anyone can deploy tokens externally; DEX does not verify legitimacy"
+      ]
+    },
+    {
+      "capability_id": "submit_token_metadata",
+      "label": "Submit Token Metadata",
+      "status": "PLANNED",
+      "availability": "planned",
+      "wallet_requirement": "optional",
+      "registry_href": "/assets",
+      "machine_manifest": "manifest://melega/platform/user-launch/submit_token_metadata@0.1.0",
+      "warnings": [
+        "Token list governance not automated in this build"
+      ]
+    },
+    {
+      "capability_id": "upload_logo",
+      "label": "Upload Logo",
+      "status": "PLANNED",
+      "availability": "planned",
+      "wallet_requirement": "none",
+      "machine_manifest": "manifest://melega/platform/user-launch/upload_logo@0.1.0",
+      "warnings": [
+        "No upload UI in this build — read model only"
+      ]
+    },
+    {
+      "capability_id": "create_liquidity",
+      "label": "Create Liquidity",
+      "status": "AVAILABLE_EXISTING_FLOW",
+      "availability": "available",
+      "wallet_requirement": "required",
+      "existing_flow_href": "/add",
+      "machine_manifest": "manifest://melega/platform/user-launch/create_liquidity@0.1.0",
+      "warnings": [
+        "User executes real on-chain transaction via existing /add flow"
+      ]
+    },
+    {
+      "capability_id": "create_pool",
+      "label": "Create Pool",
+      "status": "AVAILABLE_EXISTING_FLOW",
+      "availability": "available",
+      "wallet_requirement": "required",
+      "existing_flow_href": "/add",
+      "machine_manifest": "manifest://melega/platform/user-launch/create_pool@0.1.0",
+      "warnings": [
+        "Same flow as Create Liquidity — no separate pool wizard"
+      ]
+    },
+    {
+      "capability_id": "create_farm",
+      "label": "Create Farm",
+      "status": "BLOCKED",
+      "availability": "blocked",
+      "wallet_requirement": "required",
+      "existing_flow_href": "/farms",
+      "registry_href": "/venues",
+      "machine_manifest": "manifest://melega/platform/user-launch/create_farm@0.1.0",
+      "warnings": [
+        "NOT user-creatable in current DEX — browse existing farms at /farms",
+        "No fake farm creation button"
+      ]
+    },
+    {
+      "capability_id": "create_staking_pool",
+      "label": "Create Staking Pool",
+      "status": "PLANNED",
+      "availability": "planned",
+      "wallet_requirement": "required",
+      "existing_flow_href": "/pools",
+      "registry_href": "/venues",
+      "machine_manifest": "manifest://melega/platform/user-launch/create_staking_pool@0.1.0",
+      "warnings": [
+        "Participate in existing pools at /pools — creation not exposed"
+      ]
+    },
+    {
+      "capability_id": "launch_through_labs",
+      "label": "Launch through Labs",
+      "status": "PLANNED",
+      "availability": "planned",
+      "wallet_requirement": "optional",
+      "registry_href": "/new-project",
+      "machine_manifest": "manifest://melega/platform/user-launch/launch_through_labs@0.1.0",
+      "warnings": [
+        "Labs connection not indexed in this build"
+      ]
+    },
+    {
+      "capability_id": "activate_economic_presence",
+      "label": "Activate Economic Presence",
+      "status": "LIVE",
+      "availability": "available",
+      "wallet_requirement": "none",
+      "existing_flow_href": "/new-project",
+      "registry_href": "/presence",
+      "machine_manifest": "manifest://melega/platform/user-launch/activate_economic_presence@0.1.0",
+      "warnings": [
+        "Read model only — no blockchain writes",
+        "Economic Presence is NOT Canonical Economy"
+      ]
+    }
+  ]
+}

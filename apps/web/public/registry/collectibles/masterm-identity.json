@@ -1,0 +1,42 @@
+{
+  "$schema": "https://melega.finance/schemas/collectibles/v1",
+  "collectible_id": "collectible://melega/civilization/masterm-identity@0.1.0",
+  "slug": "masterm-identity",
+  "display_name": "MasterM Identity",
+  "description": "Planned civilization identity collectible linked to the MasterM ecosystem. MXMX fungible token exists on Base and BSC — no NFT collectible contract indexed in this repository.",
+  "status": "planned_or_external",
+  "category": "identity",
+  "role": "Civilization identity and future linked collectible — external MasterM surface, not an active DEX mint.",
+  "contract": {
+    "indexed": false,
+    "notes": "No NFT contract detected for MasterM in repo. MXMX token references only — not a collectible mint surface."
+  },
+  "metadata": {
+    "status": "not_indexed",
+    "notes": "Metadata pipeline not indexed. External references: masterm.world, linktr.ee/mastermworld."
+  },
+  "supply": {
+    "mode": "not_indexed",
+    "mintedCountIndexed": false,
+    "notes": "No supply figures — planned or external identity collectible."
+  },
+  "mint": {
+    "status": "not_indexed",
+    "notes": "No mint route in this DEX build. External ecosystem only."
+  },
+  "related_routes": [],
+  "warnings": [
+    "No fake contract address",
+    "Not an active mint surface on MelegaSwap",
+    "Identity collectible — planned linkage to civilization layer"
+  ],
+  "links": {
+    "detail": "/collectibles/masterm-identity",
+    "external": "https://www.masterm.world/",
+    "collectiblesRegistry": "/collectibles"
+  },
+  "mvp_static": true,
+  "data_source": "collectibles-registry-static",
+  "as_of": "2026-06-28",
+  "disclaimer": "Civilization Collectibles read model only. No ownership counts, mint buttons, or on-chain writes on /collectibles. Legacy mint flows remain on their original routes."
+}

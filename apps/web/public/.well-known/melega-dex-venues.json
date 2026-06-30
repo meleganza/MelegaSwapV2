@@ -1,0 +1,9 @@
+{
+  "name": "Melega DEX Economic Venue Registry",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/venues/index.json",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/blob/organ02-asset-registry-spec/docs/ORGAN_03_ECONOMIC_VENUE_REGISTRY_MVP.md"
+}

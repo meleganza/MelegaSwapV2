@@ -5,7 +5,7 @@ import { SvgProps } from "../types";
 
 const Logo: React.FC<React.PropsWithChildren<SvgProps>> = (props) => {
   return (
-    <img src="/images/logo.png" width="150px" {...props} alt="Melega" />
+    <img src="/images/logo.png" width="150px" {...props} alt="Melega DEX" />
   );
 };
 

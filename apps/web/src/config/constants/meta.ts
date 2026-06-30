@@ -4,9 +4,9 @@ import { PageMeta } from './types'
 import { ASSET_CDN } from './endpoints'
 
 export const DEFAULT_META: PageMeta = {
-  title: 'Melega',
+  title: 'Melega DEX',
   description:
-    '',
+    'Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility.',
   image: `${ASSET_CDN}/web/og/hero.jpg`,
 }
 
@@ -41,17 +41,17 @@ const getPathList = (t: ContextApi['t']): PathList => {
       // '/voting/proposal/create': { title: t('Make a Proposal'), image: `${ASSET_CDN}/web/og/voting.jpg` },
       '/info': {
         title: `${t('Overview')} - ${t('Info')}`,
-        description: 'View statistics for Melega exchanges.',
+        description: 'View statistics for Melega DEX.',
         image: `${ASSET_CDN}/web/og/info.jpg`,
       },
       '/info/pairs': {
         title: `${t('Pairs')} - ${t('Info')}`,
-        description: 'View statistics for Melega exchanges.',
+        description: 'View statistics for Melega DEX.',
         image: `${ASSET_CDN}/web/og/info.jpg`,
       },
       '/info/tokens': {
         title: `${t('Tokens')} - ${t('Info')}`,
-        description: 'View statistics for Melega exchanges.',
+        description: 'View statistics for Melega DEX.',
         image: `${ASSET_CDN}/web/og/info.jpg`,
       },
       '/nft': { title: t('NFT'), image: `${ASSET_CDN}/web/og/nft.jpg` },
@@ -68,7 +68,7 @@ const getPathList = (t: ContextApi['t']): PathList => {
       // '/launchpads': { basePath: true, title: t('Launchpad List'), image: `${ASSET_CDN}/web/og/pottery.jpg` },
       // '/lock-list': { basePath: true, title: t('Locks'), image: `${ASSET_CDN}/web/og/pottery.jpg` },
     },
-    defaultTitleSuffix: t('MelegaExchange'),
+    defaultTitleSuffix: t('Melega DEX'),
   }
 }
 

@@ -1,0 +1,8 @@
+{
+  "name": "Melega DEX Project Discovery",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/projects/discovery.json",
+  "project_registry": "/registry/projects/index.json",
+  "documentation": "https://github.com/meleganza/MelegaSwapV2/blob/main/docs/MELEGA_DEX_PROJECT_REGISTRY_CORE_SPEC_V1.md"
+}

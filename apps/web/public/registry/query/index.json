@@ -1,0 +1,368 @@
+{
+  "manifest": "manifest://melega/platform/registry-query@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/registry-query/v1",
+  "graph_registry": "/registry/graph/index.json",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "venue_registry": "/registry/venues/index.json",
+  "event_registry": "/registry/events/index.json",
+  "capabilities": [
+    "find_projects_by_asset",
+    "find_projects_by_capability",
+    "find_projects_by_treasury_compatibility",
+    "find_assets_by_project",
+    "find_venues_by_project",
+    "find_venues_by_asset",
+    "find_venues_by_type",
+    "find_events_by_project",
+    "find_events_by_asset",
+    "find_events_by_venue",
+    "find_machine_ready_nodes",
+    "find_not_indexed_relationships"
+  ],
+  "presets": [
+    {
+      "id": "projects-with-marco-assets",
+      "label": "Projects with MARCO assets",
+      "description": "Projects linked to the MARCO (BSC) asset in the registry graph."
+    },
+    {
+      "id": "treasury-compatible-projects",
+      "label": "Treasury-compatible projects",
+      "description": "Projects with treasuryCompatible capability partial or live — not planned-only."
+    },
+    {
+      "id": "venues-connected-to-marco",
+      "label": "Venues connected to MARCO",
+      "description": "Economic venues with a linked MARCO asset binding in the static registry."
+    },
+    {
+      "id": "events-derived-from-marco",
+      "label": "Events derived from MARCO",
+      "description": "Registry-derived economic events linked to the MARCO asset."
+    },
+    {
+      "id": "machine-ready-surfaces",
+      "label": "Machine-ready surfaces",
+      "description": "Projects with live machine manifests and static registry discovery indexes."
+    },
+    {
+      "id": "not-indexed-relationships",
+      "label": "Not-indexed relationships",
+      "description": "Unresolved bindings and treasury placeholders — not_indexed only."
+    }
+  ],
+  "preset_results": [
+    {
+      "query_id": "projects-with-marco-assets",
+      "label": "Projects with MARCO assets",
+      "result_count": 1,
+      "items": [
+        {
+          "node_type": "project",
+          "slug": "melega-dex",
+          "identity": "upi://melega/project/melega-dex@1",
+          "display_name": "Melega DEX",
+          "href": "/projects/melega-dex",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "query_id": "treasury-compatible-projects",
+      "label": "Treasury-compatible projects",
+      "result_count": 0,
+      "items": []
+    },
+    {
+      "query_id": "venues-connected-to-marco",
+      "label": "Venues connected to MARCO",
+      "result_count": 4,
+      "items": [
+        {
+          "node_type": "venue",
+          "slug": "marco-bnb-lp",
+          "identity": "uvi://melega/venue/spot_lp/56/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e@1",
+          "display_name": "MARCO-BNB LP",
+          "href": "/venues/marco-bnb-lp",
+          "status": "observed"
+        },
+        {
+          "node_type": "venue",
+          "slug": "marco-bnb-farm",
+          "identity": "uvi://melega/venue/farm/56/pid-1@1",
+          "display_name": "MARCO-BNB Farm",
+          "href": "/venues/marco-bnb-farm",
+          "status": "observed"
+        },
+        {
+          "node_type": "venue",
+          "slug": "marco-stake-sous-0",
+          "identity": "uvi://melega/venue/stake_pool/56/sous-0@1",
+          "display_name": "MARCO Stake Pool (sousId 0)",
+          "href": "/venues/marco-stake-sous-0",
+          "status": "observed"
+        },
+        {
+          "node_type": "venue",
+          "slug": "melega-ilo-bsc",
+          "identity": "uvi://melega/venue/launch/56/0xabb5176ad486019fb0f7564d9f7c9510999c779a@1",
+          "display_name": "Melega ILO (BSC)",
+          "href": "/venues/melega-ilo-bsc",
+          "status": "observed"
+        }
+      ]
+    },
+    {
+      "query_id": "events-derived-from-marco",
+      "label": "Events derived from MARCO",
+      "result_count": 5,
+      "items": [
+        {
+          "node_type": "event",
+          "slug": "marco-asset-registered",
+          "identity": "uei://melega/event/asset_registered/marco-asset-registered@1",
+          "display_name": "MARCO asset registered",
+          "href": "/events/marco-asset-registered",
+          "status": "registry_derived"
+        },
+        {
+          "node_type": "event",
+          "slug": "marco-bnb-lp-venue-observed",
+          "identity": "uei://melega/event/venue_registered/marco-bnb-lp-venue-observed@1",
+          "display_name": "MARCO-BNB LP venue observed",
+          "href": "/events/marco-bnb-lp-venue-observed",
+          "status": "observed"
+        },
+        {
+          "node_type": "event",
+          "slug": "marco-bnb-farm-venue-observed",
+          "identity": "uei://melega/event/venue_registered/marco-bnb-farm-venue-observed@1",
+          "display_name": "MARCO-BNB farm venue observed",
+          "href": "/events/marco-bnb-farm-venue-observed",
+          "status": "observed"
+        },
+        {
+          "node_type": "event",
+          "slug": "marco-stake-venue-observed",
+          "identity": "uei://melega/event/venue_registered/marco-stake-venue-observed@1",
+          "display_name": "MARCO stake pool venue observed",
+          "href": "/events/marco-stake-venue-observed",
+          "status": "observed"
+        },
+        {
+          "node_type": "event",
+          "slug": "melega-ilo-venue-observed",
+          "identity": "uei://melega/event/venue_registered/melega-ilo-venue-observed@1",
+          "display_name": "Melega ILO venue observed",
+          "href": "/events/melega-ilo-venue-observed",
+          "status": "observed"
+        }
+      ]
+    },
+    {
+      "query_id": "machine-ready-surfaces",
+      "label": "Machine-ready surfaces",
+      "result_count": 7,
+      "items": [
+        {
+          "node_type": "project",
+          "slug": "melega-dex",
+          "identity": "upi://melega/project/melega-dex@1",
+          "display_name": "Melega DEX",
+          "href": "/projects/melega-dex",
+          "status": "live",
+          "notes": "Static JSON at /registry/projects/melega-dex.json"
+        },
+        {
+          "node_type": "manifest",
+          "slug": "projects-index",
+          "identity": "manifest://melega/platform/project-registry@0.1.0",
+          "display_name": "Project Registry Index",
+          "href": "/registry/projects/index.json",
+          "status": "live",
+          "notes": "Static machine discovery index"
+        },
+        {
+          "node_type": "manifest",
+          "slug": "assets-index",
+          "identity": "manifest://melega/platform/asset-registry@0.1.0",
+          "display_name": "Asset Registry Index",
+          "href": "/registry/assets/index.json",
+          "status": "live",
+          "notes": "Static machine discovery index"
+        },
+        {
+          "node_type": "manifest",
+          "slug": "venues-index",
+          "identity": "manifest://melega/platform/venue-registry@0.1.0",
+          "display_name": "Venue Registry Index",
+          "href": "/registry/venues/index.json",
+          "status": "live",
+          "notes": "Static machine discovery index"
+        },
+        {
+          "node_type": "manifest",
+          "slug": "events-index",
+          "identity": "manifest://melega/platform/event-registry@0.1.0",
+          "display_name": "Event Registry Index",
+          "href": "/registry/events/index.json",
+          "status": "live",
+          "notes": "Static machine discovery index"
+        },
+        {
+          "node_type": "manifest",
+          "slug": "graph-index",
+          "identity": "manifest://melega/platform/registry-graph@0.1.0",
+          "display_name": "Registry Graph Index",
+          "href": "/registry/graph/index.json",
+          "status": "live",
+          "notes": "Static machine discovery index"
+        },
+        {
+          "node_type": "manifest",
+          "slug": "query-index",
+          "identity": "manifest://melega/platform/registry-query@0.1.0",
+          "display_name": "Query Layer Index",
+          "href": "/registry/query/index.json",
+          "status": "live",
+          "notes": "Static machine discovery index"
+        }
+      ]
+    },
+    {
+      "query_id": "not-indexed-relationships",
+      "label": "Not-indexed relationships",
+      "result_count": 13,
+      "items": [
+        {
+          "node_type": "relationship",
+          "slug": "marco-bnb-lp-wbnb-bsc",
+          "identity": "token://56/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "display_name": "MARCO-BNB LP → wbnb-bsc",
+          "href": "/venues/marco-bnb-lp",
+          "status": "not_indexed",
+          "notes": "Asset binding not in Organ 02 registry (quote)"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-bnb-farm-marco-bnb-lp",
+          "identity": "uvi://melega/venue/spot_lp/56/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e@1",
+          "display_name": "MARCO-BNB Farm → marco-bnb-lp",
+          "href": "/venues/marco-bnb-farm",
+          "status": "not_indexed",
+          "notes": "Asset binding not in Organ 02 registry (lp)"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-bnb-lp-metrics",
+          "identity": "uvi://melega/venue/spot_lp/56/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e@1",
+          "display_name": "MARCO-BNB LP metrics",
+          "href": "/venues/marco-bnb-lp",
+          "status": "not_indexed",
+          "notes": "No TVL, volume, or APR in static MVP."
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-bnb-farm-metrics",
+          "identity": "uvi://melega/venue/farm/56/pid-1@1",
+          "display_name": "MARCO-BNB Farm metrics",
+          "href": "/venues/marco-bnb-farm",
+          "status": "not_indexed",
+          "notes": "No TVL, volume, or APR in static MVP."
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-stake-sous-0-metrics",
+          "identity": "uvi://melega/venue/stake_pool/56/sous-0@1",
+          "display_name": "MARCO Stake Pool (sousId 0) metrics",
+          "href": "/venues/marco-stake-sous-0",
+          "status": "not_indexed",
+          "notes": "No TVL, volume, or APR in static MVP."
+        },
+        {
+          "node_type": "relationship",
+          "slug": "melega-ilo-bsc-metrics",
+          "identity": "uvi://melega/venue/launch/56/0xabb5176ad486019fb0f7564d9f7c9510999c779a@1",
+          "display_name": "Melega ILO (BSC) metrics",
+          "href": "/venues/melega-ilo-bsc",
+          "status": "not_indexed",
+          "notes": "No TVL, volume, or APR in static MVP."
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-asset-registered-treasury",
+          "identity": "uei://melega/event/asset_registered/marco-asset-registered@1",
+          "display_name": "MARCO asset registered treasury",
+          "href": "/events/marco-asset-registered",
+          "status": "not_indexed",
+          "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-bnb-lp-venue-observed-treasury",
+          "identity": "uei://melega/event/venue_registered/marco-bnb-lp-venue-observed@1",
+          "display_name": "MARCO-BNB LP venue observed treasury",
+          "href": "/events/marco-bnb-lp-venue-observed",
+          "status": "not_indexed",
+          "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-bnb-farm-venue-observed-treasury",
+          "identity": "uei://melega/event/venue_registered/marco-bnb-farm-venue-observed@1",
+          "display_name": "MARCO-BNB farm venue observed treasury",
+          "href": "/events/marco-bnb-farm-venue-observed",
+          "status": "not_indexed",
+          "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "marco-stake-venue-observed-treasury",
+          "identity": "uei://melega/event/venue_registered/marco-stake-venue-observed@1",
+          "display_name": "MARCO stake pool venue observed treasury",
+          "href": "/events/marco-stake-venue-observed",
+          "status": "not_indexed",
+          "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "melega-ilo-venue-observed-treasury",
+          "identity": "uei://melega/event/venue_registered/melega-ilo-venue-observed@1",
+          "display_name": "Melega ILO venue observed treasury",
+          "href": "/events/melega-ilo-venue-observed",
+          "status": "not_indexed",
+          "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "melega-dex-treasury-compat",
+          "identity": "upi://melega/project/melega-dex@1",
+          "display_name": "Melega DEX treasury compatibility",
+          "href": "/projects/melega-dex",
+          "status": "not_indexed",
+          "notes": "MARCO fee SKUs — Treasury Runtime Phase 2"
+        },
+        {
+          "node_type": "relationship",
+          "slug": "graph-treasury",
+          "identity": "manifest://melega/platform/registry-graph@0.1.0",
+          "display_name": "Registry graph treasury attribution",
+          "href": "/graph",
+          "status": "not_indexed",
+          "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+        }
+      ]
+    }
+  ],
+  "treasury": {
+    "status": "not_indexed",
+    "notes": "Treasury query attribution — Treasury Runtime Phase 2"
+  },
+  "disclaimer": "Static economic query layer — derived from registry graph only. No live indexing, metrics, tx hashes, or treasury amounts.",
+  "data_source": "registry-query-static",
+  "as_of": "2026-06-26"
+}

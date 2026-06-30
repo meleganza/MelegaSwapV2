@@ -1,0 +1,448 @@
+{
+  "manifest": "manifest://melega/platform/smart-execution@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "smart_execution_read_model",
+  "read_only": true,
+  "execution_enabled": false,
+  "illustrative": true,
+  "disclaimer": "Illustrative Smart Economic Execution read model only. Sample candidates — no live routing, on-chain quotes, or swap execution.",
+  "as_of": "2026-06-28",
+  "constitutional": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "constraints": [
+    {
+      "id": "civilization_never_overrides_quality",
+      "label": "Civilization Benefit Constraint",
+      "rule": "Civilization benefit must NEVER override execution quality.",
+      "enforced": true
+    },
+    {
+      "id": "material_worse_rejected",
+      "label": "Material Quality Gap",
+      "rule": "Candidates materially worse for the user (execution quality gap ≥ 8) are rejected even if ecosystem benefit is higher.",
+      "enforced": true
+    },
+    {
+      "id": "venue_health_floor",
+      "label": "Venue Health Floor",
+      "rule": "Venue health below 50 rejects the candidate regardless of civilization benefit.",
+      "enforced": true
+    },
+    {
+      "id": "illustrative_only",
+      "label": "Illustrative Read Model",
+      "rule": "All candidates are static samples — not live prices, routes, or on-chain quotes.",
+      "enforced": true
+    }
+  ],
+  "recommendation": {
+    "candidateId": "melega-v2-canonical",
+    "label": "Melega V2 Canonical Pool",
+    "venue": "MelegaSwap V2",
+    "chain": "BNB Chain",
+    "executionQualityScore": 91,
+    "civilizationBenefitScore": 72,
+    "reasons": [
+      {
+        "id": "reason:constitutional:1",
+        "kind": "constitutional",
+        "message": "Canonical economy: MARCO on BNB Chain (LIVE)."
+      },
+      {
+        "id": "reason:recommendation:2",
+        "kind": "recommendation",
+        "candidateId": "melega-v2-canonical",
+        "message": "Highest execution quality score 91 among illustrative candidates."
+      },
+      {
+        "id": "reason:constraint:3",
+        "kind": "constraint",
+        "candidateId": "melega-v2-canonical",
+        "message": "Civilization benefit evaluated separately — never overrides execution quality."
+      }
+    ]
+  },
+  "alternatives": [
+    {
+      "candidateId": "melega-v2-alt-route",
+      "label": "Melega V2 Alt Route",
+      "rank": 2,
+      "executionQualityScore": 86,
+      "civilizationBenefitScore": 68,
+      "gapFromRecommended": 5,
+      "reasons": [
+        {
+          "id": "reason:alternative:4",
+          "kind": "alternative",
+          "candidateId": "melega-v2-alt-route",
+          "message": "Execution quality 86 — within 8 points of recommended."
+        }
+      ]
+    }
+  ],
+  "rejections": [
+    {
+      "candidateId": "ecosystem-treasury-route",
+      "label": "Ecosystem Treasury Route",
+      "reasons": [
+        {
+          "id": "reason:rejection:5",
+          "kind": "rejection",
+          "candidateId": "ecosystem-treasury-route",
+          "message": "Execution quality 78 trails recommended 91 by 13 points — materially worse for user."
+        },
+        {
+          "id": "reason:constraint:6",
+          "kind": "constraint",
+          "candidateId": "ecosystem-treasury-route",
+          "message": "Civilization benefit 95 exceeds recommended 72 but cannot override material quality gap."
+        }
+      ]
+    },
+    {
+      "candidateId": "presence-bridge-sample",
+      "label": "Economic Presence Bridge",
+      "reasons": [
+        {
+          "id": "reason:rejection:7",
+          "kind": "rejection",
+          "candidateId": "presence-bridge-sample",
+          "message": "Venue health 42 below floor 50 — rejected regardless of civilization benefit (80)."
+        },
+        {
+          "id": "reason:rejection:8",
+          "kind": "rejection",
+          "candidateId": "presence-bridge-sample",
+          "message": "Execution quality 58 trails recommended 91 by 33 points — materially worse for user."
+        },
+        {
+          "id": "reason:constraint:9",
+          "kind": "constraint",
+          "candidateId": "presence-bridge-sample",
+          "message": "Civilization benefit 80 exceeds recommended 72 but cannot override material quality gap."
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "id": "melega-v2-canonical",
+      "label": "Melega V2 Canonical Pool",
+      "venue": "MelegaSwap V2",
+      "chain": "BNB Chain",
+      "illustrative": true,
+      "execution_quality_score": 91,
+      "civilization_benefit_score": 72,
+      "dimensions": [
+        {
+          "id": "price_quality",
+          "label": "Price Quality",
+          "score": 92,
+          "weight": 0.22,
+          "notes": "Best illustrative effective price on canonical MARCO/BNB"
+        },
+        {
+          "id": "slippage_risk",
+          "label": "Slippage Risk",
+          "score": 88,
+          "weight": 0.18,
+          "notes": "Low illustrative slippage at sample size"
+        },
+        {
+          "id": "gas_efficiency",
+          "label": "Gas Efficiency",
+          "score": 85,
+          "weight": 0.14,
+          "notes": "Direct V2 swap path on BNB Chain"
+        },
+        {
+          "id": "liquidity_confidence",
+          "label": "Liquidity Confidence",
+          "score": 90,
+          "weight": 0.18,
+          "notes": "Canonical pool depth indexed in registry"
+        },
+        {
+          "id": "venue_health",
+          "label": "Venue Health",
+          "score": 94,
+          "weight": 0.14,
+          "notes": "Primary DEX venue — observed LIVE"
+        },
+        {
+          "id": "canonical_alignment",
+          "label": "Canonical Alignment",
+          "score": 98,
+          "weight": 0.14,
+          "notes": "MARCO on BNB Chain — constitutional match"
+        },
+        {
+          "id": "civilization_benefit",
+          "label": "Civilization Benefit",
+          "score": 72,
+          "weight": 0,
+          "notes": "Moderate ecosystem routing benefit — cannot override quality"
+        }
+      ]
+    },
+    {
+      "id": "melega-v2-alt-route",
+      "label": "Melega V2 Alt Route",
+      "venue": "MelegaSwap V2",
+      "chain": "BNB Chain",
+      "illustrative": true,
+      "execution_quality_score": 86,
+      "civilization_benefit_score": 68,
+      "dimensions": [
+        {
+          "id": "price_quality",
+          "label": "Price Quality",
+          "score": 86,
+          "weight": 0.22,
+          "notes": "Slightly worse illustrative price via multi-hop sample"
+        },
+        {
+          "id": "slippage_risk",
+          "label": "Slippage Risk",
+          "score": 82,
+          "weight": 0.18,
+          "notes": "Higher illustrative slippage on alt hop"
+        },
+        {
+          "id": "gas_efficiency",
+          "label": "Gas Efficiency",
+          "score": 78,
+          "weight": 0.14,
+          "notes": "Extra hop increases illustrative gas"
+        },
+        {
+          "id": "liquidity_confidence",
+          "label": "Liquidity Confidence",
+          "score": 84,
+          "weight": 0.18,
+          "notes": "Adequate depth on secondary hop"
+        },
+        {
+          "id": "venue_health",
+          "label": "Venue Health",
+          "score": 94,
+          "weight": 0.14,
+          "notes": "Same venue family — observed LIVE"
+        },
+        {
+          "id": "canonical_alignment",
+          "label": "Canonical Alignment",
+          "score": 95,
+          "weight": 0.14,
+          "notes": "Still on canonical chain and asset"
+        },
+        {
+          "id": "civilization_benefit",
+          "label": "Civilization Benefit",
+          "score": 68,
+          "weight": 0,
+          "notes": "Minor routing diversity benefit"
+        }
+      ]
+    },
+    {
+      "id": "ecosystem-treasury-route",
+      "label": "Ecosystem Treasury Route",
+      "venue": "Treasury Runtime (sample)",
+      "chain": "BNB Chain",
+      "illustrative": true,
+      "execution_quality_score": 78,
+      "civilization_benefit_score": 95,
+      "dimensions": [
+        {
+          "id": "price_quality",
+          "label": "Price Quality",
+          "score": 74,
+          "weight": 0.22,
+          "notes": "Worse illustrative price — treasury fee sample"
+        },
+        {
+          "id": "slippage_risk",
+          "label": "Slippage Risk",
+          "score": 70,
+          "weight": 0.18,
+          "notes": "Higher illustrative slippage envelope"
+        },
+        {
+          "id": "gas_efficiency",
+          "label": "Gas Efficiency",
+          "score": 72,
+          "weight": 0.14,
+          "notes": "Additional illustrative routing overhead"
+        },
+        {
+          "id": "liquidity_confidence",
+          "label": "Liquidity Confidence",
+          "score": 76,
+          "weight": 0.18,
+          "notes": "Thinner illustrative liquidity window"
+        },
+        {
+          "id": "venue_health",
+          "label": "Venue Health",
+          "score": 88,
+          "weight": 0.14,
+          "notes": "Phase 2 treasury surface — sample only"
+        },
+        {
+          "id": "canonical_alignment",
+          "label": "Canonical Alignment",
+          "score": 90,
+          "weight": 0.14,
+          "notes": "Canonical chain — non-primary venue path"
+        },
+        {
+          "id": "civilization_benefit",
+          "label": "Civilization Benefit",
+          "score": 95,
+          "weight": 0,
+          "notes": "High ecosystem benefit — rejected if quality gap is material"
+        }
+      ]
+    },
+    {
+      "id": "presence-bridge-sample",
+      "label": "Economic Presence Bridge",
+      "venue": "Bridge Sample (Polygon)",
+      "chain": "Polygon",
+      "illustrative": true,
+      "execution_quality_score": 58,
+      "civilization_benefit_score": 80,
+      "dimensions": [
+        {
+          "id": "price_quality",
+          "label": "Price Quality",
+          "score": 68,
+          "weight": 0.22,
+          "notes": "Illustrative cross-presence price — not canonical"
+        },
+        {
+          "id": "slippage_risk",
+          "label": "Slippage Risk",
+          "score": 62,
+          "weight": 0.18,
+          "notes": "Bridge + swap illustrative slippage stack"
+        },
+        {
+          "id": "gas_efficiency",
+          "label": "Gas Efficiency",
+          "score": 55,
+          "weight": 0.14,
+          "notes": "Multi-chain illustrative gas burden"
+        },
+        {
+          "id": "liquidity_confidence",
+          "label": "Liquidity Confidence",
+          "score": 65,
+          "weight": 0.18,
+          "notes": "Presence chain liquidity — not canonical pool"
+        },
+        {
+          "id": "venue_health",
+          "label": "Venue Health",
+          "score": 42,
+          "weight": 0.14,
+          "notes": "Below venue health floor — bridge sample unverified"
+        },
+        {
+          "id": "canonical_alignment",
+          "label": "Canonical Alignment",
+          "score": 45,
+          "weight": 0.14,
+          "notes": "Economic Presence only — not BNB Chain canonical"
+        },
+        {
+          "id": "civilization_benefit",
+          "label": "Civilization Benefit",
+          "score": 80,
+          "weight": 0,
+          "notes": "Presence expansion benefit — insufficient to override quality"
+        }
+      ]
+    }
+  ],
+  "reasons": [
+    {
+      "id": "reason:constraint:10",
+      "kind": "constraint",
+      "message": "Civilization Benefit Constraint: Civilization benefit must NEVER override execution quality."
+    },
+    {
+      "id": "reason:constraint:11",
+      "kind": "constraint",
+      "message": "Material Quality Gap: Candidates materially worse for the user (execution quality gap ≥ 8) are rejected even if ecosystem benefit is higher."
+    },
+    {
+      "id": "reason:constraint:12",
+      "kind": "constraint",
+      "message": "Venue Health Floor: Venue health below 50 rejects the candidate regardless of civilization benefit."
+    },
+    {
+      "id": "reason:constraint:13",
+      "kind": "constraint",
+      "message": "Illustrative Read Model: All candidates are static samples — not live prices, routes, or on-chain quotes."
+    },
+    {
+      "id": "reason:constitutional:1",
+      "kind": "constitutional",
+      "message": "Canonical economy: MARCO on BNB Chain (LIVE)."
+    },
+    {
+      "id": "reason:recommendation:2",
+      "kind": "recommendation",
+      "candidateId": "melega-v2-canonical",
+      "message": "Highest execution quality score 91 among illustrative candidates."
+    },
+    {
+      "id": "reason:constraint:3",
+      "kind": "constraint",
+      "candidateId": "melega-v2-canonical",
+      "message": "Civilization benefit evaluated separately — never overrides execution quality."
+    },
+    {
+      "id": "reason:alternative:4",
+      "kind": "alternative",
+      "candidateId": "melega-v2-alt-route",
+      "message": "Execution quality 86 — within 8 points of recommended."
+    },
+    {
+      "id": "reason:rejection:5",
+      "kind": "rejection",
+      "candidateId": "ecosystem-treasury-route",
+      "message": "Execution quality 78 trails recommended 91 by 13 points — materially worse for user."
+    },
+    {
+      "id": "reason:constraint:6",
+      "kind": "constraint",
+      "candidateId": "ecosystem-treasury-route",
+      "message": "Civilization benefit 95 exceeds recommended 72 but cannot override material quality gap."
+    },
+    {
+      "id": "reason:rejection:7",
+      "kind": "rejection",
+      "candidateId": "presence-bridge-sample",
+      "message": "Venue health 42 below floor 50 — rejected regardless of civilization benefit (80)."
+    },
+    {
+      "id": "reason:rejection:8",
+      "kind": "rejection",
+      "candidateId": "presence-bridge-sample",
+      "message": "Execution quality 58 trails recommended 91 by 33 points — materially worse for user."
+    },
+    {
+      "id": "reason:constraint:9",
+      "kind": "constraint",
+      "candidateId": "presence-bridge-sample",
+      "message": "Civilization benefit 80 exceeds recommended 72 but cannot override material quality gap."
+    }
+  ]
+}

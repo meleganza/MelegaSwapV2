@@ -1,0 +1,31 @@
+{
+  "$schema": "https://melega.finance/schemas/event/v1",
+  "uei": "uei://melega/event/asset_registered/marco-asset-registered@1",
+  "slug": "marco-asset-registered",
+  "event_type": "asset_registered",
+  "status": "registry_derived",
+  "display_name": "MARCO asset registered",
+  "description": "MARCO (BSC) asset entry derived from Organ 02 Asset Registry.",
+  "tags": ["marco", "asset", "bsc"],
+  "chain_id": 56,
+  "recorded_at": "2026-06-26",
+  "relationships": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+    "asset_slug": "marco",
+    "treasury": {
+      "status": "not_indexed",
+      "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+    }
+  },
+  "provenance": {
+    "derived_from": "asset-registry",
+    "registry_ref": "/registry/assets/marco.json",
+    "notes": "Synthesized from static asset manifest — not an on-chain mint event."
+  },
+  "mvp_static": true,
+  "data_source": "event-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Registry-derived events only — not live on-chain transactions. No tx hashes, volumes, fees, or treasury amounts in static MVP."
+}

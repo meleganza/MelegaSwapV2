@@ -1,0 +1,13 @@
+{
+  "name": "Melega DEX Civilization Collectibles Registry",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/collectibles/index.json",
+  "framing": "Civilization Collectibles read model — legacy NFT surfaces preserved",
+  "legacy_nft_routes": {
+    "mint": "/nft/",
+    "wallet": "/viewNFTs/",
+    "market": "/nftmarket/"
+  },
+  "ui": "/collectibles"
+}

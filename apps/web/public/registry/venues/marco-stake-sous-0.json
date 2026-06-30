@@ -1,0 +1,52 @@
+{
+  "$schema": "https://melega.finance/schemas/venue/v1",
+  "uvi": "uvi://melega/venue/stake_pool/56/sous-0@1",
+  "slug": "marco-stake-sous-0",
+  "venue_type": "stake_pool",
+  "lifecycle": "observed",
+  "display_name": "MARCO Stake Pool (sousId 0)",
+  "description": "MARCO single-asset staking pool sousId 0 on BSC — contract from legacy pool config snapshot.",
+  "tags": ["marco", "stake_pool"],
+  "chain_id": 56,
+  "contract_address": "0x41D5487836452d23f2c467070244E5842B412794",
+  "legacy_ref": "pool://56/0x41D5487836452d23f2c467070244E5842B412794/sous/0",
+  "sous_id": 0,
+  "project_binding": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "binding_source": "legacy_import",
+    "bound_at": "2026-06-26"
+  },
+  "asset_bindings": [
+    {
+      "asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+      "asset_slug": "marco",
+      "role": "stake"
+    }
+  ],
+  "trust": {
+    "badges": ["observed"],
+    "verification_status": "observed"
+  },
+  "capabilities": {
+    "swap": { "status": "planned", "notes": "Routing quotes — Smart Routing organ" },
+    "liquidity": { "status": "planned", "notes": "Depth metrics not indexed in MVP" },
+    "farm": { "status": "planned", "notes": "Reward rates not indexed in MVP" },
+    "stake": { "status": "live", "notes": "MARCO staking via /pools" },
+    "launch": { "status": "planned", "notes": "Campaign metrics not indexed in MVP" },
+    "lock": { "status": "planned", "notes": "Lock Center — Phase 2" },
+    "treasury": { "status": "planned", "notes": "Treasury SKU attribution — Phase 2" },
+    "radar": { "status": "planned", "notes": "Radar feed — Phase 2" }
+  },
+  "metrics": {
+    "status": "not_indexed",
+    "notes": "No APR or TVL in static MVP."
+  },
+  "deep_links": {
+    "pools": "/pools"
+  },
+  "mvp_static": true,
+  "data_source": "venue-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Venue listed ≠ audited. Static venue registry MVP — no live TVL, APR, or volume. Observed = legacy-config indexed only."
+}

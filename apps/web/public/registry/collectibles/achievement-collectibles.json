@@ -1,0 +1,44 @@
+{
+  "$schema": "https://melega.finance/schemas/collectibles/v1",
+  "collectible_id": "collectible://melega/civilization/achievement-collectibles@0.1.0",
+  "slug": "achievement-collectibles",
+  "display_name": "Future Achievement & Participation Collectibles",
+  "description": "Planned proof-of-participation and achievement collectibles for economic activity signals. Includes future AI-agent identity collectibles as a civilization participation layer — not indexed in this build.",
+  "status": "planned",
+  "category": "participation_proof",
+  "role": "Economic participation signals, achievement proofs, and future AI-agent identity bindings.",
+  "contract": {
+    "indexed": false,
+    "notes": "No contracts deployed or indexed. Phase 2 civilization collectible layer."
+  },
+  "metadata": {
+    "status": "not_indexed",
+    "notes": "Metadata standard and storage TBD — no fake IPFS CIDs."
+  },
+  "supply": {
+    "mode": "planned_collection",
+    "mintedCountIndexed": false,
+    "notes": "Supply policy not defined in this read model."
+  },
+  "mint": {
+    "status": "not_indexed",
+    "notes": "No mint route — planned collectible class."
+  },
+  "related_routes": [
+    "/workspace",
+    "/launch"
+  ],
+  "warnings": [
+    "Planned only — no mint buttons",
+    "Will bind to workspace economic activity when indexed",
+    "AI-agent identity collectibles are future scope"
+  ],
+  "links": {
+    "detail": "/collectibles/achievement-collectibles",
+    "collectiblesRegistry": "/collectibles"
+  },
+  "mvp_static": true,
+  "data_source": "collectibles-registry-static",
+  "as_of": "2026-06-28",
+  "disclaimer": "Civilization Collectibles read model only. No ownership counts, mint buttons, or on-chain writes on /collectibles. Legacy mint flows remain on their original routes."
+}

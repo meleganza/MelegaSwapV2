@@ -106,10 +106,12 @@ const Hero = () => {
       >
         <Flex flex="1" flexDirection="column">
           <Heading scale="xl" color="#fff" mb="24px">
-            {t('MelegaSwap')}
+            {t('Melega DEX')}
           </Heading>
           <Text width="500px" color="#fff" mb="24px">
-            {t('The best AMM DEX on Binance Smart Chain and BASE Chain providing friendly trading and better project support')}
+            {t(
+              'AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, LP, farms, and pools with familiar DEX compatibility.',
+            )}
           </Text>
           <Flex>
             {!account && <ConnectWalletButton mr="8px" />}

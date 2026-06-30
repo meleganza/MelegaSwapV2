@@ -1,0 +1,33 @@
+{
+  "$schema": "https://melega.finance/schemas/event/v1",
+  "uei": "uei://melega/event/venue_registered/marco-stake-venue-observed@1",
+  "slug": "marco-stake-venue-observed",
+  "event_type": "venue_registered",
+  "status": "observed",
+  "display_name": "MARCO stake pool venue observed",
+  "description": "MARCO staking pool venue observed in Organ 03 from legacy pool config snapshot.",
+  "tags": ["marco", "stake_pool", "venue"],
+  "chain_id": 56,
+  "recorded_at": "2026-06-26",
+  "relationships": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+    "asset_slug": "marco",
+    "venue_uvi": "uvi://melega/venue/stake_pool/56/sous-0@1",
+    "venue_slug": "marco-stake-sous-0",
+    "treasury": {
+      "status": "not_indexed",
+      "notes": "Treasury SKU attribution — Treasury Runtime Phase 2"
+    }
+  },
+  "provenance": {
+    "derived_from": "venue-registry",
+    "registry_ref": "/registry/venues/marco-stake-sous-0.json",
+    "notes": "Venue observation from Organ 03 — not a live creation transaction."
+  },
+  "mvp_static": true,
+  "data_source": "event-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Registry-derived events only — not live on-chain transactions. No tx hashes, volumes, fees, or treasury amounts in static MVP."
+}

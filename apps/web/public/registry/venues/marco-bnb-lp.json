@@ -1,0 +1,57 @@
+{
+  "$schema": "https://melega.finance/schemas/venue/v1",
+  "uvi": "uvi://melega/venue/spot_lp/56/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e@1",
+  "slug": "marco-bnb-lp",
+  "venue_type": "spot_lp",
+  "lifecycle": "observed",
+  "display_name": "MARCO-BNB LP",
+  "description": "MARCO/WBNB liquidity pair on BSC — LP address from legacy farm config snapshot.",
+  "tags": ["marco", "bnb", "spot_lp"],
+  "chain_id": 56,
+  "contract_address": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+  "legacy_ref": "lp://56/0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+  "project_binding": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "binding_source": "legacy_import",
+    "bound_at": "2026-06-26"
+  },
+  "asset_bindings": [
+    {
+      "asset_uai": "uai://melega/asset/fungible/56/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+      "asset_slug": "marco",
+      "role": "base"
+    },
+    {
+      "asset_uai": "token://56/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "asset_slug": "wbnb-bsc",
+      "role": "quote"
+    }
+  ],
+  "trust": {
+    "badges": ["observed"],
+    "verification_status": "observed"
+  },
+  "capabilities": {
+    "swap": { "status": "partial", "notes": "Swappable via legacy router — no registry quote index" },
+    "liquidity": { "status": "live", "notes": "LP add/remove via /liquidity" },
+    "farm": { "status": "planned", "notes": "Reward rates not indexed in MVP" },
+    "stake": { "status": "planned", "notes": "Stake metrics not indexed in MVP" },
+    "launch": { "status": "planned", "notes": "Campaign metrics not indexed in MVP" },
+    "lock": { "status": "planned", "notes": "Lock Center — Phase 2" },
+    "treasury": { "status": "planned", "notes": "Treasury SKU attribution — Phase 2" },
+    "radar": { "status": "planned", "notes": "Radar feed — Phase 2" }
+  },
+  "metrics": {
+    "status": "not_indexed",
+    "notes": "No TVL, volume, or APR in static MVP."
+  },
+  "deep_links": {
+    "swap": "/swap",
+    "liquidity": "/liquidity"
+  },
+  "mvp_static": true,
+  "data_source": "venue-registry-static",
+  "as_of": "2026-06-26",
+  "disclaimer": "Venue listed ≠ audited. Static venue registry MVP — no live TVL, APR, or volume. Observed = legacy-config indexed only."
+}

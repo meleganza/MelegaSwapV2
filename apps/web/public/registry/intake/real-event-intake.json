@@ -1,0 +1,692 @@
+{
+  "manifest": "manifest://melega/platform/real-event-intake@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_real_event_intake_spec",
+  "read_only": true,
+  "execution_enabled": false,
+  "persistence_enabled": false,
+  "as_of": "2026-06-29",
+  "disclaimer": "Real Event Intake specification (Mission 26) — canonical schema, validation, routing, and safety gates only. No blockchain execution, Labs API integration, database persistence, or live event ingestion in this build. Schema examples are illustrative and marked not_indexed.",
+  "event_families": [
+    {
+      "id": "labs_narrative",
+      "label": "Labs Narrative Event",
+      "description": "Narrative lifecycle events from Labs runtime — created, updated, validated, rejected, ready.",
+      "sourceSystem": "labs://runtime/narrative",
+      "allowedEventTypes": [
+        "narrative_created",
+        "narrative_updated",
+        "narrative_validated",
+        "narrative_rejected",
+        "narrative_ready"
+      ],
+      "defaultSafety": "observation_only",
+      "primaryRouting": [
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator"
+      ]
+    },
+    {
+      "id": "project_registry",
+      "label": "Project Registry Event",
+      "description": "Project identity binding events after constitutional validation.",
+      "sourceSystem": "manifest://melega/platform/project-registry@0.1.0",
+      "allowedEventTypes": [
+        "project_created",
+        "project_updated",
+        "project_indexed"
+      ],
+      "defaultSafety": "observation_only",
+      "primaryRouting": [
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ]
+    },
+    {
+      "id": "asset_metadata",
+      "label": "Asset Metadata Event",
+      "description": "Asset UAI binding and metadata submission events — never auto-mint or deploy.",
+      "sourceSystem": "manifest://melega/platform/asset-registry@0.1.0",
+      "allowedEventTypes": [
+        "asset_planned",
+        "metadata_submitted",
+        "metadata_missing"
+      ],
+      "defaultSafety": "human_review_required",
+      "primaryRouting": [
+        "/pipeline",
+        "/launch",
+        "/workspace"
+      ]
+    },
+    {
+      "id": "liquidity_readiness",
+      "label": "Liquidity Readiness Event",
+      "description": "Signals wallet liquidity readiness — does not execute addLiquidity or pool creation.",
+      "sourceSystem": "legacy://add-liquidity",
+      "allowedEventTypes": [
+        "liquidity_waiting",
+        "liquidity_ready",
+        "pair_selected"
+      ],
+      "defaultSafety": "future_execution",
+      "primaryRouting": [
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ]
+    },
+    {
+      "id": "presence_update",
+      "label": "Presence Update Event",
+      "description": "Economic presence target staging — explicitly not canonical economy replacement.",
+      "sourceSystem": "manifest://melega/platform/presence-registry@0.1.0",
+      "allowedEventTypes": [
+        "presence_waiting",
+        "presence_staged",
+        "presence_indexed"
+      ],
+      "defaultSafety": "observation_only",
+      "primaryRouting": [
+        "/presence",
+        "/pipeline",
+        "/workspace"
+      ]
+    },
+    {
+      "id": "execution_readiness",
+      "label": "Execution Readiness Event",
+      "description": "Pre-swap execution decision signals — illustrative surface only; live swaps route to /swap.",
+      "sourceSystem": "manifest://melega/platform/execution@0.2.0",
+      "allowedEventTypes": [
+        "execution_waiting",
+        "execution_review_required",
+        "execution_illustrative_ready"
+      ],
+      "defaultSafety": "blocked",
+      "primaryRouting": [
+        "/execution",
+        "/orchestrator",
+        "/map"
+      ]
+    },
+    {
+      "id": "workspace_sync",
+      "label": "Workspace Sync Event",
+      "description": "Operator hub aggregate refresh signals — read model only, no fake balances.",
+      "sourceSystem": "manifest://melega/platform/user-workspace@0.1.0",
+      "allowedEventTypes": [
+        "workspace_stale",
+        "workspace_refreshed",
+        "section_indexed"
+      ],
+      "defaultSafety": "observation_only",
+      "primaryRouting": [
+        "/workspace",
+        "/orchestrator"
+      ]
+    },
+    {
+      "id": "orchestrator_recommendation",
+      "label": "Orchestrator Recommendation Event",
+      "description": "Decision service recommendation emitted for human or agent follow-up — never auto-executes.",
+      "sourceSystem": "manifest://melega/platform/economic-orchestrator@0.1.0",
+      "allowedEventTypes": [
+        "recommendation_issued",
+        "recommendation_acknowledged",
+        "recommendation_blocked"
+      ],
+      "defaultSafety": "human_review_required",
+      "primaryRouting": [
+        "/orchestrator",
+        "/map"
+      ]
+    }
+  ],
+  "validation_rules": [
+    {
+      "id": "labs_narrative_required",
+      "family": "labs_narrative",
+      "description": "Narrative events must include narrative_id and lifecycle stage — no fake validated state.",
+      "requiredFields": [
+        "narrative_id",
+        "lifecycle_stage",
+        "source_system"
+      ],
+      "forbiddenFields": [
+        "deploy_tx",
+        "mint_tx",
+        "router_call"
+      ],
+      "onMissing": "not_indexed",
+      "onUnsafePayload": "unsafe"
+    },
+    {
+      "id": "project_registry_required",
+      "family": "project_registry",
+      "description": "Project events require UPI slug and constitutional binding reference.",
+      "requiredFields": [
+        "project_slug",
+        "upi",
+        "constitutional_fit"
+      ],
+      "forbiddenFields": [
+        "auto_deploy",
+        "token_address"
+      ],
+      "onMissing": "invalid",
+      "onUnsafePayload": "unsafe"
+    },
+    {
+      "id": "asset_metadata_required",
+      "family": "asset_metadata",
+      "description": "Asset metadata events require UAI and metadata_uri or explicit not_indexed marker.",
+      "requiredFields": [
+        "asset_slug",
+        "uai"
+      ],
+      "forbiddenFields": [
+        "fake_supply",
+        "fake_tvl"
+      ],
+      "onMissing": "not_indexed",
+      "onUnsafePayload": "invalid"
+    },
+    {
+      "id": "liquidity_readiness_required",
+      "family": "liquidity_readiness",
+      "description": "Liquidity events signal readiness only — must not contain signed transactions.",
+      "requiredFields": [
+        "wallet_connected",
+        "pair_intent"
+      ],
+      "forbiddenFields": [
+        "signed_tx",
+        "raw_calldata",
+        "router_execute"
+      ],
+      "onMissing": "pending",
+      "onUnsafePayload": "unsafe"
+    },
+    {
+      "id": "presence_update_required",
+      "family": "presence_update",
+      "description": "Presence events must distinguish canonical vs presence-only targets.",
+      "requiredFields": [
+        "presence_slug",
+        "chain_role"
+      ],
+      "forbiddenFields": [
+        "canonical_override"
+      ],
+      "onMissing": "not_indexed",
+      "onUnsafePayload": "unsafe"
+    },
+    {
+      "id": "execution_readiness_required",
+      "family": "execution_readiness",
+      "description": "Execution events are illustrative — block any live trade routing from intake.",
+      "requiredFields": [
+        "decision_context",
+        "illustrative_only"
+      ],
+      "forbiddenFields": [
+        "swap_execute",
+        "router_path",
+        "slippage_execute"
+      ],
+      "onMissing": "pending",
+      "onUnsafePayload": "blocked"
+    },
+    {
+      "id": "workspace_sync_required",
+      "family": "workspace_sync",
+      "description": "Workspace sync events aggregate indexed sections — no balance claims.",
+      "requiredFields": [
+        "section_id",
+        "indexed_count"
+      ],
+      "forbiddenFields": [
+        "wallet_balance",
+        "portfolio_value"
+      ],
+      "onMissing": "not_indexed",
+      "onUnsafePayload": "invalid"
+    },
+    {
+      "id": "orchestrator_recommendation_required",
+      "family": "orchestrator_recommendation",
+      "description": "Orchestrator events recommend actions — never auto-trigger execution.",
+      "requiredFields": [
+        "recommendation_id",
+        "priority",
+        "target_route"
+      ],
+      "forbiddenFields": [
+        "auto_execute",
+        "chain_write"
+      ],
+      "onMissing": "invalid",
+      "onUnsafePayload": "unsafe"
+    }
+  ],
+  "routing_rules": [
+    {
+      "family": "labs_narrative",
+      "eventTypes": [
+        "narrative_created",
+        "narrative_updated",
+        "narrative_validated",
+        "narrative_rejected",
+        "narrative_ready"
+      ],
+      "targets": [
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator",
+        "/map"
+      ],
+      "notes": "Labs runtime observes first; pipeline and orchestrator synchronize on validation outcomes."
+    },
+    {
+      "family": "project_registry",
+      "eventTypes": [
+        "project_created",
+        "project_updated",
+        "project_indexed"
+      ],
+      "targets": [
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ],
+      "notes": "Project binding updates registry strip and workspace project section."
+    },
+    {
+      "family": "asset_metadata",
+      "eventTypes": [
+        "asset_planned",
+        "metadata_submitted",
+        "metadata_missing"
+      ],
+      "targets": [
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "notes": "Metadata missing surfaces as not_indexed — Launch capability index only."
+    },
+    {
+      "family": "liquidity_readiness",
+      "eventTypes": [
+        "liquidity_waiting",
+        "liquidity_ready",
+        "pair_selected"
+      ],
+      "targets": [
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "notes": "Live liquidity execution routes to legacy /add — never from intake directly."
+    },
+    {
+      "family": "presence_update",
+      "eventTypes": [
+        "presence_waiting",
+        "presence_staged",
+        "presence_indexed"
+      ],
+      "targets": [
+        "/presence",
+        "/pipeline",
+        "/workspace",
+        "/map"
+      ],
+      "notes": "Presence is NOT canonical economy — constitutional MARCO on BNB remains immutable."
+    },
+    {
+      "family": "execution_readiness",
+      "eventTypes": [
+        "execution_waiting",
+        "execution_review_required",
+        "execution_illustrative_ready"
+      ],
+      "targets": [
+        "/execution",
+        "/orchestrator",
+        "/map"
+      ],
+      "notes": "Execution intake is observation_only/blocked — route live swaps to /swap externally."
+    },
+    {
+      "family": "workspace_sync",
+      "eventTypes": [
+        "workspace_stale",
+        "workspace_refreshed",
+        "section_indexed"
+      ],
+      "targets": [
+        "/workspace",
+        "/orchestrator"
+      ],
+      "notes": "Workspace refresh recommendations only — no fake aggregate balances."
+    },
+    {
+      "family": "orchestrator_recommendation",
+      "eventTypes": [
+        "recommendation_issued",
+        "recommendation_acknowledged",
+        "recommendation_blocked"
+      ],
+      "targets": [
+        "/orchestrator",
+        "/map"
+      ],
+      "notes": "Orchestrator emits recommendations for human/agent follow-up — never auto-executes."
+    }
+  ],
+  "safety_gates": [
+    {
+      "id": "observation_only",
+      "classification": "observation_only",
+      "description": "Event may update read models and manifests only — no side effects.",
+      "blocksExecution": true,
+      "requiresHumanReview": false
+    },
+    {
+      "id": "human_review_required",
+      "classification": "human_review_required",
+      "description": "Event requires human review before any downstream action.",
+      "blocksExecution": true,
+      "requiresHumanReview": true
+    },
+    {
+      "id": "blocked",
+      "classification": "blocked",
+      "description": "Event must not propagate to execution surfaces — unsafe or forbidden payload.",
+      "blocksExecution": true,
+      "requiresHumanReview": true
+    },
+    {
+      "id": "future_execution",
+      "classification": "future_execution",
+      "description": "Event may eventually route to on-chain flows via existing DEX surfaces — not from intake.",
+      "blocksExecution": true,
+      "requiresHumanReview": true
+    }
+  ],
+  "schema_examples": [
+    {
+      "eventId": "schema://intake/labs_narrative/narrative_created@example",
+      "eventFamily": "labs_narrative",
+      "eventType": "narrative_created",
+      "sourceSurface": "/runtime/labs",
+      "sourceSystem": "labs://runtime/narrative",
+      "payload": {
+        "narrative_id": "example-narrative-slug",
+        "lifecycle_stage": "draft",
+        "source_system": "labs://runtime/narrative",
+        "constitutional_fit": "pending_review"
+      },
+      "routingTargets": [
+        "/runtime/labs",
+        "/pipeline",
+        "/orchestrator",
+        "/map"
+      ],
+      "safetyClassification": "observation_only",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "labs_runtime",
+          "field": "observedNarratives",
+          "mode": "observe",
+          "notes": "Append narrative stub when Labs indexed."
+        },
+        {
+          "surface": "pipeline",
+          "field": "narrative",
+          "mode": "observe",
+          "notes": "Set narrative stage to waiting/planned."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed",
+      "validationStatus": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/project_registry/project_created@example",
+      "eventFamily": "project_registry",
+      "eventType": "project_created",
+      "sourceSurface": "/projects",
+      "sourceSystem": "manifest://melega/platform/project-registry@0.1.0",
+      "payload": {
+        "project_slug": "example-project",
+        "upi": "upi://melega/example-project",
+        "constitutional_fit": "approved"
+      },
+      "routingTargets": [
+        "/pipeline",
+        "/workspace",
+        "/launch",
+        "/map"
+      ],
+      "safetyClassification": "observation_only",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "workspace",
+          "field": "projects",
+          "mode": "observe",
+          "notes": "Indexed project section update."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed",
+      "validationStatus": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/asset_metadata/metadata_missing@example",
+      "eventFamily": "asset_metadata",
+      "eventType": "metadata_missing",
+      "sourceSurface": "/assets",
+      "sourceSystem": "manifest://melega/platform/asset-registry@0.1.0",
+      "payload": {
+        "asset_slug": "example-asset",
+        "uai": "uai://melega/example-asset",
+        "metadata_uri": "not_indexed"
+      },
+      "routingTargets": [
+        "/pipeline",
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "safetyClassification": "human_review_required",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "pipeline",
+          "field": "metadata",
+          "mode": "observe",
+          "notes": "Stage status not_indexed."
+        },
+        {
+          "surface": "orchestrator",
+          "field": "recommendations",
+          "mode": "recommend",
+          "notes": "Emit metadata_not_indexed recommendation."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed",
+      "validationStatus": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/liquidity_readiness/liquidity_waiting@example",
+      "eventFamily": "liquidity_readiness",
+      "eventType": "liquidity_waiting",
+      "sourceSurface": "/launch",
+      "sourceSystem": "legacy://add-liquidity",
+      "payload": {
+        "wallet_connected": false,
+        "pair_intent": "MARCO/BNB",
+        "on_chain_execute": "forbidden_from_intake"
+      },
+      "routingTargets": [
+        "/launch",
+        "/workspace",
+        "/orchestrator"
+      ],
+      "safetyClassification": "future_execution",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "pipeline",
+          "field": "liquidity",
+          "mode": "observe",
+          "notes": "Stage waiting until wallet action via /add."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed",
+      "validationStatus": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/presence_update/presence_staged@example",
+      "eventFamily": "presence_update",
+      "eventType": "presence_staged",
+      "sourceSurface": "/presence",
+      "sourceSystem": "manifest://melega/platform/presence-registry@0.1.0",
+      "payload": {
+        "presence_slug": "example-presence",
+        "chain_role": "presence",
+        "canonical_override": false
+      },
+      "routingTargets": [
+        "/presence",
+        "/pipeline",
+        "/workspace",
+        "/map"
+      ],
+      "safetyClassification": "observation_only",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "presence",
+          "field": "targets",
+          "mode": "observe",
+          "notes": "Staged presence target — not canonical economy."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed",
+      "validationStatus": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/execution_readiness/execution_review_required@example",
+      "eventFamily": "execution_readiness",
+      "eventType": "execution_review_required",
+      "sourceSurface": "/execution",
+      "sourceSystem": "manifest://melega/platform/execution@0.2.0",
+      "payload": {
+        "decision_context": "pre_swap_sample",
+        "illustrative_only": true
+      },
+      "validationStatus": "pending",
+      "routingTargets": [
+        "/execution",
+        "/orchestrator",
+        "/map"
+      ],
+      "safetyClassification": "blocked",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "execution",
+          "field": "samples",
+          "mode": "observe",
+          "notes": "Illustrative only — live swaps at /swap."
+        }
+      ],
+      "blockedReason": "Execution intake cannot trigger trades — observation and review only.",
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/workspace_sync/workspace_stale@example",
+      "eventFamily": "workspace_sync",
+      "eventType": "workspace_stale",
+      "sourceSurface": "/workspace",
+      "sourceSystem": "manifest://melega/platform/user-workspace@0.1.0",
+      "payload": {
+        "section_id": "projects",
+        "indexed_count": 1,
+        "stale_reason": "downstream_registry_updated"
+      },
+      "routingTargets": [
+        "/workspace",
+        "/orchestrator"
+      ],
+      "safetyClassification": "observation_only",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "workspace",
+          "field": "sections",
+          "mode": "observe",
+          "notes": "Recommend refresh without fake balances."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed",
+      "validationStatus": "not_indexed"
+    },
+    {
+      "eventId": "schema://intake/orchestrator_recommendation/recommendation_issued@example",
+      "eventFamily": "orchestrator_recommendation",
+      "eventType": "recommendation_issued",
+      "sourceSurface": "/orchestrator",
+      "sourceSystem": "manifest://melega/platform/economic-orchestrator@0.1.0",
+      "payload": {
+        "recommendation_id": "asset_ready_liquidity_missing",
+        "priority": "high",
+        "target_route": "/launch"
+      },
+      "validationStatus": "pending",
+      "routingTargets": [
+        "/orchestrator",
+        "/map"
+      ],
+      "safetyClassification": "human_review_required",
+      "resultingReadModelUpdates": [
+        {
+          "surface": "orchestrator",
+          "field": "recommendations",
+          "mode": "recommend",
+          "notes": "Queue recommendation for human/agent."
+        }
+      ],
+      "sampleKind": "schema_example",
+      "timestamp": "not_indexed"
+    }
+  ],
+  "live_events_indexed": 0,
+  "cross_links": [
+    {
+      "label": "Labs Runtime",
+      "route": "/runtime/labs"
+    },
+    {
+      "label": "Labs Pipeline",
+      "route": "/pipeline"
+    },
+    {
+      "label": "Orchestrator",
+      "route": "/orchestrator"
+    },
+    {
+      "label": "Surface Map",
+      "route": "/map"
+    }
+  ]
+}

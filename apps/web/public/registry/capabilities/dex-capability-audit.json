@@ -1,0 +1,389 @@
+{
+  "manifest": "manifest://melega/platform/dex-capability-audit@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "repository_audit",
+  "mission": "MISSION_13",
+  "audit_only": true,
+  "as_of": "2026-06-28",
+  "disclaimer": "Repository audit only — no runtime verification. Describes existing MelegaSwapV2 code paths as of audit date. Forbidden surfaces (exchange.ts, contracts.ts, pools.tsx, wagmi.ts, router logic) were inspected read-only, not modified.",
+  "summary": {
+    "total": 17,
+    "live": 9,
+    "config_only": 3,
+    "partial": 2,
+    "missing": 3,
+    "deprecated": 0
+  },
+  "chain_support": {
+    "wagmi_chains": [
+      1,
+      56,
+      137,
+      8453
+    ],
+    "multi_chain_features": [
+      "swap",
+      "liquidity",
+      "farms",
+      "pools",
+      "add",
+      "remove"
+    ],
+    "bsc_only_features": [
+      "ilo",
+      "nft_mint",
+      "zap",
+      "find"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "token_listing",
+      "label": "Token listing",
+      "status": "PARTIAL",
+      "relevantFiles": [
+        "apps/web/src/components/SearchModal/ImportToken.tsx",
+        "apps/web/src/components/SearchModal/ManageTokens.tsx",
+        "apps/web/src/state/user/hooks/useUserAddedTokens.ts",
+        "apps/web/src/registry/assets/",
+        "apps/web/src/lib/user-launch/launch-read-model.ts"
+      ],
+      "route": "/swap (import via currency modal)",
+      "contractDependency": "None for listing — ERC-20/BEP-20 token contracts on-chain",
+      "configDependency": "config/constants/tokenLists/*.json (bundled defaults); registry/assets for discovery",
+      "userFacingAvailability": "Users can import tokens by contract address into local wallet session. No protocol token-list submission UI. Asset registry indexes MARCO deployments read-only.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "medium",
+      "recommendedNextAction": "Wire Mission 12 submit_token_metadata to a real list-governance pipeline without duplicating ImportToken local-only flow.",
+      "notes": "Protocol listing ≠ user import. Do not conflate localStorage import with Melega listing."
+    },
+    {
+      "id": "token_metadata_logo_submission",
+      "label": "Token metadata / logo submission",
+      "status": "MISSING",
+      "relevantFiles": [
+        "apps/web/src/components/Logo/CurrencyLogo.tsx",
+        "apps/web/src/components/SearchModal/ImportToken.tsx",
+        "apps/web/src/lib/user-launch/launch-read-model.ts"
+      ],
+      "contractDependency": "None",
+      "configDependency": "Token logos from @pancakeswap/tokens package and list JSON; no upload pipeline",
+      "userFacingAvailability": "No logo or metadata upload UI. Logos resolved from bundled token metadata or block explorer fallbacks.",
+      "reusable": false,
+      "needsExtension": true,
+      "riskLevel": "medium",
+      "recommendedNextAction": "Define Labs → CDN → token list ingestion path before exposing upload UI. Mission 12 marks this PLANNED."
+    },
+    {
+      "id": "token_list_management",
+      "label": "Token list management",
+      "status": "CONFIG_ONLY",
+      "relevantFiles": [
+        "apps/web/src/config/constants/lists.ts",
+        "apps/web/src/config/constants/tokenLists/pancake-default.tokenlist.json",
+        "apps/web/src/state/lists/lists.ts",
+        "apps/web/src/state/lists/hooks.ts",
+        "apps/web/src/state/lists/updater.ts"
+      ],
+      "contractDependency": "None",
+      "configDependency": "lists.ts — remote OFFICIAL_LISTS and DEFAULT_ACTIVE_LIST_URLS are empty; bundled JSON only",
+      "userFacingAvailability": "Swap searches bundled default/warning/unsupported lists plus user-imported tokens. No admin UI to edit lists at runtime.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "high",
+      "recommendedNextAction": "Audit which remote list URLs should be re-enabled vs Melega-curated list before production listing governance.",
+      "notes": "Remote list URLs intentionally empty in lists.ts — local JSON is primary source."
+    },
+    {
+      "id": "add_liquidity",
+      "label": "Add liquidity",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/pages/add/[[...currency]].tsx",
+        "apps/web/src/views/AddLiquidity/index.tsx",
+        "apps/web/src/views/AddLiquidity/AddStableLiquidity/",
+        "apps/web/src/state/mint/"
+      ],
+      "route": "/add",
+      "contractDependency": "PancakeSwap V2 Router + Factory (via exchange.ts); StableSwap contracts for stable pairs",
+      "configDependency": "config/constants/exchange.ts (ROUTER_ADDRESS); supportChains SUPPORT_MULTI_CHAINS",
+      "userFacingAvailability": "Live on BNB Chain, Ethereum, Polygon, Base. Wallet required. Real on-chain addLiquidity.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "low",
+      "recommendedNextAction": "Link Mission 12 create_liquidity capability — already mapped to /add. No duplication."
+    },
+    {
+      "id": "remove_liquidity",
+      "label": "Remove liquidity",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/pages/remove/[[...currency]].tsx",
+        "apps/web/src/views/RemoveLiquidity/index.tsx",
+        "apps/web/src/views/RemoveLiquidity/RemoveStableLiquidity/",
+        "apps/web/src/state/burn/"
+      ],
+      "route": "/remove",
+      "contractDependency": "PancakeSwap V2 Router + LP pair contracts",
+      "configDependency": "config/constants/exchange.ts",
+      "userFacingAvailability": "Live on 4 chains. Wallet required. Real on-chain removeLiquidity.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "low",
+      "recommendedNextAction": "Document in launch console as companion to add liquidity — no new UI needed."
+    },
+    {
+      "id": "create_liquidity_pool",
+      "label": "Create liquidity pool",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/pages/add/[[...currency]].tsx",
+        "apps/web/src/views/AddLiquidity/ChoosePair.tsx",
+        "apps/web/src/state/mint/hooks.ts"
+      ],
+      "route": "/add",
+      "contractDependency": "PancakeSwap V2 Factory.createPair (implicit on first addLiquidity for new pair)",
+      "configDependency": "config/constants/exchange.ts (FACTORY_ADDRESS)",
+      "userFacingAvailability": "New pools created when user adds first liquidity for unseen token pair — same /add flow, no separate wizard.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "low",
+      "recommendedNextAction": "Mission 12 create_pool already links to /add — accurate. Consider UX label only."
+    },
+    {
+      "id": "create_farm",
+      "label": "Create farm",
+      "status": "MISSING",
+      "relevantFiles": [
+        "apps/web/src/pages/farms/index.tsx",
+        "apps/web/src/views/Farms/",
+        "apps/web/src/state/farms/",
+        "packages/farms/",
+        "apps/web/src/lib/user-launch/launch-read-model.ts"
+      ],
+      "route": "/farms (participate only)",
+      "contractDependency": "MasterChef — farm allocation is protocol-governed, not user-deployable",
+      "configDependency": "@pancakeswap/farms package + config/constants/contracts.ts (masterChef)",
+      "userFacingAvailability": "Users can stake/harvest on existing farms. No UI to create new MasterChef pools. Mission 12 marks BLOCKED.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "critical",
+      "recommendedNextAction": "Mission 14 should define ops/governance farm allocation workflow — never expose fake user farm deploy."
+    },
+    {
+      "id": "farm_configuration",
+      "label": "Farm configuration",
+      "status": "CONFIG_ONLY",
+      "relevantFiles": [
+        "packages/farms/",
+        "apps/web/src/state/farms/fetchFarms.ts",
+        "apps/web/src/state/farms/index.ts",
+        "apps/web/src/config/constants/contracts.ts"
+      ],
+      "contractDependency": "MasterChef contract addresses per chain",
+      "configDependency": "Farm definitions in @pancakeswap/farms; LP APR JSON in config/constants/lpAprs/",
+      "userFacingAvailability": "Farms rendered from static/package config. Changes require code deploy, not admin UI.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "high",
+      "recommendedNextAction": "Index existing farms in venue registry (partially done) before any config UI."
+    },
+    {
+      "id": "create_staking_pool",
+      "label": "Create staking pool",
+      "status": "MISSING",
+      "relevantFiles": [
+        "apps/web/src/pages/pools/index.tsx",
+        "apps/web/src/views/Pools/",
+        "apps/web/src/state/pools/",
+        "apps/web/src/config/constants/pools.tsx",
+        "apps/web/src/lib/user-launch/launch-read-model.ts"
+      ],
+      "route": "/pools (participate only)",
+      "contractDependency": "Sous Chef / SmartChef / CakeVault contracts",
+      "configDependency": "config/constants/pools.tsx — static pool definitions",
+      "userFacingAvailability": "Users stake in protocol-defined syrup pools. No user-facing pool creation. Mission 12 marks PLANNED.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "critical",
+      "recommendedNextAction": "Separate participate (/pools) from create (governance) in Mission 14 ops layer."
+    },
+    {
+      "id": "pool_configuration",
+      "label": "Pool configuration",
+      "status": "CONFIG_ONLY",
+      "relevantFiles": [
+        "apps/web/src/config/constants/pools.tsx",
+        "apps/web/src/state/pools/",
+        "apps/web/src/views/Pools/components/"
+      ],
+      "contractDependency": "Sous Chef pool contracts per config entry",
+      "configDependency": "pools.tsx static sousId, contractAddress, staking/reward tokens",
+      "userFacingAvailability": "Pool cards rendered from pools.tsx. No runtime admin editor.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "high",
+      "recommendedNextAction": "Venue registry already indexes marco-stake-sous-0 — extend for full pool catalog."
+    },
+    {
+      "id": "ilo_launch_flow",
+      "label": "ILO / launch flow",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/pages/ilo.tsx",
+        "apps/web/src/views/Ilos/",
+        "apps/web/src/config/constants/ifo.ts",
+        "apps/web/src/pages/launch/index.tsx",
+        "apps/web/src/pages/new-project/index.tsx"
+      ],
+      "route": "/ilo (BSC legacy IFO); /launch (read-model); /new-project (activation)",
+      "contractDependency": "IFO contracts via ifo.ts config; Labs handoff not on-chain in DEX",
+      "configDependency": "config/constants/ifo.ts (ifosConfig); lib/user-launch; lib/economic-activation",
+      "userFacingAvailability": "Legacy IFO pad LIVE on BSC only. Mission 12 Labs launch PLANNED. Economic activation read-model at /new-project.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "medium",
+      "recommendedNextAction": "Bridge /ilo legacy flow with Mission 12 launch_through_labs without duplicating IFO contracts."
+    },
+    {
+      "id": "nft_routes",
+      "label": "NFT routes",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/pages/nft/index.tsx",
+        "apps/web/src/pages/viewNFTs.tsx",
+        "apps/web/src/pages/nftmarket.tsx",
+        "apps/web/src/config/constants/contracts.ts",
+        "apps/web/src/config/abi/Nft.json"
+      ],
+      "route": "/nft (mint, BSC); /viewNFTs; /nftmarket",
+      "contractDependency": "Nft, nftmarket, nftstakingcrane, dragonNftcrane (BSC contracts.ts)",
+      "configDependency": "supportChains SUPPORT_CHAIN_NFT = BSC only for mint",
+      "userFacingAvailability": "DNFT mint BSC-only. View/market routes exist. Not part of core DEX launch layer.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "low",
+      "recommendedNextAction": "Exclude NFT from Mission 14 factory scope unless explicitly requested."
+    },
+    {
+      "id": "swap_routing",
+      "label": "Swap routing",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/pages/swap/index.tsx",
+        "apps/web/src/views/Swap/index.tsx",
+        "apps/web/src/views/Swap/SmartSwap/",
+        "apps/web/src/state/swap/",
+        "apps/web/src/config/constants/exchange.ts"
+      ],
+      "route": "/swap",
+      "contractDependency": "V2 Router + pair contracts; StableSwap for stable pairs",
+      "configDependency": "exchange.ts ROUTER_ADDRESS, BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES",
+      "userFacingAvailability": "Live swap on 4 chains. V2 and stable-swap paths. Production swap logic — do not modify.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "critical",
+      "recommendedNextAction": "Mission 10 execution read-model must remain separate from live swap routing."
+    },
+    {
+      "id": "smart_router_usage",
+      "label": "Smart router usage",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/views/Swap/SmartSwap/index.tsx",
+        "apps/web/src/views/Swap/SmartSwap/hooks/useBestTrade.ts",
+        "apps/web/src/views/Swap/SmartSwap/hooks/useTradeInfo.ts",
+        "apps/web/src/views/Swap/SmartSwap/utils/exchange.ts",
+        "apps/web/src/config/abi/pancakeSwapSmartRouter.json"
+      ],
+      "route": "/swap (Smart Router toggle)",
+      "contractDependency": "PancakeSwap Smart Router contract (SMART_ROUTER_ADDRESS per chain)",
+      "configDependency": "exchange.ts SMART_ROUTER_ADDRESS; @pancakeswap/smart-router/evm",
+      "userFacingAvailability": "Optional Smart Router path when better than V2. User toggle in swap UI. Falls back to V2.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "critical",
+      "recommendedNextAction": "Do not conflate Smart Router with Mission 10 illustrative execution candidates."
+    },
+    {
+      "id": "wallet_integration",
+      "label": "Wallet integration",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/utils/wagmi.ts",
+        "apps/web/src/components/WalletModal/",
+        "apps/web/src/hooks/useAuth.ts",
+        "apps/web/src/pages/_app.tsx"
+      ],
+      "contractDependency": "None (wallet connector layer)",
+      "configDependency": "wagmi.ts chain + connector config; WalletConnect project id in env",
+      "userFacingAvailability": "MetaMask, WalletConnect, Trust, Coinbase, Binance, Blocto, Ledger, Safe connectors. Multi-chain wallet switch.",
+      "reusable": true,
+      "needsExtension": false,
+      "riskLevel": "critical",
+      "recommendedNextAction": "Forbidden to modify for Mission 14 — consume wallet state only in new flows.",
+      "notes": "Audited read-only. wagmi.ts is forbidden surface."
+    },
+    {
+      "id": "chain_support",
+      "label": "Chain support",
+      "status": "LIVE",
+      "relevantFiles": [
+        "apps/web/src/config/constants/supportChains.ts",
+        "apps/web/src/utils/wagmi.ts",
+        "apps/web/src/config/chains.ts",
+        "apps/web/src/components/NetworkModal/NetworkModal.tsx"
+      ],
+      "contractDependency": "Per-chain router/factory/masterChef in contracts.ts",
+      "configDependency": "supportChains.ts feature gates; wagmi CHAIN_IDS = 1, 56, 137, 8453",
+      "userFacingAvailability": "Swap/liquidity/farms/pools: ETH, BSC, Base, Polygon. ILO/NFT mint/Zap/find: BSC only.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "medium",
+      "recommendedNextAction": "Align Mission 11 presence targets with supportChains gates before enabling new chain write flows."
+    },
+    {
+      "id": "admin_config_flows",
+      "label": "Admin / config-driven flows",
+      "status": "PARTIAL",
+      "relevantFiles": [
+        "apps/web/src/registry/",
+        "apps/web/src/lib/economic-activation/",
+        "apps/web/src/lib/economic-runtime/",
+        "apps/web/src/lib/smart-execution/",
+        "apps/web/src/lib/user-launch/",
+        "apps/web/src/components/Menu/config/config.ts",
+        "apps/web/scripts/write-*.ts"
+      ],
+      "route": "/projects, /assets, /venues, /events, /presence, /graph, /query, /execution, /launch, /new-project",
+      "contractDependency": "None for registry surfaces — read models only",
+      "configDependency": "Static registry data + public/registry/*.json manifests; menu config for feature visibility",
+      "userFacingAvailability": "No traditional /admin. Registry explorers and launch console are read-model/config indexed. Legacy DEX config via code deploy.",
+      "reusable": true,
+      "needsExtension": true,
+      "riskLevel": "medium",
+      "recommendedNextAction": "Mission 14: factory write layer should call existing LIVE flows first, registry second, never fake admin."
+    }
+  ],
+  "recommended_mission_14": "Mission 14: DEX Factory Write Layer — wire Mission 12 capabilities to existing LIVE flows (/add, /remove, /swap) first; define governance ops path for farm/pool creation; do not duplicate router, MasterChef, or wallet surfaces.",
+  "highest_risk_gaps": [
+    "create_farm — no user deploy; MasterChef governance only",
+    "create_staking_pool — no user deploy; pools.tsx static config",
+    "token_list_management — remote lists disabled; governance undefined",
+    "swap_routing / smart_router — production-critical; must not be modified by factory missions",
+    "wallet_integration — production-critical; forbidden modification surface"
+  ],
+  "reusable_flows": [
+    "/add — add liquidity and implicit pool creation",
+    "/remove — remove liquidity",
+    "/swap — swap with V2 + Smart Router",
+    "/farms — participate in MasterChef farms",
+    "/pools — participate in syrup staking pools",
+    "/ilo — BSC legacy IFO pad",
+    "/launch — Mission 12 capability console",
+    "/new-project — economic activation read model",
+    "/presence — economic presence registry",
+    "Token import by address — ImportToken local session"
+  ]
+}

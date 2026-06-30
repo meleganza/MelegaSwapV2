@@ -38,19 +38,28 @@ class MyDocument extends Document {
           )}
           <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta name="description" content="Melega Finance" />
+          <meta
+            name="description"
+            content="Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility."
+          />
 
           {/* Open Graph tags */}
-          <meta property="og:title" content="Melega Finance" />
-          <meta property="og:description" content="Melega Finance" />
+          <meta property="og:title" content="Melega DEX" />
+          <meta
+            property="og:description"
+            content="Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility."
+          />
           <meta property="og:image" content="https://melega.finance/main.jpg" />
           <meta property="og:url" content="https://melega.finance" />
           <meta property="og:type" content="website" />
 
           {/* Twitter Card tags */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Melega Finance" />
-          <meta name="twitter:description" content="Melega Finance" />
+          <meta name="twitter:title" content="Melega DEX" />
+          <meta
+            name="twitter:description"
+            content="Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility."
+          />
           <meta name="twitter:image" content="https://melega.finance/main.jpg" />
           <meta name="twitter:url" content="https://melega.finance" />
 

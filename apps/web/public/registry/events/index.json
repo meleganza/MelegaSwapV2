@@ -1,0 +1,74 @@
+{
+  "manifest": "manifest://melega/platform/event-registry@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "mvp_static",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/event/v1",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "venue_registry": "/registry/venues/index.json",
+  "events": [
+    {
+      "uei": "uei://melega/event/asset_registered/marco-asset-registered@1",
+      "slug": "marco-asset-registered",
+      "event_type": "asset_registered",
+      "status": "registry_derived",
+      "display_name": "MARCO asset registered",
+      "project_slug": "melega-dex",
+      "asset_slug": "marco",
+      "chain_id": 56,
+      "manifest_url": "/registry/events/marco-asset-registered.json"
+    },
+    {
+      "uei": "uei://melega/event/venue_registered/marco-bnb-lp-venue-observed@1",
+      "slug": "marco-bnb-lp-venue-observed",
+      "event_type": "venue_registered",
+      "status": "observed",
+      "display_name": "MARCO-BNB LP venue observed",
+      "project_slug": "melega-dex",
+      "asset_slug": "marco",
+      "venue_slug": "marco-bnb-lp",
+      "chain_id": 56,
+      "manifest_url": "/registry/events/marco-bnb-lp-venue-observed.json"
+    },
+    {
+      "uei": "uei://melega/event/venue_registered/marco-bnb-farm-venue-observed@1",
+      "slug": "marco-bnb-farm-venue-observed",
+      "event_type": "venue_registered",
+      "status": "observed",
+      "display_name": "MARCO-BNB farm venue observed",
+      "project_slug": "melega-dex",
+      "asset_slug": "marco",
+      "venue_slug": "marco-bnb-farm",
+      "chain_id": 56,
+      "manifest_url": "/registry/events/marco-bnb-farm-venue-observed.json"
+    },
+    {
+      "uei": "uei://melega/event/venue_registered/marco-stake-venue-observed@1",
+      "slug": "marco-stake-venue-observed",
+      "event_type": "venue_registered",
+      "status": "observed",
+      "display_name": "MARCO stake pool venue observed",
+      "project_slug": "melega-dex",
+      "asset_slug": "marco",
+      "venue_slug": "marco-stake-sous-0",
+      "chain_id": 56,
+      "manifest_url": "/registry/events/marco-stake-venue-observed.json"
+    },
+    {
+      "uei": "uei://melega/event/venue_registered/melega-ilo-venue-observed@1",
+      "slug": "melega-ilo-venue-observed",
+      "event_type": "venue_registered",
+      "status": "observed",
+      "display_name": "Melega ILO venue observed",
+      "project_slug": "melega-dex",
+      "asset_slug": "marco",
+      "venue_slug": "melega-ilo-bsc",
+      "chain_id": 56,
+      "manifest_url": "/registry/events/melega-ilo-venue-observed.json"
+    }
+  ],
+  "disclaimer": "Registry-derived events only — not live on-chain transactions. No tx hashes, volumes, fees, or treasury amounts in static MVP.",
+  "data_source": "event-registry-static",
+  "as_of": "2026-06-26"
+}

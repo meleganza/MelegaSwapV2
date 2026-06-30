@@ -1,0 +1,153 @@
+{
+  "manifest": "manifest://melega/platform/economic-activation@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "labs_dex_read_model",
+  "constitution": "MELEGA_DEX_CONSTITUTION_V1",
+  "schema": "https://melega.finance/schemas/economic-activation/v1",
+  "canonical_economy": {
+    "canonicalChain": "BNB Chain",
+    "canonicalAsset": "MARCO",
+    "status": "LIVE",
+    "immutable": true
+  },
+  "presence_targets": [
+    {
+      "chainId": "bnb",
+      "displayName": "BNB Chain",
+      "role": "canonical",
+      "registryChainId": 56,
+      "status": "READY",
+      "notes": "Constitutional Canonical Economy — not replaceable by new project activation"
+    },
+    {
+      "chainId": "ethereum",
+      "displayName": "Ethereum",
+      "role": "presence",
+      "registryChainId": 1,
+      "status": "READY",
+      "notes": "MARCO presence observed on Ethereum"
+    },
+    {
+      "chainId": "polygon",
+      "displayName": "Polygon",
+      "role": "presence",
+      "registryChainId": 137,
+      "status": "READY",
+      "notes": "MARCO presence observed on Polygon"
+    },
+    {
+      "chainId": "base",
+      "displayName": "Base",
+      "role": "presence",
+      "registryChainId": 8453,
+      "status": "READY",
+      "notes": "MARCO presence observed on Base"
+    },
+    {
+      "chainId": "solana",
+      "displayName": "Solana",
+      "role": "presence",
+      "status": "PLANNED",
+      "notes": "Economic Presence only — Solana bridge indexing PLANNED"
+    }
+  ],
+  "pipeline": [
+    {
+      "stage_id": "narrative",
+      "label": "Narrative",
+      "status": "WAITING",
+      "summary": "Awaiting validated Labs narrative",
+      "notes": "Melega Labs → DEX handoff not indexed in this build",
+      "machine_surface": "labs://narrative/validated"
+    },
+    {
+      "stage_id": "validation",
+      "label": "Validation",
+      "status": "BLOCKED",
+      "summary": "Constitutional validation blocked",
+      "notes": "Requires indexed Labs narrative",
+      "machine_surface": "labs://validation/constitutional"
+    },
+    {
+      "stage_id": "project_registry",
+      "label": "Project Registry",
+      "status": "WAITING",
+      "summary": "Project Registry entry pending",
+      "notes": "Follows successful narrative validation",
+      "href": "/projects",
+      "machine_surface": "manifest://melega/platform/project-registry@0.1.0"
+    },
+    {
+      "stage_id": "canonical_asset",
+      "label": "Canonical Asset",
+      "status": "WAITING",
+      "summary": "Project asset registration pending",
+      "notes": "Constitutional MARCO on BNB Chain remains immutable",
+      "href": "/assets",
+      "machine_surface": "manifest://melega/platform/asset-registry@0.1.0"
+    },
+    {
+      "stage_id": "economic_presence",
+      "label": "Economic Presence",
+      "status": "PLANNED",
+      "summary": "Economic Presence targets staged",
+      "notes": "BNB · Ethereum · Polygon · Base · Solana — presence only",
+      "machine_surface": "manifest://melega/platform/asset-registry@0.1.0#presence"
+    },
+    {
+      "stage_id": "venue_activation",
+      "label": "Venue Activation",
+      "status": "WAITING",
+      "summary": "Venue activation pending",
+      "notes": "Requires project + asset registry",
+      "href": "/venues",
+      "machine_surface": "manifest://melega/platform/venue-registry@0.1.0"
+    },
+    {
+      "stage_id": "economic_events",
+      "label": "Economic Events",
+      "status": "WAITING",
+      "summary": "Economic events pending",
+      "notes": "Derived from venue graph",
+      "href": "/events",
+      "machine_surface": "manifest://melega/platform/event-registry@0.1.0"
+    },
+    {
+      "stage_id": "treasury_runtime",
+      "label": "Treasury Runtime",
+      "status": "PLANNED",
+      "summary": "Treasury Runtime — Phase 2",
+      "notes": "No treasury amounts indexed",
+      "machine_surface": "manifest://melega/platform/treasury-runtime@0.2.0"
+    },
+    {
+      "stage_id": "radar",
+      "label": "Radar",
+      "status": "PLANNED",
+      "summary": "Radar — Phase 2",
+      "notes": "Incident feed not indexed",
+      "machine_surface": "manifest://melega/platform/radar@0.2.0"
+    },
+    {
+      "stage_id": "space",
+      "label": "Space",
+      "status": "PLANNED",
+      "summary": "Space — Phase 2",
+      "notes": "Community bind not live for new activations",
+      "machine_surface": "manifest://melega/platform/space@0.2.0"
+    },
+    {
+      "stage_id": "smartdrop",
+      "label": "SmartDrop",
+      "status": "PLANNED",
+      "summary": "SmartDrop — Phase 2",
+      "notes": "Campaign runtime not indexed",
+      "machine_surface": "manifest://melega/platform/smartdrop@0.2.0"
+    }
+  ],
+  "labs_connected": false,
+  "narrative_indexed": false,
+  "disclaimer": "Labs → DEX economic activation read model only. No blockchain writes, token deployment, or contract execution in this phase.",
+  "data_source": "economic-activation-read-model",
+  "as_of": "2026-06-28"
+}

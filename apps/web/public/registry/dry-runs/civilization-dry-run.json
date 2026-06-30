@@ -1,0 +1,240 @@
+{
+  "manifest": "manifest://melega/platform/civilization-dry-run@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_dry_run",
+  "read_only": true,
+  "execution_enabled": false,
+  "persistence_enabled": false,
+  "as_of": "2026-06-30",
+  "disclaimer": "Civilization Dry Run (Mission 31) — first end-to-end integration dry run proving a single economic narrative travels through Submission, Review, Decision Events, Intake, Pipeline, Runtime, Orchestrator, and Workspace as observable read-only state. No real submissions, reviews, approvals, registry writes, persistence, or blockchain execution.",
+  "live_dry_runs": 0,
+  "flow": [
+    "narrative",
+    "submission",
+    "review_queue",
+    "decision_event",
+    "intake",
+    "pipeline",
+    "runtime",
+    "orchestrator",
+    "workspace"
+  ],
+  "scenarios": [
+    {
+      "id": "marco-economy-narrative-dry-run",
+      "label": "MARCO Economy Narrative Dry Run",
+      "narrative": {
+        "scenarioId": "marco-economy-narrative-dry-run",
+        "title": "MARCO on BNB Chain — Civilization Economic Narrative",
+        "summary": "End-to-end dry run narrative tracing how a Labs-style project story enters the Economic OS through submission and review, without deployment, liquidity, or registry mutation.",
+        "constitutionalNote": "MARCO on BNB Chain remains the canonical LIVE economy — this narrative is observation only.",
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "submission": {
+        "submissionId": "schema://dry-run/submission/project_narrative@marco-economy",
+        "submissionCategory": "project_narrative",
+        "targetSurface": "/new-project",
+        "requiredEvidence": [
+          "narrative_title",
+          "narrative_summary",
+          "constitutional_fit"
+        ],
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "review": {
+        "reviewQueueItemId": "schema://dry-run/review/project_narrative@marco-economy",
+        "reviewQueueGroup": "waiting_review",
+        "reviewType": "constitutional_narrative_review",
+        "reviewerType": "human",
+        "status": "queued",
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "decisionEvent": {
+        "eventId": "schema://dry-run/decision-event/review_deferred@marco-economy",
+        "decisionEventType": "review_deferred",
+        "decisionReason": "Dry run defers review — no approval executed, no intake event emitted, governance timeline illustrative only.",
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "intake": {
+        "intakeEventFamily": "labs_narrative",
+        "intakeEventType": "narrative_created",
+        "routingTargets": [
+          "/runtime/labs",
+          "/pipeline",
+          "/orchestrator",
+          "/map"
+        ],
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "pipelineEffects": [
+        {
+          "stageId": "narrative",
+          "stageLabel": "Narrative",
+          "observedStatus": "planned",
+          "effect": "Narrative stage remains planned — dry run observes Labs preview artifact without registry binding.",
+          "linkedSurface": "/pipeline",
+          "flags": {
+            "schema_example": true,
+            "dry_run_only": true,
+            "no_execution": true,
+            "no_registry_mutation": true,
+            "no_persistence": true
+          }
+        },
+        {
+          "stageId": "validation",
+          "stageLabel": "Validation",
+          "observedStatus": "not_indexed",
+          "effect": "Validation inputs not indexed — honest missing evidence surfaces.",
+          "linkedSurface": "/pipeline",
+          "flags": {
+            "schema_example": true,
+            "dry_run_only": true,
+            "no_execution": true,
+            "no_registry_mutation": true,
+            "no_persistence": true
+          }
+        },
+        {
+          "stageId": "project",
+          "stageLabel": "Project",
+          "observedStatus": "waiting",
+          "effect": "Project binding waits for real intake — dry run does not fake project registry entry.",
+          "linkedSurface": "/projects",
+          "flags": {
+            "schema_example": true,
+            "dry_run_only": true,
+            "no_execution": true,
+            "no_registry_mutation": true,
+            "no_persistence": true
+          }
+        }
+      ],
+      "runtimeEffect": {
+        "eventType": "narrative_observation_waiting",
+        "labsConnected": false,
+        "syncStatus": "waiting",
+        "effect": "Labs runtime disconnected — narrative event mapping observable in spec, no fake Labs connection or validated narrative.",
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "orchestratorEffect": {
+        "recommendationId": "schema://dry-run/orchestrator/narrative_completion@marco-economy",
+        "priority": "high",
+        "effect": "Orchestrator recommends completing constitutional narrative evidence on /submit — advisory only, no auto-execution.",
+        "linkedSurface": "/orchestrator",
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "workspaceEffect": {
+        "sectionId": "projects",
+        "visibility": "schema_example_only",
+        "effect": "Workspace projects section remains indexed from registry only — dry run narrative does not add live project entry.",
+        "linkedSurface": "/workspace",
+        "flags": {
+          "schema_example": true,
+          "dry_run_only": true,
+          "no_execution": true,
+          "no_registry_mutation": true,
+          "no_persistence": true
+        }
+      },
+      "finalVerdict": "partial",
+      "verdictSummary": "Dry run path observable through all nine stages — partial verdict reflects honest not_indexed live state, no execution, and no fake approval.",
+      "flags": {
+        "schema_example": true,
+        "dry_run_only": true,
+        "no_execution": true,
+        "no_registry_mutation": true,
+        "no_persistence": true
+      }
+    }
+  ],
+  "validation_rules": [
+    "Dry run is read-only — no real submissions, reviews, or approvals.",
+    "All records carry schema_example, dry_run_only, no_execution, no_registry_mutation, no_persistence flags.",
+    "No fake approval — decision event is review_deferred, not review_approved.",
+    "No registry writes, on-chain actions, API calls, or database persistence.",
+    "liveDryRuns remains 0 — scenario is observable spec only.",
+    "Final verdict partial reflects honest not_indexed live state across Economic OS.",
+    "MARCO on BNB Chain remains canonical LIVE economy throughout dry run."
+  ],
+  "cross_links": [
+    {
+      "label": "Dry Run Console",
+      "route": "/dry-run"
+    },
+    {
+      "label": "Submission",
+      "route": "/submit"
+    },
+    {
+      "label": "Review Queue",
+      "route": "/review"
+    },
+    {
+      "label": "Pipeline",
+      "route": "/pipeline"
+    },
+    {
+      "label": "Labs Runtime",
+      "route": "/runtime/labs"
+    },
+    {
+      "label": "Orchestrator",
+      "route": "/orchestrator"
+    },
+    {
+      "label": "Workspace",
+      "route": "/workspace"
+    },
+    {
+      "label": "Surface Map",
+      "route": "/map"
+    },
+    {
+      "label": "Dry Run Manifest",
+      "route": "/registry/dry-runs/civilization-dry-run.json"
+    }
+  ]
+}

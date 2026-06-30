@@ -1,0 +1,13 @@
+{
+  "name": "Melega DEX Economic Presence Registry",
+  "version": "0.1.0",
+  "status": "mvp_static",
+  "index": "/registry/presence/index.json",
+  "project_registry": "/registry/projects/index.json",
+  "asset_registry": "/registry/assets/index.json",
+  "constitutional": {
+    "canonical_chain": "BNB Chain",
+    "canonical_asset": "MARCO",
+    "note": "Economic Presence is NOT Canonical Economy"
+  }
+}

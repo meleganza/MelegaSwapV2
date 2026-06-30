@@ -32,7 +32,7 @@ import {
 import { ContextApi } from '@pancakeswap/localization'
 // import { nftsBaseUrl } from 'views/Nft/market/constants'
 // import { getPerpetualUrl } from 'utils/getPerpetualUrl'
-import { SUPPORT_ONLY_BSC } from 'config/constants/supportChains'
+import { SUPPORT_ONLY_BSC, SUPPORT_FARMS, SUPPORT_ILO } from 'config/constants/supportChains'
 
 export type ConfigMenuDropDownItemsType = DropdownMenuItems & { hideSubNav?: boolean }
 export type ConfigMenuItemsType = Omit<MenuItemsType, 'items'> & { hideSubNav?: boolean; image?: string } & {
@@ -117,23 +117,22 @@ const config: (
     //   items: [].map((item) => addMenuItemSupported(item, chainId)),
     // },
     {
-      label: t('Farms'),
+      label: t('Earn'),
       href: '/farms',
-      icon: FarmIcon,
-      fillIcon: FarmIcon,
+      icon: EarnIcon,
+      fillIcon: EarnFillIcon,
+      supportChainIds: SUPPORT_FARMS,
       image: '/images/knb.png',
-      showItemsOnMobile: false,
+      showItemsOnMobile: true,
       items: [
-      ].map((item) => addMenuItemSupported(item, chainId)),
-    },
-    {
-      label: t('Pools'),
-      href: '/pools',
-      icon: PoolIcon,
-      fillIcon: PoolIcon,
-      image: '/images/knb.png',
-      showItemsOnMobile: false,
-      items: [
+        {
+          label: t('Farms'),
+          href: '/farms',
+        },
+        {
+          label: t('Pools'),
+          href: '/pools',
+        },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
     // {
@@ -248,13 +247,45 @@ const config: (
     //   ].map((item) => addMenuItemSupported(item, chainId)),
     // },
     {
-      label: t('ILO'),
-      href: '/ilo',
-      icon: IfoIcon,
-      fillIcon: IfoIcon,
-      image: '/images/knb.png',
+      label: t('Projects'),
+      href: '/projects',
+      icon: ResourcesIcon,
+      fillIcon: ResourcesIcon,
+      showItemsOnMobile: false,
+      items: [],
+    },
+    {
+      label: t('Workspace'),
+      href: '/workspace',
+      icon: CapitalIcon,
+      fillIcon: CapitalIcon,
+      showItemsOnMobile: false,
+      items: [],
+    },
+    {
+      label: t('Map'),
+      href: '/map',
+      icon: InfoIcon,
+      fillIcon: InfoIcon,
+      showItemsOnMobile: false,
+      items: [],
+    },
+    {
+      label: t('Launch'),
+      href: '/launch',
+      icon: LaunchPadIcon,
+      fillIcon: LaunchPadIcon,
       showItemsOnMobile: false,
       items: [
+        {
+          label: t('Launch'),
+          href: '/launch',
+        },
+        {
+          label: t('ILO (Legacy)'),
+          href: '/ilo',
+          supportChainIds: SUPPORT_ILO,
+        },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
     {
@@ -281,8 +312,8 @@ const config: (
       ],
     },
     {
-      label: t('Chart'),
-      href: '/chat',
+      label: t('Discover'),
+      href: 'https://www.coingecko.com/en/exchanges/melegaswap',
       icon: InfoIcon,
       fillIcon: InfoIcon,
       image: '/images/cgt.png',
@@ -295,7 +326,7 @@ const config: (
         {
           label: t('Dex Guru'),
           href: 'https://dex.guru/markets/melegaswap/tvl',
-        }
+        },
       ],
     },
     // {
