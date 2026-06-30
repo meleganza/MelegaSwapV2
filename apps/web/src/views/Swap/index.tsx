@@ -14,6 +14,7 @@ import { useCurrency } from '../../hooks/Tokens'
 import { Field } from '../../state/swap/actions'
 import { useSwapState } from '../../state/swap/hooks'
 import Page from '../Page'
+import { HumanPageHeader } from '../HumanCore'
 import { SmartSwapForm } from './SmartSwap'
 import useWarningImport from './hooks/useWarningImport'
 import { StyledInputCurrencyWrapper, StyledSwapContainer } from './styles'
@@ -60,8 +61,13 @@ export default function Swap() {
 
   return (
     <Page removePadding={isChartExpanded} hideFooterOnDesktop={isChartExpanded}>
-      {/* <Coming1 />
-      <StyledDisableFlex> */}
+      <Flex width="100%" flexDirection="column" alignItems="center" mb="24px" px="16px">
+        <HumanPageHeader
+          title="Swap"
+          subtitle="Exchange tokens instantly. Connect your wallet to trade on Melega DEX."
+          badges={[{ label: 'Live', status: 'LIVE' }]}
+        />
+      </Flex>
       <Flex width={['328px', '100%']} height="100%" justifyContent="center" position="relative" alignItems="flex-start">
         {/* {!isMobile && isChartSupported && (
           <PriceChartContainer

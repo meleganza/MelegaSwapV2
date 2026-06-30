@@ -1,15 +1,5 @@
 import { useTranslation } from '@pancakeswap/localization'
-import {
-  ArrowForwardIcon,
-  Button,
-  Flex,
-  Heading,
-  Link,
-  LinkExternal,
-  ModalV2,
-  PageHeader,
-  Text,
-} from '@pancakeswap/uikit'
+import { Flex, ModalV2, LinkExternal } from '@pancakeswap/uikit'
 import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import DisclaimerModal from 'components/DisclaimerModal'
 import { ConnectorNames, getDocLink } from 'config/wallet'
@@ -17,6 +7,8 @@ import { ExtendEthereum } from 'global'
 import { useState, useCallback } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
+import { HumanPageHeader, HumanEarnNav } from 'views/HumanCore'
+import Page from 'components/Layout/Page'
 import { FarmsContext } from './context'
 import Farms from './Farms'
 
@@ -75,29 +67,18 @@ function BloctoWarning() {
 }
 
 export const FarmsPageLayout: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
-  const { t } = useTranslation()
   return (
     <>
-      <PageHeader>
-        <Flex justifyContent="space-between" flexDirection={['column', null, null, 'row']}>
-          <Flex flex="1" flexDirection="column" mr={['8px', 0]}>
-            <Heading as="h1" scale="xxl" color="secondary" mb="24px">
-              {t('Farms')}
-            </Heading>
-            <Heading scale="lg" color="text">
-              {t('Stake LP tokens to earn.')}
-            </Heading>
-            <Link className="active" id="lottery-pot-banner">
-              <Button p="0" variant="text">
-                <Text color="primary" bold={true} fontSize="16px" mr="4px">
-                  {t('Community Auctions')}
-                </Text>
-                <ArrowForwardIcon color="primary" />
-              </Button>
-            </Link>
-          </Flex>
+      <Page>
+        <Flex flexDirection="column" maxWidth="1400px" margin="0 auto" px="16px" style={{ gap: '16px' }}>
+          <HumanEarnNav />
+          <HumanPageHeader
+            title="Farms"
+            subtitle="Stake LP tokens, earn rewards."
+            primaryAction={{ href: '/liquidity', label: 'Add liquidity' }}
+          />
         </Flex>
-      </PageHeader>
+      </Page>
       <Farms>{children}</Farms>
     </>
   )

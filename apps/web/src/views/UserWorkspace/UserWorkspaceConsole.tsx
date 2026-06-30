@@ -78,19 +78,13 @@ const UserWorkspaceConsole: React.FC = () => {
 
   return (
     <EconomicPageShell>
-      <EconomicHero title={t('Workspace page title')} subtitle={t('Workspace page subtitle')} />
+      <EconomicHero
+        title="My Economy"
+        subtitle="Your activity, positions, and projects — one calm cockpit."
+        primaryAction={{ href: '/swap', label: 'Swap now' }}
+      />
 
-      <EconomicSection title={t('Workspace canonical title')}>
-        <EconomicCard>
-          <Meta>
-            {model.constitutional.canonicalChain} · {model.constitutional.canonicalAsset} ·{' '}
-            <LiveDot>{model.constitutional.status}</LiveDot>
-          </Meta>
-          <Meta style={{ marginTop: 8 }}>{model.disclaimer}</Meta>
-        </EconomicCard>
-      </EconomicSection>
-
-      <EconomicSection title={t('Workspace sections title')} columns={1}>
+      <EconomicSection title="Your activity">
         {model.sections.map((section) => (
           <EconomicCard key={section.id}>
             <SectionHeader>
@@ -126,13 +120,22 @@ const UserWorkspaceConsole: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicSection title={t('Workspace future title')} columns={2}>
+      <EconomicAiLayer title="Workspace details">
+        <EconomicCard>
+          <Meta>
+            {model.constitutional.canonicalChain} · {model.constitutional.canonicalAsset} ·{' '}
+            <LiveDot>{model.constitutional.status}</LiveDot>
+          </Meta>
+          <Meta style={{ marginTop: 8 }}>{model.disclaimer}</Meta>
+        </EconomicCard>
+        <EconomicSection title={t('Workspace future title')} columns={2}>
         {model.futureSurfaces.map((surface) => (
           <EconomicCard key={surface.id} title={surface.label} footer={surface.notes}>
             <EconomicBadge status={surface.status} />
           </EconomicCard>
         ))}
-      </EconomicSection>
+        </EconomicSection>
+      </EconomicAiLayer>
 
       <EconomicAiLayer title={t('Workspace manifest title')}>
         <EconomicManifestLink

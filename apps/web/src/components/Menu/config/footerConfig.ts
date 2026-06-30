@@ -29,16 +29,16 @@ export const melegaFooterLinks: (t: ContextApi['t']) => FooterLinkType[] = (t) =
         href: '/pools',
       },
       {
-        label: t('Launch'),
+        label: t('Create'),
         href: '/launch',
       },
       {
-        label: t('Workspace'),
-        href: '/workspace',
+        label: t('Explore'),
+        href: '/projects',
       },
       {
-        label: t('Discover'),
-        href: '/projects',
+        label: t('My Economy'),
+        href: '/workspace',
       },
     ],
   },

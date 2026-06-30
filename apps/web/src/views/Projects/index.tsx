@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { Flex, Heading, Text } from '@pancakeswap/uikit'
+import { Flex } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import Page from 'components/Layout/Page'
 import { getAllProjects } from 'registry/projects/getAllProjects'
-import {
-  computeDiscoverySummary,
-  discoverProjects,
-} from 'registry/projects/discovery'
+import { computeDiscoverySummary, discoverProjects } from 'registry/projects/discovery'
+import { HumanPageHeader } from 'views/HumanCore'
+import { EconomicAiLayer, EconomicManifestLink } from 'views/EconomicOS/components'
 import DiscoveryFiltersPanel, { DiscoveryFilterState } from './components/DiscoveryFilters'
 import DiscoverySummaryPanel from './components/DiscoverySummary'
 import DiscoveryProjectCard from './components/DiscoveryProjectCard'
@@ -34,33 +33,25 @@ const Projects: React.FC = () => {
     [state.filters, state.sortBy, allProjects],
   )
 
-  const summary = useMemo(
-    () => computeDiscoverySummary(allProjects, results),
-    [allProjects, results],
-  )
+  const summary = useMemo(() => computeDiscoverySummary(allProjects, results), [allProjects, results])
 
   return (
     <Page>
-      <Flex flexDirection="column" alignItems="center" maxWidth="1200px" margin="0 auto" px="16px" style={{ gap: '24px' }}>
-        <Flex flexDirection="column" alignItems="center" style={{ gap: '8px' }}>
-          <Heading as="h1" scale="xxl" color="secondary" textAlign="center">
-            {t('Project Discovery')}
-          </Heading>
-          <Text color="textSubtle" textAlign="center" maxWidth="720px">
-            {t('Project discovery intro')}
-          </Text>
-          <Text fontSize="12px" color="textDisabled" textAlign="center" maxWidth="720px">
-            {t('Civilization readiness disclaimer')}
-          </Text>
-        </Flex>
+      <Flex flexDirection="column" maxWidth="1400px" margin="0 auto" px="16px" style={{ gap: '28px' }}>
+        <HumanPageHeader
+          title="Explore"
+          subtitle="Discover projects, assets, and indexed civilization surfaces."
+          primaryAction={{ href: '/launch', label: 'List your project' }}
+          secondaryAction={{ href: '/assets', label: 'Browse assets' }}
+        />
 
         <DiscoverySummaryPanel summary={summary} />
         <DiscoveryFiltersPanel state={state} onChange={setState} />
 
         {results.length === 0 ? (
-          <Text color="textSubtle" textAlign="center">
+          <p style={{ color: '#9E9E9E', textAlign: 'center' }}>
             {t('No projects match discovery filters')}
-          </Text>
+          </p>
         ) : (
           <Grid width="100%">
             {results.map((project) => (
@@ -71,12 +62,11 @@ const Projects: React.FC = () => {
           </Grid>
         )}
 
-        <Text fontSize="12px" color="textDisabled" textAlign="center">
-          {t('Machine discovery index')}:{' '}
-          <a href="/registry/projects/discovery.json" style={{ color: 'inherit' }}>
-            /registry/projects/discovery.json
-          </a>
-        </Text>
+        <EconomicAiLayer title={t('Machine discovery index')}>
+          <EconomicManifestLink
+            manifests={[{ label: 'Project discovery', uri: '/registry/projects/discovery.json' }]}
+          />
+        </EconomicAiLayer>
 
         <ProjectDisclaimer />
       </Flex>

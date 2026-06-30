@@ -20,70 +20,16 @@ import {
   EconomicAiLayer,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
+import { HumanListingCta, HumanIntentGrid } from 'views/HumanCore'
+import { CREATE_INTENTS, MARCO_STAKING_INTENTS } from './create-intents'
 
 const t = (key: string) => (translations as Record<string, string>)[key] ?? key
 
 const Meta = styled.p`
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: ${tokens.textSecondary};
-  line-height: 1.55;
-`
-
-const Field = styled.div`
-  margin-top: 10px;
-
-  strong {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: ${tokens.gold};
-    margin-bottom: 4px;
-  }
-
-  p,
-  ul {
-    margin: 0;
-    font-size: 12px;
-    color: ${tokens.textSecondary};
-    line-height: 1.5;
-  }
-
-  ul {
-    padding-left: 16px;
-  }
-`
-
-const LinkRow = styled.div`
-  margin-top: 10px;
-  font-size: 12px;
-
-  a {
-    color: ${tokens.gold};
-    text-decoration: none;
-    margin-right: 12px;
-
-    &:hover {
-      color: ${tokens.goldHighlight};
-    }
-  }
-`
-
-const LiveDot = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: ${tokens.success};
-  font-weight: 600;
-
-  &::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: ${tokens.success};
-  }
+  line-height: 1.65;
 `
 
 type CapabilityGroup = 'available' | 'planned' | 'blocked'
@@ -96,88 +42,21 @@ const capabilityGroup = (status: LaunchCapabilityStatus): CapabilityGroup => {
 
 const GROUP_LABELS: Record<CapabilityGroup, string> = {
   available: 'Available',
-  planned: 'Planned',
-  blocked: 'Blocked',
+  planned: 'Coming soon',
+  blocked: 'Requires review',
 }
 
 const CapabilityDetail: React.FC<{ capability: LaunchCapability }> = ({ capability }) => (
   <EconomicCard title={capability.label}>
     <EconomicBadge status={capability.status} />
     <Meta style={{ marginTop: 8 }}>{capability.description}</Meta>
-
-    <Field>
-      <strong>{t('Launch availability')}</strong>
-      <p>{capability.availability}</p>
-    </Field>
-
-    <Field>
-      <strong>{t('Launch required inputs')}</strong>
-      <ul>
-        {capability.requiredInputs.map((input) => (
-          <li key={input.id}>
-            {input.label}
-            {input.required ? ' *' : ''}
-            {input.notes ? ` — ${input.notes}` : ''}
-          </li>
-        ))}
-      </ul>
-    </Field>
-
-    <Field>
-      <strong>{t('Launch wallet requirement')}</strong>
-      <p>{capability.walletRequirement}</p>
-    </Field>
-
-    <Field>
-      <strong>{t('Launch chain support')}</strong>
-      <p>
-        {capability.chainSupport.chains.join(' · ')} — {capability.chainSupport.notes}
-      </p>
-    </Field>
-
-    <Field>
-      <strong>{t('Launch contract dependency')}</strong>
-      <p>
-        {capability.contractDependency.label}: {capability.contractDependency.reference} (
-        {capability.contractDependency.status})
-      </p>
-    </Field>
-
-    <Field>
-      <strong>{t('Launch execution dependency')}</strong>
-      <p>
-        {capability.executionDependency.label}: {capability.executionDependency.reference} (
-        {capability.executionDependency.status})
-      </p>
-    </Field>
-
-    {capability.warnings.length > 0 && (
-      <Field>
-        <strong>{t('Launch warnings')}</strong>
-        <ul>
-          {capability.warnings.map((warning) => (
-            <li key={warning}>{warning}</li>
-          ))}
-        </ul>
-      </Field>
+    {capability.existingFlowHref && (
+      <Meta style={{ marginTop: 8 }}>
+        <Link href={capability.existingFlowHref} style={{ color: tokens.gold }}>
+          Open flow →
+        </Link>
+      </Meta>
     )}
-
-    {(capability.existingFlowHref || capability.registryHref) && (
-      <LinkRow>
-        {capability.existingFlowHref && (
-          <Link href={capability.existingFlowHref}>
-            {t('Launch open existing flow')}: {capability.existingFlowHref}
-          </Link>
-        )}
-        {capability.registryHref && (
-          <Link href={capability.registryHref}>
-            {t('Launch registry link')}: {capability.registryHref}
-          </Link>
-        )}
-      </LinkRow>
-    )}
-
-    <Meta style={{ marginTop: 8, opacity: 0.7 }}>{capability.machineManifest}</Meta>
   </EconomicCard>
 )
 
@@ -193,85 +72,54 @@ const UserLaunchConsole: React.FC = () => {
     grouped[capabilityGroup(capability.status)].push(capability)
   })
 
-  const groupSummaries: { group: CapabilityGroup; count: number }[] = [
-    { group: 'available', count: model.summary.live + model.summary.availableExistingFlow },
-    { group: 'planned', count: model.summary.planned },
-    { group: 'blocked', count: model.summary.blocked },
-  ]
-
   return (
     <EconomicPageShell>
-      <EconomicHero title={t('Launch page title')} subtitle={t('Launch page subtitle')} />
+      <EconomicHero
+        title="Create"
+        subtitle="What do you want to create? Pick an action — no technical setup required to start."
+        primaryAction={{ href: '/submit', label: 'List your project' }}
+      />
 
-      <EconomicSection title={t('Launch canonical title')}>
-        <EconomicCard>
-          <Meta>
-            {model.constitutional.canonicalChain} · {model.constitutional.canonicalAsset} ·{' '}
-            <LiveDot>{model.constitutional.status}</LiveDot>
-          </Meta>
-          <Meta style={{ marginTop: 8 }}>{model.disclaimer}</Meta>
-        </EconomicCard>
+      <HumanListingCta href="/submit" />
+
+      <EconomicSection title="What do you want to create?">
+        <HumanIntentGrid intents={CREATE_INTENTS} />
       </EconomicSection>
 
-      <EconomicSection title={t('Launch summary title')}>
-        <EconomicStatusSummary
-          items={[
-            { label: t('Launch total capabilities'), value: String(model.summary.total) },
-            { label: t('Launch available now'), value: String(model.summary.live + model.summary.availableExistingFlow) },
-            { label: t('Launch planned'), value: String(model.summary.planned) },
-            { label: t('Launch blocked'), value: String(model.summary.blocked) },
-          ]}
-        />
+      <EconomicSection title="Reward MARCO holders" lead="Create a staking pool for MARCO holders.">
+        <HumanIntentGrid intents={MARCO_STAKING_INTENTS} />
       </EconomicSection>
 
-      <EconomicSection title={t('Launch capabilities title')} columns={3}>
-        {groupSummaries.map(({ group, count }) => (
-          <EconomicCard key={group} title={GROUP_LABELS[group]} footer={`${count} capabilities`}>
-            <Meta>
-              {grouped[group].map((c) => c.label).join(' · ') || '—'}
-            </Meta>
-          </EconomicCard>
-        ))}
-      </EconomicSection>
-
-      {(['available', 'planned', 'blocked'] as CapabilityGroup[]).map((group) =>
-        grouped[group].length > 0 ? (
-          <EconomicDetailToggle
-            key={group}
-            title={`${GROUP_LABELS[group]} (${grouped[group].length})`}
-          >
-            {grouped[group].map((capability) => (
-              <CapabilityDetail key={capability.id} capability={capability} />
-            ))}
-          </EconomicDetailToggle>
-        ) : null,
-      )}
-
-      <EconomicSection title={t('Launch future surfaces title')} lead={t('Launch future surfaces note')}>
+      <EconomicSection title="Quick links">
         <EconomicActionGrid
           links={[
-            { label: 'Labs / Activation', href: '/new-project' },
-            { label: t('Pipeline cross link'), href: '/pipeline' },
-            { label: t('Runtime cross link'), href: '/runtime/labs' },
-            { label: t('Orchestrator cross link'), href: '/orchestrator' },
-            { label: t('Submission cross link'), href: '/submit' },
-            { label: 'Economic Presence', href: '/presence' },
-            { label: 'Execution', href: '/execution' },
-            { label: 'Economic Identity', href: '/identity' },
-            { label: 'Surface Map', href: '/map' },
-            { label: 'Graph', href: '/graph' },
-            { label: 'Query', href: '/query' },
+            { label: 'Add liquidity', href: '/liquidity' },
+            { label: 'Earn — Farms', href: '/farms' },
+            { label: 'Earn — Pools', href: '/pools' },
+            { label: 'Explore projects', href: '/projects' },
           ]}
         />
       </EconomicSection>
 
-      <EconomicAiLayer title={t('Launch manifest title')}>
-        <EconomicManifestLink
-          manifests={[{ label: t('Launch manifest note'), uri: '/registry/launch/index.json' }]}
+      <EconomicAiLayer title="Capability registry">
+        <EconomicStatusSummary
+          items={[
+            { label: 'Available now', value: String(model.summary.live + model.summary.availableExistingFlow) },
+            { label: 'Coming soon', value: String(model.summary.planned) },
+            { label: 'Requires review', value: String(model.summary.blocked) },
+          ]}
         />
-        <Meta style={{ marginTop: 12 }}>
-          Read-only · execution disabled · as of {model.asOf}
-        </Meta>
+        {(['available', 'planned', 'blocked'] as CapabilityGroup[]).map((group) =>
+          grouped[group].length > 0 ? (
+            <EconomicDetailToggle key={group} title={`${GROUP_LABELS[group]} (${grouped[group].length})`}>
+              {grouped[group].map((capability) => (
+                <CapabilityDetail key={capability.id} capability={capability} />
+              ))}
+            </EconomicDetailToggle>
+          ) : null,
+        )}
+        <EconomicManifestLink manifests={[{ label: 'Launch manifest', uri: '/registry/launch/index.json' }]} />
+        <Meta style={{ marginTop: 12 }}>Read-only · as of {model.asOf}</Meta>
       </EconomicAiLayer>
     </EconomicPageShell>
   )

@@ -9,6 +9,7 @@ import {
   HomeIcon,
   CapitalIcon,
   LaunchPadIcon,
+  InfoIcon,
 } from '@pancakeswap/uikit'
 import { ContextApi } from '@pancakeswap/localization'
 import { SUPPORT_FARMS } from 'config/constants/supportChains'
@@ -31,7 +32,7 @@ const addMenuItemSupported = (item, chainId) => {
   }
 }
 
-/** UX Constitution v1.2 — Human Mode navigation (single system). */
+/** UX Constitution v1.2 — Epic B human intent navigation. */
 const config: (
   t: ContextApi['t'],
   isDark: boolean,
@@ -53,14 +54,8 @@ const config: (
       href: '/swap',
       showItemsOnMobile: true,
       items: [
-        {
-          label: t('Exchange'),
-          href: '/swap',
-        },
-        {
-          label: t('Liquidity'),
-          href: '/liquidity',
-        },
+        { label: t('Exchange'), href: '/swap' },
+        { label: t('Liquidity'), href: '/liquidity' },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
     {
@@ -71,18 +66,12 @@ const config: (
       supportChainIds: SUPPORT_FARMS,
       showItemsOnMobile: true,
       items: [
-        {
-          label: t('Farms'),
-          href: '/farms',
-        },
-        {
-          label: t('Pools'),
-          href: '/pools',
-        },
+        { label: t('Farms'), href: '/farms' },
+        { label: t('Pools'), href: '/pools' },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
     {
-      label: t('Launch'),
+      label: t('Create'),
       href: '/launch',
       icon: LaunchPadIcon,
       fillIcon: LaunchPadIcon,
@@ -90,41 +79,40 @@ const config: (
       items: [],
     },
     {
-      label: t('Discover'),
+      label: t('Explore'),
       href: '/projects',
       icon: ResourcesIcon,
       fillIcon: ResourcesIcon,
       showItemsOnMobile: true,
       items: [
-        {
-          label: t('Projects'),
-          href: '/projects',
-        },
-        {
-          label: t('Assets'),
-          href: '/assets',
-        },
-        {
-          label: t('Collectibles'),
-          href: '/collectibles',
-        },
-        {
-          label: t('Presence'),
-          href: '/presence',
-        },
-        {
-          label: t('Graph'),
-          href: '/graph',
-        },
+        { label: t('Projects'), href: '/projects' },
+        { label: t('Assets'), href: '/assets' },
+        { label: t('Collectibles'), href: '/collectibles' },
+        { label: t('Presence'), href: '/presence' },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
     {
-      label: t('Workspace'),
+      label: t('My Economy'),
       href: '/workspace',
       icon: CapitalIcon,
       fillIcon: CapitalIcon,
       showItemsOnMobile: true,
       items: [],
+    },
+    {
+      label: 'AI',
+      href: '/map',
+      icon: InfoIcon,
+      fillIcon: InfoIcon,
+      showItemsOnMobile: false,
+      items: [
+        { label: 'Surface Map', href: '/map' },
+        { label: 'Pipeline', href: '/pipeline' },
+        { label: 'Runtime', href: '/runtime/labs' },
+        { label: 'Review', href: '/review' },
+        { label: 'Orchestrator', href: '/orchestrator' },
+        { label: 'Dry Run', href: '/dry-run' },
+      ].map((item) => addMenuItemSupported(item, chainId)),
     },
   ].map((item) => addMenuItemSupported(item, chainId))
 

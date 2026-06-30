@@ -13,6 +13,7 @@ import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
+import { HumanPageHeader } from '../HumanCore'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
@@ -112,6 +113,13 @@ export default function Pool() {
 
   return (
     <Page>
+      <Flex width="100%" flexDirection="column" alignItems="center" mb="24px" px="16px">
+        <HumanPageHeader
+          title="Liquidity"
+          subtitle="Add or remove liquidity and manage your LP positions."
+          primaryAction={{ href: '/add', label: 'Add liquidity' }}
+        />
+      </Flex>
       <Flex width={['328px', '100%']} height="100%" justifyContent="center" position="relative" alignItems="flex-start">
         <AppBody>
           <AppHeader title={t('Your Liquidity')} subtitle={t('Remove liquidity to receive tokens back')} />

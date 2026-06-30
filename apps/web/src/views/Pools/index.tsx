@@ -1,10 +1,11 @@
 import styled from 'styled-components'
 
 import { useAccount } from 'wagmi'
-import { Heading, Flex, Image, Text, Link, FlexLayout, PageHeader, Loading, Pool, ViewMode } from '@pancakeswap/uikit'
+import { Heading, Flex, Image, Text, Link, FlexLayout, Loading, Pool, ViewMode } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import Page from 'components/Layout/Page'
+import { HumanPageHeader, HumanEarnNav } from 'views/HumanCore'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { Token } from '@pancakeswap/sdk'
 import { TokenPairImage } from 'components/TokenImage'
@@ -46,25 +47,17 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
   
   return (
     <>
-      <PageHeader>
-        <Flex justifyContent="space-between" flexDirection={['column', null, null, 'row']}>
-          <Flex flex="1" flexDirection="column" mr={['8px', 0]}>
-            <Heading as="h1" scale="xxl" color="secondary" mb="24px">
-              {t('MARCO Pools')}
-            </Heading>
-            <Heading scale="md" color="text">
-              {t('Just stake some tokens to earn.')}
-            </Heading>
-            <Heading scale="md" color="text">
-              {t('High APR, low risk.')}
-            </Heading>
-          </Flex>
-          <br/>
-          <Flex flex="1" height="fit-content" justifyContent="center" alignItems="center" mt={['24px', null, '0']}>
-            <BountyCard />
-          </Flex>
+      <Page>
+        <Flex flexDirection="column" maxWidth="1400px" margin="0 auto" px="16px" style={{ gap: '16px' }}>
+          <HumanEarnNav />
+          <HumanPageHeader
+            title="Staking Pools"
+            subtitle="Stake a token, earn rewards. Earn new tokens by staking MARCO when pools are live."
+            primaryAction={{ href: '/launch', label: 'Reward MARCO holders' }}
+          />
+          <BountyCard />
         </Flex>
-      </PageHeader>
+      </Page>
       <Page>
         <PoolControls pools={pools}>
           {({ chosenPools, viewMode, stakedOnly, normalizedUrlSearch, showFinishedPools }) => (
