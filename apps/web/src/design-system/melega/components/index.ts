@@ -23,3 +23,8 @@ export {
 export { MelegaSectionTitle, type MelegaSectionTitleProps } from './SectionTitle'
 export { MelegaEmptyState, type MelegaEmptyStateProps } from './EmptyState'
 export { MelegaLoadingSkeleton, type MelegaLoadingSkeletonProps } from './LoadingSkeleton'
+export { MelegaBrandLockup, type MelegaBrandLockupProps } from './BrandLockup'
+export { MelegaSocialIcons } from './SocialIcons'
+export { MelegaMarcoCard, type MelegaMarcoCardProps } from './MarcoCard'
+export { MelegaSidebar, MELEGA_SIDEBAR_WIDTH, type MelegaSidebarProps } from './Sidebar'
+export { MelegaAppHeader, MELEGA_APP_HEADER_HEIGHT, type MelegaAppHeaderProps } from './AppHeader'

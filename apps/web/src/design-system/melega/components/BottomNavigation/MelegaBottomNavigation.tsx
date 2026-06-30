@@ -32,6 +32,10 @@ const Nav = styled.nav<{
   z-index: 200;
   box-shadow: none;
 
+  @media (min-width: 768px) {
+    display: none;
+  }
+
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 

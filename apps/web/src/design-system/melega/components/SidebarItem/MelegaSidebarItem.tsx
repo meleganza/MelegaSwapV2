@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import styled, { css } from 'styled-components'
 import { colors, typography, spacing, radius, animation } from '../../tokens'
 import { layoutStyles } from '../../primitives'
@@ -68,32 +68,40 @@ const ItemBase = styled.a<{
   }
 `
 
-export const MelegaSidebarItem: React.FC<MelegaSidebarItemProps> = ({
-  icon,
-  label,
-  href = '#',
-  active,
-  disabled,
-  loading,
-  padding,
-  margin,
-  radius: radiusToken,
-  onClick,
-}) => (
-  <ItemBase
-    href={disabled ? undefined : href}
-    onClick={onClick}
-    $active={active}
-    $disabled={disabled || loading}
-    $loading={loading}
-    $padding={padding}
-    $margin={margin}
-    $radius={radiusToken}
-    aria-disabled={disabled || loading}
-  >
-    {icon}
-    {loading ? '…' : label}
-  </ItemBase>
+export const MelegaSidebarItem = forwardRef<HTMLAnchorElement, MelegaSidebarItemProps>(
+  (
+    {
+      icon,
+      label,
+      href = '#',
+      active,
+      disabled,
+      loading,
+      padding,
+      margin,
+      radius: radiusToken,
+      onClick,
+    },
+    ref,
+  ) => (
+    <ItemBase
+      ref={ref}
+      href={disabled ? undefined : href}
+      onClick={onClick}
+      $active={active}
+      $disabled={disabled || loading}
+      $loading={loading}
+      $padding={padding}
+      $margin={margin}
+      $radius={radiusToken}
+      aria-disabled={disabled || loading}
+    >
+      {icon}
+      {loading ? '…' : label}
+    </ItemBase>
+  ),
 )
+
+MelegaSidebarItem.displayName = 'MelegaSidebarItem'
 
 export default MelegaSidebarItem

@@ -6,6 +6,5 @@ function IndexPage() {
 }
 
 IndexPage.chains = CHAIN_IDS
-IndexPage.hideMenu = true
 
 export default IndexPage
