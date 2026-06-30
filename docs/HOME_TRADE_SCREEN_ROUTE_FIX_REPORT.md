@@ -48,4 +48,19 @@ Untouched: `exchange.ts`, `contracts.ts`, `wagmi.ts`, token lists, router/swap/w
 
 ## Build
 
-`next build` — **Pass**
+`next build` — **Pass** (`┌ ○ /` → 13.4 kB HomeTradeScreen, HTTP 200 locally)
+
+## Verification (2026-06-30)
+
+| Check | Result |
+|-------|--------|
+| Branch | `home-trade-screen-redesign` |
+| Commit | `65c4f5b` (includes `1a29e38`) |
+| `/` renders | `HomeTradeScreen` via `pages/index.tsx` |
+| `hideMenu` | Global Menu hidden; providers + modals preserved |
+| Local `next start` | HTTP **200** on `/`, empty `pageProps` (no legacy `getStaticProps`) |
+| `MelegaSwap` on `/` HTML | **0** occurrences |
+| 404 page | Melega DEX branded, `hideMenu` |
+| Vercel | Deploy **success** on `65c4f5b` |
+
+**Note:** Production domain on `main` still serves legacy home until this branch is merged. Use the `home-trade-screen-redesign` preview deployment to validate HomeTrade.
