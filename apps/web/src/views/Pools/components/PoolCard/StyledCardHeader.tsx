@@ -4,13 +4,13 @@ import styled from 'styled-components'
 import { useTranslation } from '@pancakeswap/localization'
 import { Token } from 'config/constants/types'
 import { TokenPairImage } from 'components/TokenImage'
-import { isAutoAccessorPropertyDeclaration } from 'typescript'
-import { useChainId } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 const Wrapper = styled(CardHeader)<{ isFinished?: boolean; background?: string }>`
-  background: black;
-  border-radius: ${({ theme }) => `${theme.radii.card} ${theme.radii.card} 0 0`};
+  background: ${tokens.surfaceSecondary};
+  border-bottom: 1px solid ${tokens.border};
+  border-radius: ${tokens.radius} ${tokens.radius} 0 0;
 `
 
 const StyledCardHeader: React.FC<{
@@ -23,7 +23,7 @@ const StyledCardHeader: React.FC<{
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
   const isCakePool = earningToken.symbol === 'MARCO' && stakingToken.symbol === 'MARCO'
-  const background = isStaking ? 'darkColor' : 'bubblegum'
+  const background = isStaking ? 'darkColor' : 'darkColor'
 
   const getHeadingPrefix = () => {
     if (isAutoVault) {

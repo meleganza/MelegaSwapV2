@@ -10,6 +10,7 @@ import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { getDisplayApr } from '../getDisplayApr'
 
 import Row, { RowProps } from './Row'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 export interface ITableProps {
   farms: FarmWithStakedValue[]
@@ -20,8 +21,10 @@ export interface ITableProps {
 
 const Container = styled.div`
   width: 100%;
-  background: ${({ theme }) => theme.card.background};
-  margin: 16px 0px;
+  background: transparent;
+  margin: 16px 0;
+  padding: 0 16px;
+  box-sizing: border-box;
 `
 
 const TableWrapper = styled.div`
@@ -39,6 +42,26 @@ const StyledTable = styled.table`
   margin-left: auto;
   margin-right: auto;
   width: 100%;
+  color: ${tokens.text};
+
+  thead th {
+    color: ${tokens.textSecondary};
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid ${tokens.border};
+    padding: 12px 8px;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid ${tokens.border};
+  }
+
+  tbody td {
+    color: ${tokens.text};
+    padding: 12px 8px;
+  }
 `
 
 const TableBody = styled.tbody`
@@ -177,7 +200,7 @@ const FarmTable: React.FC<React.PropsWithChildren<ITableProps>> = ({ farms, cake
   const sortedRows = rowData.map(generateSortedRow)
 
   return (
-    <Container id="farms-table">
+    <Container id="farms-table" className="FarmTable">
       <TableContainer id="table-container">
         <TableWrapper ref={tableWrapperEl}>
           <StyledTable>

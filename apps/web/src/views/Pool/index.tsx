@@ -13,10 +13,12 @@ import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
-import { HumanPageHeader } from '../HumanCore'
+import { HumanLiquidityChrome } from '../HumanCore'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 const Body = styled(CardBody)`
-  background-color: ${({ theme }) => theme.colors.dropdownDeep};
+  background-color: ${tokens.surface};
+  padding: 20px;
 `
 
 export default function Pool() {
@@ -112,15 +114,9 @@ export default function Pool() {
   }
 
   return (
-    <Page>
-      <Flex width="100%" flexDirection="column" alignItems="center" mb="24px" px="16px">
-        <HumanPageHeader
-          title="Liquidity"
-          subtitle="Add or remove liquidity and manage your LP positions."
-          primaryAction={{ href: '/add', label: 'Add liquidity' }}
-        />
-      </Flex>
-      <Flex width={['328px', '100%']} height="100%" justifyContent="center" position="relative" alignItems="flex-start">
+    <Page data-melega-trading-page="true">
+      <HumanLiquidityChrome />
+      <Flex width={['100%', '100%']} height="100%" justifyContent="center" position="relative" alignItems="flex-start" px="16px">
         <AppBody>
           <AppHeader title={t('Your Liquidity')} subtitle={t('Remove liquidity to receive tokens back')} />
           <Body>

@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 
+import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { Heading, Flex, Image, Text, Link, FlexLayout, Loading, Pool, ViewMode } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import Page from 'components/Layout/Page'
-import { HumanPageHeader, HumanEarnNav } from 'views/HumanCore'
+import { HumanEarnChrome } from 'views/HumanCore'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { Token } from '@pancakeswap/sdk'
 import { TokenPairImage } from 'components/TokenImage'
@@ -45,20 +46,39 @@ const Pools: React.FC<React.PropsWithChildren> = () => {
   usePoolsPageFetch()
   // console.log(pools)
   
+  const marcoStakePool = useMemo(
+    () =>
+      pools?.find(
+        (pool) =>
+          !pool.vaultKey &&
+          pool.stakingToken?.symbol === 'MARCO' &&
+          pool.earningToken?.symbol &&
+          pool.earningToken.symbol !== 'MARCO',
+      ),
+    [pools],
+  )
+
   return (
     <>
-      <Page>
+      <Page data-melega-trading-page="true">
         <Flex flexDirection="column" maxWidth="1400px" margin="0 auto" px="16px" style={{ gap: '16px' }}>
-          <HumanEarnNav />
-          <HumanPageHeader
-            title="Staking Pools"
-            subtitle="Stake a token, earn rewards. Earn new tokens by staking MARCO when pools are live."
-            primaryAction={{ href: '/launch', label: 'Reward MARCO holders' }}
+          <HumanEarnChrome
+            sectionTitle="Staking Pools"
+            sectionSubtitle="Stake tokens, earn rewards."
           />
+          {marcoStakePool && (
+            <div data-melega-marco-highlight="true">
+              <strong>
+                Stake MARCO → Earn {marcoStakePool.earningToken.symbol}
+              </strong>
+              {' — '}
+              {t('Live pool data from Melega DEX. APR and rewards reflect on-chain state.')}
+            </div>
+          )}
           <BountyCard />
         </Flex>
       </Page>
-      <Page>
+      <Page data-melega-trading-page="true">
         <PoolControls pools={pools}>
           {({ chosenPools, viewMode, stakedOnly, normalizedUrlSearch, showFinishedPools }) => (
             <>

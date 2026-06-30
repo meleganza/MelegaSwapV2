@@ -7,7 +7,7 @@ import { ExtendEthereum } from 'global'
 import { useState, useCallback } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
-import { HumanPageHeader, HumanEarnNav } from 'views/HumanCore'
+import { HumanEarnChrome } from 'views/HumanCore'
 import Page from 'components/Layout/Page'
 import { FarmsContext } from './context'
 import Farms from './Farms'
@@ -69,12 +69,11 @@ function BloctoWarning() {
 export const FarmsPageLayout: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   return (
     <>
-      <Page>
+      <Page data-melega-trading-page="true">
         <Flex flexDirection="column" maxWidth="1400px" margin="0 auto" px="16px" style={{ gap: '16px' }}>
-          <HumanEarnNav />
-          <HumanPageHeader
-            title="Farms"
-            subtitle="Stake LP tokens, earn rewards."
+          <HumanEarnChrome
+            sectionTitle="Farms"
+            sectionSubtitle="Stake LP tokens, earn rewards."
             primaryAction={{ href: '/liquidity', label: 'Add liquidity' }}
           />
         </Flex>

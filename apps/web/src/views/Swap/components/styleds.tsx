@@ -1,12 +1,14 @@
 import { ErrorIcon, Flex, Text } from '@pancakeswap/uikit'
 import { AutoColumn } from 'components/Layout/Column'
 import styled, { css } from 'styled-components'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 export const Wrapper = styled(Flex)`
   position: relative;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 16px 20px 20px;
+  background: ${tokens.surface};
 `
 
 export const ArrowWrapper = styled.div<{ clickable: boolean }>`

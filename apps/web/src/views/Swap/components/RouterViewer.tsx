@@ -4,6 +4,7 @@ import { isStableSwapPair, Pair } from '@pancakeswap/smart-router/evm'
 import { Box, Flex, Text, useTooltip } from '@pancakeswap/uikit'
 import { CurrencyLogo } from 'components/Logo'
 import styled from 'styled-components'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 const RouterBox = styled(Flex)`
   position: relative;
@@ -16,7 +17,7 @@ const RouterBox = styled(Flex)`
     left: 50%;
     width: 3px;
     height: 100%;
-    border-left: 3px dotted ${({ theme }) => theme.colors.backgroundDisabled};
+    border-left: 3px dotted ${tokens.border};
     transform: translateX(-50%);
     z-index: 1;
   }
@@ -31,7 +32,7 @@ const RouterBox = styled(Flex)`
       width: 100%;
       height: 3px;
       border-left: none;
-      border-top: 3px dotted ${({ theme }) => theme.colors.backgroundDisabled};
+      border-top: 3px dotted ${tokens.border};
       transform: translateY(-50%);
       z-index: 1;
     }
@@ -43,7 +44,8 @@ const RouterPoolBox = styled(Box)`
   display: flex;
   flex-direction: column;
   padding: 4px 8px;
-  background-color: ${({ theme }) => theme.colors.backgroundDisabled};
+  background-color: ${tokens.surfaceSecondary};
+  border: 1px solid ${tokens.border};
   z-index: 2;
   svg,
   img {
@@ -56,7 +58,8 @@ const RouterPoolBox = styled(Box)`
     }
   }
   &.isStableSwap {
-    background-color: ${({ theme }) => theme.colors.secondary};
+    background-color: ${tokens.surface};
+    border-color: ${tokens.borderGold};
   }
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: row;
@@ -82,7 +85,7 @@ const CurrencyLogoWrapper = styled.div`
   height: 48px;
   width: 48px;
   padding: 2px;
-  background: linear-gradient(180deg, #53dee9 0%, #7645d9 76.22%);
+  background: linear-gradient(180deg, ${({ theme }) => theme.colors.primaryBright} 0%, ${({ theme }) => theme.colors.primary} 100%);
   border-radius: 50%;
   z-index: 2;
 `

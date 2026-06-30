@@ -4,9 +4,13 @@ import styled from 'styled-components'
 export const StyledSwapContainer = styled(Flex)<{ $isChartExpanded: boolean }>`
   flex-shrink: 0;
   height: fit-content;
-  max-width: 90vw;
+  width: 100%;
+  max-width: min(436px, 100vw);
+  padding: 0 16px;
+  box-sizing: border-box;
   ${({ theme }) => theme.mediaQueries.lg} {
     padding: 0 40px;
+    max-width: 520px;
   }
 
   ${({ theme }) => theme.mediaQueries.xxl} {
@@ -15,5 +19,6 @@ export const StyledSwapContainer = styled(Flex)<{ $isChartExpanded: boolean }>`
 `
 
 export const StyledInputCurrencyWrapper = styled(Box)`
-  width: 436px;
+  width: 100%;
+  max-width: 436px;
 `

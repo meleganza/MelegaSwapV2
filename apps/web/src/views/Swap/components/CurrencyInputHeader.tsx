@@ -2,6 +2,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import {
   // ChartDisableIcon,
   // ChartIcon,
+  Box,
   Flex,
   HistoryIcon,
   // HotDisableIcon,
@@ -27,16 +28,17 @@ import atomWithStorageWithErrorCatch from 'utils/atomWithStorageWithErrorCatch'
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 import { SwapFeaturesContext } from '../SwapFeaturesContext'
 import styled from 'styled-components'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 export const HeaderWrapper = styled.div`
-  border-style: solid;
-  border-color: white;
-  border-bottom-width: 1px;
+  border-bottom: 1px solid ${tokens.border};
+  background: ${tokens.surfaceSecondary};
 `
 
 interface Props {
   title: string | ReactElement
   subtitle: string
+  hideTitle?: boolean
   noConfig?: boolean
   setIsChartDisplayed?: React.Dispatch<React.SetStateAction<boolean>>
   isChartDisplayed?: boolean
@@ -55,6 +57,7 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
   hasAmount,
   onRefreshPrice,
   title,
+  hideTitle = false,
 }) => {
   const { t } = useTranslation()
   const [mobileTooltipShowOnce, setMobileTooltipShowOnce] = useAtom(mobileShowOnceTokenHighlightAtom)
@@ -93,8 +96,8 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
 
   const titleContent = (
     <Flex width="100%" alignItems="center" justifyContent="space-between" flexDirection="column">
-      <Flex flexDirection="row" alignItems="center" width="100%" marginBottom={15}>
-        <Swap.CurrencyInputHeaderTitle>{title}</Swap.CurrencyInputHeaderTitle>
+      <Flex flexDirection="row" alignItems="center" width="100%" marginBottom={hideTitle && !subtitle ? 0 : 15}>
+        {!hideTitle ? <Swap.CurrencyInputHeaderTitle>{title}</Swap.CurrencyInputHeaderTitle> : <Box flex="1" />}
         <Flex width="100%" justifyContent="end">
           <NotificationDot show={expertMode}>
             <GlobalSettings color="textSubtle" mr="0" mode={SettingsMode.SWAP_LIQUIDITY} />
@@ -107,9 +110,11 @@ const CurrencyInputHeader: React.FC<React.PropsWithChildren<Props>> = ({
           </IconButton>
         </Flex>
       </Flex>
-      <Flex justifyContent="start" width="100%" height="17px" alignItems="center" mb="20px" mt="-14px">
-        <Swap.CurrencyInputHeaderSubTitle>{subtitle}</Swap.CurrencyInputHeaderSubTitle>
-      </Flex>
+      {subtitle ? (
+        <Flex justifyContent="start" width="100%" height="17px" alignItems="center" mb="20px" mt="-14px">
+          <Swap.CurrencyInputHeaderSubTitle>{subtitle}</Swap.CurrencyInputHeaderSubTitle>
+        </Flex>
+      ) : null}
       {/* <Flex width="100%" justifyContent="end">
         {isChartSupported && setIsChartDisplayed && (
           <ColoredIconButton

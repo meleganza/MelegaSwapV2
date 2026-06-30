@@ -63,6 +63,7 @@ import { useBurnActionHandlers, useDerivedBurnInfo, useBurnState } from '../../s
 import { Field } from '../../state/burn/actions'
 import { useGasPrice, useUserSlippageTolerance, useZapModeManager } from '../../state/user/hooks'
 import Page from '../Page'
+import { HumanLiquidityChrome } from '../HumanCore'
 import ConfirmLiquidityModal from '../Swap/components/ConfirmRemoveLiquidityModal'
 import { logError } from '../../utils/sentry'
 import { formatAmount } from '../../utils/formatInfoNumbers'
@@ -570,7 +571,9 @@ export default function RemoveLiquidity({ currencyA, currencyB, currencyIdA, cur
   const isZapOutB = isZap && !removalCheckedA && removalCheckedB
 
   return (
-    <Page>
+    <Page data-melega-trading-page="true">
+      <HumanLiquidityChrome />
+      <Flex width={['100%', '100%']} justifyContent="center" px="16px">
       {/* <Coming1 />
       <StyledDisableFlex> */}
       <AppBody>
@@ -900,6 +903,7 @@ export default function RemoveLiquidity({ currencyA, currencyB, currencyIdA, cur
           <MinimalPositionCard showUnwrapped={oneCurrencyIsWNative} pair={pair} />
         </AutoColumn>
       ) : null}
+      </Flex>
       {/* </StyledDisableFlex> */}
     </Page>
   )

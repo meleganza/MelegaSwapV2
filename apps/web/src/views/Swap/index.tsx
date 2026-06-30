@@ -60,11 +60,11 @@ export default function Swap() {
   )
 
   return (
-    <Page removePadding={isChartExpanded} hideFooterOnDesktop={isChartExpanded}>
+    <Page removePadding={isChartExpanded} hideFooterOnDesktop={isChartExpanded} data-melega-trading-page="true">
       <Flex width="100%" flexDirection="column" alignItems="center" mb="24px" px="16px">
         <HumanPageHeader
           title="Swap"
-          subtitle="Exchange tokens instantly. Connect your wallet to trade on Melega DEX."
+          subtitle="Exchange tokens on Melega DEX."
           badges={[{ label: 'Live', status: 'LIVE' }]}
         />
       </Flex>

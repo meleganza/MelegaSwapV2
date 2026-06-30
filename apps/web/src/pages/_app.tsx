@@ -28,6 +28,7 @@ import Menu from '../components/Menu'
 import Providers from '../Providers'
 import GlobalStyle from '../style/Global'
 import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
+import MelegaTradingOverrides from '../style/MelegaTradingOverrides'
 import { BrowserRouter as Router } from 'react-router-dom'
 // import "../style/Font.css";
 
@@ -97,6 +98,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           <ResetCSS />
           <GlobalStyle />
           <MelegaUIKitOverrides />
+          <MelegaTradingOverrides />
           <PersistGate loading={null} persistor={persistor}>
             <Updaters />
             <Router>

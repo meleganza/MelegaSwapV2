@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components'
 import { isAddress } from 'utils'
 import { useTranslation } from '@pancakeswap/localization'
 import { WrappedTokenInfo } from '@pancakeswap/token-lists'
+import { melegaOperational as tokens } from 'ui/tokens'
 
 import { useBUSDCurrencyAmount } from 'hooks/useBUSDPrice'
 import { formatNumber } from '@pancakeswap/utils/formatBalance'
@@ -40,8 +41,9 @@ const CurrencySelectButton = styled(Button).attrs({ variant: 'text', scale: 'sm'
 `
 
 const Container = styled(Box)`
-  background-color: ${({ theme }) => theme.colors.input};
-  border-radius: 16px;
+  background-color: ${tokens.surfaceSecondary};
+  border: 1px solid ${tokens.border};
+  border-radius: ${tokens.radiusSm};
 `
 
 const LabelRow = styled.div`

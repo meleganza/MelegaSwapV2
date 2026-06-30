@@ -1,5 +1,6 @@
 import { useEffect, useState, createElement, useRef } from 'react'
 import styled from 'styled-components'
+import { melegaOperational as tokens } from 'ui/tokens'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import {
   Box,
@@ -63,7 +64,7 @@ const CellInner = styled.div`
 const StyledTr = styled.tr`
   cursor: pointer;
   &:not(:last-child) {
-    border-bottom: 2px solid ${({ theme }) => theme.colors.disabled};
+    border-bottom: 1px solid ${tokens.border};
   }
 `
 

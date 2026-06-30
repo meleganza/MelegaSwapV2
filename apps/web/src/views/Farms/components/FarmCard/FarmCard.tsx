@@ -10,6 +10,7 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCallback, useMemo, useState } from 'react'
 import { multiChainPaths } from 'state/info/constant'
 import styled from 'styled-components'
+import { melegaOperational as tokens } from 'ui/tokens'
 import { getBlockExploreLink } from 'utils'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import ApyButton from './ApyButton'
@@ -28,12 +29,13 @@ const StyledCard = styled(Card)`
   align-self: baseline;
   max-width: 100%;
   margin: 0 0 24px 0;
-  border: 1px solid ${({ theme }) => theme.colors.cardBorder};
-  border-bottom: 3px solid ${({ theme }) => theme.colors.cardBorder};
-  border-radius: 24px;
+  border: 1px solid ${tokens.border};
+  border-radius: ${tokens.radius};
+  background: ${tokens.surface};
+  box-shadow: none;
   ${({ theme }) => theme.mediaQueries.sm} {
     max-width: 350px;
-    margin: 0 12px 46px;
+    margin: 0 12px 32px;
   }
 `
 
@@ -45,7 +47,7 @@ const FarmCardInnerContainer = styled(Flex)`
 
 const ExpandingWrapper = styled.div`
   padding: 24px;
-  border-top: 2px solid ${({ theme }) => theme.colors.cardBorder};
+  border-top: 1px solid ${tokens.border};
   overflow: hidden;
 `
 

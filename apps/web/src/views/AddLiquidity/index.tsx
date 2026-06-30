@@ -14,6 +14,7 @@ import {
   MessageText,
   IconButton,
   PencilIcon,
+  Flex,
   // Coming1,
 } from '@pancakeswap/uikit'
 import { logError } from 'utils/sentry'
@@ -62,6 +63,7 @@ import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import Dots from '../../components/Loader/Dots'
 import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
+import { HumanLiquidityChrome } from '../HumanCore'
 import ConfirmAddLiquidityModal from './components/ConfirmAddLiquidityModal'
 import ConfirmZapInModal from './components/ConfirmZapInModal'
 import { ChoosePair } from './ChoosePair'
@@ -576,7 +578,9 @@ export default function AddLiquidity({ currencyA, currencyB }) {
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
 
   return (
-    <Page>
+    <Page data-melega-trading-page="true">
+      <HumanLiquidityChrome />
+      <Flex width={['100%', '100%']} justifyContent="center" px="16px">
       {/* <Coming1 />
       <StyledDisableFlex> */}
       <AppBody>
@@ -909,6 +913,7 @@ export default function AddLiquidity({ currencyA, currencyB }) {
       ) : (
         <UnsupportedCurrencyFooter currencies={[currencies.CURRENCY_A, currencies.CURRENCY_B]} />
       )}
+      </Flex>
       {/* </StyledDisableFlex> */}
     </Page>
   )

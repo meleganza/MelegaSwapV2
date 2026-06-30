@@ -16,6 +16,7 @@ import {
   ToggleView,
 } from '@pancakeswap/uikit'
 import styled from 'styled-components'
+import { melegaOperational as tokens } from 'ui/tokens'
 import Page from 'components/Layout/Page'
 import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import { useIntersectionObserver } from '@pancakeswap/hooks'
@@ -36,16 +37,19 @@ const ControlContainer = styled.div`
   width: 100%;
   align-items: center;
   position: relative;
-
   justify-content: space-between;
   flex-direction: column;
   margin-bottom: 32px;
+  padding: 16px;
+  border: 1px solid ${tokens.border};
+  border-radius: ${tokens.radius};
+  background: ${tokens.surface};
 
   ${({ theme }) => theme.mediaQueries.sm} {
     flex-direction: row;
     flex-wrap: wrap;
     padding: 16px 32px;
-    margin-bottom: 0;
+    margin: 0 16px 0;
   }
 `
 // const FarmFlexWrapper = styled(Flex)`
