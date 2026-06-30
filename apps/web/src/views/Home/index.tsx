@@ -1,3 +1,3 @@
-import HomeTradeScreen from 'views/HomeTrade'
+import HomeTradeScreen from 'views/HomeTrade/HomeTradeScreen'
 
 export default HomeTradeScreen

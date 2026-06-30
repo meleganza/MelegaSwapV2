@@ -1,10 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { ToastListener } from '@pancakeswap/uikit'
-import { NetworkModal } from 'components/NetworkModal'
-import TransactionsDetailModal from 'components/TransactionDetailModal'
 import { PageMeta } from 'components/Layout/Page'
-import { CHAIN_IDS } from 'utils/wagmi'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSidebar from './HomeSidebar'
 import HomeTopBar from './HomeTopBar'
@@ -85,7 +81,7 @@ export const HomeTradeScreen: React.FC = () => {
   const data = useHomeTradeData()
 
   return (
-    <Root>
+    <Root data-home-trade-screen="true">
       <PageMeta />
       <HomeTradeGlobalStyle />
       <HomeSidebar marcoPriceLabel={data.marcoPriceLabel} />
@@ -117,9 +113,6 @@ export const HomeTradeScreen: React.FC = () => {
         </Content>
       </Main>
       <MobileBottomNav />
-      <ToastListener />
-      <NetworkModal pageSupportedChains={CHAIN_IDS} />
-      <TransactionsDetailModal />
     </Root>
   )
 }

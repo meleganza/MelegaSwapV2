@@ -5,8 +5,8 @@
   "homepage_url": "https://melega.finance",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#1FC7D4",
-  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "orientation": "portrait",
   "icons": [
     {

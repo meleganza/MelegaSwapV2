@@ -1,7 +1,8 @@
 {
-    "git": {
-      "deploymentEnabled": {
-        "main": true
-      }
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "home-trade-screen-redesign": true
     }
   }
+}

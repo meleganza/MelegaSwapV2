@@ -30,6 +30,7 @@ import GlobalStyle from '../style/Global'
 import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
 import MelegaTradingOverrides from '../style/MelegaTradingOverrides'
 import { BrowserRouter as Router } from 'react-router-dom'
+import { CHAIN_IDS } from 'utils/wagmi'
 // import "../style/Font.css";
 
 const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
@@ -126,8 +127,10 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
 type NextPageWithLayout = NextPage & {
   Layout?: React.FC<React.PropsWithChildren<unknown>>
-  /** render component without all layouts */
+  /** @deprecated use hideMenu — kept for compatibility */
   pure?: true
+  /** Hide global Menu shell but keep providers and modals */
+  hideMenu?: true
   /** is mini program */
   mp?: boolean
   /**
@@ -149,8 +152,17 @@ type AppPropsWithLayout = AppProps & {
 const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? SentryErrorBoundary : Fragment
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
-  if (Component.pure) {
-    return <Component {...pageProps} />
+  const hideMenu = Component.hideMenu || Component.pure
+
+  if (hideMenu) {
+    return (
+      <ProductionErrorBoundary>
+        <Component {...pageProps} />
+        <ToastListener />
+        <NetworkModal pageSupportedChains={Component.chains ?? CHAIN_IDS} />
+        <TransactionsDetailModal />
+      </ProductionErrorBoundary>
+    )
   }
 
   // Use the layout defined at the page level, if available
