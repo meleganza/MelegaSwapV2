@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useRef } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -15,16 +15,16 @@ import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { ht } from './homeTradeTokens'
 
 const Panel = styled.div`
-  background: linear-gradient(180deg, ${ht.surface2} 0%, #090909 100%);
-  border: 1px solid ${ht.borderMedium};
+  background: linear-gradient(180deg, #111111 0%, #090909 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  padding: 20px;
+  padding: 18px;
   width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-sizing: border-box;
-  transition: box-shadow 200ms ease, border-color 200ms ease;
+  transition: box-shadow 180ms ease, border-color 180ms ease;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.14);
@@ -37,7 +37,6 @@ const Panel = styled.div`
     height: ${ht.heroMaxHeight};
     max-height: ${ht.heroMaxHeight};
     flex-shrink: 0;
-    padding: 16px 20px 14px;
   }
 `
 
@@ -45,44 +44,56 @@ const Header = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 6px;
+  height: 38px;
   flex-shrink: 0;
+  margin-bottom: 4px;
 `
 
 const Title = styled.h1`
   margin: 0;
-  font-family: ${ht.fontDisplay};
-  font-size: 20px;
+  font-family: ${ht.fontBody};
+  font-size: 24px;
   font-weight: 700;
   color: ${ht.white};
-  line-height: 1.15;
+  line-height: 1.1;
 `
 
 const Subtitle = styled.p`
   margin: 2px 0 0;
   font-family: ${ht.fontBody};
-  font-size: 12px;
-  color: ${ht.textMuted};
+  font-size: 14px;
+  color: ${ht.textMeta};
   line-height: 1.35;
 `
 
-const SettingsBtn = styled.button`
-  width: 32px;
-  height: 32px;
+const IconRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`
+
+const IconBtn = styled.button`
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
-  border: 1px solid ${ht.borderSoft};
-  background: ${ht.surface3};
-  color: ${ht.textMuted};
+  border: none;
+  background: transparent;
+  color: ${ht.textMeta};
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: border-color 150ms ease, color 150ms ease;
+  transition: color 180ms ease, background 180ms ease;
 
   &:hover {
-    border-color: ${ht.borderGold};
-    color: ${ht.gold};
+    color: ${ht.white};
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
   }
 `
 
@@ -92,7 +103,22 @@ const SwapBody = styled.div`
   overflow: hidden;
 `
 
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34l1.41 1.41M16.24 16.24l1.41 1.41" />
+  </svg>
+)
+
+const RefreshIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+    <path d="M21 12a9 9 0 11-2.64-6.36" />
+    <path d="M21 3v6h-6" />
+  </svg>
+)
+
 const HomeSwapInner: React.FC = () => {
+  const swapBodyRef = useRef<HTMLDivElement>(null)
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -114,21 +140,33 @@ const HomeSwapInner: React.FC = () => {
     [inputCurrencyId, outputCurrencyId, onCurrencySelection, warningSwapHandler],
   )
 
+  const handleRefresh = useCallback(() => {
+    const root = swapBodyRef.current
+    if (!root) return
+    const btn =
+      root.querySelector('[class*="RefreshIcon"]') ||
+      root.querySelector('button[aria-label*="Refresh"]') ||
+      root.querySelector('[class*="CurrencyInputHeader"] button')
+    if (btn instanceof HTMLElement) btn.click()
+  }, [])
+
   return (
     <Panel data-home-swap-panel="true">
       <Header>
         <div>
-          <Title>Trade</Title>
-          <Subtitle>Swap instantly on Melega DEX.</Subtitle>
+          <Title>Swap</Title>
+          <Subtitle>Trade tokens instantly on Melega DEX.</Subtitle>
         </div>
-        <SettingsBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2" />
-          </svg>
-        </SettingsBtn>
+        <IconRow>
+          <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+            <SettingsIcon />
+          </IconBtn>
+          <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+            <RefreshIcon />
+          </IconBtn>
+        </IconRow>
       </Header>
-      <SwapBody className="home-trade-swap">
+      <SwapBody ref={swapBodyRef} className="home-trade-swap">
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
       </SwapBody>
     </Panel>

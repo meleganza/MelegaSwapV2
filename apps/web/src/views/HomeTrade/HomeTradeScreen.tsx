@@ -29,50 +29,56 @@ const Root = styled.div`
 
 const Main = styled.main`
   margin-left: 0;
-  padding: 12px;
-  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  padding: 14px;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
 
   @media (min-width: 1024px) {
-    margin-left: ${ht.sidebarWidth};
-    padding: 14px 24px 24px;
+    margin-left: ${ht.mainOffset};
+    padding: 16px 26px 24px;
+    max-width: calc(${ht.contentMax} + 52px);
   }
 `
 
 const Content = styled.div`
   max-width: ${ht.contentMax};
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: ${ht.gridGutter};
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 `
 
-const FullSpan = styled.div`
-  grid-column: 1 / -1;
-`
-
-const HeroRow = styled(FullSpan)`
+const HeroRow = styled.div`
   display: grid;
-  gap: ${ht.gridGutter};
-  max-height: ${ht.heroMaxHeight};
+  gap: 14px;
+  margin-top: 12px;
 
   @media (min-width: 1024px) {
-    grid-template-columns: 45fr 55fr;
+    grid-template-columns: ${ht.swapWidth} 1fr;
     height: ${ht.heroMaxHeight};
     max-height: ${ht.heroMaxHeight};
+    margin-top: 12px;
   }
 `
 
-const TwoCol = styled(FullSpan)`
+const SplitRow = styled.div`
   display: grid;
-  gap: ${ht.gridGutter};
+  gap: 14px;
+  margin-top: 12px;
 
   @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 52fr 48fr;
   }
 `
 
-const ActivityRow = styled(TwoCol)``
+const StackRow = styled.div`
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 52fr 48fr;
+  }
+`
 
 export const HomeTradeScreen: React.FC = () => {
   const data = useHomeTradeData()
@@ -83,26 +89,16 @@ export const HomeTradeScreen: React.FC = () => {
       <HomeTradeGlobalStyle />
       <HomeSidebar marcoPriceLabel={data.marcoPriceLabel} />
       <Main>
-        <HomeTopBar />
         <Content>
-          <FullSpan>
-            <HomeMobileHeader />
-          </FullSpan>
-          {data.showRibbon && (
-            <FullSpan>
-              <TrendingRibbon items={data.ribbonItems} />
-            </FullSpan>
-          )}
+          <HomeTopBar />
+          <HomeMobileHeader />
+          {data.showRibbon && <TrendingRibbon items={data.ribbonItems} />}
           <HeroRow>
             <HomeSwapPanel />
             <CinematicEconomyPanel />
           </HeroRow>
-          {data.showMarket && (
-            <FullSpan>
-              <QuickMarketStrip cards={data.marketCards} />
-            </FullSpan>
-          )}
-          <TwoCol>
+          {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
+          <SplitRow>
             <ListProjectCta />
             {data.showEarn && (
               <EarnOpportunities
@@ -111,14 +107,12 @@ export const HomeTradeScreen: React.FC = () => {
                 showNote={data.showEarnNote}
               />
             )}
-          </TwoCol>
-          <ActivityRow>
+          </SplitRow>
+          <StackRow>
             <LiveActivityFeed rows={data.activityRows} />
             <IntelligencePanel />
-          </ActivityRow>
-          <FullSpan>
-            <HomeTradeFooter />
-          </FullSpan>
+          </StackRow>
+          <HomeTradeFooter />
         </Content>
       </Main>
       <MobileBottomNav />

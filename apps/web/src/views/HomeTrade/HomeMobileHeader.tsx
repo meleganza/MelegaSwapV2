@@ -12,7 +12,7 @@ const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  height: 48px;
+  height: 50px;
   margin-bottom: 0;
 
   @media (min-width: 1024px) {
@@ -25,26 +25,29 @@ const NetworkWrap = styled.div`
   display: flex;
   justify-content: flex-end;
   min-width: 0;
+  margin-right: 8px;
 
-  button {
-    height: 38px !important;
-    max-width: 150px;
+  button,
+  [role='button'] {
+    height: 36px !important;
+    max-width: 150px !important;
     border-radius: 10px !important;
-    background: ${ht.sidebarBg} !important;
+    background: #060606 !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     font-size: 12px !important;
+    font-weight: 700 !important;
   }
 `
 
 const WalletSquare = styled(ConnectWalletButton)`
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px !important;
-  max-width: 42px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
   padding: 0 !important;
   border-radius: 10px;
   border: 1px solid ${ht.gold};
-  background: ${ht.goldSoftBg};
+  background: transparent;
   color: ${ht.gold};
   font-size: 0 !important;
   overflow: hidden;
@@ -58,11 +61,13 @@ const WalletSquare = styled(ConnectWalletButton)`
 `
 
 const WalletIconBtn = styled.div`
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid ${ht.gold};
+  border-radius: 10px;
 `
 
 export const HomeMobileHeader: React.FC = () => {

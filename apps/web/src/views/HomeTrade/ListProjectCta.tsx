@@ -4,69 +4,74 @@ import styled from 'styled-components'
 import { ht } from './homeTradeTokens'
 
 const Card = styled.div`
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), ${ht.surface2} 50%, #080808);
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  border-radius: 12px;
-  padding: 24px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), #111111 42%, #080808);
+  border: 1px solid rgba(212, 175, 55, 0.48);
+  border-radius: 14px;
+  padding: 22px;
   display: flex;
-  gap: 18px;
+  gap: 22px;
   align-items: center;
   box-sizing: border-box;
-  transition: box-shadow 200ms ease, border-color 200ms ease;
+  min-height: 138px;
+  transition: box-shadow 180ms ease, border-color 180ms ease;
 
   &:hover {
     border-color: rgba(212, 175, 55, 0.6);
     box-shadow: 0 8px 28px rgba(212, 175, 55, 0.08);
   }
 
-  @media (min-width: 1024px) {
-    min-height: 142px;
+  @media (max-width: 1023px) {
+    margin-top: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    gap: 14px;
+    min-height: auto;
   }
 `
 
 const Cube = styled.div`
-  width: 80px;
-  height: 80px;
+  width: 92px;
+  height: 92px;
   flex-shrink: 0;
-  border-radius: 16px;
   position: relative;
-  background:
-    linear-gradient(145deg, rgba(20, 16, 6, 0.95) 0%, rgba(8, 8, 8, 1) 45%, rgba(24, 18, 4, 0.9) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  box-shadow:
-    inset 0 0 30px rgba(244, 197, 66, 0.08),
-    inset -4px -4px 12px rgba(0, 0, 0, 0.6),
-    0 0 24px rgba(212, 175, 55, 0.12);
-  transform: perspective(600px) rotateY(-16deg) rotateX(8deg);
+  transform: perspective(500px) rotateY(-18deg) rotateX(10deg);
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 10px;
-    border: 1px solid rgba(244, 197, 66, 0.3);
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(244, 197, 66, 0.12) 0%, transparent 55%);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    border-radius: 8px;
-    background: linear-gradient(225deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%);
+  @media (max-width: 1023px) {
+    width: 82px;
+    height: 82px;
   }
 `
 
-const Wireframe = styled.div`
+const CubeFace = styled.div`
   position: absolute;
-  inset: 22px;
-  border: 1px dashed rgba(212, 175, 55, 0.22);
-  border-radius: 6px;
-  pointer-events: none;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(12, 10, 4, 0.95) 0%, rgba(4, 4, 4, 1) 50%, rgba(18, 14, 4, 0.9) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  box-shadow:
+    inset 0 0 40px rgba(244, 197, 66, 0.12),
+    0 0 30px rgba(212, 175, 55, 0.15);
+`
+
+const Wire = styled.svg`
+  position: absolute;
+  inset: 12px;
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+`
+
+const Core = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  background: radial-gradient(circle, rgba(244, 197, 66, 0.85) 0%, rgba(212, 175, 55, 0.4) 60%, transparent 100%);
+  box-shadow: 0 0 16px rgba(244, 197, 66, 0.5);
 `
 
 const Body = styled.div`
@@ -76,40 +81,57 @@ const Body = styled.div`
 
 const Title = styled.h3`
   margin: 0 0 6px;
-  font-family: ${ht.fontDisplay};
-  font-size: 18px;
-  font-weight: 700;
+  font-family: ${ht.fontBody};
+  font-size: 22px;
+  font-weight: 800;
   color: ${ht.white};
   line-height: 1.2;
+
+  @media (max-width: 1023px) {
+    font-size: 18px;
+  }
 `
 
 const Desc = styled.p`
-  margin: 0 0 14px;
+  margin: 0;
   font-family: ${ht.fontBody};
   font-size: 14px;
   color: #c8c8c8;
   line-height: 1.45;
+  max-width: 470px;
+
+  @media (max-width: 1023px) {
+    font-size: 13px;
+  }
 `
 
 const Actions = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  max-width: 380px;
+  margin-top: 14px;
+
+  @media (max-width: 420px) {
+    flex-direction: column;
+  }
 `
 
 const BtnBase = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 46px;
+  height: 42px;
   border-radius: 10px;
   font-family: ${ht.fontBody};
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
-  transition: filter 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+  transition: filter 180ms ease, transform 120ms ease, border-color 180ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
 
   &:active {
     transform: scale(0.985);
@@ -117,6 +139,7 @@ const BtnBase = styled(Link)`
 `
 
 const Primary = styled(BtnBase)`
+  width: 170px;
   background: linear-gradient(180deg, ${ht.goldBright}, ${ht.gold});
   color: #000000;
 
@@ -124,10 +147,17 @@ const Primary = styled(BtnBase)`
     filter: brightness(1.06);
     box-shadow: 0 0 16px rgba(212, 175, 55, 0.25);
   }
+
+  @media (max-width: 1023px) {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
 `
 
 const Secondary = styled(BtnBase)`
-  border: 1px solid rgba(212, 175, 55, 0.55);
+  width: 190px;
+  border: 1px solid rgba(212, 175, 55, 0.6);
   background: transparent;
   color: ${ht.gold};
 
@@ -135,16 +165,30 @@ const Secondary = styled(BtnBase)`
     border-color: ${ht.gold};
     box-shadow: 0 0 12px rgba(212, 175, 55, 0.12);
   }
+
+  @media (max-width: 1023px) {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
 `
 
 export const ListProjectCta: React.FC = () => (
   <Card data-list-project-cta="true">
     <Cube aria-hidden>
-      <Wireframe />
+      <CubeFace />
+      <Wire viewBox="0 0 68 68" fill="none">
+        <rect x="8" y="8" width="52" height="52" stroke="rgba(212,175,55,0.45)" strokeWidth="1" />
+        <path d="M8 8 L34 34 M60 8 L34 34 M8 60 L34 34 M60 60 L34 34" stroke="rgba(244,197,66,0.35)" strokeWidth="0.75" />
+        <rect x="20" y="20" width="28" height="28" stroke="rgba(212,175,55,0.25)" strokeWidth="0.75" strokeDasharray="3 2" />
+      </Wire>
+      <Core />
     </Cube>
     <Body>
       <Title>List your project on Melega DEX</Title>
-      <Desc>Add token details, upload logo, add liquidity, create a farm, or reward MARCO holders.</Desc>
+      <Desc>
+        Add token details, upload logo, add liquidity, create a farm, or reward MARCO holders.
+      </Desc>
       <Actions>
         <Primary href="/launch">Start listing</Primary>
         <Secondary href="/pools">Reward MARCO holders</Secondary>

@@ -1,23 +1,36 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { MarketCard } from './useHomeTradeData'
 import { ht } from './homeTradeTokens'
 
+const fadeSlide = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+`
+
 const DesktopGrid = styled.div`
   display: none;
+  margin-top: 12px;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
 
   @media (min-width: 1024px) {
     display: grid;
   }
 `
 
-const MobileGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+const MobileScroll = styled.div`
+  display: flex;
   gap: 8px;
+  overflow-x: auto;
+  margin-top: 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (min-width: 1024px) {
     display: none;
@@ -29,131 +42,115 @@ const Card = styled(Link)`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: ${ht.surface2};
-  border: 1px solid ${ht.borderSoft};
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 12px;
   text-decoration: none;
   box-sizing: border-box;
-  min-height: 88px;
+  height: 74px;
   overflow: hidden;
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: border-color 180ms ease, transform 180ms ease;
 
   &:hover {
-    border-color: ${ht.borderGold};
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    border-color: rgba(212, 175, 55, 0.35);
     transform: translateY(-1px);
   }
 
   @media (max-width: 1023px) {
-    min-height: 100px;
+    flex: 0 0 156px;
+    height: 112px;
   }
+`
+
+const Rotator = styled.div`
+  animation: ${fadeSlide} 400ms ease;
 `
 
 const Label = styled.div`
   font-family: ${ht.fontBody};
-  font-size: 12px;
-  color: ${ht.textMuted};
-  margin-bottom: 2px;
+  font-size: 11px;
+  color: #8f8f8f;
   line-height: 1.3;
 `
 
 const Value = styled.div`
   font-family: ${ht.fontBody};
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: ${ht.white};
+  margin-top: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
 `
 
-const Meta = styled.div`
+const Meta = styled.div<{ $positive?: boolean }>`
   font-size: 12px;
-  color: ${ht.green};
+  color: ${({ $positive }) => ($positive !== false ? ht.green : '#9e9e9e')};
   line-height: 1.3;
+  margin-top: 2px;
 `
 
-const Decor = styled.div<{ $type: 'spark' | 'arrow' | 'badge' | 'line' }>`
+const Spark = styled.svg`
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  opacity: 0.7;
-
-  ${({ $type }) =>
-    $type === 'spark' &&
-    `
-    width: 48px;
-    height: 20px;
-    background: linear-gradient(90deg, transparent 0%, ${ht.goldSoftBg} 30%, ${ht.greenSoftBg} 70%, transparent 100%);
-    border-radius: 2px;
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 20'%3E%3Cpath d='M0 14 L8 10 L14 16 L22 6 L30 12 L38 4 L48 8' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
-    mask-size: contain;
-    mask-repeat: no-repeat;
-  `}
-
-  ${({ $type }) =>
-    $type === 'arrow' &&
-    `
-    font-size: 14px;
-    color: ${ht.green};
-  `}
-
-  ${({ $type }) =>
-    $type === 'badge' &&
-    `
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: ${ht.gold};
-    box-shadow: 0 0 8px rgba(212,175,55,0.5);
-  `}
-
-  ${({ $type }) =>
-    $type === 'line' &&
-    `
-    width: 40px;
-    height: 3px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, ${ht.goldDark}, ${ht.gold});
-    opacity: 0.5;
-  `}
+  right: 8px;
+  bottom: 8px;
+  width: 48px;
+  height: 18px;
+  opacity: 0.28;
+  pointer-events: none;
 `
-
-const decorFor = (id: string): 'spark' | 'arrow' | 'badge' | 'line' => {
-  if (id === 'top-pair') return 'spark'
-  if (id === 'top-farm') return 'arrow'
-  if (id === 'latest-project') return 'badge'
-  return 'line'
-}
 
 const MarketCardItem: React.FC<{ card: MarketCard }> = ({ card }) => (
   <Card href={card.href}>
-    <Label>{card.label}</Label>
-    <Value>{card.value}</Value>
-    {card.meta && <Meta>{card.meta}</Meta>}
-    <Decor $type={decorFor(card.id)} aria-hidden>
-      {decorFor(card.id) === 'arrow' && '↑'}
-    </Decor>
+    <Rotator key={`${card.id}-${card.value}`}>
+      <Label>{card.label}</Label>
+      <Value>{card.value}</Value>
+      {card.meta && <Meta $positive={card.meta.includes('%') || card.meta.includes('+')}>{card.meta}</Meta>}
+    </Rotator>
+    <Spark viewBox="0 0 48 18" fill="none" aria-hidden>
+      <path
+        d="M0 12 L8 8 L14 14 L22 5 L30 11 L38 4 L48 9"
+        stroke={ht.gold}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </Spark>
   </Card>
 )
 
 export const QuickMarketStrip: React.FC<{ cards: MarketCard[] }> = ({ cards }) => {
+  const [slot, setSlot] = useState(0)
+  const canRotate = cards.length > 4
+
+  const displayCards = useMemo(() => {
+    if (!canRotate) return cards.slice(0, 4)
+    const rotated = [...cards.slice(slot), ...cards.slice(0, slot)]
+    return rotated.slice(0, 4)
+  }, [cards, slot, canRotate])
+
+  useEffect(() => {
+    if (!canRotate) return undefined
+    const id = window.setInterval(() => setSlot((s) => (s + 1) % cards.length), 5000)
+    return () => window.clearInterval(id)
+  }, [canRotate, cards.length])
+
   if (!cards.length) return null
 
   return (
     <>
       <DesktopGrid>
-        {cards.slice(0, 4).map((card) => (
-          <MarketCardItem key={card.id} card={card} />
+        {displayCards.map((card) => (
+          <MarketCardItem key={`${card.id}-${slot}`} card={card} />
         ))}
       </DesktopGrid>
-      <MobileGrid>
+      <MobileScroll>
         {cards.slice(0, 4).map((card) => (
           <MarketCardItem key={card.id} card={card} />
         ))}
-      </MobileGrid>
+      </MobileScroll>
     </>
   )
 }

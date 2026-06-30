@@ -4,6 +4,7 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import GlobalSettings from 'components/Menu/GlobalSettings'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
+import { SocialIcons } from './homeTradeShared'
 import { ht } from './homeTradeTokens'
 
 const Bar = styled.header`
@@ -14,11 +15,10 @@ const Bar = styled.header`
   height: 48px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   background: ${ht.canvas};
-  margin: -14px -24px 12px;
-  padding: 0 24px;
-  grid-column: 1 / -1;
+  margin: -16px -26px 0;
+  padding: 0 26px 12px;
 
   @media (min-width: 1024px) {
     display: flex;
@@ -28,26 +28,26 @@ const Bar = styled.header`
 const Search = styled.div`
   width: 500px;
   height: 42px;
-  background: ${ht.surface1};
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 14px;
   gap: 10px;
   cursor: text;
   flex-shrink: 0;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.16);
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.06);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.05);
   }
 `
 
 const SearchIcon = styled.span`
-  color: ${ht.textMuted};
-  font-size: 15px;
+  color: #777777;
+  font-size: 16px;
 `
 
 const SearchPlaceholder = styled.span`
@@ -58,67 +58,73 @@ const SearchPlaceholder = styled.span`
 `
 
 const Kbd = styled.span`
+  width: 38px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: ${ht.fontBody};
-  font-size: 11px;
-  color: ${ht.textSoft};
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  padding: 2px 7px;
-  background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+  color: #777777;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
 `
 
 const Right = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   margin-left: auto;
 `
 
 const NetworkWrap = styled.div`
-  min-width: 150px;
+  min-width: 140px;
 
   button,
   [role='button'] {
     height: 40px !important;
+    padding: 0 16px !important;
     border-radius: 10px !important;
-    background: ${ht.surface1} !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    font-size: 13px !important;
+    background: #060606 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
   }
 `
 
 const WalletBtn = styled(ConnectWalletButton)`
-  width: auto !important;
-  min-width: 130px !important;
-  max-width: 150px !important;
+  min-width: 136px !important;
   height: 40px !important;
   border-radius: 10px !important;
-  background: ${ht.gold} !important;
+  background: linear-gradient(180deg, ${ht.goldBright}, ${ht.gold}) !important;
   color: #000000 !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   white-space: nowrap !important;
   padding: 0 20px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  transition: filter 150ms ease, box-shadow 150ms ease, transform 100ms ease !important;
+  border: none !important;
+  transition: filter 180ms ease, transform 180ms ease, box-shadow 180ms ease !important;
 
   &:hover {
     filter: brightness(1.05) !important;
-    box-shadow: 0 0 16px rgba(212, 175, 55, 0.2) !important;
-  }
-
-  &:active {
-    transform: scale(0.985) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.18) !important;
   }
 `
 
 const SettingsWrap = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #bdbdbd;
+  transition: color 180ms ease;
+
+  &:hover {
+    color: ${ht.white};
+  }
 `
 
 export const HomeTopBar: React.FC = () => (
@@ -129,6 +135,7 @@ export const HomeTopBar: React.FC = () => (
       <Kbd>⌘K</Kbd>
     </Search>
     <Right>
+      <SocialIcons compact />
       <NetworkWrap>
         <NetworkSwitcher />
       </NetworkWrap>

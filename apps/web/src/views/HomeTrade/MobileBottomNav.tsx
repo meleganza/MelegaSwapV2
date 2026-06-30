@@ -59,7 +59,7 @@ const Icon = styled.span`
 
 const Label = styled.span`
   font-family: ${ht.fontBody};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
 `
 

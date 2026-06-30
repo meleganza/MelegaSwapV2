@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { RibbonItem } from './useHomeTradeData'
@@ -9,118 +9,117 @@ const scrollAnim = keyframes`
   100% { transform: translateX(-50%); }
 `
 
-const fadeIn = keyframes`
-  from { opacity: 0; box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
-  to { opacity: 1; box-shadow: 0 0 12px rgba(212, 175, 55, 0.12); }
-`
-
-const DesktopTrack = styled.div`
-  display: none;
-  margin-top: 12px;
-  overflow: hidden;
-  height: 58px;
-  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-
-  @media (min-width: 1024px) {
-    display: block;
-  }
-`
-
-const DesktopInner = styled.div<{ $paused: boolean }>`
-  display: flex;
-  gap: 10px;
-  width: max-content;
-  animation: ${scrollAnim} 48s linear infinite;
-  animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
-
-  &:hover {
-    animation-play-state: paused;
-  }
-`
-
-const MobileScroll = styled.div`
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  height: 72px;
-  margin-top: 10px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media (min-width: 1024px) {
-    display: none;
-  }
-`
-
-const Card = styled(Link)`
+const Strip = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: ${ht.surface2};
-  border: 1px solid ${ht.borderSoft};
-  border-radius: 10px;
-  padding: 0 12px;
-  text-decoration: none;
-  height: 58px;
-  width: 220px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
-  animation: ${fadeIn} 600ms ease;
+  height: 38px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.04),
+    rgba(255, 255, 255, 0.015),
+    rgba(212, 175, 55, 0.04)
+  );
+  overflow: hidden;
 
-  &:hover {
-    border-color: ${ht.borderGold};
-    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.1);
-    transform: translateY(-1px);
+  @media (min-width: 1024px) {
+    height: 46px;
+    margin-top: 14px;
+    margin-bottom: 12px;
   }
+`
+
+const Label = styled.div`
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 14px;
+  margin-right: 16px;
+  font-family: ${ht.fontBody};
+  font-size: 13px;
+  font-weight: 700;
+  color: ${ht.gold};
 
   @media (max-width: 1023px) {
-    width: 170px;
-    height: 72px;
+    font-size: 12px;
+    margin-right: 12px;
   }
 `
 
-const IconBox = styled.div<{ $variant: RibbonItem['icon'] }>`
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${({ $variant }) =>
-    $variant === 'trend' ? 'rgba(244, 197, 66, 0.15)' : $variant === 'swap' ? ht.greenSoftBg : ht.goldSoftBg};
-  color: ${({ $variant }) => ($variant === 'swap' ? ht.green : ht.gold)};
-  font-size: 15px;
+const TrackWrap = styled.div`
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
 `
 
-const Title = styled.div`
+const Track = styled.div<{ $paused: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: max-content;
+  white-space: nowrap;
+  animation: ${scrollAnim} 45s linear infinite;
+  animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
+
+  @media (min-width: 1024px) {
+    gap: 28px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`
+
+const Item = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+`
+
+const ItemIcon = styled.span`
+  font-size: 16px;
+  line-height: 1;
+`
+
+const Primary = styled.span`
   font-family: ${ht.fontBody};
   font-size: 13px;
   font-weight: 700;
   color: ${ht.white};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  @media (max-width: 1023px) {
+    font-size: 12px;
+  }
 `
 
-const Subtitle = styled.div`
+const Secondary = styled.span`
   font-size: 12px;
-  color: #9e9e9e;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: ${ht.textMuted};
+`
+
+const Positive = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${ht.green};
+`
+
+const Dot = styled.span`
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: ${ht.gold};
+  flex-shrink: 0;
 `
 
 const iconGlyph = (icon: RibbonItem['icon']) => {
   switch (icon) {
     case 'trend':
-      return '🔥'
+      return '⚡'
     case 'swap':
       return '↔'
     case 'pool':
@@ -132,55 +131,46 @@ const iconGlyph = (icon: RibbonItem['icon']) => {
   }
 }
 
-const RibbonCard: React.FC<{ item: RibbonItem }> = ({ item }) => (
-  <Card href={item.href}>
-    <IconBox $variant={item.icon}>{iconGlyph(item.icon)}</IconBox>
-    <div style={{ minWidth: 0, flex: 1 }}>
-      <Title>{item.title}</Title>
-      <Subtitle>{item.subtitle}</Subtitle>
-    </div>
-  </Card>
+const TickerItem: React.FC<{ item: RibbonItem }> = ({ item }) => (
+  <Item href={item.href}>
+    <ItemIcon>{iconGlyph(item.icon)}</ItemIcon>
+    <Primary>{item.title}</Primary>
+    {item.subtitle && <Secondary>{item.subtitle}</Secondary>}
+    {item.meta && <Positive>{item.meta}</Positive>}
+  </Item>
 )
 
 export const TrendingRibbon: React.FC<{ items: RibbonItem[] }> = ({ items }) => {
   const [paused, setPaused] = useState(false)
   const dragRef = useRef(false)
 
-  const onPointerDown = useCallback(() => {
-    dragRef.current = true
-    setPaused(true)
-  }, [])
-
-  const onPointerUp = useCallback(() => {
-    dragRef.current = false
-    setPaused(false)
-  }, [])
-
   if (!items.length) return null
 
-  const displayItems = items.slice(0, 5)
+  const displayItems = items.slice(0, 6)
   const loopItems = [...displayItems, ...displayItems]
 
   return (
-    <>
-      <DesktopTrack
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => !dragRef.current && setPaused(false)}
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-      >
-        <DesktopInner $paused={paused}>
+    <Strip
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => !dragRef.current && setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setPaused(false)}
+    >
+      <Label>
+        <span aria-hidden>⚡</span>
+        Trending
+      </Label>
+      <TrackWrap>
+        <Track $paused={paused}>
           {loopItems.map((item, i) => (
-            <RibbonCard key={`${item.id}-${i}`} item={item} />
+            <React.Fragment key={`${item.id}-${i}`}>
+              <TickerItem item={item} />
+              {i < loopItems.length - 1 && <Dot aria-hidden />}
+            </React.Fragment>
           ))}
-        </DesktopInner>
-      </DesktopTrack>
-      <MobileScroll>
-        {items.map((item) => (
-          <RibbonCard key={item.id} item={item} />
-        ))}
-      </MobileScroll>
-    </>
+        </Track>
+      </TrackWrap>
+    </Strip>
   )
 }
 

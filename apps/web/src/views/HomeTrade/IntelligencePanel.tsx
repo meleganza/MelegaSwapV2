@@ -5,39 +5,31 @@ import { ht } from './homeTradeTokens'
 
 const Card = styled.div`
   background: ${ht.surface1};
-  border: 1px solid ${ht.borderSoft};
-  border-radius: 12px;
-  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px;
   box-sizing: border-box;
-  transition: box-shadow 200ms ease;
-
-  &:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  @media (min-width: 1024px) {
-    min-height: 160px;
-  }
+  min-height: 160px;
 `
 
 const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-family: ${ht.fontDisplay};
-  font-size: 18px;
+  font-family: ${ht.fontBody};
+  font-size: 20px;
   font-weight: 700;
   color: ${ht.white};
   line-height: 1.2;
 `
 
 const ViewLink = styled(Link)`
-  font-size: 12px;
+  font-size: 13px;
   color: ${ht.gold};
   text-decoration: none;
 `
@@ -63,107 +55,38 @@ const IntelCard = styled(Link)`
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 0 0 200px;
-  min-height: 110px;
+  flex: 0 0 160px;
+  height: 108px;
   border-radius: 10px;
-  border: 1px solid ${ht.borderSoft};
+  border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
   text-decoration: none;
-  background: #0a0a0a;
+  background: #111111;
   box-sizing: border-box;
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: border-color 180ms ease, transform 180ms ease;
 
   &:hover {
-    border-color: ${ht.borderGold};
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.08);
+    border-color: rgba(212, 175, 55, 0.4);
     transform: translateY(-1px);
   }
 
   @media (min-width: 1024px) {
     flex: unset;
-    min-height: 120px;
   }
 `
 
-const Thumb = styled.div<{ $variant: 'radar' | 'space' | 'chart' }>`
-  width: 100%;
-  height: 45%;
-  min-height: 50px;
-  flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-
-  ${({ $variant }) =>
-    $variant === 'radar' &&
-    `
-    background: radial-gradient(circle at 50% 55%, rgba(212,175,55,0.08) 0%, transparent 70%), #0d0d0d;
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 8px 16px;
-      border: 1px solid rgba(212,175,55,0.25);
-      border-radius: 50%;
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 70%;
-      height: 70%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 1px solid rgba(212,175,55,0.15);
-      background:
-        repeating-conic-gradient(from 0deg, transparent 0deg 8deg, rgba(212,175,55,0.12) 8deg 9deg);
-    }
-  `}
-
-  ${({ $variant }) =>
-    $variant === 'space' &&
-    `
-    background:
-      radial-gradient(ellipse 80% 70% at 75% 95%, rgba(244,197,66,0.55) 0%, rgba(212,175,55,0.2) 35%, transparent 60%),
-      linear-gradient(180deg, #050505, #000);
-  `}
-
-  ${({ $variant }) =>
-    $variant === 'chart' &&
-    `
-    background: linear-gradient(180deg, #111, #0a0a0a);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 6px;
-    padding-bottom: 8px;
-
-    &::before {
-      content: '';
-      width: 10px;
-      height: 36px;
-      background: linear-gradient(180deg, ${ht.goldBright}, ${ht.gold});
-      border-radius: 2px;
-    }
-    &::after {
-      content: '';
-      width: 10px;
-      height: 22px;
-      background: linear-gradient(180deg, ${ht.goldBright}, ${ht.goldDark});
-      border-radius: 2px;
-      opacity: 0.65;
-    }
-  `}
-`
-
 const TextBlock = styled.div`
-  padding: 10px 12px;
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  z-index: 2;
 `
 
 const IntelTitle = styled.div`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: ${ht.white};
   margin-bottom: 2px;
   line-height: 1.3;
@@ -173,6 +96,81 @@ const IntelText = styled.div`
   font-size: 12px;
   color: ${ht.textMuted};
   line-height: 1.35;
+`
+
+const Thumb = styled.div<{ $variant: 'radar' | 'space' | 'chart' }>`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  ${({ $variant }) =>
+    $variant === 'radar' &&
+    `
+    &::before {
+      content: '';
+      position: absolute;
+      right: -10%;
+      bottom: -20%;
+      width: 90%;
+      height: 90%;
+      border-radius: 50%;
+      border: 1px solid rgba(212,175,55,0.3);
+      background:
+        repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(212,175,55,0.1) 10deg 11deg);
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      right: 8%;
+      bottom: 8%;
+      width: 55%;
+      height: 55%;
+      border-radius: 50%;
+      border: 1px solid rgba(212,175,55,0.2);
+    }
+  `}
+
+  ${({ $variant }) =>
+    $variant === 'space' &&
+    `
+    &::before {
+      content: '';
+      position: absolute;
+      right: -5%;
+      bottom: -30%;
+      width: 100%;
+      height: 80%;
+      background:
+        radial-gradient(ellipse 80% 70% at 75% 95%, rgba(244,197,66,0.6) 0%, rgba(212,175,55,0.25) 35%, transparent 60%);
+    }
+  `}
+
+  ${({ $variant }) =>
+    $variant === 'chart' &&
+    `
+    &::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      width: 12px;
+      height: 42px;
+      background: linear-gradient(180deg, ${ht.goldBright}, ${ht.gold});
+      border-radius: 2px;
+      opacity: 0.85;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      right: 30px;
+      bottom: 10px;
+      width: 12px;
+      height: 28px;
+      background: linear-gradient(180deg, ${ht.goldBright}, ${ht.goldDark});
+      border-radius: 2px;
+      opacity: 0.55;
+    }
+  `}
 `
 
 const items = [
