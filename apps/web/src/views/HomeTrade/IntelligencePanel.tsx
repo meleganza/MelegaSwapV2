@@ -7,13 +7,16 @@ const Card = styled.div`
   background: ${ht.surface1};
   border: 1px solid ${ht.borderSoft};
   border-radius: 12px;
-  padding: 16px;
-  min-height: 130px;
+  padding: 14px 16px;
   box-sizing: border-box;
+  transition: box-shadow 200ms ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
 
   @media (min-width: 1024px) {
-    min-height: 170px;
-    margin-top: 0;
+    min-height: 160px;
   }
 `
 
@@ -21,7 +24,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 `
 
 const Title = styled.h2`
@@ -30,14 +33,11 @@ const Title = styled.h2`
   font-size: 18px;
   font-weight: 700;
   color: ${ht.white};
-
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
+  line-height: 1.2;
 `
 
 const ViewLink = styled(Link)`
-  font-size: 13px;
+  font-size: 12px;
   color: ${ht.gold};
   text-decoration: none;
 `
@@ -47,7 +47,6 @@ const Grid = styled.div`
   gap: 10px;
   overflow-x: auto;
   scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     display: none;
@@ -62,57 +61,62 @@ const Grid = styled.div`
 
 const IntelCard = styled(Link)`
   position: relative;
-  display: block;
+  display: flex;
+  flex-direction: column;
   flex: 0 0 200px;
   min-height: 110px;
   border-radius: 10px;
   border: 1px solid ${ht.borderSoft};
   overflow: hidden;
   text-decoration: none;
-  padding: 12px 14px;
   background: #0a0a0a;
   box-sizing: border-box;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 
   &:hover {
     border-color: ${ht.borderGold};
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.08);
+    transform: translateY(-1px);
   }
 
   @media (min-width: 1024px) {
     flex: unset;
-    min-height: 100px;
+    min-height: 120px;
   }
 `
 
 const Thumb = styled.div<{ $variant: 'radar' | 'space' | 'chart' }>`
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 64px;
-  height: 64px;
-  border-radius: 8px;
-  opacity: 0.85;
+  width: 100%;
+  height: 45%;
+  min-height: 50px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 
   ${({ $variant }) =>
     $variant === 'radar' &&
     `
-    background:
-      radial-gradient(circle at center, transparent 18%, rgba(212,175,55,0.15) 19%, rgba(212,175,55,0.15) 22%, transparent 23%),
-      radial-gradient(circle at center, transparent 38%, rgba(212,175,55,0.2) 39%, rgba(212,175,55,0.2) 42%, transparent 43%),
-      radial-gradient(circle at center, transparent 58%, rgba(212,175,55,0.25) 59%, rgba(212,175,55,0.25) 62%, transparent 63%),
-      linear-gradient(135deg, #111 0%, #0a0a0a 100%);
-    border: 1px solid rgba(212,175,55,0.3);
+    background: radial-gradient(circle at 50% 55%, rgba(212,175,55,0.08) 0%, transparent 70%), #0d0d0d;
 
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 8px 16px;
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 50%;
+    }
     &::after {
       content: '';
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 6px;
-      height: 6px;
-      background: ${ht.gold};
-      border-radius: 50%;
+      width: 70%;
+      height: 70%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 12px ${ht.gold};
+      border-radius: 50%;
+      border: 1px solid rgba(212,175,55,0.15);
+      background:
+        repeating-conic-gradient(from 0deg, transparent 0deg 8deg, rgba(212,175,55,0.12) 8deg 9deg);
     }
   `}
 
@@ -120,81 +124,61 @@ const Thumb = styled.div<{ $variant: 'radar' | 'space' | 'chart' }>`
     $variant === 'space' &&
     `
     background:
-      radial-gradient(circle at 70% 85%, rgba(244,197,66,0.55) 0%, rgba(212,175,55,0.2) 30%, transparent 55%),
+      radial-gradient(ellipse 80% 70% at 75% 95%, rgba(244,197,66,0.55) 0%, rgba(212,175,55,0.2) 35%, transparent 60%),
       linear-gradient(180deg, #050505, #000);
-    border: 1px solid rgba(212,175,55,0.2);
   `}
 
   ${({ $variant }) =>
     $variant === 'chart' &&
     `
     background: linear-gradient(180deg, #111, #0a0a0a);
-    border: 1px solid rgba(212,175,55,0.25);
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: 4px;
-    padding-bottom: 10px;
+    gap: 6px;
+    padding-bottom: 8px;
 
     &::before {
       content: '';
-      width: 8px;
-      height: 28px;
+      width: 10px;
+      height: 36px;
       background: linear-gradient(180deg, ${ht.goldBright}, ${ht.gold});
       border-radius: 2px;
     }
     &::after {
       content: '';
-      width: 8px;
-      height: 18px;
+      width: 10px;
+      height: 22px;
       background: linear-gradient(180deg, ${ht.goldBright}, ${ht.goldDark});
       border-radius: 2px;
-      opacity: 0.7;
+      opacity: 0.65;
     }
   `}
 `
 
+const TextBlock = styled.div`
+  padding: 10px 12px;
+  flex: 1;
+`
+
 const IntelTitle = styled.div`
-  position: relative;
-  z-index: 1;
   font-size: 14px;
   font-weight: 600;
   color: ${ht.white};
-  margin-bottom: 4px;
-  max-width: calc(100% - 72px);
+  margin-bottom: 2px;
+  line-height: 1.3;
 `
 
 const IntelText = styled.div`
-  position: relative;
-  z-index: 1;
   font-size: 12px;
   color: ${ht.textMuted};
-  line-height: 1.4;
-  max-width: calc(100% - 72px);
+  line-height: 1.35;
 `
 
 const items = [
-  {
-    id: 'radar',
-    title: 'Radar',
-    text: 'Discover rising projects',
-    href: '/projects',
-    visual: 'radar' as const,
-  },
-  {
-    id: 'space',
-    title: 'Space Insights',
-    text: 'Real-time ecosystem intelligence',
-    href: '/query',
-    visual: 'space' as const,
-  },
-  {
-    id: 'recap',
-    title: 'Weekly Recap',
-    text: 'Top projects, trends and opportunities',
-    href: '/projects',
-    visual: 'chart' as const,
-  },
+  { id: 'radar', title: 'Radar', text: 'Discover rising projects', href: '/projects', visual: 'radar' as const },
+  { id: 'space', title: 'Space Insights', text: 'Real-time ecosystem intelligence', href: '/query', visual: 'space' as const },
+  { id: 'recap', title: 'Weekly Recap', text: 'Top projects, trends and opportunities', href: '/projects', visual: 'chart' as const },
 ]
 
 export const IntelligencePanel: React.FC = () => (
@@ -207,8 +191,10 @@ export const IntelligencePanel: React.FC = () => (
       {items.map((item) => (
         <IntelCard key={item.id} href={item.href}>
           <Thumb $variant={item.visual} />
-          <IntelTitle>{item.title}</IntelTitle>
-          <IntelText>{item.text}</IntelText>
+          <TextBlock>
+            <IntelTitle>{item.title}</IntelTitle>
+            <IntelText>{item.text}</IntelText>
+          </TextBlock>
         </IntelCard>
       ))}
     </Grid>

@@ -17,21 +17,27 @@ import { ht } from './homeTradeTokens'
 const Panel = styled.div`
   background: linear-gradient(180deg, ${ht.surface2} 0%, #090909 100%);
   border: 1px solid ${ht.borderMedium};
-  border-radius: 16px;
-  padding: 18px;
+  border-radius: 14px;
+  padding: 20px;
   width: 100%;
-  min-height: auto;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: hidden;
   box-sizing: border-box;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  }
 
   @media (min-width: 1024px) {
-    width: 500px;
-    max-width: 500px;
-    border-radius: 14px;
-    padding: 22px;
-    min-height: 360px;
+    width: ${ht.swapWidth};
+    max-width: ${ht.swapWidth};
+    height: ${ht.heroMaxHeight};
+    max-height: ${ht.heroMaxHeight};
+    flex-shrink: 0;
+    padding: 16px 20px 14px;
   }
 `
 
@@ -39,32 +45,30 @@ const Header = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   flex-shrink: 0;
 `
 
-const TitleBlock = styled.div``
-
 const Title = styled.h1`
   margin: 0;
-  font-family: ${ht.fontBody};
-  font-size: 24px;
+  font-family: ${ht.fontDisplay};
+  font-size: 20px;
   font-weight: 700;
   color: ${ht.white};
   line-height: 1.15;
 `
 
 const Subtitle = styled.p`
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   font-family: ${ht.fontBody};
-  font-size: 15px;
-  color: #bdbdbd;
-  line-height: 1.45;
+  font-size: 12px;
+  color: ${ht.textMuted};
+  line-height: 1.35;
 `
 
 const SettingsBtn = styled.button`
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   border: 1px solid ${ht.borderSoft};
   background: ${ht.surface3};
@@ -74,6 +78,7 @@ const SettingsBtn = styled.button`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: border-color 150ms ease, color 150ms ease;
 
   &:hover {
     border-color: ${ht.borderGold};
@@ -83,8 +88,8 @@ const SettingsBtn = styled.button`
 
 const SwapBody = styled.div`
   flex: 1;
-  overflow: visible;
   min-height: 0;
+  overflow: hidden;
 `
 
 const HomeSwapInner: React.FC = () => {
@@ -112,14 +117,14 @@ const HomeSwapInner: React.FC = () => {
   return (
     <Panel data-home-swap-panel="true">
       <Header>
-        <TitleBlock>
+        <div>
           <Title>Trade</Title>
           <Subtitle>Swap instantly on Melega DEX.</Subtitle>
-        </TitleBlock>
+        </div>
         <SettingsBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="3" />
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2" />
           </svg>
         </SettingsBtn>
       </Header>

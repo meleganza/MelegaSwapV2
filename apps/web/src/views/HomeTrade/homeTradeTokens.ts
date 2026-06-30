@@ -1,4 +1,4 @@
-/** Home / Trade screen design tokens — approved Epic spec. */
+/** Home / Trade screen design tokens — Art Direction Pass 01. */
 export const ht = {
   canvas: '#000000',
   surface1: '#0B0B0B',
@@ -15,6 +15,7 @@ export const ht = {
   white: '#FFFFFF',
   textMain: '#F5F5F5',
   textMuted: '#9E9E9E',
+  textPlaceholder: '#6B6B6B',
   textNavInactive: '#A0A0A0',
   textSoft: '#6F6F6F',
   green: '#22C55E',
@@ -25,5 +26,9 @@ export const ht = {
   fontDisplay: '"Orbitron", sans-serif',
   sidebarWidth: '240px',
   contentMax: '1180px',
+  gridGutter: '14px',
   marcoLogoUri: 'https://melega.finance/images/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png',
+  melegaLogoUri: 'https://melega.finance/favicon.ico',
+  heroMaxHeight: '360px',
+  swapWidth: '500px',
 } as const

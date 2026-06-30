@@ -1,18 +1,40 @@
-import React from 'react'
+import React, { useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { RibbonItem } from './useHomeTradeData'
 import { ht } from './homeTradeTokens'
 
-const DesktopGrid = styled.div`
+const scrollAnim = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+`
+
+const fadeIn = keyframes`
+  from { opacity: 0; box-shadow: 0 0 0 rgba(212, 175, 55, 0); }
+  to { opacity: 1; box-shadow: 0 0 12px rgba(212, 175, 55, 0.12); }
+`
+
+const DesktopTrack = styled.div`
   display: none;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  margin-top: 12px;
+  overflow: hidden;
   height: 58px;
-  margin-top: 18px;
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 
   @media (min-width: 1024px) {
-    display: grid;
+    display: block;
+  }
+`
+
+const DesktopInner = styled.div<{ $paused: boolean }>`
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  animation: ${scrollAnim} 48s linear infinite;
+  animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
+
+  &:hover {
+    animation-play-state: paused;
   }
 `
 
@@ -22,7 +44,7 @@ const MobileScroll = styled.div`
   overflow-x: auto;
   overflow-y: hidden;
   height: 72px;
-  margin-top: 12px;
+  margin-top: 10px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 
@@ -44,21 +66,22 @@ const Card = styled(Link)`
   border-radius: 10px;
   padding: 0 12px;
   text-decoration: none;
-  height: 72px;
-  width: 170px;
+  height: 58px;
+  width: 220px;
   flex-shrink: 0;
   box-sizing: border-box;
-  transition: border-color 150ms ease;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  animation: ${fadeIn} 600ms ease;
 
   &:hover {
     border-color: ${ht.borderGold};
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.1);
+    transform: translateY(-1px);
   }
 
-  @media (min-width: 1024px) {
-    height: 58px;
-    width: auto;
-    min-width: 0;
-    padding: 0 10px;
+  @media (max-width: 1023px) {
+    width: 170px;
+    height: 72px;
   }
 `
 
@@ -73,12 +96,7 @@ const IconBox = styled.div<{ $variant: RibbonItem['icon'] }>`
   background: ${({ $variant }) =>
     $variant === 'trend' ? 'rgba(244, 197, 66, 0.15)' : $variant === 'swap' ? ht.greenSoftBg : ht.goldSoftBg};
   color: ${({ $variant }) => ($variant === 'swap' ? ht.green : ht.gold)};
-  font-size: 16px;
-`
-
-const TextCol = styled.div`
-  min-width: 0;
-  flex: 1;
+  font-size: 15px;
 `
 
 const Title = styled.div`
@@ -117,23 +135,46 @@ const iconGlyph = (icon: RibbonItem['icon']) => {
 const RibbonCard: React.FC<{ item: RibbonItem }> = ({ item }) => (
   <Card href={item.href}>
     <IconBox $variant={item.icon}>{iconGlyph(item.icon)}</IconBox>
-    <TextCol>
+    <div style={{ minWidth: 0, flex: 1 }}>
       <Title>{item.title}</Title>
       <Subtitle>{item.subtitle}</Subtitle>
-    </TextCol>
+    </div>
   </Card>
 )
 
 export const TrendingRibbon: React.FC<{ items: RibbonItem[] }> = ({ items }) => {
+  const [paused, setPaused] = useState(false)
+  const dragRef = useRef(false)
+
+  const onPointerDown = useCallback(() => {
+    dragRef.current = true
+    setPaused(true)
+  }, [])
+
+  const onPointerUp = useCallback(() => {
+    dragRef.current = false
+    setPaused(false)
+  }, [])
+
   if (!items.length) return null
+
+  const displayItems = items.slice(0, 5)
+  const loopItems = [...displayItems, ...displayItems]
 
   return (
     <>
-      <DesktopGrid>
-        {items.slice(0, 5).map((item) => (
-          <RibbonCard key={item.id} item={item} />
-        ))}
-      </DesktopGrid>
+      <DesktopTrack
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => !dragRef.current && setPaused(false)}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+      >
+        <DesktopInner $paused={paused}>
+          {loopItems.map((item, i) => (
+            <RibbonCard key={`${item.id}-${i}`} item={item} />
+          ))}
+        </DesktopInner>
+      </DesktopTrack>
       <MobileScroll>
         {items.map((item) => (
           <RibbonCard key={item.id} item={item} />

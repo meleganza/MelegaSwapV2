@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
@@ -26,13 +26,13 @@ const Sidebar = styled.aside`
 
 const BrandRow = styled.div`
   height: 48px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
 `
 
 const Section = styled.div`
-  margin-top: 18px;
+  margin-top: 32px;
 
   &:first-of-type {
     margin-top: 0;
@@ -46,7 +46,7 @@ const SectionLabel = styled.div`
   color: ${ht.textSoft};
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   padding: 0 4px;
 `
 
@@ -62,7 +62,7 @@ const NavItem = styled(Link)<{ $active?: boolean }>`
   font-size: 14px;
   color: ${({ $active }) => ($active ? ht.gold : ht.textNavInactive)};
   background: ${({ $active }) => ($active ? ht.goldSoftBg : 'transparent')};
-  margin-bottom: 2px;
+  margin-bottom: 10px;
   transition: background 150ms ease, color 150ms ease;
 
   &:hover {
@@ -97,11 +97,21 @@ const MarcoCard = styled.div`
   margin-bottom: 10px;
 `
 
-const MarcoLogo = styled.img`
+const MarcoLogoWrap = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: linear-gradient(135deg, ${ht.goldBright}, ${ht.goldDark});
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+`
+
+const MarcoLogo = styled.img`
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 `
 
@@ -266,6 +276,7 @@ const DiscordIcon = () => (
 
 export const HomeSidebar: React.FC<{ marcoPriceLabel?: string }> = ({ marcoPriceLabel }) => {
   const { pathname } = useRouter()
+  const [marcoOk, setMarcoOk] = useState(true)
 
   return (
     <Sidebar data-home-sidebar="true">
@@ -285,7 +296,13 @@ export const HomeSidebar: React.FC<{ marcoPriceLabel?: string }> = ({ marcoPrice
       ))}
       <BottomPanel>
         <MarcoCard>
-          <MarcoLogo src={ht.marcoLogoUri} alt="MARCO" />
+          <MarcoLogoWrap>
+            {marcoOk ? (
+              <MarcoLogo src={ht.marcoLogoUri} alt="MARCO" onError={() => setMarcoOk(false)} />
+            ) : (
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#000' }}>M</span>
+            )}
+          </MarcoLogoWrap>
           <div>
             <MarcoText>MARCO</MarcoText>
             {marcoPriceLabel && <MarcoPrice>{marcoPriceLabel}</MarcoPrice>}

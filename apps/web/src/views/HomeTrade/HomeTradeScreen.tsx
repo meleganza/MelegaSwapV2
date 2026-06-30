@@ -23,66 +23,56 @@ const Root = styled.div`
   background: ${ht.canvas};
   color: ${ht.textMain};
   font-family: ${ht.fontBody};
+  font-size: 14px;
+  line-height: 1.45;
 `
 
 const Main = styled.main`
   margin-left: 0;
-  padding: 14px;
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: 12px;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
 
   @media (min-width: 1024px) {
     margin-left: ${ht.sidebarWidth};
-    padding: 18px 28px 32px;
+    padding: 14px 24px 24px;
   }
 `
 
 const Content = styled.div`
   max-width: ${ht.contentMax};
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: ${ht.gridGutter};
+  align-content: start;
 `
 
-const HeroRow = styled.div`
+const FullSpan = styled.div`
+  grid-column: 1 / -1;
+`
+
+const HeroRow = styled(FullSpan)`
   display: grid;
-  gap: 14px;
-  margin-top: 12px;
+  gap: ${ht.gridGutter};
+  max-height: ${ht.heroMaxHeight};
 
   @media (min-width: 1024px) {
-    grid-template-columns: 500px 1fr;
-    gap: 14px;
-    margin-top: 14px;
-    min-height: 360px;
-    align-items: stretch;
+    grid-template-columns: 45fr 55fr;
+    height: ${ht.heroMaxHeight};
+    max-height: ${ht.heroMaxHeight};
   }
 `
 
-const EarnCtaRow = styled.div<{ $single?: boolean }>`
+const TwoCol = styled(FullSpan)`
   display: grid;
-  gap: 14px;
-  margin-top: 12px;
+  gap: ${ht.gridGutter};
 
   @media (min-width: 1024px) {
-    margin-top: 14px;
-    grid-template-columns: ${({ $single }) => ($single ? '1fr' : '1fr 1fr')};
-    align-items: stretch;
-  }
-`
-
-const ActivityRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 12px;
-
-  @media (min-width: 1024px) {
-    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-top: 14px;
-    align-items: start;
   }
 `
+
+const ActivityRow = styled(TwoCol)``
 
 export const HomeTradeScreen: React.FC = () => {
   const data = useHomeTradeData()
@@ -95,14 +85,24 @@ export const HomeTradeScreen: React.FC = () => {
       <Main>
         <HomeTopBar />
         <Content>
-          <HomeMobileHeader />
-          {data.showRibbon && <TrendingRibbon items={data.ribbonItems} />}
+          <FullSpan>
+            <HomeMobileHeader />
+          </FullSpan>
+          {data.showRibbon && (
+            <FullSpan>
+              <TrendingRibbon items={data.ribbonItems} />
+            </FullSpan>
+          )}
           <HeroRow>
             <HomeSwapPanel />
             <CinematicEconomyPanel />
           </HeroRow>
-          {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
-          <EarnCtaRow $single={!data.showEarn}>
+          {data.showMarket && (
+            <FullSpan>
+              <QuickMarketStrip cards={data.marketCards} />
+            </FullSpan>
+          )}
+          <TwoCol>
             <ListProjectCta />
             {data.showEarn && (
               <EarnOpportunities
@@ -111,12 +111,14 @@ export const HomeTradeScreen: React.FC = () => {
                 showNote={data.showEarnNote}
               />
             )}
-          </EarnCtaRow>
+          </TwoCol>
           <ActivityRow>
             <LiveActivityFeed rows={data.activityRows} />
             <IntelligencePanel />
           </ActivityRow>
-          <HomeTradeFooter />
+          <FullSpan>
+            <HomeTradeFooter />
+          </FullSpan>
         </Content>
       </Main>
       <MobileBottomNav />

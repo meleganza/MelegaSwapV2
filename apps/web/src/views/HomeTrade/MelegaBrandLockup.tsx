@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ht } from './homeTradeTokens'
 
@@ -27,6 +27,13 @@ const LogoCircle = styled.div<{ $size?: 'desktop' | 'mobile' }>`
   }
 `
 
+const PlaceholderMark = styled.span`
+  font-family: ${ht.fontDisplay};
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+`
+
 const BrandText = styled.div`
   display: flex;
   align-items: baseline;
@@ -45,16 +52,24 @@ const DexWord = styled.span`
   color: ${ht.gold};
 `
 
-export const MelegaBrandLockup: React.FC<{ size?: 'desktop' | 'mobile' }> = ({ size = 'desktop' }) => (
-  <Wrap>
-    <LogoCircle $size={size}>
-      <img src="https://melega.finance/favicon.ico" alt="Melega" />
-    </LogoCircle>
-    <BrandText>
-      <MelegaWord>Melega</MelegaWord>
-      <DexWord>DEX</DexWord>
-    </BrandText>
-  </Wrap>
-)
+export const MelegaBrandLockup: React.FC<{ size?: 'desktop' | 'mobile' }> = ({ size = 'desktop' }) => {
+  const [imgOk, setImgOk] = useState(true)
+
+  return (
+    <Wrap>
+      <LogoCircle $size={size}>
+        {imgOk ? (
+          <img src={ht.melegaLogoUri} alt="Melega" onError={() => setImgOk(false)} />
+        ) : (
+          <PlaceholderMark>M</PlaceholderMark>
+        )}
+      </LogoCircle>
+      <BrandText>
+        <MelegaWord>Melega</MelegaWord>
+        <DexWord>DEX</DexWord>
+      </BrandText>
+    </Wrap>
+  )
+}
 
 export default MelegaBrandLockup
