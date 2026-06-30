@@ -1,5 +1,4 @@
 import React, { useCallback, useRef } from 'react'
-import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
@@ -12,106 +11,17 @@ import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
-import { ht } from './homeTradeTokens'
-
-const Panel = styled.div`
-  background: linear-gradient(180deg, #111111 0%, #090909 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 18px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
-  transition: box-shadow 180ms ease, border-color 180ms ease;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.14);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-  }
-
-  @media (min-width: 1024px) {
-    width: ${ht.swapWidth};
-    max-width: ${ht.swapWidth};
-    height: ${ht.heroMaxHeight};
-    max-height: ${ht.heroMaxHeight};
-    flex-shrink: 0;
-  }
-`
-
-const Header = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  height: 38px;
-  flex-shrink: 0;
-  margin-bottom: 4px;
-`
-
-const Title = styled.h1`
-  margin: 0;
-  font-family: ${ht.fontBody};
-  font-size: 24px;
-  font-weight: 700;
-  color: ${ht.white};
-  line-height: 1.1;
-`
-
-const Subtitle = styled.p`
-  margin: 2px 0 0;
-  font-family: ${ht.fontBody};
-  font-size: 14px;
-  color: ${ht.textMeta};
-  line-height: 1.35;
-`
-
-const IconRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`
-
-const IconBtn = styled.button`
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: ${ht.textMeta};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: color 180ms ease, background 180ms ease;
-
-  &:hover {
-    color: ${ht.white};
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-`
-
-const SwapBody = styled.div`
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-`
+import { MelegaButton, MelegaSwapPanelShell } from 'design-system/melega'
 
 const SettingsIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" width={20} height={20}>
     <circle cx="12" cy="12" r="3" />
     <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34l1.41 1.41M16.24 16.24l1.41 1.41" />
   </svg>
 )
 
 const RefreshIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" width={20} height={20}>
     <path d="M21 12a9 9 0 11-2.64-6.36" />
     <path d="M21 3v6h-6" />
   </svg>
@@ -151,25 +61,34 @@ const HomeSwapInner: React.FC = () => {
   }, [])
 
   return (
-    <Panel data-home-swap-panel="true">
-      <Header>
-        <div>
-          <Title>Swap</Title>
-          <Subtitle>Trade tokens instantly on Melega DEX.</Subtitle>
-        </div>
-        <IconRow>
-          <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+    <MelegaSwapPanelShell
+      toolbar={
+        <>
+          <MelegaButton
+            variant="ghost"
+            aria-label="Swap settings"
+            onClick={onPresentSettingsModal}
+            padding="0"
+            style={{ width: 34, height: 34, minHeight: 34 }}
+          >
             <SettingsIcon />
-          </IconBtn>
-          <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+          </MelegaButton>
+          <MelegaButton
+            variant="ghost"
+            aria-label="Refresh price"
+            onClick={handleRefresh}
+            padding="0"
+            style={{ width: 34, height: 34, minHeight: 34 }}
+          >
             <RefreshIcon />
-          </IconBtn>
-        </IconRow>
-      </Header>
-      <SwapBody ref={swapBodyRef} className="home-trade-swap">
+          </MelegaButton>
+        </>
+      }
+    >
+      <div ref={swapBodyRef} className="home-trade-swap">
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-      </SwapBody>
-    </Panel>
+      </div>
+    </MelegaSwapPanelShell>
   )
 }
 

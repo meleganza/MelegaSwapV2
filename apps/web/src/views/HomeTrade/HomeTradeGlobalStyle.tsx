@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components'
-import { ht } from './homeTradeTokens'
+import { colors } from 'design-system/melega/tokens'
 
 const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='HeaderWrapper'],
@@ -80,14 +80,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='InputPanel'] label,
   .home-trade-swap [class*='LabelRow'] + * {
     font-size: 12px !important;
-    color: ${ht.textMeta} !important;
+    color: ${colors.textSecondary} !important;
   }
 
   .home-trade-swap .token-amount-input,
   .home-trade-swap [class*='CurrencyInputPanel'] input,
   .home-trade-swap [class*='InputPanel'] input {
     font-size: 26px !important;
-    color: ${ht.white} !important;
+    color: ${colors.textPrimary} !important;
     font-weight: 500 !important;
     line-height: 1 !important;
     padding: 0 !important;
@@ -111,7 +111,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     font-weight: 700 !important;
     padding: 0 10px !important;
     margin: 0 10px 10px !important;
-    color: ${ht.white} !important;
+    color: ${colors.textPrimary} !important;
   }
 
   .home-trade-swap [class*='ArrowWrapper'],
@@ -121,11 +121,11 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     min-width: 34px !important;
     min-height: 34px !important;
     border-radius: 50% !important;
-    background: ${ht.surface1} !important;
+    background: ${colors.surface1} !important;
     border: 1px solid rgba(212, 175, 55, 0.3) !important;
     padding: 0 !important;
     margin: -6px auto !important;
-    color: ${ht.gold} !important;
+    color: ${colors.gold} !important;
     z-index: 2 !important;
   }
 
@@ -143,7 +143,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     gap: 0 !important;
     margin-top: 8px !important;
     font-size: 12px !important;
-    color: ${ht.textMeta} !important;
+    color: ${colors.textSecondary} !important;
     min-height: 26px !important;
     max-height: none !important;
     overflow: visible !important;
@@ -153,12 +153,12 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     display: none !important;
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 767px) {
     .home-trade-swap [class*='Details'] {
       display: block !important;
       height: 22px !important;
       font-size: 12px !important;
-      color: ${ht.textMeta} !important;
+      color: ${colors.textSecondary} !important;
       text-align: center !important;
       margin-top: 6px !important;
       overflow: visible !important;
@@ -190,7 +190,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 44px !important;
     width: 100% !important;
     border-radius: 10px !important;
-    background: linear-gradient(180deg, ${ht.goldBright} 0%, ${ht.gold} 100%) !important;
+    background: linear-gradient(180deg, ${colors.goldHover} 0%, ${colors.gold} 100%) !important;
     color: #000000 !important;
     font-weight: 700 !important;
     font-size: 15px !important;
@@ -214,7 +214,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     transform: scale(0.985) !important;
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 767px) {
     .home-trade-swap #swap-page {
       max-height: none !important;
       overflow: visible !important;

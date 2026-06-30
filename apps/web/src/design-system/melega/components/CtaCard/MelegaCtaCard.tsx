@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import { colors, typography, spacing, radius } from '../../tokens'
 import { media } from '../../theme'
@@ -87,6 +88,10 @@ const Actions = styled.div`
   margin-top: ${spacing[4]};
 `
 
+const ActionLink = styled(Link)`
+  text-decoration: none;
+`
+
 export const MelegaCtaCard: React.FC<MelegaCtaCardProps> = ({
   visual,
   title,
@@ -105,26 +110,35 @@ export const MelegaCtaCard: React.FC<MelegaCtaCardProps> = ({
       <Title>{title}</Title>
       <Desc>{description}</Desc>
       <Actions>
-        {primaryAction && (
-          <MelegaButton
-            variant="primary"
-            disabled={disabled}
-            loading={loading}
-            onClick={primaryAction.onClick}
-          >
-            {primaryAction.label}
-          </MelegaButton>
-        )}
-        {secondaryAction && (
-          <MelegaButton
-            variant="secondary"
-            disabled={disabled}
-            loading={loading}
-            onClick={secondaryAction.onClick}
-          >
-            {secondaryAction.label}
-          </MelegaButton>
-        )}
+        {primaryAction &&
+          (primaryAction.href ? (
+            <ActionLink href={primaryAction.href}>
+              <MelegaButton variant="primary" disabled={disabled} loading={loading} as="span">
+                {primaryAction.label}
+              </MelegaButton>
+            </ActionLink>
+          ) : (
+            <MelegaButton variant="primary" disabled={disabled} loading={loading} onClick={primaryAction.onClick}>
+              {primaryAction.label}
+            </MelegaButton>
+          ))}
+        {secondaryAction &&
+          (secondaryAction.href ? (
+            <ActionLink href={secondaryAction.href}>
+              <MelegaButton variant="secondary" disabled={disabled} loading={loading} as="span">
+                {secondaryAction.label}
+              </MelegaButton>
+            </ActionLink>
+          ) : (
+            <MelegaButton
+              variant="secondary"
+              disabled={disabled}
+              loading={loading}
+              onClick={secondaryAction.onClick}
+            >
+              {secondaryAction.label}
+            </MelegaButton>
+          ))}
       </Actions>
     </Body>
   </Card>

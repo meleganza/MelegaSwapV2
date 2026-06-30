@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import { colors, typography, spacing, MelegaCinematicPanel } from 'design-system/melega'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import TrendingRibbon from './TrendingRibbon'
 import HomeSwapPanel from './HomeSwapPanel'
-import CinematicEconomyPanel from './CinematicEconomyPanel'
 import QuickMarketStrip from './QuickMarketStrip'
 import ListProjectCta from './ListProjectCta'
 import EarnOpportunities from './EarnOpportunities'
@@ -12,38 +12,38 @@ import LiveActivityFeed from './LiveActivityFeed'
 import IntelligencePanel from './IntelligencePanel'
 import HomeTradeFooter from './HomeTradeFooter'
 import useHomeTradeData from './useHomeTradeData'
-import { ht } from './homeTradeTokens'
+import { homeTradeLayout } from './homeTradeTokens'
 
 const Root = styled.div`
-  color: ${ht.textMain};
-  font-family: ${ht.fontBody};
-  font-size: 14px;
-  line-height: 1.45;
+  color: ${colors.textPrimary};
+  font-family: ${typography.fontFamily.body};
+  font-size: ${typography.fontSize.base};
+  line-height: ${typography.lineHeight.normal};
 `
 
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
+  max-width: ${homeTradeLayout.contentMax};
 `
 
 const HeroRow = styled.div`
   display: grid;
-  gap: 14px;
-  margin-top: 12px;
+  gap: ${homeTradeLayout.gridGutter};
+  margin-top: ${spacing[3]};
 
   @media (min-width: 768px) {
-    grid-template-columns: ${ht.swapWidth} 1fr;
-    height: ${ht.heroMaxHeight};
-    max-height: ${ht.heroMaxHeight};
-    margin-top: 12px;
+    grid-template-columns: ${homeTradeLayout.swapWidth} 1fr;
+    height: ${homeTradeLayout.heroMaxHeight};
+    max-height: ${homeTradeLayout.heroMaxHeight};
   }
 `
 
 const SplitRow = styled.div`
   display: grid;
-  gap: 14px;
-  margin-top: 12px;
+  gap: ${homeTradeLayout.gridGutter};
+  margin-top: ${spacing[3]};
 
   @media (min-width: 768px) {
     grid-template-columns: 52fr 48fr;
@@ -52,8 +52,8 @@ const SplitRow = styled.div`
 
 const StackRow = styled.div`
   display: grid;
-  gap: 14px;
-  margin-top: 12px;
+  gap: ${homeTradeLayout.gridGutter};
+  margin-top: ${spacing[3]};
 
   @media (min-width: 768px) {
     grid-template-columns: 52fr 48fr;
@@ -71,7 +71,7 @@ export const HomeTradeScreen: React.FC = () => {
         {data.showRibbon && <TrendingRibbon items={data.ribbonItems} />}
         <HeroRow>
           <HomeSwapPanel />
-          <CinematicEconomyPanel />
+          <MelegaCinematicPanel />
         </HeroRow>
         {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
         <SplitRow>

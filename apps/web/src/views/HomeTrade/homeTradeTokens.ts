@@ -1,5 +1,14 @@
-/** Home / Trade screen design tokens — Art Direction Pass 02. */
+/** Home / Trade layout constants — content area inside DS-002 shell. */
+export const homeTradeLayout = {
+  contentMax: '1180px',
+  gridGutter: '14px',
+  heroMaxHeight: '360px',
+  swapWidth: '500px',
+} as const
+
+/** Legacy tokens for orphaned pre-DS-002 HomeTrade shell modules (not mounted on `/`). */
 export const ht = {
+  ...homeTradeLayout,
   canvas: '#000000',
   surface1: '#0B0B0B',
   surface2: '#111111',
@@ -28,10 +37,6 @@ export const ht = {
   fontDisplay: '"Orbitron", sans-serif',
   sidebarWidth: '230px',
   mainOffset: '250px',
-  contentMax: '1180px',
-  gridGutter: '14px',
   marcoLogoUri: 'https://melega.finance/images/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png',
   melegaLogoUri: 'https://melega.finance/favicon.ico',
-  heroMaxHeight: '360px',
-  swapWidth: '500px',
 } as const

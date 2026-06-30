@@ -12,6 +12,7 @@ export interface MelegaButtonProps extends MelegaLayoutProps, React.ButtonHTMLAt
   fullWidth?: boolean
   active?: boolean
   children: React.ReactNode
+  as?: React.ElementType
 }
 
 const variantStyles: Record<MelegaButtonVariant, ReturnType<typeof css>> = {
@@ -63,7 +64,9 @@ const variantStyles: Record<MelegaButtonVariant, ReturnType<typeof css>> = {
   `,
 }
 
-const StyledButton = styled.button<{
+const StyledButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$variant', '$fullWidth', '$active', '$loading', '$disabled', '$padding', '$margin', '$radius'].includes(prop),
+})<{
   $variant: MelegaButtonVariant
   $fullWidth?: boolean
   $active?: boolean
@@ -126,10 +129,12 @@ export const MelegaButton: React.FC<MelegaButtonProps> = ({
   margin,
   radius: radiusToken,
   children,
+  as,
   ...rest
 }) => (
   <StyledButton
-    type="button"
+    as={as}
+    type={as ? undefined : 'button'}
     $variant={disabled ? 'disabled' : variant}
     $fullWidth={fullWidth}
     $active={active}

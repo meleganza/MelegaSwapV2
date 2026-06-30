@@ -1,56 +1,48 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { ht } from './homeTradeTokens'
-
-const Footer = styled.footer`
-  display: none;
-  margin-top: 28px;
-  border-top: 1px solid ${ht.borderSoft};
-  height: 56px;
-  align-items: center;
-  justify-content: space-between;
-  font-family: ${ht.fontBody};
-  font-size: 12px;
-  color: ${ht.textMuted};
-
-  @media (min-width: 1024px) {
-    display: flex;
-  }
-`
-
-const Links = styled.div`
-  display: flex;
-  gap: 20px;
-`
+import { MelegaFooter, colors, typography } from 'design-system/melega'
 
 const FooterLink = styled(Link)`
-  color: ${ht.textMuted};
+  color: ${colors.textMuted};
   text-decoration: none;
 
   &:hover {
-    color: ${ht.gold};
+    color: ${colors.gold};
   }
 `
 
-const Center = styled.div`
-  color: ${ht.gold};
-  font-weight: 700;
-  font-size: 14px;
+const Brand = styled.span`
+  color: ${colors.gold};
+  font-weight: ${typography.fontWeight.bold};
+  font-size: ${typography.fontSize.base};
+`
+
+const DesktopFooter = styled.div`
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    margin-top: 28px;
+  }
 `
 
 export const HomeTradeFooter: React.FC = () => (
-  <Footer>
-    <span>© 2026 Melega DEX. All rights reserved.</span>
-    <Center>Melega DEX</Center>
-    <Links>
-      <FooterLink href="https://docs.melega.finance" target="_blank" rel="noreferrer">
-        Docs
-      </FooterLink>
-      <FooterLink href="/runtime/labs">Status</FooterLink>
-      <FooterLink href="/orchestrator">Operator Mode</FooterLink>
-    </Links>
-  </Footer>
+  <DesktopFooter>
+    <MelegaFooter
+      left={<span>© 2026 Melega DEX. All rights reserved.</span>}
+      center={<Brand>Melega DEX</Brand>}
+      right={
+        <>
+          <FooterLink href="https://docs.melega.finance" target="_blank" rel="noreferrer">
+            Docs
+          </FooterLink>
+          <FooterLink href="/runtime/labs">Status</FooterLink>
+          <FooterLink href="/orchestrator">Operator Mode</FooterLink>
+        </>
+      }
+    />
+  </DesktopFooter>
 )
 
 export default HomeTradeFooter
