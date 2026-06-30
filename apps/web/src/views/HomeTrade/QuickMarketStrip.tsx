@@ -8,24 +8,18 @@ const DesktopGrid = styled.div`
   display: none;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 14px;
 
   @media (min-width: 1024px) {
     display: grid;
   }
 `
 
-const MobileScroll = styled.div`
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  margin-top: 10px;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+const MobileGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
 
   @media (min-width: 1024px) {
     display: none;
@@ -33,15 +27,16 @@ const MobileScroll = styled.div`
 `
 
 const Card = styled(Link)`
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background: ${ht.surface2};
   border: 1px solid ${ht.borderSoft};
   border-radius: 10px;
   padding: 14px;
   text-decoration: none;
-  min-width: 168px;
-  height: 120px;
   box-sizing: border-box;
+  min-height: 116px;
   transition: border-color 150ms ease;
 
   &:hover {
@@ -49,8 +44,8 @@ const Card = styled(Link)`
   }
 
   @media (min-width: 1024px) {
-    min-width: 0;
-    height: 94px;
+    min-height: 88px;
+    height: 88px;
   }
 `
 
@@ -58,7 +53,7 @@ const Label = styled.div`
   font-family: ${ht.fontBody};
   font-size: 12px;
   color: ${ht.textMuted};
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 `
 
 const Value = styled.div`
@@ -66,26 +61,24 @@ const Value = styled.div`
   font-size: 15px;
   font-weight: 600;
   color: ${ht.white};
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const Meta = styled.div`
   font-size: 12px;
   color: ${ht.green};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const Change = styled.div`
   font-size: 12px;
   color: ${ht.textMuted};
-  margin-top: 4px;
-`
-
-const Spark = styled.div`
-  height: 24px;
-  margin-top: 8px;
-  background: linear-gradient(90deg, transparent, ${ht.goldSoftBg}, transparent);
-  border-radius: 4px;
-  opacity: 0.6;
+  margin-top: 2px;
 `
 
 const MarketCardItem: React.FC<{ card: MarketCard }> = ({ card }) => (
@@ -94,7 +87,6 @@ const MarketCardItem: React.FC<{ card: MarketCard }> = ({ card }) => (
     <Value>{card.value}</Value>
     {card.meta && <Meta>{card.meta}</Meta>}
     {card.change && <Change>{card.change}</Change>}
-    {card.id === 'top-pair' && <Spark aria-hidden />}
   </Card>
 )
 
@@ -104,15 +96,15 @@ export const QuickMarketStrip: React.FC<{ cards: MarketCard[] }> = ({ cards }) =
   return (
     <>
       <DesktopGrid>
-        {cards.map((card) => (
+        {cards.slice(0, 4).map((card) => (
           <MarketCardItem key={card.id} card={card} />
         ))}
       </DesktopGrid>
-      <MobileScroll>
-        {cards.map((card) => (
+      <MobileGrid>
+        {cards.slice(0, 4).map((card) => (
           <MarketCardItem key={card.id} card={card} />
         ))}
-      </MobileScroll>
+      </MobileGrid>
     </>
   )
 }

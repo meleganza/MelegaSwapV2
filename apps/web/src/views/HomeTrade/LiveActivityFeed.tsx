@@ -9,8 +9,8 @@ const Card = styled.div`
   border: 1px solid ${ht.borderSoft};
   border-radius: 12px;
   padding: 16px;
-  margin-top: 12px;
-  min-height: 120px;
+  min-height: 130px;
+  box-sizing: border-box;
 
   @media (min-width: 1024px) {
     min-height: 170px;
@@ -21,14 +21,14 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 `
 
 const Title = styled.h2`
   margin: 0;
   font-family: ${ht.fontDisplay};
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: ${ht.white};
 
   @media (min-width: 1024px) {
@@ -44,10 +44,11 @@ const ViewLink = styled(Link)`
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 24px 1fr auto auto;
+  grid-template-columns: 20px 1fr auto;
   gap: 8px;
   align-items: center;
-  padding: 6px 0;
+  padding: 4px 0;
+  min-height: 28px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 
   &:last-child {
@@ -57,34 +58,39 @@ const Row = styled.div`
 
 const Icon = styled.span`
   color: ${ht.gold};
-  font-size: 14px;
+  font-size: 13px;
 `
 
-const Type = styled.span`
+const TypeLine = styled.div`
   font-size: 13px;
   color: ${ht.white};
-  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const Context = styled.span`
-  font-size: 13px;
   color: ${ht.textMuted};
+  font-weight: 400;
 `
 
-const Value = styled.span`
-  font-size: 13px;
-  color: ${ht.green};
+const MetaCol = styled.div`
   text-align: right;
+  flex-shrink: 0;
 `
 
-const Time = styled.span`
+const Value = styled.div`
   font-size: 12px;
+  color: ${ht.green};
+`
+
+const Time = styled.div`
+  font-size: 11px;
   color: ${ht.textMuted};
-  text-align: right;
 `
 
 const Empty = styled.p`
-  margin: 8px 0 0;
+  margin: 4px 0 0;
   font-size: 14px;
   color: ${ht.textMuted};
   line-height: 1.45;
@@ -109,12 +115,14 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
       rows.map((row) => (
         <Row key={row.id}>
           <Icon>{eventIcon(row.type)}</Icon>
-          <div>
-            <Type>{row.type}</Type>
-            <Context> {row.context}</Context>
-          </div>
-          {row.value && <Value>{row.value}</Value>}
-          {row.time ? <Time>{row.time}</Time> : <span />}
+          <TypeLine>
+            {row.type}
+            <Context> · {row.context}</Context>
+          </TypeLine>
+          <MetaCol>
+            {row.value && <Value>{row.value}</Value>}
+            {row.time && <Time>{row.time}</Time>}
+          </MetaCol>
         </Row>
       ))
     )}

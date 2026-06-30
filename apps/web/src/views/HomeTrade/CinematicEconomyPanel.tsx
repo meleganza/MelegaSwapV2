@@ -5,9 +5,9 @@ import { ht } from './homeTradeTokens'
 const Panel = styled.div`
   display: none;
   position: relative;
-  height: 350px;
+  min-height: 360px;
   border-radius: 14px;
-  border: 1px solid ${ht.borderMedium};
+  border: 1px solid ${ht.borderSoft};
   overflow: hidden;
   background: #000000;
 
@@ -20,19 +20,24 @@ const Panel = styled.div`
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 85% 95%, rgba(244, 197, 66, 0.55) 0%, rgba(212, 175, 55, 0.2) 35%, transparent 70%),
-      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
-      linear-gradient(180deg, #000000 0%, #050505 100%);
+      radial-gradient(circle at 78% 88%, rgba(244, 197, 66, 0.52) 0%, rgba(212, 175, 55, 0.22) 20%, rgba(0, 0, 0, 0) 46%),
+      radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.04) 0%, transparent 35%),
+      linear-gradient(180deg, #050505 0%, #000000 100%);
   }
 
   &::after {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.35), transparent),
-      radial-gradient(1px 1px at 60% 20%, rgba(255, 255, 255, 0.25), transparent),
-      radial-gradient(1px 1px at 80% 40%, rgba(255, 255, 255, 0.2), transparent);
-    opacity: 0.6;
+    opacity: 0.55;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.45), transparent),
+      radial-gradient(1px 1px at 28% 42%, rgba(255, 255, 255, 0.3), transparent),
+      radial-gradient(1px 1px at 55% 22%, rgba(255, 255, 255, 0.35), transparent),
+      radial-gradient(1px 1px at 72% 35%, rgba(255, 255, 255, 0.25), transparent),
+      radial-gradient(1px 1px at 88% 15%, rgba(255, 255, 255, 0.2), transparent),
+      radial-gradient(1px 1px at 40% 68%, rgba(255, 255, 255, 0.18), transparent);
+    pointer-events: none;
   }
 `
 
@@ -46,7 +51,7 @@ const Badges = styled.div`
   z-index: 2;
 `
 
-const Badge = styled.span<{ $live?: boolean }>`
+const Badge = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -69,19 +74,18 @@ const LiveDot = styled.span`
 
 const Copy = styled.div`
   position: absolute;
-  left: 36px;
-  top: 50%;
-  transform: translateY(-40%);
+  left: 44px;
+  top: 120px;
   z-index: 2;
-  max-width: 320px;
+  max-width: 380px;
 `
 
 const Headline = styled.h2`
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-family: ${ht.fontBody};
-  font-size: 34px;
+  font-size: 42px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.05;
   color: ${ht.white};
 `
 
@@ -90,17 +94,17 @@ const Gold = styled.span`
 `
 
 const Line = styled.p`
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-family: ${ht.fontBody};
-  font-size: 16px;
+  font-size: 18px;
   color: #cfcfcf;
-  line-height: 1.35;
+  line-height: 1.45;
 `
 
 export const CinematicEconomyPanel: React.FC = () => (
   <Panel>
     <Badges>
-      <Badge $live>
+      <Badge>
         <LiveDot />
         Live on BNB Chain
       </Badge>

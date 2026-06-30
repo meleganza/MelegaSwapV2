@@ -7,10 +7,9 @@ const Footer = styled.footer`
   display: none;
   margin-top: 28px;
   border-top: 1px solid ${ht.borderSoft};
-  min-height: 60px;
+  height: 56px;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
   font-family: ${ht.fontBody};
   font-size: 12px;
   color: ${ht.textMuted};

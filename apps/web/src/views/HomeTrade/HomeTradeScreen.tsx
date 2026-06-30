@@ -27,11 +27,12 @@ const Root = styled.div`
 
 const Main = styled.main`
   margin-left: 0;
-  padding: 16px 14px 96px;
+  padding: 14px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 
   @media (min-width: 1024px) {
     margin-left: ${ht.sidebarWidth};
-    padding: 20px 28px 32px;
+    padding: 18px 28px 32px;
   }
 `
 
@@ -40,39 +41,45 @@ const Content = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 0;
 `
 
 const HeroRow = styled.div`
   display: grid;
   gap: 14px;
-  margin-bottom: 12px;
+  margin-top: 12px;
 
   @media (min-width: 1024px) {
-    grid-template-columns: minmax(500px, 43%) 1fr;
-    height: 350px;
+    grid-template-columns: 500px 1fr;
+    gap: 14px;
+    margin-top: 14px;
+    min-height: 360px;
+    align-items: stretch;
   }
 `
 
 const EarnCtaRow = styled.div<{ $single?: boolean }>`
   display: grid;
-  gap: 12px;
+  gap: 14px;
+  margin-top: 12px;
 
   @media (min-width: 1024px) {
+    margin-top: 14px;
     grid-template-columns: ${({ $single }) => ($single ? '1fr' : '1fr 1fr')};
-    align-items: start;
+    align-items: stretch;
   }
 `
 
 const ActivityRow = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
+  margin-top: 12px;
 
   @media (min-width: 1024px) {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 14px;
+    margin-top: 14px;
     align-items: start;
   }
 `

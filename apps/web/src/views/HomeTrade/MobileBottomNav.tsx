@@ -12,7 +12,7 @@ const Nav = styled.nav`
   bottom: 0;
   height: calc(78px + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: rgba(0, 0, 0, 0.94);
+  background: #000000;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 200;
 
@@ -31,14 +31,14 @@ const Item = styled(Link)<{ $active?: boolean }>`
   gap: 4px;
   text-decoration: none;
   position: relative;
-  padding-top: 6px;
-  color: ${({ $active }) => ($active ? ht.gold : '#bdbdbd')};
+  padding-top: 8px;
+  color: ${({ $active }) => ($active ? ht.gold : ht.textNavInactive)};
 `
 
 const Indicator = styled.div`
   position: absolute;
   top: 0;
-  width: 58px;
+  width: 56px;
   height: 3px;
   border-radius: 0 0 3px 3px;
   background: ${ht.gold};

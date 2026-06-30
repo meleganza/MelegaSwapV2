@@ -12,8 +12,8 @@ const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 56px;
-  margin-bottom: 12px;
+  height: 48px;
+  margin-bottom: 0;
 
   @media (min-width: 1024px) {
     display: none;
@@ -24,26 +24,37 @@ const NetworkWrap = styled.div`
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  min-width: 0;
 
   button {
     height: 38px !important;
-    max-width: 170px;
-    border-radius: 12px !important;
+    max-width: 150px;
+    border-radius: 10px !important;
     background: ${ht.sidebarBg} !important;
-    border: 1px solid ${ht.borderMedium} !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     font-size: 12px !important;
   }
 `
 
 const WalletSquare = styled(ConnectWalletButton)`
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  padding: 0;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  padding: 0 !important;
   border-radius: 10px;
   border: 1px solid ${ht.gold};
   background: ${ht.goldSoftBg};
   color: ${ht.gold};
+  font-size: 0 !important;
+  overflow: hidden;
+
+  & > span,
+  & > div {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+  }
 `
 
 const WalletIconBtn = styled.div`
@@ -58,7 +69,7 @@ export const HomeMobileHeader: React.FC = () => {
   const { address } = useAccount()
 
   return (
-    <Header>
+    <Header data-home-mobile-header="true">
       <MelegaBrandLockup size="mobile" />
       <NetworkWrap>
         <NetworkSwitcher />

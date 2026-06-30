@@ -7,9 +7,9 @@ import { ht } from './homeTradeTokens'
 const DesktopGrid = styled.div`
   display: none;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  height: 60px;
-  margin-bottom: 14px;
+  gap: 10px;
+  height: 58px;
+  margin-top: 18px;
 
   @media (min-width: 1024px) {
     display: grid;
@@ -20,8 +20,9 @@ const MobileScroll = styled.div`
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  height: 74px;
-  margin-bottom: 12px;
+  overflow-y: hidden;
+  height: 72px;
+  margin-top: 12px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 
@@ -40,11 +41,13 @@ const Card = styled(Link)`
   gap: 10px;
   background: ${ht.surface2};
   border: 1px solid ${ht.borderSoft};
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 0 12px;
   text-decoration: none;
-  min-width: 200px;
+  height: 72px;
+  width: 170px;
   flex-shrink: 0;
+  box-sizing: border-box;
   transition: border-color 150ms ease;
 
   &:hover {
@@ -52,15 +55,17 @@ const Card = styled(Link)`
   }
 
   @media (min-width: 1024px) {
-    border-radius: 10px;
+    height: 58px;
+    width: auto;
     min-width: 0;
+    padding: 0 10px;
   }
 `
 
 const IconBox = styled.div<{ $variant: RibbonItem['icon'] }>`
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -68,22 +73,18 @@ const IconBox = styled.div<{ $variant: RibbonItem['icon'] }>`
   background: ${({ $variant }) =>
     $variant === 'trend' ? 'rgba(244, 197, 66, 0.15)' : $variant === 'swap' ? ht.greenSoftBg : ht.goldSoftBg};
   color: ${({ $variant }) => ($variant === 'swap' ? ht.green : ht.gold)};
-  font-size: 18px;
-
-  @media (min-width: 1024px) {
-    width: 36px;
-    height: 36px;
-  }
+  font-size: 16px;
 `
 
 const TextCol = styled.div`
   min-width: 0;
+  flex: 1;
 `
 
 const Title = styled.div`
   font-family: ${ht.fontBody};
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: ${ht.white};
   white-space: nowrap;
   overflow: hidden;
@@ -92,16 +93,10 @@ const Title = styled.div`
 
 const Subtitle = styled.div`
   font-size: 12px;
-  color: ${ht.textMuted};
+  color: #9e9e9e;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`
-
-const Meta = styled.div`
-  font-size: 11px;
-  color: ${ht.textMuted};
-  margin-top: 2px;
 `
 
 const iconGlyph = (icon: RibbonItem['icon']) => {
@@ -125,7 +120,6 @@ const RibbonCard: React.FC<{ item: RibbonItem }> = ({ item }) => (
     <TextCol>
       <Title>{item.title}</Title>
       <Subtitle>{item.subtitle}</Subtitle>
-      {item.meta && <Meta>{item.meta}</Meta>}
     </TextCol>
   </Card>
 )
@@ -136,7 +130,7 @@ export const TrendingRibbon: React.FC<{ items: RibbonItem[] }> = ({ items }) => 
   return (
     <>
       <DesktopGrid>
-        {items.map((item) => (
+        {items.slice(0, 5).map((item) => (
           <RibbonCard key={item.id} item={item} />
         ))}
       </DesktopGrid>

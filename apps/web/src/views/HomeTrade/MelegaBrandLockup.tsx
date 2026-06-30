@@ -2,15 +2,15 @@ import React from 'react'
 import styled from 'styled-components'
 import { ht } from './homeTradeTokens'
 
-const Wrap = styled.div<{ $size?: 'desktop' | 'mobile' }>`
+const Wrap = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
 `
 
 const LogoCircle = styled.div<{ $size?: 'desktop' | 'mobile' }>`
-  width: ${({ $size }) => ($size === 'mobile' ? '36px' : '40px')};
-  height: ${({ $size }) => ($size === 'mobile' ? '36px' : '40px')};
+  width: ${({ $size }) => ($size === 'mobile' ? '38px' : '42px')};
+  height: ${({ $size }) => ($size === 'mobile' ? '38px' : '42px')};
   border-radius: 50%;
   flex-shrink: 0;
   background: linear-gradient(135deg, ${ht.goldBright} 0%, ${ht.goldDark} 100%);
@@ -46,7 +46,7 @@ const DexWord = styled.span`
 `
 
 export const MelegaBrandLockup: React.FC<{ size?: 'desktop' | 'mobile' }> = ({ size = 'desktop' }) => (
-  <Wrap $size={size}>
+  <Wrap>
     <LogoCircle $size={size}>
       <img src="https://melega.finance/favicon.ico" alt="Melega" />
     </LogoCircle>

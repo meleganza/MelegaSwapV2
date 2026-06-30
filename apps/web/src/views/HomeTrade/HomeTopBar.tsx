@@ -11,13 +11,12 @@ const Bar = styled.header`
   position: sticky;
   top: 0;
   z-index: 50;
-  height: 64px;
+  height: 48px;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   background: ${ht.canvas};
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  margin: -20px -28px 14px;
+  margin: -18px -28px 18px;
   padding: 0 28px;
 
   @media (min-width: 1024px) {
@@ -26,16 +25,17 @@ const Bar = styled.header`
 `
 
 const Search = styled.div`
-  width: 520px;
-  height: 42px;
+  width: 500px;
+  height: 40px;
   background: ${ht.surface1};
-  border: 1px solid ${ht.borderMedium};
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   display: flex;
   align-items: center;
   padding: 0 14px;
   gap: 10px;
   cursor: text;
+  flex-shrink: 0;
 `
 
 const SearchIcon = styled.span`
@@ -54,7 +54,7 @@ const Kbd = styled.span`
   font-family: ${ht.fontBody};
   font-size: 12px;
   color: ${ht.textSoft};
-  border: 1px solid ${ht.borderMedium};
+  border: 1px solid ${ht.borderSoft};
   border-radius: 6px;
   padding: 2px 8px;
 `
@@ -67,26 +67,37 @@ const Right = styled.div`
 `
 
 const NetworkWrap = styled.div`
-  min-width: 180px;
+  min-width: 160px;
 
   button,
   [role='button'] {
     height: 42px !important;
     border-radius: 10px !important;
     background: ${ht.surface1} !important;
-    border: 1px solid ${ht.borderMedium} !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     font-size: 14px !important;
   }
 `
 
 const WalletBtn = styled(ConnectWalletButton)`
-  width: 146px;
-  height: 42px;
-  border-radius: 10px;
-  background: ${ht.gold};
-  color: #000000;
-  font-weight: 700;
-  font-size: 14px;
+  width: 138px !important;
+  min-width: 138px !important;
+  max-width: 138px !important;
+  height: 42px !important;
+  border-radius: 10px !important;
+  background: ${ht.gold} !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  white-space: nowrap !important;
+  padding: 0 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+
+  & > * {
+    white-space: nowrap !important;
+    font-size: 14px !important;
+  }
 `
 
 const SettingsWrap = styled.div`

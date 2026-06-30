@@ -15,19 +15,23 @@ import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { ht } from './homeTradeTokens'
 
 const Panel = styled.div`
-  background: linear-gradient(180deg, ${ht.surface2} 0%, ${ht.surface1} 100%);
+  background: linear-gradient(180deg, ${ht.surface2} 0%, #090909 100%);
   border: 1px solid ${ht.borderMedium};
   border-radius: 16px;
-  padding: 20px;
-  height: auto;
-  min-height: 350px;
+  padding: 18px;
+  width: 100%;
+  min-height: auto;
   display: flex;
   flex-direction: column;
+  overflow: visible;
+  box-sizing: border-box;
 
   @media (min-width: 1024px) {
+    width: 500px;
+    max-width: 500px;
     border-radius: 14px;
     padding: 22px;
-    height: 350px;
+    min-height: 360px;
   }
 `
 
@@ -35,7 +39,8 @@ const Header = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
 `
 
 const TitleBlock = styled.div``
@@ -43,21 +48,17 @@ const TitleBlock = styled.div``
 const Title = styled.h1`
   margin: 0;
   font-family: ${ht.fontBody};
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: ${ht.white};
   line-height: 1.15;
-
-  @media (min-width: 1024px) {
-    font-size: 22px;
-  }
 `
 
 const Subtitle = styled.p`
   margin: 4px 0 0;
   font-family: ${ht.fontBody};
-  font-size: 14px;
-  color: #c4c4c4;
+  font-size: 15px;
+  color: #bdbdbd;
   line-height: 1.45;
 `
 
@@ -82,7 +83,8 @@ const SettingsBtn = styled.button`
 
 const SwapBody = styled.div`
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
+  min-height: 0;
 `
 
 const HomeSwapInner: React.FC = () => {
@@ -108,7 +110,7 @@ const HomeSwapInner: React.FC = () => {
   )
 
   return (
-    <Panel>
+    <Panel data-home-swap-panel="true">
       <Header>
         <TitleBlock>
           <Title>Trade</Title>

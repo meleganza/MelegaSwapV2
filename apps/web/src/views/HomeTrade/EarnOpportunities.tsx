@@ -5,7 +5,19 @@ import { EarnRow } from './useHomeTradeData'
 import { ht } from './homeTradeTokens'
 
 const Section = styled.section`
-  margin-top: 12px;
+  background: ${ht.surface1};
+  border: 1px solid ${ht.borderSoft};
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    min-height: 142px;
+    height: 142px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 `
 
 const Header = styled.div`
@@ -13,18 +25,15 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+  flex-shrink: 0;
 `
 
 const Title = styled.h2`
   margin: 0;
   font-family: ${ht.fontDisplay};
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: ${ht.white};
-
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
 `
 
 const ViewLink = styled(Link)`
@@ -32,6 +41,7 @@ const ViewLink = styled(Link)`
   font-size: 13px;
   color: ${ht.gold};
   text-decoration: none;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;
@@ -39,30 +49,27 @@ const ViewLink = styled(Link)`
 `
 
 const Grid = styled.div`
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
-`
-
-const Card = styled.div`
-  background: ${ht.surface1};
-  border: 1px solid ${ht.borderSoft};
-  border-radius: 12px;
-  padding: 14px 16px;
-  min-height: 120px;
+  flex: 1;
+  min-height: 0;
 
   @media (min-width: 1024px) {
-    min-height: 136px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
   }
 `
 
-const CardTitle = styled.h3`
-  margin: 0 0 10px;
+const ListBlock = styled.div`
+  min-width: 0;
+`
+
+const ListTitle = styled.h3`
+  margin: 0 0 6px;
   font-family: ${ht.fontBody};
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: ${ht.textMuted};
 `
@@ -71,7 +78,7 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 30px;
+  height: 28px;
   gap: 8px;
 `
 
@@ -81,6 +88,8 @@ const Name = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 `
 
 const Apr = styled.span`
@@ -90,31 +99,25 @@ const Apr = styled.span`
   flex-shrink: 0;
 `
 
-const Tvl = styled.span`
-  font-size: 12px;
-  color: ${ht.textMuted};
-  flex-shrink: 0;
-`
-
 const Note = styled.p`
-  margin: 10px 0 0;
-  font-size: 12px;
+  margin: 8px 0 0;
+  font-size: 11px;
   color: ${ht.textSoft};
+  flex-shrink: 0;
 `
 
 const EarnList: React.FC<{ title: string; rows: EarnRow[] }> = ({ title, rows }) => {
   if (!rows.length) return null
   return (
-    <Card>
-      <CardTitle>{title}</CardTitle>
+    <ListBlock>
+      <ListTitle>{title}</ListTitle>
       {rows.map((row) => (
         <Row key={row.id}>
           <Name>{row.name}</Name>
           {row.apr && <Apr>{row.apr}</Apr>}
-          {row.tvl && <Tvl>{row.tvl}</Tvl>}
         </Row>
       ))}
-    </Card>
+    </ListBlock>
   )
 }
 
@@ -133,9 +136,9 @@ export const EarnOpportunities: React.FC<{
       </Header>
       <Grid>
         <EarnList title="Top Farms" rows={farmRows} />
-        <EarnList title="Top Staking Pools" rows={poolRows} />
+        {poolRows.length > 0 && <EarnList title="Top Staking Pools" rows={poolRows} />}
       </Grid>
-      {showNote && <Note>APR and TVL shown are real-time on-chain data.</Note>}
+      {showNote && <Note>APR shown is real-time on-chain data.</Note>}
     </Section>
   )
 }
