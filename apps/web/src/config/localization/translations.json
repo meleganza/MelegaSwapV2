@@ -1882,5 +1882,7 @@
   "Orchestrator human action": "Human",
   "Orchestrator ai action": "AI",
   "Orchestrator blocking": "Blocking",
-  "Orchestrator future": "Future"
+  "Orchestrator future": "Future",
+  "Intake manifest note": "Real event intake manifest",
+  "Intake cross link": "Event Intake Spec"
 }

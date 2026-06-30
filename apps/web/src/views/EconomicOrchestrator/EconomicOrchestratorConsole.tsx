@@ -338,6 +338,12 @@ const EconomicOrchestratorConsole: React.FC = () => {
               </a>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Intake cross link')}:{' '}
+              <a href="/registry/intake/real-event-intake.json" style={{ color: tokens.gold }}>
+                /registry/intake/real-event-intake.json
+              </a>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · observation only · as of {model.asOf}
             </Meta>
           </Panel>
