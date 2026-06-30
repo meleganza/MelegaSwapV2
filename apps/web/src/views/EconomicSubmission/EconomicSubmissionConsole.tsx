@@ -328,6 +328,12 @@ const EconomicSubmissionConsole: React.FC = () => {
               </a>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Decision events manifest note')}:{' '}
+              <a href="/registry/review/decision-events.json" style={{ color: tokens.gold }}>
+                /registry/review/decision-events.json
+              </a>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · no persistence · as of {model.asOf}
             </Meta>
           </Panel>

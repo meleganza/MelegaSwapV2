@@ -1935,5 +1935,6 @@
   "Review manifest title": "Machine Manifest",
   "Review manifest note": "Economic review manifest",
   "Review cross link": "Review",
-  "Bridge manifest note": "Submission review intake bridge"
+  "Bridge manifest note": "Submission review intake bridge",
+  "Decision events manifest note": "Review decision events spec"
 }
