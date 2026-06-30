@@ -1,0 +1,215 @@
+{
+  "manifest": "manifest://melega/platform/ux-constitution@1.2.0",
+  "document_version": "1.2",
+  "status": "approved",
+  "authority": "canonical_design_authority",
+  "as_of": "2026-06-26",
+  "title": "Melega DEX UX Renaissance Constitution",
+  "markdown_uri": "/docs/MELEGA_DEX_UX_RENAISSANCE_CONSTITUTION_v1_2.md",
+  "brand": "Melega DEX",
+  "forbidden_public_label": "MelegaSwap",
+  "real_data_only": true,
+  "no_fake_metrics": true,
+  "human_mode": {
+    "default": true,
+    "surfaces": [
+      "Home",
+      "Swap",
+      "Liquidity",
+      "Earn",
+      "Launch",
+      "Workspace",
+      "Discover",
+      "Settings"
+    ],
+    "navigation": [
+      "Home",
+      "Swap",
+      "Earn",
+      "Launch",
+      "Discover",
+      "Workspace"
+    ],
+    "liquidity_placement": {
+      "mobile": "inside_swap",
+      "desktop": "primary_or_swap_subnav"
+    }
+  },
+  "ai_mode": {
+    "separated": true,
+    "opt_in": true,
+    "surfaces": [
+      "Runtime",
+      "Pipeline",
+      "Submission",
+      "Review",
+      "Decision Events",
+      "Intake",
+      "Orchestrator",
+      "Map",
+      "Manifest Explorer",
+      "Registry Explorer",
+      "Dry Run",
+      "Readiness"
+    ]
+  },
+  "homepage": {
+    "model": "live_dex",
+    "section_order": [
+      "trending_ribbon",
+      "compact_hero_swap_cta",
+      "swap_module",
+      "list_project_cta",
+      "top_farms",
+      "top_pools",
+      "trending_projects_assets",
+      "latest_swaps_activity",
+      "discover_space_radar",
+      "workspace_entry",
+      "footer"
+    ],
+    "listing_cta": "List your project on Melega DEX",
+    "listing_cta_supporting": "List your token, add liquidity, create a farm, or reward MARCO holders with a staking pool."
+  },
+  "listing_funnel": {
+    "cta": "List your project on Melega DEX",
+    "steps": [
+      "start_listing",
+      "add_token_details",
+      "upload_logo_metadata",
+      "add_website_social",
+      "add_liquidity",
+      "optional_growth_tools",
+      "submit_for_review",
+      "get_listed",
+      "appear_in_discover_workspace_trending"
+    ],
+    "optional_growth_tools": [
+      "create_farm",
+      "create_staking_pool",
+      "reward_marco_holders"
+    ],
+    "no_automatic_approval": true,
+    "no_fake_listing": true
+  },
+  "earn": {
+    "tabs": [
+      "Farms",
+      "Staking Pools"
+    ],
+    "farms": {
+      "concept": "Stake LP tokens, earn rewards"
+    },
+    "staking_pools": {
+      "concept": "Stake a token, earn rewards",
+      "user_copy_marco": "Earn new tokens by staking MARCO",
+      "recommended_staking_template": "Stake MARCO -> Earn your token",
+      "recommended_template_id": "marco_recommended",
+      "advanced_template_id": "custom"
+    }
+  },
+  "staking_pool_creation": {
+    "human_mode_allowed": true,
+    "recommended_path": {
+      "template": "Stake MARCO -> Earn your token",
+      "primary_message": "Create a staking pool for MARCO holders",
+      "short_cta": "Reward MARCO holders",
+      "mandatory": false,
+      "visually_emphasized": true
+    },
+    "advanced_path": {
+      "template": "custom_staking_pool",
+      "hidden_if_unsupported": false,
+      "mandatory": false
+    },
+    "holder_count_copy": {
+      "unindexed": "MARCO holders",
+      "indexed": "Reach X MARCO holders"
+    },
+    "no_automatic_creation": true,
+    "no_contract_execution_from_ux_spec": true
+  },
+  "ai_visibility_policy": {
+    "ai_originated_objects_hidden_until_validated": true,
+    "human_visible_after": [
+      "review_approved",
+      "indexed",
+      "safe"
+    ]
+  },
+  "economic_communication_layer": {
+    "downstream_of_review": true,
+    "events": [
+      "new_project_listed",
+      "new_token_metadata_approved",
+      "new_liquidity_pool_created",
+      "new_farm_created",
+      "new_pool_created",
+      "project_enters_trending",
+      "top_project_by_liquidity",
+      "top_project_by_trading_activity",
+      "labs_narrative_listed",
+      "new_marco_staking_pool_created",
+      "project_rewards_marco_holders",
+      "top_marco_staking_pools_weekly",
+      "new_token_for_marco_stakers"
+    ],
+    "outputs": [
+      "daily_recap",
+      "weekly_recap",
+      "top_10_listed_projects",
+      "top_10_by_liquidity",
+      "top_10_by_trading_activity",
+      "marco_staking_opportunities_recap",
+      "space_article_draft",
+      "cme_social_signal"
+    ]
+  },
+  "design_tokens": {
+    "canvas": "#000000",
+    "surface_primary": "#111111",
+    "surface_secondary": "#1A1A1A",
+    "gold": "#D4AF37",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#9E9E9E",
+    "status_live": "#22C55E",
+    "font_display": "Orbitron",
+    "font_body": "Inter",
+    "content_max_width_px": 1400
+  },
+  "implementation_roadmap": {
+    "phases": [
+      "foundation",
+      "live_homepage",
+      "human_core",
+      "discover",
+      "workspace",
+      "ai_mode",
+      "legacy_polish",
+      "phase_x_listing_communication_loop",
+      "launch"
+    ],
+    "phase_x_deliverables": [
+      "listing_cta",
+      "submission_funnel",
+      "metadata_logo_journey",
+      "liquidity_routing",
+      "review_integration",
+      "listing_event",
+      "cme_space_event_emission",
+      "daily_weekly_recap",
+      "trending_eligibility",
+      "marco_staking_pool_growth_template",
+      "custom_staking_pool_template",
+      "earn_staking_pool_visibility",
+      "cme_space_marco_staking_recap"
+    ]
+  },
+  "governance": {
+    "amendment_required_for_contradiction": true,
+    "prior_versions": [
+      "1.0-draft",
+      "1.1-amended"
+    ]
+  }
+}
