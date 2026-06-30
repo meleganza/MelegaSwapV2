@@ -7,7 +7,7 @@ import { getAllProjects } from 'registry/projects/getAllProjects'
 import { resolveHomepageLiveSections } from 'lib/homepage-live'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useProtocolTransactionsSWR } from 'state/info/hooks'
-import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
+import { usePriceCakeBusd } from 'state/farms/hooks'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 
@@ -106,7 +106,7 @@ const txLabel = (tx: Transaction): { type: string; context: string; value?: stri
 
 export const useHomeTradeData = () => {
   const transactions = useProtocolTransactionsSWR()
-  const marcoPrice = useCakeBusdPrice({ forceMainnet: true })
+  const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { topFarms } = useGetTopFarmsByApr(true)
   const { topPools } = useGetTopPoolsByApr(true)
   const registry = useMemo(() => resolveHomepageLiveSections(), [])
