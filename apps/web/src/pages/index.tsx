@@ -118,5 +118,6 @@ export const getStaticProps: GetStaticProps = async () => {
 
 // IndexPage.chains = []
 IndexPage.chains = CHAIN_IDS
+IndexPage.pure = true
 
 export default IndexPage

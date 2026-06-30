@@ -1,3 +1,3 @@
-import CivilizationEntryPoint from 'views/CivilizationEntryPoint/CivilizationEntryPoint'
+import HomeTradeScreen from 'views/HomeTrade'
 
-export default CivilizationEntryPoint
+export default HomeTradeScreen
