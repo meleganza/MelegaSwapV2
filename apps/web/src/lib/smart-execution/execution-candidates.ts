@@ -9,7 +9,7 @@ export const SAMPLE_EXECUTION_CANDIDATES: ExecutionCandidate[] = [
   {
     id: 'melega-v2-canonical',
     label: 'Melega V2 Canonical Pool',
-    venue: 'MelegaSwap V2',
+    venue: 'Melega DEX V2',
     chain: 'BNB Chain',
     illustrative: true,
     disclaimer: ILLUSTRATIVE_NOTE,
@@ -26,7 +26,7 @@ export const SAMPLE_EXECUTION_CANDIDATES: ExecutionCandidate[] = [
   {
     id: 'melega-v2-alt-route',
     label: 'Melega V2 Alt Route',
-    venue: 'MelegaSwap V2',
+    venue: 'Melega DEX V2',
     chain: 'BNB Chain',
     illustrative: true,
     disclaimer: ILLUSTRATIVE_NOTE,

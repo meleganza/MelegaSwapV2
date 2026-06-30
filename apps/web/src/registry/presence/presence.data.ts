@@ -25,7 +25,7 @@ export const STATIC_PRESENCE_RECORDS: StaticPresenceRecord[] = [
     assetSlug: 'marco',
     chainId: 56,
     chainLabel: 'BNB Chain',
-    venueSource: 'MelegaSwap V2',
+    venueSource: 'Melega DEX V2',
     presenceType: 'canonical',
     status: 'LIVE',
     liquidityConfidence: 'canonical',

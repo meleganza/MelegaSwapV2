@@ -60,7 +60,7 @@ export const STATIC_COLLECTIBLE_RECORDS: StaticCollectibleRecord[] = [
       mint: DETECTED_NFT_ROUTES.mint,
       wallet: DETECTED_NFT_ROUTES.wallet,
       market: DETECTED_NFT_ROUTES.market,
-      external: 'https://www.melegaswap.finance/babymarco',
+      external: 'https://melega.finance/babymarco',
       collectiblesRegistry: '/collectibles',
     },
     disclaimer: COLLECTIBLES_REGISTRY_DISCLAIMER,
@@ -98,7 +98,7 @@ export const STATIC_COLLECTIBLE_RECORDS: StaticCollectibleRecord[] = [
     relatedRoutes: [],
     warnings: [
       'No fake contract address',
-      'Not an active mint surface on MelegaSwap',
+      'Not an active mint surface on Melega DEX',
       'Identity collectible — planned linkage to civilization layer',
     ],
     links: {

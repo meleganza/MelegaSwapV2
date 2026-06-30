@@ -8,17 +8,26 @@ declare module 'styled-components' {
 }
 
 const GlobalStyle = createGlobalStyle`
-  * {
+  *,
+  *::before,
+  *::after {
     font-family: ${tokens.fontBody};
+    box-sizing: border-box;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3, h4, h5, h6,
+  [data-melega-display='true'] {
     font-family: ${tokens.fontDisplay};
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   body {
     background-color: ${tokens.bg} !important;
     color: ${tokens.text};
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 
     img {
       height: auto;
@@ -26,9 +35,18 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 
-  /* Melega Economic OS — neutralize Pancake-era accent colors */
   a {
     transition: color ${tokens.transition};
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 `
 

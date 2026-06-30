@@ -1,4 +1,4 @@
-import { ModalProvider, light, dark, UIKitProvider } from '@pancakeswap/uikit'
+import { ModalProvider, UIKitProvider } from '@pancakeswap/uikit'
 import { Provider } from 'react-redux'
 import { SWRConfig } from 'swr'
 import { LanguageProvider } from '@pancakeswap/localization'
@@ -9,10 +9,11 @@ import { WagmiProvider } from '@pancakeswap/wagmi'
 import { client } from 'utils/wagmi'
 import { HistoryManagerProvider } from 'contexts/HistoryContext'
 
+import { melegaDarkTheme } from 'style/melega-theme'
+
 const StyledUIKitProvider: React.FC<React.PropsWithChildren> = ({ children, ...props }) => {
-  const { resolvedTheme } = useNextTheme()
   return (
-    <UIKitProvider theme={resolvedTheme === 'dark' ? dark : dark} {...props}>
+    <UIKitProvider theme={melegaDarkTheme} {...props}>
       {children}
     </UIKitProvider>
   )

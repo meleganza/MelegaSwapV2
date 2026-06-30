@@ -9,6 +9,7 @@ export const melegaOperational = {
   text: '#FFFFFF',
   textSecondary: '#9E9E9E',
   success: '#22C55E',
+  error: '#EF4444',
   border: 'rgba(255, 255, 255, 0.06)',
   borderGold: 'rgba(212, 175, 55, 0.2)',
   radius: '16px',

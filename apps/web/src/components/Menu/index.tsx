@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { Menu as UikitMenu, NextLinkFromReactRouter, footerLinks, Button, useMatchBreakpoints } from '@pancakeswap/uikit'
+import { Menu as UikitMenu, NextLinkFromReactRouter, Button, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { useTranslation, languageList } from '@pancakeswap/localization'
 import PhishingWarningBanner from 'components/PhishingWarningBanner'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
@@ -9,15 +9,24 @@ import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
 import { usePhishingBannerManager } from 'state/user/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { CHAIN_QUERY_NAME } from 'config/chains'
+import { melegaOperational as tokens } from 'ui/tokens'
 import UserMenu from './UserMenu'
 import { useMenuItems } from './hooks/useMenuItems'
-// import { useTopMenuItems } from './hooks/useTopMenuItems'
-// import GlobalSettings from './GlobalSettings'
 import { getActiveMenuItem, getActiveSubMenuItem } from './utils'
 import GlobalSettings from './GlobalSettings'
 import { SettingsMode } from './GlobalSettings/types'
+import { melegaFooterLinks } from './config/footerConfig'
 
-// import { SettingsMode } from './GlobalSettings/types'
+const solanaButtonStyle = {
+  background: tokens.surface,
+  color: tokens.textSecondary,
+  alignItems: 'center' as const,
+  border: `1px solid ${tokens.border}`,
+  height: '36px',
+  borderRadius: tokens.radiusSm,
+  fontSize: '13px',
+  fontWeight: 500,
+}
 
 const Menu = (props) => {
   const { isDark, setTheme } = useTheme()
@@ -29,7 +38,6 @@ const Menu = (props) => {
 
   const { chainId } = useActiveChainId()
   const menuItems = useMenuItems()
-  // const topMenuItems = useTopMenuItems()
 
   const activeMenuItem = getActiveMenuItem({ menuConfig: [...menuItems], pathname })
   const activeSubMenuItem = getActiveSubMenuItem({ menuItem: activeMenuItem, pathname })
@@ -39,7 +47,7 @@ const Menu = (props) => {
   }, [setTheme, isDark])
 
   const getFooterLinks = useMemo(() => {
-    return footerLinks(t)
+    return melegaFooterLinks(t)
   }, [t])
 
   return (
@@ -51,28 +59,17 @@ const Menu = (props) => {
         leftSide={<NetworkSwitcher />}
         rightSide={
           <>
-            <Button
-              className=""
-              style={{
-                background: '#000',
-                color: '#fff',
-                // marginRight: '20px',
-                alignItems: 'center',
-                border: '1px solid #fff',
-                height: '32px',
-              }}
-            >
+            <Button className="melega-solana-link" style={solanaButtonStyle}>
               {isMobile ? (
-                <a href="https://solana.melega.finance/" target="_blank" className="">
+                <a href="https://solana.melega.finance/" target="_blank" rel="noreferrer">
                   SolanaFi
                 </a>
               ) : (
-                <a href="https://solana.melega.finance/" target="_blank" className="">
+                <a href="https://solana.melega.finance/" target="_blank" rel="noreferrer">
                   Solana MelegaFi
                 </a>
               )}
             </Button>
-            <NetworkSwitcher />
             <GlobalSettings mode={SettingsMode.GLOBAL} />
             <UserMenu />
           </>
@@ -85,7 +82,6 @@ const Menu = (props) => {
         setLang={setLanguage}
         cakePriceUsd={cakePriceUsd}
         links={menuItems}
-        // topLinks={topMenuItems}
         subLinks={activeMenuItem?.hideSubNav || activeSubMenuItem?.hideSubNav ? [] : activeMenuItem?.items}
         footerLinks={getFooterLinks}
         activeItem={activeMenuItem?.href}

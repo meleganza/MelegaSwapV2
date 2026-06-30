@@ -2,24 +2,31 @@ import styled from 'styled-components'
 import { NextSeo } from 'next-seo'
 import { useTranslation } from '@pancakeswap/localization'
 import { useRouter } from 'next/router'
-import { DEFAULT_META, getCustomMeta } from 'config/constants/meta'
+import { getCustomMeta } from 'config/constants/meta'
 import { usePriceCakeBusd } from 'state/farms/hooks'
+import { melegaOperational as tokens } from 'ui/tokens'
 import Container from './Container'
+
+const PageRoot = styled.div`
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background: ${tokens.bg};
+  color: ${tokens.text};
+`
 
 const StyledPage = styled(Container)`
   width: 100%;
-  min-height: calc(100vh - 64px);
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding-top: 20px;
+  padding-bottom: 48px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding-top: 28px;
+    padding-bottom: 56px;
   }
 
   ${({ theme }) => theme.mediaQueries.lg} {
-    padding-top: 32px;
-    padding-bottom: 32px;
+    padding-top: 36px;
+    padding-bottom: 64px;
   }
 `
 
@@ -59,10 +66,10 @@ export const PageMeta: React.FC<React.PropsWithChildren> = () => {
 
 const Page: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>> = ({ children, ...props }) => {
   return (
-    <>
+    <PageRoot>
       <PageMeta />
       <StyledPage {...props}>{children}</StyledPage>
-    </>
+    </PageRoot>
   )
 }
 
