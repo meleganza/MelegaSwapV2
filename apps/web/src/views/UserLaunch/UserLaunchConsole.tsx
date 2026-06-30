@@ -358,6 +358,7 @@ const UserLaunchConsole: React.FC = () => {
               <Link href="/pipeline">{t('Pipeline cross link')}</Link>
               <Link href="/runtime/labs">{t('Runtime cross link')}</Link>
               <Link href="/orchestrator">{t('Orchestrator cross link')}</Link>
+              <Link href="/submit">{t('Submission cross link')}</Link>
               <Link href="/presence">Economic Presence</Link>
               <Link href="/execution">Execution</Link>
               <Link href="/identity">Economic Identity</Link>

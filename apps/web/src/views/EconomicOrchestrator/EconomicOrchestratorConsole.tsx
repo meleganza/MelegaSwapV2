@@ -326,6 +326,7 @@ const EconomicOrchestratorConsole: React.FC = () => {
                   {link.label}
                 </CrossLink>
               ))}
+              <CrossLink href="/submit">{t('Submission cross link')}</CrossLink>
             </CrossLinkGrid>
           </Panel>
 

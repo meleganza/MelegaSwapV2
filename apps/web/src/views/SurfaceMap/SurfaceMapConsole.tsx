@@ -356,6 +356,12 @@ const SurfaceMapConsole: React.FC = () => {
               </Link>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Submission cross link')}:{' '}
+              <Link href="/submit" style={{ color: tokens.gold }}>
+                /submit
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>

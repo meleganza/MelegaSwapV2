@@ -1,0 +1,246 @@
+import { SubmissionCategoryDefinition, SubmissionCategoryId } from './submission-types'
+
+const field = (
+  id: string,
+  label: string,
+  required: boolean,
+  type: string,
+  notes?: string,
+) => ({ id, label, required, type, notes })
+
+const category = (
+  def: Omit<SubmissionCategoryDefinition, 'requiredFields' | 'optionalFields'> & {
+    requiredFields: SubmissionCategoryDefinition['requiredFields']
+    optionalFields: SubmissionCategoryDefinition['optionalFields']
+  },
+): SubmissionCategoryDefinition => ({
+  ...def,
+  requiredFields: def.requiredFields.map((f) => ({ ...f })),
+  optionalFields: def.optionalFields.map((f) => ({ ...f })),
+})
+
+export const SUBMISSION_CATEGORY_IDS: SubmissionCategoryId[] = [
+  'token_metadata',
+  'token_logo',
+  'website',
+  'social_links',
+  'project_narrative',
+  'whitepaper',
+  'audit_reference',
+  'category_classification',
+  'economic_presence_request',
+  'launch_request',
+  'future_ai_review',
+]
+
+export const SUBMISSION_CATEGORIES: SubmissionCategoryDefinition[] = [
+  category({
+    id: 'token_metadata',
+    label: 'Token Metadata',
+    description: 'Token name, symbol, decimals, and description for registry review — not on-chain deployment.',
+    targetSurface: '/assets',
+    targetRegistry: 'asset-registry',
+    targetRegistryManifest: '/registry/assets/index.json',
+    defaultSafety: 'human_review_required',
+    resultingEventIntakeFamily: 'asset_metadata',
+    resultingRegistryTarget: '/assets',
+    humanReviewerAction: 'Verify metadata fields against constitutional asset policy before indexing.',
+    aiReviewerAction: 'Validate UAI shape and flag missing fields — never auto-approve.',
+    requiredFields: [
+      field('token_name', 'Token name', true, 'string'),
+      field('token_symbol', 'Token symbol', true, 'string'),
+      field('decimals', 'Decimals', true, 'number'),
+      field('asset_slug', 'Proposed asset slug', true, 'string'),
+    ],
+    optionalFields: [field('description', 'Description', false, 'string')],
+  }),
+  category({
+    id: 'token_logo',
+    label: 'Token Logo',
+    description: 'Brand logo reference for asset registry — no file upload in this build.',
+    targetSurface: '/launch',
+    targetRegistry: 'asset-registry',
+    targetRegistryManifest: '/registry/assets/index.json',
+    defaultSafety: 'human_review_required',
+    resultingEventIntakeFamily: 'asset_metadata',
+    resultingRegistryTarget: '/assets',
+    humanReviewerAction: 'Review logo URI and rights — manual CDN handoff planned.',
+    aiReviewerAction: 'Check logo_uri format only — no upload handling.',
+    requiredFields: [field('asset_slug', 'Asset slug', true, 'string'), field('logo_uri', 'Logo URI', true, 'uri')],
+    optionalFields: [field('attribution', 'Attribution', false, 'string')],
+  }),
+  category({
+    id: 'website',
+    label: 'Website',
+    description: 'Official project or token website URL for discovery surfaces.',
+    targetSurface: '/projects',
+    targetRegistry: 'project-registry',
+    targetRegistryManifest: '/registry/projects/index.json',
+    defaultSafety: 'observation_only',
+    resultingEventIntakeFamily: 'project_registry',
+    resultingRegistryTarget: '/projects',
+    humanReviewerAction: 'Verify website authenticity and constitutional fit.',
+    aiReviewerAction: 'Resolve HTTPS URL — no auto-publish to registry.',
+    requiredFields: [
+      field('project_slug', 'Project slug', true, 'string'),
+      field('website_url', 'Website URL', true, 'uri'),
+    ],
+    optionalFields: [],
+  }),
+  category({
+    id: 'social_links',
+    label: 'Social Links',
+    description: 'Social and community links — read model indexing only after review.',
+    targetSurface: '/projects',
+    targetRegistry: 'project-registry',
+    targetRegistryManifest: '/registry/projects/index.json',
+    defaultSafety: 'observation_only',
+    resultingEventIntakeFamily: 'project_registry',
+    resultingRegistryTarget: '/projects',
+    humanReviewerAction: 'Review social links for spam and impersonation risk.',
+    aiReviewerAction: 'Validate URL list schema — no auto-index.',
+    requiredFields: [field('project_slug', 'Project slug', true, 'string')],
+    optionalFields: [
+      field('twitter', 'Twitter / X', false, 'uri'),
+      field('telegram', 'Telegram', false, 'uri'),
+      field('discord', 'Discord', false, 'uri'),
+    ],
+  }),
+  category({
+    id: 'project_narrative',
+    label: 'Project Narrative',
+    description: 'Labs-style project narrative for constitutional review before registry binding.',
+    targetSurface: '/new-project',
+    targetRegistry: 'activation-runtime',
+    targetRegistryManifest: '/registry/activation/runtime.json',
+    defaultSafety: 'human_review_required',
+    resultingEventIntakeFamily: 'labs_narrative',
+    resultingRegistryTarget: '/projects',
+    humanReviewerAction: 'Constitutional review — MARCO on BNB Chain remains canonical.',
+    aiReviewerAction: 'Route to event intake family labs_narrative — no fake validated state.',
+    requiredFields: [
+      field('narrative_title', 'Narrative title', true, 'string'),
+      field('narrative_summary', 'Summary', true, 'string'),
+      field('constitutional_fit', 'Constitutional fit statement', true, 'string'),
+    ],
+    optionalFields: [field('creator_contact', 'Creator contact', false, 'string')],
+  }),
+  category({
+    id: 'whitepaper',
+    label: 'Whitepaper',
+    description: 'Whitepaper or documentation URI — review only, no hosting.',
+    targetSurface: '/projects',
+    targetRegistry: 'project-registry',
+    targetRegistryManifest: '/registry/projects/index.json',
+    defaultSafety: 'human_review_required',
+    resultingEventIntakeFamily: 'labs_narrative',
+    resultingRegistryTarget: '/projects',
+    humanReviewerAction: 'Review whitepaper URI and project claims.',
+    aiReviewerAction: 'Index URI reference only after human approval.',
+    requiredFields: [
+      field('project_slug', 'Project slug', true, 'string'),
+      field('whitepaper_uri', 'Whitepaper URI', true, 'uri'),
+    ],
+    optionalFields: [],
+  }),
+  category({
+    id: 'audit_reference',
+    label: 'Audit Reference',
+    description: 'Third-party audit reference — not investment advice or safety guarantee.',
+    targetSurface: '/assets',
+    targetRegistry: 'asset-registry',
+    targetRegistryManifest: '/registry/assets/index.json',
+    defaultSafety: 'human_review_required',
+    resultingEventIntakeFamily: 'asset_metadata',
+    resultingRegistryTarget: '/assets',
+    humanReviewerAction: 'Verify audit firm and report authenticity.',
+    aiReviewerAction: 'Store audit_uri as not_indexed until approved.',
+    requiredFields: [
+      field('asset_slug', 'Asset slug', true, 'string'),
+      field('audit_uri', 'Audit report URI', true, 'uri'),
+      field('auditor_name', 'Auditor name', true, 'string'),
+    ],
+    optionalFields: [field('audit_date', 'Audit date', false, 'string')],
+  }),
+  category({
+    id: 'category_classification',
+    label: 'Category / Classification',
+    description: 'Economic category tags for discovery — not quality or investment rating.',
+    targetSurface: '/assets',
+    targetRegistry: 'asset-registry',
+    targetRegistryManifest: '/registry/assets/index.json',
+    defaultSafety: 'observation_only',
+    resultingEventIntakeFamily: 'asset_metadata',
+    resultingRegistryTarget: '/assets',
+    humanReviewerAction: 'Approve classification tags against taxonomy.',
+    aiReviewerAction: 'Validate taxonomy ids — no auto-classification.',
+    requiredFields: [
+      field('asset_slug', 'Asset slug', true, 'string'),
+      field('taxonomy_ids', 'Taxonomy IDs', true, 'string[]'),
+    ],
+    optionalFields: [],
+  }),
+  category({
+    id: 'economic_presence_request',
+    label: 'Economic Presence Request',
+    description: 'Request Economic Presence target — NOT canonical economy replacement.',
+    targetSurface: '/presence',
+    targetRegistry: 'presence-registry',
+    targetRegistryManifest: '/registry/presence/index.json',
+    defaultSafety: 'human_review_required',
+    resultingEventIntakeFamily: 'presence_update',
+    resultingRegistryTarget: '/presence',
+    humanReviewerAction: 'Confirm presence target is not canonical MARCO override.',
+    aiReviewerAction: 'Route to presence_update intake — chain_role required.',
+    requiredFields: [
+      field('presence_slug', 'Presence slug', true, 'string'),
+      field('chain_role', 'Chain role', true, 'enum:canonical|presence'),
+      field('target_chain', 'Target chain', true, 'string'),
+    ],
+    optionalFields: [field('bridge_notes', 'Bridge notes', false, 'string')],
+  }),
+  category({
+    id: 'launch_request',
+    label: 'Launch Request',
+    description: 'Capability launch request — routes to Launch index, not ILO or auto-deploy.',
+    targetSurface: '/launch',
+    targetRegistry: 'launch-index',
+    targetRegistryManifest: '/registry/launch/index.json',
+    defaultSafety: 'future_execution',
+    resultingEventIntakeFamily: 'liquidity_readiness',
+    resultingRegistryTarget: '/launch',
+    humanReviewerAction: 'Review capability request against honest Launch statuses.',
+    aiReviewerAction: 'Never mark PLANNED capabilities as LIVE — route to /launch only.',
+    requiredFields: [
+      field('capability_type', 'Capability type', true, 'string'),
+      field('project_slug', 'Project slug', true, 'string'),
+    ],
+    optionalFields: [field('wallet_address', 'Wallet address', false, 'address')],
+  }),
+  category({
+    id: 'future_ai_review',
+    label: 'Future AI Review',
+    description: 'Placeholder for AI-assisted review pipeline — not active in this build.',
+    targetSurface: '/orchestrator',
+    targetRegistry: 'economic-orchestrator',
+    targetRegistryManifest: '/registry/orchestrator/index.json',
+    defaultSafety: 'blocked',
+    resultingEventIntakeFamily: 'orchestrator_recommendation',
+    resultingRegistryTarget: '/orchestrator',
+    humanReviewerAction: 'Human review always required — AI review is advisory only.',
+    aiReviewerAction: 'Emit recommendation_issued event only after intake validation.',
+    requiredFields: [field('review_subject', 'Review subject', true, 'string')],
+    optionalFields: [field('agent_id', 'Agent identifier', false, 'string')],
+  }),
+]
+
+export const getSubmissionCategory = (id: SubmissionCategoryId) =>
+  SUBMISSION_CATEGORIES.find((category) => category.id === id)
+
+export const assertSubmissionCategoryCoverage = (): void => {
+  SUBMISSION_CATEGORY_IDS.forEach((id) => {
+    if (!getSubmissionCategory(id)) {
+      throw new Error(`Missing submission category: ${id}`)
+    }
+  })
+}
