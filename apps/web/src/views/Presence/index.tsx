@@ -1,16 +1,33 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Flex, Heading, Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
-import Page from 'components/Layout/Page'
+import { melegaOperational as tokens } from 'ui/tokens'
 import { getAllPresence } from 'registry/presence/getAllPresence'
-import CanonicalEconomyBanner from './components/CanonicalEconomyBanner'
+import {
+  CONSTITUTIONAL_CANONICAL_ASSET,
+  CONSTITUTIONAL_CANONICAL_CHAIN,
+  CONSTITUTIONAL_CANONICAL_STATUS,
+} from 'registry/presence/presence-constants'
+import {
+  EconomicPageShell,
+  EconomicHero,
+  EconomicSection,
+  EconomicStatusSummary,
+  EconomicDetailToggle,
+  EconomicManifestLink,
+} from 'views/EconomicOS/components'
 import PresenceCard from './components/PresenceCard'
 
-const Grid = styled(Flex)`
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
+const Disclaimer = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: ${tokens.textSecondary};
+  line-height: 1.5;
+  max-width: 640px;
+`
+
+const CardWrap = styled.div`
+  min-width: 0;
 `
 
 const Presence: React.FC = () => {
@@ -18,49 +35,38 @@ const Presence: React.FC = () => {
   const records = getAllPresence()
 
   return (
-    <Page>
-      <Flex
-        flexDirection="column"
-        alignItems="center"
-        maxWidth="1200px"
-        margin="0 auto"
-        px="16px"
-        style={{ gap: '24px' }}
-      >
-        <Flex flexDirection="column" alignItems="center" style={{ gap: '8px' }}>
-          <Heading as="h1" scale="xxl" color="secondary" textAlign="center">
-            {t('Presence page title')}
-          </Heading>
-          <Text color="textSubtle" textAlign="center" maxWidth="720px">
-            {t('Presence page subtitle')}
-          </Text>
-          <Text fontSize="12px" color="textDisabled" textAlign="center" maxWidth="720px">
-            {t('Presence registry disclaimer')}
-          </Text>
-        </Flex>
+    <EconomicPageShell>
+      <EconomicHero title={t('Presence page title')} subtitle={t('Presence page subtitle')}>
+        <Disclaimer>{t('Presence registry disclaimer')}</Disclaimer>
+      </EconomicHero>
 
-        <CanonicalEconomyBanner />
+      <EconomicSection title={t('Presence canonical banner title')} lead={t('Presence canonical banner note')}>
+        <EconomicStatusSummary
+          items={[
+            { label: t('CMD chain label'), value: CONSTITUTIONAL_CANONICAL_CHAIN },
+            { label: t('CMD asset label'), value: CONSTITUTIONAL_CANONICAL_ASSET },
+            { label: t('CMD status label'), value: '', status: CONSTITUTIONAL_CANONICAL_STATUS },
+          ]}
+        />
+      </EconomicSection>
 
-        <Grid width="100%">
-          {records.map((record) => (
-            <Flex key={record.slug} style={{ flex: '1 1 320px', maxWidth: '400px' }}>
-              <PresenceCard record={record} />
-            </Flex>
-          ))}
-        </Grid>
+      <EconomicSection title={t('Activation presence title')} columns={2}>
+        {records.map((record) => (
+          <CardWrap key={record.slug}>
+            <PresenceCard record={record} />
+          </CardWrap>
+        ))}
+      </EconomicSection>
 
-        <Text fontSize="12px" color="textDisabled" textAlign="center">
-          {t('Machine discovery index')}:{' '}
-          <a href="/registry/presence/index.json" style={{ color: 'inherit' }}>
-            /registry/presence/index.json
-          </a>
-          {' · '}
-          <a href="/.well-known/melega-dex-presence.json" style={{ color: 'inherit' }}>
-            /.well-known/melega-dex-presence.json
-          </a>
-        </Text>
-      </Flex>
-    </Page>
+      <EconomicDetailToggle title={t('Machine discovery index')}>
+        <EconomicManifestLink
+          manifests={[
+            { label: t('Machine discovery index'), uri: '/registry/presence/index.json' },
+            { label: 'Well-known manifest', uri: '/.well-known/melega-dex-presence.json' },
+          ]}
+        />
+      </EconomicDetailToggle>
+    </EconomicPageShell>
   )
 }
 

@@ -1,25 +1,27 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Flex, Heading, Text } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
-import Page from 'components/Layout/Page'
+import { melegaOperational as tokens } from 'ui/tokens'
 import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
+import {
+  EconomicPageShell,
+  EconomicHero,
+  EconomicSection,
+  EconomicDetailToggle,
+  EconomicManifestLink,
+} from 'views/EconomicOS/components'
 import CollectibleCard from './components/CollectibleCard'
 
-const Grid = styled(Flex)`
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
+const Disclaimer = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: ${tokens.textSecondary};
+  line-height: 1.5;
+  max-width: 640px;
 `
 
-const Banner = styled(Flex)`
-  flex-direction: column;
-  padding: 16px 20px;
-  border: 1px solid rgba(49, 208, 170, 0.3);
-  border-radius: 12px;
-  background: rgba(49, 208, 170, 0.06);
-  gap: 8px;
-  max-width: 720px;
+const CardWrap = styled.div`
+  min-width: 0;
 `
 
 const Collectibles: React.FC = () => {
@@ -27,63 +29,33 @@ const Collectibles: React.FC = () => {
   const records = getAllCollectibles()
 
   return (
-    <Page>
-      <Flex
-        flexDirection="column"
-        alignItems="center"
-        maxWidth="1200px"
-        margin="0 auto"
-        px="16px"
-        style={{ gap: '24px' }}
+    <EconomicPageShell>
+      <EconomicHero
+        title={t('Collectibles page title')}
+        subtitle={t('Collectibles page subtitle')}
       >
-        <Flex flexDirection="column" alignItems="center" style={{ gap: '8px' }}>
-          <Heading as="h1" scale="xxl" color="secondary" textAlign="center">
-            {t('Collectibles page title')}
-          </Heading>
-          <Text color="textSubtle" textAlign="center" maxWidth="720px">
-            {t('Collectibles page subtitle')}
-          </Text>
-          <Text fontSize="12px" color="textDisabled" textAlign="center" maxWidth="720px">
-            {t('Collectibles registry disclaimer')}
-          </Text>
-        </Flex>
+        <Disclaimer>{t('Collectibles registry disclaimer')}</Disclaimer>
+      </EconomicHero>
 
-        <Banner>
-          <Text fontSize="12px" color="textSubtle" textAlign="center">
-            {t('Collectibles framing note')}
-          </Text>
-        </Banner>
+      <EconomicSection title={t('Collectibles')} lead={t('Collectibles framing note')} columns={2}>
+        {records.map((record) => (
+          <CardWrap key={record.slug}>
+            <CollectibleCard record={record} />
+          </CardWrap>
+        ))}
+      </EconomicSection>
 
-        <Grid width="100%">
-          {records.map((record) => (
-            <Flex key={record.slug} style={{ flex: '1 1 320px', maxWidth: '400px' }}>
-              <CollectibleCard record={record} />
-            </Flex>
-          ))}
-        </Grid>
-
-        <Text fontSize="12px" color="textDisabled" textAlign="center">
-          {t('Identity cross link')}:{' '}
-          <a href="/identity" style={{ color: 'inherit' }}>
-            /identity
-          </a>
-          {' · '}
-          {t('Surface map cross link')}:{' '}
-          <a href="/map" style={{ color: 'inherit' }}>
-            /map
-          </a>
-          {' · '}
-          {t('Machine discovery index')}:{' '}
-          <a href="/registry/collectibles/index.json" style={{ color: 'inherit' }}>
-            /registry/collectibles/index.json
-          </a>
-          {' · '}
-          <a href="/.well-known/melega-dex-collectibles.json" style={{ color: 'inherit' }}>
-            /.well-known/melega-dex-collectibles.json
-          </a>
-        </Text>
-      </Flex>
-    </Page>
+      <EconomicDetailToggle title={t('Machine discovery index')}>
+        <EconomicManifestLink
+          manifests={[
+            { label: t('Identity cross link'), uri: '/identity' },
+            { label: t('Surface map cross link'), uri: '/map' },
+            { label: t('Machine discovery index'), uri: '/registry/collectibles/index.json' },
+            { label: 'Well-known manifest', uri: '/.well-known/melega-dex-collectibles.json' },
+          ]}
+        />
+      </EconomicDetailToggle>
+    </EconomicPageShell>
   )
 }
 
