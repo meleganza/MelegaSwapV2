@@ -1,6 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
+import { ToastListener } from '@pancakeswap/uikit'
+import { NetworkModal } from 'components/NetworkModal'
+import TransactionsDetailModal from 'components/TransactionDetailModal'
 import { PageMeta } from 'components/Layout/Page'
+import { CHAIN_IDS } from 'utils/wagmi'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSidebar from './HomeSidebar'
 import HomeTopBar from './HomeTopBar'
@@ -12,6 +16,7 @@ import QuickMarketStrip from './QuickMarketStrip'
 import ListProjectCta from './ListProjectCta'
 import EarnOpportunities from './EarnOpportunities'
 import LiveActivityFeed from './LiveActivityFeed'
+import IntelligencePanel from './IntelligencePanel'
 import MobileBottomNav from './MobileBottomNav'
 import HomeTradeFooter from './HomeTradeFooter'
 import useHomeTradeData from './useHomeTradeData'
@@ -53,21 +58,26 @@ const HeroRow = styled.div`
   }
 `
 
-const EarnCtaRow = styled.div`
+const EarnCtaRow = styled.div<{ $single?: boolean }>`
   display: grid;
   gap: 12px;
 
   @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: ${({ $single }) => ($single ? '1fr' : '1fr 1fr')};
     align-items: start;
   }
 `
 
 const ActivityRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
   @media (min-width: 1024px) {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
+    align-items: start;
   }
 `
 
@@ -89,7 +99,7 @@ export const HomeTradeScreen: React.FC = () => {
             <CinematicEconomyPanel />
           </HeroRow>
           {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
-          <EarnCtaRow>
+          <EarnCtaRow $single={!data.showEarn}>
             <ListProjectCta />
             {data.showEarn && (
               <EarnOpportunities
@@ -101,11 +111,15 @@ export const HomeTradeScreen: React.FC = () => {
           </EarnCtaRow>
           <ActivityRow>
             <LiveActivityFeed rows={data.activityRows} />
+            <IntelligencePanel />
           </ActivityRow>
           <HomeTradeFooter />
         </Content>
       </Main>
       <MobileBottomNav />
+      <ToastListener />
+      <NetworkModal pageSupportedChains={CHAIN_IDS} />
+      <TransactionsDetailModal />
     </Root>
   )
 }

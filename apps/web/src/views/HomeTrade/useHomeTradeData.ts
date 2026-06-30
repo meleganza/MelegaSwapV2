@@ -321,7 +321,6 @@ export const useHomeTradeData = () => {
     marcoPriceLabel,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,
-    showIntelligence: false,
   }
 }
 

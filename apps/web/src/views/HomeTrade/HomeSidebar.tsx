@@ -157,6 +157,7 @@ const sections = [
       { href: '/projects', label: 'Trending', match: (p: string) => p === '/projects' },
       { href: '/projects', label: 'Projects', match: (p: string) => p.startsWith('/projects') },
       { href: '/assets', label: 'Assets', match: (p: string) => p.startsWith('/assets') },
+      { href: '/projects', label: 'Intelligence', match: (p: string) => p.startsWith('/query') || p.startsWith('/presence') },
     ],
   },
   {

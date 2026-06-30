@@ -23,6 +23,7 @@ const Nav = styled.nav`
 
 const Item = styled(Link)<{ $active?: boolean }>`
   flex: 1;
+  width: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,15 +38,23 @@ const Item = styled(Link)<{ $active?: boolean }>`
 const Indicator = styled.div`
   position: absolute;
   top: 0;
-  width: 56px;
+  width: 58px;
   height: 3px;
   border-radius: 0 0 3px 3px;
   background: ${ht.gold};
 `
 
 const Icon = styled.span`
-  font-size: 22px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
 `
 
 const Label = styled.span`
@@ -54,12 +63,45 @@ const Label = styled.span`
   font-weight: 500;
 `
 
+const TradeIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M7 10l3-3 3 3M17 14l-3 3-3-3" />
+  </svg>
+)
+
+const EarnIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="9" cy="14" r="4" />
+    <circle cx="15" cy="10" r="4" />
+  </svg>
+)
+
+const FindIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M14 10l-2 6-2-6 6-2z" />
+  </svg>
+)
+
+const BuildIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" />
+  </svg>
+)
+
+const PortfolioIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <rect x="4" y="7" width="16" height="12" rx="2" />
+    <path d="M16 12h4v4h-4z" />
+  </svg>
+)
+
 const items = [
-  { href: '/', label: 'Trade', icon: '⇅' },
-  { href: '/farms', label: 'Earn', icon: '◎' },
-  { href: '/projects', label: 'Find', icon: '⌖' },
-  { href: '/launch', label: 'Build', icon: '↑' },
-  { href: '/workspace', label: 'Portfolio', icon: '▣' },
+  { href: '/', label: 'Trade', Icon: TradeIcon },
+  { href: '/farms', label: 'Earn', Icon: EarnIcon },
+  { href: '/projects', label: 'Find', Icon: FindIcon },
+  { href: '/launch', label: 'Build', Icon: BuildIcon },
+  { href: '/workspace', label: 'Portfolio', Icon: PortfolioIcon },
 ]
 
 export const MobileBottomNav: React.FC = () => {
@@ -69,10 +111,13 @@ export const MobileBottomNav: React.FC = () => {
     <Nav aria-label="Main">
       {items.map((item) => {
         const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+        const IconComponent = item.Icon
         return (
           <Item key={item.label} href={item.href} $active={active}>
             {active && <Indicator />}
-            <Icon>{item.icon}</Icon>
+            <Icon>
+              <IconComponent />
+            </Icon>
             <Label>{item.label}</Label>
           </Item>
         )

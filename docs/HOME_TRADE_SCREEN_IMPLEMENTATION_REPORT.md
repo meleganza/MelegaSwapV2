@@ -32,6 +32,7 @@ Implemented the approved Home / Trade cockpit per desktop and mobile reference i
 | `ListProjectCta.tsx` | List your project CTA |
 | `EarnOpportunities.tsx` | Top farms & staking pools |
 | `LiveActivityFeed.tsx` | Live activity feed |
+| `IntelligencePanel.tsx` | Discovery entry cards (no fake feed data) |
 | `MobileBottomNav.tsx` | Five-intent bottom nav |
 | `HomeTradeFooter.tsx` | Desktop footer |
 | `HomeTradeGlobalStyle.tsx` | Swap panel presentation overrides |
@@ -55,7 +56,7 @@ Implemented the approved Home / Trade cockpit per desktop and mobile reference i
 - Hero row: swap panel (43%) + cinematic MARCO economy panel (57%)
 - Quick market strip (4 columns)
 - List project CTA + Earn opportunities (2-column)
-- Live activity card
+- Live activity + Intelligence (2-column desktop)
 - Footer with Docs / Status / Operator Mode
 
 ---
@@ -68,7 +69,7 @@ Implemented the approved Home / Trade cockpit per desktop and mobile reference i
 - Horizontal quick market cards
 - List project CTA
 - Earn opportunities (stacked)
-- Live activity
+- Live activity + Intelligence
 - Fixed bottom nav: Trade · Earn · Find · Build · Portfolio
 - Safe-area padding bottom 96px
 
@@ -83,7 +84,7 @@ Implemented the approved Home / Trade cockpit per desktop and mobile reference i
 | Earn opportunities | `useGetTopFarmsByApr`, `useGetTopPoolsByApr` | No APR/TVL rows |
 | Live activity | `useProtocolTransactionsSWR` | Shows honest empty text |
 | MARCO price (sidebar) | `useCakeBusdPrice` | Price omitted if unavailable |
-| Intelligence | — | **Hidden** (no live Radar/Space feed) |
+| Intelligence | Static discovery entry cards → `/projects`, `/query` | Always shown (navigation only — no feed metrics) |
 
 **No fake APR, TVL, timestamps, or rankings.** Timestamps only from subgraph `timestamp` field.
 
@@ -127,7 +128,7 @@ Implemented the approved Home / Trade cockpit per desktop and mobile reference i
 | Item | Notes |
 |------|-------|
 | Universal search ⌘K | Visual search bar only — command palette not wired (out of scope) |
-| Intelligence section | Hidden — Radar/Space not indexed (per data rules) |
+| Intelligence cards | Static navigation affordances — no fake rankings or timestamps |
 | Logo asset | Uses `melega.finance/favicon.ico` in circular frame until local raster provided |
 | Sparkline on Top Pair | Decorative gradient bar only — no fake price series |
 | Operator Mode footer link | Points to `/orchestrator` (existing route) |
@@ -137,6 +138,6 @@ Implemented the approved Home / Trade cockpit per desktop and mobile reference i
 ## Recommended Follow-ups
 
 1. Wire ⌘K universal search index  
-2. Enable Intelligence when Radar/Space feeds are live  
+2. Enable Intelligence live feeds when Radar/Space indexers are active  
 3. Replace favicon with bundled round Melega logo asset  
 4. Extend `pure` layout pattern to other intent screens
