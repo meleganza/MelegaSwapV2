@@ -374,6 +374,16 @@ const SurfaceMapConsole: React.FC = () => {
               </a>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Dry run manifest note')}:{' '}
+              <a href="/registry/dry-runs/civilization-dry-run.json" style={{ color: tokens.gold }}>
+                /registry/dry-runs/civilization-dry-run.json
+              </a>
+              {' · '}
+              <Link href="/dry-run" style={{ color: tokens.gold }}>
+                /dry-run
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               Read-only · execution disabled · as of {model.asOf}
             </Meta>
           </Panel>
