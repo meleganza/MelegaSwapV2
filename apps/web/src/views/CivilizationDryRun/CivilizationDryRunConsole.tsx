@@ -15,7 +15,9 @@ import {
   EconomicBadge,
   EconomicStatusSummary,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
   EconomicTimeline,
 } from 'views/EconomicOS/components'
@@ -106,7 +108,7 @@ const CivilizationDryRunConsole: React.FC = () => {
         </EconomicCard>
       </EconomicSection>
 
-      <EconomicDetailToggle title="Technical details">
+      <EconomicAiLayer title={TECHNICAL_DETAILS_TITLE}>
         <Meta>{model.disclaimer}</Meta>
         <Meta style={{ marginTop: 16, marginBottom: 12 }}>{t('Dry run cross links title')}</Meta>
         <EconomicActionGrid
@@ -116,9 +118,9 @@ const CivilizationDryRunConsole: React.FC = () => {
             external: link.route.startsWith('/registry'),
           }))}
         />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title="Manifest">
+      <EconomicAiLayer title={MANIFEST_TITLE}>
         <EconomicManifestLink
           manifests={[
             {
@@ -130,7 +132,7 @@ const CivilizationDryRunConsole: React.FC = () => {
         <Meta style={{ marginTop: 12 }}>
           Read-only · dry run only · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

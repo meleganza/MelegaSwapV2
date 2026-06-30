@@ -12,7 +12,9 @@ import {
   EconomicBadge,
   EconomicStatusSummary,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -141,7 +143,7 @@ const EconomicOrchestratorConsole: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicDetailToggle title="Technical details">
+      <EconomicAiLayer title={TECHNICAL_DETAILS_TITLE}>
         <Meta>{model.disclaimer}</Meta>
         <Meta style={{ marginTop: 16, marginBottom: 8 }}>{t('Orchestrator dependency title')}</Meta>
         <GraphList>
@@ -169,9 +171,9 @@ const EconomicOrchestratorConsole: React.FC = () => {
             { label: t('Review cross link'), href: '/review' },
           ]}
         />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title="Manifest">
+      <EconomicAiLayer title={MANIFEST_TITLE}>
         <EconomicManifestLink
           manifests={[
             { label: t('Orchestrator manifest note'), uri: '/registry/orchestrator/index.json' },
@@ -198,7 +200,7 @@ const EconomicOrchestratorConsole: React.FC = () => {
         <Meta style={{ marginTop: 8 }}>
           Read-only · observation only · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

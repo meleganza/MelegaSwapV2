@@ -5,29 +5,28 @@ import { EconomicBadge } from './EconomicBadge'
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
 `
 
 const Cell = styled.div`
   background: ${tokens.surface};
   border: 1px solid ${tokens.border};
   border-radius: ${tokens.radiusSm};
-  padding: 14px 16px;
+  padding: 18px 20px;
 `
 
 const Label = styled.span`
   display: block;
   font-size: 11px;
   color: ${tokens.textSecondary};
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
 `
 
 const Value = styled.strong`
   display: block;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: ${tokens.text};
   line-height: 1.3;
@@ -44,11 +43,7 @@ export const EconomicStatusSummary: React.FC<{ items: StatusItem[] }> = ({ items
     {items.map((item) => (
       <Cell key={item.label}>
         <Label>{item.label}</Label>
-        {item.status ? (
-          <EconomicBadge status={item.status} />
-        ) : (
-          <Value>{item.value}</Value>
-        )}
+        {item.status ? <EconomicBadge status={item.status} /> : <Value>{item.value}</Value>}
       </Cell>
     ))}
   </Grid>

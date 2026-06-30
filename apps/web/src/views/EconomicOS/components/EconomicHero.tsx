@@ -6,44 +6,43 @@ import { melegaOperational as tokens } from 'ui/tokens'
 const Wrap = styled.header`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-bottom: 8px;
+  gap: 12px;
 `
 
 const Title = styled.h1`
   margin: 0;
   font-family: ${tokens.fontDisplay};
-  font-size: 22px;
+  font-size: clamp(24px, 3vw, 32px);
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: ${tokens.text};
-  line-height: 1.3;
+  line-height: 1.25;
 `
 
 const Subtitle = styled.p`
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   color: ${tokens.textSecondary};
-  line-height: 1.6;
+  line-height: 1.65;
   max-width: 640px;
 `
 
 const PrimaryAction = styled(Link)`
   display: inline-flex;
   align-self: flex-start;
-  padding: 10px 18px;
+  margin-top: 8px;
+  padding: 12px 22px;
   border-radius: ${tokens.radiusSm};
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.08));
-  border: 1px solid ${tokens.borderGold};
-  color: ${tokens.goldHighlight};
-  font-size: 13px;
+  background: ${tokens.gold};
+  border: 1px solid ${tokens.gold};
+  color: ${tokens.bg};
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  transition: border-color ${tokens.transition};
+  transition: opacity ${tokens.transition};
 
   &:hover {
-    border-color: ${tokens.gold};
-    color: ${tokens.text};
+    opacity: 0.9;
   }
 `
 

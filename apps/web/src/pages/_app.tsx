@@ -27,6 +27,7 @@ import { SentryErrorBoundary } from '../components/ErrorBoundary'
 import Menu from '../components/Menu'
 import Providers from '../Providers'
 import GlobalStyle from '../style/Global'
+import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
 import { BrowserRouter as Router } from 'react-router-dom'
 // import "../style/Font.css";
 
@@ -73,7 +74,11 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           name="description"
           content="Melega DEX — AI-native liquidity on BSC, Base, Ethereum, and Polygon. Swap, liquidity, farms, and pools with classic DEX compatibility."
         />
-        <meta name="theme-color" content="#1FC7D4" />
+        <meta name="theme-color" content="#000000" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700&display=swap"
+          rel="stylesheet"
+        />
         {(Component as NextPageWithLayout).mp && (
           // eslint-disable-next-line @next/next/no-sync-scripts
           <script src="https://public.bnbstatic.com/static/js/mp-webview-sdk/webview-v1.0.0.min.js" id="mp-webview" />
@@ -91,6 +96,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           {(Component as NextPageWithLayout).mp ? <MPGlobalHooks /> : <GlobalHooks />}
           <ResetCSS />
           <GlobalStyle />
+          <MelegaUIKitOverrides />
           <PersistGate loading={null} persistor={persistor}>
             <Updaters />
             <Router>

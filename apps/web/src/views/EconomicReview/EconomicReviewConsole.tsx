@@ -12,7 +12,9 @@ import {
   EconomicBadge,
   EconomicStatusSummary,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -119,7 +121,7 @@ const EconomicReviewConsole: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicDetailToggle title="Technical details">
+      <EconomicAiLayer title={TECHNICAL_DETAILS_TITLE}>
         <Meta>{model.disclaimer}</Meta>
         <Meta style={{ marginTop: 12 }}>
           {t('Review live count')}: {model.liveReviewQueue} · {t('Review persistence')}:{' '}
@@ -147,9 +149,9 @@ const EconomicReviewConsole: React.FC = () => {
             { label: t('Review cross link'), href: '/review' },
           ]}
         />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title="Manifest">
+      <EconomicAiLayer title={MANIFEST_TITLE}>
         <EconomicManifestLink
           manifests={[
             { label: t('Review manifest note'), uri: '/registry/review/economic-review.json' },
@@ -175,7 +177,7 @@ const EconomicReviewConsole: React.FC = () => {
         <Meta style={{ marginTop: 8 }}>
           Read-only · no persistence · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

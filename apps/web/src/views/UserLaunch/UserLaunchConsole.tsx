@@ -17,6 +17,7 @@ import {
   EconomicStatusSummary,
   EconomicActionGrid,
   EconomicDetailToggle,
+  EconomicAiLayer,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -264,14 +265,14 @@ const UserLaunchConsole: React.FC = () => {
         />
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Launch manifest title')}>
+      <EconomicAiLayer title={t('Launch manifest title')}>
         <EconomicManifestLink
           manifests={[{ label: t('Launch manifest note'), uri: '/registry/launch/index.json' }]}
         />
         <Meta style={{ marginTop: 12 }}>
           Read-only · execution disabled · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

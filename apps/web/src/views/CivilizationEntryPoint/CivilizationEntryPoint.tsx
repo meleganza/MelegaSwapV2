@@ -12,12 +12,16 @@ import {
 import translations from 'config/localization/translations.json'
 import {
   EconomicPageShell,
-  EconomicHero,
+  EconomicHeroBanner,
+  EconomicHumanLayer,
   EconomicStatusSummary,
-  EconomicActionGrid,
+  EconomicActionCard,
   EconomicSection,
-  EconomicDetailToggle,
+  EconomicCard,
+  EconomicActionGrid,
+  EconomicAiLayer,
   EconomicManifestLink,
+  EconomicFooter,
 } from 'views/EconomicOS/components'
 
 const t = (key: string) => (translations as Record<string, string>)[key] ?? key
@@ -31,23 +35,33 @@ const MACHINE_DISCOVERY = [
   { label: 'Surface Index', uri: '/registry/surfaces/index.json' },
 ]
 
-const Framing = styled.p`
-  margin: 0;
-  font-size: 13px;
-  color: ${tokens.textSecondary};
-  line-height: 1.55;
-  max-width: 640px;
+const ActionRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const Note = styled.p`
   margin: 0 0 12px;
-  font-size: 12px;
+  font-size: 13px;
   color: ${tokens.textSecondary};
-  line-height: 1.55;
+  line-height: 1.65;
 `
+
+const CORE_ICONS: Record<string, string> = {
+  swap: '⇄',
+  workspace: '◎',
+  launch: '◇',
+  map: '⊞',
+}
 
 const CivilizationEntryPoint: React.FC = () => {
   const blueprint = resolveHomepageBlueprint()
+  const primarySurfaces = CORE_SURFACES.filter((s) => ['swap', 'workspace', 'launch'].includes(s.id))
 
   return (
     <>
@@ -72,53 +86,70 @@ const CivilizationEntryPoint: React.FC = () => {
         />
       </Head>
       <EconomicPageShell>
-        <EconomicHero
-          title={`${blueprint.constitutional.canonicalAsset} on ${blueprint.constitutional.canonicalChain}`}
+        <EconomicHeroBanner
+          eyebrow={t('Homepage hero eyebrow')}
+          title={t('Homepage hero title')}
           subtitle={t('Homepage constitutional subtitle')}
-        >
-          <Framing>{blueprint.constitutional.framing}</Framing>
-        </EconomicHero>
-
-        <EconomicStatusSummary
-          items={[
-            { label: t('CMD chain label'), value: blueprint.constitutional.canonicalChain },
-            { label: t('CMD asset label'), value: blueprint.constitutional.canonicalAsset },
-            { label: t('CMD status label'), value: '', status: blueprint.constitutional.status },
+          badges={[
+            { label: 'Live on BNB Chain', status: 'LIVE' },
+            { label: 'Canonical Economy', status: blueprint.constitutional.status },
           ]}
         />
 
-        <EconomicSection title={t('Homepage value proposition title')} lead={t('Homepage value proposition body')}>
-          {null}
-        </EconomicSection>
-
-        <EconomicSection title={t('Homepage core actions title')}>
-          <EconomicActionGrid
-            links={CORE_SURFACES.map((surface) => ({
-              label: surface.label,
-              href: surface.route,
-            }))}
+        <EconomicHumanLayer>
+          <EconomicStatusSummary
+            items={[
+              { label: t('CMD asset label'), value: blueprint.constitutional.canonicalAsset },
+              { label: t('CMD chain label'), value: blueprint.constitutional.canonicalChain },
+              { label: t('CMD status label'), value: '', status: blueprint.constitutional.status },
+              { label: 'Overall', value: '', status: 'READY' },
+            ]}
           />
-        </EconomicSection>
 
-        <EconomicSection title={t('Homepage registry strip title')}>
-          <EconomicActionGrid
-            links={SECONDARY_SURFACES.map((surface) => ({
-              label: surface.label,
-              href: surface.route,
-            }))}
-          />
-        </EconomicSection>
+          <EconomicSection title={t('Homepage core actions title')}>
+            <ActionRow>
+              {primarySurfaces.map((surface) => (
+                <EconomicActionCard
+                  key={surface.id}
+                  href={surface.route}
+                  title={surface.label}
+                  description={surface.humanPurpose}
+                  actionLabel={`Open ${surface.label}`}
+                  icon={CORE_ICONS[surface.id]}
+                />
+              ))}
+            </ActionRow>
+          </EconomicSection>
 
-        <EconomicDetailToggle title={t('Homepage advanced title')}>
+          <EconomicSection
+            title={t('Homepage value proposition title')}
+            lead={t('Homepage value proposition body')}
+          >
+            <EconomicCard elevated>
+              {blueprint.constitutional.framing}
+            </EconomicCard>
+          </EconomicSection>
+
+          <EconomicSection title={t('Homepage registry strip title')}>
+            <EconomicActionGrid
+              links={SECONDARY_SURFACES.map((surface) => ({
+                label: surface.label,
+                href: surface.route,
+              }))}
+            />
+          </EconomicSection>
+        </EconomicHumanLayer>
+
+        <EconomicAiLayer title={t('Homepage advanced title')}>
           <EconomicActionGrid
             links={ADVANCED_SURFACES.map((surface) => ({
               label: surface.label,
               href: surface.route,
             }))}
           />
-        </EconomicDetailToggle>
+        </EconomicAiLayer>
 
-        <EconomicDetailToggle title={t('Homepage legacy title')}>
+        <EconomicAiLayer title={t('Homepage legacy title')}>
           <Note>{t('Homepage legacy note')}</Note>
           <EconomicActionGrid
             links={LEGACY_SURFACES.map((surface) => ({
@@ -126,12 +157,14 @@ const CivilizationEntryPoint: React.FC = () => {
               href: surface.route,
             }))}
           />
-        </EconomicDetailToggle>
+        </EconomicAiLayer>
 
-        <EconomicDetailToggle title={t('Homepage machine discovery title')}>
+        <EconomicAiLayer title={t('Homepage machine discovery title')}>
           <Note>{t('Homepage machine discovery note')}</Note>
           <EconomicManifestLink manifests={MACHINE_DISCOVERY} />
-        </EconomicDetailToggle>
+        </EconomicAiLayer>
+
+        <EconomicFooter />
       </EconomicPageShell>
     </>
   )

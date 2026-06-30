@@ -11,7 +11,7 @@ import {
   EconomicCard,
   EconomicBadge,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -108,7 +108,7 @@ const LabsRuntimeConsole: React.FC = () => {
         {model.recentEvents.length === 0 && (
           <Meta style={{ fontStyle: 'italic' }}>{t('Runtime no observed events')}</Meta>
         )}
-        <EconomicDetailToggle title={t('Runtime events title')}>
+        <EconomicAiLayer title={t('Runtime events title')}>
           {model.eventDefinitions.map((definition) => (
             <EconomicCard key={definition.id} title={definition.label}>
               <Meta>{definition.description}</Meta>
@@ -124,7 +124,7 @@ const LabsRuntimeConsole: React.FC = () => {
               </List>
             </EconomicCard>
           ))}
-        </EconomicDetailToggle>
+        </EconomicAiLayer>
       </EconomicSection>
 
       <EconomicSection title={t('Runtime pipeline sync title')}>
@@ -159,7 +159,7 @@ const LabsRuntimeConsole: React.FC = () => {
             <li key={reason}>{reason}</li>
           ))}
         </List>
-        <EconomicDetailToggle title={t('Runtime future title')}>
+        <EconomicAiLayer title={t('Runtime future title')}>
           <List>
             {model.futureActions.map((action) => (
               <li key={action.id}>
@@ -177,7 +177,7 @@ const LabsRuntimeConsole: React.FC = () => {
               </li>
             ))}
           </List>
-        </EconomicDetailToggle>
+        </EconomicAiLayer>
       </EconomicSection>
 
       <EconomicSection title={t('Runtime cross links title')}>
@@ -186,7 +186,7 @@ const LabsRuntimeConsole: React.FC = () => {
         />
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Runtime manifest title')}>
+      <EconomicAiLayer title={t('Runtime manifest title')}>
         <EconomicManifestLink
           manifests={[
             { label: t('Runtime manifest note'), uri: '/registry/runtime/labs-runtime.json' },
@@ -196,7 +196,7 @@ const LabsRuntimeConsole: React.FC = () => {
         <Meta style={{ marginTop: 12 }}>
           Read-only · observation only · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

@@ -16,7 +16,7 @@ import {
   EconomicBadge,
   EconomicStatusSummary,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -167,7 +167,7 @@ const EconomicIdentityConsole: React.FC<EconomicIdentityConsoleProps> = ({ optio
             { label: t('Identity illustrative score'), value: String(model.agentReadiness.score) },
           ]}
         />
-        <EconomicDetailToggle title="Dimension breakdown">
+        <EconomicAiLayer title="Dimension breakdown">
           <ItemList>
             {model.agentReadiness.dimensions.map((dimension) => (
               <li key={dimension.id}>
@@ -176,7 +176,7 @@ const EconomicIdentityConsole: React.FC<EconomicIdentityConsoleProps> = ({ optio
             ))}
           </ItemList>
           <Meta style={{ marginTop: 8 }}>{model.agentReadiness.notes}</Meta>
-        </EconomicDetailToggle>
+        </EconomicAiLayer>
       </EconomicSection>
 
       <EconomicSection title={t('Identity surfaces title')}>
@@ -239,14 +239,14 @@ const EconomicIdentityConsole: React.FC<EconomicIdentityConsoleProps> = ({ optio
         />
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Identity manifest title')}>
+      <EconomicAiLayer title={t('Identity manifest title')}>
         <EconomicManifestLink
           manifests={[{ label: t('Identity manifest note'), uri: '/registry/identity/index.json' }]}
         />
         <Meta style={{ marginTop: 12 }}>
           Read-only · execution disabled · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

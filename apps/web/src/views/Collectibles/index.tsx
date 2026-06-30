@@ -7,7 +7,9 @@ import {
   EconomicPageShell,
   EconomicHero,
   EconomicSection,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 import CollectibleCard from './components/CollectibleCard'
@@ -45,7 +47,7 @@ const Collectibles: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Machine discovery index')}>
+      <EconomicAiLayer title={t('Machine discovery index')}>
         <EconomicManifestLink
           manifests={[
             { label: t('Identity cross link'), uri: '/identity' },
@@ -54,7 +56,7 @@ const Collectibles: React.FC = () => {
             { label: 'Well-known manifest', uri: '/.well-known/melega-dex-collectibles.json' },
           ]}
         />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

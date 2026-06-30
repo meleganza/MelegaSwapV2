@@ -64,14 +64,81 @@ const config: (
       href: '/',
       icon: HomeIcon,
       showItemsOnMobile: true,
-      items: []
+      items: [],
+    },
+    {
+      label: t('Swap'),
+      icon: SwapIcon,
+      fillIcon: SwapFillIcon,
+      href: '/swap',
+      showItemsOnMobile: true,
+      items: [
+        {
+          label: t('Exchange'),
+          href: '/swap',
+        },
+        {
+          label: t('Liquidity'),
+          href: '/liquidity',
+        },
+      ].map((item) => addMenuItemSupported(item, chainId)),
+    },
+    {
+      label: t('Workspace'),
+      href: '/workspace',
+      icon: CapitalIcon,
+      fillIcon: CapitalIcon,
+      showItemsOnMobile: false,
+      items: [],
+    },
+    {
+      label: t('Launch'),
+      href: '/launch',
+      icon: LaunchPadIcon,
+      fillIcon: LaunchPadIcon,
+      showItemsOnMobile: false,
+      items: [
+        {
+          label: t('Launch'),
+          href: '/launch',
+        },
+        {
+          label: t('ILO (Legacy)'),
+          href: '/ilo',
+          supportChainIds: SUPPORT_ILO,
+        },
+      ].map((item) => addMenuItemSupported(item, chainId)),
+    },
+    {
+      label: t('Projects'),
+      href: '/projects',
+      icon: ResourcesIcon,
+      fillIcon: ResourcesIcon,
+      showItemsOnMobile: false,
+      items: [],
+    },
+    {
+      label: t('Assets'),
+      href: '/assets',
+      icon: TokenIcon,
+      fillIcon: TokenIcon,
+      showItemsOnMobile: false,
+      items: [],
+    },
+    {
+      label: t('Map'),
+      href: '/map',
+      icon: InfoIcon,
+      fillIcon: InfoIcon,
+      showItemsOnMobile: false,
+      items: [],
     },
     {
       label: t('Trade'),
       icon: TradeIcon,
       fillIcon: TradeFilledIcon,
       href: '/swap',
-      showItemsOnMobile: true,
+      showItemsOnMobile: false,
       items: [
         {
           label: t('Exchange'),
@@ -132,159 +199,6 @@ const config: (
         {
           label: t('Pools'),
           href: '/pools',
-        },
-      ].map((item) => addMenuItemSupported(item, chainId)),
-    },
-    // {
-    //   label: t('Margin'),
-    //   href: '/long',
-    //   icon: SwapIcon,
-    //   fillIcon: SwapFillIcon,
-    //   items: [
-    //     {
-    //       label: t('Long'),
-    //       href: '/long',
-    //     },
-    //     {
-    //       label: t('Short'),
-    //       href: '/short',
-    //     },
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('Earn'),
-    //   href: '/farms',
-    //   icon: EarnIcon,
-    //   fillIcon: EarnFillIcon,
-    //   image: '/images/logo.png',
-    //   items: [
-    //     {
-    //       label: t('Farms'),
-    //       href: '/farms',
-    //     },
-    //     {
-    //       label: t('Pools'),
-    //       href: '/pools',
-    //     },
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('Bridge'),
-    //   href: '/bridge',
-    //   icon: TradeIcon,
-    //   fillIcon: TradeFilledIcon,
-    //   image: '/images/cgt.png',
-    //   showItemsOnMobile: false,
-    //   items: [
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('Funds'),
-    //   href: '/funds',
-    //   icon: CapitalIcon,
-    //   fillIcon: CapitalIcon,
-    //   image: '/images/cgt.png',
-    //   showItemsOnMobile: false,
-    //   hideSubNav: false,
-    //   items: [
-    //     {
-    //       label: t('Bitcoin'),
-    //       href: '/bitcoin-funds',
-    //     },
-    //     {
-    //       label: t('Venture'),
-    //       href: '/venture-funds',
-    //     },
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('Lock'),
-    //   href: '/token',
-    //   icon: TokenIcon,
-    //   fillIcon: TokenIcon,
-    //   image: '/images/cgt.png',
-    //   showItemsOnMobile: false,
-    //   hideSubNav: true,
-    //   items: [
-    //     {
-    //       label: t('Create a lock'),
-    //       href: '/create-lock',
-    //     },
-    //     {
-    //       label: t('Lock list'),
-    //       href: '/lock-list',
-    //     },
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('MultiSender'),
-    //   href: '/multisender',
-    //   icon: MultisenderIcon,
-    //   fillIcon: MultisenderIcon,
-    //   image: '/images/cgt.png',
-    //   showItemsOnMobile: false,
-    //   items: [
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('Staking'),
-    //   href: '/stake',
-    //   icon: EarnIcon,
-    //   fillIcon: EarnFillIcon,
-    //   image: '/images/cgt.png',
-    //   showItemsOnMobile: false,
-    //   items: [
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    // {
-    //   label: t('KYC'),
-    //   href: '/kyc',
-    //   icon: InfoIcon,
-    //   fillIcon: InfoIcon,
-    //   image: '/images/cgt.png',
-    //   showItemsOnMobile: false,
-    //   items: [
-    //   ].map((item) => addMenuItemSupported(item, chainId)),
-    // },
-    {
-      label: t('Projects'),
-      href: '/projects',
-      icon: ResourcesIcon,
-      fillIcon: ResourcesIcon,
-      showItemsOnMobile: false,
-      items: [],
-    },
-    {
-      label: t('Workspace'),
-      href: '/workspace',
-      icon: CapitalIcon,
-      fillIcon: CapitalIcon,
-      showItemsOnMobile: false,
-      items: [],
-    },
-    {
-      label: t('Map'),
-      href: '/map',
-      icon: InfoIcon,
-      fillIcon: InfoIcon,
-      showItemsOnMobile: false,
-      items: [],
-    },
-    {
-      label: t('Launch'),
-      href: '/launch',
-      icon: LaunchPadIcon,
-      fillIcon: LaunchPadIcon,
-      showItemsOnMobile: false,
-      items: [
-        {
-          label: t('Launch'),
-          href: '/launch',
-        },
-        {
-          label: t('ILO (Legacy)'),
-          href: '/ilo',
-          supportChainIds: SUPPORT_ILO,
         },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },

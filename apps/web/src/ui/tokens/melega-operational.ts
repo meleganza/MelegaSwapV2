@@ -1,20 +1,25 @@
-/** Shared Melega operational presentation tokens — not feature-owned. */
+/** Shared Melega Economic OS presentation tokens — design system source of truth. */
 export const melegaOperational = {
   bg: '#000000',
   surface: '#111111',
-  surfaceGlass: 'rgba(17, 17, 17, 0.88)',
+  surfaceSecondary: '#1A1A1A',
+  surfaceGlass: 'rgba(17, 17, 17, 0.92)',
   gold: '#D4AF37',
-  goldHighlight: '#FFC842',
+  goldHighlight: '#E8C547',
   text: '#FFFFFF',
-  textSecondary: '#A9A9A9',
+  textSecondary: '#9E9E9E',
   success: '#22C55E',
-  border: 'rgba(255, 255, 255, 0.08)',
-  borderGold: 'rgba(212, 175, 55, 0.22)',
-  radius: '14px',
-  radiusSm: '10px',
+  border: 'rgba(255, 255, 255, 0.06)',
+  borderGold: 'rgba(212, 175, 55, 0.2)',
+  radius: '16px',
+  radiusSm: '12px',
+  radiusLg: '20px',
+  contentMaxWidth: '1400px',
+  sectionGap: '48px',
+  cardPadding: '28px 32px',
   fontDisplay: '"Orbitron", sans-serif',
-  fontBody: '"Inter", sans-serif',
-  transition: '180ms ease',
+  fontBody: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+  transition: '200ms ease',
 } as const
 
 export type MelegaOperationalTokens = typeof melegaOperational

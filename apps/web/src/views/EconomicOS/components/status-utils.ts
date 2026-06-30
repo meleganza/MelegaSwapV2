@@ -8,6 +8,7 @@ const STATUS_MAP: Record<string, HumanStatus> = {
   approved: 'Ready',
   success: 'Ready',
   live: 'Ready',
+  active: 'Ready',
   observation_only: 'Ready',
   waiting: 'Waiting',
   pending: 'Waiting',

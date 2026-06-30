@@ -9,7 +9,7 @@ import {
   EconomicStatusSummary,
   EconomicSection,
   EconomicCard,
-  EconomicDetailToggle,
+  EconomicAiLayer,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -183,16 +183,16 @@ const SmartExecutionExplorer: React.FC = () => {
         </Stack>
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Execution constraints title')}>
+      <EconomicAiLayer title={t('Execution constraints title')}>
         {model.constraints.map((constraint) => (
           <Meta key={constraint.id}>
             <strong>{constraint.label}:</strong> {constraint.rule}
           </Meta>
         ))}
         <Meta>{t('Execution illustrative note')}</Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title={t('Execution score breakdown title')}>
+      <EconomicAiLayer title={t('Execution score breakdown title')}>
         {recommendedScore && (
           <ScoreBar>
             {recommendedScore.dimensionScores.map((dimension) => (
@@ -210,9 +210,9 @@ const SmartExecutionExplorer: React.FC = () => {
           </ScoreBar>
         )}
         <Meta>{t('Execution score breakdown note')}</Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title={t('Execution alternatives title')}>
+      <EconomicAiLayer title={t('Execution alternatives title')}>
         {model.alternatives.length === 0 ? (
           <Meta>{t('Execution no alternatives')}</Meta>
         ) : (
@@ -242,9 +242,9 @@ const SmartExecutionExplorer: React.FC = () => {
             ))}
           </Stack>
         )}
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title={t('Execution rejections title')}>
+      <EconomicAiLayer title={t('Execution rejections title')}>
         <Stack>
           {model.rejections.map((rejection) => (
             <EconomicCard key={rejection.candidateId} title={rejection.label}>
@@ -259,16 +259,16 @@ const SmartExecutionExplorer: React.FC = () => {
             </EconomicCard>
           ))}
         </Stack>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title={t('Execution manifest title')}>
+      <EconomicAiLayer title={t('Execution manifest title')}>
         <Meta>{t('Execution manifest note')}</Meta>
         <EconomicManifestLink manifests={[{ label: 'Execution index', uri: '/registry/execution/index.json' }]} />
         <Meta>
           Read-only · execution disabled · illustrative samples · as of {model.asOf}
         </Meta>
         <EconomicManifestLink manifests={[{ label: t('View economic presence registry'), uri: '/presence' }]} />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

@@ -12,7 +12,9 @@ import {
   EconomicBadge,
   EconomicStatusSummary,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -110,7 +112,7 @@ const EconomicSubmissionConsole: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicDetailToggle title="Technical details">
+      <EconomicAiLayer title={TECHNICAL_DETAILS_TITLE}>
         <Meta>{model.disclaimer}</Meta>
         <Meta style={{ marginTop: 16, marginBottom: 12 }}>{t('Submission categories title')}</Meta>
         {model.categories.map((category) => (
@@ -158,9 +160,9 @@ const EconomicSubmissionConsole: React.FC = () => {
             { label: t('Review cross link'), href: '/review' },
           ]}
         />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
 
-      <EconomicDetailToggle title="Manifest">
+      <EconomicAiLayer title={MANIFEST_TITLE}>
         <EconomicManifestLink
           manifests={[
             {
@@ -180,7 +182,7 @@ const EconomicSubmissionConsole: React.FC = () => {
         <Meta style={{ marginTop: 8 }}>
           Read-only · no persistence · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

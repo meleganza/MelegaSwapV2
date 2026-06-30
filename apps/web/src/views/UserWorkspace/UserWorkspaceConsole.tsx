@@ -11,7 +11,9 @@ import {
   EconomicCard,
   EconomicBadge,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -132,7 +134,7 @@ const UserWorkspaceConsole: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Workspace manifest title')}>
+      <EconomicAiLayer title={t('Workspace manifest title')}>
         <EconomicManifestLink
           manifests={[
             { label: t('Workspace manifest note'), uri: '/registry/workspace/index.json' },
@@ -154,7 +156,7 @@ const UserWorkspaceConsole: React.FC = () => {
         <Meta style={{ marginTop: 12 }}>
           Read-only · execution disabled · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

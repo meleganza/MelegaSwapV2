@@ -16,7 +16,7 @@ import {
   EconomicBadge,
   EconomicStatusSummary,
   EconomicActionGrid,
-  EconomicDetailToggle,
+  EconomicAiLayer,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -60,7 +60,7 @@ const SurfaceSummary: React.FC<{ surface: SurfaceRecord }> = ({ surface }) => (
     </BadgeRow>
     <RouteLink href={surface.route}>{surface.route}</RouteLink>
     <Meta style={{ marginTop: 8 }}>{surface.humanPurpose}</Meta>
-    <EconomicDetailToggle title={t('Surface map agent purpose')}>
+    <EconomicAiLayer title={t('Surface map agent purpose')}>
       {surface.replacementRoute && (
         <Meta>
           {t('Surface map replacement')}:{' '}
@@ -88,7 +88,7 @@ const SurfaceSummary: React.FC<{ surface: SurfaceRecord }> = ({ surface }) => (
           manifests={[{ label: t('Surface map manifest'), uri: surface.manifestUri }]}
         />
       )}
-    </EconomicDetailToggle>
+    </EconomicAiLayer>
   </EconomicCard>
 )
 
@@ -127,13 +127,13 @@ const SurfaceMapConsole: React.FC = () => {
           {surfaces.map((surface) => (
             <SurfaceSummary key={surface.id} surface={surface} />
           ))}
-          <EconomicDetailToggle title={t('Surface map agent summary')}>
+          <EconomicAiLayer title={t('Surface map agent summary')}>
             <Meta>{group.agentSummary}</Meta>
-          </EconomicDetailToggle>
+          </EconomicAiLayer>
         </EconomicSection>
       ))}
 
-      <EconomicDetailToggle title={t('Surface map manifest title')}>
+      <EconomicAiLayer title={t('Surface map manifest title')}>
         <EconomicManifestLink
           manifests={[
             { label: t('Surface map manifest note'), uri: '/registry/surfaces/index.json' },
@@ -160,7 +160,7 @@ const SurfaceMapConsole: React.FC = () => {
         <Meta style={{ marginTop: 12 }}>
           Read-only · execution disabled · as of {model.asOf}
         </Meta>
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }

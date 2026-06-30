@@ -13,7 +13,9 @@ import {
   EconomicHero,
   EconomicSection,
   EconomicStatusSummary,
-  EconomicDetailToggle,
+  EconomicAiLayer,
+  TECHNICAL_DETAILS_TITLE,
+  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 import PresenceCard from './components/PresenceCard'
@@ -58,14 +60,14 @@ const Presence: React.FC = () => {
         ))}
       </EconomicSection>
 
-      <EconomicDetailToggle title={t('Machine discovery index')}>
+      <EconomicAiLayer title={t('Machine discovery index')}>
         <EconomicManifestLink
           manifests={[
             { label: t('Machine discovery index'), uri: '/registry/presence/index.json' },
             { label: 'Well-known manifest', uri: '/.well-known/melega-dex-presence.json' },
           ]}
         />
-      </EconomicDetailToggle>
+      </EconomicAiLayer>
     </EconomicPageShell>
   )
 }
