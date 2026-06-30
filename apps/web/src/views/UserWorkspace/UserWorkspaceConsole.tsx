@@ -271,6 +271,12 @@ const UserWorkspaceConsole: React.FC = () => {
               </Link>
             </Meta>
             <Meta style={{ marginTop: 8 }}>
+              {t('Review cross link')}:{' '}
+              <Link href="/review" style={{ color: tokens.gold }}>
+                /review
+              </Link>
+            </Meta>
+            <Meta style={{ marginTop: 8 }}>
               {t('Orchestrator cross link')}:{' '}
               <Link href="/orchestrator" style={{ color: tokens.gold }}>
                 /orchestrator

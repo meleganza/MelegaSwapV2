@@ -15,6 +15,7 @@ export const SUBMISSION_DISCLAIMER =
   'Economic Submission Service (Mission 27) — canonical submission read model for review before registry entry. No contract execution, token deployment, liquidity deployment, database persistence, file upload, or fake approval in this build. Schema examples only.'
 
 export const SUBMISSION_CROSS_LINKS = [
+  { label: 'Review Queue', route: '/review' },
   { label: 'Launch', route: '/launch' },
   { label: 'Labs Pipeline', route: '/pipeline' },
   { label: 'Orchestrator', route: '/orchestrator' },

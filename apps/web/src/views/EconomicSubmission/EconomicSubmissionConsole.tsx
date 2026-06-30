@@ -309,6 +309,7 @@ const EconomicSubmissionConsole: React.FC = () => {
                 ),
               )}
               <CrossLink href="/submit">{t('Submission cross link')}</CrossLink>
+              <CrossLink href="/review">{t('Review cross link')}</CrossLink>
             </CrossLinkGrid>
           </Panel>
 

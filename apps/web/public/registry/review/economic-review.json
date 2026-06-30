@@ -1,0 +1,342 @@
+{
+  "manifest": "manifest://melega/platform/economic-review@0.1.0",
+  "api_version": "0.1.0",
+  "phase": "civilization_services_economic_review",
+  "read_only": true,
+  "execution_enabled": false,
+  "persistence_enabled": false,
+  "as_of": "2026-06-29",
+  "disclaimer": "Economic Submission Review Queue (Mission 28) — canonical review surface for submissions entering the Civilization. No persistence, no approval execution, no registry mutation, no database writes. Schema examples only.",
+  "live_review_queue": 0,
+  "queue_summary": {
+    "total": 10,
+    "waitingReview": 2,
+    "needsInformation": 2,
+    "blocked": 2,
+    "futureReview": 2,
+    "completedExamples": 2
+  },
+  "groups": [
+    {
+      "id": "waiting_review",
+      "label": "Waiting Review",
+      "description": "Submissions queued for human reviewer assignment when persistence exists.",
+      "items": [
+        {
+          "queueItemId": "schema://review/queue/token_metadata@waiting",
+          "submissionId": "schema://submission/token_metadata@example",
+          "submissionCategory": "token_metadata",
+          "created": "not_indexed",
+          "status": "queued",
+          "priority": "normal",
+          "reviewType": "human_metadata_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "token_name",
+            "token_symbol",
+            "decimals",
+            "asset_slug"
+          ],
+          "targetRegistry": "asset-registry",
+          "targetSurface": "/assets",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "linkedOrchestratorRecommendation": "/orchestrator",
+          "queueGroup": "waiting_review",
+          "sampleKind": "schema_example"
+        },
+        {
+          "queueItemId": "schema://review/queue/project_narrative@under_review",
+          "submissionId": "schema://submission/project_narrative@example",
+          "submissionCategory": "project_narrative",
+          "created": "not_indexed",
+          "status": "under_review",
+          "priority": "high",
+          "reviewType": "constitutional_narrative_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "narrative_title",
+            "narrative_summary",
+            "constitutional_fit"
+          ],
+          "targetRegistry": "activation-runtime",
+          "targetSurface": "/new-project",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "linkedOrchestratorRecommendation": "/orchestrator",
+          "queueGroup": "waiting_review",
+          "sampleKind": "schema_example"
+        }
+      ]
+    },
+    {
+      "id": "needs_information",
+      "label": "Needs Information",
+      "description": "Reviewer requested additional evidence — return to submission surface.",
+      "items": [
+        {
+          "queueItemId": "schema://review/queue/token_logo@needs_info",
+          "submissionId": "schema://submission/token_logo@example",
+          "submissionCategory": "token_logo",
+          "created": "not_indexed",
+          "status": "submitted",
+          "priority": "normal",
+          "reviewType": "asset_branding_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "logo_uri",
+            "logo_format",
+            "asset_slug"
+          ],
+          "blockingReason": "Missing logo_uri and asset_slug linkage to canonical asset registry.",
+          "targetRegistry": "asset-registry",
+          "targetSurface": "/assets",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "queueGroup": "needs_information",
+          "sampleKind": "schema_example"
+        },
+        {
+          "queueItemId": "schema://review/queue/audit_report@needs_info",
+          "submissionId": "schema://submission/audit_report@example",
+          "submissionCategory": "audit_report",
+          "created": "not_indexed",
+          "status": "under_review",
+          "priority": "high",
+          "reviewType": "audit_evidence_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "audit_uri",
+            "auditor_name",
+            "audit_scope"
+          ],
+          "blockingReason": "audit_uri not supplied — request_information decision applies when persistence exists.",
+          "targetRegistry": "asset-registry",
+          "targetSurface": "/assets",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "queueGroup": "needs_information",
+          "sampleKind": "schema_example"
+        }
+      ]
+    },
+    {
+      "id": "blocked",
+      "label": "Blocked",
+      "description": "Safety gate or constitutional block — no downstream routing.",
+      "items": [
+        {
+          "queueItemId": "schema://review/queue/economic_presence@blocked",
+          "submissionId": "schema://submission/economic_presence_request@example",
+          "submissionCategory": "economic_presence_request",
+          "created": "not_indexed",
+          "status": "blocked",
+          "priority": "critical",
+          "reviewType": "canonical_safety_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "presence_slug",
+            "chain_role",
+            "target_chain"
+          ],
+          "blockingReason": "Attempted canonical economy override — MARCO on BNB Chain remains LIVE.",
+          "targetRegistry": "presence-registry",
+          "targetSurface": "/presence",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "linkedOrchestratorRecommendation": "/orchestrator",
+          "queueGroup": "blocked",
+          "sampleKind": "schema_example"
+        },
+        {
+          "queueItemId": "schema://review/queue/launch_request@blocked",
+          "submissionId": "schema://submission/launch_request@example",
+          "submissionCategory": "launch_request",
+          "created": "not_indexed",
+          "status": "blocked",
+          "priority": "high",
+          "reviewType": "launch_capability_review",
+          "requiredReviewer": "governance",
+          "requiredEvidence": [
+            "capability_type",
+            "project_slug"
+          ],
+          "blockingReason": "Forbidden route to /ilo or execution payload detected in schema validation.",
+          "targetRegistry": "launch-index",
+          "targetSurface": "/launch",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "queueGroup": "blocked",
+          "sampleKind": "schema_example"
+        }
+      ]
+    },
+    {
+      "id": "future_review",
+      "label": "Future Review",
+      "description": "AI or governance review paths planned — not active in this build.",
+      "items": [
+        {
+          "queueItemId": "schema://review/queue/future_ai@future",
+          "submissionId": "schema://submission/future_ai_review@example",
+          "submissionCategory": "future_ai_review",
+          "created": "not_indexed",
+          "status": "not_indexed",
+          "priority": "low",
+          "reviewType": "future_ai_assist_review",
+          "requiredReviewer": "future",
+          "requiredEvidence": [
+            "submission_category",
+            "constitutional_fit"
+          ],
+          "blockingReason": "AI reviewer path not active — human governance required for approve.",
+          "targetRegistry": "review-queue",
+          "targetSurface": "/review",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "linkedOrchestratorRecommendation": "/orchestrator",
+          "queueGroup": "future_review",
+          "sampleKind": "schema_example"
+        },
+        {
+          "queueItemId": "schema://review/queue/website@future",
+          "submissionId": "schema://submission/website@example",
+          "submissionCategory": "website",
+          "created": "not_indexed",
+          "status": "draft",
+          "priority": "low",
+          "reviewType": "presence_link_review",
+          "requiredReviewer": "ai",
+          "requiredEvidence": [
+            "website_url",
+            "project_slug"
+          ],
+          "targetRegistry": "presence-registry",
+          "targetSurface": "/presence",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "queueGroup": "future_review",
+          "sampleKind": "schema_example"
+        }
+      ]
+    },
+    {
+      "id": "completed",
+      "label": "Completed",
+      "description": "Schema examples illustrating terminal review shapes — not live indexed outcomes.",
+      "items": [
+        {
+          "queueItemId": "schema://review/queue/classification@completed_example",
+          "submissionId": "schema://submission/classification@example",
+          "submissionCategory": "classification",
+          "created": "not_indexed",
+          "status": "approved",
+          "priority": "normal",
+          "reviewType": "economic_classification_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "classification_tier",
+            "constitutional_fit"
+          ],
+          "targetRegistry": "asset-registry",
+          "targetSurface": "/assets",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "linkedOrchestratorRecommendation": "/orchestrator",
+          "queueGroup": "completed",
+          "sampleKind": "schema_example"
+        },
+        {
+          "queueItemId": "schema://review/queue/social@completed_rejected_example",
+          "submissionId": "schema://submission/social@example",
+          "submissionCategory": "social",
+          "created": "not_indexed",
+          "status": "rejected",
+          "priority": "normal",
+          "reviewType": "presence_social_review",
+          "requiredReviewer": "human",
+          "requiredEvidence": [
+            "social_platform",
+            "social_handle"
+          ],
+          "blockingReason": "Schema example rejection — unverifiable social handle.",
+          "targetRegistry": "presence-registry",
+          "targetSurface": "/presence",
+          "linkedSubmission": "/submit",
+          "linkedPipeline": "/pipeline",
+          "queueGroup": "completed",
+          "sampleKind": "schema_example"
+        }
+      ]
+    }
+  ],
+  "decision_examples": [
+    {
+      "id": "decision_approve_example",
+      "decision": "approve",
+      "description": "Human reviewer approves submission for event intake handoff — registry write still manual.",
+      "executesRegistryMutation": false,
+      "executesOnChain": false,
+      "reviewerType": "human",
+      "notes": "Schema example only — not applied to any live queue item."
+    },
+    {
+      "id": "decision_reject_example",
+      "decision": "reject",
+      "description": "Submission fails constitutional or evidence review.",
+      "executesRegistryMutation": false,
+      "executesOnChain": false,
+      "reviewerType": "human",
+      "notes": "Rejected items do not emit intake events."
+    },
+    {
+      "id": "decision_request_information_example",
+      "decision": "request_information",
+      "description": "Reviewer requests additional metadata, audit URI, or constitutional disclosure.",
+      "executesRegistryMutation": false,
+      "executesOnChain": false,
+      "reviewerType": "human",
+      "notes": "Moves item to Needs Information group when persistence exists."
+    },
+    {
+      "id": "decision_defer_example",
+      "decision": "defer",
+      "description": "Review deferred pending Labs runtime or governance timeline.",
+      "executesRegistryMutation": false,
+      "executesOnChain": false,
+      "reviewerType": "governance",
+      "notes": "Item remains queued — no fake approval."
+    },
+    {
+      "id": "decision_blocked_example",
+      "decision": "blocked",
+      "description": "Safety gate triggered — forbidden payload or canonical override attempt.",
+      "executesRegistryMutation": false,
+      "executesOnChain": false,
+      "reviewerType": "human",
+      "notes": "Blocked decisions prevent pipeline synchronization."
+    }
+  ],
+  "cross_links": [
+    {
+      "label": "Submission",
+      "route": "/submit"
+    },
+    {
+      "label": "Labs Pipeline",
+      "route": "/pipeline"
+    },
+    {
+      "label": "Orchestrator",
+      "route": "/orchestrator"
+    },
+    {
+      "label": "Workspace",
+      "route": "/workspace"
+    },
+    {
+      "label": "Event Intake",
+      "route": "/registry/intake/real-event-intake.json"
+    }
+  ]
+}
