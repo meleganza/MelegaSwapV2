@@ -29,6 +29,7 @@ const Shell = styled.div`
     height: 380px;
     max-height: 380px;
     flex-shrink: 0;
+    overflow: hidden;
   }
 
   ${media.mobile} {
@@ -125,14 +126,14 @@ const Body = styled.div`
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: hidden;
 
   .home-trade-swap {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: visible;
+    overflow: hidden;
   }
 
   ${media.mobile} {
