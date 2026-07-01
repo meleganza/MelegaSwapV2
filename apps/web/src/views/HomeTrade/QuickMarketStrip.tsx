@@ -92,7 +92,7 @@ export const QuickMarketStrip: React.FC<{ cards: MarketCard[] }> = ({ cards }) =
       setAnimating(true)
       setSlot((s) => (s + 1) % pool.length)
       window.setTimeout(() => setAnimating(false), 260)
-    }, 10000)
+    }, 8000)
     return () => window.clearInterval(id)
   }, [pool.length])
 

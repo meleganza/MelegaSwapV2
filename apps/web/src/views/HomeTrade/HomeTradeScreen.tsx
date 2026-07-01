@@ -38,6 +38,24 @@ const Content = styled.div`
   }
 `
 
+const MarketStripWrap = styled.div`
+  margin-top: -8px;
+  position: relative;
+  z-index: 2;
+`
+
+const CtaWrap = styled.div`
+  margin-top: -4px;
+  position: relative;
+  z-index: 1;
+`
+
+const GrowWrap = styled.div`
+  margin-top: -6px;
+  position: relative;
+  z-index: 1;
+`
+
 const HeroRow = styled.div`
   display: grid;
   gap: ${homeTradeLayout.heroGap};
@@ -69,8 +87,8 @@ export const HomeTradeScreen: React.FC = () => {
     const topPool = data.marketCards.find((c) => c.id === 'top-pool')
 
     if (topFarm) rows.push({ id: 'farm', label: 'Top Farm', value: topFarm.meta || topFarm.value })
-    if (latestProject) rows.push({ id: 'listing', label: 'Latest Listing', value: latestProject.value })
     if (topPool) rows.push({ id: 'pool', label: 'Newest Pool', value: topPool.meta || topPool.value })
+    if (latestProject) rows.push({ id: 'listing', label: 'Latest Listing', value: latestProject.value })
 
     return rows.slice(0, 3)
   }, [data.marketCards])
@@ -88,9 +106,17 @@ export const HomeTradeScreen: React.FC = () => {
             liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
           />
         </HeroRow>
-        {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
-        <ListProjectCta />
-        <GrowInsideMelegaPanel />
+        {data.showMarket && (
+          <MarketStripWrap>
+            <QuickMarketStrip cards={data.marketCards} />
+          </MarketStripWrap>
+        )}
+        <CtaWrap>
+          <ListProjectCta />
+        </CtaWrap>
+        <GrowWrap>
+          <GrowInsideMelegaPanel />
+        </GrowWrap>
         <LowerRow $hasEarn={data.showEarn}>
           {data.showEarn && (
             <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />

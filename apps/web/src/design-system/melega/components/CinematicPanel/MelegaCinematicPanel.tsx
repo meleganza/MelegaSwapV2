@@ -3,13 +3,13 @@ import styled, { keyframes } from 'styled-components'
 import { colors, typography } from '../../tokens'
 
 const melegaPlanetGlow = keyframes`
-  0%, 100% { opacity: 0.97; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.025); }
+  0%, 100% { opacity: 0.98; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
 `
 
 const melegaStars = keyframes`
-  0%, 100% { opacity: 0.18; }
-  50% { opacity: 0.42; }
+  0%, 100% { opacity: 0.31; }
+  50% { opacity: 0.71; }
 `
 
 const particleFloat = keyframes`
@@ -97,13 +97,13 @@ const Particles = styled.div`
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(1px 1px at 12% 58%, rgba(244, 197, 66, 0.12), transparent),
-    radial-gradient(1px 1px at 28% 68%, rgba(244, 197, 66, 0.12), transparent),
-    radial-gradient(1px 1px at 44% 52%, rgba(244, 197, 66, 0.12), transparent),
-    radial-gradient(1px 1px at 62% 72%, rgba(244, 197, 66, 0.12), transparent),
-    radial-gradient(1px 1px at 78% 48%, rgba(244, 197, 66, 0.12), transparent),
-    radial-gradient(1px 1px at 88% 62%, rgba(244, 197, 66, 0.12), transparent),
-    radial-gradient(1px 1px at 52% 78%, rgba(244, 197, 66, 0.12), transparent);
+    radial-gradient(1px 1px at 12% 58%, rgba(244, 197, 66, 0.1), transparent),
+    radial-gradient(1px 1px at 28% 68%, rgba(244, 197, 66, 0.1), transparent),
+    radial-gradient(1px 1px at 44% 52%, rgba(244, 197, 66, 0.1), transparent),
+    radial-gradient(1px 1px at 62% 72%, rgba(244, 197, 66, 0.1), transparent),
+    radial-gradient(1px 1px at 78% 48%, rgba(244, 197, 66, 0.1), transparent),
+    radial-gradient(1px 1px at 88% 62%, rgba(244, 197, 66, 0.1), transparent),
+    radial-gradient(1px 1px at 52% 78%, rgba(244, 197, 66, 0.1), transparent);
   animation: ${particleFloat} 9s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
@@ -123,10 +123,10 @@ const Scene = styled.div`
 const Planet = styled.div`
   position: absolute;
   inset: 0;
-  top: 70px;
+  top: 110px;
   background:
-    radial-gradient(ellipse 82% 66% at 82% 92%, rgba(244, 197, 66, 0.97) 0%, rgba(212, 175, 55, 0.42) 28%, rgba(0, 0, 0, 0) 52%);
-  animation: ${melegaPlanetGlow} 9s ease-in-out infinite;
+    radial-gradient(ellipse 82% 66% at 82% 92%, rgba(244, 197, 66, 1) 0%, rgba(212, 175, 55, 0.52) 28%, rgba(0, 0, 0, 0) 52%);
+  animation: ${melegaPlanetGlow} 8s ease-in-out infinite;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
@@ -170,9 +170,9 @@ const LiveEconomyStrip = styled.div`
 const LiveLabel = styled.span`
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: ${colors.gold};
+  color: #c6a33a;
   margin-right: 14px;
 `
 
@@ -225,12 +225,12 @@ const PulseOverlay = styled.div`
   position: absolute;
   right: 22px;
   bottom: 20px;
-  width: 126px;
+  width: 88px;
   background: rgba(5, 5, 5, 0.92);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 10px 12px;
+  padding: 10px 10px;
   z-index: 3;
 `
 
@@ -301,20 +301,18 @@ export const MelegaCinematicPanel: React.FC<MelegaCinematicPanelProps> = ({ puls
         <HorizonArc />
       </Scene>
       <Copy>
-        {economyMetrics.length > 0 && (
-          <LiveEconomyStrip>
-            <LiveLabel>Live Economy</LiveLabel>
-            {economyMetrics.map((metric, i) => (
-              <React.Fragment key={metric.id}>
-                {i > 0 && <MetricSep aria-hidden />}
-                <MetricItem>
-                  <MetricName>{metric.label}</MetricName>
-                  <MetricValue $live={metric.live}>{metric.value}</MetricValue>
-                </MetricItem>
-              </React.Fragment>
-            ))}
-          </LiveEconomyStrip>
-        )}
+        <LiveEconomyStrip>
+          <LiveLabel>Live Economy</LiveLabel>
+          {economyMetrics.map((metric, i) => (
+            <React.Fragment key={metric.id}>
+              {i > 0 && <MetricSep aria-hidden />}
+              <MetricItem>
+                <MetricName>{metric.label}</MetricName>
+                <MetricValue $live={metric.live}>{metric.value}</MetricValue>
+              </MetricItem>
+            </React.Fragment>
+          ))}
+        </LiveEconomyStrip>
         <HeadlineBlock>
           <HeadlineLine>Trade.</HeadlineLine>
           <HeadlineLine>Build.</HeadlineLine>

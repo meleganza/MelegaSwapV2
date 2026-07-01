@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
+import { useWeb3React } from '@pancakeswap/wagmi'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
@@ -29,6 +30,7 @@ const RefreshIcon = () => (
 
 const HomeSwapInner: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
+  const { account } = useWeb3React()
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -73,8 +75,32 @@ const HomeSwapInner: React.FC = () => {
         </>
       }
     >
-      <div ref={swapBodyRef} className="home-trade-swap">
+      <div
+        ref={swapBodyRef}
+        className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
+        data-wallet-connected={account ? 'true' : 'false'}
+      >
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+        {!account && (
+          <div className="home-trade-swap-details-preview" aria-hidden>
+            <div className="home-trade-swap-details-row">
+              <span>Estimated</span>
+              <span>—</span>
+            </div>
+            <div className="home-trade-swap-details-row">
+              <span>Minimum received</span>
+              <span>—</span>
+            </div>
+            <div className="home-trade-swap-details-row">
+              <span>Price impact</span>
+              <span>—</span>
+            </div>
+            <div className="home-trade-swap-details-row">
+              <span>Route</span>
+              <span>—</span>
+            </div>
+          </div>
+        )}
       </div>
     </MelegaSwapPanelShell>
   )

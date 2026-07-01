@@ -9,40 +9,40 @@ const fadeIn = keyframes`
 `
 
 const Shell = styled.section`
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  padding: 20px 22px;
+  background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 18px 20px 16px;
   box-sizing: border-box;
-  max-height: 210px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 `
 
 const Header = styled.div`
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1.2;
+  letter-spacing: -0.01em;
 `
 
 const Subtitle = styled.p`
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #a8a8a8;
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #707070;
   line-height: 1.35;
 `
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px 16px;
+  gap: 4px 18px;
 `
 
 const Cell = styled.div`
@@ -51,6 +51,13 @@ const Cell = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding-bottom: 4px;
+
+  &:nth-last-child(-n + 2) {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
 `
 
 const CellLabel = styled.div`
@@ -59,19 +66,19 @@ const CellLabel = styled.div`
   gap: 6px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #707070;
+  color: #5f5f5f;
   line-height: 1.2;
 `
 
 const StatusDot = styled.span<{ $tone?: 'gold' | 'green' | 'neutral' }>`
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   flex-shrink: 0;
   background: ${({ $tone }) =>
-    $tone === 'green' ? colors.green : $tone === 'gold' ? colors.gold : 'rgba(255,255,255,0.25)'};
+    $tone === 'green' ? colors.green : $tone === 'gold' ? colors.gold : 'rgba(255,255,255,0.2)'};
 `
 
 const CellValue = styled.div`
@@ -89,7 +96,7 @@ const CellValue = styled.div`
 const CellMeta = styled.div`
   margin-top: 1px;
   font-size: 11px;
-  color: #9e9e9e;
+  color: #8a8a8a;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -97,16 +104,24 @@ const CellMeta = styled.div`
 `
 
 const Networks = styled.div`
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 11px;
-  color: #8a8a8a;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5f5f5f;
   line-height: 1.35;
 `
 
 const NetworkGold = styled.span`
   color: ${colors.gold};
+  font-weight: 700;
+`
+
+const NetworkNeutral = styled.span`
+  color: #5f5f5f;
   font-weight: 600;
 `
 
@@ -132,9 +147,8 @@ export const MarketPulsePanel: React.FC = () => {
         ))}
       </Grid>
       <Networks>
-        <NetworkGold>BNB Chain</NetworkGold>
-        {' · '}
-        Polygon · Ethereum · Base
+        <NetworkGold>BNB</NetworkGold>
+        <NetworkNeutral> · Polygon · Ethereum · Base</NetworkNeutral>
       </Networks>
     </Shell>
   )

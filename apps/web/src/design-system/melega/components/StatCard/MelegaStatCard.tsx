@@ -31,8 +31,8 @@ const Card = styled.a<{ $interactive?: boolean }>`
   justify-content: center;
   height: 72px;
   padding: 12px;
-  background: #111111;
-  border: 1px solid ${colors.border};
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   text-decoration: none;
   box-shadow: none;

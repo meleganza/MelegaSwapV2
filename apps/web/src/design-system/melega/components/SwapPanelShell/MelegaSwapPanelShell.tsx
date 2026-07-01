@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, radius } from '../../tokens'
+import { colors, typography } from '../../tokens'
 import { media } from '../../theme'
 
 export interface MelegaSwapPanelShellProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -11,10 +11,10 @@ export interface MelegaSwapPanelShellProps extends React.HTMLAttributes<HTMLDivE
 }
 
 const Shell = styled.div`
-  background: linear-gradient(180deg, #111111 0%, #080808 100%);
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  border-radius: ${radius['2xl']};
-  padding: 14px 18px 16px;
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 0 18px 14px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@ const Shell = styled.div`
   }
 
   ${media.mobile} {
-    border-radius: ${radius.panel};
+    border-radius: 20px;
     min-height: 500px;
     max-height: none;
     height: auto;
@@ -40,32 +40,40 @@ const Shell = styled.div`
 
 const Header = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  height: 60px;
+  min-height: 60px;
+`
+
+const TitleBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `
 
 const Title = styled.h1`
   margin: 0;
   font-family: ${typography.fontFamily.body};
-  font-size: 38px;
+  font-size: 42px;
   font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1;
 `
 
 const Subtitle = styled.p`
-  margin: 6px 0 0;
+  margin: 0;
   font-size: 13px;
   font-weight: 500;
-  color: ${colors.textSecondary};
+  color: #b6b6b6;
   line-height: 1.35;
 `
 
 const Divider = styled.div`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: 12px 0 10px;
+  margin: 0 0 10px;
   flex-shrink: 0;
 `
 
@@ -129,10 +137,10 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
 }) => (
   <Shell data-home-swap-panel {...rest}>
     <Header>
-      <div>
+      <TitleBlock>
         <Title>{title}</Title>
         <Subtitle>{subtitle}</Subtitle>
-      </div>
+      </TitleBlock>
       {toolbar && <Toolbar>{toolbar}</Toolbar>}
     </Header>
     <Divider />

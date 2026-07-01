@@ -5,32 +5,28 @@ import { colors } from 'design-system/melega'
 import { ActivityRow } from './useHomeTradeData'
 
 const Shell = styled.section`
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  padding: 18px 22px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px 20px;
   box-sizing: border-box;
-  height: 190px;
+  height: 160px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  @media (min-width: 768px) {
-    height: 210px;
-  }
 `
 
 const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: ${colors.textPrimary};
 `
@@ -56,7 +52,7 @@ const Body = styled.div`
 const Timeline = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 `
 
 const Row = styled.div`
@@ -64,7 +60,7 @@ const Row = styled.div`
   grid-template-columns: 16px 1fr auto;
   gap: 10px;
   align-items: center;
-  height: 30px;
+  height: 28px;
 `
 
 const RowIcon = styled.span`
@@ -111,22 +107,22 @@ const EmptyWrap = styled.div`
 `
 
 const pulseDot = keyframes`
-  0%, 100% { transform: scale(1); opacity: 0.35; }
-  50% { transform: scale(1.45); opacity: 0.08; }
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.5); opacity: 0.08; }
 `
 
 const PulseDot = styled.span`
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: rgba(212, 175, 55, 0.35);
-  margin-bottom: 12px;
+  background: rgba(212, 175, 55, 0.4);
+  margin-bottom: 10px;
   animation: ${pulseDot} 2.4s ease-in-out infinite;
 `
 
 const EmptyTitle = styled.p`
-  margin: 0 0 6px;
-  font-size: 14px;
+  margin: 0 0 4px;
+  font-size: 13px;
   font-weight: 600;
   color: ${colors.textPrimary};
 `

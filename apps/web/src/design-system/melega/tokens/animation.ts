@@ -4,12 +4,12 @@ export const animation = {
   cardHover: '150ms ease',
   expand: '220ms ease',
   fade: '180ms ease',
-  glow: '9s ease-in-out',
+  glow: '8s ease-in-out',
   ticker: '42s linear',
   heroParticles: '9s ease-in-out',
-  marketRotate: '10s linear',
+  marketRotate: '8s linear',
   stars: '7s ease-in-out',
-  pulse: '2.5s ease-in-out',
+  pulse: '2.4s ease-in-out',
   switchRotate: '250ms ease-out',
 } as const
 

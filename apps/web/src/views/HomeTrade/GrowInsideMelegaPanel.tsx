@@ -57,8 +57,8 @@ const GROW_ITEMS = [
 ] as const
 
 const Shell = styled.section`
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 18px;
   padding: 20px 22px 22px;
   box-sizing: border-box;
@@ -130,8 +130,8 @@ const EcoCard = styled(Link)`
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 12px;
   box-sizing: border-box;
@@ -142,9 +142,9 @@ const EcoCard = styled(Link)`
     box-shadow 150ms ease;
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(212, 175, 55, 0.22);
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.08);
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.06);
   }
 
   @media (max-width: 767px) {
@@ -162,21 +162,21 @@ const TextCol = styled.div`
 
 const IconWrap = styled.span`
   display: flex;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   color: ${colors.gold};
   flex-shrink: 0;
 
   svg {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
   }
 `
 
 const CardTitle = styled.span`
   display: block;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
 `
@@ -184,7 +184,7 @@ const CardTitle = styled.span`
 const CardSubtitle = styled.span`
   display: block;
   margin-top: 2px;
-  font-size: 11px;
+  font-size: 12px;
   color: #a8a8a8;
   line-height: 1.25;
   white-space: nowrap;

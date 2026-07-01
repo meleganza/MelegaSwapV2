@@ -8,14 +8,14 @@ export interface MelegaSidebarSectionProps {
 }
 
 const Section = styled.div`
-  margin-top: 14px;
+  margin-top: 18px;
 
   &:first-child {
     margin-top: 0;
   }
 
   @media (max-height: 899px) {
-    margin-top: 12px;
+    margin-top: 16px;
 
     &:first-child {
       margin-top: 0;
@@ -29,10 +29,10 @@ const Label = styled.div`
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #5f5f5f;
+  color: #4a4a4a;
   height: 14px;
-  margin-bottom: 6px;
-  padding: 0 10px;
+  margin-bottom: 8px;
+  padding: 0 6px;
 `
 
 const Items = styled.div`

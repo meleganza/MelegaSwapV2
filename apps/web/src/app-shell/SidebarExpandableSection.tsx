@@ -10,13 +10,14 @@ const MoreButton = styled.button<{ $open?: boolean }>`
   align-items: center;
   width: 100%;
   height: 28px;
-  padding: 0 14px 0 38px;
+  padding: 0 10px 0 30px;
   border: none;
   background: transparent;
   color: #707070;
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   cursor: pointer;
   text-align: left;
   transition: color 150ms ease;
@@ -26,17 +27,31 @@ const MoreButton = styled.button<{ $open?: boolean }>`
   }
 `
 
+const Chevron = styled.span<{ $open?: boolean }>`
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 1;
+  color: #5f5f5f;
+  transform: rotate(${({ $open }) => ($open ? '90deg' : '0deg')});
+  transition: transform 220ms ease;
+`
+
 const Expandable = styled.div<{ $open?: boolean }>`
   display: grid;
   grid-template-rows: ${({ $open }) => ($open ? '1fr' : '0fr')};
   transition: grid-template-rows 220ms ease;
 `
 
-const ExpandInner = styled.div`
+const ExpandInner = styled.div<{ $open?: boolean }>`
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  transform: translateY(${({ $open }) => ($open ? '0' : '8px')});
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
 `
 
 export interface SidebarExpandableSectionProps {
@@ -82,12 +97,16 @@ export const SidebarExpandableSection: React.FC<SidebarExpandableSectionProps> =
             $open={open}
             aria-expanded={open}
             aria-controls={panelId}
+            aria-label={open ? 'Collapse menu' : 'Expand menu'}
             onClick={() => setOpen((v) => !v)}
           >
-            More &gt;
+            ...
+            <Chevron $open={open} aria-hidden>
+              ›
+            </Chevron>
           </MoreButton>
           <Expandable $open={open} id={panelId}>
-            <ExpandInner>{extra.map(renderItem)}</ExpandInner>
+            <ExpandInner $open={open}>{extra.map(renderItem)}</ExpandInner>
           </Expandable>
         </>
       )}
