@@ -26,8 +26,8 @@ const Shell = styled.div`
   @media (min-width: 768px) {
     width: 470px;
     max-width: 470px;
-    height: 372px;
-    max-height: 372px;
+    height: 392px;
+    max-height: 392px;
     flex-shrink: 0;
     overflow: hidden;
   }
@@ -53,7 +53,7 @@ const TitleBlock = styled.div`
   gap: 0;
   min-width: 0;
   max-width: calc(100% - 200px);
-  padding-bottom: 0;
+  padding-bottom: 8px;
 `
 
 const Title = styled.h1`
@@ -76,7 +76,7 @@ const Subtitle = styled.p`
 const PairSlot = styled.div`
   position: absolute;
   top: 22px;
-  right: 104px;
+  right: 124px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -87,7 +87,7 @@ const PairSlot = styled.div`
 const Toolbar = styled.div`
   position: absolute;
   top: 12px;
-  right: 18px;
+  right: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -132,7 +132,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 6px 16px 4px;
+  padding: 6px 16px 16px;
 
   .home-trade-swap {
     flex: 1;

@@ -15,9 +15,9 @@ const Shell = styled.section<{ $hasRows?: boolean }>`
   overflow: hidden;
 
   @media (min-width: 768px) {
-    min-height: ${({ $hasRows }) => ($hasRows ? 'auto' : '140px')};
-    height: ${({ $hasRows }) => ($hasRows ? 'auto' : '140px')};
-    max-height: ${({ $hasRows }) => ($hasRows ? '220px' : '140px')};
+    min-height: ${({ $hasRows }) => ($hasRows ? 'auto' : '136px')};
+    height: ${({ $hasRows }) => ($hasRows ? 'auto' : '136px')};
+    max-height: ${({ $hasRows }) => ($hasRows ? '220px' : '136px')};
   }
 
   @media (max-width: 767px) {

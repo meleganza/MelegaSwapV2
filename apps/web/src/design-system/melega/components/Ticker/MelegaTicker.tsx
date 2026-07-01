@@ -64,11 +64,11 @@ const Track = styled.div<{ $paused?: boolean }>`
   width: max-content;
   white-space: nowrap;
   will-change: transform;
-  animation: ${melegaTicker} 34s linear infinite;
+  animation: ${melegaTicker} 40s linear infinite;
   animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
 
   @media (min-width: 768px) {
-    animation-duration: 42s;
+    animation-duration: 40s;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -128,18 +128,18 @@ const Secondary = styled.span`
 `
 
 const Accent = styled.span`
-  font-weight: 400;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 14px;
   color: #00e676;
 `
 
 const Dot = styled.span`
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: ${colors.gold};
   flex-shrink: 0;
-  margin: 0 28px;
+  margin: 0 18px;
 `
 
 const EmptyRow = styled.div`

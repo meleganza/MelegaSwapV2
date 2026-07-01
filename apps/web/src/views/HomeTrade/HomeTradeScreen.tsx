@@ -53,6 +53,14 @@ const HeroRow = styled.div`
   }
 `
 
+const GrowSection = styled.div`
+  margin-top: 4px;
+`
+
+const LowerSection = styled.div`
+  margin-top: 4px;
+`
+
 const LowerRow = styled.div<{ $hasEarn?: boolean }>`
   display: grid;
   gap: ${homeTradeLayout.columnGap};
@@ -93,13 +101,17 @@ export const HomeTradeScreen: React.FC = () => {
         </HeroRow>
         {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
         <ListProjectCta />
-        <GrowInsideMelegaPanel />
-        <LowerRow $hasEarn={data.showEarn}>
-          {data.showEarn && (
-            <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
-          )}
-          <MarketPulsePanel />
-        </LowerRow>
+        <GrowSection>
+          <GrowInsideMelegaPanel />
+        </GrowSection>
+        <LowerSection>
+          <LowerRow $hasEarn={data.showEarn}>
+            {data.showEarn && (
+              <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
+            )}
+            <MarketPulsePanel />
+          </LowerRow>
+        </LowerSection>
         <LiveActivityFeed rows={data.activityRows} />
         <HomeTradeFooter />
       </Content>

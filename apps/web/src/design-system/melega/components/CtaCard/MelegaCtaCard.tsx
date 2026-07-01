@@ -17,7 +17,7 @@ export interface MelegaCtaCardProps {
 
 const Card = styled.div`
   display: grid;
-  grid-template-columns: 74px 1fr;
+  grid-template-columns: 80px 1fr;
   gap: 14px;
   align-items: center;
   min-height: 136px;
@@ -40,8 +40,8 @@ const Card = styled.div`
 `
 
 const Visual = styled.div`
-  width: 66px;
-  height: 66px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,7 @@ const Body = styled.div`
 const Title = styled.h3`
   margin: 0 0 2px;
   font-family: ${typography.fontFamily.body};
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1.1;
@@ -84,7 +84,7 @@ const Desc = styled.p`
 const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 14px;
   margin-top: 8px;
 
   ${media.mobile} {
@@ -97,9 +97,9 @@ const ActionLink = styled(Link)<{ $variant?: 'primary' | 'secondary' }>`
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  width: ${({ $variant }) => ($variant === 'secondary' ? '210px' : '170px')};
-  height: 40px;
-  min-height: 40px;
+  width: ${({ $variant }) => ($variant === 'secondary' ? '230px' : '170px')};
+  height: 44px;
+  min-height: 44px;
   border-radius: 12px;
   font-family: ${typography.fontFamily.body};
   font-size: 14px;

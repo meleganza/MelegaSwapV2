@@ -28,6 +28,10 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     transform: translateY(-1px) !important;
   }
 
+  [data-melega-app-shell] .melega-shell-network {
+    transform: translateY(-2px);
+  }
+
   [data-melega-app-shell] .melega-shell-network button,
   [data-melega-app-shell] .melega-shell-network [role='button'] {
     height: 40px !important;

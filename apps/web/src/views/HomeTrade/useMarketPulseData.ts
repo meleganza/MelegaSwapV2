@@ -1,27 +1,33 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { ChainId } from '@pancakeswap/sdk'
 import { formatUnits } from '@ethersproject/units'
 import { useCurrentBlock } from 'state/block/hooks'
 import { useGasPrice } from 'state/user/hooks'
-import { useActiveChainId } from 'hooks/useActiveChainId'
 
-export interface MarketPulseCell {
-  id: string
+export interface MarketPulseMetric {
   label: string
   value?: string
-  meta?: string
-  status?: 'gold' | 'green' | 'neutral'
+  change?: string
+  changePositive?: boolean
 }
 
 interface CoinGeckoGlobal {
   market_cap_percentage?: { btc?: number }
   total_market_cap?: { usd?: number }
+  total_volume?: { usd?: number }
+  market_cap_change_percentage_24h_usd?: number
 }
 
 interface FearGreedEntry {
   value?: string
   value_classification?: string
+}
+
+interface BnbPriceEntry {
+  binancecoin?: {
+    usd?: number
+    usd_24h_change?: number
+  }
 }
 
 const fetchGlobal = async (): Promise<CoinGeckoGlobal | null> => {
@@ -38,11 +44,20 @@ const fetchFearGreed = async (): Promise<FearGreedEntry | null> => {
   return json?.data?.[0] ?? null
 }
 
-const formatMarketCap = (usd?: number): string | undefined => {
+const fetchBnbPrice = async (): Promise<BnbPriceEntry | null> => {
+  const res = await fetch(
+    'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd&include_24hr_change=true',
+  )
+  if (!res.ok) return null
+  return res.json()
+}
+
+const formatUsdCompact = (usd?: number): string | undefined => {
   if (!usd || usd <= 0) return undefined
   if (usd >= 1e12) return `$${(usd / 1e12).toFixed(2)}T`
   if (usd >= 1e9) return `$${(usd / 1e9).toFixed(2)}B`
-  return `$${(usd / 1e6).toFixed(0)}M`
+  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`
+  return `$${usd.toFixed(2)}`
 }
 
 const formatGasGwei = (raw?: string): string | undefined => {
@@ -58,8 +73,13 @@ const formatGasGwei = (raw?: string): string | undefined => {
   }
 }
 
+const formatChange = (pct?: number): { text?: string; positive?: boolean } => {
+  if (pct == null || !Number.isFinite(pct)) return {}
+  const sign = pct >= 0 ? '+' : ''
+  return { text: `${sign}${pct.toFixed(2)}%`, positive: pct >= 0 }
+}
+
 export const useMarketPulseData = () => {
-  const chainId = useActiveChainId()
   const block = useCurrentBlock()
   const gasRaw = useGasPrice()
 
@@ -73,60 +93,61 @@ export const useMarketPulseData = () => {
     revalidateOnFocus: false,
   })
 
-  const cells = useMemo((): MarketPulseCell[] => {
-    const onBsc = chainId === ChainId.BSC
+  const { data: bnbData } = useSWR('market-pulse-bnb-price', fetchBnbPrice, {
+    refreshInterval: 120_000,
+    revalidateOnFocus: false,
+  })
+
+  const cryptoMarket = useMemo((): MarketPulseMetric[] => {
+    const mcap = formatUsdCompact(globalData?.total_market_cap?.usd)
+    const mcapChange = formatChange(globalData?.market_cap_change_percentage_24h_usd)
+    const volume = formatUsdCompact(globalData?.total_volume?.usd)
     const btcDom = globalData?.market_cap_percentage?.btc
-    const mcap = formatMarketCap(globalData?.total_market_cap?.usd)
-    const gas = formatGasGwei(gasRaw)
-    const fngValue = fngData?.value
-    const fngLabel = fngData?.value_classification
 
     return [
       {
-        id: 'chain',
-        label: 'BNB Chain',
-        value: onBsc ? 'Active' : 'Indexing',
-        meta: onBsc ? 'Primary network' : undefined,
-        status: onBsc ? 'gold' : 'neutral',
-      },
-      {
-        id: 'block',
-        label: 'Latest block',
-        value: block > 0 ? block.toLocaleString() : undefined,
-        meta: block > 0 ? 'Live' : undefined,
-        status: block > 0 ? 'green' : 'neutral',
-      },
-      {
-        id: 'gas',
-        label: 'Gas',
-        value: gas,
-        meta: gas ? 'Network fee' : undefined,
-        status: gas ? 'green' : 'neutral',
-      },
-      {
-        id: 'btc-dom',
-        label: 'BTC Dominance',
-        value: btcDom != null ? `${btcDom.toFixed(1)}%` : undefined,
-        status: btcDom != null ? 'gold' : 'neutral',
-      },
-      {
-        id: 'mcap',
         label: 'Crypto Market Cap',
         value: mcap,
-        status: mcap ? 'neutral' : 'neutral',
+        change: mcapChange.text,
+        changePositive: mcapChange.positive,
       },
       {
-        id: 'fng',
-        label: 'Fear & Greed',
-        value: fngValue,
-        meta: fngLabel,
-        status: fngValue ? 'gold' : 'neutral',
+        label: '24H Crypto Volume',
+        value: volume,
+      },
+      {
+        label: 'Bitcoin Dominance',
+        value: btcDom != null ? `${btcDom.toFixed(1)}%` : undefined,
       },
     ]
-  }, [block, chainId, fngData, gasRaw, globalData])
+  }, [globalData])
+
+  const bnbChain = useMemo((): MarketPulseMetric[] => {
+    const bnbUsd = bnbData?.binancecoin?.usd
+    const bnbChange = formatChange(bnbData?.binancecoin?.usd_24h_change)
+    const gas = formatGasGwei(gasRaw)
+
+    return [
+      {
+        label: 'BNB Price',
+        value: bnbUsd != null ? `$${bnbUsd.toFixed(2)}` : undefined,
+        change: bnbChange.text,
+        changePositive: bnbChange.positive,
+      },
+      {
+        label: 'Gas',
+        value: gas,
+      },
+      {
+        label: 'Latest Block',
+        value: block > 0 ? block.toLocaleString() : undefined,
+      },
+    ]
+  }, [block, bnbData, gasRaw])
 
   return {
-    cells,
+    cryptoMarket,
+    bnbChain,
     fearGreed: {
       value: fngData?.value,
       classification: fngData?.value_classification,

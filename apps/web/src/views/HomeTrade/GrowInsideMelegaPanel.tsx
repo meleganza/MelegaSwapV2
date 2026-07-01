@@ -6,8 +6,8 @@ import { colors } from 'design-system/melega'
 const GROW_ITEMS = [
   {
     id: 'labs',
-    title: 'Labs',
-    subtitle: 'Trade narratives before listing',
+    title: 'LABS',
+    subtitle: 'Trade narratives before listing.',
     href: '/runtime/labs',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -19,8 +19,8 @@ const GROW_ITEMS = [
   },
   {
     id: 'space',
-    title: 'Space',
-    subtitle: 'Increase project visibility',
+    title: 'SPACE',
+    subtitle: 'Increase project visibility.',
     href: '/presence',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -31,8 +31,8 @@ const GROW_ITEMS = [
   },
   {
     id: 'radar',
-    title: 'Radar',
-    subtitle: 'Find trends and claim your profile',
+    title: 'RADAR',
+    subtitle: 'Discover trends and claim your profile.',
     href: '/projects',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -44,8 +44,8 @@ const GROW_ITEMS = [
   },
   {
     id: 'smartdrop',
-    title: 'SmartDrop',
-    subtitle: 'Acquire active holders',
+    title: 'SMARTDROP',
+    subtitle: 'Acquire active holders.',
     href: '/launch',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -130,23 +130,23 @@ const EcoCard = styled(Link)`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  padding: 14px;
+  padding: 16px;
   box-sizing: border-box;
-  height: 74px;
+  height: 78px;
   transition:
     border-color 150ms ease,
     transform 150ms ease,
     box-shadow 150ms ease;
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.22);
+    border-color: rgba(212, 175, 55, 0.55);
     transform: translateY(-2px);
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.06);
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.08);
   }
 
   @media (max-width: 767px) {
@@ -164,20 +164,20 @@ const TextCol = styled.div`
 
 const IconWrap = styled.span`
   display: flex;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   color: ${colors.gold};
   flex-shrink: 0;
 
   svg {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
   }
 `
 
 const CardTitle = styled.span`
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;

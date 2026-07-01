@@ -21,7 +21,7 @@ const ItemBase = styled.a<{
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 28px;
+  height: 26px;
   padding: 0 12px;
   border-radius: 8px;
   border: 1px solid transparent;

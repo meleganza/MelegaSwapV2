@@ -17,6 +17,11 @@ const particleFloat = keyframes`
   50% { transform: translateY(-6px); }
 `
 
+const widgetFloat = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+`
+
 const metricFade = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -53,7 +58,7 @@ const Panel = styled.div`
 
   @media (min-width: 768px) {
     height: 100%;
-    max-height: 350px;
+    max-height: 392px;
   }
 `
 
@@ -84,7 +89,12 @@ const Stars = styled.div`
     radial-gradient(1px 1px at 96% 24%, rgba(255, 255, 255, 0.28), transparent),
     radial-gradient(1px 1px at 6% 48%, rgba(255, 255, 255, 0.22), transparent),
     radial-gradient(1px 1px at 18% 58%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 32% 52%, rgba(255, 255, 255, 0.24), transparent);
+    radial-gradient(1px 1px at 32% 52%, rgba(255, 255, 255, 0.24), transparent),
+    radial-gradient(1px 1px at 10% 40%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 24% 44%, rgba(255, 255, 255, 0.26), transparent),
+    radial-gradient(1px 1px at 40% 46%, rgba(255, 255, 255, 0.22), transparent),
+    radial-gradient(1px 1px at 55% 42%, rgba(255, 255, 255, 0.28), transparent),
+    radial-gradient(1px 1px at 70% 46%, rgba(255, 255, 255, 0.24), transparent);
   animation: ${melegaStars} 7s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
@@ -130,7 +140,7 @@ const Planet = styled.div`
   background:
     radial-gradient(ellipse 82% 66% at 50% 50%, rgba(244, 197, 66, 1) 0%, rgba(212, 175, 55, 0.52) 28%, rgba(0, 0, 0, 0) 52%);
   filter: blur(80px);
-  opacity: 0.52;
+  opacity: 0.57;
   animation: ${melegaPlanetGlow} 8s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
@@ -250,9 +260,14 @@ const PulseOverlay = styled.div`
   border-radius: 16px;
   padding: 14px;
   z-index: 3;
+  animation: ${widgetFloat} 7s ease-in-out infinite;
 
   @media (max-width: 767px) {
     display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `
 

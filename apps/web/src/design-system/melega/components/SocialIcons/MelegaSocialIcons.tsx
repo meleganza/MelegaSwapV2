@@ -6,6 +6,7 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   gap: 14px;
+  transform: translateY(4px);
 `
 
 const Link = styled.a`

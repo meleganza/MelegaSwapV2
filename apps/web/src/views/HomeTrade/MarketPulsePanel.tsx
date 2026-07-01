@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
-import useMarketPulseData from './useMarketPulseData'
+import useMarketPulseData, { type MarketPulseMetric } from './useMarketPulseData'
 import FearGreedGauge from './FearGreedGauge'
 
 const fadeIn = keyframes`
@@ -60,8 +60,8 @@ const Content = styled.div`
 
 const Body = styled.div`
   display: grid;
-  grid-template-columns: 170px 1fr;
-  gap: 24px;
+  grid-template-columns: 130px 1fr 1fr;
+  gap: 20px 28px;
   flex: 1;
   min-height: 0;
   align-items: start;
@@ -77,79 +77,77 @@ const GaugeColumn = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  width: 170px;
-  min-width: 170px;
-  margin-top: 18px;
+  width: 130px;
+  min-width: 130px;
+  padding-top: 8px;
 
   @media (max-width: 767px) {
     width: 100%;
     min-width: 0;
-    margin-top: 0;
+    padding-top: 0;
   }
 `
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px 24px;
-  align-content: start;
-`
-
-const Cell = styled.div`
-  min-width: 0;
-  min-height: 58px;
+const DataColumn = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 14px;
+  min-width: 0;
 `
 
-const CellLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
+const ColumnTitle = styled.div`
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #707070;
+  color: #8a8a8a;
   line-height: 1.2;
 `
 
-const StatusDot = styled.span<{ $tone?: 'gold' | 'green' | 'neutral' }>`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: ${({ $tone }) =>
-    $tone === 'green' ? colors.green : $tone === 'gold' ? colors.gold : 'rgba(255,255,255,0.2)'};
+const MetricBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 `
 
-const CellValue = styled.div`
-  margin-top: 2px;
-  font-size: 20px;
-  font-weight: 800;
+const MetricLabel = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  line-height: 1.2;
+`
+
+const MetricValue = styled.div`
+  font-size: 28px;
+  font-weight: 700;
   color: #ffffff;
-  line-height: 1.1;
+  line-height: 1.05;
   animation: ${fadeIn} 180ms ease;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
-const CellMeta = styled.div`
-  margin-top: 1px;
-  font-size: 11px;
-  color: #9e9e9e;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const MetricChange = styled.div<{ $positive?: boolean }>`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ $positive }) => ($positive ? colors.green : '#ef4444')};
+  line-height: 1.2;
 `
 
-export const MarketPulsePanel: React.FC = () => {
-  const { cells, fearGreed } = useMarketPulseData()
+const MetricRow: React.FC<{ metric: MarketPulseMetric }> = ({ metric }) => (
+  <MetricBlock>
+    <MetricLabel>{metric.label}</MetricLabel>
+    <MetricValue>{metric.value ?? 'Indexing'}</MetricValue>
+    {metric.change && <MetricChange $positive={metric.changePositive}>{metric.change}</MetricChange>}
+  </MetricBlock>
+)
 
-  const displayCells = useMemo(() => cells.filter((c) => c.id !== 'fng'), [cells])
+export const MarketPulsePanel: React.FC = () => {
+  const { cryptoMarket, bnbChain, fearGreed } = useMarketPulseData()
 
   return (
     <Shell data-market-pulse-panel>
@@ -162,18 +160,18 @@ export const MarketPulsePanel: React.FC = () => {
           <GaugeColumn>
             <FearGreedGauge value={fearGreed?.value} classification={fearGreed?.classification} />
           </GaugeColumn>
-          <Grid>
-            {displayCells.map((cell) => (
-              <Cell key={cell.id}>
-                <CellLabel>
-                  <StatusDot $tone={cell.status} aria-hidden />
-                  {cell.label}
-                </CellLabel>
-                <CellValue key={cell.value ?? 'indexing'}>{cell.value ?? 'Indexing'}</CellValue>
-                {cell.meta && <CellMeta>{cell.meta}</CellMeta>}
-              </Cell>
+          <DataColumn>
+            <ColumnTitle>Crypto Market</ColumnTitle>
+            {cryptoMarket.map((metric) => (
+              <MetricRow key={metric.label} metric={metric} />
             ))}
-          </Grid>
+          </DataColumn>
+          <DataColumn>
+            <ColumnTitle>BNB Chain</ColumnTitle>
+            {bnbChain.map((metric) => (
+              <MetricRow key={metric.label} metric={metric} />
+            ))}
+          </DataColumn>
         </Body>
       </Content>
     </Shell>

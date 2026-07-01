@@ -80,7 +80,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 44px !important;
     opacity: 1 !important;
     padding: 0 !important;
-    margin: 6px 0 !important;
+    margin: 6px 0 12px !important;
     width: 100% !important;
     max-width: none !important;
     overflow: hidden !important;
@@ -444,7 +444,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       min-height: 44px !important;
       max-height: 44px !important;
       margin-top: 0 !important;
+      margin-bottom: 0 !important;
       flex-shrink: 0 !important;
+    }
+
+    .home-trade-swap #swap-page > div:last-child,
+    .home-trade-swap [class*='Box'][class*='mt'] {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
     }
 
     .home-trade-swap.is-disconnected [class*='ConnectWallet'],

@@ -1,51 +1,41 @@
 import React, { useEffect, useState } from 'react'
-import styled, { css, keyframes } from 'styled-components'
-
-const needleEnter = keyframes`
-  from { transform: rotate(-90deg); }
-  to { transform: rotate(var(--needle-angle, 0deg)); }
-`
+import styled from 'styled-components'
 
 const Shell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  width: 170px;
-  min-width: 170px;
+  width: 130px;
+  min-width: 130px;
   margin-top: 0;
   overflow: visible;
 `
 
 const Svg = styled.svg`
-  width: 110px;
-  height: 70px;
+  width: 130px;
+  height: 72px;
   margin-top: 0;
   overflow: visible;
   flex-shrink: 0;
 `
 
 const Needle = styled.g<{ $angle: number; $animate: boolean }>`
-  transform-origin: 59px 64px;
+  transform-origin: 65px 58px;
   transform: rotate(${({ $angle, $animate }) => ($animate ? $angle : -90)}deg);
-  ${({ $animate }) =>
-    $animate &&
-    css`
-      animation: ${needleEnter} 700ms ease-out forwards;
-      --needle-angle: ${({ $angle }: { $angle: number }) => `${$angle}deg`};
-    `}
+  transition: transform 700ms ease-out;
 `
 
 const Value = styled.div`
-  margin-top: 6px;
-  font-size: 30px;
-  font-weight: 800;
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1;
 `
 
 const Label = styled.div`
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -54,22 +44,22 @@ const Label = styled.div`
 `
 
 const Caption = styled.div`
-  margin-top: 3px;
+  margin-top: 4px;
   font-size: 11px;
   color: #b3b3b3;
   text-align: center;
-  line-height: 1.25;
-  max-width: 160px;
+  line-height: 1.3;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `
 
 const SkeletonArc = styled.div`
-  width: 110px;
-  height: 55px;
+  width: 130px;
+  height: 56px;
   margin-top: 0;
-  border-radius: 118px 118px 0 0;
+  border-radius: 130px 130px 0 0;
   border: 8px solid rgba(255, 255, 255, 0.06);
   border-bottom: none;
   box-sizing: border-box;
@@ -109,39 +99,39 @@ export const FearGreedGauge: React.FC<FearGreedGaugeProps> = ({ value, classific
 
   return (
     <Shell data-fear-greed-gauge aria-label={`Fear and Greed Index ${numeric}`}>
-      <Svg viewBox="0 0 118 76" aria-hidden>
-        <path d="M 12 64 A 47 47 0 0 1 106 64" fill="none" stroke="#EF4444" strokeWidth="8" strokeLinecap="round" />
+      <Svg viewBox="0 0 130 72" aria-hidden>
+        <path d="M 14 58 A 51 51 0 0 1 116 58" fill="none" stroke="#EF4444" strokeWidth="8" strokeLinecap="round" />
         <path
-          d="M 12 64 A 47 47 0 0 1 106 64"
+          d="M 14 58 A 51 51 0 0 1 116 58"
           fill="none"
           stroke="#D4AF37"
           strokeWidth="8"
           strokeLinecap="round"
-          strokeDasharray="29.5 118"
-          strokeDashoffset="-29.5"
+          strokeDasharray="32 128"
+          strokeDashoffset="-32"
         />
         <path
-          d="M 12 64 A 47 47 0 0 1 106 64"
+          d="M 14 58 A 51 51 0 0 1 116 58"
           fill="none"
           stroke="#22C55E"
           strokeWidth="8"
           strokeLinecap="round"
-          strokeDasharray="29.5 118"
-          strokeDashoffset="-59"
+          strokeDasharray="32 128"
+          strokeDashoffset="-64"
         />
         <path
-          d="M 12 64 A 47 47 0 0 1 106 64"
+          d="M 14 58 A 51 51 0 0 1 116 58"
           fill="none"
           stroke="#00E676"
           strokeWidth="8"
           strokeLinecap="round"
-          strokeDasharray="29.5 118"
-          strokeDashoffset="-88.5"
+          strokeDasharray="32 128"
+          strokeDashoffset="-96"
         />
         <Needle $angle={angle} $animate={animated}>
-          <line x1="59" y1="64" x2="59" y2="26" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+          <line x1="65" y1="58" x2="65" y2="22" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
         </Needle>
-        <circle cx="59" cy="64" r="4" fill="#ffffff" />
+        <circle cx="65" cy="58" r="3" fill="#ffffff" />
       </Svg>
       <Value>{Math.round(numeric)}</Value>
       <Label>Fear &amp; Greed</Label>

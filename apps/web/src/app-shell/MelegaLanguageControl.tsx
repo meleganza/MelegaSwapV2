@@ -8,6 +8,7 @@ const Slot = styled.div`
   display: flex;
   align-items: center;
   height: 36px;
+  transform: translateY(2px);
 
   button {
     height: 36px !important;

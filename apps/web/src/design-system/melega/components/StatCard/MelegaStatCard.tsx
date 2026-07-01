@@ -21,14 +21,15 @@ const fadeIn = keyframes`
 `
 
 const drawSpark = keyframes`
-  from { stroke-dashoffset: 48; }
-  to { stroke-dashoffset: 0; }
+  0% { stroke-dashoffset: 48; }
+  75% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; }
 `
 
 const Card = styled.a<{ $interactive?: boolean }>`
   display: block;
   height: 64px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
@@ -109,7 +110,7 @@ const SparkPath = styled.path<{ $animated?: boolean }>`
     css`
       stroke-dasharray: 42;
       stroke-dashoffset: 42;
-      animation: ${drawSpark} 6s ease-in-out infinite;
+      animation: ${drawSpark} 6s ease-out infinite;
     `}
 `
 
@@ -146,7 +147,7 @@ export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
     if (sparkPoints && sparkPoints.length >= 2) return buildSparkPath(sparkPoints)
     return PLACEHOLDER_PATH
   }, [sparkPoints])
-  const animated = !sparkPoints || sparkPoints.length < 2
+  const animated = true
 
   const content = (
     <>
