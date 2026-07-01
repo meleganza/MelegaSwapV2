@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { colors } from 'design-system/melega'
+import { tradeColors, tradeLayout } from '../tradeTokens'
 import type { TradeSwapRow } from '../useTradeTerminalData'
 
 const slideIn = keyframes`
@@ -9,55 +9,70 @@ const slideIn = keyframes`
 `
 
 const Shell = styled.div`
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 18px 20px;
+  background: ${tradeColors.panel};
+  border: 1px solid ${tradeColors.border};
+  border-radius: 18px;
+  padding: 14px;
   box-sizing: border-box;
+  min-height: ${tradeLayout.recentSwapsHeight};
+  overflow: hidden;
+`
+
+const HeadRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
 `
 
 const Title = styled.h3`
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 16px;
-  font-weight: 700;
-  color: ${colors.textPrimary};
+  font-weight: 800;
+  color: #ffffff;
+`
+
+const ViewAll = styled.button`
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: ${tradeColors.gold};
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 `
 
 const Table = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
 `
 
 const Head = styled.div`
   display: grid;
-  grid-template-columns: 72px 88px 1fr 72px 56px;
+  grid-template-columns: 70px 130px 70px 110px 130px 1fr;
   gap: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 11px;
+  padding-bottom: 6px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #707070;
+  color: ${tradeColors.muted};
 `
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 72px 88px 1fr 72px 56px;
+  grid-template-columns: 70px 130px 70px 110px 130px 1fr;
   gap: 8px;
   align-items: center;
-  min-height: 36px;
-  font-size: 13px;
+  min-height: 34px;
+  font-size: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   animation: ${slideIn} 220ms ease;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  }
 `
 
 const Cell = styled.span`
-  color: #b3b3b3;
+  color: #b5b5b5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -71,8 +86,13 @@ const PairCell = styled(Cell)`
 const Direction = styled.span<{ $buy?: boolean }>`
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  color: ${({ $buy }) => ($buy ? colors.green : '#ef4444')};
+  text-transform: capitalize;
+  color: ${({ $buy }) => ($buy ? tradeColors.green : tradeColors.red)};
+`
+
+const RouteDots = styled.span`
+  color: ${tradeColors.muted};
+  letter-spacing: 2px;
 `
 
 const Empty = styled.div`
@@ -80,7 +100,7 @@ const Empty = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 120px;
-  color: #8a8a8a;
+  color: ${tradeColors.muted};
   font-size: 14px;
 `
 
@@ -90,25 +110,30 @@ export interface TradeRecentSwapsProps {
 
 export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows }) => (
   <Shell data-trade-recent-swaps>
-    <Title>Recent Swaps</Title>
+    <HeadRow>
+      <Title>Recent Swaps on Melega DEX</Title>
+      <ViewAll type="button">View All</ViewAll>
+    </HeadRow>
     {rows.length === 0 ? (
-      <Empty>Indexing...</Empty>
+      <Empty>Indexing recent swaps...</Empty>
     ) : (
       <Table>
         <Head>
           <span>Time</span>
-          <span>Wallet</span>
           <span>Pair</span>
+          <span>Type</span>
           <span>Amount</span>
-          <span>Side</span>
+          <span>Received</span>
+          <span>Route</span>
         </Head>
         {rows.map((row) => (
           <Row key={row.id}>
             <Cell>{row.time}</Cell>
-            <Cell>{row.wallet}</Cell>
             <PairCell>{row.pair}</PairCell>
-            <Cell>{row.amount}</Cell>
             <Direction $buy={row.direction === 'buy'}>{row.direction}</Direction>
+            <Cell>{row.amount}</Cell>
+            <Cell>{row.received ?? '—'}</Cell>
+            <RouteDots>● ● ●</RouteDots>
           </Row>
         ))}
       </Table>

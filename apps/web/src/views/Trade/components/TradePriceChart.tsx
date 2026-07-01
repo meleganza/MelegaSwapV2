@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import dynamic from 'next/dynamic'
-import { colors } from 'design-system/melega'
+import { tradeColors, tradeLayout, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { getTimeWindowChange } from 'views/Swap/components/Chart/utils'
-import { TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
+import type { TradePairStat } from '../useTradeTerminalData'
 
 const SwapLineChart = dynamic(() => import('views/Swap/components/Chart/SwapLineChart'), { ssr: false })
 
@@ -16,12 +16,14 @@ const fadeIn = keyframes`
 `
 
 const Shell = styled.div`
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  background: ${tradeColors.panel};
+  border: 1px solid ${tradeColors.border};
+  border-radius: 18px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-height: ${tradeLayout.chartPanelHeight};
+  box-sizing: border-box;
 `
 
 const Header = styled.div`
@@ -29,74 +31,122 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 18px 20px 12px;
-  flex-wrap: wrap;
+  min-height: 74px;
+  padding: 16px 16px 8px;
+  box-sizing: border-box;
 `
 
-const PairTitle = styled.div`
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #8a8a8a;
+const PairBlock = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+`
+
+const TokenIcon = styled.span`
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #171717;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: ${tradeColors.goldBright};
+  flex-shrink: 0;
 `
 
 const PairName = styled.div`
-  margin-top: 4px;
   font-size: 18px;
-  font-weight: 700;
-  color: ${colors.textPrimary};
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `
 
-const PriceBlock = styled.div`
-  text-align: right;
-`
-
-const Price = styled.div`
+const PriceMain = styled.div`
+  margin-top: 4px;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 800;
   color: #ffffff;
   line-height: 1.05;
   animation: ${fadeIn} 180ms ease;
 `
 
+const PriceUsd = styled.div`
+  margin-top: 2px;
+  font-size: 11px;
+  color: ${tradeColors.muted};
+`
+
+const HeaderRight = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+`
+
 const Change = styled.div<{ $positive?: boolean }>`
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: ${({ $positive }) => ($positive ? colors.green : '#ef4444')};
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
+  white-space: nowrap;
+  padding-top: 8px;
+`
+
+const IconBtn = styled.button`
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #121212;
+  color: #b5b5b5;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 `
 
 const Timeframes = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 0 20px 12px;
+  min-height: 34px;
+  padding: 0 16px 8px;
 `
 
 const TfButton = styled.button<{ $active?: boolean }>`
+  width: 38px;
   height: 30px;
-  min-width: 40px;
-  padding: 0 10px;
+  padding: 0;
   border-radius: 8px;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.55)' : 'rgba(255, 255, 255, 0.06)')};
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.12)' : 'transparent')};
-  color: ${({ $active }) => ($active ? colors.gold : '#8a8a8a')};
+  border: 1px solid ${({ $active }) => ($active ? tradeColors.gold : 'rgba(255, 255, 255, 0.06)')};
+  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.1)' : 'transparent')};
+  color: ${({ $active }) => ($active ? tradeColors.goldBright : '#8a8a8a')};
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
 
   &:hover {
-    color: ${colors.textPrimary};
+    color: #ffffff;
+    border-color: rgba(212, 175, 55, 0.35);
   }
 `
 
 const ChartArea = styled.div`
-  height: 420px;
-  min-height: 420px;
-  padding: 0 12px 12px;
+  height: ${tradeLayout.chartAreaHeight};
+  min-height: ${tradeLayout.chartAreaHeight};
+  margin: 10px 16px 0;
   box-sizing: border-box;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
 `
 
 const EmptyChart = styled.div`
@@ -104,13 +154,63 @@ const EmptyChart = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #8a8a8a;
+  color: ${tradeColors.muted};
   font-size: 14px;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+`
+
+const StatsRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  min-height: 82px;
+  padding: 12px 16px 16px;
+  box-sizing: border-box;
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`
+
+const StatCard = styled.div`
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+  min-height: 82px;
+`
+
+const StatLabel = styled.div`
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${tradeColors.muted};
+`
+
+const StatValue = styled.div`
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  animation: ${fadeIn} 180ms ease;
+`
+
+const StatDelta = styled.div<{ $positive?: boolean }>`
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
 `
 
 const timeframeToEnum = (id: TradeTimeframeId): PairDataTimeWindowEnum => {
-  if (id === '1w') return PairDataTimeWindowEnum.WEEK
-  if (id === '1m' || id === 'all') return PairDataTimeWindowEnum.YEAR
+  if (id === '1d' || id === '4h') return PairDataTimeWindowEnum.DAY
+  if (id === '1h' || id === '15m') return PairDataTimeWindowEnum.WEEK
   return PairDataTimeWindowEnum.DAY
 }
 
@@ -121,6 +221,7 @@ export interface TradePriceChartProps {
   outputCurrencyId?: string
   priceUsd?: number
   change24h?: number
+  stats?: TradePairStat[]
 }
 
 export const TradePriceChart: React.FC<TradePriceChartProps> = ({
@@ -130,8 +231,9 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   outputCurrencyId,
   priceUsd,
   change24h,
+  stats = [],
 }) => {
-  const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1d')
+  const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1h')
   const token0Address = getTokenAddress(inputCurrencyId)
   const token1Address = getTokenAddress(outputCurrencyId)
 
@@ -146,33 +248,49 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   const lastPrice = pairPrices[pairPrices.length - 1]?.value
   const displayPrice = priceUsd ?? lastPrice
   const displayChange = change24h ?? Number(chartChange.changePercentage)
-
   const hasChart = pairPrices.length > 1 && pairPrices.some((p) => p.value > 0)
+
+  const priceText =
+    displayPrice != null && Number.isFinite(displayPrice)
+      ? displayPrice < 0.01
+        ? displayPrice.toFixed(6)
+        : displayPrice.toFixed(4)
+      : null
 
   return (
     <Shell data-trade-price-chart>
       <Header>
-        <div>
-          <PairTitle>Pair</PairTitle>
-          <PairName>
-            {inputSymbol} / {outputSymbol}
-          </PairName>
-        </div>
-        <PriceBlock>
-          <Price>
-            {displayPrice != null && Number.isFinite(displayPrice)
-              ? displayPrice < 0.01
-                ? displayPrice.toFixed(6)
-                : displayPrice.toFixed(4)
-              : 'Indexing...'}
-          </Price>
+        <PairBlock>
+          <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
+          <div>
+            <PairName>
+              {inputSymbol} / {outputSymbol}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a8a8a" strokeWidth="2" aria-hidden>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </PairName>
+            <PriceMain>{priceText ?? 'Indexing...'}</PriceMain>
+            {priceText && <PriceUsd>USD ${priceText}</PriceUsd>}
+          </div>
+        </PairBlock>
+        <HeaderRight>
           {Number.isFinite(displayChange) && (
             <Change $positive={displayChange >= 0}>
               {displayChange >= 0 ? '+' : ''}
-              {displayChange.toFixed(2)}% (24H)
+              {displayChange.toFixed(2)}% (24h)
             </Change>
           )}
-        </PriceBlock>
+          <IconBtn type="button" aria-label="Favorite pair">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </IconBtn>
+          <IconBtn type="button" aria-label="Open pair explorer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+            </svg>
+          </IconBtn>
+        </HeaderRight>
       </Header>
       <Timeframes role="tablist" aria-label="Chart timeframe">
         {TRADE_TIMEFRAMES.map((tf) => (
@@ -188,7 +306,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           </TfButton>
         ))}
       </Timeframes>
-      <ChartArea>
+      <ChartArea data-trade-chart-area>
         {hasChart ? (
           <SwapLineChart
             data={pairPrices}
@@ -201,6 +319,15 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           <EmptyChart>Indexing chart data...</EmptyChart>
         )}
       </ChartArea>
+      <StatsRow data-trade-pair-stats>
+        {stats.map((stat) => (
+          <StatCard key={stat.id}>
+            <StatLabel>{stat.label}</StatLabel>
+            <StatValue>{stat.value ?? 'Indexing...'}</StatValue>
+            {stat.change && <StatDelta $positive={stat.changePositive}>{stat.change}</StatDelta>}
+          </StatCard>
+        ))}
+      </StatsRow>
     </Shell>
   )
 }

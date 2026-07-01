@@ -13,36 +13,88 @@ import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
-import { SwapIconButton } from 'design-system/melega'
-import TradePairHeader from './components/TradePairHeader'
-import TradeModeSelector from './components/TradeModeSelector'
+import { tradeColors, tradeLayout } from './tradeTokens'
+import TradeRouteLine from './components/TradeRouteLine'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   width: 100%;
-  max-width: 560px;
+  max-width: ${tradeLayout.cockpitWidth};
   overflow: hidden;
   box-sizing: border-box;
 `
 
-const CockpitCard = styled.div`
+const Panel = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: linear-gradient(180deg, #141414 0%, #101010 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  padding: 14px;
+  background: ${tradeColors.panelGradient};
+  border: 1px solid ${tradeColors.border};
+  border-radius: 18px;
   box-sizing: border-box;
-  min-height: 0;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  position: relative;
   contain: layout paint;
+`
+
+const BadgeRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 34px;
+  min-height: 34px;
+  flex-shrink: 0;
+`
+
+const BadgeLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const BadgeGreen = styled.span`
+  color: ${tradeColors.green};
+  font-weight: 600;
+`
+
+const Toolbar = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`
+
+const IconBtn = styled.button`
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #121212;
+  color: #b5b5b5;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 150ms ease, border-color 150ms ease;
+
+  &:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 `
 
 const SwapFormWrap = styled.div`
@@ -51,37 +103,7 @@ const SwapFormWrap = styled.div`
   overflow: hidden;
   contain: layout paint;
   box-sizing: border-box;
-`
-
-const Toolbar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: -4px;
-`
-
-const SmartInsights = styled.div`
-  display: grid;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  background: rgba(212, 175, 55, 0.06);
-`
-
-const InsightRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-  color: #b3b3b3;
-`
-
-const InsightValue = styled.span`
-  color: #ffffff;
-  font-weight: 600;
+  margin-top: 0;
 `
 
 const SettingsIcon = () => (
@@ -102,12 +124,17 @@ const RefreshIcon = () => (
   </svg>
 )
 
+const LightningSmall = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={tradeColors.goldBright} aria-hidden>
+    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+  </svg>
+)
+
 export interface TradeCockpitProps {
   mode: TradeMode
-  onModeChange: (mode: TradeMode) => void
 }
 
-export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode, onModeChange }) => {
+export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
   const warningSwapHandler = useWarningImport()
@@ -116,12 +143,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode, onModeChange }
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = useSwapState()
-  const inputCurrency = useCurrency(inputCurrencyId)
-  const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
-
-  const inputSymbol = inputCurrency?.symbol ?? '—'
-  const outputSymbol = outputCurrency?.symbol ?? '—'
 
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
@@ -146,44 +168,44 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode, onModeChange }
     if (btn instanceof HTMLElement) btn.click()
   }, [])
 
+  if (mode !== 'smartswap') {
+    return (
+      <Shell data-trade-cockpit>
+        <Panel data-trade-cockpit-shell>
+          <BadgeLeft>Mode coming soon</BadgeLeft>
+        </Panel>
+      </Shell>
+    )
+  }
+
   return (
     <Shell data-trade-cockpit>
-      <TradePairHeader inputSymbol={inputSymbol} outputSymbol={outputSymbol} />
-      <TradeModeSelector mode={mode} onChange={onModeChange} />
-      <CockpitCard data-trade-cockpit-shell>
-        <Toolbar>
-          <SwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-            <SettingsIcon />
-          </SwapIconButton>
-          <SwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
-            <RefreshIcon />
-          </SwapIconButton>
-        </Toolbar>
-        {mode === 'smartswap' && (
-          <SmartInsights data-trade-smart-insights>
-            <InsightRow>
-              <span>Route quality</span>
-              <InsightValue>{account ? 'Optimizing' : '—'}</InsightValue>
-            </InsightRow>
-            <InsightRow>
-              <span>Estimated savings</span>
-              <InsightValue>—</InsightValue>
-            </InsightRow>
-            <InsightRow>
-              <span>Execution speed</span>
-              <InsightValue>Fast</InsightValue>
-            </InsightRow>
-          </SmartInsights>
-        )}
+      <Panel data-trade-cockpit-shell className="trade-swap-cockpit">
+        <BadgeRow>
+          <BadgeLeft>
+            <LightningSmall />
+            <span>Best route found</span>
+            {account ? <BadgeGreen>optimizing</BadgeGreen> : <BadgeGreen>—</BadgeGreen>}
+          </BadgeLeft>
+          <Toolbar>
+            <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+              <SettingsIcon />
+            </IconBtn>
+            <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+              <RefreshIcon />
+            </IconBtn>
+          </Toolbar>
+        </BadgeRow>
         <SwapFormWrap
           ref={swapBodyRef}
-          className={`trade-terminal-swap${account ? '' : ' is-disconnected'}${mode === 'smartswap' ? ' is-smartswap' : ''}`}
+          className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
           data-wallet-connected={account ? 'true' : 'false'}
           data-trade-swap-form
         >
           <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+          <TradeRouteLine />
         </SwapFormWrap>
-      </CockpitCard>
+      </Panel>
     </Shell>
   )
 }

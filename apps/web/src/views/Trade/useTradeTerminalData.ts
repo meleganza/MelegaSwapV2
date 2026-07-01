@@ -9,6 +9,7 @@ export interface TradeSwapRow {
   wallet: string
   pair: string
   amount: string
+  received?: string
   direction: 'buy' | 'sell'
 }
 
@@ -104,23 +105,16 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         changePositive: liqChange?.positive,
       },
       {
-        id: 'tvl',
-        label: 'TVL',
-        value: formatUsd(tokenData?.liquidityUSD ?? 0),
-        change: liqChange?.text,
-        changePositive: liqChange?.positive,
+        id: 'transactions',
+        label: '24H Trades',
+        value: tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined,
+        change: priceChange?.text,
+        changePositive: priceChange?.positive,
       },
       {
         id: 'holders',
         label: 'Holders',
         value: undefined,
-      },
-      {
-        id: 'transactions',
-        label: 'Transactions',
-        value: tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined,
-        change: priceChange?.text,
-        changePositive: priceChange?.positive,
       },
     ]
   }, [tokenData])

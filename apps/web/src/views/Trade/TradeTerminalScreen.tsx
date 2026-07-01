@@ -1,64 +1,100 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import { colors, typography } from 'design-system/melega'
+import { typography } from 'design-system/melega'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
+import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
+import TradePageHeader from './components/TradePageHeader'
+import TradeTabBar from './components/TradeTabBar'
 import TradeCockpit from './TradeCockpit'
-import TradeMarketPanel from './TradeMarketPanel'
-import { tradeLayout, type TradeMode } from './tradeTokens'
+import TradeCenterPanel from './TradeCenterPanel'
+import TradeRightRail from './components/TradeRightRail'
+import TradeRecentSwaps from './components/TradeRecentSwaps'
+import useTradeTerminalData from './useTradeTerminalData'
+import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
 
 const Root = styled.div`
-  color: ${colors.textPrimary};
+  color: ${tradeColors.text};
   font-family: ${typography.fontFamily.body};
-  background: #0a0a0a;
+  background: ${tradeColors.canvas};
   padding: 0 0 32px;
+  min-width: 0;
+  overflow-x: hidden;
 
   @media (max-width: 767px) {
-    padding: 0 14px 24px;
+    padding: 0 0 24px;
   }
 `
 
 const Content = styled.div`
   max-width: ${tradeLayout.contentMax};
   margin: 0 auto;
-  padding: 0 16px;
+  padding: ${tradeLayout.contentPaddingTop} ${tradeLayout.contentPaddingX} 0;
   box-sizing: border-box;
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    padding: 12px 16px 0;
+  }
 `
 
-const PageHeader = styled.div`
-  margin: 8px 0 20px;
-`
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 32px;
-  font-weight: 800;
-  color: ${colors.textPrimary};
-  line-height: 1.1;
-`
-
-const Subtitle = styled.p`
-  margin: 8px 0 0;
-  font-size: 14px;
-  color: #9e9e9e;
-  line-height: 1.45;
-`
-
-const Grid = styled.div`
+const PageGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
+  align-items: start;
+  min-width: 0;
 
-  @media (min-width: 768px) {
-    grid-template-columns: ${tradeLayout.cockpitWidth} 1fr;
-    align-items: start;
+  @media (min-width: 1100px) {
+    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, 1fr) ${tradeLayout.rightRailWidth};
+    grid-template-areas:
+      'cockpit center right'
+      'swaps swaps right';
   }
+
+  @media (max-width: 1099px) and (min-width: 768px) {
+    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, 1fr);
+    grid-template-areas:
+      'cockpit center'
+      'right right'
+      'swaps swaps';
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'cockpit'
+      'center'
+      'right'
+      'swaps';
+  }
+`
+
+const AreaCockpit = styled.div`
+  grid-area: cockpit;
+  min-width: 0;
+`
+
+const AreaCenter = styled.div`
+  grid-area: center;
+  min-width: 0;
+`
+
+const AreaRight = styled.div`
+  grid-area: right;
+  min-width: 0;
+`
+
+const AreaSwaps = styled.div`
+  grid-area: swaps;
+  min-width: 0;
 `
 
 export const TradeTerminalScreen: React.FC = () => {
   const [mode, setMode] = useState<TradeMode>('smartswap')
+  const [aiMode, setAiMode] = useState(false)
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -69,24 +105,35 @@ export const TradeTerminalScreen: React.FC = () => {
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
 
+  const { recentSwaps } = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+
   return (
     <Root data-trade-terminal-screen="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
+      <TrendingRibbon />
       <Content>
-        <PageHeader>
-          <Title>Trade</Title>
-          <Subtitle>Professional trading with best multichain routes.</Subtitle>
-        </PageHeader>
-        <Grid>
-          <TradeCockpit mode={mode} onModeChange={setMode} />
-          <TradeMarketPanel
-            inputSymbol={inputSymbol}
-            outputSymbol={outputSymbol}
-            inputCurrencyId={inputCurrencyId}
-            outputCurrencyId={outputCurrencyId}
-          />
-        </Grid>
+        <TradePageHeader aiMode={aiMode} onAiModeChange={setAiMode} />
+        <TradeTabBar active={mode} onChange={setMode} />
+        <PageGrid>
+          <AreaCockpit>
+            <TradeCockpit mode={mode} />
+          </AreaCockpit>
+          <AreaCenter>
+            <TradeCenterPanel
+              inputSymbol={inputSymbol}
+              outputSymbol={outputSymbol}
+              inputCurrencyId={inputCurrencyId}
+              outputCurrencyId={outputCurrencyId}
+            />
+          </AreaCenter>
+          <AreaRight>
+            <TradeRightRail />
+          </AreaRight>
+          <AreaSwaps>
+            <TradeRecentSwaps rows={recentSwaps} />
+          </AreaSwaps>
+        </PageGrid>
       </Content>
     </Root>
   )

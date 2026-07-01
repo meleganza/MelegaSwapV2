@@ -1,0 +1,59 @@
+{
+  "home-desktop-1440x900.png": {
+    "oneSlippage": true,
+    "slippageVisible": true,
+    "connectVisible": true
+  },
+  "trade-desktop-1440x900.png": {
+    "hasSidebar": true,
+    "hasTicker": true,
+    "hasTabs": true,
+    "cockpitWidth": 360,
+    "centerWidth": 424,
+    "rightWidth": 300,
+    "formOverflows": false,
+    "overlapsCenter": false,
+    "gapCenterToRight": 16,
+    "swapsBelowCenter": true,
+    "duplicateSlippageHidden": true,
+    "btnVisible": false
+  },
+  "trade-desktop-1728x1117.png": {
+    "hasSidebar": true,
+    "hasTicker": true,
+    "hasTabs": true,
+    "cockpitWidth": 360,
+    "centerWidth": 440,
+    "rightWidth": 300,
+    "formOverflows": false,
+    "overlapsCenter": false,
+    "gapCenterToRight": 16,
+    "swapsBelowCenter": true,
+    "duplicateSlippageHidden": true,
+    "btnVisible": false
+  },
+  "trade-mobile-390x844.png": {
+    "hasSidebar": true,
+    "hasTicker": true,
+    "hasTabs": true,
+    "cockpitWidth": 330,
+    "centerWidth": 330,
+    "rightWidth": 330,
+    "formOverflows": false,
+    "overlapsCenter": true,
+    "duplicateSlippageHidden": true,
+    "btnVisible": false
+  },
+  "trade-mobile-428x926.png": {
+    "hasSidebar": true,
+    "hasTicker": true,
+    "hasTabs": true,
+    "cockpitWidth": 360,
+    "centerWidth": 368,
+    "rightWidth": 368,
+    "formOverflows": false,
+    "overlapsCenter": true,
+    "duplicateSlippageHidden": true,
+    "btnVisible": false
+  }
+}
