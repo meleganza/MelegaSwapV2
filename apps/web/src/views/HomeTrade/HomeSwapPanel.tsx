@@ -18,8 +18,16 @@ import { MelegaSwapPanelShell, SwapIconButton, colors } from 'design-system/mele
 
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-    <circle cx="12" cy="12" r="3" />
-    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34l1.41 1.41M16.24 16.24l1.41 1.41" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 15a3 3 0 100-6 3 3 0 000 6z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+    />
   </svg>
 )
 
@@ -51,13 +59,6 @@ const LiveText = styled.span<{ $live?: boolean }>`
   font-weight: 600;
   color: ${({ $live }) => ($live ? '#8a8a8a' : '#5f5f5f')};
 `
-
-const DISCONNECTED_EXECUTION_ROWS = [
-  { label: 'Estimated received', value: '—' },
-  { label: 'Price impact', value: '—' },
-  { label: 'Route', value: '—' },
-  { label: 'Slippage tolerance', value: '0.5%', slippage: true },
-] as const
 
 const HomeSwapInner: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
@@ -136,15 +137,9 @@ const HomeSwapInner: React.FC = () => {
       >
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
         {showExecutionFallback && (
-          <div className="home-trade-swap-execution-summary" aria-hidden>
-            {DISCONNECTED_EXECUTION_ROWS.map((row) => (
-              <div key={row.label} className="home-trade-swap-execution-row">
-                <span className="home-trade-swap-execution-label">{row.label}</span>
-                <span className={`home-trade-swap-execution-value${'slippage' in row && row.slippage ? ' is-slippage' : ''}`}>
-                  {row.value}
-                </span>
-              </div>
-            ))}
+          <div className="home-trade-swap-slippage-strip" aria-hidden>
+            <span className="home-trade-swap-execution-label">Slippage tolerance</span>
+            <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
           </div>
         )}
       </div>

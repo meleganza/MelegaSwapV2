@@ -152,6 +152,9 @@ const eventIcon = (type: string) => {
   return '●'
 }
 
+/**
+ * Live Activity must be wired to MelegaSwap router/subgraph indexed swaps, listings, pools and farms.
+ */
 export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) => {
   const displayRows = rows.slice(0, 5)
 
@@ -165,8 +168,8 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
         {displayRows.length === 0 ? (
           <EmptyWrap>
             <PulseDot aria-hidden />
-            <EmptyTitle>Waiting for the next on-chain event...</EmptyTitle>
-            <EmptyDesc>Swaps, listings, pools and farms appear here automatically.</EmptyDesc>
+            <EmptyTitle>Waiting for the next Melega DEX event...</EmptyTitle>
+            <EmptyDesc>Swaps, listings, pools and farms appear here when indexed.</EmptyDesc>
           </EmptyWrap>
         ) : (
           <Timeline>

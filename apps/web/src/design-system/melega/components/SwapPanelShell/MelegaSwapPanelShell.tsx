@@ -26,8 +26,8 @@ const Shell = styled.div`
   @media (min-width: 768px) {
     width: 470px;
     max-width: 470px;
-    height: 350px;
-    max-height: 350px;
+    height: 372px;
+    max-height: 372px;
     flex-shrink: 0;
     overflow: hidden;
   }
@@ -43,9 +43,7 @@ const Shell = styled.div`
 const Header = styled.div`
   position: relative;
   flex-shrink: 0;
-  height: 54px;
-  min-height: 54px;
-  padding: 14px 18px 0;
+  padding: 8px 18px 0;
   box-sizing: border-box;
 `
 
@@ -55,28 +53,29 @@ const TitleBlock = styled.div`
   gap: 0;
   min-width: 0;
   max-width: calc(100% - 200px);
+  padding-bottom: 0;
 `
 
 const Title = styled.h1`
-  margin: 0;
+  margin: 0 0 4px;
   font-family: ${typography.fontFamily.body};
   font-size: 38px;
   font-weight: 800;
   color: ${colors.textPrimary};
-  line-height: 1;
+  line-height: 40px;
 `
 
 const Subtitle = styled.p`
-  margin: 6px 0 0;
+  margin: 0;
   font-size: 13px;
   font-weight: 500;
   color: #b6b6b6;
-  line-height: 1.2;
+  line-height: 16px;
 `
 
 const PairSlot = styled.div`
   position: absolute;
-  top: 26px;
+  top: 22px;
   right: 104px;
   display: flex;
   align-items: center;
@@ -87,7 +86,7 @@ const PairSlot = styled.div`
 
 const Toolbar = styled.div`
   position: absolute;
-  top: 18px;
+  top: 12px;
   right: 18px;
   display: flex;
   align-items: center;
@@ -97,7 +96,7 @@ const Toolbar = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: 6px 18px 0;
+  margin: 0 18px;
   flex-shrink: 0;
 `
 
@@ -107,7 +106,7 @@ export const SwapIconButton = styled.button`
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #121212;
-  color: ${colors.textSecondary};
+  color: #b5b5b5;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -133,14 +132,14 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 8px 16px 10px;
+  padding: 6px 16px 4px;
 
   .home-trade-swap {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: hidden;
+    overflow: visible;
     gap: 8px;
   }
 

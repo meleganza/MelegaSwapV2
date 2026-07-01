@@ -60,10 +60,11 @@ const Content = styled.div`
 
 const Body = styled.div`
   display: grid;
-  grid-template-columns: 160px 1fr;
+  grid-template-columns: 170px 1fr;
   gap: 24px;
   flex: 1;
   min-height: 0;
+  align-items: start;
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
@@ -76,27 +77,27 @@ const GaugeColumn = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  width: 150px;
-  min-width: 150px;
-  height: 150px;
-  min-height: 150px;
+  width: 170px;
+  min-width: 170px;
+  margin-top: 18px;
 
   @media (max-width: 767px) {
     width: 100%;
     min-width: 0;
+    margin-top: 0;
   }
 `
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px 20px;
+  gap: 12px 24px;
   align-content: start;
 `
 
 const Cell = styled.div`
   min-width: 0;
-  min-height: 54px;
+  min-height: 58px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -145,27 +146,6 @@ const CellMeta = styled.div`
   text-overflow: ellipsis;
 `
 
-const Networks = styled.div`
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 11px;
-  color: #8a8a8a;
-  line-height: 14px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-`
-
-const NetworkGold = styled.span`
-  color: ${colors.gold};
-  font-weight: 700;
-`
-
-const NetworkNeutral = styled.span`
-  color: #707070;
-  font-weight: 500;
-`
-
 export const MarketPulsePanel: React.FC = () => {
   const { cells, fearGreed } = useMarketPulseData()
 
@@ -195,13 +175,6 @@ export const MarketPulsePanel: React.FC = () => {
             ))}
           </Grid>
         </Body>
-        <Networks>
-          <NetworkGold>BNB</NetworkGold>
-          <NetworkNeutral> · Polygon · Ethereum · Base</NetworkNeutral>
-          <span style={{ marginLeft: 8, color: '#8a8a8a' }}>
-            BNB active now. Other networks indexed when liquidity is available.
-          </span>
-        </Networks>
       </Content>
     </Shell>
   )

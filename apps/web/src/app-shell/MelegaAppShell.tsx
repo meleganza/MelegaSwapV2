@@ -5,8 +5,6 @@ import { useAccount } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
-import GlobalSettings from 'components/Menu/GlobalSettings'
-import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import {
   MelegaBrandLockup,
   MelegaSidebar,
@@ -148,9 +146,6 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
             ) : (
               <ConnectWalletButton className="melega-shell-connect">Connect Wallet</ConnectWalletButton>
             )}
-            <div className="melega-shell-settings">
-              <GlobalSettings mode={SettingsMode.GLOBAL} />
-            </div>
           </>
         }
       />

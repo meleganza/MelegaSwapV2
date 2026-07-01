@@ -14,7 +14,7 @@ const swapArrowPulse = keyframes`
 
 const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='HeaderWrapper'],
-  .home-trade-swap > div:first-child:not(#swap-page):not(.home-trade-swap-execution-summary) {
+  .home-trade-swap > div:first-child:not(#swap-page):not(.home-trade-swap-slippage-strip):not(.home-trade-swap-execution-summary) {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
@@ -23,10 +23,20 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     overflow: hidden !important;
   }
 
+  .home-trade-swap {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    justify-content: flex-start !important;
+  }
+
   .home-trade-swap #swap-page {
     padding: 0 !important;
     min-height: 0 !important;
     max-height: none !important;
+    height: auto !important;
     background: transparent !important;
     overflow: visible !important;
     margin-top: 0 !important;
@@ -34,7 +44,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   .home-trade-swap [class*='AutoColumn'] {
-    gap: 10px !important;
+    gap: 4px !important;
     flex: 0 0 auto !important;
     min-height: 0 !important;
     order: 1;
@@ -42,30 +52,35 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     flex-direction: column !important;
   }
 
-  .home-trade-swap.show-execution-fallback .home-trade-swap-execution-summary {
-    display: grid;
-    grid-template-rows: repeat(4, 14px);
-    row-gap: 2px;
+  .home-trade-swap.show-execution-fallback .home-trade-swap-slippage-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     order: 2;
-    margin: 8px 0;
+    margin: 0;
     padding: 0;
     pointer-events: none;
-    height: 62px;
-    max-height: 62px;
-    position: static;
-    overflow: hidden;
+    height: 12px;
+    max-height: 12px;
+    flex-shrink: 0;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .home-trade-swap.show-execution-fallback .home-trade-swap-execution-summary {
+    display: none;
   }
 
   .home-trade-swap [class*='AdvancedDetailsFooter'] {
     order: 2;
     display: grid !important;
-    grid-template-rows: repeat(4, 14px);
+    grid-template-rows: repeat(4, 10px);
     row-gap: 2px;
-    height: 62px !important;
-    max-height: 62px !important;
+    height: 44px !important;
+    max-height: 44px !important;
     opacity: 1 !important;
     padding: 0 !important;
-    margin: 8px 0 !important;
+    margin: 6px 0 !important;
     width: 100% !important;
     max-width: none !important;
     overflow: hidden !important;
@@ -76,6 +91,19 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='Box'][class*='mt'] {
     order: 3;
     margin-top: 0 !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    width: 100% !important;
+    z-index: 1 !important;
+  }
+
+  .home-trade-swap [class*='ConnectWallet'],
+  .home-trade-swap a[class*='ConnectWallet'],
+  .home-trade-swap #swap-page > div:last-child button {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
   }
   .home-trade-swap.is-disconnected .token-amount-input {
     pointer-events: none !important;
@@ -101,10 +129,10 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    min-height: 14px;
-    height: 14px;
-    font-size: 11px;
-    line-height: 14px;
+    min-height: 10px;
+    height: 10px;
+    font-size: 10px;
+    line-height: 10px;
   }
 
   .home-trade-swap-execution-label,
@@ -132,13 +160,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap.is-disconnected [class*='ConnectWallet'],
   .home-trade-swap.is-disconnected a[class*='ConnectWallet'],
   .home-trade-swap.is-disconnected button[class*='pancake-button']:only-child {
-    height: 48px !important;
-    min-height: 48px !important;
-    max-height: 48px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
     width: 100% !important;
     border-radius: 12px !important;
     background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
-    color: #000000 !important;
+    color: #050505 !important;
     font-weight: 700 !important;
     font-size: 16px !important;
     border: none !important;
@@ -335,14 +363,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   @media (min-width: 768px) {
     .home-trade-swap [class*='AutoColumn'] {
-      gap: 8px !important;
+      gap: 4px !important;
     }
 
     .home-trade-swap #swap-currency-input,
     .home-trade-swap #swap-currency-output {
-      height: 68px !important;
-      min-height: 68px !important;
-      max-height: 68px !important;
+      height: 64px !important;
+      min-height: 64px !important;
+      max-height: 64px !important;
       padding: 0 !important;
     }
 
@@ -387,24 +415,24 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
     .home-trade-swap [class*='ArrowWrapper'],
     .home-trade-swap [class*='SwitchButton'] button {
-      width: 32px !important;
-      height: 32px !important;
-      min-width: 32px !important;
-      min-height: 32px !important;
+      width: 28px !important;
+      height: 28px !important;
+      min-width: 28px !important;
+      min-height: 28px !important;
     }
 
     .home-trade-swap [class*='AutoRow'][style*='padding'] {
-      min-height: 32px !important;
-      max-height: 32px !important;
-      margin: -2px auto !important;
+      min-height: 28px !important;
+      max-height: 28px !important;
+      margin: 0 auto !important;
     }
 
     .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'],
     .home-trade-swap [class*='AdvancedSwapDetails'] > div > div {
-      min-height: 14px !important;
-      height: 14px !important;
-      font-size: 11px !important;
-      line-height: 14px !important;
+      min-height: 10px !important;
+      height: 10px !important;
+      font-size: 10px !important;
+      line-height: 10px !important;
     }
 
     .home-trade-swap .pancake-button--primary,
@@ -415,7 +443,8 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 44px !important;
       min-height: 44px !important;
       max-height: 44px !important;
-      margin-top: 8px !important;
+      margin-top: 0 !important;
+      flex-shrink: 0 !important;
     }
 
     .home-trade-swap.is-disconnected [class*='ConnectWallet'],
@@ -424,6 +453,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 44px !important;
       min-height: 44px !important;
       max-height: 44px !important;
+      flex-shrink: 0 !important;
     }
   }
 
@@ -499,9 +529,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   .home-trade-swap [class*='AutoRow'][style*='padding'] {
     padding: 0 !important;
-    margin: -4px auto !important;
-    min-height: 32px !important;
-    max-height: 32px !important;
+    margin: 0 auto !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
   }
 
   .home-trade-swap [class*='Info'],
@@ -582,20 +612,21 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='CommitButton'] button,
   .home-trade-swap #swap-page > div:last-child button,
   .home-trade-swap [class*='Box'] button:not([class*='OpenCurrencySelectButton']) {
-    height: 48px !important;
-    min-height: 48px !important;
-    max-height: 48px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
     width: 100% !important;
     border-radius: 12px !important;
     background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
-    color: #000000 !important;
+    color: #050505 !important;
     font-weight: 700 !important;
     font-size: 16px !important;
     border: none !important;
     white-space: nowrap !important;
-    margin-top: 10px !important;
+    margin-top: 0 !important;
     margin-bottom: 0 !important;
     box-shadow: none !important;
+    flex-shrink: 0 !important;
     transition: filter 150ms ease, transform 150ms ease !important;
   }
 
