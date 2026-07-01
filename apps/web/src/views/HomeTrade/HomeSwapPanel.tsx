@@ -141,7 +141,7 @@ const HomeSwapInner: React.FC = () => {
       >
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
         {!account && (
-          <div className="home-trade-swap-slippage-strip" role="group" aria-label="Slippage tolerance">
+          <div className="home-trade-swap-slippage-strip slippage-row" role="group" aria-label="Slippage tolerance">
             <span className="home-trade-swap-slippage-label-row">
               <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
               <button

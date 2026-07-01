@@ -1,0 +1,29 @@
+{
+  "home-desktop-1440x900.png": {
+    "stripVisible": true,
+    "dupHidden": true,
+    "visibleSlippageBlockCount": 1,
+    "pairText": "BNB / MARCO•Live",
+    "subtitleOverlapsPair": true,
+    "gapPairToGear": 8,
+    "connectBtnVisible": true
+  },
+  "home-desktop-1728x1117.png": {
+    "stripVisible": true,
+    "dupHidden": true,
+    "visibleSlippageBlockCount": 1,
+    "pairText": "BNB / MARCO•Live",
+    "subtitleOverlapsPair": true,
+    "gapPairToGear": 8,
+    "connectBtnVisible": true
+  },
+  "home-mobile-390x844.png": {
+    "stripVisible": true,
+    "dupHidden": true,
+    "visibleSlippageBlockCount": 1,
+    "pairText": "BNB / MARCO•Live",
+    "subtitleOverlapsPair": false,
+    "gapPairToGear": 8,
+    "connectBtnVisible": true
+  }
+}

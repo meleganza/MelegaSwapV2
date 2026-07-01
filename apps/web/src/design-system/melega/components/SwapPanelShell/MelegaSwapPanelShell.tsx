@@ -60,12 +60,12 @@ const Header = styled.div`
   box-sizing: border-box;
 `
 
-const TitleBlock = styled.div`
+const TitleBlock = styled.div<{ $size?: 'home' | 'trade' }>`
   display: flex;
   flex-direction: column;
   gap: 0;
   min-width: 0;
-  max-width: calc(100% - 200px);
+  max-width: ${({ $size }) => ($size === 'home' ? '210px' : 'calc(100% - 200px)')};
   padding-bottom: 8px;
 `
 
@@ -86,14 +86,15 @@ const Subtitle = styled.p`
   line-height: 16px;
 `
 
-const PairSlot = styled.div`
+const PairSlot = styled.div<{ $size?: 'home' | 'trade' }>`
   position: absolute;
-  top: 30px;
-  right: 156px;
+  top: ${({ $size }) => ($size === 'home' ? '31px' : '30px')};
+  right: ${({ $size }) => ($size === 'home' ? '112px' : '156px')};
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 6px;
-  max-width: 150px;
+  max-width: ${({ $size }) => ($size === 'home' ? '128px' : '150px')};
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
@@ -101,6 +102,7 @@ const PairSlot = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
   pointer-events: none;
 `
 
@@ -178,13 +180,20 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
   size = 'home',
   ...rest
 }) => (
-  <Shell data-home-swap-panel data-swap-cockpit data-swap-size={size} $size={size} {...rest}>
+  <Shell
+    className={size === 'home' ? 'home-swap-cockpit' : undefined}
+    data-home-swap-panel
+    data-swap-cockpit
+    data-swap-size={size}
+    $size={size}
+    {...rest}
+  >
     <Header>
-      <TitleBlock>
+      <TitleBlock $size={size}>
         <Title>{title}</Title>
         <Subtitle>{subtitle}</Subtitle>
       </TitleBlock>
-      {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
+      {pairIndicator && <PairSlot $size={size}>{pairIndicator}</PairSlot>}
       {toolbar && <Toolbar>{toolbar}</Toolbar>}
     </Header>
     <Divider $size={size} />

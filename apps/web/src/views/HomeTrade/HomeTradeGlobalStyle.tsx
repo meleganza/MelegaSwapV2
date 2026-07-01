@@ -58,6 +58,30 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     box-sizing: border-box !important;
   }
 
+  /* Home cockpit: exactly one slippage row — hide uikit SwapUI.Info duplicate */
+  .home-swap-cockpit .home-trade-swap #swap-currency-output + div {
+    display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .home-swap-cockpit .home-trade-swap-slippage-strip.slippage-row {
+    display: flex !important;
+  }
+
+  .home-swap-cockpit .slippage-row:not(.home-trade-swap-slippage-strip) {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
   .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip {
     display: flex;
     align-items: center;
