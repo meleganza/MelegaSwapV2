@@ -4,17 +4,26 @@ import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
 import { ActivityRow } from './useHomeTradeData'
 
-const Shell = styled.section`
+const Shell = styled.section<{ $hasRows?: boolean }>`
   background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 22px;
   box-sizing: border-box;
-  min-height: 160px;
-  max-height: 220px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (min-width: 768px) {
+    min-height: ${({ $hasRows }) => ($hasRows ? 'auto' : '140px')};
+    height: ${({ $hasRows }) => ($hasRows ? 'auto' : '140px')};
+    max-height: ${({ $hasRows }) => ($hasRows ? '220px' : '140px')};
+  }
+
+  @media (max-width: 767px) {
+    min-height: 150px;
+    height: auto;
+  }
 `
 
 const Header = styled.div`
@@ -147,7 +156,7 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
   const displayRows = rows.slice(0, 5)
 
   return (
-    <Shell data-live-activity-feed>
+    <Shell data-live-activity-feed $hasRows={displayRows.length > 0}>
       <Header>
         <Title>Live Activity</Title>
         <SectionLink href="/swap">View all →</SectionLink>

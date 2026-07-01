@@ -1,8 +1,22 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
 import { colors, typography } from '../../tokens'
 import { MelegaLogoSvg } from './MelegaLogoSvg'
+
+const BrandLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 150ms ease;
+  min-width: 0;
+
+  &:hover {
+    opacity: 0.92;
+  }
+`
 
 const Wrap = styled.div`
   display: flex;
@@ -60,19 +74,21 @@ export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'de
   const [ok, setOk] = useState(true)
 
   return (
-    <Wrap data-melega-brand-lockup>
-      <Circle $size={logoSize} aria-hidden>
-        {ok ? (
-          <img src={MELEGA_LOGO_URI} alt="Melega" onError={() => setOk(false)} />
-        ) : (
-          <MelegaLogoSvg size={logoSize} />
-        )}
-      </Circle>
-      <BrandText $compact={size === 'mobile'}>
-        <MelegaWord>Melega</MelegaWord>
-        <DexWord>DEX</DexWord>
-      </BrandText>
-    </Wrap>
+    <BrandLink href="/" aria-label="Melega DEX home">
+      <Wrap data-melega-brand-lockup>
+        <Circle $size={logoSize} aria-hidden>
+          {ok ? (
+            <img src={MELEGA_LOGO_URI} alt="" onError={() => setOk(false)} />
+          ) : (
+            <MelegaLogoSvg size={logoSize} />
+          )}
+        </Circle>
+        <BrandText $compact={size === 'mobile'}>
+          <MelegaWord>Melega</MelegaWord>
+          <DexWord>DEX</DexWord>
+        </BrandText>
+      </Wrap>
+    </BrandLink>
   )
 }
 

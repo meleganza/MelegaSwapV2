@@ -9,6 +9,7 @@ export type MelegaNavIcon =
   | 'star'
   | 'rocket'
   | 'wallet'
+  | 'sparkle'
 
 export const ShellNavIcon: React.FC<{ name: MelegaNavIcon }> = ({ name }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -33,6 +34,12 @@ export const ShellNavIcon: React.FC<{ name: MelegaNavIcon }> = ({ name }) => (
       <>
         <rect x="4" y="7" width="16" height="12" rx="2" />
         <path d="M16 12h4v4h-4z" />
+      </>
+    )}
+    {name === 'sparkle' && (
+      <>
+        <path d="M12 3l1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2z" />
+        <path d="M18 14l.8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8z" />
       </>
     )}
   </svg>

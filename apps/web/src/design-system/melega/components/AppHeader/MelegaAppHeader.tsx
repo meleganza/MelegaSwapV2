@@ -26,6 +26,7 @@ const Bar = styled.header`
 const Left = styled.div`
   display: flex;
   align-items: center;
+  height: 60px;
   min-width: 0;
 `
 
@@ -33,24 +34,14 @@ const Right = styled.div`
   display: flex;
   align-items: center;
   gap: 14px;
+  height: 60px;
   margin-left: auto;
   flex-shrink: 0;
 
-  .melega-shell-network {
-    margin-left: 8px;
-  }
-
-  [data-melega-social-icons] {
-    transform: translateY(-4px);
-  }
-
-  .melega-shell-connect,
-  .melega-shell-wallet-slot {
-    transform: translateY(-4px) translateX(-2px);
-  }
-
-  .melega-shell-settings {
-    margin-left: -4px;
+  & > * {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 `
 

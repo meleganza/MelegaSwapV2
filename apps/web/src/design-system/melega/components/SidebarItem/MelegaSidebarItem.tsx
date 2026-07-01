@@ -7,6 +7,7 @@ export interface MelegaSidebarItemProps {
   label: string
   href?: string
   active?: boolean
+  highlighted?: boolean
   disabled?: boolean
   loading?: boolean
   onClick?: () => void
@@ -14,6 +15,7 @@ export interface MelegaSidebarItemProps {
 
 const ItemBase = styled.a<{
   $active?: boolean
+  $highlighted?: boolean
   $disabled?: boolean
 }>`
   display: flex;
@@ -27,8 +29,9 @@ const ItemBase = styled.a<{
   font-family: ${typography.fontFamily.body};
   font-size: 13px;
   font-weight: 500;
-  color: ${({ $active }) => ($active ? colors.gold : '#B5B5B5')};
-  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.12)' : 'transparent')};
+  color: ${({ $active, $highlighted }) => ($active || $highlighted ? colors.gold : '#B5B5B5')};
+  background: ${({ $active, $highlighted }) =>
+    $active ? 'rgba(212,175,55,0.12)' : $highlighted ? 'rgba(212,175,55,0.08)' : 'transparent'};
   position: relative;
   cursor: pointer;
   transition:
@@ -88,12 +91,13 @@ const ItemBase = styled.a<{
 `
 
 export const MelegaSidebarItem = forwardRef<HTMLAnchorElement, MelegaSidebarItemProps>(
-  ({ icon, label, href = '#', active, disabled, loading, onClick }, ref) => (
+  ({ icon, label, href = '#', active, highlighted, disabled, loading, onClick }, ref) => (
     <ItemBase
       ref={ref}
       href={disabled ? undefined : href}
       onClick={onClick}
       $active={active}
+      $highlighted={highlighted}
       $disabled={disabled || loading}
       aria-disabled={disabled || loading}
     >

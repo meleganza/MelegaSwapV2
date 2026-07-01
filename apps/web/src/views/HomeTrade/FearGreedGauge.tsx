@@ -10,15 +10,17 @@ const Shell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  width: 118px;
-  min-width: 118px;
+  width: 150px;
+  min-width: 150px;
+  margin-top: 0;
 `
 
 const Svg = styled.svg`
   width: 118px;
   height: 76px;
+  margin-top: 8px;
   overflow: visible;
+  flex-shrink: 0;
 `
 
 const Needle = styled.g<{ $angle: number; $animate: boolean }>`
@@ -41,18 +43,18 @@ const Value = styled.div`
 `
 
 const Label = styled.div`
-  margin-top: 2px;
-  font-size: 11px;
+  margin-top: 4px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #707070;
 `
 
 const Caption = styled.div`
   margin-top: 2px;
-  font-size: 11px;
-  color: #9e9e9e;
+  font-size: 12px;
+  color: #b3b3b3;
   text-align: center;
   line-height: 1.25;
 `
@@ -60,6 +62,7 @@ const Caption = styled.div`
 const SkeletonArc = styled.div`
   width: 118px;
   height: 59px;
+  margin-top: 8px;
   border-radius: 118px 118px 0 0;
   border: 8px solid rgba(255, 255, 255, 0.06);
   border-bottom: none;
@@ -87,7 +90,7 @@ export const FearGreedGauge: React.FC<FearGreedGaugeProps> = ({ value, classific
     return (
       <Shell data-fear-greed-gauge aria-label="Fear and Greed Index indexing">
         <SkeletonArc />
-        <Label>Fear & Greed</Label>
+        <Label>Fear &amp; Greed</Label>
         <Caption>Indexing</Caption>
       </Shell>
     )
@@ -99,19 +102,43 @@ export const FearGreedGauge: React.FC<FearGreedGaugeProps> = ({ value, classific
     (numeric <= 25 ? 'Extreme Fear' : numeric <= 50 ? 'Fear' : numeric <= 75 ? 'Greed' : 'Extreme Greed')
 
   return (
-    <Shell data-fear-greed-gauge aria-label={hasValue ? `Fear and Greed Index ${numeric}` : 'Fear and Greed Index indexing'}>
+    <Shell data-fear-greed-gauge aria-label={`Fear and Greed Index ${numeric}`}>
       <Svg viewBox="0 0 118 76" aria-hidden>
         <path d="M 12 64 A 47 47 0 0 1 106 64" fill="none" stroke="#EF4444" strokeWidth="8" strokeLinecap="round" />
-        <path d="M 12 64 A 47 47 0 0 1 106 64" fill="none" stroke="#D4AF37" strokeWidth="8" strokeLinecap="round" strokeDasharray="29.5 118" strokeDashoffset="-29.5" />
-        <path d="M 12 64 A 47 47 0 0 1 106 64" fill="none" stroke="#22C55E" strokeWidth="8" strokeLinecap="round" strokeDasharray="29.5 118" strokeDashoffset="-59" />
-        <path d="M 12 64 A 47 47 0 0 1 106 64" fill="none" stroke="#00E676" strokeWidth="8" strokeLinecap="round" strokeDasharray="29.5 118" strokeDashoffset="-88.5" />
+        <path
+          d="M 12 64 A 47 47 0 0 1 106 64"
+          fill="none"
+          stroke="#D4AF37"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray="29.5 118"
+          strokeDashoffset="-29.5"
+        />
+        <path
+          d="M 12 64 A 47 47 0 0 1 106 64"
+          fill="none"
+          stroke="#22C55E"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray="29.5 118"
+          strokeDashoffset="-59"
+        />
+        <path
+          d="M 12 64 A 47 47 0 0 1 106 64"
+          fill="none"
+          stroke="#00E676"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray="29.5 118"
+          strokeDashoffset="-88.5"
+        />
         <Needle $angle={angle} $animate={animated}>
           <line x1="59" y1="64" x2="59" y2="26" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
         </Needle>
         <circle cx="59" cy="64" r="4" fill="#ffffff" />
       </Svg>
       <Value>{Math.round(numeric)}</Value>
-      <Label>Fear & Greed</Label>
+      <Label>Fear &amp; Greed</Label>
       <Caption>{caption}</Caption>
     </Shell>
   )

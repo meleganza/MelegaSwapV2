@@ -6,16 +6,21 @@ import { colors } from 'design-system/melega/tokens'
 export const AppShellUIKitNeutralizer = createGlobalStyle`
   [data-melega-app-shell] .melega-shell-connect {
     min-width: 138px !important;
+    width: 138px !important;
     height: 40px !important;
-    padding: 0 20px !important;
-    border-radius: 10px !important;
+    padding: 0 16px !important;
+    border-radius: 12px !important;
     background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
-    color: #000000 !important;
-    font-size: 14px !important;
-    font-weight: 800 !important;
+    color: #050505 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
     white-space: nowrap !important;
     border: none !important;
     box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
   }
 
   [data-melega-app-shell] .melega-shell-connect:hover {
@@ -26,21 +31,28 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   [data-melega-app-shell] .melega-shell-network button,
   [data-melega-app-shell] .melega-shell-network [role='button'] {
     height: 40px !important;
-    padding: 0 25px !important;
-    border-radius: 10px !important;
-    background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    font-size: 14px !important;
+    min-width: 178px !important;
+    padding: 0 14px !important;
+    border-radius: 12px !important;
+    background: #060606 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    font-size: 15px !important;
     font-weight: 700 !important;
+    line-height: 16px !important;
     white-space: nowrap !important;
     box-shadow: none !important;
     color: ${colors.textPrimary} !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
   }
 
   [data-melega-app-shell] .melega-shell-network img,
   [data-melega-app-shell] .melega-shell-network svg {
-    width: 20px !important;
-    height: 20px !important;
+    width: 22px !important;
+    height: 22px !important;
+    flex-shrink: 0 !important;
   }
 
   [data-melega-app-shell] .melega-shell-settings {
@@ -88,6 +100,17 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     font-size: 12px !important;
     font-weight: 700 !important;
     box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  @media (max-width: 419px) {
+    [data-melega-app-shell] .melega-shell-mobile-network button,
+    [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
+      max-width: 72px !important;
+      min-width: 72px !important;
+      padding: 0 10px !important;
+    }
   }
 
   [data-melega-app-shell] .melega-shell-wallet-icon {

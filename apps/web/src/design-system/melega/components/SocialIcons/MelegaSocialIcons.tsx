@@ -24,6 +24,7 @@ const Link = styled.a`
   svg {
     width: 18px;
     height: 18px;
+    line-height: 1;
   }
 `
 

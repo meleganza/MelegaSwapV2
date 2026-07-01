@@ -18,16 +18,21 @@ const Shell = styled.section`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 260px;
+  min-height: 280px;
 
   @media (min-width: 768px) {
-    height: 260px;
-    max-height: 260px;
+    height: 280px;
+    max-height: 280px;
+  }
+
+  @media (max-width: 767px) {
+    height: auto;
+    max-height: none;
   }
 `
 
 const Header = styled.div`
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   flex-shrink: 0;
 `
 
@@ -46,28 +51,49 @@ const Subtitle = styled.p`
   line-height: 1.35;
 `
 
+const Content = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+`
+
 const Body = styled.div`
   display: grid;
-  grid-template-columns: 118px 1fr;
-  gap: 16px;
+  grid-template-columns: 160px 1fr;
+  gap: 24px;
   flex: 1;
   min-height: 0;
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+`
+
+const GaugeColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 150px;
+  min-width: 150px;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    min-width: 0;
   }
 `
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2px 14px;
+  gap: 10px 20px;
   align-content: start;
 `
 
 const Cell = styled.div`
   min-width: 0;
-  min-height: 52px;
+  min-height: 54px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -117,13 +143,15 @@ const CellMeta = styled.div`
 `
 
 const Networks = styled.div`
-  margin-top: auto;
+  margin-top: 14px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 11px;
   color: #8a8a8a;
   line-height: 1.4;
   flex-shrink: 0;
+  height: 28px;
+  box-sizing: content-box;
 `
 
 const NetworkGold = styled.span`
@@ -147,28 +175,32 @@ export const MarketPulsePanel: React.FC = () => {
         <Title>Market Pulse</Title>
         <Subtitle>Live market and chain signals.</Subtitle>
       </Header>
-      <Body>
-        <FearGreedGauge value={fearGreed?.value} classification={fearGreed?.classification} />
-        <Grid>
-          {displayCells.map((cell) => (
-            <Cell key={cell.id}>
-              <CellLabel>
-                <StatusDot $tone={cell.status} aria-hidden />
-                {cell.label}
-              </CellLabel>
-              <CellValue key={cell.value ?? 'indexing'}>{cell.value ?? 'Indexing'}</CellValue>
-              {cell.meta && <CellMeta>{cell.meta}</CellMeta>}
-            </Cell>
-          ))}
-        </Grid>
-      </Body>
-      <Networks>
-        <NetworkGold>BNB</NetworkGold>
-        <NetworkNeutral> · Polygon · Ethereum · Base</NetworkNeutral>
-        <div style={{ marginTop: 4, fontSize: 11, color: '#8a8a8a' }}>
-          BNB active now. Other networks indexed when liquidity is available.
-        </div>
-      </Networks>
+      <Content>
+        <Body>
+          <GaugeColumn>
+            <FearGreedGauge value={fearGreed?.value} classification={fearGreed?.classification} />
+          </GaugeColumn>
+          <Grid>
+            {displayCells.map((cell) => (
+              <Cell key={cell.id}>
+                <CellLabel>
+                  <StatusDot $tone={cell.status} aria-hidden />
+                  {cell.label}
+                </CellLabel>
+                <CellValue key={cell.value ?? 'indexing'}>{cell.value ?? 'Indexing'}</CellValue>
+                {cell.meta && <CellMeta>{cell.meta}</CellMeta>}
+              </Cell>
+            ))}
+          </Grid>
+        </Body>
+        <Networks>
+          <NetworkGold>BNB</NetworkGold>
+          <NetworkNeutral> · Polygon · Ethereum · Base</NetworkNeutral>
+          <span style={{ marginLeft: 8, color: '#8a8a8a' }}>
+            BNB active now. Other networks indexed when liquidity is available.
+          </span>
+        </Networks>
+      </Content>
     </Shell>
   )
 }

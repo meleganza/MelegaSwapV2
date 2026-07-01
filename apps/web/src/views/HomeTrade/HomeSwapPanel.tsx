@@ -57,6 +57,7 @@ const EXECUTION_ROWS = [
   { label: 'Minimum received', value: '—' },
   { label: 'Price impact', value: '—' },
   { label: 'Route', value: '—' },
+  { label: 'Slippage tolerance', value: '0.5%', slippage: true },
 ] as const
 
 const HomeSwapInner: React.FC = () => {
@@ -139,8 +140,10 @@ const HomeSwapInner: React.FC = () => {
           <div className="home-trade-swap-execution-summary" aria-hidden>
             {EXECUTION_ROWS.map((row) => (
               <div key={row.label} className="home-trade-swap-execution-row">
-                <span>{row.label}</span>
-                <span>{row.value}</span>
+                <span className="home-trade-swap-execution-label">{row.label}</span>
+                <span className={`home-trade-swap-execution-value${'slippage' in row && row.slippage ? ' is-slippage' : ''}`}>
+                  {row.value}
+                </span>
               </div>
             ))}
           </div>

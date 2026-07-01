@@ -26,8 +26,8 @@ const Shell = styled.div`
   @media (min-width: 768px) {
     width: 470px;
     max-width: 470px;
-    height: 380px;
-    max-height: 380px;
+    height: 410px;
+    max-height: 410px;
     flex-shrink: 0;
     overflow: hidden;
   }

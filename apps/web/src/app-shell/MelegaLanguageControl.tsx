@@ -7,19 +7,22 @@ import { languageList } from 'config/localization/languages'
 const Slot = styled.div`
   display: flex;
   align-items: center;
-  height: 40px;
+  height: 36px;
 
   button {
-    height: 40px !important;
-    min-height: 40px !important;
+    height: 36px !important;
+    min-height: 36px !important;
     padding: 0 12px !important;
     border-radius: 10px !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     background: transparent !important;
     box-shadow: none !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
     font-weight: 600 !important;
     color: #b3b3b3 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
   }
 
   button:hover {

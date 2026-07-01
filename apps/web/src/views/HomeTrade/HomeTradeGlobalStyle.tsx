@@ -43,26 +43,33 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   .home-trade-swap.show-execution-fallback .home-trade-swap-execution-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    display: grid;
+    grid-template-rows: repeat(5, 18px);
+    row-gap: 2px;
     order: 2;
-    margin: 2px 0 4px;
+    margin: 8px 0;
     padding: 0;
     pointer-events: none;
-    max-height: 72px;
+    height: 94px;
+    max-height: 94px;
     position: static;
+    overflow: hidden;
   }
 
   .home-trade-swap [class*='AdvancedDetailsFooter'] {
     order: 2;
-    max-height: 72px !important;
+    display: grid !important;
+    grid-template-rows: repeat(5, 18px);
+    row-gap: 2px;
+    height: 94px !important;
+    max-height: 94px !important;
     opacity: 1 !important;
     padding: 0 !important;
-    margin: 2px 0 4px !important;
+    margin: 8px 0 !important;
     width: 100% !important;
     max-width: none !important;
     overflow: hidden !important;
+    position: static !important;
   }
 
   .home-trade-swap #swap-page > div:last-child,
@@ -91,23 +98,35 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   .home-trade-swap-execution-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
-    min-height: 14px;
-    height: 14px;
+    min-height: 18px;
+    height: 18px;
     font-size: 12px;
-    line-height: 1;
+    line-height: 18px;
   }
 
+  .home-trade-swap-execution-label,
   .home-trade-swap-execution-row span:first-child {
     color: #8a8a8a;
     font-weight: 500;
+    white-space: nowrap;
   }
 
+  .home-trade-swap-execution-value,
   .home-trade-swap-execution-row span:last-child {
     color: #ffffff;
     font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .home-trade-swap-execution-value.is-slippage {
+    color: #f4c542;
   }
 
   .home-trade-swap.is-disconnected [class*='ConnectWallet'],
@@ -185,14 +204,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap #swap-currency-output::before {
     content: '';
     position: absolute;
-    top: 10px;
+    top: 12px;
     left: 14px;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #a8a8a8;
-    line-height: 1;
+    line-height: 11px;
     z-index: 4;
     pointer-events: none;
   }
@@ -295,13 +314,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     bottom: 12px !important;
     right: 112px !important;
     width: auto !important;
-    font-size: 32px !important;
+    font-size: 30px !important;
     color: ${colors.textPrimary} !important;
     font-weight: 700 !important;
-    line-height: 1 !important;
+    line-height: 30px !important;
     padding: 0 !important;
-    min-height: 32px !important;
-    height: 32px !important;
+    min-height: 30px !important;
+    height: 30px !important;
     max-width: none !important;
     background: transparent !important;
     border: none !important;
@@ -312,6 +331,30 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     opacity: 0.82 !important;
     animation: ${swapValueFade} 180ms ease;
     z-index: 2 !important;
+  }
+
+  @media (min-width: 768px) {
+    .home-trade-swap #swap-currency-input,
+    .home-trade-swap #swap-currency-output {
+      height: 78px !important;
+      min-height: 78px !important;
+      max-height: 78px !important;
+      padding: 12px 14px !important;
+    }
+
+    .home-trade-swap #swap-currency-input [class*='InputContainer'] > div,
+    .home-trade-swap #swap-currency-output [class*='InputContainer'] > div {
+      height: 30px !important;
+      min-height: 30px !important;
+      max-height: 30px !important;
+    }
+
+    .home-trade-swap #swap-currency-input [class*='InputContainer'],
+    .home-trade-swap #swap-currency-output [class*='InputContainer'] {
+      height: 30px !important;
+      min-height: 30px !important;
+      max-height: 30px !important;
+    }
   }
 
   .home-trade-swap [class*='InputPanel'] input,
@@ -413,15 +456,15 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'],
   .home-trade-swap [class*='AdvancedSwapDetails'] > div > div {
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    min-height: 14px !important;
-    height: 14px !important;
+    min-height: 18px !important;
+    height: 18px !important;
     margin: 0 !important;
     padding: 0 !important;
     font-size: 12px !important;
-    line-height: 1 !important;
+    line-height: 18px !important;
   }
 
   .home-trade-swap [class*='AdvancedSwapDetails'] [class*='Text'],
@@ -429,13 +472,24 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     font-size: 12px !important;
     color: #8a8a8a !important;
     font-weight: 500 !important;
+    white-space: nowrap !important;
   }
 
   .home-trade-swap [class*='AdvancedSwapDetails'] [class*='Text']:last-child,
   .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'] > :last-child {
     color: #ffffff !important;
     font-weight: 600 !important;
+    text-align: right !important;
+    max-width: 160px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
     animation: ${swapValueFade} 180ms ease;
+  }
+
+  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:has([class*='Slippage']) > :last-child,
+  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:last-child > :last-child {
+    color: #f4c542 !important;
   }
 
   .home-trade-swap [class*='PercentInput'],

@@ -6,7 +6,7 @@ export const homeTradeLayout = {
   compactGap: '12px',
   gridGutter: '16px',
   heroGap: '16px',
-  heroMaxHeight: '380px',
+  heroMaxHeight: '410px',
   swapWidth: '470px',
 } as const
 

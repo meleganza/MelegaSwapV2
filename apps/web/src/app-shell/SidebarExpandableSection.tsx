@@ -81,6 +81,7 @@ export const SidebarExpandableSection: React.FC<SidebarExpandableSectionProps> =
       <MelegaSidebarItem
         label={item.label}
         active={item.match(pathname)}
+        highlighted={item.highlight}
         icon={<ShellNavIcon name={item.icon} />}
       />
     </Link>

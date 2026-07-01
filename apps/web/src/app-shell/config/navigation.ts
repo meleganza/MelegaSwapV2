@@ -6,14 +6,20 @@ export interface ShellNavItem {
   href: string
   icon: MelegaNavIcon
   match: (pathname: string) => boolean
+  /** Gold accent for featured launch actions (e.g. Reward MARCO holders). */
+  highlight?: boolean
 }
 
 export interface ShellNavSection {
   label: string
   items: ShellNavItem[]
-  /** Items shown before "More"; remainder expand on click. */
+  /** Items shown before "…"; remainder expand on click. */
   visibleCount: number
 }
+
+/** BabyMarco mint: legacy /nft/ — registry UI at /collectibles. */
+export const BABYMARCO_NFT_ROUTE = '/nft/'
+export const COLLECTIBLES_ROUTE = '/collectibles'
 
 export const shellNavigation: ShellNavSection[] = [
   {
@@ -28,8 +34,6 @@ export const shellNavigation: ShellNavSection[] = [
         icon: 'drop',
         match: (p) => p.startsWith('/liquidity') || p.startsWith('/add') || p.startsWith('/remove'),
       },
-      { id: 'identities', label: 'Digital Identities', href: '/identity/placeholder', icon: 'wallet', match: (p) => p.startsWith('/identity') },
-      { id: 'collectibles', label: 'Collectibles', href: '/collectibles', icon: 'star', match: (p) => p.startsWith('/collectibles') },
     ],
   },
   {
@@ -38,36 +42,65 @@ export const shellNavigation: ShellNavSection[] = [
     items: [
       { id: 'farms', label: 'Farms', href: '/farms', icon: 'coins', match: (p) => p.startsWith('/farms') },
       { id: 'pools', label: 'Pools', href: '/pools', icon: 'coins', match: (p) => p.startsWith('/pools') },
-      { id: 'staking', label: 'Staking', href: '/pools', icon: 'coins', match: () => false },
     ],
   },
   {
     label: 'FIND',
-    visibleCount: 3,
+    visibleCount: 4,
     items: [
       { id: 'trending', label: 'Trending', href: '/projects', icon: 'star', match: (p) => p === '/projects' },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
       { id: 'radar', label: 'Radar', href: '/query', icon: 'brain', match: (p) => p.startsWith('/query') },
-      { id: 'assets', label: 'Assets', href: '/assets', icon: 'folder', match: (p) => p.startsWith('/assets') },
       {
-        id: 'intelligence',
-        label: 'Intelligence',
-        href: '/query',
-        icon: 'brain',
-        match: (p) => p.startsWith('/presence'),
+        id: 'collectibles',
+        label: 'Collectibles',
+        href: COLLECTIBLES_ROUTE,
+        icon: 'star',
+        match: (p) => p.startsWith('/collectibles') || p.startsWith('/nft'),
       },
     ],
   },
   {
     label: 'BUILD',
-    visibleCount: 1,
+    visibleCount: 2,
     items: [
-      { id: 'list', label: 'List Project', href: '/launch', icon: 'rocket', match: (p) => p.startsWith('/launch') },
-      { id: 'create-token', label: 'Create Token', href: '/launch', icon: 'rocket', match: () => false },
-      { id: 'create-farm', label: 'Create Farm', href: '/farms', icon: 'coins', match: () => false },
-      { id: 'create-pool', label: 'Create Staking Pool', href: '/pools', icon: 'coins', match: () => false },
-      { id: 'lock-liquidity', label: 'Lock Liquidity', href: '/liquidity', icon: 'drop', match: () => false },
-      { id: 'reward', label: 'Reward MARCO holders', href: '/pools', icon: 'coins', match: () => false },
+      { id: 'list', label: 'List Project', href: '/launch', icon: 'rocket', match: (p) => p === '/launch' },
+      {
+        id: 'reward',
+        label: 'Reward MARCO holders',
+        href: '/launch?intent=reward-marco-holders',
+        icon: 'sparkle',
+        highlight: true,
+        match: (p) => p.includes('intent=reward-marco-holders'),
+      },
+      {
+        id: 'create-token',
+        label: 'Create Token',
+        href: '/launch?intent=create-token',
+        icon: 'rocket',
+        match: (p) => p.includes('intent=create-token'),
+      },
+      {
+        id: 'create-farm',
+        label: 'Create Farm',
+        href: '/launch?intent=create-farm',
+        icon: 'coins',
+        match: (p) => p.includes('intent=create-farm'),
+      },
+      {
+        id: 'create-pool',
+        label: 'Create Staking Pool',
+        href: '/launch?intent=create-staking-pool',
+        icon: 'coins',
+        match: (p) => p.includes('intent=create-staking-pool'),
+      },
+      {
+        id: 'lock-liquidity',
+        label: 'Lock Liquidity',
+        href: '/launch?intent=lock-liquidity',
+        icon: 'drop',
+        match: (p) => p.includes('intent=lock-liquidity'),
+      },
     ],
   },
   {
@@ -84,8 +117,20 @@ export const shellNavigation: ShellNavSection[] = [
 
 export const shellBottomNavItems = [
   { id: 'trade', label: 'Trade', href: '/', icon: 'swap' as MelegaNavIcon, match: (p: string) => p === '/' },
-  { id: 'earn', label: 'Earn', href: '/farms', icon: 'coins' as MelegaNavIcon, match: (p: string) => p.startsWith('/farms') || p.startsWith('/pools') },
-  { id: 'find', label: 'Find', href: '/projects', icon: 'star' as MelegaNavIcon, match: (p: string) => p.startsWith('/projects') || p.startsWith('/assets') || p.startsWith('/query') },
+  {
+    id: 'earn',
+    label: 'Earn',
+    href: '/farms',
+    icon: 'coins' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/farms') || p.startsWith('/pools'),
+  },
+  {
+    id: 'find',
+    label: 'Find',
+    href: '/projects',
+    icon: 'star' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/projects') || p.startsWith('/assets') || p.startsWith('/query') || p.startsWith('/collectibles'),
+  },
   { id: 'build', label: 'Build', href: '/launch', icon: 'rocket' as MelegaNavIcon, match: (p: string) => p.startsWith('/launch') || p.startsWith('/add') },
   { id: 'portfolio', label: 'Portfolio', href: '/workspace', icon: 'wallet' as MelegaNavIcon, match: (p: string) => p.startsWith('/workspace') },
 ]

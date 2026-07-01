@@ -151,8 +151,8 @@ const config = {
         permanent: true,
       },
       {
-        source: '/collectibles',
-        destination: '/nfts',
+        source: '/nfts',
+        destination: '/collectibles',
         permanent: true,
       },
       {

@@ -53,7 +53,7 @@ const Panel = styled.div`
 
   @media (min-width: 768px) {
     height: 100%;
-    max-height: 380px;
+    max-height: 410px;
   }
 `
 

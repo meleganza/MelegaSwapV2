@@ -26,10 +26,8 @@ const drawSpark = keyframes`
 `
 
 const Card = styled.a<{ $interactive?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 72px;
+  display: block;
+  height: 76px;
   padding: 12px 14px;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -38,6 +36,7 @@ const Card = styled.a<{ $interactive?: boolean }>`
   box-shadow: none;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
   transition: border-color ${animation.cardHover}, transform 150ms ease;
   cursor: ${({ $interactive }) => ($interactive ? 'pointer' : 'default')};
   animation: ${fadeIn} 180ms ease;
@@ -53,14 +52,15 @@ const Card = styled.a<{ $interactive?: boolean }>`
 
   ${media.mobile} {
     flex: 0 0 210px;
-    height: 72px;
+    height: 76px;
   }
 `
 
 const Label = styled.div`
   font-size: 11px;
-  color: #8f8f8f;
-  line-height: 1.3;
+  color: #8a8a8a;
+  line-height: 12px;
+  height: 12px;
 `
 
 const Value = styled.div`
@@ -68,29 +68,31 @@ const Value = styled.div`
   font-size: 16px;
   font-weight: 800;
   color: ${colors.textPrimary};
-  line-height: 1.1;
+  line-height: 20px;
+  height: 20px;
+  max-width: calc(100% - 62px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-right: 52px;
 `
 
 const Meta = styled.div<{ $positive?: boolean }>`
-  margin-top: auto;
-  padding-top: 2px;
+  margin-top: 2px;
   font-size: 12px;
+  font-weight: 700;
   color: ${({ $positive }) => ($positive ? colors.green : colors.textSecondary)};
-  line-height: 1.3;
+  line-height: 16px;
+  height: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-shrink: 0;
+  max-width: calc(100% - 62px);
 `
 
 const Spark = styled.svg`
   position: absolute;
-  right: 10px;
-  bottom: 12px;
+  right: 14px;
+  bottom: 14px;
   width: 48px;
   height: 18px;
   pointer-events: none;
