@@ -18,22 +18,9 @@ const ECOSYSTEM_ITEMS = [
     ),
   },
   {
-    id: 'dex',
-    title: 'DEX',
-    subtitle: 'List, trade and earn',
-    href: '/swap',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-        <path d="M7 10h10l-3-3M17 14H7l3 3" />
-        <circle cx="5" cy="12" r="2" />
-        <circle cx="19" cy="12" r="2" />
-      </svg>
-    ),
-  },
-  {
     id: 'space',
     title: 'Space',
-    subtitle: 'Propagate your project',
+    subtitle: 'Increase project visibility',
     href: '/presence',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -45,7 +32,7 @@ const ECOSYSTEM_ITEMS = [
   {
     id: 'radar',
     title: 'Radar',
-    subtitle: 'Find trends and claim visibility',
+    subtitle: 'Find trends and claim your profile',
     href: '/projects',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -58,12 +45,24 @@ const ECOSYSTEM_ITEMS = [
   {
     id: 'smartdrop',
     title: 'SmartDrop',
-    subtitle: 'Reach active holders',
+    subtitle: 'Acquire active holders',
     href: '/launch',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <path d="M12 3l2.5 5.5L20 10l-5.5 1.5L12 17l-2.5-5.5L4 10l5.5-1.5L12 3z" />
         <path d="M5 19l1.5 3M19 19l-1.5 3" />
+      </svg>
+    ),
+  },
+  {
+    id: 'insights',
+    title: 'Insights',
+    subtitle: 'Monitor ecosystem intelligence',
+    href: '/query',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+        <path d="M4 19h16M6 16l3-8 4 5 3-4 2 7" />
+        <circle cx="18" cy="6" r="2" />
       </svg>
     ),
   },
@@ -73,30 +72,35 @@ const Shell = styled.section`
   background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 22px;
+  padding: 20px 22px 22px;
   box-sizing: border-box;
-  max-height: 190px;
-  overflow: hidden;
-
-  @media (max-width: 767px) {
-    max-height: none;
-    padding: 18px;
-  }
 `
 
 const Header = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+`
+
+const TitleBlock = styled.div`
+  min-width: 0;
 `
 
 const Title = styled.h2`
   margin: 0;
   font-size: 24px;
-  font-weight: 850;
+  font-weight: 800;
   color: #ffffff;
   line-height: 1.1;
+`
+
+const Subtitle = styled.p`
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #a8a8a8;
+  line-height: 1.35;
 `
 
 const ExploreLink = styled(Link)`
@@ -105,6 +109,7 @@ const ExploreLink = styled(Link)`
   color: #d4af37;
   text-decoration: none;
   white-space: nowrap;
+  padding-top: 4px;
 
   &:hover {
     text-decoration: underline;
@@ -114,7 +119,7 @@ const ExploreLink = styled(Link)`
 const CardTrack = styled.div`
   display: flex;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 14px;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -124,59 +129,65 @@ const CardTrack = styled.div`
   }
 
   @media (min-width: 768px) {
-    padding-bottom: 2px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    overflow: visible;
   }
 `
 
 const EcoCard = styled(Link)`
   flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
   text-decoration: none;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 12px;
   box-sizing: border-box;
-  transition: border-color 150ms ease;
+  height: 74px;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
 
   &:hover {
     border-color: rgba(212, 175, 55, 0.35);
-  }
-
-  @media (min-width: 768px) {
-    width: calc((100% - 32px) / 5);
-    min-width: 108px;
-    height: 58px;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.08);
   }
 
   @media (max-width: 767px) {
-    width: 150px;
+    width: 160px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
     height: 92px;
-    justify-content: flex-start;
   }
+`
+
+const TextCol = styled.div`
+  min-width: 0;
+  flex: 1;
 `
 
 const IconWrap = styled.span`
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   color: ${colors.gold};
   flex-shrink: 0;
 
   svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  @media (max-width: 767px) {
-    margin-bottom: 4px;
+    width: 22px;
+    height: 22px;
   }
 `
 
 const CardTitle = styled.span`
+  display: block;
   font-size: 13px;
   font-weight: 800;
   color: #ffffff;
@@ -184,6 +195,8 @@ const CardTitle = styled.span`
 `
 
 const CardSubtitle = styled.span`
+  display: block;
+  margin-top: 2px;
   font-size: 11px;
   color: #a8a8a8;
   line-height: 1.25;
@@ -195,15 +208,20 @@ const CardSubtitle = styled.span`
 export const GrowInsideMelegaPanel: React.FC = () => (
   <Shell data-grow-inside-melega="true">
     <Header>
-      <Title>Grow inside Melega</Title>
+      <TitleBlock>
+        <Title>Grow inside Melega</Title>
+        <Subtitle>Grow faster using the Melega ecosystem.</Subtitle>
+      </TitleBlock>
       <ExploreLink href="/projects">Explore ecosystem →</ExploreLink>
     </Header>
     <CardTrack>
       {ECOSYSTEM_ITEMS.map((item) => (
         <EcoCard key={item.id} href={item.href}>
           <IconWrap>{item.icon}</IconWrap>
-          <CardTitle>{item.title}</CardTitle>
-          <CardSubtitle>{item.subtitle}</CardSubtitle>
+          <TextCol>
+            <CardTitle>{item.title}</CardTitle>
+            <CardSubtitle>{item.subtitle}</CardSubtitle>
+          </TextCol>
         </EcoCard>
       ))}
     </CardTrack>

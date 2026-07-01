@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { useAccount } from 'wagmi'
@@ -11,8 +10,6 @@ import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import {
   MelegaBrandLockup,
   MelegaSidebar,
-  MelegaSidebarSection,
-  MelegaSidebarItem,
   MelegaMarcoCard,
   MelegaAppHeader,
   MELEGA_SIDEBAR_WIDTH,
@@ -25,12 +22,14 @@ import {
 } from 'design-system/melega'
 import { shellNavigation, shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
-import useAppShellData from './hooks/useAppShellData'
 import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
+import MelegaLanguageControl from './MelegaLanguageControl'
+import SidebarExpandableSection from './SidebarExpandableSection'
+import useAppShellData from './hooks/useAppShellData'
 
 const Root = styled.div`
   min-height: 100vh;
-  background: ${colors.canvas};
+  background: #050505;
   color: ${colors.textPrimary};
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `
@@ -38,13 +37,13 @@ const Root = styled.div`
 const DesktopMain = styled.main`
   margin-left: 0;
   padding: 70px 14px calc(96px + env(safe-area-inset-bottom, 0px));
-  background: ${colors.canvas};
+  background: #050505;
   min-height: 100vh;
   box-sizing: border-box;
 
   @media (min-width: 768px) {
     margin-left: ${MELEGA_SIDEBAR_WIDTH};
-    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + 12px) 26px 24px;
+    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + 20px) 24px 24px;
     max-width: none;
   }
 `
@@ -100,17 +99,13 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
   const navigation = useMemo(
     () =>
       shellNavigation.map((section) => (
-        <MelegaSidebarSection key={section.label} label={section.label}>
-          {section.items.map((item) => (
-            <Link key={`${section.label}-${item.id}`} href={item.href} passHref legacyBehavior>
-              <MelegaSidebarItem
-                label={item.label}
-                active={item.match(pathname)}
-                icon={<ShellNavIcon name={item.icon} />}
-              />
-            </Link>
-          ))}
-        </MelegaSidebarSection>
+        <SidebarExpandableSection
+          key={section.label}
+          label={section.label}
+          items={section.items}
+          visibleCount={section.visibleCount}
+          pathname={pathname}
+        />
       )),
     [pathname],
   )
@@ -144,6 +139,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
         right={
           <>
             <MelegaSocialIcons />
+            <MelegaLanguageControl />
             <div className="melega-shell-network">
               <NetworkSwitcher />
             </div>

@@ -17,11 +17,11 @@ export interface MelegaCtaCardProps {
 
 const Card = styled.div`
   display: grid;
-  grid-template-columns: 128px 1fr;
-  gap: 24px;
+  grid-template-columns: 100px 1fr;
+  gap: 20px;
   align-items: center;
-  min-height: 190px;
-  padding: 24px;
+  min-height: 156px;
+  padding: 20px 22px;
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), #111111 42%, #080808 100%);
   border: 1px solid rgba(212, 175, 55, 0.42);
   border-radius: 18px;
@@ -37,8 +37,8 @@ const Card = styled.div`
 `
 
 const Visual = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 92px;
+  height: 92px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,8 +56,8 @@ const Body = styled.div`
 const Title = styled.h3`
   margin: 0 0 6px;
   font-family: ${typography.fontFamily.body};
-  font-size: 26px;
-  font-weight: ${typography.fontWeight.heavy};
+  font-size: 36px;
+  font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1.1;
 
@@ -81,7 +81,7 @@ const Desc = styled.p`
 const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 16px;
   margin-top: 16px;
 
   ${media.mobile} {

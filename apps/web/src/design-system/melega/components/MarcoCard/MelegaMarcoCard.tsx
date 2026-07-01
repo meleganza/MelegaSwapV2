@@ -2,12 +2,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { MARCO_LOGO_URI } from '../../constants/brand'
 import { colors, typography } from '../../tokens'
+import { MarcoLogoSvg } from './MarcoLogoSvg'
 
 const Card = styled.div`
   width: 100%;
-  height: 70px;
-  background: #0a0a0a;
-  border: 1px solid ${colors.border};
+  height: 72px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 12px;
   display: flex;
@@ -22,7 +23,7 @@ const Circle = styled.div`
   height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: ${colors.canvas};
+  background: ${colors.background};
   border: 1px solid rgba(212, 175, 55, 0.45);
   display: flex;
   align-items: center;
@@ -34,13 +35,6 @@ const Circle = styled.div`
     height: 100%;
     object-fit: contain;
   }
-`
-
-const Mark = styled.span`
-  font-family: ${typography.fontFamily.body};
-  font-size: 10px;
-  font-weight: ${typography.fontWeight.bold};
-  color: ${colors.gold};
 `
 
 const Meta = styled.div`
@@ -56,7 +50,7 @@ const Name = styled.div`
 const Price = styled.div`
   font-size: 13px;
   font-weight: ${typography.fontWeight.semibold};
-  color: ${colors.green};
+  color: #22c55e;
   margin-top: 2px;
 `
 
@@ -73,7 +67,7 @@ export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) 
         {ok ? (
           <img src={MARCO_LOGO_URI} alt="MARCO" onError={() => setOk(false)} />
         ) : (
-          <Mark>M</Mark>
+          <MarcoLogoSvg size={28} />
         )}
       </Circle>
       <Meta>

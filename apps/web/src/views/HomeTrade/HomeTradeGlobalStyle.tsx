@@ -214,6 +214,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     border: none !important;
     white-space: nowrap !important;
     margin-top: 8px !important;
+    margin-bottom: 18px !important;
     transition: filter 150ms ease, transform 150ms ease, box-shadow 150ms ease !important;
   }
 

@@ -10,6 +10,7 @@ import ListProjectCta from './ListProjectCta'
 import EarnOpportunities from './EarnOpportunities'
 import LiveActivityFeed from './LiveActivityFeed'
 import GrowInsideMelegaPanel from './GrowInsideMelegaPanel'
+import EcosystemPanel from './EcosystemPanel'
 import HomeTradeFooter from './HomeTradeFooter'
 import useHomeTradeData from './useHomeTradeData'
 import { homeTradeLayout } from './homeTradeTokens'
@@ -24,7 +25,7 @@ const Root = styled.div`
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: ${homeTradeLayout.sectionGap};
   max-width: ${homeTradeLayout.contentMax};
   margin: 0 auto;
 `
@@ -41,44 +42,12 @@ const HeroRow = styled.div`
   }
 `
 
-const LowerGrid = styled.div`
+const LowerRow = styled.div`
   display: grid;
-  gap: ${homeTradeLayout.gridGutter};
-  margin-top: ${homeTradeLayout.gridGutter};
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
+  gap: ${homeTradeLayout.columnGap};
 
   @media (min-width: 768px) {
-    grid-template-columns: 1.15fr 1fr;
-    grid-template-areas:
-      'cta earn'
-      'activity grow';
-  }
-`
-
-const GridCta = styled.div`
-  @media (min-width: 768px) {
-    grid-area: cta;
-  }
-`
-
-const GridEarn = styled.div`
-  @media (min-width: 768px) {
-    grid-area: earn;
-  }
-`
-
-const GridActivity = styled.div`
-  @media (min-width: 768px) {
-    grid-area: activity;
-  }
-`
-
-const GridGrow = styled.div`
-  @media (min-width: 768px) {
-    grid-area: grow;
+    grid-template-columns: 1fr 1fr;
   }
 `
 
@@ -111,22 +80,15 @@ export const HomeTradeScreen: React.FC = () => {
           <MelegaCinematicPanel pulseRows={pulseRows.length ? pulseRows : undefined} />
         </HeroRow>
         {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
-        <LowerGrid>
-          <GridCta>
-            <ListProjectCta />
-          </GridCta>
+        <ListProjectCta />
+        <GrowInsideMelegaPanel />
+        <LowerRow>
           {data.showEarn && (
-            <GridEarn>
-              <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
-            </GridEarn>
+            <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
           )}
-          <GridGrow>
-            <GrowInsideMelegaPanel />
-          </GridGrow>
-          <GridActivity>
-            <LiveActivityFeed rows={data.activityRows} />
-          </GridActivity>
-        </LowerGrid>
+          <EcosystemPanel />
+        </LowerRow>
+        <LiveActivityFeed rows={data.activityRows} />
         <HomeTradeFooter />
       </Content>
     </Root>

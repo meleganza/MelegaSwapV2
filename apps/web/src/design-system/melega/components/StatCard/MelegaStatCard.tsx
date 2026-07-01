@@ -23,7 +23,7 @@ const Card = styled.a<{ $interactive?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 76px;
+  height: 72px;
   padding: 12px;
   background: #111111;
   border: 1px solid ${colors.border};
@@ -32,7 +32,7 @@ const Card = styled.a<{ $interactive?: boolean }>`
   box-shadow: none;
   position: relative;
   overflow: hidden;
-  transition: border-color ${animation.cardHover}, transform ${animation.cardHover};
+  transition: border-color ${animation.cardHover}, transform 150ms ease;
   cursor: ${({ $interactive }) => ($interactive ? 'pointer' : 'default')};
   animation: ${fadeIn} 180ms ease;
 
@@ -41,7 +41,7 @@ const Card = styled.a<{ $interactive?: boolean }>`
       $interactive &&
       `
       border-color: rgba(212,175,55,0.35);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     `}
   }
 

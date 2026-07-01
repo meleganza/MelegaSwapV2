@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography } from '../../tokens'
+import { typography } from '../../tokens'
 
 export interface MelegaSidebarSectionProps {
   label: string
@@ -13,18 +13,26 @@ const Section = styled.div`
   &:first-child {
     margin-top: 0;
   }
+
+  @media (max-height: 899px) {
+    margin-top: 12px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
 `
 
 const Label = styled.div`
   font-family: ${typography.fontFamily.body};
   font-size: 10px;
-  font-weight: ${typography.fontWeight.bold};
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: ${colors.textMuted};
+  color: #707070;
   height: 14px;
   margin-bottom: 6px;
-  padding: 0 2px;
+  padding: 0 14px;
 `
 
 const Items = styled.div`

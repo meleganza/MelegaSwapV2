@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { MelegaSectionCard, colors } from 'design-system/melega'
@@ -13,32 +13,42 @@ const SectionLink = styled(Link)`
   }
 `
 
-const Subheader = styled.div`
-  font-size: 13px;
-  color: ${colors.textSecondary};
-  margin-top: 8px;
-  margin-bottom: 6px;
+const Tabs = styled.div`
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+`
+
+const Tab = styled.button<{ $active?: boolean }>`
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(212,175,55,0.45)' : 'rgba(255,255,255,0.08)')};
+  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.1)' : 'transparent')};
+  color: ${({ $active }) => ($active ? colors.gold : colors.textSecondary)};
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+
+  &:hover {
+    border-color: rgba(212, 175, 55, 0.35);
+    color: ${colors.textPrimary};
+  }
 `
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 18px 1fr 72px;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 10px;
-  height: 30px;
+  height: 34px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   &:last-child {
     border-bottom: none;
   }
-`
-
-const Dot = styled.span`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${colors.gold};
-  border: 1px solid rgba(212, 175, 55, 0.5);
 `
 
 const Pair = styled.span`
@@ -50,28 +60,30 @@ const Pair = styled.span`
   text-overflow: ellipsis;
 `
 
-const Apr = styled.span`
+const AprWrap = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   font-weight: 800;
   color: ${colors.green};
   text-align: right;
 `
 
-const EarnList: React.FC<{ title: string; rows: EarnRow[] }> = ({ title, rows }) => {
-  if (!rows.length) return null
+const AprDot = styled.span`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: ${colors.green};
+  flex-shrink: 0;
+`
 
-  return (
-    <div>
-      <Subheader>{title}</Subheader>
-      {rows.map((row) => (
-        <Row key={row.id}>
-          <Dot aria-hidden />
-          <Pair>{row.name}</Pair>
-          <Apr>{row.apr || '—'}</Apr>
-        </Row>
-      ))}
-    </div>
-  )
+type TabId = 'top' | 'farms' | 'pools'
+
+const parseApr = (apr?: string) => {
+  if (!apr) return 0
+  const n = parseFloat(apr.replace('%', ''))
+  return Number.isFinite(n) ? n : 0
 }
 
 export const EarnOpportunities: React.FC<{
@@ -79,16 +91,48 @@ export const EarnOpportunities: React.FC<{
   poolRows: EarnRow[]
   showNote: boolean
 }> = ({ farmRows, poolRows }) => {
+  const [tab, setTab] = useState<TabId>('top')
+
+  const topRows = useMemo(() => {
+    const combined = [
+      ...farmRows.map((r) => ({ ...r, kind: 'farm' as const })),
+      ...poolRows.map((r) => ({ ...r, kind: 'pool' as const })),
+    ]
+    return combined
+      .sort((a, b) => parseApr(b.apr) - parseApr(a.apr))
+      .slice(0, 3)
+  }, [farmRows, poolRows])
+
+  const rows = tab === 'farms' ? farmRows : tab === 'pools' ? poolRows : topRows
+
   if (!farmRows.length && !poolRows.length) return null
 
   return (
     <MelegaSectionCard
       title="Earn Opportunities"
-      minHeight="190px"
+      minHeight="180px"
       action={<SectionLink href="/farms">View Earn →</SectionLink>}
     >
-      <EarnList title="Top Farms" rows={farmRows} />
-      {poolRows.length > 0 && <EarnList title="Top Staking Pools" rows={poolRows} />}
+      <Tabs>
+        <Tab type="button" $active={tab === 'top'} onClick={() => setTab('top')}>
+          Top
+        </Tab>
+        <Tab type="button" $active={tab === 'farms'} onClick={() => setTab('farms')}>
+          Farms
+        </Tab>
+        <Tab type="button" $active={tab === 'pools'} onClick={() => setTab('pools')}>
+          Pools
+        </Tab>
+      </Tabs>
+      {rows.map((row) => (
+        <Row key={row.id}>
+          <Pair>{row.name}</Pair>
+          <AprWrap>
+            <AprDot aria-hidden />
+            {row.apr || '—'}
+          </AprWrap>
+        </Row>
+      ))}
     </MelegaSectionCard>
   )
 }

@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, animation } from '../../tokens'
+import { colors } from '../../tokens'
 
 const Row = styled.div`
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
 `
 
 const Link = styled.a`
@@ -14,7 +14,8 @@ const Link = styled.a`
   justify-content: center;
   color: ${colors.textSecondary};
   text-decoration: none;
-  transition: color ${animation.hover};
+  background: transparent;
+  transition: color 150ms ease;
 
   &:hover {
     color: ${colors.gold};
@@ -44,13 +45,6 @@ const Discord = () => (
   </svg>
 )
 
-const Globe = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
-  </svg>
-)
-
 export const MelegaSocialIcons: React.FC = () => (
   <Row data-melega-social-icons>
     <Link href="https://t.me/melegafinance" target="_blank" rel="noreferrer" aria-label="Telegram">
@@ -61,9 +55,6 @@ export const MelegaSocialIcons: React.FC = () => (
     </Link>
     <Link href="https://discord.gg/melega" target="_blank" rel="noreferrer" aria-label="Discord">
       <Discord />
-    </Link>
-    <Link href="https://melega.finance" target="_blank" rel="noreferrer" aria-label="Website">
-      <Globe />
     </Link>
   </Row>
 )

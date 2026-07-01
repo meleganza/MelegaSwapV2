@@ -2,56 +2,55 @@ import React from 'react'
 import styled from 'styled-components'
 import { colors } from '../../tokens'
 
-const ASIDE_WIDTH = '230px'
-const SIDEBAR_BG = colors.background
+const ASIDE_WIDTH = '228px'
+const SIDEBAR_BG = '#050505'
 
 const Aside = styled.aside`
   display: none;
   position: fixed;
   left: 0;
   top: 0;
-  bottom: 0;
+  height: 100vh;
   width: ${ASIDE_WIDTH};
   background: ${SIDEBAR_BG};
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 24px 14px 14px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 0 16px;
   z-index: 100;
   box-sizing: border-box;
   flex-direction: column;
+  box-shadow: none;
 
   @media (min-width: 768px) {
     display: flex;
     overflow: hidden;
   }
-
-  @media (min-height: 820px) and (max-height: 920px) {
-    .melega-sidebar-nav {
-      overflow-y: auto;
-    }
-  }
 `
 
 const BrandRow = styled.div`
-  height: 44px;
-  margin-bottom: 22px;
-  display: flex;
-  align-items: center;
   flex-shrink: 0;
+  padding: 20px 0 0 18px;
+  margin-bottom: 18px;
 `
 
 const NavScroll = styled.div`
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  padding: 0 8px 0 0;
 
   &::-webkit-scrollbar {
     width: 0;
+  }
+
+  @media (max-height: 899px) {
+    overflow-y: auto;
   }
 `
 
 const Bottom = styled.div`
   flex-shrink: 0;
-  margin-top: 12px;
+  padding: 0 10px;
+  margin-top: auto;
 `
 
 export const MELEGA_SIDEBAR_WIDTH = ASIDE_WIDTH

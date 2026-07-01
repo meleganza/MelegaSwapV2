@@ -20,19 +20,21 @@ const ItemBase = styled.a<{
   align-items: center;
   gap: 9px;
   height: 28px;
-  padding: 0 10px;
+  padding: 0 10px 0 14px;
   border-radius: 8px;
+  border: 1px solid transparent;
   text-decoration: none;
   font-family: ${typography.fontFamily.body};
   font-size: 13px;
-  font-weight: ${typography.fontWeight.medium};
-  color: ${({ $active }) => ($active ? colors.gold : '#A8A8A8')};
-  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.13)' : 'transparent')};
+  font-weight: 500;
+  color: ${({ $active }) => ($active ? colors.gold : '#B5B5B5')};
+  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.12)' : 'transparent')};
   position: relative;
   cursor: pointer;
   transition:
-    background ${animation.hover},
-    color ${animation.hover};
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
   box-shadow: none;
 
   ${({ $active }) =>
@@ -46,14 +48,24 @@ const ItemBase = styled.a<{
         bottom: 6px;
         width: 2px;
         border-radius: 2px;
-        background: ${colors.gold};
+        background: #d4af37;
       }
     `}
 
   &:hover {
-    background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.13)' : 'rgba(255,255,255,0.045)')};
+    background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.045)')};
     color: ${({ $active }) => ($active ? colors.gold : colors.textPrimary)};
+    border-color: rgba(212, 175, 55, 0.35);
   }
+
+  ${({ $active }) =>
+    $active &&
+    css`
+      svg {
+        color: ${colors.gold};
+        stroke: ${colors.gold};
+      }
+    `}
 
   ${({ $disabled }) => $disabled && 'opacity: 0.45; pointer-events: none;'}
 
@@ -62,6 +74,16 @@ const ItemBase = styled.a<{
     height: 15px;
     flex-shrink: 0;
     stroke-width: 1.7;
+  }
+
+  @media (max-height: 899px) {
+    height: 26px;
+    font-size: 12px;
+
+    &::before {
+      top: 5px;
+      bottom: 5px;
+    }
   }
 `
 

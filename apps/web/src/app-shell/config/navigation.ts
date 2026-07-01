@@ -11,11 +11,14 @@ export interface ShellNavItem {
 export interface ShellNavSection {
   label: string
   items: ShellNavItem[]
+  /** Items shown before "More"; remainder expand on click. */
+  visibleCount: number
 }
 
 export const shellNavigation: ShellNavSection[] = [
   {
     label: 'TRADE',
+    visibleCount: 2,
     items: [
       { id: 'swap', label: 'Swap', href: '/', icon: 'swap', match: (p) => p === '/' },
       {
@@ -25,21 +28,27 @@ export const shellNavigation: ShellNavSection[] = [
         icon: 'drop',
         match: (p) => p.startsWith('/liquidity') || p.startsWith('/add') || p.startsWith('/remove'),
       },
+      { id: 'trending', label: 'Trending', href: '/projects', icon: 'star', match: (p) => p === '/projects' },
+      { id: 'assets', label: 'Assets', href: '/assets', icon: 'folder', match: (p) => p.startsWith('/assets') },
     ],
   },
   {
     label: 'EARN',
+    visibleCount: 2,
     items: [
       { id: 'farms', label: 'Farms', href: '/farms', icon: 'coins', match: (p) => p.startsWith('/farms') },
-      { id: 'staking', label: 'Staking', href: '/pools', icon: 'coins', match: (p) => p.startsWith('/pools') },
+      { id: 'pools', label: 'Pools', href: '/pools', icon: 'coins', match: (p) => p.startsWith('/pools') },
+      { id: 'staking', label: 'Staking', href: '/pools', icon: 'coins', match: () => false },
     ],
   },
   {
-    label: 'FIND',
+    label: 'BUILD',
+    visibleCount: 1,
     items: [
-      { id: 'trending', label: 'Trending', href: '/projects', icon: 'star', match: (p) => p === '/projects' },
+      { id: 'list', label: 'List Project', href: '/launch', icon: 'rocket', match: (p) => p.startsWith('/launch') },
+      { id: 'pool', label: 'Create pool', href: '/add', icon: 'rocket', match: (p) => p.startsWith('/add') },
+      { id: 'reward', label: 'Reward MARCO holders', href: '/pools', icon: 'coins', match: () => false },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
-      { id: 'assets', label: 'Assets', href: '/assets', icon: 'folder', match: (p) => p.startsWith('/assets') },
       {
         id: 'intelligence',
         label: 'Intelligence',
@@ -50,15 +59,8 @@ export const shellNavigation: ShellNavSection[] = [
     ],
   },
   {
-    label: 'BUILD',
-    items: [
-      { id: 'list', label: 'List project', href: '/launch', icon: 'rocket', match: (p) => p.startsWith('/launch') },
-      { id: 'pool', label: 'Create pool', href: '/add', icon: 'rocket', match: (p) => p.startsWith('/add') },
-      { id: 'reward', label: 'Reward MARCO holders', href: '/pools', icon: 'coins', match: () => false },
-    ],
-  },
-  {
     label: 'PORTFOLIO',
+    visibleCount: 1,
     items: [
       { id: 'overview', label: 'Overview', href: '/workspace', icon: 'wallet', match: (p) => p === '/workspace' },
       { id: 'positions', label: 'Positions', href: '/liquidity', icon: 'wallet', match: (p) => p === '/liquidity' },

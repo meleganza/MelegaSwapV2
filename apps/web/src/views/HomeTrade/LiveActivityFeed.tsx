@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-import styled from 'styled-components'
-import { MelegaEmptyState, MelegaSectionCard, MelegaTimelineRow, colors } from 'design-system/melega'
+import styled, { keyframes } from 'styled-components'
+import { MelegaSectionCard, MelegaTimelineRow, colors } from 'design-system/melega'
 import { ActivityRow } from './useHomeTradeData'
 
 const SectionLink = styled(Link)`
@@ -30,6 +30,64 @@ const Timeline = styled.div`
   }
 `
 
+const EmptyWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 24px 16px;
+  text-align: center;
+`
+
+const Orbit = styled.div`
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 14px;
+`
+
+const orbitPulse = keyframes`
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.6); opacity: 0.5; }
+`
+
+const OrbitRing = styled.div`
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 50%;
+  animation: ${orbitPulse} 2.5s ease-in-out infinite;
+`
+
+const OrbitDot = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: ${colors.gold};
+  opacity: 0.25;
+  animation: ${orbitPulse} 2.5s ease-in-out infinite;
+`
+
+const EmptyTitle = styled.p`
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${colors.textPrimary};
+`
+
+const EmptyDesc = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: ${colors.textSecondary};
+  line-height: 1.45;
+  max-width: 280px;
+`
+
 const eventIcon = (type: string) => {
   if (type === 'Swap') return '↔'
   if (type.includes('Added')) return '+'
@@ -44,10 +102,14 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
     action={<SectionLink href="/swap">View all →</SectionLink>}
   >
     {rows.length === 0 ? (
-      <MelegaEmptyState
-        title="No recent indexed activity yet."
-        description="Swaps, listings, pools and farms will appear here as soon as they are indexed."
-      />
+      <EmptyWrap>
+        <Orbit aria-hidden>
+          <OrbitRing />
+          <OrbitDot />
+        </Orbit>
+        <EmptyTitle>No recent activity.</EmptyTitle>
+        <EmptyDesc>Activities appear automatically when indexed.</EmptyDesc>
+      </EmptyWrap>
     ) : (
       <Timeline>
         {rows.map((row) => (

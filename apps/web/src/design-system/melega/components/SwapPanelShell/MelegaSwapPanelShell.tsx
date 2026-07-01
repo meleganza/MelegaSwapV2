@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, spacing, radius } from '../../tokens'
+import { colors, typography, radius } from '../../tokens'
 import { media } from '../../theme'
 
 export interface MelegaSwapPanelShellProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -14,19 +14,19 @@ const Shell = styled.div`
   background: linear-gradient(180deg, #111111 0%, #080808 100%);
   border: 1px solid rgba(212, 175, 55, 0.22);
   border-radius: ${radius['2xl']};
-  padding: 18px;
+  padding: 16px 18px 18px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
   box-shadow: none;
 
   @media (min-width: 768px) {
-    width: 500px;
-    max-width: 500px;
-    height: 360px;
-    max-height: 360px;
+    width: 470px;
+    max-width: 470px;
+    height: 410px;
+    max-height: 410px;
     flex-shrink: 0;
   }
 
@@ -43,22 +43,22 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   flex-shrink: 0;
-  height: 40px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 `
 
 const Title = styled.h1`
   margin: 0;
   font-family: ${typography.fontFamily.body};
   font-size: 28px;
-  font-weight: ${typography.fontWeight.extrabold};
+  font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1;
 `
 
 const Subtitle = styled.p`
-  margin: 4px 0 0;
-  font-size: ${typography.fontSize.base};
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 400;
   color: ${colors.textSecondary};
   line-height: 1.35;
 `
@@ -99,13 +99,14 @@ const Body = styled.div`
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 
   .home-trade-swap {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
+    overflow: visible;
   }
 
   ${media.mobile} {
@@ -115,7 +116,7 @@ const Body = styled.div`
 
 export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
   title = 'Swap',
-  subtitle = 'Trade tokens instantly on Melega DEX.',
+  subtitle = 'Trade instantly on Melega DEX',
   toolbar,
   children,
   ...rest

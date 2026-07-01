@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
 import { colors, typography } from '../../tokens'
+import { MelegaLogoSvg } from './MelegaLogoSvg'
 
 const Wrap = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 `
 
@@ -15,12 +16,13 @@ const Circle = styled.div<{ $size: number }>`
   height: ${({ $size }) => $size}px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: ${colors.canvas};
-  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: ${colors.background};
+  border: 2px solid #d4af37;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-sizing: border-box;
 
   img {
     width: 100%;
@@ -29,32 +31,24 @@ const Circle = styled.div<{ $size: number }>`
   }
 `
 
-const Mark = styled.span<{ $size: number }>`
-  font-family: ${typography.fontFamily.body};
-  font-size: ${({ $size }) => Math.round($size * 0.28)}px;
-  font-weight: ${typography.fontWeight.extrabold};
-  color: ${colors.textPrimary};
-  letter-spacing: -0.04em;
-`
-
 const BrandText = styled.div<{ $compact?: boolean }>`
   display: flex;
   align-items: baseline;
   gap: 4px;
   font-family: ${typography.fontFamily.body};
-  font-size: ${({ $compact }) => ($compact ? '21px' : '22px')};
-  font-weight: ${typography.fontWeight.extrabold};
+  font-size: ${({ $compact }) => ($compact ? '20px' : '22px')};
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.4px;
   white-space: nowrap;
 `
 
 const MelegaWord = styled.span`
-  color: ${colors.textPrimary};
+  color: #ffffff;
 `
 
 const DexWord = styled.span`
-  color: ${colors.gold};
+  color: #d4af37;
 `
 
 export interface MelegaBrandLockupProps {
@@ -62,7 +56,7 @@ export interface MelegaBrandLockupProps {
 }
 
 export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'desktop' }) => {
-  const logoSize = size === 'mobile' ? 38 : 40
+  const logoSize = size === 'mobile' ? 38 : 42
   const [ok, setOk] = useState(true)
 
   return (
@@ -71,7 +65,7 @@ export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'de
         {ok ? (
           <img src={MELEGA_LOGO_URI} alt="Melega" onError={() => setOk(false)} />
         ) : (
-          <Mark $size={logoSize}>MM</Mark>
+          <MelegaLogoSvg size={logoSize} />
         )}
       </Circle>
       <BrandText $compact={size === 'mobile'}>

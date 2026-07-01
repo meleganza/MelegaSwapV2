@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, spacing, radius, animation } from '../../tokens'
+import { colors, typography, animation } from '../../tokens'
 import { media } from '../../theme'
 import { focusRing } from '../../primitives'
 
@@ -17,34 +17,33 @@ export interface MelegaSearchBarProps {
 const Wrap = styled.div`
   display: flex;
   align-items: center;
-  gap: ${spacing[3]};
+  gap: 10px;
+  width: 500px;
   height: 42px;
-  padding: 0 10px 0 16px;
+  padding: 0 12px 0 16px;
   background: #080808;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: ${radius.lg};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
   box-shadow: none;
+  box-sizing: border-box;
   transition: border-color ${animation.hover};
 
   &:hover,
   &:focus-within {
-    border-color: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.14);
   }
 
   ${media.mobile} {
-    height: 40px;
     width: 100%;
-  }
-
-  ${media.desktopUp} {
-    width: 500px;
+    height: 40px;
   }
 `
 
 const Icon = styled.span`
-  color: ${colors.textMuted};
-  font-size: ${typography.fontSize.lg};
+  color: #707070;
+  font-size: 16px;
   line-height: 1;
+  margin-left: 2px;
 `
 
 const Input = styled.input`
@@ -53,11 +52,13 @@ const Input = styled.input`
   outline: none;
   background: transparent;
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize.base};
+  font-size: 14px;
   color: ${colors.textPrimary};
+  padding-top: 2px;
 
   &::placeholder {
-    color: ${colors.textSecondary};
+    color: #888888;
+    font-size: 14px;
   }
 
   ${focusRing}
@@ -70,11 +71,12 @@ const Kbd = styled.span`
   width: 32px;
   height: 24px;
   border-radius: 8px;
-  border: 1px solid ${colors.border};
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize.sm};
-  color: ${colors.textMuted};
+  font-size: 12px;
+  color: #707070;
+  flex-shrink: 0;
 
   ${media.mobile} {
     display: none;

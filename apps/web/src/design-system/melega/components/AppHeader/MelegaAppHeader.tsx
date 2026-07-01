@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors } from '../../tokens'
 import { MELEGA_SIDEBAR_WIDTH } from '../Sidebar/MelegaSidebar'
 
 const Bar = styled.header`
@@ -9,11 +8,11 @@ const Bar = styled.header`
   top: 0;
   right: 0;
   left: ${MELEGA_SIDEBAR_WIDTH};
-  height: 64px;
+  height: 60px;
   z-index: 90;
-  background: ${colors.canvas};
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 0 26px;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0 24px;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
@@ -33,9 +32,22 @@ const Left = styled.div`
 const Right = styled.div`
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   margin-left: auto;
   flex-shrink: 0;
+
+  .melega-shell-network {
+    margin-left: 8px;
+  }
+
+  .melega-shell-connect,
+  .melega-shell-wallet-slot {
+    transform: translateY(-4px);
+  }
+
+  .melega-shell-settings {
+    margin-left: -4px;
+  }
 `
 
 export interface MelegaAppHeaderProps {
@@ -50,6 +62,6 @@ export const MelegaAppHeader: React.FC<MelegaAppHeaderProps> = ({ left, right })
   </Bar>
 )
 
-export const MELEGA_APP_HEADER_HEIGHT = '64px'
+export const MELEGA_APP_HEADER_HEIGHT = '60px'
 
 export default MelegaAppHeader

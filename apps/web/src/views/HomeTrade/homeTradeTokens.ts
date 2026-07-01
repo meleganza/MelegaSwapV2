@@ -1,10 +1,12 @@
 /** Home / Trade layout constants — content area inside DS-002 shell. */
 export const homeTradeLayout = {
   contentMax: '1180px',
-  gridGutter: '12px',
-  heroGap: '14px',
-  heroMaxHeight: '360px',
-  swapWidth: '500px',
+  columnGap: '16px',
+  sectionGap: '18px',
+  gridGutter: '16px',
+  heroGap: '16px',
+  heroMaxHeight: '410px',
+  swapWidth: '470px',
 } as const
 
 /** Legacy tokens for orphaned pre-DS-002 HomeTrade shell modules (not mounted on `/`). */

@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { colors } from '../../tokens'
 
 const Cube = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 92px;
+  height: 92px;
   position: relative;
   transform: perspective(520px) rotateY(-18deg) rotateX(10deg);
 

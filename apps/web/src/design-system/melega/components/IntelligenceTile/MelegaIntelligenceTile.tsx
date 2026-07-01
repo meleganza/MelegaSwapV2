@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { colors, typography, spacing, radius } from '../../tokens'
 
@@ -16,7 +16,7 @@ const Tile = styled.a`
   display: flex;
   flex-direction: column;
   flex: 0 0 160px;
-  height: 108px;
+  height: 120px;
   border-radius: ${radius.md};
   border: 1px solid ${colors.border};
   overflow: hidden;
@@ -28,11 +28,12 @@ const Tile = styled.a`
 
   &:hover {
     border-color: rgba(212, 175, 55, 0.4);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 
   @media (min-width: 768px) {
     flex: unset;
+    height: 128px;
   }
 
   @media (max-width: 767px) {
@@ -42,17 +43,16 @@ const Tile = styled.a`
 `
 
 const TextBlock = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: ${spacing[3]};
+  position: relative;
   z-index: 2;
+  padding: ${spacing[3]};
+  flex: 1;
+  min-height: 55%;
 `
 
 const Title = styled.div`
   font-size: ${typography.fontSize.md};
-  font-weight: ${typography.fontWeight.bold};
+  font-weight: 800;
   color: ${colors.textPrimary};
   margin-bottom: 2px;
   line-height: 1.3;
@@ -64,10 +64,15 @@ const Desc = styled.div`
   line-height: 1.35;
 `
 
-const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant }>`
+const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant; $offsetX: number; $offsetY: number }>`
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
   pointer-events: none;
+  transform: translate(${({ $offsetX }) => $offsetX}px, ${({ $offsetY }) => $offsetY}px);
+  transition: transform 400ms ease-out;
 
   ${({ $variant }) =>
     $variant === 'radar' &&
@@ -76,9 +81,9 @@ const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant }>`
       content: '';
       position: absolute;
       right: -10%;
-      bottom: -20%;
-      width: 90%;
-      height: 90%;
+      bottom: -30%;
+      width: 100%;
+      height: 120%;
       border-radius: 50%;
       border: 1px solid rgba(212,175,55,0.3);
       background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(212,175,55,0.1) 10deg 11deg);
@@ -102,9 +107,9 @@ const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant }>`
       content: '';
       position: absolute;
       right: -5%;
-      bottom: -30%;
-      width: 100%;
-      height: 80%;
+      bottom: -40%;
+      width: 110%;
+      height: 120%;
       background: radial-gradient(ellipse 80% 70% at 75% 95%, rgba(244,197,66,0.6) 0%, rgba(212,175,55,0.25) 35%, transparent 60%);
     }
   `}
@@ -142,14 +147,41 @@ export const MelegaIntelligenceTile: React.FC<MelegaIntelligenceTileProps> = ({
   description,
   href,
   variant,
-}) => (
-  <Tile href={href}>
-    <Thumb $variant={variant} />
-    <TextBlock>
-      <Title>{title}</Title>
-      <Desc>{description}</Desc>
-    </TextBlock>
-  </Tile>
-)
+}) => {
+  const offset = useRef({ x: 0, y: 0 })
+  const thumbRef = useRef<HTMLDivElement>(null)
+
+  const handleMove = (e: React.MouseEvent) => {
+    const el = e.currentTarget
+    const rect = el.getBoundingClientRect()
+    const nx = (e.clientX - rect.left) / rect.width - 0.5
+    const ny = (e.clientY - rect.top) / rect.height - 0.5
+    offset.current = { x: nx * 4, y: ny * 3 }
+    if (thumbRef.current) {
+      thumbRef.current.style.transform = `translate(${offset.current.x}px, ${offset.current.y}px)`
+    }
+  }
+
+  const handleLeave = () => {
+    offset.current = { x: 0, y: 0 }
+    if (thumbRef.current) thumbRef.current.style.transform = 'translate(0, 0)'
+  }
+
+  return (
+    <Tile href={href} onMouseMove={handleMove} onMouseLeave={handleLeave}>
+      <TextBlock>
+        <Title>{title}</Title>
+        <Desc>{description}</Desc>
+      </TextBlock>
+      <Thumb
+        ref={thumbRef}
+        $variant={variant}
+        $offsetX={0}
+        $offsetY={0}
+        aria-hidden
+      />
+    </Tile>
+  )
+}
 
 export default MelegaIntelligenceTile

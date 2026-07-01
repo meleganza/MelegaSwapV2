@@ -1,15 +1,15 @@
 import React from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
-import { colors, radius } from 'design-system/melega/tokens'
+import { colors } from 'design-system/melega/tokens'
 
 /** Neutralize legacy UIkit chrome inside the Melega app shell only. */
 export const AppShellUIKitNeutralizer = createGlobalStyle`
   [data-melega-app-shell] .melega-shell-connect {
-    min-width: 136px !important;
+    min-width: 138px !important;
     height: 40px !important;
     padding: 0 20px !important;
     border-radius: 10px !important;
-    background: linear-gradient(180deg, #F4C542 0%, #D4AF37 100%) !important;
+    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
     color: #000000 !important;
     font-size: 14px !important;
     font-weight: 800 !important;
@@ -28,13 +28,19 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     height: 40px !important;
     padding: 0 14px !important;
     border-radius: 10px !important;
-    background: #060606 !important;
-    border: 1px solid ${colors.border} !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     font-size: 14px !important;
     font-weight: 700 !important;
     white-space: nowrap !important;
     box-shadow: none !important;
     color: ${colors.textPrimary} !important;
+  }
+
+  [data-melega-app-shell] .melega-shell-network img,
+  [data-melega-app-shell] .melega-shell-network svg {
+    width: 20px !important;
+    height: 20px !important;
   }
 
   [data-melega-app-shell] .melega-shell-settings {
@@ -43,11 +49,16 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    background: transparent;
     color: ${colors.textSecondary};
+    box-sizing: border-box;
   }
 
   [data-melega-app-shell] .melega-shell-settings:hover {
     color: ${colors.textPrimary};
+    border-color: rgba(212, 175, 55, 0.35);
   }
 
   [data-melega-app-shell] .melega-shell-settings button {
@@ -55,11 +66,16 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     border: none !important;
     box-shadow: none !important;
     color: inherit !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   [data-melega-app-shell] .melega-shell-settings svg {
-    width: 22px !important;
-    height: 22px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
 
   [data-melega-app-shell] .melega-shell-mobile-network button,
@@ -68,7 +84,7 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     max-width: 145px !important;
     border-radius: 10px !important;
     background: ${colors.surface1} !important;
-    border: 1px solid ${colors.borderStrong} !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     font-size: 12px !important;
     font-weight: 700 !important;
     box-shadow: none !important;
@@ -95,7 +111,7 @@ const WalletIconBtn = styled.div`
   align-items: center;
   justify-content: center;
   border: 1px solid ${colors.gold};
-  border-radius: ${radius.md};
+  border-radius: 10px;
 `
 
 export const MobileWalletSlot: React.FC<{ children: React.ReactNode }> = ({ children }) => (

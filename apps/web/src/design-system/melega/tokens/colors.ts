@@ -1,9 +1,9 @@
 /** Melega DEX design system — color tokens (Home V2 cockpit). */
 export const colors = {
   background: '#050505',
-  canvas: '#000000',
-  surface1: '#0D0D0D',
-  surface2: '#151515',
+  canvas: '#050505',
+  surface1: '#111111',
+  surface2: '#171717',
   surface3: '#1C1C1C',
   gold: '#D4AF37',
   goldHover: '#F4C542',
