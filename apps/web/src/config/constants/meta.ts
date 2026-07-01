@@ -28,6 +28,7 @@ const getPathList = (t: ContextApi['t']): PathList => {
       '/add': { basePath: true, title: t('Add Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
       '/remove': { basePath: true, title: t('Remove Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
       '/liquidity': { basePath: true, title: t('Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
+      '/liquidity-studio': { basePath: true, title: 'Liquidity Studio', image: `${ASSET_CDN}/web/og/liquidity.jpg` },
       '/find': { basePath: true, title: t('Import Pool') },
       // '/competition': { title: t('Trading Battle') },
       // '/prediction': { title: t('Prediction'), image: `${ASSET_CDN}/web/og/prediction.jpg` },

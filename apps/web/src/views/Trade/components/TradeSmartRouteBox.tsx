@@ -27,7 +27,7 @@ const TitleRow = styled.div`
 `
 
 const Title = styled.span`
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;

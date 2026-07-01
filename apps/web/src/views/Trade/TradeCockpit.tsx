@@ -207,7 +207,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
         <CockpitHeader data-trade-cockpit-header>
           <TitleBlock>
             <Title>Swap</Title>
-            <Subtitle>Trade instantly across supported liquidity.</Subtitle>
+            <Subtitle>Swap through the best available multichain route.</Subtitle>
           </TitleBlock>
           <Toolbar data-trade-cockpit-toolbar>
             <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>

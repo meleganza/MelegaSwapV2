@@ -38,7 +38,7 @@ const Icon = styled.span`
   height: 22px;
   border-radius: 50%;
   background: #171717;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid ${tradeColors.gold};
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -13,8 +13,7 @@ export interface HomeSwapPanelShellProps extends React.HTMLAttributes<HTMLDivEle
 
 const Shell = styled.div`
   position: relative;
-  background: #111111;
-  background-image: linear-gradient(180deg, #141414 0%, #101010 100%);
+  background: linear-gradient(180deg, #141414 0%, #101010 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   width: 100%;
@@ -23,7 +22,6 @@ const Shell = styled.div`
   overflow: hidden;
   box-sizing: border-box;
   box-shadow: none;
-  padding: 24px;
 
   @media (min-width: 768px) {
     width: 470px;
@@ -39,8 +37,17 @@ const Shell = styled.div`
     min-height: 0;
     max-height: none;
     height: auto;
-    padding: 20px 16px;
   }
+`
+
+const Inner = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
 `
 
 const Header = styled.div`
@@ -52,38 +59,37 @@ const Header = styled.div`
 const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 6px;
   min-width: 0;
-  max-width: 210px;
-  padding-bottom: 8px;
+  max-width: calc(100% - 96px);
 `
 
 const Title = styled.h1`
-  margin: 0 0 4px;
+  margin: 0;
   font-family: ${typography.fontFamily.body};
   font-size: 38px;
   font-weight: 800;
-  color: ${colors.textPrimary};
+  color: #ffffff;
   line-height: 40px;
 `
 
 const Subtitle = styled.p`
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 13px;
   font-weight: 500;
-  color: #b6b6b6;
+  color: #a8a8a8;
   line-height: 16px;
 `
 
 const PairSlot = styled.div`
   position: absolute;
-  top: 7px;
-  right: 88px;
+  top: 0;
+  right: 96px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  max-width: 128px;
+  max-width: 120px;
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
@@ -107,7 +113,7 @@ const Toolbar = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   flex-shrink: 0;
 `
 
@@ -143,7 +149,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-top: 0;
+  margin-top: 8px;
 
   .home-trade-swap {
     flex: 1;
@@ -152,6 +158,7 @@ const Body = styled.div`
     min-height: 0;
     overflow: hidden;
     gap: 0;
+    justify-content: flex-end;
   }
 
   ${media.mobile} {
@@ -168,16 +175,18 @@ export const HomeSwapPanelShell: React.FC<HomeSwapPanelShellProps> = ({
   ...rest
 }) => (
   <Shell className="home-swap-cockpit" data-home-swap-panel data-home-swap-shell {...rest}>
-    <Header>
-      <TitleBlock>
-        <Title>{title}</Title>
-        <Subtitle>{subtitle}</Subtitle>
-      </TitleBlock>
-      {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
-      {toolbar && <Toolbar>{toolbar}</Toolbar>}
-    </Header>
-    <Divider />
-    <Body>{children}</Body>
+    <Inner>
+      <Header>
+        <TitleBlock>
+          <Title>{title}</Title>
+          <Subtitle>{subtitle}</Subtitle>
+        </TitleBlock>
+        {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
+        {toolbar && <Toolbar>{toolbar}</Toolbar>}
+      </Header>
+      <Divider />
+      <Body>{children}</Body>
+    </Inner>
   </Shell>
 )
 

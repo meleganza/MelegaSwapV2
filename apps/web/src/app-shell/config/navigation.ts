@@ -29,7 +29,7 @@ export const shellNavigation: ShellNavSection[] = [
   },
   {
     label: 'TRADE',
-    visibleCount: 2,
+    visibleCount: 3,
     items: [
       {
         id: 'trade',
@@ -39,11 +39,18 @@ export const shellNavigation: ShellNavSection[] = [
         match: (p) => p === '/trade' || p.startsWith('/trade/'),
       },
       {
+        id: 'liquidity-studio',
+        label: 'Liquidity Studio',
+        href: '/liquidity-studio',
+        icon: 'drop',
+        match: (p) => p.startsWith('/liquidity-studio'),
+      },
+      {
         id: 'liquidity',
-        label: 'Liquidity',
+        label: 'My Liquidity',
         href: '/liquidity',
         icon: 'drop',
-        match: (p) => p.startsWith('/liquidity') || p.startsWith('/add') || p.startsWith('/remove'),
+        match: (p) => p === '/liquidity' || p.startsWith('/add') || p.startsWith('/remove'),
       },
     ],
   },

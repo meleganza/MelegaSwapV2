@@ -13,6 +13,15 @@ const swapArrowPulse = keyframes`
 `
 
 const HomeTradeGlobalStyle = createGlobalStyle`
+  .home-swap-cockpit .home-trade-swap {
+    justify-content: flex-end !important;
+  }
+
+  .home-swap-cockpit .home-trade-swap #swap-page > div:last-child,
+  .home-swap-cockpit .home-trade-swap [class*='Box'][class*='mt'] {
+    margin-top: auto !important;
+  }
+
   .home-trade-swap [class*='HeaderWrapper'],
   .home-trade-swap > div:first-child:not(#swap-page):not(.home-trade-swap-slippage-strip):not(.home-trade-swap-execution-summary) {
     display: none !important;

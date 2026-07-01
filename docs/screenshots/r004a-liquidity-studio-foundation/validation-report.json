@@ -1,0 +1,17 @@
+{
+  "task": "R004-A LIQUIDITY STUDIO FOUNDATION HOME SWAP FINAL REPAIR TRADE SWAP FINAL REPAIR",
+  "branch": "design-system-foundation",
+  "validation": {
+    "yarn_build": "pass",
+    "design_system_tests": "pass (8/8)",
+    "homepage_live_tests": "pass (2/2)"
+  },
+  "screenshots": [
+    "home-desktop-1440x900.png",
+    "trade-desktop-1440x900.png",
+    "liquidity-desktop-1440x900.png",
+    "liquidity-desktop-1728x1117.png",
+    "liquidity-mobile-390x844.png",
+    "liquidity-mobile-428x926.png"
+  ]
+}

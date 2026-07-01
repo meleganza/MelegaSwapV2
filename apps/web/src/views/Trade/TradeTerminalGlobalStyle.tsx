@@ -131,7 +131,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     border-radius: 14px !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 14px !important;
+    padding: 0 !important;
     position: relative !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
@@ -155,7 +155,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-terminal-swap #swap-currency-input::before,
   .trade-terminal-swap #swap-currency-output::before {
     position: absolute;
-    top: 24px;
+    top: 12px;
     left: 14px;
     font-size: 10px;
     font-weight: 600;
@@ -169,16 +169,38 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'],
   .trade-terminal-swap #swap-currency-output [class*='InputContainer'] {
-    padding-top: 42px !important;
+    position: absolute !important;
+    left: 14px !important;
+    right: 112px !important;
+    bottom: 12px !important;
+    top: auto !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .trade-terminal-swap #swap-currency-input [class*='CurrencyInputHeader'],
+  .trade-terminal-swap #swap-currency-output [class*='CurrencyInputHeader'],
+  .trade-terminal-swap #swap-currency-input [class*='LabelRow'],
+  .trade-terminal-swap #swap-currency-output [class*='LabelRow'],
+  .trade-terminal-swap [class*='CurrencyInputPanel'] > label,
+  .trade-terminal-swap [class*='InputPanel'] > label {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
   }
 
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'] [class*='Text'],
   .trade-terminal-swap #swap-currency-output [class*='InputContainer'] [class*='Text'],
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'] span:not(:first-child),
   .trade-terminal-swap #swap-currency-output [class*='InputContainer'] span:not(:first-child) {
-    font-size: 12px !important;
-    color: #8a8a8a !important;
-    line-height: 1.2 !important;
+    display: none !important;
   }
 
   .trade-terminal-swap #swap-currency-input::before {
@@ -186,16 +208,21 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-output::before {
-    content: 'TO (Estimated)';
+    content: 'TO (ESTIMATED)';
   }
 
   .trade-terminal-swap .token-amount-input,
   .trade-terminal-swap [class*='CurrencyInputPanel'] input {
-    font-size: 34px !important;
+    font-size: 32px !important;
     font-weight: 700 !important;
-    line-height: 38px !important;
+    line-height: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
     color: #ffffff !important;
-    max-width: calc(100% - 110px) !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
     animation: ${valueFade} 180ms ease;
   }
