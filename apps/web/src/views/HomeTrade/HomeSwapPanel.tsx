@@ -1,4 +1,5 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
+import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -7,12 +8,13 @@ import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
+import { useCurrency } from 'hooks/Tokens'
 import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
-import { MelegaSwapPanelShell, SwapIconButton } from 'design-system/melega'
+import { MelegaSwapPanelShell, SwapIconButton, colors } from 'design-system/melega'
 
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -28,16 +30,75 @@ const RefreshIcon = () => (
   </svg>
 )
 
+const PairCompact = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: #707070;
+  line-height: 1.2;
+  white-space: nowrap;
+  margin-right: 2px;
+`
+
+const LiveBadge = styled.span<{ $live?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${({ $live }) => ($live ? '#8a8a8a' : '#5f5f5f')};
+  margin-right: 4px;
+`
+
+const LiveDot = styled.span<{ $live?: boolean }>`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: ${({ $live }) => ($live ? colors.green : '#5f5f5f')};
+  flex-shrink: 0;
+`
+
+const EXECUTION_ROWS = [
+  { label: 'Estimated received', value: '—' },
+  { label: 'Minimum received', value: '—' },
+  { label: 'Price impact', value: '—' },
+  { label: 'Route', value: '—' },
+] as const
+
 const HomeSwapInner: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
+    typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = useSwapState()
+  const inputCurrency = useCurrency(inputCurrencyId)
+  const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
+
+  const inputSymbol = inputCurrency?.symbol ?? '—'
+  const outputSymbol = outputCurrency?.symbol ?? '—'
+
+  const showExecutionFallback = !account || !typedValue
+
+  const headerMeta = useMemo(
+    () => (
+      <>
+        <PairCompact>
+          {inputSymbol} / {outputSymbol}
+        </PairCompact>
+        <LiveBadge $live={Boolean(account)}>
+          <LiveDot $live={Boolean(account)} aria-hidden />
+          Live
+        </LiveBadge>
+      </>
+    ),
+    [account, inputSymbol, outputSymbol],
+  )
 
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
@@ -64,6 +125,7 @@ const HomeSwapInner: React.FC = () => {
 
   return (
     <MelegaSwapPanelShell
+      headerMeta={headerMeta}
       toolbar={
         <>
           <SwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
@@ -77,28 +139,18 @@ const HomeSwapInner: React.FC = () => {
     >
       <div
         ref={swapBodyRef}
-        className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
+        className={`home-trade-swap${account ? '' : ' is-disconnected'}${showExecutionFallback ? ' show-execution-fallback' : ''}`}
         data-wallet-connected={account ? 'true' : 'false'}
       >
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-        {!account && (
-          <div className="home-trade-swap-details-preview" aria-hidden>
-            <div className="home-trade-swap-details-row">
-              <span>Estimated</span>
-              <span>—</span>
-            </div>
-            <div className="home-trade-swap-details-row">
-              <span>Minimum received</span>
-              <span>—</span>
-            </div>
-            <div className="home-trade-swap-details-row">
-              <span>Price impact</span>
-              <span>—</span>
-            </div>
-            <div className="home-trade-swap-details-row">
-              <span>Route</span>
-              <span>—</span>
-            </div>
+        {showExecutionFallback && (
+          <div className="home-trade-swap-execution-summary" aria-hidden>
+            {EXECUTION_ROWS.map((row) => (
+              <div key={row.label} className="home-trade-swap-execution-row">
+                <span>{row.label}</span>
+                <span>{row.value}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
