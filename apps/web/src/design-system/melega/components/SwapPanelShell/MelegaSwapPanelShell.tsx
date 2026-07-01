@@ -53,10 +53,10 @@ const Shell = styled.div<{ $size?: 'home' | 'trade' }>`
   }
 `
 
-const Header = styled.div`
+const Header = styled.div<{ $size?: 'home' | 'trade' }>`
   position: relative;
   flex-shrink: 0;
-  padding: 18px 20px 0;
+  padding: ${({ $size }) => ($size === 'home' ? '28px' : '18px')} 20px 0;
   box-sizing: border-box;
 `
 
@@ -88,7 +88,7 @@ const Subtitle = styled.p`
 
 const PairSlot = styled.div<{ $size?: 'home' | 'trade' }>`
   position: absolute;
-  top: ${({ $size }) => ($size === 'home' ? '31px' : '30px')};
+  top: ${({ $size }) => ($size === 'home' ? '38px' : '30px')};
   right: ${({ $size }) => ($size === 'home' ? '112px' : '156px')};
   display: flex;
   align-items: center;
@@ -106,9 +106,9 @@ const PairSlot = styled.div<{ $size?: 'home' | 'trade' }>`
   pointer-events: none;
 `
 
-const Toolbar = styled.div`
+const Toolbar = styled.div<{ $size?: 'home' | 'trade' }>`
   position: absolute;
-  top: 18px;
+  top: ${({ $size }) => ($size === 'home' ? '28px' : '18px')};
   right: 16px;
   display: flex;
   align-items: center;
@@ -118,7 +118,7 @@ const Toolbar = styled.div`
 const Divider = styled.div<{ $size?: 'home' | 'trade' }>`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: ${({ $size }) => ($size === 'home' ? '6px' : '10px')} 20px 0;
+  margin: ${({ $size }) => ($size === 'home' ? '4px' : '10px')} 20px 0;
   flex-shrink: 0;
 `
 
@@ -148,13 +148,13 @@ export const SwapIconButton = styled.button`
   }
 `
 
-const Body = styled.div`
+const Body = styled.div<{ $size?: 'home' | 'trade' }>`
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 0 20px 18px;
+  padding: 0 20px ${({ $size }) => ($size === 'home' ? '28px' : '18px')};
 
   .home-trade-swap {
     flex: 1;
@@ -167,7 +167,7 @@ const Body = styled.div`
 
   ${media.mobile} {
     overflow: visible;
-    padding: 12px 16px 18px;
+    padding: 12px 16px ${({ $size }) => ($size === 'home' ? '28px' : '18px')};
   }
 `
 
@@ -188,16 +188,16 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
     $size={size}
     {...rest}
   >
-    <Header>
+    <Header $size={size}>
       <TitleBlock $size={size}>
         <Title>{title}</Title>
         <Subtitle>{subtitle}</Subtitle>
       </TitleBlock>
       {pairIndicator && <PairSlot $size={size}>{pairIndicator}</PairSlot>}
-      {toolbar && <Toolbar>{toolbar}</Toolbar>}
+      {toolbar && <Toolbar $size={size}>{toolbar}</Toolbar>}
     </Header>
     <Divider $size={size} />
-    <Body>{children}</Body>
+    <Body $size={size}>{children}</Body>
   </Shell>
 )
 

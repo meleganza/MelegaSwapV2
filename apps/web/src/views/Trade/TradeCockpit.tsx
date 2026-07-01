@@ -8,26 +8,30 @@ import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
-import { useCurrency } from 'hooks/Tokens'
 import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
+import TradeSmartRouteBox from './components/TradeSmartRouteBox'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
   width: 100%;
   max-width: ${tradeLayout.cockpitWidth};
+  height: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 `
 
 const Panel = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 14px;
+  flex: 1;
+  padding: 18px;
   background: ${tradeColors.panelGradient};
   border: 1px solid ${tradeColors.border};
   border-radius: 18px;
@@ -38,37 +42,13 @@ const Panel = styled.div`
   contain: layout paint;
 `
 
-const BadgeRow = styled.div`
+const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
-  height: 34px;
   min-height: 34px;
-  flex-shrink: 0;
-`
-
-const BadgeLeft = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  font-size: 12px;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const BadgeGreen = styled.span`
-  color: ${tradeColors.green};
-  font-weight: 600;
-`
-
-const Toolbar = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 `
 
@@ -84,11 +64,15 @@ const IconBtn = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: color 150ms ease, border-color 150ms ease;
+  transition: color 150ms ease, border-color 150ms ease, transform 120ms ease;
 
   &:hover {
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  &:active {
+    transform: scale(0.99);
   }
 
   svg {
@@ -103,7 +87,16 @@ const SwapFormWrap = styled.div`
   overflow: hidden;
   contain: layout paint;
   box-sizing: border-box;
-  margin-top: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+`
+
+const Placeholder = styled.div`
+  padding: 18px;
+  color: ${tradeColors.muted};
+  font-size: 14px;
 `
 
 const SettingsIcon = () => (
@@ -121,12 +114,6 @@ const RefreshIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
     <path d="M21 12a9 9 0 11-2.64-6.36" />
     <path d="M21 3v6h-6" />
-  </svg>
-)
-
-const LightningSmall = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill={tradeColors.goldBright} aria-hidden>
-    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
   </svg>
 )
 
@@ -172,7 +159,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
     return (
       <Shell data-trade-cockpit>
         <Panel data-trade-cockpit-shell>
-          <BadgeLeft>Mode coming soon</BadgeLeft>
+          <Placeholder>Mode coming soon</Placeholder>
         </Panel>
       </Shell>
     )
@@ -181,21 +168,15 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   return (
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit">
-        <BadgeRow>
-          <BadgeLeft>
-            <LightningSmall />
-            <span>Best route found</span>
-            {account ? <BadgeGreen>optimizing</BadgeGreen> : <BadgeGreen>—</BadgeGreen>}
-          </BadgeLeft>
-          <Toolbar>
-            <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-              <SettingsIcon />
-            </IconBtn>
-            <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
-              <RefreshIcon />
-            </IconBtn>
-          </Toolbar>
-        </BadgeRow>
+        <ToolbarRow>
+          <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+            <SettingsIcon />
+          </IconBtn>
+          <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+            <RefreshIcon />
+          </IconBtn>
+        </ToolbarRow>
+        <TradeSmartRouteBox />
         <SwapFormWrap
           ref={swapBodyRef}
           className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}

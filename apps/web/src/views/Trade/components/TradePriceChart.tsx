@@ -15,6 +15,16 @@ const fadeIn = keyframes`
   to { opacity: 1; }
 `
 
+const gridShimmer = keyframes`
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
+`
+
+const loadingPulse = keyframes`
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+`
+
 const Shell = styled.div`
   background: ${tradeColors.panel};
   border: 1px solid ${tradeColors.border};
@@ -22,8 +32,15 @@ const Shell = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: ${tradeLayout.chartPanelHeight};
+  height: 100%;
+  min-height: 0;
   box-sizing: border-box;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
 `
 
 const Header = styled.div`
@@ -31,15 +48,14 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  min-height: 74px;
-  padding: 16px 16px 8px;
+  padding: 18px 18px 8px;
   box-sizing: border-box;
 `
 
 const PairBlock = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
 `
 
@@ -69,17 +85,17 @@ const PairName = styled.div`
 `
 
 const PriceMain = styled.div`
-  margin-top: 4px;
-  font-size: 28px;
+  margin-top: 8px;
+  font-size: 34px;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.05;
+  line-height: 1;
   animation: ${fadeIn} 180ms ease;
 `
 
 const PriceUsd = styled.div`
-  margin-top: 2px;
-  font-size: 11px;
+  margin-top: 4px;
+  font-size: 12px;
   color: ${tradeColors.muted};
 `
 
@@ -91,7 +107,7 @@ const HeaderRight = styled.div`
 `
 
 const Change = styled.div<{ $positive?: boolean }>`
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
   white-space: nowrap;
@@ -110,14 +126,19 @@ const IconBtn = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
+  transition: transform 120ms ease;
+
+  &:active {
+    transform: scale(0.99);
+  }
 `
 
 const Timeframes = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  min-height: 34px;
-  padding: 0 16px 8px;
+  min-height: 30px;
+  padding: 0 18px 8px;
 `
 
 const TfButton = styled.button<{ $active?: boolean }>`
@@ -126,40 +147,96 @@ const TfButton = styled.button<{ $active?: boolean }>`
   padding: 0;
   border-radius: 8px;
   border: 1px solid ${({ $active }) => ($active ? tradeColors.gold : 'rgba(255, 255, 255, 0.06)')};
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.1)' : 'transparent')};
+  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.08)' : 'transparent')};
   color: ${({ $active }) => ($active ? tradeColors.goldBright : '#8a8a8a')};
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 120ms ease;
 
   &:hover {
     color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
     border-color: rgba(212, 175, 55, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.99);
   }
 `
 
 const ChartArea = styled.div`
   height: ${tradeLayout.chartAreaHeight};
   min-height: ${tradeLayout.chartAreaHeight};
-  margin: 10px 16px 0;
+  margin: 0 18px;
   box-sizing: border-box;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
+  background: #080808;
 `
 
 const EmptyChart = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
   height: 100%;
   color: ${tradeColors.muted};
   font-size: 14px;
+  position: relative;
+  overflow: hidden;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
+  animation: ${gridShimmer} 8s ease-in-out infinite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 38%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 62%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+`
+
+const LoadingBar = styled.div`
+  width: 120px;
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, ${tradeColors.goldBright}, transparent);
+    animation: ${loadingPulse} 2.4s ease-in-out infinite;
+  }
+`
+
+const ChartLabel = styled.span`
+  position: relative;
+  z-index: 1;
 `
 
 const StatsRow = styled.div`
@@ -167,7 +244,7 @@ const StatsRow = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   min-height: 82px;
-  padding: 12px 16px 16px;
+  padding: 12px 18px 18px;
   box-sizing: border-box;
 
   @media (max-width: 767px) {
@@ -182,6 +259,12 @@ const StatCard = styled.div`
   padding: 12px;
   box-sizing: border-box;
   min-height: 82px;
+  height: 82px;
+  transition: transform 160ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 `
 
 const StatLabel = styled.div`
@@ -195,7 +278,7 @@ const StatLabel = styled.div`
 const StatValue = styled.div`
   margin-top: 6px;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1.1;
   animation: ${fadeIn} 180ms ease;
@@ -269,16 +352,18 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </PairName>
-            <PriceMain>{priceText ?? 'Indexing...'}</PriceMain>
-            {priceText && <PriceUsd>USD ${priceText}</PriceUsd>}
+            <PriceMain>{priceText ?? '—'}</PriceMain>
+            {priceText ? <PriceUsd>USD ${priceText}</PriceUsd> : null}
           </div>
         </PairBlock>
         <HeaderRight>
-          {Number.isFinite(displayChange) && (
+          {Number.isFinite(displayChange) ? (
             <Change $positive={displayChange >= 0}>
               {displayChange >= 0 ? '+' : ''}
-              {displayChange.toFixed(2)}% (24h)
+              {displayChange.toFixed(2)}% (24H)
             </Change>
+          ) : (
+            <Change $positive>— (24H)</Change>
           )}
           <IconBtn type="button" aria-label="Favorite pair">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -316,7 +401,10 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
             style={{ height: '100%', width: '100%' }}
           />
         ) : (
-          <EmptyChart>Indexing chart data...</EmptyChart>
+          <EmptyChart>
+            <LoadingBar aria-hidden />
+            <ChartLabel>Indexing chart data...</ChartLabel>
+          </EmptyChart>
         )}
       </ChartArea>
       <StatsRow data-trade-pair-stats>

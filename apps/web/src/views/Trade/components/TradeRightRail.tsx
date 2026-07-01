@@ -1,59 +1,85 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useWeb3React } from '@pancakeswap/wagmi'
-import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useCurrency } from 'hooks/Tokens'
-import { Field } from 'state/swap/actions'
-import { useSwapState } from 'state/swap/hooks'
-import { tradeColors } from '../tradeTokens'
+import Link from 'next/link'
+import {
+  MOCK_ASSETS,
+  MOCK_ROUTE_ENTRIES,
+  MOCK_ROUTER_STATUS,
+  MOCK_WATCHLIST,
+  TRADE_MOCK_LABEL,
+} from '../tradeMockData'
+import { tradeColors, tradeLayout } from '../tradeTokens'
+import TradeWatchlist from './TradeWatchlist'
 
 const Rail = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: ${tradeLayout.rightRailGap};
   width: 100%;
   min-width: 0;
+  height: 100%;
 `
 
-const Panel = styled.div<{ $height?: string }>`
+const Panel = styled.div`
   background: ${tradeColors.panel};
   border: 1px solid ${tradeColors.border};
-  border-radius: 18px;
-  padding: 14px;
+  border-radius: ${tradeLayout.rightRailRadius};
+  padding: ${tradeLayout.rightRailPadding};
   box-sizing: border-box;
-  min-height: 0;
-  ${({ $height }) => ($height ? `height: ${$height};` : '')}
   overflow: hidden;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+`
+
+const PanelHead = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
 `
 
 const PanelTitle = styled.h3`
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 15px;
   font-weight: 800;
   color: ${tradeColors.text};
   line-height: 1.2;
 `
 
-const Badge = styled.span`
+const MockCaption = styled.span`
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${tradeColors.muted};
+`
+
+const SampleBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  height: 22px;
+  height: 20px;
   padding: 0 8px;
-  margin-left: 8px;
   border-radius: 6px;
-  background: rgba(0, 230, 118, 0.1);
-  color: ${tradeColors.green};
-  font-size: 11px;
+  background: rgba(212, 175, 55, 0.1);
+  color: ${tradeColors.gold};
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 `
 
 const RouteEntry = styled.div`
   display: grid;
-  grid-template-columns: 24px 1fr auto;
+  grid-template-columns: 22px 1fr auto;
   gap: 8px;
   align-items: center;
-  min-height: 58px;
-  padding: 6px 0;
+  min-height: 54px;
+  padding: 4px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 160ms ease;
 
@@ -70,10 +96,10 @@ const Rank = styled.span<{ $rank?: number }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   color: ${({ $rank }) => ($rank === 1 ? tradeColors.goldBright : '#6b8cff')};
   background: ${({ $rank }) =>
@@ -110,12 +136,11 @@ const RouteAmount = styled.div`
   color: #ffffff;
 `
 
-const RouteDelta = styled.div<{ $positive?: boolean; $best?: boolean }>`
+const RouteDelta = styled.div<{ $best?: boolean }>`
   margin-top: 2px;
   font-size: 11px;
   font-weight: 600;
-  color: ${({ $best, $positive }) =>
-    $best ? tradeColors.green : $positive ? tradeColors.green : tradeColors.red};
+  color: ${({ $best }) => ($best ? tradeColors.green : tradeColors.muted)};
 `
 
 const OutlineBtn = styled.button`
@@ -129,7 +154,7 @@ const OutlineBtn = styled.button`
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 150ms ease, background 150ms ease;
+  transition: border-color 150ms ease, background 150ms ease, transform 120ms ease;
 
   &:hover {
     background: rgba(212, 175, 55, 0.08);
@@ -234,115 +259,85 @@ const StatValue = styled.div`
   color: #ffffff;
 `
 
-const Indexing = styled.p`
-  margin: 12px 0 0;
-  font-size: 13px;
-  color: ${tradeColors.muted};
-  line-height: 1.4;
-`
+export const TradeRightRail: React.FC = () => (
+  <Rail data-trade-right-rail>
+    <Panel data-trade-best-route>
+      <PanelHead>
+        <PanelTitle>SmartSwap Best Route</PanelTitle>
+        <SampleBadge>Sample route</SampleBadge>
+      </PanelHead>
+      {MOCK_ROUTE_ENTRIES.map((entry) => (
+        <RouteEntry key={entry.rank}>
+          <Rank $rank={entry.rank}>{entry.rank}</Rank>
+          <RouteMeta>
+            <RouteName>
+              {entry.chain} · {entry.source}
+            </RouteName>
+            <RouteSub>
+              Gas: {entry.gas} · {entry.time}
+            </RouteSub>
+          </RouteMeta>
+          <RouteRight>
+            <RouteAmount>{entry.amount}</RouteAmount>
+            <RouteDelta $best={entry.best}>{entry.delta}</RouteDelta>
+          </RouteRight>
+        </RouteEntry>
+      ))}
+      <OutlineBtn type="button">View All Routes</OutlineBtn>
+    </Panel>
 
-const formatBal = (value?: string) => {
-  if (!value || value === '0') return '—'
-  const n = parseFloat(value)
-  if (!Number.isFinite(n)) return '—'
-  if (n >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 2 })
-  return n.toFixed(4).replace(/\.?0+$/, '')
-}
-
-export const TradeRightRail: React.FC = () => {
-  const { account } = useWeb3React()
-  const {
-    [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-  } = useSwapState()
-  const inputCurrency = useCurrency(inputCurrencyId)
-  const outputCurrency = useCurrency(outputCurrencyId)
-  const inputBal = useCurrencyBalance(account ?? undefined, inputCurrency ?? undefined)
-  const outputBal = useCurrencyBalance(account ?? undefined, outputCurrency ?? undefined)
-
-  const inputSymbol = inputCurrency?.symbol ?? 'BNB'
-  const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
-
-  return (
-    <Rail data-trade-right-rail>
-      <Panel $height="292px" data-trade-best-route>
-        <PanelTitle>
-          SmartSwap Best Route
-          {account && <Badge>Recommended</Badge>}
-        </PanelTitle>
-        {account ? (
-          <>
-            <RouteEntry>
-              <Rank $rank={1}>1</Rank>
-              <RouteMeta>
-                <RouteName>BNB Chain / PancakeSwap</RouteName>
-                <RouteSub>Est. Time: — · Gas: —</RouteSub>
-              </RouteMeta>
-              <RouteRight>
-                <RouteAmount>—</RouteAmount>
-                <RouteDelta $best>Indexing route</RouteDelta>
-              </RouteRight>
-            </RouteEntry>
-            <OutlineBtn type="button">View All Routes</OutlineBtn>
-          </>
-        ) : (
-          <Indexing>Indexing supported routes...</Indexing>
-        )}
-      </Panel>
-
-      <Panel $height="172px" data-trade-your-assets>
+    <Panel data-trade-your-assets>
+      <PanelHead>
         <PanelTitle>Your Assets</PanelTitle>
-        <AssetRow>
+        <MockCaption>{TRADE_MOCK_LABEL}</MockCaption>
+      </PanelHead>
+      {MOCK_ASSETS.map((asset) => (
+        <AssetRow key={asset.symbol}>
           <AssetLeft>
-            <AssetIcon>{inputSymbol.slice(0, 1)}</AssetIcon>
-            <AssetName>{inputSymbol}</AssetName>
+            <AssetIcon>{asset.symbol.slice(0, 1)}</AssetIcon>
+            <AssetName>{asset.symbol}</AssetName>
           </AssetLeft>
           <AssetRight>
-            <AssetBal>{account ? formatBal(inputBal?.toExact()) : '—'}</AssetBal>
-            <AssetUsd>{account ? '—' : 'Connect wallet'}</AssetUsd>
+            <AssetBal>{asset.balance}</AssetBal>
+            <AssetUsd>{asset.usd}</AssetUsd>
           </AssetRight>
         </AssetRow>
-        <AssetRow>
-          <AssetLeft>
-            <AssetIcon>{outputSymbol.slice(0, 1)}</AssetIcon>
-            <AssetName>{outputSymbol}</AssetName>
-          </AssetLeft>
-          <AssetRight>
-            <AssetBal>{account ? formatBal(outputBal?.toExact()) : '—'}</AssetBal>
-            <AssetUsd>{account ? '—' : 'Connect wallet'}</AssetUsd>
-          </AssetRight>
-        </AssetRow>
-        <OutlineBtn type="button" style={{ height: 38, marginTop: 10 }}>
-          Manage Assets
-        </OutlineBtn>
-      </Panel>
+      ))}
+      <OutlineBtn type="button" style={{ height: 38, marginTop: 10 }}>
+        Manage Assets
+      </OutlineBtn>
+    </Panel>
 
-      <Panel $height="170px" data-trade-router-status>
+    <Panel data-trade-router-status>
+      <PanelHead>
         <PanelTitle style={{ fontSize: 12, letterSpacing: '0.06em' }}>MELEGA ROUTER STATUS</PanelTitle>
-        <StatusRow>
-          <StatusDot />
-          <StatusText>Indexing router status...</StatusText>
-        </StatusRow>
-        <StatGrid>
-          <StatCell>
-            <StatLabel>Uptime</StatLabel>
-            <StatValue>—</StatValue>
-          </StatCell>
-          <StatCell>
-            <StatLabel>Routes</StatLabel>
-            <StatValue>—</StatValue>
-          </StatCell>
-          <StatCell>
-            <StatLabel>Chains</StatLabel>
-            <StatValue>—</StatValue>
-          </StatCell>
-        </StatGrid>
-        <OutlineBtn type="button" style={{ height: 36, marginTop: 10 }}>
-          Router Analytics
-        </OutlineBtn>
-      </Panel>
-    </Rail>
-  )
-}
+        <MockCaption>{TRADE_MOCK_LABEL}</MockCaption>
+      </PanelHead>
+      <StatusRow>
+        <StatusDot />
+        <StatusText>{MOCK_ROUTER_STATUS.status}</StatusText>
+      </StatusRow>
+      <StatGrid>
+        <StatCell>
+          <StatLabel>Uptime</StatLabel>
+          <StatValue>{MOCK_ROUTER_STATUS.uptime}</StatValue>
+        </StatCell>
+        <StatCell>
+          <StatLabel>Routes</StatLabel>
+          <StatValue>{MOCK_ROUTER_STATUS.routes}</StatValue>
+        </StatCell>
+        <StatCell>
+          <StatLabel>Chains</StatLabel>
+          <StatValue>{MOCK_ROUTER_STATUS.chains}</StatValue>
+        </StatCell>
+      </StatGrid>
+      <OutlineBtn type="button" style={{ height: 36, marginTop: 10 }}>
+        Router Analytics
+      </OutlineBtn>
+    </Panel>
+
+    <TradeWatchlist pairs={MOCK_WATCHLIST} />
+  </Rail>
+)
 
 export default TradeRightRail

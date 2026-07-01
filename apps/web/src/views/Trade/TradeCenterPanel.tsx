@@ -10,6 +10,7 @@ const Shell = styled.div`
   gap: 0;
   min-width: 0;
   width: 100%;
+  height: 100%;
 `
 
 export interface TradeCenterPanelProps {

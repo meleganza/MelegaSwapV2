@@ -1,0 +1,29 @@
+{
+  "task": "R003-B TRADE TERMINAL LAYOUT ENGINEERING",
+  "branch": "design-system-foundation",
+  "validation": {
+    "yarn_build": "pass",
+    "design_system_tests": "pass (8/8)",
+    "homepage_live_tests": "pass (2/2)"
+  },
+  "screenshots": [
+    "home-desktop-1440x900.png",
+    "home-mobile-390x844.png",
+    "home-mobile-428x926.png",
+    "trade-desktop-1440x900.png",
+    "trade-desktop-1728x1117.png",
+    "trade-mobile-390x844.png",
+    "trade-mobile-428x926.png"
+  ],
+  "acceptance": {
+    "panels_aligned": true,
+    "no_overlapping": true,
+    "cockpit_breathes": true,
+    "chart_professional": true,
+    "right_column_balanced": true,
+    "recent_swaps_realistic": true,
+    "watchlist_realistic": true,
+    "header_aligned": true,
+    "home_symmetry_fix": true
+  }
+}

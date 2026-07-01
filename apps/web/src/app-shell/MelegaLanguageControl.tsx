@@ -7,12 +7,11 @@ import { languageList } from 'config/localization/languages'
 const Slot = styled.div`
   display: flex;
   align-items: center;
-  height: 36px;
-  transform: translateY(2px);
+  height: 40px;
 
   button {
-    height: 36px !important;
-    min-height: 36px !important;
+    height: 40px !important;
+    min-height: 40px !important;
     padding: 0 12px !important;
     border-radius: 10px !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;

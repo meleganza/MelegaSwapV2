@@ -44,11 +44,11 @@ const Content = styled.div`
 const PageGrid = styled.div`
   display: grid;
   gap: ${tradeLayout.columnGap};
-  align-items: start;
+  align-items: stretch;
   min-width: 0;
 
   @media (min-width: 1100px) {
-    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, 1fr) ${tradeLayout.rightRailWidth};
+    grid-template-columns: ${tradeLayout.cockpitWidth} minmax(0, ${tradeLayout.centerWidth}) ${tradeLayout.rightRailWidth};
     grid-template-areas:
       'cockpit center right'
       'swaps swaps right';
@@ -72,19 +72,31 @@ const PageGrid = styled.div`
   }
 `
 
+const stretchColumn = `
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+
+  & > * {
+    flex: 1;
+    min-height: 0;
+  }
+`
+
 const AreaCockpit = styled.div`
   grid-area: cockpit;
-  min-width: 0;
+  ${stretchColumn}
 `
 
 const AreaCenter = styled.div`
   grid-area: center;
-  min-width: 0;
+  ${stretchColumn}
 `
 
 const AreaRight = styled.div`
   grid-area: right;
-  min-width: 0;
+  ${stretchColumn}
 `
 
 const AreaSwaps = styled.div`

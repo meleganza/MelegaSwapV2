@@ -1,12 +1,17 @@
-/** Trade terminal layout constants — R003-A pixel grid. */
+/** Trade terminal layout constants — R003-B precision grid. */
 export const tradeLayout = {
   contentMax: '1180px',
   cockpitWidth: '360px',
+  centerWidth: '520px',
   rightRailWidth: '300px',
   columnGap: '16px',
+  verticalRhythm: '16px',
+  rightRailGap: '14px',
+  rightRailRadius: '16px',
+  rightRailPadding: '14px',
   contentPaddingX: '24px',
   contentPaddingTop: '18px',
-  chartPanelHeight: '500px',
+  chartPanelHeight: 'auto',
   chartAreaHeight: '300px',
   recentSwapsHeight: '220px',
 } as const

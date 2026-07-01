@@ -7,27 +7,32 @@ const Row = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 72px;
-  max-height: 72px;
+  min-height: 74px;
+  height: 74px;
   overflow: hidden;
 `
 
 const Left = styled.div`
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
 `
 
 const Title = styled.h1`
   margin: 0;
-  font-size: 30px;
+  font-size: 38px;
   font-weight: 800;
-  line-height: 36px;
+  line-height: 1;
   color: ${tradeColors.text};
 `
 
 const Subtitle = styled.p`
-  margin: 2px 0 0;
+  margin: 0;
   font-size: 14px;
-  line-height: 20px;
+  font-weight: 500;
+  line-height: 1.2;
   color: #a8a8a8;
 `
 

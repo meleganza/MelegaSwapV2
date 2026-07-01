@@ -4,19 +4,22 @@ import { TRADE_TABS, tradeColors, type TradeMode } from '../tradeTokens'
 
 const glow = keyframes`
   0%, 100% { box-shadow: inset 0 -2px 0 0 rgba(244, 197, 66, 0.08); }
-  50% { box-shadow: inset 0 -2px 0 0 rgba(244, 197, 66, 0.16); }
+  50% { box-shadow: inset 0 -2px 0 0 rgba(244, 197, 66, 0.12); }
 `
 
 const Bar = styled.div`
   display: flex;
   align-items: center;
-  gap: 36px;
-  height: 46px;
-  min-height: 46px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 32px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 20px;
+  margin-top: 18px;
   margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   overflow-x: auto;
   scrollbar-width: none;
+  box-sizing: border-box;
 
   &::-webkit-scrollbar {
     display: none;
@@ -27,11 +30,11 @@ const Tab = styled.button<{ $active?: boolean }>`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 46px;
+  height: 44px;
   padding: 0;
   border: none;
   background: transparent;
-  color: ${({ $active }) => ($active ? tradeColors.goldBright : '#b5b5b5')};
+  color: ${({ $active }) => ($active ? tradeColors.goldBright : '#a5a5a5')};
   font-size: 14px;
   font-weight: 600;
   cursor: ${({ $active }) => ($active ? 'default' : 'pointer')};
@@ -57,6 +60,10 @@ const Tab = styled.button<{ $active?: boolean }>`
 
   &:not(:disabled):hover {
     color: #ffffff;
+  }
+
+  &:not(:disabled):active {
+    transform: scale(0.99);
   }
 `
 

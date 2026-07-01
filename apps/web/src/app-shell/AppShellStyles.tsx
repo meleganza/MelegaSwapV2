@@ -29,7 +29,9 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   }
 
   [data-melega-app-shell] .melega-shell-network {
-    transform: translateY(-2px);
+    display: flex;
+    align-items: center;
+    height: 40px;
   }
 
   [data-melega-app-shell] .melega-shell-network button,
