@@ -62,17 +62,26 @@ const Value = styled.div`
   font-size: 15px;
   font-weight: ${typography.fontWeight.extrabold};
   color: ${colors.textPrimary};
-  white-space: nowrap;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.3;
+  max-height: 2.6em;
+  padding-right: 4px;
 `
 
 const Meta = styled.div<{ $positive?: boolean }>`
-  margin-top: 2px;
+  margin-top: auto;
+  padding-top: 2px;
   font-size: 12px;
   color: ${({ $positive }) => ($positive ? colors.green : colors.textSecondary)};
   line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 `
 
 const Spark = styled.svg`

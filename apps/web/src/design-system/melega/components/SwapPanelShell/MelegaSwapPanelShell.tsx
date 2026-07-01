@@ -97,7 +97,16 @@ export const SwapIconButton = styled.button`
 const Body = styled.div`
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+
+  .home-trade-swap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
 
   ${media.mobile} {
     overflow: visible;

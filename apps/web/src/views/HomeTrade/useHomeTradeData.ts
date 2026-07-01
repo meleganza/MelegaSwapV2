@@ -66,6 +66,21 @@ const formatUsd = (value: number): string | undefined => {
   return `$${value.toFixed(2)}`
 }
 
+const sanitizeRibbonText = (value?: string): string | undefined => {
+  if (!value) return undefined
+  const trimmed = value.trim()
+  if (!trimmed || trimmed === '()' || trimmed === 'undefined') return undefined
+  if (/sousId|sous\s*id|sld\s*\d/i.test(trimmed)) return undefined
+  if (/^\(\s*\)$/.test(trimmed)) return undefined
+  return trimmed
+}
+
+const formatPairLabel = (symbol?: string): string | undefined => {
+  if (!symbol) return undefined
+  const cleaned = symbol.replace(/-/g, ' / ').replace(/\s+/g, ' ').trim()
+  return sanitizeRibbonText(cleaned)
+}
+
 const farmApr = (farm: FarmWithStakedValue): number | undefined => {
   const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
   return apr > 0 ? apr : undefined
@@ -136,10 +151,11 @@ export const useHomeTradeData = () => {
 
     const topFarm = farms[0]
     if (topFarm?.lpSymbol) {
+      const pairLabel = formatPairLabel(topFarm.lpSymbol)
       items.push({
         id: 'trending-pair',
-        title: topFarm.lpSymbol.replace('-', ' / '),
-        subtitle: 'Trending pair',
+        title: 'Top farm',
+        subtitle: pairLabel ?? 'MARCO / BNB',
         href: '/farms',
         icon: 'trend',
       })
@@ -159,20 +175,21 @@ export const useHomeTradeData = () => {
 
     const topPoolVenue = registry.topPools[0]
     if (topPoolVenue) {
+      const poolLabel = sanitizeRibbonText(topPoolVenue.label)
       items.push({
         id: 'new-pool',
         title: 'New pool',
-        subtitle: topPoolVenue.label,
+        subtitle: poolLabel ?? 'MARCO / BNB',
         href: topPoolVenue.href,
         icon: 'pool',
       })
     } else {
       const topPool = pools[0]
-      if (topPool?.earningToken?.symbol) {
+      if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
         items.push({
           id: 'new-pool',
           title: 'New pool',
-          subtitle: `${topPool.stakingToken.symbol} Staking`,
+          subtitle: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
           href: '/pools',
           icon: 'pool',
         })
@@ -180,13 +197,16 @@ export const useHomeTradeData = () => {
     }
 
     if (latestProject) {
-      items.push({
-        id: 'project-listed',
-        title: 'Project listed',
-        subtitle: latestProject.displayName ?? latestProject.slug,
-        href: `/projects/${latestProject.slug}`,
-        icon: 'project',
-      })
+      const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
+      if (projectName) {
+        items.push({
+          id: 'project-listed',
+          title: 'Project listed',
+          subtitle: projectName,
+          href: `/projects/${latestProject.slug}`,
+          icon: 'project',
+        })
+      }
     }
 
     if (items.length > 0) {

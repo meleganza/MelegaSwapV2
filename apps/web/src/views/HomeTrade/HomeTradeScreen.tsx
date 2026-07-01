@@ -9,7 +9,7 @@ import QuickMarketStrip from './QuickMarketStrip'
 import ListProjectCta from './ListProjectCta'
 import EarnOpportunities from './EarnOpportunities'
 import LiveActivityFeed from './LiveActivityFeed'
-import IntelligencePanel from './IntelligencePanel'
+import GrowInsideMelegaPanel from './GrowInsideMelegaPanel'
 import HomeTradeFooter from './HomeTradeFooter'
 import useHomeTradeData from './useHomeTradeData'
 import { homeTradeLayout } from './homeTradeTokens'
@@ -41,13 +41,44 @@ const HeroRow = styled.div`
   }
 `
 
-const LowerRow = styled.div`
+const LowerGrid = styled.div`
   display: grid;
   gap: ${homeTradeLayout.gridGutter};
   margin-top: ${homeTradeLayout.gridGutter};
 
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+
   @media (min-width: 768px) {
     grid-template-columns: 1.15fr 1fr;
+    grid-template-areas:
+      'cta earn'
+      'activity grow';
+  }
+`
+
+const GridCta = styled.div`
+  @media (min-width: 768px) {
+    grid-area: cta;
+  }
+`
+
+const GridEarn = styled.div`
+  @media (min-width: 768px) {
+    grid-area: earn;
+  }
+`
+
+const GridActivity = styled.div`
+  @media (min-width: 768px) {
+    grid-area: activity;
+  }
+`
+
+const GridGrow = styled.div`
+  @media (min-width: 768px) {
+    grid-area: grow;
   }
 `
 
@@ -80,16 +111,22 @@ export const HomeTradeScreen: React.FC = () => {
           <MelegaCinematicPanel pulseRows={pulseRows.length ? pulseRows : undefined} />
         </HeroRow>
         {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
-        <LowerRow>
-          <ListProjectCta />
+        <LowerGrid>
+          <GridCta>
+            <ListProjectCta />
+          </GridCta>
           {data.showEarn && (
-            <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
+            <GridEarn>
+              <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
+            </GridEarn>
           )}
-        </LowerRow>
-        <LowerRow>
-          <LiveActivityFeed rows={data.activityRows} />
-          <IntelligencePanel />
-        </LowerRow>
+          <GridGrow>
+            <GrowInsideMelegaPanel />
+          </GridGrow>
+          <GridActivity>
+            <LiveActivityFeed rows={data.activityRows} />
+          </GridActivity>
+        </LowerGrid>
         <HomeTradeFooter />
       </Content>
     </Root>

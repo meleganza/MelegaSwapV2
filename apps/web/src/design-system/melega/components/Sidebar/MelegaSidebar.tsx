@@ -24,7 +24,7 @@ const Aside = styled.aside`
     overflow: hidden;
   }
 
-  @media (max-height: 819px) {
+  @media (min-height: 820px) and (max-height: 920px) {
     .melega-sidebar-nav {
       overflow-y: auto;
     }

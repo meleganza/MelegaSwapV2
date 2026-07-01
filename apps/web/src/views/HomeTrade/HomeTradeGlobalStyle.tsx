@@ -15,10 +15,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap #swap-page {
     padding: 0 !important;
     min-height: 0 !important;
-    max-height: 252px !important;
+    max-height: none !important;
     background: transparent !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     margin-top: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
   }
 
   .home-trade-swap [class*='CurrencyInputHeader'] button:not([class*='OpenCurrencySelectButton']),
@@ -169,19 +172,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   .home-trade-swap [class*='Details'] {
-    display: none !important;
-  }
-
-  @media (max-width: 767px) {
-    .home-trade-swap [class*='Details'] {
-      display: block !important;
-      height: 22px !important;
-      font-size: 12px !important;
-      color: ${colors.textSecondary} !important;
-      text-align: center !important;
-      margin-top: 6px !important;
-      overflow: visible !important;
-    }
+    display: block !important;
+    height: auto !important;
+    min-height: 22px !important;
+    font-size: 12px !important;
+    color: ${colors.textSecondary} !important;
+    text-align: center !important;
+    margin-top: 6px !important;
+    overflow: visible !important;
   }
 
   .home-trade-swap [class*='PercentInput'],

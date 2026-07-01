@@ -89,32 +89,48 @@ const Actions = styled.div`
   }
 `
 
-const ActionLink = styled(Link)`
+const ActionLink = styled(Link)<{ $variant?: 'primary' | 'secondary' }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
-
-  ${media.mobile} {
-    width: 100%;
-  }
-`
-
-const PrimaryBtn = styled(MelegaButton)`
-  width: 170px;
+  width: ${({ $variant }) => ($variant === 'secondary' ? '210px' : '170px')};
   height: 44px;
   min-height: 44px;
   border-radius: 12px;
+  font-family: ${typography.fontFamily.body};
   font-size: 14px;
+  font-weight: ${typography.fontWeight.bold};
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    filter 150ms ease,
+    transform 150ms ease;
 
-  ${media.mobile} {
-    width: 100%;
-  }
-`
+  ${({ $variant }) =>
+    $variant === 'secondary'
+      ? `
+    background: transparent;
+    color: ${colors.gold};
+    border: 1px solid rgba(212, 175, 55, 0.55);
 
-const SecondaryBtn = styled(MelegaButton)`
-  width: 210px;
-  height: 44px;
-  min-height: 44px;
-  border-radius: 12px;
-  font-size: 14px;
+    &:hover {
+      border-color: ${colors.gold};
+      background: ${colors.goldSoft};
+    }
+  `
+      : `
+    background: linear-gradient(180deg, ${colors.goldHover} 0%, ${colors.gold} 100%);
+    color: ${colors.canvas};
+    border: 1px solid ${colors.gold};
+
+    &:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+  `}
 
   ${media.mobile} {
     width: 100%;
@@ -138,32 +154,28 @@ export const MelegaCtaCard: React.FC<MelegaCtaCardProps> = ({
       <Actions>
         {primaryAction &&
           (primaryAction.href ? (
-            <ActionLink href={primaryAction.href}>
-              <PrimaryBtn variant="primary" disabled={disabled} loading={loading} as="span">
-                {primaryAction.label}
-              </PrimaryBtn>
+            <ActionLink href={primaryAction.href} $variant="primary">
+              {primaryAction.label}
             </ActionLink>
           ) : (
-            <PrimaryBtn variant="primary" disabled={disabled} loading={loading} onClick={primaryAction.onClick}>
+            <MelegaButton variant="primary" disabled={disabled} loading={loading} onClick={primaryAction.onClick}>
               {primaryAction.label}
-            </PrimaryBtn>
+            </MelegaButton>
           ))}
         {secondaryAction &&
           (secondaryAction.href ? (
-            <ActionLink href={secondaryAction.href}>
-              <SecondaryBtn variant="secondary" disabled={disabled} loading={loading} as="span">
-                {secondaryAction.label}
-              </SecondaryBtn>
+            <ActionLink href={secondaryAction.href} $variant="secondary">
+              {secondaryAction.label}
             </ActionLink>
           ) : (
-            <SecondaryBtn
+            <MelegaButton
               variant="secondary"
               disabled={disabled}
               loading={loading}
               onClick={secondaryAction.onClick}
             >
               {secondaryAction.label}
-            </SecondaryBtn>
+            </MelegaButton>
           ))}
       </Actions>
     </Body>

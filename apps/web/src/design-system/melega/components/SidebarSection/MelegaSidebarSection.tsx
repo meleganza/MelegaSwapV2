@@ -8,7 +8,7 @@ export interface MelegaSidebarSectionProps {
 }
 
 const Section = styled.div`
-  margin-top: 18px;
+  margin-top: 14px;
 
   &:first-child {
     margin-top: 0;
