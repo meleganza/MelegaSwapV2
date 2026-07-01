@@ -14,7 +14,7 @@ const swapArrowPulse = keyframes`
 
 const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='HeaderWrapper'],
-  .home-trade-swap > div > div:first-child:not(#swap-page) {
+  .home-trade-swap > div:first-child:not(#swap-page):not(.home-trade-swap-execution-summary) {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
@@ -135,6 +135,8 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   .home-trade-swap [class*='AutoColumn'] {
     gap: 0 !important;
+    flex: 0 0 auto !important;
+    min-height: 184px !important;
   }
 
   .home-trade-swap #swap-page > div:first-of-type {
@@ -147,7 +149,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   .home-trade-swap #swap-page > div:last-child {
     flex: 0 0 auto !important;
-    margin-top: auto !important;
+    margin-top: 0 !important;
   }
 
   .home-trade-swap #swap-currency-input,
