@@ -5,7 +5,7 @@ export const homeTradeLayout = {
   sectionGap: '18px',
   gridGutter: '16px',
   heroGap: '16px',
-  heroMaxHeight: '410px',
+  heroMaxHeight: '380px',
   swapWidth: '470px',
 } as const
 

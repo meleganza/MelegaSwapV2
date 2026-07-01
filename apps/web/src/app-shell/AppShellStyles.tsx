@@ -26,7 +26,7 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   [data-melega-app-shell] .melega-shell-network button,
   [data-melega-app-shell] .melega-shell-network [role='button'] {
     height: 40px !important;
-    padding: 0 14px !important;
+    padding: 0 20px !important;
     border-radius: 10px !important;
     background: transparent !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;

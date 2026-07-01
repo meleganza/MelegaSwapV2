@@ -14,7 +14,7 @@ const Shell = styled.div`
   background: linear-gradient(180deg, #111111 0%, #080808 100%);
   border: 1px solid rgba(212, 175, 55, 0.22);
   border-radius: ${radius['2xl']};
-  padding: 16px 18px 18px;
+  padding: 14px 18px 16px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -25,8 +25,8 @@ const Shell = styled.div`
   @media (min-width: 768px) {
     width: 470px;
     max-width: 470px;
-    height: 410px;
-    max-height: 410px;
+    height: 380px;
+    max-height: 380px;
     flex-shrink: 0;
   }
 
@@ -43,24 +43,30 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   flex-shrink: 0;
-  margin-bottom: 8px;
 `
 
 const Title = styled.h1`
   margin: 0;
   font-family: ${typography.fontFamily.body};
-  font-size: 28px;
+  font-size: 38px;
   font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1;
 `
 
 const Subtitle = styled.p`
-  margin: 8px 0 0;
-  font-size: 12px;
-  font-weight: 400;
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
   color: ${colors.textSecondary};
   line-height: 1.35;
+`
+
+const Divider = styled.div`
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 12px 0 10px;
+  flex-shrink: 0;
 `
 
 const Toolbar = styled.div`
@@ -129,6 +135,7 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
       </div>
       {toolbar && <Toolbar>{toolbar}</Toolbar>}
     </Header>
+    <Divider />
     <Body>{children}</Body>
   </Shell>
 )

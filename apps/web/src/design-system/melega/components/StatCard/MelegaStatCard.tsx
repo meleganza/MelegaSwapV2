@@ -1,5 +1,5 @@
-import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useMemo } from 'react'
+import styled, { css, keyframes } from 'styled-components'
 import { colors, typography, animation } from '../../tokens'
 import { media } from '../../theme'
 
@@ -8,6 +8,7 @@ export interface MelegaStatCardProps {
   value: string
   meta?: string
   metaPositive?: boolean
+  sparkPoints?: number[]
   href?: string
   onClick?: () => void
   disabled?: boolean
@@ -17,6 +18,11 @@ export interface MelegaStatCardProps {
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+`
+
+const drawSpark = keyframes`
+  from { stroke-dashoffset: 48; }
+  to { stroke-dashoffset: 0; }
 `
 
 const Card = styled.a<{ $interactive?: boolean }>`
@@ -69,7 +75,7 @@ const Value = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 2.6em;
-  padding-right: 4px;
+  padding-right: 52px;
 `
 
 const Meta = styled.div<{ $positive?: boolean }>`
@@ -86,37 +92,70 @@ const Meta = styled.div<{ $positive?: boolean }>`
 
 const Spark = styled.svg`
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 52px;
-  height: 18px;
-  opacity: 0.35;
+  right: 10px;
+  bottom: 14px;
+  width: 48px;
+  height: 16px;
   pointer-events: none;
 `
+
+const SparkPath = styled.path<{ $animated?: boolean }>`
+  fill: none;
+  stroke: ${colors.gold};
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  ${({ $animated }) =>
+    $animated &&
+    css`
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: ${drawSpark} 6s ease-in-out infinite;
+    `}
+`
+
+const buildSparkPath = (points: number[]): string => {
+  if (points.length < 2) return ''
+  const min = Math.min(...points)
+  const max = Math.max(...points)
+  const range = max - min || 1
+  const step = 48 / (points.length - 1)
+  return points
+    .map((p, i) => {
+      const x = i * step
+      const y = 14 - ((p - min) / range) * 12
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`
+    })
+    .join(' ')
+}
+
+const PLACEHOLDER_PATH = 'M0 11 L8 8 L16 12 L24 5 L32 9 L40 6 L48 10'
 
 export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
   label,
   value,
   meta,
   metaPositive,
+  sparkPoints,
   href,
   onClick,
   disabled,
   loading,
 }) => {
   const interactive = !!(href || onClick)
+  const sparkPath = useMemo(() => {
+    if (sparkPoints && sparkPoints.length >= 2) return buildSparkPath(sparkPoints)
+    return PLACEHOLDER_PATH
+  }, [sparkPoints])
+  const animated = !sparkPoints || sparkPoints.length < 2
+
   const content = (
     <>
       <Label>{label}</Label>
       <Value>{loading ? '…' : value}</Value>
       {meta && <Meta $positive={metaPositive}>{meta}</Meta>}
-      <Spark viewBox="0 0 52 18" fill="none" aria-hidden>
-        <path
-          d="M0 12 L10 8 L16 14 L24 5 L32 11 L40 4 L52 9"
-          stroke={colors.gold}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
+      <Spark viewBox="0 0 48 16" aria-hidden>
+        <SparkPath d={sparkPath} $animated={animated} />
       </Spark>
     </>
   )

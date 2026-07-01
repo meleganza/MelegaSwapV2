@@ -37,11 +37,11 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   .home-trade-swap #swap-currency-input,
   .home-trade-swap #swap-currency-output {
-    height: 74px !important;
-    min-height: 74px !important;
-    max-height: 74px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
     overflow: hidden !important;
-    margin-top: 12px !important;
+    margin-top: 10px !important;
   }
 
   .home-trade-swap #swap-currency-input:first-of-type {
@@ -53,9 +53,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     background: rgba(255, 255, 255, 0.045) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 14px !important;
-    height: 74px !important;
-    min-height: 74px !important;
-    max-height: 74px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
     padding: 0 !important;
     overflow: hidden !important;
     box-shadow: none !important;
@@ -116,19 +116,31 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap .open-currency-select-button,
   .home-trade-swap [class*='CurrencySelect'] button,
   .home-trade-swap [class*='OpenCurrencySelectButton'] {
-    height: 34px !important;
-    min-height: 34px !important;
-    max-height: 34px !important;
-    min-width: 104px !important;
-    border-radius: 999px !important;
-    background: rgba(0, 0, 0, 0.18) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    font-size: 15px !important;
-    font-weight: 800 !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    min-width: 108px !important;
+    border-radius: 10px !important;
+    background: #171717 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
     padding: 0 10px !important;
-    margin: 0 10px 10px !important;
+    margin: 0 10px 8px !important;
     color: ${colors.textPrimary} !important;
     box-shadow: none !important;
+  }
+
+  .home-trade-swap .open-currency-select-button img,
+  .home-trade-swap [class*='OpenCurrencySelectButton'] img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .home-trade-swap .open-currency-select-button svg,
+  .home-trade-swap [class*='OpenCurrencySelectButton'] svg {
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .home-trade-swap [class*='ArrowWrapper'],
@@ -202,28 +214,29 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='CommitButton'] button,
   .home-trade-swap #swap-page > div:last-child button,
   .home-trade-swap [class*='Box'] button:not([class*='OpenCurrencySelectButton']) {
-    height: 46px !important;
-    min-height: 46px !important;
-    max-height: 46px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
     width: 100% !important;
     border-radius: 12px !important;
-    background: linear-gradient(180deg, ${colors.goldHover} 0%, ${colors.gold} 100%) !important;
+    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
     color: #000000 !important;
     font-weight: 800 !important;
     font-size: 15px !important;
     border: none !important;
     white-space: nowrap !important;
-    margin-top: 8px !important;
-    margin-bottom: 18px !important;
-    transition: filter 150ms ease, transform 150ms ease, box-shadow 150ms ease !important;
+    margin-top: 6px !important;
+    margin-bottom: 12px !important;
+    box-shadow: none !important;
+    transition: filter 150ms ease, transform 150ms ease !important;
   }
 
   .home-trade-swap .pancake-button--primary:hover,
   .home-trade-swap button[id='swap-button']:hover,
   .home-trade-swap [class*='CommitButton'] button:hover {
-    filter: brightness(1.08) !important;
+    filter: brightness(1.06) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.22) !important;
+    box-shadow: none !important;
   }
 
   .home-trade-swap .pancake-button--primary:active,

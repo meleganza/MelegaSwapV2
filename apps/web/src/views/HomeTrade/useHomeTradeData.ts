@@ -45,6 +45,13 @@ export interface ActivityRow {
   time?: string
 }
 
+export interface LiveEconomyMetric {
+  id: string
+  label: string
+  value: string
+  live?: boolean
+}
+
 const formatTimeAgo = (timestamp: string): string | undefined => {
   const ts = Number(timestamp)
   if (!ts || Number.isNaN(ts)) return undefined
@@ -330,12 +337,36 @@ export const useHomeTradeData = () => {
     return `$${price.toFixed(4)}`
   }, [marcoPrice])
 
+  const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
+    const metrics: LiveEconomyMetric[] = []
+    const dayAgo = Math.floor(Date.now() / 1000) - 86_400
+    const todaySwaps = transactions?.filter(
+      (tx) => tx.type === TransactionType.SWAP && Number(tx.timestamp) >= dayAgo,
+    ).length
+
+    if (todaySwaps && todaySwaps > 0) {
+      metrics.push({ id: 'swaps', label: "Today's swaps", value: String(todaySwaps), live: true })
+    }
+    if (farms.length > 0) {
+      metrics.push({ id: 'farms', label: 'Live farms', value: String(farms.length), live: true })
+    }
+    const projectCount = getAllProjects().length
+    if (projectCount > 0) {
+      metrics.push({ id: 'projects', label: 'Projects', value: String(projectCount), live: true })
+    }
+    if (pools.length > 0) {
+      metrics.push({ id: 'pools', label: 'Pools', value: String(pools.length), live: true })
+    }
+    return metrics
+  }, [transactions, farms.length, pools.length])
+
   return {
     ribbonItems,
     marketCards,
     farmRows,
     poolRows,
     activityRows,
+    liveEconomyMetrics,
     showEarn,
     showEarnNote,
     marcoPriceLabel,

@@ -64,18 +64,16 @@ export const HomeTradeScreen: React.FC = () => {
 
   const pulseRows = useMemo((): MelegaPulseRow[] => {
     const rows: MelegaPulseRow[] = []
-    const swap = data.ribbonItems.find((i) => i.icon === 'swap')
-    const farm = data.ribbonItems.find((i) => i.icon === 'pool')
-    const pool = data.marketCards.find((c) => c.id === 'top-pool')
-    const project = data.ribbonItems.find((i) => i.icon === 'project')
+    const topFarm = data.marketCards.find((c) => c.id === 'top-farm')
+    const latestProject = data.marketCards.find((c) => c.id === 'latest-project')
+    const topPool = data.marketCards.find((c) => c.id === 'top-pool')
 
-    if (swap) rows.push({ id: 'swap', label: 'Latest swap', value: swap.subtitle || swap.meta })
-    if (farm) rows.push({ id: 'farm', label: 'Top farm', value: farm.meta || farm.subtitle })
-    if (pool) rows.push({ id: 'pool', label: 'New pool', value: pool.meta || pool.value })
-    if (project) rows.push({ id: 'project', label: 'Project listed', value: project.title })
+    if (topFarm) rows.push({ id: 'farm', label: 'Top Farm', value: topFarm.meta || topFarm.value })
+    if (latestProject) rows.push({ id: 'listing', label: 'Latest Listing', value: latestProject.value })
+    if (topPool) rows.push({ id: 'pool', label: 'Newest Pool', value: topPool.meta || topPool.value })
 
-    return rows.slice(0, 4)
-  }, [data.ribbonItems, data.marketCards])
+    return rows.slice(0, 3)
+  }, [data.marketCards])
 
   return (
     <Root data-home-trade-screen="true">
@@ -85,7 +83,10 @@ export const HomeTradeScreen: React.FC = () => {
         <TrendingRibbon items={data.ribbonItems} />
         <HeroRow>
           <HomeSwapPanel />
-          <MelegaCinematicPanel pulseRows={pulseRows.length ? pulseRows : undefined} />
+          <MelegaCinematicPanel
+            pulseRows={pulseRows.length ? pulseRows : undefined}
+            liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
+          />
         </HeroRow>
         {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
         <ListProjectCta />

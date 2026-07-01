@@ -26,11 +26,11 @@ const Wrap = styled.div`
   border-radius: 14px;
   box-shadow: none;
   box-sizing: border-box;
-  transition: border-color ${animation.hover};
+  transition: border-color ${animation.hover}, box-shadow ${animation.hover};
 
-  &:hover,
   &:focus-within {
-    border-color: rgba(255, 255, 255, 0.14);
+    border-color: rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2);
   }
 
   ${media.mobile} {

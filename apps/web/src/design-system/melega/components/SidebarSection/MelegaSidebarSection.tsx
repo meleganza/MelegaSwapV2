@@ -29,10 +29,10 @@ const Label = styled.div`
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #707070;
+  color: #5f5f5f;
   height: 14px;
   margin-bottom: 6px;
-  padding: 0 14px;
+  padding: 0 10px;
 `
 
 const Items = styled.div`

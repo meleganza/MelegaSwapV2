@@ -12,7 +12,7 @@ const Shell = styled.section`
   background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 22px;
+  padding: 20px 22px;
   box-sizing: border-box;
   max-height: 210px;
   overflow: hidden;
@@ -21,7 +21,7 @@ const Shell = styled.section`
 `
 
 const Header = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `
 
 const Title = styled.h2`
@@ -42,27 +42,23 @@ const Subtitle = styled.p`
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px 16px;
-
-  @media (max-width: 767px) {
-    gap: 6px 12px;
-  }
+  gap: 6px 16px;
 `
 
 const Cell = styled.div`
   min-width: 0;
-
-  @media (max-width: 767px) {
-    min-height: 64px;
-  }
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `
 
 const CellLabel = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #707070;
@@ -79,11 +75,11 @@ const StatusDot = styled.span<{ $tone?: 'gold' | 'green' | 'neutral' }>`
 `
 
 const CellValue = styled.div`
-  margin-top: 3px;
-  font-size: 18px;
+  margin-top: 2px;
+  font-size: 20px;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.15;
+  line-height: 1.1;
   animation: ${fadeIn} 180ms ease;
   white-space: nowrap;
   overflow: hidden;
@@ -92,7 +88,7 @@ const CellValue = styled.div`
 
 const CellMeta = styled.div`
   margin-top: 1px;
-  font-size: 12px;
+  font-size: 11px;
   color: #9e9e9e;
   line-height: 1.25;
   white-space: nowrap;
@@ -101,24 +97,17 @@ const CellMeta = styled.div`
 `
 
 const Networks = styled.div`
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 12px;
+  font-size: 11px;
   color: #8a8a8a;
-  line-height: 1.4;
+  line-height: 1.35;
 `
 
 const NetworkGold = styled.span`
   color: ${colors.gold};
   font-weight: 600;
-`
-
-const NetworkNote = styled.div`
-  margin-top: 2px;
-  font-size: 11px;
-  color: #707070;
-  line-height: 1.35;
 `
 
 export const MarketPulsePanel: React.FC = () => {
@@ -143,11 +132,9 @@ export const MarketPulsePanel: React.FC = () => {
         ))}
       </Grid>
       <Networks>
-        Supported networks:{' '}
         <NetworkGold>BNB Chain</NetworkGold>
         {' · '}
         Polygon · Ethereum · Base
-        <NetworkNote>BNB active now. Other networks are indexed when liquidity is available.</NetworkNote>
       </Networks>
     </Shell>
   )

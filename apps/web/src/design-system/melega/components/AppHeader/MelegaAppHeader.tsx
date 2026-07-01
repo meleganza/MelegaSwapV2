@@ -11,7 +11,7 @@ const Bar = styled.header`
   height: 60px;
   z-index: 90;
   background: transparent;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   padding: 0 24px;
   align-items: center;
   justify-content: space-between;
@@ -40,9 +40,13 @@ const Right = styled.div`
     margin-left: 8px;
   }
 
+  [data-melega-social-icons] {
+    transform: translateY(-4px);
+  }
+
   .melega-shell-connect,
   .melega-shell-wallet-slot {
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateX(-2px);
   }
 
   .melega-shell-settings {
