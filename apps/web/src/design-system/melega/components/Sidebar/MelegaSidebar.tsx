@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, spacing } from '../../tokens'
+import { colors } from '../../tokens'
 
 const ASIDE_WIDTH = '230px'
-const SIDEBAR_BG = '#050505'
+const SIDEBAR_BG = colors.background
 
 const Aside = styled.aside`
   display: none;
@@ -14,7 +14,7 @@ const Aside = styled.aside`
   width: ${ASIDE_WIDTH};
   background: ${SIDEBAR_BG};
   border-right: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 22px 14px 18px;
+  padding: 24px 14px 14px;
   z-index: 100;
   box-sizing: border-box;
   flex-direction: column;
@@ -23,11 +23,17 @@ const Aside = styled.aside`
     display: flex;
     overflow: hidden;
   }
+
+  @media (max-height: 819px) {
+    .melega-sidebar-nav {
+      overflow-y: auto;
+    }
+  }
 `
 
 const BrandRow = styled.div`
-  height: 46px;
-  margin-bottom: 24px;
+  height: 44px;
+  margin-bottom: 22px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -36,8 +42,7 @@ const BrandRow = styled.div`
 const NavScroll = styled.div`
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 
   &::-webkit-scrollbar {
     width: 0;
@@ -46,8 +51,7 @@ const NavScroll = styled.div`
 
 const Bottom = styled.div`
   flex-shrink: 0;
-  margin-top: ${spacing[3]};
-  padding-top: ${spacing[3]};
+  margin-top: 12px;
 `
 
 export const MELEGA_SIDEBAR_WIDTH = ASIDE_WIDTH
@@ -61,7 +65,7 @@ export interface MelegaSidebarProps {
 export const MelegaSidebar: React.FC<MelegaSidebarProps> = ({ brand, navigation, footer }) => (
   <Aside data-melega-sidebar>
     <BrandRow>{brand}</BrandRow>
-    <NavScroll>{navigation}</NavScroll>
+    <NavScroll className="melega-sidebar-nav">{navigation}</NavScroll>
     {footer && <Bottom>{footer}</Bottom>}
   </Aside>
 )

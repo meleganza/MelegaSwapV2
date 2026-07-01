@@ -44,8 +44,8 @@ const DesktopMain = styled.main`
 
   @media (min-width: 768px) {
     margin-left: ${MELEGA_SIDEBAR_WIDTH};
-    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + 16px) 26px 24px;
-    max-width: calc(1180px + 52px);
+    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + 12px) 26px 24px;
+    max-width: none;
   }
 `
 
@@ -79,15 +79,6 @@ const MobileNetwork = styled.div`
   display: flex;
   justify-content: flex-end;
   min-width: 0;
-`
-
-const Lang = styled.div`
-  font-size: 12px;
-  color: ${colors.textMuted};
-  margin-top: ${spacing[2]};
-  height: 28px;
-  display: flex;
-  align-items: center;
 `
 
 const WalletIcon = () => (
@@ -145,12 +136,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
       <MelegaSidebar
         brand={<MelegaBrandLockup size="desktop" />}
         navigation={navigation}
-        footer={
-          <>
-            <MelegaMarcoCard priceLabel={marcoPriceLabel} />
-            <Lang>EN</Lang>
-          </>
-        }
+        footer={<MelegaMarcoCard priceLabel={marcoPriceLabel} />}
       />
 
       <MelegaAppHeader

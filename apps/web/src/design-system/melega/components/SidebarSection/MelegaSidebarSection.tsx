@@ -1,51 +1,40 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, spacing } from '../../tokens'
-import { layoutStyles } from '../../primitives'
-import type { MelegaLayoutProps } from '../../primitives'
+import { colors, typography } from '../../tokens'
 
-export interface MelegaSidebarSectionProps extends MelegaLayoutProps {
+export interface MelegaSidebarSectionProps {
   label: string
   children: React.ReactNode
 }
 
-const Section = styled.div<{
-  $padding?: MelegaLayoutProps['padding']
-  $margin?: MelegaLayoutProps['margin']
-}>`
-  margin-top: ${spacing[6]};
+const Section = styled.div`
+  margin-top: 18px;
 
   &:first-child {
     margin-top: 0;
   }
-
-  ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
 const Label = styled.div`
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize.xs};
+  font-size: 10px;
   font-weight: ${typography.fontWeight.bold};
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: ${colors.textMuted};
-  margin-bottom: ${spacing[2]};
+  height: 14px;
+  margin-bottom: 6px;
   padding: 0 2px;
 `
 
 const Items = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${spacing[1]};
+  gap: 2px;
 `
 
-export const MelegaSidebarSection: React.FC<MelegaSidebarSectionProps> = ({
-  label,
-  children,
-  padding,
-  margin,
-}) => (
-  <Section $padding={padding} $margin={margin}>
+export const MelegaSidebarSection: React.FC<MelegaSidebarSectionProps> = ({ label, children }) => (
+  <Section>
     <Label>{label}</Label>
     <Items>{children}</Items>
   </Section>

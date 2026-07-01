@@ -13,7 +13,7 @@ export const TrendingRibbon: React.FC<{ items: RibbonItem[] }> = ({ items }) => 
     href: item.href,
   }))
 
-  return <MelegaTicker label="⚡ Trending" items={tickerItems} margin="3" />
+  return <MelegaTicker items={tickerItems} />
 }
 
 export default TrendingRibbon

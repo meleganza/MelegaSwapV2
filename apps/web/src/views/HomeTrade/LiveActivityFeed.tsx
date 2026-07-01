@@ -1,13 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import {
-  MelegaEmptyState,
-  MelegaSectionCard,
-  MelegaTimelineRow,
-  colors,
-  spacing,
-} from 'design-system/melega'
+import { MelegaEmptyState, MelegaSectionCard, MelegaTimelineRow, colors } from 'design-system/melega'
 import { ActivityRow } from './useHomeTradeData'
 
 const SectionLink = styled(Link)`
@@ -23,7 +17,7 @@ const Timeline = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-left: ${spacing[1]};
+  padding-left: 4px;
 
   &::before {
     content: '';
@@ -46,6 +40,7 @@ const eventIcon = (type: string) => {
 export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) => (
   <MelegaSectionCard
     title="Live Activity"
+    minHeight="180px"
     action={<SectionLink href="/swap">View all →</SectionLink>}
   >
     {rows.length === 0 ? (
@@ -55,14 +50,13 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
       />
     ) : (
       <Timeline>
-        {rows.map((row, i) => (
+        {rows.map((row) => (
           <MelegaTimelineRow
             key={row.id}
             icon={eventIcon(row.type)}
             event={row.type}
             context={row.context}
             time={row.time || row.value || ''}
-            margin={i > 0 ? '0' : undefined}
           />
         ))}
       </Timeline>

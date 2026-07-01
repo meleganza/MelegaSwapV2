@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { colors, typography, spacing, animation } from '../../tokens'
-import { layoutStyles } from '../../primitives'
+import { colors, typography, animation } from '../../tokens'
 import type { MelegaLayoutProps } from '../../primitives'
+import { layoutStyles } from '../../primitives'
 
 export interface MelegaTickerItem {
   id: string
@@ -18,7 +18,7 @@ export interface MelegaTickerProps extends MelegaLayoutProps {
   paused?: boolean
 }
 
-const scrollAnim = keyframes`
+const melegaTicker = keyframes`
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 `
@@ -29,28 +29,33 @@ const Strip = styled.div<{
 }>`
   display: flex;
   align-items: center;
-  height: 46px;
+  height: 36px;
+  margin-bottom: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: linear-gradient(
     90deg,
-    rgba(212, 175, 55, 0.04),
+    rgba(212, 175, 55, 0.06),
     rgba(255, 255, 255, 0.015),
-    rgba(212, 175, 55, 0.04)
+    rgba(212, 175, 55, 0.06)
   );
   overflow: hidden;
   box-shadow: none;
+
+  @media (min-width: 768px) {
+    height: 44px;
+  }
 
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
 const Label = styled.div`
   flex-shrink: 0;
-  padding-left: ${spacing[4]};
-  margin-right: ${spacing[4]};
+  padding-left: 14px;
+  padding-right: 18px;
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize.md};
-  font-weight: ${typography.fontWeight.bold};
+  font-size: 13px;
+  font-weight: ${typography.fontWeight.extrabold};
   color: ${colors.gold};
 `
 
@@ -62,10 +67,10 @@ const TrackWrap = styled.div`
 const Track = styled.div<{ $paused?: boolean }>`
   display: flex;
   align-items: center;
-  gap: ${spacing[8]};
+  gap: 26px;
   width: max-content;
   white-space: nowrap;
-  animation: ${scrollAnim} ${animation.ticker} infinite;
+  animation: ${melegaTicker} ${animation.ticker} infinite;
   animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
 
   @media (prefers-reduced-motion: reduce) {
@@ -76,24 +81,22 @@ const Track = styled.div<{ $paused?: boolean }>`
 const Item = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: ${spacing[2]};
+  gap: 8px;
   text-decoration: none;
   color: inherit;
+  font-size: 13px;
 `
 
 const Primary = styled.span`
-  font-size: ${typography.fontSize.md};
-  font-weight: ${typography.fontWeight.bold};
+  font-weight: ${typography.fontWeight.extrabold};
   color: ${colors.textPrimary};
 `
 
 const Secondary = styled.span`
-  font-size: ${typography.fontSize.sm};
   color: ${colors.textSecondary};
 `
 
 const Accent = styled.span`
-  font-size: ${typography.fontSize.sm};
   font-weight: ${typography.fontWeight.semibold};
   color: ${colors.green};
 `
@@ -103,10 +106,11 @@ const Dot = styled.span`
   height: 4px;
   border-radius: 50%;
   background: ${colors.gold};
+  opacity: 0.8;
 `
 
 export const MelegaTicker: React.FC<MelegaTickerProps> = ({
-  label = 'Trending',
+  label = '⚡ Trending',
   items,
   paused: pausedProp,
   padding,
@@ -125,6 +129,8 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
       $margin={margin}
       onMouseEnter={() => setHoverPaused(true)}
       onMouseLeave={() => setHoverPaused(false)}
+      onTouchStart={() => setHoverPaused(true)}
+      onTouchEnd={() => setHoverPaused(false)}
     >
       <Label>{label}</Label>
       <TrackWrap>

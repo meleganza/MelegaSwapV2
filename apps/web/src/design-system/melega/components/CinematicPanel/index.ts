@@ -1,2 +1,1 @@
-export { MelegaCinematicPanel } from './MelegaCinematicPanel'
-export { default } from './MelegaCinematicPanel'
+export { MelegaCinematicPanel, type MelegaCinematicPanelProps, type MelegaPulseRow } from './MelegaCinematicPanel'

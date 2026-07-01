@@ -34,6 +34,11 @@ const Tile = styled.a`
   @media (min-width: 768px) {
     flex: unset;
   }
+
+  @media (max-width: 767px) {
+    flex: 0 0 150px;
+    height: 104px;
+  }
 `
 
 const TextBlock = styled.div`
@@ -55,7 +60,7 @@ const Title = styled.div`
 
 const Desc = styled.div`
   font-size: ${typography.fontSize.sm};
-  color: ${colors.textMuted};
+  color: #8f8f8f;
   line-height: 1.35;
 `
 

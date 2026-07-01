@@ -2,29 +2,26 @@ import React from 'react'
 import styled from 'styled-components'
 import { colors, typography, spacing, radius, animation } from '../../tokens'
 import { media } from '../../theme'
-import { focusRing, layoutStyles } from '../../primitives'
-import type { MelegaLayoutProps } from '../../primitives'
+import { focusRing } from '../../primitives'
 
-export interface MelegaSearchBarProps extends MelegaLayoutProps {
+export interface MelegaSearchBarProps {
   placeholder?: string
   shortcut?: string
   value?: string
   onChange?: (value: string) => void
   onFocus?: () => void
+  disabled?: boolean
+  loading?: boolean
 }
 
-const Wrap = styled.div<{
-  $padding?: MelegaLayoutProps['padding']
-  $margin?: MelegaLayoutProps['margin']
-  $radius?: MelegaLayoutProps['radius']
-}>`
+const Wrap = styled.div`
   display: flex;
   align-items: center;
   gap: ${spacing[3]};
   height: 42px;
-  padding: 0 ${spacing[4]};
-  background: ${colors.surface1};
-  border: 1px solid ${colors.borderStrong};
+  padding: 0 10px 0 16px;
+  background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: ${radius.lg};
   box-shadow: none;
   transition: border-color ${animation.hover};
@@ -33,8 +30,6 @@ const Wrap = styled.div<{
   &:focus-within {
     border-color: rgba(255, 255, 255, 0.18);
   }
-
-  ${({ $padding, $margin, $radius: r }) => layoutStyles({ padding: $padding, margin: $margin, radius: r })}
 
   ${media.mobile} {
     height: 40px;
@@ -62,7 +57,7 @@ const Input = styled.input`
   color: ${colors.textPrimary};
 
   &::placeholder {
-    color: ${colors.textMuted};
+    color: ${colors.textSecondary};
   }
 
   ${focusRing}
@@ -72,10 +67,9 @@ const Kbd = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 38px;
+  width: 32px;
   height: 24px;
-  padding: 0 ${spacing[2]};
-  border-radius: ${radius.sm};
+  border-radius: 8px;
   border: 1px solid ${colors.border};
   background: rgba(255, 255, 255, 0.04);
   font-family: ${typography.fontFamily.body};
@@ -88,21 +82,15 @@ const Kbd = styled.span`
 `
 
 export const MelegaSearchBar: React.FC<MelegaSearchBarProps> = ({
-  placeholder = 'Search tokens, farms, projects…',
+  placeholder = 'Search tokens, farms, projects...',
   shortcut = '⌘K',
   value,
   onChange,
   onFocus,
-  padding,
-  margin,
-  radius: radiusToken,
   disabled,
   loading,
 }) => (
   <Wrap
-    $padding={padding}
-    $margin={margin}
-    $radius={radiusToken}
     role="search"
     aria-busy={loading}
     style={{ opacity: disabled ? 0.45 : 1, pointerEvents: disabled || loading ? 'none' : 'auto' }}

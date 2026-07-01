@@ -28,7 +28,7 @@ const Nav = styled.nav<{
   height: calc(78px + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: ${colors.canvas};
-  border-top: 1px solid ${colors.borderStrong};
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 200;
   box-shadow: none;
 

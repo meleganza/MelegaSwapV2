@@ -1,37 +1,40 @@
 import React from 'react'
-import styled from 'styled-components'
-import { colors, typography, spacing, radius } from '../../tokens'
+import styled, { keyframes } from 'styled-components'
+import { colors, typography, animation } from '../../tokens'
 import { media } from '../../theme'
-import { layoutStyles } from '../../primitives'
-import type { MelegaLayoutProps } from '../../primitives'
 
-export interface MelegaStatCardProps extends MelegaLayoutProps {
+export interface MelegaStatCardProps {
   label: string
   value: string
   meta?: string
   metaPositive?: boolean
   href?: string
   onClick?: () => void
+  disabled?: boolean
+  loading?: boolean
 }
 
-const Card = styled.a<{
-  $interactive?: boolean
-  $padding?: MelegaLayoutProps['padding']
-  $margin?: MelegaLayoutProps['margin']
-  $radius?: MelegaLayoutProps['radius']
-}>`
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+`
+
+const Card = styled.a<{ $interactive?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 74px;
-  padding: ${spacing[3]};
-  background: ${colors.surface2};
+  height: 76px;
+  padding: 12px;
+  background: #111111;
   border: 1px solid ${colors.border};
-  border-radius: ${radius.md};
+  border-radius: 12px;
   text-decoration: none;
   box-shadow: none;
-  transition: border-color 150ms ease, transform 150ms ease;
+  position: relative;
+  overflow: hidden;
+  transition: border-color ${animation.cardHover}, transform ${animation.cardHover};
   cursor: ${({ $interactive }) => ($interactive ? 'pointer' : 'default')};
+  animation: ${fadeIn} 180ms ease;
 
   &:hover {
     ${({ $interactive }) =>
@@ -42,33 +45,44 @@ const Card = styled.a<{
     `}
   }
 
-  ${({ $padding, $margin, $radius: r }) => layoutStyles({ padding: $padding, margin: $margin, radius: r })}
-
   ${media.mobile} {
-    flex: 0 0 156px;
-    height: 112px;
+    flex: 0 0 150px;
+    height: 96px;
   }
 `
 
 const Label = styled.div`
-  font-size: ${typography.fontSize.xs};
-  color: ${colors.textMuted};
+  font-size: 11px;
+  color: #8f8f8f;
+  line-height: 1.3;
 `
 
 const Value = styled.div`
-  margin-top: ${spacing[1]};
-  font-size: ${typography.fontSize['2xl']};
-  font-weight: ${typography.fontWeight.bold};
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: ${typography.fontWeight.extrabold};
   color: ${colors.textPrimary};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 `
 
 const Meta = styled.div<{ $positive?: boolean }>`
   margin-top: 2px;
-  font-size: ${typography.fontSize.sm};
+  font-size: 12px;
   color: ${({ $positive }) => ($positive ? colors.green : colors.textSecondary)};
+  line-height: 1.3;
+`
+
+const Spark = styled.svg`
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 52px;
+  height: 18px;
+  opacity: 0.35;
+  pointer-events: none;
 `
 
 export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
@@ -78,9 +92,6 @@ export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
   metaPositive,
   href,
   onClick,
-  padding,
-  margin,
-  radius: radiusToken,
   disabled,
   loading,
 }) => {
@@ -90,20 +101,20 @@ export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
       <Label>{label}</Label>
       <Value>{loading ? '…' : value}</Value>
       {meta && <Meta $positive={metaPositive}>{meta}</Meta>}
+      <Spark viewBox="0 0 52 18" fill="none" aria-hidden>
+        <path
+          d="M0 12 L10 8 L16 14 L24 5 L32 11 L40 4 L52 9"
+          stroke={colors.gold}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </Spark>
     </>
   )
 
   if (href && !disabled) {
     return (
-      <Card
-        as="a"
-        href={href}
-        $interactive={interactive && !loading}
-        $padding={padding}
-        $margin={margin}
-        $radius={radiusToken}
-        style={{ opacity: disabled || loading ? 0.45 : 1 }}
-      >
+      <Card as="a" href={href} $interactive={interactive && !loading} style={{ opacity: disabled || loading ? 0.45 : 1 }}>
         {content}
       </Card>
     )
@@ -114,9 +125,6 @@ export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
       as="div"
       onClick={disabled || loading ? undefined : onClick}
       $interactive={interactive && !disabled && !loading}
-      $padding={padding}
-      $margin={margin}
-      $radius={radiusToken}
       style={{ opacity: disabled || loading ? 0.45 : 1 }}
     >
       {content}

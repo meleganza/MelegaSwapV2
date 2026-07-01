@@ -6,7 +6,7 @@ import type { MelegaLayoutProps } from '../../primitives'
 
 const pulse = keyframes`
   0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.06); }
+  50% { opacity: 0; transform: scale(1.35); }
 `
 
 export interface MelegaEmptyStateProps extends MelegaLayoutProps {
@@ -35,7 +35,7 @@ const Icon = styled.span`
   background: ${colors.goldSoft};
   border: 1px solid rgba(212, 175, 55, 0.35);
   flex-shrink: 0;
-  animation: ${pulse} 2.5s ease-in-out infinite;
+  animation: ${pulse} 1.5s ease-in-out infinite;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;

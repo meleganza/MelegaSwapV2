@@ -1,60 +1,52 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, spacing } from '../../tokens'
-import { layoutStyles } from '../../primitives'
-import type { MelegaLayoutProps } from '../../primitives'
+import { colors, typography } from '../../tokens'
 
-export interface MelegaSectionTitleProps extends MelegaLayoutProps {
+export interface MelegaSectionTitleProps {
   title: string
   action?: React.ReactNode
   subtitle?: string
+  cockpit?: boolean
 }
 
-const Row = styled.div<{
-  $padding?: MelegaLayoutProps['padding']
-  $margin?: MelegaLayoutProps['margin']
-}>`
+const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: ${spacing[3]};
-  margin-bottom: ${spacing[3]};
-
-  ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
+  gap: 12px;
+  margin-bottom: 12px;
 `
 
-const Title = styled.h2`
+const Title = styled.h2<{ $cockpit?: boolean }>`
   margin: 0;
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize['3xl']};
-  font-weight: ${typography.fontWeight.bold};
+  font-size: ${({ $cockpit }) => ($cockpit ? '24px' : typography.fontSize['3xl'])};
+  font-weight: ${typography.fontWeight.heavy};
   color: ${colors.textPrimary};
-  line-height: ${typography.lineHeight.tight};
+  line-height: ${({ $cockpit }) => ($cockpit ? '1.15' : typography.lineHeight.snug)};
+
+  @media (max-width: 767px) {
+    font-size: ${({ $cockpit }) => ($cockpit ? '22px' : typography.fontSize['2xl'])};
+  }
 `
 
 const Subtitle = styled.p`
-  margin: ${spacing[1]} 0 0;
+  margin: 4px 0 0;
   font-size: ${typography.fontSize.base};
   color: ${colors.textSecondary};
 `
 
 const Action = styled.div`
-  font-size: ${typography.fontSize.md};
+  font-size: 13px;
   color: ${colors.gold};
   flex-shrink: 0;
 `
 
-export const MelegaSectionTitle: React.FC<MelegaSectionTitleProps> = ({
-  title,
-  subtitle,
-  action,
-  padding,
-  margin,
-}) => (
+export const MelegaSectionTitle: React.FC<MelegaSectionTitleProps> = ({ title, subtitle, action, cockpit }) => (
   <div>
-    <Row $padding={padding} $margin={margin}>
+    <Row>
       <div>
-        <Title>{title}</Title>
+        <Title $cockpit={cockpit}>{title}</Title>
         {subtitle && <Subtitle>{subtitle}</Subtitle>}
       </div>
       {action && <Action>{action}</Action>}

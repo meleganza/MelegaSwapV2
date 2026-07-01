@@ -1,2 +1,1 @@
-export { MelegaSwapPanelShell, type MelegaSwapPanelShellProps } from './MelegaSwapPanelShell'
-export { default } from './MelegaSwapPanelShell'
+export { MelegaSwapPanelShell, SwapIconButton, type MelegaSwapPanelShellProps } from './MelegaSwapPanelShell'

@@ -17,13 +17,13 @@ export interface MelegaButtonProps extends MelegaLayoutProps, React.ButtonHTMLAt
 
 const variantStyles: Record<MelegaButtonVariant, ReturnType<typeof css>> = {
   primary: css`
-    background: ${colors.gold};
+    background: linear-gradient(180deg, ${colors.goldHover} 0%, ${colors.gold} 100%);
     color: ${colors.canvas};
     border: 1px solid ${colors.gold};
 
     &:hover:not(:disabled) {
-      background: ${colors.goldHover};
-      border-color: ${colors.goldHover};
+      filter: brightness(1.08);
+      transform: translateY(-1px);
     }
   `,
   secondary: css`

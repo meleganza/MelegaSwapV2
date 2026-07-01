@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { MelegaIntelligenceTile, MelegaSectionCard, colors, spacing } from 'design-system/melega'
+import { MelegaIntelligenceTile, MelegaSectionCard, colors } from 'design-system/melega'
 
 const SectionLink = styled(Link)`
   color: ${colors.gold};
@@ -14,8 +14,9 @@ const SectionLink = styled(Link)`
 
 const Grid = styled.div`
   display: flex;
-  gap: ${spacing[3]};
+  gap: 10px;
   overflow-x: auto;
+  margin-top: 14px;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -50,6 +51,7 @@ const items = [
 export const IntelligencePanel: React.FC = () => (
   <MelegaSectionCard
     title="Intelligence"
+    minHeight="180px"
     action={<SectionLink href="/projects">View all →</SectionLink>}
   >
     <Grid>

@@ -15,8 +15,8 @@ const Circle = styled.div<{ $size: number }>`
   height: ${({ $size }) => $size}px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: linear-gradient(145deg, #1a1508 0%, #0a0a0a 55%, #1f1806 100%);
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: ${colors.canvas};
+  border: 1px solid rgba(212, 175, 55, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,15 +25,15 @@ const Circle = styled.div<{ $size: number }>`
   img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
   }
 `
 
 const Mark = styled.span<{ $size: number }>`
-  font-family: ${typography.fontFamily.wordmark};
-  font-size: ${({ $size }) => Math.round($size * 0.3)}px;
-  font-weight: ${typography.fontWeight.bold};
-  color: ${colors.gold};
+  font-family: ${typography.fontFamily.body};
+  font-size: ${({ $size }) => Math.round($size * 0.28)}px;
+  font-weight: ${typography.fontWeight.extrabold};
+  color: ${colors.textPrimary};
   letter-spacing: -0.04em;
 `
 
@@ -43,8 +43,8 @@ const BrandText = styled.div<{ $compact?: boolean }>`
   gap: 4px;
   font-family: ${typography.fontFamily.body};
   font-size: ${({ $compact }) => ($compact ? '21px' : '22px')};
-  font-weight: ${typography.fontWeight.bold};
-  line-height: 1.15;
+  font-weight: ${typography.fontWeight.extrabold};
+  line-height: 1;
   letter-spacing: -0.02em;
   white-space: nowrap;
 `
@@ -62,7 +62,7 @@ export interface MelegaBrandLockupProps {
 }
 
 export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'desktop' }) => {
-  const logoSize = size === 'mobile' ? 38 : 42
+  const logoSize = size === 'mobile' ? 38 : 40
   const [ok, setOk] = useState(true)
 
   return (
