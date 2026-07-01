@@ -16,7 +16,7 @@ export interface MelegaSectionCardProps {
 const Card = styled.section<{ $minHeight?: string; $compact?: boolean }>`
   background: ${colors.surface1};
   border: 1px solid ${colors.border};
-  border-radius: 18px;
+  border-radius: 20px;
   padding: ${({ $compact }) => ($compact ? '16px' : '22px')};
   box-sizing: border-box;
   min-height: ${({ $minHeight }) => $minHeight || '180px'};

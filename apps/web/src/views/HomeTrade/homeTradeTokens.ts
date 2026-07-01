@@ -2,7 +2,8 @@
 export const homeTradeLayout = {
   contentMax: '1180px',
   columnGap: '16px',
-  sectionGap: '18px',
+  sectionGap: '16px',
+  compactGap: '12px',
   gridGutter: '16px',
   heroGap: '16px',
   heroMaxHeight: '380px',

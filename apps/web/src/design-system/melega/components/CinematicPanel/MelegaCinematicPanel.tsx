@@ -8,8 +8,8 @@ const melegaPlanetGlow = keyframes`
 `
 
 const melegaStars = keyframes`
-  0%, 100% { opacity: 0.31; }
-  50% { opacity: 0.71; }
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.18; }
 `
 
 const particleFloat = keyframes`
@@ -41,18 +41,19 @@ export interface MelegaCinematicPanelProps {
 }
 
 const Panel = styled.div`
-  display: none;
+  display: block;
   position: relative;
-  height: 100%;
-  max-height: 380px;
-  border-radius: 18px;
+  height: 260px;
+  max-height: 260px;
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  background: ${colors.canvas};
+  background: #050505;
   box-shadow: none;
 
   @media (min-width: 768px) {
-    display: block;
+    height: 100%;
+    max-height: 380px;
   }
 `
 
@@ -122,11 +123,17 @@ const Scene = styled.div`
 
 const Planet = styled.div`
   position: absolute;
-  inset: 0;
-  top: 110px;
+  right: -20px;
+  bottom: -20px;
+  width: 68%;
+  height: 55%;
   background:
-    radial-gradient(ellipse 82% 66% at 82% 92%, rgba(244, 197, 66, 1) 0%, rgba(212, 175, 55, 0.52) 28%, rgba(0, 0, 0, 0) 52%);
+    radial-gradient(ellipse 82% 66% at 50% 50%, rgba(244, 197, 66, 1) 0%, rgba(212, 175, 55, 0.52) 28%, rgba(0, 0, 0, 0) 52%);
+  filter: blur(80px);
+  opacity: 0.52;
   animation: ${melegaPlanetGlow} 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
@@ -152,10 +159,16 @@ const HorizonArc = styled.div`
 
 const Copy = styled.div`
   position: absolute;
-  left: 36px;
-  top: 72px;
+  left: 44px;
+  top: 82px;
   z-index: 3;
   max-width: 380px;
+
+  @media (max-width: 767px) {
+    left: 20px;
+    top: 28px;
+    max-width: calc(100% - 40px);
+  }
 `
 
 const LiveEconomyStrip = styled.div`
@@ -169,7 +182,7 @@ const LiveEconomyStrip = styled.div`
 
 const LiveLabel = styled.span`
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #c6a33a;
@@ -211,6 +224,7 @@ const HeadlineBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-top: 18px;
 `
 
 const HeadlineLine = styled.div`
@@ -219,32 +233,43 @@ const HeadlineLine = styled.div`
   font-weight: 800;
   line-height: 1.02;
   color: ${colors.textPrimary};
+
+  @media (max-width: 767px) {
+    font-size: 42px;
+  }
 `
 
 const PulseOverlay = styled.div`
   position: absolute;
-  right: 22px;
-  bottom: 20px;
-  width: 88px;
-  background: rgba(5, 5, 5, 0.92);
+  right: 32px;
+  bottom: 34px;
+  width: 170px;
+  background: rgba(17, 17, 17, 0.82);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: 10px 10px;
+  padding: 14px;
   z-index: 3;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 `
 
 const PulseRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 24px;
-  gap: 6px;
-  font-size: 10px;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `
 
 const PulseLabel = styled.span`
-  color: ${colors.textSecondary};
+  color: #8a8a8a;
+  font-size: 11px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -252,13 +277,11 @@ const PulseLabel = styled.span`
 
 const PulseValue = styled.span`
   color: ${colors.textPrimary};
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 12px;
   white-space: nowrap;
-  font-size: 10px;
-  max-width: 58px;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: right;
 `
 
 export const MelegaCinematicPanel: React.FC<MelegaCinematicPanelProps> = ({ pulseRows, liveEconomy }) => {

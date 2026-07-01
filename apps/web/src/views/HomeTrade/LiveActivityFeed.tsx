@@ -5,12 +5,13 @@ import { colors } from 'design-system/melega'
 import { ActivityRow } from './useHomeTradeData'
 
 const Shell = styled.section`
-  background: #0a0a0a;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 16px 20px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 22px;
   box-sizing: border-box;
-  height: 160px;
+  min-height: 160px;
+  max-height: 220px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -26,8 +27,8 @@ const Header = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   color: ${colors.textPrimary};
 `
 
@@ -107,8 +108,8 @@ const EmptyWrap = styled.div`
 `
 
 const pulseDot = keyframes`
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(1.5); opacity: 0.08; }
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.45); opacity: 0.08; }
 `
 
 const PulseDot = styled.span`
@@ -122,14 +123,14 @@ const PulseDot = styled.span`
 
 const EmptyTitle = styled.p`
   margin: 0 0 4px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: ${colors.textPrimary};
 `
 
 const EmptyDesc = styled.p`
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: #9e9e9e;
   line-height: 1.45;
   max-width: 300px;

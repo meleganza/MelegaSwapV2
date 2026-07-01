@@ -15,8 +15,8 @@ const Strip = styled.div`
 
 const DesktopGrid = styled.div`
   display: none;
-  grid-template-columns: repeat(4, 0.92fr);
-  gap: ${homeTradeLayout.columnGap};
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 
   @media (min-width: 768px) {
     display: grid;

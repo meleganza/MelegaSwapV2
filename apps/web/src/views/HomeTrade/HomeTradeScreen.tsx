@@ -20,6 +20,7 @@ const Root = styled.div`
   font-family: ${typography.fontFamily.body};
   font-size: ${typography.fontSize.base};
   line-height: ${typography.lineHeight.normal};
+  background: #0a0a0a;
 
   @media (max-width: 767px) {
     padding: 0 14px;
@@ -38,30 +39,14 @@ const Content = styled.div`
   }
 `
 
-const MarketStripWrap = styled.div`
-  margin-top: -8px;
-  position: relative;
-  z-index: 2;
-`
-
-const CtaWrap = styled.div`
-  margin-top: -4px;
-  position: relative;
-  z-index: 1;
-`
-
-const GrowWrap = styled.div`
-  margin-top: -6px;
-  position: relative;
-  z-index: 1;
-`
-
 const HeroRow = styled.div`
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: ${homeTradeLayout.heroGap};
   margin-top: 0;
 
   @media (min-width: 768px) {
+    display: grid;
     grid-template-columns: ${homeTradeLayout.swapWidth} 1fr;
     height: ${homeTradeLayout.heroMaxHeight};
     max-height: ${homeTradeLayout.heroMaxHeight};
@@ -98,7 +83,7 @@ export const HomeTradeScreen: React.FC = () => {
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        <TrendingRibbon items={data.ribbonItems} />
+        <TrendingRibbon />
         <HeroRow>
           <HomeSwapPanel />
           <MelegaCinematicPanel
@@ -106,17 +91,9 @@ export const HomeTradeScreen: React.FC = () => {
             liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
           />
         </HeroRow>
-        {data.showMarket && (
-          <MarketStripWrap>
-            <QuickMarketStrip cards={data.marketCards} />
-          </MarketStripWrap>
-        )}
-        <CtaWrap>
-          <ListProjectCta />
-        </CtaWrap>
-        <GrowWrap>
-          <GrowInsideMelegaPanel />
-        </GrowWrap>
+        {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
+        <ListProjectCta />
+        <GrowInsideMelegaPanel />
         <LowerRow $hasEarn={data.showEarn}>
           {data.showEarn && (
             <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />

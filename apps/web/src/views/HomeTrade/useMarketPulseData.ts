@@ -125,7 +125,13 @@ export const useMarketPulseData = () => {
     ]
   }, [block, chainId, fngData, gasRaw, globalData])
 
-  return { cells }
+  return {
+    cells,
+    fearGreed: {
+      value: fngData?.value,
+      classification: fngData?.value_classification,
+    },
+  }
 }
 
 export default useMarketPulseData

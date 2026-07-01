@@ -30,10 +30,10 @@ const Card = styled.a<{ $interactive?: boolean }>`
   flex-direction: column;
   justify-content: center;
   height: 72px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 12px 14px;
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: 14px;
   text-decoration: none;
   box-shadow: none;
   position: relative;
@@ -52,8 +52,8 @@ const Card = styled.a<{ $interactive?: boolean }>`
   }
 
   ${media.mobile} {
-    flex: 0 0 150px;
-    height: 96px;
+    flex: 0 0 210px;
+    height: 72px;
   }
 `
 
@@ -65,16 +65,13 @@ const Label = styled.div`
 
 const Value = styled.div`
   margin-top: 4px;
-  font-size: 15px;
-  font-weight: ${typography.fontWeight.extrabold};
+  font-size: 16px;
+  font-weight: 800;
   color: ${colors.textPrimary};
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  line-height: 1.1;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 2.6em;
   padding-right: 52px;
 `
 
@@ -93,9 +90,9 @@ const Meta = styled.div<{ $positive?: boolean }>`
 const Spark = styled.svg`
   position: absolute;
   right: 10px;
-  bottom: 14px;
+  bottom: 12px;
   width: 48px;
-  height: 16px;
+  height: 18px;
   pointer-events: none;
 `
 

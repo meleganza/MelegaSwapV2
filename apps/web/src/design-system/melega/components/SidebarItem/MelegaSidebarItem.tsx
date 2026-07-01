@@ -18,9 +18,9 @@ const ItemBase = styled.a<{
 }>`
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   height: 28px;
-  padding: 0 6px 0 6px;
+  padding: 0 12px;
   border-radius: 8px;
   border: 1px solid transparent;
   text-decoration: none;
@@ -28,7 +28,7 @@ const ItemBase = styled.a<{
   font-size: 13px;
   font-weight: 500;
   color: ${({ $active }) => ($active ? colors.gold : '#B5B5B5')};
-  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.216)' : 'transparent')};
+  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.12)' : 'transparent')};
   position: relative;
   cursor: pointer;
   transition:
@@ -53,7 +53,7 @@ const ItemBase = styled.a<{
     `}
 
   &:hover {
-    background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.216)' : 'rgba(255,255,255,0.045)')};
+    background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.045)')};
     color: ${({ $active }) => ($active ? colors.gold : colors.textPrimary)};
     border-color: rgba(212, 175, 55, 0.35);
   }
@@ -70,8 +70,8 @@ const ItemBase = styled.a<{
   ${({ $disabled }) => $disabled && 'opacity: 0.45; pointer-events: none;'}
 
   svg {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
     stroke-width: 1.7;
   }

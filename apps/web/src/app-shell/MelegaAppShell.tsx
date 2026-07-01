@@ -27,25 +27,25 @@ import MelegaLanguageControl from './MelegaLanguageControl'
 import SidebarExpandableSection from './SidebarExpandableSection'
 import useAppShellData from './hooks/useAppShellData'
 
-const Root = styled.div`
-  min-height: 100vh;
-  background: #050505;
-  color: ${colors.textPrimary};
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-`
-
 const DesktopMain = styled.main`
   margin-left: 0;
   padding: 70px 14px calc(96px + env(safe-area-inset-bottom, 0px));
-  background: #050505;
+  background: #0a0a0a;
   min-height: 100vh;
   box-sizing: border-box;
 
   @media (min-width: 768px) {
     margin-left: ${MELEGA_SIDEBAR_WIDTH};
-    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + 20px) 24px 24px;
+    padding: 80px 24px 24px;
     max-width: none;
   }
+`
+
+const Root = styled.div`
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: ${colors.textPrimary};
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `
 
 const Content = styled.div`

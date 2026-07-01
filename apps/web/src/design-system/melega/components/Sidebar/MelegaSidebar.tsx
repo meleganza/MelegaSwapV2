@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { colors } from '../../tokens'
 
 const ASIDE_WIDTH = '228px'
-const SIDEBAR_BG = '#030303'
+const SIDEBAR_BG = '#050505'
 
 const Aside = styled.aside`
   display: none;

@@ -6,16 +6,16 @@ import { media } from '../../theme'
 export interface MelegaSwapPanelShellProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   subtitle?: string
-  headerMeta?: React.ReactNode
+  pairIndicator?: React.ReactNode
   toolbar?: React.ReactNode
   children: React.ReactNode
 }
 
 const Shell = styled.div`
+  position: relative;
   background: linear-gradient(180deg, #141414 0%, #101010 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  padding: 0 16px 12px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -34,27 +34,27 @@ const Shell = styled.div`
 
   ${media.mobile} {
     border-radius: 20px;
-    min-height: 500px;
+    min-height: 420px;
     max-height: none;
     height: auto;
   }
 `
 
 const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  position: relative;
   flex-shrink: 0;
   height: 58px;
   min-height: 58px;
-  gap: 10px;
+  padding: 18px 18px 0;
+  box-sizing: border-box;
 `
 
 const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
   min-width: 0;
+  max-width: calc(100% - 200px);
 `
 
 const Title = styled.h1`
@@ -67,32 +67,38 @@ const Title = styled.h1`
 `
 
 const Subtitle = styled.p`
-  margin: 0;
+  margin: 6px 0 0;
   font-size: 13px;
   font-weight: 500;
   color: #b6b6b6;
   line-height: 1.2;
 `
 
-const HeaderRight = styled.div`
+const PairSlot = styled.div`
+  position: absolute;
+  top: 30px;
+  right: 104px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+`
+
+const Toolbar = styled.div`
+  position: absolute;
+  top: 18px;
+  right: 18px;
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
-  margin-left: auto;
 `
 
 const Divider = styled.div`
   height: 1px;
-  background: rgba(255, 255, 255, 0.05);
-  margin: 0 0 12px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 14px 18px 0;
   flex-shrink: 0;
-`
-
-const Toolbar = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
 `
 
 export const SwapIconButton = styled.button`
@@ -100,7 +106,7 @@ export const SwapIconButton = styled.button`
   height: 40px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  background: #121212;
   color: ${colors.textSecondary};
   cursor: pointer;
   display: flex;
@@ -127,6 +133,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding: 16px 18px 18px;
 
   .home-trade-swap {
     flex: 1;
@@ -134,17 +141,19 @@ const Body = styled.div`
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
+    gap: 10px;
   }
 
   ${media.mobile} {
     overflow: visible;
+    padding-bottom: 18px;
   }
 `
 
 export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
   title = 'Swap',
   subtitle = 'Trade instantly on Melega DEX',
-  headerMeta,
+  pairIndicator,
   toolbar,
   children,
   ...rest
@@ -155,10 +164,8 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
         <Title>{title}</Title>
         <Subtitle>{subtitle}</Subtitle>
       </TitleBlock>
-      <HeaderRight>
-        {headerMeta}
-        {toolbar && <Toolbar>{toolbar}</Toolbar>}
-      </HeaderRight>
+      {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
+      {toolbar && <Toolbar>{toolbar}</Toolbar>}
     </Header>
     <Divider />
     <Body>{children}</Body>

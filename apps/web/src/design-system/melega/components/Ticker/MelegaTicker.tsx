@@ -77,12 +77,13 @@ const Track = styled.div<{ $paused?: boolean }>`
 const TrendingAnchor = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   padding-left: 16px;
   font-family: ${typography.fontFamily.body};
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 800;
-  color: #d4af37;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f4c542;
   flex-shrink: 0;
 `
 
@@ -98,8 +99,8 @@ const Item = styled.a`
 
 const ItemIcon = styled.span`
   display: inline-flex;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -113,18 +114,21 @@ const ItemIcon = styled.span`
 `
 
 const Primary = styled.span`
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 13px;
   color: #ffffff;
 `
 
 const Secondary = styled.span`
   font-weight: 400;
+  font-size: 13px;
   color: #a8a8a8;
 `
 
 const Accent = styled.span`
-  font-weight: 600;
-  color: ${colors.green};
+  font-weight: 400;
+  font-size: 13px;
+  color: #00e676;
 `
 
 const Dot = styled.span`
@@ -186,10 +190,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         onPointerCancel={handlePointerUp}
       >
         <Track $paused={paused}>
-          <TrendingAnchor aria-hidden>
-            <span>⚡</span>
-            {label}
-          </TrendingAnchor>
+          <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
           <Dot aria-hidden />
           {scrollItems.map((item, i) => (
             <React.Fragment key={`${item.id}-${i}`}>

@@ -21,11 +21,11 @@ const Tabs = styled.div`
 `
 
 const Tab = styled.button<{ $active?: boolean }>`
-  height: 28px;
+  height: 30px;
   padding: 0 12px;
   border-radius: 8px;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(212,175,55,0.45)' : 'rgba(255,255,255,0.08)')};
-  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.1)' : 'transparent')};
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(212,175,55,0.30)' : 'rgba(255,255,255,0.08)')};
+  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.13)' : 'transparent')};
   color: ${({ $active }) => ($active ? colors.gold : colors.textSecondary)};
   font-size: 12px;
   font-weight: 700;
@@ -52,7 +52,7 @@ const Row = styled.div`
 `
 
 const Pair = styled.span`
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: ${colors.textPrimary};
   white-space: nowrap;
@@ -64,7 +64,7 @@ const AprWrap = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: ${colors.green};
   text-align: right;
@@ -110,7 +110,7 @@ export const EarnOpportunities: React.FC<{
   return (
     <MelegaSectionCard
       title="Earn Opportunities"
-      minHeight="180px"
+      minHeight="260px"
       action={<SectionLink href="/farms">View Earn →</SectionLink>}
     >
       <Tabs>

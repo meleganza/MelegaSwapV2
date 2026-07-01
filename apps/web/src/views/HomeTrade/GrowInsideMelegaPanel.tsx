@@ -57,11 +57,13 @@ const GROW_ITEMS = [
 ] as const
 
 const Shell = styled.section`
-  background: #0a0a0a;
+  background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 18px;
-  padding: 20px 22px 22px;
+  border-radius: 20px;
+  padding: 24px;
   box-sizing: border-box;
+  max-height: 180px;
+  overflow: hidden;
 `
 
 const Header = styled.div`
@@ -78,7 +80,7 @@ const TitleBlock = styled.div`
 const Title = styled.h2`
   margin: 0;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1.1;
 `
@@ -87,7 +89,7 @@ const Subtitle = styled.p`
   margin: 6px 0 0;
   font-size: 14px;
   font-weight: 400;
-  color: #a8a8a8;
+  color: #b3b3b3;
   line-height: 1.35;
 `
 
@@ -106,7 +108,7 @@ const ExploreLink = styled(Link)`
 
 const CardTrack = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 14px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -130,10 +132,10 @@ const EcoCard = styled(Link)`
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.02);
+  background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 14px;
+  padding: 14px;
   box-sizing: border-box;
   height: 74px;
   transition:

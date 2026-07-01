@@ -1,8 +1,8 @@
 /** Melega DEX design system — color tokens (Home V2 cockpit). */
 export const colors = {
-  background: '#050505',
-  canvas: '#050505',
-  surface1: '#111111',
+  background: '#0A0A0A',
+  canvas: '#0A0A0A',
+  surface1: '#101010',
   surface2: '#171717',
   surface3: '#1C1C1C',
   gold: '#D4AF37',
@@ -14,7 +14,7 @@ export const colors = {
   textPrimary: '#FFFFFF',
   textSecondary: '#B3B3B3',
   textMuted: '#707070',
-  green: '#22C55E',
+  green: '#00E676',
   red: '#EF4444',
 } as const
 

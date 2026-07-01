@@ -4,9 +4,9 @@ import { breakpoints } from '../theme'
 
 describe('Melega design system tokens (DS-001)', () => {
   it('exposes canonical color palette', () => {
-    expect(melegaTokens.colors.canvas).toBe('#050505')
+    expect(melegaTokens.colors.canvas).toBe('#0A0A0A')
     expect(melegaTokens.colors.gold).toBe('#D4AF37')
-    expect(melegaTokens.colors.green).toBe('#22C55E')
+    expect(melegaTokens.colors.green).toBe('#00E676')
   })
 
   it('uses Inter for body typography', () => {

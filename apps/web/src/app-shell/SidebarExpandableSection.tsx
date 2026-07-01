@@ -9,15 +9,14 @@ const MoreButton = styled.button<{ $open?: boolean }>`
   display: flex;
   align-items: center;
   width: 100%;
-  height: 28px;
-  padding: 0 10px 0 30px;
+  height: 26px;
+  padding: 0 12px 0 30px;
   border: none;
   background: transparent;
-  color: #707070;
+  color: rgba(255, 255, 255, 0.45);
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
   transition: color 150ms ease;
@@ -29,17 +28,17 @@ const MoreButton = styled.button<{ $open?: boolean }>`
 
 const Chevron = styled.span<{ $open?: boolean }>`
   margin-left: auto;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1;
   color: #5f5f5f;
   transform: rotate(${({ $open }) => ($open ? '90deg' : '0deg')});
-  transition: transform 220ms ease;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 `
 
 const Expandable = styled.div<{ $open?: boolean }>`
   display: grid;
   grid-template-rows: ${({ $open }) => ($open ? '1fr' : '0fr')};
-  transition: grid-template-rows 220ms ease;
+  transition: grid-template-rows 220ms cubic-bezier(0.22, 1, 0.36, 1);
 `
 
 const ExpandInner = styled.div<{ $open?: boolean }>`
@@ -50,8 +49,8 @@ const ExpandInner = styled.div<{ $open?: boolean }>`
   opacity: ${({ $open }) => ($open ? 1 : 0)};
   transform: translateY(${({ $open }) => ($open ? '0' : '8px')});
   transition:
-    opacity 220ms ease,
-    transform 220ms ease;
+    opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 `
 
 export interface SidebarExpandableSectionProps {

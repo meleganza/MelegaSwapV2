@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
 import useMarketPulseData from './useMarketPulseData'
+import FearGreedGauge from './FearGreedGauge'
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -9,55 +10,67 @@ const fadeIn = keyframes`
 `
 
 const Shell = styled.section`
-  background: #080808;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 18px 20px 16px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 22px;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-height: 260px;
+
+  @media (min-width: 768px) {
+    height: 260px;
+    max-height: 260px;
+  }
 `
 
 const Header = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   color: ${colors.textPrimary};
   line-height: 1.2;
-  letter-spacing: -0.01em;
 `
 
 const Subtitle = styled.p`
-  margin: 3px 0 0;
-  font-size: 12px;
-  color: #707070;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #9e9e9e;
   line-height: 1.35;
+`
+
+const Body = styled.div`
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 4px 18px;
+  gap: 2px 14px;
+  align-content: start;
 `
 
 const Cell = styled.div`
   min-width: 0;
-  min-height: 64px;
+  min-height: 52px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  padding-bottom: 4px;
-
-  &:nth-last-child(-n + 2) {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
 `
 
 const CellLabel = styled.div`
@@ -66,15 +79,15 @@ const CellLabel = styled.div`
   gap: 6px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #5f5f5f;
+  color: #707070;
   line-height: 1.2;
 `
 
 const StatusDot = styled.span<{ $tone?: 'gold' | 'green' | 'neutral' }>`
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
   background: ${({ $tone }) =>
@@ -96,7 +109,7 @@ const CellValue = styled.div`
 const CellMeta = styled.div`
   margin-top: 1px;
   font-size: 11px;
-  color: #8a8a8a;
+  color: #9e9e9e;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -104,15 +117,13 @@ const CellMeta = styled.div`
 `
 
 const Networks = styled.div`
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #5f5f5f;
-  line-height: 1.35;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+  color: #8a8a8a;
+  line-height: 1.4;
+  flex-shrink: 0;
 `
 
 const NetworkGold = styled.span`
@@ -121,12 +132,14 @@ const NetworkGold = styled.span`
 `
 
 const NetworkNeutral = styled.span`
-  color: #5f5f5f;
-  font-weight: 600;
+  color: #707070;
+  font-weight: 500;
 `
 
 export const MarketPulsePanel: React.FC = () => {
-  const { cells } = useMarketPulseData()
+  const { cells, fearGreed } = useMarketPulseData()
+
+  const displayCells = useMemo(() => cells.filter((c) => c.id !== 'fng'), [cells])
 
   return (
     <Shell data-market-pulse-panel>
@@ -134,21 +147,27 @@ export const MarketPulsePanel: React.FC = () => {
         <Title>Market Pulse</Title>
         <Subtitle>Live market and chain signals.</Subtitle>
       </Header>
-      <Grid>
-        {cells.map((cell) => (
-          <Cell key={cell.id}>
-            <CellLabel>
-              <StatusDot $tone={cell.status} aria-hidden />
-              {cell.label}
-            </CellLabel>
-            <CellValue key={cell.value ?? 'indexing'}>{cell.value ?? 'Indexing'}</CellValue>
-            {cell.meta && <CellMeta>{cell.meta}</CellMeta>}
-          </Cell>
-        ))}
-      </Grid>
+      <Body>
+        <FearGreedGauge value={fearGreed?.value} classification={fearGreed?.classification} />
+        <Grid>
+          {displayCells.map((cell) => (
+            <Cell key={cell.id}>
+              <CellLabel>
+                <StatusDot $tone={cell.status} aria-hidden />
+                {cell.label}
+              </CellLabel>
+              <CellValue key={cell.value ?? 'indexing'}>{cell.value ?? 'Indexing'}</CellValue>
+              {cell.meta && <CellMeta>{cell.meta}</CellMeta>}
+            </Cell>
+          ))}
+        </Grid>
+      </Body>
       <Networks>
         <NetworkGold>BNB</NetworkGold>
         <NetworkNeutral> · Polygon · Ethereum · Base</NetworkNeutral>
+        <div style={{ marginTop: 4, fontSize: 11, color: '#8a8a8a' }}>
+          BNB active now. Other networks indexed when liquidity is available.
+        </div>
       </Networks>
     </Shell>
   )

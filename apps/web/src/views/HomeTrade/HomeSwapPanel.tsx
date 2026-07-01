@@ -30,25 +30,12 @@ const RefreshIcon = () => (
   </svg>
 )
 
-const PairCompact = styled.span`
+const PairLine = styled.span`
   font-size: 12px;
   font-weight: 600;
-  color: #707070;
+  color: #8a8a8a;
   line-height: 1.2;
   white-space: nowrap;
-  margin-right: 2px;
-`
-
-const LiveBadge = styled.span<{ $live?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: ${({ $live }) => ($live ? '#8a8a8a' : '#5f5f5f')};
-  margin-right: 4px;
 `
 
 const LiveDot = styled.span<{ $live?: boolean }>`
@@ -57,6 +44,12 @@ const LiveDot = styled.span<{ $live?: boolean }>`
   border-radius: 50%;
   background: ${({ $live }) => ($live ? colors.green : '#5f5f5f')};
   flex-shrink: 0;
+`
+
+const LiveText = styled.span<{ $live?: boolean }>`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ $live }) => ($live ? '#8a8a8a' : '#5f5f5f')};
 `
 
 const EXECUTION_ROWS = [
@@ -85,16 +78,15 @@ const HomeSwapInner: React.FC = () => {
 
   const showExecutionFallback = !account || !typedValue
 
-  const headerMeta = useMemo(
+  const pairIndicator = useMemo(
     () => (
       <>
-        <PairCompact>
+        <PairLine>
           {inputSymbol} / {outputSymbol}
-        </PairCompact>
-        <LiveBadge $live={Boolean(account)}>
-          <LiveDot $live={Boolean(account)} aria-hidden />
-          Live
-        </LiveBadge>
+        </PairLine>
+        <span style={{ color: '#5f5f5f', fontSize: 12 }}>•</span>
+        <LiveDot $live={Boolean(account)} aria-hidden />
+        <LiveText $live={Boolean(account)}>Live</LiveText>
       </>
     ),
     [account, inputSymbol, outputSymbol],
@@ -125,7 +117,7 @@ const HomeSwapInner: React.FC = () => {
 
   return (
     <MelegaSwapPanelShell
-      headerMeta={headerMeta}
+      pairIndicator={pairIndicator}
       toolbar={
         <>
           <SwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>

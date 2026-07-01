@@ -23,9 +23,9 @@ const Card = styled.div`
   min-height: 150px;
   max-height: 150px;
   padding: 18px 22px;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), #111111 42%, #080808 100%);
-  border: 1px solid rgba(212, 175, 55, 0.42);
-  border-radius: 18px;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.14) 0%, #101010 45%, #0b0b0b 100%);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 20px;
   box-shadow: none;
   box-sizing: border-box;
 
@@ -72,7 +72,7 @@ const Title = styled.h3`
 const Desc = styled.p`
   margin: 0;
   font-size: 15px;
-  color: #c8c8c8;
+  color: #b3b3b3;
   line-height: 1.45;
   max-width: 520px;
 
