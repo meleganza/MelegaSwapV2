@@ -15,6 +15,7 @@ import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
+import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
@@ -42,13 +43,49 @@ const Panel = styled.div`
   contain: layout paint;
 `
 
-const ToolbarRow = styled.div`
+const CockpitHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+`
+
+const TitleBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+`
+
+const Title = styled.h2`
+  margin: 0;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+`
+
+const Subtitle = styled.p`
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #a8a8a8;
+`
+
+const Toolbar = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 8px;
-  min-height: 34px;
-  margin-bottom: 12px;
+  flex-shrink: 0;
+  padding-top: 4px;
+`
+
+const Divider = styled.div`
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 10px 0 12px;
   flex-shrink: 0;
 `
 
@@ -64,7 +101,7 @@ const IconBtn = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: color 150ms ease, border-color 150ms ease, transform 120ms ease;
+  transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
 
   &:hover {
     color: #ffffff;
@@ -168,14 +205,22 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   return (
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit">
-        <ToolbarRow>
-          <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-            <SettingsIcon />
-          </IconBtn>
-          <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
-            <RefreshIcon />
-          </IconBtn>
-        </ToolbarRow>
+        <TradeMarcoIconPatch />
+        <CockpitHeader data-trade-cockpit-header>
+          <TitleBlock>
+            <Title>Swap</Title>
+            <Subtitle>Trade instantly on Melega DEX</Subtitle>
+          </TitleBlock>
+          <Toolbar>
+            <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+              <SettingsIcon />
+            </IconBtn>
+            <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+              <RefreshIcon />
+            </IconBtn>
+          </Toolbar>
+        </CockpitHeader>
+        <Divider />
         <TradeSmartRouteBox />
         <SwapFormWrap
           ref={swapBodyRef}

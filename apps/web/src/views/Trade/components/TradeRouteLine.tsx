@@ -17,18 +17,16 @@ const Title = styled.div`
 
 const Track = styled.div`
   display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: nowrap;
-  overflow: hidden;
+  align-items: flex-start;
+  justify-content: center;
 `
 
-const Step = styled.div`
+const NodeCol = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  min-width: 0;
+  width: 22px;
   flex-shrink: 0;
 `
 
@@ -44,23 +42,30 @@ const Icon = styled.span`
   font-size: 9px;
   font-weight: 800;
   color: ${tradeColors.goldBright};
+  flex-shrink: 0;
 `
 
 const Label = styled.span`
   font-size: 9px;
   color: ${tradeColors.muted};
   white-space: nowrap;
-  max-width: 56px;
+  max-width: 72px;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+  line-height: 1.2;
 `
 
-const Arrow = styled.span`
+const ArrowSlot = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 22px;
+  flex-shrink: 0;
   color: ${tradeColors.gold};
   font-size: 12px;
   line-height: 1;
-  flex-shrink: 0;
 `
 
 const STEPS = ['BNB Chain', 'PancakeSwap', 'Bridge', 'Melega DEX']
@@ -71,11 +76,11 @@ export const TradeRouteLine: React.FC = () => (
     <Track>
       {STEPS.map((step, i) => (
         <React.Fragment key={step}>
-          <Step>
-            <Icon>{step.slice(0, 1)}</Icon>
+          <NodeCol>
+            <Icon aria-hidden>{step.slice(0, 1)}</Icon>
             <Label>{step}</Label>
-          </Step>
-          {i < STEPS.length - 1 && <Arrow>→</Arrow>}
+          </NodeCol>
+          {i < STEPS.length - 1 && <ArrowSlot aria-hidden>→</ArrowSlot>}
         </React.Fragment>
       ))}
     </Track>

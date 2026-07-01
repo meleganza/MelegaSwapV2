@@ -1,28 +1,17 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import dynamic from 'next/dynamic'
-import { tradeColors, tradeLayout, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
+import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { tradeColors, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { getTimeWindowChange } from 'views/Swap/components/Chart/utils'
 import type { TradePairStat } from '../useTradeTerminalData'
-
-const SwapLineChart = dynamic(() => import('views/Swap/components/Chart/SwapLineChart'), { ssr: false })
+import TradeChartPanel from './TradeChartPanel'
 
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
-`
-
-const gridShimmer = keyframes`
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.65; }
-`
-
-const loadingPulse = keyframes`
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
 `
 
 const Shell = styled.div`
@@ -107,7 +96,7 @@ const HeaderRight = styled.div`
 `
 
 const Change = styled.div<{ $positive?: boolean }>`
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
   white-space: nowrap;
@@ -163,80 +152,6 @@ const TfButton = styled.button<{ $active?: boolean }>`
   &:active {
     transform: scale(0.99);
   }
-`
-
-const ChartArea = styled.div`
-  height: ${tradeLayout.chartAreaHeight};
-  min-height: ${tradeLayout.chartAreaHeight};
-  margin: 0 18px;
-  box-sizing: border-box;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  background: #080808;
-`
-
-const EmptyChart = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  height: 100%;
-  color: ${tradeColors.muted};
-  font-size: 14px;
-  position: relative;
-  overflow: hidden;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: ${gridShimmer} 8s ease-in-out infinite;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 18px;
-    right: 18px;
-    top: 38%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 18px;
-    right: 18px;
-    top: 62%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.06);
-  }
-`
-
-const LoadingBar = styled.div`
-  width: 120px;
-  height: 2px;
-  border-radius: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, ${tradeColors.goldBright}, transparent);
-    animation: ${loadingPulse} 2.4s ease-in-out infinite;
-  }
-`
-
-const ChartLabel = styled.span`
-  position: relative;
-  z-index: 1;
 `
 
 const StatsRow = styled.div`
@@ -331,7 +246,6 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   const lastPrice = pairPrices[pairPrices.length - 1]?.value
   const displayPrice = priceUsd ?? lastPrice
   const displayChange = change24h ?? Number(chartChange.changePercentage)
-  const hasChart = pairPrices.length > 1 && pairPrices.some((p) => p.value > 0)
 
   const priceText =
     displayPrice != null && Number.isFinite(displayPrice)
@@ -344,7 +258,11 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
     <Shell data-trade-price-chart>
       <Header>
         <PairBlock>
-          <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
+          {inputSymbol === 'MARCO' ? (
+            <MelegaLogoSvg size={34} />
+          ) : (
+            <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
+          )}
           <div>
             <PairName>
               {inputSymbol} / {outputSymbol}
@@ -391,22 +309,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           </TfButton>
         ))}
       </Timeframes>
-      <ChartArea data-trade-chart-area>
-        {hasChart ? (
-          <SwapLineChart
-            data={pairPrices}
-            isChangePositive={chartChange.changeValue >= 0}
-            timeWindow={timeframeToEnum(timeframe)}
-            isChartExpanded={false}
-            style={{ height: '100%', width: '100%' }}
-          />
-        ) : (
-          <EmptyChart>
-            <LoadingBar aria-hidden />
-            <ChartLabel>Indexing chart data...</ChartLabel>
-          </EmptyChart>
-        )}
-      </ChartArea>
+      <TradeChartPanel inputSymbol={inputSymbol} outputSymbol={outputSymbol} />
       <StatsRow data-trade-pair-stats>
         {stats.map((stat) => (
           <StatCard key={stat.id}>

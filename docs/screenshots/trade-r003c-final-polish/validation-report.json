@@ -1,0 +1,31 @@
+{
+  "task": "R003-C TRADE TERMINAL FINAL POLISH",
+  "branch": "design-system-foundation",
+  "validation": {
+    "yarn_build": "pass",
+    "design_system_tests": "pass (8/8)",
+    "homepage_live_tests": "pass (2/2)"
+  },
+  "screenshots": [
+    "home-desktop-1440x900.png",
+    "home-mobile-390x844.png",
+    "home-mobile-428x926.png",
+    "trade-desktop-1440x900.png",
+    "trade-desktop-1728x1117.png",
+    "trade-mobile-390x844.png",
+    "trade-mobile-428x926.png"
+  ],
+  "acceptance": {
+    "home_cockpit_vertically_centered": true,
+    "swap_title_restored": true,
+    "single_toolbar": true,
+    "correct_marco_svg": true,
+    "route_aligned": true,
+    "smart_route_compact": true,
+    "from_to_aligned": true,
+    "chart_not_empty": true,
+    "recent_swaps_typography": true,
+    "right_column_aligned": true,
+    "header_baseline_aligned": true
+  }
+}

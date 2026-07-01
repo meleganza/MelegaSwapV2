@@ -60,6 +60,14 @@ const Header = styled.div<{ $size?: 'home' | 'trade' }>`
   box-sizing: border-box;
 `
 
+const InnerStack = styled.div<{ $size?: 'home' | 'trade' }>`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  transform: ${({ $size }) => ($size === 'home' ? 'translateY(10px)' : 'none')};
+`
+
 const TitleBlock = styled.div<{ $size?: 'home' | 'trade' }>`
   display: flex;
   flex-direction: column;
@@ -188,16 +196,18 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
     $size={size}
     {...rest}
   >
-    <Header $size={size}>
-      <TitleBlock $size={size}>
-        <Title>{title}</Title>
-        <Subtitle>{subtitle}</Subtitle>
-      </TitleBlock>
-      {pairIndicator && <PairSlot $size={size}>{pairIndicator}</PairSlot>}
-      {toolbar && <Toolbar $size={size}>{toolbar}</Toolbar>}
-    </Header>
-    <Divider $size={size} />
-    <Body $size={size}>{children}</Body>
+    <InnerStack $size={size}>
+      <Header $size={size}>
+        <TitleBlock $size={size}>
+          <Title>{title}</Title>
+          <Subtitle>{subtitle}</Subtitle>
+        </TitleBlock>
+        {pairIndicator && <PairSlot $size={size}>{pairIndicator}</PairSlot>}
+        {toolbar && <Toolbar $size={size}>{toolbar}</Toolbar>}
+      </Header>
+      <Divider $size={size} />
+      <Body $size={size}>{children}</Body>
+    </InnerStack>
   </Shell>
 )
 

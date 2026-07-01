@@ -38,8 +38,8 @@ export type TradeTimeframeId = (typeof TRADE_TIMEFRAMES)[number]['id']
 
 export const tradeColors = {
   canvas: '#050505',
-  panel: '#0B0B0B',
-  panelGradient: 'linear-gradient(180deg, #101010 0%, #0B0B0B 100%)',
+  panel: '#111111',
+  panelGradient: 'linear-gradient(180deg, #141414 0%, #101010 100%)',
   gold: '#D4AF37',
   goldBright: '#F4C542',
   green: '#00E676',

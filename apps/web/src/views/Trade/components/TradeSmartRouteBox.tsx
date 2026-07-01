@@ -3,10 +3,10 @@ import styled from 'styled-components'
 import { tradeColors } from '../tradeTokens'
 
 const Box = styled.div`
-  height: 82px;
-  min-height: 82px;
+  height: 68px;
+  min-height: 68px;
   margin-bottom: 12px;
-  padding: 12px 14px;
+  padding: 12px;
   box-sizing: border-box;
   background: #171512;
   border: 1px solid rgba(212, 175, 55, 0.18);
@@ -14,7 +14,7 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 `
 
 const TitleRow = styled.div`
@@ -22,6 +22,7 @@ const TitleRow = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-height: 22px;
 `
 
 const Title = styled.span`
@@ -40,7 +41,7 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 26px;
+  min-height: 22px;
   font-size: 12px;
 `
 

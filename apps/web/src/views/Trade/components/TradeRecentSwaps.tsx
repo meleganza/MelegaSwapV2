@@ -13,7 +13,7 @@ const Shell = styled.div`
   background: ${tradeColors.panel};
   border: 1px solid ${tradeColors.border};
   border-radius: 18px;
-  padding: 14px;
+  padding: 16px;
   box-sizing: border-box;
   min-height: ${tradeLayout.recentSwapsHeight};
   overflow: hidden;
@@ -24,12 +24,12 @@ const HeadRow = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 `
 
 const Title = styled.h3`
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: #ffffff;
 `
@@ -66,11 +66,11 @@ const Table = styled.div`
 const Head = styled.div`
   display: grid;
   grid-template-columns: 70px 130px 70px 110px 130px 1fr;
-  gap: 8px;
-  padding-bottom: 6px;
+  gap: 10px;
+  padding-bottom: 8px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${tradeColors.muted};
 `
@@ -78,9 +78,9 @@ const Head = styled.div`
 const Row = styled.div`
   display: grid;
   grid-template-columns: 70px 130px 70px 110px 130px 1fr;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
-  min-height: 34px;
+  min-height: 36px;
   font-size: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   animation: ${slideIn} 220ms ease;
@@ -105,9 +105,23 @@ const Direction = styled.span<{ $buy?: boolean }>`
   color: ${({ $buy }) => ($buy ? tradeColors.green : tradeColors.red)};
 `
 
-const RouteCell = styled(Cell)`
+const RouteCell = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: ${tradeColors.muted};
   font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const RouteDot = styled.span`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: ${tradeColors.gold};
+  flex-shrink: 0;
 `
 
 type DisplaySwapRow = {
@@ -173,7 +187,10 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows }) => {
             <Direction $buy={row.direction === 'buy'}>{row.direction}</Direction>
             <Cell>{row.amount}</Cell>
             <Cell>{row.received ?? '—'}</Cell>
-            <RouteCell>{row.route ?? '—'}</RouteCell>
+            <RouteCell title={row.route}>
+              <RouteDot aria-hidden />
+              {row.route ?? '—'}
+            </RouteCell>
           </Row>
         ))}
       </Table>

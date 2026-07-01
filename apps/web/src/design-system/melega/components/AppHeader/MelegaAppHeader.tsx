@@ -39,9 +39,11 @@ const Right = styled.div`
   flex-shrink: 0;
 
   & > * {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    align-self: center;
     flex-shrink: 0;
+    height: 40px;
   }
 `
 

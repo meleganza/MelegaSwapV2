@@ -8,6 +8,7 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     min-width: 138px !important;
     width: 138px !important;
     height: 40px !important;
+    line-height: 40px !important;
     padding: 0 16px !important;
     border-radius: 12px !important;
     background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
@@ -24,8 +25,8 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   }
 
   [data-melega-app-shell] .melega-shell-connect:hover {
-    filter: brightness(1.08) !important;
-    transform: translateY(-1px) !important;
+    filter: brightness(1.05) !important;
+    transform: none !important;
   }
 
   [data-melega-app-shell] .melega-shell-network {

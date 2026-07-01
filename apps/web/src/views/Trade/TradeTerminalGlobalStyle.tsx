@@ -85,9 +85,18 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap [class*='CurrencyInputHeader'],
+  .trade-terminal-swap [class*='HeaderWrapper'],
+  .trade-terminal-swap > [class*='HeaderWrapper'],
   .trade-terminal-swap [class*='Info'],
   .trade-terminal-swap [class*='SwapUI'] {
     display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   /* Hide duplicate uikit slippage row — execution details panel is the single source */
@@ -132,7 +141,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-terminal-swap #swap-currency-input::before,
   .trade-terminal-swap #swap-currency-output::before {
     position: absolute;
-    top: 14px;
+    top: 18px;
     left: 14px;
     font-size: 10px;
     font-weight: 600;
@@ -145,7 +154,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'],
   .trade-terminal-swap #swap-currency-output [class*='InputContainer'] {
-    padding-top: 18px !important;
+    padding-top: 26px !important;
   }
 
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'] [class*='Text'],
@@ -300,7 +309,14 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: transform 120ms ease !important;
+    transition: transform 150ms ease, filter 150ms ease !important;
+  }
+
+  .trade-terminal-swap .pancake-button--primary:hover,
+  .trade-terminal-swap button[id='swap-button']:hover,
+  .trade-terminal-swap [class*='CommitButton'] button:hover,
+  .trade-terminal-swap #swap-page > div:last-child button:hover {
+    filter: brightness(1.05) !important;
   }
 
   .trade-terminal-swap .pancake-button--primary:active,
