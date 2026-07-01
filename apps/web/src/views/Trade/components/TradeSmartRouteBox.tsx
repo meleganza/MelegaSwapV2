@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { tradeColors } from '../tradeTokens'
 
 const Box = styled.div`
-  height: 56px;
-  min-height: 56px;
+  height: 54px;
+  min-height: 54px;
   margin-bottom: 10px;
   padding: 10px;
   box-sizing: border-box;
@@ -14,7 +14,7 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2px;
+  gap: 0;
 `
 
 const TitleRow = styled.div`
@@ -22,7 +22,8 @@ const TitleRow = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 18px;
+  min-height: 20px;
+  height: 20px;
 `
 
 const Title = styled.span`
@@ -43,7 +44,8 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 18px;
+  min-height: 20px;
+  height: 20px;
   font-size: 12px;
   line-height: 1.2;
 `

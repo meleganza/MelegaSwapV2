@@ -59,9 +59,9 @@ const TitleBlock = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 38px;
+  font-size: 36px;
   font-weight: 800;
-  line-height: 1;
+  line-height: 38px;
   color: #ffffff;
 `
 
@@ -69,7 +69,7 @@ const Subtitle = styled.p`
   margin: 0;
   font-size: 13px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 16px;
   color: #a8a8a8;
 `
 

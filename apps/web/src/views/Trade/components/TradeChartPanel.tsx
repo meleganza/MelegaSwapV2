@@ -13,13 +13,13 @@ const gridShimmer = keyframes`
 `
 
 const candlePulse = keyframes`
-  0%, 100% { opacity: 0.12; transform: scaleY(0.88); }
-  50% { opacity: 0.28; transform: scaleY(1); }
+  0%, 100% { opacity: 0.22; transform: scaleY(0.88); }
+  50% { opacity: 0.42; transform: scaleY(1); }
 `
 
 const volumePulse = keyframes`
-  0%, 100% { opacity: 0.08; }
-  50% { opacity: 0.12; }
+  0%, 100% { opacity: 0.14; }
+  50% { opacity: 0.24; }
 `
 
 const loadingPulse = keyframes`
@@ -108,7 +108,7 @@ const Wick = styled.span<{ $h: number; $up?: boolean }>`
   width: 1px;
   height: ${({ $h }) => $h}px;
   background: ${({ $up }) => ($up ? tradeColors.green : tradeColors.red)};
-  opacity: 0.12;
+  opacity: 0.28;
 `
 
 const Body = styled.span<{ $h: number; $up?: boolean }>`
@@ -116,7 +116,7 @@ const Body = styled.span<{ $h: number; $up?: boolean }>`
   height: ${({ $h }) => $h}px;
   border-radius: 1px;
   background: ${({ $up }) => ($up ? tradeColors.green : tradeColors.red)};
-  opacity: 0.12;
+  opacity: 0.28;
 `
 
 const VolumeRow = styled.div`
@@ -135,7 +135,7 @@ const VolumeBar = styled.span<{ $h: number; $delay: number }>`
   width: 10px;
   height: ${({ $h }) => $h}px;
   border-radius: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.2);
   animation: ${volumePulse} 2.8s ease-in-out infinite;
   animation-delay: ${({ $delay }) => $delay}ms;
 `

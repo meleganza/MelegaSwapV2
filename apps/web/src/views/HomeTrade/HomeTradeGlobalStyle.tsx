@@ -236,9 +236,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap.is-disconnected [class*='ConnectWallet'],
   .home-trade-swap.is-disconnected a[class*='ConnectWallet'],
   .home-trade-swap.is-disconnected button[class*='pancake-button']:only-child {
-    height: 44px !important;
-    min-height: 44px !important;
-    max-height: 44px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
     width: 100% !important;
     border-radius: 12px !important;
     margin-top: 8px !important;
@@ -300,9 +300,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     border: 1px solid rgba(255, 255, 255, 0.05) !important;
     border-radius: 14px !important;
     padding: 0 !important;
-    height: 72px !important;
-    min-height: 72px !important;
-    max-height: 72px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
     overflow: hidden !important;
     margin-top: 10px !important;
     box-sizing: border-box !important;
@@ -447,29 +447,6 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   @media (min-width: 768px) {
-    [data-swap-size='home'] > div:first-child {
-      padding-top: 12px !important;
-      max-height: 58px !important;
-      overflow: hidden !important;
-      flex-shrink: 0 !important;
-    }
-
-    [data-swap-size='home'] h1 {
-      font-size: 24px !important;
-      line-height: 28px !important;
-      margin: 0 0 2px !important;
-    }
-
-    [data-swap-size='home'] p {
-      font-size: 11px !important;
-      line-height: 14px !important;
-      margin: 2px 0 0 !important;
-    }
-
-    [data-swap-size='home'] > div:nth-child(2) {
-      margin-top: 6px !important;
-    }
-
     .home-trade-swap [class*='AutoColumn'] {
       gap: 0 !important;
     }
@@ -554,9 +531,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
     .home-trade-swap #swap-page > div:last-child,
     .home-trade-swap [class*='Box'][class*='mt'] {
-      height: 44px !important;
-      min-height: 44px !important;
-      max-height: 44px !important;
+      height: 46px !important;
+      min-height: 46px !important;
+      max-height: 46px !important;
       margin-top: 8px !important;
       margin-bottom: 0 !important;
       padding: 0 !important;
@@ -575,9 +552,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     .home-trade-swap [class*='CommitButton'] button,
     .home-trade-swap #swap-page > div:last-child button,
     .home-trade-swap [class*='Box'] button:not([class*='OpenCurrencySelectButton']) {
-      height: 44px !important;
-      min-height: 44px !important;
-      max-height: 44px !important;
+      height: 46px !important;
+      min-height: 46px !important;
+      max-height: 46px !important;
       margin-top: 8px !important;
       margin-bottom: 0 !important;
       flex-shrink: 0 !important;
@@ -590,9 +567,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     .home-trade-swap.is-disconnected [class*='ConnectWallet'],
     .home-trade-swap.is-disconnected a[class*='ConnectWallet'],
     .home-trade-swap.is-disconnected button[class*='pancake-button']:only-child {
-      height: 44px !important;
-      min-height: 44px !important;
-      max-height: 44px !important;
+      height: 46px !important;
+      min-height: 46px !important;
+      max-height: 46px !important;
       flex-shrink: 0 !important;
     }
   }
@@ -644,10 +621,10 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
   .home-trade-swap [class*='ArrowWrapper'],
   .home-trade-swap [class*='SwitchButton'] button {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
     border-radius: 50% !important;
     background: #121212 !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -699,9 +676,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='CommitButton'] button,
   .home-trade-swap #swap-page > div:last-child button,
   .home-trade-swap [class*='Box'] button:not([class*='OpenCurrencySelectButton']) {
-    height: 44px !important;
-    min-height: 44px !important;
-    max-height: 44px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
     width: 100% !important;
     border-radius: 12px !important;
     background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
@@ -742,9 +719,9 @@ const HomeTradeGlobalStyle = createGlobalStyle`
 
     .home-trade-swap #swap-currency-input,
     .home-trade-swap #swap-currency-output {
-      height: 72px !important;
-      min-height: 72px !important;
-      max-height: 72px !important;
+      height: 64px !important;
+      min-height: 64px !important;
+      max-height: 64px !important;
     }
 
     .home-trade-swap .token-amount-input,

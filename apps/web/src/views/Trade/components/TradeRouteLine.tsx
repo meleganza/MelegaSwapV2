@@ -20,7 +20,7 @@ const Title = styled.div`
 
 const Track = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: center;
 `
 

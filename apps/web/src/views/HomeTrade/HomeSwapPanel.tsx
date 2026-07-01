@@ -14,7 +14,8 @@ import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
-import { MelegaSwapPanelShell, SwapIconButton, colors } from 'design-system/melega'
+import { colors } from 'design-system/melega'
+import { HomeSwapIconButton, HomeSwapPanelShell } from './HomeSwapPanelShell'
 
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -121,16 +122,16 @@ const HomeSwapInner: React.FC = () => {
   }, [])
 
   return (
-    <MelegaSwapPanelShell
+    <HomeSwapPanelShell
       pairIndicator={pairIndicator}
       toolbar={
         <>
-          <SwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+          <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
             <SettingsIcon />
-          </SwapIconButton>
-          <SwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
+          </HomeSwapIconButton>
+          <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
             <RefreshIcon />
-          </SwapIconButton>
+          </HomeSwapIconButton>
         </>
       }
     >
@@ -157,7 +158,7 @@ const HomeSwapInner: React.FC = () => {
           </div>
         )}
       </div>
-    </MelegaSwapPanelShell>
+    </HomeSwapPanelShell>
   )
 }
 

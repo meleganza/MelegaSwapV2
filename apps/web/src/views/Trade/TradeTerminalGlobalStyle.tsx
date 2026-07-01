@@ -155,20 +155,21 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-terminal-swap #swap-currency-input::before,
   .trade-terminal-swap #swap-currency-output::before {
     position: absolute;
-    top: 18px;
+    top: 24px;
     left: 14px;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #8a8a8a;
+    line-height: 10px;
     z-index: 2;
     pointer-events: none;
   }
 
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'],
   .trade-terminal-swap #swap-currency-output [class*='InputContainer'] {
-    padding-top: 26px !important;
+    padding-top: 42px !important;
   }
 
   .trade-terminal-swap #swap-currency-input [class*='InputContainer'] [class*='Text'],
