@@ -24,6 +24,8 @@ const Shell = styled.div`
   gap: 16px;
   width: 100%;
   max-width: 560px;
+  overflow: hidden;
+  box-sizing: border-box;
 `
 
 const CockpitCard = styled.div`
@@ -36,6 +38,19 @@ const CockpitCard = styled.div`
   border-radius: 20px;
   box-sizing: border-box;
   min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+  contain: layout paint;
+`
+
+const SwapFormWrap = styled.div`
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: layout paint;
+  box-sizing: border-box;
 `
 
 const Toolbar = styled.div`
@@ -160,13 +175,14 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode, onModeChange }
             </InsightRow>
           </SmartInsights>
         )}
-        <div
+        <SwapFormWrap
           ref={swapBodyRef}
           className={`trade-terminal-swap${account ? '' : ' is-disconnected'}${mode === 'smartswap' ? ' is-smartswap' : ''}`}
           data-wallet-connected={account ? 'true' : 'false'}
+          data-trade-swap-form
         >
           <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-        </div>
+        </SwapFormWrap>
       </CockpitCard>
     </Shell>
   )

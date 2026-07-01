@@ -37,19 +37,25 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     min-height: 0 !important;
     max-height: none !important;
     height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
     background: transparent !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     margin-top: 0 !important;
     display: contents !important;
+    box-sizing: border-box !important;
   }
 
   .home-trade-swap [class*='AutoColumn'] {
-    gap: 4px !important;
+    gap: 0 !important;
     flex: 0 0 auto !important;
     min-height: 0 !important;
     order: 1;
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip {
@@ -60,19 +66,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     height: 24px;
     max-height: 24px;
     margin-top: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     padding: 0;
     flex-shrink: 0;
     font-size: 14px;
     line-height: 20px;
     pointer-events: auto;
     position: static;
-  }
-
-  .home-trade-swap-slippage-label-row {
-    display: inline-flex;
-    align-items: center;
-    gap: 0;
   }
 
   .home-trade-swap.is-disconnected .home-trade-swap-execution-label {
@@ -109,8 +109,17 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     height: 14px;
   }
 
-  .home-trade-swap.is-disconnected [class*='AdvancedDetailsFooter'] {
+  /* Kill duplicate slippage from SmartSwapForm footer — single custom row only */
+  .home-trade-swap [class*='AdvancedDetailsFooter'],
+  .home-trade-swap [class*='AdvancedSwapDetails'] {
     display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   .home-trade-swap.show-execution-fallback .home-trade-swap-slippage-strip {
@@ -121,35 +130,23 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     display: none;
   }
 
-  .home-trade-swap [class*='AdvancedDetailsFooter'] {
-    order: 2;
-    display: grid !important;
-    grid-template-rows: repeat(4, 10px);
-    row-gap: 2px;
-    height: 44px !important;
-    max-height: 44px !important;
-    opacity: 1 !important;
-    padding: 0 !important;
-    margin: 6px 0 12px !important;
-    width: 100% !important;
-    max-width: none !important;
-    overflow: hidden !important;
-    position: static !important;
-  }
-
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:has([class*='Slippage']),
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:last-child {
-    display: none !important;
+  .home-trade-swap-slippage-label-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
   }
 
   .home-trade-swap #swap-page > div:last-child,
   .home-trade-swap [class*='Box'][class*='mt'] {
     order: 3;
-    margin-top: 0 !important;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     position: relative !important;
     width: 100% !important;
+    max-width: 100% !important;
     z-index: 1 !important;
+    box-sizing: border-box !important;
   }
 
   .home-trade-swap [class*='ConnectWallet'],
@@ -220,6 +217,11 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 44px !important;
     width: 100% !important;
     border-radius: 12px !important;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
     color: #050505 !important;
     font-weight: 700 !important;
@@ -421,8 +423,31 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   @media (min-width: 768px) {
+    [data-swap-size='home'] > div:first-child {
+      padding-top: 12px !important;
+      max-height: 58px !important;
+      overflow: hidden !important;
+      flex-shrink: 0 !important;
+    }
+
+    [data-swap-size='home'] h1 {
+      font-size: 24px !important;
+      line-height: 28px !important;
+      margin: 0 0 2px !important;
+    }
+
+    [data-swap-size='home'] p {
+      font-size: 11px !important;
+      line-height: 14px !important;
+      margin: 2px 0 0 !important;
+    }
+
+    [data-swap-size='home'] > div:nth-child(2) {
+      margin-top: 6px !important;
+    }
+
     .home-trade-swap [class*='AutoColumn'] {
-      gap: 4px !important;
+      gap: 0 !important;
     }
 
     .home-trade-swap #swap-currency-input,
@@ -431,10 +456,11 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       min-height: 64px !important;
       max-height: 64px !important;
       padding: 0 !important;
+      margin-top: 0 !important;
     }
 
     .home-trade-swap #swap-currency-input {
-      margin-top: 10px !important;
+      margin-top: 0 !important;
     }
 
     .home-trade-swap #swap-currency-output {
@@ -486,13 +512,30 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 28px !important;
       min-width: 28px !important;
       min-height: 28px !important;
-      margin: 6px auto !important;
+      margin: 0 auto !important;
     }
 
     .home-trade-swap [class*='AutoRow'][style*='padding'] {
       min-height: 28px !important;
       max-height: 28px !important;
-      margin: 6px auto !important;
+      height: 28px !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+    }
+
+    .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip {
+      margin-top: 8px !important;
+      margin-bottom: 4px !important;
+    }
+
+    .home-trade-swap #swap-page > div:last-child,
+    .home-trade-swap [class*='Box'][class*='mt'] {
+      height: 44px !important;
+      min-height: 44px !important;
+      max-height: 44px !important;
+      margin-top: 8px !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
     }
 
     .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'],
@@ -511,15 +554,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 44px !important;
       min-height: 44px !important;
       max-height: 44px !important;
-      margin-top: 0 !important;
-      margin-bottom: 16px !important;
+      margin-top: 8px !important;
+      margin-bottom: 0 !important;
       flex-shrink: 0 !important;
-    }
-
-    .home-trade-swap #swap-page > div:last-child,
-    .home-trade-swap [class*='Box'][class*='mt'] {
-      margin-bottom: 16px !important;
-      padding-bottom: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
     }
 
     .home-trade-swap.is-disconnected [class*='ConnectWallet'],
@@ -618,59 +659,6 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     display: none !important;
   }
 
-  .home-trade-swap.show-execution-fallback [class*='AdvancedDetailsFooter'] {
-    display: none !important;
-  }
-
-  .home-trade-swap.is-disconnected [class*='AdvancedDetailsFooter'] {
-    display: none !important;
-  }
-
-  .home-trade-swap [class*='AdvancedDetailsFooter'] > div,
-  .home-trade-swap [class*='AdvancedSwapDetails'] {
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-  }
-
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'],
-  .home-trade-swap [class*='AdvancedSwapDetails'] > div > div {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    align-items: center !important;
-    min-height: 18px !important;
-    height: 18px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 12px !important;
-    line-height: 18px !important;
-  }
-
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='Text'],
-  .home-trade-swap [class*='AdvancedSwapDetails'] span {
-    font-size: 12px !important;
-    color: #8a8a8a !important;
-    font-weight: 500 !important;
-    white-space: nowrap !important;
-  }
-
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='Text']:last-child,
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'] > :last-child {
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    text-align: right !important;
-    max-width: 160px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    animation: ${swapValueFade} 180ms ease;
-  }
-
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:has([class*='Slippage']) > :last-child,
-  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:last-child > :last-child {
-    color: #f4c542 !important;
-  }
-
   .home-trade-swap [class*='PercentInput'],
   .home-trade-swap [class*='CommonBases'],
   .home-trade-swap [class*='Message'] {
@@ -680,10 +668,6 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap [class*='Checkbox'],
   .home-trade-swap label:has([class*='Checkbox']) {
     display: none !important;
-  }
-
-  .home-trade-swap [class*='Box'][class*='mt'] {
-    margin-top: 6px !important;
   }
 
   .home-trade-swap .pancake-button--primary,
@@ -702,10 +686,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     font-size: 16px !important;
     border: none !important;
     white-space: nowrap !important;
-    margin-top: 0 !important;
-    margin-bottom: 16px !important;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
     box-shadow: none !important;
     flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     transition: filter 150ms ease, transform 150ms ease !important;
   }
 

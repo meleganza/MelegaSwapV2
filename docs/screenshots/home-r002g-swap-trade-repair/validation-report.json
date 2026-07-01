@@ -1,0 +1,60 @@
+{
+  "home-desktop-1440x900.png": {
+    "customSlippageVisible": true,
+    "footerSlippageVisible": false,
+    "exactlyOneSlippage": true,
+    "connectBtnVisible": true,
+    "connectBtnHeight": 44,
+    "panelHeight": 404,
+    "btnClipPx": -18,
+    "liveToGearGap": 52
+  },
+  "home-desktop-1728x1117.png": {
+    "customSlippageVisible": true,
+    "footerSlippageVisible": false,
+    "exactlyOneSlippage": true,
+    "connectBtnVisible": true,
+    "connectBtnHeight": 44,
+    "panelHeight": 404,
+    "btnClipPx": -18,
+    "liveToGearGap": 52
+  },
+  "home-mobile-390x844.png": {
+    "customSlippageVisible": true,
+    "footerSlippageVisible": false,
+    "exactlyOneSlippage": true,
+    "connectBtnVisible": true,
+    "connectBtnHeight": 44,
+    "panelHeight": 515,
+    "btnClipPx": -19,
+    "liveToGearGap": 52
+  },
+  "trade-desktop-1440x900.png": {
+    "cockpitWidth": 560,
+    "formOverflowsCockpit": false,
+    "overlapsChart": false,
+    "gapCockpitToRight": 20,
+    "fromInside": true,
+    "toInside": true,
+    "tradeBtnVisible": true,
+    "tradeBtnText": "Connect Wallet"
+  },
+  "trade-desktop-1728x1117.png": {
+    "cockpitWidth": 560,
+    "formOverflowsCockpit": false,
+    "overlapsChart": false,
+    "gapCockpitToRight": 20,
+    "fromInside": true,
+    "toInside": true,
+    "tradeBtnVisible": true,
+    "tradeBtnText": "Connect Wallet"
+  },
+  "trade-mobile-390x844.png": {
+    "cockpitWidth": 302,
+    "formOverflowsCockpit": false,
+    "fromInside": true,
+    "toInside": true,
+    "tradeBtnVisible": true,
+    "tradeBtnText": "Connect Wallet"
+  }
+}

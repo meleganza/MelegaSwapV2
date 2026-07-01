@@ -9,9 +9,11 @@ export interface MelegaSwapPanelShellProps extends React.HTMLAttributes<HTMLDivE
   pairIndicator?: React.ReactNode
   toolbar?: React.ReactNode
   children: React.ReactNode
+  /** home = 470×404 cockpit; trade = 560px contained width */
+  size?: 'home' | 'trade'
 }
 
-const Shell = styled.div`
+const Shell = styled.div<{ $size?: 'home' | 'trade' }>`
   position: relative;
   background: linear-gradient(180deg, #141414 0%, #101010 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -19,18 +21,28 @@ const Shell = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: hidden;
   box-sizing: border-box;
   box-shadow: none;
 
   @media (min-width: 768px) {
-    width: 470px;
-    max-width: 470px;
-    min-height: 392px;
-    max-height: 404px;
-    height: auto;
+    width: ${({ $size }) => ($size === 'trade' ? '560px' : '470px')};
+    max-width: ${({ $size }) => ($size === 'trade' ? '560px' : '470px')};
     flex-shrink: 0;
     overflow: hidden;
+
+    ${({ $size }) =>
+      $size === 'trade'
+        ? `
+      height: auto;
+      min-height: 0;
+      max-height: none;
+    `
+        : `
+      height: 404px;
+      min-height: 404px;
+      max-height: 404px;
+    `}
   }
 
   ${media.mobile} {
@@ -77,13 +89,14 @@ const Subtitle = styled.p`
 const PairSlot = styled.div`
   position: absolute;
   top: 30px;
-  right: 138px;
+  right: 156px;
   display: flex;
   align-items: center;
   gap: 6px;
-  max-width: 130px;
+  max-width: 150px;
   font-size: 12px;
   font-weight: 600;
+  line-height: 16px;
   color: #8a8a8a;
   white-space: nowrap;
   overflow: hidden;
@@ -100,10 +113,10 @@ const Toolbar = styled.div`
   gap: 8px;
 `
 
-const Divider = styled.div`
+const Divider = styled.div<{ $size?: 'home' | 'trade' }>`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: 10px 20px 0;
+  margin: ${({ $size }) => ($size === 'home' ? '6px' : '10px')} 20px 0;
   flex-shrink: 0;
 `
 
@@ -146,8 +159,8 @@ const Body = styled.div`
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: visible;
-    gap: 8px;
+    overflow: hidden;
+    gap: 0;
   }
 
   ${media.mobile} {
@@ -162,9 +175,10 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
   pairIndicator,
   toolbar,
   children,
+  size = 'home',
   ...rest
 }) => (
-  <Shell data-home-swap-panel data-swap-cockpit {...rest}>
+  <Shell data-home-swap-panel data-swap-cockpit data-swap-size={size} $size={size} {...rest}>
     <Header>
       <TitleBlock>
         <Title>{title}</Title>
@@ -173,7 +187,7 @@ export const MelegaSwapPanelShell: React.FC<MelegaSwapPanelShellProps> = ({
       {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
       {toolbar && <Toolbar>{toolbar}</Toolbar>}
     </Header>
-    <Divider />
+    <Divider $size={size} />
     <Body>{children}</Body>
   </Shell>
 )
