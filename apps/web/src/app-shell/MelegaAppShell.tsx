@@ -119,8 +119,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
     [],
   )
 
-  const activeBottomId =
-    shellBottomNavItems.find((item) => item.match(pathname))?.id ?? 'trade'
+  const activeBottomId = shellBottomNavItems.find((item) => item.match(pathname))?.id
 
   return (
     <Root data-melega-app-shell>

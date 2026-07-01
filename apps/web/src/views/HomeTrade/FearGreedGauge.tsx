@@ -28,8 +28,8 @@ const Needle = styled.g<{ $angle: number; $animate: boolean }>`
 
 const Value = styled.div`
   margin-top: 8px;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 30px;
+  font-weight: 800;
   color: #ffffff;
   line-height: 1;
 `
@@ -45,7 +45,7 @@ const Label = styled.div`
 
 const Caption = styled.div`
   margin-top: 4px;
-  font-size: 11px;
+  font-size: 12px;
   color: #b3b3b3;
   text-align: center;
   line-height: 1.3;

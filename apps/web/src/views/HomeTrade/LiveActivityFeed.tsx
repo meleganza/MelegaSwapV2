@@ -153,7 +153,7 @@ const eventIcon = (type: string) => {
 }
 
 /**
- * Live Activity must be wired to MelegaSwap router/subgraph indexed swaps, listings, pools and farms.
+ * TODO: Live Activity should be wired to MelegaSwap router/subgraph indexed events.
  */
 export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) => {
   const displayRows = rows.slice(0, 5)
@@ -162,7 +162,7 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
     <Shell data-live-activity-feed $hasRows={displayRows.length > 0}>
       <Header>
         <Title>Live Activity</Title>
-        <SectionLink href="/swap">View all →</SectionLink>
+        <SectionLink href="/trade">View all →</SectionLink>
       </Header>
       <Body>
         {displayRows.length === 0 ? (

@@ -26,8 +26,9 @@ const Shell = styled.div`
   @media (min-width: 768px) {
     width: 470px;
     max-width: 470px;
-    height: 392px;
-    max-height: 392px;
+    min-height: 392px;
+    max-height: 404px;
+    height: auto;
     flex-shrink: 0;
     overflow: hidden;
   }
@@ -43,7 +44,7 @@ const Shell = styled.div`
 const Header = styled.div`
   position: relative;
   flex-shrink: 0;
-  padding: 8px 18px 0;
+  padding: 18px 20px 0;
   box-sizing: border-box;
 `
 
@@ -66,7 +67,7 @@ const Title = styled.h1`
 `
 
 const Subtitle = styled.p`
-  margin: 0;
+  margin: 4px 0 0;
   font-size: 13px;
   font-weight: 500;
   color: #b6b6b6;
@@ -75,19 +76,25 @@ const Subtitle = styled.p`
 
 const PairSlot = styled.div`
   position: absolute;
-  top: 22px;
-  right: 124px;
+  top: 30px;
+  right: 138px;
   display: flex;
   align-items: center;
   gap: 6px;
+  max-width: 130px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a8a8a;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
 `
 
 const Toolbar = styled.div`
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 18px;
+  right: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -96,7 +103,7 @@ const Toolbar = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: 0 18px;
+  margin: 10px 20px 0;
   flex-shrink: 0;
 `
 
@@ -132,7 +139,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 6px 16px 16px;
+  padding: 0 20px 18px;
 
   .home-trade-swap {
     flex: 1;

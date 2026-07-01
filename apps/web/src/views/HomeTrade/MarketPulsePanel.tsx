@@ -98,7 +98,7 @@ const DataColumn = styled.div`
 const ColumnTitle = styled.div`
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #8a8a8a;
   line-height: 1.2;
@@ -134,7 +134,7 @@ const MetricValue = styled.div`
 const MetricChange = styled.div<{ $positive?: boolean }>`
   font-size: 12px;
   font-weight: 600;
-  color: ${({ $positive }) => ($positive ? colors.green : '#ef4444')};
+  color: ${({ $positive }) => ($positive ? '#00e676' : '#ff4d4d')};
   line-height: 1.2;
 `
 

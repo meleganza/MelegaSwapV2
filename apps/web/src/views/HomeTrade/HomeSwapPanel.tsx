@@ -38,6 +38,13 @@ const RefreshIcon = () => (
   </svg>
 )
 
+const PencilIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+  </svg>
+)
+
 const PairLine = styled.span`
   font-size: 12px;
   font-weight: 600;
@@ -66,7 +73,6 @@ const HomeSwapInner: React.FC = () => {
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
-    typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = useSwapState()
@@ -76,8 +82,6 @@ const HomeSwapInner: React.FC = () => {
 
   const inputSymbol = inputCurrency?.symbol ?? '—'
   const outputSymbol = outputCurrency?.symbol ?? '—'
-
-  const showExecutionFallback = !account || !typedValue
 
   const pairIndicator = useMemo(
     () => (
@@ -132,13 +136,23 @@ const HomeSwapInner: React.FC = () => {
     >
       <div
         ref={swapBodyRef}
-        className={`home-trade-swap${account ? '' : ' is-disconnected'}${showExecutionFallback ? ' show-execution-fallback' : ''}`}
+        className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
         data-wallet-connected={account ? 'true' : 'false'}
       >
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-        {showExecutionFallback && (
-          <div className="home-trade-swap-slippage-strip" aria-hidden>
-            <span className="home-trade-swap-execution-label">Slippage tolerance</span>
+        {!account && (
+          <div className="home-trade-swap-slippage-strip" role="group" aria-label="Slippage tolerance">
+            <span className="home-trade-swap-slippage-label-row">
+              <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
+              <button
+                type="button"
+                className="home-trade-swap-slippage-edit"
+                aria-label="Edit slippage tolerance"
+                onClick={onPresentSettingsModal}
+              >
+                <PencilIcon />
+              </button>
+            </span>
             <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
           </div>
         )}

@@ -23,10 +23,21 @@ export const COLLECTIBLES_ROUTE = '/collectibles'
 
 export const shellNavigation: ShellNavSection[] = [
   {
+    label: 'HOME',
+    visibleCount: 1,
+    items: [{ id: 'overview', label: 'Overview', href: '/', icon: 'swap', match: (p) => p === '/' }],
+  },
+  {
     label: 'TRADE',
     visibleCount: 2,
     items: [
-      { id: 'swap', label: 'Swap', href: '/', icon: 'swap', match: (p) => p === '/' },
+      {
+        id: 'trade',
+        label: 'Trade',
+        href: '/trade',
+        icon: 'swap',
+        match: (p) => p === '/trade' || p.startsWith('/trade/'),
+      },
       {
         id: 'liquidity',
         label: 'Liquidity',
@@ -48,9 +59,9 @@ export const shellNavigation: ShellNavSection[] = [
     label: 'FIND',
     visibleCount: 4,
     items: [
-      { id: 'trending', label: 'Trending', href: '/projects', icon: 'star', match: (p) => p === '/projects' },
+      { id: 'trending', label: 'Trending', href: '/trending', icon: 'star', match: (p) => p === '/trending' },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
-      { id: 'radar', label: 'Radar', href: '/query', icon: 'brain', match: (p) => p.startsWith('/query') },
+      { id: 'radar', label: 'Radar', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
       {
         id: 'collectibles',
         label: 'Collectibles',
@@ -107,16 +118,25 @@ export const shellNavigation: ShellNavSection[] = [
     label: 'PORTFOLIO',
     visibleCount: 1,
     items: [
-      { id: 'overview', label: 'Overview', href: '/workspace', icon: 'wallet', match: (p) => p === '/workspace' },
-      { id: 'positions', label: 'Positions', href: '/liquidity', icon: 'wallet', match: (p) => p === '/liquidity' },
-      { id: 'rewards', label: 'Rewards', href: '/farms', icon: 'wallet', match: () => false },
-      { id: 'activity', label: 'Activity', href: '/workspace', icon: 'wallet', match: () => false },
+      {
+        id: 'overview',
+        label: 'Overview',
+        href: '/portfolio',
+        icon: 'wallet',
+        match: (p) => p === '/portfolio' || p.startsWith('/portfolio/'),
+      },
     ],
   },
 ]
 
 export const shellBottomNavItems = [
-  { id: 'trade', label: 'Trade', href: '/', icon: 'swap' as MelegaNavIcon, match: (p: string) => p === '/' },
+  {
+    id: 'trade',
+    label: 'Trade',
+    href: '/trade',
+    icon: 'swap' as MelegaNavIcon,
+    match: (p: string) => p === '/trade' || p.startsWith('/trade/'),
+  },
   {
     id: 'earn',
     label: 'Earn',
@@ -129,8 +149,26 @@ export const shellBottomNavItems = [
     label: 'Find',
     href: '/projects',
     icon: 'star' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/projects') || p.startsWith('/assets') || p.startsWith('/query') || p.startsWith('/collectibles'),
+    match: (p: string) =>
+      p.startsWith('/projects') ||
+      p.startsWith('/trending') ||
+      p.startsWith('/assets') ||
+      p.startsWith('/radar') ||
+      p.startsWith('/query') ||
+      p.startsWith('/collectibles'),
   },
-  { id: 'build', label: 'Build', href: '/launch', icon: 'rocket' as MelegaNavIcon, match: (p: string) => p.startsWith('/launch') || p.startsWith('/add') },
-  { id: 'portfolio', label: 'Portfolio', href: '/workspace', icon: 'wallet' as MelegaNavIcon, match: (p: string) => p.startsWith('/workspace') },
+  {
+    id: 'build',
+    label: 'Build',
+    href: '/launch',
+    icon: 'rocket' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/launch') || p.startsWith('/add'),
+  },
+  {
+    id: 'portfolio',
+    label: 'Portfolio',
+    href: '/portfolio',
+    icon: 'wallet' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/portfolio') || p.startsWith('/workspace'),
+  },
 ]

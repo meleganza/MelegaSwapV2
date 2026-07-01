@@ -52,19 +52,69 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     flex-direction: column !important;
   }
 
-  .home-trade-swap.show-execution-fallback .home-trade-swap-slippage-strip {
+  .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip {
     display: flex;
     align-items: center;
     justify-content: space-between;
     order: 2;
-    margin: 0;
+    height: 24px;
+    max-height: 24px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     padding: 0;
-    pointer-events: none;
-    height: 12px;
-    max-height: 12px;
     flex-shrink: 0;
-    font-size: 10px;
-    line-height: 12px;
+    font-size: 14px;
+    line-height: 20px;
+    pointer-events: auto;
+    position: static;
+  }
+
+  .home-trade-swap-slippage-label-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .home-trade-swap.is-disconnected .home-trade-swap-execution-label {
+    color: #b3b3b3;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+
+  .home-trade-swap.is-disconnected .home-trade-swap-execution-value.is-slippage {
+    color: #f4c542;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+
+  .home-trade-swap-slippage-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #f4c542;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .home-trade-swap-slippage-edit svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .home-trade-swap.is-disconnected [class*='AdvancedDetailsFooter'] {
+    display: none !important;
+  }
+
+  .home-trade-swap.show-execution-fallback .home-trade-swap-slippage-strip {
+    display: none;
   }
 
   .home-trade-swap.show-execution-fallback .home-trade-swap-execution-summary {
@@ -85,6 +135,11 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-width: none !important;
     overflow: hidden !important;
     position: static !important;
+  }
+
+  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:has([class*='Slippage']),
+  .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:last-child {
+    display: none !important;
   }
 
   .home-trade-swap #swap-page > div:last-child,
@@ -223,9 +278,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     min-height: 72px !important;
     max-height: 72px !important;
     overflow: hidden !important;
-    margin-top: 0 !important;
+    margin-top: 10px !important;
     box-sizing: border-box !important;
     box-shadow: none !important;
+  }
+
+  .home-trade-swap #swap-currency-input {
+    margin-top: 10px !important;
   }
 
   .home-trade-swap #swap-currency-input::before,
@@ -374,6 +433,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       padding: 0 !important;
     }
 
+    .home-trade-swap #swap-currency-input {
+      margin-top: 10px !important;
+    }
+
+    .home-trade-swap #swap-currency-output {
+      margin-top: 0 !important;
+    }
+
     .home-trade-swap #swap-currency-input::before,
     .home-trade-swap #swap-currency-output::before {
       top: 12px;
@@ -419,12 +486,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 28px !important;
       min-width: 28px !important;
       min-height: 28px !important;
+      margin: 6px auto !important;
     }
 
     .home-trade-swap [class*='AutoRow'][style*='padding'] {
       min-height: 28px !important;
       max-height: 28px !important;
-      margin: 0 auto !important;
+      margin: 6px auto !important;
     }
 
     .home-trade-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'],
@@ -444,13 +512,13 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       min-height: 44px !important;
       max-height: 44px !important;
       margin-top: 0 !important;
-      margin-bottom: 0 !important;
+      margin-bottom: 16px !important;
       flex-shrink: 0 !important;
     }
 
     .home-trade-swap #swap-page > div:last-child,
     .home-trade-swap [class*='Box'][class*='mt'] {
-      margin-bottom: 0 !important;
+      margin-bottom: 16px !important;
       padding-bottom: 0 !important;
     }
 
@@ -519,7 +587,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     background: #121212 !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 0 !important;
-    margin: -4px auto !important;
+    margin: 6px auto !important;
     color: ${colors.textPrimary} !important;
     z-index: 2 !important;
     transition: transform 200ms ease, border-color 150ms ease !important;
@@ -551,6 +619,10 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   }
 
   .home-trade-swap.show-execution-fallback [class*='AdvancedDetailsFooter'] {
+    display: none !important;
+  }
+
+  .home-trade-swap.is-disconnected [class*='AdvancedDetailsFooter'] {
     display: none !important;
   }
 
@@ -631,7 +703,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     border: none !important;
     white-space: nowrap !important;
     margin-top: 0 !important;
-    margin-bottom: 0 !important;
+    margin-bottom: 16px !important;
     box-shadow: none !important;
     flex-shrink: 0 !important;
     transition: filter 150ms ease, transform 150ms ease !important;
