@@ -3,14 +3,16 @@ import styled from 'styled-components'
 import { colors } from '../../tokens'
 
 const Cube = styled.div`
-  width: 92px;
-  height: 92px;
+  width: 78px;
+  height: 78px;
   position: relative;
-  transform: perspective(520px) rotateY(-18deg) rotateX(10deg);
+  transform: perspective(520px) rotateY(-18deg) rotateX(10deg) scale(0.86);
+  transform-origin: center center;
 
   @media (max-width: 767px) {
     width: 84px;
     height: 84px;
+    transform: perspective(520px) rotateY(-18deg) rotateX(10deg);
   }
 `
 

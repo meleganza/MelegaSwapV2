@@ -3,7 +3,7 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { colors } from 'design-system/melega'
 
-const ECOSYSTEM_ITEMS = [
+const GROW_ITEMS = [
   {
     id: 'labs',
     title: 'Labs',
@@ -54,18 +54,6 @@ const ECOSYSTEM_ITEMS = [
       </svg>
     ),
   },
-  {
-    id: 'insights',
-    title: 'Insights',
-    subtitle: 'Monitor ecosystem intelligence',
-    href: '/query',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-        <path d="M4 19h16M6 16l3-8 4 5 3-4 2 7" />
-        <circle cx="18" cy="6" r="2" />
-      </svg>
-    ),
-  },
 ] as const
 
 const Shell = styled.section`
@@ -89,7 +77,7 @@ const TitleBlock = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.1;
@@ -130,7 +118,7 @@ const CardTrack = styled.div`
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     overflow: visible;
   }
 `
@@ -160,11 +148,10 @@ const EcoCard = styled(Link)`
   }
 
   @media (max-width: 767px) {
-    width: 160px;
+    width: 210px;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    height: 92px;
   }
 `
 
@@ -206,16 +193,16 @@ const CardSubtitle = styled.span`
 `
 
 export const GrowInsideMelegaPanel: React.FC = () => (
-  <Shell data-grow-inside-melega="true">
+  <Shell data-grow-your-project="true">
     <Header>
       <TitleBlock>
-        <Title>Grow inside Melega</Title>
-        <Subtitle>Grow faster using the Melega ecosystem.</Subtitle>
+        <Title>Grow your project</Title>
+        <Subtitle>Use Melega&apos;s ecosystem to launch, promote, discover and expand.</Subtitle>
       </TitleBlock>
       <ExploreLink href="/projects">Explore ecosystem →</ExploreLink>
     </Header>
     <CardTrack>
-      {ECOSYSTEM_ITEMS.map((item) => (
+      {GROW_ITEMS.map((item) => (
         <EcoCard key={item.id} href={item.href}>
           <IconWrap>{item.icon}</IconWrap>
           <TextCol>

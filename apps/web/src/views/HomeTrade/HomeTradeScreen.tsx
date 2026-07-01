@@ -10,7 +10,7 @@ import ListProjectCta from './ListProjectCta'
 import EarnOpportunities from './EarnOpportunities'
 import LiveActivityFeed from './LiveActivityFeed'
 import GrowInsideMelegaPanel from './GrowInsideMelegaPanel'
-import EcosystemPanel from './EcosystemPanel'
+import MarketPulsePanel from './MarketPulsePanel'
 import HomeTradeFooter from './HomeTradeFooter'
 import useHomeTradeData from './useHomeTradeData'
 import { homeTradeLayout } from './homeTradeTokens'
@@ -20,6 +20,10 @@ const Root = styled.div`
   font-family: ${typography.fontFamily.body};
   font-size: ${typography.fontSize.base};
   line-height: ${typography.lineHeight.normal};
+
+  @media (max-width: 767px) {
+    padding: 0 14px;
+  }
 `
 
 const Content = styled.div`
@@ -28,6 +32,10 @@ const Content = styled.div`
   gap: ${homeTradeLayout.sectionGap};
   max-width: ${homeTradeLayout.contentMax};
   margin: 0 auto;
+
+  @media (max-width: 767px) {
+    gap: 12px;
+  }
 `
 
 const HeroRow = styled.div`
@@ -42,12 +50,12 @@ const HeroRow = styled.div`
   }
 `
 
-const LowerRow = styled.div`
+const LowerRow = styled.div<{ $hasEarn?: boolean }>`
   display: grid;
   gap: ${homeTradeLayout.columnGap};
 
   @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: ${({ $hasEarn }) => ($hasEarn ? '1fr 1fr' : '1fr')};
   }
 `
 
@@ -74,7 +82,7 @@ export const HomeTradeScreen: React.FC = () => {
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        {data.showRibbon && <TrendingRibbon items={data.ribbonItems} />}
+        <TrendingRibbon items={data.ribbonItems} />
         <HeroRow>
           <HomeSwapPanel />
           <MelegaCinematicPanel pulseRows={pulseRows.length ? pulseRows : undefined} />
@@ -82,11 +90,11 @@ export const HomeTradeScreen: React.FC = () => {
         {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
         <ListProjectCta />
         <GrowInsideMelegaPanel />
-        <LowerRow>
+        <LowerRow $hasEarn={data.showEarn}>
           {data.showEarn && (
             <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
           )}
-          <EcosystemPanel />
+          <MarketPulsePanel />
         </LowerRow>
         <LiveActivityFeed rows={data.activityRows} />
         <HomeTradeFooter />

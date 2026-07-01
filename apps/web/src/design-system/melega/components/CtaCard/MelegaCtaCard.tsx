@@ -17,28 +17,31 @@ export interface MelegaCtaCardProps {
 
 const Card = styled.div`
   display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 20px;
+  grid-template-columns: 86px 1fr;
+  gap: 18px;
   align-items: center;
-  min-height: 156px;
-  padding: 20px 22px;
+  min-height: 150px;
+  max-height: 150px;
+  padding: 18px 22px;
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), #111111 42%, #080808 100%);
   border: 1px solid rgba(212, 175, 55, 0.42);
   border-radius: 18px;
   box-shadow: none;
+  box-sizing: border-box;
 
   ${media.mobile} {
     grid-template-columns: 84px 1fr;
     gap: 14px;
     padding: 16px;
     min-height: auto;
+    max-height: none;
     border-radius: 18px;
   }
 `
 
 const Visual = styled.div`
-  width: 92px;
-  height: 92px;
+  width: 78px;
+  height: 78px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,9 +57,9 @@ const Body = styled.div`
 `
 
 const Title = styled.h3`
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-family: ${typography.fontFamily.body};
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 800;
   color: ${colors.textPrimary};
   line-height: 1.1;
@@ -81,8 +84,8 @@ const Desc = styled.p`
 const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 12px;
 
   ${media.mobile} {
     flex-direction: column;
@@ -95,8 +98,8 @@ const ActionLink = styled(Link)<{ $variant?: 'primary' | 'secondary' }>`
   justify-content: center;
   text-decoration: none;
   width: ${({ $variant }) => ($variant === 'secondary' ? '210px' : '170px')};
-  height: 44px;
-  min-height: 44px;
+  height: 42px;
+  min-height: 42px;
   border-radius: 12px;
   font-family: ${typography.fontFamily.body};
   font-size: 14px;

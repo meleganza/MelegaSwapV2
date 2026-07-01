@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { colors, typography, animation } from '../../tokens'
+import { colors, typography } from '../../tokens'
 import type { MelegaLayoutProps } from '../../primitives'
 import { layoutStyles } from '../../primitives'
 
@@ -30,12 +30,13 @@ const Strip = styled.div<{
 }>`
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 38px;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
   border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-  background: rgba(212, 175, 55, 0.03);
+  background: rgba(212, 175, 55, 0.035);
   overflow: hidden;
   box-shadow: none;
+  width: 100%;
 
   @media (min-width: 768px) {
     height: 44px;
@@ -44,33 +45,11 @@ const Strip = styled.div<{
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
-const Label = styled.div`
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding-left: 16px;
-  padding-right: 20px;
-  font-family: ${typography.fontFamily.body};
-  font-size: 13px;
-  font-weight: 500;
-  color: ${colors.gold};
-`
-
-const LabelIcon = styled.span`
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  line-height: 1;
-`
-
 const TrackWrap = styled.div`
   flex: 1;
   overflow: hidden;
   cursor: grab;
+  min-width: 0;
 
   &:active {
     cursor: grabbing;
@@ -80,15 +59,31 @@ const TrackWrap = styled.div`
 const Track = styled.div<{ $paused?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 36px;
   width: max-content;
   white-space: nowrap;
-  animation: ${melegaTicker} ${animation.ticker} linear infinite;
+  will-change: transform;
+  animation: ${melegaTicker} 34s linear infinite;
   animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
+
+  @media (min-width: 768px) {
+    animation-duration: 42s;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+`
+
+const TrendingAnchor = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 16px;
+  font-family: ${typography.fontFamily.body};
+  font-size: 14px;
+  font-weight: 800;
+  color: #d4af37;
+  flex-shrink: 0;
 `
 
 const Item = styled.a`
@@ -97,8 +92,8 @@ const Item = styled.a`
   gap: 8px;
   text-decoration: none;
   color: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  flex-shrink: 0;
 `
 
 const ItemIcon = styled.span`
@@ -118,17 +113,17 @@ const ItemIcon = styled.span`
 `
 
 const Primary = styled.span`
-  font-weight: 500;
-  color: ${colors.textPrimary};
+  font-weight: 600;
+  color: #ffffff;
 `
 
 const Secondary = styled.span`
-  font-weight: 500;
-  color: ${colors.textSecondary};
+  font-weight: 400;
+  color: #a8a8a8;
 `
 
 const Accent = styled.span`
-  font-weight: 500;
+  font-weight: 600;
   color: ${colors.green};
 `
 
@@ -138,6 +133,7 @@ const Dot = styled.span`
   border-radius: 50%;
   background: ${colors.gold};
   flex-shrink: 0;
+  margin: 0 28px;
 `
 
 export const MelegaTicker: React.FC<MelegaTickerProps> = ({
@@ -154,7 +150,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
 
   if (!items.length || disabled) return null
 
-  const loop = [...items, ...items]
+  const scrollItems = [...items, ...items]
   const paused = pausedProp ?? hoverPaused ?? dragPaused
 
   const handlePointerDown = () => {
@@ -173,18 +169,16 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     <Strip
       $padding={padding}
       $margin={margin}
+      data-melega-ticker
       onMouseEnter={() => setHoverPaused(true)}
       onMouseLeave={() => {
         setHoverPaused(false)
         setDragPaused(false)
       }}
-      onTouchStart={() => setHoverPaused(true)}
-      onTouchEnd={() => setHoverPaused(false)}
+      onTouchStart={() => setDragPaused(true)}
+      onTouchEnd={() => setDragPaused(false)}
+      onTouchCancel={() => setDragPaused(false)}
     >
-      <Label>
-        <LabelIcon aria-hidden>⚡</LabelIcon>
-        {label}
-      </Label>
       <TrackWrap
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
@@ -192,7 +186,12 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         onPointerCancel={handlePointerUp}
       >
         <Track $paused={paused}>
-          {loop.map((item, i) => (
+          <TrendingAnchor aria-hidden>
+            <span>⚡</span>
+            {label}
+          </TrendingAnchor>
+          <Dot aria-hidden />
+          {scrollItems.map((item, i) => (
             <React.Fragment key={`${item.id}-${i}`}>
               <Item href={item.href || '#'}>
                 {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
@@ -200,7 +199,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
                 {item.secondary && <Secondary>{item.secondary}</Secondary>}
                 {item.accent && <Accent>{item.accent}</Accent>}
               </Item>
-              {i < loop.length - 1 && <Dot aria-hidden />}
+              {i < scrollItems.length - 1 && <Dot aria-hidden />}
             </React.Fragment>
           ))}
         </Track>

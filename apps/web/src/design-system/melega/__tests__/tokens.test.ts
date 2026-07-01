@@ -26,6 +26,6 @@ describe('Melega design system tokens (DS-001)', () => {
 
   it('defines animation tokens only from spec', () => {
     expect(melegaTokens.animation.hover).toBe('150ms ease')
-    expect(melegaTokens.animation.ticker).toBe('45s linear')
+    expect(melegaTokens.animation.ticker).toBe('42s linear')
   })
 })
