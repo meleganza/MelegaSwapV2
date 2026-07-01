@@ -1,129 +1,195 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { LsPanel, LsPanelTitle, LsPrimaryBtn } from './liquidityStudioPrimitives'
 
-const Panel = styled.div`
+const shimmer = keyframes`
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+`
+
+const PairSelect = styled.button`
   width: 100%;
-  max-width: ${liquidityStudioLayout.leftWidth};
-  background: ${liquidityStudioColors.panelGradient};
-  border: 1px solid ${liquidityStudioColors.border};
-  border-radius: ${liquidityStudioLayout.panelRadius};
-  padding: ${liquidityStudioLayout.panelPadding};
-  box-sizing: border-box;
-`
-
-const Title = styled.h2`
-  margin: 0 0 14px;
-  font-size: 24px;
-  font-weight: 800;
-  line-height: 1.1;
-  color: ${liquidityStudioColors.text};
-`
-
-const PairSelect = styled.div`
   height: ${liquidityStudioLayout.builderPairHeight};
   min-height: ${liquidityStudioLayout.builderPairHeight};
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #171717;
+  border: 1px solid ${liquidityStudioColors.border};
+  background: ${liquidityStudioColors.surfaceSecondary};
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
+  padding: 0 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+`
+
+const PairText = styled.span`
   font-size: 16px;
   font-weight: 700;
   color: ${liquidityStudioColors.text};
-  margin-bottom: 12px;
+`
+
+const Chevron = styled.span`
+  display: inline-flex;
+  color: ${liquidityStudioColors.muted};
+  font-size: 16px;
+  line-height: 1;
 `
 
 const TokenRow = styled.div`
+  position: relative;
   height: ${liquidityStudioLayout.tokenRowHeight};
   min-height: ${liquidityStudioLayout.tokenRowHeight};
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: #171717;
+  border-radius: 12px;
+  border: 1px solid ${liquidityStudioColors.border};
+  background: ${liquidityStudioColors.surfaceSecondary};
   padding: 12px 14px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `
 
 const TokenLabel = styled.span`
+  display: block;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${liquidityStudioColors.muted};
+  line-height: 1;
+  margin-bottom: 8px;
 `
 
 const TokenValue = styled.span`
-  font-size: 28px;
+  display: block;
+  font-size: 34px;
   font-weight: 700;
   line-height: 1;
   color: ${liquidityStudioColors.text};
 `
 
-const RatioRow = styled.div`
+const TokenSelect = styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  min-width: 88px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid ${liquidityStudioColors.border};
+  background: #0f0f0f;
+  color: ${liquidityStudioColors.text};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+`
+
+const SwapMid = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 0 0 4px;
+  position: relative;
+  z-index: 2;
+`
+
+const SwapBtn = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: #121212;
+  color: ${liquidityStudioColors.goldBright};
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const RatioHead = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  margin: 2px 0 6px;
+  font-size: 11px;
   font-weight: 600;
   color: ${liquidityStudioColors.muted};
-  margin: 4px 0 6px;
 `
 
 const RatioBar = styled.div`
   height: 4px;
-  border-radius: 2px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 50%;
+    background: linear-gradient(90deg, ${liquidityStudioColors.goldBright}, ${liquidityStudioColors.gold});
+    border-radius: 999px;
+    animation: ${shimmer} 6s ease-in-out infinite;
+  }
 `
 
-const RatioFill = styled.div`
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, ${liquidityStudioColors.goldBright}, ${liquidityStudioColors.gold});
+const SlippageRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
 `
 
-const ConnectBtn = styled.button`
-  width: 100%;
-  height: ${liquidityStudioLayout.connectButtonHeight};
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%);
-  color: #050505;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
+const SlippageLabel = styled.span`
+  color: ${liquidityStudioColors.muted};
+`
+
+const SlippageValue = styled.span`
+  color: ${liquidityStudioColors.goldBright};
+  font-weight: 700;
 `
 
 export const LiquidityBuilderPanel: React.FC = () => (
-  <Panel data-ls-panel data-ls-builder>
-    <Title>Liquidity Builder</Title>
-    <PairSelect>BNB / MARCO</PairSelect>
+  <LsPanel data-ls-panel data-ls-builder $height={liquidityStudioLayout.positionPreviewHeight}>
+    <LsPanelTitle style={{ marginBottom: 10 }}>Liquidity Builder</LsPanelTitle>
+    <PairSelect type="button">
+      <PairText>BNB / MARCO</PairText>
+      <Chevron aria-hidden>▾</Chevron>
+    </PairSelect>
     <TokenRow>
       <TokenLabel>Token A</TokenLabel>
       <TokenValue>0.0</TokenValue>
+      <TokenSelect type="button">BNB</TokenSelect>
     </TokenRow>
+    <SwapMid>
+      <SwapBtn type="button" aria-label="Swap tokens">
+        ⇅
+      </SwapBtn>
+    </SwapMid>
     <TokenRow>
       <TokenLabel>Token B</TokenLabel>
       <TokenValue>0.0</TokenValue>
+      <TokenSelect type="button">MARCO</TokenSelect>
     </TokenRow>
-    <RatioRow>
+    <RatioHead>
       <span>Ratio</span>
       <span>50 / 50</span>
-    </RatioRow>
-    <RatioBar aria-hidden>
-      <RatioFill />
-    </RatioBar>
-    <ConnectBtn type="button" data-ls-primary-btn>
+    </RatioHead>
+    <RatioBar aria-hidden />
+    <SlippageRow>
+      <SlippageLabel>Slippage Tolerance</SlippageLabel>
+      <SlippageValue>0.5%</SlippageValue>
+    </SlippageRow>
+    <LsPrimaryBtn type="button" data-ls-primary-btn>
       Connect Wallet
-    </ConnectBtn>
-  </Panel>
+    </LsPrimaryBtn>
+  </LsPanel>
 )
 
 export default LiquidityBuilderPanel

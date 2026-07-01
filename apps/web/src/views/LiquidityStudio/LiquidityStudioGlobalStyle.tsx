@@ -2,13 +2,13 @@ import { createGlobalStyle, keyframes } from 'styled-components'
 import { liquidityStudioColors } from './liquidityStudioTokens'
 
 const barPulse = keyframes`
-  0%, 100% { opacity: 0.72; }
+  0%, 100% { opacity: 0.82; }
   50% { opacity: 1; }
 `
 
 const shimmer = keyframes`
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.65; }
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
 `
 
 const LiquidityStudioGlobalStyle = createGlobalStyle`
@@ -18,7 +18,7 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
   }
 
   [data-liquidity-studio-screen] [data-ls-panel] {
-    transition: transform 160ms ease, box-shadow 160ms ease;
+    transition: transform 150ms ease, box-shadow 150ms ease;
 
     &:hover {
       transform: translateY(-2px);
@@ -31,6 +31,7 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
 
     &:hover {
       filter: brightness(1.05);
+      transform: translateY(-2px);
     }
 
     &:active {

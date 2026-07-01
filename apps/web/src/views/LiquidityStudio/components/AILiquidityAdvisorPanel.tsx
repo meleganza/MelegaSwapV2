@@ -1,14 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { liquidityStudioColors, liquidityStudioLayout, LIQUIDITY_STUDIO_PREVIEW_LABEL } from '../liquidityStudioTokens'
-
-const Panel = styled.div`
-  background: ${liquidityStudioColors.panel};
-  border: 1px solid ${liquidityStudioColors.border};
-  border-radius: ${liquidityStudioLayout.panelRadius};
-  padding: ${liquidityStudioLayout.panelPadding};
-  box-sizing: border-box;
-`
+import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { LsPanel, LsSectionTitle, LsPreviewBadge } from './liquidityStudioPrimitives'
 
 const Head = styled.div`
   display: flex;
@@ -18,72 +11,51 @@ const Head = styled.div`
   margin-bottom: 10px;
 `
 
-const Title = styled.h3`
-  margin: 0;
-  font-size: 15px;
-  font-weight: 800;
-  color: ${liquidityStudioColors.text};
-`
-
-const Badge = styled.span`
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: ${liquidityStudioColors.muted};
-`
-
 const Row = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 28px;
   font-size: 12px;
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
 `
 
 const Label = styled.span`
-  color: ${liquidityStudioColors.muted};
+  font-size: 11px;
   font-weight: 600;
+  color: ${liquidityStudioColors.muted};
 `
 
-const Value = styled.span`
-  color: ${liquidityStudioColors.text};
+const Stable = styled.span`
+  font-size: 12px;
   font-weight: 700;
-  text-align: right;
+  color: ${liquidityStudioColors.green};
 `
 
-const Risk = styled.span`
+const Gold = styled.span`
+  font-size: 12px;
+  font-weight: 700;
   color: ${liquidityStudioColors.goldBright};
-  font-weight: 700;
-  text-align: right;
 `
 
 const ITEMS = [
-  { label: 'Pool Health', value: 'Stable' },
-  { label: 'Best Opportunity', value: 'MARCO / BNB' },
-  { label: 'Risk', value: 'Low', risk: true },
+  { label: 'Pool Health', value: 'Stable', tone: 'green' as const },
+  { label: 'Best Opportunity', value: 'MARCO / BNB', tone: 'gold' as const },
+  { label: 'Risk', value: 'Low', tone: 'green' as const },
 ]
 
 export const AILiquidityAdvisorPanel: React.FC = () => (
-  <Panel data-ls-panel>
+  <LsPanel data-ls-panel $height={liquidityStudioLayout.aiAdvisorHeight}>
     <Head>
-      <Title>AI Liquidity Advisor</Title>
-      <Badge>{LIQUIDITY_STUDIO_PREVIEW_LABEL}</Badge>
+      <LsSectionTitle style={{ margin: 0 }}>AI Liquidity Advisor</LsSectionTitle>
+      <LsPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>PREVIEW</LsPreviewBadge>
     </Head>
     {ITEMS.map((item) => (
       <Row key={item.label}>
         <Label>{item.label}</Label>
-        {item.risk ? <Risk>{item.value}</Risk> : <Value>{item.value}</Value>}
+        {item.tone === 'gold' ? <Gold>{item.value}</Gold> : <Stable>{item.value}</Stable>}
       </Row>
     ))}
-  </Panel>
+  </LsPanel>
 )
 
 export default AILiquidityAdvisorPanel

@@ -79,7 +79,7 @@ const AreaRight = styled.div`
   grid-area: right;
   display: flex;
   flex-direction: column;
-  gap: ${liquidityStudioLayout.columnGap};
+  gap: ${liquidityStudioLayout.verticalRhythm};
   min-width: 0;
 `
 
