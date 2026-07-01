@@ -2,11 +2,11 @@
 export const homeTradeLayout = {
   contentMax: '1180px',
   columnGap: '16px',
-  sectionGap: '16px',
+  sectionGap: '12px',
   compactGap: '12px',
   gridGutter: '16px',
-  heroGap: '16px',
-  heroMaxHeight: '410px',
+  heroGap: '12px',
+  heroMaxHeight: '350px',
   swapWidth: '470px',
 } as const
 

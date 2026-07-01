@@ -53,7 +53,7 @@ const Panel = styled.div`
 
   @media (min-width: 768px) {
     height: 100%;
-    max-height: 410px;
+    max-height: 350px;
   }
 `
 
@@ -124,7 +124,7 @@ const Scene = styled.div`
 const Planet = styled.div`
   position: absolute;
   right: -20px;
-  bottom: -20px;
+  bottom: -30px;
   width: 68%;
   height: 55%;
   background:
@@ -160,7 +160,7 @@ const HorizonArc = styled.div`
 const Copy = styled.div`
   position: absolute;
   left: 44px;
-  top: 82px;
+  top: 72px;
   z-index: 3;
   max-width: 380px;
 
@@ -229,7 +229,7 @@ const HeadlineBlock = styled.div`
 
 const HeadlineLine = styled.div`
   font-family: ${typography.fontFamily.body};
-  font-size: 54px;
+  font-size: 50px;
   font-weight: 800;
   line-height: 1.02;
   color: ${colors.textPrimary};
@@ -241,9 +241,9 @@ const HeadlineLine = styled.div`
 
 const PulseOverlay = styled.div`
   position: absolute;
-  right: 32px;
-  bottom: 34px;
-  width: 170px;
+  right: 28px;
+  bottom: 28px;
+  width: 150px;
   background: rgba(17, 17, 17, 0.82);
   backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);

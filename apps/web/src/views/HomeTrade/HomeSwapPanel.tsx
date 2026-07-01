@@ -52,9 +52,8 @@ const LiveText = styled.span<{ $live?: boolean }>`
   color: ${({ $live }) => ($live ? '#8a8a8a' : '#5f5f5f')};
 `
 
-const EXECUTION_ROWS = [
+const DISCONNECTED_EXECUTION_ROWS = [
   { label: 'Estimated received', value: '—' },
-  { label: 'Minimum received', value: '—' },
   { label: 'Price impact', value: '—' },
   { label: 'Route', value: '—' },
   { label: 'Slippage tolerance', value: '0.5%', slippage: true },
@@ -138,7 +137,7 @@ const HomeSwapInner: React.FC = () => {
         <SmartSwapForm handleOutputSelect={handleOutputSelect} />
         {showExecutionFallback && (
           <div className="home-trade-swap-execution-summary" aria-hidden>
-            {EXECUTION_ROWS.map((row) => (
+            {DISCONNECTED_EXECUTION_ROWS.map((row) => (
               <div key={row.label} className="home-trade-swap-execution-row">
                 <span className="home-trade-swap-execution-label">{row.label}</span>
                 <span className={`home-trade-swap-execution-value${'slippage' in row && row.slippage ? ' is-slippage' : ''}`}>

@@ -10,15 +10,19 @@ const Shell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   width: 150px;
   min-width: 150px;
+  height: 150px;
+  min-height: 150px;
   margin-top: 0;
+  overflow: hidden;
 `
 
 const Svg = styled.svg`
-  width: 118px;
-  height: 76px;
-  margin-top: 8px;
+  width: 100px;
+  height: 64px;
+  margin-top: 4px;
   overflow: visible;
   flex-shrink: 0;
 `
@@ -35,15 +39,15 @@ const Needle = styled.g<{ $angle: number; $animate: boolean }>`
 `
 
 const Value = styled.div`
-  margin-top: 4px;
-  font-size: 32px;
+  margin-top: 2px;
+  font-size: 24px;
   font-weight: 800;
   color: #ffffff;
   line-height: 1;
 `
 
 const Label = styled.div`
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -52,17 +56,21 @@ const Label = styled.div`
 `
 
 const Caption = styled.div`
-  margin-top: 2px;
-  font-size: 12px;
+  margin-top: 1px;
+  font-size: 11px;
   color: #b3b3b3;
   text-align: center;
-  line-height: 1.25;
+  line-height: 1.2;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const SkeletonArc = styled.div`
-  width: 118px;
-  height: 59px;
-  margin-top: 8px;
+  width: 100px;
+  height: 50px;
+  margin-top: 4px;
   border-radius: 118px 118px 0 0;
   border: 8px solid rgba(255, 255, 255, 0.06);
   border-bottom: none;

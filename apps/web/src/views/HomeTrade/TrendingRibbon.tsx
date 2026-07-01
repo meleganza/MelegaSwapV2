@@ -1,13 +1,18 @@
 import React from 'react'
 import { MelegaTicker } from 'design-system/melega'
-import useLiveMarketsTicker from './useLiveMarketsTicker'
+import useDexTrendingTicker from './useDexTrendingTicker'
 
 export const TrendingRibbon: React.FC = () => {
-  const liveItems = useLiveMarketsTicker()
+  const { items, isIndexing } = useDexTrendingTicker()
 
-  if (!liveItems.length) return null
-
-  return <MelegaTicker label="Live Markets" items={liveItems} />
+  return (
+    <MelegaTicker
+      label="TRENDING ON MELEGA DEX"
+      items={items}
+      emptyPrimary={isIndexing ? 'Indexing Melega DEX activity' : undefined}
+      emptySecondary={isIndexing ? 'Pairs, swaps, farms and pools will appear here automatically' : undefined}
+    />
+  )
 }
 
 export default TrendingRibbon

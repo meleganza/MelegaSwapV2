@@ -27,8 +27,8 @@ const drawSpark = keyframes`
 
 const Card = styled.a<{ $interactive?: boolean }>`
   display: block;
-  height: 76px;
-  padding: 12px 14px;
+  height: 64px;
+  padding: 10px 12px;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
@@ -52,7 +52,7 @@ const Card = styled.a<{ $interactive?: boolean }>`
 
   ${media.mobile} {
     flex: 0 0 210px;
-    height: 76px;
+    height: 64px;
   }
 `
 
@@ -65,12 +65,12 @@ const Label = styled.div`
 
 const Value = styled.div`
   margin-top: 4px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: ${colors.textPrimary};
-  line-height: 20px;
-  height: 20px;
-  max-width: calc(100% - 62px);
+  line-height: 18px;
+  height: 18px;
+  max-width: calc(100% - 56px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -91,10 +91,10 @@ const Meta = styled.div<{ $positive?: boolean }>`
 
 const Spark = styled.svg`
   position: absolute;
-  right: 14px;
-  bottom: 14px;
-  width: 48px;
-  height: 18px;
+  right: 12px;
+  bottom: 12px;
+  width: 42px;
+  height: 16px;
   pointer-events: none;
 `
 
@@ -107,8 +107,8 @@ const SparkPath = styled.path<{ $animated?: boolean }>`
   ${({ $animated }) =>
     $animated &&
     css`
-      stroke-dasharray: 48;
-      stroke-dashoffset: 48;
+      stroke-dasharray: 42;
+      stroke-dashoffset: 42;
       animation: ${drawSpark} 6s ease-in-out infinite;
     `}
 `

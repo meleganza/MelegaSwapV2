@@ -17,6 +17,8 @@ export interface MelegaTickerProps extends MelegaLayoutProps {
   label?: string
   items: MelegaTickerItem[]
   paused?: boolean
+  emptyPrimary?: string
+  emptySecondary?: string
 }
 
 const melegaTicker = keyframes`
@@ -30,7 +32,7 @@ const Strip = styled.div<{
 }>`
   display: flex;
   align-items: center;
-  height: 38px;
+  height: 36px;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
   border-bottom: 1px solid rgba(212, 175, 55, 0.1);
   background: rgba(212, 175, 55, 0.035);
@@ -39,7 +41,7 @@ const Strip = styled.div<{
   width: 100%;
 
   @media (min-width: 768px) {
-    height: 44px;
+    height: 40px;
   }
 
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
@@ -140,6 +142,14 @@ const Dot = styled.span`
   margin: 0 28px;
 `
 
+const EmptyRow = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 16px;
+  flex-shrink: 0;
+`
+
 export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   label = 'Trending',
   items,
@@ -147,12 +157,27 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   padding,
   margin,
   disabled,
+  emptyPrimary = 'Indexing Melega DEX activity',
+  emptySecondary = 'Pairs, swaps, farms and pools will appear here automatically',
 }) => {
   const [hoverPaused, setHoverPaused] = useState(false)
   const [dragPaused, setDragPaused] = useState(false)
   const dragRef = useRef(false)
 
-  if (!items.length || disabled) return null
+  if (disabled) return null
+
+  if (!items.length) {
+    return (
+      <Strip $padding={padding} $margin={margin} data-melega-ticker>
+        <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
+        <Dot aria-hidden />
+        <EmptyRow>
+          <Primary>{emptyPrimary}</Primary>
+          <Secondary>{emptySecondary}</Secondary>
+        </EmptyRow>
+      </Strip>
+    )
+  }
 
   const scrollItems = [...items, ...items]
   const paused = pausedProp ?? hoverPaused ?? dragPaused
@@ -189,7 +214,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         onPointerLeave={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        <Track $paused={paused}>
+        <Track $paused={paused} data-ticker-track>
           <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
           <Dot aria-hidden />
           {scrollItems.map((item, i) => (

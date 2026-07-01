@@ -3,6 +3,7 @@ import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import type { MelegaTickerItem } from 'design-system/melega'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { resolveHomepageLiveSections } from 'lib/homepage-live'
 import { Transaction, TransactionType } from 'state/info/types'
@@ -152,6 +153,112 @@ export const useHomeTradeData = () => {
     const projects = getAllProjects()
     return projects[0]
   }, [])
+
+  const topVolumeSwap = useMemo(() => {
+    if (!transactions?.length) return undefined
+    const swaps = transactions.filter((tx) => tx.type === TransactionType.SWAP && tx.amountUSD > 0)
+    if (!swaps.length) return undefined
+    return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
+  }, [transactions])
+
+  const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
+    const items: MelegaTickerItem[] = []
+    const topFarm = farms[0]
+    const secondFarm = farms[1]
+    const topPool = pools[0]
+
+    if (topFarm?.lpSymbol) {
+      const pairLabel = formatPairLabel(topFarm.lpSymbol)
+      items.push({
+        id: 'top-pair',
+        primary: 'Top pair',
+        secondary: pairLabel ?? 'MARCO / BNB',
+        href: '/swap',
+      })
+    }
+
+    if (topFarm?.lpSymbol) {
+      items.push({
+        id: 'top-farm',
+        primary: 'Top farm',
+        secondary: topFarm.lpSymbol,
+        accent: farmApr(topFarm) ? `${farmApr(topFarm)!.toFixed(2)}% APR` : undefined,
+        href: '/farms',
+      })
+    }
+
+    if (topPool?.stakingToken) {
+      items.push({
+        id: 'top-pool',
+        primary: 'Top pool',
+        secondary: `${topPool.stakingToken.symbol} Staking`,
+        href: '/pools',
+      })
+    }
+
+    if (latestProject) {
+      const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
+      if (projectName) {
+        items.push({
+          id: 'latest-listing',
+          primary: 'Latest listing',
+          secondary: projectName,
+          href: `/projects/${latestProject.slug}`,
+        })
+      }
+    }
+
+    const topPoolVenue = registry.topPools[0]
+    if (topPoolVenue) {
+      const poolLabel = sanitizeRibbonText(topPoolVenue.label)
+      if (poolLabel) {
+        items.push({
+          id: 'new-pool',
+          primary: 'New pool',
+          secondary: poolLabel,
+          href: topPoolVenue.href,
+        })
+      }
+    } else if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
+      items.push({
+        id: 'new-pool',
+        primary: 'New pool',
+        secondary: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
+        href: '/pools',
+      })
+    }
+
+    if (latestSwap) {
+      items.push({
+        id: 'latest-swap',
+        primary: 'Latest swap',
+        secondary: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
+        accent: formatTimeAgo(latestSwap.timestamp),
+        href: '/swap',
+      })
+    }
+
+    if (topVolumeSwap) {
+      items.push({
+        id: 'top-volume-pair',
+        primary: 'Top volume pair',
+        secondary: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
+        accent: formatUsd(topVolumeSwap.amountUSD),
+        href: '/swap',
+      })
+    }
+
+    if (secondFarm?.lpSymbol) {
+      items.push({
+        id: 'new-farm',
+        primary: 'New farm',
+        secondary: secondFarm.lpSymbol,
+        href: '/farms',
+      })
+    }
+
+    return items
+  }, [farms, latestSwap, latestProject, pools, registry.topPools, topVolumeSwap])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -362,6 +469,7 @@ export const useHomeTradeData = () => {
 
   return {
     ribbonItems,
+    trendingTickerItems,
     marketCards,
     farmRows,
     poolRows,

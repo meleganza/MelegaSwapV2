@@ -26,15 +26,15 @@ const Shell = styled.div`
   @media (min-width: 768px) {
     width: 470px;
     max-width: 470px;
-    height: 410px;
-    max-height: 410px;
+    height: 350px;
+    max-height: 350px;
     flex-shrink: 0;
     overflow: hidden;
   }
 
   ${media.mobile} {
     border-radius: 20px;
-    min-height: 420px;
+    min-height: 0;
     max-height: none;
     height: auto;
   }
@@ -43,9 +43,9 @@ const Shell = styled.div`
 const Header = styled.div`
   position: relative;
   flex-shrink: 0;
-  height: 58px;
-  min-height: 58px;
-  padding: 18px 18px 0;
+  height: 54px;
+  min-height: 54px;
+  padding: 14px 18px 0;
   box-sizing: border-box;
 `
 
@@ -76,7 +76,7 @@ const Subtitle = styled.p`
 
 const PairSlot = styled.div`
   position: absolute;
-  top: 30px;
+  top: 26px;
   right: 104px;
   display: flex;
   align-items: center;
@@ -97,7 +97,7 @@ const Toolbar = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
-  margin: 14px 18px 0;
+  margin: 6px 18px 0;
   flex-shrink: 0;
 `
 
@@ -133,7 +133,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 16px 18px 18px;
+  padding: 8px 16px 10px;
 
   .home-trade-swap {
     flex: 1;
@@ -141,12 +141,12 @@ const Body = styled.div`
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
-    gap: 10px;
+    gap: 8px;
   }
 
   ${media.mobile} {
     overflow: visible;
-    padding-bottom: 18px;
+    padding: 12px 16px 18px;
   }
 `
 

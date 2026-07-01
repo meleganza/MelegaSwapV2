@@ -18,11 +18,11 @@ const Shell = styled.section`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  min-height: 300px;
 
   @media (min-width: 768px) {
-    height: 280px;
-    max-height: 280px;
+    height: 300px;
+    max-height: 300px;
   }
 
   @media (max-width: 767px) {
@@ -75,8 +75,11 @@ const GaugeColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   width: 150px;
   min-width: 150px;
+  height: 150px;
+  min-height: 150px;
 
   @media (max-width: 767px) {
     width: 100%;
@@ -143,15 +146,14 @@ const CellMeta = styled.div`
 `
 
 const Networks = styled.div`
-  margin-top: 14px;
+  margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 11px;
   color: #8a8a8a;
-  line-height: 1.4;
+  line-height: 14px;
   flex-shrink: 0;
-  height: 28px;
-  box-sizing: content-box;
+  box-sizing: border-box;
 `
 
 const NetworkGold = styled.span`
