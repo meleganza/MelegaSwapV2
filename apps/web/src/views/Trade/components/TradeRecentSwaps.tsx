@@ -108,7 +108,7 @@ const Direction = styled.span<{ $buy?: boolean }>`
 const RouteCell = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   color: ${tradeColors.muted};
   font-size: 11px;
   white-space: nowrap;
@@ -116,12 +116,24 @@ const RouteCell = styled.span`
   text-overflow: ellipsis;
 `
 
-const RouteDot = styled.span`
-  width: 6px;
-  height: 6px;
+const RouteIcon = styled.span`
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: ${tradeColors.gold};
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+
+  &::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: ${tradeColors.gold};
+  }
 `
 
 type DisplaySwapRow = {
@@ -188,7 +200,7 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows }) => {
             <Cell>{row.amount}</Cell>
             <Cell>{row.received ?? '—'}</Cell>
             <RouteCell title={row.route}>
-              <RouteDot aria-hidden />
+              <RouteIcon aria-hidden />
               {row.route ?? '—'}
             </RouteCell>
           </Row>

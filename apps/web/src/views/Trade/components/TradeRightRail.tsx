@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import Link from 'next/link'
 import {
   MOCK_ASSETS,
   MOCK_ROUTE_ENTRIES,
@@ -10,6 +9,7 @@ import {
 } from '../tradeMockData'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import TradeWatchlist from './TradeWatchlist'
+import TradeMelegaIsologo from './TradeMelegaIsologo'
 
 const Rail = styled.div`
   display: flex;
@@ -18,6 +18,22 @@ const Rail = styled.div`
   width: 100%;
   min-width: 0;
   height: 100%;
+`
+
+const TopPanels = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${tradeLayout.rightRailGap};
+  flex-shrink: 0;
+`
+
+const WatchlistSlot = styled.div`
+  margin-top: auto;
+  flex-shrink: 0;
+
+  @media (max-width: 1099px) {
+    margin-top: 0;
+  }
 `
 
 const Panel = styled.div`
@@ -261,6 +277,7 @@ const StatValue = styled.div`
 
 export const TradeRightRail: React.FC = () => (
   <Rail data-trade-right-rail>
+    <TopPanels>
     <Panel data-trade-best-route>
       <PanelHead>
         <PanelTitle>SmartSwap Best Route</PanelTitle>
@@ -294,7 +311,11 @@ export const TradeRightRail: React.FC = () => (
       {MOCK_ASSETS.map((asset) => (
         <AssetRow key={asset.symbol}>
           <AssetLeft>
-            <AssetIcon>{asset.symbol.slice(0, 1)}</AssetIcon>
+            {asset.symbol === 'MARCO' ? (
+              <TradeMelegaIsologo size={22} />
+            ) : (
+              <AssetIcon>{asset.symbol.slice(0, 1)}</AssetIcon>
+            )}
             <AssetName>{asset.symbol}</AssetName>
           </AssetLeft>
           <AssetRight>
@@ -335,8 +356,11 @@ export const TradeRightRail: React.FC = () => (
         Router Analytics
       </OutlineBtn>
     </Panel>
+    </TopPanels>
 
-    <TradeWatchlist pairs={MOCK_WATCHLIST} />
+    <WatchlistSlot>
+      <TradeWatchlist pairs={MOCK_WATCHLIST} />
+    </WatchlistSlot>
   </Rail>
 )
 

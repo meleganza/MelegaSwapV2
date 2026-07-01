@@ -1,0 +1,29 @@
+{
+  "task": "R003-D TRADE TERMINAL FINAL FIT AND FINISH",
+  "branch": "design-system-foundation",
+  "validation": {
+    "yarn_build": "pass",
+    "design_system_tests": "pass (8/8)",
+    "homepage_live_tests": "pass (2/2)"
+  },
+  "screenshots": [
+    "home-desktop-1440x900.png",
+    "trade-desktop-1440x900.png",
+    "trade-desktop-1728x1117.png",
+    "trade-mobile-390x844.png",
+    "trade-mobile-428x926.png"
+  ],
+  "acceptance": {
+    "home_swap_title_visible": true,
+    "home_vertically_centered": true,
+    "official_marco_icon": true,
+    "one_toolbar_only": true,
+    "swap_subtitle_updated": true,
+    "best_route_compact": true,
+    "route_aligned": true,
+    "chart_alive": true,
+    "watchlist_aligned": true,
+    "no_overlapping": true,
+    "no_duplicated_icons": true
+  }
+}

@@ -13,6 +13,7 @@ import TradeCockpit from './TradeCockpit'
 import TradeCenterPanel from './TradeCenterPanel'
 import TradeRightRail from './components/TradeRightRail'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
+import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import useTradeTerminalData from './useTradeTerminalData'
 import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
 
@@ -97,6 +98,7 @@ const AreaCenter = styled.div`
 const AreaRight = styled.div`
   grid-area: right;
   ${stretchColumn}
+  align-self: stretch;
 `
 
 const AreaSwaps = styled.div`
@@ -123,6 +125,7 @@ export const TradeTerminalScreen: React.FC = () => {
     <Root data-trade-terminal-screen="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
+      <TradeMarcoIconPatch />
       <TrendingRibbon />
       <Content>
         <TradePageHeader aiMode={aiMode} onAiModeChange={setAiMode} />

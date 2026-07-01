@@ -42,6 +42,8 @@ const Shell = styled.div<{ $size?: 'home' | 'trade' }>`
       height: 404px;
       min-height: 404px;
       max-height: 404px;
+      padding-top: 10px;
+      box-sizing: border-box;
     `}
   }
 
@@ -56,7 +58,7 @@ const Shell = styled.div<{ $size?: 'home' | 'trade' }>`
 const Header = styled.div<{ $size?: 'home' | 'trade' }>`
   position: relative;
   flex-shrink: 0;
-  padding: ${({ $size }) => ($size === 'home' ? '28px' : '18px')} 20px 0;
+  padding: ${({ $size }) => ($size === 'home' ? '34px' : '18px')} 20px 0;
   box-sizing: border-box;
 `
 
@@ -96,7 +98,7 @@ const Subtitle = styled.p`
 
 const PairSlot = styled.div<{ $size?: 'home' | 'trade' }>`
   position: absolute;
-  top: ${({ $size }) => ($size === 'home' ? '38px' : '30px')};
+  top: ${({ $size }) => ($size === 'home' ? '44px' : '30px')};
   right: ${({ $size }) => ($size === 'home' ? '112px' : '156px')};
   display: flex;
   align-items: center;
@@ -116,7 +118,7 @@ const PairSlot = styled.div<{ $size?: 'home' | 'trade' }>`
 
 const Toolbar = styled.div<{ $size?: 'home' | 'trade' }>`
   position: absolute;
-  top: ${({ $size }) => ($size === 'home' ? '28px' : '18px')};
+  top: ${({ $size }) => ($size === 'home' ? '34px' : '18px')};
   right: 16px;
   display: flex;
   align-items: center;

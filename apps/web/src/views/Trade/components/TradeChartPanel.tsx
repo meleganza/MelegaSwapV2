@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import dynamic from 'next/dynamic'
 import { useDebounce } from '@pancakeswap/hooks'
 import TradingView, { useTradingViewEvent } from 'components/TradingView'
 import { tradeColors, tradeLayout } from '../tradeTokens'
@@ -9,18 +8,28 @@ const TV_ID = 'TV_TRADE_TERMINAL_CHART'
 const SYMBOL_PREFIX = 'PANCAKESWAP:'
 
 const gridShimmer = keyframes`
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.65; }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
 `
 
 const candlePulse = keyframes`
-  0%, 100% { opacity: 0.35; transform: scaleY(0.85); }
-  50% { opacity: 0.9; transform: scaleY(1); }
+  0%, 100% { opacity: 0.12; transform: scaleY(0.88); }
+  50% { opacity: 0.28; transform: scaleY(1); }
+`
+
+const volumePulse = keyframes`
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.12; }
 `
 
 const loadingPulse = keyframes`
   0% { transform: translateX(-100%); }
   100% { transform: translateX(200%); }
+`
+
+const crosshairPulse = keyframes`
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.14; }
 `
 
 const Area = styled.div`
@@ -44,11 +53,7 @@ const TvWrap = styled.div<{ $show: boolean }>`
 const Skeleton = styled.div`
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
+  overflow: hidden;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
@@ -56,28 +61,98 @@ const Skeleton = styled.div`
   animation: ${gridShimmer} 8s ease-in-out infinite;
 `
 
-const CandleRow = styled.div`
+const CrosshairH = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 42%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: ${crosshairPulse} 8s ease-in-out infinite;
+`
+
+const CrosshairV = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 28%;
+  left: 58%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: ${crosshairPulse} 8s ease-in-out infinite;
+`
+
+const ChartBody = styled.div`
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 18px;
+  bottom: 52px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 6px;
-  height: 72px;
-  padding: 0 24px;
+  gap: 8px;
 `
 
-const Candle = styled.span<{ $h: number; $delay: number; $up?: boolean }>`
-  width: 8px;
-  height: ${({ $h }) => $h}px;
-  border-radius: 2px;
-  background: ${({ $up }) => ($up ? tradeColors.green : tradeColors.red)};
-  opacity: 0.55;
-  transform-origin: bottom center;
-  animation: ${candlePulse} 2.4s ease-in-out infinite;
+const CandleStick = styled.div<{ $h: number; $wick: number; $up?: boolean; $delay: number }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  width: 10px;
+  animation: ${candlePulse} 2.8s ease-in-out infinite;
   animation-delay: ${({ $delay }) => $delay}ms;
 `
 
+const Wick = styled.span<{ $h: number; $up?: boolean }>`
+  width: 1px;
+  height: ${({ $h }) => $h}px;
+  background: ${({ $up }) => ($up ? tradeColors.green : tradeColors.red)};
+  opacity: 0.12;
+`
+
+const Body = styled.span<{ $h: number; $up?: boolean }>`
+  width: 8px;
+  height: ${({ $h }) => $h}px;
+  border-radius: 1px;
+  background: ${({ $up }) => ($up ? tradeColors.green : tradeColors.red)};
+  opacity: 0.12;
+`
+
+const VolumeRow = styled.div`
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 36px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  height: 28px;
+`
+
+const VolumeBar = styled.span<{ $h: number; $delay: number }>`
+  width: 10px;
+  height: ${({ $h }) => $h}px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  animation: ${volumePulse} 2.8s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}ms;
+`
+
+const Footer = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+`
+
 const LoadingBar = styled.div`
-  width: 120px;
+  width: 140px;
   height: 2px;
   border-radius: 1px;
   background: rgba(255, 255, 255, 0.08);
@@ -102,14 +177,14 @@ const SkeletonLabel = styled.span`
 `
 
 const CANDLES = [
-  { h: 28, up: true, delay: 0 },
-  { h: 44, up: false, delay: 120 },
-  { h: 36, up: true, delay: 240 },
-  { h: 52, up: true, delay: 360 },
-  { h: 30, up: false, delay: 480 },
-  { h: 40, up: true, delay: 600 },
-  { h: 34, up: false, delay: 720 },
-  { h: 48, up: true, delay: 840 },
+  { h: 22, wick: 8, up: true, delay: 0, vol: 14 },
+  { h: 34, wick: 10, up: false, delay: 140, vol: 22 },
+  { h: 28, wick: 9, up: true, delay: 280, vol: 18 },
+  { h: 40, wick: 12, up: true, delay: 420, vol: 24 },
+  { h: 20, wick: 7, up: false, delay: 560, vol: 12 },
+  { h: 32, wick: 10, up: true, delay: 700, vol: 20 },
+  { h: 26, wick: 8, up: false, delay: 840, vol: 16 },
+  { h: 36, wick: 11, up: true, delay: 980, vol: 22 },
 ]
 
 const bnbToWBNB = (sym: string) => (sym === 'BNB' ? 'WBNB' : sym)
@@ -155,13 +230,25 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
       )}
       {showSkeleton && (
         <Skeleton aria-hidden={!showSkeleton}>
-          <CandleRow>
+          <CrosshairH />
+          <CrosshairV />
+          <ChartBody>
             {CANDLES.map((c, i) => (
-              <Candle key={i} $h={c.h} $up={c.up} $delay={c.delay} />
+              <CandleStick key={i} $h={c.h} $wick={c.wick} $up={c.up} $delay={c.delay}>
+                <Wick $h={c.wick} $up={c.up} />
+                <Body $h={c.h} $up={c.up} />
+              </CandleStick>
             ))}
-          </CandleRow>
-          <LoadingBar />
-          <SkeletonLabel>Indexing chart data...</SkeletonLabel>
+          </ChartBody>
+          <VolumeRow>
+            {CANDLES.map((c, i) => (
+              <VolumeBar key={i} $h={c.vol} $delay={c.delay} />
+            ))}
+          </VolumeRow>
+          <Footer>
+            <LoadingBar />
+            <SkeletonLabel>Loading market data...</SkeletonLabel>
+          </Footer>
         </Skeleton>
       )}
     </Area>

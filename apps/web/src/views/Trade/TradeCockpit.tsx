@@ -15,7 +15,6 @@ import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
-import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
@@ -205,13 +204,12 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   return (
     <Shell data-trade-cockpit>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit">
-        <TradeMarcoIconPatch />
         <CockpitHeader data-trade-cockpit-header>
           <TitleBlock>
             <Title>Swap</Title>
-            <Subtitle>Trade instantly on Melega DEX</Subtitle>
+            <Subtitle>Trade instantly across supported liquidity.</Subtitle>
           </TitleBlock>
-          <Toolbar>
+          <Toolbar data-trade-cockpit-toolbar>
             <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
               <SettingsIcon />
             </IconBtn>

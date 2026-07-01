@@ -3,16 +3,19 @@ import styled from 'styled-components'
 import { tradeColors } from '../tradeTokens'
 
 const Block = styled.div`
-  margin-top: 12px;
   min-height: 54px;
+  height: 54px;
+  max-height: 54px;
   overflow: hidden;
+  box-sizing: border-box;
 `
 
 const Title = styled.div`
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  line-height: 1;
 `
 
 const Track = styled.div`

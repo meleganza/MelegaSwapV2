@@ -87,6 +87,10 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-terminal-swap [class*='CurrencyInputHeader'],
   .trade-terminal-swap [class*='HeaderWrapper'],
   .trade-terminal-swap > [class*='HeaderWrapper'],
+  .trade-terminal-swap > div:first-child:not([data-trade-route-line]),
+  .trade-terminal-swap [class*='GlobalSettings'],
+  .trade-terminal-swap #open-settings-dialog-button-SWAP_LIQUIDITY,
+  .trade-terminal-swap [class*='IconButton'],
   .trade-terminal-swap [class*='Info'],
   .trade-terminal-swap [class*='SwapUI'] {
     display: none !important;
@@ -97,6 +101,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     overflow: hidden !important;
     visibility: hidden !important;
     pointer-events: none !important;
+  }
+
+  .trade-swap-cockpit [data-trade-cockpit-toolbar] button {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    width: 34px !important;
+    overflow: visible !important;
   }
 
   /* Hide duplicate uikit slippage row — execution details panel is the single source */
@@ -125,17 +139,17 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input {
-    min-height: 88px !important;
-    height: 88px !important;
-    max-height: 88px !important;
-    margin-top: 12px !important;
+    min-height: 84px !important;
+    height: 84px !important;
+    max-height: 84px !important;
+    margin-top: 10px !important;
   }
 
   .trade-terminal-swap #swap-currency-output {
-    min-height: 88px !important;
-    height: 88px !important;
-    max-height: 88px !important;
-    margin-top: 0 !important;
+    min-height: 84px !important;
+    height: 84px !important;
+    max-height: 84px !important;
+    margin-top: 10px !important;
   }
 
   .trade-terminal-swap #swap-currency-input::before,
@@ -206,10 +220,10 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap [class*='ArrowWrapper'],
   .trade-terminal-swap [class*='SwitchButton'] button {
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
     border-radius: 50% !important;
     background: #121212 !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -226,11 +240,18 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap [class*='AutoRow'][style*='padding'] {
-    min-height: 36px !important;
-    max-height: 36px !important;
-    height: 36px !important;
-    margin: 0 auto !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    height: 32px !important;
+    margin: 10px auto !important;
     padding: 0 !important;
+  }
+
+  .trade-swap-cockpit [data-trade-route-line] {
+    margin-top: 10px !important;
+    min-height: 54px !important;
+    height: 54px !important;
+    max-height: 54px !important;
   }
 
   .trade-terminal-swap [class*='AdvancedDetailsFooter'] {
@@ -302,7 +323,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     color: #050505 !important;
     font-weight: 800 !important;
     font-size: 15px !important;
-    margin-top: 12px !important;
+    margin-top: 10px !important;
     margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
@@ -347,9 +368,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
-      min-height: 86px !important;
-      height: 86px !important;
-      max-height: 86px !important;
+      min-height: 84px !important;
+      height: 84px !important;
+      max-height: 84px !important;
     }
   }
 `

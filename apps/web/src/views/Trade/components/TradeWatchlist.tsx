@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 import { tradeColors, tradeLayout } from '../tradeTokens'
+import TradeMelegaIsologo from './TradeMelegaIsologo'
 
 export interface WatchlistPair {
   id: string
@@ -103,10 +104,12 @@ export const TradeWatchlist: React.FC<TradeWatchlistProps> = ({ pairs }) => (
     <List>
       {pairs.map((item) => {
         const [base] = item.pair.split('/')
+        const baseTrim = base?.trim() ?? ''
+        const isMarco = /marco/i.test(baseTrim)
         return (
           <Item key={item.id} href={item.href}>
             <PairLeft>
-              <TokenIcon>{base?.trim().slice(0, 1) ?? '?'}</TokenIcon>
+              {isMarco ? <TradeMelegaIsologo size={22} /> : <TokenIcon>{baseTrim.slice(0, 1) || '?'}</TokenIcon>}
               <Pair>{item.pair}</Pair>
             </PairLeft>
             <Meta>Trade →</Meta>

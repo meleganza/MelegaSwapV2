@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import TradeMelegaIsologo from './TradeMelegaIsologo'
 import { tradeColors, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
@@ -259,7 +259,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
       <Header>
         <PairBlock>
           {inputSymbol === 'MARCO' ? (
-            <MelegaLogoSvg size={34} />
+            <TradeMelegaIsologo size={22} />
           ) : (
             <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
           )}
