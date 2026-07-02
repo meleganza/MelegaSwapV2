@@ -1,0 +1,15 @@
+{
+  "task": "R005-A FARMS PAGE FOUNDATION",
+  "branch": "design-system-foundation",
+  "validation": {
+    "yarn_build": "pass",
+    "design_system_tests": "pass (8/8)",
+    "homepage_live_tests": "pass (2/2)"
+  },
+  "screenshots": [
+    "farms-desktop-1440x900.png",
+    "farms-desktop-1728x1117.png",
+    "farms-mobile-390x844.png",
+    "farms-mobile-428x926.png"
+  ]
+}
