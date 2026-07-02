@@ -73,8 +73,6 @@ const Value = styled.div`
   height: 18px;
   max-width: calc(100% - 56px);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
 
 const Meta = styled.div<{ $positive?: boolean }>`

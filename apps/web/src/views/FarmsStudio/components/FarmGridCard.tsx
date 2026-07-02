@@ -30,9 +30,8 @@ const Card = styled.article<{ $expanded?: boolean }>`
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 0;
   flex: 1;
+  min-height: 0;
 `
 
 const TopRow = styled.div`
@@ -42,6 +41,7 @@ const TopRow = styled.div`
   gap: 8px;
   height: 32px;
   flex-shrink: 0;
+  margin-bottom: 8px;
 `
 
 const PairBlock = styled.div`
@@ -126,20 +126,41 @@ const StatusPill = styled.span<{ $tone?: FarmPreviewCard['status'] }>`
         : 'rgba(0, 230, 118, 0.08)'};
 `
 
+const AprSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: ${farmsStudioLayout.farmCardAprGap};
+  flex-shrink: 0;
+`
+
+const AprValue = styled.div<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
+  font-size: ${({ $variant }) =>
+    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '26px' : '36px'};
+  font-weight: 800;
+  line-height: 38px;
+  color: ${({ $variant }) =>
+    $variant === 'indexing'
+      ? farmsStudioColors.gold
+      : $variant === 'coming-soon'
+        ? farmsStudioColors.muted
+        : farmsStudioColors.green};
+`
+
 const Metrics = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 18px;
-  row-gap: 12px;
-  max-height: 168px;
+  column-gap: ${farmsStudioLayout.farmCardMetricColGap};
+  row-gap: ${farmsStudioLayout.farmCardMetricRowGap};
+  flex: 1;
+  min-height: 0;
 `
 
-const Metric = styled.div<{ $isApr?: boolean }>`
+const Metric = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
-  min-height: 34px;
   min-width: 0;
 `
 
@@ -152,30 +173,22 @@ const MetricLabel = styled.span`
   line-height: 1;
 `
 
-const MetricValue = styled.span<{ $variant?: 'live' | 'indexing' | 'coming-soon' | 'default'; $tone?: 'green' | 'gold' }>`
-  font-size: ${({ $variant }) =>
-    $variant === 'live' ? '40px' : $variant === 'indexing' ? '32px' : $variant === 'coming-soon' ? '30px' : '16px'};
-  font-weight: ${({ $variant }) => ($variant ? 800 : 700)};
-  line-height: ${({ $variant }) => ($variant === 'live' ? '42px' : '1.2')};
-  color: ${({ $variant, $tone }) =>
-    $variant === 'indexing'
-      ? farmsStudioColors.gold
-      : $variant === 'coming-soon'
-        ? farmsStudioColors.muted
-        : $variant === 'live'
-          ? farmsStudioColors.green
-          : $tone === 'green'
-            ? farmsStudioColors.green
-            : $tone === 'gold'
-              ? farmsStudioColors.gold
-              : '#ffffff'};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: ${({ $tone }) =>
+    $tone === 'green'
+      ? farmsStudioColors.green
+      : $tone === 'gold'
+        ? farmsStudioColors.gold
+        : $tone === 'muted'
+          ? farmsStudioColors.muted
+          : '#ffffff'};
 `
 
 const AnalyzePanel = styled.div`
-  margin-top: 4px;
+  margin-top: 8px;
   padding-top: 10px;
   border-top: 1px solid ${farmsStudioColors.rowBorder};
   display: grid;
@@ -206,16 +219,21 @@ const AnalyzeValue = styled.span`
 const Footer = styled.div<{ $centered?: boolean }>`
   height: ${farmsStudioLayout.farmCardFooterHeight};
   min-height: ${farmsStudioLayout.farmCardFooterHeight};
+  margin-top: ${farmsStudioLayout.farmCardMetricsFooterGap};
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-end')};
-  gap: 10px;
+  gap: ${farmsStudioLayout.farmCardBtnGap};
   flex-shrink: 0;
 
   @media (max-width: 767px) {
     height: auto;
     min-height: ${farmsStudioLayout.farmCardFooterHeight};
-    margin-top: 12px;
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
   }
 `
 
@@ -230,6 +248,12 @@ const CardStakeBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 150ms ease, filter 150ms ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
 `
 
 const CardAnalyzeBtn = styled.button`
@@ -243,6 +267,12 @@ const CardAnalyzeBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 150ms ease, filter 150ms ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
 `
 
 const ComingSoonBadge = styled.div`
@@ -286,6 +316,13 @@ function aprDisplay(farm: FarmPreviewCard) {
   if (farm.apr) return farm.apr
   if (farm.status === 'indexing') return 'Indexing...'
   return 'Coming soon'
+}
+
+function statusMetric(farm: FarmPreviewCard) {
+  if (farm.status === 'live') return 'Live'
+  if (farm.status === 'indexing') return 'Indexing'
+  if (farm.status === 'coming-soon') return 'Coming soon'
+  return farm.status
 }
 
 export interface FarmGridCardProps {
@@ -346,22 +383,19 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           </StatusPill>
         </TopRow>
 
+        <AprSection>
+          <MetricLabel>APR</MetricLabel>
+          <AprValue $variant={aprVar}>{aprDisplay(farm)}</AprValue>
+        </AprSection>
+
         <Metrics>
-          <Metric $isApr>
-            <MetricLabel>APR</MetricLabel>
-            <MetricValue $variant={aprVar}>{aprDisplay(farm)}</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>Liquidity</MetricLabel>
-            <MetricValue>{farm.liquidity}</MetricValue>
-          </Metric>
           <Metric>
             <MetricLabel>TVL</MetricLabel>
             <MetricValue>{farm.tvl}</MetricValue>
           </Metric>
           <Metric>
-            <MetricLabel>Daily Rewards</MetricLabel>
-            <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : undefined}>{farm.dailyRewards}</MetricValue>
+            <MetricLabel>Liquidity</MetricLabel>
+            <MetricValue>{farm.liquidity}</MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Reward Token</MetricLabel>
@@ -370,6 +404,16 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           <Metric>
             <MetricLabel>Multiplier</MetricLabel>
             <MetricValue $tone={farm.multiplier !== '—' ? 'gold' : undefined}>{farm.multiplier}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Daily Rewards</MetricLabel>
+            <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : undefined}>{farm.dailyRewards}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Status</MetricLabel>
+            <MetricValue $tone={farm.status === 'live' ? 'green' : farm.status === 'indexing' ? 'gold' : 'muted'}>
+              {statusMetric(farm)}
+            </MetricValue>
           </Metric>
         </Metrics>
 

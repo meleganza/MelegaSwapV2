@@ -7,6 +7,7 @@ export interface FarmsKpiItem {
   delta?: string
   deltaPositive?: boolean
   gold?: boolean
+  sparkline?: number[]
 }
 
 export interface FarmAnalyzePreview {
@@ -50,9 +51,23 @@ export const DEFAULT_ANALYZE_PREVIEW: FarmAnalyzePreview = {
 }
 
 export const FARMS_KPIS: FarmsKpiItem[] = [
-  { id: 'tvl', label: 'Total TVL', value: '$24.56M', delta: '+2.35%', deltaPositive: true },
+  {
+    id: 'tvl',
+    label: 'Total TVL',
+    value: '$24.56M',
+    delta: '+2.35%',
+    deltaPositive: true,
+    sparkline: [4, 5, 6, 5, 7, 8, 9, 10],
+  },
   { id: 'active', label: 'Active Farms', value: '12', delta: '+1', deltaPositive: true },
-  { id: 'rewards', label: 'Daily Rewards', value: '184,200 MARCO', delta: '+8.42%', deltaPositive: true },
+  {
+    id: 'rewards',
+    label: 'Daily Rewards',
+    value: '184.2K MARCO',
+    delta: '+8.42%',
+    deltaPositive: true,
+    sparkline: [3, 4, 5, 6, 7, 8, 9, 10],
+  },
   { id: 'apr', label: 'Highest APR', value: '36.08%', gold: true },
   { id: 'ai', label: 'AI Suggested', value: 'MARCO / BNB', gold: true },
 ]
@@ -84,7 +99,7 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     apr: '36.08%',
     status: 'live',
     tvl: '$3.21M',
-    dailyRewards: '42,000 MARCO',
+    dailyRewards: '42K MARCO',
     multiplier: '3x',
     liquidity: '$1.20M',
     cta: 'stake',
@@ -97,7 +112,7 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     apr: '21.4%',
     status: 'live',
     tvl: '$640K',
-    dailyRewards: '18,400 MARCO',
+    dailyRewards: '18.4K MARCO',
     multiplier: '2x',
     liquidity: '$640K',
     cta: 'stake',
@@ -113,7 +128,7 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     apr: '14.2%',
     status: 'live',
     tvl: '$280K',
-    dailyRewards: '9,200 MARCO',
+    dailyRewards: '9.2K MARCO',
     multiplier: '1.5x',
     liquidity: '$280K',
     cta: 'stake',
@@ -129,7 +144,7 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     apr: '11.8%',
     status: 'live',
     tvl: '$190K',
-    dailyRewards: '6,800 MARCO',
+    dailyRewards: '6.8K MARCO',
     multiplier: '1.2x',
     liquidity: '$190K',
     cta: 'stake',

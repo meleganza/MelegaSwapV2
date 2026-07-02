@@ -54,8 +54,8 @@ export const FsPreviewBadge = styled.span`
 `
 
 export const FsPrimaryBtn = styled.button`
-  height: 44px;
-  min-height: 44px;
+  height: 40px;
+  min-height: 40px;
   padding: 0 18px;
   border: none;
   border-radius: 12px;
@@ -64,17 +64,17 @@ export const FsPrimaryBtn = styled.button`
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 140ms ease, filter 140ms ease;
+  transition: transform 150ms ease, filter 150ms ease;
 
   &:hover {
-    filter: brightness(1.06);
-    transform: translateY(-1px) scale(1.01);
+    filter: brightness(1.05);
+    transform: translateY(-1px);
   }
 `
 
 export const FsGhostBtn = styled.button`
-  height: 44px;
-  min-height: 44px;
+  height: 40px;
+  min-height: 40px;
   padding: 0 18px;
   border-radius: 12px;
   border: 1px solid ${farmsStudioColors.goldBorder};
@@ -83,12 +83,12 @@ export const FsGhostBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 140ms ease, filter 140ms ease, border-color 140ms ease;
+  transition: transform 150ms ease, filter 150ms ease, border-color 150ms ease;
 
   &:hover {
-    filter: brightness(1.06);
+    filter: brightness(1.05);
     border-color: ${farmsStudioColors.gold};
-    transform: translateY(-1px) scale(1.01);
+    transform: translateY(-1px);
   }
 `
 
@@ -167,17 +167,16 @@ export const FsKpiLabel = styled.span`
 `
 
 export const FsKpiValue = styled.span<{ $gold?: boolean }>`
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 32px;
+  font-weight: 700;
   line-height: 1;
   color: ${({ $gold }) => ($gold ? farmsStudioColors.gold : farmsStudioColors.text)};
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
 
 export const FsKpiDelta = styled.span<{ $positive?: boolean }>`
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
+  line-height: 1;
   color: ${({ $positive }) => ($positive ? farmsStudioColors.green : farmsStudioColors.red)};
 `

@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { formatCompactDisplay } from 'design-system/melega'
 import { FARMS_KPIS } from '../farmsStudioData'
 import { farmsStudioLayout } from '../farmsStudioTokens'
 import { FsKpiCard, FsKpiDelta, FsKpiLabel, FsKpiValue } from './farmsStudioPrimitives'
@@ -19,6 +20,15 @@ const Row = styled.div`
   }
 `
 
+const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
+  position: relative;
+  min-height: 38px;
+  padding-right: ${({ $hasSparkline }) => ($hasSparkline ? farmsStudioLayout.sparklineW + 8 : 0)}px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
 const ValueRow = styled.div`
   display: flex;
   align-items: baseline;
@@ -26,17 +36,50 @@ const ValueRow = styled.div`
   min-width: 0;
 `
 
+const Sparkline = styled.svg`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: ${farmsStudioLayout.sparklineW}px;
+  height: ${farmsStudioLayout.sparklineH}px;
+`
+
+function MiniSparkline({ points }: { points: number[] }) {
+  const max = Math.max(...points)
+  const min = Math.min(...points)
+  const range = max - min || 1
+  const w = farmsStudioLayout.sparklineW
+  const h = farmsStudioLayout.sparklineH
+  const d = points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * w
+      const y = h - ((p - min) / range) * (h - 2) - 1
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+
+  return (
+    <Sparkline viewBox={`0 0 ${w} ${h}`} data-fs-sparkline aria-hidden>
+      <path d={d} fill="none" stroke="#00E676" strokeWidth="1.5" strokeLinecap="round" />
+    </Sparkline>
+  )
+}
+
 export const FarmsKpiRow: React.FC = () => (
   <Row data-fs-kpi-row>
     {FARMS_KPIS.map((kpi) => (
       <FsKpiCard key={kpi.id} data-fs-kpi-card>
         <FsKpiLabel>{kpi.label}</FsKpiLabel>
-        <ValueRow>
-          <FsKpiValue $gold={kpi.gold} data-fs-kpi-value>
-            {kpi.value}
-          </FsKpiValue>
-          {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
-        </ValueRow>
+        <ValueBlock $hasSparkline={!!kpi.sparkline}>
+          <ValueRow>
+            <FsKpiValue $gold={kpi.gold} data-fs-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
+              {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
+            </FsKpiValue>
+            {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
+          </ValueRow>
+          {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
+        </ValueBlock>
       </FsKpiCard>
     ))}
   </Row>
