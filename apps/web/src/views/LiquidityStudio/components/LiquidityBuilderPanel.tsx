@@ -19,7 +19,7 @@ const PairSelect = styled.button`
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
-  margin-bottom: 12px;
+  margin-bottom: ${liquidityStudioLayout.sectionGap};
   cursor: pointer;
   box-sizing: border-box;
 `
@@ -44,9 +44,9 @@ const TokenRow = styled.div`
   border-radius: 12px;
   border: 1px solid ${liquidityStudioColors.border};
   background: ${liquidityStudioColors.surfaceSecondary};
-  padding: 12px 14px;
+  padding: 10px 14px;
   box-sizing: border-box;
-  margin-bottom: 12px;
+  margin-bottom: ${liquidityStudioLayout.sectionGap};
 `
 
 const TokenLabel = styled.span`
@@ -57,12 +57,12 @@ const TokenLabel = styled.span`
   text-transform: uppercase;
   color: ${liquidityStudioColors.muted};
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 `
 
 const TokenValue = styled.span`
   display: block;
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
   line-height: 1;
   color: ${liquidityStudioColors.text};
@@ -88,7 +88,7 @@ const TokenSelect = styled.button`
 const SwapMid = styled.div`
   display: flex;
   justify-content: center;
-  margin: 4px auto 12px;
+  margin: 2px auto ${liquidityStudioLayout.sectionGap};
   position: relative;
   z-index: 2;
 `
@@ -111,9 +111,9 @@ const RatioHead = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 26px;
-  min-height: 26px;
-  margin-bottom: 6px;
+  height: ${liquidityStudioLayout.ratioRowHeight};
+  min-height: ${liquidityStudioLayout.ratioRowHeight};
+  margin-bottom: 4px;
   font-size: 11px;
   font-weight: 600;
   color: ${liquidityStudioColors.muted};
@@ -124,7 +124,7 @@ const RatioBar = styled.div`
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: ${liquidityStudioLayout.sectionGap};
   position: relative;
 
   &::after {
@@ -142,8 +142,8 @@ const SlippageRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 26px;
-  min-height: 26px;
+  height: ${liquidityStudioLayout.slippageRowHeight};
+  min-height: ${liquidityStudioLayout.slippageRowHeight};
   margin-bottom: 0;
   font-size: 13px;
   font-weight: 600;
@@ -195,7 +195,7 @@ export const LiquidityBuilderPanel: React.FC = () => (
       <SlippageValue>0.5%</SlippageValue>
     </SlippageRow>
     <LsPrimaryBtn type="button" data-ls-primary-btn>
-      Connect Wallet
+      Add Liquidity
     </LsPrimaryBtn>
   </LsPanel>
 )

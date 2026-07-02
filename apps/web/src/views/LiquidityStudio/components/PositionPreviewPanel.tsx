@@ -69,7 +69,7 @@ const Metrics = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-top: 14px;
+  margin-top: ${liquidityStudioLayout.metricsAfterBarsGap};
 `
 
 const MetricCard = styled.div`
@@ -103,7 +103,7 @@ const MetricValue = styled.span`
 `
 
 const IlBlock = styled.div`
-  margin-top: 12px;
+  margin-top: ${liquidityStudioLayout.ilMarginTop};
   border-radius: 12px;
   border: 1px solid ${liquidityStudioColors.border};
   background: ${liquidityStudioColors.surfaceSecondary};
@@ -148,6 +148,7 @@ export const PositionPreviewPanel: React.FC = () => (
     data-ls-position-preview
     $width={liquidityStudioLayout.centerWidth}
     $height={liquidityStudioLayout.previewHeight}
+    $pad={`${liquidityStudioLayout.previewPanelPaddingTop} 18px 18px 18px`}
   >
     <Head>
       <LsPanelTitle style={{ margin: 0 }}>Position Preview</LsPanelTitle>

@@ -31,7 +31,7 @@ const Shell = styled.div`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 24px rgba(212, 175, 55, 0.08);
   }
 `
 
@@ -181,10 +181,11 @@ const StatCard = styled.div`
   min-height: 72px;
   max-height: 72px;
   overflow: hidden;
-  transition: transform 160ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease;
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(212, 175, 55, 0.08);
   }
 `
 

@@ -1,0 +1,17 @@
+{
+  "task": "R004-C FINAL PIXEL FIT",
+  "branch": "design-system-foundation",
+  "validation": {
+    "yarn_build": "pass",
+    "design_system_tests": "pass (8/8)",
+    "homepage_live_tests": "pass (2/2)"
+  },
+  "screenshots": [
+    "home-1440x900.png",
+    "trade-1440x900.png",
+    "liquidity-1440x900.png",
+    "liquidity-1728x1117.png",
+    "liquidity-390x844.png",
+    "liquidity-428x926.png"
+  ]
+}

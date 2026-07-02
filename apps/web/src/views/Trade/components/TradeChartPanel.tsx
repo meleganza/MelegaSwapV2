@@ -174,6 +174,21 @@ const LoadingBar = styled.div`
 const SkeletonLabel = styled.span`
   font-size: 14px;
   color: ${tradeColors.muted};
+  opacity: 0.18;
+`
+
+const Watermark = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  user-select: none;
 `
 
 const CANDLES = [
@@ -247,8 +262,9 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
           </VolumeRow>
           <Footer>
             <LoadingBar />
-            <SkeletonLabel>Loading market data...</SkeletonLabel>
+            <SkeletonLabel>Loading market...</SkeletonLabel>
           </Footer>
+          <Watermark aria-hidden>M</Watermark>
         </Skeleton>
       )}
     </Area>

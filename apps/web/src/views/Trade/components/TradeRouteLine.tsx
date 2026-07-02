@@ -20,7 +20,7 @@ const Title = styled.div`
 
 const Track = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
 `
 
@@ -57,6 +57,7 @@ const Label = styled.span`
   text-overflow: ellipsis;
   text-align: center;
   line-height: 1.2;
+  transform: translateY(2px);
 `
 
 const ArrowSlot = styled.span`
@@ -69,6 +70,7 @@ const ArrowSlot = styled.span`
   color: ${tradeColors.gold};
   font-size: 12px;
   line-height: 1;
+  transform: translateY(-2px);
 `
 
 const STEPS = ['BNB Chain', 'PancakeSwap', 'Bridge', 'Melega DEX']

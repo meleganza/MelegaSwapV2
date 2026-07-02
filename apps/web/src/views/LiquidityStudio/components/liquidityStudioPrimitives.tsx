@@ -64,6 +64,17 @@ export const LsPrimaryBtn = styled.button`
   font-weight: 800;
   cursor: pointer;
   margin-top: 10px;
+  flex-shrink: 0;
+  transition: transform 140ms ease, filter 140ms ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px) scale(1.01);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
 `
 
 export const LsRightRow = styled.div`

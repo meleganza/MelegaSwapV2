@@ -171,16 +171,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input {
-    min-height: 92px !important;
-    height: 92px !important;
-    max-height: 92px !important;
+    min-height: 84px !important;
+    height: 84px !important;
+    max-height: 84px !important;
     margin-top: 0 !important;
   }
 
   .trade-terminal-swap #swap-currency-output {
-    min-height: 92px !important;
-    height: 92px !important;
-    max-height: 92px !important;
+    min-height: 84px !important;
+    height: 84px !important;
+    max-height: 84px !important;
     margin-top: 0 !important;
   }
 
@@ -204,7 +204,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     position: absolute !important;
     left: 14px !important;
     right: 112px !important;
-    bottom: 12px !important;
+    bottom: 14px !important;
     top: auto !important;
     height: 32px !important;
     min-height: 32px !important;
@@ -408,6 +408,8 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-terminal-swap [class*='CommitButton'] button:hover,
   .trade-terminal-swap #swap-page > div:last-child button:hover {
     filter: brightness(1.05) !important;
+    transform: translateY(-1px) scale(1.01) !important;
+    transition: transform 140ms ease, filter 140ms ease !important;
   }
 
   .trade-terminal-swap .pancake-button--primary:active,
@@ -428,6 +430,16 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
       linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 48px 48px;
     animation: ${gridShimmer} 8s ease-in-out infinite;
+    filter: brightness(1.06);
+  }
+
+  [data-trade-price-chart]:hover [data-trade-chart-area] {
+    filter: brightness(1.06);
+  }
+
+  [data-trade-price-chart] [class*='StatCard']:hover,
+  [data-trade-price-chart] [data-trade-pair-stats] > div:hover {
+    box-shadow: 0 10px 24px rgba(212, 175, 55, 0.08);
   }
 
   @media (max-width: 767px) {
@@ -438,9 +450,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
-      min-height: 92px !important;
-      height: 92px !important;
-      max-height: 92px !important;
+      min-height: 84px !important;
+      height: 84px !important;
+      max-height: 84px !important;
     }
   }
 `

@@ -27,8 +27,8 @@ const Table = styled.table`
 
 const Th = styled.th<{ $w?: string }>`
   text-align: left;
-  padding: 0 8px;
-  height: 32px;
+  padding: 0 ${liquidityStudioLayout.activityCellPadding};
+  height: ${liquidityStudioLayout.activityHeaderHeight};
   width: ${({ $w }) => $w || 'auto'};
   font-size: 10px;
   font-weight: 700;
@@ -42,8 +42,8 @@ const Th = styled.th<{ $w?: string }>`
 `
 
 const Td = styled.td`
-  height: 38px;
-  padding: 0 8px;
+  height: ${liquidityStudioLayout.activityRowHeight};
+  padding: 0 ${liquidityStudioLayout.activityCellPadding};
   font-size: 12px;
   font-weight: 500;
   color: ${liquidityStudioColors.text};
@@ -64,24 +64,66 @@ const ActionRemove = styled.span`
   font-weight: 700;
 `
 
-const StatusBadge = styled.span`
+const StatusBadge = styled.span<{ $tone?: 'green' | 'yellow' | 'red' }>`
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding: 0 8px;
+  justify-content: center;
+  height: 24px;
+  padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid ${liquidityStudioColors.gold};
+  border: 1px solid
+    ${({ $tone }) =>
+      $tone === 'green'
+        ? liquidityStudioColors.green
+        : $tone === 'red'
+          ? liquidityStudioColors.red
+          : liquidityStudioColors.gold};
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: ${liquidityStudioColors.goldBright};
+  color: ${({ $tone }) =>
+    $tone === 'green'
+      ? liquidityStudioColors.green
+      : $tone === 'red'
+        ? liquidityStudioColors.red
+        : liquidityStudioColors.goldBright};
+  background: ${({ $tone }) =>
+    $tone === 'green'
+      ? 'rgba(0, 230, 118, 0.08)'
+      : $tone === 'red'
+        ? 'rgba(255, 77, 77, 0.08)'
+        : liquidityStudioColors.previewBadgeBg};
 `
 
 const ROWS = [
-  { time: '2m ago', pair: 'BNB / MARCO', action: 'Add' as const, amount: '1.2 BNB', lp: '842.1 LP' },
-  { time: '18m ago', pair: 'MARCO / USDT', action: 'Remove' as const, amount: '4,200 MARCO', lp: '210.0 LP' },
-  { time: '1h ago', pair: 'BNB / MARCO', action: 'Add' as const, amount: '0.8 BNB', lp: '561.4 LP' },
+  {
+    time: '2m ago',
+    pair: 'BNB / MARCO',
+    action: 'Add' as const,
+    amount: '1.2 BNB',
+    lp: '842.1 LP',
+    status: 'Indexing',
+    tone: 'green' as const,
+  },
+  {
+    time: '18m ago',
+    pair: 'MARCO / USDT',
+    action: 'Remove' as const,
+    amount: '4,200 MARCO',
+    lp: '210.0 LP',
+    status: 'Preview',
+    tone: 'yellow' as const,
+  },
+  {
+    time: '1h ago',
+    pair: 'BNB / MARCO',
+    action: 'Add' as const,
+    amount: '0.8 BNB',
+    lp: '561.4 LP',
+    status: 'Failed',
+    tone: 'red' as const,
+  },
 ]
 
 export const LiquidityActivityTable: React.FC = () => (
@@ -123,7 +165,7 @@ export const LiquidityActivityTable: React.FC = () => (
             <Td>{row.amount}</Td>
             <Td>{row.lp}</Td>
             <Td>
-              <StatusBadge>Preview Layout</StatusBadge>
+              <StatusBadge $tone={row.tone}>{row.status}</StatusBadge>
             </Td>
           </tr>
         ))}

@@ -46,7 +46,7 @@ const Inner = styled.div`
   flex: 1;
   min-height: 0;
   height: 100%;
-  padding: 24px 24px 26px 24px;
+  padding: 24px 24px 24px 24px;
   box-sizing: border-box;
   overflow: hidden;
 `

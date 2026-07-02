@@ -52,6 +52,7 @@ const LayoutGrid = styled.div`
       'builder preview right'
       'activity activity activity';
     max-width: ${liquidityStudioLayout.gridWidth};
+    align-items: end;
   }
 
   @media (max-width: 1099px) and (min-width: 768px) {

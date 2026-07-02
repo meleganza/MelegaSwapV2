@@ -18,25 +18,16 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
   }
 
   [data-liquidity-studio-screen] [data-ls-panel] {
-    transition: transform 150ms ease, box-shadow 150ms ease;
+    transition: transform 140ms ease, box-shadow 140ms ease;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 10px 24px rgba(212, 175, 55, 0.08);
     }
   }
 
   [data-liquidity-studio-screen] [data-ls-primary-btn] {
-    transition: transform 150ms ease, filter 150ms ease;
-
-    &:hover {
-      filter: brightness(1.05);
-      transform: translateY(-2px);
-    }
-
-    &:active {
-      transform: scale(0.99);
-    }
+    transition: transform 140ms ease, filter 140ms ease;
   }
 
   [data-liquidity-studio-screen] [data-ls-liquidity-bar] {
@@ -45,6 +36,7 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
 
   [data-liquidity-studio-screen] [data-ls-mini-chart] {
     animation: ${shimmer} 8s ease-in-out infinite;
+    filter: brightness(1.04);
   }
 
   @media (max-width: 767px) {
