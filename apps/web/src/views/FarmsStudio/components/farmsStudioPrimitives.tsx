@@ -67,7 +67,7 @@ export const FsPrimaryBtn = styled.button`
   transition: transform 140ms ease, filter 140ms ease;
 
   &:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.06);
     transform: translateY(-1px) scale(1.01);
   }
 `
@@ -83,24 +83,47 @@ export const FsGhostBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 140ms ease, border-color 140ms ease;
+  transition: transform 140ms ease, filter 140ms ease, border-color 140ms ease;
 
   &:hover {
+    filter: brightness(1.06);
     border-color: ${farmsStudioColors.gold};
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.01);
   }
 `
 
 export const FsSmallPrimaryBtn = styled(FsPrimaryBtn)`
-  height: 38px;
-  min-height: 38px;
+  width: ${farmsStudioLayout.farmCardBtnWidth};
+  min-width: ${farmsStudioLayout.farmCardBtnWidth};
+  height: ${farmsStudioLayout.farmCardBtnHeight};
+  min-height: ${farmsStudioLayout.farmCardBtnHeight};
+  padding: 0;
   font-size: 13px;
 `
 
 export const FsSmallGhostBtn = styled(FsGhostBtn)`
-  height: 38px;
-  min-height: 38px;
+  width: ${farmsStudioLayout.farmCardBtnWidth};
+  min-width: ${farmsStudioLayout.farmCardBtnWidth};
+  height: ${farmsStudioLayout.farmCardBtnHeight};
+  min-height: ${farmsStudioLayout.farmCardBtnHeight};
+  padding: 0;
   font-size: 13px;
+`
+
+export const FsCardMetricLabel = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${farmsStudioColors.muted};
+  line-height: 1;
+`
+
+export const FsCardMetricValue = styled.span`
+  font-size: 18px;
+  font-weight: 700;
+  color: ${farmsStudioColors.text};
+  line-height: 1;
 `
 
 export const FsMetricLabel = styled.span`

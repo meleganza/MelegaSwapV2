@@ -17,11 +17,15 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     justify-content: flex-end !important;
   }
 
-  /* R004-C: lift slippage + Connect Wallet block 12px — card/button size unchanged */
-  .home-swap-cockpit .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip,
+  /* R004-C: lift slippage row — card/button size unchanged */
+  .home-swap-cockpit .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip {
+    transform: translateY(-12px) !important;
+  }
+
+  /* R005-B: lift Connect Wallet button only — additional 12px (24px total) */
   .home-swap-cockpit .home-trade-swap #swap-page > div:last-child,
   .home-swap-cockpit .home-trade-swap [class*='Box'][class*='mt'] {
-    transform: translateY(-12px) !important;
+    transform: translateY(-24px) !important;
   }
 
   .home-swap-cockpit .home-trade-swap #swap-page > div:last-child,
@@ -47,8 +51,8 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-swap-cockpit .home-trade-swap [class*='CommitButton'] button:hover,
   .home-swap-cockpit .home-trade-swap.is-disconnected [class*='ConnectWallet']:hover,
   .home-swap-cockpit .home-trade-swap.is-disconnected a[class*='ConnectWallet']:hover {
-    transform: translateY(-13px) scale(1.01) !important;
-    filter: brightness(1.05) !important;
+    transform: translateY(-25px) scale(1.01) !important;
+    filter: brightness(1.06) !important;
   }
 
   .home-trade-swap [class*='HeaderWrapper'],
@@ -298,7 +302,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap.is-disconnected [class*='ConnectWallet']:hover,
   .home-trade-swap.is-disconnected button[class*='pancake-button']:only-child:hover {
     filter: brightness(1.06) !important;
-    transform: translateY(-13px) scale(1.01) !important;
+    transform: translateY(-25px) scale(1.01) !important;
     opacity: 0.9 !important;
   }
 

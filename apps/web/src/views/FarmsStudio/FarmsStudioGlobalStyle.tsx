@@ -6,6 +6,17 @@ const shimmer = keyframes`
   50% { opacity: 0.85; }
 `
 
+const kpiCountUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
+
 const FarmsStudioGlobalStyle = createGlobalStyle`
   [data-farms-studio-screen] {
     color: ${farmsStudioColors.text};
@@ -15,7 +26,7 @@ const FarmsStudioGlobalStyle = createGlobalStyle`
   [data-farms-studio-screen] [data-fs-panel],
   [data-farms-studio-screen] [data-fs-farm-card],
   [data-farms-studio-screen] [data-fs-kpi-card] {
-    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
   }
 
   [data-farms-studio-screen] [data-fs-panel]:hover,
@@ -32,6 +43,26 @@ const FarmsStudioGlobalStyle = createGlobalStyle`
 
   [data-farms-studio-screen] [data-fs-mini-chart] {
     animation: ${shimmer} 8s ease-in-out infinite;
+  }
+
+  [data-farms-studio-screen] [data-fs-kpi-card] [data-fs-kpi-value] {
+    animation: ${kpiCountUp} 700ms ease-out both;
+  }
+
+  [data-farms-studio-screen] [data-fs-kpi-row] [data-fs-kpi-card]:nth-child(2) [data-fs-kpi-value] {
+    animation-delay: 80ms;
+  }
+
+  [data-farms-studio-screen] [data-fs-kpi-row] [data-fs-kpi-card]:nth-child(3) [data-fs-kpi-value] {
+    animation-delay: 160ms;
+  }
+
+  [data-farms-studio-screen] [data-fs-kpi-row] [data-fs-kpi-card]:nth-child(4) [data-fs-kpi-value] {
+    animation-delay: 240ms;
+  }
+
+  [data-farms-studio-screen] [data-fs-kpi-row] [data-fs-kpi-card]:nth-child(5) [data-fs-kpi-value] {
+    animation-delay: 320ms;
   }
 
   @media (max-width: 767px) {

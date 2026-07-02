@@ -1,0 +1,16 @@
+{
+  "task": "R005-B FARMS FINAL FIT",
+  "branch": "design-system-foundation",
+  "build": "pass",
+  "tests": {
+    "design-system": "8/8 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "home-1440x900.png",
+    "farms-1440x900.png",
+    "farms-1728x1117.png",
+    "farms-mobile-390x844.png",
+    "farms-mobile-428x926.png"
+  ]
+}

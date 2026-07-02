@@ -1,23 +1,27 @@
-/** Farms Studio layout constants — R005-A foundation. */
+/** Farms Studio layout constants — R005-B final fit. */
 export const farmsStudioLayout = {
-  contentMax: '1160px',
+  contentMax: '1180px',
   contentPaddingX: '18px',
   contentPaddingTop: '18px',
   contentPaddingBottom: '32px',
   sectionGap: '16px',
   kpiGap: '12px',
   kpiHeight: '86px',
-  featuredWidth: '760px',
-  advisorWidth: '384px',
+  featuredWidth: '740px',
+  advisorWidth: '340px',
   featuredHeight: '300px',
+  featuredMetricColWidth: '120px',
   filterHeight: '44px',
   filterMarginTop: '16px',
   gridGap: '14px',
   gridMarginTop: '16px',
   farmCardHeight: '220px',
+  farmCardBtnHeight: '40px',
+  farmCardBtnWidth: '92px',
   activityHeight: '250px',
   activityMarginTop: '18px',
-  activityRowHeight: '40px',
+  activityRowHeight: '42px',
+  activityCellPadding: '18px',
   mobileBottomPad: '88px',
 } as const
 

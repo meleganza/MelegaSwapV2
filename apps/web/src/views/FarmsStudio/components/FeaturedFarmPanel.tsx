@@ -37,7 +37,7 @@ const Pair = styled.div`
 `
 
 const Apr = styled.div`
-  font-size: 52px;
+  font-size: 48px;
   font-weight: 800;
   line-height: 1;
   color: ${farmsStudioColors.green};
@@ -45,7 +45,7 @@ const Apr = styled.div`
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, ${farmsStudioLayout.featuredMetricColWidth});
   gap: 12px;
 `
 
@@ -53,6 +53,7 @@ const Metric = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: ${farmsStudioLayout.featuredMetricColWidth};
 `
 
 const MetricLabel = styled.span`
@@ -78,15 +79,18 @@ const BtnRow = styled.div`
 const ChartWrap = styled.div`
   width: 300px;
   height: 110px;
+  margin-left: 12px;
   border-radius: 12px;
   border: 1px solid ${farmsStudioColors.border};
   background: ${farmsStudioColors.panelAlt};
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
+  filter: brightness(1.04);
 
   @media (max-width: 767px) {
     width: 100%;
+    margin-left: 0;
   }
 `
 
@@ -97,6 +101,7 @@ const ChartGrid = styled.div`
     linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
+  opacity: 1;
 `
 
 const ChartSvg = styled.svg`

@@ -84,7 +84,7 @@ const Subtitle = styled.p`
 
 const PairSlot = styled.div`
   position: absolute;
-  top: 42px;
+  top: 24px;
   right: 112px;
   display: flex;
   align-items: center;
@@ -104,7 +104,7 @@ const PairSlot = styled.div`
 
 const Toolbar = styled.div`
   position: absolute;
-  top: 28px;
+  top: 10px;
   right: 16px;
   display: flex;
   align-items: center;

@@ -35,12 +35,12 @@ const Table = styled.table`
 
 const Th = styled.th<{ $w?: string }>`
   text-align: left;
-  padding: 0 12px;
+  padding: 0 ${farmsStudioLayout.activityCellPadding};
   height: 32px;
   width: ${({ $w }) => $w || 'auto'};
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${farmsStudioColors.muted};
   border-bottom: 1px solid ${farmsStudioColors.rowBorder};
@@ -48,7 +48,7 @@ const Th = styled.th<{ $w?: string }>`
 
 const Td = styled.td`
   height: ${farmsStudioLayout.activityRowHeight};
-  padding: 0 12px;
+  padding: 0 ${farmsStudioLayout.activityCellPadding};
   font-size: 12px;
   font-weight: 500;
   color: ${farmsStudioColors.text};
@@ -69,19 +69,36 @@ const Action = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
         : farmsStudioColors.muted};
 `
 
-const StatusBadge = styled.span<{ $indexed?: boolean }>`
+const StatusBadge = styled.span<{ $tone?: 'indexed' | 'preview' | 'gray' }>`
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding: 0 10px;
+  justify-content: center;
+  height: 24px;
+  padding: 0 12px;
   border-radius: 999px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  border: 1px solid ${({ $indexed }) => ($indexed ? farmsStudioColors.green : farmsStudioColors.gold)};
-  color: ${({ $indexed }) => ($indexed ? farmsStudioColors.green : farmsStudioColors.goldBright)};
-  background: ${({ $indexed }) => ($indexed ? 'rgba(0, 230, 118, 0.08)' : farmsStudioColors.previewBadgeBg)};
+  border: 1px solid
+    ${({ $tone }) =>
+      $tone === 'indexed'
+        ? farmsStudioColors.green
+        : $tone === 'gray'
+          ? farmsStudioColors.border
+          : farmsStudioColors.gold};
+  color: ${({ $tone }) =>
+    $tone === 'indexed'
+      ? farmsStudioColors.green
+      : $tone === 'gray'
+        ? farmsStudioColors.muted
+        : farmsStudioColors.goldBright};
+  background: ${({ $tone }) =>
+    $tone === 'indexed'
+      ? 'rgba(0, 230, 118, 0.08)'
+      : $tone === 'gray'
+        ? 'rgba(255, 255, 255, 0.04)'
+        : farmsStudioColors.previewBadgeBg};
 `
 
 export const FarmsActivityTable: React.FC = () => (
@@ -120,8 +137,20 @@ export const FarmsActivityTable: React.FC = () => (
               <Td>{row.amount}</Td>
               <Td>{row.rewards}</Td>
               <Td>
-                <StatusBadge $indexed={row.status === 'indexed'}>
-                  {row.status === 'indexed' ? 'Indexed' : 'Preview'}
+                <StatusBadge
+                  $tone={
+                    row.status === 'indexed'
+                      ? 'indexed'
+                      : row.action === 'New Farm'
+                        ? 'gray'
+                        : 'preview'
+                  }
+                >
+                  {row.status === 'indexed'
+                    ? 'Indexed'
+                    : row.action === 'New Farm'
+                      ? 'Coming Soon'
+                      : 'Preview'}
                 </StatusBadge>
               </Td>
             </tr>

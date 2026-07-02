@@ -2,20 +2,21 @@ import React from 'react'
 import styled from 'styled-components'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
-import { FsMetricLabel, FsMetricValue, FsSmallGhostBtn, FsSmallPrimaryBtn } from './farmsStudioPrimitives'
+import { FsCardMetricLabel, FsCardMetricValue, FsSmallGhostBtn, FsSmallPrimaryBtn } from './farmsStudioPrimitives'
 
 const Card = styled.article`
   height: ${farmsStudioLayout.farmCardHeight};
   min-height: ${farmsStudioLayout.farmCardHeight};
-  padding: 16px;
+  padding: 14px 16px 16px;
   border-radius: 18px;
   background: ${farmsStudioColors.panel};
   border: 1px solid ${farmsStudioColors.border};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
+  overflow: hidden;
 `
 
 const TopRow = styled.div`
@@ -24,6 +25,7 @@ const TopRow = styled.div`
   justify-content: space-between;
   gap: 8px;
   min-width: 0;
+  flex-shrink: 0;
 `
 
 const PairBlock = styled.div`
@@ -113,6 +115,7 @@ const AprBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex-shrink: 0;
 `
 
 const AprValue = styled.span`
@@ -131,24 +134,24 @@ const AprLabel = styled.span`
 `
 
 const Metrics = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px 12px;
-  flex: 1;
-  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
 `
 
 const Metric = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 `
 
 const BtnRow = styled.div`
   display: flex;
-  gap: 8px;
-  margin-top: auto;
+  gap: 10px;
+  margin-top: 18px;
+  flex-shrink: 0;
 `
 
 const statusLabel = (status: FarmPreviewCard['status']) => {
@@ -196,20 +199,20 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => (
     {farm.tvl ? (
       <Metrics>
         <Metric>
-          <FsMetricLabel>TVL</FsMetricLabel>
-          <FsMetricValue>{farm.tvl}</FsMetricValue>
+          <FsCardMetricLabel>TVL</FsCardMetricLabel>
+          <FsCardMetricValue>{farm.tvl}</FsCardMetricValue>
         </Metric>
         <Metric>
-          <FsMetricLabel>Daily Rewards</FsMetricLabel>
-          <FsMetricValue>{farm.dailyRewards}</FsMetricValue>
+          <FsCardMetricLabel>Liquidity</FsCardMetricLabel>
+          <FsCardMetricValue>{farm.liquidity}</FsCardMetricValue>
         </Metric>
         <Metric>
-          <FsMetricLabel>Multiplier</FsMetricLabel>
-          <FsMetricValue>{farm.multiplier}</FsMetricValue>
+          <FsCardMetricLabel>Rewards / Day</FsCardMetricLabel>
+          <FsCardMetricValue>{farm.dailyRewards}</FsCardMetricValue>
         </Metric>
         <Metric>
-          <FsMetricLabel>Liquidity</FsMetricLabel>
-          <FsMetricValue>{farm.liquidity}</FsMetricValue>
+          <FsCardMetricLabel>Multiplier</FsCardMetricLabel>
+          <FsCardMetricValue>{farm.multiplier}</FsCardMetricValue>
         </Metric>
       </Metrics>
     ) : null}

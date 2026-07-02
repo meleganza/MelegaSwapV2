@@ -32,7 +32,9 @@ export const FarmsKpiRow: React.FC = () => (
       <FsKpiCard key={kpi.id} data-fs-kpi-card>
         <FsKpiLabel>{kpi.label}</FsKpiLabel>
         <ValueRow>
-          <FsKpiValue $gold={kpi.gold}>{kpi.value}</FsKpiValue>
+          <FsKpiValue $gold={kpi.gold} data-fs-kpi-value>
+            {kpi.value}
+          </FsKpiValue>
           {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
         </ValueRow>
       </FsKpiCard>
