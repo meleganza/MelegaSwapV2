@@ -100,6 +100,26 @@ export const PrSmallGhostBtn = styled(PrGhostBtn)`
   padding: 0;
 `
 
+export const PrFollowBtn = styled.button`
+  width: ${projectsStudioLayout.followBtnWidth};
+  min-width: ${projectsStudioLayout.followBtnWidth};
+  height: ${projectsStudioLayout.btnHeight};
+  min-height: ${projectsStudioLayout.btnHeight};
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: ${projectsStudioColors.secondary};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, color 180ms ease;
+
+  &:hover {
+    color: ${projectsStudioColors.text};
+    transform: translateY(-1px);
+  }
+`
+
 export const PrKpiCard = styled.div`
   height: ${projectsStudioLayout.kpiHeight};
   min-height: ${projectsStudioLayout.kpiHeight};
@@ -134,8 +154,9 @@ export const PrKpiValue = styled.span<{ $gold?: boolean }>`
 
 export const PrKpiDelta = styled.span<{ $positive?: boolean }>`
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
+  margin-left: ${projectsStudioLayout.kpiDeltaGap};
   color: ${({ $positive }) => ($positive ? projectsStudioColors.green : projectsStudioColors.red)};
 `
 

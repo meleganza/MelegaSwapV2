@@ -23,17 +23,17 @@ const Row = styled.div`
 const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
   position: relative;
   min-height: 38px;
-  padding-right: ${({ $hasSparkline }) => ($hasSparkline ? projectsStudioLayout.sparklineW + 8 : 0)}px;
+  padding-right: ${({ $hasSparkline }) =>
+    $hasSparkline ? projectsStudioLayout.sparklineW + Number.parseInt(projectsStudioLayout.kpiSparkGap, 10) : 0}px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
 `
 
 const ValueRow = styled.div`
   display: flex;
   align-items: baseline;
-  gap: 8px;
   min-width: 0;
+  flex: 1;
 `
 
 const Sparkline = styled.svg`

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { formatCompactDisplay } from 'design-system/melega'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
@@ -126,19 +127,27 @@ const StatusPill = styled.span<{ $tone?: FarmPreviewCard['status'] }>`
         : 'rgba(0, 230, 118, 0.08)'};
 `
 
-const AprSection = styled.div`
+const AprSection = styled.div<{ $comingSoon?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin-bottom: ${farmsStudioLayout.farmCardAprGap};
   flex-shrink: 0;
+  ${({ $comingSoon }) =>
+    $comingSoon
+      ? `
+    flex: 1;
+    justify-content: center;
+  `
+      : ''}
 `
 
 const AprValue = styled.div<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
   font-size: ${({ $variant }) =>
-    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '26px' : '36px'};
+    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '60px'};
   font-weight: 800;
-  line-height: 38px;
+  line-height: ${({ $variant }) =>
+    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '60px'};
   color: ${({ $variant }) =>
     $variant === 'indexing'
       ? farmsStudioColors.gold
@@ -221,7 +230,7 @@ const Footer = styled.div<{ $centered?: boolean }>`
   min-height: ${farmsStudioLayout.farmCardFooterHeight};
   margin-top: ${farmsStudioLayout.farmCardMetricsFooterGap};
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-end')};
   gap: ${farmsStudioLayout.farmCardBtnGap};
   flex-shrink: 0;
@@ -318,6 +327,11 @@ function aprDisplay(farm: FarmPreviewCard) {
   return 'Coming soon'
 }
 
+function formatRewardValue(value: string) {
+  if (!value || value === '—') return value
+  return formatCompactDisplay(value.replace(/\s*MARCO\s*$/i, ''))
+}
+
 function statusMetric(farm: FarmPreviewCard) {
   if (farm.status === 'live') return 'Live'
   if (farm.status === 'indexing') return 'Indexing'
@@ -383,7 +397,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           </StatusPill>
         </TopRow>
 
-        <AprSection>
+        <AprSection $comingSoon={farm.status === 'coming-soon' && !farm.apr}>
           <MetricLabel>APR</MetricLabel>
           <AprValue $variant={aprVar}>{aprDisplay(farm)}</AprValue>
         </AprSection>
@@ -407,7 +421,9 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           </Metric>
           <Metric>
             <MetricLabel>Daily Rewards</MetricLabel>
-            <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : undefined}>{farm.dailyRewards}</MetricValue>
+            <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : undefined}>
+              {formatRewardValue(farm.dailyRewards)}
+            </MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Status</MetricLabel>

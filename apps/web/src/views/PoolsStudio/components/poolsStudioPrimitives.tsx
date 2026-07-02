@@ -139,7 +139,9 @@ export const PsKpiValue = styled.span<{ $gold?: boolean }>`
 
 export const PsKpiDelta = styled.span<{ $positive?: boolean }>`
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
+  line-height: 1;
+  margin-left: ${poolsStudioLayout.kpiDeltaGap};
   color: ${({ $positive }) => ($positive ? poolsStudioColors.green : poolsStudioColors.red)};
 `
 

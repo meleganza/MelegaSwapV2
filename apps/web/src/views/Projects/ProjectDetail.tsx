@@ -6,6 +6,7 @@ import { StaticProjectRecord } from 'registry/projects/types'
 import { computeHealthMetrics } from 'registry/projects/intelligence'
 import ProjectHero from './components/ProjectHero'
 import ProjectIntelligenceCard from './components/ProjectIntelligenceCard'
+import ProjectExecutiveIntelligence from './components/ProjectExecutiveIntelligence'
 import ProjectHealthSummary from './components/ProjectHealthSummary'
 import ProjectManifestViewer from './components/ProjectManifestViewer'
 import ProjectRelationshipsSection from './components/ProjectRelationshipsSection'
@@ -38,6 +39,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, manifest }) => {
       <Stack px="16px">
         <ProjectHero project={project} />
         <ProjectIntelligenceCard project={project} />
+        <ProjectExecutiveIntelligence project={project} />
         <ProjectHealthSummary health={health} />
         <ProjectManifestViewer manifest={manifest} slug={project.slug} />
         <ProjectAssetsSection projectSlug={project.slug} />

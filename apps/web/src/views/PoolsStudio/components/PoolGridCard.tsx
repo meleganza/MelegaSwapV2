@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { formatCompactDisplay } from 'design-system/melega'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { DEFAULT_POOL_ANALYZE } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
@@ -89,19 +90,27 @@ const StatusPill = styled.span<{ $status: PoolPreviewCard['status'] }>`
     $status === 'indexing' ? poolsStudioColors.previewBadgeBg : $status === 'coming-soon' ? 'rgba(255,255,255,0.04)' : 'rgba(0,230,118,0.08)'};
 `
 
-const AprSection = styled.div`
+const AprSection = styled.div<{ $comingSoon?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin-bottom: ${poolsStudioLayout.poolCardAprGap};
   flex-shrink: 0;
+  ${({ $comingSoon }) =>
+    $comingSoon
+      ? `
+    flex: 1;
+    justify-content: center;
+  `
+      : ''}
 `
 
 const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '26px' : '36px'};
+    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '60px'};
   font-weight: 800;
-  line-height: 38px;
+  line-height: ${({ $status }) =>
+    $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '60px'};
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
@@ -167,7 +176,7 @@ const Footer = styled.div`
   min-height: ${poolsStudioLayout.poolCardFooterHeight};
   margin-top: ${poolsStudioLayout.poolCardMetricsFooterGap};
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
   gap: ${poolsStudioLayout.poolCardBtnGap};
   flex-shrink: 0;
@@ -195,6 +204,11 @@ const ComingSoonPill = styled.span`
   font-size: 13px;
   font-weight: 700;
 `
+
+function formatRewardValue(value: string) {
+  if (!value || value === '—') return value
+  return formatCompactDisplay(value.replace(/\s*MARCO\s*$/i, ''))
+}
 
 function statusLabel(status: PoolPreviewCard['status']) {
   if (status === 'live') return 'Live'
@@ -230,7 +244,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           </StatusPill>
         </TopRow>
 
-        <AprSection>
+        <AprSection $comingSoon={pool.status === 'coming-soon'}>
           <PsMetricLabel>APR</PsMetricLabel>
           <AprValue $status={pool.status}>{aprText}</AprValue>
         </AprSection>
@@ -254,7 +268,9 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           </MetricCell>
           <MetricCell>
             <PsMetricLabel>Daily Rewards</PsMetricLabel>
-            <MetricValue $tone="green">{pool.dailyRewards}</MetricValue>
+            <MetricValue $tone={pool.dailyRewards !== '—' ? 'green' : 'muted'}>
+              {formatRewardValue(pool.dailyRewards)}
+            </MetricValue>
           </MetricCell>
           <MetricCell>
             <PsMetricLabel>Status</PsMetricLabel>

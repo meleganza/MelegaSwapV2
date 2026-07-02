@@ -4,6 +4,7 @@ import type { ProjectPreviewCard } from '../projectsStudioData'
 import { ratingColor } from '../projectsStudioData'
 import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 import {
+  PrFollowBtn,
   PrMetricLabel,
   PrMetricValue,
   PrSmallGhostBtn,
@@ -14,7 +15,6 @@ import {
 const Card = styled.article`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   height: ${projectsStudioLayout.cardHeight};
   min-height: ${projectsStudioLayout.cardHeight};
   padding: ${projectsStudioLayout.cardPadding};
@@ -31,33 +31,46 @@ const Card = styled.article`
   }
 `
 
-const Body = styled.div`
+const Split = styled.div`
   display: flex;
-  flex-direction: column;
   flex: 1;
   min-height: 0;
-  gap: 10px;
+  gap: 16px;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
 `
 
-const TopRow = styled.div`
+const LeftPane = styled.div`
+  flex: 0 0 60%;
+  min-width: 0;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 10px;
 `
 
-const Rank = styled.span`
-  font-size: 12px;
-  font-weight: 800;
-  color: ${projectsStudioColors.muted};
-  min-width: 20px;
+const RightPane = styled.div`
+  flex: 0 0 calc(40% - 16px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid ${projectsStudioColors.rowBorder};
+  padding-left: 16px;
+
+  @media (max-width: 767px) {
+    flex: 1;
+    border-left: none;
+    border-top: 1px solid ${projectsStudioColors.rowBorder};
+    padding-left: 0;
+    padding-top: 12px;
+  }
 `
 
-const HeaderMain = styled.div`
+const HeaderRow = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  flex: 1;
   min-width: 0;
 `
 
@@ -67,7 +80,7 @@ const HeaderText = styled.div`
 `
 
 const Name = styled.div`
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
   color: ${projectsStudioColors.text};
@@ -75,7 +88,7 @@ const Name = styled.div`
 
 const Category = styled.div`
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -86,7 +99,7 @@ const Chains = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
 `
 
 const ChainBadge = styled.span`
@@ -101,42 +114,71 @@ const ChainBadge = styled.span`
   align-items: center;
 `
 
-const StatusBadge = styled.span<{ $status: ProjectPreviewCard['status'] }>`
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
+const SummaryLabel = styled.div`
   font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid
-    ${({ $status }) =>
-      $status === 'verified'
-        ? projectsStudioColors.green
-        : $status === 'new'
-          ? projectsStudioColors.gold
-          : projectsStudioColors.borderStrong};
-  color: ${({ $status }) =>
-    $status === 'verified'
-      ? projectsStudioColors.green
-      : $status === 'new'
-        ? projectsStudioColors.gold
-        : projectsStudioColors.secondary};
-  background: ${({ $status }) =>
-    $status === 'verified' ? 'rgba(0,230,118,0.08)' : $status === 'new' ? projectsStudioColors.previewBadgeBg : 'transparent'};
+  color: ${projectsStudioColors.gold};
 `
 
-const RatingBadge = styled.div<{ $color: string }>`
+const SummaryWrap = styled.div`
+  position: relative;
+  max-height: calc(1.45em * 3);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.2em;
+    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 0%, #101010 100%);
+    pointer-events: none;
+  }
+`
+
+const Summary = styled.p`
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: ${projectsStudioColors.summary};
+`
+
+const Metrics = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
+  row-gap: 10px;
+  margin-top: auto;
+`
+
+const MetricCell = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+`
+
+const RatingBlock = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
-  flex-shrink: 0;
+  margin-bottom: 12px;
+`
+
+const RatingLabel = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${projectsStudioColors.muted};
 `
 
 const RatingScore = styled.span<{ $color: string }>`
-  font-size: 18px;
+  font-size: 32px;
   font-weight: 800;
   line-height: 1;
   color: ${({ $color }) =>
@@ -152,75 +194,28 @@ const RatingScore = styled.span<{ $color: string }>`
 `
 
 const RatingSub = styled.span`
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: ${projectsStudioColors.muted};
 `
 
-const SummaryLabel = styled.div`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.gold};
-`
-
-const Summary = styled.p`
-  margin: 4px 0 0;
-  font-size: 14px;
-  line-height: 1.45;
-  color: ${projectsStudioColors.summary};
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`
-
-const Metrics = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 16px;
-  row-gap: 8px;
-`
-
-const MetricCell = styled.div`
+const SideFields = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-`
-
-const RatingBox = styled.div`
-  height: ${projectsStudioLayout.ratingBoxHeight};
-  min-height: ${projectsStudioLayout.ratingBoxHeight};
-  border-radius: 12px;
-  border: 1px solid ${projectsStudioColors.border};
-  background: rgba(255, 255, 255, 0.02);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  padding: 10px 12px;
-  align-items: center;
+  flex: 1;
+  min-height: 0;
 `
 
-const RatingItem = styled.div`
+const SideField = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0;
 `
 
-const RatingItemLabel = styled.span`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.muted};
-`
-
-const RatingItemValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
+const SideValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? projectsStudioColors.green
@@ -228,43 +223,46 @@ const RatingItemValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' 
         ? projectsStudioColors.gold
         : $tone === 'red'
           ? projectsStudioColors.red
-          : projectsStudioColors.text};
+          : $tone === 'gray'
+            ? projectsStudioColors.muted
+            : projectsStudioColors.text};
+  word-break: break-all;
 `
 
-const Footer = styled.div`
+const ButtonRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: stretch;
   gap: ${projectsStudioLayout.btnGap};
-  flex-shrink: 0;
+  margin-top: auto;
   padding-top: 10px;
-
-  @media (max-width: 359px) {
-    flex-direction: column;
-    width: 100%;
-
-    a,
-    button {
-      width: 100%;
-    }
-  }
+  min-height: ${projectsStudioLayout.cardFooterHeight};
+  justify-content: flex-end;
 `
 
 interface Props {
   project: ProjectPreviewCard
 }
 
+function metricValue(project: ProjectPreviewCard, label: string) {
+  return project.metrics.find((m) => m.label === label)?.value ?? '—'
+}
+
+function metricTone(project: ProjectPreviewCard, label: string) {
+  return project.metrics.find((m) => m.label === label)?.tone
+}
+
 export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   const color = ratingColor(project.rating)
-  const displayMetrics = project.metrics.slice(0, 8)
+  const liquidity = metricValue(project, 'Liquidity')
+  const audit = metricValue(project, 'Audit')
 
   return (
     <Card data-pr-project-card>
-      <Body>
-        <TopRow>
-          <Rank>#{project.rank}</Rank>
-          <HeaderMain>
-            <ProjectLogo name={project.name} symbol={project.symbol} size={48} />
+      <Split>
+        <LeftPane>
+          <HeaderRow>
+            <ProjectLogo name={project.name} symbol={project.symbol} size={44} />
             <HeaderText>
               <Name>{project.name}</Name>
               <Category>{project.category}</Category>
@@ -272,56 +270,74 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
                 {project.chains.map((chain) => (
                   <ChainBadge key={chain}>{chain}</ChainBadge>
                 ))}
-                <StatusBadge $status={project.status}>
-                  {project.status === 'verified' ? 'Verified' : project.status === 'new' ? 'New' : 'Community'}
-                </StatusBadge>
               </Chains>
             </HeaderText>
-          </HeaderMain>
-          <RatingBadge $color={color}>
+          </HeaderRow>
+
+          <div>
+            <SummaryLabel>AI Summary</SummaryLabel>
+            <SummaryWrap>
+              <Summary>{project.aiSummary}</Summary>
+            </SummaryWrap>
+          </div>
+
+          <Metrics>
+            {project.metrics.map((metric) => (
+              <MetricCell key={metric.label}>
+                <PrMetricLabel>{metric.label}</PrMetricLabel>
+                <PrMetricValue $tone={metric.tone}>{metric.value}</PrMetricValue>
+              </MetricCell>
+            ))}
+          </Metrics>
+        </LeftPane>
+
+        <RightPane>
+          <RatingBlock>
+            <RatingLabel>AI Rating</RatingLabel>
             <RatingScore $color={color}>{project.rating}</RatingScore>
-            <RatingSub>/100</RatingSub>
-          </RatingBadge>
-        </TopRow>
+            <RatingSub>/100 · {project.aiConfidence} confidence</RatingSub>
+          </RatingBlock>
 
-        <div>
-          <SummaryLabel>AI Summary</SummaryLabel>
-          <Summary>{project.aiSummary}</Summary>
-        </div>
+          <SideFields>
+            <SideField>
+              <PrMetricLabel>Risk</PrMetricLabel>
+              <SideValue $tone={project.riskTone}>{project.risk}</SideValue>
+            </SideField>
+            <SideField>
+              <PrMetricLabel>Liquidity</PrMetricLabel>
+              <SideValue $tone={metricTone(project, 'Liquidity')}>{liquidity}</SideValue>
+            </SideField>
+            <SideField>
+              <PrMetricLabel>Audit</PrMetricLabel>
+              <SideValue $tone={metricTone(project, 'Audit')}>{audit}</SideValue>
+            </SideField>
+            <SideField>
+              <PrMetricLabel>Website</PrMetricLabel>
+              <SideValue>{project.website}</SideValue>
+            </SideField>
+            <SideField>
+              <PrMetricLabel>Contract</PrMetricLabel>
+              <SideValue
+                $tone={
+                  project.contract === 'Unverified' ? 'red' : project.contract === '—' ? 'gray' : undefined
+                }
+              >
+                {project.contract}
+              </SideValue>
+            </SideField>
+          </SideFields>
 
-        <Metrics>
-          {displayMetrics.map((metric) => (
-            <MetricCell key={metric.label}>
-              <PrMetricLabel>{metric.label}</PrMetricLabel>
-              <PrMetricValue $tone={metric.tone}>{metric.value}</PrMetricValue>
-            </MetricCell>
-          ))}
-        </Metrics>
-
-        <RatingBox>
-          <RatingItem>
-            <RatingItemLabel>AI Confidence</RatingItemLabel>
-            <RatingItemValue>{project.aiConfidence}</RatingItemValue>
-          </RatingItem>
-          <RatingItem>
-            <RatingItemLabel>Melega Rating</RatingItemLabel>
-            <RatingItemValue $tone="green">{project.melegaRating}</RatingItemValue>
-          </RatingItem>
-          <RatingItem>
-            <RatingItemLabel>Risk</RatingItemLabel>
-            <RatingItemValue $tone={project.riskTone}>{project.risk}</RatingItemValue>
-          </RatingItem>
-        </RatingBox>
-      </Body>
-
-      <Footer>
-        <PrSmallPrimaryBtn as="a" href="/swap">
-          Trade
-        </PrSmallPrimaryBtn>
-        <PrSmallGhostBtn as="a" href={`/projects/${project.slug}`}>
-          Open Project
-        </PrSmallGhostBtn>
-      </Footer>
+          <ButtonRow>
+            <PrSmallPrimaryBtn as="a" href="/swap">
+              Trade
+            </PrSmallPrimaryBtn>
+            <PrSmallGhostBtn as="a" href={`/projects/${project.slug}`}>
+              Open Project
+            </PrSmallGhostBtn>
+            <PrFollowBtn type="button">Follow</PrFollowBtn>
+          </ButtonRow>
+        </RightPane>
+      </Split>
     </Card>
   )
 }
