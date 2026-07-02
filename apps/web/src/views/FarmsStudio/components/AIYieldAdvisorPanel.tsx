@@ -58,8 +58,9 @@ export const AIYieldAdvisorPanel: React.FC = () => (
   <FsPanel
     data-fs-panel
     data-fs-advisor
-    $width={farmsStudioLayout.advisorWidth}
+    $width="100%"
     $height={farmsStudioLayout.featuredHeight}
+    style={{ padding: '18px' }}
   >
     <FsSectionTitle>AI Yield Advisor</FsSectionTitle>
     <List>

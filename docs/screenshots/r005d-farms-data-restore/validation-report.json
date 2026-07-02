@@ -1,0 +1,15 @@
+{
+  "task": "R005-D FARMS DATA RESTORE",
+  "branch": "design-system-foundation",
+  "build": "pass",
+  "tests": {
+    "design-system": "8/8 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "farms-desktop-1440x900.png",
+    "farms-desktop-1728x1117.png",
+    "farms-mobile-390x844.png",
+    "farms-mobile-428x926.png"
+  ]
+}

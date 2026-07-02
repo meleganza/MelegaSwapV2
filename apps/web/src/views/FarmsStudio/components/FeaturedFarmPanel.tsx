@@ -119,8 +119,9 @@ export const FeaturedFarmPanel: React.FC = () => (
   <FsPanel
     data-fs-panel
     data-fs-featured
-    $width={farmsStudioLayout.featuredWidth}
+    $width="100%"
     $height={farmsStudioLayout.featuredHeight}
+    style={{ padding: '18px' }}
   >
     <FsPanelTitle style={{ marginBottom: 10 }}>Featured Farm</FsPanelTitle>
     <Inner>
@@ -143,7 +144,7 @@ export const FeaturedFarmPanel: React.FC = () => (
         </Metrics>
         <BtnRow>
           <FsPrimaryBtn type="button">Stake</FsPrimaryBtn>
-          <FsGhostBtn type="button">Details</FsGhostBtn>
+          <FsGhostBtn type="button">Analyze</FsGhostBtn>
         </BtnRow>
       </Main>
       <ChartWrap data-fs-mini-chart aria-hidden>

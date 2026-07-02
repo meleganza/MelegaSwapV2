@@ -1,23 +1,25 @@
-/** Farms Studio layout constants — R005-B final fit. */
+/** Farms Studio layout constants — R005-D data restore. */
 export const farmsStudioLayout = {
   contentMax: '1180px',
   contentPaddingX: '18px',
   contentPaddingTop: '18px',
-  contentPaddingBottom: '32px',
+  contentPaddingBottom: '40px',
   sectionGap: '16px',
+  pageGridColumns: 3,
+  pageGridGap: '14px',
   kpiGap: '12px',
   kpiHeight: '86px',
-  featuredWidth: '740px',
-  advisorWidth: '340px',
-  featuredHeight: '300px',
+  featuredHeight: '270px',
   featuredMetricColWidth: '120px',
   filterHeight: '44px',
   filterMarginTop: '16px',
   gridGap: '14px',
   gridMarginTop: '16px',
-  farmCardHeight: '220px',
+  farmCardHeight: '238px',
+  farmCardHeightExpanded: '340px',
   farmCardBtnHeight: '40px',
   farmCardBtnWidth: '92px',
+  farmCardAnalyzeWidth: '100px',
   activityHeight: '250px',
   activityMarginTop: '18px',
   activityRowHeight: '42px',
@@ -45,3 +47,4 @@ export const farmsStudioColors = {
 } as const
 
 export const FARMS_STUDIO_PREVIEW_LABEL = 'PREVIEW LAYOUT'
+export const FARMS_ACTIVITY_PREVIEW_LABEL = 'Indexed Preview'

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { FARMS_ACTIVITY_ROWS } from '../farmsStudioData'
-import { FARMS_STUDIO_PREVIEW_LABEL, farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { FARMS_ACTIVITY_PREVIEW_LABEL, farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
 import { FsPanel, FsPreviewBadge } from './farmsStudioPrimitives'
 
 const Head = styled.div`
@@ -111,7 +111,7 @@ export const FarmsActivityTable: React.FC = () => (
     <Head>
       <Title>Recent Farming Activity</Title>
       <FsPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
-        {FARMS_STUDIO_PREVIEW_LABEL}
+        {FARMS_ACTIVITY_PREVIEW_LABEL}
       </FsPreviewBadge>
     </Head>
     <TableWrap>

@@ -66,12 +66,18 @@ const FarmsStudioGlobalStyle = createGlobalStyle`
   }
 
   @media (max-width: 767px) {
-    [data-farms-studio-screen] [data-fs-panel],
-    [data-farms-studio-screen] [data-fs-farm-card] {
+    [data-farms-studio-screen] [data-fs-panel] {
       width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
       min-height: 0 !important;
+    }
+
+    [data-farms-studio-screen] [data-fs-farm-card] {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-height: 238px !important;
     }
   }
 `

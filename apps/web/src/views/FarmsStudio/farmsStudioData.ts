@@ -9,17 +9,26 @@ export interface FarmsKpiItem {
   gold?: boolean
 }
 
+export interface FarmAnalyzePreview {
+  aprHistory: string
+  rewardToken: string
+  emission: string
+  contract: string
+  risk: string
+}
+
 export interface FarmPreviewCard {
   id: string
   pair: string
   tokens: [string, string]
   apr?: string
   status: FarmStatus
-  tvl?: string
-  dailyRewards?: string
-  multiplier?: string
-  liquidity?: string
-  cta?: 'stake' | 'details' | 'none'
+  tvl: string
+  dailyRewards: string
+  multiplier: string
+  liquidity: string
+  cta?: 'stake' | 'analyze' | 'none'
+  analyzePreview?: FarmAnalyzePreview
 }
 
 export interface FarmsActivityRow {
@@ -30,6 +39,14 @@ export interface FarmsActivityRow {
   rewards: string
   status: 'indexed' | 'preview'
   actionTone?: 'green' | 'gold' | 'muted'
+}
+
+export const DEFAULT_ANALYZE_PREVIEW: FarmAnalyzePreview = {
+  aprHistory: '7d stable',
+  rewardToken: 'MARCO',
+  emission: '42,000/day',
+  contract: 'Indexed',
+  risk: 'Low',
 }
 
 export const FARMS_KPIS: FarmsKpiItem[] = [
@@ -69,8 +86,9 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     tvl: '$3.21M',
     dailyRewards: '42,000 MARCO',
     multiplier: '3x',
-    liquidity: '$1.2M',
+    liquidity: '$1.20M',
     cta: 'stake',
+    analyzePreview: DEFAULT_ANALYZE_PREVIEW,
   },
   {
     id: 'marco-usdt',
@@ -83,6 +101,10 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     multiplier: '2x',
     liquidity: '$640K',
     cta: 'stake',
+    analyzePreview: {
+      ...DEFAULT_ANALYZE_PREVIEW,
+      emission: '18,400/day',
+    },
   },
   {
     id: 'naiive-bnb',
@@ -95,6 +117,10 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     multiplier: '1.5x',
     liquidity: '$280K',
     cta: 'stake',
+    analyzePreview: {
+      ...DEFAULT_ANALYZE_PREVIEW,
+      emission: '9,200/day',
+    },
   },
   {
     id: 'aster-bnb',
@@ -104,9 +130,13 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     status: 'live',
     tvl: '$190K',
     dailyRewards: '6,800 MARCO',
-    multiplier: '1x',
+    multiplier: '1.2x',
     liquidity: '$190K',
     cta: 'stake',
+    analyzePreview: {
+      ...DEFAULT_ANALYZE_PREVIEW,
+      emission: '6,800/day',
+    },
   },
   {
     id: 'marco-eth',
@@ -117,13 +147,24 @@ export const FARM_PREVIEW_CARDS: FarmPreviewCard[] = [
     dailyRewards: '—',
     multiplier: '—',
     liquidity: '—',
-    cta: 'details',
+    cta: 'analyze',
+    analyzePreview: {
+      aprHistory: '—',
+      rewardToken: 'MARCO',
+      emission: '—',
+      contract: 'Indexing',
+      risk: '—',
+    },
   },
   {
     id: 'marco-base',
     pair: 'MARCO / BASE',
     tokens: ['MARCO', 'BASE'],
     status: 'coming-soon',
+    tvl: '—',
+    dailyRewards: '—',
+    multiplier: '—',
+    liquidity: '—',
     cta: 'none',
   },
 ]

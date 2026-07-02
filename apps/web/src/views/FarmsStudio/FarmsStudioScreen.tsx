@@ -43,18 +43,31 @@ const Content = styled.div`
   }
 `
 
-const FeaturedRow = styled.div`
+export const PageColumnGrid = styled.div`
   display: grid;
-  gap: ${farmsStudioLayout.sectionGap};
+  grid-template-columns: repeat(${farmsStudioLayout.pageGridColumns}, minmax(0, 1fr));
+  column-gap: ${farmsStudioLayout.pageGridGap};
+  row-gap: ${farmsStudioLayout.pageGridGap};
+  width: 100%;
   min-width: 0;
 
-  @media (min-width: 1100px) {
-    grid-template-columns: ${farmsStudioLayout.featuredWidth} ${farmsStudioLayout.advisorWidth};
-  }
-
-  @media (max-width: 1099px) {
+  @media (max-width: 767px) {
     grid-template-columns: 1fr;
   }
+`
+
+export const FeaturedSlot = styled.div`
+  grid-column: span 2;
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    grid-column: span 1;
+  }
+`
+
+export const AdvisorSlot = styled.div`
+  grid-column: span 1;
+  min-width: 0;
 `
 
 export const FarmsStudioScreen: React.FC = () => (
@@ -65,10 +78,14 @@ export const FarmsStudioScreen: React.FC = () => (
     <Content>
       <FarmsStudioPageHeader />
       <FarmsKpiRow />
-      <FeaturedRow>
-        <FeaturedFarmPanel />
-        <AIYieldAdvisorPanel />
-      </FeaturedRow>
+      <PageColumnGrid data-fs-page-grid>
+        <FeaturedSlot>
+          <FeaturedFarmPanel />
+        </FeaturedSlot>
+        <AdvisorSlot>
+          <AIYieldAdvisorPanel />
+        </AdvisorSlot>
+      </PageColumnGrid>
       <FarmsFilterRow />
       <FarmsGrid />
       <FarmsActivityTable />

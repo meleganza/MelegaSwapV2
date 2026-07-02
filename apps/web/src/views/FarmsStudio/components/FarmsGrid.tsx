@@ -6,14 +6,12 @@ import FarmGridCard from './FarmGridCard'
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: ${farmsStudioLayout.gridGap};
+  grid-template-columns: repeat(${farmsStudioLayout.pageGridColumns}, minmax(0, 1fr));
+  column-gap: ${farmsStudioLayout.pageGridGap};
+  row-gap: ${farmsStudioLayout.pageGridGap};
   margin-top: ${farmsStudioLayout.gridMarginTop};
+  width: 100%;
   min-width: 0;
-
-  @media (max-width: 1099px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
