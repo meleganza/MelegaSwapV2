@@ -1,0 +1,12 @@
+{
+  "task": "R005-C RESTORE FARMS CTA",
+  "branch": "design-system-foundation",
+  "build": "pass",
+  "tests": {
+    "design-system": "8/8 pass"
+  },
+  "screenshots": [
+    "farms-desktop-1440.png",
+    "farms-desktop-1728.png"
+  ]
+}

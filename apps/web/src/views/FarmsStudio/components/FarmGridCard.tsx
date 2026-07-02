@@ -2,20 +2,28 @@ import React from 'react'
 import styled from 'styled-components'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
-import { FsCardMetricLabel, FsCardMetricValue, FsSmallGhostBtn, FsSmallPrimaryBtn } from './farmsStudioPrimitives'
+import { FsCardMetricLabel, FsCardMetricValue } from './farmsStudioPrimitives'
 
 const Card = styled.article`
   height: ${farmsStudioLayout.farmCardHeight};
   min-height: ${farmsStudioLayout.farmCardHeight};
-  padding: 14px 16px 16px;
+  padding: 16px;
   border-radius: 18px;
   background: ${farmsStudioColors.panel};
   border: 1px solid ${farmsStudioColors.border};
   box-sizing: border-box;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  row-gap: 18px;
+  min-width: 0;
+  overflow: hidden;
+`
+
+const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 0;
+  min-height: 0;
   overflow: hidden;
 `
 
@@ -137,7 +145,9 @@ const Metrics = styled.div`
   display: flex;
   flex-direction: column;
   gap: 14px;
-  flex-shrink: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 `
 
 const Metric = styled.div`
@@ -147,11 +157,69 @@ const Metric = styled.div`
   min-width: 0;
 `
 
-const BtnRow = styled.div`
+const BtnRow = styled.div<{ $centered?: boolean }>`
   display: flex;
   gap: 10px;
-  margin-top: 18px;
+  align-items: center;
+  justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-start')};
   flex-shrink: 0;
+  height: ${farmsStudioLayout.farmCardBtnHeight};
+`
+
+const CardStakeBtn = styled.button`
+  width: ${farmsStudioLayout.farmCardBtnWidth};
+  min-width: ${farmsStudioLayout.farmCardBtnWidth};
+  height: ${farmsStudioLayout.farmCardBtnHeight};
+  min-height: ${farmsStudioLayout.farmCardBtnHeight};
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: #d4af37;
+  color: #050505;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 150ms ease, transform 150ms ease;
+
+  &:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
+`
+
+const CardDetailsBtn = styled.button`
+  width: ${farmsStudioLayout.farmCardBtnWidth};
+  min-width: ${farmsStudioLayout.farmCardBtnWidth};
+  height: ${farmsStudioLayout.farmCardBtnHeight};
+  min-height: ${farmsStudioLayout.farmCardBtnHeight};
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: transparent;
+  color: #d4af37;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+
+  &:hover {
+    background: rgba(212, 175, 55, 0.08);
+    transform: translateY(-1px);
+  }
+`
+
+const ComingSoonBadge = styled.div`
+  width: 120px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid ${farmsStudioColors.border};
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 14px;
+  font-weight: 700;
+  color: ${farmsStudioColors.muted};
 `
 
 const statusLabel = (status: FarmPreviewCard['status']) => {
@@ -162,67 +230,89 @@ const statusLabel = (status: FarmPreviewCard['status']) => {
   return 'Coming soon'
 }
 
+const renderFooter = (farm: FarmPreviewCard) => {
+  if (farm.status === 'coming-soon' || farm.cta === 'none') {
+    return (
+      <BtnRow $centered>
+        <ComingSoonBadge>Coming Soon</ComingSoonBadge>
+      </BtnRow>
+    )
+  }
+
+  if (farm.status === 'indexing' || farm.cta === 'details') {
+    return (
+      <BtnRow $centered>
+        <CardDetailsBtn type="button">Details</CardDetailsBtn>
+      </BtnRow>
+    )
+  }
+
+  return (
+    <BtnRow>
+      <CardStakeBtn type="button">Stake</CardStakeBtn>
+      <CardDetailsBtn type="button">Details</CardDetailsBtn>
+    </BtnRow>
+  )
+}
+
 export interface FarmGridCardProps {
   farm: FarmPreviewCard
 }
 
 export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => (
   <Card data-fs-farm-card>
-    <TopRow>
-      <PairBlock>
-        <Icons>
-          <TokenIcon>{farm.tokens[0].slice(0, 1)}</TokenIcon>
-          <TokenIcon $offset>{farm.tokens[1].slice(0, 1)}</TokenIcon>
-        </Icons>
-        <PairName>{farm.pair}</PairName>
-      </PairBlock>
-      <StatusPill $tone={farm.status}>{statusLabel(farm.status)}</StatusPill>
-    </TopRow>
+    <CardContent>
+      <TopRow>
+        <PairBlock>
+          <Icons>
+            <TokenIcon>{farm.tokens[0].slice(0, 1)}</TokenIcon>
+            <TokenIcon $offset>{farm.tokens[1].slice(0, 1)}</TokenIcon>
+          </Icons>
+          <PairName>{farm.pair}</PairName>
+        </PairBlock>
+        <StatusPill $tone={farm.status}>{statusLabel(farm.status)}</StatusPill>
+      </TopRow>
 
-    {farm.apr ? (
-      <AprBlock>
-        <AprValue>{farm.apr}</AprValue>
-        <AprLabel>APR</AprLabel>
-      </AprBlock>
-    ) : farm.status === 'indexing' ? (
-      <AprBlock>
-        <AprValue style={{ fontSize: 28, color: farmsStudioColors.goldBright }}>Indexing...</AprValue>
-        <AprLabel>APR</AprLabel>
-      </AprBlock>
-    ) : (
-      <AprBlock>
-        <AprValue style={{ fontSize: 28, color: farmsStudioColors.muted }}>Coming soon</AprValue>
-        <AprLabel>APR</AprLabel>
-      </AprBlock>
-    )}
+      {farm.apr ? (
+        <AprBlock>
+          <AprValue>{farm.apr}</AprValue>
+          <AprLabel>APR</AprLabel>
+        </AprBlock>
+      ) : farm.status === 'indexing' ? (
+        <AprBlock>
+          <AprValue style={{ fontSize: 28, color: farmsStudioColors.goldBright }}>Indexing...</AprValue>
+          <AprLabel>APR</AprLabel>
+        </AprBlock>
+      ) : (
+        <AprBlock>
+          <AprValue style={{ fontSize: 28, color: farmsStudioColors.muted }}>Coming soon</AprValue>
+          <AprLabel>APR</AprLabel>
+        </AprBlock>
+      )}
 
-    {farm.tvl ? (
-      <Metrics>
-        <Metric>
-          <FsCardMetricLabel>TVL</FsCardMetricLabel>
-          <FsCardMetricValue>{farm.tvl}</FsCardMetricValue>
-        </Metric>
-        <Metric>
-          <FsCardMetricLabel>Liquidity</FsCardMetricLabel>
-          <FsCardMetricValue>{farm.liquidity}</FsCardMetricValue>
-        </Metric>
-        <Metric>
-          <FsCardMetricLabel>Rewards / Day</FsCardMetricLabel>
-          <FsCardMetricValue>{farm.dailyRewards}</FsCardMetricValue>
-        </Metric>
-        <Metric>
-          <FsCardMetricLabel>Multiplier</FsCardMetricLabel>
-          <FsCardMetricValue>{farm.multiplier}</FsCardMetricValue>
-        </Metric>
-      </Metrics>
-    ) : null}
+      {farm.tvl ? (
+        <Metrics>
+          <Metric>
+            <FsCardMetricLabel>TVL</FsCardMetricLabel>
+            <FsCardMetricValue>{farm.tvl}</FsCardMetricValue>
+          </Metric>
+          <Metric>
+            <FsCardMetricLabel>Liquidity</FsCardMetricLabel>
+            <FsCardMetricValue>{farm.liquidity}</FsCardMetricValue>
+          </Metric>
+          <Metric>
+            <FsCardMetricLabel>Rewards / Day</FsCardMetricLabel>
+            <FsCardMetricValue>{farm.dailyRewards}</FsCardMetricValue>
+          </Metric>
+          <Metric>
+            <FsCardMetricLabel>Multiplier</FsCardMetricLabel>
+            <FsCardMetricValue>{farm.multiplier}</FsCardMetricValue>
+          </Metric>
+        </Metrics>
+      ) : null}
+    </CardContent>
 
-    {farm.cta !== 'none' ? (
-      <BtnRow>
-        {farm.cta !== 'details' ? <FsSmallPrimaryBtn type="button">Stake</FsSmallPrimaryBtn> : null}
-        <FsSmallGhostBtn type="button">Details</FsSmallGhostBtn>
-      </BtnRow>
-    ) : null}
+    {renderFooter(farm)}
   </Card>
 )
 
