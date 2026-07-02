@@ -1,18 +1,24 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
-import { RADAR_FONT, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
+import { heatBlockColor } from '../radarStudioData'
+import {
+  RADAR_FONT_BODY,
+  RADAR_FONT_DISPLAY,
+  radarStudioColors,
+  radarStudioLayout,
+} from '../radarStudioTokens'
 
-const sparkDraw = keyframes`
-  0% { stroke-dashoffset: 140; }
-  100% { stroke-dashoffset: 0; }
+const sparkShimmer = keyframes`
+  0% { stroke-dashoffset: 140; opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.6; }
 `
 
 export const RdPanel = styled.div<{ $height?: string }>`
   background: ${radarStudioColors.panel};
   border: 1px solid ${radarStudioColors.border};
-  border-radius: 20px;
-  box-shadow: ${radarStudioColors.shadow};
+  border-radius: ${radarStudioLayout.cardRadius};
   box-sizing: border-box;
   overflow: hidden;
   ${({ $height }) =>
@@ -26,78 +32,94 @@ export const RdPanel = styled.div<{ $height?: string }>`
 
 export const RdSectionTitle = styled.h2`
   margin: 0 0 14px;
-  font-family: ${RADAR_FONT};
-  font-size: 28px;
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 22px;
   font-weight: 800;
   line-height: 1.1;
   color: ${radarStudioColors.white};
 `
 
 export const RdLabel = styled.span`
-  font-family: ${RADAR_FONT};
-  font-size: 12px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: ${radarStudioColors.grey};
 `
 
 export const RdPrimaryBtn = styled.button`
-  height: ${radarStudioLayout.discoveryBtnHeight};
-  min-height: ${radarStudioLayout.discoveryBtnHeight};
-  padding: 0 16px;
+  height: ${radarStudioLayout.eventBtnHeight};
+  min-height: ${radarStudioLayout.eventBtnHeight};
+  padding: 0 14px;
   border: none;
   border-radius: 10px;
   background: ${radarStudioColors.gold};
   color: #050505;
-  font-family: ${RADAR_FONT};
-  font-size: 14px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 180ms ease;
+  white-space: nowrap;
 
   &:hover {
     transform: scale(0.98);
   }
+
+  @media (max-width: 767px) {
+    min-height: 44px;
+    height: 44px;
+  }
 `
 
 export const RdGhostBtn = styled.button`
-  height: ${radarStudioLayout.discoveryBtnHeight};
-  min-height: ${radarStudioLayout.discoveryBtnHeight};
-  padding: 0 14px;
+  height: ${radarStudioLayout.eventBtnHeight};
+  min-height: ${radarStudioLayout.eventBtnHeight};
+  padding: 0 12px;
   border-radius: 10px;
   border: 1px solid ${radarStudioColors.border};
   background: transparent;
   color: ${radarStudioColors.gold};
-  font-family: ${RADAR_FONT};
-  font-size: 14px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 180ms ease, border-color 180ms ease;
+  white-space: nowrap;
 
   &:hover {
     transform: scale(0.98);
     border-color: ${radarStudioColors.gold};
   }
+
+  @media (max-width: 767px) {
+    min-height: 44px;
+    height: 44px;
+  }
+`
+
+export const RdOutlineGoldBtn = styled(RdGhostBtn)`
+  border-color: ${radarStudioColors.gold};
 `
 
 export const RdChip = styled.button<{ $active?: boolean }>`
   height: ${radarStudioLayout.filterHeight};
   min-height: ${radarStudioLayout.filterHeight};
   padding: 0 16px;
-  border-radius: ${radarStudioLayout.filterRadius};
+  border-radius: 999px;
   border: 1px solid ${({ $active }) => ($active ? radarStudioColors.gold : radarStudioColors.border)};
   background: ${({ $active }) => ($active ? radarStudioColors.gold : 'transparent')};
-  color: ${({ $active }) => ($active ? '#050505' : radarStudioColors.grey)};
-  font-family: ${RADAR_FONT};
+  color: ${({ $active }) => ($active ? '#050505' : radarStudioColors.secondary)};
+  font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 180ms ease, border-color 180ms ease;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 
   &:hover {
-    transform: scale(0.98);
+    transform: translateY(-1px);
     border-color: ${radarStudioColors.gold};
   }
 `
@@ -128,7 +150,7 @@ export const RadarProjectLogo: React.FC<{ name: string; symbol?: string; size?: 
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
-        fontFamily: RADAR_FONT,
+        fontFamily: RADAR_FONT_DISPLAY,
         fontSize: size * 0.32,
         fontWeight: 800,
         color: radarStudioColors.gold,
@@ -145,13 +167,13 @@ const SparkPath = styled.path`
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 140;
-  animation: ${sparkDraw} 6s ease-in-out infinite alternate;
+  animation: ${sparkShimmer} 8s ease-in-out infinite alternate;
 `
 
 export const AnimatedSparkline: React.FC<{ points: number[]; width?: number; height?: number; color?: string }> = ({
   points,
-  width = radarStudioLayout.sparklineW,
-  height = radarStudioLayout.sparklineH,
+  width = 56,
+  height = 20,
   color,
 }) => {
   const max = Math.max(...points)
@@ -172,29 +194,25 @@ export const AnimatedSparkline: React.FC<{ points: number[]; width?: number; hei
   )
 }
 
-export const HeatBlocks: React.FC<{ value: number; invert?: boolean }> = ({ value, invert }) => {
-  const level =
-    (invert ? 100 - value : value) >= 80
-      ? radarStudioColors.green
-      : (invert ? 100 - value : value) >= 60
-        ? radarStudioColors.yellow
-        : (invert ? 100 - value : value) >= 40
-          ? radarStudioColors.orange
-          : radarStudioColors.red
-  const filled = Math.round((value / 100) * 10)
+export const HeatBlocks: React.FC<{ value: number; invert?: boolean; count?: number }> = ({
+  value,
+  invert,
+  count = 12,
+}) => {
+  const filled = Math.round((value / 100) * count)
 
   return (
     <span data-rd-heat-blocks style={{ display: 'inline-flex', gap: 2 }}>
-      {Array.from({ length: 10 }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <span
           key={i}
+          data-rd-heat-block
           style={{
-            width: 8,
-            height: 12,
+            width: 6,
+            height: 10,
             borderRadius: 2,
-            background: i < filled ? level : 'rgba(255,255,255,0.08)',
-            animation: i < filled ? 'rdHeatPulse 5s ease-in-out infinite' : undefined,
-            animationDelay: `${i * 0.05}s`,
+            background: i < filled ? heatBlockColor(value, invert) : 'rgba(255,255,255,0.08)',
+            animationDelay: `${i * 0.08}s`,
           }}
         />
       ))}
@@ -203,14 +221,9 @@ export const HeatBlocks: React.FC<{ value: number; invert?: boolean }> = ({ valu
 }
 
 export function StatusDot({ level }: { level: 'green' | 'yellow' | 'orange' | 'red' }) {
-  const color =
-    level === 'green'
-      ? radarStudioColors.green
-      : level === 'yellow'
-        ? radarStudioColors.yellow
-        : level === 'orange'
-          ? radarStudioColors.orange
-          : radarStudioColors.red
+  const color = heatBlockColor(
+    level === 'green' ? 90 : level === 'yellow' ? 65 : level === 'orange' ? 45 : 20,
+  )
   return (
     <span
       style={{
@@ -223,3 +236,17 @@ export function StatusDot({ level }: { level: 'green' | 'yellow' | 'orange' | 'r
     />
   )
 }
+
+export const SignalChip = styled.span`
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid ${radarStudioColors.border};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 10px;
+  font-weight: 700;
+  color: ${radarStudioColors.secondary};
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+`

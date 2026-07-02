@@ -1,34 +1,31 @@
 import React from 'react'
 import styled from 'styled-components'
-import { RADAR_DISCOVERIES } from '../radarStudioData'
+import { RADAR_EVENTS } from '../radarStudioData'
 import { radarStudioLayout } from '../radarStudioTokens'
 import { RdSectionTitle } from './radarStudioPrimitives'
-import RadarDiscoveryCard from './RadarDiscoveryCard'
+import RadarEventCard from './RadarEventCard'
 
 const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
 `
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: ${radarStudioLayout.discoveryCardGap};
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
+const Stack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${radarStudioLayout.eventCardGap};
 `
 
 export const RadarDiscoveriesGrid: React.FC = () => (
   <Section data-rd-discoveries>
     <RdSectionTitle>AI Discoveries</RdSectionTitle>
-    <Grid>
-      {RADAR_DISCOVERIES.map((project) => (
-        <RadarDiscoveryCard key={project.name} project={project} />
+    <Stack>
+      {RADAR_EVENTS.map((event, index) => (
+        <RadarEventCard key={event.id} event={event} index={index} />
       ))}
-    </Grid>
+    </Stack>
   </Section>
 )
 

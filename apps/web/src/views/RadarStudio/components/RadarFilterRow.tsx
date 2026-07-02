@@ -8,6 +8,10 @@ const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: ${radarStudioLayout.filterGap};
+  overflow-x: auto;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
 `
 
 export const RadarFilterRow: React.FC = () => {

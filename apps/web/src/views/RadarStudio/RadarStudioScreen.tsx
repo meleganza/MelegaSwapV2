@@ -7,14 +7,15 @@ import RadarDiscoveriesGrid from './components/RadarDiscoveriesGrid'
 import RadarFilterRow from './components/RadarFilterRow'
 import RadarHeatmapTable from './components/RadarHeatmapTable'
 import RadarKpiRow from './components/RadarKpiRow'
-import RadarLiveScanBar from './components/RadarLiveScanBar'
-import RadarSidebar from './components/RadarSidebar'
+import RadarLiveEventStream from './components/RadarLiveEventStream'
+import RadarOpsLeftColumn from './components/RadarOpsLeftColumn'
+import RadarOpsRightColumn from './components/RadarOpsRightColumn'
 import RadarStudioPageHeader from './components/RadarStudioPageHeader'
-import { RADAR_FONT, radarStudioColors, radarStudioLayout } from './radarStudioTokens'
+import { RADAR_FONT_BODY, radarStudioColors, radarStudioLayout } from './radarStudioTokens'
 
 const Root = styled.div`
   color: ${radarStudioColors.white};
-  font-family: ${RADAR_FONT};
+  font-family: ${RADAR_FONT_BODY};
   background: ${radarStudioColors.canvas};
   padding: 0 0 32px;
   min-width: 0;
@@ -38,9 +39,9 @@ const Content = styled.div`
   gap: ${radarStudioLayout.sectionGap};
 `
 
-const PageGrid = styled.div`
+const ConsoleGrid = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, ${radarStudioLayout.mainColumnWidth}) minmax(0, ${radarStudioLayout.sidebarWidth});
+  grid-template-columns: minmax(0, 340fr) minmax(0, 520fr) minmax(0, 320fr);
   gap: ${radarStudioLayout.columnGap};
   align-items: start;
 
@@ -57,12 +58,13 @@ export const RadarStudioScreen: React.FC = () => (
     <Content>
       <RadarStudioPageHeader />
       <RadarKpiRow />
-      <RadarLiveScanBar />
+      <RadarLiveEventStream />
       <RadarFilterRow />
-      <PageGrid data-rd-page-grid>
+      <ConsoleGrid data-rd-console-grid>
+        <RadarOpsLeftColumn />
         <RadarDiscoveriesGrid />
-        <RadarSidebar />
-      </PageGrid>
+        <RadarOpsRightColumn />
+      </ConsoleGrid>
       <RadarHeatmapTable />
     </Content>
   </Root>
