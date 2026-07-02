@@ -1,7 +1,7 @@
 import { CHAIN_IDS } from 'utils/wagmi'
-import Collectibles from 'views/Collectibles'
+import CollectiblesStudioScreen from 'views/CollectiblesStudio/CollectiblesStudioScreen'
 
-const CollectiblesPage = () => <Collectibles />
+const CollectiblesPage = () => <CollectiblesStudioScreen />
 
 CollectiblesPage.chains = CHAIN_IDS
 

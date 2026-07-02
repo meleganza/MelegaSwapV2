@@ -1,0 +1,28 @@
+{
+  "task": "R010 COLLECTIBLES EXPERIENCE",
+  "deliverable": "R010_COLLECTIBLES_STUDIO_COMPLETE",
+  "build": "pass",
+  "tests": {
+    "design-system": "11/11 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "collectibles-desktop-1440x900.png",
+    "collectibles-desktop-1728x1117.png",
+    "collectibles-mobile-390x844.png",
+    "collectibles-mobile-428x926.png"
+  ],
+  "validation": {
+    "heroCivilizationPortal": true,
+    "kpiStrip5Cards": true,
+    "featuredMasterMGenesis": true,
+    "aiCollectionAdvisor": true,
+    "filterPills": true,
+    "collectionGrid5Col": true,
+    "utilityBadges": true,
+    "aiScoreRings": true,
+    "rightSidebar5Sections": true,
+    "bottomCtaBanner": true,
+    "mobileResponsive": true
+  }
+}
