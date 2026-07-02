@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MARCO_LOGO_URI } from 'design-system/melega'
+import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
 export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
@@ -140,7 +140,7 @@ export const PsKpiValue = styled.span<{ $gold?: boolean }>`
 `
 
 export const PsKpiDelta = styled.span<{ $positive?: boolean }>`
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: ${({ $positive }) => ($positive ? poolsStudioColors.green : poolsStudioColors.red)};
 `
@@ -159,20 +159,27 @@ export const PsMetricValue = styled.span`
   color: ${poolsStudioColors.text};
 `
 
-const TokenImg = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-`
-
-export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: boolean; logoUri?: string }> = ({
+export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: boolean }> = ({
   symbol,
   size = 24,
   offset,
-  logoUri,
 }) => {
-  const uri = logoUri || (symbol === 'MARCO' ? MARCO_LOGO_URI : undefined)
+  if (symbol === 'MARCO') {
+    return (
+      <span
+        style={{
+          marginLeft: offset ? -6 : 0,
+          position: 'relative',
+          zIndex: offset ? 1 : 2,
+          flexShrink: 0,
+          display: 'inline-flex',
+        }}
+      >
+        <MelegaLogoSvg size={size} />
+      </span>
+    )
+  }
+
   return (
     <span
       style={{
@@ -189,15 +196,12 @@ export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: b
         zIndex: offset ? 1 : 2,
         overflow: 'hidden',
         flexShrink: 0,
+        fontSize: size * 0.38,
+        fontWeight: 800,
+        color: poolsStudioColors.goldBright,
       }}
     >
-      {uri ? (
-        <TokenImg src={uri} alt={symbol} />
-      ) : (
-        <span style={{ fontSize: size * 0.38, fontWeight: 800, color: poolsStudioColors.goldBright }}>
-          {symbol.slice(0, 1)}
-        </span>
-      )}
+      {symbol.slice(0, 1)}
     </span>
   )
 }

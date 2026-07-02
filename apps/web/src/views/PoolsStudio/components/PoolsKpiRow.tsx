@@ -19,18 +19,27 @@ const Row = styled.div`
   }
 `
 
+const ValueBlock = styled.div`
+  position: relative;
+  min-height: 42px;
+  padding-right: ${poolsStudioLayout.sparklineW + 8}px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
 const ValueRow = styled.div`
   display: flex;
   align-items: baseline;
   gap: 8px;
   min-width: 0;
-  flex-wrap: wrap;
 `
 
 const Sparkline = styled.svg`
   position: absolute;
-  right: 14px;
-  bottom: 14px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: ${poolsStudioLayout.sparklineW}px;
   height: ${poolsStudioLayout.sparklineH}px;
 `
@@ -61,13 +70,19 @@ export const PoolsKpiRow: React.FC = () => (
     {POOLS_KPIS.map((kpi) => (
       <PsKpiCard key={kpi.id} data-ps-kpi-card>
         <PsKpiLabel>{kpi.label}</PsKpiLabel>
-        <ValueRow>
-          <PsKpiValue $gold={kpi.gold} data-ps-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-            {kpi.value}
-          </PsKpiValue>
-          {kpi.delta ? <PsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PsKpiDelta> : null}
-        </ValueRow>
-        {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
+        <ValueBlock>
+          <ValueRow>
+            <PsKpiValue $gold={kpi.gold} data-ps-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
+              {kpi.value}
+            </PsKpiValue>
+            {kpi.delta ? (
+              <PsKpiDelta $positive={kpi.deltaPositive} style={{ marginTop: 4 }}>
+                {kpi.delta}
+              </PsKpiDelta>
+            ) : null}
+          </ValueRow>
+          {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
+        </ValueBlock>
       </PsKpiCard>
     ))}
   </Row>

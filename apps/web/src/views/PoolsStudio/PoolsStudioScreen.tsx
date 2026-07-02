@@ -47,7 +47,8 @@ const Content = styled.div`
 
 export const PageGrid12 = styled.div`
   display: grid;
-  grid-template-columns: repeat(${poolsStudioLayout.pageGridColumns}, minmax(0, 1fr));
+  grid-template-columns: minmax(0, calc(66.666% + ${poolsStudioLayout.featuredGridAdjust}))
+    minmax(0, calc(33.333% - ${poolsStudioLayout.featuredGridAdjust}));
   column-gap: ${poolsStudioLayout.pageGridGap};
   row-gap: ${poolsStudioLayout.pageGridGap};
   width: 100%;
@@ -59,21 +60,11 @@ export const PageGrid12 = styled.div`
 `
 
 export const FeaturedSlot = styled.div`
-  grid-column: span 8;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    grid-column: span 1;
-  }
 `
 
 export const AdvisorSlot = styled.div`
-  grid-column: span 4;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    grid-column: span 1;
-  }
 `
 
 export const PoolsStudioScreen: React.FC = () => (

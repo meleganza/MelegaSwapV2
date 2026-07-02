@@ -112,7 +112,7 @@ export const AIRewardAdvisorPanel: React.FC = () => (
     data-ps-advisor
     $height={poolsStudioLayout.featuredHeight}
     $radius="20px"
-    style={{ padding: '18px', maxWidth: poolsStudioLayout.advisorWidth }}
+    style={{ padding: '18px', width: '100%' }}
   >
     <Title>AI Reward Advisor</Title>
     {AI_REWARD_ROWS.map((row) => (

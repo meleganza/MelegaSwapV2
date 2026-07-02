@@ -3,15 +3,16 @@ import styled from 'styled-components'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { DEFAULT_POOL_ANALYZE } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
-import { PoolTokenIcon, PsMetricLabel, PsMetricValue, PsSmallGhostBtn, PsSmallPrimaryBtn } from './poolsStudioPrimitives'
+import { PoolTokenIcon, PsMetricLabel, PsSmallGhostBtn, PsSmallPrimaryBtn } from './poolsStudioPrimitives'
 
 const Card = styled.article<{ $expanded?: boolean }>`
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   height: ${({ $expanded }) =>
     $expanded ? poolsStudioLayout.poolCardHeightExpanded : poolsStudioLayout.poolCardHeight};
   min-height: ${poolsStudioLayout.poolCardHeight};
   padding: 18px;
-  padding-bottom: 64px;
   border-radius: 18px;
   background: ${poolsStudioColors.card};
   border: 1px solid ${poolsStudioColors.border};
@@ -23,8 +24,15 @@ const Card = styled.article<{ $expanded?: boolean }>`
   @media (max-width: 767px) {
     height: auto;
     min-height: ${poolsStudioLayout.poolCardHeight};
-    padding-bottom: 18px;
   }
+`
+
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
 `
 
 const TopRow = styled.div`
@@ -32,7 +40,6 @@ const TopRow = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-width: 0;
 `
 
 const NameBlock = styled.div`
@@ -40,11 +47,6 @@ const NameBlock = styled.div`
   align-items: center;
   gap: 8px;
   min-width: 0;
-`
-
-const Icons = styled.div`
-  display: flex;
-  align-items: center;
 `
 
 const PoolName = styled.span`
@@ -86,12 +88,28 @@ const StatusPill = styled.span<{ $status: PoolPreviewCard['status'] }>`
     $status === 'indexing' ? poolsStudioColors.previewBadgeBg : $status === 'coming-soon' ? 'rgba(255,255,255,0.04)' : 'rgba(0,230,118,0.08)'};
 `
 
-const Apr = styled.div<{ $status: PoolPreviewCard['status'] }>`
-  margin-top: 10px;
+const Metrics = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 18px;
+  row-gap: 12px;
+  max-height: 168px;
+`
+
+const MetricCell = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 34px;
+  min-width: 0;
+`
+
+const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '36px' : $status === 'coming-soon' ? '34px' : '44px'};
+    $status === 'indexing' ? '32px' : $status === 'coming-soon' ? '30px' : '40px'};
   font-weight: 800;
-  line-height: 1;
+  line-height: 42px;
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
@@ -100,32 +118,14 @@ const Apr = styled.div<{ $status: PoolPreviewCard['status'] }>`
         : poolsStudioColors.green};
 `
 
-const AprLabel = styled.div`
-  margin-top: 4px;
-  font-size: 11px;
+const MetricValue = styled.span`
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${poolsStudioColors.muted};
-`
-
-const Metrics = styled.div`
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  row-gap: 8px;
-  column-gap: 18px;
-`
-
-const MetricCell = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
+  color: ${poolsStudioColors.text};
 `
 
 const AnalyzeBlock = styled.div`
-  margin-top: 10px;
+  margin-top: 4px;
   padding-top: 10px;
   border-top: 1px solid ${poolsStudioColors.rowBorder};
   display: grid;
@@ -145,21 +145,24 @@ const AnalyzeItem = styled.div`
   }
 `
 
-const BtnRow = styled.div`
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 18px;
-  height: 40px;
+const Footer = styled.div`
+  height: ${poolsStudioLayout.poolCardFooterHeight};
+  min-height: ${poolsStudioLayout.poolCardFooterHeight};
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  flex-shrink: 0;
 
   @media (max-width: 767px) {
-    position: relative;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    margin-top: 16px;
+    height: auto;
+    min-height: ${poolsStudioLayout.poolCardFooterHeight};
+    margin-top: 12px;
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
   }
 `
 
@@ -187,81 +190,78 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const showAnalyze = pool.cta === 'stake' || pool.cta === 'analyze'
   const comingSoon = pool.cta === 'none'
 
+  const aprText = pool.status === 'coming-soon' ? 'Coming soon' : pool.apr ?? '—'
+
   return (
     <Card data-ps-pool-card $expanded={expanded}>
-      <TopRow>
-        <NameBlock>
-          <Icons>
+      <Body>
+        <TopRow>
+          <NameBlock>
             {pool.tokens.map((token, i) => (
               <PoolTokenIcon key={token} symbol={token} offset={i > 0} />
             ))}
-          </Icons>
-          <PoolName>{pool.name}</PoolName>
-        </NameBlock>
-        <StatusPill $status={pool.status}>
-          {pool.status === 'live' ? 'LIVE' : pool.status === 'indexing' ? 'INDEXING' : 'COMING SOON'}
-        </StatusPill>
-      </TopRow>
+            <PoolName>{pool.name}</PoolName>
+          </NameBlock>
+          <StatusPill $status={pool.status}>
+            {pool.status === 'live' ? 'LIVE' : pool.status === 'indexing' ? 'INDEXING' : 'COMING SOON'}
+          </StatusPill>
+        </TopRow>
 
-      <Apr $status={pool.status}>
-        {pool.status === 'coming-soon' ? 'Coming soon' : pool.apr ?? '—'}
-      </Apr>
-      <AprLabel>APR</AprLabel>
+        <Metrics>
+          <MetricCell>
+            <PsMetricLabel>APR</PsMetricLabel>
+            <AprValue $status={pool.status}>{aprText}</AprValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>Liquidity</PsMetricLabel>
+            <MetricValue>{pool.liquidity}</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>TVL</PsMetricLabel>
+            <MetricValue>{pool.tvl}</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>Daily Rewards</PsMetricLabel>
+            <MetricValue>{pool.dailyRewards}</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>Reward Token</PsMetricLabel>
+            <MetricValue>{pool.rewardToken}</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>Multiplier</PsMetricLabel>
+            <MetricValue>{pool.multiplier}</MetricValue>
+          </MetricCell>
+        </Metrics>
 
-      <Metrics>
-        <MetricCell>
-          <PsMetricLabel>TVL</PsMetricLabel>
-          <PsMetricValue>{pool.tvl}</PsMetricValue>
-        </MetricCell>
-        <MetricCell>
-          <PsMetricLabel>Liquidity</PsMetricLabel>
-          <PsMetricValue>{pool.liquidity}</PsMetricValue>
-        </MetricCell>
-        <MetricCell>
-          <PsMetricLabel>Reward Token</PsMetricLabel>
-          <PsMetricValue>{pool.rewardToken}</PsMetricValue>
-        </MetricCell>
-        <MetricCell>
-          <PsMetricLabel>Daily Rewards</PsMetricLabel>
-          <PsMetricValue>{pool.dailyRewards}</PsMetricValue>
-        </MetricCell>
-        <MetricCell>
-          <PsMetricLabel>Multiplier</PsMetricLabel>
-          <PsMetricValue>{pool.multiplier}</PsMetricValue>
-        </MetricCell>
-        <MetricCell>
-          <PsMetricLabel>Participants</PsMetricLabel>
-          <PsMetricValue>{pool.participants}</PsMetricValue>
-        </MetricCell>
-      </Metrics>
+        {expanded ? (
+          <AnalyzeBlock>
+            <AnalyzeItem>
+              APR History<span>{preview.aprHistory}</span>
+            </AnalyzeItem>
+            <AnalyzeItem>
+              Reward Token<span>{preview.rewardToken}</span>
+            </AnalyzeItem>
+            <AnalyzeItem>
+              Emission<span>{preview.emission}</span>
+            </AnalyzeItem>
+            <AnalyzeItem>
+              Contract<span>{preview.contract}</span>
+            </AnalyzeItem>
+            <AnalyzeItem>
+              Risk<span>{preview.risk}</span>
+            </AnalyzeItem>
+            <AnalyzeItem>
+              Auto Compound<span>{preview.autoCompound}</span>
+            </AnalyzeItem>
+            <AnalyzeItem style={{ gridColumn: 'span 2' }}>
+              Estimated ROI<span>{preview.estimatedRoi}</span>
+            </AnalyzeItem>
+          </AnalyzeBlock>
+        ) : null}
+      </Body>
 
-      {expanded ? (
-        <AnalyzeBlock>
-          <AnalyzeItem>
-            APR History<span>{preview.aprHistory}</span>
-          </AnalyzeItem>
-          <AnalyzeItem>
-            Reward Token<span>{preview.rewardToken}</span>
-          </AnalyzeItem>
-          <AnalyzeItem>
-            Emission<span>{preview.emission}</span>
-          </AnalyzeItem>
-          <AnalyzeItem>
-            Contract<span>{preview.contract}</span>
-          </AnalyzeItem>
-          <AnalyzeItem>
-            Risk<span>{preview.risk}</span>
-          </AnalyzeItem>
-          <AnalyzeItem>
-            Auto Compound<span>{preview.autoCompound}</span>
-          </AnalyzeItem>
-          <AnalyzeItem style={{ gridColumn: 'span 2' }}>
-            Estimated ROI<span>{preview.estimatedRoi}</span>
-          </AnalyzeItem>
-        </AnalyzeBlock>
-      ) : null}
-
-      <BtnRow>
+      <Footer>
         {comingSoon ? (
           <ComingSoonPill>Coming Soon</ComingSoonPill>
         ) : (
@@ -274,7 +274,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
             ) : null}
           </>
         )}
-      </BtnRow>
+      </Footer>
     </Card>
   )
 }

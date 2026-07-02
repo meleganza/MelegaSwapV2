@@ -94,7 +94,7 @@ const PoolsStudioGlobalStyle = createGlobalStyle`
       width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
-      min-height: 260px !important;
+      min-height: 262px !important;
     }
 
     [data-pools-studio-screen] [data-ps-advisor] {

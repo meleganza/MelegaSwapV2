@@ -64,7 +64,7 @@ const Apr = styled.div`
 const Metrics = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px 24px;
+  gap: 16px 24px;
 `
 
 const Metric = styled.div`

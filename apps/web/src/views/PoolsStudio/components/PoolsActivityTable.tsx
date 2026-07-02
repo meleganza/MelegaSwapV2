@@ -63,6 +63,7 @@ const Row = styled.div`
   padding: 0 18px;
   height: ${poolsStudioLayout.activityRowHeight};
   align-items: center;
+  text-align: center;
   font-size: 13px;
   border-bottom: 1px solid ${poolsStudioColors.rowBorder};
 
@@ -92,12 +93,14 @@ const StatusPill = styled.span<{ $status: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 22px;
-  padding: 0 10px;
+  height: 36px;
+  min-width: 88px;
+  padding: 0 12px;
   border-radius: 999px;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
+  justify-self: center;
   border: 1px solid
     ${({ $status }) =>
       $status === 'completed'
