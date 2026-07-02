@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import type { ContractPreviewData, RadarEventCard } from '../radarStudioData'
-import { statusColor } from '../radarStudioData'
-import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors } from '../radarStudioTokens'
-import { RadarProjectLogo, StatusDot } from './radarStudioPrimitives'
+import type { ContractPreviewData } from '../radarStudioData'
+import { buildContractPreview, statusColor } from '../radarStudioData'
+import type { RadarEventCard } from '../radarStudioData'
+import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
+import { PreviewGauge, RadarProjectLogo, StatusPill } from './radarStudioPrimitives'
 
 const Overlay = styled.div`
   position: fixed;
@@ -23,17 +24,17 @@ const Overlay = styled.div`
 `
 
 const Sheet = styled.div`
-  width: min(760px, 100%);
-  max-height: min(78vh, 720px);
+  width: min(860px, 100%);
+  max-height: min(90vh, 900px);
   overflow: auto;
-  background: #111111;
+  background: ${radarStudioColors.panel};
   border: 1px solid ${radarStudioColors.gold};
-  border-radius: 20px;
-  padding: 24px;
+  border-radius: ${radarStudioLayout.cardRadius};
+  padding: ${radarStudioLayout.cardPadding};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 
   @media (max-width: 767px) {
     width: 100%;
@@ -43,13 +44,16 @@ const Sheet = styled.div`
   }
 
   @keyframes rdSheetUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
   }
+`
+
+const TopRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 `
 
 const Title = styled.h3`
@@ -60,45 +64,11 @@ const Title = styled.h3`
   color: ${radarStudioColors.white};
 `
 
-const ContractLine = styled.p`
-  margin: 0;
+const SubLine = styled.p`
+  margin: 4px 0 0;
   font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
   color: ${radarStudioColors.subtitle};
-`
-
-const ScoreRing = styled.div`
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  border: 4px solid ${radarStudioColors.green};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-`
-
-const ScoreValue = styled.span`
-  font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 28px;
-  font-weight: 800;
-  color: ${radarStudioColors.green};
-  line-height: 1;
-`
-
-const ScoreLabel = styled.span`
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 10px;
-  color: ${radarStudioColors.muted};
-  text-transform: uppercase;
-`
-
-const TopRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
 `
 
 const CloseBtn = styled.button`
@@ -113,105 +83,177 @@ const CloseBtn = styled.button`
   flex-shrink: 0;
 `
 
-const Checklist = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 16px;
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const CheckItem = styled.div<{ $color: string }>`
+const GaugeSection = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 8px;
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 13px;
-  color: ${({ $color }) => $color};
 `
 
-const Summary = styled.p`
-  margin: 0;
+const GaugeLabel = styled.div`
   font-family: ${RADAR_FONT_BODY};
-  font-size: 14px;
-  line-height: 20px;
-  color: ${radarStudioColors.secondary};
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${radarStudioColors.label};
 `
 
-const CtaRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+const MetricsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 4px;
 
-  @media (max-width: 767px) {
-    position: sticky;
-    bottom: 0;
-    background: #111111;
-    padding-top: 8px;
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 
-const OutlineBtn = styled.button`
-  height: 42px;
-  min-height: 42px;
-  padding: 0 16px;
+const MetricCell = styled.div`
+  padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid #3a3a3a;
+  border: 1px solid ${radarStudioColors.border};
+  background: rgba(0, 0, 0, 0.2);
+`
+
+const MetricName = styled.div`
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: ${radarStudioColors.label};
+  margin-bottom: 6px;
+`
+
+const MetricDesc = styled.div`
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 12px;
+  line-height: 16px;
+  color: ${radarStudioColors.secondary};
+  margin-top: 6px;
+`
+
+const SummaryCard = styled.div`
+  min-height: 170px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid ${radarStudioColors.border};
+  background: rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+`
+
+const SummaryTitle = styled.h4`
+  margin: 0 0 10px;
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 20px;
+  font-weight: 800;
+  color: ${radarStudioColors.white};
+`
+
+const SummaryBody = styled.p`
+  margin: 0;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 16px;
+  line-height: 24px;
+  color: ${radarStudioColors.secondary};
+  white-space: pre-line;
+`
+
+const ProvenanceCard = styled.div`
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid ${radarStudioColors.border};
+  background: rgba(0, 0, 0, 0.2);
+`
+
+const ProvenanceTitle = styled.h4`
+  margin: 0 0 12px;
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 16px;
+  font-weight: 800;
+  color: ${radarStudioColors.white};
+`
+
+const SourceGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`
+
+const SourceChip = styled.span<{ $available: boolean }>`
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid ${({ $available }) => ($available ? radarStudioColors.green : radarStudioColors.border)};
+  background: ${({ $available }) => ($available ? 'rgba(0,232,132,0.08)' : 'transparent')};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 11px;
+  font-weight: 600;
+  color: ${({ $available }) => ($available ? radarStudioColors.green : radarStudioColors.muted)};
+  display: inline-flex;
+  align-items: center;
+`
+
+const ProvenanceFooter = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid ${radarStudioColors.divider};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 11px;
+  color: ${radarStudioColors.muted};
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`
+
+const SpaceSection = styled.div`
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid ${radarStudioColors.border};
+`
+
+const SpaceTitle = styled.h4`
+  margin: 0 0 8px;
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 16px;
+  font-weight: 800;
+  color: ${radarStudioColors.gold};
+`
+
+const SpaceList = styled.ul`
+  margin: 0 0 14px;
+  padding-left: 18px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 13px;
+  line-height: 20px;
+  color: ${radarStudioColors.secondary};
+`
+
+const SpaceBtn = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  border: 1px solid ${radarStudioColors.gold};
   background: transparent;
   color: ${radarStudioColors.gold};
   font-family: ${RADAR_FONT_BODY};
   font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-`
-
-const GoldBtn = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 18px;
-  border-radius: 12px;
-  border: 1px solid ${radarStudioColors.gold};
-  background: ${radarStudioColors.gold};
-  color: #050505;
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 14px;
   font-weight: 800;
   text-decoration: none;
-  flex: 1;
-  min-width: 200px;
-`
+  transition: filter ${radarStudioColors.transition} ease;
 
-const FooterNote = styled.p`
-  margin: 0;
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 12px;
-  line-height: 18px;
-  color: ${radarStudioColors.muted};
-`
-
-function fromEvent(event: RadarEventCard): ContractPreviewData {
-  return {
-    address: '0x8f3a…4e2c',
-    network: event.network,
-    score: event.aiConfidence,
-    projectName: event.name,
-    symbol: event.symbol,
-    checklist: event.contractIntel.slice(0, 6).map((f) => ({
-      label: f.label,
-      status: f.status,
-    })),
-    summary: event.intelSummary,
+  &:hover {
+    filter: brightness(1.08);
   }
-}
+`
 
 interface Props {
   preview?: ContractPreviewData
@@ -220,7 +262,8 @@ interface Props {
 }
 
 export const ContractIntelligencePreview: React.FC<Props> = ({ preview, event, onClose }) => {
-  const data = preview ?? (event ? fromEvent(event) : null)
+  const [animated, setAnimated] = useState(0)
+  const data = preview ?? (event ? buildContractPreview(event) : null)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -230,6 +273,12 @@ export const ContractIntelligencePreview: React.FC<Props> = ({ preview, event, o
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  useEffect(() => {
+    if (!data) return
+    const t = window.setTimeout(() => setAnimated(data.score), 80)
+    return () => window.clearTimeout(t)
+  }, [data])
+
   if (!data) return null
 
   return (
@@ -237,14 +286,12 @@ export const ContractIntelligencePreview: React.FC<Props> = ({ preview, event, o
       <Sheet onClick={(e) => e.stopPropagation()} data-rd-contract-intel-modal>
         <TopRow>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', minWidth: 0 }}>
-            {data.projectName ? (
-              <RadarProjectLogo name={data.projectName} symbol={data.symbol} size={40} />
-            ) : null}
+            {data.projectName ? <RadarProjectLogo name={data.projectName} symbol={data.symbol} size={44} /> : null}
             <div>
               <Title>AI Contract Intelligence Preview</Title>
-              <ContractLine>
+              <SubLine>
                 {data.address} · {data.network}
-              </ContractLine>
+              </SubLine>
             </div>
           </div>
           <CloseBtn type="button" onClick={onClose} aria-label="Close">
@@ -252,34 +299,58 @@ export const ContractIntelligencePreview: React.FC<Props> = ({ preview, event, o
           </CloseBtn>
         </TopRow>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <ScoreRing>
-            <ScoreValue>{data.score}</ScoreValue>
-            <ScoreLabel>/ 100</ScoreLabel>
-          </ScoreRing>
-        </div>
+        <GaugeSection>
+          <GaugeLabel>Overall AI Confidence</GaugeLabel>
+          <PreviewGauge score={data.score} animated={animated} />
+        </GaugeSection>
 
-        <Checklist>
-          {data.checklist.map((item) => (
-            <CheckItem key={item.label} $color={statusColor(item.status)}>
-              <StatusDot level={item.status} />
-              {item.label}
-            </CheckItem>
+        <MetricsGrid>
+          {data.metrics.map((m) => (
+            <MetricCell key={m.label}>
+              <MetricName>{m.label}</MetricName>
+              <StatusPill $color={statusColor(m.status)}>{m.description}</StatusPill>
+            </MetricCell>
           ))}
-        </Checklist>
+        </MetricsGrid>
 
-        <Summary>{data.summary}</Summary>
+        <SummaryCard>
+          <SummaryTitle>AI Operational Summary</SummaryTitle>
+          <SummaryBody>{data.operationalSummary}</SummaryBody>
+        </SummaryCard>
 
-        <CtaRow>
-          <OutlineBtn type="button">Open Project</OutlineBtn>
-          <GoldBtn href="https://space.melega.io" target="_blank" rel="noopener noreferrer">
-            Professional AI Contract Audit on Melega Space
-          </GoldBtn>
-        </CtaRow>
+        <ProvenanceCard>
+          <ProvenanceTitle>Evidence Sources</ProvenanceTitle>
+          <SourceGrid>
+            {data.provenance.map((s) => (
+              <SourceChip key={s.id} $available={s.available}>
+                {s.label}
+              </SourceChip>
+            ))}
+          </SourceGrid>
+          <ProvenanceFooter>
+            <span>Last Updated: {data.lastUpdated}</span>
+            <span>Freshness: {data.freshness}</span>
+            <span>Evidence: {data.evidenceCount}</span>
+            <span>{data.aiVersion}</span>
+          </ProvenanceFooter>
+        </ProvenanceCard>
 
-        <FooterNote>
-          This is a free operational due diligence preview. It is not a legal, financial, or certified audit.
-        </FooterNote>
+        <SpaceSection>
+          <SpaceTitle>Professional Contract Audit</SpaceTitle>
+          <SpaceList>
+            <li>Security analysis</li>
+            <li>Attack vectors</li>
+            <li>Tax simulation</li>
+            <li>Ownership report</li>
+            <li>Proxy analysis</li>
+            <li>Upgradeability</li>
+            <li>Legal disclaimer</li>
+            <li>Professional export</li>
+          </SpaceList>
+          <SpaceBtn href="https://space.melega.io" target="_blank" rel="noopener noreferrer">
+            Open in Melega Space
+          </SpaceBtn>
+        </SpaceSection>
       </Sheet>
     </Overlay>
   )

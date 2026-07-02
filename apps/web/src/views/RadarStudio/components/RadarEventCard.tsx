@@ -3,38 +3,44 @@ import styled from 'styled-components'
 import type { RadarEventCard as RadarEventCardType } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import ContractIntelligencePreview from './ContractIntelligencePreview'
-import { RadarProjectLogo, RdGhostBtn, RdIntelBtn, RdLabel, RdPrimaryBtn, SignalChip } from './radarStudioPrimitives'
+import {
+  ConfidenceBar,
+  RadarProjectLogo,
+  RdGhostBtn,
+  RdIntelBtn,
+  RdLabel,
+  RdPrimaryBtn,
+  SignalChip,
+  StatusDot,
+} from './radarStudioPrimitives'
 
 const Card = styled.article<{ $delay: number; $featured?: boolean }>`
   width: 100%;
   max-width: ${radarStudioLayout.eventCardWidth};
-  min-height: ${radarStudioLayout.eventCardMinHeight};
-  padding: 18px;
+  padding: ${radarStudioLayout.cardPadding};
   border-radius: ${radarStudioLayout.cardRadius};
-  background: ${radarStudioColors.panelGradientAlt};
-  border: 1px solid ${({ $featured }) => ($featured ? radarStudioColors.goldBorder : '#282828')};
+  background: ${radarStudioColors.panel};
+  border: 1px solid ${({ $featured }) => ($featured ? radarStudioColors.goldBorder : radarStudioColors.border)};
   box-sizing: border-box;
-  display: grid;
-  grid-template-rows: 52px 46px 28px 46px 42px;
-  gap: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   min-width: 0;
   animation: rdCardIn 420ms ease both;
   animation-delay: ${({ $delay }) => $delay}ms;
+  transition: transform ${radarStudioColors.transition} ease, border-color ${radarStudioColors.transition} ease,
+    box-shadow ${radarStudioColors.transition} ease;
 
   @media (max-width: 767px) {
     max-width: 100%;
-    min-height: 280px;
-    grid-template-rows: auto auto auto auto auto;
-    gap: 10px;
   }
 `
 
 const TopRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  min-height: 52px;
+  gap: 12px;
 `
 
 const HeaderLeft = styled.div`
@@ -61,20 +67,21 @@ const Rank = styled.span`
 
 const Name = styled.div`
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
   font-weight: 800;
   color: ${radarStudioColors.white};
 `
 
 const Network = styled.div`
-  margin-top: 2px;
+  margin-top: 4px;
   font-family: ${RADAR_FONT_BODY};
   font-size: 12px;
+  font-weight: 500;
   color: ${radarStudioColors.muted};
 `
 
-const Confidence = styled.div`
+const ConfBlock = styled.div`
   text-align: right;
   flex-shrink: 0;
 `
@@ -90,7 +97,7 @@ const ConfLabel = styled.div`
 
 const ConfValue = styled.div`
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 800;
   color: ${radarStudioColors.green};
   line-height: 1;
@@ -101,26 +108,21 @@ const Summary = styled.p`
   font-family: ${RADAR_FONT_BODY};
   font-size: 14px;
   line-height: 20px;
+  font-weight: 500;
   color: ${radarStudioColors.secondary};
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  align-self: center;
 `
 
 const Signals = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  align-items: center;
 `
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  align-items: end;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 18px;
+  row-gap: 24px;
 `
 
 const MetricValue = styled.span`
@@ -129,23 +131,152 @@ const MetricValue = styled.span`
   font-size: 15px;
   font-weight: 800;
   color: ${radarStudioColors.white};
-  line-height: 1.1;
-  white-space: nowrap;
+  line-height: 1.2;
+  margin-top: 4px;
+`
+
+const SectionTitle = styled.h4`
+  margin: 0 0 10px;
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 14px;
+  font-weight: 800;
+  color: ${radarStudioColors.white};
+`
+
+const BulletList = styled.ul`
+  margin: 0;
+  padding-left: 16px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  color: ${radarStudioColors.secondary};
+
+  li {
+    margin-bottom: 4px;
+  }
+`
+
+const ConfidenceGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+const RiskGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+`
+
+const RiskCell = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  border: 1px solid ${radarStudioColors.border};
+  cursor: default;
+
+  &:hover [data-rd-risk-tip] {
+    opacity: 1;
+    visibility: visible;
+  }
+`
+
+const RiskLabel = styled.span`
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: ${radarStudioColors.label};
+  text-align: center;
+`
+
+const RiskTip = styled.span`
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  border: 1px solid ${radarStudioColors.border};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 10px;
+  line-height: 14px;
+  color: ${radarStudioColors.secondary};
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity ${radarStudioColors.transition} ease;
+  z-index: 2;
+  pointer-events: none;
+`
+
+const TimelineToggle = styled.button`
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${radarStudioColors.border};
+  background: rgba(0, 0, 0, 0.2);
+  color: ${radarStudioColors.white};
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+`
+
+const TimelineBody = styled.div<{ $open: boolean }>`
+  max-height: ${({ $open }) => ($open ? '220px' : '0')};
+  overflow: hidden;
+  transition: max-height ${radarStudioColors.transition} ease;
+`
+
+const TimelineList = styled.div`
+  padding: 10px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 210px;
+  overflow-y: auto;
+`
+
+const TimelineRow = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 12px;
+  color: ${radarStudioColors.secondary};
 `
 
 const ButtonRow = styled.div`
   display: grid;
-  grid-template-columns: 88px 126px 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  align-items: end;
+  margin-top: auto;
+
+  button {
+    height: ${radarStudioLayout.eventBtnHeight};
+    min-height: ${radarStudioLayout.eventBtnHeight};
+    width: 100%;
+  }
 
   @media (max-width: 767px) {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-
-    & > :first-child {
-      grid-column: 1 / -1;
-    }
+    grid-template-columns: 1fr;
   }
 `
 
@@ -156,6 +287,7 @@ interface Props {
 
 export const RadarEventCard: React.FC<Props> = ({ event, index }) => {
   const [intelOpen, setIntelOpen] = useState(false)
+  const [timelineOpen, setTimelineOpen] = useState(false)
 
   return (
     <>
@@ -169,10 +301,10 @@ export const RadarEventCard: React.FC<Props> = ({ event, index }) => {
               <Network>{event.network}</Network>
             </div>
           </HeaderLeft>
-          <Confidence>
+          <ConfBlock>
             <ConfLabel>AI Confidence</ConfLabel>
             <ConfValue>{event.aiConfidence}%</ConfValue>
-          </Confidence>
+          </ConfBlock>
         </TopRow>
 
         <Summary>{event.summary}</Summary>
@@ -189,22 +321,84 @@ export const RadarEventCard: React.FC<Props> = ({ event, index }) => {
             <MetricValue>{event.liquidity}</MetricValue>
           </div>
           <div>
-            <RdLabel>Volume</RdLabel>
+            <RdLabel>24h Volume</RdLabel>
             <MetricValue>{event.volume}</MetricValue>
-          </div>
-          <div>
-            <RdLabel>New Holders</RdLabel>
-            <MetricValue>{event.newHolders}</MetricValue>
           </div>
           <div>
             <RdLabel>Whales</RdLabel>
             <MetricValue>{event.whales}</MetricValue>
           </div>
           <div>
-            <RdLabel>Contract Risk</RdLabel>
-            <MetricValue>{event.contractRisk}</MetricValue>
+            <RdLabel>Holder Growth</RdLabel>
+            <MetricValue>{event.newHolders}</MetricValue>
+          </div>
+          <div>
+            <RdLabel>Contract Status</RdLabel>
+            <MetricValue>{event.contractStatus}</MetricValue>
+          </div>
+          <div>
+            <RdLabel>Risk Level</RdLabel>
+            <MetricValue>{event.riskLevel}</MetricValue>
+          </div>
+          <div>
+            <RdLabel>Freshness</RdLabel>
+            <MetricValue>{event.freshness}</MetricValue>
+          </div>
+          <div>
+            <RdLabel>Last Detection</RdLabel>
+            <MetricValue>{event.lastDetection}</MetricValue>
           </div>
         </Metrics>
+
+        <div>
+          <SectionTitle>AI Detection Reason</SectionTitle>
+          <BulletList>
+            {event.detectionReasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </BulletList>
+        </div>
+
+        <div>
+          <SectionTitle>Confidence Breakdown</SectionTitle>
+          <ConfidenceGrid>
+            {event.confidenceBreakdown.map((item, i) => (
+              <ConfidenceBar key={item.label} label={item.label} value={item.value} delay={i * 40} />
+            ))}
+          </ConfidenceGrid>
+        </div>
+
+        <div>
+          <SectionTitle>Risk Matrix</SectionTitle>
+          <RiskGrid>
+            {event.riskMatrix.map((item) => (
+              <RiskCell key={item.label}>
+                <StatusDot level={item.level} />
+                <RiskLabel>{item.label}</RiskLabel>
+                <RiskTip data-rd-risk-tip>{item.tooltip}</RiskTip>
+              </RiskCell>
+            ))}
+          </RiskGrid>
+        </div>
+
+        <div>
+          <TimelineToggle type="button" onClick={() => setTimelineOpen((v) => !v)} aria-expanded={timelineOpen}>
+            Event Timeline
+            <span>{timelineOpen ? '−' : '+'}</span>
+          </TimelineToggle>
+          <TimelineBody $open={timelineOpen}>
+            <TimelineList>
+              {event.timeline.map((row) => (
+                <TimelineRow key={`${row.timestamp}-${row.label}`}>
+                  <StatusDot level={row.severity} />
+                  <span>{row.label}</span>
+                  <span style={{ color: radarStudioColors.muted }}>{row.timestamp}</span>
+                  <span style={{ color: radarStudioColors.green, fontWeight: 700 }}>{row.confidence}</span>
+                </TimelineRow>
+              ))}
+            </TimelineList>
+          </TimelineBody>
+        </div>
 
         <ButtonRow>
           <RdPrimaryBtn type="button">Trade</RdPrimaryBtn>

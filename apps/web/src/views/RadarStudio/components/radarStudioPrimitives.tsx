@@ -11,11 +11,13 @@ import {
 
 export const RdPanel = styled.div<{ $height?: string; $width?: string }>`
   width: ${({ $width }) => $width || '100%'};
-  background: ${radarStudioColors.panelGradient};
+  background: ${radarStudioColors.panel};
   border: 1px solid ${radarStudioColors.border};
   border-radius: ${radarStudioLayout.cardRadius};
   box-sizing: border-box;
   overflow: hidden;
+  transition: transform ${radarStudioColors.transition} ease, border-color ${radarStudioColors.transition} ease,
+    box-shadow ${radarStudioColors.transition} ease;
   ${({ $height }) =>
     $height
       ? `
@@ -310,3 +312,129 @@ export const OpportunityGauge: React.FC<{ score: number; animated: number }> = (
     </svg>
   )
 }
+
+export const PreviewGauge: React.FC<{ score: number; animated: number }> = ({ score, animated }) => {
+  const size = 220
+  const r = 88
+  const c = 2 * Math.PI * r
+  const offset = c - (animated / 100) * c
+
+  return (
+    <svg
+      viewBox="0 0 220 220"
+      width={size}
+      height={size}
+      aria-hidden
+      data-rd-preview-gauge
+      style={{ display: 'block', flexShrink: 0 }}
+    >
+      <circle cx="110" cy="110" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="14" />
+      <circle
+        cx="110"
+        cy="110"
+        r={r}
+        fill="none"
+        stroke={radarStudioColors.green}
+        strokeWidth="14"
+        strokeLinecap="round"
+        strokeDasharray={c}
+        strokeDashoffset={offset}
+        transform="rotate(-90 110 110)"
+        style={{ transition: 'stroke-dashoffset 1200ms ease-out' }}
+      />
+      <text
+        x="110"
+        y="108"
+        textAnchor="middle"
+        fontFamily={RADAR_FONT_DISPLAY}
+        fontSize="52"
+        fontWeight="800"
+        fill={radarStudioColors.green}
+      >
+        {score}
+      </text>
+      <text
+        x="110"
+        y="132"
+        textAnchor="middle"
+        fontFamily={RADAR_FONT_BODY}
+        fontSize="14"
+        fontWeight="500"
+        fill={radarStudioColors.muted}
+      >
+        / 100
+      </text>
+    </svg>
+  )
+}
+
+export const StatusPill = styled.span<{ $color: string }>`
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid ${({ $color }) => $color};
+  background: ${({ $color }) => `${$color}18`};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 11px;
+  font-weight: 600;
+  color: ${({ $color }) => $color};
+  line-height: 1;
+`
+
+export const ConfidenceBar: React.FC<{ label: string; value: number; delay?: number }> = ({
+  label,
+  value,
+  delay = 0,
+}) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+    <span
+      style={{
+        width: 72,
+        flexShrink: 0,
+        fontFamily: RADAR_FONT_BODY,
+        fontSize: 11,
+        fontWeight: 600,
+        color: radarStudioColors.muted,
+      }}
+    >
+      {label}
+    </span>
+    <span
+      style={{
+        width: 28,
+        flexShrink: 0,
+        fontFamily: RADAR_FONT_DISPLAY,
+        fontSize: 12,
+        fontWeight: 800,
+        color: radarStudioColors.green,
+        textAlign: 'right',
+      }}
+    >
+      {value}
+    </span>
+    <span
+      style={{
+        width: radarStudioLayout.confidenceBarW,
+        height: radarStudioLayout.confidenceBarH,
+        borderRadius: 3,
+        background: radarStudioColors.heatInactive,
+        overflow: 'hidden',
+        flexShrink: 0,
+      }}
+    >
+      <span
+        data-rd-confidence-bar
+        style={{
+          display: 'block',
+          height: '100%',
+          width: `${value}%`,
+          background: radarStudioColors.green,
+          animationDelay: `${delay}ms`,
+          transition: 'width 600ms ease-out',
+        }}
+      />
+    </span>
+  </div>
+)

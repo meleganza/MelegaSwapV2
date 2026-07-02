@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { LIVE_EVENTS } from '../radarStudioData'
+import { LIVE_EVENTS, LIVE_EVENT_ICONS } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 
 const Bar = styled.div`
@@ -8,7 +8,7 @@ const Bar = styled.div`
   height: ${radarStudioLayout.eventStreamHeight};
   min-height: ${radarStudioLayout.eventStreamHeight};
   border-radius: 16px;
-  border: 1px solid #282828;
+  border: 1px solid ${radarStudioColors.border};
   background: ${radarStudioColors.panelAlt};
   display: flex;
   align-items: center;
@@ -69,21 +69,24 @@ const EventItem = styled.div`
   white-space: nowrap;
   font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
+  font-weight: 500;
   color: ${radarStudioColors.secondary};
 `
 
 const Icon = styled.span`
   font-size: 14px;
+  width: 14px;
+  text-align: center;
 `
 
 const Project = styled.span`
   font-family: ${RADAR_FONT_DISPLAY};
-  font-weight: 700;
+  font-weight: 800;
   color: ${radarStudioColors.white};
 `
 
 const EventText = styled.span`
-  font-weight: 400;
+  font-weight: 500;
   color: ${radarStudioColors.subtitle};
 `
 
@@ -95,7 +98,7 @@ const Timestamp = styled.span`
 const Confidence = styled.span`
   font-family: ${RADAR_FONT_DISPLAY};
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   color: ${radarStudioColors.green};
 `
 
@@ -110,7 +113,7 @@ export const RadarLiveEventStream: React.FC = () => {
         <TickerTrack data-rd-ticker-track>
           {items.map((item, i) => (
             <EventItem key={`${item.id}-${i}`}>
-              <Icon aria-hidden>{item.icon}</Icon>
+              <Icon aria-hidden>{LIVE_EVENT_ICONS[item.type]}</Icon>
               <Project>{item.project}</Project>
               <EventText>{item.event}</EventText>
               <Timestamp>{item.timestamp}</Timestamp>

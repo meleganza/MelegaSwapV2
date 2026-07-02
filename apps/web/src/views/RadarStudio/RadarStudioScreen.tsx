@@ -38,12 +38,12 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${radarStudioLayout.sectionGap};
-  background: ${radarStudioColors.contentBg};
-  border-radius: 0;
 
   @media (max-width: 767px) {
-    width: calc(100vw - 32px);
+    width: 100%;
+    max-width: 100%;
     padding: 16px;
+    box-sizing: border-box;
   }
 `
 
@@ -52,7 +52,6 @@ const ConsoleGrid = styled.div`
   grid-template-columns: ${radarStudioLayout.colLeft} minmax(0, 1fr) ${radarStudioLayout.colRight};
   gap: ${radarStudioLayout.columnGap};
   align-items: start;
-  margin-top: ${radarStudioLayout.consoleMarginTop};
 
   @media (max-width: ${radarStudioLayout.stackBreakpoint}) {
     grid-template-columns: 1fr;

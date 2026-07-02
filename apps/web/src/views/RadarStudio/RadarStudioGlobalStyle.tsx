@@ -11,6 +11,7 @@ const livePulse = keyframes`
   50% { box-shadow: 0 0 0 8px transparent; }
 `
 
+/* ~42px/sec: track width ~2400px => ~57s */
 const ticker = keyframes`
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -44,7 +45,8 @@ const RadarStudioGlobalStyle = createGlobalStyle`
   [data-radar-studio-screen] [data-rd-panel],
   [data-radar-studio-screen] [data-rd-kpi-card],
   [data-radar-studio-screen] [data-rd-event-card] {
-    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    transition: transform ${radarStudioColors.transition} ease, border-color ${radarStudioColors.transition} ease,
+      box-shadow ${radarStudioColors.transition} ease;
   }
 
   [data-radar-studio-screen] [data-rd-panel]:hover,
@@ -60,7 +62,7 @@ const RadarStudioGlobalStyle = createGlobalStyle`
   }
 
   [data-radar-studio-screen] [data-rd-ticker-track] {
-    animation: ${ticker} 28s linear infinite;
+    animation: ${ticker} 57s linear infinite;
   }
 
   [data-radar-studio-screen] [data-rd-ticker-viewport]:hover [data-rd-ticker-track] {
@@ -69,6 +71,14 @@ const RadarStudioGlobalStyle = createGlobalStyle`
 
   [data-radar-studio-screen] [data-rd-heat-block] {
     animation: rdHeatFade 3s ease-in-out infinite;
+  }
+
+  [data-radar-studio-screen] [data-rd-confidence-bar] {
+    animation: rdConfGrow 600ms ease-out both;
+  }
+
+  @keyframes rdConfGrow {
+    from { width: 0; }
   }
 
   @media (max-width: ${radarStudioLayout.stackBreakpoint}) {
@@ -82,6 +92,11 @@ const RadarStudioGlobalStyle = createGlobalStyle`
     [data-radar-studio-screen] [data-rd-panel] {
       width: 100% !important;
       max-width: 100% !important;
+    }
+
+    [data-radar-studio-screen] [data-rd-preview-gauge] {
+      width: ${radarStudioLayout.mobileGaugeSize};
+      height: ${radarStudioLayout.mobileGaugeSize};
     }
   }
 `

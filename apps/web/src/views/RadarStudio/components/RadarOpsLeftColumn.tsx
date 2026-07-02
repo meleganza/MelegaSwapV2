@@ -1,13 +1,13 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { SMART_MONEY_ROWS, WHALE_ROWS } from '../radarStudioData'
+import { SMART_MONEY_ROWS, WALLET_ACCUMULATION_ROWS, WHALE_ROWS } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { RdPanel, RdSectionTitle } from './radarStudioPrimitives'
 
 const Column = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   min-width: 0;
   width: 100%;
   max-width: ${radarStudioLayout.opsPanelWidth};
@@ -16,10 +16,7 @@ const Column = styled.div`
 const Panel = styled(RdPanel)`
   width: ${radarStudioLayout.opsPanelWidth};
   max-width: 100%;
-  min-height: 160px;
-  padding: 16px;
-  background: ${radarStudioColors.panel};
-  border-color: ${radarStudioColors.borderMuted};
+  padding: ${radarStudioLayout.cardPadding};
 `
 
 const whaleSlide = keyframes`
@@ -35,7 +32,6 @@ const WhaleScroll = styled.div`
 const WhaleTrack = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
   animation: ${whaleSlide} 18s linear infinite;
 `
 
@@ -47,6 +43,7 @@ const WhaleRow = styled.div`
   align-items: center;
   font-family: ${RADAR_FONT_BODY};
   font-size: 12px;
+  font-weight: 500;
   color: ${radarStudioColors.muted};
 `
 
@@ -58,6 +55,19 @@ const SmartRow = styled.div`
   align-items: center;
   font-family: ${RADAR_FONT_BODY};
   font-size: 11px;
+  font-weight: 500;
+  color: ${radarStudioColors.muted};
+`
+
+const AccumRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 6px 8px;
+  height: 30px;
+  align-items: center;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 12px;
+  font-weight: 500;
   color: ${radarStudioColors.muted};
 `
 
@@ -66,9 +76,9 @@ export const RadarOpsLeftColumn: React.FC = () => {
 
   return (
     <Column data-rd-ops-left>
-      <RdSectionTitle style={{ fontSize: 22, marginBottom: 0 }}>Operational Intelligence</RdSectionTitle>
+      <RdSectionTitle>Operational Intelligence</RdSectionTitle>
       <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>Whale Monitor</RdSectionTitle>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Whale Monitor</RdSectionTitle>
         <WhaleScroll data-rd-whale-feed>
           <WhaleTrack>
             {whaleItems.map((row, i) => (
@@ -89,11 +99,11 @@ export const RadarOpsLeftColumn: React.FC = () => {
       </Panel>
 
       <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>Smart Money Tracker</RdSectionTitle>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Smart Money Tracker</RdSectionTitle>
         {SMART_MONEY_ROWS.map((row) => (
           <SmartRow key={row.wallet}>
             <div>
-              <div style={{ color: radarStudioColors.white, fontWeight: 700, fontFamily: RADAR_FONT_DISPLAY }}>
+              <div style={{ color: radarStudioColors.white, fontWeight: 800, fontFamily: RADAR_FONT_DISPLAY }}>
                 {row.wallet}
               </div>
               <div>{row.lastActivity}</div>
@@ -107,6 +117,24 @@ export const RadarOpsLeftColumn: React.FC = () => {
               </div>
             </div>
           </SmartRow>
+        ))}
+      </Panel>
+
+      <Panel data-rd-panel>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Top Wallet Accumulation</RdSectionTitle>
+        {WALLET_ACCUMULATION_ROWS.map((row) => (
+          <AccumRow key={row.wallet}>
+            <span>
+              <strong style={{ color: radarStudioColors.white, fontFamily: RADAR_FONT_DISPLAY }}>
+                {row.wallet}
+              </strong>{' '}
+              · {row.token}
+            </span>
+            <span style={{ color: radarStudioColors.green, fontWeight: 800 }}>{row.amount}</span>
+            <span style={{ color: radarStudioColors.green, fontFamily: RADAR_FONT_DISPLAY, fontWeight: 800 }}>
+              {row.confidence}
+            </span>
+          </AccumRow>
         ))}
       </Panel>
     </Column>
