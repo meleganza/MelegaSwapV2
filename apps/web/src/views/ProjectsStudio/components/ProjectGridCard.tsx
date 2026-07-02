@@ -234,10 +234,11 @@ const ButtonRow = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: ${projectsStudioLayout.btnGap};
-  padding-top: 10px;
-  padding-right: 4px;
+  margin-top: auto;
   min-height: ${projectsStudioLayout.cardFooterHeight};
+  height: ${projectsStudioLayout.cardFooterHeight};
   flex-shrink: 0;
+  padding-right: 4px;
 
   @media (max-width: 767px) {
     flex-wrap: wrap;

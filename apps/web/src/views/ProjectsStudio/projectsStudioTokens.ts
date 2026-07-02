@@ -21,7 +21,7 @@ export const projectsStudioLayout = {
   cardHeight: '332px',
   cardPadding: '20px',
   cardRadius: '20px',
-  cardFooterHeight: '64px',
+  cardFooterHeight: '56px',
   followBtnWidth: '110px',
   tradeBtnWidth: '120px',
   openBtnWidth: '150px',

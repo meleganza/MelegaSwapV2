@@ -1,0 +1,10 @@
+{
+  "task": "R007 RADAR PAGE",
+  "build": "pass",
+  "screenshots": [
+    "radar-desktop-1440x900.png",
+    "radar-desktop-1728x1117.png",
+    "radar-mobile-390x844.png",
+    "radar-mobile-428x926.png"
+  ]
+}

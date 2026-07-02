@@ -144,10 +144,10 @@ const AprSection = styled.div<{ $comingSoon?: boolean }>`
 
 const AprValue = styled.div<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
   font-size: ${({ $variant }) =>
-    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '52px'};
+    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '46px'};
   font-weight: 800;
   line-height: ${({ $variant }) =>
-    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '52px'};
+    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '46px'};
   color: ${({ $variant }) =>
     $variant === 'indexing'
       ? farmsStudioColors.gold
