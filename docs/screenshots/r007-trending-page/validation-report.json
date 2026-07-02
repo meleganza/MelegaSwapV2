@@ -1,0 +1,14 @@
+{
+  "task": "R007 TRENDING PAGE",
+  "build": "pass",
+  "tests": {
+    "design-system": "11/11 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "trending-desktop-1440x900.png",
+    "trending-desktop-1728x1117.png",
+    "trending-mobile-390x844.png",
+    "trending-mobile-428x926.png"
+  ]
+}

@@ -28,7 +28,7 @@ export const farmsStudioLayout = {
   farmCardAnalyzeWidth: '104px',
   farmCardBtnGap: '12px',
   farmCardAprGap: '14px',
-  farmCardMetricsFooterGap: '26px',
+  farmCardMetricsFooterGap: '44px',
   farmCardMetricRowGap: '10px',
   farmCardMetricColGap: '26px',
   featuredGridAdjust: '12px',

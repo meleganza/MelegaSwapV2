@@ -124,7 +124,7 @@ const SummaryLabel = styled.div`
 
 const SummaryWrap = styled.div`
   position: relative;
-  max-height: calc(1.45em * 3);
+  max-height: calc(1.45em * 4);
   overflow: hidden;
 
   &::after {
@@ -231,13 +231,24 @@ const SideValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
 
 const ButtonRow = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: ${projectsStudioLayout.btnGap};
-  margin-top: auto;
-  padding-top: 10px;
-  min-height: ${projectsStudioLayout.cardFooterHeight};
+  align-items: center;
   justify-content: flex-end;
+  gap: ${projectsStudioLayout.btnGap};
+  padding-top: 10px;
+  padding-right: 4px;
+  min-height: ${projectsStudioLayout.cardFooterHeight};
+  flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+    width: 100%;
+
+    a,
+    button {
+      flex: 1;
+      min-width: 0;
+    }
+  }
 `
 
 interface Props {
@@ -326,18 +337,18 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
               </SideValue>
             </SideField>
           </SideFields>
-
-          <ButtonRow>
-            <PrSmallPrimaryBtn as="a" href="/swap">
-              Trade
-            </PrSmallPrimaryBtn>
-            <PrSmallGhostBtn as="a" href={`/projects/${project.slug}`}>
-              Open Project
-            </PrSmallGhostBtn>
-            <PrFollowBtn type="button">Follow</PrFollowBtn>
-          </ButtonRow>
         </RightPane>
       </Split>
+
+      <ButtonRow>
+        <PrSmallPrimaryBtn as="a" href="/swap">
+          Trade
+        </PrSmallPrimaryBtn>
+        <PrSmallGhostBtn as="a" href={`/projects/${project.slug}`}>
+          Open Project
+        </PrSmallGhostBtn>
+        <PrFollowBtn type="button">Follow</PrFollowBtn>
+      </ButtonRow>
     </Card>
   )
 }

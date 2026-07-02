@@ -144,10 +144,10 @@ const AprSection = styled.div<{ $comingSoon?: boolean }>`
 
 const AprValue = styled.div<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
   font-size: ${({ $variant }) =>
-    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '60px'};
+    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '52px'};
   font-weight: 800;
   line-height: ${({ $variant }) =>
-    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '60px'};
+    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '52px'};
   color: ${({ $variant }) =>
     $variant === 'indexing'
       ? farmsStudioColors.gold
@@ -229,6 +229,7 @@ const Footer = styled.div<{ $centered?: boolean }>`
   height: ${farmsStudioLayout.farmCardFooterHeight};
   min-height: ${farmsStudioLayout.farmCardFooterHeight};
   margin-top: ${farmsStudioLayout.farmCardMetricsFooterGap};
+  padding-right: 24px;
   display: flex;
   align-items: center;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-end')};

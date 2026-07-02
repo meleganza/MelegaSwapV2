@@ -1,7 +1,7 @@
 import { CHAIN_IDS } from 'utils/wagmi'
-import ProjectsStudioScreen from 'views/ProjectsStudio/ProjectsStudioScreen'
+import TrendingStudioScreen from 'views/TrendingStudio/TrendingStudioScreen'
 
-const TrendingPage = () => <ProjectsStudioScreen />
+const TrendingPage = () => <TrendingStudioScreen />
 
 TrendingPage.chains = CHAIN_IDS
 

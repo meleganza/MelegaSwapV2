@@ -107,10 +107,10 @@ const AprSection = styled.div<{ $comingSoon?: boolean }>`
 
 const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '60px'};
+    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '52px'};
   font-weight: 800;
   line-height: ${({ $status }) =>
-    $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '60px'};
+    $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '52px'};
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
@@ -175,6 +175,7 @@ const Footer = styled.div`
   height: ${poolsStudioLayout.poolCardFooterHeight};
   min-height: ${poolsStudioLayout.poolCardFooterHeight};
   margin-top: ${poolsStudioLayout.poolCardMetricsFooterGap};
+  padding-right: 24px;
   display: flex;
   align-items: center;
   justify-content: flex-end;

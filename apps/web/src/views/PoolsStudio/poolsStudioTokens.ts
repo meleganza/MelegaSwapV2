@@ -21,7 +21,7 @@ export const poolsStudioLayout = {
   poolCardAnalyzeWidth: '104px',
   poolCardBtnGap: '12px',
   poolCardAprGap: '14px',
-  poolCardMetricsFooterGap: '26px',
+  poolCardMetricsFooterGap: '44px',
   poolCardMetricRowGap: '10px',
   poolCardMetricColGap: '26px',
   featuredAprGap: '16px',
