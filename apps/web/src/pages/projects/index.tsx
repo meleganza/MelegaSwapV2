@@ -1,7 +1,7 @@
 import { CHAIN_IDS } from 'utils/wagmi'
-import Projects from 'views/Projects'
+import ProjectsStudioScreen from 'views/ProjectsStudio/ProjectsStudioScreen'
 
-const ProjectsPage = () => <Projects />
+const ProjectsPage = () => <ProjectsStudioScreen />
 
 ProjectsPage.chains = CHAIN_IDS
 

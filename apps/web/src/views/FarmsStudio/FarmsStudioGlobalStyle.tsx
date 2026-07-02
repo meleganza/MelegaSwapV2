@@ -77,7 +77,7 @@ const FarmsStudioGlobalStyle = createGlobalStyle`
       width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
-      min-height: 278px !important;
+      min-height: 292px !important;
     }
   }
 `
