@@ -35,8 +35,22 @@ const Inner = styled.div`
 const Main = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 14px;
   min-width: 0;
+`
+
+const Apr = styled.div`
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  color: ${poolsStudioColors.green};
+  margin-bottom: ${poolsStudioLayout.featuredAprGap};
+`
+
+const Metrics = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: ${poolsStudioLayout.featuredMetricsBtnGap};
 `
 
 const TitleRow = styled.div`
@@ -44,6 +58,7 @@ const TitleRow = styled.div`
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  margin-bottom: 8px;
 `
 
 const PoolName = styled.h2`
@@ -52,19 +67,6 @@ const PoolName = styled.h2`
   font-size: 22px;
   font-weight: 800;
   color: ${poolsStudioColors.text};
-`
-
-const Apr = styled.div`
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 1;
-  color: ${poolsStudioColors.green};
-`
-
-const Metrics = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
 `
 
 const Metric = styled.div`
@@ -118,7 +120,7 @@ export const FeaturedPoolPanel: React.FC = () => (
           </Metric>
           <Metric>
             <MetricLabel>Participants</MetricLabel>
-            <MetricValue>6,842</MetricValue>
+            <MetricValue>6.84K</MetricValue>
           </Metric>
           <Metric style={{ gridColumn: 'span 2' }}>
             <MetricLabel>Rewards Distributed</MetricLabel>

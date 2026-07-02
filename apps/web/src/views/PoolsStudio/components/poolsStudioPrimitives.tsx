@@ -45,8 +45,8 @@ export const PsPreviewBadge = styled.span`
 `
 
 export const PsPrimaryBtn = styled.button`
-  height: 42px;
-  min-height: 42px;
+  height: 40px;
+  min-height: 40px;
   padding: 0 24px;
   border: none;
   border-radius: 12px;
@@ -59,18 +59,17 @@ export const PsPrimaryBtn = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+  transition: transform 150ms ease, filter 150ms ease;
 
   &:hover {
-    filter: brightness(1.06);
-    transform: translateY(-1px) scale(0.99);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+    filter: brightness(1.05);
+    transform: translateY(-1px);
   }
 `
 
 export const PsGhostBtn = styled.button`
-  height: 42px;
-  min-height: 42px;
+  height: 40px;
+  min-height: 40px;
   padding: 0 18px;
   border-radius: 12px;
   border: 1px solid ${poolsStudioColors.goldBorder};
@@ -79,11 +78,12 @@ export const PsGhostBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 150ms ease, border-color 150ms ease;
+  transition: transform 150ms ease, filter 150ms ease, border-color 150ms ease;
 
   &:hover {
+    filter: brightness(1.05);
     border-color: ${poolsStudioColors.gold};
-    transform: translateY(-1px) scale(0.99);
+    transform: translateY(-1px);
   }
 `
 
@@ -122,7 +122,7 @@ export const PsKpiCard = styled.div`
 `
 
 export const PsKpiLabel = styled.span`
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -130,13 +130,11 @@ export const PsKpiLabel = styled.span`
 `
 
 export const PsKpiValue = styled.span<{ $gold?: boolean }>`
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
   line-height: 1;
   color: ${({ $gold }) => ($gold ? poolsStudioColors.gold : poolsStudioColors.text)};
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
 
 export const PsKpiDelta = styled.span<{ $positive?: boolean }>`

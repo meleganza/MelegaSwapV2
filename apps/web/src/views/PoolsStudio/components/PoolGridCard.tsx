@@ -30,7 +30,6 @@ const Card = styled.article<{ $expanded?: boolean }>`
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
   flex: 1;
   min-height: 0;
 `
@@ -40,6 +39,8 @@ const TopRow = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
 `
 
 const NameBlock = styled.div`
@@ -88,28 +89,19 @@ const StatusPill = styled.span<{ $status: PoolPreviewCard['status'] }>`
     $status === 'indexing' ? poolsStudioColors.previewBadgeBg : $status === 'coming-soon' ? 'rgba(255,255,255,0.04)' : 'rgba(0,230,118,0.08)'};
 `
 
-const Metrics = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 18px;
-  row-gap: 12px;
-  max-height: 168px;
-`
-
-const MetricCell = styled.div`
+const AprSection = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 2px;
-  min-height: 34px;
-  min-width: 0;
+  margin-bottom: ${poolsStudioLayout.poolCardAprGap};
+  flex-shrink: 0;
 `
 
 const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '32px' : $status === 'coming-soon' ? '30px' : '40px'};
+    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '26px' : '36px'};
   font-weight: 800;
-  line-height: 42px;
+  line-height: 38px;
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
@@ -118,14 +110,39 @@ const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
         : poolsStudioColors.green};
 `
 
-const MetricValue = styled.span`
+const Metrics = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: ${poolsStudioLayout.poolCardMetricColGap};
+  row-gap: ${poolsStudioLayout.poolCardMetricRowGap};
+  flex: 1;
+  min-height: 0;
+`
+
+const MetricCell = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+`
+
+const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
   font-size: 16px;
   font-weight: 700;
-  color: ${poolsStudioColors.text};
+  line-height: 1.2;
+  color: ${({ $tone }) =>
+    $tone === 'green'
+      ? poolsStudioColors.green
+      : $tone === 'gold'
+        ? poolsStudioColors.gold
+        : $tone === 'muted'
+          ? poolsStudioColors.muted
+          : poolsStudioColors.text};
 `
 
 const AnalyzeBlock = styled.div`
-  margin-top: 4px;
+  margin-top: 8px;
   padding-top: 10px;
   border-top: 1px solid ${poolsStudioColors.rowBorder};
   display: grid;
@@ -148,16 +165,16 @@ const AnalyzeItem = styled.div`
 const Footer = styled.div`
   height: ${poolsStudioLayout.poolCardFooterHeight};
   min-height: ${poolsStudioLayout.poolCardFooterHeight};
+  margin-top: ${poolsStudioLayout.poolCardMetricsFooterGap};
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
-  gap: 10px;
+  gap: ${poolsStudioLayout.poolCardBtnGap};
   flex-shrink: 0;
 
   @media (max-width: 767px) {
     height: auto;
     min-height: ${poolsStudioLayout.poolCardFooterHeight};
-    margin-top: 12px;
     width: 100%;
 
     button {
@@ -178,6 +195,12 @@ const ComingSoonPill = styled.span`
   font-size: 13px;
   font-weight: 700;
 `
+
+function statusLabel(status: PoolPreviewCard['status']) {
+  if (status === 'live') return 'Live'
+  if (status === 'indexing') return 'Indexing'
+  return 'Coming soon'
+}
 
 interface Props {
   pool: PoolPreviewCard
@@ -207,22 +230,19 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           </StatusPill>
         </TopRow>
 
+        <AprSection>
+          <PsMetricLabel>APR</PsMetricLabel>
+          <AprValue $status={pool.status}>{aprText}</AprValue>
+        </AprSection>
+
         <Metrics>
-          <MetricCell>
-            <PsMetricLabel>APR</PsMetricLabel>
-            <AprValue $status={pool.status}>{aprText}</AprValue>
-          </MetricCell>
-          <MetricCell>
-            <PsMetricLabel>Liquidity</PsMetricLabel>
-            <MetricValue>{pool.liquidity}</MetricValue>
-          </MetricCell>
           <MetricCell>
             <PsMetricLabel>TVL</PsMetricLabel>
             <MetricValue>{pool.tvl}</MetricValue>
           </MetricCell>
           <MetricCell>
-            <PsMetricLabel>Daily Rewards</PsMetricLabel>
-            <MetricValue>{pool.dailyRewards}</MetricValue>
+            <PsMetricLabel>Liquidity</PsMetricLabel>
+            <MetricValue>{pool.liquidity}</MetricValue>
           </MetricCell>
           <MetricCell>
             <PsMetricLabel>Reward Token</PsMetricLabel>
@@ -230,7 +250,19 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           </MetricCell>
           <MetricCell>
             <PsMetricLabel>Multiplier</PsMetricLabel>
-            <MetricValue>{pool.multiplier}</MetricValue>
+            <MetricValue $tone="gold">{pool.multiplier}</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>Daily Rewards</PsMetricLabel>
+            <MetricValue $tone="green">{pool.dailyRewards}</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <PsMetricLabel>Status</PsMetricLabel>
+            <MetricValue
+              $tone={pool.status === 'live' ? 'green' : pool.status === 'indexing' ? 'gold' : 'muted'}
+            >
+              {statusLabel(pool.status)}
+            </MetricValue>
           </MetricCell>
         </Metrics>
 

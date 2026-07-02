@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { formatCompactDisplay } from 'design-system/melega'
 import { POOLS_KPIS } from '../poolsStudioData'
 import { poolsStudioLayout } from '../poolsStudioTokens'
 import { PsKpiCard, PsKpiDelta, PsKpiLabel, PsKpiValue } from './poolsStudioPrimitives'
@@ -19,10 +20,10 @@ const Row = styled.div`
   }
 `
 
-const ValueBlock = styled.div`
+const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
   position: relative;
-  min-height: 42px;
-  padding-right: ${poolsStudioLayout.sparklineW + 8}px;
+  min-height: 38px;
+  padding-right: ${({ $hasSparkline }) => ($hasSparkline ? poolsStudioLayout.sparklineW + 8 : 0)}px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,16 +71,12 @@ export const PoolsKpiRow: React.FC = () => (
     {POOLS_KPIS.map((kpi) => (
       <PsKpiCard key={kpi.id} data-ps-kpi-card>
         <PsKpiLabel>{kpi.label}</PsKpiLabel>
-        <ValueBlock>
+        <ValueBlock $hasSparkline={!!kpi.sparkline}>
           <ValueRow>
             <PsKpiValue $gold={kpi.gold} data-ps-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-              {kpi.value}
+              {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
             </PsKpiValue>
-            {kpi.delta ? (
-              <PsKpiDelta $positive={kpi.deltaPositive} style={{ marginTop: 4 }}>
-                {kpi.delta}
-              </PsKpiDelta>
-            ) : null}
+            {kpi.delta ? <PsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PsKpiDelta> : null}
           </ValueRow>
           {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
         </ValueBlock>
