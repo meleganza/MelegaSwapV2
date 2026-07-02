@@ -1,0 +1,14 @@
+{
+  "task": "R006 POOLS PREMIUM UI",
+  "build": "pass",
+  "tests": {
+    "design-system": "8/8 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "pools-desktop-1440x900.png",
+    "pools-desktop-1728x1117.png",
+    "pools-mobile-390x844.png",
+    "pools-mobile-428x926.png"
+  ]
+}

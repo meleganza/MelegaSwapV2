@@ -1,13 +1,7 @@
-import Pools from 'views/Pools'
 import { SUPPORT_FARMS } from 'config/constants/supportChains'
+import PoolsStudioScreen from 'views/PoolsStudio/PoolsStudioScreen'
 
-const PoolsPage = () => {
-    return (
-      <Pools />
-    )
-  }
-
-PoolsPage.Layout = Pools
+const PoolsPage = () => <PoolsStudioScreen />
 
 PoolsPage.chains = SUPPORT_FARMS
 
