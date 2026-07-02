@@ -1,39 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
-import { LsPanel, LsSectionTitle } from './liquidityStudioPrimitives'
+import { LsPanel, LsRightLabel, LsRightRow, LsRightValue, LsSectionTitle } from './liquidityStudioPrimitives'
 
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 26px;
-  height: 26px;
-`
-
-const Label = styled.span`
-  font-size: 11px;
-  font-weight: 600;
-  color: ${liquidityStudioColors.muted};
+const Delta = styled.span`
+  font-size: 12px;
+  font-weight: 800;
+  color: ${liquidityStudioColors.green};
+  margin-left: 6px;
 `
 
 const ValueWrap = styled.span`
   display: inline-flex;
   align-items: baseline;
-  gap: 6px;
-`
-
-const Value = styled.span`
-  font-size: 18px;
-  font-weight: 700;
-  color: ${liquidityStudioColors.text};
-  line-height: 1;
-`
-
-const Delta = styled.span`
-  font-size: 11px;
-  font-weight: 600;
-  color: ${liquidityStudioColors.green};
 `
 
 const METRICS = [
@@ -44,16 +23,22 @@ const METRICS = [
 ]
 
 export const MarketIntelligencePanel: React.FC = () => (
-  <LsPanel data-ls-panel $height={liquidityStudioLayout.marketIntelHeight}>
+  <LsPanel
+    data-ls-panel
+    $width={liquidityStudioLayout.rightWidth}
+    $height={liquidityStudioLayout.marketIntelHeight}
+    $radius={liquidityStudioLayout.rightPanelRadius}
+    $pad={liquidityStudioLayout.rightPanelPadding}
+  >
     <LsSectionTitle>Market Intelligence</LsSectionTitle>
     {METRICS.map((m) => (
-      <Row key={m.label}>
-        <Label>{m.label}</Label>
+      <LsRightRow key={m.label}>
+        <LsRightLabel>{m.label}</LsRightLabel>
         <ValueWrap>
-          <Value>{m.value}</Value>
+          <LsRightValue>{m.value}</LsRightValue>
           <Delta>{m.delta}</Delta>
         </ValueWrap>
-      </Row>
+      </LsRightRow>
     ))}
   </LsPanel>
 )

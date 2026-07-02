@@ -1,21 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
-import { LsPanel, LsSectionTitle } from './liquidityStudioPrimitives'
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 32px;
-  padding: 4px 0;
-  border-bottom: 1px solid ${liquidityStudioColors.rowBorder};
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-`
+import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
 
 const Pair = styled.span`
   font-size: 12px;
@@ -31,17 +17,23 @@ const Right = styled.div`
 `
 
 const Apr = styled.span`
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   color: ${liquidityStudioColors.green};
   line-height: 1;
 `
 
 const Tvl = styled.span`
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: ${liquidityStudioColors.muted};
   line-height: 1;
+`
+
+const PoolRow = styled(LsRightRow)`
+  height: auto;
+  min-height: 32px;
+  padding: 2px 0;
 `
 
 const POOLS = [
@@ -51,16 +43,22 @@ const POOLS = [
 ]
 
 export const TopPoolsPanel: React.FC = () => (
-  <LsPanel data-ls-panel $height={liquidityStudioLayout.topPoolsHeight}>
+  <LsPanel
+    data-ls-panel
+    $width={liquidityStudioLayout.rightWidth}
+    $height={liquidityStudioLayout.topPoolsHeight}
+    $radius={liquidityStudioLayout.rightPanelRadius}
+    $pad={liquidityStudioLayout.rightPanelPadding}
+  >
     <LsSectionTitle>Top Pools</LsSectionTitle>
     {POOLS.map((pool) => (
-      <Row key={pool.pair}>
+      <PoolRow key={pool.pair}>
         <Pair>{pool.pair}</Pair>
         <Right>
           <Apr>{pool.apr}</Apr>
           <Tvl>{pool.tvl}</Tvl>
         </Right>
-      </Row>
+      </PoolRow>
     ))}
   </LsPanel>
 )

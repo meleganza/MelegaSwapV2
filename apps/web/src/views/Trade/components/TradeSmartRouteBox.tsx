@@ -5,7 +5,7 @@ import { tradeColors } from '../tradeTokens'
 const Box = styled.div`
   height: 54px;
   min-height: 54px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
   padding: 10px;
   box-sizing: border-box;
   background: #171512;

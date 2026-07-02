@@ -124,6 +124,38 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     pointer-events: none !important;
   }
 
+  .trade-cockpit [data-native-label],
+  .trade-cockpit .native-label,
+  .trade-cockpit .token-amount-tooltip,
+  .trade-cockpit .swap-form-label:not(.trade-controlled-label) {
+    display: none !important;
+  }
+
+  .trade-cockpit .trade-terminal-swap #swap-currency-input > div:first-of-type,
+  .trade-cockpit .trade-terminal-swap #swap-currency-output > div:first-of-type,
+  .trade-cockpit .trade-terminal-swap [class*='LabelRow'],
+  .trade-cockpit .trade-terminal-swap #swap-currency-input [class*='LabelRow'],
+  .trade-cockpit .trade-terminal-swap #swap-currency-output [class*='LabelRow'] {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .trade-cockpit .trade-terminal-swap .token-amount-input[title],
+  .trade-cockpit .trade-terminal-swap input[title] {
+    pointer-events: auto !important;
+  }
+
+  .trade-cockpit .trade-terminal-swap .token-amount-input[title]::after,
+  .trade-cockpit .trade-terminal-swap input[title]::before {
+    display: none !important;
+  }
+
   .trade-terminal-swap #swap-currency-input,
   .trade-terminal-swap #swap-currency-output {
     background: #171717 !important;
@@ -131,7 +163,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     border-radius: 14px !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 0 !important;
+    padding: 14px !important;
     position: relative !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
@@ -139,23 +171,23 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap #swap-currency-input {
-    min-height: 84px !important;
-    height: 84px !important;
-    max-height: 84px !important;
-    margin-top: 10px !important;
+    min-height: 92px !important;
+    height: 92px !important;
+    max-height: 92px !important;
+    margin-top: 0 !important;
   }
 
   .trade-terminal-swap #swap-currency-output {
-    min-height: 84px !important;
-    height: 84px !important;
-    max-height: 84px !important;
-    margin-top: 10px !important;
+    min-height: 92px !important;
+    height: 92px !important;
+    max-height: 92px !important;
+    margin-top: 0 !important;
   }
 
   .trade-terminal-swap #swap-currency-input::before,
   .trade-terminal-swap #swap-currency-output::before {
     position: absolute;
-    top: 12px;
+    top: 14px;
     left: 14px;
     font-size: 10px;
     font-weight: 600;
@@ -187,7 +219,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-terminal-swap #swap-currency-input [class*='LabelRow'],
   .trade-terminal-swap #swap-currency-output [class*='LabelRow'],
   .trade-terminal-swap [class*='CurrencyInputPanel'] > label,
-  .trade-terminal-swap [class*='InputPanel'] > label {
+  .trade-terminal-swap [class*='InputPanel'] > label,
+  .trade-terminal-swap #swap-currency-input > div:first-of-type,
+  .trade-terminal-swap #swap-currency-output > div:first-of-type {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
@@ -248,10 +282,10 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   .trade-terminal-swap [class*='ArrowWrapper'],
   .trade-terminal-swap [class*='SwitchButton'] button {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
     border-radius: 50% !important;
     background: #121212 !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -268,15 +302,23 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap [class*='AutoRow'][style*='padding'] {
-    min-height: 32px !important;
-    max-height: 32px !important;
-    height: 32px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    height: 30px !important;
     margin: 10px auto !important;
     padding: 0 !important;
   }
 
-  .trade-swap-cockpit [data-trade-route-line] {
+  .trade-cockpit .trade-terminal-swap #swap-currency-input {
+    margin-top: 0 !important;
+  }
+
+  .trade-cockpit .trade-terminal-swap #swap-currency-output {
     margin-top: 10px !important;
+  }
+
+  .trade-swap-cockpit [data-trade-route-line] {
+    margin-top: 12px !important;
     min-height: 54px !important;
     height: 54px !important;
     max-height: 54px !important;
@@ -396,9 +438,9 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
     .trade-terminal-swap #swap-currency-input,
     .trade-terminal-swap #swap-currency-output {
-      min-height: 84px !important;
-      height: 84px !important;
-      max-height: 84px !important;
+      min-height: 92px !important;
+      height: 92px !important;
+      max-height: 92px !important;
     }
   }
 `

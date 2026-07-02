@@ -203,7 +203,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
 
   return (
     <Shell data-trade-cockpit>
-      <Panel data-trade-cockpit-shell className="trade-swap-cockpit">
+      <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header>
           <TitleBlock>
             <Title>Swap</Title>

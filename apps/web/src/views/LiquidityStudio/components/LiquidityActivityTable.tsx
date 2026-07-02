@@ -8,7 +8,7 @@ const Head = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `
 
 const Title = styled.h3`
@@ -19,35 +19,38 @@ const Title = styled.h3`
   color: ${liquidityStudioColors.text};
 `
 
-const TableWrap = styled.div`
-  overflow-x: auto;
-`
-
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  min-width: 720px;
+  table-layout: fixed;
 `
 
-const Th = styled.th`
+const Th = styled.th<{ $w?: string }>`
   text-align: left;
-  padding: 0 10px 8px;
+  padding: 0 8px;
+  height: 32px;
+  width: ${({ $w }) => $w || 'auto'};
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: ${liquidityStudioColors.muted};
   border-bottom: 1px solid ${liquidityStudioColors.rowBorder};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const Td = styled.td`
-  height: 36px;
-  padding: 0 10px;
+  height: 38px;
+  padding: 0 8px;
   font-size: 12px;
   font-weight: 500;
   color: ${liquidityStudioColors.text};
   border-bottom: 1px solid ${liquidityStudioColors.rowBorder};
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   vertical-align: middle;
 `
 
@@ -86,7 +89,7 @@ export const LiquidityActivityTable: React.FC = () => (
     data-ls-panel
     data-ls-activity
     $height={liquidityStudioLayout.activityHeight}
-    style={{ marginTop: liquidityStudioLayout.verticalRhythm }}
+    $width="100%"
   >
     <Head>
       <Title>Liquidity Activity</Title>
@@ -94,40 +97,38 @@ export const LiquidityActivityTable: React.FC = () => (
         {LIQUIDITY_STUDIO_PREVIEW_LABEL}
       </LsPreviewBadge>
     </Head>
-    <TableWrap>
-      <Table>
-        <thead>
-          <tr>
-            <Th>Time</Th>
-            <Th>Pair</Th>
-            <Th>Action</Th>
-            <Th>Amount</Th>
-            <Th>LP Tokens</Th>
-            <Th>Status</Th>
+    <Table>
+      <thead>
+        <tr>
+          <Th $w="14%">Time</Th>
+          <Th $w="20%">Pair</Th>
+          <Th $w="16%">Action</Th>
+          <Th $w="20%">Amount</Th>
+          <Th $w="18%">LP Tokens</Th>
+          <Th $w="12%">Status</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {ROWS.map((row) => (
+          <tr key={`${row.time}-${row.pair}-${row.action}`}>
+            <Td>{row.time}</Td>
+            <Td>{row.pair}</Td>
+            <Td>
+              {row.action === 'Add' ? (
+                <ActionAdd>{row.action}</ActionAdd>
+              ) : (
+                <ActionRemove>{row.action}</ActionRemove>
+              )}
+            </Td>
+            <Td>{row.amount}</Td>
+            <Td>{row.lp}</Td>
+            <Td>
+              <StatusBadge>Preview Layout</StatusBadge>
+            </Td>
           </tr>
-        </thead>
-        <tbody>
-          {ROWS.map((row) => (
-            <tr key={`${row.time}-${row.pair}-${row.action}`}>
-              <Td>{row.time}</Td>
-              <Td>{row.pair}</Td>
-              <Td>
-                {row.action === 'Add' ? (
-                  <ActionAdd>{row.action}</ActionAdd>
-                ) : (
-                  <ActionRemove>{row.action}</ActionRemove>
-                )}
-              </Td>
-              <Td>{row.amount}</Td>
-              <Td>{row.lp}</Td>
-              <Td>
-                <StatusBadge>Preview Layout</StatusBadge>
-              </Td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </TableWrap>
+        ))}
+      </tbody>
+    </Table>
   </LsPanel>
 )
 

@@ -13,7 +13,7 @@ const Head = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 `
 
 const FeeBadge = styled.span`
@@ -28,8 +28,9 @@ const Bars = styled.div`
   align-items: flex-end;
   justify-content: center;
   gap: 40px;
-  height: 130px;
-  margin-bottom: 10px;
+  height: ${liquidityStudioLayout.barsAreaHeight};
+  margin-top: 8px;
+  margin-bottom: 0;
 `
 
 const BarCol = styled.div`
@@ -66,9 +67,9 @@ const BarPct = styled.span`
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 14px;
 `
 
 const MetricCard = styled.div`
@@ -77,7 +78,7 @@ const MetricCard = styled.div`
   border-radius: 12px;
   border: 1px solid ${liquidityStudioColors.border};
   background: ${liquidityStudioColors.surfaceSecondary};
-  padding: 10px 12px;
+  padding: 12px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -88,7 +89,7 @@ const MetricCard = styled.div`
 const MetricLabel = styled.span`
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${liquidityStudioColors.muted};
   line-height: 1;
@@ -102,23 +103,30 @@ const MetricValue = styled.span`
 `
 
 const IlBlock = styled.div`
+  margin-top: 12px;
   border-radius: 12px;
   border: 1px solid ${liquidityStudioColors.border};
   background: ${liquidityStudioColors.surfaceSecondary};
   padding: 10px 12px 8px;
   box-sizing: border-box;
+  height: ${liquidityStudioLayout.ilChartHeight};
+  min-height: ${liquidityStudioLayout.ilChartHeight};
+  display: flex;
+  flex-direction: column;
 `
 
 const IlTitle = styled.div`
   font-size: 11px;
   font-weight: 700;
   color: ${liquidityStudioColors.text};
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
 `
 
 const IlChart = styled.div`
   position: relative;
-  height: ${liquidityStudioLayout.ilChartHeight};
+  flex: 1;
+  min-height: 0;
   border-radius: 8px;
   overflow: hidden;
   background-image:
@@ -135,7 +143,12 @@ const IlSvg = styled.svg`
 `
 
 export const PositionPreviewPanel: React.FC = () => (
-  <LsPanel data-ls-panel data-ls-position-preview $height={liquidityStudioLayout.positionPreviewHeight}>
+  <LsPanel
+    data-ls-panel
+    data-ls-position-preview
+    $width={liquidityStudioLayout.centerWidth}
+    $height={liquidityStudioLayout.previewHeight}
+  >
     <Head>
       <LsPanelTitle style={{ margin: 0 }}>Position Preview</LsPanelTitle>
       <FeeBadge>Fee Tier 0.25%</FeeBadge>
@@ -173,9 +186,9 @@ export const PositionPreviewPanel: React.FC = () => (
     <IlBlock>
       <IlTitle>Impermanent Loss Preview</IlTitle>
       <IlChart data-ls-mini-chart aria-hidden>
-        <IlSvg viewBox="0 0 400 90" preserveAspectRatio="none">
+        <IlSvg viewBox="0 0 400 60" preserveAspectRatio="none">
           <path
-            d="M 0 72 Q 100 8 200 45 T 400 28"
+            d="M 0 48 Q 100 6 200 32 T 400 20"
             fill="none"
             stroke={liquidityStudioColors.gold}
             strokeWidth="2"

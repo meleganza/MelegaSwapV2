@@ -22,38 +22,44 @@ const Root = styled.div`
   overflow-x: hidden;
 
   @media (max-width: 767px) {
-    padding: 0 0 24px;
+    padding: 0 0 ${liquidityStudioLayout.mobileBottomPad};
   }
 `
 
 const Content = styled.div`
   max-width: ${liquidityStudioLayout.contentMax};
   margin: 0 auto;
-  padding: ${liquidityStudioLayout.contentPaddingTop} ${liquidityStudioLayout.contentPaddingX} 0;
+  padding: ${liquidityStudioLayout.contentPaddingTop} ${liquidityStudioLayout.contentPaddingX}
+    ${liquidityStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
+  overflow-x: hidden;
 
   @media (max-width: 767px) {
-    padding: 12px 16px 0;
+    padding: 16px 16px ${liquidityStudioLayout.mobileBottomPad};
   }
 `
 
-const PageGrid = styled.div`
+const LayoutGrid = styled.div`
   display: grid;
   gap: ${liquidityStudioLayout.columnGap};
-  align-items: start;
+  align-items: stretch;
   min-width: 0;
 
   @media (min-width: 1100px) {
     grid-template-columns: ${liquidityStudioLayout.leftWidth} ${liquidityStudioLayout.centerWidth} ${liquidityStudioLayout.rightWidth};
-    grid-template-areas: 'builder preview right';
+    grid-template-areas:
+      'builder preview right'
+      'activity activity activity';
+    max-width: ${liquidityStudioLayout.gridWidth};
   }
 
   @media (max-width: 1099px) and (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       'builder preview'
-      'right right';
+      'right right'
+      'activity activity';
   }
 
   @media (max-width: 767px) {
@@ -61,7 +67,10 @@ const PageGrid = styled.div`
     grid-template-areas:
       'builder'
       'preview'
-      'right';
+      'market'
+      'advisor'
+      'pools'
+      'activity';
   }
 `
 
@@ -81,6 +90,42 @@ const AreaRight = styled.div`
   flex-direction: column;
   gap: ${liquidityStudioLayout.verticalRhythm};
   min-width: 0;
+  width: 100%;
+  max-width: ${liquidityStudioLayout.rightWidth};
+
+  @media (max-width: 767px) {
+    display: contents;
+  }
+`
+
+const AreaMarket = styled.div`
+  @media (max-width: 767px) {
+    grid-area: market;
+  }
+`
+
+const AreaAdvisor = styled.div`
+  @media (max-width: 767px) {
+    grid-area: advisor;
+  }
+`
+
+const AreaPools = styled.div`
+  @media (max-width: 767px) {
+    grid-area: pools;
+  }
+`
+
+const AreaActivity = styled.div`
+  grid-area: activity;
+  min-width: 0;
+  margin-top: 2px;
+
+  @media (min-width: 1100px) {
+    margin-top: 16px;
+    width: 100%;
+    max-width: ${liquidityStudioLayout.gridWidth};
+  }
 `
 
 export const LiquidityStudioScreen: React.FC = () => (
@@ -90,7 +135,7 @@ export const LiquidityStudioScreen: React.FC = () => (
     <TrendingRibbon />
     <Content>
       <LiquidityStudioPageHeader />
-      <PageGrid>
+      <LayoutGrid>
         <AreaBuilder>
           <LiquidityBuilderPanel />
         </AreaBuilder>
@@ -98,12 +143,20 @@ export const LiquidityStudioScreen: React.FC = () => (
           <PositionPreviewPanel />
         </AreaPreview>
         <AreaRight>
-          <MarketIntelligencePanel />
-          <AILiquidityAdvisorPanel />
-          <TopPoolsPanel />
+          <AreaMarket>
+            <MarketIntelligencePanel />
+          </AreaMarket>
+          <AreaAdvisor>
+            <AILiquidityAdvisorPanel />
+          </AreaAdvisor>
+          <AreaPools>
+            <TopPoolsPanel />
+          </AreaPools>
         </AreaRight>
-      </PageGrid>
-      <LiquidityActivityTable />
+        <AreaActivity>
+          <LiquidityActivityTable />
+        </AreaActivity>
+      </LayoutGrid>
     </Content>
   </Root>
 )

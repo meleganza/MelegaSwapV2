@@ -35,7 +35,7 @@ const crosshairPulse = keyframes`
 const Area = styled.div`
   height: ${tradeLayout.chartAreaHeight};
   min-height: ${tradeLayout.chartAreaHeight};
-  margin: 0 18px;
+  margin: 0;
   box-sizing: border-box;
   border-radius: 12px;
   overflow: hidden;

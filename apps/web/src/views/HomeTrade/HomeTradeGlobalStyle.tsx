@@ -20,6 +20,18 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-swap-cockpit .home-trade-swap #swap-page > div:last-child,
   .home-swap-cockpit .home-trade-swap [class*='Box'][class*='mt'] {
     margin-top: auto !important;
+    margin-bottom: 0 !important;
+  }
+
+  .home-swap-cockpit .home-trade-swap .pancake-button--primary,
+  .home-swap-cockpit .home-trade-swap button[id='swap-button'],
+  .home-swap-cockpit .home-trade-swap [class*='CommitButton'] button,
+  .home-swap-cockpit .home-trade-swap #swap-page > div:last-child button,
+  .home-swap-cockpit .home-trade-swap.is-disconnected [class*='ConnectWallet'],
+  .home-swap-cockpit .home-trade-swap.is-disconnected a[class*='ConnectWallet'] {
+    margin-top: 12px !important;
+    margin-bottom: 0 !important;
+    border-radius: 12px !important;
   }
 
   .home-trade-swap [class*='HeaderWrapper'],

@@ -19,7 +19,7 @@ const PairSelect = styled.button`
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   cursor: pointer;
   box-sizing: border-box;
 `
@@ -46,7 +46,7 @@ const TokenRow = styled.div`
   background: ${liquidityStudioColors.surfaceSecondary};
   padding: 12px 14px;
   box-sizing: border-box;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 `
 
 const TokenLabel = styled.span`
@@ -88,14 +88,14 @@ const TokenSelect = styled.button`
 const SwapMid = styled.div`
   display: flex;
   justify-content: center;
-  margin: 0 0 4px;
+  margin: 4px auto 12px;
   position: relative;
   z-index: 2;
 `
 
 const SwapBtn = styled.button`
-  width: 32px;
-  height: 32px;
+  width: ${liquidityStudioLayout.swapIconSize};
+  height: ${liquidityStudioLayout.swapIconSize};
   border-radius: 50%;
   border: 1px solid rgba(212, 175, 55, 0.35);
   background: #121212;
@@ -111,7 +111,9 @@ const RatioHead = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 2px 0 6px;
+  height: 26px;
+  min-height: 26px;
+  margin-bottom: 6px;
   font-size: 11px;
   font-weight: 600;
   color: ${liquidityStudioColors.muted};
@@ -140,8 +142,9 @@ const SlippageRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 24px;
-  margin-bottom: 8px;
+  height: 26px;
+  min-height: 26px;
+  margin-bottom: 0;
   font-size: 13px;
   font-weight: 600;
 `
@@ -156,8 +159,13 @@ const SlippageValue = styled.span`
 `
 
 export const LiquidityBuilderPanel: React.FC = () => (
-  <LsPanel data-ls-panel data-ls-builder $height={liquidityStudioLayout.positionPreviewHeight}>
-    <LsPanelTitle style={{ marginBottom: 10 }}>Liquidity Builder</LsPanelTitle>
+  <LsPanel
+    data-ls-panel
+    data-ls-builder
+    $width={liquidityStudioLayout.leftWidth}
+    $height={liquidityStudioLayout.builderHeight}
+  >
+    <LsPanelTitle>Liquidity Builder</LsPanelTitle>
     <PairSelect type="button">
       <PairText>BNB / MARCO</PairText>
       <Chevron aria-hidden>▾</Chevron>

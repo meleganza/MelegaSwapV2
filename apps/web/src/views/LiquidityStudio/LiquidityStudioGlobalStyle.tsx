@@ -46,6 +46,22 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
   [data-liquidity-studio-screen] [data-ls-mini-chart] {
     animation: ${shimmer} 8s ease-in-out infinite;
   }
+
+  @media (max-width: 767px) {
+    [data-liquidity-studio-screen] [data-ls-panel] {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+    }
+
+    [data-liquidity-studio-screen] [data-ls-builder],
+    [data-liquidity-studio-screen] [data-ls-position-preview],
+    [data-liquidity-studio-screen] [data-ls-activity] {
+      min-height: auto;
+    }
+  }
 `
 
 export default LiquidityStudioGlobalStyle

@@ -23,7 +23,10 @@ const Shell = styled.div`
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  width: 100%;
+  max-width: 520px;
   box-sizing: border-box;
+  padding: 16px;
   transition: transform 160ms ease, box-shadow 160ms ease;
 
   &:hover {
@@ -37,7 +40,7 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 18px 18px 8px;
+  padding: 0 0 8px;
   box-sizing: border-box;
 `
 
@@ -127,7 +130,7 @@ const Timeframes = styled.div`
   flex-wrap: wrap;
   gap: 6px;
   min-height: 30px;
-  padding: 0 18px 8px;
+  padding: 0 0 8px;
 `
 
 const TfButton = styled.button<{ $active?: boolean }>`
@@ -158,8 +161,8 @@ const StatsRow = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  min-height: 82px;
-  padding: 12px 18px 18px;
+  width: 100%;
+  margin-top: 12px;
   box-sizing: border-box;
 
   @media (max-width: 767px) {
@@ -169,12 +172,15 @@ const StatsRow = styled.div`
 
 const StatCard = styled.div`
   background: #101010;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 12px;
   box-sizing: border-box;
-  min-height: 82px;
-  height: 82px;
+  min-width: 0;
+  height: 72px;
+  min-height: 72px;
+  max-height: 72px;
+  overflow: hidden;
   transition: transform 160ms ease;
 
   &:hover {
@@ -184,18 +190,23 @@ const StatCard = styled.div`
 
 const StatLabel = styled.div`
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: ${tradeColors.muted};
+  color: #8a8a8a;
+  line-height: 12px;
 `
 
 const StatValue = styled.div`
   margin-top: 6px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   color: #ffffff;
-  line-height: 1.1;
+  line-height: 22px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   animation: ${fadeIn} 180ms ease;
 `
 
