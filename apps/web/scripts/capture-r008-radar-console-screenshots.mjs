@@ -17,6 +17,7 @@ const SHOTS = [
   { name: 'radar-mobile-390x844.png', url: '/radar', width: 390, height: 844 },
   { name: 'radar-mobile-428x926.png', url: '/radar', width: 428, height: 926 },
   { name: 'radar-contract-intel-desktop-1440x900.png', url: '/radar', width: 1440, height: 900, openIntel: true },
+  { name: 'radar-contract-intel-mobile-390x844.png', url: '/radar', width: 390, height: 844, openIntel: true },
 ]
 
 async function main() {
@@ -28,8 +29,8 @@ async function main() {
     await page.waitForSelector('[data-radar-studio-screen]', { timeout: 120000 }).catch(() => undefined)
     await page.waitForSelector('[data-rd-event-card]', { timeout: 120000 }).catch(() => undefined)
     if (shot.openIntel) {
-      await page.locator('button:has-text("Contract Intelligence")').first().click({ timeout: 10000 })
-      await page.waitForSelector('[role="dialog"]', { timeout: 10000 }).catch(() => undefined)
+      await page.locator('button:has-text("Run Free Preview")').first().click({ timeout: 10000 })
+      await page.waitForSelector('[data-rd-contract-intel-modal]', { timeout: 10000 }).catch(() => undefined)
       await page.waitForTimeout(800)
     } else {
       await page.waitForTimeout(2500)

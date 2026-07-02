@@ -39,7 +39,7 @@ const Main = styled.div`
 `
 
 const Apr = styled.div`
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 800;
   line-height: 1;
   color: ${poolsStudioColors.green};

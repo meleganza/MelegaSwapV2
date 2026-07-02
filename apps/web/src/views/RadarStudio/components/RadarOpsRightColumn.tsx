@@ -2,61 +2,46 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { AI_OPPORTUNITY, AI_WARNINGS, RECENT_DISCOVERIES } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
-import { RdPanel, RdSectionTitle, StatusDot } from './radarStudioPrimitives'
+import { OpportunityGauge, RdPanel, RdSectionTitle, StatusDot } from './radarStudioPrimitives'
 
 const Column = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  width: 100%;
+  max-width: ${radarStudioLayout.opsPanelWidth};
 `
 
 const Panel = styled(RdPanel)`
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  width: ${radarStudioLayout.opsPanelWidth};
+  max-width: 100%;
+  padding: 16px;
+  background: ${radarStudioColors.panel};
+  border-color: ${radarStudioColors.borderMuted};
+`
+
+const OpportunityPanel = styled(Panel)`
+  height: ${radarStudioLayout.opportunityHeight};
+  min-height: ${radarStudioLayout.opportunityHeight};
+`
+
+const WarningsPanel = styled(Panel)`
+  height: ${radarStudioLayout.warningsHeight};
+  min-height: ${radarStudioLayout.warningsHeight};
+`
+
+const RecentPanel = styled(Panel)`
+  height: ${radarStudioLayout.recentHeight};
+  min-height: ${radarStudioLayout.recentHeight};
 `
 
 const GaugeWrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-align: center;
-`
-
-const Gauge = styled.div<{ $score: number; $animated: number }>`
-  width: ${radarStudioLayout.gaugeSize};
-  height: ${radarStudioLayout.gaugeSize};
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 32px;
-  font-weight: 700;
-  color: ${radarStudioColors.green};
-  background: conic-gradient(
-    ${radarStudioColors.green} ${({ $animated }) => $animated * 3.6}deg,
-    rgba(255, 255, 255, 0.08) 0
-  );
-  position: relative;
-  flex-shrink: 0;
-  transition: background 1200ms ease-out;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 14px;
-    border-radius: 50%;
-    background: ${radarStudioColors.panel};
-  }
-
-  span {
-    position: relative;
-    z-index: 1;
-  }
 `
 
 const RecLabel = styled.div`
@@ -70,14 +55,15 @@ const RecSummary = styled.p`
   margin: 0;
   font-family: ${RADAR_FONT_BODY};
   font-size: 12px;
-  line-height: 1.45;
-  color: ${radarStudioColors.secondary};
+  line-height: 18px;
+  color: ${radarStudioColors.muted};
 `
 
 const WarningRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 28px;
   font-family: ${RADAR_FONT_BODY};
   font-size: 12px;
   color: ${radarStudioColors.secondary};
@@ -88,22 +74,16 @@ const FeedRow = styled.div`
   grid-template-columns: auto 1fr auto;
   gap: 6px 8px;
   align-items: baseline;
+  height: 30px;
   font-family: ${RADAR_FONT_BODY};
   font-size: 11px;
-  color: ${radarStudioColors.secondary};
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
+  color: ${radarStudioColors.muted};
 `
 
 const FeedTime = styled.span`
   font-family: ${RADAR_FONT_DISPLAY};
   font-size: 10px;
-  color: ${radarStudioColors.grey};
+  color: ${radarStudioColors.label};
 `
 
 const FeedProject = styled.span`
@@ -129,29 +109,27 @@ export const RadarOpsRightColumn: React.FC = () => {
 
   return (
     <Column data-rd-ops-right>
-      <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>AI Opportunity Score</RdSectionTitle>
+      <OpportunityPanel data-rd-panel>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>AI Opportunity Score</RdSectionTitle>
         <GaugeWrap>
-          <Gauge $score={AI_OPPORTUNITY.score} $animated={animatedScore} data-rd-gauge>
-            <span>{AI_OPPORTUNITY.score}</span>
-          </Gauge>
+          <OpportunityGauge score={AI_OPPORTUNITY.score} animated={animatedScore} />
           <RecLabel>{AI_OPPORTUNITY.recommendation}</RecLabel>
           <RecSummary>{AI_OPPORTUNITY.summary}</RecSummary>
         </GaugeWrap>
-      </Panel>
+      </OpportunityPanel>
 
-      <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>Warnings</RdSectionTitle>
+      <WarningsPanel data-rd-panel>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>Warnings</RdSectionTitle>
         {AI_WARNINGS.map((row) => (
           <WarningRow key={row.label}>
             <StatusDot level={row.level} />
             {row.label}
           </WarningRow>
         ))}
-      </Panel>
+      </WarningsPanel>
 
-      <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>Recent Discoveries</RdSectionTitle>
+      <RecentPanel data-rd-panel>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>Recent Discoveries</RdSectionTitle>
         {RECENT_DISCOVERIES.map((row) => (
           <FeedRow key={`${row.time}-${row.project}`}>
             <FeedTime>{row.time}</FeedTime>
@@ -161,7 +139,7 @@ export const RadarOpsRightColumn: React.FC = () => {
             <FeedConf>{row.confidence}</FeedConf>
           </FeedRow>
         ))}
-      </Panel>
+      </RecentPanel>
     </Column>
   )
 }

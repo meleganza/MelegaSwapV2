@@ -1,5 +1,5 @@
 import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { heatBlockColor } from '../radarStudioData'
 import {
@@ -9,14 +9,9 @@ import {
   radarStudioLayout,
 } from '../radarStudioTokens'
 
-const sparkShimmer = keyframes`
-  0% { stroke-dashoffset: 140; opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { stroke-dashoffset: 0; opacity: 0.6; }
-`
-
-export const RdPanel = styled.div<{ $height?: string }>`
-  background: ${radarStudioColors.panel};
+export const RdPanel = styled.div<{ $height?: string; $width?: string }>`
+  width: ${({ $width }) => $width || '100%'};
+  background: ${radarStudioColors.panelGradient};
   border: 1px solid ${radarStudioColors.border};
   border-radius: ${radarStudioLayout.cardRadius};
   box-sizing: border-box;
@@ -34,37 +29,38 @@ export const RdSectionTitle = styled.h2`
   margin: 0 0 14px;
   font-family: ${RADAR_FONT_DISPLAY};
   font-size: 22px;
+  line-height: 28px;
   font-weight: 800;
-  line-height: 1.1;
   color: ${radarStudioColors.white};
 `
 
 export const RdLabel = styled.span`
   font-family: ${RADAR_FONT_BODY};
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${radarStudioColors.grey};
+  color: ${radarStudioColors.label};
+  line-height: 14px;
 `
 
 export const RdPrimaryBtn = styled.button`
   height: ${radarStudioLayout.eventBtnHeight};
   min-height: ${radarStudioLayout.eventBtnHeight};
-  padding: 0 14px;
+  padding: 0;
   border: none;
   border-radius: 10px;
   background: ${radarStudioColors.gold};
   color: #050505;
   font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  transition: transform 180ms ease;
+  transition: transform 180ms ease, filter 180ms ease;
   white-space: nowrap;
 
   &:hover {
-    transform: scale(0.98);
+    filter: brightness(1.06);
   }
 
   @media (max-width: 767px) {
@@ -76,9 +72,9 @@ export const RdPrimaryBtn = styled.button`
 export const RdGhostBtn = styled.button`
   height: ${radarStudioLayout.eventBtnHeight};
   min-height: ${radarStudioLayout.eventBtnHeight};
-  padding: 0 12px;
+  padding: 0;
   border-radius: 10px;
-  border: 1px solid ${radarStudioColors.border};
+  border: 1px solid #3a3a3a;
   background: transparent;
   color: ${radarStudioColors.gold};
   font-family: ${RADAR_FONT_BODY};
@@ -89,7 +85,6 @@ export const RdGhostBtn = styled.button`
   white-space: nowrap;
 
   &:hover {
-    transform: scale(0.98);
     border-color: ${radarStudioColors.gold};
   }
 
@@ -99,27 +94,42 @@ export const RdGhostBtn = styled.button`
   }
 `
 
-export const RdOutlineGoldBtn = styled(RdGhostBtn)`
-  border-color: ${radarStudioColors.gold};
+export const RdIntelBtn = styled(RdGhostBtn)`
+  border-color: rgba(212, 175, 55, 0.45);
+`
+
+export const RdOutlineGoldBtn = styled.button`
+  height: 44px;
+  min-height: 44px;
+  width: 178px;
+  padding: 0;
+  border-radius: 13px;
+  border: 1px solid ${radarStudioColors.gold};
+  background: ${radarStudioColors.goldBg};
+  color: ${radarStudioColors.gold};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 `
 
 export const RdChip = styled.button<{ $active?: boolean }>`
   height: ${radarStudioLayout.filterHeight};
   min-height: ${radarStudioLayout.filterHeight};
-  padding: 0 16px;
+  padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid ${({ $active }) => ($active ? radarStudioColors.gold : radarStudioColors.border)};
-  background: ${({ $active }) => ($active ? radarStudioColors.gold : 'transparent')};
+  border: 1px solid ${({ $active }) => ($active ? radarStudioColors.gold : '#252525')};
+  background: ${({ $active }) => ($active ? radarStudioColors.gold : '#090909')};
   color: ${({ $active }) => ($active ? '#050505' : radarStudioColors.secondary)};
   font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  flex-shrink: 0;
+  transition: border-color 180ms ease, background 180ms ease;
 
   &:hover {
-    transform: translateY(-1px);
     border-color: ${radarStudioColors.gold};
   }
 `
@@ -145,7 +155,7 @@ export const RadarProjectLogo: React.FC<{ name: string; symbol?: string; size?: 
         height: size,
         borderRadius: '50%',
         border: `1px solid ${radarStudioColors.border}`,
-        background: radarStudioColors.panelAlt,
+        background: radarStudioColors.panel,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -161,39 +171,6 @@ export const RadarProjectLogo: React.FC<{ name: string; symbol?: string; size?: 
   )
 }
 
-const SparkPath = styled.path`
-  fill: none;
-  stroke: ${radarStudioColors.green};
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 140;
-  animation: ${sparkShimmer} 8s ease-in-out infinite alternate;
-`
-
-export const AnimatedSparkline: React.FC<{ points: number[]; width?: number; height?: number; color?: string }> = ({
-  points,
-  width = 56,
-  height = 20,
-  color,
-}) => {
-  const max = Math.max(...points)
-  const min = Math.min(...points)
-  const range = max - min || 1
-  const d = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * width
-      const y = height - ((p - min) / range) * (height - 4) - 2
-      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
-    })
-    .join(' ')
-
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height} aria-hidden data-rd-sparkline>
-      <SparkPath d={d} style={color ? { stroke: color } : undefined} />
-    </svg>
-  )
-}
-
 export const HeatBlocks: React.FC<{ value: number; invert?: boolean; count?: number }> = ({
   value,
   invert,
@@ -202,16 +179,16 @@ export const HeatBlocks: React.FC<{ value: number; invert?: boolean; count?: num
   const filled = Math.round((value / 100) * count)
 
   return (
-    <span data-rd-heat-blocks style={{ display: 'inline-flex', gap: 2 }}>
+    <span data-rd-heat-blocks style={{ display: 'inline-flex', gap: 3 }}>
       {Array.from({ length: count }).map((_, i) => (
         <span
           key={i}
           data-rd-heat-block
           style={{
-            width: 6,
-            height: 10,
-            borderRadius: 2,
-            background: i < filled ? heatBlockColor(value, invert) : 'rgba(255,255,255,0.08)',
+            width: 8,
+            height: 22,
+            borderRadius: 3,
+            background: i < filled ? heatBlockColor(value, invert) : radarStudioColors.heatInactive,
             animationDelay: `${i * 0.08}s`,
           }}
         />
@@ -238,15 +215,98 @@ export function StatusDot({ level }: { level: 'green' | 'yellow' | 'orange' | 'r
 }
 
 export const SignalChip = styled.span`
-  height: 22px;
+  height: 24px;
   padding: 0 8px;
   border-radius: 999px;
   border: 1px solid ${radarStudioColors.border};
   font-family: ${RADAR_FONT_BODY};
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: ${radarStudioColors.secondary};
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
 `
+
+const sparkShimmer = `
+  @keyframes rdSparkShimmer {
+    0% { stroke-dashoffset: 140; opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0.6; }
+  }
+`
+
+export const KpiSparkline: React.FC<{ points: number[]; color?: string }> = ({ points, color = '#00E884' }) => {
+  const w = 58
+  const h = 22
+  const max = Math.max(...points)
+  const min = Math.min(...points)
+  const range = max - min || 1
+  const d = points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * w
+      const y = h - ((p - min) / range) * (h - 4) - 2
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+
+  return (
+    <>
+      <style>{sparkShimmer}</style>
+      <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} aria-hidden data-rd-sparkline>
+        <path
+          d={d}
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray="140"
+          style={{ animation: 'rdSparkShimmer 8s ease-in-out infinite alternate' }}
+        />
+      </svg>
+    </>
+  )
+}
+
+export const OpportunityGauge: React.FC<{ score: number; animated: number }> = ({ score, animated }) => {
+  const r = 48
+  const c = 2 * Math.PI * r
+  const offset = c - (animated / 100) * c
+
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      width={126}
+      height={126}
+      aria-hidden
+      data-rd-gauge
+      style={{ display: 'block', flexShrink: 0 }}
+    >
+      <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12" />
+      <circle
+        cx="60"
+        cy="60"
+        r={r}
+        fill="none"
+        stroke={radarStudioColors.green}
+        strokeWidth="12"
+        strokeLinecap="round"
+        strokeDasharray={c}
+        strokeDashoffset={offset}
+        transform="rotate(-90 60 60)"
+        style={{ transition: 'stroke-dashoffset 1200ms ease-out' }}
+      />
+      <text
+        x="60"
+        y="64"
+        textAnchor="middle"
+        fontFamily={RADAR_FONT_DISPLAY}
+        fontSize="34"
+        fontWeight="800"
+        fill={radarStudioColors.green}
+      >
+        {score}
+      </text>
+    </svg>
+  )
+}

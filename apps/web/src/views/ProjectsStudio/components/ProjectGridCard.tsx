@@ -123,27 +123,19 @@ const SummaryLabel = styled.div`
 `
 
 const SummaryWrap = styled.div`
-  position: relative;
-  max-height: calc(1.45em * 4);
+  max-height: 57px;
   overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1.2em;
-    background: linear-gradient(180deg, rgba(16, 16, 16, 0) 0%, #101010 100%);
-    pointer-events: none;
-  }
 `
 
 const Summary = styled.p`
   margin: 4px 0 0;
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 19px;
   color: ${projectsStudioColors.summary};
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 const Metrics = styled.div`
@@ -234,7 +226,7 @@ const ButtonRow = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: ${projectsStudioLayout.btnGap};
-  margin-top: auto;
+  margin-top: 16px;
   min-height: ${projectsStudioLayout.cardFooterHeight};
   height: ${projectsStudioLayout.cardFooterHeight};
   flex-shrink: 0;

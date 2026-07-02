@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { RADAR_KPIS } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
-import { AnimatedSparkline } from './radarStudioPrimitives'
+import { KpiSparkline } from './radarStudioPrimitives'
 
 const SPARKLINES: Record<string, number[]> = {
   indexed: [8, 9, 10, 11, 12, 13, 12, 14],
@@ -28,47 +28,53 @@ const Row = styled.div`
 `
 
 const Card = styled.div`
+  position: relative;
   height: ${radarStudioLayout.kpiHeight};
   min-height: ${radarStudioLayout.kpiHeight};
   border-radius: ${radarStudioLayout.kpiRadius};
-  border: 1px solid ${radarStudioColors.border};
+  border: 1px solid ${radarStudioColors.borderMuted};
   background: ${radarStudioColors.panel};
   padding: ${radarStudioLayout.kpiPadding};
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  min-width: 0;
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: 104px;
+    min-height: 104px;
+  }
 `
 
 const Label = styled.span`
+  display: block;
   font-family: ${RADAR_FONT_BODY};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${radarStudioColors.grey};
+  color: ${radarStudioColors.label};
+  line-height: 14px;
 `
 
-const ValueRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-  flex-wrap: wrap;
-`
-
-const Value = styled.span`
+const Value = styled.span<{ $risk?: boolean }>`
+  display: block;
+  margin-top: 8px;
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 56px;
-  font-weight: 700;
-  line-height: 1;
-  color: ${radarStudioColors.green};
+  font-size: 42px;
+  line-height: 48px;
+  font-weight: 800;
+  color: ${({ $risk }) => ($risk ? radarStudioColors.white : radarStudioColors.green)};
   white-space: nowrap;
+
+  @media (max-width: 767px) {
+    font-size: 34px;
+    line-height: 38px;
+  }
 `
 
 const Delta = styled.span<{ $positive?: boolean }>`
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
   font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
   font-weight: 600;
@@ -78,9 +84,8 @@ const Delta = styled.span<{ $positive?: boolean }>`
 
 const SparkWrap = styled.div`
   position: absolute;
-  right: 16px;
+  right: 18px;
   bottom: 18px;
-  opacity: 0.85;
 `
 
 export const RadarKpiRow: React.FC = () => (
@@ -88,12 +93,12 @@ export const RadarKpiRow: React.FC = () => (
     {RADAR_KPIS.map((kpi) => (
       <Card key={kpi.id} data-rd-kpi-card>
         <Label>{kpi.label}</Label>
-        <ValueRow>
-          <Value data-rd-kpi-value>{kpi.value}</Value>
-          <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta>
-        </ValueRow>
+        <Value $risk={kpi.id === 'risk'} data-rd-kpi-value>
+          {kpi.value}
+        </Value>
+        <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta>
         <SparkWrap>
-          <AnimatedSparkline
+          <KpiSparkline
             points={SPARKLINES[kpi.id]}
             color={kpi.deltaPositive === false ? radarStudioColors.red : radarStudioColors.green}
           />

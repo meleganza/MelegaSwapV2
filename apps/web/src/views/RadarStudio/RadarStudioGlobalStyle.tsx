@@ -7,13 +7,8 @@ const heatFade = keyframes`
 `
 
 const livePulse = keyframes`
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px ${radarStudioColors.green}; }
-  50% { opacity: 0.65; transform: scale(0.9); box-shadow: 0 0 14px ${radarStudioColors.green}; }
-`
-
-const radarPulse = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,232,132,0.35); }
+  50% { box-shadow: 0 0 0 8px transparent; }
 `
 
 const ticker = keyframes`
@@ -43,7 +38,7 @@ const RadarStudioGlobalStyle = createGlobalStyle`
 
   [data-radar-studio-screen] {
     color: ${radarStudioColors.white};
-    background: ${radarStudioColors.canvas};
+    background: ${radarStudioColors.pageBg};
   }
 
   [data-radar-studio-screen] [data-rd-panel],
@@ -65,7 +60,7 @@ const RadarStudioGlobalStyle = createGlobalStyle`
   }
 
   [data-radar-studio-screen] [data-rd-ticker-track] {
-    animation: ${ticker} 32s linear infinite;
+    animation: ${ticker} 28s linear infinite;
   }
 
   [data-radar-studio-screen] [data-rd-ticker-viewport]:hover [data-rd-ticker-track] {
@@ -74,10 +69,6 @@ const RadarStudioGlobalStyle = createGlobalStyle`
 
   [data-radar-studio-screen] [data-rd-heat-block] {
     animation: rdHeatFade 3s ease-in-out infinite;
-  }
-
-  [data-radar-studio-screen] [data-rd-page-header] [data-rd-radar-pulse] {
-    animation: ${radarPulse} 2s ease-in-out infinite;
   }
 
   @media (max-width: ${radarStudioLayout.stackBreakpoint}) {

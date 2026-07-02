@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { SMART_MONEY_ROWS, WHALE_ROWS } from '../radarStudioData'
-import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors } from '../radarStudioTokens'
+import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { RdPanel, RdSectionTitle } from './radarStudioPrimitives'
 
 const Column = styled.div`
@@ -9,23 +9,17 @@ const Column = styled.div`
   flex-direction: column;
   gap: 16px;
   min-width: 0;
-`
-
-const OpsLabel = styled.span`
-  font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: ${radarStudioColors.grey};
-  margin-bottom: -4px;
+  width: 100%;
+  max-width: ${radarStudioLayout.opsPanelWidth};
 `
 
 const Panel = styled(RdPanel)`
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  width: ${radarStudioLayout.opsPanelWidth};
+  max-width: 100%;
+  min-height: 160px;
+  padding: 16px;
+  background: ${radarStudioColors.panel};
+  border-color: ${radarStudioColors.borderMuted};
 `
 
 const whaleSlide = keyframes`
@@ -34,14 +28,14 @@ const whaleSlide = keyframes`
 `
 
 const WhaleScroll = styled.div`
-  height: 140px;
+  height: 120px;
   overflow: hidden;
 `
 
 const WhaleTrack = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   animation: ${whaleSlide} 18s linear infinite;
 `
 
@@ -49,25 +43,22 @@ const WhaleRow = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4px 8px;
+  height: 30px;
+  align-items: center;
   font-family: ${RADAR_FONT_BODY};
   font-size: 12px;
-  color: ${radarStudioColors.secondary};
+  color: ${radarStudioColors.muted};
 `
 
 const SmartRow = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 2px 8px;
+  height: 30px;
+  align-items: center;
   font-family: ${RADAR_FONT_BODY};
   font-size: 11px;
-  color: ${radarStudioColors.secondary};
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
+  color: ${radarStudioColors.muted};
 `
 
 export const RadarOpsLeftColumn: React.FC = () => {
@@ -75,9 +66,9 @@ export const RadarOpsLeftColumn: React.FC = () => {
 
   return (
     <Column data-rd-ops-left>
-      <OpsLabel>Operational Intelligence</OpsLabel>
+      <RdSectionTitle style={{ fontSize: 22, marginBottom: 0 }}>Operational Intelligence</RdSectionTitle>
       <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>Whale Monitor</RdSectionTitle>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>Whale Monitor</RdSectionTitle>
         <WhaleScroll data-rd-whale-feed>
           <WhaleTrack>
             {whaleItems.map((row, i) => (
@@ -98,7 +89,7 @@ export const RadarOpsLeftColumn: React.FC = () => {
       </Panel>
 
       <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>Smart Money Tracker</RdSectionTitle>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 8 }}>Smart Money Tracker</RdSectionTitle>
         {SMART_MONEY_ROWS.map((row) => (
           <SmartRow key={row.wallet}>
             <div>

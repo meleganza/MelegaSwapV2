@@ -1,5 +1,5 @@
 {
-  "task": "R008 RADAR CONSOLE ARCHITECTURE REWORK",
+  "task": "R008-B RADAR CONSOLE FUNCTIONAL COMPLETION + VISUAL SURGERY",
   "build": "pass",
   "tests": {
     "design-system": "11/11 pass",
@@ -10,13 +10,18 @@
     "radar-desktop-1728x1117.png",
     "radar-mobile-390x844.png",
     "radar-mobile-428x926.png",
-    "radar-contract-intel-desktop-1440x900.png"
+    "radar-contract-intel-desktop-1440x900.png",
+    "radar-contract-intel-mobile-390x844.png"
   ],
   "validation": {
-    "layout": "1180px shell, 340/520/320 console grid, event cards (not project cards)",
-    "liveStream": "52px ticker with icon/project/event/timestamp/confidence, pauses on hover",
-    "contractIntel": "Free AI preview modal with Melega Space professional audit CTA",
-    "heatmap": "12 metrics x 12 color blocks, no percentages",
-    "animations": "ticker scroll, 2s live pulse, 1200ms gauge, 3s heatmap fade, 80ms card stagger"
+    "contractIntelligenceInput": true,
+    "contractIntelligenceModal": true,
+    "liveDiscoveryFeed": true,
+    "aiHeatmapConsole": true,
+    "consoleGrid": "300px | center discoveries | 300px",
+    "eventCards": "548px event cards with signal chips, metrics, 3-button row",
+    "farmsPoolsAprFix": "regular cards 42px APR, featured 56px",
+    "farmsKpiLabel": "MARCO REWARDS TODAY with MARCO suffix label",
+    "projectsCardFix": "360px min-height, 3-line AI summary, bottom button row"
   }
 }

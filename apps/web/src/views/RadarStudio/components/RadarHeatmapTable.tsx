@@ -2,42 +2,70 @@ import React from 'react'
 import styled from 'styled-components'
 import { HEATMAP_PROJECTS } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
-import { HeatBlocks, RadarProjectLogo, RdPanel, RdSectionTitle } from './radarStudioPrimitives'
+import { HeatBlocks, RadarProjectLogo, RdPanel } from './radarStudioPrimitives'
 
 const Panel = styled(RdPanel)`
-  padding: 16px 18px;
-  min-height: ${radarStudioLayout.heatmapHeight};
+  width: 100%;
+  min-height: ${radarStudioLayout.heatmapMinHeight};
+  margin-top: ${radarStudioLayout.heatmapMarginTop};
+  padding: 18px;
+  background: ${radarStudioColors.panelAlt};
+  border: 1px solid rgba(212, 175, 55, 0.58);
+`
+
+const Header = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+`
+
+const Title = styled.h2`
+  margin: 0;
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 26px;
+  font-weight: 800;
+  color: ${radarStudioColors.white};
+`
+
+const Legend = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 11px;
+  color: ${radarStudioColors.muted};
 `
 
 const TableWrap = styled.div`
-  flex: 1;
-  min-height: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 `
 
 const Table = styled.table`
   width: 100%;
-  min-width: 1100px;
+  min-width: 1360px;
   border-collapse: collapse;
 `
 
-const Th = styled.th`
+const Th = styled.th<{ $w?: string }>`
+  width: ${({ $w }) => $w || '120px'};
+  min-width: 100px;
   text-align: left;
   font-family: ${RADAR_FONT_BODY};
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${radarStudioColors.grey};
+  color: ${radarStudioColors.label};
   padding: 0 6px 10px;
   white-space: nowrap;
 `
 
 const Td = styled.td`
-  padding: 6px;
+  padding: 8px 6px;
   vertical-align: middle;
 `
 
@@ -68,15 +96,24 @@ const METRICS = [
 
 export const RadarHeatmapTable: React.FC = () => (
   <Panel data-rd-panel data-rd-heatmap>
-    <RdSectionTitle>AI Heatmap</RdSectionTitle>
+    <Header>
+      <Title>AI Heatmap</Title>
+      <Legend>
+        <span style={{ color: radarStudioColors.green }}>Low Risk</span>
+        <span>→</span>
+        <span style={{ color: radarStudioColors.red }}>High Risk</span>
+      </Legend>
+    </Header>
     <TableWrap>
       <Table>
         <thead>
           <tr>
-            <Th>#</Th>
-            <Th>Project</Th>
+            <Th $w="40px">#</Th>
+            <Th $w="120px">Project</Th>
             {METRICS.map((m) => (
-              <Th key={m.key}>{m.label}</Th>
+              <Th key={m.key} $w="120px">
+                {m.label}
+              </Th>
             ))}
           </tr>
         </thead>

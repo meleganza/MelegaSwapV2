@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
 import { FARMS_KPIS } from '../farmsStudioData'
-import { farmsStudioLayout } from '../farmsStudioTokens'
+import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
 import { FsKpiCard, FsKpiDelta, FsKpiLabel, FsKpiValue } from './farmsStudioPrimitives'
 
 const Row = styled.div`
@@ -26,7 +26,9 @@ const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
   padding-right: ${({ $hasSparkline }) =>
     $hasSparkline ? farmsStudioLayout.sparklineW + Number.parseInt(farmsStudioLayout.kpiSparkGap, 10) : 0}px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
 `
 
 const ValueRow = styled.div`
@@ -34,6 +36,14 @@ const ValueRow = styled.div`
   align-items: baseline;
   min-width: 0;
   flex: 1;
+  gap: 8px;
+`
+
+const TokenSuffix = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  color: ${farmsStudioColors.muted};
+  line-height: 1;
 `
 
 const Sparkline = styled.svg`
@@ -78,6 +88,7 @@ export const FarmsKpiRow: React.FC = () => (
             </FsKpiValue>
             {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
           </ValueRow>
+          {kpi.id === 'rewards' ? <TokenSuffix>MARCO</TokenSuffix> : null}
           {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
         </ValueBlock>
       </FsKpiCard>

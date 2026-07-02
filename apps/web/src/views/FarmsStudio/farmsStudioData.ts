@@ -62,7 +62,7 @@ export const FARMS_KPIS: FarmsKpiItem[] = [
   { id: 'active', label: 'Active Farms', value: '12', delta: '+1', deltaPositive: true },
   {
     id: 'rewards',
-    label: 'Daily Rewards',
+    label: 'MARCO REWARDS TODAY',
     value: '184.2K',
     delta: '+8.42%',
     deltaPositive: true,

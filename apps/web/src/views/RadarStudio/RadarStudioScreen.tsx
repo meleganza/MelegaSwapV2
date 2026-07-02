@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import RadarStudioGlobalStyle from './RadarStudioGlobalStyle'
+import RadarContractIntelligenceInput from './components/RadarContractIntelligenceInput'
 import RadarDiscoveriesGrid from './components/RadarDiscoveriesGrid'
 import RadarFilterRow from './components/RadarFilterRow'
 import RadarHeatmapTable from './components/RadarHeatmapTable'
@@ -16,7 +17,7 @@ import { RADAR_FONT_BODY, radarStudioColors, radarStudioLayout } from './radarSt
 const Root = styled.div`
   color: ${radarStudioColors.white};
   font-family: ${RADAR_FONT_BODY};
-  background: ${radarStudioColors.canvas};
+  background: ${radarStudioColors.pageBg};
   padding: 0 0 32px;
   min-width: 0;
   overflow-x: hidden;
@@ -37,13 +38,21 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${radarStudioLayout.sectionGap};
+  background: ${radarStudioColors.contentBg};
+  border-radius: 0;
+
+  @media (max-width: 767px) {
+    width: calc(100vw - 32px);
+    padding: 16px;
+  }
 `
 
 const ConsoleGrid = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 340fr) minmax(0, 520fr) minmax(0, 320fr);
+  grid-template-columns: ${radarStudioLayout.colLeft} minmax(0, 1fr) ${radarStudioLayout.colRight};
   gap: ${radarStudioLayout.columnGap};
   align-items: start;
+  margin-top: ${radarStudioLayout.consoleMarginTop};
 
   @media (max-width: ${radarStudioLayout.stackBreakpoint}) {
     grid-template-columns: 1fr;
@@ -58,6 +67,7 @@ export const RadarStudioScreen: React.FC = () => (
     <Content>
       <RadarStudioPageHeader />
       <RadarKpiRow />
+      <RadarContractIntelligenceInput />
       <RadarLiveEventStream />
       <RadarFilterRow />
       <ConsoleGrid data-rd-console-grid>

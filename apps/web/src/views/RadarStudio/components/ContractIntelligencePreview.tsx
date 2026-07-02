@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import type { RadarEventCard } from '../radarStudioData'
+import type { ContractPreviewData, RadarEventCard } from '../radarStudioData'
 import { statusColor } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors } from '../radarStudioTokens'
-import { RadarProjectLogo, RdOutlineGoldBtn, StatusDot } from './radarStudioPrimitives'
+import { RadarProjectLogo, StatusDot } from './radarStudioPrimitives'
 
 const Overlay = styled.div`
   position: fixed;
@@ -23,20 +23,22 @@ const Overlay = styled.div`
 `
 
 const Sheet = styled.div`
-  width: min(560px, 100%);
-  max-height: min(88vh, 720px);
+  width: min(760px, 100%);
+  max-height: min(78vh, 720px);
   overflow: auto;
-  background: ${radarStudioColors.panel};
-  border: 1px solid ${radarStudioColors.border};
+  background: #111111;
+  border: 1px solid ${radarStudioColors.gold};
   border-radius: 20px;
   padding: 24px;
   box-sizing: border-box;
-  box-shadow: ${radarStudioColors.shadow};
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   @media (max-width: 767px) {
     width: 100%;
-    max-height: 85vh;
-    border-radius: 20px 20px 0 0;
+    max-height: 86vh;
+    border-radius: 22px 22px 0 0;
     animation: rdSheetUp 280ms ease-out;
   }
 
@@ -50,154 +52,176 @@ const Sheet = styled.div`
   }
 `
 
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-`
-
 const Title = styled.h3`
   margin: 0;
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: ${radarStudioColors.white};
 `
 
-const Subtitle = styled.p`
-  margin: 2px 0 0;
+const ContractLine = styled.p`
+  margin: 0;
   font-family: ${RADAR_FONT_BODY};
   font-size: 13px;
   color: ${radarStudioColors.subtitle};
 `
 
+const ScoreRing = styled.div`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 4px solid ${radarStudioColors.green};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`
+
+const ScoreValue = styled.span`
+  font-family: ${RADAR_FONT_DISPLAY};
+  font-size: 28px;
+  font-weight: 800;
+  color: ${radarStudioColors.green};
+  line-height: 1;
+`
+
+const ScoreLabel = styled.span`
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 10px;
+  color: ${radarStudioColors.muted};
+  text-transform: uppercase;
+`
+
+const TopRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+`
+
 const CloseBtn = styled.button`
-  margin-left: auto;
   width: 36px;
   height: 36px;
   border: 1px solid ${radarStudioColors.border};
   border-radius: 10px;
   background: transparent;
-  color: ${radarStudioColors.grey};
+  color: ${radarStudioColors.muted};
   font-size: 18px;
   cursor: pointer;
   flex-shrink: 0;
 `
 
-const Grid = styled.div`
+const Checklist = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px 16px;
-  margin-bottom: 16px;
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
 `
 
-const Field = styled.div`
+const CheckItem = styled.div<{ $color: string }>`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  background: ${radarStudioColors.panelAlt};
   font-family: ${RADAR_FONT_BODY};
-  font-size: 12px;
-`
-
-const FieldLabel = styled.span`
-  color: ${radarStudioColors.grey};
-`
-
-const FieldValue = styled.span<{ $color: string }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
+  font-size: 13px;
   color: ${({ $color }) => $color};
 `
 
-const ScoreRow = styled.div`
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-`
-
-const ScoreBox = styled.div`
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid ${radarStudioColors.border};
-  background: ${radarStudioColors.panelAlt};
-`
-
-const ScoreLabel = styled.div`
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: ${radarStudioColors.grey};
-  margin-bottom: 4px;
-`
-
-const ScoreValue = styled.div`
-  font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 24px;
-  font-weight: 700;
-  color: ${radarStudioColors.green};
-`
-
 const Summary = styled.p`
-  margin: 0 0 16px;
+  margin: 0;
   font-family: ${RADAR_FONT_BODY};
   font-size: 14px;
-  line-height: 1.55;
-  color: ${radarStudioColors.subtitle};
-`
-
-const Disclaimer = styled.p`
-  margin: 0 0 16px;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid ${radarStudioColors.border};
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 12px;
-  line-height: 1.5;
+  line-height: 20px;
   color: ${radarStudioColors.secondary};
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
-const Cta = styled.a`
+const CtaRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 44px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+
+  @media (max-width: 767px) {
+    position: sticky;
+    bottom: 0;
+    background: #111111;
+    padding-top: 8px;
+  }
+`
+
+const OutlineBtn = styled.button`
+  height: 42px;
+  min-height: 42px;
+  padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid ${radarStudioColors.gold};
+  border: 1px solid #3a3a3a;
   background: transparent;
   color: ${radarStudioColors.gold};
   font-family: ${RADAR_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
-  text-decoration: none;
-  transition: transform 180ms ease;
-
-  &:hover {
-    transform: scale(0.99);
-  }
+  cursor: pointer;
 `
 
+const GoldBtn = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid ${radarStudioColors.gold};
+  background: ${radarStudioColors.gold};
+  color: #050505;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  flex: 1;
+  min-width: 200px;
+`
+
+const FooterNote = styled.p`
+  margin: 0;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 12px;
+  line-height: 18px;
+  color: ${radarStudioColors.muted};
+`
+
+function fromEvent(event: RadarEventCard): ContractPreviewData {
+  return {
+    address: '0x8f3a…4e2c',
+    network: event.network,
+    score: event.aiConfidence,
+    projectName: event.name,
+    symbol: event.symbol,
+    checklist: event.contractIntel.slice(0, 6).map((f) => ({
+      label: f.label,
+      status: f.status,
+    })),
+    summary: event.intelSummary,
+  }
+}
+
 interface Props {
-  event: RadarEventCard
+  preview?: ContractPreviewData
+  event?: RadarEventCard
   onClose: () => void
 }
 
-export const ContractIntelligencePreview: React.FC<Props> = ({ event, onClose }) => {
+export const ContractIntelligencePreview: React.FC<Props> = ({ preview, event, onClose }) => {
+  const data = preview ?? (event ? fromEvent(event) : null)
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -206,56 +230,56 @@ export const ContractIntelligencePreview: React.FC<Props> = ({ event, onClose })
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  if (!data) return null
+
   return (
-    <Overlay role="dialog" aria-modal="true" aria-label="Contract Intelligence Preview" onClick={onClose}>
-      <Sheet onClick={(e) => e.stopPropagation()}>
-        <Header>
-          <RadarProjectLogo name={event.name} symbol={event.symbol} size={40} />
-          <div>
-            <Title>Contract Intelligence</Title>
-            <Subtitle>
-              {event.name} · {event.network} · Free AI Preview
-            </Subtitle>
+    <Overlay role="dialog" aria-modal="true" aria-label="AI Contract Intelligence Preview" onClick={onClose}>
+      <Sheet onClick={(e) => e.stopPropagation()} data-rd-contract-intel-modal>
+        <TopRow>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', minWidth: 0 }}>
+            {data.projectName ? (
+              <RadarProjectLogo name={data.projectName} symbol={data.symbol} size={40} />
+            ) : null}
+            <div>
+              <Title>AI Contract Intelligence Preview</Title>
+              <ContractLine>
+                {data.address} · {data.network}
+              </ContractLine>
+            </div>
           </div>
           <CloseBtn type="button" onClick={onClose} aria-label="Close">
             ×
           </CloseBtn>
-        </Header>
+        </TopRow>
 
-        <Grid>
-          {event.contractIntel.map((field) => (
-            <Field key={field.label}>
-              <FieldLabel>{field.label}</FieldLabel>
-              <FieldValue $color={statusColor(field.status)}>
-                <StatusDot level={field.status} />
-                {field.value}
-              </FieldValue>
-            </Field>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <ScoreRing>
+            <ScoreValue>{data.score}</ScoreValue>
+            <ScoreLabel>/ 100</ScoreLabel>
+          </ScoreRing>
+        </div>
+
+        <Checklist>
+          {data.checklist.map((item) => (
+            <CheckItem key={item.label} $color={statusColor(item.status)}>
+              <StatusDot level={item.status} />
+              {item.label}
+            </CheckItem>
           ))}
-        </Grid>
+        </Checklist>
 
-        <ScoreRow>
-          <ScoreBox>
-            <ScoreLabel>Risk Score</ScoreLabel>
-            <ScoreValue>{event.riskScore}/100</ScoreValue>
-          </ScoreBox>
-          <ScoreBox>
-            <ScoreLabel>Gas Complexity</ScoreLabel>
-            <ScoreValue style={{ fontSize: 18 }}>{event.gasComplexity}</ScoreValue>
-          </ScoreBox>
-        </ScoreRow>
+        <Summary>{data.summary}</Summary>
 
-        <Summary>{event.intelSummary}</Summary>
+        <CtaRow>
+          <OutlineBtn type="button">Open Project</OutlineBtn>
+          <GoldBtn href="https://space.melega.io" target="_blank" rel="noopener noreferrer">
+            Professional AI Contract Audit on Melega Space
+          </GoldBtn>
+        </CtaRow>
 
-        <Disclaimer>
-          For a complete Professional AI Contract Audit with downloadable PDF, certification and detailed
-          legal-grade report, continue on Melega Space. Radar remains free — no PDF or professional
-          certification is provided here.
-        </Disclaimer>
-
-        <Cta href="https://space.melega.io" target="_blank" rel="noopener noreferrer">
-          Professional Audit on Melega Space
-        </Cta>
+        <FooterNote>
+          This is a free operational due diligence preview. It is not a legal, financial, or certified audit.
+        </FooterNote>
       </Sheet>
     </Overlay>
   )

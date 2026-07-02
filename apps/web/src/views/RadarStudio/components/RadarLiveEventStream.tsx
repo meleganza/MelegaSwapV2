@@ -1,36 +1,35 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { LIVE_EVENTS } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 
 const Bar = styled.div`
+  width: 100%;
   height: ${radarStudioLayout.eventStreamHeight};
   min-height: ${radarStudioLayout.eventStreamHeight};
-  border-radius: 14px;
-  border: 1px solid ${radarStudioColors.border};
-  background: ${radarStudioColors.panel};
+  border-radius: 16px;
+  border: 1px solid #282828;
+  background: ${radarStudioColors.panelAlt};
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 16px;
+  padding: 0 18px;
   overflow: hidden;
   box-sizing: border-box;
 `
 
 const LiveDot = styled.span`
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: ${radarStudioColors.green};
-  box-shadow: 0 0 8px ${radarStudioColors.green};
   flex-shrink: 0;
 `
 
 const LiveLabel = styled.span`
-  font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 11px;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.1em;
   color: ${radarStudioColors.green};
   flex-shrink: 0;
 `
@@ -52,6 +51,7 @@ const TickerTrack = styled.div`
   display: flex;
   width: max-content;
   gap: 28px;
+  align-items: center;
 
   ${TickerViewport}:hover & {
     animation-play-state: paused;
@@ -74,7 +74,6 @@ const EventItem = styled.div`
 
 const Icon = styled.span`
   font-size: 14px;
-  flex-shrink: 0;
 `
 
 const Project = styled.span`
@@ -84,11 +83,12 @@ const Project = styled.span`
 `
 
 const EventText = styled.span`
+  font-weight: 400;
   color: ${radarStudioColors.subtitle};
 `
 
 const Timestamp = styled.span`
-  color: ${radarStudioColors.grey};
+  color: ${radarStudioColors.muted};
   font-size: 12px;
 `
 

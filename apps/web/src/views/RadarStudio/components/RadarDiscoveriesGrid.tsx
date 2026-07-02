@@ -16,6 +16,8 @@ const Stack = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${radarStudioLayout.eventCardGap};
+  width: 100%;
+  max-width: ${radarStudioLayout.eventCardWidth};
 `
 
 export const RadarDiscoveriesGrid: React.FC = () => (

@@ -107,7 +107,7 @@ const AprSection = styled.div<{ $comingSoon?: boolean }>`
 
 const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '46px'};
+    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '42px'};
   font-weight: 800;
   line-height: ${({ $status }) =>
     $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '46px'};
@@ -117,6 +117,13 @@ const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
       : $status === 'coming-soon'
         ? poolsStudioColors.muted
         : poolsStudioColors.green};
+
+  @media (max-width: 767px) {
+    font-size: ${({ $status }) =>
+      $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '38px'};
+    line-height: ${({ $status }) =>
+      $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '42px'};
+  }
 `
 
 const Metrics = styled.div`

@@ -79,6 +79,34 @@ export interface RecentDiscoveryRow {
   confidence: string
 }
 
+export interface ContractPreviewData {
+  address: string
+  network: string
+  score: number
+  checklist: { label: string; status: RadarStatusLevel }[]
+  summary: string
+  projectName?: string
+  symbol?: string
+}
+
+export const MOCK_CONTRACT_PREVIEW: ContractPreviewData = {
+  address: '0x8f3a…4e2c',
+  network: 'BNB Smart Chain',
+  score: 96,
+  projectName: 'MARCO',
+  symbol: 'MARCO',
+  checklist: [
+    { label: 'Contract verified', status: 'green' },
+    { label: 'Liquidity locked', status: 'green' },
+    { label: 'Ownership renounced', status: 'green' },
+    { label: 'Mint function present', status: 'yellow' },
+    { label: 'Holder concentration moderate', status: 'yellow' },
+    { label: 'Honeypot risk not detected', status: 'green' },
+  ],
+  summary:
+    'Automated scan indicates a standard token structure with renounced ownership and locked liquidity. Mint authority disabled; moderate holder concentration warrants monitoring before large positions.',
+}
+
 export interface HeatmapProject {
   rank: number
   name: string
@@ -154,8 +182,7 @@ export const RADAR_EVENTS: RadarEventCard[] = [
     network: 'BNB Chain',
     symbol: 'MARCO',
     aiConfidence: 97,
-    summary:
-      'AI detected sustained whale accumulation with rising liquidity depth. Contract checks pass with low honeypot probability and strong holder expansion.',
+    summary: 'Sustained whale accumulation with rising liquidity depth. Contract checks pass with low honeypot probability.',
     signals: ['Whale', 'Liquidity', 'Contract', 'Holder Growth', 'Audit'],
     liquidity: '$3.21M',
     volume: '$1.28M',
@@ -174,8 +201,7 @@ export const RADAR_EVENTS: RadarEventCard[] = [
     name: 'NAIIVE',
     network: 'BNB Chain',
     aiConfidence: 88,
-    summary:
-      'New liquidity pool indexed with accelerating volume. Smart money wallets entering; monitor holder distribution for concentration signals.',
+    summary: 'New LP indexed with accelerating volume. Smart money wallets entering; monitor holder concentration.',
     signals: ['Liquidity', 'Whale', 'Social', 'Holder Growth'],
     liquidity: '$840K',
     volume: '$420K',
@@ -196,8 +222,7 @@ export const RADAR_EVENTS: RadarEventCard[] = [
     name: 'APX',
     network: 'BNB Chain',
     aiConfidence: 79,
-    summary:
-      'Ownership renouncement event flagged. Volume stable with moderate whale presence. Upgradeability requires continued monitoring.',
+    summary: 'Ownership renouncement flagged. Volume stable with moderate whale presence; upgradeability needs monitoring.',
     signals: ['Contract', 'Audit', 'Risk', 'Liquidity'],
     liquidity: '$520K',
     volume: '$180K',
@@ -218,8 +243,7 @@ export const RADAR_EVENTS: RadarEventCard[] = [
     name: 'LAB',
     network: 'BNB Chain',
     aiConfidence: 71,
-    summary:
-      'Holder surge detected following social momentum spike. Early-stage liquidity building; audit status pending full indexer confirmation.',
+    summary: 'Holder surge after social momentum spike. Early liquidity building; audit pending indexer confirmation.',
     signals: ['Holder Growth', 'Social', 'Liquidity', 'Risk'],
     liquidity: '$280K',
     volume: '$92K',
@@ -356,10 +380,10 @@ export const HEATMAP_PROJECTS: HeatmapProject[] = [
 
 export function heatBlockColor(value: number, invert = false): string {
   const v = invert ? 100 - value : value
-  if (v >= 80) return '#12F27E'
-  if (v >= 60) return '#E9C84D'
-  if (v >= 40) return '#F2A93B'
-  return '#FF4D4F'
+  if (v >= 80) return '#00E884'
+  if (v >= 60) return '#D4AF37'
+  if (v >= 40) return '#FFB84D'
+  return '#FF4D4D'
 }
 
 export function statusColor(level: RadarStatusLevel): string {
