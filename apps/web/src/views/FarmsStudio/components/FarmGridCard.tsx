@@ -1,29 +1,38 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
 
 const Card = styled.article<{ $expanded?: boolean }>`
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   height: ${({ $expanded }) =>
     $expanded ? farmsStudioLayout.farmCardHeightExpanded : farmsStudioLayout.farmCardHeight};
   min-height: ${farmsStudioLayout.farmCardHeight};
-  padding: 16px;
-  padding-bottom: 56px;
+  padding: ${farmsStudioLayout.farmCardPadding};
   border-radius: 18px;
   background: ${farmsStudioColors.panel};
   border: 1px solid ${farmsStudioColors.border};
   box-sizing: border-box;
   min-width: 0;
   overflow: hidden;
-  transition: height 150ms ease, border-color 150ms ease, transform 150ms ease;
+  transition: height 250ms ease, border-color 150ms ease, transform 150ms ease;
 
   @media (max-width: 767px) {
     height: auto;
     min-height: ${farmsStudioLayout.farmCardHeight};
-    padding-bottom: 16px;
   }
+`
+
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  flex: 1;
 `
 
 const TopRow = styled.div`
@@ -32,7 +41,6 @@ const TopRow = styled.div`
   justify-content: space-between;
   gap: 8px;
   height: 32px;
-  min-width: 0;
   flex-shrink: 0;
 `
 
@@ -49,7 +57,19 @@ const Icons = styled.div`
   flex-shrink: 0;
 `
 
-const TokenIcon = styled.span<{ $offset?: boolean }>`
+const TokenIconWrap = styled.span<{ $offset?: boolean }>`
+  width: 24px;
+  height: 24px;
+  margin-left: ${({ $offset }) => ($offset ? '-6px' : '0')};
+  position: relative;
+  z-index: ${({ $offset }) => ($offset ? 1 : 2)};
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const TokenFallback = styled.span`
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -61,9 +81,6 @@ const TokenIcon = styled.span<{ $offset?: boolean }>`
   font-size: 9px;
   font-weight: 800;
   color: ${farmsStudioColors.goldBright};
-  margin-left: ${({ $offset }) => ($offset ? '-6px' : '0')};
-  position: relative;
-  z-index: ${({ $offset }) => ($offset ? 1 : 2)};
 `
 
 const PairName = styled.span`
@@ -94,75 +111,35 @@ const StatusPill = styled.span<{ $tone?: FarmPreviewCard['status'] }>`
         ? farmsStudioColors.gold
         : $tone === 'coming-soon'
           ? 'rgba(255,255,255,0.16)'
-          : $tone === 'finished'
-            ? farmsStudioColors.red
-            : $tone === 'new'
-              ? farmsStudioColors.purple
-              : farmsStudioColors.green};
+          : farmsStudioColors.green};
   color: ${({ $tone }) =>
     $tone === 'indexing'
       ? farmsStudioColors.gold
       : $tone === 'coming-soon'
         ? farmsStudioColors.muted
-        : $tone === 'finished'
-          ? farmsStudioColors.red
-          : $tone === 'new'
-            ? farmsStudioColors.purple
-            : farmsStudioColors.green};
+        : farmsStudioColors.green};
   background: ${({ $tone }) =>
     $tone === 'indexing'
       ? farmsStudioColors.previewBadgeBg
       : $tone === 'coming-soon'
         ? 'rgba(255,255,255,0.04)'
-        : $tone === 'finished'
-          ? 'rgba(255, 77, 77, 0.08)'
-          : $tone === 'new'
-            ? 'rgba(167, 139, 250, 0.1)'
-            : 'rgba(0, 230, 118, 0.08)'};
-`
-
-const AprBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 10px;
-  flex-shrink: 0;
-`
-
-const AprValue = styled.span<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
-  font-size: ${({ $variant }) =>
-    $variant === 'indexing' ? '32px' : $variant === 'coming-soon' ? '30px' : '42px'};
-  font-weight: 800;
-  line-height: 1;
-  color: ${({ $variant }) =>
-    $variant === 'indexing'
-      ? farmsStudioColors.gold
-      : $variant === 'coming-soon'
-        ? farmsStudioColors.muted
-        : farmsStudioColors.green};
-`
-
-const AprLabel = styled.span`
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${farmsStudioColors.muted};
+        : 'rgba(0, 230, 118, 0.08)'};
 `
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
   column-gap: 18px;
-  row-gap: 8px;
-  margin-top: 10px;
-  flex-shrink: 0;
+  row-gap: 12px;
+  max-height: 168px;
 `
 
-const Metric = styled.div`
+const Metric = styled.div<{ $isApr?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: center;
+  gap: 2px;
+  min-height: 34px;
   min-width: 0;
 `
 
@@ -175,20 +152,31 @@ const MetricLabel = styled.span`
   line-height: 1;
 `
 
-const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'default' }>`
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: ${({ $tone }) =>
-    $tone === 'green' ? farmsStudioColors.green : $tone === 'gold' ? farmsStudioColors.gold : '#ffffff'};
+const MetricValue = styled.span<{ $variant?: 'live' | 'indexing' | 'coming-soon' | 'default'; $tone?: 'green' | 'gold' }>`
+  font-size: ${({ $variant }) =>
+    $variant === 'live' ? '40px' : $variant === 'indexing' ? '32px' : $variant === 'coming-soon' ? '30px' : '16px'};
+  font-weight: ${({ $variant }) => ($variant ? 800 : 700)};
+  line-height: ${({ $variant }) => ($variant === 'live' ? '42px' : '1.2')};
+  color: ${({ $variant, $tone }) =>
+    $variant === 'indexing'
+      ? farmsStudioColors.gold
+      : $variant === 'coming-soon'
+        ? farmsStudioColors.muted
+        : $variant === 'live'
+          ? farmsStudioColors.green
+          : $tone === 'green'
+            ? farmsStudioColors.green
+            : $tone === 'gold'
+              ? farmsStudioColors.gold
+              : '#ffffff'};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
 const AnalyzePanel = styled.div`
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 4px;
+  padding-top: 10px;
   border-top: 1px solid ${farmsStudioColors.rowBorder};
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -199,7 +187,6 @@ const AnalyzeRow = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0;
 `
 
 const AnalyzeLabel = styled.span`
@@ -216,23 +203,19 @@ const AnalyzeValue = styled.span`
   color: ${farmsStudioColors.text};
 `
 
-const BtnRow = styled.div<{ $centered?: boolean }>`
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
-  height: 40px;
+const Footer = styled.div<{ $centered?: boolean }>`
+  height: ${farmsStudioLayout.farmCardFooterHeight};
+  min-height: ${farmsStudioLayout.farmCardFooterHeight};
   display: flex;
-  gap: 10px;
   align-items: center;
-  justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-start')};
+  justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-end')};
+  gap: 10px;
+  flex-shrink: 0;
 
   @media (max-width: 767px) {
-    position: relative;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    margin-top: 16px;
+    height: auto;
+    min-height: ${farmsStudioLayout.farmCardFooterHeight};
+    margin-top: 12px;
   }
 `
 
@@ -247,12 +230,6 @@ const CardStakeBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: filter 150ms ease, transform 150ms ease;
-
-  &:hover {
-    filter: brightness(1.06);
-    transform: translateY(-1px);
-  }
 `
 
 const CardAnalyzeBtn = styled.button`
@@ -266,17 +243,11 @@ const CardAnalyzeBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 150ms ease, transform 150ms ease;
-
-  &:hover {
-    background: rgba(212, 175, 55, 0.08);
-    transform: translateY(-1px);
-  }
 `
 
 const ComingSoonBadge = styled.div`
   width: 120px;
-  height: 34px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -287,21 +258,31 @@ const ComingSoonBadge = styled.div`
   color: ${farmsStudioColors.muted};
 `
 
-const statusLabel = (status: FarmPreviewCard['status']) => {
-  if (status === 'live') return 'Live'
-  if (status === 'new') return 'New'
-  if (status === 'finished') return 'Finished'
-  if (status === 'indexing') return 'Indexing'
-  return 'Coming soon'
+function renderTokenIcon(symbol: string, offset?: boolean) {
+  if (symbol === 'MARCO') {
+    return (
+      <TokenIconWrap $offset={offset}>
+        <MelegaLogoSvg size={24} />
+      </TokenIconWrap>
+    )
+  }
+  return <TokenFallback style={offset ? { marginLeft: -6 } : undefined}>{symbol.slice(0, 1)}</TokenFallback>
 }
 
-const aprVariant = (farm: FarmPreviewCard): 'live' | 'indexing' | 'coming-soon' => {
+function rewardTokenFor(farm: FarmPreviewCard) {
+  if (farm.dailyRewards?.includes('MARCO')) return 'MARCO'
+  if (farm.status === 'coming-soon') return '—'
+  return 'MARCO'
+}
+
+function aprVariant(farm: FarmPreviewCard): 'live' | 'indexing' | 'coming-soon' | undefined {
   if (farm.status === 'coming-soon') return 'coming-soon'
   if (farm.status === 'indexing') return 'indexing'
-  return 'live'
+  if (farm.apr) return 'live'
+  return undefined
 }
 
-const aprDisplay = (farm: FarmPreviewCard) => {
+function aprDisplay(farm: FarmPreviewCard) {
   if (farm.apr) return farm.apr
   if (farm.status === 'indexing') return 'Indexing...'
   return 'Coming soon'
@@ -314,97 +295,109 @@ export interface FarmGridCardProps {
 export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
   const [expanded, setExpanded] = useState(false)
   const preview = farm.analyzePreview ?? DEFAULT_ANALYZE_PREVIEW
+  const aprVar = aprVariant(farm)
 
   const renderFooter = () => {
     if (farm.status === 'coming-soon' || farm.cta === 'none') {
       return (
-        <BtnRow $centered>
+        <Footer $centered>
           <ComingSoonBadge>Coming Soon</ComingSoonBadge>
-        </BtnRow>
+        </Footer>
       )
     }
 
     if (farm.status === 'indexing' || farm.cta === 'analyze') {
       return (
-        <BtnRow $centered>
+        <Footer>
           <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
             Analyze
           </CardAnalyzeBtn>
-        </BtnRow>
+        </Footer>
       )
     }
 
     return (
-      <BtnRow>
+      <Footer>
         <CardStakeBtn type="button">Stake</CardStakeBtn>
         <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
           Analyze
         </CardAnalyzeBtn>
-      </BtnRow>
+      </Footer>
     )
   }
 
   return (
     <Card data-fs-farm-card $expanded={expanded}>
-      <TopRow>
-        <PairBlock>
-          <Icons>
-            <TokenIcon>{farm.tokens[0].slice(0, 1)}</TokenIcon>
-            <TokenIcon $offset>{farm.tokens[1].slice(0, 1)}</TokenIcon>
-          </Icons>
-          <PairName>{farm.pair}</PairName>
-        </PairBlock>
-        <StatusPill $tone={farm.status}>{statusLabel(farm.status)}</StatusPill>
-      </TopRow>
+      <Body>
+        <TopRow>
+          <PairBlock>
+            <Icons>
+              {renderTokenIcon(farm.tokens[0])}
+              {renderTokenIcon(farm.tokens[1], true)}
+            </Icons>
+            <PairName>{farm.pair}</PairName>
+          </PairBlock>
+          <StatusPill $tone={farm.status}>
+            {farm.status === 'live'
+              ? 'Live'
+              : farm.status === 'indexing'
+                ? 'Indexing'
+                : 'Coming soon'}
+          </StatusPill>
+        </TopRow>
 
-      <AprBlock>
-        <AprValue $variant={aprVariant(farm)}>{aprDisplay(farm)}</AprValue>
-        <AprLabel>APR</AprLabel>
-      </AprBlock>
+        <Metrics>
+          <Metric $isApr>
+            <MetricLabel>APR</MetricLabel>
+            <MetricValue $variant={aprVar}>{aprDisplay(farm)}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Liquidity</MetricLabel>
+            <MetricValue>{farm.liquidity}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>TVL</MetricLabel>
+            <MetricValue>{farm.tvl}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Daily Rewards</MetricLabel>
+            <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : undefined}>{farm.dailyRewards}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Reward Token</MetricLabel>
+            <MetricValue>{rewardTokenFor(farm)}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Multiplier</MetricLabel>
+            <MetricValue $tone={farm.multiplier !== '—' ? 'gold' : undefined}>{farm.multiplier}</MetricValue>
+          </Metric>
+        </Metrics>
 
-      <Metrics>
-        <Metric>
-          <MetricLabel>TVL</MetricLabel>
-          <MetricValue>{farm.tvl}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Liquidity</MetricLabel>
-          <MetricValue>{farm.liquidity}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Daily Rewards</MetricLabel>
-          <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : 'default'}>{farm.dailyRewards}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Multiplier</MetricLabel>
-          <MetricValue $tone={farm.multiplier !== '—' ? 'gold' : 'default'}>{farm.multiplier}</MetricValue>
-        </Metric>
-      </Metrics>
-
-      {expanded ? (
-        <AnalyzePanel>
-          <AnalyzeRow>
-            <AnalyzeLabel>APR History</AnalyzeLabel>
-            <AnalyzeValue>{preview.aprHistory}</AnalyzeValue>
-          </AnalyzeRow>
-          <AnalyzeRow>
-            <AnalyzeLabel>Reward Token</AnalyzeLabel>
-            <AnalyzeValue>{preview.rewardToken}</AnalyzeValue>
-          </AnalyzeRow>
-          <AnalyzeRow>
-            <AnalyzeLabel>Emission</AnalyzeLabel>
-            <AnalyzeValue>{preview.emission}</AnalyzeValue>
-          </AnalyzeRow>
-          <AnalyzeRow>
-            <AnalyzeLabel>Contract</AnalyzeLabel>
-            <AnalyzeValue>{preview.contract}</AnalyzeValue>
-          </AnalyzeRow>
-          <AnalyzeRow>
-            <AnalyzeLabel>Risk</AnalyzeLabel>
-            <AnalyzeValue>{preview.risk}</AnalyzeValue>
-          </AnalyzeRow>
-        </AnalyzePanel>
-      ) : null}
+        {expanded ? (
+          <AnalyzePanel>
+            <AnalyzeRow>
+              <AnalyzeLabel>APR History</AnalyzeLabel>
+              <AnalyzeValue>{preview.aprHistory}</AnalyzeValue>
+            </AnalyzeRow>
+            <AnalyzeRow>
+              <AnalyzeLabel>Reward Token</AnalyzeLabel>
+              <AnalyzeValue>{preview.rewardToken}</AnalyzeValue>
+            </AnalyzeRow>
+            <AnalyzeRow>
+              <AnalyzeLabel>Emission</AnalyzeLabel>
+              <AnalyzeValue>{preview.emission}</AnalyzeValue>
+            </AnalyzeRow>
+            <AnalyzeRow>
+              <AnalyzeLabel>Contract</AnalyzeLabel>
+              <AnalyzeValue>{preview.contract}</AnalyzeValue>
+            </AnalyzeRow>
+            <AnalyzeRow>
+              <AnalyzeLabel>Risk</AnalyzeLabel>
+              <AnalyzeValue>{preview.risk}</AnalyzeValue>
+            </AnalyzeRow>
+          </AnalyzePanel>
+        ) : null}
+      </Body>
 
       {renderFooter()}
     </Card>

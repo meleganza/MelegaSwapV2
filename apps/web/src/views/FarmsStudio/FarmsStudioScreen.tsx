@@ -45,7 +45,8 @@ const Content = styled.div`
 
 export const PageColumnGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(${farmsStudioLayout.pageGridColumns}, minmax(0, 1fr));
+  grid-template-columns: minmax(0, calc(66.666% + ${farmsStudioLayout.featuredGridAdjust}))
+    minmax(0, calc(33.333% - ${farmsStudioLayout.featuredGridAdjust}));
   column-gap: ${farmsStudioLayout.pageGridGap};
   row-gap: ${farmsStudioLayout.pageGridGap};
   width: 100%;
@@ -57,7 +58,6 @@ export const PageColumnGrid = styled.div`
 `
 
 export const FeaturedSlot = styled.div`
-  grid-column: span 2;
   min-width: 0;
 
   @media (max-width: 767px) {
@@ -66,7 +66,6 @@ export const FeaturedSlot = styled.div`
 `
 
 export const AdvisorSlot = styled.div`
-  grid-column: span 1;
   min-width: 0;
 `
 

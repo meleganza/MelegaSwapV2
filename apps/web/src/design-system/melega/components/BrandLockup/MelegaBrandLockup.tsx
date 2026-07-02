@@ -67,9 +67,11 @@ const DexWord = styled.span`
 
 export interface MelegaBrandLockupProps {
   size?: 'desktop' | 'mobile'
+  /** Icon-only lockup — circular Melega symbol without wordmark. */
+  iconOnly?: boolean
 }
 
-export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'desktop' }) => {
+export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'desktop', iconOnly = false }) => {
   const logoSize = size === 'mobile' ? 38 : 42
   const [ok, setOk] = useState(true)
 
@@ -83,10 +85,12 @@ export const MelegaBrandLockup: React.FC<MelegaBrandLockupProps> = ({ size = 'de
             <MelegaLogoSvg size={logoSize} />
           )}
         </Circle>
-        <BrandText $compact={size === 'mobile'}>
-          <MelegaWord>Melega</MelegaWord>
-          <DexWord>DEX</DexWord>
-        </BrandText>
+        {!iconOnly ? (
+          <BrandText $compact={size === 'mobile'}>
+            <MelegaWord>Melega</MelegaWord>
+            <DexWord>DEX</DexWord>
+          </BrandText>
+        ) : null}
       </Wrap>
     </BrandLink>
   )

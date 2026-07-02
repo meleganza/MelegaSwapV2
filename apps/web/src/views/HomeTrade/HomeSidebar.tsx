@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { MelegaBrandLockup } from './MelegaBrandLockup'
-import { SafeLogo } from './homeTradeShared'
+import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { ht } from './homeTradeTokens'
 
 const Sidebar = styled.aside`
@@ -249,7 +249,7 @@ export const HomeSidebar: React.FC<{ marcoPriceLabel?: string }> = ({ marcoPrice
   return (
     <Sidebar data-home-sidebar="true">
       <BrandRow>
-        <MelegaBrandLockup size="desktop" />
+        <MelegaBrandLockup size="desktop" iconOnly />
       </BrandRow>
       <NavScroll>
         {sections.map((section) => (
@@ -266,7 +266,7 @@ export const HomeSidebar: React.FC<{ marcoPriceLabel?: string }> = ({ marcoPrice
       </NavScroll>
       <BottomPanel>
         <MarcoCard>
-          <SafeLogo src={ht.marcoLogoUri} alt="MARCO" size={32} fallbackMark="M" />
+          <MelegaLogoSvg size={32} />
           <MarcoMeta>
             <MarcoText>MARCO</MarcoText>
             {marcoPriceLabel && <MarcoPrice>{marcoPriceLabel}</MarcoPrice>}

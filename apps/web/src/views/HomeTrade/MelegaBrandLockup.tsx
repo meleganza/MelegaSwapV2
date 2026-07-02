@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { SafeLogo } from './homeTradeShared'
+import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { ht } from './homeTradeTokens'
 
 const Wrap = styled.div`
@@ -30,14 +30,23 @@ const DexWord = styled.span`
   color: ${ht.gold};
 `
 
-export const MelegaBrandLockup: React.FC<{ size?: 'desktop' | 'mobile' }> = ({ size = 'desktop' }) => (
-  <Wrap>
-    <SafeLogo src={ht.melegaLogoUri} alt="Melega" size={size === 'mobile' ? 38 : 42} fallbackMark="MM" />
-    <BrandText style={size === 'mobile' ? { fontSize: 21 } : undefined}>
-      <MelegaWord>Melega</MelegaWord>
-      <DexWord>DEX</DexWord>
-    </BrandText>
-  </Wrap>
-)
+export const MelegaBrandLockup: React.FC<{ size?: 'desktop' | 'mobile'; iconOnly?: boolean }> = ({
+  size = 'desktop',
+  iconOnly = false,
+}) => {
+  const logoSize = size === 'mobile' ? 38 : 42
+
+  return (
+    <Wrap>
+      <MelegaLogoSvg size={logoSize} />
+      {!iconOnly ? (
+        <BrandText style={size === 'mobile' ? { fontSize: 21 } : undefined}>
+          <MelegaWord>Melega</MelegaWord>
+          <DexWord>DEX</DexWord>
+        </BrandText>
+      ) : null}
+    </Wrap>
+  )
+}
 
 export default MelegaBrandLockup

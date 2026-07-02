@@ -1,0 +1,17 @@
+{
+  "task": "R005-E + R006-A",
+  "screenshots": {
+    "farms": [
+      "farms-desktop-1440x900.png",
+      "farms-desktop-1728x1117.png",
+      "farms-mobile-390x844.png",
+      "farms-mobile-428x926.png"
+    ],
+    "pools": [
+      "pools-desktop-1440x900.png",
+      "pools-desktop-1728x1117.png",
+      "pools-mobile-390x844.png",
+      "pools-mobile-428x926.png"
+    ]
+  }
+}
