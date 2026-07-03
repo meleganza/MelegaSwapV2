@@ -7,29 +7,37 @@ import {
   TESTNET_CHAIN_IDS,
   type ExecutionMode,
 } from './constants'
+import {
+  ACTIVATION_LIFECYCLE_OFF,
+  type ActivationLifecycleState,
+} from './activation-lifecycle'
 
 /**
  * Static execution configuration — preparation surface for future env-driven overrides.
  * This mission does NOT read process.env for mode activation.
+ * Civilization authorization requires explicit harness setter — never env alone.
  */
 export interface ExecutionModeConfig {
   /** Configured mode — default OFF; never TESTNET or MAINNET without explicit harness + gates. */
   mode: ExecutionMode
-  /** Future: set true only after constitutional authorization + env confirmation. */
+  /** Canonical activation lifecycle — default OFF; execution requires TESTNET_EXECUTION_ENABLED. */
+  activationLifecycleState: ActivationLifecycleState
+  /** Future: set true only after constitutional authorization + explicit activation mission. */
   environmentAuthorized: boolean
-  /** Future: explicit testnet execution arm — remains false in this mission. */
+  /** Testnet arm engaged — lifecycle TESTNET_ARMED; does not alone permit execution. */
   testnetExecutionArmed: boolean
   /** Mainnet execution is forbidden until a future civilization milestone. */
   mainnetExecutionArmed: false
   /**
    * Civilization authorization for any live KERL execution.
-   * Remains false after TESTNET preparation — enabling is a future configuration mission only.
+   * Remains false after T1 arming — enabling requires explicit Civilization authorization only.
    */
   kerlLiveExecutionAuthorized: boolean
 }
 
 const DEFAULT_CONFIG: ExecutionModeConfig = {
   mode: EXECUTION_MODE_OFF,
+  activationLifecycleState: ACTIVATION_LIFECYCLE_OFF,
   environmentAuthorized: false,
   testnetExecutionArmed: false,
   mainnetExecutionArmed: false,
@@ -59,6 +67,16 @@ export function setEnvironmentAuthorizedForHarness(authorized: boolean): void {
 /** @internal Harness and tests only — remains ineffective until all gates pass. */
 export function setTestnetExecutionArmedForHarness(armed: boolean): void {
   runtimeConfig = { ...runtimeConfig, testnetExecutionArmed: armed }
+}
+
+/** @internal Harness and tests only — Civilization authorization; never env-driven in T1. */
+export function setCivilizationAuthorizationForHarness(authorized: boolean): void {
+  runtimeConfig = { ...runtimeConfig, kerlLiveExecutionAuthorized: authorized }
+}
+
+/** @internal Harness and tests only — lifecycle progression. */
+export function setActivationLifecycleForHarness(state: ActivationLifecycleState): void {
+  runtimeConfig = { ...runtimeConfig, activationLifecycleState: state }
 }
 
 /** @internal Test harness reset. */

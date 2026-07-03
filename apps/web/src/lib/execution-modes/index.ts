@@ -17,6 +17,8 @@ export {
   setExecutionModeForHarness,
   setEnvironmentAuthorizedForHarness,
   setTestnetExecutionArmedForHarness,
+  setCivilizationAuthorizationForHarness,
+  setActivationLifecycleForHarness,
   resetExecutionModeConfig,
   isTestnetChainId,
   isMainnetChainId,
@@ -27,6 +29,31 @@ export {
 } from './config'
 
 export {
+  ACTIVATION_LIFECYCLE_STATES,
+  ACTIVATION_LIFECYCLE_OFF,
+  ACTIVATION_LIFECYCLE_DRY_RUN,
+  ACTIVATION_LIFECYCLE_TESTNET_ARMED,
+  ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED,
+  ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ACTIVE,
+  ACTIVATION_LIFECYCLE_TESTNET_RECEIPT_CAPTURE,
+  ACTIVATION_LIFECYCLE_EXECUTION_EVIDENCE,
+  ACTIVATION_LIFECYCLE_SETTLEMENT_EVENT_READY,
+  lifecyclePermitsWalletSubmission,
+  lifecycleIsPreExecution,
+  canTransitionLifecycle,
+  type ActivationLifecycleState,
+} from './activation-lifecycle'
+
+export {
+  getCivilizationObservations,
+  allObservationsSatisfied,
+  observationsBlockingReasons,
+  setCivilizationObservationsForHarness,
+  resetCivilizationObservations,
+  type CivilizationObservationStatus,
+} from './civilization-observations'
+
+export {
   evaluateDryRunGates,
   evaluateLiveExecutionGates,
   canPerformDryRun,
@@ -35,6 +62,7 @@ export {
   resolveKerlIngressRoute,
   buildGateFailureMessage,
   isInstructionContextValid,
+  listRequiredLiveGateIds,
   type ActivationGateId,
   type ActivationGateResult,
   type ActivationGateContext,
@@ -49,4 +77,8 @@ export {
   type ReceiptPipelineStageDescriptor,
 } from './receipt-pipeline'
 
-export { enableKerlDryRunHarness, resetKerlExecutionHarness } from './harness'
+export { enableKerlDryRunHarness, armTestnetLifecycleForHarness, resetKerlExecutionHarness } from './harness'
+
+export { rollbackActivationToDryRun, rollbackToOff, type RollbackResult } from './rollback'
+
+export { runTestnetArmingValidation, type ArmingValidationReport } from './testnet-arming-validator'

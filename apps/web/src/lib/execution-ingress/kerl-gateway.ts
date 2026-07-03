@@ -37,7 +37,9 @@ export function acceptKerlExecutionInstruction(
       chainId: context.chainId ?? instruction.chainId,
       account: context.account,
       instructionValid: true,
-      certifiedHandoff: context.certifiedHandoff ?? true,
+      certifiedHandoff: context.certifiedHandoff ?? false,
+      handoffCompatible: context.certifiedHandoff ?? false,
+      instructionType: 'SmartSwap',
     })
     return {
       ok: false,

@@ -13,6 +13,7 @@ import {
   EXECUTION_MODE_MAINNET_EXECUTION,
   EXECUTION_MODE_OFF,
   EXECUTION_MODE_TESTNET_EXECUTION_ONLY,
+  ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED,
   MODE_ERROR_CODES,
   canPerformDryRun,
   canPerformLiveExecution,
@@ -24,6 +25,7 @@ import {
   setEnvironmentAuthorizedForHarness,
   setExecutionModeForHarness,
   setTestnetExecutionArmedForHarness,
+  setActivationLifecycleForHarness,
   enableKerlDryRunHarness,
 } from 'lib/execution-modes'
 
@@ -72,8 +74,9 @@ describe('execution-modes', () => {
     expect(evaluation.allowed).toBe(true)
   })
 
-  it('blocks TESTNET mode even with all harness flags enabled', () => {
+  it('blocks TESTNET mode even with harness flags but without Civilization authorization', () => {
     setExecutionModeForHarness(EXECUTION_MODE_TESTNET_EXECUTION_ONLY)
+    setActivationLifecycleForHarness(ACTIVATION_LIFECYCLE_TESTNET_EXECUTION_ENABLED)
     setExecutionGatewayEnabled(true)
     setInternalIngressEnabled(true)
     setEnvironmentAuthorizedForHarness(true)
@@ -84,6 +87,8 @@ describe('execution-modes', () => {
       account: '0x00000000000000000000000000000000000000aa',
       instructionValid: true,
       certifiedHandoff: true,
+      handoffCompatible: true,
+      instructionType: 'SmartSwap',
     })
 
     expect(evaluation.allowed).toBe(false)

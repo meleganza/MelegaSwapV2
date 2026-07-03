@@ -86,6 +86,8 @@ export async function dispatchExecutionInstruction(
     account: context.account,
     instructionValid: true,
     certifiedHandoff: context.certifiedHandoff ?? false,
+    handoffCompatible: context.certifiedHandoff ?? false,
+    instructionType: validation.instructionType,
   })
   if (!liveGates.allowed) {
     return {
