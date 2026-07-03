@@ -4,6 +4,8 @@ import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
+import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
+import PoolsActionHost from './poolsRuntime/PoolsActionHost'
 import PoolsStudioPageHeader from './components/PoolsStudioPageHeader'
 import PoolsKpiRow from './components/PoolsKpiRow'
 import FeaturedPoolPanel from './components/FeaturedPoolPanel'
@@ -72,7 +74,9 @@ export const PoolsStudioScreen: React.FC = () => (
     <PageMeta />
     <PoolsStudioGlobalStyle />
     <TrendingRibbon />
-    <Content>
+    <PoolsRuntimeProvider>
+      <PoolsActionHost />
+      <Content>
       <PoolsStudioPageHeader />
       <PoolsKpiRow />
       <PageGrid12 data-ps-page-grid>
@@ -89,6 +93,7 @@ export const PoolsStudioScreen: React.FC = () => (
       <PoolsAnalyticsRow />
       <PoolsActivityTable />
     </Content>
+    </PoolsRuntimeProvider>
   </Root>
 )
 

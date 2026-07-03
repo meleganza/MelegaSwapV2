@@ -1,8 +1,8 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { MARCO_LOGO_URI } from 'design-system/melega'
-import { ANALYTICS_REWARDS_BARS } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PsPanel } from './poolsStudioPrimitives'
 
 const Row = styled.div`
@@ -77,26 +77,43 @@ const LineChart = styled.svg`
   animation: ${shimmer} 8s ease-in-out infinite;
 `
 
+const LoadingLine = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: ${poolsStudioColors.muted};
+`
+
 export const PoolsAnalyticsRow: React.FC = () => {
-  const linePoints = [20, 35, 28, 45, 40, 55, 50, 62, 58, 70, 65, 78]
-  const max = Math.max(...linePoints)
+  const { analytics, loadingLabel } = usePoolsRuntime()
+  const linePoints = analytics.topStakedPool.sparkline
+  const max = Math.max(...linePoints, 1)
   const w = 200
   const h = 72
   const d = linePoints
     .map((p, i) => {
-      const x = (i / (linePoints.length - 1)) * w
+      const x = (i / Math.max(linePoints.length - 1, 1)) * w
       const y = h - (p / max) * (h - 8) - 4
       return `${i === 0 ? 'M' : 'L'}${x},${y}`
     })
     .join(' ')
 
+  if (loadingLabel) {
+    return (
+      <Row data-ps-analytics>
+        <PsPanel $height={poolsStudioLayout.analyticsHeight} style={{ padding: '16px 18px', gridColumn: '1 / -1' }}>
+          <LoadingLine>{loadingLabel}</LoadingLine>
+        </PsPanel>
+      </Row>
+    )
+  }
+
   return (
     <Row data-ps-analytics>
       <PsPanel data-ps-analytics-card $height={poolsStudioLayout.analyticsHeight} style={{ padding: '16px 18px' }}>
-        <Title>Rewards Distributed (30D)</Title>
+        <Title>Rewards Emission (live)</Title>
         <Bars>
-          {ANALYTICS_REWARDS_BARS.map((h, i) => (
-            <Bar key={i} $h={h} style={{ animationDelay: `${i * 0.15}s` }} />
+          {analytics.rewardBars.map((barH, i) => (
+            <Bar key={i} $h={barH} style={{ animationDelay: `${i * 0.15}s` }} />
           ))}
         </Bars>
       </PsPanel>
@@ -104,10 +121,10 @@ export const PoolsAnalyticsRow: React.FC = () => {
       <PsPanel data-ps-analytics-card $height={poolsStudioLayout.analyticsHeight} style={{ padding: '16px 18px' }}>
         <Title>Top Reward Token</Title>
         <TokenBlock>
-          <TokenLogo src={MARCO_LOGO_URI} alt="MARCO" />
+          <TokenLogo src={MARCO_LOGO_URI} alt={analytics.topRewardToken.symbol} />
           <div>
-            <TokenPct>68.3%</TokenPct>
-            <TokenSub>of all rewards · MARCO</TokenSub>
+            <TokenPct>{analytics.topRewardToken.pct}</TokenPct>
+            <TokenSub>of pools · {analytics.topRewardToken.symbol}</TokenSub>
           </div>
         </TokenBlock>
       </PsPanel>
@@ -115,7 +132,7 @@ export const PoolsAnalyticsRow: React.FC = () => {
       <PsPanel data-ps-analytics-card $height={poolsStudioLayout.analyticsHeight} style={{ padding: '16px 18px' }}>
         <Title>Most Staked Pool</Title>
         <div style={{ fontSize: 15, fontWeight: 700, color: poolsStudioColors.text, marginBottom: 8 }}>
-          MARCO FLEXIBLE · $18.72M
+          {analytics.topStakedPool.name} · {analytics.topStakedPool.tvl}
         </div>
         <LineChart viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" data-ps-line-chart>
           <path d={d} fill="none" stroke={poolsStudioColors.green} strokeWidth="2.5" strokeLinecap="round" />

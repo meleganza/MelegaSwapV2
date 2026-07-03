@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PsGhostBtn, PsPanel, PsPrimaryBtn, PoolTokenIcon } from './poolsStudioPrimitives'
 import StakeDonutChart from './StakeDonutChart'
 
@@ -95,50 +97,86 @@ const BtnRow = styled.div`
   margin-top: auto;
 `
 
-export const FeaturedPoolPanel: React.FC = () => (
-  <PsPanel data-ps-panel data-ps-featured $height={poolsStudioLayout.featuredHeight} $radius="22px" style={{ padding: '22px' }}>
-    <Inner>
-      <Main>
-        <TitleRow>
-          <PoolTokenIcon symbol="MARCO" size={28} />
-          <PoolName>MARCO STAKING</PoolName>
-          <OfficialBadge>Official</OfficialBadge>
-        </TitleRow>
-        <Apr>36.08%</Apr>
-        <Metrics>
-          <Metric>
-            <MetricLabel>Reward Token</MetricLabel>
-            <MetricValue>MARCO</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>Total Staked</MetricLabel>
-            <MetricValue>$18.72M</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>Lock</MetricLabel>
-            <MetricValue>Flexible</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>Participants</MetricLabel>
-            <MetricValue>6.84K</MetricValue>
-          </Metric>
-          <Metric style={{ gridColumn: 'span 2' }}>
-            <MetricLabel>Rewards Distributed</MetricLabel>
-            <MetricValue>24.56M MARCO</MetricValue>
-          </Metric>
-        </Metrics>
-        <BtnRow>
-          <PsPrimaryBtn type="button" style={{ height: 40, minHeight: 40, padding: '0 20px' }}>
-            Stake
-          </PsPrimaryBtn>
-          <PsGhostBtn type="button" style={{ height: 40, minHeight: 40 }}>
-            Analyze
-          </PsGhostBtn>
-        </BtnRow>
-      </Main>
-      <StakeDonutChart />
-    </Inner>
-  </PsPanel>
-)
+const LoadingLine = styled.p`
+  margin: 0;
+  font-size: 13px;
+  color: ${poolsStudioColors.muted};
+`
+
+const ConnectWrap = styled.div`
+  button {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 20px !important;
+    border-radius: 12px !important;
+  }
+`
+
+export const FeaturedPoolPanel: React.FC = () => {
+  const { featured, loadingLabel, requestModal, account } = usePoolsRuntime()
+  const card = featured.card
+
+  return (
+    <PsPanel data-ps-panel data-ps-featured $height={poolsStudioLayout.featuredHeight} $radius="22px" style={{ padding: '22px' }}>
+      <Inner>
+        <Main>
+          {loadingLabel ? (
+            <LoadingLine>{loadingLabel}</LoadingLine>
+          ) : (
+            <>
+              <TitleRow>
+                <PoolTokenIcon symbol={featured.symbol} size={28} />
+                <PoolName>{featured.name}</PoolName>
+                <OfficialBadge>{featured.poolType}</OfficialBadge>
+              </TitleRow>
+              <Apr>{featured.apr}</Apr>
+              <Metrics>
+                <Metric>
+                  <MetricLabel>Reward Token</MetricLabel>
+                  <MetricValue>{featured.rewardToken}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Total Staked</MetricLabel>
+                  <MetricValue>{featured.totalStaked}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Lock</MetricLabel>
+                  <MetricValue>{featured.lockLabel}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Participants</MetricLabel>
+                  <MetricValue>{featured.participants}</MetricValue>
+                </Metric>
+                <Metric style={{ gridColumn: 'span 2' }}>
+                  <MetricLabel>Rewards Distributed</MetricLabel>
+                  <MetricValue>{featured.rewardsDistributed}</MetricValue>
+                </Metric>
+              </Metrics>
+              <BtnRow>
+                {card && account ? (
+                  <PsPrimaryBtn
+                    type="button"
+                    style={{ height: 40, minHeight: 40, padding: '0 20px' }}
+                    onClick={() => requestModal(card, 'stake')}
+                  >
+                    Stake
+                  </PsPrimaryBtn>
+                ) : (
+                  <ConnectWrap>
+                    <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+                  </ConnectWrap>
+                )}
+                <PsGhostBtn type="button" style={{ height: 40, minHeight: 40 }}>
+                  Analyze
+                </PsGhostBtn>
+              </BtnRow>
+            </>
+          )}
+        </Main>
+        <StakeDonutChart />
+      </Inner>
+    </PsPanel>
+  )
+}
 
 export default FeaturedPoolPanel

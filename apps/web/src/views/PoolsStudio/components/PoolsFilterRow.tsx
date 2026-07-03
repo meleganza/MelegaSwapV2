@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { POOL_FILTER_CHIPS } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Row = styled.div`
   display: flex;
@@ -30,12 +31,12 @@ const Chip = styled.button<{ $active?: boolean }>`
 `
 
 export const PoolsFilterRow: React.FC = () => {
-  const [active, setActive] = useState<string>('All')
+  const { filter, setFilter } = usePoolsRuntime()
 
   return (
     <Row data-ps-filters>
       {POOL_FILTER_CHIPS.map((chip) => (
-        <Chip key={chip} type="button" $active={active === chip} onClick={() => setActive(chip)}>
+        <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
           {chip}
         </Chip>
       ))}

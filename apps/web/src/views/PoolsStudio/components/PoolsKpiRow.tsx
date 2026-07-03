@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { POOLS_KPIS } from '../poolsStudioData'
 import { poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PsKpiCard, PsKpiDelta, PsKpiLabel, PsKpiValue } from './poolsStudioPrimitives'
 
 const Row = styled.div`
@@ -20,11 +20,9 @@ const Row = styled.div`
   }
 `
 
-const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
+const ValueBlock = styled.div`
   position: relative;
   min-height: 38px;
-  padding-right: ${({ $hasSparkline }) =>
-    $hasSparkline ? poolsStudioLayout.sparklineW + Number.parseInt(poolsStudioLayout.kpiSparkGap, 10) : 0}px;
   display: flex;
   align-items: center;
 `
@@ -36,53 +34,37 @@ const ValueRow = styled.div`
   flex: 1;
 `
 
-const Sparkline = styled.svg`
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: ${poolsStudioLayout.sparklineW}px;
-  height: ${poolsStudioLayout.sparklineH}px;
+const LoadingLine = styled.span`
+  font-size: 12px;
+  color: #a8a8a8;
 `
 
-function MiniSparkline({ points }: { points: number[] }) {
-  const max = Math.max(...points)
-  const min = Math.min(...points)
-  const range = max - min || 1
-  const w = poolsStudioLayout.sparklineW
-  const h = poolsStudioLayout.sparklineH
-  const d = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * w
-      const y = h - ((p - min) / range) * (h - 2) - 1
-      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
-    })
-    .join(' ')
+export const PoolsKpiRow: React.FC = () => {
+  const { kpis, loadingLabel } = usePoolsRuntime()
 
   return (
-    <Sparkline viewBox={`0 0 ${w} ${h}`} data-ps-sparkline aria-hidden>
-      <path d={d} fill="none" stroke="#00E676" strokeWidth="1.5" strokeLinecap="round" />
-    </Sparkline>
+    <Row data-ps-kpi-row>
+      {loadingLabel ? (
+        <PsKpiCard data-ps-kpi-card>
+          <LoadingLine>{loadingLabel}</LoadingLine>
+        </PsKpiCard>
+      ) : (
+        kpis.map((kpi) => (
+          <PsKpiCard key={kpi.id} data-ps-kpi-card>
+            <PsKpiLabel>{kpi.label}</PsKpiLabel>
+            <ValueBlock>
+              <ValueRow>
+                <PsKpiValue $gold={kpi.gold} data-ps-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
+                  {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
+                </PsKpiValue>
+                {kpi.delta ? <PsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PsKpiDelta> : null}
+              </ValueRow>
+            </ValueBlock>
+          </PsKpiCard>
+        ))
+      )}
+    </Row>
   )
 }
-
-export const PoolsKpiRow: React.FC = () => (
-  <Row data-ps-kpi-row>
-    {POOLS_KPIS.map((kpi) => (
-      <PsKpiCard key={kpi.id} data-ps-kpi-card>
-        <PsKpiLabel>{kpi.label}</PsKpiLabel>
-        <ValueBlock $hasSparkline={!!kpi.sparkline}>
-          <ValueRow>
-            <PsKpiValue $gold={kpi.gold} data-ps-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-              {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
-            </PsKpiValue>
-            {kpi.delta ? <PsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PsKpiDelta> : null}
-          </ValueRow>
-          {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
-        </ValueBlock>
-      </PsKpiCard>
-    ))}
-  </Row>
-)
 
 export default PoolsKpiRow

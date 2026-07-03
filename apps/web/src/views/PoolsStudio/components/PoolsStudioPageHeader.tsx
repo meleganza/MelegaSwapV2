@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { POOLS_STUDIO_PREVIEW_LABEL, poolsStudioColors } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PsPreviewBadge, PsPrimaryBtn } from './poolsStudioPrimitives'
 
 const Row = styled.div`
@@ -55,6 +56,12 @@ const Right = styled.div`
   }
 `
 
+const LiveBadge = styled(PsPreviewBadge)`
+  border-color: ${poolsStudioColors.green};
+  color: ${poolsStudioColors.green};
+  background: rgba(0, 230, 118, 0.08);
+`
+
 export const PoolsStudioPageHeader: React.FC = () => (
   <div data-ps-page-header>
     <Row>
@@ -63,7 +70,7 @@ export const PoolsStudioPageHeader: React.FC = () => (
         <Subtitle>Stake assets, distribute rewards and build long-term communities.</Subtitle>
       </Left>
       <Right>
-        <PsPreviewBadge>{POOLS_STUDIO_PREVIEW_LABEL}</PsPreviewBadge>
+        <LiveBadge>LIVE RUNTIME</LiveBadge>
         <PsPrimaryBtn type="button">
           <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
           Create Pool

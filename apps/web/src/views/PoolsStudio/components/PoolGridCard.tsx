@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
 import type { PoolPreviewCard } from '../poolsStudioData'
-import { DEFAULT_POOL_ANALYZE } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PoolTokenIcon, PsMetricLabel, PsSmallGhostBtn, PsSmallPrimaryBtn } from './poolsStudioPrimitives'
 
 const Card = styled.article<{ $expanded?: boolean }>`
@@ -230,10 +230,12 @@ interface Props {
 
 export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const [expanded, setExpanded] = useState(false)
-  const preview = pool.analyzePreview ?? DEFAULT_POOL_ANALYZE
+  const { requestModal, account } = usePoolsRuntime()
+  const preview = pool.analyzePreview
   const showStake = pool.cta === 'stake'
   const showAnalyze = pool.cta === 'stake' || pool.cta === 'analyze'
   const comingSoon = pool.cta === 'none'
+  const hasPending = pool.pendingReward?.gt(0)
 
   const aprText = pool.status === 'coming-soon' ? 'Coming soon' : pool.apr ?? '—'
 
@@ -290,13 +292,13 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           </MetricCell>
         </Metrics>
 
-        {expanded ? (
+        {expanded && preview ? (
           <AnalyzeBlock>
             <AnalyzeItem>
               APR History<span>{preview.aprHistory}</span>
             </AnalyzeItem>
             <AnalyzeItem>
-              Reward Token<span>{preview.rewardToken}</span>
+              Pool Type<span>{pool.poolTypeLabel ?? '—'}</span>
             </AnalyzeItem>
             <AnalyzeItem>
               Emission<span>{preview.emission}</span>
@@ -322,7 +324,16 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           <ComingSoonPill>Coming Soon</ComingSoonPill>
         ) : (
           <>
-            {showStake ? <PsSmallPrimaryBtn type="button">Stake</PsSmallPrimaryBtn> : null}
+            {showStake ? (
+              <PsSmallPrimaryBtn type="button" onClick={() => requestModal(pool, 'stake')}>
+                Stake
+              </PsSmallPrimaryBtn>
+            ) : null}
+            {hasPending && account ? (
+              <PsSmallGhostBtn type="button" onClick={() => requestModal(pool, 'claim')}>
+                Claim
+              </PsSmallGhostBtn>
+            ) : null}
             {showAnalyze ? (
               <PsSmallGhostBtn type="button" onClick={() => setExpanded((v) => !v)}>
                 Analyze

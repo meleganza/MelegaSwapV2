@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { AI_REWARD_ROWS, REWARD_SUSTAINABILITY } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PsPanel } from './poolsStudioPrimitives'
 
 const Title = styled.h3`
@@ -89,9 +89,9 @@ const BarTrack = styled.div`
   overflow: hidden;
 `
 
-const BarFill = styled.div`
+const BarFill = styled.div<{ $score: number }>`
   height: 100%;
-  width: ${REWARD_SUSTAINABILITY.score}%;
+  width: ${({ $score }) => $score}%;
   background: linear-gradient(90deg, ${poolsStudioColors.green}, #4ade80);
   border-radius: 999px;
   transition: width 900ms ease;
@@ -106,35 +106,77 @@ const SustainMeta = styled.div`
   color: ${poolsStudioColors.green};
 `
 
-export const AIRewardAdvisorPanel: React.FC = () => (
-  <PsPanel
-    data-ps-panel
-    data-ps-advisor
-    $height={poolsStudioLayout.featuredHeight}
-    $radius="20px"
-    style={{ padding: '18px', width: '100%' }}
-  >
-    <Title>AI Reward Advisor</Title>
-    {AI_REWARD_ROWS.map((row) => (
-      <Row key={row.label}>
-        <Icon $tone={row.tone}>{row.icon}</Icon>
-        <RowText>
-          <RowLabel>{row.label}</RowLabel>
-          <RowValue $tone={row.tone}>{row.value}</RowValue>
-        </RowText>
-      </Row>
-    ))}
-    <Sustain>
-      <SustainLabel>{REWARD_SUSTAINABILITY.label}</SustainLabel>
-      <BarTrack>
-        <BarFill data-ps-sustain-bar />
-      </BarTrack>
-      <SustainMeta>
-        <span>{REWARD_SUSTAINABILITY.level}</span>
-        <span>{REWARD_SUSTAINABILITY.score}/100</span>
-      </SustainMeta>
-    </Sustain>
-  </PsPanel>
-)
+const MachineToggle = styled.button`
+  margin-top: 10px;
+  border: none;
+  background: transparent;
+  color: ${poolsStudioColors.muted};
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+`
+
+const MachinePre = styled.pre`
+  margin: 8px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0c0c0c;
+  border: 1px solid ${poolsStudioColors.border};
+  font-size: 9px;
+  line-height: 1.35;
+  color: ${poolsStudioColors.muted};
+  max-height: 80px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+`
+
+export const AIRewardAdvisorPanel: React.FC = () => {
+  const { advisorItems, sustainability, machine, loadingLabel } = usePoolsRuntime()
+  const [machineOpen, setMachineOpen] = useState(false)
+
+  return (
+    <PsPanel
+      data-ps-panel
+      data-ps-advisor
+      $height={poolsStudioLayout.featuredHeight}
+      $radius="20px"
+      style={{ padding: '18px', width: '100%' }}
+    >
+      <Title>AI Reward Advisor</Title>
+      {loadingLabel ? (
+        <RowLabel>{loadingLabel}</RowLabel>
+      ) : (
+        advisorItems.map((row) => (
+          <Row key={row.label}>
+            <Icon $tone={row.tone}>{row.icon}</Icon>
+            <RowText>
+              <RowLabel>{row.label}</RowLabel>
+              <RowValue $tone={row.tone}>{row.value}</RowValue>
+            </RowText>
+          </Row>
+        ))
+      )}
+      <Sustain>
+        <SustainLabel>{sustainability.label}</SustainLabel>
+        <BarTrack>
+          <BarFill $score={sustainability.score} data-ps-sustain-bar />
+        </BarTrack>
+        <SustainMeta>
+          <span>{sustainability.level}</span>
+          <span>{sustainability.score}/100</span>
+        </SustainMeta>
+      </Sustain>
+      <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
+        {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
+      </MachineToggle>
+      {machineOpen && (
+        <MachinePre data-ps-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
+      )}
+    </PsPanel>
+  )
+}
 
 export default AIRewardAdvisorPanel

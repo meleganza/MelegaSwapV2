@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { POOLS_ACTIVITY } from '../poolsStudioData'
-import { POOLS_ACTIVITY_PREVIEW_LABEL, poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
-import { PsPanel, PsPreviewBadge } from './poolsStudioPrimitives'
+import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { PsPanel } from './poolsStudioPrimitives'
 
 const Wrap = styled(PsPanel)`
   padding: 0;
@@ -24,13 +24,19 @@ const Title = styled.h3`
   color: ${poolsStudioColors.text};
 `
 
-const ViewAll = styled.button`
-  border: none;
-  background: none;
-  color: ${poolsStudioColors.gold};
-  font-size: 12px;
+const LiveBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid ${poolsStudioColors.green};
+  font-size: 9px;
   font-weight: 700;
-  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${poolsStudioColors.green};
+  background: rgba(0, 230, 118, 0.08);
 `
 
 const Table = styled.div`
@@ -122,40 +128,53 @@ const StatusPill = styled.span<{ $status: string }>`
         : 'rgba(255,255,255,0.04)'};
 `
 
-export const PoolsActivityTable: React.FC = () => (
-  <Wrap data-ps-activity $height="auto">
-    <Head>
-      <Title>Recent Pool Activity</Title>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <PsPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
-          {POOLS_ACTIVITY_PREVIEW_LABEL}
-        </PsPreviewBadge>
-        <ViewAll type="button">View all activity</ViewAll>
-      </div>
-    </Head>
-    <Table>
-      <HeaderRow>
-        <span>Time</span>
-        <span>Pool</span>
-        <span>Action</span>
-        <span>Amount</span>
-        <span>Reward</span>
-        <span>Status</span>
-      </HeaderRow>
-      {POOLS_ACTIVITY.map((row) => (
-        <Row key={`${row.time}-${row.pool}-${row.action}`}>
-          <span style={{ color: poolsStudioColors.muted }}>{row.time}</span>
-          <span style={{ fontWeight: 600 }}>{row.pool}</span>
-          <Action $tone={row.actionTone}>{row.action}</Action>
-          <span>{row.amount}</span>
-          <span>{row.reward}</span>
-          <StatusPill $status={row.status}>
-            {row.status === 'completed' ? 'Completed' : row.status === 'preview' ? 'Preview' : 'Pending'}
-          </StatusPill>
-        </Row>
-      ))}
-    </Table>
-  </Wrap>
-)
+const EmptyRow = styled.div`
+  padding: 20px 18px;
+  font-size: 13px;
+  color: ${poolsStudioColors.muted};
+  text-align: center;
+`
+
+export const PoolsActivityTable: React.FC = () => {
+  const { terminal, loadingLabel } = usePoolsRuntime()
+  const rows = terminal.activityRows.slice(0, 5)
+
+  return (
+    <Wrap data-ps-activity $height="auto">
+      <Head>
+        <Title>Recent Pool Activity</Title>
+        <LiveBadge>LIVE</LiveBadge>
+      </Head>
+      <Table>
+        <HeaderRow>
+          <span>Time</span>
+          <span>Pool</span>
+          <span>Action</span>
+          <span>Amount</span>
+          <span>Reward</span>
+          <span>Status</span>
+        </HeaderRow>
+        {loadingLabel ? (
+          <EmptyRow>{loadingLabel}</EmptyRow>
+        ) : rows.length === 0 ? (
+          <EmptyRow>Connect wallet to see your staking activity.</EmptyRow>
+        ) : (
+          rows.map((row) => (
+            <Row key={`${row.time}-${row.pool}-${row.action}`}>
+              <span style={{ color: poolsStudioColors.muted }}>{row.time}</span>
+              <span style={{ fontWeight: 600 }}>{row.pool}</span>
+              <Action $tone={row.actionTone}>{row.action}</Action>
+              <span>{row.amount}</span>
+              <span>{row.reward}</span>
+              <StatusPill $status={row.status}>
+                {row.status === 'completed' ? 'Completed' : row.status === 'preview' ? 'Preview' : 'Pending'}
+              </StatusPill>
+            </Row>
+          ))
+        )}
+      </Table>
+    </Wrap>
+  )
+}
 
 export default PoolsActivityTable

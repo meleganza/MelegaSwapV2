@@ -141,7 +141,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `PoolsStudioScreen` |
-| Runtime | 🟨 | Legacy `views/Pools` + sousId contracts; studio static data |
+| Runtime | 🟩 | R017 — `PoolsRuntimeProvider`; live APR/TVL/stake/claim |
 | AI | ⬜ | — |
 | Production | ⬜ | — |
 
@@ -149,11 +149,11 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Staking contracts | 🟨 | Legacy pools pages |
-| Rewards | 🟨 | Legacy |
-| Lock periods | ⬜ | Studio static |
-| Unlock | 🟨 | Legacy where applicable |
-| APR | 🟨 | Legacy live; studio static |
+| Staking contracts | 🟩 | `usePoolsPageFetch` + sousId / vault |
+| Rewards | 🟩 | Pending rewards + `CollectModal` |
+| Lock periods | 🟩 | `CakeVault` lock label in featured + pool type |
+| Unlock | 🟩 | Vault unstake modal |
+| APR | 🟩 | `getAprData` live in all cards |
 
 ### AI (future)
 
@@ -365,7 +365,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 |----------|------------|----------------|
 | **1** | **Trade Runtime** | Replace `tradeMockData` rails; wire live router status, assets, watchlist |
 | **2** | **Liquidity Runtime** | ✅ R016 complete — studio live |
-| **3** | **Pools Runtime** | Wire `PoolsStudio` → legacy pool hooks + live APR/TVL |
+| **3** | **Pools Runtime** | ✅ R017 complete — studio live |
 | **4** | **Farms Runtime** | Wire `FarmsStudio` → `useFarms` / stake actions |
 | **5** | **Projects AI Runtime** | External discovery feeds + indexing pipeline |
 | **6** | **Radar Runtime** | Replace `radarStudioData` with live event intake |
@@ -391,6 +391,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-03 | R017 Pools Runtime — studio wired to staking infra; Pools Runtime 🟩 |
 | 2026-07-03 | R016 Liquidity Runtime — studio wired to LP infra; Liquidity Runtime 🟩 |
 | 2026-07-03 | R015 Trade Runtime — mock layers removed; Trade Runtime 🟩 |
 | 2026-07-03 | Initial matrix — UI freeze; runtime priorities; codebase audit statuses |

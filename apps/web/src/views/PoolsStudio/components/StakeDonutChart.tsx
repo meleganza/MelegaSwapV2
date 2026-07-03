@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { DONUT_SEGMENTS } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const R = 70
 const C = 2 * Math.PI * R
@@ -56,56 +56,58 @@ const Dot = styled.span<{ $color: string }>`
   flex-shrink: 0;
 `
 
-function buildSegments() {
-  let offset = 0
-  return DONUT_SEGMENTS.map((seg) => {
-    const dash = (seg.value / 100) * C
-    const item = { ...seg, dash, gap: C - dash, offset: -offset }
-    offset += dash
-    return item
-  })
+export const StakeDonutChart: React.FC = () => {
+  const { donutSegments } = usePoolsRuntime()
+
+  const segments = useMemo(() => {
+    let offset = 0
+    return donutSegments.map((seg) => {
+      const dash = (seg.value / 100) * C
+      const item = { ...seg, dash, gap: C - dash, offset: -offset }
+      offset += dash
+      return item
+    })
+  }, [donutSegments])
+
+  return (
+    <Wrap data-ps-donut>
+      <Svg viewBox="0 0 180 180" aria-hidden>
+        <circle cx="90" cy="90" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="22" />
+        {segments.map((seg, index) => (
+          <circle
+            key={seg.label}
+            cx="90"
+            cy="90"
+            r={R}
+            fill="none"
+            stroke={seg.color}
+            strokeWidth="22"
+            strokeDasharray={`${seg.dash} ${seg.gap}`}
+            strokeDashoffset={seg.offset}
+            transform="rotate(-90 90 90)"
+            data-ps-donut-segment
+            style={{
+              animation: `donutSweep 900ms ease-out ${index * 60}ms both`,
+            }}
+          />
+        ))}
+        <text x="90" y="86" textAnchor="middle" fill="#fff" fontSize="18" fontWeight="800">
+          Stake
+        </text>
+        <text x="90" y="104" textAnchor="middle" fill={poolsStudioColors.muted} fontSize="12" fontWeight="600">
+          Distribution
+        </text>
+      </Svg>
+      <Legend>
+        {donutSegments.map((seg) => (
+          <LegendItem key={seg.label}>
+            <Dot $color={seg.color} />
+            {seg.label}
+          </LegendItem>
+        ))}
+      </Legend>
+    </Wrap>
+  )
 }
-
-const segments = buildSegments()
-
-export const StakeDonutChart: React.FC = () => (
-  <Wrap data-ps-donut>
-    <Svg viewBox="0 0 180 180" aria-hidden>
-      <circle cx="90" cy="90" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="22" />
-      {segments.map((seg, index) => (
-        <circle
-          key={seg.label}
-          cx="90"
-          cy="90"
-          r={R}
-          fill="none"
-          stroke={seg.color}
-          strokeWidth="22"
-          strokeDasharray={`${seg.dash} ${seg.gap}`}
-          strokeDashoffset={seg.offset}
-          transform="rotate(-90 90 90)"
-          data-ps-donut-segment
-          style={{
-            animation: `donutSweep 900ms ease-out ${index * 60}ms both`,
-          }}
-        />
-      ))}
-      <text x="90" y="86" textAnchor="middle" fill="#fff" fontSize="18" fontWeight="800">
-        Stake
-      </text>
-      <text x="90" y="104" textAnchor="middle" fill={poolsStudioColors.muted} fontSize="12" fontWeight="600">
-        Distribution
-      </text>
-    </Svg>
-    <Legend>
-      {DONUT_SEGMENTS.map((seg) => (
-        <LegendItem key={seg.label}>
-          <Dot $color={seg.color} />
-          {seg.label}
-        </LegendItem>
-      ))}
-    </Legend>
-  </Wrap>
-)
 
 export default StakeDonutChart
