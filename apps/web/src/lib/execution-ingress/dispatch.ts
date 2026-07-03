@@ -7,6 +7,10 @@ import type {
 } from '../execution-layer/types'
 import { getExecutionTracker } from '../execution-tracker/tracker'
 import { trackExecutionSubmission } from '../execution-tracker/trackExecution'
+import {
+  buildGateFailureMessage,
+  evaluateLiveExecutionGates,
+} from '../execution-modes'
 import { isInternalIngressEnabled } from './activation'
 import { INGRESS_ERROR_CODES } from './constants'
 import type { IngressDispatchContext, IngressDispatchResult } from './types'
@@ -75,6 +79,23 @@ export async function dispatchExecutionInstruction(
   const validation = validateExecutionInstruction(instruction)
   if (!validation.ok) {
     return { ok: false, error: validation.error }
+  }
+
+  const liveGates = evaluateLiveExecutionGates({
+    chainId: context.chainId ?? instruction.chainId,
+    account: context.account,
+    instructionValid: true,
+    certifiedHandoff: context.certifiedHandoff ?? false,
+  })
+  if (!liveGates.allowed) {
+    return {
+      ok: false,
+      error: {
+        code: INGRESS_ERROR_CODES.GATES_NOT_SATISFIED,
+        category: 'adapter_error',
+        message: buildGateFailureMessage(liveGates),
+      },
+    }
   }
 
   const submit = selectSubmit(validation.instructionType, instruction, context)

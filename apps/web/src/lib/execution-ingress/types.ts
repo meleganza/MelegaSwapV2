@@ -20,6 +20,7 @@ export interface IngressAdapterHandlers {
 export interface IngressDispatchContext {
   account?: string
   chainId?: number
+  certifiedHandoff?: boolean
   adapters: IngressAdapterHandlers
 }
 

@@ -7,6 +7,11 @@ import type { ExecutionError } from '../execution-contract/types'
 import type { ExecutionInstruction } from '../execution-layer/types'
 import { validateExecutionInstruction } from '../execution-ingress/validate'
 import { getExecutionTracker } from '../execution-tracker/tracker'
+import {
+  buildGateFailureMessage,
+  canPerformDryRun,
+  evaluateDryRunGates,
+} from '../execution-modes'
 import { isExecutionGatewayEnabled } from './activation'
 import {
   DRY_RUN_SUPPRESSION_REASON,
@@ -37,6 +42,22 @@ export function dryRunExecutionInstruction(
 ): DryRunGatewayResult {
   if (!isExecutionGatewayEnabled()) {
     return { ok: false, error: inactiveError() }
+  }
+
+  const dryRunGateContext = {
+    instructionValid: true,
+    certifiedHandoff: context.certifiedHandoff,
+  }
+  if (!canPerformDryRun(dryRunGateContext)) {
+    const evaluation = evaluateDryRunGates(dryRunGateContext)
+    return {
+      ok: false,
+      error: {
+        code: evaluation.errorCode ?? GATEWAY_ERROR_CODES.INACTIVE,
+        category: 'adapter_error',
+        message: buildGateFailureMessage(evaluation),
+      },
+    }
   }
 
   const validation = validateExecutionInstruction(instruction)

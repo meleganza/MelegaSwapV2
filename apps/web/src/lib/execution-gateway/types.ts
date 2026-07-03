@@ -19,6 +19,8 @@ export interface DryRunSuppressionManifest {
 export interface DryRunGatewayContext {
   account?: string
   chainId?: number
+  /** When true, certified handoff gate is satisfied for dry-run ingress. */
+  certifiedHandoff?: boolean
 }
 
 export type DryRunGatewaySuccess = {

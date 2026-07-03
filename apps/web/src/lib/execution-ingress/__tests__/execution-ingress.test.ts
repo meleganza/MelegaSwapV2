@@ -15,6 +15,7 @@ import {
   createSmartSwapExecutionInstruction,
   createV2SwapExecutionInstruction,
 } from 'lib/routing-layer'
+import * as executionModes from 'lib/execution-modes'
 import {
   INGRESS_ERROR_CODES,
   INGRESS_FORBIDDEN_KERL_IMPORTS,
@@ -201,9 +202,31 @@ describe('KERL execution ingress — dispatch', () => {
   afterEach(() => {
     resetInternalIngressActivation()
     ExecutionTracker.resetForTests()
+    vi.restoreAllMocks()
   })
 
-  it('dispatches SmartSwap through injected adapter and records lifecycle', async () => {
+  it('blocks live dispatch when activation gates are not satisfied', async () => {
+    const instruction = createBridgeExecutionInstruction({ pid: 1, isNative: false, amount: '1' })
+
+    const result = await dispatchExecutionInstruction(instruction, {
+      account: '0xuser',
+      chainId: 97,
+      certifiedHandoff: true,
+      adapters: mockAdapters(),
+    })
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error.code).toBe(INGRESS_ERROR_CODES.GATES_NOT_SATISFIED)
+    }
+  })
+
+  it('dispatches SmartSwap through injected adapter when live gates pass (future activation simulation)', async () => {
+    vi.spyOn(executionModes, 'evaluateLiveExecutionGates').mockReturnValue({
+      allowed: true,
+      gates: [],
+    })
+
     const trade = {
       inputAmount: { currency: { symbol: 'BNB' }, quotient: { toString: () => '1000' } },
       outputAmount: { currency: { symbol: 'MARCO' }, quotient: { toString: () => '500' } },
@@ -232,7 +255,12 @@ describe('KERL execution ingress — dispatch', () => {
     expect(record?.events.some((event) => event.type === 'instruction_received')).toBe(true)
   })
 
-  it('dispatches V2Swap and BridgeBurn to correct adapters only', async () => {
+  it('dispatches V2Swap and BridgeBurn to correct adapters only (future activation simulation)', async () => {
+    vi.spyOn(executionModes, 'evaluateLiveExecutionGates').mockReturnValue({
+      allowed: true,
+      gates: [],
+    })
+
     const v2Instruction = createV2SwapExecutionInstruction({
       trade: { mock: true },
       allowedSlippage: 50,
@@ -260,7 +288,12 @@ describe('KERL execution ingress — dispatch', () => {
     expect(bridgeBurn).toHaveBeenCalledOnce()
   })
 
-  it('returns structured error when adapter submission fails', async () => {
+  it('returns structured error when adapter submission fails (future activation simulation)', async () => {
+    vi.spyOn(executionModes, 'evaluateLiveExecutionGates').mockReturnValue({
+      allowed: true,
+      gates: [],
+    })
+
     const instruction = createBridgeExecutionInstruction({ pid: 1, isNative: false, amount: '1' })
 
     const result = await dispatchExecutionInstruction(instruction, {
@@ -277,7 +310,12 @@ describe('KERL execution ingress — dispatch', () => {
     }
   })
 
-  it('does not emit settlement fields on returned reports', async () => {
+  it('does not emit settlement fields on returned reports (future activation simulation)', async () => {
+    vi.spyOn(executionModes, 'evaluateLiveExecutionGates').mockReturnValue({
+      allowed: true,
+      gates: [],
+    })
+
     const instruction = createBridgeExecutionInstruction({ pid: 1, isNative: false, amount: '1' })
 
     const result = await dispatchExecutionInstruction(instruction, {

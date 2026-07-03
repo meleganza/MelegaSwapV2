@@ -1,4 +1,4 @@
-/** KERL Live Integration Phase 1 — execution mode is dry-run only. */
+/** KERL Live Integration Phase 1 — legacy manifest value; see lib/execution-modes for mode architecture. */
 export const EXECUTION_MODE_DRY_RUN_ONLY = 'DRY_RUN_ONLY' as const
 
 export const EXECUTION_AUTHORITY_DEX = 'dex' as const
