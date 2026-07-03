@@ -1,13 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import type { SidebarListItem } from '../collectiblesStudioData'
-import {
-  HIGHEST_GOVERNANCE,
-  MOST_ACTIVE_BUILDERS,
-  MOST_ADOPTED,
-  MOST_USED_BY_AI,
-  NEWEST_IDENTITIES,
-} from '../collectiblesStudioData'
+import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import {
   CS_FONT_BODY,
   CS_FONT_DISPLAY,
@@ -151,14 +145,18 @@ function SidebarSection({
   )
 }
 
-export const CollectiblesRightSidebar: React.FC = () => (
+export const CollectiblesRightSidebar: React.FC = () => {
+  const { sidebar } = useCollectiblesRuntime()
+
+  return (
   <Sidebar data-cs-right-sidebar>
-    <SidebarSection title="Most Adopted" items={MOST_ADOPTED} showRank showChange />
-    <SidebarSection title="Highest Governance" items={HIGHEST_GOVERNANCE} priceLabel="score" />
-    <SidebarSection title="Most Used by AI" items={MOST_USED_BY_AI} priceLabel="score" />
-    <SidebarSection title="Newest Identities" items={NEWEST_IDENTITIES} />
-    <SidebarSection title="Most Active Builders" items={MOST_ACTIVE_BUILDERS} />
+    <SidebarSection title="Most Adopted" items={sidebar.mostAdopted} showRank showChange />
+    <SidebarSection title="Highest Governance" items={sidebar.highestGovernance} priceLabel="score" />
+    <SidebarSection title="Most Used by AI" items={sidebar.mostUsedByAi} priceLabel="score" />
+    <SidebarSection title="Newest Identities" items={sidebar.newestIdentities} />
+    <SidebarSection title="Most Active Builders" items={sidebar.mostActiveBuilders} />
   </Sidebar>
-)
+  )
+}
 
 export default CollectiblesRightSidebar

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { FILTER_CHIPS } from '../collectiblesStudioData'
+import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import { collectiblesStudioLayout } from '../collectiblesStudioTokens'
 import { CsChip } from './collectiblesStudioPrimitives'
 
@@ -19,7 +20,7 @@ const Row = styled.div`
 `
 
 export const CollectiblesFilterRow: React.FC = () => {
-  const [active, setActive] = useState<string>('All')
+  const { filter, setFilter } = useCollectiblesRuntime()
 
   return (
     <Row data-cs-filter-row>
@@ -27,9 +28,9 @@ export const CollectiblesFilterRow: React.FC = () => {
         <CsChip
           key={chip}
           type="button"
-          $active={active === chip}
+          $active={filter === chip}
           data-cs-filter-chip={chip}
-          onClick={() => setActive(chip)}
+          onClick={() => setFilter(chip)}
         >
           {chip}
         </CsChip>

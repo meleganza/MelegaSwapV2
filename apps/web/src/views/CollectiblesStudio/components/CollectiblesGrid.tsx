@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { COLLECTION_CARDS } from '../collectiblesStudioData'
+import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import { collectiblesStudioLayout } from '../collectiblesStudioTokens'
 import CollectibleGridCard from './CollectibleGridCard'
 
@@ -19,12 +19,16 @@ const Grid = styled.div`
   }
 `
 
-export const CollectiblesGrid: React.FC = () => (
+export const CollectiblesGrid: React.FC = () => {
+  const { cards } = useCollectiblesRuntime()
+
+  return (
   <Grid data-cs-grid>
-    {COLLECTION_CARDS.map((collection) => (
+    {cards.map((collection) => (
       <CollectibleGridCard key={collection.id} collection={collection} />
     ))}
   </Grid>
-)
+  )
+}
 
 export default CollectiblesGrid

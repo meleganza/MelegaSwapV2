@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { COLLECTIBLES_KPIS } from '../collectiblesStudioData'
+import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import { collectiblesStudioLayout } from '../collectiblesStudioTokens'
 import { KpiIcon } from './collectiblesStudioIcons'
 import { CsKpiCard, CsKpiDelta, CsKpiValue, CsLabel } from './collectiblesStudioPrimitives'
@@ -87,9 +87,12 @@ const MobileCard = styled(CsKpiCard)`
   }
 `
 
-export const CollectiblesKpiRow: React.FC = () => (
+export const CollectiblesKpiRow: React.FC = () => {
+  const { kpis } = useCollectiblesRuntime()
+
+  return (
   <Row data-cs-kpi-row>
-    {COLLECTIBLES_KPIS.map((kpi) => (
+    {kpis.map((kpi) => (
       <MobileCard key={kpi.id} data-cs-kpi-card>
         <Top>
           <CsLabel>{kpi.label}</CsLabel>
@@ -107,6 +110,7 @@ export const CollectiblesKpiRow: React.FC = () => (
       </MobileCard>
     ))}
   </Row>
-)
+  )
+}
 
 export default CollectiblesKpiRow

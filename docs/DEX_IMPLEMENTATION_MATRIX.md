@@ -252,24 +252,26 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `CollectiblesStudioScreen` + registry detail |
-| Runtime | 🟨 | `registry/collectibles` read model; legacy `/nft/` mint on-chain |
-| AI | ⬜ | — |
+| Runtime | 🟩 | ✅ R023 — `collectiblesRuntime/` registry + DNFT wallet ownership + identity privileges |
+| AI | 🟨 | Rule-based advisor, health, membership heuristics — no ML |
 | Production | ⬜ | — |
 
 ### Runtime requirements
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| NFT collections | 🟨 | Registry + legacy mint |
-| Identity verification | ⬜ | — |
-| Privileges | 🟨 | Manifest metadata |
-| Ownership | 🟨 | Legacy wallet routes |
-| Metadata | 🟩 | Registry manifests |
-| Utilities | ⬜ | — |
+| NFT collections | 🟩 | Registry canonical (3 collectibles) |
+| Identity verification | 🟨 | Registry + wallet ownership for indexed DNFT |
+| Privileges | 🟩 | Category-derived from runtime — no hardcoded badges |
+| Ownership | 🟩 | `useWalletCollectibleOwnership` — single source |
+| Metadata | 🟩 | Registry manifests — no placeholders |
+| Utilities | 🟨 | Active/Inactive/Pending from ownership + registry status |
 
-### AI (future)
+### AI (R023 partial)
 
-- Identity scoring
+- AI Collection Advisor — heuristic suggestions (Genesis, Builder, AI Passport)
+- Identity health score — rule-based green/yellow/red dimensions
+- Machine profile — `melega.collectibles-identity.v1` JSON export
 
 ---
 
@@ -320,7 +322,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Pools | 🟩 | Pools runtime user stakes |
 | Farms | 🟩 | Farms runtime user stakes |
 | Liquidity | 🟩 | Liquidity runtime positions |
-| Collectibles | 🟩 | Registry + wallet NFT ownership |
+| Collectibles | 🟩 | `collectiblesRuntime/` — shared wallet ownership + identity summary |
 | Infrastructure | 🟩 | Build runtime score + extensions |
 | Reports | 🟩 | Build extensions (audit/space) |
 | Notifications | 🟩 | Runtime transaction events |

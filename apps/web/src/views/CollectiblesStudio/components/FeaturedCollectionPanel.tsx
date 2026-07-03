@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { FEATURED_COLLECTION } from '../collectiblesStudioData'
+import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import {
   CS_FONT_BODY,
   CS_FONT_DISPLAY,
@@ -279,18 +279,21 @@ const ScoreWrap = styled.div`
   right: 8px;
 `
 
-export const FeaturedCollectionPanel: React.FC = () => (
+export const FeaturedCollectionPanel: React.FC = () => {
+  const { featured } = useCollectiblesRuntime()
+
+  return (
   <Panel data-cs-panel data-cs-featured>
     <Inner>
       <Info>
         <TitleRow>
           <IconStar size={18} />
-          <Title>{FEATURED_COLLECTION.title}</Title>
+          <Title>{featured.title}</Title>
         </TitleRow>
-        <Desc>{FEATURED_COLLECTION.description}</Desc>
+        <Desc>{featured.description}</Desc>
         <PrivilegesBlock data-cs-privileges>
           <PrivilegesTitle>Privileges</PrivilegesTitle>
-          {FEATURED_COLLECTION.privileges.map((privilege) => (
+          {featured.privileges.map((privilege) => (
             <PrivilegeRow key={privilege}>
               <IconCheck size={14} color={collectiblesStudioColors.green} />
               {privilege}
@@ -298,27 +301,27 @@ export const FeaturedCollectionPanel: React.FC = () => (
           ))}
         </PrivilegesBlock>
         <IdentityBadges>
-          {FEATURED_COLLECTION.identityBadges.map((badge) => (
+          {featured.identityBadges.map((badge) => (
             <IdentityBadge key={badge}>{badge}</IdentityBadge>
           ))}
         </IdentityBadges>
-        {FEATURED_COLLECTION.agentEnabled ? <AgentBadge>Agent Enabled</AgentBadge> : null}
+        {featured.agentEnabled ? <AgentBadge>Agent Enabled</AgentBadge> : null}
         <Metrics>
           <Metric>
             <FeaturedMetricLabel>Floor Price</FeaturedMetricLabel>
-            <FeaturedMetricValue>{FEATURED_COLLECTION.floorPrice}</FeaturedMetricValue>
+            <FeaturedMetricValue>{featured.floorPrice}</FeaturedMetricValue>
           </Metric>
           <Metric>
             <FeaturedMetricLabel>Owners</FeaturedMetricLabel>
-            <FeaturedMetricValue>{FEATURED_COLLECTION.owners}</FeaturedMetricValue>
+            <FeaturedMetricValue>{featured.owners}</FeaturedMetricValue>
           </Metric>
           <Metric>
             <FeaturedMetricLabel>Items</FeaturedMetricLabel>
-            <FeaturedMetricValue>{FEATURED_COLLECTION.items}</FeaturedMetricValue>
+            <FeaturedMetricValue>{featured.items}</FeaturedMetricValue>
           </Metric>
           <Metric>
             <FeaturedMetricLabel>Volume</FeaturedMetricLabel>
-            <FeaturedMetricValue>{FEATURED_COLLECTION.volume}</FeaturedMetricValue>
+            <FeaturedMetricValue>{featured.volume}</FeaturedMetricValue>
           </Metric>
         </Metrics>
         <BtnRow>
@@ -329,11 +332,12 @@ export const FeaturedCollectionPanel: React.FC = () => (
       <Visual>
         <Coin data-cs-featured-coin />
         <ScoreWrap>
-          <FeaturedScoreRingDisplay score={FEATURED_COLLECTION.utilityScore} />
+          <FeaturedScoreRingDisplay score={featured.utilityScore} />
         </ScoreWrap>
       </Visual>
     </Inner>
   </Panel>
-)
+  )
+}
 
 export default FeaturedCollectionPanel

@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useAllTransactions } from 'state/transactions/hooks'
-import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
 import { useTradeSwapRuntime } from 'views/Trade/tradeRuntime/useTradeSwapRuntime'
 import { useLiquidityPositions } from 'views/LiquidityStudio/liquidityRuntime/useLiquidityPositions'
 import { usePoolsStakingRuntime } from 'views/PoolsStudio/poolsRuntime/usePoolsStakingRuntime'
@@ -22,14 +21,17 @@ import {
 import {
   countPendingActions,
   formatAssetRows,
-  formatCollectibleItems,
   formatFarmPositionRows,
   formatLiquidityRows,
   formatPoolPositionRows,
   sumPendingRewardsUsd,
 } from './formatCommandCenterRuntime'
 import { createCommandCenterError, type CommandCenterRuntimeError } from './commandCenterRuntimeErrors'
-import { useCollectiblesWalletOwnership } from './useCollectiblesWalletOwnership'
+import {
+  commandCenterIdentitySummary,
+  formatCommandCenterCollectibles,
+} from 'views/CollectiblesStudio/collectiblesRuntime/formatCommandCenterCollectibles'
+import { useWalletCollectibleOwnership } from 'views/CollectiblesStudio/collectiblesRuntime/useWalletCollectibleOwnership'
 
 export function useCommandCenterOrchestrationRuntime() {
   const { address: account } = useAccount()
@@ -43,7 +45,7 @@ export function useCommandCenterOrchestrationRuntime() {
   const projects = useProjectsIntelligenceRuntime()
   const radar = useRadarIntelligenceRuntime()
   const build = useBuildOrchestrationRuntime()
-  const collectiblesWallet = useCollectiblesWalletOwnership()
+  const collectiblesWallet = useWalletCollectibleOwnership()
 
   const assets = useMemo(() => formatAssetRows(trade.assets, account), [trade.assets, account])
   const liquidityRows = useMemo(() => formatLiquidityRows(liquidity.positions), [liquidity.positions])
@@ -134,8 +136,8 @@ export function useCommandCenterOrchestrationRuntime() {
           time: b.time,
         })),
         collectibleUnlocked:
-          collectiblesWallet.ownedCount > 0
-            ? { title: `${collectiblesWallet.ownedCount} wallet NFT(s)`, time: new Date().toISOString() }
+          collectiblesWallet.totalOwned > 0
+            ? { title: `${collectiblesWallet.totalOwned} identity collectible(s)`, time: new Date().toISOString() }
             : undefined,
       }),
     [
@@ -144,7 +146,7 @@ export function useCommandCenterOrchestrationRuntime() {
       farms.terminal.activityRows,
       radar.recentDiscoveries,
       build.recentBuilds,
-      collectiblesWallet.ownedCount,
+      collectiblesWallet.totalOwned,
     ],
   )
 
@@ -169,9 +171,24 @@ export function useCommandCenterOrchestrationRuntime() {
     [tradeTxs, pools.terminal.activityRows, farms.terminal.activityRows, build.recentBuilds],
   )
 
+  const identitySummary = useMemo(
+    () =>
+      commandCenterIdentitySummary(
+        collectiblesWallet.records,
+        collectiblesWallet.ownershipBySlug,
+        collectiblesWallet.totalOwned,
+      ),
+    [collectiblesWallet],
+  )
+
   const collectibles = useMemo(
-    () => formatCollectibleItems(getAllCollectibles(), collectiblesWallet.ownedCount, account),
-    [collectiblesWallet.ownedCount, account],
+    () =>
+      formatCommandCenterCollectibles(
+        collectiblesWallet.records,
+        collectiblesWallet.ownershipBySlug,
+        account,
+      ),
+    [collectiblesWallet.records, collectiblesWallet.ownershipBySlug, account],
   )
 
   const reports = useMemo(
@@ -263,7 +280,8 @@ export function useCommandCenterOrchestrationRuntime() {
         buildMachine: build.machine as unknown as Record<string, unknown>,
         infrastructureScore,
         notificationCount: notifications.length,
-        collectibleCount: getAllCollectibles().length,
+        collectibleCount: collectiblesWallet.records.length,
+        identitySummary,
       }),
     [
       account,
@@ -278,6 +296,8 @@ export function useCommandCenterOrchestrationRuntime() {
       build.machine,
       infrastructureScore,
       notifications.length,
+      collectiblesWallet.records.length,
+      identitySummary,
     ],
   )
 

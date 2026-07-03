@@ -36,6 +36,7 @@ interface MachineInput {
   infrastructureScore?: number
   notificationCount: number
   collectibleCount: number
+  identitySummary?: Record<string, unknown>
 }
 
 export function buildMachineSummary(input: MachineInput): CommandMachineSummary {
@@ -56,7 +57,7 @@ export function buildMachineSummary(input: MachineInput): CommandMachineSummary 
       score: input.infrastructureScore ?? null,
       ...input.buildMachine,
     },
-    identity: { collectiblesIndexed: input.collectibleCount },
+    identity: input.identitySummary as unknown as Record<string, unknown>,
     notifications: { count: input.notificationCount },
     positions: {
       assets: input.assetCount,

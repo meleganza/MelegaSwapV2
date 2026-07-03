@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import CollectiblesStudioGlobalStyle from './CollectiblesStudioGlobalStyle'
+import { CollectiblesRuntimeProvider } from './collectiblesRuntime/CollectiblesRuntimeContext'
 import AICollectionAdvisorPanel from './components/AICollectionAdvisorPanel'
 import CollectiblesBottomCta from './components/CollectiblesBottomCta'
 import CollectiblesFilterRow from './components/CollectiblesFilterRow'
@@ -73,6 +74,7 @@ const GridSlot = styled.div`
 `
 
 export const CollectiblesStudioScreen: React.FC = () => (
+  <CollectiblesRuntimeProvider>
   <Root data-collectibles-studio-screen="true">
     <PageMeta />
     <CollectiblesStudioGlobalStyle />
@@ -94,6 +96,7 @@ export const CollectiblesStudioScreen: React.FC = () => (
       <CollectiblesBottomCta />
     </Content>
   </Root>
+  </CollectiblesRuntimeProvider>
 )
 
 export default CollectiblesStudioScreen

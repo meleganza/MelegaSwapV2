@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { AI_ADVISOR_ROWS } from '../collectiblesStudioData'
+import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import {
   CS_FONT_BODY,
   CS_FONT_DISPLAY,
@@ -74,12 +74,15 @@ const CtaWrap = styled.div`
   padding-top: 14px;
 `
 
-export const AICollectionAdvisorPanel: React.FC = () => (
+export const AICollectionAdvisorPanel: React.FC = () => {
+  const { advisorRows } = useCollectiblesRuntime()
+
+  return (
   <CsPanel data-cs-panel data-cs-advisor $height={collectiblesStudioLayout.featuredHeight}>
     <Inner>
       <Title>AI Collection Advisor</Title>
       <List>
-        {AI_ADVISOR_ROWS.map((row) => (
+        {advisorRows.map((row) => (
           <Row key={row.category} data-cs-advisor-row>
             <CsThumbnail $theme={row.artTheme} />
             <RowText>
@@ -97,6 +100,7 @@ export const AICollectionAdvisorPanel: React.FC = () => (
       </CtaWrap>
     </Inner>
   </CsPanel>
-)
+  )
+}
 
 export default AICollectionAdvisorPanel
