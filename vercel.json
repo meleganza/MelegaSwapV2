@@ -2,7 +2,8 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "home-trade-screen-redesign": true
+      "home-trade-screen-redesign": true,
+      "design-system-foundation": true
     }
   }
 }
