@@ -1,0 +1,40 @@
+export const CC_FONT_DISPLAY = "'Orbitron', sans-serif"
+export const CC_FONT_BODY = "'Inter', sans-serif"
+
+export const commandCenterLayout = {
+  contentMax: '1180px',
+  contentPaddingX: '24px',
+  contentPaddingTop: '28px',
+  contentPaddingBottom: '40px',
+  sectionGap: '20px',
+  colMain: '1fr',
+  colSidebar: '320px',
+  cardRadius: '20px',
+  panelRadius: '24px',
+  mobileBottomPad: '88px',
+  stackBreakpoint: '1024px',
+  btnTransition: '150ms',
+  cardLift: '4px',
+  gaugeAnim: '900ms',
+} as const
+
+export const commandCenterColors = {
+  pageBg: '#050505',
+  panel: '#131313',
+  panelGradient: 'linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005))',
+  white: '#FFFFFF',
+  subtitle: '#B5B5B5',
+  body: '#C8C8C8',
+  muted: '#8F8F8F',
+  label: '#8F8F8F',
+  border: '#262626',
+  borderGold: 'rgba(214, 180, 69, 0.85)',
+  gold: '#D6B445',
+  goldHover: '#E0C25A',
+  goldBg: 'rgba(214, 180, 69, 0.08)',
+  green: '#1BE77A',
+  yellow: '#F4C542',
+  red: '#F04B4B',
+  shadow: '0 16px 42px rgba(0,0,0,0.30)',
+  transition: '180ms',
+} as const

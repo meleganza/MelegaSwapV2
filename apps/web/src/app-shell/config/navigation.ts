@@ -75,6 +75,13 @@ export const shellNavigation: ShellNavSection[] = [
     label: 'BUILD',
     visibleCount: 2,
     items: [
+      {
+        id: 'build-studio',
+        label: 'Build Studio',
+        href: '/build-studio',
+        icon: 'sparkle',
+        match: (p) => p.startsWith('/build-studio'),
+      },
       { id: 'list', label: 'List Project', href: '/launch', icon: 'rocket', match: (p) => p === '/launch' },
       {
         id: 'reward',
@@ -115,11 +122,18 @@ export const shellNavigation: ShellNavSection[] = [
     ],
   },
   {
-    label: 'PORTFOLIO',
-    visibleCount: 1,
+    label: 'OWN',
+    visibleCount: 2,
     items: [
       {
-        id: 'overview',
+        id: 'command-center',
+        label: 'Command Center',
+        href: '/command-center',
+        icon: 'command',
+        match: (p) => p === '/command-center' || p.startsWith('/command-center/'),
+      },
+      {
+        id: 'portfolio-overview',
         label: 'Overview',
         href: '/portfolio',
         icon: 'wallet',
@@ -160,15 +174,16 @@ export const shellBottomNavItems = [
   {
     id: 'build',
     label: 'Build',
-    href: '/launch',
+    href: '/build-studio',
     icon: 'rocket' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/launch') || p.startsWith('/add'),
+    match: (p: string) => p.startsWith('/build-studio') || p.startsWith('/launch') || p.startsWith('/add'),
   },
   {
-    id: 'portfolio',
-    label: 'Portfolio',
-    href: '/portfolio',
-    icon: 'wallet' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/portfolio') || p.startsWith('/workspace'),
+    id: 'command-center',
+    label: 'Command Center',
+    href: '/command-center',
+    icon: 'command' as MelegaNavIcon,
+    match: (p: string) =>
+      p.startsWith('/command-center') || p.startsWith('/portfolio') || p.startsWith('/workspace'),
   },
 ]
