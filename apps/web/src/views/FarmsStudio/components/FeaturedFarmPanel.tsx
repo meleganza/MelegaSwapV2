@@ -1,6 +1,8 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsGhostBtn, FsPanel, FsPanelTitle, FsPrimaryBtn } from './farmsStudioPrimitives'
 
 const shimmer = keyframes`
@@ -115,63 +117,112 @@ const ChartLine = styled.path`
   animation: ${shimmer} 8s ease-in-out infinite;
 `
 
-export const FeaturedFarmPanel: React.FC = () => (
-  <FsPanel
-    data-fs-panel
-    data-fs-featured
-    $width="100%"
-    $height={farmsStudioLayout.featuredHeight}
-    style={{ padding: '18px' }}
-  >
-    <FsPanelTitle style={{ marginBottom: 10 }}>Featured Farm</FsPanelTitle>
-    <Inner>
-      <Main>
-        <Pair>MARCO / BNB</Pair>
-        <Apr>36.08%</Apr>
-        <Metrics>
-          <Metric>
-            <MetricLabel>TVL</MetricLabel>
-            <MetricValue>$3.21M</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>Rewards / day</MetricLabel>
-            <MetricValue>42,000 MARCO</MetricValue>
-          </Metric>
-          <Metric>
-            <MetricLabel>Multiplier</MetricLabel>
-            <MetricValue>3x</MetricValue>
-          </Metric>
-        </Metrics>
-        <BtnRow>
-          <FsPrimaryBtn type="button">Stake</FsPrimaryBtn>
-          <FsGhostBtn type="button">Analyze</FsGhostBtn>
-        </BtnRow>
-      </Main>
-      <ChartWrap data-fs-mini-chart aria-hidden>
-        <ChartGrid />
-        <ChartSvg viewBox="0 0 280 90" preserveAspectRatio="none">
-          <ChartLine
-            d="M 0 72 L 40 58 L 80 64 L 120 38 L 160 48 L 200 22 L 240 30 L 280 14"
-            fill="none"
-            stroke={farmsStudioColors.goldBright}
-            strokeWidth="2"
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            d="M 0 72 L 40 58 L 80 64 L 120 38 L 160 48 L 200 22 L 240 30 L 280 14 L 280 90 L 0 90 Z"
-            fill="url(#fsAprFill)"
-            opacity="0.18"
-          />
-          <defs>
-            <linearGradient id="fsAprFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={farmsStudioColors.green} />
-              <stop offset="100%" stopColor="transparent" />
-            </linearGradient>
-          </defs>
-        </ChartSvg>
-      </ChartWrap>
-    </Inner>
-  </FsPanel>
-)
+const LoadingLine = styled.p`
+  margin: 0;
+  font-size: 13px;
+  color: ${farmsStudioColors.muted};
+`
+
+const ConnectWrap = styled.div`
+  button {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 20px !important;
+    border-radius: 12px !important;
+  }
+`
+
+function sparklinePath(points: number[]): string {
+  if (!points.length) return 'M 0 72 L 280 14'
+  const max = Math.max(...points)
+  const min = Math.min(...points)
+  const range = max - min || 1
+  return points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * 280
+      const y = 90 - ((p - min) / range) * 76 - 7
+      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
+    })
+    .join(' ')
+}
+
+export const FeaturedFarmPanel: React.FC = () => {
+  const { featured, loadingLabel, requestModal, account } = useFarmsRuntime()
+  const card = featured.card
+  const linePath = sparklinePath(featured.sparkline)
+
+  return (
+    <FsPanel
+      data-fs-panel
+      data-fs-featured
+      $width="100%"
+      $height={farmsStudioLayout.featuredHeight}
+      style={{ padding: '18px' }}
+    >
+      <FsPanelTitle style={{ marginBottom: 10 }}>Featured Farm</FsPanelTitle>
+      <Inner>
+        <Main>
+          {loadingLabel ? (
+            <LoadingLine>{loadingLabel}</LoadingLine>
+          ) : (
+            <>
+              <Pair>{featured.pair}</Pair>
+              <Apr>{featured.apr}</Apr>
+              <Metrics>
+                <Metric>
+                  <MetricLabel>TVL</MetricLabel>
+                  <MetricValue>{featured.tvl}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Rewards / day</MetricLabel>
+                  <MetricValue>{featured.dailyRewards}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Multiplier</MetricLabel>
+                  <MetricValue>{featured.multiplier}</MetricValue>
+                </Metric>
+              </Metrics>
+              <BtnRow>
+                {card && account ? (
+                  <FsPrimaryBtn type="button" onClick={() => requestModal(card, 'stake')}>
+                    Stake
+                  </FsPrimaryBtn>
+                ) : (
+                  <ConnectWrap>
+                    <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+                  </ConnectWrap>
+                )}
+                <FsGhostBtn type="button">Analyze</FsGhostBtn>
+              </BtnRow>
+            </>
+          )}
+        </Main>
+        <ChartWrap data-fs-mini-chart aria-hidden>
+          <ChartGrid />
+          <ChartSvg viewBox="0 0 280 90" preserveAspectRatio="none">
+            <ChartLine
+              d={linePath}
+              fill="none"
+              stroke={farmsStudioColors.goldBright}
+              strokeWidth="2"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={`${linePath} L 280 90 L 0 90 Z`}
+              fill="url(#fsAprFill)"
+              opacity="0.18"
+            />
+            <defs>
+              <linearGradient id="fsAprFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={farmsStudioColors.green} />
+                <stop offset="100%" stopColor="transparent" />
+              </linearGradient>
+            </defs>
+          </ChartSvg>
+        </ChartWrap>
+      </Inner>
+    </FsPanel>
+  )
+}
 
 export default FeaturedFarmPanel

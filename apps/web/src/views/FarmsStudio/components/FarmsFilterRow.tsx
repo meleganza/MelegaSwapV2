@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { FARM_FILTER_CHIPS } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 
 const Row = styled.div`
   display: flex;
@@ -31,12 +32,12 @@ const Chip = styled.button<{ $active?: boolean }>`
 `
 
 export const FarmsFilterRow: React.FC = () => {
-  const [active, setActive] = useState<string>('All')
+  const { filter, setFilter } = useFarmsRuntime()
 
   return (
     <Row data-fs-filters>
       {FARM_FILTER_CHIPS.map((chip) => (
-        <Chip key={chip} type="button" $active={active === chip} onClick={() => setActive(chip)}>
+        <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
           {chip}
         </Chip>
       ))}

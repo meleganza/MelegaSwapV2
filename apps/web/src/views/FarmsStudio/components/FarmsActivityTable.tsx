@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { FARMS_ACTIVITY_ROWS } from '../farmsStudioData'
 import { FARMS_ACTIVITY_PREVIEW_LABEL, farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsPanel, FsPreviewBadge } from './farmsStudioPrimitives'
 
 const Head = styled.div`
@@ -101,64 +101,86 @@ const StatusBadge = styled.span<{ $tone?: 'indexed' | 'preview' | 'gray' }>`
         : farmsStudioColors.previewBadgeBg};
 `
 
-export const FarmsActivityTable: React.FC = () => (
-  <FsPanel
-    data-fs-panel
-    data-fs-activity
-    $height={farmsStudioLayout.activityHeight}
-    style={{ marginTop: farmsStudioLayout.activityMarginTop }}
-  >
-    <Head>
-      <Title>Recent Farming Activity</Title>
-      <FsPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
-        {FARMS_ACTIVITY_PREVIEW_LABEL}
-      </FsPreviewBadge>
-    </Head>
-    <TableWrap>
-      <Table>
-        <thead>
-          <tr>
-            <Th $w="14%">Time</Th>
-            <Th $w="20%">Pair</Th>
-            <Th $w="18%">Action</Th>
-            <Th $w="18%">Amount</Th>
-            <Th $w="18%">Rewards</Th>
-            <Th $w="12%">Status</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {FARMS_ACTIVITY_ROWS.map((row) => (
-            <tr key={`${row.time}-${row.pair}-${row.action}`}>
-              <Td>{row.time}</Td>
-              <Td>{row.pair}</Td>
-              <Td>
-                <Action $tone={row.actionTone}>{row.action}</Action>
-              </Td>
-              <Td>{row.amount}</Td>
-              <Td>{row.rewards}</Td>
-              <Td>
-                <StatusBadge
-                  $tone={
-                    row.status === 'indexed'
-                      ? 'indexed'
-                      : row.action === 'New Farm'
-                        ? 'gray'
-                        : 'preview'
-                  }
-                >
-                  {row.status === 'indexed'
-                    ? 'Indexed'
-                    : row.action === 'New Farm'
-                      ? 'Coming Soon'
-                      : 'Preview'}
-                </StatusBadge>
-              </Td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </TableWrap>
-  </FsPanel>
-)
+const Empty = styled.p`
+  margin: 0;
+  padding: 18px;
+  font-size: 13px;
+  color: ${farmsStudioColors.muted};
+`
+
+const LiveBadge = styled(FsPreviewBadge)`
+  border-color: ${farmsStudioColors.green};
+  color: ${farmsStudioColors.green};
+  background: rgba(0, 230, 118, 0.08);
+`
+
+export const FarmsActivityTable: React.FC = () => {
+  const { terminal, loadingLabel, account } = useFarmsRuntime()
+  const rows = terminal.activityRows
+
+  return (
+    <FsPanel
+      data-fs-panel
+      data-fs-activity
+      $height={farmsStudioLayout.activityHeight}
+      style={{ marginTop: farmsStudioLayout.activityMarginTop }}
+    >
+      <Head>
+        <Title>Recent Farming Activity</Title>
+        <LiveBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
+          {FARMS_ACTIVITY_PREVIEW_LABEL}
+        </LiveBadge>
+      </Head>
+      <TableWrap>
+        {loadingLabel ? (
+          <Empty>{loadingLabel}</Empty>
+        ) : !account ? (
+          <Empty>Connect wallet to view farming activity.</Empty>
+        ) : rows.length === 0 ? (
+          <Empty>No recent farm transactions.</Empty>
+        ) : (
+          <Table>
+            <thead>
+              <tr>
+                <Th $w="14%">Time</Th>
+                <Th $w="20%">Pair</Th>
+                <Th $w="18%">Action</Th>
+                <Th $w="18%">Amount</Th>
+                <Th $w="18%">Rewards</Th>
+                <Th $w="12%">Status</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={`${row.time}-${row.pair}-${row.action}-${row.hash ?? ''}`}>
+                  <Td>{row.time}</Td>
+                  <Td>{row.pair}</Td>
+                  <Td>
+                    <Action $tone={row.actionTone}>{row.action}</Action>
+                  </Td>
+                  <Td>{row.amount}</Td>
+                  <Td>{row.rewards}</Td>
+                  <Td>
+                    <StatusBadge
+                      $tone={
+                        row.status === 'indexed'
+                          ? 'indexed'
+                          : row.action === 'New Farm'
+                            ? 'gray'
+                            : 'preview'
+                      }
+                    >
+                      {row.status === 'indexed' ? 'Indexed' : 'Pending'}
+                    </StatusBadge>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </TableWrap>
+    </FsPanel>
+  )
+}
 
 export default FarmsActivityTable

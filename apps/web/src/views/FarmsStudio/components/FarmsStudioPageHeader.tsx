@@ -36,6 +36,12 @@ const Subtitle = styled.p`
   max-width: 720px;
 `
 
+const LiveBadge = styled(FsPreviewBadge)`
+  border-color: ${farmsStudioColors.green};
+  color: ${farmsStudioColors.green};
+  background: rgba(0, 230, 118, 0.08);
+`
+
 export const FarmsStudioPageHeader: React.FC = () => (
   <div data-fs-page-header>
     <Row>
@@ -43,7 +49,7 @@ export const FarmsStudioPageHeader: React.FC = () => (
         <Title>Farms</Title>
         <Subtitle>Earn yield across the Melega ecosystem.</Subtitle>
       </Left>
-      <FsPreviewBadge>{FARMS_STUDIO_PREVIEW_LABEL}</FsPreviewBadge>
+      <LiveBadge>{FARMS_STUDIO_PREVIEW_LABEL}</LiveBadge>
     </Row>
   </div>
 )

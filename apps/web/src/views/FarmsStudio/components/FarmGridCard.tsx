@@ -5,6 +5,7 @@ import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/Meleg
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 
 const Card = styled.article<{ $expanded?: boolean }>`
   display: flex;
@@ -353,8 +354,10 @@ export interface FarmGridCardProps {
 
 export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
   const [expanded, setExpanded] = useState(false)
+  const { requestModal, account } = useFarmsRuntime()
   const preview = farm.analyzePreview ?? DEFAULT_ANALYZE_PREVIEW
   const aprVar = aprVariant(farm)
+  const hasPending = farm.pendingReward?.gt(0)
 
   const renderFooter = () => {
     if (farm.status === 'coming-soon' || farm.cta === 'none') {
@@ -377,10 +380,18 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
 
     return (
       <Footer>
-        <CardStakeBtn type="button">Stake</CardStakeBtn>
-        <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
-          Analyze
-        </CardAnalyzeBtn>
+        <CardStakeBtn type="button" onClick={() => requestModal(farm, 'stake')}>
+          Stake
+        </CardStakeBtn>
+        {hasPending && account ? (
+          <CardAnalyzeBtn type="button" onClick={() => requestModal(farm, 'claim')}>
+            Claim
+          </CardAnalyzeBtn>
+        ) : (
+          <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
+            Analyze
+          </CardAnalyzeBtn>
+        )}
       </Footer>
     )
   }

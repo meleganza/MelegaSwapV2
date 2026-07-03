@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { FARMS_KPIS } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsKpiCard, FsKpiDelta, FsKpiLabel, FsKpiValue } from './farmsStudioPrimitives'
 
 const Row = styled.div`
@@ -55,6 +55,11 @@ const Sparkline = styled.svg`
   height: ${farmsStudioLayout.sparklineH}px;
 `
 
+const LoadingLine = styled.span`
+  font-size: 12px;
+  color: ${farmsStudioColors.muted};
+`
+
 function MiniSparkline({ points }: { points: number[] }) {
   const max = Math.max(...points)
   const min = Math.min(...points)
@@ -76,24 +81,35 @@ function MiniSparkline({ points }: { points: number[] }) {
   )
 }
 
-export const FarmsKpiRow: React.FC = () => (
-  <Row data-fs-kpi-row>
-    {FARMS_KPIS.map((kpi) => (
-      <FsKpiCard key={kpi.id} data-fs-kpi-card>
-        <FsKpiLabel>{kpi.label}</FsKpiLabel>
-        <ValueBlock $hasSparkline={!!kpi.sparkline}>
-          <ValueRow>
-            <FsKpiValue $gold={kpi.gold} data-fs-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-              {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
-            </FsKpiValue>
-            {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
-          </ValueRow>
-          {kpi.id === 'rewards' ? <TokenSuffix>MARCO</TokenSuffix> : null}
-          {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
-        </ValueBlock>
-      </FsKpiCard>
-    ))}
-  </Row>
-)
+export const FarmsKpiRow: React.FC = () => {
+  const { kpis, loadingLabel, featured } = useFarmsRuntime()
+  const sparkline = featured.sparkline
+
+  return (
+    <Row data-fs-kpi-row>
+      {loadingLabel ? (
+        <FsKpiCard data-fs-kpi-card>
+          <LoadingLine>{loadingLabel}</LoadingLine>
+        </FsKpiCard>
+      ) : (
+        kpis.map((kpi) => (
+          <FsKpiCard key={kpi.id} data-fs-kpi-card>
+            <FsKpiLabel>{kpi.label}</FsKpiLabel>
+            <ValueBlock $hasSparkline={kpi.id === 'tvl' && sparkline.length > 0}>
+              <ValueRow>
+                <FsKpiValue $gold={kpi.gold} data-fs-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
+                  {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
+                </FsKpiValue>
+                {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
+              </ValueRow>
+              {kpi.id === 'rewards' ? <TokenSuffix>MARCO</TokenSuffix> : null}
+              {kpi.id === 'tvl' && sparkline.length > 0 ? <MiniSparkline points={sparkline} /> : null}
+            </ValueBlock>
+          </FsKpiCard>
+        ))
+      )}
+    </Row>
+  )
+}
 
 export default FarmsKpiRow

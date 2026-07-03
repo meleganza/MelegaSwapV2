@@ -113,21 +113,21 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `FarmsStudioScreen` |
-| Runtime | 🟨 | Legacy `views/Farms` hooks exist; studio uses `farmsStudioData.ts` static |
-| AI | ⬜ | Advisor panel is static copy |
+| Runtime | 🟩 | R018 — `FarmsRuntimeProvider`; live APR/TVL/stake/claim |
+| AI | ⬜ | Heuristic advisor from live metrics |
 | Production | ⬜ | — |
 
 ### Runtime requirements
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Farm contracts | 🟨 | `@pancakeswap/farms`, legacy farm pages |
-| APR calculation | 🟨 | Live on legacy; static in studio |
-| Pending rewards | 🟨 | Legacy stake UI |
-| Claim | 🟨 | Legacy |
-| Deposit | 🟨 | Legacy |
-| Withdraw | 🟨 | Legacy |
-| Multipliers | ⬜ | Studio display only |
+| Farm contracts | 🟩 | `usePollFarmsWithUserData` + MasterChef |
+| APR calculation | 🟩 | `getFarmApr` live in all cards |
+| Pending rewards | 🟩 | `userData.earnings` + claim button |
+| Claim | 🟩 | `useHarvestFarm` |
+| Deposit | 🟩 | `DepositModal` via `FarmsActionHost` |
+| Withdraw | 🟩 | `WithdrawModal` via `FarmsActionHost` |
+| Multipliers | 🟩 | Live `farm.multiplier` in cards |
 
 ### AI (future)
 
@@ -366,7 +366,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | **1** | **Trade Runtime** | Replace `tradeMockData` rails; wire live router status, assets, watchlist |
 | **2** | **Liquidity Runtime** | ✅ R016 complete — studio live |
 | **3** | **Pools Runtime** | ✅ R017 complete — studio live |
-| **4** | **Farms Runtime** | Wire `FarmsStudio` → `useFarms` / stake actions |
+| **4** | **Farms Runtime** | ✅ R018 complete — studio live |
 | **5** | **Projects AI Runtime** | External discovery feeds + indexing pipeline |
 | **6** | **Radar Runtime** | Replace `radarStudioData` with live event intake |
 | **7** | **Build Studio Runtime** | Import token validation + create flows |

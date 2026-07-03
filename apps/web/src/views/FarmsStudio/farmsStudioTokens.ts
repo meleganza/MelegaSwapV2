@@ -58,5 +58,5 @@ export const farmsStudioColors = {
   previewBadgeBg: 'rgba(212,175,55,0.1)',
 } as const
 
-export const FARMS_STUDIO_PREVIEW_LABEL = 'PREVIEW LAYOUT'
-export const FARMS_ACTIVITY_PREVIEW_LABEL = 'Indexed Preview'
+export const FARMS_STUDIO_PREVIEW_LABEL = 'LIVE RUNTIME'
+export const FARMS_ACTIVITY_PREVIEW_LABEL = 'LIVE'

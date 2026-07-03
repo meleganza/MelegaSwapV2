@@ -4,6 +4,8 @@ import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
+import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
+import FarmsActionHost from './farmsRuntime/FarmsActionHost'
 import FarmsStudioPageHeader from './components/FarmsStudioPageHeader'
 import FarmsKpiRow from './components/FarmsKpiRow'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
@@ -74,21 +76,24 @@ export const FarmsStudioScreen: React.FC = () => (
     <PageMeta />
     <FarmsStudioGlobalStyle />
     <TrendingRibbon />
-    <Content>
-      <FarmsStudioPageHeader />
-      <FarmsKpiRow />
-      <PageColumnGrid data-fs-page-grid>
-        <FeaturedSlot>
-          <FeaturedFarmPanel />
-        </FeaturedSlot>
-        <AdvisorSlot>
-          <AIYieldAdvisorPanel />
-        </AdvisorSlot>
-      </PageColumnGrid>
-      <FarmsFilterRow />
-      <FarmsGrid />
-      <FarmsActivityTable />
-    </Content>
+    <FarmsRuntimeProvider>
+      <FarmsActionHost />
+      <Content>
+        <FarmsStudioPageHeader />
+        <FarmsKpiRow />
+        <PageColumnGrid data-fs-page-grid>
+          <FeaturedSlot>
+            <FeaturedFarmPanel />
+          </FeaturedSlot>
+          <AdvisorSlot>
+            <AIYieldAdvisorPanel />
+          </AdvisorSlot>
+        </PageColumnGrid>
+        <FarmsFilterRow />
+        <FarmsGrid />
+        <FarmsActivityTable />
+      </Content>
+    </FarmsRuntimeProvider>
   </Root>
 )
 
