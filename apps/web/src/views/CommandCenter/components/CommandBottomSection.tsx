@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { BUILDER_STATUS, COLLECTIBLES, INFRASTRUCTURE_SUMMARY, RECENT_ACTIVITY } from '../commandCenterData'
+import { safeArray, safePct } from '../commandCenterSafe'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors } from '../commandCenterTokens'
 import { CcPanel, CcProgressFill, CcProgressTrack, CcTitle } from './commandCenterPrimitives'
 
@@ -188,12 +189,18 @@ const KiriFooter = styled.div`
   padding: 16px 0 0;
 `
 
-export const CommandBottomSection: React.FC = () => (
+export const CommandBottomSection: React.FC = () => {
+  const collectibles = safeArray(COLLECTIBLES)
+  const activity = safeArray(RECENT_ACTIVITY)
+  const infraScore = safePct(INFRASTRUCTURE_SUMMARY?.score, 0)
+  const builderProgress = safePct(BUILDER_STATUS?.progress, 0)
+
+  return (
   <div data-cc-bottom-section>
     <CcPanel $padding="20px" style={{ marginBottom: 16 }}>
       <CcTitle>Collectibles</CcTitle>
       <CollectiblesGrid style={{ marginTop: 14 }}>
-        {COLLECTIBLES.map((c) => (
+        {collectibles.map((c) => (
           <CollectibleCard key={c.id}>
             <CollIcon>{c.icon}</CollIcon>
             <CollTitle>{c.title}</CollTitle>
@@ -226,10 +233,10 @@ export const CommandBottomSection: React.FC = () => (
         </StatGrid>
         <ScoreLabel>
           <span>Infrastructure Score</span>
-          <span style={{ color: commandCenterColors.green }}>{INFRASTRUCTURE_SUMMARY.score}/100</span>
+          <span style={{ color: commandCenterColors.green }}>{infraScore}/100</span>
         </ScoreLabel>
         <CcProgressTrack>
-          <CcProgressFill $pct={INFRASTRUCTURE_SUMMARY.score} />
+          <CcProgressFill $pct={infraScore} />
         </CcProgressTrack>
       </InfraPanel>
 
@@ -239,7 +246,7 @@ export const CommandBottomSection: React.FC = () => (
           Builder Level {BUILDER_STATUS.level}
         </div>
         <CcProgressTrack style={{ marginTop: 10 }}>
-          <CcProgressFill $pct={BUILDER_STATUS.progress} />
+          <CcProgressFill $pct={builderProgress} />
         </CcProgressTrack>
         <BuilderStats>
           <div>Projects: {BUILDER_STATUS.projects}</div>
@@ -255,7 +262,7 @@ export const CommandBottomSection: React.FC = () => (
       <div style={{ position: 'relative' }}>
         <TimelineLine />
         <Timeline>
-          {RECENT_ACTIVITY.map((e) => (
+          {activity.map((e) => (
             <TimelineItem key={e.id}>
               <TimelineDot>{e.icon}</TimelineDot>
               <TimelineLabel>{e.label}</TimelineLabel>
@@ -268,6 +275,7 @@ export const CommandBottomSection: React.FC = () => (
 
     <KiriFooter data-cc-kiri-footer>⚠ KIRI is observing. KIRI is learning. KIRI is building the Civilization.</KiriFooter>
   </div>
-)
+  )
+}
 
 export default CommandBottomSection

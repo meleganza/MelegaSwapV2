@@ -8,7 +8,7 @@ export const TrendingRibbon: React.FC = () => {
   return (
     <MelegaTicker
       label="TRENDING ON MELEGA DEX"
-      items={items}
+      items={items ?? []}
       emptyPrimary={isIndexing ? 'Indexing Melega DEX activity' : undefined}
       emptySecondary={isIndexing ? 'Pairs, swaps, farms and pools will appear here automatically' : undefined}
     />

@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components'
-import { commandCenterColors, commandCenterLayout } from './commandCenterTokens'
+import { commandCenterColors } from './commandCenterTokens'
 
 const CommandCenterGlobalStyle = createGlobalStyle`
   [data-command-center-screen] {

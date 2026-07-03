@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { AI_BRIEFING } from '../commandCenterData'
+import { safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import { CcBody, CcPanel } from './commandCenterPrimitives'
 
@@ -83,19 +84,23 @@ const Footer = styled.div`
   color: ${commandCenterColors.gold};
 `
 
-export const AIDailyBriefing: React.FC = () => (
+export const AIDailyBriefing: React.FC = () => {
+  const bullets = safeArray(AI_BRIEFING?.bullets)
+
+  return (
   <Panel data-cc-ai-briefing $emphasis>
     <Avatar aria-hidden>✦</Avatar>
     <Content>
-      <Greeting>{AI_BRIEFING.greeting}</Greeting>
+      <Greeting>{AI_BRIEFING?.greeting ?? 'Welcome back.'}</Greeting>
       <List>
-        {AI_BRIEFING.bullets.map((b) => (
+        {bullets.map((b) => (
           <Item key={b}>{b}</Item>
         ))}
       </List>
-      <Footer>⏱ Estimated actions today: {AI_BRIEFING.estimatedActions}</Footer>
+      <Footer>⏱ Estimated actions today: {AI_BRIEFING?.estimatedActions ?? '—'}</Footer>
     </Content>
   </Panel>
-)
+  )
+}
 
 export default AIDailyBriefing

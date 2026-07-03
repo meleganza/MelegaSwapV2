@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { ASSETS, FARMS, LIQUIDITY, POOLS } from '../commandCenterData'
+import { safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
 import { CcCardHeader, CcGoldBtn, CcOutlineBtn, CcPanel, CcPill, CcTitle, CcViewAll } from './commandCenterPrimitives'
 
@@ -84,7 +85,13 @@ const Meta = styled.div`
   margin-top: 4px;
 `
 
-export const PositionColumns: React.FC = () => (
+export const PositionColumns: React.FC = () => {
+  const assets = safeArray(ASSETS)
+  const liquidity = safeArray(LIQUIDITY)
+  const pools = safeArray(POOLS)
+  const farms = safeArray(FARMS)
+
+  return (
   <Grid data-cc-position-columns>
     <Col>
       <CcCardHeader>
@@ -92,7 +99,7 @@ export const PositionColumns: React.FC = () => (
         <CcViewAll href="/assets">View all</CcViewAll>
       </CcCardHeader>
       <List>
-        {ASSETS.map((a) => (
+        {assets.map((a) => (
           <Row key={a.id}>
             <Left>
               <TokenIcon $color={a.color}>{a.symbol.slice(0, 1)}</TokenIcon>
@@ -119,7 +126,7 @@ export const PositionColumns: React.FC = () => (
         <CcViewAll href="/liquidity-studio">View all</CcViewAll>
       </CcCardHeader>
       <List>
-        {LIQUIDITY.map((l) => (
+        {liquidity.map((l) => (
           <div key={l.id} style={{ padding: '10px 0', borderBottom: `1px solid ${commandCenterColors.border}` }}>
             <PairTitle>{l.pair}</PairTitle>
             <Meta>
@@ -140,7 +147,7 @@ export const PositionColumns: React.FC = () => (
         <CcViewAll href="/pools">View all</CcViewAll>
       </CcCardHeader>
       <List>
-        {POOLS.map((p) => (
+        {pools.map((p) => (
           <Row key={p.id}>
             <div>
               <PairTitle>{p.name}</PairTitle>
@@ -164,7 +171,7 @@ export const PositionColumns: React.FC = () => (
         <CcViewAll href="/farms">View all</CcViewAll>
       </CcCardHeader>
       <List>
-        {FARMS.map((f) => (
+        {farms.map((f) => (
           <Row key={f.id}>
             <div>
               <PairTitle>{f.name}</PairTitle>
@@ -182,6 +189,7 @@ export const PositionColumns: React.FC = () => (
       </BtnWrap>
     </Col>
   </Grid>
-)
+  )
+}
 
 export default PositionColumns

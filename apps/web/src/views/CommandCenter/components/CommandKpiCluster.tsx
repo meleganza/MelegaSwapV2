@@ -8,6 +8,7 @@ import {
   KPI_RADAR,
   KPI_REWARDS,
 } from '../commandCenterData'
+import { safeSparklinePoints } from '../commandCenterSafe'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors } from '../commandCenterTokens'
 import { CcPanel } from './commandCenterPrimitives'
 
@@ -89,14 +90,16 @@ const ScoreRing = styled.div`
 `
 
 function MiniSparkline({ points }: { points: number[] }) {
-  const max = Math.max(...points)
-  const min = Math.min(...points)
+  const safePoints = safeSparklinePoints(points)
+  const max = Math.max(...safePoints)
+  const min = Math.min(...safePoints)
   const range = max - min || 1
   const w = 120
   const h = 28
-  const d = points
+  const denom = Math.max(safePoints.length - 1, 1)
+  const d = safePoints
     .map((p, i) => {
-      const x = (i / (points.length - 1)) * w
+      const x = (i / denom) * w
       const y = h - ((p - min) / range) * (h - 4) - 2
       return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
     })
@@ -117,7 +120,7 @@ export const CommandKpiCluster: React.FC = () => (
         <div>
           <Value>{KPI_NET_WORTH.value}</Value>
           <Delta $pos={KPI_NET_WORTH.deltaPositive}>{KPI_NET_WORTH.delta} 24h</Delta>
-          <MiniSparkline points={KPI_NET_WORTH.sparkline} />
+          <MiniSparkline points={KPI_NET_WORTH.sparkline ?? []} />
         </div>
       </KpiCard>
       <KpiCard>

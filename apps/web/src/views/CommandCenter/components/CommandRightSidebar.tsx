@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { AI_RECOMMENDATIONS, NOTIFICATIONS, REPORTS } from '../commandCenterData'
+import { recommendationIconEmoji, recommendationIconTone, safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
 import { CcCardHeader, CcPanel, CcPill, CcTitle } from './commandCenterPrimitives'
 
@@ -105,37 +106,29 @@ const ReportRow = styled.div`
   }
 `
 
-const iconTone: Record<string, string> = {
-  rebalance: 'rgba(214,180,69,0.15)',
-  claim: 'rgba(27,231,122,0.12)',
-  pool: 'rgba(139,124,246,0.15)',
-  radar: 'rgba(27,231,122,0.12)',
-  audit: 'rgba(244,197,66,0.12)',
-}
-
-const iconEmoji: Record<string, string> = {
-  rebalance: '⚖',
-  claim: '💰',
-  pool: '🏊',
-  radar: '📡',
-  audit: '📋',
-}
-
 const reportTone = (s: string) => {
   if (s === 'Completed') return 'green' as const
   if (s === 'In Progress') return 'yellow' as const
   return 'gold' as const
 }
 
-export const CommandRightSidebar: React.FC = () => (
+const iconTone = recommendationIconTone
+const iconEmoji = recommendationIconEmoji
+
+export const CommandRightSidebar: React.FC = () => {
+  const recommendations = safeArray(AI_RECOMMENDATIONS)
+  const notifications = safeArray(NOTIFICATIONS)
+  const reports = safeArray(REPORTS)
+
+  return (
   <Stack data-cc-right-sidebar>
     <Panel>
       <CcCardHeader>
         <CcTitle>AI Recommendations</CcTitle>
       </CcCardHeader>
-      {AI_RECOMMENDATIONS.map((r) => (
+      {recommendations.map((r) => (
         <RecRow key={r.id} type="button">
-          <Icon $tone={iconTone[r.icon]}>{iconEmoji[r.icon]}</Icon>
+          <Icon $tone={iconTone(r.icon)}>{iconEmoji(r.icon)}</Icon>
           <div>
             <RecTitle className="cc-rec-title">{r.title}</RecTitle>
             <RecDesc>{r.description}</RecDesc>
@@ -149,7 +142,7 @@ export const CommandRightSidebar: React.FC = () => (
       <CcCardHeader>
         <CcTitle>Notifications</CcTitle>
       </CcCardHeader>
-      {NOTIFICATIONS.map((n) => (
+      {notifications.map((n) => (
         <NotifRow key={n.id}>
           <NotifTitle>{n.title}</NotifTitle>
           <NotifTime>{n.time}</NotifTime>
@@ -161,7 +154,7 @@ export const CommandRightSidebar: React.FC = () => (
       <CcCardHeader>
         <CcTitle>Professional Reports</CcTitle>
       </CcCardHeader>
-      {REPORTS.map((r) => (
+      {reports.map((r) => (
         <ReportRow key={r.id}>
           <span>{r.title}</span>
           <CcPill $tone={reportTone(r.status)}>{r.status}</CcPill>
@@ -169,6 +162,7 @@ export const CommandRightSidebar: React.FC = () => (
       ))}
     </Panel>
   </Stack>
-)
+  )
+}
 
 export default CommandRightSidebar

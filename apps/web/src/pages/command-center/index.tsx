@@ -1,8 +1,13 @@
-import { CHAIN_IDS } from 'utils/wagmi'
 import CommandCenterScreen from 'views/CommandCenter/CommandCenterScreen'
+import CommandCenterRuntimeBoundary from 'views/CommandCenter/components/CommandCenterRuntimeBoundary'
 
-const CommandCenterPage = () => <CommandCenterScreen />
+const CommandCenterPage = () => (
+  <CommandCenterRuntimeBoundary>
+    <CommandCenterScreen />
+  </CommandCenterRuntimeBoundary>
+)
 
-CommandCenterPage.chains = CHAIN_IDS
+/** Empty array bypasses network-block modal — page uses mock operational data only. */
+CommandCenterPage.chains = []
 
 export default CommandCenterPage

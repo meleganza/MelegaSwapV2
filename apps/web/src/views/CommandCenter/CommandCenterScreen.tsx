@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
+import { MelegaTicker } from 'design-system/melega'
 import { PageMeta } from 'components/Layout/Page'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import CommandCenterGlobalStyle from './CommandCenterGlobalStyle'
 import { commandCenterColors, commandCenterLayout } from './commandCenterTokens'
 import AIDailyBriefing from './components/AIDailyBriefing'
@@ -10,6 +10,7 @@ import CommandCenterPageHeader from './components/CommandCenterPageHeader'
 import CommandKpiCluster from './components/CommandKpiCluster'
 import CommandRightSidebar from './components/CommandRightSidebar'
 import PositionColumns from './components/PositionColumns'
+import SafeTrendingRibbon from './components/SafeTrendingRibbon'
 
 const Root = styled.div`
   color: ${commandCenterColors.white};
@@ -60,11 +61,24 @@ const MainCol = styled.div`
   min-width: 0;
 `
 
-export const CommandCenterScreen: React.FC = () => (
+export interface CommandCenterScreenProps {
+  runtimeSafeMode?: boolean
+}
+
+export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtimeSafeMode = false }) => (
   <Root data-command-center-screen>
     <PageMeta />
     <CommandCenterGlobalStyle />
-    <TrendingRibbon />
+    {runtimeSafeMode ? (
+      <MelegaTicker
+        label="TRENDING ON MELEGA DEX"
+        items={[]}
+        emptyPrimary="Command Center ready"
+        emptySecondary="Operational overview loaded with safe fallback data"
+      />
+    ) : (
+      <SafeTrendingRibbon />
+    )}
     <Content>
       <CommandCenterPageHeader />
       <TopRow data-cc-top-row>

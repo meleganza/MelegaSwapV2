@@ -164,9 +164,11 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   const [dragPaused, setDragPaused] = useState(false)
   const dragRef = useRef(false)
 
+  const safeItems = Array.isArray(items) ? items : []
+
   if (disabled) return null
 
-  if (!items.length) {
+  if (!safeItems.length) {
     return (
       <Strip $padding={padding} $margin={margin} data-melega-ticker>
         <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
@@ -179,7 +181,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     )
   }
 
-  const scrollItems = [...items, ...items]
+  const scrollItems = [...safeItems, ...safeItems]
   const paused = pausedProp ?? hoverPaused ?? dragPaused
 
   const handlePointerDown = () => {
