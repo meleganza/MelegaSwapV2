@@ -166,34 +166,34 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `ProjectsStudioScreen` + `views/Projects` |
-| Runtime | 🟨 | `registry/projects`, `getAllProjects()` indexed; external feeds not wired |
-| AI | ⬜ | — |
+| Runtime | 🟩 | `projectsRuntime/` + `registry/projects`; source availability matrix |
+| AI | 🟨 | Heuristic rating, summary, health, recommendations (no ML) |
 | Production | ⬜ | — |
 
 ### Runtime requirements
 
 | Requirement | Status |
 |-------------|--------|
-| AI project indexing | ⬜ |
-| Website discovery | ⬜ |
-| Social discovery | ⬜ |
-| Contract discovery | 🟨 |
-| Liquidity | ⬜ |
-| Holders | ⬜ |
-| Categories | 🟨 |
-| DEX listings | ⬜ |
-| CoinMarketCap | ⬜ |
-| CoinGecko | ⬜ |
-| TokenSniffer | ⬜ |
-| GoPlus | ⬜ |
-| DexTools | ⬜ |
-| DexScreener | ⬜ |
-| GitHub | ⬜ |
-| Explorer | 🟨 |
+| AI project indexing | 🟩 |
+| Website discovery | 🟩 |
+| Social discovery | 🟩 |
+| Contract discovery | 🟩 |
+| Liquidity | 🟨 |
+| Holders | 🟨 |
+| Categories | 🟩 |
+| DEX listings | 🟨 |
+| CoinMarketCap | 🟨 |
+| CoinGecko | 🟨 |
+| TokenSniffer | 🟨 |
+| GoPlus | 🟨 |
+| DexTools | 🟨 |
+| DexScreener | 🟨 |
+| GitHub | 🟩 |
+| Explorer | 🟩 |
 
-### AI (future)
+### AI (R019)
 
-- AI Project Rating, Summary, Reputation, Risk, Classification
+- AI Project Rating (heuristic 0–100), Summary, Health, Recommendations — rule-based, no fabrication
 
 ---
 
@@ -367,7 +367,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | **2** | **Liquidity Runtime** | ✅ R016 complete — studio live |
 | **3** | **Pools Runtime** | ✅ R017 complete — studio live |
 | **4** | **Farms Runtime** | ✅ R018 complete — studio live |
-| **5** | **Projects AI Runtime** | External discovery feeds + indexing pipeline |
+| **5** | **Projects AI Runtime** | ✅ R019 — registry runtime + heuristic AI; external feed APIs next |
 | **6** | **Radar Runtime** | Replace `radarStudioData` with live event intake |
 | **7** | **Build Studio Runtime** | Import token validation + create flows |
 | **8** | **Command Center Runtime** | Wallet + positions + live briefing feed |

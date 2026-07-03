@@ -11,6 +11,7 @@ import ProjectsFilterRow from './components/ProjectsFilterRow'
 import ProjectsGrid from './components/ProjectsGrid'
 import ProjectsKpiRow from './components/ProjectsKpiRow'
 import ProjectsStudioPageHeader from './components/ProjectsStudioPageHeader'
+import { ProjectsRuntimeProvider } from './projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioColors, projectsStudioLayout } from './projectsStudioTokens'
 
 const Root = styled.div`
@@ -66,26 +67,28 @@ export const AdvisorSlot = styled.div`
 `
 
 export const ProjectsStudioScreen: React.FC = () => (
-  <Root data-projects-studio-screen="true">
-    <PageMeta />
-    <ProjectsStudioGlobalStyle />
-    <TrendingRibbon />
-    <Content>
-      <ProjectsStudioPageHeader />
-      <ProjectsKpiRow />
-      <PageColumnGrid data-pr-page-grid>
-        <FeaturedSlot>
-          <FeaturedProjectPanel />
-        </FeaturedSlot>
-        <AdvisorSlot>
-          <AIProjectAdvisorPanel />
-        </AdvisorSlot>
-      </PageColumnGrid>
-      <ProjectsFilterRow />
-      <ProjectsGrid />
-      <ProjectsActivityTable />
-    </Content>
-  </Root>
+  <ProjectsRuntimeProvider>
+    <Root data-projects-studio-screen="true">
+      <PageMeta />
+      <ProjectsStudioGlobalStyle />
+      <TrendingRibbon />
+      <Content>
+        <ProjectsStudioPageHeader />
+        <ProjectsKpiRow />
+        <PageColumnGrid data-pr-page-grid>
+          <FeaturedSlot>
+            <FeaturedProjectPanel />
+          </FeaturedSlot>
+          <AdvisorSlot>
+            <AIProjectAdvisorPanel />
+          </AdvisorSlot>
+        </PageColumnGrid>
+        <ProjectsFilterRow />
+        <ProjectsGrid />
+        <ProjectsActivityTable />
+      </Content>
+    </Root>
+  </ProjectsRuntimeProvider>
 )
 
 export default ProjectsStudioScreen

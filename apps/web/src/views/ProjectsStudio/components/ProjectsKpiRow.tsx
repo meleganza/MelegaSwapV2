@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { PROJECTS_KPIS } from '../projectsStudioData'
+import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioLayout } from '../projectsStudioTokens'
 import { PrKpiCard, PrKpiDelta, PrKpiLabel, PrKpiValue } from './projectsStudioPrimitives'
 
@@ -66,23 +66,27 @@ function MiniSparkline({ points }: { points: number[] }) {
   )
 }
 
-export const ProjectsKpiRow: React.FC = () => (
-  <Row data-pr-kpi-row>
-    {PROJECTS_KPIS.map((kpi) => (
-      <PrKpiCard key={kpi.id} data-pr-kpi-card>
-        <PrKpiLabel>{kpi.label}</PrKpiLabel>
-        <ValueBlock $hasSparkline={!!kpi.sparkline}>
-          <ValueRow>
-            <PrKpiValue $gold={kpi.gold} data-pr-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-              {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
-            </PrKpiValue>
-            {kpi.delta ? <PrKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PrKpiDelta> : null}
-          </ValueRow>
-          {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
-        </ValueBlock>
-      </PrKpiCard>
-    ))}
-  </Row>
-)
+export const ProjectsKpiRow: React.FC = () => {
+  const { kpis } = useProjectsRuntime()
+
+  return (
+    <Row data-pr-kpi-row>
+      {kpis.map((kpi) => (
+        <PrKpiCard key={kpi.id} data-pr-kpi-card>
+          <PrKpiLabel>{kpi.label}</PrKpiLabel>
+          <ValueBlock $hasSparkline={!!kpi.sparkline}>
+            <ValueRow>
+              <PrKpiValue $gold={kpi.gold} data-pr-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
+                {kpi.value === 'Unavailable' ? kpi.value : kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
+              </PrKpiValue>
+              {kpi.delta ? <PrKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PrKpiDelta> : null}
+            </ValueRow>
+            {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
+          </ValueBlock>
+        </PrKpiCard>
+      ))}
+    </Row>
+  )
+}
 
 export default ProjectsKpiRow

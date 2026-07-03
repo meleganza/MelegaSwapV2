@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { PrGhostBtn, PrMetricLabel, PrMetricValue, PrPanel, PrPrimaryBtn, ProjectLogo } from './projectsStudioPrimitives'
 
 const shimmer = keyframes`
@@ -137,7 +138,7 @@ const Price = styled.span`
 const Change = styled.span`
   font-size: 13px;
   font-weight: 700;
-  color: ${projectsStudioColors.green};
+  color: ${projectsStudioColors.muted};
 `
 
 const ChartSvg = styled.svg`
@@ -167,93 +168,104 @@ const Tf = styled.button<{ $active?: boolean }>`
   cursor: pointer;
 `
 
-export const FeaturedProjectPanel: React.FC = () => (
-  <PrPanel data-pr-panel data-pr-featured $height={projectsStudioLayout.featuredHeight} style={{ padding: '22px' }}>
-    <Inner>
-      <Main>
-        <TitleRow>
-          <ProjectLogo name="MARCO" symbol="MARCO" size={48} />
-          <Name>MARCO</Name>
-          <VerifiedBadge>Verified</VerifiedBadge>
-        </TitleRow>
-        <Tags>
-          <Tag>DEX</Tag>
-          <Tag>DeFi</Tag>
-          <Tag>AI Integrated</Tag>
-          <Tag>BNB Chain</Tag>
-        </Tags>
-        <Desc>
-          Melega native coordination token powering swap, liquidity, farms, and pools across the Melega DEX ecosystem.
-        </Desc>
-        <Metrics>
-          <Metric>
-            <PrMetricLabel>Holders</PrMetricLabel>
-            <PrMetricValue>186.4K</PrMetricValue>
-          </Metric>
-          <Metric>
-            <PrMetricLabel>Liquidity</PrMetricLabel>
-            <PrMetricValue $tone="green">
-              $3.21M
-            </PrMetricValue>
-          </Metric>
-          <Metric>
-            <PrMetricLabel>FDV</PrMetricLabel>
-            <PrMetricValue>$12.48M</PrMetricValue>
-          </Metric>
-          <Metric>
-            <PrMetricLabel>Volume 24h</PrMetricLabel>
-            <PrMetricValue $tone="green">
-              $1.28M
-            </PrMetricValue>
-          </Metric>
-          <Metric>
-            <PrMetricLabel>Age</PrMetricLabel>
-            <PrMetricValue $tone="gray">
-              312 Days
-            </PrMetricValue>
-          </Metric>
-        </Metrics>
-        <BtnRow>
-          <PrPrimaryBtn type="button">Trade MARCO</PrPrimaryBtn>
-          <PrGhostBtn type="button">Open Project</PrGhostBtn>
-          <PrGhostBtn type="button">☆ Follow</PrGhostBtn>
-        </BtnRow>
-      </Main>
-      <ChartWrap aria-hidden>
-        <PriceRow>
-          <Price>$0.0004</Price>
-          <Change>+2.35%</Change>
-        </PriceRow>
-        <ChartSvg viewBox="0 0 260 120" preserveAspectRatio="none">
-          <ChartLine
-            d="M 0 95 L 30 82 L 60 88 L 90 62 L 120 72 L 150 48 L 180 56 L 210 38 L 240 44 L 260 28"
-            fill="none"
-            stroke={projectsStudioColors.green}
-            strokeWidth="2"
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            d="M 0 95 L 30 82 L 60 88 L 90 62 L 120 72 L 150 48 L 180 56 L 210 38 L 240 44 L 260 28 L 260 120 L 0 120 Z"
-            fill="url(#prChartFill)"
-            opacity="0.15"
-          />
-          <defs>
-            <linearGradient id="prChartFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={projectsStudioColors.green} />
-              <stop offset="100%" stopColor="transparent" />
-            </linearGradient>
-          </defs>
-        </ChartSvg>
-        <Timeframes>
-          {['1D', '7D', '1M', '3M', '1Y'].map((tf, i) => (
-            <Tf key={tf} type="button" $active={i === 1}>
-              {tf}
-            </Tf>
-          ))}
-        </Timeframes>
-      </ChartWrap>
-    </Inner>
-  </PrPanel>
-)
+const UnavailableChart = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${projectsStudioColors.muted};
+  min-height: 120px;
+`
+
+export const FeaturedProjectPanel: React.FC = () => {
+  const { featured } = useProjectsRuntime()
+
+  return (
+    <PrPanel data-pr-panel data-pr-featured $height={projectsStudioLayout.featuredHeight} style={{ padding: '22px' }}>
+      <Inner>
+        <Main>
+          <TitleRow>
+            <ProjectLogo name={featured.name} symbol={featured.symbol} size={48} />
+            <Name>{featured.name}</Name>
+            {featured.verified ? <VerifiedBadge>Verified</VerifiedBadge> : null}
+          </TitleRow>
+          <Tags>
+            {featured.tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </Tags>
+          <Desc>{featured.description}</Desc>
+          <Metrics>
+            {featured.metrics.map((metric) => (
+              <Metric key={metric.label}>
+                <PrMetricLabel>{metric.label}</PrMetricLabel>
+                <PrMetricValue $tone={metric.tone}>{metric.value}</PrMetricValue>
+              </Metric>
+            ))}
+          </Metrics>
+          <BtnRow>
+            <PrPrimaryBtn as="a" href={featured.tradeHref ?? '/swap'}>
+              Trade {featured.symbol}
+            </PrPrimaryBtn>
+            <PrGhostBtn as="a" href={featured.projectHref}>
+              Open Project
+            </PrGhostBtn>
+            {featured.radarHref ? (
+              <PrGhostBtn as="a" href={featured.radarHref}>
+                View Contract Intelligence
+              </PrGhostBtn>
+            ) : null}
+            {featured.spaceUrl ? (
+              <PrGhostBtn as="a" href={featured.spaceUrl} target="_blank" rel="noopener noreferrer">
+                Professional Audit
+              </PrGhostBtn>
+            ) : null}
+          </BtnRow>
+        </Main>
+        <ChartWrap aria-hidden={!featured.hasPriceData}>
+          <PriceRow>
+            <Price>{featured.hasPriceData ? featured.price : 'Unavailable'}</Price>
+            <Change>{featured.hasPriceData ? featured.priceChange : ''}</Change>
+          </PriceRow>
+          {featured.hasPriceData ? (
+            <>
+              <ChartSvg viewBox="0 0 260 120" preserveAspectRatio="none">
+                <ChartLine
+                  d="M 0 95 L 30 82 L 60 88 L 90 62 L 120 72 L 150 48 L 180 56 L 210 38 L 240 44 L 260 28"
+                  fill="none"
+                  stroke={projectsStudioColors.green}
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <path
+                  d="M 0 95 L 30 82 L 60 88 L 90 62 L 120 72 L 150 48 L 180 56 L 210 38 L 240 44 L 260 28 L 260 120 L 0 120 Z"
+                  fill="url(#prChartFill)"
+                  opacity="0.15"
+                />
+                <defs>
+                  <linearGradient id="prChartFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={projectsStudioColors.green} />
+                    <stop offset="100%" stopColor="transparent" />
+                  </linearGradient>
+                </defs>
+              </ChartSvg>
+              <Timeframes>
+                {['1D', '7D', '1M', '3M', '1Y'].map((tf, i) => (
+                  <Tf key={tf} type="button" $active={i === 1}>
+                    {tf}
+                  </Tf>
+                ))}
+              </Timeframes>
+            </>
+          ) : (
+            <UnavailableChart>Price chart unavailable</UnavailableChart>
+          )}
+        </ChartWrap>
+      </Inner>
+    </PrPanel>
+  )
+}
 
 export default FeaturedProjectPanel

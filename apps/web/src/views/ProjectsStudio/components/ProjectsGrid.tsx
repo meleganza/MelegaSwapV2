@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { PROJECT_PREVIEW_CARDS } from '../projectsStudioData'
+import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioLayout } from '../projectsStudioTokens'
 import ProjectGridCard from './ProjectGridCard'
 
@@ -19,12 +19,16 @@ const Grid = styled.div`
   }
 `
 
-export const ProjectsGrid: React.FC = () => (
-  <Grid data-pr-grid>
-    {PROJECT_PREVIEW_CARDS.map((project) => (
-      <ProjectGridCard key={project.id} project={project} />
-    ))}
-  </Grid>
-)
+export const ProjectsGrid: React.FC = () => {
+  const { projects } = useProjectsRuntime()
+
+  return (
+    <Grid data-pr-grid>
+      {projects.map((project) => (
+        <ProjectGridCard key={project.id} project={project} />
+      ))}
+    </Grid>
+  )
+}
 
 export default ProjectsGrid

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { PROJECTS_ACTIVITY } from '../projectsStudioData'
 import { PROJECTS_ACTIVITY_PREVIEW_LABEL, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { PrPanel, PrPreviewBadge, ProjectLogo } from './projectsStudioPrimitives'
 
 const Wrap = styled(PrPanel)`
@@ -128,43 +128,56 @@ const StatusPill = styled.span<{ $status: string }>`
         : 'rgba(255,255,255,0.04)'};
 `
 
-export const ProjectsActivityTable: React.FC = () => (
-  <Wrap data-pr-activity $height="auto">
-    <Head>
-      <Title>Recent Project Activity</Title>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <PrPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
-          {PROJECTS_ACTIVITY_PREVIEW_LABEL}
-        </PrPreviewBadge>
-        <ViewAll type="button">View all activity →</ViewAll>
-      </div>
-    </Head>
-    <Table>
-      <HeaderRow>
-        <span>Time</span>
-        <span>Project</span>
-        <span>Action</span>
-        <span>Details</span>
-        <span>Source</span>
-        <span>Status</span>
-      </HeaderRow>
-      {PROJECTS_ACTIVITY.map((row) => (
-        <Row key={`${row.time}-${row.project}-${row.action}`}>
-          <span style={{ color: projectsStudioColors.muted }}>{row.time}</span>
-          <ProjectCell>
-            <ProjectLogo name={row.project} symbol={row.projectSymbol} size={24} />
-            {row.project}
-          </ProjectCell>
-          <Action $tone={row.actionTone}>{row.action}</Action>
-          <span>{row.details}</span>
-          <span style={{ color: projectsStudioColors.secondary }}>{row.source}</span>
-          <StatusPill $status={row.status}>
-            {row.status === 'verified' ? 'Verified' : row.status === 'indexed' ? 'Indexed' : 'Live'}
-          </StatusPill>
-        </Row>
-      ))}
-    </Table>
-  </Wrap>
-)
+export const ProjectsActivityTable: React.FC = () => {
+  const { terminal } = useProjectsRuntime()
+  const rows = terminal.rows
+
+  return (
+    <Wrap data-pr-activity $height="auto">
+      <Head>
+        <Title>Recent Project Activity</Title>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <PrPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
+            {PROJECTS_ACTIVITY_PREVIEW_LABEL}
+          </PrPreviewBadge>
+          <ViewAll type="button">View all activity →</ViewAll>
+        </div>
+      </Head>
+      <Table>
+        <HeaderRow>
+          <span>Time</span>
+          <span>Project</span>
+          <span>Action</span>
+          <span>Details</span>
+          <span>Source</span>
+          <span>Status</span>
+        </HeaderRow>
+        {rows.length === 0 ? (
+          <Row>
+            <span style={{ color: projectsStudioColors.muted, gridColumn: '1 / -1' }}>
+              {terminal.label ?? 'No activity indexed.'}
+            </span>
+          </Row>
+        ) : (
+          rows.map((row) => (
+            <Row key={`${row.time}-${row.project}-${row.action}`}>
+              <span style={{ color: projectsStudioColors.muted }}>{row.time}</span>
+              <ProjectCell>
+                <ProjectLogo name={row.project} symbol={row.projectSymbol} size={24} />
+                {row.project}
+              </ProjectCell>
+              <Action $tone={row.actionTone}>{row.action}</Action>
+              <span>{row.details}</span>
+              <span style={{ color: projectsStudioColors.secondary }}>{row.source}</span>
+              <StatusPill $status={row.status}>
+                {row.status === 'verified' ? 'Verified' : row.status === 'indexed' ? 'Indexed' : 'Live'}
+              </StatusPill>
+            </Row>
+          ))
+        )}
+      </Table>
+    </Wrap>
+  )
+}
 
 export default ProjectsActivityTable

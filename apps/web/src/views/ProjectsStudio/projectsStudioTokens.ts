@@ -58,5 +58,5 @@ export const projectsStudioColors = {
   previewBadgeBg: 'rgba(212,175,55,0.1)',
 } as const
 
-export const PROJECTS_STUDIO_PREVIEW_LABEL = 'PREVIEW LAYOUT'
-export const PROJECTS_ACTIVITY_PREVIEW_LABEL = 'Indexed Preview'
+export const PROJECTS_STUDIO_PREVIEW_LABEL = 'LIVE RUNTIME'
+export const PROJECTS_ACTIVITY_PREVIEW_LABEL = 'LIVE'

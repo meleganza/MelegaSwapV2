@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { PROJECT_FILTER_CHIPS } from '../projectsStudioData'
+import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 
 const Row = styled.div`
@@ -31,12 +32,12 @@ const Chip = styled.button<{ $active?: boolean }>`
 `
 
 export const ProjectsFilterRow: React.FC = () => {
-  const [active, setActive] = useState<string>('All')
+  const { filter, setFilter } = useProjectsRuntime()
 
   return (
     <Row data-pr-filters>
       {PROJECT_FILTER_CHIPS.map((chip) => (
-        <Chip key={chip} type="button" $active={active === chip} onClick={() => setActive(chip)}>
+        <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
           {chip}
         </Chip>
       ))}
