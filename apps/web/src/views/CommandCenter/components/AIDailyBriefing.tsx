@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { AI_BRIEFING } from '../commandCenterData'
+import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import { CcPanel } from './commandCenterPrimitives'
@@ -97,19 +97,20 @@ const Footer = styled.div`
 `
 
 export const AIDailyBriefing: React.FC = () => {
-  const bullets = safeArray(AI_BRIEFING?.bullets)
+  const { briefing } = useCommandRuntime()
+  const bullets = safeArray(briefing?.bullets)
 
   return (
     <Panel data-cc-ai-briefing $emphasis>
       <Avatar aria-hidden>✦</Avatar>
       <Content>
-        <Greeting>{AI_BRIEFING?.greeting ?? 'Welcome back.'}</Greeting>
+        <Greeting>{briefing?.greeting ?? 'Welcome back.'}</Greeting>
         <List>
           {bullets.map((b) => (
             <Item key={b}>{b}</Item>
           ))}
         </List>
-        <Footer>⏱ Estimated actions today: {AI_BRIEFING?.estimatedActions ?? '—'}</Footer>
+        <Footer>⏱ Estimated actions today: {briefing?.estimatedActions ?? '—'}</Footer>
       </Content>
     </Panel>
   )

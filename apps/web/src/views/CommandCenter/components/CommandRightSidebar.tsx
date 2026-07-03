@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { AI_RECOMMENDATIONS, NOTIFICATIONS, REPORTS } from '../commandCenterData'
+import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { recommendationIconEmoji, recommendationIconTone, safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
 import { CcCardHeader, CcDashCard, CcPill, CcTitle } from './commandCenterPrimitives'
@@ -107,9 +107,10 @@ const reportTone = (s: string) => {
 }
 
 export const CommandRightSidebar: React.FC = () => {
-  const recommendations = safeArray(AI_RECOMMENDATIONS)
-  const notifications = safeArray(NOTIFICATIONS)
-  const reports = safeArray(REPORTS)
+  const { recommendations, notifications, reports } = useCommandRuntime()
+  const recs = safeArray(recommendations)
+  const notifs = safeArray(notifications)
+  const reportRows = safeArray(reports)
 
   return (
     <>
@@ -117,40 +118,57 @@ export const CommandRightSidebar: React.FC = () => {
         <CcCardHeader style={{ marginBottom: 0 }}>
           <CcTitle>AI Recommendations</CcTitle>
         </CcCardHeader>
-        {recommendations.map((r) => (
-          <RecRow key={r.id} type="button">
-            <Icon $tone={recommendationIconTone(r.icon)}>{recommendationIconEmoji(r.icon)}</Icon>
-            <div style={{ minWidth: 0 }}>
-              <RecTitle className="cc-rec-title">{r.title}</RecTitle>
-              <RecDesc>{r.description}</RecDesc>
-            </div>
-            <Chevron>›</Chevron>
-          </RecRow>
-        ))}
+        {recs.length === 0 ? (
+          <RecDesc style={{ padding: '8px 0' }}>No recommendations from Projects, Radar, or Build runtimes.</RecDesc>
+        ) : (
+          recs.map((r) => (
+            <RecRow key={r.id} type="button">
+              <Icon $tone={recommendationIconTone(r.icon)}>{recommendationIconEmoji(r.icon)}</Icon>
+              <div style={{ minWidth: 0 }}>
+                <RecTitle className="cc-rec-title">{r.title}</RecTitle>
+                <RecDesc>{r.description}</RecDesc>
+              </div>
+              <Chevron>›</Chevron>
+            </RecRow>
+          ))
+        )}
       </CcDashCard>
 
       <CcDashCard data-cc-notifications>
         <CcCardHeader style={{ marginBottom: 0 }}>
           <CcTitle>Notifications</CcTitle>
         </CcCardHeader>
-        {notifications.map((n) => (
-          <NotifRow key={n.id}>
-            <NotifTitle>{n.title}</NotifTitle>
-            <NotifTime>{n.time}</NotifTime>
-          </NotifRow>
-        ))}
+        {notifs.length === 0 ? (
+          <NotifTitle style={{ padding: '8px 0', fontWeight: 400, color: commandCenterColors.muted }}>
+            No runtime notifications yet.
+          </NotifTitle>
+        ) : (
+          notifs.map((n) => (
+            <NotifRow key={n.id}>
+              <NotifTitle>{n.title}</NotifTitle>
+              <NotifTime>{n.time}</NotifTime>
+            </NotifRow>
+          ))
+        )}
       </CcDashCard>
 
       <CcDashCard data-cc-reports>
         <CcCardHeader style={{ marginBottom: 0 }}>
           <CcTitle>Professional Reports</CcTitle>
         </CcCardHeader>
-        {reports.map((r) => (
-          <ReportRow key={r.id}>
-            <span>{r.title}</span>
-            <CcPill $tone={reportTone(r.status)}>{r.status}</CcPill>
+        {reportRows.length === 0 ? (
+          <ReportRow>
+            <span>Unavailable</span>
+            <CcPill $tone="gold">Unavailable</CcPill>
           </ReportRow>
-        ))}
+        ) : (
+          reportRows.map((r) => (
+            <ReportRow key={r.id}>
+              <span>{r.title}</span>
+              <CcPill $tone={reportTone(r.status)}>{r.status}</CcPill>
+            </ReportRow>
+          ))
+        )}
       </CcDashCard>
     </>
   )

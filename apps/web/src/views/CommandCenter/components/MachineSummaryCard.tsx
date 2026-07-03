@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { MACHINE_SUMMARY } from '../commandCenterData'
+import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { commandCenterColors } from '../commandCenterTokens'
 import { CcCardHeader, CcDashCard, CcOutlineBtn, CcPill, CcTitle } from './commandCenterPrimitives'
 
@@ -54,8 +54,9 @@ const HeaderActions = styled.div`
 `
 
 export const MachineSummaryCard: React.FC = () => {
+  const { machine } = useCommandRuntime()
   const [expanded, setExpanded] = useState(false)
-  const jsonText = JSON.stringify(MACHINE_SUMMARY, null, 2)
+  const jsonText = useMemo(() => JSON.stringify(machine, null, 2), [machine])
 
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {

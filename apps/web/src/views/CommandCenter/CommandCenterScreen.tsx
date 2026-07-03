@@ -4,6 +4,7 @@ import { MelegaTicker } from 'design-system/melega'
 import { PageMeta } from 'components/Layout/Page'
 import CommandCenterGlobalStyle from './CommandCenterGlobalStyle'
 import { commandCenterColors, commandCenterLayout } from './commandCenterTokens'
+import { CommandRuntimeProvider } from './commandCenterRuntime/CommandRuntimeContext'
 import AIDailyBriefing from './components/AIDailyBriefing'
 import CommandCenterPageHeader from './components/CommandCenterPageHeader'
 import CommandKpiCluster from './components/CommandKpiCluster'
@@ -127,7 +128,8 @@ export interface CommandCenterScreenProps {
 }
 
 export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtimeSafeMode = false }) => (
-  <Root data-command-center-screen>
+  <CommandRuntimeProvider>
+    <Root data-command-center-screen>
     <PageMeta />
     <CommandCenterGlobalStyle />
     <Shell>
@@ -184,6 +186,7 @@ export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtim
       </KiriFooter>
     </Shell>
   </Root>
+  </CommandRuntimeProvider>
 )
 
 export default CommandCenterScreen

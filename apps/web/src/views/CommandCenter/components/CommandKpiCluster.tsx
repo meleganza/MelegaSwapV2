@@ -1,13 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-  KPI_ACTIONS,
-  KPI_AI_SCORE,
-  KPI_INFRASTRUCTURE,
-  KPI_NET_WORTH,
-  KPI_RADAR,
-  KPI_REWARDS,
-} from '../commandCenterData'
+import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { safeSparklinePoints } from '../commandCenterSafe'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import { CcPanel } from './commandCenterPrimitives'
@@ -121,45 +114,49 @@ function MiniSparkline({ points }: { points: number[] }) {
   )
 }
 
-export const CommandKpiCluster: React.FC = () => (
-  <Grid data-cc-kpi-cluster>
-    <KpiCard>
-      <Label>Net Worth</Label>
-      <div>
-        <Value>{KPI_NET_WORTH.value}</Value>
-        <Delta $pos={KPI_NET_WORTH.deltaPositive}>{KPI_NET_WORTH.delta} 24h</Delta>
-        <MiniSparkline points={KPI_NET_WORTH.sparkline ?? []} />
-      </div>
-    </KpiCard>
-    <KpiCard>
-      <Label>Today&apos;s Actions</Label>
-      <Value>{KPI_ACTIONS.value}</Value>
-      <Sub>{KPI_ACTIONS.label}</Sub>
-    </KpiCard>
-    <KpiCard>
-      <Label>Radar Alerts</Label>
-      <Value>{KPI_RADAR.value}</Value>
-      <Sub>{KPI_RADAR.label}</Sub>
-    </KpiCard>
-    <KpiCard>
-      <Label>Rewards Pending</Label>
-      <Value style={{ fontSize: 22 }}>{KPI_REWARDS.value}</Value>
-      <Sub>{KPI_REWARDS.label}</Sub>
-    </KpiCard>
-    <KpiCard>
-      <Label>Infrastructure</Label>
-      <Value>{KPI_INFRASTRUCTURE.value}</Value>
-      <Sub>{KPI_INFRASTRUCTURE.label}</Sub>
-    </KpiCard>
-    <KpiCard>
-      <Label>AI Score</Label>
-      <ScoreWrap>
-        <Value>{KPI_AI_SCORE.value}</Value>
-        <ScoreRing>{KPI_AI_SCORE.value}</ScoreRing>
-      </ScoreWrap>
-      <Sub>{KPI_AI_SCORE.label}</Sub>
-    </KpiCard>
-  </Grid>
-)
+export const CommandKpiCluster: React.FC = () => {
+  const { kpis } = useCommandRuntime()
+
+  return (
+    <Grid data-cc-kpi-cluster>
+      <KpiCard>
+        <Label>Net Worth</Label>
+        <div>
+          <Value>{kpis.netWorth.value}</Value>
+          <Delta $pos={kpis.netWorth.deltaPositive}>{kpis.netWorth.delta} 24h</Delta>
+          <MiniSparkline points={kpis.netWorth.sparkline ?? []} />
+        </div>
+      </KpiCard>
+      <KpiCard>
+        <Label>Today&apos;s Actions</Label>
+        <Value>{kpis.actions.value}</Value>
+        <Sub>{kpis.actions.label}</Sub>
+      </KpiCard>
+      <KpiCard>
+        <Label>Radar Alerts</Label>
+        <Value>{kpis.radar.value}</Value>
+        <Sub>{kpis.radar.label}</Sub>
+      </KpiCard>
+      <KpiCard>
+        <Label>Rewards Pending</Label>
+        <Value style={{ fontSize: 22 }}>{kpis.rewards.value}</Value>
+        <Sub>{kpis.rewards.label}</Sub>
+      </KpiCard>
+      <KpiCard>
+        <Label>Infrastructure</Label>
+        <Value>{kpis.infrastructure.value}</Value>
+        <Sub>{kpis.infrastructure.label}</Sub>
+      </KpiCard>
+      <KpiCard>
+        <Label>AI Score</Label>
+        <ScoreWrap>
+          <Value>{kpis.aiScore.value}</Value>
+          <ScoreRing>{kpis.aiScore.value}</ScoreRing>
+        </ScoreWrap>
+        <Sub>{kpis.aiScore.label}</Sub>
+      </KpiCard>
+    </Grid>
+  )
+}
 
 export default CommandKpiCluster

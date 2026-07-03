@@ -307,31 +307,31 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | Safe 1180px layout, collapsed Machine Summary |
-| Runtime | ⬜ | `commandCenterData.ts` — static fixtures; `chains=[]` safe mode |
-| AI | 🟨 | Briefing + recommendations are static narrative (not live AI) |
+| Runtime | 🟩 | ✅ R022 — `commandCenterRuntime/` aggregates Trade/Liquidity/Pools/Farms/Projects/Radar/Build |
+| AI | 🟨 | Rule-based briefing + recommendations from live runtimes — no ML |
 | Production | ⬜ | Route 404 on production `main` |
 
 ### Runtime requirements
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Wallet | ⬜ | Static KPIs |
-| Assets | ⬜ | Static cards |
-| Pools | ⬜ | Static |
-| Farms | ⬜ | Static |
-| Liquidity | ⬜ | Static |
-| Collectibles | ⬜ | Static |
-| Infrastructure | ⬜ | Static |
-| Reports | ⬜ | Static |
-| Notifications | ⬜ | Static |
-| Timeline | ⬜ | Static |
-| Machine Summary | 🟨 | JSON manifest static; expand/collapse UI 🟩 |
+| Wallet | 🟩 | Trade runtime + wagmi account |
+| Assets | 🟩 | Trade runtime assets |
+| Pools | 🟩 | Pools runtime user stakes |
+| Farms | 🟩 | Farms runtime user stakes |
+| Liquidity | 🟩 | Liquidity runtime positions |
+| Collectibles | 🟩 | Registry + wallet NFT ownership |
+| Infrastructure | 🟩 | Build runtime score + extensions |
+| Reports | 🟩 | Build extensions (audit/space) |
+| Notifications | 🟩 | Runtime transaction events |
+| Timeline | 🟩 | Multi-runtime activity |
+| Machine Summary | 🟩 | Runtime JSON v2 — copy/download |
 
-### AI (future)
+### AI (R022 partial)
 
-- AI Daily Briefing (live)
-- AI Recommendations (live)
-- AI Actions
+- AI Daily Briefing — operational bullets from connected runtimes
+- AI Recommendations — Projects + Radar + Build suggestions
+- AI Actions — future (execution layer)
 
 ---
 
@@ -370,7 +370,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | **5** | **Projects AI Runtime** | ✅ R019 — registry runtime + heuristic AI; external feed APIs next |
 | **6** | **Radar Runtime** | ✅ R020 — Projects Runtime integration + live event engine |
 | **7** | **Build Studio Runtime** | ✅ R021 — infrastructure orchestrator; Projects/Radar/Pools/Farms integration |
-| **8** | **Command Center Runtime** | Wallet + positions + live briefing feed |
+| **8** | **Command Center Runtime** | ✅ R022 — personal operational hub; aggregates all studio runtimes |
 | **9** | **Global Visual Freeze** | Responsive + a11y + perf audit; no new UI scope |
 
 ---
@@ -391,6 +391,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-03 | R022 Command Center Runtime — operational hub; Command Center Runtime 🟩 |
 | 2026-07-03 | R021 Build Studio Runtime — orchestration layer; Build Studio Runtime 🟩, AI 🟨 |
 | 2026-07-03 | R020 Radar Runtime — Projects integration + live events; Radar Runtime 🟩 |
 | 2026-07-03 | R019 Projects AI Runtime — registry runtime + heuristic AI; Projects Runtime 🟩 |

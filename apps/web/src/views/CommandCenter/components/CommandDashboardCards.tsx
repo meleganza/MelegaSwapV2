@@ -1,15 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-  ASSETS,
-  BUILDER_STATUS,
-  COLLECTIBLES,
-  FARMS,
-  INFRASTRUCTURE_SUMMARY,
-  LIQUIDITY,
-  POOLS,
-  RECENT_ACTIVITY,
-} from '../commandCenterData'
+import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { safeArray, safePct } from '../commandCenterSafe'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import {
@@ -223,7 +214,8 @@ const TimelineTime = styled.div`
 const positionMinH = '240px'
 
 export const CommandAssetsCard: React.FC = () => {
-  const assets = safeArray(ASSETS)
+  const { assets } = useCommandRuntime()
+  const rows = safeArray(assets)
   return (
     <CcDashCard data-cc-assets $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
@@ -231,7 +223,10 @@ export const CommandAssetsCard: React.FC = () => {
         <CcViewAll href="/assets">View all</CcViewAll>
       </CcCardHeader>
       <CcDashBody>
-        {assets.map((a) => (
+        {rows.length === 0 ? (
+          <Meta>No assets — connect wallet or open Trade runtime.</Meta>
+        ) : (
+          rows.map((a) => (
           <Row key={a.id}>
             <Left>
               <TokenIcon $color={a.color}>{a.symbol.slice(0, 1)}</TokenIcon>
@@ -248,14 +243,16 @@ export const CommandAssetsCard: React.FC = () => {
               </Change>
             </div>
           </Row>
-        ))}
+          ))
+        )}
       </CcDashBody>
     </CcDashCard>
   )
 }
 
 export const CommandLiquidityCard: React.FC = () => {
-  const liquidity = safeArray(LIQUIDITY)
+  const { liquidity } = useCommandRuntime()
+  const rows = safeArray(liquidity)
   return (
     <CcDashCard data-cc-liquidity $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
@@ -263,7 +260,10 @@ export const CommandLiquidityCard: React.FC = () => {
         <CcViewAll href="/liquidity-studio">View all</CcViewAll>
       </CcCardHeader>
       <CcDashBody>
-        {liquidity.map((l) => (
+        {rows.length === 0 ? (
+          <Meta>No liquidity positions from Liquidity runtime.</Meta>
+        ) : (
+          rows.map((l) => (
           <div key={l.id} style={{ paddingBottom: 8, borderBottom: `1px solid ${commandCenterColors.border}` }}>
             <PairTitle>{l.pair}</PairTitle>
             <Meta>
@@ -271,7 +271,8 @@ export const CommandLiquidityCard: React.FC = () => {
             </Meta>
             <Meta style={{ color: commandCenterColors.red, marginTop: 4 }}>IL {l.impermanentLoss}</Meta>
           </div>
-        ))}
+          ))
+        )}
       </CcDashBody>
       <BtnWrap>
         <CcGoldBtn type="button">Add Liquidity</CcGoldBtn>
@@ -281,7 +282,8 @@ export const CommandLiquidityCard: React.FC = () => {
 }
 
 export const CommandPoolsCard: React.FC = () => {
-  const pools = safeArray(POOLS)
+  const { pools } = useCommandRuntime()
+  const rows = safeArray(pools)
   return (
     <CcDashCard data-cc-pools $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
@@ -289,7 +291,10 @@ export const CommandPoolsCard: React.FC = () => {
         <CcViewAll href="/pools">View all</CcViewAll>
       </CcCardHeader>
       <CcDashBody>
-        {pools.map((p) => (
+        {rows.length === 0 ? (
+          <Meta>No pool positions from Pools runtime.</Meta>
+        ) : (
+          rows.map((p) => (
           <Row key={p.id}>
             <div>
               <PairTitle>{p.name}</PairTitle>
@@ -300,7 +305,8 @@ export const CommandPoolsCard: React.FC = () => {
               <div style={{ fontWeight: 700, color: commandCenterColors.green }}>{p.pending}</div>
             </div>
           </Row>
-        ))}
+          ))
+        )}
       </CcDashBody>
       <BtnWrap>
         <CcOutlineBtn type="button">Go to Pools</CcOutlineBtn>
@@ -310,7 +316,8 @@ export const CommandPoolsCard: React.FC = () => {
 }
 
 export const CommandFarmsCard: React.FC = () => {
-  const farms = safeArray(FARMS)
+  const { farms } = useCommandRuntime()
+  const rows = safeArray(farms)
   return (
     <CcDashCard data-cc-farms $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
@@ -318,7 +325,10 @@ export const CommandFarmsCard: React.FC = () => {
         <CcViewAll href="/farms">View all</CcViewAll>
       </CcCardHeader>
       <CcDashBody>
-        {farms.map((f) => (
+        {rows.length === 0 ? (
+          <Meta>No farm positions from Farms runtime.</Meta>
+        ) : (
+          rows.map((f) => (
           <Row key={f.id}>
             <div>
               <PairTitle>{f.name}</PairTitle>
@@ -329,7 +339,8 @@ export const CommandFarmsCard: React.FC = () => {
               <div style={{ fontWeight: 700, color: commandCenterColors.green }}>{f.pending}</div>
             </div>
           </Row>
-        ))}
+          ))
+        )}
       </CcDashBody>
       <BtnWrap>
         <CcOutlineBtn type="button">Go to Farms</CcOutlineBtn>
@@ -339,27 +350,33 @@ export const CommandFarmsCard: React.FC = () => {
 }
 
 export const CommandCollectiblesCard: React.FC = () => {
-  const collectibles = safeArray(COLLECTIBLES)
+  const { collectibles } = useCommandRuntime()
+  const rows = safeArray(collectibles)
   return (
     <CcDashCard data-cc-collectibles>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Collectibles</CcTitle>
       </CcCardHeader>
       <CollectiblesGrid>
-        {collectibles.map((c) => (
+        {rows.length === 0 ? (
+          <Meta style={{ gridColumn: '1 / -1' }}>No collectibles — wallet ownership from registry.</Meta>
+        ) : (
+          rows.map((c) => (
           <CollectibleCard key={c.id}>
             <CollIcon>{c.icon}</CollIcon>
             <CollTitle>{c.title}</CollTitle>
             <CollSub>{c.subtitle}</CollSub>
           </CollectibleCard>
-        ))}
+          ))
+        )}
       </CollectiblesGrid>
     </CcDashCard>
   )
 }
 
 export const CommandInfrastructureCard: React.FC = () => {
-  const infraScore = safePct(INFRASTRUCTURE_SUMMARY?.score, 0)
+  const { infrastructureSummary } = useCommandRuntime()
+  const infraScore = safePct(infrastructureSummary?.score, 0)
 
   return (
     <CcDashCard data-cc-infrastructure>
@@ -368,19 +385,19 @@ export const CommandInfrastructureCard: React.FC = () => {
       </CcCardHeader>
       <StatGrid>
         <Stat>
-          <StatVal>{INFRASTRUCTURE_SUMMARY.tokens}</StatVal>
+          <StatVal>{infrastructureSummary.tokens}</StatVal>
           <StatLabel>Tokens</StatLabel>
         </Stat>
         <Stat>
-          <StatVal>{INFRASTRUCTURE_SUMMARY.pools}</StatVal>
+          <StatVal>{infrastructureSummary.pools}</StatVal>
           <StatLabel>Pools</StatLabel>
         </Stat>
         <Stat>
-          <StatVal>{INFRASTRUCTURE_SUMMARY.farms}</StatVal>
+          <StatVal>{infrastructureSummary.farms}</StatVal>
           <StatLabel>Farms</StatLabel>
         </Stat>
         <Stat>
-          <StatVal>{INFRASTRUCTURE_SUMMARY.smartdrop}</StatVal>
+          <StatVal>{infrastructureSummary.smartdrop}</StatVal>
           <StatLabel>SmartDrop</StatLabel>
         </Stat>
       </StatGrid>
@@ -396,7 +413,8 @@ export const CommandInfrastructureCard: React.FC = () => {
 }
 
 export const CommandBuilderStatusCard: React.FC = () => {
-  const builderProgress = safePct(BUILDER_STATUS?.progress, 0)
+  const { builderStatus } = useCommandRuntime()
+  const builderProgress = safePct(builderStatus?.progress, 0)
 
   return (
     <CcDashCard data-cc-builder-status>
@@ -404,20 +422,21 @@ export const CommandBuilderStatusCard: React.FC = () => {
         <CcTitle>Builder Status</CcTitle>
       </CcCardHeader>
       <div style={{ marginTop: 4, fontFamily: CC_FONT_BODY, fontSize: 14, fontWeight: 700, color: commandCenterColors.white }}>
-        Builder Level {BUILDER_STATUS.level}
+        Builder Level {builderStatus.level}
       </div>
       <CcProgressTrack style={{ marginTop: 10 }}>
         <CcProgressFill $pct={builderProgress} />
       </CcProgressTrack>
-      <Meta style={{ marginTop: 10 }}>Projects: {BUILDER_STATUS.projects}</Meta>
-      <Meta>Pools: {BUILDER_STATUS.pools} · Farms: {BUILDER_STATUS.farms}</Meta>
-      <Meta>TVL managed: {BUILDER_STATUS.tvlManaged}</Meta>
+      <Meta style={{ marginTop: 10 }}>Projects: {builderStatus.projects}</Meta>
+      <Meta>Pools: {builderStatus.pools} · Farms: {builderStatus.farms}</Meta>
+      <Meta>TVL managed: {builderStatus.tvlManaged}</Meta>
     </CcDashCard>
   )
 }
 
 export const CommandRecentActivityCard: React.FC = () => {
-  const activity = safeArray(RECENT_ACTIVITY)
+  const { recentActivity } = useCommandRuntime()
+  const activity = safeArray(recentActivity)
 
   return (
     <CcDashCard data-cc-recent-activity $minHeight={commandCenterLayout.activityMinHeight}>
@@ -425,7 +444,10 @@ export const CommandRecentActivityCard: React.FC = () => {
         <CcTitle>Recent Activity</CcTitle>
       </CcCardHeader>
       <Timeline>
-        {activity.map((e) => (
+        {activity.length === 0 ? (
+          <Meta>No recent activity from connected runtimes.</Meta>
+        ) : (
+          activity.map((e) => (
           <TimelineItem key={e.id}>
             <TimelineDot>{e.icon}</TimelineDot>
             <TimelineCopy>
@@ -433,7 +455,8 @@ export const CommandRecentActivityCard: React.FC = () => {
               <TimelineTime>{e.time}</TimelineTime>
             </TimelineCopy>
           </TimelineItem>
-        ))}
+          ))
+        )}
       </Timeline>
     </CcDashCard>
   )
