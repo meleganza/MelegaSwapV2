@@ -77,8 +77,21 @@ export {
   type ReceiptPipelineStageDescriptor,
 } from './receipt-pipeline'
 
-export { enableKerlDryRunHarness, armTestnetLifecycleForHarness, resetKerlExecutionHarness } from './harness'
+export { enableKerlDryRunHarness, armTestnetLifecycleForHarness, enableKerlTestnetExecutionActivation, resetKerlExecutionHarness } from './harness'
 
 export { rollbackActivationToDryRun, rollbackToOff, type RollbackResult } from './rollback'
 
 export { runTestnetArmingValidation, type ArmingValidationReport } from './testnet-arming-validator'
+
+export {
+  runFirstTestnetExecution,
+  resetGenesisExecutionAttemptFlag,
+  type FirstTestnetExecutionResult,
+  type FirstTestnetExecutionVerdict,
+} from './first-testnet-execution/runFirstTestnetExecution'
+export { evaluateTestnetExecutionPreconditions } from './first-testnet-execution/evaluatePreconditions'
+export { buildSettlementEventCandidate } from './first-testnet-execution/buildSettlementEventCandidate'
+export {
+  checkTestnetWalletFunded,
+  createGenesisTestnetAdapters,
+} from './first-testnet-execution/genesisTestnetAdapter'

@@ -1,0 +1,87 @@
+{
+  "packageVersion": "1.0.0",
+  "packageId": "kerl-genesis-testnet-handoff-001",
+  "correlationId": "corr:genesis:testnet:swap:97:2026-07-03",
+  "handoffMode": "testnet_execution",
+  "createdAt": "2026-07-03T20:30:00.000Z",
+  "handoffTimestamp": "2026-07-03T20:30:00.000Z",
+  "dexCompatibilityVersion": "1.0.0",
+  "executionInstructionContractVersion": "1.0",
+  "routingDecisionSnapshotRef": "kerl-genesis-testnet-routing-snapshot-001",
+  "routingMetadataSummary": {
+    "domain": "swap",
+    "adapter": "smart-router",
+    "chainId": 97,
+    "routeLabel": "Genesis TESTNET — smallest deterministic SmartSwap (BNB Testnet)",
+    "instructionType": "SmartSwap"
+  },
+  "instructionIdentity": {
+    "id": "swap-smart:BNB:BUSD:1000000000000:50",
+    "correlationId": "corr:genesis:testnet:swap:97:2026-07-03",
+    "version": "1.0",
+    "source": "kerl-preview"
+  },
+  "correlationIdentity": {
+    "handoffCorrelationId": "corr:genesis:testnet:swap:97:2026-07-03",
+    "swarmSessionRef": "swarm-genesis-testnet-session-001"
+  },
+  "evidenceSummary": {
+    "evidenceClass": "testnet_execution_proposal",
+    "proposalStatus": "eligible",
+    "networkSourced": false
+  },
+  "proposalEligibility": {
+    "eligible": true,
+    "dexDryRunOnly": false,
+    "executionPermitted": true,
+    "testnetOnly": true,
+    "notes": "Genesis TESTNET execution — exactly one certified instruction, BNB Testnet chainId 97 only"
+  },
+  "testnetExecutionManifest": {
+    "executionMode": "TESTNET_EXECUTION_ONLY",
+    "executionPerformed": false,
+    "walletInteraction": "submit",
+    "networkCommunication": true,
+    "transmitted": "internal-test",
+    "transactionHash": null,
+    "receipt": null,
+    "settlement": null,
+    "treasurySubmission": null
+  },
+  "proposedInstruction": {
+    "id": "swap-smart:BNB:BUSD:1000000000000:50",
+    "correlationId": "corr:genesis:testnet:swap:97:2026-07-03",
+    "version": "1.0",
+    "source": "kerl-preview",
+    "domain": "swap",
+    "adapter": "smart-router",
+    "routingPlan": {
+      "domain": "swap-smart",
+      "allowedSlippageBps": 50,
+      "recipient": null,
+      "fallbackV2": true,
+      "routeType": "V2",
+      "trade": {
+        "inputAmount": { "currency": { "symbol": "BNB" }, "quotient": { "toString": "1000000000000" } },
+        "outputAmount": { "currency": { "symbol": "BUSD" }, "quotient": { "toString": "0" } },
+        "route": { "routeType": "V2" },
+        "tradeType": 0
+      }
+    },
+    "allowedSlippageBps": 50,
+    "recipient": null,
+    "createdAt": "2026-07-03T20:30:00.000Z",
+    "chainId": 97
+  },
+  "kerlReference": {
+    "swarmVerdict": "KERL_LIVE_INTEGRATION_RC1_REMOTE_CERTIFIED",
+    "rcVersion": "rc1"
+  },
+  "compatibilityCertification": {
+    "certificationVerdict": "KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED",
+    "outcome": "compatible",
+    "executionContractVersion": "1.0",
+    "dexCompatibilityVersion": "1.0.0",
+    "certifiedAt": "2026-07-03T20:30:00.000Z"
+  }
+}

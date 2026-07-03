@@ -1,7 +1,7 @@
 {
   "packageVersion": "1.0.0",
   "packageId": "kerl-rc1-offline-handoff-fixture-001",
-  "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+  "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783110382584",
   "handoffMode": "dry_run",
   "createdAt": "2026-07-03T08:00:00.000Z",
   "handoffTimestamp": "2026-07-03T08:00:00.000Z",
@@ -17,12 +17,12 @@
   },
   "instructionIdentity": {
     "id": "bridge:7:1000000000000000000:erc20",
-    "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+    "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783110382584",
     "version": "1.0",
     "source": "kerl-preview"
   },
   "correlationIdentity": {
-    "handoffCorrelationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+    "handoffCorrelationId": "corr:bridge:7:1000000000000000000:erc20:1783110382584",
     "swarmSessionRef": "swarm-rc1-offline-session-fixture-001"
   },
   "evidenceSummary": {
@@ -49,7 +49,7 @@
   },
   "proposedInstruction": {
     "id": "bridge:7:1000000000000000000:erc20",
-    "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+    "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783110382584",
     "version": "1.0",
     "source": "kerl-preview",
     "domain": "bridge",
