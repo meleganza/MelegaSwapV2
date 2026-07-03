@@ -1,16 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { RADAR_KPIS } from '../radarStudioData'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { KpiSparkline } from './radarStudioPrimitives'
-
-const SPARKLINES: Record<string, number[]> = {
-  indexed: [8, 9, 10, 11, 12, 13, 12, 14],
-  signals: [4, 5, 6, 5, 7, 8, 9, 10],
-  whales: [2, 3, 2, 4, 3, 5, 4, 6],
-  confidence: [5, 6, 7, 8, 7, 9, 10, 11],
-  risk: [6, 5, 5, 4, 4, 3, 3, 2],
-}
 
 const Row = styled.div`
   display: grid;
@@ -82,30 +74,22 @@ const Delta = styled.span<{ $positive?: boolean }>`
   white-space: nowrap;
 `
 
-const SparkWrap = styled.div`
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-`
+export const RadarKpiRow: React.FC = () => {
+  const { kpis } = useRadarRuntime()
 
-export const RadarKpiRow: React.FC = () => (
-  <Row data-rd-kpi-row>
-    {RADAR_KPIS.map((kpi) => (
-      <Card key={kpi.id} data-rd-kpi-card>
-        <Label>{kpi.label}</Label>
-        <Value $risk={kpi.id === 'risk'} data-rd-kpi-value>
-          {kpi.value}
-        </Value>
-        <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta>
-        <SparkWrap>
-          <KpiSparkline
-            points={SPARKLINES[kpi.id]}
-            color={kpi.deltaPositive === false ? radarStudioColors.red : radarStudioColors.green}
-          />
-        </SparkWrap>
-      </Card>
-    ))}
-  </Row>
-)
+  return (
+    <Row data-rd-kpi-row>
+      {kpis.map((kpi) => (
+        <Card key={kpi.id} data-rd-kpi-card>
+          <Label>{kpi.label}</Label>
+          <Value $risk={kpi.id === 'risk'} data-rd-kpi-value>
+            {kpi.value}
+          </Value>
+          {kpi.delta ? <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta> : null}
+        </Card>
+      ))}
+    </Row>
+  )
+}
 
 export default RadarKpiRow

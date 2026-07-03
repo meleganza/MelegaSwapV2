@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { HEATMAP_METRICS, HEATMAP_PROJECTS, HEATMAP_TOOLTIPS } from '../radarStudioData'
+import { HEATMAP_METRICS, HEATMAP_TOOLTIPS } from '../radarStudioData'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { HeatBlocks, RadarProjectLogo, RdPanel } from './radarStudioPrimitives'
 
@@ -117,6 +118,7 @@ const Tooltip = styled.span`
 `
 
 export const RadarHeatmapTable: React.FC = () => {
+  const { heatmap } = useRadarRuntime()
   const [tip, setTip] = useState<string | null>(null)
 
   return (
@@ -124,9 +126,9 @@ export const RadarHeatmapTable: React.FC = () => {
       <Header>
         <Title>AI Heatmap</Title>
         <Legend>
-          <span style={{ color: radarStudioColors.green }}>Low Risk</span>
+          <span style={{ color: radarStudioColors.heatInactive }}>Unavailable</span>
           <span>→</span>
-          <span style={{ color: radarStudioColors.red }}>High Risk</span>
+          <span style={{ color: radarStudioColors.green }}>Available</span>
         </Legend>
       </Header>
       <TableWrap>
@@ -143,7 +145,7 @@ export const RadarHeatmapTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {HEATMAP_PROJECTS.map((row) => (
+            {heatmap.map((row) => (
               <tr key={row.name} data-rd-heatmap-row>
                 <Td>{row.rank}</Td>
                 <Td>
@@ -155,15 +157,16 @@ export const RadarHeatmapTable: React.FC = () => {
                 {HEATMAP_METRICS.map((m) => {
                   const val = row[m.key as keyof typeof row] as number
                   const invert = 'invert' in m && m.invert
+                  const label = val <= 0 ? 'Unavailable' : 'Available'
                   return (
                     <Td key={m.key}>
                       <TooltipWrap
-                        onMouseEnter={() => setTip(`${row.name} · ${m.label}: ${HEATMAP_TOOLTIPS[m.key]}`)}
+                        onMouseEnter={() => setTip(`${row.name} · ${m.label}: ${label}`)}
                         onMouseLeave={() => setTip(null)}
                       >
                         <HeatBlocks value={val} invert={!!invert} count={12} />
                         <Tooltip data-rd-heat-tip role="tooltip">
-                          {HEATMAP_TOOLTIPS[m.key]}
+                          {label} — {HEATMAP_TOOLTIPS[m.key]}
                         </Tooltip>
                       </TooltipWrap>
                     </Td>

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import RadarStudioGlobalStyle from './RadarStudioGlobalStyle'
+import { RadarRuntimeProvider } from './radarRuntime/RadarRuntimeContext'
 import RadarContractIntelligenceInput from './components/RadarContractIntelligenceInput'
 import RadarDiscoveriesGrid from './components/RadarDiscoveriesGrid'
 import RadarFilterRow from './components/RadarFilterRow'
@@ -59,24 +60,26 @@ const ConsoleGrid = styled.div`
 `
 
 export const RadarStudioScreen: React.FC = () => (
-  <Root data-radar-studio-screen="true">
-    <PageMeta />
-    <RadarStudioGlobalStyle />
-    <TrendingRibbon />
-    <Content>
-      <RadarStudioPageHeader />
-      <RadarKpiRow />
-      <RadarContractIntelligenceInput />
-      <RadarLiveEventStream />
-      <RadarFilterRow />
-      <ConsoleGrid data-rd-console-grid>
-        <RadarOpsLeftColumn />
-        <RadarDiscoveriesGrid />
-        <RadarOpsRightColumn />
-      </ConsoleGrid>
-      <RadarHeatmapTable />
-    </Content>
-  </Root>
+  <RadarRuntimeProvider>
+    <Root data-radar-studio-screen="true">
+      <PageMeta />
+      <RadarStudioGlobalStyle />
+      <TrendingRibbon />
+      <Content>
+        <RadarStudioPageHeader />
+        <RadarKpiRow />
+        <RadarContractIntelligenceInput />
+        <RadarLiveEventStream />
+        <RadarFilterRow />
+        <ConsoleGrid data-rd-console-grid>
+          <RadarOpsLeftColumn />
+          <RadarDiscoveriesGrid />
+          <RadarOpsRightColumn />
+        </ConsoleGrid>
+        <RadarHeatmapTable />
+      </Content>
+    </Root>
+  </RadarRuntimeProvider>
 )
 
 export default RadarStudioScreen

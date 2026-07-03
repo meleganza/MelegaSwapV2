@@ -225,26 +225,25 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `RadarStudioScreen` (console + intelligence layouts) |
-| Runtime | ⬜ | `radarStudioData.ts` — static fixtures |
-| AI | ⬜ | Copy + mock confidence scores only |
+| Runtime | 🟩 | `radarRuntime/` consumes Projects Runtime — no duplicate registry |
+| AI | 🟨 | Heuristic opportunity score, summary, heatmap, recommendations |
 | Production | ⬜ | — |
 
 ### Runtime requirements
 
 | Requirement | Status |
 |-------------|--------|
-| Live scanning | ⬜ |
-| Wallet monitoring | ⬜ |
-| Contract Intelligence | 🟨 |
-| Smart Money | ⬜ |
-| Whale Monitor | ⬜ |
-| Heatmap | ⬜ |
-| Contract Intelligence Preview | 🟨 |
+| Live scanning | 🟩 |
+| Wallet monitoring | 🟨 |
+| Contract Intelligence | 🟩 |
+| Smart Money | 🟨 |
+| Whale Monitor | 🟨 |
+| Heatmap | 🟩 |
+| Contract Intelligence Preview | 🟩 |
 
-### AI (future)
+### AI (R020)
 
-- Signal integration
-- Real AI scoring
+- Opportunity score, event summaries, health warnings — rule-based via Projects Runtime; whale/smart money unavailable until wallet feeds
 
 ---
 
@@ -368,7 +367,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | **3** | **Pools Runtime** | ✅ R017 complete — studio live |
 | **4** | **Farms Runtime** | ✅ R018 complete — studio live |
 | **5** | **Projects AI Runtime** | ✅ R019 — registry runtime + heuristic AI; external feed APIs next |
-| **6** | **Radar Runtime** | Replace `radarStudioData` with live event intake |
+| **6** | **Radar Runtime** | ✅ R020 — Projects Runtime integration + live event engine |
 | **7** | **Build Studio Runtime** | Import token validation + create flows |
 | **8** | **Command Center Runtime** | Wallet + positions + live briefing feed |
 | **9** | **Global Visual Freeze** | Responsive + a11y + perf audit; no new UI scope |

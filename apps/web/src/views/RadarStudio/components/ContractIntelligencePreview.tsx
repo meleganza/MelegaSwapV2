@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import type { ContractPreviewData } from '../radarStudioData'
-import { buildContractPreview, statusColor } from '../radarStudioData'
 import type { RadarEventCard } from '../radarStudioData'
+import { statusColor } from '../radarStudioData'
+import { buildContractPreview } from '../radarRuntime/buildContractIntelligence'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { PreviewGauge, RadarProjectLogo, StatusPill } from './radarStudioPrimitives'
 

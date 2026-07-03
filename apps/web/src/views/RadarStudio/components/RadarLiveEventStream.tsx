@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { LIVE_EVENTS, LIVE_EVENT_ICONS } from '../radarStudioData'
+import { LIVE_EVENT_ICONS } from '../radarStudioData'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 
 const Bar = styled.div`
@@ -62,6 +63,15 @@ const TickerTrack = styled.div`
   }
 `
 
+const scroll = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+`
+
+const ScrollingTrack = styled(TickerTrack)<{ $animate: boolean }>`
+  animation: ${({ $animate }) => ($animate ? `${scroll} 40s linear infinite` : 'none')};
+`
+
 const EventItem = styled.div`
   display: inline-flex;
   align-items: center;
@@ -102,25 +112,36 @@ const Confidence = styled.span`
   color: ${radarStudioColors.green};
 `
 
+const Empty = styled.span`
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 13px;
+  color: ${radarStudioColors.muted};
+`
+
 export const RadarLiveEventStream: React.FC = () => {
-  const items = [...LIVE_EVENTS, ...LIVE_EVENTS]
+  const { liveEvents } = useRadarRuntime()
+  const items = liveEvents.length > 1 ? [...liveEvents, ...liveEvents] : liveEvents
 
   return (
     <Bar data-rd-live-stream>
       <LiveDot data-rd-live-dot />
       <LiveLabel>LIVE</LiveLabel>
       <TickerViewport data-rd-ticker-viewport>
-        <TickerTrack data-rd-ticker-track>
-          {items.map((item, i) => (
-            <EventItem key={`${item.id}-${i}`}>
-              <Icon aria-hidden>{LIVE_EVENT_ICONS[item.type]}</Icon>
-              <Project>{item.project}</Project>
-              <EventText>{item.event}</EventText>
-              <Timestamp>{item.timestamp}</Timestamp>
-              <Confidence>{item.confidence}</Confidence>
-            </EventItem>
-          ))}
-        </TickerTrack>
+        {items.length === 0 ? (
+          <Empty>No runtime events indexed.</Empty>
+        ) : (
+          <ScrollingTrack data-rd-ticker-track $animate={items.length > 2}>
+            {items.map((item, i) => (
+              <EventItem key={`${item.id}-${i}`}>
+                <Icon aria-hidden>{LIVE_EVENT_ICONS[item.type]}</Icon>
+                <Project>{item.project}</Project>
+                <EventText>{item.event}</EventText>
+                <Timestamp>{item.timestamp}</Timestamp>
+                <Confidence>{item.confidence}</Confidence>
+              </EventItem>
+            ))}
+          </ScrollingTrack>
+        )}
       </TickerViewport>
     </Bar>
   )

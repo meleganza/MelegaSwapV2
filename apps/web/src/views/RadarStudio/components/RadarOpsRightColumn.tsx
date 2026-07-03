@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import {
-  AI_OPPORTUNITY,
-  AI_RECOMMENDATION,
-  AI_WARNINGS,
-  HIGHEST_CONFIDENCE_TODAY,
-  RECENT_DISCOVERIES,
-  TOP_CONTRACTS,
-} from '../radarStudioData'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { OpportunityGauge, RadarProjectLogo, RdGhostBtn, RdPanel, RdSectionTitle, StatusDot } from './radarStudioPrimitives'
 
@@ -121,28 +114,75 @@ const AiRecText = styled.p`
   color: ${radarStudioColors.secondary};
 `
 
+const MachineToggle = styled.button`
+  margin-top: 10px;
+  border: none;
+  background: transparent;
+  color: ${radarStudioColors.muted};
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+`
+
+const MachinePre = styled.pre`
+  margin: 8px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0c0c0c;
+  border: 1px solid ${radarStudioColors.border};
+  font-size: 9px;
+  line-height: 1.35;
+  color: ${radarStudioColors.muted};
+  max-height: 80px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+`
+
+const SourceRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: ${radarStudioColors.muted};
+  height: 22px;
+  align-items: center;
+`
+
 export const RadarOpsRightColumn: React.FC = () => {
+  const {
+    opportunity,
+    warnings,
+    recentDiscoveries,
+    highestConfidence,
+    topContracts,
+    aiRecommendation,
+    sources,
+    machine,
+  } = useRadarRuntime()
   const [animatedScore, setAnimatedScore] = useState(0)
+  const [machineOpen, setMachineOpen] = useState(false)
 
   useEffect(() => {
-    const t = window.setTimeout(() => setAnimatedScore(AI_OPPORTUNITY.score), 80)
+    const t = window.setTimeout(() => setAnimatedScore(opportunity.score), 80)
     return () => window.clearTimeout(t)
-  }, [])
+  }, [opportunity.score])
 
   return (
     <Column data-rd-ops-right>
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>AI Opportunity Score</RdSectionTitle>
         <GaugeWrap>
-          <OpportunityGauge score={AI_OPPORTUNITY.score} animated={animatedScore} />
+          <OpportunityGauge score={opportunity.score} animated={animatedScore} />
           <RecBlock>
             <RecLabel>Recommendation</RecLabel>
-            <RecValue>{AI_OPPORTUNITY.recommendation}</RecValue>
+            <RecValue>{opportunity.recommendation}</RecValue>
             <RecLabel style={{ marginTop: 10 }}>Confidence</RecLabel>
-            <RecValue>{AI_OPPORTUNITY.confidence}%</RecValue>
+            <RecValue>{opportunity.confidence}%</RecValue>
             <RecLabel style={{ marginTop: 10 }}>Reason</RecLabel>
             <ReasonList>
-              {AI_OPPORTUNITY.reasons.map((r) => (
+              {opportunity.reasons.map((r) => (
                 <li key={r}>{r}</li>
               ))}
             </ReasonList>
@@ -155,7 +195,7 @@ export const RadarOpsRightColumn: React.FC = () => {
 
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Warnings</RdSectionTitle>
-        {AI_WARNINGS.map((row) => (
+        {warnings.map((row) => (
           <WarningRow key={row.label}>
             <StatusDot level={row.level} />
             {row.label}
@@ -164,8 +204,20 @@ export const RadarOpsRightColumn: React.FC = () => {
       </Panel>
 
       <Panel data-rd-panel>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Data Sources</RdSectionTitle>
+        {sources.map((s) => (
+          <SourceRow key={s.key}>
+            <span>{s.label}</span>
+            <span style={{ color: s.available ? radarStudioColors.green : radarStudioColors.muted }}>
+              {s.available ? s.lastUpdate ?? 'Available' : 'Unavailable'}
+            </span>
+          </SourceRow>
+        ))}
+      </Panel>
+
+      <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Recent Discoveries</RdSectionTitle>
-        {RECENT_DISCOVERIES.map((row) => (
+        {recentDiscoveries.map((row) => (
           <FeedRow key={`${row.time}-${row.project}`}>
             <span style={{ fontFamily: RADAR_FONT_DISPLAY, fontSize: 10, color: radarStudioColors.label }}>
               {row.time}
@@ -185,7 +237,7 @@ export const RadarOpsRightColumn: React.FC = () => {
 
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Highest Confidence Today</RdSectionTitle>
-        {HIGHEST_CONFIDENCE_TODAY.map((row) => (
+        {highestConfidence.map((row) => (
           <ConfRow key={row.project}>
             <span style={{ fontFamily: RADAR_FONT_DISPLAY, fontWeight: 800, color: radarStudioColors.white }}>
               {row.project}
@@ -200,7 +252,7 @@ export const RadarOpsRightColumn: React.FC = () => {
 
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Top Contracts</RdSectionTitle>
-        {TOP_CONTRACTS.map((row) => (
+        {topContracts.map((row) => (
           <TopContractRow key={row.name}>
             <RadarProjectLogo name={row.name} symbol={row.symbol} size={22} />
             <div>
@@ -217,11 +269,17 @@ export const RadarOpsRightColumn: React.FC = () => {
       </Panel>
 
       <Panel data-rd-panel>
-        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>{AI_RECOMMENDATION.title}</RdSectionTitle>
-        <RecValue style={{ fontSize: 15 }}>{AI_RECOMMENDATION.action}</RecValue>
-        <AiRecText>{AI_RECOMMENDATION.detail}</AiRecText>
+        <RdSectionTitle style={{ fontSize: 18, marginBottom: 6 }}>{aiRecommendation.title}</RdSectionTitle>
+        <RecValue style={{ fontSize: 15 }}>{aiRecommendation.action}</RecValue>
+        <AiRecText>{aiRecommendation.detail}</AiRecText>
         <RecLabel style={{ marginTop: 10 }}>Confidence</RecLabel>
-        <RecValue style={{ fontSize: 16 }}>{AI_RECOMMENDATION.confidence}</RecValue>
+        <RecValue style={{ fontSize: 16 }}>{aiRecommendation.confidence}</RecValue>
+        <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
+          {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
+        </MachineToggle>
+        {machineOpen && (
+          <MachinePre data-rd-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
+        )}
       </Panel>
     </Column>
   )

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { RADAR_FILTER_CHIPS } from '../radarStudioData'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { radarStudioLayout } from '../radarStudioTokens'
 import { RdChip } from './radarStudioPrimitives'
 
@@ -21,12 +22,12 @@ const Row = styled.div`
 `
 
 export const RadarFilterRow: React.FC = () => {
-  const [active, setActive] = useState<string>('All')
+  const { filter, setFilter } = useRadarRuntime()
 
   return (
     <Row data-rd-filter-row>
       {RADAR_FILTER_CHIPS.map((chip) => (
-        <RdChip key={chip} type="button" $active={active === chip} onClick={() => setActive(chip)}>
+        <RdChip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
           {chip}
         </RdChip>
       ))}

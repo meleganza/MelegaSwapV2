@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { MOCK_CONTRACT_PREVIEW } from '../radarStudioData'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import ContractIntelligencePreview from './ContractIntelligencePreview'
 
@@ -109,9 +109,16 @@ const RunBtn = styled.button`
 const CHAINS = ['BNB Smart Chain', 'Ethereum', 'Base', 'Polygon', 'Solana'] as const
 
 export const RadarContractIntelligenceInput: React.FC = () => {
-  const [address, setAddress] = useState('')
-  const [chain, setChain] = useState<string>(CHAINS[0])
-  const [open, setOpen] = useState(false)
+  const {
+    contractInput,
+    setContractInput,
+    chainLabel,
+    setChainLabel,
+    previewOpen,
+    setPreviewOpen,
+    contractPreview,
+    runContractPreview,
+  } = useRadarRuntime()
 
   return (
     <>
@@ -123,33 +130,26 @@ export const RadarContractIntelligenceInput: React.FC = () => {
         </Subtitle>
         <InputRow>
           <Input
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            value={contractInput}
+            onChange={(e) => setContractInput(e.target.value)}
             placeholder="Paste contract address..."
             aria-label="Contract address"
           />
-          <Select value={chain} onChange={(e) => setChain(e.target.value)} aria-label="Chain">
+          <Select value={chainLabel} onChange={(e) => setChainLabel(e.target.value)} aria-label="Chain">
             {CHAINS.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
             ))}
           </Select>
-          <RunBtn type="button" onClick={() => setOpen(true)}>
+          <RunBtn type="button" onClick={() => runContractPreview()}>
             Run Free Preview
           </RunBtn>
         </InputRow>
       </Panel>
 
-      {open ? (
-        <ContractIntelligencePreview
-          preview={{
-            ...MOCK_CONTRACT_PREVIEW,
-            network: chain,
-            address: address.trim() || MOCK_CONTRACT_PREVIEW.address,
-          }}
-          onClose={() => setOpen(false)}
-        />
+      {previewOpen && contractPreview ? (
+        <ContractIntelligencePreview preview={contractPreview} onClose={() => setPreviewOpen(false)} />
       ) : null}
     </>
   )
