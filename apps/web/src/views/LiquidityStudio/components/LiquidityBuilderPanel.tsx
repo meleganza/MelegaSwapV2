@@ -1,6 +1,12 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
+import { useModal } from '@pancakeswap/uikit'
+import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
+import { CommonBasesType } from 'components/SearchModal/types'
+import { useRouter } from 'next/router'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsPanelTitle, LsPrimaryBtn } from './liquidityStudioPrimitives'
 
 const shimmer = keyframes`
@@ -60,12 +66,21 @@ const TokenLabel = styled.span`
   margin-bottom: 6px;
 `
 
-const TokenValue = styled.span`
+const TokenInput = styled.input`
   display: block;
+  width: calc(100% - 100px);
+  border: none;
+  background: transparent;
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
   color: ${liquidityStudioColors.text};
+  outline: none;
+  padding: 0;
+
+  &::placeholder {
+    color: ${liquidityStudioColors.muted};
+  }
 `
 
 const TokenSelect = styled.button`
@@ -119,7 +134,7 @@ const RatioHead = styled.div`
   color: ${liquidityStudioColors.muted};
 `
 
-const RatioBar = styled.div`
+const RatioBar = styled.div<{ $pct?: number }>`
   height: 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
@@ -131,7 +146,7 @@ const RatioBar = styled.div`
     content: '';
     position: absolute;
     inset: 0;
-    width: 50%;
+    width: ${({ $pct }) => $pct ?? 50}%;
     background: linear-gradient(90deg, ${liquidityStudioColors.goldBright}, ${liquidityStudioColors.gold});
     border-radius: 999px;
     animation: ${shimmer} 6s ease-in-out infinite;
@@ -158,46 +173,222 @@ const SlippageValue = styled.span`
   font-weight: 700;
 `
 
-export const LiquidityBuilderPanel: React.FC = () => (
-  <LsPanel
-    data-ls-panel
-    data-ls-builder
-    $width={liquidityStudioLayout.leftWidth}
-    $height={liquidityStudioLayout.builderHeight}
-  >
-    <LsPanelTitle>Liquidity Builder</LsPanelTitle>
-    <PairSelect type="button">
-      <PairText>BNB / MARCO</PairText>
-      <Chevron aria-hidden>▾</Chevron>
-    </PairSelect>
-    <TokenRow>
-      <TokenLabel>Token A</TokenLabel>
-      <TokenValue>0.0</TokenValue>
-      <TokenSelect type="button">BNB</TokenSelect>
-    </TokenRow>
-    <SwapMid>
-      <SwapBtn type="button" aria-label="Swap tokens">
-        ⇅
-      </SwapBtn>
-    </SwapMid>
-    <TokenRow>
-      <TokenLabel>Token B</TokenLabel>
-      <TokenValue>0.0</TokenValue>
-      <TokenSelect type="button">MARCO</TokenSelect>
-    </TokenRow>
-    <RatioHead>
-      <span>Ratio</span>
-      <span>50 / 50</span>
-    </RatioHead>
-    <RatioBar aria-hidden />
-    <SlippageRow>
-      <SlippageLabel>Slippage Tolerance</SlippageLabel>
-      <SlippageValue>0.5%</SlippageValue>
-    </SlippageRow>
-    <LsPrimaryBtn type="button" data-ls-primary-btn>
-      Add Liquidity
-    </LsPrimaryBtn>
-  </LsPanel>
-)
+const StatusLine = styled.p`
+  margin: 8px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: ${liquidityStudioColors.muted};
+`
+
+const PositionList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+`
+
+const PositionItem = styled.button<{ $active?: boolean }>`
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid ${({ $active }) => ($active ? liquidityStudioColors.gold : liquidityStudioColors.border)};
+  background: ${liquidityStudioColors.surfaceSecondary};
+  padding: 10px 12px;
+  cursor: pointer;
+  color: ${liquidityStudioColors.text};
+`
+
+const ConnectWrap = styled.div`
+  margin-top: 10px;
+
+  button {
+    width: 100% !important;
+    height: ${liquidityStudioLayout.connectButtonHeight} !important;
+    border-radius: 12px !important;
+    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
+    color: #050505 !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    border: none !important;
+  }
+`
+
+export const LiquidityBuilderPanel: React.FC = () => {
+  const router = useRouter()
+  const {
+    mode,
+    pairLabel,
+    currencyA,
+    currencyB,
+    setCurrencyA,
+    setCurrencyB,
+    onFieldAInput,
+    onFieldBInput,
+    onSwapTokens,
+    typedValueA,
+    typedValueB,
+    slippageLabel,
+    preview,
+    primaryCtaLabel,
+    onPrimaryAction,
+    account,
+    loadingLabel,
+    error,
+    positions,
+    positionsLoading,
+    selectedPositionId,
+    setSelectedPositionId,
+    onRemovePercent,
+    removePercent,
+  } = useLiquidityRuntime()
+
+  const [pickField, setPickField] = useState<'A' | 'B' | null>(null)
+
+  const onCurrencySelect = useCallback(
+    (currency) => {
+      if (pickField === 'A') setCurrencyA(currency)
+      if (pickField === 'B') setCurrencyB(currency)
+      setPickField(null)
+    },
+    [pickField, setCurrencyA, setCurrencyB],
+  )
+
+  const [onPresentCurrencyModal] = useModal(
+    <CurrencySearchModal
+      onCurrencySelect={onCurrencySelect}
+      selectedCurrency={pickField === 'A' ? currencyA : currencyB}
+      otherSelectedCurrency={pickField === 'A' ? currencyB : currencyA}
+      showCommonBases
+      commonBasesType={CommonBasesType.LIQUIDITY}
+    />,
+    true,
+    false,
+    'lsCurrencyModal',
+  )
+
+  const openPicker = (field: 'A' | 'B') => {
+    setPickField(field)
+    onPresentCurrencyModal()
+  }
+
+  const isPositions = mode === 'My Positions'
+  const isRemove = mode === 'Remove Liquidity'
+
+  return (
+    <LsPanel
+      data-ls-panel
+      data-ls-builder
+      $width={liquidityStudioLayout.leftWidth}
+      $height={liquidityStudioLayout.builderHeight}
+    >
+      <LsPanelTitle>Liquidity Builder</LsPanelTitle>
+      {isPositions ? (
+        <>
+          <PairText style={{ display: 'block', marginBottom: 12 }}>Your LP Positions</PairText>
+          {!account ? (
+            <StatusLine>Connect wallet to view positions.</StatusLine>
+          ) : positionsLoading ? (
+            <StatusLine>Reading LP…</StatusLine>
+          ) : positions.length === 0 ? (
+            <StatusLine>No LP positions found.</StatusLine>
+          ) : (
+            <PositionList>
+              {positions.map((pos) => (
+                <PositionItem
+                  key={pos.id}
+                  type="button"
+                  $active={selectedPositionId === pos.id}
+                  onClick={() => setSelectedPositionId(pos.id)}
+                >
+                  {pos.pairLabel}
+                </PositionItem>
+              ))}
+            </PositionList>
+          )}
+          <LsPrimaryBtn type="button" data-ls-primary-btn onClick={() => router.push('/liquidity')}>
+            {primaryCtaLabel}
+          </LsPrimaryBtn>
+        </>
+      ) : (
+        <>
+          <PairSelect type="button" onClick={() => openPicker('A')}>
+            <PairText>{pairLabel}</PairText>
+            <Chevron aria-hidden>▾</Chevron>
+          </PairSelect>
+          <TokenRow>
+            <TokenLabel>{isRemove ? 'Expected Output A' : 'Token A'}</TokenLabel>
+            {isRemove ? (
+              <TokenInput value={typedValueA} readOnly placeholder="0.0" />
+            ) : (
+              <TokenInput
+                value={typedValueA === '0.0' ? '' : typedValueA}
+                onChange={(e) => onFieldAInput(e.target.value)}
+                placeholder="0.0"
+                inputMode="decimal"
+              />
+            )}
+            <TokenSelect type="button" onClick={() => openPicker('A')}>
+              {currencyA?.symbol ?? '—'}
+            </TokenSelect>
+          </TokenRow>
+          <SwapMid>
+            <SwapBtn type="button" aria-label="Swap tokens" onClick={onSwapTokens}>
+              ⇅
+            </SwapBtn>
+          </SwapMid>
+          <TokenRow>
+            <TokenLabel>{isRemove ? 'Expected Output B' : 'Token B'}</TokenLabel>
+            {isRemove ? (
+              <TokenInput value={typedValueB} readOnly placeholder="0.0" />
+            ) : (
+              <TokenInput
+                value={typedValueB === '0.0' ? '' : typedValueB}
+                onChange={(e) => onFieldBInput(e.target.value)}
+                placeholder="0.0"
+                inputMode="decimal"
+              />
+            )}
+            <TokenSelect type="button" onClick={() => openPicker('B')}>
+              {currencyB?.symbol ?? '—'}
+            </TokenSelect>
+          </TokenRow>
+          <RatioHead>
+            <span>Ratio</span>
+            <span>
+              {preview.tokenAPct} / {preview.tokenBPct}
+            </span>
+          </RatioHead>
+          <RatioBar $pct={preview.tokenAPct} aria-hidden />
+          {isRemove && (
+            <TokenRow style={{ height: 56, minHeight: 56 }}>
+              <TokenLabel>Remove %</TokenLabel>
+              <TokenInput
+                value={removePercent}
+                onChange={(e) => onRemovePercent(e.target.value)}
+                placeholder="50"
+                inputMode="numeric"
+              />
+            </TokenRow>
+          )}
+          <SlippageRow>
+            <SlippageLabel>Slippage Tolerance</SlippageLabel>
+            <SlippageValue>{slippageLabel}</SlippageValue>
+          </SlippageRow>
+          {loadingLabel && <StatusLine>{loadingLabel}</StatusLine>}
+          {error && error.code !== 'CALCULATING' && <StatusLine>{error.message}</StatusLine>}
+          {!account ? (
+            <ConnectWrap>
+              <ConnectWalletButton>{primaryCtaLabel}</ConnectWalletButton>
+            </ConnectWrap>
+          ) : (
+            <LsPrimaryBtn type="button" data-ls-primary-btn onClick={onPrimaryAction}>
+              {primaryCtaLabel}
+            </LsPrimaryBtn>
+          )}
+        </>
+      )}
+    </LsPanel>
+  )
+}
 
 export default LiquidityBuilderPanel

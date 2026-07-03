@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsPanelTitle } from './liquidityStudioPrimitives'
 
 const barPulse = keyframes`
@@ -40,9 +41,10 @@ const BarCol = styled.div`
   gap: 6px;
 `
 
-const Bar = styled.div<{ $gold?: boolean }>`
+const Bar = styled.div<{ $gold?: boolean; $scale?: number }>`
   width: ${liquidityStudioLayout.liquidityBarWidth};
-  height: ${liquidityStudioLayout.liquidityBarHeight};
+  height: ${({ $scale }) =>
+    $scale ? Math.max(24, liquidityStudioLayout.liquidityBarHeight * $scale) : liquidityStudioLayout.liquidityBarHeight}px;
   border-radius: 999px;
   background: ${({ $gold }) =>
     $gold
@@ -142,63 +144,93 @@ const IlSvg = styled.svg`
   height: 100%;
 `
 
-export const PositionPreviewPanel: React.FC = () => (
-  <LsPanel
-    data-ls-panel
-    data-ls-position-preview
-    $width={liquidityStudioLayout.centerWidth}
-    $height={liquidityStudioLayout.previewHeight}
-    $pad={`${liquidityStudioLayout.previewPanelPaddingTop} 18px 18px 18px`}
-  >
-    <Head>
-      <LsPanelTitle style={{ margin: 0 }}>Position Preview</LsPanelTitle>
-      <FeeBadge>Fee Tier 0.25%</FeeBadge>
-    </Head>
-    <Bars>
-      <BarCol>
-        <Bar data-ls-liquidity-bar />
-        <BarLabel>BNB</BarLabel>
-        <BarPct>52%</BarPct>
-      </BarCol>
-      <BarCol>
-        <Bar $gold data-ls-liquidity-bar />
-        <BarLabel>MARCO</BarLabel>
-        <BarPct>48%</BarPct>
-      </BarCol>
-    </Bars>
-    <Metrics>
-      <MetricCard>
-        <MetricLabel>Expected LP</MetricLabel>
-        <MetricValue>0.0000</MetricValue>
-      </MetricCard>
-      <MetricCard>
-        <MetricLabel>Pool Share</MetricLabel>
-        <MetricValue>0.00%</MetricValue>
-      </MetricCard>
-      <MetricCard>
-        <MetricLabel>APR</MetricLabel>
-        <MetricValue>—</MetricValue>
-      </MetricCard>
-      <MetricCard>
-        <MetricLabel>Fee Tier</MetricLabel>
-        <MetricValue>0.25%</MetricValue>
-      </MetricCard>
-    </Metrics>
-    <IlBlock>
-      <IlTitle>Impermanent Loss Preview</IlTitle>
-      <IlChart data-ls-mini-chart aria-hidden>
-        <IlSvg viewBox="0 0 400 60" preserveAspectRatio="none">
-          <path
-            d="M 0 48 Q 100 6 200 32 T 400 20"
-            fill="none"
-            stroke={liquidityStudioColors.gold}
-            strokeWidth="2"
-            vectorEffect="non-scaling-stroke"
-          />
-        </IlSvg>
-      </IlChart>
-    </IlBlock>
-  </LsPanel>
-)
+const LoadingLine = styled.p`
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: ${liquidityStudioColors.muted};
+`
+
+export const PositionPreviewPanel: React.FC = () => {
+  const { preview, loadingLabel, mode } = useLiquidityRuntime()
+  const leftScale = preview.tokenAPct / 100
+  const rightScale = preview.tokenBPct / 100
+
+  return (
+    <LsPanel
+      data-ls-panel
+      data-ls-position-preview
+      $width={liquidityStudioLayout.centerWidth}
+      $height={liquidityStudioLayout.previewHeight}
+      $pad={`${liquidityStudioLayout.previewPanelPaddingTop} 18px 18px 18px`}
+    >
+      <Head>
+        <LsPanelTitle style={{ margin: 0 }}>Position Preview</LsPanelTitle>
+        <FeeBadge>Fee Tier {preview.feeTier}</FeeBadge>
+      </Head>
+      {loadingLabel ? (
+        <LoadingLine>{loadingLabel}</LoadingLine>
+      ) : (
+        <>
+          <Bars>
+            <BarCol>
+              <Bar $scale={leftScale} data-ls-liquidity-bar />
+              <BarLabel>{preview.tokenASymbol}</BarLabel>
+              <BarPct>{preview.tokenAPct}%</BarPct>
+            </BarCol>
+            <BarCol>
+              <Bar $gold $scale={rightScale} data-ls-liquidity-bar />
+              <BarLabel>{preview.tokenBSymbol}</BarLabel>
+              <BarPct>{preview.tokenBPct}%</BarPct>
+            </BarCol>
+          </Bars>
+          <Metrics>
+            <MetricCard>
+              <MetricLabel>{mode === 'Remove Liquidity' ? 'LP Removed' : 'Expected LP'}</MetricLabel>
+              <MetricValue>{preview.expectedLp}</MetricValue>
+            </MetricCard>
+            <MetricCard>
+              <MetricLabel>Pool Share</MetricLabel>
+              <MetricValue>{preview.poolShare}</MetricValue>
+            </MetricCard>
+            <MetricCard>
+              <MetricLabel>APR</MetricLabel>
+              <MetricValue>{preview.apr}</MetricValue>
+            </MetricCard>
+            <MetricCard>
+              <MetricLabel>Fee Tier</MetricLabel>
+              <MetricValue>{preview.feeTier}</MetricValue>
+            </MetricCard>
+            {preview.estimatedDailyFees && (
+              <MetricCard>
+                <MetricLabel>Est. Daily Fees</MetricLabel>
+                <MetricValue style={{ fontSize: 16 }}>{preview.estimatedDailyFees}</MetricValue>
+              </MetricCard>
+            )}
+            {preview.currentValue && (
+              <MetricCard>
+                <MetricLabel>Current Value</MetricLabel>
+                <MetricValue style={{ fontSize: 16 }}>{preview.currentValue}</MetricValue>
+              </MetricCard>
+            )}
+          </Metrics>
+          <IlBlock>
+            <IlTitle>Impermanent Loss Preview ({preview.impermanentLoss})</IlTitle>
+            <IlChart data-ls-mini-chart aria-hidden>
+              <IlSvg viewBox="0 0 400 60" preserveAspectRatio="none">
+                <path
+                  d="M 0 48 Q 100 6 200 32 T 400 20"
+                  fill="none"
+                  stroke={liquidityStudioColors.gold}
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </IlSvg>
+            </IlChart>
+          </IlBlock>
+        </>
+      )}
+    </LsPanel>
+  )
+}
 
 export default PositionPreviewPanel

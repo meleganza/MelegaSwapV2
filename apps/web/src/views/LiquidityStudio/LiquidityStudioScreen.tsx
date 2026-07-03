@@ -4,6 +4,7 @@ import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import LiquidityStudioGlobalStyle from './LiquidityStudioGlobalStyle'
+import { LiquidityRuntimeProvider } from './liquidityRuntime/LiquidityRuntimeContext'
 import LiquidityStudioPageHeader from './components/LiquidityStudioPageHeader'
 import LiquidityBuilderPanel from './components/LiquidityBuilderPanel'
 import PositionPreviewPanel from './components/PositionPreviewPanel'
@@ -134,31 +135,33 @@ export const LiquidityStudioScreen: React.FC = () => (
     <PageMeta />
     <LiquidityStudioGlobalStyle />
     <TrendingRibbon />
-    <Content>
-      <LiquidityStudioPageHeader />
-      <LayoutGrid>
-        <AreaBuilder>
-          <LiquidityBuilderPanel />
-        </AreaBuilder>
-        <AreaPreview>
-          <PositionPreviewPanel />
-        </AreaPreview>
-        <AreaRight>
-          <AreaMarket>
-            <MarketIntelligencePanel />
-          </AreaMarket>
-          <AreaAdvisor>
-            <AILiquidityAdvisorPanel />
-          </AreaAdvisor>
-          <AreaPools>
-            <TopPoolsPanel />
-          </AreaPools>
-        </AreaRight>
-        <AreaActivity>
-          <LiquidityActivityTable />
-        </AreaActivity>
-      </LayoutGrid>
-    </Content>
+    <LiquidityRuntimeProvider>
+      <Content>
+        <LiquidityStudioPageHeader />
+        <LayoutGrid>
+          <AreaBuilder>
+            <LiquidityBuilderPanel />
+          </AreaBuilder>
+          <AreaPreview>
+            <PositionPreviewPanel />
+          </AreaPreview>
+          <AreaRight>
+            <AreaMarket>
+              <MarketIntelligencePanel />
+            </AreaMarket>
+            <AreaAdvisor>
+              <AILiquidityAdvisorPanel />
+            </AreaAdvisor>
+            <AreaPools>
+              <TopPoolsPanel />
+            </AreaPools>
+          </AreaRight>
+          <AreaActivity>
+            <LiquidityActivityTable />
+          </AreaActivity>
+        </LayoutGrid>
+      </Content>
+    </LiquidityRuntimeProvider>
   </Root>
 )
 

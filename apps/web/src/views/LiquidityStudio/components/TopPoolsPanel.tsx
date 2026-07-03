@@ -1,6 +1,8 @@
 import React from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
 
 const Pair = styled.span`
@@ -36,31 +38,50 @@ const PoolRow = styled(LsRightRow)`
   padding: 2px 0;
 `
 
-const POOLS = [
-  { pair: 'MARCO / BNB', apr: '14.2%', tvl: '$1.2M' },
-  { pair: 'MARCO / USDT', apr: '11.8%', tvl: '$640K' },
-  { pair: 'NAIIVE / BNB', apr: '9.4%', tvl: '$280K' },
-]
+const PoolLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+  display: contents;
+`
 
-export const TopPoolsPanel: React.FC = () => (
-  <LsPanel
-    data-ls-panel
-    $width={liquidityStudioLayout.rightWidth}
-    $height={liquidityStudioLayout.topPoolsHeight}
-    $radius={liquidityStudioLayout.rightPanelRadius}
-    $pad={liquidityStudioLayout.rightPanelPadding}
-  >
-    <LsSectionTitle>Top Pools</LsSectionTitle>
-    {POOLS.map((pool) => (
-      <PoolRow key={pool.pair}>
-        <Pair>{pool.pair}</Pair>
-        <Right>
-          <Apr>{pool.apr}</Apr>
-          <Tvl>{pool.tvl}</Tvl>
-        </Right>
-      </PoolRow>
-    ))}
-  </LsPanel>
-)
+const LoadingLine = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: ${liquidityStudioColors.muted};
+`
+
+export const TopPoolsPanel: React.FC = () => {
+  const { terminal, loadingLabel } = useLiquidityRuntime()
+  const { topPools, isIndexing, isLoadingPools } = terminal
+
+  return (
+    <LsPanel
+      data-ls-panel
+      $width={liquidityStudioLayout.rightWidth}
+      $height={liquidityStudioLayout.topPoolsHeight}
+      $radius={liquidityStudioLayout.rightPanelRadius}
+      $pad={liquidityStudioLayout.rightPanelPadding}
+    >
+      <LsSectionTitle>Top Pools</LsSectionTitle>
+      {loadingLabel || isIndexing || isLoadingPools ? (
+        <LoadingLine>{loadingLabel ?? 'Loading top pools…'}</LoadingLine>
+      ) : topPools.length === 0 ? (
+        <LoadingLine>No pools indexed yet.</LoadingLine>
+      ) : (
+        topPools.map((pool) => (
+          <PoolRow key={pool.id}>
+            <PoolLink href={pool.href}>
+              <Pair>{pool.pair}</Pair>
+              <Right>
+                <Apr>{pool.apr}</Apr>
+                <Tvl>{pool.tvl}</Tvl>
+              </Right>
+            </PoolLink>
+          </PoolRow>
+        ))
+      )}
+    </LsPanel>
+  )
+}
 
 export default TopPoolsPanel

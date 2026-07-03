@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { liquidityStudioColors, LIQUIDITY_STUDIO_PREVIEW_LABEL } from '../liquidityStudioTokens'
+import { liquidityStudioColors } from '../liquidityStudioTokens'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPreviewBadge } from './liquidityStudioPrimitives'
 
 const Row = styled.div`
@@ -69,10 +70,16 @@ const Tab = styled.button<{ $active?: boolean }>`
   }
 `
 
+const LiveBadge = styled(LsPreviewBadge)`
+  border-color: ${liquidityStudioColors.green};
+  color: ${liquidityStudioColors.green};
+  background: rgba(0, 230, 118, 0.08);
+`
+
 const TABS = ['Add Liquidity', 'Remove Liquidity', 'My Positions', 'Simulation'] as const
 
 export const LiquidityStudioPageHeader: React.FC = () => {
-  const [active, setActive] = useState<(typeof TABS)[number]>('Add Liquidity')
+  const { mode, setMode } = useLiquidityRuntime()
 
   return (
     <div data-ls-page-header>
@@ -81,11 +88,11 @@ export const LiquidityStudioPageHeader: React.FC = () => {
           <Title>Liquidity Studio</Title>
           <Subtitle>Build markets, manage liquidity and optimise LP performance.</Subtitle>
         </Left>
-        <LsPreviewBadge>{LIQUIDITY_STUDIO_PREVIEW_LABEL}</LsPreviewBadge>
+        <LiveBadge>LIVE RUNTIME</LiveBadge>
       </Row>
       <TabRow>
         {TABS.map((tab) => (
-          <Tab key={tab} type="button" $active={active === tab} onClick={() => setActive(tab)}>
+          <Tab key={tab} type="button" $active={mode === tab} onClick={() => setMode(tab)}>
             {tab}
           </Tab>
         ))}

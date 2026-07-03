@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { liquidityStudioColors, liquidityStudioLayout, LIQUIDITY_STUDIO_PREVIEW_LABEL } from '../liquidityStudioTokens'
-import { LsPanel, LsPreviewBadge } from './liquidityStudioPrimitives'
+import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
+import { LsPanel } from './liquidityStudioPrimitives'
 
 const Head = styled.div`
   display: flex;
@@ -17,6 +18,21 @@ const Title = styled.h3`
   font-weight: 800;
   line-height: 1;
   color: ${liquidityStudioColors.text};
+`
+
+const LiveBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid ${liquidityStudioColors.green};
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${liquidityStudioColors.green};
+  background: rgba(0, 230, 118, 0.08);
 `
 
 const Table = styled.table`
@@ -96,82 +112,74 @@ const StatusBadge = styled.span<{ $tone?: 'green' | 'yellow' | 'red' }>`
         : liquidityStudioColors.previewBadgeBg};
 `
 
-const ROWS = [
-  {
-    time: '2m ago',
-    pair: 'BNB / MARCO',
-    action: 'Add' as const,
-    amount: '1.2 BNB',
-    lp: '842.1 LP',
-    status: 'Indexing',
-    tone: 'green' as const,
-  },
-  {
-    time: '18m ago',
-    pair: 'MARCO / USDT',
-    action: 'Remove' as const,
-    amount: '4,200 MARCO',
-    lp: '210.0 LP',
-    status: 'Preview',
-    tone: 'yellow' as const,
-  },
-  {
-    time: '1h ago',
-    pair: 'BNB / MARCO',
-    action: 'Add' as const,
-    amount: '0.8 BNB',
-    lp: '561.4 LP',
-    status: 'Failed',
-    tone: 'red' as const,
-  },
-]
+const EmptyRow = styled.td`
+  height: ${liquidityStudioLayout.activityRowHeight};
+  padding: 0 ${liquidityStudioLayout.activityCellPadding};
+  font-size: 12px;
+  color: ${liquidityStudioColors.muted};
+  border-bottom: 1px solid ${liquidityStudioColors.rowBorder};
+`
 
-export const LiquidityActivityTable: React.FC = () => (
-  <LsPanel
-    data-ls-panel
-    data-ls-activity
-    $height={liquidityStudioLayout.activityHeight}
-    $width="100%"
-  >
-    <Head>
-      <Title>Liquidity Activity</Title>
-      <LsPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
-        {LIQUIDITY_STUDIO_PREVIEW_LABEL}
-      </LsPreviewBadge>
-    </Head>
-    <Table>
-      <thead>
-        <tr>
-          <Th $w="14%">Time</Th>
-          <Th $w="20%">Pair</Th>
-          <Th $w="16%">Action</Th>
-          <Th $w="20%">Amount</Th>
-          <Th $w="18%">LP Tokens</Th>
-          <Th $w="12%">Status</Th>
-        </tr>
-      </thead>
-      <tbody>
-        {ROWS.map((row) => (
-          <tr key={`${row.time}-${row.pair}-${row.action}`}>
-            <Td>{row.time}</Td>
-            <Td>{row.pair}</Td>
-            <Td>
-              {row.action === 'Add' ? (
-                <ActionAdd>{row.action}</ActionAdd>
-              ) : (
-                <ActionRemove>{row.action}</ActionRemove>
-              )}
-            </Td>
-            <Td>{row.amount}</Td>
-            <Td>{row.lp}</Td>
-            <Td>
-              <StatusBadge $tone={row.tone}>{row.status}</StatusBadge>
-            </Td>
+export const LiquidityActivityTable: React.FC = () => {
+  const { terminal, loadingLabel } = useLiquidityRuntime()
+  const { activityRows, isIndexing } = terminal
+  const rows = activityRows.slice(0, 3)
+
+  return (
+    <LsPanel
+      data-ls-panel
+      data-ls-activity
+      $height={liquidityStudioLayout.activityHeight}
+      $width="100%"
+    >
+      <Head>
+        <Title>Liquidity Activity</Title>
+        <LiveBadge>LIVE</LiveBadge>
+      </Head>
+      <Table>
+        <thead>
+          <tr>
+            <Th $w="14%">Time</Th>
+            <Th $w="20%">Pair</Th>
+            <Th $w="16%">Action</Th>
+            <Th $w="20%">Amount</Th>
+            <Th $w="18%">LP Tokens</Th>
+            <Th $w="12%">Status</Th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
-  </LsPanel>
-)
+        </thead>
+        <tbody>
+          {loadingLabel || isIndexing ? (
+            <tr>
+              <EmptyRow colSpan={6}>{loadingLabel ?? 'Indexing liquidity events…'}</EmptyRow>
+            </tr>
+          ) : rows.length === 0 ? (
+            <tr>
+              <EmptyRow colSpan={6}>No recent liquidity activity for this pair.</EmptyRow>
+            </tr>
+          ) : (
+            rows.map((row) => (
+              <tr key={row.id}>
+                <Td>{row.time}</Td>
+                <Td>{row.pair}</Td>
+                <Td>
+                  {row.action === 'Add' ? (
+                    <ActionAdd>{row.action}</ActionAdd>
+                  ) : (
+                    <ActionRemove>{row.action}</ActionRemove>
+                  )}
+                </Td>
+                <Td>{row.amount}</Td>
+                <Td>{row.lp}</Td>
+                <Td>
+                  <StatusBadge $tone={row.tone}>{row.status}</StatusBadge>
+                </Td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </Table>
+    </LsPanel>
+  )
+}
 
 export default LiquidityActivityTable

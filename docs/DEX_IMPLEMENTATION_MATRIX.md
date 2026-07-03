@@ -85,7 +85,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `LiquidityStudioScreen` + legacy `/add`, `/remove`, `/liquidity` |
-| Runtime | 🟨 | Legacy LP flows operational; studio not wired to wallet positions |
+| Runtime | 🟩 | R016 — `LiquidityRuntimeProvider`; studio wired to mint/burn, positions, subgraph |
 | AI | ⬜ | — |
 | Production | ⬜ | — |
 
@@ -93,13 +93,13 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| LP positions | 🟨 | Legacy views only |
-| Add Liquidity | 🟩 | `/add/[[...currency]]` |
-| Remove Liquidity | 🟩 | `/remove/[[...currency]]` |
-| LP valuation | ⬜ | Studio static |
-| Impermanent loss | ⬜ | — |
-| APR | ⬜ | Studio static |
-| Fees generated | ⬜ | — |
+| LP positions | 🟩 | `useLiquidityPositions` + My Positions tab |
+| Add Liquidity | 🟩 | Studio builder + `ConfirmAddLiquidityModal` |
+| Remove Liquidity | 🟩 | Studio burn mode + `ConfirmRemoveLiquidityModal` |
+| LP valuation | 🟩 | `useBUSDPrice` in position details |
+| Impermanent loss | 🟨 | Heuristic estimate; chart decorative |
+| APR | 🟩 | `useLPApr` + subgraph `lpApr7d` |
+| Fees generated | 🟩 | Subgraph `lpFees24h` |
 
 ### AI (future)
 
@@ -364,7 +364,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Priority | Workstream | Matrix trigger |
 |----------|------------|----------------|
 | **1** | **Trade Runtime** | Replace `tradeMockData` rails; wire live router status, assets, watchlist |
-| **2** | **Liquidity Runtime** | Wire `LiquidityStudio` → wallet LP positions + `/add`/`/remove` |
+| **2** | **Liquidity Runtime** | ✅ R016 complete — studio live |
 | **3** | **Pools Runtime** | Wire `PoolsStudio` → legacy pool hooks + live APR/TVL |
 | **4** | **Farms Runtime** | Wire `FarmsStudio` → `useFarms` / stake actions |
 | **5** | **Projects AI Runtime** | External discovery feeds + indexing pipeline |
@@ -391,6 +391,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-03 | R016 Liquidity Runtime — studio wired to LP infra; Liquidity Runtime 🟩 |
 | 2026-07-03 | R015 Trade Runtime — mock layers removed; Trade Runtime 🟩 |
 | 2026-07-03 | Initial matrix — UI freeze; runtime priorities; codebase audit statuses |
 
