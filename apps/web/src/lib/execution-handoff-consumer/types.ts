@@ -1,5 +1,9 @@
 import type { ExecutionInstruction } from '../execution-layer/types'
 import type { HANDOFF_MODE_DRY_RUN, HANDOFF_PACKAGE_VERSION } from './constants'
+import type {
+  CompatibilityCertificationOutcome,
+  KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED,
+} from './certification'
 
 /**
  * Dry-run manifest embedded in a KERL Dry-Run Handoff Package.
@@ -56,6 +60,18 @@ export interface Rc1ProposalEligibility {
 }
 
 /**
+ * KERL Remote Contract Compatibility Certification — carried on certified handoff packages.
+ * Validated locally without Swarm runtime.
+ */
+export interface KerlCompatibilityCertification {
+  certificationVerdict: typeof KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED | string
+  outcome: CompatibilityCertificationOutcome
+  executionContractVersion: string
+  dexCompatibilityVersion: string
+  certifiedAt: string
+}
+
+/**
  * KERL Swarm RC1 offline handoff envelope fields.
  * Test-only fixture shape — no live network data.
  */
@@ -101,9 +117,19 @@ export interface DryRunHandoffPackage {
   proposalEligibility?: Rc1ProposalEligibility
   dexCompatibilityVersion?: string
   handoffTimestamp?: string
+  /** Remote contract compatibility certification — required for certified handshake. */
+  compatibilityCertification?: KerlCompatibilityCertification
 }
 
 /** Full RC1 offline fixture package with all envelope fields required. */
 export type Rc1OfflineDryRunHandoffPackage = DryRunHandoffPackage & KerlRc1HandoffEnvelope
+
+/**
+ * Certified dry-run handoff package — RC1 envelope + compatibility certification required.
+ */
+export type CertifiedDryRunHandoffPackage = DryRunHandoffPackage &
+  KerlRc1HandoffEnvelope & {
+    compatibilityCertification: KerlCompatibilityCertification
+  }
 
 export type { ExecutionInstruction }

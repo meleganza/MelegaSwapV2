@@ -11,8 +11,14 @@ import {
   EXECUTION_INSTRUCTION_SCHEMA_VERSION,
   INSTRUCTION_SOURCE_KERL_PREVIEW,
 } from 'lib/execution-contract'
+import {
+  COMPATIBILITY_OUTCOME_COMPATIBLE,
+  COMPATIBILITY_OUTCOME_INCOMPATIBLE,
+  COMPATIBILITY_OUTCOME_UNKNOWN,
+  KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED,
+} from '../certification'
 import { HANDOFF_PACKAGE_VERSION } from '../constants'
-import type { DryRunHandoffPackage, Rc1OfflineDryRunHandoffPackage } from '../types'
+import type { CertifiedDryRunHandoffPackage, DryRunHandoffPackage, Rc1OfflineDryRunHandoffPackage } from '../types'
 import { createBridgeExecutionInstruction } from '../../routing-layer/createSwapExecutionInstruction'
 
 /** Fixed offline timestamp for deterministic fixtures. */
@@ -25,6 +31,10 @@ export const RC1_OFFLINE_SNAPSHOT_REF = 'kerl-rc1-routing-snapshot-offline-fixtu
 export const RC1_OFFLINE_SWARM_SESSION_REF = 'swarm-rc1-offline-session-fixture-001' as const
 
 export const RC1_OFFLINE_SWARM_VERDICT = 'KERL_LIVE_INTEGRATION_RC1_REMOTE_CERTIFIED' as const
+
+export const RC1_OFFLINE_COMPATIBILITY_CERT_VERDICT = KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED
+
+export const RC1_OFFLINE_CERTIFIED_AT = RC1_OFFLINE_HANDOFF_TIMESTAMP
 
 function buildOfflineProposedInstruction() {
   const instruction = createBridgeExecutionInstruction({
@@ -39,6 +49,16 @@ function buildOfflineProposedInstruction() {
     source: INSTRUCTION_SOURCE_KERL_PREVIEW,
     createdAt: RC1_OFFLINE_HANDOFF_TIMESTAMP,
   }
+}
+
+function buildCompatibilityCertification() {
+  return {
+    certificationVerdict: RC1_OFFLINE_COMPATIBILITY_CERT_VERDICT,
+    outcome: COMPATIBILITY_OUTCOME_COMPATIBLE,
+    executionContractVersion: EXECUTION_INSTRUCTION_SCHEMA_VERSION,
+    dexCompatibilityVersion: HANDOFF_PACKAGE_VERSION,
+    certifiedAt: RC1_OFFLINE_CERTIFIED_AT,
+  } as const
 }
 
 /**
@@ -101,8 +121,17 @@ export function buildRc1OfflineDryRunHandoffFixture(): Rc1OfflineDryRunHandoffPa
       swarmVerdict: RC1_OFFLINE_SWARM_VERDICT,
       rcVersion: 'rc1',
     },
+    compatibilityCertification: buildCompatibilityCertification(),
   }
 }
+
+/** Certified dry-run handoff package — RC1 envelope + compatibility certification. */
+export function buildCertifiedDryRunHandoffFixture(): CertifiedDryRunHandoffPackage {
+  return buildRc1OfflineDryRunHandoffFixture() as CertifiedDryRunHandoffPackage
+}
+
+/** Frozen singleton certified package for handshake tests. */
+export const CERTIFIED_DRY_RUN_HANDOFF_FIXTURE: CertifiedDryRunHandoffPackage = buildCertifiedDryRunHandoffFixture()
 
 /** Frozen singleton for tests requiring stable reference equality across imports. */
 export const RC1_OFFLINE_DRY_RUN_HANDOFF_FIXTURE: Rc1OfflineDryRunHandoffPackage =

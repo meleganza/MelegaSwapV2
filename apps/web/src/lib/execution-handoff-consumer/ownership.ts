@@ -6,6 +6,8 @@ export const HANDOFF_CONSUMER_OWNERSHIP = {
     'KERL dry-run handoff package validation',
     'handoff manifest integrity checks',
     'proposed instruction extraction',
+    'certified dry-run handshake validation',
+    'compatibility certification verification',
     'routing to execution gateway (DRY_RUN_ONLY)',
     'dry-run execution report return',
   ],
