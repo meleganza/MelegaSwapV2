@@ -348,6 +348,17 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Performance | ⬜ | No production perf budget sign-off |
 | Production | ⬜ | `melega.finance` on legacy `main`; V2 on `v2.melega.finance` only |
 
+### R024 production gate (2026-07-03)
+
+| Check | Status |
+|-------|--------|
+| Automated build + 44 tests | 🟩 PASS |
+| Route smoke (15 routes) | 🟩 PASS |
+| Manual BSC wallet QA | ⬜ BLOCKED — operator sign-off required |
+| Mobile wallet UX | 🟨 Partial — overflow OK; connect CTA needs manual verify |
+| Rollback `main` @ `5d4818f` | 🟩 Confirmed |
+| Production cutover | ⬜ BLOCKED — see `DEX_PRODUCTION_READINESS_REPORT.md` |
+
 ### Shared runtime infrastructure (cross-cutting)
 
 | Capability | Status | Location |
@@ -381,10 +392,11 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Milestone | Status | Ref |
 |-----------|--------|-----|
-| Staging `v2.melega.finance` | 🟩 | Phase 1 complete |
-| Phase 2 automated QA | 🟩 | MERGE_ALLOWED (wallet manual pending) |
-| PR `design-system-foundation` → `main` | 🟨 | [#2](https://github.com/meleganza/MelegaSwapV2/pull/2) open, not merged |
-| Production cutover `melega.finance` | ⬜ | Blocked — explicit approval required |
+| Staging `v2.melega.finance` | 🟩 | Phase 1 + R024 automated gate PASS |
+| Phase 2 automated QA | 🟩 | 42/44 checks PASS — 2 flaky/client-render (see R024 report) |
+| R024 production readiness | 🟨 | Automated PASS; cutover BLOCKED pending manual BSC QA |
+| PR `design-system-foundation` → `main` | 🟨 | [#2](https://github.com/meleganza/MelegaSwapV2/pull/2) open — HOLD until wallet sign-off |
+| Production cutover `melega.finance` | ⬜ | Blocked — explicit approval + manual QA required |
 | Homepage policy | 🟩 | Trade-first `HomeTradeScreen` (not Civilization Entry Point) |
 
 ---
@@ -393,7 +405,8 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
-| 2026-07-03 | R022 Command Center Runtime — operational hub; Command Center Runtime 🟩 |
+| 2026-07-03 | R024 Production Readiness Gate — automated PASS; cutover BLOCKED pending manual BSC QA |
+| 2026-07-03 | R023 Collectibles Runtime — Digital Identity layer; Collectibles Runtime 🟩, AI 🟨 |
 | 2026-07-03 | R021 Build Studio Runtime — orchestration layer; Build Studio Runtime 🟩, AI 🟨 |
 | 2026-07-03 | R020 Radar Runtime — Projects integration + live events; Radar Runtime 🟩 |
 | 2026-07-03 | R019 Projects AI Runtime — registry runtime + heuristic AI; Projects Runtime 🟩 |
