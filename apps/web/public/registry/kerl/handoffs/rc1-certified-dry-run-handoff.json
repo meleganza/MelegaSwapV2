@@ -1,0 +1,80 @@
+{
+  "packageVersion": "1.0.0",
+  "packageId": "kerl-rc1-offline-handoff-fixture-001",
+  "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+  "handoffMode": "dry_run",
+  "createdAt": "2026-07-03T08:00:00.000Z",
+  "handoffTimestamp": "2026-07-03T08:00:00.000Z",
+  "dexCompatibilityVersion": "1.0.0",
+  "executionInstructionContractVersion": "1.0",
+  "routingDecisionSnapshotRef": "kerl-rc1-routing-snapshot-offline-fixture-001",
+  "routingMetadataSummary": {
+    "domain": "bridge",
+    "adapter": "kronoswap-bridge",
+    "chainId": 56,
+    "routeLabel": "MARCO-BNB bridge burn (offline RC1 fixture)",
+    "instructionType": "BridgeBurn"
+  },
+  "instructionIdentity": {
+    "id": "bridge:7:1000000000000000000:erc20",
+    "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+    "version": "1.0",
+    "source": "kerl-preview"
+  },
+  "correlationIdentity": {
+    "handoffCorrelationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+    "swarmSessionRef": "swarm-rc1-offline-session-fixture-001"
+  },
+  "evidenceSummary": {
+    "evidenceClass": "dry_run_proposal",
+    "proposalStatus": "eligible",
+    "networkSourced": false
+  },
+  "proposalEligibility": {
+    "eligible": true,
+    "dexDryRunOnly": true,
+    "executionPermitted": false,
+    "notes": "Offline RC1 fixture — routing proposal only, no live network"
+  },
+  "dryRunManifest": {
+    "executionMode": "DRY_RUN_ONLY",
+    "executionPerformed": false,
+    "walletInteraction": "none",
+    "networkCommunication": false,
+    "transmitted": "internal-test",
+    "transactionHash": null,
+    "receipt": null,
+    "settlement": null,
+    "treasurySubmission": null
+  },
+  "proposedInstruction": {
+    "id": "bridge:7:1000000000000000000:erc20",
+    "correlationId": "corr:bridge:7:1000000000000000000:erc20:1783097767153",
+    "version": "1.0",
+    "source": "kerl-preview",
+    "domain": "bridge",
+    "adapter": "kronoswap-bridge",
+    "routingPlan": {
+      "domain": "bridge",
+      "pid": 7,
+      "isNative": false,
+      "amount": "1000000000000000000"
+    },
+    "pid": 7,
+    "isNative": false,
+    "amount": "1000000000000000000",
+    "createdAt": "2026-07-03T08:00:00.000Z",
+    "chainId": 56
+  },
+  "kerlReference": {
+    "swarmVerdict": "KERL_LIVE_INTEGRATION_RC1_REMOTE_CERTIFIED",
+    "rcVersion": "rc1"
+  },
+  "compatibilityCertification": {
+    "certificationVerdict": "KERL_REMOTE_CONTRACT_COMPATIBILITY_CERTIFIED",
+    "outcome": "compatible",
+    "executionContractVersion": "1.0",
+    "dexCompatibilityVersion": "1.0.0",
+    "certifiedAt": "2026-07-03T08:00:00.000Z"
+  }
+}

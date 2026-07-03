@@ -1,0 +1,15 @@
+{
+  "registryVersion": "1.0.0",
+  "purpose": "KERL certified dry-run handoff packages — local, static, test-only",
+  "networkCommunication": false,
+  "executionMode": "DRY_RUN_ONLY",
+  "handoffs": [
+    {
+      "id": "kerl-rc1-offline-handoff-fixture-001",
+      "path": "handoffs/rc1-certified-dry-run-handoff.json",
+      "handoffMode": "dry_run",
+      "certified": true,
+      "testOnly": true
+    }
+  ]
+}
