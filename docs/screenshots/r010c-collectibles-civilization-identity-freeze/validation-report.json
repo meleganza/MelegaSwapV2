@@ -1,0 +1,33 @@
+{
+  "task": "R010-C COLLECTIBLES CIVILIZATION IDENTITY FREEZE",
+  "deliverable": "R010_C_COLLECTIBLES_CIVILIZATION_IDENTITY_FREEZE",
+  "build": "pass",
+  "tests": {
+    "design-system": "11/11 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "collectibles-desktop-1440x900.png",
+    "collectibles-desktop-1728x1117.png",
+    "collectibles-mobile-390x844.png",
+    "collectibles-mobile-428x926.png"
+  ],
+  "validation": {
+    "heroIdentityCopy": true,
+    "featuredIdentityBadges": true,
+    "privilegesBlock": true,
+    "gridIdentityLabels": true,
+    "agentEnabledBadges": true,
+    "utilityChipsCanonical": true,
+    "cardHierarchyOrder": true,
+    "viewFavoriteReserveButtons": true,
+    "sidebarCivilizationNarrative": true,
+    "aiAdvisorRecommendations": true,
+    "identityBindingRows": true,
+    "civilizationFilterCategories": true,
+    "microAnimations": true,
+    "mobileResponsive": true,
+    "noMarketplaceRedesign": true
+  },
+  "verdict": "R010_C_COLLECTIBLES_CIVILIZATION_IDENTITY_FREEZE"
+}

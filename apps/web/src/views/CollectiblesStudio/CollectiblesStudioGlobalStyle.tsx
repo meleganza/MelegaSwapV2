@@ -23,6 +23,12 @@ const glowPulse = keyframes`
 `
 
 const CollectiblesStudioGlobalStyle = createGlobalStyle`
+  @property --ring-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+
   [data-collectibles-studio-screen] {
     color: ${collectiblesStudioColors.white};
     background: ${collectiblesStudioColors.pageBg};
@@ -45,7 +51,7 @@ const CollectiblesStudioGlobalStyle = createGlobalStyle`
   }
 
   [data-collectibles-studio-screen] [data-cs-collection-card]:hover [data-cs-artwork] {
-    transform: scale(1.04);
+    transform: scale(1.03);
   }
 
   [data-collectibles-studio-screen] [data-cs-kpi-card] {
@@ -75,7 +81,7 @@ const CollectiblesStudioGlobalStyle = createGlobalStyle`
   }
 
   [data-collectibles-studio-screen] [data-cs-hero-glow] {
-    animation: ${glowPulse} 6s ease-in-out infinite;
+    animation: ${glowPulse} 12s ease-in-out infinite;
   }
 
   [data-collectibles-studio-screen] [data-cs-sidebar-row] {

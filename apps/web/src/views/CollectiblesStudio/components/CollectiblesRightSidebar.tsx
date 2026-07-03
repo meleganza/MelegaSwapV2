@@ -2,11 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 import type { SidebarListItem } from '../collectiblesStudioData'
 import {
-  COLLECTOR_ACTIVITY,
-  HIGHEST_UTILITY,
-  NEWEST_COLLECTIONS,
-  RECENTLY_SOLD,
-  TRENDING_NOW,
+  HIGHEST_GOVERNANCE,
+  MOST_ACTIVE_BUILDERS,
+  MOST_ADOPTED,
+  MOST_USED_BY_AI,
+  NEWEST_IDENTITIES,
 } from '../collectiblesStudioData'
 import {
   CS_FONT_BODY,
@@ -14,23 +14,34 @@ import {
   collectiblesStudioColors,
   collectiblesStudioLayout,
 } from '../collectiblesStudioTokens'
-import { CsPanel, CsThumbnail } from './collectiblesStudioPrimitives'
+import { CsThumbnail } from './collectiblesStudioPrimitives'
 
 const Sidebar = styled.aside`
   display: flex;
   flex-direction: column;
   gap: ${collectiblesStudioLayout.gridGap};
   min-width: 0;
+  width: ${collectiblesStudioLayout.sidebarWidth};
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `
 
-const Section = styled(CsPanel)`
-  padding: 16px;
+const Section = styled.div`
+  width: 100%;
+  background: ${collectiblesStudioColors.panel};
+  border: 1px solid ${collectiblesStudioColors.border};
+  border-radius: ${collectiblesStudioLayout.cardRadius};
+  padding: 20px;
+  box-sizing: border-box;
 `
 
 const SectionTitle = styled.h3`
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-family: ${CS_FONT_DISPLAY};
-  font-size: 16px;
+  font-size: 24px;
+  line-height: 28px;
   font-weight: 700;
   color: ${collectiblesStudioColors.white};
 `
@@ -38,49 +49,59 @@ const SectionTitle = styled.h3`
 const List = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
 `
 
 const Row = styled.div`
-  display: flex;
+  height: 54px;
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  gap: 12px;
   align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid ${collectiblesStudioColors.border};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
   &:last-child {
     border-bottom: none;
-    padding-bottom: 0;
   }
 `
 
+const NameCol = styled.div`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
 const Rank = styled.span`
-  width: 18px;
   font-family: ${CS_FONT_DISPLAY};
   font-size: 13px;
   font-weight: 700;
   color: ${collectiblesStudioColors.gold};
   flex-shrink: 0;
-`
-
-const RowText = styled.div`
-  flex: 1;
-  min-width: 0;
+  width: 14px;
 `
 
 const Name = styled.div`
   font-family: ${CS_FONT_BODY};
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: ${collectiblesStudioColors.white};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+`
+
+const RightCol = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
 `
 
 const Price = styled.div`
   font-family: ${CS_FONT_BODY};
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: ${collectiblesStudioColors.white};
   white-space: nowrap;
@@ -91,14 +112,6 @@ const Change = styled.span<{ $positive?: boolean }>`
   font-size: 11px;
   font-weight: 600;
   color: ${({ $positive }) => ($positive ? collectiblesStudioColors.green : collectiblesStudioColors.red)};
-`
-
-const RightCol = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  flex-shrink: 0;
 `
 
 function SidebarSection({
@@ -120,15 +133,13 @@ function SidebarSection({
       <List>
         {items.map((item) => (
           <Row key={`${title}-${item.title}`} data-cs-sidebar-row>
-            {showRank && item.rank ? <Rank>{item.rank}</Rank> : null}
             <CsThumbnail $theme={item.artTheme} />
-            <RowText>
+            <NameCol>
+              {showRank && item.rank ? <Rank>{item.rank}</Rank> : null}
               <Name>{item.title}</Name>
-            </RowText>
+            </NameCol>
             <RightCol>
-              <Price>
-                {priceLabel ? `${item.price} ${priceLabel}` : item.price}
-              </Price>
+              <Price>{priceLabel ? `${item.price} ${priceLabel}` : item.price}</Price>
               {showChange && item.change ? (
                 <Change $positive={item.changePositive}>{item.change}</Change>
               ) : null}
@@ -142,11 +153,11 @@ function SidebarSection({
 
 export const CollectiblesRightSidebar: React.FC = () => (
   <Sidebar data-cs-right-sidebar>
-    <SidebarSection title="Trending Now" items={TRENDING_NOW} showRank showChange />
-    <SidebarSection title="Newest Collections" items={NEWEST_COLLECTIONS} />
-    <SidebarSection title="Highest Utility" items={HIGHEST_UTILITY} priceLabel="score" />
-    <SidebarSection title="Recently Sold" items={RECENTLY_SOLD} />
-    <SidebarSection title="Collector Activity" items={COLLECTOR_ACTIVITY} />
+    <SidebarSection title="Most Adopted" items={MOST_ADOPTED} showRank showChange />
+    <SidebarSection title="Highest Governance" items={HIGHEST_GOVERNANCE} priceLabel="score" />
+    <SidebarSection title="Most Used by AI" items={MOST_USED_BY_AI} priceLabel="score" />
+    <SidebarSection title="Newest Identities" items={NEWEST_IDENTITIES} />
+    <SidebarSection title="Most Active Builders" items={MOST_ACTIVE_BUILDERS} />
   </Sidebar>
 )
 

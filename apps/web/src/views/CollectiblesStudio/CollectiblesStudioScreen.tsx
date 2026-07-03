@@ -21,7 +21,7 @@ const Root = styled.div`
   min-width: 0;
   overflow-x: hidden;
 
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     padding: 0 0 ${collectiblesStudioLayout.mobileBottomPad};
   }
 `
@@ -38,8 +38,8 @@ const Content = styled.div`
   flex-direction: column;
   gap: ${collectiblesStudioLayout.sectionGap};
 
-  @media (max-width: 767px) {
-    padding: 16px;
+  @media (max-width: 768px) {
+    padding: 20px;
   }
 `
 
@@ -49,7 +49,7 @@ const FeaturedRow = styled.div`
   gap: ${collectiblesStudioLayout.gridGap};
   align-items: stretch;
 
-  @media (max-width: ${collectiblesStudioLayout.stackBreakpoint}) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `
@@ -60,7 +60,7 @@ const MainRow = styled.div`
   gap: ${collectiblesStudioLayout.gridGap};
   align-items: start;
 
-  @media (max-width: ${collectiblesStudioLayout.stackBreakpoint}) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `

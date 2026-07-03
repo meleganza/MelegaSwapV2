@@ -9,9 +9,14 @@ import {
 import { IconPlus, IconSparkles } from './collectiblesStudioIcons'
 import { CsOutlineBtn, CsPrimaryBtn } from './collectiblesStudioPrimitives'
 
-const glow = keyframes`
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.05); }
+const floatY = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+`
+
+const pulseOpacity = keyframes`
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 1; }
 `
 
 const Hero = styled.section`
@@ -22,9 +27,10 @@ const Hero = styled.section`
   align-items: stretch;
   min-width: 0;
 
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
     min-height: 0;
+    gap: 24px;
   }
 `
 
@@ -44,16 +50,26 @@ const Title = styled.h1`
   font-weight: 700;
   letter-spacing: -1px;
   color: ${collectiblesStudioColors.white};
+
+  @media (max-width: 768px) {
+    font-size: 42px;
+    line-height: 46px;
+  }
 `
 
 const Subtitle = styled.p`
   margin: 0;
-  max-width: 420px;
+  max-width: 520px;
   font-family: ${CS_FONT_BODY};
-  font-size: 20px;
-  line-height: 30px;
+  font-size: 22px;
+  line-height: 34px;
   font-weight: 400;
   color: ${collectiblesStudioColors.secondary};
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+    line-height: 26px;
+  }
 `
 
 const BtnRow = styled.div`
@@ -61,7 +77,7 @@ const BtnRow = styled.div`
   gap: 12px;
   flex-wrap: wrap;
 
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     flex-direction: column;
     width: 100%;
   }
@@ -69,20 +85,31 @@ const BtnRow = styled.div`
 
 const ArtWrap = styled.div`
   position: relative;
-  border-radius: ${collectiblesStudioLayout.cardRadius};
+  border-radius: 24px;
   overflow: hidden;
   min-height: ${collectiblesStudioLayout.heroHeight};
   border: 1px solid ${collectiblesStudioColors.border};
-  background: #0a0806;
+  background: #111111;
+  animation: ${floatY} 8s ease-in-out infinite alternate, ${pulseOpacity} 12s ease-in-out infinite;
+
+  @media (max-width: 768px) {
+    height: 220px;
+    width: 100%;
+    min-height: 220px;
+  }
 `
 
 const ArtBg = styled.div`
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 55% 45%, rgba(214, 180, 69, 0.55) 0%, transparent 42%),
-    radial-gradient(ellipse at 50% 80%, rgba(214, 180, 69, 0.2) 0%, transparent 50%),
-    linear-gradient(180deg, #1a1208 0%, #080808 70%);
+  background: radial-gradient(circle at 60% 45%, rgba(214, 180, 69, 0.22) 0%, transparent 55%);
+`
+
+const HeroGlow = styled.div`
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 55% 50%, rgba(214, 180, 69, 0.12) 0%, transparent 60%);
+  pointer-events: none;
 `
 
 const Portal = styled.div`
@@ -90,44 +117,18 @@ const Portal = styled.div`
   top: 50%;
   left: 55%;
   transform: translate(-50%, -50%);
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  border: 2px solid rgba(214, 180, 69, 0.6);
-  box-shadow:
-    0 0 60px rgba(214, 180, 69, 0.35),
-    inset 0 0 40px rgba(214, 180, 69, 0.15);
-  animation: ${glow} 8s ease-in-out infinite;
+  border: 2px solid rgba(214, 180, 69, 0.45);
+  box-shadow: 0 0 48px rgba(214, 180, 69, 0.2);
 `
 
 const PortalInner = styled.div`
   position: absolute;
-  inset: 20px;
+  inset: 24px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(214, 180, 69, 0.4) 0%, transparent 70%);
-`
-
-const Ray = styled.div<{ $deg: number }>`
-  position: absolute;
-  top: 50%;
-  left: 55%;
-  width: 2px;
-  height: 120px;
-  background: linear-gradient(180deg, rgba(214, 180, 69, 0.5) 0%, transparent 100%);
-  transform-origin: top center;
-  transform: translate(-50%, 0) rotate(${({ $deg }) => $deg}deg);
-  opacity: 0.3;
-`
-
-const Particle = styled.span<{ $top: string; $left: string; $delay: string }>`
-  position: absolute;
-  top: ${({ $top }) => $top};
-  left: ${({ $left }) => $left};
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: ${collectiblesStudioColors.gold};
-  animation-delay: ${({ $delay }) => $delay};
+  background: radial-gradient(circle, rgba(214, 180, 69, 0.28) 0%, transparent 70%);
 `
 
 const Silhouette = styled.div`
@@ -135,18 +136,11 @@ const Silhouette = styled.div`
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 140px;
-  background: linear-gradient(180deg, transparent 0%, #080808 30%, #050505 100%);
+  width: 72px;
+  height: 120px;
+  background: linear-gradient(180deg, transparent 0%, #111111 40%, #080808 100%);
   clip-path: polygon(30% 0%, 70% 0%, 85% 100%, 15% 100%);
-  opacity: 0.9;
-`
-
-const HeroGlow = styled.div`
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 60% 50%, rgba(214, 180, 69, 0.12) 0%, transparent 55%);
-  pointer-events: none;
+  opacity: 0.85;
 `
 
 export const CollectiblesStudioPageHeader: React.FC = () => (
@@ -154,7 +148,13 @@ export const CollectiblesStudioPageHeader: React.FC = () => (
     <Left>
       <Title>COLLECTIBLES</Title>
       <Subtitle>
-        Own exclusive digital identities, memberships, achievements, AI utilities, and Civilization access.
+        Digital Identities.
+        <br />
+        Civilization Access.
+        <br />
+        AI Privileges.
+        <br />
+        Premium Memberships.
       </Subtitle>
       <BtnRow>
         <CsPrimaryBtn type="button" data-cs-hero-explore>
@@ -170,17 +170,9 @@ export const CollectiblesStudioPageHeader: React.FC = () => (
     <ArtWrap data-cs-hero-art>
       <ArtBg />
       <HeroGlow data-cs-hero-glow />
-      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-        <Ray key={deg} $deg={deg} />
-      ))}
       <Portal>
         <PortalInner />
       </Portal>
-      <Particle data-cs-particle $top="20%" $left="30%" $delay="0s" />
-      <Particle data-cs-particle $top="35%" $left="70%" $delay="2s" />
-      <Particle data-cs-particle $top="55%" $left="25%" $delay="4s" />
-      <Particle data-cs-particle $top="15%" $left="60%" $delay="6s" />
-      <Particle data-cs-particle $top="70%" $left="80%" $delay="3s" />
       <Silhouette />
     </ArtWrap>
   </Hero>

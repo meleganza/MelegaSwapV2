@@ -1,5 +1,5 @@
 import React from 'react'
-import styled, { css } from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import type { CollectionCard } from '../collectiblesStudioData'
 import {
   CS_FONT_BODY,
@@ -48,7 +48,7 @@ export const CsLabel = styled.span`
   font-family: ${CS_FONT_BODY};
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   color: ${collectiblesStudioColors.label};
   line-height: 16px;
@@ -70,7 +70,7 @@ export const CsPrimaryBtn = styled.button<{ $width?: string; $height?: string }>
   border: none;
   border-radius: 12px;
   background: ${collectiblesStudioColors.gold};
-  color: #080808;
+  color: #050505;
   font-family: ${CS_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
@@ -146,7 +146,7 @@ export const CsChip = styled.button<{ $active?: boolean }>`
 export const CsKpiCard = styled.div`
   height: ${collectiblesStudioLayout.kpiHeight};
   min-height: ${collectiblesStudioLayout.kpiHeight};
-  padding: 16px 18px;
+  padding: ${collectiblesStudioLayout.kpiPadding};
   border-radius: ${collectiblesStudioLayout.kpiRadius};
   background: ${collectiblesStudioColors.panel};
   border: 1px solid ${collectiblesStudioColors.border};
@@ -155,16 +155,31 @@ export const CsKpiCard = styled.div`
   flex-direction: column;
   justify-content: space-between;
   min-width: 0;
+  max-width: 100%;
   position: relative;
+  overflow: hidden;
+
+  @container (max-width: 210px) {
+    /* fallback via media on parent grid cells */
+  }
 `
 
 export const CsKpiValue = styled.div`
   font-family: ${CS_FONT_DISPLAY};
-  font-size: 56px;
-  line-height: 1;
+  font-size: 50px;
+  line-height: 54px;
   font-weight: 700;
   color: ${collectiblesStudioColors.green};
   letter-spacing: -1px;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (max-width: 1099px) {
+    font-size: 44px;
+    line-height: 48px;
+  }
 `
 
 export const CsKpiDelta = styled.span<{ $positive?: boolean }>`
@@ -190,9 +205,9 @@ export const CsMetricValue = styled.span`
   color: ${collectiblesStudioColors.white};
 `
 
-const ringBase = css<{ $size: string; $score: number }>`
-  width: ${({ $size }) => $size};
-  height: ${({ $size }) => $size};
+export const CsScoreRing = styled.div<{ $size?: string; $score: number }>`
+  width: ${({ $size }) => $size || collectiblesStudioLayout.scoreRingSm};
+  height: ${({ $size }) => $size || collectiblesStudioLayout.scoreRingSm};
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -200,10 +215,14 @@ const ringBase = css<{ $size: string; $score: number }>`
   justify-content: center;
   flex-shrink: 0;
   background: conic-gradient(
-    ${collectiblesStudioColors.green} ${({ $score }) => $score * 3.6}deg,
+    ${collectiblesStudioColors.green} var(--ring-angle, 0deg),
     rgba(255, 255, 255, 0.06) 0
   );
   position: relative;
+  animation: ${({ $score }) => keyframes`
+    from { --ring-angle: 0deg; }
+    to { --ring-angle: ${$score * 3.6}deg; }
+  `} 1200ms ease-out both;
 
   &::before {
     content: '';
@@ -212,12 +231,6 @@ const ringBase = css<{ $size: string; $score: number }>`
     border-radius: 50%;
     background: ${collectiblesStudioColors.panel};
   }
-`
-
-export const CsScoreRing = styled.div<{ $size?: string; $score: number }>`
-  ${ringBase}
-  width: ${({ $size }) => $size || collectiblesStudioLayout.scoreRingSm};
-  height: ${({ $size }) => $size || collectiblesStudioLayout.scoreRingSm};
 `
 
 const ScoreNum = styled.span<{ $large?: boolean }>`
@@ -242,16 +255,115 @@ const ScoreSub = styled.span`
   margin-top: 2px;
 `
 
-export const ScoreRingDisplay: React.FC<{ score: number; size?: string; large?: boolean; sub?: string }> = ({
+export const ScoreRingDisplay: React.FC<{ score: number; size?: string; large?: boolean; sub?: string; $compact?: boolean }> = ({
   score,
   size,
   large,
   sub,
-}) => (
-  <CsScoreRing $size={size} $score={score} data-cs-score-ring>
-    <ScoreNum $large={large}>{score}</ScoreNum>
-    {sub ? <ScoreSub>{sub}</ScoreSub> : null}
-  </CsScoreRing>
+  $compact,
+}) =>
+  $compact ? (
+    <CompactScoreRing data-cs-score-ring $size={size || collectiblesStudioLayout.scoreRingSm} $score={score}>
+      <CompactScoreNum>{score}</CompactScoreNum>
+    </CompactScoreRing>
+  ) : (
+    <CsScoreRing $size={size} $score={score} data-cs-score-ring>
+      <ScoreNum $large={large}>{score}</ScoreNum>
+      {sub ? <ScoreSub>{sub}</ScoreSub> : null}
+    </CsScoreRing>
+  )
+
+const CompactScoreRing = styled.div<{ $size: string; $score: number }>`
+  width: ${({ $size }) => $size};
+  height: ${({ $size }) => $size};
+  border-radius: 50%;
+  background: conic-gradient(
+    ${collectiblesStudioColors.green} var(--ring-angle, 0deg),
+    rgba(255, 255, 255, 0.06) 0
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  animation: ${({ $score }) => keyframes`
+    from { --ring-angle: 0deg; }
+    to { --ring-angle: ${$score * 3.6}deg; }
+  `} 1200ms ease-out both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: #0b0b0b;
+  }
+`
+
+const CompactScoreNum = styled.span`
+  position: relative;
+  z-index: 1;
+  font-family: ${CS_FONT_DISPLAY};
+  font-size: 18px;
+  font-weight: 700;
+  color: ${collectiblesStudioColors.green};
+  line-height: 1;
+`
+
+const FeaturedScoreRing = styled.div<{ $score: number }>`
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: conic-gradient(
+    ${collectiblesStudioColors.green} var(--ring-angle, 0deg),
+    rgba(255, 255, 255, 0.06) 0
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  animation: ${({ $score }) => keyframes`
+    from { --ring-angle: 0deg; }
+    to { --ring-angle: ${$score * 3.6}deg; }
+  `} 1200ms ease-out both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: #0b0b0b;
+  }
+`
+
+const FeaturedScoreNum = styled.span`
+  position: relative;
+  z-index: 1;
+  font-family: ${CS_FONT_DISPLAY};
+  font-size: 18px;
+  font-weight: 700;
+  color: ${collectiblesStudioColors.green};
+  line-height: 1;
+`
+
+const FeaturedScoreLabel = styled.span`
+  position: relative;
+  z-index: 1;
+  font-family: ${CS_FONT_BODY};
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${collectiblesStudioColors.secondary};
+`
+
+export const FeaturedScoreRingDisplay: React.FC<{ score: number; label?: string }> = ({ score, label = 'Utility' }) => (
+  <FeaturedScoreRing data-cs-score-ring $score={score}>
+    <FeaturedScoreNum>{score}</FeaturedScoreNum>
+    <FeaturedScoreLabel>{label}</FeaturedScoreLabel>
+  </FeaturedScoreRing>
 )
 
 const ART_THEMES: Record<CollectionCard['artTheme'], string> = {
@@ -277,25 +389,24 @@ export const CsArtwork = styled.div<{ $theme: CollectionCard['artTheme']; $heigh
   width: 100%;
   height: ${({ $height }) => $height || collectiblesStudioLayout.artworkH};
   border-radius: ${collectiblesStudioLayout.artworkRadius};
-  background: ${({ $theme }) => ART_THEMES[$theme]};
+  background: radial-gradient(
+      circle at 50% 40%,
+      rgba(214, 180, 69, 0.26) 0%,
+      rgba(0, 0, 0, 0.25) 60%,
+      #0a0a0a 100%
+    ),
+    ${({ $theme }) => ART_THEMES[$theme]};
   position: relative;
   overflow: hidden;
-  transition: transform 200ms ease;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 120%, rgba(214, 180, 69, 0.15) 0%, transparent 60%);
-    pointer-events: none;
-  }
+  transition: transform 220ms ease;
 `
 
 export const CsThumbnail = styled.div<{ $theme: CollectionCard['artTheme'] }>`
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   flex-shrink: 0;
-  background: ${({ $theme }) => ART_THEMES[$theme]};
+  background: radial-gradient(circle at 50% 40%, rgba(214, 180, 69, 0.26), #0a0a0a 100%),
+    ${({ $theme }) => ART_THEMES[$theme]};
   border: 1px solid ${collectiblesStudioColors.border};
 `

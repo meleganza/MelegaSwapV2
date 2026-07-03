@@ -15,7 +15,7 @@ const Row = styled.div`
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -79,8 +79,10 @@ function MiniSparkline({ points }: { points: number[] }) {
 }
 
 const MobileCard = styled(CsKpiCard)`
-  @media (max-width: 767px) {
-    flex: 0 0 200px;
+  @media (max-width: 768px) {
+    flex: 0 0 220px;
+    height: 110px;
+    min-height: 110px;
     scroll-snap-align: start;
   }
 `

@@ -76,7 +76,13 @@ export const IconStar: React.FC<IconProps> = ({ size = 16, color = collectiblesS
   </svg>
 )
 
-export const IconCheck: React.FC<IconProps> = ({ size = 14, color = collectiblesStudioColors.gold }) => (
+export const IconBookmark: React.FC<IconProps> = ({ size = 18, color = collectiblesStudioColors.gold }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" aria-hidden>
+    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+  </svg>
+)
+
+export const IconCheck: React.FC<IconProps> = ({ size = 14, color = collectiblesStudioColors.green }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" aria-hidden>
     <path d="M20 6 9 17l-5-5" />
   </svg>
