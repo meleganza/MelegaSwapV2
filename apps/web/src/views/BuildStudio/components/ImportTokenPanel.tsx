@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { GENERATED_INFRASTRUCTURE, IMPORT_DETECTIONS, IMPORT_PIPELINE_STEPS } from '../buildStudioData'
+import { IMPORT_PIPELINE_STEPS } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { IconCheck, IconDownload, IconRadar } from './buildStudioIcons'
 import {
@@ -68,11 +69,11 @@ const PipelineRow = styled.div`
   gap: 4px;
 `
 
-const PipelineStep = styled.span`
+const PipelineStep = styled.span<{ $done?: boolean }>`
   font-family: ${BS_FONT_BODY};
   font-size: 12px;
   font-weight: 600;
-  color: ${buildStudioColors.white};
+  color: ${({ $done }) => ($done ? buildStudioColors.green : buildStudioColors.white)};
   white-space: nowrap;
 `
 
@@ -87,12 +88,6 @@ const PipelineArrow = styled.span`
   font-weight: 700;
   margin: 0 2px;
   animation: ${arrowPulse} ${buildStudioLayout.arrowAnim} ease-in-out infinite;
-
-  &:nth-child(2) { animation-delay: 0ms; }
-  &:nth-child(4) { animation-delay: 140ms; }
-  &:nth-child(6) { animation-delay: 280ms; }
-  &:nth-child(8) { animation-delay: 420ms; }
-  &:nth-child(10) { animation-delay: 560ms; }
 `
 
 const DetectionGrid = styled.div`
@@ -107,13 +102,13 @@ const DetectionGrid = styled.div`
   }
 `
 
-const DetectionItem = styled.div`
+const DetectionItem = styled.div<{ $muted?: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
   font-family: ${BS_FONT_BODY};
   font-size: 11px;
-  color: ${buildStudioColors.body};
+  color: ${({ $muted }) => ($muted ? buildStudioColors.muted : buildStudioColors.green)};
 `
 
 const InfraSection = styled.div`
@@ -153,79 +148,114 @@ const RadarWrap = styled.div`
   background: rgba(27, 231, 122, 0.06);
 `
 
-export const ImportTokenPanel: React.FC = () => (
-  <BsPanel
-    data-bs-panel
-    data-bs-import-token
-    data-bs-primary-entry
-    $emphasis="primary"
-    $height={buildStudioLayout.importTokenH}
-  >
-    <Inner>
-      <TitleRow>
-        <RadarWrap data-bs-artwork>
-          <IconRadar size={24} />
-        </RadarWrap>
+export const ImportTokenPanel: React.FC = () => {
+  const {
+    contractInput,
+    setContractInput,
+    chainKey,
+    setChainKey,
+    runAnalysis,
+    detections,
+    pipelineComplete,
+    generatedInfrastructure,
+    importResult,
+  } = useBuildRuntime()
+
+  const displayDetections =
+    detections.length > 0
+      ? detections
+      : [
+          { label: 'Run analysis', available: false },
+        ]
+
+  return (
+    <BsPanel
+      data-bs-panel
+      data-bs-import-token
+      data-bs-primary-entry
+      $emphasis="primary"
+      $height={buildStudioLayout.importTokenH}
+    >
+      <Inner>
+        <TitleRow>
+          <RadarWrap data-bs-artwork>
+            <IconRadar size={24} />
+          </RadarWrap>
+          <div>
+            <BsCardTitle>Import Existing Token</BsCardTitle>
+            <BsBody style={{ fontSize: 14, lineHeight: '22px', marginTop: 4 }}>
+              Default infrastructure entry — AI-assisted contract analysis and machine-readable manifest generation.
+            </BsBody>
+          </div>
+        </TitleRow>
+
+        <InputRow>
+          <InputFlex>
+            <BsInput
+              placeholder="Paste token contract..."
+              data-bs-contract-input
+              value={contractInput}
+              onChange={(e) => setContractInput(e.target.value)}
+            />
+          </InputFlex>
+          <BsSelect
+            style={{ width: 180 }}
+            value={chainKey}
+            onChange={(e) => setChainKey(e.target.value)}
+            aria-label="Chain"
+          >
+            <option value="bnb">BNB Chain</option>
+            <option value="eth">Ethereum</option>
+            <option value="base">Base</option>
+            <option value="polygon">Polygon</option>
+          </BsSelect>
+          <BsPrimaryBtn type="button" $width="220px" $height="56px" onClick={runAnalysis}>
+            <IconDownload size={16} color="#050505" />
+            Run AI Analysis
+          </BsPrimaryBtn>
+        </InputRow>
+
+        {importResult?.summary ? (
+          <BsBody style={{ fontSize: 12, color: buildStudioColors.muted }}>{importResult.summary}</BsBody>
+        ) : null}
+
+        <PipelineSection data-bs-import-pipeline>
+          <PipelineLabel>AI Import Pipeline</PipelineLabel>
+          <PipelineRow>
+            {IMPORT_PIPELINE_STEPS.map((step, i) => (
+              <React.Fragment key={step}>
+                {i > 0 ? <PipelineArrow data-bs-pipeline-arrow aria-hidden>↓</PipelineArrow> : null}
+                <PipelineStep $done={pipelineComplete[i]}>{step}</PipelineStep>
+              </React.Fragment>
+            ))}
+          </PipelineRow>
+        </PipelineSection>
+
         <div>
-          <BsCardTitle>Import Existing Token</BsCardTitle>
-          <BsBody style={{ fontSize: 14, lineHeight: '22px', marginTop: 4 }}>
-            Default infrastructure entry — AI-assisted contract analysis and machine-readable manifest generation.
-          </BsBody>
+          <BsLabel>AI automatically detects</BsLabel>
+          <DetectionGrid>
+            {displayDetections.map((item) => (
+              <DetectionItem key={item.label} $muted={!item.available}>
+                <IconCheck size={12} />
+                {item.label}
+                {!item.available ? ' — Unavailable' : ''}
+              </DetectionItem>
+            ))}
+          </DetectionGrid>
         </div>
-      </TitleRow>
 
-      <InputRow>
-        <InputFlex>
-          <BsInput placeholder="Paste token contract..." data-bs-contract-input />
-        </InputFlex>
-        <BsSelect style={{ width: 180 }} defaultValue="bnb" aria-label="Chain">
-          <option value="bnb">BNB Chain</option>
-          <option value="eth">Ethereum</option>
-          <option value="base">Base</option>
-          <option value="polygon">Polygon</option>
-          <option value="sol">Solana</option>
-        </BsSelect>
-        <BsPrimaryBtn type="button" $width="220px" $height="56px">
-          <IconDownload size={16} color="#050505" />
-          Run AI Analysis
-        </BsPrimaryBtn>
-      </InputRow>
-
-      <PipelineSection data-bs-import-pipeline>
-        <PipelineLabel>AI Import Pipeline</PipelineLabel>
-        <PipelineRow>
-          {IMPORT_PIPELINE_STEPS.map((step, i) => (
-            <React.Fragment key={step}>
-              {i > 0 ? <PipelineArrow data-bs-pipeline-arrow aria-hidden>↓</PipelineArrow> : null}
-              <PipelineStep>{step}</PipelineStep>
-            </React.Fragment>
-          ))}
-        </PipelineRow>
-      </PipelineSection>
-
-      <div>
-        <BsLabel>AI automatically detects</BsLabel>
-        <DetectionGrid>
-          {IMPORT_DETECTIONS.slice(0, 12).map((item) => (
-            <DetectionItem key={item}>
-              <IconCheck size={12} />
+        <InfraSection>
+          <InfraTitle>Generated infrastructure</InfraTitle>
+          {generatedInfrastructure.map((item) => (
+            <InfraRow key={item}>
+              <IconCheck size={14} />
               {item}
-            </DetectionItem>
+            </InfraRow>
           ))}
-        </DetectionGrid>
-      </div>
-
-      <InfraSection>
-        <InfraTitle>Generated infrastructure</InfraTitle>
-        {GENERATED_INFRASTRUCTURE.map((item) => (
-          <InfraRow key={item}>
-            <IconCheck size={14} />
-            {item}
-          </InfraRow>
-        ))}
-      </InfraSection>
-    </Inner>
-  </BsPanel>
-)
+        </InfraSection>
+      </Inner>
+    </BsPanel>
+  )
+}
 
 export default ImportTokenPanel

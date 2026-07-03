@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { BUILD_KPIS } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { MiniSparkline } from './buildStudioPrimitives'
 
@@ -91,21 +91,25 @@ const Delta = styled.span<{ $positive?: boolean }>`
   color: ${({ $positive }) => ($positive ? buildStudioColors.green : buildStudioColors.red)};
 `
 
-export const BuildKpiRow: React.FC = () => (
-  <Row data-bs-kpi-row>
-    {BUILD_KPIS.map((kpi) => (
-      <Card key={kpi.id} data-bs-kpi-card>
-        <Label>{kpi.label}</Label>
-        <Bottom>
-          <ValueCol>
-            <Value>{kpi.value}</Value>
-            <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta>
-          </ValueCol>
-          <MiniSparkline points={kpi.sparkline} />
-        </Bottom>
-      </Card>
-    ))}
-  </Row>
-)
+export const BuildKpiRow: React.FC = () => {
+  const { kpis } = useBuildRuntime()
+
+  return (
+    <Row data-bs-kpi-row>
+      {kpis.map((kpi) => (
+        <Card key={kpi.id} data-bs-kpi-card>
+          <Label>{kpi.label}</Label>
+          <Bottom>
+            <ValueCol>
+              <Value>{kpi.value}</Value>
+              {kpi.delta ? <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta> : null}
+            </ValueCol>
+            <MiniSparkline points={kpi.sparkline} />
+          </Bottom>
+        </Card>
+      ))}
+    </Row>
+  )
+}
 
 export default BuildKpiRow

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import BuildStudioGlobalStyle from './BuildStudioGlobalStyle'
+import { BuildRuntimeProvider } from './buildRuntime/BuildRuntimeContext'
 import { buildStudioColors, buildStudioLayout } from './buildStudioTokens'
 import AIBuildAdvisorPanel from './components/AIBuildAdvisorPanel'
 import AIManifestPanel from './components/AIManifestPanel'
@@ -58,27 +59,29 @@ const MainGrid = styled.div`
 `
 
 export const BuildStudioScreen: React.FC = () => (
-  <Root data-build-studio-screen>
-    <PageMeta />
-    <BuildStudioGlobalStyle />
-    <TrendingRibbon />
-    <Content>
-      <BuildStudioPageHeader />
-      <BuildKpiRow />
-      <MainGrid data-bs-main-grid>
-        <ImportTokenPanel />
-        <CreateTokenPanel />
-        <AIBuildAdvisorPanel />
-      </MainGrid>
-      <SecondRowCards />
-      <AIValidationEngine />
-      <InfrastructureFlow />
-      <OptionalServices />
-      <AIManifestPanel />
-      <TrustedInfrastructurePanel />
-      <RecentBuildsTable />
-    </Content>
-  </Root>
+  <BuildRuntimeProvider>
+    <Root data-build-studio-screen>
+      <PageMeta />
+      <BuildStudioGlobalStyle />
+      <TrendingRibbon />
+      <Content>
+        <BuildStudioPageHeader />
+        <BuildKpiRow />
+        <MainGrid data-bs-main-grid>
+          <ImportTokenPanel />
+          <CreateTokenPanel />
+          <AIBuildAdvisorPanel />
+        </MainGrid>
+        <SecondRowCards />
+        <AIValidationEngine />
+        <InfrastructureFlow />
+        <OptionalServices />
+        <AIManifestPanel />
+        <TrustedInfrastructurePanel />
+        <RecentBuildsTable />
+      </Content>
+    </Root>
+  </BuildRuntimeProvider>
 )
 
 export default BuildStudioScreen

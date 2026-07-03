@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { BUILDER_TEMPLATES, FARM_SIMULATION, STAKING_TEMPLATES } from '../buildStudioData'
+import { STAKING_TEMPLATES } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { IconCoins } from './buildStudioIcons'
 import {
@@ -109,10 +110,10 @@ const BuilderGrid = styled.div`
   gap: 8px;
 `
 
-const BuilderCard = styled.button`
+const BuilderCard = styled.button<{ $active?: boolean }>`
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid ${buildStudioColors.border};
+  border: 1px solid ${({ $active }) => ($active ? buildStudioColors.gold : buildStudioColors.border)};
   background: rgba(255, 255, 255, 0.02);
   text-align: left;
   cursor: pointer;
@@ -131,6 +132,7 @@ const BuilderTitle = styled.div`
 `
 
 function StakingPoolCard() {
+  const { poolPreview } = useBuildRuntime()
   const [templateId, setTemplateId] = useState('marco-holders')
   const template = STAKING_TEMPLATES.find((t) => t.id === templateId) ?? STAKING_TEMPLATES[0]
   const stakeLocked = template.lockStakeToken
@@ -159,13 +161,36 @@ function StakingPoolCard() {
         </TemplateGrid>
         <BsField>
           <BsFieldLabel>Stake Token</BsFieldLabel>
-          <BsInput value={template.stakeToken} readOnly={stakeLocked} style={{ height: 40, fontSize: 13 }} />
+          <BsInput
+            value={poolPreview.available ? poolPreview.stakeToken : template.stakeToken}
+            readOnly={stakeLocked}
+            style={{ height: 40, fontSize: 13 }}
+          />
         </BsField>
         <BsField>
           <BsFieldLabel>Reward Token</BsFieldLabel>
-          <BsInput placeholder="Select reward token" style={{ height: 40, fontSize: 13 }} />
+          <BsInput
+            value={poolPreview.rewardToken}
+            readOnly
+            style={{ height: 40, fontSize: 13 }}
+          />
         </BsField>
-        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }}>
+        <SimBlock>
+          <SimTitle>Pools Runtime</SimTitle>
+          <SimRow>
+            <span>APR</span>
+            <SimVal>{poolPreview.apr}</SimVal>
+          </SimRow>
+          <SimRow>
+            <span>Pool Type</span>
+            <SimVal>{poolPreview.poolType}</SimVal>
+          </SimRow>
+          <SimRow>
+            <span>Lock</span>
+            <SimVal>{poolPreview.lock}</SimVal>
+          </SimRow>
+        </SimBlock>
+        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled>
           Create Pool
         </BsPrimaryBtn>
       </Inner>
@@ -174,42 +199,40 @@ function StakingPoolCard() {
 }
 
 function CreateFarmCard() {
+  const { farmPreview } = useBuildRuntime()
+
   return (
     <BsPanel data-bs-panel data-bs-create-farm $height={buildStudioLayout.secondRowCardH}>
       <Inner>
         <BsCardTitle>Create Farm</BsCardTitle>
         <BsField>
           <BsFieldLabel>LP Token</BsFieldLabel>
-          <BsInput placeholder="MARCO-BNB LP" style={{ height: 40, fontSize: 13 }} />
+          <BsInput value={farmPreview.lp} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
         <BsField>
           <BsFieldLabel>Reward Token</BsFieldLabel>
-          <BsInput placeholder="MARCO" style={{ height: 40, fontSize: 13 }} />
+          <BsInput value={farmPreview.reward} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
         <SimBlock data-bs-farm-simulation>
-          <SimTitle>AI Simulation Summary</SimTitle>
+          <SimTitle>Farms Runtime</SimTitle>
           <SimRow>
-            <span>Estimated APR</span>
-            <SimVal>{FARM_SIMULATION.estimatedApr}</SimVal>
+            <span>APR</span>
+            <SimVal>{farmPreview.apr}</SimVal>
           </SimRow>
           <SimRow>
-            <span>Estimated TVL</span>
-            <SimVal>{FARM_SIMULATION.estimatedTvl}</SimVal>
+            <span>Multiplier</span>
+            <SimVal>{farmPreview.multiplier}</SimVal>
           </SimRow>
           <SimRow>
-            <span>Estimated emissions</span>
-            <SimVal>{FARM_SIMULATION.estimatedEmissions}</SimVal>
+            <span>Reward budget</span>
+            <SimVal>{farmPreview.budget}</SimVal>
           </SimRow>
           <SimRow>
-            <span>Reward duration</span>
-            <SimVal>{FARM_SIMULATION.rewardDuration}</SimVal>
-          </SimRow>
-          <SimRow>
-            <span>Treasury impact</span>
-            <SimVal>{FARM_SIMULATION.treasuryImpact}</SimVal>
+            <span>Duration</span>
+            <SimVal>{farmPreview.duration}</SimVal>
           </SimRow>
         </SimBlock>
-        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }}>
+        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled>
           Create Farm
         </BsPrimaryBtn>
       </Inner>
@@ -218,13 +241,20 @@ function CreateFarmCard() {
 }
 
 function BuilderTemplatesCard() {
+  const { builderTemplates, selectedTemplateId, setSelectedTemplateId } = useBuildRuntime()
+
   return (
     <BsPanel data-bs-panel data-bs-builder-templates $height={buildStudioLayout.secondRowCardH}>
       <Inner>
         <BsCardTitle>Builder Templates</BsCardTitle>
         <BuilderGrid>
-          {BUILDER_TEMPLATES.map((t) => (
-            <BuilderCard key={t.id} type="button">
+          {builderTemplates.map((t) => (
+            <BuilderCard
+              key={t.id}
+              type="button"
+              $active={selectedTemplateId === t.id}
+              onClick={() => setSelectedTemplateId(t.id)}
+            >
               <BuilderTitle>{t.title}</BuilderTitle>
             </BuilderCard>
           ))}
@@ -240,9 +270,9 @@ function QuickCreateTokenCard() {
       <Inner>
         <BsCardTitle $size="reduced">Create Token</BsCardTitle>
         <BsBody style={{ fontSize: 13, lineHeight: '20px', color: buildStudioColors.muted }}>
-          Quick access to token deployment with AI manifest generation.
+          Quick access to token deployment preparation with AI manifest generation.
         </BsBody>
-        <BsOutlineBtn type="button" $height="42px" style={{ marginTop: 'auto' }}>
+        <BsOutlineBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled>
           <IconCoins size={16} />
           Open Token Builder
         </BsOutlineBtn>

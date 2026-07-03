@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { VALIDATION_CHECKS } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { IconSparkles } from './buildStudioIcons'
 import { BsPanel, BsSectionTitle, BsStatusChip } from './buildStudioPrimitives'
@@ -38,25 +38,29 @@ const CheckLabel = styled.span`
   color: ${buildStudioColors.white};
 `
 
-export const AIValidationEngine: React.FC = () => (
-  <BsPanel data-bs-panel data-bs-validation $height={buildStudioLayout.validationH}>
-    <Inner>
-      <BsSectionTitle>
-        <IconSparkles size={20} style={{ marginRight: 8, verticalAlign: 'middle' }} />
-        AI Validation Engine
-      </BsSectionTitle>
-      <Grid>
-        {VALIDATION_CHECKS.map((check) => (
-          <CheckCard key={check.id}>
-            <CheckLabel>{check.label}</CheckLabel>
-            <BsStatusChip $status={check.status}>
-              {check.status === 'green' ? 'Pass' : check.status === 'yellow' ? 'Review' : 'Fail'}
-            </BsStatusChip>
-          </CheckCard>
-        ))}
-      </Grid>
-    </Inner>
-  </BsPanel>
-)
+export const AIValidationEngine: React.FC = () => {
+  const { validationChecks } = useBuildRuntime()
+
+  return (
+    <BsPanel data-bs-panel data-bs-validation $height={buildStudioLayout.validationH}>
+      <Inner>
+        <BsSectionTitle>
+          <IconSparkles size={20} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+          AI Validation Engine
+        </BsSectionTitle>
+        <Grid>
+          {validationChecks.map((check) => (
+            <CheckCard key={check.id}>
+              <CheckLabel>{check.label}</CheckLabel>
+              <BsStatusChip $status={check.status}>
+                {check.status === 'green' ? 'Pass' : check.status === 'yellow' ? 'Review' : 'Fail'}
+              </BsStatusChip>
+            </CheckCard>
+          ))}
+        </Grid>
+      </Inner>
+    </BsPanel>
+  )
+}
 
 export default AIValidationEngine

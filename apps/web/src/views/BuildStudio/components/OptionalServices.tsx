@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { OPTIONAL_SERVICES } from '../buildStudioData'
-import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
+import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
 import { BsBody } from './buildStudioPrimitives'
 
 const Grid = styled.div`
@@ -14,16 +14,19 @@ const Grid = styled.div`
   }
 `
 
-const Card = styled.div`
+const Card = styled.a`
   padding: 16px;
   border-radius: 16px;
   border: 1px solid ${buildStudioColors.border};
   background: ${buildStudioColors.panel};
-  transition: transform ${buildStudioLayout.btnTransition} ease, border-color ${buildStudioLayout.transition} ease;
+  transition: transform 180ms ease, border-color 180ms ease;
+  text-decoration: none;
+  display: block;
+  color: inherit;
 
   &:hover {
     border-color: ${buildStudioColors.gold};
-    transform: translateY(-${buildStudioLayout.cardLift});
+    transform: translateY(-4px);
   }
 `
 
@@ -43,6 +46,12 @@ const Activation = styled.div`
   color: ${buildStudioColors.gold};
 `
 
+const Status = styled.div`
+  margin-top: 4px;
+  font-size: 11px;
+  color: ${({ $available }: { $available: boolean }) => ($available ? buildStudioColors.green : buildStudioColors.muted)};
+`
+
 const SectionTitle = styled.h2`
   margin: 0 0 4px;
   font-family: ${BS_FONT_DISPLAY};
@@ -58,20 +67,32 @@ const SectionSub = styled.p`
   color: ${buildStudioColors.muted};
 `
 
-export const OptionalServices: React.FC = () => (
-  <div data-bs-optional-services>
-    <SectionTitle>Infrastructure Extensions</SectionTitle>
-    <SectionSub>Services</SectionSub>
-    <Grid>
-      {OPTIONAL_SERVICES.map((svc) => (
-        <Card key={svc.id} data-bs-panel>
-          <Title>{svc.title}</Title>
-          <BsBody style={{ fontSize: 13, lineHeight: '20px' }}>{svc.purpose}</BsBody>
-          <Activation>Est. activation: {svc.activationTime}</Activation>
-        </Card>
-      ))}
-    </Grid>
-  </div>
-)
+export const OptionalServices: React.FC = () => {
+  const { extensions } = useBuildRuntime()
+
+  return (
+    <div data-bs-optional-services>
+      <SectionTitle>Infrastructure Extensions</SectionTitle>
+      <SectionSub>Services</SectionSub>
+      <Grid>
+        {extensions.map((svc) => (
+          <Card
+            key={svc.id}
+            data-bs-panel
+            href={svc.href ?? '#'}
+            onClick={(e) => {
+              if (!svc.href) e.preventDefault()
+            }}
+          >
+            <Title>{svc.title}</Title>
+            <BsBody style={{ fontSize: 13, lineHeight: '20px' }}>{svc.purpose}</BsBody>
+            <Activation>Est. activation: {svc.activationTime}</Activation>
+            <Status $available={svc.available}>{svc.status} · {svc.requirements}</Status>
+          </Card>
+        ))}
+      </Grid>
+    </div>
+  )
+}
 
 export default OptionalServices

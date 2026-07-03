@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { AI_MANIFEST_PREVIEW } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { BsBadge, BsManifestPreview, BsOutlineBtn, BsPanel } from './buildStudioPrimitives'
 
@@ -88,8 +88,9 @@ const CollapseBtn = styled.button`
 const VISIBLE_LINES = 10
 
 export const AIManifestPanel: React.FC = () => {
+  const { manifest } = useBuildRuntime()
   const [expanded, setExpanded] = useState(false)
-  const fullText = useMemo(() => JSON.stringify(AI_MANIFEST_PREVIEW, null, 2), [])
+  const fullText = useMemo(() => JSON.stringify(manifest, null, 2), [manifest])
   const lines = useMemo(() => fullText.split('\n'), [fullText])
   const hasMore = lines.length > VISIBLE_LINES
   const displayText = expanded || !hasMore ? fullText : `${lines.slice(0, VISIBLE_LINES).join('\n')}\n  …`
@@ -118,7 +119,9 @@ export const AIManifestPanel: React.FC = () => {
           </TitleBlock>
           <StatusRow>
             <span style={{ fontFamily: BS_FONT_BODY, fontSize: 12, color: buildStudioColors.label }}>Manifest Status</span>
-            <BsBadge $variant="green">Machine Readable</BsBadge>
+            <BsBadge $variant={manifest.status === 'ready' ? 'green' : 'yellow'}>
+              {manifest.status === 'ready' ? 'Machine Readable' : manifest.status}
+            </BsBadge>
           </StatusRow>
         </Header>
 

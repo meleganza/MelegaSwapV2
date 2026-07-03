@@ -278,26 +278,27 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `BuildStudioScreen`, `ImportExistingTokenScreen` |
-| Runtime | ⬜ | Wizard UI + static timelines; no on-chain create flows wired in studio |
-| AI | ⬜ | Advisor copy static |
+| Runtime | 🟩 | ✅ R021 — `buildRuntime/` orchestrates Projects + Radar + Pools + Farms; preparation only |
+| AI | 🟨 | Rule-based advisor, score, suggestions, manifest — no ML |
 | Production | ⬜ | — |
 
 ### Runtime requirements
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Import Existing Token | 🟨 | UI complete; validation runtime partial |
-| Create Token | ⬜ | Links to `/launch` intents |
-| Create Pool | ⬜ | — |
-| Create Farm | ⬜ | — |
-| Infrastructure Suggestions | ⬜ | Static |
-| Manifest | 🟨 | Registry write paths exist in libs |
-| Builder Templates | ⬜ | Static |
+| Import Existing Token | 🟩 | Contract → Projects → Radar → score → suggestions |
+| Create Token | 🟩 | Preparation preview — deploy suppressed in studio |
+| Create Pool | 🟩 | Pools Runtime preview — create suppressed |
+| Create Farm | 🟩 | Farms Runtime preview — create suppressed |
+| Infrastructure Suggestions | 🟩 | From Projects `buildAiRecommendations` |
+| Manifest | 🟩 | Runtime-generated JSON — copy/download |
+| Builder Templates | 🟩 | 6 templates + config JSON + execution preview |
 
-### AI (future)
+### AI (R021 partial)
 
-- AI Builder Assistant
-- Infrastructure Optimizer
+- AI Build Advisor — rule-based next action from live runtimes
+- Infrastructure Score — heuristic 0–100 (Projects + Radar + capabilities)
+- Infrastructure Optimizer — future (external feed integration)
 
 ---
 
@@ -368,7 +369,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | **4** | **Farms Runtime** | ✅ R018 complete — studio live |
 | **5** | **Projects AI Runtime** | ✅ R019 — registry runtime + heuristic AI; external feed APIs next |
 | **6** | **Radar Runtime** | ✅ R020 — Projects Runtime integration + live event engine |
-| **7** | **Build Studio Runtime** | Import token validation + create flows |
+| **7** | **Build Studio Runtime** | ✅ R021 — infrastructure orchestrator; Projects/Radar/Pools/Farms integration |
 | **8** | **Command Center Runtime** | Wallet + positions + live briefing feed |
 | **9** | **Global Visual Freeze** | Responsive + a11y + perf audit; no new UI scope |
 
@@ -390,6 +391,9 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-03 | R021 Build Studio Runtime — orchestration layer; Build Studio Runtime 🟩, AI 🟨 |
+| 2026-07-03 | R020 Radar Runtime — Projects integration + live events; Radar Runtime 🟩 |
+| 2026-07-03 | R019 Projects AI Runtime — registry runtime + heuristic AI; Projects Runtime 🟩 |
 | 2026-07-03 | R017 Pools Runtime — studio wired to staking infra; Pools Runtime 🟩 |
 | 2026-07-03 | R016 Liquidity Runtime — studio wired to LP infra; Liquidity Runtime 🟩 |
 | 2026-07-03 | R015 Trade Runtime — mock layers removed; Trade Runtime 🟩 |

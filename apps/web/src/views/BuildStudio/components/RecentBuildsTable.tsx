@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { RECENT_BUILDS } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { BsPanel, BsSectionTitle, BsStatusChip } from './buildStudioPrimitives'
 
@@ -40,16 +40,6 @@ const Row = styled.div`
   font-family: ${BS_FONT_BODY};
   font-size: 13px;
   color: ${buildStudioColors.body};
-  animation: fadeIn 300ms ease-out both;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
 `
 
 const Status = styled.span<{ $ready?: boolean }>`
@@ -67,38 +57,42 @@ const TitleWrap = styled.div`
   padding: 20px 24px 0;
 `
 
-export const RecentBuildsTable: React.FC = () => (
-  <BsPanel data-bs-panel data-bs-recent-builds $height={buildStudioLayout.recentBuildsH}>
-    <Inner>
-      <TitleWrap>
-        <BsSectionTitle>Recent Builds</BsSectionTitle>
-      </TitleWrap>
-      <Table>
-        <Head>
-          <span>Time</span>
-          <span>Action</span>
-          <span>Project</span>
-          <span>Builder</span>
-          <span>Status</span>
-          <span>Infrastructure</span>
-          <span>Execution Status</span>
-          <span>AI Verified</span>
-        </Head>
-        {RECENT_BUILDS.map((row, i) => (
-          <Row key={row.id} style={{ animationDelay: `${i * 60}ms` }}>
-            <span>{row.time}</span>
-            <span style={{ color: buildStudioColors.white, fontWeight: 600 }}>{row.action}</span>
-            <span>{row.project}</span>
-            <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{row.builder}</span>
-            <Status $ready={row.status === 'Ready' || row.status === 'Validated'}>{row.status}</Status>
-            <span>{row.infrastructure}</span>
-            <BsStatusChip $status={row.executionStatusTone}>{row.executionStatus}</BsStatusChip>
-            <Verified $verified={row.aiVerified}>{row.aiVerified ? 'Yes' : 'No'}</Verified>
-          </Row>
-        ))}
-      </Table>
-    </Inner>
-  </BsPanel>
-)
+export const RecentBuildsTable: React.FC = () => {
+  const { recentBuilds } = useBuildRuntime()
+
+  return (
+    <BsPanel data-bs-panel data-bs-recent-builds $height={buildStudioLayout.recentBuildsH}>
+      <Inner>
+        <TitleWrap>
+          <BsSectionTitle>Recent Builds</BsSectionTitle>
+        </TitleWrap>
+        <Table>
+          <Head>
+            <span>Time</span>
+            <span>Action</span>
+            <span>Project</span>
+            <span>Builder</span>
+            <span>Status</span>
+            <span>Infrastructure</span>
+            <span>Execution Status</span>
+            <span>AI Verified</span>
+          </Head>
+          {recentBuilds.map((row) => (
+            <Row key={row.id}>
+              <span>{row.time}</span>
+              <span style={{ color: buildStudioColors.white, fontWeight: 600 }}>{row.action}</span>
+              <span>{row.project}</span>
+              <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{row.builder}</span>
+              <Status $ready={row.status === 'Ready' || row.status === 'Validated'}>{row.status}</Status>
+              <span>{row.infrastructure}</span>
+              <BsStatusChip $status={row.executionStatusTone}>{row.executionStatus}</BsStatusChip>
+              <Verified $verified={row.aiVerified}>{row.aiVerified ? 'Yes' : 'No'}</Verified>
+            </Row>
+          ))}
+        </Table>
+      </Inner>
+    </BsPanel>
+  )
+}
 
 export default RecentBuildsTable

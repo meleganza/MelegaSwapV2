@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { ADVISOR_DATA, ADVISOR_WORKFLOW } from '../buildStudioData'
+import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { BsGauge, BsGaugeLabel, BsGaugeValue, BsPanel } from './buildStudioPrimitives'
 
@@ -111,41 +111,54 @@ const GaugeWrap = styled.div`
   padding-top: 6px;
 `
 
-export const AIBuildAdvisorPanel: React.FC = () => (
-  <BsPanel data-bs-panel data-bs-advisor $height={buildStudioLayout.advisorH}>
-    <Inner>
-      <Title>AI Build Advisor</Title>
+const NextAction = styled.div`
+  font-family: ${BS_FONT_BODY};
+  font-size: 11px;
+  color: ${buildStudioColors.gold};
+  margin-top: 4px;
+`
 
-      <WorkflowLabel>Recommended Workflow</WorkflowLabel>
-      <WorkflowList>
-        {ADVISOR_WORKFLOW.map((step, i) => (
-          <WorkflowStep key={step}>
-            {i > 0 ? <StepArrow aria-hidden>↓</StepArrow> : null}
-            {step}
-          </WorkflowStep>
-        ))}
-      </WorkflowList>
+export const AIBuildAdvisorPanel: React.FC = () => {
+  const { advisor } = useBuildRuntime()
 
-      <ConfidenceRow>
-        <ConfidenceLabel>Confidence</ConfidenceLabel>
-        <ConfidenceValue>{ADVISOR_DATA.confidence}%</ConfidenceValue>
-      </ConfidenceRow>
+  return (
+    <BsPanel data-bs-panel data-bs-advisor $height={buildStudioLayout.advisorH}>
+      <Inner>
+        <Title>AI Build Advisor</Title>
 
-      <ReasoningBlock>
-        <ReasoningLabel>Reasoning</ReasoningLabel>
-        {ADVISOR_DATA.reasoning.map((line) => (
-          <ReasoningText key={line}>{line}</ReasoningText>
-        ))}
-      </ReasoningBlock>
+        <WorkflowLabel>Recommended Workflow</WorkflowLabel>
+        <WorkflowList>
+          {advisor.workflow.map((step, i) => (
+            <WorkflowStep key={step}>
+              {i > 0 ? <StepArrow aria-hidden>↓</StepArrow> : null}
+              {step}
+            </WorkflowStep>
+          ))}
+        </WorkflowList>
 
-      <GaugeWrap>
-        <BsGauge $score={ADVISOR_DATA.infrastructureReady}>
-          <BsGaugeValue>{ADVISOR_DATA.infrastructureReady}</BsGaugeValue>
-          <BsGaugeLabel>Infrastructure Ready</BsGaugeLabel>
-        </BsGauge>
-      </GaugeWrap>
-    </Inner>
-  </BsPanel>
-)
+        <ConfidenceRow>
+          <ConfidenceLabel>Confidence</ConfidenceLabel>
+          <ConfidenceValue>{advisor.confidence}%</ConfidenceValue>
+        </ConfidenceRow>
+
+        <NextAction>Next: {advisor.nextAction} · D87 {advisor.d87Contribution}</NextAction>
+
+        <ReasoningBlock>
+          <ReasoningLabel>Reasoning</ReasoningLabel>
+          {advisor.reasoning.map((line) => (
+            <ReasoningText key={line}>{line}</ReasoningText>
+          ))}
+        </ReasoningBlock>
+
+        <GaugeWrap>
+          <BsGauge $score={advisor.infrastructureReady}>
+            <BsGaugeValue>{advisor.infrastructureReady}</BsGaugeValue>
+            <BsGaugeLabel>Infrastructure Ready</BsGaugeLabel>
+          </BsGauge>
+        </GaugeWrap>
+      </Inner>
+    </BsPanel>
+  )
+}
 
 export default AIBuildAdvisorPanel
