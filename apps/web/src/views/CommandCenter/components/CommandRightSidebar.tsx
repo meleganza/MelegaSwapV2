@@ -3,24 +3,14 @@ import styled from 'styled-components'
 import { AI_RECOMMENDATIONS, NOTIFICATIONS, REPORTS } from '../commandCenterData'
 import { recommendationIconEmoji, recommendationIconTone, safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
-import { CcCardHeader, CcPanel, CcPill, CcTitle } from './commandCenterPrimitives'
-
-const Stack = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const Panel = styled(CcPanel)`
-  padding: 18px;
-`
+import { CcCardHeader, CcDashCard, CcPill, CcTitle } from './commandCenterPrimitives'
 
 const RecRow = styled.button`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 0;
+  gap: 10px;
+  padding: 8px 0;
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: transparent;
@@ -38,20 +28,20 @@ const RecRow = styled.button`
 `
 
 const Icon = styled.span<{ $tone: string }>`
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   background: ${({ $tone }) => $tone};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
   flex-shrink: 0;
 `
 
 const RecTitle = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: ${commandCenterColors.white};
   transition: color 180ms ease;
@@ -59,18 +49,20 @@ const RecTitle = styled.div`
 
 const RecDesc = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: 11px;
+  font-size: 10px;
   color: ${commandCenterColors.muted};
   margin-top: 2px;
+  line-height: 1.35;
 `
 
 const Chevron = styled.span`
   color: ${commandCenterColors.gold};
   margin-left: auto;
+  flex-shrink: 0;
 `
 
 const NotifRow = styled.div`
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-family: ${CC_FONT_BODY};
   font-size: 12px;
@@ -83,10 +75,11 @@ const NotifRow = styled.div`
 const NotifTitle = styled.div`
   font-weight: 600;
   color: ${commandCenterColors.white};
+  font-size: 11px;
 `
 
 const NotifTime = styled.div`
-  font-size: 11px;
+  font-size: 10px;
   color: ${commandCenterColors.muted};
   margin-top: 2px;
 `
@@ -95,10 +88,11 @@ const ReportRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  gap: 8px;
+  padding: 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-family: ${CC_FONT_BODY};
-  font-size: 12px;
+  font-size: 11px;
   color: ${commandCenterColors.body};
 
   &:last-child {
@@ -112,56 +106,53 @@ const reportTone = (s: string) => {
   return 'gold' as const
 }
 
-const iconTone = recommendationIconTone
-const iconEmoji = recommendationIconEmoji
-
 export const CommandRightSidebar: React.FC = () => {
   const recommendations = safeArray(AI_RECOMMENDATIONS)
   const notifications = safeArray(NOTIFICATIONS)
   const reports = safeArray(REPORTS)
 
   return (
-  <Stack data-cc-right-sidebar>
-    <Panel>
-      <CcCardHeader>
-        <CcTitle>AI Recommendations</CcTitle>
-      </CcCardHeader>
-      {recommendations.map((r) => (
-        <RecRow key={r.id} type="button">
-          <Icon $tone={iconTone(r.icon)}>{iconEmoji(r.icon)}</Icon>
-          <div>
-            <RecTitle className="cc-rec-title">{r.title}</RecTitle>
-            <RecDesc>{r.description}</RecDesc>
-          </div>
-          <Chevron>›</Chevron>
-        </RecRow>
-      ))}
-    </Panel>
+    <>
+      <CcDashCard data-cc-ai-recommendations $minHeight="360px">
+        <CcCardHeader style={{ marginBottom: 0 }}>
+          <CcTitle>AI Recommendations</CcTitle>
+        </CcCardHeader>
+        {recommendations.map((r) => (
+          <RecRow key={r.id} type="button">
+            <Icon $tone={recommendationIconTone(r.icon)}>{recommendationIconEmoji(r.icon)}</Icon>
+            <div style={{ minWidth: 0 }}>
+              <RecTitle className="cc-rec-title">{r.title}</RecTitle>
+              <RecDesc>{r.description}</RecDesc>
+            </div>
+            <Chevron>›</Chevron>
+          </RecRow>
+        ))}
+      </CcDashCard>
 
-    <Panel>
-      <CcCardHeader>
-        <CcTitle>Notifications</CcTitle>
-      </CcCardHeader>
-      {notifications.map((n) => (
-        <NotifRow key={n.id}>
-          <NotifTitle>{n.title}</NotifTitle>
-          <NotifTime>{n.time}</NotifTime>
-        </NotifRow>
-      ))}
-    </Panel>
+      <CcDashCard data-cc-notifications>
+        <CcCardHeader style={{ marginBottom: 0 }}>
+          <CcTitle>Notifications</CcTitle>
+        </CcCardHeader>
+        {notifications.map((n) => (
+          <NotifRow key={n.id}>
+            <NotifTitle>{n.title}</NotifTitle>
+            <NotifTime>{n.time}</NotifTime>
+          </NotifRow>
+        ))}
+      </CcDashCard>
 
-    <Panel>
-      <CcCardHeader>
-        <CcTitle>Professional Reports</CcTitle>
-      </CcCardHeader>
-      {reports.map((r) => (
-        <ReportRow key={r.id}>
-          <span>{r.title}</span>
-          <CcPill $tone={reportTone(r.status)}>{r.status}</CcPill>
-        </ReportRow>
-      ))}
-    </Panel>
-  </Stack>
+      <CcDashCard data-cc-reports>
+        <CcCardHeader style={{ marginBottom: 0 }}>
+          <CcTitle>Professional Reports</CcTitle>
+        </CcCardHeader>
+        {reports.map((r) => (
+          <ReportRow key={r.id}>
+            <span>{r.title}</span>
+            <CcPill $tone={reportTone(r.status)}>{r.status}</CcPill>
+          </ReportRow>
+        ))}
+      </CcDashCard>
+    </>
   )
 }
 

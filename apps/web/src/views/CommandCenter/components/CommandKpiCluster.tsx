@@ -9,32 +9,37 @@ import {
   KPI_REWARDS,
 } from '../commandCenterData'
 import { safeSparklinePoints } from '../commandCenterSafe'
-import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors } from '../commandCenterTokens'
+import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import { CcPanel } from './commandCenterPrimitives'
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-`
-
-const SmallGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 12px;
+  grid-template-rows: repeat(3, 1fr);
+  gap: ${commandCenterLayout.kpiGap};
+  height: ${commandCenterLayout.heroHeight};
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    height: auto;
+    grid-template-rows: auto;
   }
 `
 
 const KpiCard = styled(CcPanel)`
-  padding: 16px;
-  min-height: 100px;
+  padding: 18px;
+  min-height: ${commandCenterLayout.kpiCardMinHeight};
+  border-radius: ${commandCenterLayout.kpiCardRadius};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
 `
 
 const Label = styled.div`
@@ -48,7 +53,7 @@ const Label = styled.div`
 
 const Value = styled.div`
   font-family: ${CC_FONT_DISPLAY};
-  font-size: 28px;
+  font-size: clamp(20px, 2.4vw, ${commandCenterLayout.kpiValueMax});
   font-weight: 700;
   color: ${commandCenterColors.white};
   line-height: 1.1;
@@ -63,8 +68,8 @@ const Delta = styled.span<{ $pos?: boolean }>`
 
 const Sparkline = styled.svg`
   width: 100%;
-  height: 28px;
-  margin-top: 8px;
+  height: 24px;
+  margin-top: 6px;
 `
 
 const Sub = styled.div`
@@ -74,19 +79,28 @@ const Sub = styled.div`
   margin-top: 4px;
 `
 
+const ScoreWrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+`
+
 const ScoreRing = styled.div`
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   border: 3px solid ${commandCenterColors.green};
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: ${CC_FONT_DISPLAY};
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: ${commandCenterColors.green};
-  margin-top: 8px;
+  flex-shrink: 0;
 `
 
 function MiniSparkline({ points }: { points: number[] }) {
@@ -95,7 +109,7 @@ function MiniSparkline({ points }: { points: number[] }) {
   const min = Math.min(...safePoints)
   const range = max - min || 1
   const w = 120
-  const h = 28
+  const h = 24
   const denom = Math.max(safePoints.length - 1, 1)
   const d = safePoints
     .map((p, i) => {
@@ -113,46 +127,44 @@ function MiniSparkline({ points }: { points: number[] }) {
 }
 
 export const CommandKpiCluster: React.FC = () => (
-  <div data-cc-kpi-cluster>
-    <Grid>
-      <KpiCard>
-        <Label>Net Worth</Label>
-        <div>
-          <Value>{KPI_NET_WORTH.value}</Value>
-          <Delta $pos={KPI_NET_WORTH.deltaPositive}>{KPI_NET_WORTH.delta} 24h</Delta>
-          <MiniSparkline points={KPI_NET_WORTH.sparkline ?? []} />
-        </div>
-      </KpiCard>
-      <KpiCard>
-        <Label>Today&apos;s Actions</Label>
-        <Value>{KPI_ACTIONS.value}</Value>
-        <Sub>{KPI_ACTIONS.label}</Sub>
-      </KpiCard>
-      <KpiCard>
-        <Label>Radar Alerts</Label>
-        <Value>{KPI_RADAR.value}</Value>
-        <Sub>{KPI_RADAR.label}</Sub>
-      </KpiCard>
-      <KpiCard>
-        <Label>Rewards Pending</Label>
-        <Value style={{ fontSize: 22 }}>{KPI_REWARDS.value}</Value>
-        <Sub>{KPI_REWARDS.label}</Sub>
-      </KpiCard>
-    </Grid>
-    <SmallGrid>
-      <KpiCard>
-        <Label>Infrastructure</Label>
-        <Value>{KPI_INFRASTRUCTURE.value}</Value>
-        <Sub>{KPI_INFRASTRUCTURE.label}</Sub>
-      </KpiCard>
-      <KpiCard>
-        <Label>AI Score</Label>
+  <Grid data-cc-kpi-cluster>
+    <KpiCard>
+      <Label>Net Worth</Label>
+      <div>
+        <Value>{KPI_NET_WORTH.value}</Value>
+        <Delta $pos={KPI_NET_WORTH.deltaPositive}>{KPI_NET_WORTH.delta} 24h</Delta>
+        <MiniSparkline points={KPI_NET_WORTH.sparkline ?? []} />
+      </div>
+    </KpiCard>
+    <KpiCard>
+      <Label>Today&apos;s Actions</Label>
+      <Value>{KPI_ACTIONS.value}</Value>
+      <Sub>{KPI_ACTIONS.label}</Sub>
+    </KpiCard>
+    <KpiCard>
+      <Label>Radar Alerts</Label>
+      <Value>{KPI_RADAR.value}</Value>
+      <Sub>{KPI_RADAR.label}</Sub>
+    </KpiCard>
+    <KpiCard>
+      <Label>Rewards Pending</Label>
+      <Value style={{ fontSize: 22 }}>{KPI_REWARDS.value}</Value>
+      <Sub>{KPI_REWARDS.label}</Sub>
+    </KpiCard>
+    <KpiCard>
+      <Label>Infrastructure</Label>
+      <Value>{KPI_INFRASTRUCTURE.value}</Value>
+      <Sub>{KPI_INFRASTRUCTURE.label}</Sub>
+    </KpiCard>
+    <KpiCard>
+      <Label>AI Score</Label>
+      <ScoreWrap>
         <Value>{KPI_AI_SCORE.value}</Value>
         <ScoreRing>{KPI_AI_SCORE.value}</ScoreRing>
-        <Sub>{KPI_AI_SCORE.label}</Sub>
-      </KpiCard>
-    </SmallGrid>
-  </div>
+      </ScoreWrap>
+      <Sub>{KPI_AI_SCORE.label}</Sub>
+    </KpiCard>
+  </Grid>
 )
 
 export default CommandKpiCluster

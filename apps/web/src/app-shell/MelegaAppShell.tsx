@@ -126,7 +126,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
       <AppShellUIKitNeutralizer />
 
       <MelegaSidebar
-        brand={<MelegaBrandLockup size="desktop" iconOnly />}
+        brand={<MelegaBrandLockup size="desktop" />}
         navigation={navigation}
         footer={<MelegaMarcoCard priceLabel={marcoPriceLabel} />}
       />

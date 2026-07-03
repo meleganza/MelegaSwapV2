@@ -5,26 +5,36 @@ import { PageMeta } from 'components/Layout/Page'
 import CommandCenterGlobalStyle from './CommandCenterGlobalStyle'
 import { commandCenterColors, commandCenterLayout } from './commandCenterTokens'
 import AIDailyBriefing from './components/AIDailyBriefing'
-import CommandBottomSection from './components/CommandBottomSection'
 import CommandCenterPageHeader from './components/CommandCenterPageHeader'
 import CommandKpiCluster from './components/CommandKpiCluster'
+import CommandQuickActions from './components/CommandQuickActions'
 import CommandRightSidebar from './components/CommandRightSidebar'
-import PositionColumns from './components/PositionColumns'
+import {
+  CommandAssetsCard,
+  CommandCollectiblesCard,
+  CommandFarmsCard,
+  CommandInfrastructureCard,
+  CommandLiquidityCard,
+  CommandPoolsCard,
+  CommandRecentActivityCard,
+} from './components/CommandDashboardCards'
+import MachineSummaryCard from './components/MachineSummaryCard'
+import { CcColStack } from './components/commandCenterPrimitives'
 import SafeTrendingRibbon from './components/SafeTrendingRibbon'
 
 const Root = styled.div`
   color: ${commandCenterColors.white};
   background: ${commandCenterColors.pageBg};
-  padding: 0 0 32px;
   min-width: 0;
   overflow-x: hidden;
+  padding-bottom: ${commandCenterLayout.mobileBottomPad};
 
-  @media (max-width: 768px) {
-    padding: 0 0 ${commandCenterLayout.mobileBottomPad};
+  @media (min-width: 769px) {
+    padding-bottom: 32px;
   }
 `
 
-const Content = styled.div`
+const Shell = styled.div`
   max-width: ${commandCenterLayout.contentMax};
   margin: 0 auto;
   padding: ${commandCenterLayout.contentPaddingTop} ${commandCenterLayout.contentPaddingX}
@@ -35,9 +45,20 @@ const Content = styled.div`
   gap: ${commandCenterLayout.sectionGap};
 `
 
-const TopRow = styled.div`
+const HeroRow = styled.div`
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
+  grid-template-columns: 7fr 5fr;
+  gap: ${commandCenterLayout.sectionGap};
+  align-items: stretch;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const DashboardGrid = styled.div`
+  display: grid;
+  grid-template-columns: ${commandCenterLayout.colLeft} ${commandCenterLayout.colCenter} ${commandCenterLayout.colRight};
   gap: ${commandCenterLayout.sectionGap};
   align-items: start;
 
@@ -46,19 +67,28 @@ const TopRow = styled.div`
   }
 `
 
-const MainRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr ${commandCenterLayout.colSidebar};
-  gap: ${commandCenterLayout.sectionGap};
-  align-items: start;
+const MobileRecs = styled.div`
+  display: none;
 
   @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: ${commandCenterLayout.sectionGap};
   }
 `
 
-const MainCol = styled.div`
-  min-width: 0;
+const RightCol = styled(CcColStack)`
+  @media (max-width: 1024px) {
+    display: none;
+  }
+`
+
+const KiriFooter = styled.div`
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: ${commandCenterColors.muted};
+  padding-top: 4px;
 `
 
 export interface CommandCenterScreenProps {
@@ -69,30 +99,55 @@ export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtim
   <Root data-command-center-screen>
     <PageMeta />
     <CommandCenterGlobalStyle />
-    {runtimeSafeMode ? (
-      <MelegaTicker
-        label="TRENDING ON MELEGA DEX"
-        items={[]}
-        emptyPrimary="Command Center ready"
-        emptySecondary="Operational overview loaded with safe fallback data"
-      />
-    ) : (
-      <SafeTrendingRibbon />
-    )}
-    <Content>
+    <Shell>
       <CommandCenterPageHeader />
-      <TopRow data-cc-top-row>
+      {runtimeSafeMode ? (
+        <MelegaTicker
+          label="TRENDING ON MELEGA DEX"
+          items={[]}
+          emptyPrimary="Command Center ready"
+          emptySecondary="Operational overview loaded with safe fallback data"
+        />
+      ) : (
+        <SafeTrendingRibbon />
+      )}
+
+      <HeroRow data-cc-hero-row>
         <AIDailyBriefing />
         <CommandKpiCluster />
-      </TopRow>
-      <MainRow data-cc-main-row>
-        <MainCol>
-          <PositionColumns />
-        </MainCol>
+      </HeroRow>
+
+      <MobileRecs data-cc-mobile-recs>
         <CommandRightSidebar />
-      </MainRow>
-      <CommandBottomSection />
-    </Content>
+        <CommandQuickActions />
+      </MobileRecs>
+
+      <DashboardGrid data-cc-dashboard-grid>
+        <CcColStack>
+          <CommandAssetsCard />
+          <CommandCollectiblesCard />
+          <CommandInfrastructureCard />
+        </CcColStack>
+
+        <CcColStack>
+          <CommandLiquidityCard />
+          <CommandPoolsCard />
+          <CommandFarmsCard />
+        </CcColStack>
+
+        <RightCol>
+          <CommandRightSidebar />
+          <CommandQuickActions />
+        </RightCol>
+      </DashboardGrid>
+
+      <CommandRecentActivityCard />
+      <MachineSummaryCard />
+
+      <KiriFooter data-cc-kiri-footer>
+        ⚠ KIRI is observing. KIRI is learning. KIRI is building the Civilization.
+      </KiriFooter>
+    </Shell>
   </Root>
 )
 

@@ -3,16 +3,20 @@ import styled from 'styled-components'
 import { AI_BRIEFING } from '../commandCenterData'
 import { safeArray } from '../commandCenterSafe'
 import { CC_FONT_BODY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
-import { CcBody, CcPanel } from './commandCenterPrimitives'
+import { CcPanel } from './commandCenterPrimitives'
 
 const Panel = styled(CcPanel)`
-  padding: 24px;
+  padding: 20px;
   border-radius: ${commandCenterLayout.panelRadius};
-  min-height: 200px;
+  height: ${commandCenterLayout.heroHeight};
   display: flex;
-  gap: 20px;
+  gap: 18px;
+  overflow: hidden;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
+    height: auto;
+    min-height: 240px;
     flex-direction: column;
   }
 `
@@ -34,6 +38,9 @@ const Avatar = styled.div`
 const Content = styled.div`
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `
 
 const Greeting = styled.div`
@@ -41,7 +48,7 @@ const Greeting = styled.div`
   font-size: 18px;
   font-weight: 700;
   color: ${commandCenterColors.white};
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 `
 
 const List = styled.ul`
@@ -50,13 +57,16 @@ const List = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 `
 
 const Item = styled.li`
   font-family: ${CC_FONT_BODY};
   font-size: 13px;
-  line-height: 20px;
+  line-height: 19px;
   color: ${commandCenterColors.body};
   padding-left: 14px;
   position: relative;
@@ -70,7 +80,8 @@ const Item = styled.li`
 `
 
 const Footer = styled.div`
-  margin-top: 16px;
+  margin-top: auto;
+  align-self: center;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -88,18 +99,18 @@ export const AIDailyBriefing: React.FC = () => {
   const bullets = safeArray(AI_BRIEFING?.bullets)
 
   return (
-  <Panel data-cc-ai-briefing $emphasis>
-    <Avatar aria-hidden>✦</Avatar>
-    <Content>
-      <Greeting>{AI_BRIEFING?.greeting ?? 'Welcome back.'}</Greeting>
-      <List>
-        {bullets.map((b) => (
-          <Item key={b}>{b}</Item>
-        ))}
-      </List>
-      <Footer>⏱ Estimated actions today: {AI_BRIEFING?.estimatedActions ?? '—'}</Footer>
-    </Content>
-  </Panel>
+    <Panel data-cc-ai-briefing $emphasis>
+      <Avatar aria-hidden>✦</Avatar>
+      <Content>
+        <Greeting>{AI_BRIEFING?.greeting ?? 'Welcome back.'}</Greeting>
+        <List>
+          {bullets.map((b) => (
+            <Item key={b}>{b}</Item>
+          ))}
+        </List>
+        <Footer>⏱ Estimated actions today: {AI_BRIEFING?.estimatedActions ?? '—'}</Footer>
+      </Content>
+    </Panel>
   )
 }
 

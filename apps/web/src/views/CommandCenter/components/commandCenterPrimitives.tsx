@@ -1,20 +1,53 @@
 import styled from 'styled-components'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 
-export const CcPanel = styled.div<{ $emphasis?: boolean; $padding?: string }>`
-  background: ${commandCenterColors.panelGradient}, ${commandCenterColors.panel};
+export const CcPanel = styled.div<{ $emphasis?: boolean; $padding?: string; $dash?: boolean }>`
+  background: ${commandCenterColors.panel};
   border: 1px solid ${({ $emphasis }) => ($emphasis ? commandCenterColors.borderGold : commandCenterColors.border)};
   border-radius: ${commandCenterLayout.cardRadius};
   box-sizing: border-box;
-  padding: ${({ $padding }) => $padding || '20px'};
-  transition: transform ${commandCenterLayout.transition} ease, border-color ${commandCenterLayout.transition} ease,
-    box-shadow ${commandCenterLayout.transition} ease;
+  padding: ${({ $padding }) => $padding || commandCenterLayout.cardPadding};
+  transition: ${({ $dash }) =>
+    $dash ? 'border-color 180ms ease' : `transform ${commandCenterLayout.transition} ease, border-color ${commandCenterLayout.transition} ease, box-shadow ${commandCenterLayout.transition} ease`};
 
   &:hover {
     border-color: ${commandCenterColors.borderGold};
+    ${({ $dash }) =>
+      $dash
+        ? ''
+        : `
     transform: translateY(-${commandCenterLayout.cardLift});
     box-shadow: ${commandCenterColors.shadow};
+    `}
   }
+`
+
+/** Dashboard grid card — no hover lift, flex column layout */
+export const CcDashCard = styled(CcPanel).attrs({ $dash: true })<{ $height?: string; $minHeight?: string }>`
+  padding: ${commandCenterLayout.cardPadding};
+  display: flex;
+  flex-direction: column;
+  gap: ${commandCenterLayout.cardGap};
+  min-width: 0;
+  height: ${({ $height }) => $height || 'auto'};
+  min-height: ${({ $minHeight }) => $minHeight || '0'};
+  overflow: hidden;
+`
+
+export const CcDashBody = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`
+
+export const CcColStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${commandCenterLayout.sectionGap};
+  min-width: 0;
 `
 
 export const CcTitle = styled.h3`

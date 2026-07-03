@@ -1,0 +1,53 @@
+{
+  "task": "R013-B COMMAND CENTER STRUCTURAL LAYOUT FIX",
+  "deliverable": "R013_B_COMMAND_CENTER_STRUCTURAL_FIX_READY",
+  "route": "/command-center",
+  "build": "pass",
+  "tests": {
+    "design-system": "11/11 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "command-center-desktop-1440x900.png",
+    "command-center-desktop-1728x1117.png",
+    "command-center-mobile-390x844.png",
+    "command-center-mobile-428x926.png"
+  ],
+  "checks": {
+    "command-center-desktop-1440x900.png": {
+      "oops": 0,
+      "hasScreen": true,
+      "hasMachineSummary": true,
+      "hasBrand": true
+    },
+    "command-center-desktop-1728x1117.png": {
+      "oops": 0,
+      "hasScreen": true,
+      "hasMachineSummary": true,
+      "hasBrand": true
+    },
+    "command-center-mobile-390x844.png": {
+      "oops": 0,
+      "hasScreen": true,
+      "hasMachineSummary": true,
+      "hasBrand": true
+    },
+    "command-center-mobile-428x926.png": {
+      "oops": 0,
+      "hasScreen": true,
+      "hasMachineSummary": true,
+      "hasBrand": true
+    }
+  },
+  "errors": [],
+  "validation": {
+    "grid1180Shell": true,
+    "heroRow7plus5": true,
+    "threeColumnDashboard": true,
+    "machineSummaryVisible": true,
+    "sidebarWordmarkRestored": true,
+    "marcoCanonicalLogo": true,
+    "noOverlap": true
+  },
+  "verdict": "R013_B_COMMAND_CENTER_STRUCTURAL_FIX_READY"
+}

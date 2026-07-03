@@ -18,12 +18,16 @@ const Card = styled.div`
 `
 
 const LogoSlot = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #d6b445;
+  background: #050505;
+  overflow: hidden;
 `
 
 const Meta = styled.div`
@@ -50,7 +54,7 @@ export interface MelegaMarcoCardProps {
 export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) => (
   <Card data-melega-marco-card>
     <LogoSlot aria-hidden>
-      <MelegaLogoSvg size={32} />
+      <MelegaLogoSvg size={28} />
     </LogoSlot>
     <Meta>
       <Name>MARCO</Name>

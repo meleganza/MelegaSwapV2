@@ -166,3 +166,45 @@ export const RECENT_ACTIVITY: ActivityEvent[] = [
   { id: '5', label: 'Reward Claimed', time: '3d ago', icon: '💰' },
   { id: '6', label: 'Radar Indexed', time: '4d ago', icon: '📡' },
 ]
+
+export interface QuickActionItem {
+  id: string
+  label: string
+  href: string
+}
+
+export const QUICK_ACTIONS: QuickActionItem[] = [
+  { id: '1', label: 'Claim Rewards', href: '/farms' },
+  { id: '2', label: 'Add Liquidity', href: '/liquidity-studio' },
+  { id: '3', label: 'Open Radar', href: '/radar' },
+  { id: '4', label: 'Build Studio', href: '/build-studio' },
+]
+
+export const MACHINE_SUMMARY = {
+  schema: 'melega.command-center.v1',
+  generatedAt: '2026-07-03T12:00:00Z',
+  operator: 'marco',
+  netWorthUsd: 24780.45,
+  pendingRewardsUsd: 1248.75,
+  radarAlerts: 5,
+  aiScore: 87,
+  infrastructure: {
+    tokens: 3,
+    pools: 2,
+    farms: 2,
+    smartdrop: 1,
+    score: 82,
+  },
+  builder: {
+    level: 3,
+    progressPct: 68,
+    tvlManagedUsd: 48560,
+  },
+  positions: {
+    assets: 5,
+    liquidity: 2,
+    pools: 2,
+    farms: 2,
+  },
+  status: 'operational',
+}
