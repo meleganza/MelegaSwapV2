@@ -8,15 +8,16 @@ import { CcPanel } from './commandCenterPrimitives'
 const Panel = styled(CcPanel)`
   padding: 20px;
   border-radius: ${commandCenterLayout.panelRadius};
+  min-height: ${commandCenterLayout.heroHeight};
   height: ${commandCenterLayout.heroHeight};
   display: flex;
   gap: 18px;
   overflow: hidden;
   box-sizing: border-box;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     height: auto;
-    min-height: 240px;
+    min-height: 220px;
     flex-direction: column;
   }
 `

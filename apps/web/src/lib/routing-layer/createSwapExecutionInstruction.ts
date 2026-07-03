@@ -29,7 +29,7 @@ export function createSmartSwapExecutionInstruction(
     recipient: input.recipient,
     fallbackV2: input.fallbackV2 ?? false,
     routerAddress: input.routerAddress,
-    routeType: input.routeType ?? input.trade.route.routeType,
+    routeType: input.routeType ?? input.trade?.route?.routeType,
   }
 
   const id = buildInstructionId(plan)

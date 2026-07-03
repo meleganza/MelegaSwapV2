@@ -7,18 +7,10 @@ export const CcPanel = styled.div<{ $emphasis?: boolean; $padding?: string; $das
   border-radius: ${commandCenterLayout.cardRadius};
   box-sizing: border-box;
   padding: ${({ $padding }) => $padding || commandCenterLayout.cardPadding};
-  transition: ${({ $dash }) =>
-    $dash ? 'border-color 180ms ease' : `transform ${commandCenterLayout.transition} ease, border-color ${commandCenterLayout.transition} ease, box-shadow ${commandCenterLayout.transition} ease`};
+  transition: border-color 180ms ease;
 
   &:hover {
     border-color: ${commandCenterColors.borderGold};
-    ${({ $dash }) =>
-      $dash
-        ? ''
-        : `
-    transform: translateY(-${commandCenterLayout.cardLift});
-    box-shadow: ${commandCenterColors.shadow};
-    `}
   }
 `
 
@@ -98,11 +90,6 @@ export const CcGoldBtn = styled.button`
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform ${commandCenterLayout.btnTransition} ease;
-
-  &:hover {
-    transform: scale(1.02);
-  }
 `
 
 export const CcOutlineBtn = styled.button`

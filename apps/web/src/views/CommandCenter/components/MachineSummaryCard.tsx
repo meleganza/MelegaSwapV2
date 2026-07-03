@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { MACHINE_SUMMARY } from '../commandCenterData'
-import { commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
+import { commandCenterColors } from '../commandCenterTokens'
 import { CcCardHeader, CcDashCard, CcOutlineBtn, CcPill, CcTitle } from './commandCenterPrimitives'
 
 const JsonBlock = styled.pre`
@@ -16,9 +16,8 @@ const JsonBlock = styled.pre`
   color: ${commandCenterColors.body};
   white-space: pre-wrap;
   word-break: break-word;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  max-height: 160px;
+  overflow-y: auto;
 `
 
 const BtnRow = styled.div`
@@ -30,21 +29,41 @@ const BtnRow = styled.div`
 const CopyBtn = styled(CcOutlineBtn)`
   width: auto;
   flex: 1;
-  min-width: 140px;
+  min-width: 120px;
   height: 40px;
 `
 
-export const MachineSummaryCard: React.FC = () => {
-  const jsonText = useMemo(() => JSON.stringify(MACHINE_SUMMARY, null, 2), [])
-  const previewLines = useMemo(() => jsonText.split('\n').slice(0, 8).join('\n'), [jsonText])
+const ExpandBtn = styled.button`
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid ${commandCenterColors.border};
+  background: rgba(255, 255, 255, 0.04);
+  color: ${commandCenterColors.gold};
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+`
 
-  const handleCopy = useCallback(() => {
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`
+
+export const MachineSummaryCard: React.FC = () => {
+  const [expanded, setExpanded] = useState(false)
+  const jsonText = JSON.stringify(MACHINE_SUMMARY, null, 2)
+
+  const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(jsonText).catch(() => undefined)
     }
-  }, [jsonText])
+  }
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = () => {
     if (typeof document === 'undefined' || typeof URL === 'undefined') return
     const blob = new Blob([jsonText], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -53,23 +72,32 @@ export const MachineSummaryCard: React.FC = () => {
     a.download = 'melega-command-center-summary.json'
     a.click()
     URL.revokeObjectURL(url)
-  }, [jsonText])
+  }
 
   return (
-    <CcDashCard data-cc-machine-summary $height={commandCenterLayout.machineSummaryHeight}>
+    <CcDashCard data-cc-machine-summary>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Machine Summary</CcTitle>
-        <CcPill $tone="gold">Machine Readable</CcPill>
+        <HeaderActions>
+          <CcPill $tone="gold">Machine Readable</CcPill>
+          <ExpandBtn type="button" onClick={() => setExpanded((v) => !v)} aria-expanded={expanded}>
+            {expanded ? 'Collapse' : 'Expand'}
+          </ExpandBtn>
+        </HeaderActions>
       </CcCardHeader>
-      <JsonBlock>{previewLines}</JsonBlock>
-      <BtnRow>
-        <CopyBtn type="button" onClick={handleCopy}>
-          Copy Summary
-        </CopyBtn>
-        <CopyBtn type="button" onClick={handleDownload}>
-          Download JSON
-        </CopyBtn>
-      </BtnRow>
+      {expanded && (
+        <>
+          <JsonBlock>{jsonText.split('\n').slice(0, 8).join('\n')}</JsonBlock>
+          <BtnRow>
+            <CopyBtn type="button" onClick={handleCopy}>
+              Copy Summary
+            </CopyBtn>
+            <CopyBtn type="button" onClick={handleDownload}>
+              Download JSON
+            </CopyBtn>
+          </BtnRow>
+        </>
+      )}
     </CcDashCard>
   )
 }

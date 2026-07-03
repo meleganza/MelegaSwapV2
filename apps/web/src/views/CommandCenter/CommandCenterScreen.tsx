@@ -11,6 +11,7 @@ import CommandQuickActions from './components/CommandQuickActions'
 import CommandRightSidebar from './components/CommandRightSidebar'
 import {
   CommandAssetsCard,
+  CommandBuilderStatusCard,
   CommandCollectiblesCard,
   CommandFarmsCard,
   CommandInfrastructureCard,
@@ -25,8 +26,11 @@ import SafeTrendingRibbon from './components/SafeTrendingRibbon'
 const Root = styled.div`
   color: ${commandCenterColors.white};
   background: ${commandCenterColors.pageBg};
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
+  box-sizing: border-box;
   padding-bottom: ${commandCenterLayout.mobileBottomPad};
 
   @media (min-width: 769px) {
@@ -35,6 +39,7 @@ const Root = styled.div`
 `
 
 const Shell = styled.div`
+  width: 100%;
   max-width: ${commandCenterLayout.contentMax};
   margin: 0 auto;
   padding: ${commandCenterLayout.contentPaddingTop} ${commandCenterLayout.contentPaddingX}
@@ -43,6 +48,7 @@ const Shell = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${commandCenterLayout.sectionGap};
+  min-width: 0;
 `
 
 const HeroRow = styled.div`
@@ -50,34 +56,59 @@ const HeroRow = styled.div`
   grid-template-columns: 7fr 5fr;
   gap: ${commandCenterLayout.sectionGap};
   align-items: stretch;
+  min-width: 0;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
   }
 `
 
-const DashboardGrid = styled.div`
+const MainGrid = styled.div`
   display: grid;
-  grid-template-columns: ${commandCenterLayout.colLeft} ${commandCenterLayout.colCenter} ${commandCenterLayout.colRight};
+  grid-template-columns: minmax(0, ${commandCenterLayout.mainLeft}) minmax(0, ${commandCenterLayout.mainRight});
   gap: ${commandCenterLayout.sectionGap};
   align-items: start;
+  min-width: 0;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
   }
 `
 
-const MobileRecs = styled.div`
+const PositionsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: ${commandCenterLayout.sectionGap};
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const MetaGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: ${commandCenterLayout.sectionGap};
+  min-width: 0;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const MobileRail = styled.div`
   display: none;
 
   @media (max-width: 1024px) {
     display: flex;
     flex-direction: column;
     gap: ${commandCenterLayout.sectionGap};
+    min-width: 0;
   }
 `
 
-const RightCol = styled(CcColStack)`
+const DesktopRail = styled(CcColStack)`
   @media (max-width: 1024px) {
     display: none;
   }
@@ -101,6 +132,7 @@ export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtim
     <CommandCenterGlobalStyle />
     <Shell>
       <CommandCenterPageHeader />
+
       {runtimeSafeMode ? (
         <MelegaTicker
           label="TRENDING ON MELEGA DEX"
@@ -117,32 +149,35 @@ export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtim
         <CommandKpiCluster />
       </HeroRow>
 
-      <MobileRecs data-cc-mobile-recs>
+      <MobileRail data-cc-mobile-rail>
         <CommandRightSidebar />
         <CommandQuickActions />
-      </MobileRecs>
+      </MobileRail>
 
-      <DashboardGrid data-cc-dashboard-grid>
+      <MainGrid data-cc-main-grid>
         <CcColStack>
-          <CommandAssetsCard />
-          <CommandCollectiblesCard />
-          <CommandInfrastructureCard />
+          <PositionsGrid data-cc-positions-grid>
+            <CommandAssetsCard />
+            <CommandLiquidityCard />
+            <CommandPoolsCard />
+            <CommandFarmsCard />
+          </PositionsGrid>
+
+          <MetaGrid data-cc-meta-grid>
+            <CommandCollectiblesCard />
+            <CommandInfrastructureCard />
+            <CommandBuilderStatusCard />
+          </MetaGrid>
+
+          <CommandRecentActivityCard />
+          <MachineSummaryCard />
         </CcColStack>
 
-        <CcColStack>
-          <CommandLiquidityCard />
-          <CommandPoolsCard />
-          <CommandFarmsCard />
-        </CcColStack>
-
-        <RightCol>
+        <DesktopRail data-cc-right-rail>
           <CommandRightSidebar />
           <CommandQuickActions />
-        </RightCol>
-      </DashboardGrid>
-
-      <CommandRecentActivityCard />
-      <MachineSummaryCard />
+        </DesktopRail>
+      </MainGrid>
 
       <KiriFooter data-cc-kiri-footer>
         ⚠ KIRI is observing. KIRI is learning. KIRI is building the Civilization.

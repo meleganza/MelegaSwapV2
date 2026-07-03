@@ -80,10 +80,13 @@ export default function SwapCommitButton({
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
   const [singleHopOnly] = useUserSingleHopOnly()
-  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
+  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade?.route ? trade : null)
 
   const executionInstruction = useMemo(
-    () => createSmartSwapExecutionInstruction({ trade, allowedSlippage, recipient }),
+    () =>
+      trade?.route
+        ? createSmartSwapExecutionInstruction({ trade, allowedSlippage, recipient })
+        : null,
     [trade, allowedSlippage, recipient],
   )
 

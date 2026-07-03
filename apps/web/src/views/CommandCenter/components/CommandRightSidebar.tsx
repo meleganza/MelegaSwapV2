@@ -113,7 +113,7 @@ export const CommandRightSidebar: React.FC = () => {
 
   return (
     <>
-      <CcDashCard data-cc-ai-recommendations $minHeight="360px">
+      <CcDashCard data-cc-ai-recommendations>
         <CcCardHeader style={{ marginBottom: 0 }}>
           <CcTitle>AI Recommendations</CcTitle>
         </CcCardHeader>

@@ -20,7 +20,7 @@ const Grid = styled.div`
   height: ${commandCenterLayout.heroHeight};
   box-sizing: border-box;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     height: auto;
     grid-template-rows: auto;
   }
@@ -35,11 +35,6 @@ const KpiCard = styled(CcPanel)`
   justify-content: space-between;
   box-sizing: border-box;
   overflow: hidden;
-
-  &:hover {
-    transform: none;
-    box-shadow: none;
-  }
 `
 
 const Label = styled.div`

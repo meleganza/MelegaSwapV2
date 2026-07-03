@@ -90,13 +90,12 @@ const CollectiblesGrid = styled.div`
 
 const CollectibleCard = styled.div`
   width: 100%;
-  min-height: ${commandCenterLayout.collectibleH};
+  min-height: 100px;
   border-radius: 14px;
   border: 1px solid ${commandCenterColors.border};
   background: rgba(255, 255, 255, 0.02);
   padding: 12px;
   text-align: center;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -160,34 +159,39 @@ const ScoreLabel = styled.div`
 const Timeline = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 0;
+  gap: 12px;
   overflow-x: auto;
   min-height: 0;
+  width: 100%;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 `
 
 const TimelineItem = styled.div`
   flex: 1;
-  min-width: 88px;
+  min-width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  padding-top: 36px;
-  position: relative;
+  gap: 6px;
 
   @media (max-width: 768px) {
+    flex-direction: row;
+    align-items: center;
     text-align: left;
-    padding-top: 0;
-    padding-left: 40px;
     min-width: 0;
+    width: 100%;
   }
 `
 
 const TimelineDot = styled.div`
   width: 30px;
   height: 30px;
+  min-width: 30px;
   border-radius: 50%;
   border: 1px solid ${commandCenterColors.gold};
   background: ${commandCenterColors.goldBg};
@@ -195,27 +199,11 @@ const TimelineDot = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  margin: 0 auto 8px;
-
-  @media (max-width: 768px) {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 0;
-  }
+  flex-shrink: 0;
 `
 
-const TimelineLine = styled.div`
-  position: absolute;
-  top: 14px;
-  left: 24px;
-  right: 24px;
-  height: 2px;
-  background: ${commandCenterColors.border};
-
-  @media (max-width: 768px) {
-    display: none;
-  }
+const TimelineCopy = styled.div`
+  min-width: 0;
 `
 
 const TimelineLabel = styled.div`
@@ -232,12 +220,12 @@ const TimelineTime = styled.div`
   margin-top: 2px;
 `
 
-const positionH = commandCenterLayout.positionCardHeight
+const positionMinH = '240px'
 
 export const CommandAssetsCard: React.FC = () => {
   const assets = safeArray(ASSETS)
   return (
-    <CcDashCard data-cc-assets $height={positionH}>
+    <CcDashCard data-cc-assets $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Assets</CcTitle>
         <CcViewAll href="/assets">View all</CcViewAll>
@@ -269,7 +257,7 @@ export const CommandAssetsCard: React.FC = () => {
 export const CommandLiquidityCard: React.FC = () => {
   const liquidity = safeArray(LIQUIDITY)
   return (
-    <CcDashCard data-cc-liquidity $height={positionH}>
+    <CcDashCard data-cc-liquidity $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Liquidity</CcTitle>
         <CcViewAll href="/liquidity-studio">View all</CcViewAll>
@@ -295,7 +283,7 @@ export const CommandLiquidityCard: React.FC = () => {
 export const CommandPoolsCard: React.FC = () => {
   const pools = safeArray(POOLS)
   return (
-    <CcDashCard data-cc-pools $height={positionH}>
+    <CcDashCard data-cc-pools $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Pools</CcTitle>
         <CcViewAll href="/pools">View all</CcViewAll>
@@ -324,7 +312,7 @@ export const CommandPoolsCard: React.FC = () => {
 export const CommandFarmsCard: React.FC = () => {
   const farms = safeArray(FARMS)
   return (
-    <CcDashCard data-cc-farms $height={positionH}>
+    <CcDashCard data-cc-farms $minHeight={positionMinH}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Farms</CcTitle>
         <CcViewAll href="/farms">View all</CcViewAll>
@@ -372,7 +360,6 @@ export const CommandCollectiblesCard: React.FC = () => {
 
 export const CommandInfrastructureCard: React.FC = () => {
   const infraScore = safePct(INFRASTRUCTURE_SUMMARY?.score, 0)
-  const builderProgress = safePct(BUILDER_STATUS?.progress, 0)
 
   return (
     <CcDashCard data-cc-infrastructure>
@@ -404,13 +391,27 @@ export const CommandInfrastructureCard: React.FC = () => {
       <CcProgressTrack>
         <CcProgressFill $pct={infraScore} />
       </CcProgressTrack>
-      <div style={{ marginTop: 12, fontFamily: CC_FONT_BODY, fontSize: 13, fontWeight: 700, color: commandCenterColors.white }}>
+    </CcDashCard>
+  )
+}
+
+export const CommandBuilderStatusCard: React.FC = () => {
+  const builderProgress = safePct(BUILDER_STATUS?.progress, 0)
+
+  return (
+    <CcDashCard data-cc-builder-status>
+      <CcCardHeader style={{ marginBottom: 0 }}>
+        <CcTitle>Builder Status</CcTitle>
+      </CcCardHeader>
+      <div style={{ marginTop: 4, fontFamily: CC_FONT_BODY, fontSize: 14, fontWeight: 700, color: commandCenterColors.white }}>
         Builder Level {BUILDER_STATUS.level}
       </div>
-      <CcProgressTrack style={{ marginTop: 8 }}>
+      <CcProgressTrack style={{ marginTop: 10 }}>
         <CcProgressFill $pct={builderProgress} />
       </CcProgressTrack>
-      <Meta style={{ marginTop: 8 }}>TVL managed: {BUILDER_STATUS.tvlManaged}</Meta>
+      <Meta style={{ marginTop: 10 }}>Projects: {BUILDER_STATUS.projects}</Meta>
+      <Meta>Pools: {BUILDER_STATUS.pools} · Farms: {BUILDER_STATUS.farms}</Meta>
+      <Meta>TVL managed: {BUILDER_STATUS.tvlManaged}</Meta>
     </CcDashCard>
   )
 }
@@ -419,22 +420,21 @@ export const CommandRecentActivityCard: React.FC = () => {
   const activity = safeArray(RECENT_ACTIVITY)
 
   return (
-    <CcDashCard data-cc-recent-activity $height={commandCenterLayout.activityHeight}>
+    <CcDashCard data-cc-recent-activity $minHeight={commandCenterLayout.activityMinHeight}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Recent Activity</CcTitle>
       </CcCardHeader>
-      <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
-        <TimelineLine />
-        <Timeline>
-          {activity.map((e) => (
-            <TimelineItem key={e.id}>
-              <TimelineDot>{e.icon}</TimelineDot>
+      <Timeline>
+        {activity.map((e) => (
+          <TimelineItem key={e.id}>
+            <TimelineDot>{e.icon}</TimelineDot>
+            <TimelineCopy>
               <TimelineLabel>{e.label}</TimelineLabel>
               <TimelineTime>{e.time}</TimelineTime>
-            </TimelineItem>
-          ))}
-        </Timeline>
-      </div>
+            </TimelineCopy>
+          </TimelineItem>
+        ))}
+      </Timeline>
     </CcDashCard>
   )
 }
