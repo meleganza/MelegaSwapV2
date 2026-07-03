@@ -18,14 +18,14 @@ import {
 } from 'config/constants/exchange'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { WrapType } from 'hooks/useWrapCallback'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createSmartSwapExecutionInstruction } from 'lib/routing-layer'
+import { useSmartSwapExecution } from 'lib/execution-layer'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import { warningSeverity } from 'utils/exchange'
 import ProgressSteps from '../../components/ProgressSteps'
 import { SwapCallbackError } from '../../components/styleds'
-import { useSwapCallArguments } from '../hooks/useSwapCallArguments'
-import { useSwapCallback } from '../hooks/useSwapCallback'
 import { computeTradePriceBreakdown } from '../utils/exchange'
 import ConfirmSwapModal from './ConfirmSwapModal'
 
@@ -81,16 +81,13 @@ export default function SwapCommitButton({
   const { t } = useTranslation()
   const [singleHopOnly] = useUserSingleHopOnly()
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-  // the callback to execute the swap
 
-  const swapCalls = useSwapCallArguments(trade, allowedSlippage, recipient)
-
-  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
-    trade,
-    allowedSlippage,
-    recipient,
-    swapCalls,
+  const executionInstruction = useMemo(
+    () => createSmartSwapExecutionInstruction({ trade, allowedSlippage, recipient }),
+    [trade, allowedSlippage, recipient],
   )
+
+  const { callback: swapCallback, error: swapCallbackError } = useSmartSwapExecution(executionInstruction)
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     tradeToConfirm: TradeWithStableSwap<Currency, Currency, TradeType> | undefined
     attemptingTxn: boolean

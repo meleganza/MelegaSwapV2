@@ -11,7 +11,9 @@ import { Field } from 'state/swap/actions'
 import ProgressSteps from 'views/Swap/components/ProgressSteps'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { ToastDescriptionWithTx } from 'components/Toast'
-import useBurnToken from 'views/Bridge/hooks/useBurnToken'
+import { createBridgeExecutionInstruction } from 'lib/routing-layer'
+import { useBridgeExecution } from 'lib/execution-layer'
+import { useMemo } from 'react'
 
 interface SwapCommitButtonPropsType {
   account: string
@@ -58,7 +60,17 @@ export default function BridgeCommitButton({
   const { toastSuccess } = useToast()
   const { fetchWithCatchTxError, loading: pendingTx } = useCatchTxError()
 
-  const { onStake } = useBurnToken(pid, isNative)
+  const bridgeInstruction = useMemo(
+    () =>
+      createBridgeExecutionInstruction({
+        pid,
+        isNative,
+        amount: parsedAmount.quotient.toString(),
+      }),
+    [pid, isNative, parsedAmount],
+  )
+
+  const { execute: onStake } = useBridgeExecution(bridgeInstruction)
 
   // const [pendingTx, setPendingTx] = useState(false);
 

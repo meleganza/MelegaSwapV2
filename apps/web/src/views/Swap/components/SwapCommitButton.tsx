@@ -12,7 +12,9 @@ import CircleLoader from 'components/Loader/CircleLoader'
 import { Field } from 'state/swap/actions'
 import SettingsModal, { withCustomOnDismiss } from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createV2SwapExecutionInstruction } from 'lib/routing-layer'
+import { useV2SwapExecution } from 'lib/execution-layer'
 import Column from 'components/Layout/Column'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import {
@@ -21,8 +23,6 @@ import {
   PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
 } from 'config/constants/exchange'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/exchange'
-import { useSwapCallback } from 'hooks/useSwapCallback'
-import { useSwapCallArguments } from 'hooks/useSwapCallArguments'
 
 import ConfirmSwapModal from './ConfirmSwapModal'
 import ProgressSteps from './ProgressSteps'
@@ -80,16 +80,13 @@ export default function SwapCommitButton({
   const { t } = useTranslation()
   const [singleHopOnly] = useUserSingleHopOnly()
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-  // the callback to execute the swap
 
-  const swapCalls = useSwapCallArguments(trade, allowedSlippage, recipient)
-
-  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
-    trade,
-    allowedSlippage,
-    recipient,
-    swapCalls,
+  const executionInstruction = useMemo(
+    () => createV2SwapExecutionInstruction({ trade, allowedSlippage, recipient }),
+    [trade, allowedSlippage, recipient],
   )
+
+  const { callback: swapCallback, error: swapCallbackError } = useV2SwapExecution(executionInstruction)
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     tradeToConfirm: Trade<Currency, Currency, TradeType> | undefined
     attemptingTxn: boolean
