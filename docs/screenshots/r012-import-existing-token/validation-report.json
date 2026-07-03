@@ -1,0 +1,33 @@
+{
+  "task": "R012 IMPORT EXISTING TOKEN AI ONBOARDING ENGINE",
+  "deliverable": "R012_IMPORT_EXISTING_TOKEN_READY",
+  "route": "/import-existing-token",
+  "build": "pass",
+  "tests": {
+    "design-system": "11/11 pass",
+    "homepage-live": "2/2 pass"
+  },
+  "screenshots": [
+    "import-existing-token-desktop-1440x900.png",
+    "import-existing-token-desktop-1728x1117.png",
+    "import-existing-token-mobile-390x844.png",
+    "import-existing-token-mobile-428x926.png"
+  ],
+  "validation": {
+    "canonicalOnboardingEngine": true,
+    "notLaunchpad": true,
+    "contractInputHero": true,
+    "aiDiscoveryPipeline": true,
+    "projectDetectedWithProvenance": true,
+    "aiReadinessGauge": true,
+    "infrastructureSuggestions": true,
+    "serviceActivation": true,
+    "aiManifestMachineReady": true,
+    "onboardingAdvisor": true,
+    "recentImportsTimeline": true,
+    "d87ContributionLabels": true,
+    "responsiveLayout": true,
+    "layout760x360": true
+  },
+  "verdict": "R012_IMPORT_EXISTING_TOKEN_READY"
+}
