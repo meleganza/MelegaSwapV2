@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { tradeColors } from '../tradeTokens'
+import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'
 
 const Box = styled.div`
   height: 52px;
@@ -41,6 +42,13 @@ const Savings = styled.span`
   line-height: 12px;
 `
 
+const Muted = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${tradeColors.muted};
+  line-height: 12px;
+`
+
 const Row = styled.div`
   display: flex;
   align-items: center;
@@ -66,17 +74,37 @@ const Value = styled.span`
   line-height: 12px;
 `
 
-export const TradeSmartRouteBox: React.FC = () => (
-  <Box data-trade-smart-route-box>
-    <TitleRow>
-      <Title>Best Route Found</Title>
-      <Savings>0.5% better price</Savings>
-    </TitleRow>
-    <Row>
-      <Label>Execution speed</Label>
-      <Value>Fast</Value>
-    </Row>
-  </Box>
-)
+export const TradeSmartRouteBox: React.FC = () => {
+  const { phase, loadingLabel, smartRouteSavings, executionSpeed, executionSummary, error } = useTradeRuntime()
+
+  const title =
+    phase === 'routing'
+      ? loadingLabel ?? 'Routing…'
+      : phase === 'error' && error
+        ? error.message
+        : executionSummary.executionRoute
+          ? 'Best Route Found'
+          : 'Awaiting quote'
+
+  const savingsNode =
+    phase === 'routing' ? (
+      <Muted>…</Muted>
+    ) : (
+      <Savings>{smartRouteSavings ?? executionSummary.priceImpact ?? '—'}</Savings>
+    )
+
+  return (
+    <Box data-trade-smart-route-box data-trade-runtime-phase={phase}>
+      <TitleRow>
+        <Title>{title}</Title>
+        {savingsNode}
+      </TitleRow>
+      <Row>
+        <Label>Execution speed</Label>
+        <Value>{phase === 'routing' ? '…' : executionSpeed ?? '—'}</Value>
+      </Row>
+    </Box>
+  )
+}
 
 export default TradeSmartRouteBox

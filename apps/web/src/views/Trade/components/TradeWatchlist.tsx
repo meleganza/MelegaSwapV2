@@ -96,11 +96,15 @@ const Meta = styled.span`
 
 export interface TradeWatchlistProps {
   pairs: readonly WatchlistPair[]
+  emptyLabel?: string
 }
 
-export const TradeWatchlist: React.FC<TradeWatchlistProps> = ({ pairs }) => (
+export const TradeWatchlist: React.FC<TradeWatchlistProps> = ({ pairs, emptyLabel }) => (
   <Shell data-trade-watchlist>
     <Title>Watchlist</Title>
+    {!pairs.length && emptyLabel ? (
+      <Meta style={{ display: 'block', padding: '8px 0' }}>{emptyLabel}</Meta>
+    ) : (
     <List>
       {pairs.map((item) => {
         const [base] = item.pair.split('/')
@@ -117,6 +121,7 @@ export const TradeWatchlist: React.FC<TradeWatchlistProps> = ({ pairs }) => (
         )
       })}
     </List>
+    )}
   </Shell>
 )
 

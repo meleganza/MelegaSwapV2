@@ -15,6 +15,7 @@ import TradeRightRail from './components/TradeRightRail'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
 import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
 import useTradeTerminalData from './useTradeTerminalData'
+import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
 import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
 
 const Root = styled.div`
@@ -119,7 +120,7 @@ export const TradeTerminalScreen: React.FC = () => {
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
 
-  const { recentSwaps } = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const { recentSwaps, isIndexing } = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
 
   return (
     <Root data-trade-terminal-screen="true">
@@ -130,25 +131,27 @@ export const TradeTerminalScreen: React.FC = () => {
       <Content>
         <TradePageHeader aiMode={aiMode} onAiModeChange={setAiMode} />
         <TradeTabBar active={mode} onChange={setMode} />
-        <PageGrid>
-          <AreaCockpit>
-            <TradeCockpit mode={mode} />
-          </AreaCockpit>
-          <AreaCenter>
-            <TradeCenterPanel
-              inputSymbol={inputSymbol}
-              outputSymbol={outputSymbol}
-              inputCurrencyId={inputCurrencyId}
-              outputCurrencyId={outputCurrencyId}
-            />
-          </AreaCenter>
-          <AreaRight>
-            <TradeRightRail />
-          </AreaRight>
-          <AreaSwaps>
-            <TradeRecentSwaps rows={recentSwaps} />
-          </AreaSwaps>
-        </PageGrid>
+        <TradeRuntimeProvider>
+          <PageGrid>
+            <AreaCockpit>
+              <TradeCockpit mode={mode} />
+            </AreaCockpit>
+            <AreaCenter>
+              <TradeCenterPanel
+                inputSymbol={inputSymbol}
+                outputSymbol={outputSymbol}
+                inputCurrencyId={inputCurrencyId}
+                outputCurrencyId={outputCurrencyId}
+              />
+            </AreaCenter>
+            <AreaRight>
+              <TradeRightRail />
+            </AreaRight>
+            <AreaSwaps>
+              <TradeRecentSwaps rows={recentSwaps} isIndexing={isIndexing} />
+            </AreaSwaps>
+          </PageGrid>
+        </TradeRuntimeProvider>
       </Content>
     </Root>
   )

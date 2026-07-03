@@ -1,6 +1,5 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { MOCK_RECENT_SWAPS, TRADE_MOCK_LABEL } from '../tradeMockData'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import type { TradeSwapRow } from '../useTradeTerminalData'
 
@@ -40,7 +39,7 @@ const HeadRight = styled.div`
   gap: 12px;
 `
 
-const MockCaption = styled.span`
+const IndexingLabel = styled.span`
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -136,76 +135,59 @@ const RouteIcon = styled.span`
   }
 `
 
-type DisplaySwapRow = {
-  id: string
-  time: string
-  pair: string
-  direction: 'buy' | 'sell'
-  amount: string
-  received?: string
-  route?: string
-}
-
-const toDisplayRows = (rows: TradeSwapRow[]): DisplaySwapRow[] => {
-  if (rows.length >= 6) {
-    return rows.slice(0, 6).map((r) => ({ ...r, route: undefined }))
-  }
-  const mock: DisplaySwapRow[] = MOCK_RECENT_SWAPS.map((m) => ({
-    id: m.id,
-    time: m.time,
-    pair: m.pair,
-    direction: m.type,
-    amount: m.amount,
-    received: m.received,
-    route: m.route,
-  }))
-  if (rows.length === 0) return mock
-  return [
-    ...rows.map((r) => ({ ...r, route: undefined })),
-    ...mock,
-  ].slice(0, 6)
-}
+const EmptyState = styled.p`
+  margin: 0;
+  padding: 12px 0;
+  font-size: 13px;
+  color: ${tradeColors.muted};
+`
 
 export interface TradeRecentSwapsProps {
   rows: TradeSwapRow[]
+  isIndexing?: boolean
 }
 
-export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows }) => {
-  const displayRows = toDisplayRows(rows)
-  const showMockCaption = rows.length < 6
+export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows, isIndexing }) => {
+  const displayRows = rows.slice(0, 6)
 
   return (
     <Shell data-trade-recent-swaps>
       <HeadRow>
         <Title>Recent Swaps on Melega DEX</Title>
         <HeadRight>
-          {showMockCaption && <MockCaption>{TRADE_MOCK_LABEL}</MockCaption>}
+          {isIndexing && <IndexingLabel>Indexing</IndexingLabel>}
           <ViewAll type="button">View All</ViewAll>
         </HeadRight>
       </HeadRow>
-      <Table>
-        <Head>
-          <span>Time</span>
-          <span>Pair</span>
-          <span>Type</span>
-          <span>Amount</span>
-          <span>Received</span>
-          <span>Route</span>
-        </Head>
-        {displayRows.map((row) => (
-          <Row key={row.id}>
-            <Cell>{row.time}</Cell>
-            <PairCell>{row.pair}</PairCell>
-            <Direction $buy={row.direction === 'buy'}>{row.direction}</Direction>
-            <Cell>{row.amount}</Cell>
-            <Cell>{row.received ?? '—'}</Cell>
-            <RouteCell title={row.route}>
-              <RouteIcon aria-hidden />
-              {row.route ?? '—'}
-            </RouteCell>
-          </Row>
-        ))}
-      </Table>
+      {displayRows.length === 0 ? (
+        <EmptyState>
+          {isIndexing ? 'Indexing Melega DEX swap activity…' : 'No recent swaps for this pair yet.'}
+        </EmptyState>
+      ) : (
+        <Table>
+          <Head>
+            <span>Time</span>
+            <span>Pair</span>
+            <span>Type</span>
+            <span>Amount</span>
+            <span>Received</span>
+            <span>Route</span>
+          </Head>
+          {displayRows.map((row) => (
+            <Row key={row.id}>
+              <Cell>{row.time}</Cell>
+              <PairCell>{row.pair}</PairCell>
+              <Direction $buy={row.direction === 'buy'}>{row.direction}</Direction>
+              <Cell>{row.amount}</Cell>
+              <Cell>{row.received ?? '—'}</Cell>
+              <RouteCell title={row.route}>
+                <RouteIcon aria-hidden />
+                {row.route ?? '—'}
+              </RouteCell>
+            </Row>
+          ))}
+        </Table>
+      )}
     </Shell>
   )
 }

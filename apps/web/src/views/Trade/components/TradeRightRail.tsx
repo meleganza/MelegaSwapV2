@@ -1,13 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import {
-  MOCK_ASSETS,
-  MOCK_ROUTE_ENTRIES,
-  MOCK_ROUTER_STATUS,
-  MOCK_WATCHLIST,
-  TRADE_MOCK_LABEL,
-} from '../tradeMockData'
 import { tradeColors, tradeLayout } from '../tradeTokens'
+import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'
 import TradeWatchlist from './TradeWatchlist'
 import TradeMelegaIsologo from './TradeMelegaIsologo'
 
@@ -67,26 +61,25 @@ const PanelTitle = styled.h3`
   line-height: 1.2;
 `
 
-const MockCaption = styled.span`
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: ${tradeColors.muted};
-`
-
-const SampleBadge = styled.span`
+const LiveBadge = styled.span`
   display: inline-flex;
   align-items: center;
   height: 20px;
   padding: 0 8px;
   border-radius: 6px;
-  background: rgba(212, 175, 55, 0.1);
-  color: ${tradeColors.gold};
+  background: rgba(34, 197, 94, 0.1);
+  color: ${tradeColors.green};
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+`
+
+const EmptyLine = styled.p`
+  margin: 0;
+  padding: 8px 0;
+  font-size: 12px;
+  color: ${tradeColors.muted};
 `
 
 const RouteEntry = styled.div`
@@ -226,11 +219,6 @@ const AssetBal = styled.div`
   color: #ffffff;
 `
 
-const AssetUsd = styled.div`
-  font-size: 11px;
-  color: ${tradeColors.muted};
-`
-
 const StatusRow = styled.div`
   display: flex;
   align-items: center;
@@ -238,17 +226,19 @@ const StatusRow = styled.div`
   margin-bottom: 10px;
 `
 
-const StatusDot = styled.span`
+const StatusDot = styled.span<{ $tone?: 'ok' | 'warn' | 'error' }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: ${tradeColors.green};
+  background: ${({ $tone }) =>
+    $tone === 'warn' ? tradeColors.gold : $tone === 'error' ? tradeColors.red : tradeColors.green};
 `
 
-const StatusText = styled.span`
+const StatusText = styled.span<{ $tone?: 'ok' | 'warn' | 'error' }>`
   font-size: 13px;
   font-weight: 600;
-  color: ${tradeColors.green};
+  color: ${({ $tone }) =>
+    $tone === 'warn' ? tradeColors.gold : $tone === 'error' ? tradeColors.red : tradeColors.green};
 `
 
 const StatGrid = styled.div`
@@ -275,93 +265,135 @@ const StatValue = styled.div`
   color: #ffffff;
 `
 
-export const TradeRightRail: React.FC = () => (
-  <Rail data-trade-right-rail>
-    <TopPanels>
-    <Panel data-trade-best-route>
-      <PanelHead>
-        <PanelTitle>SmartSwap Best Route</PanelTitle>
-        <SampleBadge>Sample route</SampleBadge>
-      </PanelHead>
-      {MOCK_ROUTE_ENTRIES.map((entry) => (
-        <RouteEntry key={entry.rank}>
-          <Rank $rank={entry.rank}>{entry.rank}</Rank>
-          <RouteMeta>
-            <RouteName>
-              {entry.chain} · {entry.source}
-            </RouteName>
-            <RouteSub>
-              Gas: {entry.gas} · {entry.time}
-            </RouteSub>
-          </RouteMeta>
-          <RouteRight>
-            <RouteAmount>{entry.amount}</RouteAmount>
-            <RouteDelta $best={entry.best}>{entry.delta}</RouteDelta>
-          </RouteRight>
-        </RouteEntry>
-      ))}
-      <OutlineBtn type="button">View All Routes</OutlineBtn>
-    </Panel>
+const MachineToggle = styled.button`
+  margin-top: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: ${tradeColors.muted};
+  font-size: 10px;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+`
 
-    <Panel data-trade-your-assets>
-      <PanelHead>
-        <PanelTitle>Your Assets</PanelTitle>
-        <MockCaption>{TRADE_MOCK_LABEL}</MockCaption>
-      </PanelHead>
-      {MOCK_ASSETS.map((asset) => (
-        <AssetRow key={asset.symbol}>
-          <AssetLeft>
-            {asset.symbol === 'MARCO' ? (
-              <TradeMelegaIsologo size={22} />
-            ) : (
-              <AssetIcon>{asset.symbol.slice(0, 1)}</AssetIcon>
-            )}
-            <AssetName>{asset.symbol}</AssetName>
-          </AssetLeft>
-          <AssetRight>
-            <AssetBal>{asset.balance}</AssetBal>
-            <AssetUsd>{asset.usd}</AssetUsd>
-          </AssetRight>
-        </AssetRow>
-      ))}
-      <OutlineBtn type="button" style={{ height: 38, marginTop: 10 }}>
-        Manage Assets
-      </OutlineBtn>
-    </Panel>
+const MachinePre = styled.pre`
+  margin: 6px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 9px;
+  line-height: 1.35;
+  color: ${tradeColors.muted};
+  max-height: 160px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+`
 
-    <Panel data-trade-router-status>
-      <PanelHead>
-        <PanelTitle style={{ fontSize: 12, letterSpacing: '0.06em' }}>MELEGA ROUTER STATUS</PanelTitle>
-        <MockCaption>{TRADE_MOCK_LABEL}</MockCaption>
-      </PanelHead>
-      <StatusRow>
-        <StatusDot />
-        <StatusText>{MOCK_ROUTER_STATUS.status}</StatusText>
-      </StatusRow>
-      <StatGrid>
-        <StatCell>
-          <StatLabel>Uptime</StatLabel>
-          <StatValue>{MOCK_ROUTER_STATUS.uptime}</StatValue>
-        </StatCell>
-        <StatCell>
-          <StatLabel>Routes</StatLabel>
-          <StatValue>{MOCK_ROUTER_STATUS.routes}</StatValue>
-        </StatCell>
-        <StatCell>
-          <StatLabel>Chains</StatLabel>
-          <StatValue>{MOCK_ROUTER_STATUS.chains}</StatValue>
-        </StatCell>
-      </StatGrid>
-      <OutlineBtn type="button" style={{ height: 36, marginTop: 10 }}>
-        Router Analytics
-      </OutlineBtn>
-    </Panel>
-    </TopPanels>
+export const TradeRightRail: React.FC = () => {
+  const { routeEntries, assets, routerStatus, watchlistHrefs, machine, phase } = useTradeRuntime()
+  const [machineOpen, setMachineOpen] = useState(false)
 
-    <WatchlistSlot>
-      <TradeWatchlist pairs={MOCK_WATCHLIST} />
-    </WatchlistSlot>
-  </Rail>
-)
+  return (
+    <Rail data-trade-right-rail>
+      <TopPanels>
+        <Panel data-trade-best-route>
+          <PanelHead>
+            <PanelTitle>SmartSwap Best Route</PanelTitle>
+            <LiveBadge>Live</LiveBadge>
+          </PanelHead>
+          {phase === 'routing' && <EmptyLine>Routing…</EmptyLine>}
+          {phase !== 'routing' && routeEntries.length === 0 && (
+            <EmptyLine>Enter amount to compare routes</EmptyLine>
+          )}
+          {routeEntries.map((entry) => (
+            <RouteEntry key={entry.rank}>
+              <Rank $rank={entry.rank}>{entry.rank}</Rank>
+              <RouteMeta>
+                <RouteName>
+                  {entry.chain} · {entry.source}
+                </RouteName>
+                <RouteSub>
+                  Gas: {entry.gas ?? '—'} · {entry.time ?? '—'}
+                </RouteSub>
+              </RouteMeta>
+              <RouteRight>
+                <RouteAmount>{entry.amount}</RouteAmount>
+                <RouteDelta $best={entry.best}>{entry.delta}</RouteDelta>
+              </RouteRight>
+            </RouteEntry>
+          ))}
+          <OutlineBtn type="button">View All Routes</OutlineBtn>
+        </Panel>
+
+        <Panel data-trade-your-assets>
+          <PanelHead>
+            <PanelTitle>Your Assets</PanelTitle>
+            <LiveBadge>Live</LiveBadge>
+          </PanelHead>
+          {!assets.length && <EmptyLine>Connect wallet to view balances</EmptyLine>}
+          {assets.map((asset) => (
+            <AssetRow key={asset.symbol}>
+              <AssetLeft>
+                {asset.symbol === 'MARCO' ? (
+                  <TradeMelegaIsologo size={22} />
+                ) : (
+                  <AssetIcon>{asset.symbol.slice(0, 1)}</AssetIcon>
+                )}
+                <AssetName>{asset.symbol}</AssetName>
+              </AssetLeft>
+              <AssetRight>
+                <AssetBal>{asset.balance}</AssetBal>
+              </AssetRight>
+            </AssetRow>
+          ))}
+          <OutlineBtn type="button" style={{ height: 38, marginTop: 10 }}>
+            Manage Assets
+          </OutlineBtn>
+        </Panel>
+
+        <Panel data-trade-router-status>
+          <PanelHead>
+            <PanelTitle style={{ fontSize: 12, letterSpacing: '0.06em' }}>MELEGA ROUTER STATUS</PanelTitle>
+            <LiveBadge>Live</LiveBadge>
+          </PanelHead>
+          <StatusRow>
+            <StatusDot $tone={routerStatus.statusTone} />
+            <StatusText $tone={routerStatus.statusTone}>{routerStatus.status}</StatusText>
+          </StatusRow>
+          <StatGrid>
+            <StatCell>
+              <StatLabel>Quote</StatLabel>
+              <StatValue>{routerStatus.uptime}</StatValue>
+            </StatCell>
+            <StatCell>
+              <StatLabel>Hops</StatLabel>
+              <StatValue>{routerStatus.routes}</StatValue>
+            </StatCell>
+            <StatCell>
+              <StatLabel>Chains</StatLabel>
+              <StatValue>{routerStatus.chains}</StatValue>
+            </StatCell>
+          </StatGrid>
+          <OutlineBtn type="button" style={{ height: 36, marginTop: 10 }}>
+            Router Analytics
+          </OutlineBtn>
+          <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
+            {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
+          </MachineToggle>
+          {machineOpen && (
+            <MachinePre data-trade-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
+          )}
+        </Panel>
+      </TopPanels>
+
+      <WatchlistSlot>
+        <TradeWatchlist pairs={watchlistHrefs} emptyLabel="No watchlist tokens saved" />
+      </WatchlistSlot>
+    </Rail>
+  )
+}
 
 export default TradeRightRail

@@ -11,6 +11,7 @@ export interface TradeSwapRow {
   amount: string
   received?: string
   direction: 'buy' | 'sell'
+  route?: string
 }
 
 export interface TradePairStat {
@@ -57,6 +58,15 @@ const swapDirection = (tx: Transaction, quoteSymbol?: string): 'buy' | 'sell' =>
   return tx.amountToken0 >= tx.amountToken1 ? 'sell' : 'buy'
 }
 
+const formatTokenAmount = (value: number, symbol: string): string | undefined => {
+  if (!value || value <= 0) return undefined
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M ${symbol}`
+  if (value >= 1_000) return `${(value / 1_000).toFixed(2)}K ${symbol}`
+  return `${value.toFixed(4)} ${symbol}`
+}
+
+const swapRouteLabel = (tx: Transaction): string => `${tx.token0Symbol}→${tx.token1Symbol}`
+
 const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean => {
   if (!token0 || !token1) return true
   const symbols = new Set([tx.token0Symbol.toUpperCase(), tx.token1Symbol.toUpperCase()])
@@ -74,14 +84,23 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       .filter((tx) => tx.type === TransactionType.SWAP)
       .filter((tx) => matchesPair(tx, inputSymbol, outputSymbol))
       .slice(0, 12)
-      .map((tx) => ({
-        id: tx.hash,
-        time: formatTimeAgo(tx.timestamp),
-        wallet: shortenWallet(tx.sender),
-        pair: `${tx.token0Symbol} / ${tx.token1Symbol}`,
-        amount: formatUsd(tx.amountUSD) ?? '—',
-        direction: swapDirection(tx, outputSymbol),
-      }))
+      .map((tx) => {
+        const receivedSymbol = outputSymbol ?? tx.token1Symbol
+        const receivedAmount =
+          receivedSymbol === tx.token1Symbol
+            ? formatTokenAmount(tx.amountToken1, tx.token1Symbol)
+            : formatTokenAmount(tx.amountToken0, tx.token0Symbol)
+        return {
+          id: tx.hash,
+          time: formatTimeAgo(tx.timestamp),
+          wallet: shortenWallet(tx.sender),
+          pair: `${tx.token0Symbol} / ${tx.token1Symbol}`,
+          amount: formatUsd(tx.amountUSD) ?? '—',
+          received: receivedAmount,
+          direction: swapDirection(tx, outputSymbol),
+          route: swapRouteLabel(tx),
+        }
+      })
   }, [transactions, inputSymbol, outputSymbol])
 
   const pairStats = useMemo((): TradePairStat[] => {
