@@ -7,7 +7,7 @@ import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 
-const Card = styled.article<{ $expanded?: boolean }>`
+const Card = styled.article<{ $expanded?: boolean; $archived?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -15,11 +15,13 @@ const Card = styled.article<{ $expanded?: boolean }>`
   height: ${({ $expanded }) => ($expanded ? 'auto' : farmsStudioLayout.farmCardHeight)};
   padding: ${farmsStudioLayout.farmCardPadding};
   border-radius: 20px;
-  background: #131313;
-  border: 1px solid #262626;
+  background: ${({ $archived }) => ($archived ? 'rgba(19, 19, 19, 0.72)' : farmsStudioColors.panel)};
+  border: 1px solid ${({ $archived }) => ($archived ? 'rgba(255,255,255,0.05)' : farmsStudioColors.border)};
+  opacity: ${({ $archived }) => ($archived ? 0.82 : 1)};
   box-sizing: border-box;
   min-width: 0;
   overflow: visible;
+  filter: ${({ $archived }) => ($archived ? 'saturate(0.65)' : 'none')};
 
   @media (max-width: 767px) {
     height: auto;
@@ -406,7 +408,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
   }
 
   return (
-    <Card data-fs-farm-card $expanded={expanded}>
+    <Card data-fs-farm-card $expanded={expanded} $archived={farm.status === 'finished'}>
       <Body>
         <TopRow>
           <PairBlock>

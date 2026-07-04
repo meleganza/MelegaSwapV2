@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
-import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
 export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`

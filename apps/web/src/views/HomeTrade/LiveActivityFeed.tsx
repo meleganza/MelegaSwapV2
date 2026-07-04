@@ -63,14 +63,17 @@ const Timeline = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
+  max-height: 220px;
+  overflow-y: auto;
 `
 
 const Row = styled.div`
   display: grid;
   grid-template-columns: 16px 1fr auto;
   gap: 10px;
-  align-items: center;
-  height: 28px;
+  align-items: start;
+  min-height: 36px;
+  padding: 4px 0;
 `
 
 const RowIcon = styled.span`
@@ -167,6 +170,7 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
       <Body>
         {displayRows.length === 0 ? (
           <EmptyWrap>
+            <PulseDot aria-hidden />
             <EmptyTitle>No recent activity</EmptyTitle>
             <EmptyDesc>Latest swaps and liquidity events appear here when indexed.</EmptyDesc>
           </EmptyWrap>

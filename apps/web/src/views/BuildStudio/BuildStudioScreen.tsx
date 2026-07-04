@@ -53,6 +53,7 @@ const MainGrid = styled.div`
   grid-template-columns: ${buildStudioLayout.colImport} ${buildStudioLayout.colCreate} ${buildStudioLayout.colRight};
   gap: ${buildStudioLayout.cardGap};
   width: 100%;
+  align-items: stretch;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;

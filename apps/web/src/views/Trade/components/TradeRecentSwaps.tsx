@@ -64,7 +64,7 @@ const Table = styled.div`
 
 const Head = styled.div`
   display: grid;
-  grid-template-columns: 70px 130px 70px 110px 130px 1fr;
+  grid-template-columns: 70px 1fr 70px 1fr 1fr minmax(80px, 1.2fr);
   gap: 10px;
   padding-bottom: 8px;
   font-size: 10px;
@@ -72,17 +72,27 @@ const Head = styled.div`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${tradeColors.muted};
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 `
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 70px 130px 70px 110px 130px 1fr;
+  grid-template-columns: 70px 1fr 70px 1fr 1fr minmax(80px, 1.2fr);
   gap: 10px;
   align-items: center;
   min-height: 36px;
   font-size: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   animation: ${slideIn} 220ms ease;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+    padding: 10px 0;
+  }
 `
 
 const Cell = styled.span`
@@ -135,11 +145,31 @@ const RouteIcon = styled.span`
   }
 `
 
-const EmptyState = styled.p`
+const EmptyState = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  min-height: 140px;
+  padding: 16px;
+`
+
+const EmptyTitle = styled.p`
   margin: 0;
-  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+`
+
+const EmptyDesc = styled.p`
+  margin: 0;
   font-size: 13px;
   color: ${tradeColors.muted};
+  line-height: 1.45;
+  max-width: 280px;
 `
 
 export interface TradeRecentSwapsProps {
@@ -161,7 +191,12 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows, isInde
       </HeadRow>
       {displayRows.length === 0 ? (
         <EmptyState>
-          {isIndexing ? 'Loading swap activity…' : 'No recent swaps for this pair yet.'}
+          <EmptyTitle>{isIndexing ? 'Loading swaps' : 'No recent swaps'}</EmptyTitle>
+          <EmptyDesc>
+            {isIndexing
+              ? 'Fetching indexed swap activity for this pair.'
+              : 'Swap history appears here when Melega subgraph indexes trades.'}
+          </EmptyDesc>
         </EmptyState>
       ) : (
         <Table>

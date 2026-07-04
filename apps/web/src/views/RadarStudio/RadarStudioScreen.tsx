@@ -52,7 +52,7 @@ const ConsoleGrid = styled.div`
   display: grid;
   grid-template-columns: ${radarStudioLayout.colLeft} minmax(0, 1fr) ${radarStudioLayout.colRight};
   gap: ${radarStudioLayout.columnGap};
-  align-items: start;
+  align-items: stretch;
 
   @media (max-width: ${radarStudioLayout.stackBreakpoint}) {
     grid-template-columns: 1fr;

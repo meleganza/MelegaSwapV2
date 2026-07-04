@@ -41,6 +41,6 @@ export const ht = {
   fontDisplay: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
   sidebarWidth: '230px',
   mainOffset: '250px',
-  marcoLogoUri: 'https://melega.finance/images/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png',
+  marcoLogoUri: '/images/melega.png',
   melegaLogoUri: '/images/melega.png',
 } as const

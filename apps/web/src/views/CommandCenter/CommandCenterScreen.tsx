@@ -93,6 +93,7 @@ const MetaGrid = styled.div`
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: ${commandCenterLayout.sectionGap};
   min-width: 0;
+  align-items: stretch;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;

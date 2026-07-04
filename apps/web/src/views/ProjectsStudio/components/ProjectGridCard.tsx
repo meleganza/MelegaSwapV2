@@ -19,8 +19,8 @@ const Card = styled.article`
   height: auto;
   padding: ${projectsStudioLayout.cardPadding};
   border-radius: ${projectsStudioLayout.cardRadius};
-  background: #131313;
-  border: 1px solid #262626;
+  background: ${projectsStudioColors.panelGradient};
+  border: 1px solid ${projectsStudioColors.borderStrong};
   box-sizing: border-box;
   min-width: 0;
   overflow: visible;
@@ -241,9 +241,10 @@ const ButtonRow = styled.div`
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 12px;
+  gap: ${projectsStudioLayout.btnGap};
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid ${projectsStudioColors.rowBorder};
   flex-shrink: 0;
 
   a,

@@ -258,7 +258,34 @@ const TimelineTime = styled.div`
   margin-top: 2px;
 `
 
-const positionMinH = '240px'
+const positionMinH = commandCenterLayout.metaCardMinHeight
+
+const EmptyState = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  min-height: 120px;
+  padding: 12px 8px;
+`
+
+const EmptyTitle = styled.div`
+  font-family: ${CC_FONT_BODY};
+  font-size: 13px;
+  font-weight: 700;
+  color: ${commandCenterColors.white};
+`
+
+const EmptyDesc = styled.div`
+  font-family: ${CC_FONT_BODY};
+  font-size: 11px;
+  line-height: 1.45;
+  color: ${commandCenterColors.muted};
+  max-width: 220px;
+`
 
 export const CommandAssetsCard: React.FC = () => {
   const { assets } = useCommandRuntime()
@@ -271,7 +298,10 @@ export const CommandAssetsCard: React.FC = () => {
       </CcCardHeader>
       <CcDashBody>
         {rows.length === 0 ? (
-          <Meta>No assets — connect wallet or open Trade runtime.</Meta>
+          <EmptyState data-cc-empty>
+            <EmptyTitle>No assets yet</EmptyTitle>
+            <EmptyDesc>Connect wallet or open Trade to populate holdings.</EmptyDesc>
+          </EmptyState>
         ) : (
           rows.map((a) => (
           <Row key={a.id}>
@@ -308,7 +338,10 @@ export const CommandLiquidityCard: React.FC = () => {
       </CcCardHeader>
       <CcDashBody>
         {rows.length === 0 ? (
-          <Meta>No liquidity positions from Liquidity runtime.</Meta>
+          <EmptyState data-cc-empty>
+            <EmptyTitle>No liquidity positions</EmptyTitle>
+            <EmptyDesc>Add liquidity from Liquidity Studio when ready.</EmptyDesc>
+          </EmptyState>
         ) : (
           rows.map((l) => (
           <div key={l.id} style={{ paddingBottom: 8, borderBottom: `1px solid ${commandCenterColors.border}` }}>
@@ -339,7 +372,10 @@ export const CommandPoolsCard: React.FC = () => {
       </CcCardHeader>
       <CcDashBody>
         {rows.length === 0 ? (
-          <Meta>No pool positions from Pools runtime.</Meta>
+          <EmptyState data-cc-empty>
+            <EmptyTitle>No pool positions</EmptyTitle>
+            <EmptyDesc>Stake in pools from the Pools studio.</EmptyDesc>
+          </EmptyState>
         ) : (
           rows.map((p) => (
           <Row key={p.id}>
@@ -373,7 +409,10 @@ export const CommandFarmsCard: React.FC = () => {
       </CcCardHeader>
       <CcDashBody>
         {rows.length === 0 ? (
-          <Meta>No farm positions from Farms runtime.</Meta>
+          <EmptyState data-cc-empty>
+            <EmptyTitle>No farm positions</EmptyTitle>
+            <EmptyDesc>Active farms appear here after staking.</EmptyDesc>
+          </EmptyState>
         ) : (
           rows.map((f) => (
           <Row key={f.id}>
@@ -411,7 +450,7 @@ export const CommandSettlementCard: React.FC = () => {
     : '—'
 
   return (
-    <CcDashCard data-cc-settlement>
+    <CcDashCard data-cc-settlement $minHeight={commandCenterLayout.metaCardMinHeight}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Latest Settlement</CcTitle>
       </CcCardHeader>
@@ -432,13 +471,16 @@ export const CommandCollectiblesCard: React.FC = () => {
   const { collectibles } = useCommandRuntime()
   const rows = safeArray(collectibles)
   return (
-    <CcDashCard data-cc-collectibles>
+    <CcDashCard data-cc-collectibles $minHeight={commandCenterLayout.metaCardMinHeight}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Collectibles</CcTitle>
       </CcCardHeader>
       <CollectiblesGrid>
         {rows.length === 0 ? (
-          <Meta style={{ gridColumn: '1 / -1' }}>No collectibles — wallet ownership from registry.</Meta>
+          <EmptyState data-cc-empty style={{ gridColumn: '1 / -1' }}>
+            <EmptyTitle>No collectibles</EmptyTitle>
+            <EmptyDesc>Genesis, Builder, and Validator identities appear from wallet ownership.</EmptyDesc>
+          </EmptyState>
         ) : (
           rows.map((c) => (
           <CollectibleCard key={c.id}>
@@ -468,7 +510,7 @@ export const CommandInfrastructureCard: React.FC = () => {
   const infraScore = safePct(infrastructureSummary?.score, 0)
 
   return (
-    <CcDashCard data-cc-infrastructure>
+    <CcDashCard data-cc-infrastructure $minHeight={commandCenterLayout.metaCardMinHeight}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Infrastructure</CcTitle>
       </CcCardHeader>
@@ -506,7 +548,7 @@ export const CommandBuilderStatusCard: React.FC = () => {
   const builderProgress = safePct(builderStatus?.progress, 0)
 
   return (
-    <CcDashCard data-cc-builder-status>
+    <CcDashCard data-cc-builder-status $minHeight={commandCenterLayout.metaCardMinHeight}>
       <CcCardHeader style={{ marginBottom: 0 }}>
         <CcTitle>Builder Status</CcTitle>
       </CcCardHeader>
@@ -534,7 +576,10 @@ export const CommandRecentActivityCard: React.FC = () => {
       </CcCardHeader>
       <Timeline>
         {activity.length === 0 ? (
-          <Meta>No recent activity from connected runtimes.</Meta>
+          <EmptyState data-cc-empty>
+            <EmptyTitle>No recent activity</EmptyTitle>
+            <EmptyDesc>Swaps, stakes, and builds surface here when runtimes index events.</EmptyDesc>
+          </EmptyState>
         ) : (
           activity.map((e) => (
           <TimelineItem key={e.id}>

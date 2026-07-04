@@ -5,7 +5,7 @@ export interface TradeMelegaIsologoProps {
   size?: number
 }
 
-/** Official Melega isologo — unmodified MelegaLogoSvg only. */
+/** Official Melega / MARCO round logo (double-M). */
 export const TradeMelegaIsologo: React.FC<TradeMelegaIsologoProps> = ({ size = 22 }) => (
   <span
     data-trade-melega-isologo

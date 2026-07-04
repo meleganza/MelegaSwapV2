@@ -7,10 +7,11 @@ import { RdPanel, RdSectionTitle } from './radarStudioPrimitives'
 const Column = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   min-width: 0;
   width: 100%;
   max-width: ${radarStudioLayout.opsPanelWidth};
+  height: 100%;
 `
 
 const Panel = styled(RdPanel)`

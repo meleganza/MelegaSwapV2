@@ -21,6 +21,11 @@ const Grid = styled.div`
   grid-template-columns: repeat(4, ${buildStudioLayout.secondRowCardW});
   gap: ${buildStudioLayout.cardGap};
   width: 100%;
+  align-items: stretch;
+
+  @media (max-width: 1180px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -41,7 +46,7 @@ const TemplateGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 6px;
-  max-height: 130px;
+  max-height: 160px;
   overflow-y: auto;
 `
 

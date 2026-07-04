@@ -51,7 +51,7 @@ const HeroRow = styled.div`
     grid-template-columns: ${homeTradeLayout.swapWidth} 1fr;
     height: ${homeTradeLayout.heroMaxHeight};
     max-height: ${homeTradeLayout.heroMaxHeight};
-    align-items: end;
+    align-items: stretch;
   }
 `
 

@@ -11,7 +11,7 @@ import {
 import { IconBookmark, IconHeart } from './collectiblesStudioIcons'
 import { CsArtwork, ScoreRingDisplay } from './collectiblesStudioPrimitives'
 
-const Card = styled.article`
+const Card = styled.article<{ $identity?: string }>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -21,15 +21,30 @@ const Card = styled.article`
   padding: 14px;
   border-radius: ${collectiblesStudioLayout.cardRadius};
   background: ${collectiblesStudioColors.panel};
-  border: 1px solid ${collectiblesStudioColors.border};
+  border: 1px solid
+    ${({ $identity }) =>
+      $identity === 'genesis'
+        ? 'rgba(212, 175, 55, 0.55)'
+        : $identity === 'builder'
+          ? 'rgba(77, 163, 255, 0.45)'
+          : $identity === 'validator'
+            ? 'rgba(27, 231, 122, 0.45)'
+            : collectiblesStudioColors.border};
   box-sizing: border-box;
   min-width: 0;
   overflow: hidden;
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 
   &:hover {
-    border-color: ${collectiblesStudioColors.gold};
-    transform: translateY(-3px);
+    border-color: ${({ $identity }) =>
+      $identity === 'genesis'
+        ? collectiblesStudioColors.gold
+        : $identity === 'builder'
+          ? '#4DA3FF'
+          : $identity === 'validator'
+            ? collectiblesStudioColors.green
+            : collectiblesStudioColors.gold};
+    transform: translateY(-2px);
     box-shadow: ${collectiblesStudioColors.shadow};
   }
 
@@ -144,15 +159,38 @@ const UtilityRow = styled.div`
   overflow: hidden;
 `
 
-const UtilChip = styled.span`
+const UtilChip = styled.span<{ $accent?: 'genesis' | 'builder' | 'validator' }>`
   height: 20px;
   padding: 0 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid ${collectiblesStudioColors.border};
+  background: ${({ $accent }) =>
+    $accent === 'genesis'
+      ? 'rgba(212, 175, 55, 0.1)'
+      : $accent === 'builder'
+        ? 'rgba(77, 163, 255, 0.1)'
+        : $accent === 'validator'
+          ? 'rgba(27, 231, 122, 0.1)'
+          : 'rgba(255, 255, 255, 0.04)'};
+  border: 1px solid
+    ${({ $accent }) =>
+      $accent === 'genesis'
+        ? 'rgba(212, 175, 55, 0.35)'
+        : $accent === 'builder'
+          ? 'rgba(77, 163, 255, 0.35)'
+          : $accent === 'validator'
+            ? 'rgba(27, 231, 122, 0.35)'
+            : collectiblesStudioColors.border};
   font-family: ${CS_FONT_BODY};
   font-size: 10px;
-  color: ${collectiblesStudioColors.secondary};
+  font-weight: 600;
+  color: ${({ $accent }) =>
+    $accent === 'genesis'
+      ? collectiblesStudioColors.gold
+      : $accent === 'builder'
+        ? '#4DA3FF'
+        : $accent === 'validator'
+          ? collectiblesStudioColors.green
+          : collectiblesStudioColors.secondary};
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
@@ -282,13 +320,29 @@ interface Props {
   collection: CollectionCard
 }
 
+function resolveIdentityAccent(collection: CollectionCard): 'genesis' | 'builder' | 'validator' | undefined {
+  if (collection.artTheme === 'genesis' || collection.badges.includes('genesis')) return 'genesis'
+  if (collection.artTheme === 'builder' || collection.badges.includes('builder')) return 'builder'
+  if (collection.artTheme === 'validator' || collection.badges.includes('validator')) return 'validator'
+  return undefined
+}
+
+function chipAccent(chip: string, identity?: 'genesis' | 'builder' | 'validator'): 'genesis' | 'builder' | 'validator' | undefined {
+  const lower = chip.toLowerCase()
+  if (lower.includes('genesis')) return 'genesis'
+  if (lower.includes('builder') || lower.includes('governance')) return 'builder'
+  if (lower.includes('validator') || lower.includes('execution')) return 'validator'
+  return identity
+}
+
 export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
   const [fav, setFav] = useState(false)
   const [reserved, setReserved] = useState(false)
   const visibleBadges = collection.badges.slice(0, 2)
+  const identityAccent = resolveIdentityAccent(collection)
 
   return (
-    <Card data-cs-collection-card>
+    <Card data-cs-collection-card $identity={identityAccent}>
       <CardBody>
         <ArtWrap>
           <CsArtwork data-cs-artwork $theme={collection.artTheme} />
@@ -314,7 +368,9 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
 
         <UtilityRow>
           {collection.utilityChips.slice(0, 4).map((chip) => (
-            <UtilChip key={chip}>{chip}</UtilChip>
+            <UtilChip key={chip} $accent={chipAccent(chip, identityAccent)}>
+              {chip}
+            </UtilChip>
           ))}
           {collection.utilityChips.length > 4 ? (
             <UtilChip>+{collection.utilityChips.length - 4}</UtilChip>

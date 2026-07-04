@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 
 export const PrPanel = styled.div<{ $height?: string; $radius?: string }>`
@@ -191,7 +191,13 @@ export const ProjectLogo: React.FC<{ name: string; symbol?: string; size?: numbe
   if (isMarco) {
     return (
       <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: 12, overflow: 'hidden' }}>
-        <MelegaLogoSvg size={size} />
+        <img
+          src={MARCO_LOGO_URI}
+          alt=""
+          width={size}
+          height={size}
+          style={{ display: 'block', borderRadius: '50%', objectFit: 'cover' }}
+        />
       </span>
     )
   }

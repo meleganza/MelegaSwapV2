@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { MARCO_LOGO_URI } from '../../constants/brand'
-import { MelegaLogoSvg } from '../BrandLockup/MelegaLogoSvg'
 import { colors, typography } from '../../tokens'
 
 const Card = styled.div`
@@ -58,17 +57,10 @@ export interface MelegaMarcoCardProps {
   priceLabel?: string
 }
 
-export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) => {
-  const [logoOk, setLogoOk] = useState(true)
-
-  return (
-    <Card data-melega-marco-card>
+export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) => (
+  <Card data-melega-marco-card>
       <LogoSlot aria-hidden>
-        {logoOk ? (
-          <img src={MARCO_LOGO_URI} alt="" onError={() => setLogoOk(false)} />
-        ) : (
-          <MelegaLogoSvg size={28} />
-        )}
+        <img src={MARCO_LOGO_URI} alt="" />
       </LogoSlot>
       <Meta>
         <Name>MARCO</Name>
@@ -76,6 +68,6 @@ export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) 
       </Meta>
     </Card>
   )
-}
+)
 
 export default MelegaMarcoCard
