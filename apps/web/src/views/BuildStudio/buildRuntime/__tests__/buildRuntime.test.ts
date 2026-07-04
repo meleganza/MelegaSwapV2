@@ -17,10 +17,13 @@ describe('buildRuntime', () => {
     expect(result.detections.some((d) => d.label === 'Ticker' && d.available)).toBe(true)
   })
 
-  it('returns PROJECT_NOT_FOUND for unknown contract', () => {
+  it('creates pending project profile for unknown contract', () => {
     const result = runImportAnalysis('0x0000000000000000000000000000000000000001', 'bnb')
     expect(result.found).toBe(false)
-    expect(result.errors[0].code).toBe('PROJECT_NOT_FOUND')
+    expect(result.pending).toBe(true)
+    expect(result.pendingProject?.is_canonical).toBe(false)
+    expect(result.errors).toHaveLength(0)
+    expect(result.score.score).toBeGreaterThan(0)
   })
 
   it('builds infrastructure score with reason', () => {

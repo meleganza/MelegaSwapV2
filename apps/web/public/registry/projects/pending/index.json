@@ -1,0 +1,7 @@
+{
+  "schema": "melega.project-registry.pending-index.v1",
+  "as_of": "2026-07-04T00:00:00.000Z",
+  "count": 0,
+  "note": "Pending projects are runtime-written via /api/registry/projects/onboard — not canonical until manually approved and merged into STATIC_PROJECTS.",
+  "projects": []
+}

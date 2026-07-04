@@ -1,5 +1,7 @@
+import { describe, expect, it, beforeEach } from 'vitest'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { enrichProject } from 'registry/projects/discovery'
+import { resetPendingProjectRegistryForTests } from 'registry/projects/pending'
 import { buildAiSummary } from '../buildAiSummary'
 import { buildProjectRating } from '../buildProjectRating'
 import { discoverProjectFromContract } from '../discoverProjectFromContract'
@@ -7,6 +9,10 @@ import { createProjectsRuntimeError } from '../projectsRuntimeErrors'
 
 describe('projectsRuntime', () => {
   const project = enrichProject(getAllProjects()[0])
+
+  beforeEach(() => {
+    resetPendingProjectRegistryForTests()
+  })
 
   it('builds factual AI summary without investment advice', () => {
     const summary = buildAiSummary(project)
@@ -30,10 +36,12 @@ describe('projectsRuntime', () => {
     expect(result.ticker).toBe('MARCO')
   })
 
-  it('returns PROJECT_NOT_FOUND for unknown contract', () => {
+  it('creates pending project profile for unknown contract', () => {
     const result = discoverProjectFromContract('0x0000000000000000000000000000000000000001', 56)
     expect(result.found).toBe(false)
-    expect(result.errors[0].code).toBe('PROJECT_NOT_FOUND')
+    expect(result.registryTier).toBe('pending')
+    expect(result.pending?.is_canonical).toBe(false)
+    expect(result.errors).toHaveLength(0)
   })
 
   it('exposes runtime error catalog', () => {

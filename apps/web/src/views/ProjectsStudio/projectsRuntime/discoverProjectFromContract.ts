@@ -1,10 +1,18 @@
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import type { StaticProjectRecord } from 'registry/projects/types'
+import {
+  buildPendingDiscoverySummary,
+  resolveProjectRegistryLookup,
+} from 'registry/projects/pending'
+import type { PendingProjectRecord } from 'registry/projects/pending/types'
 import { createProjectsRuntimeError, type ProjectsRuntimeError } from './projectsRuntimeErrors'
 
 export interface ContractDiscoveryResult {
   found: boolean
+  registryTier: 'canonical' | 'pending' | 'none'
   project?: StaticProjectRecord
+  pending?: PendingProjectRecord
+  pendingCreated?: boolean
   name?: string
   ticker?: string
   logo?: string
@@ -34,6 +42,7 @@ function mapRegistryProject(project: StaticProjectRecord): ContractDiscoveryResu
 
   return {
     found: true,
+    registryTier: 'canonical',
     project,
     name: project.displayName,
     ticker: token?.symbol,
@@ -49,6 +58,24 @@ function mapRegistryProject(project: StaticProjectRecord): ContractDiscoveryResu
   }
 }
 
+function mapPendingProject(pending: PendingProjectRecord, pendingCreated?: boolean): ContractDiscoveryResult {
+  return {
+    found: false,
+    registryTier: 'pending',
+    pending,
+    pendingCreated,
+    name: pending.name.available ? pending.name.value ?? undefined : undefined,
+    ticker: pending.symbol.available ? pending.symbol.value ?? undefined : undefined,
+    website: pending.website.available ? pending.website.value ?? undefined : undefined,
+    twitter: pending.socials.twitter?.available ? pending.socials.twitter.value ?? undefined : undefined,
+    telegram: pending.socials.telegram?.available ? pending.socials.telegram.value ?? undefined : undefined,
+    discord: pending.socials.discord?.available ? pending.socials.discord.value ?? undefined : undefined,
+    github: pending.socials.github?.available ? pending.socials.github.value ?? undefined : undefined,
+    explorer: pending.contract,
+    errors: [],
+  }
+}
+
 export function discoverProjectFromContract(
   contract: string,
   chainId?: number,
@@ -57,26 +84,39 @@ export function discoverProjectFromContract(
   if (!normalized || !normalized.startsWith('0x') || normalized.length < 10) {
     return {
       found: false,
+      registryTier: 'none',
       errors: [createProjectsRuntimeError('NO_CONTRACT')],
     }
   }
 
+  const resolvedChainId = chainId ?? 56
   const projects = getAllProjects()
   const match = projects.find((project) =>
     project.resources.tokens.some(
       (token) =>
-        token.address.toLowerCase() === normalized && (chainId == null || token.chainId === chainId),
+        token.address.toLowerCase() === normalized &&
+        (chainId == null || token.chainId === chainId),
     ),
   )
 
   if (match) return mapRegistryProject(match)
 
+  const lookup = resolveProjectRegistryLookup(normalized, resolvedChainId)
+  if (lookup.tier === 'pending' && lookup.pending) {
+    return mapPendingProject(lookup.pending, lookup.pendingCreated)
+  }
+
   return {
     found: false,
-    errors: [createProjectsRuntimeError('PROJECT_NOT_FOUND')],
+    registryTier: 'none',
+    errors: [createProjectsRuntimeError('UNKNOWN')],
   }
 }
 
 export function findProjectBySlug(slug: string): StaticProjectRecord | undefined {
   return getAllProjects().find((p) => p.slug === slug)
+}
+
+export function getPendingDiscoverySummary(pending: PendingProjectRecord): string {
+  return buildPendingDiscoverySummary(pending)
 }

@@ -33,7 +33,7 @@
 | **Economic Intelligence** | **Partial** | Organ 00 spec ratified; not implemented | EIE mission post-treasury ingestion |
 | **Pricing** | **Partial** | Swap fees in `config/constants/info.ts`; all service SKUs undefined | Per-service constitutional pricing |
 | **Revenue** | **Partial** | On-chain swap fees exist; not ingested to Treasury Runtime | Phase C ingestion |
-| **Registry** | **Partial** | 1 project, 5 infrastructure events; no settlement registry | `/registry/treasury/*` publish |
+| **Registry** | **Partial** | 1 canonical project; pending write path (D87-06); no settlement registry | `/registry/treasury/*` publish |
 | **MARCO Utility** | **Partial** | Canonical asset declared; `treasuryCompatible: planned`; optional in execution | Treasury SKU + service payment rails |
 | **Civilization Economy** | **Partial** | Activation pipeline 0% READY; economic-runtime read model only | Close activation stages B→F |
 
@@ -74,6 +74,7 @@
 | Empty state honest (no fabrication) | ✅ |
 | Command Center reads only | ✅ Specified — Phase D |
 | Project attribution explainability | ✅ Specified — Phase F |
+| Project registry pending write path (D87-06) | 🟨 Pending onboarding live; canonical merge manual |
 | DEX receipt handoff module | ✅ `lib/treasury-handoff/` |
 | API proxy `/api/treasury/settlement-events` | ✅ |
 | Forbidden waterfall fields in DEX payload | ✅ |
@@ -119,6 +120,7 @@ EIE Implementation — post-treasury
 
 | Date | Change |
 |------|--------|
+| 2026-07-04 | D87-06 — Project registry pending write path for Import Existing Token |
 | 2026-07-03 | D87-03 — DEX receipt handoff to Treasury Runtime |
 | 2026-07-03 | D87-01 — Treasury Truth architecture frozen; matrix created |
 

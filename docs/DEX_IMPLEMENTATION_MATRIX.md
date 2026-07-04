@@ -399,7 +399,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Execution layer | 🟨 | `lib/execution-layer`, `lib/routing-layer` |
 | Wallet / wagmi | 🟩 | `utils/wagmi.ts`, `MelegaAppShell` |
 | Subgraph / protocol txs | 🟨 | `state/info/hooks`, used on home/trade |
-| Project registry | 🟨 | `registry/projects` |
+| Project registry | 🟨 | Canonical static + **pending write path** (D87-06) |
 | Economic read models | 🟨 | `lib/homepage-live`, surface map, readiness gates |
 | Treasury Truth (D87) | 🟩 | D87-03 `lib/treasury-handoff` + API proxy |
 | Settlement Producer (D87) | 🟨 | Treasury Runtime external |
@@ -442,7 +442,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
-| 2026-07-03 | D87-03 DEX Treasury Handoff — receipt POST to Treasury Runtime; settlement reference only in DEX |
+| 2026-07-04 | D87-06 Project Registry Write Path — pending onboarding; Import no longer dead-ends |
 | 2026-07-03 | D87-01 Treasury Truth Activation — settlement schema + architecture + activation plan; D87 matrix created |
 | 2026-07-03 | R024 Production Readiness Gate — automated PASS; cutover BLOCKED pending manual BSC QA |
 | 2026-07-03 | R023 Collectibles Runtime — Digital Identity layer; Collectibles Runtime 🟩, AI 🟨 |

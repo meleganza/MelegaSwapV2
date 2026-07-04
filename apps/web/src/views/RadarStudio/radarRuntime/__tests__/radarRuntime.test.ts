@@ -1,5 +1,7 @@
+import { describe, expect, it, beforeEach } from 'vitest'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
+import { resetPendingProjectRegistryForTests } from 'registry/projects/pending'
 import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
 import { buildLiveEvents } from '../buildLiveEvents'
 import { buildOpportunityScore } from '../buildOpportunityScore'
@@ -10,6 +12,10 @@ describe('radarRuntime', () => {
   const projects = getAllProjects().map(enrichProject)
   const project = projects[0]
   const token = project.resources.tokens[0]
+
+  beforeEach(() => {
+    resetPendingProjectRegistryForTests()
+  })
 
   it('builds live events from projects runtime', () => {
     const events = buildLiveEvents(projects)
@@ -37,10 +43,11 @@ describe('radarRuntime', () => {
     expect(result.found).toBe(true)
   })
 
-  it('returns PROJECT_NOT_INDEXED for unknown contract', () => {
+  it('creates pending profile for unknown contract via projects runtime', () => {
     const result = discoverProjectFromContract('0x0000000000000000000000000000000000000001', 56)
     expect(result.found).toBe(false)
-    expect(result.errors[0].code).toBe('PROJECT_NOT_FOUND')
+    expect(result.registryTier).toBe('pending')
+    expect(result.pending).toBeDefined()
   })
 
   it('exposes radar error catalog', () => {

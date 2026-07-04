@@ -1,6 +1,7 @@
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import { enrichProject } from 'registry/projects/discovery'
-import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
+import type { PendingProjectRecord } from 'registry/projects/pending/types'
+import { discoverProjectFromContract, getPendingDiscoverySummary } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
 import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketSources'
 import { buildOnChainMetrics } from 'views/ProjectsStudio/projectsRuntime/onChainMetrics'
 import { buildAiSummary } from 'views/ProjectsStudio/projectsRuntime/buildAiSummary'
@@ -23,6 +24,8 @@ export interface ImportDetectionItem {
 
 export interface ImportAnalysisResult {
   found: boolean
+  pending?: boolean
+  pendingProject?: PendingProjectRecord
   project?: EnrichedProjectRecord
   projectName?: string
   symbol?: string
@@ -52,6 +55,29 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
   }
 
   const discovery = discoverProjectFromContract(contract.trim(), chainId)
+
+  if (discovery.registryTier === 'pending' && discovery.pending) {
+    const pending = discovery.pending
+    const detections = buildPendingDetections(pending)
+    return {
+      found: false,
+      pending: true,
+      pendingProject: pending,
+      projectName: pending.name.available ? pending.name.value ?? undefined : undefined,
+      symbol: pending.symbol.available ? pending.symbol.value ?? undefined : undefined,
+      score: {
+        score: pending.health.readiness_score,
+        confidence: pending.health.identity_completeness / 100,
+        reason: `Pending registry profile — readiness ${pending.health.readiness_score}/100. Awaiting review before canonical listing.`,
+      },
+      suggestions: [],
+      summary: getPendingDiscoverySummary(pending),
+      detections,
+      pipelineComplete: [true, true, true, pending.health.review_ready, false],
+      errors: [],
+    }
+  }
+
   if (!discovery.found || !discovery.project) {
     errors.push(createBuildRuntimeError('PROJECT_NOT_FOUND'))
     return {
@@ -100,6 +126,24 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
     pipelineComplete: [true, true, true, true, score.score >= 50],
     errors: [...discovery.errors, ...intel.errors],
   }
+}
+
+function buildPendingDetections(pending: PendingProjectRecord): ImportDetectionItem[] {
+  const socialAvailable = Object.values(pending.socials).some((s) => s?.available)
+  return [
+    { label: 'Name', available: pending.name.available },
+    { label: 'Ticker', available: pending.symbol.available },
+    { label: 'Website', available: pending.website.available },
+    { label: 'Socials', available: socialAvailable },
+    { label: 'Liquidity', available: false },
+    { label: 'Holders', available: false },
+    { label: 'DEX presence', available: false },
+    { label: 'CoinGecko', available: false },
+    { label: 'DexScreener', available: false },
+    { label: 'TokenSniffer', available: false },
+    { label: 'Contract', available: Boolean(pending.contract) },
+    { label: 'AI Summary', available: pending.description_ai.available },
+  ]
 }
 
 function buildUnavailableDetections(): ImportDetectionItem[] {
