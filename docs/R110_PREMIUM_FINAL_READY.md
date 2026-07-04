@@ -15,7 +15,7 @@
 | **Recommendation** | **PREMIUM_BLOCKED** |
 | **Premium readiness score** | **78 / 100** |
 | **Build** | `yarn build` — PASS |
-| **SHA** | *(set at commit)* |
+| **SHA** | `474daa4` |
 
 PREMIUM_BLOCKED: major refinements landed, but full responsive certification and several structural layout debts (Radar console, Command Center flagship polish, Projects metric duplication) remain.
 
