@@ -120,6 +120,24 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     }
   }
 
+  [data-melega-app-shell] .melega-shell-mobile-connect {
+    min-width: 72px !important;
+    width: auto !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    border-radius: 10px !important;
+    border: 1px solid ${colors.gold} !important;
+    background: transparent !important;
+    color: ${colors.gold} !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
   [data-melega-app-shell] .melega-shell-wallet-icon {
     width: 40px !important;
     height: 40px !important;

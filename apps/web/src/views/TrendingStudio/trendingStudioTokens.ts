@@ -33,7 +33,7 @@ export const trendingStudioLayout = {
   discoveriesHeight: '260px',
   mobilePadding: '20px',
   mobileGap: '16px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
   stackBreakpoint: '1180px',
 } as const
 

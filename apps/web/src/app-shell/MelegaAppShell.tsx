@@ -44,11 +44,16 @@ const Root = styled.div`
   background: #0a0a0a;
   color: ${colors.textPrimary};
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  width: 100%;
 `
 
 const Content = styled.div`
   max-width: 1180px;
   margin: 0 auto;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 `
 
 const MobileHeader = styled.div`
@@ -77,13 +82,6 @@ const MobileNetwork = styled.div`
   justify-content: flex-end;
   min-width: 0;
 `
-
-const WalletIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-    <rect x="3" y="7" width="18" height="13" rx="2" />
-    <path d="M17 12h4v4h-4z" />
-  </svg>
-)
 
 export interface MelegaAppShellProps {
   children: React.ReactNode
@@ -159,8 +157,8 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
             <UserMenu />
           </MobileWalletSlot>
         ) : (
-          <ConnectWalletButton className="melega-shell-wallet-icon" aria-label="Connect wallet">
-            <WalletIcon />
+          <ConnectWalletButton className="melega-shell-mobile-connect" aria-label="Connect wallet">
+            Connect
           </ConnectWalletButton>
         )}
       </MobileHeader>

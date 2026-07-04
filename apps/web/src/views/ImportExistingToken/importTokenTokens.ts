@@ -12,7 +12,7 @@ export const importTokenLayout = {
   cardGap: '20px',
   cardRadius: '20px',
   heroH: '240px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
   stackBreakpoint: '768px',
   btnTransition: '150ms',
   cardLift: '4px',

@@ -88,7 +88,7 @@ export const MachineSummaryCard: React.FC = () => {
       </CcCardHeader>
       {expanded && (
         <>
-          <JsonBlock>{jsonText.split('\n').slice(0, 8).join('\n')}</JsonBlock>
+          <JsonBlock>{jsonText}</JsonBlock>
           <BtnRow>
             <CopyBtn type="button" onClick={handleCopy}>
               Copy Summary

@@ -13,11 +13,12 @@ import { CsArtwork, ScoreRingDisplay } from './collectiblesStudioPrimitives'
 
 const Card = styled.article`
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: ${collectiblesStudioLayout.cardHeight};
   min-height: ${collectiblesStudioLayout.cardHeight};
   padding: 14px;
-  padding-bottom: 58px;
   border-radius: ${collectiblesStudioLayout.cardRadius};
   background: ${collectiblesStudioColors.panel};
   border: 1px solid ${collectiblesStudioColors.border};
@@ -36,11 +37,19 @@ const Card = styled.article`
     transform: scale(1.03);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     height: 400px;
     min-height: 400px;
     width: 100%;
   }
+`
+
+const CardBody = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 `
 
 const ArtWrap = styled.div`
@@ -210,13 +219,12 @@ const BindingValue = styled.span`
 `
 
 const BtnRow = styled.div`
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
+  margin-top: auto;
+  padding-top: 10px;
   height: 40px;
   display: flex;
   gap: 8px;
+  flex-shrink: 0;
 `
 
 const ViewBtn = styled.a`
@@ -282,50 +290,52 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
 
   return (
     <Card data-cs-collection-card>
-      <ArtWrap>
-        <CsArtwork data-cs-artwork $theme={collection.artTheme} />
-        <Badges>
-          {visibleBadges.map((b) => {
-            const c = BADGE_COLORS[b]
-            return (
-              <Badge key={b} $bg={c.bg} $border={c.border} $color={c.color}>
-                {BADGE_LABELS[b]}
-              </Badge>
-            )
-          })}
-          {collection.agentEnabled ? <AgentBadge>Agent Enabled</AgentBadge> : null}
-        </Badges>
-        <ScorePos>
-          <ScoreRingDisplay score={collection.aiScore} $compact />
-        </ScorePos>
-      </ArtWrap>
+      <CardBody>
+        <ArtWrap>
+          <CsArtwork data-cs-artwork $theme={collection.artTheme} />
+          <Badges>
+            {visibleBadges.map((b) => {
+              const c = BADGE_COLORS[b]
+              return (
+                <Badge key={b} $bg={c.bg} $border={c.border} $color={c.color}>
+                  {BADGE_LABELS[b]}
+                </Badge>
+              )
+            })}
+            {collection.agentEnabled ? <AgentBadge>Agent Enabled</AgentBadge> : null}
+          </Badges>
+          <ScorePos>
+            <ScoreRingDisplay score={collection.aiScore} $compact />
+          </ScorePos>
+        </ArtWrap>
 
-      <Title>{collection.title}</Title>
-      <IdentityLine>{collection.identityLine}</IdentityLine>
-      <Creator>{collection.creator}</Creator>
+        <Title>{collection.title}</Title>
+        <IdentityLine>{collection.identityLine}</IdentityLine>
+        <Creator>{collection.creator}</Creator>
 
-      <UtilityRow>
-        {collection.utilityChips.slice(0, 4).map((chip) => (
-          <UtilChip key={chip}>{chip}</UtilChip>
-        ))}
-      </UtilityRow>
+        <UtilityRow>
+          {collection.utilityChips.slice(0, 4).map((chip) => (
+            <UtilChip key={chip}>{chip}</UtilChip>
+          ))}
+        </UtilityRow>
 
-      <Metrics>
-        <Metric>
-          <MetricLabel>Floor</MetricLabel>
-          <MetricValue>{collection.floorPrice}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>24h Vol</MetricLabel>
-          <MetricValue>{collection.volume24h}</MetricValue>
-        </Metric>
-        <Metric>
-          <MetricLabel>Items</MetricLabel>
-          <MetricValue>{collection.items}</MetricValue>
-        </Metric>
-      </Metrics>
+        <Metrics>
+          <Metric>
+            <MetricLabel>Floor</MetricLabel>
+            <MetricValue>{collection.floorPrice}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>24h Vol</MetricLabel>
+            <MetricValue>{collection.volume24h}</MetricValue>
+          </Metric>
+          <Metric>
+            <MetricLabel>Items</MetricLabel>
+            <MetricValue>{collection.items}</MetricValue>
+          </Metric>
+        </Metrics>
 
-      <BindingRows binding={collection.identityBinding} />
+        <BindingRows binding={collection.identityBinding} />
+      </CardBody>
 
       <BtnRow>
         <ViewBtn href={`/collectibles/${collection.slug}`}>View Collection</ViewBtn>

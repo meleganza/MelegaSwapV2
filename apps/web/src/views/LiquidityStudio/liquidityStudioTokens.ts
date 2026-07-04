@@ -38,7 +38,7 @@ export const liquidityStudioLayout = {
   activityHeaderHeight: '36px',
   activityRowHeight: '40px',
   activityCellPadding: '16px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
 } as const
 
 export const liquidityStudioColors = {

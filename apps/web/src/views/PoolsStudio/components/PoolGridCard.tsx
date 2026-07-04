@@ -107,10 +107,10 @@ const AprSection = styled.div<{ $comingSoon?: boolean }>`
 
 const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '42px'};
+    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '36px' : '32px'};
   font-weight: 800;
   line-height: ${({ $status }) =>
-    $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '46px'};
+    $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '38px' : '36px'};
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
@@ -120,9 +120,9 @@ const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
 
   @media (max-width: 767px) {
     font-size: ${({ $status }) =>
-      $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '44px' : '38px'};
+      $status === 'indexing' ? '26px' : $status === 'coming-soon' ? '32px' : '28px'};
     line-height: ${({ $status }) =>
-      $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '44px' : '42px'};
+      $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '34px' : '32px'};
   }
 `
 
@@ -147,6 +147,9 @@ const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
   font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? poolsStudioColors.green
@@ -182,7 +185,6 @@ const Footer = styled.div`
   height: ${poolsStudioLayout.poolCardFooterHeight};
   min-height: ${poolsStudioLayout.poolCardFooterHeight};
   margin-top: ${poolsStudioLayout.poolCardMetricsFooterGap};
-  padding-right: 24px;
   display: flex;
   align-items: center;
   justify-content: flex-end;

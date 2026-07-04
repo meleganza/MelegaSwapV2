@@ -145,10 +145,10 @@ const AprSection = styled.div<{ $comingSoon?: boolean }>`
 
 const AprValue = styled.div<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
   font-size: ${({ $variant }) =>
-    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '42px'};
+    $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '36px' : '32px'};
   font-weight: 800;
   line-height: ${({ $variant }) =>
-    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '46px'};
+    $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '38px' : '36px'};
   color: ${({ $variant }) =>
     $variant === 'indexing'
       ? farmsStudioColors.gold
@@ -158,9 +158,9 @@ const AprValue = styled.div<{ $variant?: 'live' | 'indexing' | 'coming-soon' }>`
 
   @media (max-width: 767px) {
     font-size: ${({ $variant }) =>
-      $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '44px' : '38px'};
+      $variant === 'indexing' ? '26px' : $variant === 'coming-soon' ? '32px' : '28px'};
     line-height: ${({ $variant }) =>
-      $variant === 'indexing' ? '30px' : $variant === 'coming-soon' ? '44px' : '42px'};
+      $variant === 'indexing' ? '28px' : $variant === 'coming-soon' ? '34px' : '32px'};
   }
 `
 
@@ -194,6 +194,9 @@ const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
   font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? farmsStudioColors.green
@@ -237,7 +240,6 @@ const Footer = styled.div<{ $centered?: boolean }>`
   height: ${farmsStudioLayout.farmCardFooterHeight};
   min-height: ${farmsStudioLayout.farmCardFooterHeight};
   margin-top: ${farmsStudioLayout.farmCardMetricsFooterGap};
-  padding-right: 24px;
   display: flex;
   align-items: center;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-end')};

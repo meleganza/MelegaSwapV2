@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { MARCO_LOGO_URI } from '../../constants/brand'
 import { MelegaLogoSvg } from '../BrandLockup/MelegaLogoSvg'
 import { colors, typography } from '../../tokens'
 
@@ -28,6 +29,12 @@ const LogoSlot = styled.div`
   border: 1px solid #d6b445;
   background: #050505;
   overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `
 
 const Meta = styled.div`
@@ -51,16 +58,24 @@ export interface MelegaMarcoCardProps {
   priceLabel?: string
 }
 
-export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) => (
-  <Card data-melega-marco-card>
-    <LogoSlot aria-hidden>
-      <MelegaLogoSvg size={28} />
-    </LogoSlot>
-    <Meta>
-      <Name>MARCO</Name>
-      {priceLabel && <Price>{priceLabel}</Price>}
-    </Meta>
-  </Card>
-)
+export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) => {
+  const [logoOk, setLogoOk] = useState(true)
+
+  return (
+    <Card data-melega-marco-card>
+      <LogoSlot aria-hidden>
+        {logoOk ? (
+          <img src={MARCO_LOGO_URI} alt="" onError={() => setLogoOk(false)} />
+        ) : (
+          <MelegaLogoSvg size={28} />
+        )}
+      </LogoSlot>
+      <Meta>
+        <Name>MARCO</Name>
+        {priceLabel && <Price>{priceLabel}</Price>}
+      </Meta>
+    </Card>
+  )
+}
 
 export default MelegaMarcoCard

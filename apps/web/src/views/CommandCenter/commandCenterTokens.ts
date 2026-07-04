@@ -19,7 +19,7 @@ export const commandCenterLayout = {
   cardPadding: '18px',
   cardGap: '14px',
   panelRadius: '24px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
   stackBreakpoint: '1024px',
 } as const
 

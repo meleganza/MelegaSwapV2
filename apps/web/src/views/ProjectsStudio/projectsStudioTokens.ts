@@ -18,7 +18,7 @@ export const projectsStudioLayout = {
   filterPaddingX: '20px',
   gridColumns: 3,
   gridGap: '18px',
-  cardHeight: '360px',
+  cardHeight: '400px',
   cardPadding: '20px',
   cardRadius: '20px',
   cardFooterHeight: '42px',
@@ -29,7 +29,7 @@ export const projectsStudioLayout = {
   btnGap: '12px',
   activityHeight: '280px',
   activityRowHeight: '42px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
 } as const
 
 export const projectsStudioColors = {

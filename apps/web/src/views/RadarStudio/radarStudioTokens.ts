@@ -33,7 +33,7 @@ export const radarStudioLayout = {
   heatmapMinHeight: '300px',
   heatmapMarginTop: '24px',
   stackBreakpoint: '1180px',
-  mobileBottomPad: '96px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
   confidenceBarW: '100px',
   confidenceBarH: '6px',
 } as const

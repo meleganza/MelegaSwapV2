@@ -36,7 +36,7 @@ export const poolsStudioLayout = {
   sparklineH: 18,
   kpiDeltaGap: '16px',
   kpiSparkGap: '8px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
 } as const
 
 export const poolsStudioColors = {

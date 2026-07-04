@@ -22,7 +22,7 @@ export const buildStudioLayout = {
   secondRowCardH: '280px',
   validationH: '260px',
   recentBuildsH: '380px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
   stackBreakpoint: '768px',
   btnTransition: '150ms',
   cardLift: '4px',

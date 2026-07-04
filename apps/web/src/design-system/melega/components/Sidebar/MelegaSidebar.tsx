@@ -30,6 +30,8 @@ const BrandRow = styled.div`
   flex-shrink: 0;
   padding: 20px 0 0 18px;
   margin-bottom: 18px;
+  min-width: 0;
+  overflow: visible;
 `
 
 const NavScroll = styled.div`

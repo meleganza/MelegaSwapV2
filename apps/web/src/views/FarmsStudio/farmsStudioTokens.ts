@@ -36,7 +36,7 @@ export const farmsStudioLayout = {
   activityMarginTop: '18px',
   activityRowHeight: '42px',
   activityCellPadding: '18px',
-  mobileBottomPad: '88px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
 } as const
 
 export const farmsStudioColors = {

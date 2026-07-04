@@ -429,9 +429,10 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Milestone | Status | Ref |
 |-----------|--------|-----|
-| Staging `v2.melega.finance` | 🟩 | Phase 1 + R024 automated gate PASS |
-| Phase 2 automated QA | 🟩 | 42/44 checks PASS — 2 flaky/client-render (see R024 report) |
-| R024 production readiness | 🟨 | Automated PASS; cutover BLOCKED pending manual BSC QA |
+| Staging `v2.melega.finance` | 🟩 | Phase 1 + R024 + **R100** freeze pass |
+| Phase 2 automated QA | 🟩 | R100 mobile Connect CTA + layout fixes |
+| R100 production freeze | 🟩 | Visual/mobile/layout stabilization — MERGE_ALLOWED on branch |
+| R024 production readiness | 🟨 | Automated PASS; `www` cutover BLOCKED pending manual BSC QA |
 | PR `design-system-foundation` → `main` | 🟨 | [#2](https://github.com/meleganza/MelegaSwapV2/pull/2) open — HOLD until wallet sign-off |
 | Production cutover `melega.finance` | ⬜ | Blocked — explicit approval + manual QA required |
 | Homepage policy | 🟩 | Trade-first `HomeTradeScreen` (not Civilization Entry Point) |
@@ -442,6 +443,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-04 | **R100 DEX Production Freeze** — branding, mobile pad, farms/pools/projects/collectibles layout; MARCO logo; mobile Connect CTA |
 | 2026-07-04 | D87-06 Project Registry Write Path — pending onboarding; Import no longer dead-ends |
 | 2026-07-03 | D87-01 Treasury Truth Activation — settlement schema + architecture + activation plan; D87 matrix created |
 | 2026-07-03 | R024 Production Readiness Gate — automated PASS; cutover BLOCKED pending manual BSC QA |

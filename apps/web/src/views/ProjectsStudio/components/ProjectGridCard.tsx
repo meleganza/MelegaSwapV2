@@ -123,8 +123,7 @@ const SummaryLabel = styled.div`
 `
 
 const SummaryWrap = styled.div`
-  max-height: 57px;
-  overflow: hidden;
+  min-height: 57px;
 `
 
 const Summary = styled.p`

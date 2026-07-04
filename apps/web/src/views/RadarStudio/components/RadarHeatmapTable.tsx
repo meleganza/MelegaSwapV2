@@ -43,9 +43,11 @@ const Legend = styled.div`
 const TableWrap = styled.div`
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  min-width: 0;
 
   @media (max-width: 767px) {
-    margin: 0 -4px;
+    margin: 0;
   }
 `
 

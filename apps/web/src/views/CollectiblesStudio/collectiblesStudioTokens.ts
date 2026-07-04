@@ -39,7 +39,7 @@ export const collectiblesStudioLayout = {
   btnFavorite: '40px',
   bannerHeight: '180px',
   stackBreakpoint: '1180px',
-  mobileBottomPad: '96px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
 } as const
 
 export const collectiblesStudioColors = {
