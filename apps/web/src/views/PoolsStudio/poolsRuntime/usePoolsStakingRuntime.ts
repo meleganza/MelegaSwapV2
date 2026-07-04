@@ -138,6 +138,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     return rawPools
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
       .map((p) => mapPoolToPreviewCard(p, currentBlock, performanceFee))
+      .filter((c): c is PoolPreviewCard => c !== null)
   }, [rawPools, currentBlock])
 
   const filteredPools = useMemo(() => filterPools(previewCards, filter), [previewCards, filter])

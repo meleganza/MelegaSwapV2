@@ -16,8 +16,8 @@ const Card = styled.article`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: ${collectiblesStudioLayout.cardHeight};
-  min-height: ${collectiblesStudioLayout.cardHeight};
+  height: auto;
+  min-height: ${collectiblesStudioLayout.cardMinHeight};
   padding: 14px;
   border-radius: ${collectiblesStudioLayout.cardRadius};
   background: ${collectiblesStudioColors.panel};
@@ -38,8 +38,7 @@ const Card = styled.article`
   }
 
   @media (max-width: 767px) {
-    height: 400px;
-    min-height: 400px;
+    min-height: 320px;
     width: 100%;
   }
 `
@@ -317,6 +316,9 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
           {collection.utilityChips.slice(0, 4).map((chip) => (
             <UtilChip key={chip}>{chip}</UtilChip>
           ))}
+          {collection.utilityChips.length > 4 ? (
+            <UtilChip>+{collection.utilityChips.length - 4}</UtilChip>
+          ) : null}
         </UtilityRow>
 
         <Metrics>

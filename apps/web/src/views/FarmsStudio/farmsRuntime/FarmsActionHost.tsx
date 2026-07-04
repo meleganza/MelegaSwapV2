@@ -24,6 +24,8 @@ import useStakeFarms from 'views/Farms/hooks/useStakeFarms'
 import useUnstakeFarms from 'views/Farms/hooks/useUnstakeFarms'
 import { useFarmsRuntime } from './FarmsRuntimeContext'
 
+const ERC20_PLACEHOLDER = '0x0000000000000000000000000000000000000000'
+
 export const FarmsActionHost: React.FC = () => {
   const { modalRequest, clearModal } = useFarmsRuntime()
   const farm = modalRequest?.farm.rawFarm
@@ -39,7 +41,7 @@ export const FarmsActionHost: React.FC = () => {
 
   const pid = farm?.pid ?? 0
   const lpAddress = farm?.lpAddress ?? ''
-  const lpContract = useERC20(lpAddress || undefined)
+  const lpContract = useERC20(lpAddress && lpAddress.length >= 42 ? lpAddress : ERC20_PLACEHOLDER)
   const { onStake } = useStakeFarms(pid, chainId ?? 56)
   const { onUnstake } = useUnstakeFarms(pid, chainId ?? 56)
   const { onApprove } = useApproveFarm(lpContract, chainId ?? 56)

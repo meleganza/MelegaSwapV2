@@ -39,15 +39,19 @@ const Pair = styled.div`
 `
 
 const Apr = styled.div`
-  font-size: 56px;
+  font-size: 52px;
   font-weight: 800;
   line-height: 1;
   color: ${farmsStudioColors.green};
+
+  @media (max-width: 767px) {
+    font-size: 40px;
+  }
 `
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, ${farmsStudioLayout.featuredMetricColWidth});
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 `
 
@@ -55,7 +59,7 @@ const Metric = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: ${farmsStudioLayout.featuredMetricColWidth};
+  min-width: 0;
 `
 
 const MetricLabel = styled.span`
@@ -74,7 +78,8 @@ const MetricValue = styled.span`
 
 const BtnRow = styled.div`
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: auto;
 `
 

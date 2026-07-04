@@ -7,6 +7,7 @@ import { BuildRuntimeProvider } from './buildRuntime/BuildRuntimeContext'
 import { buildStudioColors, buildStudioLayout } from './buildStudioTokens'
 import AIBuildAdvisorPanel from './components/AIBuildAdvisorPanel'
 import AIManifestPanel from './components/AIManifestPanel'
+import BuildMachinePanel from './components/BuildMachinePanel'
 import AIValidationEngine from './components/AIValidationEngine'
 import BuildKpiRow from './components/BuildKpiRow'
 import BuildStudioPageHeader from './components/BuildStudioPageHeader'
@@ -77,6 +78,7 @@ export const BuildStudioScreen: React.FC = () => (
         <InfrastructureFlow />
         <OptionalServices />
         <AIManifestPanel />
+        <BuildMachinePanel />
         <TrustedInfrastructurePanel />
         <RecentBuildsTable />
       </Content>

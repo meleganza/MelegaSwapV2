@@ -11,21 +11,20 @@ const Card = styled.article<{ $expanded?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: ${({ $expanded }) =>
-    $expanded ? farmsStudioLayout.farmCardHeightExpanded : farmsStudioLayout.farmCardHeight};
   min-height: ${farmsStudioLayout.farmCardHeight};
+  height: ${({ $expanded }) => ($expanded ? 'auto' : farmsStudioLayout.farmCardHeight)};
   padding: ${farmsStudioLayout.farmCardPadding};
-  border-radius: 18px;
-  background: ${farmsStudioColors.panel};
-  border: 1px solid ${farmsStudioColors.border};
+  border-radius: 20px;
+  background: #131313;
+  border: 1px solid #262626;
   box-sizing: border-box;
   min-width: 0;
-  overflow: hidden;
-  transition: height 250ms ease, border-color 150ms ease, transform 150ms ease;
+  overflow: visible;
 
   @media (max-width: 767px) {
     height: auto;
-    min-height: ${farmsStudioLayout.farmCardHeight};
+    min-height: 280px;
+    padding: 14px;
   }
 `
 
@@ -237,35 +236,26 @@ const AnalyzeValue = styled.span`
 `
 
 const Footer = styled.div<{ $centered?: boolean }>`
-  height: ${farmsStudioLayout.farmCardFooterHeight};
-  min-height: ${farmsStudioLayout.farmCardFooterHeight};
   margin-top: ${farmsStudioLayout.farmCardMetricsFooterGap};
   display: flex;
   align-items: center;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-end')};
+  flex-wrap: wrap;
   gap: ${farmsStudioLayout.farmCardBtnGap};
   flex-shrink: 0;
-
-  @media (max-width: 767px) {
-    height: auto;
-    min-height: ${farmsStudioLayout.farmCardFooterHeight};
-    width: 100%;
-
-    button {
-      flex: 1;
-    }
-  }
+  padding-top: 8px;
 `
 
 const CardStakeBtn = styled.button`
-  width: ${farmsStudioLayout.farmCardBtnWidth};
-  min-width: ${farmsStudioLayout.farmCardBtnWidth};
+  min-width: 72px;
+  flex: 1 1 auto;
+  max-width: 120px;
   height: ${farmsStudioLayout.farmCardBtnHeight};
   border: none;
   border-radius: 12px;
   background: #d4af37;
   color: #050505;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 150ms ease, filter 150ms ease;
@@ -274,17 +264,23 @@ const CardStakeBtn = styled.button`
     filter: brightness(1.05);
     transform: translateY(-1px);
   }
+
+  @media (max-width: 767px) {
+    max-width: none;
+    flex: 1 1 calc(50% - 4px);
+  }
 `
 
 const CardAnalyzeBtn = styled.button`
-  width: ${farmsStudioLayout.farmCardAnalyzeWidth};
-  min-width: ${farmsStudioLayout.farmCardAnalyzeWidth};
+  min-width: 72px;
+  flex: 1 1 auto;
+  max-width: 120px;
   height: ${farmsStudioLayout.farmCardBtnHeight};
   border-radius: 12px;
   border: 1px solid rgba(212, 175, 55, 0.55);
   background: transparent;
   color: #d4af37;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 150ms ease, filter 150ms ease;
@@ -292,6 +288,11 @@ const CardAnalyzeBtn = styled.button`
   &:hover {
     filter: brightness(1.05);
     transform: translateY(-1px);
+  }
+
+  @media (max-width: 767px) {
+    max-width: none;
+    flex: 1 1 calc(50% - 4px);
   }
 `
 

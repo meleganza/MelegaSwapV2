@@ -1,5 +1,5 @@
 import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 import { LIVE_EVENT_ICONS } from '../radarStudioData'
 import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
@@ -69,7 +69,14 @@ const scroll = keyframes`
 `
 
 const ScrollingTrack = styled(TickerTrack)<{ $animate: boolean }>`
-  animation: ${({ $animate }) => ($animate ? `${scroll} 40s linear infinite` : 'none')};
+  ${({ $animate }) =>
+    $animate
+      ? css`
+          animation: ${scroll} 40s linear infinite;
+        `
+      : css`
+          animation: none;
+        `}
 `
 
 const EventItem = styled.div`

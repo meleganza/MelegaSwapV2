@@ -19,18 +19,19 @@ const Panel = styled(TrPanel)`
 `
 
 const WhalePanel = styled(Panel)`
-  height: ${trendingStudioLayout.whaleMonitorHeight};
-  min-height: ${trendingStudioLayout.whaleMonitorHeight};
+  height: auto;
+  min-height: 0;
 `
 
 const SmartPanel = styled(Panel)`
-  height: ${trendingStudioLayout.smartMoneyHeight};
-  min-height: ${trendingStudioLayout.smartMoneyHeight};
+  height: auto;
+  min-height: 0;
 `
 
 const DiscoveriesPanel = styled(Panel)`
-  height: ${trendingStudioLayout.discoveriesHeight};
-  min-height: ${trendingStudioLayout.discoveriesHeight};
+  height: auto;
+  min-height: 0;
+  max-height: ${trendingStudioLayout.discoveriesHeight};
 `
 
 const List = styled.div`

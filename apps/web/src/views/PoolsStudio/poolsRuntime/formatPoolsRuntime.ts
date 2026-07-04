@@ -9,6 +9,12 @@ import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } fr
 
 const BLOCKS_PER_DAY = 28800
 
+function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBlock']): BigNumber {
+  if (!tokenPerBlock) return new BigNumber(0)
+  if (typeof (tokenPerBlock as BigNumber).times === 'function') return tokenPerBlock as BigNumber
+  return new BigNumber(tokenPerBlock as string | number)
+}
+
 export const formatUsd = (value?: number | null): string => {
   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return '—'
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
@@ -63,19 +69,22 @@ export function mapPoolToPreviewCard(
   pool: Pool.DeserializedPool<Token>,
   currentBlock: number,
   performanceFee = 0,
-): PoolPreviewCard {
+): PoolPreviewCard | null {
+  if (!pool?.earningToken?.decimals || !pool?.stakingToken?.decimals) return null
+
   const { apr } = getAprData(pool, performanceFee)
   const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
   const tvlUsd = staked * (pool.stakingTokenPrice || 0)
-  const dailyRewardTokens = pool.tokenPerBlock
-    ? getBalanceNumber(pool.tokenPerBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
+  const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
+  const dailyRewardTokens = perBlock.gt(0)
+    ? getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
     : 0
   const status = poolStatus(pool, currentBlock)
 
   const analyzePreview: PoolAnalyzePreview = {
     aprHistory: formatApr(apr),
     rewardToken: pool.earningToken.symbol ?? '—',
-    emission: pool.tokenPerBlock ? `${formatTokenAmount(pool.tokenPerBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)} / day` : '—',
+    emission: perBlock.gt(0) ? `${formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)} / day` : '—',
     contract: pool.sousId !== undefined ? `sousId ${pool.sousId}` : 'On-chain',
     risk: pool.vaultKey === VaultKey.CakeVault ? 'Lock period applies' : 'Standard',
     autoCompound: pool.vaultKey ? 'Enabled' : 'Manual',
@@ -94,7 +103,7 @@ export function mapPoolToPreviewCard(
     tvl: formatUsd(tvlUsd),
     liquidity: formatUsd(tvlUsd),
     rewardToken: pool.earningToken.symbol ?? '—',
-    dailyRewards: dailyRewardTokens > 0 ? formatTokenAmount(pool.tokenPerBlock!.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
+    dailyRewards: dailyRewardTokens > 0 ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
     multiplier: pool.userData?.stakedBalance?.gt(0) ? 'Active' : '—',
     participants: staked > 0 ? formatTokenAmount(pool.totalStaked, pool.stakingToken.decimals) : '—',
     cta: status === 'coming-soon' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',

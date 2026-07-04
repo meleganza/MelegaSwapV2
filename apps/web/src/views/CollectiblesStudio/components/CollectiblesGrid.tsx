@@ -6,16 +6,13 @@ import CollectibleGridCard from './CollectibleGridCard'
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(${collectiblesStudioLayout.gridColumns}, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: ${collectiblesStudioLayout.gridGap};
   min-width: 0;
 
-  @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 `
 

@@ -112,6 +112,53 @@ const CollSub = styled.div`
   margin-top: 2px;
 `
 
+const PrivilegeRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 6px;
+`
+
+const PrivilegeChip = styled.span`
+  font-family: ${CC_FONT_BODY};
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: ${commandCenterColors.green};
+  border: 1px solid rgba(27, 231, 122, 0.35);
+  background: rgba(27, 231, 122, 0.08);
+`
+
+const SettlementRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: ${CC_FONT_BODY};
+  font-size: 12px;
+`
+
+const SettlementLabel = styled.span<{ $tone: 'ok' | 'warn' | 'error' | 'muted' }>`
+  font-weight: 700;
+  color: ${({ $tone }) =>
+    $tone === 'ok'
+      ? commandCenterColors.green
+      : $tone === 'error'
+        ? '#f87171'
+        : $tone === 'warn'
+          ? commandCenterColors.gold
+          : commandCenterColors.muted};
+`
+
+const SettlementMeta = styled.div`
+  font-size: 11px;
+  color: ${commandCenterColors.muted};
+  line-height: 1.45;
+`
+
 const StatGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -349,6 +396,30 @@ export const CommandFarmsCard: React.FC = () => {
   )
 }
 
+export const CommandSettlementCard: React.FC = () => {
+  const { settlement } = useCommandRuntime()
+  const timeLabel = settlement.settlementTime
+    ? new Date(settlement.settlementTime).toLocaleString()
+    : '—'
+
+  return (
+    <CcDashCard data-cc-settlement>
+      <CcCardHeader style={{ marginBottom: 0 }}>
+        <CcTitle>Latest Settlement</CcTitle>
+      </CcCardHeader>
+      <SettlementRow>
+        <SettlementLabel $tone={settlement.tone}>{settlement.label}</SettlementLabel>
+        <SettlementMeta>Settlement ID: {settlement.settlementId ?? '—'}</SettlementMeta>
+        <SettlementMeta>Settlement Time: {timeLabel}</SettlementMeta>
+        <SettlementMeta>Treasury Status: {settlement.treasuryStatus}</SettlementMeta>
+        {settlement.txHash ? (
+          <SettlementMeta>Tx: {settlement.txHash.slice(0, 10)}…</SettlementMeta>
+        ) : null}
+      </SettlementRow>
+    </CcDashCard>
+  )
+}
+
 export const CommandCollectiblesCard: React.FC = () => {
   const { collectibles } = useCommandRuntime()
   const rows = safeArray(collectibles)
@@ -366,6 +437,16 @@ export const CommandCollectiblesCard: React.FC = () => {
             <CollIcon>{c.icon}</CollIcon>
             <CollTitle>{c.title}</CollTitle>
             <CollSub>{c.subtitle}</CollSub>
+            {c.privileges?.length ? (
+              <PrivilegeRow data-cc-privileges>
+                {c.privileges.slice(0, 4).map((privilege) => (
+                  <PrivilegeChip key={privilege}>{privilege}</PrivilegeChip>
+                ))}
+                {c.privileges.length > 4 ? (
+                  <PrivilegeChip>+{c.privileges.length - 4}</PrivilegeChip>
+                ) : null}
+              </PrivilegeRow>
+            ) : null}
           </CollectibleCard>
           ))
         )}

@@ -10,21 +10,20 @@ const Card = styled.article<{ $expanded?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: ${({ $expanded }) =>
-    $expanded ? poolsStudioLayout.poolCardHeightExpanded : poolsStudioLayout.poolCardHeight};
   min-height: ${poolsStudioLayout.poolCardHeight};
-  padding: 18px;
-  border-radius: 18px;
-  background: ${poolsStudioColors.card};
-  border: 1px solid ${poolsStudioColors.border};
+  height: ${({ $expanded }) => ($expanded ? 'auto' : poolsStudioLayout.poolCardHeight)};
+  padding: 16px;
+  border-radius: 20px;
+  background: #131313;
+  border: 1px solid #262626;
   box-sizing: border-box;
   min-width: 0;
-  overflow: hidden;
-  transition: height 250ms ease, border-color 150ms ease, transform 150ms ease, background 150ms ease;
+  overflow: visible;
 
   @media (max-width: 767px) {
     height: auto;
-    min-height: ${poolsStudioLayout.poolCardHeight};
+    min-height: 280px;
+    padding: 14px;
   }
 `
 
@@ -182,22 +181,27 @@ const AnalyzeItem = styled.div`
 `
 
 const Footer = styled.div`
-  height: ${poolsStudioLayout.poolCardFooterHeight};
-  min-height: ${poolsStudioLayout.poolCardFooterHeight};
   margin-top: ${poolsStudioLayout.poolCardMetricsFooterGap};
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: ${poolsStudioLayout.poolCardBtnGap};
   flex-shrink: 0;
+  padding-top: 8px;
+
+  button {
+    min-width: 72px;
+    flex: 1 1 auto;
+    max-width: 120px;
+    font-size: 13px;
+    height: ${poolsStudioLayout.poolCardBtnHeight};
+  }
 
   @media (max-width: 767px) {
-    height: auto;
-    min-height: ${poolsStudioLayout.poolCardFooterHeight};
-    width: 100%;
-
     button {
-      flex: 1;
+      max-width: none;
+      flex: 1 1 calc(50% - 4px);
     }
   }
 `

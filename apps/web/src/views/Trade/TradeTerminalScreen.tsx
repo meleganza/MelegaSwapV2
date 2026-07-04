@@ -29,7 +29,7 @@ const Root = styled.div`
   overflow-x: hidden;
 
   @media (max-width: 767px) {
-    padding: 0 0 24px;
+    padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px));
   }
 `
 

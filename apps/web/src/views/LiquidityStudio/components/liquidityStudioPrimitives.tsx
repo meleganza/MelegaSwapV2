@@ -9,15 +9,18 @@ export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?:
   border: 1px solid ${liquidityStudioColors.border};
   border-radius: ${({ $radius }) => $radius || liquidityStudioLayout.panelRadius};
   padding: ${({ $pad }) => $pad || liquidityStudioLayout.panelPadding};
-  overflow: hidden;
+  overflow: visible;
   ${({ $height }) =>
-    $height
+    $height && $height !== 'auto'
       ? `
     height: ${$height};
     min-height: ${$height};
     max-height: ${$height};
   `
-      : ''}
+      : `
+    height: auto;
+    min-height: ${liquidityStudioLayout.builderMinHeight};
+  `}
 `
 
 export const LsPanelTitle = styled.h2`

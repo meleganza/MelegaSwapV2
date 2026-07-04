@@ -15,19 +15,19 @@ import {
 const Card = styled.article`
   display: flex;
   flex-direction: column;
-  height: ${projectsStudioLayout.cardHeight};
-  min-height: ${projectsStudioLayout.cardHeight};
+  min-height: ${projectsStudioLayout.cardMinHeight};
+  height: auto;
   padding: ${projectsStudioLayout.cardPadding};
   border-radius: ${projectsStudioLayout.cardRadius};
-  background: ${projectsStudioColors.panelGradient};
-  border: 1px solid ${projectsStudioColors.border};
+  background: #131313;
+  border: 1px solid #262626;
   box-sizing: border-box;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 
   @media (max-width: 767px) {
-    height: auto;
-    min-height: ${projectsStudioLayout.cardHeight};
+    min-height: auto;
+    padding: 14px;
   }
 `
 
@@ -93,6 +93,22 @@ const Category = styled.div`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${projectsStudioColors.muted};
+`
+
+const PendingBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${projectsStudioColors.gold};
+  border: 1px solid rgba(214, 180, 69, 0.45);
+  background: rgba(214, 180, 69, 0.08);
 `
 
 const Chains = styled.div`
@@ -224,20 +240,18 @@ const ButtonRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: ${projectsStudioLayout.btnGap};
-  margin-top: 16px;
-  min-height: ${projectsStudioLayout.cardFooterHeight};
-  height: ${projectsStudioLayout.cardFooterHeight};
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
   flex-shrink: 0;
-  padding-right: 4px;
 
   @media (max-width: 767px) {
-    flex-wrap: wrap;
     width: 100%;
 
     a,
     button {
-      flex: 1;
+      flex: 1 1 calc(50% - 4px);
       min-width: 0;
     }
   }
@@ -290,8 +304,9 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   }, [project.slug])
 
   const tradeHref = project.tradeHref ?? '/trade'
-  const projectHref = project.projectHref ?? `/projects/${project.slug}`
+  const projectHref = project.importHref ?? project.projectHref ?? `/projects/${project.slug}`
   const radarHref = project.radarHref
+  const isPending = project.registryTier === 'pending' || project.status === 'pending'
 
   return (
     <Card data-pr-project-card>
@@ -302,6 +317,11 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
             <HeaderText>
               <Name>{project.name}</Name>
               <Category>{project.category}</Category>
+              {isPending ? (
+                <PendingBadge data-pr-pending-badge>
+                  {project.reviewStatus ?? 'Pending Review'}
+                </PendingBadge>
+              ) : null}
               <Chains>
                 {project.chains.map((chain) => (
                   <ChainBadge key={chain}>{chain}</ChainBadge>
@@ -370,7 +390,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
           Trade
         </PrSmallPrimaryBtn>
         <PrSmallGhostBtn as="a" href={projectHref}>
-          Open Project
+          {isPending ? 'Review Import' : 'Open Project'}
         </PrSmallGhostBtn>
         {radarHref ? (
           <PrSmallGhostBtn as="a" href={radarHref}>

@@ -41,16 +41,20 @@ const Main = styled.div`
 `
 
 const Apr = styled.div`
-  font-size: 56px;
+  font-size: 52px;
   font-weight: 800;
   line-height: 1;
   color: ${poolsStudioColors.green};
   margin-bottom: ${poolsStudioLayout.featuredAprGap};
+
+  @media (max-width: 767px) {
+    font-size: 40px;
+  }
 `
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px 24px;
   margin-bottom: ${poolsStudioLayout.featuredMetricsBtnGap};
 `
@@ -93,7 +97,8 @@ const MetricValue = styled.span`
 
 const BtnRow = styled.div`
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: auto;
 `
 

@@ -27,6 +27,7 @@ import { SentryErrorBoundary } from '../components/ErrorBoundary'
 import Menu from '../components/Menu'
 import Providers from '../Providers'
 import GlobalStyle from '../style/Global'
+import R107GlobalVisualStyle from 'design-system/melega/R107GlobalVisualStyle'
 import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
 import MelegaTradingOverrides from '../style/MelegaTradingOverrides'
 import { BrowserRouter as Router } from 'react-router-dom'
@@ -98,6 +99,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           {(Component as NextPageWithLayout).mp ? <MPGlobalHooks /> : <GlobalHooks />}
           <ResetCSS />
           <GlobalStyle />
+          <R107GlobalVisualStyle />
           <MelegaUIKitOverrides />
           <MelegaTradingOverrides />
           <PersistGate loading={null} persistor={persistor}>

@@ -13,24 +13,22 @@ import {
 
 const Card = styled.article`
   width: 100%;
-  max-width: ${trendingStudioLayout.trendingCardWidth};
-  height: ${trendingStudioLayout.trendingCardHeight};
-  min-height: ${trendingStudioLayout.trendingCardHeight};
-  padding: 16px 18px;
+  max-width: 100%;
+  min-height: ${trendingStudioLayout.trendingCardMinHeight};
+  height: auto;
+  padding: 16px;
   border-radius: ${trendingStudioLayout.trendingCardRadius};
-  border: 1px solid ${trendingStudioColors.border};
-  background: ${trendingStudioColors.panel};
-  box-shadow: ${trendingStudioColors.shadow};
+  border: 1px solid #262626;
+  background: #131313;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 
   @media (max-width: 767px) {
-    max-width: 100%;
-    height: auto;
-    min-height: ${trendingStudioLayout.trendingCardHeight};
+    padding: 14px;
+    min-height: auto;
   }
 `
 
@@ -68,10 +66,14 @@ const HeaderText = styled.div`
 `
 
 const Name = styled.div`
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.1;
   color: ${trendingStudioColors.white};
+
+  @media (max-width: 767px) {
+    font-size: 20px;
+  }
 `
 
 const Pair = styled.div`

@@ -53,7 +53,7 @@ const TableWrap = styled.div`
 
 const Table = styled.table`
   width: 100%;
-  min-width: 1480px;
+  min-width: 100%;
   border-collapse: collapse;
 `
 

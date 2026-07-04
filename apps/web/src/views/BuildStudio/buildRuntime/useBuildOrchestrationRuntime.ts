@@ -22,7 +22,7 @@ import { buildValidationChecks } from './buildValidationChecks'
 export function useBuildOrchestrationRuntime() {
   const { chainId } = useActiveChainId()
   const { data: farms = [] } = useFarms()
-  const pools = usePoolsWithVault()
+  const { pools: poolList = [] } = usePoolsWithVault()
 
   const [contractInput, setContractInput] = useState('')
   const [chainKey, setChainKey] = useState('bnb')
@@ -41,12 +41,12 @@ export function useBuildOrchestrationRuntime() {
     }
   }, [contractInput, chainKey])
 
-  const poolPreview = useMemo(() => buildPoolPreviewFromRuntime(pools), [pools])
+  const poolPreview = useMemo(() => buildPoolPreviewFromRuntime(poolList), [poolList])
   const farmPreview = useMemo(() => buildFarmPreviewFromRuntime(farms), [farms])
 
   const activePools = useMemo(
-    () => pools.filter((p) => !p.isFinished).length,
-    [pools],
+    () => poolList.filter((p) => !p.isFinished).length,
+    [poolList],
   )
   const activeFarms = useMemo(
     () => farms.filter((f) => f.multiplier?.toString() !== '0X').length,
@@ -86,7 +86,7 @@ export function useBuildOrchestrationRuntime() {
 
   const machine = useMemo(
     () => ({
-      schema: 'https://melega.finance/schemas/build-runtime/v1',
+      schema: 'melega.build-runtime.v1',
       status: 'ready',
       chainId,
       project: activeProject?.slug ?? null,

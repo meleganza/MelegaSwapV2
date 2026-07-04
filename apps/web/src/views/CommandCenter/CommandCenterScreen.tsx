@@ -19,6 +19,7 @@ import {
   CommandLiquidityCard,
   CommandPoolsCard,
   CommandRecentActivityCard,
+  CommandSettlementCard,
 } from './components/CommandDashboardCards'
 import MachineSummaryCard from './components/MachineSummaryCard'
 import { CcColStack } from './components/commandCenterPrimitives'
@@ -89,7 +90,7 @@ const PositionsGrid = styled.div`
 
 const MetaGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: ${commandCenterLayout.sectionGap};
   min-width: 0;
 
@@ -166,6 +167,7 @@ export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = ({ runtim
           </PositionsGrid>
 
           <MetaGrid data-cc-meta-grid>
+            <CommandSettlementCard />
             <CommandCollectiblesCard />
             <CommandInfrastructureCard />
             <CommandBuilderStatusCard />

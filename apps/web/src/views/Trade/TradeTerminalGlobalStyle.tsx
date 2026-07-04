@@ -454,6 +454,24 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
       height: 84px !important;
       max-height: 84px !important;
     }
+
+    .trade-terminal-swap button[class*='SwapButton'],
+    .trade-terminal-swap #swap-button,
+    .trade-swap-cockpit button[type='button']:not([data-trade-cockpit-toolbar] button) {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: 44px !important;
+      visibility: visible !important;
+      display: inline-flex !important;
+    }
+
+    .trade-terminal-swap [class*='CurrencySelect'],
+    .trade-terminal-swap [class*='OpenCurrencySelectButton'] {
+      max-width: 108px !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
   }
 `
 

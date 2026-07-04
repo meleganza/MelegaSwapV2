@@ -160,7 +160,13 @@ export function buildFeaturedCollection(
     }
   }
 
-  const ownership = ownershipBySlug[record.slug]
+  const ownership = ownershipBySlug[record.slug] ?? {
+    slug: record.slug,
+    balance: 0,
+    status: record.contract.indexed ? 'Not owned' : 'Unavailable',
+    transferable: record.contract.indexed ? true : null,
+    tokenIds: [],
+  }
   const privileges = buildCollectiblePrivileges(record, ownership)
   const membership = buildMembershipStatus(record, ownership)
   const health = buildCollectibleHealth(record, ownership)

@@ -1,0 +1,23 @@
+/** R107 global visual stabilization tokens — pre-production UX sprint. */
+export const R107_VISUAL = {
+  contentMax: '1180px',
+  contentPaddingDesktop: '28px 24px 48px',
+  contentPaddingMobile: '16px',
+  cardBg: '#131313',
+  cardBorder: '1px solid #262626',
+  cardRadius: '20px',
+  cardPaddingDesktop: '16px',
+  cardPaddingMobile: '14px',
+  gridGapDesktop: '20px',
+  gridGapMobile: '14px',
+  btnHeightDesktop: '44px',
+  btnHeightMobile: '46px',
+  btnRadius: '12px',
+  btnFontSize: '13px',
+  aprRegularDesktop: '32px',
+  aprRegularMobile: '28px',
+  aprFeaturedMax: '52px',
+  chartBounds: { width: '72px', height: '28px' },
+  projectCardMinHeight: '400px',
+  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
+} as const

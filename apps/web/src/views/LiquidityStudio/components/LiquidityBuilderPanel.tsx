@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { useModal } from '@pancakeswap/uikit'
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
-import { CommonBasesType } from 'components/SearchModal/types'
 import { useRouter } from 'next/router'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
@@ -259,7 +258,7 @@ export const LiquidityBuilderPanel: React.FC = () => {
       selectedCurrency={pickField === 'A' ? currencyA : currencyB}
       otherSelectedCurrency={pickField === 'A' ? currencyB : currencyA}
       showCommonBases
-      commonBasesType={CommonBasesType.LIQUIDITY}
+      commonBasesType="LIQUIDITY"
     />,
     true,
     false,
