@@ -9,6 +9,7 @@ import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useMemo } from 'react'
 import { useTransactionAdder } from 'state/transactions/hooks'
+import { buildSwapHandoffContext } from 'lib/treasury-handoff'
 import { useGasPrice } from 'state/user/hooks'
 import { calculateGasMargin, isAddress } from 'utils'
 import { basisPointsToPercent } from 'utils/exchange'
@@ -174,6 +175,7 @@ export function useSwapCallback(
                 },
               },
               type: 'swap',
+              settlementHandoffContext: buildSwapHandoffContext(trade),
             })
             logSwap({
               chainId,

@@ -1,9 +1,10 @@
-import { ReactNode, useMemo } from 'react'
+import { Fragment, ReactNode, useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { BLOCKED_ADDRESSES } from './config/constants'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
 import TransactionUpdater from './state/transactions/updater'
+import TreasuryHandoffUpdater from './state/transactions/treasuryHandoffUpdater'
 import { chains } from './utils/wagmi'
 
 export function Updaters() {
@@ -11,7 +12,10 @@ export function Updaters() {
     <>
       <ListsUpdater />
       {chains.map((chain) => (
-        <TransactionUpdater key={`trxUpdater#${chain.id}`} chainId={chain.id} />
+        <Fragment key={chain.id}>
+          <TransactionUpdater chainId={chain.id} />
+          <TreasuryHandoffUpdater chainId={chain.id} />
+        </Fragment>
       ))}
       <MulticallUpdater />
     </>

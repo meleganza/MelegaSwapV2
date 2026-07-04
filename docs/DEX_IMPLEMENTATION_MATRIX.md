@@ -337,6 +337,39 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 ---
 
+## D87 TREASURY TRUTH (D87-01)
+
+**Authority:** [`D87_IMPLEMENTATION_MATRIX.md`](./D87_IMPLEMENTATION_MATRIX.md) · [`TREASURY_SETTLEMENT_ARCHITECTURE.md`](./TREASURY_SETTLEMENT_ARCHITECTURE.md)
+
+| Layer | Status | Notes |
+|-------|--------|-------|
+| Settlement schema | 🟩 | `melega.settlement-event.v1` — `TREASURY_EVENT_SCHEMA.md` |
+| Settlement architecture | 🟩 | Ownership + waterfall + API — `TREASURY_SETTLEMENT_ARCHITECTURE.md` |
+| Activation plan | 🟩 | Phases A–G — `TREASURY_RUNTIME_ACTIVATION_PLAN.md` |
+| DEX receipt handoff | 🟩 | D87-03 — `lib/treasury-handoff/` + API proxy |
+| Settlement Producer | ⬜ | Treasury Runtime (external) — normalizes receipts |
+| Treasury Runtime ingestion | ⬜ | External service — `/api/public/treasury/settlement-events` |
+| Registry publish | ⬜ | `/registry/treasury/*` — depends on Treasury Runtime |
+| Command Center treasury read | ⬜ | Phase D — read only |
+| Trade settlements | 🟨 | DEX sends receipt; Treasury returns settlement_id |
+| Referral waterfall | ⬜ | Slot reserved; subsystem absent |
+
+### D87 dimension tracker
+
+| Dimension | Status | Ref |
+|-----------|--------|-----|
+| Treasury Truth | 🟨 | D87-03 handoff live; Treasury Runtime owns truth |
+| Settlement | 🟨 | DEX receipt handoff + external normalization |
+| Referral | ⬜ | — |
+| Economic Intelligence | 🟨 | Organ 00 spec only |
+| Pricing | 🟨 | Swap fees only |
+| Revenue | 🟨 | On-chain fees not ingested |
+| Registry | 🟨 | No settlement registry |
+| MARCO Utility | 🟨 | Canonical declared; treasury SKU planned |
+| Civilization Economy | 🟨 | Activation 0% READY |
+
+---
+
 ## GLOBAL
 
 | Area | Status | Notes |
@@ -368,6 +401,9 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Subgraph / protocol txs | 🟨 | `state/info/hooks`, used on home/trade |
 | Project registry | 🟨 | `registry/projects` |
 | Economic read models | 🟨 | `lib/homepage-live`, surface map, readiness gates |
+| Treasury Truth (D87) | 🟩 | D87-03 `lib/treasury-handoff` + API proxy |
+| Settlement Producer (D87) | 🟨 | Treasury Runtime external |
+| Fee policy (swap) | 🟩 | `config/constants/info.ts` — ingestion pending |
 | KIRI / labs pipelines | 🟨 | Mission libs — not DEX-studio wired |
 
 ---
@@ -376,7 +412,8 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Priority | Workstream | Matrix trigger |
 |----------|------------|----------------|
-| **1** | **Trade Runtime** | Replace `tradeMockData` rails; wire live router status, assets, watchlist |
+| **0** | **D87 Treasury Truth** | D87-01 ✅ architecture; D87-03 ✅ DEX handoff; Treasury Runtime ingestion external |
+| **1** | **Trade Runtime** | ✅ R015 complete — live router/quotes |
 | **2** | **Liquidity Runtime** | ✅ R016 complete — studio live |
 | **3** | **Pools Runtime** | ✅ R017 complete — studio live |
 | **4** | **Farms Runtime** | ✅ R018 complete — studio live |
@@ -405,6 +442,8 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-03 | D87-03 DEX Treasury Handoff — receipt POST to Treasury Runtime; settlement reference only in DEX |
+| 2026-07-03 | D87-01 Treasury Truth Activation — settlement schema + architecture + activation plan; D87 matrix created |
 | 2026-07-03 | R024 Production Readiness Gate — automated PASS; cutover BLOCKED pending manual BSC QA |
 | 2026-07-03 | R023 Collectibles Runtime — Digital Identity layer; Collectibles Runtime 🟩, AI 🟨 |
 | 2026-07-03 | R021 Build Studio Runtime — orchestration layer; Build Studio Runtime 🟩, AI 🟨 |

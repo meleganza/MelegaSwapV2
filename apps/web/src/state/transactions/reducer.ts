@@ -13,6 +13,7 @@ import {
   NonBscFarmTransactionType,
   FarmTransactionStatus,
 } from './actions'
+import type { SwapHandoffContext } from 'lib/treasury-handoff'
 import { resetUserState } from '../global/actions'
 
 const now = () => new Date().getTime()
@@ -31,6 +32,7 @@ export interface TransactionDetails {
   confirmedTime?: number
   from: string
   nonBscFarm?: NonBscFarmTransactionType
+  settlementHandoffContext?: SwapHandoffContext
 }
 
 export interface TransactionState {
@@ -47,7 +49,7 @@ export default createReducer(initialState, (builder) =>
       addTransaction,
       (
         transactions,
-        { payload: { chainId, from, hash, approval, summary, translatableSummary, claim, type, order, nonBscFarm } },
+        { payload: { chainId, from, hash, approval, summary, translatableSummary, claim, type, order, nonBscFarm, settlementHandoffContext } },
       ) => {
         if (transactions[chainId]?.[hash]) {
           throw Error('Attempted to add existing transaction.')
@@ -64,6 +66,7 @@ export default createReducer(initialState, (builder) =>
           type,
           order,
           nonBscFarm,
+          settlementHandoffContext,
         }
         transactions[chainId] = txs
         if (order) saveOrder(chainId, from, order, true)

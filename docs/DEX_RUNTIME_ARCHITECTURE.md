@@ -21,6 +21,50 @@ Formatters (studio card shapes — unchanged)
 Studio UI components (frozen layout)
 ```
 
+### D87 Treasury Truth layer (D87-01)
+
+Economic truth follows a **separate ingestion path** — not the studio runtime stack above.
+
+```
+On-chain receipt / signed invoice (evidence)
+        ↓
+Settlement Producer (Treasury Runtime — external)
+        ↓
+melega.settlement-event.v1
+        ↓
+Treasury Runtime (lib/treasury-runtime/) — single truth owner
+        ↓
+/registry/treasury/* manifests
+        ↓
+Command Center · EIE · Projects attribution (read only)
+```
+
+### D87-03 DEX receipt handoff (implemented)
+
+DEX does **not** own settlement. After SmartSwap receipt confirmation:
+
+```
+Confirmed swap receipt
+        ↓
+lib/treasury-handoff/ (execution receipt only)
+        ↓
+POST /api/treasury/settlement-events
+        ↓
+Treasury Runtime /api/public/treasury/settlement-events
+        ↓
+Settlement reference stored in DEX (settlement_id, status)
+```
+
+See [`DEX_TREASURY_HANDOFF_REPORT.md`](./DEX_TREASURY_HANDOFF_REPORT.md).
+
+**Rules:**
+
+- Treasury Runtime ingests **Settlement Events only** — never UI, router, or wallet state.
+- DEX submits **verified execution receipts** — never LP/Treasury/Buyback/Referral amounts or settlement IDs.
+- Execution Ingress / Tracker **must not** emit settlements (existing ownership preserved).
+- Command Center **reads** treasury state — never computes fees.
+- See [`TREASURY_SETTLEMENT_ARCHITECTURE.md`](./TREASURY_SETTLEMENT_ARCHITECTURE.md) · [`TREASURY_EVENT_SCHEMA.md`](./TREASURY_EVENT_SCHEMA.md).
+
 ---
 
 ## Layer map
@@ -36,6 +80,8 @@ Studio UI components (frozen layout)
 | **Collectibles** | `views/CollectiblesStudio/collectiblesRuntime/` | `/collectibles` | Registry + DNFT `walletOfOwner` |
 | **Build** | `views/BuildStudio/buildRuntime/` | `/build-studio`, `/import-existing-token` | Projects + Radar + Pools + Farms preview |
 | **Command Center** | `views/CommandCenter/commandCenterRuntime/` | `/command-center` | Aggregates all studio runtimes |
+| **Treasury Truth** | `lib/treasury-handoff/` + proxy API | `/api/treasury/settlement-events` | Receipt handoff only — truth owned by Treasury Runtime |
+| **Settlement Producer** | Treasury Runtime (external) | — | Normalizes receipts → `melega.settlement-event.v1` |
 
 ---
 
@@ -66,9 +112,15 @@ flowchart TB
     CC[commandCenterRuntime]
   end
 
+  subgraph treasury [D87 Treasury Truth]
+    TH[treasury-handoff]
+    TR[treasury-runtime external]
+  end
+
   subgraph reg [Static Registries]
     RP[registry/projects]
     RC[registry/collectibles]
+    RT[registry/treasury]
   end
 
   W --> T & L & P & F & CO & CC
@@ -79,6 +131,9 @@ flowchart TB
   T & L & P & F --> CC
   PR & R & B & CO --> CC
   P & F --> B
+  T -.->|receipt| TH
+  TH -->|POST receipt| TR
+  TR -.->|settlement ref| TH
 ```
 
 ---
@@ -112,6 +167,7 @@ Each studio runtime follows the same pattern established in R015–R023:
 | Infrastructure score | `useBuildOrchestrationRuntime` |
 | Recommendations | Projects + Radar + Build |
 | Machine JSON | `buildMachineSummary` v2 |
+| Treasury (planned) | `useTreasuryRuntime` — read only; never computes fees |
 
 ---
 
@@ -153,6 +209,9 @@ No ML inference in production path. AI surfaces are **rule-based suggestions**:
 | Schema | Location | Collapsed default |
 |--------|----------|-------------------|
 | `melega.command-center.v2` | Command Center panel | ✅ |
+| `melega.command-center.v3` | Command Center + treasury passthrough (planned) | — |
+| `melega.settlement-event.v1` | Treasury settlements | — |
+| `melega.treasury-runtime.v1` | `/registry/treasury/*` | — |
 | `melega.collectibles-identity.v1` | Collectibles advisor | ✅ |
 | `melega.build-manifest.v1` | Build Studio | ✅ |
 | Projects machine JSON | Projects advisor | ✅ |
@@ -169,6 +228,10 @@ No ML inference in production path. AI surfaces are **rule-based suggestions**:
 | Homepage live | `lib/homepage-live` | Subgraph + farm metrics |
 | Project registry | `registry/projects` | Canonical project list |
 | Collectibles registry | `registry/collectibles` | 3 indexed slugs |
+| Treasury Truth | `lib/treasury-handoff/` | D87-03 receipt handoff — settlement owned by Treasury Runtime |
+| Settlement Producer | Treasury Runtime (external) | Normalizes receipts → canonical settlement events |
+| Fee policy | `config/constants/info.ts` | Display + handoff gross fee metadata only |
+| Economic activation | `lib/economic-runtime` | Activation progress — separate from treasury aggregates |
 
 ---
 
@@ -189,3 +252,5 @@ No ML inference in production path. AI surfaces are **rule-based suggestions**:
 2. New registry entry → update `registry/*` + matrix row.
 3. Command Center reads from runtimes only — never add duplicate wallet hooks.
 4. AI additions must remain heuristic until ML pipeline is constitutionally approved.
+5. Treasury amounts must come from Treasury Runtime only — never computed in studio runtimes or Command Center.
+6. New fee-bearing modules must register a Settlement Producer before claiming revenue in any manifest.

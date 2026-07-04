@@ -19,6 +19,7 @@ import {
   FarmTransactionStatus,
   NonBscFarmStepType,
 } from './actions'
+import type { SwapHandoffContext } from 'lib/treasury-handoff'
 import { AppState, useAppDispatch } from '../index'
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
@@ -32,6 +33,7 @@ export function useTransactionAdder(): (
     type?: TransactionType
     order?: Order
     nonBscFarm?: NonBscFarmTransactionType
+    settlementHandoffContext?: SwapHandoffContext
   },
 ) => void {
   const { chainId, account } = useWeb3React()
@@ -48,6 +50,7 @@ export function useTransactionAdder(): (
         type,
         order,
         nonBscFarm,
+        settlementHandoffContext,
       }: {
         summary?: string
         translatableSummary?: { text: string; data?: Record<string, string | number> }
@@ -56,6 +59,7 @@ export function useTransactionAdder(): (
         type?: TransactionType
         order?: Order
         nonBscFarm?: NonBscFarmTransactionType
+        settlementHandoffContext?: SwapHandoffContext
       } = {},
     ) => {
       if (!account) return
@@ -77,6 +81,7 @@ export function useTransactionAdder(): (
           type,
           order,
           nonBscFarm,
+          settlementHandoffContext,
         }),
       )
     },

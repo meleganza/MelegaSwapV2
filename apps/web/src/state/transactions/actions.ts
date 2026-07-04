@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit'
 import { ChainId } from '@pancakeswap/sdk'
 import { Order } from '@gelatonetwork/limit-orders-lib'
+import type { SwapHandoffContext } from 'lib/treasury-handoff'
 
 export type TransactionType =
   | 'approve'
@@ -76,6 +77,7 @@ export const addTransaction = createAction<{
   type?: TransactionType
   order?: Order
   nonBscFarm?: NonBscFarmTransactionType
+  settlementHandoffContext?: SwapHandoffContext
 }>('transactions/addTransaction')
 export const clearAllTransactions = createAction('transactions/clearAllTransactions')
 export const clearAllChainTransactions = createAction<{ chainId: ChainId }>('transactions/clearAllChainTransactions')

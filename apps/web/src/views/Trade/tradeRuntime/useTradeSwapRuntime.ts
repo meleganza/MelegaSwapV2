@@ -30,6 +30,8 @@ import {
   routerSourceLabel,
 } from './formatTradeRuntime'
 import { runtimeErrorFromPhase, type TradeRuntimeError } from './tradeRuntimeErrors'
+import { useTradeSettlementMetadata } from './useTradeSettlementMetadata'
+import type { TradeSettlementMachineMetadata } from 'lib/treasury-handoff'
 
 export type TradeRuntimePhase =
   | 'idle'
@@ -90,6 +92,7 @@ export interface TradeMachinePayload {
   minimumReceived?: string
   error?: TradeRuntimeError | null
   timestamp: string
+  settlement: TradeSettlementMachineMetadata
 }
 
 export interface TradeSwapRuntime {
@@ -113,6 +116,7 @@ export interface TradeSwapRuntime {
 export function useTradeSwapRuntime(): TradeSwapRuntime {
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
+  const settlementMetadata = useTradeSettlementMetadata()
   const [allowedSlippage] = useUserSlippageTolerance()
   const [isStableSwapByDefault] = useStableSwapByDefault()
   const gasPrice = useGasPrice()
@@ -311,6 +315,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
       minimumReceived: minReceivedLabel(tradeInfo),
       error,
       timestamp: new Date().toISOString(),
+      settlement: settlementMetadata,
     }),
     [
       phase,
@@ -323,6 +328,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
       useSmartRouter,
       approval,
       error,
+      settlementMetadata,
     ],
   )
 
