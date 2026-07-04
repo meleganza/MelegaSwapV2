@@ -395,11 +395,10 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           <CardAnalyzeBtn type="button" onClick={() => requestModal(farm, 'claim')}>
             Claim
           </CardAnalyzeBtn>
-        ) : (
-          <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
-            Analyze
-          </CardAnalyzeBtn>
-        )}
+        ) : null}
+        <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
+          Analyze
+        </CardAnalyzeBtn>
       </Footer>
     )
   }

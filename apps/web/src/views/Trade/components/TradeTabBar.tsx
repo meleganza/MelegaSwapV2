@@ -82,7 +82,8 @@ export const TradeTabBar: React.FC<TradeTabBarProps> = ({ active, onChange }) =>
   <Bar role="tablist" aria-label="Trade modes" data-trade-tab-bar>
     {TRADE_TABS.map((tab) => {
       const isActive = active === tab.id
-      const isDisabled = tab.id !== 'smartswap'
+      const isDisabled = tab.id === 'limit'
+      const comingSoon = tab.id === 'limit'
       return (
         <Tab
           key={tab.id}
@@ -95,7 +96,7 @@ export const TradeTabBar: React.FC<TradeTabBarProps> = ({ active, onChange }) =>
         >
           {tab.icon === 'lightning' && <LightningIcon />}
           {tab.label}
-          {isDisabled ? ' · Coming soon' : ''}
+          {comingSoon ? ' · Coming soon' : ''}
         </Tab>
       )
     })}

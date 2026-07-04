@@ -54,7 +54,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `HomeTradeScreen`, `TradeTerminalScreen`, `/trade`, `/swap` compat |
-| Runtime | 🟩 | R015 — `TradeRuntimeProvider`; mock layers removed; live router/quotes |
+| Runtime | 🟩 | R015 + R103 — History/Router tabs, settlement handoff UI, live quotes |
 | AI | ⬜ | UI affordances only (`aiMode` toggle) |
 | Production | ⬜ | Live domain still on legacy `main`; V2 staging on `v2.melega.finance` |
 
@@ -70,7 +70,11 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Quotes | 🟩 | Live output/min received from `tradeInfo` |
 | Token approvals | 🟩 | `useApproveCallback`, `SmartSwapCommitButton` |
 | Gas estimation | 🟨 | `useGasPrice` estimate in runtime summary |
-| Transaction history | 🟩 | `useProtocolTransactionsSWR` — no mock padding |
+| Melega Router tab | 🟩 | R103 — `TradeRouterPanel` from live SmartSwap/V2 comparison |
+| Trade History tab | 🟩 | R103 — wallet txs + protocol swaps + settlement refs |
+| Settlement status UI | 🟩 | R103 — treasury handoff display in `TradeRightRail` |
+| Limit orders | 🟨 | Tab labeled Coming soon |
+| Transaction history | 🟩 | Wallet + protocol via `tradeRuntime/formatTradeHistory` |
 
 ### AI (future)
 
@@ -100,6 +104,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Impermanent loss | 🟨 | Heuristic estimate; chart decorative |
 | APR | 🟩 | `useLPApr` + subgraph `lpApr7d` |
 | Fees generated | 🟩 | Subgraph `lpFees24h` |
+| Simulation tab | 🟩 | R103 — read-only preview from live pool math; no execution |
 
 ### AI (future)
 
@@ -126,7 +131,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Pending rewards | 🟩 | `userData.earnings` + claim button |
 | Claim | 🟩 | `useHarvestFarm` |
 | Deposit | 🟩 | `DepositModal` via `FarmsActionHost` |
-| Withdraw | 🟩 | `WithdrawModal` via `FarmsActionHost` |
+| Withdraw | 🟩 | R103 — grid + featured panel when `userStaked > 0` |
 | Multipliers | 🟩 | Live `farm.multiplier` in cards |
 
 ### AI (future)
@@ -152,7 +157,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Staking contracts | 🟩 | `usePoolsPageFetch` + sousId / vault |
 | Rewards | 🟩 | Pending rewards + `CollectModal` |
 | Lock periods | 🟩 | `CakeVault` lock label in featured + pool type |
-| Unlock | 🟩 | Vault unstake modal |
+| Unlock | 🟩 | R103 — Unstake on grid + featured when `userStaked > 0` |
 | APR | 🟩 | `getAprData` live in all cards |
 
 ### AI (future)
@@ -296,6 +301,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Infrastructure Suggestions | 🟩 | From Projects `buildAiRecommendations` |
 | Manifest | 🟩 | Runtime-generated JSON — copy/download |
 | Builder Templates | 🟩 | 6 templates + config JSON + execution preview |
+| AI Infrastructure Guide | 🟩 | R103 — compact in-page guide panel |
 
 ### AI (R021 partial)
 

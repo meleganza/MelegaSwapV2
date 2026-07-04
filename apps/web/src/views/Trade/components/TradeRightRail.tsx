@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'
+import { formatSettlementUserLabel, settlementLabelTone } from '../tradeRuntime/formatSettlementStatus'
 import TradeWatchlist from './TradeWatchlist'
 import TradeMelegaIsologo from './TradeMelegaIsologo'
 
@@ -295,6 +296,8 @@ const MachinePre = styled.pre`
 export const TradeRightRail: React.FC = () => {
   const { routeEntries, assets, routerStatus, watchlistHrefs, machine, phase } = useTradeRuntime()
   const [machineOpen, setMachineOpen] = useState(false)
+  const settlementLabel = formatSettlementUserLabel(machine.settlement)
+  const settlementTone = settlementLabelTone(settlementLabel)
 
   return (
     <Rail data-trade-right-rail>
@@ -315,9 +318,7 @@ export const TradeRightRail: React.FC = () => {
                 <RouteName>
                   {entry.chain} · {entry.source}
                 </RouteName>
-                <RouteSub>
-                  Gas: {entry.gas ?? '—'} · {entry.time ?? '—'}
-                </RouteSub>
+                <RouteSub>Gas: {entry.gas ?? '—'}</RouteSub>
               </RouteMeta>
               <RouteRight>
                 <RouteAmount>{entry.amount}</RouteAmount>
@@ -354,6 +355,27 @@ export const TradeRightRail: React.FC = () => {
           <OutlineBtn type="button" disabled title="Coming soon" style={{ height: 38, marginTop: 10 }}>
             Manage Assets
           </OutlineBtn>
+        </Panel>
+
+        <Panel data-trade-settlement-status>
+          <PanelHead>
+            <PanelTitle style={{ fontSize: 12, letterSpacing: '0.06em' }}>SETTLEMENT STATUS</PanelTitle>
+            <LiveBadge>Handoff</LiveBadge>
+          </PanelHead>
+          <StatusRow>
+            <StatusDot $tone={settlementTone === 'ok' ? 'ok' : settlementTone === 'error' ? 'error' : 'warn'} />
+            <StatusText $tone={settlementTone === 'ok' ? 'ok' : settlementTone === 'error' ? 'error' : 'warn'}>
+              {settlementLabel}
+            </StatusText>
+          </StatusRow>
+          {machine.settlement.txHash ? (
+            <EmptyLine style={{ marginTop: 8 }}>
+              Tx {machine.settlement.txHash.slice(0, 10)}…
+              {machine.settlement.settlementId ? ` · ${machine.settlement.settlementId}` : ''}
+            </EmptyLine>
+          ) : (
+            <EmptyLine style={{ marginTop: 8 }}>Complete a swap to see treasury handoff status.</EmptyLine>
+          )}
         </Panel>
 
         <Panel data-trade-router-status>

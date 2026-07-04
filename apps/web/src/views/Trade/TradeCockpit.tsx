@@ -15,6 +15,8 @@ import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
+import TradeHistoryPanel from './components/TradeHistoryPanel'
+import TradeRouterPanel from './components/TradeRouterPanel'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
@@ -190,6 +192,32 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
       root.querySelector('[class*="CurrencyInputHeader"] button')
     if (btn instanceof HTMLElement) btn.click()
   }, [])
+
+  if (mode === 'history') {
+    return (
+      <Shell data-trade-cockpit>
+        <TradeHistoryPanel />
+      </Shell>
+    )
+  }
+
+  if (mode === 'router') {
+    return (
+      <Shell data-trade-cockpit>
+        <TradeRouterPanel />
+      </Shell>
+    )
+  }
+
+  if (mode === 'limit') {
+    return (
+      <Shell data-trade-cockpit>
+        <Panel data-trade-cockpit-shell>
+          <Placeholder>Limit orders — coming soon</Placeholder>
+        </Panel>
+      </Shell>
+    )
+  }
 
   if (mode !== 'smartswap') {
     return (

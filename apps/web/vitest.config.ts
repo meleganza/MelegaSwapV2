@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react(), vanillaExtractPlugin()],
   resolve: {
     alias: {
+      'react-dom/client': r('node_modules/react-dom/client.js'),
       '@pancakeswap/wagmi/connectors/binanceWallet': r('../../packages/wagmi/connectors/binanceWallet/index.ts'),
       '@pancakeswap/wagmi/connectors/blocto': r('../../packages/wagmi/connectors/blocto/index.ts'),
       '@pancakeswap/wagmi/connectors/miniProgram': r('../../packages/wagmi/connectors/miniProgram/index.ts'),
@@ -22,5 +23,8 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     exclude: ['src/config/__tests__'],
+    deps: {
+      inline: ['@testing-library/react', 'react-dom'],
+    },
   },
 })

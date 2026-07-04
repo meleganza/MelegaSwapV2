@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
 import { IconBook, IconDownload } from './buildStudioIcons'
 import { BsOutlineBtn, BsPrimaryBtn } from './buildStudioPrimitives'
+import BuildInfrastructureGuidePanel from './BuildInfrastructureGuidePanel'
 
 const Header = styled.header`
   display: flex;
@@ -59,14 +60,18 @@ const BtnRow = styled.div`
   }
 `
 
-export const BuildStudioPageHeader: React.FC = () => (
+export const BuildStudioPageHeader: React.FC = () => {
+  const [guideOpen, setGuideOpen] = useState(false)
+
+  return (
+  <>
   <Header data-bs-page-header>
     <Left>
       <Title>BUILD STUDIO</Title>
       <Subtitle>Build trusted economic infrastructure with AI assistance.</Subtitle>
     </Left>
     <BtnRow>
-      <BsOutlineBtn type="button" $width="180px" $height="46px" data-bs-hero-guide>
+      <BsOutlineBtn type="button" $width="180px" $height="46px" data-bs-hero-guide onClick={() => setGuideOpen(true)}>
         <IconBook size={16} />
         AI Infrastructure Guide
       </BsOutlineBtn>
@@ -83,6 +88,9 @@ export const BuildStudioPageHeader: React.FC = () => (
       </BsPrimaryBtn>
     </BtnRow>
   </Header>
-)
+  <BuildInfrastructureGuidePanel open={guideOpen} onClose={() => setGuideOpen(false)} />
+  </>
+  )
+}
 
 export default BuildStudioPageHeader

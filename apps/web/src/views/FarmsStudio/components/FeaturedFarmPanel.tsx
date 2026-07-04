@@ -151,6 +151,8 @@ export const FeaturedFarmPanel: React.FC = () => {
   const card = featured.card
   const [analyzeOpen, setAnalyzeOpen] = useState(false)
   const preview = card?.analyzePreview
+  const hasPending = card?.pendingReward?.gt(0)
+  const hasStaked = card?.userStaked?.gt(0)
   const linePath = sparklinePath(featured.sparkline)
 
   return (
@@ -186,9 +188,21 @@ export const FeaturedFarmPanel: React.FC = () => {
               </Metrics>
               <BtnRow>
                 {card && account ? (
-                  <FsPrimaryBtn type="button" onClick={() => requestModal(card, 'stake')}>
-                    Stake
-                  </FsPrimaryBtn>
+                  <>
+                    <FsPrimaryBtn type="button" onClick={() => requestModal(card, 'stake')}>
+                      Stake
+                    </FsPrimaryBtn>
+                    {hasStaked ? (
+                      <FsGhostBtn type="button" onClick={() => requestModal(card, 'unstake')}>
+                        Withdraw
+                      </FsGhostBtn>
+                    ) : null}
+                    {hasPending ? (
+                      <FsGhostBtn type="button" onClick={() => requestModal(card, 'claim')}>
+                        Claim
+                      </FsGhostBtn>
+                    ) : null}
+                  </>
                 ) : (
                   <ConnectWrap>
                     <ConnectWalletButton>Connect Wallet</ConnectWalletButton>

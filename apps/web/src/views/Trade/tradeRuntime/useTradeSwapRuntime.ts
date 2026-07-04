@@ -203,13 +203,12 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
         amount: formatAmount(tradeWithStableSwap.outputAmount) ?? '—',
         delta: compareOutputDelta(tradeWithStableSwap.outputAmount, v2Trade?.outputAmount) ?? 'Best route',
         gas,
-        time: '~30s',
         best: true,
       })
     }
 
     if (v2Trade?.outputAmount) {
-      const isBest = !entries.length || entries[0]?.source === 'MelegaSwap V2'
+      const isBest = !entries.length
       entries.push({
         rank: entries.length + 1,
         chain,
@@ -217,7 +216,6 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
         amount: formatAmount(v2Trade.outputAmount) ?? '—',
         delta: isBest ? 'Best route' : compareOutputDelta(v2Trade.outputAmount, tradeWithStableSwap?.outputAmount) ?? '—',
         gas,
-        time: '~45s',
         best: isBest,
       })
     }

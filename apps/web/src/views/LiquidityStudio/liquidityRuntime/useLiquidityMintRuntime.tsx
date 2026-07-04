@@ -203,9 +203,15 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
 
   const isRemove = mode === 'Remove Liquidity'
   const isPositions = mode === 'My Positions'
+  const isSimulation = mode === 'Simulation'
   const calculating = pairState === PairState.LOADING || terminal.isLoadingPools
 
   const phase: LiquidityRuntimePhase = useMemo(() => {
+    if (isSimulation) {
+      if (!currencyA || !currencyB) return 'idle'
+      if (calculating) return 'calculating'
+      return 'ready'
+    }
     if (isPositions) {
       if (!account) return 'wallet_required'
       if (positionsLoading) return 'reading_lp'
@@ -239,6 +245,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     positionsLoading,
     currencyA,
     currencyB,
+    isSimulation,
     calculating,
     typedValue,
     burnTypedValue,
@@ -580,6 +587,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const openRemoveModal = useCallback(() => onPresentRemoveLiquidityModal(), [onPresentRemoveLiquidityModal])
 
   const onPrimaryAction = useCallback(() => {
+    if (isSimulation) return
     if (!account) return
     if (isRemove) {
       if (liquidityApproval === ApprovalState.NOT_APPROVED && burnInfo.parsedAmounts[BurnField.LIQUIDITY]) {
@@ -599,6 +607,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     }
     openAddModal()
   }, [
+    isSimulation,
     account,
     isRemove,
     approvalA,
@@ -614,12 +623,13 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   ])
 
   const primaryCtaLabel = useMemo(() => {
+    if (isSimulation) return 'Simulation only — no execution'
     if (!account) return 'Connect Wallet'
     if (phase === 'approval_required') return isRemove ? 'Approve LP Token' : 'Approve Token'
     if (isRemove) return 'Remove Liquidity'
     if (isPositions) return 'Manage on /liquidity'
     return 'Add Liquidity'
-  }, [account, phase, isRemove, isPositions])
+  }, [account, phase, isRemove, isPositions, isSimulation])
 
   const machine: LiquidityMachinePayload = useMemo(
     () => ({

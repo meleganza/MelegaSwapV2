@@ -117,6 +117,8 @@ export const FeaturedPoolPanel: React.FC = () => {
   const card = featured.card
   const [analyzeOpen, setAnalyzeOpen] = useState(false)
   const preview = card?.analyzePreview
+  const hasPending = card?.pendingReward?.gt(0)
+  const hasStaked = card?.userStaked?.gt(0)
 
   return (
     <PsPanel data-ps-panel data-ps-featured $height={poolsStudioLayout.featuredHeight} $radius="22px" style={{ padding: '22px' }}>
@@ -156,13 +158,33 @@ export const FeaturedPoolPanel: React.FC = () => {
               </Metrics>
               <BtnRow>
                 {card && account ? (
-                  <PsPrimaryBtn
-                    type="button"
-                    style={{ height: 40, minHeight: 40, padding: '0 20px' }}
-                    onClick={() => requestModal(card, 'stake')}
-                  >
-                    Stake
-                  </PsPrimaryBtn>
+                  <>
+                    <PsPrimaryBtn
+                      type="button"
+                      style={{ height: 40, minHeight: 40, padding: '0 20px' }}
+                      onClick={() => requestModal(card, 'stake')}
+                    >
+                      Stake
+                    </PsPrimaryBtn>
+                    {hasStaked ? (
+                      <PsGhostBtn
+                        type="button"
+                        style={{ height: 40, minHeight: 40 }}
+                        onClick={() => requestModal(card, 'unstake')}
+                      >
+                        Unstake
+                      </PsGhostBtn>
+                    ) : null}
+                    {hasPending ? (
+                      <PsGhostBtn
+                        type="button"
+                        style={{ height: 40, minHeight: 40 }}
+                        onClick={() => requestModal(card, 'claim')}
+                      >
+                        Claim
+                      </PsGhostBtn>
+                    ) : null}
+                  </>
                 ) : (
                   <ConnectWrap>
                     <ConnectWalletButton>Connect Wallet</ConnectWalletButton>

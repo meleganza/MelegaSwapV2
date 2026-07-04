@@ -273,6 +273,7 @@ export const LiquidityBuilderPanel: React.FC = () => {
 
   const isPositions = mode === 'My Positions'
   const isRemove = mode === 'Remove Liquidity'
+  const isSimulation = mode === 'Simulation'
 
   return (
     <LsPanel
@@ -282,6 +283,11 @@ export const LiquidityBuilderPanel: React.FC = () => {
       $height={liquidityStudioLayout.builderHeight}
     >
       <LsPanelTitle>Liquidity Builder</LsPanelTitle>
+      {isSimulation ? (
+        <StatusLine style={{ marginBottom: 12 }}>
+          Read-only simulation using live pool math. Adjust amounts to preview LP share, APR, and IL — no on-chain execution.
+        </StatusLine>
+      ) : null}
       {isPositions ? (
         <>
           <PairText style={{ display: 'block', marginBottom: 12 }}>Your LP Positions</PairText>
@@ -381,7 +387,7 @@ export const LiquidityBuilderPanel: React.FC = () => {
               <ConnectWalletButton>{primaryCtaLabel}</ConnectWalletButton>
             </ConnectWrap>
           ) : (
-            <LsPrimaryBtn type="button" data-ls-primary-btn onClick={onPrimaryAction}>
+            <LsPrimaryBtn type="button" data-ls-primary-btn onClick={onPrimaryAction} disabled={isSimulation}>
               {primaryCtaLabel}
             </LsPrimaryBtn>
           )}
