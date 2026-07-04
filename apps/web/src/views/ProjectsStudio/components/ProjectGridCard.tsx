@@ -248,10 +248,13 @@ const ButtonRow = styled.div`
 
   @media (max-width: 767px) {
     width: 100%;
+    flex-direction: column;
+    align-items: stretch;
 
     a,
     button {
-      flex: 1 1 calc(50% - 4px);
+      flex: 1 1 auto;
+      width: 100%;
       min-width: 0;
     }
   }

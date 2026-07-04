@@ -152,7 +152,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     const card = featuredCard
     const pool = card?.rawPool
     const stakedUsd =
-      pool && pool.totalStaked
+      pool?.totalStaked && pool.stakingToken?.decimals
         ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * (pool.stakingTokenPrice || 0)
         : 0
   return {

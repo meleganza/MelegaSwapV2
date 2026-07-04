@@ -37,6 +37,11 @@ const TopRow = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `
 
 const Rank = styled.span`
@@ -89,6 +94,17 @@ const ScoreBlock = styled.div`
   align-items: flex-end;
   gap: 4px;
   flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    flex-direction: row;
+    align-items: center;
+    align-self: stretch;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px solid ${trendingStudioColors.border};
+  }
 `
 
 const Score = styled.span<{ $tone: 'green' | 'yellow' }>`
@@ -145,6 +161,11 @@ const Metrics = styled.div`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 12px;
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+  }
 `
 
 const MetricCell = styled.div`
@@ -158,9 +179,8 @@ const MetricValue = styled.span`
   font-size: 15px;
   font-weight: 700;
   color: ${trendingStudioColors.white};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.25;
+  word-break: break-word;
 `
 
 const Footer = styled.div`

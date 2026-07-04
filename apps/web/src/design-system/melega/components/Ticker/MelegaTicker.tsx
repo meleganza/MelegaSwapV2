@@ -125,6 +125,12 @@ const Secondary = styled.span`
   font-weight: 400;
   font-size: 13px;
   color: #a8a8a8;
+  line-height: 1.3;
+
+  @media (max-width: 767px) {
+    font-size: 11px;
+    white-space: normal;
+  }
 `
 
 const Accent = styled.span`
@@ -146,8 +152,16 @@ const EmptyRow = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding-left: 16px;
-  flex-shrink: 0;
+  padding: 0 16px 0 0;
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-right: 12px;
+  }
 `
 
 export const MelegaTicker: React.FC<MelegaTickerProps> = ({

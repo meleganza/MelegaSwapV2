@@ -24,6 +24,7 @@ const Root = styled.div`
 
   @media (max-width: 767px) {
     padding: 0 14px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 `
 

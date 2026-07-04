@@ -29,6 +29,7 @@ const DesktopMain = styled.main`
   margin-left: 0;
   padding: 70px 14px calc(96px + env(safe-area-inset-bottom, 0px));
   background: #0a0a0a;
+  min-height: 100dvh;
   min-height: 100vh;
   box-sizing: border-box;
 

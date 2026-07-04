@@ -159,14 +159,14 @@ const TfButton = styled.button<{ $active?: boolean }>`
 
 const StatsRow = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   width: 100%;
   margin-top: 12px;
   box-sizing: border-box;
 
   @media (max-width: 767px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 
@@ -177,10 +177,8 @@ const StatCard = styled.div`
   padding: 12px;
   box-sizing: border-box;
   min-width: 0;
-  height: 72px;
   min-height: 72px;
-  max-height: 72px;
-  overflow: hidden;
+  height: auto;
   transition: transform 140ms ease, box-shadow 140ms ease;
 
   &:hover {
@@ -200,14 +198,12 @@ const StatLabel = styled.div`
 
 const StatValue = styled.div`
   margin-top: 6px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #ffffff;
-  line-height: 22px;
+  line-height: 1.25;
   max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
   animation: ${fadeIn} 180ms ease;
 `
 

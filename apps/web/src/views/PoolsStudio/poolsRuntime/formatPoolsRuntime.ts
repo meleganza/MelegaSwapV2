@@ -125,6 +125,7 @@ export function aggregateKpis(
   let stakerPositions = 0
 
   pools.forEach((pool) => {
+    if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
     if (!pool.isFinished) activePools += 1
     const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
     totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
@@ -153,6 +154,7 @@ export function buildDonutSegments(pools: Pool.DeserializedPool<Token>[]) {
   ]
 
   pools.forEach((pool) => {
+    if (!pool?.stakingToken?.decimals) return
     const usd = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * (pool.stakingTokenPrice || 0)
     const bucket = buckets.find((b) => usd <= b.max) ?? buckets[buckets.length - 1]
     bucket.value += 1

@@ -171,6 +171,8 @@ export const PrMetricLabel = styled.span`
 export const PrMetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
   font-size: 16px;
   font-weight: 700;
+  line-height: 1.25;
+  word-break: break-word;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? projectsStudioColors.green

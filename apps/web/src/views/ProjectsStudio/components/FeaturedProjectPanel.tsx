@@ -86,15 +86,15 @@ const Desc = styled.p`
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(5, minmax(88px, 1fr));
+  gap: 14px 16px;
 
   @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(88px, 1fr));
   }
 
   @media (max-width: 767px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 
@@ -102,6 +102,7 @@ const Metric = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 `
 
 const BtnRow = styled.div`
