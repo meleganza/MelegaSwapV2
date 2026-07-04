@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { PsGhostBtn, PsPrimaryBtn } from './poolsStudioPrimitives'
@@ -162,8 +163,12 @@ export const CreatePoolCta: React.FC = () => (
       <Title>Create Your Reward Pool</Title>
       <Sub>Launch a staking program rewarding your community.</Sub>
       <BtnRow>
-        <PsPrimaryBtn type="button">+ Create Pool</PsPrimaryBtn>
-        <PsGhostBtn type="button">Reward MARCO Holders</PsGhostBtn>
+        <PsPrimaryBtn as={Link} to="/build-studio?intent=staking-pool" type="button">
+          + Create Pool
+        </PsPrimaryBtn>
+        <PsGhostBtn as={Link} to="/build-studio?intent=reward-marco-holders" type="button">
+          Reward MARCO Holders
+        </PsGhostBtn>
       </BtnRow>
     </Center>
     <Checklist>

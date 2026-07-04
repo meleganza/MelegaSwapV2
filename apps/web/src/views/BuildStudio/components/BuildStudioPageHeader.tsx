@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
 import { IconBook, IconDownload } from './buildStudioIcons'
@@ -69,7 +70,14 @@ export const BuildStudioPageHeader: React.FC = () => (
         <IconBook size={16} />
         AI Infrastructure Guide
       </BsOutlineBtn>
-      <BsPrimaryBtn type="button" $width="220px" $height="52px" data-bs-hero-import>
+      <BsPrimaryBtn
+        as={Link}
+        to="/import-existing-token"
+        $width="220px"
+        $height="52px"
+        data-bs-hero-import
+        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+      >
         <IconDownload size={16} color="#050505" />
         Import Existing Token
       </BsPrimaryBtn>

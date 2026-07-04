@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
@@ -149,6 +149,8 @@ function sparklinePath(points: number[]): string {
 export const FeaturedFarmPanel: React.FC = () => {
   const { featured, loadingLabel, requestModal, account } = useFarmsRuntime()
   const card = featured.card
+  const [analyzeOpen, setAnalyzeOpen] = useState(false)
+  const preview = card?.analyzePreview
   const linePath = sparklinePath(featured.sparkline)
 
   return (
@@ -192,8 +194,23 @@ export const FeaturedFarmPanel: React.FC = () => {
                     <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
                   </ConnectWrap>
                 )}
-                <FsGhostBtn type="button">Analyze</FsGhostBtn>
+                <FsGhostBtn
+                  type="button"
+                  onClick={() => setAnalyzeOpen((v) => !v)}
+                  disabled={!preview}
+                  title={preview ? undefined : 'Analysis unavailable'}
+                >
+                  {analyzeOpen ? 'Hide Analysis' : 'Analyze'}
+                </FsGhostBtn>
               </BtnRow>
+              {analyzeOpen && preview ? (
+                <div style={{ marginTop: 12, fontSize: 12, color: farmsStudioColors.muted, lineHeight: 1.5 }}>
+                  <div>APR History: {preview.aprHistory}</div>
+                  <div>Reward Token: {preview.rewardToken}</div>
+                  <div>Contract: {preview.contract}</div>
+                  <div>Risk: {preview.risk}</div>
+                </div>
+              ) : null}
             </>
           )}
         </Main>

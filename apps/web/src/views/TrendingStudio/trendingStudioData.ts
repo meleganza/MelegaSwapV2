@@ -22,6 +22,8 @@ export interface HeatmapRow {
   social: number
   whales: number
   volume: number
+  slug?: string
+  provenance?: string
 }
 
 export interface TrendingProjectCard {
@@ -30,8 +32,10 @@ export interface TrendingProjectCard {
   pair: string
   symbol?: string
   chain: string
+  slug?: string
   tags: string[]
   aiScore: number
+  signalLabel?: string
   summary: string
   holders: string
   liquidity: string
@@ -39,6 +43,10 @@ export interface TrendingProjectCard {
   growth: string
   growthPositive?: boolean
   sparkline: number[]
+  provenance?: string
+  projectHref?: string
+  radarHref?: string
+  tradeHref?: string
 }
 
 export interface WhaleActivityRow {
@@ -121,6 +129,8 @@ export const TRENDING_FILTER_CHIPS = [
   'DeFi',
   'Meme',
 ] as const
+
+export type TrendingFilterChip = (typeof TRENDING_FILTER_CHIPS)[number]
 
 export const HEATMAP_ROWS: HeatmapRow[] = [
   {

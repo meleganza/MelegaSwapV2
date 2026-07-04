@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { AI_MANIFEST_PREVIEW } from '../importTokenData'
+import { useImportRuntime } from '../importExistingTokenRuntime/ImportRuntimeContext'
 import { IT_FONT_BODY, importTokenColors } from '../importTokenTokens'
 import { ItBadge, ItManifestPre, ItOutlineBtn, ItPanel, ItSectionLabel } from './importTokenPrimitives'
 
@@ -55,10 +55,12 @@ const CollapseBtn = styled.button`
 const VISIBLE_LINES = 12
 
 export const AIManifestSection: React.FC = () => {
+  const { manifest } = useImportRuntime()
   const [expanded, setExpanded] = useState(false)
-  const fullText = useMemo(() => JSON.stringify(AI_MANIFEST_PREVIEW, null, 2), [])
+  const fullText = useMemo(() => JSON.stringify(manifest, null, 2), [manifest])
   const lines = useMemo(() => fullText.split('\n'), [fullText])
-  const displayText = expanded ? fullText : `${lines.slice(0, VISIBLE_LINES).join('\n')}\n  …`
+  const hasMore = lines.length > VISIBLE_LINES
+  const displayText = expanded || !hasMore ? fullText : `${lines.slice(0, VISIBLE_LINES).join('\n')}\n  …`
 
   const handleCopy = useCallback(() => {
     void navigator.clipboard?.writeText(fullText)
@@ -69,30 +71,29 @@ export const AIManifestSection: React.FC = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'onboarding-manifest.json'
+    a.download = 'import-manifest.json'
     a.click()
     URL.revokeObjectURL(url)
   }, [fullText])
 
   return (
     <Panel data-iet-ai-manifest>
-      <ItSectionLabel>Step 7 — AI Manifest</ItSectionLabel>
       <Header>
-        <span style={{ fontFamily: IT_FONT_BODY, fontSize: 12, color: importTokenColors.label }}>Manifest Status</span>
-        <ItBadge $variant="green">Machine Ready</ItBadge>
+        <ItSectionLabel style={{ margin: 0 }}>AI Manifest</ItSectionLabel>
+        <ItBadge $tone={manifest.status === 'ready' ? 'green' : 'yellow'}>{manifest.status}</ItBadge>
       </Header>
       <ManifestBody data-iet-manifest-preview>{displayText}</ManifestBody>
-      {lines.length > VISIBLE_LINES ? (
+      {hasMore ? (
         <CollapseBtn type="button" onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'Show fewer lines' : `Expand all ${lines.length} lines`}
+          {expanded ? 'Show fewer lines' : `Show all ${lines.length} lines`}
         </CollapseBtn>
       ) : null}
       <BtnRow>
-        <ItOutlineBtn type="button" $width="140px" onClick={handleCopy}>
-          Copy
+        <ItOutlineBtn type="button" onClick={handleCopy}>
+          Copy Manifest
         </ItOutlineBtn>
-        <ItOutlineBtn type="button" $width="140px" onClick={handleDownload}>
-          Download
+        <ItOutlineBtn type="button" onClick={handleDownload}>
+          Download JSON
         </ItOutlineBtn>
       </BtnRow>
     </Panel>

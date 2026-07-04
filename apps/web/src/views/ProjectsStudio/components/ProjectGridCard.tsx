@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import type { ProjectPreviewCard } from '../projectsStudioData'
 import { ratingColor } from '../projectsStudioData'
@@ -243,6 +243,21 @@ const ButtonRow = styled.div`
   }
 `
 
+const FOLLOW_STORAGE_KEY = 'melega-projects-follow'
+
+function readFollowedSlugs(): string[] {
+  try {
+    const raw = localStorage.getItem(FOLLOW_STORAGE_KEY)
+    return raw ? (JSON.parse(raw) as string[]) : []
+  } catch {
+    return []
+  }
+}
+
+function writeFollowedSlugs(slugs: string[]) {
+  localStorage.setItem(FOLLOW_STORAGE_KEY, JSON.stringify(slugs))
+}
+
 interface Props {
   project: ProjectPreviewCard
 }
@@ -259,6 +274,24 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   const color = ratingColor(project.rating)
   const liquidity = metricValue(project, 'Liquidity')
   const audit = metricValue(project, 'Audit')
+  const [following, setFollowing] = useState(false)
+
+  useEffect(() => {
+    setFollowing(readFollowedSlugs().includes(project.slug))
+  }, [project.slug])
+
+  const toggleFollow = useCallback(() => {
+    const current = readFollowedSlugs()
+    const next = current.includes(project.slug)
+      ? current.filter((s) => s !== project.slug)
+      : [...current, project.slug]
+    writeFollowedSlugs(next)
+    setFollowing(next.includes(project.slug))
+  }, [project.slug])
+
+  const tradeHref = project.tradeHref ?? '/trade'
+  const projectHref = project.projectHref ?? `/projects/${project.slug}`
+  const radarHref = project.radarHref
 
   return (
     <Card data-pr-project-card>
@@ -333,13 +366,20 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
       </Split>
 
       <ButtonRow>
-        <PrSmallPrimaryBtn as="a" href="/swap">
+        <PrSmallPrimaryBtn as="a" href={tradeHref}>
           Trade
         </PrSmallPrimaryBtn>
-        <PrSmallGhostBtn as="a" href={`/projects/${project.slug}`}>
+        <PrSmallGhostBtn as="a" href={projectHref}>
           Open Project
         </PrSmallGhostBtn>
-        <PrFollowBtn type="button">Follow</PrFollowBtn>
+        {radarHref ? (
+          <PrSmallGhostBtn as="a" href={radarHref}>
+            Radar
+          </PrSmallGhostBtn>
+        ) : null}
+        <PrFollowBtn type="button" onClick={toggleFollow} aria-pressed={following}>
+          {following ? 'Following' : 'Follow'}
+        </PrFollowBtn>
       </ButtonRow>
     </Card>
   )

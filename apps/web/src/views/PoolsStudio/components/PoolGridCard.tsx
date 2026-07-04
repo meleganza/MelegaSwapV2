@@ -238,6 +238,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const showAnalyze = pool.cta === 'stake' || pool.cta === 'analyze'
   const comingSoon = pool.cta === 'none'
   const hasPending = pool.pendingReward?.gt(0)
+  const hasStaked = pool.userStaked?.gt(0)
 
   const aprText = pool.status === 'coming-soon' ? 'Coming soon' : pool.apr ?? '—'
 
@@ -330,6 +331,11 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               <PsSmallPrimaryBtn type="button" onClick={() => requestModal(pool, 'stake')}>
                 Stake
               </PsSmallPrimaryBtn>
+            ) : null}
+            {hasStaked && account ? (
+              <PsSmallGhostBtn type="button" onClick={() => requestModal(pool, 'unstake')}>
+                Unstake
+              </PsSmallGhostBtn>
             ) : null}
             {hasPending && account ? (
               <PsSmallGhostBtn type="button" onClick={() => requestModal(pool, 'claim')}>

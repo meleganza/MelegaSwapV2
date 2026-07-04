@@ -16,6 +16,7 @@ import { useWalletCollectibleOwnership } from './useWalletCollectibleOwnership'
 export function useCollectiblesIdentityRuntime() {
   const wallet = useWalletCollectibleOwnership()
   const [filter, setFilter] = useState<string>('All')
+  const [machineOpen, setMachineOpen] = useState(false)
 
   const projects = useMemo(() => getAllProjects().map(enrichProject), [])
   const featuredProject = projects[0]
@@ -89,6 +90,8 @@ export function useCollectiblesIdentityRuntime() {
     advisorRows,
     sidebar,
     machine,
+    machineOpen,
+    setMachineOpen,
     wallet,
     runtimeErrors,
     projects,

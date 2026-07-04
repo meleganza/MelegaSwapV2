@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { PROJECT_DETECTED } from '../importTokenData'
+import { useImportRuntime } from '../importExistingTokenRuntime/ImportRuntimeContext'
 import { IT_FONT_BODY, importTokenColors } from '../importTokenTokens'
-import { IconChevronDown } from './importTokenIcons'
 import { ItBody, ItPanel, ItSectionLabel, ItSourceTag } from './importTokenPrimitives'
 
 const Panel = styled(ItPanel)`
@@ -58,131 +57,53 @@ const TickerRow = styled.div`
   color: ${importTokenColors.muted};
 `
 
-const LinkGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px 16px;
-  margin-top: 16px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const LinkItem = styled.div`
+const LinkRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-family: ${IT_FONT_BODY};
-  font-size: 12px;
-  color: ${importTokenColors.body};
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
 `
 
-const LinkVal = styled.span`
-  color: ${importTokenColors.white};
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const AiSummary = styled.div`
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(27, 231, 122, 0.25);
-  background: rgba(27, 231, 122, 0.04);
-`
-
-const AiLabel = styled.div`
-  font-family: ${IT_FONT_BODY};
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: ${importTokenColors.green};
-  margin-bottom: 8px;
-`
-
-const OwnerToggle = styled.button`
-  margin-top: 12px;
-  border: none;
-  background: transparent;
-  font-family: ${IT_FONT_BODY};
-  font-size: 12px;
-  font-weight: 600;
-  color: ${importTokenColors.gold};
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-`
-
-const OwnerBlock = styled.div`
-  margin-top: 10px;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid ${importTokenColors.border};
-  font-family: ${IT_FONT_BODY};
+const Link = styled.a`
   font-size: 13px;
-  line-height: 20px;
-  color: ${importTokenColors.muted};
+  font-weight: 700;
+  color: ${importTokenColors.gold};
+  text-decoration: none;
 `
-
-const p = PROJECT_DETECTED
 
 export const ProjectDetectedCard: React.FC = () => {
-  const [showOwner, setShowOwner] = useState(false)
+  const { analysis, contract } = useImportRuntime()
+  if (!analysis || analysis.pending || !analysis.found || !analysis.project) return null
+
+  const project = analysis.project
+  const sym = analysis.symbol ?? project.displayName
+  const addr = project.resources.tokens[0]?.address
 
   return (
     <Panel data-iet-project-detected>
-      <ItSectionLabel>Step 3 — Project Detected</ItSectionLabel>
+      <ItSectionLabel>Step 3 — Canonical Project</ItSectionLabel>
       <Top>
-        <Logo>{p.logo}</Logo>
+        <Logo>{sym.slice(0, 2)}</Logo>
         <Meta>
-          <Name>{p.name}</Name>
+          <Name>{analysis.projectName ?? project.displayName}</Name>
           <TickerRow>
-            <span>{p.ticker}</span>
-            <span>·</span>
-            <span>{p.chain}</span>
-            <span>·</span>
-            <span>{p.category}</span>
-            <span>·</span>
-            <span>Age {p.age}</span>
+            <span>{sym}</span>
+            <ItSourceTag>Registry</ItSourceTag>
+            {project.trustBadges.includes('canonical') ? <ItSourceTag>Canonical</ItSourceTag> : null}
           </TickerRow>
+          <ItBody style={{ marginTop: 12 }}>{analysis.summary}</ItBody>
+          <LinkRow>
+            <Link href={`/projects/${project.slug}`}>Open Project</Link>
+            {addr ? <Link href={`/radar?contract=${addr}`}>Radar Intelligence</Link> : null}
+            {addr ? <Link href={`/swap?outputCurrency=${addr}`}>Trade</Link> : null}
+          </LinkRow>
         </Meta>
       </Top>
-      <LinkGrid>
-        {[
-          { label: 'Website', value: p.website },
-          { label: 'Twitter', value: p.twitter },
-          { label: 'Telegram', value: p.telegram },
-          { label: 'Discord', value: p.discord },
-          { label: 'GitHub', value: p.github },
-          { label: 'Whitepaper', value: p.whitepaper },
-        ].map((item) => {
-          const field = p.fields.find((f) => f.label.toLowerCase() === item.label.toLowerCase())
-          return (
-            <LinkItem key={item.label}>
-              <span>{item.label}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <LinkVal>{item.value}</LinkVal>
-                {field ? <ItSourceTag>{field.source}</ItSourceTag> : null}
-              </span>
-            </LinkItem>
-          )
-        })}
-      </LinkGrid>
-      <AiSummary>
-        <AiLabel>AI Summary — priority</AiLabel>
-        <ItBody>{p.aiSummary}</ItBody>
-      </AiSummary>
-      <OwnerToggle type="button" onClick={() => setShowOwner(!showOwner)}>
-        Project owner description {showOwner ? '(collapse)' : '(expand)'}
-        <IconChevronDown />
-      </OwnerToggle>
-      {showOwner ? <OwnerBlock>{p.ownerDescription}</OwnerBlock> : null}
+      {contract ? (
+        <TickerRow style={{ marginTop: 12 }}>
+          Contract: {contract} · Provenance: Projects + Radar runtime
+        </TickerRow>
+      ) : null}
     </Panel>
   )
 }

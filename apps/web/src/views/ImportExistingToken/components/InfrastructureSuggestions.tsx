@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { INFRASTRUCTURE_SUGGESTIONS } from '../importTokenData'
+import { useImportRuntime } from '../importExistingTokenRuntime/ImportRuntimeContext'
 import { IT_FONT_BODY, importTokenColors } from '../importTokenTokens'
 import { ItPanel, ItSectionLabel } from './importTokenPrimitives'
 
@@ -14,73 +14,56 @@ const List = styled.div`
   gap: 10px;
 `
 
-const Row = styled.label`
-  display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
-  gap: 12px;
-  align-items: center;
+const Item = styled.div`
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid ${importTokenColors.border};
   background: rgba(255, 255, 255, 0.02);
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    grid-template-columns: auto 1fr;
-    gap: 8px;
-  }
 `
 
-const Title = styled.span`
+const Title = styled.div`
   font-family: ${IT_FONT_BODY};
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: ${importTokenColors.white};
 `
 
-const Meta = styled.span`
-  font-family: ${IT_FONT_BODY};
-  font-size: 11px;
+const Sub = styled.div`
+  margin-top: 4px;
+  font-size: 12px;
   color: ${importTokenColors.muted};
-
-  @media (max-width: 768px) {
-    grid-column: 2;
-  }
+  line-height: 1.45;
 `
 
-const D87 = styled.span`
-  font-family: ${IT_FONT_BODY};
-  font-size: 11px;
-  font-weight: 700;
-  color: ${importTokenColors.gold};
-  white-space: nowrap;
-
-  @media (max-width: 768px) {
-    grid-column: 2;
-  }
+const Empty = styled.p`
+  margin: 0;
+  font-size: 13px;
+  color: ${importTokenColors.muted};
 `
 
 export const InfrastructureSuggestions: React.FC = () => {
-  const [items, setItems] = useState(INFRASTRUCTURE_SUGGESTIONS)
-
-  const toggle = (id: string) => {
-    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)))
-  }
+  const { analysis } = useImportRuntime()
+  const suggestions = analysis?.suggestions ?? []
 
   return (
-    <Panel data-iet-suggestions>
-      <ItSectionLabel>Step 5 — Infrastructure Suggestions</ItSectionLabel>
-      <List>
-        {items.map((item) => (
-          <Row key={item.id}>
-            <input type="checkbox" checked={item.checked} onChange={() => toggle(item.id)} />
-            <Title>{item.title}</Title>
-            <Meta>{item.estimatedImpact}</Meta>
-            <Meta>{item.estimatedCompletion}</Meta>
-            <D87>D87: {item.d87Contribution}</D87>
-          </Row>
-        ))}
-      </List>
+    <Panel data-iet-infrastructure-suggestions>
+      <ItSectionLabel>Infrastructure Suggestions</ItSectionLabel>
+      {suggestions.length === 0 ? (
+        <Empty>
+          {analysis?.pending
+            ? 'Suggestions unlock after pending profile review and canonical listing.'
+            : 'No suggestions available for this contract state.'}
+        </Empty>
+      ) : (
+        <List>
+          {suggestions.map((s) => (
+            <Item key={s.id}>
+              <Title>{s.title}</Title>
+              <Sub>{s.description}</Sub>
+            </Item>
+          ))}
+        </List>
+      )}
     </Panel>
   )
 }

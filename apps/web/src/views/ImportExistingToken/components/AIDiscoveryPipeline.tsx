@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { DISCOVERY_PIPELINE } from '../importTokenData'
+import { useImportRuntime } from '../importExistingTokenRuntime/ImportRuntimeContext'
 import { IT_FONT_BODY, importTokenColors, importTokenLayout } from '../importTokenTokens'
 import { IconCheck } from './importTokenIcons'
 import { ItPanel, ItSectionLabel } from './importTokenPrimitives'
@@ -15,10 +15,11 @@ const Pipeline = styled.div`
   gap: 4px;
 `
 
-const StepRow = styled.div<{ $delay: number }>`
+const StepRow = styled.div<{ $delay: number; $complete?: boolean }>`
   display: flex;
   align-items: center;
   gap: 10px;
+  opacity: ${({ $complete }) => ($complete ? 1 : 0.55)};
   animation: ${keyframes`
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
@@ -26,21 +27,15 @@ const StepRow = styled.div<{ $delay: number }>`
   animation-delay: ${({ $delay }) => $delay}ms;
 `
 
-const checkPulse = keyframes`
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-`
-
-const CheckWrap = styled.span`
+const CheckWrap = styled.span<{ $complete?: boolean }>`
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 1px solid ${importTokenColors.green};
-  background: rgba(27, 231, 122, 0.1);
+  border: 1px solid ${({ $complete }) => ($complete ? importTokenColors.green : importTokenColors.border)};
+  background: ${({ $complete }) => ($complete ? 'rgba(27, 231, 122, 0.1)' : 'transparent')};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  animation: ${checkPulse} ${importTokenLayout.arrowAnim} ease-in-out infinite;
 `
 
 const StepLabel = styled.span`
@@ -50,33 +45,22 @@ const StepLabel = styled.span`
   color: ${importTokenColors.white};
 `
 
-const Arrow = styled.span`
-  color: ${importTokenColors.gold};
-  font-size: 12px;
-  margin-left: 6px;
-  animation: ${keyframes`
-    0%, 100% { opacity: 0.45; }
-    50% { opacity: 1; }
-  `} ${importTokenLayout.arrowAnim} ease-in-out infinite;
-`
+export const AIDiscoveryPipeline: React.FC = () => {
+  const { pipelineSteps } = useImportRuntime()
 
-export const AIDiscoveryPipeline: React.FC = () => (
-  <Panel data-iet-discovery-pipeline>
-    <ItSectionLabel>Step 2 — AI Discovery</ItSectionLabel>
-    <Pipeline>
-      {DISCOVERY_PIPELINE.map((step, i) => (
-        <React.Fragment key={step.id}>
-          {i > 0 ? <Arrow aria-hidden>↓</Arrow> : null}
-          <StepRow $delay={i * 80}>
-            <CheckWrap>
-              <IconCheck size={12} />
-            </CheckWrap>
+  return (
+    <Panel data-iet-discovery-pipeline>
+      <ItSectionLabel>Step 2 — Discovery Pipeline</ItSectionLabel>
+      <Pipeline>
+        {pipelineSteps.map((step, i) => (
+          <StepRow key={step.label} $delay={i * 80} $complete={step.complete}>
+            <CheckWrap $complete={step.complete}>{step.complete ? <IconCheck size={12} /> : null}</CheckWrap>
             <StepLabel>{step.label}</StepLabel>
           </StepRow>
-        </React.Fragment>
-      ))}
-    </Pipeline>
-  </Panel>
-)
+        ))}
+      </Pipeline>
+    </Panel>
+  )
+}
 
 export default AIDiscoveryPipeline

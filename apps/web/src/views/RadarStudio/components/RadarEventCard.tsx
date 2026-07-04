@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import type { RadarEventCard as RadarEventCardType } from '../radarStudioData'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
@@ -401,8 +402,22 @@ export const RadarEventCard: React.FC<Props> = ({ event, index }) => {
         </div>
 
         <ButtonRow>
-          <RdPrimaryBtn type="button">Trade</RdPrimaryBtn>
-          <RdGhostBtn type="button">Open Project</RdGhostBtn>
+          <RdPrimaryBtn
+            as={Link}
+            to={event.tradeHref ?? '/trade'}
+            type="button"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            Trade
+          </RdPrimaryBtn>
+          <RdGhostBtn
+            as={Link}
+            to={event.projectHref ?? `/projects/${event.projectSlug ?? ''}`}
+            type="button"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            Open Project
+          </RdGhostBtn>
           <RdIntelBtn type="button" onClick={() => setIntelOpen(true)}>
             Contract Intelligence
           </RdIntelBtn>

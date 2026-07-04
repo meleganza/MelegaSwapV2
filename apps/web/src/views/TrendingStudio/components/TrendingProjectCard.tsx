@@ -95,6 +95,19 @@ const Score = styled.span<{ $tone: 'green' | 'yellow' }>`
   color: ${({ $tone }) => ($tone === 'green' ? trendingStudioColors.green : trendingStudioColors.yellow)};
 `
 
+const Signal = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${trendingStudioColors.gold};
+`
+
+const Provenance = styled.span`
+  font-size: 10px;
+  color: ${trendingStudioColors.gray};
+`
+
 const Tags = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -139,10 +152,13 @@ const MetricCell = styled.div`
   min-width: 0;
 `
 
-const MetricValue = styled.span<{ $positive?: boolean }>`
+const MetricValue = styled.span`
   font-size: 15px;
   font-weight: 700;
-  color: ${({ $positive }) => ($positive ? trendingStudioColors.green : trendingStudioColors.white)};
+  color: ${trendingStudioColors.white};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const Footer = styled.div`
@@ -157,6 +173,7 @@ const Footer = styled.div`
   @media (max-width: 767px) {
     width: 100%;
 
+    a,
     button {
       flex: 1;
       min-width: 0;
@@ -168,18 +185,28 @@ const TradeBtn = styled(TrPrimaryBtn)`
   width: ${trendingStudioLayout.tradeBtnWidth};
   min-width: ${trendingStudioLayout.tradeBtnWidth};
   padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const OpenBtn = styled(TrGhostBtn)`
   width: ${trendingStudioLayout.openBtnWidth};
   min-width: ${trendingStudioLayout.openBtnWidth};
   padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `
 
-const WatchBtn = styled(TrGhostBtn)`
-  width: ${trendingStudioLayout.watchBtnWidth};
-  min-width: ${trendingStudioLayout.watchBtnWidth};
-  padding: 0;
+const RadarBtn = styled(TrGhostBtn)`
+  padding: 0 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `
 
 interface Props {
@@ -187,7 +214,7 @@ interface Props {
 }
 
 export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
-  const tone = aiScoreColor(project.aiScore)
+  const tone = project.aiScore > 0 ? aiScoreColor(project.aiScore) : 'yellow'
 
   return (
     <Card data-tr-trending-card>
@@ -198,10 +225,12 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
           <HeaderText>
             <Name>{project.name}</Name>
             <Pair>{project.pair}</Pair>
+            {project.provenance ? <Provenance>{project.provenance}</Provenance> : null}
           </HeaderText>
         </HeaderMain>
         <ScoreBlock>
-          <Score $tone={tone}>{project.aiScore}/100</Score>
+          <Score $tone={tone}>{project.aiScore > 0 ? `${project.aiScore}/100` : '—'}</Score>
+          <Signal>{project.signalLabel ?? 'Unavailable'}</Signal>
           <AnimatedSparkline points={project.sparkline} width={56} height={18} />
         </ScoreBlock>
       </TopRow>
@@ -228,15 +257,23 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
           <MetricValue>{project.volume}</MetricValue>
         </MetricCell>
         <MetricCell>
-          <TrLabel>7d Growth</TrLabel>
-          <MetricValue $positive={project.growthPositive}>{project.growth}</MetricValue>
+          <TrLabel>Momentum</TrLabel>
+          <MetricValue>{project.growth}</MetricValue>
         </MetricCell>
       </Metrics>
 
       <Footer>
-        <TradeBtn type="button">Trade</TradeBtn>
-        <OpenBtn type="button">Open Project</OpenBtn>
-        <WatchBtn type="button">★ Watch</WatchBtn>
+        <TradeBtn as="a" href={project.tradeHref ?? '/trade'}>
+          Trade
+        </TradeBtn>
+        <OpenBtn as="a" href={project.projectHref ?? '/projects'}>
+          Open Project
+        </OpenBtn>
+        {project.radarHref ? (
+          <RadarBtn as="a" href={project.radarHref}>
+            Radar
+          </RadarBtn>
+        ) : null}
       </Footer>
     </Card>
   )

@@ -187,7 +187,11 @@ export const RadarOpsRightColumn: React.FC = () => {
               ))}
             </ReasonList>
           </RecBlock>
-          <RdGhostBtn type="button" style={{ width: '100%', marginTop: 8 }}>
+          <RdGhostBtn
+            type="button"
+            style={{ width: '100%', marginTop: 8 }}
+            onClick={() => setMachineOpen(true)}
+          >
             View Complete Analysis
           </RdGhostBtn>
         </GaugeWrap>

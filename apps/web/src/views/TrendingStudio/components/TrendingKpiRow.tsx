@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { TRENDING_KPIS } from '../trendingStudioData'
-import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
+import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
+import { trendingStudioLayout } from '../trendingStudioTokens'
 import { AnimatedSparkline } from './trendingStudioPrimitives'
 
 const Row = styled.div`
@@ -23,8 +23,8 @@ const Card = styled.div`
   height: ${trendingStudioLayout.kpiHeight};
   min-height: ${trendingStudioLayout.kpiHeight};
   border-radius: ${trendingStudioLayout.kpiRadius};
-  border: 1px solid ${trendingStudioColors.border};
-  background: ${trendingStudioColors.panel};
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111111;
   padding: 14px 16px;
   box-sizing: border-box;
   display: flex;
@@ -33,7 +33,6 @@ const Card = styled.div`
   gap: 8px;
   position: relative;
   min-width: 0;
-  box-shadow: ${trendingStudioColors.shadow};
 `
 
 const Label = styled.span`
@@ -41,29 +40,17 @@ const Label = styled.span`
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: ${trendingStudioColors.gray};
-`
-
-const ValueRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
+  color: #8a8a8a;
 `
 
 const Value = styled.span`
   font-size: 42px;
   font-weight: 800;
   line-height: 1;
-  color: ${trendingStudioColors.green};
+  color: #00e676;
   white-space: nowrap;
-`
-
-const Delta = styled.span`
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1;
-  color: ${trendingStudioColors.green};
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const SparkWrap = styled.div`
@@ -72,21 +59,22 @@ const SparkWrap = styled.div`
   right: 12px;
 `
 
-export const TrendingKpiRow: React.FC = () => (
-  <Row data-tr-kpi-row>
-    {TRENDING_KPIS.map((kpi) => (
-      <Card key={kpi.id} data-tr-kpi-card>
-        <Label>{kpi.label}</Label>
-        <ValueRow>
+export const TrendingKpiRow: React.FC = () => {
+  const { kpis } = useTrendingRuntime()
+
+  return (
+    <Row data-tr-kpi-row>
+      {kpis.map((kpi) => (
+        <Card key={kpi.id} data-tr-kpi-card>
+          <Label>{kpi.label}</Label>
           <Value data-tr-kpi-value>{kpi.value}</Value>
-          <Delta>{kpi.delta}</Delta>
-        </ValueRow>
-        <SparkWrap>
-          <AnimatedSparkline points={kpi.sparkline} />
-        </SparkWrap>
-      </Card>
-    ))}
-  </Row>
-)
+          <SparkWrap>
+            <AnimatedSparkline points={kpi.sparkline} />
+          </SparkWrap>
+        </Card>
+      ))}
+    </Row>
+  )
+}
 
 export default TrendingKpiRow

@@ -3,13 +3,15 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
-import TrendingStudioGlobalStyle from './TrendingStudioGlobalStyle'
 import AIHeatmapTable from './components/AIHeatmapTable'
 import TrendingFilterRow from './components/TrendingFilterRow'
 import TrendingKpiRow from './components/TrendingKpiRow'
+import TrendingMachinePanel from './components/TrendingMachinePanel'
 import TrendingNowGrid from './components/TrendingNowGrid'
 import TrendingSidebar from './components/TrendingSidebar'
 import TrendingStudioPageHeader from './components/TrendingStudioPageHeader'
+import { TrendingRuntimeProvider } from './trendingRuntime/TrendingRuntimeContext'
+import TrendingStudioGlobalStyle from './TrendingStudioGlobalStyle'
 import { trendingStudioColors, trendingStudioLayout } from './trendingStudioTokens'
 
 const Root = styled.div`
@@ -53,7 +55,7 @@ const MainColumn = styled.div`
   min-width: 0;
 `
 
-export const TrendingStudioScreen: React.FC = () => (
+const TrendingStudioContent: React.FC = () => (
   <Root data-trending-studio-screen="true">
     <PageMeta />
     <TrendingStudioGlobalStyle />
@@ -66,11 +68,18 @@ export const TrendingStudioScreen: React.FC = () => (
           <TrendingFilterRow />
           <AIHeatmapTable />
           <TrendingNowGrid />
+          <TrendingMachinePanel />
         </MainColumn>
         <TrendingSidebar />
       </PageGrid>
     </Content>
   </Root>
+)
+
+export const TrendingStudioScreen: React.FC = () => (
+  <TrendingRuntimeProvider>
+    <TrendingStudioContent />
+  </TrendingRuntimeProvider>
 )
 
 export default TrendingStudioScreen

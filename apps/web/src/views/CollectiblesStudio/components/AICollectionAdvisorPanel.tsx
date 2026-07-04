@@ -75,7 +75,12 @@ const CtaWrap = styled.div`
 `
 
 export const AICollectionAdvisorPanel: React.FC = () => {
-  const { advisorRows } = useCollectiblesRuntime()
+  const { advisorRows, setMachineOpen } = useCollectiblesRuntime()
+
+  const openMachineInsights = () => {
+    setMachineOpen(true)
+    document.getElementById('cs-machine-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
 
   return (
   <CsPanel data-cs-panel data-cs-advisor $height={collectiblesStudioLayout.featuredHeight}>
@@ -94,7 +99,7 @@ export const AICollectionAdvisorPanel: React.FC = () => {
         ))}
       </List>
       <CtaWrap>
-        <CsOutlineBtn $width="100%" $height="42px" type="button">
+        <CsOutlineBtn $width="100%" $height="42px" type="button" onClick={openMachineInsights}>
           View All Insights
         </CsOutlineBtn>
       </CtaWrap>

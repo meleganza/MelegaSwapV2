@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { HEATMAP_ROWS, aiScoreColor } from '../trendingStudioData'
+import { aiScoreColor } from '../trendingStudioData'
+import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
 import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
 import { HeatBar, TrPanel, TrSectionTitle, TrendingProjectLogo } from './trendingStudioPrimitives'
 
@@ -42,10 +43,6 @@ const Td = styled.td`
   white-space: nowrap;
 `
 
-const Row = styled.tr`
-  transition: background 150ms ease;
-`
-
 const ProjectCell = styled.div`
   display: flex;
   align-items: center;
@@ -53,9 +50,15 @@ const ProjectCell = styled.div`
   min-width: 0;
 `
 
-const ProjectName = styled.span`
+const ProjectName = styled.a`
   font-size: 15px;
   font-weight: 700;
+  color: ${trendingStudioColors.white};
+  text-decoration: none;
+
+  &:hover {
+    color: ${trendingStudioColors.gold};
+  }
 `
 
 const AiScore = styled.span<{ $tone: 'green' | 'yellow' }>`
@@ -64,61 +67,71 @@ const AiScore = styled.span<{ $tone: 'green' | 'yellow' }>`
   color: ${({ $tone }) => ($tone === 'green' ? trendingStudioColors.green : trendingStudioColors.yellow)};
 `
 
-export const AIHeatmapTable: React.FC = () => (
-  <Panel data-tr-panel data-tr-heatmap>
-    <TrSectionTitle>AI Heatmap</TrSectionTitle>
-    <TableWrap>
-      <Table>
-        <thead>
-          <tr>
-            <Th>#</Th>
-            <Th>Project</Th>
-            <Th>Momentum</Th>
-            <Th>Liquidity</Th>
-            <Th>Holders</Th>
-            <Th>AI Score</Th>
-            <Th>Social</Th>
-            <Th>Whales</Th>
-            <Th>Volume</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {HEATMAP_ROWS.map((row) => (
-            <Row key={row.project} data-tr-heat-row>
-              <Td>{row.rank}</Td>
-              <Td>
-                <ProjectCell>
-                  <TrendingProjectLogo name={row.project} symbol={row.symbol} size={28} />
-                  <ProjectName>{row.project}</ProjectName>
-                </ProjectCell>
-              </Td>
-              <Td>
-                <HeatBar value={row.momentum} />
-              </Td>
-              <Td>
-                <HeatBar value={row.liquidity} />
-              </Td>
-              <Td>
-                <HeatBar value={row.holders} />
-              </Td>
-              <Td>
-                <AiScore $tone={aiScoreColor(row.aiScore)}>{row.aiScore}</AiScore>
-              </Td>
-              <Td>
-                <HeatBar value={row.social} />
-              </Td>
-              <Td>
-                <HeatBar value={row.whales} />
-              </Td>
-              <Td>
-                <HeatBar value={row.volume} />
-              </Td>
-            </Row>
-          ))}
-        </tbody>
-      </Table>
-    </TableWrap>
-  </Panel>
-)
+const UnavailableCell = styled.span`
+  font-size: 12px;
+  color: ${trendingStudioColors.gray};
+`
+
+function heatLabel(value: number): React.ReactNode {
+  if (value <= 0) return <UnavailableCell>Unavailable</UnavailableCell>
+  return <HeatBar $value={value} />
+}
+
+export const AIHeatmapTable: React.FC = () => {
+  const { heatmap } = useTrendingRuntime()
+
+  return (
+    <Panel data-tr-panel data-tr-heatmap>
+      <TrSectionTitle>Registry Heatmap</TrSectionTitle>
+      <TableWrap>
+        <Table>
+          <thead>
+            <tr>
+              <Th>#</Th>
+              <Th>Project</Th>
+              <Th>Momentum</Th>
+              <Th>Liquidity</Th>
+              <Th>Holders</Th>
+              <Th>Runtime Score</Th>
+              <Th>Social</Th>
+              <Th>Whales</Th>
+              <Th>Volume</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {heatmap.map((row) => {
+              const tone = aiScoreColor(row.aiScore)
+              const href = row.slug ? `/projects/${row.slug}` : undefined
+              return (
+                <tr key={`${row.project}-${row.rank}`}>
+                  <Td>{row.rank}</Td>
+                  <Td>
+                    <ProjectCell>
+                      <TrendingProjectLogo name={row.project} symbol={row.symbol} size={28} />
+                      {href ? (
+                        <ProjectName href={href}>{row.project}</ProjectName>
+                      ) : (
+                        <ProjectName as="span">{row.project}</ProjectName>
+                      )}
+                    </ProjectCell>
+                  </Td>
+                  <Td>{heatLabel(row.momentum)}</Td>
+                  <Td>{heatLabel(row.liquidity)}</Td>
+                  <Td>{heatLabel(row.holders)}</Td>
+                  <Td>
+                    <AiScore $tone={tone}>{row.aiScore > 0 ? row.aiScore : '—'}</AiScore>
+                  </Td>
+                  <Td>{heatLabel(row.social)}</Td>
+                  <Td>{heatLabel(row.whales)}</Td>
+                  <Td>{heatLabel(row.volume)}</Td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </Table>
+      </TableWrap>
+    </Panel>
+  )
+}
 
 export default AIHeatmapTable

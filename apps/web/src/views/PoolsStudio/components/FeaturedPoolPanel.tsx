@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
@@ -115,6 +115,8 @@ const ConnectWrap = styled.div`
 export const FeaturedPoolPanel: React.FC = () => {
   const { featured, loadingLabel, requestModal, account } = usePoolsRuntime()
   const card = featured.card
+  const [analyzeOpen, setAnalyzeOpen] = useState(false)
+  const preview = card?.analyzePreview
 
   return (
     <PsPanel data-ps-panel data-ps-featured $height={poolsStudioLayout.featuredHeight} $radius="22px" style={{ padding: '22px' }}>
@@ -166,10 +168,24 @@ export const FeaturedPoolPanel: React.FC = () => {
                     <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
                   </ConnectWrap>
                 )}
-                <PsGhostBtn type="button" style={{ height: 40, minHeight: 40 }}>
-                  Analyze
+                <PsGhostBtn
+                  type="button"
+                  style={{ height: 40, minHeight: 40 }}
+                  onClick={() => setAnalyzeOpen((v) => !v)}
+                  disabled={!preview}
+                  title={preview ? undefined : 'Analysis unavailable'}
+                >
+                  {analyzeOpen ? 'Hide Analysis' : 'Analyze'}
                 </PsGhostBtn>
               </BtnRow>
+              {analyzeOpen && preview ? (
+                <div style={{ marginTop: 12, fontSize: 12, color: poolsStudioColors.muted, lineHeight: 1.5 }}>
+                  <div>APR History: {preview.aprHistory}</div>
+                  <div>Emission: {preview.emission}</div>
+                  <div>Contract: {preview.contract}</div>
+                  <div>Risk: {preview.risk}</div>
+                </div>
+              ) : null}
             </>
           )}
         </Main>

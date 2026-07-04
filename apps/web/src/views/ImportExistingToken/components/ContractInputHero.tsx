@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { DEMO_CONTRACT, EXPLORER_ICONS, SUPPORTED_CHAINS } from '../importTokenData'
+import { EXPLORER_ICONS } from '../importTokenData'
+import { useImportRuntime } from '../importExistingTokenRuntime/ImportRuntimeContext'
 import { IT_FONT_BODY, importTokenColors, importTokenLayout } from '../importTokenTokens'
 import { ItInput, ItPanel, ItPrimaryBtn, ItSectionLabel } from './importTokenPrimitives'
+
+const SUPPORTED_CHAINS = ['BNB', 'ETH', 'Base', 'Polygon'] as const
 
 const Hero = styled(ItPanel)`
   min-height: ${importTokenLayout.heroH};
@@ -79,7 +82,6 @@ const ExplorerIcon = styled.a`
   font-weight: 800;
   color: ${importTokenColors.muted};
   text-decoration: none;
-  transition: border-color ${importTokenLayout.transition} ease;
 
   &:hover {
     border-color: ${importTokenColors.gold};
@@ -87,14 +89,20 @@ const ExplorerIcon = styled.a`
   }
 `
 
-type Props = {
-  onAnalyze: () => void
-  analyzed: boolean
-}
+const Error = styled.p`
+  margin: 0;
+  font-size: 13px;
+  color: ${importTokenColors.red};
+`
 
-export const ContractInputHero: React.FC<Props> = ({ onAnalyze, analyzed }) => {
-  const [chain, setChain] = useState('BNB')
-  const [contract, setContract] = useState(analyzed ? DEMO_CONTRACT : '')
+type Props = Record<string, never>
+
+export const ContractInputHero: React.FC<Props> = () => {
+  const { contract, setContract, chainLabel, setChainLabel, runAnalysis, validationError } = useImportRuntime()
+
+  const handleAnalyze = () => {
+    runAnalysis()
+  }
 
   return (
     <Hero data-iet-contract-hero>
@@ -110,15 +118,21 @@ export const ContractInputHero: React.FC<Props> = ({ onAnalyze, analyzed }) => {
         </InputFlex>
         <ChainRow>
           {SUPPORTED_CHAINS.map((c) => (
-            <ChainBtn key={c} type="button" $active={chain === c} onClick={() => setChain(c)}>
+            <ChainBtn
+              key={c}
+              type="button"
+              $active={chainLabel === c || (c === 'ETH' && chainLabel === 'Ethereum')}
+              onClick={() => setChainLabel(c === 'ETH' ? 'ETH' : c)}
+            >
               {c}
             </ChainBtn>
           ))}
         </ChainRow>
-        <ItPrimaryBtn type="button" $width="220px" $height="56px" onClick={onAnalyze}>
+        <ItPrimaryBtn type="button" $width="220px" $height="56px" onClick={handleAnalyze}>
           Analyze Project
         </ItPrimaryBtn>
       </InputRow>
+      {validationError ? <Error>{validationError}</Error> : null}
       <Explorers>
         <ExplorerLabel>Supported explorers</ExplorerLabel>
         {EXPLORER_ICONS.map((ex) => (

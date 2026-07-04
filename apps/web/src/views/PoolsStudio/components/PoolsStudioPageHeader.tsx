@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { POOLS_STUDIO_PREVIEW_LABEL, poolsStudioColors } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
@@ -71,7 +72,7 @@ export const PoolsStudioPageHeader: React.FC = () => (
       </Left>
       <Right>
         <LiveBadge>LIVE RUNTIME</LiveBadge>
-        <PsPrimaryBtn type="button">
+        <PsPrimaryBtn as={Link} to="/build-studio?intent=staking-pool" type="button">
           <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
           Create Pool
         </PsPrimaryBtn>

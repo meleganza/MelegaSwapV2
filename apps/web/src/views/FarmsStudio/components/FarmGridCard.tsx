@@ -360,6 +360,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
   const preview = farm.analyzePreview ?? DEFAULT_ANALYZE_PREVIEW
   const aprVar = aprVariant(farm)
   const hasPending = farm.pendingReward?.gt(0)
+  const hasStaked = farm.userStaked?.gt(0)
 
   const renderFooter = () => {
     if (farm.status === 'coming-soon' || farm.cta === 'none') {
@@ -385,6 +386,11 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
         <CardStakeBtn type="button" onClick={() => requestModal(farm, 'stake')}>
           Stake
         </CardStakeBtn>
+        {hasStaked && account ? (
+          <CardAnalyzeBtn type="button" onClick={() => requestModal(farm, 'unstake')}>
+            Withdraw
+          </CardAnalyzeBtn>
+        ) : null}
         {hasPending && account ? (
           <CardAnalyzeBtn type="button" onClick={() => requestModal(farm, 'claim')}>
             Claim

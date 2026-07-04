@@ -110,6 +110,12 @@ export function mapProjectToPreviewCard(project: EnrichedProjectRecord, rank: nu
         : token?.address
           ? shortAddress(token.address)
           : '—',
+    contractAddress: token?.address,
+    tradeHref: token?.address
+      ? `/swap?outputCurrency=${token.address}`
+      : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/trade',
+    radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
+    projectHref: `/projects/${project.slug}`,
   }
 }
 

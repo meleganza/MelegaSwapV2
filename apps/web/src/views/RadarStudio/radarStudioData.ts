@@ -106,6 +106,10 @@ export interface RadarEventCard {
   riskScore: number
   gasComplexity: string
   intelSummary: string
+  projectSlug?: string
+  contractAddress?: string
+  tradeHref?: string
+  projectHref?: string
 }
 
 export interface WhaleRow {

@@ -325,7 +325,9 @@ export const TradeRightRail: React.FC = () => {
               </RouteRight>
             </RouteEntry>
           ))}
-          <OutlineBtn type="button">View All Routes</OutlineBtn>
+          <OutlineBtn type="button" disabled title="Coming soon">
+            View All Routes
+          </OutlineBtn>
         </Panel>
 
         <Panel data-trade-your-assets>
@@ -349,7 +351,7 @@ export const TradeRightRail: React.FC = () => {
               </AssetRight>
             </AssetRow>
           ))}
-          <OutlineBtn type="button" style={{ height: 38, marginTop: 10 }}>
+          <OutlineBtn type="button" disabled title="Coming soon" style={{ height: 38, marginTop: 10 }}>
             Manage Assets
           </OutlineBtn>
         </Panel>
@@ -377,7 +379,7 @@ export const TradeRightRail: React.FC = () => {
               <StatValue>{routerStatus.chains}</StatValue>
             </StatCell>
           </StatGrid>
-          <OutlineBtn type="button" style={{ height: 36, marginTop: 10 }}>
+          <OutlineBtn type="button" disabled title="Coming soon" style={{ height: 36, marginTop: 10 }}>
             Router Analytics
           </OutlineBtn>
           <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>

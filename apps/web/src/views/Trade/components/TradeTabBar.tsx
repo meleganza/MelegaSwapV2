@@ -95,6 +95,7 @@ export const TradeTabBar: React.FC<TradeTabBarProps> = ({ active, onChange }) =>
         >
           {tab.icon === 'lightning' && <LightningIcon />}
           {tab.label}
+          {isDisabled ? ' · Coming soon' : ''}
         </Tab>
       )
     })}

@@ -30,6 +30,17 @@ const Card = styled.a`
   }
 `
 
+const DisabledCard = styled.div`
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid ${buildStudioColors.border};
+  background: ${buildStudioColors.panel};
+  display: block;
+  color: inherit;
+  opacity: 0.55;
+  cursor: not-allowed;
+`
+
 const Title = styled.h4`
   margin: 0 0 6px;
   font-family: ${BS_FONT_BODY};
@@ -75,21 +86,30 @@ export const OptionalServices: React.FC = () => {
       <SectionTitle>Infrastructure Extensions</SectionTitle>
       <SectionSub>Services</SectionSub>
       <Grid>
-        {extensions.map((svc) => (
-          <Card
-            key={svc.id}
-            data-bs-panel
-            href={svc.href ?? '#'}
-            onClick={(e) => {
-              if (!svc.href) e.preventDefault()
-            }}
-          >
-            <Title>{svc.title}</Title>
-            <BsBody style={{ fontSize: 13, lineHeight: '20px' }}>{svc.purpose}</BsBody>
-            <Activation>Est. activation: {svc.activationTime}</Activation>
-            <Status $available={svc.available}>{svc.status} · {svc.requirements}</Status>
-          </Card>
-        ))}
+        {extensions.map((svc) => {
+          const content = (
+            <>
+              <Title>{svc.title}</Title>
+              <BsBody style={{ fontSize: 13, lineHeight: '20px' }}>{svc.purpose}</BsBody>
+              <Activation>Est. activation: {svc.activationTime}</Activation>
+              <Status $available={svc.available}>
+                {svc.status} · {svc.requirements}
+              </Status>
+            </>
+          )
+          if (!svc.href) {
+            return (
+              <DisabledCard key={svc.id} data-bs-panel title="Coming soon">
+                {content}
+              </DisabledCard>
+            )
+          }
+          return (
+            <Card key={svc.id} data-bs-panel href={svc.href}>
+              {content}
+            </Card>
+          )
+        })}
       </Grid>
     </div>
   )

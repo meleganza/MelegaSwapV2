@@ -37,6 +37,10 @@ export interface ProjectPreviewCard {
   riskTone: MetricTone
   website: string
   contract: string
+  contractAddress?: string
+  tradeHref?: string
+  radarHref?: string
+  projectHref?: string
 }
 
 export interface ProjectsActivityRow {

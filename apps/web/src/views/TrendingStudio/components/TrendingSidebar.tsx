@@ -1,12 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-  AI_DISCOVERIES,
-  AI_OPPORTUNITY,
-  AI_WARNINGS,
-  SMART_MONEY_ROWS,
-  WHALE_ACTIVITY,
-} from '../trendingStudioData'
+import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
 import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
 import { TrLabel, TrPanel, TrSectionTitle, TrStatusBadge } from './trendingStudioPrimitives'
 
@@ -46,39 +40,6 @@ const List = styled.div`
   flex: 1;
   min-height: 0;
   overflow: auto;
-`
-
-const WhaleRow = styled.div`
-  display: grid;
-  grid-template-columns: 18px 1fr auto;
-  gap: 8px;
-  align-items: center;
-  font-size: 13px;
-`
-
-const Arrow = styled.span<{ $direction: 'buy' | 'sell' | 'transfer' }>`
-  font-size: 14px;
-  font-weight: 800;
-  color: ${({ $direction }) =>
-    $direction === 'buy'
-      ? trendingStudioColors.green
-      : $direction === 'sell'
-        ? trendingStudioColors.red
-        : trendingStudioColors.orange};
-`
-
-const SmartRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 8px;
-  font-size: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
 `
 
 const OpportunityWrap = styled.div`
@@ -157,92 +118,75 @@ const DiscoveryRow = styled.div`
   font-size: 12px;
 `
 
-export const TrendingSidebar: React.FC = () => (
-  <Sidebar data-tr-sidebar>
-    <WhalePanel data-tr-panel>
-      <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Whale Monitor</TrSectionTitle>
-      <List>
-        {WHALE_ACTIVITY.map((row) => (
-          <WhaleRow key={`${row.wallet}-${row.time}`}>
-            <Arrow $direction={row.direction}>
-              {row.direction === 'buy' ? '↑' : row.direction === 'sell' ? '↓' : '↔'}
-            </Arrow>
-            <span>
-              <strong style={{ color: trendingStudioColors.white }}>{row.wallet}</strong>
-              <br />
-              {row.amount} {row.token}
-            </span>
-            <span style={{ color: trendingStudioColors.gray }}>{row.time}</span>
-          </WhaleRow>
-        ))}
-      </List>
-    </WhalePanel>
+const Unavailable = styled.p`
+  margin: 0;
+  font-size: 13px;
+  color: ${trendingStudioColors.gray};
+  line-height: 1.45;
+`
 
-    <SmartPanel data-tr-panel>
-      <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Smart Money Tracker</TrSectionTitle>
-      <List>
-        {SMART_MONEY_ROWS.map((row) => (
-          <SmartRow key={row.wallet}>
-            <div>
-              <div style={{ color: trendingStudioColors.white, fontWeight: 700 }}>{row.wallet}</div>
-              <div>{row.performance}</div>
+export const TrendingSidebar: React.FC = () => {
+  const { discoveries, warnings, opportunity } = useTrendingRuntime()
+
+  return (
+    <Sidebar data-tr-sidebar>
+      <WhalePanel data-tr-panel>
+        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Whale Monitor</TrSectionTitle>
+        <Unavailable>Unavailable — whale activity feed is not connected to a live data source.</Unavailable>
+      </WhalePanel>
+
+      <SmartPanel data-tr-panel>
+        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Smart Money Tracker</TrSectionTitle>
+        <Unavailable>Unavailable — smart money tracking requires external wallet intelligence.</Unavailable>
+      </SmartPanel>
+
+      <Panel data-tr-panel>
+        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Runtime Signal</TrSectionTitle>
+        <OpportunityWrap>
+          <Ring data-tr-opportunity-ring $score={opportunity.score}>
+            <span>{opportunity.score > 0 ? opportunity.score : '—'}</span>
+          </Ring>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: trendingStudioColors.gold }}>
+              {opportunity.signalLabel}
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ color: trendingStudioColors.green, fontWeight: 800 }}>{row.roi}</div>
-              <div>{row.lastTrade}</div>
-              <div>{row.confidence}</div>
+            <div style={{ fontSize: 13, color: trendingStudioColors.gray, marginTop: 6, lineHeight: 1.45 }}>
+              {opportunity.summary}
             </div>
-          </SmartRow>
-        ))}
-      </List>
-    </SmartPanel>
-
-    <Panel data-tr-panel>
-      <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>AI Opportunity Score</TrSectionTitle>
-      <OpportunityWrap>
-        <Ring data-tr-opportunity-ring $score={AI_OPPORTUNITY.score}>
-          <span>{AI_OPPORTUNITY.score}</span>
-        </Ring>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: trendingStudioColors.green }}>
-            {AI_OPPORTUNITY.recommendation}
           </div>
-          <div style={{ fontSize: 13, color: trendingStudioColors.gray, marginTop: 6, lineHeight: 1.45 }}>
-            {AI_OPPORTUNITY.summary}
-          </div>
-        </div>
-      </OpportunityWrap>
-    </Panel>
+        </OpportunityWrap>
+      </Panel>
 
-    <Panel data-tr-panel>
-      <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>AI Warnings</TrSectionTitle>
-      <List>
-        {AI_WARNINGS.map((warning) => (
-          <WarningRow key={warning.label}>
-            <Dot $level={warning.level} />
-            {warning.label}
-          </WarningRow>
-        ))}
-      </List>
-    </Panel>
+      <Panel data-tr-panel>
+        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Availability Warnings</TrSectionTitle>
+        <List>
+          {warnings.map((warning) => (
+            <WarningRow key={warning.label}>
+              <Dot $level={warning.level} />
+              {warning.label}
+            </WarningRow>
+          ))}
+        </List>
+      </Panel>
 
-    <DiscoveriesPanel data-tr-panel>
-      <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Recent AI Discoveries</TrSectionTitle>
-      <DiscoveryTable>
-        {AI_DISCOVERIES.map((row) => (
-          <DiscoveryRow key={`${row.project}-${row.time}`}>
-            <span style={{ color: trendingStudioColors.gray }}>{row.time}</span>
-            <span>
-              <strong style={{ color: trendingStudioColors.white }}>{row.project}</strong> · {row.event}
-              <br />
-              <TrLabel>{row.score}</TrLabel>
-            </span>
-            <TrStatusBadge $status={row.status}>{row.status}</TrStatusBadge>
-          </DiscoveryRow>
-        ))}
-      </DiscoveryTable>
-    </DiscoveriesPanel>
-  </Sidebar>
-)
+      <DiscoveriesPanel data-tr-panel>
+        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Recent Registry Discoveries</TrSectionTitle>
+        <DiscoveryTable>
+          {discoveries.map((row) => (
+            <DiscoveryRow key={`${row.project}-${row.time}`}>
+              <span style={{ color: trendingStudioColors.gray }}>{row.time}</span>
+              <span>
+                <strong style={{ color: trendingStudioColors.white }}>{row.project}</strong> · {row.event}
+                <br />
+                <TrLabel>{row.score}</TrLabel>
+              </span>
+              <TrStatusBadge $status={row.status}>{row.status}</TrStatusBadge>
+            </DiscoveryRow>
+          ))}
+        </DiscoveryTable>
+      </DiscoveriesPanel>
+    </Sidebar>
+  )
+}
 
 export default TrendingSidebar

@@ -9,6 +9,7 @@ import {
   collectiblesStudioLayout,
 } from '../collectiblesStudioTokens'
 import { CsThumbnail } from './collectiblesStudioPrimitives'
+import CollectiblesMachinePanel from './CollectiblesMachinePanel'
 
 const Sidebar = styled.aside`
   display: flex;
@@ -155,6 +156,7 @@ export const CollectiblesRightSidebar: React.FC = () => {
     <SidebarSection title="Most Used by AI" items={sidebar.mostUsedByAi} priceLabel="score" />
     <SidebarSection title="Newest Identities" items={sidebar.newestIdentities} />
     <SidebarSection title="Most Active Builders" items={sidebar.mostActiveBuilders} />
+    <CollectiblesMachinePanel />
   </Sidebar>
   )
 }

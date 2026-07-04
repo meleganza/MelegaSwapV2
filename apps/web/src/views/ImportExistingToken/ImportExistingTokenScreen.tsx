@@ -1,19 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
-import ImportExistingTokenGlobalStyle from './ImportExistingTokenGlobalStyle'
-import { importTokenColors, importTokenLayout } from './importTokenTokens'
 import AIDiscoveryPipeline from './components/AIDiscoveryPipeline'
 import AIManifestSection from './components/AIManifestSection'
 import AIReadinessScore from './components/AIReadinessScore'
 import ContractInputHero from './components/ContractInputHero'
+import ImportMachinePanel from './components/ImportMachinePanel'
 import ImportPageHeader from './components/ImportPageHeader'
 import InfrastructureSuggestions from './components/InfrastructureSuggestions'
 import OnboardingAdvisor from './components/OnboardingAdvisor'
+import PendingReviewCard from './components/PendingReviewCard'
 import ProjectDetectedCard from './components/ProjectDetectedCard'
-import RecentImportsTimeline from './components/RecentImportsTimeline'
-import ServiceActivation from './components/ServiceActivation'
+import ImportExistingTokenGlobalStyle from './ImportExistingTokenGlobalStyle'
+import { ImportRuntimeProvider, useImportRuntime } from './importExistingTokenRuntime/ImportRuntimeContext'
+import { importTokenColors, importTokenLayout } from './importTokenTokens'
 
 const Root = styled.div`
   color: ${importTokenColors.white};
@@ -33,26 +34,16 @@ const Content = styled.div`
   padding: ${importTokenLayout.contentPaddingTop} ${importTokenLayout.contentPaddingX}
     ${importTokenLayout.contentPaddingBottom};
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: ${importTokenLayout.sectionGap};
-
-  @media (max-width: 768px) {
-    padding: 20px;
-  }
+  min-width: 0;
 `
 
 const MainGrid = styled.div`
   display: grid;
-  grid-template-columns: ${importTokenLayout.colLeft} ${importTokenLayout.colRight};
-  gap: ${importTokenLayout.cardGap};
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: ${importTokenLayout.sectionGap};
   align-items: start;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (max-width: 768px) {
+  @media (max-width: 1099px) {
     grid-template-columns: 1fr;
   }
 `
@@ -72,16 +63,10 @@ const AnalyzedBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${importTokenLayout.sectionGap};
-  animation: fadeIn 400ms ease-out both;
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
 `
 
-export const ImportExistingTokenScreen: React.FC = () => {
-  const [analyzed, setAnalyzed] = useState(true)
+const ImportContent: React.FC = () => {
+  const { analyzed } = useImportRuntime()
 
   return (
     <Root data-import-existing-token-screen>
@@ -92,26 +77,30 @@ export const ImportExistingTokenScreen: React.FC = () => {
         <ImportPageHeader />
         <MainGrid data-iet-main-grid>
           <LeftCol>
-            <ContractInputHero analyzed={analyzed} onAnalyze={() => setAnalyzed(true)} />
+            <ContractInputHero />
             {analyzed ? (
               <AnalyzedBlock data-iet-analyzed>
                 <AIDiscoveryPipeline />
                 <ProjectDetectedCard />
+                <PendingReviewCard />
                 <AIReadinessScore />
                 <InfrastructureSuggestions />
-                <ServiceActivation />
                 <AIManifestSection />
+                <ImportMachinePanel />
               </AnalyzedBlock>
             ) : null}
           </LeftCol>
-          <RightCol>
-            {analyzed ? <OnboardingAdvisor /> : null}
-          </RightCol>
+          <RightCol>{analyzed ? <OnboardingAdvisor /> : null}</RightCol>
         </MainGrid>
-        {analyzed ? <RecentImportsTimeline /> : null}
       </Content>
     </Root>
   )
 }
+
+export const ImportExistingTokenScreen: React.FC = () => (
+  <ImportRuntimeProvider>
+    <ImportContent />
+  </ImportRuntimeProvider>
+)
 
 export default ImportExistingTokenScreen

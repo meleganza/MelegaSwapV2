@@ -202,21 +202,22 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Layer | Status | Notes |
 |-------|--------|-------|
 | UI | 🟩 | `TrendingStudioScreen` + `TrendingRibbon` / `MelegaTicker` |
-| Runtime | 🟨 | Home/trade ticker uses `useHomeTradeData` (live subgraph + farms); studio static |
-| AI | ⬜ | — |
+| Runtime | 🟩 | ✅ R102 — `trendingRuntime/` consumes Projects + Radar; no static mock cards |
+| AI | 🟨 | Heuristic opportunity + registry heatmap; whale/smart money honestly **Unavailable** |
 | Production | ⬜ | — |
 
 ### Runtime requirements
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Live ranking | 🟨 | Ticker live; studio cards static |
-| Momentum | ⬜ | — |
-| Whales | ⬜ | — |
-| Volume | 🟨 | Subgraph on trade/home |
-| Liquidity | 🟨 | Partial via farm/pool hooks |
-| Growth | ⬜ | — |
-| Radar integration | ⬜ | — |
+| Live ranking | 🟩 | Registry projects sorted by runtime rating |
+| Momentum | 🟨 | Provenance-based; no fabricated scores |
+| Whales | 🟨 | Shown as Unavailable (no feed) |
+| Volume | 🟨 | From Projects on-chain metrics when indexed |
+| Liquidity | 🟨 | Projects runtime + partial subgraph |
+| Growth | 🟨 | Holders metric when available; else Insufficient Data |
+| Radar integration | 🟩 | Live events + heatmap from `radarRuntime` |
+| Machine JSON | 🟩 | Collapsed by default in `TrendingMachinePanel` |
 
 ---
 
@@ -288,7 +289,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Import Existing Token | 🟩 | Contract → Projects → Radar → score → suggestions |
+| Import Existing Token | 🟩 | ✅ R102 — `/import-existing-token` wired to `runImportAnalysis`, pending registry, manifest |
 | Create Token | 🟩 | Preparation preview — deploy suppressed in studio |
 | Create Pool | 🟩 | Pools Runtime preview — create suppressed |
 | Create Farm | 🟩 | Farms Runtime preview — create suppressed |

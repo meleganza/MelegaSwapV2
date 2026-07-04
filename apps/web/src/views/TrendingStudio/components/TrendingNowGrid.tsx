@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { TRENDING_NOW_CARDS } from '../trendingStudioData'
+import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
 import { trendingStudioLayout } from '../trendingStudioTokens'
 import { TrSectionTitle } from './trendingStudioPrimitives'
 import TrendingProjectCard from './TrendingProjectCard'
@@ -22,15 +22,26 @@ const Grid = styled.div`
   }
 `
 
-export const TrendingNowGrid: React.FC = () => (
-  <Section data-tr-trending-now>
-    <TrSectionTitle>Trending Now</TrSectionTitle>
-    <Grid>
-      {TRENDING_NOW_CARDS.map((project) => (
-        <TrendingProjectCard key={project.name} project={project} />
-      ))}
-    </Grid>
-  </Section>
-)
+const Empty = styled.p`
+  margin: 0;
+  font-size: 14px;
+  color: #8a8a8a;
+`
+
+export const TrendingNowGrid: React.FC = () => {
+  const { cards, filterEmptyMessage } = useTrendingRuntime()
+
+  return (
+    <Section data-tr-trending-now>
+      <TrSectionTitle>Trending Now</TrSectionTitle>
+      {filterEmptyMessage ? <Empty>{filterEmptyMessage}</Empty> : null}
+      <Grid>
+        {cards.map((project) => (
+          <TrendingProjectCard key={`${project.slug ?? project.name}-${project.rank}`} project={project} />
+        ))}
+      </Grid>
+    </Section>
+  )
+}
 
 export default TrendingNowGrid
