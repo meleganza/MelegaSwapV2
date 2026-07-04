@@ -1,4 +1,5 @@
 import { TREASURY_HANDOFF_API_PATH } from './config'
+import { normalizeTreasuryIntakePayload } from './normalizeTreasuryIntakePayload'
 import { assertPayloadDoesNotOwnSettlement } from './ownership'
 import { setSettlementReference, type SettlementReference } from './settlementReferenceStore'
 import type {
@@ -8,6 +9,7 @@ import type {
   TreasuryRuntimeEndpointStatus,
   TreasurySettlementResponse,
 } from './types'
+import type { TreasuryIntakePayload } from './normalizeTreasuryIntakePayload'
 
 const MAX_ATTEMPTS = 3
 const RETRY_DELAY_MS = 400
@@ -24,15 +26,18 @@ function sleepDefault(ms: number): Promise<void> {
   })
 }
 
+function extractSettlementId(response: TreasurySettlementResponse): string | undefined {
+  return response.settlement_id ?? response.settlement?.settlement_id
+}
+
 function mapResponseToStatus(response: TreasurySettlementResponse): SettlementHandoffStatus {
-  const code = response.machine_code?.toUpperCase()
+  const code = (response.machine_code ?? response.code)?.toUpperCase()
   if (code === 'DUPLICATE_SETTLEMENT') return 'SETTLEMENT_DUPLICATE'
-  if (response.status?.toLowerCase() === 'accepted' || response.settlement_id) return 'SETTLEMENT_ACCEPTED'
+  if (response.ok === true || extractSettlementId(response)) return 'SETTLEMENT_ACCEPTED'
+  if (response.status?.toLowerCase() === 'accepted') return 'SETTLEMENT_ACCEPTED'
   if (response.status?.toLowerCase() === 'rejected') return 'SETTLEMENT_REJECTED'
-  if (code === 'DUPLICATE_SETTLEMENT' || response.status?.toLowerCase() === 'duplicate') {
-    return 'SETTLEMENT_DUPLICATE'
-  }
-  return response.settlement_id ? 'SETTLEMENT_ACCEPTED' : 'SETTLEMENT_REJECTED'
+  if (response.status?.toLowerCase() === 'duplicate') return 'SETTLEMENT_DUPLICATE'
+  return extractSettlementId(response) ? 'SETTLEMENT_ACCEPTED' : 'SETTLEMENT_REJECTED'
 }
 
 function buildReference(
@@ -46,7 +51,7 @@ function buildReference(
     chainId: payload.chain,
     wallet: payload.wallet,
     settlementStatus: status,
-    settlementId: response?.settlement_id,
+    settlementId: response ? extractSettlementId(response) : undefined,
     machineCode: response?.machine_code,
     reason: response?.reason,
     treasuryRuntimeEndpointStatus: endpointStatus,
@@ -55,7 +60,7 @@ function buildReference(
 }
 
 async function postOnce(
-  payload: ExecutionReceiptPayload,
+  payload: TreasuryIntakePayload,
   endpoint: string,
   fetchImpl: typeof fetch,
 ): Promise<{ ok: boolean; status: number; body: TreasurySettlementResponse | null }> {
@@ -85,6 +90,18 @@ export async function submitSettlementHandoff(
 ): Promise<SettlementHandoffResult> {
   assertPayloadDoesNotOwnSettlement(payload as unknown as Record<string, unknown>)
 
+  const normalized = normalizeTreasuryIntakePayload(payload)
+  if (!normalized.ok) {
+    const rejected: TreasurySettlementResponse = {
+      status: 'rejected',
+      machine_code: normalized.machine_code,
+      reason: normalized.reason,
+    }
+    const reference = buildReference(payload, 'SETTLEMENT_REJECTED', 'available', rejected)
+    setSettlementReference(reference)
+    return { reference, response: rejected }
+  }
+
   const fetchImpl = deps.fetchImpl ?? fetch
   const endpoint = deps.endpoint ?? TREASURY_HANDOFF_API_PATH
   const sleep = deps.sleep ?? sleepDefault
@@ -92,7 +109,7 @@ export async function submitSettlementHandoff(
   let lastError: unknown
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     try {
-      const result = await postOnce(payload, endpoint, fetchImpl)
+      const result = await postOnce(normalized.payload, endpoint, fetchImpl)
 
       if (result.status === 503) {
         const reference = buildReference(payload, 'SETTLEMENT_PENDING', 'not_configured')
@@ -105,7 +122,7 @@ export async function submitSettlementHandoff(
       }
 
       const body = result.body ?? {}
-      const machineCode = body.machine_code?.toUpperCase()
+      const machineCode = (body.machine_code ?? body.code)?.toUpperCase()
 
       if (machineCode === 'DUPLICATE_SETTLEMENT') {
         const reference = buildReference(payload, 'SETTLEMENT_DUPLICATE', 'available', body)

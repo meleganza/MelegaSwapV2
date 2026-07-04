@@ -52,6 +52,7 @@ Enforced by `lib/treasury-handoff/ownership.ts` + API route validation.
 | `types.ts` | Receipt payload + settlement reference types |
 | `ownership.ts` | Forbidden field guard |
 | `config.ts` | `TREASURY_RUNTIME_URL` / `NEXT_PUBLIC_TREASURY_RUNTIME_URL` |
+| `normalizeTreasuryIntakePayload.ts` | Map DEX receipt → Treasury intake contract (shape only) |
 | `buildSwapHandoffContext.ts` | Capture swap context at submit (execution metadata) |
 | `buildExecutionReceiptPayload.ts` | Build receipt on confirmation |
 | `submitSettlementHandoff.ts` | POST with retry; tolerate `DUPLICATE_SETTLEMENT` |
@@ -60,6 +61,7 @@ Enforced by `lib/treasury-handoff/ownership.ts` + API route validation.
 
 ### API proxy: `pages/api/treasury/settlement-events.ts`
 
+- Normalizes DEX receipt shape before upstream forward
 - Server-side forward to `${TREASURY_RUNTIME_URL}/api/public/treasury/settlement-events`
 - Returns `503` when Treasury Runtime URL not configured
 - Rejects forbidden settlement fields before proxy
@@ -77,20 +79,29 @@ Enforced by `lib/treasury-handoff/ownership.ts` + API route validation.
 
 ## Receipt payload (DEX sends)
 
+Internal DEX receipt (`melega.dex-execution-receipt.v1`) uses numeric `chain`, nested `asset`, string `amount`/`fee`.
+
+Before Treasury POST, `normalizeTreasuryIntakePayload` maps to intake contract **without computing settlement truth**:
+
+| DEX field | Treasury intake field |
+|-----------|----------------------|
+| `chain: 56` or `{ id: 56 }` | `chain: "56"` |
+| `asset: { symbol, address }` | `asset: "MARCO"` (symbol preferred; address fallback) |
+| `amount` / `exactAmount` / `inputAmount` | `amount: 1` (positive number) |
+| `fee` | `fee: 0.0025` (positive number; **required** — no estimation) |
+
 | Field | Source |
 |-------|--------|
 | `transactionHash` | Confirmed receipt |
 | `wallet` | Transaction `from` |
-| `chain` | Active chain id |
 | `timestamp` | Receipt confirmation time |
-| `status` | `confirmed` / `failed` |
-| `asset` | Swap input token (context at submit) |
-| `amount` | Swap input amount |
-| `fee` | Gross protocol fee on input (execution metadata — not waterfall) |
+| `status` | `confirmed` only (submitted receipts) |
 | `operation` | `swap` |
-| `explorerUrl` | Block explorer link |
+| `explorerUrl` | Block explorer link when available — not fabricated |
 | `originModule` | `trade` |
 | `originProject` | `melega-dex` when MARCO involved |
+
+Missing fee or gross amount → local `INVALID_RECEIPT` rejection (no upstream POST).
 
 ---
 
@@ -157,7 +168,7 @@ Trade runtime machine JSON (`TradeMachinePayload`) includes:
 | `yarn build` | PASS |
 | `yarn test src/design-system` | 11/11 PASS |
 | `yarn test src/lib/homepage-live` | 2/2 PASS |
-| `yarn test src/lib/treasury-handoff` | 7/7 PASS |
+| `yarn test src/lib/treasury-handoff` | PASS (normalizer + handoff) |
 
 ---
 

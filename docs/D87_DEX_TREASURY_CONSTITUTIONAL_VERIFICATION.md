@@ -188,9 +188,11 @@ Treasury Runtime contract is **engine-agnostic**:
 
 ```
 POST /api/public/treasury/settlement-events
-Body: melega.dex-execution-receipt.v1
+Body: melega.dex-execution-receipt.v1 (normalized intake shape via normalizeTreasuryIntakePayload)
 Response: { settlement_id, status, machine_code?, reason? }
 ```
+
+Shape normalization (`chain` string, flat `asset` symbol, numeric `amount`/`fee`) is **transport mapping only** — not settlement computation.
 
 Any replacement execution engine that:
 
@@ -206,14 +208,16 @@ Treasury Runtime does not import DEX modules, Redux state, or router hooks. Prox
 
 ## Test corroboration
 
-`treasury-handoff.test.ts` (7 tests):
+`treasury-handoff.test.ts`:
 
 - Forbidden waterfall/settlement fields absent from payload
 - `assertPayloadDoesNotOwnSettlement` rejects `settlement_id` injection
+- D87-03G normalizer maps numeric chain + nested asset → Treasury intake contract
+- Missing fee rejects locally before POST
 - Duplicate settlement tolerated (`DUPLICATE_SETTLEMENT`)
 - Treasury unavailable → `SETTLEMENT_PENDING` (swap not blocked)
 - Rejected settlement exposes `machine_code`
-- Outbound body contains no LP/treasury/buyback/referral/settlement_id fields
+- Outbound normalized body contains no LP/treasury/buyback/referral/settlement_id fields
 
 ---
 

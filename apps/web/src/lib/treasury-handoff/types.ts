@@ -42,10 +42,19 @@ export type SettlementHandoffStatus =
 export type TreasuryRuntimeEndpointStatus = 'available' | 'unavailable' | 'not_configured'
 
 export interface TreasurySettlementResponse {
+  ok?: boolean
   settlement_id?: string
+  settlement?: {
+    settlement_id?: string
+    authority?: string
+    status?: string
+  }
+  authority?: string
+  schema?: string
   status?: string
   machine_code?: string
   reason?: string
+  code?: string
 }
 
 export interface SettlementReference {

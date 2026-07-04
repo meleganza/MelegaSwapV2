@@ -1,5 +1,6 @@
 import type { NextApiHandler } from 'next'
 import { getTreasuryRuntimePublicEndpoint, isTreasuryRuntimeConfigured } from 'lib/treasury-handoff/config'
+import { normalizeTreasuryIntakePayload } from 'lib/treasury-handoff/normalizeTreasuryIntakePayload'
 import { assertPayloadDoesNotOwnSettlement } from 'lib/treasury-handoff/ownership'
 
 const handler: NextApiHandler = async (req, res) => {
@@ -35,12 +36,21 @@ const handler: NextApiHandler = async (req, res) => {
     })
   }
 
+  const normalized = normalizeTreasuryIntakePayload(payload as Record<string, unknown>)
+  if (!normalized.ok) {
+    return res.status(400).json({
+      status: 'rejected',
+      machine_code: normalized.machine_code,
+      reason: normalized.reason,
+    })
+  }
+
   const endpoint = getTreasuryRuntimePublicEndpoint()
   try {
     const upstream = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(normalized.payload),
     })
 
     const text = await upstream.text()
