@@ -397,7 +397,15 @@ export const CommandFarmsCard: React.FC = () => {
 }
 
 export const CommandSettlementCard: React.FC = () => {
-  const { settlement } = useCommandRuntime()
+  const runtime = useCommandRuntime()
+  const settlement = runtime.settlement ?? {
+    label: 'No settlement data',
+    settlementId: null,
+    settlementTime: null,
+    treasuryStatus: '—',
+    tone: 'muted' as const,
+    txHash: null,
+  }
   const timeLabel = settlement.settlementTime
     ? new Date(settlement.settlementTime).toLocaleString()
     : '—'
