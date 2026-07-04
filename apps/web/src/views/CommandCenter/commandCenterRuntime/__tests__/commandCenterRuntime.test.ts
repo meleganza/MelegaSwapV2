@@ -2,6 +2,7 @@ import { buildAiBriefing } from '../buildAiBriefing'
 import { buildActivityTimeline } from '../buildActivityTimeline'
 import { buildMachineSummary } from '../buildMachineSummary'
 import { mapRecommendations } from '../buildNotifications'
+import { formatSettlementUserLabel } from 'views/Trade/tradeRuntime/formatSettlementStatus'
 import { createCommandCenterError } from '../commandCenterRuntimeErrors'
 
 describe('commandCenterRuntime', () => {
@@ -74,6 +75,15 @@ describe('commandCenterRuntime', () => {
     expect(summary.schema).toContain('command-center')
     expect(summary.trade).toBeDefined()
     expect(summary.radar).toBeDefined()
+  })
+
+  it('formats settlement labels for command center mirror', () => {
+    const label = formatSettlementUserLabel({
+      settlementStatus: 'SETTLEMENT_ACCEPTED',
+      treasuryRuntimeEndpointStatus: 'available',
+      settlementId: 'stl_1',
+    })
+    expect(label).toBe('Settled')
   })
 
   it('exposes error catalog', () => {

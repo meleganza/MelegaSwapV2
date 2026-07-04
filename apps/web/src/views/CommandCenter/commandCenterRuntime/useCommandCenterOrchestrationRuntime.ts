@@ -3,6 +3,11 @@ import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useAllTransactions } from 'state/transactions/hooks'
 import { useTradeSwapRuntime } from 'views/Trade/tradeRuntime/useTradeSwapRuntime'
+import { useTradeSettlementMetadata } from 'views/Trade/tradeRuntime/useTradeSettlementMetadata'
+import {
+  formatSettlementUserLabel,
+  settlementLabelTone,
+} from 'views/Trade/tradeRuntime/formatSettlementStatus'
 import { useLiquidityPositions } from 'views/LiquidityStudio/liquidityRuntime/useLiquidityPositions'
 import { usePoolsStakingRuntime } from 'views/PoolsStudio/poolsRuntime/usePoolsStakingRuntime'
 import { useFarmsStakingRuntime } from 'views/FarmsStudio/farmsRuntime/useFarmsStakingRuntime'
@@ -39,6 +44,7 @@ export function useCommandCenterOrchestrationRuntime() {
   const allTransactions = useAllTransactions()
 
   const trade = useTradeSwapRuntime()
+  const settlementMeta = useTradeSettlementMetadata()
   const liquidity = useLiquidityPositions()
   const pools = usePoolsStakingRuntime()
   const farms = useFarmsStakingRuntime()
@@ -313,6 +319,25 @@ export function useCommandCenterOrchestrationRuntime() {
     return errs
   }, [account, chainId, assets, liquidityRows, poolRows, farmRows, projects.allProjects])
 
+  const settlement = useMemo(() => {
+    const label = formatSettlementUserLabel(settlementMeta)
+    const treasuryStatus =
+      settlementMeta.treasuryRuntimeEndpointStatus === 'available'
+        ? 'Treasury Runtime available'
+        : settlementMeta.treasuryRuntimeEndpointStatus === 'unavailable'
+          ? 'Treasury Runtime unavailable'
+          : 'Treasury Runtime not configured'
+    return {
+      label,
+      tone: settlementLabelTone(label),
+      txHash: settlementMeta.txHash,
+      settlementId: settlementMeta.settlementId,
+      settlementTime: settlementMeta.settlementTime,
+      treasuryStatus,
+      machineCode: settlementMeta.machineCode,
+    }
+  }, [settlementMeta])
+
   return {
     account,
     chainId,
@@ -330,6 +355,7 @@ export function useCommandCenterOrchestrationRuntime() {
     recentActivity,
     kpis,
     machine,
+    settlement,
     runtimeErrors,
   }
 }

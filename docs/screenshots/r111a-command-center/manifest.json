@@ -1,0 +1,17 @@
+{
+  "capturedAt": "2026-07-04T17:44:22.776Z",
+  "base": "http://localhost:3002",
+  "route": "/command-center",
+  "results": [
+    {
+      "viewport": "desktop-1440",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r111a-command-center/command-center-desktop-1440.png",
+      "url": "http://localhost:3002/command-center"
+    },
+    {
+      "viewport": "mobile-390",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r111a-command-center/command-center-mobile-390.png",
+      "url": "http://localhost:3002/command-center"
+    }
+  ]
+}

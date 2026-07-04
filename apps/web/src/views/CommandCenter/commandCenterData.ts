@@ -58,6 +58,7 @@ export interface CollectibleItem {
   title: string
   subtitle: string
   icon: string
+  privileges: string[]
 }
 
 export interface ActivityEvent {
