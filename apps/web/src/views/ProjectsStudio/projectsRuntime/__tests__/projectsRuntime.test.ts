@@ -5,6 +5,7 @@ import { resetPendingProjectRegistryForTests } from 'registry/projects/pending'
 import { buildAiSummary } from '../buildAiSummary'
 import { buildProjectRating } from '../buildProjectRating'
 import { discoverProjectFromContract } from '../discoverProjectFromContract'
+import { mapPendingToPreviewCard } from '../formatProjectsRuntime'
 import { createProjectsRuntimeError } from '../projectsRuntimeErrors'
 
 describe('projectsRuntime', () => {
@@ -42,6 +43,16 @@ describe('projectsRuntime', () => {
     expect(result.registryTier).toBe('pending')
     expect(result.pending?.is_canonical).toBe(false)
     expect(result.errors).toHaveLength(0)
+  })
+
+  it('maps pending project to preview card with non-canonical badge fields', () => {
+    const result = discoverProjectFromContract('0x0000000000000000000000000000000000000001', 56)
+    expect(result.pending).toBeDefined()
+    const card = mapPendingToPreviewCard(result.pending!, 1)
+    expect(card.status).toBe('pending')
+    expect(card.registryTier).toBe('pending')
+    expect(card.radarHref).toContain('/radar?contract=')
+    expect(card.projectHref).toContain('/import-existing-token')
   })
 
   it('exposes runtime error catalog', () => {

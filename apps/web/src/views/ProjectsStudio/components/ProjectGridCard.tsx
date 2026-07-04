@@ -2,48 +2,48 @@ import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import type { ProjectPreviewCard } from '../projectsStudioData'
 import { ratingColor } from '../projectsStudioData'
-import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import { PR_FONT_BODY, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 import {
-  PrFollowBtn,
+  PrCardFollowBtn,
+  PrCardOutlineBtn,
+  PrCardOutlineBtnDisabled,
+  PrCardPrimaryBtn,
   PrMetricLabel,
   PrMetricValue,
-  PrSmallGhostBtn,
-  PrSmallPrimaryBtn,
   ProjectLogo,
 } from './projectsStudioPrimitives'
 
 const Card = styled.article`
-  display: flex;
-  flex-direction: column;
-  min-height: ${projectsStudioLayout.cardMinHeight};
-  height: auto;
-  padding: ${projectsStudioLayout.cardPadding};
+  height: ${projectsStudioLayout.projectCardHeight};
+  padding: 24px;
   border-radius: ${projectsStudioLayout.cardRadius};
-  background: ${projectsStudioColors.panelGradient};
-  border: 1px solid ${projectsStudioColors.borderStrong};
+  background: ${projectsStudioColors.card};
+  border: 1px solid ${projectsStudioColors.cardBorder};
   box-sizing: border-box;
   min-width: 0;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 180ms ease;
 
-  @media (max-width: 767px) {
-    min-height: auto;
-    padding: 14px;
+  &:hover {
+    border-color: ${projectsStudioColors.cardBorderHover};
   }
 `
 
 const Split = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: ${projectsStudioLayout.cardSplitLeft} ${projectsStudioLayout.cardSplitRight};
+  gap: 20px;
   flex: 1;
   min-height: 0;
-  gap: 16px;
 
-  @media (max-width: 767px) {
-    flex-direction: column;
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
+    grid-template-columns: 1fr;
   }
 `
 
 const LeftPane = styled.div`
-  flex: 0 0 60%;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -51,101 +51,57 @@ const LeftPane = styled.div`
 `
 
 const RightPane = styled.div`
-  flex: 0 0 calc(40% - 16px);
   min-width: 0;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid ${projectsStudioColors.rowBorder};
-  padding-left: 16px;
-
-  @media (max-width: 767px) {
-    flex: 1;
-    border-left: none;
-    border-top: 1px solid ${projectsStudioColors.rowBorder};
-    padding-left: 0;
-    padding-top: 12px;
-  }
+  justify-content: center;
+  gap: 10px;
+  padding-left: ${projectsStudioLayout.cardRightPanePadding};
+  box-sizing: border-box;
 `
 
 const HeaderRow = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  min-width: 0;
-`
-
-const HeaderText = styled.div`
-  min-width: 0;
-  flex: 1;
 `
 
 const Name = styled.div`
+  font-family: ${PR_FONT_BODY};
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
   color: ${projectsStudioColors.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
-const Category = styled.div`
-  margin-top: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.muted};
-`
-
-const PendingBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 10px;
-  margin-top: 6px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.gold};
-  border: 1px solid rgba(214, 180, 69, 0.45);
-  background: rgba(214, 180, 69, 0.08);
-`
-
-const Chains = styled.div`
+const Tags = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
-  margin-top: 6px;
+  overflow: hidden;
 `
 
-const ChainBadge = styled.span`
-  height: 20px;
-  padding: 0 8px;
-  border-radius: 6px;
-  border: 1px solid ${projectsStudioColors.borderStrong};
-  font-size: 10px;
-  font-weight: 700;
+const Tag = styled.span`
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  font-family: ${PR_FONT_BODY};
+  font-size: 11px;
+  font-weight: 600;
   color: ${projectsStudioColors.secondary};
   display: inline-flex;
   align-items: center;
 `
 
-const SummaryLabel = styled.div`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.gold};
-`
-
-const SummaryWrap = styled.div`
-  min-height: 57px;
-`
-
 const Summary = styled.p`
-  margin: 4px 0 0;
-  font-size: 13px;
-  line-height: 19px;
+  margin: 0;
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  line-height: 1.45;
   color: ${projectsStudioColors.summary};
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -156,39 +112,20 @@ const Summary = styled.p`
 const Metrics = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 12px;
-  row-gap: 10px;
+  gap: 8px 12px;
   margin-top: auto;
 `
 
 const MetricCell = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   min-width: 0;
 `
 
-const RatingBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  margin-bottom: 12px;
-`
-
-const RatingLabel = styled.span`
-  font-size: 10px;
+const RatingTop = styled.div`
+  font-family: ${PR_FONT_BODY};
+  font-size: 48px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.muted};
-`
-
-const RatingScore = styled.span<{ $color: string }>`
-  font-size: 32px;
-  font-weight: 800;
   line-height: 1;
-  color: ${({ $color }) =>
+  color: ${({ $color }: { $color: string }) =>
     $color === 'green'
       ? projectsStudioColors.green
       : $color === 'gold'
@@ -200,18 +137,12 @@ const RatingScore = styled.span<{ $color: string }>`
             : projectsStudioColors.muted};
 `
 
-const RatingSub = styled.span`
-  font-size: 11px;
-  font-weight: 700;
+const RatingLabel = styled.div`
+  font-family: ${PR_FONT_BODY};
+  font-size: 13px;
+  font-weight: 600;
   color: ${projectsStudioColors.muted};
-`
-
-const SideFields = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  min-height: 0;
+  margin-bottom: 4px;
 `
 
 const SideField = styled.div`
@@ -220,53 +151,13 @@ const SideField = styled.div`
   gap: 2px;
 `
 
-const SideValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
-  font-size: 13px;
-  font-weight: 700;
-  color: ${({ $tone }) =>
-    $tone === 'green'
-      ? projectsStudioColors.green
-      : $tone === 'gold'
-        ? projectsStudioColors.gold
-        : $tone === 'red'
-          ? projectsStudioColors.red
-          : $tone === 'gray'
-            ? projectsStudioColors.muted
-            : projectsStudioColors.text};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
 const ButtonRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: ${projectsStudioLayout.btnGap};
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid ${projectsStudioColors.rowBorder};
+  align-items: stretch;
+  gap: ${projectsStudioLayout.cardBtnGap};
+  width: 100%;
   flex-shrink: 0;
-
-  a,
-  button {
-    flex: 0 1 auto;
-    min-height: ${projectsStudioLayout.btnHeight};
-  }
-
-  @media (max-width: 767px) {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-
-    a,
-    button {
-      flex: 1 1 auto;
-      width: 100%;
-      min-width: 0;
-    }
-  }
+  margin-top: ${projectsStudioLayout.cardActionRowSpacing};
 `
 
 const FOLLOW_STORAGE_KEY = 'melega-projects-follow'
@@ -289,17 +180,17 @@ interface Props {
 }
 
 function metricValue(project: ProjectPreviewCard, label: string) {
-  return project.metrics.find((m) => m.label === label)?.value ?? '—'
+  return project.metrics.find((m) => m.label === label)?.value ?? 'Unavailable'
 }
 
 function metricTone(project: ProjectPreviewCard, label: string) {
+  const v = metricValue(project, label)
+  if (v === 'Unavailable') return 'gray' as const
   return project.metrics.find((m) => m.label === label)?.tone
 }
 
 export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   const color = ratingColor(project.rating)
-  const liquidity = metricValue(project, 'Liquidity')
-  const audit = metricValue(project, 'Audit')
   const [following, setFollowing] = useState(false)
 
   useEffect(() => {
@@ -318,100 +209,81 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   const tradeHref = project.tradeHref ?? '/trade'
   const projectHref = project.importHref ?? project.projectHref ?? `/projects/${project.slug}`
   const radarHref = project.radarHref
-  const isPending = project.registryTier === 'pending' || project.status === 'pending'
 
   return (
     <Card data-pr-project-card>
       <Split>
         <LeftPane>
           <HeaderRow>
-            <ProjectLogo name={project.name} symbol={project.symbol} size={44} />
-            <HeaderText>
+            <ProjectLogo name={project.name} symbol={project.symbol} size={48} />
+            <div style={{ minWidth: 0 }}>
               <Name>{project.name}</Name>
-              <Category>{project.category}</Category>
-              {isPending ? (
-                <PendingBadge data-pr-pending-badge>
-                  {project.reviewStatus ?? 'Pending Review'}
-                </PendingBadge>
-              ) : null}
-              <Chains>
-                {project.chains.map((chain) => (
-                  <ChainBadge key={chain}>{chain}</ChainBadge>
+              <Tags>
+                <Tag>{project.category}</Tag>
+                {project.chains.slice(0, 3).map((chain) => (
+                  <Tag key={chain}>{chain}</Tag>
                 ))}
-              </Chains>
-            </HeaderText>
+              </Tags>
+            </div>
           </HeaderRow>
-
-          <div>
-            <SummaryLabel>AI Summary</SummaryLabel>
-            <SummaryWrap>
-              <Summary>{project.aiSummary}</Summary>
-            </SummaryWrap>
-          </div>
-
+          <Summary>{project.aiSummary}</Summary>
           <Metrics>
-            {project.metrics.map((metric) => (
+            {project.metrics.slice(0, 4).map((metric) => (
               <MetricCell key={metric.label}>
                 <PrMetricLabel>{metric.label}</PrMetricLabel>
-                <PrMetricValue $tone={metric.tone}>{metric.value}</PrMetricValue>
+                <PrMetricValue $muted={metric.value === 'Unavailable'} $tone={metric.tone}>
+                  {metric.value}
+                </PrMetricValue>
               </MetricCell>
             ))}
           </Metrics>
         </LeftPane>
-
         <RightPane>
-          <RatingBlock>
+          <div>
             <RatingLabel>AI Rating</RatingLabel>
-            <RatingScore $color={color}>{project.rating}</RatingScore>
-            <RatingSub>/100 · {project.aiConfidence} confidence</RatingSub>
-          </RatingBlock>
-
-          <SideFields>
-            <SideField>
-              <PrMetricLabel>Risk</PrMetricLabel>
-              <SideValue $tone={project.riskTone}>{project.risk}</SideValue>
-            </SideField>
-            <SideField>
-              <PrMetricLabel>Liquidity</PrMetricLabel>
-              <SideValue $tone={metricTone(project, 'Liquidity')}>{liquidity}</SideValue>
-            </SideField>
-            <SideField>
-              <PrMetricLabel>Audit</PrMetricLabel>
-              <SideValue $tone={metricTone(project, 'Audit')}>{audit}</SideValue>
-            </SideField>
-            <SideField>
-              <PrMetricLabel>Website</PrMetricLabel>
-              <SideValue>{project.website}</SideValue>
-            </SideField>
-            <SideField>
-              <PrMetricLabel>Contract</PrMetricLabel>
-              <SideValue
-                $tone={
-                  project.contract === 'Unverified' ? 'red' : project.contract === '—' ? 'gray' : undefined
-                }
-              >
-                {project.contract}
-              </SideValue>
-            </SideField>
-          </SideFields>
+            <RatingTop $color={color}>{project.rating}</RatingTop>
+            <PrMetricValue $muted={project.aiConfidence === 'Unavailable'}>
+              {project.aiConfidence} confidence
+            </PrMetricValue>
+          </div>
+          <SideField>
+            <PrMetricLabel>Risk</PrMetricLabel>
+            <PrMetricValue $tone={project.riskTone} $muted={project.risk === 'Unavailable'}>
+              {project.risk}
+            </PrMetricValue>
+          </SideField>
+          <SideField>
+            <PrMetricLabel>Audit</PrMetricLabel>
+            <PrMetricValue $tone={metricTone(project, 'Audit')} $muted={metricValue(project, 'Audit') === 'Unavailable'}>
+              {metricValue(project, 'Audit')}
+            </PrMetricValue>
+          </SideField>
+          <SideField>
+            <PrMetricLabel>Website</PrMetricLabel>
+            <PrMetricValue $muted={project.website === 'Unavailable'}>{project.website}</PrMetricValue>
+          </SideField>
+          <SideField>
+            <PrMetricLabel>Contract</PrMetricLabel>
+            <PrMetricValue
+              $tone={project.contract === 'Unverified' ? 'red' : project.contract === 'Unavailable' ? 'gray' : undefined}
+              $muted={project.contract === 'Unavailable'}
+            >
+              {project.contract}
+            </PrMetricValue>
+          </SideField>
         </RightPane>
       </Split>
-
       <ButtonRow data-pr-action-bar>
-        <PrSmallPrimaryBtn as="a" href={tradeHref}>
-          Trade
-        </PrSmallPrimaryBtn>
-        <PrSmallGhostBtn as="a" href={projectHref}>
-          {isPending ? 'Review Import' : 'Open Project'}
-        </PrSmallGhostBtn>
+        <PrCardPrimaryBtn href={tradeHref}>Trade</PrCardPrimaryBtn>
+        <PrCardOutlineBtn href={projectHref}>Open Project</PrCardOutlineBtn>
         {radarHref ? (
-          <PrSmallGhostBtn as="a" href={radarHref}>
-            Radar
-          </PrSmallGhostBtn>
-        ) : null}
-        <PrFollowBtn type="button" onClick={toggleFollow} aria-pressed={following}>
+          <PrCardOutlineBtn href={radarHref}>Radar</PrCardOutlineBtn>
+        ) : (
+          <PrCardOutlineBtnDisabled>Radar</PrCardOutlineBtnDisabled>
+        )}
+        <PrCardFollowBtn type="button" onClick={toggleFollow}>
           {following ? 'Following' : 'Follow'}
-        </PrFollowBtn>
+        </PrCardFollowBtn>
       </ButtonRow>
     </Card>
   )

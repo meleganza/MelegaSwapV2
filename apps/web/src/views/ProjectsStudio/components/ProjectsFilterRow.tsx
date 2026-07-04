@@ -1,33 +1,38 @@
 import React from 'react'
 import styled from 'styled-components'
-import { PROJECT_FILTER_CHIPS } from '../projectsStudioData'
+import { FILTER_CATEGORIES, FILTER_CHAINS, FILTER_SORT } from '../projectsStudioData'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
-import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import { PR_FONT_BODY, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`
 
 const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  min-height: ${projectsStudioLayout.filterHeight};
   align-items: center;
 `
 
 const Chip = styled.button<{ $active?: boolean }>`
-  height: ${projectsStudioLayout.filterHeight};
-  padding: 0 ${projectsStudioLayout.filterPaddingX};
+  height: ${projectsStudioLayout.filterPillHeight};
+  padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid ${({ $active }) => ($active ? projectsStudioColors.gold : projectsStudioColors.borderStrong)};
-  background: ${({ $active }) => ($active ? projectsStudioColors.gold : 'transparent')};
+  border: 1px solid ${({ $active }) => ($active ? projectsStudioColors.gold : projectsStudioColors.cardBorder)};
+  background: ${({ $active }) => ($active ? projectsStudioColors.gold : projectsStudioColors.card)};
   color: ${({ $active }) => ($active ? '#050505' : projectsStudioColors.secondary)};
-  font-size: 13px;
-  font-weight: 700;
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+  transition: border-color 180ms ease, background 180ms ease;
   white-space: nowrap;
 
   &:hover {
     border-color: ${projectsStudioColors.gold};
-    transform: translateY(-1px);
   }
 `
 
@@ -35,13 +40,29 @@ export const ProjectsFilterRow: React.FC = () => {
   const { filter, setFilter } = useProjectsRuntime()
 
   return (
-    <Row data-pr-filters>
-      {PROJECT_FILTER_CHIPS.map((chip) => (
-        <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
-          {chip}
-        </Chip>
-      ))}
-    </Row>
+    <Wrap data-pr-filters>
+      <Row data-pr-filter-chains>
+        {FILTER_CHAINS.map((chip) => (
+          <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
+            {chip}
+          </Chip>
+        ))}
+      </Row>
+      <Row data-pr-filter-categories>
+        {FILTER_CATEGORIES.map((chip) => (
+          <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
+            {chip}
+          </Chip>
+        ))}
+      </Row>
+      <Row data-pr-filter-sort>
+        {FILTER_SORT.map((chip) => (
+          <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
+            {chip}
+          </Chip>
+        ))}
+      </Row>
+    </Wrap>
   )
 }
 

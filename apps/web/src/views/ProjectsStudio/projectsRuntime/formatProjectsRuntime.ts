@@ -1,4 +1,6 @@
 import { CHAIN_LABELS } from 'registry/projects/constants'
+import type { PendingProjectRecord } from 'registry/projects/pending/types'
+import { formatPendingReviewStatusLabel } from 'registry/projects/pending/updatePendingReview'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { StaticProjectRecord } from 'registry/projects/types'
 import type {
@@ -119,7 +121,71 @@ export function mapProjectToPreviewCard(project: EnrichedProjectRecord, rank: nu
   }
 }
 
-export function aggregateKpis(projects: EnrichedProjectRecord[]): ProjectsKpiItem[] {
+function pendingChainBadge(chainId: number): string {
+  const label = CHAIN_LABELS[chainId]
+  if (label === 'BSC') return 'BNB'
+  return label?.replace('Ethereum', 'ETH') ?? `Chain ${chainId}`
+}
+
+export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: number): ProjectPreviewCard {
+  const name = pending.name.available ? (pending.name.value ?? 'Unknown') : 'Unknown'
+  const symbol = pending.symbol.available ? pending.symbol.value : undefined
+  const score = pending.health.readiness_score
+
+  return {
+    id: pending.id,
+    rank,
+    name: symbol ?? name,
+    slug: pending.id,
+    symbol,
+    category: 'Pending Review',
+    chains: [pendingChainBadge(pending.chain)],
+    status: 'pending',
+    rating: score,
+    ratingTier: score >= 70 ? 'active' : 'emerging',
+    aiSummary: `Pending registry profile — ${formatPendingReviewStatusLabel(pending.status)}. Awaiting canonical promotion.`,
+    metrics: [
+      { label: 'Liquidity', value: UNAVAILABLE, tone: 'gray' },
+      { label: 'Volume', value: UNAVAILABLE, tone: 'gray' },
+      { label: 'Holders', value: UNAVAILABLE, tone: 'gray' },
+      { label: 'Age', value: UNAVAILABLE, tone: 'gray' },
+      { label: 'Audit', value: 'Pending', tone: 'gold' },
+      { label: 'Risk', value: 'Pending', tone: 'gold' },
+    ],
+    aiConfidence: `${pending.health.identity_completeness}%`,
+    melegaRating: 'Pending Review',
+    risk: 'Pending',
+    riskTone: 'gold',
+    website: '—',
+    contract: shortAddress(pending.contract),
+    contractAddress: pending.contract,
+    tradeHref: `/swap?outputCurrency=${pending.contract}`,
+    radarHref: `/radar?contract=${pending.contract}`,
+    projectHref: `/import-existing-token?contract=${encodeURIComponent(pending.contract)}`,
+    registryTier: 'pending',
+    pendingId: pending.id,
+    reviewStatus: formatPendingReviewStatusLabel(pending.status),
+    importHref: `/import-existing-token?contract=${encodeURIComponent(pending.contract)}`,
+  }
+}
+
+export function buildActivityFromPending(pendingRecords: PendingProjectRecord[]): ProjectsActivityRow[] {
+  return pendingRecords.slice(0, 4).map((pending) => ({
+    time: pending.updated_at,
+    project: pending.symbol.available ? (pending.symbol.value ?? 'Unknown') : 'Unknown',
+    projectSymbol: pending.symbol.available ? pending.symbol.value : undefined,
+    action: 'Pending Review',
+    details: `${formatPendingReviewStatusLabel(pending.status)} — non-canonical registry intake`,
+    source: 'Pending Registry',
+    status: 'indexed',
+    actionTone: 'gold',
+  }))
+}
+
+export function aggregateKpis(
+  projects: EnrichedProjectRecord[],
+  pendingCount = 0,
+): ProjectsKpiItem[] {
   const indexed = projects.length
   const live = projects.filter((p) =>
     Object.values(p.capabilities).some((c) => c.status === 'live' || c.status === 'partial'),
@@ -129,6 +195,7 @@ export function aggregateKpis(projects: EnrichedProjectRecord[]): ProjectsKpiIte
 
   return [
     { id: 'indexed', label: 'Projects Indexed', value: String(indexed) },
+    { id: 'pending', label: 'Pending Review', value: String(pendingCount), gold: pendingCount > 0 },
     { id: 'live', label: 'Live Projects', value: String(live) },
     { id: 'verified', label: 'Verified Projects', value: String(verified) },
     {
@@ -338,6 +405,10 @@ export function filterProjectsByChip(
   chip: ProjectFilterChip,
 ): ProjectPreviewCard[] {
   if (chip === 'All') return cards
+
+  if (chip === 'Pending Review') {
+    return cards.filter((c) => c.registryTier === 'pending')
+  }
 
   const projectBySlug = new Map(projects.map((p) => [p.slug, p]))
 

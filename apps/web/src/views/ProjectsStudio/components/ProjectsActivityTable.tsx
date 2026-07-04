@@ -1,131 +1,108 @@
 import React from 'react'
 import styled from 'styled-components'
-import { PROJECTS_ACTIVITY_PREVIEW_LABEL, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import { PR_FONT_BODY, PR_FONT_DISPLAY, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
-import { PrPanel, PrPreviewBadge, ProjectLogo } from './projectsStudioPrimitives'
+import { PrPanel } from './projectsStudioPrimitives'
 
-const Wrap = styled(PrPanel)`
-  padding: 0;
+const Panel = styled(PrPanel)`
+  height: ${projectsStudioLayout.activityHeight};
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 `
 
-const Head = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid ${projectsStudioColors.rowBorder};
-`
-
 const Title = styled.h3`
-  margin: 0;
-  font-size: 16px;
-  font-weight: 800;
+  margin: 0 0 16px;
+  font-family: ${PR_FONT_DISPLAY};
+  font-size: 18px;
+  font-weight: 700;
   color: ${projectsStudioColors.text};
 `
 
-const ViewAll = styled.button`
-  border: none;
-  background: none;
-  color: ${projectsStudioColors.gold};
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-`
-
-const Table = styled.div`
-  min-height: ${projectsStudioLayout.activityHeight};
-`
-
-const HeaderRow = styled.div`
-  display: grid;
-  grid-template-columns: 80px 1.1fr 1fr 1.4fr 0.9fr 100px;
-  gap: 8px;
-  padding: 0 20px;
-  height: 36px;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.muted};
-  border-bottom: 1px solid ${projectsStudioColors.rowBorder};
-
-  @media (max-width: 767px) {
-    display: none;
-  }
+const List = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-left: ${projectsStudioLayout.activityListPaddingLeft};
 `
 
 const Row = styled.div`
-  display: grid;
-  grid-template-columns: 80px 1.1fr 1fr 1.4fr 0.9fr 100px;
-  gap: 8px;
-  padding: 0 20px;
-  height: ${projectsStudioLayout.activityRowHeight};
+  display: flex;
   align-items: center;
-  font-size: 13px;
-  border-bottom: 1px solid ${projectsStudioColors.rowBorder};
+  gap: 14px;
+  height: ${projectsStudioLayout.activityRowHeight};
+  min-height: ${projectsStudioLayout.activityRowHeight};
+  border-bottom: 1px solid ${projectsStudioColors.divider};
 
   &:last-child {
     border-bottom: none;
   }
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr 1fr;
-    height: auto;
-    padding: 12px 20px;
-    gap: 4px;
-  }
 `
 
-const ProjectCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
+const Dot = styled.span`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: ${projectsStudioColors.gold};
+  flex-shrink: 0;
 `
 
-const Action = styled.span<{ $tone?: string }>`
+const Middle = styled.div`
+  flex: 1;
+  min-width: 0;
+`
+
+const EventTitle = styled.div`
+  font-family: ${PR_FONT_BODY};
+  font-size: 15px;
   font-weight: 700;
-  color: ${({ $tone }) =>
-    $tone === 'green'
-      ? projectsStudioColors.green
-      : $tone === 'gold'
-        ? projectsStudioColors.gold
-        : projectsStudioColors.secondary};
+  color: ${projectsStudioColors.text};
+  line-height: 1.3;
+`
+
+const EventSub = styled.div`
+  font-family: ${PR_FONT_BODY};
+  font-size: 13px;
+  font-weight: 400;
+  color: ${projectsStudioColors.muted};
+  line-height: 1.3;
+`
+
+const Right = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
 `
 
 const StatusPill = styled.span<{ $status: string }>`
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  height: 28px;
-  min-width: 80px;
+  height: 24px;
   padding: 0 10px;
-  border-radius: 999px;
-  font-size: 10px;
+  border-radius: 12px;
+  font-family: ${PR_FONT_BODY};
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  justify-self: center;
   border: 1px solid
     ${({ $status }) =>
-      $status === 'verified'
-        ? projectsStudioColors.green
-        : $status === 'indexed'
-          ? projectsStudioColors.gold
-          : projectsStudioColors.borderStrong};
+      $status === 'verified' ? projectsStudioColors.green : projectsStudioColors.cardBorder};
   color: ${({ $status }) =>
-    $status === 'verified'
-      ? projectsStudioColors.green
-      : $status === 'indexed'
-        ? projectsStudioColors.gold
-        : projectsStudioColors.muted};
+    $status === 'verified' ? projectsStudioColors.green : projectsStudioColors.muted};
   background: ${({ $status }) =>
-    $status === 'verified'
-      ? 'rgba(0,230,118,0.08)'
-      : $status === 'indexed'
-        ? projectsStudioColors.previewBadgeBg
-        : 'rgba(255,255,255,0.04)'};
+    $status === 'verified' ? 'rgba(27,231,122,0.08)' : 'transparent'};
+`
+
+const Time = styled.span`
+  font-family: ${PR_FONT_BODY};
+  font-size: 13px;
+  color: ${projectsStudioColors.muted};
 `
 
 export const ProjectsActivityTable: React.FC = () => {
@@ -133,50 +110,38 @@ export const ProjectsActivityTable: React.FC = () => {
   const rows = terminal.rows
 
   return (
-    <Wrap data-pr-activity $height="auto">
-      <Head>
-        <Title>Recent Project Activity</Title>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <PrPreviewBadge style={{ height: 20, padding: '0 8px', fontSize: 9 }}>
-            {PROJECTS_ACTIVITY_PREVIEW_LABEL}
-          </PrPreviewBadge>
-          <ViewAll type="button">View all activity →</ViewAll>
-        </div>
-      </Head>
-      <Table>
-        <HeaderRow>
-          <span>Time</span>
-          <span>Project</span>
-          <span>Action</span>
-          <span>Details</span>
-          <span>Source</span>
-          <span>Status</span>
-        </HeaderRow>
+    <Panel data-pr-activity>
+      <Title>Recent Project Activity</Title>
+      <List>
         {rows.length === 0 ? (
           <Row>
-            <span style={{ color: projectsStudioColors.muted, gridColumn: '1 / -1' }}>
-              {terminal.label ?? 'No activity indexed.'}
-            </span>
+            <Dot aria-hidden />
+            <Middle>
+              <EventTitle>No activity indexed</EventTitle>
+              <EventSub>{terminal.label ?? 'Events appear here as projects are indexed.'}</EventSub>
+            </Middle>
           </Row>
         ) : (
           rows.map((row) => (
             <Row key={`${row.time}-${row.project}-${row.action}`}>
-              <span style={{ color: projectsStudioColors.muted }}>{row.time}</span>
-              <ProjectCell>
-                <ProjectLogo name={row.project} symbol={row.projectSymbol} size={24} />
-                {row.project}
-              </ProjectCell>
-              <Action $tone={row.actionTone}>{row.action}</Action>
-              <span>{row.details}</span>
-              <span style={{ color: projectsStudioColors.secondary }}>{row.source}</span>
-              <StatusPill $status={row.status}>
-                {row.status === 'verified' ? 'Verified' : row.status === 'indexed' ? 'Indexed' : 'Live'}
-              </StatusPill>
+              <Dot aria-hidden />
+              <Middle>
+                <EventTitle>{row.action}</EventTitle>
+                <EventSub>
+                  {row.project} · {row.details}
+                </EventSub>
+              </Middle>
+              <Right>
+                <StatusPill $status={row.status}>
+                  {row.status === 'verified' ? 'Verified' : row.status === 'indexed' ? 'Indexed' : 'Live'}
+                </StatusPill>
+                <Time>{row.time}</Time>
+              </Right>
             </Row>
           ))
         )}
-      </Table>
-    </Wrap>
+      </List>
+    </Panel>
   )
 }
 

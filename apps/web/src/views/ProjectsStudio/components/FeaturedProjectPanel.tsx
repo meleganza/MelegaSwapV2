@@ -1,58 +1,76 @@
-import React from 'react'
-import styled, { keyframes } from 'styled-components'
-import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import { PR_FONT_BODY, projectsStudioColors, projectsStudioLayout, projectsStudioType } from '../projectsStudioTokens'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
-import { PrGhostBtn, PrMetricLabel, PrMetricValue, PrPanel, PrPrimaryBtn, ProjectLogo } from './projectsStudioPrimitives'
+import {
+  PrFeaturedOutlineBtn,
+  PrFeaturedOutlineBtnDisabled,
+  PrFeaturedPrimaryBtn,
+  PrMetricLabel,
+  PrMetricValue,
+  PrPanel,
+  ProjectLogo,
+} from './projectsStudioPrimitives'
 
-const shimmer = keyframes`
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
+const Panel = styled(PrPanel)`
+  height: ${projectsStudioLayout.featuredHeight};
+  padding: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
+    height: auto;
+    overflow: visible;
+  }
 `
 
 const Inner = styled.div`
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 20px;
-  height: calc(100% - 8px);
+  grid-template-columns: ${projectsStudioLayout.featuredSplitLeft} ${projectsStudioLayout.featuredSplitRight};
+  gap: ${projectsStudioLayout.cardGap};
+  height: 100%;
   min-height: 0;
 
-  @media (max-width: 767px) {
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
     grid-template-columns: 1fr;
     height: auto;
   }
 `
 
-const Main = styled.div`
+const Left = styled.div`
   display: flex;
   flex-direction: column;
   gap: 14px;
   min-width: 0;
+  min-height: 0;
 `
 
 const TitleRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 14px;
 `
 
 const Name = styled.h2`
   margin: 0;
-  font-size: 28px;
-  font-weight: 800;
+  font-family: ${PR_FONT_BODY};
+  font-size: ${projectsStudioType.featuredName};
+  font-weight: 700;
+  line-height: 1.05;
   color: ${projectsStudioColors.text};
 `
 
 const VerifiedBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  height: 22px;
+  height: 26px;
   padding: 0 10px;
-  border-radius: 999px;
-  background: rgba(0, 230, 118, 0.1);
+  border-radius: 13px;
+  background: rgba(27, 231, 122, 0.08);
   border: 1px solid ${projectsStudioColors.green};
   color: ${projectsStudioColors.green};
-  font-size: 10px;
+  font-family: ${PR_FONT_BODY};
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -60,230 +78,246 @@ const VerifiedBadge = styled.span`
 
 const Tags = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
+  overflow: hidden;
 `
 
 const Tag = styled.span`
-  height: 24px;
-  padding: 0 10px;
+  height: 28px;
+  padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid ${projectsStudioColors.borderStrong};
-  font-size: 11px;
-  font-weight: 700;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  font-family: ${PR_FONT_BODY};
+  font-size: 12px;
+  font-weight: 600;
   color: ${projectsStudioColors.secondary};
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
 `
 
-const Desc = styled.p`
+const Summary = styled.p`
   margin: 0;
-  font-size: 14px;
+  font-family: ${PR_FONT_BODY};
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.5;
   color: ${projectsStudioColors.summary};
-  max-width: 520px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
-const Metrics = styled.div`
+const MetricsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, minmax(88px, 1fr));
-  gap: 14px 16px;
-
-  @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, minmax(88px, 1fr));
-  }
-
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: ${projectsStudioLayout.featuredMetricGapY} ${projectsStudioLayout.featuredMetricGapX};
 `
 
 const Metric = styled.div`
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 0;
 `
 
 const BtnRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: ${projectsStudioLayout.featuredBtnGap};
   margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px solid ${projectsStudioColors.rowBorder};
+  width: 100%;
 
-  a,
-  button {
-    flex: 0 1 auto;
-    min-height: ${projectsStudioLayout.btnHeight};
-  }
-
-  @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: stretch;
-
-    a,
-    button {
-      width: 100%;
-    }
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: ${projectsStudioLayout.featuredBtnGap};
+    row-gap: ${projectsStudioLayout.featuredMobileBtnRowGap};
   }
 `
 
-const ChartWrap = styled.div`
-  border-radius: 14px;
-  border: 1px solid ${projectsStudioColors.border};
-  background: ${projectsStudioColors.panel};
-  padding: 12px;
+const Right = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   min-height: 0;
+  min-width: 0;
 `
 
-const PriceRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-`
-
-const Price = styled.span`
-  font-size: 22px;
-  font-weight: 800;
+const Price = styled.div`
+  font-family: ${PR_FONT_BODY};
+  font-size: ${projectsStudioType.featuredPrice};
+  font-weight: 700;
+  line-height: 1;
   color: ${projectsStudioColors.text};
 `
 
-const Change = styled.span`
-  font-size: 13px;
-  font-weight: 700;
-  color: ${projectsStudioColors.muted};
+const ChartBox = styled.div`
+  flex: 1;
+  min-height: 0;
+  border-radius: 16px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  background: ${projectsStudioColors.chartBg};
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+`
+
+const ChartArea = styled.div`
+  height: ${projectsStudioLayout.featuredChartHeight};
+  min-height: ${projectsStudioLayout.featuredChartHeight};
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
+    height: ${projectsStudioLayout.featuredChartHeightMobile};
+    min-height: ${projectsStudioLayout.featuredChartHeightMobile};
+  }
 `
 
 const ChartSvg = styled.svg`
   width: 100%;
-  height: 120px;
+  height: 100%;
   flex: 1;
-`
-
-const ChartLine = styled.path`
-  animation: ${shimmer} 8s ease-in-out infinite;
+  min-height: 0;
 `
 
 const Timeframes = styled.div`
   display: flex;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 `
 
 const Tf = styled.button<{ $active?: boolean }>`
-  height: 24px;
-  padding: 0 8px;
-  border-radius: 6px;
-  border: 1px solid ${({ $active }) => ($active ? projectsStudioColors.gold : projectsStudioColors.borderStrong)};
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid ${({ $active }) => ($active ? projectsStudioColors.gold : projectsStudioColors.cardBorder)};
   background: ${({ $active }) => ($active ? projectsStudioColors.goldBg : 'transparent')};
   color: ${({ $active }) => ($active ? projectsStudioColors.gold : projectsStudioColors.muted)};
-  font-size: 10px;
-  font-weight: 700;
+  font-family: ${PR_FONT_BODY};
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
 `
 
-const UnavailableChart = styled.div`
+const ChartPlaceholder = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-family: ${PR_FONT_BODY};
+  font-size: 13px;
   color: ${projectsStudioColors.muted};
-  min-height: 120px;
+  height: 100%;
 `
 
+function metricValue(
+  metrics: { label: string; value: string; tone?: string }[],
+  label: string,
+  fallback = 'Unavailable',
+) {
+  const found = metrics.find((m) => m.label.toLowerCase().includes(label.toLowerCase()))
+  return found?.value ?? fallback
+}
+
 export const FeaturedProjectPanel: React.FC = () => {
-  const { featured } = useProjectsRuntime()
+  const { featured, projects } = useProjectsRuntime()
+  const [timeframe, setTimeframe] = useState(1)
+  const card = projects.find((p) => p.slug === featured.slug)
+
+  const rowOne = [
+    { label: 'Holders', value: metricValue(featured.metrics, 'Holders') },
+    { label: 'Liquidity', value: metricValue(featured.metrics, 'Liquidity') },
+    { label: 'FDV', value: metricValue(featured.metrics, 'FDV') },
+    { label: '24h Volume', value: metricValue(featured.metrics, 'Volume') },
+  ]
+  const rowTwo = [
+    { label: 'Age', value: metricValue(featured.metrics, 'Age'), muted: true },
+    { label: 'Risk', value: card?.risk ?? 'Unavailable', muted: !card || card.risk === 'Unavailable' },
+    { label: 'Audit', value: metricValue(featured.metrics, 'Audit', card?.metrics.find((m) => m.label === 'Audit')?.value ?? 'Unavailable'), muted: true },
+    { label: 'Website', value: card?.website ?? 'Unavailable', muted: !card || card.website === 'Unavailable' },
+  ]
+  const metrics = [...rowOne, ...rowTwo]
 
   return (
-    <PrPanel data-pr-panel data-pr-featured $height={projectsStudioLayout.featuredHeight} style={{ padding: '22px' }}>
+    <Panel data-pr-featured>
       <Inner>
-        <Main>
+        <Left>
           <TitleRow>
-            <ProjectLogo name={featured.name} symbol={featured.symbol} size={48} />
-            <Name>{featured.name}</Name>
-            {featured.verified ? <VerifiedBadge>Verified</VerifiedBadge> : null}
+            <ProjectLogo name={featured.name} symbol={featured.symbol} size={72} />
+            <div style={{ minWidth: 0 }}>
+              <Name>{featured.name}</Name>
+              {featured.verified ? <VerifiedBadge>Verified</VerifiedBadge> : null}
+            </div>
           </TitleRow>
           <Tags>
-            {featured.tags.map((tag) => (
+            {featured.tags.slice(0, 4).map((tag) => (
               <Tag key={tag}>{tag}</Tag>
             ))}
           </Tags>
-          <Desc>{featured.description}</Desc>
-          <Metrics>
-            {featured.metrics.map((metric) => (
+          <Summary>{featured.description}</Summary>
+          <MetricsGrid>
+            {metrics.map((metric) => (
               <Metric key={metric.label}>
                 <PrMetricLabel>{metric.label}</PrMetricLabel>
-                <PrMetricValue $tone={metric.tone}>{metric.value}</PrMetricValue>
+                <PrMetricValue $muted={metric.value === 'Unavailable' || Boolean(metric.muted)}>
+                  {metric.value}
+                </PrMetricValue>
               </Metric>
             ))}
-          </Metrics>
+          </MetricsGrid>
           <BtnRow>
-            <PrPrimaryBtn as="a" href={featured.tradeHref ?? '/swap'}>
-              Trade {featured.symbol}
-            </PrPrimaryBtn>
-            <PrGhostBtn as="a" href={featured.projectHref}>
-              Open Project
-            </PrGhostBtn>
+            <PrFeaturedPrimaryBtn href={featured.tradeHref ?? '/swap'}>
+              Trade
+            </PrFeaturedPrimaryBtn>
+            <PrFeaturedOutlineBtn href={featured.projectHref}>Open Project</PrFeaturedOutlineBtn>
             {featured.radarHref ? (
-              <PrGhostBtn as="a" href={featured.radarHref}>
-                Radar
-              </PrGhostBtn>
-            ) : null}
+              <PrFeaturedOutlineBtn href={featured.radarHref}>Radar</PrFeaturedOutlineBtn>
+            ) : (
+              <PrFeaturedOutlineBtnDisabled>Radar</PrFeaturedOutlineBtnDisabled>
+            )}
             {featured.spaceUrl ? (
-              <PrGhostBtn as="a" href={featured.spaceUrl} target="_blank" rel="noopener noreferrer">
+              <PrFeaturedOutlineBtn href={featured.spaceUrl} target="_blank" rel="noopener noreferrer">
                 Professional Audit
-              </PrGhostBtn>
-            ) : null}
+              </PrFeaturedOutlineBtn>
+            ) : (
+              <PrFeaturedOutlineBtnDisabled>Professional Audit</PrFeaturedOutlineBtnDisabled>
+            )}
           </BtnRow>
-        </Main>
-        <ChartWrap aria-hidden={!featured.hasPriceData}>
-          <PriceRow>
-            <Price>{featured.hasPriceData ? featured.price : 'Unavailable'}</Price>
-            <Change>{featured.hasPriceData ? featured.priceChange : ''}</Change>
-          </PriceRow>
-          {featured.hasPriceData ? (
-            <>
-              <ChartSvg viewBox="0 0 260 120" preserveAspectRatio="none">
-                <ChartLine
-                  d="M 0 95 L 30 82 L 60 88 L 90 62 L 120 72 L 150 48 L 180 56 L 210 38 L 240 44 L 260 28"
-                  fill="none"
-                  stroke={projectsStudioColors.green}
-                  strokeWidth="2"
-                  vectorEffect="non-scaling-stroke"
-                />
-                <path
-                  d="M 0 95 L 30 82 L 60 88 L 90 62 L 120 72 L 150 48 L 180 56 L 210 38 L 240 44 L 260 28 L 260 120 L 0 120 Z"
-                  fill="url(#prChartFill)"
-                  opacity="0.15"
-                />
-                <defs>
-                  <linearGradient id="prChartFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={projectsStudioColors.green} />
-                    <stop offset="100%" stopColor="transparent" />
-                  </linearGradient>
-                </defs>
-              </ChartSvg>
-              <Timeframes>
-                {['1D', '7D', '1M', '3M', '1Y'].map((tf, i) => (
-                  <Tf key={tf} type="button" $active={i === 1}>
-                    {tf}
-                  </Tf>
-                ))}
-              </Timeframes>
-            </>
-          ) : (
-            <UnavailableChart>Price chart unavailable</UnavailableChart>
-          )}
-        </ChartWrap>
+        </Left>
+        <Right>
+          <Price>{featured.hasPriceData ? featured.price : 'Unavailable'}</Price>
+          <ChartBox>
+            <ChartArea>
+              {featured.hasPriceData ? (
+                <ChartSvg viewBox="0 0 300 160" preserveAspectRatio="none">
+                  <path
+                    d="M 0 120 L 40 98 L 80 104 L 120 78 L 160 88 L 200 62 L 240 70 L 280 48 L 300 54"
+                    fill="none"
+                    stroke={projectsStudioColors.green}
+                    strokeWidth="2"
+                  />
+                </ChartSvg>
+              ) : (
+                <ChartPlaceholder>Chart unavailable</ChartPlaceholder>
+              )}
+            </ChartArea>
+            <Timeframes>
+              {['1D', '7D', '1M', '3M', '1Y'].map((tf, i) => (
+                <Tf key={tf} type="button" $active={timeframe === i} onClick={() => setTimeframe(i)}>
+                  {tf}
+                </Tf>
+              ))}
+            </Timeframes>
+          </ChartBox>
+        </Right>
       </Inner>
-    </PrPanel>
+    </Panel>
   )
 }
 

@@ -1,90 +1,57 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { formatCompactDisplay } from 'design-system/melega'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioLayout } from '../projectsStudioTokens'
-import { PrKpiCard, PrKpiDelta, PrKpiLabel, PrKpiValue } from './projectsStudioPrimitives'
+import { PrKpiCard, PrKpiLabel, PrKpiSubline, PrKpiValue } from './projectsStudioPrimitives'
+
+const KPI_IDS = ['indexed', 'live', 'verified', 'holders', 'ai'] as const
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: ${projectsStudioLayout.kpiGap};
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: ${projectsStudioLayout.cardGap};
   min-width: 0;
 
-  @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, 1fr);
+  @media (max-width: ${projectsStudioLayout.stackBreakpoint}) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 
-const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
-  position: relative;
-  min-height: 38px;
-  padding-right: ${({ $hasSparkline }) =>
-    $hasSparkline ? projectsStudioLayout.sparklineW + Number.parseInt(projectsStudioLayout.kpiSparkGap, 10) : 0}px;
+const ValueStack = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
 `
-
-const ValueRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  min-width: 0;
-  flex: 1;
-`
-
-const Sparkline = styled.svg`
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: ${projectsStudioLayout.sparklineW}px;
-  height: ${projectsStudioLayout.sparklineH}px;
-`
-
-function MiniSparkline({ points }: { points: number[] }) {
-  const max = Math.max(...points)
-  const min = Math.min(...points)
-  const range = max - min || 1
-  const w = projectsStudioLayout.sparklineW
-  const h = projectsStudioLayout.sparklineH
-  const d = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * w
-      const y = h - ((p - min) / range) * (h - 2) - 1
-      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
-    })
-    .join(' ')
-
-  return (
-    <Sparkline viewBox={`0 0 ${w} ${h}`} data-pr-sparkline aria-hidden>
-      <path d={d} fill="none" stroke="#00E676" strokeWidth="1.5" strokeLinecap="round" />
-    </Sparkline>
-  )
-}
 
 export const ProjectsKpiRow: React.FC = () => {
   const { kpis } = useProjectsRuntime()
 
+  const displayKpis = useMemo(() => {
+    const map = new Map(kpis.map((k) => [k.id, k]))
+    return KPI_IDS.map((id) => map.get(id)).filter(Boolean)
+  }, [kpis])
+
   return (
     <Row data-pr-kpi-row>
-      {kpis.map((kpi) => (
-        <PrKpiCard key={kpi.id} data-pr-kpi-card>
-          <PrKpiLabel>{kpi.label}</PrKpiLabel>
-          <ValueBlock $hasSparkline={!!kpi.sparkline}>
-            <ValueRow>
-              <PrKpiValue $gold={kpi.gold} data-pr-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-                {kpi.value === 'Unavailable' ? kpi.value : kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
-              </PrKpiValue>
-              {kpi.delta ? <PrKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PrKpiDelta> : null}
-            </ValueRow>
-            {kpi.sparkline ? <MiniSparkline points={kpi.sparkline} /> : null}
-          </ValueBlock>
-        </PrKpiCard>
-      ))}
+      {displayKpis.map((kpi) =>
+        kpi ? (
+          <PrKpiCard key={kpi.id} data-pr-kpi-card>
+            <PrKpiLabel>{kpi.label}</PrKpiLabel>
+            {kpi.value === 'Unavailable' ? (
+              <ValueStack>
+                <PrKpiValue $muted>—</PrKpiValue>
+                <PrKpiSubline>Not indexed yet</PrKpiSubline>
+              </ValueStack>
+            ) : (
+              <PrKpiValue>{kpi.value}</PrKpiValue>
+            )}
+          </PrKpiCard>
+        ) : null,
+      )}
     </Row>
   )
 }

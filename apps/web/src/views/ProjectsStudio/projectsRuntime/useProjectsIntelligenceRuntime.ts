@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
+import { getPendingProjectRegistry } from 'registry/projects/pending'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
@@ -9,6 +10,7 @@ import {
   buildFeaturedProject,
   buildMachineProfile,
   filterProjectsByChip,
+  mapPendingToPreviewCard,
   mapProjectToPreviewCard,
 } from './formatProjectsRuntime'
 import { buildAiRecommendations } from './buildAiRecommendations'
@@ -31,6 +33,7 @@ export interface ProjectsMachinePayload {
   status: ProjectsRuntimePhase
   filter: string
   indexed: number
+  pending?: number
   featured?: string
   errors: ProjectsRuntimeError[]
   timestamp: string
@@ -43,6 +46,7 @@ export interface ProjectsIntelligenceRuntime {
   filter: ProjectFilterChip
   setFilter: (chip: ProjectFilterChip) => void
   projects: ProjectPreviewCard[]
+  pendingProjects: ProjectPreviewCard[]
   allProjects: ReturnType<typeof enrichProject>[]
   featured: ReturnType<typeof buildFeaturedProject>
   kpis: ProjectsKpiItem[]
@@ -61,6 +65,13 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
 
   const enriched = useMemo(() => getAllProjects().map(enrichProject), [])
 
+  const pendingRecords = useMemo(() => {
+    if (typeof window === 'undefined') return []
+    return getPendingProjectRegistry()
+      .getAll()
+      .filter((p) => p.status !== 'archived' && p.status !== 'rejected')
+  }, [])
+
   const sorted = useMemo(
     () =>
       [...enriched].sort(
@@ -69,10 +80,13 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     [enriched],
   )
 
-  const cards = useMemo(
-    () => sorted.map((project, index) => mapProjectToPreviewCard(project, index + 1)),
-    [sorted],
-  )
+  const cards = useMemo(() => {
+    const canonical = sorted.map((project, index) => mapProjectToPreviewCard(project, index + 1))
+    const pending = pendingRecords.map((pending, index) =>
+      mapPendingToPreviewCard(pending, canonical.length + index + 1),
+    )
+    return [...canonical, ...pending]
+  }, [sorted, pendingRecords])
 
   const filtered = useMemo(
     () => filterProjectsByChip(cards, sorted, filter),
@@ -99,7 +113,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     return buildFeaturedProject(featuredProject, priceUsd)
   }, [featuredProject, priceUsd])
 
-  const kpis = useMemo(() => aggregateKpis(enriched), [enriched])
+  const kpis = useMemo(() => aggregateKpis(enriched, pendingRecords.length), [enriched, pendingRecords.length])
   const advisorRows = useMemo(() => buildAdvisorRows(sorted), [sorted])
   const terminal = useProjectsTerminalData(enriched)
 
@@ -131,12 +145,18 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
       status: 'ready',
       filter,
       indexed: enriched.length,
+      pending: pendingRecords.length,
       featured: featuredProject?.slug,
       errors: [],
       timestamp: new Date().toISOString(),
       profile: featuredProject ? buildMachineProfile(featuredProject) : undefined,
     }),
-    [filter, enriched.length, featuredProject],
+    [filter, enriched.length, pendingRecords.length, featuredProject],
+  )
+
+  const pendingCards = useMemo(
+    () => cards.filter((c) => c.registryTier === 'pending'),
+    [cards],
   )
 
   const setFilterCb = useCallback((chip: ProjectFilterChip) => setFilter(chip), [])
@@ -146,6 +166,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     filter,
     setFilter: setFilterCb,
     projects: filtered,
+    pendingProjects: pendingCards,
     allProjects: enriched,
     featured,
     kpis,

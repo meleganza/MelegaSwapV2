@@ -1,58 +1,35 @@
 import React from 'react'
 import styled from 'styled-components'
 import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
-import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
+import {
+  PR_FONT_BODY,
+  projectsStudioColors,
+  projectsStudioLayout,
+  projectsStudioType,
+} from '../projectsStudioTokens'
 
-export const PrPanel = styled.div<{ $height?: string; $radius?: string }>`
+export const PrPanel = styled.section`
   width: 100%;
-  max-width: 100%;
   box-sizing: border-box;
-  background: ${projectsStudioColors.panelGradient};
-  border: 1px solid ${projectsStudioColors.border};
-  border-radius: ${({ $radius }) => $radius || projectsStudioLayout.cardRadius};
-  padding: 18px;
-  overflow: hidden;
-  ${({ $height }) =>
-    $height
-      ? `
-    height: ${$height};
-    min-height: ${$height};
-  `
-      : ''}
-`
-
-export const PrCard = styled.article`
-  background: ${projectsStudioColors.panelGradient};
-  border: 1px solid ${projectsStudioColors.border};
+  background: ${projectsStudioColors.card};
+  border: 1px solid ${projectsStudioColors.cardBorder};
   border-radius: ${projectsStudioLayout.cardRadius};
-  box-sizing: border-box;
-`
+  transition: border-color 180ms ease;
 
-export const PrPreviewBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid ${projectsStudioColors.gold};
-  background: ${projectsStudioColors.previewBadgeBg};
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: ${projectsStudioColors.goldBright};
-  white-space: nowrap;
+  &:hover {
+    border-color: ${projectsStudioColors.cardBorderHover};
+  }
 `
 
 export const PrPrimaryBtn = styled.button`
-  height: ${projectsStudioLayout.btnHeight};
-  min-height: ${projectsStudioLayout.btnHeight};
-  padding: 0 20px;
+  width: ${projectsStudioType.headerPrimaryW};
+  height: ${projectsStudioType.headerPrimaryH};
+  padding: 0 18px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%);
+  background: ${projectsStudioColors.gold};
   color: #050505;
+  font-family: ${PR_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -60,125 +37,232 @@ export const PrPrimaryBtn = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 180ms ease, filter 180ms ease;
-
-  &:hover {
-    filter: brightness(1.05);
-    transform: translateY(-1px);
-  }
+  box-sizing: border-box;
 `
 
 export const PrGhostBtn = styled.button`
-  height: ${projectsStudioLayout.btnHeight};
-  min-height: ${projectsStudioLayout.btnHeight};
+  width: ${projectsStudioType.headerPrimaryW};
+  height: ${projectsStudioType.headerPrimaryH};
   padding: 0 18px;
   border-radius: 12px;
-  border: 1px solid ${projectsStudioColors.goldBorder};
+  border: 1px solid ${projectsStudioColors.gold};
   background: transparent;
-  color: ${projectsStudioColors.goldBright};
+  color: ${projectsStudioColors.gold};
+  font-family: ${PR_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 180ms ease, filter 180ms ease, border-color 180ms ease;
-
-  &:hover {
-    filter: brightness(1.05);
-    border-color: ${projectsStudioColors.gold};
-    transform: translateY(-1px);
-  }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 `
 
-export const PrSmallPrimaryBtn = styled(PrPrimaryBtn)`
-  min-width: 88px;
+export const PrFeaturedPrimaryBtn = styled.a`
+  width: 100%;
+  max-width: ${projectsStudioLayout.projectBtnWidth};
+  height: ${projectsStudioLayout.projectBtnHeight};
   padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  background: ${projectsStudioColors.gold};
+  color: #050505;
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
 `
 
-export const PrSmallGhostBtn = styled(PrGhostBtn)`
-  min-width: 100px;
+export const PrFeaturedOutlineBtn = styled.a`
+  width: 100%;
+  max-width: ${projectsStudioLayout.projectBtnWidth};
+  height: ${projectsStudioLayout.projectBtnHeight};
   padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${projectsStudioColors.gold};
+  background: transparent;
+  color: ${projectsStudioColors.gold};
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
 `
 
-export const PrFollowBtn = styled.button`
-  min-width: 88px;
-  height: ${projectsStudioLayout.btnHeight};
-  min-height: ${projectsStudioLayout.btnHeight};
+export const PrFeaturedOutlineBtnDisabled = styled.span`
+  width: 100%;
+  max-width: ${projectsStudioLayout.projectBtnWidth};
+  height: ${projectsStudioLayout.projectBtnHeight};
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${projectsStudioColors.gold};
+  background: transparent;
+  color: ${projectsStudioColors.secondary};
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+`
+
+export const PrCardOutlineBtnDisabled = styled.span`
+  flex: 1;
+  min-width: 0;
+  height: ${projectsStudioLayout.projectBtnHeight};
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid ${projectsStudioColors.gold};
+  background: transparent;
+  color: ${projectsStudioColors.secondary};
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+`
+
+export const PrCardPrimaryBtn = styled.a`
+  flex: 1;
+  min-width: 0;
+  height: ${projectsStudioLayout.projectBtnHeight};
+  padding: 0 12px;
+  border: none;
+  border-radius: 12px;
+  background: ${projectsStudioColors.gold};
+  color: #050505;
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
+`
+
+export const PrCardOutlineBtn = styled.a`
+  flex: 1;
+  min-width: 0;
+  height: ${projectsStudioLayout.projectBtnHeight};
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid ${projectsStudioColors.gold};
+  background: transparent;
+  color: ${projectsStudioColors.gold};
+  font-family: ${PR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
+`
+
+export const PrCardFollowBtn = styled.button`
+  flex: 1;
+  min-width: 0;
+  height: ${projectsStudioLayout.projectBtnHeight};
+  padding: 0 12px;
   border: none;
   border-radius: 12px;
   background: transparent;
-  color: ${projectsStudioColors.secondary};
+  color: ${projectsStudioColors.gold};
+  font-family: ${PR_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 180ms ease, color 180ms ease;
-
-  &:hover {
-    color: ${projectsStudioColors.text};
-    transform: translateY(-1px);
-  }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 `
 
 export const PrKpiCard = styled.div`
   height: ${projectsStudioLayout.kpiHeight};
   min-height: ${projectsStudioLayout.kpiHeight};
   border-radius: ${projectsStudioLayout.cardRadius};
-  border: 1px solid ${projectsStudioColors.border};
-  background: ${projectsStudioColors.panelGradient};
-  padding: 14px 16px;
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  background: ${projectsStudioColors.card};
+  padding: ${projectsStudioLayout.kpiPadding};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 6px;
+  justify-content: space-between;
   min-width: 0;
-  position: relative;
+  transition: border-color 180ms ease;
+
+  &:hover {
+    border-color: ${projectsStudioColors.cardBorderHover};
+  }
 `
 
 export const PrKpiLabel = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: ${PR_FONT_BODY};
+  font-size: ${projectsStudioType.kpiLabel};
+  font-weight: 500;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: ${projectsStudioColors.muted};
 `
 
-export const PrKpiValue = styled.span<{ $gold?: boolean }>`
-  font-size: 32px;
+export const PrKpiValue = styled.span<{ $muted?: boolean }>`
+  font-family: ${PR_FONT_BODY};
+  font-size: ${projectsStudioType.kpiMetric};
   font-weight: 700;
   line-height: 1;
-  color: ${({ $gold }) => ($gold ? projectsStudioColors.gold : projectsStudioColors.text)};
-  white-space: nowrap;
+  color: ${({ $muted }) => ($muted ? projectsStudioColors.secondary : projectsStudioColors.text)};
 `
 
-export const PrKpiDelta = styled.span<{ $positive?: boolean }>`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1;
-  margin-left: ${projectsStudioLayout.kpiDeltaGap};
-  color: ${({ $positive }) => ($positive ? projectsStudioColors.green : projectsStudioColors.red)};
+export const PrKpiSubline = styled.span`
+  font-family: ${PR_FONT_BODY};
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: ${projectsStudioColors.muted};
 `
 
 export const PrMetricLabel = styled.span`
+  font-family: ${PR_FONT_BODY};
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: ${projectsStudioColors.muted};
 `
 
-export const PrMetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
-  font-size: 16px;
-  font-weight: 700;
+export const PrMetricValue = styled.span<{ $muted?: boolean; $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
+  font-family: ${PR_FONT_BODY};
+  font-size: ${({ $muted, $tone }) => ($muted || $tone === 'gray' ? '13px' : '14px')};
+  font-weight: ${({ $muted, $tone }) => ($muted || $tone === 'gray' ? 500 : 600)};
   line-height: 1.25;
   white-space: nowrap;
-  color: ${({ $tone }) =>
-    $tone === 'green'
-      ? projectsStudioColors.green
-      : $tone === 'gold'
-        ? projectsStudioColors.gold
-        : $tone === 'red'
-          ? projectsStudioColors.red
-          : $tone === 'gray'
-            ? projectsStudioColors.muted
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: ${({ $muted, $tone }) =>
+    $muted || $tone === 'gray'
+      ? projectsStudioColors.secondary
+      : $tone === 'green'
+        ? projectsStudioColors.green
+        : $tone === 'gold'
+          ? projectsStudioColors.gold
+          : $tone === 'red'
+            ? projectsStudioColors.red
             : projectsStudioColors.text};
 `
 
@@ -190,7 +274,7 @@ export const ProjectLogo: React.FC<{ name: string; symbol?: string; size?: numbe
   const isMarco = isMarcoSymbol(symbol, name)
   if (isMarco) {
     return (
-      <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: 12, overflow: 'hidden' }}>
+      <span style={{ flexShrink: 0, display: 'inline-flex' }}>
         <img
           src={MARCO_LOGO_URI}
           alt=""
@@ -208,15 +292,15 @@ export const ProjectLogo: React.FC<{ name: string; symbol?: string; size?: numbe
         width: size,
         height: size,
         borderRadius: 12,
-        border: `1px solid ${projectsStudioColors.borderStrong}`,
-        background: projectsStudioColors.panel,
+        border: `1px solid ${projectsStudioColors.cardBorder}`,
+        background: projectsStudioColors.card,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
         fontSize: size * 0.36,
-        fontWeight: 800,
-        color: projectsStudioColors.goldBright,
+        fontWeight: 700,
+        color: projectsStudioColors.gold,
       }}
     >
       {name.slice(0, 1)}

@@ -1,6 +1,38 @@
+export const FILTER_CHAINS = ['BNB', 'Ethereum', 'Base', 'Polygon', 'Solana'] as const
+export const FILTER_CATEGORIES = ['AI', 'DeFi', 'Gaming', 'Infrastructure', 'Meme', 'RWA'] as const
+export const FILTER_SORT = [
+  'Trending',
+  'Highest Rated',
+  'Highest Liquidity',
+  'Newest',
+  'Recently Listed',
+] as const
+
+export const PROJECT_FILTER_CHIPS = [
+  'All',
+  'AI Verified',
+  'Trending',
+  'BNB',
+  'Ethereum',
+  'Base',
+  'Polygon',
+  'Solana',
+  'Gaming',
+  'AI',
+  'DeFi',
+  'RWA',
+  'Meme',
+  'Infrastructure',
+  'Recently Listed',
+  'Pending Review',
+  'Highest Rated',
+  'Highest Liquidity',
+  'Newest',
+] as const
+
 export type ProjectRatingTier = 'exceptional' | 'strong' | 'active' | 'emerging' | 'high-risk' | 'unknown'
 export type MetricTone = 'green' | 'gold' | 'red' | 'gray'
-export type ProjectStatus = 'verified' | 'community' | 'new'
+export type ProjectStatus = 'verified' | 'community' | 'new' | 'pending'
 
 export interface ProjectsKpiItem {
   id: string
@@ -41,6 +73,10 @@ export interface ProjectPreviewCard {
   tradeHref?: string
   radarHref?: string
   projectHref?: string
+  registryTier?: 'canonical' | 'pending'
+  pendingId?: string
+  reviewStatus?: string
+  importHref?: string
 }
 
 export interface ProjectsActivityRow {
@@ -53,27 +89,6 @@ export interface ProjectsActivityRow {
   status: 'verified' | 'indexed' | 'live'
   actionTone?: 'green' | 'gold' | 'muted'
 }
-
-export const PROJECT_FILTER_CHIPS = [
-  'All',
-  'AI Verified',
-  'Trending',
-  'BNB',
-  'Ethereum',
-  'Base',
-  'Polygon',
-  'Solana',
-  'Gaming',
-  'AI',
-  'DeFi',
-  'RWA',
-  'Meme',
-  'Infrastructure',
-  'Recently Listed',
-  'Highest Rated',
-  'Highest Liquidity',
-  'Newest',
-] as const
 
 export function ratingColor(score: number): 'green' | 'gold' | 'orange' | 'red' | 'gray' {
   if (score >= 95) return 'green'

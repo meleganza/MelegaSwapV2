@@ -6,27 +6,17 @@ import ProjectGridCard from './ProjectGridCard'
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(${projectsStudioLayout.gridColumns}, 1fr);
-  gap: ${projectsStudioLayout.gridGap};
+  grid-template-columns: 1fr;
+  gap: ${projectsStudioLayout.cardGap};
   min-width: 0;
-  align-items: stretch;
-
-  @media (max-width: 1099px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
 `
 
 const EmptyPanel = styled.div`
-  grid-column: 1 / -1;
   min-height: 200px;
   padding: 32px 24px;
   border-radius: ${projectsStudioLayout.cardRadius};
-  border: 1px solid ${projectsStudioColors.borderStrong};
-  background: ${projectsStudioColors.panelGradient};
+  border: 1px solid ${projectsStudioColors.cardBorder};
+  background: ${projectsStudioColors.card};
   display: flex;
   flex-direction: column;
   align-items: center;

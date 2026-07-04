@@ -1,43 +1,50 @@
 import React from 'react'
 import styled from 'styled-components'
-import { projectsStudioColors } from '../projectsStudioTokens'
-import { PrGhostBtn, PrPreviewBadge, PrPrimaryBtn } from './projectsStudioPrimitives'
+import {
+  PR_FONT_BODY,
+  PR_FONT_DISPLAY,
+  projectsStudioColors,
+  projectsStudioLayout,
+  projectsStudioType,
+} from '../projectsStudioTokens'
+import { PrGhostBtn, PrPrimaryBtn } from './projectsStudioPrimitives'
 
-const Row = styled.div`
+const Header = styled.header`
+  min-height: ${projectsStudioLayout.headerHeight};
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
+  gap: 20px;
+  box-sizing: border-box;
 
-  @media (max-width: 767px) {
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
+    min-height: auto;
     flex-direction: column;
     align-items: flex-start;
   }
 `
 
 const Left = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   min-width: 0;
 `
 
 const Title = styled.h1`
   margin: 0;
-  font-size: 38px;
-  font-weight: 800;
+  font-family: ${PR_FONT_DISPLAY};
+  font-size: ${projectsStudioType.pageTitle};
+  font-weight: 700;
   line-height: 1.05;
   color: ${projectsStudioColors.text};
 `
 
 const Subtitle = styled.p`
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
+  margin: 6px 0 0;
+  font-family: ${PR_FONT_BODY};
+  font-size: ${projectsStudioType.pageSubtitle};
+  font-weight: 400;
   line-height: 1.5;
   color: ${projectsStudioColors.subtitle};
-  max-width: 560px;
+  max-width: ${projectsStudioType.pageSubtitleMax};
 `
 
 const Right = styled.div`
@@ -45,33 +52,29 @@ const Right = styled.div`
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
-  flex-wrap: wrap;
 
-  @media (max-width: 767px) {
+  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
     width: 100%;
+    flex-direction: column;
+    align-items: stretch;
   }
 `
 
 export const ProjectsStudioPageHeader: React.FC = () => (
-  <div data-pr-page-header>
-    <Row>
-      <Left>
-        <Title>PROJECTS</Title>
-        <Subtitle>
-          Discover AI-indexed crypto projects. Find verified ecosystems. Trade with confidence.
-        </Subtitle>
-      </Left>
-      <Right>
-        <PrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }}>
-          AI Indexing: How it works
-        </PrGhostBtn>
-        <PrPrimaryBtn as="a" href="/import-existing-token">
-          <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
-          List Your Project
-        </PrPrimaryBtn>
-      </Right>
-    </Row>
-  </div>
+  <Header data-pr-page-header>
+    <Left>
+      <Title>PROJECTS</Title>
+      <Subtitle>
+        Discover AI-indexed crypto projects. Find verified ecosystems. Trade with confidence.
+      </Subtitle>
+    </Left>
+    <Right>
+      <PrPrimaryBtn as="a" href="/import-existing-token">
+        List Your Project
+      </PrPrimaryBtn>
+      <PrGhostBtn type="button">AI Indexing: How it works</PrGhostBtn>
+    </Right>
+  </Header>
 )
 
 export default ProjectsStudioPageHeader
