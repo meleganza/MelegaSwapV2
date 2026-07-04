@@ -12,8 +12,6 @@ import {
   EconomicBadge,
   EconomicActionGrid,
   EconomicAiLayer,
-  TECHNICAL_DETAILS_TITLE,
-  MANIFEST_TITLE,
   EconomicManifestLink,
 } from 'views/EconomicOS/components'
 
@@ -21,7 +19,7 @@ const t = (key: string) => (translations as Record<string, string>)[key] ?? key
 
 const Meta = styled.p`
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: ${tokens.textSecondary};
   line-height: 1.55;
 `
@@ -29,12 +27,12 @@ const Meta = styled.p`
 const ItemList = styled.ul`
   margin: 8px 0 0;
   padding-left: 18px;
-  font-size: 12px;
+  font-size: 13px;
   color: ${tokens.textSecondary};
   line-height: 1.5;
 
   li {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 `
 
@@ -43,7 +41,13 @@ const SectionHeader = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+`
+
+const SectionTitle = styled.strong`
+  display: block;
+  color: ${tokens.text};
+  font-size: 15px;
 `
 
 const ModuleLink = styled.a`
@@ -51,6 +55,7 @@ const ModuleLink = styled.a`
   color: ${tokens.gold};
   text-decoration: none;
   white-space: nowrap;
+  font-weight: 600;
 
   &:hover {
     color: ${tokens.goldHighlight};
@@ -63,6 +68,7 @@ const LiveDot = styled.span`
   gap: 6px;
   color: ${tokens.success};
   font-weight: 600;
+  font-size: 12px;
 
   &::before {
     content: '';
@@ -73,6 +79,28 @@ const LiveDot = styled.span`
   }
 `
 
+const EmptyPanel = styled.div`
+  margin-top: 10px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  text-align: center;
+`
+
+const EmptyTitle = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${tokens.text};
+`
+
+const EmptyDesc = styled.div`
+  margin-top: 4px;
+  font-size: 12px;
+  color: ${tokens.textSecondary};
+  line-height: 1.45;
+`
+
 const UserWorkspaceConsole: React.FC = () => {
   const model = resolveUserWorkspaceReadModel()
 
@@ -80,8 +108,8 @@ const UserWorkspaceConsole: React.FC = () => {
     <EconomicPageShell>
       <EconomicHero
         title="My Economy"
-        subtitle="Your activity, positions, and projects — one calm cockpit."
-        primaryAction={{ href: '/swap', label: 'Swap now' }}
+        subtitle="Your activity, positions, and projects — one calm cockpit aligned with Melega DEX."
+        primaryAction={{ href: '/trade', label: 'Open Trade' }}
       />
 
       <EconomicSection title="Your activity">
@@ -89,7 +117,7 @@ const UserWorkspaceConsole: React.FC = () => {
           <EconomicCard key={section.id}>
             <SectionHeader>
               <div>
-                <strong style={{ color: tokens.text }}>{section.label}</strong>
+                <SectionTitle>{section.label}</SectionTitle>
                 <Meta style={{ marginTop: 4 }}>{section.description}</Meta>
               </div>
               <Link href={section.moduleHref} passHref legacyBehavior>
@@ -102,7 +130,7 @@ const UserWorkspaceConsole: React.FC = () => {
                 {section.items.map((item) => (
                   <li key={item.id}>
                     {item.href ? (
-                      <Link href={item.href} style={{ color: tokens.gold }}>
+                      <Link href={item.href} style={{ color: tokens.gold, fontWeight: 600 }}>
                         {item.label}
                       </Link>
                     ) : (
@@ -114,7 +142,10 @@ const UserWorkspaceConsole: React.FC = () => {
                 ))}
               </ItemList>
             ) : (
-              <Meta style={{ marginTop: 8, fontStyle: 'italic' }}>{section.emptyMessage}</Meta>
+              <EmptyPanel>
+                <EmptyTitle>No activity yet</EmptyTitle>
+                <EmptyDesc>{section.emptyMessage}</EmptyDesc>
+              </EmptyPanel>
             )}
           </EconomicCard>
         ))}
@@ -129,11 +160,11 @@ const UserWorkspaceConsole: React.FC = () => {
           <Meta style={{ marginTop: 8 }}>{model.disclaimer}</Meta>
         </EconomicCard>
         <EconomicSection title={t('Workspace future title')} columns={2}>
-        {model.futureSurfaces.map((surface) => (
-          <EconomicCard key={surface.id} title={surface.label} footer={surface.notes}>
-            <EconomicBadge status={surface.status} />
-          </EconomicCard>
-        ))}
+          {model.futureSurfaces.map((surface) => (
+            <EconomicCard key={surface.id} title={surface.label} footer={surface.notes}>
+              <EconomicBadge status={surface.status} />
+            </EconomicCard>
+          ))}
         </EconomicSection>
       </EconomicAiLayer>
 

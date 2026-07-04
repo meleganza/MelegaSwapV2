@@ -1,22 +1,39 @@
 import React from 'react'
 import styled from 'styled-components'
 import Head from 'next/head'
-import { melegaOperational as tokens } from 'ui/tokens'
+import { MelegaBrandLockup } from 'design-system/melega/components/BrandLockup/MelegaBrandLockup'
 
 const Root = styled.div`
   min-height: 100vh;
-  background: ${tokens.bg};
-  color: ${tokens.text};
-  font-family: ${tokens.fontBody};
-  padding: 40px 24px 80px;
+  background: #050505;
+  color: #f5f5f5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 28px 24px 80px;
 `
 
 const Shell = styled.div`
-  max-width: ${tokens.contentMaxWidth};
+  max-width: 1180px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: ${tokens.sectionGap};
+  gap: 24px;
+`
+
+const BrandRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+`
+
+const PageTag = styled.span`
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8f8f8f;
 `
 
 export const EconomicPageShell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -27,8 +44,14 @@ export const EconomicPageShell: React.FC<{ children: React.ReactNode }> = ({ chi
         rel="stylesheet"
       />
     </Head>
-    <Root>
-      <Shell>{children}</Shell>
+    <Root data-economic-page-shell>
+      <Shell>
+        <BrandRow>
+          <MelegaBrandLockup size="desktop" iconOnly />
+          <PageTag>Portfolio · My Economy</PageTag>
+        </BrandRow>
+        {children}
+      </Shell>
     </Root>
   </>
 )

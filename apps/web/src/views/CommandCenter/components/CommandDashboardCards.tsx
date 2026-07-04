@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { safeArray, safePct } from '../commandCenterSafe'
+import { isMarcoSymbol, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import {
   CcCardHeader,
@@ -306,7 +307,17 @@ export const CommandAssetsCard: React.FC = () => {
           rows.map((a) => (
           <Row key={a.id}>
             <Left>
-              <TokenIcon $color={a.color}>{a.symbol.slice(0, 1)}</TokenIcon>
+              {isMarcoSymbol(a.symbol) ? (
+                <img
+                  src={MARCO_LOGO_URI}
+                  alt=""
+                  width={28}
+                  height={28}
+                  style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                />
+              ) : (
+                <TokenIcon $color={a.color}>{a.symbol.slice(0, 1)}</TokenIcon>
+              )}
               <div>
                 <div style={{ fontWeight: 700, color: commandCenterColors.white }}>{a.symbol}</div>
                 <div style={{ color: commandCenterColors.muted, fontSize: 11 }}>{a.amount}</div>

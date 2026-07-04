@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { typography } from 'design-system/melega'
 import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
 
@@ -139,7 +140,7 @@ export const TrendingProjectLogo: React.FC<{ name: string; symbol?: string; size
   symbol,
   size = 64,
 }) => {
-  const isMarco = symbol === 'MARCO' || name === 'MARCO'
+  const isMarco = isMarcoSymbol(symbol, name)
   if (isMarco) {
     return (
       <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: '50%', overflow: 'hidden' }}>

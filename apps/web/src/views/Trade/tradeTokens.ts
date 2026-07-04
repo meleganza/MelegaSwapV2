@@ -13,6 +13,7 @@ export const tradeLayout = {
   contentPaddingTop: '18px',
   chartPanelHeight: 'auto',
   chartAreaHeight: '300px',
+  chartAreaHeightCompact: '132px',
   recentSwapsHeight: '220px',
 } as const
 

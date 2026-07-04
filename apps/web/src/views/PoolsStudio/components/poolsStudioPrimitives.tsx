@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
+import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
 export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
@@ -164,7 +164,7 @@ export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: b
   size = 24,
   offset,
 }) => {
-  if (symbol === 'MARCO') {
+  if (isMarcoSymbol(symbol)) {
     return (
       <span
         style={{

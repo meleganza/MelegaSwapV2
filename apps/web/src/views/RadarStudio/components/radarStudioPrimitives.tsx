@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { heatBlockColor } from '../radarStudioData'
 import {
   RADAR_FONT_BODY,
@@ -141,7 +142,7 @@ export const RadarProjectLogo: React.FC<{ name: string; symbol?: string; size?: 
   symbol,
   size = 40,
 }) => {
-  const isMarco = symbol === 'MARCO' || name === 'MARCO'
+  const isMarco = isMarcoSymbol(symbol, name)
   if (isMarco) {
     return (
       <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: '50%', overflow: 'hidden' }}>

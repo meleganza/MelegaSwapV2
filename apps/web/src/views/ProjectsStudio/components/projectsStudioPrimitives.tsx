@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
+import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 
 export const PrPanel = styled.div<{ $height?: string; $radius?: string }>`
@@ -187,7 +187,7 @@ export const ProjectLogo: React.FC<{ name: string; symbol?: string; size?: numbe
   symbol,
   size = 48,
 }) => {
-  const isMarco = symbol === 'MARCO' || name === 'MARCO'
+  const isMarco = isMarcoSymbol(symbol, name)
   if (isMarco) {
     return (
       <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: 12, overflow: 'hidden' }}>

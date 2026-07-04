@@ -32,9 +32,11 @@ const crosshairPulse = keyframes`
   50% { opacity: 0.14; }
 `
 
-const Area = styled.div`
-  height: ${tradeLayout.chartAreaHeight};
-  min-height: ${tradeLayout.chartAreaHeight};
+const Area = styled.div<{ $compact?: boolean }>`
+  height: ${({ $compact }) =>
+    $compact ? tradeLayout.chartAreaHeightCompact : tradeLayout.chartAreaHeight};
+  min-height: ${({ $compact }) =>
+    $compact ? tradeLayout.chartAreaHeightCompact : tradeLayout.chartAreaHeight};
   margin: 0;
   box-sizing: border-box;
   border-radius: 12px;
@@ -250,7 +252,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
   }, [symbol])
 
   return (
-    <Area data-trade-chart-area>
+    <Area data-trade-chart-area $compact={showUnavailable}>
       {showTv && (
         <TvWrap $show={!showSkeleton}>
           <TradingView id={TV_ID} symbol={`${SYMBOL_PREFIX}${symbol}`} />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
+import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
@@ -312,7 +312,7 @@ const ComingSoonBadge = styled.div`
 `
 
 function renderTokenIcon(symbol: string, offset?: boolean) {
-  if (symbol === 'MARCO') {
+  if (isMarcoSymbol(symbol)) {
     return (
       <TokenIconWrap $offset={offset}>
         <img src={MARCO_LOGO_URI} alt="" width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover' }} />

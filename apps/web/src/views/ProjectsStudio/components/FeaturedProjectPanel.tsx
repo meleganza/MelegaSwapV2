@@ -107,9 +107,27 @@ const Metric = styled.div`
 
 const BtnRow = styled.div`
   display: flex;
-  gap: 12px;
-  margin-top: auto;
   flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid ${projectsStudioColors.rowBorder};
+
+  a,
+  button {
+    flex: 0 1 auto;
+    min-height: ${projectsStudioLayout.btnHeight};
+  }
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    a,
+    button {
+      width: 100%;
+    }
+  }
 `
 
 const ChartWrap = styled.div`
@@ -215,7 +233,7 @@ export const FeaturedProjectPanel: React.FC = () => {
             </PrGhostBtn>
             {featured.radarHref ? (
               <PrGhostBtn as="a" href={featured.radarHref}>
-                View Contract Intelligence
+                Radar
               </PrGhostBtn>
             ) : null}
             {featured.spaceUrl ? (

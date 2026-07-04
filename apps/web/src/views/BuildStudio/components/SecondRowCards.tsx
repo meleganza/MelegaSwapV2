@@ -39,7 +39,7 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow: hidden;
+  overflow: visible;
 `
 
 const TemplateGrid = styled.div`

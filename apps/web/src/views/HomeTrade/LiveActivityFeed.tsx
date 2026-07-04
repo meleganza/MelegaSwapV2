@@ -2,9 +2,9 @@ import React from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
-import { ActivityRow } from './useHomeTradeData'
+import type { ActivityRow, ActivitySlot } from './useHomeTradeData'
 
-const Shell = styled.section<{ $hasRows?: boolean }>`
+const Shell = styled.section`
   background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
@@ -13,16 +13,10 @@ const Shell = styled.section<{ $hasRows?: boolean }>`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  @media (min-width: 768px) {
-    min-height: ${({ $hasRows }) => ($hasRows ? 'auto' : '136px')};
-    height: ${({ $hasRows }) => ($hasRows ? 'auto' : '136px')};
-    max-height: ${({ $hasRows }) => ($hasRows ? '220px' : '136px')};
-  }
+  min-height: 180px;
 
   @media (max-width: 767px) {
-    min-height: 150px;
-    height: auto;
+    min-height: 160px;
   }
 `
 
@@ -30,7 +24,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 `
 
@@ -56,37 +50,35 @@ const Body = styled.div`
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 `
 
-const Timeline = styled.div`
+const SlotList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
-  max-height: 220px;
-  overflow-y: auto;
-`
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 16px 1fr auto;
   gap: 10px;
-  align-items: start;
-  min-height: 36px;
-  padding: 4px 0;
 `
 
-const RowIcon = styled.span`
-  width: 16px;
-  height: 16px;
-  display: flex;
+const Slot = styled.div<{ $filled?: boolean }>`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
   align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: ${colors.gold};
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid ${({ $filled }) => ($filled ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)')};
+  background: ${({ $filled }) => ($filled ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.015)')};
 `
 
-const RowTitle = styled.span`
+const SlotLabel = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  grid-column: 1 / -1;
+`
+
+const SlotTitle = styled.span`
   font-size: 13px;
   font-weight: 600;
   color: #ffffff;
@@ -95,7 +87,7 @@ const RowTitle = styled.span`
   text-overflow: ellipsis;
 `
 
-const RowMeta = styled.span`
+const SlotMeta = styled.span`
   font-size: 12px;
   color: #9e9e9e;
   white-space: nowrap;
@@ -103,7 +95,7 @@ const RowMeta = styled.span`
   text-overflow: ellipsis;
 `
 
-const RowTime = styled.span`
+const SlotTime = styled.span`
   font-size: 12px;
   color: #707070;
   white-space: nowrap;
@@ -117,6 +109,7 @@ const EmptyWrap = styled.div`
   justify-content: center;
   text-align: center;
   flex: 1;
+  padding: 8px 0;
 `
 
 const pulseDot = keyframes`
@@ -148,45 +141,60 @@ const EmptyDesc = styled.p`
   max-width: 300px;
 `
 
-const eventIcon = (type: string) => {
-  if (type === 'Swap') return '↔'
-  if (type.includes('Added')) return '+'
-  if (type.includes('Removed')) return '−'
-  return '●'
+export interface LiveActivityFeedProps {
+  rows?: ActivityRow[]
+  slots?: ActivitySlot[]
 }
 
-/**
- * TODO: Live Activity should be wired to MelegaSwap router/subgraph indexed events.
- */
-export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) => {
-  const displayRows = rows.slice(0, 5)
+export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({ rows = [], slots = [] }) => {
+  const displaySlots = slots.length > 0 ? slots : []
+  const hasAnyActivity = displaySlots.some((s) => s.row) || rows.length > 0
 
   return (
-    <Shell data-live-activity-feed $hasRows={displayRows.length > 0}>
+    <Shell data-live-activity-feed>
       <Header>
         <Title>Live Activity</Title>
         <SectionLink href="/trade">View all →</SectionLink>
       </Header>
       <Body>
-        {displayRows.length === 0 ? (
+        {displaySlots.length > 0 ? (
+          <SlotList>
+            {displaySlots.map((slot) =>
+              slot.row ? (
+                <Slot key={slot.id} $filled>
+                  <SlotLabel>{slot.label}</SlotLabel>
+                  <div style={{ minWidth: 0 }}>
+                    <SlotTitle>{slot.row.type}</SlotTitle>
+                    {slot.row.context ? <SlotMeta>{slot.row.context}</SlotMeta> : null}
+                  </div>
+                  <SlotTime>{slot.row.time || slot.row.value || ''}</SlotTime>
+                </Slot>
+              ) : (
+                <Slot key={slot.id}>
+                  <SlotLabel>{slot.label}</SlotLabel>
+                  <SlotMeta style={{ gridColumn: '1 / -1' }}>Awaiting index</SlotMeta>
+                </Slot>
+              ),
+            )}
+          </SlotList>
+        ) : hasAnyActivity ? (
+          <SlotList>
+            {rows.slice(0, 5).map((row) => (
+              <Slot key={row.id} $filled>
+                <div style={{ minWidth: 0 }}>
+                  <SlotTitle>{row.type}</SlotTitle>
+                  {row.context ? <SlotMeta>{row.context}</SlotMeta> : null}
+                </div>
+                <SlotTime>{row.time || row.value || ''}</SlotTime>
+              </Slot>
+            ))}
+          </SlotList>
+        ) : (
           <EmptyWrap>
             <PulseDot aria-hidden />
             <EmptyTitle>No recent activity</EmptyTitle>
-            <EmptyDesc>Latest swaps and liquidity events appear here when indexed.</EmptyDesc>
+            <EmptyDesc>Swaps, liquidity, and staking events appear here when indexed.</EmptyDesc>
           </EmptyWrap>
-        ) : (
-          <Timeline>
-            {displayRows.map((row) => (
-              <Row key={row.id}>
-                <RowIcon>{eventIcon(row.type)}</RowIcon>
-                <div style={{ minWidth: 0 }}>
-                  <RowTitle>{row.type}</RowTitle>
-                  {row.context && <RowMeta>{row.context}</RowMeta>}
-                </div>
-                <RowTime>{row.time || row.value || ''}</RowTime>
-              </Row>
-            ))}
-          </Timeline>
         )}
       </Body>
     </Shell>

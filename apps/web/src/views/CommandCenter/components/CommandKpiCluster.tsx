@@ -150,8 +150,7 @@ export const CommandKpiCluster: React.FC = () => {
       <KpiCard>
         <Label>AI Score</Label>
         <ScoreWrap>
-          <Value>{kpis.aiScore.value}</Value>
-          <ScoreRing>{kpis.aiScore.value}</ScoreRing>
+          <ScoreRing aria-label={`AI Score ${kpis.aiScore.value}`}>{kpis.aiScore.value}</ScoreRing>
         </ScoreWrap>
         <Sub>{kpis.aiScore.label}</Sub>
       </KpiCard>

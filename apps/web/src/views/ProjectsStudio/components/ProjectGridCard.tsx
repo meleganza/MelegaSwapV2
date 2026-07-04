@@ -233,7 +233,9 @@ const SideValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'gray' }>`
           : $tone === 'gray'
             ? projectsStudioColors.muted
             : projectsStudioColors.text};
-  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const ButtonRow = styled.div`
@@ -395,7 +397,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
         </RightPane>
       </Split>
 
-      <ButtonRow>
+      <ButtonRow data-pr-action-bar>
         <PrSmallPrimaryBtn as="a" href={tradeHref}>
           Trade
         </PrSmallPrimaryBtn>

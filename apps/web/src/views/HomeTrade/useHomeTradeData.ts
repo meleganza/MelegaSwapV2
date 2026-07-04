@@ -45,6 +45,12 @@ export interface ActivityRow {
   time?: string
 }
 
+export interface ActivitySlot {
+  id: string
+  label: string
+  row?: ActivityRow
+}
+
 export interface LiveEconomyMetric {
   id: string
   label: string
@@ -82,12 +88,6 @@ const sanitizeRibbonText = (value?: string): string | undefined => {
   return trimmed
 }
 
-const formatPairLabel = (symbol?: string): string | undefined => {
-  if (!symbol) return undefined
-  const cleaned = symbol.replace(/-/g, ' / ').replace(/\s+/g, ' ').trim()
-  return sanitizeRibbonText(cleaned)
-}
-
 const farmApr = (farm: FarmWithStakedValue): number | undefined => {
   const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
   return apr > 0 ? apr : undefined
@@ -104,25 +104,31 @@ const poolTvl = (pool: Pool.DeserializedPool<Token>): string | undefined => {
   return bal > 0 ? formatUsd(bal * (pool.stakingTokenPrice ?? 0)) : undefined
 }
 
-const txLabel = (tx: Transaction): { type: string; context: string; value?: string } => {
+const txToRow = (tx: Transaction): ActivityRow => {
   if (tx.type === TransactionType.SWAP) {
     return {
+      id: tx.hash,
       type: 'Swap',
       context: `${tx.token0Symbol} → ${tx.token1Symbol}`,
       value: tx.amountUSD > 0 ? formatUsd(tx.amountUSD) : undefined,
+      time: formatTimeAgo(tx.timestamp),
     }
   }
   if (tx.type === TransactionType.MINT) {
     return {
+      id: tx.hash,
       type: 'Liquidity Added',
       context: `${tx.token0Symbol} / ${tx.token1Symbol}`,
       value: tx.amountUSD > 0 ? formatUsd(tx.amountUSD) : undefined,
+      time: formatTimeAgo(tx.timestamp),
     }
   }
   return {
+    id: tx.hash,
     type: 'Liquidity Removed',
     context: `${tx.token0Symbol} / ${tx.token1Symbol}`,
     value: tx.amountUSD > 0 ? formatUsd(tx.amountUSD) : undefined,
+    time: formatTimeAgo(tx.timestamp),
   }
 }
 
@@ -147,6 +153,13 @@ export const useHomeTradeData = () => {
     return transactions.find((tx) => tx.type === TransactionType.SWAP)
   }, [transactions])
 
+  const latestLiquidity = useMemo(() => {
+    if (!transactions?.length) return undefined
+    return transactions.find(
+      (tx) => tx.type === TransactionType.MINT || tx.type === TransactionType.BURN,
+    )
+  }, [transactions])
+
   const latestProject = useMemo(() => {
     const projects = getAllProjects().filter((p) => p.slug !== 'melega-dex')
     return projects[0]
@@ -162,24 +175,13 @@ export const useHomeTradeData = () => {
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     const items: MelegaTickerItem[] = []
     const topFarm = farms[0]
-    const secondFarm = farms[1]
     const topPool = pools[0]
-
-    if (topFarm?.lpSymbol) {
-      const pairLabel = formatPairLabel(topFarm.lpSymbol)
-      items.push({
-        id: 'top-pair',
-        primary: 'Top pair',
-        secondary: pairLabel ?? 'MARCO / BNB',
-        href: '/swap',
-      })
-    }
 
     if (topFarm?.lpSymbol) {
       items.push({
         id: 'top-farm',
         primary: 'Top farm',
-        secondary: topFarm.lpSymbol,
+        secondary: topFarm.lpSymbol.replace('-', ' / '),
         accent: farmApr(topFarm) ? `${farmApr(topFarm)!.toFixed(2)}% APR` : undefined,
         href: '/farms',
       })
@@ -191,6 +193,16 @@ export const useHomeTradeData = () => {
         primary: 'Top pool',
         secondary: `${topPool.stakingToken.symbol} Staking`,
         href: '/pools',
+      })
+    }
+
+    if (topVolumeSwap) {
+      items.push({
+        id: 'top-volume-pair',
+        primary: 'Top volume',
+        secondary: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
+        accent: formatUsd(topVolumeSwap.amountUSD),
+        href: '/trade',
       })
     }
 
@@ -206,41 +218,13 @@ export const useHomeTradeData = () => {
       }
     }
 
-    if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
-      items.push({
-        id: 'new-pool',
-        primary: 'Top staking pool',
-        secondary: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
-        href: '/pools',
-      })
-    }
-
     if (latestSwap) {
       items.push({
         id: 'latest-swap',
         primary: 'Latest swap',
         secondary: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
         accent: formatTimeAgo(latestSwap.timestamp),
-        href: '/swap',
-      })
-    }
-
-    if (topVolumeSwap) {
-      items.push({
-        id: 'top-volume-pair',
-        primary: 'Top volume pair',
-        secondary: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
-        accent: formatUsd(topVolumeSwap.amountUSD),
-        href: '/swap',
-      })
-    }
-
-    if (secondFarm?.lpSymbol) {
-      items.push({
-        id: 'new-farm',
-        primary: 'New farm',
-        secondary: secondFarm.lpSymbol,
-        href: '/farms',
+        href: '/trade',
       })
     }
 
@@ -249,14 +233,13 @@ export const useHomeTradeData = () => {
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
-
     const topFarm = farms[0]
+
     if (topFarm?.lpSymbol) {
-      const pairLabel = formatPairLabel(topFarm.lpSymbol)
       items.push({
-        id: 'trending-pair',
+        id: 'trending-farm',
         title: 'Top farm',
-        subtitle: pairLabel ?? 'MARCO / BNB',
+        subtitle: topFarm.lpSymbol.replace('-', ' / '),
         href: '/farms',
         icon: 'trend',
       })
@@ -269,17 +252,17 @@ export const useHomeTradeData = () => {
         title: 'Latest swap',
         subtitle: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
         meta: time,
-        href: '/swap',
+        href: '/trade',
         icon: 'swap',
       })
     }
 
     const topPool = pools[0]
-    if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
+    if (topPool?.stakingToken?.symbol) {
       items.push({
-        id: 'new-pool',
+        id: 'top-pool',
         title: 'Top pool',
-        subtitle: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
+        subtitle: `${topPool.stakingToken.symbol} Staking`,
         href: '/pools',
         icon: 'pool',
       })
@@ -290,7 +273,7 @@ export const useHomeTradeData = () => {
       if (projectName) {
         items.push({
           id: 'project-listed',
-          title: 'Project listed',
+          title: 'Latest listing',
           subtitle: projectName,
           href: `/projects/${latestProject.slug}`,
           icon: 'project',
@@ -316,43 +299,28 @@ export const useHomeTradeData = () => {
 
     const topFarm = farms[0]
     if (topFarm?.lpSymbol) {
-      cards.push({
-        id: 'top-pair',
-        label: 'Top Pair',
-        value: topFarm.lpSymbol.replace('-', ' / '),
-        href: '/swap',
-      })
-    }
-
-    if (topFarm) {
       const apr = farmApr(topFarm)
-      const tvl = farmTvl(topFarm)
-      if (apr || tvl) {
-        cards.push({
-          id: 'top-farm',
-          label: 'Top Farm',
-          value: topFarm.lpSymbol ?? 'Farm',
-          meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
-          change: tvl,
-          href: '/farms',
-        })
-      }
+      cards.push({
+        id: 'top-farm',
+        label: 'Top Farm',
+        value: topFarm.lpSymbol.replace('-', ' / '),
+        meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
+        change: farmTvl(topFarm),
+        href: '/farms',
+      })
     }
 
     const topPool = pools[0]
     if (topPool?.stakingToken) {
       const apr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
-      const tvl = poolTvl(topPool)
-      if (apr || tvl) {
-        cards.push({
-          id: 'top-pool',
-          label: 'Top Staking Pool',
-          value: `${topPool.stakingToken.symbol} Staking`,
-          meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
-          change: tvl,
-          href: '/pools',
-        })
-      }
+      cards.push({
+        id: 'top-pool',
+        label: 'Top Pool',
+        value: `${topPool.stakingToken.symbol} Staking`,
+        meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
+        change: poolTvl(topPool),
+        href: '/pools',
+      })
     }
 
     if (topVolumeSwap) {
@@ -367,7 +335,7 @@ export const useHomeTradeData = () => {
 
     if (latestProject) {
       cards.push({
-        id: 'latest-project',
+        id: 'latest-listing',
         label: 'Latest Listing',
         value: latestProject.displayName ?? latestProject.slug,
         meta: latestProject.status,
@@ -379,46 +347,74 @@ export const useHomeTradeData = () => {
   }, [farms, pools, latestProject, topVolumeSwap])
 
   const farmRows = useMemo((): EarnRow[] => {
-    return farms.slice(0, 3).map((farm) => {
-      const apr = farmApr(farm)
-      const tvl = farmTvl(farm)
-      return {
-        id: `farm-${farm.pid}`,
-        name: farm.lpSymbol ?? 'Farm',
-        apr: apr ? `${apr.toFixed(2)}%` : undefined,
-        tvl,
-        href: '/farms',
-      }
-    }).filter((row) => row.apr || row.tvl)
+    return farms
+      .slice(0, 3)
+      .map((farm) => {
+        const apr = farmApr(farm)
+        const tvl = farmTvl(farm)
+        return {
+          id: `farm-${farm.pid}`,
+          name: farm.lpSymbol ?? 'Farm',
+          apr: apr ? `${apr.toFixed(2)}%` : undefined,
+          tvl,
+          href: '/farms',
+        }
+      })
+      .filter((row) => row.apr || row.tvl)
   }, [farms])
 
   const poolRows = useMemo((): EarnRow[] => {
-    return pools.slice(0, 3).map((pool) => {
-      const apr = pool.apr && pool.apr > 0 ? `${pool.apr.toFixed(2)}%` : undefined
-      const tvl = poolTvl(pool)
-      return {
-        id: `pool-${pool.sousId}`,
-        name: pool.stakingToken?.symbol ? `${pool.stakingToken.symbol} Staking` : 'Pool',
-        apr,
-        tvl,
-        href: '/pools',
-      }
-    }).filter((row) => row.apr || row.tvl)
+    return pools
+      .slice(0, 3)
+      .map((pool) => {
+        const apr = pool.apr && pool.apr > 0 ? `${pool.apr.toFixed(2)}%` : undefined
+        const tvl = poolTvl(pool)
+        return {
+          id: `pool-${pool.sousId}`,
+          name: pool.stakingToken?.symbol ? `${pool.stakingToken.symbol} Staking` : 'Pool',
+          apr,
+          tvl,
+          href: '/pools',
+        }
+      })
+      .filter((row) => row.apr || row.tvl)
   }, [pools])
 
-  const activityRows = useMemo((): ActivityRow[] => {
-    if (!transactions?.length) return []
-    return transactions.slice(0, 5).map((tx) => {
-      const { type, context, value } = txLabel(tx)
-      return {
-        id: tx.hash,
-        type,
-        context,
-        value,
-        time: formatTimeAgo(tx.timestamp),
-      }
-    })
-  }, [transactions])
+  const activitySlots = useMemo((): ActivitySlot[] => {
+    const topPool = pools[0]
+    const stakingRow: ActivityRow | undefined = topPool?.stakingToken
+      ? {
+          id: `pool-${topPool.sousId}`,
+          type: 'Staking Pool',
+          context: `${topPool.stakingToken.symbol} · ${topPool.earningToken?.symbol ?? 'Rewards'}`,
+          value: topPool.apr && topPool.apr > 0 ? `${topPool.apr.toFixed(2)}% APR` : undefined,
+          time: 'Live',
+        }
+      : undefined
+
+    return [
+      {
+        id: 'swap',
+        label: 'Latest swap',
+        row: latestSwap ? txToRow(latestSwap) : undefined,
+      },
+      {
+        id: 'liquidity',
+        label: 'Latest liquidity',
+        row: latestLiquidity ? txToRow(latestLiquidity) : undefined,
+      },
+      {
+        id: 'staking',
+        label: 'Latest staking',
+        row: stakingRow,
+      },
+    ]
+  }, [latestSwap, latestLiquidity, pools])
+
+  const activityRows = useMemo(
+    (): ActivityRow[] => activitySlots.filter((s) => s.row).map((s) => s.row!),
+    [activitySlots],
+  )
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)
@@ -459,6 +455,7 @@ export const useHomeTradeData = () => {
     farmRows,
     poolRows,
     activityRows,
+    activitySlots,
     liveEconomyMetrics,
     showEarn,
     showEarnNote,

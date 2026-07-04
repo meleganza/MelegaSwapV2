@@ -40,13 +40,13 @@ const Label = styled.div`
   color: #8a8a8a;
 `
 
-const Value = styled.div`
+const Value = styled.div<{ $unavailable?: boolean }>`
   margin-top: 6px;
-  font-size: 16px;
-  font-weight: 700;
-  color: ${colors.textPrimary};
+  font-size: ${({ $unavailable }) => ($unavailable ? '14px' : '16px')};
+  font-weight: ${({ $unavailable }) => ($unavailable ? 600 : 700)};
+  color: ${({ $unavailable }) => ($unavailable ? '#8a8a8a' : colors.textPrimary)};
   line-height: 1.25;
-  word-break: break-word;
+  white-space: nowrap;
 `
 
 const Change = styled.div<{ $positive?: boolean }>`
@@ -62,13 +62,18 @@ export interface TradePairStatsProps {
 
 export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
   <Grid data-trade-pair-stats>
-    {stats.map((stat) => (
-      <Card key={stat.id}>
-        <Label>{stat.label}</Label>
-        <Value>{stat.value ?? '—'}</Value>
-        {stat.change && <Change $positive={stat.changePositive}>{stat.change}</Change>}
-      </Card>
-    ))}
+    {stats.map((stat) => {
+      const unavailable = !stat.value || stat.value === '—'
+      return (
+        <Card key={stat.id}>
+          <Label>{stat.label}</Label>
+          <Value $unavailable={unavailable}>{unavailable ? 'Unavailable' : stat.value}</Value>
+          {stat.change && !unavailable ? (
+            <Change $positive={stat.changePositive}>{stat.change}</Change>
+          ) : null}
+        </Card>
+      )
+    })}
   </Grid>
 )
 

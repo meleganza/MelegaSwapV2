@@ -55,7 +55,7 @@ const Shell = styled.div`
 
 const HeroRow = styled.div`
   display: grid;
-  grid-template-columns: 7fr 5fr;
+  grid-template-columns: 1fr 1fr;
   gap: ${commandCenterLayout.sectionGap};
   align-items: stretch;
   min-width: 0;

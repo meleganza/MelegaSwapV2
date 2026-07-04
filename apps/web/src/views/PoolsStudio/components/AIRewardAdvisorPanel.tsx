@@ -57,6 +57,8 @@ const RowLabel = styled.div`
 const RowValue = styled.div<{ $tone?: string }>`
   font-size: 13px;
   font-weight: 700;
+  line-height: 1.4;
+  word-break: break-word;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? poolsStudioColors.green

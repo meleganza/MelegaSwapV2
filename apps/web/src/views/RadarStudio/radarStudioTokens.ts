@@ -30,7 +30,7 @@ export const radarStudioLayout = {
   opsPanelWidth: '300px',
   previewGaugeSize: '220px',
   mobileGaugeSize: '240px',
-  heatmapMinHeight: '300px',
+  heatmapMinHeight: '240px',
   heatmapMarginTop: '24px',
   stackBreakpoint: '1180px',
   mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',

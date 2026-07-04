@@ -9,7 +9,7 @@ export const poolsStudioLayout = {
   pageGridGap: '16px',
   kpiGap: '12px',
   kpiHeight: '96px',
-  featuredHeight: '330px',
+  featuredHeight: '380px',
   advisorWidth: '334px',
   featuredGridAdjust: '14px',
   filterHeight: '44px',
