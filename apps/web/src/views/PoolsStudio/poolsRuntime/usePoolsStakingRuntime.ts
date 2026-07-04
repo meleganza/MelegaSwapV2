@@ -201,7 +201,8 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
     const earningCounts: Record<string, number> = {}
     ;(rawPools ?? []).forEach((p) => {
-      const sym = p.earningToken.symbol ?? '?'
+      if (!p?.earningToken?.symbol) return
+      const sym = p.earningToken.symbol
       earningCounts[sym] = (earningCounts[sym] || 0) + 1
     })
     const topSym = Object.entries(earningCounts).sort((a, b) => b[1] - a[1])[0]

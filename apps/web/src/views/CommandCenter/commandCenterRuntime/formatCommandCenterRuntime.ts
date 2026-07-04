@@ -64,7 +64,7 @@ export function formatPoolPositionRows(cards: PoolPreviewCard[]): PoolPosition[]
       name: p.name,
       apr: p.apr ?? UNAVAILABLE,
       pending:
-        p.pendingReward && p.rawPool
+        p.pendingReward?.gt(0) && p.rawPool?.earningToken?.decimals
           ? formatPoolUsd(
               getBalanceNumber(p.pendingReward, p.rawPool.earningToken.decimals) *
                 (p.rawPool.earningTokenPrice || 0),
@@ -120,7 +120,7 @@ export function formatTimeAgo(isoOrUnix: string | number): string {
 export function sumPendingRewardsUsd(pools: PoolPreviewCard[], farms: FarmPreviewCard[]): string {
   let total = 0
   pools.forEach((p) => {
-    if (p.pendingReward?.gt(0) && p.rawPool) {
+    if (p.pendingReward?.gt(0) && p.rawPool?.earningToken?.decimals) {
       total +=
         getBalanceNumber(p.pendingReward, p.rawPool.earningToken.decimals) *
         (p.rawPool.earningTokenPrice || 0)
