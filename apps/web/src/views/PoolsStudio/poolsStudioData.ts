@@ -3,7 +3,7 @@ import { Token } from '@pancakeswap/sdk'
 import { Pool } from '@pancakeswap/uikit'
 import { VaultKey } from 'state/types'
 
-export type PoolStatus = 'live' | 'indexing' | 'coming-soon'
+export type PoolStatus = 'live' | 'indexing' | 'ended'
 
 export interface PoolsKpiItem {
   id: string

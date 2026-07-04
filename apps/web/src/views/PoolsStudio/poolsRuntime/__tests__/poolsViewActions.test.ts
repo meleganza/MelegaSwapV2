@@ -29,7 +29,7 @@ describe('pools view actions', () => {
   })
 
   it('shows coming soon for finished pools', () => {
-    expect(resolvePoolCardActions({ ...basePool, cta: 'none', status: 'coming-soon' }, '0xabc')).toEqual(['coming-soon'])
+    expect(resolvePoolCardActions({ ...basePool, cta: 'none', status: 'ended' }, '0xabc')).toEqual(['ended'])
   })
 
   it('hides unstake/claim without wallet', () => {

@@ -89,20 +89,17 @@ export const PrGhostBtn = styled.button`
 `
 
 export const PrSmallPrimaryBtn = styled(PrPrimaryBtn)`
-  width: ${projectsStudioLayout.tradeBtnWidth};
-  min-width: ${projectsStudioLayout.tradeBtnWidth};
-  padding: 0;
+  min-width: 88px;
+  padding: 0 14px;
 `
 
 export const PrSmallGhostBtn = styled(PrGhostBtn)`
-  width: ${projectsStudioLayout.openBtnWidth};
-  min-width: ${projectsStudioLayout.openBtnWidth};
-  padding: 0;
+  min-width: 100px;
+  padding: 0 14px;
 `
 
 export const PrFollowBtn = styled.button`
-  width: ${projectsStudioLayout.followBtnWidth};
-  min-width: ${projectsStudioLayout.followBtnWidth};
+  min-width: 88px;
   height: ${projectsStudioLayout.btnHeight};
   min-height: ${projectsStudioLayout.btnHeight};
   border: none;
@@ -172,7 +169,7 @@ export const PrMetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'red' | 'g
   font-size: 16px;
   font-weight: 700;
   line-height: 1.25;
-  word-break: break-word;
+  white-space: nowrap;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? projectsStudioColors.green

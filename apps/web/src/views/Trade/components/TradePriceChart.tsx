@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import TradeMelegaIsologo from './TradeMelegaIsologo'
+import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { tradeColors, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
@@ -49,6 +49,14 @@ const PairBlock = styled.div`
   align-items: flex-start;
   gap: 8px;
   min-width: 0;
+`
+
+const TokenLogo = styled.img`
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
 `
 
 const TokenIcon = styled.span`
@@ -267,7 +275,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
       <Header>
         <PairBlock>
           {inputSymbol === 'MARCO' ? (
-            <TradeMelegaIsologo size={22} />
+            <TokenLogo src={MARCO_LOGO_URI} alt="" />
           ) : (
             <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
           )}
@@ -322,7 +330,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
         {stats.map((stat) => (
           <StatCard key={stat.id}>
             <StatLabel>{stat.label}</StatLabel>
-            <StatValue>{stat.value ?? 'Indexing...'}</StatValue>
+            <StatValue>{stat.value ?? '—'}</StatValue>
             {stat.change && <StatDelta $positive={stat.changePositive}>{stat.change}</StatDelta>}
           </StatCard>
         ))}

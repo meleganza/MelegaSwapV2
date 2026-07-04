@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
@@ -313,7 +313,7 @@ function renderTokenIcon(symbol: string, offset?: boolean) {
   if (symbol === 'MARCO') {
     return (
       <TokenIconWrap $offset={offset}>
-        <MelegaLogoSvg size={24} />
+        <img src={MARCO_LOGO_URI} alt="" width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover' }} />
       </TokenIconWrap>
     )
   }
@@ -334,9 +334,10 @@ function aprVariant(farm: FarmPreviewCard): 'live' | 'indexing' | 'coming-soon' 
 }
 
 function aprDisplay(farm: FarmPreviewCard) {
+  if (farm.status === 'finished') return 'Ended'
   if (farm.apr) return farm.apr
-  if (farm.status === 'indexing') return 'Indexing...'
-  return 'Coming soon'
+  if (farm.status === 'indexing') return '—'
+  return '—'
 }
 
 function formatRewardValue(value: string) {
@@ -347,7 +348,7 @@ function formatRewardValue(value: string) {
 function statusMetric(farm: FarmPreviewCard) {
   if (farm.status === 'live') return 'Live'
   if (farm.status === 'indexing') return 'Indexing'
-  if (farm.status === 'coming-soon') return 'Coming soon'
+  if (farm.status === 'finished') return 'Ended'
   return farm.status
 }
 
@@ -364,10 +365,10 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
   const hasStaked = farm.userStaked?.gt(0)
 
   const renderFooter = () => {
-    if (farm.status === 'coming-soon' || farm.cta === 'none') {
+    if (farm.status === 'finished' || farm.cta === 'none') {
       return (
         <Footer $centered>
-          <ComingSoonBadge>Coming Soon</ComingSoonBadge>
+          <ComingSoonBadge>Ended</ComingSoonBadge>
         </Footer>
       )
     }
@@ -420,7 +421,9 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
               ? 'Live'
               : farm.status === 'indexing'
                 ? 'Indexing'
-                : 'Coming soon'}
+                : farm.status === 'finished'
+                  ? 'Ended'
+                  : 'Unavailable'}
           </StatusPill>
         </TopRow>
 
@@ -429,6 +432,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           <AprValue $variant={aprVar}>{aprDisplay(farm)}</AprValue>
         </AprSection>
 
+        {farm.status !== 'finished' ? (
         <Metrics>
           <Metric>
             <MetricLabel>TVL</MetricLabel>
@@ -459,6 +463,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
             </MetricValue>
           </Metric>
         </Metrics>
+        ) : null}
 
         {expanded ? (
           <AnalyzePanel>

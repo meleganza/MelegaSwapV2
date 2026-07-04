@@ -171,8 +171,8 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   padding,
   margin,
   disabled,
-  emptyPrimary = 'Indexing Melega DEX activity',
-  emptySecondary = 'Pairs, swaps, farms and pools will appear here automatically',
+  emptyPrimary = 'No live market activity',
+  emptySecondary = 'Pairs, swaps, farms and pools appear when indexed',
 }) => {
   const [hoverPaused, setHoverPaused] = useState(false)
   const [dragPaused, setDragPaused] = useState(false)

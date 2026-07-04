@@ -65,7 +65,7 @@ export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
     {stats.map((stat) => (
       <Card key={stat.id}>
         <Label>{stat.label}</Label>
-        <Value>{stat.value ?? 'Indexing...'}</Value>
+        <Value>{stat.value ?? '—'}</Value>
         {stat.change && <Change $positive={stat.changePositive}>{stat.change}</Change>}
       </Card>
     ))}

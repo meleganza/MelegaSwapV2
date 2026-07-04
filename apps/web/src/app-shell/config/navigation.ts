@@ -82,7 +82,7 @@ export const shellNavigation: ShellNavSection[] = [
         icon: 'sparkle',
         match: (p) => p.startsWith('/build-studio'),
       },
-      { id: 'list', label: 'List Project', href: '/launch', icon: 'rocket', match: (p) => p === '/launch' },
+      { id: 'list', label: 'List Project', href: '/import-existing-token', icon: 'rocket', match: (p) => p === '/import-existing-token' || p === '/launch' },
       {
         id: 'reward',
         label: 'Reward MARCO holders',
@@ -176,7 +176,11 @@ export const shellBottomNavItems = [
     label: 'Build',
     href: '/build-studio',
     icon: 'rocket' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/build-studio') || p.startsWith('/launch') || p.startsWith('/add'),
+    match: (p: string) =>
+      p.startsWith('/build-studio') ||
+      p.startsWith('/launch') ||
+      p.startsWith('/import-existing-token') ||
+      p.startsWith('/add'),
   },
   {
     id: 'command-center',

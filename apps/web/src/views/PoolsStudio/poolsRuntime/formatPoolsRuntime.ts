@@ -57,7 +57,7 @@ export function getPoolDisplayName(pool: Pool.DeserializedPool<Token>): string {
 }
 
 function poolStatus(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolStatus {
-  if (pool.isFinished) return 'coming-soon'
+  if (pool.isFinished) return 'ended'
   if (pool.sousId !== 0) {
     const { hasPoolStarted } = getPoolBlockInfo(pool, currentBlock)
     if (!hasPoolStarted) return 'indexing'
@@ -98,7 +98,7 @@ export function mapPoolToPreviewCard(
     poolType: getPoolTypeLabel(pool),
     name: getPoolDisplayName(pool),
     tokens: [pool.stakingToken.symbol, pool.earningToken.symbol].filter(Boolean) as string[],
-    apr: status === 'live' ? formatApr(apr) : status === 'indexing' ? 'Indexing...' : undefined,
+    apr: status === 'live' ? formatApr(apr) : status === 'indexing' ? '—' : undefined,
     status,
     tvl: formatUsd(tvlUsd),
     liquidity: formatUsd(tvlUsd),
@@ -106,7 +106,7 @@ export function mapPoolToPreviewCard(
     dailyRewards: dailyRewardTokens > 0 ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
     multiplier: pool.userData?.stakedBalance?.gt(0) ? 'Active' : '—',
     participants: staked > 0 ? formatTokenAmount(pool.totalStaked, pool.stakingToken.decimals) : '—',
-    cta: status === 'coming-soon' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
+    cta: status === 'ended' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
     rawPool: pool,
     userStaked: pool.userData?.stakedBalance,

@@ -76,52 +76,54 @@ const StatusPill = styled.span<{ $status: PoolPreviewCard['status'] }>`
     ${({ $status }) =>
       $status === 'indexing'
         ? poolsStudioColors.gold
-        : $status === 'coming-soon'
+        : $status === 'ended'
           ? 'rgba(255,255,255,0.16)'
           : poolsStudioColors.green};
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
-      : $status === 'coming-soon'
+      : $status === 'ended'
         ? poolsStudioColors.muted
         : poolsStudioColors.green};
   background: ${({ $status }) =>
-    $status === 'indexing' ? poolsStudioColors.previewBadgeBg : $status === 'coming-soon' ? 'rgba(255,255,255,0.04)' : 'rgba(0,230,118,0.08)'};
+    $status === 'indexing' ? poolsStudioColors.previewBadgeBg : $status === 'ended' ? 'rgba(255,255,255,0.04)' : 'rgba(0,230,118,0.08)'};
 `
 
-const AprSection = styled.div<{ $comingSoon?: boolean }>`
+const AprSection = styled.div<{ $ended?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin-bottom: ${poolsStudioLayout.poolCardAprGap};
   flex-shrink: 0;
-  ${({ $comingSoon }) =>
-    $comingSoon
+  ${({ $ended }) =>
+    $ended
       ? `
     flex: 1;
     justify-content: center;
+    align-items: center;
+    text-align: center;
   `
       : ''}
 `
 
 const AprValue = styled.div<{ $status: PoolPreviewCard['status'] }>`
   font-size: ${({ $status }) =>
-    $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '36px' : '32px'};
+    $status === 'indexing' ? '28px' : $status === 'ended' ? '36px' : '32px'};
   font-weight: 800;
   line-height: ${({ $status }) =>
-    $status === 'indexing' ? '30px' : $status === 'coming-soon' ? '38px' : '36px'};
+    $status === 'indexing' ? '30px' : $status === 'ended' ? '38px' : '36px'};
   color: ${({ $status }) =>
     $status === 'indexing'
       ? poolsStudioColors.gold
-      : $status === 'coming-soon'
+      : $status === 'ended'
         ? poolsStudioColors.muted
         : poolsStudioColors.green};
 
   @media (max-width: 767px) {
     font-size: ${({ $status }) =>
-      $status === 'indexing' ? '26px' : $status === 'coming-soon' ? '32px' : '28px'};
+      $status === 'indexing' ? '26px' : $status === 'ended' ? '32px' : '28px'};
     line-height: ${({ $status }) =>
-      $status === 'indexing' ? '28px' : $status === 'coming-soon' ? '34px' : '32px'};
+      $status === 'indexing' ? '28px' : $status === 'ended' ? '34px' : '32px'};
   }
 `
 
@@ -206,11 +208,11 @@ const Footer = styled.div`
   }
 `
 
-const ComingSoonPill = styled.span`
+const EndedPill = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 120px;
+  width: 100%;
   height: 36px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
@@ -227,7 +229,7 @@ function formatRewardValue(value: string) {
 function statusLabel(status: PoolPreviewCard['status']) {
   if (status === 'live') return 'Live'
   if (status === 'indexing') return 'Indexing'
-  return 'Coming soon'
+  return 'Ended'
 }
 
 interface Props {
@@ -240,11 +242,11 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const preview = pool.analyzePreview
   const showStake = pool.cta === 'stake'
   const showAnalyze = pool.cta === 'stake' || pool.cta === 'analyze'
-  const comingSoon = pool.cta === 'none'
+  const isEnded = pool.status === 'ended' || pool.cta === 'none'
   const hasPending = pool.pendingReward?.gt(0)
   const hasStaked = pool.userStaked?.gt(0)
 
-  const aprText = pool.status === 'coming-soon' ? 'Coming soon' : pool.apr ?? '—'
+  const aprText = pool.status === 'ended' ? 'Ended' : pool.apr ?? '—'
 
   return (
     <Card data-ps-pool-card $expanded={expanded}>
@@ -257,15 +259,16 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
             <PoolName>{pool.name}</PoolName>
           </NameBlock>
           <StatusPill $status={pool.status}>
-            {pool.status === 'live' ? 'LIVE' : pool.status === 'indexing' ? 'INDEXING' : 'COMING SOON'}
+            {pool.status === 'live' ? 'LIVE' : pool.status === 'indexing' ? 'INDEXING' : 'ENDED'}
           </StatusPill>
         </TopRow>
 
-        <AprSection $comingSoon={pool.status === 'coming-soon'}>
+        <AprSection $ended={pool.status === 'ended'}>
           <PsMetricLabel>APR</PsMetricLabel>
           <AprValue $status={pool.status}>{aprText}</AprValue>
         </AprSection>
 
+        {!isEnded ? (
         <Metrics>
           <MetricCell>
             <PsMetricLabel>TVL</PsMetricLabel>
@@ -298,6 +301,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
             </MetricValue>
           </MetricCell>
         </Metrics>
+        ) : null}
 
         {expanded && preview ? (
           <AnalyzeBlock>
@@ -327,8 +331,8 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
       </Body>
 
       <Footer>
-        {comingSoon ? (
-          <ComingSoonPill>Coming Soon</ComingSoonPill>
+        {isEnded ? (
+          <EndedPill>Ended</EndedPill>
         ) : (
           <>
             {showStake ? (

@@ -246,6 +246,12 @@ const ButtonRow = styled.div`
   padding-top: 12px;
   flex-shrink: 0;
 
+  a,
+  button {
+    flex: 0 1 auto;
+    min-height: ${projectsStudioLayout.btnHeight};
+  }
+
   @media (max-width: 767px) {
     width: 100%;
     flex-direction: column;

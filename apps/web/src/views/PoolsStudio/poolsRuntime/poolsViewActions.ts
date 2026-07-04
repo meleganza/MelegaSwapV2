@@ -1,10 +1,10 @@
 import type BigNumber from 'bignumber.js'
 import type { PoolPreviewCard } from '../poolsStudioData'
 
-export type PoolCardAction = 'coming-soon' | 'stake' | 'unstake' | 'claim' | 'analyze'
+export type PoolCardAction = 'ended' | 'stake' | 'unstake' | 'claim' | 'analyze'
 
 export function resolvePoolCardActions(pool: PoolPreviewCard, account?: string | null): PoolCardAction[] {
-  if (pool.cta === 'none' || pool.status === 'coming-soon') return ['coming-soon']
+  if (pool.cta === 'none' || pool.status === 'ended') return ['ended']
 
   const actions: PoolCardAction[] = []
   if (pool.cta === 'stake') actions.push('stake')

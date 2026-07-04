@@ -177,18 +177,30 @@ const SkeletonLabel = styled.span`
   opacity: 0.18;
 `
 
-const Watermark = styled.div`
+const UnavailableState = styled.div`
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.04);
-  pointer-events: none;
-  user-select: none;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  background: #080808;
+`
+
+const UnavailableTitle = styled.span`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${tradeColors.muted};
+`
+
+const UnavailableDesc = styled.span`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.45;
+  max-width: 280px;
 `
 
 const CANDLES = [
@@ -229,7 +241,8 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
 
   const debouncedLoading = useDebounce(isLoading, 800)
   const showTv = Boolean(symbol) && !hasNoData
-  const showSkeleton = !showTv || isLoading || debouncedLoading
+  const showUnavailable = hasNoData || !symbol
+  const showSkeleton = showTv && (isLoading || debouncedLoading)
 
   useEffect(() => {
     setIsLoading(true)
@@ -242,6 +255,12 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
         <TvWrap $show={!showSkeleton}>
           <TradingView id={TV_ID} symbol={`${SYMBOL_PREFIX}${symbol}`} />
         </TvWrap>
+      )}
+      {showUnavailable && (
+        <UnavailableState data-trade-chart-unavailable>
+          <UnavailableTitle>Chart unavailable</UnavailableTitle>
+          <UnavailableDesc>Pair price history is not indexed for this market yet.</UnavailableDesc>
+        </UnavailableState>
       )}
       {showSkeleton && (
         <Skeleton aria-hidden={!showSkeleton}>
@@ -262,9 +281,8 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
           </VolumeRow>
           <Footer>
             <LoadingBar />
-            <SkeletonLabel>Loading market...</SkeletonLabel>
+            <SkeletonLabel>Loading chart…</SkeletonLabel>
           </Footer>
-          <Watermark aria-hidden>M</Watermark>
         </Skeleton>
       )}
     </Area>

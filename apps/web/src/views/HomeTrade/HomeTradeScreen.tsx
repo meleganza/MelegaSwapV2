@@ -81,8 +81,8 @@ export const HomeTradeScreen: React.FC = () => {
     const latestProject = data.marketCards.find((c) => c.id === 'latest-project')
     const topPool = data.marketCards.find((c) => c.id === 'top-pool')
 
-    if (topFarm) rows.push({ id: 'farm', label: 'Top Farm', value: topFarm.meta || topFarm.value })
-    if (topPool) rows.push({ id: 'pool', label: 'Newest Pool', value: topPool.meta || topPool.value })
+    if (topFarm) rows.push({ id: 'farm', label: 'Top Farm', value: topFarm.value })
+    if (topPool) rows.push({ id: 'pool', label: 'Top Pool', value: topPool.value })
     if (latestProject) rows.push({ id: 'listing', label: 'Latest Listing', value: latestProject.value })
 
     return rows.slice(0, 3)

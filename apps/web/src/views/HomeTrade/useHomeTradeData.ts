@@ -5,7 +5,6 @@ import { Token } from '@pancakeswap/sdk'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { getAllProjects } from 'registry/projects/getAllProjects'
-import { resolveHomepageLiveSections } from 'lib/homepage-live'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useProtocolTransactionsSWR } from 'state/info/hooks'
 import { usePriceCakeBusd } from 'state/farms/hooks'
@@ -132,7 +131,6 @@ export const useHomeTradeData = () => {
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { topFarms } = useGetTopFarmsByApr(true)
   const { topPools } = useGetTopPoolsByApr(true)
-  const registry = useMemo(() => resolveHomepageLiveSections(), [])
 
   const farms = useMemo(
     () => (topFarms ?? []).filter((f): f is FarmWithStakedValue => Boolean(f?.lpSymbol)),
@@ -150,7 +148,7 @@ export const useHomeTradeData = () => {
   }, [transactions])
 
   const latestProject = useMemo(() => {
-    const projects = getAllProjects()
+    const projects = getAllProjects().filter((p) => p.slug !== 'melega-dex')
     return projects[0]
   }, [])
 
@@ -208,21 +206,10 @@ export const useHomeTradeData = () => {
       }
     }
 
-    const topPoolVenue = registry.topPools[0]
-    if (topPoolVenue) {
-      const poolLabel = sanitizeRibbonText(topPoolVenue.label)
-      if (poolLabel) {
-        items.push({
-          id: 'new-pool',
-          primary: 'New pool',
-          secondary: poolLabel,
-          href: topPoolVenue.href,
-        })
-      }
-    } else if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
+    if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
       items.push({
         id: 'new-pool',
-        primary: 'New pool',
+        primary: 'Top staking pool',
         secondary: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
         href: '/pools',
       })
@@ -258,7 +245,7 @@ export const useHomeTradeData = () => {
     }
 
     return items
-  }, [farms, latestSwap, latestProject, pools, registry.topPools, topVolumeSwap])
+  }, [farms, latestSwap, latestProject, pools, topVolumeSwap])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -287,27 +274,15 @@ export const useHomeTradeData = () => {
       })
     }
 
-    const topPoolVenue = registry.topPools[0]
-    if (topPoolVenue) {
-      const poolLabel = sanitizeRibbonText(topPoolVenue.label)
+    const topPool = pools[0]
+    if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
       items.push({
         id: 'new-pool',
-        title: 'New pool',
-        subtitle: poolLabel ?? 'MARCO / BNB',
-        href: topPoolVenue.href,
+        title: 'Top pool',
+        subtitle: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
+        href: '/pools',
         icon: 'pool',
       })
-    } else {
-      const topPool = pools[0]
-      if (topPool?.stakingToken?.symbol && topPool?.earningToken?.symbol) {
-        items.push({
-          id: 'new-pool',
-          title: 'New pool',
-          subtitle: `${topPool.stakingToken.symbol} / ${topPool.earningToken.symbol}`,
-          href: '/pools',
-          icon: 'pool',
-        })
-      }
     }
 
     if (latestProject) {
@@ -334,7 +309,7 @@ export const useHomeTradeData = () => {
     }
 
     return items
-  }, [farms, latestSwap, latestProject, pools, registry.topPools])
+  }, [farms, latestSwap, latestProject, pools])
 
   const marketCards = useMemo((): MarketCard[] => {
     const cards: MarketCard[] = []
@@ -380,10 +355,20 @@ export const useHomeTradeData = () => {
       }
     }
 
+    if (topVolumeSwap) {
+      cards.push({
+        id: 'top-volume',
+        label: 'Top Volume',
+        value: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
+        meta: formatUsd(topVolumeSwap.amountUSD),
+        href: '/trade',
+      })
+    }
+
     if (latestProject) {
       cards.push({
         id: 'latest-project',
-        label: 'Latest Project',
+        label: 'Latest Listing',
         value: latestProject.displayName ?? latestProject.slug,
         meta: latestProject.status,
         href: `/projects/${latestProject.slug}`,
@@ -391,7 +376,7 @@ export const useHomeTradeData = () => {
     }
 
     return cards
-  }, [farms, pools, latestProject])
+  }, [farms, pools, latestProject, topVolumeSwap])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms.slice(0, 3).map((farm) => {

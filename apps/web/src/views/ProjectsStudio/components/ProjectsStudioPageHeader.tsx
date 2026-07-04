@@ -65,7 +65,7 @@ export const ProjectsStudioPageHeader: React.FC = () => (
         <PrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }}>
           AI Indexing: How it works
         </PrGhostBtn>
-        <PrPrimaryBtn type="button">
+        <PrPrimaryBtn as="a" href="/import-existing-token">
           <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
           List Your Project
         </PrPrimaryBtn>

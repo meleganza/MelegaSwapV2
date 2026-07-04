@@ -167,9 +167,8 @@ export const LiveActivityFeed: React.FC<{ rows: ActivityRow[] }> = ({ rows }) =>
       <Body>
         {displayRows.length === 0 ? (
           <EmptyWrap>
-            <PulseDot aria-hidden />
-            <EmptyTitle>Waiting for the next Melega DEX event...</EmptyTitle>
-            <EmptyDesc>Swaps, listings, pools and farms appear here when indexed.</EmptyDesc>
+            <EmptyTitle>No recent activity</EmptyTitle>
+            <EmptyDesc>Latest swaps and liquidity events appear here when indexed.</EmptyDesc>
           </EmptyWrap>
         ) : (
           <Timeline>

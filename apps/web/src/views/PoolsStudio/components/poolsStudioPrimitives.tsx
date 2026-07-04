@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
@@ -175,7 +176,13 @@ export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: b
           display: 'inline-flex',
         }}
       >
-        <MelegaLogoSvg size={size} />
+        <img
+          src={MARCO_LOGO_URI}
+          alt=""
+          width={size}
+          height={size}
+          style={{ borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+        />
       </span>
     )
   }

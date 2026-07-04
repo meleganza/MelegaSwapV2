@@ -155,13 +155,13 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows, isInde
       <HeadRow>
         <Title>Recent Swaps on Melega DEX</Title>
         <HeadRight>
-          {isIndexing && <IndexingLabel>Indexing</IndexingLabel>}
+          {isIndexing && <IndexingLabel>Loading</IndexingLabel>}
           <ViewAll type="button">View All</ViewAll>
         </HeadRight>
       </HeadRow>
       {displayRows.length === 0 ? (
         <EmptyState>
-          {isIndexing ? 'Indexing Melega DEX swap activity…' : 'No recent swaps for this pair yet.'}
+          {isIndexing ? 'Loading swap activity…' : 'No recent swaps for this pair yet.'}
         </EmptyState>
       ) : (
         <Table>

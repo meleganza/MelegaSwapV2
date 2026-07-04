@@ -133,7 +133,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'holders',
         label: 'Holders',
-        value: undefined,
+        value: '—',
       },
     ]
   }, [tokenData])
@@ -151,7 +151,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     recentSwaps,
     pairStats,
     pairPrice,
-    isIndexing: !transactions && !tokenData,
+    isIndexing: transactions === undefined && tokenData === undefined,
+    hasSwapData: transactions !== undefined,
   }
 }
 
