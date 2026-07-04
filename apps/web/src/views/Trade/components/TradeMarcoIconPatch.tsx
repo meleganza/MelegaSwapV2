@@ -1,17 +1,14 @@
 import React, { useEffect } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
-import { TradeMelegaIsologo } from './TradeMelegaIsologo'
+import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 
 const SCOPE = '[data-trade-terminal-screen]'
 const BUTTON_SELECTOR = '.open-currency-select-button, [class*="OpenCurrencySelectButton"]'
 
 const isMarcoButton = (btn: Element) => /MARCO/i.test(btn.textContent ?? '')
 
-/** Presentation-only: swap MARCO token glyphs for official Melega isologo SVG. */
+/** Presentation-only: ensure MARCO currency buttons use the official token logo. */
 export const TradeMarcoIconPatch: React.FC = () => {
   useEffect(() => {
-    const roots = new Map<Element, Root>()
-
     const patch = () => {
       const scope = document.querySelector(SCOPE)
       if (!scope) return
@@ -25,15 +22,17 @@ export const TradeMarcoIconPatch: React.FC = () => {
 
         let slot = btn.querySelector('[data-melega-marco-icon]') as HTMLElement | null
         if (!slot) {
-          slot = document.createElement('span')
+          slot = document.createElement('img')
           slot.setAttribute('data-melega-marco-icon', 'true')
-          slot.style.display = 'inline-flex'
-          slot.style.alignItems = 'center'
+          slot.setAttribute('src', MARCO_LOGO_URI)
+          slot.setAttribute('alt', '')
+          slot.style.width = '22px'
+          slot.style.height = '22px'
+          slot.style.borderRadius = '50%'
+          slot.style.objectFit = 'cover'
+          slot.style.display = 'inline-block'
           slot.style.marginRight = '6px'
           btn.insertBefore(slot, btn.firstChild)
-          const root = createRoot(slot)
-          roots.set(slot, root)
-          root.render(<TradeMelegaIsologo size={22} />)
         }
       })
     }
@@ -47,11 +46,6 @@ export const TradeMarcoIconPatch: React.FC = () => {
 
     return () => {
       observer.disconnect()
-      roots.forEach((root, el) => {
-        root.unmount()
-        el.remove()
-      })
-      roots.clear()
     }
   }, [])
 
