@@ -3,7 +3,7 @@
 **Mission:** R100 DEX Production Freeze (supersedes R024 gate for V2 staging)  
 **Date:** 2026-07-04  
 **Branch:** `design-system-foundation`  
-**SHA:** _(see R100 commit)_  
+**SHA:** `99aea9c371528276b5cfe6d7d6a12a67ddfd7d60`  
 **Staging:** https://v2.melega.finance  
 **Production rollback SHA:** `5d4818f` (`main` — Phase D Consolidation M32)  
 **Return:** `R100_DEX_PRODUCTION_FREEZE_READY`

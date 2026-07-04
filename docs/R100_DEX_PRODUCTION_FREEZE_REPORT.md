@@ -3,7 +3,7 @@
 **Mission:** R100 DEX Production Freeze  
 **Date:** 2026-07-04  
 **Branch:** `design-system-foundation`  
-**SHA:** _(see commit after push)_  
+**SHA:** `99aea9c371528276b5cfe6d7d6a12a67ddfd7d60`  
 **Staging:** https://v2.melega.finance  
 **Return:** `R100_DEX_PRODUCTION_FREEZE_READY`
 
