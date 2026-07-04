@@ -16,7 +16,7 @@
 | **Recommendation** | **PREMIUM_BLOCKED** |
 | **Premium readiness score** | **74 / 100** |
 | **Build** | `yarn build` — PASS |
-| **SHA** | *(set at commit — see git log)* |
+| **SHA** | `222745f` |
 
 Truth over continuity: significant polish landed, but full responsive certification and several structural layout debts remain before claiming premium production quality.
 
