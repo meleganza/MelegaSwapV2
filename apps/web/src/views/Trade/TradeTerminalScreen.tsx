@@ -14,8 +14,10 @@ import TradeCenterPanel from './TradeCenterPanel'
 import TradeRightRail from './components/TradeRightRail'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
 import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
+import TradeHowItWorksPanel from './components/TradeHowItWorksPanel'
 import useTradeTerminalData from './useTradeTerminalData'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
+import { TradeUiProvider } from './TradeUiContext'
 import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
 
 const Root = styled.div`
@@ -110,6 +112,7 @@ const AreaSwaps = styled.div`
 export const TradeTerminalScreen: React.FC = () => {
   const [mode, setMode] = useState<TradeMode>('smartswap')
   const [aiMode, setAiMode] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -128,8 +131,9 @@ export const TradeTerminalScreen: React.FC = () => {
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
       <TrendingRibbon />
+      <TradeUiProvider value={{ mode, setMode, helpOpen, setHelpOpen }}>
       <Content>
-        <TradePageHeader aiMode={aiMode} onAiModeChange={setAiMode} />
+        <TradePageHeader aiMode={aiMode} onAiModeChange={setAiMode} onHowItWorks={() => setHelpOpen(true)} />
         <TradeTabBar active={mode} onChange={setMode} />
         <TradeRuntimeProvider>
           <PageGrid>
@@ -153,6 +157,8 @@ export const TradeTerminalScreen: React.FC = () => {
           </PageGrid>
         </TradeRuntimeProvider>
       </Content>
+      <TradeHowItWorksPanel open={helpOpen} onClose={() => setHelpOpen(false)} />
+      </TradeUiProvider>
     </Root>
   )
 }

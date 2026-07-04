@@ -73,7 +73,8 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Melega Router tab | 🟩 | R103 — `TradeRouterPanel` from live SmartSwap/V2 comparison |
 | Trade History tab | 🟩 | R103 — wallet txs + protocol swaps + settlement refs |
 | Settlement status UI | 🟩 | R103 — treasury handoff display in `TradeRightRail` |
-| Limit orders | 🟨 | Tab labeled Coming soon |
+| Limit orders | 🟩 | R104 — read-only explainer panel; tab enabled, labeled Coming soon |
+| Trade rail CTAs | 🟩 | R104 — View All Routes / Router Analytics → Router tab; Manage Assets scroll; How it works panel |
 | Transaction history | 🟩 | Wallet + protocol via `tradeRuntime/formatTradeHistory` |
 
 ### AI (future)

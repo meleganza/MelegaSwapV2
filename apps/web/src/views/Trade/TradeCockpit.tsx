@@ -17,6 +17,7 @@ import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
 import TradeHistoryPanel from './components/TradeHistoryPanel'
 import TradeRouterPanel from './components/TradeRouterPanel'
+import TradeLimitOrdersPanel from './components/TradeLimitOrdersPanel'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
@@ -212,9 +213,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   if (mode === 'limit') {
     return (
       <Shell data-trade-cockpit>
-        <Panel data-trade-cockpit-shell>
-          <Placeholder>Limit orders — coming soon</Placeholder>
-        </Panel>
+        <TradeLimitOrdersPanel />
       </Shell>
     )
   }

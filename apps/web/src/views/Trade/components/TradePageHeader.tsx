@@ -111,16 +111,17 @@ const HiddenCheckbox = styled.input`
 export interface TradePageHeaderProps {
   aiMode: boolean
   onAiModeChange: (on: boolean) => void
+  onHowItWorks?: () => void
 }
 
-export const TradePageHeader: React.FC<TradePageHeaderProps> = ({ aiMode, onAiModeChange }) => (
+export const TradePageHeader: React.FC<TradePageHeaderProps> = ({ aiMode, onAiModeChange, onHowItWorks }) => (
   <Row data-trade-page-header>
     <Left>
       <Title>Trade</Title>
       <Subtitle>Professional trading with best multichain routes.</Subtitle>
     </Left>
     <Right>
-      <HowItWorks type="button" disabled title="Coming soon">
+      <HowItWorks type="button" onClick={onHowItWorks} disabled={!onHowItWorks} title={onHowItWorks ? undefined : 'Unavailable'}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
           <circle cx="12" cy="12" r="10" />
           <path d="M12 16v-4M12 8h.01" />

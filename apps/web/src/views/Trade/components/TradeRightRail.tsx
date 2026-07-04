@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'
 import { formatSettlementUserLabel, settlementLabelTone } from '../tradeRuntime/formatSettlementStatus'
+import { useTradeUi } from '../TradeUiContext'
 import TradeWatchlist from './TradeWatchlist'
 import TradeMelegaIsologo from './TradeMelegaIsologo'
 
@@ -295,9 +296,16 @@ const MachinePre = styled.pre`
 
 export const TradeRightRail: React.FC = () => {
   const { routeEntries, assets, routerStatus, watchlistHrefs, machine, phase } = useTradeRuntime()
+  const { setMode } = useTradeUi()
+  const assetsPanelRef = useRef<HTMLDivElement>(null)
   const [machineOpen, setMachineOpen] = useState(false)
   const settlementLabel = formatSettlementUserLabel(machine.settlement)
   const settlementTone = settlementLabelTone(settlementLabel)
+
+  const openRouterTab = () => setMode('router')
+  const scrollToAssets = () => {
+    assetsPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
 
   return (
     <Rail data-trade-right-rail>
@@ -326,12 +334,12 @@ export const TradeRightRail: React.FC = () => {
               </RouteRight>
             </RouteEntry>
           ))}
-          <OutlineBtn type="button" disabled title="Coming soon">
+          <OutlineBtn type="button" onClick={openRouterTab}>
             View All Routes
           </OutlineBtn>
         </Panel>
 
-        <Panel data-trade-your-assets>
+        <Panel data-trade-your-assets ref={assetsPanelRef}>
           <PanelHead>
             <PanelTitle>Your Assets</PanelTitle>
             <LiveBadge>Live</LiveBadge>
@@ -352,7 +360,7 @@ export const TradeRightRail: React.FC = () => {
               </AssetRight>
             </AssetRow>
           ))}
-          <OutlineBtn type="button" disabled title="Coming soon" style={{ height: 38, marginTop: 10 }}>
+          <OutlineBtn type="button" onClick={scrollToAssets} style={{ height: 38, marginTop: 10 }}>
             Manage Assets
           </OutlineBtn>
         </Panel>
@@ -401,7 +409,7 @@ export const TradeRightRail: React.FC = () => {
               <StatValue>{routerStatus.chains}</StatValue>
             </StatCell>
           </StatGrid>
-          <OutlineBtn type="button" disabled title="Coming soon" style={{ height: 36, marginTop: 10 }}>
+          <OutlineBtn type="button" onClick={openRouterTab} style={{ height: 36, marginTop: 10 }}>
             Router Analytics
           </OutlineBtn>
           <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
