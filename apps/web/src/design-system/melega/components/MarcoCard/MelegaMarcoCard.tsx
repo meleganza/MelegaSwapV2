@@ -67,7 +67,6 @@ export const MelegaMarcoCard: React.FC<MelegaMarcoCardProps> = ({ priceLabel }) 
         {priceLabel && <Price>{priceLabel}</Price>}
       </Meta>
     </Card>
-  )
 )
 
 export default MelegaMarcoCard
