@@ -3,6 +3,14 @@ export { typography, fontFamily, fontSize, fontWeight, lineHeight, type MelegaTy
 export { spacing, type MelegaSpacing, type SpacingToken } from './spacing'
 export { radius, type MelegaRadius, type RadiusToken } from './radius'
 export { animation, type MelegaAnimation } from './animation'
+export {
+  PREMIUM_EMPTY,
+  PREMIUM_FONT_BODY,
+  PREMIUM_FONT_DISPLAY,
+  premiumStudioColors,
+  premiumStudioLayout,
+  premiumStudioType,
+} from './premiumStudio'
 
 import { colors } from './colors'
 import { typography } from './typography'

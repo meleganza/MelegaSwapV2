@@ -1,41 +1,31 @@
-export const IT_FONT_DISPLAY = "'Orbitron', sans-serif"
-export const IT_FONT_BODY = "'Inter', sans-serif"
+import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
 
+export const IT_FONT_DISPLAY = PREMIUM_FONT_DISPLAY
+export const IT_FONT_BODY = PREMIUM_FONT_BODY
+
+/** Import Existing Token — R200 premium alignment. */
 export const importTokenLayout = {
-  contentMax: '1180px',
-  contentPaddingX: '32px',
-  contentPaddingTop: '24px',
-  contentPaddingBottom: '48px',
-  sectionGap: '20px',
+  ...premiumStudioLayout,
   colLeft: '760px',
   colRight: '360px',
-  cardGap: '20px',
-  cardRadius: '20px',
   heroH: '240px',
-  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
-  stackBreakpoint: '768px',
-  btnTransition: '150ms',
-  cardLift: '4px',
+  btnTransition: premiumStudioLayout.hoverTransition,
+  cardLift: '0px',
   arrowAnim: '700ms',
   manifestFade: '300ms',
   gaugeAnim: '900ms',
 } as const
 
 export const importTokenColors = {
-  pageBg: '#080808',
-  panel: '#131313',
-  white: '#FFFFFF',
-  subtitle: '#B5B5B5',
-  body: '#C8C8C8',
-  muted: '#8F8F8F',
-  label: '#8F8F8F',
-  border: '#262626',
-  gold: '#D6B445',
-  goldHover: '#E0C25A',
-  goldBg: 'rgba(214, 180, 69, 0.08)',
-  green: '#1BE77A',
-  yellow: '#F4C542',
-  red: '#F04B4B',
-  gray: '#6B6B6B',
-  transition: '180ms',
+  ...premiumStudioColors,
+  pageBg: premiumStudioColors.canvas,
+  panel: premiumStudioColors.card,
+  white: premiumStudioColors.text,
+  body: premiumStudioColors.summary,
+  label: premiumStudioColors.muted,
+  border: premiumStudioColors.cardBorder,
+  goldHover: premiumStudioColors.cardBorderHover,
+  yellow: premiumStudioColors.gold,
+  gray: premiumStudioColors.muted,
+  transition: premiumStudioLayout.hoverTransition,
 } as const

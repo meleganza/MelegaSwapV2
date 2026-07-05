@@ -70,7 +70,7 @@ export const AdvisorSlot = styled.div`
 `
 
 export const PoolsStudioScreen: React.FC = () => (
-  <Root data-pools-studio-screen="true">
+  <Root data-pools-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <PoolsStudioGlobalStyle />
     <TrendingRibbon />

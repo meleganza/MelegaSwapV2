@@ -27,9 +27,16 @@ export function useTradeSettlementMetadata() {
         settlementId: ref.settlementId,
         machineCode: ref.machineCode,
         treasuryRuntimeEndpointStatus: ref.treasuryRuntimeEndpointStatus,
+        settlementTime: ref.updatedAt,
       }
     }
 
-    return formatTradeSettlementMetadata({ chainId, latestTxHash: latest.hash })
+    const meta = formatTradeSettlementMetadata({ chainId, latestTxHash: latest.hash })
+    return {
+      ...meta,
+      settlementTime: latest.confirmedTime
+        ? new Date(latest.confirmedTime * 1000).toISOString()
+        : new Date(latest.addedTime * 1000).toISOString(),
+    }
   }, [account, chainId, transactions])
 }

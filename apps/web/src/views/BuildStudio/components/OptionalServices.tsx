@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
 import { BsBody } from './buildStudioPrimitives'
@@ -19,14 +20,13 @@ const Card = styled.a`
   border-radius: 16px;
   border: 1px solid ${buildStudioColors.border};
   background: ${buildStudioColors.panel};
-  transition: transform 180ms ease, border-color 180ms ease;
+  transition: border-color 180ms ease;
   text-decoration: none;
   display: block;
   color: inherit;
 
   &:hover {
     border-color: ${buildStudioColors.gold};
-    transform: translateY(-4px);
   }
 `
 
@@ -93,7 +93,7 @@ export const OptionalServices: React.FC = () => {
               <BsBody style={{ fontSize: 13, lineHeight: '20px' }}>{svc.purpose}</BsBody>
               <Activation>Est. activation: {svc.activationTime}</Activation>
               <Status $available={svc.available}>
-                {svc.status} · {svc.requirements}
+                {premiumUiValue(svc.status)} · {svc.requirements}
               </Status>
             </>
           )

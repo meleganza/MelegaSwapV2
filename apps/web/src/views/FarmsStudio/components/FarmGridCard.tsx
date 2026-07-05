@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
@@ -312,14 +313,18 @@ const ComingSoonBadge = styled.div`
 `
 
 function renderTokenIcon(symbol: string, offset?: boolean) {
-  if (isMarcoSymbol(symbol)) {
-    return (
-      <TokenIconWrap $offset={offset}>
-        <img src={MARCO_LOGO_URI} alt="" width={24} height={24} style={{ borderRadius: '50%', objectFit: 'cover' }} />
-      </TokenIconWrap>
-    )
-  }
-  return <TokenFallback style={offset ? { marginLeft: -6 } : undefined}>{symbol.slice(0, 1)}</TokenFallback>
+  return (
+    <TokenIconWrap $offset={offset}>
+      <MelegaTokenAvatar
+        name={symbol}
+        symbol={symbol}
+        size={24}
+        address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : undefined}
+        chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : undefined}
+        radius="circle"
+      />
+    </TokenIconWrap>
+  )
 }
 
 function rewardTokenFor(farm: FarmPreviewCard) {
@@ -425,7 +430,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
                 ? 'Indexing'
                 : farm.status === 'finished'
                   ? 'Ended'
-                  : 'Unavailable'}
+                  : 'Pending'}
           </StatusPill>
         </TopRow>
 

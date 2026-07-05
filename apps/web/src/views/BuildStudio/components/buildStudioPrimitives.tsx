@@ -14,32 +14,28 @@ export const BsPanel = styled.div<{
   box-sizing: border-box;
   overflow: hidden;
   opacity: ${({ $emphasis }) => ($emphasis === 'reduced' ? 0.88 : 1)};
-  box-shadow: ${({ $emphasis }) => ($emphasis === 'primary' ? '0 8px 32px rgba(214,180,69,0.12)' : 'none')};
-  transition: transform ${buildStudioLayout.transition} ease, border-color ${buildStudioLayout.transition} ease,
-    box-shadow ${buildStudioLayout.transition} ease;
+  transition: border-color ${buildStudioLayout.transition} ease;
   ${({ $height }) => ($height ? `height: ${$height}; min-height: ${$height};` : '')}
   ${({ $minHeight }) => ($minHeight ? `min-height: ${$minHeight};` : '')}
 
   &:hover {
-    border-color: ${({ $emphasis }) => ($emphasis === 'reduced' ? buildStudioColors.border : buildStudioColors.gold)};
-    transform: translateY(-${buildStudioLayout.cardLift});
-    ${({ $emphasis }) => ($emphasis === 'primary' ? `box-shadow: ${buildStudioColors.shadow};` : '')}
+    border-color: ${buildStudioColors.gold};
   }
 `
 
 export const BsCardTitle = styled.h3<{ $size?: 'default' | 'reduced' }>`
   margin: 0;
-  font-family: ${BS_FONT_DISPLAY};
-  font-size: ${({ $size }) => ($size === 'reduced' ? '20px' : '24px')};
-  font-weight: 600;
+  font-family: ${BS_FONT_BODY};
+  font-size: ${({ $size }) => ($size === 'reduced' ? '16px' : '18px')};
+  font-weight: 700;
   line-height: 1.2;
-  color: ${({ $size }) => ($size === 'reduced' ? buildStudioColors.body : buildStudioColors.white)};
+  color: ${buildStudioColors.white};
 `
 
 export const BsSectionTitle = styled.h2`
   margin: 0 0 16px;
   font-family: ${BS_FONT_DISPLAY};
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 600;
   color: ${buildStudioColors.white};
 `
@@ -63,10 +59,10 @@ export const BsLabel = styled.span`
 
 export const BsPrimaryBtn = styled.button<{ $width?: string; $height?: string }>`
   width: ${({ $width }) => $width || '100%'};
-  height: ${({ $height }) => $height || '50px'};
-  min-height: ${({ $height }) => $height || '50px'};
+  height: ${({ $height }) => $height || buildStudioLayout.btnHeight};
+  min-height: ${({ $height }) => $height || buildStudioLayout.btnHeight};
   border: none;
-  border-radius: 16px;
+  border-radius: ${buildStudioLayout.btnRadius};
   background: ${buildStudioColors.gold};
   color: #050505;
   font-family: ${BS_FONT_BODY};
@@ -77,19 +73,18 @@ export const BsPrimaryBtn = styled.button<{ $width?: string; $height?: string }>
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform ${buildStudioLayout.btnTransition} ease, background ${buildStudioLayout.transition} ease;
+  transition: filter ${buildStudioLayout.btnTransition} ease;
 
   &:hover {
-    background: ${buildStudioColors.goldHover};
-    transform: scale(1.02);
+    filter: brightness(1.05);
   }
 `
 
 export const BsOutlineBtn = styled.button<{ $width?: string; $height?: string }>`
   width: ${({ $width }) => $width || '100%'};
-  height: ${({ $height }) => $height || '46px'};
-  min-height: ${({ $height }) => $height || '46px'};
-  border-radius: 16px;
+  height: ${({ $height }) => $height || buildStudioLayout.btnHeight};
+  min-height: ${({ $height }) => $height || buildStudioLayout.btnHeight};
+  border-radius: ${buildStudioLayout.btnRadius};
   border: 1px solid ${buildStudioColors.gold};
   background: ${buildStudioColors.goldBg};
   color: ${buildStudioColors.gold};
@@ -101,10 +96,10 @@ export const BsOutlineBtn = styled.button<{ $width?: string; $height?: string }>
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform ${buildStudioLayout.btnTransition} ease, border-color ${buildStudioLayout.transition} ease;
+  transition: border-color ${buildStudioLayout.transition} ease;
 
   &:hover {
-    transform: scale(1.02);
+    border-color: ${buildStudioColors.goldHover};
   }
 `
 

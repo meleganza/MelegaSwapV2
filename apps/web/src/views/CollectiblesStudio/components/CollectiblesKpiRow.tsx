@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import { collectiblesStudioLayout } from '../collectiblesStudioTokens'
 import { KpiIcon } from './collectiblesStudioIcons'
@@ -99,7 +100,7 @@ export const CollectiblesKpiRow: React.FC = () => {
           <KpiIcon icon={kpi.icon} />
         </Top>
         <ValueBlock>
-          <CsKpiValue data-cs-kpi-value>{kpi.value}</CsKpiValue>
+          <CsKpiValue data-cs-kpi-value>{premiumUiValue(kpi.value)}</CsKpiValue>
           {kpi.delta ? (
             <DeltaRow>
               <CsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</CsKpiDelta>

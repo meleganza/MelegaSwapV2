@@ -1,29 +1,27 @@
-/** Trending Studio layout constants — R007 canonical trending page. */
+import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
+
+/** Trending Studio — R200 premium alignment. */
 export const trendingStudioLayout = {
-  contentMax: '1180px',
-  contentPaddingTop: '28px',
-  contentPaddingX: '24px',
-  contentPaddingBottom: '48px',
+  ...premiumStudioLayout,
   mainColumnWidth: 'minmax(0, 1fr)',
   sidebarWidth: 'minmax(280px, 320px)',
-  columnGap: '20px',
-  sectionGap: '20px',
+  columnGap: premiumStudioLayout.cardGap,
   kpiGap: '18px',
-  kpiHeight: '110px',
-  kpiRadius: '18px',
+  kpiHeight: premiumStudioLayout.kpiHeight,
+  kpiRadius: premiumStudioLayout.cardRadius,
   sparklineW: 72,
   sparklineH: 28,
-  filterHeight: '42px',
-  filterRadius: '21px',
+  filterHeight: '44px',
+  filterRadius: '999px',
   filterPaddingX: '18px',
   filterGap: '10px',
   heatmapHeight: '260px',
   trendingCardWidth: 'auto',
   trendingCardHeight: 'auto',
   trendingCardMinHeight: '245px',
-  trendingCardGap: '20px',
-  trendingCardRadius: '20px',
-  trendingBtnHeight: '44px',
+  trendingCardGap: premiumStudioLayout.cardGap,
+  trendingCardRadius: premiumStudioLayout.cardRadius,
+  trendingBtnHeight: premiumStudioLayout.btnHeight,
   tradeBtnWidth: '120px',
   openBtnWidth: '150px',
   watchBtnWidth: '120px',
@@ -34,24 +32,21 @@ export const trendingStudioLayout = {
   discoveriesHeight: '260px',
   mobilePadding: '20px',
   mobileGap: '16px',
-  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
-  stackBreakpoint: '1180px',
 } as const
 
 export const trendingStudioColors = {
-  canvas: '#090909',
-  panel: '#121212',
-  panelAlt: '#161616',
-  border: '#2A2A2A',
-  green: '#18F58A',
-  yellow: '#F4C63D',
-  orange: '#F79D38',
-  red: '#FF4B4B',
-  white: '#F8F8F8',
-  gray: '#A8A8A8',
-  muted: '#6F6F6F',
+  ...premiumStudioColors,
+  panel: premiumStudioColors.card,
+  panelAlt: premiumStudioColors.card,
+  border: premiumStudioColors.cardBorder,
+  yellow: premiumStudioColors.gold,
+  white: premiumStudioColors.text,
+  gray: premiumStudioColors.secondary,
   hoverRow: '#171717',
   shadow: '0 8px 30px rgba(0,0,0,0.35)',
 } as const
+
+export const TRENDING_FONT_DISPLAY = PREMIUM_FONT_DISPLAY
+export const TRENDING_FONT_BODY = PREMIUM_FONT_BODY
 
 export const TRENDING_STUDIO_PREVIEW_LABEL = 'PREVIEW LAYOUT'

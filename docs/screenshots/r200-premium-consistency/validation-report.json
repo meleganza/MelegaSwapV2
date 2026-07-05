@@ -1,0 +1,116 @@
+{
+  "task": "R200_PREMIUM_CONSISTENCY_REVIEW",
+  "build": "pass",
+  "screenshots": [
+    "overview-desktop-1440x900.png",
+    "overview-mobile-390x844.png",
+    "trade-desktop-1440x900.png",
+    "trade-mobile-390x844.png",
+    "liquidity-desktop-1440x900.png",
+    "liquidity-mobile-390x844.png",
+    "farms-desktop-1440x900.png",
+    "farms-mobile-390x844.png",
+    "pools-desktop-1440x900.png",
+    "pools-mobile-390x844.png",
+    "trending-desktop-1440x900.png",
+    "trending-mobile-390x844.png",
+    "build-desktop-1440x900.png",
+    "build-mobile-390x844.png",
+    "collectibles-desktop-1440x900.png",
+    "collectibles-mobile-390x844.png",
+    "import-desktop-1440x900.png",
+    "import-mobile-390x844.png"
+  ],
+  "checks": {
+    "overview-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "overview-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "trade-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "trade-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "liquidity-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "liquidity-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "farms-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "farms-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "pools-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "pools-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "trending-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "trending-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "build-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "build-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "collectibles-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "collectibles-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "import-desktop-1440x900.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    },
+    "import-mobile-390x844.png": {
+      "ok": true,
+      "overflow": false,
+      "unavailableDom": false
+    }
+  }
+}

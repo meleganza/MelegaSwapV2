@@ -1,13 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
+import { premiumUiValue, PREMIUM_EMPTY } from 'design-system/melega/tokens/premiumStudio'
 import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
-import { trendingStudioLayout } from '../trendingStudioTokens'
+import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
 import { AnimatedSparkline } from './trendingStudioPrimitives'
 
 const Row = styled.div`
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: ${trendingStudioLayout.kpiGap};
+  gap: ${trendingStudioLayout.cardGap};
   min-width: 0;
 
   @media (max-width: 1099px) {
@@ -23,9 +24,9 @@ const Card = styled.div`
   height: ${trendingStudioLayout.kpiHeight};
   min-height: ${trendingStudioLayout.kpiHeight};
   border-radius: ${trendingStudioLayout.kpiRadius};
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #111111;
-  padding: 14px 16px;
+  border: 1px solid ${trendingStudioColors.border};
+  background: ${trendingStudioColors.panel};
+  padding: 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -33,6 +34,11 @@ const Card = styled.div`
   gap: 8px;
   position: relative;
   min-width: 0;
+  transition: border-color ${trendingStudioLayout.hoverTransition} ease;
+
+  &:hover {
+    border-color: ${trendingStudioColors.cardBorderHover};
+  }
 `
 
 const Label = styled.span`
@@ -40,23 +46,29 @@ const Label = styled.span`
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #8a8a8a;
+  color: ${trendingStudioColors.gray};
 `
 
-const Value = styled.span`
-  font-size: 42px;
+const Value = styled.span<{ $muted?: boolean }>`
+  font-size: ${({ $muted }) => ($muted ? '18px' : '36px')};
   font-weight: 800;
   line-height: 1;
-  color: #00e676;
+  color: ${({ $muted }) => ($muted ? trendingStudioColors.gray : trendingStudioColors.green)};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
+const Subline = styled.span`
+  font-size: 13px;
+  color: ${trendingStudioColors.gray};
+  line-height: 1.35;
+`
+
 const SparkWrap = styled.div`
   position: absolute;
-  top: 14px;
-  right: 12px;
+  top: 24px;
+  right: 16px;
 `
 
 export const TrendingKpiRow: React.FC = () => {
@@ -64,15 +76,22 @@ export const TrendingKpiRow: React.FC = () => {
 
   return (
     <Row data-tr-kpi-row>
-      {kpis.map((kpi) => (
-        <Card key={kpi.id} data-tr-kpi-card>
-          <Label>{kpi.label}</Label>
-          <Value data-tr-kpi-value>{kpi.value}</Value>
-          <SparkWrap>
-            <AnimatedSparkline points={kpi.sparkline} />
-          </SparkWrap>
-        </Card>
-      ))}
+      {kpis.map((kpi) => {
+        const display = premiumUiValue(kpi.value)
+        const muted = display === PREMIUM_EMPTY
+        return (
+          <Card key={kpi.id} data-tr-kpi-card>
+            <Label>{kpi.label}</Label>
+            <Value $muted={muted} data-tr-kpi-value>
+              {display}
+            </Value>
+            {muted ? <Subline>Awaiting live intelligence feed</Subline> : null}
+            <SparkWrap>
+              <AnimatedSparkline points={kpi.sparkline} />
+            </SparkWrap>
+          </Card>
+        )
+      })}
     </Row>
   )
 }

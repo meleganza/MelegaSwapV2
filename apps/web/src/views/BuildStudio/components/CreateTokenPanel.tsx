@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { SUPPORTED_CHAINS } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
@@ -76,9 +77,9 @@ export const CreateTokenPanel: React.FC = () => {
           ))}
         </Chains>
         <Meta>
-          Gas: {tokenPreparation.gasEstimation}
+          Gas: {premiumUiValue(tokenPreparation.gasEstimation)}
           <br />
-          Treasury: {tokenPreparation.treasuryConfiguration}
+          Treasury: {premiumUiValue(tokenPreparation.treasuryConfiguration)}
           <br />
           Readiness: {tokenPreparation.readinessScore}/100
         </Meta>

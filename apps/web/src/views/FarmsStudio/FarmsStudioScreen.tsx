@@ -72,7 +72,7 @@ export const AdvisorSlot = styled.div`
 `
 
 export const FarmsStudioScreen: React.FC = () => (
-  <Root data-farms-studio-screen="true">
+  <Root data-farms-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <FarmsStudioGlobalStyle />
     <TrendingRibbon />

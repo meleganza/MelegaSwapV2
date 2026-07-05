@@ -7,11 +7,10 @@ export const ItPanel = styled.div`
   border-radius: ${importTokenLayout.cardRadius};
   box-sizing: border-box;
   overflow: hidden;
-  transition: transform ${importTokenLayout.transition} ease, border-color ${importTokenLayout.transition} ease;
+  transition: border-color ${importTokenLayout.transition} ease;
 
   &:hover {
-    border-color: rgba(214, 180, 69, 0.35);
-    transform: translateY(-${importTokenLayout.cardLift});
+    border-color: ${importTokenColors.gold};
   }
 `
 
@@ -43,9 +42,10 @@ export const ItBody = styled.p`
 
 export const ItPrimaryBtn = styled.button<{ $width?: string; $height?: string }>`
   width: ${({ $width }) => $width || '100%'};
-  height: ${({ $height }) => $height || '56px'};
+  height: ${({ $height }) => $height || importTokenLayout.btnHeight};
+  min-height: ${({ $height }) => $height || importTokenLayout.btnHeight};
   border: none;
-  border-radius: 14px;
+  border-radius: ${importTokenLayout.btnRadius};
   background: ${importTokenColors.gold};
   color: #050505;
   font-family: ${IT_FONT_BODY};
@@ -56,29 +56,29 @@ export const ItPrimaryBtn = styled.button<{ $width?: string; $height?: string }>
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform ${importTokenLayout.btnTransition} ease, background ${importTokenLayout.transition} ease;
+  transition: filter ${importTokenLayout.btnTransition} ease;
 
   &:hover {
-    background: ${importTokenColors.goldHover};
-    transform: scale(1.02);
+    filter: brightness(1.05);
   }
 `
 
 export const ItOutlineBtn = styled.button<{ $width?: string; $height?: string }>`
   width: ${({ $width }) => $width || '100%'};
-  height: ${({ $height }) => $height || '44px'};
-  border-radius: 14px;
+  height: ${({ $height }) => $height || importTokenLayout.btnHeight};
+  min-height: ${({ $height }) => $height || importTokenLayout.btnHeight};
+  border-radius: ${importTokenLayout.btnRadius};
   border: 1px solid ${importTokenColors.gold};
   background: ${importTokenColors.goldBg};
   color: ${importTokenColors.gold};
   font-family: ${IT_FONT_BODY};
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform ${importTokenLayout.btnTransition} ease;
+  transition: border-color ${importTokenLayout.transition} ease;
 
   &:hover {
-    transform: scale(1.02);
+    border-color: ${importTokenColors.goldHover};
   }
 `
 

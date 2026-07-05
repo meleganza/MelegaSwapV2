@@ -36,12 +36,15 @@ const Root = styled.div`
 const Content = styled.div`
   max-width: ${tradeLayout.contentMax};
   margin: 0 auto;
-  padding: ${tradeLayout.contentPaddingTop} ${tradeLayout.contentPaddingX} 0;
+  padding: ${tradeLayout.contentPaddingTop} ${tradeLayout.contentPaddingX} ${tradeLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: ${tradeLayout.sectionGap};
 
   @media (max-width: 767px) {
-    padding: 12px 16px 0;
+    padding: 16px 16px ${tradeLayout.mobileBottomPad};
   }
 `
 
@@ -126,7 +129,7 @@ export const TradeTerminalScreen: React.FC = () => {
   const { recentSwaps, isIndexing } = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
 
   return (
-    <Root data-trade-terminal-screen="true">
+    <Root data-trade-terminal-screen="true" data-r200-premium="true">
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />

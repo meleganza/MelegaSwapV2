@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { tradeColors, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
@@ -274,8 +275,8 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
     <Shell data-trade-price-chart>
       <Header>
         <PairBlock>
-          {inputSymbol === 'MARCO' ? (
-            <TokenLogo src={MARCO_LOGO_URI} alt="" />
+          {isMarcoSymbol(inputSymbol) ? (
+            <MelegaTokenAvatar name={inputSymbol} symbol={inputSymbol} size={36} radius="circle" />
           ) : (
             <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
           )}

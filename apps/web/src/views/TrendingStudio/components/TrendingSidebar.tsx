@@ -119,11 +119,19 @@ const DiscoveryRow = styled.div`
   font-size: 12px;
 `
 
-const Unavailable = styled.p`
+const EmptyCopy = styled.p`
   margin: 0;
   font-size: 13px;
   color: ${trendingStudioColors.gray};
   line-height: 1.45;
+`
+
+const EmptyDash = styled.span`
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: ${trendingStudioColors.gray};
+  margin-bottom: 6px;
 `
 
 export const TrendingSidebar: React.FC = () => {
@@ -133,12 +141,14 @@ export const TrendingSidebar: React.FC = () => {
     <Sidebar data-tr-sidebar>
       <WhalePanel data-tr-panel>
         <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Whale Monitor</TrSectionTitle>
-        <Unavailable>Unavailable — whale activity feed is not connected to a live data source.</Unavailable>
+        <EmptyDash>—</EmptyDash>
+        <EmptyCopy>Whale activity feed is not connected to a live data source.</EmptyCopy>
       </WhalePanel>
 
       <SmartPanel data-tr-panel>
         <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Smart Money Tracker</TrSectionTitle>
-        <Unavailable>Unavailable — smart money tracking requires external wallet intelligence.</Unavailable>
+        <EmptyDash>—</EmptyDash>
+        <EmptyCopy>Smart money tracking requires external wallet intelligence.</EmptyCopy>
       </SmartPanel>
 
       <Panel data-tr-panel>

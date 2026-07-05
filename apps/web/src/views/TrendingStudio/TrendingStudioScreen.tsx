@@ -35,6 +35,9 @@ const Content = styled.div`
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: ${trendingStudioLayout.sectionGap};
 `
 
 const PageGrid = styled.div`
@@ -56,7 +59,7 @@ const MainColumn = styled.div`
 `
 
 const TrendingStudioContent: React.FC = () => (
-  <Root data-trending-studio-screen="true">
+  <Root data-trending-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <TrendingStudioGlobalStyle />
     <TrendingRibbon />

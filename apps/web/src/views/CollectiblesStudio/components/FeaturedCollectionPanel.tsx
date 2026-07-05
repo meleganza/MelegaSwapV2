@@ -1,5 +1,6 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import {
   CS_FONT_BODY,
@@ -309,19 +310,19 @@ export const FeaturedCollectionPanel: React.FC = () => {
         <Metrics>
           <Metric>
             <FeaturedMetricLabel>Floor Price</FeaturedMetricLabel>
-            <FeaturedMetricValue>{featured.floorPrice}</FeaturedMetricValue>
+            <FeaturedMetricValue>{premiumUiValue(featured.floorPrice)}</FeaturedMetricValue>
           </Metric>
           <Metric>
             <FeaturedMetricLabel>Owners</FeaturedMetricLabel>
-            <FeaturedMetricValue>{featured.owners}</FeaturedMetricValue>
+            <FeaturedMetricValue>{premiumUiValue(featured.owners)}</FeaturedMetricValue>
           </Metric>
           <Metric>
             <FeaturedMetricLabel>Items</FeaturedMetricLabel>
-            <FeaturedMetricValue>{featured.items}</FeaturedMetricValue>
+            <FeaturedMetricValue>{premiumUiValue(featured.items)}</FeaturedMetricValue>
           </Metric>
           <Metric>
             <FeaturedMetricLabel>Volume</FeaturedMetricLabel>
-            <FeaturedMetricValue>{featured.volume}</FeaturedMetricValue>
+            <FeaturedMetricValue>{premiumUiValue(featured.volume)}</FeaturedMetricValue>
           </Metric>
         </Metrics>
         <BtnRow>

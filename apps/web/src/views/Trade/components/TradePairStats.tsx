@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
+import { PREMIUM_EMPTY } from 'design-system/melega/tokens/premiumStudio'
 import type { TradePairStat } from '../useTradeTerminalData'
 
 const fadeIn = keyframes`
@@ -23,30 +24,42 @@ const Grid = styled.div`
 `
 
 const Card = styled.div`
-  background: #111111;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
-  padding: 12px 14px;
-  min-height: 72px;
+  background: #141414;
+  border: 1px solid #2A2A2A;
+  border-radius: 20px;
+  padding: 24px;
+  min-height: 120px;
   box-sizing: border-box;
   animation: ${fadeIn} 180ms ease;
+  transition: border-color 180ms ease;
+
+  &:hover {
+    border-color: #D4AF37;
+  }
 `
 
 const Label = styled.div`
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #8a8a8a;
+  color: #8F8F8F;
 `
 
-const Value = styled.div<{ $unavailable?: boolean }>`
-  margin-top: 6px;
-  font-size: ${({ $unavailable }) => ($unavailable ? '14px' : '16px')};
-  font-weight: ${({ $unavailable }) => ($unavailable ? 600 : 700)};
-  color: ${({ $unavailable }) => ($unavailable ? '#8a8a8a' : colors.textPrimary)};
-  line-height: 1.25;
+const Value = styled.div<{ $muted?: boolean }>`
+  margin-top: 8px;
+  font-size: ${({ $muted }) => ($muted ? '14px' : '36px')};
+  font-weight: ${({ $muted }) => ($muted ? 600 : 700)};
+  color: ${({ $muted }) => ($muted ? '#8F8F8F' : colors.textPrimary)};
+  line-height: 1.15;
   white-space: nowrap;
+`
+
+const Subline = styled.div`
+  margin-top: 4px;
+  font-size: 13px;
+  color: #8F8F8F;
+  line-height: 1.35;
 `
 
 const Change = styled.div<{ $positive?: boolean }>`
@@ -63,12 +76,13 @@ export interface TradePairStatsProps {
 export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
   <Grid data-trade-pair-stats>
     {stats.map((stat) => {
-      const unavailable = !stat.value || stat.value === '—'
+      const muted = !stat.value || stat.value === PREMIUM_EMPTY || stat.value === 'Unavailable'
       return (
         <Card key={stat.id}>
           <Label>{stat.label}</Label>
-          <Value $unavailable={unavailable}>{unavailable ? 'Unavailable' : stat.value}</Value>
-          {stat.change && !unavailable ? (
+          <Value $muted={muted}>{muted ? PREMIUM_EMPTY : stat.value}</Value>
+          {muted ? <Subline>Waiting for indexing</Subline> : null}
+          {stat.change && !muted ? (
             <Change $positive={stat.changePositive}>{stat.change}</Change>
           ) : null}
         </Card>

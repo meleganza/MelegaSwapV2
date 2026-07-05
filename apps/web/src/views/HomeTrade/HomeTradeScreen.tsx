@@ -14,17 +14,17 @@ import MarketPulsePanel from './MarketPulsePanel'
 import HomeTradeFooter from './HomeTradeFooter'
 import useHomeTradeData from './useHomeTradeData'
 import { homeTradeLayout } from './homeTradeTokens'
+import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
 
 const Root = styled.div`
   color: ${colors.textPrimary};
   font-family: ${typography.fontFamily.body};
   font-size: ${typography.fontSize.base};
   line-height: ${typography.lineHeight.normal};
-  background: #0a0a0a;
+  background: ${premiumStudioColors.canvas};
 
   @media (max-width: 767px) {
-    padding: 0 14px;
-    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    padding: 0 ${homeTradeLayout.contentPaddingX} ${homeTradeLayout.mobileBottomPad};
   }
 `
 
@@ -34,9 +34,13 @@ const Content = styled.div`
   gap: ${homeTradeLayout.sectionGap};
   max-width: ${homeTradeLayout.contentMax};
   margin: 0 auto;
+  padding: ${homeTradeLayout.contentPaddingTop} ${homeTradeLayout.contentPaddingX}
+    ${homeTradeLayout.contentPaddingBottom};
+  box-sizing: border-box;
 
   @media (max-width: 767px) {
-    gap: 12px;
+    gap: 16px;
+    padding: 16px 16px ${homeTradeLayout.mobileBottomPad};
   }
 `
 
@@ -89,7 +93,7 @@ export const HomeTradeScreen: React.FC = () => {
   }, [data.marketCards])
 
   return (
-    <Root data-home-trade-screen="true">
+    <Root data-home-trade-screen data-r200-premium="true">
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>

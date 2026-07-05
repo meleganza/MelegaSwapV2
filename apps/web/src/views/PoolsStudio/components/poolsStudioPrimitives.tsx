@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
 export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
@@ -9,9 +10,10 @@ export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
   box-sizing: border-box;
   background: ${poolsStudioColors.panel};
   border: 1px solid ${poolsStudioColors.border};
-  border-radius: ${({ $radius }) => $radius || '20px'};
-  padding: 18px;
+  border-radius: ${({ $radius }) => $radius || poolsStudioLayout.cardRadius};
+  padding: ${poolsStudioLayout.cardPadding};
   overflow: hidden;
+  transition: border-color ${poolsStudioLayout.hoverTransition} ease;
   ${({ $height }) =>
     $height
       ? `
@@ -19,12 +21,16 @@ export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
     min-height: ${$height};
   `
       : ''}
+
+  &:hover {
+    border-color: ${poolsStudioColors.cardBorderHover};
+  }
 `
 
 export const PsCard = styled.div`
   background: ${poolsStudioColors.card};
   border: 1px solid ${poolsStudioColors.border};
-  border-radius: 18px;
+  border-radius: ${poolsStudioLayout.cardRadius};
 `
 
 export const PsPreviewBadge = styled.span`
@@ -45,11 +51,11 @@ export const PsPreviewBadge = styled.span`
 `
 
 export const PsPrimaryBtn = styled.button`
-  height: 40px;
-  min-height: 40px;
+  height: ${poolsStudioLayout.btnHeight};
+  min-height: ${poolsStudioLayout.btnHeight};
   padding: 0 24px;
   border: none;
-  border-radius: 12px;
+  border-radius: ${poolsStudioLayout.btnRadius};
   background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%);
   color: #050505;
   font-size: 14px;
@@ -59,31 +65,28 @@ export const PsPrimaryBtn = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 150ms ease, filter 150ms ease;
+  transition: filter ${poolsStudioLayout.hoverTransition} ease;
 
   &:hover {
     filter: brightness(1.05);
-    transform: translateY(-1px);
   }
 `
 
 export const PsGhostBtn = styled.button`
-  height: 40px;
-  min-height: 40px;
+  height: ${poolsStudioLayout.btnHeight};
+  min-height: ${poolsStudioLayout.btnHeight};
   padding: 0 18px;
-  border-radius: 12px;
+  border-radius: ${poolsStudioLayout.btnRadius};
   border: 1px solid ${poolsStudioColors.goldBorder};
   background: transparent;
   color: ${poolsStudioColors.goldBright};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 150ms ease, filter 150ms ease, border-color 150ms ease;
+  transition: border-color ${poolsStudioLayout.hoverTransition} ease;
 
   &:hover {
-    filter: brightness(1.05);
-    border-color: ${poolsStudioColors.gold};
-    transform: translateY(-1px);
+    border-color: ${poolsStudioColors.cardBorderHover};
   }
 `
 
@@ -108,15 +111,20 @@ export const PsSmallGhostBtn = styled(PsGhostBtn)`
 export const PsKpiCard = styled.div`
   height: ${poolsStudioLayout.kpiHeight};
   min-height: ${poolsStudioLayout.kpiHeight};
-  border-radius: 20px;
+  border-radius: ${poolsStudioLayout.cardRadius};
   border: 1px solid ${poolsStudioColors.border};
   background: ${poolsStudioColors.panel};
-  padding: 14px 16px;
+  padding: 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 6px;
+  transition: border-color ${poolsStudioLayout.hoverTransition} ease;
+
+  &:hover {
+    border-color: ${poolsStudioColors.cardBorderHover};
+  }
   min-width: 0;
   position: relative;
 `
@@ -163,51 +171,23 @@ export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: b
   symbol,
   size = 24,
   offset,
-}) => {
-  if (isMarcoSymbol(symbol)) {
-    return (
-      <span
-        style={{
-          marginLeft: offset ? -6 : 0,
-          position: 'relative',
-          zIndex: offset ? 1 : 2,
-          flexShrink: 0,
-          display: 'inline-flex',
-        }}
-      >
-        <img
-          src={MARCO_LOGO_URI}
-          alt=""
-          width={size}
-          height={size}
-          style={{ borderRadius: '50%', objectFit: 'cover', display: 'block' }}
-        />
-      </span>
-    )
-  }
-
-  return (
-    <span
-      style={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        border: `1px solid ${poolsStudioColors.border}`,
-        background: poolsStudioColors.card,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: offset ? -6 : 0,
-        position: 'relative',
-        zIndex: offset ? 1 : 2,
-        overflow: 'hidden',
-        flexShrink: 0,
-        fontSize: size * 0.38,
-        fontWeight: 800,
-        color: poolsStudioColors.goldBright,
-      }}
-    >
-      {symbol.slice(0, 1)}
-    </span>
-  )
-}
+}) => (
+  <span
+    style={{
+      marginLeft: offset ? -6 : 0,
+      position: 'relative',
+      zIndex: offset ? 1 : 2,
+      flexShrink: 0,
+      display: 'inline-flex',
+    }}
+  >
+    <MelegaTokenAvatar
+      name={symbol}
+      symbol={symbol}
+      size={size}
+      address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : undefined}
+      chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : undefined}
+      radius="circle"
+    />
+  </span>
+)

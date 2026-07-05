@@ -62,7 +62,7 @@ const MainGrid = styled.div`
 
 export const BuildStudioScreen: React.FC = () => (
   <BuildRuntimeProvider>
-    <Root data-build-studio-screen>
+    <Root data-build-studio-screen data-r200-premium="true">
       <PageMeta />
       <BuildStudioGlobalStyle />
       <TrendingRibbon />

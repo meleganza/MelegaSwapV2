@@ -75,7 +75,7 @@ const GridSlot = styled.div`
 
 export const CollectiblesStudioScreen: React.FC = () => (
   <CollectiblesRuntimeProvider>
-  <Root data-collectibles-studio-screen="true">
+  <Root data-collectibles-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <CollectiblesStudioGlobalStyle />
     <TrendingRibbon />

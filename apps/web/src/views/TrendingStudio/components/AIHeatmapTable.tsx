@@ -6,7 +6,7 @@ import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTok
 import { HeatBar, TrPanel, TrSectionTitle, TrendingProjectLogo } from './trendingStudioPrimitives'
 
 const Panel = styled(TrPanel)`
-  padding: 16px 18px;
+  padding: ${trendingStudioLayout.cardPadding};
   height: ${trendingStudioLayout.heatmapHeight};
   min-height: ${trendingStudioLayout.heatmapHeight};
   display: flex;
@@ -68,12 +68,12 @@ const AiScore = styled.span<{ $tone: 'green' | 'yellow' }>`
 `
 
 const UnavailableCell = styled.span`
-  font-size: 12px;
+  font-size: 13px;
   color: ${trendingStudioColors.gray};
 `
 
 function heatLabel(value: number): React.ReactNode {
-  if (value <= 0) return <UnavailableCell>Unavailable</UnavailableCell>
+  if (value <= 0) return <UnavailableCell>—</UnavailableCell>
   return <HeatBar $value={value} />
 }
 

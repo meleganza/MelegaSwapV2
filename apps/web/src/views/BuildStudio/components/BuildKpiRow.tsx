@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { premiumUiValue, PREMIUM_EMPTY } from 'design-system/melega/tokens/premiumStudio'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { MiniSparkline } from './buildStudioPrimitives'
@@ -34,11 +35,10 @@ const Card = styled.div`
   flex-direction: column;
   justify-content: space-between;
   flex-shrink: 0;
-  transition: border-color ${buildStudioLayout.transition} ease, transform ${buildStudioLayout.transition} ease;
+  transition: border-color ${buildStudioLayout.transition} ease;
 
   &:hover {
     border-color: ${buildStudioColors.gold};
-    transform: translateY(-6px);
   }
 
   @media (max-width: 768px) {
@@ -71,17 +71,24 @@ const ValueCol = styled.div`
   gap: 2px;
 `
 
-const Value = styled.span`
+const Value = styled.span<{ $muted?: boolean }>`
   font-family: ${BS_FONT_DISPLAY};
-  font-size: 50px;
+  font-size: ${({ $muted }) => ($muted ? '18px' : '36px')};
   font-weight: 700;
   line-height: 1;
-  color: ${buildStudioColors.white};
+  color: ${({ $muted }) => ($muted ? buildStudioColors.muted : buildStudioColors.white)};
   letter-spacing: -1px;
 
   @media (max-width: 768px) {
-    font-size: 40px;
+    font-size: ${({ $muted }) => ($muted ? '16px' : '32px')};
   }
+`
+
+const Subline = styled.span`
+  font-family: ${BS_FONT_BODY};
+  font-size: 13px;
+  color: ${buildStudioColors.muted};
+  line-height: 1.35;
 `
 
 const Delta = styled.span<{ $positive?: boolean }>`
@@ -96,18 +103,23 @@ export const BuildKpiRow: React.FC = () => {
 
   return (
     <Row data-bs-kpi-row>
-      {kpis.map((kpi) => (
+      {kpis.map((kpi) => {
+        const display = premiumUiValue(kpi.value)
+        const muted = display === PREMIUM_EMPTY
+        return (
         <Card key={kpi.id} data-bs-kpi-card>
           <Label>{kpi.label}</Label>
           <Bottom>
             <ValueCol>
-              <Value>{kpi.value}</Value>
+              <Value $muted={muted}>{display}</Value>
+              {muted ? <Subline>Awaiting runtime</Subline> : null}
               {kpi.delta ? <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta> : null}
             </ValueCol>
             <MiniSparkline points={kpi.sparkline} />
           </Bottom>
         </Card>
-      ))}
+        )
+      })}
     </Row>
   )
 }

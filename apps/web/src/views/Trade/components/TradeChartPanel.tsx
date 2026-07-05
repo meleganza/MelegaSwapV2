@@ -260,7 +260,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
       )}
       {showUnavailable && (
         <UnavailableState data-trade-chart-unavailable>
-          <UnavailableTitle>Chart unavailable</UnavailableTitle>
+          <UnavailableTitle>—</UnavailableTitle>
           <UnavailableDesc>Pair price history is not indexed for this market yet.</UnavailableDesc>
         </UnavailableState>
       )}

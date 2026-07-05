@@ -1,9 +1,8 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
-import { isMarcoSymbol } from 'design-system/melega/constants/brand'
-import { typography } from 'design-system/melega'
-import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
+import { trendingStudioColors, trendingStudioLayout, TRENDING_FONT_DISPLAY } from '../trendingStudioTokens'
 
 const sparkDraw = keyframes`
   0% { stroke-dashoffset: 120; }
@@ -14,9 +13,9 @@ export const TrPanel = styled.div<{ $height?: string }>`
   background: ${trendingStudioColors.panel};
   border: 1px solid ${trendingStudioColors.border};
   border-radius: ${trendingStudioLayout.trendingCardRadius};
-  box-shadow: ${trendingStudioColors.shadow};
   box-sizing: border-box;
   overflow: hidden;
+  transition: border-color ${trendingStudioLayout.hoverTransition} ease;
   ${({ $height }) =>
     $height
       ? `
@@ -24,13 +23,17 @@ export const TrPanel = styled.div<{ $height?: string }>`
     min-height: ${$height};
   `
       : ''}
+
+  &:hover {
+    border-color: ${trendingStudioColors.cardBorderHover};
+  }
 `
 
 export const TrSectionTitle = styled.h2`
   margin: 0 0 14px;
-  font-family: ${typography.fontFamily.body};
-  font-size: 28px;
-  font-weight: 800;
+  font-family: ${TRENDING_FONT_DISPLAY};
+  font-size: 32px;
+  font-weight: 700;
   line-height: 1.1;
   color: ${trendingStudioColors.white};
 `
@@ -51,20 +54,16 @@ export const TrPrimaryBtn = styled.button`
   border-radius: 12px;
   background: ${trendingStudioColors.yellow};
   color: #050505;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 180ms ease;
+  transition: filter ${trendingStudioLayout.hoverTransition} ease;
 
   &:hover {
-    transform: scale(0.98);
-  }
-
-  &:active {
-    transform: scale(0.98);
+    filter: brightness(1.05);
   }
 `
 
@@ -76,24 +75,23 @@ export const TrGhostBtn = styled.button`
   border: 1px solid ${trendingStudioColors.border};
   background: transparent;
   color: ${trendingStudioColors.yellow};
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: transform 180ms ease, border-color 180ms ease;
+  transition: border-color ${trendingStudioLayout.hoverTransition} ease;
 
   &:hover {
-    transform: scale(0.98);
     border-color: ${trendingStudioColors.yellow};
   }
 `
 
 export const TrChip = styled.button<{ $active?: boolean }>`
-  height: ${trendingStudioLayout.filterHeight};
-  min-height: ${trendingStudioLayout.filterHeight};
+  height: ${trendingStudioLayout.tagHeight};
+  min-height: ${trendingStudioLayout.tagHeight};
   padding: 0 ${trendingStudioLayout.filterPaddingX};
   border-radius: ${trendingStudioLayout.filterRadius};
   border: 1px solid ${({ $active }) => ($active ? trendingStudioColors.yellow : trendingStudioColors.border)};
@@ -103,10 +101,10 @@ export const TrChip = styled.button<{ $active?: boolean }>`
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 180ms ease, background 180ms ease;
+  transition: border-color ${trendingStudioLayout.hoverTransition} ease, background ${trendingStudioLayout.hoverTransition} ease;
 
   &:hover {
-    transform: scale(0.98);
+    border-color: ${trendingStudioColors.yellow};
   }
 `
 
@@ -139,37 +137,16 @@ export const TrendingProjectLogo: React.FC<{ name: string; symbol?: string; size
   name,
   symbol,
   size = 64,
-}) => {
-  const isMarco = isMarcoSymbol(symbol, name)
-  if (isMarco) {
-    return (
-      <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: '50%', overflow: 'hidden' }}>
-        <MelegaLogoSvg size={size} />
-      </span>
-    )
-  }
-
-  return (
-    <span
-      style={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        border: `1px solid ${trendingStudioColors.border}`,
-        background: trendingStudioColors.panelAlt,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        fontSize: size * 0.32,
-        fontWeight: 800,
-        color: trendingStudioColors.yellow,
-      }}
-    >
-      {name.slice(0, 1)}
-    </span>
-  )
-}
+}) => (
+  <MelegaTokenAvatar
+    name={name}
+    symbol={symbol}
+    size={size}
+    address={isMarcoSymbol(symbol, name) ? MARCO_BSC_ADDRESS : undefined}
+    chainId={isMarcoSymbol(symbol, name) ? MARCO_BSC_CHAIN_ID : undefined}
+    radius="circle"
+  />
+)
 
 const SparkPath = styled.path`
   fill: none;

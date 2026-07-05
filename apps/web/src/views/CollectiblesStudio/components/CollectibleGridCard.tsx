@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import type { CollectionCard, IdentityBinding } from '../collectiblesStudioData'
 import { BADGE_COLORS, BADGE_LABELS, BINDING_LABELS } from '../collectiblesStudioData'
 import {
@@ -309,7 +310,7 @@ function BindingRows({ binding }: { binding: IdentityBinding }) {
       {entries.map((key) => (
         <BindingRow key={key}>
           <BindingLabel>{BINDING_LABELS[key]}</BindingLabel>
-          <BindingValue>{binding[key]}</BindingValue>
+          <BindingValue>{premiumUiValue(binding[key])}</BindingValue>
         </BindingRow>
       ))}
     </BindingGrid>
@@ -363,7 +364,7 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
         </ArtWrap>
 
         <Title>{collection.title}</Title>
-        <IdentityLine>{collection.identityLine}</IdentityLine>
+        <IdentityLine>{premiumUiValue(collection.identityLine)}</IdentityLine>
         <Creator>{collection.creator}</Creator>
 
         <UtilityRow>
@@ -380,15 +381,15 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
         <Metrics>
           <Metric>
             <MetricLabel>Floor</MetricLabel>
-            <MetricValue>{collection.floorPrice}</MetricValue>
+            <MetricValue>{premiumUiValue(collection.floorPrice)}</MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>24h Vol</MetricLabel>
-            <MetricValue>{collection.volume24h}</MetricValue>
+            <MetricValue>{premiumUiValue(collection.volume24h)}</MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Items</MetricLabel>
-            <MetricValue>{collection.items}</MetricValue>
+            <MetricValue>{premiumUiValue(collection.items)}</MetricValue>
           </Metric>
         </Metrics>
 

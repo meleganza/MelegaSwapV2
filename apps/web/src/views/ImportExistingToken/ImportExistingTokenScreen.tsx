@@ -69,7 +69,7 @@ const ImportContent: React.FC = () => {
   const { analyzed } = useImportRuntime()
 
   return (
-    <Root data-import-existing-token-screen>
+    <Root data-import-existing-token-screen data-r200-premium="true">
       <PageMeta />
       <ImportExistingTokenGlobalStyle />
       <TrendingRibbon />

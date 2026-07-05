@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { STAKING_TEMPLATES } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
@@ -167,7 +168,7 @@ function StakingPoolCard() {
         <BsField>
           <BsFieldLabel>Stake Token</BsFieldLabel>
           <BsInput
-            value={poolPreview.available ? poolPreview.stakeToken : template.stakeToken}
+            value={premiumUiValue(poolPreview.available ? poolPreview.stakeToken : template.stakeToken)}
             readOnly={stakeLocked}
             style={{ height: 40, fontSize: 13 }}
           />
@@ -175,7 +176,7 @@ function StakingPoolCard() {
         <BsField>
           <BsFieldLabel>Reward Token</BsFieldLabel>
           <BsInput
-            value={poolPreview.rewardToken}
+            value={premiumUiValue(poolPreview.rewardToken)}
             readOnly
             style={{ height: 40, fontSize: 13 }}
           />
@@ -184,15 +185,15 @@ function StakingPoolCard() {
           <SimTitle>Pools Runtime</SimTitle>
           <SimRow>
             <span>APR</span>
-            <SimVal>{poolPreview.apr}</SimVal>
+            <SimVal>{premiumUiValue(poolPreview.apr)}</SimVal>
           </SimRow>
           <SimRow>
             <span>Pool Type</span>
-            <SimVal>{poolPreview.poolType}</SimVal>
+            <SimVal>{premiumUiValue(poolPreview.poolType)}</SimVal>
           </SimRow>
           <SimRow>
             <span>Lock</span>
-            <SimVal>{poolPreview.lock}</SimVal>
+            <SimVal>{premiumUiValue(poolPreview.lock)}</SimVal>
           </SimRow>
         </SimBlock>
         <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled>
@@ -212,29 +213,29 @@ function CreateFarmCard() {
         <BsCardTitle>Create Farm</BsCardTitle>
         <BsField>
           <BsFieldLabel>LP Token</BsFieldLabel>
-          <BsInput value={farmPreview.lp} readOnly style={{ height: 40, fontSize: 13 }} />
+          <BsInput value={premiumUiValue(farmPreview.lp)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
         <BsField>
           <BsFieldLabel>Reward Token</BsFieldLabel>
-          <BsInput value={farmPreview.reward} readOnly style={{ height: 40, fontSize: 13 }} />
+          <BsInput value={premiumUiValue(farmPreview.reward)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
         <SimBlock data-bs-farm-simulation>
           <SimTitle>Farms Runtime</SimTitle>
           <SimRow>
             <span>APR</span>
-            <SimVal>{farmPreview.apr}</SimVal>
+            <SimVal>{premiumUiValue(farmPreview.apr)}</SimVal>
           </SimRow>
           <SimRow>
             <span>Multiplier</span>
-            <SimVal>{farmPreview.multiplier}</SimVal>
+            <SimVal>{premiumUiValue(farmPreview.multiplier)}</SimVal>
           </SimRow>
           <SimRow>
             <span>Reward budget</span>
-            <SimVal>{farmPreview.budget}</SimVal>
+            <SimVal>{premiumUiValue(farmPreview.budget)}</SimVal>
           </SimRow>
           <SimRow>
             <span>Duration</span>
-            <SimVal>{farmPreview.duration}</SimVal>
+            <SimVal>{premiumUiValue(farmPreview.duration)}</SimVal>
           </SimRow>
         </SimBlock>
         <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled>

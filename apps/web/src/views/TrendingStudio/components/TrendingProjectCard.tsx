@@ -1,4 +1,5 @@
 import React from 'react'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import styled from 'styled-components'
 import type { TrendingProjectCard as TrendingProjectCardType } from '../trendingStudioData'
 import { aiScoreColor } from '../trendingStudioData'
@@ -252,7 +253,7 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
         </HeaderMain>
         <ScoreBlock>
           <Score $tone={tone}>{project.aiScore > 0 ? `${project.aiScore}/100` : '—'}</Score>
-          <Signal>{project.signalLabel ?? 'Unavailable'}</Signal>
+          <Signal>{project.signalLabel && project.signalLabel !== 'Unavailable' ? project.signalLabel : '—'}</Signal>
           <AnimatedSparkline points={project.sparkline} width={56} height={18} />
         </ScoreBlock>
       </TopRow>
@@ -268,19 +269,19 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
       <Metrics>
         <MetricCell>
           <TrLabel>Holders</TrLabel>
-          <MetricValue>{project.holders}</MetricValue>
+          <MetricValue>{premiumUiValue(project.holders)}</MetricValue>
         </MetricCell>
         <MetricCell>
           <TrLabel>Liquidity</TrLabel>
-          <MetricValue>{project.liquidity}</MetricValue>
+          <MetricValue>{premiumUiValue(project.liquidity)}</MetricValue>
         </MetricCell>
         <MetricCell>
           <TrLabel>24h Volume</TrLabel>
-          <MetricValue>{project.volume}</MetricValue>
+          <MetricValue>{premiumUiValue(project.volume)}</MetricValue>
         </MetricCell>
         <MetricCell>
           <TrLabel>Momentum</TrLabel>
-          <MetricValue>{project.growth}</MetricValue>
+          <MetricValue>{premiumUiValue(project.growth)}</MetricValue>
         </MetricCell>
       </Metrics>
 

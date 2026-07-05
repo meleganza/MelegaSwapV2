@@ -14,8 +14,7 @@ export const CsPanel = styled.div<{ $height?: string; $padding?: string }>`
   border-radius: ${collectiblesStudioLayout.cardRadius};
   box-sizing: border-box;
   overflow: hidden;
-  transition: transform ${collectiblesStudioColors.transition} ease, border-color ${collectiblesStudioColors.transition} ease,
-    box-shadow ${collectiblesStudioColors.transition} ease;
+  transition: border-color ${collectiblesStudioColors.transition} ease;
   ${({ $height }) =>
     $height
       ? `
@@ -24,22 +23,26 @@ export const CsPanel = styled.div<{ $height?: string; $padding?: string }>`
   `
       : ''}
   ${({ $padding }) => ($padding ? `padding: ${$padding};` : '')}
+
+  &:hover {
+    border-color: ${collectiblesStudioColors.gold};
+  }
 `
 
 export const CsSectionTitle = styled.h2`
   margin: 0 0 14px;
   font-family: ${CS_FONT_DISPLAY};
-  font-size: 34px;
-  line-height: 40px;
+  font-size: 32px;
+  line-height: 1.1;
   font-weight: 700;
   color: ${collectiblesStudioColors.white};
 `
 
 export const CsCardTitle = styled.h3`
   margin: 0;
-  font-family: ${CS_FONT_DISPLAY};
-  font-size: 24px;
-  line-height: 30px;
+  font-family: ${CS_FONT_BODY};
+  font-size: 18px;
+  line-height: 1.25;
   font-weight: 700;
   color: ${collectiblesStudioColors.white};
 `
@@ -80,11 +83,10 @@ export const CsPrimaryBtn = styled.button<{ $width?: string; $height?: string }>
   justify-content: center;
   gap: 8px;
   white-space: nowrap;
-  transition: background ${collectiblesStudioColors.transition} ease, transform ${collectiblesStudioColors.transition} ease;
+  transition: filter ${collectiblesStudioColors.transition} ease;
 
   &:hover {
-    background: ${collectiblesStudioColors.goldHover};
-    transform: scale(1.02);
+    filter: brightness(1.05);
   }
 
   @media (max-width: 767px) {
@@ -110,11 +112,10 @@ export const CsOutlineBtn = styled.button<{ $width?: string; $height?: string }>
   justify-content: center;
   gap: 8px;
   white-space: nowrap;
-  transition: border-color ${collectiblesStudioColors.transition} ease, transform ${collectiblesStudioColors.transition} ease;
+  transition: border-color ${collectiblesStudioColors.transition} ease;
 
   &:hover {
     border-color: ${collectiblesStudioColors.goldHover};
-    transform: scale(1.02);
   }
 
   @media (max-width: 767px) {

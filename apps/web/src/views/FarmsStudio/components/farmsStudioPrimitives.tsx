@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { farmsStudioColors, farmsStudioLayout, FARMS_FONT_DISPLAY } from '../farmsStudioTokens'
 
 export const FsPanel = styled.div<{ $height?: string; $width?: string }>`
   width: ${({ $width }) => $width || '100%'};
@@ -7,9 +7,10 @@ export const FsPanel = styled.div<{ $height?: string; $width?: string }>`
   box-sizing: border-box;
   background: ${farmsStudioColors.panel};
   border: 1px solid ${farmsStudioColors.border};
-  border-radius: 18px;
-  padding: 18px;
+  border-radius: ${farmsStudioLayout.cardRadius};
+  padding: ${farmsStudioLayout.cardPadding};
   overflow: hidden;
+  transition: border-color ${farmsStudioLayout.hoverTransition} ease;
   ${({ $height }) =>
     $height
       ? `
@@ -17,13 +18,18 @@ export const FsPanel = styled.div<{ $height?: string; $width?: string }>`
     min-height: ${$height};
   `
       : ''}
+
+  &:hover {
+    border-color: ${farmsStudioColors.cardBorderHover};
+  }
 `
 
 export const FsPanelTitle = styled.h2`
   margin: 0 0 14px;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 32px;
+  font-family: ${FARMS_FONT_DISPLAY};
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
   color: ${farmsStudioColors.text};
 `
 
@@ -54,41 +60,38 @@ export const FsPreviewBadge = styled.span`
 `
 
 export const FsPrimaryBtn = styled.button`
-  height: 40px;
-  min-height: 40px;
+  height: ${farmsStudioLayout.btnHeight};
+  min-height: ${farmsStudioLayout.btnHeight};
   padding: 0 18px;
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%);
+  border-radius: ${farmsStudioLayout.btnRadius};
+  background: ${farmsStudioColors.gold};
   color: #050505;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
-  transition: transform 150ms ease, filter 150ms ease;
+  transition: filter ${farmsStudioLayout.hoverTransition} ease;
 
   &:hover {
-    filter: brightness(1.05);
-    transform: translateY(-1px);
+    filter: brightness(1.06);
   }
 `
 
 export const FsGhostBtn = styled.button`
-  height: 40px;
-  min-height: 40px;
+  height: ${farmsStudioLayout.btnHeight};
+  min-height: ${farmsStudioLayout.btnHeight};
   padding: 0 18px;
-  border-radius: 12px;
-  border: 1px solid ${farmsStudioColors.goldBorder};
+  border-radius: ${farmsStudioLayout.btnRadius};
+  border: 1px solid ${farmsStudioColors.gold};
   background: transparent;
-  color: ${farmsStudioColors.goldBright};
+  color: ${farmsStudioColors.gold};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 150ms ease, filter 150ms ease, border-color 150ms ease;
+  transition: border-color ${farmsStudioLayout.hoverTransition} ease;
 
   &:hover {
-    filter: brightness(1.05);
-    border-color: ${farmsStudioColors.gold};
-    transform: translateY(-1px);
+    border-color: ${farmsStudioColors.cardBorderHover};
   }
 `
 
@@ -145,7 +148,7 @@ export const FsMetricValue = styled.span`
 export const FsKpiCard = styled.div`
   height: ${farmsStudioLayout.kpiHeight};
   min-height: ${farmsStudioLayout.kpiHeight};
-  border-radius: 18px;
+  border-radius: ${farmsStudioLayout.cardRadius};
   border: 1px solid ${farmsStudioColors.border};
   background: ${farmsStudioColors.panel};
   padding: 14px 16px;

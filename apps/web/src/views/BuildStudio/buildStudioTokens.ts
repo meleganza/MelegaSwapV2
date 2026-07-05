@@ -1,16 +1,13 @@
-export const BS_FONT_DISPLAY = "'Orbitron', sans-serif"
-export const BS_FONT_BODY = "'Inter', sans-serif"
+import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
 
+export const BS_FONT_DISPLAY = PREMIUM_FONT_DISPLAY
+export const BS_FONT_BODY = PREMIUM_FONT_BODY
+
+/** Build Studio — R200 premium alignment. */
 export const buildStudioLayout = {
-  contentMax: '1180px',
-  contentPaddingX: '24px',
-  contentPaddingTop: '24px',
-  contentPaddingBottom: '48px',
-  sectionGap: '20px',
-  cardGap: '20px',
-  cardRadius: '24px',
+  ...premiumStudioLayout,
   kpiWidth: '212px',
-  kpiHeight: '118px',
+  kpiHeight: premiumStudioLayout.kpiHeight,
   kpiGap: '16px',
   colCreate: 'minmax(240px, 0.75fr)',
   colImport: 'minmax(320px, 1.8fr)',
@@ -22,31 +19,24 @@ export const buildStudioLayout = {
   secondRowCardH: '320px',
   validationH: '260px',
   recentBuildsH: '380px',
-  mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
-  stackBreakpoint: '768px',
-  btnTransition: '150ms',
-  cardLift: '4px',
+  btnTransition: premiumStudioLayout.hoverTransition,
+  cardLift: '0px',
   arrowAnim: '700ms',
   manifestFade: '300ms',
   progressAnim: '900ms',
 } as const
 
 export const buildStudioColors = {
-  pageBg: '#050505',
-  panel: '#131313',
-  white: '#FFFFFF',
-  subtitle: '#B5B5B5',
-  body: '#C8C8C8',
-  muted: '#8F8F8F',
-  label: '#8F8F8F',
-  border: '#262626',
-  gold: '#D6B445',
-  goldHover: '#E0C25A',
-  goldBg: 'rgba(214, 180, 69, 0.08)',
-  green: '#1BE77A',
-  yellow: '#F4C542',
-  red: '#F04B4B',
-  gray: '#6B6B6B',
+  ...premiumStudioColors,
+  pageBg: premiumStudioColors.canvas,
+  panel: premiumStudioColors.card,
+  white: premiumStudioColors.text,
+  body: premiumStudioColors.summary,
+  label: premiumStudioColors.muted,
+  border: premiumStudioColors.cardBorder,
+  goldHover: premiumStudioColors.cardBorderHover,
+  yellow: premiumStudioColors.gold,
+  gray: premiumStudioColors.muted,
   shadow: '0 16px 42px rgba(0,0,0,0.30)',
-  transition: '180ms',
+  transition: premiumStudioLayout.hoverTransition,
 } as const

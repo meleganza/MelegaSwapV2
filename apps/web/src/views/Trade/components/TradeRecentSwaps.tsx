@@ -1,175 +1,25 @@
 import React from 'react'
-import styled, { keyframes } from 'styled-components'
-import { tradeColors, tradeLayout } from '../tradeTokens'
+import styled from 'styled-components'
+import { PremiumActivityTimeline } from 'design-system/melega/components/PremiumActivityTimeline/PremiumActivityTimeline'
+import { tradeLayout } from '../tradeTokens'
 import type { TradeSwapRow } from '../useTradeTerminalData'
-
-const slideIn = keyframes`
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-`
-
-const Shell = styled.div`
-  background: ${tradeColors.panel};
-  border: 1px solid ${tradeColors.border};
-  border-radius: 18px;
-  padding: 16px;
-  box-sizing: border-box;
-  min-height: ${tradeLayout.recentSwapsHeight};
-  overflow: hidden;
-`
 
 const HeadRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
-`
-
-const Title = styled.h3`
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: #ffffff;
-`
-
-const HeadRight = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`
-
-const IndexingLabel = styled.span`
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: ${tradeColors.muted};
+  margin-bottom: 4px;
 `
 
 const ViewAll = styled.button`
   padding: 0;
   border: none;
   background: transparent;
-  color: ${tradeColors.gold};
+  color: #d4af37;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-`
-
-const Table = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const Head = styled.div`
-  display: grid;
-  grid-template-columns: 70px 1fr 70px 1fr 1fr minmax(80px, 1.2fr);
-  gap: 10px;
-  padding-bottom: 8px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${tradeColors.muted};
-
-  @media (max-width: 1024px) {
-    display: none;
-  }
-`
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 70px 1fr 70px 1fr 1fr minmax(80px, 1.2fr);
-  gap: 10px;
-  align-items: center;
-  min-height: 36px;
-  font-size: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  animation: ${slideIn} 220ms ease;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 12px;
-    padding: 10px 0;
-  }
-`
-
-const Cell = styled.span`
-  color: #b5b5b5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const PairCell = styled(Cell)`
-  color: #ffffff;
-  font-weight: 600;
-`
-
-const Direction = styled.span<{ $buy?: boolean }>`
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: ${({ $buy }) => ($buy ? tradeColors.green : tradeColors.red)};
-`
-
-const RouteCell = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: ${tradeColors.muted};
-  font-size: 11px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const RouteIcon = styled.span`
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(212, 175, 55, 0.12);
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  &::after {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: ${tradeColors.gold};
-  }
-`
-
-const EmptyState = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 4px;
-  min-height: 140px;
-  padding: 16px;
-`
-
-const EmptyTitle = styled.p`
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: #ffffff;
-`
-
-const EmptyDesc = styled.p`
-  margin: 0;
-  font-size: 13px;
-  color: ${tradeColors.muted};
-  line-height: 1.45;
-  max-width: 280px;
 `
 
 export interface TradeRecentSwapsProps {
@@ -180,50 +30,33 @@ export interface TradeRecentSwapsProps {
 export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({ rows, isIndexing }) => {
   const displayRows = rows.slice(0, 6)
 
+  const timelineRows = displayRows.map((row) => ({
+    id: row.id,
+    title: `${row.direction === 'buy' ? 'Buy' : 'Sell'} ${row.pair}`,
+    subtitle: `${row.amount} → ${row.received ?? '—'} · ${row.route ?? 'Melega route'}`,
+    status: row.direction === 'buy' ? 'Buy' : 'Sell',
+    time: row.time,
+    statusTone: (row.direction === 'buy' ? 'green' : 'muted') as 'green' | 'muted',
+  }))
+
   return (
-    <Shell data-trade-recent-swaps>
+    <div data-trade-recent-swaps>
       <HeadRow>
-        <Title>Recent Swaps on Melega DEX</Title>
-        <HeadRight>
-          {isIndexing && <IndexingLabel>Loading</IndexingLabel>}
-          <ViewAll type="button">View All</ViewAll>
-        </HeadRight>
+        <ViewAll type="button">View All</ViewAll>
       </HeadRow>
-      {displayRows.length === 0 ? (
-        <EmptyState>
-          <EmptyTitle>{isIndexing ? 'Loading swaps' : 'No recent swaps'}</EmptyTitle>
-          <EmptyDesc>
-            {isIndexing
-              ? 'Fetching indexed swap activity for this pair.'
-              : 'Swap history appears here when Melega subgraph indexes trades.'}
-          </EmptyDesc>
-        </EmptyState>
-      ) : (
-        <Table>
-          <Head>
-            <span>Time</span>
-            <span>Pair</span>
-            <span>Type</span>
-            <span>Amount</span>
-            <span>Received</span>
-            <span>Route</span>
-          </Head>
-          {displayRows.map((row) => (
-            <Row key={row.id}>
-              <Cell>{row.time}</Cell>
-              <PairCell>{row.pair}</PairCell>
-              <Direction $buy={row.direction === 'buy'}>{row.direction}</Direction>
-              <Cell>{row.amount}</Cell>
-              <Cell>{row.received ?? '—'}</Cell>
-              <RouteCell title={row.route}>
-                <RouteIcon aria-hidden />
-                {row.route ?? '—'}
-              </RouteCell>
-            </Row>
-          ))}
-        </Table>
-      )}
-    </Shell>
+      <PremiumActivityTimeline
+        title="Recent Swaps on Melega DEX"
+        rows={timelineRows}
+        height={tradeLayout.recentSwapsHeight}
+        emptyTitle={isIndexing ? 'Awaiting indexing' : 'No activity yet'}
+        emptySubtitle={
+          isIndexing
+            ? 'Fetching indexed swap activity for this pair'
+            : 'Swap history appears when Melega subgraph indexes trades'
+        }
+        data-testid="trade"
+      />
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { liquidityStudioColors, liquidityStudioLayout, LIQUIDITY_FONT_DISPLAY } from '../liquidityStudioTokens'
 
 export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?: string; $pad?: string }>`
   width: ${({ $width }) => $width || '100%'};
@@ -10,6 +10,7 @@ export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?:
   border-radius: ${({ $radius }) => $radius || liquidityStudioLayout.panelRadius};
   padding: ${({ $pad }) => $pad || liquidityStudioLayout.panelPadding};
   overflow: visible;
+  transition: border-color ${liquidityStudioLayout.hoverTransition} ease;
   ${({ $height }) =>
     $height && $height !== 'auto'
       ? `
@@ -21,13 +22,18 @@ export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?:
     height: auto;
     min-height: ${liquidityStudioLayout.builderMinHeight};
   `}
+
+  &:hover {
+    border-color: ${liquidityStudioColors.cardBorderHover};
+  }
 `
 
 export const LsPanelTitle = styled.h2`
   margin: 0 0 14px;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 32px;
+  font-family: ${LIQUIDITY_FONT_DISPLAY};
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
   color: ${liquidityStudioColors.text};
 `
 
@@ -68,15 +74,10 @@ export const LsPrimaryBtn = styled.button`
   cursor: pointer;
   margin-top: 10px;
   flex-shrink: 0;
-  transition: transform 140ms ease, filter 140ms ease;
+  transition: filter ${liquidityStudioLayout.hoverTransition} ease;
 
   &:hover {
     filter: brightness(1.05);
-    transform: translateY(-1px) scale(1.01);
-  }
-
-  &:active {
-    transform: scale(0.99);
   }
 `
 

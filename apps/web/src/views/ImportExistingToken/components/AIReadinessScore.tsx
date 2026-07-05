@@ -45,7 +45,7 @@ export const AIReadinessScore: React.FC = () => {
 
   const score = analysis.score.score
   const label =
-    analysis.pending ? 'Pending Review' : score >= 70 ? 'Indexed' : score > 0 ? 'Incomplete' : 'Unavailable'
+    analysis.pending ? 'Pending Review' : score >= 70 ? 'Indexed' : score > 0 ? 'Incomplete' : '—'
 
   return (
     <Panel data-iet-readiness-score>
@@ -67,7 +67,7 @@ export const AIReadinessScore: React.FC = () => {
               <ItStatusDot $tone={d.available ? 'green' : 'red'} />
               {d.label}
             </ReasonLeft>
-            <span>{d.available ? 'Available' : 'Unavailable'}</span>
+            <span>{d.available ? 'Available' : '—'}</span>
           </ReasonRow>
         ))}
       </Reasons>

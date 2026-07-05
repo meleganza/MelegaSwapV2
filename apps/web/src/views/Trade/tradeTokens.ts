@@ -1,20 +1,20 @@
-/** Trade terminal layout constants — R003-B precision grid. */
+import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+
+/** Trade terminal — R200 premium alignment. */
 export const tradeLayout = {
-  contentMax: '1180px',
+  ...premiumStudioLayout,
   cockpitWidth: '360px',
   centerWidth: '520px',
   rightRailWidth: '300px',
   columnGap: '16px',
   verticalRhythm: '16px',
   rightRailGap: '14px',
-  rightRailRadius: '16px',
+  rightRailRadius: premiumStudioLayout.cardRadius,
   rightRailPadding: '14px',
-  contentPaddingX: '24px',
-  contentPaddingTop: '18px',
   chartPanelHeight: 'auto',
   chartAreaHeight: '300px',
   chartAreaHeightCompact: '132px',
-  recentSwapsHeight: '220px',
+  recentSwapsHeight: '320px',
 } as const
 
 export type TradeMode = 'smartswap' | 'router' | 'limit' | 'history'
@@ -38,14 +38,9 @@ export const TRADE_TIMEFRAMES = [
 export type TradeTimeframeId = (typeof TRADE_TIMEFRAMES)[number]['id']
 
 export const tradeColors = {
-  canvas: '#050505',
-  panel: '#111111',
-  panelGradient: 'linear-gradient(180deg, #141414 0%, #101010 100%)',
-  gold: '#D4AF37',
-  goldBright: '#F4C542',
-  green: '#00E676',
-  red: '#FF4D4D',
-  muted: '#8A8A8A',
-  text: '#FFFFFF',
-  border: 'rgba(255,255,255,0.08)',
+  ...premiumStudioColors,
+  panel: premiumStudioColors.card,
+  panelGradient: premiumStudioColors.card,
+  goldBright: premiumStudioColors.gold,
+  border: premiumStudioColors.cardBorder,
 } as const

@@ -35,6 +35,9 @@ const Content = styled.div`
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: ${liquidityStudioLayout.sectionGap};
 
   @media (max-width: 767px) {
     padding: 16px 16px ${liquidityStudioLayout.mobileBottomPad};
@@ -131,7 +134,7 @@ const AreaActivity = styled.div`
 `
 
 export const LiquidityStudioScreen: React.FC = () => (
-  <Root data-liquidity-studio-screen="true">
+  <Root data-liquidity-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <LiquidityStudioGlobalStyle />
     <TrendingRibbon />
