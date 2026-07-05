@@ -2,13 +2,11 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
 import { PREMIUM_EMPTY } from 'design-system/melega/tokens/premiumStudio'
-import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
-import { DATA_REASON_LABELS } from 'lib/data-policy/dataReasonCodes'
+import { tradeUiReasonLabel } from 'lib/data-policy/uiReasonLabels'
 import type { TradePairStat } from '../useTradeTerminalData'
 
-const reasonSubline = (code?: DataReasonCode): string | undefined => {
-  if (!code) return undefined
-  return DATA_REASON_LABELS[code]
+const reasonSubline = (stat: TradePairStat): string | undefined => {
+  return tradeUiReasonLabel(stat.reasonCode)
 }
 
 const fadeIn = keyframes`
@@ -84,7 +82,7 @@ export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
   <Grid data-trade-pair-stats>
     {stats.map((stat) => {
       const muted = !stat.value || stat.value === PREMIUM_EMPTY || stat.value === 'Unavailable'
-      const subline = muted ? reasonSubline(stat.reasonCode) ?? 'Not indexed yet' : undefined
+      const subline = muted ? reasonSubline(stat) ?? 'Waiting for indexing' : undefined
       return (
         <Card key={stat.id}>
           <Label>{stat.label}</Label>

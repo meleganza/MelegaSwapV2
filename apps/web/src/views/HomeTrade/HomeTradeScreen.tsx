@@ -105,7 +105,11 @@ export const HomeTradeScreen: React.FC = () => {
             liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
           />
         </HeroRow>
-        {data.showMarket && <QuickMarketStrip cards={data.marketCards} />}
+        {data.showMarket ? (
+          <QuickMarketStrip cards={data.marketCards} isIndexing={data.isActivityIndexing} />
+        ) : (
+          <QuickMarketStrip cards={[]} isIndexing={data.isActivityIndexing} />
+        )}
         <ListProjectCta />
         <GrowSection>
           <GrowInsideMelegaPanel />

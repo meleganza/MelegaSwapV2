@@ -11,7 +11,7 @@ import { buildCollectiblePrivileges, privilegeLabels } from './buildCollectibleP
 import { buildMembershipStatus } from './buildMembershipStatus'
 import type { WalletCollectibleOwnership } from './useWalletCollectibleOwnership'
 
-const UNAVAILABLE = 'Unavailable'
+const UNAVAILABLE = '—'
 
 const ART_THEME: Record<StaticCollectibleRecord['category'], CollectionCard['artTheme']> = {
   mascot_ecosystem: 'genesis',

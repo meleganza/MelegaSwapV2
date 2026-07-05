@@ -38,6 +38,8 @@ export interface ProjectsKpiItem {
   id: string
   label: string
   value: string
+  subline?: string
+  reasonCode?: string
   delta?: string
   deltaPositive?: boolean
   gold?: boolean

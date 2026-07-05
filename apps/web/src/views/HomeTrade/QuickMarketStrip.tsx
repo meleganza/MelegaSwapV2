@@ -38,16 +38,20 @@ const MobileScroll = styled.div`
   }
 `
 
-export const QuickMarketStrip: React.FC<{ cards: MarketCard[] }> = ({ cards }) => {
+export const QuickMarketStrip: React.FC<{ cards: MarketCard[]; isIndexing?: boolean }> = ({
+  cards,
+  isIndexing = false,
+}) => {
   const displayCards = cards.slice(0, 4)
 
   if (displayCards.length === 0) {
+    const emptyMeta = isIndexing ? 'Waiting for indexing' : 'No recent activity yet'
     return (
       <Strip data-home-market-strip>
         <DesktopGrid>
           {['Top Volume', 'Top Farm', 'Latest Listing', 'Market Pulse'].map((label) => (
             <CardSlot key={label}>
-              <MelegaStatCard label={label} value="—" meta="Awaiting index" />
+              <MelegaStatCard label={label} value="—" meta={emptyMeta} />
             </CardSlot>
           ))}
         </DesktopGrid>

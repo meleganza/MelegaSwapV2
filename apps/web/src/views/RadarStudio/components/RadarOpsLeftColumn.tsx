@@ -72,7 +72,7 @@ export const RadarOpsLeftColumn: React.FC = () => {
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Whale Monitor</RdSectionTitle>
         {whales.length === 0 ? (
-          <Unavailable data-rd-whale-feed>Unavailable — no whale activity indexed.</Unavailable>
+          <Unavailable data-rd-whale-feed>Source not configured — whale activity feed.</Unavailable>
         ) : (
           whales.map((row) => (
             <WhaleRow key={row.wallet}>
@@ -93,7 +93,7 @@ export const RadarOpsLeftColumn: React.FC = () => {
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Smart Money Tracker</RdSectionTitle>
         {smartMoney.length === 0 ? (
-          <Unavailable>Unavailable — smart money feed not connected.</Unavailable>
+          <Unavailable>Source not configured — smart money feed.</Unavailable>
         ) : (
           smartMoney.map((row) => (
             <SmartRow key={row.wallet}>
@@ -119,7 +119,7 @@ export const RadarOpsLeftColumn: React.FC = () => {
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Top Wallet Accumulation</RdSectionTitle>
         {walletAccumulation.length === 0 ? (
-          <Unavailable>Unavailable — wallet accumulation not indexed.</Unavailable>
+          <Unavailable>Source not configured — wallet accumulation.</Unavailable>
         ) : (
           walletAccumulation.map((row) => (
             <AccumRow key={row.wallet}>

@@ -41,10 +41,17 @@ export const ProjectsKpiRow: React.FC = () => {
         kpi ? (
           <PrKpiCard key={kpi.id} data-pr-kpi-card>
             <PrKpiLabel>{kpi.label}</PrKpiLabel>
-            {kpi.value === 'Unavailable' ? (
+            {kpi.subline ? (
+              <ValueStack>
+                <PrKpiValue $muted={kpi.value === '—'}>{kpi.value}</PrKpiValue>
+                <PrKpiSubline>{kpi.subline}</PrKpiSubline>
+              </ValueStack>
+            ) : kpi.value === 'Unavailable' || kpi.value === '—' ? (
               <ValueStack>
                 <PrKpiValue $muted>—</PrKpiValue>
-                <PrKpiSubline>Not indexed yet</PrKpiSubline>
+                <PrKpiSubline>
+                  {kpi.id === 'holders' ? 'Waiting for explorer' : kpi.subline ?? 'Waiting for indexing'}
+                </PrKpiSubline>
               </ValueStack>
             ) : (
               <PrKpiValue>{kpi.value}</PrKpiValue>

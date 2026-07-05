@@ -180,12 +180,16 @@ interface Props {
 }
 
 function metricValue(project: ProjectPreviewCard, label: string) {
-  return project.metrics.find((m) => m.label === label)?.value ?? 'Unavailable'
+  return project.metrics.find((m) => m.label === label)?.value ?? '—'
+}
+
+function isEmptyMetric(v: string) {
+  return v === '—' || v === 'Unavailable'
 }
 
 function metricTone(project: ProjectPreviewCard, label: string) {
   const v = metricValue(project, label)
-  if (v === 'Unavailable') return 'gray' as const
+  if (isEmptyMetric(v)) return 'gray' as const
   return project.metrics.find((m) => m.label === label)?.tone
 }
 
@@ -215,7 +219,12 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
       <Split>
         <LeftPane>
           <HeaderRow>
-            <ProjectLogo name={project.name} symbol={project.symbol} size={48} />
+            <ProjectLogo
+              name={project.name}
+              symbol={project.symbol}
+              size={48}
+              address={project.contractAddress}
+            />
             <div style={{ minWidth: 0 }}>
               <Name>{project.name}</Name>
               <Tags>
@@ -231,7 +240,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
             {project.metrics.slice(0, 4).map((metric) => (
               <MetricCell key={metric.label}>
                 <PrMetricLabel>{metric.label}</PrMetricLabel>
-                <PrMetricValue $muted={metric.value === 'Unavailable'} $tone={metric.tone}>
+                <PrMetricValue $muted={isEmptyMetric(metric.value)} $tone={metric.tone}>
                   {metric.value}
                 </PrMetricValue>
               </MetricCell>

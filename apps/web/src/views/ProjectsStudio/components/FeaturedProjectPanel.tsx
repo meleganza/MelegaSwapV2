@@ -312,7 +312,7 @@ export const FeaturedProjectPanel: React.FC = () => {
                   />
                 </ChartSvg>
               ) : (
-                <ChartPlaceholder>Chart unavailable</ChartPlaceholder>
+                <ChartPlaceholder>Waiting for indexing</ChartPlaceholder>
               )}
             </ChartArea>
             <Timeframes>

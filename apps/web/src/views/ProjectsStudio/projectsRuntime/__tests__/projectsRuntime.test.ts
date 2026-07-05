@@ -5,7 +5,9 @@ import { resetPendingProjectRegistryForTests } from 'registry/projects/pending'
 import { buildAiSummary } from '../buildAiSummary'
 import { buildProjectRating } from '../buildProjectRating'
 import { discoverProjectFromContract } from '../discoverProjectFromContract'
-import { mapPendingToPreviewCard } from '../formatProjectsRuntime'
+import { mapPendingToPreviewCard, aggregateKpis } from '../formatProjectsRuntime'
+import { buildOnChainMetrics } from '../onChainMetrics'
+import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import { createProjectsRuntimeError } from '../projectsRuntimeErrors'
 
 describe('projectsRuntime', () => {
@@ -59,5 +61,22 @@ describe('projectsRuntime', () => {
     const err = createProjectsRuntimeError('NO_MARKET_DATA')
     expect(err.code).toBe('NO_MARKET_DATA')
     expect(err.message).toMatch(/unavailable/i)
+  })
+
+  it('aggregateKpis uses reason subline for holders without explorer source', () => {
+    const kpis = aggregateKpis([project], 0, {
+      display: '—',
+      reasonCode: 'EXPLORER_SOURCE_MISSING',
+    })
+    const holders = kpis.find((k) => k.id === 'holders')
+    expect(holders?.value).toBe('—')
+    expect(holders?.subline).toBe('Waiting for explorer')
+    expect(holders?.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
+  })
+
+  it('buildOnChainMetrics includes machine-readable reason codes', () => {
+    const metrics = buildOnChainMetrics(project, buildProjectLiveMetrics(project))
+    expect(metrics.reasonCodes?.holders).toBe('EXPLORER_SOURCE_MISSING')
+    expect(metrics.liquidity).toBe('—')
   })
 })

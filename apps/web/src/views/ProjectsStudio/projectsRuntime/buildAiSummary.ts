@@ -24,7 +24,7 @@ export function buildAiSummary(project: StaticProjectRecord | EnrichedProjectRec
     )
   }
 
-  if (metrics.contractVerification !== 'Unavailable') {
+  if (metrics.contractVerification !== '—' && metrics.contractVerification !== 'Unavailable') {
     pushLine(lines, `Contract status: ${metrics.contractVerification}.`)
   }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MARCO_LOGO_URI, isMarcoSymbol } from 'design-system/melega/constants/brand'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
 import {
   PR_FONT_BODY,
   projectsStudioColors,
@@ -266,44 +267,19 @@ export const PrMetricValue = styled.span<{ $muted?: boolean; $tone?: 'green' | '
             : projectsStudioColors.text};
 `
 
-export const ProjectLogo: React.FC<{ name: string; symbol?: string; size?: number }> = ({
-  name,
-  symbol,
-  size = 48,
-}) => {
-  const isMarco = isMarcoSymbol(symbol, name)
-  if (isMarco) {
-    return (
-      <span style={{ flexShrink: 0, display: 'inline-flex' }}>
-        <img
-          src={MARCO_LOGO_URI}
-          alt=""
-          width={size}
-          height={size}
-          style={{ display: 'block', borderRadius: '50%', objectFit: 'cover' }}
-        />
-      </span>
-    )
-  }
-
-  return (
-    <span
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 12,
-        border: `1px solid ${projectsStudioColors.cardBorder}`,
-        background: projectsStudioColors.card,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        fontSize: size * 0.36,
-        fontWeight: 700,
-        color: projectsStudioColors.gold,
-      }}
-    >
-      {name.slice(0, 1)}
-    </span>
-  )
-}
+export const ProjectLogo: React.FC<{
+  name: string
+  symbol?: string
+  size?: number
+  address?: string
+  chainId?: number
+}> = ({ name, symbol, size = 48, address, chainId }) => (
+  <MelegaTokenAvatar
+    name={name}
+    symbol={symbol}
+    size={size}
+    address={address ?? (symbol?.toUpperCase() === 'MARCO' ? MARCO_BSC_ADDRESS : undefined)}
+    chainId={chainId ?? (symbol?.toUpperCase() === 'MARCO' ? MARCO_BSC_CHAIN_ID : undefined)}
+    radius="circle"
+  />
+)

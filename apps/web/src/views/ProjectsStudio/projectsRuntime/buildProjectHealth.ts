@@ -53,7 +53,7 @@ function transparencyTone(project: StaticProjectRecord): HealthTone {
 export function buildProjectHealth(project: StaticProjectRecord): ProjectHealthDimension[] {
   const metrics = buildOnChainMetrics(project)
   const liquidityTone: HealthTone =
-    metrics.liquidity === 'Unavailable'
+    metrics.liquidity === '—' || metrics.liquidity === 'Unavailable'
       ? project.capabilities.liquidity.status === 'live'
         ? 'yellow'
         : 'red'

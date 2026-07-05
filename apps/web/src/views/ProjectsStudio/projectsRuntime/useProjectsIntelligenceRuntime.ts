@@ -3,6 +3,8 @@ import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { getPendingProjectRegistry } from 'registry/projects/pending'
 import { usePriceCakeBusd } from 'state/farms/hooks'
+import { useTokenDataSWR } from 'state/info/hooks'
+import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
@@ -65,6 +67,13 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
 
   const enriched = useMemo(() => getAllProjects().map(enrichProject), [])
 
+  const primaryBscToken = enriched[0]?.resources.tokens.find((t) => t.chainId === 56) ?? enriched[0]?.resources.tokens[0]
+  const tokenData = useTokenDataSWR(primaryBscToken?.address)
+  const liveMetrics = useMemo(
+    () => (enriched[0] ? buildProjectLiveMetrics(enriched[0], tokenData) : undefined),
+    [enriched, tokenData],
+  )
+
   const pendingRecords = useMemo(() => {
     if (typeof window === 'undefined') return []
     return getPendingProjectRegistry()
@@ -81,12 +90,18 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   )
 
   const cards = useMemo(() => {
-    const canonical = sorted.map((project, index) => mapProjectToPreviewCard(project, index + 1))
+    const canonical = sorted.map((project, index) =>
+      mapProjectToPreviewCard(
+        project,
+        index + 1,
+        project.slug === enriched[0]?.slug ? liveMetrics : undefined,
+      ),
+    )
     const pending = pendingRecords.map((pending, index) =>
       mapPendingToPreviewCard(pending, canonical.length + index + 1),
     )
     return [...canonical, ...pending]
-  }, [sorted, pendingRecords])
+  }, [sorted, pendingRecords, enriched, liveMetrics])
 
   const filtered = useMemo(
     () => filterProjectsByChip(cards, sorted, filter),
@@ -110,10 +125,17 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
         hasPriceData: false,
       }
     }
-    return buildFeaturedProject(featuredProject, priceUsd)
-  }, [featuredProject, priceUsd])
+    return buildFeaturedProject(featuredProject, priceUsd, liveMetrics)
+  }, [featuredProject, priceUsd, liveMetrics])
 
-  const kpis = useMemo(() => aggregateKpis(enriched, pendingRecords.length), [enriched, pendingRecords.length])
+  const kpis = useMemo(
+    () =>
+      aggregateKpis(enriched, pendingRecords.length, {
+        display: liveMetrics?.holders.display ?? '—',
+        reasonCode: liveMetrics?.holders.reasonCode,
+      }),
+    [enriched, pendingRecords.length, liveMetrics],
+  )
   const advisorRows = useMemo(() => buildAdvisorRows(sorted), [sorted])
   const terminal = useProjectsTerminalData(enriched)
 

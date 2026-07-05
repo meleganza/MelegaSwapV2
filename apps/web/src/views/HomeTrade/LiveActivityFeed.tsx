@@ -154,7 +154,7 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
 }) => {
   const displaySlots = slots.length > 0 ? slots : []
   const hasAnyActivity = displaySlots.some((s) => s.row) || rows.length > 0
-  const slotEmptyCopy = isIndexing ? 'Indexing…' : 'No recent activity indexed yet'
+  const slotEmptyCopy = isIndexing ? 'Waiting for indexing' : 'No recent activity yet'
 
   return (
     <Shell data-live-activity-feed>
@@ -165,23 +165,22 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
       <Body>
         {displaySlots.length > 0 ? (
           <SlotList>
-            {displaySlots.map((slot) =>
-              slot.row ? (
-                <Slot key={slot.id} $filled>
-                  <SlotLabel>{slot.label}</SlotLabel>
-                  <div style={{ minWidth: 0 }}>
-                    <SlotTitle>{slot.row.type}</SlotTitle>
-                    {slot.row.context ? <SlotMeta>{slot.row.context}</SlotMeta> : null}
-                  </div>
-                  <SlotTime>{slot.row.time || slot.row.value || ''}</SlotTime>
-                </Slot>
-              ) : (
-                <Slot key={slot.id}>
-                  <SlotLabel>{slot.label}</SlotLabel>
+            {displaySlots.map((slot) => (
+              <Slot key={slot.id} $filled={Boolean(slot.row)}>
+                <SlotLabel>{slot.label}</SlotLabel>
+                {slot.row ? (
+                  <>
+                    <div style={{ minWidth: 0 }}>
+                      <SlotTitle>{slot.row.type}</SlotTitle>
+                      {slot.row.context ? <SlotMeta>{slot.row.context}</SlotMeta> : null}
+                    </div>
+                    <SlotTime>{slot.row.time || slot.row.value || ''}</SlotTime>
+                  </>
+                ) : (
                   <SlotMeta style={{ gridColumn: '1 / -1' }}>{slotEmptyCopy}</SlotMeta>
-                </Slot>
-              ),
-            )}
+                )}
+              </Slot>
+            ))}
           </SlotList>
         ) : hasAnyActivity ? (
           <SlotList>
@@ -198,11 +197,11 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
         ) : (
           <EmptyWrap>
             <PulseDot aria-hidden />
-            <EmptyTitle>{isIndexing ? 'Indexing activity' : 'No recent activity'}</EmptyTitle>
+            <EmptyTitle>{isIndexing ? 'Indexing activity' : 'No recent protocol activity yet'}</EmptyTitle>
             <EmptyDesc>
               {isIndexing
-                ? 'Pulling latest swaps, liquidity, and staking from Melega indexers.'
-                : 'No recent activity indexed yet. Swaps and liquidity events appear here when available.'}
+                ? 'Pulling latest swaps, liquidity, and ecosystem events from Melega indexers.'
+                : 'Swaps, liquidity, farms, pools, and listings appear here when indexed.'}
             </EmptyDesc>
           </EmptyWrap>
         )}

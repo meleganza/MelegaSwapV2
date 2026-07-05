@@ -36,6 +36,11 @@ export interface FarmsMachinePayload {
   wallet?: string
   filter: string
   activeFarms: number
+  endedFarms?: number
+  activeFarmNames?: string[]
+  endedFarmNames?: string[]
+  displayedFarms?: string[]
+  sourceMethod?: string
   featuredFarm?: string
   error?: FarmsRuntimeError | null
   timestamp: string
@@ -263,19 +268,25 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
 
   const error = useMemo(() => runtimeErrorFromPhase(phase), [phase])
 
-  const machine: FarmsMachinePayload = useMemo(
-    () => ({
+  const machine: FarmsMachinePayload = useMemo(() => {
+    const live = previewCards.filter((f) => f.status === 'live')
+    const ended = previewCards.filter((f) => f.status === 'finished')
+    return {
       status: phase,
       chainId,
       wallet: account,
       filter,
-      activeFarms: previewCards.filter((f) => f.status === 'live').length,
+      activeFarms: live.length,
+      endedFarms: ended.length,
+      activeFarmNames: live.map((f) => f.pair),
+      endedFarmNames: ended.map((f) => f.pair),
+      displayedFarms: filteredFarms.slice(0, 10).map((f) => f.pair),
+      sourceMethod: 'master_chef_config_rpc',
       featuredFarm: featured.pair,
       error,
       timestamp: new Date().toISOString(),
-    }),
-    [phase, chainId, account, filter, previewCards, featured.pair, error],
-  )
+    }
+  }, [phase, chainId, account, filter, previewCards, filteredFarms, featured.pair, error])
 
   const loadingLabel =
     phase === 'loading_farms'

@@ -36,7 +36,10 @@ export interface PoolsMachinePayload {
   wallet?: string
   filter: string
   activePools: number
+  endedPools?: number
   activePoolNames?: string[]
+  endedPoolNames?: string[]
+  displayedPools?: string[]
   poolSourceMethod?: string
   featuredPool?: string
   error?: PoolsRuntimeError | null
@@ -238,19 +241,23 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
   const machine: PoolsMachinePayload = useMemo(() => {
     const { activePools: activePoolNames, sourceMethod } = listActivePools(previewCards)
+    const ended = previewCards.filter((p) => p.status === 'ended')
     return {
       status: phase,
       chainId,
       wallet: account,
       filter,
-      activePools: previewCards.filter((p) => p.status === 'live').length,
+      activePools: activePoolNames.length,
+      endedPools: ended.length,
       activePoolNames,
+      endedPoolNames: ended.map((p) => p.name),
+      displayedPools: filteredPools.slice(0, 10).map((p) => p.name),
       poolSourceMethod: sourceMethod,
       featuredPool: featured.name,
       error,
       timestamp: new Date().toISOString(),
     }
-  }, [phase, chainId, account, filter, previewCards, featured.name, error])
+  }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error])
 
   const loadingLabel =
     phase === 'loading_pools'

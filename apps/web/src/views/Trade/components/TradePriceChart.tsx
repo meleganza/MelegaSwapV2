@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import { isMarcoSymbol } from 'design-system/melega/constants/brand'
+import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
+import { tradeUiReasonLabel } from 'lib/data-policy/uiReasonLabels'
 import { tradeColors, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
@@ -223,6 +224,13 @@ const StatDelta = styled.div<{ $positive?: boolean }>`
   color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
 `
 
+const StatSubline = styled.div`
+  margin-top: 4px;
+  font-size: 11px;
+  color: ${tradeColors.muted};
+  line-height: 1.35;
+`
+
 const timeframeToEnum = (id: TradeTimeframeId): PairDataTimeWindowEnum => {
   if (id === '1d' || id === '4h') return PairDataTimeWindowEnum.DAY
   if (id === '1h' || id === '15m') return PairDataTimeWindowEnum.WEEK
@@ -275,11 +283,18 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
     <Shell data-trade-price-chart>
       <Header>
         <PairBlock>
-          {isMarcoSymbol(inputSymbol) ? (
-            <MelegaTokenAvatar name={inputSymbol} symbol={inputSymbol} size={36} radius="circle" />
-          ) : (
-            <TokenIcon>{inputSymbol.slice(0, 1)}</TokenIcon>
-          )}
+          <MelegaTokenAvatar
+            name={inputSymbol}
+            symbol={inputSymbol}
+            size={36}
+            address={
+              isMarcoSymbol(inputSymbol)
+                ? MARCO_BSC_ADDRESS
+                : token0Address
+            }
+            chainId={isMarcoSymbol(inputSymbol) ? MARCO_BSC_CHAIN_ID : 56}
+            radius="circle"
+          />
           <div>
             <PairName>
               {inputSymbol} / {outputSymbol}
@@ -332,13 +347,20 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
         pairPrices={pairPrices}
       />
       <StatsRow data-trade-pair-stats>
-        {stats.map((stat) => (
-          <StatCard key={stat.id}>
-            <StatLabel>{stat.label}</StatLabel>
-            <StatValue>{stat.value ?? '—'}</StatValue>
-            {stat.change && <StatDelta $positive={stat.changePositive}>{stat.change}</StatDelta>}
-          </StatCard>
-        ))}
+        {stats.map((stat) => {
+          const muted = !stat.value
+          const subline = muted ? tradeUiReasonLabel(stat.reasonCode) : undefined
+          return (
+            <StatCard key={stat.id}>
+              <StatLabel>{stat.label}</StatLabel>
+              <StatValue>{stat.value ?? '—'}</StatValue>
+              {stat.change && !muted ? (
+                <StatDelta $positive={stat.changePositive}>{stat.change}</StatDelta>
+              ) : null}
+              {subline ? <StatSubline>{subline}</StatSubline> : null}
+            </StatCard>
+          )
+        })}
       </StatsRow>
     </Shell>
   )

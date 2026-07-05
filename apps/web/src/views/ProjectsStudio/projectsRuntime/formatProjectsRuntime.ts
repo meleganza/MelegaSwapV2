@@ -18,8 +18,10 @@ import { buildProjectHealth } from './buildProjectHealth'
 import { buildProjectRating } from './buildProjectRating'
 import { buildMarketSources } from './marketSources'
 import { buildOnChainMetrics } from './onChainMetrics'
+import type { ProjectLiveMetricsSnapshot } from 'lib/projects-data/projectLiveMetrics'
+import { metricUiReasonLabel, type ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
 
-const UNAVAILABLE = 'Unavailable'
+const EMPTY = '—'
 
 function shortAddress(address?: string): string {
   if (!address) return '—'
@@ -53,7 +55,7 @@ function riskFromTier(tier: ProjectRatingTier): { risk: string; tone: MetricTone
     case 'high-risk':
       return { risk: 'High', tone: 'red' }
     default:
-      return { risk: UNAVAILABLE, tone: 'gray' }
+      return { risk: EMPTY, tone: 'gray' }
   }
 }
 
@@ -61,7 +63,7 @@ function auditLabel(project: StaticProjectRecord): { value: string; tone: Metric
   if (project.trustBadges.includes('canonical')) return { value: 'Canonical', tone: 'green' }
   if (project.verificationStatus === 'observed') return { value: 'Observed', tone: 'gold' }
   if (project.verificationStatus === 'unverified') return { value: 'Unverified', tone: 'red' }
-  return { value: UNAVAILABLE, tone: 'gray' }
+  return { value: EMPTY, tone: 'gray' }
 }
 
 function websiteDisplay(url?: string): string {
@@ -73,13 +75,18 @@ function websiteDisplay(url?: string): string {
   }
 }
 
-export function mapProjectToPreviewCard(project: EnrichedProjectRecord, rank: number): ProjectPreviewCard {
+export function mapProjectToPreviewCard(
+  project: EnrichedProjectRecord,
+  rank: number,
+  live?: ProjectLiveMetricsSnapshot,
+): ProjectPreviewCard {
   const token = project.resources.tokens[0]
   const rating = buildProjectRating(project)
-  const metrics = buildOnChainMetrics(project)
+  const metrics = buildOnChainMetrics(project, live)
   const { risk, tone: riskTone } = riskFromTier(rating.tier)
   const audit = auditLabel(project)
   const symbol = token?.symbol ?? project.tickers[0]
+  const muted = (value: string) => value === EMPTY
 
   return {
     id: project.slug,
@@ -94,10 +101,10 @@ export function mapProjectToPreviewCard(project: EnrichedProjectRecord, rank: nu
     ratingTier: rating.tier,
     aiSummary: buildAiSummary(project),
     metrics: [
-      { label: 'Liquidity', value: metrics.liquidity, tone: 'gray' },
-      { label: 'Volume', value: metrics.volume, tone: 'gray' },
-      { label: 'Holders', value: metrics.holders, tone: 'gray' },
-      { label: 'Age', value: metrics.age, tone: 'gray' },
+      { label: 'Liquidity', value: metrics.liquidity, tone: muted(metrics.liquidity) ? 'gray' : 'green' },
+      { label: 'Volume', value: metrics.volume, tone: muted(metrics.volume) ? 'gray' : undefined },
+      { label: 'Holders', value: metrics.holders, tone: muted(metrics.holders) ? 'gray' : undefined },
+      { label: 'Age', value: metrics.age, tone: muted(metrics.age) ? 'gray' : undefined },
       { label: 'Audit', value: audit.value, tone: audit.tone },
       { label: 'Risk', value: risk, tone: riskTone },
     ],
@@ -145,10 +152,10 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
     ratingTier: score >= 70 ? 'active' : 'emerging',
     aiSummary: `Pending registry profile — ${formatPendingReviewStatusLabel(pending.status)}. Awaiting canonical promotion.`,
     metrics: [
-      { label: 'Liquidity', value: UNAVAILABLE, tone: 'gray' },
-      { label: 'Volume', value: UNAVAILABLE, tone: 'gray' },
-      { label: 'Holders', value: UNAVAILABLE, tone: 'gray' },
-      { label: 'Age', value: UNAVAILABLE, tone: 'gray' },
+      { label: 'Liquidity', value: EMPTY, tone: 'gray' },
+      { label: 'Volume', value: EMPTY, tone: 'gray' },
+      { label: 'Holders', value: EMPTY, tone: 'gray' },
+      { label: 'Age', value: EMPTY, tone: 'gray' },
       { label: 'Audit', value: 'Pending', tone: 'gold' },
       { label: 'Risk', value: 'Pending', tone: 'gold' },
     ],
@@ -185,6 +192,7 @@ export function buildActivityFromPending(pendingRecords: PendingProjectRecord[])
 export function aggregateKpis(
   projects: EnrichedProjectRecord[],
   pendingCount = 0,
+  holdersMetric?: { display: string; reasonCode?: string },
 ): ProjectsKpiItem[] {
   const indexed = projects.length
   const live = projects.filter((p) =>
@@ -192,6 +200,13 @@ export function aggregateKpis(
   ).length
   const verified = projects.filter((p) => p.trustBadges.includes('canonical')).length
   const aiRecommended = projects.filter((p) => buildProjectRating(p).score >= 70).length
+
+  const holdersValue = holdersMetric?.display ?? EMPTY
+  const holdersSubline = holdersMetric?.reasonCode
+    ? metricUiReasonLabel(holdersMetric.reasonCode as ProjectDataReasonCode)
+    : holdersValue === EMPTY
+      ? metricUiReasonLabel('EXPLORER_SOURCE_MISSING')
+      : undefined
 
   return [
     { id: 'indexed', label: 'Projects Indexed', value: String(indexed) },
@@ -201,7 +216,9 @@ export function aggregateKpis(
     {
       id: 'holders',
       label: 'Total Holders',
-      value: UNAVAILABLE,
+      value: holdersValue,
+      subline: holdersSubline,
+      reasonCode: holdersMetric?.reasonCode ?? (holdersValue === EMPTY ? 'EXPLORER_SOURCE_MISSING' : undefined),
     },
     {
       id: 'ai',
@@ -230,9 +247,13 @@ export interface FeaturedProjectView {
   hasPriceData: boolean
 }
 
-export function buildFeaturedProject(project: EnrichedProjectRecord, priceUsd?: number): FeaturedProjectView {
+export function buildFeaturedProject(
+  project: EnrichedProjectRecord,
+  priceUsd?: number,
+  live?: ProjectLiveMetricsSnapshot,
+): FeaturedProjectView {
   const token = project.resources.tokens[0]
-  const onChain = buildOnChainMetrics(project)
+  const onChain = buildOnChainMetrics(project, live)
   const symbol = token?.symbol ?? project.tickers[0] ?? project.displayName
 
   let price: string | undefined
@@ -241,7 +262,7 @@ export function buildFeaturedProject(project: EnrichedProjectRecord, priceUsd?: 
   if (priceUsd != null && Number.isFinite(priceUsd) && priceUsd > 0) {
     hasPriceData = true
     price = priceUsd >= 1 ? `$${priceUsd.toFixed(4)}` : `$${priceUsd.toFixed(6)}`
-    priceChange = UNAVAILABLE
+    priceChange = onChain.priceChange && onChain.priceChange !== EMPTY ? onChain.priceChange : undefined
   }
 
   return {
@@ -252,10 +273,10 @@ export function buildFeaturedProject(project: EnrichedProjectRecord, priceUsd?: 
     tags: [...project.sectorTags.slice(0, 2), ...chainBadges(project).slice(0, 2)],
     description: project.tagline ?? project.description,
     metrics: [
-      { label: 'Holders', value: onChain.holders },
-      { label: 'Liquidity', value: onChain.liquidity },
-      { label: 'FDV', value: UNAVAILABLE },
-      { label: 'Volume 24h', value: onChain.volume },
+      { label: 'Holders', value: onChain.holders, tone: onChain.holders === EMPTY ? 'gray' : undefined },
+      { label: 'Liquidity', value: onChain.liquidity, tone: onChain.liquidity === EMPTY ? 'gray' : 'green' },
+      { label: 'FDV', value: onChain.fdv ?? EMPTY, tone: onChain.fdv === EMPTY ? 'gray' : undefined },
+      { label: 'Volume 24h', value: onChain.volume, tone: onChain.volume === EMPTY ? 'gray' : undefined },
       { label: 'Age', value: onChain.age, tone: 'gray' },
     ],
     contractAddress: token?.address,
@@ -290,7 +311,7 @@ export function buildAdvisorRows(projects: EnrichedProjectRecord[]): {
   return labels.map((label, i) => {
     const entry = rated[i]
     if (!entry) {
-      return { label, value: UNAVAILABLE, score: '—', tone: 'gold' as const }
+      return { label, value: EMPTY, score: '—', tone: 'gold' as const }
     }
     const symbol = entry.project.resources.tokens[0]?.symbol ?? entry.project.displayName
     return {
@@ -352,7 +373,7 @@ export function buildMachineProfile(project: EnrichedProjectRecord) {
   const health = buildProjectHealth(project)
   const sources = buildMarketSources(project, project.asOf)
   const recommendations = buildAiRecommendations(project)
-  const onChain = buildOnChainMetrics(project)
+  const onChain = buildOnChainMetrics(project, undefined)
 
   return {
     schema: 'https://melega.finance/schemas/projects-runtime/v1',
@@ -373,7 +394,10 @@ export function buildMachineProfile(project: EnrichedProjectRecord) {
       space: project.spaceProfileUrl ?? null,
       social: project.socialLinks ?? [],
     },
-    metrics: onChain,
+    metrics: {
+      ...onChain,
+      reason_codes: onChain.reasonCodes ?? {},
+    },
     sources: sources.map((s) => ({
       key: s.key,
       available: s.available,

@@ -381,24 +381,66 @@ export const useHomeTradeData = () => {
   }, [pools])
 
   const activitySlots = useMemo((): ActivitySlot[] => {
-    return [
-      {
-        id: 'swap',
-        label: 'Latest swap',
-        row: latestSwap ? txToRow(latestSwap) : undefined,
-      },
-      {
-        id: 'liquidity',
-        label: 'Latest liquidity',
-        row: latestLiquidity ? txToRow(latestLiquidity) : undefined,
-      },
-      {
-        id: 'staking',
-        label: 'Latest staking',
-        row: undefined,
-      },
-    ]
-  }, [latestSwap, latestLiquidity])
+    const slots: ActivitySlot[] = []
+
+    if (latestSwap) {
+      slots.push({ id: 'swap', label: 'Latest swap', row: txToRow(latestSwap) })
+    }
+    if (latestLiquidity) {
+      slots.push({ id: 'liquidity', label: 'Latest liquidity', row: txToRow(latestLiquidity) })
+    }
+
+    const topFarm = farms[0]
+    if (topFarm?.lpSymbol) {
+      const apr = farmApr(topFarm)
+      slots.push({
+        id: 'farm',
+        label: 'Top farm',
+        row: {
+          id: `farm-${topFarm.pid}`,
+          type: 'Farm opportunity',
+          context: topFarm.lpSymbol.replace('-', ' / '),
+          value: apr ? `${apr.toFixed(2)}% APR` : farmTvl(topFarm),
+          time: 'Live',
+        },
+      })
+    }
+
+    const topPool = pools[0]
+    if (topPool?.stakingToken?.symbol) {
+      slots.push({
+        id: 'pool',
+        label: 'Top pool',
+        row: {
+          id: `pool-${topPool.sousId}`,
+          type: 'Pool opportunity',
+          context: `${topPool.stakingToken.symbol} Staking`,
+          value:
+            topPool.apr && topPool.apr > 0 ? `${topPool.apr.toFixed(2)}% APR` : poolTvl(topPool),
+          time: 'Live',
+        },
+      })
+    }
+
+    if (latestProject) {
+      const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
+      if (projectName) {
+        slots.push({
+          id: 'listing',
+          label: 'Latest listing',
+          row: {
+            id: `project-${latestProject.slug}`,
+            type: 'Project listed',
+            context: projectName,
+            value: latestProject.status,
+            time: 'Registry',
+          },
+        })
+      }
+    }
+
+    return slots
+  }, [latestSwap, latestLiquidity, farms, pools, latestProject])
 
   const isActivityIndexing = transactions === undefined
 
