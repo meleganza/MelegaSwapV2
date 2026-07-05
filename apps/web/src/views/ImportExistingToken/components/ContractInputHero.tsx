@@ -43,9 +43,10 @@ const AddressField = styled(ItInput)`
   box-sizing: border-box;
 
   @media (min-width: 769px) {
-    min-width: 680px;
-    max-width: 760px;
-    flex: 1 1 680px;
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
   }
 
   @media (max-width: 768px) {
@@ -138,11 +139,27 @@ type Props = {
 }
 
 export const ContractInputHero: React.FC<Props> = ({ embedded }) => {
-  const { contract, setContract, chainLabel, setChainLabel, runAnalysis, validationError } = useImportRuntime()
+  const {
+    contract,
+    setContract,
+    chainLabel,
+    setChainLabel,
+    runAnalysis,
+    analyzed,
+    analysisExpanded,
+    toggleAnalysisExpanded,
+    validationError,
+  } = useImportRuntime()
 
-  const handleAnalyze = () => {
+  const handlePrimary = () => {
+    if (analyzed && analysisExpanded) {
+      toggleAnalysisExpanded()
+      return
+    }
     runAnalysis()
   }
+
+  const primaryLabel = analyzed && analysisExpanded ? 'Collapse Analysis' : 'Analyze Project'
 
   return (
     <Hero data-iet-contract-hero $embedded={embedded}>
@@ -167,8 +184,8 @@ export const ContractInputHero: React.FC<Props> = ({ embedded }) => {
             </ChainBtn>
           ))}
         </ChainRow>
-        <AnalyzeBtn type="button" $height="56px" onClick={handleAnalyze}>
-          Analyze Project
+        <AnalyzeBtn type="button" $height="56px" onClick={handlePrimary} data-iet-analyze-btn>
+          {primaryLabel}
         </AnalyzeBtn>
       </DesktopRow>
       {validationError ? <Error>{validationError}</Error> : null}

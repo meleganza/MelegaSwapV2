@@ -14,7 +14,7 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
+  overflow: visible;
 `
 
 const TitleRow = styled.div`

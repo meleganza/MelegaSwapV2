@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useRouter } from 'next/router'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RdOutlineGoldBtn } from './radarStudioPrimitives'
 
 const Row = styled.div`
@@ -103,7 +105,11 @@ const LiveBtn = styled.button`
   }
 `
 
-export const RadarStudioPageHeader: React.FC = () => (
+export const RadarStudioPageHeader: React.FC = () => {
+  const router = useRouter()
+  const { runContractPreview } = useRadarRuntime()
+
+  return (
   <div data-rd-page-header>
     <Row>
       <Left>
@@ -113,14 +119,25 @@ export const RadarStudioPageHeader: React.FC = () => (
         </Subtitle>
       </Left>
       <Right>
-        <RdOutlineGoldBtn type="button">AI Discovery Engine</RdOutlineGoldBtn>
-        <LiveBtn type="button" data-rd-live-scan-btn>
+        <RdOutlineGoldBtn type="button" onClick={() => router.push('/projects')}>
+          AI Discovery Engine
+        </RdOutlineGoldBtn>
+        <LiveBtn
+          type="button"
+          data-rd-live-scan-btn
+          onClick={() => {
+            const featured = document.querySelector<HTMLInputElement>('[data-rd-contract-input]')
+            if (featured?.value) runContractPreview(featured.value)
+            else featured?.focus()
+          }}
+        >
           <LiveDot data-rd-live-dot />
           Live Scan
         </LiveBtn>
       </Right>
     </Row>
   </div>
-)
+  )
+}
 
 export default RadarStudioPageHeader

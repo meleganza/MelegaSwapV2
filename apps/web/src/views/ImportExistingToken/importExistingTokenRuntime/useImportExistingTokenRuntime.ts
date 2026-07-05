@@ -15,6 +15,7 @@ export function useImportExistingTokenRuntime() {
   const [contract, setContract] = useState('')
   const [chainLabel, setChainLabel] = useState('BNB')
   const [analyzed, setAnalyzed] = useState(false)
+  const [analysisExpanded, setAnalysisExpanded] = useState(false)
   const [machineOpen, setMachineOpen] = useState(false)
 
   const chainKey = CHAIN_KEY_BY_LABEL[chainLabel] ?? 'bnb'
@@ -28,13 +29,20 @@ export function useImportExistingTokenRuntime() {
     const trimmed = contract.trim()
     if (!trimmed || !trimmed.startsWith('0x')) {
       setAnalyzed(true)
+      setAnalysisExpanded(true)
       return
     }
     setAnalyzed(true)
+    setAnalysisExpanded(true)
   }, [contract])
 
   const resetAnalysis = useCallback(() => {
     setAnalyzed(false)
+    setAnalysisExpanded(false)
+  }, [])
+
+  const toggleAnalysisExpanded = useCallback(() => {
+    setAnalysisExpanded((prev) => !prev)
   }, [])
 
   const pipelineSteps = useMemo(() => {
@@ -89,8 +97,10 @@ export function useImportExistingTokenRuntime() {
     chainLabel,
     setChainLabel,
     analyzed,
+    analysisExpanded,
     runAnalysis,
     resetAnalysis,
+    toggleAnalysisExpanded,
     analysis,
     pipelineSteps,
     manifest,

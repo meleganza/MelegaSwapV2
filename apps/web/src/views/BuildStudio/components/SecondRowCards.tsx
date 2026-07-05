@@ -5,7 +5,6 @@ import { STAKING_TEMPLATES } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import {
-  BsBody,
   BsCardTitle,
   BsField,
   BsFieldLabel,
@@ -29,7 +28,7 @@ const Grid = styled.div`
 
 const Inner = styled.div`
   padding: 20px;
-  height: 100%;
+  min-height: ${buildStudioLayout.secondRowCardMinH};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -39,10 +38,12 @@ const Inner = styled.div`
 
 const TemplateGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
-  max-height: 160px;
-  overflow-y: auto;
+`
+
+const CardShell = styled(BsPanel)`
+  min-height: ${buildStudioLayout.secondRowCardMinH};
 `
 
 const TemplateCard = styled.button<{ $active?: boolean; $featured?: boolean }>`
@@ -111,7 +112,7 @@ function StakingPoolCard() {
   const stakeLocked = template.lockStakeToken
 
   return (
-    <BsPanel data-bs-panel data-bs-staking-pool $height={buildStudioLayout.secondRowCardH}>
+    <CardShell data-bs-panel data-bs-staking-pool>
       <Inner>
         <BsCardTitle>Create Staking Pool</BsCardTitle>
         <BsLabel>Infrastructure Templates</BsLabel>
@@ -142,11 +143,7 @@ function StakingPoolCard() {
         </BsField>
         <BsField>
           <BsFieldLabel>Reward Token</BsFieldLabel>
-          <BsInput
-            value={premiumUiValue(poolPreview.rewardToken)}
-            readOnly
-            style={{ height: 40, fontSize: 13 }}
-          />
+          <BsInput value={premiumUiValue(poolPreview.rewardToken)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
         <SimBlock>
           <SimTitle>Pools Runtime</SimTitle>
@@ -167,7 +164,7 @@ function StakingPoolCard() {
           Create Pool
         </BsPrimaryBtn>
       </Inner>
-    </BsPanel>
+    </CardShell>
   )
 }
 
@@ -175,41 +172,38 @@ function CreateFarmCard() {
   const { farmPreview } = useBuildRuntime()
 
   return (
-    <BsPanel data-bs-panel data-bs-create-farm $height={buildStudioLayout.secondRowCardH}>
+    <CardShell data-bs-panel data-bs-create-farm>
       <Inner>
         <BsCardTitle>Create Farm</BsCardTitle>
+        <BsField>
+          <BsFieldLabel>Reward Token</BsFieldLabel>
+          <BsInput value={premiumUiValue(farmPreview.reward)} readOnly style={{ height: 40, fontSize: 13 }} />
+        </BsField>
         <BsField>
           <BsFieldLabel>LP Token</BsFieldLabel>
           <BsInput value={premiumUiValue(farmPreview.lp)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
         <BsField>
-          <BsFieldLabel>Reward Token</BsFieldLabel>
-          <BsInput value={premiumUiValue(farmPreview.reward)} readOnly style={{ height: 40, fontSize: 13 }} />
+          <BsFieldLabel>APR</BsFieldLabel>
+          <BsInput value={premiumUiValue(farmPreview.apr)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
-        <SimBlock data-bs-farm-simulation>
-          <SimTitle>Farms Runtime</SimTitle>
-          <SimRow>
-            <span>APR</span>
-            <SimVal>{premiumUiValue(farmPreview.apr)}</SimVal>
-          </SimRow>
-          <SimRow>
-            <span>Multiplier</span>
-            <SimVal>{premiumUiValue(farmPreview.multiplier)}</SimVal>
-          </SimRow>
-          <SimRow>
-            <span>Reward budget</span>
-            <SimVal>{premiumUiValue(farmPreview.budget)}</SimVal>
-          </SimRow>
-          <SimRow>
-            <span>Duration</span>
-            <SimVal>{premiumUiValue(farmPreview.duration)}</SimVal>
-          </SimRow>
-        </SimBlock>
+        <BsField>
+          <BsFieldLabel>Multiplier</BsFieldLabel>
+          <BsInput value={premiumUiValue(farmPreview.multiplier)} readOnly style={{ height: 40, fontSize: 13 }} />
+        </BsField>
+        <BsField>
+          <BsFieldLabel>Reward Budget</BsFieldLabel>
+          <BsInput value={premiumUiValue(farmPreview.budget)} readOnly style={{ height: 40, fontSize: 13 }} />
+        </BsField>
+        <BsField>
+          <BsFieldLabel>Duration</BsFieldLabel>
+          <BsInput value={premiumUiValue(farmPreview.duration)} readOnly style={{ height: 40, fontSize: 13 }} />
+        </BsField>
         <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }}>
           Create Farm
         </BsPrimaryBtn>
       </Inner>
-    </BsPanel>
+    </CardShell>
   )
 }
 

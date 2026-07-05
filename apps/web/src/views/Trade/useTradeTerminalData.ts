@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
+import useSWR from 'swr'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useProtocolTransactionsSWR, useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { MARCO_BSC_ADDRESS, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
+import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
 
 export interface TradeSwapRow {
@@ -103,6 +105,30 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   const resolvedOutput = resolveCanonicalOutputAddress(outputSymbol, outputAddress)
   const tokenAddress = resolvedOutput
   const tokenData = useTokenDataSWR(tokenAddress)
+  const isMarcoRoute =
+    isMarcoSymbol(outputSymbol) ||
+    !outputSymbol ||
+    resolvedOutput?.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()
+  const { data: publicMarket } = useSWR(
+    isMarcoRoute ? 'trade-marco-coingecko-market' : null,
+    fetchMarcoPublicMarket,
+    { refreshInterval: 120_000, revalidateOnFocus: false },
+  )
+
+  const formatCompactUsd = (value?: number): string | undefined => {
+    if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return undefined
+    if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`
+    if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
+    if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
+    return `$${value.toFixed(2)}`
+  }
+
+  const formatSupply = (value?: number): string | undefined => {
+    if (value === undefined || !Number.isFinite(value) || value <= 0) return undefined
+    if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`
+    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`
+    return value.toLocaleString()
+  }
 
   const displayInput = inputSymbol ?? 'BNB'
   const displayOutput = isMarcoSymbol(outputSymbol) || !outputSymbol ? 'MARCO' : outputSymbol
@@ -137,12 +163,18 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const liqChange = formatPct(tokenData?.liquidityUSDChange ?? NaN)
     const txChange = formatPct(tokenData?.txCountChange ?? NaN)
 
+    const volumeValue = formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
+    const liquidityValue = formatUsd(tokenData?.liquidityUSD ?? 0)
+    const mcapValue = formatCompactUsd(publicMarket?.marketCapUsd)
+    const fdvValue = formatCompactUsd(publicMarket?.fdvUsd)
+    const supplyValue = formatSupply(publicMarket?.circulatingSupply)
+
     const volumeReason: DataReasonCode | undefined =
-      tokenData === undefined
+      tokenData === undefined && !publicMarket
         ? 'SUBGRAPH_LOADING'
-        : !tokenData.exists
+        : !tokenData?.exists && !publicMarket?.volume24hUsd
           ? 'PAIR_NOT_INDEXED'
-          : !tokenData.volumeUSD
+          : !tokenData?.volumeUSD && !publicMarket?.volume24hUsd
             ? 'NO_EVENTS_INDEXED'
             : undefined
 
@@ -164,11 +196,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
             ? 'NO_EVENTS_INDEXED'
             : undefined
 
+    const mcapReason: DataReasonCode | undefined = mcapValue ? undefined : 'EXPLORER_SOURCE_MISSING'
+    const fdvReason: DataReasonCode | undefined = fdvValue ? undefined : 'EXPLORER_SOURCE_MISSING'
+    const supplyReason: DataReasonCode | undefined = supplyValue ? undefined : 'EXPLORER_SOURCE_MISSING'
+
     return [
       {
         id: 'volume',
         label: '24H Volume',
-        value: formatUsd(tokenData?.volumeUSD ?? 0),
+        value: volumeValue,
         change: volChange?.text,
         changePositive: volChange?.positive,
         reasonCode: volumeReason,
@@ -176,10 +212,28 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'liquidity',
         label: 'Liquidity',
-        value: formatUsd(tokenData?.liquidityUSD ?? 0),
+        value: liquidityValue,
         change: liqChange?.text,
         changePositive: liqChange?.positive,
         reasonCode: liquidityReason,
+      },
+      {
+        id: 'marketCap',
+        label: 'Market Cap',
+        value: mcapValue,
+        reasonCode: mcapReason,
+      },
+      {
+        id: 'fdv',
+        label: 'FDV',
+        value: fdvValue,
+        reasonCode: fdvReason,
+      },
+      {
+        id: 'supply',
+        label: 'Circulating',
+        value: supplyValue,
+        reasonCode: supplyReason,
       },
       {
         id: 'transactions',
@@ -196,7 +250,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         reasonCode: 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData])
+  }, [tokenData, publicMarket])
 
   const pairPrice = useMemo(() => {
     if (!tokenData?.priceUSD) return undefined

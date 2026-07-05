@@ -38,8 +38,6 @@ const AnalyzedBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 280px;
-  overflow-y: auto;
 `
 
 const Intro = styled.p`
@@ -51,7 +49,7 @@ const Intro = styled.p`
 
 /** Constitutional infrastructure entry — import workflow lives inside Build Studio. */
 export const BuildStudioImportWorkflow: React.FC = () => {
-  const { analyzed } = useImportRuntime()
+  const { analyzed, analysisExpanded } = useImportRuntime()
 
   return (
     <Shell data-bs-import-workflow id="build-import">
@@ -60,7 +58,7 @@ export const BuildStudioImportWorkflow: React.FC = () => {
       <Intro>Paste a contract to analyze registry fit, infrastructure, and pending review.</Intro>
       <WorkflowGrid data-bs-import-grid>
         <ContractInputHero embedded />
-        {analyzed ? (
+        {analyzed && analysisExpanded ? (
           <AnalyzedBlock data-bs-import-analyzed>
             <AIDiscoveryPipeline />
             <ProjectDetectedCard />

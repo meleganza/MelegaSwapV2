@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
-import { enrichProject } from 'registry/projects/discovery'
-import { getAllProjects } from 'registry/projects/getAllProjects'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from './buildDexTokenIndex'
 import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
 import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketSources'
 import type { ContractPreviewData, RadarFilterChip } from '../radarStudioData'
@@ -41,7 +40,10 @@ export function useRadarIntelligenceRuntime() {
   const [contractPreview, setContractPreview] = useState<ContractPreviewData | null>(null)
   const [runtimeErrors, setRuntimeErrors] = useState<RadarRuntimeError[]>([])
 
-  const enriched = useMemo(() => getAllProjects().map(enrichProject), [])
+  const enriched = useMemo(
+    () => dexIndexToEnrichedProjects(buildDexTokenIndex()),
+    [],
+  )
 
   const liveEvents = useMemo(() => buildLiveEvents(enriched), [enriched])
   const filteredLiveEvents = useMemo(

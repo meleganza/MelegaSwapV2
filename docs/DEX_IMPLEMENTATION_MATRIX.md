@@ -171,7 +171,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Layer | Status | Notes |
 |-------|--------|-------|
-| UI | 🟩 | `ProjectsStudioScreen` + `views/Projects` |
+| UI | 🟩 | `ProjectsStudioScreen` + `views/Projects` + R106 Radar CTAs on project detail |
 | Runtime | 🟩 | `projectsRuntime/` + `registry/projects`; source availability matrix |
 | AI | 🟨 | Heuristic rating, summary, health, recommendations (no ML) |
 | Production | ⬜ | — |
@@ -184,6 +184,8 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Website discovery | 🟩 |
 | Social discovery | 🟩 |
 | Contract discovery | 🟩 |
+| Pending review workflow | 🟩 | R106 — Review UI + PATCH API; pending overlay in Projects grid |
+| Pending visibility | 🟩 | R106 — Pending Review badge; non-canonical overlay in Projects + Radar |
 | Liquidity | 🟨 |
 | Holders | 🟨 |
 | Categories | 🟩 |
@@ -247,6 +249,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Whale Monitor | 🟨 |
 | Heatmap | 🟩 |
 | Contract Intelligence Preview | 🟩 |
+| Pending contract preview | 🟩 | R106 — pending profiles in Radar discoveries + `?contract=` preview |
 
 ### AI (R020)
 
@@ -270,7 +273,8 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | NFT collections | 🟩 | Registry canonical (3 collectibles) |
 | Identity verification | 🟨 | Registry + wallet ownership for indexed DNFT |
 | Privileges | 🟩 | Category-derived from runtime — no hardcoded badges |
-| Ownership | 🟩 | `useWalletCollectibleOwnership` — single source |
+| Ownership | 🟩 | R106 — all 3 canonical identities; Genesis on-chain DNFT; Builder/Validator registry runtime |
+| Command Center privileges | 🟩 | R106 — active privilege chips per identity in `CommandCollectiblesCard` |
 | Metadata | 🟩 | Registry manifests — no placeholders |
 | Utilities | 🟨 | Active/Inactive/Pending from ownership + registry status |
 
@@ -295,7 +299,9 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Import Existing Token | 🟩 | ✅ R102 — `/import-existing-token` wired to `runImportAnalysis`, pending registry, manifest |
+| Import Existing Token | 🟩 | R106 — single workflow at `/import-existing-token`; Build Studio entry links only |
+| Build Machine JSON | 🟩 | R106 — `BuildMachinePanel` schema `melega.build-runtime.v1` |
+| Pending in Build Studio | 🟩 | R106 — pending list from registry in import entry panel |
 | Create Token | 🟩 | Preparation preview — deploy suppressed in studio |
 | Create Pool | 🟩 | Pools Runtime preview — create suppressed |
 | Create Farm | 🟩 | Farms Runtime preview — create suppressed |
@@ -336,6 +342,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 | Notifications | 🟩 | Runtime transaction events |
 | Timeline | 🟩 | Multi-runtime activity |
 | Machine Summary | 🟩 | Runtime JSON v2 — copy/download |
+| Settlement mirror | 🟩 | R106 — `CommandSettlementCard` consumes Trade `useTradeSettlementMetadata` only |
 
 ### AI (R022 partial)
 
@@ -451,6 +458,7 @@ If UI is 🟩 and runtime is ⬜ → work is **runtime integration only**, not n
 
 | Date | Change |
 |------|--------|
+| 2026-07-04 | **R106 Final DEX Functional Gap Closure** — pending review UI; Projects/Radar pending overlay; CC settlement mirror; Build Machine JSON; project detail Radar; collectibles privileges |
 | 2026-07-04 | **R100 DEX Production Freeze** — branding, mobile pad, farms/pools/projects/collectibles layout; MARCO logo; mobile Connect CTA |
 | 2026-07-04 | D87-06 Project Registry Write Path — pending onboarding; Import no longer dead-ends |
 | 2026-07-03 | D87-01 Treasury Truth Activation — settlement schema + architecture + activation plan; D87 matrix created |

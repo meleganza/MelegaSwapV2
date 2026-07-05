@@ -95,12 +95,8 @@ export const HomeTradeScreen: React.FC = () => {
 
   const pulseRows = useMemo((): MelegaPulseRow[] => {
     const rows: MelegaPulseRow[] = []
-    const topFarm = data.marketCards.find((c) => c.id === 'top-farm')
     const latestProject = data.marketCards.find((c) => c.id === 'latest-listing')
-    const topPool = data.marketCards.find((c) => c.id === 'top-pool')
 
-    if (topFarm) rows.push({ id: 'farm', label: 'Top Farm', value: topFarm.value })
-    if (topPool) rows.push({ id: 'pool', label: 'Top Pool', value: topPool.value })
     if (latestProject) rows.push({ id: 'listing', label: 'Latest Listing', value: latestProject.value })
 
     return rows.slice(0, 3)

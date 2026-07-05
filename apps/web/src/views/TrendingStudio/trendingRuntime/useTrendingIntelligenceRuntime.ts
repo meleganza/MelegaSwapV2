@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { enrichProject } from 'registry/projects/discovery'
-import { getAllProjects } from 'registry/projects/getAllProjects'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { buildLiveEvents } from 'views/RadarStudio/radarRuntime/buildLiveEvents'
 import type { TrendingFilterChip } from '../trendingStudioData'
 import { buildTrendingMachine } from './buildTrendingMachine'
@@ -20,7 +19,10 @@ export function useTrendingIntelligenceRuntime() {
   const [filter, setFilter] = useState<TrendingFilterChip>('All')
   const [machineOpen, setMachineOpen] = useState(false)
 
-  const enriched = useMemo(() => getAllProjects().map(enrichProject), [])
+  const enriched = useMemo(
+    () => dexIndexToEnrichedProjects(buildDexTokenIndex()),
+    [],
+  )
   const liveEvents = useMemo(() => buildLiveEvents(enriched), [enriched])
 
   const filteredProjects = useMemo(

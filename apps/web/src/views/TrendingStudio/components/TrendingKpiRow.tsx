@@ -89,7 +89,7 @@ export const TrendingKpiRow: React.FC = () => {
             </Value>
             {muted ? <Subline>Awaiting live intelligence feed</Subline> : null}
             <SparkWrap>
-              <AnimatedSparkline points={kpi.sparkline} />
+              {kpi.sparkline.length >= 2 ? <AnimatedSparkline points={kpi.sparkline} /> : null}
             </SparkWrap>
           </Card>
         )

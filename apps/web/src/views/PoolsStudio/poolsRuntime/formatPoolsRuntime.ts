@@ -64,18 +64,65 @@ function poolHasClaimableRewards(pool: Pool.DeserializedPool<Token>): boolean {
   return Boolean(pool.userData?.pendingReward?.gt(0))
 }
 
-function poolStatus(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolStatus {
-  const hasDeposits = poolHasDeposits(pool)
-  const hasClaimable = poolHasClaimableRewards(pool)
+function poolHasActiveEmission(pool: Pool.DeserializedPool<Token>): boolean {
+  return tokenPerBlockBn(pool.tokenPerBlock).gt(0)
+}
 
-  if (hasDeposits || hasClaimable) return 'live'
+function poolRewardPeriodActive(pool: Pool.DeserializedPool<Token>, currentBlock: number): boolean {
+  if (pool.vaultKey) return true
+  if (!pool.isFinished) {
+    const { hasPoolStarted, blocksRemaining } = getPoolBlockInfo(pool, currentBlock)
+    return hasPoolStarted || blocksRemaining > 0
+  }
+  const { blocksRemaining } = getPoolBlockInfo(pool, currentBlock)
+  return blocksRemaining > 0
+}
+
+function poolStatus(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolStatus {
+  const hasEmission = poolHasActiveEmission(pool)
+  const hasClaimable = poolHasClaimableRewards(pool)
+  const periodActive = poolRewardPeriodActive(pool, currentBlock)
+
+  if (hasEmission || hasClaimable || periodActive) return 'live'
   if (pool.isFinished) return 'ended'
 
   if (pool.sousId !== 0) {
     const { hasPoolStarted } = getPoolBlockInfo(pool, currentBlock)
     if (!hasPoolStarted) return 'indexing'
   }
-  return 'live'
+  return 'ended'
+}
+
+function estimateAprFromEmission(pool: Pool.DeserializedPool<Token>): number | null {
+  const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
+  if (!perBlock.gt(0) || !pool.earningToken?.decimals || !pool.stakingToken?.decimals) return null
+
+  const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
+  const stakingUsd = staked * (pool.stakingTokenPrice || 0)
+  const earningPrice = pool.earningTokenPrice || pool.stakingTokenPrice || 0
+  if (stakingUsd <= 0 || earningPrice <= 0) return null
+
+  const dailyReward = getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
+  const dailyRewardUsd = dailyReward * earningPrice
+  const annualized = (dailyRewardUsd / stakingUsd) * 365 * 100
+  return Number.isFinite(annualized) && annualized > 0 ? annualized : null
+}
+
+function displayPoolApr(
+  pool: Pool.DeserializedPool<Token>,
+  apr: number,
+  status: PoolStatus,
+  currentBlock: number,
+): string | undefined {
+  if (status === 'indexing') return '—'
+  if (status === 'ended') return undefined
+  if (apr > 0) return `${apr.toFixed(2)}%`
+  if (poolHasActiveEmission(pool) || poolRewardPeriodActive(pool, currentBlock)) {
+    const estimated = estimateAprFromEmission(pool)
+    if (estimated && estimated > 0) return `${estimated.toFixed(2)}%`
+    return 'Calculating...'
+  }
+  return '—'
 }
 
 export function mapPoolToPreviewCard(
@@ -111,7 +158,7 @@ export function mapPoolToPreviewCard(
     poolType: getPoolTypeLabel(pool),
     name: getPoolDisplayName(pool),
     tokens: [pool.stakingToken.symbol, pool.earningToken.symbol].filter(Boolean) as string[],
-    apr: status === 'live' ? formatApr(apr) : status === 'indexing' ? '—' : undefined,
+    apr: displayPoolApr(pool, apr, status, currentBlock),
     status,
     tvl: formatUsd(tvlUsd),
     liquidity: formatUsd(tvlUsd),
@@ -131,15 +178,17 @@ export function mapPoolToPreviewCard(
 export function aggregateKpis(
   pools: Pool.DeserializedPool<Token>[],
   featuredName?: string,
+  currentBlock = 0,
 ): PoolsKpiItem[] {
   let totalStakedUsd = 0
   let totalPending = 0
+  let dailyEmission = 0
   let activePools = 0
   let stakerPositions = 0
 
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
-    const status = pool.isFinished && !poolHasDeposits(pool) ? 'ended' : 'live'
+    const status = poolStatus(pool, currentBlock)
     if (status === 'live') activePools += 1
     const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
     totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
@@ -147,12 +196,25 @@ export function aggregateKpis(
     if (pool.userData?.pendingReward?.gt(0)) {
       totalPending += getBalanceNumber(pool.userData.pendingReward, pool.earningToken.decimals)
     }
+    const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
+    if (perBlock.gt(0)) {
+      dailyEmission += getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
+    }
   })
 
   return [
     { id: 'staked', label: 'Total Staked', value: formatUsd(totalStakedUsd) },
     { id: 'active', label: 'Active Pools', value: String(activePools) },
-    { id: 'rewards', label: 'MARCO Rewards Today', value: totalPending > 0 ? formatTokenAmount(new BigNumber(totalPending), 18, 'MARCO') : '0 MARCO' },
+    {
+      id: 'rewards',
+      label: 'MARCO Rewards Today',
+      value:
+        dailyEmission > 0
+          ? formatTokenAmount(new BigNumber(dailyEmission), 18, 'MARCO')
+          : totalPending > 0
+            ? formatTokenAmount(new BigNumber(totalPending), 18, 'MARCO')
+            : '0 MARCO',
+    },
     { id: 'stakers', label: 'Your Positions', value: String(stakerPositions) },
     { id: 'ai', label: 'AI Recommended', value: featuredName ?? '—', gold: true },
   ]
@@ -175,7 +237,9 @@ export function sortPoolsDefault(cards: PoolPreviewCard[]): PoolPreviewCard[] {
     const sa = statusRank[a.status] ?? 1
     const sb = statusRank[b.status] ?? 1
     if (sa !== sb) return sa - sb
-    const aprDiff = parseFloat(b.apr || '0') - parseFloat(a.apr || '0')
+    const aprDiff =
+      (b.apr === 'Calculating...' ? -1 : parseFloat(b.apr || '0')) -
+      (a.apr === 'Calculating...' ? -1 : parseFloat(a.apr || '0'))
     if (aprDiff !== 0) return aprDiff
     const parseTvl = (v?: string) => parseFloat(v?.replace(/[^0-9.]/g, '') || '0')
     return parseTvl(b.tvl) - parseTvl(a.tvl)

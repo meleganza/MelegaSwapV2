@@ -255,7 +255,9 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
         <ScoreBlock>
           <Score $tone={tone}>{project.aiScore > 0 ? `${project.aiScore}/100` : '—'}</Score>
           <Signal>{project.signalLabel && project.signalLabel !== 'Unavailable' ? project.signalLabel : '—'}</Signal>
-          <AnimatedSparkline points={project.sparkline} width={56} height={14} />
+          {project.sparkline.length >= 2 ? (
+            <AnimatedSparkline points={project.sparkline} width={56} height={14} />
+          ) : null}
         </ScoreBlock>
       </TopRow>
 

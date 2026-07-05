@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { DETECTED_BABYMARCO_PINATA_GATEWAY } from 'registry/collectibles/collectible-constants'
@@ -305,7 +306,7 @@ export const FeaturedCollectionPanel: React.FC = () => {
           </Metric>
         </Metrics>
         <BtnRow>
-          <ViewBtn type="button">View Collection</ViewBtn>
+          <ViewBtn href="/collectibles/babymarco-genesis">View Collection</ViewBtn>
           <LearnBtn type="button">Learn More</LearnBtn>
         </BtnRow>
       </Info>

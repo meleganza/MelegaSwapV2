@@ -177,7 +177,10 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     }
   }, [featuredCard])
 
-  const kpis = useMemo(() => aggregateKpis(rawPools ?? [], featured.name), [rawPools, featured.name])
+  const kpis = useMemo(
+    () => aggregateKpis(rawPools ?? [], featured.name, currentBlock),
+    [rawPools, featured.name, currentBlock],
+  )
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
   const advisorItems = useMemo(() => {
