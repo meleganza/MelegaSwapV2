@@ -310,7 +310,7 @@ export const LiquidityBuilderPanel: React.FC = () => {
               ))}
             </PositionList>
           )}
-          <LsPrimaryBtn type="button" data-ls-primary-btn onClick={() => router.push('/liquidity-studio')}>
+          <LsPrimaryBtn type="button" data-ls-primary-btn onClick={() => router.push('/liquidity')}>
             {primaryCtaLabel}
           </LsPrimaryBtn>
         </>

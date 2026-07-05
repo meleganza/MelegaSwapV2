@@ -1,7 +1,23 @@
 import type { MelegaTickerItem } from 'design-system/melega'
-import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 
-export type HomeMachinePayload = MelegaSurfaceEnvelope
+export interface HomeMachinePayload {
+  schema: 'melega.home.v1'
+  schemaVersion: '1.0.0'
+  module: 'home'
+  timestamp: string
+  dataSources: string[]
+  reasonCodes: Record<string, string>
+  primaryActions: string[]
+  runtimeLinks: string[]
+  surfaces: {
+    swap: 'active'
+    trendingRibbon: 'active'
+    earnOpportunities: 'partial'
+    liveActivity: 'partial'
+  }
+  indexedProjects: number
+  marketCards: number
+}
 
 export function buildHomeMachine(input: {
   indexedProjects: number
@@ -13,22 +29,22 @@ export function buildHomeMachine(input: {
   if (input.activityRows === 0) reasonCodes.liveActivity = 'NO_EVENTS_INDEXED'
   if (input.earnRows === 0) reasonCodes.earnOpportunities = 'NO_POOL_FOUND'
 
-  return buildSurfaceEnvelope({
+  return {
+    schema: 'melega.home.v1',
+    schemaVersion: '1.0.0',
     module: 'home',
-    runtime: {
-      status: 'ready',
-      surfaces: {
-        swap: 'active',
-        trendingRibbon: 'active',
-        earnOpportunities: 'partial',
-        liveActivity: input.activityRows > 0 ? 'partial' : 'partial',
-      },
-      indexedProjects: input.indexedProjects,
-      marketCards: input.marketCards.length,
-    },
+    timestamp: new Date().toISOString(),
+    dataSources: ['registry', 'subgraph', 'farms-api', 'pools-api'],
     reasonCodes,
-    sources: ['registry', 'subgraph', 'farms-api', 'pools-api'],
-    primaryActions: ['swap', 'build_import'],
-    nextActions: ['trade', 'build_import', 'view_projects', 'open_command_center'],
-  })
+    primaryActions: ['swap', 'list_project', 'view_trending', 'view_earn'],
+    runtimeLinks: ['/trade', '/import-existing-token', '/trending', '/farms', '/command-center'],
+    surfaces: {
+      swap: 'active',
+      trendingRibbon: 'active',
+      earnOpportunities: input.earnRows > 0 ? 'partial' : 'partial',
+      liveActivity: input.activityRows > 0 ? 'partial' : 'partial',
+    },
+    indexedProjects: input.indexedProjects,
+    marketCards: input.marketCards.length,
+  }
 }

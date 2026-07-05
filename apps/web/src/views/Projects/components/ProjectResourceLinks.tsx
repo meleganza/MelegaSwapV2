@@ -20,17 +20,13 @@ interface ProjectResourceLinksProps {
 const ProjectResourceLinks: React.FC<ProjectResourceLinksProps> = ({ project }) => {
   const { t } = useTranslation()
   const { deepLinks, websiteUrl, docsUrl, spaceProfileUrl } = project
-  const tokenAddress = project.resources.tokens[0]?.address
-  const radarHref = tokenAddress ? `/radar?contract=${tokenAddress}` : undefined
 
   const platformLinks = [
     { label: t('Swap'), href: deepLinks.swap },
     { label: t('Liquidity'), href: deepLinks.liquidity },
     { label: t('Farms'), href: deepLinks.farms },
     { label: t('Pools'), href: deepLinks.pools },
-    radarHref ? { label: t('Open Radar'), href: radarHref } : null,
-    radarHref ? { label: t('Open Contract Intelligence'), href: radarHref } : null,
-  ].filter((item): item is { label: string; href: string } => Boolean(item?.href))
+  ].filter((item) => Boolean(item.href))
 
   const externalLinks = [
     { label: t('Website'), href: websiteUrl },

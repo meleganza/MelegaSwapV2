@@ -93,7 +93,7 @@ export interface DryRunWorkspaceEffect {
   sectionId: 'projects'
   visibility: 'schema_example_only'
   effect: string
-  linkedSurface: '/command-center'
+  linkedSurface: '/workspace'
   flags: DryRunRecordFlags
 }
 

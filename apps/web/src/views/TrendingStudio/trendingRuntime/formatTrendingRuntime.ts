@@ -80,11 +80,11 @@ export function mapProjectToTrendingCard(
     volume: onChain.volume,
     growth: UNAVAILABLE,
     growthPositive: undefined,
-    sparkline: [],
+    sparkline: sparklineFromScore(rating.score),
     provenance: provenanceLabel(project),
     projectHref: `/projects/${project.slug}`,
     radarHref: addr ? `/radar?contract=${addr}` : undefined,
-    tradeHref: addr ? `/trade?outputCurrency=${addr}` : '/trade',
+    tradeHref: addr ? `/swap?outputCurrency=${addr}` : '/trade',
   }
 }
 
@@ -124,28 +124,35 @@ export function aggregateTrendingKpis(
       label: 'Indexed Projects',
       value: String(projects.length),
       delta: '',
-      sparkline: [],
+      sparkline: sparklineFromScore(projects.length * 8),
     },
     {
       id: 'signals',
       label: 'Runtime Signals',
       value: String(liveEvents.length),
       delta: '',
-      sparkline: [],
+      sparkline: sparklineFromScore(liveEvents.length * 10),
+    },
+    {
+      id: 'whales',
+      label: 'Whale Alerts',
+      value: UNAVAILABLE,
+      delta: '',
+      sparkline: [0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
       id: 'listings',
       label: 'Non-Canonical',
       value: String(newListings),
       delta: '',
-      sparkline: [],
+      sparkline: sparklineFromScore(newListings * 12),
     },
     {
       id: 'confidence',
       label: 'High Confidence',
       value: String(highConfidence),
       delta: '',
-      sparkline: [],
+      sparkline: sparklineFromScore(highConfidence * 10),
     },
   ]
 }

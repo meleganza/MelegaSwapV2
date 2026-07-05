@@ -1,10 +1,8 @@
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { TrendingFilterChip } from '../trendingStudioData'
 
-export const TRENDING_RUNTIME_SCHEMA = 'melega.trending-runtime.v1' as const
-
 export interface TrendingMachinePayload {
-  schema: typeof TRENDING_RUNTIME_SCHEMA
+  schema: 'melega.trending-runtime/v1'
   generatedAt: string
   filter: TrendingFilterChip
   indexedProjects: number
@@ -37,7 +35,7 @@ export function buildTrendingMachine(input: {
   featured?: { slug: string; runtimeSignal: string; score: number; confidence: number }
 }): TrendingMachinePayload {
   return {
-    schema: TRENDING_RUNTIME_SCHEMA,
+    schema: 'melega.trending-runtime/v1',
     generatedAt: new Date().toISOString(),
     filter: input.filter,
     indexedProjects: input.projects.length,

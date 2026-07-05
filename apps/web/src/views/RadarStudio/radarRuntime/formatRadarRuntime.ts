@@ -1,6 +1,4 @@
 import { CHAIN_LABELS } from 'registry/projects/constants'
-import type { PendingProjectRecord } from 'registry/projects/pending/types'
-import { formatPendingReviewStatusLabel } from 'registry/projects/pending/updatePendingReview'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import { buildAiRecommendations } from 'views/ProjectsStudio/projectsRuntime/buildAiRecommendations'
 import { buildAiSummary } from 'views/ProjectsStudio/projectsRuntime/buildAiSummary'
@@ -22,11 +20,10 @@ import type {
   WarningRow,
   WhaleRow,
 } from '../radarStudioData'
-import { FILTER_CATEGORIES } from '../radarStudioData'
 import type { RadarLiveEvent } from './buildLiveEvents'
 import { buildOpportunityScore } from './buildOpportunityScore'
 
-const EMPTY = '—'
+const UNAVAILABLE = 'Unavailable'
 
 function networkLabel(project: EnrichedProjectRecord): string {
   const id = project.supportedChains[0]
@@ -63,7 +60,7 @@ function confidenceBreakdown(project: EnrichedProjectRecord): ConfidenceBreakdow
   }
 
   return [
-    { label: 'Liquidity', value: onChain.liquidity === EMPTY ? 0 : valueFor('liquidity', false) },
+    { label: 'Liquidity', value: onChain.liquidity === UNAVAILABLE ? 0 : valueFor('liquidity', false) },
     { label: 'Volume', value: 0 },
     { label: 'Contract', value: valueFor('contract', true) },
     { label: 'Community', value: valueFor('community', Boolean(project.socialLinks?.length)) },
@@ -79,7 +76,7 @@ function riskMatrix(project: EnrichedProjectRecord): RiskMatrixItem[] {
   const unavailable = (label: string): RiskMatrixItem => ({
     label,
     level: 'yellow',
-    tooltip: EMPTY,
+    tooltip: UNAVAILABLE,
   })
 
   const live = (label: string, tooltip: string, level: RadarStatusLevel = 'green'): RiskMatrixItem => ({
@@ -89,7 +86,7 @@ function riskMatrix(project: EnrichedProjectRecord): RiskMatrixItem[] {
   })
 
   return [
-    onChain.contractVerification === EMPTY
+    onChain.contractVerification === UNAVAILABLE
       ? unavailable('Contract')
       : live('Contract', `Registry: ${onChain.contractVerification}`),
     unavailable('Liquidity'),
@@ -133,7 +130,7 @@ export function mapProjectToRadarEvent(
     project.trustBadges.includes('canonical') ? 'Canonical registry project' : null,
     project.capabilities.liquidity.status === 'live' ? 'Liquidity surface live' : null,
     project.websiteUrl ? 'Website indexed' : null,
-    onChain.liquidity === EMPTY ? 'Market liquidity unavailable' : null,
+    onChain.liquidity === UNAVAILABLE ? 'Market liquidity unavailable' : null,
   ].filter(Boolean) as string[]
 
   return {
@@ -148,7 +145,7 @@ export function mapProjectToRadarEvent(
     liquidity: onChain.liquidity,
     volume: onChain.volume,
     newHolders: onChain.holders,
-    whales: EMPTY,
+    whales: UNAVAILABLE,
     contractStatus: onChain.contractVerification,
     contractRisk: risk,
     riskLevel: risk,
@@ -160,56 +157,12 @@ export function mapProjectToRadarEvent(
     timeline: timelineFromEvents(liveEvents, sym),
     contractIntel: [],
     riskScore: Math.max(0, 100 - rating.score),
-    gasComplexity: EMPTY,
+    gasComplexity: UNAVAILABLE,
     intelSummary: buildAiSummary(project),
     projectSlug: project.slug,
     contractAddress: token?.address,
-    tradeHref: token?.address ? `/trade?outputCurrency=${token.address}` : '/trade',
+    tradeHref: token?.address ? `/swap?outputCurrency=${token.address}` : '/trade',
     projectHref: `/projects/${project.slug}`,
-  }
-}
-
-function pendingNetworkLabel(chainId: number): string {
-  const label = CHAIN_LABELS[chainId]
-  if (label === 'BSC') return 'BNB Chain'
-  return label ?? 'Multi-chain'
-}
-
-export function mapPendingToRadarEvent(pending: PendingProjectRecord, rank: number): RadarEventCard {
-  const sym = pending.symbol.available ? (pending.symbol.value ?? 'Unknown') : 'Unknown'
-  const score = pending.health.readiness_score
-
-  return {
-    id: `pending-${pending.id}`,
-    rank,
-    name: sym,
-    network: pendingNetworkLabel(pending.chain),
-    symbol: sym,
-    aiConfidence: score,
-    summary: `Pending registry profile — ${formatPendingReviewStatusLabel(pending.status)}. Non-canonical until manual promotion.`,
-    signals: ['Contract'],
-    liquidity: EMPTY,
-    volume: EMPTY,
-    newHolders: EMPTY,
-    whales: EMPTY,
-    contractStatus: 'Pending Review',
-    contractRisk: 'Pending',
-    riskLevel: 'Pending',
-    freshness: 'Pending Registry',
-    lastDetection: pending.updated_at,
-    detectionReasons: ['Pending registry intake', 'Awaiting review'],
-    confidenceBreakdown: [{ label: 'Readiness', value: score }],
-    riskMatrix: [{ label: 'Canonical', level: 'yellow', tooltip: 'Not canonical' }],
-    timeline: [],
-    contractIntel: [{ label: 'Status', value: formatPendingReviewStatusLabel(pending.status), status: 'yellow' }],
-    riskScore: Math.max(0, 100 - score),
-    gasComplexity: EMPTY,
-    intelSummary: `Pending contract ${pending.contract.slice(0, 6)}…${pending.contract.slice(-4)}`,
-    contractAddress: pending.contract,
-    tradeHref: `/trade?outputCurrency=${pending.contract}`,
-    projectHref: `/build-studio?contract=${encodeURIComponent(pending.contract)}#build-import`,
-    registryTier: 'pending',
-    reviewStatus: formatPendingReviewStatusLabel(pending.status),
   }
 }
 
@@ -224,7 +177,7 @@ function deriveRisk(tier: string): { risk: string } {
     case 'high-risk':
       return { risk: 'Elevated' }
     default:
-      return { risk: EMPTY }
+      return { risk: UNAVAILABLE }
   }
 }
 
@@ -317,15 +270,7 @@ export function buildAiRecommendation(project: EnrichedProjectRecord) {
 export const EMPTY_WHALE_ROWS: WhaleRow[] = []
 export const EMPTY_SMART_MONEY: SmartMoneyRow[] = []
 
-export type RadarFilterChip = (typeof import('../radarStudioData').RADAR_FILTER_CHIPS)[number] | string
-
-const CHAIN_FILTER_MAP: Record<string, string[]> = {
-  BNB: ['BNB Chain', 'BSC', 'BNB Smart Chain'],
-  Ethereum: ['Ethereum'],
-  Base: ['Base'],
-  Polygon: ['Polygon'],
-  Solana: ['Solana'],
-}
+export type RadarFilterChip = (typeof import('../radarStudioData').RADAR_FILTER_CHIPS)[number]
 
 export function filterRadarEvents(
   events: RadarEventCard[],
@@ -335,19 +280,6 @@ export function filterRadarEvents(
   if (chip === 'All') return events
 
   const bySlug = new Map(projects.map((p) => [p.slug, p]))
-
-  const chainMatch = CHAIN_FILTER_MAP[chip]
-  if (chainMatch) {
-    return events.filter((card) => chainMatch.some((c) => card.network.includes(c)))
-  }
-
-  if ((FILTER_CATEGORIES as readonly string[]).includes(chip)) {
-    return events.filter((card) => {
-      const project = card.projectSlug ? bySlug.get(card.projectSlug) : undefined
-      if (!project) return false
-      return project.sectorTags.some((t) => t.toLowerCase() === chip.toLowerCase())
-    })
-  }
 
   return events.filter((card) => {
     const project = [...bySlug.values()].find(
@@ -376,26 +308,6 @@ export function filterRadarEvents(
   })
 }
 
-export function sortRadarEvents(events: RadarEventCard[], chip: RadarFilterChip): RadarEventCard[] {
-  const copy = [...events]
-  switch (chip) {
-    case 'Highest Rated':
-      return copy.sort((a, b) => b.aiConfidence - a.aiConfidence)
-    case 'Highest Liquidity':
-      return copy.sort((a, b) => {
-        const av = a.liquidity === EMPTY ? 0 : parseFloat(a.liquidity.replace(/[^0-9.]/g, '')) || 0
-        const bv = b.liquidity === EMPTY ? 0 : parseFloat(b.liquidity.replace(/[^0-9.]/g, '')) || 0
-        return bv - av
-      })
-    case 'Newest':
-    case 'Recently Listed':
-      return copy.sort((a, b) => b.lastDetection.localeCompare(a.lastDetection))
-    case 'Trending':
-    default:
-      return copy.sort((a, b) => b.aiConfidence - a.aiConfidence)
-  }
-}
-
 export function filterLiveEvents(events: RadarLiveEvent[], chip: RadarFilterChip): RadarLiveEvent[] {
   if (chip === 'All') return events
   if (chip === 'Whales') return []
@@ -404,8 +316,6 @@ export function filterLiveEvents(events: RadarLiveEvent[], chip: RadarFilterChip
   if (chip === 'AI Verified') return events.filter((e) => e.type === 'verification' || e.type === 'audit')
   return events
 }
-
-export const RADAR_RUNTIME_SCHEMA = 'melega.radar-runtime.v1' as const
 
 export function buildMachinePayload(input: {
   projects: EnrichedProjectRecord[]
@@ -418,7 +328,7 @@ export function buildMachinePayload(input: {
 }) {
   const token = input.featured?.resources.tokens[0]
   return {
-    schema: RADAR_RUNTIME_SCHEMA,
+    schema: 'https://melega.finance/schemas/radar-runtime/v1',
     status: 'ready',
     filter: input.filter,
     timestamp: new Date().toISOString(),

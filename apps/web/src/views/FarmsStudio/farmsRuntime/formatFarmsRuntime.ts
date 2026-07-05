@@ -111,7 +111,7 @@ export function aggregateKpis(
       value: dailyEmissions > 0 ? formatTokenAmount(new BigNumber(dailyEmissions)) : '—',
     },
     { id: 'apr', label: 'Highest APR', value: highestApr > 0 ? formatApr(highestApr) : '—', gold: true },
-    { id: 'ai', label: 'Featured', value: featuredPair ?? '—', gold: true },
+    { id: 'ai', label: 'AI Suggested', value: featuredPair ?? '—', gold: true },
   ]
 }
 

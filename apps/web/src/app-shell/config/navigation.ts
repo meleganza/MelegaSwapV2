@@ -72,13 +72,13 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Identity Hub',
         href: COLLECTIBLES_ROUTE,
         icon: 'star',
-        match: (p) => p.startsWith('/collectibles'),
+        match: (p) => p.startsWith('/collectibles') || p.startsWith('/nft'),
       },
     ],
   },
   {
     label: 'BUILD',
-    visibleCount: 1,
+    visibleCount: 2,
     items: [
       {
         id: 'build-studio',
@@ -88,56 +88,57 @@ export const shellNavigation: ShellNavSection[] = [
         match: (p) => p.startsWith('/build-studio'),
       },
       {
-        id: 'import-existing-token',
+        id: 'list',
         label: 'Import Existing Token',
-        href: '/build-studio#build-import',
+        href: '/import-existing-token',
         icon: 'rocket',
-        match: (p) => p.startsWith('/build-studio'),
-      },
-      {
-        id: 'create-token',
-        label: 'Create Token',
-        href: '/build-studio',
-        icon: 'rocket',
-        disabled: true,
-        disabledReason: 'Preparation only — page not ready',
-        match: () => false,
-      },
-      {
-        id: 'create-farm',
-        label: 'Create Farm',
-        href: '/build-studio',
-        icon: 'coins',
-        disabled: true,
-        disabledReason: 'Preparation only — page not ready',
-        match: () => false,
-      },
-      {
-        id: 'create-pool',
-        label: 'Create Staking Pool',
-        href: '/build-studio',
-        icon: 'coins',
-        disabled: true,
-        disabledReason: 'Preparation only — page not ready',
-        match: () => false,
+        match: (p) => p === '/import-existing-token' || p === '/launch',
       },
       {
         id: 'reward',
         label: 'Reward MARCO holders',
-        href: '/build-studio',
+        href: '/launch?intent=reward-marco-holders',
         icon: 'sparkle',
         highlight: true,
         disabled: true,
         disabledReason: 'Preparation only — module not ready',
-        match: () => false,
+        match: (p) => p.includes('intent=reward-marco-holders'),
+      },
+      {
+        id: 'create-token',
+        label: 'Create Token',
+        href: '/launch?intent=create-token',
+        icon: 'rocket',
+        disabled: true,
+        disabledReason: 'Preparation only — page not ready',
+        match: (p) => p.includes('intent=create-token'),
+      },
+      {
+        id: 'create-farm',
+        label: 'Create Farm',
+        href: '/launch?intent=create-farm',
+        icon: 'coins',
+        disabled: true,
+        disabledReason: 'Preparation only — page not ready',
+        match: (p) => p.includes('intent=create-farm'),
+      },
+      {
+        id: 'create-pool',
+        label: 'Create Staking Pool',
+        href: '/launch?intent=create-staking-pool',
+        icon: 'coins',
+        disabled: true,
+        disabledReason: 'Preparation only — page not ready',
+        match: (p) => p.includes('intent=create-staking-pool'),
       },
       {
         id: 'lock-liquidity',
         label: 'Lock Liquidity',
-        href: '/build-studio',
+        href: '/launch?intent=lock-liquidity',
         icon: 'drop',
-        hidden: true,
-        match: () => false,
+        disabled: true,
+        disabledReason: 'Not available — functionality pending',
+        match: (p) => p.includes('intent=lock-liquidity'),
       },
     ],
   },
@@ -155,23 +156,16 @@ export const shellNavigation: ShellNavSection[] = [
       {
         id: 'portfolio-overview',
         label: 'Overview',
-        href: '/command-center',
+        href: '/portfolio',
         icon: 'wallet',
         hidden: true,
-        match: () => false,
+        match: (p) => p === '/portfolio' || p.startsWith('/portfolio/'),
       },
     ],
   },
 ]
 
 export const shellBottomNavItems = [
-  {
-    id: 'home',
-    label: 'Home',
-    href: '/',
-    icon: 'swap' as MelegaNavIcon,
-    match: (p: string) => p === '/',
-  },
   {
     id: 'trade',
     label: 'Trade',
@@ -194,7 +188,9 @@ export const shellBottomNavItems = [
     match: (p: string) =>
       p.startsWith('/projects') ||
       p.startsWith('/trending') ||
+      p.startsWith('/assets') ||
       p.startsWith('/radar') ||
+      p.startsWith('/query') ||
       p.startsWith('/collectibles'),
   },
   {
@@ -202,13 +198,18 @@ export const shellBottomNavItems = [
     label: 'Build',
     href: '/build-studio',
     icon: 'rocket' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/build-studio'),
+    match: (p: string) =>
+      p.startsWith('/build-studio') ||
+      p.startsWith('/launch') ||
+      p.startsWith('/import-existing-token') ||
+      p.startsWith('/add'),
   },
   {
     id: 'command-center',
     label: 'Command Center',
     href: '/command-center',
     icon: 'command' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/command-center'),
+    match: (p: string) =>
+      p.startsWith('/command-center') || p.startsWith('/portfolio') || p.startsWith('/workspace'),
   },
 ]

@@ -19,7 +19,7 @@ export const LEGACY_ILO_SURFACE: LegacySurfaceRecord = {
   contractLogicUntouched: true,
   supersededBy: [
     {
-      route: '/build-studio#build-import',
+      route: '/launch',
       label: 'Operational Launch Console',
       purpose: 'User creation and listing capabilities',
     },
@@ -29,7 +29,7 @@ export const LEGACY_ILO_SURFACE: LegacySurfaceRecord = {
       purpose: 'Labs → DEX activation read model',
     },
     {
-      route: '/command-center',
+      route: '/workspace',
       label: 'User Economic Workspace',
       purpose: 'Operational center for indexed economic activity',
     },

@@ -15,7 +15,7 @@ describe('legacy ILO retirement', () => {
 
   it('supersedes with launch activation and workspace routes', () => {
     const routes = LEGACY_ILO_SURFACE.supersededBy.map((entry) => entry.route)
-    expect(routes).toEqual(['/build-studio#build-import', '/new-project', '/command-center'])
+    expect(routes).toEqual(['/launch', '/new-project', '/workspace'])
   })
 
   it('does not remove historical module reference', () => {

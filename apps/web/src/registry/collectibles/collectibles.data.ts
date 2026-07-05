@@ -30,7 +30,6 @@ export const STATIC_COLLECTIBLE_RECORDS: StaticCollectibleRecord[] = [
       status: 'pinata_ipfs',
       gateway: DETECTED_BABYMARCO_PINATA_GATEWAY,
       ipfsCid: 'QmRqb3TUnbxjLPzJqhgKkzpysfFmdsvSdiUBqVYFCKSYxb',
-      metadataCid: 'QmRhzvsUCMpPFmytBj9w5KYFS1CtrbpZUeM1qUcRCxw7XZ',
       imagePattern: DETECTED_BABYMARCO_IMAGE_PATTERN,
       tokenUriSource: 'on_chain',
       notes:
@@ -138,7 +137,7 @@ export const STATIC_COLLECTIBLE_RECORDS: StaticCollectibleRecord[] = [
       status: 'not_indexed',
       notes: 'No mint route — planned collectible class.',
     },
-    relatedRoutes: ['/command-center', '/build-studio#build-import'],
+    relatedRoutes: ['/workspace', '/launch'],
     warnings: [
       'Planned only — no mint buttons',
       'Will bind to workspace economic activity when indexed',

@@ -115,7 +115,7 @@ const Hero = () => {
           </Text>
           <Flex>
             {!account && <ConnectWalletButton mr="8px" />}
-            <Link mr="16px" href="/trade">
+            <Link mr="16px" href="/swap">
               <Button variant={!account ? 'secondary' : 'primary'}>{t('Trade Now')}</Button>
             </Link>
           </Flex>

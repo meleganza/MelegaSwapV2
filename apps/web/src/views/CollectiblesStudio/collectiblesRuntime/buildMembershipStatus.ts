@@ -20,11 +20,9 @@ export interface MembershipStatus {
 
 export function resolveMembershipTier(record: StaticCollectibleRecord): MembershipTier {
   if (record.slug === 'babymarco-genesis') return 'Genesis'
-  if (record.slug === 'masterm-identity') return 'Builder'
-  if (record.slug === 'achievement-collectibles') return 'Validator'
   if (record.category === 'identity') return 'Builder'
   if (record.category === 'ai_agent_identity') return 'AI Passport'
-  if (record.category === 'participation_proof') return 'Validator'
+  if (record.category === 'participation_proof') return 'Community'
   if (record.status === 'live_or_legacy_existing') return 'Genesis'
   return 'Unavailable'
 }

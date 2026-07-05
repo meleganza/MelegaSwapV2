@@ -70,7 +70,7 @@ export const POOL_FILTER_CHIPS = [
   'Flexible',
   'Highest APR',
   'Newest',
-  'Featured',
+  'AI Suggested',
 ] as const
 
 export type PoolFilterChip = (typeof POOL_FILTER_CHIPS)[number]

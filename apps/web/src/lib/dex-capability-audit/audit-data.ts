@@ -259,7 +259,7 @@ export const DEX_CAPABILITY_AUDIT_ENTRIES: DexCapabilityAuditEntry[] = [
       'apps/web/src/state/swap/',
       'apps/web/src/config/constants/exchange.ts',
     ],
-    route: '/trade',
+    route: '/swap',
     contractDependency: 'V2 Router + pair contracts; StableSwap for stable pairs',
     configDependency: 'exchange.ts ROUTER_ADDRESS, BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES',
     userFacingAvailability: 'Live swap on 4 chains. V2 and stable-swap paths. Production swap logic — do not modify.',

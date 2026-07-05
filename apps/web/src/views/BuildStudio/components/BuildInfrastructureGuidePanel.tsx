@@ -105,7 +105,7 @@ export const BuildInfrastructureGuidePanel: React.FC<Props> = ({ open, onClose }
           ))}
         </Steps>
         <LinkRow>
-          <GuideLink to="/build-studio#build-import">Import existing token</GuideLink>
+          <GuideLink to="/import-existing-token">Import existing token</GuideLink>
           <GuideLink to="/projects">Projects registry</GuideLink>
           <GuideLink to="/radar">Radar intelligence</GuideLink>
           <GuideLink to="/pools">Pools runtime</GuideLink>

@@ -10,8 +10,8 @@ export const EVENT_INTAKE_DISCLAIMER =
 export const EVENT_INTAKE_ROUTING_TARGETS = [
   '/runtime/labs',
   '/pipeline',
-  '/command-center',
-  '/build-studio#build-import',
+  '/workspace',
+  '/launch',
   '/presence',
   '/execution',
   '/orchestrator',
@@ -41,7 +41,7 @@ export const EVENT_FAMILY_DEFINITIONS: EventFamilyDefinition[] = [
     sourceSystem: 'manifest://melega/platform/project-registry@0.1.0',
     allowedEventTypes: ['project_created', 'project_updated', 'project_indexed'],
     defaultSafety: 'observation_only',
-    primaryRouting: ['/pipeline', '/command-center', '/build-studio#build-import', '/map'],
+    primaryRouting: ['/pipeline', '/workspace', '/launch', '/map'],
   },
   {
     id: 'asset_metadata',
@@ -50,7 +50,7 @@ export const EVENT_FAMILY_DEFINITIONS: EventFamilyDefinition[] = [
     sourceSystem: 'manifest://melega/platform/asset-registry@0.1.0',
     allowedEventTypes: ['asset_planned', 'metadata_submitted', 'metadata_missing'],
     defaultSafety: 'human_review_required',
-    primaryRouting: ['/pipeline', '/build-studio#build-import', '/command-center'],
+    primaryRouting: ['/pipeline', '/launch', '/workspace'],
   },
   {
     id: 'liquidity_readiness',
@@ -59,7 +59,7 @@ export const EVENT_FAMILY_DEFINITIONS: EventFamilyDefinition[] = [
     sourceSystem: 'legacy://add-liquidity',
     allowedEventTypes: ['liquidity_waiting', 'liquidity_ready', 'pair_selected'],
     defaultSafety: 'future_execution',
-    primaryRouting: ['/build-studio#build-import', '/command-center', '/orchestrator'],
+    primaryRouting: ['/launch', '/workspace', '/orchestrator'],
   },
   {
     id: 'presence_update',
@@ -68,7 +68,7 @@ export const EVENT_FAMILY_DEFINITIONS: EventFamilyDefinition[] = [
     sourceSystem: 'manifest://melega/platform/presence-registry@0.1.0',
     allowedEventTypes: ['presence_waiting', 'presence_staged', 'presence_indexed'],
     defaultSafety: 'observation_only',
-    primaryRouting: ['/presence', '/pipeline', '/command-center'],
+    primaryRouting: ['/presence', '/pipeline', '/workspace'],
   },
   {
     id: 'execution_readiness',
@@ -86,7 +86,7 @@ export const EVENT_FAMILY_DEFINITIONS: EventFamilyDefinition[] = [
     sourceSystem: 'manifest://melega/platform/user-workspace@0.1.0',
     allowedEventTypes: ['workspace_stale', 'workspace_refreshed', 'section_indexed'],
     defaultSafety: 'observation_only',
-    primaryRouting: ['/command-center', '/orchestrator'],
+    primaryRouting: ['/workspace', '/orchestrator'],
   },
   {
     id: 'orchestrator_recommendation',

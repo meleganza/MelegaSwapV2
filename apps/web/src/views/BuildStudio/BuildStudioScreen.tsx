@@ -5,12 +5,19 @@ import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import BuildStudioGlobalStyle from './BuildStudioGlobalStyle'
 import { BuildRuntimeProvider } from './buildRuntime/BuildRuntimeContext'
 import { buildStudioColors, buildStudioLayout } from './buildStudioTokens'
-import { ImportRuntimeProvider } from 'views/ImportExistingToken/importExistingTokenRuntime/ImportRuntimeContext'
+import AIBuildAdvisorPanel from './components/AIBuildAdvisorPanel'
+import AIManifestPanel from './components/AIManifestPanel'
 import BuildMachinePanel from './components/BuildMachinePanel'
+import AIValidationEngine from './components/AIValidationEngine'
+import BuildKpiRow from './components/BuildKpiRow'
 import BuildStudioPageHeader from './components/BuildStudioPageHeader'
-import BuildStudioImportWorkflow from './components/BuildStudioImportWorkflow'
-import FutureProductionModules from './components/FutureProductionModules'
+import CreateTokenPanel from './components/CreateTokenPanel'
+import ImportTokenPanel from './components/ImportTokenPanel'
 import InfrastructureFlow from './components/InfrastructureFlow'
+import OptionalServices from './components/OptionalServices'
+import RecentBuildsTable from './components/RecentBuildsTable'
+import SecondRowCards from './components/SecondRowCards'
+import TrustedInfrastructurePanel from './components/TrustedInfrastructurePanel'
 
 const Root = styled.div`
   color: ${buildStudioColors.white};
@@ -41,6 +48,18 @@ const Content = styled.div`
   }
 `
 
+const MainGrid = styled.div`
+  display: grid;
+  grid-template-columns: ${buildStudioLayout.colImport} ${buildStudioLayout.colCreate} ${buildStudioLayout.colRight};
+  gap: ${buildStudioLayout.cardGap};
+  width: 100%;
+  align-items: stretch;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`
+
 export const BuildStudioScreen: React.FC = () => (
   <BuildRuntimeProvider>
     <Root data-build-studio-screen data-r200-premium="true">
@@ -49,12 +68,20 @@ export const BuildStudioScreen: React.FC = () => (
       <TrendingRibbon />
       <Content>
         <BuildStudioPageHeader />
-        <ImportRuntimeProvider>
-          <BuildStudioImportWorkflow />
-        </ImportRuntimeProvider>
+        <BuildKpiRow />
+        <MainGrid data-bs-main-grid>
+          <ImportTokenPanel />
+          <CreateTokenPanel />
+          <AIBuildAdvisorPanel />
+        </MainGrid>
+        <SecondRowCards />
+        <AIValidationEngine />
         <InfrastructureFlow />
-        <FutureProductionModules />
+        <OptionalServices />
+        <AIManifestPanel />
         <BuildMachinePanel />
+        <TrustedInfrastructurePanel />
+        <RecentBuildsTable />
       </Content>
     </Root>
   </BuildRuntimeProvider>

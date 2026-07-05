@@ -52,10 +52,21 @@ const JsonBlock = styled.pre`
 export const ProjectsMachinePanel: React.FC = () => {
   const { machine } = useProjectsRuntime()
   const [open, setOpen] = useState(false)
-  const jsonText = JSON.stringify(machine, null, 2)
+  const payload = {
+    schema: 'melega.projects-runtime.v1',
+    schemaVersion: '1.0.0',
+    module: 'projects',
+    timestamp: machine.timestamp,
+    dataSources: ['registry', 'subgraph', 'pending-registry'],
+    reasonCodes: machine.errors.map((e) => e.code),
+    primaryActions: ['filter_projects', 'view_featured', 'open_radar', 'import_project'],
+    runtimeLinks: ['/radar', '/trending', '/import-existing-token', '/command-center'],
+    ...machine,
+  }
+  const jsonText = JSON.stringify(payload, null, 2)
 
   return (
-    <Panel data-projects-machine-json>
+    <Panel data-ps-machine-json>
       <Title>Machine Summary</Title>
       <ToggleBtn type="button" onClick={() => setOpen(!open)} aria-expanded={open}>
         {open ? 'Collapse' : 'Expand'} machine-readable runtime

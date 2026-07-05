@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { buildLiveEvents } from 'views/RadarStudio/radarRuntime/buildLiveEvents'
@@ -59,14 +58,9 @@ export function useTrendingIntelligenceRuntime() {
     return errors
   }, [enriched.length, filter])
 
-  const machine: MelegaSurfaceEnvelope = useMemo(() => {
-    const reasonCodes: Record<string, string> = {}
-    runtimeErrors.forEach((e) => {
-      reasonCodes[e.code] = e.message
-    })
-    return buildSurfaceEnvelope({
-      module: 'trending',
-      runtime: buildTrendingMachine({
+  const machine = useMemo(
+    () =>
+      buildTrendingMachine({
         projects: enriched,
         filter,
         cards: cards.map((c) => ({
@@ -87,10 +81,8 @@ export function useTrendingIntelligenceRuntime() {
             }
           : undefined,
       }),
-      reasonCodes,
-      sources: ['registry', 'radar-events'],
-    })
-  }, [enriched, filter, cards, featured, opportunity.signalLabel, opportunity.score, runtimeErrors])
+    [enriched, filter, cards, featured, opportunity.signalLabel, opportunity.score],
+  )
 
   const filterEmptyMessage =
     filter === 'Whale Activity'

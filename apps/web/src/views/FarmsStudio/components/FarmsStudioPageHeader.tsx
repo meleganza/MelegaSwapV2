@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { FARMS_STUDIO_PREVIEW_LABEL, farmsStudioColors } from '../farmsStudioTokens'
-import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { FsPreviewBadge } from './farmsStudioPrimitives'
 
 const Row = styled.div`
@@ -47,7 +46,6 @@ export const FarmsStudioPageHeader: React.FC = () => (
   <div data-fs-page-header>
     <Row>
       <Left>
-        <CivilizationRoleLabel module="farms" />
         <Title>Farms</Title>
         <Subtitle>Earn yield across the Melega ecosystem.</Subtitle>
       </Left>

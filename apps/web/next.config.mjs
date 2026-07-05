@@ -117,62 +117,17 @@ const config = {
     return [
       {
         source: '/send',
-        destination: '/trade',
-        permanent: true,
-      },
-      {
-        source: '/swap',
-        destination: '/trade',
+        destination: '/swap',
         permanent: true,
       },
       {
         source: '/swap/:outputCurrency',
-        destination: '/trade?outputCurrency=:outputCurrency',
+        destination: '/swap?outputCurrency=:outputCurrency',
         permanent: true,
-      },
-      {
-        source: '/liquidity',
-        destination: '/liquidity-studio',
-        permanent: true,
-      },
-      {
-        source: '/add/:path*',
-        destination: '/liquidity-studio',
-        permanent: true,
-      },
-      {
-        source: '/remove/:path*',
-        destination: '/liquidity-studio',
-        permanent: true,
-      },
-      {
-        source: '/find',
-        destination: '/liquidity-studio',
-        permanent: true,
-      },
-      {
-        source: '/workspace',
-        destination: '/command-center',
-        permanent: true,
-      },
-      {
-        source: '/portfolio',
-        destination: '/command-center',
-        permanent: true,
-      },
-      {
-        source: '/import-existing-token',
-        destination: '/build-studio',
-        permanent: false,
-      },
-      {
-        source: '/launch',
-        destination: '/build-studio',
-        permanent: false,
       },
       {
         source: '/create/:currency*',
-        destination: '/liquidity-studio',
+        destination: '/add/:currency*',
         permanent: true,
       },
       {
@@ -182,7 +137,7 @@ const config = {
       },
       {
         source: '/pool',
-        destination: '/liquidity-studio',
+        destination: '/liquidity',
         permanent: true,
       },
       {

@@ -19,15 +19,15 @@ const getPathList = (t: ContextApi['t']): PathList => {
   return {
     paths: {
       '/': { title: t('Home') },
-      '/trade': { basePath: true, title: t('Swap'), image: `${ASSET_CDN}/web/og/swap.jpg` },
+      '/swap': { basePath: true, title: t('Swap'), image: `${ASSET_CDN}/web/og/swap.jpg` },
       '/trade': { basePath: true, title: t('Trade'), image: `${ASSET_CDN}/web/og/swap.jpg` },
       '/trending': { title: t('Trending') },
       '/radar': { title: t('Radar') },
-      '/command-center': { title: t('Portfolio') },
+      '/portfolio': { title: t('Portfolio') },
       // '/limit-orders': { basePath: true, title: t('Limit Orders'), image: `${ASSET_CDN}/web/og/limit.jpg` },
       '/add': { basePath: true, title: t('Add Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
       '/remove': { basePath: true, title: t('Remove Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
-      '/liquidity-studio': { basePath: true, title: t('Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
+      '/liquidity': { basePath: true, title: t('Liquidity'), image: `${ASSET_CDN}/web/og/liquidity.jpg` },
       '/liquidity-studio': { basePath: true, title: 'Liquidity Studio', image: `${ASSET_CDN}/web/og/liquidity.jpg` },
       '/find': { basePath: true, title: t('Import Pool') },
       // '/competition': { title: t('Trading Battle') },

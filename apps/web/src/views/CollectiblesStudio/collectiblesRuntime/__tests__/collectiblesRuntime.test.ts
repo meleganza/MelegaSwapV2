@@ -2,7 +2,7 @@ import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
 import { buildAiAdvisorRows } from '../buildAiAdvisor'
 import { buildCollectibleHealth } from '../buildCollectibleHealth'
 import { buildCollectiblePrivileges } from '../buildCollectiblePrivileges'
-import { buildMachineProfile, IDENTITY_MACHINE_SCHEMA } from '../buildMachineProfile'
+import { buildMachineProfile } from '../buildMachineProfile'
 import { buildMembershipStatus } from '../buildMembershipStatus'
 import { createCollectiblesRuntimeError } from '../collectiblesRuntimeErrors'
 import {
@@ -45,22 +45,17 @@ describe('collectiblesRuntime', () => {
     expect(health.dimensions.some((d) => d.label === 'Ownership')).toBe(true)
   })
 
-  it('derives privileges from genesis identity mapping', () => {
+  it('derives privileges from category and ownership', () => {
     const privileges = buildCollectiblePrivileges(genesis, owned)
-    expect(privileges.some((p) => p.label === 'Identity Badge' && p.status === 'ACTIVE')).toBe(true)
-    expect(privileges.some((p) => p.label === 'Future Governance' && p.status === 'COMING SOON')).toBe(true)
-    const locked = buildCollectiblePrivileges(genesis, notOwned)
-    expect(locked.every((p) => p.status === 'LOCKED' || p.status === 'COMING SOON')).toBe(true)
+    expect(privileges.some((p) => p.id === 'Governance' && p.status === 'Active')).toBe(true)
+    const inactive = buildCollectiblePrivileges(genesis, notOwned)
+    expect(inactive.every((p) => p.status === 'Inactive' || p.status === 'Pending')).toBe(true)
   })
 
   it('resolves membership tiers from registry', () => {
     const membership = buildMembershipStatus(genesis, owned)
     expect(membership.tier).toBe('Genesis')
     expect(membership.acquired).toBe('Wallet verified')
-    const builder = records.find((r) => r.slug === 'masterm-identity')!
-    expect(buildMembershipStatus(builder, notOwned).tier).toBe('Builder')
-    const validator = records.find((r) => r.slug === 'achievement-collectibles')!
-    expect(buildMembershipStatus(validator, notOwned).tier).toBe('Validator')
   })
 
   it('builds heuristic AI advisor rows without auto-actions', () => {
@@ -77,34 +72,22 @@ describe('collectiblesRuntime', () => {
       records,
       ownershipBySlug: { [genesis.slug]: owned },
       totalOwned: 1,
-      primaryRarityLabel: 'Normal',
-      primaryTokenId: '1',
     })
-    expect(profile.schema).toBe(IDENTITY_MACHINE_SCHEMA)
-    expect(profile.schema).toBe('melega.identity.v1')
-    expect(profile.wallet_identity.currentIdentity).toBe('Genesis')
-    expect(profile.ownership.genesis).toBe(true)
-    expect(profile.rarity_tiers.length).toBe(4)
-    expect(profile.identity_hub.label).toBe('Identity Hub')
-    expect(profile.registry_collections.length).toBe(3)
+    expect(profile.schema).toBe('melega.collectibles-identity.v1')
+    expect(profile.collections.length).toBe(3)
+    expect(profile.capabilities.builderLevel).toBe(1)
   })
 
   it('formats command center collectibles from wallet ownership', () => {
     const items = formatCommandCenterCollectibles(records, { [genesis.slug]: owned }, '0xabc')
     expect(items.length).toBe(3)
     expect(items[0].subtitle).toContain('Genesis')
-    expect(items[0].privileges.length).toBeGreaterThan(0)
-    expect(items[1].privileges).toContain('Builder')
-    expect(items[2].privileges).toContain('Validator')
   })
 
   it('summarizes identity for command center machine JSON', () => {
-    const summary = commandCenterIdentitySummary(records, { [genesis.slug]: owned }, 1, '0xabc')
+    const summary = commandCenterIdentitySummary(records, { [genesis.slug]: owned }, 1)
     expect(summary.owned).toBe(1)
-    expect(summary.currentIdentity).toBe('Genesis')
-    expect(summary.identity).toBe('Genesis Identity')
-    expect(summary.collection).toBe('BabyMARCO Genesis')
-    expect(summary.identityLevel).toBe('L1 Genesis Owner')
+    expect(summary.builderLevel).toBe(1)
   })
 
   it('exposes runtime error catalog', () => {

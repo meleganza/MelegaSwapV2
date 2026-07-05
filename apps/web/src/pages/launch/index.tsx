@@ -12,7 +12,7 @@ const LaunchPage = () => {
         return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, String(value)]]
       }),
     ).toString()
-    router.replace(query ? `/build-studio?${query}#build-import` : '/build-studio#build-import')
+    router.replace(query ? `/import-existing-token?${query}` : '/import-existing-token')
   }, [router])
 
   return null

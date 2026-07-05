@@ -13,13 +13,13 @@ export const CREATE_INTENTS: HumanIntent[] = [
     id: 'create-token',
     title: 'Create token',
     description: 'Start a token launch flow when available on your chain.',
-    href: '/build-studio#build-import',
+    href: '/launch',
   },
   {
     id: 'add-liquidity',
     title: 'Add liquidity',
     description: 'Provide liquidity using the existing safe flow.',
-    href: '/liquidity-studio',
+    href: '/liquidity',
   },
   {
     id: 'create-farm',

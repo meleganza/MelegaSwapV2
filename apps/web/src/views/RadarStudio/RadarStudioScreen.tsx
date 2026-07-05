@@ -1,30 +1,30 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import RadarStudioGlobalStyle from './RadarStudioGlobalStyle'
 import { RadarRuntimeProvider } from './radarRuntime/RadarRuntimeContext'
-import RadarAiOpportunityPanel from './components/RadarAiOpportunityPanel'
+import RadarContractIntelligenceInput from './components/RadarContractIntelligenceInput'
 import RadarDiscoveriesGrid from './components/RadarDiscoveriesGrid'
-import RadarEventTimeline from './components/RadarEventTimeline'
-import RadarFeaturedAnalysisPanel from './components/RadarFeaturedAnalysisPanel'
 import RadarFilterRow from './components/RadarFilterRow'
-import RadarMachineSummaryPanel from './components/RadarMachineSummaryPanel'
-import RadarOperationalIntelligencePanel from './components/RadarOperationalIntelligencePanel'
+import RadarHeatmapTable from './components/RadarHeatmapTable'
+import RadarKpiRow from './components/RadarKpiRow'
+import RadarLiveEventStream from './components/RadarLiveEventStream'
+import RadarOpsLeftColumn from './components/RadarOpsLeftColumn'
+import RadarOpsRightColumn from './components/RadarOpsRightColumn'
 import RadarStudioPageHeader from './components/RadarStudioPageHeader'
-import { radarStudioColors, radarStudioLayout } from './radarStudioTokens'
+import { RADAR_FONT_BODY, radarStudioColors, radarStudioLayout } from './radarStudioTokens'
 
 const Root = styled.div`
-  color: ${radarStudioColors.text};
-  background: ${radarStudioColors.canvas};
-  width: 100%;
-  max-width: 100%;
+  color: ${radarStudioColors.white};
+  font-family: ${RADAR_FONT_BODY};
+  background: ${radarStudioColors.pageBg};
+  padding: 0 0 32px;
   min-width: 0;
   overflow-x: hidden;
-  box-sizing: border-box;
-  padding-bottom: ${radarStudioLayout.mobileBottomPad};
 
-  @media (min-width: 769px) {
-    padding-bottom: 48px;
+  @media (max-width: 767px) {
+    padding: 0 0 ${radarStudioLayout.mobileBottomPad};
   }
 `
 
@@ -35,25 +35,48 @@ const Content = styled.div`
     ${radarStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: ${radarStudioLayout.sectionGap};
+
+  @media (max-width: 767px) {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+`
+
+const ConsoleGrid = styled.div`
+  display: grid;
+  grid-template-columns: ${radarStudioLayout.colLeft} minmax(0, 1fr) ${radarStudioLayout.colRight};
+  gap: ${radarStudioLayout.columnGap};
+  align-items: stretch;
+
+  @media (max-width: ${radarStudioLayout.stackBreakpoint}) {
+    grid-template-columns: 1fr;
+  }
 `
 
 export const RadarStudioScreen: React.FC = () => (
   <RadarRuntimeProvider>
-    <Root data-radar-studio-screen data-r112-canonical>
+    <Root data-radar-studio-screen="true">
       <PageMeta />
       <RadarStudioGlobalStyle />
+      <TrendingRibbon />
       <Content>
         <RadarStudioPageHeader />
-        <RadarOperationalIntelligencePanel />
-        <RadarFeaturedAnalysisPanel />
-        <RadarAiOpportunityPanel />
+        <RadarKpiRow />
+        <RadarContractIntelligenceInput />
+        <RadarLiveEventStream />
         <RadarFilterRow />
-        <RadarDiscoveriesGrid />
-        <RadarEventTimeline />
-        <RadarMachineSummaryPanel />
+        <ConsoleGrid data-rd-console-grid>
+          <RadarOpsLeftColumn />
+          <RadarDiscoveriesGrid />
+          <RadarOpsRightColumn />
+        </ConsoleGrid>
+        <RadarHeatmapTable />
       </Content>
     </Root>
   </RadarRuntimeProvider>

@@ -2,8 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useCommandRuntime } from '../commandCenterRuntime/CommandRuntimeContext'
 import { safeArray, safePct } from '../commandCenterSafe'
-import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import { isMarcoSymbol } from 'design-system/melega/constants/brand'
+import { isMarcoSymbol, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors, commandCenterLayout } from '../commandCenterTokens'
 import {
   CcCardHeader,
@@ -309,7 +308,13 @@ export const CommandAssetsCard: React.FC = () => {
           <Row key={a.id}>
             <Left>
               {isMarcoSymbol(a.symbol) ? (
-                <MelegaTokenAvatar name={a.symbol} symbol={a.symbol} size={28} radius="circle" />
+                <img
+                  src={MARCO_LOGO_URI}
+                  alt=""
+                  width={28}
+                  height={28}
+                  style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                />
               ) : (
                 <TokenIcon $color={a.color}>{a.symbol.slice(0, 1)}</TokenIcon>
               )}
@@ -474,51 +479,17 @@ export const CommandSettlementCard: React.FC = () => {
 }
 
 export const CommandCollectiblesCard: React.FC = () => {
-  const { collectibles, identitySummary, account } = useCommandRuntime()
+  const { collectibles } = useCommandRuntime()
   const rows = safeArray(collectibles)
-  const genesisOwned = identitySummary?.identity === 'Genesis Identity'
-  const connected = Boolean(account)
-
   return (
-    <CcDashCard data-cc-collectibles data-cc-identity $minHeight={commandCenterLayout.metaCardMinHeight}>
+    <CcDashCard data-cc-collectibles $minHeight={commandCenterLayout.metaCardMinHeight}>
       <CcCardHeader style={{ marginBottom: 0 }}>
-        <CcTitle>Identity</CcTitle>
+        <CcTitle>Collectibles</CcTitle>
       </CcCardHeader>
-      <Meta style={{ marginBottom: 10 }} data-cc-identity-summary>
-        <div>
-          {genesisOwned
-            ? identitySummary?.identity
-            : connected
-              ? 'No Identity Connected'
-              : 'No Identity Connected'}
-        </div>
-        {genesisOwned ? (
-          <>
-            <div>Level: {identitySummary?.identityLevel}</div>
-            <div>Collection: {identitySummary?.collection}</div>
-          </>
-        ) : null}
-        {identitySummary?.privileges?.length ? (
-          <PrivilegeRow data-cc-privileges style={{ marginTop: 8 }}>
-            {identitySummary.privileges.slice(0, 4).map((privilege: string) => (
-              <PrivilegeChip key={privilege}>{privilege}</PrivilegeChip>
-            ))}
-          </PrivilegeRow>
-        ) : null}
-        {identitySummary?.capabilities?.length ? (
-          <PrivilegeRow data-cc-capabilities style={{ marginTop: 6 }}>
-            {identitySummary.capabilities.slice(0, 3).map((cap: { label: string; status: string }) => (
-              <PrivilegeChip key={cap.label}>
-                {cap.label} · {cap.status}
-              </PrivilegeChip>
-            ))}
-          </PrivilegeRow>
-        ) : null}
-      </Meta>
       <CollectiblesGrid>
         {rows.length === 0 ? (
           <EmptyState data-cc-empty style={{ gridColumn: '1 / -1' }}>
-            <EmptyTitle>No identity connected</EmptyTitle>
+            <EmptyTitle>No collectibles</EmptyTitle>
             <EmptyDesc>Genesis, Builder, and Validator identities appear from wallet ownership.</EmptyDesc>
           </EmptyState>
         ) : (

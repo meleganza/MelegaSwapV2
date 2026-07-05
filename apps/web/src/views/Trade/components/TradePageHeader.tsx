@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { tradeColors } from '../tradeTokens'
 
 const Row = styled.div`
@@ -118,7 +117,6 @@ export interface TradePageHeaderProps {
 export const TradePageHeader: React.FC<TradePageHeaderProps> = ({ aiMode, onAiModeChange, onHowItWorks }) => (
   <Row data-trade-page-header>
     <Left>
-      <CivilizationRoleLabel module="trade" />
       <Title>Trade</Title>
       <Subtitle>Professional trading with best multichain routes.</Subtitle>
     </Left>

@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { trendingStudioColors } from '../trendingStudioTokens'
 import { TrGhostBtn } from './trendingStudioPrimitives'
 
@@ -75,7 +74,6 @@ export const TrendingStudioPageHeader: React.FC = () => (
   <div data-tr-page-header>
     <Row>
       <Left>
-        <CivilizationRoleLabel module="trending" />
         <Title>TRENDING</Title>
         <Subtitle>Discover the fastest growing crypto opportunities ranked by Melega AI.</Subtitle>
       </Left>

@@ -20,25 +20,25 @@ export const LABS_PIPELINE_DISCLAIMER =
 export const DEFAULT_PIPELINE_ID = 'labs-preview-to-marco-economy'
 
 export const PIPELINE_LINKED_SURFACES = [
-  '/build-studio#build-import',
+  '/launch',
   '/new-project',
   '/projects',
   '/assets',
   '/presence',
   '/execution',
-  '/command-center',
+  '/workspace',
   '/map',
   '/pipeline',
 ]
 
 export const PIPELINE_CROSS_LINKS = [
-  { label: 'Launch', route: '/build-studio#build-import' },
+  { label: 'Launch', route: '/launch' },
   { label: 'Activation Preview', route: '/new-project' },
   { label: 'Projects', route: '/projects' },
   { label: 'Assets', route: '/assets' },
   { label: 'Presence', route: '/presence' },
   { label: 'Execution', route: '/execution' },
-  { label: 'Workspace', route: '/command-center' },
+  { label: 'Workspace', route: '/workspace' },
   { label: 'Surface Map', route: '/map' },
 ]
 
@@ -129,7 +129,7 @@ const buildLabsPreviewToMarcoEconomyStages = (): PipelineStage[] => [
     humanAction: 'Use /add when wallet and pair are ready — no pipeline auto-liquidity.',
     agentAction: 'Route live liquidity to legacy /add — never fake TVL or pool creation.',
     outputArtifact: 'legacy://add-liquidity',
-    linkedSurface: '/build-studio#build-import',
+    linkedSurface: '/launch',
     dependencies: [dep('asset', 'Asset binding'), dep('metadata', 'Metadata', false)],
   }),
   stage('registry', 'ready', {
@@ -169,7 +169,7 @@ const buildLabsPreviewToMarcoEconomyStages = (): PipelineStage[] => [
     humanAction: 'Manage and orient from /workspace — read-only, no fake balances.',
     agentAction: 'Aggregate section links from workspace manifest without inventing portfolio data.',
     outputArtifact: 'manifest://melega/platform/user-workspace@0.1.0',
-    linkedSurface: '/command-center',
+    linkedSurface: '/workspace',
     manifestUri: '/registry/workspace/index.json',
     dependencies: [
       dep('registry', 'Registry graph'),

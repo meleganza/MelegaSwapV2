@@ -10,25 +10,25 @@ export const EVENT_INTAKE_ROUTING_RULES: EventIntakeRoutingRule[] = [
   {
     family: 'project_registry',
     eventTypes: ['project_created', 'project_updated', 'project_indexed'],
-    targets: ['/pipeline', '/command-center', '/build-studio#build-import', '/map'],
+    targets: ['/pipeline', '/workspace', '/launch', '/map'],
     notes: 'Project binding updates registry strip and workspace project section.',
   },
   {
     family: 'asset_metadata',
     eventTypes: ['asset_planned', 'metadata_submitted', 'metadata_missing'],
-    targets: ['/pipeline', '/build-studio#build-import', '/command-center', '/orchestrator'],
+    targets: ['/pipeline', '/launch', '/workspace', '/orchestrator'],
     notes: 'Metadata missing surfaces as not_indexed — Launch capability index only.',
   },
   {
     family: 'liquidity_readiness',
     eventTypes: ['liquidity_waiting', 'liquidity_ready', 'pair_selected'],
-    targets: ['/build-studio#build-import', '/command-center', '/orchestrator'],
+    targets: ['/launch', '/workspace', '/orchestrator'],
     notes: 'Live liquidity execution routes to legacy /add — never from intake directly.',
   },
   {
     family: 'presence_update',
     eventTypes: ['presence_waiting', 'presence_staged', 'presence_indexed'],
-    targets: ['/presence', '/pipeline', '/command-center', '/map'],
+    targets: ['/presence', '/pipeline', '/workspace', '/map'],
     notes: 'Presence is NOT canonical economy — constitutional MARCO on BNB remains immutable.',
   },
   {
@@ -40,7 +40,7 @@ export const EVENT_INTAKE_ROUTING_RULES: EventIntakeRoutingRule[] = [
   {
     family: 'workspace_sync',
     eventTypes: ['workspace_stale', 'workspace_refreshed', 'section_indexed'],
-    targets: ['/command-center', '/orchestrator'],
+    targets: ['/workspace', '/orchestrator'],
     notes: 'Workspace refresh recommendations only — no fake aggregate balances.',
   },
   {

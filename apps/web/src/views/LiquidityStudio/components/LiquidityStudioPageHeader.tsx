@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { liquidityStudioColors } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPreviewBadge } from './liquidityStudioPrimitives'
@@ -86,7 +85,6 @@ export const LiquidityStudioPageHeader: React.FC = () => {
     <div data-ls-page-header>
       <Row>
         <Left>
-          <CivilizationRoleLabel module="liquidity" />
           <Title>Liquidity Studio</Title>
           <Subtitle>Build markets, manage liquidity and optimise LP performance.</Subtitle>
         </Left>

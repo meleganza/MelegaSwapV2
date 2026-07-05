@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
-import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
+import { MelegaLogoSvg } from 'design-system/melega/components/BrandLockup/MelegaLogoSvg'
+import { isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { heatBlockColor } from '../radarStudioData'
 import {
   RADAR_FONT_BODY,
@@ -10,14 +10,15 @@ import {
   radarStudioLayout,
 } from '../radarStudioTokens'
 
-export const RdPanel = styled.section<{ $height?: string; $width?: string }>`
+export const RdPanel = styled.div<{ $height?: string; $width?: string }>`
   width: ${({ $width }) => $width || '100%'};
-  background: ${radarStudioColors.card};
-  border: 1px solid ${radarStudioColors.cardBorder};
+  background: ${radarStudioColors.panel};
+  border: 1px solid ${radarStudioColors.border};
   border-radius: ${radarStudioLayout.cardRadius};
   box-sizing: border-box;
   overflow: hidden;
-  transition: border-color 180ms ease;
+  transition: transform ${radarStudioColors.transition} ease, border-color ${radarStudioColors.transition} ease,
+    box-shadow ${radarStudioColors.transition} ease;
   ${({ $height }) =>
     $height
       ? `
@@ -25,10 +26,6 @@ export const RdPanel = styled.section<{ $height?: string; $width?: string }>`
     min-height: ${$height};
   `
       : ''}
-
-  &:hover {
-    border-color: ${radarStudioColors.cardBorderHover};
-  }
 `
 
 export const RdSectionTitle = styled.h2`
@@ -37,7 +34,7 @@ export const RdSectionTitle = styled.h2`
   font-size: 22px;
   line-height: 28px;
   font-weight: 800;
-  color: ${radarStudioColors.text};
+  color: ${radarStudioColors.white};
 `
 
 export const RdLabel = styled.span`
@@ -46,13 +43,13 @@ export const RdLabel = styled.span`
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${radarStudioColors.muted};
+  color: ${radarStudioColors.label};
   line-height: 14px;
 `
 
 export const RdPrimaryBtn = styled.button`
-  height: ${radarStudioLayout.btnHeight};
-  min-height: ${radarStudioLayout.btnHeight};
+  height: ${radarStudioLayout.eventBtnHeight};
+  min-height: ${radarStudioLayout.eventBtnHeight};
   padding: 0;
   border: none;
   border-radius: 10px;
@@ -76,8 +73,8 @@ export const RdPrimaryBtn = styled.button`
 `
 
 export const RdGhostBtn = styled.button`
-  height: ${radarStudioLayout.btnHeight};
-  min-height: ${radarStudioLayout.btnHeight};
+  height: ${radarStudioLayout.eventBtnHeight};
+  min-height: ${radarStudioLayout.eventBtnHeight};
   padding: 0;
   border-radius: 10px;
   border: 1px solid #3a3a3a;
@@ -120,8 +117,8 @@ export const RdOutlineGoldBtn = styled.button`
 `
 
 export const RdChip = styled.button<{ $active?: boolean }>`
-  height: ${radarStudioLayout.filterPillHeight};
-  min-height: ${radarStudioLayout.filterPillHeight};
+  height: ${radarStudioLayout.filterHeight};
+  min-height: ${radarStudioLayout.filterHeight};
   padding: 0 18px;
   border-radius: 999px;
   border: 1px solid ${({ $active }) => ($active ? radarStudioColors.gold : '#252525')};
@@ -140,22 +137,42 @@ export const RdChip = styled.button<{ $active?: boolean }>`
   }
 `
 
-export const RadarProjectLogo: React.FC<{
-  name: string
-  symbol?: string
-  size?: number
-  address?: string
-  chainId?: number
-}> = ({ name, symbol, size = 40, address, chainId }) => (
-  <MelegaTokenAvatar
-    name={name}
-    symbol={symbol}
-    size={size}
-    address={address ?? (isMarcoSymbol(symbol, name) ? MARCO_BSC_ADDRESS : undefined)}
-    chainId={chainId ?? (isMarcoSymbol(symbol, name) ? MARCO_BSC_CHAIN_ID : undefined)}
-    radius="circle"
-  />
-)
+export const RadarProjectLogo: React.FC<{ name: string; symbol?: string; size?: number }> = ({
+  name,
+  symbol,
+  size = 40,
+}) => {
+  const isMarco = isMarcoSymbol(symbol, name)
+  if (isMarco) {
+    return (
+      <span style={{ flexShrink: 0, display: 'inline-flex', borderRadius: '50%', overflow: 'hidden' }}>
+        <MelegaLogoSvg size={size} />
+      </span>
+    )
+  }
+
+  return (
+    <span
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        border: `1px solid ${radarStudioColors.border}`,
+        background: radarStudioColors.panel,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        fontFamily: RADAR_FONT_DISPLAY,
+        fontSize: size * 0.32,
+        fontWeight: 800,
+        color: radarStudioColors.gold,
+      }}
+    >
+      {name.slice(0, 1)}
+    </span>
+  )
+}
 
 export const HeatBlocks: React.FC<{ value: number; invert?: boolean; count?: number }> = ({
   value,
@@ -204,7 +221,7 @@ export const SignalChip = styled.span`
   height: 24px;
   padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid ${radarStudioColors.cardBorder};
+  border: 1px solid ${radarStudioColors.border};
   font-family: ${RADAR_FONT_BODY};
   font-size: 11px;
   font-weight: 700;

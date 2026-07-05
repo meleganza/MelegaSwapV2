@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { getPendingProjectRegistry } from 'registry/projects/pending'
@@ -10,13 +9,13 @@ import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
+  buildAdvisorRows,
   buildFeaturedProject,
   buildMachineProfile,
   filterProjectsByChip,
   mapPendingToPreviewCard,
   mapProjectToPreviewCard,
 } from './formatProjectsRuntime'
-import { buildFeaturedProjectIntelligence } from './buildFeaturedProjectIntelligence'
 import { buildAiRecommendations } from './buildAiRecommendations'
 import { buildProjectHealth } from './buildProjectHealth'
 import { buildProjectRating } from './buildProjectRating'
@@ -30,10 +29,19 @@ export interface ProjectsAdvisorRow {
   label: string
   value: string
   score: string
-  tone: 'green' | 'gold' | 'gray'
+  tone: 'green' | 'gold'
 }
 
-export type ProjectsMachinePayload = MelegaSurfaceEnvelope
+export interface ProjectsMachinePayload {
+  status: ProjectsRuntimePhase
+  filter: string
+  indexed: number
+  pending?: number
+  featured?: string
+  errors: ProjectsRuntimeError[]
+  timestamp: string
+  profile?: ReturnType<typeof buildMachineProfile>
+}
 
 export interface ProjectsIntelligenceRuntime {
   phase: ProjectsRuntimePhase
@@ -129,13 +137,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
       }),
     [enriched, pendingRecords.length, liveMetrics],
   )
-  const advisorRows = useMemo(
-    () =>
-      featuredProject
-        ? buildFeaturedProjectIntelligence(featuredProject, liveMetrics)
-        : [{ label: 'Featured project', value: '—', score: '—', tone: 'gray' as const }],
-    [featuredProject, liveMetrics],
-  )
+  const advisorRows = useMemo(() => buildAdvisorRows(sorted), [sorted])
   const terminal = useProjectsTerminalData(enriched)
 
   const recommendations = useMemo(
@@ -162,20 +164,16 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   }, [sources])
 
   const machine: ProjectsMachinePayload = useMemo(
-    () =>
-      buildSurfaceEnvelope({
-        module: 'projects',
-        runtime: {
-          status: 'ready',
-          filter,
-          indexed: enriched.length,
-          pending: pendingRecords.length,
-          featured: featuredProject?.slug,
-          errors: [] as ProjectsRuntimeError[],
-          profile: featuredProject ? buildMachineProfile(featuredProject) : undefined,
-        },
-        sources: ['registry', 'subgraph', 'pending-registry'],
-      }),
+    () => ({
+      status: 'ready',
+      filter,
+      indexed: enriched.length,
+      pending: pendingRecords.length,
+      featured: featuredProject?.slug,
+      errors: [],
+      timestamp: new Date().toISOString(),
+      profile: featuredProject ? buildMachineProfile(featuredProject) : undefined,
+    }),
     [filter, enriched.length, pendingRecords.length, featuredProject],
   )
 

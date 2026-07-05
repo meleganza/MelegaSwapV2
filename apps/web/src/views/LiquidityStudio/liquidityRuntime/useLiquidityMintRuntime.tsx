@@ -12,7 +12,6 @@ import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
-import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import { PairState } from 'hooks/usePairs'
 import { Field } from 'state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks'
@@ -66,7 +65,21 @@ export interface LiquidityPreviewMetrics {
   walletContribution?: string
 }
 
-export type LiquidityMachinePayload = MelegaSurfaceEnvelope
+export interface LiquidityMachinePayload {
+  status: LiquidityRuntimePhase
+  mode: LiquidityStudioMode
+  chainId?: number
+  wallet?: string
+  pair?: string
+  poolAddress?: string
+  approvalA?: string
+  approvalB?: string
+  expectedLp?: string
+  poolShare?: string
+  apr?: string
+  error?: LiquidityRuntimeError | null
+  timestamp: string
+}
 
 export interface LiquidityMintRuntime {
   mode: LiquidityStudioMode
@@ -615,59 +628,54 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     if (!account) return 'Connect Wallet'
     if (phase === 'approval_required') return isRemove ? 'Approve LP Token' : 'Approve Token'
     if (isRemove) return 'Remove Liquidity'
-    if (isPositions) return 'Manage in Liquidity Studio'
+    if (isPositions) return 'Manage on /liquidity'
     return 'Add Liquidity'
   }, [account, phase, isRemove, isPositions, isSimulation])
 
-  const machine: LiquidityMachinePayload = useMemo(() => {
-    const reasonCodes: Record<string, string> = {}
-    if (error?.code) reasonCodes.runtime = error.code
-    return buildSurfaceEnvelope({
-      module: 'liquidity',
-      runtime: {
-        status: phase,
-        mode,
-        chainId,
-        wallet: account,
-        pair: pairLabel(currencyA, currencyB),
-        poolAddress,
-        approvalA:
-          approvalA === ApprovalState.APPROVED
-            ? 'APPROVED'
-            : approvalA === ApprovalState.PENDING
-              ? 'PENDING'
-              : approvalA === ApprovalState.NOT_APPROVED
-                ? 'NOT_APPROVED'
-                : 'UNKNOWN',
-        approvalB:
-          approvalB === ApprovalState.APPROVED
-            ? 'APPROVED'
-            : approvalB === ApprovalState.PENDING
-              ? 'PENDING'
-              : approvalB === ApprovalState.NOT_APPROVED
-                ? 'NOT_APPROVED'
-                : 'UNKNOWN',
-        expectedLp: preview.expectedLp,
-        poolShare: preview.poolShare,
-        apr: preview.apr,
-        error: error?.code ?? null,
-      },
-      reasonCodes,
-      sources: ['melega-subgraph', 'on-chain-pools'],
-    })
-  }, [
-    phase,
-    mode,
-    chainId,
-    account,
-    currencyA,
-    currencyB,
-    poolAddress,
-    approvalA,
-    approvalB,
-    preview,
-    error,
-  ])
+  const machine: LiquidityMachinePayload = useMemo(
+    () => ({
+      status: phase,
+      mode,
+      chainId,
+      wallet: account,
+      pair: pairLabel(currencyA, currencyB),
+      poolAddress,
+      approvalA:
+        approvalA === ApprovalState.APPROVED
+          ? 'APPROVED'
+          : approvalA === ApprovalState.PENDING
+            ? 'PENDING'
+            : approvalA === ApprovalState.NOT_APPROVED
+              ? 'NOT_APPROVED'
+              : 'UNKNOWN',
+      approvalB:
+        approvalB === ApprovalState.APPROVED
+          ? 'APPROVED'
+          : approvalB === ApprovalState.PENDING
+            ? 'PENDING'
+            : approvalB === ApprovalState.NOT_APPROVED
+              ? 'NOT_APPROVED'
+              : 'UNKNOWN',
+      expectedLp: preview.expectedLp,
+      poolShare: preview.poolShare,
+      apr: preview.apr,
+      error,
+      timestamp: new Date().toISOString(),
+    }),
+    [
+      phase,
+      mode,
+      chainId,
+      account,
+      currencyA,
+      currencyB,
+      poolAddress,
+      approvalA,
+      approvalB,
+      preview,
+      error,
+    ],
+  )
 
   const loadingLabel =
     phase === 'calculating'

@@ -18,7 +18,6 @@ import { buildHomeMachine } from './buildHomeMachine'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { homeTradeLayout } from './homeTradeTokens'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
-import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 
 const Root = styled.div`
   color: ${colors.textPrimary};
@@ -46,23 +45,6 @@ const Content = styled.div`
     gap: 16px;
     padding: 16px 16px ${homeTradeLayout.mobileBottomPad};
   }
-`
-
-const OsTagline = styled.p`
-  margin: 0 0 4px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: ${premiumStudioColors.muted};
-`
-
-const OsTitle = styled.h1`
-  margin: 0 0 12px;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1.15;
-  color: ${colors.textPrimary};
 `
 
 const HeroRow = styled.div`
@@ -129,9 +111,6 @@ export const HomeTradeScreen: React.FC = () => {
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        <CivilizationRoleLabel module="home" />
-        <OsTagline>Melega Economic Operating System</OsTagline>
-        <OsTitle>Trade, build, and operate on-chain infrastructure</OsTitle>
         <TrendingRibbon />
         <HeroRow>
           <HomeSwapPanel />

@@ -19,7 +19,6 @@ export interface CollectibleMetadataStorage {
   status: MetadataStorageStatus
   gateway?: string
   ipfsCid?: string
-  metadataCid?: string
   imagePattern?: string
   tokenUriSource?: 'on_chain' | 'not_indexed'
   notes: string

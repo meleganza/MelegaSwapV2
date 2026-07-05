@@ -32,7 +32,7 @@ describe('economic orchestrator', () => {
     const recommendations = buildRecommendations()
     const liquidityRec = recommendations.find((rec) => rec.id === 'asset_ready_liquidity_missing')
     expect(liquidityRec).toBeDefined()
-    expect(liquidityRec?.targetRoute).toBe('/build-studio#build-import')
+    expect(liquidityRec?.targetRoute).toBe('/launch')
     expect(liquidityRec?.priority).toBe('high')
   })
 

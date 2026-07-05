@@ -12,8 +12,8 @@ export const ORCHESTRATOR_DISCLAIMER =
 export const ORCHESTRATOR_CROSS_LINKS = [
   { label: 'Labs Pipeline', route: '/pipeline' },
   { label: 'Labs Runtime', route: '/runtime/labs' },
-  { label: 'Workspace', route: '/command-center' },
-  { label: 'Launch', route: '/build-studio#build-import' },
+  { label: 'Workspace', route: '/workspace' },
+  { label: 'Launch', route: '/launch' },
   { label: 'Surface Map', route: '/map' },
 ]
 

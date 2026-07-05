@@ -15,7 +15,7 @@ const getActiveIndex = (pathname: string): number => {
     pathname.includes('/add') ||
     pathname.includes('/remove') ||
     pathname.includes('/find') ||
-    pathname.includes('/liquidity-studio')
+    pathname.includes('/liquidity')
   ) {
     return 1
   }
@@ -28,7 +28,7 @@ const Nav = () => {
   return (
     <StyledNav>
       <ButtonMenu activeIndex={getActiveIndex(pathname)} scale="sm" variant="subtle">
-        <Link href="/trade" passHref>
+        <Link href="/swap" passHref>
           <ButtonMenuItem id="swap-nav-link" as="a">
             {t('Swap')}
           </ButtonMenuItem>

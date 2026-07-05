@@ -28,15 +28,15 @@ describe('surface map', () => {
   it('marks legacy ILO as retired with replacement route', () => {
     const ilo = getSurfaceById('legacy_ilo')!
     expect(ilo.status).toBe('retired')
-    expect(ilo.replacementRoute).toBe('/build-studio#build-import')
+    expect(ilo.replacementRoute).toBe('/launch')
     expect(ilo.manifestUri).toBe('/registry/legacy/ilo-retirement.json')
     expect(ilo.visibility).toBe('legacy')
   })
 
   it('includes create and manage surfaces from recent missions', () => {
-    expect(getSurfaceById('launch')?.route).toBe('/build-studio#build-import')
+    expect(getSurfaceById('launch')?.route).toBe('/launch')
     expect(getSurfaceById('collectibles')?.route).toBe('/collectibles')
-    expect(getSurfaceById('workspace')?.route).toBe('/command-center')
+    expect(getSurfaceById('workspace')?.route).toBe('/workspace')
     expect(getSurfaceById('identity')?.route).toBe('/identity')
   })
 

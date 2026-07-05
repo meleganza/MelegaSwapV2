@@ -17,14 +17,14 @@ const HomeLiveSwaps: React.FC = () => {
         id: tx.hash,
         label: formatSwapLabel(tx.token0Symbol, tx.token1Symbol),
         meta: tx.amountUSD > 0 ? `$${tx.amountUSD.toFixed(2)}` : undefined,
-        href: '/trade',
+        href: '/swap',
       }))
   }, [transactions])
 
   return (
     <HumanDynamicSection
       title="Latest swaps"
-      seeAllHref="/trade"
+      seeAllHref="/swap"
       items={swaps}
       emptyMessage="No recent swaps indexed for this network yet. Open Swap to trade."
       layout="list"

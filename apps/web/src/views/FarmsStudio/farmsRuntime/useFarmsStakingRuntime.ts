@@ -6,7 +6,6 @@ import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farm
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { getFarmApr } from 'utils/apr'
 import isArchivedPid from 'utils/farmHelpers'
-import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import type { FarmFilterChip, FarmPreviewCard } from '../farmsStudioData'
 import {
   aggregateKpis,
@@ -31,7 +30,21 @@ export type FarmsRuntimePhase =
 
 export type FarmsModalAction = 'stake' | 'unstake' | 'claim' | null
 
-export type FarmsMachinePayload = MelegaSurfaceEnvelope
+export interface FarmsMachinePayload {
+  status: FarmsRuntimePhase
+  chainId?: number
+  wallet?: string
+  filter: string
+  activeFarms: number
+  endedFarms?: number
+  activeFarmNames?: string[]
+  endedFarmNames?: string[]
+  displayedFarms?: string[]
+  sourceMethod?: string
+  featuredFarm?: string
+  error?: FarmsRuntimeError | null
+  timestamp: string
+}
 
 export interface FarmsFeaturedMetrics {
   pair: string
@@ -134,7 +147,7 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
     case 'Finished':
       list = list.filter((f) => f.status === 'finished')
       break
-    case 'Featured':
+    case 'AI Suggested':
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
       break
     default:
@@ -258,27 +271,21 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   const machine: FarmsMachinePayload = useMemo(() => {
     const live = previewCards.filter((f) => f.status === 'live')
     const ended = previewCards.filter((f) => f.status === 'finished')
-    const reasonCodes: Record<string, string> = {}
-    if (error?.code) reasonCodes.runtime = error.code
-    return buildSurfaceEnvelope({
-      module: 'farms',
-      runtime: {
-        status: phase,
-        chainId,
-        wallet: account,
-        filter,
-        activeFarms: live.length,
-        endedFarms: ended.length,
-        activeFarmNames: live.map((f) => f.pair),
-        endedFarmNames: ended.map((f) => f.pair),
-        displayedFarms: filteredFarms.slice(0, 10).map((f) => f.pair),
-        sourceMethod: 'master_chef_config_rpc',
-        featuredFarm: featured.pair,
-        error: error?.code ?? null,
-      },
-      reasonCodes,
-      sources: ['master-chef-rpc', 'price-oracle'],
-    })
+    return {
+      status: phase,
+      chainId,
+      wallet: account,
+      filter,
+      activeFarms: live.length,
+      endedFarms: ended.length,
+      activeFarmNames: live.map((f) => f.pair),
+      endedFarmNames: ended.map((f) => f.pair),
+      displayedFarms: filteredFarms.slice(0, 10).map((f) => f.pair),
+      sourceMethod: 'master_chef_config_rpc',
+      featuredFarm: featured.pair,
+      error,
+      timestamp: new Date().toISOString(),
+    }
   }, [phase, chainId, account, filter, previewCards, filteredFarms, featured.pair, error])
 
   const loadingLabel =

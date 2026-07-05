@@ -280,7 +280,7 @@ export const FeaturedProjectPanel: React.FC = () => {
             ))}
           </MetricsGrid>
           <BtnRow>
-            <PrFeaturedPrimaryBtn href={featured.tradeHref ?? '/trade'}>
+            <PrFeaturedPrimaryBtn href={featured.tradeHref ?? '/swap'}>
               Trade
             </PrFeaturedPrimaryBtn>
             <PrFeaturedOutlineBtn href={featured.projectHref}>Open Project</PrFeaturedOutlineBtn>

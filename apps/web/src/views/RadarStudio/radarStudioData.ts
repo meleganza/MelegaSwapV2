@@ -110,8 +110,6 @@ export interface RadarEventCard {
   contractAddress?: string
   tradeHref?: string
   projectHref?: string
-  registryTier?: 'canonical' | 'pending'
-  reviewStatus?: string
 }
 
 export interface WhaleRow {
@@ -191,10 +189,6 @@ export const RADAR_FILTER_CHIPS = [
   'All', 'AI Verified', 'Trending', 'New', 'Whales', 'Liquidity', 'Contracts',
   'Holder Growth', 'Gaming', 'AI', 'Infrastructure', 'DeFi', 'RWA', 'More',
 ] as const
-
-export const FILTER_CHAINS = ['BNB', 'Ethereum', 'Base', 'Polygon', 'Solana'] as const
-export const FILTER_CATEGORIES = ['AI', 'DeFi', 'Gaming', 'Infrastructure', 'Meme', 'RWA'] as const
-export const FILTER_SORT = ['Trending', 'Highest Rated', 'Highest Liquidity', 'Newest', 'Recently Listed'] as const
 
 export const HEATMAP_TOOLTIPS: Record<string, string> = {
   liquidity: 'Indexed liquidity depth vs ecosystem median',

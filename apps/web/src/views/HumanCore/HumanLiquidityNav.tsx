@@ -27,7 +27,7 @@ const Tab = styled(Link)<{ $active?: boolean }>`
 
 const isAdd = (pathname: string) => pathname.startsWith('/add')
 const isRemove = (pathname: string) => pathname.startsWith('/remove') || pathname.startsWith('/find')
-const isPositions = (pathname: string) => pathname === '/liquidity-studio' || pathname.startsWith('/liquidity/')
+const isPositions = (pathname: string) => pathname === '/liquidity' || pathname.startsWith('/liquidity/')
 
 export const HumanLiquidityNav: React.FC = () => {
   const { pathname } = useRouter()
@@ -39,7 +39,7 @@ export const HumanLiquidityNav: React.FC = () => {
       <Tab href="/remove" $active={isRemove(pathname)}>
         Remove liquidity
       </Tab>
-      <Tab href="/liquidity-studio" $active={isPositions(pathname)}>
+      <Tab href="/liquidity" $active={isPositions(pathname)}>
         Your positions
       </Tab>
     </Tabs>

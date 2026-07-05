@@ -1,36 +1,23 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
-import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
-import {
-  RADAR_FONT_BODY,
-  RADAR_FONT_DISPLAY,
-  radarStudioColors,
-  radarStudioLayout,
-  radarStudioType,
-} from '../radarStudioTokens'
+import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
+import { RdOutlineGoldBtn } from './radarStudioPrimitives'
 
-const Wrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-`
-
-const Top = styled.div`
+const Row = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 660px) auto;
   align-items: start;
   gap: 16px;
+  min-height: ${radarStudioLayout.heroHeight};
   min-width: 0;
 
-  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
+  @media (max-width: 767px) {
     grid-template-columns: 1fr;
-    gap: 12px;
+    min-height: 0;
   }
 `
 
-const Copy = styled.div`
+const Left = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -40,139 +27,100 @@ const Copy = styled.div`
 const Title = styled.h1`
   margin: 0;
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: ${radarStudioType.pageTitle};
-  font-weight: 700;
-  line-height: 1.08;
-  color: ${radarStudioColors.text};
-  word-break: keep-all;
-  overflow-wrap: normal;
-
-  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
-    font-size: ${radarStudioType.pageTitleMobile};
-    line-height: 1.1;
-    white-space: nowrap;
-  }
+  font-size: 52px;
+  line-height: 56px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: ${radarStudioColors.white};
 `
 
 const Subtitle = styled.p`
   margin: 10px 0 0;
-  max-width: ${radarStudioType.pageSubtitleMax};
+  max-width: 620px;
   font-family: ${RADAR_FONT_BODY};
-  font-size: ${radarStudioType.pageSubtitle};
-  line-height: 1.5;
-  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 500;
   color: ${radarStudioColors.subtitle};
-
-  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
-    max-width: 100%;
-    margin-top: 8px;
-  }
 `
 
-const CtaRow = styled.div`
+const Right = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  justify-content: flex-end;
+  gap: 14px;
   flex-shrink: 0;
   flex-wrap: wrap;
 
-  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
+  @media (max-width: 767px) {
+    justify-content: flex-start;
     width: 100%;
-    flex-direction: column;
   }
 
-  @media (min-width: calc(${radarStudioLayout.mobileBreakpoint} + 1px)) {
-    justify-self: end;
+  @media (max-width: 360px) {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
   }
 `
 
-const PrimaryBtn = styled.button`
-  width: ${radarStudioLayout.headerPrimaryW};
-  height: ${radarStudioLayout.headerPrimaryH};
+const LiveDot = styled.span`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #050505;
+  flex-shrink: 0;
+`
+
+const LiveBtn = styled.button`
+  width: 132px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 14px;
   border: none;
-  border-radius: 12px;
-  background: ${radarStudioColors.gold};
+  border-radius: 13px;
+  background: ${radarStudioColors.green};
   color: #050505;
   font-family: ${RADAR_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 180ms ease;
 
-  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
-    width: 100%;
+  &:hover {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 767px) {
+    flex: 1;
+    min-width: 0;
   }
 `
 
-const OutlineBtn = styled.button`
-  width: ${radarStudioLayout.headerPrimaryW};
-  height: ${radarStudioLayout.headerPrimaryH};
-  border-radius: 12px;
-  border: 1px solid ${radarStudioColors.gold};
-  background: transparent;
-  color: ${radarStudioColors.gold};
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  box-sizing: border-box;
-
-  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
-    width: 100%;
-  }
-`
-
-const HiddenInput = styled.input`
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
-  height: 0;
-`
-
-export const RadarStudioPageHeader: React.FC = () => {
-  const { runContractPreview, contractInput, setContractInput } = useRadarRuntime()
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  return (
-    <Wrap data-rd-page-header>
-      <HiddenInput
-        ref={inputRef}
-        value={contractInput}
-        onChange={(e) => setContractInput(e.target.value)}
-        aria-hidden
-      />
-      <Top>
-        <Copy>
-          <CivilizationRoleLabel module="radar" />
-          <Title>RADAR</Title>
-          <Subtitle>
-            Discover verified on-chain intelligence. Track projects. Monitor liquidity. Detect opportunities.
-          </Subtitle>
-        </Copy>
-        <CtaRow className="rd-header-cta-desktop">
-          <PrimaryBtn
-            type="button"
-            onClick={() => {
-              if (contractInput.trim()) {
-                runContractPreview()
-              } else {
-                inputRef.current?.focus()
-                const addr = window.prompt('Enter contract address for analysis')
-                if (addr) {
-                  setContractInput(addr)
-                  runContractPreview(addr)
-                }
-              }
-            }}
-          >
-            Run Contract Analysis
-          </PrimaryBtn>
-          <OutlineBtn type="button">How Radar Works</OutlineBtn>
-        </CtaRow>
-      </Top>
-    </Wrap>
-  )
-}
+export const RadarStudioPageHeader: React.FC = () => (
+  <div data-rd-page-header>
+    <Row>
+      <Left>
+        <Title>RADAR</Title>
+        <Subtitle>
+          AI operational console for live discovery, wallet activity and contract intelligence.
+        </Subtitle>
+      </Left>
+      <Right>
+        <RdOutlineGoldBtn type="button">AI Discovery Engine</RdOutlineGoldBtn>
+        <LiveBtn type="button" data-rd-live-scan-btn>
+          <LiveDot data-rd-live-dot />
+          Live Scan
+        </LiveBtn>
+      </Right>
+    </Row>
+  </div>
+)
 
 export default RadarStudioPageHeader

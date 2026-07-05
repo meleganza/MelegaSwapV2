@@ -145,7 +145,7 @@ export const SCHEMA_EXAMPLE_QUEUE_ITEMS: ReviewQueueItem[] = [
     requiredEvidence: ['capability_type', 'project_slug'],
     blockingReason: 'Forbidden route to /ilo or execution payload detected in schema validation.',
     targetRegistry: 'launch-index',
-    targetSurface: '/build-studio#build-import',
+    targetSurface: '/launch',
     linkedSubmission: '/submit',
     linkedPipeline: '/pipeline',
     queueGroup: 'blocked',

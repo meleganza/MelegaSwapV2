@@ -162,8 +162,8 @@ export const MISSION_BRANCH_LINEAGE: MissionBranchRecord[] = [
 export const RECOMMENDED_MERGE_ORDER = MISSION_BRANCH_LINEAGE.map((record) => record.branch)
 
 export const SURFACE_READINESS: SurfaceReadinessRecord[] = [
-  { id: 'swap', route: '/trade', classification: 'production_safe', notes: 'Legacy live DEX swap — untouched by missions 09–18' },
-  { id: 'liquidity', route: '/liquidity-studio', classification: 'production_safe', notes: 'Legacy add/remove LP — LIVE' },
+  { id: 'swap', route: '/swap', classification: 'production_safe', notes: 'Legacy live DEX swap — untouched by missions 09–18' },
+  { id: 'liquidity', route: '/liquidity', classification: 'production_safe', notes: 'Legacy add/remove LP — LIVE' },
   { id: 'farms', route: '/farms', classification: 'production_safe', notes: 'Legacy MasterChef farms — LIVE participate only' },
   { id: 'pools', route: '/pools', classification: 'production_safe', notes: 'Legacy Sous Chef pools — LIVE participate only' },
   { id: 'projects', route: '/projects', classification: 'read_model_only', notes: 'Static registry — no writes' },
@@ -175,8 +175,8 @@ export const SURFACE_READINESS: SurfaceReadinessRecord[] = [
   { id: 'new-project', route: '/new-project', classification: 'preview_only', notes: 'Activation runtime UI — read model, no chain writes' },
   { id: 'execution', route: '/execution', classification: 'read_model_only', notes: 'Illustrative execution samples only' },
   { id: 'presence', route: '/presence', classification: 'read_model_only', notes: 'Economic presence — NOT canonical economy' },
-  { id: 'launch', route: '/build-studio#build-import', classification: 'read_model_only', notes: 'Capability index — links to existing flows' },
-  { id: 'workspace', route: '/command-center', classification: 'read_model_only', notes: 'Operational workspace aggregator' },
+  { id: 'launch', route: '/launch', classification: 'read_model_only', notes: 'Capability index — links to existing flows' },
+  { id: 'workspace', route: '/workspace', classification: 'read_model_only', notes: 'Operational workspace aggregator' },
   { id: 'ilo', route: '/ilo', classification: 'retired', notes: 'Retirement page — route preserved, IFO logic not rendered' },
   { id: 'collectibles', route: '/collectibles', classification: 'read_model_only', notes: 'Civilization collectibles — no fake ownership' },
   { id: 'identity', route: '/identity', classification: 'read_model_only', notes: 'Economic identity — not KYC/social' },
@@ -210,8 +210,8 @@ export const ROUTES_ADDED_OR_MODIFIED = [
   '/new-project',
   '/execution',
   '/presence',
-  '/build-studio#build-import',
-  '/command-center',
+  '/launch',
+  '/workspace',
   '/ilo',
   '/collectibles',
   '/identity',

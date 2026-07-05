@@ -10,11 +10,6 @@ import { useProtocolTransactionsSWR } from 'state/info/hooks'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
-import {
-  formatFarmTrendingLabel,
-  formatHighestTvlLabel,
-  formatPoolTrendingLabel,
-} from './formatTrendingLabels'
 
 export interface RibbonItem {
   id: string
@@ -182,37 +177,22 @@ export const useHomeTradeData = () => {
     const topFarm = farms[0]
     const topPool = pools[0]
 
-    if (topFarm) {
-      const apr = farmApr(topFarm)
-      const farmLabel = formatFarmTrendingLabel(topFarm, apr)
+    if (topFarm?.lpSymbol) {
       items.push({
         id: 'top-farm',
-        primary: farmLabel.primary,
-        secondary: farmLabel.secondary,
-        accent: farmLabel.accent ? `${farmLabel.accent} APR` : undefined,
+        primary: 'Top farm',
+        secondary: topFarm.lpSymbol.replace('-', ' / '),
+        accent: farmApr(topFarm) ? `${farmApr(topFarm)!.toFixed(2)}% APR` : undefined,
         href: '/farms',
       })
     }
 
-    if (topPool) {
-      const poolLabel = formatPoolTrendingLabel(topPool)
-      const poolApr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
+    if (topPool?.stakingToken) {
       items.push({
         id: 'top-pool',
-        primary: poolLabel.primary,
-        secondary: poolLabel.secondary,
-        accent: poolApr ? `${poolApr.toFixed(2)}%` : undefined,
+        primary: 'Top pool',
+        secondary: `${topPool.stakingToken.symbol} Staking`,
         href: '/pools',
-      })
-    }
-
-    const highestTvl = formatHighestTvlLabel(farms)
-    if (highestTvl) {
-      items.push({
-        id: 'highest-tvl',
-        primary: highestTvl.primary,
-        secondary: highestTvl.secondary,
-        href: '/farms',
       })
     }
 
@@ -230,8 +210,8 @@ export const useHomeTradeData = () => {
       const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
       if (projectName) {
         items.push({
-          id: 'newest-listing',
-          primary: 'Newest Listing',
+          id: 'latest-listing',
+          primary: 'Latest listing',
           secondary: projectName,
           href: `/projects/${latestProject.slug}`,
         })
@@ -255,13 +235,11 @@ export const useHomeTradeData = () => {
     const items: RibbonItem[] = []
     const topFarm = farms[0]
 
-    if (topFarm) {
-      const apr = farmApr(topFarm)
-      const farmLabel = formatFarmTrendingLabel(topFarm, apr)
+    if (topFarm?.lpSymbol) {
       items.push({
         id: 'trending-farm',
-        title: farmLabel.primary,
-        subtitle: farmLabel.secondary,
+        title: 'Top farm',
+        subtitle: topFarm.lpSymbol.replace('-', ' / '),
         href: '/farms',
         icon: 'trend',
       })
@@ -280,25 +258,13 @@ export const useHomeTradeData = () => {
     }
 
     const topPool = pools[0]
-    if (topPool) {
-      const poolLabel = formatPoolTrendingLabel(topPool)
+    if (topPool?.stakingToken?.symbol) {
       items.push({
         id: 'top-pool',
-        title: poolLabel.primary,
-        subtitle: poolLabel.secondary,
+        title: 'Top pool',
+        subtitle: `${topPool.stakingToken.symbol} Staking`,
         href: '/pools',
         icon: 'pool',
-      })
-    }
-
-    const highestTvl = formatHighestTvlLabel(farms)
-    if (highestTvl) {
-      items.push({
-        id: 'highest-tvl',
-        title: highestTvl.primary,
-        subtitle: highestTvl.secondary,
-        href: '/farms',
-        icon: 'trend',
       })
     }
 
@@ -306,8 +272,8 @@ export const useHomeTradeData = () => {
       const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
       if (projectName) {
         items.push({
-          id: 'newest-listing',
-          title: 'Newest Listing',
+          id: 'project-listed',
+          title: 'Latest listing',
           subtitle: projectName,
           href: `/projects/${latestProject.slug}`,
           icon: 'project',
@@ -332,27 +298,25 @@ export const useHomeTradeData = () => {
     const cards: MarketCard[] = []
 
     const topFarm = farms[0]
-    if (topFarm) {
+    if (topFarm?.lpSymbol) {
       const apr = farmApr(topFarm)
-      const farmLabel = formatFarmTrendingLabel(topFarm, apr)
       cards.push({
         id: 'top-farm',
-        label: farmLabel.primary,
-        value: farmLabel.secondary,
-        meta: farmLabel.accent ? `APR ${farmLabel.accent}` : undefined,
+        label: 'Top Farm',
+        value: topFarm.lpSymbol.replace('-', ' / '),
+        meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
         change: farmTvl(topFarm),
         href: '/farms',
       })
     }
 
     const topPool = pools[0]
-    if (topPool) {
-      const poolLabel = formatPoolTrendingLabel(topPool)
+    if (topPool?.stakingToken) {
       const apr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
       cards.push({
         id: 'top-pool',
-        label: poolLabel.primary,
-        value: poolLabel.secondary,
+        label: 'Top Pool',
+        value: `${topPool.stakingToken.symbol} Staking`,
         meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
         change: poolTvl(topPool),
         href: '/pools',

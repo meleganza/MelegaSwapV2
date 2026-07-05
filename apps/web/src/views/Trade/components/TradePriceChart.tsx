@@ -256,7 +256,6 @@ export interface TradePriceChartProps {
   stats?: TradePairStat[]
   chartEmptyReason?: string | null
   chartEmptyDetail?: string
-  externalChartHref?: string
 }
 
 export const TradePriceChart: React.FC<TradePriceChartProps> = ({
@@ -269,7 +268,6 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   stats = [],
   chartEmptyReason,
   chartEmptyDetail,
-  externalChartHref,
 }) => {
   const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1h')
   const token0Address = getTokenAddress(inputCurrencyId)
@@ -363,7 +361,6 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           pairPrices={pairPrices}
           emptyReason={chartEmptyReason}
           emptyDetail={chartEmptyDetail}
-          externalChartHref={externalChartHref}
         />
       </ChartBlock>
       <StatsRow data-trade-pair-stats>

@@ -121,7 +121,7 @@ export function mapProjectToPreviewCard(
           : '—',
     contractAddress: token?.address,
     tradeHref: token?.address
-      ? `/trade?outputCurrency=${token.address}`
+      ? `/swap?outputCurrency=${token.address}`
       : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/trade',
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
     projectHref: `/projects/${project.slug}`,
@@ -166,13 +166,13 @@ export function mapPendingToPreviewCard(pending: PendingProjectRecord, rank: num
     website: '—',
     contract: shortAddress(pending.contract),
     contractAddress: pending.contract,
-    tradeHref: `/trade?outputCurrency=${pending.contract}`,
+    tradeHref: `/swap?outputCurrency=${pending.contract}`,
     radarHref: `/radar?contract=${pending.contract}`,
-    projectHref: `/build-studio?contract=${encodeURIComponent(pending.contract)}#build-import`,
+    projectHref: `/import-existing-token?contract=${encodeURIComponent(pending.contract)}`,
     registryTier: 'pending',
     pendingId: pending.id,
     reviewStatus: formatPendingReviewStatusLabel(pending.status),
-    importHref: `/build-studio?contract=${encodeURIComponent(pending.contract)}#build-import`,
+    importHref: `/import-existing-token?contract=${encodeURIComponent(pending.contract)}`,
   }
 }
 
@@ -222,7 +222,7 @@ export function aggregateKpis(
     },
     {
       id: 'ai',
-      label: 'Featured',
+      label: 'AI Recommended',
       value: String(aiRecommended),
       gold: true,
     },
@@ -281,7 +281,7 @@ export function buildFeaturedProject(
     ],
     contractAddress: token?.address,
     spaceUrl: project.spaceProfileUrl,
-    tradeHref: project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/trade',
+    tradeHref: project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
     projectHref: `/projects/${project.slug}`,
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
     price,
@@ -368,8 +368,6 @@ export function buildActivityFromRegistry(projects: EnrichedProjectRecord[]): Pr
   return rows.slice(0, 8)
 }
 
-export const PROJECTS_RUNTIME_SCHEMA = 'melega.projects-runtime.v1' as const
-
 export function buildMachineProfile(project: EnrichedProjectRecord) {
   const rating = buildProjectRating(project)
   const health = buildProjectHealth(project)
@@ -378,7 +376,7 @@ export function buildMachineProfile(project: EnrichedProjectRecord) {
   const onChain = buildOnChainMetrics(project, undefined)
 
   return {
-    schema: PROJECTS_RUNTIME_SCHEMA,
+    schema: 'https://melega.finance/schemas/projects-runtime/v1',
     project: {
       upi: project.upi,
       slug: project.slug,

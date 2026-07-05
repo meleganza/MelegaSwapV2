@@ -19,7 +19,7 @@ export const SURFACE_MAP_RECORDS: SurfaceRecord[] = [
   surface({
     id: 'swap',
     label: 'Swap',
-    route: '/trade',
+    route: '/swap',
     group: 'execute',
     status: 'live',
     humanPurpose: 'Exchange tokens via the legacy DEX swap interface.',
@@ -31,7 +31,7 @@ export const SURFACE_MAP_RECORDS: SurfaceRecord[] = [
   surface({
     id: 'liquidity',
     label: 'Liquidity',
-    route: '/liquidity-studio',
+    route: '/liquidity',
     group: 'execute',
     status: 'live',
     humanPurpose: 'Add or remove liquidity from V2 pairs.',
@@ -82,7 +82,7 @@ export const SURFACE_MAP_RECORDS: SurfaceRecord[] = [
   surface({
     id: 'launch',
     label: 'Launch',
-    route: '/build-studio#build-import',
+    route: '/launch',
     group: 'create',
     status: 'read_model',
     humanPurpose: 'User launch and listing capabilities — links to existing flows where live.',
@@ -129,7 +129,7 @@ export const SURFACE_MAP_RECORDS: SurfaceRecord[] = [
     dataSource: 'legacy-ilo-retirement',
     executionRisk: 'none',
     manifestUri: '/registry/legacy/ilo-retirement.json',
-    replacementRoute: '/build-studio#build-import',
+    replacementRoute: '/launch',
     visibility: 'legacy',
   }),
   surface({
@@ -243,7 +243,7 @@ export const SURFACE_MAP_RECORDS: SurfaceRecord[] = [
   surface({
     id: 'workspace',
     label: 'Workspace',
-    route: '/command-center',
+    route: '/workspace',
     group: 'manage',
     status: 'read_model',
     humanPurpose: 'User economic workspace — operational center for indexed activity.',

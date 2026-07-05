@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
-import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
-import { getPendingProjectRegistry } from 'registry/projects/pending'
-import { formatPendingReviewStatusLabel } from 'registry/projects/pending/updatePendingReview'
-import { discoverProjectFromContract, getPendingDiscoverySummary } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
+import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntime/discoverProjectFromContract'
 import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketSources'
-import type { ContractPreviewData } from '../radarStudioData'
+import type { ContractPreviewData, RadarFilterChip } from '../radarStudioData'
 import { buildContractIntelligence } from './buildContractIntelligence'
 import { buildHeatmapRows } from './buildHeatmap'
 import { buildLiveEvents } from './buildLiveEvents'
@@ -25,9 +22,6 @@ import {
   filterLiveEvents,
   filterRadarEvents,
   mapProjectToRadarEvent,
-  mapPendingToRadarEvent,
-  sortRadarEvents,
-  type RadarFilterChip,
 } from './formatRadarRuntime'
 import { createRadarRuntimeError, type RadarRuntimeError } from './radarRuntimeErrors'
 
@@ -49,13 +43,6 @@ export function useRadarIntelligenceRuntime() {
 
   const enriched = useMemo(() => getAllProjects().map(enrichProject), [])
 
-  const pendingRecords = useMemo(() => {
-    if (typeof window === 'undefined') return []
-    return getPendingProjectRegistry()
-      .getAll()
-      .filter((p) => p.status !== 'archived' && p.status !== 'rejected')
-  }, [])
-
   const liveEvents = useMemo(() => buildLiveEvents(enriched), [enriched])
   const filteredLiveEvents = useMemo(
     () => filterLiveEvents(liveEvents, filter),
@@ -74,12 +61,9 @@ export function useRadarIntelligenceRuntime() {
   const featured = sorted[0]
 
   const discoveries = useMemo(() => {
-    const canonical = sorted.map((p, i) => mapProjectToRadarEvent(p, i + 1, liveEvents))
-    const pending = pendingRecords.map((p, i) => mapPendingToRadarEvent(p, canonical.length + i + 1))
-    const cards = [...canonical, ...pending]
-    const filtered = filterRadarEvents(cards, enriched, filter)
-    return sortRadarEvents(filtered, filter)
-  }, [sorted, liveEvents, enriched, filter, pendingRecords])
+    const cards = sorted.map((p, i) => mapProjectToRadarEvent(p, i + 1, liveEvents))
+    return filterRadarEvents(cards, enriched, filter)
+  }, [sorted, liveEvents, enriched, filter])
 
   const kpis = useMemo(() => aggregateRadarKpis(enriched, liveEvents), [enriched, liveEvents])
   const heatmap = useMemo(() => buildHeatmapRows(enriched), [enriched])
@@ -103,14 +87,9 @@ export function useRadarIntelligenceRuntime() {
     [featured],
   )
 
-  const machine: MelegaSurfaceEnvelope = useMemo(() => {
-    const reasonCodes: Record<string, string> = {}
-    runtimeErrors.forEach((e) => {
-      reasonCodes[e.code] = e.message
-    })
-    return buildSurfaceEnvelope({
-      module: 'radar',
-      runtime: buildMachinePayload({
+  const machine = useMemo(
+    () =>
+      buildMachinePayload({
         projects: enriched,
         featured,
         opportunity,
@@ -119,10 +98,8 @@ export function useRadarIntelligenceRuntime() {
         errors: runtimeErrors,
         filter,
       }),
-      reasonCodes,
-      sources: ['registry', 'contract-intelligence'],
-    })
-  }, [enriched, featured, opportunity, sources, filteredLiveEvents, runtimeErrors, filter])
+    [enriched, featured, opportunity, sources, filteredLiveEvents, runtimeErrors, filter],
+  )
 
   const runContractPreview = useCallback(
     (address?: string, chain?: string) => {
@@ -132,28 +109,6 @@ export function useRadarIntelligenceRuntime() {
       const errors: RadarRuntimeError[] = [...discovery.errors]
 
       if (!discovery.found || !discovery.project) {
-        if (discovery.registryTier === 'pending' && discovery.pending) {
-          const pending = discovery.pending
-          setRuntimeErrors(errors)
-          setContractPreview({
-            address: raw ? `${raw.slice(0, 6)}…${raw.slice(-4)}` : 'Unavailable',
-            network: chain ?? chainLabel,
-            score: pending.health.readiness_score,
-            metrics: [
-              { label: 'Status', status: 'yellow', description: formatPendingReviewStatusLabel(pending.status) },
-              { label: 'Readiness', status: 'yellow', description: `${pending.health.readiness_score}/100` },
-            ],
-            operationalSummary: getPendingDiscoverySummary(pending),
-            provenance: ['Pending registry intake'],
-            lastUpdated: pending.updated_at,
-            freshness: 'Pending Registry',
-            evidenceCount: 1,
-            aiVersion: 'Melega Radar Runtime v1',
-          })
-          setPreviewOpen(true)
-          return
-        }
-
         errors.push(createRadarRuntimeError('PROJECT_NOT_INDEXED'))
         setRuntimeErrors(errors)
         setContractPreview({
@@ -194,25 +149,6 @@ export function useRadarIntelligenceRuntime() {
         const { preview, errors: intelErrors } = buildContractIntelligence(discovery.project, q, chainId)
         setRuntimeErrors([...discovery.errors, ...intelErrors])
         setContractPreview(preview)
-        setPreviewOpen(true)
-      } else if (discovery.registryTier === 'pending' && discovery.pending) {
-        const pending = discovery.pending
-        setRuntimeErrors(discovery.errors)
-        setContractPreview({
-          address: `${q.slice(0, 6)}…${q.slice(-4)}`,
-          network: chainLabel,
-          score: pending.health.readiness_score,
-          metrics: [
-            { label: 'Status', status: 'yellow', description: formatPendingReviewStatusLabel(pending.status) },
-            { label: 'Readiness', status: 'yellow', description: `${pending.health.readiness_score}/100` },
-          ],
-          operationalSummary: getPendingDiscoverySummary(pending),
-          provenance: ['Pending registry intake'],
-          lastUpdated: pending.updated_at,
-          freshness: 'Pending Registry',
-          evidenceCount: 1,
-          aiVersion: 'Melega Radar Runtime v1',
-        })
         setPreviewOpen(true)
       }
     }

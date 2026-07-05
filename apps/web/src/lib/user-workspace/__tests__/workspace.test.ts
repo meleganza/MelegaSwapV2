@@ -26,7 +26,7 @@ describe('user economic workspace', () => {
     const hrefs = Object.fromEntries(model.sections.map((section) => [section.id, section.moduleHref]))
     expect(hrefs.projects).toBe('/projects')
     expect(hrefs.assets).toBe('/assets')
-    expect(hrefs.liquidity).toBe('/liquidity-studio')
+    expect(hrefs.liquidity).toBe('/liquidity')
     expect(hrefs.pools).toBe('/pools')
     expect(hrefs.farms).toBe('/farms')
     expect(hrefs.presence).toBe('/presence')

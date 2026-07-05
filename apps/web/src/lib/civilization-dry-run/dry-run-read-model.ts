@@ -94,7 +94,7 @@ export const MARCO_ECONOMY_NARRATIVE_DRY_RUN: CivilizationDryRunScenario = {
     visibility: 'schema_example_only',
     effect:
       'Workspace projects section remains indexed from registry only — dry run narrative does not add live project entry.',
-    linkedSurface: '/command-center',
+    linkedSurface: '/workspace',
     flags: DRY_RUN_RECORD_FLAGS,
   },
   finalVerdict: 'partial',

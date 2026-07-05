@@ -51,11 +51,11 @@ const config: (
       label: t('Swap'),
       icon: SwapIcon,
       fillIcon: SwapFillIcon,
-      href: '/trade',
+      href: '/swap',
       showItemsOnMobile: true,
       items: [
-        { label: t('Exchange'), href: '/trade' },
-        { label: t('Liquidity'), href: '/liquidity-studio' },
+        { label: t('Exchange'), href: '/swap' },
+        { label: t('Liquidity'), href: '/liquidity' },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },
     {
@@ -72,7 +72,7 @@ const config: (
     },
     {
       label: t('Create'),
-      href: '/build-studio#build-import',
+      href: '/launch',
       icon: LaunchPadIcon,
       fillIcon: LaunchPadIcon,
       showItemsOnMobile: true,
@@ -93,7 +93,7 @@ const config: (
     },
     {
       label: t('My Economy'),
-      href: '/command-center',
+      href: '/workspace',
       icon: CapitalIcon,
       fillIcon: CapitalIcon,
       showItemsOnMobile: true,

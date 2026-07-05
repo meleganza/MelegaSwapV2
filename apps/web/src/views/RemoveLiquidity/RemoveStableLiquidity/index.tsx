@@ -325,7 +325,7 @@ export default function RemoveStableLiquidity({ currencyA, currencyB, currencyId
       <StyledDisableFlex> */}
       <AppBody>
         <AppHeader
-          backTo="/liquidity-studio"
+          backTo="/liquidity"
           title={t('Remove %assetA%-%assetB% liquidity', {
             assetA: currencyA?.symbol ?? '',
             assetB: currencyB?.symbol ?? '',

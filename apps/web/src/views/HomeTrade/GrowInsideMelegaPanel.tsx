@@ -46,7 +46,7 @@ const GROW_ITEMS = [
     id: 'smartdrop',
     title: 'SMARTDROP',
     subtitle: 'Acquire active holders.',
-    href: '/build-studio#build-import',
+    href: '/import-existing-token',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <path d="M12 3l2.5 5.5L20 10l-5.5 1.5L12 17l-2.5-5.5L4 10l5.5-1.5L12 3z" />

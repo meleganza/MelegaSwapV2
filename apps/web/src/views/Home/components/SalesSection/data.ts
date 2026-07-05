@@ -6,7 +6,7 @@ export const swapSectionData: SalesSectionProps = {
     'AI-native liquidity on BSC, Base, Ethereum, and Polygon. Classic swap and LP flows today, with smart routing on the roadmap.',
   reverse: false,
   primaryButton: {
-    to: '/trade',
+    to: '/swap',
     text: 'Trade Now',
     external: false,
   },
@@ -45,7 +45,7 @@ export const cakeSectionData: SalesSectionProps = {
     'MARCO powers rewards across Melega DEX — the liquidity surface of MELEGA AI | KIRI CIVILIZATION. Trade it, farm it, stake it, and govern with it.',
   reverse: false,
   primaryButton: {
-    to: '/trade?outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+    to: '/swap?outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b',
     text: 'Buy MARCO',
     external: false,
   },
