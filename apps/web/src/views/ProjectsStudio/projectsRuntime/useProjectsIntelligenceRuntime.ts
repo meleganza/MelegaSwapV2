@@ -9,13 +9,13 @@ import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
-  buildAdvisorRows,
   buildFeaturedProject,
   buildMachineProfile,
   filterProjectsByChip,
   mapPendingToPreviewCard,
   mapProjectToPreviewCard,
 } from './formatProjectsRuntime'
+import { buildFeaturedProjectIntelligence } from './buildFeaturedProjectIntelligence'
 import { buildAiRecommendations } from './buildAiRecommendations'
 import { buildProjectHealth } from './buildProjectHealth'
 import { buildProjectRating } from './buildProjectRating'
@@ -29,7 +29,7 @@ export interface ProjectsAdvisorRow {
   label: string
   value: string
   score: string
-  tone: 'green' | 'gold'
+  tone: 'green' | 'gold' | 'gray'
 }
 
 export interface ProjectsMachinePayload {
@@ -137,7 +137,10 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
       }),
     [enriched, pendingRecords.length, liveMetrics],
   )
-  const advisorRows = useMemo(() => buildAdvisorRows(sorted), [sorted])
+  const advisorRows = useMemo(
+    () => buildFeaturedProjectIntelligence(featuredProject, liveMetrics).slice(0, 5),
+    [featuredProject, liveMetrics],
+  )
   const terminal = useProjectsTerminalData(enriched)
 
   const recommendations = useMemo(

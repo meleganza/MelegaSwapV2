@@ -5,6 +5,7 @@ import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import BuildStudioGlobalStyle from './BuildStudioGlobalStyle'
 import { BuildRuntimeProvider } from './buildRuntime/BuildRuntimeContext'
 import { buildStudioColors, buildStudioLayout } from './buildStudioTokens'
+import { ImportRuntimeProvider } from 'views/ImportExistingToken/importExistingTokenRuntime/ImportRuntimeContext'
 import AIBuildAdvisorPanel from './components/AIBuildAdvisorPanel'
 import AIManifestPanel from './components/AIManifestPanel'
 import BuildMachinePanel from './components/BuildMachinePanel'
@@ -69,11 +70,13 @@ export const BuildStudioScreen: React.FC = () => (
       <Content>
         <BuildStudioPageHeader />
         <BuildKpiRow />
-        <MainGrid data-bs-main-grid>
-          <ImportTokenPanel />
-          <CreateTokenPanel />
-          <AIBuildAdvisorPanel />
-        </MainGrid>
+        <ImportRuntimeProvider>
+          <MainGrid data-bs-main-grid>
+            <ImportTokenPanel />
+            <CreateTokenPanel />
+            <AIBuildAdvisorPanel />
+          </MainGrid>
+        </ImportRuntimeProvider>
         <SecondRowCards />
         <AIValidationEngine />
         <InfrastructureFlow />

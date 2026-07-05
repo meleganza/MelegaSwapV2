@@ -205,6 +205,29 @@ const UnavailableDesc = styled.span`
   max-width: 280px;
 `
 
+const SourceLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 4px;
+`
+
+const SourceLink = styled.a`
+  font-size: 11px;
+  font-weight: 600;
+  color: ${tradeColors.gold};
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+
+  &:hover {
+    border-color: ${tradeColors.gold};
+    background: rgba(212, 175, 55, 0.08);
+  }
+`
+
 const CANDLES = [
   { h: 22, wick: 8, up: true, delay: 0, vol: 14 },
   { h: 34, wick: 10, up: false, delay: 140, vol: 22 },
@@ -224,6 +247,7 @@ export interface TradeChartPanelProps {
   pairPrices?: Array<{ time: string; value: number }>
   emptyReason?: string | null
   emptyDetail?: string
+  publicSources?: Array<{ label: string; href: string }>
 }
 
 const EMPTY_REASON_LABELS: Record<string, string> = {
@@ -277,6 +301,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   pairPrices = [],
   emptyReason,
   emptyDetail,
+  publicSources = [],
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
@@ -347,6 +372,15 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
             {emptyDetail ??
               'Indexed pair candles are not available yet. Stats and swaps update when subgraph indexes this pair.'}
           </UnavailableDesc>
+          {publicSources.length > 0 ? (
+            <SourceLinks data-trade-chart-sources>
+              {publicSources.map((source) => (
+                <SourceLink key={source.href} href={source.href} target="_blank" rel="noopener noreferrer">
+                  {source.label}
+                </SourceLink>
+              ))}
+            </SourceLinks>
+          ) : null}
         </UnavailableState>
       )}
       {showSkeleton && (

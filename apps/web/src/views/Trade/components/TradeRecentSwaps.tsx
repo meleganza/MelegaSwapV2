@@ -58,7 +58,7 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
         title="Recent Swaps on Melega DEX"
         rows={timelineRows}
         height={isEmpty ? tradeLayout.recentSwapsHeightCompact : tradeLayout.recentSwapsHeight}
-        emptyTitle={isIndexing ? 'Indexing swaps' : 'No recent swaps'}
+        emptyTitle={isIndexing ? 'Indexing swaps' : 'No swaps indexed yet.'}
         emptySubtitle={
           isIndexing
             ? 'Fetching indexed swap activity for this pair'

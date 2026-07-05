@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
+import { resolveTradeMarketContext } from 'lib/trade-market/resolveTradeMarketContext'
 import { tradeUiReasonLabel } from 'lib/data-policy/uiReasonLabels'
 import { tradeColors, TRADE_TIMEFRAMES, type TradeTimeframeId } from '../tradeTokens'
 import { useFetchPairPrices } from 'state/swap/hooks'
@@ -285,6 +286,16 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   const displayPrice = priceUsd ?? lastPrice
   const displayChange = change24h ?? Number(chartChange.changePercentage)
 
+  const publicSources = useMemo(() => {
+    const ctx = resolveTradeMarketContext({
+      outputAddress: isMarcoSymbol(outputSymbol) ? MARCO_BSC_ADDRESS : token1Address,
+      hasPairPrices: pairPrices.length >= 2,
+      hasSwaps: false,
+      routeConfigured: Boolean(token0Address && token1Address),
+    })
+    return ctx.sources.filter((s) => s.href).map((s) => ({ label: s.label, href: s.href! }))
+  }, [outputSymbol, token1Address, token0Address, pairPrices.length])
+
   const priceText =
     displayPrice != null && Number.isFinite(displayPrice)
       ? displayPrice < 0.01
@@ -361,6 +372,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           pairPrices={pairPrices}
           emptyReason={chartEmptyReason}
           emptyDetail={chartEmptyDetail}
+          publicSources={isMarcoSymbol(outputSymbol) ? publicSources : []}
         />
       </ChartBlock>
       <StatsRow data-trade-pair-stats>

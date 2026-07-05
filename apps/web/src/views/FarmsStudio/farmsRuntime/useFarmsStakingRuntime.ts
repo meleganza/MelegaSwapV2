@@ -147,7 +147,7 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
     case 'Finished':
       list = list.filter((f) => f.status === 'finished')
       break
-    case 'AI Suggested':
+    case 'Featured Farm':
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
       break
     default:

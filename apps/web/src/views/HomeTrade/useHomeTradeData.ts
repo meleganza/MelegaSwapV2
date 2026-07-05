@@ -10,6 +10,7 @@ import { useProtocolTransactionsSWR } from 'state/info/hooks'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
+import { getAprData } from 'views/Pools/helpers'
 import { formatFarmTrendingLabel, formatPoolTrendingLabel } from './formatTrendingLabels'
 
 export interface RibbonItem {
@@ -105,6 +106,12 @@ const poolTvl = (pool: Pool.DeserializedPool<Token>): string | undefined => {
   return bal > 0 ? formatUsd(bal * (pool.stakingTokenPrice ?? 0)) : undefined
 }
 
+const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => {
+  if (pool.apr && pool.apr > 0) return pool.apr
+  const { apr } = getAprData(pool, 0)
+  return apr > 0 ? apr : undefined
+}
+
 const txToRow = (tx: Transaction): ActivityRow => {
   if (tx.type === TransactionType.SWAP) {
     return {
@@ -192,12 +199,12 @@ export const useHomeTradeData = () => {
 
     if (topPool) {
       const poolLabel = formatPoolTrendingLabel(topPool)
-      const poolApr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
+      const apr = poolApr(topPool)
       items.push({
         id: 'top-pool',
         primary: poolLabel.primary,
         secondary: poolLabel.secondary,
-        accent: poolApr ? `${poolApr.toFixed(2)}% APR` : undefined,
+        accent: apr ? `${apr.toFixed(2)}% APR` : undefined,
         href: '/pools',
       })
     }
@@ -266,12 +273,12 @@ export const useHomeTradeData = () => {
     const topPool = pools[0]
     if (topPool) {
       const poolLabel = formatPoolTrendingLabel(topPool)
-      const poolApr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
+      const apr = poolApr(topPool)
       items.push({
         id: 'top-pool',
         title: poolLabel.primary,
         subtitle: poolLabel.secondary,
-        meta: poolApr ? `${poolApr.toFixed(2)}% APR` : undefined,
+        meta: apr ? `${apr.toFixed(2)}% APR` : undefined,
         href: '/pools',
         icon: 'pool',
       })
@@ -322,12 +329,12 @@ export const useHomeTradeData = () => {
     const topPool = pools[0]
     if (topPool?.stakingToken) {
       const poolLabel = formatPoolTrendingLabel(topPool)
-      const apr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
+      const apr = poolApr(topPool)
       cards.push({
         id: 'top-pool',
         label: poolLabel.primary,
-        value: poolLabel.secondary,
-        meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
+        value: apr ? `${apr.toFixed(2)}% APR` : poolLabel.secondary,
+        meta: apr ? poolLabel.secondary : undefined,
         change: poolTvl(topPool),
         href: '/pools',
       })
@@ -377,7 +384,8 @@ export const useHomeTradeData = () => {
     return pools
       .slice(0, 3)
       .map((pool) => {
-        const apr = pool.apr && pool.apr > 0 ? `${pool.apr.toFixed(2)}%` : undefined
+        const aprValue = poolApr(pool)
+        const apr = aprValue ? `${aprValue.toFixed(2)}%` : undefined
         const tvl = poolTvl(pool)
         return {
           id: `pool-${pool.sousId}`,
@@ -425,8 +433,10 @@ export const useHomeTradeData = () => {
           id: `pool-${topPool.sousId}`,
           type: 'Pool opportunity',
           context: `${topPool.stakingToken.symbol} Staking`,
-          value:
-            topPool.apr && topPool.apr > 0 ? `${topPool.apr.toFixed(2)}% APR` : poolTvl(topPool),
+          value: (() => {
+            const apr = poolApr(topPool)
+            return apr ? `${apr.toFixed(2)}% APR` : poolTvl(topPool)
+          })(),
           time: 'Live',
         },
       })

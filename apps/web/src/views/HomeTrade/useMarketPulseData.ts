@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { formatUnits } from '@ethersproject/units'
+import { formatCompactNumber } from 'design-system/melega/utils/formatCompactNumber'
 import { useCurrentBlock } from 'state/block/hooks'
 import { useGasPrice } from 'state/user/hooks'
 
@@ -140,7 +141,7 @@ export const useMarketPulseData = () => {
       },
       {
         label: 'Latest Block',
-        value: block > 0 ? block.toLocaleString() : undefined,
+        value: block > 0 ? formatCompactNumber(block) : undefined,
       },
     ]
   }, [block, bnbData, gasRaw])

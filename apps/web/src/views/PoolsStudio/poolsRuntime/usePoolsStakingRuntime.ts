@@ -115,7 +115,7 @@ function filterPools(cards: PoolPreviewCard[], filter: PoolFilterChip): PoolPrev
     case 'Newest':
       list = list.sort((a, b) => (b.sousId ?? 0) - (a.sousId ?? 0))
       break
-    case 'AI Suggested':
+    case 'Featured Farm':
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
       break
     default:

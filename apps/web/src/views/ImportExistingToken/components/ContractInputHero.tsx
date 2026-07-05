@@ -7,9 +7,11 @@ import { ItInput, ItPanel, ItPrimaryBtn, ItSectionLabel } from './importTokenPri
 
 const SUPPORTED_CHAINS = ['BNB', 'ETH', 'Base', 'Polygon'] as const
 
-const Hero = styled(ItPanel)`
-  min-height: ${importTokenLayout.heroH};
-  padding: 24px;
+const Hero = styled(ItPanel)<{ $embedded?: boolean }>`
+  min-height: ${({ $embedded }) => ($embedded ? 'auto' : importTokenLayout.heroH)};
+  padding: ${({ $embedded }) => ($embedded ? '0' : '24px')};
+  border: ${({ $embedded }) => ($embedded ? 'none' : undefined)};
+  background: ${({ $embedded }) => ($embedded ? 'transparent' : undefined)};
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -131,9 +133,11 @@ const Error = styled.p`
   color: ${importTokenColors.red};
 `
 
-type Props = Record<string, never>
+type Props = {
+  embedded?: boolean
+}
 
-export const ContractInputHero: React.FC<Props> = () => {
+export const ContractInputHero: React.FC<Props> = ({ embedded }) => {
   const { contract, setContract, chainLabel, setChainLabel, runAnalysis, validationError } = useImportRuntime()
 
   const handleAnalyze = () => {
@@ -141,8 +145,8 @@ export const ContractInputHero: React.FC<Props> = () => {
   }
 
   return (
-    <Hero data-iet-contract-hero>
-      <ItSectionLabel>Step 1 — Contract Input</ItSectionLabel>
+    <Hero data-iet-contract-hero $embedded={embedded}>
+      {!embedded ? <ItSectionLabel>Step 1 — Contract Input</ItSectionLabel> : null}
       <DesktopRow>
         <AddressField
           placeholder="0x..."
@@ -168,14 +172,16 @@ export const ContractInputHero: React.FC<Props> = () => {
         </AnalyzeBtn>
       </DesktopRow>
       {validationError ? <Error>{validationError}</Error> : null}
-      <Explorers>
-        <ExplorerLabel>Supported explorers</ExplorerLabel>
-        {EXPLORER_ICONS.map((ex) => (
-          <ExplorerIcon key={ex.id} href={ex.href} target="_blank" rel="noopener noreferrer" title={ex.label}>
-            {ex.label.slice(0, 3)}
-          </ExplorerIcon>
-        ))}
-      </Explorers>
+      {!embedded ? (
+        <Explorers>
+          <ExplorerLabel>Supported explorers</ExplorerLabel>
+          {EXPLORER_ICONS.map((ex) => (
+            <ExplorerIcon key={ex.id} href={ex.href} target="_blank" rel="noopener noreferrer" title={ex.label}>
+              {ex.label.slice(0, 3)}
+            </ExplorerIcon>
+          ))}
+        </Explorers>
+      ) : null}
     </Hero>
   )
 }

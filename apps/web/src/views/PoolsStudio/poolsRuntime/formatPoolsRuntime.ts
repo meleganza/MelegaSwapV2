@@ -56,8 +56,21 @@ export function getPoolDisplayName(pool: Pool.DeserializedPool<Token>): string {
   return pool.earningToken?.symbol ? `${pool.earningToken.symbol} Pool` : `Pool #${pool.sousId}`
 }
 
+function poolHasDeposits(pool: Pool.DeserializedPool<Token>): boolean {
+  return Boolean(pool.totalStaked?.gt(0))
+}
+
+function poolHasClaimableRewards(pool: Pool.DeserializedPool<Token>): boolean {
+  return Boolean(pool.userData?.pendingReward?.gt(0))
+}
+
 function poolStatus(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolStatus {
+  const hasDeposits = poolHasDeposits(pool)
+  const hasClaimable = poolHasClaimableRewards(pool)
+
+  if (hasDeposits || hasClaimable) return 'live'
   if (pool.isFinished) return 'ended'
+
   if (pool.sousId !== 0) {
     const { hasPoolStarted } = getPoolBlockInfo(pool, currentBlock)
     if (!hasPoolStarted) return 'indexing'
@@ -126,7 +139,8 @@ export function aggregateKpis(
 
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
-    if (!pool.isFinished) activePools += 1
+    const status = pool.isFinished && !poolHasDeposits(pool) ? 'ended' : 'live'
+    if (status === 'live') activePools += 1
     const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
     totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
     if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
@@ -138,7 +152,7 @@ export function aggregateKpis(
   return [
     { id: 'staked', label: 'Total Staked', value: formatUsd(totalStakedUsd) },
     { id: 'active', label: 'Active Pools', value: String(activePools) },
-    { id: 'rewards', label: 'MARCO Rewards Today', value: totalPending > 0 ? formatTokenAmount(new BigNumber(totalPending)) : '—' },
+    { id: 'rewards', label: 'MARCO Rewards Today', value: totalPending > 0 ? formatTokenAmount(new BigNumber(totalPending), 18, 'MARCO') : '0 MARCO' },
     { id: 'stakers', label: 'Your Positions', value: String(stakerPositions) },
     { id: 'ai', label: 'AI Recommended', value: featuredName ?? '—', gold: true },
   ]

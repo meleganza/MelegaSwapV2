@@ -95,6 +95,7 @@ const ScoreBlock = styled.div`
   align-items: flex-end;
   gap: 4px;
   flex-shrink: 0;
+  padding-top: 16px;
 
   @media (max-width: 767px) {
     flex-direction: row;
@@ -254,7 +255,7 @@ export const TrendingProjectCard: React.FC<Props> = ({ project }) => {
         <ScoreBlock>
           <Score $tone={tone}>{project.aiScore > 0 ? `${project.aiScore}/100` : '—'}</Score>
           <Signal>{project.signalLabel && project.signalLabel !== 'Unavailable' ? project.signalLabel : '—'}</Signal>
-          <AnimatedSparkline points={project.sparkline} width={56} height={18} />
+          <AnimatedSparkline points={project.sparkline} width={56} height={14} />
         </ScoreBlock>
       </TopRow>
 

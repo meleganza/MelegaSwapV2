@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
+import { formatCompactDisplay } from 'design-system/melega/utils/formatCompactNumber'
 import useMarketPulseData, { type MarketPulseMetric } from './useMarketPulseData'
 import FearGreedGauge from './FearGreedGauge'
 
@@ -120,15 +121,15 @@ const MetricLabel = styled.div`
   line-height: 1.2;
 `
 
-const MetricValue = styled.div`
+const MetricValue = styled.div<{ $compact?: boolean }>`
   font-size: 28px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.05;
   animation: ${fadeIn} 180ms ease;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: ${({ $compact }) => ($compact ? 'visible' : 'hidden')};
+  text-overflow: ${({ $compact }) => ($compact ? 'clip' : 'ellipsis')};
 `
 
 const MetricChange = styled.div<{ $positive?: boolean }>`
@@ -138,13 +139,17 @@ const MetricChange = styled.div<{ $positive?: boolean }>`
   line-height: 1.2;
 `
 
-const MetricRow: React.FC<{ metric: MarketPulseMetric }> = ({ metric }) => (
-  <MetricBlock>
-    <MetricLabel>{metric.label}</MetricLabel>
-    <MetricValue>{metric.value ?? 'Indexing'}</MetricValue>
-    {metric.change && <MetricChange $positive={metric.changePositive}>{metric.change}</MetricChange>}
-  </MetricBlock>
-)
+const MetricRow: React.FC<{ metric: MarketPulseMetric }> = ({ metric }) => {
+  const isBlock = metric.label === 'Latest Block'
+  const displayValue = metric.value ? formatCompactDisplay(metric.value) : undefined
+  return (
+    <MetricBlock>
+      <MetricLabel>{metric.label}</MetricLabel>
+      <MetricValue $compact={isBlock}>{displayValue ?? 'Indexing'}</MetricValue>
+      {metric.change && <MetricChange $positive={metric.changePositive}>{metric.change}</MetricChange>}
+    </MetricBlock>
+  )
+}
 
 export const MarketPulsePanel: React.FC = () => {
   const { cryptoMarket, bnbChain, fearGreed } = useMarketPulseData()

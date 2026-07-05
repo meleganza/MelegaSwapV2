@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { SUPPORTED_CHAINS } from '../buildStudioData'
@@ -14,6 +14,7 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
 `
 
 const TitleRow = styled.div`
@@ -57,8 +58,44 @@ const Meta = styled.div`
   line-height: 1.5;
 `
 
+const BuilderGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+`
+
+const BuilderCard = styled.button<{ $active?: boolean }>`
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid ${({ $active }) => ($active ? buildStudioColors.gold : buildStudioColors.border)};
+  background: rgba(255, 255, 255, 0.02);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: ${buildStudioColors.gold};
+  }
+`
+
+const BuilderTitle = styled.div`
+  font-family: ${BS_FONT_BODY};
+  font-size: 12px;
+  font-weight: 700;
+  color: ${buildStudioColors.white};
+`
+
+const TemplatesLabel = styled.div`
+  font-family: ${BS_FONT_BODY};
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${buildStudioColors.label};
+`
+
 export const CreateTokenPanel: React.FC = () => {
-  const { tokenPreparation } = useBuildRuntime()
+  const { tokenPreparation, builderTemplates, selectedTemplateId, setSelectedTemplateId } = useBuildRuntime()
 
   return (
     <BsPanel data-bs-panel data-bs-create-token $emphasis="reduced" $height={buildStudioLayout.createTokenH}>
@@ -71,6 +108,19 @@ export const CreateTokenPanel: React.FC = () => {
         <BsBody style={{ fontSize: 13, lineHeight: '20px', color: buildStudioColors.muted }}>
           {tokenPreparation.deploymentPreview}
         </BsBody>
+        <TemplatesLabel>Builder Templates</TemplatesLabel>
+        <BuilderGrid data-bs-builder-templates>
+          {builderTemplates.map((t) => (
+            <BuilderCard
+              key={t.id}
+              type="button"
+              $active={selectedTemplateId === t.id}
+              onClick={() => setSelectedTemplateId(t.id)}
+            >
+              <BuilderTitle>{t.title}</BuilderTitle>
+            </BuilderCard>
+          ))}
+        </BuilderGrid>
         <Chains>
           {SUPPORTED_CHAINS.map((chain) => (
             <Chain key={chain}>{chain}</Chain>
@@ -84,7 +134,7 @@ export const CreateTokenPanel: React.FC = () => {
           Readiness: {tokenPreparation.readinessScore}/100
         </Meta>
         <BtnCol>
-          <BsPrimaryBtn type="button" $width="100%" $height="44px" style={{ fontSize: 13 }} disabled>
+          <BsPrimaryBtn type="button" $width="100%" $height="44px" style={{ fontSize: 13 }}>
             Create Token →
           </BsPrimaryBtn>
           <BsOutlineBtn type="button" $height="40px" style={{ fontSize: 13 }}>

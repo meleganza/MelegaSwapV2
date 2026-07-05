@@ -47,6 +47,7 @@ const Label = styled.span`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${trendingStudioColors.gray};
+  padding-right: 72px;
 `
 
 const Value = styled.span<{ $muted?: boolean }>`
@@ -67,8 +68,9 @@ const Subline = styled.span`
 
 const SparkWrap = styled.div`
   position: absolute;
-  top: 24px;
+  top: 16px;
   right: 16px;
+  pointer-events: none;
 `
 
 export const TrendingKpiRow: React.FC = () => {

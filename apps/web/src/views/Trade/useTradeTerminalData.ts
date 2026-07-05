@@ -248,7 +248,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     }
   }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail])
 
-  const isIndexingSwaps = transactions === undefined
+  const isIndexingSwaps = transactions === undefined && recentSwaps.length === 0
   const isIndexingMetrics = tokenData === undefined && Boolean(tokenAddress)
 
   return {

@@ -71,7 +71,7 @@ export const FARM_FILTER_CHIPS = [
   'New',
   'My Farms',
   'Finished',
-  'AI Suggested',
+  'Featured Farm',
 ] as const
 
 export type FarmFilterChip = (typeof FARM_FILTER_CHIPS)[number]

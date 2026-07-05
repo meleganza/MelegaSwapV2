@@ -1,0 +1,22 @@
+{
+  "status": "R507_PREMIUM_POLISH_READY",
+  "branch": "design-system-foundation",
+  "baseUrl": "http://127.0.0.1:3000",
+  "build": "pass",
+  "tests": "29 impacted tests pass",
+  "routeSmoke": "9/9 pass",
+  "screenshots": [
+    "home-desktop-1440.png",
+    "home-mobile-390.png",
+    "build-studio-desktop-1440.png",
+    "build-studio-mobile-390.png",
+    "collectibles-desktop-1440.png",
+    "collectibles-mobile-390.png",
+    "trade-desktop-1440.png",
+    "pools-desktop-1440.png",
+    "trending-desktop-1440.png",
+    "projects-desktop-1440.png"
+  ],
+  "production": "untouched",
+  "staging": "https://v2.melega.finance"
+}

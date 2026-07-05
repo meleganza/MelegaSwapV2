@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
+import { DETECTED_BABYMARCO_PINATA_GATEWAY } from 'registry/collectibles/collectible-constants'
 import { useCollectiblesRuntime } from '../collectiblesRuntime/CollectiblesRuntimeContext'
 import {
   CS_FONT_BODY,
@@ -236,41 +237,18 @@ const Visual = styled.div`
   }
 `
 
-const Coin = styled.div`
+const Coin = styled.img`
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #f0d060 0%, #d6b445 35%, #8a7020 70%, #d6b445 100%);
+  object-fit: cover;
   box-shadow: 0 0 70px rgba(214, 180, 69, 0.28);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   animation: ${coinFloat} 8s ease-in-out infinite;
-  position: relative;
-
-  &::before {
-    content: 'M';
-    font-family: ${CS_FONT_DISPLAY};
-    font-size: 80px;
-    font-weight: 700;
-    color: #1a1408;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 10px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.12);
-  }
+  border: 2px solid rgba(255, 255, 255, 0.12);
 
   @media (max-width: 768px) {
     width: 140px;
     height: 140px;
-
-    &::before {
-      font-size: 64px;
-    }
   }
 `
 
@@ -282,6 +260,7 @@ const ScoreWrap = styled.div`
 
 export const FeaturedCollectionPanel: React.FC = () => {
   const { featured } = useCollectiblesRuntime()
+  const babyMarcoArt = useMemo(() => `${DETECTED_BABYMARCO_PINATA_GATEWAY}/DOG1.png`, [])
 
   return (
   <Panel data-cs-panel data-cs-featured>
@@ -331,7 +310,7 @@ export const FeaturedCollectionPanel: React.FC = () => {
         </BtnRow>
       </Info>
       <Visual>
-        <Coin data-cs-featured-coin />
+        <Coin src={babyMarcoArt} alt="BabyMARCO Genesis" data-cs-featured-coin />
         <ScoreWrap>
           <FeaturedScoreRingDisplay score={featured.utilityScore} />
         </ScoreWrap>

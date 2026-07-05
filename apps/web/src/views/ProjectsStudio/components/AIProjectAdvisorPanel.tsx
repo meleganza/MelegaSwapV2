@@ -52,12 +52,18 @@ const ValueBlock = styled.div`
   min-width: 0;
 `
 
-const Value = styled.span<{ $tone?: 'green' | 'gold' }>`
+const Value = styled.span<{ $tone?: 'green' | 'gold' | 'gray' }>`
   font-family: ${PR_FONT_BODY};
   font-size: 14px;
   font-weight: 600;
   color: ${({ $tone }) =>
-    $tone === 'green' ? projectsStudioColors.green : $tone === 'gold' ? projectsStudioColors.gold : projectsStudioColors.text};
+    $tone === 'green'
+      ? projectsStudioColors.green
+      : $tone === 'gold'
+        ? projectsStudioColors.gold
+        : $tone === 'gray'
+          ? projectsStudioColors.muted
+          : projectsStudioColors.text};
 `
 
 const Confidence = styled.span`
