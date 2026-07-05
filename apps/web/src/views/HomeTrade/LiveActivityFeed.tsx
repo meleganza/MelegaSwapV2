@@ -144,11 +144,17 @@ const EmptyDesc = styled.p`
 export interface LiveActivityFeedProps {
   rows?: ActivityRow[]
   slots?: ActivitySlot[]
+  isIndexing?: boolean
 }
 
-export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({ rows = [], slots = [] }) => {
+export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
+  rows = [],
+  slots = [],
+  isIndexing = false,
+}) => {
   const displaySlots = slots.length > 0 ? slots : []
   const hasAnyActivity = displaySlots.some((s) => s.row) || rows.length > 0
+  const slotEmptyCopy = isIndexing ? 'Indexing…' : 'No recent activity indexed yet'
 
   return (
     <Shell data-live-activity-feed>
@@ -172,7 +178,7 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({ rows = [], s
               ) : (
                 <Slot key={slot.id}>
                   <SlotLabel>{slot.label}</SlotLabel>
-                  <SlotMeta style={{ gridColumn: '1 / -1' }}>Awaiting index</SlotMeta>
+                  <SlotMeta style={{ gridColumn: '1 / -1' }}>{slotEmptyCopy}</SlotMeta>
                 </Slot>
               ),
             )}
@@ -192,8 +198,12 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({ rows = [], s
         ) : (
           <EmptyWrap>
             <PulseDot aria-hidden />
-            <EmptyTitle>No recent activity</EmptyTitle>
-            <EmptyDesc>Swaps, liquidity, and staking events appear here when indexed.</EmptyDesc>
+            <EmptyTitle>{isIndexing ? 'Indexing activity' : 'No recent activity'}</EmptyTitle>
+            <EmptyDesc>
+              {isIndexing
+                ? 'Pulling latest swaps, liquidity, and staking from Melega indexers.'
+                : 'No recent activity indexed yet. Swaps and liquidity events appear here when available.'}
+            </EmptyDesc>
           </EmptyWrap>
         )}
       </Body>

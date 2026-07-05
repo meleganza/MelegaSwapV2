@@ -144,6 +144,30 @@ export function aggregateKpis(
   ]
 }
 
+export function listActivePools(cards: PoolPreviewCard[]): {
+  activePools: string[]
+  sourceMethod: string
+} {
+  const active = cards.filter((p) => p.status === 'live')
+  return {
+    activePools: active.map((p) => p.name),
+    sourceMethod: 'sous_chef_bonus_end_block_rpc',
+  }
+}
+
+export function sortPoolsDefault(cards: PoolPreviewCard[]): PoolPreviewCard[] {
+  const statusRank: Record<string, number> = { live: 0, indexing: 1, ended: 2 }
+  return [...cards].sort((a, b) => {
+    const sa = statusRank[a.status] ?? 1
+    const sb = statusRank[b.status] ?? 1
+    if (sa !== sb) return sa - sb
+    const aprDiff = parseFloat(b.apr || '0') - parseFloat(a.apr || '0')
+    if (aprDiff !== 0) return aprDiff
+    const parseTvl = (v?: string) => parseFloat(v?.replace(/[^0-9.]/g, '') || '0')
+    return parseTvl(b.tvl) - parseTvl(a.tvl)
+  })
+}
+
 export function buildDonutSegments(pools: Pool.DeserializedPool<Token>[]) {
   const colors = ['#D4AF37', '#00E676', '#4DA3FF', '#A78BFA']
   const buckets = [

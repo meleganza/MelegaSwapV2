@@ -128,6 +128,7 @@ const BtnRow = styled.div`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: ${projectsStudioLayout.featuredBtnGap};
   margin-top: auto;
+  padding-top: ${projectsStudioLayout.featuredActionGroupMarginTop};
   width: 100%;
 
   @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
@@ -219,7 +220,7 @@ const ChartPlaceholder = styled.div`
 function metricValue(
   metrics: { label: string; value: string; tone?: string }[],
   label: string,
-  fallback = 'Unavailable',
+  fallback = '—',
 ) {
   const found = metrics.find((m) => m.label.toLowerCase().includes(label.toLowerCase()))
   return found?.value ?? fallback
@@ -238,9 +239,9 @@ export const FeaturedProjectPanel: React.FC = () => {
   ]
   const rowTwo = [
     { label: 'Age', value: metricValue(featured.metrics, 'Age'), muted: true },
-    { label: 'Risk', value: card?.risk ?? 'Unavailable', muted: !card || card.risk === 'Unavailable' },
-    { label: 'Audit', value: metricValue(featured.metrics, 'Audit', card?.metrics.find((m) => m.label === 'Audit')?.value ?? 'Unavailable'), muted: true },
-    { label: 'Website', value: card?.website ?? 'Unavailable', muted: !card || card.website === 'Unavailable' },
+    { label: 'Risk', value: card?.risk ?? '—', muted: !card || card.risk === '—' || card.risk === 'Unavailable' },
+    { label: 'Audit', value: metricValue(featured.metrics, 'Audit', card?.metrics.find((m) => m.label === 'Audit')?.value ?? '—'), muted: true },
+    { label: 'Website', value: card?.website ?? '—', muted: !card || card.website === '—' || card.website === 'Unavailable' },
   ]
   const metrics = [...rowOne, ...rowTwo]
 
@@ -249,7 +250,12 @@ export const FeaturedProjectPanel: React.FC = () => {
       <Inner>
         <Left>
           <TitleRow>
-            <ProjectLogo name={featured.name} symbol={featured.symbol} size={72} />
+            <ProjectLogo
+              name={featured.name}
+              symbol={featured.symbol}
+              size={72}
+              address={featured.contractAddress}
+            />
             <div style={{ minWidth: 0 }}>
               <Name>{featured.name}</Name>
               {featured.verified ? <VerifiedBadge>Verified</VerifiedBadge> : null}
@@ -265,7 +271,9 @@ export const FeaturedProjectPanel: React.FC = () => {
             {metrics.map((metric) => (
               <Metric key={metric.label}>
                 <PrMetricLabel>{metric.label}</PrMetricLabel>
-                <PrMetricValue $muted={metric.value === 'Unavailable' || Boolean(metric.muted)}>
+                <PrMetricValue
+                  $muted={metric.value === '—' || metric.value === 'Unavailable' || Boolean(metric.muted)}
+                >
                   {metric.value}
                 </PrMetricValue>
               </Metric>
@@ -291,7 +299,7 @@ export const FeaturedProjectPanel: React.FC = () => {
           </BtnRow>
         </Left>
         <Right>
-          <Price>{featured.hasPriceData ? featured.price : 'Unavailable'}</Price>
+          <Price>{featured.hasPriceData ? featured.price : '—'}</Price>
           <ChartBox>
             <ChartArea>
               {featured.hasPriceData ? (

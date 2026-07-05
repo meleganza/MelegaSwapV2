@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useProtocolTransactionsSWR, useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
+import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
 
 export interface TradeSwapRow {
   id: string
@@ -20,6 +21,14 @@ export interface TradePairStat {
   value?: string
   change?: string
   changePositive?: boolean
+  reasonCode?: DataReasonCode
+}
+
+export interface TradeDataMachinePayload {
+  subgraphTransactions: 'loading' | 'ready' | 'empty'
+  tokenMetrics: 'loading' | 'ready' | 'missing'
+  reasonCodes: Partial<Record<string, DataReasonCode>>
+  timestamp: string
 }
 
 const formatTimeAgo = (timestamp: string): string => {
@@ -108,6 +117,33 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const liqChange = formatPct(tokenData?.liquidityUSDChange ?? NaN)
     const priceChange = formatPct(tokenData?.priceUSDChange ?? NaN)
 
+    const volumeReason: DataReasonCode | undefined =
+      tokenData === undefined
+        ? 'SUBGRAPH_LOADING'
+        : !tokenData.exists
+          ? 'PAIR_NOT_INDEXED'
+          : !tokenData.volumeUSD
+            ? 'NO_EVENTS_INDEXED'
+            : undefined
+
+    const liquidityReason: DataReasonCode | undefined =
+      tokenData === undefined
+        ? 'SUBGRAPH_LOADING'
+        : !tokenData.exists
+          ? 'PAIR_NOT_INDEXED'
+          : !tokenData.liquidityUSD
+            ? 'NO_POOL_FOUND'
+            : undefined
+
+    const tradesReason: DataReasonCode | undefined =
+      tokenData === undefined
+        ? 'SUBGRAPH_LOADING'
+        : !tokenData.exists
+          ? 'PAIR_NOT_INDEXED'
+          : !tokenData.txCount
+            ? 'NO_EVENTS_INDEXED'
+            : undefined
+
     return [
       {
         id: 'volume',
@@ -115,6 +151,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         value: formatUsd(tokenData?.volumeUSD ?? 0),
         change: volChange?.text,
         changePositive: volChange?.positive,
+        reasonCode: volumeReason,
       },
       {
         id: 'liquidity',
@@ -122,6 +159,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         value: formatUsd(tokenData?.liquidityUSD ?? 0),
         change: liqChange?.text,
         changePositive: liqChange?.positive,
+        reasonCode: liquidityReason,
       },
       {
         id: 'transactions',
@@ -129,11 +167,13 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         value: tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined,
         change: priceChange?.text,
         changePositive: priceChange?.positive,
+        reasonCode: tradesReason,
       },
       {
         id: 'holders',
         label: 'Holders',
-        value: '—',
+        value: undefined,
+        reasonCode: 'EXPLORER_SOURCE_MISSING',
       },
     ]
   }, [tokenData])
@@ -147,12 +187,33 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     }
   }, [tokenData])
 
+  const machine = useMemo((): TradeDataMachinePayload => {
+    const reasonCodes: Partial<Record<string, DataReasonCode>> = {}
+    pairStats.forEach((stat) => {
+      if (stat.reasonCode) reasonCodes[stat.id] = stat.reasonCode
+    })
+    return {
+      subgraphTransactions:
+        transactions === undefined ? 'loading' : transactions.length > 0 ? 'ready' : 'empty',
+      tokenMetrics:
+        tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
+      reasonCodes,
+      timestamp: new Date().toISOString(),
+    }
+  }, [transactions, tokenData, pairStats])
+
+  const isIndexingSwaps = transactions === undefined
+  const isIndexingMetrics = tokenData === undefined && Boolean(tokenAddress)
+
   return {
     recentSwaps,
     pairStats,
     pairPrice,
-    isIndexing: transactions === undefined && tokenData === undefined,
+    machine,
+    isIndexing: isIndexingSwaps,
+    isIndexingMetrics,
     hasSwapData: transactions !== undefined,
+    swapEmptyReason: transactions !== undefined && recentSwaps.length === 0 ? 'NO_EVENTS_INDEXED' : undefined,
   }
 }
 

@@ -126,7 +126,11 @@ export const TradeTerminalScreen: React.FC = () => {
   const inputSymbol = inputCurrency?.symbol ?? 'BNB'
   const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
 
-  const { recentSwaps, isIndexing } = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const { recentSwaps, isIndexing, swapEmptyReason } = useTradeTerminalData(
+    inputSymbol,
+    outputSymbol,
+    outputCurrencyId,
+  )
 
   return (
     <Root data-trade-terminal-screen="true" data-r200-premium="true">
@@ -155,7 +159,11 @@ export const TradeTerminalScreen: React.FC = () => {
               <TradeRightRail />
             </AreaRight>
             <AreaSwaps>
-              <TradeRecentSwaps rows={recentSwaps} isIndexing={isIndexing} />
+              <TradeRecentSwaps
+                rows={recentSwaps}
+                isIndexing={isIndexing}
+                swapEmptyReason={swapEmptyReason}
+              />
             </AreaSwaps>
           </PageGrid>
         </TradeRuntimeProvider>

@@ -167,11 +167,13 @@ export const PsMetricValue = styled.span`
   color: ${poolsStudioColors.text};
 `
 
-export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: boolean }> = ({
-  symbol,
-  size = 24,
-  offset,
-}) => (
+export const PoolTokenIcon: React.FC<{
+  symbol: string
+  size?: number
+  offset?: boolean
+  address?: string
+  chainId?: number
+}> = ({ symbol, size = 24, offset, address, chainId }) => (
   <span
     style={{
       marginLeft: offset ? -6 : 0,
@@ -185,8 +187,8 @@ export const PoolTokenIcon: React.FC<{ symbol: string; size?: number; offset?: b
       name={symbol}
       symbol={symbol}
       size={size}
-      address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : undefined}
-      chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : undefined}
+      address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : address}
+      chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : chainId}
       radius="circle"
     />
   </span>

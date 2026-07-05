@@ -79,8 +79,9 @@ const MetricValue = styled.span`
 const BtnRow = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${farmsStudioLayout.farmCardBtnGap};
   margin-top: auto;
+  padding-top: 4px;
 `
 
 const ChartWrap = styled.div`

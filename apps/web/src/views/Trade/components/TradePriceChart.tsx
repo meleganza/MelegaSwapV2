@@ -326,7 +326,11 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           </TfButton>
         ))}
       </Timeframes>
-      <TradeChartPanel inputSymbol={inputSymbol} outputSymbol={outputSymbol} />
+      <TradeChartPanel
+        inputSymbol={inputSymbol}
+        outputSymbol={outputSymbol}
+        pairPrices={pairPrices}
+      />
       <StatsRow data-trade-pair-stats>
         {stats.map((stat) => (
           <StatCard key={stat.id}>

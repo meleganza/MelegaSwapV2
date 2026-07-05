@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
@@ -312,15 +313,20 @@ const ComingSoonBadge = styled.div`
   color: ${farmsStudioColors.muted};
 `
 
-function renderTokenIcon(symbol: string, offset?: boolean) {
+function renderTokenIcon(
+  symbol: string,
+  tokenAddress?: string,
+  chainId?: number,
+  offset?: boolean,
+) {
   return (
     <TokenIconWrap $offset={offset}>
       <MelegaTokenAvatar
         name={symbol}
         symbol={symbol}
         size={24}
-        address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : undefined}
-        chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : undefined}
+        address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : tokenAddress}
+        chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : chainId}
         radius="circle"
       />
     </TokenIconWrap>
@@ -366,6 +372,7 @@ export interface FarmGridCardProps {
 export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
   const [expanded, setExpanded] = useState(false)
   const { requestModal, account } = useFarmsRuntime()
+  const { chainId } = useActiveChainId()
   const preview = farm.analyzePreview ?? DEFAULT_ANALYZE_PREVIEW
   const aprVar = aprVariant(farm)
   const hasPending = farm.pendingReward?.gt(0)
@@ -418,8 +425,17 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
         <TopRow>
           <PairBlock>
             <Icons>
-              {renderTokenIcon(farm.tokens[0])}
-              {renderTokenIcon(farm.tokens[1], true)}
+              {renderTokenIcon(
+                farm.tokens[0],
+                farm.rawFarm?.token?.address,
+                chainId,
+              )}
+              {renderTokenIcon(
+                farm.tokens[1],
+                farm.rawFarm?.quoteToken?.address,
+                chainId,
+                true,
+              )}
             </Icons>
             <PairName>{farm.pair}</PairName>
           </PairBlock>

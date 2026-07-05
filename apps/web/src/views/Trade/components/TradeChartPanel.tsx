@@ -221,11 +221,56 @@ const bnbToWBNB = (sym: string) => (sym === 'BNB' ? 'WBNB' : sym)
 export interface TradeChartPanelProps {
   inputSymbol: string
   outputSymbol: string
+  pairPrices?: Array<{ time: string; value: number }>
 }
 
-export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, outputSymbol }) => {
+const SubgraphChart = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px 18px 14px;
+  box-sizing: border-box;
+  background: #080808;
+`
+
+const SubgraphSvg = styled.svg`
+  width: 100%;
+  height: calc(100% - 24px);
+`
+
+const SubgraphLabel = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  color: ${tradeColors.muted};
+  text-align: center;
+`
+
+function buildSubgraphPath(points: Array<{ value: number }>, width: number, height: number): string {
+  if (points.length < 2) return ''
+  const values = points.map((p) => p.value)
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = max - min || 1
+  return points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * width
+      const y = height - ((p.value - min) / range) * (height - 8) - 4
+      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
+    })
+    .join(' ')
+}
+
+export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
+  inputSymbol,
+  outputSymbol,
+  pairPrices = [],
+}) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
+
+  const hasSubgraphPrices = pairPrices.length >= 2
 
   const symbol = useMemo(() => {
     if (!inputSymbol || !outputSymbol) return null
@@ -242,9 +287,10 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
   })
 
   const debouncedLoading = useDebounce(isLoading, 800)
-  const showTv = Boolean(symbol) && !hasNoData
-  const showUnavailable = hasNoData || !symbol
+  const showTv = Boolean(symbol) && !hasNoData && !hasSubgraphPrices
+  const showUnavailable = (hasNoData || !symbol) && !hasSubgraphPrices
   const showSkeleton = showTv && (isLoading || debouncedLoading)
+  const subgraphPath = useMemo(() => buildSubgraphPath(pairPrices, 360, 160), [pairPrices])
 
   useEffect(() => {
     setIsLoading(true)
@@ -252,7 +298,32 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({ inputSymbol, o
   }, [symbol])
 
   return (
-    <Area data-trade-chart-area $compact={showUnavailable}>
+    <Area data-trade-chart-area $compact={showUnavailable && !hasSubgraphPrices}>
+      {hasSubgraphPrices && (
+        <SubgraphChart data-trade-chart-subgraph>
+          <SubgraphSvg viewBox="0 0 360 160" preserveAspectRatio="none">
+            <path
+              d={subgraphPath}
+              fill="none"
+              stroke={tradeColors.green}
+              strokeWidth="2"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={`${subgraphPath} L 360 160 L 0 160 Z`}
+              fill="url(#tradeSubgraphFill)"
+              opacity="0.12"
+            />
+            <defs>
+              <linearGradient id="tradeSubgraphFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={tradeColors.green} />
+                <stop offset="100%" stopColor="transparent" />
+              </linearGradient>
+            </defs>
+          </SubgraphSvg>
+          <SubgraphLabel>Indexed pair price · Melega subgraph</SubgraphLabel>
+        </SubgraphChart>
+      )}
       {showTv && (
         <TvWrap $show={!showSkeleton}>
           <TradingView id={TV_ID} symbol={`${SYMBOL_PREFIX}${symbol}`} />

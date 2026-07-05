@@ -118,7 +118,11 @@ export const HomeTradeScreen: React.FC = () => {
             <MarketPulsePanel />
           </LowerRow>
         </LowerSection>
-        <LiveActivityFeed slots={data.activitySlots} rows={data.activityRows} />
+        <LiveActivityFeed
+          slots={data.activitySlots}
+          rows={data.activityRows}
+          isIndexing={data.isActivityIndexing}
+        />
         <HomeTradeFooter />
       </Content>
     </Root>

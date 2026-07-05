@@ -34,6 +34,7 @@ export const projectsStudioLayout = {
   projectBtnHeight: '46px',
   projectBtnWidth: '210px',
   featuredBtnGap: '12px',
+  featuredActionGroupMarginTop: '8px',
   featuredMobileBtnRowGap: '20px',
   activityHeight: '320px',
   activityRowHeight: '68px',

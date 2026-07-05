@@ -8,7 +8,7 @@ const GROW_ITEMS = [
     id: 'labs',
     title: 'LABS',
     subtitle: 'Trade narratives before listing.',
-    href: '/runtime/labs',
+    href: '/build-studio',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <path d="M9 3h6l1 4H8l1-4z" />
@@ -21,7 +21,7 @@ const GROW_ITEMS = [
     id: 'space',
     title: 'SPACE',
     subtitle: 'Increase project visibility.',
-    href: '/presence',
+    href: 'https://space.melega.io',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <circle cx="12" cy="12" r="3" />
@@ -33,7 +33,7 @@ const GROW_ITEMS = [
     id: 'radar',
     title: 'RADAR',
     subtitle: 'Discover trends and claim your profile.',
-    href: '/projects',
+    href: '/radar',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <circle cx="12" cy="12" r="8" />
@@ -46,7 +46,7 @@ const GROW_ITEMS = [
     id: 'smartdrop',
     title: 'SMARTDROP',
     subtitle: 'Acquire active holders.',
-    href: '/launch',
+    href: '/import-existing-token',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <path d="M12 3l2.5 5.5L20 10l-5.5 1.5L12 17l-2.5-5.5L4 10l5.5-1.5L12 3z" />

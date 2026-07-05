@@ -144,16 +144,42 @@ const IlSvg = styled.svg`
   height: 100%;
 `
 
-const LoadingLine = styled.p`
-  margin: 12px 0 0;
+const SplitBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid ${liquidityStudioColors.border};
+  background: ${liquidityStudioColors.surfaceSecondary};
+`
+
+const SplitHalf = styled.span<{ $gold?: boolean }>`
+  flex: 1;
+  text-align: center;
   font-size: 12px;
-  color: ${liquidityStudioColors.muted};
+  font-weight: 700;
+  color: ${({ $gold }) => ($gold ? liquidityStudioColors.gold : liquidityStudioColors.text)};
+`
+
+const SplitDivider = styled.span`
+  width: 1px;
+  height: 28px;
+  background: ${liquidityStudioColors.border};
 `
 
 export const PositionPreviewPanel: React.FC = () => {
   const { preview, loadingLabel, mode } = useLiquidityRuntime()
-  const leftScale = preview.tokenAPct / 100
-  const rightScale = preview.tokenBPct / 100
+  const tokenASymbol =
+    preview.tokenASymbol && preview.tokenASymbol !== 'A' ? preview.tokenASymbol : 'BNB'
+  const tokenBSymbol =
+    preview.tokenBSymbol && preview.tokenBSymbol !== 'B' ? preview.tokenBSymbol : 'MARCO'
+  const leftPct = preview.tokenAPct > 0 ? preview.tokenAPct : 50
+  const rightPct = preview.tokenBPct > 0 ? preview.tokenBPct : 50
+  const leftScale = Math.max(0.35, leftPct / 100)
+  const rightScale = Math.max(0.35, rightPct / 100)
 
   return (
     <LsPanel
@@ -174,15 +200,20 @@ export const PositionPreviewPanel: React.FC = () => {
           <Bars>
             <BarCol>
               <Bar $scale={leftScale} data-ls-liquidity-bar />
-              <BarLabel>{preview.tokenASymbol}</BarLabel>
-              <BarPct>{preview.tokenAPct}%</BarPct>
+              <BarLabel>{tokenASymbol}</BarLabel>
+              <BarPct>{leftPct}%</BarPct>
             </BarCol>
             <BarCol>
               <Bar $gold $scale={rightScale} data-ls-liquidity-bar />
-              <BarLabel>{preview.tokenBSymbol}</BarLabel>
-              <BarPct>{preview.tokenBPct}%</BarPct>
+              <BarLabel>{tokenBSymbol}</BarLabel>
+              <BarPct>{rightPct}%</BarPct>
             </BarCol>
           </Bars>
+          <SplitBadge aria-label={`${tokenASymbol} ${leftPct}% / ${tokenBSymbol} ${rightPct}%`}>
+            <SplitHalf>{tokenASymbol} {leftPct}%</SplitHalf>
+            <SplitDivider />
+            <SplitHalf $gold>{tokenBSymbol} {rightPct}%</SplitHalf>
+          </SplitBadge>
           <Metrics>
             <MetricCard>
               <MetricLabel>{mode === 'Remove Liquidity' ? 'LP Removed' : 'Expected LP'}</MetricLabel>

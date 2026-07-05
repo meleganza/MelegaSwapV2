@@ -11,7 +11,9 @@ import {
   aggregateKpis,
   buildDonutSegments,
   formatUsd,
+  listActivePools,
   mapPoolToPreviewCard,
+  sortPoolsDefault,
 } from './formatPoolsRuntime'
 import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErrors'
 import usePoolsTerminalData from './usePoolsTerminalData'
@@ -34,6 +36,8 @@ export interface PoolsMachinePayload {
   wallet?: string
   filter: string
   activePools: number
+  activePoolNames?: string[]
+  poolSourceMethod?: string
   featuredPool?: string
   error?: PoolsRuntimeError | null
   timestamp: string
@@ -112,6 +116,7 @@ function filterPools(cards: PoolPreviewCard[], filter: PoolFilterChip): PoolPrev
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
       break
     default:
+      list = sortPoolsDefault(list)
       break
   }
   return list
@@ -231,19 +236,21 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
   const error = useMemo(() => runtimeErrorFromPhase(phase), [phase])
 
-  const machine: PoolsMachinePayload = useMemo(
-    () => ({
+  const machine: PoolsMachinePayload = useMemo(() => {
+    const { activePools: activePoolNames, sourceMethod } = listActivePools(previewCards)
+    return {
       status: phase,
       chainId,
       wallet: account,
       filter,
       activePools: previewCards.filter((p) => p.status === 'live').length,
+      activePoolNames,
+      poolSourceMethod: sourceMethod,
       featuredPool: featured.name,
       error,
       timestamp: new Date().toISOString(),
-    }),
-    [phase, chainId, account, filter, previewCards, featured.name, error],
-  )
+    }
+  }, [phase, chainId, account, filter, previewCards, featured.name, error])
 
   const loadingLabel =
     phase === 'loading_pools'

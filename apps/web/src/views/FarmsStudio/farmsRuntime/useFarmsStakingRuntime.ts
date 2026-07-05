@@ -102,6 +102,25 @@ function enrichFarmsWithApr(
   })
 }
 
+function sortEarnCardsDefault<T extends { status: string; apr?: string; tvl?: string }>(list: T[]): T[] {
+  const statusRank: Record<string, number> = {
+    live: 0,
+    indexing: 1,
+    finished: 2,
+    ended: 2,
+    'coming-soon': 3,
+  }
+  return [...list].sort((a, b) => {
+    const sa = statusRank[a.status] ?? 1
+    const sb = statusRank[b.status] ?? 1
+    if (sa !== sb) return sa - sb
+    const aprDiff = parseFloat(b.apr || '0') - parseFloat(a.apr || '0')
+    if (aprDiff !== 0) return aprDiff
+    const parseTvl = (v?: string) => parseFloat(v?.replace(/[^0-9.]/g, '') || '0')
+    return parseTvl(b.tvl) - parseTvl(a.tvl)
+  })
+}
+
 function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPreviewCard[] {
   let list = [...cards]
   switch (filter) {
@@ -127,6 +146,7 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
       break
     default:
+      list = sortEarnCardsDefault(list)
       break
   }
   return list

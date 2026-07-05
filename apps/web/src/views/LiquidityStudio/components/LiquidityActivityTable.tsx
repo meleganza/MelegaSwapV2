@@ -39,11 +39,11 @@ export const LiquidityActivityTable: React.FC = () => {
         title="Liquidity Activity"
         rows={timelineRows}
         height={liquidityStudioLayout.activityHeight}
-        emptyTitle={loadingLabel || isIndexing ? 'Awaiting indexing' : 'No activity yet'}
+        emptyTitle={loadingLabel || isIndexing ? 'Indexing liquidity' : 'No liquidity activity'}
         emptySubtitle={
           loadingLabel || isIndexing
-            ? 'Fetching indexed liquidity events'
-            : 'No recent liquidity activity for this pair'
+            ? 'Fetching indexed mint and burn events'
+            : 'No recent liquidity events indexed for this pair'
         }
         badge={<LiveBadge>LIVE</LiveBadge>}
         data-testid="liquidity"

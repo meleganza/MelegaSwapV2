@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PoolTokenIcon, PsMetricLabel, PsSmallGhostBtn, PsSmallPrimaryBtn } from './poolsStudioPrimitives'
 
@@ -239,6 +240,9 @@ interface Props {
 export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const [expanded, setExpanded] = useState(false)
   const { requestModal, account } = usePoolsRuntime()
+  const { chainId } = useActiveChainId()
+  const stakingToken = pool.rawPool?.stakingToken
+  const earningToken = pool.rawPool?.earningToken
   const preview = pool.analyzePreview
   const showStake = pool.cta === 'stake'
   const showAnalyze = pool.cta === 'stake' || pool.cta === 'analyze'
@@ -254,7 +258,13 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
         <TopRow>
           <NameBlock>
             {pool.tokens.map((token, i) => (
-              <PoolTokenIcon key={token} symbol={token} offset={i > 0} />
+              <PoolTokenIcon
+                key={token}
+                symbol={token}
+                offset={i > 0}
+                address={i === 0 ? stakingToken?.address : earningToken?.address}
+                chainId={chainId}
+              />
             ))}
             <PoolName>{pool.name}</PoolName>
           </NameBlock>

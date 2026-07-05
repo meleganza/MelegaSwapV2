@@ -381,17 +381,6 @@ export const useHomeTradeData = () => {
   }, [pools])
 
   const activitySlots = useMemo((): ActivitySlot[] => {
-    const topPool = pools[0]
-    const stakingRow: ActivityRow | undefined = topPool?.stakingToken
-      ? {
-          id: `pool-${topPool.sousId}`,
-          type: 'Staking Pool',
-          context: `${topPool.stakingToken.symbol} · ${topPool.earningToken?.symbol ?? 'Rewards'}`,
-          value: topPool.apr && topPool.apr > 0 ? `${topPool.apr.toFixed(2)}% APR` : undefined,
-          time: 'Live',
-        }
-      : undefined
-
     return [
       {
         id: 'swap',
@@ -406,10 +395,12 @@ export const useHomeTradeData = () => {
       {
         id: 'staking',
         label: 'Latest staking',
-        row: stakingRow,
+        row: undefined,
       },
     ]
-  }, [latestSwap, latestLiquidity, pools])
+  }, [latestSwap, latestLiquidity])
+
+  const isActivityIndexing = transactions === undefined
 
   const activityRows = useMemo(
     (): ActivityRow[] => activitySlots.filter((s) => s.row).map((s) => s.row!),
@@ -460,6 +451,7 @@ export const useHomeTradeData = () => {
     showEarn,
     showEarnNote,
     marcoPriceLabel,
+    isActivityIndexing,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,
   }
