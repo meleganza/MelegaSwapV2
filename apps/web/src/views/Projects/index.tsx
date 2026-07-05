@@ -41,7 +41,7 @@ const Projects: React.FC = () => {
         <HumanPageHeader
           title="Explore"
           subtitle="Discover projects, assets, and indexed civilization surfaces."
-          primaryAction={{ href: '/launch', label: 'List your project' }}
+          primaryAction={{ href: '/build-studio#build-import', label: 'List your project' }}
           secondaryAction={{ href: '/assets', label: 'Browse assets' }}
         />
 

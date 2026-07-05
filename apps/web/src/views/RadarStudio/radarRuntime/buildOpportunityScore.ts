@@ -28,11 +28,13 @@ export function buildOpportunityScore(project: EnrichedProjectRecord): RadarOppo
   if (project.websiteUrl) reasons.push('Official website indexed')
   if (project.docsUrl) reasons.push('Documentation present in registry')
   if (project.trustBadges.includes('canonical')) reasons.push('Canonical registry verification')
-  if (onChain.contractVerification !== 'Unavailable') reasons.push(`Contract status: ${onChain.contractVerification}`)
+  if (onChain.contractVerification !== '—' && onChain.contractVerification !== 'Unavailable') {
+    reasons.push(`Contract status: ${onChain.contractVerification}`)
+  }
   if (sourceCount > 0) reasons.push(`${sourceCount} intelligence source(s) available`)
 
-  const liquidityUnavailable = onChain.liquidity === 'Unavailable'
-  const volumeUnavailable = onChain.volume === 'Unavailable'
+  const liquidityUnavailable = onChain.liquidity === '—' || onChain.liquidity === 'Unavailable'
+  const volumeUnavailable = onChain.volume === '—' || onChain.volume === 'Unavailable'
   let adjusted = rating.score
   if (liquidityUnavailable && volumeUnavailable) adjusted = Math.max(35, adjusted - 8)
   adjusted = Math.min(100, Math.max(0, adjusted + Math.min(6, greens)))

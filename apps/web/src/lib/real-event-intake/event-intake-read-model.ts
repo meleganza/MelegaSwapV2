@@ -53,7 +53,7 @@ export const SCHEMA_EXAMPLE_EVENTS: CanonicalEventIntakeRecord[] = [
       upi: 'upi://melega/example-project',
       constitutional_fit: 'approved',
     },
-    routingTargets: ['/pipeline', '/workspace', '/launch', '/map'],
+    routingTargets: ['/pipeline', '/command-center', '/build-studio#build-import', '/map'],
     safetyClassification: 'observation_only',
     resultingReadModelUpdates: [
       { surface: 'workspace', field: 'projects', mode: 'observe', notes: 'Indexed project section update.' },
@@ -70,7 +70,7 @@ export const SCHEMA_EXAMPLE_EVENTS: CanonicalEventIntakeRecord[] = [
       uai: 'uai://melega/example-asset',
       metadata_uri: 'not_indexed',
     },
-    routingTargets: ['/pipeline', '/launch', '/workspace', '/orchestrator'],
+    routingTargets: ['/pipeline', '/build-studio#build-import', '/command-center', '/orchestrator'],
     safetyClassification: 'human_review_required',
     resultingReadModelUpdates: [
       { surface: 'pipeline', field: 'metadata', mode: 'observe', notes: 'Stage status not_indexed.' },
@@ -81,14 +81,14 @@ export const SCHEMA_EXAMPLE_EVENTS: CanonicalEventIntakeRecord[] = [
     eventId: 'schema://intake/liquidity_readiness/liquidity_waiting@example',
     eventFamily: 'liquidity_readiness',
     eventType: 'liquidity_waiting',
-    sourceSurface: '/launch',
+    sourceSurface: '/build-studio#build-import',
     sourceSystem: 'legacy://add-liquidity',
     payload: {
       wallet_connected: false,
       pair_intent: 'MARCO/BNB',
       on_chain_execute: 'forbidden_from_intake',
     },
-    routingTargets: ['/launch', '/workspace', '/orchestrator'],
+    routingTargets: ['/build-studio#build-import', '/command-center', '/orchestrator'],
     safetyClassification: 'future_execution',
     resultingReadModelUpdates: [
       { surface: 'pipeline', field: 'liquidity', mode: 'observe', notes: 'Stage waiting until wallet action via /add.' },
@@ -105,7 +105,7 @@ export const SCHEMA_EXAMPLE_EVENTS: CanonicalEventIntakeRecord[] = [
       chain_role: 'presence',
       canonical_override: false,
     },
-    routingTargets: ['/presence', '/pipeline', '/workspace', '/map'],
+    routingTargets: ['/presence', '/pipeline', '/command-center', '/map'],
     safetyClassification: 'observation_only',
     resultingReadModelUpdates: [
       { surface: 'presence', field: 'targets', mode: 'observe', notes: 'Staged presence target — not canonical economy.' },
@@ -133,14 +133,14 @@ export const SCHEMA_EXAMPLE_EVENTS: CanonicalEventIntakeRecord[] = [
     eventId: 'schema://intake/workspace_sync/workspace_stale@example',
     eventFamily: 'workspace_sync',
     eventType: 'workspace_stale',
-    sourceSurface: '/workspace',
+    sourceSurface: '/command-center',
     sourceSystem: 'manifest://melega/platform/user-workspace@0.1.0',
     payload: {
       section_id: 'projects',
       indexed_count: 1,
       stale_reason: 'downstream_registry_updated',
     },
-    routingTargets: ['/workspace', '/orchestrator'],
+    routingTargets: ['/command-center', '/orchestrator'],
     safetyClassification: 'observation_only',
     resultingReadModelUpdates: [
       { surface: 'workspace', field: 'sections', mode: 'observe', notes: 'Recommend refresh without fake balances.' },
@@ -155,7 +155,7 @@ export const SCHEMA_EXAMPLE_EVENTS: CanonicalEventIntakeRecord[] = [
     payload: {
       recommendation_id: 'asset_ready_liquidity_missing',
       priority: 'high',
-      target_route: '/launch',
+      target_route: '/build-studio#build-import',
     },
     validationStatus: 'pending',
     routingTargets: ['/orchestrator', '/map'],

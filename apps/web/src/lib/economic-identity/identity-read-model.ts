@@ -151,7 +151,7 @@ export const resolveEconomicIdentityReadModel = (
       id: 'workspace',
       label: 'Workspace Links',
       description: 'Operational economic workspace surfaces.',
-      moduleHref: '/workspace',
+      moduleHref: '/command-center',
       status: 'indexed',
       items: workspace.sections.map((section) => ({
         id: section.id,
@@ -193,7 +193,7 @@ export const resolveEconomicIdentityReadModel = (
       id: 'liquidity',
       label: 'Liquidity',
       description: 'LP venue registry — no TVL or wallet balance figures.',
-      moduleHref: '/liquidity',
+      moduleHref: '/liquidity-studio',
       status: surfaceStatusFromCount(liquiditySection?.indexedCount ?? 0),
       items: (liquiditySection?.items ?? []).map((item) => ({
         id: item.id,
@@ -221,12 +221,12 @@ export const resolveEconomicIdentityReadModel = (
       id: 'launch',
       label: 'Launch Capabilities',
       description: 'User launch and listing layer — links to existing flows only.',
-      moduleHref: '/launch',
+      moduleHref: '/build-studio#build-import',
       status: surfaceStatusFromCount(launchAvailable.length),
       items: launch.capabilities.map((capability) => ({
         id: capability.id,
         label: capability.label,
-        href: capability.existingFlowHref ?? capability.registryHref ?? '/launch',
+        href: capability.existingFlowHref ?? capability.registryHref ?? '/build-studio#build-import',
         status: capability.status,
         notes: capability.availability,
       })),
@@ -305,8 +305,8 @@ export const resolveEconomicIdentityReadModel = (
     sections,
     agentReadiness,
     crossLinks: {
-      workspace: '/workspace',
-      launch: '/launch',
+      workspace: '/command-center',
+      launch: '/build-studio#build-import',
       collectibles: '/collectibles',
       presence: '/presence',
       activation: '/new-project',

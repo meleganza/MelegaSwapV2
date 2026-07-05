@@ -69,11 +69,11 @@ export const resolveUserWorkspaceReadModel = (): UserWorkspaceReadModel => {
       id: 'liquidity',
       label: 'Liquidity',
       description: 'Registry-indexed LP venues. No TVL or balance figures.',
-      moduleHref: '/liquidity',
+      moduleHref: '/liquidity-studio',
       items: liquidityVenues.map((venue) => ({
         id: venue.slug,
         label: venue.displayName,
-        href: venue.deepLinks?.liquidity ?? '/liquidity',
+        href: venue.deepLinks?.liquidity ?? '/liquidity-studio',
         status: venue.metrics.status,
         notes: venue.metrics.notes,
       })),

@@ -96,7 +96,7 @@ export const ImportTokenPanel: React.FC = () => {
           </div>
         </TitleRow>
 
-        <Link href="/import-existing-token" passHref legacyBehavior>
+        <Link href="/build-studio#build-import" passHref legacyBehavior>
           <BsPrimaryBtn as="a" $width="100%" $height="56px" style={{ textDecoration: 'none' }}>
             <IconDownload size={16} color="#050505" />
             Open Import Workflow
@@ -112,7 +112,7 @@ export const ImportTokenPanel: React.FC = () => {
               {pendingRecords.map((pending) => (
                 <PendingRow
                   key={pending.id}
-                  href={`/import-existing-token?contract=${encodeURIComponent(pending.contract)}`}
+                  href={`/build-studio?contract=${encodeURIComponent(pending.contract)}#build-import`}
                 >
                   <PendingName>
                     {pending.symbol.available ? pending.symbol.value : pending.name.value ?? 'Unknown'}

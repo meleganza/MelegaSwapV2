@@ -298,7 +298,7 @@ export default function AddStableLiquidity({ currencyA, currencyB }) {
                 ? `${currencies[Field.CURRENCY_A].symbol}-${currencies[Field.CURRENCY_B].symbol} Stable LP`
                 : t('Add Stable Liquidity')
             }
-            backTo="/liquidity"
+            backTo="/liquidity-studio"
           />
           <CardBody>
             <AutoColumn gap="20px">

@@ -4,7 +4,7 @@ export const REVIEW_ROUTING_TARGETS = {
   submission: '/submit',
   pipeline: '/pipeline',
   orchestrator: '/orchestrator',
-  workspace: '/workspace',
+  workspace: '/command-center',
   review: '/review',
   intake: '/registry/intake/real-event-intake.json',
 } as const
@@ -39,6 +39,6 @@ export const REVIEW_CROSS_LINKS = [
   { label: 'Submission', route: '/submit' },
   { label: 'Labs Pipeline', route: '/pipeline' },
   { label: 'Orchestrator', route: '/orchestrator' },
-  { label: 'Workspace', route: '/workspace' },
+  { label: 'Workspace', route: '/command-center' },
   { label: 'Event Intake', route: '/registry/intake/real-event-intake.json' },
 ]

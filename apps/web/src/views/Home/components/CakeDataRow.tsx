@@ -102,7 +102,7 @@ const CakeDataRow = () => {
             <Flex padding="1rem" style={{ textAlign: 'center', alignItems: 'center' }}>
               <img alt="logo" src="/metmaskicon.png" style={{ width: '32px' }} />
               &nbsp;&nbsp;&nbsp;
-              <a href="/swap">
+              <a href="/trade">
                 <Button>Buy</Button>
               </a>
             </Flex>
@@ -148,7 +148,7 @@ const CakeDataRow = () => {
         <Flex flexDirection="column" style={{ textAlign: 'center', minWidth: '33.333%' }}>
           <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>Products</h1>
           <br />
-          <a style={{ margin: '0.5rem' }} href="/swap">
+          <a style={{ margin: '0.5rem' }} href="/trade">
             Exchange
           </a>
           <a style={{ margin: '0.5rem' }} href="/add">

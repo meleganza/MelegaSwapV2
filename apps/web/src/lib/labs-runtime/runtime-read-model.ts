@@ -25,8 +25,8 @@ export const LABS_RUNTIME_DISCLAIMER =
 
 export const LABS_RUNTIME_CROSS_LINKS = [
   { label: 'Labs Pipeline', route: '/pipeline' },
-  { label: 'Workspace', route: '/workspace' },
-  { label: 'Launch', route: '/launch' },
+  { label: 'Workspace', route: '/command-center' },
+  { label: 'Launch', route: '/build-studio#build-import' },
   { label: 'Surface Map', route: '/map' },
   { label: 'Activation Preview', route: '/new-project' },
 ]
@@ -112,13 +112,13 @@ const buildFutureActions = (): RuntimeAction[] => [
     id: 'surface_workspace_alerts',
     label: 'Push pending requirements to Workspace',
     kind: 'future',
-    route: '/workspace',
+    route: '/command-center',
   },
   {
     id: 'route_launch_capabilities',
     label: 'Update Launch capability status from Labs validation',
     kind: 'future',
-    route: '/launch',
+    route: '/build-studio#build-import',
   },
 ]
 

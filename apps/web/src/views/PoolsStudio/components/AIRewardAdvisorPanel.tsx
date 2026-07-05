@@ -175,7 +175,7 @@ export const AIRewardAdvisorPanel: React.FC = () => {
         {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
       </MachineToggle>
       {machineOpen && (
-        <MachinePre data-ps-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
+        <MachinePre data-pools-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
       )}
     </PsPanel>
   )

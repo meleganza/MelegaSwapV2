@@ -7,6 +7,7 @@ import {
   projectsStudioLayout,
   projectsStudioType,
 } from '../projectsStudioTokens'
+import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { PrGhostBtn, PrPrimaryBtn } from './projectsStudioPrimitives'
 
 const Header = styled.header`
@@ -63,14 +64,15 @@ const Right = styled.div`
 export const ProjectsStudioPageHeader: React.FC = () => (
   <Header data-pr-page-header>
     <Left>
+      <CivilizationRoleLabel module="projects" />
       <Title>PROJECTS</Title>
       <Subtitle>
-        Discover AI-indexed crypto projects. Find verified ecosystems. Trade with confidence.
+        Discover registry-indexed crypto projects. Find verified ecosystems. Trade with confidence.
       </Subtitle>
     </Left>
     <Right>
-      <PrPrimaryBtn as="a" href="/import-existing-token">
-        List Your Project
+      <PrPrimaryBtn as="a" href="/build-studio#build-import">
+        Import &amp; Analyze Token
       </PrPrimaryBtn>
       <PrGhostBtn type="button">AI Indexing: How it works</PrGhostBtn>
     </Right>

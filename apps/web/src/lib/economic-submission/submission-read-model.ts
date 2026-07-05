@@ -16,11 +16,11 @@ export const SUBMISSION_DISCLAIMER =
 
 export const SUBMISSION_CROSS_LINKS = [
   { label: 'Review Queue', route: '/review' },
-  { label: 'Launch', route: '/launch' },
+  { label: 'Launch', route: '/build-studio#build-import' },
   { label: 'Labs Pipeline', route: '/pipeline' },
   { label: 'Orchestrator', route: '/orchestrator' },
   { label: 'Surface Map', route: '/map' },
-  { label: 'Workspace', route: '/workspace' },
+  { label: 'Workspace', route: '/command-center' },
   { label: 'Event Intake Spec', route: '/registry/intake/real-event-intake.json' },
 ]
 
@@ -86,7 +86,7 @@ export const SCHEMA_EXAMPLE_SUBMISSIONS: EconomicSubmissionRecord[] = [
     submissionId: 'schema://submission/launch_request@example',
     category: 'launch_request',
     source: 'schema_example',
-    targetSurface: '/launch',
+    targetSurface: '/build-studio#build-import',
     targetRegistry: 'launch-index',
     requiredFields: ['capability_type', 'project_slug'],
     optionalFields: ['wallet_address'],
@@ -95,7 +95,7 @@ export const SCHEMA_EXAMPLE_SUBMISSIONS: EconomicSubmissionRecord[] = [
     humanReviewerAction: 'Review capability request against honest Launch statuses.',
     aiReviewerAction: 'Never mark PLANNED capabilities as LIVE — route to /launch only.',
     resultingEventIntakeFamily: 'liquidity_readiness',
-    resultingRegistryTarget: '/launch',
+    resultingRegistryTarget: '/build-studio#build-import',
   }),
 ]
 

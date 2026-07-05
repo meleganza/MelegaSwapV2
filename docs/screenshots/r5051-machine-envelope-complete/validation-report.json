@@ -1,0 +1,58 @@
+{
+  "task": "R505.1 COMPLETE MACHINE ENVELOPE BEFORE COMMIT",
+  "deliverable": "R5051_MACHINE_ENVELOPE_COMPLETE",
+  "capturedAt": "2026-07-05T16:56:30.000Z",
+  "sha": "uncommitted — base f8bc9147ef91b627e7db731dbc1d67db28d79064",
+  "branch": "design-system-foundation",
+  "commit": false,
+  "push": false,
+  "deploy": false,
+  "build": { "status": "pass", "command": "yarn build" },
+  "tests": {
+    "status": "pass",
+    "suites": "12/12 impacted",
+    "count": "75/75"
+  },
+  "machineEnvelopeCoverage": [
+    { "route": "/", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/trade", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/liquidity-studio", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/farms", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/pools", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/trending", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/projects", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/radar", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/build-studio", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/collectibles", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/command-center", "schema": "melega.surface.v1", "status": "done" }
+  ],
+  "acceptanceChecklist": {
+    "mainRoutesSurfaceV1": "11/11",
+    "schemaVersionDrift": 0,
+    "duplicateMachineDataAttributes": 0,
+    "exposedLegacyNavEntries": 0,
+    "primaryCtasToLegacyRoutes": 0
+  },
+  "civilizationRoleLabels": {
+    "trade": "Economic Exchange",
+    "liquidity": "Capital Formation",
+    "pools": "Distribution Organ",
+    "radar": "Observation Organ",
+    "trending": "Signal Surface",
+    "collectibles": "Identity Registry",
+    "commandCenter": "Operational Cockpit"
+  },
+  "schemaNamingFixes": [
+    "melega.trending-runtime/v1 → melega.trending-runtime.v1 (inner runtime)",
+    "https://melega.finance/schemas/radar-runtime/v1 → melega.radar-runtime.v1 (inner runtime)",
+    "https://melega.finance/schemas/projects-runtime/v1 → melega.projects-runtime.v1 (inner runtime)",
+    "Build machine panel badge → melega.surface.v1",
+    "Projects machine panel — removed duplicate envelope assembly in UI"
+  ],
+  "remainingBlockers": [
+    "Legacy /swap, /add, /workspace pages still exist as Next routes (edge redirects handle traffic)",
+    "BscScan holders not wired (trending shows — placeholder)",
+    "Whale/smart-money feeds unavailable (Radar ops panel hidden when empty)",
+    "Staging deploy pending founder review — not pushed"
+  ]
+}

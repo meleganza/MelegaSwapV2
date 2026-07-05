@@ -23,7 +23,7 @@ describe('trendingRuntime', () => {
     const card = mapProjectToTrendingCard(projects[0], 1)
     expect(card.projectHref).toMatch(/^\/projects\//)
     expect(card.signalLabel).not.toBe('Strong Buy')
-    expect(card.holders).toBe('Unavailable')
+    expect(card.holders).toBe('—')
   })
 
   it('filters projects by chain chip', () => {
@@ -39,7 +39,7 @@ describe('trendingRuntime', () => {
     const events = buildLiveEvents(projects)
     const kpis = aggregateTrendingKpis(projects, events)
     const whale = kpis.find((k) => k.id === 'whales')
-    expect(whale?.value).toBe('Unavailable')
+    expect(whale).toBeUndefined()
   })
 
   it('uses Runtime Signal language instead of Strong Buy', () => {
@@ -64,7 +64,7 @@ describe('trendingRuntime', () => {
         },
       ],
     })
-    expect(machine.schema).toBe('melega.trending-runtime/v1')
+    expect(machine.schema).toBe('melega.trending-runtime.v1')
     expect(machine.availability.whaleMonitor).toBe('unavailable')
   })
 

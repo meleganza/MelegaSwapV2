@@ -89,7 +89,7 @@ export const analyzeEconomicState = (): OrchestratorAnalysisContext => {
       id: 'workspace',
       label: 'Workspace',
       status: 'ready',
-      route: '/workspace',
+      route: '/command-center',
       manifestUri: '/registry/workspace/index.json',
       notes: `${workspace.sections.filter((section) => section.hasActivity).length} active sections.`,
     },
@@ -97,7 +97,7 @@ export const analyzeEconomicState = (): OrchestratorAnalysisContext => {
       id: 'launch',
       label: 'Launch',
       status: launchLive > 0 ? 'ready' : 'waiting',
-      route: '/launch',
+      route: '/build-studio#build-import',
       manifestUri: '/registry/launch/index.json',
       notes: `${launchLive} live or existing-flow capabilities.`,
     },
@@ -179,11 +179,11 @@ export const buildDependencyGraph = (
     project: '/projects',
     asset: '/assets',
     metadata: '/assets',
-    liquidity: '/launch',
+    liquidity: '/build-studio#build-import',
     registry: '/graph',
     presence: '/presence',
     execution: '/execution',
-    workspace: '/workspace',
+    workspace: '/command-center',
   }
 
   const order = ctx.pipelineStages.map((stage) => stage.stageId)

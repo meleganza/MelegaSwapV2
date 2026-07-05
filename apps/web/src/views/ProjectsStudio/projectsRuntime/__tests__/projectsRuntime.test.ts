@@ -54,7 +54,7 @@ describe('projectsRuntime', () => {
     expect(card.status).toBe('pending')
     expect(card.registryTier).toBe('pending')
     expect(card.radarHref).toContain('/radar?contract=')
-    expect(card.projectHref).toContain('/import-existing-token')
+    expect(card.projectHref).toContain('/build-studio')
   })
 
   it('exposes runtime error catalog', () => {

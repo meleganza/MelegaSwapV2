@@ -1,26 +1,6 @@
-export interface CommandMachineSummary {
-  schema: string
-  generatedAt: string
-  operator: string | null
-  wallet: string | null
-  chainId?: number
-  status: string
-  trade: Record<string, unknown>
-  liquidity: Record<string, unknown>
-  pools: Record<string, unknown>
-  farms: Record<string, unknown>
-  projects: Record<string, unknown>
-  radar: Record<string, unknown>
-  infrastructure: Record<string, unknown>
-  identity: Record<string, unknown>
-  notifications: { count: number }
-  positions: {
-    assets: number
-    liquidity: number
-    pools: number
-    farms: number
-  }
-}
+import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
+
+export type CommandMachineSummary = MelegaSurfaceEnvelope
 
 interface MachineInput {
   account?: string
@@ -40,30 +20,34 @@ interface MachineInput {
 }
 
 export function buildMachineSummary(input: MachineInput): CommandMachineSummary {
-  return {
-    schema: 'melega.command-center.v2',
-    generatedAt: new Date().toISOString(),
-    operator: input.account ? input.account.slice(0, 6) : null,
-    wallet: input.account ?? null,
-    chainId: input.chainId,
-    status: input.account ? 'operational' : 'wallet_disconnected',
-    trade: input.tradeMachine,
-    liquidity: { positions: input.liquidityCount },
-    pools: { stakedPositions: input.poolCount },
-    farms: { stakedPositions: input.farmCount },
-    projects: input.projectsMachine,
-    radar: input.radarMachine,
-    infrastructure: {
-      score: input.infrastructureScore ?? null,
-      ...input.buildMachine,
+  const status = input.account ? 'operational' : 'wallet_disconnected'
+  return buildSurfaceEnvelope({
+    module: 'commandCenter',
+    runtime: {
+      status,
+      operator: input.account ? input.account.slice(0, 6) : null,
+      wallet: input.account ?? null,
+      chainId: input.chainId,
+      trade: input.tradeMachine,
+      liquidity: { positions: input.liquidityCount },
+      pools: { stakedPositions: input.poolCount },
+      farms: { stakedPositions: input.farmCount },
+      projects: input.projectsMachine,
+      radar: input.radarMachine,
+      infrastructure: {
+        score: input.infrastructureScore ?? null,
+        ...input.buildMachine,
+      },
+      identity: input.identitySummary ?? {},
+      notifications: { count: input.notificationCount },
+      positions: {
+        assets: input.assetCount,
+        liquidity: input.liquidityCount,
+        pools: input.poolCount,
+        farms: input.farmCount,
+      },
     },
-    identity: input.identitySummary as unknown as Record<string, unknown>,
-    notifications: { count: input.notificationCount },
-    positions: {
-      assets: input.assetCount,
-      liquidity: input.liquidityCount,
-      pools: input.poolCount,
-      farms: input.farmCount,
-    },
-  }
+    sources: ['civilization-fabric', 'wallet', 'module-runtimes'],
+    reasonCodes: status === 'wallet_disconnected' ? { wallet: 'WALLET_DISCONNECTED' } : {},
+  })
 }

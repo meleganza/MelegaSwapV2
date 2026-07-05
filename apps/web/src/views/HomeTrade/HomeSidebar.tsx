@@ -163,9 +163,9 @@ const sections = [
     items: [
       { href: '/', label: 'Swap', match: (p: string) => p === '/' },
       {
-        href: '/liquidity',
+        href: '/liquidity-studio',
         label: 'Liquidity',
-        match: (p: string) => p.startsWith('/liquidity') || p.startsWith('/add') || p.startsWith('/remove'),
+        match: (p: string) => p.startsWith('/liquidity-studio') || p.startsWith('/add') || p.startsWith('/remove'),
       },
     ],
   },
@@ -188,7 +188,7 @@ const sections = [
   {
     label: 'BUILD',
     items: [
-      { href: '/launch', label: 'List project', match: (p: string) => p.startsWith('/launch') },
+      { href: '/build-studio#build-import', label: 'List project', match: (p: string) => p.startsWith('/build-studio#build-import') },
       { href: '/add', label: 'Create pool', match: (p: string) => p.startsWith('/add') },
       { href: '/pools', label: 'Reward MARCO holders', match: () => false },
     ],
@@ -196,10 +196,10 @@ const sections = [
   {
     label: 'PORTFOLIO',
     items: [
-      { href: '/workspace', label: 'Overview', match: (p: string) => p === '/workspace' },
-      { href: '/liquidity', label: 'Positions', match: (p: string) => p === '/liquidity' },
+      { href: '/command-center', label: 'Overview', match: (p: string) => p === '/command-center' },
+      { href: '/liquidity-studio', label: 'Positions', match: (p: string) => p === '/liquidity-studio' },
       { href: '/farms', label: 'Rewards', match: () => false },
-      { href: '/workspace', label: 'Activity', match: () => false },
+      { href: '/command-center', label: 'Activity', match: () => false },
     ],
   },
 ]

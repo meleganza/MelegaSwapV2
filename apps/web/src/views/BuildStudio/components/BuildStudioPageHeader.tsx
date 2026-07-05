@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
 import { IconBook, IconDownload } from './buildStudioIcons'
 import { BsOutlineBtn, BsPrimaryBtn } from './buildStudioPrimitives'
+import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import BuildInfrastructureGuidePanel from './BuildInfrastructureGuidePanel'
 
 const Header = styled.header`
@@ -67,6 +67,7 @@ export const BuildStudioPageHeader: React.FC = () => {
   <>
   <Header data-bs-page-header>
     <Left>
+      <CivilizationRoleLabel module="build" />
       <Title>BUILD STUDIO</Title>
       <Subtitle>Build trusted economic infrastructure with AI assistance.</Subtitle>
     </Left>
@@ -76,8 +77,8 @@ export const BuildStudioPageHeader: React.FC = () => {
         AI Infrastructure Guide
       </BsOutlineBtn>
       <BsPrimaryBtn
-        as={Link}
-        to="/import-existing-token"
+        as="a"
+        href="#build-import"
         $width="220px"
         $height="52px"
         data-bs-hero-import

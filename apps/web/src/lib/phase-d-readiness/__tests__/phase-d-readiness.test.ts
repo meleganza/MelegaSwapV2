@@ -41,7 +41,7 @@ describe('phase d consolidation gate', () => {
     expect(routes).toContain('/')
     expect(routes).toContain('/pipeline')
     expect(routes).toContain('/dry-run')
-    expect(routes).toContain('/swap')
+    expect(routes).toContain('/trade')
     expect(routes).toContain('/pools')
     expect(PHASE_D_ROUTES).toHaveLength(14)
   })

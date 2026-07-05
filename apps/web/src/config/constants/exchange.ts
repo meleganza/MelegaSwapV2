@@ -149,4 +149,4 @@ export const DEFAULT_INPUT_CURRENCY = 'BNB'
 // CAKE
 export const DEFAULT_OUTPUT_CURRENCY = '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82'
 
-export const EXCHANGE_PAGE_PATHS = ['/swap', 'liquidity', '/add', '/find', '/remove']
+export const EXCHANGE_PAGE_PATHS = ['/trade', 'liquidity', '/add', '/find', '/remove']

@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import { runImportAnalysis } from 'views/BuildStudio/buildRuntime/buildImportAnalysis'
 import { buildAiManifest } from 'views/BuildStudio/buildRuntime/buildManifest'
 import { buildAdvisorData } from 'views/BuildStudio/buildRuntime/buildAdvisor'
@@ -12,17 +13,19 @@ const CHAIN_KEY_BY_LABEL: Record<string, string> = {
 }
 
 export function useImportExistingTokenRuntime() {
+  const router = useRouter()
   const [contract, setContract] = useState('')
   const [chainLabel, setChainLabel] = useState('BNB')
   const [analyzed, setAnalyzed] = useState(false)
   const [machineOpen, setMachineOpen] = useState(false)
+  const [revision, setRevision] = useState(0)
 
   const chainKey = CHAIN_KEY_BY_LABEL[chainLabel] ?? 'bnb'
 
   const analysis = useMemo(() => {
     if (!analyzed) return null
     return runImportAnalysis(contract.trim(), chainKey)
-  }, [analyzed, contract, chainKey])
+  }, [analyzed, contract, chainKey, revision])
 
   const runAnalysis = useCallback(() => {
     const trimmed = contract.trim()
@@ -35,6 +38,10 @@ export function useImportExistingTokenRuntime() {
 
   const resetAnalysis = useCallback(() => {
     setAnalyzed(false)
+  }, [])
+
+  const refreshAnalysis = useCallback(() => {
+    setRevision((r) => r + 1)
   }, [])
 
   const pipelineSteps = useMemo(() => {
@@ -65,7 +72,7 @@ export function useImportExistingTokenRuntime() {
       chain: chainLabel,
       analyzed,
       pending: analysis?.pending ?? false,
-      pendingId: analysis?.pendingProject?.pending_id ?? null,
+      pendingId: analysis?.pendingProject?.id ?? null,
       found: analysis?.found ?? false,
       projectSlug: analysis?.project?.slug ?? null,
       infrastructureScore: analysis?.score?.score ?? 0,
@@ -83,6 +90,14 @@ export function useImportExistingTokenRuntime() {
     return null
   }, [analyzed, contract, analysis])
 
+  useEffect(() => {
+    const q = router.query.contract
+    if (typeof q === 'string' && q.startsWith('0x') && q !== contract) {
+      setContract(q)
+      setAnalyzed(true)
+    }
+  }, [router.query.contract, contract])
+
   return {
     contract,
     setContract,
@@ -90,6 +105,7 @@ export function useImportExistingTokenRuntime() {
     setChainLabel,
     analyzed,
     runAnalysis,
+    refreshAnalysis,
     resetAnalysis,
     analysis,
     pipelineSteps,

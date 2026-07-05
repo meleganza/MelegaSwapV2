@@ -45,7 +45,7 @@ export function ChoosePair({
         helper={t(
           'Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pair.',
         )}
-        backTo="/liquidity"
+        backTo="/liquidity-studio"
       />
       <CardBody>
         <Box>

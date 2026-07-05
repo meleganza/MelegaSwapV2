@@ -68,8 +68,8 @@ describe('labs economic pipeline', () => {
     const model = resolveLabsEconomicPipelineReadModel()
     expect(model.readOnly).toBe(true)
     expect(model.executionEnabled).toBe(false)
-    expect(model.linkedSurfaces).toContain('/launch')
-    expect(model.linkedSurfaces).toContain('/workspace')
+    expect(model.linkedSurfaces).toContain('/build-studio#build-import')
+    expect(model.linkedSurfaces).toContain('/command-center')
     expect(model.linkedSurfaces).toContain('/map')
   })
 

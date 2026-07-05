@@ -6,6 +6,7 @@ import { useCurrentBlock } from 'state/block/hooks'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import type { PoolFilterChip, PoolPreviewCard } from '../poolsStudioData'
 import {
   aggregateKpis,
@@ -30,21 +31,7 @@ export type PoolsRuntimePhase =
 
 export type PoolsModalAction = 'stake' | 'unstake' | 'claim' | null
 
-export interface PoolsMachinePayload {
-  status: PoolsRuntimePhase
-  chainId?: number
-  wallet?: string
-  filter: string
-  activePools: number
-  endedPools?: number
-  activePoolNames?: string[]
-  endedPoolNames?: string[]
-  displayedPools?: string[]
-  poolSourceMethod?: string
-  featuredPool?: string
-  error?: PoolsRuntimeError | null
-  timestamp: string
-}
+export type PoolsMachinePayload = MelegaSurfaceEnvelope
 
 export interface PoolsFeaturedMetrics {
   name: string
@@ -115,7 +102,7 @@ function filterPools(cards: PoolPreviewCard[], filter: PoolFilterChip): PoolPrev
     case 'Newest':
       list = list.sort((a, b) => (b.sousId ?? 0) - (a.sousId ?? 0))
       break
-    case 'AI Suggested':
+    case 'Featured':
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
       break
     default:
@@ -242,21 +229,27 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const machine: PoolsMachinePayload = useMemo(() => {
     const { activePools: activePoolNames, sourceMethod } = listActivePools(previewCards)
     const ended = previewCards.filter((p) => p.status === 'ended')
-    return {
-      status: phase,
-      chainId,
-      wallet: account,
-      filter,
-      activePools: activePoolNames.length,
-      endedPools: ended.length,
-      activePoolNames,
-      endedPoolNames: ended.map((p) => p.name),
-      displayedPools: filteredPools.slice(0, 10).map((p) => p.name),
-      poolSourceMethod: sourceMethod,
-      featuredPool: featured.name,
-      error,
-      timestamp: new Date().toISOString(),
-    }
+    const reasonCodes: Record<string, string> = {}
+    if (error?.code) reasonCodes.runtime = error.code
+    return buildSurfaceEnvelope({
+      module: 'pools',
+      runtime: {
+        status: phase,
+        chainId,
+        wallet: account,
+        filter,
+        activePools: activePoolNames.length,
+        endedPools: ended.length,
+        activePoolNames,
+        endedPoolNames: ended.map((p) => p.name),
+        displayedPools: filteredPools.slice(0, 10).map((p) => p.name),
+        poolSourceMethod: sourceMethod,
+        featuredPool: featured.name,
+        error: error?.code ?? null,
+      },
+      reasonCodes,
+      sources: ['sous-chef-rpc', 'price-oracle'],
+    })
   }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error])
 
   const loadingLabel =

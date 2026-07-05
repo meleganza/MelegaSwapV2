@@ -41,7 +41,7 @@ const Action = styled.span`
   color: ${tokens.gold};
 `
 
-export const HumanListingCta: React.FC<{ href?: string }> = ({ href = '/launch' }) => (
+export const HumanListingCta: React.FC<{ href?: string }> = ({ href = '/build-studio#build-import' }) => (
   <Block href={href}>
     <Title>List your project on Melega DEX</Title>
     <Copy>

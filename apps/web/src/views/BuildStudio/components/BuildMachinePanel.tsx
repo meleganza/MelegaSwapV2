@@ -110,7 +110,7 @@ export const BuildMachinePanel: React.FC = () => {
   }, [fullText])
 
   return (
-    <BsPanel data-bs-panel data-bs-machine-json>
+    <BsPanel data-bs-machine-json>
       <Inner>
         <Header>
           <TitleBlock>
@@ -119,7 +119,7 @@ export const BuildMachinePanel: React.FC = () => {
           </TitleBlock>
           <StatusRow>
             <span style={{ fontFamily: BS_FONT_BODY, fontSize: 12, color: buildStudioColors.label }}>Schema</span>
-            <BsBadge $variant="green">melega.build-runtime.v1</BsBadge>
+            <BsBadge $variant="green">melega.surface.v1</BsBadge>
           </StatusRow>
         </Header>
 

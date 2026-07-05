@@ -14,7 +14,7 @@ describe('homepage entry manifest', () => {
   it('exposes CORE four routes', () => {
     const manifest = resolveHomepageEntryManifest()
     expect(manifest.core_routes).toEqual(CORE_SURFACES.map((surface) => surface.route))
-    expect(manifest.core_routes).toContain('/launch')
+    expect(manifest.core_routes).toContain('/build-studio#build-import')
     expect(manifest.core_routes).not.toContain('/ilo')
   })
 

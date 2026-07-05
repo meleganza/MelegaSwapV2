@@ -65,8 +65,8 @@ const buildVenues = (): StaticVenueRecord[] => {
       notes: 'No TVL, volume, or APR in static MVP.',
     },
     deepLinks: {
-      swap: '/swap',
-      liquidity: '/liquidity',
+      swap: '/trade',
+      liquidity: '/liquidity-studio',
     },
     disclaimer: VENUE_REGISTRY_DISCLAIMER,
     dataSource: 'venue-registry-static',

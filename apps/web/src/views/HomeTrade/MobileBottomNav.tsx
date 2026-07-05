@@ -100,8 +100,8 @@ const items = [
   { href: '/', label: 'Trade', Icon: TradeIcon },
   { href: '/farms', label: 'Earn', Icon: EarnIcon },
   { href: '/projects', label: 'Find', Icon: FindIcon },
-  { href: '/launch', label: 'Build', Icon: BuildIcon },
-  { href: '/workspace', label: 'Portfolio', Icon: PortfolioIcon },
+  { href: '/build-studio#build-import', label: 'Build', Icon: BuildIcon },
+  { href: '/command-center', label: 'Portfolio', Icon: PortfolioIcon },
 ]
 
 export const MobileBottomNav: React.FC = () => {

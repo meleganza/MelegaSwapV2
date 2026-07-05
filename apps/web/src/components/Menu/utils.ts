@@ -2,10 +2,10 @@ import orderBy from 'lodash/orderBy'
 import { ConfigMenuItemsType } from './config/config'
 
 export const getActiveMenuItem = ({ pathname, menuConfig }: { pathname: string; menuConfig: ConfigMenuItemsType[] }) =>
-  menuConfig.find((menuItem) => (pathname === menuItem.href) || (pathname === "/" && menuItem.href === "/swap") || getActiveSubMenuItem({ menuItem, pathname }))
+  menuConfig.find((menuItem) => (pathname === menuItem.href) || (pathname === "/" && menuItem.href === "/trade") || getActiveSubMenuItem({ menuItem, pathname }))
 
 export const getActiveSubMenuItem = ({ pathname, menuItem }: { pathname: string; menuItem?: ConfigMenuItemsType }) => {
-  const activeSubMenuItems = menuItem?.items.filter((subMenuItem) => pathname === subMenuItem.href || (pathname === "/" && subMenuItem.href === "/swap")) ?? []
+  const activeSubMenuItems = menuItem?.items.filter((subMenuItem) => pathname === subMenuItem.href || (pathname === "/" && subMenuItem.href === "/trade")) ?? []
 
   // Pathname doesn't include any submenu item href - return undefined
   if (!activeSubMenuItems || activeSubMenuItems.length === 0) {

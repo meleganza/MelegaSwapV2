@@ -141,14 +141,14 @@ const CivilizationEntryPoint: React.FC = () => {
 
           <SwapRow>
             <HumanSwapEntryCard />
-            <HumanListingCta href="/launch" />
+            <HumanListingCta href="/build-studio#build-import" />
           </SwapRow>
 
           <QuickRow>
             <Quick href="/farms">Earn</Quick>
-            <Quick href="/launch">Create</Quick>
+            <Quick href="/build-studio">Build</Quick>
             <Quick href="/projects">Explore</Quick>
-            <Quick href="/workspace">My Economy</Quick>
+            <Quick href="/command-center">Command Center</Quick>
           </QuickRow>
 
           <HumanDynamicSection
@@ -190,10 +190,10 @@ const CivilizationEntryPoint: React.FC = () => {
           />
 
           <EconomicActionCard
-            href="/workspace"
-            title="My Economy"
-            description="Your activity, positions, and projects in one calm cockpit."
-            actionLabel="Open My Economy"
+            href="/command-center"
+            title="Command Center"
+            description="Your operational cockpit — positions, activity, and civilization runtime in one place."
+            actionLabel="Open Command Center"
             icon="◎"
           />
         </EconomicHumanLayer>

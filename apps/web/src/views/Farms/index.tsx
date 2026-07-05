@@ -74,7 +74,7 @@ export const FarmsPageLayout: React.FC<React.PropsWithChildren<unknown>> = ({ ch
           <HumanEarnChrome
             sectionTitle="Farms"
             sectionSubtitle="Stake LP tokens, earn rewards."
-            primaryAction={{ href: '/liquidity', label: 'Add liquidity' }}
+            primaryAction={{ href: '/liquidity-studio', label: 'Add liquidity' }}
           />
         </Flex>
       </Page>

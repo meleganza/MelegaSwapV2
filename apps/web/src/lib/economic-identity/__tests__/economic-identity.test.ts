@@ -89,8 +89,8 @@ describe('economic identity read model', () => {
 
   it('links cross-surfaces to workspace launch and collectibles', () => {
     const model = resolveEconomicIdentityReadModel()
-    expect(model.crossLinks.workspace).toBe('/workspace')
-    expect(model.crossLinks.launch).toBe('/launch')
+    expect(model.crossLinks.workspace).toBe('/command-center')
+    expect(model.crossLinks.launch).toBe('/build-studio#build-import')
     expect(model.crossLinks.collectibles).toBe('/collectibles')
   })
 })

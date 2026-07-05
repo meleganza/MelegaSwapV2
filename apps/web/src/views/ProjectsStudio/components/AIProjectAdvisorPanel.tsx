@@ -52,12 +52,16 @@ const ValueBlock = styled.div`
   min-width: 0;
 `
 
-const Value = styled.span<{ $tone?: 'green' | 'gold' }>`
+const Value = styled.span<{ $tone?: 'green' | 'gold' | 'gray' }>`
   font-family: ${PR_FONT_BODY};
   font-size: 14px;
   font-weight: 600;
   color: ${({ $tone }) =>
-    $tone === 'green' ? projectsStudioColors.green : $tone === 'gold' ? projectsStudioColors.gold : projectsStudioColors.text};
+    $tone === 'green'
+      ? projectsStudioColors.green
+      : $tone === 'gold'
+        ? projectsStudioColors.gold
+        : projectsStudioColors.text};
 `
 
 const Confidence = styled.span`
@@ -71,11 +75,11 @@ const Confidence = styled.span`
 
 export const AIProjectAdvisorPanel: React.FC = () => {
   const { advisorRows } = useProjectsRuntime()
-  const rows = advisorRows.slice(0, 5)
+  const rows = advisorRows
 
   return (
     <Panel data-pr-advisor>
-      <Title>AI Project Advisor</Title>
+      <Title>Registry Advisor</Title>
       <List>
         {rows.map((row) => (
           <Row key={row.label}>

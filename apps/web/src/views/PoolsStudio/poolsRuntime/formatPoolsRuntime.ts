@@ -56,8 +56,17 @@ export function getPoolDisplayName(pool: Pool.DeserializedPool<Token>): string {
   return pool.earningToken?.symbol ? `${pool.earningToken.symbol} Pool` : `Pool #${pool.sousId}`
 }
 
+function poolHasDeposits(pool: Pool.DeserializedPool<Token>): boolean {
+  return Boolean(pool.totalStaked?.gt(0))
+}
+
 function poolStatus(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolStatus {
+  const hasDeposits = poolHasDeposits(pool)
+
+  if (hasDeposits) return 'live'
+
   if (pool.isFinished) return 'ended'
+
   if (pool.sousId !== 0) {
     const { hasPoolStarted } = getPoolBlockInfo(pool, currentBlock)
     if (!hasPoolStarted) return 'indexing'
@@ -126,8 +135,9 @@ export function aggregateKpis(
 
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
-    if (!pool.isFinished) activePools += 1
     const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
+    const isActive = staked > 0 || !pool.isFinished
+    if (isActive) activePools += 1
     totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
     if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
     if (pool.userData?.pendingReward?.gt(0)) {
@@ -140,7 +150,7 @@ export function aggregateKpis(
     { id: 'active', label: 'Active Pools', value: String(activePools) },
     { id: 'rewards', label: 'MARCO Rewards Today', value: totalPending > 0 ? formatTokenAmount(new BigNumber(totalPending)) : '—' },
     { id: 'stakers', label: 'Your Positions', value: String(stakerPositions) },
-    { id: 'ai', label: 'AI Recommended', value: featuredName ?? '—', gold: true },
+    { id: 'ai', label: 'Featured', value: featuredName ?? '—', gold: true },
   ]
 }
 

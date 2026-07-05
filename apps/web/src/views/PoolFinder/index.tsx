@@ -101,7 +101,7 @@ export default function PoolFinder() {
       {/* <Coming1 />
       <StyledDisableFlex> */}
       <AppBody>
-        <AppHeader title={t('Import Pool')} subtitle={t('Import an existing pool')} backTo="/liquidity" />
+        <AppHeader title={t('Import Pool')} subtitle={t('Import an existing pool')} backTo="/liquidity-studio" />
         <AutoColumn style={{ padding: '1rem' }} gap="md">
           <StyledButton
             endIcon={<ChevronDownIcon />}
@@ -146,7 +146,7 @@ export default function PoolFinder() {
               hasPosition && pair ? (
                 <>
                   <MinimalPositionCard pair={pair} />
-                  <Button as={NextLinkFromReactRouter} to="/liquidity" variant="secondary" width="100%">
+                  <Button as={NextLinkFromReactRouter} to="/liquidity-studio" variant="secondary" width="100%">
                     {t('Manage this pair')}
                   </Button>
                 </>

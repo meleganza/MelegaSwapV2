@@ -72,9 +72,11 @@ describe('commandCenterRuntime', () => {
       notificationCount: 2,
       collectibleCount: 4,
     })
-    expect(summary.schema).toContain('command-center')
-    expect(summary.trade).toBeDefined()
-    expect(summary.radar).toBeDefined()
+    expect(summary.schema).toBe('melega.surface.v1')
+    expect(summary.machineReadable).toBe(true)
+    const runtime = summary.runtime as Record<string, unknown>
+    expect(runtime.trade).toBeDefined()
+    expect(runtime.radar).toBeDefined()
   })
 
   it('formats settlement labels for command center mirror', () => {

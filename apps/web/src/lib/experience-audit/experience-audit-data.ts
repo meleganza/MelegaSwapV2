@@ -251,7 +251,7 @@ export const SURFACE_EXPERIENCE_AUDITS: SurfaceExperienceAudit[] = [
   },
   {
     id: 'launch',
-    route: '/launch',
+    route: '/build-studio#build-import',
     purposeClarity: 88,
     humanUnderstanding: 75,
     aiUnderstanding: 90,
@@ -272,7 +272,7 @@ export const SURFACE_EXPERIENCE_AUDITS: SurfaceExperienceAudit[] = [
   },
   {
     id: 'workspace',
-    route: '/workspace',
+    route: '/command-center',
     purposeClarity: 90,
     humanUnderstanding: 80,
     aiUnderstanding: 88,
@@ -357,7 +357,7 @@ export const SURFACE_EXPERIENCE_AUDITS: SurfaceExperienceAudit[] = [
   },
   {
     id: 'swap',
-    route: '/swap',
+    route: '/trade',
     purposeClarity: 95,
     humanUnderstanding: 95,
     aiUnderstanding: 90,
@@ -377,7 +377,7 @@ export const SURFACE_EXPERIENCE_AUDITS: SurfaceExperienceAudit[] = [
   },
   {
     id: 'liquidity',
-    route: '/liquidity',
+    route: '/liquidity-studio',
     purposeClarity: 92,
     humanUnderstanding: 90,
     aiUnderstanding: 88,
@@ -489,8 +489,8 @@ export const ECONOMIC_JOURNEYS: EconomicJourneyAudit[] = [
       { step: 'Connect Wallet', status: 'clear', notes: 'Global wallet button works' },
       { step: 'Understand Platform', route: '/map', status: 'missing', notes: 'No menu/home link to surface map' },
       { step: 'Create Project', route: '/projects', status: 'indirect', notes: 'Projects in menu but no create flow' },
-      { step: 'Launch Asset', route: '/launch', status: 'broken', notes: 'Menu sends to /ilo retirement' },
-      { step: 'Manage Economy', route: '/workspace', status: 'missing', notes: 'Not in menu' },
+      { step: 'Launch Asset', route: '/build-studio#build-import', status: 'broken', notes: 'Menu sends to /ilo retirement' },
+      { step: 'Manage Economy', route: '/command-center', status: 'missing', notes: 'Not in menu' },
     ],
   },
   {
@@ -498,8 +498,8 @@ export const ECONOMIC_JOURNEYS: EconomicJourneyAudit[] = [
     journeyScore: 72,
     blockers: ['Workspace/execution not in menu'],
     steps: [
-      { step: 'Liquidity', route: '/liquidity', status: 'clear', notes: 'Trade submenu' },
-      { step: 'Workspace', route: '/workspace', status: 'missing', notes: 'Direct URL only' },
+      { step: 'Liquidity', route: '/liquidity-studio', status: 'clear', notes: 'Trade submenu' },
+      { step: 'Workspace', route: '/command-center', status: 'missing', notes: 'Direct URL only' },
       { step: 'Execution', route: '/execution', status: 'indirect', notes: 'Cross-link from launch only' },
       { step: 'Identity', route: '/identity', status: 'indirect', notes: 'Cross-link from workspace' },
     ],
@@ -512,9 +512,9 @@ export const ECONOMIC_JOURNEYS: EconomicJourneyAudit[] = [
       { step: 'Registry Discovery', route: '/registry/surfaces/index.json', status: 'clear', notes: 'Surface map manifest excellent' },
       { step: 'Graph', route: '/graph', status: 'clear', notes: 'Well-known + registry' },
       { step: 'Execution', route: '/execution', status: 'clear', notes: 'Must not execute here — illustrative' },
-      { step: 'Workspace', route: '/workspace', status: 'clear', notes: 'Manifest indexed' },
+      { step: 'Workspace', route: '/command-center', status: 'clear', notes: 'Manifest indexed' },
       { step: 'Identity', route: '/identity', status: 'clear', notes: 'Agent-readiness score' },
-      { step: 'Economic Decision', route: '/swap', status: 'clear', notes: 'Route to live execution' },
+      { step: 'Economic Decision', route: '/trade', status: 'clear', notes: 'Route to live execution' },
     ],
   },
   {
@@ -522,10 +522,10 @@ export const ECONOMIC_JOURNEYS: EconomicJourneyAudit[] = [
     journeyScore: 55,
     blockers: ['Launch menu → /ilo', 'Activation preview not distinguished from launch'],
     steps: [
-      { step: 'Launch', route: '/launch', status: 'broken', notes: 'Menu alias wrong' },
+      { step: 'Launch', route: '/build-studio#build-import', status: 'broken', notes: 'Menu alias wrong' },
       { step: 'Activation', route: '/new-project', status: 'indirect', notes: 'Not in menu' },
       { step: 'Presence', route: '/presence', status: 'indirect', notes: 'Cross-links only' },
-      { step: 'Workspace', route: '/workspace', status: 'missing', notes: 'Not in menu' },
+      { step: 'Workspace', route: '/command-center', status: 'missing', notes: 'Not in menu' },
     ],
   },
 ]

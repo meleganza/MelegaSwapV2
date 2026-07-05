@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { useFarms } from 'state/farms/hooks'
@@ -84,20 +85,27 @@ export function useBuildOrchestrationRuntime() {
     return errs
   }, [importResult?.errors, activePools, activeFarms, chainId])
 
-  const machine = useMemo(
-    () => ({
-      schema: 'melega.build-runtime.v1',
-      status: 'ready',
-      chainId,
-      project: activeProject?.slug ?? null,
-      infrastructureScore: importResult?.score ?? null,
-      poolPreview,
-      farmPreview,
-      errors: runtimeErrors,
-      timestamp: new Date().toISOString(),
-    }),
-    [chainId, activeProject, importResult, poolPreview, farmPreview, runtimeErrors],
-  )
+  const machine: MelegaSurfaceEnvelope = useMemo(() => {
+    const reasonCodes: Record<string, string> = {}
+    runtimeErrors.forEach((e) => {
+      reasonCodes[e.code] = e.message
+    })
+    return buildSurfaceEnvelope({
+      module: 'build',
+      runtime: {
+        schema: 'melega.build-runtime.v1',
+        status: 'ready',
+        chainId,
+        project: activeProject?.slug ?? null,
+        infrastructureScore: importResult?.score ?? null,
+        poolPreview,
+        farmPreview,
+        errors: runtimeErrors,
+      },
+      reasonCodes,
+      sources: ['registry', 'import-runtime'],
+    })
+  }, [chainId, activeProject, importResult, poolPreview, farmPreview, runtimeErrors])
 
   const generatedInfrastructure = useMemo(() => {
     const items = ['Create Project Profile']

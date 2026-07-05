@@ -20,7 +20,7 @@ describe('homepage blueprint', () => {
 
   it('places launch at /launch not /ilo', () => {
     const launch = CORE_SURFACES.find((surface) => surface.id === 'launch')!
-    expect(launch.route).toBe('/launch')
+    expect(launch.route).toBe('/build-studio#build-import')
     expect(launch.notes).toContain('NOT point to /ilo')
   })
 

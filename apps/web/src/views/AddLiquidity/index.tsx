@@ -604,7 +604,7 @@ export default function AddLiquidity({ currencyA, currencyB }) {
               helper={t(
                 'Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pair.',
               )}
-              backTo={canZap ? () => setSteps(Steps.Choose) : '/liquidity'}
+              backTo={canZap ? () => setSteps(Steps.Choose) : '/liquidity-studio'}
             />
             <CardBody>
               <AutoColumn gap="20px">

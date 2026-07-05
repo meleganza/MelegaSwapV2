@@ -63,7 +63,7 @@ export const VaultRoiCalculatorModal = ({
           compounding: false, // no compounding if apy is specify
         },
       }}
-      linkHref="/swap"
+      linkHref="/trade"
       linkLabel={t('Get %symbol%', { symbol: pool.stakingToken.symbol })}
       earningTokenPrice={pool.earningTokenPrice}
       stakingTokenPrice={pool.stakingTokenPrice}

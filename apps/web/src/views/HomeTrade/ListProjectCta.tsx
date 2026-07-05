@@ -2,13 +2,13 @@ import React from 'react'
 import { MelegaCtaCard, MelegaProjectCube } from 'design-system/melega'
 
 export const ListProjectCta: React.FC = () => (
-  <div data-list-project-cta="true">
+  <div data-build-cta="true">
     <MelegaCtaCard
       visual={<MelegaProjectCube />}
-      title="List your project on Melega DEX"
-      description="List your token, add liquidity, create a farm, or reward MARCO holders."
-      primaryAction={{ label: 'Start listing', href: '/launch' }}
-      secondaryAction={{ label: 'Reward MARCO holders', href: '/pools' }}
+      title="Build with Melega"
+      description="Import & analyze your token contract. Registry verification and infrastructure proposal in one workflow."
+      primaryAction={{ label: 'Import & Analyze Token', href: '/build-studio#build-import' }}
+      secondaryAction={{ label: 'Explore Projects', href: '/projects' }}
     />
   </div>
 )

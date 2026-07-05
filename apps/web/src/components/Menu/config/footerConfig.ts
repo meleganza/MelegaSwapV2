@@ -14,11 +14,11 @@ export const melegaFooterLinks: (t: ContextApi['t']) => FooterLinkType[] = (t) =
       },
       {
         label: t('Swap'),
-        href: '/swap',
+        href: '/trade',
       },
       {
         label: t('Liquidity'),
-        href: '/liquidity',
+        href: '/liquidity-studio',
       },
       {
         label: t('Farms'),
@@ -30,7 +30,7 @@ export const melegaFooterLinks: (t: ContextApi['t']) => FooterLinkType[] = (t) =
       },
       {
         label: t('Create'),
-        href: '/launch',
+        href: '/build-studio#build-import',
       },
       {
         label: t('Explore'),
@@ -38,7 +38,7 @@ export const melegaFooterLinks: (t: ContextApi['t']) => FooterLinkType[] = (t) =
       },
       {
         label: t('My Economy'),
-        href: '/workspace',
+        href: '/command-center',
       },
     ],
   },

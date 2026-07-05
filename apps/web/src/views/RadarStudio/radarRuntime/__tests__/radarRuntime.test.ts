@@ -28,7 +28,7 @@ describe('radarRuntime', () => {
     const events = buildLiveEvents(projects)
     const card = mapProjectToRadarEvent(project, 1, events)
     expect(card.name).toBe('MARCO')
-    expect(card.liquidity).toBe('Unavailable')
+    expect(card.liquidity).toBe('—')
     expect(card.summary.length).toBeGreaterThan(0)
   })
 

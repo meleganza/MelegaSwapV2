@@ -13,7 +13,7 @@ const workspace = (): RuntimeMappingTarget => ({
   kind: 'workspace',
   id: 'workspace',
   label: 'Workspace',
-  route: '/workspace',
+  route: '/command-center',
   manifestUri: '/registry/workspace/index.json',
 })
 
@@ -21,7 +21,7 @@ const launch = (): RuntimeMappingTarget => ({
   kind: 'launch',
   id: 'launch',
   label: 'Launch',
-  route: '/launch',
+  route: '/build-studio#build-import',
   manifestUri: '/registry/launch/index.json',
 })
 

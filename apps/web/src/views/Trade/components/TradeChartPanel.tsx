@@ -224,7 +224,20 @@ export interface TradeChartPanelProps {
   pairPrices?: Array<{ time: string; value: number }>
   emptyReason?: string | null
   emptyDetail?: string
+  externalChartHref?: string
 }
+
+const ExternalLink = styled.a`
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: ${tradeColors.goldBright};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
 
 const EMPTY_REASON_LABELS: Record<string, string> = {
   pair_not_indexed: 'Pair not indexed',
@@ -277,6 +290,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   pairPrices = [],
   emptyReason,
   emptyDetail,
+  externalChartHref,
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
@@ -347,6 +361,11 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
             {emptyDetail ??
               'Indexed pair candles are not available yet. Stats and swaps update when subgraph indexes this pair.'}
           </UnavailableDesc>
+          {externalChartHref ? (
+            <ExternalLink href={externalChartHref} target="_blank" rel="noopener noreferrer">
+              View chart on public source →
+            </ExternalLink>
+          ) : null}
         </UnavailableState>
       )}
       {showSkeleton && (

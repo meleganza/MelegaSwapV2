@@ -73,7 +73,7 @@ export const DRY_RUN_FLOW_STEPS: DryRunFlowStep[] = [
   {
     id: 'workspace',
     label: 'Workspace',
-    surface: '/workspace',
+    surface: '/command-center',
     description: 'Projects section visibility as schema example — not live indexed from dry run.',
     flags: DRY_RUN_RECORD_FLAGS,
   },
@@ -86,7 +86,7 @@ export const DRY_RUN_CROSS_LINKS = [
   { label: 'Pipeline', route: '/pipeline' },
   { label: 'Labs Runtime', route: '/runtime/labs' },
   { label: 'Orchestrator', route: '/orchestrator' },
-  { label: 'Workspace', route: '/workspace' },
+  { label: 'Workspace', route: '/command-center' },
   { label: 'Surface Map', route: '/map' },
   { label: 'Dry Run Manifest', route: '/registry/dry-runs/civilization-dry-run.json' },
 ]

@@ -27,7 +27,8 @@ const ImportExistingTokenGlobalStyle = createGlobalStyle`
   }
 
   @media (max-width: 768px) {
-    [data-import-existing-token-screen] [data-iet-contract-hero] [data-iet-contract-input] {
+    [data-import-existing-token-screen] [data-iet-contract-hero] [data-iet-contract-input],
+    [data-bs-import-workflow] [data-iet-contract-hero] [data-iet-contract-input] {
       width: 100% !important;
       min-width: 0 !important;
       max-width: 100% !important;
@@ -35,7 +36,9 @@ const ImportExistingTokenGlobalStyle = createGlobalStyle`
     }
 
     [data-import-existing-token-screen] [data-iet-contract-hero] button[data-iet-primary],
-    [data-import-existing-token-screen] [data-iet-contract-hero] button:last-of-type {
+    [data-import-existing-token-screen] [data-iet-contract-hero] button:last-of-type,
+    [data-bs-import-workflow] [data-iet-contract-hero] button[data-iet-primary],
+    [data-bs-import-workflow] [data-iet-contract-hero] button:last-of-type {
       width: 100% !important;
     }
   }

@@ -53,7 +53,7 @@ const Cta = styled.span`
 `
 
 export const HumanSwapEntryCard: React.FC<{ href?: string; compact?: boolean }> = ({
-  href = '/swap',
+  href = '/trade',
   compact = false,
 }) => (
   <Card href={href}>

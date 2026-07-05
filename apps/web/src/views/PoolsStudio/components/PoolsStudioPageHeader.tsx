@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { POOLS_STUDIO_PREVIEW_LABEL, poolsStudioColors } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { PsPreviewBadge, PsPrimaryBtn } from './poolsStudioPrimitives'
@@ -67,6 +68,7 @@ export const PoolsStudioPageHeader: React.FC = () => (
   <div data-ps-page-header>
     <Row>
       <Left>
+        <CivilizationRoleLabel module="pools" />
         <Title>POOLS</Title>
         <Subtitle>Stake assets, distribute rewards and build long-term communities.</Subtitle>
       </Left>

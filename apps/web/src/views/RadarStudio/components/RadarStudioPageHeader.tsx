@@ -1,23 +1,36 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
-import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
-import { RdOutlineGoldBtn } from './radarStudioPrimitives'
+import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
+import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
+import {
+  RADAR_FONT_BODY,
+  RADAR_FONT_DISPLAY,
+  radarStudioColors,
+  radarStudioLayout,
+  radarStudioType,
+} from '../radarStudioTokens'
 
-const Row = styled.div`
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+`
+
+const Top = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 660px) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   gap: 16px;
-  min-height: ${radarStudioLayout.heroHeight};
   min-width: 0;
 
-  @media (max-width: 767px) {
+  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
     grid-template-columns: 1fr;
-    min-height: 0;
+    gap: 12px;
   }
 `
 
-const Left = styled.div`
+const Copy = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -27,100 +40,139 @@ const Left = styled.div`
 const Title = styled.h1`
   margin: 0;
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 52px;
-  line-height: 56px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: ${radarStudioColors.white};
+  font-size: ${radarStudioType.pageTitle};
+  font-weight: 700;
+  line-height: 1.08;
+  color: ${radarStudioColors.text};
+  word-break: keep-all;
+  overflow-wrap: normal;
+
+  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
+    font-size: ${radarStudioType.pageTitleMobile};
+    line-height: 1.1;
+    white-space: nowrap;
+  }
 `
 
 const Subtitle = styled.p`
   margin: 10px 0 0;
-  max-width: 620px;
+  max-width: ${radarStudioType.pageSubtitleMax};
   font-family: ${RADAR_FONT_BODY};
-  font-size: 18px;
-  line-height: 28px;
-  font-weight: 500;
+  font-size: ${radarStudioType.pageSubtitle};
+  line-height: 1.5;
+  font-weight: 400;
   color: ${radarStudioColors.subtitle};
+
+  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
+    max-width: 100%;
+    margin-top: 8px;
+  }
 `
 
-const Right = styled.div`
+const CtaRow = styled.div`
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
-  gap: 14px;
+  gap: 12px;
   flex-shrink: 0;
   flex-wrap: wrap;
 
-  @media (max-width: 767px) {
-    justify-content: flex-start;
+  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
     width: 100%;
-  }
-
-  @media (max-width: 360px) {
     flex-direction: column;
+  }
 
-    button {
-      width: 100%;
-    }
+  @media (min-width: calc(${radarStudioLayout.mobileBreakpoint} + 1px)) {
+    justify-self: end;
   }
 `
 
-const LiveDot = styled.span`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #050505;
-  flex-shrink: 0;
-`
-
-const LiveBtn = styled.button`
-  width: 132px;
-  height: 44px;
-  min-height: 44px;
-  padding: 0 14px;
+const PrimaryBtn = styled.button`
+  width: ${radarStudioLayout.headerPrimaryW};
+  height: ${radarStudioLayout.headerPrimaryH};
   border: none;
-  border-radius: 13px;
-  background: ${radarStudioColors.green};
+  border-radius: 12px;
+  background: ${radarStudioColors.gold};
   color: #050505;
   font-family: ${RADAR_FONT_BODY};
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform 180ms ease;
+  box-sizing: border-box;
 
-  &:hover {
-    transform: scale(0.98);
-  }
-
-  @media (max-width: 767px) {
-    flex: 1;
-    min-width: 0;
+  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
+    width: 100%;
   }
 `
 
-export const RadarStudioPageHeader: React.FC = () => (
-  <div data-rd-page-header>
-    <Row>
-      <Left>
-        <Title>RADAR</Title>
-        <Subtitle>
-          AI operational console for live discovery, wallet activity and contract intelligence.
-        </Subtitle>
-      </Left>
-      <Right>
-        <RdOutlineGoldBtn type="button">AI Discovery Engine</RdOutlineGoldBtn>
-        <LiveBtn type="button" data-rd-live-scan-btn>
-          <LiveDot data-rd-live-dot />
-          Live Scan
-        </LiveBtn>
-      </Right>
-    </Row>
-  </div>
-)
+const OutlineBtn = styled.button`
+  width: ${radarStudioLayout.headerPrimaryW};
+  height: ${radarStudioLayout.headerPrimaryH};
+  border-radius: 12px;
+  border: 1px solid ${radarStudioColors.gold};
+  background: transparent;
+  color: ${radarStudioColors.gold};
+  font-family: ${RADAR_FONT_BODY};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  @media (max-width: ${radarStudioLayout.mobileBreakpoint}) {
+    width: 100%;
+  }
+`
+
+const HiddenInput = styled.input`
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+`
+
+export const RadarStudioPageHeader: React.FC = () => {
+  const { runContractPreview, contractInput, setContractInput } = useRadarRuntime()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <Wrap data-rd-page-header>
+      <HiddenInput
+        ref={inputRef}
+        value={contractInput}
+        onChange={(e) => setContractInput(e.target.value)}
+        aria-hidden
+      />
+      <Top>
+        <Copy>
+          <CivilizationRoleLabel module="radar" />
+          <Title>RADAR</Title>
+          <Subtitle>
+            Discover verified on-chain intelligence. Track projects. Monitor liquidity. Detect opportunities.
+          </Subtitle>
+        </Copy>
+        <CtaRow className="rd-header-cta-desktop">
+          <PrimaryBtn
+            type="button"
+            onClick={() => {
+              if (contractInput.trim()) {
+                runContractPreview()
+              } else {
+                inputRef.current?.focus()
+                const addr = window.prompt('Enter contract address for analysis')
+                if (addr) {
+                  setContractInput(addr)
+                  runContractPreview(addr)
+                }
+              }
+            }}
+          >
+            Run Contract Analysis
+          </PrimaryBtn>
+          <OutlineBtn type="button">How Radar Works</OutlineBtn>
+        </CtaRow>
+      </Top>
+    </Wrap>
+  )
+}
 
 export default RadarStudioPageHeader

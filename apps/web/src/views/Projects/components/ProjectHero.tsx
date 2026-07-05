@@ -26,6 +26,8 @@ interface ProjectHeroProps {
 
 const ProjectHero: React.FC<ProjectHeroProps> = ({ project }) => {
   const { t } = useTranslation()
+  const tokenAddress = project.resources.tokens[0]?.address
+  const radarHref = tokenAddress ? `/radar?contract=${tokenAddress}` : undefined
 
   return (
     <HeroCard>
@@ -41,13 +43,29 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({ project }) => {
           )}
           <ProjectTrustBadge badges={project.trustBadges} />
         </Flex>
-        {project.deepLinks.buyMarco && (
-          <Link href={project.deepLinks.buyMarco} passHref legacyBehavior>
-            <Button as="a" scale="sm">
-              {t('Buy MARCO')}
-            </Button>
-          </Link>
-        )}
+        <Flex style={{ gap: '8px', flexWrap: 'wrap' }}>
+          {radarHref ? (
+            <Link href={radarHref} passHref legacyBehavior>
+              <Button as="a" scale="sm" variant="secondary">
+                {t('Open Radar')}
+              </Button>
+            </Link>
+          ) : null}
+          {radarHref ? (
+            <Link href={radarHref} passHref legacyBehavior>
+              <Button as="a" scale="sm" variant="secondary">
+                {t('Open Contract Intelligence')}
+              </Button>
+            </Link>
+          ) : null}
+          {project.deepLinks.buyMarco ? (
+            <Link href={project.deepLinks.buyMarco} passHref legacyBehavior>
+              <Button as="a" scale="sm">
+                {t('Buy MARCO')}
+              </Button>
+            </Link>
+          ) : null}
+        </Flex>
       </Flex>
       <Text color="text" mt="16px" mb="8px">
         {project.description}

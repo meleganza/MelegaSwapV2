@@ -93,7 +93,7 @@ const UserLaunchConsole: React.FC = () => {
       <EconomicSection title="Quick links">
         <EconomicActionGrid
           links={[
-            { label: 'Add liquidity', href: '/liquidity' },
+            { label: 'Add liquidity', href: '/liquidity-studio' },
             { label: 'Earn — Farms', href: '/farms' },
             { label: 'Earn — Pools', href: '/pools' },
             { label: 'Explore projects', href: '/projects' },

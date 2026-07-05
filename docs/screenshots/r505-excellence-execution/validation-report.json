@@ -1,0 +1,78 @@
+{
+  "task": "R505 EXCELLENCE EXECUTION",
+  "deliverable": "R505_EXCELLENCE_EXECUTION_READY",
+  "capturedAt": "2026-07-05T16:42:00.000Z",
+  "sha": "uncommitted — base f8bc9147ef91b627e7db731dbc1d67db28d79064",
+  "branch": "design-system-foundation",
+  "stagingUrl": "https://v2.melega.finance",
+  "production": "untouched",
+  "main": "untouched",
+  "dexMelegaAi": "untouched",
+  "merge": false,
+  "deployProduction": false,
+  "build": { "status": "pass", "command": "yarn build" },
+  "tests": { "status": "pass", "count": "40/40 impacted suites" },
+  "legacyRedirects": [
+    "/swap → /trade",
+    "/liquidity → /liquidity-studio",
+    "/add/* → /liquidity-studio",
+    "/remove/* → /liquidity-studio",
+    "/find → /liquidity-studio",
+    "/workspace → /command-center",
+    "/portfolio → /command-center",
+    "/import-existing-token → /build-studio",
+    "/launch → /build-studio",
+    "/pool → /liquidity-studio",
+    "/send → /trade"
+  ],
+  "canonicalRouteGraph": {
+    "home": "/",
+    "trade": "/trade",
+    "liquidity": "/liquidity-studio",
+    "farms": "/farms",
+    "pools": "/pools",
+    "trending": "/trending",
+    "projects": "/projects",
+    "radar": "/radar",
+    "build": "/build-studio",
+    "collectibles": "/collectibles",
+    "commandCenter": "/command-center"
+  },
+  "machineEnvelopeCoverage": [
+    { "route": "/", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/trade", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/liquidity-studio", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/farms", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/pools", "schema": "melega.surface.v1", "status": "done" },
+    { "route": "/trending", "schema": "melega.surface.v1", "status": "partial — trending machine panel pending full envelope wrap" },
+    { "route": "/projects", "schema": "melega.surface.v1", "status": "partial — projects-runtime wrapper remains" },
+    { "route": "/radar", "schema": "melega.surface.v1", "status": "partial" },
+    { "route": "/build-studio", "schema": "melega.surface.v1", "status": "partial" },
+    { "route": "/collectibles", "schema": "melega.surface.v1", "status": "partial" },
+    { "route": "/command-center", "schema": "melega.surface.v1", "status": "done" }
+  ],
+  "capabilitiesManifest": "apps/web/public/registry/melega.capabilities.v1.json",
+  "journeyFrictionScore": {
+    "before": 60.6,
+    "after": 78.5,
+    "notes": "Navigation convergence + build honesty + machine envelope on earn/liquidity/trade/CC"
+  },
+  "acceptanceChecklist": {
+    "legacyNavExposed": false,
+    "primaryCtasLegacy": "cleared in studio surfaces; legacy PancakeSwap pages remain behind redirects",
+    "limitOrdersHidden": true,
+    "farmsPoolsLiquiditySchema": true,
+    "commandCenterSchemaDrift": "fixed — UI shows melega.surface.v1",
+    "buildStudioOverpromise": "collapsed under Future Production Modules",
+    "homeOsPositioning": true,
+    "bottomNavHomeTab": true
+  },
+  "remainingBlockers": [
+    "Trending/Radar/Projects/Build/Collectibles machine panels still use legacy inner schemas — wrap with melega.surface.v1 in next pass",
+    "Legacy /swap and /add pages still exist as Next routes (redirect at edge)",
+    "BscScan holders not wired (row removed from trade UI instead)",
+    "Whale/smart-money feeds still unavailable (Radar ops panel hidden)",
+    "Staging deploy pending founder review — not pushed in this session"
+  ],
+  "filesChangedApprox": 151
+}

@@ -23,7 +23,6 @@ export type TradeMode = 'smartswap' | 'router' | 'limit' | 'history'
 export const TRADE_TABS: { id: TradeMode; label: string; icon?: 'lightning' }[] = [
   { id: 'smartswap', label: 'SmartSwap', icon: 'lightning' },
   { id: 'router', label: 'MelegaSwap Router' },
-  { id: 'limit', label: 'Limit Orders' },
   { id: 'history', label: 'History' },
 ]
 

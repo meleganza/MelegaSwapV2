@@ -18,7 +18,7 @@ describe('mainnet readiness gate', () => {
 
   it('classifies all audited public routes', () => {
     const routes = SURFACE_READINESS.map((surface) => surface.route)
-    expect(routes).toContain('/swap')
+    expect(routes).toContain('/trade')
     expect(routes).toContain('/ilo')
     expect(routes).toContain('/map')
     expect(routes).toContain('/collectibles')

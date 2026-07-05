@@ -1141,7 +1141,7 @@ export const CcSpecMachineSummary: React.FC = () => {
       <MachineBar data-cc-machine-bar>
         <MachineBarLeft>
           <SpecLabel style={{ fontWeight: 700, color: commandCenterColors.white }}>Machine Summary</SpecLabel>
-          <MachineSchema>melega.command-center.v1</MachineSchema>
+          <MachineSchema>melega.surface.v1</MachineSchema>
         </MachineBarLeft>
         <MachineExpandBtn type="button" onClick={() => setExpanded((v) => !v)}>
           {expanded ? 'Collapse' : 'Expand'}

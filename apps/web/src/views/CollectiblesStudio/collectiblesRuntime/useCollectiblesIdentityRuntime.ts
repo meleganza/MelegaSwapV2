@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { buildSurfaceEnvelope, type MelegaSurfaceEnvelope } from 'lib/surface-envelope'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { buildAiAdvisorRows } from './buildAiAdvisor'
@@ -12,9 +13,11 @@ import {
   mapRecordToCollectionCard,
 } from './formatCollectiblesRuntime'
 import { useWalletCollectibleOwnership } from './useWalletCollectibleOwnership'
+import { useBabyMarcoIdentityData } from './useBabyMarcoIdentityData'
 
 export function useCollectiblesIdentityRuntime() {
   const wallet = useWalletCollectibleOwnership()
+  const babyMarco = useBabyMarcoIdentityData(wallet.ownershipBySlug, wallet.account)
   const [filter, setFilter] = useState<string>('All')
   const [machineOpen, setMachineOpen] = useState(false)
 
@@ -58,18 +61,6 @@ export function useCollectiblesIdentityRuntime() {
 
   const sidebar = useMemo(() => buildSidebarLists(cards), [cards])
 
-  const machine = useMemo(
-    () =>
-      buildMachineProfile({
-        account: wallet.account,
-        chainId: wallet.chainId,
-        records: wallet.records,
-        ownershipBySlug: wallet.ownershipBySlug,
-        totalOwned: wallet.totalOwned,
-      }),
-    [wallet],
-  )
-
   const runtimeErrors: CollectiblesRuntimeError[] = useMemo(() => {
     const errs: CollectiblesRuntimeError[] = []
     if (wallet.records.length === 0) errs.push(createCollectiblesRuntimeError('NO_COLLECTION'))
@@ -77,6 +68,27 @@ export function useCollectiblesIdentityRuntime() {
     if (wallet.totalOwned === 0 && wallet.account) errs.push(createCollectiblesRuntimeError('NO_OWNER'))
     return errs
   }, [wallet.records.length, wallet.account, wallet.totalOwned])
+
+  const machine: MelegaSurfaceEnvelope = useMemo(() => {
+    const reasonCodes: Record<string, string> = {}
+    runtimeErrors.forEach((e) => {
+      reasonCodes[e.code] = e.message
+    })
+    return buildSurfaceEnvelope({
+      module: 'collectibles',
+      runtime: buildMachineProfile({
+        account: wallet.account,
+        chainId: wallet.chainId,
+        records: wallet.records,
+        ownershipBySlug: wallet.ownershipBySlug,
+        totalOwned: wallet.totalOwned,
+        primaryRarityLabel: babyMarco.yourIdentity.rarityLabel,
+        primaryTokenId: babyMarco.yourIdentity.primaryTokenId,
+      }),
+      reasonCodes,
+      sources: ['registry', 'wallet-nft-rpc'],
+    })
+  }, [wallet, babyMarco.yourIdentity.rarityLabel, babyMarco.yourIdentity.primaryTokenId, runtimeErrors])
 
   const setFilterCb = useCallback((chip: string) => setFilter(chip), [])
 
@@ -93,6 +105,7 @@ export function useCollectiblesIdentityRuntime() {
     machineOpen,
     setMachineOpen,
     wallet,
+    babyMarco,
     runtimeErrors,
     projects,
     featuredProject,

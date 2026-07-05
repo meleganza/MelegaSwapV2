@@ -49,7 +49,7 @@ export default function useWarningImport() {
 
   // const [onPresentSwapWarningModal] = useModal(<SwapWarningModal swapCurrency={swapWarningCurrency} />, false)
   // const [onPresentImportTokenWarningModal] = useModal(
-  //   <ImportTokenWarningModal tokens={importTokensNotInDefault} onCancel={() => router.push('/swap')} />,
+  //   <ImportTokenWarningModal tokens={importTokensNotInDefault} onCancel={() => router.push('/trade')} />,
   // )
 
   // useEffect(() => {

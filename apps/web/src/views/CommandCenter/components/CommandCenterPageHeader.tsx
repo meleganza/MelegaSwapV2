@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import CivilizationRoleLabel from 'components/Civilization/CivilizationRoleLabel'
 import { CC_FONT_BODY, CC_FONT_DISPLAY, commandCenterColors } from '../commandCenterTokens'
 
 const Wrap = styled.header`
@@ -30,6 +31,7 @@ const Subtitle = styled.p`
 
 export const CommandCenterPageHeader: React.FC = () => (
   <Wrap data-cc-page-header>
+    <CivilizationRoleLabel module="commandCenter" />
     <Title>COMMAND CENTER</Title>
     <Subtitle>Everything you own, build, earn and operate across the Melega ecosystem.</Subtitle>
   </Wrap>

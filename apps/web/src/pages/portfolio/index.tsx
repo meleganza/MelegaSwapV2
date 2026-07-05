@@ -1,7 +1,16 @@
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { CHAIN_IDS } from 'utils/wagmi'
-import UserWorkspaceConsole from 'views/UserWorkspace/UserWorkspaceConsole'
 
-const PortfolioPage = () => <UserWorkspaceConsole />
+/** Legacy — canonical cockpit is Command Center. */
+const PortfolioPage = () => {
+  const router = useRouter()
+  useEffect(() => {
+    if (!router.isReady) return
+    router.replace('/command-center')
+  }, [router, router.isReady])
+  return null
+}
 
 PortfolioPage.chains = CHAIN_IDS
 PortfolioPage.pure = true

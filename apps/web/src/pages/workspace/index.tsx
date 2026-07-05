@@ -1,7 +1,16 @@
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { CHAIN_IDS } from 'utils/wagmi'
-import UserWorkspaceConsole from 'views/UserWorkspace/UserWorkspaceConsole'
 
-const WorkspacePage = () => <UserWorkspaceConsole />
+/** Legacy — canonical cockpit is Command Center. */
+const WorkspacePage = () => {
+  const router = useRouter()
+  useEffect(() => {
+    if (!router.isReady) return
+    router.replace('/command-center')
+  }, [router, router.isReady])
+  return null
+}
 
 WorkspacePage.chains = CHAIN_IDS
 WorkspacePage.pure = true

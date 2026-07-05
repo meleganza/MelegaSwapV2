@@ -113,7 +113,7 @@ const EconomicReviewConsole: React.FC = () => {
                       {t('Review orchestrator link')}
                     </Link>
                   )}
-                  <Link href="/workspace">{t('Review workspace link')}</Link>
+                  <Link href="/command-center">{t('Review workspace link')}</Link>
                 </LinkRow>
               </div>
             ))}

@@ -41,9 +41,9 @@ const AddressField = styled(ItInput)`
   box-sizing: border-box;
 
   @media (min-width: 769px) {
-    min-width: 520px;
-    max-width: 640px;
-    flex: 1 1 520px;
+    min-width: 680px;
+    max-width: 760px;
+    flex: 1 1 680px;
   }
 
   @media (max-width: 768px) {
@@ -65,7 +65,7 @@ const ChainRow = styled.div`
 
 const AnalyzeBtn = styled(ItPrimaryBtn)`
   @media (min-width: 769px) {
-    width: 260px;
+    width: 280px;
     flex-shrink: 0;
   }
 
@@ -131,9 +131,12 @@ const Error = styled.p`
   color: ${importTokenColors.red};
 `
 
-type Props = Record<string, never>
+type Props = {
+  /** When embedded in Build Studio, hide duplicate step label. */
+  embedded?: boolean
+}
 
-export const ContractInputHero: React.FC<Props> = () => {
+export const ContractInputHero: React.FC<Props> = ({ embedded = false }) => {
   const { contract, setContract, chainLabel, setChainLabel, runAnalysis, validationError } = useImportRuntime()
 
   const handleAnalyze = () => {
@@ -142,7 +145,7 @@ export const ContractInputHero: React.FC<Props> = () => {
 
   return (
     <Hero data-iet-contract-hero>
-      <ItSectionLabel>Step 1 — Contract Input</ItSectionLabel>
+      {embedded ? null : <ItSectionLabel>Step 1 — Contract Input</ItSectionLabel>}
       <DesktopRow>
         <AddressField
           placeholder="0x..."
