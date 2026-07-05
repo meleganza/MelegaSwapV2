@@ -167,12 +167,21 @@ const TfButton = styled.button<{ $active?: boolean }>`
   }
 `
 
+const ChartBlock = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+`
+
 const StatsRow = styled.div`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   width: 100%;
-  margin-top: 12px;
+  margin-top: auto;
+  padding-top: 12px;
+  flex-shrink: 0;
   box-sizing: border-box;
 
   @media (max-width: 767px) {
@@ -245,6 +254,8 @@ export interface TradePriceChartProps {
   priceUsd?: number
   change24h?: number
   stats?: TradePairStat[]
+  chartEmptyReason?: string | null
+  chartEmptyDetail?: string
 }
 
 export const TradePriceChart: React.FC<TradePriceChartProps> = ({
@@ -255,6 +266,8 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   priceUsd,
   change24h,
   stats = [],
+  chartEmptyReason,
+  chartEmptyDetail,
 }) => {
   const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1h')
   const token0Address = getTokenAddress(inputCurrencyId)
@@ -327,25 +340,29 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           </IconBtn>
         </HeaderRight>
       </Header>
-      <Timeframes role="tablist" aria-label="Chart timeframe">
-        {TRADE_TIMEFRAMES.map((tf) => (
-          <TfButton
-            key={tf.id}
-            type="button"
-            role="tab"
-            aria-selected={timeframe === tf.id}
-            $active={timeframe === tf.id}
-            onClick={() => setTimeframe(tf.id)}
-          >
-            {tf.label}
-          </TfButton>
-        ))}
-      </Timeframes>
-      <TradeChartPanel
-        inputSymbol={inputSymbol}
-        outputSymbol={outputSymbol}
-        pairPrices={pairPrices}
-      />
+      <ChartBlock>
+        <Timeframes role="tablist" aria-label="Chart timeframe">
+          {TRADE_TIMEFRAMES.map((tf) => (
+            <TfButton
+              key={tf.id}
+              type="button"
+              role="tab"
+              aria-selected={timeframe === tf.id}
+              $active={timeframe === tf.id}
+              onClick={() => setTimeframe(tf.id)}
+            >
+              {tf.label}
+            </TfButton>
+          ))}
+        </Timeframes>
+        <TradeChartPanel
+          inputSymbol={inputSymbol}
+          outputSymbol={outputSymbol}
+          pairPrices={pairPrices}
+          emptyReason={chartEmptyReason}
+          emptyDetail={chartEmptyDetail}
+        />
+      </ChartBlock>
       <StatsRow data-trade-pair-stats>
         {stats.map((stat) => {
           const muted = !stat.value

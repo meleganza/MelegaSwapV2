@@ -222,6 +222,15 @@ export interface TradeChartPanelProps {
   inputSymbol: string
   outputSymbol: string
   pairPrices?: Array<{ time: string; value: number }>
+  emptyReason?: string | null
+  emptyDetail?: string
+}
+
+const EMPTY_REASON_LABELS: Record<string, string> = {
+  pair_not_indexed: 'Pair not indexed',
+  subgraph_empty: 'Subgraph empty',
+  explorer_missing: 'Explorer source missing',
+  route_not_configured: 'Route not configured',
 }
 
 const SubgraphChart = styled.div`
@@ -266,6 +275,8 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   inputSymbol,
   outputSymbol,
   pairPrices = [],
+  emptyReason,
+  emptyDetail,
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
@@ -331,8 +342,11 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
       )}
       {showUnavailable && (
         <UnavailableState data-trade-chart-unavailable>
-          <UnavailableTitle>—</UnavailableTitle>
-          <UnavailableDesc>Waiting for indexing — pair price history not available yet.</UnavailableDesc>
+          <UnavailableTitle>{EMPTY_REASON_LABELS[emptyReason ?? ''] ?? 'No chart data'}</UnavailableTitle>
+          <UnavailableDesc>
+            {emptyDetail ??
+              'Indexed pair candles are not available yet. Stats and swaps update when subgraph indexes this pair.'}
+          </UnavailableDesc>
         </UnavailableState>
       )}
       {showSkeleton && (

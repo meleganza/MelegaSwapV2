@@ -33,6 +33,7 @@ import { convertCakeToShares, convertSharesToCake } from '../../helpers'
 import FeeSummary from './FeeSummary'
 import { Token } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import type { PoolTxSuccessPayload } from '../Modals/CollectModal'
 
 interface VaultStakeModalProps {
   pool: Pool.DeserializedPool<Token>
@@ -40,6 +41,7 @@ interface VaultStakeModalProps {
   performanceFee?: number
   isRemovingStake?: boolean
   onDismiss?: () => void
+  onTxSuccess?: (payload: PoolTxSuccessPayload) => void
 }
 
 const StyledButton = styled(Button)`
@@ -68,6 +70,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   performanceFee,
   isRemovingStake = false,
   onDismiss,
+  onTxSuccess,
 }) => {
   const dispatch = useAppDispatch()
   const { stakingToken, earningToken, apr, stakingTokenPrice, earningTokenPrice } = pool
@@ -142,6 +145,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
         if (receipt.status) {
           toastSuccess(t('Unstaked!'), t('Your earnings have also been harvested to your wallet'))
           setPendingTx(false)
+          onTxSuccess?.({ action: 'unstake', sousId: pool.sousId, txHash: receipt.transactionHash })
           onDismiss()
           dispatch(fetchCakeVaultUserData({ account }))
         }
@@ -158,6 +162,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
         if (receipt.status) {
           toastSuccess(t('Unstaked!'), t('Your earnings have also been harvested to your wallet'))
           setPendingTx(false)
+          onTxSuccess?.({ action: 'unstake', sousId: pool.sousId, txHash: receipt.transactionHash })
           onDismiss()
           dispatch(fetchCakeVaultUserData({ account }))
         }
@@ -179,6 +184,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
       if (receipt.status) {
         toastSuccess(t('Staked!'), t('Your funds have been staked in the pool'))
         setPendingTx(false)
+        onTxSuccess?.({ action: 'stake', sousId: pool.sousId, txHash: receipt.transactionHash })
         onDismiss()
         dispatch(fetchCakeVaultUserData({ account }))
       }

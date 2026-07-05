@@ -2,6 +2,7 @@ import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import { CHAIN_LABELS } from 'registry/projects/constants'
 import type { LiveEventItem, LiveEventType } from '../radarStudioData'
 import { buildProjectRating } from 'views/ProjectsStudio/projectsRuntime/buildProjectRating'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 
 export interface RadarLiveEvent extends LiveEventItem {
   severity: 'low' | 'medium' | 'high'
@@ -84,6 +85,11 @@ export function buildLiveEvents(projects: EnrichedProjectRecord[]): RadarLiveEve
       severity: 'low',
       source: 'Melega AI',
     })
+  })
+
+  emitCivilizationEvent('radar_signals_refreshed', 'radar', {
+    eventCount: events.length,
+    projectCount: projects.length,
   })
 
   return events

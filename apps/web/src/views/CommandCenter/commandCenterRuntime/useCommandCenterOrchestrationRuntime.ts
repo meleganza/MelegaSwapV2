@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
+import { useCivilizationRuntimeSync } from 'lib/civilization-runtime/useCivilizationRuntimeSync'
 import { useAllTransactions } from 'state/transactions/hooks'
 import { useTradeSwapRuntime } from 'views/Trade/tradeRuntime/useTradeSwapRuntime'
 import { useTradeSettlementMetadata } from 'views/Trade/tradeRuntime/useTradeSettlementMetadata'
@@ -36,6 +38,7 @@ import {
   commandCenterIdentitySummary,
   formatCommandCenterCollectibles,
 } from 'views/CollectiblesStudio/collectiblesRuntime/formatCommandCenterCollectibles'
+import { useTrendingIntelligenceRuntime } from 'views/TrendingStudio/trendingRuntime/useTrendingIntelligenceRuntime'
 import { useWalletCollectibleOwnership } from 'views/CollectiblesStudio/collectiblesRuntime/useWalletCollectibleOwnership'
 
 export function useCommandCenterOrchestrationRuntime() {
@@ -52,6 +55,8 @@ export function useCommandCenterOrchestrationRuntime() {
   const radar = useRadarIntelligenceRuntime()
   const build = useBuildOrchestrationRuntime()
   const collectiblesWallet = useWalletCollectibleOwnership()
+  const trending = useTrendingIntelligenceRuntime()
+  const civilizationRuntime = useCivilizationRuntimeSync()
 
   const assets = useMemo(() => formatAssetRows(trade.assets, account), [trade.assets, account])
   const liquidityRows = useMemo(() => formatLiquidityRows(liquidity.positions), [liquidity.positions])
@@ -143,8 +148,13 @@ export function useCommandCenterOrchestrationRuntime() {
         })),
         collectibleUnlocked:
           collectiblesWallet.totalOwned > 0
-            ? { title: `${collectiblesWallet.totalOwned} identity collectible(s)`, time: new Date().toISOString() }
+            ? { title: `${collectiblesWallet.totalOwned} civilization identity(ies)`, time: new Date().toISOString() }
             : undefined,
+        civilizationEvents: civilizationRuntime.events.journal.slice(0, 6).map((e) => ({
+          title: e.type.replace(/_/g, ' '),
+          time: e.emittedAt,
+          source: e.source,
+        })),
       }),
     [
       tradeTxs,
@@ -153,8 +163,17 @@ export function useCommandCenterOrchestrationRuntime() {
       radar.recentDiscoveries,
       build.recentBuilds,
       collectiblesWallet.totalOwned,
+      civilizationRuntime.events.journal,
     ],
   )
+
+  useEffect(() => {
+    emitCivilizationEvent('command_center_synced', 'command_center', {
+      projectCount: projects.allProjects.length,
+      notificationCount: notifications.length,
+      coverage: civilizationRuntime.runtimeGraph.coveragePercentage,
+    })
+  }, [projects.allProjects.length, notifications.length, civilizationRuntime.runtimeGraph.coveragePercentage])
 
   const recentActivity = useMemo(
     () =>
@@ -183,8 +202,9 @@ export function useCommandCenterOrchestrationRuntime() {
         collectiblesWallet.records,
         collectiblesWallet.ownershipBySlug,
         collectiblesWallet.totalOwned,
+        account,
       ),
-    [collectiblesWallet],
+    [collectiblesWallet, account],
   )
 
   const collectibles = useMemo(
@@ -355,6 +375,8 @@ export function useCommandCenterOrchestrationRuntime() {
     recentActivity,
     kpis,
     machine,
+    civilizationRuntime,
+    trendingMachine: trending.machine,
     settlement,
     runtimeErrors,
   }

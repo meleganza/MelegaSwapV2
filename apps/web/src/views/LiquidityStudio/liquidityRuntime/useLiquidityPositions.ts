@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { Currency, CurrencyAmount, Pair, Percent, Token } from '@pancakeswap/sdk'
 import { useAccount } from 'wagmi'
 import useBUSDPrice from 'hooks/useBUSDPrice'
@@ -118,6 +119,13 @@ export function useLiquidityPositions() {
 
   const positions = useMemo(() => [...v2Positions, ...stablePositions], [v2Positions, stablePositions])
   const isLoading = Boolean(account) && v2IsLoading
+
+  useEffect(() => {
+    emitCivilizationEvent('liquidity_position_changed', 'liquidity', {
+      positionCount: positions.length,
+      account: account ?? null,
+    })
+  }, [positions.length, account])
 
   return { positions, isLoading, account }
 }

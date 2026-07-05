@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { getPendingProjectRegistry } from 'registry/projects/pending'
@@ -182,6 +183,13 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   )
 
   const setFilterCb = useCallback((chip: ProjectFilterChip) => setFilter(chip), [])
+
+  useEffect(() => {
+    emitCivilizationEvent('projects_intelligence_refreshed', 'projects', {
+      indexed: enriched.length,
+      pending: pendingRecords.length,
+    })
+  }, [enriched.length, pendingRecords.length])
 
   return {
     phase: 'ready',

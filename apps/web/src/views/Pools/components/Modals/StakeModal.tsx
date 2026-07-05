@@ -17,6 +17,12 @@ import useStakePool from '../../hooks/useStakePool'
 import useUnstakePool from '../../hooks/useUnstakePool'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
+export type PoolTxSuccessPayload = {
+  action: 'stake' | 'unstake' | 'claim'
+  sousId: number
+  txHash: string
+}
+
 const StakeModalContainer = ({
   isBnbPool,
   pool,
@@ -24,7 +30,8 @@ const StakeModalContainer = ({
   onDismiss,
   stakingTokenBalance,
   stakingTokenPrice,
-}: Pool.StakeModalPropsType<Token>) => {
+  onTxSuccess,
+}: Pool.StakeModalPropsType<Token> & { onTxSuccess?: (payload: PoolTxSuccessPayload) => void }) => {
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
   const {
@@ -90,6 +97,11 @@ const StakeModalContainer = ({
         }
 
         onDone?.()
+        onTxSuccess?.({
+          action: isRemovingStake ? 'unstake' : 'stake',
+          sousId,
+          txHash: receipt.transactionHash,
+        })
         onDismiss?.()
       }
     },
@@ -102,6 +114,7 @@ const StakeModalContainer = ({
       onUnstake,
       onDone,
       onDismiss,
+      onTxSuccess,
       toastSuccess,
       t,
       earningToken.symbol,

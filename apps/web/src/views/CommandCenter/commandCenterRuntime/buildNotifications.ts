@@ -7,6 +7,7 @@ interface NotificationInput {
   buildEvents: Array<{ title: string; time: string }>
   tradeTxs: Array<{ title: string; time: string }>
   collectibleUnlocked?: { title: string; time: string }
+  civilizationEvents?: Array<{ title: string; time: string; source: string }>
 }
 
 function formatTimeAgo(isoOrUnix: string | number): string {
@@ -46,11 +47,19 @@ export function buildNotifications(input: NotificationInput): NotificationItem[]
 
   if (input.collectibleUnlocked) {
     items.push({
-      id: 'collectible-0',
-      title: `Collectible — ${input.collectibleUnlocked.title}`,
+      id: 'identity-0',
+      title: `Identity — ${input.collectibleUnlocked.title}`,
       time: formatTimeAgo(input.collectibleUnlocked.time),
     })
   }
+
+  input.civilizationEvents?.forEach((e, i) => {
+    items.push({
+      id: `runtime-${i}`,
+      title: `${e.source} — ${e.title}`,
+      time: formatTimeAgo(e.time),
+    })
+  })
 
   return items.slice(0, 8)
 }

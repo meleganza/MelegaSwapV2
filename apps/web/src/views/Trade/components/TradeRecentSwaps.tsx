@@ -26,14 +26,19 @@ export interface TradeRecentSwapsProps {
   rows: TradeSwapRow[]
   isIndexing?: boolean
   swapEmptyReason?: string
+  missingReason?: string | null
+  missingReasonDetail?: string
 }
 
 export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
   rows,
   isIndexing,
   swapEmptyReason,
+  missingReason,
+  missingReasonDetail,
 }) => {
   const displayRows = rows.slice(0, 6)
+  const isEmpty = displayRows.length === 0
 
   const timelineRows = displayRows.map((row) => ({
     id: row.id,
@@ -52,14 +57,15 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
       <PremiumActivityTimeline
         title="Recent Swaps on Melega DEX"
         rows={timelineRows}
-        height={tradeLayout.recentSwapsHeight}
+        height={isEmpty ? tradeLayout.recentSwapsHeightCompact : tradeLayout.recentSwapsHeight}
         emptyTitle={isIndexing ? 'Indexing swaps' : 'No recent swaps'}
         emptySubtitle={
           isIndexing
             ? 'Fetching indexed swap activity for this pair'
-            : swapEmptyReason === 'NO_EVENTS_INDEXED'
-              ? 'No swap events indexed for this pair yet'
-              : 'Swap history appears when Melega subgraph indexes trades'
+            : missingReasonDetail ??
+              (swapEmptyReason === 'NO_EVENTS_INDEXED'
+                ? 'No swap events indexed for this pair yet'
+                : 'Swap history appears when Melega subgraph indexes trades')
         }
         data-testid="trade"
       />

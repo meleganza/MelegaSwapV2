@@ -8,6 +8,11 @@ export interface ShellNavItem {
   match: (pathname: string) => boolean
   /** Gold accent for featured launch actions (e.g. Reward MARCO holders). */
   highlight?: boolean
+  /** Hidden from primary nav but route may remain for legacy deep links. */
+  hidden?: boolean
+  /** Preparation-only — shown disabled, no navigation. */
+  disabled?: boolean
+  disabledReason?: string
 }
 
 export interface ShellNavSection {
@@ -64,7 +69,7 @@ export const shellNavigation: ShellNavSection[] = [
       { id: 'radar', label: 'Radar', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
       {
         id: 'collectibles',
-        label: 'Collectibles',
+        label: 'Identity Hub',
         href: COLLECTIBLES_ROUTE,
         icon: 'star',
         match: (p) => p.startsWith('/collectibles') || p.startsWith('/nft'),
@@ -82,13 +87,21 @@ export const shellNavigation: ShellNavSection[] = [
         icon: 'sparkle',
         match: (p) => p.startsWith('/build-studio'),
       },
-      { id: 'list', label: 'List Project', href: '/import-existing-token', icon: 'rocket', match: (p) => p === '/import-existing-token' || p === '/launch' },
+      {
+        id: 'list',
+        label: 'Import Existing Token',
+        href: '/import-existing-token',
+        icon: 'rocket',
+        match: (p) => p === '/import-existing-token' || p === '/launch',
+      },
       {
         id: 'reward',
         label: 'Reward MARCO holders',
         href: '/launch?intent=reward-marco-holders',
         icon: 'sparkle',
         highlight: true,
+        disabled: true,
+        disabledReason: 'Preparation only — module not ready',
         match: (p) => p.includes('intent=reward-marco-holders'),
       },
       {
@@ -96,6 +109,8 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Create Token',
         href: '/launch?intent=create-token',
         icon: 'rocket',
+        disabled: true,
+        disabledReason: 'Preparation only — page not ready',
         match: (p) => p.includes('intent=create-token'),
       },
       {
@@ -103,6 +118,8 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Create Farm',
         href: '/launch?intent=create-farm',
         icon: 'coins',
+        disabled: true,
+        disabledReason: 'Preparation only — page not ready',
         match: (p) => p.includes('intent=create-farm'),
       },
       {
@@ -110,6 +127,8 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Create Staking Pool',
         href: '/launch?intent=create-staking-pool',
         icon: 'coins',
+        disabled: true,
+        disabledReason: 'Preparation only — page not ready',
         match: (p) => p.includes('intent=create-staking-pool'),
       },
       {
@@ -117,13 +136,15 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Lock Liquidity',
         href: '/launch?intent=lock-liquidity',
         icon: 'drop',
+        disabled: true,
+        disabledReason: 'Not available — functionality pending',
         match: (p) => p.includes('intent=lock-liquidity'),
       },
     ],
   },
   {
     label: 'OWN',
-    visibleCount: 2,
+    visibleCount: 1,
     items: [
       {
         id: 'command-center',
@@ -137,6 +158,7 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Overview',
         href: '/portfolio',
         icon: 'wallet',
+        hidden: true,
         match: (p) => p === '/portfolio' || p.startsWith('/portfolio/'),
       },
     ],

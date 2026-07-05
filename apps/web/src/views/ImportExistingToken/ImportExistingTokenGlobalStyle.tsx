@@ -26,7 +26,14 @@ const ImportExistingTokenGlobalStyle = createGlobalStyle`
     transition: transform ${importTokenLayout.transition} ease, border-color ${importTokenLayout.transition} ease;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
+    [data-import-existing-token-screen] [data-iet-contract-hero] [data-iet-contract-input] {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+
     [data-import-existing-token-screen] [data-iet-contract-hero] button[data-iet-primary],
     [data-import-existing-token-screen] [data-iet-contract-hero] button:last-of-type {
       width: 100% !important;

@@ -67,8 +67,9 @@ export const SidebarExpandableSection: React.FC<SidebarExpandableSectionProps> =
   pathname,
 }) => {
   const panelId = useId()
-  const primary = items.slice(0, visibleCount)
-  const extra = items.slice(visibleCount)
+  const visibleItems = items.filter((item) => !item.hidden)
+  const primary = visibleItems.slice(0, visibleCount)
+  const extra = visibleItems.slice(visibleCount)
   const extraActive = extra.some((item) => item.match(pathname))
   const [open, setOpen] = useState(extraActive)
 
@@ -76,16 +77,31 @@ export const SidebarExpandableSection: React.FC<SidebarExpandableSectionProps> =
     if (extraActive) setOpen(true)
   }, [extraActive])
 
-  const renderItem = (item: ShellNavItem) => (
-    <Link key={`${label}-${item.id}`} href={item.href} passHref legacyBehavior>
-      <MelegaSidebarItem
-        label={item.label}
-        active={item.match(pathname)}
-        highlighted={item.highlight}
-        icon={<ShellNavIcon name={item.icon} />}
-      />
-    </Link>
-  )
+  const renderItem = (item: ShellNavItem) => {
+    if (item.disabled) {
+      return (
+        <MelegaSidebarItem
+          key={`${label}-${item.id}`}
+          label={item.label}
+          active={false}
+          highlighted={item.highlight}
+          disabled
+          icon={<ShellNavIcon name={item.icon} />}
+        />
+      )
+    }
+
+    return (
+      <Link key={`${label}-${item.id}`} href={item.href} passHref legacyBehavior>
+        <MelegaSidebarItem
+          label={item.label}
+          active={item.match(pathname)}
+          highlighted={item.highlight}
+          icon={<ShellNavIcon name={item.icon} />}
+        />
+      </Link>
+    )
+  }
 
   return (
     <MelegaSidebarSection label={label}>

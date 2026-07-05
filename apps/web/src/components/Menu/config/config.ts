@@ -87,7 +87,7 @@ const config: (
       items: [
         { label: t('Projects'), href: '/projects' },
         { label: t('Assets'), href: '/assets' },
-        { label: t('Collectibles'), href: '/collectibles' },
+        { label: 'Identity Hub', href: '/collectibles' },
         { label: t('Presence'), href: '/presence' },
       ].map((item) => addMenuItemSupported(item, chainId)),
     },

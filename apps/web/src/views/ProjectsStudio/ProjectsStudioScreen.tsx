@@ -10,6 +10,7 @@ import ProjectsGrid from './components/ProjectsGrid'
 import ProjectsKpiRow from './components/ProjectsKpiRow'
 import ProjectsStudioPageHeader from './components/ProjectsStudioPageHeader'
 import { ProjectsRuntimeProvider } from './projectsRuntime/ProjectsRuntimeContext'
+import ProjectsMachinePanel from './components/ProjectsMachinePanel'
 import { projectsStudioColors, projectsStudioLayout } from './projectsStudioTokens'
 
 const Root = styled.div`
@@ -52,6 +53,7 @@ export const ProjectsStudioScreen: React.FC = () => (
         <ProjectsFilterRow />
         <ProjectsGrid />
         <ProjectsActivityTable />
+        <ProjectsMachinePanel />
       </Content>
     </Root>
   </ProjectsRuntimeProvider>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useMemo, useState, useRef } from 'react'
 import styled from 'styled-components'
 import { tradeColors, tradeLayout } from '../tradeTokens'
 import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'
@@ -6,6 +6,11 @@ import { formatSettlementUserLabel, settlementLabelTone } from '../tradeRuntime/
 import { useTradeUi } from '../TradeUiContext'
 import TradeWatchlist from './TradeWatchlist'
 import TradeMelegaIsologo from './TradeMelegaIsologo'
+import { Field } from 'state/swap/actions'
+import { useSwapState } from 'state/swap/hooks'
+import { useCurrency } from 'hooks/Tokens'
+import useTradeTerminalData from '../useTradeTerminalData'
+import { buildTradeSurfaceMachinePayload } from '../tradeRuntime/buildTradeMachinePayload'
 
 const Rail = styled.div`
   display: flex;
@@ -299,6 +304,46 @@ export const TradeRightRail: React.FC = () => {
   const { setMode } = useTradeUi()
   const assetsPanelRef = useRef<HTMLDivElement>(null)
   const [machineOpen, setMachineOpen] = useState(false)
+  const {
+    [Field.INPUT]: { currencyId: inputCurrencyId },
+    [Field.OUTPUT]: { currencyId: outputCurrencyId },
+  } = useSwapState()
+  const inputCurrency = useCurrency(inputCurrencyId)
+  const outputCurrency = useCurrency(outputCurrencyId)
+  const inputSymbol = inputCurrency?.symbol ?? 'BNB'
+  const outputSymbol = outputCurrency?.symbol ?? 'MARCO'
+  const terminalData = useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
+  const surfaceMachine = useMemo(
+    () =>
+      buildTradeSurfaceMachinePayload({
+        execution: machine,
+        market: terminalData.machine,
+        inputSymbol,
+        outputSymbol,
+        outputAddress: terminalData.canonicalOutputAddress,
+        tokenExists: terminalData.tokenExists,
+        tokenLoading: terminalData.isIndexingMetrics,
+        hasSubgraphTx: terminalData.recentSwaps.length > 0,
+        hasPairPrices: Boolean(terminalData.pairPrice?.value),
+        routeConfigured: Boolean(outputCurrencyId || terminalData.canonicalOutputAddress),
+        chartStatus: terminalData.pairPrice?.value
+          ? 'indexed'
+          : terminalData.isIndexingMetrics
+            ? 'loading'
+            : 'empty',
+        statsStatus: terminalData.isIndexingMetrics
+          ? 'loading'
+          : terminalData.tokenExists === false
+            ? 'missing'
+            : 'ready',
+        swapsStatus: terminalData.isIndexing
+          ? 'loading'
+          : terminalData.recentSwaps.length > 0
+            ? 'ready'
+            : 'empty',
+      }),
+    [machine, terminalData, inputSymbol, outputSymbol, outputCurrencyId],
+  )
   const settlementLabel = formatSettlementUserLabel(machine.settlement)
   const settlementTone = settlementLabelTone(settlementLabel)
 
@@ -416,7 +461,7 @@ export const TradeRightRail: React.FC = () => {
             {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
           </MachineToggle>
           {machineOpen && (
-            <MachinePre data-trade-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
+            <MachinePre data-trade-machine-json>{JSON.stringify(surfaceMachine, null, 2)}</MachinePre>
           )}
         </Panel>
       </TopPanels>

@@ -2,7 +2,9 @@ import { useMemo } from 'react'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useProtocolTransactionsSWR, useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
+import { MARCO_BSC_ADDRESS, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
+import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
 
 export interface TradeSwapRow {
   id: string
@@ -25,9 +27,17 @@ export interface TradePairStat {
 }
 
 export interface TradeDataMachinePayload {
+  schema: 'melega.trade.market.v1'
+  schemaVersion: '1.0.0'
+  module: 'trade'
   subgraphTransactions: 'loading' | 'ready' | 'empty'
   tokenMetrics: 'loading' | 'ready' | 'missing'
   reasonCodes: Partial<Record<string, DataReasonCode>>
+  dataSources: string[]
+  primaryActions: string[]
+  runtimeLinks: string[]
+  missingReason: TradeDataMissingReason
+  missingReasonDetail?: string
   timestamp: string
 }
 
@@ -82,19 +92,29 @@ const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean
   return symbols.has(token0.toUpperCase()) && symbols.has(token1.toUpperCase())
 }
 
+function resolveCanonicalOutputAddress(outputSymbol?: string, outputAddress?: string): string | undefined {
+  if (outputAddress) return getTokenAddress(outputAddress)
+  if (isMarcoSymbol(outputSymbol)) return MARCO_BSC_ADDRESS
+  return undefined
+}
+
 export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string, outputAddress?: string) => {
   const transactions = useProtocolTransactionsSWR()
-  const tokenAddress = outputAddress ? getTokenAddress(outputAddress) : undefined
+  const resolvedOutput = resolveCanonicalOutputAddress(outputSymbol, outputAddress)
+  const tokenAddress = resolvedOutput
   const tokenData = useTokenDataSWR(tokenAddress)
+
+  const displayInput = inputSymbol ?? 'BNB'
+  const displayOutput = isMarcoSymbol(outputSymbol) || !outputSymbol ? 'MARCO' : outputSymbol
 
   const recentSwaps = useMemo((): TradeSwapRow[] => {
     if (!transactions?.length) return []
     return transactions
       .filter((tx) => tx.type === TransactionType.SWAP)
-      .filter((tx) => matchesPair(tx, inputSymbol, outputSymbol))
+      .filter((tx) => matchesPair(tx, displayInput, displayOutput))
       .slice(0, 12)
       .map((tx) => {
-        const receivedSymbol = outputSymbol ?? tx.token1Symbol
+        const receivedSymbol = displayOutput ?? tx.token1Symbol
         const receivedAmount =
           receivedSymbol === tx.token1Symbol
             ? formatTokenAmount(tx.amountToken1, tx.token1Symbol)
@@ -106,16 +126,16 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
           pair: `${tx.token0Symbol} / ${tx.token1Symbol}`,
           amount: formatUsd(tx.amountUSD) ?? '—',
           received: receivedAmount,
-          direction: swapDirection(tx, outputSymbol),
+          direction: swapDirection(tx, displayOutput),
           route: swapRouteLabel(tx),
         }
       })
-  }, [transactions, inputSymbol, outputSymbol])
+  }, [transactions, displayInput, displayOutput])
 
   const pairStats = useMemo((): TradePairStat[] => {
     const volChange = formatPct(tokenData?.volumeUSDChange ?? NaN)
     const liqChange = formatPct(tokenData?.liquidityUSDChange ?? NaN)
-    const priceChange = formatPct(tokenData?.priceUSDChange ?? NaN)
+    const txChange = formatPct(tokenData?.txCountChange ?? NaN)
 
     const volumeReason: DataReasonCode | undefined =
       tokenData === undefined
@@ -165,8 +185,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         id: 'transactions',
         label: '24H Trades',
         value: tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined,
-        change: priceChange?.text,
-        changePositive: priceChange?.positive,
+        change: txChange?.text,
+        changePositive: txChange?.positive,
         reasonCode: tradesReason,
       },
       {
@@ -187,20 +207,46 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     }
   }, [tokenData])
 
+  const missingReason = useMemo((): TradeDataMissingReason => {
+    if (tokenData === undefined) return null
+    if (!tokenAddress) return 'route_not_configured'
+    if (!tokenData.exists) return 'pair_not_indexed'
+    if (!transactions?.length && !tokenData.volumeUSD) return 'subgraph_empty'
+    return null
+  }, [tokenData, tokenAddress, transactions])
+
+  const missingReasonDetail = useMemo((): string | undefined => {
+    if (missingReason === 'pair_not_indexed') return 'MARCO/BNB pair not indexed in Melega subgraph'
+    if (missingReason === 'subgraph_empty') return 'Subgraph returned no historical candles or swap events'
+    if (missingReason === 'route_not_configured') return 'Output token route not configured'
+    if (pairStats.find((s) => s.id === 'holders')?.reasonCode === 'EXPLORER_SOURCE_MISSING') {
+      return missingReason ? undefined : 'Holder count requires explorer API — not wired'
+    }
+    return undefined
+  }, [missingReason, pairStats])
+
   const machine = useMemo((): TradeDataMachinePayload => {
     const reasonCodes: Partial<Record<string, DataReasonCode>> = {}
     pairStats.forEach((stat) => {
       if (stat.reasonCode) reasonCodes[stat.id] = stat.reasonCode
     })
     return {
+      schema: 'melega.trade.market.v1',
+      schemaVersion: '1.0.0',
+      module: 'trade',
       subgraphTransactions:
         transactions === undefined ? 'loading' : transactions.length > 0 ? 'ready' : 'empty',
       tokenMetrics:
         tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
       reasonCodes,
+      dataSources: ['melega-subgraph', 'on-chain-multicall', 'presence-registry'],
+      primaryActions: ['view_chart', 'view_recent_swaps', 'swap'],
+      runtimeLinks: ['/command-center', '/liquidity-studio', '/trending'],
+      missingReason,
+      missingReasonDetail,
       timestamp: new Date().toISOString(),
     }
-  }, [transactions, tokenData, pairStats])
+  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail])
 
   const isIndexingSwaps = transactions === undefined
   const isIndexingMetrics = tokenData === undefined && Boolean(tokenAddress)
@@ -210,10 +256,16 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     pairStats,
     pairPrice,
     machine,
+    missingReason,
+    missingReasonDetail,
+    canonicalOutputAddress: resolvedOutput,
+    displayInput,
+    displayOutput,
     isIndexing: isIndexingSwaps,
     isIndexingMetrics,
     hasSwapData: transactions !== undefined,
     swapEmptyReason: transactions !== undefined && recentSwaps.length === 0 ? 'NO_EVENTS_INDEXED' : undefined,
+    tokenExists: tokenData?.exists,
   }
 }
 

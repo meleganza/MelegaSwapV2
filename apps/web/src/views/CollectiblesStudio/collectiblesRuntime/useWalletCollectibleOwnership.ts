@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useDNFTContract } from 'hooks/useContract'
 import { getAllCollectibles } from 'registry/collectibles/getAllCollectibles'
@@ -37,10 +37,14 @@ export function useWalletCollectibleOwnership() {
 
     for (const record of indexedRecords) {
       if (!record.contract.indexed || !record.contract.address) {
+        const runtimeStatus =
+          record.status === 'planned' || record.status === 'planned_or_external'
+            ? ('Not owned' as const)
+            : ('Unavailable' as const)
         next[record.slug] = {
           slug: record.slug,
           balance: 0,
-          status: record.status === 'planned' ? 'Unavailable' : 'Not owned',
+          status: runtimeStatus,
           transferable: null,
           tokenIds: [],
         }
@@ -81,6 +85,14 @@ export function useWalletCollectibleOwnership() {
     }
 
     setOwnershipBySlug(next)
+
+    const genesisOwned = next['babymarco-genesis']?.balance ?? 0
+    if (genesisOwned > 0) {
+      emitCivilizationEvent('identity_resolved', 'identity', {
+        balance: genesisOwned,
+        tokenIds: next['babymarco-genesis']?.tokenIds ?? [],
+      })
+    }
   }, [account, contract, indexedRecords])
 
   useEffect(() => {

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { buildLiveEvents } from 'views/RadarStudio/radarRuntime/buildLiveEvents'
@@ -89,6 +90,13 @@ export function useTrendingIntelligenceRuntime() {
       : cards.length === 0
         ? 'Insufficient Data — no projects match this filter.'
         : null
+
+  useEffect(() => {
+    emitCivilizationEvent('trending_refreshed', 'trending', {
+      projectCount: enriched.length,
+      cardCount: cards.length,
+    })
+  }, [enriched.length, cards.length, filter])
 
   return {
     filter,

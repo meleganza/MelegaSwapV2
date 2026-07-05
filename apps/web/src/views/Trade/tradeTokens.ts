@@ -15,6 +15,7 @@ export const tradeLayout = {
   chartAreaHeight: '300px',
   chartAreaHeightCompact: '132px',
   recentSwapsHeight: '320px',
+  recentSwapsHeightCompact: '168px',
 } as const
 
 export type TradeMode = 'smartswap' | 'router' | 'limit' | 'history'

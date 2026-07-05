@@ -133,6 +133,15 @@ export async function submitSettlementHandoff(
       const status = mapResponseToStatus(body)
       const reference = buildReference(payload, status, 'available', body)
       setSettlementReference(reference)
+      emitCivilizationEvent('treasury_settlement', 'trade', {
+        txHash: payload.transactionHash,
+        status,
+        chainId: payload.chain,
+      })
+      emitCivilizationEvent('trade_executed', 'trade', {
+        txHash: payload.transactionHash,
+        status,
+      })
       return { reference, response: body }
     } catch (error) {
       lastError = error

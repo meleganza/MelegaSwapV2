@@ -15,11 +15,16 @@ const Hero = styled(ItPanel)`
   gap: 16px;
 `
 
-const InputRow = styled.div`
+const DesktopRow = styled.div`
   display: flex;
-  gap: 12px;
   flex-wrap: wrap;
   align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  @media (min-width: 769px) {
+    flex-wrap: nowrap;
+  }
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -27,15 +32,46 @@ const InputRow = styled.div`
   }
 `
 
-const InputFlex = styled.div`
-  flex: 1;
-  min-width: 200px;
+const AddressField = styled(ItInput)`
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  overflow-x: auto;
+  white-space: nowrap;
+  box-sizing: border-box;
+
+  @media (min-width: 769px) {
+    min-width: 520px;
+    max-width: 640px;
+    flex: 1 1 520px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
 `
 
 const ChainRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+
+  @media (min-width: 769px) {
+    flex-shrink: 0;
+  }
+`
+
+const AnalyzeBtn = styled(ItPrimaryBtn)`
+  @media (min-width: 769px) {
+    width: 260px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `
 
 const ChainBtn = styled.button<{ $active?: boolean }>`
@@ -107,15 +143,14 @@ export const ContractInputHero: React.FC<Props> = () => {
   return (
     <Hero data-iet-contract-hero>
       <ItSectionLabel>Step 1 — Contract Input</ItSectionLabel>
-      <InputRow>
-        <InputFlex>
-          <ItInput
-            placeholder="0x..."
-            value={contract}
-            onChange={(e) => setContract(e.target.value)}
-            data-iet-contract-input
-          />
-        </InputFlex>
+      <DesktopRow>
+        <AddressField
+          placeholder="0x..."
+          value={contract}
+          onChange={(e) => setContract(e.target.value)}
+          data-iet-contract-input
+          aria-label="Contract address"
+        />
         <ChainRow>
           {SUPPORTED_CHAINS.map((c) => (
             <ChainBtn
@@ -128,10 +163,10 @@ export const ContractInputHero: React.FC<Props> = () => {
             </ChainBtn>
           ))}
         </ChainRow>
-        <ItPrimaryBtn type="button" $width="220px" $height="56px" onClick={handleAnalyze}>
+        <AnalyzeBtn type="button" $height="56px" onClick={handleAnalyze}>
           Analyze Project
-        </ItPrimaryBtn>
-      </InputRow>
+        </AnalyzeBtn>
+      </DesktopRow>
       {validationError ? <Error>{validationError}</Error> : null}
       <Explorers>
         <ExplorerLabel>Supported explorers</ExplorerLabel>

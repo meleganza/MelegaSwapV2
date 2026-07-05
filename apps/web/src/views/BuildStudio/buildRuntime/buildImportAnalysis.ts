@@ -6,6 +6,7 @@ import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketS
 import { buildOnChainMetrics } from 'views/ProjectsStudio/projectsRuntime/onChainMetrics'
 import { buildAiSummary } from 'views/ProjectsStudio/projectsRuntime/buildAiSummary'
 import { buildContractIntelligence } from 'views/RadarStudio/radarRuntime/buildContractIntelligence'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { buildInfrastructureScore } from './buildInfrastructureScore'
 import { buildInfrastructureSuggestions } from './buildInfrastructureSuggestions'
 import { createBuildRuntimeError, type BuildRuntimeError } from './buildRuntimeErrors'
@@ -59,6 +60,13 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
   if (discovery.registryTier === 'pending' && discovery.pending) {
     const pending = discovery.pending
     const detections = buildPendingDetections(pending)
+    emitCivilizationEvent('import_analyzed', 'import', {
+      contract: contract.trim(),
+      chainId,
+      pending: true,
+      projectName: pending.name.available ? pending.name.value : undefined,
+    })
+    emitCivilizationEvent('registry_indexed', 'registry', { tier: 'pending', contract: contract.trim() })
     return {
       found: false,
       pending: true,
@@ -113,6 +121,17 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
     { label: 'Contract', available: Boolean(project.resources.tokens[0]?.address) },
     { label: 'AI Summary', available: Boolean(buildAiSummary(project)) },
   ]
+
+  emitCivilizationEvent('import_analyzed', 'import', {
+    contract: contract.trim(),
+    chainId,
+    found: true,
+    slug: project.slug,
+    projectName: project.displayName,
+  })
+  emitCivilizationEvent('registry_indexed', 'registry', { tier: 'canonical', slug: project.slug })
+  emitCivilizationEvent('radar_signals_refreshed', 'radar', { slug: project.slug, source: 'import_pipeline' })
+  emitCivilizationEvent('projects_intelligence_refreshed', 'projects', { slug: project.slug })
 
   return {
     found: true,

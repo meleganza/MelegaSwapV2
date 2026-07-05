@@ -10,7 +10,7 @@ import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
-import useWarningImport from 'views/Swap/hooks/useWarningImport'
+import useTradeWarningImport from './hooks/useTradeWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
@@ -163,7 +163,7 @@ export interface TradeCockpitProps {
 export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
-  const warningSwapHandler = useWarningImport()
+  const warningSwapHandler = useTradeWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },

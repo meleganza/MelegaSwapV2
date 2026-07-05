@@ -22,6 +22,7 @@ import useApproveFarm from 'views/Farms/hooks/useApproveFarm'
 import useHarvestFarm from 'views/Farms/hooks/useHarvestFarm'
 import useStakeFarms from 'views/Farms/hooks/useStakeFarms'
 import useUnstakeFarms from 'views/Farms/hooks/useUnstakeFarms'
+import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { useFarmsRuntime } from './FarmsRuntimeContext'
 
 const ERC20_PLACEHOLDER = '0x0000000000000000000000000000000000000000'
@@ -80,6 +81,7 @@ export const FarmsActionHost: React.FC = () => {
         </ToastDescriptionWithTx>,
       )
       onDone()
+      emitCivilizationEvent('farm_staked', 'farms', { pid, txHash: receipt.transactionHash })
     }
   }
 
@@ -122,6 +124,7 @@ export const FarmsActionHost: React.FC = () => {
         </ToastDescriptionWithTx>,
       )
       onDone()
+      emitCivilizationEvent('farm_withdrawn', 'farms', { pid, txHash: receipt.transactionHash })
     }
   }
 
@@ -143,6 +146,7 @@ export const FarmsActionHost: React.FC = () => {
         </ToastDescriptionWithTx>,
       )
       onDone()
+      emitCivilizationEvent('farm_claimed', 'farms', { pid, txHash: receipt.transactionHash })
     }
   }
 

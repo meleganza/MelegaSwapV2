@@ -9,13 +9,20 @@ import { updateUserBalance, updateUserPendingReward, updateUserStakedBalance } f
 import useHarvestPool from '../../hooks/useHarvestPool'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
+export type PoolTxSuccessPayload = {
+  action: 'stake' | 'unstake' | 'claim'
+  sousId: number
+  txHash: string
+}
+
 export const CollectModalContainer = ({
   earningTokenSymbol,
   sousId,
   isBnbPool,
   onDismiss,
+  onTxSuccess,
   ...rest
-}: React.PropsWithChildren<Pool.CollectModalProps>) => {
+}: React.PropsWithChildren<Pool.CollectModalProps & { onTxSuccess?: (payload: PoolTxSuccessPayload) => void }>) => {
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
   const { toastSuccess } = useToast()
@@ -38,9 +45,10 @@ export const CollectModalContainer = ({
       dispatch(updateUserStakedBalance({ sousId, account, chainId }))
       dispatch(updateUserPendingReward({ sousId, account, chainId }))
       dispatch(updateUserBalance({ sousId, account, chainId }))
+      onTxSuccess?.({ action: 'claim', sousId, txHash: receipt.transactionHash })
       onDismiss?.()
     }
-  }, [account, dispatch, earningTokenSymbol, fetchWithCatchTxError, onDismiss, onReward, sousId, t, toastSuccess])
+  }, [account, dispatch, earningTokenSymbol, fetchWithCatchTxError, onDismiss, onReward, onTxSuccess, sousId, t, toastSuccess])
 
   return (
     <Pool.CollectModal

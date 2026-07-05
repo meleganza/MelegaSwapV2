@@ -12,7 +12,10 @@ import LiveActivityFeed from './LiveActivityFeed'
 import GrowInsideMelegaPanel from './GrowInsideMelegaPanel'
 import MarketPulsePanel from './MarketPulsePanel'
 import HomeTradeFooter from './HomeTradeFooter'
+import HomeMachinePanel from './components/HomeMachinePanel'
 import useHomeTradeData from './useHomeTradeData'
+import { buildHomeMachine } from './buildHomeMachine'
+import { getAllProjects } from 'registry/projects/getAllProjects'
 import { homeTradeLayout } from './homeTradeTokens'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
 
@@ -79,6 +82,17 @@ const LowerRow = styled.div<{ $hasEarn?: boolean }>`
 export const HomeTradeScreen: React.FC = () => {
   const data = useHomeTradeData()
 
+  const machine = useMemo(
+    () =>
+      buildHomeMachine({
+        indexedProjects: getAllProjects().length,
+        marketCards: data.marketCards,
+        activityRows: data.activityRows.length,
+        earnRows: data.farmRows.length + data.poolRows.length,
+      }),
+    [data],
+  )
+
   const pulseRows = useMemo((): MelegaPulseRow[] => {
     const rows: MelegaPulseRow[] = []
     const topFarm = data.marketCards.find((c) => c.id === 'top-farm')
@@ -128,6 +142,7 @@ export const HomeTradeScreen: React.FC = () => {
           isIndexing={data.isActivityIndexing}
         />
         <HomeTradeFooter />
+        <HomeMachinePanel machine={machine} />
       </Content>
     </Root>
   )
