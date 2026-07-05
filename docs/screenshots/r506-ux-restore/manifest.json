@@ -1,0 +1,55 @@
+{
+  "task": "R506 UX RESTORE",
+  "capturedAt": "2026-07-05T16:05:32.204Z",
+  "base": "http://localhost:3000",
+  "results": [
+    {
+      "route": "/",
+      "viewport": "desktop-1440",
+      "file": "home-desktop-1440.png",
+      "status": "ok"
+    },
+    {
+      "route": "/build-studio",
+      "viewport": "desktop-1440",
+      "file": "build-studio-desktop-1440.png",
+      "status": "ok"
+    },
+    {
+      "route": "/collectibles",
+      "viewport": "desktop-1440",
+      "file": "collectibles-desktop-1440.png",
+      "status": "ok"
+    },
+    {
+      "route": "/command-center",
+      "viewport": "desktop-1440",
+      "file": "command-center-desktop-1440.png",
+      "status": "ok"
+    },
+    {
+      "route": "/",
+      "viewport": "mobile-390",
+      "file": "home-mobile-390.png",
+      "status": "ok"
+    },
+    {
+      "route": "/build-studio",
+      "viewport": "mobile-390",
+      "file": "build-studio-mobile-390.png",
+      "status": "ok"
+    },
+    {
+      "route": "/collectibles",
+      "viewport": "mobile-390",
+      "file": "collectibles-mobile-390.png",
+      "status": "ok"
+    },
+    {
+      "route": "/command-center",
+      "viewport": "mobile-390",
+      "file": "command-center-mobile-390.png",
+      "status": "ok"
+    }
+  ]
+}

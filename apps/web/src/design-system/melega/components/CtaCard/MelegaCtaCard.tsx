@@ -97,7 +97,10 @@ const ActionLink = styled(Link)<{ $variant?: 'primary' | 'secondary' }>`
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  width: ${({ $variant }) => ($variant === 'secondary' ? '230px' : '170px')};
+  width: auto;
+  min-width: ${({ $variant }) => ($variant === 'secondary' ? '200px' : '170px')};
+  max-width: 100%;
+  padding: 0 16px;
   height: 44px;
   min-height: 44px;
   border-radius: 12px;

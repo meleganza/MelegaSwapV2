@@ -10,6 +10,7 @@ import { useProtocolTransactionsSWR } from 'state/info/hooks'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
+import { formatFarmTrendingLabel, formatPoolTrendingLabel } from './formatTrendingLabels'
 
 export interface RibbonItem {
   id: string
@@ -177,21 +178,26 @@ export const useHomeTradeData = () => {
     const topFarm = farms[0]
     const topPool = pools[0]
 
-    if (topFarm?.lpSymbol) {
+    if (topFarm) {
+      const apr = farmApr(topFarm)
+      const farmLabel = formatFarmTrendingLabel(topFarm, apr)
       items.push({
         id: 'top-farm',
-        primary: 'Top farm',
-        secondary: topFarm.lpSymbol.replace('-', ' / '),
-        accent: farmApr(topFarm) ? `${farmApr(topFarm)!.toFixed(2)}% APR` : undefined,
+        primary: farmLabel.primary,
+        secondary: farmLabel.secondary,
+        accent: farmLabel.accent ? `${farmLabel.accent} APR` : undefined,
         href: '/farms',
       })
     }
 
-    if (topPool?.stakingToken) {
+    if (topPool) {
+      const poolLabel = formatPoolTrendingLabel(topPool)
+      const poolApr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
       items.push({
         id: 'top-pool',
-        primary: 'Top pool',
-        secondary: `${topPool.stakingToken.symbol} Staking`,
+        primary: poolLabel.primary,
+        secondary: poolLabel.secondary,
+        accent: poolApr ? `${poolApr.toFixed(2)}% APR` : undefined,
         href: '/pools',
       })
     }
@@ -258,11 +264,14 @@ export const useHomeTradeData = () => {
     }
 
     const topPool = pools[0]
-    if (topPool?.stakingToken?.symbol) {
+    if (topPool) {
+      const poolLabel = formatPoolTrendingLabel(topPool)
+      const poolApr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
       items.push({
         id: 'top-pool',
-        title: 'Top pool',
-        subtitle: `${topPool.stakingToken.symbol} Staking`,
+        title: poolLabel.primary,
+        subtitle: poolLabel.secondary,
+        meta: poolApr ? `${poolApr.toFixed(2)}% APR` : undefined,
         href: '/pools',
         icon: 'pool',
       })
@@ -312,11 +321,12 @@ export const useHomeTradeData = () => {
 
     const topPool = pools[0]
     if (topPool?.stakingToken) {
+      const poolLabel = formatPoolTrendingLabel(topPool)
       const apr = topPool.apr && topPool.apr > 0 ? topPool.apr : undefined
       cards.push({
         id: 'top-pool',
-        label: 'Top Pool',
-        value: `${topPool.stakingToken.symbol} Staking`,
+        label: poolLabel.primary,
+        value: poolLabel.secondary,
         meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
         change: poolTvl(topPool),
         href: '/pools',

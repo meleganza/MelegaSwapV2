@@ -1,0 +1,51 @@
+{
+  "task": "R506 EMERGENCY UX ROLLBACK",
+  "deliverable": "R506_UX_RESTORED",
+  "capturedAt": "2026-07-05T16:05:30.000Z",
+  "rollbackBaselineSha": "f8bc9147ef91b627e7db731dbc1d67db28d79064",
+  "revertedCommit": "7aed7fd7dd09511fdb6615183fb06dfcee107ee9",
+  "revertCommit": "1da63e2",
+  "stagingUrl": "https://v2.melega.finance",
+  "production": "untouched",
+  "main": "untouched",
+  "dexMelegaAi": "untouched",
+  "build": { "status": "pass" },
+  "routeSmoke": {
+    "pass": true,
+    "routes": ["/", "/trade", "/build-studio", "/collectibles", "/command-center", "/projects", "/radar", "/farms", "/pools"]
+  },
+  "crashesFixed": [
+    "Identity Hub — missing wagmi useAccount import in useWalletCollectibleOwnership",
+    "Command Center — same hook chain crash resolved"
+  ],
+  "overflowFixes": [
+    "Import contract input 680–760px / analyze button 280px",
+    "MelegaCtaCard flexible action button widths",
+    "Build Studio header button row wrap",
+    "Home slippage strip spacing (+2px margins)",
+    "Top Pool APR label consistency via formatTrendingLabels"
+  ],
+  "invisibleRestores": [
+    "lib/projects-data/projectLiveMetrics.ts (build dependency at f8bc914)",
+    "registry/collectibles/identity-hub-collections.config.ts (civilization fabric)"
+  ],
+  "r505Removed": {
+    "surfaceEnvelope": true,
+    "civilizationRoleLabels": true,
+    "buildStudioImportWorkflowEmbed": true,
+    "identityHubR400Layout": true,
+    "homeBuildWithMelegaCta": true,
+    "machineEnvelopeVisiblePanels": true
+  },
+  "machineLayer": "not reintroduced visibly",
+  "screenshots": [
+    "home-desktop-1440.png",
+    "home-mobile-390.png",
+    "build-studio-desktop-1440.png",
+    "build-studio-mobile-390.png",
+    "collectibles-desktop-1440.png",
+    "collectibles-mobile-390.png",
+    "command-center-desktop-1440.png",
+    "command-center-mobile-390.png"
+  ]
+}

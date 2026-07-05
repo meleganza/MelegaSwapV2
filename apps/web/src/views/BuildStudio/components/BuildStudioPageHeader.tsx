@@ -53,6 +53,8 @@ const BtnRow = styled.div`
   gap: 12px;
   flex-shrink: 0;
   align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
 
   @media (max-width: 768px) {
     width: 100%;

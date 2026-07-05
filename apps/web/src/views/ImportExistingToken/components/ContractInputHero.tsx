@@ -41,9 +41,9 @@ const AddressField = styled(ItInput)`
   box-sizing: border-box;
 
   @media (min-width: 769px) {
-    min-width: 520px;
-    max-width: 640px;
-    flex: 1 1 520px;
+    min-width: 680px;
+    max-width: 760px;
+    flex: 1 1 680px;
   }
 
   @media (max-width: 768px) {
@@ -65,7 +65,7 @@ const ChainRow = styled.div`
 
 const AnalyzeBtn = styled(ItPrimaryBtn)`
   @media (min-width: 769px) {
-    width: 260px;
+    width: 280px;
     flex-shrink: 0;
   }
 

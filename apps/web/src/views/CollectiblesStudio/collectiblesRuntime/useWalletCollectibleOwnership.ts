@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useDNFTContract } from 'hooks/useContract'

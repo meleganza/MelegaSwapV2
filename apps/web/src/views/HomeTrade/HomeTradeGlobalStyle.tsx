@@ -131,8 +131,8 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     order: 2;
     height: 24px;
     max-height: 24px;
-    margin-top: 8px;
-    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 12px;
     padding: 0;
     flex-shrink: 0;
     font-size: 14px;
