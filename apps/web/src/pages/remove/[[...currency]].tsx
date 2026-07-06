@@ -9,6 +9,7 @@ import { CHAIN_IDS } from 'utils/wagmi'
 import RemoveLiquidity from 'views/RemoveLiquidity'
 import RemoveStableLiquidity from 'views/RemoveLiquidity/RemoveStableLiquidity'
 import useStableConfig, { StableConfigContext } from 'views/Swap/StableSwap/hooks/useStableConfig'
+import { buildLiquidityCanonicalOwnership, LIQUIDITY_ALIAS_ROUTES } from 'lib/liquidity-runtime/canonicalOwnership'
 
 const RemoveLiquidityPage = () => {
   const router = useRouter()
@@ -47,6 +48,7 @@ const RemoveLiquidityPage = () => {
 }
 
 RemoveLiquidityPage.chains = CHAIN_IDS
+RemoveLiquidityPage.liquidityRuntimeAlias = buildLiquidityCanonicalOwnership(LIQUIDITY_ALIAS_ROUTES.remove)
 
 export default RemoveLiquidityPage
 

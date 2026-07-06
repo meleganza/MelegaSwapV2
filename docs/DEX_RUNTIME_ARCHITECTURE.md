@@ -246,6 +246,83 @@ No ML inference in production path. AI surfaces are **rule-based suggestions**:
 
 ---
 
+## KAP-006C — DEX as Civilization Economic Exchange Engine
+
+**Effective:** 2026-07-06 · **Marker:** `KAP-006C_DEX_GRAVITY_IMPLEMENTED`
+
+The DEX converges routing, execution, liquidity, and machine surfaces under constitutional boundaries. Civilization Liquidity (creation, LP, routing-to-liquidity, exchange efficiency) is owned by the DEX. Gravity, Settlement Truth, and Opportunity Truth are explicitly **not** owned.
+
+### Canonical routing pipeline
+
+```
+smart-router (computation engine)
+        ↓
+lib/routing-layer/facade (quote + instruction owner)
+        ↓
+melega.execution.v1 machine surface
+        ↓
+execution-layer (wallet hooks — no direct smart-router import)
+```
+
+- Every swap quote packages through `routeSmartSwapQuote` / `routeV2SwapQuote`.
+- LP mint/burn instructions package through `routeLiquidityInstruction` (quote only — no submit).
+
+### Canonical execution pipeline
+
+```
+routing-layer instruction
+        ↓
+execution-modes gates (DEX canonical gates when mode OFF)
+        ↓
+lib/execution-ingress/dispatch (submit owner)
+        ↓
+execution-tracker (evidence only)
+        ↓
+lib/treasury-handoff (receipt-only — unchanged)
+```
+
+- `useSmartSwapExecution` / `useV2SwapExecution` route submit via `submitSwapViaIngress`.
+- Commit buttons remain thin UI — they do not import ingress directly.
+
+### Canonical liquidity pipeline
+
+```
+/liquidity-studio (canonical UX)
+        ↓
+liquidityRuntime (canonical owner)
+        ↓
+state/mint + state/burn (shared primitives)
+        ↓
+/add · /remove (alias routes — same mint/burn flow)
+```
+
+- Farms/Pools rewards remain separate — not liquidity ownership.
+
+### Machine surface plan
+
+| Schema | Purpose |
+|--------|---------|
+| `melega.dex.v1` | Exchange engine manifest |
+| `melega.liquidity.v1` | Pool discovery, LP positions, analytics — no auto-execution |
+| `melega.execution.v1` | Quote/instruction lifecycle |
+| `melega.exchange-receipt.v1` | Confirmed tx receipt to Treasury (`melega.dex-execution-receipt.v1` alias) |
+
+Static manifest: `public/registry/exchange/melega-dex.json`
+
+### Authority boundaries
+
+**DEX owns:** Civilization Liquidity, routing-to-liquidity, exchange efficiency, swap/LP execution quality, machine surfaces, execution evidence, exchange receipts to Treasury.
+
+**DEX never owns:** Civilization Gravity, Treasury execution, Settlement Truth, Opportunity Truth, Signal Gateway, Radar authority, Labs productive planning, reward/cashback computation.
+
+**Delegated:** Core/G001, Treasury, Signal, Radar, Labs (consumption only for Radar opportunityRef).
+
+### Out of scope (KAP-006C)
+
+Market making, arbitrage, trading bots, UI redesign, Treasury Runtime changes, Gravity computation, Opportunity Truth detection/ranking.
+
+---
+
 ## Extension rules
 
 1. New data → extend runtime module, not studio component layout.

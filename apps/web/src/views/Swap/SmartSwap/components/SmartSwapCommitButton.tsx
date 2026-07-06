@@ -19,7 +19,7 @@ import {
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { WrapType } from 'hooks/useWrapCallback'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { createSmartSwapExecutionInstruction } from 'lib/routing-layer'
+import { routeSmartSwapQuoteFromTrade } from 'lib/routing-layer/facade'
 import { useSmartSwapExecution } from 'lib/execution-layer'
 import { Field } from 'state/swap/actions'
 import { useUserSingleHopOnly } from 'state/user/hooks'
@@ -85,7 +85,7 @@ export default function SwapCommitButton({
   const executionInstruction = useMemo(
     () =>
       trade?.route
-        ? createSmartSwapExecutionInstruction({ trade, allowedSlippage, recipient })
+        ? routeSmartSwapQuoteFromTrade({ trade, allowedSlippage, recipient }).instruction
         : null,
     [trade, allowedSlippage, recipient],
   )

@@ -26,7 +26,9 @@ import {
   acceptKerlExecutionInstruction,
   dispatchExecutionInstruction,
   isInternalIngressEnabled,
+  isCanonicalIngressEnabled,
   resetInternalIngressActivation,
+  setCanonicalIngressEnabledForHarness,
   resolveInstructionType,
   setInternalIngressEnabled,
   setExecutionGatewayEnabled,
@@ -94,7 +96,8 @@ describe('KERL execution ingress — activation', () => {
     expect(isInternalIngressEnabled()).toBe(false)
   })
 
-  it('rejects dispatch when inactive without mutating tracker', async () => {
+  it('rejects dispatch when fully inactive without mutating tracker', async () => {
+    setCanonicalIngressEnabledForHarness(false)
     const instruction = createBridgeExecutionInstruction({ pid: 1, isNative: false, amount: '1' })
     const result = await dispatchExecutionInstruction(instruction, {
       account: '0xabc',
@@ -196,6 +199,7 @@ describe('KERL execution ingress — validation', () => {
 describe('KERL execution ingress — dispatch', () => {
   beforeEach(() => {
     ExecutionTracker.resetForTests()
+    setCanonicalIngressEnabledForHarness(false)
     setInternalIngressEnabled(true)
   })
 
@@ -276,9 +280,11 @@ describe('KERL execution ingress — dispatch', () => {
     const bridgeBurn = vi.fn(async () => '0xbridgehash')
 
     const v2Result = await dispatchExecutionInstruction(v2Instruction, {
+      account: '0xuser',
       adapters: mockAdapters({ v2Swap }),
     })
     const bridgeResult = await dispatchExecutionInstruction(bridgeInstruction, {
+      account: '0xuser',
       adapters: mockAdapters({ bridgeBurn }),
     })
 
@@ -297,6 +303,7 @@ describe('KERL execution ingress — dispatch', () => {
     const instruction = createBridgeExecutionInstruction({ pid: 1, isNative: false, amount: '1' })
 
     const result = await dispatchExecutionInstruction(instruction, {
+      account: '0xuser',
       adapters: mockAdapters({
         bridgeBurn: async () => {
           throw new Error('wallet rejected')
@@ -382,16 +389,16 @@ describe('KERL execution ingress — kerl gateway entry', () => {
 })
 
 describe('KERL execution ingress — UI isolation', () => {
-  it('existing commit buttons do not import execution ingress', () => {
+  it('existing commit buttons do not import execution ingress directly', () => {
     for (const file of UI_COMMIT_BUTTONS) {
       const content = fs.readFileSync(file, 'utf8')
-      expect(content).not.toContain('execution-ingress')
       expect(content).not.toContain('dispatchExecutionInstruction')
     }
   })
 
-  it('execution layer remains free of ingress wiring', () => {
-    const violations = scanForbiddenImports(EXECUTION_LAYER_DIR, ['lib/execution-ingress', 'dispatchExecutionInstruction'])
-    expect(violations).toEqual([])
+  it('execution layer routes submit through canonical ingress helper', () => {
+    const swapExecutionPath = path.resolve(EXECUTION_LAYER_DIR, 'useSwapExecution.ts')
+    const content = fs.readFileSync(swapExecutionPath, 'utf8')
+    expect(content).toContain('submitSwapViaIngress')
   })
 })

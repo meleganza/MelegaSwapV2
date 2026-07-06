@@ -10,8 +10,11 @@ import { trackExecutionSubmission } from '../execution-tracker/trackExecution'
 import {
   buildGateFailureMessage,
   evaluateLiveExecutionGates,
+  getConfiguredExecutionMode,
+  EXECUTION_MODE_OFF,
 } from '../execution-modes'
-import { isInternalIngressEnabled } from './activation'
+import { isCanonicalIngressEnabled, isIngressDispatchActive } from './activation'
+import { evaluateDexCanonicalIngressGates } from './dexCanonicalGates'
 import { INGRESS_ERROR_CODES } from './constants'
 import type { IngressDispatchContext, IngressDispatchResult } from './types'
 import type { SupportedInstructionType } from './constants'
@@ -21,7 +24,7 @@ function inactiveError(): ExecutionError {
   return {
     code: INGRESS_ERROR_CODES.INACTIVE,
     category: 'adapter_error',
-    message: 'Internal instruction ingress is inactive',
+    message: 'Execution ingress is inactive',
   }
 }
 
@@ -65,14 +68,14 @@ function resolveReport(account: string | undefined, chainId: number | undefined,
 }
 
 /**
- * Internal-only instruction dispatcher.
- * Inactive by default — does not run unless explicitly enabled for internal harnesses.
+ * Canonical instruction dispatcher — KAP-006C submit owner.
+ * Active via canonical ingress (default) or internal harness flag.
  */
 export async function dispatchExecutionInstruction(
   instruction: ExecutionInstruction,
   context: IngressDispatchContext,
 ): Promise<IngressDispatchResult> {
-  if (!isInternalIngressEnabled()) {
+  if (!isIngressDispatchActive()) {
     return { ok: false, error: inactiveError() }
   }
 
@@ -81,14 +84,23 @@ export async function dispatchExecutionInstruction(
     return { ok: false, error: validation.error }
   }
 
-  const liveGates = evaluateLiveExecutionGates({
-    chainId: context.chainId ?? instruction.chainId,
-    account: context.account,
-    instructionValid: true,
-    certifiedHandoff: context.certifiedHandoff ?? false,
-    handoffCompatible: context.certifiedHandoff ?? false,
-    instructionType: validation.instructionType,
-  })
+  const mode = getConfiguredExecutionMode()
+  const useDexCanonicalGates = mode === EXECUTION_MODE_OFF && isCanonicalIngressEnabled()
+
+  const liveGates = useDexCanonicalGates
+    ? evaluateDexCanonicalIngressGates({
+        account: context.account,
+        instructionValid: true,
+        instructionType: validation.instructionType,
+      })
+    : evaluateLiveExecutionGates({
+        chainId: context.chainId ?? instruction.chainId,
+        account: context.account,
+        instructionValid: true,
+        certifiedHandoff: context.certifiedHandoff ?? false,
+        handoffCompatible: context.certifiedHandoff ?? false,
+        instructionType: validation.instructionType,
+      })
   if (!liveGates.allowed) {
     return {
       ok: false,

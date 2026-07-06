@@ -12,6 +12,7 @@ import { CHAIN_IDS } from 'utils/wagmi'
 import AddStableLiquidity from 'views/AddLiquidity/AddStableLiquidity/index'
 import useStableConfig, { StableConfigContext } from 'views/Swap/StableSwap/hooks/useStableConfig'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { buildLiquidityCanonicalOwnership, LIQUIDITY_ALIAS_ROUTES } from 'lib/liquidity-runtime/canonicalOwnership'
 
 const AddLiquidityPage = () => {
   const router = useRouter()
@@ -50,6 +51,7 @@ const AddLiquidityPage = () => {
 }
 
 AddLiquidityPage.chains = CHAIN_IDS
+AddLiquidityPage.liquidityRuntimeAlias = buildLiquidityCanonicalOwnership(LIQUIDITY_ALIAS_ROUTES.add)
 
 export default AddLiquidityPage
 

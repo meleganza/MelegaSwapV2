@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useRouter } from 'next/router'
 import { Currency, Trade, TradeType } from '@pancakeswap/sdk'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useAtomValue } from 'jotai'
@@ -32,6 +33,8 @@ import {
 import { runtimeErrorFromPhase, type TradeRuntimeError } from './tradeRuntimeErrors'
 import { useTradeSettlementMetadata } from './useTradeSettlementMetadata'
 import type { TradeSettlementMachineMetadata } from 'lib/treasury-handoff'
+import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gravity/radarConsumption'
+import { routeSmartSwapQuoteFromTrade, routeV2SwapQuote } from 'lib/routing-layer/facade'
 
 export type TradeRuntimePhase =
   | 'idle'
@@ -93,6 +96,8 @@ export interface TradeMachinePayload {
   error?: TradeRuntimeError | null
   timestamp: string
   settlement: TradeSettlementMachineMetadata
+  routingFacade?: string
+  opportunityRef?: ReturnType<typeof consumeOpportunityRef>
 }
 
 export interface TradeSwapRuntime {
@@ -115,6 +120,7 @@ export interface TradeSwapRuntime {
 
 export function useTradeSwapRuntime(): TradeSwapRuntime {
   const { account } = useWeb3React()
+  const router = useRouter()
   const { chainId } = useActiveChainId()
   const settlementMetadata = useTradeSettlementMetadata()
   const [allowedSlippage] = useUserSlippageTolerance()
@@ -290,6 +296,27 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     })
   }, [watchlistTokens, tokenMap, chainId])
 
+  const opportunityRef = useMemo(
+    () => consumeOpportunityRef(parseOpportunityRefFromQuery(router.query)),
+    [router.query],
+  )
+
+  const routingFacadeQuote = useMemo(() => {
+    if (!tradeInfo || !tradeWithStableSwap) return undefined
+    if (useSmartRouter && tradeWithStableSwap.route) {
+      return routeSmartSwapQuoteFromTrade({
+        trade: tradeWithStableSwap,
+        allowedSlippage,
+        recipient,
+        chainId,
+      })
+    }
+    if (v2Trade) {
+      return routeV2SwapQuote({ trade: v2Trade, allowedSlippage, recipient, chainId })
+    }
+    return undefined
+  }, [tradeInfo, tradeWithStableSwap, v2Trade, useSmartRouter, allowedSlippage, recipient, chainId])
+
   const machine: TradeMachinePayload = useMemo(
     () => ({
       status: phase,
@@ -314,6 +341,8 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
       error,
       timestamp: new Date().toISOString(),
       settlement: settlementMetadata,
+      routingFacade: routingFacadeQuote?.marker,
+      opportunityRef,
     }),
     [
       phase,
@@ -327,6 +356,8 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
       approval,
       error,
       settlementMetadata,
+      routingFacadeQuote?.marker,
+      opportunityRef,
     ],
   )
 

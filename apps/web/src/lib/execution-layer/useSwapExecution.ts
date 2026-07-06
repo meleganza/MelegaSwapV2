@@ -16,7 +16,7 @@ import { useSwapCallArguments as useV2SwapCallArguments } from 'hooks/useSwapCal
 import { useSwapCallback as useV2SwapCallback, SwapCallbackState as V2SwapCallbackState } from 'hooks/useSwapCallback'
 
 import type { SmartSwapRoutingPlan, V2SwapRoutingPlan } from '../routing-layer/types'
-import { trackExecutionSubmission } from '../execution-tracker/trackExecution'
+import { submitSwapViaIngress } from '../execution-ingress/canonicalSubmit'
 import { useExecutionTrackerReceiptSync } from '../execution-tracker/useExecutionTrackerReceiptSync'
 import type { SwapExecutionInstruction, SwapExecutionResult } from './types'
 
@@ -37,7 +37,7 @@ function wrapSwapCallback(
     return null
   }
 
-  return () => trackExecutionSubmission(instruction, callback, context)
+  return () => submitSwapViaIngress(instruction, callback, context)
 }
 
 /**

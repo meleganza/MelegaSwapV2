@@ -6,13 +6,17 @@ import { ChainId, Native } from '@pancakeswap/sdk'
 import { CAKE } from '@pancakeswap/tokens'
 import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { useTradeExactOut } from 'hooks/Trades'
-import { useSwapCallback } from 'hooks/useSwapCallback'
 import { useWeb3React } from '@pancakeswap/wagmi'
-import { useSwapCallArguments } from 'hooks/useSwapCallArguments'
 import { INITIAL_ALLOWED_SLIPPAGE } from 'config/constants'
 import BigNumber from 'bignumber.js'
+import { routeV2SwapQuote } from 'lib/routing-layer/facade'
+import { useV2SwapExecution } from 'lib/execution-layer'
 import { useActiveChainId } from './useActiveChainId'
 
+/**
+ * Internal CAKE-enable utility — routes through canonical routing facade
+ * and execution-ingress via useV2SwapExecution (same boundary as swap commit buttons).
+ */
 export const useCakeEnable = (enableAmount: BigNumber) => {
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
@@ -26,9 +30,15 @@ export const useCakeEnable = (enableAmount: BigNumber) => {
 
   const trade = useTradeExactOut(Native.onChain(ChainId.BSC), parsedAmount)
 
-  const swapCalls = useSwapCallArguments(trade, INITIAL_ALLOWED_SLIPPAGE, null)
+  const executionInstruction = useMemo(
+    () =>
+      trade
+        ? routeV2SwapQuote({ trade, allowedSlippage: INITIAL_ALLOWED_SLIPPAGE, recipient: null }).instruction
+        : null,
+    [trade],
+  )
 
-  const { callback: swapCallback } = useSwapCallback(trade, INITIAL_ALLOWED_SLIPPAGE, null, swapCalls)
+  const { callback: swapCallback } = useV2SwapExecution(executionInstruction)
 
   useEffect(() => {
     if (pendingEnableTx && transactionHash && !isTransactionPending) {

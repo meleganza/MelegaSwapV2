@@ -5,20 +5,20 @@ import { Currency, CurrencyAmount } from '@pancakeswap/sdk'
 import { GreyCard } from 'components/Card'
 import { CommitButton } from 'components/CommitButton'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import Column from 'components/Layout/Column'
 import { AutoRow, RowBetween } from 'components/Layout/Row'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import CircleLoader from 'components/Loader/CircleLoader'
 import { Field } from 'state/swap/actions'
 import SettingsModal, { withCustomOnDismiss } from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
-import { useCallback, useEffect, useState } from 'react'
-import Column from 'components/Layout/Column'
-import { useSwapCallback } from 'hooks/useSwapCallback'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { routeV2SwapQuote } from 'lib/routing-layer/facade'
+import { useV2SwapExecution } from 'lib/execution-layer'
 
 import ConfirmSwapModal from '../../components/ConfirmSwapModal'
 import ProgressSteps from '../../components/ProgressSteps'
 import { SwapCallbackError } from '../../components/styleds'
-import useStableSwapCallArgs from '../hooks/useStableSwapCallArgs'
 import { StableTrade } from '../hooks/useStableTradeExactIn'
 
 const SettingsModalWithCustomDismiss = withCustomOnDismiss(SettingsModal)
@@ -57,10 +57,13 @@ export default function StableSwapCommitButton({
   onUserInput,
 }: StableSwapCommitButtonPropsType) {
   const { t } = useTranslation()
-  // the callback to execute the swap
-  const swapCalls = useStableSwapCallArgs(trade)
 
-  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(trade, allowedSlippage, null, swapCalls)
+  const executionInstruction = useMemo(
+    () => (trade ? routeV2SwapQuote({ trade, allowedSlippage, recipient: null }).instruction : null),
+    [trade, allowedSlippage],
+  )
+
+  const { callback: swapCallback, error: swapCallbackError } = useV2SwapExecution(executionInstruction)
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     tradeToConfirm: StableTrade | undefined
     attemptingTxn: boolean

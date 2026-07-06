@@ -9,9 +9,14 @@ export type { SupportedInstructionType } from './constants'
 
 export {
   isInternalIngressEnabled,
+  isCanonicalIngressEnabled,
+  isIngressDispatchActive,
   setInternalIngressEnabled,
+  setCanonicalIngressEnabledForHarness,
   resetInternalIngressActivation,
 } from './activation'
+
+export { submitSwapViaIngress } from './canonicalSubmit'
 
 export { validateExecutionInstruction, resolveInstructionType } from './validate'
 

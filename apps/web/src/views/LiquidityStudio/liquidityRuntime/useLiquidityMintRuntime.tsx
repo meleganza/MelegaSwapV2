@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, Token } from '@pancakeswap/sdk'
@@ -38,6 +39,11 @@ import {
 import { runtimeErrorFromPhase, type LiquidityRuntimeError } from './liquidityRuntimeErrors'
 import { useLiquidityPositions, useLiquidityPositionDetails, type LiquidityPositionRow } from './useLiquidityPositions'
 import useLiquidityTerminalData from './useLiquidityTerminalData'
+import { buildMelegaLiquidityV1 } from 'lib/dex-gravity/buildLiquidityMachineV1'
+import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gravity/radarConsumption'
+import { buildLiquidityCanonicalOwnership } from 'lib/liquidity-runtime/canonicalOwnership'
+import { routeLiquidityInstruction } from 'lib/routing-layer/facade'
+import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
 
 export type LiquidityStudioMode = 'Add Liquidity' | 'Remove Liquidity' | 'My Positions' | 'Simulation'
 
@@ -79,6 +85,12 @@ export interface LiquidityMachinePayload {
   apr?: string
   error?: LiquidityRuntimeError | null
   timestamp: string
+  canonicalOwner: string
+  liquiditySchema: ReturnType<typeof buildMelegaLiquidityV1>
+  routingInstruction: ReturnType<typeof routeLiquidityInstruction>
+  opportunityRef?: ReturnType<typeof consumeOpportunityRef>
+  /** KAP-006E — accepted deferral; ingress does not support liquidity domain yet. */
+  lpSubmitDeferral: typeof LP_SUBMIT_DEFERRAL.deferralReason
 }
 
 export interface LiquidityMintRuntime {
@@ -121,6 +133,7 @@ export interface LiquidityMintRuntime {
 
 export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const { t } = useTranslation()
+  const router = useRouter()
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
   const native = useNativeCurrency()
@@ -362,6 +375,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   })
 
   const onAdd = useCallback(async () => {
+    // KAP-006E: direct router submit — liquidityRuntime canonical; see lpSubmitDeferral.ts
     if (!chainId || !account || !routerContract) return
     const parsedAmountA = parsedAmounts[Field.CURRENCY_A]
     const parsedAmountB = parsedAmounts[Field.CURRENCY_B]
@@ -632,6 +646,11 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     return 'Add Liquidity'
   }, [account, phase, isRemove, isPositions, isSimulation])
 
+  const opportunityRef = useMemo(
+    () => consumeOpportunityRef(parseOpportunityRefFromQuery(router.query)),
+    [router.query],
+  )
+
   const machine: LiquidityMachinePayload = useMemo(
     () => ({
       status: phase,
@@ -661,6 +680,22 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       apr: preview.apr,
       error,
       timestamp: new Date().toISOString(),
+      canonicalOwner: buildLiquidityCanonicalOwnership().owner,
+      liquiditySchema: buildMelegaLiquidityV1({
+        operation: isRemove ? 'burn' : isPositions ? 'positions' : 'mint',
+        pair: pairLabel(currencyA, currencyB),
+        poolAddress,
+        wallet: account,
+        chainId,
+      }),
+      routingInstruction: routeLiquidityInstruction({
+        operation: isRemove ? 'burn' : 'mint',
+        currencyA: currencyA?.symbol,
+        currencyB: currencyB?.symbol,
+        chainId,
+      }),
+      opportunityRef,
+      lpSubmitDeferral: LP_SUBMIT_DEFERRAL.deferralReason,
     }),
     [
       phase,
@@ -674,6 +709,9 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       approvalB,
       preview,
       error,
+      isRemove,
+      isPositions,
+      opportunityRef,
     ],
   )
 

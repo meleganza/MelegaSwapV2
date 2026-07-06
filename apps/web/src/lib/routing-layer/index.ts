@@ -14,6 +14,16 @@ export {
 } from './createSwapExecutionInstruction'
 export type { CreateSmartSwapInstructionInput, CreateV2SwapInstructionInput } from './createSwapExecutionInstruction'
 
+export {
+  routeSmartSwapQuote,
+  routeV2SwapQuote,
+  routeSmartSwapQuoteFromTrade,
+  routeLiquidityInstruction,
+  ROUTING_FACADE_MARKER,
+  assertRoutingFacadeOwnership,
+} from './facade'
+export type { RoutedSwapQuote, RoutedLiquidityInstruction } from './facade'
+
 export { ROUTING_LAYER_OWNERSHIP, ROUTING_FORBIDDEN_IN_EXECUTION_LAYER } from './ownership'
 
 export {

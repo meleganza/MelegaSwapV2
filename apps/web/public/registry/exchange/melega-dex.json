@@ -1,0 +1,69 @@
+{
+  "schema": "melega.dex.v1",
+  "schemaVersion": "1.0.0",
+  "marker": "KAP-006C_DEX_GRAVITY_IMPLEMENTED",
+  "role": "Civilization Economic Exchange Engine",
+  "civilizationLiquidityOwner": true,
+  "canonicalPipelines": [
+    "routing_pipeline",
+    "execution_pipeline",
+    "liquidity_pipeline",
+    "machine_surface_pipeline"
+  ],
+  "schemas": {
+    "dex": "melega.dex.v1",
+    "liquidity": "melega.liquidity.v1",
+    "execution": "melega.execution.v1",
+    "exchangeReceipt": "melega.exchange-receipt.v1",
+    "exchangeReceiptLegacy": "melega.dex-execution-receipt.v1"
+  },
+  "delegatedAuthorities": [
+    "Core/G001",
+    "Treasury",
+    "Signal",
+    "Radar",
+    "Labs"
+  ],
+  "forbiddenAuthorities": [
+    "Civilization Gravity",
+    "Treasury settlement computation",
+    "Settlement Truth",
+    "Opportunity Truth",
+    "Signal Gateway authority",
+    "Radar authority",
+    "Labs productive planning",
+    "reward computation",
+    "cashback computation",
+    "market making",
+    "arbitrage",
+    "trading bots"
+  ],
+  "routingPolicy": {
+    "quoteOwner": "routing-layer",
+    "computationEngine": "smart-router",
+    "facade": "lib/routing-layer/facade"
+  },
+  "executionPolicy": {
+    "submitOwner": "execution-ingress",
+    "evidenceOwner": "execution-tracker",
+    "treasuryHandoff": "receipt-only"
+  },
+  "liquidityPolicy": {
+    "canonicalOwner": "liquidityRuntime",
+    "canonicalRoute": "/liquidity-studio",
+    "aliasRoutes": ["/add", "/remove", "/liquidity"],
+    "mintBurnPrimitives": ["state/mint", "state/burn"]
+  },
+  "authorityBoundaries": {
+    "owns": [
+      "Civilization Liquidity",
+      "routing-to-liquidity",
+      "exchange efficiency",
+      "swap/LP execution quality",
+      "exchange/liquidity machine surfaces",
+      "execution evidence",
+      "exchange receipts to Treasury"
+    ],
+    "receiptOnlySettlement": true
+  }
+}

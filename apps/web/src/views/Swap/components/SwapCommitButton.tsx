@@ -13,7 +13,7 @@ import { Field } from 'state/swap/actions'
 import SettingsModal, { withCustomOnDismiss } from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { createV2SwapExecutionInstruction } from 'lib/routing-layer'
+import { routeV2SwapQuote } from 'lib/routing-layer/facade'
 import { useV2SwapExecution } from 'lib/execution-layer'
 import Column from 'components/Layout/Column'
 import { useUserSingleHopOnly } from 'state/user/hooks'
@@ -82,7 +82,7 @@ export default function SwapCommitButton({
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   const executionInstruction = useMemo(
-    () => createV2SwapExecutionInstruction({ trade, allowedSlippage, recipient }),
+    () => (trade ? routeV2SwapQuote({ trade, allowedSlippage, recipient }).instruction : null),
     [trade, allowedSlippage, recipient],
   )
 
