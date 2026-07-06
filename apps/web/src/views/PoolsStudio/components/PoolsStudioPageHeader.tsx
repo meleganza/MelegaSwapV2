@@ -36,13 +36,17 @@ const Title = styled.h1`
   letter-spacing: 0.02em;
 `
 
-const Subtitle = styled.p`
+const Subtitle = styled.div`
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.5;
   color: ${poolsStudioColors.subtitle};
   max-width: 560px;
+
+  p {
+    margin: 0;
+  }
 `
 
 const Right = styled.div`
@@ -68,7 +72,11 @@ export const PoolsStudioPageHeader: React.FC = () => (
     <Row>
       <Left>
         <Title>POOLS</Title>
-        <Subtitle>Stake assets, distribute rewards and build long-term communities.</Subtitle>
+        <Subtitle>
+          <p>Stake assets.</p>
+          <p>Earn rewards.</p>
+          <p>Build long-term positions.</p>
+        </Subtitle>
       </Left>
       <Right>
         <LiveBadge>LIVE RUNTIME</LiveBadge>

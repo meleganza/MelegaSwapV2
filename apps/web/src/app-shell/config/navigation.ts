@@ -66,7 +66,7 @@ export const shellNavigation: ShellNavSection[] = [
     items: [
       { id: 'trending', label: 'Trending', href: '/trending', icon: 'star', match: (p) => p === '/trending' },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
-      { id: 'radar', label: 'Radar', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
+      { id: 'radar', label: 'DEX Intelligence', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
       {
         id: 'collectibles',
         label: 'Identity Hub',
@@ -92,6 +92,7 @@ export const shellNavigation: ShellNavSection[] = [
         label: 'Import Existing Token',
         href: '/import-existing-token',
         icon: 'rocket',
+        hidden: true,
         match: (p) => p === '/import-existing-token' || p === '/launch',
       },
       {

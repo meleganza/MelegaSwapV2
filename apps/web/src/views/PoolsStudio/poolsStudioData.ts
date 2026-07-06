@@ -30,14 +30,29 @@ export interface PoolPreviewCard {
   name: string
   tokens: string[]
   tokenLogos?: string[]
+  stakeToken?: string
   apr?: string
+  aprExact?: number
   status: PoolStatus
+  displayStatus?: 'LIVE' | 'ENDED' | 'ENDING SOON' | 'NEW' | 'INDEXING'
+  visualType?: string
   tvl: string
   liquidity: string
   rewardToken: string
   dailyRewards: string
+  estimatedDailyReward?: string
+  remainingRewards?: string
+  remainingRewardsPct?: number
+  remainingRewardsTone?: 'green' | 'yellow' | 'red'
   multiplier: string
   participants: string
+  lockPeriod?: string
+  cooldown?: string
+  rewardSustainability?: string
+  sustainabilityScore?: number
+  contractAddress?: string
+  contractLabel?: string
+  explorerUrl?: string
   cta?: 'stake' | 'analyze' | 'none'
   analyzePreview?: PoolAnalyzePreview
   /** Runtime fields (R017) */
@@ -65,12 +80,18 @@ export const POOL_FILTER_CHIPS = [
   'All',
   'Official',
   'MARCO',
-  'Community',
-  'Locked',
   'Flexible',
+  'Fixed',
+  'Auto Compound',
+  '30 Days',
+  '90 Days',
+  '180 Days',
+  '365 Days',
   'Highest APR',
+  'Highest Rewards',
+  'Lowest Risk',
   'Newest',
-  'Featured Farm',
+  'Featured',
 ] as const
 
 export type PoolFilterChip = (typeof POOL_FILTER_CHIPS)[number]

@@ -149,7 +149,7 @@ export const useLiquidityTerminalData = (
     advisorItems,
     selectedPool,
     isIndexing: transactions === undefined,
-    isLoadingPools: topAddresses.length > 0 && poolDatas.length === 0,
+    isLoadingPools: topAddresses.length > 0 && poolDatas.length === 0 && transactions === undefined,
   }
 }
 

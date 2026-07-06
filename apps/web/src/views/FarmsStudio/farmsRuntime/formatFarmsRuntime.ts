@@ -107,7 +107,7 @@ export function aggregateKpis(
     { id: 'active', label: 'Active Farms', value: String(activeFarms) },
     {
       id: 'rewards',
-      label: 'MARCO REWARDS TODAY',
+      label: 'MARCO Emitted Today',
       value: dailyEmissions > 0 ? formatTokenAmount(new BigNumber(dailyEmissions), 18, 'MARCO') : '0 MARCO',
     },
     { id: 'apr', label: 'Highest APR', value: highestApr > 0 ? formatApr(highestApr) : '—', gold: true },

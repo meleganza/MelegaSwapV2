@@ -73,6 +73,9 @@ export function mapRecordToCollectionCard(
       expiration: membership.expiration,
     },
     utilities: privilegeLabels(privileges),
+    previewImageUrl: record.metadata.gateway
+      ? `${record.metadata.gateway.replace(/\/$/, '')}/1.png`
+      : undefined,
   }
 }
 

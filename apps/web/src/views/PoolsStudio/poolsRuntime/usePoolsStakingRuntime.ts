@@ -15,6 +15,7 @@ import {
   mapPoolToPreviewCard,
   sortPoolsDefault,
 } from './formatPoolsRuntime'
+import { buildPoolMachineV2 } from './formatPoolPresentation'
 import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErrors'
 import usePoolsTerminalData from './usePoolsTerminalData'
 import { getAprData } from 'views/Pools/helpers'
@@ -51,11 +52,25 @@ export interface PoolsFeaturedMetrics {
   symbol: string
   apr: string
   rewardToken: string
+  stakeToken: string
   totalStaked: string
+  tvl: string
   lockLabel: string
+  lockPeriod: string
+  cooldown: string
   participants: string
   rewardsDistributed: string
+  estimatedDailyReward: string
+  remainingRewards: string
+  remainingRewardsPct: number
+  remainingRewardsTone: 'green' | 'yellow' | 'red'
+  rewardSustainability: string
+  sustainabilityScore: number
   poolType: string
+  visualType: string
+  contractAddress: string
+  contractLabel: string
+  explorerUrl: string
   card?: PoolPreviewCard
 }
 
@@ -89,34 +104,62 @@ export interface PoolsStakingRuntime {
 
 function filterPools(cards: PoolPreviewCard[], filter: PoolFilterChip): PoolPreviewCard[] {
   let list = [...cards]
+  const byVisual = (type: string) => list.filter((p) => p.visualType === type)
+  const parseBudget = (p: PoolPreviewCard) => {
+    const raw = p.rawPool
+    if (!raw?.earningToken?.decimals) return 0
+    const perBlock = raw.tokenPerBlock
+    if (!perBlock) return 0
+    const bn = typeof (perBlock as { times?: (n: number) => unknown }).times === 'function'
+      ? (perBlock as { times: (n: number) => { toNumber: () => number } }).times(28800)
+      : null
+    return bn ? bn.toNumber() : 0
+  }
+
   switch (filter) {
     case 'Official':
-      list = list.filter((p) => p.rawPool?.poolCategory === PoolCategory.CORE || p.sousId === 0)
+      list = list.filter((p) => p.visualType === 'Official' || p.sousId === 0)
       break
     case 'MARCO':
       list = list.filter(
         (p) => p.tokens.includes('MARCO') || p.rewardToken === 'MARCO' || p.name.includes('MARCO'),
       )
       break
-    case 'Community':
-      list = list.filter((p) => p.poolTypeLabel === 'Community Pool')
-      break
-    case 'Locked':
-      list = list.filter((p) => p.vaultKey === VaultKey.CakeVault)
-      break
     case 'Flexible':
-      list = list.filter(
-        (p) => p.vaultKey === VaultKey.CakeFlexibleSideVault || (!p.vaultKey && p.sousId === 0),
-      )
+      list = byVisual('Flexible')
+      break
+    case 'Fixed':
+      list = list.filter((p) => p.visualType === 'Fixed Lock' || p.lockPeriod?.includes('d'))
+      break
+    case 'Auto Compound':
+      list = byVisual('Auto Compound')
+      break
+    case '30 Days':
+      list = byVisual('30 Days')
+      break
+    case '90 Days':
+      list = byVisual('90 Days')
+      break
+    case '180 Days':
+      list = byVisual('180 Days')
+      break
+    case '365 Days':
+      list = byVisual('365 Days')
       break
     case 'Highest APR':
-      list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))
+      list = list.sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0))
+      break
+    case 'Highest Rewards':
+      list = list.sort((a, b) => parseBudget(b) - parseBudget(a))
+      break
+    case 'Lowest Risk':
+      list = list.sort((a, b) => (a.sustainabilityScore ?? 0) - (b.sustainabilityScore ?? 0)).reverse()
       break
     case 'Newest':
       list = list.sort((a, b) => (b.sousId ?? 0) - (a.sousId ?? 0))
       break
-    case 'Featured Farm':
-      list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0')).slice(0, 3)
+    case 'Featured':
+      list = list.filter((p) => p.status === 'live').sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0)).slice(0, 3)
       break
     default:
       list = sortPoolsDefault(list)
@@ -163,23 +206,37 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       pool?.totalStaked && pool.stakingToken?.decimals
         ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * (pool.stakingTokenPrice || 0)
         : 0
-  return {
+    return {
       name: card?.name ?? '—',
       symbol: card?.tokens[0] ?? 'MARCO',
       apr: card?.apr ?? '—',
       rewardToken: card?.rewardToken ?? '—',
+      stakeToken: card?.stakeToken ?? card?.tokens[0] ?? '—',
       totalStaked: formatUsd(stakedUsd),
-      lockLabel: card?.vaultKey === VaultKey.CakeVault ? 'Locked' : 'Flexible',
+      tvl: card?.tvl ?? '—',
+      lockLabel: card?.lockPeriod ?? 'Flexible',
+      lockPeriod: card?.lockPeriod ?? 'Flexible',
+      cooldown: card?.cooldown ?? 'None',
       participants: card?.participants ?? '—',
       rewardsDistributed: card?.dailyRewards !== '—' ? `${card?.dailyRewards ?? '—'} / day` : '—',
+      estimatedDailyReward: card?.estimatedDailyReward ?? '—',
+      remainingRewards: card?.remainingRewards ?? '—',
+      remainingRewardsPct: card?.remainingRewardsPct ?? 0,
+      remainingRewardsTone: card?.remainingRewardsTone ?? 'yellow',
+      rewardSustainability: card?.rewardSustainability ?? 'Medium',
+      sustainabilityScore: card?.sustainabilityScore ?? 0,
       poolType: card?.poolTypeLabel ?? '—',
+      visualType: card?.visualType ?? 'Flexible',
+      contractAddress: card?.contractAddress ?? '',
+      contractLabel: card?.contractLabel ?? '—',
+      explorerUrl: card?.explorerUrl ?? 'https://bscscan.com',
       card,
     }
   }, [featuredCard])
 
   const kpis = useMemo(
-    () => aggregateKpis(rawPools ?? [], featured.name, currentBlock),
-    [rawPools, featured.name, currentBlock],
+    () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock),
+    [rawPools, featuredCard, currentBlock],
   )
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
@@ -259,7 +316,8 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       featuredPool: featured.name,
       error,
       timestamp: new Date().toISOString(),
-    }
+      pools: filteredPools.map((p) => buildPoolMachineV2(p, chainId)),
+    } as PoolsMachinePayload & { pools?: ReturnType<typeof buildPoolMachineV2>[] }
   }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error])
 
   const loadingLabel =

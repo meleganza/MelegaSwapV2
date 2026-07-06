@@ -77,22 +77,16 @@ export const PoolsStudioScreen: React.FC = () => (
     <PoolsRuntimeProvider>
       <PoolsActionHost />
       <Content>
-      <PoolsStudioPageHeader />
-      <PoolsKpiRow />
-      <PageGrid12 data-ps-page-grid>
-        <FeaturedSlot>
-          <FeaturedPoolPanel />
-        </FeaturedSlot>
-        <AdvisorSlot>
-          <AIRewardAdvisorPanel />
-        </AdvisorSlot>
-      </PageGrid12>
-      <PoolsFilterRow />
-      <PoolsGrid />
-      <CreatePoolCta />
-      <PoolsAnalyticsRow />
-      <PoolsActivityTable />
-    </Content>
+        <PoolsStudioPageHeader />
+        <PoolsKpiRow />
+        <FeaturedPoolPanel />
+        <PoolsFilterRow />
+        <PoolsGrid />
+        <CreatePoolCta />
+        <AIRewardAdvisorPanel />
+        <PoolsAnalyticsRow />
+        <PoolsActivityTable />
+      </Content>
     </PoolsRuntimeProvider>
   </Root>
 )

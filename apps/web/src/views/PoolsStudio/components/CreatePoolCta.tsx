@@ -1,182 +1,132 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
-import { PsGhostBtn, PsPrimaryBtn } from './poolsStudioPrimitives'
+import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
+import { STAKING_TEMPLATES } from 'views/BuildStudio/buildStudioData'
+import { poolsStudioColors } from '../poolsStudioTokens'
+import { PsField, PsFieldLabel, PsInput, PsPrimaryBtn } from './poolsStudioPrimitives'
 
-const Section = styled.section`
+const Card = styled.section`
   width: 100%;
-  min-height: ${poolsStudioLayout.createCtaHeight};
   border-radius: 20px;
   border: 1px solid ${poolsStudioColors.border};
-  background: ${poolsStudioColors.ctaGradient}, ${poolsStudioColors.panel};
-  padding: 20px 24px;
+  background: ${poolsStudioColors.panel};
+  padding: 24px;
   box-sizing: border-box;
-  display: grid;
-  grid-template-columns: 140px 1fr 200px;
-  gap: 24px;
-  align-items: center;
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding: 20px 16px;
-  }
-`
-
-const Illustration = styled.div`
-  width: 120px;
-  height: 110px;
-  position: relative;
-  margin: 0 auto;
-
-  @media (max-width: 767px) {
-    width: 100px;
-    height: 90px;
-  }
-`
-
-const GiftBox = styled.div`
-  width: 72px;
-  height: 56px;
-  border-radius: 10px;
-  background: linear-gradient(145deg, #f4c542, #b8860b);
-  position: absolute;
-  left: 50%;
-  bottom: 8px;
-  transform: translateX(-50%);
-  box-shadow: 0 12px 32px rgba(212, 175, 55, 0.25);
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: 14px;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.25);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 18px;
-    left: 0;
-    right: 0;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.2);
-  }
-`
-
-const Coin = styled.span<{ $x: number; $y: number; $s: number }>`
-  position: absolute;
-  left: ${({ $x }) => $x}%;
-  top: ${({ $y }) => $y}%;
-  width: ${({ $s }) => $s}px;
-  height: ${({ $s }) => $s}px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f4c542, #d4af37);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-  animation: float 3s ease-in-out infinite;
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-6px);
-    }
-  }
-`
-
-const Center = styled.div`
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `
 
 const Title = styled.h2`
-  margin: 0 0 6px;
+  margin: 0;
   font-family: Orbitron, sans-serif;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: ${poolsStudioColors.text};
 `
 
-const Sub = styled.p`
-  margin: 0 0 14px;
-  font-size: 14px;
-  color: ${poolsStudioColors.secondary};
-`
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 
-const BtnRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   @media (max-width: 767px) {
-    justify-content: center;
+    grid-template-columns: 1fr;
   }
 `
 
-const Checklist = styled.ul`
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`
+const SimRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid ${poolsStudioColors.border};
+  background: rgba(255, 255, 255, 0.02);
 
-const CheckItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: ${poolsStudioColors.secondary};
-
-  &::before {
-    content: '✓';
-    color: ${poolsStudioColors.green};
-    font-weight: 800;
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
   }
 `
 
-const CHECKS = [
-  'Distribute your own token',
-  'Flexible & Locked pools',
-  'AI Analytics',
-  'Retention tools',
-]
+const SimItem = styled.div`
+  font-size: 11px;
+  color: ${poolsStudioColors.muted};
+
+  strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    color: ${poolsStudioColors.text};
+  }
+`
+
+const template = STAKING_TEMPLATES[0]
 
 export const CreatePoolCta: React.FC = () => (
-  <Section data-ps-create-cta>
-    <Illustration aria-hidden>
-      <Coin $x={10} $y={5} $s={22} />
-      <Coin $x={75} $y={0} $s={18} />
-      <Coin $x={82} $y={35} $s={14} />
-      <GiftBox />
-    </Illustration>
-    <Center>
-      <Title>Create Your Reward Pool</Title>
-      <Sub>Launch a staking program rewarding your community.</Sub>
-      <BtnRow>
-        <PsPrimaryBtn as={Link} to="/build-studio?intent=staking-pool" type="button">
-          + Create Pool
-        </PsPrimaryBtn>
-        <PsGhostBtn as={Link} to="/build-studio?intent=reward-marco-holders" type="button">
-          Reward MARCO Holders
-        </PsGhostBtn>
-      </BtnRow>
-    </Center>
-    <Checklist>
-      {CHECKS.map((item) => (
-        <CheckItem key={item}>{item}</CheckItem>
-      ))}
-    </Checklist>
-  </Section>
+  <Card data-ps-create-pool-builder>
+    <Title>Create Pool</Title>
+    <Grid>
+      <PsField>
+        <PsFieldLabel>Stake Token</PsFieldLabel>
+        <PsInput value={premiumUiValue(template.stakeToken)} readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>Reward Token</PsFieldLabel>
+        <PsInput value="MARCO" readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>Reward Budget</PsFieldLabel>
+        <PsInput value="Preparation only" readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>Lock Type</PsFieldLabel>
+        <PsInput value={premiumUiValue(template.title)} readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>Cooldown</PsFieldLabel>
+        <PsInput value="None" readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>Pool Duration</PsFieldLabel>
+        <PsInput value="Configurable" readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>Start Date</PsFieldLabel>
+        <PsInput value="At deployment" readOnly />
+      </PsField>
+      <PsField>
+        <PsFieldLabel>End Date</PsFieldLabel>
+        <PsInput value="At budget exhaustion" readOnly />
+      </PsField>
+    </Grid>
+    <SimRow>
+      <SimItem>
+        APR Simulation
+        <strong>8–12%</strong>
+      </SimItem>
+      <SimItem>
+        Estimated Sustainability
+        <strong>High</strong>
+      </SimItem>
+      <SimItem>
+        Estimated Daily Distribution
+        <strong>Runtime preview</strong>
+      </SimItem>
+      <SimItem>
+        Participants Simulation
+        <strong>—</strong>
+      </SimItem>
+    </SimRow>
+    <PsPrimaryBtn as={Link} to="/build-studio?intent=staking-pool" type="button" style={{ alignSelf: 'flex-start', minWidth: 200 }}>
+      Create Pool
+    </PsPrimaryBtn>
+  </Card>
 )
 
 export default CreatePoolCta

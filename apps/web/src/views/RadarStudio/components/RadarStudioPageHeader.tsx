@@ -113,7 +113,7 @@ export const RadarStudioPageHeader: React.FC = () => {
   <div data-rd-page-header>
     <Row>
       <Left>
-        <Title>RADAR</Title>
+        <Title>DEX INTELLIGENCE</Title>
         <Subtitle>
           AI operational console for live discovery, wallet activity and contract intelligence.
         </Subtitle>

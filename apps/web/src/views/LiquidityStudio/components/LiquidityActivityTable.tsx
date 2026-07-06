@@ -39,7 +39,7 @@ export const LiquidityActivityTable: React.FC = () => {
         title="Liquidity Activity"
         rows={timelineRows}
         height={liquidityStudioLayout.activityHeight}
-        emptyTitle={loadingLabel || isIndexing ? 'Indexing liquidity' : 'No liquidity activity'}
+        emptyTitle={loadingLabel || isIndexing ? 'Indexing liquidity' : 'No liquidity events yet.'}
         emptySubtitle={
           loadingLabel || isIndexing
             ? 'Fetching indexed mint and burn events'

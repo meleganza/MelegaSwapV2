@@ -8,7 +8,8 @@ const GROW_ITEMS = [
     id: 'labs',
     title: 'LABS',
     subtitle: 'Trade narratives before listing.',
-    href: '/build-studio',
+    href: 'https://labs.melega.ai',
+    external: true,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <path d="M9 3h6l1 4H8l1-4z" />
@@ -21,7 +22,8 @@ const GROW_ITEMS = [
     id: 'space',
     title: 'SPACE',
     subtitle: 'Increase project visibility.',
-    href: 'https://space.melega.io',
+    href: 'https://space.melega.ai',
+    external: true,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <circle cx="12" cy="12" r="3" />
@@ -33,7 +35,8 @@ const GROW_ITEMS = [
     id: 'radar',
     title: 'RADAR',
     subtitle: 'Discover trends and claim your profile.',
-    href: '/radar',
+    href: 'https://radar.melega.ai',
+    external: true,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <circle cx="12" cy="12" r="8" />
@@ -46,7 +49,8 @@ const GROW_ITEMS = [
     id: 'smartdrop',
     title: 'SMARTDROP',
     subtitle: 'Acquire active holders.',
-    href: '/build-studio#build-import',
+    href: 'https://smartdrop.melega.ai',
+    external: true,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
         <path d="M12 3l2.5 5.5L20 10l-5.5 1.5L12 17l-2.5-5.5L4 10l5.5-1.5L12 3z" />
@@ -125,7 +129,7 @@ const CardTrack = styled.div`
   }
 `
 
-const EcoCard = styled(Link)`
+const ecoCardStyles = `
   flex: 0 0 auto;
   display: flex;
   flex-direction: row;
@@ -155,6 +159,14 @@ const EcoCard = styled(Link)`
     align-items: flex-start;
     justify-content: center;
   }
+`
+
+const EcoCardLink = styled(Link)`
+  ${ecoCardStyles}
+`
+
+const EcoCardExternal = styled.a`
+  ${ecoCardStyles}
 `
 
 const TextCol = styled.div`
@@ -204,15 +216,26 @@ export const GrowInsideMelegaPanel: React.FC = () => (
       <ExploreLink href="/projects">Explore ecosystem →</ExploreLink>
     </Header>
     <CardTrack>
-      {GROW_ITEMS.map((item) => (
-        <EcoCard key={item.id} href={item.href}>
-          <IconWrap>{item.icon}</IconWrap>
-          <TextCol>
-            <CardTitle>{item.title}</CardTitle>
-            <CardSubtitle>{item.subtitle}</CardSubtitle>
-          </TextCol>
-        </EcoCard>
-      ))}
+      {GROW_ITEMS.map((item) => {
+        const content = (
+          <>
+            <IconWrap>{item.icon}</IconWrap>
+            <TextCol>
+              <CardTitle>{item.title}</CardTitle>
+              <CardSubtitle>{item.subtitle}</CardSubtitle>
+            </TextCol>
+          </>
+        )
+        return item.external ? (
+          <EcoCardExternal key={item.id} href={item.href} target="_blank" rel="noopener noreferrer">
+            {content}
+          </EcoCardExternal>
+        ) : (
+          <EcoCardLink key={item.id} href={item.href}>
+            {content}
+          </EcoCardLink>
+        )
+      })}
     </CardTrack>
   </Shell>
 )

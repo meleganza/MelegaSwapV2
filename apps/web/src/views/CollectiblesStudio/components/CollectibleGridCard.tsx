@@ -72,6 +72,15 @@ const ArtWrap = styled.div`
   flex-shrink: 0;
 `
 
+const ArtImage = styled.img`
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  background: #111;
+`
+
 const Badges = styled.div`
   position: absolute;
   top: 12px;
@@ -346,7 +355,11 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
     <Card data-cs-collection-card $identity={identityAccent}>
       <CardBody>
         <ArtWrap>
-          <CsArtwork data-cs-artwork $theme={collection.artTheme} />
+          {collection.previewImageUrl ? (
+            <ArtImage data-cs-artwork src={collection.previewImageUrl} alt="" />
+          ) : (
+            <CsArtwork data-cs-artwork $theme={collection.artTheme} />
+          )}
           <Badges>
             {visibleBadges.map((b) => {
               const c = BADGE_COLORS[b]

@@ -6,9 +6,8 @@ export const ListProjectCta: React.FC = () => (
     <MelegaCtaCard
       visual={<MelegaProjectCube />}
       title="Build with Melega"
-      description="List your token, add liquidity, create a farm, or reward MARCO holders."
-      primaryAction={{ label: 'Open Build Studio', href: '/build-studio' }}
-      secondaryAction={{ label: 'Reward MARCO holders', href: '/pools' }}
+      description="List your token, add liquidity, create a farm, or launch on Melega infrastructure."
+      primaryAction={{ label: 'Import & Analyze Token', href: '/build-studio#build-import' }}
     />
   </div>
 )

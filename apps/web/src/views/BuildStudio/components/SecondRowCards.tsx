@@ -28,7 +28,6 @@ const Grid = styled.div`
 
 const Inner = styled.div`
   padding: 20px;
-  min-height: ${buildStudioLayout.secondRowCardMinH};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -43,7 +42,7 @@ const TemplateGrid = styled.div`
 `
 
 const CardShell = styled(BsPanel)`
-  min-height: ${buildStudioLayout.secondRowCardMinH};
+  min-height: auto;
 `
 
 const TemplateCard = styled.button<{ $active?: boolean; $featured?: boolean }>`
@@ -105,7 +104,7 @@ const SimVal = styled.span`
   font-weight: 700;
 `
 
-function StakingPoolCard() {
+export function StakingPoolCard() {
   const { poolPreview } = useBuildRuntime()
   const [templateId, setTemplateId] = useState('marco-holders')
   const template = STAKING_TEMPLATES.find((t) => t.id === templateId) ?? STAKING_TEMPLATES[0]
@@ -168,7 +167,7 @@ function StakingPoolCard() {
   )
 }
 
-function CreateFarmCard() {
+export function CreateFarmCard() {
   const { farmPreview } = useBuildRuntime()
 
   return (

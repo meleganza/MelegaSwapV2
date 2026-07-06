@@ -3,10 +3,11 @@ import styled from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { buildPoolMachineV2 } from '../poolsRuntime/formatPoolPresentation'
 import { PsGhostBtn, PsPanel, PsPrimaryBtn, PoolTokenIcon } from './poolsStudioPrimitives'
-import StakeDonutChart from './StakeDonutChart'
+import FeaturedPoolAllocation from './FeaturedPoolAllocation'
 
-const OfficialBadge = styled.span`
+const TypeBadge = styled.span`
   display: inline-flex;
   align-items: center;
   height: 22px;
@@ -23,40 +24,36 @@ const OfficialBadge = styled.span`
 
 const Inner = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 20px;
-  height: calc(100% - 8px);
+  grid-template-columns: minmax(0, 65%) minmax(0, 35%);
+  gap: 24px;
   min-height: 0;
 
-  @media (max-width: 767px) {
+  @media (max-width: 991px) {
     grid-template-columns: 1fr;
-    height: auto;
   }
 `
 
-const Main = styled.div`
+const Left = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 16px;
   min-width: 0;
 `
 
-const Apr = styled.div`
-  font-size: 52px;
-  font-weight: 800;
-  line-height: 1;
-  color: ${poolsStudioColors.green};
-  margin-bottom: ${poolsStudioLayout.featuredAprGap};
+const Right = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  border-left: 1px solid ${poolsStudioColors.rowBorder};
+  padding-left: 24px;
 
-  @media (max-width: 767px) {
-    font-size: 40px;
+  @media (max-width: 991px) {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid ${poolsStudioColors.rowBorder};
+    padding-top: 20px;
   }
-`
-
-const Metrics = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px 24px;
-  margin-bottom: ${poolsStudioLayout.featuredMetricsBtnGap};
 `
 
 const TitleRow = styled.div`
@@ -64,7 +61,6 @@ const TitleRow = styled.div`
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
 `
 
 const PoolName = styled.h2`
@@ -73,6 +69,30 @@ const PoolName = styled.h2`
   font-size: 22px;
   font-weight: 800;
   color: ${poolsStudioColors.text};
+`
+
+const Apr = styled.div`
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  color: ${poolsStudioColors.green};
+
+  @media (max-width: 767px) {
+    font-size: 52px;
+  }
+`
+
+const DailyReward = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+  color: ${poolsStudioColors.secondary};
+  margin-top: -4px;
+`
+
+const Metrics = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 `
 
 const Metric = styled.div`
@@ -95,11 +115,82 @@ const MetricValue = styled.span`
   color: ${poolsStudioColors.text};
 `
 
+const BtnCell = styled.div`
+  min-width: 0;
+
+  button {
+    width: 100%;
+    height: ${poolsStudioLayout.btnHeight};
+    min-height: ${poolsStudioLayout.btnHeight};
+  }
+`
+
 const BtnRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: auto;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const ContractRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+`
+
+const ContractBtns = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: auto;
+`
+
+const ContractLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${poolsStudioColors.goldBorder};
+  color: ${poolsStudioColors.goldBright};
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: ${poolsStudioColors.cardBorderHover};
+  }
+`
+
+const CopyBtn = styled.button`
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${poolsStudioColors.border};
+  background: transparent;
+  color: ${poolsStudioColors.secondary};
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+`
+
+const AnalyzeBlock = styled.div`
+  overflow: hidden;
+  max-height: ${({ $open }: { $open: boolean }) => ($open ? '320px' : '0')};
+  opacity: ${({ $open }: { $open: boolean }) => ($open ? 1 : 0)};
+  transition: max-height 220ms ease-out, opacity 220ms ease-out;
+  font-size: 12px;
+  color: ${poolsStudioColors.muted};
+  line-height: 1.6;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
 `
 
 const LoadingLine = styled.p`
@@ -108,13 +199,8 @@ const LoadingLine = styled.p`
   color: ${poolsStudioColors.muted};
 `
 
-const ConnectWrap = styled.div`
-  button {
-    height: 40px !important;
-    min-height: 40px !important;
-    padding: 0 20px !important;
-    border-radius: 12px !important;
-  }
+const MachineHidden = styled.div`
+  display: none;
 `
 
 export const FeaturedPoolPanel: React.FC = () => {
@@ -122,13 +208,24 @@ export const FeaturedPoolPanel: React.FC = () => {
   const card = featured.card
   const [analyzeOpen, setAnalyzeOpen] = useState(false)
   const preview = card?.analyzePreview
-  const hasPending = card?.pendingReward?.gt(0)
-  const hasStaked = card?.userStaked?.gt(0)
+
+  const copyContract = () => {
+    if (featured.contractAddress) navigator.clipboard?.writeText(featured.contractAddress)
+  }
 
   return (
-    <PsPanel data-ps-panel data-ps-featured $height={poolsStudioLayout.featuredHeight} $radius="22px" style={{ padding: '22px' }}>
+    <PsPanel
+      data-ps-panel
+      data-ps-featured
+      $height={poolsStudioLayout.featuredHeight}
+      $radius="20px"
+      style={{ padding: '24px' }}
+    >
+      {card ? (
+        <MachineHidden data-melega-pool-v2={JSON.stringify(buildPoolMachineV2(card))} aria-hidden />
+      ) : null}
       <Inner>
-        <Main>
+        <Left>
           {loadingLabel ? (
             <LoadingLine>{loadingLabel}</LoadingLine>
           ) : (
@@ -136,87 +233,101 @@ export const FeaturedPoolPanel: React.FC = () => {
               <TitleRow>
                 <PoolTokenIcon symbol={featured.symbol} size={28} />
                 <PoolName>{featured.name}</PoolName>
-                <OfficialBadge>{featured.poolType}</OfficialBadge>
+                <TypeBadge>{featured.visualType}</TypeBadge>
               </TitleRow>
               <Apr>{featured.apr}</Apr>
+              <DailyReward>{featured.estimatedDailyReward}</DailyReward>
               <Metrics>
+                <Metric>
+                  <MetricLabel>Stake</MetricLabel>
+                  <MetricValue>{featured.stakeToken}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Reward</MetricLabel>
+                  <MetricValue>{featured.rewardToken}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Pool Type</MetricLabel>
+                  <MetricValue>{featured.visualType}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Lock Period</MetricLabel>
+                  <MetricValue>{featured.lockPeriod}</MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>Cooldown</MetricLabel>
+                  <MetricValue>{featured.cooldown}</MetricValue>
+                </Metric>
                 <Metric>
                   <MetricLabel>Reward Token</MetricLabel>
                   <MetricValue>{featured.rewardToken}</MetricValue>
                 </Metric>
                 <Metric>
-                  <MetricLabel>Total Staked</MetricLabel>
-                  <MetricValue>{featured.totalStaked}</MetricValue>
-                </Metric>
-                <Metric>
-                  <MetricLabel>Lock</MetricLabel>
-                  <MetricValue>{featured.lockLabel}</MetricValue>
+                  <MetricLabel>Total Rewards Remaining</MetricLabel>
+                  <MetricValue>{featured.remainingRewards}</MetricValue>
                 </Metric>
                 <Metric>
                   <MetricLabel>Participants</MetricLabel>
                   <MetricValue>{featured.participants}</MetricValue>
                 </Metric>
-                <Metric style={{ gridColumn: 'span 2' }}>
-                  <MetricLabel>Rewards Distributed</MetricLabel>
-                  <MetricValue>{featured.rewardsDistributed}</MetricValue>
+                <Metric>
+                  <MetricLabel>TVL</MetricLabel>
+                  <MetricValue>{featured.tvl}</MetricValue>
                 </Metric>
               </Metrics>
               <BtnRow>
-                {card && account ? (
-                  <>
-                    <PsPrimaryBtn
-                      type="button"
-                      style={{ height: 40, minHeight: 40, padding: '0 20px' }}
-                      onClick={() => requestModal(card, 'stake')}
-                    >
-                      Stake
-                    </PsPrimaryBtn>
-                    {hasStaked ? (
-                      <PsGhostBtn
-                        type="button"
-                        style={{ height: 40, minHeight: 40 }}
-                        onClick={() => requestModal(card, 'unstake')}
-                      >
-                        Unstake
-                      </PsGhostBtn>
-                    ) : null}
-                    {hasPending ? (
-                      <PsGhostBtn
-                        type="button"
-                        style={{ height: 40, minHeight: 40 }}
-                        onClick={() => requestModal(card, 'claim')}
-                      >
-                        Claim
-                      </PsGhostBtn>
-                    ) : null}
-                  </>
-                ) : (
-                  <ConnectWrap>
-                    <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
-                  </ConnectWrap>
-                )}
+                <BtnCell>
+                  <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+                </BtnCell>
+                <PsPrimaryBtn
+                  type="button"
+                  onClick={() => card && requestModal(card, 'stake')}
+                  disabled={!account || !card || card.status === 'ended'}
+                  style={{ width: '100%' }}
+                >
+                  Stake
+                </PsPrimaryBtn>
                 <PsGhostBtn
                   type="button"
-                  style={{ height: 40, minHeight: 40 }}
                   onClick={() => setAnalyzeOpen((v) => !v)}
                   disabled={!preview}
-                  title={preview ? undefined : 'Analysis unavailable'}
+                  style={{ width: '100%' }}
                 >
                   {analyzeOpen ? 'Hide Analysis' : 'Analyze'}
                 </PsGhostBtn>
               </BtnRow>
               {analyzeOpen && preview ? (
-                <div style={{ marginTop: 12, fontSize: 12, color: poolsStudioColors.muted, lineHeight: 1.5 }}>
+                <AnalyzeBlock $open={analyzeOpen}>
                   <div>APR History: {preview.aprHistory}</div>
-                  <div>Emission: {preview.emission}</div>
+                  <div>Pool Type: {card?.visualType}</div>
+                  <div>Lock: {card?.lockPeriod}</div>
+                  <div>Cooldown: {card?.cooldown}</div>
+                  <div>Sustainability: {card?.rewardSustainability}</div>
+                  <div>Auto Compound: {preview.autoCompound}</div>
                   <div>Contract: {preview.contract}</div>
-                  <div>Risk: {preview.risk}</div>
-                </div>
+                </AnalyzeBlock>
               ) : null}
             </>
           )}
-        </Main>
-        <StakeDonutChart />
+        </Left>
+        <Right>
+          <FeaturedPoolAllocation />
+          <ContractRow>
+            <MetricLabel>Contract</MetricLabel>
+            <MetricValue>{featured.contractLabel}</MetricValue>
+            <ContractBtns>
+              <ContractLink href={featured.explorerUrl} target="_blank" rel="noopener noreferrer">
+                BSC Explorer
+              </ContractLink>
+              <CopyBtn type="button" onClick={copyContract}>
+                Copy address
+              </CopyBtn>
+              <ContractLink href={featured.explorerUrl} target="_blank" rel="noopener noreferrer">
+                View Contract
+              </ContractLink>
+            </ContractBtns>
+          </ContractRow>
+        </Right>
       </Inner>
     </PsPanel>
   )

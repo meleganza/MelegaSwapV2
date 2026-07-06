@@ -146,7 +146,7 @@ const Silhouette = styled.div`
 export const CollectiblesStudioPageHeader: React.FC = () => (
   <Hero data-cs-page-header>
     <Left>
-      <Title>COLLECTIBLES</Title>
+      <Title>IDENTITY HUB</Title>
       <Subtitle>
         Digital Identities.
         <br />

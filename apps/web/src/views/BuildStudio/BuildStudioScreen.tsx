@@ -12,12 +12,11 @@ import BuildMachinePanel from './components/BuildMachinePanel'
 import AIValidationEngine from './components/AIValidationEngine'
 import BuildKpiRow from './components/BuildKpiRow'
 import BuildStudioPageHeader from './components/BuildStudioPageHeader'
-import CreateTokenPanel from './components/CreateTokenPanel'
+import CenterBuildColumn from './components/CenterBuildColumn'
 import ImportTokenPanel from './components/ImportTokenPanel'
 import InfrastructureFlow from './components/InfrastructureFlow'
 import OptionalServices from './components/OptionalServices'
 import RecentBuildsTable from './components/RecentBuildsTable'
-import SecondRowCards from './components/SecondRowCards'
 import TrustedInfrastructurePanel from './components/TrustedInfrastructurePanel'
 
 const Root = styled.div`
@@ -73,11 +72,10 @@ export const BuildStudioScreen: React.FC = () => (
         <ImportRuntimeProvider>
           <MainGrid data-bs-main-grid>
             <ImportTokenPanel />
-            <CreateTokenPanel />
+            <CenterBuildColumn />
             <AIBuildAdvisorPanel />
           </MainGrid>
         </ImportRuntimeProvider>
-        <SecondRowCards />
         <AIValidationEngine />
         <InfrastructureFlow />
         <OptionalServices />

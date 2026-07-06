@@ -391,7 +391,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
       return (
         <Footer>
           <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
-            Analyze
+            {expanded ? 'Hide Analysis' : 'Analyze'}
           </CardAnalyzeBtn>
         </Footer>
       )
@@ -413,7 +413,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           </CardAnalyzeBtn>
         ) : null}
         <CardAnalyzeBtn type="button" onClick={() => setExpanded((v) => !v)}>
-          Analyze
+          {expanded ? 'Hide Analysis' : 'Analyze'}
         </CardAnalyzeBtn>
       </Footer>
     )

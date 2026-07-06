@@ -24,6 +24,12 @@ const FeeBadge = styled.span`
   white-space: nowrap;
 `
 
+const LoadingLine = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: ${liquidityStudioColors.muted};
+`
+
 const Bars = styled.div`
   display: flex;
   align-items: flex-end;

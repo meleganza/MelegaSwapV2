@@ -1,4 +1,5 @@
 import React from 'react'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { trendingStudioColors } from '../trendingStudioTokens'
 import { TrGhostBtn } from './trendingStudioPrimitives'
@@ -70,7 +71,9 @@ const LivePill = styled.span`
   }
 `
 
-export const TrendingStudioPageHeader: React.FC = () => (
+export const TrendingStudioPageHeader: React.FC = () => {
+  const router = useRouter()
+  return (
   <div data-tr-page-header>
     <Row>
       <Left>
@@ -78,13 +81,14 @@ export const TrendingStudioPageHeader: React.FC = () => (
         <Subtitle>Discover the fastest growing crypto opportunities ranked by Melega AI.</Subtitle>
       </Left>
       <Right>
-        <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }}>
+        <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }} onClick={() => router.push('/projects')}>
           ✦ AI Discovery Engine
         </TrGhostBtn>
         <LivePill>Updated every minute</LivePill>
       </Right>
     </Row>
   </div>
-)
+  )
+}
 
 export default TrendingStudioPageHeader

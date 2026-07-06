@@ -82,11 +82,17 @@ const LayoutGrid = styled.div`
 const AreaBuilder = styled.div`
   grid-area: builder;
   min-width: 0;
+  min-height: ${liquidityStudioLayout.builderMinHeight};
+  display: flex;
+  flex-direction: column;
 `
 
 const AreaPreview = styled.div`
   grid-area: preview;
   min-width: 0;
+  min-height: ${liquidityStudioLayout.builderMinHeight};
+  display: flex;
+  flex-direction: column;
 `
 
 const AreaRight = styled.div`
@@ -97,9 +103,20 @@ const AreaRight = styled.div`
   min-width: 0;
   width: 100%;
   max-width: ${liquidityStudioLayout.rightWidth};
+  min-height: ${liquidityStudioLayout.builderMinHeight};
 
   @media (max-width: 767px) {
     display: contents;
+  }
+`
+
+const AreaPools = styled.div`
+  @media (max-width: 767px) {
+    grid-area: pools;
+  }
+
+  @media (min-width: 1100px) {
+    margin-top: auto;
   }
 `
 
@@ -112,12 +129,6 @@ const AreaMarket = styled.div`
 const AreaAdvisor = styled.div`
   @media (max-width: 767px) {
     grid-area: advisor;
-  }
-`
-
-const AreaPools = styled.div`
-  @media (max-width: 767px) {
-    grid-area: pools;
   }
 `
 

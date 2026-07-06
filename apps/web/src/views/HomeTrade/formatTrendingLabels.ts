@@ -3,20 +3,25 @@ import { Token } from '@pancakeswap/sdk'
 import { VaultKey } from 'state/types'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 
-export function formatPoolTrendingLabel(pool: Pool.DeserializedPool<Token>): { primary: string; secondary: string } {
+export function formatPoolTrendingLabel(
+  pool: Pool.DeserializedPool<Token>,
+  apr?: number,
+): { primary: string; secondary: string; accent?: string } {
+  let secondary: string
   if (pool.vaultKey === VaultKey.CakeVault) {
-    return { primary: 'Top Pool', secondary: 'MARCO Locked' }
+    secondary = 'MARCO Locked'
+  } else if (pool.vaultKey === VaultKey.CakeFlexibleSideVault) {
+    secondary = 'MARCO Flexible'
+  } else if (pool.stakingToken?.symbol && pool.earningToken?.symbol) {
+    secondary = `${pool.stakingToken.symbol} / ${pool.earningToken.symbol}`
+  } else {
+    secondary = pool.stakingToken?.symbol ?? 'Pool'
   }
-  if (pool.vaultKey === VaultKey.CakeFlexibleSideVault) {
-    return { primary: 'Top Pool', secondary: 'MARCO Flexible' }
+  return {
+    primary: 'Top Pool',
+    secondary,
+    accent: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
   }
-  if (pool.stakingToken?.symbol && pool.earningToken?.symbol) {
-    return {
-      primary: 'Top Pool',
-      secondary: `${pool.stakingToken.symbol} / ${pool.earningToken.symbol}`,
-    }
-  }
-  return { primary: 'Top Pool', secondary: pool.stakingToken?.symbol ?? 'Pool' }
 }
 
 export function formatFarmTrendingLabel(farm: FarmWithStakedValue, apr?: number): {

@@ -167,6 +167,34 @@ export const PsMetricValue = styled.span`
   color: ${poolsStudioColors.text};
 `
 
+export const PsField = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+`
+
+export const PsFieldLabel = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${poolsStudioColors.muted};
+`
+
+export const PsInput = styled.input`
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid ${poolsStudioColors.border};
+  background: rgba(255, 255, 255, 0.03);
+  color: ${poolsStudioColors.text};
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  box-sizing: border-box;
+`
+
 export const PoolTokenIcon: React.FC<{
   symbol: string
   size?: number

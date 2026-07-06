@@ -284,12 +284,17 @@ const Greeting = styled.h2`
   font-family: ${CC_FONT_DISPLAY};
   font-size: ${commandCenterType.greeting};
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.15;
   color: ${commandCenterColors.white};
-  max-width: 440px;
+  max-width: min(440px, 100%);
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: manual;
 
   @media (max-width: ${commandCenterLayout.mobileBreakpoint}) {
     font-size: ${commandCenterType.greetingMobile};
+    line-height: 1.2;
+    max-width: 100%;
   }
 `
 

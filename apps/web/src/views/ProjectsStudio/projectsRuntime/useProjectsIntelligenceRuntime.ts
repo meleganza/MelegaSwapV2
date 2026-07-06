@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { enrichProject } from 'registry/projects/discovery'
-import { getAllProjects } from 'registry/projects/getAllProjects'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import { getPendingProjectRegistry } from 'registry/projects/pending'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useTokenDataSWR } from 'state/info/hooks'
@@ -50,7 +50,7 @@ export interface ProjectsIntelligenceRuntime {
   setFilter: (chip: ProjectFilterChip) => void
   projects: ProjectPreviewCard[]
   pendingProjects: ProjectPreviewCard[]
-  allProjects: ReturnType<typeof enrichProject>[]
+  allProjects: EnrichedProjectRecord[]
   featured: ReturnType<typeof buildFeaturedProject>
   kpis: ProjectsKpiItem[]
   advisorRows: ProjectsAdvisorRow[]
@@ -66,7 +66,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const [filter, setFilter] = useState<ProjectFilterChip>('All')
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
 
-  const enriched = useMemo(() => getAllProjects().map(enrichProject), [])
+  const enriched = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
 
   const primaryBscToken = enriched[0]?.resources.tokens.find((t) => t.chainId === 56) ?? enriched[0]?.resources.tokens[0]
   const tokenData = useTokenDataSWR(primaryBscToken?.address)

@@ -41,6 +41,7 @@ export interface CollectionCard {
   agentEnabled?: boolean
   identityBinding: IdentityBinding
   utilities: string[]
+  previewImageUrl?: string
 }
 
 export interface AdvisorRow {

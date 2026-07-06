@@ -6,10 +6,17 @@ import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Row = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   min-height: ${poolsStudioLayout.filterHeight};
   align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const Chip = styled.button<{ $active?: boolean }>`
@@ -22,11 +29,12 @@ const Chip = styled.button<{ $active?: boolean }>`
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 150ms ease, opacity 150ms ease, background 150ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 150ms ease, background 150ms ease;
 
   &:hover {
     border-color: ${poolsStudioColors.gold};
-    opacity: 0.92;
   }
 `
 
