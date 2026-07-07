@@ -5,186 +5,177 @@ import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { buildPoolMachineV2 } from '../poolsRuntime/formatPoolPresentation'
+import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import { PoolTokenIcon, PsMetricLabel, PsSmallGhostBtn, PsSmallPrimaryBtn } from './poolsStudioPrimitives'
 
 const Card = styled.article<{ $expanded?: boolean }>`
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  width: ${poolsStudioLayout.poolCardWidth};
+  max-width: 100%;
   min-height: ${poolsStudioLayout.poolCardHeight};
-  padding: 24px;
-  border-radius: 20px;
+  height: ${({ $expanded }) =>
+    $expanded ? poolsStudioLayout.poolCardExpandedHeight : poolsStudioLayout.poolCardHeight};
+  max-height: ${({ $expanded }) =>
+    $expanded ? poolsStudioLayout.poolCardExpandedHeight : poolsStudioLayout.poolCardHeight};
+  padding: 16px;
+  border-radius: ${poolsStudioLayout.cardRadius};
   background: ${poolsStudioColors.card};
   border: 1px solid ${poolsStudioColors.border};
   box-sizing: border-box;
-  min-width: 0;
   overflow: hidden;
-  transition: border-color 150ms ease;
+  transition: height ${poolsStudioLayout.drawerTransition} ease, transform ${poolsStudioLayout.hoverTransition} ease,
+    border-color ${poolsStudioLayout.hoverTransition} ease;
 
   &:hover {
-    border-color: ${poolsStudioColors.goldBorder};
-  }
-
-  @media (max-width: 767px) {
-    min-height: auto;
-    padding: 20px;
+    border-color: ${poolsStudioColors.cardBorderHover};
   }
 `
 
-const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-  min-height: 0;
-`
-
-const Line1 = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+const AprValue = styled.div`
+  font-family: Orbitron, sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  color: ${poolsStudioColors.aprGreen};
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const NameBlock = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
+  margin-bottom: 8px;
 `
 
 const PoolName = styled.span`
+  font-family: Orbitron, sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: ${poolsStudioColors.text};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 190px;
 `
 
-const TypeBadge = styled.span`
+const LiveBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid ${poolsStudioColors.goldBorder};
+  justify-content: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 10px;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: ${poolsStudioColors.goldBright};
+  border: 1px solid ${poolsStudioColors.aprGreen};
+  color: ${poolsStudioColors.aprGreen};
+  background: ${poolsStudioColors.greenSoft};
   flex-shrink: 0;
 `
 
-const AprValue = styled.div`
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 1;
-  color: ${poolsStudioColors.green};
-
-  @media (max-width: 767px) {
-    font-size: 40px;
-  }
-`
-
-const PairRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`
-
-const MetricCell = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+const InfoGrid = styled.div<{ $hidden?: boolean }>`
+  display: ${({ $hidden }) => ($hidden ? 'none' : 'grid')};
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  flex: 1;
+  min-height: 0;
 `
 
 const MetricValue = styled.span`
-  font-size: 14px;
-  font-weight: 700;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
   color: ${poolsStudioColors.text};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `
 
-const StatusBadge = styled.span<{ $status: string }>`
+const MetricCell = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+`
+
+const HealthValue = styled(MetricValue)`
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  height: 24px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  width: fit-content;
-  border: 1px solid
-    ${({ $status }) =>
-      $status === 'ENDED'
-        ? 'rgba(255,255,255,0.16)'
-        : $status === 'ENDING SOON' || $status === 'NEW'
-          ? poolsStudioColors.gold
-          : poolsStudioColors.green};
-  color: ${({ $status }) =>
-    $status === 'ENDED' ? poolsStudioColors.muted : $status === 'ENDING SOON' || $status === 'NEW' ? poolsStudioColors.gold : poolsStudioColors.green};
-  background: ${({ $status }) =>
-    $status === 'ENDED' ? 'rgba(255,255,255,0.04)' : 'rgba(0,230,118,0.08)'};
-`
-
-const RemainBar = styled.div`
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-  margin-top: 4px;
-`
-
-const RemainFill = styled.div<{ $pct: number; $tone: string }>`
-  height: 100%;
-  width: ${({ $pct }) => $pct}%;
-  background: ${({ $tone }) =>
-    $tone === 'green' ? poolsStudioColors.green : $tone === 'yellow' ? poolsStudioColors.gold : poolsStudioColors.red};
-  border-radius: 999px;
-  transition: width 220ms ease-out;
-`
-
-const ExpandBlock = styled.div<{ $open: boolean }>`
-  overflow: hidden;
-  max-height: ${({ $open }) => ($open ? '280px' : '0')};
-  opacity: ${({ $open }) => ($open ? 1 : 0)};
-  transition: max-height 220ms ease-out, opacity 220ms ease-out;
-  border-top: 1px solid ${poolsStudioColors.rowBorder};
-  padding-top: ${({ $open }) => ($open ? '12px' : '0')};
-  margin-top: ${({ $open }) => ($open ? '4px' : '0')};
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 12px;
-  font-size: 11px;
-  color: ${poolsStudioColors.secondary};
-
-  span {
-    display: block;
-    color: ${poolsStudioColors.text};
-    font-weight: 700;
-    font-size: 12px;
-    margin-top: 2px;
-  }
+  gap: 4px;
 `
 
 const Footer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 12px;
+  display: flex;
+  gap: ${poolsStudioLayout.poolCardBtnGap};
+  margin-top: auto;
+  padding-top: 8px;
+  justify-content: flex-start;
+`
 
+const PoolBtn = styled(PsSmallPrimaryBtn)`
+  width: ${poolsStudioLayout.poolCardBtnWidth};
+  min-width: ${poolsStudioLayout.poolCardBtnWidth};
+  height: ${poolsStudioLayout.poolCardBtnHeight};
+  min-height: ${poolsStudioLayout.poolCardBtnHeight};
+  flex: 0 0 auto;
+  font-size: 13px;
+  border-radius: ${poolsStudioLayout.poolCardBtnRadius};
+`
+
+const AnalyzeBtn = styled(PsSmallGhostBtn)`
+  width: ${poolsStudioLayout.poolCardBtnWidth};
+  min-width: ${poolsStudioLayout.poolCardBtnWidth};
+  height: ${poolsStudioLayout.poolCardBtnHeight};
+  min-height: ${poolsStudioLayout.poolCardBtnHeight};
+  flex: 0 0 auto;
+  font-size: 13px;
+  border-radius: ${poolsStudioLayout.poolCardBtnRadius};
+`
+
+const AnalyzeBlock = styled.div<{ $open: boolean }>`
+  display: ${({ $open }) => ($open ? 'grid' : 'none')};
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+  flex: 1;
+  min-height: 0;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid ${poolsStudioColors.rowBorder};
+  font-size: 11px;
+  color: ${poolsStudioColors.subtitle};
+  overflow: hidden;
+
+  a,
   button {
-    width: 100%;
-    height: ${poolsStudioLayout.poolCardBtnHeight};
+    color: ${poolsStudioColors.gold};
+    font-weight: 600;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 11px;
+    text-align: left;
+    word-break: break-all;
   }
+`
+
+const DrawerLabel = styled.span`
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: ${poolsStudioColors.muted};
+  margin-bottom: 2px;
 `
 
 const MachineHidden = styled.div`
@@ -196,126 +187,157 @@ interface Props {
 }
 
 export const PoolGridCard: React.FC<Props> = ({ pool }) => {
-  const [expanded, setExpanded] = useState(false)
-  const { requestModal, account } = usePoolsRuntime()
+  const [analyzeOpen, setAnalyzeOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const { requestModal } = usePoolsRuntime()
   const { chainId } = useActiveChainId()
-  const stakingToken = pool.rawPool?.stakingToken
-  const earningToken = pool.rawPool?.earningToken
   const preview = pool.analyzePreview
-  const isEnded = pool.status === 'ended' || pool.cta === 'none'
-  const displayStatus = pool.displayStatus ?? (pool.status === 'live' ? 'LIVE' : pool.status === 'indexing' ? 'INDEXING' : 'ENDED')
-  const aprText = isEnded ? 'Ended' : pool.apr ?? '—'
+  const isLive =
+    pool.displayStatus === 'LIVE' &&
+    pool.status === 'live' &&
+    pool.sustainableAprDisplay &&
+    !isForbiddenAprDisplay(pool.sustainableAprDisplay)
+  const aprText = isLive ? pool.sustainableAprDisplay! : 'Ended'
+  const healthScore = pool.healthScore ?? pool.sustainabilityScore ?? 0
+  const lockType = pool.visualType ?? pool.poolTypeLabel ?? '—'
+  const duration = pool.estimatedDuration ?? preview?.duration ?? pool.lockPeriod ?? '—'
+  const machineJson = JSON.stringify(buildPoolMachineV2(pool, chainId))
+
+  const copyContract = async () => {
+    if (!pool.contractAddress) return
+    try {
+      await navigator.clipboard.writeText(pool.contractAddress)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* ignore */
+    }
+  }
 
   return (
-    <Card data-ps-pool-card $expanded={expanded}>
-      <MachineHidden data-melega-pool-v2={JSON.stringify(buildPoolMachineV2(pool, chainId))} aria-hidden />
-      <Body>
-        <Line1>
-          <NameBlock>
-            {pool.tokens.map((token, i) => (
-              <PoolTokenIcon
-                key={token}
-                symbol={token}
-                offset={i > 0}
-                address={i === 0 ? stakingToken?.address : earningToken?.address}
-                chainId={chainId}
-              />
-            ))}
-            <PoolName>{pool.name}</PoolName>
-          </NameBlock>
-          <TypeBadge>{pool.visualType ?? 'Flexible'}</TypeBadge>
-        </Line1>
+    <Card
+      data-ps-pool-card
+      data-pool-card
+      data-pool-status={pool.displayStatus}
+      data-pool-apr-status={pool.aprDisplayReason}
+      data-pool-contract={pool.contractAddress}
+      data-r708-pool-card
+      $expanded={analyzeOpen}
+    >
+      <MachineHidden data-melega-pool-v2={machineJson} data-pools-machine-json aria-hidden />
+      <AprValue data-ps-pool-apr>{aprText}</AprValue>
 
-        <AprValue>{aprText}</AprValue>
+      <NameBlock>
+        <PoolTokenIcon symbol={pool.tokens[0] ?? 'MARCO'} size={20} />
+        <PoolName>{pool.name}</PoolName>
+        {isLive ? <LiveBadge>LIVE</LiveBadge> : null}
+      </NameBlock>
 
-        <PairRow>
-          <MetricCell>
-            <PsMetricLabel>Stake Token</PsMetricLabel>
-            <MetricValue>{pool.stakeToken ?? pool.tokens[0] ?? '—'}</MetricValue>
-          </MetricCell>
-          <MetricCell>
-            <PsMetricLabel>Reward Token</PsMetricLabel>
-            <MetricValue>{pool.rewardToken}</MetricValue>
-          </MetricCell>
-        </PairRow>
+      <InfoGrid $hidden={analyzeOpen}>
+        <MetricCell>
+          <PsMetricLabel>Reward Token</PsMetricLabel>
+          <MetricValue>{pool.rewardToken}</MetricValue>
+        </MetricCell>
+        <MetricCell>
+          <PsMetricLabel>Lock Type</PsMetricLabel>
+          <MetricValue>{lockType}</MetricValue>
+        </MetricCell>
+        <MetricCell>
+          <PsMetricLabel>Duration</PsMetricLabel>
+          <MetricValue>{duration}</MetricValue>
+        </MetricCell>
+        <MetricCell>
+          <PsMetricLabel>Daily Rewards</PsMetricLabel>
+          <MetricValue>{preview?.dailyEmission ?? pool.dailyRewards ?? pool.estimatedDailyReward ?? '—'}</MetricValue>
+        </MetricCell>
+        <MetricCell>
+          <PsMetricLabel>Remaining Rewards</PsMetricLabel>
+          <MetricValue>{pool.remainingRewards ?? preview?.remainingRewards ?? '—'}</MetricValue>
+        </MetricCell>
+        <MetricCell>
+          <PsMetricLabel>Pool Health</PsMetricLabel>
+          <HealthValue>
+            <span aria-hidden>🛡</span>
+            {healthScore} / 100
+          </HealthValue>
+        </MetricCell>
+      </InfoGrid>
 
-        <PairRow>
-          <MetricCell>
-            <PsMetricLabel>TVL</PsMetricLabel>
-            <MetricValue>{pool.tvl}</MetricValue>
-          </MetricCell>
-          <MetricCell>
-            <PsMetricLabel>Participants</PsMetricLabel>
-            <MetricValue>{pool.participants}</MetricValue>
-          </MetricCell>
-        </PairRow>
-
-        <PairRow>
-          <MetricCell>
-            <PsMetricLabel>Daily Rewards</PsMetricLabel>
-            <MetricValue>{pool.estimatedDailyReward ?? pool.dailyRewards}</MetricValue>
-          </MetricCell>
-          <MetricCell>
-            <PsMetricLabel>Remaining Rewards</PsMetricLabel>
-            <MetricValue>{pool.remainingRewards ?? '—'}</MetricValue>
-            {pool.remainingRewardsPct != null ? (
-              <RemainBar>
-                <RemainFill $pct={pool.remainingRewardsPct} $tone={pool.remainingRewardsTone ?? 'green'} />
-              </RemainBar>
-            ) : null}
-          </MetricCell>
-        </PairRow>
-
-        <StatusBadge $status={displayStatus}>{displayStatus}</StatusBadge>
-
-        <ExpandBlock $open={expanded && Boolean(preview)}>
+      {preview && analyzeOpen ? (
+        <AnalyzeBlock $open={analyzeOpen} data-ps-pool-analyze-panel>
           <div>
-            APR History<span>{preview?.aprHistory}</span>
+            <DrawerLabel>Contract</DrawerLabel>
+            {pool.contractLabel ?? preview.contract}
           </div>
           <div>
-            Pool Type<span>{pool.visualType}</span>
+            <DrawerLabel>Copy</DrawerLabel>
+            <button type="button" onClick={copyContract}>
+              {copied ? 'Copied' : 'Copy contract'}
+            </button>
           </div>
           <div>
-            Lock Period<span>{pool.lockPeriod}</span>
-          </div>
-          <div>
-            Cooldown<span>{pool.cooldown}</span>
-          </div>
-          <div>
-            Sustainability<span>{pool.rewardSustainability}</span>
-          </div>
-          <div>
-            Auto Compound<span>{preview?.autoCompound}</span>
-          </div>
-          <div>
-            Contract
-            <span>
-              <a href={pool.explorerUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                Explorer
+            <DrawerLabel>Open BscScan</DrawerLabel>
+            {preview.contractExplorerUrl ? (
+              <a href={preview.contractExplorerUrl} target="_blank" rel="noopener noreferrer">
+                View on BscScan
               </a>
-            </span>
+            ) : (
+              '—'
+            )}
           </div>
-        </ExpandBlock>
-      </Body>
+          <div>
+            <DrawerLabel>Reward Budget</DrawerLabel>
+            {pool.rewardBudgetUsd ?? preview.rewardBudget}
+          </div>
+          <div>
+            <DrawerLabel>Emission</DrawerLabel>
+            {preview.emission ?? preview.dailyEmission}
+          </div>
+          <div>
+            <DrawerLabel>Remaining Rewards</DrawerLabel>
+            {preview.remainingRewards ?? pool.remainingRewards ?? '—'}
+          </div>
+          <div>
+            <DrawerLabel>Estimated duration</DrawerLabel>
+            {pool.estimatedDuration ?? preview.emissionEndEstimate ?? preview.duration ?? '—'}
+          </div>
+          <div>
+            <DrawerLabel>Participants</DrawerLabel>
+            {pool.participants}
+          </div>
+          <div>
+            <DrawerLabel>Auto Compound</DrawerLabel>
+            {preview.autoCompound}
+          </div>
+          <div>
+            <DrawerLabel>Withdrawal fee</DrawerLabel>
+            {preview.withdrawFee}
+          </div>
+          <div>
+            <DrawerLabel>Cooldown</DrawerLabel>
+            {pool.cooldown ?? '—'}
+          </div>
+        </AnalyzeBlock>
+      ) : null}
 
       <Footer>
-        {isEnded ? (
-          <StatusBadge $status="ENDED" style={{ gridColumn: 'span 2', width: '100%', justifyContent: 'center' }}>
-            Ended
-          </StatusBadge>
-        ) : (
+        {isLive ? (
           <>
-            {pool.cta === 'stake' ? (
-              <PsSmallPrimaryBtn type="button" onClick={() => requestModal(pool, 'stake')}>
-                Stake
-              </PsSmallPrimaryBtn>
-            ) : (
-              <span />
-            )}
-            <PsSmallGhostBtn type="button" onClick={() => setExpanded((v) => !v)}>
-              {expanded ? 'Hide Analysis' : 'Analyze'}
-            </PsSmallGhostBtn>
+            <PoolBtn type="button" onClick={() => requestModal(pool, 'stake')} data-ps-stake-btn>
+              Stake
+            </PoolBtn>
+            <AnalyzeBtn
+              type="button"
+              data-ps-analyze-toggle
+              onClick={() => setAnalyzeOpen((v) => !v)}
+            >
+              {analyzeOpen ? 'Hide Analysis' : 'Analyze'}
+            </AnalyzeBtn>
           </>
+        ) : (
+          <AnalyzeBtn disabled style={{ width: '100%' }}>
+            Ended
+          </AnalyzeBtn>
         )}
       </Footer>
     </Card>

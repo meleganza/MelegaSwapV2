@@ -1,43 +1,119 @@
 import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
-import { poolsStudioLayout } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
-import { PsKpiCard, PsKpiDelta, PsKpiLabel, PsKpiValue } from './poolsStudioPrimitives'
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: ${poolsStudioLayout.kpiGap};
+  grid-template-columns: repeat(5, 198px);
+  gap: 16px;
   min-width: 0;
 
   @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   @media (max-width: 767px) {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `
 
-const ValueBlock = styled.div`
-  position: relative;
-  min-height: 38px;
+const KpiCard = styled.div`
+  width: 198px;
+  height: 112px;
+  min-height: 112px;
+  max-height: 112px;
+  padding: 18px 0 0 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #141414;
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
-`
-
-const ValueRow = styled.div`
-  display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  gap: 3px;
   min-width: 0;
-  flex: 1;
+  overflow: hidden;
+  transition: border-color 180ms ease;
+
+  &:hover {
+    border-color: rgba(242, 201, 76, 0.28);
+  }
+
+  @media (max-width: 767px) {
+    width: 170px;
+    min-width: 170px;
+    flex-shrink: 0;
+  }
 `
 
-const LoadingLine = styled.span`
-  font-size: 12px;
-  color: #a8a8a8;
+const KpiIcon = styled.span`
+  display: block;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
+  opacity: 0.4;
+  color: #ffffff;
 `
+
+const KpiLabel = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.56);
+  line-height: 1.2;
+`
+
+const KpiValue = styled.span<{ $green?: boolean; $center?: boolean }>`
+  font-family: Inter, sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  color: ${({ $green }) => ($green ? '#00d97e' : '#ffffff')};
+  white-space: nowrap;
+  text-align: ${({ $center }) => ($center ? 'center' : 'left')};
+`
+
+const KpiSecondary = styled.span`
+  display: block;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+`
+
+const KPI_LABELS: Record<string, string> = {
+  tvl: 'Total Value Locked',
+  active: 'Active Pools',
+  budget: 'Total Rewards Live',
+  highestApr: 'Highest Sustainable APR',
+  featured: 'Featured Pool',
+}
+
+const KPI_ICONS: Record<string, string> = {
+  tvl: '◆',
+  active: '◎',
+  budget: '↗',
+  highestApr: '★',
+  featured: '◇',
+}
+
+function formatKpiValue(id: string, value: string): string {
+  if (id === 'budget' || id === 'active') return value
+  return formatCompactDisplay(value)
+}
 
 export const PoolsKpiRow: React.FC = () => {
   const { kpis, loadingLabel } = usePoolsRuntime()
@@ -45,23 +121,37 @@ export const PoolsKpiRow: React.FC = () => {
   return (
     <Row data-ps-kpi-row>
       {loadingLabel ? (
-        <PsKpiCard data-ps-kpi-card>
-          <LoadingLine>{loadingLabel}</LoadingLine>
-        </PsKpiCard>
+        <KpiCard data-ps-kpi-card>
+          <KpiLabel>{loadingLabel}</KpiLabel>
+        </KpiCard>
       ) : (
-        kpis.map((kpi) => (
-          <PsKpiCard key={kpi.id} data-ps-kpi-card>
-            <PsKpiLabel>{kpi.label}</PsKpiLabel>
-            <ValueBlock>
-              <ValueRow>
-                <PsKpiValue $gold={kpi.gold} data-ps-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-                  {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
-                </PsKpiValue>
-                {kpi.delta ? <PsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</PsKpiDelta> : null}
-              </ValueRow>
-            </ValueBlock>
-          </PsKpiCard>
-        ))
+        kpis.map((kpi) => {
+          const label = KPI_LABELS[kpi.id] ?? kpi.label
+          const isFeaturedEmpty = kpi.id === 'featured' && (kpi.gold || kpi.value === 'No live pool')
+          const isDashApr = kpi.id === 'highestApr' && kpi.value === '—'
+
+          return (
+            <KpiCard key={kpi.id} data-ps-kpi-card>
+              <KpiIcon aria-hidden>{KPI_ICONS[kpi.id] ?? '•'}</KpiIcon>
+              <KpiLabel>{label}</KpiLabel>
+              {isFeaturedEmpty ? (
+                <KpiSecondary data-ps-kpi-value>No Live Pool</KpiSecondary>
+              ) : kpi.id === 'featured' ? (
+                <>
+                  <KpiValue data-ps-kpi-value>{kpi.value}</KpiValue>
+                  {kpi.secondary ? <KpiSecondary>{kpi.secondary}</KpiSecondary> : null}
+                </>
+              ) : (
+                <>
+                  <KpiValue $green={kpi.green} $center={isDashApr} data-ps-kpi-value>
+                    {formatKpiValue(kpi.id, kpi.value)}
+                  </KpiValue>
+                  {kpi.secondary ? <KpiSecondary>{kpi.secondary}</KpiSecondary> : null}
+                </>
+              )}
+            </KpiCard>
+          )
+        })
       )}
     </Row>
   )

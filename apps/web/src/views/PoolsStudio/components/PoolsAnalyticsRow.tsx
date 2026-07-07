@@ -85,7 +85,9 @@ const LoadingLine = styled.p`
 
 export const PoolsAnalyticsRow: React.FC = () => {
   const { analytics, loadingLabel } = usePoolsRuntime()
-  const linePoints = analytics.topStakedPool.sparkline
+  const linePoints = analytics.topStakedPool.sparkline.map((p) =>
+    Number.isFinite(p) && p > 0 ? p : 8,
+  )
   const max = Math.max(...linePoints, 1)
   const w = 200
   const h = 72
@@ -109,8 +111,8 @@ export const PoolsAnalyticsRow: React.FC = () => {
 
   return (
     <Row data-ps-analytics>
-      <PsPanel data-ps-analytics-card $height={poolsStudioLayout.analyticsHeight} style={{ padding: '16px 18px' }}>
-        <Title>Rewards Emission (live)</Title>
+      <PsPanel data-ps-analytics-card $height={poolsStudioLayout.analyticsHeight} style={{ padding: '20px 22px' }}>
+        <Title>Reward Distribution</Title>
         <Bars>
           {analytics.rewardBars.map((barH, i) => (
             <Bar key={i} $h={barH} style={{ animationDelay: `${i * 0.15}s` }} />

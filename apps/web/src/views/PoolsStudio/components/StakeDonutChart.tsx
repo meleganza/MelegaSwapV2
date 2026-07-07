@@ -1,107 +1,113 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
-const R = 70
+const SIZE = 140
+const R = 52
+const STROKE = 18
 const C = 2 * Math.PI * R
+const CX = SIZE / 2
 
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+`
+
+const DonutCenter = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `
 
 const Svg = styled.svg`
-  width: ${poolsStudioLayout.donutDiameter}px;
-  height: ${poolsStudioLayout.donutDiameter}px;
+  width: ${SIZE}px;
+  height: ${SIZE}px;
   flex-shrink: 0;
-
-  @keyframes donutSweep {
-    from {
-      stroke-dashoffset: ${C + 40}px;
-      opacity: 0.35;
-    }
-  }
-
-  @media (max-width: 767px) {
-    width: ${poolsStudioLayout.donutDiameterMobile}px;
-    height: ${poolsStudioLayout.donutDiameterMobile}px;
-  }
 `
 
 const Legend = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   width: 100%;
-  max-width: 200px;
 `
 
 const LegendItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: ${poolsStudioColors.secondary};
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `
 
 const Dot = styled.span<{ $color: string }>`
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: ${({ $color }) => $color};
   flex-shrink: 0;
 `
 
-export const StakeDonutChart: React.FC = () => {
+export const StakeDonutChart: React.FC<{ compact?: boolean }> = ({ compact }) => {
   const { donutSegments } = usePoolsRuntime()
+  const segments = useMemo(() => donutSegments.slice(0, 4), [donutSegments])
 
-  const segments = useMemo(() => {
+  const arcs = useMemo(() => {
     let offset = 0
-    return donutSegments.map((seg) => {
+    return segments.map((seg) => {
       const dash = (seg.value / 100) * C
-      const item = { ...seg, dash, gap: C - dash, offset: -offset }
+      const item = {
+        ...seg,
+        dash,
+        gap: C - dash,
+        offset: -offset,
+        color: seg.color === '#E2BC2B' ? '#F2C94C' : seg.color,
+      }
       offset += dash
       return item
     })
-  }, [donutSegments])
+  }, [segments])
+
+  if (!compact) {
+    return null
+  }
 
   return (
     <Wrap data-ps-donut>
-      <Svg viewBox="0 0 180 180" aria-hidden>
-        <circle cx="90" cy="90" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="22" />
-        {segments.map((seg, index) => (
-          <circle
-            key={seg.label}
-            cx="90"
-            cy="90"
-            r={R}
-            fill="none"
-            stroke={seg.color}
-            strokeWidth="22"
-            strokeDasharray={`${seg.dash} ${seg.gap}`}
-            strokeDashoffset={seg.offset}
-            transform="rotate(-90 90 90)"
-            data-ps-donut-segment
-            style={{
-              animation: `donutSweep 900ms ease-out ${index * 60}ms both`,
-            }}
-          />
-        ))}
-        <text x="90" y="86" textAnchor="middle" fill="#fff" fontSize="18" fontWeight="800">
-          Stake
-        </text>
-        <text x="90" y="104" textAnchor="middle" fill={poolsStudioColors.muted} fontSize="12" fontWeight="600">
-          Distribution
-        </text>
-      </Svg>
+      <DonutCenter>
+        <Svg viewBox={`0 0 ${SIZE} ${SIZE}`} aria-hidden>
+          <circle cx={CX} cy={CX} r={R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={STROKE} />
+          {arcs.map((seg) => (
+            <circle
+              key={seg.label}
+              cx={CX}
+              cy={CX}
+              r={R}
+              fill="none"
+              stroke={seg.color}
+              strokeWidth={STROKE}
+              strokeDasharray={`${seg.dash} ${seg.gap}`}
+              strokeDashoffset={seg.offset}
+              transform={`rotate(-90 ${CX} ${CX})`}
+              data-ps-donut-segment
+            />
+          ))}
+        </Svg>
+      </DonutCenter>
       <Legend>
-        {donutSegments.map((seg) => (
+        {segments.map((seg) => (
           <LegendItem key={seg.label}>
-            <Dot $color={seg.color} />
+            <Dot $color={seg.color === '#E2BC2B' ? '#F2C94C' : seg.color} />
             {seg.label}
           </LegendItem>
         ))}

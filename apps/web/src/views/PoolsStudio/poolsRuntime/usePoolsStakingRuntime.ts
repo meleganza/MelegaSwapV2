@@ -6,19 +6,22 @@ import { useCurrentBlock } from 'state/block/hooks'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import type { PoolFilterChip, PoolPreviewCard } from '../poolsStudioData'
+import type { PoolFilterChip, PoolPreviewCard, PoolTab, PoolsSortMode } from '../poolsStudioData'
 import {
   aggregateKpis,
   buildDonutSegments,
   formatUsd,
   listActivePools,
+  listUsablePools,
   mapPoolToPreviewCard,
+  selectFeaturedPool,
   sortPoolsDefault,
 } from './formatPoolsRuntime'
 import { buildPoolMachineV2 } from './formatPoolPresentation'
 import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErrors'
 import usePoolsTerminalData from './usePoolsTerminalData'
 import { getAprData } from 'views/Pools/helpers'
+import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
 
 export type PoolsRuntimePhase =
   | 'idle'
@@ -50,7 +53,7 @@ export interface PoolsMachinePayload {
 export interface PoolsFeaturedMetrics {
   name: string
   symbol: string
-  apr: string
+  apr?: string
   rewardToken: string
   stakeToken: string
   totalStaked: string
@@ -80,12 +83,22 @@ export interface PoolsAnalyticsData {
   topStakedPool: { name: string; tvl: string; sparkline: number[] }
 }
 
+export type PoolsViewMode = 'grid' | 'list'
+
 export interface PoolsStakingRuntime {
   phase: PoolsRuntimePhase
   loadingLabel?: string
   error: PoolsRuntimeError | null
   filter: PoolFilterChip
   setFilter: (chip: PoolFilterChip) => void
+  viewMode: PoolsViewMode
+  setViewMode: (mode: PoolsViewMode) => void
+  poolTab: PoolTab
+  setPoolTab: (tab: PoolTab) => void
+  sortMode: PoolsSortMode
+  setSortMode: (mode: PoolsSortMode) => void
+  positionsCount: number
+  hiddenPoolReasons: string[]
   pools: PoolPreviewCard[]
   featured: PoolsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
@@ -102,64 +115,46 @@ export interface PoolsStakingRuntime {
   clearModal: () => void
 }
 
+function matchesDurationFilter(visualType?: string, filter?: string): boolean {
+  if (!visualType || !filter) return false
+  if (filter === '30–90 Days') {
+    return visualType === '30 Days' || visualType === 'Fixed 30d' || visualType === '90 Days' || visualType === 'Fixed 90d'
+  }
+  if (filter === '90–180 Days') {
+    return visualType === '90 Days' || visualType === 'Fixed 90d' || visualType === '180 Days' || visualType === 'Fixed 180d'
+  }
+  if (filter === '180–365 Days') {
+    return visualType === '180 Days' || visualType === 'Fixed 180d' || visualType === '365 Days' || visualType === 'Fixed 365d'
+  }
+  if (filter === '365+ Days') return visualType === '365 Days' || visualType === 'Fixed 365d'
+  return false
+}
+
 function filterPools(cards: PoolPreviewCard[], filter: PoolFilterChip): PoolPreviewCard[] {
   let list = [...cards]
   const byVisual = (type: string) => list.filter((p) => p.visualType === type)
-  const parseBudget = (p: PoolPreviewCard) => {
-    const raw = p.rawPool
-    if (!raw?.earningToken?.decimals) return 0
-    const perBlock = raw.tokenPerBlock
-    if (!perBlock) return 0
-    const bn = typeof (perBlock as { times?: (n: number) => unknown }).times === 'function'
-      ? (perBlock as { times: (n: number) => { toNumber: () => number } }).times(28800)
-      : null
-    return bn ? bn.toNumber() : 0
-  }
 
   switch (filter) {
     case 'Official':
-      list = list.filter((p) => p.visualType === 'Official' || p.sousId === 0)
+      list = list.filter((p) => p.rewardBadge === 'Official' || p.sousId === 0)
       break
-    case 'MARCO':
-      list = list.filter(
-        (p) => p.tokens.includes('MARCO') || p.rewardToken === 'MARCO' || p.name.includes('MARCO'),
-      )
+    case 'Partner':
+      list = list.filter((p) => p.rewardBadge === 'Partner')
+      break
+    case 'Community':
+      list = list.filter((p) => p.rewardBadge === 'Community')
       break
     case 'Flexible':
       list = byVisual('Flexible')
       break
-    case 'Fixed':
-      list = list.filter((p) => p.visualType === 'Fixed Lock' || p.lockPeriod?.includes('d'))
+    case '30–90 Days':
+    case '90–180 Days':
+    case '180–365 Days':
+    case '365+ Days':
+      list = list.filter((p) => matchesDurationFilter(p.visualType, filter))
       break
     case 'Auto Compound':
       list = byVisual('Auto Compound')
-      break
-    case '30 Days':
-      list = byVisual('30 Days')
-      break
-    case '90 Days':
-      list = byVisual('90 Days')
-      break
-    case '180 Days':
-      list = byVisual('180 Days')
-      break
-    case '365 Days':
-      list = byVisual('365 Days')
-      break
-    case 'Highest APR':
-      list = list.sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0))
-      break
-    case 'Highest Rewards':
-      list = list.sort((a, b) => parseBudget(b) - parseBudget(a))
-      break
-    case 'Lowest Risk':
-      list = list.sort((a, b) => (a.sustainabilityScore ?? 0) - (b.sustainabilityScore ?? 0)).reverse()
-      break
-    case 'Newest':
-      list = list.sort((a, b) => (b.sousId ?? 0) - (a.sousId ?? 0))
-      break
-    case 'Featured':
-      list = list.filter((p) => p.status === 'live').sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0)).slice(0, 3)
       break
     default:
       list = sortPoolsDefault(list)
@@ -168,11 +163,40 @@ function filterPools(cards: PoolPreviewCard[], filter: PoolFilterChip): PoolPrev
   return list
 }
 
+function sortPools(cards: PoolPreviewCard[], sortMode: PoolsSortMode): PoolPreviewCard[] {
+  const list = [...cards]
+  if (sortMode === 'apr') {
+    return list.sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0))
+  }
+  if (sortMode === 'tvl') {
+    return list.sort((a, b) => parseFloat(b.tvl.replace(/[^0-9.]/g, '') || '0') - parseFloat(a.tvl.replace(/[^0-9.]/g, '') || '0'))
+  }
+  if (sortMode === 'budget') {
+    return list.sort(
+      (a, b) =>
+        parseFloat(b.rewardBudgetUsd?.replace(/[^0-9.]/g, '') || '0') -
+        parseFloat(a.rewardBudgetUsd?.replace(/[^0-9.]/g, '') || '0'),
+    )
+  }
+  return list.sort((a, b) => (b.sousId ?? 0) - (a.sousId ?? 0))
+}
+
+function filterByTab(cards: PoolPreviewCard[], tab: PoolTab, account?: string): PoolPreviewCard[] {
+  if (tab === 'finished') return cards.filter((p) => p.status === 'ended')
+  if (tab === 'positions') {
+    return cards.filter((p) => Boolean(p.userStaked?.gt(0)) || Boolean(p.pendingReward?.gt(0)))
+  }
+  return cards.filter((p) => p.status !== 'ended')
+}
+
 export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
   const currentBlock = useCurrentBlock()
   const [filter, setFilter] = useState<PoolFilterChip>('All')
+  const [viewMode, setViewMode] = useState<PoolsViewMode>('grid')
+  const [poolTab, setPoolTab] = useState<PoolTab>('all')
+  const [sortMode, setSortMode] = useState<PoolsSortMode>('apr')
   const [modalRequest, setModalRequest] = useState<{
     pool: PoolPreviewCard
     action: Exclude<PoolsModalAction, null>
@@ -185,6 +209,9 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const performanceFee = 0
 
   const previewCards = useMemo(() => {
+    if (isPoolsUxFixtureEnabled()) {
+      return getPoolsUxFixtureCards()
+    }
     if (!rawPools?.length) return []
     return rawPools
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
@@ -192,12 +219,27 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       .filter((c): c is PoolPreviewCard => c !== null)
   }, [rawPools, currentBlock])
 
-  const filteredPools = useMemo(() => filterPools(previewCards, filter), [previewCards, filter])
+  const filteredPools = useMemo(() => {
+    const tabbed = filterByTab(previewCards, poolTab, account)
+    const filtered = filterPools(tabbed, filter)
+    const visible = poolTab === 'finished' ? filtered : listUsablePools(filtered)
+    return sortPools(visible, sortMode)
+  }, [previewCards, filter, poolTab, sortMode, account])
 
-  const featuredCard = useMemo(() => {
-    const live = previewCards.filter((p) => p.status === 'live')
-    return live.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0] ?? previewCards[0]
+  const hiddenPoolReasons = useMemo(() => {
+    const reasons = new Set<string>()
+    previewCards.forEach((p) => {
+      if (p.hiddenReason) reasons.add(p.hiddenReason)
+    })
+    return [...reasons]
   }, [previewCards])
+
+  const positionsCount = useMemo(
+    () => previewCards.filter((p) => Boolean(p.userStaked?.gt(0)) || Boolean(p.pendingReward?.gt(0))).length,
+    [previewCards],
+  )
+
+  const featuredCard = useMemo(() => selectFeaturedPool(previewCards), [previewCards])
 
   const featured = useMemo((): PoolsFeaturedMetrics => {
     const card = featuredCard
@@ -209,7 +251,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     return {
       name: card?.name ?? '—',
       symbol: card?.tokens[0] ?? 'MARCO',
-      apr: card?.apr ?? '—',
+      apr: card?.apr ?? undefined,
       rewardToken: card?.rewardToken ?? '—',
       stakeToken: card?.stakeToken ?? card?.tokens[0] ?? '—',
       totalStaked: formatUsd(stakedUsd),
@@ -235,21 +277,30 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   }, [featuredCard])
 
   const kpis = useMemo(
-    () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock),
-    [rawPools, featuredCard, currentBlock],
+    () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock, previewCards),
+    [rawPools, featuredCard, currentBlock, previewCards],
   )
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
   const advisorItems = useMemo(() => {
-    const flexible = previewCards.find((p) => p.poolTypeLabel === 'Flexible Pool')
-    const locked = previewCards.find((p) => p.poolTypeLabel === 'Locked Pool')
-    const highest = [...previewCards].sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
-    const partner = previewCards.find((p) => p.poolTypeLabel === 'Reward MARCO Holders')
+    const usable = listUsablePools(previewCards)
+    const bySustain = [...usable].sort((a, b) => (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0))
+    const byApr = [...usable].sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0))
+    const byRisk = [...usable].sort((a, b) => {
+      const riskOrder = { 'Very Low': 0, Low: 1, Medium: 2, High: 3 }
+      const aR = riskOrder[a.poolSafetyRisk as keyof typeof riskOrder] ?? 2
+      const bR = riskOrder[b.poolSafetyRisk as keyof typeof riskOrder] ?? 2
+      return aR - bR
+    })
+    const byLock = [...usable].sort((a, b) => {
+      const lockScore = (p: PoolPreviewCard) => (p.lockPeriod?.includes('365') ? 4 : p.lockPeriod?.includes('180') ? 3 : 1)
+      return lockScore(b) - lockScore(a)
+    })
     return [
-      { label: "Today's Recommendation", value: flexible?.name ?? highest?.name ?? '—', tone: 'green' as const, icon: '★' },
-      { label: 'Highest Yield', value: highest?.name ?? '—', tone: 'green' as const, icon: '↗' },
-      { label: 'Lowest Risk', value: flexible?.name ?? '—', tone: 'gold' as const, icon: '◎' },
-      { label: 'Partner Pool', value: partner?.name ?? locked?.name ?? '—', tone: 'blue' as const, icon: '◇' },
+      { label: 'Best Sustainability', value: bySustain[0]?.name ?? 'Indexing', tone: 'green' as const, icon: '◎' },
+      { label: 'Highest APR Sustainable', value: byApr[0]?.apr ?? byApr[0]?.name ?? 'Indexing', tone: 'green' as const, icon: '↗' },
+      { label: 'Lowest Risk', value: byRisk[0]?.name ?? 'Indexing', tone: 'gold' as const, icon: '◇' },
+      { label: 'Best Long Term', value: byLock[0]?.name ?? 'Indexing', tone: 'gold' as const, icon: '★' },
     ]
   }, [previewCards])
 
@@ -263,7 +314,8 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const analytics = useMemo((): PoolsAnalyticsData => {
     const bars = (rawPools ?? []).slice(0, 12).map((pool) => {
       const { apr } = getAprData(pool, performanceFee)
-      return Math.min(100, Math.max(8, apr * 2))
+      const safe = Number.isFinite(apr) && apr > 0 ? Math.min(100, Math.max(8, apr * 2)) : 8
+      return safe
     })
     while (bars.length < 12) bars.push(8)
 
@@ -292,6 +344,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   }, [rawPools, previewCards])
 
   const phase: PoolsRuntimePhase = useMemo(() => {
+    if (isPoolsUxFixtureEnabled()) return 'idle'
     if (!rawPools) return 'loading_pools'
     if (account && !userDataLoaded) return 'reading_wallet'
     return 'idle'
@@ -341,6 +394,14 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     error,
     filter,
     setFilter,
+    viewMode,
+    setViewMode,
+    poolTab,
+    setPoolTab,
+    sortMode,
+    setSortMode,
+    positionsCount,
+    hiddenPoolReasons,
     pools: filteredPools,
     featured,
     kpis,

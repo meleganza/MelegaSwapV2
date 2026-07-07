@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
-import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 
 export const PsPanel = styled.div<{ $height?: string; $radius?: string }>`
   width: 100%;
@@ -56,19 +56,20 @@ export const PsPrimaryBtn = styled.button`
   padding: 0 24px;
   border: none;
   border-radius: ${poolsStudioLayout.btnRadius};
-  background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%);
+  background: ${poolsStudioColors.goldGradient};
   color: #050505;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 900;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: filter ${poolsStudioLayout.hoverTransition} ease;
+  transition: box-shadow ${poolsStudioLayout.hoverTransition} ease;
 
   &:hover {
-    filter: brightness(1.05);
+    box-shadow: ${poolsStudioColors.goldButtonGlow};
+    filter: none;
   }
 `
 
@@ -83,72 +84,119 @@ export const PsGhostBtn = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  transition: border-color ${poolsStudioLayout.hoverTransition} ease, box-shadow ${poolsStudioLayout.hoverTransition} ease;
+
+  &:hover {
+    border-color: ${poolsStudioColors.cardBorderHover};
+    box-shadow: ${poolsStudioColors.goldButtonGlow};
+  }
+`
+
+export const PsSmallPrimaryBtn = styled(PsPrimaryBtn)`
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  height: ${poolsStudioLayout.poolCardBtnHeight};
+  min-height: ${poolsStudioLayout.poolCardBtnHeight};
+  border-radius: ${poolsStudioLayout.poolCardBtnRadius};
+  padding: 0;
+  font-size: 14px;
+
+  &:hover {
+    box-shadow: ${poolsStudioColors.goldButtonGlow};
+  }
+`
+
+export const PsSmallGhostBtn = styled(PsGhostBtn)`
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  height: ${poolsStudioLayout.poolCardBtnHeight};
+  min-height: ${poolsStudioLayout.poolCardBtnHeight};
+  border-radius: ${poolsStudioLayout.poolCardBtnRadius};
+  padding: 0;
+  font-size: 14px;
+`
+
+export const PsSidebarCard = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+  background: ${poolsStudioColors.card};
+  border: 1px solid ${poolsStudioColors.border};
+  border-radius: 18px;
   transition: border-color ${poolsStudioLayout.hoverTransition} ease;
 
   &:hover {
     border-color: ${poolsStudioColors.cardBorderHover};
   }
-`
-
-export const PsSmallPrimaryBtn = styled(PsPrimaryBtn)`
-  width: ${poolsStudioLayout.poolCardStakeWidth};
-  min-width: ${poolsStudioLayout.poolCardStakeWidth};
-  height: ${poolsStudioLayout.poolCardBtnHeight};
-  min-height: ${poolsStudioLayout.poolCardBtnHeight};
-  padding: 0;
-  font-size: 14px;
-`
-
-export const PsSmallGhostBtn = styled(PsGhostBtn)`
-  width: ${poolsStudioLayout.poolCardAnalyzeWidth};
-  min-width: ${poolsStudioLayout.poolCardAnalyzeWidth};
-  height: ${poolsStudioLayout.poolCardBtnHeight};
-  min-height: ${poolsStudioLayout.poolCardBtnHeight};
-  padding: 0;
-  font-size: 14px;
 `
 
 export const PsKpiCard = styled.div`
   height: ${poolsStudioLayout.kpiHeight};
   min-height: ${poolsStudioLayout.kpiHeight};
-  border-radius: ${poolsStudioLayout.cardRadius};
+  max-height: ${poolsStudioLayout.kpiHeight};
+  border-radius: ${poolsStudioLayout.kpiRadius};
   border: 1px solid ${poolsStudioColors.border};
-  background: ${poolsStudioColors.panel};
-  padding: 24px;
+  background: ${poolsStudioColors.card};
+  padding: ${poolsStudioLayout.kpiPadding};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   transition: border-color ${poolsStudioLayout.hoverTransition} ease;
+  min-width: 0;
+  overflow: hidden;
 
   &:hover {
     border-color: ${poolsStudioColors.cardBorderHover};
   }
-  min-width: 0;
-  position: relative;
+
+  @media (max-width: 767px) {
+    width: ${poolsStudioLayout.kpiMobileWidth};
+    min-width: ${poolsStudioLayout.kpiMobileWidth};
+    height: ${poolsStudioLayout.kpiMobileHeight};
+    min-height: ${poolsStudioLayout.kpiMobileHeight};
+    max-height: ${poolsStudioLayout.kpiMobileHeight};
+    flex-shrink: 0;
+  }
 `
 
 export const PsKpiLabel = styled.span`
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: ${poolsStudioColors.muted};
 `
 
-export const PsKpiValue = styled.span<{ $gold?: boolean }>`
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
-  color: ${({ $gold }) => ($gold ? poolsStudioColors.gold : poolsStudioColors.text)};
+export const PsKpiValue = styled.span<{ $gold?: boolean; $compact?: boolean; $green?: boolean }>`
+  font-size: ${({ $compact }) => ($compact ? 18 : 34)}px;
+  line-height: ${({ $compact }) => ($compact ? '22px' : '38px')};
+  font-weight: 900;
+  color: ${({ $gold, $green }) =>
+    $green ? poolsStudioColors.aprGreen : $gold ? poolsStudioColors.gold : poolsStudioColors.text};
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const PsKpiSecondary = styled.span<{ $gold?: boolean }>`
+  display: block;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 700;
+  color: ${({ $gold }) => ($gold ? poolsStudioColors.gold : poolsStudioColors.mutedSecondary)};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export const PsKpiDelta = styled.span<{ $positive?: boolean }>`
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 16px;
   font-weight: 600;
-  line-height: 1;
   margin-left: ${poolsStudioLayout.kpiDeltaGap};
   color: ${({ $positive }) => ($positive ? poolsStudioColors.green : poolsStudioColors.red)};
 `

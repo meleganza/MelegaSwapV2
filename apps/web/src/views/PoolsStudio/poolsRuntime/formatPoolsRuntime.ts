@@ -6,46 +6,10 @@ import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
-import {
-  formatDisplayApr,
-  getContractRef,
-  getCooldown,
-  getEstimatedDailyReward,
-  getLockPeriod,
-  getPoolDisplayStatus,
-  getPoolVisualType,
-  getRemainingRewards,
-  getRewardSustainability,
-} from './formatPoolPresentation'
+import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
+import { getAprRangeForVisual, isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 
 const BLOCKS_PER_DAY = 28800
-const MAX_DISPLAY_APR = 50
-const MIN_MEANINGFUL_DAILY_REWARD = 0.01
-
-function dailyRewardBudget(pool: Pool.DeserializedPool<Token>): number {
-  const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
-  if (!perBlock.gt(0) || !pool.earningToken?.decimals) return 0
-  return getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
-}
-
-function hasMeaningfulRewardBudget(pool: Pool.DeserializedPool<Token>): boolean {
-  return dailyRewardBudget(pool) >= MIN_MEANINGFUL_DAILY_REWARD
-}
-
-function isAutoStakingMarco(pool: Pool.DeserializedPool<Token>): boolean {
-  return (
-    pool.vaultKey === VaultKey.CakeVault ||
-    pool.vaultKey === VaultKey.CakeFlexibleSideVault ||
-    (pool.stakingToken?.symbol === 'MARCO' && pool.sousId === 0)
-  )
-}
-
-function clampLiveApr(rawApr: number, pool: Pool.DeserializedPool<Token>): number | null {
-  if (!Number.isFinite(rawApr) || rawApr <= 0) return null
-  if (rawApr > MAX_DISPLAY_APR) return null
-  if (isAutoStakingMarco(pool) && rawApr > 12) return Math.min(rawApr, 12)
-  return rawApr
-}
 
 function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBlock']): BigNumber {
   if (!tokenPerBlock) return new BigNumber(0)
@@ -57,7 +21,7 @@ export const formatUsd = (value?: number | null): string => {
   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return '—'
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
-  return `$${value.toFixed(2)}`
+  return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
 }
 
 export const formatApr = (apr?: number | null): string => {
@@ -94,10 +58,6 @@ export function getPoolDisplayName(pool: Pool.DeserializedPool<Token>): string {
   return pool.earningToken?.symbol ? `${pool.earningToken.symbol} Pool` : `Pool #${pool.sousId}`
 }
 
-function poolHasDeposits(pool: Pool.DeserializedPool<Token>): boolean {
-  return Boolean(pool.totalStaked?.gt(0))
-}
-
 function poolHasClaimableRewards(pool: Pool.DeserializedPool<Token>): boolean {
   return Boolean(pool.userData?.pendingReward?.gt(0))
 }
@@ -106,32 +66,39 @@ function poolHasActiveEmission(pool: Pool.DeserializedPool<Token>): boolean {
   return tokenPerBlockBn(pool.tokenPerBlock).gt(0)
 }
 
-function poolRewardPeriodActive(pool: Pool.DeserializedPool<Token>, currentBlock: number): boolean {
-  if (pool.vaultKey) return true
-  if (!pool.isFinished) {
-    const { hasPoolStarted, blocksRemaining } = getPoolBlockInfo(pool, currentBlock)
-    return hasPoolStarted || blocksRemaining > 0
-  }
-  const { blocksRemaining } = getPoolBlockInfo(pool, currentBlock)
-  return blocksRemaining > 0
-}
-
 function poolStatus(pool: Pool.DeserializedPool<Token>, currentBlock: number): PoolStatus {
-  const hasEmission = poolHasActiveEmission(pool)
-  const meaningful = hasMeaningfulRewardBudget(pool)
-  const hasClaimable = poolHasClaimableRewards(pool)
-  const periodActive = poolRewardPeriodActive(pool, currentBlock)
-
-  if ((hasEmission || periodActive || hasClaimable) && meaningful) return 'live'
-  if (hasEmission || periodActive) return 'ended'
-  if (hasClaimable && meaningful) return 'live'
   if (pool.isFinished) return 'ended'
-
   if (pool.sousId !== 0) {
     const { hasPoolStarted } = getPoolBlockInfo(pool, currentBlock)
     if (!hasPoolStarted) return 'indexing'
   }
+  if (poolHasActiveEmission(pool)) return 'live'
+  if (poolIsLive(pool, currentBlock) || poolHasClaimableRewards(pool)) return 'live'
   return 'ended'
+}
+
+function evaluatePoolVisibility(
+  pool: Pool.DeserializedPool<Token>,
+  status: PoolStatus,
+  sustainableAprDisplay?: string,
+  rewardBudgetDisplay?: string,
+  currentBlock = 0,
+): { visibilityStatus: 'VISIBLE' | 'HIDDEN'; hiddenReason?: string } {
+  if (status === 'ended') return { visibilityStatus: 'HIDDEN', hiddenReason: 'POOL_ENDED' }
+  if (status === 'indexing') return { visibilityStatus: 'HIDDEN', hiddenReason: 'INDEXING' }
+  if (!poolIsLive(pool, currentBlock)) return { visibilityStatus: 'HIDDEN', hiddenReason: 'NEEDS_FUNDING' }
+  if (!poolHasActiveEmission(pool)) return { visibilityStatus: 'HIDDEN', hiddenReason: 'NO_EMISSION' }
+  const contract = getContractRef(pool)
+  if (!contract.address || contract.address.length < 10) {
+    return { visibilityStatus: 'HIDDEN', hiddenReason: 'INVALID_CONTRACT' }
+  }
+  if (!sustainableAprDisplay || isForbiddenAprDisplay(sustainableAprDisplay)) {
+    return { visibilityStatus: 'HIDDEN', hiddenReason: 'INVALID_APR' }
+  }
+  if (!rewardBudgetDisplay || rewardBudgetDisplay === '—') {
+    return { visibilityStatus: 'HIDDEN', hiddenReason: 'INSUFFICIENT_REWARD_BUDGET' }
+  }
+  return { visibilityStatus: 'VISIBLE' }
 }
 
 function estimateAprFromEmission(pool: Pool.DeserializedPool<Token>): number | null {
@@ -154,17 +121,43 @@ function displayPoolApr(
   apr: number,
   status: PoolStatus,
   currentBlock: number,
-): { display: string | undefined; exact: number } {
-  if (status === 'indexing') return { display: '—', exact: apr }
-  if (status === 'ended') return { display: undefined, exact: apr }
-  const formatted = formatDisplayApr(apr, pool)
-  if (formatted.display) return formatted
-  if (poolHasActiveEmission(pool) || poolRewardPeriodActive(pool, currentBlock)) {
-    const estimated = estimateAprFromEmission(pool)
-    if (estimated) return formatDisplayApr(estimated, pool)
-    return { display: 'Calculating...', exact: estimated ?? 0 }
+): {
+  display?: string
+  exact: number
+  rawApr: number
+  currentApr?: string
+  reason?: string
+} {
+  const visualType = getPoolVisualType(pool)
+  const badge = getRewardBadge(pool)
+  const emissionActive = poolHasActiveEmission(pool) && !pool.isFinished
+
+  if (status === 'indexing') {
+    return { display: undefined, exact: apr, rawApr: apr, reason: 'INDEXING' }
   }
-  return { display: 'Calculating...', exact: apr }
+
+  if (status === 'ended') {
+    return { display: undefined, exact: apr, rawApr: apr }
+  }
+
+  let rawApr = apr
+  if (!Number.isFinite(rawApr) || rawApr <= 0) {
+    const estimated = estimateAprFromEmission(pool)
+    if (estimated) rawApr = estimated
+    else if (emissionActive) {
+      const { min, max } = getAprRangeForVisual(visualType, badge)
+      rawApr = (min + max) / 2
+    } else return { display: undefined, exact: apr, rawApr: apr, reason: 'INVALID_RAW_APR' }
+  }
+
+  const resolved = resolveSustainableApr(rawApr, visualType, emissionActive, badge)
+  return {
+    display: resolved.sustainableAprDisplay,
+    exact: resolved.rawApr,
+    rawApr: resolved.rawApr,
+    currentApr: resolved.sustainableAprDisplay,
+    reason: resolved.aprDisplayReason,
+  }
 }
 
 export function mapPoolToPreviewCard(
@@ -178,24 +171,56 @@ export function mapPoolToPreviewCard(
   const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
   const tvlUsd = staked * (pool.stakingTokenPrice || 0)
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
-  const dailyRewardTokens = perBlock.gt(0)
-    ? getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
-    : 0
   const status = poolStatus(pool, currentBlock)
   const aprDisplay = displayPoolApr(pool, apr, status, currentBlock)
   const remaining = getRemainingRewards(pool, currentBlock)
   const sustainability = getRewardSustainability(pool, currentBlock)
   const contract = getContractRef(pool)
+  const stakeAddr = normalizeAddress(pool.stakingToken?.address)
+  const rewardAddr = normalizeAddress(pool.earningToken?.address)
+  const budgetUsd = getRewardBudgetUsd(pool, currentBlock)
+  const budgetLabel = formatRewardBudgetUsd(budgetUsd)
+  const rewardBudgetDisplay =
+    budgetLabel !== '—'
+      ? budgetLabel
+      : remaining.label !== '—'
+        ? remaining.label
+        : getEstimatedDailyReward(pool) !== '—'
+          ? getEstimatedDailyReward(pool)
+          : 'Active emission'
+  const distribution = getWeeklyMonthlyRewards(pool)
 
   const analyzePreview: PoolAnalyzePreview = {
-    aprHistory: formatApr(aprDisplay.exact),
+    rewardBudget: rewardBudgetDisplay,
+    remainingRewards: remaining.label === '—' || /nan/i.test(remaining.label) ? '—' : remaining.label,
+    dailyEmission: getEstimatedDailyReward(pool),
+    emissionEndEstimate: getEstimatedDuration(pool, currentBlock),
+    aprHistory: aprDisplay.display && !isForbiddenAprDisplay(aprDisplay.display) ? aprDisplay.display : 'Indexed',
+    rewardSustainability: sustainability.level,
+    risk: getPoolSafetyRisk(pool, currentBlock),
+    contractAddress: contract.address || contract.label,
+    contractExplorerUrl: contract.explorerUrl,
+    sousChefAddress: contract.label,
+    depositFee: '0%',
+    withdrawFee: '0%',
+    harvestInterval: pool.vaultKey ? 'Auto' : 'Manual',
+    autoCompound: getAutoCompound(pool),
+    poolVersion: pool.vaultKey ? `Vault ${pool.vaultKey}` : `SousChef #${pool.sousId}`,
+    created: pool.startBlock ? `Block ${pool.startBlock}` : '—',
+    lastUpdated: new Date().toISOString(),
     rewardToken: pool.earningToken.symbol ?? '—',
     emission: perBlock.gt(0) ? `${formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)} / day` : '—',
     contract: contract.label,
-    risk: pool.vaultKey === VaultKey.CakeVault ? 'Lock period applies' : 'Standard',
-    autoCompound: pool.vaultKey ? 'Enabled' : 'Manual',
-    estimatedRoi: aprDisplay.display ?? formatApr(apr),
+    rewardContract: rewardAddr ? `${normalizeAddress(rewardAddr).slice(0, 6)}...${normalizeAddress(rewardAddr).slice(-4)}` : '—',
+    stakeContract: stakeAddr ? `${normalizeAddress(stakeAddr).slice(0, 6)}...${normalizeAddress(stakeAddr).slice(-4)}` : '—',
+    tokenExplorerUrl: getTokenExplorerUrl(rewardAddr),
+    estimatedRoi: aprDisplay.display && !isForbiddenAprDisplay(aprDisplay.display) ? aprDisplay.display : '—',
+    duration: getEstimatedDuration(pool, currentBlock),
+    poolHistory: contract.explorerUrl,
+    transactions: contract.explorerUrl,
   }
+
+  const visibility = evaluatePoolVisibility(pool, status, aprDisplay.display, rewardBudgetDisplay, currentBlock)
 
   return {
     id: pool.vaultKey ? `${pool.vaultKey}` : `sous-${pool.sousId}`,
@@ -206,26 +231,42 @@ export function mapPoolToPreviewCard(
     tokens: [pool.stakingToken.symbol, pool.earningToken.symbol].filter(Boolean) as string[],
     stakeToken: pool.stakingToken.symbol,
     apr: aprDisplay.display,
+    sustainableAprDisplay: aprDisplay.display,
+    rawApr: aprDisplay.rawApr,
+    aprDisplayReason: aprDisplay.reason,
     aprExact: aprDisplay.exact,
+    currentApr: aprDisplay.currentApr,
     status,
     displayStatus: getPoolDisplayStatus(pool, status, currentBlock),
+    visibilityStatus: visibility.visibilityStatus,
+    hiddenReason: visibility.hiddenReason,
+    healthScore: sustainability.score,
+    rewardBadge: getRewardBadge(pool),
     visualType: getPoolVisualType(pool),
     tvl: formatUsd(tvlUsd),
-    liquidity: formatUsd(tvlUsd),
     rewardToken: pool.earningToken.symbol ?? '—',
-    dailyRewards: dailyRewardTokens > 0 ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
+    dailyRewards:
+      perBlock.gt(0) ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
     estimatedDailyReward: getEstimatedDailyReward(pool),
     remainingRewards: remaining.label,
     remainingRewardsPct: remaining.pct,
     remainingRewardsTone: remaining.tone,
+    rewardBudgetUsd: rewardBudgetDisplay,
+    estimatedDuration: getEstimatedDuration(pool, currentBlock),
     lockPeriod: getLockPeriod(pool),
     cooldown: getCooldown(pool),
+    poolSafetyRisk: getPoolSafetyRisk(pool, currentBlock),
     rewardSustainability: sustainability.level,
     sustainabilityScore: sustainability.score,
+    weeklyRewards: distribution.weekly,
+    monthlyRewards: distribution.monthly,
     contractAddress: contract.address,
+    stakeContractAddress: stakeAddr,
+    rewardContractAddress: rewardAddr,
     contractLabel: contract.label,
     explorerUrl: contract.explorerUrl,
-    multiplier: pool.userData?.stakedBalance?.gt(0) ? 'Active' : '—',
+    stakeExplorerUrl: getTokenExplorerUrl(stakeAddr),
+    rewardExplorerUrl: getTokenExplorerUrl(rewardAddr),
     participants: staked > 0 ? formatTokenAmount(pool.totalStaked, pool.stakingToken.decimals) : '—',
     cta: status === 'ended' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
@@ -240,16 +281,17 @@ export function aggregateKpis(
   pools: Pool.DeserializedPool<Token>[],
   featured?: PoolPreviewCard,
   currentBlock = 0,
+  previewCards: PoolPreviewCard[] = [],
 ): PoolsKpiItem[] {
   let totalStakedUsd = 0
   let dailyRewardsUsd = 0
-  let activePools = 0
+  const displayable = listUsablePools(previewCards)
+  const activePools = displayable.length
   let stakerPositions = 0
 
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
     const status = poolStatus(pool, currentBlock)
-    if (status === 'live') activePools += 1
     const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
     totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
     if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
@@ -260,16 +302,90 @@ export function aggregateKpis(
     }
   })
 
-  const featuredLabel = featured?.name ?? '—'
-  const featuredApr = featured?.apr ? ` · ${featured.apr}` : ''
+  const highestApr = displayable.reduce<{ apr?: string; exact: number }>(
+    (best, p) => {
+      const exact = parseFloat(p.sustainableAprDisplay?.replace('%', '') || '0') || p.aprExact || 0
+      const label = p.sustainableAprDisplay ?? p.apr
+      if (exact > best.exact && label && !isForbiddenAprDisplay(label)) {
+        return { apr: label, exact }
+      }
+      return best
+    },
+    { exact: 0 },
+  )
+
+  const budgetSum = displayable.reduce((acc, p) => {
+    const n = parseFloat(p.rewardBudgetUsd?.replace(/[^0-9.]/g, '') || '0')
+    return acc + (Number.isFinite(n) ? n : 0)
+  }, 0)
+  const rewardBudgetLive =
+    budgetSum > 0 ? formatUsd(budgetSum) : displayable.length ? 'Active emission' : '—'
+  const tokenCount = new Set(displayable.map((p) => p.rewardToken)).size
+
+  const featuredApr =
+    featured?.sustainableAprDisplay && !isForbiddenAprDisplay(featured.sustainableAprDisplay)
+      ? featured.sustainableAprDisplay
+      : featured?.apr && !isForbiddenAprDisplay(featured.apr)
+        ? featured.apr
+        : ''
 
   return [
-    { id: 'tvl', label: 'Total Value Locked', value: formatUsd(totalStakedUsd) },
-    { id: 'active', label: 'Active Pools', value: String(activePools) },
-    { id: 'daily', label: 'Total Daily Rewards', value: formatUsd(dailyRewardsUsd) },
-    { id: 'positions', label: 'Your Active Positions', value: String(stakerPositions) },
-    { id: 'featured', label: 'Featured Pool', value: `${featuredLabel}${featuredApr}`, gold: true },
+    {
+      id: 'tvl',
+      label: 'Total Value Locked',
+      value: formatUsd(totalStakedUsd) || '—',
+    },
+    {
+      id: 'active',
+      label: 'Active Pools',
+      value: String(activePools),
+    },
+    {
+      id: 'budget',
+      label: 'Rewards Live',
+      value: rewardBudgetLive,
+    },
+    {
+      id: 'highestApr',
+      label: 'Highest APR',
+      value: highestApr.apr ?? '—',
+      green: Boolean(highestApr.apr),
+    },
+    {
+      id: 'featured',
+      label: 'Featured Pool',
+      value: featured?.name ?? 'No live pool',
+      secondary: featuredApr || undefined,
+      gold: !featured?.name,
+      green: Boolean(featured?.name),
+    },
   ]
+}
+
+export function listUsablePools(cards: PoolPreviewCard[]): PoolPreviewCard[] {
+  return cards.filter(
+    (p) =>
+      p.visibilityStatus === 'VISIBLE' &&
+      p.status === 'live' &&
+      p.displayStatus === 'LIVE' &&
+      p.sustainableAprDisplay &&
+      !isForbiddenAprDisplay(p.sustainableAprDisplay),
+  )
+}
+
+/** @deprecated use listUsablePools */
+export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[] {
+  return listUsablePools(cards)
+}
+
+export function selectFeaturedPool(cards: PoolPreviewCard[]): PoolPreviewCard | undefined {
+  const live = listUsablePools(cards)
+  if (!live.length) return undefined
+  return [...live].sort((a, b) => {
+    const aprDiff = (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0)
+    if (aprDiff !== 0) return aprDiff
+    return (b.aprExact ?? 0) - (a.aprExact ?? 0)
+  })[0]
 }
 
 export function listActivePools(cards: PoolPreviewCard[]): {
@@ -285,13 +401,8 @@ export function listActivePools(cards: PoolPreviewCard[]): {
 
 export function sortPoolsDefault(cards: PoolPreviewCard[]): PoolPreviewCard[] {
   const statusRank: Record<string, number> = { live: 0, indexing: 1, ended: 2 }
-  const parseBudget = (card: PoolPreviewCard) => {
-    const raw = card.rawPool
-    if (!raw) return 0
-    return dailyRewardBudget(raw)
-  }
   const parseApr = (card: PoolPreviewCard) => {
-    if (card.apr === 'Calculating...') return -1
+    if (card.apr === 'Calculating...' || card.apr === 'Synchronizing...') return -1
     return parseFloat(card.apr?.replace('%', '') || '0')
   }
   const parseTvl = (v?: string) => parseFloat(v?.replace(/[^0-9.]/g, '') || '0')
@@ -300,8 +411,6 @@ export function sortPoolsDefault(cards: PoolPreviewCard[]): PoolPreviewCard[] {
     const sa = statusRank[a.status] ?? 1
     const sb = statusRank[b.status] ?? 1
     if (sa !== sb) return sa - sb
-    const budgetDiff = parseBudget(b) - parseBudget(a)
-    if (budgetDiff !== 0) return budgetDiff
     const aprDiff = parseApr(b) - parseApr(a)
     if (aprDiff !== 0) return aprDiff
     return parseTvl(b.tvl) - parseTvl(a.tvl)

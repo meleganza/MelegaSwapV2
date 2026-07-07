@@ -1,184 +1,144 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
+import { typography } from 'design-system/melega'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
-import { PsPanel } from './poolsStudioPrimitives'
 
 const Title = styled.h3`
-  margin: 0 0 14px;
+  margin: 0 0 6px;
   font-family: Orbitron, sans-serif;
+  font-size: 30px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+`
+
+const Subtitle = styled.p`
+  margin: 0 0 12px;
+  font-family: ${typography.fontFamily.body};
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`
+
+const AskBtn = styled.button`
+  width: 220px;
+  height: 46px;
+  margin: auto auto 0;
+  border: 1px solid #f2c94c;
+  border-radius: 14px;
+  background: transparent;
+  color: #f2c94c;
+  font-family: ${typography.fontFamily.body};
   font-size: 16px;
-  font-weight: 800;
-  color: ${poolsStudioColors.text};
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
 `
 
 const Row = styled.div`
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
   gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid ${poolsStudioColors.rowBorder};
+  height: 20px;
+  min-height: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
   &:last-of-type {
     border-bottom: none;
   }
 `
 
-const Icon = styled.span<{ $tone?: string }>`
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  flex-shrink: 0;
-  color: ${({ $tone }) =>
-    $tone === 'green'
-      ? poolsStudioColors.green
-      : $tone === 'gold'
-        ? poolsStudioColors.gold
-        : $tone === 'blue'
-          ? poolsStudioColors.blue
-          : poolsStudioColors.muted};
+const Icon = styled.span`
+  width: 16px;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
 `
 
-const RowText = styled.div`
-  flex: 1;
-  min-width: 0;
-`
-
-const RowLabel = styled.div`
-  font-size: 11px;
+const RowTitle = styled.span`
+  font-family: ${typography.fontFamily.body};
+  font-size: 14px;
   font-weight: 600;
-  color: ${poolsStudioColors.muted};
-  margin-bottom: 2px;
-`
-
-const RowValue = styled.div<{ $tone?: string }>`
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.4;
-  word-break: break-word;
-  color: ${({ $tone }) =>
-    $tone === 'green'
-      ? poolsStudioColors.green
-      : $tone === 'gold'
-        ? poolsStudioColors.gold
-        : $tone === 'blue'
-          ? poolsStudioColors.blue
-          : poolsStudioColors.text};
-`
-
-const Sustain = styled.div`
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid ${poolsStudioColors.rowBorder};
-`
-
-const SustainLabel = styled.div`
-  font-size: 11px;
-  font-weight: 700;
-  color: ${poolsStudioColors.muted};
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-`
-
-const BarTrack = styled.div`
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 `
 
-const BarFill = styled.div<{ $score: number }>`
-  height: 100%;
-  width: ${({ $score }) => $score}%;
-  background: linear-gradient(90deg, ${poolsStudioColors.green}, #4ade80);
-  border-radius: 999px;
-  transition: width 900ms ease;
-`
-
-const SustainMeta = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: ${poolsStudioColors.green};
-`
-
-const MachineToggle = styled.button`
-  margin-top: 10px;
-  border: none;
-  background: transparent;
-  color: ${poolsStudioColors.muted};
-  font-size: 10px;
+const RowValue = styled.span`
+  font-family: ${typography.fontFamily.body};
+  font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 88px;
+  text-align: right;
 `
 
-const MachinePre = styled.pre`
-  margin: 8px 0 0;
-  padding: 8px;
-  border-radius: 8px;
-  background: #0c0c0c;
-  border: 1px solid ${poolsStudioColors.border};
-  font-size: 9px;
-  line-height: 1.35;
-  color: ${poolsStudioColors.muted};
-  max-height: 80px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+const CompactWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 `
 
-export const AIRewardAdvisorPanel: React.FC = () => {
-  const { advisorItems, sustainability, machine, loadingLabel } = usePoolsRuntime()
-  const [machineOpen, setMachineOpen] = useState(false)
+const List = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  margin-bottom: 10px;
+`
 
-  return (
-    <PsPanel
-      data-ps-panel
-      data-ps-advisor
-      $height={poolsStudioLayout.featuredHeight}
-      $radius="20px"
-      style={{ padding: '18px', width: '100%' }}
-    >
-      <Title>AI Reward Advisor</Title>
-      {loadingLabel ? (
-        <RowLabel>{loadingLabel}</RowLabel>
-      ) : (
-        advisorItems.map((row) => (
-          <Row key={row.label}>
-            <Icon $tone={row.tone}>{row.icon}</Icon>
-            <RowText>
-              <RowLabel>{row.label}</RowLabel>
-              <RowValue $tone={row.tone}>{row.value}</RowValue>
-            </RowText>
-          </Row>
-        ))
-      )}
-      <Sustain>
-        <SustainLabel>{sustainability.label}</SustainLabel>
-        <BarTrack>
-          <BarFill $score={sustainability.score} data-ps-sustain-bar />
-        </BarTrack>
-        <SustainMeta>
-          <span>{sustainability.level}</span>
-          <span>{sustainability.score}/100</span>
-        </SustainMeta>
-      </Sustain>
-      <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
-        {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
-      </MachineToggle>
-      {machineOpen && (
-        <MachinePre data-ps-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
-      )}
-    </PsPanel>
+const ROW_TITLES = ['Best Sustainability', 'Highest APR', 'Lowest Risk', 'Best Long Term'] as const
+
+const humanAdvisorValue = (value: string) => {
+  if (/NEEDS_FUNDING|POOL_ENDED|INDEXING|Hidden/i.test(value)) return '—'
+  return value
+}
+
+export const AIRewardAdvisorPanel: React.FC<{ embedded?: boolean; compact?: boolean }> = ({ embedded, compact }) => {
+  const { advisorItems, loadingLabel } = usePoolsRuntime()
+  const rows = advisorItems.slice(0, 4)
+
+  const content = (
+    <CompactWrap>
+      <Title>Reward Advisor</Title>
+      <Subtitle>Ranked picks from live reward sustainability and APR bands.</Subtitle>
+      <List>
+        {loadingLabel ? (
+          <RowTitle>{loadingLabel}</RowTitle>
+        ) : (
+          rows.map((row, index) => (
+            <Row key={ROW_TITLES[index]}>
+              <Icon aria-hidden>{row.icon}</Icon>
+              <RowTitle>{ROW_TITLES[index]}</RowTitle>
+              <RowValue>{humanAdvisorValue(row.value)}</RowValue>
+            </Row>
+          ))
+        )}
+      </List>
+      <AskBtn type="button">Ask Advisor</AskBtn>
+    </CompactWrap>
   )
+
+  if (embedded || compact) {
+    return <div data-ps-advisor>{content}</div>
+  }
+
+  return <div data-ps-advisor>{content}</div>
 }
 
 export default AIRewardAdvisorPanel

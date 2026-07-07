@@ -6,36 +6,26 @@ import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Row = styled.div`
   display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  min-height: ${poolsStudioLayout.filterHeight};
+  flex-wrap: wrap;
+  gap: ${poolsStudioLayout.filterGap};
   align-items: center;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  width: 100%;
+  overflow: visible;
 `
 
 const Chip = styled.button<{ $active?: boolean }>`
-  height: 36px;
-  padding: 0 16px;
+  height: ${poolsStudioLayout.filterPillHeight};
+  padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid ${({ $active }) => ($active ? poolsStudioColors.gold : poolsStudioColors.border)};
-  background: ${({ $active }) => ($active ? poolsStudioColors.gold : 'transparent')};
-  color: ${({ $active }) => ($active ? '#050505' : poolsStudioColors.secondary)};
-  font-size: 13px;
-  font-weight: 700;
+  border: 1px solid ${poolsStudioColors.chipBorder};
+  background: ${({ $active }) => ($active ? poolsStudioColors.explorerGold : poolsStudioColors.card)};
+  color: ${({ $active }) => ($active ? '#050505' : poolsStudioColors.tabInactive)};
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: border-color 150ms ease, background 150ms ease;
-
-  &:hover {
-    border-color: ${poolsStudioColors.gold};
-  }
 `
 
 export const PoolsFilterRow: React.FC = () => {

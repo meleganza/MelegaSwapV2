@@ -41,8 +41,8 @@ export const PoolsActivityTable: React.FC = () => {
         title="Recent Pool Activity"
         rows={timelineRows}
         height={poolsStudioLayout.activityHeight}
-        emptyTitle={loadingLabel ? loadingLabel : 'No activity yet'}
-        emptySubtitle={loadingLabel ? 'Awaiting runtime' : 'Connect wallet to see your staking activity'}
+        emptyTitle={loadingLabel ? loadingLabel : 'No activity yet.'}
+        emptySubtitle={loadingLabel ? 'Awaiting runtime' : 'Connect wallet to see your staking activity.'}
         badge={<LiveBadge>LIVE</LiveBadge>}
         data-testid="pools"
       />
