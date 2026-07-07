@@ -6,19 +6,17 @@ import PoolGridCard from './PoolGridCard'
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, ${poolsStudioLayout.poolCardWidth});
-  gap: ${poolsStudioLayout.cardGap};
-  width: 100%;
-  min-width: 0;
+  grid-template-columns: repeat(3, ${poolsStudioLayout.poolCardWidth});
+  column-gap: ${poolsStudioLayout.cardGap};
+  row-gap: ${poolsStudioLayout.poolCardRowGap};
+  width: fit-content;
   max-width: 100%;
+  min-width: 0;
   margin-top: ${poolsStudioLayout.gapExplorerGrid};
-
-  @media (min-width: 960px) {
-    grid-template-columns: repeat(3, ${poolsStudioLayout.poolCardWidth});
-  }
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 `
 
@@ -82,7 +80,7 @@ export const PoolsGrid: React.FC = () => {
   }
 
   return (
-    <Grid data-ps-pool-grid data-r708-pool-grid>
+    <Grid data-ps-pool-grid data-r708-pool-grid data-r717-pool-grid>
       {pools.map((pool) => (
         <PoolGridCard key={pool.id} pool={pool} />
       ))}

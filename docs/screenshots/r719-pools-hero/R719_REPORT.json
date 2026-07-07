@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "errors": [],
+  "checks": {
+    "heroHeight": 300,
+    "kpiBoxes": 4,
+    "aprFontSize": "64px",
+    "aprClipped": false,
+    "donutSize": 88,
+    "aprLargerThanDonut": true,
+    "stakeW": 156,
+    "analyzeW": 156,
+    "buttonsAligned": true,
+    "buttonsBottomAnchored": false,
+    "healthBar96": true,
+    "rewardRows": 4,
+    "overflow": false
+  }
+}

@@ -1,27 +1,30 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { OpenNewIcon } from '@pancakeswap/uikit'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import FeaturedPoolAllocation from './FeaturedPoolAllocation'
+import { poolsFeaturedHero } from '../poolsStudioTokens'
 
-const Card = styled.section`
+const LiveCard = styled.section`
+  position: relative;
   width: 100%;
-  max-width: 1240px;
-  height: 356px;
-  min-height: 356px;
-  max-height: 356px;
+  height: 300px;
+  min-height: 300px;
+  max-height: 300px;
   background: #141414;
-  border: 1px solid #353535;
-  border-radius: 22px;
-  padding: 32px 36px;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 18px;
+  padding: 30px 34px 28px;
   box-sizing: border-box;
   overflow: hidden;
-`
+  transition: box-shadow 180ms ease-out;
 
-const LiveCard = styled(Card)`
-  overflow: visible;
+  &:hover {
+    box-shadow:
+      0 0 0 1px rgba(212, 175, 55, 0.35),
+      0 12px 28px rgba(0, 0, 0, 0.28);
+  }
 `
 
 const EmptyCard = styled.section`
@@ -51,77 +54,71 @@ const EmptyCard = styled.section`
 
 const LiveGrid = styled.div`
   display: grid;
-  grid-template-columns: 58% 1px 42%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 188px);
   column-gap: 32px;
   height: 100%;
   min-height: 0;
-  align-items: start;
-`
-
-const Divider = styled.div`
-  width: 1px;
-  height: 292px;
-  background: #2b2b2b;
-  align-self: center;
-  flex-shrink: 0;
+  align-items: stretch;
 `
 
 const LiveLeft = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 0;
-  overflow: visible;
+  height: 100%;
+  overflow: hidden;
 `
 
 const LiveRight = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 0;
-  overflow: visible;
-`
-
-const TitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  height: 42px;
-  min-height: 42px;
-  max-height: 42px;
-  gap: 8px;
-  min-width: 0;
+  height: 100%;
   overflow: hidden;
 `
 
-const LivePoolName = styled.h2`
-  margin: 0;
-  flex: 0 1 auto;
-  max-width: 360px;
+const LiveApr = styled.div`
   font-family: Orbitron, sans-serif;
-  font-size: 30px;
+  font-size: ${poolsFeaturedHero.aprSize};
+  font-weight: 800;
+  line-height: ${poolsFeaturedHero.aprLineHeight};
+  color: ${poolsFeaturedHero.aprColor};
+  margin: 0 0 ${poolsFeaturedHero.gapAprName};
+  white-space: nowrap;
+  overflow: visible;
+  flex-shrink: 0;
+`
+
+const LivePoolName = styled.h2`
+  margin: 0 0 ${poolsFeaturedHero.gapNameBadges};
+  max-width: 260px;
+  font-family: Orbitron, sans-serif;
+  font-size: 24px;
   font-weight: 700;
-  line-height: 34px;
-  letter-spacing: 0;
+  line-height: 28px;
   color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-shrink: 0;
 `
 
 const LiveBadgeRow = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  overflow: hidden;
-`
-
-const LiveBadge = styled.span<{ $variant: 'live' | 'gold' | 'grey' }>`
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
+  gap: ${poolsFeaturedHero.badgeGap};
+  margin-bottom: ${poolsFeaturedHero.gapBadgesKpi};
+  flex-shrink: 0;
+`
+
+const LiveBadge = styled.span<{ $variant: 'live' | 'official' | 'partner' | 'community' }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 22px;
   padding: 0 10px;
-  border-radius: 11px;
+  border-radius: 999px;
   font-family: Inter, sans-serif;
   font-size: 10px;
   font-weight: 700;
@@ -130,137 +127,121 @@ const LiveBadge = styled.span<{ $variant: 'live' | 'gold' | 'grey' }>`
   white-space: nowrap;
   flex-shrink: 0;
   border: 1px solid
-    ${({ $variant }) => ($variant === 'live' ? '#16E67A' : $variant === 'gold' ? '#F2C94C' : '#6B6B6B')};
-  color: ${({ $variant }) => ($variant === 'live' ? '#16E67A' : $variant === 'gold' ? '#F2C94C' : '#A0A0A0')};
-  background: transparent;
+    ${({ $variant }) => {
+      if ($variant === 'live') return '#19f08a'
+      if ($variant === 'official') return '#d4af37'
+      if ($variant === 'partner') return '#4da3ff'
+      return '#a86cff'
+    }};
+  color: ${({ $variant }) => {
+    if ($variant === 'live') return '#19f08a'
+    if ($variant === 'official') return '#d4af37'
+    if ($variant === 'partner') return '#4da3ff'
+    return '#a86cff'
+  }};
+  background: ${({ $variant }) => ($variant === 'live' ? 'rgba(25, 240, 138, 0.12)' : 'transparent')};
 `
 
-const LiveApr = styled.div`
-  margin-top: 18px;
-  font-family: Orbitron, sans-serif;
-  font-size: 72px;
-  font-weight: 700;
-  line-height: 78px;
-  color: #16e67a;
-  white-space: nowrap;
-  overflow: visible;
-`
-
-const LiveDaily = styled.div`
-  margin-top: 6px;
-  font-family: Inter, sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 22px;
-  color: #b8b8b8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const LiveMetrics = styled.div`
-  margin-top: 22px;
+const KpiGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  row-gap: 14px;
-  column-gap: 24px;
+  grid-template-columns: repeat(2, ${poolsFeaturedHero.kpiWidth});
+  gap: 12px 14px;
+  margin-bottom: ${poolsFeaturedHero.gapKpiButtons};
+  flex-shrink: 0;
 `
 
-const LiveMetricCell = styled.div`
-  min-width: 0;
-  overflow: hidden;
-`
-
-const LiveMetricLabel = styled.div`
-  font-family: Inter, sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #777777;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const LiveMetricValue = styled.div`
-  margin-top: 2px;
-  font-family: Inter, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const LiveContractLink = styled.a`
-  display: inline-flex;
-  align-items: center;
+const KpiBox = styled.div`
+  width: ${poolsFeaturedHero.kpiWidth};
+  height: ${poolsFeaturedHero.kpiHeight};
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   gap: 4px;
-  margin-top: 2px;
-  font-family: Inter, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #ffffff;
-  text-decoration: none;
-  white-space: nowrap;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  min-width: 0;
+  cursor: default;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 
   &:hover {
-    color: #f2c94c;
+    background: #1a1a1a;
+    border-color: rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
   }
+`
+
+const KpiLabel = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7c7c7c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const KpiValue = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const LiveBtnRow = styled.div`
   display: flex;
-  gap: 14px;
-  margin-top: 24px;
+  gap: 12px;
+  margin-top: auto;
   flex-shrink: 0;
 `
 
 const LiveStakeBtn = styled.button`
-  width: 176px;
-  min-width: 176px;
-  height: 48px;
+  width: 156px;
+  min-width: 156px;
+  height: 46px;
   border: none;
   border-radius: 12px;
-  background: #f2c94c;
-  color: #121212;
+  background: linear-gradient(180deg, #f6d44a 0%, #d4af37 100%);
+  color: #080808;
   font-family: Inter, sans-serif;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 150ms ease;
+  transition: box-shadow 180ms ease-out;
 
   &:hover {
-    background: #ffd256;
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.32);
   }
 `
 
 const LiveAnalyzeBtn = styled.button`
-  width: 150px;
-  min-width: 150px;
-  height: 48px;
-  border: 1px solid #f2c94c;
+  width: 156px;
+  min-width: 156px;
+  height: 46px;
+  border: 1px solid #d4af37;
   border-radius: 12px;
   background: transparent;
-  color: #f2c94c;
+  color: #d4af37;
   font-family: Inter, sans-serif;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 150ms ease;
+  transition: box-shadow 180ms ease-out;
 
   &:hover {
-    background: rgba(242, 201, 76, 0.08);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.35);
   }
 `
 
@@ -366,25 +347,11 @@ const HiddenReason = styled.div`
   letter-spacing: 0.4px;
 `
 
-function shortenContract(address?: string, label?: string): string {
-  if (label && label.includes('...')) return label
-  if (!address || address.length < 10) return label ?? '—'
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
-}
-
-function formatDailyReward(value?: string): string {
-  if (!value || value === '—') return '—'
-  if (value.startsWith('≈')) return value
-  return `≈ ${value}`
-}
-
-function durationBadge(visualType?: string, lockPeriod?: string): string | null {
-  const source = visualType ?? lockPeriod ?? ''
-  if (/90/i.test(source)) return '90 Days'
-  if (/30/i.test(source)) return '30 Days'
-  if (/180/i.test(source)) return '180 Days'
-  if (/365/i.test(source)) return '365 Days'
-  if (source && source !== 'Flexible') return source
+function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | null {
+  const key = (badge ?? '').toLowerCase()
+  if (key.includes('official')) return 'official'
+  if (key.includes('partner')) return 'partner'
+  if (key.includes('community')) return 'community'
   return null
 }
 
@@ -426,64 +393,55 @@ export const FeaturedPoolHero: React.FC = () => {
     )
   }
 
-  const contractShort = shortenContract(card.contractAddress, card.contractLabel)
-  const duration = durationBadge(card.visualType, card.lockPeriod)
+  const healthScore = card.healthScore ?? card.sustainabilityScore ?? 0
+  const lockType = card.visualType ?? card.poolTypeLabel ?? card.lockPeriod ?? '—'
+  const rewardBadge = badgeVariant(card.rewardBadge)
 
   return (
-    <LiveCard data-ps-featured-hero data-ps-featured data-r707-featured data-r707b-live>
+    <LiveCard
+      data-ps-featured-hero
+      data-ps-featured
+      data-r707-featured
+      data-r707b-live
+      data-r719-featured-hero
+      data-r720-featured-hero
+      data-r721-featured-hero
+    >
       <LiveGrid>
         <LiveLeft>
-          <TitleRow>
-            <LivePoolName>{card.name}</LivePoolName>
-            <LiveBadgeRow>
-              <LiveBadge $variant="live">LIVE</LiveBadge>
-              {card.rewardBadge ? <LiveBadge $variant="gold">{card.rewardBadge}</LiveBadge> : null}
-              {duration ? <LiveBadge $variant="grey">{duration}</LiveBadge> : null}
-            </LiveBadgeRow>
-          </TitleRow>
           <LiveApr data-ps-live-apr>{aprText}</LiveApr>
-          <LiveDaily>{formatDailyReward(featured.estimatedDailyReward)}</LiveDaily>
-          <LiveMetrics>
-            <LiveMetricCell>
-              <LiveMetricLabel>Stake token</LiveMetricLabel>
-              <LiveMetricValue>{card.stakeToken ?? '—'}</LiveMetricValue>
-            </LiveMetricCell>
-            <LiveMetricCell>
-              <LiveMetricLabel>Reward token</LiveMetricLabel>
-              <LiveMetricValue>{card.rewardToken ?? '—'}</LiveMetricValue>
-            </LiveMetricCell>
-            <LiveMetricCell>
-              <LiveMetricLabel>Lock</LiveMetricLabel>
-              <LiveMetricValue>{card.lockPeriod ?? '—'}</LiveMetricValue>
-            </LiveMetricCell>
-            <LiveMetricCell>
-              <LiveMetricLabel>Cooldown</LiveMetricLabel>
-              <LiveMetricValue>{card.cooldown ?? '—'}</LiveMetricValue>
-            </LiveMetricCell>
-            <LiveMetricCell>
-              <LiveMetricLabel>Remaining rewards</LiveMetricLabel>
-              <LiveMetricValue>{card.remainingRewards ?? '—'}</LiveMetricValue>
-            </LiveMetricCell>
-            <LiveMetricCell>
-              <LiveMetricLabel>Contract</LiveMetricLabel>
-              {card.explorerUrl ? (
-                <LiveContractLink href={card.explorerUrl} target="_blank" rel="noopener noreferrer">
-                  {contractShort}
-                  <OpenNewIcon color="#F2C94C" width="14px" />
-                </LiveContractLink>
-              ) : (
-                <LiveMetricValue>{contractShort}</LiveMetricValue>
-              )}
-            </LiveMetricCell>
-          </LiveMetrics>
-          <LiveBtnRow>
+          <LivePoolName data-ps-live-pool-name>{card.name}</LivePoolName>
+          <LiveBadgeRow data-ps-hero-badges>
+            <LiveBadge $variant="live">LIVE</LiveBadge>
+            {rewardBadge ? <LiveBadge $variant={rewardBadge}>{card.rewardBadge}</LiveBadge> : null}
+          </LiveBadgeRow>
+          <KpiGrid data-ps-hero-kpi-grid>
+            <KpiBox data-ps-hero-kpi-box>
+              <KpiLabel>Reward Token</KpiLabel>
+              <KpiValue>{card.rewardToken ?? '—'}</KpiValue>
+            </KpiBox>
+            <KpiBox data-ps-hero-kpi-box>
+              <KpiLabel>Remaining Rewards</KpiLabel>
+              <KpiValue>{card.remainingRewards ?? '—'}</KpiValue>
+            </KpiBox>
+            <KpiBox data-ps-hero-kpi-box>
+              <KpiLabel>Lock Type</KpiLabel>
+              <KpiValue>{lockType}</KpiValue>
+            </KpiBox>
+            <KpiBox data-ps-hero-kpi-box>
+              <KpiLabel>Pool Health</KpiLabel>
+              <KpiValue>{healthScore}/100</KpiValue>
+            </KpiBox>
+          </KpiGrid>
+          <LiveBtnRow data-ps-hero-btn-row>
             <LiveStakeBtn type="button" onClick={() => requestModal(card, 'stake')} data-ps-stake-btn>
               Stake
             </LiveStakeBtn>
-            <LiveAnalyzeBtn type="button">Analyze</LiveAnalyzeBtn>
+            <LiveAnalyzeBtn type="button" data-ps-hero-analyze>
+              Analyze
+            </LiveAnalyzeBtn>
           </LiveBtnRow>
         </LiveLeft>
-        <Divider aria-hidden />
         <LiveRight>
           <FeaturedPoolAllocation />
         </LiveRight>

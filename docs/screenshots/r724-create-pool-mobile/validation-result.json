@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "errors": [],
+  "checks": {
+    "overflowX": false,
+    "progressPadL": 16,
+    "progressPadR": 16,
+    "progressOverflowX": "auto",
+    "rewardText": "Reward",
+    "rewardFullyVisible": true,
+    "nextW": 320,
+    "nextH": 46,
+    "nextMaxWidth": "none",
+    "cancelBelowNext": true,
+    "cancelGap": 10,
+    "previewMarginTop": 24,
+    "footerBottomGap": -240,
+    "footerVisible": false
+  },
+  "footerPad": 96
+}

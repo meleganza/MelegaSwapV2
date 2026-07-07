@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "errors": [],
+  "step1Fields": 2,
+  "step3Fields": 4,
+  "step1": {
+    "progressH": 44,
+    "previewW": 320,
+    "footerText": "Progress · Step 1 / 5",
+    "hasPreviewApr": true,
+    "heroUntouched": true,
+    "sidebarUntouched": false,
+    "explorerUntouched": true,
+    "cardUntouched": true,
+    "overflowX": false,
+    "circleTransition": "0.18s, 0.18s, 0.18s"
+  },
+  "step5": {
+    "reviewH": 278,
+    "createW": 220,
+    "createH": 50,
+    "hasJson": false
+  },
+  "mobileChecks": {
+    "previewBelow": true,
+    "progressScroll": "auto",
+    "stickyNext": true
+  }
+}

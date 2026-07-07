@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "errors": [],
+  "checks": {
+    "heroHeight": 300,
+    "donutSize": 88,
+    "aprFontSize": "64px",
+    "donutCenterScore": "82",
+    "donutCenterLabel": true,
+    "healthTextUnderDonut": false,
+    "healthBarW": 96,
+    "healthBarH": 6,
+    "kpiCount": 4,
+    "stakeW": 156,
+    "stakeH": 46
+  }
+}

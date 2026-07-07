@@ -20,6 +20,7 @@ export const poolsStudioLayout = {
   mainColumnWidth: '820px',
   pageGridGap: '24px',
   cardGap: '18px',
+  poolCardRowGap: '22px',
   cardRadius: '22px',
   cardPadding: '24px',
   kpiGap: '16px',
@@ -62,12 +63,12 @@ export const poolsStudioLayout = {
   filterPillHeight: '30px',
   filterChipRowHeight: '30px',
   filterGap: '8px',
-  poolCardHeight: '246px',
-  poolCardExpandedHeight: '356px',
-  poolCardWidth: '292px',
+  poolCardHeight: '258px',
+  poolCardExpandedHeight: '390px',
+  poolCardWidth: '312px',
   poolCardBtnHeight: '42px',
-  poolCardBtnWidth: '128px',
-  poolCardBtnGap: '8px',
+  poolCardBtnWidth: '132px',
+  poolCardBtnGap: '10px',
   poolCardBtnRadius: '12px',
   createPoolBtnWidth: '180px',
   createPoolBtnHeight: '44px',
@@ -87,6 +88,26 @@ export const poolsStudioLayout = {
   donutDiameterMobile: 128,
   btnHeight: '48px',
   btnRadius: '14px',
+} as const
+
+/** R721 — Featured Hero enterprise polish tokens. */
+export const poolsFeaturedHero = {
+  height: '300px',
+  padding: '30px 34px 28px',
+  aprSize: '64px',
+  aprLineHeight: '64px',
+  aprColor: '#19F08A',
+  gapAprName: '18px',
+  gapNameBadges: '10px',
+  gapBadgesKpi: '18px',
+  gapKpiButtons: '22px',
+  badgeGap: '10px',
+  kpiWidth: '118px',
+  kpiHeight: '56px',
+  donutDiameter: 88,
+  rewardRowGap: '22px',
+  healthBarWidth: '96px',
+  healthBarHeight: '6px',
 } as const
 
 export const poolsStudioColors = {

@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "errors": [],
+  "collapsed": {
+    "collapsedCells": 4,
+    "aprFontSize": "56px",
+    "aprLineHeight": "60px",
+    "titleWraps": false,
+    "aprClipped": false,
+    "cardHeight": 258,
+    "footerPosition": "absolute",
+    "stakeW": 132,
+    "analyzeW": 132,
+    "stakeH": 42,
+    "healthBar64": true,
+    "hasDurationCollapsed": false,
+    "hasDailyCollapsed": null,
+    "hasContractCollapsed": false,
+    "threeCols": true,
+    "overlaps": false,
+    "overflow": false
+  },
+  "expanded": {
+    "height": 390,
+    "toggle": "Hide Analysis",
+    "bsc": true,
+    "machine": true,
+    "heading": true,
+    "analysisCells": 8
+  }
+}

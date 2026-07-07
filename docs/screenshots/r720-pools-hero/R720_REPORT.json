@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "errors": [],
+  "checks": {
+    "heroHeight": 300,
+    "kpiBoxes": 4,
+    "donutSize": 88,
+    "aprClipped": false,
+    "aprLargerThanDonut": true,
+    "hasDividerEl": false,
+    "badgesOnTitleRow": false,
+    "healthBar96": true,
+    "stakeW": 156,
+    "buttonsAligned": true,
+    "overflow": false
+  }
+}

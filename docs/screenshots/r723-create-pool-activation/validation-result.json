@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "errors": [],
+  "defaultState": {
+    "height": 188,
+    "compact": true,
+    "expanded": false,
+    "wizardProgress": false,
+    "overflowX": false
+  },
+  "expanded": {
+    "expanded": true,
+    "closeBtn": true,
+    "previewSticky": true
+  },
+  "step5": {
+    "poolReady": true,
+    "backW": 96,
+    "backH": 50,
+    "gridCols": 2,
+    "machineStatus": true
+  },
+  "mobileChecks": {
+    "previewBelow": true,
+    "sticky": false
+  },
+  "preserved": "888"
+}
