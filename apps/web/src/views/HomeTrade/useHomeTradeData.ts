@@ -11,7 +11,11 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { getAprData } from 'views/Pools/helpers'
-import { formatFarmTrendingLabel, formatPoolTrendingLabel } from './formatTrendingLabels'
+import {
+  formatFarmTrendingLabel,
+  formatPoolTickerAccent,
+  formatPoolTrendingLabel,
+} from './formatTrendingLabels'
 
 export interface RibbonItem {
   id: string
@@ -197,7 +201,7 @@ export const useHomeTradeData = () => {
         id: 'top-pool',
         primary: poolLabel.primary,
         secondary: poolLabel.secondary,
-        accent: poolLabel.accent ? `${poolLabel.accent} APR` : apr ? `${apr.toFixed(2)}% APR` : 'APR —',
+        accent: formatPoolTickerAccent(poolLabel.accent),
         href: '/pools',
       })
     }
@@ -271,7 +275,7 @@ export const useHomeTradeData = () => {
         id: 'top-pool',
         title: poolLabel.primary,
         subtitle: poolLabel.secondary,
-        meta: apr ? `${apr.toFixed(2)}% APR` : 'APR —',
+        meta: formatPoolTickerAccent(poolLabel.accent),
         href: '/pools',
         icon: 'pool',
       })
@@ -323,11 +327,12 @@ export const useHomeTradeData = () => {
     if (topPool) {
       const apr = poolApr(topPool)
       const poolLabel = formatPoolTrendingLabel(topPool, apr)
+      const tickerAccent = formatPoolTickerAccent(poolLabel.accent)
       cards.push({
         id: 'top-pool',
         label: 'Top Pool',
         value: poolLabel.secondary,
-        meta: apr ? `APR ${apr.toFixed(2)}%` : 'APR —',
+        meta: tickerAccent.includes('%') ? `APR ${poolLabel.accent}` : tickerAccent,
         change: poolTvl(topPool),
         href: '/pools',
       })

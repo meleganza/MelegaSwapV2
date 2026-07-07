@@ -3,84 +3,87 @@ import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
 import { poolsStudioLayout } from '../poolsStudioTokens'
 
-const livePulse = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.82; }
+const liveDotPulse = keyframes`
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 `
 
 const Header = styled.header`
   position: relative;
   width: 100%;
-  padding-bottom: 0;
+  max-width: 1240px;
+  margin: 0 0 34px;
+  padding: 0;
+  background: transparent;
+  box-sizing: border-box;
 
   @media (max-width: 767px) {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
+    margin-bottom: 24px;
   }
 `
 
 const Left = styled.div`
-  padding-right: 480px;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    padding-right: 0;
-  }
 `
 
 const Title = styled.h1`
-  margin: 0;
+  margin: 0 0 18px;
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
   font-family: Orbitron, sans-serif;
-  font-size: 72px;
-  font-weight: 700;
-  line-height: 72px;
-  letter-spacing: -2px;
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 68px;
+  letter-spacing: -1.5px;
   color: #ffffff;
+  white-space: nowrap;
 
   @media (max-width: 767px) {
-    font-size: ${poolsStudioLayout.mobileTitleSize};
+    font-size: 44px;
     line-height: 48px;
     letter-spacing: -1px;
+    white-space: normal;
   }
 `
 
 const Subtitle = styled.div`
-  margin: 22px 0 42px;
-  font-family: ${typography.fontFamily.body};
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 38px;
-  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+  max-width: 420px;
+  font-family: Inter, ${typography.fontFamily.body};
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  color: #b8b8b8;
 
   span {
     display: block;
-    white-space: nowrap;
   }
 
   @media (max-width: 767px) {
-    margin: 12px 0 24px;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 24px;
-
-    span {
-      white-space: normal;
-    }
   }
 `
 
 const Right = styled.div`
   position: absolute;
   right: 0;
-  top: 0;
+  top: 8px;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 
   @media (max-width: 767px) {
     position: static;
+    margin-top: 20px;
     flex-wrap: wrap;
     gap: 10px;
+    max-width: 100%;
   }
 `
 
@@ -88,41 +91,49 @@ const LiveBadge = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 152px;
   height: 36px;
-  padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid #00d97e;
-  background: rgba(0, 217, 126, 0.06);
-  color: #00d97e;
+  border: 1px solid #16e67a;
+  background: rgba(22, 230, 122, 0.08);
+  color: #16e67a;
   font-family: ${typography.fontFamily.body};
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
   white-space: nowrap;
   box-sizing: border-box;
   gap: 6px;
+  flex-shrink: 0;
 
   @media (max-width: 767px) {
-    height: ${poolsStudioLayout.mobileLivePillHeight};
-    padding: 0 14px;
-    font-size: 12px;
+    width: 140px;
+    height: 34px;
+    font-size: 11px;
   }
 `
 
 const LiveDot = styled.span`
-  animation: ${livePulse} 3.2s ease-in-out infinite;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16e67a;
+  flex-shrink: 0;
+  animation: ${liveDotPulse} 4s linear infinite;
 `
 
 const CreateBtn = styled.button`
-  width: 220px;
-  min-width: 220px;
+  width: 190px;
+  min-width: 190px;
   height: 52px;
   border: none;
   border-radius: 14px;
-  background: #f2c94c;
-  color: #121212;
+  background: linear-gradient(180deg, #f6d44a 0%, #d4af37 100%);
+  color: #080808;
   font-family: ${typography.fontFamily.body};
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 900;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -131,24 +142,30 @@ const CreateBtn = styled.button`
   padding: 0 16px;
   box-sizing: border-box;
   white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(242, 201, 76, 0.18);
+  flex-shrink: 0;
+  box-shadow: 0 0 26px rgba(212, 175, 55, 0.24);
+  transition: box-shadow 180ms ease;
 
   &:hover {
-    filter: brightness(1.05);
+    box-shadow: 0 0 34px rgba(212, 175, 55, 0.38);
+  }
+
+  &:active {
+    opacity: 0.92;
   }
 
   @media (max-width: 767px) {
     width: ${poolsStudioLayout.mobileCreateBtnWidth};
     min-width: ${poolsStudioLayout.mobileCreateBtnWidth};
-    height: ${poolsStudioLayout.mobileCreateBtnHeight};
-    font-size: 14px;
+    height: 44px;
+    font-size: 13px;
   }
 `
 
 const PlusIcon = styled.span`
   font-size: 16px;
   line-height: 1;
-  font-weight: 600;
+  font-weight: 900;
 `
 
 const scrollToCreatePool = () => {
@@ -161,20 +178,18 @@ const scrollToCreatePool = () => {
 }
 
 export const PoolsStudioPageHeader: React.FC = () => (
-  <Header data-ps-page-header>
+  <Header data-ps-page-header data-r715-pools-hero>
     <Left>
       <Title data-ps-pools-title>POOLS</Title>
-      <Subtitle>
+      <Subtitle data-ps-pools-subtitle>
         <span>Stake assets.</span>
         <span>Earn rewards.</span>
         <span>Build long-term positions.</span>
       </Subtitle>
     </Left>
-    <Right>
-      <LiveBadge>
-        <LiveDot data-ps-live-dot aria-hidden>
-          ●
-        </LiveDot>
+    <Right data-ps-hero-actions>
+      <LiveBadge data-ps-live-runtime>
+        <LiveDot data-ps-live-dot aria-hidden />
         LIVE RUNTIME
       </LiveBadge>
       <CreateBtn type="button" data-ps-header-create-pool onClick={scrollToCreatePool}>

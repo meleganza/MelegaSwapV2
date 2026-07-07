@@ -26,21 +26,27 @@ const LiveCard = styled(Card)`
 
 const EmptyCard = styled.section`
   width: 100%;
-  max-width: 1240px;
-  height: 300px;
-  min-height: 300px;
-  max-height: 300px;
+  height: 260px;
+  min-height: 260px;
+  max-height: 260px;
   background: #141414;
-  border: 1px solid rgba(212, 175, 55, 0.55);
+  border: 1px solid rgba(212, 175, 55, 0.42);
   border-radius: 22px;
   box-shadow: none;
-  padding: 32px 40px;
+  padding: 34px 38px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+
+  @media (max-width: 767px) {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    padding: 24px;
+  }
 `
 
 const LiveGrid = styled.div`
@@ -259,35 +265,50 @@ const LiveAnalyzeBtn = styled.button`
 `
 
 const EmptyTitle = styled.h2`
-  margin: 0 0 8px 0;
+  margin: 0 0 12px;
   font-family: Orbitron, sans-serif;
   font-size: 28px;
   line-height: 34px;
-  font-weight: 700;
+  font-weight: 800;
   color: #ffffff;
   max-width: 520px;
   white-space: nowrap;
   overflow: visible;
-  text-overflow: unset;
+
+  @media (max-width: 767px) {
+    font-size: 24px;
+    line-height: 30px;
+    white-space: normal;
+  }
 `
 
 const EmptySubtitle = styled.p`
-  margin: 0 0 18px 0;
+  margin: 0 0 24px;
   font-family: Inter, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 400;
-  color: #a8a8a8;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 500;
+  color: #b8b8b8;
   max-width: 520px;
+
+  @media (max-width: 767px) {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 20px;
+  }
 `
 
 const EmptyCtaRow = styled.div`
   display: flex;
-  gap: 16px;
-  height: 44px;
-  margin-top: 0;
+  gap: 14px;
   flex-shrink: 0;
   overflow: visible;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
 `
 
 const EmptyPrimaryBtn = styled(Link)`
@@ -299,13 +320,18 @@ const EmptyPrimaryBtn = styled(Link)`
   height: 44px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f7d44a 0%, #d7a900 100%);
-  color: #050505;
+  background: linear-gradient(180deg, #f6d44a 0%, #d4af37 100%);
+  color: #080808;
   font-family: Inter, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   text-decoration: none;
   white-space: nowrap;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    min-width: 0;
+  }
 `
 
 const EmptyGhostBtn = styled(Link)`
@@ -318,22 +344,26 @@ const EmptyGhostBtn = styled(Link)`
   border-radius: 12px;
   border: 1px solid #d4af37;
   background: transparent;
-  color: #f7d44a;
+  color: #d4af37;
   font-family: Inter, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   text-decoration: none;
   white-space: nowrap;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    min-width: 0;
+  }
 `
 
 const HiddenReason = styled.div`
-  margin-top: 14px;
+  margin-top: 18px;
   font-family: Inter, sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 16px;
-  color: #777777;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #7a7a7a;
+  letter-spacing: 0.4px;
 `
 
 function shortenContract(address?: string, label?: string): string {
@@ -373,6 +403,7 @@ export const FeaturedPoolHero: React.FC = () => {
       <EmptyCard
         data-ps-featured-hero
         data-ps-featured-empty
+        data-r716-featured-empty
         data-r707-featured
         data-r707c-empty
         data-r707d-empty

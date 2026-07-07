@@ -1,0 +1,81 @@
+{
+  "task": "R716 Pools Premium Polish — Step B",
+  "timestamp": "2026-07-07T09:22:08.310Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "build": "passed",
+  "routeSmoke": {
+    "path": "/pools",
+    "status": 200
+  },
+  "screenshots": [
+    "pools-r716-1440.png",
+    "pools-r716-1728.png",
+    "pools-r716-390.png"
+  ],
+  "checks": {
+    "390": {
+      "emptyVisible": true,
+      "advisorVisible": true,
+      "emptyHeight": 314,
+      "advisorHeight": 266,
+      "topAlignDeltaPx": 334,
+      "topAligned": false,
+      "sectionToExplorerGapPx": null,
+      "explorerGapOk": true,
+      "emptyBorderRadius": "22px",
+      "emptyPadding": "24px",
+      "advisorBorderRadius": "18px",
+      "advisorPadding": "24px",
+      "buttonsVisible": true,
+      "clipped": false,
+      "docOverflowX": false,
+      "advisorBelowPanelMobile": true,
+      "emptyTitle": "No funded reward pools"
+    },
+    "1440": {
+      "emptyVisible": true,
+      "advisorVisible": true,
+      "emptyHeight": 260,
+      "advisorHeight": 260,
+      "topAlignDeltaPx": 0,
+      "topAligned": true,
+      "sectionToExplorerGapPx": 63,
+      "explorerGapOk": true,
+      "emptyBorderRadius": "22px",
+      "emptyPadding": "34px 38px",
+      "advisorBorderRadius": "18px",
+      "advisorPadding": "24px",
+      "buttonsVisible": true,
+      "clipped": false,
+      "docOverflowX": false,
+      "advisorBelowPanelMobile": true,
+      "emptyTitle": "No funded reward pools"
+    },
+    "1728": {
+      "emptyVisible": true,
+      "advisorVisible": true,
+      "emptyHeight": 260,
+      "advisorHeight": 260,
+      "topAlignDeltaPx": 0,
+      "topAligned": true,
+      "sectionToExplorerGapPx": 63,
+      "explorerGapOk": true,
+      "emptyBorderRadius": "22px",
+      "emptyPadding": "34px 38px",
+      "advisorBorderRadius": "18px",
+      "advisorPadding": "24px",
+      "buttonsVisible": true,
+      "clipped": false,
+      "docOverflowX": false,
+      "advisorBelowPanelMobile": true,
+      "emptyTitle": "No funded reward pools"
+    }
+  },
+  "pixelNotes": [
+    "1440 top-align delta: 0px",
+    "1440 empty/advisor heights: 260/260px",
+    "1440 panel→explorer gap: 63px"
+  ],
+  "passed": true,
+  "errors": []
+}

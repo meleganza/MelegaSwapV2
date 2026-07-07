@@ -32,9 +32,19 @@ const SidebarCard = styled.div`
 `
 
 const AdvisorCard = styled(SidebarCard)`
-  height: 220px;
-  min-height: 220px;
-  max-height: 220px;
+  height: 260px;
+  min-height: 260px;
+  max-height: 260px;
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid #262626;
+  overflow: visible;
+
+  @media (max-width: 767px) {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
 `
 
 const HealthCard = styled(SidebarCard)`
@@ -63,7 +73,7 @@ const DonutTitle = styled.h3`
 
 export const PoolsSidebar: React.FC = () => (
   <Stack data-ps-sidebar>
-    <AdvisorCard data-ps-advisor-wrap>
+    <AdvisorCard data-ps-advisor-wrap data-r716-advisor-wrap>
       <AIRewardAdvisorPanel embedded compact />
     </AdvisorCard>
     <HealthCard data-ps-health-guide>

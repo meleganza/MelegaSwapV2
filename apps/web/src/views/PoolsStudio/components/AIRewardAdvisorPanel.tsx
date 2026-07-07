@@ -1,16 +1,31 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { typography } from 'design-system/melega'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
-const Title = styled.h3`
-  margin: 0 0 6px;
+const Title = styled.h3<{ $compact?: boolean }>`
+  margin: 0;
   font-family: Orbitron, sans-serif;
-  font-size: 30px;
-  line-height: 1.1;
   font-weight: 700;
   color: #ffffff;
   white-space: nowrap;
+
+  ${({ $compact }) =>
+    $compact
+      ? css`
+          font-size: 24px;
+          line-height: 30px;
+          margin-bottom: 8px;
+
+          @media (max-width: 767px) {
+            white-space: normal;
+          }
+        `
+      : css`
+          font-size: 30px;
+          line-height: 1.1;
+          margin-bottom: 6px;
+        `}
 `
 
 const Subtitle = styled.p`
@@ -26,29 +41,58 @@ const Subtitle = styled.p`
   overflow: hidden;
 `
 
-const AskBtn = styled.button`
-  width: 220px;
-  height: 46px;
-  margin: auto auto 0;
-  border: 1px solid #f2c94c;
-  border-radius: 14px;
+const AskBtn = styled.button<{ $compact?: boolean }>`
+  border-radius: 12px;
   background: transparent;
-  color: #f2c94c;
-  font-family: ${typography.fontFamily.body};
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  font-family: Inter, ${typography.fontFamily.body};
+  font-weight: 800;
+  color: #d4af37;
+  border: 1px solid #d4af37;
+
+  ${({ $compact }) =>
+    $compact
+      ? css`
+          width: 100%;
+          height: 42px;
+          margin-top: auto;
+          font-size: 13px;
+          flex-shrink: 0;
+        `
+      : css`
+          width: 220px;
+          height: 46px;
+          margin: auto auto 0;
+          font-size: 16px;
+          font-weight: 600;
+          border-radius: 14px;
+          border-color: #f2c94c;
+          color: #f2c94c;
+        `}
 `
 
-const Row = styled.div`
+const Row = styled.div<{ $compact?: boolean }>`
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  height: 20px;
-  min-height: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: 0;
+  border-bottom: 1px solid
+    ${({ $compact }) => ($compact ? '#242424' : 'rgba(255, 255, 255, 0.06)')};
+
+  ${({ $compact }) =>
+    $compact
+      ? css`
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 12px;
+          height: 34px;
+          min-height: 34px;
+        `
+      : css`
+          grid-template-columns: 16px minmax(0, 1fr) auto;
+          gap: 10px;
+          height: 20px;
+          min-height: 20px;
+        `}
 
   &:last-of-type {
     border-bottom: none;
@@ -63,26 +107,49 @@ const Icon = styled.span`
   color: rgba(255, 255, 255, 0.4);
 `
 
-const RowTitle = styled.span`
-  font-family: ${typography.fontFamily.body};
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.72);
+const RowTitle = styled.span<{ $compact?: boolean }>`
+  font-family: Inter, ${typography.fontFamily.body};
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  ${({ $compact }) =>
+    $compact
+      ? css`
+          font-size: 12px;
+          color: #b8b8b8;
+        `
+      : css`
+          font-size: 14px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.72);
+        `}
 `
 
-const RowValue = styled.span`
-  font-family: ${typography.fontFamily.body};
-  font-size: 16px;
+const RowValue = styled.span<{ $tone?: 'green' | 'default' | 'muted' }>`
+  font-family: Inter, ${typography.fontFamily.body};
   font-weight: 600;
-  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 88px;
   text-align: right;
+
+  ${({ $tone }) => {
+    if ($tone === 'green') return 'color: #16e67a; font-size: 13px;'
+    if ($tone === 'muted') return 'color: #b8b8b8; font-size: 13px;'
+    return 'color: #ffffff; font-size: 16px;'
+  }}
+
+  ${({ $tone }) =>
+    $tone === 'green' || $tone === 'muted'
+      ? css`
+          max-width: 120px;
+          font-size: 13px;
+        `
+      : css`
+          max-width: 88px;
+        `}
 `
 
 const CompactWrap = styled.div`
@@ -90,16 +157,27 @@ const CompactWrap = styled.div`
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  overflow: visible;
 `
 
-const List = styled.div`
+const List = styled.div<{ $compact?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 10px;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
-  margin-bottom: 10px;
+  overflow: visible;
+
+  ${({ $compact }) =>
+    $compact
+      ? css`
+          gap: 0;
+          margin-bottom: 0;
+        `
+      : css`
+          gap: 10px;
+          margin-bottom: 10px;
+          overflow: hidden;
+        `}
 `
 
 const ROW_TITLES = ['Best Sustainability', 'Highest APR', 'Lowest Risk', 'Best Long Term'] as const
@@ -109,33 +187,48 @@ const humanAdvisorValue = (value: string) => {
   return value
 }
 
+const valueTone = (display: string): 'green' | 'default' | 'muted' => {
+  if (display === '—') return 'muted'
+  if (/%/.test(display)) return 'green'
+  return 'default'
+}
+
 export const AIRewardAdvisorPanel: React.FC<{ embedded?: boolean; compact?: boolean }> = ({ embedded, compact }) => {
   const { advisorItems, loadingLabel } = usePoolsRuntime()
   const rows = advisorItems.slice(0, 4)
 
   const content = (
     <CompactWrap>
-      <Title>Reward Advisor</Title>
-      <Subtitle>Ranked picks from live reward sustainability and APR bands.</Subtitle>
-      <List>
+      <Title $compact={compact}>Reward Advisor</Title>
+      {!compact ? <Subtitle>Ranked picks from live reward sustainability and APR bands.</Subtitle> : null}
+      <List $compact={compact}>
         {loadingLabel ? (
-          <RowTitle>{loadingLabel}</RowTitle>
+          <RowTitle $compact={compact}>{loadingLabel}</RowTitle>
         ) : (
-          rows.map((row, index) => (
-            <Row key={ROW_TITLES[index]}>
-              <Icon aria-hidden>{row.icon}</Icon>
-              <RowTitle>{ROW_TITLES[index]}</RowTitle>
-              <RowValue>{humanAdvisorValue(row.value)}</RowValue>
-            </Row>
-          ))
+          rows.map((row, index) => {
+            const display = humanAdvisorValue(row.value)
+            return (
+              <Row key={ROW_TITLES[index]} $compact={compact}>
+                {!compact ? <Icon aria-hidden>{row.icon}</Icon> : null}
+                <RowTitle $compact={compact}>{ROW_TITLES[index]}</RowTitle>
+                <RowValue $tone={compact ? valueTone(display) : 'default'}>{display}</RowValue>
+              </Row>
+            )
+          })
         )}
       </List>
-      <AskBtn type="button">Ask Advisor</AskBtn>
+      <AskBtn type="button" $compact={compact}>
+        Ask Advisor
+      </AskBtn>
     </CompactWrap>
   )
 
   if (embedded || compact) {
-    return <div data-ps-advisor>{content}</div>
+    return (
+      <div data-ps-advisor data-r716-advisor>
+        {content}
+      </div>
+    )
   }
 
   return <div data-ps-advisor>{content}</div>

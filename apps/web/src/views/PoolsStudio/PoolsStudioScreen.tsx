@@ -34,7 +34,7 @@ const Root = styled.div`
 const Content = styled.div`
   max-width: 1240px;
   margin: 0 auto;
-  padding: 44px 40px ${poolsStudioLayout.contentPaddingBottom};
+  padding: 64px 40px ${poolsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -92,8 +92,8 @@ const SidebarColumn = styled.div`
   }
 
   @media (max-width: 767px) {
-    order: 4;
-    margin-top: 32px;
+    order: 2;
+    margin-top: 20px;
   }
 `
 
@@ -111,7 +111,7 @@ const ExplorerSection = styled.section`
   }
 
   @media (max-width: 767px) {
-    order: 2;
+    order: 3;
     margin-top: 28px;
   }
 `
@@ -129,7 +129,7 @@ const CreatePoolSection = styled.div`
   }
 
   @media (max-width: 767px) {
-    order: 3;
+    order: 4;
     margin-top: 32px;
     width: calc(100vw - 32px);
     max-width: calc(100vw - 32px);
@@ -158,6 +158,8 @@ export const PoolsStudioScreen: React.FC = () => (
     data-r711-pools-screen
     data-r712-pools-screen
     data-r713-pools-screen
+    data-r715-pools-screen
+    data-r716-pools-screen
     data-pools-ux-fixture={isPoolsUxFixtureEnabled() ? 'true' : undefined}
   >
     <PageMeta />

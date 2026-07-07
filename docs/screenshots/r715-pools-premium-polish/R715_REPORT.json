@@ -1,0 +1,87 @@
+{
+  "task": "R715 Pools Premium Polish — Step 0 + Step A",
+  "timestamp": "2026-07-07T08:58:58.538Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "build": "passed",
+  "routeSmoke": {
+    "path": "/pools",
+    "status": 200
+  },
+  "screenshots": [
+    "pools-r715-1440.png",
+    "pools-r715-1728.png",
+    "pools-r715-390.png"
+  ],
+  "checks": {
+    "390": {
+      "tickerText": "TRENDING ON MELEGA DEXTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable poolTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable pool",
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "poolAprValid": false,
+      "poolAprHonestEmpty": true,
+      "tickerPoolAprOk": true,
+      "forbiddenHit": null,
+      "heroPresent": true,
+      "poolsTitle": "POOLS",
+      "subtitleLines": [
+        "Stake assets.",
+        "Earn rewards.",
+        "Build long-term positions."
+      ],
+      "subtitleLineCount": 3,
+      "titleFontSize": "44px",
+      "titleVisible": true,
+      "actionsBelowSubtitleMobile": true,
+      "actionsOverlapTitle": false,
+      "docOverflowX": false,
+      "subtitleColor": "rgb(184, 184, 184)"
+    },
+    "1440": {
+      "tickerText": "TRENDING ON MELEGA DEXTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable poolTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable pool",
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "poolAprValid": false,
+      "poolAprHonestEmpty": true,
+      "tickerPoolAprOk": true,
+      "forbiddenHit": null,
+      "heroPresent": true,
+      "poolsTitle": "POOLS",
+      "subtitleLines": [
+        "Stake assets.",
+        "Earn rewards.",
+        "Build long-term positions."
+      ],
+      "subtitleLineCount": 3,
+      "titleFontSize": "64px",
+      "titleVisible": true,
+      "actionsBelowSubtitleMobile": true,
+      "actionsOverlapTitle": false,
+      "docOverflowX": false,
+      "subtitleColor": "rgb(184, 184, 184)"
+    },
+    "1728": {
+      "tickerText": "TRENDING ON MELEGA DEXTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable poolTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable pool",
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "poolAprValid": false,
+      "poolAprHonestEmpty": true,
+      "tickerPoolAprOk": true,
+      "forbiddenHit": null,
+      "heroPresent": true,
+      "poolsTitle": "POOLS",
+      "subtitleLines": [
+        "Stake assets.",
+        "Earn rewards.",
+        "Build long-term positions."
+      ],
+      "subtitleLineCount": 3,
+      "titleFontSize": "64px",
+      "titleVisible": true,
+      "actionsBelowSubtitleMobile": true,
+      "actionsOverlapTitle": false,
+      "docOverflowX": false,
+      "subtitleColor": "rgb(184, 184, 184)"
+    }
+  },
+  "tickerTextFound": "TRENDING ON MELEGA DEXTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable poolTop FarmMARCO / ASTER LP37.76% APRTop PoolMARCO / MXMXNo sustainable pool",
+  "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+  "passed": true,
+  "errors": []
+}
