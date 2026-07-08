@@ -45,3 +45,8 @@ debug.log*
 # turbo
 .turbo
 .vercel
+
+# foundry
+cache/
+out/
+broadcast/
