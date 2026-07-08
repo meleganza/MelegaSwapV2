@@ -102,5 +102,57 @@
       { "indexed": false, "name": "routeHash", "type": "bytes32" }
     ],
     "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CivilizationRouteSubmitted",
+    "inputs": [
+      { "indexed": true, "name": "user", "type": "address" },
+      { "indexed": true, "name": "routeType", "type": "bytes32" },
+      { "indexed": true, "name": "chainId", "type": "uint256" },
+      { "indexed": false, "name": "architecture", "type": "string" },
+      { "indexed": false, "name": "executionId", "type": "bytes32" },
+      { "indexed": false, "name": "machineReadable", "type": "bool" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TreasuryHandoffPrepared",
+    "inputs": [
+      { "indexed": true, "name": "executionId", "type": "bytes32" },
+      { "indexed": true, "name": "routeType", "type": "bytes32" },
+      { "indexed": false, "name": "treasuryCollector", "type": "address" },
+      { "indexed": false, "name": "protocolFee", "type": "uint256" },
+      { "indexed": false, "name": "treasuryPolicyRefHash", "type": "bytes32" },
+      { "indexed": false, "name": "pricingRefHash", "type": "bytes32" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "NarrativeTradeRouted",
+    "inputs": [
+      { "indexed": true, "name": "narrativeId", "type": "bytes32" },
+      { "indexed": true, "name": "initiator", "type": "address" },
+      { "indexed": false, "name": "sourceOrgan", "type": "string" },
+      { "indexed": false, "name": "asset", "type": "address" },
+      { "indexed": false, "name": "executionId", "type": "bytes32" },
+      { "indexed": false, "name": "KERLRefHash", "type": "bytes32" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "AIServiceRouted",
+    "inputs": [
+      { "indexed": true, "name": "serviceId", "type": "bytes32" },
+      { "indexed": true, "name": "buyer", "type": "address" },
+      { "indexed": false, "name": "seller", "type": "address" },
+      { "indexed": false, "name": "agentId", "type": "string" },
+      { "indexed": false, "name": "executionId", "type": "bytes32" },
+      { "indexed": false, "name": "policyRefHash", "type": "bytes32" }
+    ],
+    "anonymous": false
   }
 ]

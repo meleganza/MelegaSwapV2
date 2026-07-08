@@ -1,16 +1,23 @@
 {
-  "registryVersion": "0.2.0",
+  "registryVersion": "0.3.0",
   "schema": "melega.smart-router-registry.v1",
   "policyRef": "D87_DEX_PRICING_RATIFIED",
-  "asOf": "2026-06-28",
+  "asOf": "2026-07-08",
   "phase": "PHASE2_CONSTITUTIONAL_WRAPPER",
   "currentArchitecture": "ADAPTER",
   "targetArchitecture": "WRAPPER",
+  "civilizationRouterContract": "/registry/smart-router/civilization-router-contract.json",
   "chains": {
     "56": {
       "chainId": 56,
       "chainName": "BNB Chain",
       "status": "partial",
+      "wrapperAddress": null,
+      "underlyingRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "treasuryCollector": null,
+      "KERLRegistry": "/registry/kerl/index.json",
+      "TreasuryRuntime": "/registry/treasury/index.json#56",
       "executionRouter": {
         "address": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
         "label": "PancakeSwap Smart Router",
@@ -33,9 +40,76 @@
         "status": "planned"
       },
       "supportedAssets": ["MARCO", "MXMX", "WBNB"],
+      "supportedRouteTypes": [
+        "STANDARD_SWAP",
+        "BUY_MARCO",
+        "SELL_MARCO",
+        "NARRATIVE_TRADE",
+        "AI_SERVICE",
+        "MARKETPLACE_SERVICE",
+        "MARKETPLACE_SETTLEMENT",
+        "TREASURY_TRANSFER",
+        "INTERNAL_ROUTING",
+        "REFERRAL",
+        "PROPAGATION"
+      ],
+      "executableRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
       "policyRef": "FSC-01",
-      "registryVersion": "0.2.0",
-      "lastVerification": "2026-06-28"
+      "blockerReason": "BLOCKED_WRAPPER_NOT_DEPLOYED; BLOCKED_TREASURY_COLLECTOR_MISSING",
+      "registryVersion": "0.3.0",
+      "lastVerification": "2026-07-08"
+    },
+    "97": {
+      "chainId": 97,
+      "chainName": "BNB Testnet",
+      "status": "blocked",
+      "wrapperAddress": null,
+      "underlyingRouter": null,
+      "MARCO": null,
+      "treasuryCollector": null,
+      "KERLRegistry": "/registry/kerl/index.json",
+      "TreasuryRuntime": "/registry/treasury/index.json#97",
+      "executionRouter": {
+        "address": null,
+        "label": "PancakeSwap Smart Router (testnet)",
+        "role": "execution-only",
+        "status": "blocked"
+      },
+      "wrapper": {
+        "address": null,
+        "label": "Melega Smart Router Wrapper",
+        "role": "canonical-economic-entrypoint",
+        "status": "planned",
+        "specRef": "docs/MELEGA_SMART_ROUTER_PHASE2_WRAPPER_SPEC.md"
+      },
+      "marco": {
+        "assetRef": null,
+        "status": "missing",
+        "envKey": "NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET"
+      },
+      "collector": {
+        "registryRef": "/registry/treasury/index.json#97",
+        "status": "planned"
+      },
+      "supportedAssets": [],
+      "supportedRouteTypes": [
+        "STANDARD_SWAP",
+        "BUY_MARCO",
+        "SELL_MARCO",
+        "NARRATIVE_TRADE",
+        "AI_SERVICE",
+        "MARKETPLACE_SERVICE",
+        "MARKETPLACE_SETTLEMENT",
+        "TREASURY_TRANSFER",
+        "INTERNAL_ROUTING",
+        "REFERRAL",
+        "PROPAGATION"
+      ],
+      "executableRouteTypes": [],
+      "policyRef": "FSC-01",
+      "blockerReason": "BNB_TESTNET_BLOCKED: BLOCKED_WRAPPER_NOT_DEPLOYED; BLOCKED_UNDERLYING_ROUTER_MISSING; BLOCKED_CONFIG_MARCO_TOKEN_MISSING; BLOCKED_TREASURY_COLLECTOR_MISSING; BLOCKED_CHAIN_NOT_INDEXED",
+      "registryVersion": "0.3.0",
+      "lastVerification": "2026-07-08"
     },
     "1": {
       "chainId": 1,
@@ -47,8 +121,8 @@
       "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
       "supportedAssets": ["MARCO"],
       "policyRef": "FSC-01",
-      "registryVersion": "0.2.0",
-      "lastVerification": "2026-06-28"
+      "registryVersion": "0.3.0",
+      "lastVerification": "2026-07-08"
     },
     "137": {
       "chainId": 137,
@@ -60,8 +134,8 @@
       "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
       "supportedAssets": ["MARCO"],
       "policyRef": "FSC-01",
-      "registryVersion": "0.2.0",
-      "lastVerification": "2026-06-28"
+      "registryVersion": "0.3.0",
+      "lastVerification": "2026-07-08"
     },
     "8453": {
       "chainId": 8453,
@@ -73,8 +147,8 @@
       "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
       "supportedAssets": ["MARCO"],
       "policyRef": "FSC-01",
-      "registryVersion": "0.2.0",
-      "lastVerification": "2026-06-28"
+      "registryVersion": "0.3.0",
+      "lastVerification": "2026-07-08"
     }
   },
   "nonEvm": {

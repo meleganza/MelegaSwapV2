@@ -2,6 +2,15 @@
 
 export const WRAPPER_SPEC_VERSION = '0.2.0' as const
 
+export const WRAPPER_CANONICAL_EVENTS = [
+  'ProtocolFeeCollected',
+  'SmartRouterSwapRouted',
+  'CivilizationRouteSubmitted',
+  'TreasuryHandoffPrepared',
+  'NarrativeTradeRouted',
+  'AIServiceRouted',
+] as const
+
 export const WRAPPER_STORAGE_LAYOUT = [
   'owner (address)',
   'paused (bool)',

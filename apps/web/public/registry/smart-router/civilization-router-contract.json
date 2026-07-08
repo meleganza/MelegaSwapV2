@@ -1,0 +1,520 @@
+{
+  "schema": "melega.civilization-router-contract.v1",
+  "schemaVersion": "1.0.0",
+  "routerVersion": "1.0.0",
+  "wrapperAddress": null,
+  "wrapperStatus": "BLOCKED_WRAPPER_NOT_DEPLOYED",
+  "architecture": {
+    "current": "ADAPTER",
+    "target": "WRAPPER"
+  },
+  "ABI": {
+    "draftPath": "apps/web/src/lib/melega-smart-router/wrapper/MelegaSmartRouterWrapper.abi.json",
+    "deployed": false,
+    "entries": 13
+  },
+  "supportedChains": {
+    "56": {
+      "chainId": 56,
+      "chainName": "BNB Chain",
+      "wrapperAddress": null,
+      "underlyingRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "treasuryCollector": null,
+      "KERLRegistry": "/registry/kerl/index.json (1.0.0)",
+      "TreasuryRuntime": "/registry/treasury/index.json (0.2.0)",
+      "supportedAssets": [
+        "MARCO",
+        "MXMX",
+        "WBNB"
+      ],
+      "supportedRouteTypes": [
+        "STANDARD_SWAP",
+        "BUY_MARCO",
+        "SELL_MARCO",
+        "NARRATIVE_TRADE",
+        "AI_SERVICE",
+        "MARKETPLACE_SERVICE",
+        "MARKETPLACE_SETTLEMENT",
+        "TREASURY_TRANSFER",
+        "INTERNAL_ROUTING",
+        "REFERRAL",
+        "PROPAGATION"
+      ],
+      "status": "partial",
+      "blockerReason": "BLOCKED_WRAPPER_NOT_DEPLOYED; BLOCKED_TREASURY_COLLECTOR_MISSING",
+      "lastVerifiedAt": "2026-07-08",
+      "version": "0.3.0"
+    },
+    "97": {
+      "chainId": 97,
+      "chainName": "BNB Testnet",
+      "wrapperAddress": null,
+      "underlyingRouter": null,
+      "MARCO": null,
+      "treasuryCollector": null,
+      "KERLRegistry": "/registry/kerl/index.json (1.0.0)",
+      "TreasuryRuntime": "/registry/treasury/index.json (0.2.0)",
+      "supportedAssets": [],
+      "supportedRouteTypes": [
+        "STANDARD_SWAP",
+        "BUY_MARCO",
+        "SELL_MARCO",
+        "NARRATIVE_TRADE",
+        "AI_SERVICE",
+        "MARKETPLACE_SERVICE",
+        "MARKETPLACE_SETTLEMENT",
+        "TREASURY_TRANSFER",
+        "INTERNAL_ROUTING",
+        "REFERRAL",
+        "PROPAGATION"
+      ],
+      "status": "blocked",
+      "blockerReason": "BLOCKED_WRAPPER_NOT_DEPLOYED; BLOCKED_UNDERLYING_ROUTER_MISSING; BLOCKED_CONFIG_MARCO_TOKEN_MISSING; BLOCKED_TREASURY_COLLECTOR_MISSING",
+      "lastVerifiedAt": "2026-07-08",
+      "version": "0.3.0"
+    }
+  },
+  "supportedAssets": {
+    "56": {
+      "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "registryRef": "/registry/assets/marco.json"
+    },
+    "97": null
+  },
+  "supportedRouteTypes": [
+    {
+      "id": "STANDARD_SWAP",
+      "supported": true,
+      "planned": false,
+      "blocked": false,
+      "blockerReason": "Exact-input swap via ADAPTER when registry prerequisites met on chain 56",
+      "requiredInputs": [
+        "chainId",
+        "inputAmount",
+        "outputAmount",
+        "tradeType"
+      ],
+      "requiredRegistries": [
+        "KERL MARCO",
+        "Treasury Collector",
+        "Underlying Router"
+      ],
+      "requiredSettlement": "Treasury Runtime FSC-01 post-confirmation",
+      "machineSchema": "melega.smart-router.quote.v1"
+    },
+    {
+      "id": "BUY_MARCO",
+      "supported": true,
+      "planned": false,
+      "blocked": false,
+      "blockerReason": "Output token equals chain MARCO address — 20 bps D87 incentive",
+      "requiredInputs": [
+        "chainId",
+        "outputAddress",
+        "inputAmount",
+        "outputAmount"
+      ],
+      "requiredRegistries": [
+        "KERL MARCO",
+        "Treasury Collector",
+        "Underlying Router"
+      ],
+      "requiredSettlement": "Treasury Runtime FSC-01 post-confirmation",
+      "machineSchema": "melega.smart-router.quote.v1"
+    },
+    {
+      "id": "SELL_MARCO",
+      "supported": true,
+      "planned": false,
+      "blocked": false,
+      "blockerReason": "Input token equals chain MARCO address — 30 bps standard fee",
+      "requiredInputs": [
+        "chainId",
+        "inputAddress",
+        "inputAmount",
+        "outputAmount"
+      ],
+      "requiredRegistries": [
+        "KERL MARCO",
+        "Treasury Collector",
+        "Underlying Router"
+      ],
+      "requiredSettlement": "Treasury Runtime FSC-01 post-confirmation",
+      "machineSchema": "melega.smart-router.quote.v1"
+    },
+    {
+      "id": "NARRATIVE_TRADE",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "NARRATIVE_TRADE_BLOCKED_BY_MISSING_ROUTER_CONTRACT — no executable wrapper route",
+      "requiredInputs": [
+        "narrativeId",
+        "sourceOrgan",
+        "initiator",
+        "asset",
+        "pricingRef",
+        "feeRef",
+        "settlementRef",
+        "treasuryRef",
+        "KERLRef",
+        "executionManifest"
+      ],
+      "requiredRegistries": [
+        "KERL",
+        "Treasury Runtime",
+        "Smart Router Wrapper",
+        "D90",
+        "D99"
+      ],
+      "requiredSettlement": "Treasury Runtime intake required",
+      "machineSchema": "melega.civilization-router.narrative-trade.v1"
+    },
+    {
+      "id": "AI_SERVICE",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "AI_SERVICE_BLOCKED_BY_MISSING_ROUTER_CONTRACT — no marketplace execution surface",
+      "requiredInputs": [
+        "serviceId",
+        "agentId",
+        "buyer",
+        "seller",
+        "pricingRef",
+        "policyRef",
+        "treasuryRef",
+        "settlementRef"
+      ],
+      "requiredRegistries": [
+        "KERL",
+        "Treasury Runtime",
+        "Smart Router Wrapper"
+      ],
+      "requiredSettlement": "Treasury Runtime intake required",
+      "machineSchema": "melega.civilization-router.ai-service.v1"
+    },
+    {
+      "id": "MARKETPLACE_SERVICE",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "MARKETPLACE_SERVICE_BLOCKED_BY_MISSING_ROUTER_CONTRACT",
+      "requiredInputs": [
+        "serviceId",
+        "buyer",
+        "seller",
+        "pricingRef",
+        "policyRef",
+        "treasuryRef"
+      ],
+      "requiredRegistries": [
+        "KERL",
+        "Treasury Runtime"
+      ],
+      "requiredSettlement": "Treasury Runtime intake required",
+      "machineSchema": "melega.civilization-router.marketplace-service.v1"
+    },
+    {
+      "id": "MARKETPLACE_SETTLEMENT",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "MARKETPLACE_SETTLEMENT_BLOCKED_BY_MISSING_ROUTER_CONTRACT — no fake marketplace settlement",
+      "requiredInputs": [
+        "serviceId",
+        "settlementRef",
+        "treasuryRef",
+        "executionManifest"
+      ],
+      "requiredRegistries": [
+        "Treasury Runtime",
+        "KERL"
+      ],
+      "requiredSettlement": "Treasury Runtime intake required",
+      "machineSchema": "melega.civilization-router.marketplace-settlement.v1"
+    },
+    {
+      "id": "TREASURY_TRANSFER",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "TREASURY_TRANSFER_BLOCKED_BY_MISSING_RUNTIME",
+      "requiredInputs": [
+        "treasuryRef",
+        "settlementRef",
+        "amount",
+        "asset"
+      ],
+      "requiredRegistries": [
+        "Treasury Runtime"
+      ],
+      "requiredSettlement": "Treasury Runtime intake required",
+      "machineSchema": "melega.civilization-router.treasury-transfer.v1"
+    },
+    {
+      "id": "INTERNAL_ROUTING",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "INTERNAL_ROUTING_BLOCKED_BY_MISSING_SCHEMA",
+      "requiredInputs": [
+        "routeRef",
+        "policyRef"
+      ],
+      "requiredRegistries": [
+        "KERL",
+        "Smart Router Registry"
+      ],
+      "requiredSettlement": "Schema publication required",
+      "machineSchema": "melega.civilization-router.internal-routing.v1"
+    },
+    {
+      "id": "REFERRAL",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "REFERRAL_BLOCKED_BY_MISSING_RUNTIME — SRD-01 owned by Treasury Runtime",
+      "requiredInputs": [
+        "referralRef",
+        "settlementRef"
+      ],
+      "requiredRegistries": [
+        "Treasury Runtime",
+        "SRD-01"
+      ],
+      "requiredSettlement": "Treasury Runtime intake required",
+      "machineSchema": "melega.civilization-router.referral.v1"
+    },
+    {
+      "id": "PROPAGATION",
+      "supported": false,
+      "planned": true,
+      "blocked": true,
+      "blockerReason": "PROPAGATION_BLOCKED_BY_MISSING_SCHEMA",
+      "requiredInputs": [
+        "sourceOrgan",
+        "targetOrgan",
+        "policyRef"
+      ],
+      "requiredRegistries": [
+        "KERL",
+        "Treasury Runtime"
+      ],
+      "requiredSettlement": "Schema publication required",
+      "machineSchema": "melega.civilization-router.propagation.v1"
+    }
+  ],
+  "treasuryRouting": {
+    "owner": "Treasury Runtime",
+    "dexRole": [
+      "route classification",
+      "protocol fee metadata",
+      "execution manifest",
+      "handoff preparation"
+    ],
+    "treasuryRole": [
+      "FSC-01 settlement",
+      "D90",
+      "D99",
+      "referral settlement",
+      "accounting",
+      "treasury routing"
+    ],
+    "intakePath": "/api/treasury/settlement-events",
+    "upstreamPath": "/api/public/treasury/settlement-events",
+    "configured": false,
+    "d90Defined": false,
+    "d99Defined": false,
+    "forbiddenDexFields": [
+      "settlement_id",
+      "settlementId",
+      "lp_amount",
+      "lpAmount",
+      "treasury_amount",
+      "treasuryAmount",
+      "buyback_amount",
+      "buybackAmount",
+      "referral_amount",
+      "referralAmount",
+      "waterfall",
+      "amounts"
+    ],
+    "route": "Labs → Smart Router → Treasury Runtime → D99 → D90 → Treasury",
+    "bypassAllowed": false
+  },
+  "D90": {
+    "status": "NOT_DEFINED_IN_DEX",
+    "owner": "Treasury Runtime",
+    "required": true
+  },
+  "D99": {
+    "status": "NOT_DEFINED_IN_DEX",
+    "owner": "Treasury Runtime",
+    "required": true
+  },
+  "KERLVersion": "1.0.0",
+  "KERLIntegration": {
+    "registryVersion": "1.0.0",
+    "mode": "read-only-static-json",
+    "writable": false,
+    "resolutionOrder": [
+      "KERL Registry",
+      "Treasury Runtime Registry",
+      "Smart Router Registry",
+      "env (dev only)"
+    ],
+    "treasuryCollectorPublished": false,
+    "marcoChainsIndexed": [
+      56,
+      1,
+      137,
+      8453
+    ]
+  },
+  "TreasuryRuntimeVersion": "0.2.0",
+  "CivilizationVersion": "KIRI-CIVILIZATION-PHASE2",
+  "capabilities": {
+    "swapAdapter": true,
+    "wrapperDeployed": false,
+    "narrativeTrade": false,
+    "aiServiceRouting": false,
+    "multichainCanonical": false
+  },
+  "policies": {
+    "pricing": "D87_DEX_PRICING_RATIFIED",
+    "treasury": "FSC-01",
+    "referral": "SRD-01",
+    "lpFee": "unaffected-separate-from-protocol-fee"
+  },
+  "phases": {
+    "bnbTestnet": {
+      "status": "BNB_TESTNET_BLOCKED",
+      "chainId": 97,
+      "quoteStandardSwap": false,
+      "quoteBuyMarco": false,
+      "routeNarrativeTrade": false,
+      "routeAIService": false,
+      "executionManifest": "blocked-only until registry prerequisites met",
+      "treasuryHandoff": "blocked until collector published",
+      "reasons": [
+        "BLOCKED_WRAPPER_NOT_DEPLOYED",
+        "BLOCKED_UNDERLYING_ROUTER_MISSING",
+        "BLOCKED_CONFIG_MARCO_TOKEN_MISSING",
+        "BLOCKED_TREASURY_COLLECTOR_MISSING",
+        "BLOCKED_CHAIN_NOT_INDEXED"
+      ],
+      "blockedRouteTypes": [
+        "NARRATIVE_TRADE",
+        "AI_SERVICE",
+        "MARKETPLACE_SERVICE",
+        "MARKETPLACE_SETTLEMENT",
+        "TREASURY_TRANSFER",
+        "INTERNAL_ROUTING",
+        "REFERRAL",
+        "PROPAGATION"
+      ]
+    },
+    "bnbMainnet": {
+      "status": "BNB_MAINNET_PARTIAL_ADAPTER_ONLY",
+      "chainId": 56,
+      "wrapperDeployed": false,
+      "adapterActive": true,
+      "underlyingRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "marcoAddress": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "treasuryCollector": null,
+      "canonicalRouting": false,
+      "note": "Do not claim canonical mainnet routing until wrapper exists"
+    },
+    "narrativeTrade": {
+      "supported": false,
+      "status": "NARRATIVE_TRADE_BLOCKED_BY_MISSING_ROUTER_CONTRACT",
+      "executable": false,
+      "labsVerdict": "BLOCKED_BY_MISSING_ROUTER_CONTRACT"
+    },
+    "aiServiceRouting": {
+      "supported": false,
+      "routeTypes": [
+        "AI_SERVICE",
+        "MARKETPLACE_SERVICE",
+        "MARKETPLACE_SETTLEMENT"
+      ],
+      "status": "AI_SERVICE_BLOCKED_BY_MISSING_ROUTER_CONTRACT",
+      "executable": false
+    }
+  },
+  "blockers": [
+    {
+      "phase": "Phase 0",
+      "requirement": "Deployable wrapper contract (Solidity)",
+      "status": "BLOCKED",
+      "evidence": "ABI draft + spec only — no .sol in repo (wrapper/spec.ts)",
+      "nextRequiredAction": "Implement and audit MelegaSmartRouterWrapper.sol; publish deployed address to registry"
+    },
+    {
+      "phase": "Phase 0",
+      "requirement": "Deployer keys / deploy toolchain",
+      "status": "BLOCKED",
+      "evidence": "No hardhat.config or foundry.toml; KERL testnet uses KERL_TESTNET_EXECUTOR_PRIVATE_KEY only",
+      "nextRequiredAction": "Provision wrapper deploy toolchain and authorized deployer outside DEX repo"
+    },
+    {
+      "phase": "Phase 0",
+      "requirement": "Treasury Collector registered per chain",
+      "status": "BLOCKED",
+      "evidence": "/registry/treasury/index.json — collector null for chains 56 and 97",
+      "nextRequiredAction": "Treasury Runtime must publish collector addresses"
+    },
+    {
+      "phase": "Phase 0",
+      "requirement": "KERL registry writable",
+      "status": "BLOCKED",
+      "evidence": "KERL v1.0.0 — static JSON read-only; intake is dry-run only",
+      "nextRequiredAction": "Treasury Runtime / KERL operator publishes registry updates externally"
+    },
+    {
+      "phase": "Phase 0",
+      "requirement": "Treasury Runtime intake endpoint",
+      "status": "BLOCKED",
+      "evidence": "TREASURY_RUNTIME_URL unset — proxy returns 503",
+      "nextRequiredAction": "Configure TREASURY_RUNTIME_URL in Vercel and verify intake accepts handoffs"
+    },
+    {
+      "phase": "Phase 0",
+      "requirement": "Narrative Trade schemas",
+      "status": "BLOCKED",
+      "evidence": "NARRATIVE_TRADE route type absent from executable adapter; Labs execution_enabled: false",
+      "nextRequiredAction": "Define executable narrative handoff + wrapper route entrypoint"
+    },
+    {
+      "phase": "Phase 0",
+      "requirement": "D90 / D99 schemas",
+      "status": "BLOCKED",
+      "evidence": "NOT_DEFINED_IN_DEX — codex has D87, FSC-01, SRD-01 only",
+      "nextRequiredAction": "Treasury Runtime / Labs must publish D90 and D99 codex entries"
+    },
+    {
+      "phase": "Phase 1",
+      "requirement": "Wrapper deployed on-chain",
+      "status": "BLOCKED",
+      "evidence": "Architecture ADAPTER; wrapper.address null in registry",
+      "nextRequiredAction": "Deploy wrapper after audit + collector publication"
+    }
+  ],
+  "labsBinding": {
+    "smart_router_status": "ADAPTER_PHASE1_PARTIAL",
+    "router_contract_status": "BLOCKED_BY_MISSING_ROUTER_CONTRACT",
+    "narrative_trade_support": false,
+    "integrationContract": "/registry/smart-router/labs-integration-contract.json"
+  },
+  "registries": {
+    "smartRouter": "/registry/smart-router/index.json",
+    "civilizationRouter": "/registry/smart-router/civilization-router-contract.json",
+    "treasury": "/registry/treasury/index.json",
+    "kerl": "/registry/kerl/index.json"
+  },
+  "smartRouterRegistryVersion": "0.3.0",
+  "lastVerifiedAt": "2026-07-08",
+  "disclaimer": "Constitutional economic router contract. No fake routing, placeholder addresses, or simulated execution. Wrapper address null until deployed and verified."
+}

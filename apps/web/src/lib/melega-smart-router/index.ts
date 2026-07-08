@@ -74,3 +74,28 @@ export {
   explainFeeCharge,
   explainTreasurySelection,
 } from './aiReadability'
+
+export {
+  CIVILIZATION_ROUTER_SCHEMA,
+  CIVILIZATION_ROUTER_VERSION,
+  CIVILIZATION_ROUTER_CONTRACT_SCHEMA,
+  buildBlockerAuditTable,
+  buildChainRegistry,
+  buildRouteTypeMatrix,
+  buildCivilizationRouterContract,
+  getCivilizationRouterVerdict,
+  prepareCivilizationRoute,
+  prepareCivilizationSwapRoute,
+  classifySwapRouteType,
+  getTreasuryRuntimeIntegrationStatus,
+  getNarrativeTradeStatus,
+  getBnbTestnetReadiness,
+  getBnbMainnetReadiness,
+} from './civilization-router'
+export type {
+  CivilizationRouteType,
+  CivilizationRouteResult,
+  BlockerAuditRow,
+  ChainRegistryEntry,
+  RouteTypeDefinition,
+} from './civilization-router'
