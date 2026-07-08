@@ -10,6 +10,7 @@ import { useWeb3React } from '@pancakeswap/wagmi'
 import { useMemo } from 'react'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { buildSwapHandoffContext } from 'lib/treasury-handoff'
+import { prepareMelegaSmartRouterSwap } from 'lib/melega-smart-router'
 import { useGasPrice } from 'state/user/hooks'
 import { calculateGasMargin, isAddress } from 'utils'
 import { basisPointsToPercent } from 'utils/exchange'
@@ -124,6 +125,17 @@ export function useSwapCallback(
           gasEstimate,
         } = successfulEstimation
 
+        const handoffPlan = prepareMelegaSmartRouterSwap({
+          chainId,
+          user: account,
+          tradeType: trade.tradeType,
+          inputAmount: trade.inputAmount,
+          outputAmount: trade.outputAmount,
+        })
+        if (!handoffPlan.ok) {
+          throw new Error(handoffPlan.message)
+        }
+
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           gasPrice,
@@ -175,7 +187,7 @@ export function useSwapCallback(
                 },
               },
               type: 'swap',
-              settlementHandoffContext: buildSwapHandoffContext(trade),
+              settlementHandoffContext: buildSwapHandoffContext(trade, chainId, account),
             })
             logSwap({
               chainId,

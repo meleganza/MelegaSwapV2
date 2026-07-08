@@ -1,0 +1,30 @@
+{
+  "registryVersion": "0.2.0",
+  "schema": "melega.treasury-runtime-registry.v1",
+  "policyRef": "FSC-01",
+  "source": "treasury-runtime-read-model",
+  "asOf": "2026-06-28",
+  "disclaimer": "Treasury Runtime owns collector truth. DEX consumes read-only. No fabricated addresses.",
+  "chains": {
+    "56": {
+      "chainId": 56,
+      "chainName": "BNB Chain",
+      "status": "planned",
+      "collector": null,
+      "collectorVersion": null,
+      "policyRef": "FSC-01",
+      "lastVerification": "2026-06-28",
+      "notes": "Treasury Runtime collector publication pending for BNB Chain mainnet."
+    },
+    "97": {
+      "chainId": 97,
+      "chainName": "BNB Testnet",
+      "status": "planned",
+      "collector": null,
+      "collectorVersion": null,
+      "policyRef": "FSC-01",
+      "lastVerification": "2026-06-28",
+      "notes": "Testnet collector publication pending."
+    }
+  }
+}

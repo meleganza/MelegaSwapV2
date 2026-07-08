@@ -11,6 +11,7 @@ import { Field } from 'state/swap/actions'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import { RouterViewer } from './RouterViewer'
 import SwapRoute from './SwapRoute'
+import { DexSwapFeeDisclosure } from 'components/DexPricing/DexSwapFeeDisclosure'
 
 function TradeSummary({
   inputAmount,
@@ -165,6 +166,15 @@ export function AdvancedSwapDetails({
             realizedLPFee={realizedLPFee}
             hasStablePair={hasStablePair}
           />
+          {outputAmount && (
+            <DexSwapFeeDisclosure
+              trade={{
+                inputAmount,
+                outputAmount,
+                tradeType,
+              }}
+            />
+          )}
           {showRoute && (
             <>
               <RowBetween style={{ padding: '0 16px' }}>

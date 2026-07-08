@@ -1,0 +1,86 @@
+{
+  "registryVersion": "0.2.0",
+  "schema": "melega.smart-router-registry.v1",
+  "policyRef": "D87_DEX_PRICING_RATIFIED",
+  "asOf": "2026-06-28",
+  "phase": "PHASE2_CONSTITUTIONAL_WRAPPER",
+  "currentArchitecture": "ADAPTER",
+  "targetArchitecture": "WRAPPER",
+  "chains": {
+    "56": {
+      "chainId": 56,
+      "chainName": "BNB Chain",
+      "status": "partial",
+      "executionRouter": {
+        "address": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+        "label": "PancakeSwap Smart Router",
+        "role": "execution-only",
+        "status": "active"
+      },
+      "wrapper": {
+        "address": null,
+        "label": "Melega Smart Router Wrapper",
+        "role": "canonical-economic-entrypoint",
+        "status": "planned",
+        "specRef": "docs/MELEGA_SMART_ROUTER_PHASE2_WRAPPER_SPEC.md"
+      },
+      "marco": {
+        "assetRef": "/registry/assets/marco.json",
+        "status": "active"
+      },
+      "collector": {
+        "registryRef": "/registry/treasury/index.json#56",
+        "status": "planned"
+      },
+      "supportedAssets": ["MARCO", "MXMX", "WBNB"],
+      "policyRef": "FSC-01",
+      "registryVersion": "0.2.0",
+      "lastVerification": "2026-06-28"
+    },
+    "1": {
+      "chainId": 1,
+      "chainName": "Ethereum",
+      "status": "planned",
+      "executionRouter": { "address": null, "status": "planned" },
+      "wrapper": { "address": null, "status": "planned" },
+      "marco": { "assetRef": "/registry/assets/marco-ethereum.json", "status": "observed" },
+      "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
+      "supportedAssets": ["MARCO"],
+      "policyRef": "FSC-01",
+      "registryVersion": "0.2.0",
+      "lastVerification": "2026-06-28"
+    },
+    "137": {
+      "chainId": 137,
+      "chainName": "Polygon",
+      "status": "planned",
+      "executionRouter": { "address": null, "status": "planned" },
+      "wrapper": { "address": null, "status": "planned" },
+      "marco": { "assetRef": "/registry/assets/marco-polygon.json", "status": "observed" },
+      "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
+      "supportedAssets": ["MARCO"],
+      "policyRef": "FSC-01",
+      "registryVersion": "0.2.0",
+      "lastVerification": "2026-06-28"
+    },
+    "8453": {
+      "chainId": 8453,
+      "chainName": "Base",
+      "status": "planned",
+      "executionRouter": { "address": null, "status": "planned" },
+      "wrapper": { "address": null, "status": "planned" },
+      "marco": { "assetRef": "/registry/assets/marco-base.json", "status": "observed" },
+      "collector": { "registryRef": "/registry/treasury/index.json", "status": "planned" },
+      "supportedAssets": ["MARCO"],
+      "policyRef": "FSC-01",
+      "registryVersion": "0.2.0",
+      "lastVerification": "2026-06-28"
+    }
+  },
+  "nonEvm": {
+    "solana": {
+      "status": "architecture_note_only",
+      "note": "Solana requires separate non-EVM wrapper and settlement architecture."
+    }
+  }
+}

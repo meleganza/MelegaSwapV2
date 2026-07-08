@@ -1,0 +1,37 @@
+{
+  "gate": "PASS",
+  "checks": [
+    {
+      "route": "/trade",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/pricing-fees",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/build-studio",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/farms",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/pools",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": []
+    }
+  ],
+  "failures": [],
+  "screenshots": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r727-smart-router-phase2-gate"
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "melega.codex.SRD-01",
+  "id": "SRD-01",
+  "version": "1.0.0",
+  "authority": "KIRI Codex",
+  "status": "ratified",
+  "policyRef": "codex://SRD-01",
+  "dexPolicy": "Consume SRD-01 only — no local referral implementation in DEX"
+}

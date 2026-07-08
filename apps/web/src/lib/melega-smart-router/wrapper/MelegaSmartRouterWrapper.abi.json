@@ -1,0 +1,106 @@
+[
+  {
+    "type": "function",
+    "name": "swapExactTokensForTokens",
+    "inputs": [
+      { "name": "amountIn", "type": "uint256" },
+      { "name": "amountOutMin", "type": "uint256" },
+      { "name": "path", "type": "address[]" },
+      { "name": "recipient", "type": "address" },
+      { "name": "deadline", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "amountOut", "type": "uint256" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "swapExactETHForTokens",
+    "inputs": [
+      { "name": "amountOutMin", "type": "uint256" },
+      { "name": "path", "type": "address[]" },
+      { "name": "recipient", "type": "address" },
+      { "name": "deadline", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "amountOut", "type": "uint256" }],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "quoteProtocolFee",
+    "inputs": [
+      { "name": "inputToken", "type": "address" },
+      { "name": "outputToken", "type": "address" },
+      { "name": "amountIn", "type": "uint256" }
+    ],
+    "outputs": [
+      { "name": "feeAmount", "type": "uint256" },
+      { "name": "netAmountIn", "type": "uint256" },
+      { "name": "protocolFeeBps", "type": "uint16" },
+      { "name": "buyMarcoIncentiveApplied", "type": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "treasuryCollector",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "underlyingRouter",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "marcoToken",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "paused",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "ProtocolFeeCollected",
+    "inputs": [
+      { "indexed": true, "name": "user", "type": "address" },
+      { "indexed": true, "name": "inputToken", "type": "address" },
+      { "indexed": true, "name": "outputToken", "type": "address" },
+      { "indexed": false, "name": "feeToken", "type": "address" },
+      { "indexed": false, "name": "grossAmountIn", "type": "uint256" },
+      { "indexed": false, "name": "netAmountIn", "type": "uint256" },
+      { "indexed": false, "name": "feeAmount", "type": "uint256" },
+      { "indexed": false, "name": "protocolFeeBps", "type": "uint16" },
+      { "indexed": false, "name": "buyMarcoIncentiveApplied", "type": "bool" },
+      { "indexed": false, "name": "underlyingRouter", "type": "address" },
+      { "indexed": false, "name": "treasuryCollector", "type": "address" },
+      { "indexed": false, "name": "pricingRefHash", "type": "bytes32" },
+      { "indexed": false, "name": "treasuryPolicyRefHash", "type": "bytes32" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "SmartRouterSwapRouted",
+    "inputs": [
+      { "indexed": true, "name": "user", "type": "address" },
+      { "indexed": true, "name": "inputToken", "type": "address" },
+      { "indexed": true, "name": "outputToken", "type": "address" },
+      { "indexed": false, "name": "grossAmountIn", "type": "uint256" },
+      { "indexed": false, "name": "netAmountIn", "type": "uint256" },
+      { "indexed": false, "name": "amountOut", "type": "uint256" },
+      { "indexed": false, "name": "underlyingRouter", "type": "address" },
+      { "indexed": false, "name": "routeHash", "type": "bytes32" }
+    ],
+    "anonymous": false
+  }
+]

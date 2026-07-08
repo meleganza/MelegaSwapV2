@@ -31,6 +31,18 @@ export interface SwapHandoffContext {
   amount: string
   fee: string
   originProject?: string
+  smartRouter?: {
+    architecture: 'ADAPTER'
+    protocolFeeBps?: number
+    buyMarcoIncentiveApplied?: boolean
+    treasuryCollector?: string
+    underlyingRouter?: string
+    pricingRef: 'D87_DEX_PRICING_RATIFIED'
+    treasuryPolicyRef: 'FSC-01'
+    blocked?: string
+    protocolFeeCollected?: Record<string, unknown>
+    smartRouterSwapRouted?: Record<string, unknown>
+  }
 }
 
 export type SettlementHandoffStatus =

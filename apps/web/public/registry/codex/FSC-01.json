@@ -1,0 +1,17 @@
+{
+  "schema": "melega.codex.FSC-01",
+  "id": "FSC-01",
+  "version": "1.0.0",
+  "authority": "KIRI Codex",
+  "status": "ratified",
+  "policyRef": "codex://FSC-01",
+  "owner": "Treasury Runtime",
+  "dexPolicy": "DEX forwards gross protocol fee only — never splits locally",
+  "splits": [
+    { "destination": "treasury_melega", "percent": 52.5 },
+    { "destination": "civilization_treasury", "percent": 22.5 },
+    { "destination": "buyback_and_burn", "percent": 10 },
+    { "destination": "referral_distribution", "percent": 10, "referralSpec": "SRD-01" },
+    { "destination": "strategic_allocation", "percent": 5 }
+  ]
+}

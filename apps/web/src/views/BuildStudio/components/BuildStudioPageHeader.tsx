@@ -5,6 +5,7 @@ import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudio
 import { IconBook, IconDownload } from './buildStudioIcons'
 import { BsOutlineBtn, BsPrimaryBtn } from './buildStudioPrimitives'
 import BuildInfrastructureGuidePanel from './BuildInfrastructureGuidePanel'
+import { DexPricingFeesLink } from 'components/DexPricing/DexPricingFeesLink'
 
 const Header = styled.header`
   display: flex;
@@ -71,6 +72,7 @@ export const BuildStudioPageHeader: React.FC = () => {
     <Left>
       <Title>BUILD STUDIO</Title>
       <Subtitle>Build trusted economic infrastructure with AI assistance.</Subtitle>
+      <DexPricingFeesLink />
     </Left>
     <BtnRow>
       <BsOutlineBtn type="button" $width="180px" $height="46px" data-bs-hero-guide onClick={() => setGuideOpen(true)}>
