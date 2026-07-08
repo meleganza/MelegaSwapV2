@@ -12,6 +12,7 @@ import FormattedPriceImpact from './FormattedPriceImpact'
 import { RouterViewer } from './RouterViewer'
 import SwapRoute from './SwapRoute'
 import { DexSwapFeeDisclosure } from 'components/DexPricing/DexSwapFeeDisclosure'
+import { DexExecutionDetailsPanel } from 'components/DexPricing/DexExecutionDetailsPanel'
 
 function TradeSummary({
   inputAmount,
@@ -168,6 +169,15 @@ export function AdvancedSwapDetails({
           />
           {outputAmount && (
             <DexSwapFeeDisclosure
+              trade={{
+                inputAmount,
+                outputAmount,
+                tradeType,
+              }}
+            />
+          )}
+          {outputAmount && (
+            <DexExecutionDetailsPanel
               trade={{
                 inputAmount,
                 outputAmount,

@@ -14,6 +14,10 @@ import { getMarcoRegistryEntry, normalizeTokenAddress } from './marcoRegistry'
 import { getTreasuryCollectorEntry } from './treasuryCollectorRegistry'
 import { getUnderlyingRouterEntry } from './underlyingRouterRegistry'
 import { computeProtocolFeeAmounts, resolveProtocolFeeBps } from './protocolFee'
+import {
+  buildExecutionManifestFromBlocked,
+  buildExecutionManifestFromPlan,
+} from './execution-manifest'
 
 function tokenRef(currency: { isNative: boolean; symbol?: string; wrapped: { address: string } }): string {
   if (currency.isNative) return 'native'
@@ -28,49 +32,76 @@ function blocked(
   chainId: number,
   code: MelegaSmartRouterBlocked['code'],
   message: string,
+  input?: { inputToken?: string; outputToken?: string; grossAmount?: string },
 ): MelegaSmartRouterBlocked {
-  return { ok: false, architecture: MELEGA_SMART_ROUTER_ARCHITECTURE, code, message, chainId }
+  return {
+    ok: false,
+    architecture: MELEGA_SMART_ROUTER_ARCHITECTURE,
+    code,
+    message,
+    chainId,
+    executionManifest: buildExecutionManifestFromBlocked({ chainId, code, message }, input),
+  }
 }
 
 export function prepareMelegaSmartRouterSwap(input: PrepareSmartRouterSwapInput): MelegaSmartRouterResult {
   const { chainId, tradeType, inputAmount, outputAmount } = input
 
   if (tradeType === TradeType.EXACT_OUTPUT) {
+    const inputToken = tokenRef(inputAmount.currency)
+    const outputToken = tokenRef(outputAmount.currency)
     return blocked(
       chainId,
       'SMART_ROUTER_EXACT_OUTPUT_UNSUPPORTED',
       'Exact-output swaps are not supported by Melega Smart Router D87 adapter.',
+      { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
     )
   }
 
   if (input.feeOnTransfer) {
+    const inputToken = tokenRef(inputAmount.currency)
+    const outputToken = tokenRef(outputAmount.currency)
     return blocked(
       chainId,
       'SMART_ROUTER_FEE_ON_TRANSFER_UNSUPPORTED',
       'Fee-on-transfer tokens are not certified for Melega Smart Router D87 protocol fee routing.',
+      { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
     )
   }
 
   const marcoRegistry = getMarcoRegistryEntry(chainId)
   if (marcoRegistry.status === 'missing') {
-    return blocked(chainId, 'BLOCKED_CONFIG_MARCO_TOKEN_MISSING', 'MARCO token address missing for active chain.')
+    const inputToken = tokenRef(inputAmount.currency)
+    const outputToken = tokenRef(outputAmount.currency)
+    return blocked(
+      chainId,
+      'BLOCKED_CONFIG_MARCO_TOKEN_MISSING',
+      'MARCO token address missing for active chain.',
+      { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
+    )
   }
 
   const collectorRegistry = getTreasuryCollectorEntry(chainId)
   if (collectorRegistry.status === 'missing' || !collectorRegistry.collectorAddress) {
+    const inputToken = tokenRef(inputAmount.currency)
+    const outputToken = tokenRef(outputAmount.currency)
     return blocked(
       chainId,
       'BLOCKED_TREASURY_COLLECTOR_MISSING',
       'Treasury collector address missing for active chain.',
+      { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
     )
   }
 
   const routerRegistry = getUnderlyingRouterEntry(chainId)
   if (routerRegistry.status === 'missing' || !routerRegistry.routerAddress) {
+    const inputToken = tokenRef(inputAmount.currency)
+    const outputToken = tokenRef(outputAmount.currency)
     return blocked(
       chainId,
       'BLOCKED_UNDERLYING_ROUTER_MISSING',
       'Underlying execution router missing for active chain.',
+      { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
     )
   }
 
@@ -119,8 +150,8 @@ export function prepareMelegaSmartRouterSwap(input: PrepareSmartRouterSwapInput)
     pricingRef: D87_PRICING_REF,
   }
 
-  const plan: MelegaSmartRouterSwapPlan = {
-    ok: true,
+  const planBase = {
+    ok: true as const,
     architecture: MELEGA_SMART_ROUTER_ARCHITECTURE,
     chainId,
     protocolFeeBps,
@@ -136,6 +167,11 @@ export function prepareMelegaSmartRouterSwap(input: PrepareSmartRouterSwapInput)
     marcoRegistry,
     collectorRegistry,
     events: { protocolFeeCollected, smartRouterSwapRouted },
+  }
+
+  const plan: MelegaSmartRouterSwapPlan = {
+    ...planBase,
+    executionManifest: buildExecutionManifestFromPlan(planBase),
   }
 
   return plan

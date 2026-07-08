@@ -42,3 +42,35 @@ export {
   readSmartRouterChainProfile,
 } from './registry'
 export * from './wrapper/spec'
+
+export {
+  POLICY_ENGINE_VERSION,
+  POLICY_ENGINE_SCHEMA,
+  resolvePricingPolicy,
+  resolveTreasuryPolicy,
+  resolveRegistryPolicies,
+  resolveExecutionPolicy,
+  resolveCompliancePolicy,
+  resolveChainPolicy,
+  resolveSmartRouterPolicies,
+} from './policy-engine'
+export type { SmartRouterPolicyBundle } from './policy-engine'
+
+export {
+  EXECUTION_MANIFEST_SCHEMA,
+  MELEGA_SMART_ROUTER_ADAPTER_VERSION,
+  buildExecutionManifestFromPlan,
+  buildExecutionManifestFromBlocked,
+  computeReceiptHash,
+} from './execution-manifest'
+export type { ExecutionManifest } from './execution-manifest'
+
+export { CAPABILITY_MANIFEST_SCHEMA, buildCapabilityManifest } from './capability-manifest'
+export type { CapabilityManifest, CapabilityEntry } from './capability-manifest'
+
+export {
+  describeSmartRouterCapabilities,
+  describeExecution,
+  explainFeeCharge,
+  explainTreasurySelection,
+} from './aiReadability'

@@ -1,0 +1,128 @@
+{
+  "gate": "PASS",
+  "phase": "2.5",
+  "checks": [
+    {
+      "route": "/trade",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": [
+        "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request.",
+        "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to fetch price chart data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to fetch price chart data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to fetch price chart data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request.",
+        "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Error fetching blocks for timestamps [1782885600, 1782900000, 1782914400, 1782928800, 1782943200, 1782957600, 1782972000, 1782986400, 1783000800, 1783015200, 1783029600, 1783044000, 1783058400, 1783072800, 1783087200, 1783101600, 1783116000, 1783130400, 1783144800, 1783159200, 1783173600, 1783188000, 1783202400, 1783216800, 1783231200, 1783245600, 1783260000, 1783274400, 1783288800, 1783303200, 1783317600, 1783332000, 1783346400, 1783360800, 1783375200, 1783389600, 1783404000, 1783418400, 1783432800, 1783447200, 1783461600, 1783476000, 1783490400]",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request.",
+        "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Error fetching blocks for timestamps [1782885600, 1782900000, 1782914400, 1782928800, 1782943200, 1782957600, 1782972000, 1782986400, 1783000800, 1783015200, 1783029600, 1783044000, 1783058400, 1783072800, 1783087200, 1783101600, 1783116000, 1783130400, 1783144800, 1783159200, 1783173600, 1783188000, 1783202400, 1783216800, 1783231200, 1783245600, 1783260000, 1783274400, 1783288800, 1783303200, 1783317600, 1783332000, 1783346400, 1783360800, 1783375200, 1783389600, 1783404000, 1783418400, 1783432800, 1783447200, 1783461600, 1783476000, 1783490400]",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request.",
+        "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3000/_next/static/chunks/8258-9bc6b11ed500b78b.js:1:9642)",
+        "Error fetching blocks for timestamps [1782885600, 1782900000, 1782914400, 1782928800, 1782943200, 1782957600, 1782972000, 1782986400, 1783000800, 1783015200, 1783029600, 1783044000, 1783058400, 1783072800, 1783087200, 1783101600, 1783116000, 1783130400, 1783144800, 1783159200, 1783173600, 1783188000, 1783202400, 1783216800, 1783231200, 1783245600, 1783260000, 1783274400, 1783288800, 1783303200, 1783317600, 1783332000, 1783346400, 1783360800, 1783375200, 1783389600, 1783404000, 1783418400, 1783432800, 1783447200, 1783461600, 1783476000, 1783490400]",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "2026-07-08T06:58:28.272Z:Fetch:/support/support-portal-problems/?language=en. TypeError: Failed to fetch"
+      ]
+    },
+    {
+      "route": "/pricing-fees",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": [
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED"
+      ]
+    },
+    {
+      "route": "/build-studio",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": [
+        "Error: <path> attribute d: Expected number, \"MNaN,26.0\".",
+        "Error: <path> attribute d: Expected number, \"MNaN,26.0\".",
+        "Error: <path> attribute d: Expected number, \"MNaN,26.0\".",
+        "Error: <path> attribute d: Expected number, \"MNaN,26.0\".",
+        "Error: <path> attribute d: Expected number, \"MNaN,26.0\".",
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED"
+      ]
+    },
+    {
+      "route": "/farms",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": [
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "route": "/pools",
+      "status": 200,
+      "overflow": false,
+      "consoleErrors": [
+        "Access to XMLHttpRequest at 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+        "Failed to load resource: net::ERR_FAILED"
+      ]
+    }
+  ],
+  "failures": [],
+  "screenshots": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r728-smart-router-phase25-gate"
+}

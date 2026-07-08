@@ -1,4 +1,4 @@
-import { SWAP_PROTOCOL_FEE_BUY_MARCO_BPS, SWAP_PROTOCOL_FEE_STANDARD_BPS } from 'lib/d87-pricing'
+import { resolvePricingPolicy } from './policy-engine'
 import { isBuyMarcoByAddress } from './marcoRegistry'
 
 export function resolveProtocolFeeBps(input: {
@@ -7,9 +7,10 @@ export function resolveProtocolFeeBps(input: {
   outputAddress?: string | null
 }): { bps: number; buyMarcoIncentiveApplied: boolean } {
   const { chainId } = input
+  const pricing = resolvePricingPolicy()
   const buyMarcoIncentiveApplied = isBuyMarcoByAddress(chainId, input.outputAddress)
   return {
-    bps: buyMarcoIncentiveApplied ? SWAP_PROTOCOL_FEE_BUY_MARCO_BPS : SWAP_PROTOCOL_FEE_STANDARD_BPS,
+    bps: buyMarcoIncentiveApplied ? pricing.protocolFeeBuyMarcoBps : pricing.protocolFeeStandardBps,
     buyMarcoIncentiveApplied,
   }
 }

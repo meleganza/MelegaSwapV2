@@ -1,5 +1,6 @@
 import type { Currency } from '@pancakeswap/sdk'
 import { TradeType } from '@pancakeswap/sdk'
+import type { ExecutionManifest } from './execution-manifest/types'
 
 export const MELEGA_SMART_ROUTER_ARCHITECTURE = 'ADAPTER' as const
 
@@ -101,6 +102,7 @@ export interface MelegaSmartRouterSwapPlan {
   treasuryCollector: string
   marcoRegistry: MarcoRegistryEntry
   collectorRegistry: TreasuryCollectorEntry
+  executionManifest: ExecutionManifest
   events: {
     protocolFeeCollected: Omit<ProtocolFeeCollectedEvent, 'user' | 'timestamp'>
     smartRouterSwapRouted: Omit<SmartRouterSwapRoutedEvent, 'user'>
@@ -113,6 +115,7 @@ export interface MelegaSmartRouterBlocked {
   code: SmartRouterBlockCode
   message: string
   chainId: number
+  executionManifest: ExecutionManifest
 }
 
 export type MelegaSmartRouterResult = MelegaSmartRouterSwapPlan | MelegaSmartRouterBlocked
