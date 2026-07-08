@@ -1,0 +1,76 @@
+{
+  "gate": "PASS",
+  "checks": [
+    {
+      "query": "master",
+      "emptyVisible": false,
+      "resultCount": 12,
+      "snapshot": {
+        "emptyText": null,
+        "resultLabels": [
+          "MasterChef Farms",
+          "MasterM Identity",
+          "0x41D5487836452d23f2c467070244E5842B412794",
+          "0x41D5487836452d23f2c467070244E5842B412794",
+          "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+          "0xabB5176ad486019fb0F7564d9F7C9510999c779A",
+          "BabyMarco Genesis",
+          "Build Studio",
+          "Future Achievement & Participation Collectibles",
+          "MARCO-BNB Farm",
+          "Farms",
+          "Melega DEX"
+        ],
+        "resultCount": 12
+      }
+    },
+    {
+      "query": "marco",
+      "emptyVisible": false,
+      "resultCount": 12,
+      "snapshot": {
+        "emptyText": null,
+        "resultLabels": [
+          "MARCO",
+          "MARCO",
+          "MARCO",
+          "MARCO",
+          "MARCO-BNB Farm",
+          "MARCO Stake Pool (sousId 0)",
+          "MARCO-BNB LP",
+          "0x41D5487836452d23f2c467070244E5842B412794",
+          "0x41D5487836452d23f2c467070244E5842B412794",
+          "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+          "Melega DEX",
+          "Presence"
+        ],
+        "resultCount": 12
+      }
+    },
+    {
+      "query": "mxmx",
+      "emptyVisible": false,
+      "resultCount": 2,
+      "snapshot": {
+        "emptyText": null,
+        "resultLabels": [
+          "MXMX",
+          "MasterM Identity"
+        ],
+        "resultCount": 2
+      }
+    },
+    {
+      "query": "qxqzqzqzqzqzq",
+      "emptyVisible": true,
+      "resultCount": 0,
+      "snapshot": {
+        "emptyText": "No results found",
+        "resultLabels": [],
+        "resultCount": 0
+      }
+    }
+  ],
+  "screenshots": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r726-global-search",
+  "failures": []
+}

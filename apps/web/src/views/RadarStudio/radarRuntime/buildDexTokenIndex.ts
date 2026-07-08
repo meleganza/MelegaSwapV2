@@ -1,5 +1,6 @@
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
+import { getAllVenues } from 'registry/venues/getAllVenues'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { CapabilityStatus, StaticProjectRecord } from 'registry/projects/types'
 import { bscTokens } from '@pancakeswap/tokens'
@@ -85,7 +86,23 @@ export function buildDexTokenIndex(): DexIndexedToken[] {
     if (sym === 'BabyMarco') addToken(sym, bscTokens.babymarco?.address, 56, 'pool')
   })
 
-  return [...byKey.values()].sort(marcoFirst)
+  getAllVenues().forEach((venue) => {
+    if (venue.contractAddress) {
+      addToken(venue.displayName, venue.contractAddress, 56, venue.venueType === 'farm' ? 'farm' : 'pool')
+    }
+  })
+
+  Object.values(bscTokens).forEach((token) => {
+    if (token?.address && token.symbol) {
+      addToken(token.symbol, token.address, token.chainId ?? 56, 'liquidity')
+    }
+  })
+
+  return [...byKey.values()].sort((a, b) => {
+    const rank = marcoFirst(a, b)
+    if (rank !== 0) return rank
+    return a.symbol.localeCompare(b.symbol)
+  })
 }
 
 const capabilityFromSource = (active: boolean): CapabilityStatus => (active ? 'live' : 'planned')
@@ -155,10 +172,10 @@ export function dexIndexToEnrichedProjects(index: DexIndexedToken[]): EnrichedPr
   })
 
   return [...registry, ...synthetic].sort((a, b) => {
-    const aMarco = a.slug === 'melega-dex' || a.resources.tokens[0]?.symbol === 'MARCO'
-    const bMarco = b.slug === 'melega-dex' || b.resources.tokens[0]?.symbol === 'MARCO'
+    const aMarco = a.slug === 'melega-dex'
+    const bMarco = b.slug === 'melega-dex'
     if (aMarco && !bMarco) return -1
     if (bMarco && !aMarco) return 1
-    return 0
+    return a.displayName.localeCompare(b.displayName)
   })
 }

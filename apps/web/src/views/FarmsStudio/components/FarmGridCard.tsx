@@ -504,8 +504,26 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
             </AnalyzeRow>
             <AnalyzeRow>
               <AnalyzeLabel>Contract</AnalyzeLabel>
-              <AnalyzeValue>{preview.contract}</AnalyzeValue>
+              <AnalyzeValue>
+                {preview.contractExplorerUrl ? (
+                  <a href={preview.contractExplorerUrl} target="_blank" rel="noopener noreferrer">
+                    {preview.contract}
+                  </a>
+                ) : (
+                  preview.contract
+                )}
+              </AnalyzeValue>
             </AnalyzeRow>
+            {farm.masterChefExplorerUrl ? (
+              <AnalyzeRow>
+                <AnalyzeLabel>MasterChef</AnalyzeLabel>
+                <AnalyzeValue>
+                  <a href={farm.masterChefExplorerUrl} target="_blank" rel="noopener noreferrer">
+                    BscScan
+                  </a>
+                </AnalyzeValue>
+              </AnalyzeRow>
+            ) : null}
             <AnalyzeRow>
               <AnalyzeLabel>Risk</AnalyzeLabel>
               <AnalyzeValue>{preview.risk}</AnalyzeValue>

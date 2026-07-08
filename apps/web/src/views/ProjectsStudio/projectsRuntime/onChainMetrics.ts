@@ -64,7 +64,7 @@ export function buildOnChainMetrics(
   return {
     liquidity: '—',
     volume: '—',
-    holders: '—',
+    holders: 'Source not configured',
     transactions: '—',
     age: '—',
     fdv: '—',

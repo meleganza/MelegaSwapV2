@@ -61,7 +61,7 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
     }
   }, [setTopPools, pools, fetchStatus, topPools])
 
-  return { setTopPools, topPools }
+  return { setTopPools, topPools, fetchStatus }
 }
 
 export default useGetTopPoolsByApr

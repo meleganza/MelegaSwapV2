@@ -44,3 +44,13 @@ export function metricUiReasonLabel(code?: ProjectDataReasonCode): string | unde
 export function missingMetric(reasonCode: ProjectDataReasonCode): ResolvedMetricValue {
   return { display: '—', reasonCode }
 }
+
+/** Holder count must never fall back to em dash — use an explicit diagnostic label. */
+export function holderUnavailableMetric(
+  reasonCode: ProjectDataReasonCode = 'EXPLORER_SOURCE_MISSING',
+): ResolvedMetricValue {
+  return {
+    display: metricUiReasonLabel(reasonCode) ?? 'Source not configured',
+    reasonCode,
+  }
+}

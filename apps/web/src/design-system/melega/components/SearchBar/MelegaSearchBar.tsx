@@ -10,6 +10,7 @@ export interface MelegaSearchBarProps {
   value?: string
   onChange?: (value: string) => void
   onFocus?: () => void
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
   disabled?: boolean
   loading?: boolean
 }
@@ -89,6 +90,7 @@ export const MelegaSearchBar: React.FC<MelegaSearchBarProps> = ({
   value,
   onChange,
   onFocus,
+  onKeyDown,
   disabled,
   loading,
 }) => (
@@ -103,6 +105,7 @@ export const MelegaSearchBar: React.FC<MelegaSearchBarProps> = ({
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
       onFocus={onFocus}
+      onKeyDown={onKeyDown}
       disabled={disabled || loading}
       aria-label={placeholder}
     />

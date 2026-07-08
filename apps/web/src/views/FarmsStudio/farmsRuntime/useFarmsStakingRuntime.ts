@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useAppSelector } from 'state'
 import { getFarmApr } from 'utils/apr'
 import isArchivedPid from 'utils/farmHelpers'
 import type { FarmFilterChip, FarmPreviewCard } from '../farmsStudioData'
@@ -139,7 +140,7 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))
       break
     case 'New':
-      list = list.sort((a, b) => (b.pid ?? 0) - (a.pid ?? 0))
+      list = list.sort((a, b) => (b.rawFarm?.pid ?? b.pid ?? 0) - (a.rawFarm?.pid ?? a.pid ?? 0))
       break
     case 'My Farms':
       list = list.filter((f) => f.userStaked?.gt(0))
@@ -167,6 +168,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   } | null>(null)
 
   usePollFarmsWithUserData()
+  const loadingKeys = useAppSelector((state) => state.farms.loadingKeys)
   const { data: farmsLP, userDataLoaded, regularCakePerBlock } = useFarms()
   const cakePrice = usePriceCakeBusd()
   const terminal = useFarmsTerminalData()
@@ -261,10 +263,11 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   }, [previewCards, enrichedFarms])
 
   const phase: FarmsRuntimePhase = useMemo(() => {
-    if (!farmsLP) return 'loading_farms'
+    const fetching = Object.values(loadingKeys ?? {}).some(Boolean)
+    if (fetching) return 'loading_farms'
     if (account && !userDataLoaded) return 'reading_wallet'
     return 'idle'
-  }, [farmsLP, account, userDataLoaded])
+  }, [loadingKeys, account, userDataLoaded])
 
   const error = useMemo(() => runtimeErrorFromPhase(phase), [phase])
 

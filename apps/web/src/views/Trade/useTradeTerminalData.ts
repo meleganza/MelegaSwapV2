@@ -5,6 +5,7 @@ import { useProtocolTransactionsSWR, useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { MARCO_BSC_ADDRESS, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
+import { resolveHolderMetric, useHolderCount } from 'lib/holder-count'
 import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
 
@@ -105,6 +106,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   const resolvedOutput = resolveCanonicalOutputAddress(outputSymbol, outputAddress)
   const tokenAddress = resolvedOutput
   const tokenData = useTokenDataSWR(tokenAddress)
+  const { data: holderCount } = useHolderCount(56, tokenAddress)
   const isMarcoRoute =
     isMarcoSymbol(outputSymbol) ||
     !outputSymbol ||
@@ -246,11 +248,16 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'holders',
         label: 'Holders',
-        value: undefined,
-        reasonCode: 'EXPLORER_SOURCE_MISSING',
+        value: tokenAddress
+          ? resolveHolderMetric(holderCount).display
+          : 'Source not configured',
+        reasonCode:
+          tokenAddress && holderCount?.status === 'ready'
+            ? undefined
+            : 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData, publicMarket])
+  }, [tokenData, publicMarket, tokenAddress, holderCount])
 
   const pairPrice = useMemo(() => {
     if (!tokenData?.priceUSD) return undefined
@@ -273,11 +280,12 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     if (missingReason === 'pair_not_indexed') return 'MARCO/BNB pair not indexed in Melega subgraph'
     if (missingReason === 'subgraph_empty') return 'Subgraph returned no historical candles or swap events'
     if (missingReason === 'route_not_configured') return 'Output token route not configured'
-    if (pairStats.find((s) => s.id === 'holders')?.reasonCode === 'EXPLORER_SOURCE_MISSING') {
-      return missingReason ? undefined : 'Holder count requires explorer API — not wired'
+    const holdersStat = pairStats.find((s) => s.id === 'holders')
+    if (holdersStat?.reasonCode === 'EXPLORER_SOURCE_MISSING' && holderCount?.status === 'unavailable') {
+      return missingReason ? undefined : holderCount.diagnostic
     }
     return undefined
-  }, [missingReason, pairStats])
+  }, [missingReason, pairStats, holderCount])
 
   const machine = useMemo((): TradeDataMachinePayload => {
     const reasonCodes: Partial<Record<string, DataReasonCode>> = {}

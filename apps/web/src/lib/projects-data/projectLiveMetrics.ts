@@ -1,7 +1,9 @@
 import type { TokenData } from 'state/info/types'
 import type { StaticProjectRecord } from 'registry/projects/types'
+import type { HolderCountResult } from 'lib/holder-count'
+import { resolveHolderMetric } from 'lib/holder-count'
 import type { ProjectDataReasonCode, ResolvedMetricValue } from './dataReasonCodes'
-import { missingMetric } from './dataReasonCodes'
+import { holderUnavailableMetric, missingMetric } from './dataReasonCodes'
 
 export interface ProjectLiveMetricsSnapshot {
   liquidity: ResolvedMetricValue
@@ -62,6 +64,7 @@ function registryAge(project: StaticProjectRecord): ResolvedMetricValue {
 export function buildProjectLiveMetrics(
   project: StaticProjectRecord,
   tokenData?: TokenData,
+  holderResult?: HolderCountResult | null,
 ): ProjectLiveMetricsSnapshot {
   const liquidity = resolveSubgraphUsd(tokenData?.liquidityUSD, tokenData)
   const volume = resolveSubgraphUsd(tokenData?.volumeUSD, tokenData)
@@ -72,7 +75,10 @@ export function buildProjectLiveMetrics(
         ? missingMetric('NO_EVENTS_INDEXED')
         : missingMetric('DATA_SOURCE_NOT_CONFIGURED')
 
-  const holders = missingMetric('EXPLORER_SOURCE_MISSING')
+  const holders =
+    holderResult !== undefined
+      ? resolveHolderMetric(holderResult)
+      : holderUnavailableMetric('EXPLORER_SOURCE_MISSING')
 
   const fdv = missingMetric('EXPLORER_SOURCE_MISSING')
 

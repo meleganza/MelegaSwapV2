@@ -13,7 +13,7 @@ export type AprDisplayReason =
 
 type AprRange = { min: number; max: number }
 
-/** R703D sustainable APR bands. */
+/** R703D sustainable APR bands — retained for legacy references only; runtime APR no longer maps into bands. */
 export function getAprRangeForVisual(visualType: string, rewardBadge?: string): AprRange {
   const badge = rewardBadge ?? ''
   if (visualType === 'Official' || badge === 'Official' || visualType === 'Auto Compound') {
@@ -46,22 +46,21 @@ export function isForbiddenAprDisplay(display?: string | null): boolean {
   return false
 }
 
+/** Runtime APR display: cap at MAX_DISPLAY_APR without visual-band estimation. */
 export function normalizeAprForDisplay(
   rawApr: number,
-  visualType: string,
-  rewardBadge?: string,
+  _visualType?: string,
+  _rewardBadge?: string,
 ): { display: string | undefined; exact: number; normalized: number } {
-  if (!Number.isFinite(rawApr) || rawApr <= 0 || rawApr > 500) {
+  if (!Number.isFinite(rawApr) || rawApr <= 0) {
     return { display: undefined, exact: rawApr, normalized: 0 }
   }
-  const { min, max } = getAprRangeForVisual(visualType, rewardBadge)
   const capped = Math.min(rawApr, MAX_DISPLAY_APR)
-  const normalized = Math.min(max, Math.max(min, capped))
-  const display = `${normalized.toFixed(2)}%`
+  const display = `${capped.toFixed(2)}%`
   if (isForbiddenAprDisplay(display)) {
-    return { display: undefined, exact: rawApr, normalized }
+    return { display: undefined, exact: rawApr, normalized: capped }
   }
-  return { display, exact: rawApr, normalized }
+  return { display, exact: rawApr, normalized: capped }
 }
 
 export function resolveSustainableApr(
@@ -78,15 +77,8 @@ export function resolveSustainableApr(
     return { rawApr, aprDisplayReason: 'EMISSION_INACTIVE' }
   }
 
-  let estimatedFromType = false
-  if (!Number.isFinite(rawApr) || rawApr <= 0 || rawApr > 500) {
-    if (emissionActive) {
-      const { min, max } = getAprRangeForVisual(visualType, rewardBadge)
-      rawApr = (min + max) / 2
-      estimatedFromType = true
-    } else {
-      return { rawApr: rawApr || 0, aprDisplayReason: 'INVALID_RAW_APR' }
-    }
+  if (!Number.isFinite(rawApr) || rawApr <= 0) {
+    return { rawApr: rawApr || 0, aprDisplayReason: 'INVALID_RAW_APR' }
   }
 
   const normalized = normalizeAprForDisplay(rawApr, visualType, rewardBadge)
@@ -94,9 +86,8 @@ export function resolveSustainableApr(
     return { rawApr, aprDisplayReason: 'INVALID_RAW_APR' }
   }
 
-  const reason: AprDisplayReason = estimatedFromType
-    ? 'APR_ESTIMATED_FROM_POOL_TYPE'
-    : Math.abs(rawApr - normalized.normalized) > 0.5
+  const reason: AprDisplayReason =
+    Math.abs(rawApr - normalized.normalized) > 0.01
       ? 'APR_NORMALIZED_FOR_DISPLAY'
       : 'APR_WITHIN_RANGE'
 

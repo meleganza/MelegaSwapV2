@@ -47,19 +47,20 @@ const Label = styled.span`
   line-height: 14px;
 `
 
-const Value = styled.span<{ $risk?: boolean }>`
+const Value = styled.span<{ $risk?: boolean; $unavailable?: boolean }>`
   display: block;
   margin-top: 8px;
   font-family: ${RADAR_FONT_DISPLAY};
-  font-size: 42px;
-  line-height: 48px;
+  font-size: ${({ $unavailable }) => ($unavailable ? '16px' : '42px')};
+  line-height: ${({ $unavailable }) => ($unavailable ? '20px' : '48px')};
   font-weight: 800;
-  color: ${({ $risk }) => ($risk ? radarStudioColors.white : radarStudioColors.green)};
-  white-space: nowrap;
+  color: ${({ $risk, $unavailable }) =>
+    $unavailable ? radarStudioColors.muted : $risk ? radarStudioColors.white : radarStudioColors.green};
+  white-space: ${({ $unavailable }) => ($unavailable ? 'normal' : 'nowrap')};
 
   @media (max-width: 767px) {
-    font-size: 34px;
-    line-height: 38px;
+    font-size: ${({ $unavailable }) => ($unavailable ? '14px' : '34px')};
+    line-height: ${({ $unavailable }) => ($unavailable ? '18px' : '38px')};
   }
 `
 
@@ -82,7 +83,7 @@ export const RadarKpiRow: React.FC = () => {
       {kpis.map((kpi) => (
         <Card key={kpi.id} data-rd-kpi-card>
           <Label>{kpi.label}</Label>
-          <Value $risk={kpi.id === 'risk'} data-rd-kpi-value>
+          <Value $risk={kpi.id === 'risk'} $unavailable={kpi.unavailable} data-rd-kpi-value>
             {kpi.value}
           </Value>
           {kpi.delta ? <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta> : null}

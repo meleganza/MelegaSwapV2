@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
+import orderBy from 'lodash/orderBy'
 import { Transaction, TransactionType } from 'state/info/types'
 import { usePoolDatasSWR, useProtocolTransactionsSWR } from 'state/info/hooks'
 import useTopPoolAddresses from 'state/info/queries/pools/topPools'
+import { buildRuntimeDiagnostic } from 'lib/runtime-integrity'
 import { formatPct, formatUsd } from './formatLiquidityRuntime'
 
 export interface LiquidityActivityRow {
@@ -142,12 +144,35 @@ export const useLiquidityTerminalData = (
     ]
   }, [selectedPool, topPools])
 
+  const activityDiagnostic = useMemo(() => {
+    if (transactions === undefined) {
+      return buildRuntimeDiagnostic({
+        surface: 'liquidity-activity',
+        status: 'loading',
+        source: 'subgraph',
+        indexer: 'melega-subgraph',
+        reason: 'Subgraph transactions loading',
+      })
+    }
+    if (activityRows.length > 0) return undefined
+    return buildRuntimeDiagnostic({
+      surface: 'liquidity-activity',
+      status: 'empty',
+      source: 'subgraph',
+      indexer: 'melega-subgraph',
+      reason: symbolA && symbolB
+        ? `No mint/burn events indexed for ${symbolA}/${symbolB}`
+        : 'No liquidity mint/burn events indexed in current subgraph window',
+    })
+  }, [transactions, activityRows.length, symbolA, symbolB])
+
   return {
     activityRows,
     marketMetrics,
     topPools,
     advisorItems,
     selectedPool,
+    activityDiagnostic,
     isIndexing: transactions === undefined,
     isLoadingPools: topAddresses.length > 0 && poolDatas.length === 0 && transactions === undefined,
   }

@@ -12,7 +12,6 @@ import {
   MelegaAppHeader,
   MELEGA_SIDEBAR_WIDTH,
   MELEGA_APP_HEADER_HEIGHT,
-  MelegaSearchBar,
   MelegaSocialIcons,
   MelegaBottomNavigation,
   colors,
@@ -24,6 +23,7 @@ import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
 import MelegaLanguageControl from './MelegaLanguageControl'
 import SidebarExpandableSection from './SidebarExpandableSection'
 import useAppShellData from './hooks/useAppShellData'
+import GlobalSearch from './components/GlobalSearch'
 
 const DesktopMain = styled.main`
   margin-left: 0;
@@ -131,7 +131,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
       />
 
       <MelegaAppHeader
-        left={<MelegaSearchBar placeholder="Search tokens, farms, projects..." />}
+        left={<GlobalSearch />}
         right={
           <>
             <MelegaSocialIcons />

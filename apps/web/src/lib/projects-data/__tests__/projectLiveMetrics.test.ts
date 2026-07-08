@@ -37,7 +37,8 @@ describe('projectLiveMetrics', () => {
   it('returns explorer reason for holders when no holder source exists', () => {
     const live = buildProjectLiveMetrics(project, undefined)
     expect(live.holders.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
-    expect(live.holders.display).toBe('—')
+    expect(live.holders.display).toBe('Waiting for explorer')
+    expect(live.holders.display).not.toBe('—')
   })
 
   it('wires live metrics into onChainMetrics without Unavailable strings', () => {
@@ -61,7 +62,7 @@ describe('projectLiveMetrics', () => {
     const metrics = buildOnChainMetrics(project, buildProjectLiveMetrics(project, tokenData))
     expect(metrics.liquidity).not.toBe('Unavailable')
     expect(metrics.volume).not.toBe('Unavailable')
-    expect(metrics.holders).toBe('—')
+    expect(metrics.holders).toBe('Waiting for explorer')
     expect(metrics.reasonCodes?.holders).toBe('EXPLORER_SOURCE_MISSING')
   })
 })

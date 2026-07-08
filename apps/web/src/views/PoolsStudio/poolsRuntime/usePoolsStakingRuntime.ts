@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { useCurrentBlock } from 'state/block/hooks'
+import { useCurrentBlock, useInitialBlock } from 'state/block/hooks'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
@@ -48,6 +48,14 @@ export interface PoolsMachinePayload {
   featuredPool?: string
   error?: PoolsRuntimeError | null
   timestamp: string
+  integrity?: {
+    discovered: number
+    indexed: number
+    live: number
+    ended: number
+    hidden: number
+    displayable: number
+  }
 }
 
 export interface PoolsFeaturedMetrics {
@@ -203,6 +211,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   } | null>(null)
 
   usePoolsPageFetch()
+  const initialBlock = useInitialBlock()
   const { pools: rawPools, userDataLoaded } = usePoolsWithVault(chainId)
   const terminal = usePoolsTerminalData()
 
@@ -345,16 +354,20 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
   const phase: PoolsRuntimePhase = useMemo(() => {
     if (isPoolsUxFixtureEnabled()) return 'idle'
-    if (!rawPools) return 'loading_pools'
+    const poolsHydrated = rawPools.some((p) => Boolean(p?.stakingToken?.symbol || p?.vaultKey))
+    if (chainId && initialBlock > 0 && !poolsHydrated) return 'loading_pools'
     if (account && !userDataLoaded) return 'reading_wallet'
     return 'idle'
-  }, [rawPools, account, userDataLoaded])
+  }, [rawPools, account, userDataLoaded, chainId, initialBlock])
 
   const error = useMemo(() => runtimeErrorFromPhase(phase), [phase])
 
   const machine: PoolsMachinePayload = useMemo(() => {
     const { activePools: activePoolNames, sourceMethod } = listActivePools(previewCards)
     const ended = previewCards.filter((p) => p.status === 'ended')
+    const live = previewCards.filter((p) => p.status === 'live')
+    const hidden = previewCards.filter((p) => p.hiddenReason)
+    const displayable = listUsablePools(previewCards)
     return {
       status: phase,
       chainId,
@@ -369,9 +382,17 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       featuredPool: featured.name,
       error,
       timestamp: new Date().toISOString(),
+      integrity: {
+        discovered: previewCards.length,
+        indexed: rawPools.length,
+        live: live.length,
+        ended: ended.length,
+        hidden: hidden.length,
+        displayable: displayable.length,
+      },
       pools: filteredPools.map((p) => buildPoolMachineV2(p, chainId)),
     } as PoolsMachinePayload & { pools?: ReturnType<typeof buildPoolMachineV2>[] }
-  }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error])
+  }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error, rawPools.length])
 
   const loadingLabel =
     phase === 'loading_pools'

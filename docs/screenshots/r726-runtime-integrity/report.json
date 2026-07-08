@@ -1,0 +1,69 @@
+{
+  "gate": "PASS",
+  "checks": [
+    {
+      "route": "/trade",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/pricing-fees",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/build-studio",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/pools",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/farms",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/projects",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/radar",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    },
+    {
+      "route": "/liquidity-studio",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false
+    }
+  ],
+  "globalSearch": {
+    "mounted": true,
+    "masterResults": 12,
+    "noResultsVisible": 0
+  },
+  "runtimeComponents": [
+    {
+      "component": "global-search",
+      "source": "registry",
+      "indexer": "static-index",
+      "status": "ready",
+      "reason": "master query returns results"
+    }
+  ],
+  "failures": [],
+  "screenshots": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r726-runtime-integrity"
+}

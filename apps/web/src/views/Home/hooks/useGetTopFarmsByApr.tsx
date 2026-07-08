@@ -87,7 +87,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
 
   }, [setTopFarms, farms, fetchStatus, cakePriceBusd, regularCakePerBlock, topFarms, chainId])
 
-  return { topFarms }
+  return { topFarms, fetchStatus }
 }
 
 export default useGetTopFarmsByApr

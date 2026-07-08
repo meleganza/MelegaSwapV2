@@ -194,7 +194,7 @@ export function aggregateRadarKpis(
   return [
     { id: 'indexed', label: 'Projects Indexed', value: String(projects.length), delta: '', deltaPositive: true },
     { id: 'signals', label: 'AI Signals', value: String(liveEvents.length), delta: '', deltaPositive: true },
-    { id: 'whales', label: 'Whale Alerts', value: '0', delta: '', deltaPositive: true },
+    { id: 'whales', label: 'Whale Alerts', value: 'Source not configured', delta: '', deltaPositive: true, unavailable: true },
     {
       id: 'confidence',
       label: 'High Confidence',
@@ -357,5 +357,10 @@ export function buildMachinePayload(input: {
     })),
     errors: input.errors,
     data_source: 'radar-runtime-projects',
+    whale_feed: {
+      status: 'not_configured',
+      source: null,
+      diagnostic: 'Whale activity indexer not configured — feed remains explicit until a real indexer exists',
+    },
   }
 }

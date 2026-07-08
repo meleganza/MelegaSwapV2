@@ -5,6 +5,7 @@ import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import { getPendingProjectRegistry } from 'registry/projects/pending'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useTokenDataSWR } from 'state/info/hooks'
+import { useHolderCount } from 'lib/holder-count'
 import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
 import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
@@ -70,9 +71,10 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
 
   const primaryBscToken = enriched[0]?.resources.tokens.find((t) => t.chainId === 56) ?? enriched[0]?.resources.tokens[0]
   const tokenData = useTokenDataSWR(primaryBscToken?.address)
+  const { data: holderCount } = useHolderCount(primaryBscToken?.chainId ?? 56, primaryBscToken?.address)
   const liveMetrics = useMemo(
-    () => (enriched[0] ? buildProjectLiveMetrics(enriched[0], tokenData) : undefined),
-    [enriched, tokenData],
+    () => (enriched[0] ? buildProjectLiveMetrics(enriched[0], tokenData, holderCount) : undefined),
+    [enriched, tokenData, holderCount],
   )
 
   const pendingRecords = useMemo(() => {
@@ -132,7 +134,7 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const kpis = useMemo(
     () =>
       aggregateKpis(enriched, pendingRecords.length, {
-        display: liveMetrics?.holders.display ?? '—',
+        display: liveMetrics?.holders.display ?? 'Waiting for explorer',
         reasonCode: liveMetrics?.holders.reasonCode,
       }),
     [enriched, pendingRecords.length, liveMetrics],

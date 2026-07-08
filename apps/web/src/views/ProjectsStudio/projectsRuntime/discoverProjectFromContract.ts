@@ -5,6 +5,7 @@ import {
   resolveProjectRegistryLookup,
 } from 'registry/projects/pending'
 import type { PendingProjectRecord } from 'registry/projects/pending/types'
+import { buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { createProjectsRuntimeError, type ProjectsRuntimeError } from './projectsRuntimeErrors'
 
 export interface ContractDiscoveryResult {
@@ -53,7 +54,7 @@ function mapRegistryProject(project: StaticProjectRecord): ContractDiscoveryResu
     discord: socialUrl(project, 'discord'),
     github: socialUrl(project, 'github'),
     whitepaper: project.docsUrl,
-    explorer: token?.address,
+    explorer: token?.address ? `https://bscscan.com/token/${token.address}` : undefined,
     errors,
   }
 }
@@ -100,6 +101,20 @@ export function discoverProjectFromContract(
   )
 
   if (match) return mapRegistryProject(match)
+
+  const dexMatch = buildDexTokenIndex().find(
+    (entry) => entry.address.toLowerCase() === normalized && (chainId == null || entry.chainId === chainId),
+  )
+  if (dexMatch) {
+    return {
+      found: true,
+      registryTier: 'canonical',
+      name: dexMatch.symbol,
+      ticker: dexMatch.symbol,
+      explorer: `https://bscscan.com/token/${dexMatch.address}`,
+      errors: [],
+    }
+  }
 
   const lookup = resolveProjectRegistryLookup(normalized, resolvedChainId)
   if (lookup.tier === 'pending' && lookup.pending) {

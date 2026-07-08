@@ -8,6 +8,8 @@ import { getAllProjects } from 'registry/projects/getAllProjects'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useProtocolTransactionsSWR } from 'state/info/hooks'
 import { usePriceCakeBusd } from 'state/farms/hooks'
+import { FetchStatus } from 'config/constants/types'
+import { buildRuntimeDiagnostic } from 'lib/runtime-integrity'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { getAprData } from 'views/Pools/helpers'
@@ -62,6 +64,13 @@ export interface LiveEconomyMetric {
   label: string
   value: string
   live?: boolean
+}
+
+export interface ActivityUnavailable {
+  message: string
+  timestamp: string
+  reason: string
+  source: string
 }
 
 const formatTimeAgo = (timestamp: string): string | undefined => {
@@ -147,8 +156,8 @@ const txToRow = (tx: Transaction): ActivityRow => {
 export const useHomeTradeData = () => {
   const transactions = useProtocolTransactionsSWR()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
-  const { topFarms } = useGetTopFarmsByApr(true)
-  const { topPools } = useGetTopPoolsByApr(true)
+  const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
+  const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
 
   const farms = useMemo(
     () => (topFarms ?? []).filter((f): f is FarmWithStakedValue => Boolean(f?.lpSymbol)),
@@ -179,8 +188,12 @@ export const useHomeTradeData = () => {
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     const items: MelegaTickerItem[] = []
-    const topFarm = farms[0]
-    const topPool = pools[0]
+    const topFarm = farms.find((f) => farmApr(f))
+    const topPool =
+      pools.find((p) => {
+        const apr = poolApr(p)
+        return apr !== undefined && apr > 0
+      }) ?? pools[0]
 
     if (topFarm) {
       const apr = farmApr(topFarm)
@@ -429,10 +442,38 @@ export const useHomeTradeData = () => {
 
   const isActivityIndexing = transactions === undefined
 
+  const isTrendingIndexing = useMemo(() => {
+    const farmsLoading =
+      farmsFetchStatus === 'fetching' ||
+      farmsFetchStatus === 'not-fetched'
+    const poolsLoading =
+      poolsFetchStatus === FetchStatus.Fetching || poolsFetchStatus === FetchStatus.Idle
+    const subgraphLoading = transactions === undefined
+    return farmsLoading || poolsLoading || subgraphLoading
+  }, [farmsFetchStatus, poolsFetchStatus, transactions])
+
   const activityRows = useMemo(
     (): ActivityRow[] => activitySlots.filter((s) => s.row).map((s) => s.row!),
     [activitySlots],
   )
+
+  const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
+    if (isActivityIndexing) return undefined
+    if (activityRows.length > 0) return undefined
+    const diagnostic = buildRuntimeDiagnostic({
+      surface: 'home-live-activity',
+      status: 'empty',
+      source: 'subgraph',
+      indexer: 'melega-subgraph',
+      reason: 'No swaps or liquidity events indexed in the current subgraph window',
+    })
+    return {
+      message: 'Last indexed activity unavailable',
+      timestamp: diagnostic.timestamp,
+      reason: diagnostic.reason,
+      source: diagnostic.source,
+    }
+  }, [isActivityIndexing, activityRows.length])
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)
@@ -479,6 +520,8 @@ export const useHomeTradeData = () => {
     showEarnNote,
     marcoPriceLabel,
     isActivityIndexing,
+    isTrendingIndexing,
+    activityUnavailable,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,
   }

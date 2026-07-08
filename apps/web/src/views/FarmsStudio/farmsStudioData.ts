@@ -18,6 +18,7 @@ export interface FarmAnalyzePreview {
   rewardToken: string
   emission: string
   contract: string
+  contractExplorerUrl?: string
   risk: string
 }
 
@@ -42,6 +43,8 @@ export interface FarmPreviewCard {
   lpLabel?: string
   rewardToken?: string
   participants?: string
+  explorerUrl?: string
+  masterChefExplorerUrl?: string
 }
 
 export interface FarmsActivityRow {

@@ -136,6 +136,7 @@ export const HomeTradeScreen: React.FC = () => {
           slots={data.activitySlots}
           rows={data.activityRows}
           isIndexing={data.isActivityIndexing}
+          activityUnavailable={data.activityUnavailable}
         />
         <HomeTradeFooter />
         <HomeMachinePanel machine={machine} />

@@ -10,9 +10,9 @@ const shimmer = keyframes`
   50% { opacity: 1; }
 `
 
-const Inner = styled.div`
+const Inner = styled.div<{ $hasSparkline?: boolean }>`
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: ${({ $hasSparkline }) => ($hasSparkline ? '1fr 300px' : '1fr')};
   gap: 16px;
   height: calc(100% - 46px);
   min-height: 0;
@@ -139,7 +139,7 @@ const ConnectWrap = styled.div`
 `
 
 function sparklinePath(points: number[]): string {
-  if (!points.length) return 'M 0 72 L 280 14'
+  if (points.length < 2) return ''
   const max = Math.max(...points)
   const min = Math.min(...points)
   const range = max - min || 1
@@ -159,6 +159,7 @@ export const FeaturedFarmPanel: React.FC = () => {
   const preview = card?.analyzePreview
   const hasPending = card?.pendingReward?.gt(0)
   const hasStaked = card?.userStaked?.gt(0)
+  const hasSparkline = featured.sparkline.length >= 2
   const linePath = sparklinePath(featured.sparkline)
 
   return (
@@ -170,7 +171,7 @@ export const FeaturedFarmPanel: React.FC = () => {
       style={{ padding: '18px' }}
     >
       <FsPanelTitle style={{ marginBottom: 10 }}>Featured Farm</FsPanelTitle>
-      <Inner>
+      <Inner $hasSparkline={hasSparkline}>
         <Main>
           {loadingLabel ? (
             <LoadingLine>{loadingLabel}</LoadingLine>
@@ -234,6 +235,7 @@ export const FeaturedFarmPanel: React.FC = () => {
             </>
           )}
         </Main>
+        {hasSparkline ? (
         <ChartWrap data-fs-mini-chart aria-hidden>
           <ChartGrid />
           <ChartSvg viewBox="0 0 280 90" preserveAspectRatio="none">
@@ -257,6 +259,7 @@ export const FeaturedFarmPanel: React.FC = () => {
             </defs>
           </ChartSvg>
         </ChartWrap>
+        ) : null}
       </Inner>
     </FsPanel>
   )

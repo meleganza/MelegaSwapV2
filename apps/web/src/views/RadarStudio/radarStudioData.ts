@@ -24,6 +24,7 @@ export interface RadarKpiItem {
   value: string
   delta: string
   deltaPositive?: boolean
+  unavailable?: boolean
 }
 
 export interface LiveEventItem {

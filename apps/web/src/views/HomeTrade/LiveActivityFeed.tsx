@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { colors } from 'design-system/melega'
-import type { ActivityRow, ActivitySlot } from './useHomeTradeData'
+import type { ActivityRow, ActivitySlot, ActivityUnavailable } from './useHomeTradeData'
 
 const Shell = styled.section`
   background: #0b0b0b;
@@ -145,12 +145,14 @@ export interface LiveActivityFeedProps {
   rows?: ActivityRow[]
   slots?: ActivitySlot[]
   isIndexing?: boolean
+  activityUnavailable?: ActivityUnavailable
 }
 
 export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
   rows = [],
   slots = [],
   isIndexing = false,
+  activityUnavailable,
 }) => {
   const displaySlots = slots.length > 0 ? slots : []
   const hasAnyActivity = displaySlots.some((s) => s.row) || rows.length > 0
@@ -197,11 +199,17 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
         ) : (
           <EmptyWrap>
             <PulseDot aria-hidden />
-            <EmptyTitle>{isIndexing ? 'Indexing activity' : 'No recent protocol activity yet'}</EmptyTitle>
+            <EmptyTitle>
+              {isIndexing
+                ? 'Indexing activity'
+                : activityUnavailable?.message ?? 'No recent protocol activity yet'}
+            </EmptyTitle>
             <EmptyDesc>
               {isIndexing
                 ? 'Pulling latest swaps, liquidity, and ecosystem events from Melega indexers.'
-                : 'Swaps, liquidity, farms, pools, and listings appear here when indexed.'}
+                : activityUnavailable
+                  ? `${activityUnavailable.reason} · Source: ${activityUnavailable.source} · ${new Date(activityUnavailable.timestamp).toLocaleString()}`
+                  : 'Swaps, liquidity, farms, pools, and listings appear here when indexed.'}
             </EmptyDesc>
           </EmptyWrap>
         )}

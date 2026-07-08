@@ -7,7 +7,7 @@ import { VaultKey } from 'state/types'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
 import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
-import { getAprRangeForVisual, isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
+import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 
 const BLOCKS_PER_DAY = 28800
 
@@ -144,10 +144,14 @@ function displayPoolApr(
   if (!Number.isFinite(rawApr) || rawApr <= 0) {
     const estimated = estimateAprFromEmission(pool)
     if (estimated) rawApr = estimated
-    else if (emissionActive) {
-      const { min, max } = getAprRangeForVisual(visualType, badge)
-      rawApr = (min + max) / 2
-    } else return { display: undefined, exact: apr, rawApr: apr, reason: 'INVALID_RAW_APR' }
+    else {
+      return {
+        display: undefined,
+        exact: apr,
+        rawApr: apr,
+        reason: 'INVALID_RAW_APR',
+      }
+    }
   }
 
   const resolved = resolveSustainableApr(rawApr, visualType, emissionActive, badge)

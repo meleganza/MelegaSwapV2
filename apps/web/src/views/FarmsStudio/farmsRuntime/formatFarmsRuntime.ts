@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { BLOCKS_PER_DAY } from 'config'
+import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 
@@ -48,11 +49,16 @@ export function mapFarmToPreviewCard(
   const token0 = farm.token?.symbol ?? '?'
   const token1 = farm.quoteToken?.symbol ?? '?'
 
+  const chainId = farm.token?.chainId ?? 56
+  const lpExplorerUrl = farm.lpAddress ? `https://bscscan.com/address/${farm.lpAddress}` : undefined
+  const masterChefExplorerUrl = `https://bscscan.com/address/${getMasterChefAddress(chainId)}`
+
   const analyzePreview: FarmAnalyzePreview = {
     aprHistory: displayApr ? `${displayApr}%` : '—',
-    rewardToken: 'MARCO',
-    emission: dailyRewardBn ? `${formatTokenAmount(dailyRewardBn)} / day` : '—',
-    contract: farm.lpAddress ? `${farm.lpAddress.slice(0, 6)}…${farm.lpAddress.slice(-4)}` : 'On-chain',
+    rewardToken: farm.earningToken?.symbol ?? 'MARCO',
+    emission: dailyRewardBn ? `${formatTokenAmount(dailyRewardBn, 18, farm.earningToken?.symbol ?? 'MARCO')} / day` : '—',
+    contract: farm.lpAddress ?? 'On-chain',
+    contractExplorerUrl: lpExplorerUrl,
     risk: farm.isStable ? 'Stable pair' : 'Standard',
   }
 
@@ -67,9 +73,9 @@ export function mapFarmToPreviewCard(
     status,
     tvl: formatUsd(liquidityUsd),
     liquidity: formatUsd(liquidityUsd),
-    dailyRewards: dailyRewardBn ? formatTokenAmount(dailyRewardBn) : '—',
+    dailyRewards: dailyRewardBn ? formatTokenAmount(dailyRewardBn, 18, farm.earningToken?.symbol) : '—',
     multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : '—',
-    rewardToken: 'MARCO',
+    rewardToken: farm.earningToken?.symbol ?? 'MARCO',
     participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : '—',
     cta: status === 'finished' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
@@ -78,6 +84,8 @@ export function mapFarmToPreviewCard(
     pendingReward: farm.userData?.earnings,
     displayApr: displayApr ?? undefined,
     lpLabel: farm.lpSymbol,
+    explorerUrl: lpExplorerUrl,
+    masterChefExplorerUrl,
   }
 }
 
@@ -115,13 +123,6 @@ export function aggregateKpis(
   ]
 }
 
-export function buildAprSparkline(farms: FarmWithStakedValue[]): number[] {
-  const aprs = farms
-    .filter((f) => f.multiplier !== '0X')
-    .map((f) => (f.apr ?? 0) + (f.lpRewardsApr ?? 0))
-    .filter((a) => a > 0)
-    .sort((a, b) => a - b)
-    .slice(-8)
-  while (aprs.length < 8) aprs.unshift(4)
-  return aprs.map((a) => Math.min(10, Math.max(3, Math.round(a / 4))))
+export function buildAprSparkline(_farms: FarmWithStakedValue[]): number[] {
+  return []
 }

@@ -17,7 +17,7 @@ export function formatPoolTrendingLabel(
   } else {
     secondary = pool.stakingToken?.symbol ?? 'Pool'
   }
-  const hasApr = apr !== undefined && Number.isFinite(apr) && apr > 0 && apr <= 50
+  const hasApr = apr !== undefined && Number.isFinite(apr) && apr > 0
   return {
     primary: 'Top Pool',
     secondary,
@@ -25,12 +25,12 @@ export function formatPoolTrendingLabel(
   }
 }
 
-/** Ticker/ribbon accent for Top Pool — never returns APR — or other placeholder copy. */
+/** Ticker/ribbon accent for Top Pool — shows APR when recoverable. */
 export function formatPoolTickerAccent(accent?: string): string {
   if (accent && accent.includes('%')) {
     return `${accent} APR`
   }
-  return 'No sustainable pool'
+  return accent ?? 'No sustainable pool'
 }
 
 export function formatFarmTrendingLabel(farm: FarmWithStakedValue, apr?: number): {

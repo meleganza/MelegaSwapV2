@@ -65,11 +65,12 @@ describe('projectsRuntime', () => {
 
   it('aggregateKpis uses reason subline for holders without explorer source', () => {
     const kpis = aggregateKpis([project], 0, {
-      display: '—',
+      display: 'Waiting for explorer',
       reasonCode: 'EXPLORER_SOURCE_MISSING',
     })
     const holders = kpis.find((k) => k.id === 'holders')
-    expect(holders?.value).toBe('—')
+    expect(holders?.value).toBe('Waiting for explorer')
+    expect(holders?.value).not.toBe('—')
     expect(holders?.subline).toBe('Waiting for explorer')
     expect(holders?.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
   })
