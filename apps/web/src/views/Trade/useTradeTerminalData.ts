@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { Transaction, TransactionType } from 'state/info/types'
-import { useProtocolTransactionsSWR, useTokenDataSWR } from 'state/info/hooks'
+import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
+import { useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { MARCO_BSC_ADDRESS, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
@@ -102,7 +103,7 @@ function resolveCanonicalOutputAddress(outputSymbol?: string, outputAddress?: st
 }
 
 export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string, outputAddress?: string) => {
-  const transactions = useProtocolTransactionsSWR()
+  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const resolvedOutput = resolveCanonicalOutputAddress(outputSymbol, outputAddress)
   const tokenAddress = resolvedOutput
   const tokenData = useTokenDataSWR(tokenAddress)
@@ -287,6 +288,25 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     return undefined
   }, [missingReason, pairStats, holderCount])
 
+  const chartUnavailableDetail = useMemo((): string | undefined => {
+    if (missingReason === 'pair_not_indexed') {
+      return `Reason: Pair not indexed · Source: melega-subgraph · Indexer: ${indexerState.indexer}`
+    }
+    if (missingReason === 'subgraph_empty') {
+      return `Reason: ${indexerState.reason ?? 'No indexed candles or swaps'} · Source: ${indexerState.source} · Indexer: ${indexerState.indexer}`
+    }
+    if (missingReason === 'route_not_configured') {
+      return 'Reason: Output token route not configured · Source: trade-runtime'
+    }
+    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      return `Reason: ${indexerState.reason ?? 'Chart data unavailable'} · Source: ${indexerState.source} · Indexer: ${indexerState.indexer}`
+    }
+    if (tokenData === undefined) {
+      return `Reason: Token metrics loading · Source: melega-subgraph · Indexer: ${indexerState.indexer}`
+    }
+    return undefined
+  }, [missingReason, indexerState, tokenData])
+
   const machine = useMemo((): TradeDataMachinePayload => {
     const reasonCodes: Partial<Record<string, DataReasonCode>> = {}
     pairStats.forEach((stat) => {
@@ -297,7 +317,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       schemaVersion: '1.0.0',
       module: 'trade',
       subgraphTransactions:
-        transactions === undefined ? 'loading' : transactions.length > 0 ? 'ready' : 'empty',
+        indexerState.status === 'loading'
+          ? 'loading'
+          : transactions && transactions.length > 0
+            ? 'ready'
+            : 'empty',
       tokenMetrics:
         tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
       reasonCodes,
@@ -308,9 +332,9 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       missingReasonDetail,
       timestamp: new Date().toISOString(),
     }
-  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail])
+  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail, indexerState.status])
 
-  const isIndexingSwaps = transactions === undefined && recentSwaps.length === 0
+  const isIndexingSwaps = isActivityIndexing && recentSwaps.length === 0
   const isIndexingMetrics = tokenData === undefined && Boolean(tokenAddress)
 
   return {
@@ -325,8 +349,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     displayOutput,
     isIndexing: isIndexingSwaps,
     isIndexingMetrics,
-    hasSwapData: transactions !== undefined,
-    swapEmptyReason: transactions !== undefined && recentSwaps.length === 0 ? 'NO_EVENTS_INDEXED' : undefined,
+    hasSwapData: indexerState.status === 'ready',
+    swapEmptyReason: !isActivityIndexing && recentSwaps.length === 0 ? 'NO_EVENTS_INDEXED' : undefined,
+    swapDiagnostic: !isActivityIndexing && recentSwaps.length === 0 ? indexerState : undefined,
+    chartUnavailableDetail,
+    indexerState,
     tokenExists: tokenData?.exists,
   }
 }

@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import orderBy from 'lodash/orderBy'
 import { Transaction, TransactionType } from 'state/info/types'
-import { usePoolDatasSWR, useProtocolTransactionsSWR } from 'state/info/hooks'
+import { usePoolDatasSWR } from 'state/info/hooks'
 import useTopPoolAddresses from 'state/info/queries/pools/topPools'
-import { buildRuntimeDiagnostic } from 'lib/runtime-integrity'
+import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
+import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { formatPct, formatUsd } from './formatLiquidityRuntime'
 
 export interface LiquidityActivityRow {
@@ -61,7 +62,7 @@ export const useLiquidityTerminalData = (
   symbolA?: string,
   symbolB?: string,
 ) => {
-  const transactions = useProtocolTransactionsSWR()
+  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const topAddresses = useTopPoolAddresses()
   const poolAddresses = useMemo(() => {
     const addrs = [...topAddresses]
@@ -145,26 +146,26 @@ export const useLiquidityTerminalData = (
   }, [selectedPool, topPools])
 
   const activityDiagnostic = useMemo(() => {
-    if (transactions === undefined) {
-      return buildRuntimeDiagnostic({
-        surface: 'liquidity-activity',
-        status: 'loading',
-        source: 'subgraph',
-        indexer: 'melega-subgraph',
-        reason: 'Subgraph transactions loading',
+    if (isActivityIndexing) {
+      return buildIndexerActivityDiagnostic({
+        title: 'Last indexed activity unavailable',
+        source: indexerState.source,
+        indexer: indexerState.indexer,
+        lastAttempt: indexerState.lastAttempt,
+        reason: indexerState.reason ?? 'Subgraph transactions loading',
       })
     }
     if (activityRows.length > 0) return undefined
-    return buildRuntimeDiagnostic({
-      surface: 'liquidity-activity',
-      status: 'empty',
-      source: 'subgraph',
-      indexer: 'melega-subgraph',
-      reason: symbolA && symbolB
-        ? `No mint/burn events indexed for ${symbolA}/${symbolB}`
-        : 'No liquidity mint/burn events indexed in current subgraph window',
+    return buildIndexerActivityDiagnostic({
+      source: indexerState.source,
+      indexer: indexerState.indexer,
+      lastAttempt: indexerState.lastAttempt,
+      reason:
+        symbolA && symbolB
+          ? `No mint/burn events indexed for ${symbolA}/${symbolB}`
+          : 'No liquidity mint/burn events indexed in current subgraph window',
     })
-  }, [transactions, activityRows.length, symbolA, symbolB])
+  }, [isActivityIndexing, activityRows.length, symbolA, symbolB, indexerState])
 
   return {
     activityRows,
@@ -173,8 +174,8 @@ export const useLiquidityTerminalData = (
     advisorItems,
     selectedPool,
     activityDiagnostic,
-    isIndexing: transactions === undefined,
-    isLoadingPools: topAddresses.length > 0 && poolDatas.length === 0 && transactions === undefined,
+    isIndexing: isActivityIndexing,
+    isLoadingPools: topAddresses.length > 0 && poolDatas.length === 0 && isActivityIndexing,
   }
 }
 

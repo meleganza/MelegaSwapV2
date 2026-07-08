@@ -64,7 +64,7 @@ const Loading = styled(EmptyState)`
 `
 
 export const PoolsGrid: React.FC = () => {
-  const { pools, loadingLabel } = usePoolsRuntime()
+  const { pools, loadingLabel, poolsIndexingDiagnostic } = usePoolsRuntime()
 
   if (loadingLabel) {
     return <Loading>{loadingLabel}</Loading>
@@ -72,9 +72,13 @@ export const PoolsGrid: React.FC = () => {
 
   if (pools.length === 0) {
     return (
-      <EmptyState data-ps-pool-grid data-ps-pool-grid-empty data-r708-empty-grid>
+      <EmptyState data-ps-pool-grid data-ps-pool-grid-empty data-r708-empty-grid data-r730a-pools-diagnostic>
         <EmptyTitle>No sustainable live pools match the current filters.</EmptyTitle>
-        <EmptySub>Check Finished Pools or create a funded reward pool.</EmptySub>
+        <EmptySub>
+          {poolsIndexingDiagnostic
+            ? `Source: ${poolsIndexingDiagnostic.source} · Indexer: ${poolsIndexingDiagnostic.indexer} · Reason: ${poolsIndexingDiagnostic.reason}`
+            : 'Check Finished Pools or create a funded reward pool.'}
+        </EmptySub>
       </EmptyState>
     )
   }

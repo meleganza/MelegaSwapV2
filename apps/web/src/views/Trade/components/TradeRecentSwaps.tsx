@@ -28,6 +28,12 @@ export interface TradeRecentSwapsProps {
   swapEmptyReason?: string
   missingReason?: string | null
   missingReasonDetail?: string
+  swapDiagnostic?: {
+    source: string
+    indexer: string
+    lastAttempt: string
+    reason?: string
+  }
 }
 
 export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
@@ -36,6 +42,7 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
   swapEmptyReason,
   missingReason,
   missingReasonDetail,
+  swapDiagnostic,
 }) => {
   const displayRows = rows.slice(0, 6)
   const isEmpty = displayRows.length === 0
@@ -58,14 +65,16 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
         title="Recent Swaps on Melega DEX"
         rows={timelineRows}
         height={isEmpty ? tradeLayout.recentSwapsHeightCompact : tradeLayout.recentSwapsHeight}
-        emptyTitle={isIndexing ? 'Indexing swaps' : 'No swaps detected yet.'}
+        emptyTitle={isIndexing ? 'Waiting for indexed swaps' : 'No swaps detected yet.'}
         emptySubtitle={
           isIndexing
-            ? 'Fetching indexed swap activity for this pair'
-            : missingReasonDetail ??
-              (swapEmptyReason === 'NO_EVENTS_INDEXED'
-                ? 'No swap events indexed for this pair yet'
-                : 'Swap history appears when Melega subgraph indexes trades')
+            ? `Source: ${swapDiagnostic?.source ?? 'melega-subgraph'} · Indexer: ${swapDiagnostic?.indexer ?? 'loading'} · Last attempt: ${swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'} · Reason: ${swapDiagnostic?.reason ?? 'Subgraph transactions loading'}`
+            : swapDiagnostic
+              ? `Source: ${swapDiagnostic.source} · Indexer: ${swapDiagnostic.indexer} · Last attempt: ${new Date(swapDiagnostic.lastAttempt).toLocaleString()} · Reason: ${swapDiagnostic.reason ?? 'No swap events indexed for this pair'}`
+              : missingReasonDetail ??
+                (swapEmptyReason === 'NO_EVENTS_INDEXED'
+                  ? 'No swap events indexed for this pair yet'
+                  : 'Swap history appears when Melega subgraph indexes trades')
         }
         data-testid="trade"
       />

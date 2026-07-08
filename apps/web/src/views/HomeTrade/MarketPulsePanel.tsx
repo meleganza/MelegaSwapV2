@@ -145,20 +145,25 @@ const MetricRow: React.FC<{ metric: MarketPulseMetric }> = ({ metric }) => {
   return (
     <MetricBlock>
       <MetricLabel>{metric.label}</MetricLabel>
-      <MetricValue $compact={isBlock}>{displayValue ?? 'Indexing'}</MetricValue>
+      <MetricValue $compact={isBlock}>{displayValue ?? metric.unavailableReason ?? 'Source unavailable'}</MetricValue>
       {metric.change && <MetricChange $positive={metric.changePositive}>{metric.change}</MetricChange>}
     </MetricBlock>
   )
 }
 
 export const MarketPulsePanel: React.FC = () => {
-  const { cryptoMarket, bnbChain, fearGreed } = useMarketPulseData()
+  const { cryptoMarket, bnbChain, fearGreed, diagnostic } = useMarketPulseData()
 
   return (
     <Shell data-market-pulse-panel>
       <Header>
         <Title>Market Pulse</Title>
-        <Subtitle>Live market and chain signals.</Subtitle>
+        <Subtitle>
+          Live market and chain signals.
+          {diagnostic
+            ? ` Source: ${diagnostic.source} · Indexer: ${diagnostic.indexer} · Reason: ${diagnostic.reason}`
+            : ''}
+        </Subtitle>
       </Header>
       <Content>
         <Body>

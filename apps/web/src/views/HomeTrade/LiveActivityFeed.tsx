@@ -146,6 +146,12 @@ export interface LiveActivityFeedProps {
   slots?: ActivitySlot[]
   isIndexing?: boolean
   activityUnavailable?: ActivityUnavailable
+  indexerState?: {
+    source: string
+    indexer: string
+    lastAttempt: string
+    reason?: string
+  }
 }
 
 export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
@@ -153,6 +159,7 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
   slots = [],
   isIndexing = false,
   activityUnavailable,
+  indexerState,
 }) => {
   const displaySlots = slots.length > 0 ? slots : []
   const hasAnyActivity = displaySlots.some((s) => s.row) || rows.length > 0
@@ -206,9 +213,9 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
             </EmptyTitle>
             <EmptyDesc>
               {isIndexing
-                ? 'Pulling latest swaps, liquidity, and ecosystem events from Melega indexers.'
+                ? `Source: ${indexerState?.source ?? 'melega-subgraph'} · Indexer: ${indexerState?.indexer ?? 'loading'} · Last attempt: ${indexerState?.lastAttempt ? new Date(indexerState.lastAttempt).toLocaleString() : 'in progress'} · Reason: ${indexerState?.reason ?? 'Subgraph transactions loading'}`
                 : activityUnavailable
-                  ? `${activityUnavailable.reason} · Source: ${activityUnavailable.source} · ${new Date(activityUnavailable.timestamp).toLocaleString()}`
+                  ? `Source: ${activityUnavailable.source} · Indexer: ${activityUnavailable.indexer} · Last attempt: ${new Date(activityUnavailable.lastAttempt).toLocaleString()} · Reason: ${activityUnavailable.reason}`
                   : 'Swaps, liquidity, farms, pools, and listings appear here when indexed.'}
             </EmptyDesc>
           </EmptyWrap>

@@ -41,22 +41,22 @@ const XIcon = () => (
   </svg>
 )
 
-const Discord = () => (
+const Instagram = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-    <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+    <path d="M7.8 2h8.4A5.8 5.8 0 0122 7.8v8.4A5.8 5.8 0 0116.2 22H7.8A5.8 5.8 0 012 16.2V7.8A5.8 5.8 0 017.8 2zm0 2A3.8 3.8 0 004 7.8v8.4A3.8 3.8 0 007.8 20h8.4a3.8 3.8 0 003.8-3.8V7.8A3.8 3.8 0 0016.2 4H7.8zm9.65 1.5a1.15 1.15 0 110 2.3 1.15 1.15 0 010-2.3zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z" />
   </svg>
 )
 
 export const MelegaSocialIcons: React.FC = () => (
   <Row data-melega-social-icons>
-    <Link href="https://t.me/melegafinance" target="_blank" rel="noreferrer" aria-label="Telegram">
+    <Link href="https://t.me/melegacommunity" target="_blank" rel="noreferrer" aria-label="Telegram">
       <Telegram />
     </Link>
-    <Link href="https://x.com/melegafinance" target="_blank" rel="noreferrer" aria-label="X">
+    <Link href="https://x.com/meleganews" target="_blank" rel="noreferrer" aria-label="X">
       <XIcon />
     </Link>
-    <Link href="https://discord.gg/melega" target="_blank" rel="noreferrer" aria-label="Discord">
-      <Discord />
+    <Link href="https://www.instagram.com/melega.finance/" target="_blank" rel="noreferrer" aria-label="Instagram">
+      <Instagram />
     </Link>
   </Row>
 )

@@ -26,7 +26,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
   inputCurrencyId,
   outputCurrencyId,
 }) => {
-  const { pairStats, pairPrice, missingReason, missingReasonDetail } = useTradeTerminalData(
+  const { pairStats, pairPrice, missingReason, missingReasonDetail, chartUnavailableDetail } = useTradeTerminalData(
     inputSymbol,
     outputSymbol,
     outputCurrencyId,
@@ -46,8 +46,8 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
         priceUsd={pairPrice?.value}
         change24h={pairPrice?.change24h}
         stats={centerStats}
-        chartEmptyReason={missingReason}
-        chartEmptyDetail={missingReasonDetail}
+        chartEmptyReason={missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)}
+        chartEmptyDetail={chartUnavailableDetail ?? missingReasonDetail}
       />
     </Shell>
   )

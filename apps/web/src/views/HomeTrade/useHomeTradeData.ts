@@ -4,12 +4,12 @@ import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
-import { getAllProjects } from 'registry/projects/getAllProjects'
+import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
+import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
+import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
-import { useProtocolTransactionsSWR } from 'state/info/hooks'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { FetchStatus } from 'config/constants/types'
-import { buildRuntimeDiagnostic } from 'lib/runtime-integrity'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { getAprData } from 'views/Pools/helpers'
@@ -71,6 +71,8 @@ export interface ActivityUnavailable {
   timestamp: string
   reason: string
   source: string
+  indexer: string
+  lastAttempt: string
 }
 
 const formatTimeAgo = (timestamp: string): string | undefined => {
@@ -154,7 +156,7 @@ const txToRow = (tx: Transaction): ActivityRow => {
 }
 
 export const useHomeTradeData = () => {
-  const transactions = useProtocolTransactionsSWR()
+  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
   const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
@@ -174,10 +176,11 @@ export const useHomeTradeData = () => {
     return transactions.find((tx) => tx.type === TransactionType.SWAP)
   }, [transactions])
 
+  const dexProjects = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
+
   const latestProject = useMemo(() => {
-    const projects = getAllProjects().filter((p) => p.slug !== 'melega-dex')
-    return projects[0]
-  }, [])
+    return dexProjects.find((p) => p.slug !== 'melega-dex') ?? dexProjects[0]
+  }, [dexProjects])
 
   const topVolumeSwap = useMemo(() => {
     if (!transactions?.length) return undefined
@@ -229,6 +232,18 @@ export const useHomeTradeData = () => {
       })
     }
 
+    dexProjects.slice(0, 5).forEach((project, index) => {
+      if (project.slug === 'melega-dex') return
+      const projectName = sanitizeRibbonText(project.displayName ?? project.slug)
+      if (!projectName) return
+      items.push({
+        id: `indexed-asset-${index}`,
+        primary: 'Indexed asset',
+        secondary: projectName,
+        href: `/projects/${project.slug}`,
+      })
+    })
+
     if (latestProject) {
       const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
       if (projectName) {
@@ -252,7 +267,7 @@ export const useHomeTradeData = () => {
     }
 
     return items
-  }, [farms, latestSwap, latestProject, pools, topVolumeSwap])
+  }, [farms, latestSwap, latestProject, pools, topVolumeSwap, dexProjects])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -440,17 +455,14 @@ export const useHomeTradeData = () => {
     return slots.slice(0, 6)
   }, [latestSwap, transactions])
 
-  const isActivityIndexing = transactions === undefined
-
   const isTrendingIndexing = useMemo(() => {
     const farmsLoading =
       farmsFetchStatus === 'fetching' ||
       farmsFetchStatus === 'not-fetched'
     const poolsLoading =
       poolsFetchStatus === FetchStatus.Fetching || poolsFetchStatus === FetchStatus.Idle
-    const subgraphLoading = transactions === undefined
-    return farmsLoading || poolsLoading || subgraphLoading
-  }, [farmsFetchStatus, poolsFetchStatus, transactions])
+    return farmsLoading || poolsLoading || indexerState.status === 'loading'
+  }, [farmsFetchStatus, poolsFetchStatus, indexerState.status])
 
   const activityRows = useMemo(
     (): ActivityRow[] => activitySlots.filter((s) => s.row).map((s) => s.row!),
@@ -460,20 +472,24 @@ export const useHomeTradeData = () => {
   const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
     if (isActivityIndexing) return undefined
     if (activityRows.length > 0) return undefined
-    const diagnostic = buildRuntimeDiagnostic({
-      surface: 'home-live-activity',
-      status: 'empty',
-      source: 'subgraph',
-      indexer: 'melega-subgraph',
-      reason: 'No swaps or liquidity events indexed in the current subgraph window',
+    const diagnostic = buildIndexerActivityDiagnostic({
+      source: indexerState.source,
+      indexer: indexerState.indexer,
+      lastAttempt: indexerState.lastAttempt,
+      reason:
+        indexerState.status === 'error' || indexerState.status === 'unavailable'
+          ? indexerState.reason ?? 'Subgraph indexer unavailable'
+          : 'No swaps or liquidity events indexed in the current subgraph window',
     })
     return {
-      message: 'Last indexed activity unavailable',
-      timestamp: diagnostic.timestamp,
+      message: diagnostic.title,
+      timestamp: diagnostic.lastAttempt,
       reason: diagnostic.reason,
       source: diagnostic.source,
+      indexer: diagnostic.indexer,
+      lastAttempt: diagnostic.lastAttempt,
     }
-  }, [isActivityIndexing, activityRows.length])
+  }, [isActivityIndexing, activityRows.length, indexerState])
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)
@@ -497,7 +513,7 @@ export const useHomeTradeData = () => {
     if (farms.length > 0) {
       metrics.push({ id: 'farms', label: 'Live farms', value: String(farms.length), live: true })
     }
-    const projectCount = getAllProjects().length
+    const projectCount = dexProjects.length
     if (projectCount > 0) {
       metrics.push({ id: 'projects', label: 'Projects', value: String(projectCount), live: true })
     }
@@ -505,7 +521,7 @@ export const useHomeTradeData = () => {
       metrics.push({ id: 'pools', label: 'Pools', value: String(pools.length), live: true })
     }
     return metrics
-  }, [transactions, farms.length, pools.length])
+  }, [transactions, farms.length, pools.length, dexProjects.length])
 
   return {
     ribbonItems,
@@ -522,6 +538,7 @@ export const useHomeTradeData = () => {
     isActivityIndexing,
     isTrendingIndexing,
     activityUnavailable,
+    indexerState,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,
   }

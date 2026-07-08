@@ -255,6 +255,7 @@ const EMPTY_REASON_LABELS: Record<string, string> = {
   subgraph_empty: 'Subgraph empty',
   explorer_missing: 'Explorer source missing',
   route_not_configured: 'Route not configured',
+  chart_unavailable: 'Chart unavailable',
 }
 
 const SubgraphChart = styled.div`

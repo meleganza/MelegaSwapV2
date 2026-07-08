@@ -1,0 +1,82 @@
+{
+  "gate": "PASS",
+  "verdict": "R730A_INDEXING_FOUNDATION_COMPLETE",
+  "checks": [
+    {
+      "route": "/",
+      "alias": "home",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/trade",
+      "alias": "trade",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/liquidity-studio",
+      "alias": "liquidity-studio",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/farms",
+      "alias": "farms",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/pools",
+      "alias": "pools",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/trending",
+      "alias": "trending",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/projects",
+      "alias": "projects",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/radar",
+      "alias": "dex-intelligence",
+      "status": 200,
+      "permanentIndexing": false
+    },
+    {
+      "route": "/collectibles",
+      "alias": "identity-hub",
+      "status": 200,
+      "permanentIndexing": false
+    }
+  ],
+  "social": {
+    "hasTelegram": true,
+    "hasX": true,
+    "hasInstagram": true,
+    "hasDiscord": false,
+    "hrefs": [
+      {
+        "href": "https://t.me/melegacommunity",
+        "label": "Telegram"
+      },
+      {
+        "href": "https://x.com/meleganews",
+        "label": "X"
+      },
+      {
+        "href": "https://www.instagram.com/melega.finance/",
+        "label": "Instagram"
+      }
+    ]
+  },
+  "failures": [],
+  "screenshots": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r730a-indexing-foundation"
+}

@@ -107,6 +107,13 @@ export interface PoolsStakingRuntime {
   setSortMode: (mode: PoolsSortMode) => void
   positionsCount: number
   hiddenPoolReasons: string[]
+  poolsIndexingDiagnostic?: {
+    source: string
+    indexer: string
+    lastAttempt: string
+    reason: string
+    integrity: PoolsMachinePayload['integrity']
+  }
   pools: PoolPreviewCard[]
   featured: PoolsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
@@ -362,6 +369,40 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
   const error = useMemo(() => runtimeErrorFromPhase(phase), [phase])
 
+  const poolsIndexingDiagnostic = useMemo(() => {
+    const displayable = listUsablePools(previewCards)
+    const ended = previewCards.filter((p) => p.status === 'ended')
+    const live = previewCards.filter((p) => p.status === 'live')
+    const hidden = previewCards.filter((p) => p.hiddenReason)
+    const integrity = {
+      discovered: previewCards.length,
+      indexed: rawPools.length,
+      live: live.length,
+      ended: ended.length,
+      hidden: hidden.length,
+      displayable: displayable.length,
+    }
+    const lastAttempt = new Date().toISOString()
+    if (phase === 'loading_pools') {
+      return {
+        source: 'on-chain',
+        indexer: `pools-page-fetch-${chainId ?? 'unknown'}`,
+        lastAttempt,
+        reason: 'On-chain pool registry loading',
+        integrity,
+      }
+    }
+    if (displayable.length > 0) return undefined
+    const hiddenSummary = hiddenPoolReasons.length ? hiddenPoolReasons.join(', ') : 'visibility gates'
+    return {
+      source: 'on-chain',
+      indexer: `pools-runtime-${chainId ?? 'unknown'}`,
+      lastAttempt,
+      reason: `Discovered ${integrity.discovered}, indexed ${integrity.indexed}, live ${integrity.live}, ended ${integrity.ended}, hidden ${integrity.hidden}, displayable ${integrity.displayable}. Blockers: ${hiddenSummary}`,
+      integrity,
+    }
+  }, [previewCards, rawPools.length, phase, chainId, hiddenPoolReasons])
+
   const machine: PoolsMachinePayload = useMemo(() => {
     const { activePools: activePoolNames, sourceMethod } = listActivePools(previewCards)
     const ended = previewCards.filter((p) => p.status === 'ended')
@@ -423,6 +464,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     setSortMode,
     positionsCount,
     hiddenPoolReasons,
+    poolsIndexingDiagnostic,
     pools: filteredPools,
     featured,
     kpis,

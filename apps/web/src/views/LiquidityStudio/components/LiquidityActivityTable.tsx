@@ -21,7 +21,7 @@ const LiveBadge = styled.span`
 
 export const LiquidityActivityTable: React.FC = () => {
   const { terminal, loadingLabel } = useLiquidityRuntime()
-  const { activityRows, isIndexing } = terminal
+  const { activityRows, isIndexing, activityDiagnostic } = terminal
   const rows = activityRows.slice(0, 5)
 
   const timelineRows = rows.map((row) => ({
@@ -39,11 +39,13 @@ export const LiquidityActivityTable: React.FC = () => {
         title="Liquidity Activity"
         rows={timelineRows}
         height={liquidityStudioLayout.activityHeight}
-        emptyTitle={loadingLabel || isIndexing ? 'Indexing liquidity' : 'No liquidity events yet.'}
+        emptyTitle={loadingLabel || isIndexing ? 'Waiting for indexed liquidity' : 'No liquidity events yet.'}
         emptySubtitle={
-          loadingLabel || isIndexing
-            ? 'Fetching indexed mint and burn events'
-            : 'No recent liquidity events indexed for this pair'
+          loadingLabel
+            ? 'Awaiting runtime'
+            : activityDiagnostic
+              ? `Source: ${activityDiagnostic.source} · Indexer: ${activityDiagnostic.indexer} · Last attempt: ${new Date(activityDiagnostic.lastAttempt).toLocaleString()} · Reason: ${activityDiagnostic.reason}`
+              : 'No recent liquidity events indexed for this pair'
         }
         badge={<LiveBadge>LIVE</LiveBadge>}
         data-testid="liquidity"

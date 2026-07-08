@@ -10,6 +10,14 @@ export interface MarketPulseMetric {
   value?: string
   change?: string
   changePositive?: boolean
+  unavailableReason?: string
+}
+
+export interface MarketPulseDiagnostic {
+  source: string
+  indexer: string
+  lastAttempt: string
+  reason: string
 }
 
 interface CoinGeckoGlobal {
@@ -84,7 +92,11 @@ export const useMarketPulseData = () => {
   const block = useCurrentBlock()
   const gasRaw = useGasPrice()
 
-  const { data: globalData } = useSWR('market-pulse-coingecko-global', fetchGlobal, {
+  const {
+    data: globalData,
+    error: globalError,
+    isLoading: globalLoading,
+  } = useSWR('market-pulse-coingecko-global', fetchGlobal, {
     refreshInterval: 120_000,
     revalidateOnFocus: false,
   })
@@ -94,7 +106,11 @@ export const useMarketPulseData = () => {
     revalidateOnFocus: false,
   })
 
-  const { data: bnbData } = useSWR('market-pulse-bnb-price', fetchBnbPrice, {
+  const {
+    data: bnbData,
+    error: bnbError,
+    isLoading: bnbLoading,
+  } = useSWR('market-pulse-bnb-price', fetchBnbPrice, {
     refreshInterval: 120_000,
     revalidateOnFocus: false,
   })
@@ -104,6 +120,11 @@ export const useMarketPulseData = () => {
     const mcapChange = formatChange(globalData?.market_cap_change_percentage_24h_usd)
     const volume = formatUsdCompact(globalData?.total_volume?.usd)
     const btcDom = globalData?.market_cap_percentage?.btc
+    const unavailableReason = globalLoading
+      ? 'Waiting for CoinGecko global market data'
+      : globalError || globalData === null
+        ? 'CoinGecko global market data unavailable'
+        : undefined
 
     return [
       {
@@ -111,22 +132,30 @@ export const useMarketPulseData = () => {
         value: mcap,
         change: mcapChange.text,
         changePositive: mcapChange.positive,
+        unavailableReason,
       },
       {
         label: '24H Crypto Volume',
         value: volume,
+        unavailableReason,
       },
       {
         label: 'Bitcoin Dominance',
         value: btcDom != null ? `${btcDom.toFixed(1)}%` : undefined,
+        unavailableReason,
       },
     ]
-  }, [globalData])
+  }, [globalData, globalError, globalLoading])
 
   const bnbChain = useMemo((): MarketPulseMetric[] => {
     const bnbUsd = bnbData?.binancecoin?.usd
     const bnbChange = formatChange(bnbData?.binancecoin?.usd_24h_change)
     const gas = formatGasGwei(gasRaw)
+    const priceReason = bnbLoading
+      ? 'Waiting for CoinGecko BNB price'
+      : bnbError || bnbData === null
+        ? 'CoinGecko BNB price unavailable'
+        : undefined
 
     return [
       {
@@ -134,17 +163,40 @@ export const useMarketPulseData = () => {
         value: bnbUsd != null ? `$${bnbUsd.toFixed(2)}` : undefined,
         change: bnbChange.text,
         changePositive: bnbChange.positive,
+        unavailableReason: priceReason,
       },
       {
         label: 'Gas',
         value: gas,
+        unavailableReason: gas ? undefined : 'On-chain gas price unavailable',
       },
       {
         label: 'Latest Block',
         value: block > 0 ? formatCompactNumber(block) : undefined,
+        unavailableReason: block > 0 ? undefined : 'Waiting for BNB Chain block height',
       },
     ]
-  }, [block, bnbData, gasRaw])
+  }, [block, bnbData, bnbError, bnbLoading, gasRaw])
+
+  const diagnostic = useMemo((): MarketPulseDiagnostic | undefined => {
+    if (globalLoading || bnbLoading) {
+      return {
+        source: 'coingecko',
+        indexer: 'market-pulse-external',
+        lastAttempt: new Date().toISOString(),
+        reason: 'External market APIs loading',
+      }
+    }
+    if (globalError || bnbError || globalData === null || bnbData === null) {
+      return {
+        source: 'coingecko',
+        indexer: 'market-pulse-external',
+        lastAttempt: new Date().toISOString(),
+        reason: 'External market API request failed or returned empty payload',
+      }
+    }
+    return undefined
+  }, [globalLoading, bnbLoading, globalError, bnbError, globalData, bnbData])
 
   return {
     cryptoMarket,
@@ -153,6 +205,7 @@ export const useMarketPulseData = () => {
       value: fngData?.value,
       classification: fngData?.value_classification,
     },
+    diagnostic,
   }
 }
 
