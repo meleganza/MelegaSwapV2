@@ -1,0 +1,72 @@
+{
+  "schema": "melega.kerl.smart-router-wrapper-v2-certificate.v1",
+  "certificate_id": "R747-BSC-TESTNET-WRAPPER-V2-KERL",
+  "validation_date": "2026-07-09",
+  "chain_id": 97,
+  "chain_name": "BNB Testnet",
+  "verdict": "PASSED",
+  "civilization_status": "ACTIVE_TESTNET",
+  "truth_status": "SMART_ROUTER_TESTNET_FROZEN",
+  "verifier_status": "passed",
+  "wrapper_v2_contract_address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+  "wrapper_version": 2,
+  "deploy_tx": "0xef5be1c2324a0b68853f15a8d1c729c2bffae2c82372fe9a3c4f9b95f2d009ef",
+  "deployment_block": 118153243,
+  "deploy_timestamp": "2026-07-09T16:17:17.000Z",
+  "bytecode_hash": "0x38b51c47d376400b04c3af1c7425d4af830dc71aec9a7faee23e80e51213d610",
+  "explorer_url": "https://testnet.bscscan.com/address/0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+  "underlying_router": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+  "treasury_intake_address": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+  "marco_testnet_address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "wbnb_testnet_address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+  "pair_marco_wbnb_address": "0x6eFCe8f5C7Fb3B979A6a2Be4a62DB4A055c666E0",
+  "supported_routes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+  "unsupported_routes": [
+    "NARRATIVE_TRADE",
+    "AI_SERVICE",
+    "MARKETPLACE_SERVICE",
+    "MARKETPLACE_SETTLEMENT",
+    "TREASURY_TRANSFER",
+    "INTERNAL_ROUTING",
+    "REFERRAL",
+    "PROPAGATION"
+  ],
+  "validation_transactions": {
+    "BUY_MARCO": {
+      "tx_hash": "0x8a19f2eb24793dad439cb9779bc1586579fa411bc004dee8302ce37757e22ec1",
+      "protocol_fee_bps": 20,
+      "receipt_status": "success"
+    },
+    "SELL_MARCO": {
+      "tx_hash": "0x5602377a4f9eed55a047ef215e3e2b437b5df4e919ac9a3bd04b5a1d4a961486",
+      "protocol_fee_bps": 30,
+      "receipt_status": "success"
+    },
+    "STANDARD_SWAP": {
+      "tx_hash": "0x80969383a47713d6e0dd115b8382f6a0531b7a0575b8ae1d6ef942fdb2b138ec",
+      "protocol_fee_bps": 30,
+      "receipt_status": "success"
+    }
+  },
+  "fee_validation": {
+    "BUY_MARCO": { "expected_bps": 20, "verified_bps": 20, "pass": true },
+    "SELL_MARCO": { "expected_bps": 30, "verified_bps": 30, "pass": true },
+    "STANDARD_SWAP": { "expected_bps": 30, "verified_bps": 30, "pass": true }
+  },
+  "event_verification": {
+    "ProtocolFeeCollected": { "verified": true },
+    "SmartRouterSwapRouted": { "verified": true },
+    "TreasuryHandoffPrepared": { "verified": true }
+  },
+  "supersedes": {
+    "wrapper_v1": "0xe29b30099f7E5B7205151f9893e6829dbC964002",
+    "reason": "V1 native fee path reverted TREASURY_FEE_TRANSFER_FAILED; V2 wraps protocol fee to WBNB before ERC20 transfer to Treasury Intake"
+  },
+  "registry_refs": {
+    "dex_smart_router": "https://v2.melega.finance/registry/smart-router/index.json#97",
+    "dex_validation_certificate": "https://v2.melega.finance/registry/smart-router/testnet-validation-certificate.json",
+    "dex_freeze_manifest": "https://v2.melega.finance/registry/smart-router/testnet-freeze-manifest.json",
+    "treasury_runtime": "https://treasury.melega.ai/registry/treasury/index.json#97"
+  },
+  "disclaimer": "Testnet constitutional validation certificate for KERL/Labs route authority. Does not activate BNB Chain mainnet (56). NARRATIVE_TRADE is not supported."
+}

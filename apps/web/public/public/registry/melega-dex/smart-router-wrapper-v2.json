@@ -1,0 +1,53 @@
+{
+  "schema": "melega.kerl.smart-router-wrapper-v2-registry.v1",
+  "registry_version": "1.0.0",
+  "as_of": "2026-07-09",
+  "publication_id": "KERL-SMART-ROUTER-WRAPPER-V2-BSC-TESTNET",
+  "chain_id": 97,
+  "chain_name": "BNB Testnet",
+  "truth_status": "SMART_ROUTER_TESTNET_FROZEN",
+  "verifier_status": "passed",
+  "civilization_status": "ACTIVE_TESTNET",
+  "wrapper_v2_contract_address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+  "machine_contract_address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+  "wrapper_abi_reference": "https://kiri.melega.ai/public/registry/melega-dex/MelegaSmartRouterWrapper.abi.json",
+  "certificate_url": "https://kiri.melega.ai/public/registry/melega-dex/smart-router-wrapper-v2-certificate.json",
+  "supported_routes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+  "unsupported_routes": [
+    "NARRATIVE_TRADE",
+    "AI_SERVICE",
+    "MARKETPLACE_SERVICE",
+    "MARKETPLACE_SETTLEMENT",
+    "TREASURY_TRANSFER",
+    "INTERNAL_ROUTING",
+    "REFERRAL",
+    "PROPAGATION"
+  ],
+  "treasury_intake_address": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+  "marco_testnet_address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "wbnb_testnet_address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+  "pair_marco_wbnb_address": "0x6eFCe8f5C7Fb3B979A6a2Be4a62DB4A055c666E0",
+  "underlying_router_address": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+  "deployment_block": 118153243,
+  "deploy_tx": "0xef5be1c2324a0b68853f15a8d1c729c2bffae2c82372fe9a3c4f9b95f2d009ef",
+  "bytecode_hash": "0x38b51c47d376400b04c3af1c7425d4af830dc71aec9a7faee23e80e51213d610",
+  "fee_schedule_bps": {
+    "BUY_MARCO": 20,
+    "SELL_MARCO": 30,
+    "STANDARD_SWAP": 30
+  },
+  "mainnet_ready": false,
+  "testnet_ready": true,
+  "narrative_trade_supported": false,
+  "dex_registry_refs": {
+    "smart_router_index": "https://v2.melega.finance/registry/smart-router/index.json#97",
+    "validation_certificate": "https://v2.melega.finance/registry/smart-router/testnet-validation-certificate.json",
+    "freeze_manifest": "https://v2.melega.finance/registry/smart-router/testnet-freeze-manifest.json",
+    "civilization_router_contract": "https://v2.melega.finance/registry/smart-router/civilization-router-contract.json"
+  },
+  "labs_env": {
+    "SMART_ROUTER_WRAPPER_V2_REGISTRY_URL": "https://kiri.melega.ai/public/registry/melega-dex/smart-router-wrapper-v2.json",
+    "SMART_ROUTER_WRAPPER_V2_CONTRACT_ADDRESS": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db"
+  },
+  "disclaimer": "Canonical KERL-facing Smart Router Wrapper V2 registry for BNB Testnet (97). Truth-first: only STANDARD_SWAP, BUY_MARCO, and SELL_MARCO are executable. NARRATIVE_TRADE is explicitly unsupported."
+}
