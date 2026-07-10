@@ -78,23 +78,43 @@ export async function getLogsChunked(params: {
   while (cursor <= params.toBlock) {
     const end = Math.min(cursor + chunk - 1, params.toBlock)
     try {
-      const batch = await rpcCall<RawLog[]>(
-        'eth_getLogs',
-        [
-          {
-            address: params.address,
-            topics: params.topics,
-            fromBlock: toBlockHex(cursor),
-            toBlock: toBlockHex(end),
-          },
-        ],
-        rpcUrls,
-      )
-      logs.push(...batch)
+      if (chunk === 1 && cursor === end) {
+        const block = await rpcCall<{ hash: string }>(
+          'eth_getBlockByNumber',
+          [toBlockHex(cursor), false],
+          rpcUrls,
+        )
+        const batch = await rpcCall<RawLog[]>(
+          'eth_getLogs',
+          [
+            {
+              blockHash: block.hash,
+              address: params.address,
+              topics: params.topics,
+            },
+          ],
+          rpcUrls,
+        )
+        logs.push(...batch)
+      } else {
+        const batch = await rpcCall<RawLog[]>(
+          'eth_getLogs',
+          [
+            {
+              address: params.address,
+              topics: params.topics,
+              fromBlock: toBlockHex(cursor),
+              toBlock: toBlockHex(end),
+            },
+          ],
+          rpcUrls,
+        )
+        logs.push(...batch)
+      }
       cursor = end + 1
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      if (!msg.toLowerCase().includes('limit')) throw e
+      if (!msg.toLowerCase().includes('limit') && !msg.toLowerCase().includes('hex')) throw e
       if (chunk > MIN_CHUNK_SIZE) {
         chunk = Math.max(MIN_CHUNK_SIZE, Math.floor(chunk / 2))
         continue
