@@ -1,0 +1,21 @@
+{
+  "baseUrl": "https://melega-swap-v2-web.vercel.app",
+  "capturedAt": "2026-07-10T17:12:09.988Z",
+  "shots": [
+    "01-homepage-header-socials",
+    "02-homepage-build-with-melega",
+    "03-homepage-top-farm-pool",
+    "04-homepage-market-pulse",
+    "05-homepage-live-activity",
+    "06-sidebar-build-section",
+    "07-trade-amount-inputs",
+    "08-trade-chart",
+    "09-trade-pair-statistics",
+    "10-trade-recent-swaps",
+    "11-trade-route-finite",
+    "12-liquidity-position-preview",
+    "13-liquidity-intelligence-panels",
+    "14-pools-discovery",
+    "15-farms-discovery"
+  ]
+}
