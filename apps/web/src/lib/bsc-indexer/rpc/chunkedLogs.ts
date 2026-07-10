@@ -49,6 +49,12 @@ export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = re
   throw lastError ?? new Error('All RPC endpoints failed')
 }
 
+function toBlockHex(blockNumber: number): string {
+  let hex = blockNumber.toString(16)
+  if (hex.length % 2 === 1) hex = `0${hex}`
+  return `0x${hex}`
+}
+
 export async function getBlockNumber(): Promise<number> {
   const hex = await rpcCall<string>('eth_blockNumber', [])
   return parseInt(hex, 16)
