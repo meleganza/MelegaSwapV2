@@ -1,6 +1,8 @@
 import type { HolderCountResult } from './types'
 
-const BSCSCAN_HOLDER_COUNT_URL = 'https://api.bscscan.com/api'
+/** Etherscan API V2 unified endpoint — BscScan V1 returns NOTOK as of 2025. */
+const ETHERSCAN_V2_URL = 'https://api.etherscan.io/v2/api'
+const BSC_CHAIN_ID = 56
 
 function unavailable(reason: string, diagnostic: string): HolderCountResult {
   return {
@@ -22,7 +24,7 @@ export async function fetchHolderCount(
     return unavailable('Invalid token address', `Holder count requires a valid contract address, got "${tokenAddress}"`)
   }
 
-  if (chainId !== 56) {
+  if (chainId !== BSC_CHAIN_ID) {
     return unavailable(
       'Source not configured',
       `Holder count provider is not configured for chain ${chainId}`,
@@ -39,16 +41,17 @@ export async function fetchHolderCount(
 
   try {
     const params = new URLSearchParams({
+      chainid: String(BSC_CHAIN_ID),
       module: 'token',
       action: 'tokenholdercount',
       contractaddress: normalized,
       apikey: apiKey,
     })
-    const res = await fetch(`${BSCSCAN_HOLDER_COUNT_URL}?${params.toString()}`, {
+    const res = await fetch(`${ETHERSCAN_V2_URL}?${params.toString()}`, {
       headers: { accept: 'application/json' },
     })
     if (!res.ok) {
-      return unavailable('Explorer request failed', `BscScan HTTP ${res.status}`)
+      return unavailable('Explorer request failed', `Etherscan V2 HTTP ${res.status}`)
     }
 
     const json = (await res.json()) as { status?: string; message?: string; result?: string }
@@ -66,7 +69,7 @@ export async function fetchHolderCount(
 
     return unavailable(
       json.message?.trim() || 'Explorer returned no holder count',
-      `BscScan tokenholdercount: ${json.message ?? 'empty result'}`,
+      `Etherscan V2 tokenholdercount: ${json.message ?? json.result ?? 'empty result'}`,
     )
   } catch (error) {
     return unavailable(

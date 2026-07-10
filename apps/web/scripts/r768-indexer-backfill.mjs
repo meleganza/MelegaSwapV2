@@ -6,7 +6,7 @@ const baseUrl = (process.env.INDEXER_RUN_URL || 'http://localhost:3000').replace
 const secret = process.env.INDEXER_CRON_SECRET || process.env.CRON_SECRET
 
 async function runOnce() {
-  const res = await fetch(`${baseUrl}/api/indexer/run`, {
+  const res = await fetch(`${baseUrl}/api/indexer/run/`, {
     method: 'POST',
     headers: secret ? { authorization: `Bearer ${secret}` } : {},
   })

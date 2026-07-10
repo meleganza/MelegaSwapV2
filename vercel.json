@@ -8,7 +8,7 @@
   },
   "crons": [
     {
-      "path": "/api/indexer/run",
+      "path": "/api/indexer/run/",
       "schedule": "*/5 * * * *"
     }
   ]

@@ -17,6 +17,7 @@ export const DEFAULT_CHUNK_SIZE = 1_500
 export const MIN_CHUNK_SIZE = 200
 export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
+export const MAX_BLOCKS_PER_SYNC = 50_000
 export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
 
 export const INTERVAL_SECONDS = {

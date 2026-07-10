@@ -3,6 +3,7 @@ import {
   INTERVAL_SECONDS,
   MARCO_WBNB_PAIR_BSC,
   MAX_EVENTS_PER_SYNC,
+  MAX_BLOCKS_PER_SYNC,
   MELEGA_CHAIN_ID,
   REORG_SAFETY_BLOCKS,
 } from '../constants'
@@ -53,7 +54,7 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
 
   try {
     const fromBlock = Math.max(DEFAULT_START_BLOCK, existing.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
-    const toBlock = chainHead
+    const toBlock = Math.min(chainHead, fromBlock + MAX_BLOCKS_PER_SYNC - 1)
     const normalized: NormalizedIndexerEvent[] = []
 
     for (const pair of watchPairs) {

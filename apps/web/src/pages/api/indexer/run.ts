@@ -1,6 +1,10 @@
 import type { NextApiHandler } from 'next'
 import { runIncrementalSync } from 'lib/bsc-indexer/indexer/syncIncremental'
 
+export const config = {
+  maxDuration: 300,
+}
+
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST' && req.method !== 'GET') {
     res.setHeader('Allow', 'GET, POST')
