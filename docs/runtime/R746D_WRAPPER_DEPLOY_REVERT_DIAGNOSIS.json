@@ -1,0 +1,65 @@
+{
+  "task": "R746D",
+  "schema": "melega.wrapper-deploy-revert-diagnosis.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PASS",
+  "txHash": "0x71e8f548f6961bf8756c6c0b04a2b09c614d1a90d1bfc860fb2b4f4763f75bbf",
+  "predictedAddress": "0xe29b30099f7E5B7205151f9893e6829dbC964002",
+  "receipt": {
+    "status": "0x1",
+    "success": true,
+    "gasUsed": "0x118125",
+    "gasUsedDecimal": 1147685,
+    "gasLimit": "0x11a945",
+    "gasLimitDecimal": 1155653,
+    "gasHeadroom": 7968,
+    "contractAddress": "0xe29b30099f7E5B7205151f9893e6829dbC964002",
+    "revertReason": null,
+    "bscScan": "https://testnet.bscscan.com/tx/0x71e8f548f6961bf8756c6c0b04a2b09c614d1a90d1bfc860fb2b4f4763f75bbf"
+  },
+  "bytecodeCheck": {
+    "address": "0xe29b30099f7E5B7205151f9893e6829dbC964002",
+    "hasBytecode": true,
+    "bytecodeLength": 9660,
+    "validDeployment": true,
+    "note": "NOT an invalid predicted address — contract deployed successfully on-chain"
+  },
+  "constructorVerification": {
+    "deployDataLength": 11360,
+    "bytecodeHash": "0x4879108a9739af83aa481dd25170621706e504e735d99273146f51d17ab499c6",
+    "dryRun": "PASS",
+    "dryRunGas": 1047554,
+    "underlyingRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "treasuryIntake": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+    "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "pricingRefHash": "0x86ec759a7d636e2c23c8e666673400056cc5ef99061381c1dac5abbd90530294",
+    "treasuryPolicyRefHash": "0x2c4da16e00f42da5ec690db4a2db138a94f7c423d1ad10de9274c4d404b7d6b8",
+    "owner": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+    "onChainImmutables": "PASS",
+    "standardFeeBps": 30,
+    "buyMarcoFeeBps": 20
+  },
+  "rootCause": {
+    "onChain": "Deployment did NOT revert — receipt status 0x1, bytecode present, OwnershipTransferred emitted",
+    "uiFalseNegative": "Post-deploy verifyWrapperImmutables used MetaMask Web3Provider; failure in catch block set receiptStatus=failed for entire flow even after successful CREATE",
+    "gasRisk": "MetaMask gas limit 1,155,653 vs 1,147,685 used (only 7,968 headroom) — succeeded but dangerously tight",
+    "ruledOut": [
+      "bad constructor encoding",
+      "wrong bytecode artifact",
+      "wrong owner address",
+      "zero-address guard revert",
+      "incompatible constructor ABI"
+    ]
+  },
+  "fixApplied": {
+    "receiptPolling": "eth_getTransactionReceipt via wallet with explicit success + bytecode check",
+    "immutableReads": "JsonRpcProvider (direct RPC) instead of MetaMask for verification",
+    "uiGating": "wrapper address shown only when receiptStatus=success AND bytecode confirmed",
+    "failureDisplay": "Deployment reverted + exact failureReason when receipt fails",
+    "gasHandling": "estimateGas + 30% margin, floor 1,300,000, cap 3,000,000",
+    "retry": "Deploy Wrapper re-enabled after failed status"
+  },
+  "registryUpdate": false,
+  "readyForRetry": true,
+  "founderNote": "Existing tx 0x71e8... may already be a valid wrapper at 0xe29b... — hard refresh page; no redeploy required unless founder wants a fresh address"
+}

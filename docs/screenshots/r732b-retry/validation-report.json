@@ -1,0 +1,90 @@
+{
+  "task": "R732B-RETRY",
+  "base": "https://v2.melega.finance",
+  "timestamp": "2026-07-08T20:51:42.362Z",
+  "deploySha": "8e80f8e93ee3347d5d2a8fd499b2af7bdc309fa3",
+  "buildId": "qWFuUsObyPqdhizIHSOjh",
+  "holderApi": {
+    "url": "https://v2.melega.finance/api/holder-count?chainId=56&address=0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "status": 404,
+    "contentType": "text/html; charset=utf-8",
+    "body": {
+      "html": "<!DOCTYPE html><html translate=\"no\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, init"
+    }
+  },
+  "holderCount": null,
+  "tradeHolders": {
+    "segment": "",
+    "emDashMatches": 8,
+    "hasWaiting": true,
+    "hasNumericHolders": false
+  },
+  "projectsHolders": {
+    "emDashMatches": 4,
+    "marcoBlock": "MARCO holders\n...\n›\nCreate Token\nCreate Farm\nCreate Staking Pool\nLock Liquidity\nOWN\nCommand Center\nMARCO\n$0.0004\n⌕\n⌘K\nEN\nالعربية\nবাংলা\nEnglish\nDeutsch\nΕλληνικά\nEspañol\nSuomalainen\nFilipino\nFrançais\nहि",
+    "hasWaiting": true,
+    "hasNumericHolders": true
+  },
+  "bareEmDash": {
+    "trade": true,
+    "projects": true
+  },
+  "routeSmoke": [
+    {
+      "route": "/",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/trade",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/build-studio",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/collectibles",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/command-center",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/projects",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/radar",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/farms",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "route": "/pools",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "bscscanRequests": [],
+  "failures": [
+    "holder-api: HTTP 404 not-json-api",
+    "trade: bare em-dash near Holders",
+    "projects: bare em-dash detected"
+  ],
+  "screenshots": [
+    "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r732b-retry/trade-holders-1440.png",
+    "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/r732b-retry/projects-holders-1440.png"
+  ],
+  "pass": false
+}

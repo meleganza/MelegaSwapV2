@@ -82,12 +82,12 @@ export const socials = [
     href: "https://t.me/melegacommunity"
   },
   {
-    label: "Twitter",
+    label: "X",
     icon: TwitterIcon,
-    href: "https://twitter.com/meleganews",
+    href: "https://x.com/meleganews",
   },
   {
-    label: "Discord",
+    label: "Instagram",
     icon: InstagramIcon,
     href: "https://www.instagram.com/melega.finance/",
   },

@@ -1,0 +1,34 @@
+{
+  "task": "R746H",
+  "schema": "melega.wrapper-v2-constitutional-validation.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PASS",
+  "chainId": 97,
+  "wrapperV2": {
+    "address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+    "deployTx": "0xef5be1c2324a0b68853f15a8d1c729c2bffae2c82372fe9a3c4f9b95f2d009ef",
+    "deployBlock": 118153243,
+    "receiptStatus": "success",
+    "bytecodeBytes": 4933,
+    "supersedes": "0xe29b30099f7E5B7205151f9893e6829dbC964002"
+  },
+  "routes": {
+    "BUY_MARCO": {
+      "pass": true,
+      "txHash": "0x8a19f2eb24793dad439cb9779bc1586579fa411bc004dee8302ce37757e22ec1",
+      "protocolFeeBps": 20
+    },
+    "SELL_MARCO": {
+      "pass": true,
+      "txHash": "0x5602377a4f9eed55a047ef215e3e2b437b5df4e919ac9a3bd04b5a1d4a961486",
+      "protocolFeeBps": 30
+    },
+    "STANDARD_SWAP": {
+      "pass": true,
+      "txHash": "0x80969383a47713d6e0dd115b8382f6a0531b7a0575b8ae1d6ef942fdb2b138ec",
+      "protocolFeeBps": 30
+    }
+  },
+  "passCount": "3/3",
+  "publicationRef": "docs/runtime/R747_SMART_ROUTER_TESTNET_VALIDATION.md"
+}

@@ -255,7 +255,7 @@ export const SURFACE_MAP_RECORDS: SurfaceRecord[] = [
   }),
   surface({
     id: 'identity',
-    label: 'Identity',
+    label: 'Identity Console',
     route: '/identity',
     group: 'manage',
     status: 'read_model',

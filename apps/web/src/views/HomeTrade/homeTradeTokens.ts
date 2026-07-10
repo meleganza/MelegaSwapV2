@@ -1,14 +1,28 @@
-import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+import { premiumStudioLayout, premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+import { tradeTypography, tradeLayout } from 'views/Trade/tradeTokens'
 
-/** Home / Overview — R200 premium alignment. */
+/** Home / Overview — R758 constitution + R760 Trade-aligned typography. */
 export const homeTradeLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   columnGap: '16px',
   compactGap: '12px',
   gridGutter: '16px',
-  heroGap: '12px',
+  heroGap: studioConstitutionLayout.sectionGap,
   heroMaxHeight: '404px',
   swapWidth: '470px',
+  liveActivityHeight: tradeLayout.recentSwapsHeight,
+  activityRowHeight: tradeLayout.swapRowHeight,
+} as const
+
+/** R760 — mirrors Trade numeric surfaces for institutional parity. */
+export const homeTypography = {
+  ...tradeTypography,
+  sectionTitle: { size: '18px', weight: 800, lineHeight: '1.2' },
+  heroTitle: { size: '38px', weight: 800, lineHeight: '1.05' },
+  heroSubtitle: { size: '13px', weight: 500, lineHeight: '1.35' },
+  heroSubtitleMaxWidth: studioConstitutionLayout.heroSubtitleMaxWidth,
 } as const
 
 /** Legacy tokens for orphaned pre-DS-002 HomeTrade shell modules (not mounted on `/`). */

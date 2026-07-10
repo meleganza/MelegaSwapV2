@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { displayStudioMetric } from 'design-system/melega'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import FeaturedPoolAllocation from './FeaturedPoolAllocation'
@@ -29,9 +30,9 @@ const LiveCard = styled.section`
 
 const EmptyCard = styled.section`
   width: 100%;
-  height: 260px;
-  min-height: 260px;
-  max-height: 260px;
+  height: ${poolsFeaturedHero.height};
+  min-height: ${poolsFeaturedHero.height};
+  max-height: ${poolsFeaturedHero.height};
   background: #141414;
   border: 1px solid rgba(212, 175, 55, 0.42);
   border-radius: 22px;
@@ -394,7 +395,7 @@ export const FeaturedPoolHero: React.FC = () => {
   }
 
   const healthScore = card.healthScore ?? card.sustainabilityScore ?? 0
-  const lockType = card.visualType ?? card.poolTypeLabel ?? card.lockPeriod ?? '—'
+  const lockType = displayStudioMetric(card.visualType ?? card.poolTypeLabel ?? card.lockPeriod)
   const rewardBadge = badgeVariant(card.rewardBadge)
 
   return (
@@ -418,11 +419,11 @@ export const FeaturedPoolHero: React.FC = () => {
           <KpiGrid data-ps-hero-kpi-grid>
             <KpiBox data-ps-hero-kpi-box>
               <KpiLabel>Reward Token</KpiLabel>
-              <KpiValue>{card.rewardToken ?? '—'}</KpiValue>
+              <KpiValue>{displayStudioMetric(card.rewardToken)}</KpiValue>
             </KpiBox>
             <KpiBox data-ps-hero-kpi-box>
               <KpiLabel>Remaining Rewards</KpiLabel>
-              <KpiValue>{card.remainingRewards ?? '—'}</KpiValue>
+              <KpiValue>{displayStudioMetric(card.remainingRewards)}</KpiValue>
             </KpiBox>
             <KpiBox data-ps-hero-kpi-box>
               <KpiLabel>Lock Type</KpiLabel>

@@ -7,6 +7,8 @@ import tryParseAmount from '@pancakeswap/utils/tryParseAmount'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useUserSingleHopOnly, useUserSlippageTolerance } from 'state/user/hooks'
 import { isAddress } from 'utils'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isKerlRoutingAuthorityEnforced, useKerlConstitutionalSwap } from 'lib/kerl-constitutional'
 
 import { computeSlippageAdjustedAmounts } from '../utils/exchange'
 import { useBestTrade } from './useBestTrade'
@@ -51,8 +53,10 @@ export function useDerivedSwapInfoWithStableSwap(
   inputError?: string
 } {
   const { account } = useWeb3React()
+  const { chainId } = useActiveChainId()
   const { t } = useTranslation()
   const [singleHop] = useUserSingleHopOnly()
+  const [allowedSlippage] = useUserSlippageTolerance()
 
   const to: string | null = (recipient === null ? account : isAddress(recipient) || null) ?? null
 
@@ -67,9 +71,21 @@ export function useDerivedSwapInfoWithStableSwap(
   const parsedAmount = tryParseAmount(typedValue, independentCurrency ?? undefined)
 
   const tradeType = isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT
+  const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
+
+  const kerlSwap = useKerlConstitutionalSwap({
+    parsedAmount,
+    inputCurrency: inputCurrency ?? undefined,
+    outputCurrency: outputCurrency ?? undefined,
+    allowedSlippage,
+    recipient: to,
+  })
+
   const bestTradeWithStableSwap = useBestTrade(parsedAmount, dependentCurrency, tradeType, {
     maxHops: singleHop ? 1 : 3,
   })
+
+  const resolvedTrade = kerlEnforced ? kerlSwap.trade : bestTradeWithStableSwap
   // TODO add invariant make sure v2 trade has the same input & output amount as trade with stable swap
 
   const currencyBalances = {
@@ -100,17 +116,15 @@ export function useDerivedSwapInfoWithStableSwap(
     inputError = inputError ?? t('Enter a recipient')
   } else if (
     BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
-    (bestTradeWithStableSwap && involvesAddress(bestTradeWithStableSwap, formattedTo))
+    (resolvedTrade && involvesAddress(resolvedTrade, formattedTo))
   ) {
     inputError = inputError ?? t('Invalid recipient')
   }
 
-  const [allowedSlippage] = useUserSlippageTolerance()
-
   const slippageAdjustedAmounts =
-    bestTradeWithStableSwap &&
+    resolvedTrade &&
     allowedSlippage &&
-    computeSlippageAdjustedAmounts(bestTradeWithStableSwap, allowedSlippage)
+    computeSlippageAdjustedAmounts(resolvedTrade, allowedSlippage)
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
@@ -122,8 +136,12 @@ export function useDerivedSwapInfoWithStableSwap(
     inputError = t('Insufficient %symbol% balance', { symbol: amountIn.currency.symbol })
   }
 
+  if (kerlEnforced && kerlSwap.inputError) {
+    inputError = inputError ?? kerlSwap.inputError
+  }
+
   return {
-    trade: bestTradeWithStableSwap,
+    trade: resolvedTrade,
     currencies,
     currencyBalances,
     parsedAmount,

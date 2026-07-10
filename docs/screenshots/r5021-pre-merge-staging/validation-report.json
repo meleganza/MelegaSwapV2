@@ -1,0 +1,26 @@
+{
+  "task": "R502.1 PRE-MERGE STAGING READY",
+  "deliverable": "R5021_PRE_MERGE_STAGING_READY",
+  "fabricValidation": {
+    "schema": "melega.civilization.fabric.v1",
+    "tests": "14/14 pass",
+    "poolEvents": ["POOL_JOINED", "POOL_LEFT", "POOL_CLAIMED"],
+    "poolsProducerWired": true,
+    "commandCenterConsumesPoolEvents": true,
+    "brokenPaths": 0,
+    "coveragePercentage": 100
+  },
+  "importInput": {
+    "desktopWidthPx": 520,
+    "desktopConfirmed": true,
+    "mobileFullWidthOfHero": true,
+    "screenshots": [
+      "import-input-desktop-1440x900.png",
+      "import-input-mobile-390x844.png"
+    ]
+  },
+  "stagingUrl": "https://v2.melega.finance",
+  "production": "untouched",
+  "main": "untouched",
+  "dexMelegaAi": "untouched"
+}

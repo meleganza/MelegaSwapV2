@@ -1,8 +1,10 @@
 import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
 
-/** Collectibles Studio — R200 premium alignment. */
+/** Collectibles Studio — R758 constitution rhythm. */
 export const collectiblesStudioLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   cardPadding: premiumStudioLayout.cardPadding,
   gridGap: premiumStudioLayout.cardGap,
   heroHeight: '240px',

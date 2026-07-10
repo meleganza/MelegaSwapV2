@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import { typography } from 'design-system/melega'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Title = styled.h3<{ $compact?: boolean }>`
@@ -183,12 +184,12 @@ const List = styled.div<{ $compact?: boolean }>`
 const ROW_TITLES = ['Best Sustainability', 'Highest APR', 'Lowest Risk', 'Best Long Term'] as const
 
 const humanAdvisorValue = (value: string) => {
-  if (/NEEDS_FUNDING|POOL_ENDED|INDEXING|Hidden/i.test(value)) return '—'
+  if (/NEEDS_FUNDING|POOL_ENDED|INDEXING|Hidden/i.test(value)) return RUNTIME_UNAVAILABLE_LABEL
   return value
 }
 
 const valueTone = (display: string): 'green' | 'default' | 'muted' => {
-  if (display === '—') return 'muted'
+  if (display === RUNTIME_UNAVAILABLE_LABEL || display.startsWith('Unavailable')) return 'muted'
   if (/%/.test(display)) return 'green'
   return 'default'
 }

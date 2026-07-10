@@ -4,6 +4,7 @@ import { ERC20Token } from './entities/token'
 export enum ChainId {
   ETHEREUM = 1,
   BSC = 56,
+  BSC_TESTNET = 97,
   BASE = 8453,
   POLYGON = 137,
   ARBITRUM = 42161,
@@ -24,6 +25,7 @@ export const FACTORY_ADDRESS = '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C'
 export const FACTORY_ADDRESS_MAP: Record<number, string> = {
   [ChainId.ETHEREUM]: "0x149EE9245E5eD52a89Ea777d19AD3A5D87873680",
   [ChainId.BSC]: FACTORY_ADDRESS,
+  [ChainId.BSC_TESTNET]: "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
   [ChainId.BASE]: "0x78fA7Fa39CF6544DD9768A75d8Ad8C45854aE530",
   [ChainId.POLYGON]: "0x2541DBEa199a22501D75EA141627776Bd4EefC80",
 }
@@ -32,6 +34,7 @@ export const INIT_CODE_HASH = '0x5547397b1a1ae1e97b89728e7a77fdc2a6b167647566f81
 export const INIT_CODE_HASH_MAP: Record<number, string> = {
   [ChainId.ETHEREUM]: "0x70bab120b879463f253c7412d8c12623f1aa971a04d97ba3ffd0e5f5c42e1405",
   [ChainId.BSC]: INIT_CODE_HASH,
+  [ChainId.BSC_TESTNET]: "0x57224589c67f3f30a6b0d7ffa1c4d31a992c0afd7db71bd78779ba44415c0fba",
   [ChainId.BASE]: "0x1e6e24914b2abfdd5ec33609095c9b570a9e1dc137992c0995bb45f57cf1932a",
   [ChainId.POLYGON]: "0x8c114e6d042bd14975f9a4dfbeb0c15c35a0b30acf8e0bd3432b551b131c46b1",
 }
@@ -52,6 +55,14 @@ export const WETH9 = {
     'WBNB',
     'Wrapped BNB',
     'https://binance.com'
+  ),
+  [ChainId.BSC_TESTNET]: new ERC20Token(
+    ChainId.BSC_TESTNET,
+    '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd',
+    18,
+    'WBNB',
+    'Wrapped BNB',
+    'https://testnet.binance.org/'
   ),
   [ChainId.BASE]: new ERC20Token(
     ChainId.BASE,
@@ -173,6 +184,7 @@ export const WBNB = {
 export const WNATIVE: Record<number, ERC20Token> = {
   [ChainId.ETHEREUM]: WETH9[ChainId.ETHEREUM],
   [ChainId.BSC]: WBNB[ChainId.BSC],
+  [ChainId.BSC_TESTNET]: WETH9[ChainId.BSC_TESTNET],
   [ChainId.BASE]: WETH9[ChainId.BASE],
   [ChainId.POLYGON]: WETH9[ChainId.POLYGON],
   [ChainId.ARBITRUM]: WETH9[ChainId.ARBITRUM],
@@ -195,6 +207,7 @@ export const NATIVE: Record<
 > = {
   [ChainId.ETHEREUM]: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   [ChainId.BSC]: { name: 'Binance Chain Native Token', symbol: 'BNB', decimals: 18 },
+  [ChainId.BSC_TESTNET]: { name: 'Binance Chain Native Token', symbol: 'tBNB', decimals: 18 },
   [ChainId.BASE]: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   [ChainId.POLYGON]: { name: 'Matic', symbol: 'MATIC', decimals: 18 },
   [ChainId.ARBITRUM]: { name: 'Ether', symbol: 'ETH', decimals: 18 },

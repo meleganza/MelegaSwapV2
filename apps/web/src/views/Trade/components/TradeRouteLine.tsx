@@ -4,11 +4,12 @@ import { tradeColors } from '../tradeTokens'
 import { useTradeRuntime } from '../tradeRuntime/TradeRuntimeContext'
 
 const Block = styled.div`
-  min-height: 54px;
-  height: 54px;
-  max-height: 54px;
-  overflow: hidden;
+  min-height: 48px;
+  max-height: 72px;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-sizing: border-box;
+  scrollbar-width: thin;
 `
 
 const Title = styled.div`
@@ -22,7 +23,9 @@ const Title = styled.div`
 const Track = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  min-width: min-content;
+  padding-bottom: 2px;
 `
 
 const NodeCol = styled.div`

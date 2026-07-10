@@ -1,0 +1,71 @@
+{
+  "task": "R746",
+  "schema": "melega.chain-97-wrapper-deploy.v1",
+  "asOf": "2026-07-09",
+  "verdict": "BLOCKED",
+  "liquidityCeremony": {
+    "status": "PASS",
+    "pair": "0x6eFCe8f5C7Fb3B979A6a2Be4a62DB4A055c666E0",
+    "liquidityTx": "0x84b2f17e84b58b3faec4ade3e537ff1056b6534fb76b23d92e284346e6713a27",
+    "founderWallet": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
+  },
+  "constructor": {
+    "chainId": 97,
+    "underlyingRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "treasuryIntake": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+    "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "deployerOwnerRecommended": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
+  },
+  "dryRun": {
+    "status": "PASS",
+    "simulatedWrapper": "0x5aAdFB43eF8dAF45DD80F4676345b7676f1D70e3",
+    "gasUsed": 1047554,
+    "note": "Simulation address — not on-chain until broadcast"
+  },
+  "deploy": {
+    "wrapperAddress": null,
+    "deployTxHash": null,
+    "verificationUrl": null,
+    "blocker": "TESTNET_DEPLOYER not set in environment"
+  },
+  "constitutionalValidation": {
+    "required": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+    "passCount": "0/3",
+    "swapTxHashes": {
+      "STANDARD_SWAP": null,
+      "BUY_MARCO": null,
+      "SELL_MARCO": null
+    },
+    "checksPerRoute": [
+      "ProtocolFeeCollected",
+      "SmartRouterSwapRouted",
+      "Treasury Intake Received",
+      "Execution Manifest",
+      "Receipt"
+    ]
+  },
+  "registryUpdate": {
+    "pending": true,
+    "targets": [
+      "apps/web/public/registry/smart-router/index.json",
+      "apps/web/public/registry/smart-router/civilization-router-contract.json"
+    ],
+    "fields": {
+      "wrapperAddress": "pending deploy",
+      "status": "active_testnet",
+      "executableRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"]
+    },
+    "chain56": "unchanged — do not activate"
+  },
+  "runbook": {
+    "step1": "Copy .env.example to .env and set TESTNET_DEPLOYER, DEPLOYER_OWNER, BSCSCAN_API_KEY",
+    "step2": "node apps/web/scripts/smart-router/r746-testnet-deploy-validate.mjs",
+    "step3": "On 3/3 PASS registry files update automatically"
+  },
+  "remainingBlockers": [
+    "TESTNET_DEPLOYER private key not provisioned in repo or shell environment",
+    "BSCSCAN_API_KEY not set (optional for deploy, required for --verify)",
+    "Wrapper not broadcast to chain 97",
+    "Constitutional validation swaps not executed"
+  ]
+}

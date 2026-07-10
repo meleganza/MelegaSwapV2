@@ -1,5 +1,6 @@
-import { Fragment, ReactNode, useMemo } from 'react'
+import { Fragment, ReactNode, useEffect, useMemo } from 'react'
 import { useAccount } from 'wagmi'
+import { ensureKrmpTestnetOperationalActivation } from 'lib/kerl-constitutional'
 import { BLOCKED_ADDRESSES } from './config/constants'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
@@ -8,6 +9,10 @@ import TreasuryHandoffUpdater from './state/transactions/treasuryHandoffUpdater'
 import { chains } from './utils/wagmi'
 
 export function Updaters() {
+  useEffect(() => {
+    ensureKrmpTestnetOperationalActivation()
+  }, [])
+
   return (
     <>
       <ListsUpdater />

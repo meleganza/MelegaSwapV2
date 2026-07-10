@@ -6,11 +6,12 @@ import { memo } from 'react'
 export const ChainLogo = memo(
   ({ chainId, width = 24, height = 24 }: { chainId: number; width?: number; height?: number }) => {
     if (isChainSupported(chainId)) {
+      const logoChainId = chainId === 97 ? 56 : chainId
       return (
         <Image
           alt={`chain-${chainId}`}
           style={{ maxHeight: `${height}px` }}
-          src={`/images/chains/${[42161, 8453, 324, 10].includes(chainId) ? `${chainId}-1` : chainId}.png`}
+          src={`/images/chains/${[42161, 8453, 324, 10].includes(logoChainId) ? `${logoChainId}-1` : logoChainId}.png`}
           width={width}
           height={height}
           unoptimized

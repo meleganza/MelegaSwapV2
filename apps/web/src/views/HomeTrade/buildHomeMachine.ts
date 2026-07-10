@@ -17,6 +17,8 @@ export interface HomeMachinePayload {
   }
   indexedProjects: number
   marketCards: number
+  subgraphEndpoint?: string
+  subgraphBlocker?: string
 }
 
 export function buildHomeMachine(input: {
@@ -24,9 +26,13 @@ export function buildHomeMachine(input: {
   marketCards: MelegaTickerItem[]
   activityRows: number
   earnRows: number
+  subgraphEndpoint?: string
+  subgraphBlocker?: string
 }): HomeMachinePayload {
   const reasonCodes: Record<string, string> = {}
-  if (input.activityRows === 0) reasonCodes.liveActivity = 'NO_EVENTS_INDEXED'
+  if (input.activityRows === 0) {
+    reasonCodes.liveActivity = input.subgraphBlocker ?? 'NO_EVENTS_INDEXED'
+  }
   if (input.earnRows === 0) reasonCodes.earnOpportunities = 'NO_POOL_FOUND'
 
   return {
@@ -46,5 +52,7 @@ export function buildHomeMachine(input: {
     },
     indexedProjects: input.indexedProjects,
     marketCards: input.marketCards.length,
+    subgraphEndpoint: input.subgraphEndpoint,
+    subgraphBlocker: input.subgraphBlocker,
   }
 }

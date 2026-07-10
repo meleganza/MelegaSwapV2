@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { getMasterChefAddress } from 'utils/addressHelpers'
+import { farmsStudioColors, farmsStudioLayout, farmsTypography } from '../farmsStudioTokens'
+import { displayFarmMetric, shortenContractAddress } from '../farmsStudioDisplay'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsGhostBtn, FsPanel, FsPanelTitle, FsPrimaryBtn } from './farmsStudioPrimitives'
 
@@ -71,9 +74,21 @@ const MetricLabel = styled.span`
 `
 
 const MetricValue = styled.span`
-  font-size: 15px;
-  font-weight: 700;
+  font-size: ${farmsTypography.cardMetricValue.size};
+  font-weight: ${farmsTypography.cardMetricValue.weight};
+  line-height: ${farmsTypography.cardMetricValue.lineHeight};
   color: ${farmsStudioColors.text};
+  font-variant-numeric: ${farmsTypography.fontVariantNumeric};
+`
+
+const ContractLink = styled.a`
+  color: ${farmsStudioColors.text};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: ${farmsStudioColors.gold};
+  }
 `
 
 const BtnRow = styled.div`
@@ -129,12 +144,23 @@ const LoadingLine = styled.p`
   color: ${farmsStudioColors.muted};
 `
 
-const ConnectWrap = styled.div`
-  button {
-    height: 40px !important;
-    min-height: 40px !important;
-    padding: 0 20px !important;
-    border-radius: 12px !important;
+const FsConnectBtn = styled(ConnectWalletButton)`
+  && {
+    height: ${farmsStudioLayout.btnHeight};
+    min-height: ${farmsStudioLayout.btnHeight};
+    padding: 0 18px;
+    border: none;
+    border-radius: ${farmsStudioLayout.btnRadius};
+    background: ${farmsStudioColors.gold};
+    color: #050505;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: none;
+    transition: filter ${farmsStudioLayout.hoverTransition} ease;
+  }
+
+  &&:hover:not(:disabled) {
+    filter: brightness(1.06);
   }
 `
 
@@ -154,6 +180,7 @@ function sparklinePath(points: number[]): string {
 
 export const FeaturedFarmPanel: React.FC = () => {
   const { featured, loadingLabel, requestModal, account } = useFarmsRuntime()
+  const { chainId } = useActiveChainId()
   const card = featured.card
   const [analyzeOpen, setAnalyzeOpen] = useState(false)
   const preview = card?.analyzePreview
@@ -177,20 +204,20 @@ export const FeaturedFarmPanel: React.FC = () => {
             <LoadingLine>{loadingLabel}</LoadingLine>
           ) : (
             <>
-              <Pair>{featured.pair}</Pair>
-              <Apr>{featured.apr}</Apr>
+              <Pair>{displayFarmMetric(featured.pair)}</Pair>
+              <Apr>{displayFarmMetric(featured.apr)}</Apr>
               <Metrics>
                 <Metric>
                   <MetricLabel>TVL</MetricLabel>
-                  <MetricValue>{featured.tvl}</MetricValue>
+                  <MetricValue>{displayFarmMetric(featured.tvl)}</MetricValue>
                 </Metric>
                 <Metric>
                   <MetricLabel>Rewards / day</MetricLabel>
-                  <MetricValue>{featured.dailyRewards}</MetricValue>
+                  <MetricValue>{displayFarmMetric(featured.dailyRewards)}</MetricValue>
                 </Metric>
                 <Metric>
                   <MetricLabel>Multiplier</MetricLabel>
-                  <MetricValue>{featured.multiplier}</MetricValue>
+                  <MetricValue>{displayFarmMetric(featured.multiplier)}</MetricValue>
                 </Metric>
               </Metrics>
               <BtnRow>
@@ -211,9 +238,7 @@ export const FeaturedFarmPanel: React.FC = () => {
                     ) : null}
                   </>
                 ) : (
-                  <ConnectWrap>
-                    <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
-                  </ConnectWrap>
+                  <FsConnectBtn>Connect Wallet</FsConnectBtn>
                 )}
                 <FsGhostBtn
                   type="button"
@@ -226,9 +251,35 @@ export const FeaturedFarmPanel: React.FC = () => {
               </BtnRow>
               {analyzeOpen && preview ? (
                 <div style={{ marginTop: 12, fontSize: 12, color: farmsStudioColors.muted, lineHeight: 1.5 }}>
-                  <div>APR History: {preview.aprHistory}</div>
+                  <div>APR History: {displayFarmMetric(preview.aprHistory)}</div>
                   <div>Reward Token: {preview.rewardToken}</div>
-                  <div>Contract: {preview.contract}</div>
+                  <div>
+                    Contract:{' '}
+                    {preview.contractExplorerUrl && card?.rawFarm?.lpAddress ? (
+                      <ContractLink
+                        href={preview.contractExplorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={card.rawFarm.lpAddress}
+                      >
+                        {shortenContractAddress(card.rawFarm.lpAddress)}
+                      </ContractLink>
+                    ) : (
+                      displayFarmMetric(preview.contract)
+                    )}
+                  </div>
+                  {card?.masterChefExplorerUrl ? (
+                    <div>
+                      MasterChef:{' '}
+                      <ContractLink
+                        href={card.masterChefExplorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {shortenContractAddress(getMasterChefAddress(chainId))}
+                      </ContractLink>
+                    </div>
+                  ) : null}
                   <div>Risk: {preview.risk}</div>
                 </div>
               ) : null}

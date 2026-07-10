@@ -6,7 +6,8 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
-import { dexIndexToEnrichedProjects, buildDexTokenIndex } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
+import { getTrendingSurfaceAssets } from 'lib/dex-asset-index'
+import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { FetchStatus } from 'config/constants/types'
@@ -15,8 +16,10 @@ import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { getAprData } from 'views/Pools/helpers'
 import {
   formatFarmTrendingLabel,
+  formatPoolMetaLabel,
   formatPoolTickerAccent,
   formatPoolTrendingLabel,
+  POOL_APR_UNAVAILABLE_REASON,
 } from './formatTrendingLabels'
 
 export interface RibbonItem {
@@ -57,6 +60,21 @@ export interface ActivitySlot {
   id: string
   label: string
   row?: ActivityRow
+}
+
+export interface IndexedRibbonAsset {
+  slug: string
+  symbol: string
+  address?: string
+  chainId?: number
+  displayName: string
+}
+
+const pushUniqueTickerItem = (items: MelegaTickerItem[], item: MelegaTickerItem, seen: Set<string>) => {
+  const key = item.href ?? item.id
+  if (seen.has(key)) return
+  seen.add(key)
+  items.push(item)
 }
 
 export interface LiveEconomyMetric {
@@ -177,6 +195,7 @@ export const useHomeTradeData = () => {
   }, [transactions])
 
   const dexProjects = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
+  const trendingAssetCount = useMemo(() => getTrendingSurfaceAssets().length, [])
 
   const latestProject = useMemo(() => {
     return dexProjects.find((p) => p.slug !== 'melega-dex') ?? dexProjects[0]
@@ -189,8 +208,21 @@ export const useHomeTradeData = () => {
     return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
   }, [transactions])
 
+  const indexedRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
+    return getTrendingSurfaceAssets()
+      .map((asset) => ({
+        slug: asset.registrySlug ?? asset.id,
+        symbol: asset.symbol,
+        address: asset.address,
+        chainId: asset.chainId,
+        displayName: sanitizeRibbonText(asset.name ?? asset.symbol) ?? asset.symbol,
+      }))
+      .filter((asset) => asset.displayName && asset.slug !== 'melega-dex')
+  }, [])
+
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     const items: MelegaTickerItem[] = []
+    const seen = new Set<string>()
     const topFarm = farms.find((f) => farmApr(f))
     const topPool =
       pools.find((p) => {
@@ -201,73 +233,78 @@ export const useHomeTradeData = () => {
     if (topFarm) {
       const apr = farmApr(topFarm)
       const farmLabel = formatFarmTrendingLabel(topFarm, apr)
-      items.push({
-        id: 'top-farm',
-        primary: farmLabel.primary,
-        secondary: farmLabel.secondary,
-        accent: farmLabel.accent ? `${farmLabel.accent} APR` : undefined,
-        href: '/farms',
-      })
+      pushUniqueTickerItem(
+        items,
+        {
+          id: 'top-farm',
+          primary: farmLabel.primary,
+          secondary: farmLabel.secondary,
+          accent: farmLabel.accent ? `${farmLabel.accent} APR` : undefined,
+          href: '/farms',
+        },
+        seen,
+      )
     }
 
     if (topPool) {
       const apr = poolApr(topPool)
       const poolLabel = formatPoolTrendingLabel(topPool, apr)
-      items.push({
-        id: 'top-pool',
-        primary: poolLabel.primary,
-        secondary: poolLabel.secondary,
-        accent: formatPoolTickerAccent(poolLabel.accent),
-        href: '/pools',
-      })
+      pushUniqueTickerItem(
+        items,
+        {
+          id: 'top-pool',
+          primary: poolLabel.primary,
+          secondary: poolLabel.secondary,
+          accent: formatPoolTickerAccent(poolLabel.accent),
+          href: '/pools',
+        },
+        seen,
+      )
     }
 
     if (topVolumeSwap) {
-      items.push({
-        id: 'top-volume-pair',
-        primary: 'Top volume',
-        secondary: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
-        accent: formatUsd(topVolumeSwap.amountUSD),
-        href: '/trade',
-      })
+      pushUniqueTickerItem(
+        items,
+        {
+          id: 'top-volume-pair',
+          primary: 'Top volume',
+          secondary: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
+          accent: formatUsd(topVolumeSwap.amountUSD),
+          href: '/trade',
+        },
+        seen,
+      )
     }
 
-    dexProjects.slice(0, 5).forEach((project, index) => {
-      if (project.slug === 'melega-dex') return
-      const projectName = sanitizeRibbonText(project.displayName ?? project.slug)
-      if (!projectName) return
-      items.push({
-        id: `indexed-asset-${index}`,
-        primary: 'Indexed asset',
-        secondary: projectName,
-        href: `/projects/${project.slug}`,
-      })
+    indexedRibbonAssets.forEach((asset) => {
+      pushUniqueTickerItem(
+        items,
+        {
+          id: `indexed-asset-${asset.slug}`,
+          primary: asset.displayName,
+          secondary: asset.symbol,
+          href: `/projects/${asset.slug}`,
+        },
+        seen,
+      )
     })
 
-    if (latestProject) {
-      const projectName = sanitizeRibbonText(latestProject.displayName ?? latestProject.slug)
-      if (projectName) {
-        items.push({
-          id: 'latest-listing',
-          primary: 'Latest listing',
-          secondary: projectName,
-          href: `/projects/${latestProject.slug}`,
-        })
-      }
-    }
-
     if (latestSwap) {
-      items.push({
-        id: 'latest-swap',
-        primary: 'Latest swap',
-        secondary: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
-        accent: formatTimeAgo(latestSwap.timestamp),
-        href: '/trade',
-      })
+      pushUniqueTickerItem(
+        items,
+        {
+          id: 'latest-swap',
+          primary: 'Latest swap',
+          secondary: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
+          accent: formatTimeAgo(latestSwap.timestamp),
+          href: '/trade',
+        },
+        seen,
+      )
     }
 
     return items
-  }, [farms, latestSwap, latestProject, pools, topVolumeSwap, dexProjects])
+  }, [farms, latestSwap, pools, topVolumeSwap, indexedRibbonAssets])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -355,12 +392,11 @@ export const useHomeTradeData = () => {
     if (topPool) {
       const apr = poolApr(topPool)
       const poolLabel = formatPoolTrendingLabel(topPool, apr)
-      const tickerAccent = formatPoolTickerAccent(poolLabel.accent)
       cards.push({
         id: 'top-pool',
         label: 'Top Pool',
         value: poolLabel.secondary,
-        meta: tickerAccent.includes('%') ? `APR ${poolLabel.accent}` : tickerAccent,
+        meta: formatPoolMetaLabel(poolLabel.accent),
         change: poolTvl(topPool),
         href: '/pools',
       })
@@ -513,19 +549,47 @@ export const useHomeTradeData = () => {
     if (farms.length > 0) {
       metrics.push({ id: 'farms', label: 'Live farms', value: String(farms.length), live: true })
     }
-    const projectCount = dexProjects.length
+    const projectCount = trendingAssetCount || dexProjects.length
     if (projectCount > 0) {
-      metrics.push({ id: 'projects', label: 'Projects', value: String(projectCount), live: true })
+      metrics.push({ id: 'projects', label: 'Indexed assets', value: String(projectCount), live: true })
     }
     if (pools.length > 0) {
       metrics.push({ id: 'pools', label: 'Pools', value: String(pools.length), live: true })
     }
     return metrics
-  }, [transactions, farms.length, pools.length, dexProjects.length])
+  }, [transactions, farms.length, pools.length, dexProjects.length, trendingAssetCount])
+
+  const marketUnavailableReason = useMemo(() => {
+    if (marketCards.length > 0) return undefined
+    if (indexerState.status === 'loading') {
+      return indexerState.reason ?? 'Subgraph metrics loading'
+    }
+    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      return indexerState.reason ?? 'Subgraph indexer unavailable'
+    }
+    return 'No indexed farm APR, pool TVL, swap volume, or listing in current window'
+  }, [marketCards.length, indexerState])
+
+  const trendingUnavailableReason = useMemo(() => {
+    if (trendingTickerItems.length > 0) return undefined
+    if (indexerState.status === 'loading') {
+      return indexerState.reason ?? 'Subgraph metrics loading'
+    }
+    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      return indexerState.reason ?? 'Indexer not deployed'
+    }
+    if (!farms.length && !pools.length && !transactions?.length) {
+      return 'Waiting for first indexed event'
+    }
+    return 'No trending farms, pools, swaps, or assets in current window'
+  }, [trendingTickerItems.length, indexerState, farms.length, pools.length, transactions?.length])
+
+  const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 
   return {
     ribbonItems,
     trendingTickerItems,
+    indexedRibbonAssets,
     marketCards,
     farmRows,
     poolRows,
@@ -541,6 +605,9 @@ export const useHomeTradeData = () => {
     indexerState,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,
+    marketUnavailableReason,
+    trendingUnavailableReason,
+    poolAprUnavailableReason,
   }
 }
 

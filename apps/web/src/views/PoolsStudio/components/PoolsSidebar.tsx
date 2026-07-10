@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import AIRewardAdvisorPanel from './AIRewardAdvisorPanel'
 import PoolHealthGuide from './PoolHealthGuide'
 import StakeDonutChart from './StakeDonutChart'
+import { poolsFeaturedHero } from '../poolsStudioTokens'
 
 const Stack = styled.aside`
   width: 340px;
@@ -11,6 +12,7 @@ const Stack = styled.aside`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
 
   @media (max-width: 1099px) {
     width: 100%;
@@ -24,7 +26,6 @@ const SidebarCard = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.05);
   background: #141414;
   box-sizing: border-box;
-  overflow: hidden;
 
   @media (max-width: 1099px) {
     width: 100%;
@@ -32,13 +33,15 @@ const SidebarCard = styled.div`
 `
 
 const AdvisorCard = styled(SidebarCard)`
-  height: 260px;
-  min-height: 260px;
-  max-height: 260px;
+  height: ${poolsFeaturedHero.height};
+  min-height: ${poolsFeaturedHero.height};
+  max-height: ${poolsFeaturedHero.height};
   padding: 24px;
   border-radius: 18px;
   border: 1px solid #262626;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   @media (max-width: 767px) {
     height: auto;
@@ -51,6 +54,7 @@ const HealthCard = styled(SidebarCard)`
   height: 150px;
   min-height: 150px;
   max-height: 150px;
+  overflow: hidden;
 `
 
 const DonutCard = styled(SidebarCard)`
@@ -59,6 +63,7 @@ const DonutCard = styled(SidebarCard)`
   max-height: 220px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `
 
 const DonutTitle = styled.h3`

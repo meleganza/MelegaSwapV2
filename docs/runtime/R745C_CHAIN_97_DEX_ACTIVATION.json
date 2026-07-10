@@ -1,0 +1,44 @@
+{
+  "task": "R745C",
+  "schema": "melega.chain-97-dex-activation.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PARTIAL",
+  "chain97": {
+    "status": "active_testnet",
+    "architecture": "ADAPTER",
+    "networkSelector": true,
+    "addresses": {
+      "marco": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "wbnb": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+      "router": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+      "factory": "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+      "treasuryIntake": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164"
+    },
+    "studios": {
+      "buildStudio": "wired",
+      "liquidityStudio": "wired",
+      "trade": "wired",
+      "pools": "wired",
+      "farms": "wired"
+    }
+  },
+  "validation": {
+    "walletConnectChain97": "requires manual wallet test",
+    "tradeOnChain": "WBNB-USDT pair exists; MARCO pairs absent",
+    "liquidityCreatePair": "factory+router wired",
+    "poolCreation": "blocked — legacy sousChef testnet contracts have no bytecode",
+    "farmCreation": "blocked — Melega MasterChef not deployed on chain 97"
+  },
+  "remainingBlockers": [
+    "BLOCKED_WRAPPER_NOT_DEPLOYED",
+    "BLOCKED_MARCO_TESTNET_LIQUIDITY",
+    "BLOCKED_TESTNET_MASTERCHEF_MISSING",
+    "BLOCKED_TESTNET_SOUSCHEF_MISSING",
+    "MANUAL_WALLET_VALIDATION_REQUIRED"
+  ],
+  "unchanged": {
+    "wrapperAddress": null,
+    "mainnetChain56": "unchanged",
+    "frontendArchitecture": "ADAPTER"
+  }
+}

@@ -31,7 +31,7 @@ const makeColorScheme = (mode: Mode = 'light') => {
     gradientBubblegum: '#aba0c4',
     gradientBubblegumHover: '#8b81a2',
     modalBackground: "#000000",
-    text99: "#52329288", // Modal Overlay
+    text99: "#52329288",
     poolDivider: "#524b63",
   }
 

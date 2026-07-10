@@ -2,7 +2,7 @@ import { readKerlMarcoToken, getKerlRegistryVersion, readKerlTreasuryCollector }
 import { readTreasuryRuntimeCollector, getTreasuryRuntimeRegistryVersion } from '../registry/runtimeRegistry'
 import { readSmartRouterChainProfile, getSmartRouterRegistryVersion } from '../registry/smartRouterRegistry'
 import { getUnderlyingRouterEntry } from '../underlyingRouterRegistry'
-import type { ChainRegistryEntry } from './types'
+import type { ChainRegistryEntry, CivilizationRouteType } from './types'
 
 const ENV_MARCO_KEYS: Record<number, string> = {
   56: 'NEXT_PUBLIC_MARCO_TOKEN_BSC',
@@ -73,7 +73,7 @@ export function getKerlIntegrationStatus() {
     writable: false,
     resolutionOrder: ['KERL Registry', 'Treasury Runtime Registry', 'Smart Router Registry', 'env (dev only)'],
     treasuryCollectorPublished: false,
-    marcoChainsIndexed: [56, 1, 137, 8453],
+    marcoChainsIndexed: [56, 97, 1, 137, 8453],
   }
 }
 
@@ -85,7 +85,10 @@ export function buildChainRegistryEntry(chainId: number): ChainRegistryEntry {
   const runtimeMarco = kerlMarco.available ? kerlMarco.marcoTokenAddress ?? null : null
 
   const runtimeCollector = readTreasuryRuntimeCollector(chainId)
-  const collectorAddress = runtimeCollector.available ? runtimeCollector.collectorAddress ?? null : null
+  const collectorAddress =
+    (runtimeCollector.available ? runtimeCollector.collectorAddress ?? null : null) ??
+    profile?.treasuryCollector ??
+    null
 
   const wrapperAddress = profile?.wrapperAddress ?? null
   const underlyingRouter = router.routerAddress ?? profile?.executionRouter ?? null
@@ -110,8 +113,15 @@ export function buildChainRegistryEntry(chainId: number): ChainRegistryEntry {
   if (!profile) blockers.push('BLOCKED_CHAIN_NOT_INDEXED')
 
   let status: ChainRegistryEntry['status'] = 'blocked'
-  if (blockers.length === 0) status = 'active'
-  else if (underlyingRouter && runtimeMarco) status = chainId === 56 ? 'partial' : 'blocked'
+  if (blockers.length === 0) {
+    status = chainId === 97 ? 'active_testnet' : 'active'
+  } else if (wrapperAddress && underlyingRouter && runtimeMarco && collectorAddress && chainId === 97) {
+    status = 'active_testnet'
+  } else if (underlyingRouter && runtimeMarco && collectorAddress && chainId === 97) {
+    status = 'active_testnet'
+  } else if (underlyingRouter && runtimeMarco) {
+    status = chainId === 56 ? 'partial' : 'blocked'
+  }
 
   const chainNames: Record<number, string> = {
     56: 'BNB Chain',
@@ -122,16 +132,32 @@ export function buildChainRegistryEntry(chainId: number): ChainRegistryEntry {
     chainId,
     chainName: profile?.chainName ?? chainNames[chainId] ?? `Chain ${chainId}`,
     wrapperAddress,
+    ...(wrapperAddress && profile?.wrapperStatus
+      ? {
+          wrapperStatus: profile.wrapperStatus,
+          wrapperVersion: profile.wrapperVersion,
+          validationStatus: profile.validationStatus,
+          validationCertificate: profile.validationCertificate,
+        }
+      : {}),
     underlyingRouter,
     MARCO: runtimeMarco,
     treasuryCollector: collectorAddress,
     KERLRegistry: `/registry/kerl/index.json (${getKerlRegistryVersion()})`,
     TreasuryRuntime: `/registry/treasury/index.json (${getTreasuryRuntimeRegistryVersion()})`,
-    supportedAssets: chainId === 56 ? ['MARCO', 'MXMX', 'WBNB'] : [],
-    supportedRouteTypes: [...swapRoutes, ...blockedRoutes],
+    supportedAssets:
+      profile?.supportedAssets ??
+      (chainId === 56 ? ['MARCO', 'MXMX', 'WBNB'] : chainId === 97 ? ['MARCO', 'WBNB'] : []),
+    supportedRouteTypes:
+      profile?.executableRouteTypes && profile.executableRouteTypes.length > 0
+        ? ([...profile.executableRouteTypes, ...blockedRoutes] as CivilizationRouteType[])
+        : ([...swapRoutes, ...blockedRoutes] as CivilizationRouteType[]),
+    ...(profile?.executableRouteTypes?.length
+      ? { executableRouteTypes: profile.executableRouteTypes as CivilizationRouteType[] }
+      : {}),
     status,
     blockerReason: blockers.length ? blockers.join('; ') : null,
-    lastVerifiedAt: new Date().toISOString().slice(0, 10),
+    lastVerifiedAt: profile?.lastVerification ?? new Date().toISOString().slice(0, 10),
     version: getSmartRouterRegistryVersion(),
   }
 }

@@ -1,12 +1,17 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { Transaction, TransactionType } from 'state/info/types'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { MARCO_BSC_ADDRESS, isMarcoSymbol } from 'design-system/melega/constants/brand'
+import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 import type { DataReasonCode } from 'lib/data-policy/dataReasonCodes'
-import { resolveHolderMetric, useHolderCount } from 'lib/holder-count'
+import { DATA_REASON_LABELS } from 'lib/data-policy/dataReasonCodes'
+import { resolveHolderMetric, resolveHolderMachinePayload, useHolderCount } from 'lib/holder-count'
+import { resolveSubgraphEndpointReport } from 'lib/runtime-indexing'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
 
@@ -16,7 +21,9 @@ export interface TradeSwapRow {
   wallet: string
   pair: string
   amount: string
+  amountReason?: string
   received?: string
+  receivedReason?: string
   direction: 'buy' | 'sell'
   route?: string
 }
@@ -35,6 +42,8 @@ export interface TradeDataMachinePayload {
   schemaVersion: '1.0.0'
   module: 'trade'
   subgraphTransactions: 'loading' | 'ready' | 'empty'
+  subgraphEndpoint?: string
+  subgraphBlocker?: string
   tokenMetrics: 'loading' | 'ready' | 'missing'
   reasonCodes: Partial<Record<string, DataReasonCode>>
   dataSources: string[]
@@ -42,12 +51,15 @@ export interface TradeDataMachinePayload {
   runtimeLinks: string[]
   missingReason: TradeDataMissingReason
   missingReasonDetail?: string
+  holder_source: 'bscscan'
+  holder_status: 'configured' | 'not_configured' | 'error'
+  holder_reason?: string
   timestamp: string
 }
 
 const formatTimeAgo = (timestamp: string): string => {
   const ts = Number(timestamp)
-  if (!ts || Number.isNaN(ts)) return '—'
+  if (!ts || Number.isNaN(ts)) return RUNTIME_UNAVAILABLE_LABEL
   const seconds = Math.floor(Date.now() / 1000 - ts)
   if (seconds < 60) return `${seconds}s ago`
   const minutes = Math.floor(seconds / 60)
@@ -58,7 +70,7 @@ const formatTimeAgo = (timestamp: string): string => {
 }
 
 const shortenWallet = (address: string): string => {
-  if (!address || address.length < 10) return address || '—'
+  if (!address || address.length < 10) return RUNTIME_UNAVAILABLE_LABEL
   return `${address.slice(0, 6)}…${address.slice(-4)}`
 }
 
@@ -96,18 +108,26 @@ const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean
   return symbols.has(token0.toUpperCase()) && symbols.has(token1.toUpperCase())
 }
 
-function resolveCanonicalOutputAddress(outputSymbol?: string, outputAddress?: string): string | undefined {
+function resolveCanonicalOutputAddress(
+  chainId: number | undefined,
+  outputSymbol?: string,
+  outputAddress?: string,
+): string | undefined {
   if (outputAddress) return getTokenAddress(outputAddress)
-  if (isMarcoSymbol(outputSymbol)) return MARCO_BSC_ADDRESS
+  if (isMarcoSymbol(outputSymbol)) {
+    return chainId === 97 ? BSC_TESTNET_ADDRESSES.marco : MARCO_BSC_ADDRESS
+  }
   return undefined
 }
 
 export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string, outputAddress?: string) => {
+  const { chainId } = useActiveChainId()
+  const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
-  const resolvedOutput = resolveCanonicalOutputAddress(outputSymbol, outputAddress)
+  const resolvedOutput = resolveCanonicalOutputAddress(chainId, outputSymbol, outputAddress)
   const tokenAddress = resolvedOutput
   const tokenData = useTokenDataSWR(tokenAddress)
-  const { data: holderCount } = useHolderCount(56, tokenAddress)
+  const { data: holderCount, isLoading: holderLoading } = useHolderCount(chainId, tokenAddress)
   const isMarcoRoute =
     isMarcoSymbol(outputSymbol) ||
     !outputSymbol ||
@@ -153,8 +173,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
           time: formatTimeAgo(tx.timestamp),
           wallet: shortenWallet(tx.sender),
           pair: `${tx.token0Symbol} / ${tx.token1Symbol}`,
-          amount: formatUsd(tx.amountUSD) ?? '—',
+          amount: formatUsd(tx.amountUSD) ?? RUNTIME_UNAVAILABLE_LABEL,
+          amountReason:
+            tx.amountUSD > 0 ? undefined : DATA_REASON_LABELS.NO_EVENTS_INDEXED,
           received: receivedAmount,
+          receivedReason: receivedAmount ? undefined : 'Swap output amount not indexed',
           direction: swapDirection(tx, displayOutput),
           route: swapRouteLabel(tx),
         }
@@ -173,7 +196,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const supplyValue = formatSupply(publicMarket?.circulatingSupply)
 
     const volumeReason: DataReasonCode | undefined =
-      tokenData === undefined && !publicMarket
+      tokenData === undefined && subgraphReport.melegaNativeConfigured && !publicMarket
         ? 'SUBGRAPH_LOADING'
         : !tokenData?.exists && !publicMarket?.volume24hUsd
           ? 'PAIR_NOT_INDEXED'
@@ -182,20 +205,20 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
             : undefined
 
     const liquidityReason: DataReasonCode | undefined =
-      tokenData === undefined
+      tokenData === undefined && subgraphReport.melegaNativeConfigured
         ? 'SUBGRAPH_LOADING'
-        : !tokenData.exists
+        : !tokenData?.exists
           ? 'PAIR_NOT_INDEXED'
           : !tokenData.liquidityUSD
             ? 'NO_POOL_FOUND'
             : undefined
 
     const tradesReason: DataReasonCode | undefined =
-      tokenData === undefined
+      tokenData === undefined && subgraphReport.melegaNativeConfigured
         ? 'SUBGRAPH_LOADING'
-        : !tokenData.exists
+        : !tokenData?.exists
           ? 'PAIR_NOT_INDEXED'
-          : !tokenData.txCount
+          : !tokenData.txCount && !transactions?.length
             ? 'NO_EVENTS_INDEXED'
             : undefined
 
@@ -249,16 +272,19 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'holders',
         label: 'Holders',
-        value: tokenAddress
-          ? resolveHolderMetric(holderCount).display
-          : 'Source not configured',
-        reasonCode:
-          tokenAddress && holderCount?.status === 'ready'
+        value: !tokenAddress
+          ? RUNTIME_UNAVAILABLE_LABEL
+          : resolveHolderMetric(holderCount, holderLoading).display,
+        reasonCode: !tokenAddress
+          ? 'DATA_SOURCE_NOT_CONFIGURED'
+          : holderLoading
             ? undefined
-            : 'EXPLORER_SOURCE_MISSING',
+            : holderCount?.status === 'ready'
+              ? undefined
+              : 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData, publicMarket, tokenAddress, holderCount])
+  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading])
 
   const pairPrice = useMemo(() => {
     if (!tokenData?.priceUSD) return undefined
@@ -312,6 +338,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     pairStats.forEach((stat) => {
       if (stat.reasonCode) reasonCodes[stat.id] = stat.reasonCode
     })
+    const holderMachine = resolveHolderMachinePayload(holderCount)
     return {
       schema: 'melega.trade.market.v1',
       schemaVersion: '1.0.0',
@@ -322,6 +349,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
           : transactions && transactions.length > 0
             ? 'ready'
             : 'empty',
+      subgraphEndpoint: indexerState.configuredEndpoint,
+      subgraphBlocker: indexerState.blockerCode,
       tokenMetrics:
         tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
       reasonCodes,
@@ -330,12 +359,14 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       runtimeLinks: ['/command-center', '/liquidity-studio', '/trending'],
       missingReason,
       missingReasonDetail,
+      ...holderMachine,
       timestamp: new Date().toISOString(),
     }
-  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail, indexerState.status])
+  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail, indexerState, holderCount, subgraphReport])
 
   const isIndexingSwaps = isActivityIndexing && recentSwaps.length === 0
-  const isIndexingMetrics = tokenData === undefined && Boolean(tokenAddress)
+  const isIndexingMetrics =
+    subgraphReport.melegaNativeConfigured && tokenData === undefined && Boolean(tokenAddress) && !publicMarket
 
   return {
     recentSwaps,
@@ -350,7 +381,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     isIndexing: isIndexingSwaps,
     isIndexingMetrics,
     hasSwapData: indexerState.status === 'ready',
-    swapEmptyReason: !isActivityIndexing && recentSwaps.length === 0 ? 'NO_EVENTS_INDEXED' : undefined,
+    swapEmptyReason: !isActivityIndexing && recentSwaps.length === 0
+      ? indexerState.status === 'error' || indexerState.status === 'unavailable'
+        ? 'DATA_SOURCE_NOT_CONFIGURED'
+        : 'NO_EVENTS_INDEXED'
+      : undefined,
     swapDiagnostic: !isActivityIndexing && recentSwaps.length === 0 ? indexerState : undefined,
     chartUnavailableDetail,
     indexerState,

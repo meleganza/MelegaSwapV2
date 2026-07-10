@@ -1,0 +1,99 @@
+{
+  "schema": "melega.civilization.runtime.v1",
+  "generatedAt": "2026-07-05T13:00:00.000Z",
+  "version": "1.0.0",
+  "identity_hub": {
+    "label": "Identity Hub",
+    "route": "/collectibles",
+    "constitutional": true,
+    "collections": ["BabyMARCO Genesis", "Master M", "Aaron", "Raky", "Future"]
+  },
+  "runtimeGraph": {
+    "flow": [
+      "import → registry",
+      "registry → radar",
+      "radar → projects",
+      "projects → trending",
+      "trending → command_center",
+      "trade → treasury",
+      "trade → command_center",
+      "liquidity → pools",
+      "pools → command_center",
+      "farms → command_center",
+      "identity → command_center",
+      "build_studio → registry",
+      "command_center → identity"
+    ],
+    "totalEdges": 17,
+    "connectedEdges": 17,
+    "coveragePercentage": 100,
+    "brokenPaths": [],
+    "modulesConnected": [
+      "import",
+      "registry",
+      "radar",
+      "projects",
+      "trending",
+      "trade",
+      "liquidity",
+      "pools",
+      "farms",
+      "identity",
+      "command_center",
+      "treasury",
+      "build_studio"
+    ]
+  },
+  "events": {
+    "producers": {
+      "import_analyzed": "import",
+      "registry_indexed": "registry",
+      "radar_signals_refreshed": "radar",
+      "projects_intelligence_refreshed": "projects",
+      "trending_refreshed": "trending",
+      "trade_executed": "trade",
+      "treasury_settlement": "trade",
+      "liquidity_position_changed": "liquidity",
+      "pool_staked": "pools",
+      "pool_unstaked": "pools",
+      "pool_claimed": "pools",
+      "farm_staked": "farms",
+      "farm_withdrawn": "farms",
+      "farm_claimed": "farms",
+      "identity_resolved": "identity",
+      "command_center_synced": "command_center"
+    },
+    "emitPoints": [
+      "buildImportAnalysis.ts",
+      "buildLiveEvents.ts",
+      "useProjectsIntelligenceRuntime.ts",
+      "useTrendingIntelligenceRuntime.ts",
+      "submitSettlementHandoff.ts",
+      "useLiquidityPositions.ts",
+      "FarmsActionHost.tsx",
+      "useWalletCollectibleOwnership.ts",
+      "useCommandCenterOrchestrationRuntime.ts"
+    ]
+  },
+  "deadModulesAtColdStart": [
+    "import",
+    "registry",
+    "radar",
+    "projects",
+    "trending",
+    "trade",
+    "liquidity",
+    "pools",
+    "farms",
+    "identity",
+    "command_center",
+    "build_studio"
+  ],
+  "unusedEventsAtColdStart": "all 16 event types until runtime activity",
+  "gaps": [
+    "pool_stake/claim/unstake emits pending PoolsActionHost modal wiring",
+    "treasury module consumes only — no direct emitter (by design)",
+    "deploy deferred pending review approval"
+  ],
+  "verdict": "R500_CIVILIZATION_RUNTIME_REVIEW"
+}

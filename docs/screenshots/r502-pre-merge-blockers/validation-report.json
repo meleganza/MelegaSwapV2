@@ -1,0 +1,22 @@
+{
+  "task": "R502 PRE-MERGE BLOCKERS",
+  "deliverable": "R502_PRE_MERGE_BLOCKERS_REVIEW",
+  "baseSha": "481cc220eb09bca604fb58d11648af0a8f03b4f6",
+  "branch": "design-system-foundation",
+  "build": "pass",
+  "tests": "44/44 impacted (after import fix)",
+  "stagingDeploy": "deferred-uncommitted",
+  "stagingUrl": "https://v2.melega.finance",
+  "production": "untouched",
+  "main": "untouched",
+  "dexMelegaAi": "untouched",
+  "tradeDataStatus": {
+    "canonicalPair": "MARCO/BNB",
+    "defaultOutput": "MARCO_BSC_ADDRESS",
+    "missingReasonWhenEmpty": "pair_not_indexed | subgraph_empty | route_not_configured | explorer_missing (holders)",
+    "chart": "subgraph first, compact empty state with reason",
+    "stats": "bottom-aligned in chart card",
+    "recentSwaps": "indexed filter + compact empty height"
+  },
+  "verdict": "R502_PRE_MERGE_BLOCKERS_REVIEW"
+}

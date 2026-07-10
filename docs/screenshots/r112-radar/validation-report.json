@@ -1,0 +1,20 @@
+{
+  "task": "R112_RADAR_PREMIUM_REVIEW",
+  "build": "pass",
+  "screenshots": [
+    "radar-desktop-1440x900.png",
+    "radar-mobile-390x844.png"
+  ],
+  "checks": {
+    "radar-desktop-1440x900.png": {
+      "ok": true,
+      "missing": [],
+      "overflow": false
+    },
+    "radar-mobile-390x844.png": {
+      "ok": true,
+      "missing": [],
+      "overflow": false
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { colors, typography, radius } from '../../tokens'
+import { colors, typography } from '../../tokens'
 import { media } from '../../theme'
 import { MelegaButton } from '../Button'
 
@@ -9,13 +9,15 @@ export interface MelegaCtaCardProps {
   visual?: React.ReactNode
   title: string
   description: string
+  /** When set, the entire card (including visual) navigates to this href — no separate CTA row. */
+  href?: string
   primaryAction?: { label: string; href?: string; onClick?: () => void }
   secondaryAction?: { label: string; href?: string; onClick?: () => void }
   disabled?: boolean
   loading?: boolean
 }
 
-const Card = styled.div`
+const cardStyles = `
   display: grid;
   grid-template-columns: 80px 1fr;
   gap: 14px;
@@ -28,6 +30,12 @@ const Card = styled.div`
   border-radius: 20px;
   box-shadow: none;
   box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease,
+    filter 150ms ease;
 
   ${media.mobile} {
     grid-template-columns: 84px 1fr;
@@ -37,6 +45,25 @@ const Card = styled.div`
     max-height: none;
     border-radius: 18px;
   }
+`
+
+const Card = styled.div`
+  ${cardStyles}
+`
+
+const CardLink = styled(Link)<{ $interactive?: boolean }>`
+  ${cardStyles}
+  cursor: ${({ $interactive }) => ($interactive ? 'pointer' : 'default')};
+
+  ${({ $interactive }) =>
+    $interactive &&
+    `
+    &:hover {
+      border-color: rgba(212, 175, 55, 0.55);
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+  `}
 `
 
 const Visual = styled.div`
@@ -143,49 +170,97 @@ const ActionLink = styled(Link)<{ $variant?: 'primary' | 'secondary' }>`
   }
 `
 
-export const MelegaCtaCard: React.FC<MelegaCtaCardProps> = ({
+const CardContent: React.FC<{
+  visual?: React.ReactNode
+  title: string
+  description: string
+  showActions: boolean
+  primaryAction?: MelegaCtaCardProps['primaryAction']
+  secondaryAction?: MelegaCtaCardProps['secondaryAction']
+  disabled?: boolean
+  loading?: boolean
+}> = ({
   visual,
   title,
   description,
+  showActions,
   primaryAction,
   secondaryAction,
   disabled,
   loading,
 }) => (
-  <Card style={{ opacity: disabled ? 0.45 : 1 }}>
+  <>
     {visual && <Visual>{visual}</Visual>}
     <Body>
       <Title>{title}</Title>
       <Desc>{description}</Desc>
-      <Actions>
-        {primaryAction &&
-          (primaryAction.href ? (
-            <ActionLink href={primaryAction.href} $variant="primary">
-              {primaryAction.label}
-            </ActionLink>
-          ) : (
-            <MelegaButton variant="primary" disabled={disabled} loading={loading} onClick={primaryAction.onClick}>
-              {primaryAction.label}
-            </MelegaButton>
-          ))}
-        {secondaryAction &&
-          (secondaryAction.href ? (
-            <ActionLink href={secondaryAction.href} $variant="secondary">
-              {secondaryAction.label}
-            </ActionLink>
-          ) : (
-            <MelegaButton
-              variant="secondary"
-              disabled={disabled}
-              loading={loading}
-              onClick={secondaryAction.onClick}
-            >
-              {secondaryAction.label}
-            </MelegaButton>
-          ))}
-      </Actions>
+      {showActions && (
+        <Actions>
+          {primaryAction &&
+            (primaryAction.href ? (
+              <ActionLink href={primaryAction.href} $variant="primary">
+                {primaryAction.label}
+              </ActionLink>
+            ) : (
+              <MelegaButton variant="primary" disabled={disabled} loading={loading} onClick={primaryAction.onClick}>
+                {primaryAction.label}
+              </MelegaButton>
+            ))}
+          {secondaryAction &&
+            (secondaryAction.href ? (
+              <ActionLink href={secondaryAction.href} $variant="secondary">
+                {secondaryAction.label}
+              </ActionLink>
+            ) : (
+              <MelegaButton
+                variant="secondary"
+                disabled={disabled}
+                loading={loading}
+                onClick={secondaryAction.onClick}
+              >
+                {secondaryAction.label}
+              </MelegaButton>
+            ))}
+        </Actions>
+      )}
     </Body>
-  </Card>
+  </>
 )
+
+export const MelegaCtaCard: React.FC<MelegaCtaCardProps> = ({
+  visual,
+  title,
+  description,
+  href,
+  primaryAction,
+  secondaryAction,
+  disabled,
+  loading,
+}) => {
+  const cardStyle = { opacity: disabled ? 0.45 : 1 }
+
+  if (href && !disabled) {
+    return (
+      <CardLink href={href} $interactive style={cardStyle} data-melega-cta-card-link>
+        <CardContent visual={visual} title={title} description={description} showActions={false} />
+      </CardLink>
+    )
+  }
+
+  return (
+    <Card style={cardStyle}>
+      <CardContent
+        visual={visual}
+        title={title}
+        description={description}
+        showActions={Boolean(primaryAction || secondaryAction)}
+        primaryAction={primaryAction}
+        secondaryAction={secondaryAction}
+        disabled={disabled}
+        loading={loading}
+      />
+    </Card>
+  )
+}
 
 export default MelegaCtaCard

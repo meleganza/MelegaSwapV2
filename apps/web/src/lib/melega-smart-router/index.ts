@@ -76,6 +76,26 @@ export {
 } from './aiReadability'
 
 export {
+  EXECUTION_ADAPTER_SCHEMA,
+  resolveExecutionAdapter,
+  resolveExecutionAdapterForSwap,
+  buildExecutionPlan,
+  resolveRequiredAdapterType,
+  EXECUTION_ADAPTER_MATRIX,
+  EXECUTION_ADAPTER_COMPATIBILITY,
+  getAdapterMatrixForChain,
+  V2ExecutionAdapter,
+  SmartRouterExecutionAdapter,
+  AdapterResolutionError,
+} from './execution-adapter'
+export type {
+  ExecutionPlan,
+  ExecutionAdapterType,
+  IExecutionAdapter,
+  ResolvedExecutionAdapter,
+} from './execution-adapter'
+
+export {
   CIVILIZATION_ROUTER_SCHEMA,
   CIVILIZATION_ROUTER_VERSION,
   CIVILIZATION_ROUTER_CONTRACT_SCHEMA,

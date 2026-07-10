@@ -1,0 +1,87 @@
+{
+  "schema": "melega.smart-router.validation.v1",
+  "certificateId": "R747-BSC-TESTNET-WRAPPER-V2",
+  "validationDate": "2026-07-09",
+  "civilizationStatus": "ACTIVE_TESTNET",
+  "chainId": 97,
+  "chainName": "BNB Testnet",
+  "verdict": "PASSED",
+  "wrapper": {
+    "address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+    "version": 2,
+    "deployTx": "0xef5be1c2324a0b68853f15a8d1c729c2bffae2c82372fe9a3c4f9b95f2d009ef",
+    "deployBlock": 118153243,
+    "deployTimestamp": "2026-07-09T16:17:17.000Z",
+    "bytecodeHash": "0x38b51c47d376400b04c3af1c7425d4af830dc71aec9a7faee23e80e51213d610",
+    "explorerUrl": "https://testnet.bscscan.com/address/0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db"
+  },
+  "immutables": {
+    "underlyingRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "treasuryIntake": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+    "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "pricingRef": "D87_DEX_PRICING_RATIFIED",
+    "pricingRefHash": "0x86ec759a7d636e2c23c8e666673400056cc5ef99061381c1dac5abbd90530294",
+    "treasuryRef": "FSC-01",
+    "treasuryPolicyRefHash": "0x2c4da16e00f42da5ec690db4a2db138a94f7c423d1ad10de9274c4d404b7d6b8"
+  },
+  "validationTransactions": {
+    "BUY_MARCO": {
+      "txHash": "0x8a19f2eb24793dad439cb9779bc1586579fa411bc004dee8302ce37757e22ec1",
+      "explorerUrl": "https://testnet.bscscan.com/tx/0x8a19f2eb24793dad439cb9779bc1586579fa411bc004dee8302ce37757e22ec1",
+      "receiptStatus": "success",
+      "protocolFeeBps": 20,
+      "buyMarcoIncentiveApplied": true,
+      "grossAmountIn": "10000000000000000",
+      "feeAmount": "20000000000000",
+      "netAmountIn": "9980000000000000",
+      "feeToken": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
+    },
+    "SELL_MARCO": {
+      "txHash": "0x5602377a4f9eed55a047ef215e3e2b437b5df4e919ac9a3bd04b5a1d4a961486",
+      "explorerUrl": "https://testnet.bscscan.com/tx/0x5602377a4f9eed55a047ef215e3e2b437b5df4e919ac9a3bd04b5a1d4a961486",
+      "receiptStatus": "success",
+      "protocolFeeBps": 30,
+      "buyMarcoIncentiveApplied": false,
+      "grossAmountIn": "100000000000000000000",
+      "feeAmount": "300000000000000000",
+      "netAmountIn": "99700000000000000000",
+      "feeToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+    },
+    "STANDARD_SWAP": {
+      "txHash": "0x80969383a47713d6e0dd115b8382f6a0531b7a0575b8ae1d6ef942fdb2b138ec",
+      "explorerUrl": "https://testnet.bscscan.com/tx/0x80969383a47713d6e0dd115b8382f6a0531b7a0575b8ae1d6ef942fdb2b138ec",
+      "receiptStatus": "success",
+      "protocolFeeBps": 30,
+      "buyMarcoIncentiveApplied": false,
+      "grossAmountIn": "10000000000000000",
+      "feeAmount": "30000000000000",
+      "netAmountIn": "9970000000000000",
+      "feeToken": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
+    }
+  },
+  "feeValidation": {
+    "BUY_MARCO": { "expectedBps": 20, "verifiedBps": 20, "pass": true },
+    "SELL_MARCO": { "expectedBps": 30, "verifiedBps": 30, "pass": true },
+    "STANDARD_SWAP": { "expectedBps": 30, "verifiedBps": 30, "pass": true }
+  },
+  "eventVerification": {
+    "ProtocolFeeCollected": { "verified": true, "routes": ["BUY_MARCO", "SELL_MARCO", "STANDARD_SWAP"] },
+    "SmartRouterSwapRouted": { "verified": true, "routes": ["BUY_MARCO", "SELL_MARCO", "STANDARD_SWAP"] },
+    "TreasuryHandoffPrepared": { "verified": true, "routes": ["BUY_MARCO", "SELL_MARCO", "STANDARD_SWAP"] }
+  },
+  "treasuryIntakeVerified": true,
+  "executionManifestVerified": true,
+  "executionManifestNote": "TreasuryHandoffPrepared emitted on-chain per swap; off-chain Treasury Runtime intake remains separate from DEX settlement ownership.",
+  "supportedRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+  "founderWallet": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "supersedes": {
+    "wrapperV1": "0xe29b30099f7E5B7205151f9893e6829dbC964002",
+    "reason": "V1 native fee path reverted TREASURY_FEE_TRANSFER_FAILED; V2 wraps protocol fee to WBNB before ERC20 transfer to Treasury Intake"
+  },
+  "registryRefs": {
+    "smartRouter": "/registry/smart-router/index.json#97",
+    "civilizationRouter": "/registry/smart-router/civilization-router-contract.json",
+    "treasury": "/registry/treasury/index.json#97"
+  },
+  "disclaimer": "Testnet constitutional validation certificate only. Does not activate BNB Chain mainnet (56). Does not modify Treasury Runtime, KERL, D87, or FSC-01 policy ownership."
+}

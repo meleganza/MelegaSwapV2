@@ -1,0 +1,96 @@
+{
+  "task": "R745D",
+  "schema": "melega.chain-97-liquidity-ceremony.v1",
+  "asOf": "2026-07-09",
+  "verdict": "BLOCKED",
+  "step1_manualE2E": {
+    "status": "NOT_COMPLETED",
+    "reason": "MetaMask wallet session cannot be operated by agent; requires founder manual session",
+    "devServer": {
+      "command": "cd apps/web && yarn dev",
+      "url": "http://localhost:3000",
+      "tradePage": "http://localhost:3000/trade",
+      "liquidityStudio": "http://localhost:3000/liquidity-studio",
+      "serverRunning": true
+    },
+    "expectedChainId": 97,
+    "verifiedConstants": {
+      "router": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+      "factory": "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+      "marco": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "wbnb": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+      "routerFactoryOnChainMatch": true,
+      "routerWethOnChainMatch": true
+    }
+  },
+  "step2_pairCheck": {
+    "factory": "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+    "pairExists": false,
+    "pairAddress": "0x0000000000000000000000000000000000000000",
+    "reserves": null,
+    "rpc": "https://bsc-testnet-rpc.publicnode.com"
+  },
+  "step3_liquidityCeremony": {
+    "status": "NOT_EXECUTED",
+    "reason": "No TESTNET_DEPLOYER / founder private key in environment; founder wallet approval required",
+    "candidateFounderWallet": {
+      "address": "0xD699b84D3e1601BdD8c6f74E26166CA28D8fd6a4",
+      "source": "Treasury Intake deployment certificate R751 deployer",
+      "tbnbBalanceWei": "297925569600000000",
+      "tbnbBalanceHuman": "~0.298 tBNB",
+      "marcoBalanceWei": "999999000000000000000000",
+      "marcoBalanceHuman": "~1,000,000 MARCO",
+      "sufficientForRecommendedLiquidity": "partial — MARCO OK; tBNB below 0.5 minimum (use ~0.25 tBNB or faucet top-up)"
+    },
+    "recommendedLiquidity": {
+      "marco": "100000",
+      "tbnb": "0.5 to 1"
+    },
+    "adjustedPlanGivenBalances": {
+      "marco": "100000",
+      "tbnb": "0.25",
+      "note": "Fits ~0.298 tBNB balance with gas headroom"
+    },
+    "executionPath": {
+      "preferred": "Liquidity Studio — http://localhost:3000/liquidity-studio?chain=bsc-testnet",
+      "steps": [
+        "Connect MetaMask on BNB Testnet (chainId 97)",
+        "Select MARCO + tBNB (native)",
+        "Enter 100000 MARCO + 0.25 tBNB",
+        "Approve MARCO to router 0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+        "Submit addLiquidityETH (Liquidity Studio useLiquidityMintRuntime)"
+      ],
+      "directRouter": {
+        "method": "addLiquidityETH(address,uint256,uint256,uint256,address,uint256)",
+        "token": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+        "value": "tBNB wei amount",
+        "spender": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
+      }
+    },
+    "addLiquidityTx": null,
+    "lpTokenBalance": null
+  },
+  "step4_validation": {
+    "factoryGetPairNonZero": false,
+    "reservesGtZero": false,
+    "quoteWbnbToMarco": false,
+    "quoteMarcoToWbnb": false,
+    "quoteWbnbToUsdtControl": true,
+    "note": "WBNB-USDT quotes succeed on same router — DEX routing layer functional; MARCO pair missing"
+  },
+  "screenshots": {
+    "captured": false,
+    "reason": "Requires founder MetaMask session in browser"
+  },
+  "remainingBlockers": [
+    "MANUAL_WALLET_E2E_NOT_COMPLETED",
+    "MARCO_WBNB_PAIR_NOT_CREATED",
+    "FOUNDER_WALLET_KEY_NOT_PROVIDED_FOR_AGENT_BROADCAST",
+    "TBNS_BALANCE_BELOW_RECOMMENDED_0.5_MINIMUM"
+  ],
+  "unchanged": {
+    "wrapperDeployed": false,
+    "mainnetTouched": false,
+    "farmsPoolsContracts": "untouched"
+  }
+}

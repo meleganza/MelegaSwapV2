@@ -50,3 +50,4 @@ debug.log*
 cache/
 out/
 broadcast/
+.env

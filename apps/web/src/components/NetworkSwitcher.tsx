@@ -25,21 +25,16 @@ import { useActiveHandle } from 'hooks/useEagerConnect.bmp'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { chains } from 'utils/wagmi'
+import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 
 import { ChainLogo } from './Logo/ChainLogo'
 import { NetworkSwitchModal } from './Menu/UserMenu/NetworkSwitchModal'
 
 const NetworkSelect = ({ switchNetwork, chainId }) => {
-  // const { t } = useTranslation()
+  const visibleChains = filterMelegaVisibleSwitcherChains(chains)
   return (
     <>
-      {/* <Box px="16px" py="8px">
-        <Text color="textSubtle">{t('Select a Network')}</Text>
-      </Box>
-      <UserMenuDivider /> */}
-      {chains
-        .filter((chain) => !chain.testnet || chain.id === chainId)
-        .map((chain) => (
+      {visibleChains.map((chain) => (
           <UserMenuItem
             key={chain.id}
             style={{ justifyContent: 'flex-start' }}

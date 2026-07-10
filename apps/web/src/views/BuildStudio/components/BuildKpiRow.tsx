@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { premiumUiValue, PREMIUM_EMPTY } from 'design-system/melega/tokens/premiumStudio'
+import { displayStudioMetric, isStudioMetricUnavailable, STUDIO_KPI_VALUE } from 'design-system/melega'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { MiniSparkline } from './buildStudioPrimitives'
@@ -73,15 +74,11 @@ const ValueCol = styled.div`
 
 const Value = styled.span<{ $muted?: boolean }>`
   font-family: ${BS_FONT_DISPLAY};
-  font-size: ${({ $muted }) => ($muted ? '18px' : '36px')};
-  font-weight: 700;
-  line-height: 1;
+  font-size: ${STUDIO_KPI_VALUE.size};
+  font-weight: ${STUDIO_KPI_VALUE.weight};
+  line-height: ${STUDIO_KPI_VALUE.lineHeight};
+  font-variant-numeric: ${STUDIO_KPI_VALUE.fontVariantNumeric};
   color: ${({ $muted }) => ($muted ? buildStudioColors.muted : buildStudioColors.white)};
-  letter-spacing: -1px;
-
-  @media (max-width: 768px) {
-    font-size: ${({ $muted }) => ($muted ? '16px' : '32px')};
-  }
 `
 
 const Subline = styled.span`
@@ -104,15 +101,15 @@ export const BuildKpiRow: React.FC = () => {
   return (
     <Row data-bs-kpi-row>
       {kpis.map((kpi) => {
-        const display = premiumUiValue(kpi.value)
-        const muted = display === PREMIUM_EMPTY
+        const display = displayStudioMetric(kpi.value)
+        const muted = isStudioMetricUnavailable(kpi.value)
         return (
         <Card key={kpi.id} data-bs-kpi-card>
           <Label>{kpi.label}</Label>
           <Bottom>
             <ValueCol>
               <Value $muted={muted}>{display}</Value>
-              {muted ? <Subline>Awaiting runtime</Subline> : null}
+              {muted ? <TradeTechnicalDetails detail="Build Studio metrics hydrate from registry and deployment runtime." /> : null}
               {kpi.delta ? <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta> : null}
             </ValueCol>
             <MiniSparkline points={kpi.sparkline} />

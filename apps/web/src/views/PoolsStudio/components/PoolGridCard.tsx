@@ -11,22 +11,19 @@ const Card = styled.article<{ $expanded?: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: ${poolsStudioLayout.poolCardWidth};
+  width: 100%;
   max-width: 100%;
-  height: ${({ $expanded }) =>
-    $expanded ? poolsStudioLayout.poolCardExpandedHeight : poolsStudioLayout.poolCardHeight};
-  min-height: ${({ $expanded }) =>
-    $expanded ? poolsStudioLayout.poolCardExpandedHeight : poolsStudioLayout.poolCardHeight};
-  max-height: ${({ $expanded }) =>
-    $expanded ? poolsStudioLayout.poolCardExpandedHeight : poolsStudioLayout.poolCardHeight};
+  min-width: 0;
+  height: ${({ $expanded }) => ($expanded ? 'auto' : poolsStudioLayout.poolCardHeight)};
+  min-height: ${poolsStudioLayout.poolCardHeight};
   padding: 22px;
   padding-bottom: 74px;
   border-radius: 18px;
   background: #141414;
   border: 1px solid rgba(212, 175, 55, 0.18);
   box-sizing: border-box;
-  overflow: hidden;
-  transition: height 180ms ease-out, box-shadow 180ms ease-out;
+  overflow: visible;
+  transition: box-shadow 180ms ease-out;
 
   &:hover {
     box-shadow:
@@ -35,10 +32,8 @@ const Card = styled.article<{ $expanded?: boolean }>`
   }
 
   @media (max-width: 767px) {
-    width: 100%;
-    height: ${({ $expanded }) => ($expanded ? '360px' : '244px')};
-    min-height: ${({ $expanded }) => ($expanded ? '360px' : '244px')};
-    max-height: ${({ $expanded }) => ($expanded ? '360px' : '244px')};
+    height: ${({ $expanded }) => ($expanded ? 'auto' : '244px')};
+    min-height: ${({ $expanded }) => ($expanded ? poolsStudioLayout.poolCardHeight : '244px')};
   }
 `
 
@@ -47,7 +42,6 @@ const CardBody = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
 `
 
 const AprValue = styled.div`
@@ -65,14 +59,11 @@ const AprValue = styled.div`
 const TitleRow = styled.div`
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 7px;
-  height: 28px;
   min-height: 28px;
-  max-height: 28px;
   min-width: 0;
   margin-bottom: 10px;
-  overflow: hidden;
 `
 
 const PoolName = styled.span`
@@ -81,12 +72,12 @@ const PoolName = styled.span`
   font-weight: 700;
   line-height: 28px;
   color: #f7f7f7;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 185px;
-  flex-shrink: 1;
+  white-space: nowrap;
+  flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
 `
 
 const BadgeRow = styled.div`
@@ -198,7 +189,6 @@ const AnalysisSection = styled.div<{ $open: boolean }>`
   margin-top: 10px;
   padding-top: 14px;
   border-top: 1px solid #262626;
-  overflow: hidden;
 `
 
 const AnalysisHeading = styled.div`
@@ -217,7 +207,6 @@ const AnalysisGrid = styled.div`
   gap: 14px 18px;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
 `
 
 const ChipBtn = styled.button`

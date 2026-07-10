@@ -4,12 +4,17 @@ import { Pool } from '@pancakeswap/uikit'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
 import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
 import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
 
 const BLOCKS_PER_DAY = 28800
+
+function isPoolsMetricUnavailable(value?: string | null): boolean {
+  return !value || value === '—' || value === RUNTIME_UNAVAILABLE_LABEL
+}
 
 function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBlock']): BigNumber {
   if (!tokenPerBlock) return new BigNumber(0)
@@ -18,19 +23,19 @@ function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBl
 }
 
 export const formatUsd = (value?: number | null): string => {
-  if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return '—'
+  if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return RUNTIME_UNAVAILABLE_LABEL
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
   return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
 }
 
 export const formatApr = (apr?: number | null): string => {
-  if (apr === undefined || apr === null || !Number.isFinite(apr)) return '—'
+  if (apr === undefined || apr === null || !Number.isFinite(apr)) return RUNTIME_UNAVAILABLE_LABEL
   return `${apr.toFixed(2)}%`
 }
 
 export const formatTokenAmount = (amount?: BigNumber, decimals = 18, symbol?: string): string => {
-  if (!amount || amount.isZero()) return '—'
+  if (!amount || amount.isZero()) return RUNTIME_UNAVAILABLE_LABEL
   const n = getBalanceNumber(amount, decimals)
   const text = n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2)}M` : n >= 1_000 ? `${(n / 1_000).toFixed(1)}K` : n.toFixed(2)
   return symbol ? `${text} ${symbol}` : text
@@ -95,7 +100,7 @@ function evaluatePoolVisibility(
   if (!sustainableAprDisplay || isForbiddenAprDisplay(sustainableAprDisplay)) {
     return { visibilityStatus: 'HIDDEN', hiddenReason: 'INVALID_APR' }
   }
-  if (!rewardBudgetDisplay || rewardBudgetDisplay === '—') {
+  if (!rewardBudgetDisplay || isPoolsMetricUnavailable(rewardBudgetDisplay)) {
     return { visibilityStatus: 'HIDDEN', hiddenReason: 'INSUFFICIENT_REWARD_BUDGET' }
   }
   return { visibilityStatus: 'VISIBLE' }
@@ -185,18 +190,18 @@ export function mapPoolToPreviewCard(
   const budgetUsd = getRewardBudgetUsd(pool, currentBlock)
   const budgetLabel = formatRewardBudgetUsd(budgetUsd)
   const rewardBudgetDisplay =
-    budgetLabel !== '—'
+    !isPoolsMetricUnavailable(budgetLabel)
       ? budgetLabel
-      : remaining.label !== '—'
+      : !isPoolsMetricUnavailable(remaining.label)
         ? remaining.label
-        : getEstimatedDailyReward(pool) !== '—'
+        : !isPoolsMetricUnavailable(getEstimatedDailyReward(pool))
           ? getEstimatedDailyReward(pool)
           : 'Active emission'
   const distribution = getWeeklyMonthlyRewards(pool)
 
   const analyzePreview: PoolAnalyzePreview = {
     rewardBudget: rewardBudgetDisplay,
-    remainingRewards: remaining.label === '—' || /nan/i.test(remaining.label) ? '—' : remaining.label,
+    remainingRewards: isPoolsMetricUnavailable(remaining.label) || /nan/i.test(remaining.label) ? RUNTIME_UNAVAILABLE_LABEL : remaining.label,
     dailyEmission: getEstimatedDailyReward(pool),
     emissionEndEstimate: getEstimatedDuration(pool, currentBlock),
     aprHistory: aprDisplay.display && !isForbiddenAprDisplay(aprDisplay.display) ? aprDisplay.display : 'Indexed',
@@ -323,7 +328,7 @@ export function aggregateKpis(
     return acc + (Number.isFinite(n) ? n : 0)
   }, 0)
   const rewardBudgetLive =
-    budgetSum > 0 ? formatUsd(budgetSum) : displayable.length ? 'Active emission' : '—'
+    budgetSum > 0 ? formatUsd(budgetSum) : displayable.length ? 'Active emission' : RUNTIME_UNAVAILABLE_LABEL
   const tokenCount = new Set(displayable.map((p) => p.rewardToken)).size
 
   const featuredApr =
@@ -337,7 +342,7 @@ export function aggregateKpis(
     {
       id: 'tvl',
       label: 'Total Value Locked',
-      value: formatUsd(totalStakedUsd) || '—',
+      value: formatUsd(totalStakedUsd) || RUNTIME_UNAVAILABLE_LABEL,
     },
     {
       id: 'active',
@@ -352,7 +357,7 @@ export function aggregateKpis(
     {
       id: 'highestApr',
       label: 'Highest APR',
-      value: highestApr.apr ?? '—',
+      value: highestApr.apr ?? RUNTIME_UNAVAILABLE_LABEL,
       green: Boolean(highestApr.apr),
     },
     {

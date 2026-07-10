@@ -1,20 +1,16 @@
-/** Radar Console — R009 intelligence completion tokens. */
+/** Radar Console — R758 aligned to studio constitution. */
+import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+
 export const radarStudioLayout = {
-  contentMax: '1180px',
-  contentPaddingTop: '34px',
-  contentPaddingX: '24px',
-  contentPaddingBottom: '36px',
-  sectionGap: '24px',
+  ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   cardPadding: '20px',
   colLeft: '280px',
   colCenter: 'minmax(0, 1fr)',
   colRight: '280px',
   columnGap: '20px',
-  cardRadius: '20px',
-  heroHeight: '132px',
   kpiGap: '14px',
-  kpiHeight: '112px',
-  kpiRadius: '16px',
   kpiPadding: '18px',
   contractInputHeight: '56px',
   contractInputRadius: '14px',

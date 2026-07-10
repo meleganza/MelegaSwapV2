@@ -49,6 +49,7 @@ import SettingsModal from '../../../components/Menu/GlobalSettings/SettingsModal
 import { SettingsMode } from '../../../components/Menu/GlobalSettings/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isKerlRoutingAuthorityEnforced, KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional'
 
 export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: Currency) => void }> = ({
   handleOutputSelect,
@@ -61,6 +62,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
 
   const { account } = useWeb3React()
   const { chainId } = useActiveChainId()
+  const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
   
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
@@ -115,6 +117,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
     chainId,
     swapInputError,
     stableSwapInputError,
+    kerlWrapperAddress: isKerlRoutingAuthorityEnforced(chainId) ? KRMP_TESTNET_REGISTRY.wrapperAddress : null,
   })
 
   const {
@@ -383,7 +386,7 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
         </AutoColumn>
 
         <Box mt="0.25rem">
-          {tradeInfo?.fallbackV2 ? (
+          {tradeInfo?.fallbackV2 && !kerlEnforced ? (
             <SwapCommitButton
               swapIsUnsupported={swapIsUnsupported}
               account={account}

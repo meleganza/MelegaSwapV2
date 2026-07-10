@@ -21,14 +21,21 @@ describe('resolveHolderMetric', () => {
       diagnostic: 'Set NEXT_PUBLIC_BSCSCAN_API_KEY to recover holder count from BscScan',
       checkedAt: '2026-06-26T00:00:00.000Z',
     })
-    expect(metric.display).toBe('Source not configured')
+    expect(metric.display).toBe('Unavailable')
     expect(metric.display).not.toBe('—')
+    expect(metric.reason).toBe('Source not configured')
     expect(metric.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
   })
 
-  it('shows waiting label while holder count is loading', () => {
-    const metric = resolveHolderMetric(undefined)
-    expect(metric.display).toBe('Waiting for explorer')
+  it('shows loading label while holder count is loading', () => {
+    const metric = resolveHolderMetric(undefined, true)
+    expect(metric.display).toBe('Loading')
     expect(metric.display).not.toBe('—')
+  })
+
+  it('shows unavailable when holder result is absent and not loading', () => {
+    const metric = resolveHolderMetric(undefined)
+    expect(metric.display).toBe('Unavailable')
+    expect(metric.reasonCode).toBe('EXPLORER_SOURCE_MISSING')
   })
 })

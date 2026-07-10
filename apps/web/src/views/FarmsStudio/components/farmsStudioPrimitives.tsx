@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { farmsStudioColors, farmsStudioLayout, FARMS_FONT_DISPLAY } from '../farmsStudioTokens'
+import { farmsStudioColors, farmsStudioLayout, farmsTypography, FARMS_FONT_DISPLAY } from '../farmsStudioTokens'
 
 export const FsPanel = styled.div<{ $height?: string; $width?: string }>`
   width: ${({ $width }) => $width || '100%'};
@@ -9,7 +9,7 @@ export const FsPanel = styled.div<{ $height?: string; $width?: string }>`
   border: 1px solid ${farmsStudioColors.border};
   border-radius: ${farmsStudioLayout.cardRadius};
   padding: ${farmsStudioLayout.cardPadding};
-  overflow: hidden;
+  overflow: visible;
   transition: border-color ${farmsStudioLayout.hoverTransition} ease;
   ${({ $height }) =>
     $height
@@ -123,10 +123,11 @@ export const FsCardMetricLabel = styled.span`
 `
 
 export const FsCardMetricValue = styled.span`
-  font-size: 18px;
-  font-weight: 700;
+  font-size: ${farmsTypography.cardMetricValue.size};
+  font-weight: ${farmsTypography.cardMetricValue.weight};
+  line-height: ${farmsTypography.cardMetricValue.lineHeight};
   color: ${farmsStudioColors.text};
-  line-height: 1;
+  font-variant-numeric: ${farmsTypography.fontVariantNumeric};
 `
 
 export const FsMetricLabel = styled.span`
@@ -170,10 +171,11 @@ export const FsKpiLabel = styled.span`
 `
 
 export const FsKpiValue = styled.span<{ $gold?: boolean }>`
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
+  font-size: ${farmsTypography.kpiValue.size};
+  font-weight: ${farmsTypography.kpiValue.weight};
+  line-height: ${farmsTypography.kpiValue.lineHeight};
   color: ${({ $gold }) => ($gold ? farmsStudioColors.gold : farmsStudioColors.text)};
+  font-variant-numeric: ${farmsTypography.fontVariantNumeric};
   white-space: nowrap;
 `
 

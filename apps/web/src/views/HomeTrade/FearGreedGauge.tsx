@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 
 const Shell = styled.div`
   display: flex;
@@ -84,10 +85,10 @@ export const FearGreedGauge: React.FC<FearGreedGaugeProps> = ({ value, classific
 
   if (!hasValue) {
     return (
-      <Shell data-fear-greed-gauge aria-label="Fear and Greed Index indexing">
+      <Shell data-fear-greed-gauge aria-label="Fear and Greed Index unavailable">
         <SkeletonArc />
         <Label>Fear &amp; Greed</Label>
-        <Caption>Indexing</Caption>
+        <Caption>{RUNTIME_UNAVAILABLE_LABEL}</Caption>
       </Shell>
     )
   }

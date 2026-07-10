@@ -37,9 +37,16 @@ export interface SmartRouterChainProfile {
   executionRouterLabel?: string
   wrapperAddress?: string
   wrapperStatus: RegistryStatus
+  wrapperVersion?: number
+  validationStatus?: string
+  validationCertificate?: string
+  treasuryCollector?: string
+  supportedAssets?: string[]
+  executableRouteTypes?: string[]
   collectorSource?: RegistryResolutionSource
   collectorAddress?: string
   marcoSource?: RegistryResolutionSource
   marcoAddress?: string
   registryVersion?: string
+  lastVerification?: string
 }

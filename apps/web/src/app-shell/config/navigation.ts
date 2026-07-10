@@ -1,4 +1,5 @@
 import type { MelegaNavIcon } from '../icons'
+import { IDENTITY_HUB_NAV_LABEL } from 'registry/collectibles/identity-hub-collections.config'
 
 export interface ShellNavItem {
   id: string
@@ -6,7 +7,7 @@ export interface ShellNavItem {
   href: string
   icon: MelegaNavIcon
   match: (pathname: string) => boolean
-  /** Gold accent for featured launch actions (e.g. Reward MARCO holders). */
+  /** Gold accent for featured launch actions. */
   highlight?: boolean
   /** Hidden from primary nav but route may remain for legacy deep links. */
   hidden?: boolean
@@ -25,6 +26,18 @@ export interface ShellNavSection {
 /** BabyMarco mint: legacy /nft/ — registry UI at /collectibles. */
 export const BABYMARCO_NFT_ROUTE = '/nft/'
 export const COLLECTIBLES_ROUTE = '/collectibles'
+export const IDENTITY_CONSOLE_ROUTE = '/identity'
+
+const matchesFindSurface = (pathname: string): boolean =>
+  pathname === '/trending' ||
+  pathname.startsWith('/projects') ||
+  pathname === '/radar' ||
+  pathname.startsWith('/collectibles') ||
+  pathname.startsWith('/nft') ||
+  pathname === '/identity' ||
+  pathname.startsWith('/identity/') ||
+  pathname.startsWith('/assets') ||
+  pathname.startsWith('/query')
 
 export const shellNavigation: ShellNavSection[] = [
   {
@@ -62,23 +75,30 @@ export const shellNavigation: ShellNavSection[] = [
   },
   {
     label: 'FIND',
-    visibleCount: 4,
+    visibleCount: 5,
     items: [
       { id: 'trending', label: 'Trending', href: '/trending', icon: 'star', match: (p) => p === '/trending' },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
       { id: 'radar', label: 'DEX Intelligence', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
       {
         id: 'collectibles',
-        label: 'Identity Hub',
+        label: IDENTITY_HUB_NAV_LABEL,
         href: COLLECTIBLES_ROUTE,
         icon: 'star',
         match: (p) => p.startsWith('/collectibles') || p.startsWith('/nft'),
+      },
+      {
+        id: 'identity-console',
+        label: 'Identity Console',
+        href: IDENTITY_CONSOLE_ROUTE,
+        icon: 'wallet',
+        match: (p) => p === '/identity' || p.startsWith('/identity/'),
       },
     ],
   },
   {
     label: 'BUILD',
-    visibleCount: 2,
+    visibleCount: 1,
     items: [
       {
         id: 'build-studio',
@@ -94,52 +114,6 @@ export const shellNavigation: ShellNavSection[] = [
         icon: 'rocket',
         hidden: true,
         match: (p) => p === '/import-existing-token' || p === '/launch',
-      },
-      {
-        id: 'reward',
-        label: 'Reward MARCO holders',
-        href: '/launch?intent=reward-marco-holders',
-        icon: 'sparkle',
-        highlight: true,
-        disabled: true,
-        disabledReason: 'Preparation only — module not ready',
-        match: (p) => p.includes('intent=reward-marco-holders'),
-      },
-      {
-        id: 'create-token',
-        label: 'Create Token',
-        href: '/launch?intent=create-token',
-        icon: 'rocket',
-        disabled: true,
-        disabledReason: 'Preparation only — page not ready',
-        match: (p) => p.includes('intent=create-token'),
-      },
-      {
-        id: 'create-farm',
-        label: 'Create Farm',
-        href: '/launch?intent=create-farm',
-        icon: 'coins',
-        disabled: true,
-        disabledReason: 'Preparation only — page not ready',
-        match: (p) => p.includes('intent=create-farm'),
-      },
-      {
-        id: 'create-pool',
-        label: 'Create Staking Pool',
-        href: '/launch?intent=create-staking-pool',
-        icon: 'coins',
-        disabled: true,
-        disabledReason: 'Preparation only — page not ready',
-        match: (p) => p.includes('intent=create-staking-pool'),
-      },
-      {
-        id: 'lock-liquidity',
-        label: 'Lock Liquidity',
-        href: '/launch?intent=lock-liquidity',
-        icon: 'drop',
-        disabled: true,
-        disabledReason: 'Not available — functionality pending',
-        match: (p) => p.includes('intent=lock-liquidity'),
       },
     ],
   },
@@ -184,26 +158,16 @@ export const shellBottomNavItems = [
   {
     id: 'find',
     label: 'Find',
-    href: '/projects',
+    href: '/trending',
     icon: 'star' as MelegaNavIcon,
-    match: (p: string) =>
-      p.startsWith('/projects') ||
-      p.startsWith('/trending') ||
-      p.startsWith('/assets') ||
-      p.startsWith('/radar') ||
-      p.startsWith('/query') ||
-      p.startsWith('/collectibles'),
+    match: matchesFindSurface,
   },
   {
     id: 'build',
     label: 'Build',
     href: '/build-studio',
     icon: 'rocket' as MelegaNavIcon,
-    match: (p: string) =>
-      p.startsWith('/build-studio') ||
-      p.startsWith('/launch') ||
-      p.startsWith('/import-existing-token') ||
-      p.startsWith('/add'),
+    match: (p: string) => p.startsWith('/build-studio'),
   },
   {
     id: 'command-center',

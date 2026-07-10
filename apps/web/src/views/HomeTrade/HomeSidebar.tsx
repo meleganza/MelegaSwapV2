@@ -187,11 +187,7 @@ const sections = [
   },
   {
     label: 'BUILD',
-    items: [
-      { href: '/launch', label: 'List project', match: (p: string) => p.startsWith('/launch') },
-      { href: '/add', label: 'Create pool', match: (p: string) => p.startsWith('/add') },
-      { href: '/pools', label: 'Reward MARCO holders', match: () => false },
-    ],
+    items: [{ href: '/build-studio', label: 'Build Studio', match: (p: string) => p.startsWith('/build-studio') }],
   },
   {
     label: 'PORTFOLIO',

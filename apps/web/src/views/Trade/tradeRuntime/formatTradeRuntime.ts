@@ -8,7 +8,13 @@ type TradeInfo = NonNullable<ReturnType<typeof useTradeInfo>>
 
 export function formatAmount(amount?: CurrencyAmount<Currency>): string | undefined {
   if (!amount) return undefined
-  return `${getFullDisplayBalance(amount, amount.currency.decimals, 6)} ${amount.currency.symbol}`
+  try {
+    const raw = getFullDisplayBalance(amount, amount.currency.decimals, 6)
+    if (!raw || raw === 'NaN' || !Number.isFinite(Number(raw.replace(/,/g, '')))) return undefined
+    return `${raw} ${amount.currency.symbol}`
+  } catch {
+    return undefined
+  }
 }
 
 export function formatPercent(percent?: Percent): string | undefined {
@@ -41,6 +47,7 @@ export function routerSourceLabel(tradeInfo: TradeInfo | null | undefined, smart
 
 export function chainLabel(chainId?: number): string {
   if (chainId === 56) return 'BNB Chain'
+  if (chainId === 97) return 'BNB Testnet'
   if (chainId === 1) return 'Ethereum'
   if (chainId === 137) return 'Polygon'
   if (chainId === 8453) return 'Base'

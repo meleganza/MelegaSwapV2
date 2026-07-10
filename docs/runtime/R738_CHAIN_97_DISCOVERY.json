@@ -1,0 +1,84 @@
+{
+  "schema": "melega.wrapper-chain-discovery.v1",
+  "asOf": "2026-07-09",
+  "disclaimer": "Chain 97 MARCO synced R744B — Treasury Runtime confirmed canonical testnet address.",
+  "chain97": {
+    "chainId": 97,
+    "chainName": "BNB Testnet",
+    "rpcUrlDefault": "https://data-seed-prebsc-1-s1.binance.org:8545",
+    "rpcSource": "apps/web/src/config/constants/rpc.ts",
+    "underlyingRouter": {
+      "status": "R745B_BLOCKED",
+      "candidateAddress": "0x9a489505a00cE272eAa5e07Dba6491314CaE3796",
+      "label": "PancakeSwap Smart Router (BSC testnet) — docs only",
+      "source": "https://developer.pancakeswap.finance/contracts/v3/addresses",
+      "verificationRef": "docs/runtime/R745B_CHAIN_97_ROUTER_VERIFICATION.json",
+      "bytecodeVerifiedOnRpc": true,
+      "wrapperInterfaceCompatible": false,
+      "blocker": "BLOCKED_UNDERLYING_ROUTER_MISSING",
+      "note": "R745B: bytecode present and Pancake docs list address, but IUnderlyingSwapRouter selectors absent; on-chain role is V3 SwapRouter periphery, not chain-56 Smart Router family."
+    },
+    "wbnb": {
+      "status": "VERIFIED",
+      "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+      "source": "PancakeSwap testnet token table + BSC testnet canonical WBNB",
+      "bytecodeVerifiedOnRpc": true
+    },
+    "marco": {
+      "status": "TREASURY_RUNTIME_CONFIRMED",
+      "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "registryRef": "/registry/assets/marco-bsc-testnet.json",
+      "smartRouterRegistryRef": "/registry/smart-router/index.json#97",
+      "attestation": "Treasury Runtime R744B",
+      "envKey": "NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET"
+    },
+    "treasuryIntake": {
+      "status": "BLOCKED_TREASURY_INTAKE_MISSING",
+      "address": null,
+      "registryRef": "/registry/treasury/index.json#97"
+    },
+    "v2RouterFallback": {
+      "address": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+      "label": "PancakeSwap V2 Router (testnet periphery)",
+      "source": "https://developer.pancakeswap.finance/contracts/v2/addresses",
+      "note": "V2 only — wrapper v1 targets Smart Router interface; fallback for test liquidity only."
+    },
+    "deployReadiness": "BLOCKED",
+    "blockers": [
+      "BLOCKED_TREASURY_INTAKE_MISSING",
+      "BLOCKED_WRAPPER_NOT_DEPLOYED",
+      "BLOCKED_UNDERLYING_ROUTER_MISSING"
+    ]
+  },
+  "chain56": {
+    "chainId": 56,
+    "chainName": "BNB Chain",
+    "rpcUrlDefault": "https://bsc-dataseed.binance.org",
+    "underlyingRouter": {
+      "status": "REGISTRY_PUBLISHED",
+      "address": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "registryRef": "/registry/smart-router/index.json#56"
+    },
+    "marco": {
+      "status": "REGISTRY_PUBLISHED",
+      "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "registryRef": "/registry/assets/marco.json"
+    },
+    "wbnb": {
+      "status": "CODEBASE_CONSTANT",
+      "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "registryRef": "apps/web/src/registry/venues/constants.ts LEGACY_WBNB"
+    },
+    "treasuryIntake": {
+      "status": "BLOCKED_TREASURY_INTAKE_MISSING",
+      "address": null,
+      "registryRef": "/registry/treasury/index.json#56"
+    },
+    "deployReadiness": "BLOCKED",
+    "blockers": [
+      "BLOCKED_TREASURY_INTAKE_MISSING",
+      "BLOCKED_WRAPPER_NOT_DEPLOYED",
+      "BLOCKED_DEPLOY_CREDENTIALS_MISSING"
+    ]
+  }
+}

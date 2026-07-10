@@ -1,0 +1,73 @@
+{
+  "task": "R715+R716 Staging Gate",
+  "targetSha": "e9ab328",
+  "deploymentUrl": "https://v2.melega.finance",
+  "deployedAt": "2026-07-07T09:34:01Z",
+  "deployStatus": "success",
+  "passed": true,
+  "routes": {
+    "pools": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "farms": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "trade": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "liquidity-studio": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "build-studio": {
+      "status": 200,
+      "errorBoundary": false
+    }
+  },
+  "screenshots": [
+    "staging-pools-1440.png",
+    "staging-pools-390.png"
+  ],
+  "checks": {
+    "pools1440": {
+      "fixtureEnabled": false,
+      "tickerText": "TRENDING ON MELEGA DEXTop FarmMARCO / ASTER LP37.75% APRTop PoolMARCO / MXMXNo sustainable poolTop FarmMARCO / ASTER LP37.75% APRTop PoolMARCO / MXMXNo sustainable pool",
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "poolAprDash": false,
+      "poolAprHonestEmpty": true,
+      "poolAprValid": false,
+      "tickerPoolAprOk": true,
+      "heroPresent": true,
+      "emptyPresent": true,
+      "advisorPresent": true,
+      "topAlignDeltaPx": 0,
+      "topAligned": true,
+      "emptyHeight": 260,
+      "advisorHeight": 260,
+      "docOverflowX": false,
+      "poolsTitle": "POOLS"
+    },
+    "pools390": {
+      "fixtureEnabled": false,
+      "tickerText": "TRENDING ON MELEGA DEXTop FarmMARCO / ASTER LP37.75% APRTop PoolMARCO / MXMXNo sustainable poolTop FarmMARCO / ASTER LP37.75% APRTop PoolMARCO / MXMXNo sustainable pool",
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "poolAprDash": false,
+      "poolAprHonestEmpty": true,
+      "poolAprValid": false,
+      "tickerPoolAprOk": true,
+      "heroPresent": true,
+      "emptyPresent": true,
+      "advisorPresent": true,
+      "topAlignDeltaPx": null,
+      "topAligned": true,
+      "emptyHeight": 314,
+      "advisorHeight": 266,
+      "docOverflowX": false,
+      "poolsTitle": "POOLS"
+    }
+  },
+  "errors": []
+}

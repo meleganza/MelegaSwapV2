@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import orderBy from 'lodash/orderBy'
 import { Transaction, TransactionType } from 'state/info/types'
 import { usePoolDatasSWR } from 'state/info/hooks'
 import useTopPoolAddresses from 'state/info/queries/pools/topPools'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { formatPct, formatUsd } from './formatLiquidityRuntime'
 
 export interface LiquidityActivityRow {
@@ -123,24 +123,64 @@ export const useLiquidityTerminalData = (
       }))
   }, [poolDatas])
 
+  const marketUnavailableReason = useMemo((): string | undefined => {
+    if (selectedPool?.liquidityUSD && selectedPool.liquidityUSD > 0) return undefined
+    if (indexerState.status === 'loading') {
+      return indexerState.reason ?? 'Subgraph request in progress'
+    }
+    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      return indexerState.reason ?? 'Indexer not deployed'
+    }
+    return symbolA && symbolB
+      ? `Pool metrics not indexed for ${symbolA}/${symbolB}`
+      : 'Pool metrics not indexed in current subgraph window'
+  }, [selectedPool, indexerState, symbolA, symbolB])
+
+  const topPoolsUnavailableReason = useMemo((): string | undefined => {
+    if (topPools.length > 0) return undefined
+    if (indexerState.status === 'loading') {
+      return indexerState.reason ?? 'Subgraph request in progress'
+    }
+    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      return indexerState.reason ?? 'Indexer not deployed'
+    }
+    return 'Waiting for first indexed pool event'
+  }, [topPools.length, indexerState])
+
+  const advisorUnavailableReason = useMemo((): string | undefined => {
+    if (selectedPool) return undefined
+    if (indexerState.status === 'loading') {
+      return indexerState.reason ?? 'Subgraph request in progress'
+    }
+    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      return indexerState.reason ?? 'Indexer not deployed'
+    }
+    return 'Pool health data not indexed for selected pair'
+  }, [selectedPool, indexerState])
+
   const advisorItems = useMemo(() => {
     const best = topPools[0]
     const pool = selectedPool
+    if (!pool) {
+      return [
+        { label: 'Pool Health', value: RUNTIME_UNAVAILABLE_LABEL, tone: 'muted' as const },
+        { label: 'Best Opportunity', value: best?.pair ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'muted' as const },
+        { label: 'Risk', value: RUNTIME_UNAVAILABLE_LABEL, tone: 'muted' as const },
+      ]
+    }
     const health =
-      pool && pool.liquidityUSD > 100_000 && pool.volumeUSD > 10_000
+      pool.liquidityUSD > 100_000 && pool.volumeUSD > 10_000
         ? 'Stable'
-        : pool
-          ? 'Moderate'
-          : 'Indexing'
-  const risk =
-      pool && pool.lpApr7d > 50
+        : 'Moderate'
+    const risk =
+      pool.lpApr7d > 50
         ? 'Elevated'
-        : pool && pool.lpApr7d > 20
+        : pool.lpApr7d > 20
           ? 'Moderate'
           : 'Low'
     return [
       { label: 'Pool Health', value: health, tone: health === 'Stable' ? 'green' as const : 'gold' as const },
-      { label: 'Best Opportunity', value: best?.pair ?? '—', tone: 'gold' as const },
+      { label: 'Best Opportunity', value: best?.pair ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'gold' as const },
       { label: 'Risk', value: risk, tone: risk === 'Low' ? 'green' as const : 'gold' as const },
     ]
   }, [selectedPool, topPools])
@@ -161,9 +201,10 @@ export const useLiquidityTerminalData = (
       indexer: indexerState.indexer,
       lastAttempt: indexerState.lastAttempt,
       reason:
-        symbolA && symbolB
+        indexerState.blockerCode ?? indexerState.reason ??
+        (symbolA && symbolB
           ? `No mint/burn events indexed for ${symbolA}/${symbolB}`
-          : 'No liquidity mint/burn events indexed in current subgraph window',
+          : 'No liquidity mint/burn events indexed in current subgraph window'),
     })
   }, [isActivityIndexing, activityRows.length, symbolA, symbolB, indexerState])
 
@@ -176,6 +217,9 @@ export const useLiquidityTerminalData = (
     activityDiagnostic,
     isIndexing: isActivityIndexing,
     isLoadingPools: topAddresses.length > 0 && poolDatas.length === 0 && isActivityIndexing,
+    marketUnavailableReason,
+    topPoolsUnavailableReason,
+    advisorUnavailableReason,
   }
 }
 

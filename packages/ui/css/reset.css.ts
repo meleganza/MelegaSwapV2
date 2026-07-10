@@ -17,7 +17,6 @@ export const button = style({
   WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
 })
 
-// HTML5 display-role reset for older browsers
 const block = style({
   display: 'block',
 })
@@ -44,7 +43,6 @@ const table = style({
   borderSpacing: 0,
 })
 
-// Custom reset rules
 const mark = style({
   backgroundColor: 'transparent',
   color: 'inherit',

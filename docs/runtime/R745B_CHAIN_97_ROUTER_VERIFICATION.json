@@ -1,0 +1,77 @@
+{
+  "task": "R745B",
+  "schema": "melega.chain-97-router-verification.v1",
+  "asOf": "2026-07-09",
+  "verdict": "BLOCKED",
+  "candidate": {
+    "address": "0x9a489505a00cE272eAa5e07Dba6491314CaE3796",
+    "chainId": 97,
+    "chainName": "BNB Testnet"
+  },
+  "checks": {
+    "bytecodeExists": {
+      "status": "PASS",
+      "bytecodeBytes": 24316,
+      "rpc": "https://bsc-testnet-rpc.publicnode.com",
+      "chainId": 97
+    },
+    "officialPancakeDocumentation": {
+      "status": "PASS",
+      "label": "Smart Router (BSC testnet)",
+      "source": "https://developer.pancakeswap.finance/contracts/v3/addresses",
+      "note": "Pancake developer docs list this address under Smart Router testnet table."
+    },
+    "bscScanUrl": {
+      "status": "PASS",
+      "url": "https://testnet.bscscan.com/address/0x9a489505a00cE272eAa5e07Dba6491314CaE3796",
+      "note": "Valid explorer URL for chain 97; automated HTML fetch returned 403 (bot protection)."
+    },
+    "onChainContractRole": {
+      "status": "PARTIAL",
+      "findings": {
+        "factory()": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865",
+        "factoryLabel": "PancakeV3Factory (per Pancake v3 addresses docs)",
+        "pancakeswapV2()": "reverts — not Pancake Smart Router (mainnet-style)",
+        "exactInputSingle": "present (0x04e45aaf)",
+        "multicall": "present (0xac9650d8)"
+      },
+      "conclusion": "On-chain contract behaves as V3 SwapRouter periphery, not the same family as chain 56 underlying 0xC6665d98Efd81f47B03801187eB46cbC63F328B0 (pancakeswapV2 + IERC20 swap)."
+    },
+    "wrapperInterfaceCompatibility": {
+      "status": "FAIL",
+      "requiredInterface": "contracts/interfaces/IUnderlyingSwapRouter.sol",
+      "requiredSelectors": {
+        "swapExactTokensForTokens(uint256,uint256,address[],address,uint256)": "0x38ed1739",
+        "swapExactETHForTokens(uint256,address[],address,uint256)": "0x7ff36ab5"
+      },
+      "candidateSelectorsPresent": {
+        "0x38ed1739": false,
+        "0x7ff36ab5": false
+      },
+      "conclusion": "MelegaSmartRouterWrapper v1 cannot call this contract via IUnderlyingSwapRouter without ABI/interface upgrade."
+    }
+  },
+  "registryAction": {
+    "updated": false,
+    "blockerRemoved": false,
+    "blockerRetained": "BLOCKED_UNDERLYING_ROUTER_MISSING",
+    "reason": "Wrapper-compatible underlying router not verified for chain 97."
+  },
+  "comparisonChain56": {
+    "underlyingRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+    "pancakeswapV2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+    "swapIerc20Present": "0xa6cbf417",
+    "note": "Mainnet Melega execution router uses Pancake Smart Router IERC20 swap surface — different from testnet candidate bytecode."
+  },
+  "alternativeTestnetAddresses": {
+    "v3SwapRouterPerDocs": "0x1b81D678ffb9C0263b24A97847620C99d213eB14",
+    "v3SwapRouterNote": "Also V3 periphery (factory + exactInputSingle); same wrapper incompatibility.",
+    "v2RouterPerDocs": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "v2RouterNote": "Has swapExactTokensForTokens family but is V2 Router, not Smart Router — requires separate certification."
+  },
+  "unchanged": {
+    "wrapperAddress": null,
+    "smartRouterRegistryChain97UnderlyingRouter": null,
+    "currentArchitecture": "ADAPTER"
+  }
+}

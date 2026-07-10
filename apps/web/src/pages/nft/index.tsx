@@ -103,7 +103,7 @@ const NftPage = () => {
         <a href="https://t.me/melegacommunity" style={{ zIndex: "1" }}>
           <img alt="ins" style={{ width: '30px', height: '30px', margin: '1rem' }} src="./teleicon.png" />
         </a>
-        <a href="https://twitter.com/meleganza" style={{ zIndex: "1" }}>
+        <a href="https://x.com/meleganews" style={{ zIndex: "1" }}>
           <img alt="ins" style={{ width: '30px', height: '30px', margin: '1rem' }} src="./twiticon.png" />
         </a>
         <a href="https://www.instagram.com/melega.finance/" style={{ zIndex: "1" }}>

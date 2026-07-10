@@ -5,6 +5,7 @@ import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import BuildStudioGlobalStyle from './BuildStudioGlobalStyle'
 import { BuildRuntimeProvider } from './buildRuntime/BuildRuntimeContext'
 import { buildStudioColors, buildStudioLayout } from './buildStudioTokens'
+import { studioConstitutionLayout } from 'design-system/melega'
 import { ImportRuntimeProvider } from 'views/ImportExistingToken/importExistingTokenRuntime/ImportRuntimeContext'
 import AIBuildAdvisorPanel from './components/AIBuildAdvisorPanel'
 import AIManifestPanel from './components/AIManifestPanel'
@@ -42,9 +43,8 @@ const Content = styled.div`
   flex-direction: column;
   gap: ${buildStudioLayout.sectionGap};
 
-  @media (max-width: 768px) {
-    padding: 20px;
-    gap: 12px;
+  @media (max-width: ${studioConstitutionLayout.mobileBreakpoint}) {
+    padding: 16px 16px ${buildStudioLayout.mobileBottomPad};
   }
 `
 

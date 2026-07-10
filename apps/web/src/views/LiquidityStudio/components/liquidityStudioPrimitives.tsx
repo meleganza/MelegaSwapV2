@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { liquidityStudioColors, liquidityStudioLayout, LIQUIDITY_FONT_DISPLAY } from '../liquidityStudioTokens'
+import {
+  MelegaStudioGhostBtn,
+  MelegaStudioOutlineBtn,
+  MelegaStudioPrimaryBtn,
+} from 'design-system/melega'
+import { liquidityStudioColors, liquidityStudioLayout, liquidityTypography, LIQUIDITY_FONT_DISPLAY } from '../liquidityStudioTokens'
 
 export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?: string; $pad?: string }>`
   width: ${({ $width }) => $width || '100%'};
@@ -9,18 +14,18 @@ export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?:
   border: 1px solid ${liquidityStudioColors.border};
   border-radius: ${({ $radius }) => $radius || liquidityStudioLayout.panelRadius};
   padding: ${({ $pad }) => $pad || liquidityStudioLayout.panelPadding};
-  overflow: visible;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transition: border-color ${liquidityStudioLayout.hoverTransition} ease;
   ${({ $height }) =>
     $height && $height !== 'auto'
       ? `
     height: ${$height};
     min-height: ${$height};
-    max-height: ${$height};
   `
       : `
     height: auto;
-    min-height: ${liquidityStudioLayout.builderMinHeight};
   `}
 
   &:hover {
@@ -31,18 +36,20 @@ export const LsPanel = styled.div<{ $height?: string; $width?: string; $radius?:
 export const LsPanelTitle = styled.h2`
   margin: 0 0 14px;
   font-family: ${LIQUIDITY_FONT_DISPLAY};
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: ${liquidityTypography.panelTitle.size};
+  font-weight: ${liquidityTypography.panelTitle.weight};
+  line-height: ${liquidityTypography.panelTitle.lineHeight};
   color: ${liquidityStudioColors.text};
+  flex-shrink: 0;
 `
 
 export const LsSectionTitle = styled.h3`
   margin: 0 0 12px;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 22px;
+  font-size: ${liquidityTypography.sectionTitle.size};
+  font-weight: ${liquidityTypography.sectionTitle.weight};
+  line-height: ${liquidityTypography.sectionTitle.lineHeight};
   color: ${liquidityStudioColors.text};
+  flex-shrink: 0;
 `
 
 export const LsPreviewBadge = styled.span`
@@ -62,41 +69,45 @@ export const LsPreviewBadge = styled.span`
   white-space: nowrap;
 `
 
-export const LsPrimaryBtn = styled.button`
+export const LsPrimaryBtn = styled(MelegaStudioPrimaryBtn)`
   width: 100%;
-  height: ${liquidityStudioLayout.connectButtonHeight};
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%);
-  color: #050505;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  margin-top: 10px;
+  margin-top: ${liquidityStudioLayout.executionButtonGap};
   flex-shrink: 0;
-  transition: filter ${liquidityStudioLayout.hoverTransition} ease;
+`
 
-  &:hover {
-    filter: brightness(1.05);
-  }
+export const LsOutlineBtn = styled(MelegaStudioOutlineBtn)`
+  width: 100%;
+`
+
+export const LsGhostBtn = styled(MelegaStudioGhostBtn)`
+  width: 100%;
 `
 
 export const LsRightRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 28px;
-  min-height: 28px;
+  gap: 12px;
+  min-height: 32px;
 `
 
 export const LsRightLabel = styled.span`
-  font-size: 12px;
-  font-weight: 600;
+  font-size: ${liquidityTypography.lpInfoLabel.size};
+  font-weight: ${liquidityTypography.lpInfoLabel.weight};
+  line-height: ${liquidityTypography.lpInfoLabel.lineHeight};
   color: ${liquidityStudioColors.muted};
+  flex-shrink: 0;
 `
 
 export const LsRightValue = styled.span`
-  font-size: 14px;
-  font-weight: 800;
+  font-size: ${liquidityTypography.lpInfoValue.size};
+  font-weight: ${liquidityTypography.lpInfoValue.weight};
+  line-height: ${liquidityTypography.lpInfoValue.lineHeight};
   color: ${liquidityStudioColors.text};
+  text-align: right;
+  font-variant-numeric: ${liquidityTypography.fontVariantNumeric};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 `

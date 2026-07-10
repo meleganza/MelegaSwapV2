@@ -1,26 +1,8 @@
-import React from 'react'
-import styled from 'styled-components'
-import { PremiumActivityTimeline } from 'design-system/melega/components/PremiumActivityTimeline/PremiumActivityTimeline'
-import { tradeLayout } from '../tradeTokens'
+import React, { useMemo } from 'react'
+import { DATA_REASON_LABELS } from 'lib/data-policy/dataReasonCodes'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { TradeSwapRow } from '../useTradeTerminalData'
-
-const HeadRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 4px;
-`
-
-const ViewAll = styled.button`
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #d4af37;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-`
+import TradeSwapsTable from './TradeSwapsTable'
 
 export interface TradeRecentSwapsProps {
   rows: TradeSwapRow[]
@@ -40,45 +22,46 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
   rows,
   isIndexing,
   swapEmptyReason,
-  missingReason,
   missingReasonDetail,
   swapDiagnostic,
 }) => {
-  const displayRows = rows.slice(0, 6)
-  const isEmpty = displayRows.length === 0
+  const emptyDescription = useMemo(() => {
+    if (isIndexing) {
+      return swapDiagnostic?.reason ?? 'Subgraph request in progress'
+    }
+    if (swapDiagnostic?.reason) {
+      return swapDiagnostic.reason
+    }
+    if (swapEmptyReason === 'DATA_SOURCE_NOT_CONFIGURED') {
+      return 'Indexer not deployed'
+    }
+    if (missingReasonDetail) {
+      return missingReasonDetail
+    }
+    if (swapEmptyReason && DATA_REASON_LABELS[swapEmptyReason as keyof typeof DATA_REASON_LABELS]) {
+      return DATA_REASON_LABELS[swapEmptyReason as keyof typeof DATA_REASON_LABELS]
+    }
+    return 'Waiting for first indexed event'
+  }, [isIndexing, swapEmptyReason, missingReasonDetail, swapDiagnostic])
 
-  const timelineRows = displayRows.map((row) => ({
-    id: row.id,
-    title: `${row.direction === 'buy' ? 'Buy' : 'Sell'} ${row.pair}`,
-    subtitle: `${row.amount} → ${row.received ?? '—'} · ${row.route ?? 'Melega route'}`,
-    status: row.direction === 'buy' ? 'Buy' : 'Sell',
-    time: row.time,
-    statusTone: (row.direction === 'buy' ? 'green' : 'muted') as 'green' | 'muted',
-  }))
+  const technicalDetail = useMemo(() => {
+    if (isIndexing) {
+      return `Subgraph request in progress · Source: ${swapDiagnostic?.source ?? 'melega-subgraph'} · Indexer: ${swapDiagnostic?.indexer ?? 'loading'} · Last attempt: ${swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'}`
+    }
+    if (swapDiagnostic) {
+      return `Reason: ${swapDiagnostic.reason ?? DATA_REASON_LABELS.NO_EVENTS_INDEXED} · Source: ${swapDiagnostic.source} · Indexer: ${swapDiagnostic.indexer} · Last attempt: ${new Date(swapDiagnostic.lastAttempt).toLocaleString()}`
+    }
+    return missingReasonDetail
+  }, [isIndexing, swapDiagnostic, missingReasonDetail])
 
   return (
-    <div data-trade-recent-swaps>
-      <HeadRow>
-        <ViewAll type="button">View All</ViewAll>
-      </HeadRow>
-      <PremiumActivityTimeline
-        title="Recent Swaps on Melega DEX"
-        rows={timelineRows}
-        height={isEmpty ? tradeLayout.recentSwapsHeightCompact : tradeLayout.recentSwapsHeight}
-        emptyTitle={isIndexing ? 'Waiting for indexed swaps' : 'No swaps detected yet.'}
-        emptySubtitle={
-          isIndexing
-            ? `Source: ${swapDiagnostic?.source ?? 'melega-subgraph'} · Indexer: ${swapDiagnostic?.indexer ?? 'loading'} · Last attempt: ${swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'} · Reason: ${swapDiagnostic?.reason ?? 'Subgraph transactions loading'}`
-            : swapDiagnostic
-              ? `Source: ${swapDiagnostic.source} · Indexer: ${swapDiagnostic.indexer} · Last attempt: ${new Date(swapDiagnostic.lastAttempt).toLocaleString()} · Reason: ${swapDiagnostic.reason ?? 'No swap events indexed for this pair'}`
-              : missingReasonDetail ??
-                (swapEmptyReason === 'NO_EVENTS_INDEXED'
-                  ? 'No swap events indexed for this pair yet'
-                  : 'Swap history appears when Melega subgraph indexes trades')
-        }
-        data-testid="trade"
-      />
-    </div>
+    <TradeSwapsTable
+      rows={rows}
+      isIndexing={isIndexing}
+      emptyTitle={RUNTIME_UNAVAILABLE_LABEL}
+      emptyDescription={emptyDescription}
+      technicalDetail={technicalDetail}
+    />
   )
 }
 

@@ -80,16 +80,7 @@ const config = {
     unoptimized: true,
   },
   async rewrites() {
-    return [
-      {
-        source: '/info/token/:address',
-        destination: '/info/tokens/:address',
-      },
-      {
-        source: '/info/pool/:address',
-        destination: '/info/pools/:address',
-      },
-    ]
+    return []
   },
   async headers() {
     return [
@@ -157,13 +148,23 @@ const config = {
       },
       {
         source: '/info/pools',
-        destination: '/info/pairs',
-        permanent: true,
+        destination: '/radar',
+        permanent: false,
       },
       {
         source: '/info/pools/:address',
-        destination: '/info/pairs/:address',
-        permanent: true,
+        destination: '/radar',
+        permanent: false,
+      },
+      {
+        source: '/info',
+        destination: '/radar',
+        permanent: false,
+      },
+      {
+        source: '/info/:path*',
+        destination: '/radar',
+        permanent: false,
       },
     ]
   },

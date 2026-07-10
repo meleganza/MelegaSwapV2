@@ -12,6 +12,7 @@ import MarketIntelligencePanel from './components/MarketIntelligencePanel'
 import AILiquidityAdvisorPanel from './components/AILiquidityAdvisorPanel'
 import TopPoolsPanel from './components/TopPoolsPanel'
 import LiquidityActivityTable from './components/LiquidityActivityTable'
+import LiquidityLpInfoPanel from './components/LiquidityLpInfoPanel'
 import { liquidityStudioColors, liquidityStudioLayout } from './liquidityStudioTokens'
 
 const Root = styled.div`
@@ -52,6 +53,7 @@ const LayoutGrid = styled.div`
 
   @media (min-width: 1100px) {
     grid-template-columns: ${liquidityStudioLayout.leftWidth} ${liquidityStudioLayout.centerWidth} ${liquidityStudioLayout.rightWidth};
+    grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto);
     grid-template-areas:
       'builder preview right'
       'activity activity activity';
@@ -72,6 +74,7 @@ const LayoutGrid = styled.div`
     grid-template-areas:
       'builder'
       'preview'
+      'lpinfo'
       'market'
       'advisor'
       'pools'
@@ -85,6 +88,11 @@ const AreaBuilder = styled.div`
   min-height: ${liquidityStudioLayout.builderMinHeight};
   display: flex;
   flex-direction: column;
+
+  & > * {
+    flex: 1;
+    width: 100%;
+  }
 `
 
 const AreaPreview = styled.div`
@@ -93,6 +101,11 @@ const AreaPreview = styled.div`
   min-height: ${liquidityStudioLayout.builderMinHeight};
   display: flex;
   flex-direction: column;
+
+  & > * {
+    flex: 1;
+    width: 100%;
+  }
 `
 
 const AreaRight = styled.div`
@@ -104,6 +117,20 @@ const AreaRight = styled.div`
   width: 100%;
   max-width: ${liquidityStudioLayout.rightWidth};
   min-height: ${liquidityStudioLayout.builderMinHeight};
+  height: 100%;
+
+  @media (max-width: 767px) {
+    display: contents;
+    height: auto;
+  }
+`
+
+const AreaRightStack = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: ${liquidityStudioLayout.verticalRhythm};
+  min-height: 0;
 
   @media (max-width: 767px) {
     display: contents;
@@ -111,37 +138,69 @@ const AreaRight = styled.div`
 `
 
 const AreaPools = styled.div`
+  flex-shrink: 0;
+
   @media (max-width: 767px) {
     grid-area: pools;
   }
+`
 
-  @media (min-width: 1100px) {
-    margin-top: auto;
+const AreaLpInfo = styled.div`
+  @media (max-width: 767px) {
+    grid-area: lpinfo;
   }
 `
 
 const AreaMarket = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  & > * {
+    flex: 1;
+    height: 100%;
+  }
+
   @media (max-width: 767px) {
     grid-area: market;
+    flex: none;
+    display: block;
+
+    & > * {
+      flex: none;
+      height: auto;
+    }
   }
 `
 
 const AreaAdvisor = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  & > * {
+    flex: 1;
+    height: 100%;
+  }
+
   @media (max-width: 767px) {
     grid-area: advisor;
+    flex: none;
+    display: block;
+
+    & > * {
+      flex: none;
+      height: auto;
+    }
   }
 `
 
 const AreaActivity = styled.div`
   grid-area: activity;
   min-width: 0;
-  margin-top: 2px;
-
-  @media (min-width: 1100px) {
-    margin-top: 16px;
-    width: 100%;
-    max-width: ${liquidityStudioLayout.gridWidth};
-  }
+  margin-top: 0;
 `
 
 export const LiquidityStudioScreen: React.FC = () => (
@@ -160,12 +219,17 @@ export const LiquidityStudioScreen: React.FC = () => (
             <PositionPreviewPanel />
           </AreaPreview>
           <AreaRight>
-            <AreaMarket>
-              <MarketIntelligencePanel />
-            </AreaMarket>
-            <AreaAdvisor>
-              <AILiquidityAdvisorPanel />
-            </AreaAdvisor>
+            <AreaLpInfo>
+              <LiquidityLpInfoPanel />
+            </AreaLpInfo>
+            <AreaRightStack>
+              <AreaMarket>
+                <MarketIntelligencePanel />
+              </AreaMarket>
+              <AreaAdvisor>
+                <AILiquidityAdvisorPanel />
+              </AreaAdvisor>
+            </AreaRightStack>
             <AreaPools>
               <TopPoolsPanel />
             </AreaPools>

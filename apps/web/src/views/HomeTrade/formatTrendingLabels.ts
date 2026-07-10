@@ -2,6 +2,9 @@ import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
 import { VaultKey } from 'state/types'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+
+export const POOL_APR_UNAVAILABLE_REASON = 'Pool APR not indexed in current subgraph window'
 
 export function formatPoolTrendingLabel(
   pool: Pool.DeserializedPool<Token>,
@@ -21,16 +24,23 @@ export function formatPoolTrendingLabel(
   return {
     primary: 'Top Pool',
     secondary,
-    accent: hasApr ? `${apr.toFixed(2)}%` : 'No sustainable pool',
+    accent: hasApr ? `${apr.toFixed(2)}%` : undefined,
   }
 }
 
 /** Ticker/ribbon accent for Top Pool — shows APR when recoverable. */
-export function formatPoolTickerAccent(accent?: string): string {
+export function formatPoolTickerAccent(accent?: string): string | undefined {
   if (accent && accent.includes('%')) {
     return `${accent} APR`
   }
-  return accent ?? 'No sustainable pool'
+  return undefined
+}
+
+export function formatPoolMetaLabel(accent?: string): string {
+  if (accent && accent.includes('%')) {
+    return `APR ${accent}`
+  }
+  return RUNTIME_UNAVAILABLE_LABEL
 }
 
 export function formatFarmTrendingLabel(farm: FarmWithStakedValue, apr?: number): {

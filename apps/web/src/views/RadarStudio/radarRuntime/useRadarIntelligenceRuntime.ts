@@ -187,6 +187,9 @@ export function useRadarIntelligenceRuntime() {
     runtimeErrors,
     runContractPreview,
     hasRuntimeData: enriched.length > 0,
+    intelligenceFeedsAvailable: false as const,
+    whaleFeedAvailable: false as const,
+    smartMoneyFeedAvailable: false as const,
   }
 }
 

@@ -1,4 +1,5 @@
 import type { CivilizationRouteType, RouteTypeDefinition } from './types'
+import { readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
 
 const SETTLEMENT_SWAP = 'Treasury Runtime FSC-01 post-confirmation'
 const SETTLEMENT_RUNTIME = 'Treasury Runtime intake required'
@@ -148,23 +149,36 @@ export function getRouteTypeDefinition(routeType: CivilizationRouteType): RouteT
 
 export function getBnbTestnetReadiness() {
   const entry = buildRouteTypeMatrix()
+  const profile = readSmartRouterChainProfile(97)
+  const wrapperAddress = profile?.wrapperAddress ?? null
+  const wrapperDeployed = Boolean(wrapperAddress)
   return {
-    status: 'BNB_TESTNET_BLOCKED',
+    status: wrapperDeployed ? 'ACTIVE_TESTNET' : 'BNB_TESTNET_BLOCKED',
     chainId: 97,
-    quoteStandardSwap: false,
-    quoteBuyMarco: false,
+    wrapperAddress,
+    wrapperVersion: wrapperDeployed ? 2 : null,
+    validationStatus: wrapperDeployed ? 'passed' : 'pending',
+    marcoAddress: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+    marcoRegistryRef: '/registry/assets/marco-bsc-testnet.json',
+    underlyingRouter: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1',
+    treasuryCollector: '0xe674b1d925d79f5A0053e40cC7cdED7841AD4164',
+    dexAdapterActive: true,
+    wrapperDeployed,
+    quoteStandardSwap: wrapperDeployed,
+    quoteBuyMarco: wrapperDeployed,
+    quoteSellMarco: wrapperDeployed,
     routeNarrativeTrade: false,
     routeAIService: false,
-    executionManifest: 'blocked-only until registry prerequisites met',
-    treasuryHandoff: 'blocked until collector published',
-    reasons: [
-      'BLOCKED_WRAPPER_NOT_DEPLOYED',
-      'BLOCKED_UNDERLYING_ROUTER_MISSING',
-      'BLOCKED_CONFIG_MARCO_TOKEN_MISSING',
-      'BLOCKED_TREASURY_COLLECTOR_MISSING',
-      'BLOCKED_CHAIN_NOT_INDEXED',
-    ],
+    executionManifest: wrapperDeployed
+      ? 'TreasuryHandoffPrepared emitted on-chain per validated swap'
+      : 'blocked-only until registry prerequisites met',
+    treasuryHandoff: 'collector active_testnet',
+    executableRouteTypes: wrapperDeployed ? ['STANDARD_SWAP', 'BUY_MARCO', 'SELL_MARCO'] : [],
+    reasons: wrapperDeployed ? [] : ['BLOCKED_WRAPPER_NOT_DEPLOYED'],
     blockedRouteTypes: entry.filter((r) => r.blocked).map((r) => r.id),
+    validationCertificate: wrapperDeployed
+      ? '/registry/smart-router/testnet-validation-certificate.json'
+      : null,
   }
 }
 

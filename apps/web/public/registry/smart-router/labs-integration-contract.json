@@ -1,0 +1,364 @@
+{
+  "schema": "melega.smart-router.labs-integration.v1",
+  "contractId": "MELEGA_DEX_SMART_ROUTER_INTERFACE_REQUIRED",
+  "asOf": "2026-07-09",
+  "disclaimer": "Truth-first integration contract for Labs Narrative Trading. Chain 97 wrapper V2 published active_testnet. Mainnet wrapper not deployed. No fabricated narrative execution support.",
+  "verdict": {
+    "smart_router_status": "ADAPTER_PHASE1_PARTIAL",
+    "router_contract_status": "BLOCKED_NO_MELEGA_WRAPPER_DEPLOYED",
+    "required_external_contract": "MELEGA_DEX_SMART_ROUTER_INTERFACE_REQUIRED",
+    "narrative_trade_support": false,
+    "bnb_testnet_chain_97_support": true,
+    "bnb_testnet_wrapper_validated": true,
+    "bnb_mainnet_chain_56_partial": true,
+    "integration_ready_for_labs_narrative_trades": false
+  },
+  "architecture": {
+    "current": "ADAPTER",
+    "target": "WRAPPER",
+    "phase": "PHASE2_CONSTITUTIONAL_WRAPPER",
+    "description": "Phase 1 is an off-chain economic adapter over PancakeSwap Smart Router. No deployed Melega Smart Router on-chain contract exists.",
+    "entrypoint": {
+      "type": "typescript_module",
+      "module": "lib/melega-smart-router",
+      "primaryFunction": "prepareMelegaSmartRouterSwap"
+    },
+    "registryUrl": "/registry/smart-router/index.json",
+    "registryVersion": "0.4.0"
+  },
+  "contracts": {
+    "melegaSmartRouterWrapper": {
+      "address": null,
+      "status": "planned",
+      "label": "Melega Smart Router Wrapper",
+      "role": "canonical-economic-entrypoint",
+      "abiUrl": null,
+      "abiDraftPath": "apps/web/src/lib/melega-smart-router/wrapper/MelegaSmartRouterWrapper.abi.json",
+      "specRef": "docs/MELEGA_SMART_ROUTER_PHASE2_WRAPPER_SPEC.md",
+      "note": "Not deployed. Labs must not assume a Melega router contract address."
+    },
+    "executionRouter": {
+      "chainId": 56,
+      "chainName": "BNB Chain",
+      "address": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "label": "PancakeSwap Smart Router",
+      "role": "execution-only",
+      "status": "active",
+      "abiUrl": "/config/abi/pancakeSwapSmartRouter.json",
+      "abiPath": "apps/web/src/config/abi/pancakeSwapSmartRouter.json",
+      "note": "Underlying DEX router. Melega D87 protocol fee is applied in ADAPTER layer, not inside this contract."
+    }
+  },
+  "apis": {
+    "melegaOwnedQuoteApi": {
+      "url": null,
+      "status": "absent",
+      "note": "No Melega-owned HTTP quote or execution API is published."
+    },
+    "legacySmartRouterProxy": {
+      "method": "POST",
+      "path": "/smartRouter",
+      "status": "pancake_legacy_optional",
+      "owner": "pancakeswap",
+      "note": "Optional frontend proxy for price discovery. Not a Melega integration contract. Primary quote path is client-side @pancakeswap/smart-router.",
+      "requestSchemaRef": "apps/web/src/state/swap/fetch/fetchBestPriceWithRouter.ts#RequestBody",
+      "responseSchemaRef": "apps/web/src/state/swap/fetch/fetchBestPriceWithRouter.ts#SmartRouterResponse"
+    },
+    "publicRegistries": {
+      "smartRouter": "/registry/smart-router/index.json",
+      "treasury": "/registry/treasury/index.json",
+      "marcoBsc": "/registry/assets/marco.json",
+      "labsIntegration": "/registry/smart-router/labs-integration-contract.json"
+    }
+  },
+  "chainSupport": {
+    "56": {
+      "chainId": 56,
+      "chainName": "BNB Chain",
+      "status": "partial",
+      "executionRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "melegaWrapper": null,
+      "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "marcoRegistryStatus": "active",
+      "treasuryCollector": null,
+      "treasuryCollectorEnvKey": "NEXT_PUBLIC_TREASURY_COLLECTOR_BSC",
+      "supportedAssets": ["MARCO", "MXMX", "WBNB"],
+      "swapReadinessBlockers": [
+        "BLOCKED_TREASURY_COLLECTOR_MISSING",
+        "BLOCKED_NO_MELEGA_WRAPPER_DEPLOYED"
+      ],
+      "exactInputSupported": true,
+      "exactOutputSupported": false,
+      "feeOnTransferSupported": false
+    },
+    "97": {
+      "chainId": 97,
+      "chainName": "BNB Testnet",
+      "status": "active_testnet",
+      "executionRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+      "melegaWrapper": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+      "melegaWrapperVersion": 2,
+      "validationStatus": "passed",
+      "validationCertificate": "/registry/smart-router/testnet-validation-certificate.json",
+      "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "marcoRegistryStatus": "active",
+      "marcoEnvKey": "NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET",
+      "treasuryCollector": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+      "treasuryCollectorEnvKey": "NEXT_PUBLIC_TREASURY_COLLECTOR_BSC_TESTNET",
+      "supportedAssets": ["MARCO", "WBNB", "USDT"],
+      "executableRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+      "swapReadinessBlockers": [],
+      "exactInputSupported": true,
+      "exactOutputSupported": false,
+      "feeOnTransferSupported": false,
+      "note": "Wrapper V2 constitutional validation passed (R747). prepareCivilizationRoute still blocks chain 97 until product wiring."
+    },
+    "planned": [1, 137, 8453]
+  },
+  "narrativeTradeSupport": {
+    "supported": false,
+    "routeTypesAvailable": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+    "routeTypesRequiredForNarrative": ["NARRATIVE_TRADE"],
+    "gap": {
+      "summary": "Smart Router ADAPTER certifies exact-input token swaps with D87 protocol fees only. No narrative trade route type, narrative metadata fields, or Labs execution binding exists in DEX.",
+      "missingCapabilities": [
+        "NARRATIVE_TRADE route type in capability manifest",
+        "narrative_id / narrative_context fields in quote and execution schemas",
+        "Labs → Smart Router handoff for narrative-triggered swaps",
+        "Treasury routing rules for narrative-attributed protocol fees",
+        "BNB Testnet (97) execution router and registry publication",
+        "Deployed Melega Smart Router Wrapper contract"
+      ],
+      "labsRuntimeState": {
+        "executionEnabled": false,
+        "readOnly": true,
+        "narrativesIndexed": false,
+        "module": "lib/labs-runtime",
+        "note": "Labs connector is observation-only. Narrative events are defined but not wired to swap execution."
+      }
+    }
+  },
+  "schemas": {
+    "routeQuote": {
+      "schema": "melega.smart-router.quote.v1",
+      "status": "partial",
+      "description": "Two-layer quote: (1) Pancake route discovery, (2) Melega economic plan via prepareMelegaSmartRouterSwap.",
+      "pancakeQuote": {
+        "source": "@pancakeswap/smart-router/evm",
+        "functions": ["getBestTradeExactIn"],
+        "legacyHttpOptional": "POST /smartRouter",
+        "fields": {
+          "tradeType": "TradeType (EXACT_INPUT only for Melega certification)",
+          "inputAmount": "string",
+          "outputAmount": "string",
+          "route": {
+            "routeType": "RouteType",
+            "path": "Token[]",
+            "pairs": "Pair[]"
+          }
+        }
+      },
+      "melegaEconomicPlan": {
+        "inputSchema": "PrepareSmartRouterSwapInput",
+        "inputSchemaPath": "apps/web/src/lib/melega-smart-router/types.ts",
+        "fields": {
+          "chainId": "number",
+          "user": "string (optional)",
+          "tradeType": "TradeType.EXACT_INPUT only",
+          "inputAmount": "{ currency, toSignificant }",
+          "outputAmount": "{ currency, toSignificant }",
+          "feeOnTransfer": "boolean (must be false or blocked)"
+        },
+        "outputSchema": "MelegaSmartRouterResult",
+        "successSchema": "MelegaSmartRouterSwapPlan",
+        "blockedSchema": "MelegaSmartRouterBlocked",
+        "blockCodes": [
+          "BLOCKED_CONFIG_MARCO_TOKEN_MISSING",
+          "BLOCKED_TREASURY_COLLECTOR_MISSING",
+          "BLOCKED_UNDERLYING_ROUTER_MISSING",
+          "SMART_ROUTER_EXACT_OUTPUT_UNSUPPORTED",
+          "SMART_ROUTER_FEE_ON_TRANSFER_UNSUPPORTED"
+        ]
+      }
+    },
+    "execution": {
+      "schema": "melega.execution-manifest.v1",
+      "adapterVersion": "2.5.0",
+      "schemaPath": "apps/web/src/lib/melega-smart-router/execution-manifest/types.ts",
+      "executionLayer": "ADAPTER",
+      "requiredFields": [
+        "executionId",
+        "executionTimestamp",
+        "chainId",
+        "executionRouter",
+        "inputToken",
+        "outputToken",
+        "grossAmount",
+        "netAmount",
+        "protocolFee",
+        "lpFee",
+        "treasuryCollector",
+        "treasuryPolicy",
+        "buyMarcoApplied",
+        "registryVersion",
+        "receiptHash",
+        "status",
+        "validationState"
+      ],
+      "events": {
+        "ProtocolFeeCollected": "apps/web/src/lib/melega-smart-router/types.ts#ProtocolFeeCollectedEvent",
+        "SmartRouterSwapRouted": "apps/web/src/lib/melega-smart-router/types.ts#SmartRouterSwapRoutedEvent"
+      },
+      "onChainExecution": {
+        "current": "Direct call to PancakeSwap Smart Router via frontend wallet (no Melega wrapper)",
+        "target": "MelegaSmartRouterWrapper.swap (planned, not deployed)"
+      }
+    },
+    "fees": {
+      "pricingPolicy": "D87_DEX_PRICING_RATIFIED",
+      "pricingPolicyPath": "apps/web/src/lib/d87-pricing/codex/ratified.ts",
+      "treasuryPolicy": "FSC-01",
+      "protocolFeeStandardBps": 30,
+      "protocolFeeBuyMarcoBps": 20,
+      "buyMarcoRule": "output_token_address_equals_chain_marco",
+      "lpFeePolicy": "unaffected — LP fees remain with liquidity providers, never enter FSC-01",
+      "feeDeduction": "Protocol fee deducted from amountIn before underlying router call (ADAPTER math; wrapper will mirror on deploy)",
+      "feeToken": "input_token"
+    },
+    "treasury": {
+      "policyRef": "FSC-01",
+      "dexPolicy": "forward_protocol_fee_only",
+      "collectorResolutionOrder": [
+        "Treasury Runtime Registry (/registry/treasury/index.json)",
+        "KERL Registry",
+        "Environment (NEXT_PUBLIC_TREASURY_COLLECTOR_*)"
+      ],
+      "forbiddenHandoffFields": [
+        "settlement_id",
+        "lp_amount",
+        "treasury_amount",
+        "buyback_amount",
+        "referral_amount",
+        "waterfall"
+      ],
+      "forbiddenHandoffPath": "apps/web/src/lib/treasury-handoff/ownership.ts",
+      "currentCollectorPublication": {
+        "56": null,
+        "97": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164"
+      },
+      "note": "DEX submits execution receipt metadata post-confirmation. Treasury Runtime owns settlement truth."
+    },
+    "supportedAssets": {
+      "resolution": "Per-chain smart-router registry profile + KERL asset registry",
+      "chain56": {
+        "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+        "registryRef": "/registry/assets/marco.json"
+      },
+      "chain97": {
+        "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+        "registryRef": "/registry/assets/marco-bsc-testnet.json"
+      },
+      "certificationRule": "MARCO detection uses on-chain address only — never symbol alone"
+    },
+    "metadataRequirements": {
+      "D87": {
+        "id": "D87_DEX_PRICING_RATIFIED",
+        "required": true,
+        "fields": ["pricingRef", "protocolFeeBps", "buyMarcoIncentiveApplied"]
+      },
+      "FSC01": {
+        "id": "FSC-01",
+        "required": true,
+        "fields": ["treasuryPolicyRef", "treasuryCollector"]
+      },
+      "D90": {
+        "status": "NOT_DEFINED_IN_DEX",
+        "note": "No D90 schema, fields, or codex reference exists in MelegaSwapV2. Labs must publish D90 requirements if narrative trades need D90 metadata."
+      },
+      "D99": {
+        "status": "NOT_DEFINED_IN_DEX",
+        "note": "No D99 schema, fields, or codex reference exists in MelegaSwapV2. Labs must publish D99 requirements if narrative trades need D99 metadata."
+      },
+      "executionManifest": {
+        "schema": "melega.execution-manifest.v1",
+        "required": true
+      },
+      "capabilityManifest": {
+        "schema": "melega.capabilities.smart-router.v1",
+        "builder": "buildCapabilityManifest"
+      }
+    }
+  },
+  "capabilities": {
+    "manifestSchema": "melega.capabilities.smart-router.v1",
+    "supported": [
+      "BUY_MARCO",
+      "SELL_MARCO",
+      "STANDARD_SWAP",
+      "LP_SEPARATION",
+      "REGISTRY_LOOKUP",
+      "EXACT_INPUT",
+      "ADAPTER"
+    ],
+    "planned": [
+      "TREASURY_HANDOFF",
+      "CHAIN_ROUTING",
+      "MULTICHAIN",
+      "WRAPPER"
+    ],
+    "blocked": [
+      "EXACT_OUTPUT",
+      "FEE_ON_TRANSFER"
+    ],
+    "absent": [
+      "NARRATIVE_TRADE"
+    ]
+  },
+  "missingPieces": [
+    {
+      "id": "MELEGA_WRAPPER_NOT_DEPLOYED",
+      "severity": "P0",
+      "blocks": "router_contract_status",
+      "action": "Deploy Melega Smart Router Wrapper on BNB Chain mainnet (56). Chain 97 wrapper V2 validated — see testnet-validation-certificate.json"
+    },
+    {
+      "id": "TREASURY_COLLECTOR_NOT_PUBLISHED",
+      "severity": "P0",
+      "blocks": "BLOCKED_TREASURY_COLLECTOR_MISSING",
+      "action": "Treasury Runtime must publish BNB Chain mainnet collector to /registry/treasury/index.json (chain 56). Chain 97 collector published."
+    },
+    {
+      "id": "NARRATIVE_TRADE_ROUTE_TYPE",
+      "severity": "P0",
+      "blocks": "narrative_trade_support",
+      "action": "Define NARRATIVE_TRADE capability, quote schema extensions (narrative_id), and Labs handoff contract"
+    },
+    {
+      "id": "D90_D99_UNDEFINED",
+      "severity": "P1",
+      "blocks": "metadata binding",
+      "action": "Labs must specify D90/D99 schemas or accept D87 + execution-manifest.v1 as interim metadata"
+    },
+    {
+      "id": "MELEGA_QUOTE_API",
+      "severity": "P2",
+      "blocks": "server-side Labs integration",
+      "action": "Optional: publish Melega-owned quote API; today integration is TypeScript module + public registries only"
+    }
+  ],
+  "integrationGuidance": {
+    "doNot": [
+      "Assume a Melega Smart Router contract address exists",
+      "Fabricate narrative trade routes or execution",
+      "Use symbol-only MARCO detection",
+      "Send settlement splits or waterfall amounts in treasury handoff",
+      "Enable Labs execution until this contract reports integration_ready_for_labs_narrative_trades: true"
+    ],
+    "do": [
+      "Fetch this contract from /registry/smart-router/labs-integration-contract.json",
+      "Use prepareMelegaSmartRouterSwap for economic plan validation on chain 56 only when registry prerequisites are met",
+      "Treat Pancake Smart Router as execution-only layer on BSC mainnet",
+      "Wait for NARRATIVE_TRADE capability before wiring Labs narrative trades to DEX execution"
+    ]
+  }
+}

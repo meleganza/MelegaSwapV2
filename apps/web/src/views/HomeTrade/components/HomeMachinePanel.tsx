@@ -61,7 +61,7 @@ export const HomeMachinePanel: React.FC<HomeMachinePanelProps> = ({ machine }) =
     <Panel data-home-machine-json>
       <Title>Machine Summary</Title>
       <ToggleBtn type="button" onClick={() => setOpen(!open)} aria-expanded={open}>
-        {open ? 'Collapse' : 'Expand'} machine-readable runtime
+        {open ? 'Hide technical details' : 'Show technical details'}
       </ToggleBtn>
       {open ? <JsonBlock>{jsonText}</JsonBlock> : null}
     </Panel>

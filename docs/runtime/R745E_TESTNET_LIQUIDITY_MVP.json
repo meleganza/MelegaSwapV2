@@ -1,0 +1,23 @@
+{
+  "task": "R745E",
+  "schema": "melega.testnet-liquidity-mvp.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PASS",
+  "route": "/testnet/liquidity",
+  "chainId": 97,
+  "filesChanged": [
+    "apps/web/src/pages/testnet/liquidity.tsx",
+    "apps/web/src/views/TestnetLiquidity/TestnetLiquidityScreen.tsx",
+    "apps/web/src/views/TestnetLiquidity/useTestnetLiquidityRuntime.ts",
+    "apps/web/src/views/TestnetLiquidity/testnetLiquidityConfig.ts",
+    "docs/runtime/R745E_TESTNET_LIQUIDITY_MVP.json"
+  ],
+  "pairStatus": {
+    "existsOnChainAtImplementation": false,
+    "note": "Pair creation requires founder wallet on /testnet/liquidity"
+  },
+  "remainingBlockers": [
+    "FOUNDER_MUST_EXECUTE_LIQUIDITY_ON_PAGE",
+    "MARCO_WBNB_PAIR_NOT_YET_CREATED_ON_CHAIN"
+  ]
+}

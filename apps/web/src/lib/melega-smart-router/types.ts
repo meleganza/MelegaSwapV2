@@ -127,4 +127,6 @@ export interface PrepareSmartRouterSwapInput {
   inputAmount: { currency: Currency; toSignificant: (decimals?: number) => string }
   outputAmount: { currency: Currency; toSignificant: (decimals?: number) => string }
   feeOnTransfer?: boolean
+  /** When true on chain 56, ExecutionPlan selects SmartRouterExecutionAdapter. Chain 97 ignores this (frozen V2). */
+  preferSmartRouter?: boolean
 }

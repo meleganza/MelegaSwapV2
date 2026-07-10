@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { colors } from '../../tokens'
+import { MELEGA_SOCIAL_LINKS } from 'config/constants/social'
 
 const Row = styled.div`
   display: flex;
@@ -49,15 +50,11 @@ const Instagram = () => (
 
 export const MelegaSocialIcons: React.FC = () => (
   <Row data-melega-social-icons>
-    <Link href="https://t.me/melegacommunity" target="_blank" rel="noreferrer" aria-label="Telegram">
-      <Telegram />
-    </Link>
-    <Link href="https://x.com/meleganews" target="_blank" rel="noreferrer" aria-label="X">
-      <XIcon />
-    </Link>
-    <Link href="https://www.instagram.com/melega.finance/" target="_blank" rel="noreferrer" aria-label="Instagram">
-      <Instagram />
-    </Link>
+    {MELEGA_SOCIAL_LINKS.map((social) => (
+      <Link key={social.id} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label}>
+        {social.id === 'telegram' ? <Telegram /> : social.id === 'x' ? <XIcon /> : <Instagram />}
+      </Link>
+    ))}
   </Row>
 )
 

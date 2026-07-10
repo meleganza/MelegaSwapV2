@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import RadarStudioGlobalStyle from './RadarStudioGlobalStyle'
-import { RadarRuntimeProvider } from './radarRuntime/RadarRuntimeContext'
+import { RadarRuntimeProvider, useRadarRuntime } from './radarRuntime/RadarRuntimeContext'
 import RadarContractIntelligenceInput from './components/RadarContractIntelligenceInput'
 import RadarDiscoveriesGrid from './components/RadarDiscoveriesGrid'
 import RadarFilterRow from './components/RadarFilterRow'
@@ -48,9 +48,12 @@ const Content = styled.div`
   }
 `
 
-const ConsoleGrid = styled.div`
+const ConsoleGrid = styled.div<{ $collapsedLeft?: boolean }>`
   display: grid;
-  grid-template-columns: ${radarStudioLayout.colLeft} minmax(0, 1fr) ${radarStudioLayout.colRight};
+  grid-template-columns: ${({ $collapsedLeft }) =>
+    $collapsedLeft
+      ? `minmax(0, 1fr) ${radarStudioLayout.colRight}`
+      : `${radarStudioLayout.colLeft} minmax(0, 1fr) ${radarStudioLayout.colRight}`};
   gap: ${radarStudioLayout.columnGap};
   align-items: stretch;
 
@@ -58,6 +61,17 @@ const ConsoleGrid = styled.div`
     grid-template-columns: 1fr;
   }
 `
+
+const RadarConsole: React.FC = () => {
+  const { intelligenceFeedsAvailable } = useRadarRuntime()
+  return (
+    <ConsoleGrid data-rd-console-grid $collapsedLeft={!intelligenceFeedsAvailable}>
+      <RadarOpsLeftColumn />
+      <RadarDiscoveriesGrid />
+      <RadarOpsRightColumn />
+    </ConsoleGrid>
+  )
+}
 
 export const RadarStudioScreen: React.FC = () => (
   <RadarRuntimeProvider>
@@ -71,11 +85,7 @@ export const RadarStudioScreen: React.FC = () => (
         <RadarContractIntelligenceInput />
         <RadarLiveEventStream />
         <RadarFilterRow />
-        <ConsoleGrid data-rd-console-grid>
-          <RadarOpsLeftColumn />
-          <RadarDiscoveriesGrid />
-          <RadarOpsRightColumn />
-        </ConsoleGrid>
+        <RadarConsole />
         <RadarHeatmapTable />
       </Content>
     </Root>

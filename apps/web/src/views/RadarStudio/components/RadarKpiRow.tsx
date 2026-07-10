@@ -1,5 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
+import { displayStudioMetric, isStudioMetricUnavailable, STUDIO_KPI_VALUE } from 'design-system/melega'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { useRadarRuntime } from '../radarRuntime/RadarRuntimeContext'
 import { RADAR_FONT_BODY, RADAR_FONT_DISPLAY, radarStudioColors, radarStudioLayout } from '../radarStudioTokens'
 import { KpiSparkline } from './radarStudioPrimitives'
@@ -50,18 +52,16 @@ const Label = styled.span`
 const Value = styled.span<{ $risk?: boolean; $unavailable?: boolean }>`
   display: block;
   margin-top: 8px;
-  font-family: ${RADAR_FONT_DISPLAY};
-  font-size: ${({ $unavailable }) => ($unavailable ? '16px' : '42px')};
-  line-height: ${({ $unavailable }) => ($unavailable ? '20px' : '48px')};
-  font-weight: 800;
+  font-family: ${RADAR_FONT_BODY};
+  font-size: ${STUDIO_KPI_VALUE.size};
+  line-height: ${STUDIO_KPI_VALUE.lineHeight};
+  font-weight: ${STUDIO_KPI_VALUE.weight};
+  font-variant-numeric: ${STUDIO_KPI_VALUE.fontVariantNumeric};
   color: ${({ $risk, $unavailable }) =>
     $unavailable ? radarStudioColors.muted : $risk ? radarStudioColors.white : radarStudioColors.green};
-  white-space: ${({ $unavailable }) => ($unavailable ? 'normal' : 'nowrap')};
-
-  @media (max-width: 767px) {
-    font-size: ${({ $unavailable }) => ($unavailable ? '14px' : '34px')};
-    line-height: ${({ $unavailable }) => ($unavailable ? '18px' : '38px')};
-  }
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const Delta = styled.span<{ $positive?: boolean }>`
@@ -80,15 +80,22 @@ export const RadarKpiRow: React.FC = () => {
 
   return (
     <Row data-rd-kpi-row>
-      {kpis.map((kpi) => (
+      {kpis.map((kpi) => {
+        const display = displayStudioMetric(kpi.value)
+        const unavailable = isStudioMetricUnavailable(kpi.value) || kpi.unavailable
+        return (
         <Card key={kpi.id} data-rd-kpi-card>
           <Label>{kpi.label}</Label>
-          <Value $risk={kpi.id === 'risk'} $unavailable={kpi.unavailable} data-rd-kpi-value>
-            {kpi.value}
+          <Value $risk={kpi.id === 'risk'} $unavailable={unavailable} data-rd-kpi-value>
+            {display}
           </Value>
+          {unavailable ? (
+            <TradeTechnicalDetails detail="Radar metrics require wallet activity and DEX indexer when deployed." />
+          ) : null}
           {kpi.delta ? <Delta $positive={kpi.deltaPositive}>{kpi.delta}</Delta> : null}
         </Card>
-      ))}
+        )
+      })}
     </Row>
   )
 }

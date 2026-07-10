@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import { colors, typography, MelegaCinematicPanel, type MelegaPulseRow } from 'design-system/melega'
+import { typography, MelegaCinematicPanel, type MelegaPulseRow } from 'design-system/melega'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import TrendingRibbon from './TrendingRibbon'
 import HomeSwapPanel from './HomeSwapPanel'
-import QuickMarketStrip from './QuickMarketStrip'
+import HomeMarketOverview from './HomeMarketOverview'
+import HomeQuickActions from './HomeQuickActions'
 import ListProjectCta from './ListProjectCta'
 import EarnOpportunities from './EarnOpportunities'
 import LiveActivityFeed from './LiveActivityFeed'
@@ -20,11 +21,13 @@ import { homeTradeLayout } from './homeTradeTokens'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
 
 const Root = styled.div`
-  color: ${colors.textPrimary};
+  color: ${premiumStudioColors.text};
   font-family: ${typography.fontFamily.body};
   font-size: ${typography.fontSize.base};
   line-height: ${typography.lineHeight.normal};
   background: ${premiumStudioColors.canvas};
+  min-width: 0;
+  overflow-x: hidden;
 
   @media (max-width: 767px) {
     padding: 0 ${homeTradeLayout.contentPaddingX} ${homeTradeLayout.mobileBottomPad};
@@ -40,9 +43,9 @@ const Content = styled.div`
   padding: ${homeTradeLayout.contentPaddingTop} ${homeTradeLayout.contentPaddingX}
     ${homeTradeLayout.contentPaddingBottom};
   box-sizing: border-box;
+  min-width: 0;
 
   @media (max-width: 767px) {
-    gap: 16px;
     padding: 16px 16px ${homeTradeLayout.mobileBottomPad};
   }
 `
@@ -60,14 +63,6 @@ const HeroRow = styled.div`
     max-height: ${homeTradeLayout.heroMaxHeight};
     align-items: stretch;
   }
-`
-
-const GrowSection = styled.div`
-  margin-top: 4px;
-`
-
-const LowerSection = styled.div`
-  margin-top: 4px;
 `
 
 const LowerRow = styled.div<{ $hasEarn?: boolean }>`
@@ -89,6 +84,8 @@ export const HomeTradeScreen: React.FC = () => {
         marketCards: data.marketCards,
         activityRows: data.activityRows.length,
         earnRows: data.farmRows.length + data.poolRows.length,
+        subgraphEndpoint: data.indexerState?.configuredEndpoint,
+        subgraphBlocker: data.indexerState?.blockerCode,
       }),
     [data],
   )
@@ -115,23 +112,16 @@ export const HomeTradeScreen: React.FC = () => {
             liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
           />
         </HeroRow>
-        {data.showMarket ? (
-          <QuickMarketStrip cards={data.marketCards} isIndexing={data.isActivityIndexing} />
-        ) : (
-          <QuickMarketStrip cards={[]} isIndexing={data.isActivityIndexing} />
-        )}
+        <HomeMarketOverview />
+        <HomeQuickActions />
         <ListProjectCta />
-        <GrowSection>
-          <GrowInsideMelegaPanel />
-        </GrowSection>
-        <LowerSection>
-          <LowerRow $hasEarn={data.showEarn}>
-            {data.showEarn && (
-              <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
-            )}
-            <MarketPulsePanel />
-          </LowerRow>
-        </LowerSection>
+        <GrowInsideMelegaPanel />
+        <LowerRow $hasEarn={data.showEarn}>
+          {data.showEarn && (
+            <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
+          )}
+          <MarketPulsePanel />
+        </LowerRow>
         <LiveActivityFeed
           slots={data.activitySlots}
           rows={data.activityRows}

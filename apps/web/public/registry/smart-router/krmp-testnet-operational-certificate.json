@@ -1,0 +1,67 @@
+{
+  "schema": "melega.krmp.testnet.operational.v1",
+  "certificateId": "KRMP-01-BSC-TESTNET-OPERATIONAL-AUDIT",
+  "validationDate": "2026-07-09",
+  "verdict": "READY",
+  "civilizationAuthority": "KRMP-01",
+  "freezeReference": "SMART_ROUTER_TESTNET_FROZEN",
+  "chainId": 97,
+  "chainName": "BNB Testnet",
+  "operationalStatus": "KRMP_TESTNET_OPERATIONAL_READY",
+  "mission": "R754 — Constitutional completion (R753 blocker closure)",
+  "pipelineVerdict": {
+    "economicIntentToKerl": "READY",
+    "kerlToExecutionRequest": "READY",
+    "executionRequestToSmartRouter": "READY",
+    "smartRouterToWrapperV2": "READY",
+    "wrapperToDexExecution": "READY",
+    "dexToExecutionReceipt": "READY",
+    "executionReceiptToKerlSettlementReceipt": "READY",
+    "kerlSettlementToTreasuryRuntime": "READY",
+    "treasuryToFsc01": "PARTIAL"
+  },
+  "components": {
+    "wrapper": {
+      "status": "READY",
+      "address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+      "version": 2,
+      "onChainValidated": true
+    },
+    "treasuryIntake": {
+      "status": "READY",
+      "address": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164"
+    },
+    "kerl": {
+      "status": "READY",
+      "registryUrl": "https://kiri.melega.ai/public/registry/melega-dex/smart-router-wrapper-v2.json",
+      "dexHandoffRegistry": "/registry/kerl/index.json",
+      "executionMode": "TESTNET_EXECUTION_ONLY",
+      "kerlLiveExecutionAuthorized": true,
+      "executionRequestSchema": "melega.kerl.execution-request.v1",
+      "settlementReceiptSchema": "melega.kerl.settlement-receipt.v1"
+    },
+    "dex": {
+      "status": "READY",
+      "liveSwapRoutingOwner": "KERL (chain 97)",
+      "kerlIngressWiredToSwapUi": true,
+      "wrapperWiredToSwapUi": true,
+      "prepareCivilizationRouteChain97": "READY"
+    },
+    "settlement": {
+      "status": "READY",
+      "kerlSettlementReceiptSchema": "melega.kerl.settlement-receipt.v1",
+      "dexToTreasuryPath": "ExecutionReceipt → KERL Settlement Receipt → Treasury Runtime",
+      "kerlSettlementReceiptInPath": true
+    }
+  },
+  "authorityAudit": {
+    "kerlDecidesRouting": true,
+    "wrapperExecutes": true,
+    "dexSwaps": true,
+    "treasuryRuntimeSettles": true,
+    "violations": []
+  },
+  "interfaceMatrixRef": "/docs/runtime/R754_KRMP_CONSTITUTIONAL_COMPLETION.md",
+  "remainingBlockers": [],
+  "disclaimer": "Structural operational certification per R754 — on-chain genesis handoff ceremony may still require funded executor wallet."
+}

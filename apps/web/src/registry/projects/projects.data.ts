@@ -24,7 +24,8 @@ const melegaDex: StaticProjectRecord = {
   spaceProfileUrl: 'https://melega.space/',
   socialLinks: [
     { type: 'telegram', url: 'https://t.me/melegacommunity' },
-    { type: 'twitter', url: 'https://twitter.com/meleganews' },
+    { type: 'twitter', url: 'https://x.com/meleganews' },
+    { type: 'instagram', url: 'https://www.instagram.com/melega.finance/' },
   ],
   resources: {
     tokens: [

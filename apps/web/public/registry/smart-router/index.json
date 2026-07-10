@@ -1,8 +1,8 @@
 {
-  "registryVersion": "0.3.0",
+  "registryVersion": "0.4.1",
   "schema": "melega.smart-router-registry.v1",
   "policyRef": "D87_DEX_PRICING_RATIFIED",
-  "asOf": "2026-07-08",
+  "asOf": "2026-07-09",
   "phase": "PHASE2_CONSTITUTIONAL_WRAPPER",
   "currentArchitecture": "ADAPTER",
   "targetArchitecture": "WRAPPER",
@@ -62,54 +62,56 @@
     "97": {
       "chainId": 97,
       "chainName": "BNB Testnet",
-      "status": "blocked",
-      "wrapperAddress": null,
-      "underlyingRouter": null,
-      "MARCO": null,
-      "treasuryCollector": null,
+      "status": "active_testnet",
+      "freezeStatus": "SMART_ROUTER_TESTNET_FROZEN",
+      "freezeDate": "2026-07-09",
+      "freezeManifest": "/registry/smart-router/testnet-freeze-manifest.json",
+      "wrapperAddress": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+      "wrapperVersion": 2,
+      "validationStatus": "passed",
+      "validationCertificate": "/registry/smart-router/testnet-validation-certificate.json",
+      "deployTx": "0xef5be1c2324a0b68853f15a8d1c729c2bffae2c82372fe9a3c4f9b95f2d009ef",
+      "underlyingRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+      "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "treasuryCollector": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
       "KERLRegistry": "/registry/kerl/index.json",
       "TreasuryRuntime": "/registry/treasury/index.json#97",
       "executionRouter": {
-        "address": null,
-        "label": "PancakeSwap Smart Router (testnet)",
+        "address": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+        "label": "PancakeSwap V2 Router (testnet)",
         "role": "execution-only",
-        "status": "blocked"
+        "status": "active_testnet"
       },
       "wrapper": {
-        "address": null,
+        "address": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
         "label": "Melega Smart Router Wrapper",
         "role": "canonical-economic-entrypoint",
-        "status": "planned",
-        "specRef": "docs/MELEGA_SMART_ROUTER_PHASE2_WRAPPER_SPEC.md"
+        "status": "active_testnet",
+        "version": 2,
+        "specRef": "docs/MELEGA_SMART_ROUTER_PHASE2_WRAPPER_SPEC.md",
+        "abiPath": "apps/web/src/lib/melega-smart-router/wrapper/MelegaSmartRouterWrapper.abi.json"
       },
       "marco": {
-        "assetRef": null,
-        "status": "missing",
-        "envKey": "NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET"
+        "assetRef": "/registry/assets/marco-bsc-testnet.json",
+        "status": "active",
+        "envKey": "NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET",
+        "attestation": "Treasury Runtime R744B"
       },
       "collector": {
         "registryRef": "/registry/treasury/index.json#97",
-        "status": "planned"
+        "status": "active_testnet"
       },
-      "supportedAssets": [],
+      "supportedAssets": ["MARCO", "WBNB", "USDT"],
       "supportedRouteTypes": [
         "STANDARD_SWAP",
         "BUY_MARCO",
-        "SELL_MARCO",
-        "NARRATIVE_TRADE",
-        "AI_SERVICE",
-        "MARKETPLACE_SERVICE",
-        "MARKETPLACE_SETTLEMENT",
-        "TREASURY_TRANSFER",
-        "INTERNAL_ROUTING",
-        "REFERRAL",
-        "PROPAGATION"
+        "SELL_MARCO"
       ],
-      "executableRouteTypes": [],
+      "executableRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
       "policyRef": "FSC-01",
-      "blockerReason": "BNB_TESTNET_BLOCKED: BLOCKED_WRAPPER_NOT_DEPLOYED; BLOCKED_UNDERLYING_ROUTER_MISSING; BLOCKED_CONFIG_MARCO_TOKEN_MISSING; BLOCKED_TREASURY_COLLECTOR_MISSING; BLOCKED_CHAIN_NOT_INDEXED",
-      "registryVersion": "0.3.0",
-      "lastVerification": "2026-07-08"
+      "blockerReason": null,
+      "registryVersion": "0.4.1",
+      "lastVerification": "2026-07-09"
     },
     "1": {
       "chainId": 1,

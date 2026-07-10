@@ -1,0 +1,24 @@
+{
+  "task": "R744B",
+  "schema": "melega.chain-97-marco-sync.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PASS",
+  "treasuryRuntimeConfirmation": {
+    "chainId": 97,
+    "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "source": "Treasury Runtime canonical MARCO testnet"
+  },
+  "removedBlockers": ["BLOCKED_MARCO_TESTNET_MISSING", "BLOCKED_CONFIG_MARCO_TOKEN_MISSING"],
+  "updatedArtifacts": [
+    "/registry/smart-router/index.json#97",
+    "/registry/assets/marco-bsc-testnet.json",
+    "/registry/assets/index.json",
+    "apps/web/src/lib/melega-smart-router/registry/kerlRegistry.ts",
+    "docs/runtime/R738_CHAIN_97_DISCOVERY.json"
+  ],
+  "unchanged": {
+    "wrapperAddress": null,
+    "currentArchitecture": "ADAPTER",
+    "treasuryCollector": null
+  }
+}

@@ -4,6 +4,11 @@ import {
   shouldAttemptHandoff,
   submitSettlementHandoff,
 } from 'lib/treasury-handoff'
+import {
+  buildKerlSettlementReceipt,
+  isKerlConstitutionalHandoff,
+  submitKerlSettlementHandoff,
+} from 'lib/kerl-constitutional'
 import { useAllChainTransactions } from './hooks'
 import { TransactionDetails } from './reducer'
 
@@ -34,7 +39,19 @@ export const TreasuryHandoffUpdater: React.FC<{ chainId: number }> = ({ chainId 
         context: tx.settlementHandoffContext!,
       })
 
-      submitSettlementHandoff(payload)
+      const context = tx.settlementHandoffContext!
+      const kerlConstitutional = isKerlConstitutionalHandoff(context)
+      if (kerlConstitutional && !buildKerlSettlementReceipt({ executionReceipt: payload, context })) {
+        console.warn('[treasury-handoff] KERL settlement receipt build failed — handoff blocked')
+        inFlight.current.delete(tx.hash)
+        return
+      }
+
+      const submitPromise = kerlConstitutional
+        ? submitKerlSettlementHandoff(payload, context)
+        : submitSettlementHandoff(payload)
+
+      submitPromise
         .catch((error) => {
           console.warn('[treasury-handoff] unexpected handoff error', error)
         })

@@ -3,6 +3,7 @@ import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { BLOCKS_PER_DAY } from 'config'
 import { getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddressExplorerUrl } from 'utils/blockExplorer'
 import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 
@@ -50,8 +51,8 @@ export function mapFarmToPreviewCard(
   const token1 = farm.quoteToken?.symbol ?? '?'
 
   const chainId = farm.token?.chainId ?? 56
-  const lpExplorerUrl = farm.lpAddress ? `https://bscscan.com/address/${farm.lpAddress}` : undefined
-  const masterChefExplorerUrl = `https://bscscan.com/address/${getMasterChefAddress(chainId)}`
+  const lpExplorerUrl = farm.lpAddress ? getAddressExplorerUrl(farm.lpAddress, chainId) : undefined
+  const masterChefExplorerUrl = getAddressExplorerUrl(getMasterChefAddress(chainId), chainId)
 
   const analyzePreview: FarmAnalyzePreview = {
     aprHistory: displayApr ? `${displayApr}%` : '—',

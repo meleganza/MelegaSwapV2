@@ -32,7 +32,7 @@ export function getAprRangeForVisual(visualType: string, rewardBadge?: string): 
   return { min: 20, max: 30 }
 }
 
-const FORBIDDEN_APR_STRINGS = new Set(['0%', '0.00%', '0.02%', '0.03%', 'NaN', 'Infinity', '—', '-'])
+const FORBIDDEN_APR_STRINGS = new Set(['0%', '0.00%', '0.02%', '0.03%', 'NaN', 'Infinity', '—', '-', 'Unavailable'])
 
 export function isForbiddenAprDisplay(display?: string | null): boolean {
   if (!display) return true

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
+import { NAV_COMING_SOON_LABEL } from 'lib/navigation/comingSoon'
 import { SUPPORTED_CHAINS } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
@@ -134,11 +135,11 @@ export const CreateTokenPanel: React.FC = () => {
           Readiness: {tokenPreparation.readinessScore}/100
         </Meta>
         <BtnCol>
-          <BsPrimaryBtn type="button" $width="100%" $height="44px" style={{ fontSize: 13 }}>
-            Create Token →
+          <BsPrimaryBtn type="button" $width="100%" $height="44px" style={{ fontSize: 13 }} disabled title={NAV_COMING_SOON_LABEL}>
+            {NAV_COMING_SOON_LABEL}
           </BsPrimaryBtn>
-          <BsOutlineBtn type="button" $height="40px" style={{ fontSize: 13 }}>
-            Learn More
+          <BsOutlineBtn type="button" $height="40px" style={{ fontSize: 13 }} disabled title={NAV_COMING_SOON_LABEL}>
+            {NAV_COMING_SOON_LABEL}
           </BsOutlineBtn>
         </BtnCol>
       </Inner>

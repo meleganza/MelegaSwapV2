@@ -1,8 +1,10 @@
 import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
 
-/** Trade terminal — R200 premium alignment. */
+/** Trade terminal — R758 constitution rhythm. */
 export const tradeLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   cockpitWidth: '360px',
   centerWidth: '520px',
   rightRailWidth: '300px',
@@ -13,9 +15,30 @@ export const tradeLayout = {
   rightRailPadding: '14px',
   chartPanelHeight: 'auto',
   chartAreaHeight: '300px',
-  chartAreaHeightCompact: '132px',
   recentSwapsHeight: '320px',
-  recentSwapsHeightCompact: '168px',
+  swapRowHeight: '52px',
+  swapTableHeadHeight: '36px',
+  statCardMinHeight: '108px',
+  statValueMinHeight: '28px',
+  executionInputGap: '12px',
+  executionRouteGap: '14px',
+  executionDetailsGap: '14px',
+  executionButtonGap: '14px',
+} as const
+
+/** R759 — canonical numeric typography for Trade surfaces. */
+export const tradeTypography = {
+  fontVariantNumeric: 'tabular-nums',
+  heroPrice: { size: '34px', weight: 800, lineHeight: '1' },
+  heroChange: { size: '14px', weight: 700, lineHeight: '1.2' },
+  statLabel: { size: '12px', weight: 600, lineHeight: '1.2' },
+  statValue: { size: '22px', weight: 700, lineHeight: '1.15' },
+  statSubline: { size: '12px', weight: 400, lineHeight: '1.35' },
+  tableHead: { size: '11px', weight: 700, letterSpacing: '0.04em' },
+  tableCell: { size: '13px', weight: 600, lineHeight: '1.3' },
+  tableCellMuted: { size: '12px', weight: 500, lineHeight: '1.3' },
+  executionAmount: { size: '32px', weight: 700, lineHeight: '32px' },
+  executionMeta: { size: '12px', weight: 600, lineHeight: '1.35' },
 } as const
 
 export type TradeMode = 'smartswap' | 'router' | 'limit' | 'history'

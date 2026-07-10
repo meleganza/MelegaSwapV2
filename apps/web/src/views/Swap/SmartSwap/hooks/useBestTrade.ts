@@ -8,6 +8,7 @@ import { getAddress } from '@ethersproject/address'
 import { useAllCommonPairs } from 'hooks/Trades'
 import { provider } from 'utils/wagmi'
 import { getBestPriceWithRouter, RequestBody } from 'state/swap/fetch/fetchBestPriceWithRouter'
+import { isKerlRoutingAuthorityEnforced } from 'lib/kerl-constitutional'
 
 const NATIVE_CURRENCY_ADDRESS = getAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')
 
@@ -130,6 +131,11 @@ export function useBestTrade(
   tradeType: TradeType,
   options?: UseTradeOptions,
 ) {
+  const chainId = amount?.currency?.chainId ?? currency?.chainId
+  if (isKerlRoutingAuthorityEnforced(chainId)) {
+    return null
+  }
+
   const bestTradeFromChain = useBestTradeFromChain(amount, currency, tradeType, options)
   // Remove source from api for now until api is optimized
   // const bestTradeFromApi = useBestTradeFromApi(amount, currency, tradeType)

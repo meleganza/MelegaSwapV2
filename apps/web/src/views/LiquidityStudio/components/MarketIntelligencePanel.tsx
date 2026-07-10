@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsRightValue, LsSectionTitle } from './liquidityStudioPrimitives'
 
 const Delta = styled.span`
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   color: ${liquidityStudioColors.green};
   margin-left: 6px;
 `
@@ -14,73 +16,80 @@ const Delta = styled.span`
 const ValueWrap = styled.span`
   display: inline-flex;
   align-items: baseline;
+  min-width: 0;
 `
 
-const LoadingLine = styled.p`
+const MetricStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+`
+
+const UnavailableWrap = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-height: 0;
+`
+
+const UnavailableTitle = styled.p`
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${liquidityStudioColors.text};
+`
+
+const UnavailableReason = styled.p`
   margin: 0;
   font-size: 12px;
+  line-height: 1.45;
   color: ${liquidityStudioColors.muted};
-`
-
-const MachineToggle = styled.button`
-  margin-top: 10px;
-  border: none;
-  background: transparent;
-  color: ${liquidityStudioColors.muted};
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-`
-
-const MachinePre = styled.pre`
-  margin: 8px 0 0;
-  padding: 8px;
-  border-radius: 8px;
-  background: #0c0c0c;
-  border: 1px solid ${liquidityStudioColors.border};
-  font-size: 9px;
-  line-height: 1.35;
-  color: ${liquidityStudioColors.muted};
-  max-height: 80px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
 `
 
 export const MarketIntelligencePanel: React.FC = () => {
-  const { terminal, machine, loadingLabel } = useLiquidityRuntime()
-  const [machineOpen, setMachineOpen] = useState(false)
-  const { marketMetrics, isIndexing } = terminal
+  const { terminal, machine } = useLiquidityRuntime()
+  const { marketMetrics, marketUnavailableReason } = terminal
+
+  const technicalDetail = useMemo(() => JSON.stringify(machine, null, 2), [machine])
+
+  const hasLiveMetrics = useMemo(
+    () => marketMetrics.some((metric) => metric.value && metric.value !== '—'),
+    [marketMetrics],
+  )
 
   return (
     <LsPanel
       data-ls-panel
       $width={liquidityStudioLayout.rightWidth}
-      $height={liquidityStudioLayout.marketIntelHeight}
+      $height="100%"
       $radius={liquidityStudioLayout.rightPanelRadius}
       $pad={liquidityStudioLayout.rightPanelPadding}
     >
-      <LsSectionTitle>Market Intelligence</LsSectionTitle>
-      {loadingLabel || isIndexing ? (
-        <LoadingLine>{loadingLabel ?? 'Loading pool metrics…'}</LoadingLine>
+      <LsSectionTitle>Market intelligence</LsSectionTitle>
+      {marketUnavailableReason || !hasLiveMetrics ? (
+        <UnavailableWrap data-ls-market-unavailable>
+          <UnavailableTitle>{RUNTIME_UNAVAILABLE_LABEL}</UnavailableTitle>
+          <UnavailableReason>
+            Reason: {marketUnavailableReason ?? 'Pool metrics not indexed in current subgraph window'}
+          </UnavailableReason>
+          <TradeTechnicalDetails detail={technicalDetail} />
+        </UnavailableWrap>
       ) : (
-        marketMetrics.map((m) => (
-          <LsRightRow key={m.label}>
-            <LsRightLabel>{m.label}</LsRightLabel>
-            <ValueWrap>
-              <LsRightValue>{m.value}</LsRightValue>
-              {m.delta && <Delta>{m.delta}</Delta>}
-            </ValueWrap>
-          </LsRightRow>
-        ))
-      )}
-      <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
-        {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
-      </MachineToggle>
-      {machineOpen && (
-        <MachinePre data-ls-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
+        <MetricStack>
+          {marketMetrics.map((m) => (
+            <LsRightRow key={m.label}>
+              <LsRightLabel>{m.label}</LsRightLabel>
+              <ValueWrap>
+                <LsRightValue>{m.value}</LsRightValue>
+                {m.delta ? <Delta>{m.delta}</Delta> : null}
+              </ValueWrap>
+            </LsRightRow>
+          ))}
+        </MetricStack>
       )}
     </LsPanel>
   )

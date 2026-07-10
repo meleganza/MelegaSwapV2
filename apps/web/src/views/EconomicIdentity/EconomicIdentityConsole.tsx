@@ -228,7 +228,7 @@ const EconomicIdentityConsole: React.FC<EconomicIdentityConsoleProps> = ({ optio
           links={[
             { label: 'Workspace', href: model.crossLinks.workspace },
             { label: 'Launch', href: model.crossLinks.launch },
-            { label: 'Collectibles', href: model.crossLinks.collectibles },
+            { label: 'Identity Hub (Collectibles)', href: model.crossLinks.collectibles },
             { label: 'Presence', href: model.crossLinks.presence },
             { label: 'Activation', href: model.crossLinks.activation },
             { label: 'Execution', href: model.crossLinks.execution },

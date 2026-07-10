@@ -1,0 +1,58 @@
+{
+  "gate": "FAIL",
+  "checks": [
+    {
+      "route": "/trade",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/liquidity-studio",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/farms",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/pools",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/build-studio",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/projects",
+      "status": 200,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    },
+    {
+      "route": "/pricing-fees",
+      "status": 404,
+      "overflow": false,
+      "errorBoundary": false,
+      "consoleErrors": []
+    }
+  ],
+  "failures": [
+    "/pricing-fees: HTTP 404"
+  ],
+  "screenshots": "/Users/marcomelega/Projects/MelegaSwapV2/docs/screenshots/melega-smart-router-d87"
+}

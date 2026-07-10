@@ -11,6 +11,8 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { LedgerConnector } from 'wagmi/connectors/ledger'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { SafeConnector } from './safeConnector'
+import { BSC_TESTNET_RPC_URLS } from 'config/constants/rpc'
+import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 
 const arbitrum1 : Chain = {
   id: 42161,
@@ -193,8 +195,29 @@ export const base : Chain = {
   }
 };
 
+const bscTestnet: Chain = {
+  id: 97,
+  name: 'BNB Testnet',
+  network: 'bsc-testnet',
+  testnet: true,
+  nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
+  rpcUrls: {
+    default: { http: [process.env.NEXT_PUBLIC_BNB_TESTNET_RPC_URL ?? BSC_TESTNET_RPC_URLS[0]] },
+  },
+  blockExplorers: {
+    etherscan: { name: 'BscScan Testnet', url: BSC_TESTNET_ADDRESSES.explorer },
+    default: { name: 'BscScan Testnet', url: BSC_TESTNET_ADDRESSES.explorer },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 17422483,
+    },
+  },
+}
+
 // const CHAINS = [bsc1, mainnet, polygon, base]
-const CHAINS = [bsc1, base, polygon1, ethereum]
+const CHAINS = [bsc1, bscTestnet, base, polygon1, ethereum]
 
 const getNodeRealUrl = (networkName: string) => {
   let host = null

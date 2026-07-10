@@ -25,6 +25,7 @@ import {
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 import { chains } from 'utils/wagmi'
+import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 import { ChainLogo } from 'components/Logo/ChainLogo'
 
 // const ModalHeader = styled(UIKitModalHeader)`
@@ -81,6 +82,7 @@ interface NetworkSwitchModalProps<T = unknown> extends ModalV2Props {
 export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T>) {
   const { switchNetwork, chainId, ...rest } = props
   const { t } = useTranslation()
+  const visibleChains = filterMelegaVisibleSwitcherChains(chains)
   // const [view, setView] = useState(initialView)
   // const { t } = useTranslation()
   // const { address: account } = useAccount()
@@ -125,9 +127,7 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
               {t('Switch Network')}
             </Heading>
             <StyleGrid>
-              {chains
-                .filter((chain) => !chain.testnet || chain.id === chainId)
-                .map((chain) => (
+              {visibleChains.map((chain) => (
                   <Flex
                     key={`network-flex-${chain.id}`}
                     justifyContent="center"

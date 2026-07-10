@@ -1,5 +1,6 @@
 import { bscTokens } from '@pancakeswap/tokens'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 import { enrichProject } from 'registry/projects/discovery'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { getAllAssets } from 'registry/assets/getAllAssets'
@@ -132,6 +133,35 @@ export function buildDexAssetIndex(): DexAssetRecord[] {
     surfaces: { trade: true, pool: true, farm: true, project: true, radar: true, trending: true },
   })
 
+  upsertAsset(map, {
+    symbol: 'MARCO',
+    name: 'MARCO',
+    chainId: 97,
+    address: BSC_TESTNET_ADDRESSES.marco,
+    source: 'canonical',
+    status: 'canonical',
+    registrySlug: 'melega-dex-testnet',
+    surfaces: { trade: true, pool: true, farm: true, project: true, radar: true, trending: true },
+  })
+
+  upsertAsset(map, {
+    symbol: 'WBNB',
+    name: 'Wrapped BNB',
+    chainId: 97,
+    address: BSC_TESTNET_ADDRESSES.wbnb,
+    source: 'liquidity',
+    surfaces: { trade: true, pool: true, farm: true, radar: true, trending: true },
+  })
+
+  upsertAsset(map, {
+    symbol: 'USDT',
+    name: 'Tether USD',
+    chainId: 97,
+    address: BSC_TESTNET_ADDRESSES.usdt,
+    source: 'liquidity',
+    surfaces: { trade: true, pool: true, radar: true, trending: true },
+  })
+
   if (bscTokens.mxmx?.address) {
     upsertAsset(map, {
       symbol: 'MXMX',
@@ -218,7 +248,7 @@ export function buildDexAssetIndex(): DexAssetRecord[] {
 
   const listTokens = (defaultTokenList.tokens ?? []) as TokenListEntry[]
   listTokens
-    .filter((t) => t.chainId === 56 && t.address && t.symbol)
+    .filter((t) => (t.chainId === 56 || t.chainId === 97) && t.address && t.symbol)
     .forEach((token) => {
       const melega = isMelegaListedSymbol(token.symbol)
       upsertAsset(map, {

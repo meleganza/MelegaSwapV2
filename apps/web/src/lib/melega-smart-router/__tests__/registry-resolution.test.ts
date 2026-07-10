@@ -28,6 +28,13 @@ describe('registry resolution — Phase 2', () => {
     expect(marco.status).toBe('active')
   })
 
+  it('resolves MARCO via Runtime registry on BNB Testnet (R744B)', () => {
+    const marco = resolveMarcoToken(97)
+    expect(marco.marcoTokenAddress?.toLowerCase()).toBe(MARCO_BSC.toLowerCase())
+    expect(marco.status).toBe('active')
+    expect(marco.resolution.source).toBe('treasury-runtime')
+  })
+
   it('never fabricates treasury collector when registry and env empty', () => {
     const collector = resolveTreasuryCollector(56)
     expect(collector.collectorAddress).toBeUndefined()

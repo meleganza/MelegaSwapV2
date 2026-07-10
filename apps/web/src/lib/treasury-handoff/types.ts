@@ -20,6 +20,16 @@ export interface ExecutionReceiptPayload {
   originProject?: string
 }
 
+/** KERL constitutional metadata — settlement must pass through KERL receipt. */
+export interface KerlConstitutionalHandoffMeta {
+  executionRequestRef: string
+  routingDecisionSnapshotRef: string
+  kerlPackageId: string
+  correlationId: string
+  wrapperAddress: string
+  routeType: 'STANDARD_SWAP' | 'BUY_MARCO' | 'SELL_MARCO'
+}
+
 /** Context captured at swap submit — stored on transaction until receipt confirms. */
 export interface SwapHandoffContext {
   schema: 'melega.dex-swap-handoff-context.v1'
@@ -31,6 +41,7 @@ export interface SwapHandoffContext {
   amount: string
   fee: string
   originProject?: string
+  kerlConstitutional?: KerlConstitutionalHandoffMeta
   smartRouter?: {
     architecture: 'ADAPTER'
     protocolFeeBps?: number

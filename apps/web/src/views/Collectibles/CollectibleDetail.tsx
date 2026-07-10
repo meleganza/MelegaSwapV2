@@ -223,7 +223,7 @@ const CollectibleDetail: React.FC<CollectibleDetailProps> = ({ record, manifest 
       <Text fontSize="12px" color="textDisabled" textAlign="center">
         <Link href="/collectibles">
           <Text as="span" color="primary">
-            ← Identity Hub
+            ← Collectibles
           </Text>
         </Link>
       </Text>

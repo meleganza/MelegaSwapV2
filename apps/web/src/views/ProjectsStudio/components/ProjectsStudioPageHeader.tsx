@@ -1,80 +1,25 @@
 import React from 'react'
-import styled from 'styled-components'
 import {
-  PR_FONT_BODY,
-  PR_FONT_DISPLAY,
-  projectsStudioColors,
-  projectsStudioLayout,
-  projectsStudioType,
-} from '../projectsStudioTokens'
-import { PrGhostBtn, PrPrimaryBtn } from './projectsStudioPrimitives'
-
-const Header = styled.header`
-  min-height: ${projectsStudioLayout.headerHeight};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  box-sizing: border-box;
-
-  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
-    min-height: auto;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-`
-
-const Left = styled.div`
-  min-width: 0;
-`
-
-const Title = styled.h1`
-  margin: 0;
-  font-family: ${PR_FONT_DISPLAY};
-  font-size: ${projectsStudioType.pageTitle};
-  font-weight: 700;
-  line-height: 1.05;
-  color: ${projectsStudioColors.text};
-`
-
-const Subtitle = styled.p`
-  margin: 6px 0 0;
-  font-family: ${PR_FONT_BODY};
-  font-size: ${projectsStudioType.pageSubtitle};
-  font-weight: 400;
-  line-height: 1.5;
-  color: ${projectsStudioColors.subtitle};
-  max-width: ${projectsStudioType.pageSubtitleMax};
-`
-
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-
-  @media (max-width: ${projectsStudioLayout.mobileBreakpoint}) {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-`
+  MelegaStudioGhostBtn,
+  MelegaStudioPageHeader,
+  MelegaStudioPrimaryBtn,
+  STUDIO_PAGE_TITLES,
+} from 'design-system/melega'
 
 export const ProjectsStudioPageHeader: React.FC = () => (
-  <Header data-pr-page-header>
-    <Left>
-      <Title>PROJECTS</Title>
-      <Subtitle>
-        Discover AI-indexed crypto projects. Find verified ecosystems. Trade with confidence.
-      </Subtitle>
-    </Left>
-    <Right>
-      <PrPrimaryBtn as="a" href="/import-existing-token">
-        List Your Project
-      </PrPrimaryBtn>
-      <PrGhostBtn type="button">AI Indexing: How it works</PrGhostBtn>
-    </Right>
-  </Header>
+  <MelegaStudioPageHeader
+    data-studio-header="projects"
+    title={STUDIO_PAGE_TITLES.projects}
+    subtitle="Discover AI-indexed crypto projects. Find verified ecosystems. Trade with confidence."
+    actions={
+      <>
+        <MelegaStudioPrimaryBtn as="a" href="/import-existing-token" style={{ textDecoration: 'none' }}>
+          List Your Project
+        </MelegaStudioPrimaryBtn>
+        <MelegaStudioGhostBtn type="button">AI Indexing: How it works</MelegaStudioGhostBtn>
+      </>
+    }
+  />
 )
 
 export default ProjectsStudioPageHeader

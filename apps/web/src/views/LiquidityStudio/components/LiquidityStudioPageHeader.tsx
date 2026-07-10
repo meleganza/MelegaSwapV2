@@ -1,47 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
+import {
+  MelegaStudioLiveBadge,
+  MelegaStudioLiveDot,
+  MelegaStudioPageHeader,
+  STUDIO_PAGE_TITLES,
+  STUDIO_LIVE_RUNTIME_LABEL,
+} from 'design-system/melega'
 import { liquidityStudioColors } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
-import { LsPreviewBadge } from './liquidityStudioPrimitives'
-
-const Row = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
-  min-width: 0;
-`
-
-const Left = styled.div`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1;
-  color: ${liquidityStudioColors.text};
-`
-
-const Subtitle = styled.p`
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.3;
-  color: ${liquidityStudioColors.subtitle};
-  max-width: 720px;
-`
 
 const TabRow = styled.div`
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-bottom: 16px;
   border-bottom: 1px solid ${liquidityStudioColors.rowBorder};
   min-width: 0;
   overflow-x: auto;
@@ -70,34 +42,32 @@ const Tab = styled.button<{ $active?: boolean }>`
   }
 `
 
-const LiveBadge = styled(LsPreviewBadge)`
-  border-color: ${liquidityStudioColors.green};
-  color: ${liquidityStudioColors.green};
-  background: rgba(0, 230, 118, 0.08);
-`
-
 const TABS = ['Add Liquidity', 'Remove Liquidity', 'My Positions', 'Simulation'] as const
 
 export const LiquidityStudioPageHeader: React.FC = () => {
   const { mode, setMode } = useLiquidityRuntime()
 
   return (
-    <div data-ls-page-header>
-      <Row>
-        <Left>
-          <Title>Liquidity Studio</Title>
-          <Subtitle>Build markets, manage liquidity and optimise LP performance.</Subtitle>
-        </Left>
-        <LiveBadge>LIVE RUNTIME</LiveBadge>
-      </Row>
-      <TabRow>
-        {TABS.map((tab) => (
-          <Tab key={tab} type="button" $active={mode === tab} onClick={() => setMode(tab)}>
-            {tab}
-          </Tab>
-        ))}
-      </TabRow>
-    </div>
+    <MelegaStudioPageHeader
+      data-studio-header="liquidity"
+      title={STUDIO_PAGE_TITLES.liquidity}
+      subtitle="Build markets, manage liquidity and optimise LP performance."
+      badge={
+        <MelegaStudioLiveBadge>
+          <MelegaStudioLiveDot aria-hidden />
+          {STUDIO_LIVE_RUNTIME_LABEL}
+        </MelegaStudioLiveBadge>
+      }
+      footer={
+        <TabRow>
+          {TABS.map((tab) => (
+            <Tab key={tab} type="button" $active={mode === tab} onClick={() => setMode(tab)}>
+              {tab}
+            </Tab>
+          ))}
+        </TabRow>
+      }
+    />
   )
 }
 

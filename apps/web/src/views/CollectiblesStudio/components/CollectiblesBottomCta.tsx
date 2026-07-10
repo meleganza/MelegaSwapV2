@@ -6,6 +6,7 @@ import {
   collectiblesStudioColors,
   collectiblesStudioLayout,
 } from '../collectiblesStudioTokens'
+import { NAV_COMING_SOON_LABEL, scrollToElement } from 'lib/navigation/comingSoon'
 import { CsOutlineBtn, CsPrimaryBtn } from './collectiblesStudioPrimitives'
 
 const Banner = styled.section`
@@ -79,10 +80,10 @@ export const CollectiblesBottomCta: React.FC = () => (
       <Sub>Own an identity. Unlock exclusive AI privileges.</Sub>
     </Text>
     <BtnRow>
-      <CsPrimaryBtn type="button" $width="180px" $height="46px">
-        Create Collectible
+      <CsPrimaryBtn type="button" $width="180px" $height="46px" disabled title={NAV_COMING_SOON_LABEL}>
+        {NAV_COMING_SOON_LABEL}
       </CsPrimaryBtn>
-      <CsOutlineBtn type="button" $width="190px" $height="46px">
+      <CsOutlineBtn type="button" $width="190px" $height="46px" onClick={() => scrollToElement('cs-collections')}>
         Explore Collections
       </CsOutlineBtn>
     </BtnRow>

@@ -40,6 +40,17 @@
       "manifest_url": "/registry/assets/marco-polygon.json"
     },
     {
+      "uai": "uai://melega/asset/fungible/97/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+      "slug": "marco-bsc-testnet",
+      "symbol": "MARCO",
+      "asset_type": "fungible",
+      "lifecycle": "observed",
+      "project_upi": "upi://melega/project/melega-dex@1",
+      "project_slug": "melega-dex",
+      "chain_id": 97,
+      "manifest_url": "/registry/assets/marco-bsc-testnet.json"
+    },
+    {
       "uai": "uai://melega/asset/fungible/8453/0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7@1",
       "slug": "marco-base",
       "symbol": "MARCO",
@@ -53,5 +64,5 @@
   ],
   "disclaimer": "Listed ≠ audited. Static asset registry MVP — automated verification not live. Observed = legacy-indexed data only.",
   "data_source": "asset-registry-static",
-  "as_of": "2026-06-26"
+  "as_of": "2026-07-09"
 }

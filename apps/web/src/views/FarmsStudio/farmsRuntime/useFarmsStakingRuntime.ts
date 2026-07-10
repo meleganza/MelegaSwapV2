@@ -7,7 +7,9 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useAppSelector } from 'state'
 import { getFarmApr } from 'utils/apr'
 import isArchivedPid from 'utils/farmHelpers'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { FarmFilterChip, FarmPreviewCard } from '../farmsStudioData'
+import { displayFarmMetric, isUnavailableFarmMetric, stripTokenSymbol } from '../farmsStudioDisplay'
 import {
   aggregateKpis,
   buildAprSparkline,
@@ -140,7 +142,13 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
       list = list.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))
       break
     case 'New':
-      list = list.sort((a, b) => (b.rawFarm?.pid ?? b.pid ?? 0) - (a.rawFarm?.pid ?? a.pid ?? 0))
+      list = list
+        .filter((f) => f.status !== 'finished')
+        .sort((a, b) => {
+          const aKey = a.rawFarm?.auctionHostingStartSeconds ?? a.rawFarm?.pid ?? a.pid ?? 0
+          const bKey = b.rawFarm?.auctionHostingStartSeconds ?? b.rawFarm?.pid ?? b.pid ?? 0
+          return bKey - aKey
+        })
       break
     case 'My Farms':
       list = list.filter((f) => f.userStaked?.gt(0))
@@ -202,15 +210,20 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
 
   const featured = useMemo((): FarmsFeaturedMetrics => {
     const card = featuredCard
+    const dailyRewardsRaw = card?.dailyRewards
+    const dailyRewards =
+      dailyRewardsRaw && !isUnavailableFarmMetric(dailyRewardsRaw)
+        ? stripTokenSymbol(dailyRewardsRaw)
+        : RUNTIME_UNAVAILABLE_LABEL
     return {
-      pair: card?.pair ?? '—',
-      tokens: card?.tokens ?? ['—', '—'],
-      apr: card?.apr ?? '—',
-      tvl: card?.tvl ?? '—',
-      dailyRewards: card?.dailyRewards !== '—' ? `${card?.dailyRewards ?? '—'} MARCO` : '—',
-      multiplier: card?.multiplier ?? '—',
+      pair: displayFarmMetric(card?.pair),
+      tokens: card?.tokens ?? ['', ''],
+      apr: displayFarmMetric(card?.apr),
+      tvl: displayFarmMetric(card?.tvl),
+      dailyRewards,
+      multiplier: displayFarmMetric(card?.multiplier),
       rewardToken: card?.rewardToken ?? 'MARCO',
-      participants: card?.participants ?? '—',
+      participants: displayFarmMetric(card?.participants),
       card,
       sparkline: buildAprSparkline(enrichedFarms),
     }
@@ -236,27 +249,28 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     return [
       {
         label: 'Best Risk / Reward',
-        value: stable?.pair ?? highest?.pair ?? '—',
+        value: displayFarmMetric(stable?.pair ?? highest?.pair),
         tone: 'green',
       },
       {
         label: 'Highest Stable APR',
-        value: stable?.pair ?? highest?.pair ?? '—',
+        value: displayFarmMetric(stable?.pair ?? highest?.pair),
         tone: 'green',
       },
       {
         label: 'Best for AI Agents',
-        value: budgetFarm?.pair ?? highest?.pair ?? '—',
+        value: displayFarmMetric(budgetFarm?.pair ?? highest?.pair),
         tone: 'gold',
       },
       {
         label: 'Auto-compound',
-        value: utilization > 0.5 ? 'Manual harvest' : 'Available soon',
-        tone: utilization > 0.5 ? 'muted' : 'muted',
+        value: utilization > 0.5 ? 'Manual harvest' : RUNTIME_UNAVAILABLE_LABEL,
+        tone: 'muted',
       },
       {
         label: 'Risk',
-        value: utilization >= 0.6 ? 'Low' : utilization >= 0.3 ? 'Moderate' : 'Indexing',
+        value:
+          utilization >= 0.6 ? 'Low' : utilization >= 0.3 ? 'Moderate' : RUNTIME_UNAVAILABLE_LABEL,
         tone: utilization >= 0.6 ? 'green' : 'gold',
       },
     ]

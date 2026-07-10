@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import { displayStudioMetric, isStudioMetricUnavailable, STUDIO_KPI_VALUE } from 'design-system/melega'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { useProjectsRuntime } from '../projectsRuntime/ProjectsRuntimeContext'
 import { projectsStudioLayout } from '../projectsStudioTokens'
 import { PrKpiCard, PrKpiLabel, PrKpiSubline, PrKpiValue } from './projectsStudioPrimitives'
@@ -41,21 +43,34 @@ export const ProjectsKpiRow: React.FC = () => {
         kpi ? (
           <PrKpiCard key={kpi.id} data-pr-kpi-card>
             <PrKpiLabel>{kpi.label}</PrKpiLabel>
-            {kpi.subline ? (
-              <ValueStack>
-                <PrKpiValue $muted={kpi.value === '—'}>{kpi.value}</PrKpiValue>
-                <PrKpiSubline>{kpi.subline}</PrKpiSubline>
-              </ValueStack>
-            ) : kpi.value === 'Unavailable' || kpi.value === '—' ? (
-              <ValueStack>
-                <PrKpiValue $muted>—</PrKpiValue>
-                <PrKpiSubline>
-                  {kpi.id === 'holders' ? 'Waiting for explorer' : kpi.subline ?? 'Waiting for indexing'}
-                </PrKpiSubline>
-              </ValueStack>
-            ) : (
-              <PrKpiValue>{kpi.value}</PrKpiValue>
-            )}
+            {(() => {
+              const value = displayStudioMetric(kpi.value)
+              const unavailable = isStudioMetricUnavailable(kpi.value)
+              const technical =
+                kpi.id === 'holders'
+                  ? 'Holder count requires BscScan or indexer when deployed.'
+                  : 'Project metrics require DEX asset index and registry hydration.'
+
+              if (kpi.subline && !unavailable) {
+                return (
+                  <ValueStack>
+                    <PrKpiValue>{value}</PrKpiValue>
+                    <PrKpiSubline>{kpi.subline}</PrKpiSubline>
+                  </ValueStack>
+                )
+              }
+
+              if (unavailable) {
+                return (
+                  <ValueStack>
+                    <PrKpiValue $muted>{value}</PrKpiValue>
+                    <TradeTechnicalDetails detail={technical} />
+                  </ValueStack>
+                )
+              }
+
+              return <PrKpiValue style={{ fontVariantNumeric: STUDIO_KPI_VALUE.fontVariantNumeric }}>{value}</PrKpiValue>
+            })()}
           </PrKpiCard>
         ) : null,
       )}

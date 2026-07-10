@@ -11,6 +11,20 @@ export {
   premiumStudioLayout,
   premiumStudioType,
 } from './premiumStudio'
+export {
+  STUDIO_FONT_BODY,
+  STUDIO_FONT_DISPLAY,
+  STUDIO_PAGE_TITLES,
+  studioConstitutionColors,
+  studioConstitutionLayout,
+  studioConstitutionType,
+} from './studioConstitution'
+export {
+  STUDIO_KPI_VALUE,
+  STUDIO_LIVE_RUNTIME_LABEL,
+  displayStudioMetric,
+  isStudioMetricUnavailable,
+} from './studioDisplay'
 
 import { colors } from './colors'
 import { typography } from './typography'

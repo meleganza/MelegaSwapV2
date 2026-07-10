@@ -1,0 +1,22 @@
+{
+  "task": "R1122_RADAR_FINAL_APPROVAL",
+  "build": "pass",
+  "screenshots": [
+    "radar-desktop-1440x900.png",
+    "radar-mobile-390x844.png"
+  ],
+  "checks": {
+    "radar-desktop-1440x900.png": {
+      "ok": true,
+      "hasActionGroup": true,
+      "hasTimeline": true,
+      "overflow": false
+    },
+    "radar-mobile-390x844.png": {
+      "ok": true,
+      "hasActionGroup": true,
+      "hasTimeline": true,
+      "overflow": false
+    }
+  }
+}

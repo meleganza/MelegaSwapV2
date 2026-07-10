@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { formatCompactDisplay } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { getMasterChefAddress } from 'utils/addressHelpers'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { DEFAULT_ANALYZE_PREVIEW } from '../farmsStudioData'
-import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { farmsStudioColors, farmsStudioLayout, farmsTypography } from '../farmsStudioTokens'
+import { displayFarmMetric, isUnavailableFarmMetric, shortenContractAddress } from '../farmsStudioDisplay'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 
 const Card = styled.article<{ $expanded?: boolean; $archived?: boolean }>`
@@ -194,9 +198,10 @@ const MetricLabel = styled.span`
 `
 
 const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: ${farmsTypography.cardMetricValue.size};
+  font-weight: ${farmsTypography.cardMetricValue.weight};
+  line-height: ${farmsTypography.cardMetricValue.lineHeight};
+  font-variant-numeric: ${farmsTypography.fontVariantNumeric};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -208,6 +213,17 @@ const MetricValue = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
         : $tone === 'muted'
           ? farmsStudioColors.muted
           : '#ffffff'};
+`
+
+const ContractLink = styled.a`
+  color: ${farmsStudioColors.text};
+  text-decoration: none;
+  font-variant-numeric: ${farmsTypography.fontVariantNumeric};
+
+  &:hover {
+    text-decoration: underline;
+    color: ${farmsStudioColors.gold};
+  }
 `
 
 const AnalyzePanel = styled.div`
@@ -234,9 +250,11 @@ const AnalyzeLabel = styled.span`
 `
 
 const AnalyzeValue = styled.span`
-  font-size: 13px;
-  font-weight: 700;
+  font-size: ${farmsTypography.analyzeValue.size};
+  font-weight: ${farmsTypography.analyzeValue.weight};
+  line-height: ${farmsTypography.analyzeValue.lineHeight};
   color: ${farmsStudioColors.text};
+  font-variant-numeric: ${farmsTypography.fontVariantNumeric};
 `
 
 const Footer = styled.div<{ $centered?: boolean }>`
@@ -248,6 +266,37 @@ const Footer = styled.div<{ $centered?: boolean }>`
   gap: ${farmsStudioLayout.farmCardBtnGap};
   flex-shrink: 0;
   padding-top: 8px;
+`
+
+const CardConnectBtn = styled(ConnectWalletButton)`
+  && {
+    min-width: 72px;
+    flex: 1 1 auto;
+    max-width: 120px;
+    height: ${farmsStudioLayout.farmCardBtnHeight};
+    min-height: ${farmsStudioLayout.farmCardBtnHeight};
+    padding: 0 12px;
+    border: none;
+    border-radius: 12px;
+    background: #d4af37;
+    color: #050505;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: none;
+    transition: transform 150ms ease, filter 150ms ease;
+  }
+
+  &&:hover:not(:disabled) {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 767px) {
+    && {
+      max-width: none;
+      flex: 1 1 calc(50% - 4px);
+    }
+  }
 `
 
 const CardStakeBtn = styled.button`
@@ -333,12 +382,6 @@ function renderTokenIcon(
   )
 }
 
-function rewardTokenFor(farm: FarmPreviewCard) {
-  if (farm.dailyRewards?.includes('MARCO')) return 'MARCO'
-  if (farm.status === 'coming-soon') return '—'
-  return 'MARCO'
-}
-
 function aprVariant(farm: FarmPreviewCard): 'live' | 'indexing' | 'coming-soon' | undefined {
   if (farm.status === 'coming-soon') return 'coming-soon'
   if (farm.status === 'indexing') return 'indexing'
@@ -346,21 +389,33 @@ function aprVariant(farm: FarmPreviewCard): 'live' | 'indexing' | 'coming-soon' 
   return undefined
 }
 
+function rewardTokenFor(farm: FarmPreviewCard) {
+  if (farm.status === 'coming-soon') return RUNTIME_UNAVAILABLE_LABEL
+  return farm.rewardToken ?? 'MARCO'
+}
+
 function aprDisplay(farm: FarmPreviewCard) {
   if (farm.status === 'finished') return 'Ended'
   if (farm.apr) return farm.apr
-  if (farm.status === 'indexing') return '—'
-  return '—'
+  return RUNTIME_UNAVAILABLE_LABEL
 }
 
 function formatRewardValue(value: string) {
-  if (!value || value === '—') return value
+  if (isUnavailableFarmMetric(value)) return RUNTIME_UNAVAILABLE_LABEL
   return formatCompactDisplay(value.replace(/\s*MARCO\s*$/i, ''))
+}
+
+function metricTone(
+  value: string,
+  preferred?: 'green' | 'gold' | 'muted',
+): 'green' | 'gold' | 'muted' | undefined {
+  if (value === RUNTIME_UNAVAILABLE_LABEL) return 'muted'
+  return preferred
 }
 
 function statusMetric(farm: FarmPreviewCard) {
   if (farm.status === 'live') return 'Live'
-  if (farm.status === 'indexing') return 'Indexing'
+  if (farm.status === 'indexing') return RUNTIME_UNAVAILABLE_LABEL
   if (farm.status === 'finished') return 'Ended'
   return farm.status
 }
@@ -399,9 +454,13 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
 
     return (
       <Footer>
-        <CardStakeBtn type="button" onClick={() => requestModal(farm, 'stake')}>
-          Stake
-        </CardStakeBtn>
+        {account ? (
+          <CardStakeBtn type="button" onClick={() => requestModal(farm, 'stake')}>
+            Stake
+          </CardStakeBtn>
+        ) : (
+          <CardConnectBtn>Connect Wallet</CardConnectBtn>
+        )}
         {hasStaked && account ? (
           <CardAnalyzeBtn type="button" onClick={() => requestModal(farm, 'unstake')}>
             Withdraw
@@ -443,7 +502,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
             {farm.status === 'live'
               ? 'Live'
               : farm.status === 'indexing'
-                ? 'Indexing'
+                ? 'Unavailable'
                 : farm.status === 'finished'
                   ? 'Ended'
                   : 'Pending'}
@@ -459,11 +518,13 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
         <Metrics>
           <Metric>
             <MetricLabel>TVL</MetricLabel>
-            <MetricValue>{farm.tvl}</MetricValue>
+            <MetricValue $tone={metricTone(displayFarmMetric(farm.tvl))}>{displayFarmMetric(farm.tvl)}</MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Liquidity</MetricLabel>
-            <MetricValue>{farm.liquidity}</MetricValue>
+            <MetricValue $tone={metricTone(displayFarmMetric(farm.liquidity))}>
+              {displayFarmMetric(farm.liquidity)}
+            </MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Reward Token</MetricLabel>
@@ -471,17 +532,23 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           </Metric>
           <Metric>
             <MetricLabel>Multiplier</MetricLabel>
-            <MetricValue $tone={farm.multiplier !== '—' ? 'gold' : undefined}>{farm.multiplier}</MetricValue>
+            <MetricValue $tone={metricTone(displayFarmMetric(farm.multiplier), 'gold')}>
+              {displayFarmMetric(farm.multiplier)}
+            </MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Daily Rewards</MetricLabel>
-            <MetricValue $tone={farm.dailyRewards !== '—' ? 'green' : undefined}>
+            <MetricValue $tone={metricTone(formatRewardValue(farm.dailyRewards), 'green')}>
               {formatRewardValue(farm.dailyRewards)}
             </MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Status</MetricLabel>
-            <MetricValue $tone={farm.status === 'live' ? 'green' : farm.status === 'indexing' ? 'gold' : 'muted'}>
+            <MetricValue
+              $tone={
+                farm.status === 'live' ? 'green' : farm.status === 'finished' ? 'muted' : 'muted'
+              }
+            >
               {statusMetric(farm)}
             </MetricValue>
           </Metric>
@@ -492,7 +559,7 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
           <AnalyzePanel>
             <AnalyzeRow>
               <AnalyzeLabel>APR History</AnalyzeLabel>
-              <AnalyzeValue>{preview.aprHistory}</AnalyzeValue>
+              <AnalyzeValue>{displayFarmMetric(preview.aprHistory)}</AnalyzeValue>
             </AnalyzeRow>
             <AnalyzeRow>
               <AnalyzeLabel>Reward Token</AnalyzeLabel>
@@ -500,17 +567,22 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
             </AnalyzeRow>
             <AnalyzeRow>
               <AnalyzeLabel>Emission</AnalyzeLabel>
-              <AnalyzeValue>{preview.emission}</AnalyzeValue>
+              <AnalyzeValue>{displayFarmMetric(preview.emission)}</AnalyzeValue>
             </AnalyzeRow>
             <AnalyzeRow>
               <AnalyzeLabel>Contract</AnalyzeLabel>
               <AnalyzeValue>
-                {preview.contractExplorerUrl ? (
-                  <a href={preview.contractExplorerUrl} target="_blank" rel="noopener noreferrer">
-                    {preview.contract}
-                  </a>
+                {preview.contractExplorerUrl && farm.rawFarm?.lpAddress ? (
+                  <ContractLink
+                    href={preview.contractExplorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={farm.rawFarm.lpAddress}
+                  >
+                    {shortenContractAddress(farm.rawFarm.lpAddress)}
+                  </ContractLink>
                 ) : (
-                  preview.contract
+                  displayFarmMetric(preview.contract)
                 )}
               </AnalyzeValue>
             </AnalyzeRow>
@@ -518,9 +590,13 @@ export const FarmGridCard: React.FC<FarmGridCardProps> = ({ farm }) => {
               <AnalyzeRow>
                 <AnalyzeLabel>MasterChef</AnalyzeLabel>
                 <AnalyzeValue>
-                  <a href={farm.masterChefExplorerUrl} target="_blank" rel="noopener noreferrer">
-                    BscScan
-                  </a>
+                  <ContractLink
+                    href={farm.masterChefExplorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {shortenContractAddress(getMasterChefAddress(chainId))}
+                  </ContractLink>
                 </AnalyzeValue>
               </AnalyzeRow>
             ) : null}

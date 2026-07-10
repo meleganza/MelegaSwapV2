@@ -21,7 +21,8 @@ import { buildPoolMachineV2 } from './formatPoolPresentation'
 import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErrors'
 import usePoolsTerminalData from './usePoolsTerminalData'
 import { getAprData } from 'views/Pools/helpers'
-import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
+import { buildPoolGateReport, POOL_GATE_POLICY_NOTE } from './buildPoolGateReport'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 
 export type PoolsRuntimePhase =
   | 'idle'
@@ -56,6 +57,9 @@ export interface PoolsMachinePayload {
     hidden: number
     displayable: number
   }
+  gateAudit?: ReturnType<typeof buildPoolGateReport>['gateAudit']
+  gateSummary?: ReturnType<typeof buildPoolGateReport>['gateSummary']
+  gatePolicyNote?: string
 }
 
 export interface PoolsFeaturedMetrics {
@@ -118,7 +122,7 @@ export interface PoolsStakingRuntime {
   featured: PoolsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   donutSegments: ReturnType<typeof buildDonutSegments>
-  advisorItems: Array<{ label: string; value: string; tone: 'green' | 'gold' | 'blue'; icon: string }>
+  advisorItems: Array<{ label: string; value: string; tone: 'green' | 'gold' | 'blue'; icon: string; reason?: string }>
   sustainability: { label: string; score: number; level: string }
   analytics: PoolsAnalyticsData
   terminal: ReturnType<typeof usePoolsTerminalData>
@@ -312,18 +316,19 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       const lockScore = (p: PoolPreviewCard) => (p.lockPeriod?.includes('365') ? 4 : p.lockPeriod?.includes('180') ? 3 : 1)
       return lockScore(b) - lockScore(a)
     })
+    const advisorUnavailable = 'No live pools with sustainable APR indexed'
     return [
-      { label: 'Best Sustainability', value: bySustain[0]?.name ?? 'Indexing', tone: 'green' as const, icon: '◎' },
-      { label: 'Highest APR Sustainable', value: byApr[0]?.apr ?? byApr[0]?.name ?? 'Indexing', tone: 'green' as const, icon: '↗' },
-      { label: 'Lowest Risk', value: byRisk[0]?.name ?? 'Indexing', tone: 'gold' as const, icon: '◇' },
-      { label: 'Best Long Term', value: byLock[0]?.name ?? 'Indexing', tone: 'gold' as const, icon: '★' },
+      { label: 'Best Sustainability', value: bySustain[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'green' as const, icon: '◎', reason: bySustain[0] ? undefined : advisorUnavailable },
+      { label: 'Highest APR Sustainable', value: byApr[0]?.apr ?? byApr[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'green' as const, icon: '↗', reason: byApr[0] ? undefined : advisorUnavailable },
+      { label: 'Lowest Risk', value: byRisk[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'gold' as const, icon: '◇', reason: byRisk[0] ? undefined : advisorUnavailable },
+      { label: 'Best Long Term', value: byLock[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'gold' as const, icon: '★', reason: byLock[0] ? undefined : advisorUnavailable },
     ]
   }, [previewCards])
 
   const sustainability = useMemo(() => {
     const active = previewCards.filter((p) => p.status === 'live').length
     const score = Math.min(100, Math.max(20, active * 25 + (userDataLoaded ? 15 : 0)))
-    const level = score >= 80 ? 'Very High' : score >= 50 ? 'Moderate' : 'Indexing'
+    const level = score >= 80 ? 'Very High' : score >= 50 ? 'Moderate' : RUNTIME_UNAVAILABLE_LABEL
     return { label: 'Reward Sustainability', score, level }
   }, [previewCards, userDataLoaded])
 
@@ -342,7 +347,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       earningCounts[sym] = (earningCounts[sym] || 0) + 1
     })
     const topSym = Object.entries(earningCounts).sort((a, b) => b[1] - a[1])[0]
-    const topPct = topSym && rawPools?.length ? `${((topSym[1] / rawPools.length) * 100).toFixed(1)}%` : '—'
+    const topPct = topSym && rawPools?.length ? `${((topSym[1] / rawPools.length) * 100).toFixed(1)}%` : RUNTIME_UNAVAILABLE_LABEL
 
     const topPool = [...previewCards].sort((a, b) => {
       const aUsd = parseFloat(a.tvl.replace(/[^0-9.]/g, '')) || 0
@@ -355,7 +360,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     return {
       rewardBars: bars,
       topRewardToken: { symbol: topSym?.[0] ?? 'MARCO', pct: topPct },
-      topStakedPool: { name: topPool?.name ?? '—', tvl: topPool?.tvl ?? '—', sparkline },
+      topStakedPool: { name: topPool?.name ?? RUNTIME_UNAVAILABLE_LABEL, tvl: topPool?.tvl ?? RUNTIME_UNAVAILABLE_LABEL, sparkline },
     }
   }, [rawPools, previewCards])
 
@@ -368,6 +373,11 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   }, [rawPools, account, userDataLoaded, chainId, initialBlock])
 
   const error = useMemo(() => runtimeErrorFromPhase(phase), [phase])
+
+  const poolGateReport = useMemo(
+    () => buildPoolGateReport(previewCards, initialBlock > 0 ? initialBlock : undefined),
+    [previewCards, initialBlock],
+  )
 
   const poolsIndexingDiagnostic = useMemo(() => {
     const displayable = listUsablePools(previewCards)
@@ -393,7 +403,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       }
     }
     if (displayable.length > 0) return undefined
-    const hiddenSummary = hiddenPoolReasons.length ? hiddenPoolReasons.join(', ') : 'visibility gates'
+    const hiddenSummary = hiddenPoolReasons.length ? hiddenPoolReasons.join(', ') : poolGateReport.gateSummary.emptyStateReason
     return {
       source: 'on-chain',
       indexer: `pools-runtime-${chainId ?? 'unknown'}`,
@@ -401,7 +411,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       reason: `Discovered ${integrity.discovered}, indexed ${integrity.indexed}, live ${integrity.live}, ended ${integrity.ended}, hidden ${integrity.hidden}, displayable ${integrity.displayable}. Blockers: ${hiddenSummary}`,
       integrity,
     }
-  }, [previewCards, rawPools.length, phase, chainId, hiddenPoolReasons])
+  }, [previewCards, rawPools.length, phase, chainId, hiddenPoolReasons, poolGateReport.gateSummary.emptyStateReason])
 
   const machine: PoolsMachinePayload = useMemo(() => {
     const { activePools: activePoolNames, sourceMethod } = listActivePools(previewCards)
@@ -431,9 +441,12 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
         hidden: hidden.length,
         displayable: displayable.length,
       },
+      gateAudit: poolGateReport.gateAudit,
+      gateSummary: poolGateReport.gateSummary,
+      gatePolicyNote: POOL_GATE_POLICY_NOTE,
       pools: filteredPools.map((p) => buildPoolMachineV2(p, chainId)),
     } as PoolsMachinePayload & { pools?: ReturnType<typeof buildPoolMachineV2>[] }
-  }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error, rawPools.length])
+  }, [phase, chainId, account, filter, previewCards, filteredPools, featured.name, error, rawPools.length, poolGateReport])
 
   const loadingLabel =
     phase === 'loading_pools'

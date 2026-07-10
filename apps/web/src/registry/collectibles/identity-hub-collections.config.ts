@@ -65,4 +65,5 @@ export const IDENTITY_HUB_COLLECTIONS: IdentityHubCollectionCard[] = [
 
 export const IDENTITY_HUB_NAV_LABEL = 'Identity Hub'
 
-export const IDENTITY_HUB_PAGE_TITLE = 'Civilization Identity'
+/** Page hero — civilization identity program (distinct from Identity Console economic read model). */
+export const IDENTITY_HUB_PAGE_TITLE = 'Identity Hub'

@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { formatCompactDisplay } from 'design-system/melega'
+import { formatCompactDisplay, STUDIO_KPI_VALUE, displayStudioMetric } from 'design-system/melega'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Row = styled.div`
@@ -76,9 +77,10 @@ const KpiLabel = styled.span`
 
 const KpiValue = styled.span<{ $green?: boolean; $center?: boolean }>`
   font-family: Inter, sans-serif;
-  font-size: 46px;
-  font-weight: 700;
-  line-height: 1;
+  font-size: ${STUDIO_KPI_VALUE.size};
+  font-weight: ${STUDIO_KPI_VALUE.weight};
+  line-height: ${STUDIO_KPI_VALUE.lineHeight};
+  font-variant-numeric: ${STUDIO_KPI_VALUE.fontVariantNumeric};
   color: ${({ $green }) => ($green ? '#00d97e' : '#ffffff')};
   white-space: nowrap;
   text-align: ${({ $center }) => ($center ? 'center' : 'left')};
@@ -111,8 +113,9 @@ const KPI_ICONS: Record<string, string> = {
 }
 
 function formatKpiValue(id: string, value: string): string {
-  if (id === 'budget' || id === 'active') return value
-  return formatCompactDisplay(value)
+  const normalized = displayStudioMetric(value)
+  if (id === 'budget' || id === 'active') return normalized
+  return formatCompactDisplay(normalized)
 }
 
 export const PoolsKpiRow: React.FC = () => {
@@ -128,14 +131,14 @@ export const PoolsKpiRow: React.FC = () => {
         kpis.map((kpi) => {
           const label = KPI_LABELS[kpi.id] ?? kpi.label
           const isFeaturedEmpty = kpi.id === 'featured' && (kpi.gold || kpi.value === 'No live pool')
-          const isDashApr = kpi.id === 'highestApr' && kpi.value === '—'
+          const isUnavailableApr = kpi.id === 'highestApr' && kpi.value === RUNTIME_UNAVAILABLE_LABEL
 
           return (
             <KpiCard key={kpi.id} data-ps-kpi-card>
               <KpiIcon aria-hidden>{KPI_ICONS[kpi.id] ?? '•'}</KpiIcon>
               <KpiLabel>{label}</KpiLabel>
               {isFeaturedEmpty ? (
-                <KpiSecondary data-ps-kpi-value>No Live Pool</KpiSecondary>
+                <KpiSecondary data-ps-kpi-value>{RUNTIME_UNAVAILABLE_LABEL}</KpiSecondary>
               ) : kpi.id === 'featured' ? (
                 <>
                   <KpiValue data-ps-kpi-value>{kpi.value}</KpiValue>
@@ -143,7 +146,7 @@ export const PoolsKpiRow: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <KpiValue $green={kpi.green} $center={isDashApr} data-ps-kpi-value>
+                  <KpiValue $green={kpi.green} $center={isUnavailableApr} data-ps-kpi-value>
                     {formatKpiValue(kpi.id, kpi.value)}
                   </KpiValue>
                   {kpi.secondary ? <KpiSecondary>{kpi.secondary}</KpiSecondary> : null}

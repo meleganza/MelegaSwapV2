@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import ProjectsStudioGlobalStyle from './ProjectsStudioGlobalStyle'
 import AIProjectAdvisorPanel from './components/AIProjectAdvisorPanel'
 import FeaturedProjectPanel from './components/FeaturedProjectPanel'
@@ -38,6 +39,10 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${projectsStudioLayout.sectionGap};
+
+  @media (max-width: 767px) {
+    padding: 16px 16px ${projectsStudioLayout.mobileBottomPad};
+  }
 `
 
 export const ProjectsStudioScreen: React.FC = () => (
@@ -45,6 +50,7 @@ export const ProjectsStudioScreen: React.FC = () => (
     <Root data-projects-studio-screen data-pr-r111b-canonical>
       <PageMeta />
       <ProjectsStudioGlobalStyle />
+      <TrendingRibbon />
       <Content>
         <ProjectsStudioPageHeader />
         <ProjectsKpiRow />

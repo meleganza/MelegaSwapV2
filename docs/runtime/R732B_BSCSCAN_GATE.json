@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-08T19:59:15.470Z",
+  "envSource": "none",
+  "canonicalEnvSet": false,
+  "typoEnvSet": false,
+  "directProbe": {
+    "skipped": true,
+    "reason": "no_api_key_in_shell"
+  },
+  "deploySha": "8e80f8e93ee3347d5d2a8fd499b2af7bdc309fa3"
+}

@@ -6,6 +6,7 @@ export const CHAIN_QUERY_NAME = {
   [ChainId.ETHEREUM]: 'ethereum',
   [ChainId.ARBITRUM]: 'arbitrum',
   [ChainId.BSC]: 'bsc',
+  [ChainId.BSC_TESTNET]: 'bsc-testnet',
   [ChainId.POLYGON]: 'polygon',
   [ChainId.SHIMMER2]: 'shimmerevm',
   [ChainId.BASE]: 'base',

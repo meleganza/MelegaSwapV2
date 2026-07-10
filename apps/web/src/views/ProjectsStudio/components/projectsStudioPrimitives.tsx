@@ -226,7 +226,8 @@ export const PrKpiValue = styled.span<{ $muted?: boolean }>`
   font-family: ${PR_FONT_BODY};
   font-size: ${projectsStudioType.kpiMetric};
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
   color: ${({ $muted }) => ($muted ? projectsStudioColors.secondary : projectsStudioColors.text)};
 `
 

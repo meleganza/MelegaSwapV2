@@ -307,7 +307,7 @@ export const FeaturedCollectionPanel: React.FC = () => {
         </Metrics>
         <BtnRow>
           <ViewBtn href="/collectibles/babymarco-genesis">View Collection</ViewBtn>
-          <LearnBtn type="button">Learn More</LearnBtn>
+          <LearnBtn as="a" href="/collectibles/babymarco-genesis">Learn More</LearnBtn>
         </BtnRow>
       </Info>
       <Visual>

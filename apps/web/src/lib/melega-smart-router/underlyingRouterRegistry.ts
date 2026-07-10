@@ -1,15 +1,28 @@
 import { ChainId } from '@pancakeswap/sdk'
+import { resolveExecutionAdapterForSwap, getV2RouterAddress } from './execution-adapter'
 import type { UnderlyingRouterEntry } from './types'
+import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 
-/** PancakeSwap Smart Router — execution layer only; unchanged by Melega D87 adapter. */
-const UNDERLYING_ROUTER_ADDRESSES: Partial<Record<number, string>> = {
-  [ChainId.BSC]: '0xC6665d98Efd81f47B03801187eB46cbC63F328B0',
-}
-
+/** Resolves canonical execution router via AdapterResolver (ExecutionPlan → adapter → router). */
 export function getUnderlyingRouterEntry(chainId: number): UnderlyingRouterEntry {
-  const routerAddress = UNDERLYING_ROUTER_ADDRESSES[chainId]
-  if (routerAddress) {
-    return { chainId, routerAddress, status: 'active', source: 'config' }
+  try {
+    const resolved = resolveExecutionAdapterForSwap({
+      chainId,
+      preferSmartRouter: chainId === ChainId.BSC,
+      inputIsNative: false,
+      path: [],
+    })
+    return {
+      chainId,
+      routerAddress: resolved.adapter.routerAddress(),
+      status: 'active',
+      source: 'config',
+    }
+  } catch {
+    const fallback = getV2RouterAddress(chainId) ?? (chainId === ChainId.BSC_TESTNET ? BSC_TESTNET_ADDRESSES.router : undefined)
+    if (fallback) {
+      return { chainId, routerAddress: fallback, status: 'active', source: 'config' }
+    }
+    return { chainId, status: 'missing', source: 'config' }
   }
-  return { chainId, status: 'missing', source: 'config' }
 }

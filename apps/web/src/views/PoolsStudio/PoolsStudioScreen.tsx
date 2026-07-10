@@ -32,16 +32,19 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: 1240px;
+  max-width: ${poolsStudioLayout.contentMax};
   margin: 0 auto;
-  padding: 64px 40px ${poolsStudioLayout.contentPaddingBottom};
+  padding: ${poolsStudioLayout.contentPaddingTop} ${poolsStudioLayout.contentPaddingX}
+    ${poolsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: ${poolsStudioLayout.sectionGap};
 
   @media (max-width: 767px) {
-    padding: ${poolsStudioLayout.mobileContentPaddingTop} ${poolsStudioLayout.contentPaddingMobile}
-      ${poolsStudioLayout.mobileBottomPad};
+    padding: 16px 16px ${poolsStudioLayout.mobileBottomPad};
   }
 `
 
@@ -50,13 +53,12 @@ const KpiSection = styled.div`
 `
 
 const MainGrid = styled.div`
-  margin-top: 28px;
   display: grid;
   grid-template-columns: minmax(0, 820px) 340px;
   grid-template-rows: auto auto;
   column-gap: 24px;
   row-gap: 0;
-  align-items: start;
+  align-items: stretch;
   min-width: 0;
 
   @media (max-width: 1099px) {
@@ -75,6 +77,8 @@ const MainColumn = styled.div`
   max-width: 820px;
   grid-column: 1;
   grid-row: 1;
+  display: flex;
+  flex-direction: column;
 
   @media (max-width: 767px) {
     order: 1;
@@ -85,6 +89,8 @@ const SidebarColumn = styled.div`
   grid-column: 2;
   grid-row: 1 / span 2;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 
   @media (max-width: 1099px) {
     grid-column: 1;
@@ -131,10 +137,8 @@ const CreatePoolSection = styled.div`
   @media (max-width: 767px) {
     order: 4;
     margin-top: 32px;
-    width: calc(100vw - 32px);
-    max-width: calc(100vw - 32px);
-    margin-left: calc(50% - 50vw + 16px);
-    margin-right: calc(50% - 50vw + 16px);
+    width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
 `

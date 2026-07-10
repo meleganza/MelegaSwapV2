@@ -13,6 +13,9 @@ import { createBuildRuntimeError, type BuildRuntimeError } from './buildRuntimeE
 
 const CHAIN_ID_MAP: Record<string, number> = {
   bnb: 56,
+  'bnb-testnet': 97,
+  bsc: 56,
+  'bsc-testnet': 97,
   eth: 1,
   base: 8453,
   polygon: 137,

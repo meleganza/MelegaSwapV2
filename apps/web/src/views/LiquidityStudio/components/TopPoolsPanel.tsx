@@ -1,6 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
@@ -44,15 +46,32 @@ const PoolLink = styled(Link)`
   display: contents;
 `
 
-const LoadingLine = styled.p`
+const UnavailableWrap = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-height: 0;
+`
+
+const UnavailableTitle = styled.p`
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${liquidityStudioColors.text};
+`
+
+const UnavailableReason = styled.p`
   margin: 0;
   font-size: 12px;
+  line-height: 1.45;
   color: ${liquidityStudioColors.muted};
 `
 
 export const TopPoolsPanel: React.FC = () => {
-  const { terminal, loadingLabel } = useLiquidityRuntime()
-  const { topPools, isIndexing, isLoadingPools } = terminal
+  const { terminal, machine } = useLiquidityRuntime()
+  const { topPools, topPoolsUnavailableReason } = terminal
 
   return (
     <LsPanel
@@ -63,10 +82,14 @@ export const TopPoolsPanel: React.FC = () => {
       $pad={liquidityStudioLayout.rightPanelPadding}
     >
       <LsSectionTitle>Top Pools</LsSectionTitle>
-      {loadingLabel || isIndexing || isLoadingPools ? (
-        <LoadingLine>{loadingLabel ?? 'Loading top pools…'}</LoadingLine>
-      ) : topPools.length === 0 ? (
-        <LoadingLine>No pools indexed yet.</LoadingLine>
+      {topPoolsUnavailableReason || topPools.length === 0 ? (
+        <UnavailableWrap data-ls-top-pools-unavailable>
+          <UnavailableTitle>{RUNTIME_UNAVAILABLE_LABEL}</UnavailableTitle>
+          <UnavailableReason>
+            Reason: {topPoolsUnavailableReason ?? 'Waiting for first indexed pool event'}
+          </UnavailableReason>
+          <TradeTechnicalDetails detail={JSON.stringify(machine, null, 2)} />
+        </UnavailableWrap>
       ) : (
         topPools.map((pool) => (
           <PoolRow key={pool.id}>

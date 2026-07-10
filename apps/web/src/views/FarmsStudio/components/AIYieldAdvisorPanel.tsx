@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsPanel, FsSectionTitle } from './farmsStudioPrimitives'
@@ -8,6 +10,8 @@ const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 18px;
+  flex: 1;
+  min-height: 0;
 `
 
 const Row = styled.div`
@@ -52,38 +56,16 @@ const Value = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
         ? `1px solid ${farmsStudioColors.gold}`
         : 'none'};
   text-align: right;
-`
-
-const MachineToggle = styled.button`
-  margin-top: 10px;
-  border: none;
-  background: transparent;
-  color: ${farmsStudioColors.muted};
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-`
-
-const MachinePre = styled.pre`
-  margin: 8px 0 0;
-  padding: 8px;
-  border-radius: 8px;
-  background: #0c0c0c;
-  border: 1px solid ${farmsStudioColors.border};
-  font-size: 9px;
-  line-height: 1.35;
-  color: ${farmsStudioColors.muted};
-  max-height: 80px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  max-width: 58%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 export const AIYieldAdvisorPanel: React.FC = () => {
   const { advisorItems, loadingLabel, machine } = useFarmsRuntime()
-  const [machineOpen, setMachineOpen] = useState(false)
+
+  const technicalDetail = useMemo(() => JSON.stringify(machine, null, 2), [machine])
 
   return (
     <FsPanel
@@ -91,7 +73,7 @@ export const AIYieldAdvisorPanel: React.FC = () => {
       data-fs-advisor
       $width="100%"
       $height={farmsStudioLayout.featuredHeight}
-      style={{ padding: '18px' }}
+      style={{ padding: '18px', display: 'flex', flexDirection: 'column' }}
     >
       <FsSectionTitle>AI Yield Advisor</FsSectionTitle>
       <List>
@@ -101,17 +83,14 @@ export const AIYieldAdvisorPanel: React.FC = () => {
           advisorItems.map((row) => (
             <Row key={row.label}>
               <Label>{row.label}</Label>
-              <Value $tone={row.tone}>{row.value}</Value>
+              <Value $tone={row.value === RUNTIME_UNAVAILABLE_LABEL ? 'muted' : row.tone}>
+                {row.value}
+              </Value>
             </Row>
           ))
         )}
       </List>
-      <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
-        {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
-      </MachineToggle>
-      {machineOpen && (
-        <MachinePre data-fs-machine-json>{JSON.stringify(machine, null, 2)}</MachinePre>
-      )}
+      <TradeTechnicalDetails detail={technicalDetail} />
     </FsPanel>
   )
 }

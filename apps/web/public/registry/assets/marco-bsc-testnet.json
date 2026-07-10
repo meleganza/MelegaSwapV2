@@ -1,0 +1,58 @@
+{
+  "$schema": "https://melega.finance/schemas/asset/v1",
+  "uai": "uai://melega/asset/fungible/97/0x963556de0eb8138E97A85F0A86eE0acD159D210b@1",
+  "legacy_ref": "token://97/0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "slug": "marco-bsc-testnet",
+  "asset_type": "fungible",
+  "lifecycle": "observed",
+  "project_binding": {
+    "project_upi": "upi://melega/project/melega-dex@1",
+    "project_slug": "melega-dex",
+    "is_primary": true,
+    "binding_source": "treasury_runtime_confirmation",
+    "bound_at": "2026-07-09"
+  },
+  "chain_id": 97,
+  "contract_address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "symbol": "MARCO",
+  "decimals": 18,
+  "name": "MARCO (BSC Testnet)",
+  "description": "MARCO coordination token on BNB Testnet — Treasury Runtime canonical address (R744B).",
+  "tags": ["native", "coordination", "fungible", "testnet"],
+  "trust": {
+    "badges": ["canonical", "treasury-runtime-confirmed"],
+    "verification_status": "treasury_runtime_confirmed"
+  },
+  "attestation": {
+    "source": "Treasury Runtime",
+    "task": "R744B",
+    "confirmedAt": "2026-07-09",
+    "note": "Same contract address as BSC mainnet MARCO; indexed for chain 97 Smart Router registry only."
+  },
+  "capabilities": {
+    "tradable": { "status": "planned", "notes": "Smart Router testnet execution blocked until wrapper deploy prerequisites met" },
+    "liquidity": { "status": "planned", "notes": "Testnet liquidity not indexed in DEX MVP" },
+    "farm": { "status": "planned", "notes": "Testnet farms not indexed" },
+    "pool": { "status": "planned", "notes": "Testnet pools not indexed" },
+    "lock": { "status": "planned", "notes": "Phase 2" },
+    "governance": { "status": "planned", "notes": "Phase 2" },
+    "smartdrop": { "status": "planned", "notes": "Phase 2" },
+    "radar": { "status": "planned", "notes": "Phase 2" },
+    "space": { "status": "planned", "notes": "Phase 2" },
+    "labs": { "status": "planned", "notes": "Phase 2" },
+    "treasury": { "status": "planned", "notes": "Treasury Runtime Phase 2" }
+  },
+  "relationships": {
+    "liquidity_pools": [],
+    "markets": [],
+    "locks": [],
+    "campaigns": [],
+    "treasury_skus": [],
+    "relationship_status": "not_indexed",
+    "relationship_notes": "Testnet asset registry entry — no indexed pools in static MVP."
+  },
+  "mvp_static": true,
+  "data_source": "asset-registry-static",
+  "as_of": "2026-07-09",
+  "disclaimer": "Treasury Runtime confirmed canonical MARCO testnet address. Listed ≠ wrapper-active. Smart Router execution remains blocked until deploy prerequisites met."
+}

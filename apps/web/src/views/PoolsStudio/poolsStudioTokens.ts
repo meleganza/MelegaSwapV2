@@ -1,15 +1,12 @@
 import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
 
 /** Pools Studio — R705 Step 1 layout foundation. */
 export const poolsStudioLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   containerMax: '1440px',
-  contentMax: '1240px',
-  contentPaddingX: '48px',
-  contentPaddingTop: '44px',
-  contentPaddingBottom: '64px',
   contentPaddingMobile: '18px',
-  sectionGap: '32px',
   gapHeaderKpi: '28px',
   gapKpiHero: '32px',
   gapHeroExplorer: '48px',
@@ -21,10 +18,7 @@ export const poolsStudioLayout = {
   pageGridGap: '24px',
   cardGap: '18px',
   poolCardRowGap: '22px',
-  cardRadius: '22px',
-  cardPadding: '24px',
   kpiGap: '16px',
-  kpiHeight: '116px',
   kpiPadding: '22px 22px 20px 22px',
   kpiRadius: '18px',
   kpiMobileWidth: '170px',
@@ -78,7 +72,7 @@ export const poolsStudioLayout = {
   hoverTransition: '180ms',
   drawerTransition: '220ms',
   mobileBottomPad: '180px',
-  mobileContentPaddingTop: '72px',
+  mobileContentPaddingTop: '16px',
   mobileTitleSize: '44px',
   mobileLivePillWidth: '130px',
   mobileLivePillHeight: '32px',
@@ -86,8 +80,6 @@ export const poolsStudioLayout = {
   mobileCreateBtnHeight: '46px',
   donutDiameter: 128,
   donutDiameterMobile: 128,
-  btnHeight: '48px',
-  btnRadius: '14px',
 } as const
 
 /** R721 — Featured Hero enterprise polish tokens. */
@@ -149,5 +141,6 @@ export const poolsStudioColors = {
   elevationHover: '0 0 28px rgba(217, 185, 47, 0.16)',
 } as const
 
+export const POOLS_STUDIO_LIVE_LABEL = 'Live Runtime'
 export const POOLS_STUDIO_PREVIEW_LABEL = 'PREVIEW LAYOUT'
 export const POOLS_ACTIVITY_PREVIEW_LABEL = 'Indexed Preview'

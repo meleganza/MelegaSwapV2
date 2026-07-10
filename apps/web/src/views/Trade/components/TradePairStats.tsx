@@ -1,27 +1,20 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { colors } from 'design-system/melega'
-import { PREMIUM_EMPTY } from 'design-system/melega/tokens/premiumStudio'
+import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { tradeUiReasonLabel } from 'lib/data-policy/uiReasonLabels'
+import { tradeColors, tradeLayout, tradeTypography } from '../tradeTokens'
 import type { TradePairStat } from '../useTradeTerminalData'
 
-const reasonSubline = (stat: TradePairStat): string | undefined => {
-  return tradeUiReasonLabel(stat.reasonCode)
-}
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+const shimmer = keyframes`
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
 `
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-
-  @media (max-width: 1100px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  width: 100%;
 
   @media (max-width: 767px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -29,50 +22,90 @@ const Grid = styled.div`
 `
 
 const Card = styled.div`
-  background: #141414;
-  border: 1px solid #2A2A2A;
-  border-radius: 20px;
-  padding: 24px;
-  min-height: 120px;
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: ${tradeLayout.cardRadius};
+  padding: 14px 16px;
+  min-height: ${tradeLayout.statCardMinHeight};
   box-sizing: border-box;
-  animation: ${fadeIn} 180ms ease;
+  display: flex;
+  flex-direction: column;
   transition: border-color 180ms ease;
+  font-variant-numeric: ${tradeTypography.fontVariantNumeric};
 
   &:hover {
-    border-color: #D4AF37;
+    border-color: ${tradeColors.cardBorderHover};
   }
 `
 
 const Label = styled.div`
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #8F8F8F;
+  font-size: ${tradeTypography.statLabel.size};
+  font-weight: ${tradeTypography.statLabel.weight};
+  line-height: ${tradeTypography.statLabel.lineHeight};
+  color: ${tradeColors.muted};
 `
 
-const Value = styled.div<{ $muted?: boolean }>`
+const ValueSlot = styled.div`
   margin-top: 8px;
-  font-size: ${({ $muted }) => ($muted ? '14px' : '36px')};
-  font-weight: ${({ $muted }) => ($muted ? 600 : 700)};
-  color: ${({ $muted }) => ($muted ? '#8F8F8F' : colors.textPrimary)};
-  line-height: 1.15;
-  white-space: nowrap;
+  min-height: ${tradeLayout.statValueMinHeight};
+  display: flex;
+  align-items: center;
+`
+
+const Value = styled.div<{ $muted?: boolean; $loading?: boolean }>`
+  font-size: ${tradeTypography.statValue.size};
+  font-weight: ${tradeTypography.statValue.weight};
+  line-height: ${tradeTypography.statValue.lineHeight};
+  color: ${({ $muted, $loading }) =>
+    $loading ? tradeColors.gold : $muted ? tradeColors.muted : tradeColors.text};
+  font-variant-numeric: ${tradeTypography.fontVariantNumeric};
+  ${({ $loading }) =>
+    $loading
+      ? `
+    animation: ${shimmer} 1.8s ease-in-out infinite;
+  `
+      : ''}
 `
 
 const Subline = styled.div`
-  margin-top: 4px;
-  font-size: 13px;
-  color: #8F8F8F;
-  line-height: 1.35;
+  margin-top: 6px;
+  font-size: ${tradeTypography.statSubline.size};
+  font-weight: ${tradeTypography.statSubline.weight};
+  line-height: ${tradeTypography.statSubline.lineHeight};
+  color: ${tradeColors.muted};
 `
 
 const Change = styled.div<{ $positive?: boolean }>`
   margin-top: 4px;
-  font-size: 12px;
+  font-size: ${tradeTypography.statSubline.size};
   font-weight: 600;
-  color: ${({ $positive }) => ($positive ? colors.green : '#ef4444')};
+  color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
+  font-variant-numeric: ${tradeTypography.fontVariantNumeric};
 `
+
+const reasonSubline = (stat: TradePairStat): string | undefined => {
+  if (stat.reasonCode === 'SUBGRAPH_LOADING') {
+    return stat.id === 'holders'
+      ? 'BscScan holder count request in progress'
+      : 'Subgraph request in progress'
+  }
+  return tradeUiReasonLabel(stat.reasonCode)
+}
+
+const isLoadingStat = (stat: TradePairStat): boolean =>
+  stat.reasonCode === 'SUBGRAPH_LOADING' ||
+  stat.value === RUNTIME_LOADING_LABEL ||
+  (stat.id === 'holders' && stat.value === RUNTIME_LOADING_LABEL)
+
+const isUnavailableStat = (stat: TradePairStat): boolean => {
+  if (isLoadingStat(stat)) return false
+  return (
+    !stat.value ||
+    stat.value === RUNTIME_UNAVAILABLE_LABEL ||
+    stat.value === 'Unavailable' ||
+    stat.value.startsWith('Unavailable')
+  )
+}
 
 export interface TradePairStatsProps {
   stats: TradePairStat[]
@@ -81,12 +114,24 @@ export interface TradePairStatsProps {
 export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
   <Grid data-trade-pair-stats>
     {stats.map((stat) => {
-      const muted = !stat.value || stat.value === PREMIUM_EMPTY || stat.value === 'Unavailable'
-      const subline = muted ? reasonSubline(stat) ?? 'Waiting for indexing' : undefined
+      const loading = isLoadingStat(stat)
+      const unavailable = isUnavailableStat(stat)
+      const muted = loading || unavailable
+      const subline = muted ? reasonSubline(stat) : undefined
+      const displayValue = loading
+        ? RUNTIME_LOADING_LABEL
+        : unavailable
+          ? RUNTIME_UNAVAILABLE_LABEL
+          : stat.value
+
       return (
         <Card key={stat.id}>
           <Label>{stat.label}</Label>
-          <Value $muted={muted}>{muted ? PREMIUM_EMPTY : stat.value}</Value>
+          <ValueSlot>
+            <Value $muted={unavailable} $loading={loading}>
+              {displayValue}
+            </Value>
+          </ValueSlot>
           {subline ? <Subline>{subline}</Subline> : null}
           {stat.change && !muted ? (
             <Change $positive={stat.changePositive}>{stat.change}</Change>

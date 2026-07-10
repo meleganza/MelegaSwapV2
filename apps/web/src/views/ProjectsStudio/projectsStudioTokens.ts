@@ -1,17 +1,15 @@
-/** R111B canonical Projects Studio tokens — do not deviate. */
+import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+
+/** R111B canonical Projects Studio tokens — R758 constitution rhythm. */
 export const PR_FONT_DISPLAY = "'Orbitron', sans-serif"
 export const PR_FONT_BODY = "'Inter', sans-serif"
 
 export const projectsStudioLayout = {
-  contentMax: '1180px',
-  contentPaddingX: '32px',
-  contentPaddingTop: '24px',
-  contentPaddingBottom: '48px',
-  sectionGap: '28px',
-  cardGap: '20px',
-  cardRadius: '20px',
-  headerHeight: '96px',
-  kpiHeight: '120px',
+  ...premiumStudioLayout,
+  ...studioConstitutionLayout,
+  headerHeight: studioConstitutionLayout.heroMinHeight,
+  kpiHeight: premiumStudioLayout.kpiHeight,
   kpiPadding: '22px',
   featuredHeight: '380px',
   advisorHeight: '380px',
@@ -41,36 +39,21 @@ export const projectsStudioLayout = {
   activityListPaddingLeft: '12px',
   gridColumns: 1,
   mobileBottomPad: 'calc(96px + env(safe-area-inset-bottom, 0px))',
-  mobileBreakpoint: '390px',
   stackBreakpoint: '1024px',
 } as const
 
 export const projectsStudioColors = {
-  canvas: '#050505',
-  card: '#141414',
-  cardBorder: '#2A2A2A',
-  cardBorderHover: '#D4AF37',
-  gold: '#D4AF37',
-  goldBright: '#D4AF37',
-  green: '#1BE77A',
-  orange: '#FF9F43',
-  red: '#FF4D4F',
-  muted: '#8F8F8F',
-  secondary: '#A3A3A3',
-  subtitle: '#A3A3A3',
-  summary: '#D8D8D8',
-  text: '#FFFFFF',
-  divider: '#262626',
-  chartBg: '#141414',
+  ...premiumStudioColors,
+  goldBright: premiumStudioColors.gold,
+  chartBg: premiumStudioColors.card,
   goldBorder: 'rgba(212,175,55,0.55)',
-  goldBg: 'rgba(212,175,55,0.14)',
 } as const
 
 export const projectsStudioType = {
   pageTitle: '52px',
   pageSubtitle: '16px',
-  pageSubtitleMax: '520px',
-  kpiMetric: '36px',
+  pageSubtitleMax: '720px',
+  kpiMetric: '22px',
   kpiLabel: '13px',
   featuredName: '40px',
   featuredPrice: '42px',

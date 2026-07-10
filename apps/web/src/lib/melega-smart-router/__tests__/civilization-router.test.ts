@@ -38,26 +38,36 @@ describe('Civilization Smart Router', () => {
     vi.stubEnv('NEXT_PUBLIC_TREASURY_COLLECTOR_BSC', COLLECTOR)
   })
 
-  it('Phase 0 blocker audit marks wrapper and collector as BLOCKED', () => {
+  it('Phase 0 blocker audit marks wrapper deploy partial and mainnet on-chain deploy still blocked', () => {
     const audit = buildBlockerAuditTable()
-    expect(audit.some((r) => r.requirement.includes('wrapper') && r.status === 'BLOCKED')).toBe(true)
+    expect(audit.some((r) => r.requirement.includes('Deployable wrapper') && r.status === 'PARTIAL')).toBe(true)
+    expect(audit.some((r) => r.requirement.includes('Wrapper deployed on-chain') && r.status === 'PARTIAL')).toBe(true)
     expect(audit.some((r) => r.requirement.includes('Treasury Collector') && r.status === 'BLOCKED')).toBe(true)
     expect(audit.some((r) => r.requirement.includes('D90') && r.status === 'BLOCKED')).toBe(true)
   })
 
-  it('chain registry uses null addresses — no placeholders', () => {
+  it('chain registry uses verified testnet addresses with published wrapper V2', () => {
     const registry = buildChainRegistry()
     expect(registry['56'].wrapperAddress).toBeNull()
     expect(registry['56'].treasuryCollector).toBeNull()
-    expect(registry['97'].underlyingRouter).toBeNull()
-    expect(registry['97'].MARCO).toBeNull()
-    expect(registry['97'].status).toBe('blocked')
+    expect(registry['97'].underlyingRouter?.toLowerCase()).toBe('0xd99d1c33f9fc3444f8101754abc46c52416550d1')
+    expect(registry['97'].MARCO?.toLowerCase()).toBe(MARCO_BSC.toLowerCase())
+    expect(registry['97'].wrapperAddress?.toLowerCase()).toBe('0x9d2451b30102b098570bfceae0e8b8c9fd2bb2db')
+    expect(registry['97'].status).toBe('active_testnet')
+    expect(registry['97'].treasuryCollector?.toLowerCase()).toBe('0xe674b1d925d79f5a0053e40cc7cded7841ad4164')
   })
 
-  it('BNB testnet is explicitly blocked', () => {
+  it('BNB testnet wrapper V2 is active_testnet with constitutional routes validated', () => {
     const readiness = getBnbTestnetReadiness()
-    expect(readiness.status).toBe('BNB_TESTNET_BLOCKED')
-    expect(readiness.quoteStandardSwap).toBe(false)
+    expect(readiness.status).toBe('ACTIVE_TESTNET')
+    expect(readiness.quoteStandardSwap).toBe(true)
+    expect(readiness.quoteBuyMarco).toBe(true)
+    expect(readiness.dexAdapterActive).toBe(true)
+    expect(readiness.wrapperDeployed).toBe(true)
+    expect(readiness.validationStatus).toBe('passed')
+    expect(readiness.marcoAddress?.toLowerCase()).toBe(MARCO_BSC.toLowerCase())
+    expect(readiness.reasons).toEqual([])
+    expect(readiness.executableRouteTypes).toEqual(['STANDARD_SWAP', 'BUY_MARCO', 'SELL_MARCO'])
   })
 
   it('BNB mainnet is partial adapter only', () => {
@@ -132,11 +142,16 @@ describe('Civilization Smart Router', () => {
     expect(matrix.find((r) => r.id === 'STANDARD_SWAP')?.supported).toBe(true)
   })
 
-  it('machine contract has null wrapper and blocked status', () => {
-    const contract = buildCivilizationRouterContract('2026-07-08')
+  it('machine contract keeps mainnet wrapper null; testnet wrapper published in supportedChains', () => {
+    const contract = buildCivilizationRouterContract('2026-07-09')
     expect(contract.schema).toBe(CIVILIZATION_ROUTER_CONTRACT_SCHEMA)
     expect(contract.wrapperAddress).toBeNull()
     expect(contract.wrapperStatus).toBe('BLOCKED_WRAPPER_NOT_DEPLOYED')
+    expect(contract.supportedChains['97'].wrapperAddress?.toLowerCase()).toBe(
+      '0x9d2451b30102b098570bfceae0e8b8c9fd2bb2db',
+    )
+    expect(contract.phases.bnbTestnet.validationStatus).toBe('passed')
+    expect(contract.capabilities.wrapperDeployedTestnet).toBe(true)
     expect(contract.labsBinding.narrative_trade_support).toBe(false)
     expect(contract.ABI.deployed).toBe(false)
     expect(getCivilizationRouterVerdict()).toBe('CIVILIZATION_SMART_ROUTER_PARTIAL')

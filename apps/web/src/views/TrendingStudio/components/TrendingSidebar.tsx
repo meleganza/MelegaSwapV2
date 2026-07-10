@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
 import { trendingStudioColors, trendingStudioLayout } from '../trendingStudioTokens'
 import { TrLabel, TrPanel, TrSectionTitle, TrStatusBadge } from './trendingStudioPrimitives'
@@ -16,16 +17,6 @@ const Panel = styled(TrPanel)`
   display: flex;
   flex-direction: column;
   gap: 10px;
-`
-
-const WhalePanel = styled(Panel)`
-  height: auto;
-  min-height: 0;
-`
-
-const SmartPanel = styled(Panel)`
-  height: auto;
-  min-height: 0;
 `
 
 const DiscoveriesPanel = styled(Panel)`
@@ -119,43 +110,16 @@ const DiscoveryRow = styled.div`
   font-size: 12px;
 `
 
-const EmptyCopy = styled.p`
-  margin: 0;
-  font-size: 13px;
-  color: ${trendingStudioColors.gray};
-  line-height: 1.45;
-`
-
-const EmptyDash = styled.span`
-  display: block;
-  font-size: 18px;
-  font-weight: 700;
-  color: ${trendingStudioColors.gray};
-  margin-bottom: 6px;
-`
-
 export const TrendingSidebar: React.FC = () => {
   const { discoveries, warnings, opportunity } = useTrendingRuntime()
 
   return (
     <Sidebar data-tr-sidebar>
-      <WhalePanel data-tr-panel>
-        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Whale Monitor</TrSectionTitle>
-        <EmptyDash>—</EmptyDash>
-        <EmptyCopy>Whale activity feed is not connected to a live data source.</EmptyCopy>
-      </WhalePanel>
-
-      <SmartPanel data-tr-panel>
-        <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Smart Money Tracker</TrSectionTitle>
-        <EmptyDash>—</EmptyDash>
-        <EmptyCopy>Smart money tracking requires external wallet intelligence.</EmptyCopy>
-      </SmartPanel>
-
       <Panel data-tr-panel>
         <TrSectionTitle style={{ fontSize: 22, marginBottom: 4 }}>Runtime Signal</TrSectionTitle>
         <OpportunityWrap>
           <Ring data-tr-opportunity-ring $score={opportunity.score}>
-            <span>{opportunity.score > 0 ? opportunity.score : '—'}</span>
+            <span>{opportunity.score > 0 ? opportunity.score : RUNTIME_UNAVAILABLE_LABEL}</span>
           </Ring>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: trendingStudioColors.gold }}>

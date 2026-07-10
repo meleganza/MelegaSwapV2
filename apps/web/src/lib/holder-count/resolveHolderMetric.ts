@@ -7,10 +7,20 @@ function formatHolderCount(count: number): string {
   return count.toLocaleString()
 }
 
-export function resolveHolderMetric(result?: HolderCountResult | null): ResolvedMetricValue {
+export function resolveHolderMetric(
+  result?: HolderCountResult | null,
+  loading?: boolean,
+): ResolvedMetricValue {
+  if (loading) {
+    return {
+      display: 'Loading',
+      reasonCode: undefined,
+    }
+  }
+
   if (!result) {
     return {
-      display: 'Waiting for explorer',
+      display: 'Unavailable',
       reasonCode: 'EXPLORER_SOURCE_MISSING',
     }
   }
@@ -20,7 +30,8 @@ export function resolveHolderMetric(result?: HolderCountResult | null): Resolved
   }
 
   return {
-    display: result.reason || 'Source not configured',
+    display: 'Unavailable',
     reasonCode: 'EXPLORER_SOURCE_MISSING',
+    reason: result.reason || result.diagnostic,
   }
 }

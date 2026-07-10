@@ -1,0 +1,154 @@
+{
+  "schema": "melega.smart-router.freeze.v1",
+  "manifestId": "R748-BSC-TESTNET-FREEZE",
+  "verdict": "SMART_ROUTER_TESTNET_FROZEN",
+  "freezeDate": "2026-07-09",
+  "chainId": 97,
+  "chainName": "BNB Testnet",
+  "civilizationStatus": "ACTIVE_TESTNET",
+  "freezeScope": "chain_97_implementation_only",
+  "mainnetActivated": false,
+  "supersedes": {
+    "publication": "R747 — SMART_ROUTER_TESTNET_CANONICAL",
+    "validationCertificate": "/registry/smart-router/testnet-validation-certificate.json"
+  },
+  "frozenImplementation": {
+    "wrapperAddress": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+    "wrapperVersion": 2,
+    "bytecodeHash": "0x38b51c47d376400b04c3af1c7425d4af830dc71aec9a7faee23e80e51213d610",
+    "sourcePath": "contracts/MelegaSmartRouterWrapper.sol",
+    "solcVersion": "0.8.20",
+    "abiPath": "apps/web/src/lib/melega-smart-router/wrapper/MelegaSmartRouterWrapper.abi.json",
+    "creationArtifact": "/testnet/MelegaSmartRouterWrapper.creation.json",
+    "deployTx": "0xef5be1c2324a0b68853f15a8d1c729c2bffae2c82372fe9a3c4f9b95f2d009ef",
+    "deployBlock": 118153243
+  },
+  "frozenImmutables": {
+    "underlyingRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "treasuryIntake": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+    "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "wbnb": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+    "factory": "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+    "pricingRef": "D87_DEX_PRICING_RATIFIED",
+    "pricingRefHash": "0x86ec759a7d636e2c23c8e666673400056cc5ef99061381c1dac5abbd90530294",
+    "treasuryRef": "FSC-01",
+    "treasuryPolicyRefHash": "0x2c4da16e00f42da5ec690db4a2db138a94f7c423d1ad10de9274c4d404b7d6b8"
+  },
+  "frozenLiquidity": {
+    "pairMarcoWbnb": "0x6eFCe8f5C7Fb3B979A6a2Be4a62DB4A055c666E0",
+    "pairTokens": ["MARCO", "WBNB"],
+    "note": "Validation ceremony liquidity pair — do not migrate or replace without new constitutional validation"
+  },
+  "frozenRoutes": {
+    "executableRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+    "feeScheduleBps": {
+      "BUY_MARCO": 20,
+      "SELL_MARCO": 30,
+      "STANDARD_SWAP": 30
+    },
+    "validationTransactions": {
+      "BUY_MARCO": "0x8a19f2eb24793dad439cb9779bc1586579fa411bc004dee8302ce37757e22ec1",
+      "SELL_MARCO": "0x5602377a4f9eed55a047ef215e3e2b437b5df4e919ac9a3bd04b5a1d4a961486",
+      "STANDARD_SWAP": "0x80969383a47713d6e0dd115b8382f6a0531b7a0575b8ae1d6ef942fdb2b138ec"
+    }
+  },
+  "frozenEvents": [
+    "ProtocolFeeCollected",
+    "SmartRouterSwapRouted",
+    "TreasuryHandoffPrepared"
+  ],
+  "compatibilityMatrix": {
+    "WrapperV2": {
+      "status": "FROZEN_CANONICAL",
+      "chainId": 97,
+      "integration": "Self — constitutional economic entrypoint",
+      "notes": "Bytecode hash locked; no redeploy, no patch, no V3 on testnet without new ticket"
+    },
+    "TreasuryRuntime": {
+      "status": "COMPATIBLE",
+      "integration": "Treasury Intake ERC20 fee receipt + FSC-01 policy ref",
+      "registryRef": "/registry/treasury/index.json#97",
+      "notes": "Intake verified during R746H validation; DEX does not own waterfall splits"
+    },
+    "KERL": {
+      "status": "READ_ONLY_COMPATIBLE",
+      "integration": "MARCO asset resolution via static registry",
+      "registryRef": "/registry/kerl/index.json",
+      "notes": "Read-only; no writable KERL intake from DEX; collector not published via KERL"
+    },
+    "Labs": {
+      "status": "PARTIAL",
+      "integration": "labs-integration-contract chain 97 indexed",
+      "registryRef": "/registry/smart-router/labs-integration-contract.json",
+      "notes": "Swap route types only; NARRATIVE_TRADE blocked; integration_ready_for_labs_narrative_trades: false"
+    },
+    "Signal": {
+      "status": "NOT_WIRED",
+      "integration": "No Signal Gateway binding to frozen wrapper routes",
+      "notes": "Signal Gateway authority exists at exchange level; no chain 97 wrapper execution binding"
+    },
+    "SmartDrop": {
+      "status": "PLANNED",
+      "integration": "No SmartDrop settlement through wrapper on testnet",
+      "notes": "Phase 2 — asset registry lists smartdrop capability as planned"
+    },
+    "DEX": {
+      "status": "PARTIAL",
+      "integration": "Founder validate pages + registry publication",
+      "notes": "prepareCivilizationRoute hard-blocks chain 97; production studios may still use ADAPTER on some surfaces"
+    },
+    "Marketplace": {
+      "status": "BLOCKED",
+      "integration": "No MARKETPLACE_SERVICE / MARKETPLACE_SETTLEMENT executable routes",
+      "notes": "Blocked by missing router contract for marketplace route types"
+    }
+  },
+  "mainnetIdentityRequirements": {
+    "description": "When BNB Chain mainnet (56) wrapper is deployed, these behavioral and policy identities MUST match the frozen testnet implementation unless a new constitutional ticket explicitly supersedes.",
+    "mustRemainIdentical": [
+      "Wrapper Solidity source semantics (MelegaSmartRouterWrapper.sol fee math and routing delegation)",
+      "Native fee path: WBNB deposit + ERC20 transfer to Treasury Intake (never plain ETH call to intake)",
+      "ERC20 fee path: safeTransfer fee to Treasury Intake before underlying router call",
+      "D87 fee schedule: BUY_MARCO 20 bps, SELL_MARCO 30 bps, STANDARD_SWAP 30 bps",
+      "Policy refs: D87_DEX_PRICING_RATIFIED and FSC-01 with identical policy ref hashes at deploy time",
+      "MARCO address equality rule for BUY_MARCO / SELL_MARCO classification",
+      "Event surface: ProtocolFeeCollected, SmartRouterSwapRouted, TreasuryHandoffPrepared",
+      "TreasuryHandoffPrepared metadata schema — no local FSC-01 waterfall execution in wrapper",
+      "Exact-input only; exact-output hard revert",
+      "Fee-on-transfer token rejection",
+      "LP fee separation — protocol fee distinct from LP fees",
+      "Underlying router role: execution-only delegation",
+      "Wrapper role: canonical-economic-entrypoint"
+    ],
+    "chainSpecificMayDiffer": [
+      "Contract addresses (wrapper, router, treasury intake, MARCO, WBNB, pairs)",
+      "Chain ID and explorer URLs",
+      "Deploy transaction hashes and block numbers",
+      "Liquidity pair addresses"
+    ]
+  },
+  "forbiddenModifications": [
+    "Redeploy or upgrade Wrapper V2 on chain 97",
+    "Change fee bps, pricing ref, or treasury ref hashes in deployed wrapper",
+    "Modify MelegaSmartRouterWrapper.sol behavior for testnet without new constitutional ticket",
+    "Replace Treasury Intake address in registry without Treasury Runtime publication",
+    "Claim mainnet canonical routing from testnet freeze artifacts",
+    "Optimize, refactor, or redesign testnet wrapper paths under this freeze",
+    "Wire NARRATIVE_TRADE or marketplace routes without explicit unfreeze ticket",
+    "Use superseded V1 wrapper 0xe29b30099f7E5B7205151f9893e6829dbC964002"
+  ],
+  "futureMigrationPath": {
+    "testnetToMainnet": "Deploy fresh wrapper on chain 56 with same bytecode semantics + mainnet immutables; run constitutional validation ceremony; publish via new registry ticket — do not promote testnet address",
+    "testnetUnfreeze": "Requires explicit constitutional ticket superseding R748; new validation certificate mandatory",
+    "productWiring": "Unblocking prepareCivilizationRoute for chain 97 is product integration, not freeze mutation — wrapper contract unchanged",
+    "labsNarrative": "Blocked until NARRATIVE_TRADE route type + wrapper entrypoint defined in separate ticket"
+  },
+  "registryRefs": {
+    "smartRouter": "/registry/smart-router/index.json#97",
+    "validationCertificate": "/registry/smart-router/testnet-validation-certificate.json",
+    "civilizationRouter": "/registry/smart-router/civilization-router-contract.json",
+    "labsIntegration": "/registry/smart-router/labs-integration-contract.json",
+    "freezeDocumentation": "docs/runtime/R748_SMART_ROUTER_TESTNET_FREEZE.md"
+  },
+  "disclaimer": "Freeze manifest only. Locks chain 97 Smart Router implementation as validated. Does not activate mainnet. Does not authorize contract changes."
+}

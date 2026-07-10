@@ -3,7 +3,7 @@ import { MELEGA_SMART_ROUTER_ADAPTER_VERSION, MELEGA_SMART_ROUTER_ARCHITECTURE, 
 import { WRAPPER_SPEC_VERSION } from '../wrapper/spec'
 import { getKerlRegistryVersion } from '../registry/kerlRegistry'
 import { getTreasuryRuntimeRegistryVersion } from '../registry/runtimeRegistry'
-import { getSmartRouterRegistryVersion } from '../registry/smartRouterRegistry'
+import { getSmartRouterRegistryVersion, readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
 import { buildBlockerAuditTable } from './blocker-audit'
 import { buildChainRegistry, getKerlIntegrationStatus } from './chain-registry'
 import {
@@ -23,6 +23,8 @@ export function buildCivilizationRouterContract(asOf = new Date().toISOString().
   const chains = buildChainRegistry()
   const blockers = buildBlockerAuditTable().filter((r) => r.status === 'BLOCKED')
   const wrapperAddress = chains['56']?.wrapperAddress ?? null
+  const testnetProfile = readSmartRouterChainProfile(97)
+  const testnetWrapperAddress = chains['97']?.wrapperAddress ?? testnetProfile?.wrapperAddress ?? null
 
   return {
     schema: CIVILIZATION_ROUTER_CONTRACT_SCHEMA,
@@ -46,7 +48,10 @@ export function buildCivilizationRouterContract(asOf = new Date().toISOString().
         MARCO: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
         registryRef: '/registry/assets/marco.json',
       },
-      '97': null,
+      '97': {
+        MARCO: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+        registryRef: '/registry/assets/marco-bsc-testnet.json',
+      },
     },
     supportedRouteTypes: buildRouteTypeMatrix(),
     treasuryRouting: getTreasuryRuntimeIntegrationStatus(),
@@ -59,6 +64,7 @@ export function buildCivilizationRouterContract(asOf = new Date().toISOString().
     capabilities: {
       swapAdapter: MELEGA_SMART_ROUTER_ARCHITECTURE === 'ADAPTER',
       wrapperDeployed: Boolean(wrapperAddress),
+      wrapperDeployedTestnet: Boolean(testnetWrapperAddress),
       narrativeTrade: false,
       aiServiceRouting: false,
       multichainCanonical: false,
@@ -91,8 +97,23 @@ export function buildCivilizationRouterContract(asOf = new Date().toISOString().
     smartRouterRegistryVersion: getSmartRouterRegistryVersion(),
     wrapperSpecVersion: WRAPPER_SPEC_VERSION,
     lastVerifiedAt: asOf,
-    disclaimer:
-      'Constitutional economic router contract. No fake routing, placeholder addresses, or simulated execution. Wrapper address null until deployed and verified.',
+    ...(testnetWrapperAddress
+      ? {
+          testnetPublication: {
+            chainId: 97,
+            civilizationStatus: 'ACTIVE_TESTNET',
+            wrapperAddress: testnetWrapperAddress,
+            wrapperStatus: testnetProfile?.wrapperStatus ?? 'active_testnet',
+            wrapperVersion: testnetProfile?.wrapperVersion ?? 2,
+            validationStatus: testnetProfile?.validationStatus ?? 'passed',
+            validationCertificate:
+              testnetProfile?.validationCertificate ?? '/registry/smart-router/testnet-validation-certificate.json',
+          },
+        }
+      : {}),
+    disclaimer: testnetWrapperAddress
+      ? 'Constitutional economic router contract. Chain 56 wrapper remains undeployed. Chain 97 wrapper V2 validated and published active_testnet — see testnet-validation-certificate.json. No mainnet activation.'
+      : 'Constitutional economic router contract. No fake routing, placeholder addresses, or simulated execution. Wrapper address null until deployed and verified.',
   }
 }
 

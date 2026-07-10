@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
+import { NAV_COMING_SOON_LABEL } from 'lib/navigation/comingSoon'
 import { STAKING_TEMPLATES } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
@@ -159,8 +160,8 @@ export function StakingPoolCard() {
             <SimVal>{premiumUiValue(poolPreview.lock)}</SimVal>
           </SimRow>
         </SimBlock>
-        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }}>
-          Create Pool
+        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled title={NAV_COMING_SOON_LABEL}>
+          {NAV_COMING_SOON_LABEL}
         </BsPrimaryBtn>
       </Inner>
     </CardShell>
@@ -198,8 +199,8 @@ export function CreateFarmCard() {
           <BsFieldLabel>Duration</BsFieldLabel>
           <BsInput value={premiumUiValue(farmPreview.duration)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
-        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }}>
-          Create Farm
+        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled title={NAV_COMING_SOON_LABEL}>
+          {NAV_COMING_SOON_LABEL}
         </BsPrimaryBtn>
       </Inner>
     </CardShell>

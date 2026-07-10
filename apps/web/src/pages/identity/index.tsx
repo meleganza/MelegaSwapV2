@@ -4,7 +4,6 @@ import EconomicIdentityConsole from 'views/EconomicIdentity/EconomicIdentityCons
 const IdentityPage = () => <EconomicIdentityConsole />
 
 IdentityPage.chains = CHAIN_IDS
-IdentityPage.pure = true
 IdentityPage.isShowScrollToTopButton = false
 
 export default IdentityPage

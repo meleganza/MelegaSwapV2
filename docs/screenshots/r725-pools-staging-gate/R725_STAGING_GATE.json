@@ -1,0 +1,63 @@
+{
+  "task": "R725 Pools Staging Gate",
+  "targetSha": "346d1fd",
+  "deploymentUrl": "https://melega.finance",
+  "passed": true,
+  "routes": {
+    "pools": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "farms": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "trade": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "liquidity-studio": {
+      "status": 200,
+      "errorBoundary": false
+    },
+    "build-studio": {
+      "status": 200,
+      "errorBoundary": false
+    }
+  },
+  "checks": {
+    "pools1440": {
+      "fixtureEnabled": false,
+      "tickerPoolAprOk": true,
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "docOverflowX": false,
+      "createPoolCompact": true,
+      "createPoolExpanded": false,
+      "wizardHiddenByDefault": true,
+      "createPoolPresent": true
+    },
+    "pools390": {
+      "fixtureEnabled": false,
+      "tickerPoolAprOk": true,
+      "topPoolSegment": "Top PoolMARCO / MXMXNo sustainable pool",
+      "docOverflowX": false,
+      "createPoolCompact": true,
+      "createPoolExpanded": false,
+      "wizardHiddenByDefault": true,
+      "createPoolPresent": true
+    },
+    "pools390Wizard": {
+      "expanded": true,
+      "nextFullWidth": false,
+      "progressVisible": true,
+      "actionsFullWidth": false,
+      "docOverflowX": false,
+      "wizardReadable": true
+    }
+  },
+  "screenshots": [
+    "staging-pools-1440.png",
+    "staging-pools-390.png"
+  ],
+  "errors": []
+}

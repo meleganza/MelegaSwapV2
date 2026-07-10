@@ -5,6 +5,7 @@ import {Test, Vm} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {MelegaSmartRouterWrapper} from "../contracts/MelegaSmartRouterWrapper.sol";
 import {MockERC20} from "../contracts/mocks/MockERC20.sol";
+import {MockWBNB} from "../contracts/mocks/MockWBNB.sol";
 import {MockERC20WithRecipientBlock} from "../contracts/mocks/MockERC20WithRecipientBlock.sol";
 import {MockUnderlyingSwapRouter} from "../contracts/mocks/MockUnderlyingSwapRouter.sol";
 import {MockRejectingTreasury} from "../contracts/mocks/MockRejectingTreasury.sol";
@@ -15,7 +16,7 @@ contract MelegaSmartRouterWrapperTest is Test {
     MockUnderlyingSwapRouter internal router;
     MockERC20 internal usdt;
     MockERC20 internal marco;
-    MockERC20 internal wbnb;
+    MockWBNB internal wbnb;
 
     address internal collector = makeAddr("treasuryCollector");
     address internal user = makeAddr("user");
@@ -54,7 +55,7 @@ contract MelegaSmartRouterWrapperTest is Test {
         router = new MockUnderlyingSwapRouter();
         usdt = new MockERC20("USDT", "USDT");
         marco = new MockERC20("MARCO", "MARCO");
-        wbnb = new MockERC20("WBNB", "WBNB");
+        wbnb = new MockWBNB();
 
         wrapper = new MelegaSmartRouterWrapper(
             address(router),
@@ -213,23 +214,23 @@ contract MelegaSmartRouterWrapperTest is Test {
     }
 
     function test_collectorRevertRevertsFullNativeSwap() public {
-        MockRejectingTreasury rejectingCollector = new MockRejectingTreasury();
-        rejectingCollector.setRejectEth(true);
+        MockWBNB blockedWbnb = new MockWBNB();
+        blockedWbnb.setBlockedRecipient(collector);
 
         MelegaSmartRouterWrapper nativeWrapper = new MelegaSmartRouterWrapper(
-            address(router), address(rejectingCollector), address(marco), PRICING_REF, TREASURY_REF, address(this)
+            address(router), collector, address(marco), PRICING_REF, TREASURY_REF, address(this)
         );
 
         uint256 gross = 1 ether;
-        uint256 collectorBefore = address(rejectingCollector).balance;
+        uint256 collectorBefore = blockedWbnb.balanceOf(collector);
 
         vm.prank(user);
-        vm.expectRevert("TREASURY_FEE_TRANSFER_FAILED");
+        vm.expectRevert(abi.encodeWithSelector(MockWBNB.RecipientBlocked.selector, collector));
         nativeWrapper.swapExactETHForTokens{value: gross}(
-            1, _path(address(wbnb), address(usdt)), user, block.timestamp + 600
+            1, _path(address(blockedWbnb), address(usdt)), user, block.timestamp + 600
         );
 
-        assertEq(address(rejectingCollector).balance, collectorBefore, "collector received native fee on failed swap");
+        assertEq(blockedWbnb.balanceOf(collector), collectorBefore, "collector received WBNB fee on failed swap");
         assertEq(router.lastEthAmountIn(), 0, "router called on failed native swap");
     }
 
@@ -301,7 +302,7 @@ contract MelegaSmartRouterWrapperTest is Test {
         wrapper.swapExactETHForTokens{value: gross}(1, _path(address(wbnb), address(usdt)), user, block.timestamp + 600);
 
         assertEq(router.lastEthAmountIn(), net);
-        assertEq(collector.balance, fee, "native fee not at collector");
+        assertEq(wbnb.balanceOf(collector), fee, "native fee not at collector as WBNB");
     }
 
     function test_erc20FeeMathExact() public {

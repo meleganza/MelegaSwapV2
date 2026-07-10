@@ -1,47 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
+import {
+  MelegaStudioPageHeader,
+  STUDIO_PAGE_TITLES,
+} from 'design-system/melega'
 import { tradeColors } from '../tradeTokens'
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 74px;
-  height: 74px;
-  overflow: hidden;
-`
-
-const Left = styled.div`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-`
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 38px;
-  font-weight: 800;
-  line-height: 1;
-  color: ${tradeColors.text};
-`
-
-const Subtitle = styled.p`
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.2;
-  color: #a8a8a8;
-`
-
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-shrink: 0;
-`
 
 const HowItWorks = styled.button`
   display: inline-flex;
@@ -115,31 +78,37 @@ export interface TradePageHeaderProps {
 }
 
 export const TradePageHeader: React.FC<TradePageHeaderProps> = ({ aiMode, onAiModeChange, onHowItWorks }) => (
-  <Row data-trade-page-header>
-    <Left>
-      <Title>Trade</Title>
-      <Subtitle>Professional trading with best multichain routes.</Subtitle>
-    </Left>
-    <Right>
-      <HowItWorks type="button" onClick={onHowItWorks} disabled={!onHowItWorks} title={onHowItWorks ? undefined : 'Unavailable'}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4M12 8h.01" />
-        </svg>
-        How it works
-      </HowItWorks>
-      <AiModeWrap>
-        <HiddenCheckbox
-          type="checkbox"
-          checked={aiMode}
-          onChange={(e) => onAiModeChange(e.target.checked)}
-          aria-label="AI Mode"
-        />
-        <AiModeLabel>AI Mode</AiModeLabel>
-        <AiToggle $on={aiMode} aria-hidden />
-      </AiModeWrap>
-    </Right>
-  </Row>
+  <MelegaStudioPageHeader
+    data-studio-header="trade"
+    title={STUDIO_PAGE_TITLES.trade}
+    subtitle="Professional trading with best multichain routes."
+    actions={
+      <>
+        <HowItWorks
+          type="button"
+          onClick={onHowItWorks}
+          disabled={!onHowItWorks}
+          title={onHowItWorks ? undefined : 'Unavailable'}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4M12 8h.01" />
+          </svg>
+          How it works
+        </HowItWorks>
+        <AiModeWrap>
+          <HiddenCheckbox
+            type="checkbox"
+            checked={aiMode}
+            onChange={(e) => onAiModeChange(e.target.checked)}
+            aria-label="AI Mode"
+          />
+          <AiModeLabel>AI Mode</AiModeLabel>
+          <AiToggle $on={aiMode} aria-hidden />
+        </AiModeWrap>
+      </>
+    }
+  />
 )
 
 export default TradePageHeader

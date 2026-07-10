@@ -1,0 +1,64 @@
+{
+  "task": "R500 CIVILIZATION RUNTIME CONVERGENCE",
+  "deliverable": "R500_CIVILIZATION_RUNTIME_REVIEW",
+  "build": "pass",
+  "schema": "melega.civilization.runtime.v1",
+  "runtimeGraph": {
+    "flow": [
+      "import",
+      "registry",
+      "radar",
+      "projects",
+      "trending",
+      "trade",
+      "liquidity",
+      "pools",
+      "command_center",
+      "identity",
+      "treasury"
+    ],
+    "totalEdges": 17,
+    "wiredCoveragePercentage": 100,
+    "modulesConnected": 13
+  },
+  "modules": {
+    "import": { "emits": ["import_analyzed"], "consumes": [] },
+    "registry": { "emits": ["registry_indexed"], "consumes": ["import_analyzed"] },
+    "radar": { "emits": ["radar_signals_refreshed"], "consumes": ["registry_indexed"] },
+    "projects": { "emits": ["projects_intelligence_refreshed"], "consumes": ["radar_signals_refreshed", "registry_indexed"] },
+    "trending": { "emits": ["trending_refreshed"], "consumes": ["projects_intelligence_refreshed", "radar_signals_refreshed"] },
+    "trade": { "emits": ["trade_executed", "treasury_settlement"], "consumes": [] },
+    "liquidity": { "emits": ["liquidity_position_changed"], "consumes": [] },
+    "pools": { "emits": ["pool_staked", "pool_unstaked", "pool_claimed"], "consumes": ["liquidity_position_changed"] },
+    "farms": { "emits": ["farm_staked", "farm_withdrawn", "farm_claimed"], "consumes": [] },
+    "identity": { "emits": ["identity_resolved"], "consumes": ["command_center_synced"] },
+    "command_center": { "emits": ["command_center_synced"], "consumes": ["all_module_events"] },
+    "treasury": { "emits": [], "consumes": ["trade_executed", "treasury_settlement"] },
+    "build_studio": { "emits": ["import_analyzed"], "consumes": [] }
+  },
+  "brokenRuntimePaths": [],
+  "deadModulesAtColdStart": [
+    "import",
+    "registry",
+    "radar",
+    "projects",
+    "trending",
+    "trade",
+    "liquidity",
+    "pools",
+    "farms",
+    "identity",
+    "command_center",
+    "treasury",
+    "build_studio"
+  ],
+  "unusedEventsAtColdStart": "all event types until user actions",
+  "notes": [
+    "In-process civilization event bus wired at module choke points",
+    "Command Center consumes journal via useCivilizationRuntimeSync",
+    "Pool stake/claim emits pending PoolsActionHost modal integration",
+    "No UI layout changes",
+    "Deploy deferred — no commit/push per review gate"
+  ],
+  "verdict": "R500_CIVILIZATION_RUNTIME_REVIEW"
+}

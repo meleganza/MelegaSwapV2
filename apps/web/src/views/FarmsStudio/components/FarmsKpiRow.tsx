@@ -1,7 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay } from 'design-system/melega'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import {
+  isUnavailableFarmMetric,
+  MARCO_EMITS_TODAY_LABEL,
+  MARCO_EMISSION_UNAVAILABLE_REASON,
+  stripTokenSymbol,
+} from '../farmsStudioDisplay'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsKpiCard, FsKpiDelta, FsKpiLabel, FsKpiValue } from './farmsStudioPrimitives'
 
@@ -12,11 +20,11 @@ const Row = styled.div`
   min-width: 0;
 
   @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   @media (max-width: 767px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
 
@@ -28,7 +36,7 @@ const ValueBlock = styled.div<{ $hasSparkline?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
 `
 
 const ValueRow = styled.div`
@@ -37,13 +45,6 @@ const ValueRow = styled.div`
   min-width: 0;
   flex: 1;
   gap: 8px;
-`
-
-const TokenSuffix = styled.span`
-  font-size: 11px;
-  font-weight: 600;
-  color: ${farmsStudioColors.muted};
-  line-height: 1;
 `
 
 const Sparkline = styled.svg`
@@ -81,6 +82,13 @@ function MiniSparkline({ points }: { points: number[] }) {
   )
 }
 
+function formatKpiDisplayValue(id: string, raw: string, gold?: boolean): string {
+  if (isUnavailableFarmMetric(raw)) return RUNTIME_UNAVAILABLE_LABEL
+  if (id === 'rewards') return formatCompactDisplay(stripTokenSymbol(raw))
+  if (gold) return raw
+  return formatCompactDisplay(raw)
+}
+
 export const FarmsKpiRow: React.FC = () => {
   const { kpis, loadingLabel, featured } = useFarmsRuntime()
   const sparkline = featured.sparkline
@@ -92,21 +100,29 @@ export const FarmsKpiRow: React.FC = () => {
           <LoadingLine>{loadingLabel}</LoadingLine>
         </FsKpiCard>
       ) : (
-        kpis.map((kpi) => (
-          <FsKpiCard key={kpi.id} data-fs-kpi-card>
-            <FsKpiLabel>{kpi.label}</FsKpiLabel>
-            <ValueBlock $hasSparkline={kpi.id === 'tvl' && sparkline.length > 0}>
-              <ValueRow>
-                <FsKpiValue $gold={kpi.gold} data-fs-kpi-value style={kpi.gold ? { fontSize: 18 } : undefined}>
-                  {kpi.gold ? kpi.value : formatCompactDisplay(kpi.value)}
-                </FsKpiValue>
-                {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
-              </ValueRow>
-              {kpi.id === 'rewards' ? <TokenSuffix>MARCO</TokenSuffix> : null}
-              {kpi.id === 'tvl' && sparkline.length > 0 ? <MiniSparkline points={sparkline} /> : null}
-            </ValueBlock>
-          </FsKpiCard>
-        ))
+        kpis.map((kpi) => {
+          const label = kpi.id === 'rewards' ? MARCO_EMITS_TODAY_LABEL : kpi.label
+          const displayValue = formatKpiDisplayValue(kpi.id, kpi.value, kpi.gold)
+          const emissionUnavailable = kpi.id === 'rewards' && displayValue === RUNTIME_UNAVAILABLE_LABEL
+
+          return (
+            <FsKpiCard key={kpi.id} data-fs-kpi-card>
+              <FsKpiLabel>{label}</FsKpiLabel>
+              <ValueBlock $hasSparkline={kpi.id === 'tvl' && sparkline.length > 0}>
+                <ValueRow>
+                  <FsKpiValue $gold={kpi.gold} data-fs-kpi-value>
+                    {displayValue}
+                  </FsKpiValue>
+                  {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
+                </ValueRow>
+                {emissionUnavailable ? (
+                  <TradeTechnicalDetails detail={MARCO_EMISSION_UNAVAILABLE_REASON} />
+                ) : null}
+                {kpi.id === 'tvl' && sparkline.length > 0 ? <MiniSparkline points={sparkline} /> : null}
+              </ValueBlock>
+            </FsKpiCard>
+          )
+        })
       )}
     </Row>
   )

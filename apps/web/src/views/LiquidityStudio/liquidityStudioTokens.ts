@@ -1,8 +1,11 @@
 import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+import { tradeLayout, tradeTypography } from 'views/Trade/tradeTokens'
 
-/** Liquidity Studio — R200 premium alignment. */
+/** Liquidity Studio — R758 constitution + R761 Trade-aligned typography. */
 export const liquidityStudioLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   gridWidth: '100%',
   leftWidth: '340px',
   centerWidth: '430px',
@@ -15,29 +18,43 @@ export const liquidityStudioLayout = {
   previewPanelPaddingTop: '22px',
   rightPanelPadding: '16px',
   builderHeight: 'auto',
-  previewHeight: 'auto',
+  previewHeight: '100%',
+  previewMinHeight: '440px',
   builderMinHeight: '440px',
   builderPairHeight: premiumStudioLayout.btnHeight,
   tokenRowHeight: '82px',
-  sectionGap: premiumStudioLayout.sectionGap,
   swapIconSize: '34px',
   ratioRowHeight: '20px',
   slippageRowHeight: '22px',
   metricCardHeight: '78px',
-  metricsAfterBarsGap: '18px',
+  metricsAfterBarsGap: '14px',
   ilChartHeight: '82px',
-  ilMarginTop: '18px',
-  barsAreaHeight: '112px',
+  ilMarginTop: '14px',
+  barsAreaHeight: '100px',
   liquidityBarWidth: '34px',
-  liquidityBarHeight: '88px',
+  liquidityBarHeight: '80px',
   connectButtonHeight: premiumStudioLayout.btnHeight,
-  marketIntelHeight: '180px',
+  marketIntelHeight: 'auto',
+  lpInfoMinHeight: '196px',
   aiAdvisorHeight: '180px',
   topPoolsHeight: '180px',
-  activityHeight: '320px',
-  activityHeaderHeight: '36px',
-  activityRowHeight: premiumStudioLayout.timelineRowHeight,
+  activityHeight: tradeLayout.recentSwapsHeight,
+  activityHeaderHeight: tradeLayout.swapTableHeadHeight,
+  activityRowHeight: tradeLayout.swapRowHeight,
   activityCellPadding: '16px',
+  executionStepGap: '10px',
+  executionButtonGap: '14px',
+} as const
+
+/** R761 — canonical numeric typography (execution workflow reference). */
+export const liquidityTypography = {
+  ...tradeTypography,
+  panelTitle: { size: '18px', weight: 800, lineHeight: '1.2' },
+  sectionTitle: { size: '16px', weight: 800, lineHeight: '1.2' },
+  builderAmount: { size: '32px', weight: 700, lineHeight: '32px' },
+  lpInfoLabel: { size: '12px', weight: 600, lineHeight: '1.2' },
+  lpInfoValue: { size: '14px', weight: 700, lineHeight: '1.3' },
+  stepLabel: { size: '12px', weight: 600, lineHeight: '1.35' },
 } as const
 
 export const liquidityStudioColors = {

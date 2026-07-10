@@ -56,86 +56,71 @@ const AccumRow = styled.div`
   color: ${radarStudioColors.muted};
 `
 
-const Unavailable = styled.div`
-  font-family: ${RADAR_FONT_BODY};
-  font-size: 12px;
-  color: ${radarStudioColors.muted};
-  padding: 8px 0;
-`
-
 export const RadarOpsLeftColumn: React.FC = () => {
-  const { whales, smartMoney, walletAccumulation } = useRadarRuntime()
+  const { whales, smartMoney, walletAccumulation, intelligenceFeedsAvailable } = useRadarRuntime()
+
+  if (!intelligenceFeedsAvailable) {
+    return null
+  }
 
   return (
     <Column data-rd-ops-left>
       <RdSectionTitle>Operational Intelligence</RdSectionTitle>
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Whale Monitor</RdSectionTitle>
-        {whales.length === 0 ? (
-          <Unavailable data-rd-whale-feed>Source not configured — whale activity feed.</Unavailable>
-        ) : (
-          whales.map((row) => (
-            <WhaleRow key={row.wallet}>
-              <span>
-                <strong style={{ color: radarStudioColors.white, fontFamily: RADAR_FONT_DISPLAY }}>
-                  {row.wallet}
-                </strong>{' '}
-                · {row.token}
-              </span>
-              <span style={{ color: row.action === 'buy' ? radarStudioColors.green : radarStudioColors.red }}>
-                {row.action === 'buy' ? '↑' : '↓'} {row.amount}
-              </span>
-            </WhaleRow>
-          ))
-        )}
+        {whales.map((row) => (
+          <WhaleRow key={row.wallet}>
+            <span>
+              <strong style={{ color: radarStudioColors.white, fontFamily: RADAR_FONT_DISPLAY }}>
+                {row.wallet}
+              </strong>{' '}
+              · {row.token}
+            </span>
+            <span style={{ color: row.action === 'buy' ? radarStudioColors.green : radarStudioColors.red }}>
+              {row.action === 'buy' ? '↑' : '↓'} {row.amount}
+            </span>
+          </WhaleRow>
+        ))}
       </Panel>
 
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Smart Money Tracker</RdSectionTitle>
-        {smartMoney.length === 0 ? (
-          <Unavailable>Source not configured — smart money feed.</Unavailable>
-        ) : (
-          smartMoney.map((row) => (
-            <SmartRow key={row.wallet}>
+        {smartMoney.map((row) => (
+          <SmartRow key={row.wallet}>
+            <div>
+              <div style={{ color: radarStudioColors.white, fontWeight: 800, fontFamily: RADAR_FONT_DISPLAY }}>
+                {row.wallet}
+              </div>
+              <div>{row.lastActivity}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ color: radarStudioColors.green, fontWeight: 800, fontFamily: RADAR_FONT_DISPLAY }}>
+                {row.roi}
+              </div>
               <div>
-                <div style={{ color: radarStudioColors.white, fontWeight: 800, fontFamily: RADAR_FONT_DISPLAY }}>
-                  {row.wallet}
-                </div>
-                <div>{row.lastActivity}</div>
+                {row.winRate} · {row.confidence}
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ color: radarStudioColors.green, fontWeight: 800, fontFamily: RADAR_FONT_DISPLAY }}>
-                  {row.roi}
-                </div>
-                <div>
-                  {row.winRate} · {row.confidence}
-                </div>
-              </div>
-            </SmartRow>
-          ))
-        )}
+            </div>
+          </SmartRow>
+        ))}
       </Panel>
 
       <Panel data-rd-panel>
         <RdSectionTitle style={{ fontSize: 18, marginBottom: 10 }}>Top Wallet Accumulation</RdSectionTitle>
-        {walletAccumulation.length === 0 ? (
-          <Unavailable>Source not configured — wallet accumulation.</Unavailable>
-        ) : (
-          walletAccumulation.map((row) => (
-            <AccumRow key={row.wallet}>
-              <span>
-                <strong style={{ color: radarStudioColors.white, fontFamily: RADAR_FONT_DISPLAY }}>
-                  {row.wallet}
-                </strong>{' '}
-                · {row.token}
-              </span>
-              <span style={{ color: radarStudioColors.green, fontWeight: 800 }}>{row.amount}</span>
-              <span style={{ color: radarStudioColors.green, fontFamily: RADAR_FONT_DISPLAY, fontWeight: 800 }}>
-                {row.confidence}
-              </span>
-            </AccumRow>
-          ))
-        )}
+        {walletAccumulation.map((row) => (
+          <AccumRow key={row.wallet}>
+            <span>
+              <strong style={{ color: radarStudioColors.white, fontFamily: RADAR_FONT_DISPLAY }}>
+                {row.wallet}
+              </strong>{' '}
+              · {row.token}
+            </span>
+            <span style={{ color: radarStudioColors.green, fontWeight: 800 }}>{row.amount}</span>
+            <span style={{ color: radarStudioColors.green, fontFamily: RADAR_FONT_DISPLAY, fontWeight: 800 }}>
+              {row.confidence}
+            </span>
+          </AccumRow>
+        ))}
       </Panel>
     </Column>
   )

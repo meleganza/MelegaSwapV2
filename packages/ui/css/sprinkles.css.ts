@@ -174,7 +174,6 @@ const responsiveProperties = defineProperties({
 })
 
 const unresponsiveProperties = defineProperties({
-  // conditions: {},
   properties: {
     isolation: ['isolate'],
     objectFit: ['contain', 'cover', 'none'],

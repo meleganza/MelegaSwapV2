@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { useDebounce } from '@pancakeswap/hooks'
 import TradingView, { useTradingViewEvent } from 'components/TradingView'
 import { tradeColors, tradeLayout } from '../tradeTokens'
+import TradeTechnicalDetails from './TradeTechnicalDetails'
 
 const TV_ID = 'TV_TRADE_TERMINAL_CHART'
 const SYMBOL_PREFIX = 'PANCAKESWAP:'
@@ -32,17 +33,16 @@ const crosshairPulse = keyframes`
   50% { opacity: 0.14; }
 `
 
-const Area = styled.div<{ $compact?: boolean }>`
-  height: ${({ $compact }) =>
-    $compact ? tradeLayout.chartAreaHeightCompact : tradeLayout.chartAreaHeight};
-  min-height: ${({ $compact }) =>
-    $compact ? tradeLayout.chartAreaHeightCompact : tradeLayout.chartAreaHeight};
+const Area = styled.div`
+  height: ${tradeLayout.chartAreaHeight};
+  min-height: ${tradeLayout.chartAreaHeight};
   margin: 0;
   box-sizing: border-box;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
   background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 `
 
 const TvWrap = styled.div<{ $show: boolean }>`
@@ -176,7 +176,6 @@ const LoadingBar = styled.div`
 const SkeletonLabel = styled.span`
   font-size: 14px;
   color: ${tradeColors.muted};
-  opacity: 0.18;
 `
 
 const UnavailableState = styled.div`
@@ -186,23 +185,37 @@ const UnavailableState = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 24px;
+  gap: 10px;
+  padding: 28px 24px;
   text-align: center;
-  background: #080808;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212, 175, 55, 0.06) 0%, transparent 70%),
+    #080808;
+`
+
+const UnavailableIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(212, 175, 55, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${tradeColors.gold};
 `
 
 const UnavailableTitle = styled.span`
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: ${tradeColors.muted};
+  color: ${tradeColors.text};
 `
 
 const UnavailableDesc = styled.span`
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.35);
-  line-height: 1.45;
-  max-width: 280px;
+  font-size: 13px;
+  color: ${tradeColors.muted};
+  line-height: 1.5;
+  max-width: 320px;
 `
 
 const SourceLinks = styled.div`
@@ -251,11 +264,19 @@ export interface TradeChartPanelProps {
 }
 
 const EMPTY_REASON_LABELS: Record<string, string> = {
-  pair_not_indexed: 'Pair not indexed',
-  subgraph_empty: 'Subgraph empty',
+  pair_not_indexed: 'Pair not indexed yet',
+  subgraph_empty: 'Chart data not indexed',
   explorer_missing: 'Explorer source missing',
   route_not_configured: 'Route not configured',
   chart_unavailable: 'Chart unavailable',
+}
+
+const EMPTY_REASON_COPY: Record<string, string> = {
+  pair_not_indexed: 'This pair has not been indexed by the Melega subgraph yet. Stats and swaps update when indexing completes.',
+  subgraph_empty: 'Indexed candles are not available for this pair yet. Recent swaps and stats may still update from live indexing.',
+  explorer_missing: 'External market reference is not configured for this token.',
+  route_not_configured: 'Select a supported output token to load chart context.',
+  chart_unavailable: 'Chart data is temporarily unavailable for this pair.',
 }
 
 const SubgraphChart = styled.div`
@@ -328,6 +349,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const showUnavailable = (hasNoData || !symbol) && !hasSubgraphPrices
   const showSkeleton = showTv && (isLoading || debouncedLoading)
   const subgraphPath = useMemo(() => buildSubgraphPath(pairPrices, 360, 160), [pairPrices])
+  const friendlyCopy = EMPTY_REASON_COPY[emptyReason ?? ''] ?? EMPTY_REASON_COPY.chart_unavailable
 
   useEffect(() => {
     setIsLoading(true)
@@ -335,7 +357,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   }, [symbol])
 
   return (
-    <Area data-trade-chart-area $compact={showUnavailable && !hasSubgraphPrices}>
+    <Area data-trade-chart-area>
       {hasSubgraphPrices && (
         <SubgraphChart data-trade-chart-subgraph>
           <SubgraphSvg viewBox="0 0 360 160" preserveAspectRatio="none">
@@ -368,11 +390,14 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
       )}
       {showUnavailable && (
         <UnavailableState data-trade-chart-unavailable>
+          <UnavailableIcon aria-hidden>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+              <path d="M3 3v18h18" />
+              <path d="M7 14l4-4 3 3 5-6" />
+            </svg>
+          </UnavailableIcon>
           <UnavailableTitle>{EMPTY_REASON_LABELS[emptyReason ?? ''] ?? 'No chart data'}</UnavailableTitle>
-          <UnavailableDesc>
-            {emptyDetail ??
-              'Indexed pair candles are not available yet. Stats and swaps update when subgraph indexes this pair.'}
-          </UnavailableDesc>
+          <UnavailableDesc>{friendlyCopy}</UnavailableDesc>
           {publicSources.length > 0 ? (
             <SourceLinks data-trade-chart-sources>
               {publicSources.map((source) => (
@@ -382,10 +407,11 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
               ))}
             </SourceLinks>
           ) : null}
+          <TradeTechnicalDetails detail={emptyDetail} />
         </UnavailableState>
       )}
       {showSkeleton && (
-        <Skeleton aria-hidden={!showSkeleton}>
+        <Skeleton aria-hidden={!showSkeleton} aria-busy="true" aria-label="Loading chart">
           <CrosshairH />
           <CrosshairV />
           <ChartBody>

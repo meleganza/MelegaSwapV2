@@ -19,6 +19,8 @@ import {
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { WrapType } from 'hooks/useWrapCallback'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { isKerlRoutingAuthorityEnforced, useKerlConstitutionalSwap } from 'lib/kerl-constitutional'
 import { routeSmartSwapQuoteFromTrade } from 'lib/routing-layer/facade'
 import { useSmartSwapExecution } from 'lib/execution-layer'
 import { Field } from 'state/swap/actions'
@@ -79,18 +81,29 @@ export default function SwapCommitButton({
   onUserInput,
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
+  const { chainId } = useActiveChainId()
+  const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
   const [singleHopOnly] = useUserSingleHopOnly()
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade?.route ? trade : null)
 
+  const kerlSwap = useKerlConstitutionalSwap({
+    parsedAmount: parsedIndepentFieldAmount,
+    inputCurrency: currencies[Field.INPUT],
+    outputCurrency: currencies[Field.OUTPUT],
+    allowedSlippage,
+    recipient,
+  })
+
   const executionInstruction = useMemo(
     () =>
-      trade?.route
-        ? routeSmartSwapQuoteFromTrade({ trade, allowedSlippage, recipient }).instruction
-        : null,
-    [trade, allowedSlippage, recipient],
+      kerlEnforced || !trade?.route
+        ? null
+        : routeSmartSwapQuoteFromTrade({ trade, allowedSlippage, recipient }).instruction,
+    [kerlEnforced, trade, allowedSlippage, recipient],
   )
 
-  const { callback: swapCallback, error: swapCallbackError } = useSmartSwapExecution(executionInstruction)
+  const { callback: dexSwapCallback, error: swapCallbackError } = useSmartSwapExecution(executionInstruction)
+  const swapCallback = kerlEnforced ? kerlSwap.callback : dexSwapCallback
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     tradeToConfirm: TradeWithStableSwap<Currency, Currency, TradeType> | undefined
     attemptingTxn: boolean
@@ -228,7 +241,7 @@ export default function SwapCommitButton({
     )
   }
 
-  const noRoute = !trade?.route
+  const noRoute = kerlEnforced ? !kerlSwap.executionRequest : !trade?.route
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedIndepentFieldAmount?.greaterThan(BIG_INT_ZERO),

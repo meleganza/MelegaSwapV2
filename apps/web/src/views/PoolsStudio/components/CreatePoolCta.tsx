@@ -22,24 +22,23 @@ const Card = styled.section<{ $expanded?: boolean }>`
   border: 1px solid
     ${({ $expanded }) => ($expanded ? 'rgba(212, 175, 55, 0.45)' : 'rgba(212, 175, 55, 0.32)')};
   border-radius: 22px;
-  padding: ${({ $expanded }) => ($expanded ? '32px 36px 34px' : '30px 32px')};
+  padding: ${({ $expanded }) => ($expanded ? '32px 36px 34px' : '28px 32px')};
   display: flex;
   flex-direction: column;
   overflow: ${({ $expanded }) => ($expanded ? 'visible' : 'hidden')};
-  height: ${({ $expanded }) => ($expanded ? 'auto' : '188px')};
-  max-height: ${({ $expanded }) => ($expanded ? 'none' : '188px')};
-  transition: max-height 220ms ease-out, height 220ms ease-out, padding 220ms ease-out;
+  min-height: ${({ $expanded }) => ($expanded ? '0' : '188px')};
+  height: auto;
+  transition: padding 220ms ease-out, border-color 220ms ease-out;
 
   @media (max-width: 767px) {
-    padding: ${({ $expanded }) => ($expanded ? '18px' : '30px 32px')};
+    padding: ${({ $expanded }) => ($expanded ? '18px' : '28px 24px')};
     border-radius: 18px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     margin-bottom: 32px;
-    scroll-margin-top: 72px;
+    scroll-margin-top: 16px;
     scroll-margin-bottom: 120px;
-    height: ${({ $expanded }) => ($expanded ? 'auto' : '188px')};
   }
 `
 
@@ -64,7 +63,7 @@ const CompactSubtitle = styled.p`
 const CompactCtaRow = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 28px;
+  margin-top: 24px;
   gap: 16px;
   min-width: 0;
 

@@ -1,8 +1,11 @@
 import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+import { tradeTypography } from 'views/Trade/tradeTokens'
 
-/** Farms Studio — R200 premium alignment. */
+/** Farms Studio — R758 constitution rhythm. */
 export const farmsStudioLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   pageGridColumns: 3,
   pageGridGap: '14px',
   kpiGap: '12px',
@@ -36,6 +39,14 @@ export const farmsStudioLayout = {
   activityCellPadding: '18px',
 } as const
 
+/** R763 — institutional numeric typography aligned with Trade / Home / Pools. */
+export const farmsTypography = {
+  ...tradeTypography,
+  kpiValue: tradeTypography.statValue,
+  cardMetricValue: tradeTypography.statValue,
+  analyzeValue: { size: '13px', weight: 700, lineHeight: '1.3' },
+} as const
+
 export const farmsStudioColors = {
   ...premiumStudioColors,
   panel: premiumStudioColors.card,
@@ -50,6 +61,6 @@ export const farmsStudioColors = {
   previewBadgeBg: premiumStudioColors.goldBg,
 } as const
 
-export const FARMS_STUDIO_PREVIEW_LABEL = 'LIVE RUNTIME'
+export const FARMS_STUDIO_PREVIEW_LABEL = 'Live Runtime'
 export const FARMS_ACTIVITY_PREVIEW_LABEL = 'LIVE'
 export const FARMS_FONT_DISPLAY = PREMIUM_FONT_DISPLAY

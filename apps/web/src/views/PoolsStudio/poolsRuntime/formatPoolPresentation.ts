@@ -8,6 +8,11 @@ import { getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { formatDisplayAprText, isForbiddenAprDisplay, normalizeAprForDisplay as normalizeAprByVisual } from './poolsAprRules'
 import { getAddress } from 'utils/addressHelpers'
+import {
+  getAddressExplorerUrl,
+  getBlockExplorerBaseUrl,
+  getTokenExplorerUrl as buildTokenExplorerUrl,
+} from 'utils/blockExplorer'
 
 const BLOCKS_PER_DAY = 28800
 export const MAX_DISPLAY_APR = 50
@@ -281,14 +286,14 @@ export function getContractRef(pool: Pool.DeserializedPool<Token>, chainId = 56)
     address = normalizeAddress(pool.stakingToken?.address, chainId)
   }
   const short = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : `sousId ${pool.sousId}`
-  const explorerUrl = address ? `https://bscscan.com/address/${address}` : `https://bscscan.com`
+  const explorerUrl = address ? getAddressExplorerUrl(address, chainId) : getBlockExplorerBaseUrl(chainId)
   return { address, explorerUrl, label: short }
 }
 
 export function getTokenExplorerUrl(address: unknown, chainId = 56): string {
   const normalized = normalizeAddress(address)
-  if (!normalized) return 'https://bscscan.com'
-  return `https://bscscan.com/token/${normalized}`
+  if (!normalized) return getBlockExplorerBaseUrl(chainId)
+  return buildTokenExplorerUrl(normalized, chainId)
 }
 
 export function buildPoolMachineV2(card: PoolPreviewCard, chainId = 56) {
@@ -315,6 +320,11 @@ export function buildPoolMachineV2(card: PoolPreviewCard, chainId = 56) {
     healthScore: card.healthScore ?? card.sustainabilityScore,
     visibilityStatus: card.visibilityStatus,
     hiddenReason: card.hiddenReason,
+    displayable:
+      card.visibilityStatus === 'VISIBLE' &&
+      card.status === 'live' &&
+      card.displayStatus === 'LIVE' &&
+      Boolean(card.sustainableAprDisplay),
     status: card.displayStatus,
     recommendedAction:
       card.status === 'ended' ? 'none' : card.cta === 'stake' ? 'stake' : card.cta === 'analyze' ? 'analyze' : 'none',

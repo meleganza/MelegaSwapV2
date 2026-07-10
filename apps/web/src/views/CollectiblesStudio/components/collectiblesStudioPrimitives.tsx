@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import type { CollectionCard } from '../collectiblesStudioData'
+import { STUDIO_KPI_VALUE } from 'design-system/melega'
 import {
   CS_FONT_BODY,
   CS_FONT_DISPLAY,
@@ -167,20 +168,15 @@ export const CsKpiCard = styled.div`
 
 export const CsKpiValue = styled.div`
   font-family: ${CS_FONT_DISPLAY};
-  font-size: 50px;
-  line-height: 54px;
-  font-weight: 700;
+  font-size: ${STUDIO_KPI_VALUE.size};
+  line-height: ${STUDIO_KPI_VALUE.lineHeight};
+  font-weight: ${STUDIO_KPI_VALUE.weight};
+  font-variant-numeric: ${STUDIO_KPI_VALUE.fontVariantNumeric};
   color: ${collectiblesStudioColors.green};
-  letter-spacing: -1px;
   white-space: nowrap;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  @media (max-width: 1099px) {
-    font-size: 44px;
-    line-height: 48px;
-  }
 `
 
 export const CsKpiDelta = styled.span<{ $positive?: boolean }>`

@@ -1,0 +1,32 @@
+{
+  "task": "R746B",
+  "schema": "melega.chain-97-wrapper-browser-deploy.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PASS",
+  "route": "/testnet/wrapper-deploy",
+  "mode": "MetaMask browser deploy — no private key in .env",
+  "constructor": {
+    "underlyingRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "treasuryIntake": "0xe674b1d925d79f5A0053e40cC7cdED7841AD4164",
+    "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "pricingRefHash": "keccak256(\"D87_DEX_PRICING_RATIFIED\")",
+    "treasuryPolicyRefHash": "keccak256(\"FSC-01\")",
+    "owner": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
+  },
+  "bytecodeArtifact": "/testnet/MelegaSmartRouterWrapper.creation.json",
+  "bytecodeHash": "0x4879108a9739af83aa481dd25170621706e504e735d99273146f51d17ab499c6",
+  "deploy": {
+    "wrapperAddress": null,
+    "deployTxHash": null,
+    "bscScanUrl": null,
+    "note": "Founder must connect MetaMask on chain 97 and click Deploy Wrapper"
+  },
+  "registryUpdate": false,
+  "frontendSwitch": false,
+  "mainnetTouched": false,
+  "remainingBlockers": [
+    "Founder must execute deploy tx in MetaMask",
+    "R746 constitutional validation (3 swaps) still pending after deploy",
+    "Registry publish pending post-validation"
+  ]
+}

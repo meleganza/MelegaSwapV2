@@ -1,4 +1,8 @@
 export type { HolderCountResult, HolderCountSource } from './types'
 export { fetchHolderCount } from './fetchHolderCount'
 export { resolveHolderMetric } from './resolveHolderMetric'
+export { resolveHolderMachinePayload } from './resolveHolderMachinePayload'
+export type { HolderMachinePayload, HolderMachineStatus } from './resolveHolderMachinePayload'
+export { resolveBscScanApiKey } from './resolveBscScanApiKey'
+export type { ResolvedBscScanApiKey, BscScanApiKeySource } from './resolveBscScanApiKey'
 export { useHolderCount } from './useHolderCount'

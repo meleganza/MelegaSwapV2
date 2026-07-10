@@ -1,11 +1,13 @@
 import { premiumStudioColors, premiumStudioLayout, PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
+import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
 
 export const BS_FONT_DISPLAY = PREMIUM_FONT_DISPLAY
 export const BS_FONT_BODY = PREMIUM_FONT_BODY
 
-/** Build Studio — R200 premium alignment. */
+/** Build Studio — R758 constitution rhythm. */
 export const buildStudioLayout = {
   ...premiumStudioLayout,
+  ...studioConstitutionLayout,
   kpiWidth: '212px',
   kpiHeight: premiumStudioLayout.kpiHeight,
   kpiGap: '16px',

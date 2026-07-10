@@ -20,7 +20,7 @@ export const CollectiblesGrid: React.FC = () => {
   const { cards } = useCollectiblesRuntime()
 
   return (
-  <Grid data-cs-grid>
+  <Grid id="cs-collections" data-cs-grid>
     {cards.map((collection) => (
       <CollectibleGridCard key={collection.id} collection={collection} />
     ))}

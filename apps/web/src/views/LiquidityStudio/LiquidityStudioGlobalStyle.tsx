@@ -17,15 +17,6 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
     background: ${liquidityStudioColors.canvas};
   }
 
-  [data-liquidity-studio-screen] [data-ls-panel] {
-    transition: transform 140ms ease, box-shadow 140ms ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(212, 175, 55, 0.08);
-    }
-  }
-
   [data-liquidity-studio-screen] [data-ls-primary-btn] {
     transition: transform 140ms ease, filter 140ms ease;
   }
@@ -39,13 +30,20 @@ const LiquidityStudioGlobalStyle = createGlobalStyle`
     filter: brightness(1.04);
   }
 
+  @media (min-width: 1100px) {
+    [data-liquidity-studio-screen] [data-ls-builder],
+    [data-liquidity-studio-screen] [data-ls-position-preview] {
+      min-height: 440px;
+      height: 100%;
+    }
+  }
+
   @media (max-width: 767px) {
     [data-liquidity-studio-screen] [data-ls-panel] {
       width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
       min-height: 0 !important;
-      max-height: none !important;
     }
 
     [data-liquidity-studio-screen] [data-ls-builder],

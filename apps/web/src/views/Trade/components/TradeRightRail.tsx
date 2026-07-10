@@ -458,7 +458,7 @@ export const TradeRightRail: React.FC = () => {
             Router Analytics
           </OutlineBtn>
           <MachineToggle type="button" onClick={() => setMachineOpen((v) => !v)}>
-            {machineOpen ? 'Hide' : 'Show'} machine-readable runtime
+            {machineOpen ? 'Hide technical details' : 'Show technical details'}
           </MachineToggle>
           {machineOpen && (
             <MachinePre data-trade-machine-json>{JSON.stringify(surfaceMachine, null, 2)}</MachinePre>

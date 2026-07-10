@@ -1,6 +1,12 @@
 import { ChainId } from '@pancakeswap/sdk'
 
-export const INFO_CLIENT = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
+/** @deprecated Dead Pancake proxy — do not use. Kept for audit references only. */
+export const LEGACY_INFO_CLIENT = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
+
+/** Melega BSC subgraph — unset until NEXT_PUBLIC_MELEGA_SUBGRAPH_URL is deployed. */
+export const MELEGA_SUBGRAPH_URL = process.env.NEXT_PUBLIC_MELEGA_SUBGRAPH_URL?.trim() || ''
+
+export const INFO_CLIENT = MELEGA_SUBGRAPH_URL
 
 export const INFO_CLIENT_ETH = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exhange-eth'
 export const BLOCKS_CLIENT = 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks'

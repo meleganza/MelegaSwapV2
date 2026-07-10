@@ -4,9 +4,10 @@ import { useModal } from '@pancakeswap/uikit'
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
 import { useRouter } from 'next/router'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
+import { liquidityStudioColors, liquidityStudioLayout, liquidityTypography } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsPanelTitle, LsPrimaryBtn } from './liquidityStudioPrimitives'
+import LiquidityExecutionSteps from './LiquidityExecutionSteps'
 
 const shimmer = keyframes`
   0%, 100% { opacity: 0.55; }
@@ -70,9 +71,9 @@ const TokenInput = styled.input`
   width: calc(100% - 100px);
   border: none;
   background: transparent;
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
+  font-size: ${liquidityTypography.builderAmount.size};
+  font-weight: ${liquidityTypography.builderAmount.weight};
+  line-height: ${liquidityTypography.builderAmount.lineHeight};
   color: ${liquidityStudioColors.text};
   outline: none;
   padding: 0;
@@ -198,17 +199,12 @@ const PositionItem = styled.button<{ $active?: boolean }>`
 `
 
 const ConnectWrap = styled.div`
-  margin-top: 10px;
+  margin-top: ${liquidityStudioLayout.executionButtonGap};
 
   button {
     width: 100% !important;
-    height: ${liquidityStudioLayout.connectButtonHeight} !important;
-    border-radius: 12px !important;
-    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
-    color: #050505 !important;
-    font-size: 15px !important;
-    font-weight: 800 !important;
-    border: none !important;
+    min-height: ${liquidityStudioLayout.connectButtonHeight} !important;
+    border-radius: ${liquidityStudioLayout.btnRadius} !important;
   }
 `
 
@@ -376,11 +372,12 @@ export const LiquidityBuilderPanel: React.FC = () => {
             </TokenRow>
           )}
           <SlippageRow>
-            <SlippageLabel>Slippage Tolerance</SlippageLabel>
+            <SlippageLabel>Slippage tolerance</SlippageLabel>
             <SlippageValue>{slippageLabel}</SlippageValue>
           </SlippageRow>
           {loadingLabel && <StatusLine>{loadingLabel}</StatusLine>}
           {error && error.code !== 'CALCULATING' && <StatusLine>{error.message}</StatusLine>}
+          <LiquidityExecutionSteps />
           {!account ? (
             <ConnectWrap>
               <ConnectWalletButton>{primaryCtaLabel}</ConnectWalletButton>

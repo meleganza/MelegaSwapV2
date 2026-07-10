@@ -76,6 +76,7 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   margin: 0;
+  max-width: 720px;
   font-size: 13px;
   font-weight: 500;
   color: #a8a8a8;

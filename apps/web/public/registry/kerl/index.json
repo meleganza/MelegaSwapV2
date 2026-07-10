@@ -1,8 +1,10 @@
 {
-  "registryVersion": "1.0.0",
-  "purpose": "KERL certified dry-run handoff packages — local, static, test-only",
-  "networkCommunication": false,
-  "executionMode": "DRY_RUN_ONLY",
+  "registryVersion": "1.1.0",
+  "purpose": "KERL certified handoff packages — BNB Testnet constitutional execution",
+  "networkCommunication": true,
+  "executionMode": "TESTNET_EXECUTION_ONLY",
+  "constitutionalAuthority": "KRMP-01",
+  "freezeReference": "SMART_ROUTER_TESTNET_FROZEN",
   "handoffs": [
     {
       "id": "kerl-rc1-offline-handoff-fixture-001",
@@ -10,6 +12,15 @@
       "handoffMode": "dry_run",
       "certified": true,
       "testOnly": true
+    },
+    {
+      "id": "kerl-genesis-testnet-handoff-001",
+      "path": "handoffs/genesis-testnet-execution-handoff.json",
+      "handoffMode": "testnet_execution",
+      "certified": true,
+      "chainId": 97,
+      "executionRequestSchema": "melega.kerl.execution-request.v1",
+      "settlementReceiptSchema": "melega.kerl.settlement-receipt.v1"
     }
   ]
 }

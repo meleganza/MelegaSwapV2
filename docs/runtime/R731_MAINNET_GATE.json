@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-07-08T19:43:22.866Z",
+  "verdict": "PARTIAL",
+  "subgraph": {
+    "configured": false,
+    "url": null,
+    "blockerWhenUnset": "BLOCKED_SUBGRAPH_NOT_DEPLOYED",
+    "legacyProxyDead": true,
+    "legacyProbe": {
+      "ok": false,
+      "status": 404,
+      "body": "Not found"
+    },
+    "frontendUsesLegacyFallback": true,
+    "deploymentSpec": true
+  },
+  "bscscan": {
+    "localKeyConfigured": false,
+    "envExample": true,
+    "marcoHolderProbe": {
+      "skipped": true,
+      "reason": "no_api_key"
+    },
+    "checklist": true
+  },
+  "pools": {
+    "auditDoc": true,
+    "gateModule": true
+  },
+  "whale": {
+    "code": true,
+    "spec": true
+  }
+}

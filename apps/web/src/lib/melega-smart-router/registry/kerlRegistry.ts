@@ -1,4 +1,5 @@
 import marcoBsc from '../../../../public/registry/assets/marco.json'
+import marcoBscTestnet from '../../../../public/registry/assets/marco-bsc-testnet.json'
 import marcoEth from '../../../../public/registry/assets/marco-ethereum.json'
 import marcoPolygon from '../../../../public/registry/assets/marco-polygon.json'
 import marcoBase from '../../../../public/registry/assets/marco-base.json'
@@ -14,6 +15,7 @@ type AssetRecord = {
 
 const KERL_MARCO_BY_CHAIN: Record<number, AssetRecord> = {
   56: marcoBsc as AssetRecord,
+  97: marcoBscTestnet as AssetRecord,
   1: marcoEth as AssetRecord,
   137: marcoPolygon as AssetRecord,
   8453: marcoBase as AssetRecord,

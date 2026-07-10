@@ -1,29 +1,32 @@
 import React from 'react'
 import styled from 'styled-components'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import PoolGridCard from './PoolGridCard'
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, ${poolsStudioLayout.poolCardWidth});
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: ${poolsStudioLayout.cardGap};
   row-gap: ${poolsStudioLayout.poolCardRowGap};
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
   min-width: 0;
   margin-top: ${poolsStudioLayout.gapExplorerGrid};
 
+  @media (max-width: 1099px) and (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
-    width: 100%;
   }
 `
 
 const EmptyState = styled.div`
   margin-top: ${poolsStudioLayout.gapExplorerGrid};
   width: 100%;
-  height: ${poolsStudioLayout.emptyGridHeight};
   min-height: ${poolsStudioLayout.emptyGridHeight};
   border-radius: 18px;
   border: 1px solid ${poolsStudioColors.explorerEmptyBorder};
@@ -32,8 +35,8 @@ const EmptyState = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 16px 24px;
+  gap: 8px;
+  padding: 24px 16px;
   box-sizing: border-box;
   text-align: center;
 `
@@ -49,6 +52,7 @@ const EmptyTitle = styled.p`
 
 const EmptySub = styled.p`
   margin: 0;
+  max-width: 420px;
   font-family: Inter, sans-serif;
   font-size: 13px;
   line-height: 18px;
@@ -66,6 +70,10 @@ const Loading = styled(EmptyState)`
 export const PoolsGrid: React.FC = () => {
   const { pools, loadingLabel, poolsIndexingDiagnostic } = usePoolsRuntime()
 
+  const technicalDetail = poolsIndexingDiagnostic
+    ? `Reason: ${poolsIndexingDiagnostic.reason} · Source: ${poolsIndexingDiagnostic.source} · Indexer: ${poolsIndexingDiagnostic.indexer}`
+    : undefined
+
   if (loadingLabel) {
     return <Loading>{loadingLabel}</Loading>
   }
@@ -73,12 +81,9 @@ export const PoolsGrid: React.FC = () => {
   if (pools.length === 0) {
     return (
       <EmptyState data-ps-pool-grid data-ps-pool-grid-empty data-r708-empty-grid data-r730a-pools-diagnostic>
-        <EmptyTitle>No sustainable live pools match the current filters.</EmptyTitle>
-        <EmptySub>
-          {poolsIndexingDiagnostic
-            ? `Source: ${poolsIndexingDiagnostic.source} · Indexer: ${poolsIndexingDiagnostic.indexer} · Reason: ${poolsIndexingDiagnostic.reason}`
-            : 'Check Finished Pools or create a funded reward pool.'}
-        </EmptySub>
+        <EmptyTitle>{RUNTIME_UNAVAILABLE_LABEL}</EmptyTitle>
+        <EmptySub>No sustainable live pools match the current filters. Check finished pools or create a funded reward pool.</EmptySub>
+        <TradeTechnicalDetails detail={technicalDetail} />
       </EmptyState>
     )
   }

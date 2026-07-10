@@ -1,5 +1,7 @@
 import { TradeType } from '@pancakeswap/sdk'
 import { buildExecutionManifestFromBlocked } from '../execution-manifest'
+import { produceKerlExecutionRequest } from 'lib/kerl-constitutional/producer'
+import { KRMP_TESTNET_REGISTRY } from 'lib/kerl-constitutional/registry'
 import { prepareMelegaSmartRouterSwap } from '../smartRouterAdapter'
 import { MELEGA_SMART_ROUTER_ARCHITECTURE } from '../types'
 import { buildTreasuryHandoffPrepared } from './treasury-integration'
@@ -84,14 +86,88 @@ function preparedSwap(
   return result
 }
 
+function preparedKerlSwap(
+  input: Extract<CivilizationRouteInput, { routeType: 'STANDARD_SWAP' | 'BUY_MARCO' | 'SELL_MARCO' }>,
+): CivilizationRouteResult {
+  const inputAddress = input.inputAmount.currency.isNative
+    ? null
+    : input.inputAmount.currency.wrapped.address
+  const outputAddress = input.outputAmount.currency.wrapped.address
+
+  const kerlRequest = produceKerlExecutionRequest({
+    chainId: input.chainId,
+    inputAddress,
+    outputAddress,
+    inputIsNative: input.inputAmount.currency.isNative,
+    amountRaw: input.inputAmount.quotient.toString(),
+    slippageBps: 50,
+    recipient: input.user ?? null,
+    tradeType: input.tradeType,
+  })
+
+  if (!kerlRequest.ok) {
+    return blocked(input, kerlRequest.code as CivilizationBlockCode, kerlRequest.message)
+  }
+
+  const swapPlan = prepareMelegaSmartRouterSwap({
+    chainId: input.chainId,
+    user: input.user,
+    tradeType: input.tradeType,
+    inputAmount: input.inputAmount,
+    outputAmount: input.outputAmount,
+    feeOnTransfer: input.feeOnTransfer,
+  })
+
+  if (!swapPlan.ok) {
+    return blocked(input, swapPlan.code as CivilizationBlockCode, swapPlan.message)
+  }
+
+  const treasuryHandoff = buildTreasuryHandoffPrepared({
+    routeType: input.routeType,
+    chainId: input.chainId,
+    executionManifest: swapPlan.executionManifest,
+    collectorAddress: KRMP_TESTNET_REGISTRY.treasuryCollector,
+  })
+
+  const result: CivilizationRoutePrepared = {
+    ok: true,
+    schema: CIVILIZATION_ROUTER_SCHEMA,
+    routeType: input.routeType,
+    chainId: input.chainId,
+    architecture: MELEGA_SMART_ROUTER_ARCHITECTURE,
+    swapPlan,
+    executionManifest: swapPlan.executionManifest,
+    treasuryHandoff,
+    events: {
+      civilizationRouteSubmitted: {
+        routeType: input.routeType,
+        chainId: input.chainId,
+        architecture: MELEGA_SMART_ROUTER_ARCHITECTURE,
+        machineReadable: true,
+        kerlExecutionRequestRef: kerlRequest.request.requestId,
+      },
+      treasuryHandoffPrepared: treasuryHandoff,
+    },
+  }
+
+  return result
+}
+
 /** Constitutional economic router entrypoint — no fake routing or execution. */
 export function prepareCivilizationRoute(input: CivilizationRouteInput): CivilizationRouteResult {
-  if (input.chainId === 97) {
-    return blocked(
-      input,
-      'BNB_TESTNET_BLOCKED',
-      'BNB Testnet is not indexed for Smart Router execution — wrapper, underlying router, MARCO, and collector all missing.',
-    )
+  if (input.chainId === KRMP_TESTNET_REGISTRY.chainId) {
+    switch (input.routeType) {
+      case 'STANDARD_SWAP':
+      case 'BUY_MARCO':
+      case 'SELL_MARCO':
+        return preparedKerlSwap(input)
+      default:
+        return blocked(
+          input,
+          'BLOCKED_WRAPPER_NOT_DEPLOYED',
+          'Route type not executable on BNB Testnet without KERL-certified wrapper path.',
+        )
+    }
   }
 
   switch (input.routeType) {
@@ -159,7 +235,10 @@ export function classifySwapRouteType(input: {
   inputAddress?: string | null
   outputAddress?: string | null
 }): 'STANDARD_SWAP' | 'BUY_MARCO' | 'SELL_MARCO' {
-  const marco = input.chainId === 56 ? '0x963556de0eb8138E97A85F0A86eE0acD159D210b'.toLowerCase() : null
+  const marco =
+    input.chainId === 56 || input.chainId === 97
+      ? '0x963556de0eb8138E97A85F0A86eE0acD159D210b'.toLowerCase()
+      : null
   if (!marco) return 'STANDARD_SWAP'
   const inAddr = input.inputAddress?.toLowerCase()
   const outAddr = input.outputAddress?.toLowerCase()

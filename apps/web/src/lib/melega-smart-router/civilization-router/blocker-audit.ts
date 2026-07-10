@@ -1,5 +1,7 @@
 import { isTreasuryRuntimeConfigured } from '../../treasury-handoff/config'
 import { getKerlRegistryVersion } from '../registry/kerlRegistry'
+import { readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
+import { readTreasuryRuntimeCollector } from '../registry/runtimeRegistry'
 import { MELEGA_SMART_ROUTER_ARCHITECTURE } from '../types'
 import type { BlockerAuditRow } from './types'
 
@@ -7,21 +9,27 @@ import type { BlockerAuditRow } from './types'
 export function buildBlockerAuditTable(): BlockerAuditRow[] {
   const kerlVersion = getKerlRegistryVersion()
   const treasuryRuntimeConfigured = isTreasuryRuntimeConfigured()
+  const testnetProfile = readSmartRouterChainProfile(97)
+  const testnetWrapper = testnetProfile?.wrapperAddress ?? null
+  const testnetCollector = readTreasuryRuntimeCollector(97)
+  const mainnetCollector = readTreasuryRuntimeCollector(56)
 
   return [
     {
       phase: 'Phase 0',
       requirement: 'Deployable wrapper contract (Solidity)',
-      status: 'BLOCKED',
-      evidence: 'ABI draft + spec only — no .sol in repo (wrapper/spec.ts)',
-      nextRequiredAction: 'Implement and audit MelegaSmartRouterWrapper.sol; publish deployed address to registry',
+      status: 'PARTIAL',
+      evidence:
+        'MelegaSmartRouterWrapper.sol + 39 Foundry tests (R736); not deployed; external audit pending',
+      nextRequiredAction: 'Complete external audit; deploy after Treasury Intake publication',
     },
     {
       phase: 'Phase 0',
       requirement: 'Deployer keys / deploy toolchain',
-      status: 'BLOCKED',
-      evidence: 'No hardhat.config or foundry.toml; KERL testnet uses KERL_TESTNET_EXECUTOR_PRIVATE_KEY only',
-      nextRequiredAction: 'Provision wrapper deploy toolchain and authorized deployer outside DEX repo',
+      status: 'PARTIAL',
+      evidence:
+        'foundry.toml RPC/etherscan mapping + DeployMelegaSmartRouterWrapper.s.sol (R738); deploy credentials unset',
+      nextRequiredAction: 'Provision TESTNET_DEPLOYER / MAINNET_DEPLOYER and Treasury Intake addresses',
     },
     {
       phase: 'Phase 0',
@@ -41,15 +49,22 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
       phase: 'Phase 0',
       requirement: 'MARCO address registered per chain',
       status: 'PARTIAL',
-      evidence: 'Chain 56 active in KERL (/registry/assets/marco.json); chain 97 not indexed',
-      nextRequiredAction: 'Publish testnet MARCO asset in KERL or env NEXT_PUBLIC_MARCO_TOKEN_BSC_TESTNET',
+      evidence:
+        'Chain 56 + 97 active (R744B Treasury Runtime confirmed MARCO testnet 0x963556de0eb8138E97A85F0A86eE0acD159D210b)',
+      nextRequiredAction: 'Publish treasury collector per chain; deploy wrapper when unblocked',
     },
     {
       phase: 'Phase 0',
       requirement: 'Treasury Collector registered per chain',
-      status: 'BLOCKED',
-      evidence: '/registry/treasury/index.json — collector null for chains 56 and 97',
-      nextRequiredAction: 'Treasury Runtime must publish collector addresses',
+      status: mainnetCollector.available && testnetCollector.available ? 'READY' : 'BLOCKED',
+      evidence: mainnetCollector.available
+        ? '/registry/treasury/index.json — collectors published for chains 56 and 97'
+        : testnetCollector.available
+          ? '/registry/treasury/index.json — chain 97 collector active_testnet; chain 56 collector null'
+          : '/registry/treasury/index.json — collector null for chains 56 and 97',
+      nextRequiredAction: mainnetCollector.available
+        ? 'None — collectors indexed'
+        : 'Treasury Runtime must publish BNB Chain mainnet collector address',
     },
     {
       phase: 'Phase 0',
@@ -91,9 +106,13 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
     {
       phase: 'Phase 1',
       requirement: 'Wrapper deployed on-chain',
-      status: 'BLOCKED',
-      evidence: `Architecture ${MELEGA_SMART_ROUTER_ARCHITECTURE}; wrapper.address null in registry`,
-      nextRequiredAction: 'Deploy wrapper after audit + collector publication',
+      status: testnetWrapper ? 'PARTIAL' : 'BLOCKED',
+      evidence: testnetWrapper
+        ? `Chain 97 wrapper V2 ${testnetWrapper} active_testnet validated; chain 56 wrapper null — architecture ${MELEGA_SMART_ROUTER_ARCHITECTURE}`
+        : `Architecture ${MELEGA_SMART_ROUTER_ARCHITECTURE}; wrapper.address null in registry`,
+      nextRequiredAction: testnetWrapper
+        ? 'Deploy and validate wrapper on BNB Chain mainnet (56) after audit'
+        : 'Deploy wrapper after audit + collector publication',
     },
   ]
 }

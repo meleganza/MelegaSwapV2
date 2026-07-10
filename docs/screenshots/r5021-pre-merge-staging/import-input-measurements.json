@@ -1,0 +1,19 @@
+{
+  "measurements": [
+    {
+      "shot": "import-input-desktop-1440x900.png",
+      "viewport": "1440x900",
+      "inputWidth": 520,
+      "heroWidth": 752,
+      "inputFullWidth": true
+    },
+    {
+      "shot": "import-input-mobile-390x844.png",
+      "viewport": "390x844",
+      "inputWidth": 248,
+      "heroWidth": 298,
+      "inputFullWidth": true
+    }
+  ],
+  "capturedAt": "2026-07-05T12:08:58.959Z"
+}

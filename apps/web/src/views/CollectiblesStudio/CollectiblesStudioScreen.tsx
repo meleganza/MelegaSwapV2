@@ -13,6 +13,7 @@ import CollectiblesRightSidebar from './components/CollectiblesRightSidebar'
 import CollectiblesStudioPageHeader from './components/CollectiblesStudioPageHeader'
 import FeaturedCollectionPanel from './components/FeaturedCollectionPanel'
 import { CS_FONT_BODY, collectiblesStudioColors, collectiblesStudioLayout } from './collectiblesStudioTokens'
+import { studioConstitutionLayout } from 'design-system/melega'
 
 const Root = styled.div`
   color: ${collectiblesStudioColors.white};
@@ -39,8 +40,8 @@ const Content = styled.div`
   flex-direction: column;
   gap: ${collectiblesStudioLayout.sectionGap};
 
-  @media (max-width: 768px) {
-    padding: 20px;
+  @media (max-width: ${studioConstitutionLayout.mobileBreakpoint}) {
+    padding: 16px 16px ${collectiblesStudioLayout.mobileBottomPad};
   }
 `
 

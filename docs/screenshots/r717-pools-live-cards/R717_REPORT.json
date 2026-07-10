@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "errors": [],
+  "routeStatus": 200,
+  "build": "passed",
+  "collapsed1440": {
+    "cardCount": 3,
+    "threeCols": true,
+    "gridColumns": "312px 312px 312px",
+    "cardWidth": 312,
+    "cardHeight": 258,
+    "aprFontSize": "58px",
+    "aprClipped": false,
+    "titleWraps": false,
+    "stakeWidth": 144,
+    "analyzeWidth": 144,
+    "buttonsSameWidth": true,
+    "buttonHeightsOk": true,
+    "healthBarPresent": true,
+    "contractPresent": true,
+    "bscInCollapsed": true,
+    "docOverflowX": false
+  },
+  "expanded1440": {
+    "expandedHeight": 390,
+    "toggleText": "Hide Analysis",
+    "panelVisible": true,
+    "bscBtn": true,
+    "jsonBtn": true,
+    "machineJson": true,
+    "healthBarPresent": true
+  },
+  "mobile390": {
+    "overflow": false,
+    "cardWidth": 382.359375
+  }
+}

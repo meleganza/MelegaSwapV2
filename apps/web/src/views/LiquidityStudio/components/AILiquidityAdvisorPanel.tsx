@@ -1,8 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
+import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
-import { LsPanel, LsRightLabel, LsRightRow, LsRightValue, LsSectionTitle } from './liquidityStudioPrimitives'
+import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
 
 const Head = styled.div`
   display: flex;
@@ -10,6 +12,7 @@ const Head = styled.div`
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
+  flex-shrink: 0;
 `
 
 const Green = styled.span`
@@ -22,6 +25,12 @@ const Gold = styled.span`
   font-size: 14px;
   font-weight: 800;
   color: ${liquidityStudioColors.gold};
+`
+
+const Muted = styled.span`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${liquidityStudioColors.muted};
 `
 
 const LiveBadge = styled.span`
@@ -39,28 +48,58 @@ const LiveBadge = styled.span`
   background: rgba(0, 230, 118, 0.08);
 `
 
+const Body = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 0;
+`
+
+const UnavailableReason = styled.p`
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: ${liquidityStudioColors.muted};
+`
+
 export const AILiquidityAdvisorPanel: React.FC = () => {
-  const { terminal } = useLiquidityRuntime()
-  const { advisorItems } = terminal
+  const { terminal, machine } = useLiquidityRuntime()
+  const { advisorItems, advisorUnavailableReason } = terminal
 
   return (
     <LsPanel
       data-ls-panel
       $width={liquidityStudioLayout.rightWidth}
-      $height={liquidityStudioLayout.aiAdvisorHeight}
+      $height="100%"
       $radius={liquidityStudioLayout.rightPanelRadius}
       $pad={liquidityStudioLayout.rightPanelPadding}
     >
       <Head>
         <LsSectionTitle style={{ margin: 0 }}>AI Liquidity Advisor</LsSectionTitle>
-        <LiveBadge>LIVE DATA</LiveBadge>
+        {!advisorUnavailableReason ? <LiveBadge>LIVE DATA</LiveBadge> : null}
       </Head>
-      {advisorItems.map((item) => (
-        <LsRightRow key={item.label}>
-          <LsRightLabel>{item.label}</LsRightLabel>
-          {item.tone === 'gold' ? <Gold>{item.value}</Gold> : <Green>{item.value}</Green>}
-        </LsRightRow>
-      ))}
+      <Body>
+        {advisorItems.map((item) => (
+          <LsRightRow key={item.label}>
+            <LsRightLabel>{item.label}</LsRightLabel>
+            {item.tone === 'gold' ? (
+              <Gold>{item.value}</Gold>
+            ) : item.tone === 'muted' ? (
+              <Muted>{item.value}</Muted>
+            ) : (
+              <Green>{item.value}</Green>
+            )}
+          </LsRightRow>
+        ))}
+        {advisorUnavailableReason ? (
+          <>
+            <UnavailableReason>Reason: {advisorUnavailableReason}</UnavailableReason>
+            <TradeTechnicalDetails detail={JSON.stringify(machine, null, 2)} />
+          </>
+        ) : null}
+      </Body>
     </LsPanel>
   )
 }

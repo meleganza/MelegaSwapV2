@@ -12,6 +12,7 @@ import {
 } from './types'
 import { getMarcoRegistryEntry, normalizeTokenAddress } from './marcoRegistry'
 import { getTreasuryCollectorEntry } from './treasuryCollectorRegistry'
+import { resolveExecutionAdapterForSwap } from './execution-adapter'
 import { getUnderlyingRouterEntry } from './underlyingRouterRegistry'
 import { computeProtocolFeeAmounts, resolveProtocolFeeBps } from './protocolFee'
 import {
@@ -93,22 +94,33 @@ export function prepareMelegaSmartRouterSwap(input: PrepareSmartRouterSwapInput)
     )
   }
 
-  const routerRegistry = getUnderlyingRouterEntry(chainId)
-  if (routerRegistry.status === 'missing' || !routerRegistry.routerAddress) {
-    const inputToken = tokenRef(inputAmount.currency)
-    const outputToken = tokenRef(outputAmount.currency)
-    return blocked(
-      chainId,
-      'BLOCKED_UNDERLYING_ROUTER_MISSING',
-      'Underlying execution router missing for active chain.',
-      { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
-    )
-  }
-
   const inputToken = tokenRef(inputAmount.currency)
   const outputToken = tokenRef(outputAmount.currency)
   const inputAddress = inputAmount.currency.isNative ? undefined : inputAmount.currency.wrapped.address
   const outputAddress = outputAmount.currency.isNative ? undefined : outputAmount.currency.wrapped.address
+
+  const swapPath = [inputToken === 'native' ? 'native' : inputAddress!, outputToken === 'native' ? 'native' : outputAddress!]
+  let underlyingRouter: string
+  try {
+    const resolved = resolveExecutionAdapterForSwap({
+      chainId,
+      preferSmartRouter: input.preferSmartRouter ?? false,
+      inputIsNative: inputAmount.currency.isNative,
+      path: swapPath.filter((t) => t !== 'native') as string[],
+    })
+    underlyingRouter = resolved.adapter.routerAddress()
+  } catch {
+    const routerRegistry = getUnderlyingRouterEntry(chainId)
+    if (routerRegistry.status === 'missing' || !routerRegistry.routerAddress) {
+      return blocked(
+        chainId,
+        'BLOCKED_UNDERLYING_ROUTER_MISSING',
+        'Underlying execution router missing for active chain.',
+        { inputToken, outputToken, grossAmount: inputAmount.toSignificant(6) },
+      )
+    }
+    underlyingRouter = routerRegistry.routerAddress
+  }
 
   const { bps: protocolFeeBps, buyMarcoIncentiveApplied } = resolveProtocolFeeBps({
     chainId,
@@ -120,7 +132,6 @@ export function prepareMelegaSmartRouterSwap(input: PrepareSmartRouterSwapInput)
   const { feeAmount, netAmountIn } = computeProtocolFeeAmounts(grossAmountIn, protocolFeeBps)
   const feeToken = inputToken
   const amountOut = outputAmount.toSignificant(6)
-  const underlyingRouter = routerRegistry.routerAddress
   const treasuryCollector = collectorRegistry.collectorAddress
 
   const protocolFeeCollected: Omit<ProtocolFeeCollectedEvent, 'user' | 'timestamp'> = {

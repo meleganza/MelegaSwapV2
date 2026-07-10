@@ -1,17 +1,11 @@
-import { useMemo } from 'react'
-import type { MelegaTickerItem } from 'design-system/melega'
 import useHomeTradeData from './useHomeTradeData'
 
-export const useDexTrendingTicker = (): { items: MelegaTickerItem[]; isIndexing: boolean } => {
-  const { trendingTickerItems, isTrendingIndexing } = useHomeTradeData()
+export default function useDexTrendingTicker() {
+  const { trendingTickerItems, indexedRibbonAssets, trendingUnavailableReason } = useHomeTradeData()
 
-  return useMemo(
-    () => ({
-      items: trendingTickerItems,
-      isIndexing: isTrendingIndexing,
-    }),
-    [trendingTickerItems, isTrendingIndexing],
-  )
+  return {
+    items: trendingTickerItems,
+    indexedRibbonAssets,
+    unavailableReason: trendingUnavailableReason,
+  }
 }
-
-export default useDexTrendingTicker

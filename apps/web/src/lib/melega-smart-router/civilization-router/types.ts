@@ -186,6 +186,10 @@ export interface ChainRegistryEntry {
   chainId: number
   chainName: string
   wrapperAddress: string | null
+  wrapperStatus?: string
+  wrapperVersion?: number
+  validationStatus?: string
+  validationCertificate?: string
   underlyingRouter: string | null
   MARCO: string | null
   treasuryCollector: string | null
@@ -193,7 +197,8 @@ export interface ChainRegistryEntry {
   TreasuryRuntime: string
   supportedAssets: string[]
   supportedRouteTypes: CivilizationRouteType[]
-  status: 'active' | 'blocked' | 'planned' | 'partial'
+  executableRouteTypes?: CivilizationRouteType[]
+  status: 'active' | 'active_testnet' | 'blocked' | 'planned' | 'partial'
   blockerReason: string | null
   lastVerifiedAt: string
   version: string

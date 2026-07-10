@@ -1,0 +1,71 @@
+{
+  "schema": "melega.civilization.fabric.v1",
+  "fabric": {
+    "name": "Civilization Event Fabric",
+    "owner": "civilization",
+    "coupling": "fabric_only",
+    "historyPolicy": "append_only_immutable"
+  },
+  "producerGraph": {
+    "import": ["PROJECT_IMPORTED"],
+    "registry": ["PROJECT_VERIFIED"],
+    "radar": ["RADAR_DISCOVERED"],
+    "projects": ["PROJECT_UPDATED"],
+    "trending": ["TRENDING_SCORE_CHANGED"],
+    "trade": ["TRADE_EXECUTED", "TREASURY_SETTLED"],
+    "liquidity": ["LIQUIDITY_ADDED"],
+    "pools": ["POOL_JOINED", "POOL_LEFT", "POOL_CLAIMED"],
+    "farms": ["FARM_STAKED", "FARM_WITHDRAWN", "FARM_CLAIMED"],
+    "identity": ["IDENTITY_VERIFIED"],
+    "command_center": ["COMMAND_NOTIFICATION_CREATED"],
+    "build_studio": ["PROJECT_IMPORTED"],
+    "treasury": []
+  },
+  "consumerGraph": {
+    "command_center": [
+      "PROJECT_IMPORTED",
+      "PROJECT_VERIFIED",
+      "RADAR_DISCOVERED",
+      "PROJECT_UPDATED",
+      "TRENDING_SCORE_CHANGED",
+      "TRADE_EXECUTED",
+      "TREASURY_SETTLED",
+      "LIQUIDITY_ADDED",
+      "POOL_JOINED",
+      "POOL_LEFT",
+      "POOL_CLAIMED",
+      "FARM_STAKED",
+      "FARM_WITHDRAWN",
+      "FARM_CLAIMED",
+      "IDENTITY_VERIFIED"
+    ],
+    "treasury": ["TRADE_EXECUTED", "TREASURY_SETTLED", "LIQUIDITY_ADDED", "POOL_CLAIMED", "FARM_CLAIMED"],
+    "identity": ["TRADE_EXECUTED", "COMMAND_NOTIFICATION_CREATED"],
+    "radar": ["PROJECT_VERIFIED", "RADAR_DISCOVERED", "IDENTITY_VERIFIED"],
+    "projects": ["PROJECT_IMPORTED", "PROJECT_VERIFIED", "RADAR_DISCOVERED", "PROJECT_UPDATED", "TRENDING_SCORE_CHANGED"],
+    "trending": ["PROJECT_VERIFIED", "RADAR_DISCOVERED", "PROJECT_UPDATED"],
+    "pools": ["LIQUIDITY_ADDED"],
+    "portfolio": ["PROJECT_UPDATED", "TRADE_EXECUTED", "LIQUIDITY_ADDED", "POOL_JOINED", "POOL_LEFT", "POOL_CLAIMED", "FARM_STAKED", "FARM_WITHDRAWN", "FARM_CLAIMED", "IDENTITY_VERIFIED"]
+  },
+  "fabricGraph": {
+    "edges": 17,
+    "nodes": {
+      "wired": 13,
+      "future": 9
+    },
+    "coveragePercentage": 100,
+    "brokenPaths": [],
+    "fabricFeedbackLoops": ["command_center → identity → command_center"],
+    "circularDependencies": []
+  },
+  "eventCatalogSummary": {
+    "total": 28,
+    "active": 16,
+    "planned": 5,
+    "future": 7
+  },
+  "traceability": {
+    "fields": ["trace_id", "correlation_id"],
+    "chainExample": "TRADE_EXECUTED → TREASURY_SETTLED → COMMAND_NOTIFICATION_CREATED → IDENTITY_VERIFIED"
+  }
+}

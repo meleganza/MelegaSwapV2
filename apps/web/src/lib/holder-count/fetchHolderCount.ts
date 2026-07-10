@@ -12,7 +12,11 @@ function unavailable(reason: string, diagnostic: string): HolderCountResult {
   }
 }
 
-export async function fetchHolderCount(chainId: number, tokenAddress: string): Promise<HolderCountResult> {
+export async function fetchHolderCount(
+  chainId: number,
+  tokenAddress: string,
+  apiKeyOverride?: string,
+): Promise<HolderCountResult> {
   const normalized = tokenAddress.trim().toLowerCase()
   if (!/^0x[a-f0-9]{40}$/.test(normalized)) {
     return unavailable('Invalid token address', `Holder count requires a valid contract address, got "${tokenAddress}"`)
@@ -25,11 +29,11 @@ export async function fetchHolderCount(chainId: number, tokenAddress: string): P
     )
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_BSCSCAN_API_KEY
+  const apiKey = apiKeyOverride ?? process.env.NEXT_PUBLIC_BSCSCAN_API_KEY ?? process.env.NEXT_PUBLIC_BSCSAN_API_KEY
   if (!apiKey) {
     return unavailable(
       'Source not configured',
-      'Set NEXT_PUBLIC_BSCSCAN_API_KEY to recover holder count from BscScan',
+      'Set NEXT_PUBLIC_BSCSCAN_API_KEY in Vercel (Production + Preview) and redeploy',
     )
   }
 

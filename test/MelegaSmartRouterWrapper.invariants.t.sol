@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {MelegaSmartRouterWrapper} from "../contracts/MelegaSmartRouterWrapper.sol";
 import {MockERC20} from "../contracts/mocks/MockERC20.sol";
+import {MockWBNB} from "../contracts/mocks/MockWBNB.sol";
 import {MockUnderlyingSwapRouter} from "../contracts/mocks/MockUnderlyingSwapRouter.sol";
 
 /// @notice Economic invariant proofs for wrapper v1 scaffold.
@@ -13,7 +14,7 @@ contract MelegaSmartRouterWrapperInvariantsTest is Test {
     MockUnderlyingSwapRouter internal router;
     MockERC20 internal usdt;
     MockERC20 internal marco;
-    MockERC20 internal wbnb;
+    MockWBNB internal wbnb;
 
     address internal collector = makeAddr("treasuryCollector");
     address internal user = makeAddr("user");
@@ -28,7 +29,7 @@ contract MelegaSmartRouterWrapperInvariantsTest is Test {
         router = new MockUnderlyingSwapRouter();
         usdt = new MockERC20("USDT", "USDT");
         marco = new MockERC20("MARCO", "MARCO");
-        wbnb = new MockERC20("WBNB", "WBNB");
+        wbnb = new MockWBNB();
 
         wrapper = new MelegaSmartRouterWrapper(
             address(router),
@@ -118,7 +119,7 @@ contract MelegaSmartRouterWrapperInvariantsTest is Test {
 
     function test_invariant_nativeBnbSwap() public {
         uint256 gross = 5 ether;
-        uint256 collectorBefore = collector.balance;
+        uint256 collectorBefore = wbnb.balanceOf(collector);
 
         vm.prank(user);
         wrapper.swapExactETHForTokens{value: gross}(1, _path(address(wbnb), address(usdt)), user, block.timestamp + 600);
@@ -127,7 +128,7 @@ contract MelegaSmartRouterWrapperInvariantsTest is Test {
         uint256 net = gross - fee;
 
         _assertGrossNetFeeInvariant(gross, net, fee);
-        assertEq(collector.balance - collectorBefore, fee, "native protocol fee not at collector");
+        assertEq(wbnb.balanceOf(collector) - collectorBefore, fee, "native protocol fee not at collector as WBNB");
         assertEq(router.lastEthAmountIn(), net, "router did not receive net native");
     }
 

@@ -116,7 +116,7 @@ export function useTrendingIntelligenceRuntime() {
     machineOpen,
     setMachineOpen,
     filterEmptyMessage,
-    phase: enriched.length ? ('ready' as const) : ('indexing' as const),
+    phase: enriched.length ? ('ready' as const) : ('unavailable' as const),
   }
 }
 

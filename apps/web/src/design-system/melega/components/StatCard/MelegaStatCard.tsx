@@ -152,9 +152,11 @@ export const MelegaStatCard: React.FC<MelegaStatCardProps> = ({
       <Label>{label}</Label>
       <Value>{loading ? '…' : value}</Value>
       {meta && <Meta $positive={metaPositive}>{meta}</Meta>}
-      <Spark viewBox="0 0 48 16" aria-hidden>
-        <SparkPath d={sparkPath} $animated={animated} />
-      </Spark>
+      {sparkPoints && sparkPoints.length >= 2 ? (
+        <Spark viewBox="0 0 48 16" aria-hidden>
+          <SparkPath d={sparkPath} $animated={animated} />
+        </Spark>
+      ) : null}
     </>
   )
 

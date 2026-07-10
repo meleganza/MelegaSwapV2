@@ -33,3 +33,17 @@ export { MelegaProjectCube } from './ProjectCube'
 export { MelegaSectionCard, type MelegaSectionCardProps } from './SectionCard'
 export { MelegaIntelligenceTile, type MelegaIntelligenceTileProps } from './IntelligenceTile'
 export { MelegaSwapPanelShell, SwapIconButton, type MelegaSwapPanelShellProps } from './SwapPanelShell'
+export {
+  MelegaStudioPageHeader,
+  MelegaStudioLiveBadge,
+  MelegaStudioLiveDot,
+  type MelegaStudioPageHeaderProps,
+} from './StudioPageHeader'
+export {
+  MelegaStudioPrimaryBtn,
+  MelegaStudioOutlineBtn,
+  MelegaStudioGhostBtn,
+  MelegaStudioSecondaryBtn,
+} from './StudioButtons'
+export { MelegaStudioContent } from './StudioShell'
+export { MelegaStudioPanel, MelegaStudioPanelTitle } from './StudioShell'

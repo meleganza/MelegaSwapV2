@@ -7,6 +7,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IUnderlyingSwapRouter} from "./interfaces/IUnderlyingSwapRouter.sol";
+import {IWBNB} from "./interfaces/IWBNB.sol";
 
 /// @title MelegaSmartRouterWrapper
 /// @notice Constitutional economic entrypoint v1 — exact-input swaps only.
@@ -161,8 +162,10 @@ contract MelegaSmartRouterWrapper is Ownable, Pausable, ReentrancyGuard {
         (uint256 feeAmount, uint256 netAmountIn, uint16 protocolFeeBps, bool buyMarcoApplied) =
             _computeFee(outputToken, grossAmountIn);
 
-        (bool feeOk,) = treasuryCollector.call{value: feeAmount}("");
-        require(feeOk, "TREASURY_FEE_TRANSFER_FAILED");
+        // Treasury Intake accepts ERC20 fees from contracts; plain ETH `call` from wrapper reverts.
+        address wbnb = path[0];
+        IWBNB(wbnb).deposit{value: feeAmount}();
+        IERC20(wbnb).safeTransfer(treasuryCollector, feeAmount);
 
         amountOut = IUnderlyingSwapRouter(underlyingRouter).swapExactETHForTokens{value: netAmountIn}(
             amountOutMin, path, recipient, deadline

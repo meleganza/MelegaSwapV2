@@ -4,6 +4,7 @@ import { Pair, RouteType, Trade as SmartRouterTrade, TradeWithStableSwap } from 
 
 import { Field } from 'state/swap/actions'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
+import { isKerlRoutingAuthorityEnforced } from 'lib/kerl-constitutional'
 import {
   computeSlippageAdjustedAmounts as computeSlippageAdjustedAmountsForV2Trade,
   computeTradePriceBreakdown as computeTradePriceBreakdownForV2Trade,
@@ -19,6 +20,7 @@ interface Options {
   chainId: ChainId
   swapInputError: string
   stableSwapInputError: string
+  kerlWrapperAddress?: string | null
 }
 
 interface Info {
@@ -46,8 +48,27 @@ export function useTradeInfo({
   chainId,
   swapInputError,
   stableSwapInputError,
+  kerlWrapperAddress,
 }: Options): Info | null {
   return useMemo(() => {
+    const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
+    if (kerlEnforced && trade && kerlWrapperAddress) {
+      const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
+      return {
+        tradeType: trade.tradeType,
+        fallbackV2: true,
+        route: trade.route,
+        inputAmount: trade.inputAmount,
+        outputAmount: trade.outputAmount,
+        slippageAdjustedAmounts: computeSlippageAdjustedAmounts(trade, allowedSlippage),
+        executionPrice: SmartRouterTrade.executionPrice(trade),
+        routerAddress: kerlWrapperAddress,
+        priceImpactWithoutFee,
+        realizedLPFee,
+        inputError: stableSwapInputError,
+      }
+    }
+
     if (!trade && !v2Trade) {
       return null
     }
@@ -88,5 +109,5 @@ export function useTradeInfo({
       realizedLPFee,
       inputError: stableSwapInputError,
     }
-  }, [useSmartRouter, trade, v2Trade, allowedSlippage, chainId, stableSwapInputError, swapInputError])
+  }, [useSmartRouter, trade, v2Trade, allowedSlippage, chainId, stableSwapInputError, swapInputError, kerlWrapperAddress])
 }

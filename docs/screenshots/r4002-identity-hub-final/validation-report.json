@@ -1,0 +1,16 @@
+{
+  "task": "R400.2 IDENTITY HUB FINAL MICRO-FIX",
+  "deliverable": "R4002_IDENTITY_HUB_FINAL_APPROVAL",
+  "build": "pass",
+  "mobileSpacing": {
+    "sectionGapPlus6px": true,
+    "identityCollectionsCardPaddingPlus4px": true,
+    "babymarcoRarityCardPaddingPlus4px": true,
+    "identityActionsButtonGap10px": true
+  },
+  "screenshots": [
+    "identity-hub-desktop-1440x900.png",
+    "identity-hub-mobile-390x844.png"
+  ],
+  "verdict": "R4002_IDENTITY_HUB_FINAL_APPROVAL"
+}

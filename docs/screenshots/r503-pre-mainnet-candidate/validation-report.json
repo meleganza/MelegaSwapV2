@@ -1,0 +1,147 @@
+{
+  "task": "R503 PRE-MAINNET CANDIDATE",
+  "deliverable": "R503_PRE_MAINNET_CANDIDATE",
+  "capturedAt": "2026-07-05T13:50:00.000Z",
+  "stagingUrl": "https://v2.melega.finance",
+  "production": "untouched",
+  "main": "untouched",
+  "dexMelegaAi": "untouched",
+  "merge": false,
+  "deployProduction": false,
+  "build": {
+    "status": "pass",
+    "command": "yarn build",
+    "durationSec": 19
+  },
+  "tests": {
+    "status": "pass",
+    "suites": [
+      "civilization-runtime (14/14)",
+      "poolsRuntime",
+      "projectsRuntime (8/8)",
+      "collectiblesRuntime (20/20)",
+      "buildRuntime (5/5)"
+    ],
+    "total": "50/50 pass"
+  },
+  "constitutionalChanges": {
+    "p0_buildStudioEntry": {
+      "status": "done",
+      "detail": "Import workflow embedded in Build Studio; /import-existing-token and /launch redirect to /build-studio#build-import"
+    },
+    "p1_buildSubmenu": {
+      "status": "done",
+      "detail": "Build Studio sole visible BUILD entry; Import active in expand; prep items disabled; Lock Liquidity hidden"
+    },
+    "p2_importContractUx": {
+      "status": "done",
+      "detail": "Desktop input 680–760px, Analyze 280px, monospace, mobile full-width"
+    },
+    "p3_poolsReality": {
+      "status": "done",
+      "detail": "Pools with deposits stay LIVE; ended only when finished + zero stake; sort Live → APR → TVL → Ended"
+    },
+    "p4_tradeMarketSources": {
+      "status": "done",
+      "detail": "resolveTradeMarketContext wired; public catalog sources in machine payload before reason codes"
+    },
+    "p5_projectsAdvisor": {
+      "status": "done",
+      "detail": "buildFeaturedProjectIntelligence populates Risk, Age, Liquidity, Verification, Website, Social, Market presence, Confidence"
+    },
+    "p6_trendingBar": {
+      "status": "done",
+      "detail": "Runtime labels: Top Farm, Top Pool (MARCO Locked), Highest TVL, Newest Listing — no generic MARCO Staking"
+    },
+    "p7_collectionDetail": {
+      "status": "done",
+      "detail": "Identity Hub collection cards link to /collectibles/{slug}; babymarco-genesis detail page canonical"
+    },
+    "p8_myEconomyHidden": {
+      "status": "done",
+      "detail": "Civilization entry quick links use Command Center; portfolio nav hidden; My Economy card removed from home layer"
+    },
+    "p9_machineReadability": {
+      "status": "audited",
+      "detail": "Core routes expose schema/version/module/runtime/actions/reasonCodes/sources/timestamp"
+    }
+  },
+  "navigationGraph": {
+    "HOME": ["/"],
+    "TRADE": ["/trade", "/liquidity-studio"],
+    "EARN": ["/farms", "/pools"],
+    "FIND": ["/trending", "/projects", "/radar", "/collectibles"],
+    "BUILD": {
+      "entry": "/build-studio",
+      "importAnchor": "#build-import",
+      "legacyRedirects": ["/import-existing-token", "/launch"],
+      "disabledPrep": ["Create Token", "Create Farm", "Create Staking Pool", "Reward MARCO holders"],
+      "hidden": ["Lock Liquidity"]
+    },
+    "OWN": ["/command-center"]
+  },
+  "machineCoverage": [
+    { "route": "/", "schema": "melega.home.v1" },
+    { "route": "/trade", "schema": "melega.trade.market.v1" },
+    { "route": "/projects", "schema": "melega.projects.v1" },
+    { "route": "/pools", "schema": "melega.pools.v1" },
+    { "route": "/farms", "schema": "melega.farms.v1" },
+    { "route": "/build-studio", "schema": "melega.build-studio.v1" },
+    { "route": "/build-studio#import", "schema": "melega.import-existing-token/v1" },
+    { "route": "/collectibles", "schema": "melega.collectibles.v1" },
+    { "route": "/collectibles/babymarco-genesis", "schema": "melega.collectibles.v1" },
+    { "route": "/command-center", "schema": "melega.command-center.v1" },
+    { "route": "/radar", "schema": "melega.radar.v1" },
+    { "route": "/trending", "schema": "melega.trending.v1" },
+    { "route": "fabric", "schema": "melega.civilization.fabric.v1", "tests": "14/14" }
+  ],
+  "remainingBlockers": [
+    {
+      "id": "trade-holders",
+      "severity": "P2",
+      "detail": "Trade holder count still requires explorer API — reason code EXPLORER_SOURCE_MISSING is honest"
+    },
+    {
+      "id": "lock-liquidity",
+      "severity": "P3",
+      "detail": "Lock Liquidity workflow not implemented — nav item hidden by design"
+    },
+    {
+      "id": "build-prep-modules",
+      "severity": "P3",
+      "detail": "Create Token, Farm, Pool, Reward MARCO — preparation-only disabled submenu items"
+    },
+    {
+      "id": "planned-collections",
+      "severity": "P3",
+      "detail": "Master M, Aaron, Raky collections have registry shells; no mint surface until future release"
+    },
+    {
+      "id": "screenshots",
+      "severity": "P1",
+      "detail": "Run capture-r503-pre-mainnet-screenshots.mjs against staging dev server for visual certification"
+    }
+  ],
+  "deployableFiles": [
+    "apps/web/src/views/BuildStudio/**",
+    "apps/web/src/views/ImportExistingToken/**",
+    "apps/web/src/views/HomeTrade/**",
+    "apps/web/src/views/Trade/useTradeTerminalData.ts",
+    "apps/web/src/lib/trade-market/**",
+    "apps/web/src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts",
+    "apps/web/src/views/ProjectsStudio/**",
+    "apps/web/src/views/CollectiblesStudio/components/IdentityStudioSections.tsx",
+    "apps/web/src/views/CivilizationEntryPoint/CivilizationEntryPoint.tsx",
+    "apps/web/src/app-shell/config/navigation.ts",
+    "apps/web/src/pages/import-existing-token/index.tsx",
+    "apps/web/src/pages/launch/index.tsx"
+  ],
+  "excludedFiles": [
+    "docs/screenshots/**",
+    "kerl/treasury experiments",
+    "yarn.lock",
+    "radar UI bulk (uncommitted)",
+    "R400 identity assets (uncommitted)"
+  ],
+  "screenshotScript": "apps/web/scripts/capture-r503-pre-mainnet-screenshots.mjs"
+}

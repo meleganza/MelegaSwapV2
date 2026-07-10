@@ -1,11 +1,13 @@
 import { ChainId, JSBI, Percent, Token, WNATIVE } from '@pancakeswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
-import { bscTokens, USDC, USDT, WBTC_ETH, DAI_ETH, WBTC_ARB, DAI_BASE, DAI_ARB, CAKE, arbitrumTokens, shimmer2Tokens, WBTC_POLYGON, DAI_POLYGON, optimismTokens, baseTokens, zksyncTokens, avaxTokens, fantomTokens, cronosTokens, pulseTokens} from '@pancakeswap/tokens'
+import { bscTokens, bscTestnetTokens, USDC, USDT, WBTC_ETH, DAI_ETH, WBTC_ARB, DAI_BASE, DAI_ARB, CAKE, arbitrumTokens, shimmer2Tokens, WBTC_POLYGON, DAI_POLYGON, optimismTokens, baseTokens, zksyncTokens, avaxTokens, fantomTokens, cronosTokens, pulseTokens} from '@pancakeswap/tokens'
 import { ChainMap, ChainTokenList } from './types'
+import { BSC_TESTNET_ADDRESSES } from './bscTestnet'
 
 export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.ETHEREUM]: '0xFF8EBf8edf1C533A02d066f852788773BdCD631C',
   [ChainId.BSC]: '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3',
+  [ChainId.BSC_TESTNET]: BSC_TESTNET_ADDRESSES.router,
   [ChainId.BASE]: '0x1B30D21354a082EeBC66c4C5E56320759f7994e5',
   [ChainId.POLYGON]: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe',
 }
@@ -22,6 +24,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     bscTokens.eth,
     bscTokens.usdc,
   ],
+  [ChainId.BSC_TESTNET]: [bscTestnetTokens.wbnb, bscTestnetTokens.usdt, bscTestnetTokens.marco],
   [ChainId.BASE]: [WNATIVE[ChainId.BASE], USDC[ChainId.BASE], DAI_BASE],
   [ChainId.ARBITRUM]: [WNATIVE[ChainId.ARBITRUM], USDC[ChainId.ARBITRUM], USDT[ChainId.ARBITRUM], WBTC_ARB],
   [ChainId.POLYGON]: [WNATIVE[ChainId.POLYGON], USDC[ChainId.POLYGON], USDT[ChainId.POLYGON], WBTC_POLYGON],
@@ -64,6 +67,7 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.ETHEREUM]: [WNATIVE[ChainId.ETHEREUM], USDC[ChainId.ETHEREUM], USDT[ChainId.ETHEREUM], WBTC_ETH, DAI_ETH],
   [ChainId.BSC]: [WNATIVE[ChainId.BSC], bscTokens.usdt, bscTokens.usdc, bscTokens.dai, bscTokens.eth, bscTokens.btcb, bscTokens.cake],
+  [ChainId.BSC_TESTNET]: [WNATIVE[ChainId.BSC_TESTNET], bscTestnetTokens.usdt, bscTestnetTokens.marco],
   [ChainId.BASE]: [WNATIVE[ChainId.BASE], baseTokens.usdc, baseTokens.dai],
   [ChainId.OPTIMISM]: [WNATIVE[ChainId.OPTIMISM], optimismTokens.usdc, optimismTokens.usdt, optimismTokens.wbtc, optimismTokens.dai],
   [ChainId.ZKSYNC]: [zksyncTokens.usdc, zksyncTokens.usdt],
@@ -82,6 +86,7 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.POLYGON]: [USDC[ChainId.POLYGON], WNATIVE[ChainId.POLYGON], USDT[ChainId.POLYGON], WBTC_POLYGON],
   [ChainId.ARBITRUM]: [USDC[ChainId.ARBITRUM], WNATIVE[ChainId.ARBITRUM], USDT[ChainId.ARBITRUM], WBTC_ARB],
   [ChainId.BSC]: [bscTokens.wbnb, bscTokens.dai, bscTokens.busd, bscTokens.usdt, bscTokens.cake],
+  [ChainId.BSC_TESTNET]: [bscTestnetTokens.wbnb, bscTestnetTokens.usdt, bscTestnetTokens.marco],
   [ChainId.BASE]: [baseTokens.weth, baseTokens.dai, baseTokens.usdc, baseTokens.cake],
   [ChainId.SHIMMER2]: [shimmer2Tokens.smr, shimmer2Tokens.gtoken, shimmer2Tokens.usdc, shimmer2Tokens.usdt, shimmer2Tokens.wbtc, shimmer2Tokens.eth],
 }
@@ -97,6 +102,7 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
     [bscTokens.busd, bscTokens.usdt],
     [bscTokens.dai, bscTokens.usdt],
   ],
+  [ChainId.BSC_TESTNET]: [[bscTestnetTokens.marco, bscTestnetTokens.wbnb], [bscTestnetTokens.usdt, bscTestnetTokens.wbnb]],
   [ChainId.BASE]: [
     [baseTokens.weth, baseTokens.cake],
     [baseTokens.usdc, baseTokens.cake],

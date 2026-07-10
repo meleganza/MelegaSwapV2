@@ -21,7 +21,7 @@ import type {
   WhaleRow,
 } from '../radarStudioData'
 import type { RadarLiveEvent } from './buildLiveEvents'
-import { buildOpportunityScore } from './buildOpportunityScore'
+import { buildWhaleFeedMachinePayload } from 'lib/runtime-indexing'
 
 const UNAVAILABLE = 'Unavailable'
 
@@ -357,10 +357,6 @@ export function buildMachinePayload(input: {
     })),
     errors: input.errors,
     data_source: 'radar-runtime-projects',
-    whale_feed: {
-      status: 'not_configured',
-      source: null,
-      diagnostic: 'Whale activity indexer not configured — feed remains explicit until a real indexer exists',
-    },
+    whale_feed: buildWhaleFeedMachinePayload(),
   }
 }

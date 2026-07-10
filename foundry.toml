@@ -14,6 +14,16 @@ remappings = [
     "forge-std/=lib/forge-std/src/"
 ]
 
+# RPC aliases — load from root .env (BNB_*_RPC_URL)
+[rpc_endpoints]
+bsc_testnet = "${BNB_TESTNET_RPC_URL}"
+bsc_mainnet = "${BNB_MAINNET_RPC_URL}"
+
+# BscScan verification — key from BSCSCAN_API_KEY or BSCSCAN_API_KEY
+[etherscan]
+bsc = { key = "${BSCSCAN_API_KEY}", url = "https://api.bscscan.com/api", chain = 56 }
+bsc_testnet = { key = "${BSCSCAN_API_KEY}", url = "https://api-testnet.bscscan.com/api", chain = 97 }
+
 [fmt]
 line_length = 120
 tab_width = 4

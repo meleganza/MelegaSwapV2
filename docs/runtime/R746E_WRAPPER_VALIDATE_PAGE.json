@@ -1,0 +1,40 @@
+{
+  "task": "R746E",
+  "schema": "melega.wrapper-validate-page.v1",
+  "asOf": "2026-07-09",
+  "verdict": "PASS",
+  "url": "http://localhost:3010/testnet/wrapper-validate/",
+  "wrapperAddress": "0x9D2451b30102B098570bfCeae0E8b8C9Fd2bb2Db",
+  "pairMarcoWbnb": "0x6eFCe8f5C7Fb3B979A6a2Be4a62DB4A055c666E0",
+  "routes": {
+    "BUY_MARCO": {
+      "path": "tBNB → MARCO",
+      "expectedFeeBps": 20,
+      "defaultAmount": "0.01",
+      "liquidity": "available"
+    },
+    "SELL_MARCO": {
+      "path": "MARCO → WBNB",
+      "expectedFeeBps": 30,
+      "defaultAmount": "100",
+      "liquidity": "available"
+    },
+    "STANDARD_SWAP": {
+      "path": "tBNB → USDT",
+      "expectedFeeBps": 30,
+      "defaultAmount": "0.01",
+      "liquidity": "available (USDT/WBNB pair)"
+    }
+  },
+  "swapTxHashes": {
+    "BUY_MARCO": null,
+    "SELL_MARCO": null,
+    "STANDARD_SWAP": null
+  },
+  "note": "Founder must execute swaps in MetaMask — no shell/private keys",
+  "registryUpdate": false,
+  "remainingBlockers": [
+    "Founder must execute 3 constitutional swaps via /testnet/wrapper-validate/",
+    "Registry publish deferred until validation report PASS"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-07-08T19:10:18.118Z",
+  "subgraph": {
+    "configuredEndpoint": "https://proxy-worker.pancake-swap.workers.dev/bsc-exchange",
+    "melegaNativeConfigured": false,
+    "legacyFallbackEndpoint": "https://proxy-worker.pancake-swap.workers.dev/bsc-exchange",
+    "blockerCode": "BLOCKED_SUBGRAPH_ENDPOINT_MISSING",
+    "legacyProbe": {
+      "ok": false,
+      "status": 404,
+      "swaps": 0,
+      "mints": 0,
+      "burns": 0,
+      "error": "Not found"
+    },
+    "endpointsUsesEnvOverride": true
+  },
+  "bscscan": {
+    "localKeyConfigured": false,
+    "envExampleHasKey": true,
+    "machinePayloadFields": true
+  },
+  "pools": {
+    "gateAuditModule": true,
+    "gateCategories": true
+  },
+  "whale": {
+    "code": true,
+    "expectedSchema": true,
+    "requiredSource": true
+  },
+  "envExample": {
+    "bscscan": true,
+    "melegaSubgraph": true
+  }
+}

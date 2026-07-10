@@ -1,0 +1,378 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://melega.finance/schemas/smart-router/mainnet-deployment-certificate.v1.json",
+  "title": "Melega Smart Router Mainnet Deployment Certificate",
+  "description": "Constitutional validation certificate schema for BNB Chain (56) wrapper deploy. Equivalent structure to melega.smart-router.validation.v1 (testnet). Issued only after on-chain mainnet ceremony — not pre-filled by equivalence review.",
+  "type": "object",
+  "required": [
+    "schema",
+    "certificateId",
+    "validationDate",
+    "civilizationStatus",
+    "chainId",
+    "chainName",
+    "verdict",
+    "wrapper",
+    "immutables",
+    "validationTransactions",
+    "feeValidation",
+    "eventVerification",
+    "treasuryIntakeVerified",
+    "executionManifestVerified",
+    "supportedRouteTypes",
+    "constitutionalEquivalence",
+    "registryRefs"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "melega.smart-router.mainnet-validation.v1"
+    },
+    "certificateId": {
+      "type": "string",
+      "pattern": "^R[0-9]+-BSC-MAINNET-WRAPPER-V[0-9]+$",
+      "description": "Example: R7XX-BSC-MAINNET-WRAPPER-V2"
+    },
+    "validationDate": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date of constitutional mainnet ceremony completion"
+    },
+    "civilizationStatus": {
+      "type": "string",
+      "enum": ["ACTIVE_MAINNET"],
+      "description": "Mainnet canonical status — distinct from ACTIVE_TESTNET"
+    },
+    "chainId": {
+      "type": "integer",
+      "const": 56
+    },
+    "chainName": {
+      "type": "string",
+      "const": "BNB Chain"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASSED", "FAILED"]
+    },
+    "wrapper": {
+      "type": "object",
+      "required": [
+        "address",
+        "version",
+        "deployTx",
+        "deployBlock",
+        "deployTimestamp",
+        "bytecodeHash",
+        "explorerUrl"
+      ],
+      "properties": {
+        "address": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "Must match frozen testnet wrapper major semantics (V2+)"
+        },
+        "deployTx": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$"
+        },
+        "deployBlock": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "deployTimestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "bytecodeHash": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "Must match testnet freeze manifest bytecodeHash unless explicit constitutional supersession"
+        },
+        "explorerUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sourcePath": {
+          "type": "string",
+          "const": "contracts/MelegaSmartRouterWrapper.sol"
+        },
+        "solcVersion": {
+          "type": "string",
+          "const": "0.8.20"
+        }
+      },
+      "additionalProperties": false
+    },
+    "immutables": {
+      "type": "object",
+      "required": [
+        "underlyingRouter",
+        "treasuryIntake",
+        "marcoToken",
+        "wbnb",
+        "pricingRef",
+        "pricingRefHash",
+        "treasuryRef",
+        "treasuryPolicyRefHash"
+      ],
+      "properties": {
+        "underlyingRouter": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$",
+          "description": "Chain 56 execution router — must be verified compatible with IUnderlyingSwapRouter before deploy"
+        },
+        "treasuryIntake": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$",
+          "description": "Treasury Runtime published collector for chain 56"
+        },
+        "marcoToken": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$",
+          "description": "Must equal chain 97 MARCO if same contract address policy holds"
+        },
+        "wbnb": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "pricingRef": {
+          "type": "string",
+          "const": "D87_DEX_PRICING_RATIFIED"
+        },
+        "pricingRefHash": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "Must match testnet: 0x86ec759a7d636e2c23c8e666673400056cc5ef99061381c1dac5abbd90530294"
+        },
+        "treasuryRef": {
+          "type": "string",
+          "const": "FSC-01"
+        },
+        "treasuryPolicyRefHash": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{64}$",
+          "description": "Must match testnet: 0x2c4da16e00f42da5ec690db4a2db138a94f7c423d1ad10de9274c4d404b7d6b8"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validationTransactions": {
+      "type": "object",
+      "required": ["BUY_MARCO", "SELL_MARCO", "STANDARD_SWAP"],
+      "properties": {
+        "BUY_MARCO": { "$ref": "#/$defs/validationTx" },
+        "SELL_MARCO": { "$ref": "#/$defs/validationTx" },
+        "STANDARD_SWAP": { "$ref": "#/$defs/validationTx" }
+      },
+      "additionalProperties": false
+    },
+    "feeValidation": {
+      "type": "object",
+      "required": ["BUY_MARCO", "SELL_MARCO", "STANDARD_SWAP"],
+      "properties": {
+        "BUY_MARCO": { "$ref": "#/$defs/feeCheck" },
+        "SELL_MARCO": { "$ref": "#/$defs/feeCheck" },
+        "STANDARD_SWAP": { "$ref": "#/$defs/feeCheck" }
+      },
+      "additionalProperties": false
+    },
+    "eventVerification": {
+      "type": "object",
+      "required": ["ProtocolFeeCollected", "SmartRouterSwapRouted", "TreasuryHandoffPrepared"],
+      "properties": {
+        "ProtocolFeeCollected": { "$ref": "#/$defs/eventCheck" },
+        "SmartRouterSwapRouted": { "$ref": "#/$defs/eventCheck" },
+        "TreasuryHandoffPrepared": { "$ref": "#/$defs/eventCheck" }
+      },
+      "additionalProperties": false
+    },
+    "treasuryIntakeVerified": {
+      "type": "boolean",
+      "const": true
+    },
+    "executionManifestVerified": {
+      "type": "boolean",
+      "const": true
+    },
+    "executionManifestNote": {
+      "type": "string"
+    },
+    "supportedRouteTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"]
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "constitutionalEquivalence": {
+      "type": "object",
+      "required": [
+        "testnetReference",
+        "freezeManifest",
+        "equivalenceReview",
+        "bytecodeHashMatch",
+        "policyHashMatch",
+        "feeScheduleMatch"
+      ],
+      "properties": {
+        "testnetReference": {
+          "type": "string",
+          "description": "Path to testnet validation certificate"
+        },
+        "freezeManifest": {
+          "type": "string",
+          "description": "Path to testnet freeze manifest"
+        },
+        "equivalenceReview": {
+          "type": "string",
+          "description": "Path to R749 equivalence review doc"
+        },
+        "bytecodeHashMatch": {
+          "type": "boolean",
+          "description": "True when mainnet deploy bytecode hash equals frozen testnet hash"
+        },
+        "policyHashMatch": {
+          "type": "boolean"
+        },
+        "feeScheduleMatch": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "founderWallet": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "registryRefs": {
+      "type": "object",
+      "required": ["smartRouter", "civilizationRouter", "treasury"],
+      "properties": {
+        "smartRouter": { "type": "string" },
+        "civilizationRouter": { "type": "string" },
+        "treasury": { "type": "string" },
+        "mainnetFreezeManifest": {
+          "type": "string",
+          "description": "Optional post-mainnet freeze manifest path"
+        }
+      },
+      "additionalProperties": false
+    },
+    "disclaimer": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "validationTx": {
+      "type": "object",
+      "required": [
+        "txHash",
+        "explorerUrl",
+        "receiptStatus",
+        "protocolFeeBps",
+        "buyMarcoIncentiveApplied",
+        "grossAmountIn",
+        "feeAmount",
+        "netAmountIn",
+        "feeToken"
+      ],
+      "properties": {
+        "txHash": { "type": "string", "pattern": "^0x[a-fA-F0-9]{64}$" },
+        "explorerUrl": { "type": "string", "format": "uri" },
+        "receiptStatus": { "type": "string", "enum": ["success"] },
+        "protocolFeeBps": { "type": "integer", "enum": [20, 30] },
+        "buyMarcoIncentiveApplied": { "type": "boolean" },
+        "grossAmountIn": { "type": "string" },
+        "feeAmount": { "type": "string" },
+        "netAmountIn": { "type": "string" },
+        "feeToken": { "type": "string", "pattern": "^0x[a-fA-F0-9]{40}$" }
+      },
+      "additionalProperties": false
+    },
+    "feeCheck": {
+      "type": "object",
+      "required": ["expectedBps", "verifiedBps", "pass"],
+      "properties": {
+        "expectedBps": { "type": "integer", "enum": [20, 30] },
+        "verifiedBps": { "type": "integer", "enum": [20, 30] },
+        "pass": { "type": "boolean", "const": true }
+      },
+      "additionalProperties": false
+    },
+    "eventCheck": {
+      "type": "object",
+      "required": ["verified", "routes"],
+      "properties": {
+        "verified": { "type": "boolean", "const": true },
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["BUY_MARCO", "SELL_MARCO", "STANDARD_SWAP"]
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "schema": "melega.smart-router.mainnet-validation.v1",
+      "certificateId": "TEMPLATE-BSC-MAINNET-WRAPPER-V2",
+      "validationDate": "YYYY-MM-DD",
+      "civilizationStatus": "ACTIVE_MAINNET",
+      "chainId": 56,
+      "chainName": "BNB Chain",
+      "verdict": "PASSED",
+      "wrapper": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "version": 2,
+        "deployTx": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "deployBlock": 0,
+        "deployTimestamp": "YYYY-MM-DDTHH:mm:ss.000Z",
+        "bytecodeHash": "0x38b51c47d376400b04c3af1c7425d4af830dc71aec9a7faee23e80e51213d610",
+        "explorerUrl": "https://bscscan.com/address/0x0000000000000000000000000000000000000000",
+        "sourcePath": "contracts/MelegaSmartRouterWrapper.sol",
+        "solcVersion": "0.8.20"
+      },
+      "immutables": {
+        "underlyingRouter": "0x0000000000000000000000000000000000000000",
+        "treasuryIntake": "0x0000000000000000000000000000000000000000",
+        "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+        "wbnb": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "pricingRef": "D87_DEX_PRICING_RATIFIED",
+        "pricingRefHash": "0x86ec759a7d636e2c23c8e666673400056cc5ef99061381c1dac5abbd90530294",
+        "treasuryRef": "FSC-01",
+        "treasuryPolicyRefHash": "0x2c4da16e00f42da5ec690db4a2db138a94f7c423d1ad10de9274c4d404b7d6b8"
+      },
+      "validationTransactions": {},
+      "feeValidation": {},
+      "eventVerification": {},
+      "treasuryIntakeVerified": true,
+      "executionManifestVerified": true,
+      "supportedRouteTypes": ["STANDARD_SWAP", "BUY_MARCO", "SELL_MARCO"],
+      "constitutionalEquivalence": {
+        "testnetReference": "/registry/smart-router/testnet-validation-certificate.json",
+        "freezeManifest": "/registry/smart-router/testnet-freeze-manifest.json",
+        "equivalenceReview": "docs/runtime/R749_SMART_ROUTER_MAINNET_EQUIVALENCE_REVIEW.md",
+        "bytecodeHashMatch": true,
+        "policyHashMatch": true,
+        "feeScheduleMatch": true
+      },
+      "registryRefs": {
+        "smartRouter": "/registry/smart-router/index.json#56",
+        "civilizationRouter": "/registry/smart-router/civilization-router-contract.json",
+        "treasury": "/registry/treasury/index.json#56"
+      },
+      "disclaimer": "Template only — populate after mainnet constitutional ceremony."
+    }
+  ]
+}

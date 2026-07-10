@@ -1,0 +1,24 @@
+{
+  "task": "R1121_RADAR_READY_FOR_REVIEW",
+  "build": "pass",
+  "screenshots": [
+    "radar-desktop-1440x900.png",
+    "radar-mobile-390x844.png"
+  ],
+  "checks": {
+    "radar-desktop-1440x900.png": {
+      "ok": true,
+      "titleText": "RADAR",
+      "titleClipped": false,
+      "featuredTopVisible": true,
+      "overflow": false
+    },
+    "radar-mobile-390x844.png": {
+      "ok": true,
+      "titleText": "RADAR",
+      "titleClipped": false,
+      "featuredTopVisible": true,
+      "overflow": false
+    }
+  }
+}
