@@ -19,6 +19,8 @@ export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
 export const MAX_BLOCKS_PER_SYNC = 2_000
 export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
+/** When durable store has no events, scan recent head first (avoids ancient-range RPC limits). */
+export const RECENT_BOOTSTRAP_BLOCKS = 3_000
 
 export const INTERVAL_SECONDS = {
   '1H': 3600,

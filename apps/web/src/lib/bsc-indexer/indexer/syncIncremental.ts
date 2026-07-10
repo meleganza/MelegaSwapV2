@@ -1,11 +1,14 @@
 import {
+  DEFAULT_CHUNK_SIZE,
   DEFAULT_START_BLOCK,
   INTERVAL_SECONDS,
+  LIVE_LAG_THRESHOLD_BLOCKS,
   MARCO_WBNB_PAIR_BSC,
   MAX_EVENTS_PER_SYNC,
   MAX_BLOCKS_PER_SYNC,
   MELEGA_CHAIN_ID,
   MIN_CHUNK_SIZE,
+  RECENT_BOOTSTRAP_BLOCKS,
   REORG_SAFETY_BLOCKS,
 } from '../constants'
 import { resolveIndexerStorage } from '../storage'
@@ -49,33 +52,39 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
     chainHeadAtSync: chainHead,
     reorgSafetyBlocks: REORG_SAFETY_BLOCKS,
     lastSuccessfulSync: new Date(0).toISOString(),
-    chunkSize: 1500,
+    chunkSize: DEFAULT_CHUNK_SIZE,
     cursorPairIndex: 0,
   }
 
   try {
-    let fromBlock = Math.max(DEFAULT_START_BLOCK, existing.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
-    const toBlock = Math.min(chainHead, fromBlock + MAX_BLOCKS_PER_SYNC - 1)
+    const eventCountsPreflight = await storage.countEvents()
+    const hasEvents = Object.values(eventCountsPreflight).some((n) => n > 0)
+    const indexingLag = Math.max(0, chainHead - existing.lastIndexedBlock)
+    const limitBackoff = existing.lastFailureReason?.toLowerCase().includes('limit')
+    const shouldBootstrapRecent =
+      !hasEvents &&
+      (indexingLag > LIVE_LAG_THRESHOLD_BLOCKS || limitBackoff)
 
-    // After repeated provider limit errors at genesis, bootstrap from recent head first.
-    if (
-      existing.lastFailureReason?.toLowerCase().includes('limit') &&
-      existing.lastIndexedBlock <= DEFAULT_START_BLOCK
-    ) {
-      fromBlock = Math.max(DEFAULT_START_BLOCK, chainHead - 3_000)
+    let fromBlock = Math.max(DEFAULT_START_BLOCK, existing.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
+    if (shouldBootstrapRecent) {
+      fromBlock = Math.max(DEFAULT_START_BLOCK, chainHead - RECENT_BOOTSTRAP_BLOCKS)
     }
+    const toBlock = Math.min(chainHead, fromBlock + MAX_BLOCKS_PER_SYNC - 1)
+    const swapOnly = shouldBootstrapRecent || (limitBackoff && !hasEvents)
     const normalized: NormalizedIndexerEvent[] = []
 
     for (const pair of watchPairs) {
       for (const [eventType, topic] of Object.entries(AMM_TOPICS) as Array<[keyof typeof AMM_TOPICS, string]>) {
         if (eventType === 'sync') continue
-        const { logs } = await getLogsChunked({
+        if (swapOnly && eventType !== 'swap') continue
+        const { logs, finalChunkSize } = await getLogsChunked({
           address: pair.pairAddress,
           topics: [topic],
           fromBlock,
           toBlock,
           initialChunk: existing.chunkSize,
         })
+        existing.chunkSize = finalChunkSize
         for (const log of logs) {
           if (normalized.length >= MAX_EVENTS_PER_SYNC) break
           if (eventType === 'swap') {
@@ -108,6 +117,7 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
       chainHeadAtSync: chainHead,
       lastSuccessfulSync: new Date().toISOString(),
       lastFailureReason: undefined,
+      chunkSize: existing.chunkSize,
     }
     await storage.saveCheckpoint(checkpoint)
 
