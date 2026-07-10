@@ -69,7 +69,7 @@ export async function fetchHolderCount(
 
     return unavailable(
       json.message?.trim() || 'Explorer returned no holder count',
-      `Etherscan V2 tokenholdercount: ${json.message ?? json.result ?? 'empty result'}`,
+      `Etherscan V2 tokenholdercount (chainid=56): ${String(json.result ?? json.message ?? 'empty result')}`,
     )
   } catch (error) {
     return unavailable(

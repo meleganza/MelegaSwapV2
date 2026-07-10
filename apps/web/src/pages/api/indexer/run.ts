@@ -12,11 +12,12 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const auth = req.headers.authorization
-  const cronSecret = process.env.CRON_SECRET || process.env.INDEXER_CRON_SECRET
+  const cronSecrets = [process.env.CRON_SECRET, process.env.INDEXER_CRON_SECRET].filter(Boolean)
   const vercelCron = req.headers['x-vercel-cron'] === '1'
 
   if (!vercelCron) {
-    if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
+    const authorized = cronSecrets.some((secret) => auth === `Bearer ${secret}`)
+    if (!authorized) {
       return res.status(401).json({ error: 'Unauthorized indexer run' })
     }
   }
