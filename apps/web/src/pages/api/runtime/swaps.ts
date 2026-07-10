@@ -4,10 +4,9 @@ import {
   decodeSwapAmounts,
   formatTokenAmountFromWei,
   getBlockNumber,
-  getLogs,
   MARCO_BSC,
   MARCO_WBNB_PAIR_BSC,
-  SWAP_EVENT_TOPIC,
+  scanSwapLogs,
   WBNB_BSC,
 } from 'lib/runtime-indexing/rpcLogReader'
 import type { RpcSwapIndexerMeta } from 'lib/runtime-indexing/fetchRpcProtocolTransactions'
@@ -46,7 +45,6 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const rpcUrl = process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
   const pairParam = typeof req.query.pair === 'string' ? req.query.pair.toLowerCase() : MARCO_WBNB_PAIR_BSC.toLowerCase()
   const blockSpan = Math.min(50_000, Math.max(2_000, Number(req.query.blockSpan) || 8_000))
   const meta = PAIR_META[pairParam]
@@ -64,17 +62,19 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    const chainHead = await getBlockNumber(rpcUrl)
-    const fromBlock = Math.max(0, chainHead - blockSpan)
-    const logs = await getLogs(
-      {
-        address: pairParam,
-        topics: [SWAP_EVENT_TOPIC],
-        fromBlock: `0x${fromBlock.toString(16)}`,
-        toBlock: 'latest',
-      },
-      rpcUrl,
-    )
+    const rpcUrls = [
+      process.env.BSC_RPC_URL,
+      process.env.NEXT_PUBLIC_BSC_RPC_URL,
+      'https://bsc-dataseed1.defibit.io',
+      'https://bsc-dataseed.binance.org',
+    ].filter(Boolean) as string[]
+    const chainHead = await getBlockNumber(rpcUrls[0])
+    const { logs, scannedFrom } = await scanSwapLogs({
+      pairAddress: pairParam,
+      chainHead,
+      maxBlocks: blockSpan,
+      rpcUrls,
+    })
 
     const blockTsCache = new Map<string, number>()
     const transactions: Transaction[] = []
@@ -83,7 +83,7 @@ const handler: NextApiHandler = async (req, res) => {
       const blockHex = log.blockNumber
       let ts = blockTsCache.get(blockHex)
       if (!ts) {
-        ts = await getBlockTimestamp(blockHex, rpcUrl)
+        ts = await getBlockTimestamp(blockHex, rpcUrls[0])
         blockTsCache.set(blockHex, ts)
       }
       const { amount0In, amount1In, amount0Out, amount1Out } = decodeSwapAmounts(log.data)
@@ -107,7 +107,7 @@ const handler: NextApiHandler = async (req, res) => {
     const indexerMeta: RpcSwapIndexerMeta = {
       source: 'bsc-rpc-log-indexer',
       pairAddress: pairParam,
-      fromBlock,
+      fromBlock: scannedFrom,
       toBlock: chainHead,
       latestIndexedBlock: chainHead,
       chainHead,

@@ -76,7 +76,70 @@ export function decodeSwapAmounts(data: string): {
   }
 }
 
-export function formatTokenAmountFromWei(value: bigint, decimals: number): number {
-  const divisor = 10 ** decimals
-  return Number(value) / divisor
+export const BSC_RPC_FALLBACKS = [
+  process.env.BSC_RPC_URL,
+  process.env.NEXT_PUBLIC_BSC_RPC_URL,
+  'https://bsc-dataseed1.defibit.io',
+  'https://bsc-dataseed.binance.org',
+].filter(Boolean) as string[]
+
+export async function getLogsWithFallback(
+  filter: {
+    address: string
+    topics?: (string | null)[]
+    fromBlock: string
+    toBlock: string
+  },
+  rpcUrls: string[] = BSC_RPC_FALLBACKS,
+) {
+  let lastError: Error | undefined
+  for (const rpcUrl of rpcUrls) {
+    try {
+      return await getLogs(filter, rpcUrl)
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e))
+    }
+  }
+  throw lastError ?? new Error('All RPC endpoints failed')
+}
+
+/** Scan backwards in small chunks to avoid eth_getLogs limits on public BSC RPC. */
+export async function scanSwapLogs(params: {
+  pairAddress: string
+  chainHead: number
+  maxBlocks?: number
+  chunkSize?: number
+  maxLogs?: number
+  rpcUrls?: string[]
+}) {
+  const {
+    pairAddress,
+    chainHead,
+    maxBlocks = 12_000,
+    chunkSize = 1_500,
+    maxLogs = 120,
+    rpcUrls = BSC_RPC_FALLBACKS,
+  } = params
+  const collected: Awaited<ReturnType<typeof getLogs>> = []
+  let scanned = 0
+  let toBlock = chainHead
+
+  while (scanned < maxBlocks && collected.length < maxLogs) {
+    const fromBlock = Math.max(0, toBlock - chunkSize)
+    const chunk = await getLogsWithFallback(
+      {
+        address: pairAddress,
+        topics: [SWAP_EVENT_TOPIC],
+        fromBlock: `0x${fromBlock.toString(16)}`,
+        toBlock: `0x${toBlock.toString(16)}`,
+      },
+      rpcUrls,
+    )
+    collected.push(...chunk)
+    scanned += toBlock - fromBlock
+    toBlock = fromBlock - 1
+    if (fromBlock <= 0) break
+  }
+
+  return { logs: collected.slice(-maxLogs), scannedFrom: Math.max(0, chainHead - scanned), chainHead }
 }

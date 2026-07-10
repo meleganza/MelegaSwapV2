@@ -32,8 +32,8 @@ async function main() {
   const browser = await chromium.launch()
   for (const shot of SHOTS) {
     const page = await browser.newPage({ viewport: { width: shot.width, height: shot.height } })
-    await page.goto(`${BASE}${shot.url}`, { waitUntil: 'networkidle', timeout: 120000 })
-    await page.waitForTimeout(4000)
+    await page.goto(`${BASE}${shot.url}`, { waitUntil: 'domcontentloaded', timeout: 120000 })
+    await page.waitForTimeout(6000)
     const file = path.join(OUT, `${shot.id}.png`)
     if (shot.clip) {
       await page.screenshot({ path: file, clip: shot.clip })
