@@ -5,6 +5,7 @@ import {
   MAX_EVENTS_PER_SYNC,
   MAX_BLOCKS_PER_SYNC,
   MELEGA_CHAIN_ID,
+  MIN_CHUNK_SIZE,
   REORG_SAFETY_BLOCKS,
 } from '../constants'
 import { resolveIndexerStorage } from '../storage'
@@ -53,8 +54,16 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
   }
 
   try {
-    const fromBlock = Math.max(DEFAULT_START_BLOCK, existing.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
+    let fromBlock = Math.max(DEFAULT_START_BLOCK, existing.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
     const toBlock = Math.min(chainHead, fromBlock + MAX_BLOCKS_PER_SYNC - 1)
+
+    // After repeated provider limit errors at genesis, bootstrap from recent head first.
+    if (
+      existing.lastFailureReason?.toLowerCase().includes('limit') &&
+      existing.lastIndexedBlock <= DEFAULT_START_BLOCK
+    ) {
+      fromBlock = Math.max(DEFAULT_START_BLOCK, chainHead - 3_000)
+    }
     const normalized: NormalizedIndexerEvent[] = []
 
     for (const pair of watchPairs) {
