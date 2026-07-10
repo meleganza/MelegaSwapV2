@@ -122,6 +122,10 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
     const failCheckpoint: IndexerCheckpoint = {
       ...existing,
       lastFailureReason: reason,
+      chunkSize:
+        reason.toLowerCase().includes('limit') && existing.chunkSize > MIN_CHUNK_SIZE
+          ? Math.max(MIN_CHUNK_SIZE, Math.floor(existing.chunkSize / 2))
+          : existing.chunkSize,
     }
     await storage.saveCheckpoint(failCheckpoint)
     const health: IndexerHealthSnapshot = {
