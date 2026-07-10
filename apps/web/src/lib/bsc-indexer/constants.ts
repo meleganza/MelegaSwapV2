@@ -13,11 +13,11 @@ export const SYNC_TOPIC = '0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062
 export const PAIR_CREATED_TOPIC = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
 
 export const DEFAULT_START_BLOCK = 26_000_000
-export const DEFAULT_CHUNK_SIZE = 1_500
-export const MIN_CHUNK_SIZE = 200
+export const DEFAULT_CHUNK_SIZE = 800
+export const MIN_CHUNK_SIZE = 100
 export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
-export const MAX_BLOCKS_PER_SYNC = 50_000
+export const MAX_BLOCKS_PER_SYNC = 8_000
 export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
 
 export const INTERVAL_SECONDS = {
