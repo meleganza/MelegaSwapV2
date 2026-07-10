@@ -20,7 +20,8 @@ export function resolveRpcUrls(): string[] {
 
 /** Dedicated QuickNode endpoints only — avoids public RPC log quirks in production indexer. */
 export function resolveIndexerLogRpcUrls(): string[] {
-  return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
+  const primary = process.env.BSC_RPC_URL?.trim()
+  return primary ? [primary] : []
 }
 
 export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = resolveRpcUrls()): Promise<T> {
@@ -83,8 +84,8 @@ export async function getLogsChunked(params: {
           {
             address: params.address,
             topics: params.topics,
-            fromBlock: toBlockHex(cursor),
-            toBlock: toBlockHex(end),
+            fromBlock: cursor,
+            toBlock: end,
           },
         ],
         rpcUrls,
