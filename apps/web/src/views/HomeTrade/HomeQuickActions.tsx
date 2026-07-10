@@ -33,11 +33,6 @@ const Grid = styled.div`
   }
 `
 
-const ActionButton = styled(MelegaStudioGhostBtn)`
-  width: 100%;
-  text-decoration: none;
-`
-
 const QUICK_ACTIONS = [
   { id: 'swap', label: 'Swap', href: '/trade' },
   { id: 'liquidity', label: 'Liquidity', href: '/liquidity-studio' },
@@ -52,9 +47,14 @@ export const HomeQuickActions: React.FC = () => (
     <Title>Quick actions</Title>
     <Grid>
       {QUICK_ACTIONS.map((action) => (
-        <ActionButton key={action.id} as={Link} href={action.href}>
+        <MelegaStudioGhostBtn
+          key={action.id}
+          as={Link}
+          href={action.href}
+          style={{ width: '100%', textDecoration: 'none' }}
+        >
           {action.label}
-        </ActionButton>
+        </MelegaStudioGhostBtn>
       ))}
     </Grid>
   </Shell>
