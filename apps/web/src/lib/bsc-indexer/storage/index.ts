@@ -128,7 +128,7 @@ export function isProductionDurableStorageConfigured(): boolean {
 export async function verifyBlobRoundTrip(): Promise<{ ok: boolean; reason?: string }> {
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
   if (!token) return { ok: false, reason: 'BLOB_READ_WRITE_TOKEN missing' }
-  const key = blobPath('smoke.json')
+  const key = blobPath(`smoke-${Date.now()}.json`)
   const payload = { ts: new Date().toISOString() }
   try {
     await put(key, JSON.stringify(payload), {

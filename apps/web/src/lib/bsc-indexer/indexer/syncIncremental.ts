@@ -1,6 +1,7 @@
 import {
   BOOTSTRAP_MAX_BLOCKS_PER_SYNC,
   DEFAULT_CHUNK_SIZE,
+  DEFAULT_CHUNK_SIZE,
   DEFAULT_START_BLOCK,
   INTERVAL_SECONDS,
   LIVE_LAG_THRESHOLD_BLOCKS,
@@ -86,7 +87,7 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
           topics: [topic],
           fromBlock,
           toBlock,
-          initialChunk: shouldBootstrapRecent ? Math.min(existing.chunkSize, 100) : existing.chunkSize,
+          initialChunk: shouldBootstrapRecent ? Math.min(existing.chunkSize, DEFAULT_CHUNK_SIZE) : existing.chunkSize,
           rpcUrls: logRpcUrls,
         })
         existing.chunkSize = finalChunkSize
