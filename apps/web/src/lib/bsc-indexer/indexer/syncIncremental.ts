@@ -21,7 +21,9 @@ import {
   getLogsChunked,
   normalizeMintBurnLog,
   normalizeSwapLog,
+  scanSwapLogsFromHead,
 } from '../rpc/chunkedLogs'
+import { SWAP_TOPIC } from '../constants'
 import { buildCandlesFromSwaps } from './candles'
 
 export interface SyncResult {
@@ -72,11 +74,28 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
       existing.chunkSize = DEFAULT_CHUNK_SIZE
     }
     const blockSpan = shouldBootstrapRecent ? BOOTSTRAP_MAX_BLOCKS_PER_SYNC : MAX_BLOCKS_PER_SYNC
-    const toBlock = Math.min(chainHead, fromBlock + blockSpan - 1)
     const swapOnly = shouldBootstrapRecent || (limitBackoff && !hasEvents)
+    const toBlock = swapOnly ? chainHead : Math.min(chainHead, fromBlock + blockSpan - 1)
     const normalized: NormalizedIndexerEvent[] = []
+    const tsMap = new Map<number, number>()
 
     for (const pair of watchPairs) {
+      if (swapOnly) {
+        const { logs, blockTimestamps } = await scanSwapLogsFromHead({
+          address: pair.pairAddress,
+          topic: SWAP_TOPIC,
+          maxBlocks: blockSpan,
+          maxLogs: MAX_EVENTS_PER_SYNC,
+          stopBeforeBlock: fromBlock - 1,
+        })
+        for (const [bn, ts] of blockTimestamps) tsMap.set(bn, ts)
+        for (const log of logs) {
+          if (normalized.length >= MAX_EVENTS_PER_SYNC) break
+          normalized.push(normalizeSwapLog(log, pair))
+        }
+        continue
+      }
+
       for (const [eventType, topic] of Object.entries(AMM_TOPICS) as Array<[keyof typeof AMM_TOPICS, string]>) {
         if (eventType === 'sync') continue
         if (swapOnly && eventType !== 'swap') continue
@@ -85,7 +104,7 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
           topics: [topic],
           fromBlock,
           toBlock,
-          initialChunk: shouldBootstrapRecent ? Math.min(existing.chunkSize, DEFAULT_CHUNK_SIZE) : existing.chunkSize,
+          initialChunk: DEFAULT_CHUNK_SIZE,
         })
         existing.chunkSize = finalChunkSize
         for (const log of logs) {
@@ -102,8 +121,9 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
     }
 
     const tsBlocks = new Set(normalized.map((e) => e.blockNumber))
-    const tsMap = new Map<number, number>()
-    for (const bn of tsBlocks) tsMap.set(bn, await getBlockTimestamp(bn))
+    for (const bn of tsBlocks) {
+      if (!tsMap.has(bn)) tsMap.set(bn, await getBlockTimestamp(bn))
+    }
     for (const e of normalized) e.blockTimestamp = tsMap.get(e.blockNumber) ?? 0
 
     const added = await storage.appendEvents(normalized)

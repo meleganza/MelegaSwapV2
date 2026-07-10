@@ -5,6 +5,7 @@ import {
   MINT_TOPIC,
   SWAP_TOPIC,
   SYNC_TOPIC,
+  MAX_EVENTS_PER_SYNC,
 } from '../constants'
 import type { NormalizedIndexerEvent } from '../types'
 
@@ -60,6 +61,44 @@ export interface RawLog {
   blockNumber: string
   transactionHash: string
   logIndex: string
+}
+
+export async function scanSwapLogsFromHead(params: {
+  address: string
+  topic: string
+  maxBlocks: number
+  maxLogs?: number
+  stopBeforeBlock?: number
+  rpcUrls?: string[]
+}): Promise<{ logs: RawLog[]; blockTimestamps: Map<number, number>; lastScannedBlock: number }> {
+  const rpcUrls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
+  if (!rpcUrls.length) throw new Error('BSC_RPC_URL missing for log scan')
+
+  type BlockHeader = { hash: string; number: string; parentHash: string; timestamp: string }
+  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', ['latest', false], rpcUrls)
+  const logs: RawLog[] = []
+  const blockTimestamps = new Map<number, number>()
+  let scanned = 0
+  const stopBefore = params.stopBeforeBlock ?? 0
+
+  while (scanned < params.maxBlocks && logs.length < (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) {
+    const blockNumber = parseInt(block.number, 16)
+    if (blockNumber <= stopBefore) break
+    blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
+
+    const batch = await rpcCall<RawLog[]>(
+      'eth_getLogs',
+      [{ blockHash: block.hash, address: params.address, topics: [params.topic] }],
+      rpcUrls,
+    )
+    logs.push(...batch)
+    scanned += 1
+
+    if (!block.parentHash || /^0x0+$/i.test(block.parentHash)) break
+    block = await rpcCall<BlockHeader>('eth_getBlockByHash', [block.parentHash, false], rpcUrls)
+  }
+
+  return { logs, blockTimestamps, lastScannedBlock: parseInt(block.number, 16) }
 }
 
 export async function getLogsChunked(params: {
