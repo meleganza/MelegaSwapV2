@@ -27,7 +27,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
 
   async function writeJson(key: string, data: unknown) {
     await put(blobPath(key), JSON.stringify(data), {
-      access: 'public',
+      access: 'private',
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: 'application/json',
@@ -132,14 +132,14 @@ export async function verifyBlobRoundTrip(): Promise<{ ok: boolean; reason?: str
   const payload = { ts: new Date().toISOString() }
   try {
     await put(key, JSON.stringify(payload), {
-      access: 'public',
+      access: 'private',
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: 'application/json',
       token,
     })
     const meta = await head(key, { token })
-    const res = await fetch(meta.url)
+    const res = await fetch(meta.url, { headers: { authorization: `Bearer ${token}` } })
     if (!res.ok) return { ok: false, reason: `Blob read HTTP ${res.status}` }
     const json = await res.json()
     if (json?.ts !== payload.ts) return { ok: false, reason: 'Blob round-trip payload mismatch' }
