@@ -44,9 +44,7 @@ export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = re
 }
 
 function toBlockHex(blockNumber: number): string {
-  let hex = blockNumber.toString(16)
-  if (hex.length % 2 === 1) hex = `0${hex}`
-  return `0x${hex}`
+  return `0x${blockNumber.toString(16)}`
 }
 
 export async function getBlockNumber(): Promise<number> {
