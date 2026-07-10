@@ -84,8 +84,8 @@ export async function getLogsChunked(params: {
           {
             address: params.address,
             topics: params.topics,
-            fromBlock: cursor,
-            toBlock: end,
+            fromBlock: toBlockHex(cursor),
+            toBlock: toBlockHex(end),
           },
         ],
         rpcUrls,
