@@ -69,6 +69,7 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
     let fromBlock = Math.max(DEFAULT_START_BLOCK, existing.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
     if (shouldBootstrapRecent) {
       fromBlock = Math.max(DEFAULT_START_BLOCK, chainHead - RECENT_BOOTSTRAP_BLOCKS)
+      existing.chunkSize = DEFAULT_CHUNK_SIZE
     }
     const blockSpan = shouldBootstrapRecent ? BOOTSTRAP_MAX_BLOCKS_PER_SYNC : MAX_BLOCKS_PER_SYNC
     const toBlock = Math.min(chainHead, fromBlock + blockSpan - 1)
