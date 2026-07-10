@@ -88,22 +88,42 @@ function evaluatePoolVisibility(
   sustainableAprDisplay?: string,
   rewardBudgetDisplay?: string,
   currentBlock = 0,
-): { visibilityStatus: 'VISIBLE' | 'HIDDEN'; hiddenReason?: string } {
-  if (status === 'ended') return { visibilityStatus: 'HIDDEN', hiddenReason: 'POOL_ENDED' }
-  if (status === 'indexing') return { visibilityStatus: 'HIDDEN', hiddenReason: 'INDEXING' }
-  if (!poolIsLive(pool, currentBlock)) return { visibilityStatus: 'HIDDEN', hiddenReason: 'NEEDS_FUNDING' }
-  if (!poolHasActiveEmission(pool)) return { visibilityStatus: 'HIDDEN', hiddenReason: 'NO_EMISSION' }
+): {
+  visibilityStatus: PoolVisibilityStatus
+  discoveryClass: import('../poolsStudioData').PoolDiscoveryClass
+  hiddenReason?: string
+} {
   const contract = getContractRef(pool)
   if (!contract.address || contract.address.length < 10) {
-    return { visibilityStatus: 'HIDDEN', hiddenReason: 'INVALID_CONTRACT' }
+    return { visibilityStatus: 'HIDDEN', discoveryClass: 'invalid_contract', hiddenReason: 'INVALID_CONTRACT' }
+  }
+
+  const hasEmission = poolHasActiveEmission(pool)
+  const live = poolIsLive(pool, currentBlock)
+  const ended = status === 'ended'
+
+  if (ended) {
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'inactive', hiddenReason: 'POOL_ENDED' }
+  }
+  if (status === 'indexing') {
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'metadata_incomplete', hiddenReason: 'INDEXING' }
+  }
+  if (!pool.stakingToken?.symbol || !pool.earningToken?.symbol) {
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'metadata_incomplete', hiddenReason: 'METADATA_INCOMPLETE' }
+  }
+  if (!live && !hasEmission) {
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'inactive', hiddenReason: 'NEEDS_FUNDING' }
+  }
+  if (!hasEmission) {
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'liquidity_present', hiddenReason: 'NO_EMISSION' }
   }
   if (!sustainableAprDisplay || isForbiddenAprDisplay(sustainableAprDisplay)) {
-    return { visibilityStatus: 'HIDDEN', hiddenReason: 'INVALID_APR' }
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'metadata_incomplete', hiddenReason: 'APR_UNAVAILABLE' }
   }
   if (!rewardBudgetDisplay || isPoolsMetricUnavailable(rewardBudgetDisplay)) {
-    return { visibilityStatus: 'HIDDEN', hiddenReason: 'INSUFFICIENT_REWARD_BUDGET' }
+    return { visibilityStatus: 'DISCOVERABLE', discoveryClass: 'metadata_incomplete', hiddenReason: 'REWARD_BUDGET_UNAVAILABLE' }
   }
-  return { visibilityStatus: 'VISIBLE' }
+  return { visibilityStatus: 'VISIBLE', discoveryClass: 'tradeable' }
 }
 
 function estimateAprFromEmission(pool: Pool.DeserializedPool<Token>): number | null {
@@ -248,6 +268,7 @@ export function mapPoolToPreviewCard(
     status,
     displayStatus: getPoolDisplayStatus(pool, status, currentBlock),
     visibilityStatus: visibility.visibilityStatus,
+    discoveryClass: visibility.discoveryClass,
     hiddenReason: visibility.hiddenReason,
     healthScore: sustainability.score,
     rewardBadge: getRewardBadge(pool),
@@ -371,15 +392,13 @@ export function aggregateKpis(
   ]
 }
 
+/** R768 — discoverable pools: all verified contracts except invalid_contract. */
+export function listDiscoverablePools(cards: PoolPreviewCard[]): PoolPreviewCard[] {
+  return cards.filter((p) => p.discoveryClass !== 'invalid_contract')
+}
+
 export function listUsablePools(cards: PoolPreviewCard[]): PoolPreviewCard[] {
-  return cards.filter(
-    (p) =>
-      p.visibilityStatus === 'VISIBLE' &&
-      p.status === 'live' &&
-      p.displayStatus === 'LIVE' &&
-      p.sustainableAprDisplay &&
-      !isForbiddenAprDisplay(p.sustainableAprDisplay),
-  )
+  return listDiscoverablePools(cards)
 }
 
 /** @deprecated use listUsablePools */
@@ -388,9 +407,10 @@ export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[
 }
 
 export function selectFeaturedPool(cards: PoolPreviewCard[]): PoolPreviewCard | undefined {
-  const live = listUsablePools(cards)
-  if (!live.length) return undefined
-  return [...live].sort((a, b) => {
+  const live = cards.filter((p) => p.discoveryClass === 'tradeable' || p.visibilityStatus === 'VISIBLE')
+  const ranked = live.length ? live : listDiscoverablePools(cards).filter((p) => p.status === 'live')
+  if (!ranked.length) return undefined
+  return [...ranked].sort((a, b) => {
     const aprDiff = (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0)
     if (aprDiff !== 0) return aprDiff
     return (b.aprExact ?? 0) - (a.aprExact ?? 0)

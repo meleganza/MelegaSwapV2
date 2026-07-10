@@ -27,7 +27,7 @@ const handler: NextApiHandler = async (req, res) => {
       status: 'unavailable',
       reason: 'Source not configured',
       source: 'unavailable',
-      diagnostic: 'Set NEXT_PUBLIC_BSCSCAN_API_KEY in Vercel (Production + Preview) and redeploy',
+      diagnostic: 'Set BSCSCAN_API_KEY in Vercel Production (server-side secret) and redeploy',
       envSource: keyInfo.source,
       checkedAt: new Date().toISOString(),
     })

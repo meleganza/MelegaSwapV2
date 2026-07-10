@@ -11,6 +11,8 @@ import { useFetchPairPrices } from 'state/swap/hooks'
 import { PairDataTimeWindowEnum } from 'state/swap/types'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { getTimeWindowChange } from 'views/Swap/components/Chart/utils'
+import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
+import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import TradeChartPanel from './TradeChartPanel'
 
 const fadeIn = keyframes`
@@ -128,6 +130,12 @@ const ChartBlock = styled.div`
   flex-direction: column;
 `
 
+const timeframeToIndexerInterval = (id: TradeTimeframeId): '1H' | '4H' | '1D' => {
+  if (id === '4h') return '4H'
+  if (id === '1d') return '1D'
+  return '1H'
+}
+
 const timeframeToEnum = (id: TradeTimeframeId): PairDataTimeWindowEnum => {
   if (id === '1d' || id === '4h') return PairDataTimeWindowEnum.DAY
   if (id === '1h' || id === '15m') return PairDataTimeWindowEnum.WEEK
@@ -175,12 +183,36 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
     return token0Address
   }, [inputSymbol, activeChainId, token0Address])
 
-  const { pairPrices = [] } = useFetchPairPrices({
+  const { pairPrices: subgraphPrices = [] } = useFetchPairPrices({
     token0Address,
     token1Address,
     timeWindow: timeframeToEnum(timeframe),
     currentSwapPrice: {},
   })
+
+  const indexerInterval = timeframeToIndexerInterval(timeframe)
+  const pairForIndexer =
+    isMarcoSymbol(inputSymbol) || isMarcoSymbol(outputSymbol) ? MARCO_WBNB_PAIR_BSC : undefined
+  const { chartEntries: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
+    pairForIndexer,
+    indexerInterval,
+  )
+
+  const pairPrices = useMemo(() => {
+    if (subgraphPrices.length >= 2) return subgraphPrices
+    if (indexerCandles.length >= 2) {
+      return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
+    }
+    return subgraphPrices
+  }, [subgraphPrices, indexerCandles])
+
+  const resolvedChartEmptyReason =
+    chartEmptyReason ??
+    (pairPrices.length < 2 && indexerCandleStatus === 'empty'
+      ? 'No swap events in selected interval'
+      : pairPrices.length < 2 && indexerCandleStatus === 'unavailable'
+        ? 'Durable indexer candles unavailable'
+        : chartEmptyReason)
 
   const chartChange = useMemo(() => getTimeWindowChange(pairPrices), [pairPrices])
   const lastPrice = pairPrices[pairPrices.length - 1]?.value
@@ -260,7 +292,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           inputSymbol={inputSymbol}
           outputSymbol={outputSymbol}
           pairPrices={pairPrices}
-          emptyReason={chartEmptyReason}
+          emptyReason={resolvedChartEmptyReason}
           emptyDetail={chartEmptyDetail}
           publicSources={isMarcoSymbol(outputSymbol) ? publicSources : []}
         />

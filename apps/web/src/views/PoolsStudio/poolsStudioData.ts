@@ -5,7 +5,14 @@ import { VaultKey } from 'state/types'
 
 export type PoolStatus = 'live' | 'indexing' | 'ended'
 
-export type PoolVisibilityStatus = 'VISIBLE' | 'HIDDEN'
+export type PoolVisibilityStatus = 'VISIBLE' | 'HIDDEN' | 'DISCOVERABLE'
+
+export type PoolDiscoveryClass =
+  | 'tradeable'
+  | 'liquidity_present'
+  | 'inactive'
+  | 'metadata_incomplete'
+  | 'invalid_contract'
 
 export type PoolTab = 'all' | 'positions' | 'finished'
 
@@ -66,6 +73,7 @@ export interface PoolPreviewCard {
   status: PoolStatus
   displayStatus?: 'LIVE' | 'ENDED' | 'INDEXING'
   visibilityStatus?: PoolVisibilityStatus
+  discoveryClass?: PoolDiscoveryClass
   hiddenReason?: string
   healthScore?: number
   rewardBadge?: 'Official' | 'Partner' | 'Community'

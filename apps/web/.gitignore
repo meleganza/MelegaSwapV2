@@ -39,3 +39,6 @@ debug.log*
 # turbo
 .turbo
 .vercel
+
+# R768 durable indexer runtime data (never commit)
+data/bsc-indexer/

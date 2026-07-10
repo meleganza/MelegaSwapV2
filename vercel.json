@@ -5,5 +5,11 @@
       "home-trade-screen-redesign": true,
       "design-system-foundation": true
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/indexer/run",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }

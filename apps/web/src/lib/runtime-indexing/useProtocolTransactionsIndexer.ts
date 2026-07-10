@@ -9,7 +9,7 @@ import {
   formatSubgraphBlockerReason,
   resolveSubgraphEndpointReport,
 } from './resolveSubgraphEndpoint'
-import { fetchRpcProtocolTransactions } from './fetchRpcProtocolTransactions'
+import { fetchDurableIndexerTransactions } from 'lib/bsc-indexer/client/fetchDurableIndexer'
 
 const SWR_SETTINGS = {
   refreshInterval: 15000,
@@ -17,7 +17,7 @@ const SWR_SETTINGS = {
   errorRetryInterval: 3000,
 }
 
-const RPC_SWR_SETTINGS = {
+const INDEXER_SWR_SETTINGS = {
   refreshInterval: 30_000,
   revalidateOnFocus: false,
   errorRetryCount: 2,
@@ -38,12 +38,12 @@ export interface IndexerActivityState {
   indexingLag?: number
 }
 
-export function useProtocolTransactionsIndexer() {
+export function useProtocolTransactionsIndexer(pairAddress?: string) {
   const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
   const type = checkIsStableSwap() ? 'stableSwap' : 'swap'
   const useSubgraph = Boolean(chainName && subgraphReport.melegaNativeConfigured)
-  const useRpcFallback = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured && !checkIsStableSwap())
+  const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured && !checkIsStableSwap())
 
   const swrKey = useSubgraph ? [`info/protocol/updateProtocolTransactionsData/${type}`, chainName] : null
 
@@ -54,76 +54,85 @@ export function useProtocolTransactionsIndexer() {
   )
 
   const {
-    data: rpcPayload,
-    error: rpcError,
-    isValidating: rpcValidating,
-  } = useSWR(useRpcFallback ? ['rpc/protocol/transactions', chainName] : null, () => fetchRpcProtocolTransactions(), RPC_SWR_SETTINGS)
+    data: indexerPayload,
+    error: indexerError,
+    isValidating: indexerValidating,
+  } = useSWR(
+    useDurableIndexer ? ['durable-indexer/transactions', chainName, pairAddress] : null,
+    () => fetchDurableIndexerTransactions({ pairAddress, limit: 80 }),
+    INDEXER_SWR_SETTINGS,
+  )
 
   const transactions = useMemo(() => {
     if (useSubgraph && Array.isArray(data)) return data
-    if (useRpcFallback && rpcPayload?.transactions?.length) return rpcPayload.transactions
+    if (useDurableIndexer && indexerPayload?.transactions?.length) return indexerPayload.transactions
     return undefined
-  }, [useSubgraph, data, useRpcFallback, rpcPayload])
+  }, [useSubgraph, data, useDurableIndexer, indexerPayload])
 
   const indexerState = useMemo((): IndexerActivityState => {
     const lastAttempt = new Date().toISOString()
 
-    if (useRpcFallback) {
-      const meta = rpcPayload?.meta
-      if (rpcPayload?.transactions?.length) {
+    if (useDurableIndexer) {
+      const meta = indexerPayload?.meta
+      if (indexerPayload?.transactions?.length) {
         return {
-          source: meta?.source ?? 'bsc-rpc-log-indexer',
+          source: meta?.source ?? 'bsc-durable-indexer',
           configuredEndpoint: null,
           status: 'ready',
-          indexer: 'bsc-rpc-swap-indexer',
+          indexer: 'bsc-durable-event-store',
           lastAttempt: meta?.lastSuccessfulSync ?? lastAttempt,
-          latestIndexedBlock: meta?.latestIndexedBlock,
+          latestIndexedBlock: meta?.lastIndexedBlock,
           chainHead: meta?.chainHead,
           indexingLag: meta?.indexingLag,
         }
       }
-      if (rpcError) {
+      if (indexerError) {
         return {
-          source: 'bsc-rpc-log-indexer',
+          source: 'bsc-durable-indexer',
           configuredEndpoint: null,
           status: 'error',
-          indexer: 'bsc-rpc-swap-indexer',
+          indexer: 'bsc-durable-event-store',
           lastAttempt,
-          reason: rpcError instanceof Error ? rpcError.message : 'RPC swap indexer request failed',
+          reason: indexerError instanceof Error ? indexerError.message : 'Durable indexer request failed',
           blockerCode: subgraphReport.blockerCode ?? undefined,
         }
       }
-      if (!rpcValidating && rpcPayload?.meta?.status === 'empty') {
+      if (!indexerValidating && meta?.status === 'empty') {
         return {
-          source: 'bsc-rpc-log-indexer',
+          source: 'bsc-durable-indexer',
           configuredEndpoint: null,
           status: 'ready',
-          indexer: 'bsc-rpc-swap-indexer',
+          indexer: 'bsc-durable-event-store',
           lastAttempt,
-          reason: rpcPayload.meta.reason ?? 'No swap events in scanned block range',
-          latestIndexedBlock: rpcPayload.meta.latestIndexedBlock,
-          chainHead: rpcPayload.meta.chainHead,
-          indexingLag: rpcPayload.meta.indexingLag,
+          reason: meta.reason ?? 'No events in durable store for query',
+          latestIndexedBlock: meta?.lastIndexedBlock,
+          chainHead: meta?.chainHead,
+          indexingLag: meta?.indexingLag,
         }
       }
-      if (rpcValidating && !rpcPayload) {
+      if (indexerValidating && !indexerPayload) {
         return {
-          source: 'bsc-rpc-log-indexer',
+          source: 'bsc-durable-indexer',
           configuredEndpoint: null,
           status: 'loading',
-          indexer: 'bsc-rpc-swap-indexer',
+          indexer: 'bsc-durable-event-store',
           lastAttempt,
-          reason: 'Scanning on-chain swap events',
+          reason: 'Loading indexed events',
         }
       }
       return {
-        source: 'bsc-rpc-log-indexer',
+        source: 'bsc-durable-indexer',
         configuredEndpoint: null,
         status: 'unavailable',
-        indexer: 'bsc-rpc-swap-indexer',
+        indexer: 'bsc-durable-event-store',
         lastAttempt,
-        reason: rpcPayload?.meta?.reason ?? formatSubgraphBlockerReason(subgraphReport),
+        reason:
+          meta?.reason ??
+          'Durable indexer not populated — configure BLOB_READ_WRITE_TOKEN and run /api/indexer/run',
         blockerCode: subgraphReport.blockerCode ?? undefined,
+        latestIndexedBlock: meta?.lastIndexedBlock,
+        chainHead: meta?.chainHead,
+        indexingLag: meta?.indexingLag,
       }
     }
 
@@ -200,7 +209,18 @@ export function useProtocolTransactionsIndexer() {
       lastAttempt,
       reason: 'Subgraph transactions loading',
     }
-  }, [chainName, data, error, isValidating, type, subgraphReport, useRpcFallback, rpcPayload, rpcError, rpcValidating])
+  }, [
+    chainName,
+    data,
+    error,
+    isValidating,
+    type,
+    subgraphReport,
+    useDurableIndexer,
+    indexerPayload,
+    indexerError,
+    indexerValidating,
+  ])
 
   return {
     transactions,

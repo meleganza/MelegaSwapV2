@@ -29,11 +29,11 @@ export async function fetchHolderCount(
     )
   }
 
-  const apiKey = apiKeyOverride ?? process.env.NEXT_PUBLIC_BSCSCAN_API_KEY ?? process.env.NEXT_PUBLIC_BSCSAN_API_KEY
+  const apiKey = apiKeyOverride ?? process.env.BSCSCAN_API_KEY ?? process.env.NEXT_PUBLIC_BSCSCAN_API_KEY ?? process.env.NEXT_PUBLIC_BSCSAN_API_KEY
   if (!apiKey) {
     return unavailable(
       'Source not configured',
-      'Set NEXT_PUBLIC_BSCSCAN_API_KEY in Vercel (Production + Preview) and redeploy',
+      'Set BSCSCAN_API_KEY in Vercel Production (server-side) and redeploy',
     )
   }
 

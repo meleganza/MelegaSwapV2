@@ -82,7 +82,7 @@ export const PoolsGrid: React.FC = () => {
     return (
       <EmptyState data-ps-pool-grid data-ps-pool-grid-empty data-r708-empty-grid data-r730a-pools-diagnostic>
         <EmptyTitle>{RUNTIME_UNAVAILABLE_LABEL}</EmptyTitle>
-        <EmptySub>No sustainable live pools match the current filters. Check finished pools or create a funded reward pool.</EmptySub>
+        <EmptySub>No pools match the current filters. Browse all discoverable pools or adjust search.</EmptySub>
         <TradeTechnicalDetails detail={technicalDetail} />
       </EmptyState>
     )

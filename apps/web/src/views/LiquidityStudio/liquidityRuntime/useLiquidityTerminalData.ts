@@ -1,10 +1,12 @@
 import { useMemo } from 'react'
+import useSWR from 'swr'
 import { Transaction, TransactionType } from 'state/info/types'
 import { usePoolDatasSWR } from 'state/info/hooks'
 import useTopPoolAddresses from 'state/info/queries/pools/topPools'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { fetchAmmPairsPage } from 'lib/bsc-indexer/client/fetchDurableIndexer'
 import { formatPct, formatUsd } from './formatLiquidityRuntime'
 
 export interface LiquidityActivityRow {
@@ -71,6 +73,11 @@ export const useLiquidityTerminalData = (
   }, [topAddresses, poolAddress])
 
   const poolDatas = usePoolDatasSWR(poolAddresses)
+  const { data: registryPairs } = useSWR(
+    'liquidity-top-amm-pairs',
+    () => fetchAmmPairsPage({ page: 1, pageSize: 8, classification: 'tradeable' }),
+    { revalidateOnFocus: false },
+  )
   const selectedPool = useMemo(
     () => (poolAddress ? poolDatas.find((p) => p?.address?.toLowerCase() === poolAddress.toLowerCase()) : poolDatas[0]),
     [poolDatas, poolAddress],
@@ -111,7 +118,7 @@ export const useLiquidityTerminalData = (
   }, [selectedPool])
 
   const topPools = useMemo((): LiquidityTopPoolRow[] => {
-    return poolDatas
+    const subgraphRows = poolDatas
       .filter(Boolean)
       .slice(0, 3)
       .map((pool) => ({
@@ -121,7 +128,19 @@ export const useLiquidityTerminalData = (
         tvl: formatUsd(pool.liquidityUSD),
         href: `/add/${pool.token0.address}/${pool.token1.address}`,
       }))
-  }, [poolDatas])
+
+    if (subgraphRows.length >= 3) return subgraphRows
+
+    const registryRows = (registryPairs?.rows ?? []).slice(0, 3).map((pair: { pairAddress: string; token0?: string; token1?: string }) => ({
+      id: pair.pairAddress,
+      pair: `${pair.token0?.slice(0, 6) ?? '???'}… / ${pair.token1?.slice(0, 6) ?? '???'}…`,
+      apr: RUNTIME_UNAVAILABLE_LABEL,
+      tvl: RUNTIME_UNAVAILABLE_LABEL,
+      href: `/add/${pair.token0}/${pair.token1}`,
+    }))
+
+    return registryRows.length ? registryRows : subgraphRows
+  }, [poolDatas, registryPairs])
 
   const marketUnavailableReason = useMemo((): string | undefined => {
     if (selectedPool?.liquidityUSD && selectedPool.liquidityUSD > 0) return undefined
