@@ -18,15 +18,9 @@ export function resolveRpcUrls(): string[] {
   ].filter(Boolean) as string[]
 }
 
-/** Prefer public/dataseed endpoints for log scans when dedicated RPC hits log limits. */
-export function resolveBootstrapLogRpcUrls(): string[] {
-  return [
-    process.env.BSC_RPC_FALLBACK_URL,
-    'https://bsc-dataseed.binance.org',
-    'https://bsc-dataseed1.defibit.io',
-    process.env.BSC_RPC_URL,
-    process.env.NEXT_PUBLIC_BSC_RPC_URL,
-  ].filter(Boolean) as string[]
+/** Dedicated QuickNode endpoints only — avoids public RPC log quirks in production indexer. */
+export function resolveIndexerLogRpcUrls(): string[] {
+  return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
 }
 
 export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = resolveRpcUrls()): Promise<T> {
@@ -91,8 +85,8 @@ export async function getLogsChunked(params: {
           {
             address: params.address,
             topics: params.topics,
-            fromBlock: `0x${cursor.toString(16)}`,
-            toBlock: `0x${end.toString(16)}`,
+            fromBlock: toBlockHex(cursor),
+            toBlock: toBlockHex(end),
           },
         ],
         rpcUrls,
@@ -121,7 +115,7 @@ const blockTsCache = new Map<number, number>()
 
 export async function getBlockTimestamp(blockNumber: number): Promise<number> {
   if (blockTsCache.has(blockNumber)) return blockTsCache.get(blockNumber)!
-  const hex = await rpcCall<{ timestamp: string }>('eth_getBlockByNumber', [`0x${blockNumber.toString(16)}`, false])
+  const hex = await rpcCall<{ timestamp: string }>('eth_getBlockByNumber', [toBlockHex(blockNumber), false])
   const ts = parseInt(hex.timestamp, 16)
   blockTsCache.set(blockNumber, ts)
   return ts
