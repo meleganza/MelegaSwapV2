@@ -1,4 +1,5 @@
 import {
+  BOOTSTRAP_MAX_BLOCKS_PER_SYNC,
   DEFAULT_CHUNK_SIZE,
   DEFAULT_START_BLOCK,
   INTERVAL_SECONDS,
@@ -20,6 +21,7 @@ import {
   getLogsChunked,
   normalizeMintBurnLog,
   normalizeSwapLog,
+  resolveBootstrapLogRpcUrls,
 } from '../rpc/chunkedLogs'
 import { buildCandlesFromSwaps } from './candles'
 
@@ -69,8 +71,10 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
     if (shouldBootstrapRecent) {
       fromBlock = Math.max(DEFAULT_START_BLOCK, chainHead - RECENT_BOOTSTRAP_BLOCKS)
     }
-    const toBlock = Math.min(chainHead, fromBlock + MAX_BLOCKS_PER_SYNC - 1)
+    const blockSpan = shouldBootstrapRecent ? BOOTSTRAP_MAX_BLOCKS_PER_SYNC : MAX_BLOCKS_PER_SYNC
+    const toBlock = Math.min(chainHead, fromBlock + blockSpan - 1)
     const swapOnly = shouldBootstrapRecent || (limitBackoff && !hasEvents)
+    const logRpcUrls = shouldBootstrapRecent ? resolveBootstrapLogRpcUrls() : undefined
     const normalized: NormalizedIndexerEvent[] = []
 
     for (const pair of watchPairs) {
@@ -82,7 +86,8 @@ export async function runIncrementalSync(watchPairs: PairWatch[] = DEFAULT_WATCH
           topics: [topic],
           fromBlock,
           toBlock,
-          initialChunk: existing.chunkSize,
+          initialChunk: shouldBootstrapRecent ? Math.min(existing.chunkSize, 100) : existing.chunkSize,
+          rpcUrls: logRpcUrls,
         })
         existing.chunkSize = finalChunkSize
         for (const log of logs) {

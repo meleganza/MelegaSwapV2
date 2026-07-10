@@ -14,13 +14,15 @@ export const PAIR_CREATED_TOPIC = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8
 
 export const DEFAULT_START_BLOCK = 26_000_000
 export const DEFAULT_CHUNK_SIZE = 400
-export const MIN_CHUNK_SIZE = 50
+export const MIN_CHUNK_SIZE = 10
 export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
 export const MAX_BLOCKS_PER_SYNC = 2_000
+/** Tighter span for cold-start bootstrap to stay within RPC log limits. */
+export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 150
 export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
 /** When durable store has no events, scan recent head first (avoids ancient-range RPC limits). */
-export const RECENT_BOOTSTRAP_BLOCKS = 3_000
+export const RECENT_BOOTSTRAP_BLOCKS = 300
 
 export const INTERVAL_SECONDS = {
   '1H': 3600,

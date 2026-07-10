@@ -18,6 +18,17 @@ export function resolveRpcUrls(): string[] {
   ].filter(Boolean) as string[]
 }
 
+/** Prefer public/dataseed endpoints for log scans when dedicated RPC hits log limits. */
+export function resolveBootstrapLogRpcUrls(): string[] {
+  return [
+    process.env.BSC_RPC_FALLBACK_URL,
+    'https://bsc-dataseed.binance.org',
+    'https://bsc-dataseed1.defibit.io',
+    process.env.BSC_RPC_URL,
+    process.env.NEXT_PUBLIC_BSC_RPC_URL,
+  ].filter(Boolean) as string[]
+}
+
 export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = resolveRpcUrls()): Promise<T> {
   let lastError: Error | undefined
   for (const url of rpcUrls) {
@@ -58,7 +69,9 @@ export async function getLogsChunked(params: {
   fromBlock: number
   toBlock: number
   initialChunk?: number
+  rpcUrls?: string[]
 }): Promise<{ logs: RawLog[]; finalChunkSize: number }> {
+  const rpcUrls = params.rpcUrls ?? resolveRpcUrls()
   let chunk = params.initialChunk ?? DEFAULT_CHUNK_SIZE
   const logs: RawLog[] = []
   let cursor = params.fromBlock
@@ -76,13 +89,19 @@ export async function getLogsChunked(params: {
             toBlock: `0x${end.toString(16)}`,
           },
         ],
+        rpcUrls,
       )
       logs.push(...batch)
       cursor = end + 1
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      if (msg.toLowerCase().includes('limit') && chunk > MIN_CHUNK_SIZE) {
+      if (!msg.toLowerCase().includes('limit')) throw e
+      if (chunk > MIN_CHUNK_SIZE) {
         chunk = Math.max(MIN_CHUNK_SIZE, Math.floor(chunk / 2))
+        continue
+      }
+      if (end > cursor) {
+        chunk = 1
         continue
       }
       throw e
