@@ -1,44 +1,38 @@
+import { head, put } from '@vercel/blob'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent, OhlcvCandle } from '../types'
 import type { IndexerStorage } from './types'
 import { createJsonFileStorage } from './jsonFileStorage'
+
+const BLOB_PREFIX = 'bsc-indexer'
+
+function blobPath(key: string): string {
+  return `${BLOB_PREFIX}/${key}`
+}
 
 /** Vercel Blob adapter — durable production storage when BLOB_READ_WRITE_TOKEN is set. */
 export function createVercelBlobStorage(): IndexerStorage | null {
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
   if (!token) return null
 
-  const base = 'bsc-indexer'
-
-  async function blobGet(key: string): Promise<string | null> {
-    const res = await fetch(`https://blob.vercel-storage.com/${base}/${key}`, {
-      headers: { authorization: `Bearer ${token}` },
-    })
-    if (res.status === 404) return null
-    if (!res.ok) throw new Error(`Blob read failed: ${res.status}`)
-    return res.text()
-  }
-
-  async function blobPut(key: string, body: string, contentType = 'application/json') {
-    const res = await fetch(`https://blob.vercel-storage.com/${base}/${key}`, {
-      method: 'PUT',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'content-type': contentType,
-        'x-api-version': '7',
-      },
-      body,
-    })
-    if (!res.ok) throw new Error(`Blob write failed: ${res.status}`)
-  }
-
   async function readJson<T>(key: string): Promise<T | null> {
-    const raw = await blobGet(key)
-    if (!raw) return null
     try {
-      return JSON.parse(raw) as T
+      const meta = await head(blobPath(key), { token })
+      const res = await fetch(meta.url, { headers: { authorization: `Bearer ${token}` } })
+      if (!res.ok) return null
+      return (await res.json()) as T
     } catch {
       return null
     }
+  }
+
+  async function writeJson(key: string, data: unknown) {
+    await put(blobPath(key), JSON.stringify(data), {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: 'application/json',
+      token,
+    })
   }
 
   return {
@@ -48,13 +42,13 @@ export function createVercelBlobStorage(): IndexerStorage | null {
       return readJson<IndexerCheckpoint>('checkpoint.json')
     },
     async saveCheckpoint(checkpoint) {
-      await blobPut('checkpoint.json', JSON.stringify(checkpoint))
+      await writeJson('checkpoint.json', checkpoint)
     },
     async loadHealth() {
       return readJson<IndexerHealthSnapshot>('health.json')
     },
     async saveHealth(health) {
-      await blobPut('health.json', JSON.stringify(health))
+      await writeJson('health.json', health)
     },
     async appendEvents(events) {
       const existing = (await readJson<NormalizedIndexerEvent[]>('events.json')) ?? []
@@ -65,7 +59,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
         seen.add(key)
         return true
       })
-      if (added.length) await blobPut('events.json', JSON.stringify([...existing, ...added]))
+      if (added.length) await writeJson('events.json', [...existing, ...added])
       return added.length
     },
     async listEvents(query) {
@@ -102,7 +96,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
         const existing = (await readJson<OhlcvCandle[]>(key)) ?? []
         const map = new Map(existing.map((c) => [c.bucketTimestamp, c]))
         for (const c of batch) map.set(c.bucketTimestamp, c)
-        await blobPut(key, JSON.stringify([...map.values()].sort((a, b) => a.bucketTimestamp - b.bucketTimestamp)))
+        await writeJson(key, [...map.values()].sort((a, b) => a.bucketTimestamp - b.bucketTimestamp))
       }
     },
     async listCandles(pairAddress, interval, limit = 200) {
@@ -128,4 +122,29 @@ export function resolveIndexerStorage(): IndexerStorage {
 
 export function isProductionDurableStorageConfigured(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim())
+}
+
+/** Smoke helper for production blob verification. */
+export async function verifyBlobRoundTrip(): Promise<{ ok: boolean; reason?: string }> {
+  const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
+  if (!token) return { ok: false, reason: 'BLOB_READ_WRITE_TOKEN missing' }
+  const key = blobPath('smoke.json')
+  const payload = { ts: new Date().toISOString() }
+  try {
+    await put(key, JSON.stringify(payload), {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: 'application/json',
+      token,
+    })
+    const meta = await head(key, { token })
+    const res = await fetch(meta.url)
+    if (!res.ok) return { ok: false, reason: `Blob read HTTP ${res.status}` }
+    const json = await res.json()
+    if (json?.ts !== payload.ts) return { ok: false, reason: 'Blob round-trip payload mismatch' }
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : 'Blob smoke failed' }
+  }
 }

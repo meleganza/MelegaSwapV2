@@ -1,4 +1,4 @@
-import { resolveIndexerStorage, isProductionDurableStorageConfigured } from './storage'
+import { resolveIndexerStorage, isProductionDurableStorageConfigured, verifyBlobRoundTrip } from './storage'
 import { getBlockNumber } from './rpc/chunkedLogs'
 
 export interface ReadinessCheck {
@@ -16,6 +16,9 @@ export interface ProductionReadinessReport {
     storageBackend: string
     storageConfigured: boolean
     durableProductionStorage: boolean
+    blobRoundTrip?: { ok: boolean; reason?: string }
+    rpcPrimary?: { ok: boolean; chainHead?: number; reason?: string }
+    rpcFallback?: { ok: boolean; chainHead?: number; reason?: string }
     lastIndexedBlock?: number
     chainHead?: number
     indexingLag?: number
@@ -34,11 +37,43 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
   const storage = resolveIndexerStorage()
   const health = await storage.loadHealth()
   const checkpoint = await storage.loadCheckpoint()
+  const durable = isProductionDurableStorageConfigured()
   let chainHead: number | undefined
+  let rpcPrimary: { ok: boolean; chainHead?: number; reason?: string } = { ok: false }
+  let rpcFallback: { ok: boolean; chainHead?: number; reason?: string } = { ok: false }
+  const blobRoundTrip = durable ? await verifyBlobRoundTrip() : { ok: false, reason: 'Blob token not configured' }
+
   try {
-    chainHead = await getBlockNumber()
-  } catch {
-    chainHead = undefined
+    const primaryUrl = process.env.BSC_RPC_URL?.trim()
+    if (primaryUrl) {
+      chainHead = await getBlockNumber([primaryUrl])
+      rpcPrimary = { ok: true, chainHead }
+    } else {
+      rpcPrimary = { ok: false, reason: 'BSC_RPC_URL missing' }
+    }
+  } catch (e) {
+    rpcPrimary = { ok: false, reason: e instanceof Error ? e.message : 'Primary RPC failed' }
+  }
+
+  const fallbackUrl = process.env.BSC_RPC_FALLBACK_URL?.trim()
+  if (fallbackUrl) {
+    try {
+      const fbHead = await getBlockNumber([fallbackUrl])
+      rpcFallback = { ok: true, chainHead: fbHead }
+      if (!chainHead) chainHead = fbHead
+    } catch (e) {
+      rpcFallback = { ok: false, reason: e instanceof Error ? e.message : 'Fallback RPC failed' }
+    }
+  } else {
+    rpcFallback = { ok: false, reason: 'BSC_RPC_FALLBACK_URL not configured' }
+  }
+
+  if (!chainHead) {
+    try {
+      chainHead = await getBlockNumber()
+    } catch {
+      chainHead = undefined
+    }
   }
 
   const checks: ReadinessCheck[] = [
@@ -76,10 +111,9 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
     },
   ]
 
-  const durable = isProductionDurableStorageConfigured()
   const hasEvents = Object.values(health?.eventCounts ?? {}).some((n) => n > 0)
   const verdict =
-    durable && hasEnv('BSC_RPC_URL') && hasEvents
+    durable && hasEnv('BSC_RPC_URL') && blobRoundTrip.ok && rpcPrimary.ok && hasEvents
       ? 'ready'
       : durable || hasEnv('BSC_RPC_URL')
         ? 'partial'
@@ -93,6 +127,9 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
       storageBackend: storage.backend,
       storageConfigured: storage.configured,
       durableProductionStorage: durable,
+      blobRoundTrip,
+      rpcPrimary,
+      rpcFallback,
       lastIndexedBlock: checkpoint?.lastIndexedBlock ?? health?.lastIndexedBlock,
       chainHead,
       indexingLag:
