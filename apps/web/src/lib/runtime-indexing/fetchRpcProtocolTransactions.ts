@@ -21,7 +21,7 @@ export interface RpcSwapIndexerResponse {
 
 export async function fetchRpcProtocolTransactions(
   pairAddress?: string,
-  blockSpan = 50_000,
+  blockSpan = 8_000,
 ): Promise<RpcSwapIndexerResponse | undefined> {
   try {
     const params = new URLSearchParams()

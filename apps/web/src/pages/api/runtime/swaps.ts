@@ -48,7 +48,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   const rpcUrl = process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
   const pairParam = typeof req.query.pair === 'string' ? req.query.pair.toLowerCase() : MARCO_WBNB_PAIR_BSC.toLowerCase()
-  const blockSpan = Math.min(200_000, Math.max(5_000, Number(req.query.blockSpan) || 80_000))
+  const blockSpan = Math.min(50_000, Math.max(2_000, Number(req.query.blockSpan) || 8_000))
   const meta = PAIR_META[pairParam]
 
   if (!meta) {

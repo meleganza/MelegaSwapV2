@@ -18,9 +18,9 @@ const INTERVAL_SECONDS: Record<Interval, number> = {
 }
 
 const BLOCK_SPAN: Record<Interval, number> = {
-  '1H': 30_000,
-  '4H': 120_000,
-  '1D': 400_000,
+  '1H': 8_000,
+  '4H': 20_000,
+  '1D': 40_000,
 }
 
 async function getBlockTimestamp(blockHex: string, rpcUrl: string): Promise<number> {
