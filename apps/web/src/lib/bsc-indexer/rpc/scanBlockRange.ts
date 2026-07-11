@@ -1,20 +1,35 @@
 import { BURN_TOPIC, MINT_TOPIC, SWAP_TOPIC } from '../constants'
 import type { RawLog } from './chunkedLogs'
 import { getBlockNumber, rpcCallWithFailover, resolveIndexerLogRpcUrls } from './chunkedLogs'
-import { toBlockQuantity } from './blockQuantity'
+import { blockQuantityVariants } from './blockQuantity'
 
 export type BlockHeader = { hash: string; number: string; timestamp: string }
 
 const EVENT_TOPICS = [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC] as const
 
-export async function fetchBlockHeader(blockNumber: number, rpcUrls?: string[]): Promise<BlockHeader> {
+async function fetchBlockHeaderWithVariants(
+  blockNumber: number,
+  rpcUrls?: string[],
+): Promise<{ block: BlockHeader; url: string }> {
   const urls = rpcUrls ?? resolveIndexerLogRpcUrls()
-  const { result } = await rpcCallWithFailover<BlockHeader>(
-    'eth_getBlockByNumber',
-    [toBlockQuantity(blockNumber), false],
-    urls,
-  )
-  return result
+  let lastError: Error | undefined
+  for (const quantity of blockQuantityVariants(blockNumber)) {
+    try {
+      const { result, url } = await rpcCallWithFailover<BlockHeader>(
+        'eth_getBlockByNumber',
+        [quantity, false],
+        urls,
+      )
+      return { block: result, url }
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e))
+    }
+  }
+  throw lastError ?? new Error(`eth_getBlockByNumber failed for block ${blockNumber}`)
+}
+
+export async function fetchBlockHeader(blockNumber: number, rpcUrls?: string[]): Promise<BlockHeader> {
+  return (await fetchBlockHeaderWithVariants(blockNumber, rpcUrls)).block
 }
 
 /** Per-block blockHash eth_getLogs — compatible with QuickNode Discover 1-block filter. */
@@ -32,11 +47,7 @@ export async function scanBlockRangeEvents(params: {
   let providerUsed = urls[0]
 
   for (let bn = params.fromBlock; bn <= params.toBlock; bn += 1) {
-    const { result: block, url } = await rpcCallWithFailover<BlockHeader>(
-      'eth_getBlockByNumber',
-      [toBlockQuantity(bn), false],
-      urls,
-    )
+    const { block, url } = await fetchBlockHeaderWithVariants(bn, urls)
     providerUsed = url
     const blockNumber = parseInt(block.number, 16)
     blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))

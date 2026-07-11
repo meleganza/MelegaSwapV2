@@ -107,29 +107,30 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
   let toBlock = checkpoint.lastIndexedBlock
   let providerUsed = checkpoint.providerUsed ?? 'unknown'
   const normalized: NormalizedIndexerEvent[] = []
+  const blockBudget =
+    checkpoint.phase === 'bootstrap' ? BOOTSTRAP_MAX_BLOCKS_PER_SYNC : MAX_BLOCKS_PER_SYNC
+  let blocksScanned = 0
 
   try {
     if (!hasEvents && checkpoint.phase === 'bootstrap') {
-      const recentFrom = Math.max(
-        checkpoint.bootstrapStartBlock ?? 0,
-        chainHead - RECENT_BOOTSTRAP_BLOCKS,
-      )
+      const recentSpan = Math.min(50, blockBudget)
+      const recentFrom = Math.max(checkpoint.bootstrapStartBlock ?? 0, chainHead - recentSpan + 1)
       const recent = await scanBlockRangeEvents({
         address: pair.pairAddress,
         fromBlock: recentFrom,
         toBlock: chainHead,
       })
       providerUsed = recent.providerUsed
+      blocksScanned += chainHead - recentFrom + 1
       normalizeLogs(recent.logs, pair, recent.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
     }
 
     const bootstrapStart = checkpoint.bootstrapStartBlock ?? 0
     fromBlock = Math.max(bootstrapStart, checkpoint.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
-    const blockBudget =
-      checkpoint.phase === 'bootstrap' ? BOOTSTRAP_MAX_BLOCKS_PER_SYNC : MAX_BLOCKS_PER_SYNC
-    toBlock = Math.min(chainHead, fromBlock + blockBudget - 1)
+    const forwardBudget = Math.max(0, blockBudget - blocksScanned)
+    toBlock = forwardBudget > 0 ? Math.min(chainHead, fromBlock + forwardBudget - 1) : checkpoint.lastIndexedBlock
 
-    if (fromBlock <= toBlock && normalized.length < MAX_EVENTS_PER_SYNC) {
+    if (forwardBudget > 0 && fromBlock <= toBlock && normalized.length < MAX_EVENTS_PER_SYNC) {
       const forward = await scanBlockRangeEvents({
         address: pair.pairAddress,
         fromBlock,

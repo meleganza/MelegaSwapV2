@@ -112,7 +112,7 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
 
   const eventCounts = health?.eventCounts ?? (await storage.countEvents())
   const hasEvents = Object.values(eventCounts).some((n) => n > 0)
-  const isV2 = checkpoint?.schemaVersion === INDEXER_SCHEMA_VERSION
+  const isV2 = checkpoint?.schemaVersion === INDEXER_SCHEMA_VERSION || storage.backend.includes('v2')
 
   const subgraphStatus: ReadinessComponentStatus = MELEGA_SUBGRAPH_URL ? 'READY' : 'NOT_CONFIGURED'
 
