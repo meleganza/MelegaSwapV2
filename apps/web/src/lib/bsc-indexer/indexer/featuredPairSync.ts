@@ -9,8 +9,9 @@ import {
   MELEGA_CHAIN_ID,
   MIN_CHUNK_SIZE,
   REORG_SAFETY_BLOCKS,
+  VERIFIED_R772_SWAP_BLOCK,
 } from '../constants'
-import { createFreshFeaturedPairCheckpoint } from '../checkpointReset'
+import { CHECKPOINT_RESET_REASON_R772, createFreshFeaturedPairCheckpoint } from '../checkpointReset'
 import { assertIndexerEventTopicsValid } from '../eventTopicIntegrity'
 import { resolveIndexerStorage } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
@@ -91,7 +92,7 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
   ) {
     checkpoint = await createFreshFeaturedPairCheckpoint(
       chainHead,
-      'R772_MALFORMED_SWAP_TOPIC_CORRECTION',
+      CHECKPOINT_RESET_REASON_R772,
     )
     await storage.saveCheckpoint(checkpoint)
   }
@@ -104,6 +105,24 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
   const normalized: NormalizedIndexerEvent[] = []
 
   try {
+    if (
+      isV2Checkpoint(checkpoint) &&
+      checkpoint.resetReason === CHECKPOINT_RESET_REASON_R772 &&
+      !checkpoint.anchorSeeded &&
+      !hasEvents
+    ) {
+      const anchor = await scanBlockRangeEvents({
+        address: pair.pairAddress,
+        fromBlock: VERIFIED_R772_SWAP_BLOCK,
+        toBlock: VERIFIED_R772_SWAP_BLOCK,
+      })
+      providerUsed = anchor.providerUsed
+      normalizeLogs(anchor.logs, pair, anchor.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
+      checkpoint = { ...checkpoint, anchorSeeded: true }
+      fromBlock = VERIFIED_R772_SWAP_BLOCK
+      toBlock = VERIFIED_R772_SWAP_BLOCK
+    }
+
     const bootstrapFloor = checkpoint.bootstrapStartBlock ?? 0
     const stopBefore =
       checkpoint.phase === 'incremental'

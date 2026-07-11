@@ -58,6 +58,8 @@ export interface IndexerCheckpoint {
   /** R773 — featured-pair checkpoint reset metadata. */
   resetReason?: string
   resetAt?: string
+  /** R773 — verified R772 anchor block ingested once after topic reset. */
+  anchorSeeded?: boolean
 }
 
 export interface IndexerHealthSnapshot {

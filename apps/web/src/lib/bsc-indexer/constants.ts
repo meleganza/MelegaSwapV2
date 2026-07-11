@@ -21,6 +21,10 @@ export const BOOTSTRAP_DAYS_FALLBACK = 7
 export const BSC_AVG_BLOCK_SECONDS = 3
 export const INDEXER_SCHEMA_VERSION = 2
 export const FEATURED_PAIR_SLUG = 'marco-wbnb'
+/** R772 verified MARCO/WBNB swap — one-time anchor backfill after topic correction. */
+export const VERIFIED_R772_SWAP_BLOCK = 86_326_727
+export const VERIFIED_R772_SWAP_TX =
+  '0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9'
 /** Per cron sync — 5 blocks; QuickNode single-block filter budget for serverless. */
 export const MAX_BLOCKS_PER_SYNC = 5
 export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 5
