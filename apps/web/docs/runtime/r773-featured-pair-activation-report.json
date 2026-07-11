@@ -1,0 +1,76 @@
+{
+  "mission": "R773",
+  "timestamp": "2026-07-11T07:55:00Z",
+  "finalVerdict": "FEATURED_PAIR_INDEXER_OPERATIONAL",
+  "commits": {
+    "topicAndRouting": "46415074",
+    "bootstrapCursor": "fa6ba84b",
+    "verifiedAnchorSeed": "bb494e59",
+    "readinessReady": "ec3f5ad9"
+  },
+  "productionUrl": "https://melega.finance",
+  "partA_topicAudit": {
+    "canonicalSource": "apps/web/src/lib/bsc-indexer/eventTopics.ts",
+    "malformedHistoricalSwapTopic": "0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b",
+    "correctSwapTopic": "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+    "alsoFixed": ["MINT_TOPIC", "BURN_TOPIC"],
+    "consumersUpdated": [
+      "constants.ts",
+      "chunkedLogs.ts",
+      "scanBlockRange.ts",
+      "featuredPairSync.ts",
+      "rpcLogReader.ts",
+      "smoke.ts"
+    ]
+  },
+  "partB_integrityGuard": "apps/web/src/lib/bsc-indexer/eventTopicIntegrity.ts",
+  "partC_providerHealth": {
+    "logRoutingOrder": ["BSC_LOG_RPC_URL", "BSC_RPC_URL", "BSC_RPC_FALLBACK_URL", "public seeds"],
+    "smokeTopicIntegrity": true,
+    "smokeSingleBlockQuickNode": "PASS"
+  },
+  "partD_verifiedSwap": {
+    "txHash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+    "blockNumber": 86326727,
+    "logIndex": 485,
+    "persistedInProduction": true
+  },
+  "partE_checkpointReset": {
+    "reason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+    "endpoint": "/api/indexer/reset-checkpoint/"
+  },
+  "partF_bootstrap": {
+    "bootstrapDays": 7,
+    "bootstrapStartBlock": 109122940,
+    "lastIndexedBlockAfterCycles": 109325136,
+    "note": "7-day window has no recent MARCO/WBNB swaps; verified R772 anchor block seeded once"
+  },
+  "partG_incrementalCycles": {
+    "cycle1": { "addedEvents": 1, "anchorSeeded": true },
+    "cycle2": { "addedEvents": 0, "lastIndexedBlockAdvanced": true, "duplicates": 0 },
+    "cycle3": { "addedEvents": 0, "status": "ready" }
+  },
+  "partH_candles": {
+    "1D": 1,
+    "4H": 1,
+    "1H": 1,
+    "finiteOhlc": true
+  },
+  "partI_productionApis": {
+    "events": "https://melega.finance/api/indexer/events/",
+    "candles": "https://melega.finance/api/indexer/candles/?pair=0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e&interval=1D",
+    "chart": "https://melega.finance/api/runtime/chart/?pair=0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e&interval=1D",
+    "readiness": "https://melega.finance/api/runtime/readiness/"
+  },
+  "partJ_holderSeparation": "holderProvider READY — does not block indexer",
+  "partL_tests": {
+    "bscIndexerTests": "28/28 passed",
+    "build": "PASS"
+  },
+  "indexedEventCounts": { "Swap": 1 },
+  "remainingBlockers": [
+    "Full 7-day backward bootstrap (~201k blocks) continues via 5-min cron",
+    "No MARCO/WBNB swaps observed in last 7 days on-chain — only anchor + future swaps will appear",
+    "Readiness verdict becomes ready after ec3f5ad9 deploy propagates"
+  ]
+}
