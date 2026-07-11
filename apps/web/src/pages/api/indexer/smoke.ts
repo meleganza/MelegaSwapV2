@@ -44,25 +44,34 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     const block = primaryRpc.chainHead ?? fallbackRpc.chainHead ?? 0
-    const quantity = blockQuantityVariants(block)[0]
-    const singleBlock = await rpcCallWithFailover<unknown[]>(
-      'eth_getLogs',
-      [
-        {
-          fromBlock: quantity,
-          toBlock: quantity,
-          address: MARCO_WBNB_PAIR_BSC,
-          topics: [SWAP_TOPIC],
-        },
-      ],
-      logUrls,
+    const variants = blockQuantityVariants(block)
+    const ordered = [variants[variants.length - 1], ...variants.slice(0, -1)].filter(
+      (v, i, a) => a.indexOf(v) === i,
     )
-    logProbe.singleBlockLogFetch = {
-      block,
-      quantity,
-      count: singleBlock.result.length,
-      url: singleBlock.url,
+    let singleBlock: { result: unknown[]; url: string } | { error: string } = { error: 'no variants' }
+    for (const quantity of ordered) {
+      try {
+        singleBlock = await rpcCallWithFailover<unknown[]>(
+          'eth_getLogs',
+          [
+            {
+              fromBlock: quantity,
+              toBlock: quantity,
+              address: MARCO_WBNB_PAIR_BSC,
+              topics: [SWAP_TOPIC],
+            },
+          ],
+          logUrls,
+        )
+        break
+      } catch (e) {
+        singleBlock = { error: e instanceof Error ? e.message : String(e) }
+      }
     }
+    logProbe.singleBlockLogFetch =
+      'error' in singleBlock
+        ? singleBlock
+        : { block, count: singleBlock.result.length, url: singleBlock.url, variants: ordered }
   } catch (e) {
     logProbe.singleBlockLogFetch = { error: e instanceof Error ? e.message : 'single-block log fetch failed' }
   }

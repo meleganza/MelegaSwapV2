@@ -103,7 +103,11 @@ async function fetchLogsForBlock(params: {
   topic: string
   logRpcUrls: string[]
 }): Promise<{ logs: RawLog[]; url: string }> {
-  for (const quantity of blockQuantityVariants(params.blockNumber)) {
+  const variants = blockQuantityVariants(params.blockNumber)
+  const ordered = [variants[variants.length - 1], ...variants.slice(0, -1)].filter(
+    (v, i, a) => a.indexOf(v) === i,
+  )
+  for (const quantity of ordered) {
     try {
       const { result, url } = await rpcCallWithFailover<RawLog[]>(
         'eth_getLogs',

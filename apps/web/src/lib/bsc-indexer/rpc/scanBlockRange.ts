@@ -54,20 +54,32 @@ export async function scanBlockRangeEvents(params: {
     blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
 
     for (const topic of EVENT_TOPICS) {
-      const quantity = blockQuantityVariants(bn)[0]
-      const { result: batch, url } = await rpcCallWithFailover<RawLog[]>(
-        'eth_getLogs',
-        [
-          {
-            fromBlock: quantity,
-            toBlock: quantity,
-            address: params.address.toLowerCase(),
-            topics: [topic],
-          },
-        ],
-        logUrls,
+      const variants = blockQuantityVariants(bn)
+      const ordered = [variants[variants.length - 1], ...variants.slice(0, -1)].filter(
+        (v, i, a) => a.indexOf(v) === i,
       )
-      providerUsed = url
+      let batch: RawLog[] = []
+      for (const quantity of ordered) {
+        try {
+          const res = await rpcCallWithFailover<RawLog[]>(
+            'eth_getLogs',
+            [
+              {
+                fromBlock: quantity,
+                toBlock: quantity,
+                address: params.address.toLowerCase(),
+                topics: [topic],
+              },
+            ],
+            logUrls,
+          )
+          providerUsed = res.url
+          batch = res.result
+          break
+        } catch {
+          continue
+        }
+      }
       logs.push(...batch)
     }
   }
