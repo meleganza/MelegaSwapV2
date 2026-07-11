@@ -29,6 +29,7 @@ import {
   // fetchPoolsProfileRequirement,
   // fetchPoolsStakingLimits,
   fetchPoolsTotalStaking,
+  fetchPoolsRewardPerBlock,
 } from './fetchPools'
 import {
   fetchPoolsAllowance,
@@ -145,9 +146,10 @@ export const fetchPoolsPublicDataAsync =
             : chainId === 8453 ? livePools8453
               : poolsConfig
       
-      const [blockLimits, totalStakings, currentBlock] = await Promise.all([
+      const [blockLimits, totalStakings, rewardPerBlocks, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
         fetchPoolsTotalStaking(chainId),
+        fetchPoolsRewardPerBlock(chainId),
         // fetchPoolsProfileRequirement(),
         currentBlockNumber ? Promise.resolve(currentBlockNumber)
           : chainId === 1 ? ethRpcProvider.getBlockNumber()
@@ -158,6 +160,7 @@ export const fetchPoolsPublicDataAsync =
       
       const blockLimitsSousIdMap = keyBy(blockLimits, 'sousId')
       const totalStakingsSousIdMap = keyBy(totalStakings, 'sousId')
+      const rewardPerBlockSousIdMap = keyBy(rewardPerBlocks, 'sousId')
 
       const priceHelperLpsConfig = getPoolsPriceHelperLpFiles(chainId)
 
@@ -196,6 +199,11 @@ export const fetchPoolsPublicDataAsync =
       const liveData = pools.map((pool) => {
         const blockLimit = blockLimitsSousIdMap[pool.sousId]
         const totalStaking = totalStakingsSousIdMap[pool.sousId]
+        const onChainReward = rewardPerBlockSousIdMap[pool.sousId]
+        const resolvedTokenPerBlock =
+          onChainReward?.rewardPerBlock != null
+            ? getBalanceNumber(new BigNumber(onChainReward.rewardPerBlock), pool.earningToken.decimals)
+            : parseFloat(pool.tokenPerBlock)
         const isPoolEndBlockExceeded =
           currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false
         const isPoolFinished = pool.isFinished || isPoolEndBlockExceeded
@@ -210,7 +218,7 @@ export const fetchPoolsPublicDataAsync =
             stakingTokenPrice,
             earningTokenPrice,
             getBalanceNumber(new BigNumber(totalStaking.totalStaked), pool.stakingToken.decimals),
-            parseFloat(pool.tokenPerBlock),
+            resolvedTokenPerBlock,
           )
           : 0
 
@@ -220,6 +228,7 @@ export const fetchPoolsPublicDataAsync =
           ...pool,
           ...blockLimit,
           ...totalStaking,
+          tokenPerBlock: onChainReward?.rewardPerBlock ?? pool.tokenPerBlock,
           // profileRequirement,
           stakingTokenPrice,
           earningTokenPrice,

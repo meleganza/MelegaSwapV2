@@ -6,12 +6,18 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
-import { getTradeSurfaceAssets } from 'lib/dex-asset-index'
+import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/dex-asset-index'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { WBNB } from '@pancakeswap/sdk'
+import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
-import { usePriceCakeBusd } from 'state/farms/hooks'
+import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'
+import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
+import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
+import { usePriceCakeBusd, useFarms, usePollFarmsWithUserData } from 'state/farms/hooks'
+import { usePoolsWithVault } from 'state/pools/hooks'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { FetchStatus } from 'config/constants/types'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
@@ -78,6 +84,11 @@ export interface LiveEconomyMetric {
   label: string
   value: string
   live?: boolean
+  ontologyId?: string
+  source?: string
+  owner?: string
+  href?: string
+  asOf?: string
 }
 
 export interface ActivityUnavailable {
@@ -89,13 +100,11 @@ export interface ActivityUnavailable {
   lastAttempt: string
 }
 
-const LIVE_ACTIVITY_MAX_AGE_SEC = 86_400
-
 export const isRecentIndexedEvent = (timestamp: string | number): boolean => {
   const ts = Number(timestamp)
   if (!ts || Number.isNaN(ts)) return false
   const ageSec = Math.floor(Date.now() / 1000 - ts)
-  return ageSec >= 0 && ageSec <= LIVE_ACTIVITY_MAX_AGE_SEC
+  return ageSec >= 0 && ageSec <= LIVE_ACTIVITY_WINDOW_SEC
 }
 
 const formatTickerPrice = (price?: number): string | undefined => {
@@ -194,14 +203,22 @@ const txToRow = (tx: Transaction): ActivityRow => {
 
 export const useHomeTradeData = () => {
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
+  const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const wbnbPrice = useBUSDPrice(WBNB[56])
+  const { chainId } = useActiveChainId()
+  usePollFarmsWithUserData()
+  const { data: allFarms = [] } = useFarms()
+  const { pools: allPools = [] } = usePoolsWithVault(chainId)
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
   const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
+  const { total: liquidPairCount } = useAmmPairRegistry({ classification: 'tradeable', pageSize: 1 })
+
+  const indexedTransactions = useMemo(() => transactions ?? [], [transactions])
 
   const recentTransactions = useMemo(
-    () => (transactions ?? []).filter((tx) => isRecentIndexedEvent(tx.timestamp)),
-    [transactions],
+    () => indexedTransactions.filter((tx) => isRecentIndexedEvent(tx.timestamp)),
+    [indexedTransactions],
   )
 
   const farms = useMemo(
@@ -220,7 +237,7 @@ export const useHomeTradeData = () => {
   }, [recentTransactions])
 
   const dexProjects = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
-  const tradeableAssetCount = useMemo(() => getTradeSurfaceAssets().length, [])
+  const tradeableAssetCount = useMemo(() => getCanonicalIndexedAssets().length, [])
 
   const latestProject = useMemo(() => {
     return dexProjects.find((p) => p.slug !== 'melega-dex') ?? dexProjects[0]
@@ -443,9 +460,7 @@ export const useHomeTradeData = () => {
     }
 
     const latestLpAdd = recentTransactions.find((tx) => tx.type === TransactionType.MINT)
-    if (latestLpAdd && latestLpAdd.hash !== latestSwap?.hash) {
-      slots.push({ id: 'lp-add', label: 'Latest LP add', row: txToRow(latestLpAdd) })
-    } else if (latestLpAdd) {
+    if (latestLpAdd) {
       slots.push({ id: 'lp-add', label: 'Latest LP add', row: txToRow(latestLpAdd) })
     }
 
@@ -483,26 +498,10 @@ export const useHomeTradeData = () => {
   const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
     if (isActivityIndexing) return undefined
     if (activityRows.length > 0) return undefined
-    const hasStaleEvents = (transactions?.length ?? 0) > 0 && recentTransactions.length === 0
-    const latestTx = transactions?.[0]
-    const latestAge =
-      latestTx && Number(latestTx.timestamp) > 0
-        ? formatTimeAgo(latestTx.timestamp)
-        : undefined
-    const indexerScope =
-      indexerState.indexer?.includes('featured') || indexerState.source?.includes('bsc-indexer')
-        ? 'Indexer scope: MARCO/WBNB featured pair only'
-        : undefined
-    let reason = 'No swaps or liquidity events indexed in the current subgraph window'
-    if (hasStaleEvents && latestAge) {
-      reason = `${indexerScope ? `${indexerScope}. ` : ''}Latest indexed event is ${latestAge} — nothing within the last 24 hours`
-    } else if (hasStaleEvents) {
-      reason = `${indexerScope ? `${indexerScope}. ` : ''}No indexed swaps or liquidity events in the last 24 hours`
-    } else if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
-      reason = indexerState.reason ?? 'Subgraph indexer unavailable'
-    } else if (indexerScope) {
-      reason = `${indexerScope}. Waiting for first indexed swap`
-    }
+    const reason =
+      indexerState.status === 'error' || indexerState.status === 'unavailable'
+        ? indexerState.reason ?? 'Indexer unavailable'
+        : 'No protocol activity indexed in the last 24 hours.'
     const diagnostic = buildIndexerActivityDiagnostic({
       source: indexerState.source,
       indexer: indexerState.indexer,
@@ -510,43 +509,62 @@ export const useHomeTradeData = () => {
       reason,
     })
     return {
-      message: diagnostic.title,
+      message: 'No protocol activity indexed in the last 24 hours.',
       timestamp: diagnostic.lastAttempt,
       reason: diagnostic.reason,
       source: diagnostic.source,
       indexer: diagnostic.indexer,
       lastAttempt: diagnostic.lastAttempt,
     }
-  }, [isActivityIndexing, activityRows.length, indexerState, transactions?.length, recentTransactions.length])
+  }, [isActivityIndexing, activityRows.length, indexerState])
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)
 
-  const marcoPriceLabel = useMemo(() => {
-    const price = marcoPrice?.toNumber()
-    if (!price || price <= 0) return undefined
-    return `$${price.toFixed(4)}`
-  }, [marcoPrice])
+  const marcoPriceLabel = useMemo(() => canonicalMarco.label, [canonicalMarco.label])
 
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
     const metrics: LiveEconomyMetric[] = []
-    const todaySwaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP).length
+    const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
+    const rewardingPoolCount = allPools.filter((p) => {
+      if (p.isFinished || p.sousId === 0) return false
+      const tpb = p.tokenPerBlock
+      if (!tpb) return false
+      if (typeof (tpb as { isZero?: () => boolean }).isZero === 'function') {
+        return !(tpb as { isZero: () => boolean }).isZero()
+      }
+      return Number(tpb) > 0
+    }).length
+    const indexedAssetCount = tradeableAssetCount || dexProjects.length
 
-    if (todaySwaps > 0) {
-      metrics.push({ id: 'swaps', label: "Today's swaps", value: String(todaySwaps), live: true })
+    const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
+      metrics.push({
+        id: built.id,
+        label: built.label,
+        value: built.value,
+        live: true,
+        ontologyId: built.ontologyId,
+        source: built.source,
+        owner: built.owner,
+        href: built.href,
+        asOf: built.asOf,
+      })
     }
-    if (farms.length > 0) {
-      metrics.push({ id: 'farms', label: 'Live farms', value: String(farms.length), live: true })
+
+    if (activeFarmCount > 0) {
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount)))
     }
-    const projectCount = tradeableAssetCount || dexProjects.length
-    if (projectCount > 0) {
-      metrics.push({ id: 'projects', label: 'Indexed assets', value: String(projectCount), live: true })
+    if (rewardingPoolCount > 0) {
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(rewardingPoolCount)))
     }
-    if (pools.length > 0) {
-      metrics.push({ id: 'pools', label: 'Pools', value: String(pools.length), live: true })
+    if (liquidPairCount > 0) {
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount)))
+    }
+    if (indexedAssetCount > 0) {
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.indexedAssets(String(indexedAssetCount)))
     }
     return metrics
-  }, [recentTransactions, farms.length, pools.length, dexProjects.length, tradeableAssetCount])
+  }, [allFarms, allPools, tradeableAssetCount, dexProjects.length, liquidPairCount])
 
   const marketUnavailableReason = useMemo(() => {
     if (marketCards.length > 0) return undefined

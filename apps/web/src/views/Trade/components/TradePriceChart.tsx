@@ -200,19 +200,25 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
 
   const pairPrices = useMemo(() => {
     if (subgraphPrices.length >= 2) return subgraphPrices
-    if (indexerCandles.length >= 1) {
+    if (indexerCandles.length >= 2) {
       return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
     }
-    return subgraphPrices
+    if (indexerCandles.length === 1) {
+      return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
+    }
+    if (subgraphPrices.length === 1) return subgraphPrices
+    return []
   }, [subgraphPrices, indexerCandles])
 
   const resolvedChartEmptyReason =
     chartEmptyReason ??
-    (pairPrices.length < 1 && indexerCandleStatus === 'empty'
-      ? 'No swap events in selected interval'
-      : pairPrices.length < 1 && indexerCandleStatus === 'unavailable'
-        ? 'Durable indexer candles unavailable'
-        : chartEmptyReason)
+    (pairPrices.length === 1
+      ? 'insufficient_history'
+      : pairPrices.length < 1 && indexerCandleStatus === 'empty'
+        ? 'No swap events in selected interval'
+        : pairPrices.length < 1 && indexerCandleStatus === 'unavailable'
+          ? 'Durable indexer candles unavailable'
+          : chartEmptyReason)
 
   const chartChange = useMemo(() => getTimeWindowChange(pairPrices), [pairPrices])
   const lastPrice = pairPrices[pairPrices.length - 1]?.value

@@ -191,10 +191,10 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
     if (isIndexing) {
       return indexerState?.reason ?? 'Subgraph request in progress'
     }
-    if (activityUnavailable?.reason) {
-      return activityUnavailable.reason
+    if (activityUnavailable?.message) {
+      return activityUnavailable.message
     }
-    return 'Indexer not deployed'
+    return 'No protocol activity indexed in the last 24 hours.'
   }, [isIndexing, activityUnavailable, indexerState?.reason])
 
   return (
@@ -245,7 +245,9 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
           </SlotList>
         ) : (
           <EmptyWrap>
-            <EmptyTitle>{isIndexing ? RUNTIME_LOADING_LABEL : RUNTIME_UNAVAILABLE_LABEL}</EmptyTitle>
+            <EmptyTitle>
+              {isIndexing ? RUNTIME_LOADING_LABEL : activityUnavailable?.message ?? 'No protocol activity indexed in the last 24 hours.'}
+            </EmptyTitle>
             <EmptyDesc>{emptyDescription}</EmptyDesc>
             <TradeTechnicalDetails detail={technicalDetail} />
           </EmptyWrap>

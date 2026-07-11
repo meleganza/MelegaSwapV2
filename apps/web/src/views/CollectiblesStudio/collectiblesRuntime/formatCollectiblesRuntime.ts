@@ -1,3 +1,4 @@
+import { DETECTED_BABYMARCO_IMAGE_PATTERN } from 'registry/collectibles/collectible-constants'
 import type { StaticCollectibleRecord } from 'registry/collectibles/collectible-types'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type {
@@ -74,8 +75,9 @@ export function mapRecordToCollectionCard(
     },
     utilities: privilegeLabels(privileges),
     previewImageUrl: record.metadata.gateway
-      ? `${record.metadata.gateway.replace(/\/$/, '')}/1.png`
-      : undefined,
+      ? `${record.metadata.gateway.replace(/\/$/, '')}/${DETECTED_BABYMARCO_IMAGE_PATTERN.replace('{tokenId}', '1')}`
+      : '/images/page/1.svg',
+    fallbackImageUrl: '/images/page/1.svg',
   }
 }
 

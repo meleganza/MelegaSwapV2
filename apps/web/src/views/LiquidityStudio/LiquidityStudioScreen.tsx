@@ -45,6 +45,7 @@ const Content = styled.div`
   }
 `
 
+/** R781 — institutional pixel grid: builder | preview | right rail; activity under builder+preview only. */
 const LayoutGrid = styled.div`
   display: grid;
   gap: ${liquidityStudioLayout.columnGap};
@@ -56,9 +57,8 @@ const LayoutGrid = styled.div`
     grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto) auto;
     grid-template-areas:
       'builder preview right'
-      'bottom bottom bottom';
+      'activity activity .';
     max-width: ${liquidityStudioLayout.gridWidth};
-    align-items: stretch;
   }
 
   @media (max-width: 1099px) and (min-width: 768px) {
@@ -66,7 +66,7 @@ const LayoutGrid = styled.div`
     grid-template-areas:
       'builder preview'
       'right right'
-      'bottom bottom';
+      'activity activity';
   }
 
   @media (max-width: 767px) {
@@ -117,103 +117,52 @@ const AreaRight = styled.div`
   width: 100%;
   max-width: ${liquidityStudioLayout.rightWidth};
   min-height: ${liquidityStudioLayout.builderMinHeight};
-  height: 100%;
+
+  & > * {
+    width: 100%;
+    max-width: ${liquidityStudioLayout.rightWidth};
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 1099px) {
+    max-width: 100%;
+  }
 
   @media (max-width: 767px) {
     display: contents;
-    height: auto;
-  }
-`
-
-const AreaRightStack = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: ${liquidityStudioLayout.verticalRhythm};
-  min-height: 0;
-
-  @media (max-width: 767px) {
-    display: contents;
-  }
-`
-
-const AreaPools = styled.div`
-  min-width: 0;
-
-  @media (max-width: 767px) {
-    grid-area: pools;
   }
 `
 
 const AreaActivity = styled.div`
+  grid-area: activity;
   min-width: 0;
-
-  @media (max-width: 767px) {
-    grid-area: activity;
-  }
-`
-
-const BottomBand = styled.div`
-  grid-area: bottom;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: ${liquidityStudioLayout.columnGap};
-  min-width: 0;
-
-  @media (max-width: 1099px) {
-    display: contents;
-  }
 `
 
 const AreaLpInfo = styled.div`
+  @media (min-width: 768px) {
+    display: none;
+  }
+
   @media (max-width: 767px) {
     grid-area: lpinfo;
   }
 `
 
 const AreaMarket = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-
-  & > * {
-    flex: 1;
-    height: 100%;
-  }
-
   @media (max-width: 767px) {
     grid-area: market;
-    flex: none;
-    display: block;
-
-    & > * {
-      flex: none;
-      height: auto;
-    }
   }
 `
 
 const AreaAdvisor = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-
-  & > * {
-    flex: 1;
-    height: 100%;
-  }
-
   @media (max-width: 767px) {
     grid-area: advisor;
-    flex: none;
-    display: block;
+  }
+`
 
-    & > * {
-      flex: none;
-      height: auto;
-    }
+const AreaPools = styled.div`
+  @media (max-width: 767px) {
+    grid-area: pools;
   }
 `
 
@@ -233,26 +182,22 @@ export const LiquidityStudioScreen: React.FC = () => (
             <PositionPreviewPanel />
           </AreaPreview>
           <AreaRight>
-            <AreaLpInfo>
-              <LiquidityLpInfoPanel />
-            </AreaLpInfo>
-            <AreaRightStack>
-              <AreaMarket>
-                <MarketIntelligencePanel />
-              </AreaMarket>
-              <AreaAdvisor>
-                <AILiquidityAdvisorPanel />
-              </AreaAdvisor>
-            </AreaRightStack>
-          </AreaRight>
-          <BottomBand>
+            <AreaMarket>
+              <MarketIntelligencePanel />
+            </AreaMarket>
+            <AreaAdvisor>
+              <AILiquidityAdvisorPanel />
+            </AreaAdvisor>
             <AreaPools>
               <TopPoolsPanel />
             </AreaPools>
-            <AreaActivity>
-              <LiquidityActivityTable />
-            </AreaActivity>
-          </BottomBand>
+          </AreaRight>
+          <AreaActivity>
+            <LiquidityActivityTable />
+          </AreaActivity>
+          <AreaLpInfo>
+            <LiquidityLpInfoPanel />
+          </AreaLpInfo>
         </LayoutGrid>
       </Content>
     </LiquidityRuntimeProvider>

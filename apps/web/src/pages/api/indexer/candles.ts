@@ -1,6 +1,8 @@
 import type { NextApiHandler } from 'next'
-import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
+import { resolveIndexerStorage, resolveIndexerStorageForSlug } from 'lib/bsc-indexer/storage'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
+import { FEATURED_PAIR_SLUG } from 'lib/bsc-indexer/v2/paths'
+import { resolveSlugFromQuery } from 'lib/bsc-indexer/v2/pairSlug'
 import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 
 const handler: NextApiHandler = async (req, res) => {
@@ -9,8 +11,15 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const storage = resolveIndexerStorage()
   const pair = (typeof req.query.pair === 'string' ? req.query.pair : MARCO_WBNB_PAIR_BSC).toLowerCase()
+  const slugParam = typeof req.query.slug === 'string' ? req.query.slug : undefined
+  const token0 = typeof req.query.token0 === 'string' ? req.query.token0 : undefined
+  const token1 = typeof req.query.token1 === 'string' ? req.query.token1 : undefined
+  const slug = resolveSlugFromQuery(slugParam, pair, token0, token1)
+  const storage =
+    slug === FEATURED_PAIR_SLUG && pair === MARCO_WBNB_PAIR_BSC.toLowerCase()
+      ? resolveIndexerStorage()
+      : resolveIndexerStorageForSlug(slug)
   const interval = (typeof req.query.interval === 'string' ? req.query.interval : '1H') as OhlcvCandle['interval']
   if (!['1H', '4H', '1D'].includes(interval)) {
     return res.status(400).json({ error: 'Invalid interval' })
@@ -38,6 +47,7 @@ const handler: NextApiHandler = async (req, res) => {
     candles: valid,
     meta: {
       pairAddress: pair,
+      slug,
       interval,
       candleCount: valid.length,
       lastIndexedBlock: health?.lastIndexedBlock,

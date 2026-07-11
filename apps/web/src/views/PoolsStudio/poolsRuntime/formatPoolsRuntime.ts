@@ -350,12 +350,12 @@ export function aggregateKpis(
     { exact: 0 },
   )
 
-  const budgetSum = displayable.reduce((acc, p) => {
-    const n = parseFloat(p.rewardBudgetUsd?.replace(/[^0-9.]/g, '') || '0')
-    return acc + (Number.isFinite(n) ? n : 0)
-  }, 0)
   const rewardBudgetLive =
-    budgetSum > 0 ? formatUsd(budgetSum) : displayable.length ? 'Active emission' : RUNTIME_UNAVAILABLE_LABEL
+    rewardingCount > 0
+      ? String(rewardingCount)
+      : RUNTIME_UNAVAILABLE_LABEL
+  const dailyEmissionLabel =
+    dailyRewardsUsd > 0 ? `${formatUsd(dailyRewardsUsd)}/day emission` : undefined
   const tokenCount = new Set(displayable.map((p) => p.rewardToken)).size
 
   const featuredApr =
@@ -381,7 +381,7 @@ export function aggregateKpis(
       id: 'budget',
       label: 'Pools Rewarding',
       value: rewardBudgetLive,
-      secondary: `${rewardingCount} live emission`,
+      secondary: dailyEmissionLabel ?? `${rewardingCount} with on-chain emission`,
     },
     {
       id: 'highestApr',

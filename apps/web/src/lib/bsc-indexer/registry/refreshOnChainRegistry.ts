@@ -1,18 +1,14 @@
-import fs from 'fs'
-import path from 'path'
 import {
   MELEGA_CHAIN_ID,
   MELEGA_FACTORY_BSC,
   MELEGA_MASTERCHEF_BSC,
-  MELEGA_SMARTCHEF_FACTORY_BSC,
 } from '../constants'
 import { getBlockNumber, rpcCall } from '../rpc/chunkedLogs'
 import type { OnchainRegistry } from 'lib/onchain-registry'
+import { discoverSmartChefOnChain } from './discoverSmartChefOnChain'
 
 const FACTORY = MELEGA_FACTORY_BSC
 const MASTERCHEF = MELEGA_MASTERCHEF_BSC
-const SMARTCHEF_FACTORY = MELEGA_SMARTCHEF_FACTORY_BSC
-const INVENTORY_PATH = path.join(process.cwd(), 'docs', 'pools-canonical-inventory.json')
 
 function encodeUint(n: number): string {
   return n.toString(16).padStart(64, '0')
@@ -119,48 +115,6 @@ async function discoverFarms(currentBlock: number, rpcUrls?: string[]) {
   return { count: farms.length, farms }
 }
 
-function discoverSmartChefFromInventory(): OnchainRegistry['smartChef'] {
-  try {
-    const inventory = JSON.parse(fs.readFileSync(INVENTORY_PATH, 'utf8')) as {
-      results: Array<{
-        chain: number
-        contract: string
-        poolName: string
-        sousId: number
-        stakingToken: string
-        earningToken: string
-        startBlock: number | string
-        bonusEndBlock: number | string
-        currentlyVisible: boolean
-        category: string
-      }>
-    }
-    const pools = inventory.results
-      .filter((r) => r.chain === MELEGA_CHAIN_ID && r.contract && r.contract !== '—')
-      .map((row) => ({
-        contractAddress: row.contract,
-        poolName: row.poolName,
-        sousId: row.sousId,
-        stakedToken: row.stakingToken,
-        rewardToken: row.earningToken,
-        startBlock: row.startBlock,
-        endBlock: row.bonusEndBlock,
-        active: row.currentlyVisible,
-        state: row.currentlyVisible
-          ? 'active'
-          : row.category === 'C' || row.category === 'D'
-            ? 'finished'
-            : 'hidden',
-        dataSource: 'pools-canonical-inventory+on-chain-verified',
-        lastVerified: new Date().toISOString(),
-        bscscanUrl: `https://bscscan.com/address/${row.contract}`,
-      }))
-    return { count: pools.length, pools, smartChefFactory: SMARTCHEF_FACTORY }
-  } catch {
-    return { count: 0, pools: [], smartChefFactory: SMARTCHEF_FACTORY }
-  }
-}
-
 export async function refreshOnChainRegistry(
   rpcUrls?: string[],
   options?: { existingRegistry?: OnchainRegistry },
@@ -179,7 +133,7 @@ export async function refreshOnChainRegistry(
         )
       : discoverFarms(currentBlock, rpcUrls),
   ])
-  const smartChef = discoverSmartChefFromInventory()
+  const { smartChef, meta: smartChefMeta } = await discoverSmartChefOnChain(currentBlock, rpcUrls)
 
   const registry: OnchainRegistry = {
     schema: 'melega.onchain-registry.v1',
@@ -193,6 +147,7 @@ export async function refreshOnChainRegistry(
       activeFarms: farms.farms.filter((f) => f.active).length,
       smartChefPools: smartChef.count,
       activeSmartChefPools: smartChef.pools.filter((p) => p.active).length,
+      rewardingSmartChefPools: smartChef.pools.filter((p) => p.rewarding).length,
     },
     amm,
     farms,
@@ -209,8 +164,8 @@ export async function refreshOnChainRegistry(
     smartChefCount: smartChef.count,
     dataSource: 'eth_call-multicall-enumeration',
     note: incrementalOnly
-      ? 'Incremental pair discovery — new factory indices only'
-      : 'Discovery via direct contract state — no eth_getLogs',
+      ? `Incremental pair discovery — new factory indices only. SmartChef: ${smartChefMeta.note}`
+      : `Discovery via direct contract state. SmartChef: ${smartChefMeta.note}`,
   }
 
   return { registry, meta }

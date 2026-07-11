@@ -1,0 +1,74 @@
+{
+  "mission": "R781 — Data Truth Operational Completion + Institutional Pixel Grid",
+  "timestamp": "2026-07-12T01:10:00.000Z",
+  "verdict": "MELEGA_DEX_DATA_TRUTH_BLOCKED",
+  "priorVerdict": "MELEGA_DEX_DATA_TRUTH_BLOCKED",
+  "build": { "status": "pass", "command": "npm run build" },
+  "qualityGates": { "script": "apps/web/scripts/r780-data-quality-gates.mjs", "passed": true },
+  "A_rootCauses": [
+    "SmartChefFactory (0x4c33...) exposes owner() only — no poolLength or deployment logs; static inventory was treated as authority",
+    "Tier-2 indexer infrastructure existed but candles API read featured namespace only",
+    "Synthetic dex-{symbol} project clones inflated Projects/Trending counts",
+    "Liquidity Studio grid placed Top Pools beside Activity instead of under AI Advisor in right rail",
+    "Reward Advisor showed truncated pool names when no eligible pools existed"
+  ],
+  "B_canonicalSourceMatrix": {
+    "activeFarms": "MasterChef poolLength + multiplier != 0X",
+    "rewardingPools": "SousChef rewardPerBlock > 0 + on-chain window",
+    "liquidPairs": "Factory enumeration + getReserves tradeable classification",
+    "indexedAssets": "getCanonicalIndexedAssets() chainId+address dedupe",
+    "marcoEmitsToday": "MasterChef dexTokenPerBlock × BLOCKS_PER_DAY",
+    "trending24h": "Tier-1/Tier-2 indexer /api/indexer/tier-metrics",
+    "smartChefInventory": "discoverSmartChefOnChain eth_call verification"
+  },
+  "C_smartChefReconciliation": {
+    "factory": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf",
+    "enumeration": "No on-chain poolLength — candidates from deployment inventory, verified via eth_call",
+    "module": "apps/web/src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts",
+    "expectedCandidates": 240,
+    "note": "Full registry refresh requires RPC time; counts reconciled at refresh runtime"
+  },
+  "D_tier2Activation": {
+    "cronBatchSize": 3,
+    "api": "/api/indexer/tier-metrics",
+    "slugAwareCandles": "/api/indexer/candles?slug=",
+    "storage": "resolveIndexerStorageForSlug per pair",
+    "status": "ACTIVATING — requires production cron cycles to populate Blob namespaces"
+  },
+  "E_candleCounts": "Per-pair via tier-metrics API; production population pending cron",
+  "F_assetDedup": {
+    "before": "symbol-based dedupe + dex-{symbol} synthetic projects",
+    "after": "chainId+address dedupe; synthetic project clones removed; getCanonicalIndexedAssets()"
+  },
+  "G_filesChanged": [
+    "apps/web/src/lib/bsc-indexer/registry/discoverSmartChefOnChain.ts",
+    "apps/web/src/lib/bsc-indexer/registry/refreshOnChainRegistry.ts",
+    "apps/web/src/lib/bsc-indexer/v2/pairSlug.ts",
+    "apps/web/src/pages/api/indexer/tier-metrics.ts",
+    "apps/web/src/pages/api/indexer/candles.ts",
+    "apps/web/src/pages/api/indexer/run.ts",
+    "apps/web/src/lib/dex-asset-index/buildDexAssetIndex.ts",
+    "apps/web/src/views/RadarStudio/radarRuntime/buildDexTokenIndex.ts",
+    "apps/web/src/views/HomeTrade/useDexTrendingRankings.ts",
+    "apps/web/src/views/LiquidityStudio/LiquidityStudioScreen.tsx",
+    "apps/web/src/pages/status/index.tsx",
+    "apps/web/src/views/HomeTrade/HomeTradeFooter.tsx",
+    "apps/web/src/views/BuildStudio/buildStudioData.ts",
+    "apps/web/src/views/ImportExistingToken/components/ContractInputHero.tsx",
+    "apps/web/src/views/PoolsStudio/poolsRuntime/usePoolsStakingRuntime.ts",
+    "apps/web/src/views/FarmsStudio/farmsRuntime/formatFarmsRuntime.ts"
+  ],
+  "H_testsBuild": {
+    "build": "PASS",
+    "qualityGates": "PASS",
+    "unitTests": "not expanded this batch"
+  },
+  "L_remainingBlockers": [
+    "Production Tier-2 Blob backfill requires live cron + BLOB_READ_WRITE_TOKEN verification",
+    "SmartChef factory lacks enumerable state — full discovery depends on inventory seed + eth_call verify",
+    "Production screenshots at 7 breakpoints not captured in CI this session",
+    "BabyMarco Pinata gateway availability external to repo",
+    "DEX Intelligence analytics pipeline still Coming Soon"
+  ],
+  "M_finalVerdictReason": "Repository-owned truth infrastructure complete and build passes; production Tier-2 population and live reconciliation evidence pending deploy cron cycles"
+}

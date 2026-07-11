@@ -254,7 +254,7 @@ export function buildDexAssetIndex(): DexAssetRecord[] {
       upsertAsset(map, {
         symbol: token.symbol,
         name: token.name,
-        chainId: 56,
+        chainId: token.chainId === 97 ? 97 : 56,
         address: token.address,
         logoURI: token.logoURI,
         source: 'token-list',
@@ -304,13 +304,27 @@ export function getTrendingSurfaceAssets(): DexAssetRecord[] {
   return buildDexAssetIndex().filter((a) => a.surfaces.trending)
 }
 
+/** Deduplicated canonical tradeable assets keyed by chainId + address. */
+export function getCanonicalIndexedAssets(): DexAssetRecord[] {
+  const seen = new Set<string>()
+  return buildDexAssetIndex().filter((asset) => {
+    if (asset.chainId !== 56 || !asset.address) return false
+    if (asset.symbol.toLowerCase().includes('http')) return false
+    const key = asset.address.toLowerCase()
+    if (seen.has(key)) return false
+    seen.add(key)
+    return asset.surfaces.trade || asset.surfaces.trending || asset.surfaces.project
+  })
+}
+
 /** Mainnet tokens with a live trade surface — excludes LP pair symbols. */
 export function getTradeSurfaceAssets(): DexAssetRecord[] {
   const seen = new Set<string>()
   return buildDexAssetIndex().filter((asset) => {
     if (!asset.surfaces.trade || asset.chainId !== 56 || !asset.address) return false
     if (asset.symbol.includes('-') || asset.symbol.includes('/')) return false
-    const key = asset.symbol.toUpperCase()
+    if (asset.symbol.toLowerCase().includes('http')) return false
+    const key = asset.address.toLowerCase()
     if (seen.has(key)) return false
     seen.add(key)
     return true

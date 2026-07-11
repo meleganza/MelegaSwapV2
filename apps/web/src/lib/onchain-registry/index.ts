@@ -24,16 +24,21 @@ export interface OnchainFarm {
 
 export interface OnchainSmartChefPool {
   contractAddress: string
-  poolName: string
-  sousId: number
-  stakedToken: string
-  rewardToken: string
-  startBlock: number | string
-  endBlock: number | string
+  poolName?: string
+  sousId?: number
+  stakedToken?: string
+  rewardToken?: string
+  startBlock?: number | string
+  endBlock?: number | string
+  rewardPerBlock?: string
+  rewardBalance?: string
   active: boolean
+  funded?: boolean
+  rewarding?: boolean
   state: string
   dataSource: string
   lastVerified: string
+  latestSyncBlock?: number
   bscscanUrl: string
 }
 
@@ -49,6 +54,7 @@ export interface OnchainRegistry {
     activeFarms: number
     smartChefPools: number
     activeSmartChefPools: number
+    rewardingSmartChefPools?: number
   }
   amm: { count: number; pairs: OnchainAmmPair[] }
   farms: { count: number; farms: OnchainFarm[] }

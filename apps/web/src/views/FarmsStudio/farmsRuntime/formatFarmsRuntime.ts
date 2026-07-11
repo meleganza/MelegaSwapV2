@@ -112,12 +112,17 @@ export function aggregateKpis(
     }
   })
 
+  // Canonical total: MasterChef dexTokenPerBlock × blocks/day (pool weights sum ≈ 1 when loaded).
+  const masterChefDailyTotal =
+    regularCakePerBlock > 0
+      ? getBalanceNumber(new BigNumber(regularCakePerBlock).times(BLOCKS_PER_DAY))
+      : 0
+  const resolvedDailyEmissions = dailyEmissions > 0 ? dailyEmissions : masterChefDailyTotal
+
   const emissionValue =
-    dailyEmissions > 0
-      ? formatTokenAmount(new BigNumber(dailyEmissions), 18, 'MARCO')
-      : regularCakePerBlock > 0
-        ? RUNTIME_UNAVAILABLE_LABEL
-        : '0 MARCO'
+    regularCakePerBlock > 0
+      ? formatTokenAmount(new BigNumber(regularCakePerBlock).times(BLOCKS_PER_DAY), 18, 'MARCO')
+      : '0 MARCO'
 
   return [
     { id: 'tvl', label: 'Total TVL', value: formatUsd(totalTvl) },

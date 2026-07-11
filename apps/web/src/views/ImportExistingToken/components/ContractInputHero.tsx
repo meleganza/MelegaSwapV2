@@ -5,7 +5,7 @@ import { useImportRuntime } from '../importExistingTokenRuntime/ImportRuntimeCon
 import { IT_FONT_BODY, importTokenColors, importTokenLayout } from '../importTokenTokens'
 import { ItInput, ItPanel, ItPrimaryBtn, ItSectionLabel } from './importTokenPrimitives'
 
-const SUPPORTED_CHAINS = ['BNB', 'ETH', 'Base', 'Polygon'] as const
+const SUPPORTED_CHAINS = ['BNB'] as const
 
 const Hero = styled(ItPanel)<{ $embedded?: boolean }>`
   min-height: ${({ $embedded }) => ($embedded ? 'auto' : importTokenLayout.heroH)};

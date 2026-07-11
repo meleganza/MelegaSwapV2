@@ -304,25 +304,48 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
   const advisorItems = useMemo(() => {
-    const usable = listUsablePools(previewCards)
-    const bySustain = [...usable].sort((a, b) => (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0))
-    const byApr = [...usable].sort((a, b) => (b.aprExact ?? 0) - (a.aprExact ?? 0))
-    const byRisk = [...usable].sort((a, b) => {
-      const riskOrder = { 'Very Low': 0, Low: 1, Medium: 2, High: 3 }
-      const aR = riskOrder[a.poolSafetyRisk as keyof typeof riskOrder] ?? 2
-      const bR = riskOrder[b.poolSafetyRisk as keyof typeof riskOrder] ?? 2
-      return aR - bR
-    })
-    const byLock = [...usable].sort((a, b) => {
-      const lockScore = (p: PoolPreviewCard) => (p.lockPeriod?.includes('365') ? 4 : p.lockPeriod?.includes('180') ? 3 : 1)
-      return lockScore(b) - lockScore(a)
-    })
-    const advisorUnavailable = 'No live pools with sustainable APR indexed'
+    const eligible = listUsablePools(previewCards).filter(
+      (p) => p.status === 'live' && p.sustainableAprDisplay && p.stakeToken && p.rewardToken,
+    )
+    if (!eligible.length) {
+      return [
+        {
+          label: 'No eligible rewarding pools',
+          value: '',
+          tone: 'muted' as const,
+          icon: '—',
+          reason: 'No funded SmartChef pool with sustainable APR in the current window.',
+        },
+      ]
+    }
+    const bySustain = [...eligible].sort((a, b) => (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0))
+    const top = bySustain[0]
     return [
-      { label: 'Best Sustainability', value: bySustain[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'green' as const, icon: '◎', reason: bySustain[0] ? undefined : advisorUnavailable },
-      { label: 'Highest APR Sustainable', value: byApr[0]?.apr ?? byApr[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'green' as const, icon: '↗', reason: byApr[0] ? undefined : advisorUnavailable },
-      { label: 'Lowest Risk', value: byRisk[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'gold' as const, icon: '◇', reason: byRisk[0] ? undefined : advisorUnavailable },
-      { label: 'Best Long Term', value: byLock[0]?.name ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'gold' as const, icon: '★', reason: byLock[0] ? undefined : advisorUnavailable },
+      {
+        label: 'Top pick',
+        value: `${top.stakeToken} → ${top.rewardToken}`,
+        tone: 'green' as const,
+        icon: '◎',
+        reason: top.apr ? `APR ${top.apr} · ${top.remainingRewards ?? '—'} remaining` : undefined,
+      },
+      {
+        label: 'APR',
+        value: top.sustainableAprDisplay ?? top.apr ?? RUNTIME_UNAVAILABLE_LABEL,
+        tone: 'green' as const,
+        icon: '↗',
+      },
+      {
+        label: 'TVL',
+        value: top.tvl ?? RUNTIME_UNAVAILABLE_LABEL,
+        tone: 'default' as const,
+        icon: '◇',
+      },
+      {
+        label: 'Contract',
+        value: top.contractLabel ?? 'View pool',
+        tone: 'default' as const,
+        icon: '★',
+      },
     ]
   }, [previewCards])
 

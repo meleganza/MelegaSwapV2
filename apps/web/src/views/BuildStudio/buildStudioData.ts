@@ -58,7 +58,7 @@ export interface FarmSimulation {
   treasuryImpact: string
 }
 
-export const SUPPORTED_CHAINS = ['BNB', 'Ethereum', 'Base', 'Polygon', 'Solana'] as const
+export const SUPPORTED_CHAINS = ['BNB'] as const
 
 export const IMPORT_PIPELINE_STEPS = [
   'Paste Contract',

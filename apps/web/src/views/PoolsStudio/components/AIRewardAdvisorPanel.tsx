@@ -196,7 +196,8 @@ const valueTone = (display: string): 'green' | 'default' | 'muted' => {
 
 export const AIRewardAdvisorPanel: React.FC<{ embedded?: boolean; compact?: boolean }> = ({ embedded, compact }) => {
   const { advisorItems, loadingLabel } = usePoolsRuntime()
-  const rows = advisorItems.slice(0, 4)
+  const isEmptyState = advisorItems.length === 1 && !advisorItems[0]?.value
+  const rows = isEmptyState ? [] : advisorItems.slice(0, 4)
 
   const content = (
     <CompactWrap>
@@ -205,6 +206,8 @@ export const AIRewardAdvisorPanel: React.FC<{ embedded?: boolean; compact?: bool
       <List $compact={compact}>
         {loadingLabel ? (
           <RowTitle $compact={compact}>{loadingLabel}</RowTitle>
+        ) : isEmptyState ? (
+          <RowTitle $compact={compact}>{advisorItems[0]?.label ?? 'No eligible rewarding pools.'}</RowTitle>
         ) : (
           rows.map((row, index) => {
             const display = humanAdvisorValue(row.value)
@@ -218,9 +221,11 @@ export const AIRewardAdvisorPanel: React.FC<{ embedded?: boolean; compact?: bool
           })
         )}
       </List>
-      <AskBtn type="button" $compact={compact}>
-        Ask Advisor
-      </AskBtn>
+      {!isEmptyState ? (
+        <AskBtn type="button" $compact={compact}>
+          Ask Advisor
+        </AskBtn>
+      ) : null}
     </CompactWrap>
   )
 

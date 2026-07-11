@@ -1,6 +1,7 @@
 import { resolveIndexerStorage, isProductionDurableStorageConfigured, verifyBlobRoundTrip } from './storage'
 import { getBlockNumber } from './rpc/chunkedLogs'
 import { loadRegistryFromDisk, loadRegistryMeta, resolveOnchainRegistry } from './registry/store'
+import { loadTierPairInventory } from './indexer/tierInventory'
 import { INDEXER_SCHEMA_VERSION, FEATURED_PAIR_SLUG } from './constants'
 import { LEGACY_INDEXER_NOTE } from './v2/paths'
 import { MELEGA_SUBGRAPH_URL } from 'config/constants/endpoints'
@@ -134,6 +135,16 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
 
   const holderProvider: ReadinessComponentStatus = hasEnv('BSCSCAN_API_KEY') ? 'READY' : 'OPTIONAL_UNAVAILABLE'
 
+  let multiPairHistoricalIndexer: ReadinessComponentStatus = 'DEFERRED'
+  try {
+    const tierInventory = await loadTierPairInventory()
+    if (tierInventory.tier2.length > 0 && durable && rpcPrimary.ok) {
+      multiPairHistoricalIndexer = 'SYNCING'
+    }
+  } catch {
+    multiPairHistoricalIndexer = 'DEFERRED'
+  }
+
   const checks: ReadinessCheck[] = [
     {
       name: 'BSC_RPC_URL',
@@ -184,7 +195,7 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
     components: {
       registryDiscovery,
       featuredPairIndexer,
-      multiPairHistoricalIndexer: 'DEFERRED',
+      multiPairHistoricalIndexer,
       holderProvider,
       subgraph: subgraphStatus,
     },

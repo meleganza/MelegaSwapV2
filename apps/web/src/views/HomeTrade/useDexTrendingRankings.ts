@@ -15,7 +15,6 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 
 const SECONDS_24H = 86_400
 const TRENDING_LIMIT = 10
-const CHANGE_UNAVAILABLE = 'Unavailable'
 
 type PairRow = {
   token0?: string
@@ -44,6 +43,26 @@ async function fetchTradeablePairs(): Promise<PairRow[]> {
     if (!res.ok) return []
     const json = (await res.json()) as { rows?: PairRow[] }
     return json.rows ?? []
+  } catch {
+    return []
+  }
+}
+
+async function fetchTierMetrics(): Promise<
+  Array<{
+    token0: string
+    token1: string
+    volume24hQuote: number
+    tradeCount24h: number
+    priceChange24h?: number
+    status: string
+  }>
+> {
+  try {
+    const res = await fetch('/api/indexer/tier-metrics')
+    if (!res.ok) return []
+    const json = (await res.json()) as { rows?: Array<{ token0: string; token1: string; volume24hQuote: number; tradeCount24h: number; priceChange24h?: number; status: string }> }
+    return (json.rows ?? []).filter((r) => r.status === 'READY')
   } catch {
     return []
   }
@@ -108,6 +127,10 @@ export function useDexTrendingRankings() {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
+  const { data: tierMetrics = [] } = useSWR('dex-trending-tier-metrics', fetchTierMetrics, {
+    revalidateOnFocus: false,
+    dedupingInterval: 120_000,
+  })
   const { data: bnbUsd } = useSWR('dex-trending-bnb-usd', fetchBnbUsdPrice, {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
@@ -165,18 +188,34 @@ export function useDexTrendingRankings() {
         tradeCount24h = indexerMetrics24h.tradeCount
       } else if (sym === 'WBNB') {
         priceUsd = wbnbUsd
-        volume24h = indexerMetrics24h.volumeUsd * 0.5
-        tradeCount24h = Math.floor(indexerMetrics24h.tradeCount / 2)
       } else if (sym === 'CAKE') {
         priceUsd = cakeUsd
       } else if (sym === 'BUSD') {
-        priceUsd = busdUsd ?? 1
+        priceUsd = busdUsd && busdUsd > 0 ? busdUsd : undefined
       } else if (asset.address?.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()) {
         priceUsd = marcoUsd
         change24h = indexerMetrics24h.marcoChange
+        volume24h = indexerMetrics24h.volumeUsd
+        tradeCount24h = indexerMetrics24h.tradeCount
       }
 
+      const addrKey = asset.address?.toLowerCase()
+      tierMetrics.forEach((row) => {
+        if (row.token0 !== addrKey && row.token1 !== addrKey) return
+        const volUsd = row.volume24hQuote > 0 && bnbUsd ? row.volume24hQuote * bnbUsd : 0
+        if (volUsd > volume24h) volume24h = volUsd
+        if (row.tradeCount24h > tradeCount24h) tradeCount24h = row.tradeCount24h
+        if (row.priceChange24h != null && !change24h && sym !== 'MARCO') {
+          const positive = row.priceChange24h >= 0
+          change24h = { text: `${positive ? '▲' : '▼'} ${Math.abs(row.priceChange24h).toFixed(2)}%`, positive }
+        }
+      })
+
       if (!priceUsd || priceUsd <= 0) return
+      if (!asset.logo && !asset.logoFallback) return
+
+      const hasMarketSignal = volume24h > 0 || tradeCount24h > 0 || Boolean(change24h)
+      if (!hasMarketSignal) return
 
       bySymbol.set(sym, {
         symbol: asset.symbol,
@@ -195,22 +234,34 @@ export function useDexTrendingRankings() {
     return [...bySymbol.values()]
       .sort((a, b) => {
         if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
+        if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
         if (b.liquidityScore !== a.liquidityScore) return b.liquidityScore - a.liquidityScore
-        return b.tradeCount24h - a.tradeCount24h
+        const aCh = Math.abs(parseFloat(a.change24h?.text.replace(/[^0-9.-]/g, '') ?? '0'))
+        const bCh = Math.abs(parseFloat(b.change24h?.text.replace(/[^0-9.-]/g, '') ?? '0'))
+        return bCh - aCh
       })
       .slice(0, TRENDING_LIMIT)
-  }, [pairRows, marcoPrice, wbnbPrice, cakePrice, busdPrice, indexerMetrics24h])
+  }, [pairRows, marcoPrice, wbnbPrice, cakePrice, busdPrice, indexerMetrics24h, tierMetrics, bnbUsd])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
       const change = asset.change24h
+      const volumeLabel =
+        asset.volume24h > 0
+          ? asset.volume24h >= 1_000_000
+            ? `$${(asset.volume24h / 1_000_000).toFixed(2)}M vol`
+            : asset.volume24h >= 1_000
+              ? `$${(asset.volume24h / 1_000).toFixed(1)}K vol`
+              : `$${asset.volume24h.toFixed(0)} vol`
+          : undefined
+      const liquidityLabel = asset.liquidityScore > 0 ? 'Liquid' : undefined
+      const accent = change?.text ?? volumeLabel ?? liquidityLabel
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
         secondary: formatTickerPrice(asset.priceUsd),
-        accent: change?.text ?? CHANGE_UNAVAILABLE,
+        accent,
         accentPositive: change ? change.positive : undefined,
-        accentUnavailable: !change,
       }
     })
   }, [rankedAssets])
@@ -230,12 +281,12 @@ export function useDexTrendingRankings() {
   const trendingUnavailableReason = useMemo(() => {
     if (trendingTickerItems.length > 0) return undefined
     if (candleStatus === 'loading') return 'Loading indexed market quotes'
-    return 'No tradeable assets with live on-chain quotes'
+    return 'No tradeable assets with price and indexed volume, change, or liquidity'
   }, [trendingTickerItems.length, candleStatus])
 
   const indexerScopeNote = useMemo(() => {
     if (!indexerMetrics24h.hasIndexerData) return undefined
-    return '24H volume and change ranked from MARCO/WBNB featured-pair indexer'
+    return '24H volume and change ranked from Tier-1/Tier-2 durable indexer pairs'
   }, [indexerMetrics24h.hasIndexerData])
 
   return {

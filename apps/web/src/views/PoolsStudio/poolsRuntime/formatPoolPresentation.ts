@@ -52,7 +52,7 @@ function safeBlocksRemaining(pool: Pool.DeserializedPool<Token>, currentBlock: n
   }
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
   if (!pool.isFinished && perBlock.gt(0) && (pool.vaultKey || pool.sousId === 0)) {
-    return BLOCKS_PER_DAY * 365
+    return 0
   }
   return 0
 }

@@ -3,7 +3,7 @@ import path from 'path'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent, OhlcvCandle } from '../types'
 import type { IndexerStorage } from './types'
 import { createJsonFileStorage } from './jsonFileStorage'
-import { featuredPairPrefix, LEGACY_BLOB_PREFIX } from '../v2/paths'
+import { featuredPairPrefix, FEATURED_PAIR_SLUG, LEGACY_BLOB_PREFIX } from '../v2/paths'
 
 function blobPath(prefix: string, key: string): string {
   return `${prefix}/${key}`
@@ -108,16 +108,25 @@ export function createV2FeaturedPairBlobStorage(prefix = featuredPairPrefix()): 
 }
 
 let cached: IndexerStorage | null = null
+const slugCache = new Map<string, IndexerStorage>()
+
+export function resolveIndexerStorageForSlug(slug: string): IndexerStorage {
+  const existing = slugCache.get(slug)
+  if (existing) return existing
+  const blob = createV2FeaturedPairBlobStorage(featuredPairPrefix(slug))
+  if (blob) {
+    slugCache.set(slug, blob)
+    return blob
+  }
+  const localRoot = path.join(process.cwd(), 'data', featuredPairPrefix(slug))
+  const local = createJsonFileStorage(localRoot)
+  slugCache.set(slug, local)
+  return local
+}
 
 export function resolveIndexerStorage(): IndexerStorage {
   if (cached) return cached
-  const blob = createV2FeaturedPairBlobStorage()
-  if (blob) {
-    cached = blob
-    return blob
-  }
-  const localRoot = path.join(process.cwd(), 'data', featuredPairPrefix())
-  cached = createJsonFileStorage(localRoot)
+  cached = resolveIndexerStorageForSlug(FEATURED_PAIR_SLUG)
   return cached
 }
 

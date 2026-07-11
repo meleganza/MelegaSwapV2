@@ -269,6 +269,7 @@ const EMPTY_REASON_LABELS: Record<string, string> = {
   explorer_missing: 'Explorer source missing',
   route_not_configured: 'Route not configured',
   chart_unavailable: 'Chart unavailable',
+  insufficient_history: 'Insufficient history',
 }
 
 const EMPTY_REASON_COPY: Record<string, string> = {
@@ -277,6 +278,7 @@ const EMPTY_REASON_COPY: Record<string, string> = {
   explorer_missing: 'External market reference is not configured for this token.',
   route_not_configured: 'Select a supported output token to load chart context.',
   chart_unavailable: 'Chart data is temporarily unavailable for this pair.',
+  insufficient_history: 'Only one indexed price point is available. A meaningful chart requires at least two candles from swap events.',
 }
 
 const SubgraphChart = styled.div`
@@ -303,11 +305,7 @@ const SubgraphLabel = styled.span`
 `
 
 function buildSubgraphPath(points: Array<{ value: number }>, width: number, height: number): string {
-  if (points.length === 0) return ''
-  if (points.length === 1) {
-    const y = height / 2
-    return `M 0 ${y} L ${width} ${y}`
-  }
+  if (points.length < 2) return ''
   const values = points.map((p) => p.value)
   const min = Math.min(...values)
   const max = Math.max(...values)
@@ -332,7 +330,9 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
 
-  const hasSubgraphPrices = pairPrices.length >= 1
+  const hasChartHistory = pairPrices.length >= 2
+  const hasSinglePoint = pairPrices.length === 1
+  const singlePointPrice = hasSinglePoint ? pairPrices[0]?.value : undefined
 
   const symbol = useMemo(() => {
     if (!inputSymbol || !outputSymbol) return null
@@ -349,8 +349,10 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   })
 
   const debouncedLoading = useDebounce(isLoading, 800)
-  const showTv = Boolean(symbol) && !hasNoData && !hasSubgraphPrices
-  const showUnavailable = (hasNoData || !symbol) && !hasSubgraphPrices
+  const showTv = Boolean(symbol) && !hasNoData && !hasChartHistory && !hasSinglePoint
+  const showUnavailable =
+    (hasNoData || !symbol || emptyReason === 'insufficient_history') && !hasChartHistory && !hasSinglePoint
+  const showInsufficientHistory = hasSinglePoint && emptyReason === 'insufficient_history'
   const showSkeleton = showTv && (isLoading || debouncedLoading)
   const subgraphPath = useMemo(() => buildSubgraphPath(pairPrices, 360, 160), [pairPrices])
   const friendlyCopy = EMPTY_REASON_COPY[emptyReason ?? ''] ?? EMPTY_REASON_COPY.chart_unavailable
@@ -362,7 +364,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
 
   return (
     <Area data-trade-chart-area>
-      {hasSubgraphPrices && (
+      {hasChartHistory && (
         <SubgraphChart data-trade-chart-subgraph>
           <SubgraphSvg viewBox="0 0 360 160" preserveAspectRatio="none">
             <path
@@ -384,12 +386,23 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
               </linearGradient>
             </defs>
           </SubgraphSvg>
-          <SubgraphLabel>
-            {pairPrices.length === 1
-              ? 'Indexed pair price · featured-pair indexer'
-              : 'Indexed pair price · Melega subgraph'}
-          </SubgraphLabel>
+          <SubgraphLabel>Indexed pair price · Melega durable indexer</SubgraphLabel>
         </SubgraphChart>
+      )}
+      {showInsufficientHistory && (
+        <UnavailableState data-trade-chart-insufficient>
+          <UnavailableIcon aria-hidden>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+            </svg>
+          </UnavailableIcon>
+          <UnavailableTitle>
+            {singlePointPrice != null ? `$${singlePointPrice.toFixed(6)}` : 'Current price'}
+          </UnavailableTitle>
+          <UnavailableDesc>{EMPTY_REASON_COPY.insufficient_history}</UnavailableDesc>
+          <TradeTechnicalDetails detail={emptyDetail} />
+        </UnavailableState>
       )}
       {showTv && (
         <TvWrap $show={!showSkeleton}>

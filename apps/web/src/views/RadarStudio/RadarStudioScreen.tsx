@@ -13,6 +13,7 @@ import RadarLiveEventStream from './components/RadarLiveEventStream'
 import RadarOpsLeftColumn from './components/RadarOpsLeftColumn'
 import RadarOpsRightColumn from './components/RadarOpsRightColumn'
 import RadarStudioPageHeader from './components/RadarStudioPageHeader'
+import RadarComingSoonBanner from './components/RadarComingSoonBanner'
 import { RADAR_FONT_BODY, radarStudioColors, radarStudioLayout } from './radarStudioTokens'
 
 const Root = styled.div`
@@ -81,6 +82,7 @@ export const RadarStudioScreen: React.FC = () => (
       <TrendingRibbon />
       <Content>
         <RadarStudioPageHeader />
+        <RadarComingSoonBanner />
         <RadarKpiRow />
         <RadarContractIntelligenceInput />
         <RadarLiveEventStream />

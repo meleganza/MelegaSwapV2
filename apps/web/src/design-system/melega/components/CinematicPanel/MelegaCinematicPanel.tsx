@@ -1,5 +1,6 @@
 import React, { useCallback, useRef } from 'react'
 import styled, { keyframes } from 'styled-components'
+import Link from 'next/link'
 import { colors, typography } from '../../tokens'
 
 const melegaPlanetGlow = keyframes`
@@ -38,6 +39,7 @@ export interface MelegaLiveEconomyMetric {
   label: string
   value: string
   live?: boolean
+  href?: string
 }
 
 export interface MelegaCinematicPanelProps {
@@ -184,10 +186,21 @@ const Copy = styled.div`
 const LiveEconomyStrip = styled.div`
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0;
-  height: 34px;
+  min-height: 34px;
   margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+    height: auto;
+  }
 `
 
 const LiveLabel = styled.span`
@@ -228,6 +241,18 @@ const MetricValue = styled.span<{ $live?: boolean }>`
   font-size: 14px;
   font-weight: 700;
   color: ${({ $live }) => ($live ? colors.green : colors.textPrimary)};
+`
+
+const MetricLink = styled(Link)`
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  text-decoration: none;
+  animation: ${metricFade} 180ms ease;
+
+  &:hover span:last-child {
+    color: ${colors.gold};
+  }
 `
 
 const HeadlineBlock = styled.div`
@@ -344,10 +369,17 @@ export const MelegaCinematicPanel: React.FC<MelegaCinematicPanelProps> = ({ puls
           {economyMetrics.map((metric, i) => (
             <React.Fragment key={metric.id}>
               {i > 0 && <MetricSep aria-hidden />}
-              <MetricItem>
-                <MetricName>{metric.label}</MetricName>
-                <MetricValue $live={metric.live}>{metric.value}</MetricValue>
-              </MetricItem>
+              {metric.href ? (
+                <MetricLink href={metric.href} data-live-economy-metric={metric.id}>
+                  <MetricName>{metric.label}</MetricName>
+                  <MetricValue $live={metric.live}>{metric.value}</MetricValue>
+                </MetricLink>
+              ) : (
+                <MetricItem data-live-economy-metric={metric.id}>
+                  <MetricName>{metric.label}</MetricName>
+                  <MetricValue $live={metric.live}>{metric.value}</MetricValue>
+                </MetricItem>
+              )}
             </React.Fragment>
           ))}
         </LiveEconomyStrip>

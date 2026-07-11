@@ -1,0 +1,132 @@
+{
+  "mission": "R780 — Melega DEX Data Truth and Indexing Recovery",
+  "timestamp": "2026-07-12T00:00:00.000Z",
+  "verdict": "MELEGA_DEX_DATA_TRUTH_BLOCKED",
+  "productionSha": "ee5f2762",
+  "ontologyModule": "apps/web/src/lib/data-truth/ontology.ts",
+  "metricDefinitionsModule": "apps/web/src/lib/data-truth/metricDefinitions.ts",
+  "deliverables": {
+    "1_rootCauseReport": {
+      "summary": "Production surfaces mixed authoritative on-chain reads with static registries, featured-pair-only indexing, and synthetic Radar/Projects clones. Batch 1–2 removed worst heuristics; multi-pair tier indexer infrastructure added but not yet producing DEX-wide aggregates in production.",
+      "primaryRootCauses": [
+        "Featured-pair-only durable indexer (MARCO/WBNB) while UI implied DEX-wide trending and activity",
+        "Static SmartChef inventory instead of factory enumeration",
+        "Synthetic dex-{symbol} project clones in buildDexTokenIndex",
+        "Ambiguous KPI labels without ontology bindings",
+        "Internal operator routes exposed in public footer"
+      ]
+    },
+    "2_canonicalOntology": {
+      "module": "apps/web/src/lib/data-truth/ontology.ts",
+      "terms": 18,
+      "indexerTiers": ["TIER_1", "TIER_2", "TIER_3"],
+      "liveActivityWindowSec": 86400
+    },
+    "3_sourceOwnershipMatrix": "A_ownershipMatrix in this file + metricDefinitions LIVE_ECONOMY_METRIC_BUILDERS",
+    "4_reconciledInventories": {
+      "factoryPairs": { "expectedSource": "Factory.allPairsLength", "status": "registry ~516 pairs via refreshOnChainRegistry", "reconciled": "partial" },
+      "masterChefFarms": { "expectedSource": "MasterChef.poolLength", "status": "~387 farms enumerated", "reconciled": "partial" },
+      "smartChefPools": { "expectedSource": "SmartChefFactory enumeration", "status": "static inventory ~241; on-chain factory enum pending", "reconciled": "blocked" }
+    },
+    "5_eventIndexerActivation": {
+      "featuredPair": "ACTIVE — MARCO/WBNB featured-pair sync via /api/indexer/run",
+      "tier2MultiPair": "ACTIVATING — runTierPairSync + resolveIndexerStorageForSlug + cron rotation",
+      "tier3InventoryOnly": "DEFINED — zero-liquidity pairs inventory-only",
+      "readinessComponent": "multiPairHistoricalIndexer: SYNCING when tier2 inventory + durable storage"
+    },
+    "6_homepageTruth": {
+      "liveEconomy": "Active Farms, Rewarding Pools, Liquid Pairs, Indexed Assets — ontology-bound with drill-down hrefs",
+      "liveActivity": "24H window only; empty: No protocol activity indexed in the last 24 hours",
+      "trending": "useDexTrendingRankings — price + real signal required; no WBNB volume heuristic",
+      "footer": "Removed /runtime/labs Status and /orchestrator Operator Mode from public footer"
+    },
+    "7_tradeTruth": {
+      "marcoPrice": "useCanonicalMarcoPrice shared object",
+      "chart": "2+ candles render chart; 1 point shows price marker + Insufficient history; no flat line",
+      "liquidity": "Pair.getReserves MARCO/WBNB (prior R778)",
+      "recentSwaps": "Durable indexer — narrow scope; 24H filter on homepage"
+    },
+    "8_farmsTruth": {
+      "marcoEmitsToday": "dexTokenPerBlock × BLOCKS_PER_DAY fallback (batch 1)",
+      "inventory": "MasterChef enumeration",
+      "remaining": "Per-farm APR reconciliation audit incomplete"
+    },
+    "9_poolsTruth": {
+      "rewardPerBlock": "On-chain multicall (batch 1)",
+      "rewardingKpi": "Count not inflated USD",
+      "remaining": "SmartChef on-chain discovery; Reward Advisor collapse when no qualifying pool"
+    },
+    "10_trendingProjectsDedup": {
+      "trending": "Same ranked dataset as ticker via useDexTrendingRankings",
+      "projects": "Synthetic dex-{symbol} clones remain — dedupe by chainId+address pending"
+    },
+    "11_dexIntelligenceDisposition": {
+      "route": "/radar",
+      "publicReady": false,
+      "label": "Coming Soon",
+      "syntheticLiveEvents": "disabled via isDexIntelligencePublicReady()"
+    },
+    "12_identityHub": {
+      "babyMarcoImage": "DOG{tokenId}.png path fix (batch 1)",
+      "verification": "production screenshot pending"
+    },
+    "13_routeClassification": "apps/web/src/lib/data-truth/routeClassification.ts",
+    "14_productionScreenshots": "pending — r780-screenshots/ not captured this batch",
+    "15_productionDeploymentSha": "pending deploy",
+    "16_remainingBlockers": [
+      "SmartChef on-chain factory enumeration not wired",
+      "Tier-2 indexer not yet backfilled in production blob storage",
+      "Projects/token deduplication incomplete",
+      "Build Studio BNB-only chain pills (R778 DEF-01)",
+      "Market Pulse CoinGecko truncation (R778 DEF-02)",
+      "Multi-pair 24H volume for non-MARCO trending assets",
+      "Production certification screenshots and payload reconciliation"
+    ]
+  },
+  "batch2Changes": [
+    "apps/web/src/lib/data-truth/ontology.ts",
+    "apps/web/src/lib/data-truth/metricDefinitions.ts",
+    "apps/web/src/lib/data-truth/routeClassification.ts",
+    "apps/web/src/lib/data-truth/dexIntelligenceDisposition.ts",
+    "apps/web/src/lib/data-truth/useCanonicalMarcoPrice.ts",
+    "apps/web/src/lib/bsc-indexer/storage/index.ts",
+    "apps/web/src/lib/bsc-indexer/indexer/tierInventory.ts",
+    "apps/web/src/lib/bsc-indexer/indexer/tierPairSync.ts",
+    "apps/web/src/lib/bsc-indexer/readiness.ts",
+    "apps/web/src/pages/api/indexer/run.ts",
+    "apps/web/src/views/HomeTrade/useHomeTradeData.ts",
+    "apps/web/src/views/HomeTrade/LiveActivityFeed.tsx",
+    "apps/web/src/views/HomeTrade/HomeTradeFooter.tsx",
+    "apps/web/src/views/Trade/components/TradeChartPanel.tsx",
+    "apps/web/src/views/Trade/components/TradePriceChart.tsx",
+    "apps/web/src/views/RadarStudio/radarRuntime/useRadarIntelligenceRuntime.ts",
+    "apps/web/src/views/RadarStudio/components/RadarComingSoonBanner.tsx",
+    "apps/web/scripts/r780-data-quality-gates.mjs"
+  ],
+  "B_fakeValues": [
+    { "id": "F-01", "surface": "Trending", "field": "WBNB 24H volume/trades", "issue": "Heuristic 50% split from MARCO/WBNB pair volume", "status": "FIXED batch 1" },
+    { "id": "F-02", "surface": "Trending", "field": "CAKE/BUSD/WBNB ticker rows", "issue": "Price-only assets shown with Unavailable 24H", "status": "FIXED batch 1" },
+    { "id": "F-03", "surface": "Homepage", "field": "Live farms / Pools counts", "issue": "Top-5 APR slice displayed as protocol totals", "status": "FIXED batch 2" },
+    { "id": "F-06", "surface": "Pools", "field": "Pools Rewarding $109M", "issue": "365-day block fallback inflates budget", "status": "FIXED batch 1" },
+    { "id": "F-09", "surface": "Farms", "field": "Marco Emits Today", "issue": "Unavailable when poolWeight not summed", "status": "FIXED batch 1" },
+    { "id": "F-10", "surface": "Radar", "field": "AI Signals / live events", "issue": "Synthetic registry events as intelligence", "status": "FIXED batch 2 — gated + Coming Soon" },
+    { "id": "F-13", "surface": "Identity", "field": "BabyMarco grid image", "issue": "Broken preview path", "status": "FIXED batch 1" }
+  ],
+  "A_ownershipMatrix": [
+    { "surface": "Home", "field": "Active Farms", "currentSource": "allFarms MasterChef filter", "canonicalOwner": "MasterChef", "real": true, "broken": false },
+    { "surface": "Home", "field": "Rewarding Pools", "currentSource": "allPools tokenPerBlock > 0", "canonicalOwner": "SmartChef/SousChef", "real": true, "broken": false },
+    { "surface": "Home", "field": "Liquid Pairs", "currentSource": "/api/indexer/pairs tradeable", "canonicalOwner": "Factory + getReserves", "real": true, "broken": false },
+    { "surface": "Home", "field": "Live Activity", "currentSource": "Indexer 24H window", "canonicalOwner": "Indexer", "real": true, "broken": "narrow scope" },
+    { "surface": "Trade", "field": "MARCO price", "currentSource": "useCanonicalMarcoPrice", "canonicalOwner": "Factory Pair", "real": true, "broken": false },
+    { "surface": "Trade", "field": "Chart", "currentSource": "indexer candles + subgraph", "canonicalOwner": "Indexer", "real": true, "broken": "partial history" },
+    { "surface": "Radar", "field": "Live events", "currentSource": "disabled when not publicReady", "canonicalOwner": "Indexer", "real": false, "broken": false }
+  ],
+  "certificationReconciliations": {
+    "factoryAllPairsEqualsInventory": "partial — registry refresh matches ~516",
+    "masterChefPoolLengthEqualsFarmInventory": "partial — ~387 enumerated",
+    "smartChefDiscoveryEqualsPoolInventory": "blocked — static inventory",
+    "tradeSwapsEqualsIndexedSwapEvents": "partial — featured pair only",
+    "homepageActivityEqualsEventTruth": "yes — same 24H indexer feed",
+    "trendingEqualsTickerDataset": "yes — useDexTrendingRankings shared"
+  }
+}

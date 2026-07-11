@@ -44,8 +44,7 @@ export const HomeTradeFooter: React.FC = () => (
           <FooterLink href="https://docs.melega.finance" target="_blank" rel="noreferrer">
             Docs
           </FooterLink>
-          <FooterLink href="/runtime/labs">Status</FooterLink>
-          <FooterLink href="/orchestrator">Operator Mode</FooterLink>
+          <FooterLink href="/status">Status</FooterLink>
         </RightLinks>
       }
     />

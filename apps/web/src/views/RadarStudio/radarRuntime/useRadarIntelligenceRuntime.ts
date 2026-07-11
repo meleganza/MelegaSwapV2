@@ -6,6 +6,7 @@ import { buildMarketSources } from 'views/ProjectsStudio/projectsRuntime/marketS
 import type { ContractPreviewData, RadarFilterChip } from '../radarStudioData'
 import { buildContractIntelligence } from './buildContractIntelligence'
 import { buildHeatmapRows } from './buildHeatmap'
+import { isDexIntelligencePublicReady } from 'lib/data-truth/dexIntelligenceDisposition'
 import { buildLiveEvents } from './buildLiveEvents'
 import { buildOpportunityScore } from './buildOpportunityScore'
 import {
@@ -45,7 +46,10 @@ export function useRadarIntelligenceRuntime() {
     [],
   )
 
-  const liveEvents = useMemo(() => buildLiveEvents(enriched), [enriched])
+  const liveEvents = useMemo(
+    () => (isDexIntelligencePublicReady() ? buildLiveEvents(enriched) : []),
+    [enriched],
+  )
   const filteredLiveEvents = useMemo(
     () => filterLiveEvents(liveEvents, filter),
     [liveEvents, filter],
