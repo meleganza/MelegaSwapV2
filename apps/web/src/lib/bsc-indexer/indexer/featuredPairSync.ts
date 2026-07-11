@@ -115,30 +115,34 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
       maxBlocks: blockBudget,
       maxLogs: MAX_EVENTS_PER_SYNC,
       stopBeforeBlock: stopBefore,
+      startBlock: checkpoint.phase === 'bootstrap' ? checkpoint.lastIndexedBlock : undefined,
     })
     providerUsed = headScan.providerUsed
     normalizeLogs(headScan.logs, pair, headScan.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
 
     if (headScan.logs.length === 0 && checkpoint.phase === 'bootstrap' && !hasEvents) {
-      const forwardFrom = Math.max(bootstrapFloor, chainHead - blockBudget + 1)
-      const forward = await scanBlockRangeEvents({
-        address: pair.pairAddress,
-        fromBlock: forwardFrom,
-        toBlock: chainHead,
-      })
-      providerUsed = forward.providerUsed
-      fromBlock = forwardFrom
-      toBlock = chainHead
-      normalizeLogs(
-        forward.logs,
-        pair,
-        forward.blockTimestamps,
-        MAX_EVENTS_PER_SYNC - normalized.length,
-        normalized,
-      )
+      const forwardFrom = Math.max(bootstrapFloor, checkpoint.lastIndexedBlock - blockBudget + 1)
+      const forwardTo = checkpoint.lastIndexedBlock
+      if (forwardFrom <= forwardTo) {
+        const forward = await scanBlockRangeEvents({
+          address: pair.pairAddress,
+          fromBlock: forwardFrom,
+          toBlock: forwardTo,
+        })
+        providerUsed = forward.providerUsed
+        fromBlock = forwardFrom
+        toBlock = forwardTo
+        normalizeLogs(
+          forward.logs,
+          pair,
+          forward.blockTimestamps,
+          MAX_EVENTS_PER_SYNC - normalized.length,
+          normalized,
+        )
+      }
     } else {
       fromBlock = headScan.lastScannedBlock
-      toBlock = chainHead
+      toBlock = checkpoint.lastIndexedBlock
     }
 
     const added = await storage.appendEvents(normalized)
@@ -150,18 +154,19 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
     if (candles.length) await storage.saveCandles(candles)
 
     let phase = checkpoint.phase ?? 'bootstrap'
-    const nextFloor =
+    const oldestScanned = headScan.lastScannedBlock
+    const nextIndexedBlock =
       checkpoint.phase === 'bootstrap'
-        ? Math.max(bootstrapFloor, headScan.lastScannedBlock)
+        ? Math.max(bootstrapFloor, oldestScanned)
         : chainHead
 
-    if (phase === 'bootstrap' && nextFloor <= bootstrapFloor + REORG_SAFETY_BLOCKS) {
+    if (phase === 'bootstrap' && oldestScanned <= bootstrapFloor + REORG_SAFETY_BLOCKS) {
       phase = 'incremental'
     }
 
     const nextCheckpoint: IndexerCheckpoint = {
       ...checkpoint,
-      lastIndexedBlock: checkpoint.phase === 'bootstrap' ? nextFloor : chainHead,
+      lastIndexedBlock: nextIndexedBlock,
       chainHeadAtSync: chainHead,
       lastSuccessfulSync: new Date().toISOString(),
       lastFailureReason: undefined,

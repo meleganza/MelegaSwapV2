@@ -207,6 +207,7 @@ export async function scanPairEventsFromHead(params: {
   maxBlocks: number
   maxLogs?: number
   stopBeforeBlock?: number
+  startBlock?: number
   rpcUrls?: string[]
 }): Promise<{ logs: RawLog[]; blockTimestamps: Map<number, number>; lastScannedBlock: number; providerUsed: string }> {
   const headRpcUrls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
@@ -215,7 +216,8 @@ export async function scanPairEventsFromHead(params: {
   if (!logRpcUrls.length) throw new Error('No healthy RPC endpoints for eth_getLogs')
 
   type BlockHeader = { hash: string; number: string; parentHash: string; timestamp: string }
-  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', ['latest', false], headRpcUrls)
+  const startHex = params.startBlock !== undefined ? toBlockQuantity(params.startBlock) : 'latest'
+  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', [startHex, false], headRpcUrls)
   const logs: RawLog[] = []
   const blockTimestamps = new Map<number, number>()
   let scanned = 0
