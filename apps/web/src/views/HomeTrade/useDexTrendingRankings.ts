@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { WBNB, CAKE, BUSD } from '@pancakeswap/sdk'
+import { WBNB } from '@pancakeswap/sdk'
+import { CAKE, BUSD } from '@pancakeswap/tokens'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { getTradeSurfaceAssets } from 'lib/dex-asset-index'
