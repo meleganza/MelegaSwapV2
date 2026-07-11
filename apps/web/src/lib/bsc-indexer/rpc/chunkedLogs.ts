@@ -25,15 +25,15 @@ export function resolveIndexerLogRpcUrls(): string[] {
   return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
 }
 
-/** Public seeds for eth_getLogs — Ankr rejects both minimal and padded hex; QuickNode rejects blockHash. */
+/** Public BSC seeds only for eth_getLogs — paid fallbacks reject standard quantity encodings. */
 export function resolveLogFetchRpcUrls(): string[] {
   return [
     'https://bsc-dataseed.binance.org',
     'https://bsc-dataseed1.defibit.io',
     'https://bsc-dataseed2.defibit.io',
-    process.env.BSC_RPC_FALLBACK_URL,
-    process.env.BSC_RPC_URL,
-  ].filter(Boolean) as string[]
+    'https://bsc-dataseed1.bnbchain.org',
+    'https://bsc-dataseed1.ninicoin.io',
+  ]
 }
 
 export async function rpcCallWithFailover<T>(
@@ -56,7 +56,9 @@ export async function rpcCallWithFailover<T>(
         return { result: json.result, url }
       } catch (e) {
         lastError = e instanceof Error ? e : new Error(String(e))
-        if (attempt < 2) await new Promise((r) => setTimeout(r, 250 * 2 ** attempt))
+        const msg = lastError.message.toLowerCase()
+        const delay = msg.includes('limit') ? 800 * 2 ** attempt : 250 * 2 ** attempt
+        if (attempt < 2) await new Promise((r) => setTimeout(r, delay))
       }
     }
   }
