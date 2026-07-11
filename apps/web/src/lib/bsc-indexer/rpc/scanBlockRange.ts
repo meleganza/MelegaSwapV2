@@ -1,6 +1,6 @@
 import { BURN_TOPIC, MINT_TOPIC, SWAP_TOPIC } from '../constants'
 import type { RawLog } from './chunkedLogs'
-import { getBlockNumber, rpcCallWithFailover, resolveIndexerLogRpcUrls } from './chunkedLogs'
+import { getBlockNumber, rpcCallWithFailover, resolveIndexerLogRpcUrls, resolveLogFetchRpcUrls } from './chunkedLogs'
 import { blockQuantityVariants } from './blockQuantity'
 
 export type BlockHeader = { hash: string; number: string; timestamp: string }
@@ -40,6 +40,7 @@ export async function scanBlockRangeEvents(params: {
   rpcUrls?: string[]
 }): Promise<{ logs: RawLog[]; blockTimestamps: Map<number, number>; providerUsed: string }> {
   const urls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
+  const logUrls = resolveLogFetchRpcUrls()
   if (!urls.length) throw new Error('BSC_RPC_URL missing for featured-pair log scan')
 
   const logs: RawLog[] = []
@@ -53,14 +54,21 @@ export async function scanBlockRangeEvents(params: {
     blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
 
     for (const topic of EVENT_TOPICS) {
-      const { result: batch } = await rpcCallWithFailover<RawLog[]>(
+      const quantity = blockQuantityVariants(bn)[0]
+      const { result: batch, url } = await rpcCallWithFailover<RawLog[]>(
         'eth_getLogs',
-        [{ blockHash: block.hash, topics: [topic] }],
-        urls,
+        [
+          {
+            fromBlock: quantity,
+            toBlock: quantity,
+            address: params.address.toLowerCase(),
+            topics: [topic],
+          },
+        ],
+        logUrls,
       )
-      logs.push(
-        ...batch.filter((log) => log.address.toLowerCase() === params.address.toLowerCase()),
-      )
+      providerUsed = url
+      logs.push(...batch)
     }
   }
 

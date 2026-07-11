@@ -1,6 +1,7 @@
 import type { NextApiHandler } from 'next'
 import { MARCO_WBNB_PAIR_BSC, SWAP_TOPIC } from 'lib/bsc-indexer/constants'
-import { getBlockNumber, rpcCallWithFailover, resolveIndexerLogRpcUrls } from 'lib/bsc-indexer/rpc/chunkedLogs'
+import { getBlockNumber, rpcCallWithFailover, resolveLogFetchRpcUrls } from 'lib/bsc-indexer/rpc/chunkedLogs'
+import { blockQuantityVariants } from 'lib/bsc-indexer/rpc/blockQuantity'
 import { verifyBlobRoundTrip } from 'lib/bsc-indexer/storage'
 
 const handler: NextApiHandler = async (req, res) => {
@@ -17,7 +18,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const blob = await verifyBlobRoundTrip()
-  const rpcUrls = resolveIndexerLogRpcUrls()
+  const logUrls = resolveLogFetchRpcUrls()
   let primaryRpc: { ok: boolean; chainHead?: number; reason?: string } = { ok: false }
   let fallbackRpc: { ok: boolean; chainHead?: number; reason?: string } = { ok: false }
   const logProbe: Record<string, unknown> = {}
@@ -42,28 +43,28 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    type BlockHeader = { hash: string; number: string }
-    const { result: latest, url: latestUrl } = await rpcCallWithFailover<BlockHeader>(
-      'eth_getBlockByNumber',
-      ['latest', false],
-      rpcUrls,
+    const block = primaryRpc.chainHead ?? fallbackRpc.chainHead ?? 0
+    const quantity = blockQuantityVariants(block)[0]
+    const singleBlock = await rpcCallWithFailover<unknown[]>(
+      'eth_getLogs',
+      [
+        {
+          fromBlock: quantity,
+          toBlock: quantity,
+          address: MARCO_WBNB_PAIR_BSC,
+          topics: [SWAP_TOPIC],
+        },
+      ],
+      logUrls,
     )
-    const withAddress = await rpcCallWithFailover<unknown[]>(
-      'eth_getLogs',
-      [{ blockHash: latest.hash, address: MARCO_WBNB_PAIR_BSC, topics: [SWAP_TOPIC] }],
-      rpcUrls,
-    ).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }))
-    const withoutAddress = await rpcCallWithFailover<unknown[]>(
-      'eth_getLogs',
-      [{ blockHash: latest.hash, topics: [SWAP_TOPIC] }],
-      rpcUrls,
-    ).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }))
-    logProbe.latestBlock = parseInt(latest.number, 16)
-    logProbe.latestUrl = latestUrl
-    logProbe.withAddress = 'error' in withAddress ? withAddress : { count: (withAddress as { result: unknown[] }).result.length, url: (withAddress as { url: string }).url }
-    logProbe.withoutAddress = 'error' in withoutAddress ? withoutAddress : { count: (withoutAddress as { result: unknown[] }).result.length, url: (withoutAddress as { url: string }).url }
+    logProbe.singleBlockLogFetch = {
+      block,
+      quantity,
+      count: singleBlock.result.length,
+      url: singleBlock.url,
+    }
   } catch (e) {
-    logProbe.error = e instanceof Error ? e.message : 'Log probe failed'
+    logProbe.singleBlockLogFetch = { error: e instanceof Error ? e.message : 'single-block log fetch failed' }
   }
 
   return res.status(200).json({
@@ -73,6 +74,7 @@ const handler: NextApiHandler = async (req, res) => {
       primary: primaryRpc,
       fallback: fallbackRpc,
       logProbe,
+      logFetchOrder: logUrls,
     },
   })
 }

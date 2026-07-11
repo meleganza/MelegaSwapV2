@@ -8,7 +8,7 @@ import {
   MAX_EVENTS_PER_SYNC,
 } from '../constants'
 import type { NormalizedIndexerEvent } from '../types'
-import { toBlockQuantity } from './blockQuantity'
+import { toBlockQuantity, blockQuantityVariants } from './blockQuantity'
 
 export function resolveRpcUrls(): string[] {
   return [
@@ -23,6 +23,13 @@ export function resolveRpcUrls(): string[] {
 /** Primary + fallback for featured-pair indexing. */
 export function resolveIndexerLogRpcUrls(): string[] {
   return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
+}
+
+/** Prefer fallback for eth_getLogs — QuickNode Discover rejects blockHash filters. */
+export function resolveLogFetchRpcUrls(): string[] {
+  const fallback = process.env.BSC_RPC_FALLBACK_URL
+  const primary = process.env.BSC_RPC_URL
+  return [fallback, primary].filter(Boolean) as string[]
 }
 
 export async function rpcCallWithFailover<T>(
@@ -90,6 +97,34 @@ export interface RawLog {
   logIndex: string
 }
 
+async function fetchLogsForBlock(params: {
+  blockNumber: number
+  address: string
+  topic: string
+  logRpcUrls: string[]
+}): Promise<{ logs: RawLog[]; url: string }> {
+  for (const quantity of blockQuantityVariants(params.blockNumber)) {
+    try {
+      const { result, url } = await rpcCallWithFailover<RawLog[]>(
+        'eth_getLogs',
+        [
+          {
+            fromBlock: quantity,
+            toBlock: quantity,
+            address: params.address.toLowerCase(),
+            topics: [params.topic],
+          },
+        ],
+        params.logRpcUrls,
+      )
+      return { logs: result, url }
+    } catch {
+      continue
+    }
+  }
+  throw new Error(`eth_getLogs failed for block ${params.blockNumber}`)
+}
+
 export async function scanPairEventsFromHead(params: {
   address: string
   maxBlocks: number
@@ -97,15 +132,16 @@ export async function scanPairEventsFromHead(params: {
   stopBeforeBlock?: number
   rpcUrls?: string[]
 }): Promise<{ logs: RawLog[]; blockTimestamps: Map<number, number>; lastScannedBlock: number; providerUsed: string }> {
-  const rpcUrls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
-  if (!rpcUrls.length) throw new Error('BSC_RPC_URL missing for log scan')
+  const headRpcUrls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
+  const logRpcUrls = resolveLogFetchRpcUrls()
+  if (!headRpcUrls.length) throw new Error('BSC_RPC_URL missing for log scan')
 
   type BlockHeader = { hash: string; number: string; parentHash: string; timestamp: string }
-  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', ['latest', false], rpcUrls)
+  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', ['latest', false], headRpcUrls)
   const logs: RawLog[] = []
   const blockTimestamps = new Map<number, number>()
   let scanned = 0
-  let providerUsed = rpcUrls[0]
+  let providerUsed = logRpcUrls[0] ?? headRpcUrls[0]
   const stopBefore = params.stopBeforeBlock ?? 0
   const topics = [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC]
 
@@ -115,19 +151,20 @@ export async function scanPairEventsFromHead(params: {
     blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
 
     for (const topic of topics) {
-      const { result: batch, url } = await rpcCallWithFailover<RawLog[]>(
-        'eth_getLogs',
-        [{ blockHash: block.hash, topics: [topic] }],
-        rpcUrls,
-      )
-      providerUsed = url
-      logs.push(...batch.filter((log) => log.address.toLowerCase() === params.address.toLowerCase()))
+      const batch = await fetchLogsForBlock({
+        blockNumber,
+        address: params.address,
+        topic,
+        logRpcUrls,
+      })
+      providerUsed = batch.url
+      logs.push(...batch.logs)
       if (logs.length >= (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) break
     }
     scanned += 1
 
     if (!block.parentHash || /^0x0+$/i.test(block.parentHash)) break
-    block = await rpcCall<BlockHeader>('eth_getBlockByHash', [block.parentHash, false], rpcUrls)
+    block = await rpcCall<BlockHeader>('eth_getBlockByHash', [block.parentHash, false], headRpcUrls)
   }
 
   return { logs, blockTimestamps, lastScannedBlock: parseInt(block.number, 16), providerUsed }
