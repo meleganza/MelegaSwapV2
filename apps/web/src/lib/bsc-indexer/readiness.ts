@@ -122,7 +122,7 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
   let featuredPairIndexer: ReadinessComponentStatus = 'BLOCKED'
   if (!durable || !rpcPrimary.ok) {
     featuredPairIndexer = 'BLOCKED'
-  } else if (hasEvents && health?.status === 'ready') {
+  } else if (hasEvents && !health?.lastFailureReason && !checkpoint?.lastFailureReason) {
     featuredPairIndexer = 'READY'
   } else if (health?.status === 'syncing' || checkpoint?.phase === 'bootstrap') {
     featuredPairIndexer = 'SYNCING'
