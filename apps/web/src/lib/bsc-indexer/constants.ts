@@ -17,9 +17,9 @@ export const BOOTSTRAP_DAYS_FALLBACK = 7
 export const BSC_AVG_BLOCK_SECONDS = 3
 export const INDEXER_SCHEMA_VERSION = 2
 export const FEATURED_PAIR_SLUG = 'marco-wbnb'
-/** Per cron sync — 10 blocks via public dataseed log RPC (rate-limit aware). */
-export const MAX_BLOCKS_PER_SYNC = 10
-export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 10
+/** Per cron sync — 5 blocks; public dataseed pacing for serverless timeout budget. */
+export const MAX_BLOCKS_PER_SYNC = 5
+export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 5
 export const RECENT_BOOTSTRAP_BLOCKS = 250
 export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
 /** Legacy R768 genesis — not used by v2 featured-pair indexer. */

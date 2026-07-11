@@ -103,6 +103,26 @@ export interface RawLog {
   logIndex: string
 }
 
+let logUrlCursor = 0
+
+function nextLogRpcUrl(urls: string[]): string {
+  const url = urls[logUrlCursor % urls.length]
+  logUrlCursor += 1
+  return url
+}
+
+async function rpcCallSingle<T>(method: string, params: unknown[], url: string): Promise<T> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+  })
+  const json = (await res.json()) as { result?: T; error?: { message: string } }
+  if (json.error) throw new Error(json.error.message)
+  if (json.result === undefined) throw new Error(`RPC ${method} empty result`)
+  return json.result
+}
+
 async function fetchLogsForBlock(params: {
   blockNumber: number
   address: string
@@ -110,12 +130,10 @@ async function fetchLogsForBlock(params: {
   logRpcUrls: string[]
 }): Promise<{ logs: RawLog[]; url: string }> {
   const variants = blockQuantityVariants(params.blockNumber)
-  const ordered = [variants[variants.length - 1], ...variants.slice(0, -1)].filter(
-    (v, i, a) => a.indexOf(v) === i,
-  )
-  for (const quantity of ordered) {
+  const url = nextLogRpcUrl(params.logRpcUrls)
+  for (const quantity of variants) {
     try {
-      const { result, url } = await rpcCallWithFailover<RawLog[]>(
+      const result = await rpcCallSingle<RawLog[]>(
         'eth_getLogs',
         [
           {
@@ -125,7 +143,7 @@ async function fetchLogsForBlock(params: {
             topics: [params.topic],
           },
         ],
-        params.logRpcUrls,
+        url,
       )
       return { logs: result, url }
     } catch {
@@ -170,6 +188,7 @@ export async function scanPairEventsFromHead(params: {
       providerUsed = batch.url
       logs.push(...batch.logs)
       if (logs.length >= (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) break
+      await new Promise((r) => setTimeout(r, 120))
     }
     scanned += 1
 
