@@ -27,13 +27,18 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
 }) => {
   const emptyDescription = useMemo(() => {
     if (isIndexing) {
-      return swapDiagnostic?.reason ?? 'Subgraph request in progress'
+      return swapDiagnostic?.reason ?? 'Indexer request in progress'
     }
     if (swapDiagnostic?.reason) {
       return swapDiagnostic.reason
     }
     if (swapEmptyReason === 'DATA_SOURCE_NOT_CONFIGURED') {
-      return 'Indexer not deployed'
+      return 'Swap indexer not deployed'
+    }
+    if (swapEmptyReason === 'NO_EVENTS_INDEXED') {
+      return swapDiagnostic?.source?.includes('bsc-indexer') || swapDiagnostic?.indexer?.includes('featured')
+        ? 'Indexer scope: MARCO/WBNB featured pair — no swaps indexed yet'
+        : DATA_REASON_LABELS.NO_EVENTS_INDEXED
     }
     if (missingReasonDetail) {
       return missingReasonDetail
@@ -46,7 +51,7 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
 
   const technicalDetail = useMemo(() => {
     if (isIndexing) {
-      return `Subgraph request in progress · Source: ${swapDiagnostic?.source ?? 'melega-subgraph'} · Indexer: ${swapDiagnostic?.indexer ?? 'loading'} · Last attempt: ${swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'}`
+      return `Indexer request in progress · Source: ${swapDiagnostic?.source ?? 'melega-indexer'} · Indexer: ${swapDiagnostic?.indexer ?? 'loading'} · Last attempt: ${swapDiagnostic?.lastAttempt ? new Date(swapDiagnostic.lastAttempt).toLocaleString() : 'in progress'}`
     }
     if (swapDiagnostic) {
       return `Reason: ${swapDiagnostic.reason ?? DATA_REASON_LABELS.NO_EVENTS_INDEXED} · Source: ${swapDiagnostic.source} · Indexer: ${swapDiagnostic.indexer} · Last attempt: ${new Date(swapDiagnostic.lastAttempt).toLocaleString()}`

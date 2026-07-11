@@ -12,6 +12,7 @@ export interface MelegaTickerItem {
   href?: string
   icon?: React.ReactNode
   accentPositive?: boolean
+  accentUnavailable?: boolean
 }
 
 export interface MelegaTickerProps extends MelegaLayoutProps {
@@ -143,10 +144,11 @@ const Secondary = styled.span`
   }
 `
 
-const Accent = styled.span<{ $positive?: boolean }>`
+const Accent = styled.span<{ $positive?: boolean; $unavailable?: boolean }>`
   font-weight: 700;
   font-size: 14px;
-  color: ${({ $positive }) => ($positive === false ? '#ff5252' : '#00e676')};
+  color: ${({ $unavailable, $positive }) =>
+    $unavailable ? '#a8a8a8' : $positive === false ? '#ff5252' : '#00e676'};
 `
 
 const Dot = styled.span`
@@ -250,14 +252,22 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
                   {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
                   <Primary>{item.primary}</Primary>
                   {item.secondary && <Secondary>{item.secondary}</Secondary>}
-                  {item.accent && <Accent $positive={item.accentPositive}>{item.accent}</Accent>}
+                  {item.accent && (
+                    <Accent $positive={item.accentPositive} $unavailable={item.accentUnavailable}>
+                      {item.accent}
+                    </Accent>
+                  )}
                 </ItemLink>
               ) : (
                 <ItemSpan>
                   {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
                   <Primary>{item.primary}</Primary>
                   {item.secondary && <Secondary>{item.secondary}</Secondary>}
-                  {item.accent && <Accent $positive={item.accentPositive}>{item.accent}</Accent>}
+                  {item.accent && (
+                    <Accent $positive={item.accentPositive} $unavailable={item.accentUnavailable}>
+                      {item.accent}
+                    </Accent>
+                  )}
                 </ItemSpan>
               )}
               {i < scrollItems.length - 1 && <Dot aria-hidden />}

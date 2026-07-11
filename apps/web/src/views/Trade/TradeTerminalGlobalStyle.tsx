@@ -494,6 +494,33 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
       text-overflow: ellipsis !important;
     }
   }
+
+  @media (max-width: 390px) {
+    .trade-terminal-swap .token-amount-input,
+    .trade-terminal-swap [class*='CurrencyInputPanel'] input {
+      font-size: 18px !important;
+      line-height: 28px !important;
+    }
+
+    .trade-terminal-swap #swap-currency-input [class*='InputContainer'],
+    .trade-terminal-swap #swap-currency-output [class*='InputContainer'] {
+      right: 88px !important;
+      bottom: 12px !important;
+    }
+
+    .trade-terminal-swap #swap-currency-input,
+    .trade-terminal-swap #swap-currency-output {
+      padding: 12px !important;
+      min-height: 76px !important;
+      height: 76px !important;
+      max-height: 76px !important;
+    }
+
+    .trade-terminal-swap [class*='OpenCurrencySelectButton'] {
+      max-width: 92px !important;
+      font-size: 12px !important;
+    }
+  }
 `
 
 export default TradeTerminalGlobalStyle

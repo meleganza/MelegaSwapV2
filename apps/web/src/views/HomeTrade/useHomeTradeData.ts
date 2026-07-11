@@ -484,16 +484,30 @@ export const useHomeTradeData = () => {
     if (isActivityIndexing) return undefined
     if (activityRows.length > 0) return undefined
     const hasStaleEvents = (transactions?.length ?? 0) > 0 && recentTransactions.length === 0
+    const latestTx = transactions?.[0]
+    const latestAge =
+      latestTx && Number(latestTx.timestamp) > 0
+        ? formatTimeAgo(latestTx.timestamp)
+        : undefined
+    const indexerScope =
+      indexerState.indexer?.includes('featured') || indexerState.source?.includes('bsc-indexer')
+        ? 'Indexer scope: MARCO/WBNB featured pair only'
+        : undefined
+    let reason = 'No swaps or liquidity events indexed in the current subgraph window'
+    if (hasStaleEvents && latestAge) {
+      reason = `${indexerScope ? `${indexerScope}. ` : ''}Latest indexed event is ${latestAge} — nothing within the last 24 hours`
+    } else if (hasStaleEvents) {
+      reason = `${indexerScope ? `${indexerScope}. ` : ''}No indexed swaps or liquidity events in the last 24 hours`
+    } else if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
+      reason = indexerState.reason ?? 'Subgraph indexer unavailable'
+    } else if (indexerScope) {
+      reason = `${indexerScope}. Waiting for first indexed swap`
+    }
     const diagnostic = buildIndexerActivityDiagnostic({
       source: indexerState.source,
       indexer: indexerState.indexer,
       lastAttempt: indexerState.lastAttempt,
-      reason:
-        hasStaleEvents
-          ? 'No indexed swaps or liquidity events in the last 24 hours'
-          : indexerState.status === 'error' || indexerState.status === 'unavailable'
-            ? indexerState.reason ?? 'Subgraph indexer unavailable'
-            : 'No swaps or liquidity events indexed in the current subgraph window',
+      reason,
     })
     return {
       message: diagnostic.title,

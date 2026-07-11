@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { BLOCKS_PER_DAY } from 'config'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getAddressExplorerUrl } from 'utils/blockExplorer'
 import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
@@ -106,10 +107,17 @@ export function aggregateKpis(
     totalTvl += liq
     const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
     if (apr > highestApr) highestApr = apr
-    if (farm.poolWeight && regularCakePerBlock) {
+    if (regularCakePerBlock > 0 && farm.poolWeight?.gt(0)) {
       dailyEmissions += getBalanceNumber(farm.poolWeight.times(regularCakePerBlock).times(BLOCKS_PER_DAY))
     }
   })
+
+  const emissionValue =
+    dailyEmissions > 0
+      ? formatTokenAmount(new BigNumber(dailyEmissions), 18, 'MARCO')
+      : regularCakePerBlock > 0
+        ? RUNTIME_UNAVAILABLE_LABEL
+        : '0 MARCO'
 
   return [
     { id: 'tvl', label: 'Total TVL', value: formatUsd(totalTvl) },
@@ -117,7 +125,7 @@ export function aggregateKpis(
     {
       id: 'rewards',
       label: 'MARCO Emitted Today',
-      value: dailyEmissions > 0 ? formatTokenAmount(new BigNumber(dailyEmissions), 18, 'MARCO') : '0 MARCO',
+      value: emissionValue,
     },
     { id: 'apr', label: 'Highest APR', value: highestApr > 0 ? formatApr(highestApr) : '—', gold: true },
     { id: 'ai', label: 'Featured Farm', value: featuredPair ?? '—', gold: true },

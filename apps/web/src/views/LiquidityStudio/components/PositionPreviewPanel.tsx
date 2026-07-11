@@ -45,6 +45,7 @@ const Bars = styled.div`
   justify-content: center;
   gap: 40px;
   height: ${liquidityStudioLayout.barsAreaHeight};
+  min-height: 120px;
   flex-shrink: 0;
 `
 
@@ -57,8 +58,9 @@ const BarCol = styled.div`
 
 const Bar = styled.div<{ $gold?: boolean; $scale?: number }>`
   width: ${liquidityStudioLayout.liquidityBarWidth};
+  min-height: 48px;
   height: ${({ $scale }) =>
-    $scale ? Math.max(24, liquidityStudioLayout.liquidityBarHeight * $scale) : liquidityStudioLayout.liquidityBarHeight}px;
+    $scale ? Math.max(48, liquidityStudioLayout.liquidityBarHeight * $scale) : liquidityStudioLayout.liquidityBarHeight}px;
   border-radius: 999px;
   background: ${({ $gold }) =>
     $gold

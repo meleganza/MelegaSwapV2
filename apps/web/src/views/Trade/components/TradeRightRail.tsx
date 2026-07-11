@@ -187,6 +187,7 @@ const AssetRow = styled.div`
   justify-content: space-between;
   gap: 10px;
   min-height: 44px;
+  min-width: 0;
 `
 
 const AssetLeft = styled.div`
@@ -224,6 +225,10 @@ const AssetBal = styled.div`
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const StatusRow = styled.div`

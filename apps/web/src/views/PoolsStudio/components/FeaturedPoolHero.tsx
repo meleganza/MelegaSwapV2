@@ -377,7 +377,7 @@ export const FeaturedPoolHero: React.FC = () => {
         data-r707d-empty
         data-r707e-empty
       >
-        <EmptyTitle data-ps-empty-title>No funded reward pools</EmptyTitle>
+        <EmptyTitle data-ps-empty-title>No rewarding pools yet</EmptyTitle>
         <EmptySubtitle data-ps-empty-subtitle>
           Create or fund a reward pool to activate staking opportunities.
         </EmptySubtitle>

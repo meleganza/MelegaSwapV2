@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
+import { Token, WNATIVE } from '@pancakeswap/sdk'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
@@ -16,6 +17,9 @@ import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
+import { usePriceCakeBusd } from 'state/farms/hooks'
+import { PairState, usePairs } from 'hooks/usePairs'
+import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 
 const SECONDS_24H = 86_400
 
@@ -167,6 +171,28 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     fetchBnbUsdPrice,
     { refreshInterval: 120_000, revalidateOnFocus: false },
   )
+  const marcoOnChainPrice = usePriceCakeBusd({ forceMainnet: true })
+  const marcoToken = useMemo(
+    () => (chainId === 56 ? new Token(56, MARCO_BSC_ADDRESS, 18, 'MARCO') : undefined),
+    [chainId],
+  )
+  const wbnbToken = chainId ? WNATIVE[chainId] : undefined
+  const [[pairState, pair]] = usePairs([[marcoToken, wbnbToken]])
+
+  const reserveLiquidityUsd = useMemo(() => {
+    if (!isMarcoRoute || pairState !== PairState.EXISTS || !pair) return undefined
+    const marcoUsd = marcoOnChainPrice?.toNumber()
+    const bnbUsd = bnbUsdPrice
+    if (!marcoUsd || !bnbUsd) return undefined
+    const marcoReserve = pair.token0.symbol === 'MARCO'
+      ? getBalanceNumber(pair.reserve0, pair.token0.decimals)
+      : getBalanceNumber(pair.reserve1, pair.token1.decimals)
+    const bnbReserve = pair.token0.symbol === 'WBNB' || pair.token0.symbol === 'BNB'
+      ? getBalanceNumber(pair.reserve0, pair.token0.decimals)
+      : getBalanceNumber(pair.reserve1, pair.token1.decimals)
+    const total = marcoReserve * marcoUsd + bnbReserve * bnbUsd
+    return total > 0 ? total : undefined
+  }, [isMarcoRoute, pairState, pair, marcoOnChainPrice, bnbUsdPrice])
 
   const indexerMetrics24h = useMemo(() => {
     if (!useDurableIndexer || !isMarcoRoute) return undefined
@@ -268,7 +294,10 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
 
     const volumeValue =
       indexedVolumeValue ?? formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
-    const liquidityValue = formatUsd(tokenData?.liquidityUSD ?? 0)
+    const liquidityValue =
+      reserveLiquidityUsd != null
+        ? formatUsd(reserveLiquidityUsd)
+        : formatUsd(tokenData?.liquidityUSD ?? 0)
     const mcapValue = formatCompactUsd(publicMarket?.marketCapUsd)
     const fdvValue = formatCompactUsd(publicMarket?.fdvUsd)
     const supplyValue = formatSupply(publicMarket?.circulatingSupply)
@@ -285,13 +314,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
               : undefined
 
     const liquidityReason: DataReasonCode | undefined =
-      tokenData === undefined && subgraphReport.melegaNativeConfigured
-        ? 'SUBGRAPH_LOADING'
-        : !tokenData?.exists
-          ? 'PAIR_NOT_INDEXED'
-          : !tokenData.liquidityUSD
-            ? 'NO_POOL_FOUND'
-            : undefined
+      reserveLiquidityUsd != null
+        ? undefined
+        : tokenData === undefined && subgraphReport.melegaNativeConfigured
+          ? 'SUBGRAPH_LOADING'
+          : !tokenData?.exists
+            ? 'PAIR_NOT_INDEXED'
+            : !tokenData.liquidityUSD
+              ? 'NO_POOL_FOUND'
+              : undefined
 
     const tradesReason: DataReasonCode | undefined =
       indexedTradeValue
@@ -366,9 +397,24 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
               : 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading, indexerMetrics24h, transactions, subgraphReport.melegaNativeConfigured])
+  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading, indexerMetrics24h, transactions, subgraphReport.melegaNativeConfigured, reserveLiquidityUsd])
 
   const pairPrice = useMemo(() => {
+    const onChain = marcoOnChainPrice?.toNumber()
+    if (isMarcoRoute && onChain && onChain > 0) {
+      const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
+      const recentCandles = indexerCandles.filter((c) => c.bucketTimestamp >= cutoff)
+      const window = recentCandles.length >= 2 ? recentCandles : indexerCandles
+      const open = window[0]?.open
+      const close = window[window.length - 1]?.close
+      const change24h =
+        open != null && close != null && open > 0 ? ((close - open) / open) * 100 : undefined
+      return {
+        value: onChain,
+        change24h,
+        formatted: `$${onChain < 0.01 ? onChain.toFixed(6) : onChain.toFixed(4)}`,
+      }
+    }
     if (tokenData?.priceUSD) {
       return {
         value: tokenData.priceUSD,
@@ -395,7 +441,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       }
     }
     return undefined
-  }, [tokenData, indexerMetrics24h, bnbUsdPrice])
+  }, [tokenData, indexerMetrics24h, bnbUsdPrice, marcoOnChainPrice, isMarcoRoute, indexerCandles])
 
   const missingReason = useMemo((): TradeDataMissingReason => {
     if (useDurableIndexer && (transactions?.length || indexerCandles.length > 0)) return null
@@ -407,15 +453,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   }, [useDurableIndexer, tokenData, tokenAddress, transactions, indexerCandles.length])
 
   const missingReasonDetail = useMemo((): string | undefined => {
-    if (missingReason === 'pair_not_indexed') return 'MARCO/BNB pair not indexed in Melega subgraph'
-    if (missingReason === 'subgraph_empty') return 'Subgraph returned no historical candles or swap events'
-    if (missingReason === 'route_not_configured') return 'Output token route not configured'
-    const holdersStat = pairStats.find((s) => s.id === 'holders')
-    if (holdersStat?.reasonCode === 'EXPLORER_SOURCE_MISSING' && holderCount?.status === 'unavailable') {
-      return missingReason ? undefined : holderCount.diagnostic
+    if (missingReason === 'pair_not_indexed') return 'MARCO/WBNB pair not indexed in Melega subgraph'
+    if (missingReason === 'subgraph_empty') {
+      return useDurableIndexer
+        ? 'Indexer scope: MARCO/WBNB featured pair — no swap events in current window'
+        : 'Subgraph returned no historical candles or swap events'
     }
+    if (missingReason === 'route_not_configured') return 'Output token route not configured'
     return undefined
-  }, [missingReason, pairStats, holderCount])
+  }, [missingReason, useDurableIndexer])
 
   const chartUnavailableDetail = useMemo((): string | undefined => {
     if (missingReason === 'pair_not_indexed') {

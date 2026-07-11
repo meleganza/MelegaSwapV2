@@ -53,10 +53,10 @@ const LayoutGrid = styled.div`
 
   @media (min-width: 1100px) {
     grid-template-columns: ${liquidityStudioLayout.leftWidth} ${liquidityStudioLayout.centerWidth} ${liquidityStudioLayout.rightWidth};
-    grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto);
+    grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto) auto;
     grid-template-areas:
       'builder preview right'
-      'activity activity activity';
+      'bottom bottom bottom';
     max-width: ${liquidityStudioLayout.gridWidth};
     align-items: stretch;
   }
@@ -66,7 +66,7 @@ const LayoutGrid = styled.div`
     grid-template-areas:
       'builder preview'
       'right right'
-      'activity activity';
+      'bottom bottom';
   }
 
   @media (max-width: 767px) {
@@ -138,10 +138,30 @@ const AreaRightStack = styled.div`
 `
 
 const AreaPools = styled.div`
-  flex-shrink: 0;
+  min-width: 0;
 
   @media (max-width: 767px) {
     grid-area: pools;
+  }
+`
+
+const AreaActivity = styled.div`
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    grid-area: activity;
+  }
+`
+
+const BottomBand = styled.div`
+  grid-area: bottom;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: ${liquidityStudioLayout.columnGap};
+  min-width: 0;
+
+  @media (max-width: 1099px) {
+    display: contents;
   }
 `
 
@@ -197,12 +217,6 @@ const AreaAdvisor = styled.div`
   }
 `
 
-const AreaActivity = styled.div`
-  grid-area: activity;
-  min-width: 0;
-  margin-top: 0;
-`
-
 export const LiquidityStudioScreen: React.FC = () => (
   <Root data-liquidity-studio-screen="true" data-r200-premium="true">
     <PageMeta />
@@ -230,13 +244,15 @@ export const LiquidityStudioScreen: React.FC = () => (
                 <AILiquidityAdvisorPanel />
               </AreaAdvisor>
             </AreaRightStack>
+          </AreaRight>
+          <BottomBand>
             <AreaPools>
               <TopPoolsPanel />
             </AreaPools>
-          </AreaRight>
-          <AreaActivity>
-            <LiquidityActivityTable />
-          </AreaActivity>
+            <AreaActivity>
+              <LiquidityActivityTable />
+            </AreaActivity>
+          </BottomBand>
         </LayoutGrid>
       </Content>
     </LiquidityRuntimeProvider>

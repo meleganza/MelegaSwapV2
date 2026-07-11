@@ -1,11 +1,12 @@
-import useHomeTradeData from './useHomeTradeData'
+import useDexTrendingRankings from './useDexTrendingRankings'
 
 export default function useDexTrendingTicker() {
-  const { trendingTickerItems, indexedRibbonAssets, trendingUnavailableReason } = useHomeTradeData()
+  const { items, indexedRibbonAssets, unavailableReason, indexerScopeNote } = useDexTrendingRankings()
 
   return {
-    items: trendingTickerItems,
+    items,
     indexedRibbonAssets,
-    unavailableReason: trendingUnavailableReason,
+    unavailableReason,
+    indexerScopeNote,
   }
 }

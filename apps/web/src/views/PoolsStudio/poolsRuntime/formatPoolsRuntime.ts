@@ -316,7 +316,13 @@ export function aggregateKpis(
   let totalStakedUsd = 0
   let dailyRewardsUsd = 0
   const displayable = listUsablePools(previewCards)
-  const activePools = displayable.length
+  const discoveredCount = listDiscoverablePools(previewCards).length
+  const activeLive = listActivePools(previewCards).activePools.length
+  const fundedCount = displayable.filter((p) => {
+    const n = parseFloat(p.rewardBudgetUsd?.replace(/[^0-9.]/g, '') || '0')
+    return Number.isFinite(n) && n > 0
+  }).length
+  const rewardingCount = displayable.filter((p) => p.status === 'live').length
   let stakerPositions = 0
 
   pools.forEach((pool) => {
@@ -367,13 +373,15 @@ export function aggregateKpis(
     },
     {
       id: 'active',
-      label: 'Active Pools',
-      value: String(activePools),
+      label: 'Pools Discovered',
+      value: String(discoveredCount),
+      secondary: `${activeLive} active · ${fundedCount} funded · ${rewardingCount} rewarding`,
     },
     {
       id: 'budget',
-      label: 'Rewards Live',
+      label: 'Pools Rewarding',
       value: rewardBudgetLive,
+      secondary: `${rewardingCount} live emission`,
     },
     {
       id: 'highestApr',

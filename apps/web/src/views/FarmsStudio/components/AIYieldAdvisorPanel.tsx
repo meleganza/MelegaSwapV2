@@ -18,24 +18,28 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 24px;
+  gap: 16px;
+  min-height: 28px;
 `
 
 const Label = styled.span`
   font-size: 11px;
   font-weight: 600;
   color: ${farmsStudioColors.muted};
+  flex: 1;
+  min-width: 0;
 `
 
 const Value = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 24px;
-  padding: ${({ $tone }) => ($tone === 'muted' ? '0' : '0 12px')};
+  justify-content: flex-end;
+  min-height: 28px;
+  min-width: 0;
+  max-width: 72%;
+  padding: ${({ $tone }) => ($tone === 'muted' ? '0' : '0 14px')};
   border-radius: 999px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
   color: ${({ $tone }) =>
     $tone === 'green'
@@ -56,7 +60,7 @@ const Value = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
         ? `1px solid ${farmsStudioColors.gold}`
         : 'none'};
   text-align: right;
-  max-width: 58%;
+  max-width: 72%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

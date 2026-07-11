@@ -98,8 +98,8 @@ const KpiSecondary = styled.span`
 
 const KPI_LABELS: Record<string, string> = {
   tvl: 'Total Value Locked',
-  active: 'Active Pools',
-  budget: 'Total Rewards Live',
+  active: 'Pools Discovered',
+  budget: 'Pools Rewarding',
   highestApr: 'Highest Sustainable APR',
   featured: 'Featured Pool',
 }
