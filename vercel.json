@@ -10,6 +10,10 @@
     {
       "path": "/api/indexer/run/",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/indexer/registry/refresh/",
+      "schedule": "0 3 * * *"
     }
   ]
 }
