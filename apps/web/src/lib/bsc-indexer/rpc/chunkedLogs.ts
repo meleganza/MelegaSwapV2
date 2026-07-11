@@ -25,11 +25,16 @@ export function resolveIndexerLogRpcUrls(): string[] {
   return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
 }
 
-/** Prefer fallback for eth_getLogs — QuickNode Discover rejects blockHash filters. */
+/** Prefer fallback + public seeds for eth_getLogs — QuickNode Discover rejects blockHash filters. */
 export function resolveLogFetchRpcUrls(): string[] {
   const fallback = process.env.BSC_RPC_FALLBACK_URL
   const primary = process.env.BSC_RPC_URL
-  return [fallback, primary].filter(Boolean) as string[]
+  return [
+    fallback,
+    'https://bsc-dataseed.binance.org',
+    'https://bsc-dataseed1.defibit.io',
+    primary,
+  ].filter(Boolean) as string[]
 }
 
 export async function rpcCallWithFailover<T>(
