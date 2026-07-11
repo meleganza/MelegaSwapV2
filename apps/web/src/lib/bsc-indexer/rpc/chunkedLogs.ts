@@ -90,6 +90,49 @@ export interface RawLog {
   logIndex: string
 }
 
+export async function scanPairEventsFromHead(params: {
+  address: string
+  maxBlocks: number
+  maxLogs?: number
+  stopBeforeBlock?: number
+  rpcUrls?: string[]
+}): Promise<{ logs: RawLog[]; blockTimestamps: Map<number, number>; lastScannedBlock: number; providerUsed: string }> {
+  const rpcUrls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
+  if (!rpcUrls.length) throw new Error('BSC_RPC_URL missing for log scan')
+
+  type BlockHeader = { hash: string; number: string; parentHash: string; timestamp: string }
+  let block = await rpcCall<BlockHeader>('eth_getBlockByNumber', ['latest', false], rpcUrls)
+  const logs: RawLog[] = []
+  const blockTimestamps = new Map<number, number>()
+  let scanned = 0
+  let providerUsed = rpcUrls[0]
+  const stopBefore = params.stopBeforeBlock ?? 0
+  const topics = [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC]
+
+  while (scanned < params.maxBlocks && logs.length < (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) {
+    const blockNumber = parseInt(block.number, 16)
+    if (blockNumber <= stopBefore) break
+    blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
+
+    for (const topic of topics) {
+      const { result: batch, url } = await rpcCallWithFailover<RawLog[]>(
+        'eth_getLogs',
+        [{ blockHash: block.hash, address: params.address.toLowerCase(), topics: [topic] }],
+        rpcUrls,
+      )
+      providerUsed = url
+      logs.push(...batch)
+      if (logs.length >= (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) break
+    }
+    scanned += 1
+
+    if (!block.parentHash || /^0x0+$/i.test(block.parentHash)) break
+    block = await rpcCall<BlockHeader>('eth_getBlockByHash', [block.parentHash, false], rpcUrls)
+  }
+
+  return { logs, blockTimestamps, lastScannedBlock: parseInt(block.number, 16), providerUsed }
+}
+
 export async function scanSwapLogsFromHead(params: {
   address: string
   topic: string

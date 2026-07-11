@@ -10,18 +10,18 @@ import {
   MAX_EVENTS_PER_SYNC,
   MELEGA_CHAIN_ID,
   MIN_CHUNK_SIZE,
-  RECENT_BOOTSTRAP_BLOCKS,
   REORG_SAFETY_BLOCKS,
 } from '../constants'
 import { resolveIndexerStorage } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
 import {
-  AMM_TOPICS,
   getBlockNumber,
   normalizeMintBurnLog,
   normalizeSwapLog,
+  scanPairEventsFromHead,
   type RawLog,
 } from '../rpc/chunkedLogs'
+import { AMM_TOPICS } from '../rpc/chunkedLogs'
 import { estimateBootstrapStartBlock, scanBlockRangeEvents } from '../rpc/scanBlockRange'
 import { LEGACY_INDEXER_NOTE } from '../v2/paths'
 import { buildCandlesFromSwaps } from './candles'
@@ -82,7 +82,7 @@ async function createBootstrapCheckpoint(chainHead: number): Promise<IndexerChec
     bootstrapStartBlock,
     bootstrapDays,
     chainId: MELEGA_CHAIN_ID,
-    lastIndexedBlock: bootstrapStartBlock - 1,
+    lastIndexedBlock: chainHead,
     chainHeadAtSync: chainHead,
     reorgSafetyBlocks: REORG_SAFETY_BLOCKS,
     lastSuccessfulSync: new Date(0).toISOString(),
@@ -102,41 +102,48 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
   const eventCountsPreflight = await storage.countEvents()
   const hasEvents = Object.values(eventCountsPreflight).some((n) => n > 0)
   const checkpoint = existing ?? (await createBootstrapCheckpoint(chainHead))
+  if (
+    isV2Checkpoint(checkpoint) &&
+    !hasEvents &&
+    checkpoint.phase === 'bootstrap' &&
+    checkpoint.lastIndexedBlock <= (checkpoint.bootstrapStartBlock ?? 0) + REORG_SAFETY_BLOCKS
+  ) {
+    checkpoint.lastIndexedBlock = chainHead
+  }
 
-  let fromBlock = 0
-  let toBlock = checkpoint.lastIndexedBlock
-  let providerUsed = checkpoint.providerUsed ?? 'unknown'
-  const normalized: NormalizedIndexerEvent[] = []
   const blockBudget =
     checkpoint.phase === 'bootstrap' ? BOOTSTRAP_MAX_BLOCKS_PER_SYNC : MAX_BLOCKS_PER_SYNC
-  let blocksScanned = 0
+  let providerUsed = checkpoint.providerUsed ?? 'unknown'
+  let fromBlock = 0
+  let toBlock = checkpoint.lastIndexedBlock
+  const normalized: NormalizedIndexerEvent[] = []
 
   try {
-    if (!hasEvents && checkpoint.phase === 'bootstrap') {
-      const recentSpan = Math.min(50, blockBudget)
-      const recentFrom = Math.max(checkpoint.bootstrapStartBlock ?? 0, chainHead - recentSpan + 1)
-      const recent = await scanBlockRangeEvents({
-        address: pair.pairAddress,
-        fromBlock: recentFrom,
-        toBlock: chainHead,
-      })
-      providerUsed = recent.providerUsed
-      blocksScanned += chainHead - recentFrom + 1
-      normalizeLogs(recent.logs, pair, recent.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
-    }
+    const bootstrapFloor = checkpoint.bootstrapStartBlock ?? 0
+    const stopBefore =
+      checkpoint.phase === 'incremental'
+        ? Math.max(0, chainHead - blockBudget - REORG_SAFETY_BLOCKS)
+        : Math.max(bootstrapFloor, checkpoint.lastIndexedBlock - blockBudget)
 
-    const bootstrapStart = checkpoint.bootstrapStartBlock ?? 0
-    fromBlock = Math.max(bootstrapStart, checkpoint.lastIndexedBlock - REORG_SAFETY_BLOCKS + 1)
-    const forwardBudget = Math.max(0, blockBudget - blocksScanned)
-    toBlock = forwardBudget > 0 ? Math.min(chainHead, fromBlock + forwardBudget - 1) : checkpoint.lastIndexedBlock
+    const headScan = await scanPairEventsFromHead({
+      address: pair.pairAddress,
+      maxBlocks: blockBudget,
+      maxLogs: MAX_EVENTS_PER_SYNC,
+      stopBeforeBlock: stopBefore,
+    })
+    providerUsed = headScan.providerUsed
+    normalizeLogs(headScan.logs, pair, headScan.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
 
-    if (forwardBudget > 0 && fromBlock <= toBlock && normalized.length < MAX_EVENTS_PER_SYNC) {
+    if (headScan.logs.length === 0 && checkpoint.phase === 'bootstrap' && !hasEvents) {
+      const forwardFrom = Math.max(bootstrapFloor, chainHead - blockBudget + 1)
       const forward = await scanBlockRangeEvents({
         address: pair.pairAddress,
-        fromBlock,
-        toBlock,
+        fromBlock: forwardFrom,
+        toBlock: chainHead,
       })
       providerUsed = forward.providerUsed
+      fromBlock = forwardFrom
+      toBlock = chainHead
       normalizeLogs(
         forward.logs,
         pair,
@@ -144,8 +151,9 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
         MAX_EVENTS_PER_SYNC - normalized.length,
         normalized,
       )
-    } else if (normalized.length === 0) {
-      toBlock = checkpoint.lastIndexedBlock
+    } else {
+      fromBlock = headScan.lastScannedBlock
+      toBlock = chainHead
     }
 
     const added = await storage.appendEvents(normalized)
@@ -157,17 +165,18 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
     if (candles.length) await storage.saveCandles(candles)
 
     let phase = checkpoint.phase ?? 'bootstrap'
-    if (
-      phase === 'bootstrap' &&
-      toBlock >= chainHead - REORG_SAFETY_BLOCKS &&
-      toBlock >= (checkpoint.bootstrapStartBlock ?? 0)
-    ) {
+    const nextFloor =
+      checkpoint.phase === 'bootstrap'
+        ? Math.max(bootstrapFloor, headScan.lastScannedBlock)
+        : chainHead
+
+    if (phase === 'bootstrap' && nextFloor <= bootstrapFloor + REORG_SAFETY_BLOCKS) {
       phase = 'incremental'
     }
 
     const nextCheckpoint: IndexerCheckpoint = {
       ...checkpoint,
-      lastIndexedBlock: Math.max(checkpoint.lastIndexedBlock, toBlock),
+      lastIndexedBlock: checkpoint.phase === 'bootstrap' ? nextFloor : chainHead,
       chainHeadAtSync: chainHead,
       lastSuccessfulSync: new Date().toISOString(),
       lastFailureReason: undefined,
@@ -192,7 +201,7 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
       featuredPairSlug: FEATURED_PAIR_SLUG,
       phase,
       providerUsed,
-      indexedBlockRange: fromBlock <= toBlock ? { from: fromBlock, to: toBlock } : undefined,
+      indexedBlockRange: { from: fromBlock, to: toBlock },
       bootstrapDays: checkpoint.bootstrapDays,
       bootstrapStartBlock: checkpoint.bootstrapStartBlock,
     }
