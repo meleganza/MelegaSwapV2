@@ -22,6 +22,7 @@ import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErr
 import usePoolsTerminalData from './usePoolsTerminalData'
 import { getAprData } from 'views/Pools/helpers'
 import { buildPoolGateReport, POOL_GATE_POLICY_NOTE } from './buildPoolGateReport'
+import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 
 export type PoolsRuntimePhase =

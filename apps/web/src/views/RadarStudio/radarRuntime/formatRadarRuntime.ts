@@ -21,6 +21,7 @@ import type {
   WhaleRow,
 } from '../radarStudioData'
 import type { RadarLiveEvent } from './buildLiveEvents'
+import { buildOpportunityScore } from './buildOpportunityScore'
 import { buildWhaleFeedMachinePayload } from 'lib/runtime-indexing'
 
 const UNAVAILABLE = 'Unavailable'
