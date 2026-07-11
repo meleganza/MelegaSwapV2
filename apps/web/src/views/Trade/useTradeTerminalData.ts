@@ -190,6 +190,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     if (!hasData) return undefined
     return {
       volumeUsd,
+      quoteVolumeWbnb: quoteVolumeWbnb > 0 ? quoteVolumeWbnb : undefined,
       tradeCount: resolvedTradeCount,
       lastClose: indexerCandles[indexerCandles.length - 1]?.close,
     }
@@ -255,7 +256,11 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const txChange = formatPct(tokenData?.txCountChange ?? NaN)
 
     const indexedVolumeValue =
-      indexerMetrics24h?.volumeUsd != null ? formatUsd(indexerMetrics24h.volumeUsd) : undefined
+      indexerMetrics24h?.volumeUsd != null
+        ? formatUsd(indexerMetrics24h.volumeUsd)
+        : indexerMetrics24h?.quoteVolumeWbnb != null
+          ? `${indexerMetrics24h.quoteVolumeWbnb < 0.01 ? indexerMetrics24h.quoteVolumeWbnb.toFixed(6) : indexerMetrics24h.quoteVolumeWbnb.toFixed(4)} WBNB`
+          : undefined
     const indexedTradeValue =
       indexerMetrics24h?.tradeCount != null && indexerMetrics24h.tradeCount > 0
         ? indexerMetrics24h.tradeCount.toLocaleString()
@@ -372,14 +377,21 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       }
     }
     const close = indexerMetrics24h?.lastClose
-    if (close != null && close > 0 && bnbUsdPrice != null && Number.isFinite(bnbUsdPrice)) {
-      const priceUsd = close * bnbUsdPrice
-      if (Number.isFinite(priceUsd) && priceUsd > 0) {
-        return {
-          value: priceUsd,
-          change24h: undefined,
-          formatted: `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(4)}`,
+    if (close != null && close > 0 && Number.isFinite(close)) {
+      if (bnbUsdPrice != null && Number.isFinite(bnbUsdPrice) && bnbUsdPrice > 0) {
+        const priceUsd = close * bnbUsdPrice
+        if (Number.isFinite(priceUsd) && priceUsd > 0) {
+          return {
+            value: priceUsd,
+            change24h: undefined,
+            formatted: `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(4)}`,
+          }
         }
+      }
+      return {
+        value: close,
+        change24h: undefined,
+        formatted: `${close < 0.01 ? close.toFixed(6) : close.toFixed(4)} WBNB`,
       }
     }
     return undefined
