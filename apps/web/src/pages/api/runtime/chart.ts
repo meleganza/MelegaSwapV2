@@ -1,40 +1,19 @@
 import type { NextApiHandler } from 'next'
 import type { PriceChartEntry } from 'state/info/types'
-import {
-  decodeSwapAmounts,
-  formatTokenAmountFromWei,
-  getBlockNumber,
-  getLogs,
-  MARCO_WBNB_PAIR_BSC,
-  SWAP_EVENT_TOPIC,
-} from 'lib/runtime-indexing/rpcLogReader'
+import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
+import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
+import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 
 type Interval = '1H' | '4H' | '1D'
 
-const INTERVAL_SECONDS: Record<Interval, number> = {
-  '1H': 3600,
-  '4H': 14400,
-  '1D': 86400,
-}
-
-const BLOCK_SPAN: Record<Interval, number> = {
-  '1H': 8_000,
-  '4H': 20_000,
-  '1D': 40_000,
-}
-
-async function getBlockTimestamp(blockHex: string, rpcUrl: string): Promise<number> {
-  const block = await fetch(rpcUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 1,
-      method: 'eth_getBlockByNumber',
-      params: [blockHex, false],
-    }),
-  }).then((r) => r.json())
-  return parseInt(block?.result?.timestamp ?? '0', 16)
+function mapCandle(c: OhlcvCandle): PriceChartEntry {
+  return {
+    time: c.bucketTimestamp,
+    open: c.open,
+    high: c.high,
+    low: c.low,
+    close: c.close,
+  }
 }
 
 const handler: NextApiHandler = async (req, res) => {
@@ -44,81 +23,47 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const interval = (typeof req.query.interval === 'string' ? req.query.interval : '1H') as Interval
-  if (!INTERVAL_SECONDS[interval]) {
+  if (!['1H', '4H', '1D'].includes(interval)) {
     return res.status(400).json({ error: 'Invalid interval. Use 1H, 4H, or 1D.' })
   }
 
-  const rpcUrl = process.env.BSC_RPC_URL || process.env.NEXT_PUBLIC_BSC_RPC_URL || 'https://bsc-dataseed.binance.org'
-  const pair = typeof req.query.pair === 'string' ? req.query.pair.toLowerCase() : MARCO_WBNB_PAIR_BSC.toLowerCase()
+  const pair = (typeof req.query.pair === 'string' ? req.query.pair : MARCO_WBNB_PAIR_BSC).toLowerCase()
+  const storage = resolveIndexerStorage()
 
   try {
-    const chainHead = await getBlockNumber(rpcUrl)
-    const fromBlock = Math.max(0, chainHead - BLOCK_SPAN[interval])
-    const logs = await getLogs(
-      {
-        address: pair,
-        topics: [SWAP_EVENT_TOPIC],
-        fromBlock: `0x${fromBlock.toString(16)}`,
-        toBlock: 'latest',
-      },
-      rpcUrl,
+    const [candles, health] = await Promise.all([
+      storage.listCandles(pair, interval, 300),
+      storage.loadHealth(),
+    ])
+
+    const valid = candles.filter(
+      (c) =>
+        Number.isFinite(c.open) &&
+        Number.isFinite(c.high) &&
+        Number.isFinite(c.low) &&
+        Number.isFinite(c.close) &&
+        c.open > 0,
     )
 
-    const blockTsCache = new Map<string, number>()
-    const bucketMap = new Map<
-      number,
-      { open: number; high: number; low: number; close: number; volume: number; count: number }
-    >()
-
-    for (const log of logs) {
-      const blockHex = log.blockNumber
-      let ts = blockTsCache.get(blockHex)
-      if (!ts) {
-        ts = await getBlockTimestamp(blockHex, rpcUrl)
-        blockTsCache.set(blockHex, ts)
-      }
-      const { amount0In, amount1In, amount0Out, amount1Out } = decodeSwapAmounts(log.data)
-      const marco = formatTokenAmountFromWei(amount0In + amount0Out, 18)
-      const wbnb = formatTokenAmountFromWei(amount1In + amount1Out, 18)
-      if (wbnb <= 0) continue
-      const price = marco / wbnb
-      if (!Number.isFinite(price) || price <= 0) continue
-
-      const bucket = Math.floor(ts / INTERVAL_SECONDS[interval]) * INTERVAL_SECONDS[interval]
-      const existing = bucketMap.get(bucket)
-      if (!existing) {
-        bucketMap.set(bucket, { open: price, high: price, low: price, close: price, volume: wbnb, count: 1 })
-      } else {
-        existing.high = Math.max(existing.high, price)
-        existing.low = Math.min(existing.low, price)
-        existing.close = price
-        existing.volume += wbnb
-        existing.count += 1
-      }
-    }
-
-    const candles: PriceChartEntry[] = [...bucketMap.entries()]
-      .sort((a, b) => a[0] - b[0])
-      .map(([time, c]) => ({
-        time,
-        open: c.open,
-        high: c.high,
-        low: c.low,
-        close: c.close,
-      }))
+    const status = valid.length > 0 ? 'ready' : health?.status === 'syncing' ? 'syncing' : 'unavailable'
 
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120')
     return res.status(200).json({
-      candles,
+      candles: valid.map(mapCandle),
       meta: {
-        source: 'bsc-rpc-log-indexer',
+        source: 'v2-featured-pair-durable-candles',
         pairAddress: pair,
         interval,
-        fromBlock,
-        toBlock: chainHead,
-        swapEventCount: logs.length,
-        candleCount: candles.length,
-        status: candles.length > 0 ? 'ready' : 'empty',
+        candleCount: valid.length,
+        lastIndexedBlock: health?.lastIndexedBlock,
+        indexerGeneration: health?.indexerGeneration ?? 'v2-featured-pair',
+        status,
+        reason:
+          status === 'unavailable'
+            ? health?.lastFailureReason ?? 'Featured-pair candle store not populated — run /api/indexer/run'
+            : status === 'syncing'
+              ? 'Featured-pair bootstrap in progress'
+              : undefined,
       },
     })
   } catch (e) {
@@ -126,7 +71,8 @@ const handler: NextApiHandler = async (req, res) => {
       candles: [] as PriceChartEntry[],
       meta: {
         status: 'error',
-        reason: e instanceof Error ? e.message : 'RPC chart indexer failed',
+        source: 'v2-featured-pair-durable-candles',
+        reason: e instanceof Error ? e.message : 'Featured-pair chart read failed',
       },
     })
   }

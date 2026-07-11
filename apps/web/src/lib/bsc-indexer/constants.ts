@@ -12,19 +12,22 @@ export const BURN_TOPIC = '0xdccd412f0b1252819cb1fd330b93224ca4ace6189ba8ebd092b
 export const SYNC_TOPIC = '0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1'
 export const PAIR_CREATED_TOPIC = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
 
+export const BOOTSTRAP_DAYS_PRIMARY = 30
+export const BOOTSTRAP_DAYS_FALLBACK = 7
+export const BSC_AVG_BLOCK_SECONDS = 3
+export const INDEXER_SCHEMA_VERSION = 2
+export const FEATURED_PAIR_SLUG = 'marco-wbnb'
+/** Per cron sync — 300 blocks bootstrap, 100 incremental (per-block blockHash scans). */
+export const MAX_BLOCKS_PER_SYNC = 100
+export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 300
+export const RECENT_BOOTSTRAP_BLOCKS = 250
+export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
+/** Legacy R768 genesis — not used by v2 featured-pair indexer. */
 export const DEFAULT_START_BLOCK = 26_000_000
-/** QuickNode Discover plan limits eth_getLogs to a 5-block range; use 1 block per request. */
 export const DEFAULT_CHUNK_SIZE = 1
 export const MIN_CHUNK_SIZE = 1
 export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
-/** ~10 getLogs calls per cron sync at 5-block chunks. */
-export const MAX_BLOCKS_PER_SYNC = 50
-/** Tighter span for cold-start bootstrap to stay within RPC log limits. */
-export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 50
-export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
-/** When durable store has no events, scan recent head first (avoids ancient-range RPC limits). */
-export const RECENT_BOOTSTRAP_BLOCKS = 250
 
 export const INTERVAL_SECONDS = {
   '1H': 3600,

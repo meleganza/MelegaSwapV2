@@ -1,22 +1,22 @@
 import { head, put } from '@vercel/blob'
+import path from 'path'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent, OhlcvCandle } from '../types'
 import type { IndexerStorage } from './types'
 import { createJsonFileStorage } from './jsonFileStorage'
+import { featuredPairPrefix, LEGACY_BLOB_PREFIX } from '../v2/paths'
 
-const BLOB_PREFIX = 'bsc-indexer'
-
-function blobPath(key: string): string {
-  return `${BLOB_PREFIX}/${key}`
+function blobPath(prefix: string, key: string): string {
+  return `${prefix}/${key}`
 }
 
-/** Vercel Blob adapter — durable production storage when BLOB_READ_WRITE_TOKEN is set. */
-export function createVercelBlobStorage(): IndexerStorage | null {
+/** Vercel Blob adapter — R771 v2 featured-pair namespace. */
+export function createV2FeaturedPairBlobStorage(prefix = featuredPairPrefix()): IndexerStorage | null {
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
   if (!token) return null
 
   async function readJson<T>(key: string): Promise<T | null> {
     try {
-      const meta = await head(blobPath(key), { token })
+      const meta = await head(blobPath(prefix, key), { token })
       const res = await fetch(meta.url, { headers: { authorization: `Bearer ${token}` } })
       if (!res.ok) return null
       return (await res.json()) as T
@@ -26,7 +26,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
   }
 
   async function writeJson(key: string, data: unknown) {
-    await put(blobPath(key), JSON.stringify(data), {
+    await put(blobPath(prefix, key), JSON.stringify(data), {
       access: 'private',
       addRandomSuffix: false,
       allowOverwrite: true,
@@ -36,7 +36,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
   }
 
   return {
-    backend: 'vercel-blob',
+    backend: 'vercel-blob-v2-featured-pair',
     configured: true,
     async loadCheckpoint() {
       return readJson<IndexerCheckpoint>('checkpoint.json')
@@ -88,7 +88,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
     async saveCandles(candles) {
       const grouped = new Map<string, OhlcvCandle[]>()
       for (const c of candles) {
-        const key = `${c.pairAddress.toLowerCase()}-${c.interval}.json`
+        const key = `candles/${c.pairAddress.toLowerCase()}-${c.interval}.json`
         if (!grouped.has(key)) grouped.set(key, [])
         grouped.get(key)!.push(c)
       }
@@ -100,7 +100,7 @@ export function createVercelBlobStorage(): IndexerStorage | null {
       }
     },
     async listCandles(pairAddress, interval, limit = 200) {
-      const key = `${pairAddress.toLowerCase()}-${interval}.json`
+      const key = `candles/${pairAddress.toLowerCase()}-${interval}.json`
       const rows = (await readJson<OhlcvCandle[]>(key)) ?? []
       return rows.slice(-limit)
     },
@@ -111,12 +111,13 @@ let cached: IndexerStorage | null = null
 
 export function resolveIndexerStorage(): IndexerStorage {
   if (cached) return cached
-  const blob = createVercelBlobStorage()
+  const blob = createV2FeaturedPairBlobStorage()
   if (blob) {
     cached = blob
     return blob
   }
-  cached = createJsonFileStorage()
+  const localRoot = path.join(process.cwd(), 'data', featuredPairPrefix())
+  cached = createJsonFileStorage(localRoot)
   return cached
 }
 
@@ -128,8 +129,8 @@ export function isProductionDurableStorageConfigured(): boolean {
 export async function verifyBlobRoundTrip(): Promise<{ ok: boolean; reason?: string }> {
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
   if (!token) return { ok: false, reason: 'BLOB_READ_WRITE_TOKEN missing' }
-  const key = blobPath(`smoke-${Date.now()}.json`)
-  const payload = { ts: new Date().toISOString() }
+  const key = blobPath(featuredPairPrefix(), `smoke-${Date.now()}.json`)
+  const payload = { ts: new Date().toISOString(), generation: 'v2-featured-pair' }
   try {
     await put(key, JSON.stringify(payload), {
       access: 'private',
@@ -148,3 +149,6 @@ export async function verifyBlobRoundTrip(): Promise<{ ok: boolean; reason?: str
     return { ok: false, reason: e instanceof Error ? e.message : 'Blob smoke failed' }
   }
 }
+
+/** Legacy R768 prefix — read-only compatibility note, not active source. */
+export const LEGACY_INDEXER_BLOB_PREFIX = LEGACY_BLOB_PREFIX

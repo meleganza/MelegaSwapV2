@@ -1,5 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { queryAmmPairs } from 'lib/bsc-indexer/pairs/registry'
+import { queryAmmPairsAsync } from 'lib/bsc-indexer/pairs/registry'
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET') {
@@ -12,13 +12,14 @@ const handler: NextApiHandler = async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 50
   const classification = typeof req.query.classification === 'string' ? req.query.classification : undefined
 
-  const result = queryAmmPairs({ q, page, pageSize, classification })
+  const result = await queryAmmPairsAsync({ q, page, pageSize, classification })
 
   res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=300')
   return res.status(200).json({
     status: result.total > 0 ? 'ready' : 'empty',
     ...result,
-    source: 'public/registry/onchain/bsc-mainnet.json',
+    dataSource: 'direct-contract-state-registry',
+    discoveryMethod: 'factory-allPairs-enumeration',
   })
 }
 

@@ -1,5 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { runIncrementalSync } from 'lib/bsc-indexer/indexer/syncIncremental'
+import { runFeaturedPairSync } from 'lib/bsc-indexer/indexer/featuredPairSync'
 
 export const config = {
   maxDuration: 300,
@@ -23,7 +23,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    const result = await runIncrementalSync()
+    const result = await runFeaturedPairSync()
     return res.status(200).json({
       ok: true,
       addedEvents: result.addedEvents,

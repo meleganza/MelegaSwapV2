@@ -1,5 +1,17 @@
 import { resolveIndexerStorage, isProductionDurableStorageConfigured, verifyBlobRoundTrip } from './storage'
 import { getBlockNumber } from './rpc/chunkedLogs'
+import { loadRegistryFromDisk, loadRegistryMeta, resolveOnchainRegistry } from './registry/store'
+import { INDEXER_SCHEMA_VERSION, FEATURED_PAIR_SLUG } from './constants'
+import { LEGACY_INDEXER_NOTE } from './v2/paths'
+import { MELEGA_SUBGRAPH_URL } from 'config/constants/endpoints'
+
+export type ReadinessComponentStatus =
+  | 'READY'
+  | 'BLOCKED'
+  | 'DEFERRED'
+  | 'OPTIONAL_UNAVAILABLE'
+  | 'NOT_CONFIGURED'
+  | 'SYNCING'
 
 export interface ReadinessCheck {
   name: string
@@ -11,11 +23,20 @@ export interface ReadinessCheck {
 export interface ProductionReadinessReport {
   timestamp: string
   verdict: 'ready' | 'partial' | 'blocked'
+  components: {
+    registryDiscovery: ReadinessComponentStatus
+    featuredPairIndexer: ReadinessComponentStatus
+    multiPairHistoricalIndexer: ReadinessComponentStatus
+    holderProvider: ReadinessComponentStatus
+    subgraph: ReadinessComponentStatus
+  }
   checks: ReadinessCheck[]
   indexer: {
     storageBackend: string
     storageConfigured: boolean
     durableProductionStorage: boolean
+    indexerGeneration: 'v2-featured-pair' | 'legacy-universal'
+    legacyNote: string
     blobRoundTrip?: { ok: boolean; reason?: string }
     rpcPrimary?: { ok: boolean; chainHead?: number; reason?: string }
     rpcFallback?: { ok: boolean; chainHead?: number; reason?: string }
@@ -25,6 +46,14 @@ export interface ProductionReadinessReport {
     eventCounts?: Record<string, number>
     lastSuccessfulSync?: string
     lastFailureReason?: string
+    featuredPairSlug?: string
+    phase?: string
+    bootstrapStartBlock?: number
+    bootstrapDays?: number
+    providerUsed?: string
+    registrySource?: string
+    registryPairCount?: number
+    registryRefreshedAt?: string
   }
   vercelSecretsChecklist: string[]
 }
@@ -76,6 +105,35 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
     }
   }
 
+  const { registry, source: registrySource } = await resolveOnchainRegistry()
+  const diskRegistry = loadRegistryFromDisk()
+  const registryMeta = await loadRegistryMeta()
+  const registryPairCount = registry?.amm?.count ?? diskRegistry?.amm?.count ?? 0
+
+  const eventCounts = health?.eventCounts ?? (await storage.countEvents())
+  const hasEvents = Object.values(eventCounts).some((n) => n > 0)
+  const isV2 = checkpoint?.schemaVersion === INDEXER_SCHEMA_VERSION
+
+  const subgraphStatus: ReadinessComponentStatus = MELEGA_SUBGRAPH_URL ? 'READY' : 'NOT_CONFIGURED'
+
+  const registryDiscovery: ReadinessComponentStatus =
+    registryPairCount >= 500 ? 'READY' : registryPairCount > 0 ? 'READY' : 'BLOCKED'
+
+  let featuredPairIndexer: ReadinessComponentStatus = 'BLOCKED'
+  if (!durable || !rpcPrimary.ok) {
+    featuredPairIndexer = 'BLOCKED'
+  } else if (hasEvents && health?.status === 'ready') {
+    featuredPairIndexer = 'READY'
+  } else if (health?.status === 'syncing' || checkpoint?.phase === 'bootstrap') {
+    featuredPairIndexer = 'SYNCING'
+  } else if (health?.lastFailureReason) {
+    featuredPairIndexer = 'BLOCKED'
+  } else {
+    featuredPairIndexer = 'SYNCING'
+  }
+
+  const holderProvider: ReadinessComponentStatus = hasEnv('BSCSCAN_API_KEY') ? 'READY' : 'OPTIONAL_UNAVAILABLE'
+
   const checks: ReadinessCheck[] = [
     {
       name: 'BSC_RPC_URL',
@@ -93,7 +151,7 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
       name: 'BSCSCAN_API_KEY',
       configured: hasEnv('BSCSCAN_API_KEY'),
       status: hasEnv('BSCSCAN_API_KEY') ? 'ready' : 'unavailable',
-      reason: hasEnv('BSCSCAN_API_KEY') ? undefined : 'Server-side BscScan key not configured',
+      reason: hasEnv('BSCSCAN_API_KEY') ? undefined : 'Server-side BscScan key not configured (holders optional)',
     },
     {
       name: 'BLOB_READ_WRITE_TOKEN',
@@ -101,7 +159,7 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
       status: isProductionDurableStorageConfigured() ? 'ready' : 'blocked',
       reason: isProductionDurableStorageConfigured()
         ? undefined
-        : 'Durable indexer storage requires Vercel Blob token in production',
+        : 'Durable featured-pair cache requires Vercel Blob token in production',
     },
     {
       name: 'INDEXER_CRON_SECRET',
@@ -111,22 +169,32 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
     },
   ]
 
-  const hasEvents = Object.values(health?.eventCounts ?? {}).some((n) => n > 0)
+  const coreIndexerReady = featuredPairIndexer === 'READY'
+  const registryReady = registryDiscovery === 'READY'
   const verdict =
-    durable && hasEnv('BSC_RPC_URL') && blobRoundTrip.ok && rpcPrimary.ok && hasEvents
+    registryReady && coreIndexerReady && durable && blobRoundTrip.ok && rpcPrimary.ok
       ? 'ready'
-      : durable || hasEnv('BSC_RPC_URL')
+      : registryReady && durable && rpcPrimary.ok
         ? 'partial'
         : 'blocked'
 
   return {
     timestamp: new Date().toISOString(),
     verdict,
+    components: {
+      registryDiscovery,
+      featuredPairIndexer,
+      multiPairHistoricalIndexer: 'DEFERRED',
+      holderProvider,
+      subgraph: subgraphStatus,
+    },
     checks,
     indexer: {
       storageBackend: storage.backend,
       storageConfigured: storage.configured,
       durableProductionStorage: durable,
+      indexerGeneration: isV2 ? 'v2-featured-pair' : 'legacy-universal',
+      legacyNote: LEGACY_INDEXER_NOTE,
       blobRoundTrip,
       rpcPrimary,
       rpcFallback,
@@ -136,14 +204,22 @@ export async function buildProductionReadinessReport(): Promise<ProductionReadin
         chainHead && checkpoint?.lastIndexedBlock !== undefined
           ? Math.max(0, chainHead - checkpoint.lastIndexedBlock)
           : health?.indexingLag,
-      eventCounts: health?.eventCounts ?? (await storage.countEvents()),
+      eventCounts,
       lastSuccessfulSync: checkpoint?.lastSuccessfulSync ?? health?.lastSuccessfulSync,
       lastFailureReason: checkpoint?.lastFailureReason ?? health?.lastFailureReason,
+      featuredPairSlug: checkpoint?.featuredPairSlug ?? FEATURED_PAIR_SLUG,
+      phase: checkpoint?.phase ?? health?.phase,
+      bootstrapStartBlock: checkpoint?.bootstrapStartBlock ?? health?.bootstrapStartBlock,
+      bootstrapDays: checkpoint?.bootstrapDays ?? health?.bootstrapDays,
+      providerUsed: checkpoint?.providerUsed ?? health?.providerUsed,
+      registrySource,
+      registryPairCount,
+      registryRefreshedAt: registryMeta?.refreshedAt ?? registry?.generatedAt,
     },
     vercelSecretsChecklist: [
       'BSC_RPC_URL',
       'BSC_RPC_FALLBACK_URL (optional)',
-      'BSCSCAN_API_KEY',
+      'BSCSCAN_API_KEY (optional — holders)',
       'BLOB_READ_WRITE_TOKEN',
       'INDEXER_CRON_SECRET',
       'CRON_SECRET (Vercel cron auth header)',

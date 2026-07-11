@@ -8,6 +8,7 @@ import {
   MAX_EVENTS_PER_SYNC,
 } from '../constants'
 import type { NormalizedIndexerEvent } from '../types'
+import { toBlockQuantity } from './blockQuantity'
 
 export function resolveRpcUrls(): string[] {
   return [
@@ -19,10 +20,36 @@ export function resolveRpcUrls(): string[] {
   ].filter(Boolean) as string[]
 }
 
-/** Dedicated QuickNode endpoints only — avoids public RPC log quirks in production indexer. */
+/** Primary + fallback for featured-pair indexing. */
 export function resolveIndexerLogRpcUrls(): string[] {
-  const primary = process.env.BSC_RPC_URL?.trim()
-  return primary ? [primary] : []
+  return [process.env.BSC_RPC_URL, process.env.BSC_RPC_FALLBACK_URL].filter(Boolean) as string[]
+}
+
+export async function rpcCallWithFailover<T>(
+  method: string,
+  params: unknown[],
+  rpcUrls = resolveIndexerLogRpcUrls(),
+): Promise<{ result: T; url: string }> {
+  let lastError: Error | undefined
+  for (const url of rpcUrls) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+        })
+        const json = (await res.json()) as { result?: T; error?: { message: string } }
+        if (json.error) throw new Error(json.error.message)
+        if (json.result === undefined) throw new Error(`RPC ${method} empty result`)
+        return { result: json.result, url }
+      } catch (e) {
+        lastError = e instanceof Error ? e : new Error(String(e))
+        if (attempt < 2) await new Promise((r) => setTimeout(r, 250 * 2 ** attempt))
+      }
+    }
+  }
+  throw lastError ?? new Error('All RPC endpoints failed')
 }
 
 export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = resolveRpcUrls()): Promise<T> {
@@ -46,11 +73,11 @@ export async function rpcCall<T>(method: string, params: unknown[], rpcUrls = re
 }
 
 function toBlockHex(blockNumber: number): string {
-  return `0x${blockNumber.toString(16)}`
+  return toBlockQuantity(blockNumber)
 }
 
-export async function getBlockNumber(): Promise<number> {
-  const hex = await rpcCall<string>('eth_blockNumber', [])
+export async function getBlockNumber(rpcUrls?: string[]): Promise<number> {
+  const hex = await rpcCall<string>('eth_blockNumber', [], rpcUrls ?? resolveRpcUrls())
   return parseInt(hex, 16)
 }
 
@@ -86,7 +113,7 @@ export async function scanSwapLogsFromHead(params: {
     if (blockNumber <= stopBefore) break
     blockTimestamps.set(blockNumber, parseInt(block.timestamp, 16))
 
-    const batch = await rpcCall<RawLog[]>(
+    const { result: batch } = await rpcCallWithFailover<RawLog[]>(
       'eth_getLogs',
       [{ blockHash: block.hash, address: params.address, topics: [params.topic] }],
       rpcUrls,

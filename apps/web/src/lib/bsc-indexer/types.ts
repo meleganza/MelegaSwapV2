@@ -35,6 +35,8 @@ export interface NormalizedIndexerEvent {
   sourceStatus: 'indexed' | 'backfill' | 'incremental'
 }
 
+export type IndexerPhase = 'bootstrap' | 'incremental'
+
 export interface IndexerCheckpoint {
   chainId: number
   lastIndexedBlock: number
@@ -44,6 +46,14 @@ export interface IndexerCheckpoint {
   lastFailureReason?: string
   chunkSize: number
   cursorPairIndex: number
+  /** R771 v2 featured-pair namespace — absent on legacy R768 checkpoints. */
+  schemaVersion?: number
+  phase?: IndexerPhase
+  featuredPairSlug?: string
+  bootstrapStartBlock?: number
+  bootstrapDays?: number
+  providerUsed?: string
+  legacyNote?: string
 }
 
 export interface IndexerHealthSnapshot {
@@ -58,6 +68,13 @@ export interface IndexerHealthSnapshot {
   eventCounts: Record<string, number>
   startedAt?: string
   finishedAt?: string
+  indexerGeneration?: 'v2-featured-pair' | 'legacy-universal'
+  featuredPairSlug?: string
+  phase?: IndexerPhase
+  providerUsed?: string
+  indexedBlockRange?: { from: number; to: number }
+  bootstrapDays?: number
+  bootstrapStartBlock?: number
 }
 
 export interface OhlcvCandle {

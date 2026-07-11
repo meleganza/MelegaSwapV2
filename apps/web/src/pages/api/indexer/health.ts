@@ -19,6 +19,13 @@ const handler: NextApiHandler = async (_req, res) => {
   res.setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30')
   return res.status(200).json({
     status: health?.status ?? 'unavailable',
+    indexerGeneration: health?.indexerGeneration ?? (checkpoint?.schemaVersion === 2 ? 'v2-featured-pair' : 'legacy-universal'),
+    featuredPairSlug: health?.featuredPairSlug ?? checkpoint?.featuredPairSlug,
+    phase: health?.phase ?? checkpoint?.phase,
+    providerUsed: health?.providerUsed ?? checkpoint?.providerUsed,
+    indexedBlockRange: health?.indexedBlockRange,
+    bootstrapStartBlock: health?.bootstrapStartBlock ?? checkpoint?.bootstrapStartBlock,
+    bootstrapDays: health?.bootstrapDays ?? checkpoint?.bootstrapDays,
     storageBackend: storage.backend,
     storageConfigured: storage.configured,
     lastIndexedBlock: checkpoint?.lastIndexedBlock ?? health?.lastIndexedBlock ?? 0,
