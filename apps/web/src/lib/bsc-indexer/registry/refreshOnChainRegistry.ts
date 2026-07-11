@@ -50,11 +50,16 @@ export interface RegistryRefreshMeta {
   note: string
 }
 
-async function discoverPairs(currentBlock: number, rpcUrls?: string[]) {
+async function discoverPairs(
+  currentBlock: number,
+  rpcUrls?: string[],
+  existing?: OnchainRegistry['amm']['pairs'],
+) {
   const length = await callUint(FACTORY, '0x574f2ba3', rpcUrls)
-  const pairs: OnchainRegistry['amm']['pairs'] = []
+  const pairs: OnchainRegistry['amm']['pairs'] = existing ? [...existing] : []
+  const startIndex = existing?.length ?? 0
   const batchSize = 10
-  for (let start = 0; start < length; start += batchSize) {
+  for (let start = startIndex; start < length; start += batchSize) {
     const end = Math.min(length, start + batchSize)
     for (let i = start; i < end; i++) {
       const pairAddress = decodeAddress(await ethCall(FACTORY, `0x1e3dd18b${encodeUint(i)}`, rpcUrls))
@@ -156,12 +161,24 @@ function discoverSmartChefFromInventory(): OnchainRegistry['smartChef'] {
   }
 }
 
-export async function refreshOnChainRegistry(rpcUrls?: string[]): Promise<{
+export async function refreshOnChainRegistry(
+  rpcUrls?: string[],
+  options?: { existingRegistry?: OnchainRegistry },
+): Promise<{
   registry: OnchainRegistry
   meta: RegistryRefreshMeta
 }> {
   const currentBlock = await getBlockNumber(rpcUrls)
-  const [amm, farms] = await Promise.all([discoverPairs(currentBlock, rpcUrls), discoverFarms(currentBlock, rpcUrls)])
+  const existingPairs = options?.existingRegistry?.amm?.pairs
+  const incrementalOnly = Boolean(existingPairs?.length)
+  const [amm, farms] = await Promise.all([
+    discoverPairs(currentBlock, rpcUrls, existingPairs),
+    incrementalOnly
+      ? Promise.resolve(
+          options!.existingRegistry!.farms ?? { count: 0, farms: [] },
+        )
+      : discoverFarms(currentBlock, rpcUrls),
+  ])
   const smartChef = discoverSmartChefFromInventory()
 
   const registry: OnchainRegistry = {
@@ -191,7 +208,9 @@ export async function refreshOnChainRegistry(rpcUrls?: string[]): Promise<{
     farmCount: farms.count,
     smartChefCount: smartChef.count,
     dataSource: 'eth_call-multicall-enumeration',
-    note: 'Discovery via direct contract state — no eth_getLogs',
+    note: incrementalOnly
+      ? 'Incremental pair discovery — new factory indices only'
+      : 'Discovery via direct contract state — no eth_getLogs',
   }
 
   return { registry, meta }

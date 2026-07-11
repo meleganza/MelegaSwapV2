@@ -6,18 +6,22 @@ export const MELEGA_MASTERCHEF_BSC = '0x41D5487836452d23f2c467070244E5842B412794
 export const MELEGA_SMARTCHEF_FACTORY_BSC = '0x4c33eb3d40c78461dd1a079150fcac6da3c701cf'
 export const MARCO_WBNB_PAIR_BSC = '0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e'
 
-export const SWAP_TOPIC = '0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b'
-export const MINT_TOPIC = '0x4c209b5fc8ad50758f13e5e1943ba2e18854ec9f5580fa75b326a67a4c672b55'
-export const BURN_TOPIC = '0xdccd412f0b1252819cb1fd330b93224ca4ace6189ba8ebd092bd5d43eafe2fd'
-export const SYNC_TOPIC = '0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1'
-export const PAIR_CREATED_TOPIC = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
+export {
+  SWAP_TOPIC,
+  MINT_TOPIC,
+  BURN_TOPIC,
+  SYNC_TOPIC,
+  PAIR_CREATED_TOPIC,
+  CANONICAL_EVENT_TOPICS,
+  MALFORMED_SWAP_TOPIC_HISTORICAL,
+} from './eventTopics'
 
 export const BOOTSTRAP_DAYS_PRIMARY = 30
 export const BOOTSTRAP_DAYS_FALLBACK = 7
 export const BSC_AVG_BLOCK_SECONDS = 3
 export const INDEXER_SCHEMA_VERSION = 2
 export const FEATURED_PAIR_SLUG = 'marco-wbnb'
-/** Per cron sync — 5 blocks; public dataseed pacing for serverless timeout budget. */
+/** Per cron sync — 5 blocks; QuickNode single-block filter budget for serverless. */
 export const MAX_BLOCKS_PER_SYNC = 5
 export const BOOTSTRAP_MAX_BLOCKS_PER_SYNC = 5
 export const RECENT_BOOTSTRAP_BLOCKS = 250

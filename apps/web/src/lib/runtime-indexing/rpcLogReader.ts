@@ -1,13 +1,14 @@
 /** R767 — bounded BSC RPC log reader for swap events when subgraph is absent. */
 
+import { SWAP_TOPIC } from 'lib/bsc-indexer/eventTopics'
+
 export const MELEGA_FACTORY_BSC = '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C'
 export const MARCO_WBNB_PAIR_BSC = '0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e'
 export const WBNB_BSC = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
 export const MARCO_BSC = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
 
-/** keccak256("Swap(address,uint256,uint256,uint256,uint256,address)") */
-export const SWAP_EVENT_TOPIC =
-  '0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b'
+/** Canonical Swap topic — re-exported from lib/bsc-indexer/eventTopics (R773). */
+export const SWAP_EVENT_TOPIC = SWAP_TOPIC
 
 const DEFAULT_RPC = 'https://bsc-dataseed.binance.org'
 

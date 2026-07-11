@@ -1,6 +1,11 @@
 import { BURN_TOPIC, MINT_TOPIC, SWAP_TOPIC } from '../constants'
 import type { RawLog } from './chunkedLogs'
-import { getBlockNumber, rpcCallWithFailover, resolveIndexerLogRpcUrls, resolveLogFetchRpcUrls } from './chunkedLogs'
+import {
+  getBlockNumber,
+  rpcCallWithFailover,
+  resolveFeaturedPairLogRpcUrls,
+  resolveIndexerLogRpcUrls,
+} from './chunkedLogs'
 import { blockQuantityVariants } from './blockQuantity'
 
 export type BlockHeader = { hash: string; number: string; timestamp: string }
@@ -40,7 +45,7 @@ export async function scanBlockRangeEvents(params: {
   rpcUrls?: string[]
 }): Promise<{ logs: RawLog[]; blockTimestamps: Map<number, number>; providerUsed: string }> {
   const urls = params.rpcUrls ?? resolveIndexerLogRpcUrls()
-  const logUrls = resolveLogFetchRpcUrls()
+  const logUrls = resolveFeaturedPairLogRpcUrls()
   if (!urls.length) throw new Error('BSC_RPC_URL missing for featured-pair log scan')
 
   const logs: RawLog[] = []

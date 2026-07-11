@@ -1,6 +1,4 @@
 import {
-  BOOTSTRAP_DAYS_FALLBACK,
-  BOOTSTRAP_DAYS_PRIMARY,
   BOOTSTRAP_MAX_BLOCKS_PER_SYNC,
   DEFAULT_CHUNK_SIZE,
   FEATURED_PAIR_SLUG,
@@ -12,18 +10,20 @@ import {
   MIN_CHUNK_SIZE,
   REORG_SAFETY_BLOCKS,
 } from '../constants'
+import { createFreshFeaturedPairCheckpoint } from '../checkpointReset'
+import { assertIndexerEventTopicsValid } from '../eventTopicIntegrity'
 import { resolveIndexerStorage } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
 import {
   getBlockNumber,
+  getProviderHealthSnapshot,
   normalizeMintBurnLog,
   normalizeSwapLog,
   scanPairEventsFromHead,
   type RawLog,
 } from '../rpc/chunkedLogs'
 import { AMM_TOPICS } from '../rpc/chunkedLogs'
-import { estimateBootstrapStartBlock, scanBlockRangeEvents } from '../rpc/scanBlockRange'
-import { LEGACY_INDEXER_NOTE } from '../v2/paths'
+import { scanBlockRangeEvents } from '../rpc/scanBlockRange'
 import { buildCandlesFromSwaps } from './candles'
 
 export interface SyncResult {
@@ -68,32 +68,10 @@ function normalizeLogs(
   }
 }
 
-async function createBootstrapCheckpoint(chainHead: number): Promise<IndexerCheckpoint> {
-  let bootstrapDays = BOOTSTRAP_DAYS_PRIMARY
-  let { bootstrapStartBlock } = await estimateBootstrapStartBlock(bootstrapDays)
-  if (chainHead - bootstrapStartBlock > 500_000) {
-    bootstrapDays = BOOTSTRAP_DAYS_FALLBACK
-    ;({ bootstrapStartBlock } = await estimateBootstrapStartBlock(bootstrapDays))
-  }
-  return {
-    schemaVersion: INDEXER_SCHEMA_VERSION,
-    phase: 'bootstrap',
-    featuredPairSlug: FEATURED_PAIR_SLUG,
-    bootstrapStartBlock,
-    bootstrapDays,
-    chainId: MELEGA_CHAIN_ID,
-    lastIndexedBlock: chainHead,
-    chainHeadAtSync: chainHead,
-    reorgSafetyBlocks: REORG_SAFETY_BLOCKS,
-    lastSuccessfulSync: new Date(0).toISOString(),
-    chunkSize: DEFAULT_CHUNK_SIZE,
-    cursorPairIndex: 0,
-    legacyNote: LEGACY_INDEXER_NOTE,
-  }
-}
-
-/** R771 — MARCO/WBNB featured-pair incremental indexer (v2 namespace). */
+/** R773 — MARCO/WBNB featured-pair incremental indexer (v2 namespace). */
 export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Promise<SyncResult> {
+  assertIndexerEventTopicsValid()
+
   const storage = resolveIndexerStorage()
   const chainHead = await getBlockNumber()
   let existing = await storage.loadCheckpoint()
@@ -101,15 +79,21 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
 
   const eventCountsPreflight = await storage.countEvents()
   const hasEvents = Object.values(eventCountsPreflight).some((n) => n > 0)
-  const checkpoint = existing ?? (await createBootstrapCheckpoint(chainHead))
+  let checkpoint =
+    existing ??
+    (await createFreshFeaturedPairCheckpoint(chainHead, 'INITIAL_V2_BOOTSTRAP'))
+
   if (
     isV2Checkpoint(checkpoint) &&
+    !checkpoint.resetReason &&
     !hasEvents &&
-    (checkpoint.lastFailureReason?.toLowerCase().includes('invalid') ||
-      checkpoint.lastIndexedBlock <= (checkpoint.bootstrapStartBlock ?? 0) + REORG_SAFETY_BLOCKS)
+    checkpoint.lastFailureReason
   ) {
-    checkpoint.lastIndexedBlock = chainHead
-    checkpoint.lastFailureReason = undefined
+    checkpoint = await createFreshFeaturedPairCheckpoint(
+      chainHead,
+      'R772_MALFORMED_SWAP_TOPIC_CORRECTION',
+    )
+    await storage.saveCheckpoint(checkpoint)
   }
 
   const blockBudget =
@@ -208,7 +192,14 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
     }
     await storage.saveHealth(health)
 
-    return { addedEvents: added, checkpoint: nextCheckpoint, health }
+    return {
+      addedEvents: added,
+      checkpoint: nextCheckpoint,
+      health: {
+        ...health,
+        providerHealth: getProviderHealthSnapshot(),
+      },
+    }
   } catch (e) {
     const reason = e instanceof Error ? e.message : 'Featured-pair sync failed'
     const failCheckpoint: IndexerCheckpoint = {

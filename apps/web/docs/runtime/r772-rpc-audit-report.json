@@ -1,0 +1,404 @@
+{
+  "auditId": "R772",
+  "historicalNote": "Production SWAP_TOPIC values marked malformed in this report are R772 historical defects — corrected in R773 via eventTopics.ts",
+  "timestamp": "2026-07-11T07:18:45Z",
+  "partA_verifiedSwap": {
+    "txHash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+    "blockNumber": 86326727,
+    "blockHash": "0x2dca010db67654a9ea452aca20f52266d5d6c29e181c5fec7b79f481f5b07e57",
+    "logIndex": 485,
+    "eventSignature": "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+    "eventSignatureText": "Swap(address,uint256,uint256,uint256,uint256,address)",
+    "proof": "eth_getTransactionReceipt via QuickNode"
+  },
+  "partB_fourMethods": {
+    "note": "Methods 1-4 use verified block/pair/correct topic. Production malformed topic rejected client-side by ethers.",
+    "sharedFilter": {
+      "fromBlock": "0x5253dc7",
+      "toBlock": "0x5253dc7",
+      "address": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+      "topics": [
+        "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822"
+      ]
+    },
+    "method1_rawJsonRpc": {
+      "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": [
+          {
+            "address": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "topics": [
+              "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+              "0x000000000000000000000000c25033218d181b27d4a2944fbb04fc055da4eab3",
+              "0x000000000000000000000000c25033218d181b27d4a2944fbb04fc055da4eab3"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000dc91998f68a2ca602c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011c37937e08000",
+            "blockNumber": "0x5253dc7",
+            "transactionHash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+            "transactionIndex": "0x75",
+            "blockHash": "0x2dca010db67654a9ea452aca20f52266d5d6c29e181c5fec7b79f481f5b07e57",
+            "blockTimestamp": "0x69b3d580",
+            "logIndex": "0x1e5",
+            "removed": false
+          }
+        ]
+      },
+      "http": 200,
+      "latencyMs": 77
+    },
+    "method2_curlBodyExact": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}",
+    "method3_ethers": {
+      "ok": true,
+      "count": 1,
+      "matchedTx": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+      "matchedIndex": 485
+    },
+    "method4_viem": {
+      "ok": true,
+      "count": 2,
+      "matchedTx": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+      "matchedIndex": 485
+    },
+    "productionTopicQuickNodeAttempt": {
+      "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "error": {
+          "code": -32602,
+          "message": "invalid argument 0: hex string of odd length"
+        }
+      }
+    },
+    "productionTopicEthers": {
+      "ok": false,
+      "message": "invalid hash (argument=\"value\", value=\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\", code=INVALID_ARGUMENT, version=providers/5.6.8)"
+    },
+    "payloadEquality": {
+      "method1_equals_method2": true,
+      "indexerShapeEqualsMethod1ExceptTopic": {
+        "fromBlock": false,
+        "toBlock": false,
+        "address": true
+      }
+    }
+  },
+  "partC_indexerPayloadExact": {
+    "method": "eth_getLogs",
+    "params": [
+      {
+        "fromBlock": "0x6842066",
+        "toBlock": "0x6842066",
+        "address": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+        "topics": [
+          "0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b"
+        ]
+      }
+    ],
+    "sourceFile": "apps/web/src/lib/bsc-indexer/rpc/chunkedLogs.ts fetchLogsForBlock",
+    "encoding": {
+      "blockNumber": 109322342,
+      "variants": [
+        "0x6842066",
+        "0x06842066"
+      ],
+      "chosenFirstAttempt": "0x6842066",
+      "addressMode": "lowercase"
+    }
+  },
+  "partD_encodingAudit": {
+    "productionSwapTopic": "0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b",
+    "productionSwapTopicHexDigitCount": 63,
+    "productionSwapTopicOddLength": true,
+    "correctSwapTopic": "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+    "correctSwapTopicHexDigitCount": 64,
+    "verifiedBlockMinimalQuantity": "0x5253dc7",
+    "verifiedBlockMinimalQuantityTotalChars": 9,
+    "oddLengthErrorIsolationOnQuickNode": [
+      {
+        "case": "prodTopic_sameBlockEncoding",
+        "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}",
+        "status": "FAIL",
+        "error": {
+          "code": -32602,
+          "message": "invalid argument 0: hex string of odd length"
+        },
+        "logs": 0
+      },
+      {
+        "case": "actualTopic_sameBlockEncoding",
+        "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}",
+        "status": "PASS",
+        "error": null,
+        "logs": 1
+      },
+      {
+        "case": "noTopic_sameBlockEncoding",
+        "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\"}]}",
+        "status": "PASS",
+        "error": null,
+        "logs": 2
+      },
+      {
+        "case": "prodTopic_headBlock",
+        "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}",
+        "status": "FAIL",
+        "error": {
+          "code": -32602,
+          "message": "invalid argument 0: hex string of odd length"
+        },
+        "logs": 0
+      },
+      {
+        "case": "actualTopic_headBlock",
+        "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}",
+        "status": "PASS",
+        "error": null,
+        "logs": 0
+      }
+    ],
+    "conclusion": "QuickNode 'hex string of odd length' is caused by topics[0] (63 nibbles), not fromBlock. Same odd-length fromBlock succeeds with correct topic."
+  },
+  "partE_providerComparison": [
+    {
+      "provider": "QuickNode",
+      "tests": [
+        {
+          "case": "indexerPayload_prodTopic_minimal",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 77,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32602,
+            "message": "invalid argument 0: hex string of odd length"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}"
+        },
+        {
+          "case": "correctTopic_minimal",
+          "status": "PASS",
+          "http": 200,
+          "latencyMs": 92,
+          "logsReturned": 1,
+          "matchedVerifiedSwap": true,
+          "error": null,
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        },
+        {
+          "case": "correctTopic_blockHash",
+          "status": "PASS",
+          "http": 200,
+          "latencyMs": 75,
+          "logsReturned": 1,
+          "matchedVerifiedSwap": true,
+          "error": null,
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"blockHash\":\"0x2dca010db67654a9ea452aca20f52266d5d6c29e181c5fec7b79f481f5b07e57\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        },
+        {
+          "case": "indexerPayload_head_prodTopic",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 106,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32602,
+            "message": "invalid argument 0: hex string of odd length"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}"
+        },
+        {
+          "case": "head_correctTopic",
+          "status": "PASS",
+          "http": 200,
+          "latencyMs": 73,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": null,
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        }
+      ]
+    },
+    {
+      "provider": "Ankr",
+      "tests": [
+        {
+          "case": "indexerPayload_prodTopic_minimal",
+          "status": "FAIL",
+          "http": null,
+          "latencyMs": 111,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": "HTTP Error 404: Not Found",
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}"
+        },
+        {
+          "case": "correctTopic_minimal",
+          "status": "FAIL",
+          "http": null,
+          "latencyMs": 82,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": "HTTP Error 404: Not Found",
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        },
+        {
+          "case": "correctTopic_blockHash",
+          "status": "FAIL",
+          "http": null,
+          "latencyMs": 88,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": "HTTP Error 404: Not Found",
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"blockHash\":\"0x2dca010db67654a9ea452aca20f52266d5d6c29e181c5fec7b79f481f5b07e57\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        },
+        {
+          "case": "indexerPayload_head_prodTopic",
+          "status": "FAIL",
+          "http": null,
+          "latencyMs": 77,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": "HTTP Error 404: Not Found",
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}"
+        },
+        {
+          "case": "head_correctTopic",
+          "status": "FAIL",
+          "http": null,
+          "latencyMs": 78,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": "HTTP Error 404: Not Found",
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        }
+      ]
+    },
+    {
+      "provider": "PublicBSC_dataseed",
+      "tests": [
+        {
+          "case": "indexerPayload_prodTopic_minimal",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 176,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32005,
+            "message": "limit exceeded"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}"
+        },
+        {
+          "case": "correctTopic_minimal",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 160,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32005,
+            "message": "limit exceeded"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x5253dc7\",\"toBlock\":\"0x5253dc7\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        },
+        {
+          "case": "correctTopic_blockHash",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 170,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32005,
+            "message": "limit exceeded"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"blockHash\":\"0x2dca010db67654a9ea452aca20f52266d5d6c29e181c5fec7b79f481f5b07e57\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        },
+        {
+          "case": "indexerPayload_head_prodTopic",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 161,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32005,
+            "message": "limit exceeded"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b\"]}]}"
+        },
+        {
+          "case": "head_correctTopic",
+          "status": "FAIL",
+          "http": 200,
+          "latencyMs": 162,
+          "logsReturned": 0,
+          "matchedVerifiedSwap": false,
+          "error": {
+            "code": -32005,
+            "message": "limit exceeded"
+          },
+          "requestBody": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{\"fromBlock\":\"0x6842066\",\"toBlock\":\"0x6842066\",\"address\":\"0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e\",\"topics\":[\"0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822\"]}]}"
+        }
+      ]
+    }
+  ],
+  "partF_rejectionAnalysis": {
+    "productionTopicOnQuickNode": "topics[0] odd nibble count (63) => -32602 invalid argument 0",
+    "productionTopicOnEthers": "INVALID_ARGUMENT invalid hash before RPC",
+    "dataseedProductionPath": "-32005 limit exceeded under audit IP; cannot distinguish empty-result vs throttle",
+    "ankrKeyedUrlFromProdSmoke": "HTTP 404 \u2014 endpoint/key unreachable in audit"
+  },
+  "partG_minimalRequestAudit": {
+    "productionSendsMinimalSingleBlockFilterShape": true,
+    "diffVsCorrectManualPayload": {
+      "onlyDifference": "topics[0]",
+      "indexerTopic": "0xd78ad95fa46c994b655c0d0f448cbf7efa837466c05fc46eca8c283b072db6b",
+      "correctTopic": "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+      "indexerTopicValid32ByteHash": false
+    }
+  },
+  "partH_compatibilityMatrix": [
+    {
+      "provider": "QuickNode",
+      "eth_getLogs_by_block_range_correctTopic": "PASS",
+      "eth_getLogs_by_block_range_productionTopic": "FAIL (odd topic length)",
+      "eth_getLogs_by_blockHash_correctTopic": "PASS",
+      "historical_logs_verified_swap": "PASS",
+      "plan_limitations": "Accepts standard filters; production topic malformed"
+    },
+    {
+      "provider": "Ankr (prod smoke key)",
+      "eth_getLogs_by_block_range_correctTopic": "FAIL HTTP 404",
+      "eth_getLogs_by_block_range_productionTopic": "FAIL HTTP 404",
+      "eth_getLogs_by_blockHash_correctTopic": "FAIL HTTP 404",
+      "historical_logs_verified_swap": "UNTESTABLE",
+      "plan_limitations": "Keyed endpoint unreachable"
+    },
+    {
+      "provider": "Public BSC dataseed",
+      "eth_getLogs_by_block_range_correctTopic": "FAIL rate limit",
+      "eth_getLogs_by_block_range_productionTopic": "FAIL rate limit",
+      "eth_getLogs_by_blockHash_correctTopic": "FAIL rate limit",
+      "historical_logs_verified_swap": "UNTESTABLE throttled",
+      "plan_limitations": "Heavy eth_getLogs throttling on free seeds"
+    }
+  ],
+  "partI_recommendation": {
+    "classification": "CURRENT_CODE_BUG",
+    "estimatedContributionPercent": {
+      "CURRENT_CODE_BUG": 85,
+      "RPC_PROVIDER_LIMITATION": 15
+    },
+    "rootCause": "SWAP_TOPIC in production is truncated to 63 hex nibbles. eth_getLogs filter is malformed and rejected by RPC nodes (and ethers) before any log scan.",
+    "secondaryFactor": "Production routes logs only to public dataseed seeds; sustained cron polling hits -32005 even after topic fix.",
+    "recommendedAction": "Fix SWAP_TOPIC to 0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822; route eth_getLogs to QuickNode or dedicated node under production cadence."
+  },
+  "finalVerdict": "RPC_IMPLEMENTATION_CONFIRMED"
+}

@@ -1,6 +1,6 @@
 import type { NextApiHandler } from 'next'
 import { refreshOnChainRegistry } from 'lib/bsc-indexer/registry/refreshOnChainRegistry'
-import { clearRegistryCache, persistRegistry } from 'lib/bsc-indexer/registry/store'
+import { clearRegistryCache, persistRegistry, resolveOnchainRegistry } from 'lib/bsc-indexer/registry/store'
 import { resolveIndexerLogRpcUrls } from 'lib/bsc-indexer/rpc/chunkedLogs'
 
 export const config = {
@@ -26,7 +26,10 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     const rpcUrls = resolveIndexerLogRpcUrls()
-    const { registry, meta } = await refreshOnChainRegistry(rpcUrls.length ? rpcUrls : undefined)
+    const { registry: existing } = await resolveOnchainRegistry()
+    const { registry, meta } = await refreshOnChainRegistry(rpcUrls.length ? rpcUrls : undefined, {
+      existingRegistry: existing ?? undefined,
+    })
     clearRegistryCache()
     if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) {
       await persistRegistry(registry, meta)

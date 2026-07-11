@@ -27,6 +27,7 @@ export interface NormalizedIndexerEvent {
   amountIn?: string
   amountOut?: string
   wallet?: string
+  recipient?: string
   txHash: string
   logIndex: number
   blockNumber: number
@@ -54,6 +55,9 @@ export interface IndexerCheckpoint {
   bootstrapDays?: number
   providerUsed?: string
   legacyNote?: string
+  /** R773 — featured-pair checkpoint reset metadata. */
+  resetReason?: string
+  resetAt?: string
 }
 
 export interface IndexerHealthSnapshot {
@@ -75,6 +79,13 @@ export interface IndexerHealthSnapshot {
   indexedBlockRange?: { from: number; to: number }
   bootstrapDays?: number
   bootstrapStartBlock?: number
+  providerHealth?: Array<{
+    url: string
+    label: string
+    healthy: boolean
+    lastFailureReason?: string
+    quarantinedUntil?: string
+  }>
 }
 
 export interface OhlcvCandle {
