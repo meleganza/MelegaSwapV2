@@ -10,5 +10,6 @@ export {
   buildDexAssetIndexPayload,
   getProjectSurfaceAssets,
   getTrendingSurfaceAssets,
+  getTradeSurfaceAssets,
 } from './buildDexAssetIndex'
 export { resolveAssetLogo, assetKey, mergeAssetSurfaces } from './resolveAssetLogo'

@@ -6,7 +6,9 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
-import { getTrendingSurfaceAssets } from 'lib/dex-asset-index'
+import { getTradeSurfaceAssets } from 'lib/dex-asset-index'
+import useBUSDPrice from 'hooks/useBUSDPrice'
+import { WBNB } from '@pancakeswap/sdk'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
 import { usePriceCakeBusd } from 'state/farms/hooks'
@@ -70,12 +72,6 @@ export interface IndexedRibbonAsset {
   displayName: string
 }
 
-const pushUniqueTickerItem = (items: MelegaTickerItem[], item: MelegaTickerItem, seen: Set<string>) => {
-  const key = item.href ?? item.id
-  if (seen.has(key)) return
-  seen.add(key)
-  items.push(item)
-}
 
 export interface LiveEconomyMetric {
   id: string
@@ -91,6 +87,29 @@ export interface ActivityUnavailable {
   source: string
   indexer: string
   lastAttempt: string
+}
+
+const LIVE_ACTIVITY_MAX_AGE_SEC = 86_400
+
+export const isRecentIndexedEvent = (timestamp: string | number): boolean => {
+  const ts = Number(timestamp)
+  if (!ts || Number.isNaN(ts)) return false
+  const ageSec = Math.floor(Date.now() / 1000 - ts)
+  return ageSec >= 0 && ageSec <= LIVE_ACTIVITY_MAX_AGE_SEC
+}
+
+const formatTickerPrice = (price?: number): string | undefined => {
+  if (!price || price <= 0 || !Number.isFinite(price)) return undefined
+  if (price >= 1) return `$${price.toFixed(2)}`
+  if (price >= 0.01) return `$${price.toFixed(4)}`
+  return `$${price.toFixed(6)}`
+}
+
+const formatTickerChange = (change?: number): { text: string; positive: boolean } | undefined => {
+  if (change == null || !Number.isFinite(change)) return undefined
+  const positive = change >= 0
+  const arrow = positive ? '▲' : '▼'
+  return { text: `${arrow} ${Math.abs(change).toFixed(2)}%`, positive }
 }
 
 const formatTimeAgo = (timestamp: string): string | undefined => {
@@ -176,8 +195,14 @@ const txToRow = (tx: Transaction): ActivityRow => {
 export const useHomeTradeData = () => {
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
+  const wbnbPrice = useBUSDPrice(WBNB[56])
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
   const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
+
+  const recentTransactions = useMemo(
+    () => (transactions ?? []).filter((tx) => isRecentIndexedEvent(tx.timestamp)),
+    [transactions],
+  )
 
   const farms = useMemo(
     () => (topFarms ?? []).filter((f): f is FarmWithStakedValue => Boolean(f?.lpSymbol)),
@@ -190,26 +215,26 @@ export const useHomeTradeData = () => {
   )
 
   const latestSwap = useMemo(() => {
-    if (!transactions?.length) return undefined
-    return transactions.find((tx) => tx.type === TransactionType.SWAP)
-  }, [transactions])
+    if (!recentTransactions.length) return undefined
+    return recentTransactions.find((tx) => tx.type === TransactionType.SWAP)
+  }, [recentTransactions])
 
   const dexProjects = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
-  const trendingAssetCount = useMemo(() => getTrendingSurfaceAssets().length, [])
+  const tradeableAssetCount = useMemo(() => getTradeSurfaceAssets().length, [])
 
   const latestProject = useMemo(() => {
     return dexProjects.find((p) => p.slug !== 'melega-dex') ?? dexProjects[0]
   }, [dexProjects])
 
   const topVolumeSwap = useMemo(() => {
-    if (!transactions?.length) return undefined
-    const swaps = transactions.filter((tx) => tx.type === TransactionType.SWAP && tx.amountUSD > 0)
+    if (!recentTransactions.length) return undefined
+    const swaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP && tx.amountUSD > 0)
     if (!swaps.length) return undefined
     return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
-  }, [transactions])
+  }, [recentTransactions])
 
   const indexedRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
-    return getTrendingSurfaceAssets()
+    return getTradeSurfaceAssets()
       .map((asset) => ({
         slug: asset.registrySlug ?? asset.id,
         symbol: asset.symbol,
@@ -217,94 +242,44 @@ export const useHomeTradeData = () => {
         chainId: asset.chainId,
         displayName: sanitizeRibbonText(asset.name ?? asset.symbol) ?? asset.symbol,
       }))
-      .filter((asset) => asset.displayName && asset.slug !== 'melega-dex')
+      .filter((asset) => asset.displayName && asset.address)
   }, [])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
-    const items: MelegaTickerItem[] = []
-    const seen = new Set<string>()
-    const topFarm = farms.find((f) => farmApr(f))
-    const topPool =
-      pools.find((p) => {
-        const apr = poolApr(p)
-        return apr !== undefined && apr > 0
-      }) ?? pools[0]
+    const marcoUsd = marcoPrice?.toNumber()
+    const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
 
-    if (topFarm) {
-      const apr = farmApr(topFarm)
-      const farmLabel = formatFarmTrendingLabel(topFarm, apr)
-      pushUniqueTickerItem(
-        items,
-        {
-          id: 'top-farm',
-          primary: farmLabel.primary,
-          secondary: farmLabel.secondary,
-          accent: farmLabel.accent ? `${farmLabel.accent} APR` : undefined,
-          href: '/farms',
-        },
-        seen,
-      )
+    const resolveQuote = (symbol: string): { price?: string; change?: { text: string; positive: boolean } } => {
+      const sym = symbol.toUpperCase()
+      if (sym === 'MARCO') {
+        return {
+          price: formatTickerPrice(marcoUsd),
+          change: formatTickerChange(0),
+        }
+      }
+      if (sym === 'WBNB') {
+        return {
+          price: formatTickerPrice(wbnbUsd),
+          change: formatTickerChange(0),
+        }
+      }
+      return {}
     }
 
-    if (topPool) {
-      const apr = poolApr(topPool)
-      const poolLabel = formatPoolTrendingLabel(topPool, apr)
-      pushUniqueTickerItem(
-        items,
-        {
-          id: 'top-pool',
-          primary: poolLabel.primary,
-          secondary: poolLabel.secondary,
-          accent: formatPoolTickerAccent(poolLabel.accent),
-          href: '/pools',
-        },
-        seen,
-      )
-    }
-
-    if (topVolumeSwap) {
-      pushUniqueTickerItem(
-        items,
-        {
-          id: 'top-volume-pair',
-          primary: 'Top volume',
-          secondary: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
-          accent: formatUsd(topVolumeSwap.amountUSD),
-          href: '/trade',
-        },
-        seen,
-      )
-    }
-
-    indexedRibbonAssets.forEach((asset) => {
-      pushUniqueTickerItem(
-        items,
-        {
-          id: `indexed-asset-${asset.slug}`,
-          primary: asset.displayName,
-          secondary: asset.symbol,
-          href: `/projects/${asset.slug}`,
-        },
-        seen,
-      )
-    })
-
-    if (latestSwap) {
-      pushUniqueTickerItem(
-        items,
-        {
-          id: 'latest-swap',
-          primary: 'Latest swap',
-          secondary: `${latestSwap.token0Symbol} → ${latestSwap.token1Symbol}`,
-          accent: formatTimeAgo(latestSwap.timestamp),
-          href: '/trade',
-        },
-        seen,
-      )
-    }
-
-    return items
-  }, [farms, latestSwap, pools, topVolumeSwap, indexedRibbonAssets])
+    return indexedRibbonAssets
+      .map((asset) => {
+        const quote = resolveQuote(asset.symbol)
+        if (!quote.price) return undefined
+        return {
+          id: `trade-asset-${asset.slug}`,
+          primary: asset.symbol,
+          secondary: quote.price,
+          accent: quote.change?.text,
+          accentPositive: quote.change?.positive,
+        } satisfies MelegaTickerItem
+      })
+      .filter((item): item is MelegaTickerItem => Boolean(item))
+  }, [indexedRibbonAssets, marcoPrice, wbnbPrice])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -467,19 +442,19 @@ export const useHomeTradeData = () => {
       slots.push({ id: 'swap', label: 'Latest swap', row: txToRow(latestSwap) })
     }
 
-    const latestLpAdd = transactions?.find((tx) => tx.type === TransactionType.MINT)
+    const latestLpAdd = recentTransactions.find((tx) => tx.type === TransactionType.MINT)
     if (latestLpAdd && latestLpAdd.hash !== latestSwap?.hash) {
       slots.push({ id: 'lp-add', label: 'Latest LP add', row: txToRow(latestLpAdd) })
     } else if (latestLpAdd) {
       slots.push({ id: 'lp-add', label: 'Latest LP add', row: txToRow(latestLpAdd) })
     }
 
-    const latestLpRemove = transactions?.find((tx) => tx.type === TransactionType.BURN)
+    const latestLpRemove = recentTransactions.find((tx) => tx.type === TransactionType.BURN)
     if (latestLpRemove) {
       slots.push({ id: 'lp-remove', label: 'Latest LP remove', row: txToRow(latestLpRemove) })
     }
 
-    const recentSwaps = transactions?.filter((tx) => tx.type === TransactionType.SWAP).slice(1, 3) ?? []
+    const recentSwaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP).slice(1, 3)
     recentSwaps.forEach((tx, i) => {
       slots.push({
         id: `swap-${i}`,
@@ -489,7 +464,7 @@ export const useHomeTradeData = () => {
     })
 
     return slots.slice(0, 6)
-  }, [latestSwap, transactions])
+  }, [latestSwap, recentTransactions])
 
   const isTrendingIndexing = useMemo(() => {
     const farmsLoading =
@@ -508,14 +483,17 @@ export const useHomeTradeData = () => {
   const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
     if (isActivityIndexing) return undefined
     if (activityRows.length > 0) return undefined
+    const hasStaleEvents = (transactions?.length ?? 0) > 0 && recentTransactions.length === 0
     const diagnostic = buildIndexerActivityDiagnostic({
       source: indexerState.source,
       indexer: indexerState.indexer,
       lastAttempt: indexerState.lastAttempt,
       reason:
-        indexerState.status === 'error' || indexerState.status === 'unavailable'
-          ? indexerState.reason ?? 'Subgraph indexer unavailable'
-          : 'No swaps or liquidity events indexed in the current subgraph window',
+        hasStaleEvents
+          ? 'No indexed swaps or liquidity events in the last 24 hours'
+          : indexerState.status === 'error' || indexerState.status === 'unavailable'
+            ? indexerState.reason ?? 'Subgraph indexer unavailable'
+            : 'No swaps or liquidity events indexed in the current subgraph window',
     })
     return {
       message: diagnostic.title,
@@ -525,7 +503,7 @@ export const useHomeTradeData = () => {
       indexer: diagnostic.indexer,
       lastAttempt: diagnostic.lastAttempt,
     }
-  }, [isActivityIndexing, activityRows.length, indexerState])
+  }, [isActivityIndexing, activityRows.length, indexerState, transactions?.length, recentTransactions.length])
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)
@@ -538,18 +516,15 @@ export const useHomeTradeData = () => {
 
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
     const metrics: LiveEconomyMetric[] = []
-    const dayAgo = Math.floor(Date.now() / 1000) - 86_400
-    const todaySwaps = transactions?.filter(
-      (tx) => tx.type === TransactionType.SWAP && Number(tx.timestamp) >= dayAgo,
-    ).length
+    const todaySwaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP).length
 
-    if (todaySwaps && todaySwaps > 0) {
+    if (todaySwaps > 0) {
       metrics.push({ id: 'swaps', label: "Today's swaps", value: String(todaySwaps), live: true })
     }
     if (farms.length > 0) {
       metrics.push({ id: 'farms', label: 'Live farms', value: String(farms.length), live: true })
     }
-    const projectCount = trendingAssetCount || dexProjects.length
+    const projectCount = tradeableAssetCount || dexProjects.length
     if (projectCount > 0) {
       metrics.push({ id: 'projects', label: 'Indexed assets', value: String(projectCount), live: true })
     }
@@ -557,7 +532,7 @@ export const useHomeTradeData = () => {
       metrics.push({ id: 'pools', label: 'Pools', value: String(pools.length), live: true })
     }
     return metrics
-  }, [transactions, farms.length, pools.length, dexProjects.length, trendingAssetCount])
+  }, [recentTransactions, farms.length, pools.length, dexProjects.length, tradeableAssetCount])
 
   const marketUnavailableReason = useMemo(() => {
     if (marketCards.length > 0) return undefined
@@ -573,16 +548,13 @@ export const useHomeTradeData = () => {
   const trendingUnavailableReason = useMemo(() => {
     if (trendingTickerItems.length > 0) return undefined
     if (indexerState.status === 'loading') {
-      return indexerState.reason ?? 'Subgraph metrics loading'
+      return indexerState.reason ?? 'Market quotes loading'
     }
-    if (indexerState.status === 'error' || indexerState.status === 'unavailable') {
-      return indexerState.reason ?? 'Indexer not deployed'
+    if (!marcoPriceLabel) {
+      return 'Waiting for live tradeable asset quotes'
     }
-    if (!farms.length && !pools.length && !transactions?.length) {
-      return 'Waiting for first indexed event'
-    }
-    return 'No trending farms, pools, swaps, or assets in current window'
-  }, [trendingTickerItems.length, indexerState, farms.length, pools.length, transactions?.length])
+    return 'No tradeable assets with live quotes'
+  }, [trendingTickerItems.length, indexerState, marcoPriceLabel])
 
   const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 

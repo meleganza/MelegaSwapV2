@@ -368,10 +368,16 @@ const slideInFromLeft = keyframes`
   to { opacity: 1; transform: translateX(0); }
 `
 
+const slideInNext = css`
+  animation: ${slideInFromRight} 220ms ease;
+`
+
+const slideInPrev = css`
+  animation: ${slideInFromLeft} 220ms ease;
+`
+
 const StepPanel = styled.div<{ $dir: 'next' | 'prev' | 'none' }>`
-  animation: ${({ $dir }) =>
-      $dir === 'next' ? slideInFromRight : $dir === 'prev' ? slideInFromLeft : 'none'}
-    220ms ease;
+  ${({ $dir }) => ($dir === 'next' ? slideInNext : $dir === 'prev' ? slideInPrev : '')}
   min-width: 0;
 
   @media (max-width: 767px) {

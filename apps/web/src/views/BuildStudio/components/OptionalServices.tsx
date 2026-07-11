@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
+import { NAV_COMING_SOON_LABEL } from 'lib/navigation/comingSoon'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, BS_FONT_DISPLAY, buildStudioColors } from '../buildStudioTokens'
-import { BsBody } from './buildStudioPrimitives'
+import { BsBody, BsComingSoonBadge } from './buildStudioPrimitives'
 
 const Grid = styled.div`
   display: grid;
@@ -37,8 +38,8 @@ const DisabledCard = styled.div`
   background: ${buildStudioColors.panel};
   display: block;
   color: inherit;
-  opacity: 0.55;
-  cursor: not-allowed;
+  opacity: 0.72;
+  cursor: default;
 `
 
 const Title = styled.h4`
@@ -95,6 +96,7 @@ export const OptionalServices: React.FC = () => {
               <Status $available={svc.available}>
                 {premiumUiValue(svc.status)} · {svc.requirements}
               </Status>
+              {!svc.href ? <BsComingSoonBadge>{NAV_COMING_SOON_LABEL}</BsComingSoonBadge> : null}
             </>
           )
           if (!svc.href) {

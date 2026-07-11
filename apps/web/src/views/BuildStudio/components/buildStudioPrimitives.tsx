@@ -103,6 +103,32 @@ export const BsOutlineBtn = styled.button<{ $width?: string; $height?: string }>
   }
 `
 
+export const BsComingSoonBtn = styled(BsPrimaryBtn)`
+  margin-top: auto;
+  opacity: 0.72;
+  cursor: not-allowed;
+  font-size: 13px;
+`
+
+export const BsComingSoonOutlineBtn = styled(BsOutlineBtn)`
+  opacity: 0.72;
+  cursor: not-allowed;
+  font-size: 13px;
+`
+
+export const BsComingSoonBadge = styled.span`
+  display: inline-flex;
+  margin-top: 8px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid ${buildStudioColors.border};
+  font-family: ${BS_FONT_BODY};
+  font-size: 11px;
+  font-weight: 700;
+  color: ${buildStudioColors.muted};
+`
+
 export const BsInput = styled.input`
   width: 100%;
   height: 56px;

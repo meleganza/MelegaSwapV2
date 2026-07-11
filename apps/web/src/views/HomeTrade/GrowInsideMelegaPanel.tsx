@@ -14,13 +14,13 @@ const GROW_ITEMS: GrowItem[] = [
     id: 'radar',
     title: 'Radar',
     subtitle: 'Discover trends and claim your profile.',
-    href: '/radar',
+    comingSoon: true,
   },
   {
     id: 'labs',
     title: 'Labs',
     subtitle: 'Trade narratives before listing.',
-    href: '/runtime/labs',
+    comingSoon: true,
   },
   {
     id: 'space',
@@ -251,18 +251,26 @@ export const GrowInsideMelegaPanel: React.FC = () => (
           )
         }
 
-        if (item.external) {
+        if ('href' in item && item.href) {
+          if (item.external) {
+            return (
+              <EcoCardExternal key={item.id} href={item.href} target="_blank" rel="noopener noreferrer">
+                {content}
+              </EcoCardExternal>
+            )
+          }
+
           return (
-            <EcoCardExternal key={item.id} href={item.href} target="_blank" rel="noopener noreferrer">
+            <EcoCardLink key={item.id} href={item.href}>
               {content}
-            </EcoCardExternal>
+            </EcoCardLink>
           )
         }
 
         return (
-          <EcoCardLink key={item.id} href={item.href}>
+          <EcoCardDisabled key={item.id} aria-disabled="true">
             {content}
-          </EcoCardLink>
+          </EcoCardDisabled>
         )
       })}
     </CardTrack>

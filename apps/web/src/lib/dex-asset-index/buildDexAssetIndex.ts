@@ -303,3 +303,16 @@ export function getProjectSurfaceAssets(): DexAssetRecord[] {
 export function getTrendingSurfaceAssets(): DexAssetRecord[] {
   return buildDexAssetIndex().filter((a) => a.surfaces.trending)
 }
+
+/** Mainnet tokens with a live trade surface — excludes LP pair symbols. */
+export function getTradeSurfaceAssets(): DexAssetRecord[] {
+  const seen = new Set<string>()
+  return buildDexAssetIndex().filter((asset) => {
+    if (!asset.surfaces.trade || asset.chainId !== 56 || !asset.address) return false
+    if (asset.symbol.includes('-') || asset.symbol.includes('/')) return false
+    const key = asset.symbol.toUpperCase()
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}

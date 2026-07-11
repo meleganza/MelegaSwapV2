@@ -166,6 +166,16 @@ const config = {
         destination: '/radar',
         permanent: false,
       },
+      {
+        source: '/dex-intelligence',
+        destination: '/radar',
+        permanent: false,
+      },
+      {
+        source: '/dex-intelligence/:path*',
+        destination: '/radar',
+        permanent: false,
+      },
     ]
   },
   // webpack: (webpackConfig, { webpack }) => {

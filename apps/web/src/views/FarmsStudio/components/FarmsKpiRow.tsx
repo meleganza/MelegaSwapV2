@@ -62,14 +62,16 @@ const LoadingLine = styled.span`
 `
 
 function MiniSparkline({ points }: { points: number[] }) {
+  if (!points.length) return null
   const max = Math.max(...points)
   const min = Math.min(...points)
   const range = max - min || 1
   const w = farmsStudioLayout.sparklineW
   const h = farmsStudioLayout.sparklineH
+  const denom = Math.max(points.length - 1, 1)
   const d = points
     .map((p, i) => {
-      const x = (i / (points.length - 1)) * w
+      const x = (i / denom) * w
       const y = h - ((p - min) / range) * (h - 2) - 1
       return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
     })

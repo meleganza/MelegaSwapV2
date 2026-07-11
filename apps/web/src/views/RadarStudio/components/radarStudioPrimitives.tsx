@@ -240,14 +240,16 @@ const sparkShimmer = `
 `
 
 export const KpiSparkline: React.FC<{ points: number[]; color?: string }> = ({ points, color = '#00E884' }) => {
+  if (!points.length) return null
   const w = 58
   const h = 22
   const max = Math.max(...points)
   const min = Math.min(...points)
   const range = max - min || 1
+  const denom = Math.max(points.length - 1, 1)
   const d = points
     .map((p, i) => {
-      const x = (i / (points.length - 1)) * w
+      const x = (i / denom) * w
       const y = h - ((p - min) / range) * (h - 4) - 2
       return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
     })

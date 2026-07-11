@@ -11,7 +11,8 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  min-width: 0;
+  overflow: visible;
 `
 
 export const ImportTokenPanel: React.FC = () => (

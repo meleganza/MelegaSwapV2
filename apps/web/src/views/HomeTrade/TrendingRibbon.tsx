@@ -15,7 +15,7 @@ export const TrendingRibbon: React.FC = () => {
   const enrichedItems = useMemo(
     () =>
       (items ?? []).map((item) => {
-        const slug = item.id.replace('indexed-asset-', '')
+        const slug = item.id.replace(/^trade-asset-/, '').replace(/^indexed-asset-/, '')
         const asset = avatarBySlug[slug]
         if (!asset) return item
         return {

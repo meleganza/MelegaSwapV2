@@ -11,6 +11,7 @@ export interface MelegaTickerItem {
   accent?: string
   href?: string
   icon?: React.ReactNode
+  accentPositive?: boolean
 }
 
 export interface MelegaTickerProps extends MelegaLayoutProps {
@@ -89,11 +90,20 @@ const TrendingAnchor = styled.span`
   flex-shrink: 0;
 `
 
-const Item = styled.a`
+const ItemLink = styled.a`
   display: inline-flex;
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  color: inherit;
+  font-size: 14px;
+  flex-shrink: 0;
+`
+
+const ItemSpan = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: inherit;
   font-size: 14px;
   flex-shrink: 0;
@@ -133,10 +143,10 @@ const Secondary = styled.span`
   }
 `
 
-const Accent = styled.span`
+const Accent = styled.span<{ $positive?: boolean }>`
   font-weight: 700;
   font-size: 14px;
-  color: #00e676;
+  color: ${({ $positive }) => ($positive === false ? '#ff5252' : '#00e676')};
 `
 
 const Dot = styled.span`
@@ -235,12 +245,21 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
           <Dot aria-hidden />
           {scrollItems.map((item, i) => (
             <React.Fragment key={`${item.id}-${i}`}>
-              <Item href={item.href || '#'}>
-                {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
-                <Primary>{item.primary}</Primary>
-                {item.secondary && <Secondary>{item.secondary}</Secondary>}
-                {item.accent && <Accent>{item.accent}</Accent>}
-              </Item>
+              {item.href ? (
+                <ItemLink href={item.href}>
+                  {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
+                  <Primary>{item.primary}</Primary>
+                  {item.secondary && <Secondary>{item.secondary}</Secondary>}
+                  {item.accent && <Accent $positive={item.accentPositive}>{item.accent}</Accent>}
+                </ItemLink>
+              ) : (
+                <ItemSpan>
+                  {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
+                  <Primary>{item.primary}</Primary>
+                  {item.secondary && <Secondary>{item.secondary}</Secondary>}
+                  {item.accent && <Accent $positive={item.accentPositive}>{item.accent}</Accent>}
+                </ItemSpan>
+              )}
               {i < scrollItems.length - 1 && <Dot aria-hidden />}
             </React.Fragment>
           ))}

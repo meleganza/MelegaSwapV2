@@ -67,9 +67,13 @@ const ChainRow = styled.div`
 `
 
 const AnalyzeBtn = styled(ItPrimaryBtn)`
+  flex-shrink: 0;
+  min-width: 148px;
+  white-space: nowrap;
+
   @media (min-width: 769px) {
-    width: 280px;
-    flex-shrink: 0;
+    width: auto;
+    align-self: stretch;
   }
 
   @media (max-width: 768px) {

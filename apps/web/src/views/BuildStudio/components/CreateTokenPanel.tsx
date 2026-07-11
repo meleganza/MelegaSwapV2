@@ -6,7 +6,7 @@ import { SUPPORTED_CHAINS } from '../buildStudioData'
 import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import { IconCoins } from './buildStudioIcons'
-import { BsBadge, BsBody, BsCardTitle, BsOutlineBtn, BsPanel, BsPrimaryBtn } from './buildStudioPrimitives'
+import { BsBadge, BsBody, BsCardTitle, BsComingSoonBtn, BsComingSoonOutlineBtn, BsPanel, BsPrimaryBtn } from './buildStudioPrimitives'
 
 const Inner = styled.div`
   padding: 20px;
@@ -135,12 +135,12 @@ export const CreateTokenPanel: React.FC = () => {
           Readiness: {tokenPreparation.readinessScore}/100
         </Meta>
         <BtnCol>
-          <BsPrimaryBtn type="button" $width="100%" $height="44px" style={{ fontSize: 13 }} disabled title={NAV_COMING_SOON_LABEL}>
+          <BsComingSoonBtn type="button" $width="100%" $height="44px" disabled title={NAV_COMING_SOON_LABEL}>
             {NAV_COMING_SOON_LABEL}
-          </BsPrimaryBtn>
-          <BsOutlineBtn type="button" $height="40px" style={{ fontSize: 13 }} disabled title={NAV_COMING_SOON_LABEL}>
+          </BsComingSoonBtn>
+          <BsComingSoonOutlineBtn type="button" $height="40px" disabled title={NAV_COMING_SOON_LABEL}>
             {NAV_COMING_SOON_LABEL}
-          </BsOutlineBtn>
+          </BsComingSoonOutlineBtn>
         </BtnCol>
       </Inner>
     </BsPanel>

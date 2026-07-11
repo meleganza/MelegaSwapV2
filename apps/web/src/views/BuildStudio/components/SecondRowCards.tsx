@@ -7,12 +7,12 @@ import { useBuildRuntime } from '../buildRuntime/BuildRuntimeContext'
 import { BS_FONT_BODY, buildStudioColors, buildStudioLayout } from '../buildStudioTokens'
 import {
   BsCardTitle,
+  BsComingSoonBtn,
   BsField,
   BsFieldLabel,
   BsInput,
   BsLabel,
   BsPanel,
-  BsPrimaryBtn,
 } from './buildStudioPrimitives'
 
 const Grid = styled.div`
@@ -160,9 +160,9 @@ export function StakingPoolCard() {
             <SimVal>{premiumUiValue(poolPreview.lock)}</SimVal>
           </SimRow>
         </SimBlock>
-        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled title={NAV_COMING_SOON_LABEL}>
+        <BsComingSoonBtn type="button" $height="42px" disabled title={NAV_COMING_SOON_LABEL}>
           {NAV_COMING_SOON_LABEL}
-        </BsPrimaryBtn>
+        </BsComingSoonBtn>
       </Inner>
     </CardShell>
   )
@@ -199,9 +199,9 @@ export function CreateFarmCard() {
           <BsFieldLabel>Duration</BsFieldLabel>
           <BsInput value={premiumUiValue(farmPreview.duration)} readOnly style={{ height: 40, fontSize: 13 }} />
         </BsField>
-        <BsPrimaryBtn type="button" $height="42px" style={{ marginTop: 'auto' }} disabled title={NAV_COMING_SOON_LABEL}>
+        <BsComingSoonBtn type="button" $height="42px" disabled title={NAV_COMING_SOON_LABEL}>
           {NAV_COMING_SOON_LABEL}
-        </BsPrimaryBtn>
+        </BsComingSoonBtn>
       </Inner>
     </CardShell>
   )

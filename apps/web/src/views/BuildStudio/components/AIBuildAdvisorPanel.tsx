@@ -6,12 +6,13 @@ import { BsGauge, BsGaugeLabel, BsGaugeValue, BsPanel } from './buildStudioPrimi
 
 const Inner = styled.div`
   padding: 20px;
-  height: 100%;
+  min-height: ${buildStudioLayout.advisorH};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 `
 
 const Title = styled.h3`
@@ -122,7 +123,7 @@ export const AIBuildAdvisorPanel: React.FC = () => {
   const { advisor } = useBuildRuntime()
 
   return (
-    <BsPanel data-bs-panel data-bs-advisor $height={buildStudioLayout.advisorH}>
+    <BsPanel data-bs-panel data-bs-advisor $minHeight={buildStudioLayout.advisorH}>
       <Inner>
         <Title>AI Build Advisor</Title>
 
