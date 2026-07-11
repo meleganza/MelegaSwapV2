@@ -1,5 +1,5 @@
 import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { tradeUiReasonLabel } from 'lib/data-policy/uiReasonLabels'
 import { tradeColors, tradeLayout, tradeTypography } from '../tradeTokens'
@@ -60,11 +60,10 @@ const Value = styled.div<{ $muted?: boolean; $loading?: boolean }>`
     $loading ? tradeColors.gold : $muted ? tradeColors.muted : tradeColors.text};
   font-variant-numeric: ${tradeTypography.fontVariantNumeric};
   ${({ $loading }) =>
-    $loading
-      ? `
-    animation: ${shimmer} 1.8s ease-in-out infinite;
-  `
-      : ''}
+    $loading &&
+    css`
+      animation: ${shimmer} 1.8s ease-in-out infinite;
+    `}
 `
 
 const Subline = styled.div`

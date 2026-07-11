@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
-import { useTokenDataSWR } from 'state/info/hooks'
+import { useGetChainName, useTokenDataSWR } from 'state/info/hooks'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
 import { MARCO_BSC_ADDRESS, isMarcoSymbol } from 'design-system/melega/constants/brand'
 import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
@@ -13,7 +13,26 @@ import { resolveHolderMetric, resolveHolderMachinePayload, useHolderCount } from
 import { resolveSubgraphEndpointReport } from 'lib/runtime-indexing'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
+import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
+import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
+
+const SECONDS_24H = 86_400
+
+async function fetchBnbUsdPrice(): Promise<number | undefined> {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd',
+      { headers: { accept: 'application/json' } },
+    )
+    if (!res.ok) return undefined
+    const json = (await res.json()) as { binancecoin?: { usd?: number } }
+    const usd = json.binancecoin?.usd
+    return usd != null && Number.isFinite(usd) && usd > 0 ? usd : undefined
+  } catch {
+    return undefined
+  }
+}
 
 export interface TradeSwapRow {
   id: string
@@ -122,7 +141,9 @@ function resolveCanonicalOutputAddress(
 
 export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string, outputAddress?: string) => {
   const { chainId } = useActiveChainId()
+  const chainName = useGetChainName()
   const subgraphReport = useMemo(() => resolveSubgraphEndpointReport(), [])
+  const useDurableIndexer = Boolean(chainName === 'BSC' && !subgraphReport.melegaNativeConfigured)
   const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
   const resolvedOutput = resolveCanonicalOutputAddress(chainId, outputSymbol, outputAddress)
   const tokenAddress = resolvedOutput
@@ -137,6 +158,50 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     fetchMarcoPublicMarket,
     { refreshInterval: 120_000, revalidateOnFocus: false },
   )
+  const { candles: indexerCandles, status: indexerCandleStatus } = useIndexerCandles(
+    useDurableIndexer && isMarcoRoute ? MARCO_WBNB_PAIR_BSC : undefined,
+    '1H',
+  )
+  const { data: bnbUsdPrice } = useSWR(
+    useDurableIndexer && isMarcoRoute ? 'trade-bnb-usd-coingecko' : null,
+    fetchBnbUsdPrice,
+    { refreshInterval: 120_000, revalidateOnFocus: false },
+  )
+
+  const indexerMetrics24h = useMemo(() => {
+    if (!useDurableIndexer || !isMarcoRoute) return undefined
+    const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
+    const recentCandles = indexerCandles.filter((c) => c.bucketTimestamp >= cutoff)
+    const candlesForMetrics = recentCandles.length > 0 ? recentCandles : indexerCandles
+    const quoteVolumeWbnb = candlesForMetrics.reduce((sum, c) => sum + (c.quoteVolume ?? 0), 0)
+    const tradeCount = candlesForMetrics.reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
+    const txCount24h =
+      transactions?.filter((tx) => {
+        const ts = Number(tx.timestamp)
+        return tx.type === TransactionType.SWAP && Number.isFinite(ts) && ts >= cutoff
+      }).length ?? 0
+    const swapEventCount = indexerState.eventCounts?.Swap ?? 0
+    const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h > 0 ? txCount24h : swapEventCount
+    const volumeUsd =
+      quoteVolumeWbnb > 0 && bnbUsdPrice != null && Number.isFinite(bnbUsdPrice)
+        ? quoteVolumeWbnb * bnbUsdPrice
+        : undefined
+    const hasData = resolvedTradeCount > 0 || quoteVolumeWbnb > 0 || indexerCandleStatus === 'ready'
+    if (!hasData) return undefined
+    return {
+      volumeUsd,
+      tradeCount: resolvedTradeCount,
+      lastClose: indexerCandles[indexerCandles.length - 1]?.close,
+    }
+  }, [
+    useDurableIndexer,
+    isMarcoRoute,
+    indexerCandles,
+    transactions,
+    indexerState.eventCounts,
+    bnbUsdPrice,
+    indexerCandleStatus,
+  ])
 
   const formatCompactUsd = (value?: number): string | undefined => {
     if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return undefined
@@ -189,20 +254,30 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const liqChange = formatPct(tokenData?.liquidityUSDChange ?? NaN)
     const txChange = formatPct(tokenData?.txCountChange ?? NaN)
 
-    const volumeValue = formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
+    const indexedVolumeValue =
+      indexerMetrics24h?.volumeUsd != null ? formatUsd(indexerMetrics24h.volumeUsd) : undefined
+    const indexedTradeValue =
+      indexerMetrics24h?.tradeCount != null && indexerMetrics24h.tradeCount > 0
+        ? indexerMetrics24h.tradeCount.toLocaleString()
+        : undefined
+
+    const volumeValue =
+      indexedVolumeValue ?? formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
     const liquidityValue = formatUsd(tokenData?.liquidityUSD ?? 0)
     const mcapValue = formatCompactUsd(publicMarket?.marketCapUsd)
     const fdvValue = formatCompactUsd(publicMarket?.fdvUsd)
     const supplyValue = formatSupply(publicMarket?.circulatingSupply)
 
     const volumeReason: DataReasonCode | undefined =
-      tokenData === undefined && subgraphReport.melegaNativeConfigured && !publicMarket
-        ? 'SUBGRAPH_LOADING'
-        : !tokenData?.exists && !publicMarket?.volume24hUsd
-          ? 'PAIR_NOT_INDEXED'
-          : !tokenData?.volumeUSD && !publicMarket?.volume24hUsd
-            ? 'NO_EVENTS_INDEXED'
-            : undefined
+      indexedVolumeValue
+        ? undefined
+        : tokenData === undefined && subgraphReport.melegaNativeConfigured && !publicMarket
+          ? 'SUBGRAPH_LOADING'
+          : !tokenData?.exists && !publicMarket?.volume24hUsd
+            ? 'PAIR_NOT_INDEXED'
+            : !tokenData?.volumeUSD && !publicMarket?.volume24hUsd
+              ? 'NO_EVENTS_INDEXED'
+              : undefined
 
     const liquidityReason: DataReasonCode | undefined =
       tokenData === undefined && subgraphReport.melegaNativeConfigured
@@ -214,13 +289,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
             : undefined
 
     const tradesReason: DataReasonCode | undefined =
-      tokenData === undefined && subgraphReport.melegaNativeConfigured
-        ? 'SUBGRAPH_LOADING'
-        : !tokenData?.exists
-          ? 'PAIR_NOT_INDEXED'
-          : !tokenData.txCount && !transactions?.length
-            ? 'NO_EVENTS_INDEXED'
-            : undefined
+      indexedTradeValue
+        ? undefined
+        : tokenData === undefined && subgraphReport.melegaNativeConfigured
+          ? 'SUBGRAPH_LOADING'
+          : !tokenData?.exists
+            ? 'PAIR_NOT_INDEXED'
+            : !tokenData.txCount && !transactions?.length
+              ? 'NO_EVENTS_INDEXED'
+              : undefined
 
     const mcapReason: DataReasonCode | undefined = mcapValue ? undefined : 'EXPLORER_SOURCE_MISSING'
     const fdvReason: DataReasonCode | undefined = fdvValue ? undefined : 'EXPLORER_SOURCE_MISSING'
@@ -264,7 +341,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'transactions',
         label: '24H Trades',
-        value: tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined,
+        value: indexedTradeValue ?? (tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined),
         change: txChange?.text,
         changePositive: txChange?.positive,
         reasonCode: tradesReason,
@@ -284,24 +361,38 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
               : 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading])
+  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading, indexerMetrics24h, transactions, subgraphReport.melegaNativeConfigured])
 
   const pairPrice = useMemo(() => {
-    if (!tokenData?.priceUSD) return undefined
-    return {
-      value: tokenData.priceUSD,
-      change24h: tokenData.priceUSDChange,
-      formatted: `$${tokenData.priceUSD < 0.01 ? tokenData.priceUSD.toFixed(6) : tokenData.priceUSD.toFixed(4)}`,
+    if (tokenData?.priceUSD) {
+      return {
+        value: tokenData.priceUSD,
+        change24h: tokenData.priceUSDChange,
+        formatted: `$${tokenData.priceUSD < 0.01 ? tokenData.priceUSD.toFixed(6) : tokenData.priceUSD.toFixed(4)}`,
+      }
     }
-  }, [tokenData])
+    const close = indexerMetrics24h?.lastClose
+    if (close != null && close > 0 && bnbUsdPrice != null && Number.isFinite(bnbUsdPrice)) {
+      const priceUsd = close * bnbUsdPrice
+      if (Number.isFinite(priceUsd) && priceUsd > 0) {
+        return {
+          value: priceUsd,
+          change24h: undefined,
+          formatted: `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(4)}`,
+        }
+      }
+    }
+    return undefined
+  }, [tokenData, indexerMetrics24h, bnbUsdPrice])
 
   const missingReason = useMemo((): TradeDataMissingReason => {
+    if (useDurableIndexer && (transactions?.length || indexerCandles.length > 0)) return null
     if (tokenData === undefined) return null
     if (!tokenAddress) return 'route_not_configured'
     if (!tokenData.exists) return 'pair_not_indexed'
     if (!transactions?.length && !tokenData.volumeUSD) return 'subgraph_empty'
     return null
-  }, [tokenData, tokenAddress, transactions])
+  }, [useDurableIndexer, tokenData, tokenAddress, transactions, indexerCandles.length])
 
   const missingReasonDetail = useMemo((): string | undefined => {
     if (missingReason === 'pair_not_indexed') return 'MARCO/BNB pair not indexed in Melega subgraph'
@@ -354,7 +445,9 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       tokenMetrics:
         tokenData === undefined ? 'loading' : tokenData.exists ? 'ready' : 'missing',
       reasonCodes,
-      dataSources: ['melega-subgraph', 'on-chain-multicall', 'presence-registry'],
+      dataSources: useDurableIndexer
+        ? ['bsc-durable-indexer', 'on-chain-multicall', 'presence-registry']
+        : ['melega-subgraph', 'on-chain-multicall', 'presence-registry'],
       primaryActions: ['view_chart', 'view_recent_swaps', 'swap'],
       runtimeLinks: ['/command-center', '/liquidity-studio', '/trending'],
       missingReason,
@@ -362,11 +455,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       ...holderMachine,
       timestamp: new Date().toISOString(),
     }
-  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail, indexerState, holderCount, subgraphReport])
+  }, [transactions, tokenData, pairStats, missingReason, missingReasonDetail, indexerState, holderCount, subgraphReport, useDurableIndexer])
 
   const isIndexingSwaps = isActivityIndexing && recentSwaps.length === 0
   const isIndexingMetrics =
-    subgraphReport.melegaNativeConfigured && tokenData === undefined && Boolean(tokenAddress) && !publicMarket
+    !useDurableIndexer &&
+    subgraphReport.melegaNativeConfigured &&
+    tokenData === undefined &&
+    Boolean(tokenAddress) &&
+    !publicMarket
 
   return {
     recentSwaps,

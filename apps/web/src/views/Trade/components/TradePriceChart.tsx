@@ -200,7 +200,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
 
   const pairPrices = useMemo(() => {
     if (subgraphPrices.length >= 2) return subgraphPrices
-    if (indexerCandles.length >= 2) {
+    if (indexerCandles.length >= 1) {
       return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
     }
     return subgraphPrices
@@ -208,9 +208,9 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
 
   const resolvedChartEmptyReason =
     chartEmptyReason ??
-    (pairPrices.length < 2 && indexerCandleStatus === 'empty'
+    (pairPrices.length < 1 && indexerCandleStatus === 'empty'
       ? 'No swap events in selected interval'
-      : pairPrices.length < 2 && indexerCandleStatus === 'unavailable'
+      : pairPrices.length < 1 && indexerCandleStatus === 'unavailable'
         ? 'Durable indexer candles unavailable'
         : chartEmptyReason)
 
@@ -222,7 +222,7 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   const publicSources = useMemo(() => {
     const ctx = resolveTradeMarketContext({
       outputAddress: isMarcoSymbol(outputSymbol) ? MARCO_BSC_ADDRESS : token1Address,
-      hasPairPrices: pairPrices.length >= 2,
+      hasPairPrices: pairPrices.length >= 1,
       hasSwaps: false,
       routeConfigured: Boolean(token0Address && token1Address),
     })

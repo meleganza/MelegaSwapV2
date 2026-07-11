@@ -1,5 +1,5 @@
 import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import { TRADE_TABS, tradeColors, type TradeMode } from '../tradeTokens'
 
 const glow = keyframes`
@@ -40,7 +40,11 @@ const Tab = styled.button<{ $active?: boolean }>`
   cursor: ${({ $active }) => ($active ? 'default' : 'pointer')};
   white-space: nowrap;
   position: relative;
-  animation: ${({ $active }) => ($active ? glow : 'none')} 4s ease-in-out infinite;
+  ${({ $active }) =>
+    $active &&
+    css`
+      animation: ${glow} 4s ease-in-out infinite;
+    `}
 
   &::after {
     content: '';

@@ -303,7 +303,11 @@ const SubgraphLabel = styled.span`
 `
 
 function buildSubgraphPath(points: Array<{ value: number }>, width: number, height: number): string {
-  if (points.length < 2) return ''
+  if (points.length === 0) return ''
+  if (points.length === 1) {
+    const y = height / 2
+    return `M 0 ${y} L ${width} ${y}`
+  }
   const values = points.map((p) => p.value)
   const min = Math.min(...values)
   const max = Math.max(...values)
@@ -328,7 +332,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
 
-  const hasSubgraphPrices = pairPrices.length >= 2
+  const hasSubgraphPrices = pairPrices.length >= 1
 
   const symbol = useMemo(() => {
     if (!inputSymbol || !outputSymbol) return null
@@ -380,7 +384,11 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
               </linearGradient>
             </defs>
           </SubgraphSvg>
-          <SubgraphLabel>Indexed pair price · Melega subgraph</SubgraphLabel>
+          <SubgraphLabel>
+            {pairPrices.length === 1
+              ? 'Indexed pair price · featured-pair indexer'
+              : 'Indexed pair price · Melega subgraph'}
+          </SubgraphLabel>
         </SubgraphChart>
       )}
       {showTv && (
