@@ -55,10 +55,12 @@ export async function scanBlockRangeEvents(params: {
     for (const topic of EVENT_TOPICS) {
       const { result: batch } = await rpcCallWithFailover<RawLog[]>(
         'eth_getLogs',
-        [{ blockHash: block.hash, address: params.address.toLowerCase(), topics: [topic] }],
+        [{ blockHash: block.hash, topics: [topic] }],
         urls,
       )
-      logs.push(...batch)
+      logs.push(
+        ...batch.filter((log) => log.address.toLowerCase() === params.address.toLowerCase()),
+      )
     }
   }
 

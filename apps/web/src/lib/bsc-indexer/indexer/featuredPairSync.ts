@@ -105,10 +105,11 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
   if (
     isV2Checkpoint(checkpoint) &&
     !hasEvents &&
-    checkpoint.phase === 'bootstrap' &&
-    checkpoint.lastIndexedBlock <= (checkpoint.bootstrapStartBlock ?? 0) + REORG_SAFETY_BLOCKS
+    (checkpoint.lastFailureReason?.toLowerCase().includes('invalid') ||
+      checkpoint.lastIndexedBlock <= (checkpoint.bootstrapStartBlock ?? 0) + REORG_SAFETY_BLOCKS)
   ) {
     checkpoint.lastIndexedBlock = chainHead
+    checkpoint.lastFailureReason = undefined
   }
 
   const blockBudget =

@@ -117,11 +117,11 @@ export async function scanPairEventsFromHead(params: {
     for (const topic of topics) {
       const { result: batch, url } = await rpcCallWithFailover<RawLog[]>(
         'eth_getLogs',
-        [{ blockHash: block.hash, address: params.address.toLowerCase(), topics: [topic] }],
+        [{ blockHash: block.hash, topics: [topic] }],
         rpcUrls,
       )
       providerUsed = url
-      logs.push(...batch)
+      logs.push(...batch.filter((log) => log.address.toLowerCase() === params.address.toLowerCase()))
       if (logs.length >= (params.maxLogs ?? MAX_EVENTS_PER_SYNC)) break
     }
     scanned += 1
