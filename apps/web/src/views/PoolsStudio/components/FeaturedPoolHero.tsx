@@ -357,10 +357,10 @@ function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | nu
 }
 
 export const FeaturedPoolHero: React.FC = () => {
-  const { featured, hiddenPoolReasons, rewardingCount, poolReconciliation } = usePoolsRuntime()
+  const { featured, hiddenPoolReasons, rewardingCount, poolReconciliation, machine } = usePoolsRuntime()
   const card = featured.card
   const isRewarding = Boolean(card?.lifecycle?.rewarding)
-  const endedCount = poolReconciliation?.finished ?? 0
+  const endedCount = machine?.integrity?.ended ?? poolReconciliation?.finished ?? 0
   const discoveredCount = poolReconciliation?.discovered ?? 0
   const aprText =
     isRewarding && card?.sustainableAprDisplay && !isForbiddenAprDisplay(card.sustainableAprDisplay)

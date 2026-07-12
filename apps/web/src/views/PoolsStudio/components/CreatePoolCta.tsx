@@ -814,7 +814,7 @@ const TokenAvatar: React.FC<{ symbol: string }> = ({ symbol }) => {
     <MelegaTokenAvatar
       name={symbol}
       symbol={symbol}
-      size={22}
+      size={32}
       address={meta?.address}
       chainId={meta?.chainId ?? 56}
       radius="circle"

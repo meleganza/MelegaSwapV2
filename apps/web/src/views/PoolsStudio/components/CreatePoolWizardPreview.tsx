@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import type { CreatePoolWizardState } from './createPoolWizardState'
+import { computeEstimatedApr, hasCompletePoolEstimateParams } from './createPoolWizardState'
 
 const Panel = styled.aside`
   width: 320px;
@@ -39,12 +40,12 @@ const BlockTitle = styled.span`
   color: #707070;
 `
 
-const AprValue = styled.span`
-  font-family: Orbitron, sans-serif;
-  font-size: 28px;
-  line-height: 32px;
-  font-weight: 700;
-  color: #18f089;
+const AprValue = styled.span<{ $pending?: boolean }>`
+  font-family: ${({ $pending }) => ($pending ? 'Inter, sans-serif' : 'Orbitron, sans-serif')};
+  font-size: ${({ $pending }) => ($pending ? '14px' : '28px')};
+  line-height: ${({ $pending }) => ($pending ? '20px' : '32px')};
+  font-weight: ${({ $pending }) => ($pending ? 600 : 700)};
+  color: ${({ $pending }) => ($pending ? '#b0b0b0' : '#18f089')};
 `
 
 const MetricRow = styled.div`
@@ -146,12 +147,7 @@ function parseNum(raw: string): number {
 }
 
 function computeApr(state: CreatePoolWizardState): string {
-  const budget = parseNum(state.rewardBudget)
-  const daily = parseNum(state.dailyRewards)
-  if (budget <= 0 || daily <= 0) return '—'
-  const apr = (daily * 365 * 100) / budget
-  if (!Number.isFinite(apr)) return '—'
-  return `${apr.toFixed(1)}%`
+  return computeEstimatedApr(state)
 }
 
 function computeHealth(state: CreatePoolWizardState): number {
@@ -178,6 +174,7 @@ type Props = {
 
 export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
   const apr = useMemo(() => computeApr(state), [state])
+  const aprPending = !hasCompletePoolEstimateParams(state)
   const health = useMemo(() => computeHealth(state), [state])
   const consumption = useMemo(() => computeConsumptionPct(state), [state])
 
@@ -194,7 +191,9 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
     <Panel data-r722-wizard-preview data-ps-create-wizard-preview>
       <Block>
         <BlockTitle>Estimated APR</BlockTitle>
-        <AprValue data-ps-wizard-preview-apr>{apr}</AprValue>
+        <AprValue data-ps-wizard-preview-apr $pending={aprPending}>
+          {apr}
+        </AprValue>
       </Block>
 
       <Block>

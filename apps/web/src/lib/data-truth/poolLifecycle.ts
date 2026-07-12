@@ -50,6 +50,10 @@ export function derivePoolLifecycle(
 
   let started = true
   let ended = Boolean(pool.isFinished)
+  const bonusEndBlock = Number(pool.bonusEndBlock ?? pool.endBlock)
+  if (Number.isFinite(bonusEndBlock) && Number.isFinite(currentBlock) && currentBlock > bonusEndBlock) {
+    ended = true
+  }
   if (pool.sousId !== 0) {
     const { hasPoolStarted, hasPoolEnded } = getPoolBlockInfo(pool, currentBlock)
     started = hasPoolStarted

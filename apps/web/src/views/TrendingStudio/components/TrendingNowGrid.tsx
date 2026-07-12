@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useTrendingRuntime } from '../trendingRuntime/TrendingRuntimeContext'
-import { getAllProjects } from 'registry/projects/getAllProjects'
 import { trendingStudioLayout } from '../trendingStudioTokens'
 import { TrSectionTitle } from './trendingStudioPrimitives'
 import TrendingProjectCard from './TrendingProjectCard'
@@ -49,7 +48,6 @@ const Empty = styled.p`
 
 export const TrendingNowGrid: React.FC = () => {
   const { cards, filterEmptyMessage } = useTrendingRuntime()
-  const indexedCount = getAllProjects().length
   const singleCard = cards.length === 1
 
   return (
@@ -57,8 +55,8 @@ export const TrendingNowGrid: React.FC = () => {
       <TrSectionTitle>Trending Now</TrSectionTitle>
       {singleCard ? (
         <Notice>
-          Showing {cards.length} indexed project{indexedCount === 1 ? '' : 's'} from the Melega registry. Additional
-          listings appear here after import review.
+          Showing {cards.length} ranked asset listing when tier metrics are available. Project entities are listed on
+          Projects.
         </Notice>
       ) : null}
       {filterEmptyMessage ? <Empty>{filterEmptyMessage}</Empty> : null}

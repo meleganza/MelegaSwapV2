@@ -14,6 +14,7 @@ import RadarOpsLeftColumn from './components/RadarOpsLeftColumn'
 import RadarOpsRightColumn from './components/RadarOpsRightColumn'
 import RadarStudioPageHeader from './components/RadarStudioPageHeader'
 import RadarComingSoonBanner from './components/RadarComingSoonBanner'
+import { isDexIntelligencePublicReady } from 'lib/data-truth/dexIntelligenceDisposition'
 import { RADAR_FONT_BODY, radarStudioColors, radarStudioLayout } from './radarStudioTokens'
 
 const Root = styled.div`
@@ -63,6 +64,13 @@ const ConsoleGrid = styled.div<{ $collapsedLeft?: boolean }>`
   }
 `
 
+const ComingSoonOnly = styled.div`
+  max-width: ${radarStudioLayout.contentMax};
+  margin: 0 auto;
+  padding: 0 ${radarStudioLayout.contentPaddingX} 48px;
+  box-sizing: border-box;
+`
+
 const RadarConsole: React.FC = () => {
   const { intelligenceFeedsAvailable } = useRadarRuntime()
   return (
@@ -74,22 +82,37 @@ const RadarConsole: React.FC = () => {
   )
 }
 
+const RadarIntelligenceBody: React.FC = () => {
+  if (!isDexIntelligencePublicReady()) {
+    return (
+      <ComingSoonOnly>
+        <RadarStudioPageHeader />
+        <RadarComingSoonBanner />
+      </ComingSoonOnly>
+    )
+  }
+
+  return (
+    <Content>
+      <RadarStudioPageHeader />
+      <RadarComingSoonBanner />
+      <RadarKpiRow />
+      <RadarContractIntelligenceInput />
+      <RadarLiveEventStream />
+      <RadarFilterRow />
+      <RadarConsole />
+      <RadarHeatmapTable />
+    </Content>
+  )
+}
+
 export const RadarStudioScreen: React.FC = () => (
   <RadarRuntimeProvider>
     <Root data-radar-studio-screen="true">
       <PageMeta />
       <RadarStudioGlobalStyle />
       <TrendingRibbon />
-      <Content>
-        <RadarStudioPageHeader />
-        <RadarComingSoonBanner />
-        <RadarKpiRow />
-        <RadarContractIntelligenceInput />
-        <RadarLiveEventStream />
-        <RadarFilterRow />
-        <RadarConsole />
-        <RadarHeatmapTable />
-      </Content>
+      <RadarIntelligenceBody />
     </Root>
   </RadarRuntimeProvider>
 )

@@ -52,12 +52,22 @@ export function parseNum(raw: string): number {
   return Number.isFinite(n) ? n : 0
 }
 
+export function hasCompletePoolEstimateParams(state: CreatePoolWizardState): boolean {
+  return Boolean(
+    state.rewardToken &&
+      state.stakeToken &&
+      parseNum(state.rewardBudget) > 0 &&
+      parseNum(state.dailyRewards) > 0 &&
+      parseNum(state.emissionDuration) > 0,
+  )
+}
+
 export function computeEstimatedApr(state: CreatePoolWizardState): string {
+  if (!hasCompletePoolEstimateParams(state)) return 'Complete pool parameters to estimate APR'
   const budget = parseNum(state.rewardBudget)
   const daily = parseNum(state.dailyRewards)
-  if (budget <= 0 || daily <= 0) return '—'
   const apr = (daily * 365 * 100) / budget
-  if (!Number.isFinite(apr)) return '—'
+  if (!Number.isFinite(apr)) return 'Complete pool parameters to estimate APR'
   return `${apr.toFixed(1)}%`
 }
 

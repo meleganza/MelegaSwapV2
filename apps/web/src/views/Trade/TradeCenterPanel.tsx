@@ -39,10 +39,11 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
   inputCurrencyId,
   outputCurrencyId,
 }) => {
-  const { pairStats, pairPrice, missingReason, missingReasonDetail, chartUnavailableDetail, isIndexingMetrics } =
+  const { pairStats, pairPrice, missingReason, missingReasonDetail, chartUnavailableDetail, isIndexingMetrics, reconciliationStatus } =
     useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
 
   const orderedStats = useMemo((): TradePairStat[] => {
+    if (reconciliationStatus === 'inconsistent') return []
     const priceChange =
       pairPrice?.change24h != null && Number.isFinite(pairPrice.change24h)
         ? {
@@ -73,7 +74,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
     }).filter((stat): stat is TradePairStat => stat != null)
 
     return merged
-  }, [pairStats, pairPrice, isIndexingMetrics])
+  }, [pairStats, pairPrice, isIndexingMetrics, reconciliationStatus])
 
   return (
     <Shell data-trade-center-panel>
@@ -84,8 +85,16 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
         outputCurrencyId={inputCurrencyId}
         priceUsd={pairPrice?.value}
         change24h={pairPrice?.change24h}
-        chartEmptyReason={missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)}
-        chartEmptyDetail={chartUnavailableDetail ?? missingReasonDetail}
+        chartEmptyReason={
+          reconciliationStatus === 'inconsistent'
+            ? 'data_inconsistent'
+            : missingReason ?? (chartUnavailableDetail ? 'chart_unavailable' : null)
+        }
+        chartEmptyDetail={
+          reconciliationStatus === 'inconsistent'
+            ? chartUnavailableDetail ?? 'Trade metrics could not be reconciled with indexed swap events.'
+            : chartUnavailableDetail ?? missingReasonDetail
+        }
         isIndexingMetrics={isIndexingMetrics}
       />
       <TradePairStats stats={orderedStats} />

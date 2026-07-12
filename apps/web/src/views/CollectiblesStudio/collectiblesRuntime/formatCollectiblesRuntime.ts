@@ -1,4 +1,4 @@
-import { DETECTED_BABYMARCO_IMAGE_PATTERN } from 'registry/collectibles/collectible-constants'
+import { DETECTED_BABYMARCO_IMAGE_PATTERN, DETECTED_BABYMARCO_PINATA_GATEWAY } from 'registry/collectibles/collectible-constants'
 import type { StaticCollectibleRecord } from 'registry/collectibles/collectible-types'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type {
@@ -74,10 +74,16 @@ export function mapRecordToCollectionCard(
       expiration: membership.expiration,
     },
     utilities: privilegeLabels(privileges),
-    previewImageUrl: record.metadata.gateway
-      ? `${record.metadata.gateway.replace(/\/$/, '')}/${DETECTED_BABYMARCO_IMAGE_PATTERN.replace('{tokenId}', '1')}`
-      : '/images/page/1.svg',
-    fallbackImageUrl: '/images/page/1.svg',
+    previewImageUrl:
+      record.slug === 'babymarco-genesis'
+        ? `${DETECTED_BABYMARCO_PINATA_GATEWAY}/DOG1.png`
+        : record.metadata.gateway
+          ? `${record.metadata.gateway.replace(/\/$/, '')}/${DETECTED_BABYMARCO_IMAGE_PATTERN.replace('{tokenId}', '1')}`
+          : undefined,
+    fallbackImageUrl:
+      record.slug === 'babymarco-genesis'
+        ? `${DETECTED_BABYMARCO_PINATA_GATEWAY}/DOG1.png`
+        : '/images/page/1.svg',
   }
 }
 

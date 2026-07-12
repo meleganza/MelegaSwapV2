@@ -12,10 +12,11 @@ const Card = styled.article<{ $expanded?: boolean; $ended?: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  min-height: ${({ $ended }) => ($ended ? '280px' : poolsStudioLayout.poolCardHeight)};
+  min-width: 320px;
+  max-width: 380px;
+  min-height: 440px;
   padding: 24px;
+  gap: 16px;
   border-radius: 18px;
   background: #141414;
   border: 1px solid rgba(212, 175, 55, 0.18);
@@ -30,7 +31,9 @@ const Card = styled.article<{ $expanded?: boolean; $ended?: boolean }>`
   }
 
   @media (max-width: 767px) {
-    min-height: ${({ $expanded, $ended }) => ($expanded ? 'auto' : $ended ? '260px' : '244px')};
+    min-width: 0;
+    max-width: 100%;
+    min-height: ${({ $expanded, $ended }) => ($expanded ? 'auto' : $ended ? '360px' : '400px')};
   }
 `
 
@@ -52,12 +55,16 @@ const HeaderRow = styled.div`
 
 const AprValue = styled.div<{ $ended?: boolean }>`
   font-family: Orbitron, sans-serif;
-  font-size: ${({ $ended }) => ($ended ? 'clamp(18px, 4vw, 24px)' : 'clamp(32px, 5vw, 48px)')};
+  font-size: ${({ $ended }) => ($ended ? '44px' : 'clamp(32px, 5vw, 48px)')};
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1;
   color: ${({ $ended }) => ($ended ? '#8a8a8a' : '#19f08a')};
-  margin: 0;
+  margin: 0 0 ${({ $ended }) => ($ended ? '4px' : '0')};
   flex-shrink: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const TitleRow = styled.div`
@@ -70,9 +77,9 @@ const TitleRow = styled.div`
 
 const PoolName = styled.span`
   font-family: Orbitron, sans-serif;
-  font-size: clamp(16px, 2.2vw, 20px);
+  font-size: 24px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.15;
   color: #f7f7f7;
   display: -webkit-box;
   -webkit-line-clamp: 2;

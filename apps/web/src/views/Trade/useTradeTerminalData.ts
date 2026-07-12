@@ -79,6 +79,7 @@ export interface TradeDataMachinePayload {
   holder_status: 'configured' | 'not_configured' | 'error'
   holder_reason?: string
   timestamp: string
+  status?: 'ok' | 'inconsistent'
 }
 
 const formatTimeAgo = (timestamp: string): string => {
@@ -518,11 +519,39 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     Boolean(tokenAddress) &&
     !publicMarket
 
-  return {
-    recentSwaps,
+  const reconciliationStatus = useMemo((): 'ok' | 'inconsistent' => {
+    if (!useDurableIndexer || !isMarcoRoute) return 'ok'
+    const tradeCount = indexerMetrics24h?.tradeCount ?? 0
+    const hasVolume =
+      (indexerMetrics24h?.volumeUsd ?? 0) > 0 || (indexerMetrics24h?.quoteVolumeWbnb ?? 0) > 0
+    if (tradeCount > 0 && recentSwaps.length === 0) return 'inconsistent'
+    if (hasVolume && indexerCandles.length === 0) return 'inconsistent'
+    const liquidityStat = pairStats.find((stat) => stat.id === 'liquidity')
+    if (reserveLiquidityUsd != null && reserveLiquidityUsd > 0 && liquidityStat?.reasonCode) {
+      return 'inconsistent'
+    }
+    return 'ok'
+  }, [
+    useDurableIndexer,
+    isMarcoRoute,
+    indexerMetrics24h,
+    recentSwaps.length,
+    indexerCandles.length,
+    reserveLiquidityUsd,
     pairStats,
-    pairPrice,
-    machine,
+  ])
+
+  const gatedPairStats = reconciliationStatus === 'inconsistent' ? [] : pairStats
+  const gatedRecentSwaps = reconciliationStatus === 'inconsistent' ? [] : recentSwaps
+
+  return {
+    recentSwaps: gatedRecentSwaps,
+    pairStats: gatedPairStats,
+    pairPrice: reconciliationStatus === 'inconsistent' ? undefined : pairPrice,
+    machine: {
+      ...machine,
+      status: reconciliationStatus === 'inconsistent' ? 'inconsistent' : 'ok',
+    },
     missingReason,
     missingReasonDetail,
     canonicalOutputAddress: resolvedOutput,
@@ -531,13 +560,28 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     isIndexing: isIndexingSwaps,
     isIndexingMetrics,
     hasSwapData: indexerState.status === 'ready',
-    swapEmptyReason: !isActivityIndexing && recentSwaps.length === 0
-      ? indexerState.status === 'error' || indexerState.status === 'unavailable'
-        ? 'DATA_SOURCE_NOT_CONFIGURED'
-        : 'NO_EVENTS_INDEXED'
-      : undefined,
-    swapDiagnostic: !isActivityIndexing && recentSwaps.length === 0 ? indexerState : undefined,
-    chartUnavailableDetail,
+    reconciliationStatus,
+    swapEmptyReason:
+      reconciliationStatus === 'inconsistent'
+        ? 'DATA_INCONSISTENT'
+        : !isActivityIndexing && recentSwaps.length === 0
+          ? indexerState.status === 'error' || indexerState.status === 'unavailable'
+            ? 'DATA_SOURCE_NOT_CONFIGURED'
+            : 'NO_EVENTS_INDEXED'
+          : undefined,
+    swapDiagnostic:
+      reconciliationStatus === 'inconsistent'
+        ? {
+            ...indexerState,
+            reason: 'Trade metrics contradict indexed swap events — reconciliation gate blocked partial display.',
+          }
+        : !isActivityIndexing && recentSwaps.length === 0
+          ? indexerState
+          : undefined,
+    chartUnavailableDetail:
+      reconciliationStatus === 'inconsistent'
+        ? 'Reason: Indexed trade count and recent swaps could not be reconciled · Source: bsc-durable-indexer'
+        : chartUnavailableDetail,
     indexerState,
     tokenExists: tokenData?.exists,
   }
