@@ -1,0 +1,38 @@
+{
+  "mission": "R783 farms playwright",
+  "base": "https://melega.finance",
+  "desktop": {
+    "checks": {
+      "label": "1440",
+      "width": 1440,
+      "oops": true,
+      "pageErrors": true,
+      "kpiRow": true,
+      "emitsToday": true,
+      "featuredFarm": true,
+      "farmGrid": true,
+      "noNaN": true,
+      "noUndefined": true,
+      "bodySnippet": "Farms\nPools\nFIND\nTrending\nProjects\nDEX Intelligence\nIdentity Hub\nIdentity Console\nBUILD\nBuild Studio\nOWN\nCommand Center\nMARCO\n$0.0004\n⌕\n⌘K\nEN\nالعربية\nবাংলা\nEnglish\nDeutsch\nΕλληνικά\nEspañol\nSuomalainen\nFilipino\nFrançais\nहिंदी\nMagyar\nBahasa Indonesia\nItaliano\n日本語\n한국어\nNederlands\nPolski\nPortuguês (Brazil)\nPortuguês\nRomână\nРусский\nSvenska\nதமிழ்\nTürkçe\nУкраїнська\nTiếng Việt\n简体中文\n繁體中文\nBNB Smart Chain\nCon"
+    },
+    "pageErrors": []
+  },
+  "mobile": {
+    "checks": {
+      "label": "390",
+      "width": 390,
+      "oops": true,
+      "pageErrors": true,
+      "kpiRow": true,
+      "emitsToday": true,
+      "featuredFarm": true,
+      "farmGrid": true,
+      "noNaN": true,
+      "noUndefined": true,
+      "bodySnippet": "Farms\nEarn yield across the Melega ecosystem.\nPricing & Fees\nLive Runtime\nTOTAL TVL\n$1.43M\nACTIVE FARMS\n63\nMARCO EMITS TODAY\n144.0K\nShow technical details\nHIGHEST APR\n36.19%\nFEATURED FARM\nMXMX / MARCO\nFeatured Farm\nMXMX / MARCO\n36.19%\nTVL\n$545.35\nREWARDS / DAY\n1.5K\nMULTIPLIER\n50x\nConnect Wallet\nAnalyze\nAI Yield Advisor\nBest Risk / Reward\nMXMX / MARCO\nHighest Stable APR\nMXMX / MARCO\nBest for AI Age"
+    },
+    "pageErrors": []
+  },
+  "pass": true,
+  "verifiedAt": "2026-07-12T08:21:18.914Z"
+}

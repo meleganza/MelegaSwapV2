@@ -8,8 +8,8 @@
     "decoded": 56
   },
   "eth_blockNumber": {
-    "raw": "0x687246a",
-    "decoded": 109519978
+    "raw": "0x6872e25",
+    "decoded": 109522469
   },
   "reads": [
     {
@@ -20,8 +20,8 @@
       "decoded": [
         "5000000000000000000"
       ],
-      "blockNumber": 109519978,
-      "timestamp": "2026-07-12T08:01:13.082Z",
+      "blockNumber": 109522469,
+      "timestamp": "2026-07-12T08:19:54.463Z",
       "provider": "https://bsc-dataseed.binance.org",
       "success": true
     },
@@ -33,8 +33,8 @@
       "decoded": [
         "478453"
       ],
-      "blockNumber": 109519978,
-      "timestamp": "2026-07-12T08:01:13.082Z",
+      "blockNumber": 109522469,
+      "timestamp": "2026-07-12T08:19:54.463Z",
       "provider": "https://bsc-dataseed.binance.org",
       "success": true
     },
@@ -46,8 +46,8 @@
       "decoded": [
         "387"
       ],
-      "blockNumber": 109519978,
-      "timestamp": "2026-07-12T08:01:13.082Z",
+      "blockNumber": 109522469,
+      "timestamp": "2026-07-12T08:19:54.463Z",
       "provider": "https://bsc-dataseed.binance.org",
       "success": true
     },
@@ -59,8 +59,8 @@
       "decoded": [
         "1"
       ],
-      "blockNumber": 109519978,
-      "timestamp": "2026-07-12T08:01:13.082Z",
+      "blockNumber": 109522469,
+      "timestamp": "2026-07-12T08:19:54.463Z",
       "provider": "https://bsc-dataseed.binance.org",
       "success": true
     },
@@ -72,8 +72,8 @@
       "decoded": [
         "18"
       ],
-      "blockNumber": 109519978,
-      "timestamp": "2026-07-12T08:01:13.082Z",
+      "blockNumber": 109522469,
+      "timestamp": "2026-07-12T08:19:54.463Z",
       "provider": "https://bsc-dataseed.binance.org",
       "success": true
     }
@@ -94,15 +94,15 @@
         "contract": "0x41D5487836452d23f2c467070244E5842B412794",
         "method": "poolInfo",
         "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000000",
-        "rawHex": "0x000000000000000000000000963556de0eb8138e97a85f0a86ee0acd159d210b000000000000000000000000000000000000000000000000000000000001d33d0000000000000000000000000000000000000000000000000000000006871942000000000000000000000000000000000000000000000000000020b52321db48",
+        "rawHex": "0x000000000000000000000000963556de0eb8138e97a85f0a86ee0acd159d210b000000000000000000000000000000000000000000000000000000000001d33d00000000000000000000000000000000000000000000000000000000068724c9000000000000000000000000000000000000000000000000000020b528a65513",
         "decoded": [
           "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
           "119613",
-          "109517122",
-          "35962350590792"
+          "109520073",
+          "35962443158803"
         ],
-        "blockNumber": 109519978,
-        "timestamp": "2026-07-12T08:01:13.082Z",
+        "blockNumber": 109522469,
+        "timestamp": "2026-07-12T08:19:54.463Z",
         "provider": "https://bsc-dataseed.binance.org",
         "success": true
       }
@@ -123,8 +123,8 @@
           "108655597",
           "11882101860100924"
         ],
-        "blockNumber": 109519978,
-        "timestamp": "2026-07-12T08:01:13.082Z",
+        "blockNumber": 109522469,
+        "timestamp": "2026-07-12T08:19:54.463Z",
         "provider": "https://bsc-dataseed.binance.org",
         "success": true
       }
@@ -145,12 +145,12 @@
           "54558439",
           "5710347698516030"
         ],
-        "blockNumber": 109519978,
-        "timestamp": "2026-07-12T08:01:13.082Z",
+        "blockNumber": 109522469,
+        "timestamp": "2026-07-12T08:19:54.463Z",
         "provider": "https://bsc-dataseed.binance.org",
         "success": true
       }
     }
   ],
-  "timestamp": "2026-07-12T08:01:13.082Z"
+  "timestamp": "2026-07-12T08:19:54.463Z"
 }
