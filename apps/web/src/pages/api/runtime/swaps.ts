@@ -2,7 +2,8 @@ import type { NextApiHandler } from 'next'
 import { Transaction, TransactionType } from 'state/info/types'
 import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
 import { mapIndexerEventsToTransactions } from 'lib/bsc-indexer/client/mapIndexerEvents'
-import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
+import { MARCO_WBNB_PAIR_BSC, FEATURED_PAIR_SLUG } from 'lib/bsc-indexer/constants'
+import { slugFromPairAddress } from 'lib/bsc-indexer/v2/pairSlug'
 import type { RpcSwapIndexerMeta } from 'lib/runtime-indexing/fetchRpcProtocolTransactions'
 
 const handler: NextApiHandler = async (req, res) => {
@@ -12,9 +13,15 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const pairParam = typeof req.query.pair === 'string' ? req.query.pair.toLowerCase() : MARCO_WBNB_PAIR_BSC.toLowerCase()
+  const pairAddress =
+    pairParam === FEATURED_PAIR_SLUG || pairParam === 'marco-wbnb'
+      ? MARCO_WBNB_PAIR_BSC.toLowerCase()
+      : pairParam.startsWith('0x')
+        ? pairParam
+        : slugFromPairAddress(pairParam)
   const storage = resolveIndexerStorage()
   const [events, health, checkpoint] = await Promise.all([
-    storage.listEvents({ pairAddress: pairParam, limit: 80 }),
+    storage.listEvents({ pairAddress, limit: 80 }),
     storage.loadHealth(),
     storage.loadCheckpoint(),
   ])
@@ -28,7 +35,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   const indexerMeta: RpcSwapIndexerMeta = {
     source: 'bsc-rpc-log-indexer',
-    pairAddress: pairParam,
+    pairAddress: pairParam === FEATURED_PAIR_SLUG ? FEATURED_PAIR_SLUG : pairAddress,
     fromBlock: Math.max(0, lastIndexed - 8000),
     toBlock: chainHead,
     latestIndexedBlock: lastIndexed,

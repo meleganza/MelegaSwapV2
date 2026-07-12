@@ -1,12 +1,14 @@
 import {
   BOOTSTRAP_DAYS_FALLBACK,
   BSC_AVG_BLOCK_SECONDS,
-  DEFAULT_CHUNK_SIZE,
+  BOOTSTRAP_MAX_BLOCKS_PER_SYNC,
   INDEXER_SCHEMA_VERSION,
   MAX_EVENTS_PER_SYNC,
   MELEGA_CHAIN_ID,
-  MIN_CHUNK_SIZE,
   REORG_SAFETY_BLOCKS,
+  SWAP_TOPIC,
+  MINT_TOPIC,
+  BURN_TOPIC,
 } from '../constants'
 import { AMM_TOPICS } from '../rpc/chunkedLogs'
 import {
@@ -18,16 +20,14 @@ import {
   scanPairEventsFromHead,
   type RawLog,
 } from '../rpc/chunkedLogs'
-import { scanBlockRangeEvents } from '../rpc/scanBlockRange'
 import { resolveIndexerStorageForSlug } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
 import { buildCandlesFromSwaps } from './candles'
 import type { PairWatch } from './featuredPairSync'
 
 const BLOCKS_PER_DAY = Math.floor(86_400 / BSC_AVG_BLOCK_SECONDS)
-const FORWARD_WINDOW_BLOCKS = BLOCKS_PER_DAY
-const FORWARD_BLOCKS_PER_SYNC = 12
-const BACKWARD_BLOCKS_PER_SYNC = 0
+const FORWARD_CHUNK_BLOCKS = BOOTSTRAP_MAX_BLOCKS_PER_SYNC
+const BACKWARD_CHUNK_BLOCKS = BOOTSTRAP_MAX_BLOCKS_PER_SYNC
 
 function normalizeLogs(
   logs: RawLog[],
@@ -58,6 +58,28 @@ async function hydrateTimestamps(logs: RawLog[]): Promise<Map<number, number>> {
   return map
 }
 
+async function newestStoredBlock(storage: ReturnType<typeof resolveIndexerStorageForSlug>): Promise<number> {
+  const events = await storage.listEvents({ limit: 1 })
+  return events[0]?.blockNumber ?? 0
+}
+
+/** Rewind a falsely advanced forward cursor that skipped a large indexing gap. */
+async function resolveForwardCursor(
+  checkpoint: IndexerCheckpoint,
+  storage: ReturnType<typeof resolveIndexerStorageForSlug>,
+  bootstrapFloor: number,
+  forwardHigh: number,
+): Promise<number> {
+  const newestBlock = await newestStoredBlock(storage)
+  let cursor = checkpoint.forwardCursor ?? Math.max(bootstrapFloor, newestBlock)
+  const nearHead = forwardHigh - cursor <= REORG_SAFETY_BLOCKS
+  const gapBehind = newestBlock > 0 && forwardHigh - newestBlock > FORWARD_CHUNK_BLOCKS * 2
+  if (nearHead && gapBehind) {
+    cursor = Math.max(bootstrapFloor, newestBlock)
+  }
+  return Math.min(cursor, forwardHigh)
+}
+
 export interface PairSyncParams {
   pair: PairWatch
   slug: string
@@ -78,22 +100,22 @@ function freshCheckpoint(chainHead: number, slug: string, bootstrapDays: number)
   return {
     schemaVersion: INDEXER_SCHEMA_VERSION,
     chainId: MELEGA_CHAIN_ID,
-    lastIndexedBlock: chainHead,
+    lastIndexedBlock: bootstrapStartBlock,
     chainHeadAtSync: chainHead,
     reorgSafetyBlocks: REORG_SAFETY_BLOCKS,
     lastSuccessfulSync: new Date(0).toISOString(),
-    chunkSize: DEFAULT_CHUNK_SIZE,
+    chunkSize: FORWARD_CHUNK_BLOCKS,
     cursorPairIndex: 0,
     phase: 'bootstrap',
     featuredPairSlug: slug,
     bootstrapStartBlock,
     bootstrapDays,
-    forwardCursor: Math.max(0, chainHead - REORG_SAFETY_BLOCKS),
+    forwardCursor: bootstrapStartBlock,
     backwardCursor: chainHead,
   }
 }
 
-/** R786 — forward-priority dual-cursor pair sync. */
+/** R786 — forward-priority dual-cursor pair sync with chunked eth_getLogs. */
 export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyncResult> {
   const storage = resolveIndexerStorageForSlug(params.slug)
   const pair = params.pair
@@ -111,53 +133,53 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
 
   const bootstrapFloor = checkpoint.bootstrapStartBlock ?? 0
   const forwardHigh = Math.max(0, chainHead - REORG_SAFETY_BLOCKS)
-  const forwardCursor =
-    checkpoint.forwardCursor ??
-    Math.max(bootstrapFloor, forwardHigh - FORWARD_BLOCKS_PER_SYNC)
+  let forwardCursor = await resolveForwardCursor(checkpoint, storage, bootstrapFloor, forwardHigh)
   const normalized: NormalizedIndexerEvent[] = []
   let providerUsed = checkpoint.providerUsed ?? 'unknown'
   let fromBlock = forwardCursor
-  let toBlock = forwardHigh
+  let toBlock = forwardCursor
 
-  // 1) Forward pass — always first (recent swaps before historical backfill)
+  // 1) Forward pass — advance from cursor+1 toward head (never jump to tip only)
   if (forwardCursor < forwardHigh) {
-    const forwardFrom = Math.max(forwardCursor + 1, forwardHigh - FORWARD_BLOCKS_PER_SYNC)
-    const forwardTo = forwardHigh
-    const forward = await scanBlockRangeEvents({
+    const forwardFrom = Math.max(bootstrapFloor, forwardCursor + 1)
+    const forwardTo = Math.min(forwardHigh, forwardFrom + FORWARD_CHUNK_BLOCKS - 1)
+    const forward = await getLogsChunked({
       address: pair.pairAddress,
+      topics: [SWAP_TOPIC],
       fromBlock: forwardFrom,
       toBlock: forwardTo,
+      initialChunk: checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS,
     })
-    providerUsed = forward.providerUsed
-    normalizeLogs(forward.logs, pair, forward.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
+    providerUsed = 'chunked-forward-eth_getLogs'
+    const tsMap = await hydrateTimestamps(forward.logs)
+    normalizeLogs(forward.logs, pair, tsMap, MAX_EVENTS_PER_SYNC, normalized)
+    forwardCursor = forwardTo
     checkpoint = {
       ...checkpoint,
-      forwardCursor: forwardTo,
+      forwardCursor,
+      chunkSize: forward.finalChunkSize,
     }
     fromBlock = forwardFrom
     toBlock = forwardTo
   }
 
-  // 2) Backward pass — bootstrap historical window (skip when forward already filled budget)
+  // 2) Backward pass — fill bootstrap window when forward chunk had spare budget
   let phase = checkpoint.phase ?? 'bootstrap'
-  if (phase === 'bootstrap' && BACKWARD_BLOCKS_PER_SYNC > 0 && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
+  if (phase === 'bootstrap' && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
     const backwardHigh = checkpoint.backwardCursor ?? chainHead
     if (backwardHigh > bootstrapFloor) {
-      const backwardLow = Math.max(bootstrapFloor, backwardHigh - BACKWARD_BLOCKS_PER_SYNC)
+      const backwardLow = Math.max(bootstrapFloor, backwardHigh - BACKWARD_CHUNK_BLOCKS)
       const remaining = MAX_EVENTS_PER_SYNC - normalized.length
       if (remaining > 0 && backwardLow < backwardHigh) {
-        const backward = await scanBlockRangeEvents({
+        const backward = await getLogsChunked({
           address: pair.pairAddress,
+          topics: [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC],
           fromBlock: backwardLow,
           toBlock: backwardHigh,
+          initialChunk: checkpoint.chunkSize ?? BACKWARD_CHUNK_BLOCKS,
         })
-        normalizeLogs(
-          backward.logs,
-          pair,
-          backward.blockTimestamps,
-          remaining,
-          normalized,
-        )
+        const tsMap = await hydrateTimestamps(backward.logs)
+        normalizeLogs(backward.logs, pair, tsMap, remaining, normalized)
         checkpoint = {
           ...checkpoint,
           backwardCursor: backwardLow,
@@ -173,13 +195,17 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     }
   }
 
-  // 3) Incremental head walk when forward chunk empty but lag remains
-  if (normalized.length === 0 && phase === 'incremental') {
+  if (forwardCursor >= forwardHigh - REORG_SAFETY_BLOCKS && phase === 'bootstrap') {
+    phase = 'incremental'
+  }
+
+  // 3) Incremental head walk when caught up but this chunk had no logs
+  if (normalized.length === 0 && phase === 'incremental' && forwardCursor >= forwardHigh - REORG_SAFETY_BLOCKS) {
     const headScan = await scanPairEventsFromHead({
       address: pair.pairAddress,
-      maxBlocks: 12,
+      maxBlocks: 24,
       maxLogs: MAX_EVENTS_PER_SYNC,
-      stopBeforeBlock: Math.max(0, forwardHigh - 12),
+      stopBeforeBlock: Math.max(0, forwardHigh - 24),
     })
     providerUsed = headScan.providerUsed
     normalizeLogs(headScan.logs, pair, headScan.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
@@ -195,9 +221,10 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   )
   if (candles.length) await storage.saveCandles(candles)
 
-  const nextIndexedBlock = Math.max(checkpoint.forwardCursor ?? forwardHigh, checkpoint.backwardCursor ?? 0)
+  const nextIndexedBlock = Math.max(forwardCursor, checkpoint.backwardCursor ?? 0)
   const nextCheckpoint: IndexerCheckpoint = {
     ...checkpoint,
+    forwardCursor,
     lastIndexedBlock: nextIndexedBlock,
     chainHeadAtSync: chainHead,
     lastSuccessfulSync: new Date().toISOString(),
@@ -210,13 +237,13 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
 
   const eventCounts = await storage.countEvents()
   const hasStoredEvents = Object.values(eventCounts).some((n) => n > 0)
-  const indexingLag = Math.max(0, chainHead - (nextCheckpoint.forwardCursor ?? chainHead))
+  const indexingLag = Math.max(0, chainHead - forwardCursor)
 
   const health: IndexerHealthSnapshot = {
     status: hasStoredEvents ? 'ready' : phase === 'bootstrap' ? 'syncing' : 'unavailable',
     storageBackend: storage.backend,
     storageConfigured: storage.configured,
-    lastIndexedBlock: nextCheckpoint.lastIndexedBlock,
+    lastIndexedBlock: forwardCursor,
     chainHead,
     indexingLag,
     lastSuccessfulSync: nextCheckpoint.lastSuccessfulSync,
