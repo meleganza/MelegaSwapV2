@@ -111,7 +111,9 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
 
   const bootstrapFloor = checkpoint.bootstrapStartBlock ?? 0
   const forwardHigh = Math.max(0, chainHead - REORG_SAFETY_BLOCKS)
-  const forwardCursor = checkpoint.forwardCursor ?? forwardHigh
+  const forwardCursor =
+    checkpoint.forwardCursor ??
+    Math.max(bootstrapFloor, forwardHigh - FORWARD_BLOCKS_PER_SYNC)
   const normalized: NormalizedIndexerEvent[] = []
   let providerUsed = checkpoint.providerUsed ?? 'unknown'
   let fromBlock = forwardCursor
@@ -138,7 +140,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
 
   // 2) Backward pass — bootstrap historical window (skip when forward already filled budget)
   let phase = checkpoint.phase ?? 'bootstrap'
-  if (phase === 'bootstrap' && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
+  if (phase === 'bootstrap' && BACKWARD_BLOCKS_PER_SYNC > 0 && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
     const backwardHigh = checkpoint.backwardCursor ?? chainHead
     if (backwardHigh > bootstrapFloor) {
       const backwardLow = Math.max(bootstrapFloor, backwardHigh - BACKWARD_BLOCKS_PER_SYNC)
