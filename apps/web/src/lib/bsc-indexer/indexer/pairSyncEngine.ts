@@ -26,8 +26,8 @@ import type { PairWatch } from './featuredPairSync'
 
 const BLOCKS_PER_DAY = Math.floor(86_400 / BSC_AVG_BLOCK_SECONDS)
 const FORWARD_WINDOW_BLOCKS = BLOCKS_PER_DAY
-const FORWARD_BLOCKS_PER_SYNC = 24
-const BACKWARD_BLOCKS_PER_SYNC = 24
+const FORWARD_BLOCKS_PER_SYNC = 12
+const BACKWARD_BLOCKS_PER_SYNC = 0
 
 function normalizeLogs(
   logs: RawLog[],
@@ -121,26 +121,16 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   if (forwardCursor < forwardHigh) {
     const forwardFrom = Math.max(forwardCursor + 1, forwardHigh - FORWARD_BLOCKS_PER_SYNC)
     const forwardTo = forwardHigh
-    const topicBatches: RawLog[] = []
-    let forwardChunkSize = checkpoint.chunkSize ?? DEFAULT_CHUNK_SIZE
-    for (const topic of [AMM_TOPICS.swap]) {
-      const chunked = await getLogsChunked({
-        address: pair.pairAddress,
-        topics: [topic],
-        fromBlock: forwardFrom,
-        toBlock: forwardTo,
-        initialChunk: Math.min(forwardChunkSize, 50),
-      })
-      topicBatches.push(...chunked.logs)
-      forwardChunkSize = chunked.finalChunkSize
-    }
-    providerUsed = 'chunked-forward'
-    const tsMap = await hydrateTimestamps(topicBatches)
-    normalizeLogs(topicBatches, pair, tsMap, MAX_EVENTS_PER_SYNC, normalized)
+    const forward = await scanBlockRangeEvents({
+      address: pair.pairAddress,
+      fromBlock: forwardFrom,
+      toBlock: forwardTo,
+    })
+    providerUsed = forward.providerUsed
+    normalizeLogs(forward.logs, pair, forward.blockTimestamps, MAX_EVENTS_PER_SYNC, normalized)
     checkpoint = {
       ...checkpoint,
       forwardCursor: forwardTo,
-      chunkSize: forwardChunkSize,
     }
     fromBlock = forwardFrom
     toBlock = forwardTo
@@ -154,24 +144,21 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
       const backwardLow = Math.max(bootstrapFloor, backwardHigh - BACKWARD_BLOCKS_PER_SYNC)
       const remaining = MAX_EVENTS_PER_SYNC - normalized.length
       if (remaining > 0 && backwardLow < backwardHigh) {
-        const topicBatches: RawLog[] = []
-        for (const topic of [AMM_TOPICS.swap, AMM_TOPICS.mint, AMM_TOPICS.burn]) {
-          const chunked = await getLogsChunked({
-            address: pair.pairAddress,
-            topics: [topic],
-            fromBlock: backwardLow,
-            toBlock: backwardHigh,
-            initialChunk: Math.min(checkpoint.chunkSize ?? DEFAULT_CHUNK_SIZE, 50),
-          })
-          topicBatches.push(...chunked.logs)
-          checkpoint = { ...checkpoint, chunkSize: chunked.finalChunkSize }
-        }
-        const tsMap = await hydrateTimestamps(topicBatches)
-        normalizeLogs(topicBatches, pair, tsMap, remaining, normalized)
+        const backward = await scanBlockRangeEvents({
+          address: pair.pairAddress,
+          fromBlock: backwardLow,
+          toBlock: backwardHigh,
+        })
+        normalizeLogs(
+          backward.logs,
+          pair,
+          backward.blockTimestamps,
+          remaining,
+          normalized,
+        )
         checkpoint = {
           ...checkpoint,
           backwardCursor: backwardLow,
-          chunkSize: chunked.finalChunkSize,
         }
         fromBlock = Math.min(fromBlock, backwardLow)
         toBlock = Math.max(toBlock, backwardHigh)
