@@ -50,7 +50,33 @@ describe('masterChefEmissionMath', () => {
     expect(resolveMasterChefStatus({ perBlock: NaN, perDay: 0, readError: 'bad' }).status).toBe('unavailable')
   })
 
-  it('resolveFarmEmissionState uses allocPoint not poolWeight', () => {
+  it('computes per-farm daily from poolWeight ratio when alloc map missing', () => {
+    const emission: MasterChefEmission = {
+      status: 'ready',
+      contract: '0x41',
+      method: 'dexTokenPerBlock',
+      rawPerBlockHex: '0x',
+      rawPerBlockWei: WEI_5_MARCO,
+      perBlock: 5,
+      rewardToken: '0x9635',
+      rewardDecimals: 18,
+      totalAllocPoint: 478453,
+      poolLength: 387,
+      bonusMultiplier: 1,
+      blocksPerDay: 28800,
+      perDay: 144000,
+      currentBlock: 1,
+      poolAllocations: {},
+      source: 'test',
+      perDayLabel: '144000 MARCO',
+    }
+    const weight = 10000 / 478453
+    const active = resolveFarmEmissionState(emission, 999, weight)
+    expect(active.state).toBe('active')
+    expect(active.dailyMarco).toBeGreaterThan(2500)
+  })
+
+  it('resolveFarmEmissionState uses on-chain allocPoint when available', () => {
     const emission: MasterChefEmission = {
       status: 'ready',
       contract: '0x41D5487836452d23f2c467070244E5842B412794',

@@ -48,7 +48,7 @@ export function mapFarmToPreviewCard(
   const displayApr = getDisplayApr(farm.apr, farm.lpRewardsApr)
 
   const pid = farm.pid ?? -1
-  const poolWeight = farm.poolWeight?.toNumber()
+  const poolWeight = farm.poolWeight ? new BigNumber(farm.poolWeight).toNumber() : undefined
   const { dailyMarco, state: emissionState } = resolveFarmEmissionState(emission, pid, poolWeight)
   const rewardSymbol = farm.earningToken?.symbol ?? 'MARCO'
 

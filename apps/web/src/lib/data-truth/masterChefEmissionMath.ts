@@ -83,11 +83,18 @@ export function resolveAllocPointForPid(
 ): number {
   const fromChain = emission.poolAllocations[pid]
   if (fromChain && fromChain > 0) return fromChain
-  if (poolWeight && poolWeight > 0 && emission.totalAllocPoint > 0) {
+  if (poolWeight && poolWeight > 0 && poolWeight <= 1 && emission.totalAllocPoint > 0) {
     const derived = poolWeight * emission.totalAllocPoint
     return Number.isFinite(derived) ? Math.round(derived) : 0
   }
   return 0
+}
+
+export function computePerFarmDailyFromPoolWeight(totalDailyMarco: number, poolWeight?: number): number {
+  if (!Number.isFinite(totalDailyMarco) || totalDailyMarco <= 0) return 0
+  if (!poolWeight || poolWeight <= 0 || poolWeight > 1) return 0
+  const daily = totalDailyMarco * poolWeight
+  return Number.isFinite(daily) ? daily : 0
 }
 
 export function resolveFarmEmissionState(
@@ -105,9 +112,14 @@ export function resolveFarmEmissionState(
     return { dailyMarco: 0, state: 'paused' }
   }
   const allocPoint = resolveAllocPointForPid(emission, pid, poolWeight)
-  if (allocPoint <= 0) return { dailyMarco: 0, state: 'no_allocation' }
-  const daily = computePerFarmDailyMarco(emission.perDay, allocPoint, emission.totalAllocPoint)
-  if (daily <= 0) return { dailyMarco: 0, state: 'zero' }
+  let daily =
+    allocPoint > 0
+      ? computePerFarmDailyMarco(emission.perDay, allocPoint, emission.totalAllocPoint)
+      : computePerFarmDailyFromPoolWeight(emission.perDay, poolWeight)
+  if (daily <= 0) {
+    if (poolWeight && poolWeight > 0) return { dailyMarco: 0, state: 'no_allocation' }
+    return { dailyMarco: 0, state: 'no_allocation' }
+  }
   return { dailyMarco: daily, state: 'active' }
 }
 
