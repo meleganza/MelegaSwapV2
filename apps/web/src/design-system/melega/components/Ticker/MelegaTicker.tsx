@@ -192,7 +192,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   const dragRef = useRef(false)
 
   const safeItems = Array.isArray(items) ? items : []
-  const marqueeEnabled = safeItems.length >= 4
+  const marqueeEnabled = safeItems.length >= 6
 
   if (disabled) return null
 

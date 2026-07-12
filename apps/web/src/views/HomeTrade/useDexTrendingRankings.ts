@@ -16,7 +16,7 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 
 const SECONDS_24H = 86_400
 const TRENDING_LIMIT = 10
-const MIN_MARQUEE_ITEMS = 4
+const MIN_MARQUEE_ITEMS = 6
 
 type PairRow = {
   token0?: string
