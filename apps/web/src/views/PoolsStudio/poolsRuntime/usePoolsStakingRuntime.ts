@@ -310,7 +310,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     () => reconcilePoolLifecycle(rawPools ?? [], currentBlock),
     [rawPools, currentBlock],
   )
-  const rewardingCount = poolReconciliation.rewarding
+  const rewardingCount = useMemo(() => listRewardingPools(previewCards).length, [previewCards])
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
   const advisorItems = useMemo(() => {
@@ -318,7 +318,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     if (!eligible.length) {
       return [
         {
-          label: 'No eligible rewarding pools',
+          label: 'No eligible rewarding pools.',
           value: '',
           tone: 'muted' as const,
           icon: '—',

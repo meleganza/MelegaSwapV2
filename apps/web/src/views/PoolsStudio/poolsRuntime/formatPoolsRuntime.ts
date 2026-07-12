@@ -392,13 +392,16 @@ export function aggregateKpis(
     {
       id: 'highestApr',
       label: 'Highest APR',
-      value: highestApr.apr ?? RUNTIME_UNAVAILABLE_LABEL,
-      green: Boolean(highestApr.apr),
+      value:
+        highestApr.apr && !isForbiddenAprDisplay(highestApr.apr)
+          ? highestApr.apr
+          : RUNTIME_UNAVAILABLE_LABEL,
+      green: Boolean(highestApr.apr && !isForbiddenAprDisplay(highestApr.apr)),
     },
     {
       id: 'featured',
       label: 'Featured Pool',
-      value: featured?.name ?? 'No live pool',
+      value: featured?.name ?? RUNTIME_UNAVAILABLE_LABEL,
       secondary: featuredApr || undefined,
       gold: !featured?.name,
       green: Boolean(featured?.name),
@@ -421,13 +424,9 @@ export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[
 }
 
 export function selectFeaturedPool(cards: PoolPreviewCard[]): PoolPreviewCard | undefined {
-  const rewarding = cards.filter((p) => p.lifecycle?.rewarding)
-  const ranked = rewarding.length
-    ? rewarding
-    : cards.filter((p) => p.lifecycle?.active && p.lifecycle?.rewardPerBlockPositive)
-  const poolSet = ranked.length ? ranked : listDiscoverablePools(cards).filter((p) => p.status === 'live')
-  if (!poolSet.length) return undefined
-  return [...poolSet].sort((a, b) => {
+  const rewarding = listRewardingPools(cards)
+  if (!rewarding.length) return undefined
+  return [...rewarding].sort((a, b) => {
     const aprDiff = (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0)
     if (aprDiff !== 0) return aprDiff
     return (b.aprExact ?? 0) - (a.aprExact ?? 0)

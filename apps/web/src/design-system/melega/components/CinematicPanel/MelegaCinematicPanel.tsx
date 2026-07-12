@@ -240,7 +240,8 @@ const MetricName = styled.span`
 const MetricValue = styled.span<{ $live?: boolean }>`
   font-size: 14px;
   font-weight: 700;
-  color: ${({ $live }) => ($live ? colors.green : colors.textPrimary)};
+  color: ${colors.textPrimary};
+  font-variant-numeric: tabular-nums;
 `
 
 const MetricLink = styled(Link)`

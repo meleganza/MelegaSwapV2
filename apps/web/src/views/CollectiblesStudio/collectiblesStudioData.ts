@@ -42,6 +42,7 @@ export interface CollectionCard {
   identityBinding: IdentityBinding
   utilities: string[]
   previewImageUrl?: string
+  fallbackImageUrl?: string
 }
 
 export interface AdvisorRow {

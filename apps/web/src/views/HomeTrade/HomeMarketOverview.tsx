@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
 import { homeTypography } from './homeTradeTokens'
+import QuickMarketStrip from './QuickMarketStrip'
+import type { MarketCard } from './useHomeTradeData'
 
 const Shell = styled.section`
   display: flex;
@@ -17,10 +19,21 @@ const Title = styled.h2`
   color: ${premiumStudioColors.text};
 `
 
-/** R760 — protocol market overview (homepage-safe; avoids Trade terminal hook on overview). */
-export const HomeMarketOverview: React.FC = () => (
+export interface HomeMarketOverviewProps {
+  cards: MarketCard[]
+  isIndexing?: boolean
+  unavailableReason?: string
+}
+
+/** R784 — protocol market overview wired to canonical runtime cards. */
+export const HomeMarketOverview: React.FC<HomeMarketOverviewProps> = ({
+  cards,
+  isIndexing,
+  unavailableReason,
+}) => (
   <Shell data-home-market-overview>
     <Title>Market overview</Title>
+    <QuickMarketStrip cards={cards} isIndexing={isIndexing} unavailableReason={unavailableReason} />
   </Shell>
 )
 

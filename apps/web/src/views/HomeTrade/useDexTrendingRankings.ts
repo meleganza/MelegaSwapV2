@@ -231,8 +231,8 @@ export function useDexTrendingRankings() {
       if (liquidityScore > 0) signals.push('liquidity')
 
       if (!priceUsd || priceUsd <= 0) return
-      const hasMarketSignal = volume24h > 0 || tradeCount24h > 0 || Boolean(change24h) || liquidityScore > 0
-      if (!hasMarketSignal) return
+      const hasRealActivity = volume24h > 0 || tradeCount24h > 0
+      if (!hasRealActivity) return
 
       byAddress.set(dedupKey, {
         symbol: asset.symbol,
@@ -249,7 +249,21 @@ export function useDexTrendingRankings() {
       })
     })
 
-    return [...byAddress.values()]
+    const bySymbol = new Map<string, RankedAsset>()
+    byAddress.forEach((asset) => {
+      const symbolKey = asset.symbol.toUpperCase()
+      const existing = bySymbol.get(symbolKey)
+      if (!existing || asset.volume24h > existing.volume24h) {
+        bySymbol.set(symbolKey, asset)
+      } else if (
+        asset.volume24h === existing.volume24h &&
+        asset.tradeCount24h > existing.tradeCount24h
+      ) {
+        bySymbol.set(symbolKey, asset)
+      }
+    })
+
+    return [...bySymbol.values()]
       .sort((a, b) => {
         if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
         if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
@@ -264,21 +278,11 @@ export function useDexTrendingRankings() {
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
       const change = asset.change24h
-      const volumeLabel =
-        asset.volume24h > 0
-          ? asset.volume24h >= 1_000_000
-            ? `$${(asset.volume24h / 1_000_000).toFixed(2)}M vol`
-            : asset.volume24h >= 1_000
-              ? `$${(asset.volume24h / 1_000).toFixed(1)}K vol`
-              : `$${asset.volume24h.toFixed(0)} vol`
-          : undefined
-      const liquidityLabel = asset.liquidityScore > 0 ? 'Liquid' : undefined
-      const accent = change?.text ?? volumeLabel ?? liquidityLabel
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
         secondary: formatTickerPrice(asset.priceUsd),
-        accent,
+        accent: change?.text,
         accentPositive: change ? change.positive : undefined,
       }
     })
@@ -299,7 +303,7 @@ export function useDexTrendingRankings() {
   const trendingUnavailableReason = useMemo(() => {
     if (trendingTickerItems.length > 0) return undefined
     if (candleStatus === 'loading') return 'Loading indexed market quotes'
-    return 'No tradeable assets with price and indexed volume, change, or liquidity'
+    return 'No tradeable assets with indexed 24H volume or trades'
   }, [trendingTickerItems.length, candleStatus])
 
   const indexerScopeNote = useMemo(() => {

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
@@ -262,6 +262,11 @@ const ScoreWrap = styled.div`
 export const FeaturedCollectionPanel: React.FC = () => {
   const { featured } = useCollectiblesRuntime()
   const babyMarcoArt = useMemo(() => `${DETECTED_BABYMARCO_PINATA_GATEWAY}/DOG1.png`, [])
+  const [coinSrc, setCoinSrc] = useState(babyMarcoArt)
+
+  const handleCoinError = () => {
+    if (coinSrc !== '/images/page/1.svg') setCoinSrc('/images/page/1.svg')
+  }
 
   return (
   <Panel data-cs-panel data-cs-featured>
@@ -311,7 +316,12 @@ export const FeaturedCollectionPanel: React.FC = () => {
         </BtnRow>
       </Info>
       <Visual>
-        <Coin src={babyMarcoArt} alt="BabyMARCO Genesis" data-cs-featured-coin />
+        <Coin
+          src={coinSrc}
+          alt="BabyMARCO Genesis"
+          data-cs-featured-coin
+          onError={handleCoinError}
+        />
         <ScoreWrap>
           <FeaturedScoreRingDisplay score={featured.utilityScore} />
         </ScoreWrap>

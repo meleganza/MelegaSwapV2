@@ -348,15 +348,28 @@ function chipAccent(chip: string, identity?: 'genesis' | 'builder' | 'validator'
 export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
   const [fav, setFav] = useState(false)
   const [reserved, setReserved] = useState(false)
+  const [imageSrc, setImageSrc] = useState(
+    collection.previewImageUrl ?? collection.fallbackImageUrl ?? '/images/page/1.svg',
+  )
   const visibleBadges = collection.badges.slice(0, 2)
   const identityAccent = resolveIdentityAccent(collection)
+
+  const handleImageError = () => {
+    const fallback = collection.fallbackImageUrl ?? '/images/page/1.svg'
+    if (imageSrc !== fallback) setImageSrc(fallback)
+  }
 
   return (
     <Card data-cs-collection-card $identity={identityAccent}>
       <CardBody>
         <ArtWrap>
-          {collection.previewImageUrl ? (
-            <ArtImage data-cs-artwork src={collection.previewImageUrl} alt="" />
+          {collection.previewImageUrl || collection.fallbackImageUrl ? (
+            <ArtImage
+              data-cs-artwork
+              src={imageSrc}
+              alt=""
+              onError={handleImageError}
+            />
           ) : (
             <CsArtwork data-cs-artwork $theme={collection.artTheme} />
           )}

@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaTicker } from 'design-system/melega'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import useDexTrendingTicker from './useDexTrendingTicker'
 
 export const TrendingRibbon: React.FC = () => {
-  const { items, indexedRibbonAssets, unavailableReason } = useDexTrendingTicker()
+  const { items, indexedRibbonAssets, unavailableReason, useMarquee } = useDexTrendingTicker()
 
   const avatarBySlug = useMemo(
     () => Object.fromEntries(indexedRibbonAssets.map((asset) => [asset.slug, asset])),
@@ -39,7 +38,8 @@ export const TrendingRibbon: React.FC = () => {
     <MelegaTicker
       label="Trending on Melega DEX"
       items={enrichedItems}
-      emptyPrimary={RUNTIME_UNAVAILABLE_LABEL}
+      marqueeMinItems={useMarquee ? 6 : Number.MAX_SAFE_INTEGER}
+      emptyPrimary="No live market activity"
       emptySecondary={unavailableReason ? `Reason: ${unavailableReason}` : undefined}
     />
   )

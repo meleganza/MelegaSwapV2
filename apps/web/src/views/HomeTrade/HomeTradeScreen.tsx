@@ -133,11 +133,15 @@ const HomeTradeScreenContent: React.FC = () => {
           >
             <MelegaCinematicPanel
               pulseRows={pulseRows.length ? pulseRows : undefined}
-              liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
+              liveEconomy={data.liveEconomyMetrics}
             />
           </DataSurfaceErrorBoundary>
         </HeroRow>
-        <HomeMarketOverview />
+        <HomeMarketOverview
+          cards={data.marketCards}
+          isIndexing={data.isTrendingIndexing}
+          unavailableReason={data.marketUnavailableReason}
+        />
         <HomeQuickActions />
         <ListProjectCta />
         <GrowInsideMelegaPanel />

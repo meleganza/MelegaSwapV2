@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { formatCompactDisplay, STUDIO_KPI_VALUE, displayStudioMetric } from 'design-system/melega'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Row = styled.div`
@@ -130,8 +131,10 @@ export const PoolsKpiRow: React.FC = () => {
       ) : (
         kpis.map((kpi) => {
           const label = KPI_LABELS[kpi.id] ?? kpi.label
-          const isFeaturedEmpty = kpi.id === 'featured' && (kpi.gold || kpi.value === 'No live pool')
-          const isUnavailableApr = kpi.id === 'highestApr' && kpi.value === RUNTIME_UNAVAILABLE_LABEL
+          const isFeaturedEmpty = kpi.id === 'featured' && !kpi.green
+          const isUnavailableApr =
+            kpi.id === 'highestApr' &&
+            (kpi.value === RUNTIME_UNAVAILABLE_LABEL || isForbiddenAprDisplay(kpi.value))
 
           return (
             <KpiCard key={kpi.id} data-ps-kpi-card>
@@ -146,8 +149,12 @@ export const PoolsKpiRow: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <KpiValue $green={kpi.green} $center={isUnavailableApr} data-ps-kpi-value>
-                    {formatKpiValue(kpi.id, kpi.value)}
+                  <KpiValue
+                    $green={kpi.green && !isUnavailableApr}
+                    $center={isUnavailableApr}
+                    data-ps-kpi-value
+                  >
+                    {isUnavailableApr ? RUNTIME_UNAVAILABLE_LABEL : formatKpiValue(kpi.id, kpi.value)}
                   </KpiValue>
                   {kpi.secondary ? <KpiSecondary>{kpi.secondary}</KpiSecondary> : null}
                 </>

@@ -19,6 +19,7 @@ export interface MelegaTickerProps extends MelegaLayoutProps {
   label?: string
   items: MelegaTickerItem[]
   paused?: boolean
+  marqueeMinItems?: number
   emptyPrimary?: string
   emptySecondary?: string
 }
@@ -79,10 +80,16 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   }
 `
 
+const AnchorWrap = styled.div`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-left: 16px;
+`
+
 const TrendingAnchor = styled.span`
   display: inline-flex;
   align-items: center;
-  padding-left: 16px;
   font-family: ${typography.fontFamily.body};
   font-size: 11px;
   font-weight: 800;
@@ -181,6 +188,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   label = 'Trending',
   items,
   paused: pausedProp,
+  marqueeMinItems = 6,
   padding,
   margin,
   disabled,
@@ -192,15 +200,17 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   const dragRef = useRef(false)
 
   const safeItems = Array.isArray(items) ? items : []
-  const marqueeEnabled = safeItems.length >= 6
+  const marqueeEnabled = safeItems.length >= marqueeMinItems
 
   if (disabled) return null
 
   if (!safeItems.length) {
     return (
       <Strip $padding={padding} $margin={margin} data-melega-ticker>
-        <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
-        <Dot aria-hidden />
+        <AnchorWrap>
+          <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
+          <Dot aria-hidden />
+        </AnchorWrap>
         <EmptyRow>
           <Primary>{emptyPrimary}</Primary>
           <Secondary>{emptySecondary}</Secondary>
@@ -238,6 +248,10 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
       onTouchEnd={() => setDragPaused(false)}
       onTouchCancel={() => setDragPaused(false)}
     >
+      <AnchorWrap>
+        <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
+        <Dot aria-hidden />
+      </AnchorWrap>
       <TrackWrap
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
@@ -245,8 +259,6 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         onPointerCancel={handlePointerUp}
       >
         <Track $paused={paused} $static={!marqueeEnabled} data-ticker-track>
-          <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
-          <Dot aria-hidden />
           {scrollItems.map((item, i) => (
             <React.Fragment key={`${item.id}-${i}`}>
               {item.href ? (

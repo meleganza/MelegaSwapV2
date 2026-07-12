@@ -14,7 +14,9 @@ import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudi
 import { Transaction, TransactionType } from 'state/info/types'
 import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'
 import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
+import { reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
 import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
+import { useCurrentBlock } from 'state/block/hooks'
 import { usePriceCakeBusd, useFarms, usePollFarmsWithUserData } from 'state/farms/hooks'
 import { usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -213,6 +215,7 @@ export const useHomeTradeData = () => {
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
   const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
   const { total: liquidPairCount } = useAmmPairRegistry({ classification: 'tradeable', pageSize: 1 })
+  const currentBlock = useCurrentBlock()
 
   const indexedTransactions = useMemo(() => transactions ?? [], [transactions])
 
@@ -451,33 +454,21 @@ export const useHomeTradeData = () => {
   }, [pools])
 
   const activitySlots = useMemo((): ActivitySlot[] => {
-    const slots: ActivitySlot[] = []
+    const sorted = [...recentTransactions].sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
 
-    if (latestSwap) {
-      slots.push({ id: 'swap', label: 'Latest swap', row: txToRow(latestSwap) })
+    const slotLabel = (tx: Transaction): string => {
+      if (tx.type === TransactionType.SWAP) return 'Swap'
+      if (tx.type === TransactionType.MINT) return 'Liquidity'
+      if (tx.type === TransactionType.BURN) return 'Liquidity'
+      return 'Activity'
     }
 
-    const latestLpAdd = recentTransactions.find((tx) => tx.type === TransactionType.MINT)
-    if (latestLpAdd) {
-      slots.push({ id: 'lp-add', label: 'Latest LP add', row: txToRow(latestLpAdd) })
-    }
-
-    const latestLpRemove = recentTransactions.find((tx) => tx.type === TransactionType.BURN)
-    if (latestLpRemove) {
-      slots.push({ id: 'lp-remove', label: 'Latest LP remove', row: txToRow(latestLpRemove) })
-    }
-
-    const recentSwaps = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP).slice(1, 3)
-    recentSwaps.forEach((tx, i) => {
-      slots.push({
-        id: `swap-${i}`,
-        label: 'Recent swap',
-        row: txToRow(tx),
-      })
-    })
-
-    return slots.slice(0, 6)
-  }, [latestSwap, recentTransactions])
+    return sorted.slice(0, 6).map((tx, index) => ({
+      id: `activity-${tx.hash}-${index}`,
+      label: slotLabel(tx),
+      row: txToRow(tx),
+    }))
+  }, [recentTransactions])
 
   const isTrendingIndexing = useMemo(() => {
     const farmsLoading =
@@ -499,7 +490,7 @@ export const useHomeTradeData = () => {
     const reason =
       indexerState.status === 'error' || indexerState.status === 'unavailable'
         ? indexerState.reason ?? 'Indexer unavailable'
-        : 'No protocol activity indexed in the last 24 hours.'
+        : 'No indexed swaps, liquidity events, pools, farms, or builds in the current window.'
     const diagnostic = buildIndexerActivityDiagnostic({
       source: indexerState.source,
       indexer: indexerState.indexer,
@@ -507,7 +498,7 @@ export const useHomeTradeData = () => {
       reason,
     })
     return {
-      message: 'No protocol activity indexed in the last 24 hours.',
+      message: 'No protocol activity detected.',
       timestamp: diagnostic.lastAttempt,
       reason: diagnostic.reason,
       source: diagnostic.source,
@@ -522,21 +513,13 @@ export const useHomeTradeData = () => {
   const marcoPriceLabel = useMemo(() => canonicalMarco.label, [canonicalMarco.label])
 
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
-    const metrics: LiveEconomyMetric[] = []
     const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
-    const rewardingPoolCount = allPools.filter((p) => {
-      if (p.isFinished || p.sousId === 0) return false
-      const tpb = p.tokenPerBlock
-      if (!tpb) return false
-      if (typeof (tpb as { isZero?: () => boolean }).isZero === 'function') {
-        return !(tpb as { isZero: () => boolean }).isZero()
-      }
-      return Number(tpb) > 0
-    }).length
+    const poolReconciliation = reconcilePoolLifecycle(allPools, currentBlock)
+    const rewardingPoolCount = poolReconciliation.rewarding
     const indexedAssetCount = tradeableAssetCount || dexProjects.length
 
     const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
-      metrics.push({
+      return {
         id: built.id,
         label: built.label,
         value: built.value,
@@ -546,23 +529,16 @@ export const useHomeTradeData = () => {
         owner: built.owner,
         href: built.href,
         asOf: built.asOf,
-      })
+      }
     }
 
-    if (activeFarmCount > 0) {
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount)))
-    }
-    if (rewardingPoolCount > 0) {
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(rewardingPoolCount)))
-    }
-    if (liquidPairCount > 0) {
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount)))
-    }
-    if (indexedAssetCount > 0) {
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.indexedAssets(String(indexedAssetCount)))
-    }
-    return metrics
-  }, [allFarms, allPools, tradeableAssetCount, dexProjects.length, liquidPairCount])
+    return [
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(rewardingPoolCount))),
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount))),
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.indexedAssets(String(indexedAssetCount))),
+    ]
+  }, [allFarms, allPools, currentBlock, tradeableAssetCount, dexProjects.length, liquidPairCount])
 
   const marketUnavailableReason = useMemo(() => {
     if (marketCards.length > 0) return undefined

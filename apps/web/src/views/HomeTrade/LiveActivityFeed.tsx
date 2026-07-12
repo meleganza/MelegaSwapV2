@@ -196,10 +196,10 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
     if (activityUnavailable?.message) {
       return activityUnavailable.message
     }
-    return 'No protocol activity indexed in the last 24 hours.'
+    return 'No protocol activity detected.'
   }, [isIndexing, activityUnavailable, indexerState?.reason])
 
-  const filledCount = displaySlots.filter((s) => s.row).length + (hasRows ? rows.length : 0)
+  const filledCount = displaySlots.filter((s) => s.row).length
   const isCompact = filledCount <= 2 && !isIndexing
 
   return (

@@ -61,9 +61,10 @@ const Value = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
         : 'none'};
   text-align: right;
   max-width: 72%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.25;
+  word-break: break-word;
 `
 
 export const AIYieldAdvisorPanel: React.FC = () => {
