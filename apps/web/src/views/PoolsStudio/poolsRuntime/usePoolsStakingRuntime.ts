@@ -254,7 +254,8 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const hiddenPoolReasons = useMemo(() => {
     const reasons = new Set<string>()
     previewCards.forEach((p) => {
-      if (p.hiddenReason) reasons.add(p.hiddenReason)
+      if (p.hiddenReasonLabel) reasons.add(p.hiddenReasonLabel)
+      else if (p.hiddenReason) reasons.add(p.hiddenReason)
     })
     return [...reasons]
   }, [previewCards])
