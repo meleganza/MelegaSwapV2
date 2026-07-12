@@ -114,17 +114,20 @@ export async function loadTierPairInventory(): Promise<{
     (p) => p.classification === 'tradeable' && !tier1Set.has(p.pairAddress.toLowerCase()),
   )
 
-  const tier2Candidates: TierPairWatch[] = tradeable.map((p) => ({
-    tier: 'TIER_2' as IndexerTier,
-    slug: pairSlug(p),
-    pairAddress: p.pairAddress.toLowerCase(),
-    token0: p.token0!.toLowerCase(),
-    token1: p.token1!.toLowerCase(),
-    liquidityScore: liquidityScore(p),
-  }))
+  const tier2Candidates: TierPairWatch[] = tradeable
+    .sort((a, b) => (liquidityScore(b) > liquidityScore(a) ? 1 : -1))
+    .slice(0, 40)
+    .map((p) => ({
+      tier: 'TIER_2' as IndexerTier,
+      slug: pairSlug(p),
+      pairAddress: p.pairAddress.toLowerCase(),
+      token0: p.token0!.toLowerCase(),
+      token1: p.token1!.toLowerCase(),
+      liquidityScore: liquidityScore(p),
+    }))
 
   const scored = await Promise.all(
-    tier2Candidates.map(async (w) => ({ w, score: await tier2ActivityScore(w) })),
+    tier2Candidates.slice(0, 12).map(async (w) => ({ w, score: await tier2ActivityScore(w) })),
   )
   const tier2 = scored
     .sort((a, b) => b.score - a.score)
