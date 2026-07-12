@@ -46,7 +46,7 @@ export function derivePoolLifecycle(
   const totalStakedPositive = staked > 0
 
   const remainingRaw = getRemainingRewardsRaw(pool, currentBlock)
-  const rewardBalancePositive = remainingRaw.gt(0)
+  const rewardBalancePositive = remainingRaw > 0
 
   let started = true
   let ended = Boolean(pool.isFinished)
