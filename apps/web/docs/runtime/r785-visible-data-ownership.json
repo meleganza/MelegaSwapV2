@@ -1,0 +1,76 @@
+{
+  "mission": "R785",
+  "asOf": "2026-07-12",
+  "metrics": [
+    {
+      "label": "Trending ticker items",
+      "owner": "useDexTrendingRankings",
+      "source": "indexer candles + tier-metrics + on-chain prices",
+      "hook": "apps/web/src/views/HomeTrade/useDexTrendingRankings.ts",
+      "empty": "Market ranking temporarily unavailable"
+    },
+    {
+      "label": "Active Farms",
+      "owner": "MasterChef poolLength",
+      "source": "useFarms enumeration",
+      "hook": "apps/web/src/views/HomeTrade/useHomeTradeData.ts",
+      "empty": "0"
+    },
+    {
+      "label": "Rewarding Pools",
+      "owner": "reconcilePoolLifecycle",
+      "source": "SmartChef on-chain lifecycle",
+      "hook": "apps/web/src/lib/data-truth/poolLifecycle.ts",
+      "empty": "0"
+    },
+    {
+      "label": "Liquid Pairs",
+      "owner": "AMM pair registry",
+      "source": "useAmmPairRegistry tradeable",
+      "hook": "apps/web/src/lib/bsc-indexer/client/useAmmPairRegistry.ts",
+      "empty": "0"
+    },
+    {
+      "label": "Indexed Assets",
+      "owner": "getCanonicalIndexedAssets",
+      "source": "canonical asset registry",
+      "hook": "apps/web/src/lib/dex-asset-index/buildDexAssetIndex.ts",
+      "empty": "0"
+    },
+    {
+      "label": "Top Farm card",
+      "owner": "useGetTopFarmsByApr",
+      "source": "MasterChef farms",
+      "hook": "apps/web/src/views/HomeTrade/useHomeTradeData.ts",
+      "empty": "card omitted"
+    },
+    {
+      "label": "Top Pool card",
+      "owner": "derivePoolLifecycle rewarding pools",
+      "source": "SmartChef",
+      "hook": "apps/web/src/views/HomeTrade/useHomeTradeData.ts",
+      "empty": "card omitted"
+    },
+    {
+      "label": "MARCO Emits Today",
+      "owner": "dexTokenPerBlock",
+      "source": "/api/masterchef/emission",
+      "hook": "apps/web/src/lib/data-truth/useMasterChefEmission.ts",
+      "empty": "Unavailable with reason"
+    },
+    {
+      "label": "Trade liquidity",
+      "owner": "MARCO/WBNB pair reserves",
+      "source": "usePairs + USD prices",
+      "hook": "apps/web/src/views/Trade/useTradeTerminalData.ts",
+      "empty": "Unavailable only when reserves unreadable"
+    },
+    {
+      "label": "Trade 24H change",
+      "owner": "computeValid24hPriceChange",
+      "source": "indexer candles",
+      "hook": "apps/web/src/lib/data-truth/compute24hPriceChange.ts",
+      "empty": "hidden"
+    }
+  ]
+}

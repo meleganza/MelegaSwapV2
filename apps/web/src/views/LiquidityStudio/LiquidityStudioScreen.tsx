@@ -52,7 +52,17 @@ const LayoutGrid = styled.div`
   align-items: stretch;
   min-width: 0;
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto) auto;
+    grid-template-areas:
+      'builder builder builder builder preview preview preview preview preview right right right'
+      'activity activity activity activity activity activity activity activity activity . . .';
+    gap: 18px;
+    margin-top: 0;
+  }
+
+  @media (min-width: 1100px) and (max-width: 1279px) {
     grid-template-columns: ${liquidityStudioLayout.leftWidth} ${liquidityStudioLayout.centerWidth} ${liquidityStudioLayout.rightWidth};
     grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto) auto;
     grid-template-areas:
@@ -62,11 +72,12 @@ const LayoutGrid = styled.div`
   }
 
   @media (max-width: 1099px) and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-areas:
-      'builder preview'
-      'right right'
-      'activity activity';
+      'builder builder builder builder builder builder preview preview preview preview preview preview'
+      'right right right right right right right right right right right right'
+      'activity activity activity activity activity activity activity activity activity activity activity activity';
+    gap: 18px;
   }
 
   @media (max-width: 767px) {
@@ -112,20 +123,20 @@ const AreaRight = styled.div`
   grid-area: right;
   display: flex;
   flex-direction: column;
-  gap: ${liquidityStudioLayout.verticalRhythm};
+  gap: 18px;
   min-width: 0;
   width: 100%;
-  max-width: ${liquidityStudioLayout.rightWidth};
   min-height: ${liquidityStudioLayout.builderMinHeight};
 
   & > * {
     width: 100%;
-    max-width: ${liquidityStudioLayout.rightWidth};
     box-sizing: border-box;
   }
 
-  @media (max-width: 1099px) {
-    max-width: 100%;
+  @media (max-width: 1099px) and (min-width: 768px) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
   }
 
   @media (max-width: 767px) {
@@ -136,6 +147,11 @@ const AreaRight = styled.div`
 const AreaActivity = styled.div`
   grid-area: activity;
   min-width: 0;
+  margin-top: 20px;
+
+  @media (min-width: 1280px) {
+    margin-top: 20px;
+  }
 `
 
 const AreaLpInfo = styled.div`

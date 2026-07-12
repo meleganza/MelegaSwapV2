@@ -12,7 +12,7 @@ const shimmer = keyframes`
   100% { background-position: 200% 0; }
 `
 
-const Shell = styled.section<{ $compact?: boolean }>`
+const Shell = styled.section<{ $compact?: boolean; $empty?: boolean }>`
   background: ${premiumStudioColors.card};
   border: 1px solid ${premiumStudioColors.cardBorder};
   border-radius: ${homeTradeLayout.cardRadius};
@@ -21,8 +21,18 @@ const Shell = styled.section<{ $compact?: boolean }>`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: ${({ $compact }) => ($compact ? 'auto' : homeTradeLayout.liveActivityHeight)};
-  min-height: ${({ $compact }) => ($compact ? '0' : 'auto')};
+  height: ${({ $empty, $compact }) =>
+    $empty ? 'auto' : $compact ? 'auto' : homeTradeLayout.liveActivityHeight};
+  min-height: ${({ $empty }) => ($empty ? '0' : 'auto')};
+  max-height: ${({ $empty }) => ($empty ? '190px' : 'none')};
+
+  @media (max-width: 1023px) {
+    max-height: ${({ $empty }) => ($empty ? '170px' : 'none')};
+  }
+
+  @media (max-width: 767px) {
+    max-height: ${({ $empty }) => ($empty ? '150px' : 'none')};
+  }
 `
 
 const Header = styled.div`
@@ -191,19 +201,17 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
 
   const emptyDescription = useMemo(() => {
     if (isIndexing) {
-      return indexerState?.reason ?? 'Subgraph request in progress'
+      return undefined
     }
-    if (activityUnavailable?.message) {
-      return activityUnavailable.message
-    }
-    return 'No protocol activity detected.'
-  }, [isIndexing, activityUnavailable, indexerState?.reason])
+    return undefined
+  }, [isIndexing])
 
   const filledCount = displaySlots.filter((s) => s.row).length
+  const isEmpty = !isIndexing && !hasFilledSlots && !hasRows
   const isCompact = filledCount <= 2 && !isIndexing
 
   return (
-    <Shell data-live-activity-feed $compact={isCompact}>
+    <Shell data-live-activity-feed $compact={isCompact} $empty={isEmpty}>
       <Header>
         <Title>{title}</Title>
         <SectionLink href="/trade">View all →</SectionLink>
@@ -251,9 +259,10 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
         ) : (
           <EmptyWrap>
             <EmptyTitle>
-              {isIndexing ? RUNTIME_LOADING_LABEL : activityUnavailable?.message ?? 'No protocol activity indexed in the last 24 hours.'}
+              {isIndexing
+                ? RUNTIME_LOADING_LABEL
+                : 'Protocol activity is not yet available from the production indexer.'}
             </EmptyTitle>
-            <EmptyDesc>{emptyDescription}</EmptyDesc>
             <TradeTechnicalDetails detail={technicalDetail} />
           </EmptyWrap>
         )}

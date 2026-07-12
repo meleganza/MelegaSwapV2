@@ -137,11 +137,7 @@ const HomeTradeScreenContent: React.FC = () => {
             />
           </DataSurfaceErrorBoundary>
         </HeroRow>
-        <HomeMarketOverview
-          cards={data.marketCards}
-          isIndexing={data.isTrendingIndexing}
-          unavailableReason={data.marketUnavailableReason}
-        />
+        <HomeMarketOverview cards={data.marketCards} />
         <HomeQuickActions />
         <ListProjectCta />
         <GrowInsideMelegaPanel />

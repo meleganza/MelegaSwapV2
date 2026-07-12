@@ -45,7 +45,7 @@ export const LIVE_ECONOMY_METRIC_BUILDERS = {
   activeFarms: (value: string) =>
     buildLiveEconomyMetric(
       'activeFarms',
-      'Live Farms',
+      'Active Farms',
       value,
       'farm_active',
       `MasterChef poolLength enumeration · ${MELEGA_PRODUCTION_CONTRACTS.masterChef}`,

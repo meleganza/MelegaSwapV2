@@ -2,9 +2,11 @@ import React, { useMemo } from 'react'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { MelegaTicker } from 'design-system/melega'
 import useDexTrendingTicker from './useDexTrendingTicker'
+import { useTrendingDisplayLimit } from './useTrendingDisplayLimit'
 
 export const TrendingRibbon: React.FC = () => {
-  const { items, indexedRibbonAssets, unavailableReason, useMarquee } = useDexTrendingTicker()
+  const { items, indexedRibbonAssets, useMarquee, trendingEmpty } = useDexTrendingTicker()
+  const displayLimit = useTrendingDisplayLimit()
 
   const avatarBySlug = useMemo(
     () => Object.fromEntries(indexedRibbonAssets.map((asset) => [asset.slug, asset])),
@@ -13,7 +15,7 @@ export const TrendingRibbon: React.FC = () => {
 
   const enrichedItems = useMemo(
     () =>
-      (items ?? []).map((item) => {
+      (items ?? []).slice(0, displayLimit).map((item) => {
         const slug = item.id.replace(/^trade-asset-/, '').replace(/^indexed-asset-/, '')
         const asset = avatarBySlug[slug]
         if (!asset) return item
@@ -23,7 +25,7 @@ export const TrendingRibbon: React.FC = () => {
             <MelegaTokenAvatar
               name={asset.displayName}
               symbol={asset.symbol}
-              size={16}
+              size={22}
               address={asset.address}
               chainId={asset.chainId}
               radius="circle"
@@ -31,7 +33,7 @@ export const TrendingRibbon: React.FC = () => {
           ),
         }
       }),
-    [items, avatarBySlug],
+    [items, avatarBySlug, displayLimit],
   )
 
   return (
@@ -39,8 +41,9 @@ export const TrendingRibbon: React.FC = () => {
       label="Trending on Melega DEX"
       items={enrichedItems}
       marqueeMinItems={useMarquee ? 6 : Number.MAX_SAFE_INTEGER}
-      emptyPrimary="No live market activity"
-      emptySecondary={unavailableReason ? `Reason: ${unavailableReason}` : undefined}
+      emptyPrimary={
+        trendingEmpty ? 'Market ranking temporarily unavailable' : undefined
+      }
     />
   )
 }

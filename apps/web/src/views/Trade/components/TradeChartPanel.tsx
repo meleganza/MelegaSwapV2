@@ -278,7 +278,7 @@ const EMPTY_REASON_COPY: Record<string, string> = {
   explorer_missing: 'External market reference is not configured for this token.',
   route_not_configured: 'Select a supported output token to load chart context.',
   chart_unavailable: 'Chart data is temporarily unavailable for this pair.',
-  insufficient_history: 'Only one indexed price point is available. A meaningful chart requires at least two candles from swap events.',
+  insufficient_history: 'Insufficient history for trend line',
 }
 
 const SubgraphChart = styled.div`
@@ -330,7 +330,8 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
 
-  const hasChartHistory = pairPrices.length >= 2
+  const hasChartHistory = pairPrices.length >= 3
+  const hasTwoPoints = pairPrices.length === 2
   const hasSinglePoint = pairPrices.length === 1
   const singlePointPrice = hasSinglePoint ? pairPrices[0]?.value : undefined
 
@@ -352,7 +353,8 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const showTv = Boolean(symbol) && !hasNoData && !hasChartHistory && !hasSinglePoint
   const showUnavailable =
     (hasNoData || !symbol || emptyReason === 'insufficient_history') && !hasChartHistory && !hasSinglePoint
-  const showInsufficientHistory = hasSinglePoint && emptyReason === 'insufficient_history'
+  const showInsufficientHistory =
+    (hasSinglePoint || hasTwoPoints) && (emptyReason === 'insufficient_history' || pairPrices.length < 3)
   const showSkeleton = showTv && (isLoading || debouncedLoading)
   const subgraphPath = useMemo(() => buildSubgraphPath(pairPrices, 360, 160), [pairPrices])
   const friendlyCopy = EMPTY_REASON_COPY[emptyReason ?? ''] ?? EMPTY_REASON_COPY.chart_unavailable

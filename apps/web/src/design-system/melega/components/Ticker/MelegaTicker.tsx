@@ -35,16 +35,20 @@ const Strip = styled.div<{
 }>`
   display: flex;
   align-items: center;
-  height: 36px;
+  width: 100%;
+  height: 48px;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
   border-bottom: 1px solid rgba(212, 175, 55, 0.1);
   background: rgba(212, 175, 55, 0.035);
   overflow: hidden;
   box-shadow: none;
-  width: 100%;
 
   @media (min-width: 768px) {
-    height: 40px;
+    height: 52px;
+  }
+
+  @media (min-width: 1024px) {
+    height: 56px;
   }
 
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
@@ -52,9 +56,11 @@ const Strip = styled.div<{
 
 const TrackWrap = styled.div`
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   cursor: grab;
-  min-width: 0;
+  display: flex;
+  align-items: center;
 
   &:active {
     cursor: grabbing;
@@ -67,13 +73,8 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   width: max-content;
   white-space: nowrap;
   will-change: transform;
-  padding-left: ${({ $static }) => ($static ? '0' : '0')};
   animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 40s linear infinite;
   animation-play-state: ${({ $paused, $static }) => ($static || $paused ? 'paused' : 'running')};
-
-  @media (min-width: 768px) {
-    animation-duration: 40s;
-  }
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
@@ -83,8 +84,15 @@ const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
 const AnchorWrap = styled.div`
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
-  padding-left: 16px;
+  flex: 0 0 auto;
+  padding-left: 18px;
+  padding-right: 16px;
+  white-space: nowrap;
+
+  @media (min-width: 1024px) {
+    padding-left: 28px;
+    padding-right: 24px;
+  }
 `
 
 const TrendingAnchor = styled.span`
@@ -102,35 +110,44 @@ const TrendingAnchor = styled.span`
 const ItemLink = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  margin-right: 30px;
   text-decoration: none;
   color: inherit;
   font-size: 14px;
   flex-shrink: 0;
+  white-space: nowrap;
 `
 
 const ItemSpan = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  margin-right: 30px;
   color: inherit;
   font-size: 14px;
   flex-shrink: 0;
+  white-space: nowrap;
 `
 
 const ItemIcon = styled.span`
   display: inline-flex;
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: ${colors.gold};
-  opacity: 0.85;
 
-  svg {
-    width: 16px;
-    height: 16px;
+  @media (min-width: 1024px) {
+    width: 22px;
+    height: 22px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
   }
 `
 
@@ -141,15 +158,10 @@ const Primary = styled.span`
 `
 
 const Secondary = styled.span`
-  font-weight: 400;
+  font-weight: 500;
   font-size: 13px;
   color: #a8a8a8;
   line-height: 1.3;
-
-  @media (max-width: 767px) {
-    font-size: 11px;
-    white-space: normal;
-  }
 `
 
 const Accent = styled.span<{ $positive?: boolean; $unavailable?: boolean }>`
@@ -165,23 +177,24 @@ const Dot = styled.span`
   border-radius: 50%;
   background: ${colors.gold};
   flex-shrink: 0;
-  margin: 0 18px;
+  margin: 0 12px;
 `
 
 const EmptyRow = styled.div`
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   padding: 0 16px 0 0;
   flex: 1;
   min-width: 0;
+  white-space: nowrap;
+`
 
-  @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    padding-right: 12px;
-  }
+const EmptyMessage = styled.span`
+  font-weight: 500;
+  font-size: 13px;
+  color: #a8a8a8;
+  white-space: nowrap;
 `
 
 export const MelegaTicker: React.FC<MelegaTickerProps> = ({
@@ -192,8 +205,8 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   padding,
   margin,
   disabled,
-  emptyPrimary = 'No live market activity',
-  emptySecondary = 'Pairs, swaps, farms and pools appear when indexed',
+  emptyPrimary = 'Market ranking temporarily unavailable',
+  emptySecondary,
 }) => {
   const [hoverPaused, setHoverPaused] = useState(false)
   const [dragPaused, setDragPaused] = useState(false)
@@ -210,11 +223,11 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         <AnchorWrap>
           <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
           <Dot aria-hidden />
+          <EmptyRow>
+            <EmptyMessage>{emptyPrimary}</EmptyMessage>
+            {emptySecondary ? <EmptyMessage style={{ marginLeft: 8 }}>{emptySecondary}</EmptyMessage> : null}
+          </EmptyRow>
         </AnchorWrap>
-        <EmptyRow>
-          <Primary>{emptyPrimary}</Primary>
-          <Secondary>{emptySecondary}</Secondary>
-        </EmptyRow>
       </Strip>
     )
   }
@@ -250,7 +263,6 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     >
       <AnchorWrap>
         <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
-        <Dot aria-hidden />
       </AnchorWrap>
       <TrackWrap
         onPointerDown={handlePointerDown}
@@ -284,7 +296,6 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
                   )}
                 </ItemSpan>
               )}
-              {i < scrollItems.length - 1 && <Dot aria-hidden />}
             </React.Fragment>
           ))}
         </Track>

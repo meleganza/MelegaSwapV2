@@ -12,9 +12,10 @@ import { WBNB } from '@pancakeswap/sdk'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
+import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 import { LIVE_ACTIVITY_WINDOW_SEC } from 'lib/data-truth/ontology'
 import { LIVE_ECONOMY_METRIC_BUILDERS } from 'lib/data-truth/metricDefinitions'
-import { reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
+import { derivePoolLifecycle, reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
 import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
 import { useCurrentBlock } from 'state/block/hooks'
 import { usePriceCakeBusd, useFarms, usePollFarmsWithUserData } from 'state/farms/hooks'
@@ -369,7 +370,7 @@ export const useHomeTradeData = () => {
     const cards: MarketCard[] = []
 
     const topFarm = farms[0]
-    if (topFarm?.lpSymbol) {
+    if (topFarm?.lpSymbol && topFarm.pid !== 0 && topFarm.multiplier !== '0X') {
       const apr = farmApr(topFarm)
       cards.push({
         id: 'top-farm',
@@ -381,42 +382,24 @@ export const useHomeTradeData = () => {
       })
     }
 
-    const topPool = pools[0]
-    if (topPool) {
-      const apr = poolApr(topPool)
-      const poolLabel = formatPoolTrendingLabel(topPool, apr)
+    const rewardingPool = allPools
+      .filter((p) => derivePoolLifecycle(p, currentBlock).rewarding)
+      .sort((a, b) => (poolApr(b) ?? 0) - (poolApr(a) ?? 0))[0]
+
+    if (rewardingPool?.stakingToken?.symbol && rewardingPool?.earningToken?.symbol) {
+      const apr = poolApr(rewardingPool)
       cards.push({
         id: 'top-pool',
         label: 'Top Pool',
-        value: poolLabel.secondary,
-        meta: formatPoolMetaLabel(poolLabel.accent),
-        change: poolTvl(topPool),
+        value: `${rewardingPool.stakingToken.symbol} / ${rewardingPool.earningToken.symbol}`,
+        meta: apr ? `APR ${apr.toFixed(2)}%` : undefined,
+        change: poolTvl(rewardingPool),
         href: '/pools',
       })
     }
 
-    if (topVolumeSwap) {
-      cards.push({
-        id: 'top-volume',
-        label: 'Top Volume',
-        value: `${topVolumeSwap.token0Symbol} / ${topVolumeSwap.token1Symbol}`,
-        meta: formatUsd(topVolumeSwap.amountUSD),
-        href: '/trade',
-      })
-    }
-
-    if (latestProject) {
-      cards.push({
-        id: 'latest-listing',
-        label: 'Latest Listing',
-        value: latestProject.displayName ?? latestProject.slug,
-        meta: latestProject.status,
-        href: `/projects/${latestProject.slug}`,
-      })
-    }
-
     return cards
-  }, [farms, pools, latestProject, topVolumeSwap])
+  }, [farms, allPools, currentBlock])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms
@@ -454,7 +437,7 @@ export const useHomeTradeData = () => {
   }, [pools])
 
   const activitySlots = useMemo((): ActivitySlot[] => {
-    const sorted = [...recentTransactions].sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+    const sorted = [...indexedTransactions].sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
 
     const slotLabel = (tx: Transaction): string => {
       if (tx.type === TransactionType.SWAP) return 'Swap'
@@ -468,7 +451,7 @@ export const useHomeTradeData = () => {
       label: slotLabel(tx),
       row: txToRow(tx),
     }))
-  }, [recentTransactions])
+  }, [indexedTransactions])
 
   const isTrendingIndexing = useMemo(() => {
     const farmsLoading =
@@ -486,7 +469,7 @@ export const useHomeTradeData = () => {
 
   const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
     if (isActivityIndexing) return undefined
-    if (activityRows.length > 0) return undefined
+    if (indexedTransactions.length > 0) return undefined
     const reason =
       indexerState.status === 'error' || indexerState.status === 'unavailable'
         ? indexerState.reason ?? 'Indexer unavailable'
@@ -498,7 +481,7 @@ export const useHomeTradeData = () => {
       reason,
     })
     return {
-      message: 'No protocol activity detected.',
+      message: 'Protocol activity is not yet available from the production indexer.',
       timestamp: diagnostic.lastAttempt,
       reason: diagnostic.reason,
       source: diagnostic.source,
@@ -516,7 +499,7 @@ export const useHomeTradeData = () => {
     const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
     const poolReconciliation = reconcilePoolLifecycle(allPools, currentBlock)
     const rewardingPoolCount = poolReconciliation.rewarding
-    const indexedAssetCount = tradeableAssetCount || dexProjects.length
+    const indexedAssetCount = tradeableAssetCount
 
     const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
       return {
@@ -563,23 +546,11 @@ export const useHomeTradeData = () => {
   }, [trendingTickerItems.length, indexerState, marcoPriceLabel])
 
   const activityScopeTitle = useMemo(() => {
-    if (activityRows.length === 0) return 'Recent protocol activity'
-    const source = indexerState.source ?? ''
-    const newestTs = Math.max(
-      ...indexedTransactions
-        .map((tx) => Number(tx.timestamp))
-        .filter((ts) => Number.isFinite(ts) && ts > 0),
-      0,
-    )
-    const ageSec = newestTs > 0 ? Math.floor(Date.now() / 1000 - newestTs) : Number.POSITIVE_INFINITY
-    const marcoOnly = activityRows.every((row) => /marco/i.test(row.context ?? row.type ?? ''))
-    if (source.includes('durable') && marcoOnly && activityRows.length <= 3) {
-      return 'MARCO / WBNB activity'
-    }
-    if (ageSec <= 15 * 60) return 'Live activity'
-    if (ageSec <= LIVE_ACTIVITY_WINDOW_SEC) return 'Recent protocol activity'
-    return 'Historical protocol activity'
-  }, [activityRows, indexedTransactions, indexerState.source])
+    if (indexedTransactions.length === 0) return 'Protocol Activity'
+    const hasRecent = indexedTransactions.some((tx) => isRecentIndexedEvent(tx.timestamp))
+    if (hasRecent) return 'Live Activity'
+    return 'Recent Protocol Activity'
+  }, [indexedTransactions])
 
   const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 

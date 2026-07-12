@@ -13,8 +13,9 @@ import BuildMachinePanel from './components/BuildMachinePanel'
 import AIValidationEngine from './components/AIValidationEngine'
 import BuildKpiRow from './components/BuildKpiRow'
 import BuildStudioPageHeader from './components/BuildStudioPageHeader'
-import CenterBuildColumn from './components/CenterBuildColumn'
 import ImportTokenPanel from './components/ImportTokenPanel'
+import { CreateFarmCard, StakingPoolCard } from './components/SecondRowCards'
+import CreateTokenPanel from './components/CreateTokenPanel'
 import InfrastructureFlow from './components/InfrastructureFlow'
 import OptionalServices from './components/OptionalServices'
 import RecentBuildsTable from './components/RecentBuildsTable'
@@ -50,14 +51,60 @@ const Content = styled.div`
 
 const MainGrid = styled.div`
   display: grid;
-  grid-template-columns: ${buildStudioLayout.colImport} ${buildStudioLayout.colCreate} ${buildStudioLayout.colRight};
   gap: ${buildStudioLayout.cardGap};
   width: 100%;
   align-items: stretch;
 
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-areas:
+      'import import import import import import import advisor advisor advisor advisor advisor'
+      'create create create create farm farm farm pool pool pool pool pool';
+  }
+
+  @media (max-width: 1279px) and (min-width: 769px) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'import import'
+      'advisor advisor'
+      'create farm'
+      'pool pool';
+  }
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      'import'
+      'advisor'
+      'create'
+      'farm'
+      'pool';
   }
+`
+
+const ImportArea = styled.div`
+  grid-area: import;
+  min-width: 0;
+`
+
+const AdvisorArea = styled.div`
+  grid-area: advisor;
+  min-width: 0;
+`
+
+const CreateArea = styled.div`
+  grid-area: create;
+  min-width: 0;
+`
+
+const FarmArea = styled.div`
+  grid-area: farm;
+  min-width: 0;
+`
+
+const PoolArea = styled.div`
+  grid-area: pool;
+  min-width: 0;
 `
 
 export const BuildStudioScreen: React.FC = () => (
@@ -71,9 +118,21 @@ export const BuildStudioScreen: React.FC = () => (
         <BuildKpiRow />
         <ImportRuntimeProvider>
           <MainGrid data-bs-main-grid>
-            <ImportTokenPanel />
-            <CenterBuildColumn />
-            <AIBuildAdvisorPanel />
+            <ImportArea>
+              <ImportTokenPanel />
+            </ImportArea>
+            <AdvisorArea>
+              <AIBuildAdvisorPanel />
+            </AdvisorArea>
+            <CreateArea>
+              <CreateTokenPanel />
+            </CreateArea>
+            <FarmArea>
+              <CreateFarmCard />
+            </FarmArea>
+            <PoolArea>
+              <StakingPoolCard />
+            </PoolArea>
           </MainGrid>
         </ImportRuntimeProvider>
         <AIValidationEngine />

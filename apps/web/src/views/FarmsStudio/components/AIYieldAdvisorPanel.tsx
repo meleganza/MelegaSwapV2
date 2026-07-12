@@ -2,45 +2,46 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
-import { farmsStudioColors, farmsStudioLayout } from '../farmsStudioTokens'
+import { farmsStudioColors } from '../farmsStudioTokens'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { FsPanel, FsSectionTitle } from './farmsStudioPrimitives'
 
 const List = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 0;
   flex: 1;
   min-height: 0;
 `
 
 const Row = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 28px;
+  min-height: 48px;
 `
 
 const Label = styled.span`
   font-size: 11px;
   font-weight: 600;
   color: ${farmsStudioColors.muted};
-  flex: 1;
   min-width: 0;
 `
 
 const Value = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
   display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
-  min-height: 28px;
-  min-width: 0;
-  max-width: 72%;
-  padding: ${({ $tone }) => ($tone === 'muted' ? '0' : '0 14px')};
+  justify-content: center;
+  max-width: 100%;
+  padding: 8px 16px;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 800;
+  line-height: 1.2;
+  white-space: normal;
+  text-align: center;
+  word-break: break-word;
   color: ${({ $tone }) =>
     $tone === 'green'
       ? farmsStudioColors.green
@@ -59,12 +60,12 @@ const Value = styled.span<{ $tone?: 'green' | 'gold' | 'muted' }>`
       : $tone === 'gold'
         ? `1px solid ${farmsStudioColors.gold}`
         : 'none'};
-  text-align: right;
-  max-width: 72%;
-  overflow: visible;
-  white-space: normal;
-  line-height: 1.25;
-  word-break: break-word;
+`
+
+const DetailsWrap = styled.div`
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 0;
 `
 
 export const AIYieldAdvisorPanel: React.FC = () => {
@@ -77,8 +78,14 @@ export const AIYieldAdvisorPanel: React.FC = () => {
       data-fs-panel
       data-fs-advisor
       $width="100%"
-      $height={farmsStudioLayout.featuredHeight}
-      style={{ padding: '18px', display: 'flex', flexDirection: 'column' }}
+      $height="auto"
+      style={{
+        padding: '18px 18px 24px',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        minHeight: 0,
+      }}
     >
       <FsSectionTitle>AI Yield Advisor</FsSectionTitle>
       <List>
@@ -95,7 +102,9 @@ export const AIYieldAdvisorPanel: React.FC = () => {
           ))
         )}
       </List>
-      <TradeTechnicalDetails detail={technicalDetail} />
+      <DetailsWrap>
+        <TradeTechnicalDetails detail={technicalDetail} />
+      </DetailsWrap>
     </FsPanel>
   )
 }

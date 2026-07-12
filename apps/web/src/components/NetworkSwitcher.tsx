@@ -169,6 +169,32 @@ export const NetworkSwitcher = () => {
     return null
   }
 
+  const visibleChains = filterMelegaVisibleSwitcherChains(chains)
+  const isBnbOnlyStatus =
+    visibleChains.length === 1 &&
+    visibleChains[0]?.id === ChainId.BSC &&
+    chainId === ChainId.BSC &&
+    !isWrongNetwork &&
+    !isNotMatched
+
+  if (isBnbOnlyStatus) {
+    return (
+      <Box height="100%" data-network-status-pill>
+        <Flex
+          alignItems="center"
+          height="44px"
+          px="16px"
+          style={{ cursor: 'default', userSelect: 'none' }}
+        >
+          <ChainLogo chainId={ChainId.BSC} width={24} height={24} />
+          <Text ml="8px" fontSize="14px" fontWeight={600} color="text" lineHeight={1.2}>
+            BNB Smart Chain
+          </Text>
+        </Flex>
+      </Box>
+    )
+  }
+
   return (
     <Box ref={cannotChangeNetwork ? targetRef : null} height="100%">
       {cannotChangeNetwork && tooltipVisible && tooltip}

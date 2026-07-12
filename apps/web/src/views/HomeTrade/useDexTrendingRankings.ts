@@ -231,8 +231,9 @@ export function useDexTrendingRankings() {
       if (liquidityScore > 0) signals.push('liquidity')
 
       if (!priceUsd || priceUsd <= 0) return
-      const hasRealActivity = volume24h > 0 || tradeCount24h > 0
-      if (!hasRealActivity) return
+      if (!asset.symbol?.trim()) return
+      if (tradeCount24h <= 0) return
+      if (!change24h) return
 
       byAddress.set(dedupKey, {
         symbol: asset.symbol,
@@ -300,11 +301,7 @@ export function useDexTrendingRankings() {
     [rankedAssets],
   )
 
-  const trendingUnavailableReason = useMemo(() => {
-    if (trendingTickerItems.length > 0) return undefined
-    if (candleStatus === 'loading') return 'Loading indexed market quotes'
-    return 'No tradeable assets with indexed 24H volume or trades'
-  }, [trendingTickerItems.length, candleStatus])
+  const trendingEmpty = useMemo(() => trendingTickerItems.length === 0, [trendingTickerItems.length])
 
   const indexerScopeNote = useMemo(() => {
     if (rankedAssets.length === 0) return undefined
@@ -314,7 +311,8 @@ export function useDexTrendingRankings() {
   return {
     items: trendingTickerItems,
     indexedRibbonAssets,
-    unavailableReason: trendingUnavailableReason,
+    trendingEmpty,
+    isLoading: candleStatus === 'loading',
     indexerScopeNote,
     rankedCount: rankedAssets.length,
     rankedAssets,

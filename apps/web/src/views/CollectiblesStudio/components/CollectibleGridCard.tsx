@@ -74,7 +74,7 @@ const ArtWrap = styled.div`
 
 const ArtImage = styled.img`
   width: 100%;
-  height: 160px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 16px;
   display: block;

@@ -357,9 +357,11 @@ function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | nu
 }
 
 export const FeaturedPoolHero: React.FC = () => {
-  const { featured, requestModal, hiddenPoolReasons, rewardingCount } = usePoolsRuntime()
+  const { featured, hiddenPoolReasons, rewardingCount, poolReconciliation } = usePoolsRuntime()
   const card = featured.card
   const isRewarding = Boolean(card?.lifecycle?.rewarding)
+  const endedCount = poolReconciliation?.finished ?? 0
+  const discoveredCount = poolReconciliation?.discovered ?? 0
   const aprText =
     isRewarding && card?.sustainableAprDisplay && !isForbiddenAprDisplay(card.sustainableAprDisplay)
       ? card.sustainableAprDisplay
@@ -369,6 +371,20 @@ export const FeaturedPoolHero: React.FC = () => {
   const hiddenReason = hiddenPoolReasons.length ? hiddenPoolReasons.join(' · ') : null
 
   if (!card || !isRewarding || rewardingCount === 0) {
+    const emptyTitle =
+      discoveredCount === 0
+        ? 'No pools discovered'
+        : endedCount > 0
+          ? 'No active rewarding pools'
+          : 'No rewarding pools yet'
+    const emptySubtitle =
+      discoveredCount === 0
+        ? 'Verified SmartChef contracts will appear when indexed from chain.'
+        : endedCount > 0
+          ? 'Historical pools are listed below under Finished.'
+          : 'Create or fund a reward pool to activate staking opportunities.'
+    const showCreateCta = discoveredCount === 0 || (rewardingCount === 0 && endedCount === 0)
+
     return (
       <EmptyCard
         data-ps-featured-hero
@@ -379,18 +395,18 @@ export const FeaturedPoolHero: React.FC = () => {
         data-r707d-empty
         data-r707e-empty
       >
-        <EmptyTitle data-ps-empty-title>No rewarding pools yet</EmptyTitle>
-        <EmptySubtitle data-ps-empty-subtitle>
-          Create or fund a reward pool to activate staking opportunities.
-        </EmptySubtitle>
-        <EmptyCtaRow data-ps-empty-cta>
-          <EmptyPrimaryBtn to="/build-studio?intent=staking-pool#create-pool" data-ps-empty-create>
-            Create Pool
-          </EmptyPrimaryBtn>
-          <EmptyGhostBtn to="/build-studio" data-ps-empty-studio>
-            Open Build Studio
-          </EmptyGhostBtn>
-        </EmptyCtaRow>
+        <EmptyTitle data-ps-empty-title>{emptyTitle}</EmptyTitle>
+        <EmptySubtitle data-ps-empty-subtitle>{emptySubtitle}</EmptySubtitle>
+        {showCreateCta ? (
+          <EmptyCtaRow data-ps-empty-cta>
+            <EmptyPrimaryBtn to="/build-studio?intent=staking-pool#create-pool" data-ps-empty-create>
+              Create Pool
+            </EmptyPrimaryBtn>
+            <EmptyGhostBtn to="/build-studio" data-ps-empty-studio>
+              Open Build Studio
+            </EmptyGhostBtn>
+          </EmptyCtaRow>
+        ) : null}
         {hiddenReason ? <HiddenReason data-ps-empty-hidden-reason>{hiddenReason}</HiddenReason> : null}
       </EmptyCard>
     )

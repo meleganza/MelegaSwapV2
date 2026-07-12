@@ -17,6 +17,7 @@ import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
+import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { PairState, usePairs } from 'hooks/usePairs'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
@@ -402,16 +403,10 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   const pairPrice = useMemo(() => {
     const onChain = marcoOnChainPrice?.toNumber()
     if (isMarcoRoute && onChain && onChain > 0) {
-      const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
-      const recentCandles = indexerCandles.filter((c) => c.bucketTimestamp >= cutoff)
-      const window = recentCandles.length >= 2 ? recentCandles : indexerCandles
-      const open = window[0]?.open
-      const close = window[window.length - 1]?.close
-      const change24h =
-        open != null && close != null && open > 0 ? ((close - open) / open) * 100 : undefined
+      const marcoChange = computeValid24hPriceChange(indexerCandles)
       return {
         value: onChain,
-        change24h,
+        change24h: marcoChange ? parseFloat(marcoChange.text.replace(/[^0-9.-]/g, '')) : undefined,
         formatted: `$${onChain < 0.01 ? onChain.toFixed(6) : onChain.toFixed(4)}`,
       }
     }

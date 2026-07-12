@@ -21,20 +21,18 @@ const Title = styled.h2`
 
 export interface HomeMarketOverviewProps {
   cards: MarketCard[]
-  isIndexing?: boolean
-  unavailableReason?: string
 }
 
-/** R784 — protocol market overview wired to canonical runtime cards. */
-export const HomeMarketOverview: React.FC<HomeMarketOverviewProps> = ({
-  cards,
-  isIndexing,
-  unavailableReason,
-}) => (
-  <Shell data-home-market-overview>
-    <Title>Market overview</Title>
-    <QuickMarketStrip cards={cards} isIndexing={isIndexing} unavailableReason={unavailableReason} />
-  </Shell>
-)
+/** R785 — market overview with up to three canonical cards; section hidden when empty. */
+export const HomeMarketOverview: React.FC<HomeMarketOverviewProps> = ({ cards }) => {
+  if (cards.length === 0) return null
+
+  return (
+    <Shell data-home-market-overview>
+      <Title>Market overview</Title>
+      <QuickMarketStrip cards={cards} />
+    </Shell>
+  )
+}
 
 export default HomeMarketOverview

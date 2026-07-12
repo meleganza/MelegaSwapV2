@@ -183,23 +183,24 @@ const Copy = styled.div`
   }
 `
 
-const LiveEconomyStrip = styled.div`
+const LiveEconomyBlock = styled.div`
   display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 0;
-  min-height: 34px;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 14px;
-  overflow-x: auto;
-  scrollbar-width: none;
+`
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
+const LiveEconomyStrip = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  column-gap: 28px;
+  row-gap: 0;
+  align-items: center;
+  justify-content: start;
 
-  @media (max-width: 767px) {
-    flex-wrap: wrap;
-    height: auto;
+  @media (max-width: 1279px) {
+    grid-template-columns: repeat(2, max-content);
+    row-gap: 10px;
   }
 `
 
@@ -209,45 +210,49 @@ const LiveLabel = styled.span`
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #c6a33a;
-  margin-right: 14px;
 `
 
 const MetricSep = styled.span`
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: ${colors.gold};
-  margin: 0 12px;
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.85;
+  align-self: center;
+  justify-self: center;
 `
 
 const MetricItem = styled.span`
   display: inline-flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 9px;
+  white-space: nowrap;
   animation: ${metricFade} 180ms ease;
 `
 
 const MetricName = styled.span`
-  font-size: 11px;
+  font-size: 13px;
+  line-height: 16px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 1.2px;
   color: #8a8a8a;
 `
 
 const MetricValue = styled.span<{ $live?: boolean }>`
-  font-size: 14px;
+  font-size: 18px;
+  line-height: 20px;
   font-weight: 700;
-  color: ${colors.textPrimary};
+  color: ${colors.green};
   font-variant-numeric: tabular-nums;
 `
 
 const MetricLink = styled(Link)`
   display: inline-flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 9px;
+  white-space: nowrap;
   text-decoration: none;
   animation: ${metricFade} 180ms ease;
 
@@ -365,25 +370,27 @@ export const MelegaCinematicPanel: React.FC<MelegaCinematicPanelProps> = ({ puls
         <HorizonArc />
       </Scene>
       <Copy>
-        <LiveEconomyStrip>
+        <LiveEconomyBlock>
           <LiveLabel>Live Economy</LiveLabel>
-          {economyMetrics.map((metric, i) => (
-            <React.Fragment key={metric.id}>
-              {i > 0 && <MetricSep aria-hidden />}
-              {metric.href ? (
-                <MetricLink href={metric.href} data-live-economy-metric={metric.id}>
-                  <MetricName>{metric.label}</MetricName>
-                  <MetricValue $live={metric.live}>{metric.value}</MetricValue>
-                </MetricLink>
-              ) : (
-                <MetricItem data-live-economy-metric={metric.id}>
-                  <MetricName>{metric.label}</MetricName>
-                  <MetricValue $live={metric.live}>{metric.value}</MetricValue>
-                </MetricItem>
-              )}
-            </React.Fragment>
-          ))}
-        </LiveEconomyStrip>
+          <LiveEconomyStrip>
+            {economyMetrics.map((metric, i) => (
+              <React.Fragment key={metric.id}>
+                {i > 0 && <MetricSep aria-hidden />}
+                {metric.href ? (
+                  <MetricLink href={metric.href} data-live-economy-metric={metric.id}>
+                    <MetricName>{metric.label}</MetricName>
+                    <MetricValue $live={metric.live}>{metric.value}</MetricValue>
+                  </MetricLink>
+                ) : (
+                  <MetricItem data-live-economy-metric={metric.id}>
+                    <MetricName>{metric.label}</MetricName>
+                    <MetricValue $live={metric.live}>{metric.value}</MetricValue>
+                  </MetricItem>
+                )}
+              </React.Fragment>
+            ))}
+          </LiveEconomyStrip>
+        </LiveEconomyBlock>
         <HeadlineBlock>
           <HeadlineLine>Trade.</HeadlineLine>
           <HeadlineLine>Build.</HeadlineLine>
