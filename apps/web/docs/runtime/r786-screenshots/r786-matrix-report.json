@@ -1,0 +1,1330 @@
+{
+  "mission": "R786",
+  "base": "https://melega.finance",
+  "capturedAt": "2026-07-12T10:56:22.176Z",
+  "expected": 88,
+  "actual": 88,
+  "pass": false,
+  "rows": [
+    {
+      "viewport": "1728x1080",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/home.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/trade.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/liquidity-studio.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/pools.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/farms.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/trending.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/projects.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/radar.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/collectibles.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/build-studio.png"
+    },
+    {
+      "viewport": "1728x1080",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1728x1080/status.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/home.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/trade.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/liquidity-studio.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/pools.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/farms.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/trending.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/projects.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/radar.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/collectibles.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/build-studio.png"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1440x900/status.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/home.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/trade.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/liquidity-studio.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/pools.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/farms.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/trending.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/projects.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/radar.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/collectibles.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/build-studio.png"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1280x800/status.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/home.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/trade.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/liquidity-studio.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/pools.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/farms.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/trending.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/projects.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/radar.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/collectibles.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/build-studio.png"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "1024x768/status.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/home.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/trade.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/liquidity-studio.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/pools.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/farms.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/trending.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/projects.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/radar.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/collectibles.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/build-studio.png"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "768x1024/status.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/home.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/trade.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/liquidity-studio.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/pools.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/farms.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/trending.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/projects.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/radar.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/collectibles.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/build-studio.png"
+    },
+    {
+      "viewport": "430x932",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "430x932/status.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/home.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/trade.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/liquidity-studio.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/pools.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/farms.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/trending.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/projects.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/radar.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/collectibles.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/build-studio.png"
+    },
+    {
+      "viewport": "390x844",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "390x844/status.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "home",
+      "path": "/",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/home.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "trade",
+      "path": "/trade",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/trade.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "liquidity-studio",
+      "path": "/liquidity-studio",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/liquidity-studio.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "pools",
+      "path": "/pools",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/pools.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "farms",
+      "path": "/farms",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": true,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/farms.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "trending",
+      "path": "/trending",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/trending.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "projects",
+      "path": "/projects",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/projects.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "radar",
+      "path": "/radar",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/radar.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "collectibles",
+      "path": "/collectibles",
+      "ok": false,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": true,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/collectibles.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "build-studio",
+      "path": "/build-studio",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/build-studio.png"
+    },
+    {
+      "viewport": "360x800",
+      "route": "status",
+      "path": "/status",
+      "ok": true,
+      "checks": {
+        "scrollOverflow": false,
+        "brokenImg": false,
+        "dupUnavailable": false,
+        "hasAppError": false,
+        "hasNaN": false,
+        "hasUndefined": false
+      },
+      "file": "360x800/status.png"
+    }
+  ]
+}
