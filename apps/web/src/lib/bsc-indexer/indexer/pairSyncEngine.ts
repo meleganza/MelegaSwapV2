@@ -18,6 +18,7 @@ import {
   scanPairEventsFromHead,
   type RawLog,
 } from '../rpc/chunkedLogs'
+import { scanBlockRangeEvents } from '../rpc/scanBlockRange'
 import { resolveIndexerStorageForSlug } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
 import { buildCandlesFromSwaps } from './candles'
@@ -25,8 +26,8 @@ import type { PairWatch } from './featuredPairSync'
 
 const BLOCKS_PER_DAY = Math.floor(86_400 / BSC_AVG_BLOCK_SECONDS)
 const FORWARD_WINDOW_BLOCKS = BLOCKS_PER_DAY
-const FORWARD_BLOCKS_PER_SYNC = 60
-const BACKWARD_BLOCKS_PER_SYNC = 60
+const FORWARD_BLOCKS_PER_SYNC = 24
+const BACKWARD_BLOCKS_PER_SYNC = 24
 
 function normalizeLogs(
   logs: RawLog[],
@@ -145,9 +146,9 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     toBlock = forwardTo
   }
 
-  // 2) Backward pass — bootstrap historical window
+  // 2) Backward pass — bootstrap historical window (skip when forward already filled budget)
   let phase = checkpoint.phase ?? 'bootstrap'
-  if (phase === 'bootstrap') {
+  if (phase === 'bootstrap' && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
     const backwardHigh = checkpoint.backwardCursor ?? chainHead
     if (backwardHigh > bootstrapFloor) {
       const backwardLow = Math.max(bootstrapFloor, backwardHigh - BACKWARD_BLOCKS_PER_SYNC)
