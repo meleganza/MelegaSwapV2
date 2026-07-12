@@ -61,13 +61,6 @@ const UnavailableTitle = styled.p`
   color: ${liquidityStudioColors.text};
 `
 
-const UnavailableReason = styled.p`
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: ${liquidityStudioColors.muted};
-`
-
 export const TopPoolsPanel: React.FC = () => {
   const { terminal, machine } = useLiquidityRuntime()
   const { topPools, topPoolsUnavailableReason } = terminal

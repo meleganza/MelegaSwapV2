@@ -1,7 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
@@ -57,15 +55,8 @@ const Body = styled.div`
   min-height: 0;
 `
 
-const UnavailableReason = styled.p`
-  margin: 8px 0 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: ${liquidityStudioColors.muted};
-`
-
 export const AILiquidityAdvisorPanel: React.FC = () => {
-  const { terminal, machine } = useLiquidityRuntime()
+  const { terminal } = useLiquidityRuntime()
   const { advisorItems, advisorUnavailableReason } = terminal
 
   return (
@@ -94,10 +85,9 @@ export const AILiquidityAdvisorPanel: React.FC = () => {
           </LsRightRow>
         ))}
         {advisorUnavailableReason ? (
-          <>
-            <UnavailableReason>Reason: {advisorUnavailableReason}</UnavailableReason>
-            <TradeTechnicalDetails detail={JSON.stringify(machine, null, 2)} />
-          </>
+          <Muted style={{ marginTop: 8, fontSize: 12, lineHeight: 1.45 }}>
+            {advisorUnavailableReason}
+          </Muted>
         ) : null}
       </Body>
     </LsPanel>

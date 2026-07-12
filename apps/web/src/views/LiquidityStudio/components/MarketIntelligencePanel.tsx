@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsRightValue, LsSectionTitle } from './liquidityStudioPrimitives'
@@ -42,18 +41,9 @@ const UnavailableTitle = styled.p`
   color: ${liquidityStudioColors.text};
 `
 
-const UnavailableReason = styled.p`
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: ${liquidityStudioColors.muted};
-`
-
 export const MarketIntelligencePanel: React.FC = () => {
-  const { terminal, machine } = useLiquidityRuntime()
+  const { terminal } = useLiquidityRuntime()
   const { marketMetrics, marketUnavailableReason } = terminal
-
-  const technicalDetail = useMemo(() => JSON.stringify(machine, null, 2), [machine])
 
   const hasLiveMetrics = useMemo(
     () => marketMetrics.some((metric) => metric.value && metric.value !== '—'),
@@ -72,7 +62,6 @@ export const MarketIntelligencePanel: React.FC = () => {
       {marketUnavailableReason || !hasLiveMetrics ? (
         <UnavailableWrap data-ls-market-unavailable>
           <UnavailableTitle>Pool metrics not indexed</UnavailableTitle>
-          <TradeTechnicalDetails detail={technicalDetail} />
         </UnavailableWrap>
       ) : (
         <MetricStack>

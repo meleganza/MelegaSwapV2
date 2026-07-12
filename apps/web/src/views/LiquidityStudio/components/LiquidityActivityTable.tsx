@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { RUNTIME_LOADING_LABEL } from 'lib/runtime-truth'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
 import { liquidityStudioColors, liquidityStudioLayout, liquidityTypography } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
@@ -191,7 +191,7 @@ export const LiquidityActivityTable: React.FC = () => {
         </TableWrap>
       ) : displayRows.length === 0 ? (
         <EmptyState>
-          <EmptyTitle>{RUNTIME_UNAVAILABLE_LABEL}</EmptyTitle>
+          <EmptyTitle>No liquidity activity indexed</EmptyTitle>
           <EmptyDesc>
             Liquidity mint and burn events appear when the Melega subgraph indexes on-chain activity for this pair.
           </EmptyDesc>

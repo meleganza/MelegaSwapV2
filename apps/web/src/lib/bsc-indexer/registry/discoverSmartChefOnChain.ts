@@ -4,7 +4,6 @@ import { MELEGA_CHAIN_ID, MELEGA_MASTERCHEF_BSC, MELEGA_SMARTCHEF_FACTORY_BSC } 
 import { rpcCall } from '../rpc/chunkedLogs'
 import type { OnchainRegistry } from 'lib/onchain-registry'
 
-const INVENTORY_PATH = path.join(process.cwd(), 'docs', 'pools-canonical-inventory.json')
 const MASTERCHEF = MELEGA_MASTERCHEF_BSC.toLowerCase()
 
 const SEL = {
@@ -51,15 +50,35 @@ async function hasBytecode(address: string, rpcUrls?: string[]): Promise<boolean
 
 function loadCandidateAddresses(): string[] {
   const set = new Set<string>()
-  try {
-    const inventory = JSON.parse(fs.readFileSync(INVENTORY_PATH, 'utf8')) as {
-      results: Array<{ chain: number; contract: string }>
+  const candidatePaths = [
+    path.join(process.cwd(), 'docs', 'pools-canonical-inventory.json'),
+    path.join(process.cwd(), '..', '..', 'docs', 'pools-canonical-inventory.json'),
+    path.join(process.cwd(), 'public', 'registry', 'pools-canonical-inventory.json'),
+  ]
+  for (const inventoryPath of candidatePaths) {
+    try {
+      if (!fs.existsSync(inventoryPath)) continue
+      const inventory = JSON.parse(fs.readFileSync(inventoryPath, 'utf8')) as {
+        results: Array<{ chain: number; contract: string }>
+      }
+      inventory.results
+        .filter((r) => r.chain === MELEGA_CHAIN_ID && r.contract && r.contract !== '—')
+        .forEach((r) => set.add(r.contract.toLowerCase()))
+      if (set.size > 0) break
+    } catch {
+      /* try next path */
     }
-    inventory.results
-      .filter((r) => r.chain === MELEGA_CHAIN_ID && r.contract && r.contract !== '—')
-      .forEach((r) => set.add(r.contract.toLowerCase()))
-  } catch {
-    /* inventory optional seed */
+  }
+  if (set.size === 0) {
+    try {
+      const registryPath = path.join(process.cwd(), 'public', 'registry', 'onchain', 'bsc-mainnet.json')
+      const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8')) as OnchainRegistry
+      registry.smartChef?.pools?.forEach((p) => {
+        if (p.contractAddress) set.add(p.contractAddress.toLowerCase())
+      })
+    } catch {
+      /* registry fallback optional */
+    }
   }
   set.delete(MASTERCHEF)
   return [...set]

@@ -1,0 +1,1340 @@
+{
+  "mission": "R789",
+  "host": "https://www.melega.finance",
+  "capturedAt": "2026-07-12T16:25:10.932Z",
+  "repositorySha": "5d718c99",
+  "endpoints": {
+    "readiness": {
+      "key": "readiness",
+      "url": "https://www.melega.finance/api/runtime/readiness",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 245,
+      "body": {
+        "timestamp": "2026-07-12T16:24:59.379Z",
+        "verdict": "ready",
+        "components": {
+          "registryDiscovery": "READY",
+          "featuredPairIndexer": "READY",
+          "multiPairHistoricalIndexer": "SYNCING",
+          "holderProvider": "READY",
+          "subgraph": "NOT_CONFIGURED"
+        },
+        "checks": [
+          {
+            "name": "BSC_RPC_URL",
+            "configured": true,
+            "status": "ready"
+          },
+          {
+            "name": "BSC_RPC_FALLBACK_URL",
+            "configured": true,
+            "status": "ready"
+          },
+          {
+            "name": "BSCSCAN_API_KEY",
+            "configured": true,
+            "status": "ready"
+          },
+          {
+            "name": "BLOB_READ_WRITE_TOKEN",
+            "configured": true,
+            "status": "ready"
+          },
+          {
+            "name": "INDEXER_CRON_SECRET",
+            "configured": true,
+            "status": "ready"
+          }
+        ],
+        "indexer": {
+          "storageBackend": "vercel-blob-v2-featured-pair",
+          "storageConfigured": true,
+          "durableProductionStorage": true,
+          "indexerGeneration": "v2-featured-pair",
+          "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+          "blobRoundTrip": {
+            "ok": true
+          },
+          "rpcPrimary": {
+            "ok": true,
+            "chainHead": 109587123
+          },
+          "rpcFallback": {
+            "ok": true,
+            "chainHead": 109587123
+          },
+          "lastIndexedBlock": 109124340,
+          "chainHead": 109587123,
+          "indexingLag": 462783,
+          "eventCounts": {
+            "Swap": 3
+          },
+          "lastSuccessfulSync": "2026-07-12T15:30:23.008Z",
+          "featuredPairSlug": "marco-wbnb",
+          "phase": "bootstrap",
+          "bootstrapStartBlock": 109122940,
+          "bootstrapDays": 7,
+          "providerUsed": "chunked-forward-eth_getLogs",
+          "registrySource": "blob",
+          "registryPairCount": 516,
+          "registryRefreshedAt": "2026-07-12T03:00:27.395Z"
+        },
+        "vercelSecretsChecklist": [
+          "BSC_RPC_URL",
+          "BSC_RPC_FALLBACK_URL (optional)",
+          "BSCSCAN_API_KEY (optional — holders)",
+          "BLOB_READ_WRITE_TOKEN",
+          "INDEXER_CRON_SECRET",
+          "CRON_SECRET (Vercel cron auth header)"
+        ]
+      }
+    },
+    "indexerHealth": {
+      "key": "indexerHealth",
+      "url": "https://www.melega.finance/api/indexer/health",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 204,
+      "body": {
+        "status": "ready",
+        "indexerGeneration": "v2-featured-pair",
+        "featuredPairSlug": "marco-wbnb",
+        "phase": "bootstrap",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "indexedBlockRange": {
+          "from": 109124241,
+          "to": 109124340
+        },
+        "bootstrapStartBlock": 109122940,
+        "bootstrapDays": 7,
+        "storageBackend": "vercel-blob-v2-featured-pair",
+        "storageConfigured": true,
+        "lastIndexedBlock": 109124340,
+        "chainHead": 109587122,
+        "indexingLag": 462782,
+        "lastSuccessfulSync": "2026-07-12T15:30:23.008Z",
+        "eventCounts": {
+          "Swap": 3
+        }
+      }
+    },
+    "indexerCoverage": {
+      "key": "indexerCoverage",
+      "url": "https://www.melega.finance/api/indexer/coverage",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 611,
+      "body": {
+        "generatedAt": "2026-07-12T16:25:10.721Z",
+        "slug": "marco-wbnb",
+        "bootstrapWindow": {
+          "fromBlock": 109122940,
+          "toBlock": 109587137,
+          "coveredBlocks": 300,
+          "uncoveredBlocks": 463898,
+          "coveragePercent": 0.06462759425934622,
+          "gaps": [
+            {
+              "fromBlock": 109123240,
+              "toBlock": 109587137
+            }
+          ],
+          "complete": false
+        },
+        "forwardCursor": 109124340,
+        "gapFillCursor": 109124340,
+        "backwardCursor": null,
+        "coverageRanges": [
+          {
+            "fromBlock": 109122940,
+            "toBlock": 109123239
+          }
+        ],
+        "chainHead": 109587149
+      }
+    },
+    "indexerEvents": {
+      "key": "indexerEvents",
+      "url": "https://www.melega.finance/api/indexer/events?limit=20",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 200,
+      "body": {
+        "status": "ready",
+        "events": [
+          {
+            "chainId": 56,
+            "protocol": "amm",
+            "eventType": "Swap",
+            "contractAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "amount0": "350.840866828602",
+            "amount1": "0.000219538905014194",
+            "amountIn": "350.840866828602",
+            "amountOut": "0.000219538905014194",
+            "wallet": "0x4cc318290743b35d6c9063e58c3ef2faa01a81a9",
+            "txHash": "0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61",
+            "logIndex": 355,
+            "blockNumber": 109542524,
+            "blockTimestamp": 1783853420,
+            "explorerUrl": "https://bscscan.com/tx/0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61",
+            "sourceStatus": "incremental",
+            "recipient": "0x78d794681d209392b25be14ebbc22ec5bf9ab2a2"
+          },
+          {
+            "chainId": 56,
+            "protocol": "amm",
+            "eventType": "Swap",
+            "contractAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "amount0": "179.86469788584677",
+            "amount1": "0.000113588105786482",
+            "amountIn": "179.86469788584677",
+            "amountOut": "0.000113588105786482",
+            "wallet": "0x0c2b4fc0f8bed892f7278a6705bab41fb8ce4170",
+            "txHash": "0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d",
+            "logIndex": 266,
+            "blockNumber": 109323984,
+            "blockTimestamp": 1783755056,
+            "explorerUrl": "https://bscscan.com/tx/0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d",
+            "sourceStatus": "incremental",
+            "recipient": "0x0c2b4fc0f8bed892f7278a6705bab41fb8ce4170"
+          },
+          {
+            "chainId": 56,
+            "protocol": "amm",
+            "eventType": "Swap",
+            "contractAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "amount0": "4068.775270702608",
+            "amount1": "0.005",
+            "amountIn": "4068.775270702608",
+            "amountOut": "0.005",
+            "wallet": "0xc25033218d181b27d4a2944fbb04fc055da4eab3",
+            "txHash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+            "logIndex": 485,
+            "blockNumber": 86326727,
+            "blockTimestamp": 1773393280,
+            "explorerUrl": "https://bscscan.com/tx/0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+            "sourceStatus": "incremental",
+            "recipient": "0xc25033218d181b27d4a2944fbb04fc055da4eab3"
+          }
+        ],
+        "meta": {
+          "storageBackend": "vercel-blob-v2-featured-pair",
+          "lastIndexedBlock": 109124340,
+          "indexingLag": 443464,
+          "eventCounts": {
+            "Swap": 3
+          }
+        }
+      }
+    },
+    "tierMetrics": {
+      "key": "tierMetrics",
+      "url": "https://www.melega.finance/api/indexer/tier-metrics",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 210,
+      "body": {
+        "generatedAt": "2026-07-12T16:25:00.048Z",
+        "tier1Count": 6,
+        "tier2Count": 12,
+        "rows": [
+          {
+            "slug": "marco-wbnb",
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_1",
+            "status": "READY",
+            "volume24hQuote": 0.000219538905014194,
+            "tradeCount24h": 1,
+            "candleCount": 3,
+            "eventCount24h": 1,
+            "indexingLag": 443464
+          },
+          {
+            "slug": "55d398-963556",
+            "pairAddress": "0xb1857b7a6650c5711ccfae451d79bf86c6cbaca4",
+            "token0": "0x55d398326f99059ff775485246999027b3197955",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "tier": "TIER_1",
+            "status": "NO_EVENTS_IN_WINDOW",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0,
+            "indexingLag": 202000
+          },
+          {
+            "slug": "8ac76a-963556",
+            "pairAddress": "0x6804d8b2be83f8e38b26552ad445906c696a671c",
+            "token0": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "tier": "TIER_1",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "55d398-8ac76a",
+            "pairAddress": "0x3e8b46eb75a574d0e2dd40d786fe05ad7272bc08",
+            "token0": "0x55d398326f99059ff775485246999027b3197955",
+            "token1": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "tier": "TIER_1",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "8ac76a-bb4cdb",
+            "pairAddress": "0x7165b14cf9d03061b67e3237078e5f5a03fe01a9",
+            "token0": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_1",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "55d398-bb4cdb",
+            "pairAddress": "0x94fadf053bad0c9d0a3874f82b1a09001926a548",
+            "token0": "0x55d398326f99059ff775485246999027b3197955",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_1",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "403487-502eed",
+            "pairAddress": "0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+            "token0": "0x4034875250f797d00b819e9011c5bb9c2e799631",
+            "token1": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "52abb0-bb4cdb",
+            "pairAddress": "0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+            "token0": "0x52abb09ceb590f04c7d70be9d6aa420177e94744",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "502eed-bb4cdb",
+            "pairAddress": "0xd656c120e843012c33187e8732b83f0c1fc1f858",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "502eed-6effc3",
+            "pairAddress": "0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x6effc3b9ea59a081e7132ad2e491d1ae523394f5",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "502eed-963556",
+            "pairAddress": "0x2261f5434dd3e352563b09c9e462956082606f5a",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "502eed-b1c137",
+            "pairAddress": "0x5b1405a8157285ab1f5912a05b5fc8023a666346",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0xb1c137d4ab6d56529efb6e4f3616ee6558083b7b",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "9acda5-bb4cdb",
+            "pairAddress": "0x9819ba5974e5a5062d9cc91ed1a39e5eeb8d43f8",
+            "token0": "0x9acda5b7ba829172036d030d5a664298ea0a7129",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "502eed-76fa56",
+            "pairAddress": "0xe69b45a33419a5456ea8db9533224d0fc98faae3",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x76fa566136cfa5b720d37259cabe45a9c407116b",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "002742-963556",
+            "pairAddress": "0xe1ac7b27398a538c20cc7e0930b4a46aaa45aabe",
+            "token0": "0x00274214c88e481ecc63460f11b264923c67f602",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "9acda5-e7ba8b",
+            "pairAddress": "0x8386dbc0ef580285626379b0505311525290600d",
+            "token0": "0x9acda5b7ba829172036d030d5a664298ea0a7129",
+            "token1": "0xe7ba8bcf0fe998c77163b42c96c0b12a834b06ed",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "502eed-ede11c",
+            "pairAddress": "0x1db96e2c7d7b286048983089392977b6b52a507a",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0xede11c43598c814d39548423eb2d2a66a4db3cc2",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          },
+          {
+            "slug": "138455-bb4cdb",
+            "pairAddress": "0x2b2b1cb7cef2d72fc77bb8405d32e5cd75f5d74a",
+            "token0": "0x1384555d00144c7725ac71da2bb1fd67b9ad889a",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "tier": "TIER_2",
+            "status": "RPC_UNAVAILABLE",
+            "volume24hQuote": 0,
+            "tradeCount24h": 0,
+            "candleCount": 0,
+            "eventCount24h": 0
+          }
+        ]
+      }
+    },
+    "storeConsistency": {
+      "key": "storeConsistency",
+      "url": "https://www.melega.finance/api/indexer/store-consistency",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 737,
+      "body": {
+        "generatedAt": "2026-07-12T16:25:10.888Z",
+        "canonicalNamespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+        "featuredPairSlug": "marco-wbnb",
+        "consumers": {
+          "events": {
+            "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+            "eventSample": 3,
+            "checkpoint": 109124340
+          },
+          "candles": {
+            "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+            "candleSample": 3
+          },
+          "runtimeSwaps": {
+            "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+            "transactionSample": 3
+          },
+          "health": {
+            "lastIndexedBlock": 109124340,
+            "forwardCursor": 109124340,
+            "phase": "bootstrap"
+          }
+        },
+        "consistent": true,
+        "legacyNote": "bsc-indexer/* is not an active read source — v2 featured-pairs namespace is canonical"
+      }
+    },
+    "pairs": {
+      "key": "pairs",
+      "url": "https://www.melega.finance/api/indexer/pairs?pageSize=50&classification=tradeable",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 217,
+      "body": {
+        "status": "ready",
+        "rows": [
+          {
+            "pairAddress": "0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+            "token0": "0x4034875250f797d00b819e9011c5bb9c2e799631",
+            "token1": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "reserve0": "61324366890069473900941",
+            "reserve1": "2827640253798889192317858894762587",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:36.599Z"
+          },
+          {
+            "pairAddress": "0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+            "token0": "0x52abb09ceb590f04c7d70be9d6aa420177e94744",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "1715899452133764387720326675458343",
+            "reserve1": "14838102456239393",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:12.576Z"
+          },
+          {
+            "pairAddress": "0xd656c120e843012c33187e8732b83f0c1fc1f858",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "738395596549612306918864760799600",
+            "reserve1": "31687407879278760",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:18.497Z"
+          },
+          {
+            "pairAddress": "0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x6effc3b9ea59a081e7132ad2e491d1ae523394f5",
+            "reserve0": "298384683104719136046771943410225",
+            "reserve1": "20879448755477176307038401",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:31.540Z"
+          },
+          {
+            "pairAddress": "0x2261f5434dd3e352563b09c9e462956082606f5a",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "72866589995290833160904022400859",
+            "reserve1": "4917750245175565200767",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:29.694Z"
+          },
+          {
+            "pairAddress": "0x5b1405a8157285ab1f5912a05b5fc8023a666346",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0xb1c137d4ab6d56529efb6e4f3616ee6558083b7b",
+            "reserve0": "7890860670859965257083579151418",
+            "reserve1": "17848761179584565247639",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:29.783Z"
+          },
+          {
+            "pairAddress": "0x9819ba5974e5a5062d9cc91ed1a39e5eeb8d43f8",
+            "token0": "0x9acda5b7ba829172036d030d5a664298ea0a7129",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "7456142254698406306754009205261",
+            "reserve1": "2676005356865746",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:43.123Z"
+          },
+          {
+            "pairAddress": "0xe69b45a33419a5456ea8db9533224d0fc98faae3",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x76fa566136cfa5b720d37259cabe45a9c407116b",
+            "reserve0": "3361252386346012722438330060335",
+            "reserve1": "122547482824600592604366787",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:24.975Z"
+          },
+          {
+            "pairAddress": "0xe1ac7b27398a538c20cc7e0930b4a46aaa45aabe",
+            "token0": "0x00274214c88e481ecc63460f11b264923c67f602",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "1177216348231513125842247630765",
+            "reserve1": "3197740874028380809108901",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:39.874Z"
+          },
+          {
+            "pairAddress": "0x8386dbc0ef580285626379b0505311525290600d",
+            "token0": "0x9acda5b7ba829172036d030d5a664298ea0a7129",
+            "token1": "0xe7ba8bcf0fe998c77163b42c96c0b12a834b06ed",
+            "reserve0": "1042008139459933927548381209528",
+            "reserve1": "1930049563930905877865",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:43.454Z"
+          },
+          {
+            "pairAddress": "0x1db96e2c7d7b286048983089392977b6b52a507a",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0xede11c43598c814d39548423eb2d2a66a4db3cc2",
+            "reserve0": "502897005320139575629690940070",
+            "reserve1": "1534134496398263849271016",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:25.315Z"
+          },
+          {
+            "pairAddress": "0x2b2b1cb7cef2d72fc77bb8405d32e5cd75f5d74a",
+            "token0": "0x1384555d00144c7725ac71da2bb1fd67b9ad889a",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "453799881236847311824814694289",
+            "reserve1": "5968496075761873",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:23.308Z"
+          },
+          {
+            "pairAddress": "0x2602e99d3835eadc755f904c98737b7a9c7e3bae",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xd717cf06922fa4d00822d09cfcf90eae97c85472",
+            "reserve0": "310856568125944",
+            "reserve1": "444246025229239877678433030636",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:50.004Z"
+          },
+          {
+            "pairAddress": "0x97ec5409fe28e3046063f270d414db1e82731f04",
+            "token0": "0x13f8dfdc76d782646800d9ebaefba5f9c8ba8597",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "321839592810433777769993839579",
+            "reserve1": "79174974882188",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:58.496Z"
+          },
+          {
+            "pairAddress": "0x0b42685a93b478621e4ca8d6292cff89d65c19f2",
+            "token0": "0x00274214c88e481ecc63460f11b264923c67f602",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "291029787936532427897205093387",
+            "reserve1": "502579108551375421",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:36.978Z"
+          },
+          {
+            "pairAddress": "0x9a6b07058a61a05027196ecc0738974c4c224c5d",
+            "token0": "0x897504dc693b30c367cdacfa88578582686c1d95",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "183614671074857913663192491057",
+            "reserve1": "14454026550355292",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:40.946Z"
+          },
+          {
+            "pairAddress": "0x7f499850650c82b845a75c2f45dfdccb47a4f6c8",
+            "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "token1": "0x92fe93300624f16edcc6bc4205e9dc836660ba3f",
+            "reserve0": "139711570046480316993691111424",
+            "reserve1": "1588174662068120985084",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:10.690Z"
+          },
+          {
+            "pairAddress": "0x5ed9fa9adde28b987d76083e630b88add42de699",
+            "token0": "0x4d1d4b79d8d30ca728bda332e8699667e7216b1e",
+            "token1": "0x502eed71ffe313252cadc745fac1223e126e002e",
+            "reserve0": "14585796473458209875796",
+            "reserve1": "88951282888932796629227951483",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:18.024Z"
+          },
+          {
+            "pairAddress": "0x4c7a472c5356679bec7bb0b36038b2edc132255a",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+            "reserve0": "328410178883039548",
+            "reserve1": "80188969283201274808756497574",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:31.390Z"
+          },
+          {
+            "pairAddress": "0x6e98c020db9e6b7112c91b9924d155329e3a5dbe",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xc444dde1cdad47c9082ef5122aac5301a1e84e14",
+            "reserve0": "6800712792246",
+            "reserve1": "72048499404959836144521716605",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:35.204Z"
+          },
+          {
+            "pairAddress": "0x2e608a635a7af675162f41cdb9b29d217010c9d3",
+            "token0": "0x7d48423feac5aa05380db98a1f24ce17d641754d",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "53279111206573986343320795776",
+            "reserve1": "47612138137913617123710152",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:57.666Z"
+          },
+          {
+            "pairAddress": "0xfb0addc13cbdfcabb6f9e7e2fc1a3ea5917f4fa6",
+            "token0": "0x074dc3a727433e774f0f26bece65fd4d63fa854b",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "33120539887763629179678157235",
+            "reserve1": "3214181711356",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:33.402Z"
+          },
+          {
+            "pairAddress": "0x443f2e9a5877e2896d1248288c73aa6b7402fbbe",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xd04ee1b6a9c4e4942f4a3d88c47b256ba5323297",
+            "reserve0": "4584024169756698",
+            "reserve1": "30000322879949118503943333100",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:18.816Z"
+          },
+          {
+            "pairAddress": "0xc16bc1c93cbabcbbc64b3064adca05e571a2ec42",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+            "reserve0": "172867164275216023084730",
+            "reserve1": "26827179007538415407579051413",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:32.130Z"
+          },
+          {
+            "pairAddress": "0x4ebc19234ecb2356bdca0ca53afc522758b6c860",
+            "token0": "0x900419079ee0fe2ae4a4990f80217fb146e9adeb",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "25868969516846390729338633317",
+            "reserve1": "1213515658944869740253876",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:59.394Z"
+          },
+          {
+            "pairAddress": "0x8e91c97fd7fecfd935e6916b1d94efd6b47c088d",
+            "token0": "0x488907d99ce2ac919a47acfac896e825fd23598f",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "13620881429956301785673916588",
+            "reserve1": "581685914880560183",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:41.276Z"
+          },
+          {
+            "pairAddress": "0xede506ee698acd55fb522c57772c9db5f98ccfa2",
+            "token0": "0x7d1481568c72891bb87a964c3a6e6213bd73d114",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "11295709759910945334685833715",
+            "reserve1": "1729931480301070430182905",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:54.138Z"
+          },
+          {
+            "pairAddress": "0xf62a5c4a5eb810493261d14a971403d78403c5ee",
+            "token0": "0x5f7cc946abf0c853a2367ac436755de6aa8d48bd",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "11282652296543241136793511979",
+            "reserve1": "1325184193492371100140845",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:52.567Z"
+          },
+          {
+            "pairAddress": "0x90ce2b7f74dbe3f3854b80fad4d433005cf32cbc",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+            "reserve0": "5577226379408251524790775",
+            "reserve1": "11149510454836537590945973619",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:40.229Z"
+          },
+          {
+            "pairAddress": "0x01db17c476ad6a4c119f559eab2d1ac9e340278e",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e",
+            "reserve0": "6917455947050056665677827",
+            "reserve1": "10227280993535718257119499794",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:33.680Z"
+          },
+          {
+            "pairAddress": "0xc6f6f0a9525d43d68ab3fc27a731c01b10f320fa",
+            "token0": "0x31b5be085af875b675392f5b37a1d0b8c3860222",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "5116644230331511903231107436",
+            "reserve1": "1358409069566172666576549",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:45.521Z"
+          },
+          {
+            "pairAddress": "0xd5feaf65dc6e4aee13687e32baba715ba19856cc",
+            "token0": "0x900419079ee0fe2ae4a4990f80217fb146e9adeb",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "4193954500744652342945315613",
+            "reserve1": "125030018853243474",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:55.485Z"
+          },
+          {
+            "pairAddress": "0x14b3de51be085be1fee1bb924b3ac32f1d7e64c1",
+            "token0": "0x31b5be085af875b675392f5b37a1d0b8c3860222",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "3929084451815903620278587947",
+            "reserve1": "663240300553871883",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:45.149Z"
+          },
+          {
+            "pairAddress": "0xffafe2103d627a056d3177e7158cb487f3a59659",
+            "token0": "0x5f7cc946abf0c853a2367ac436755de6aa8d48bd",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "3140571319583174001581075044",
+            "reserve1": "234411505860826498",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:52.287Z"
+          },
+          {
+            "pairAddress": "0x4fcefc1071b79b72d78d4666afa2dde5e08356df",
+            "token0": "0x8b0c9785a4c211b345ab2f8d88b6d021ac6dd5bf",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "2813895884993586742543835107",
+            "reserve1": "46118459216813",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:04.513Z"
+          },
+          {
+            "pairAddress": "0x8d53d34fb9cbe7e1c34e9b70537788699d683752",
+            "token0": "0x4ebd990c64a914258c3b6590273b135db60c97db",
+            "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "reserve0": "2679032255325233528404233968",
+            "reserve1": "1224423104944082832715478",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:39.507Z"
+          },
+          {
+            "pairAddress": "0xabcb96adbcbb9e61ae6dcfccbb38e169218ec838",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xe77e8a1a68edef172ff15945688402ed4dfa5e77",
+            "reserve0": "199814875053729",
+            "reserve1": "2583066053541189100431263202",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:05.204Z"
+          },
+          {
+            "pairAddress": "0x93ca9862f9fea7636b7a143e54c6cd64d9585aef",
+            "token0": "0x7d1481568c72891bb87a964c3a6e6213bd73d114",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "2165623133928103349683073515",
+            "reserve1": "211018467266885252",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:53.861Z"
+          },
+          {
+            "pairAddress": "0x57cf74a5c7da36501db634ba2a2e312faca1cfae",
+            "token0": "0x4ebd990c64a914258c3b6590273b135db60c97db",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "2128472137405013571570497722",
+            "reserve1": "619094865428112076",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:39.226Z"
+          },
+          {
+            "pairAddress": "0x03956b318e6cea5b04a19331a41d0df39ee55bbc",
+            "token0": "0x6effc3b9ea59a081e7132ad2e491d1ae523394f5",
+            "token1": "0xd04ee1b6a9c4e4942f4a3d88c47b256ba5323297",
+            "reserve0": "132597495661701222619520",
+            "reserve1": "1838010664957624661721135564",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:30.030Z"
+          },
+          {
+            "pairAddress": "0x9c0bc3570b5d8524316e6590fc2dc0bd74093411",
+            "token0": "0x488907d99ce2ac919a47acfac896e825fd23598f",
+            "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+            "reserve0": "1526570830655547548210777314",
+            "reserve1": "37370647583926964373",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:13.753Z"
+          },
+          {
+            "pairAddress": "0x7825da4753eb52d918dac368f59d1fb734dafb72",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e",
+            "reserve0": "646863807201189070",
+            "reserve1": "1513543643971146255299757698",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:34:20.581Z"
+          },
+          {
+            "pairAddress": "0xab661bbcf1196e6af311fd1fc30572bced31907b",
+            "token0": "0x76fa566136cfa5b720d37259cabe45a9c407116b",
+            "token1": "0x92fe93300624f16edcc6bc4205e9dc836660ba3f",
+            "reserve0": "1474666342773993418671772148",
+            "reserve1": "418167720364814854886076",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:18.785Z"
+          },
+          {
+            "pairAddress": "0xca630342eb01a71aa901ad9ebf80156dbfa61e8a",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xd04ee1b6a9c4e4942f4a3d88c47b256ba5323297",
+            "reserve0": "275917741425500118094",
+            "reserve1": "1169969126756878188767570393",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:37:00.641Z"
+          },
+          {
+            "pairAddress": "0x7151d3368e04846b74810286a07546c18f925402",
+            "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1": "0xfbcaa62b6e76ddf2e085b1483ec742e8a1474513",
+            "reserve0": "1141501399725848382289272",
+            "reserve1": "1005649607616135140484782160",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:02.773Z"
+          },
+          {
+            "pairAddress": "0x0ca5da766a0d95a5b16abfb974071c29391d1581",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+            "reserve0": "311418495406287779",
+            "reserve1": "978173471687320811266961108",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:35.842Z"
+          },
+          {
+            "pairAddress": "0xc1abc7bec45faadd806647b9b211973e7b4814c3",
+            "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "token1": "0xcd03bcf9abbae8ea85c74ca079b98768380a2950",
+            "reserve0": "621718908550258",
+            "reserve1": "771843712762027351301921047",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:35:14.200Z"
+          },
+          {
+            "pairAddress": "0x8f2a185c19093eaacd8f1110472e155375532510",
+            "token0": "0x76fa566136cfa5b720d37259cabe45a9c407116b",
+            "token1": "0xede11c43598c814d39548423eb2d2a66a4db3cc2",
+            "reserve0": "684986242776723546372670864",
+            "reserve1": "55716132555466406511813685",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:19.736Z"
+          },
+          {
+            "pairAddress": "0x8d1aa91cdf8b07242380fe9462fe15f459796831",
+            "token0": "0x7d48423feac5aa05380db98a1f24ce17d641754d",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "638872153599849363698014414",
+            "reserve1": "382450361485224440",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:55.823Z"
+          },
+          {
+            "pairAddress": "0x8d499dd632dc17dcb1460cc80ab4cc9b2b47c0f3",
+            "token0": "0x76fa566136cfa5b720d37259cabe45a9c407116b",
+            "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "reserve0": "492766330023609069706737778",
+            "reserve1": "603610724272005",
+            "classification": "tradeable",
+            "metadataStatus": "partial",
+            "active": true,
+            "lastVerified": "2026-07-10T16:36:18.314Z"
+          }
+        ],
+        "total": 505,
+        "page": 1,
+        "pageSize": 50,
+        "source": "blob",
+        "dataSource": "direct-contract-state-registry",
+        "discoveryMethod": "factory-allPairs-enumeration"
+      }
+    },
+    "candlesMarcoWbnb": {
+      "key": "candlesMarcoWbnb",
+      "url": "https://www.melega.finance/api/indexer/candles?pair=0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e&interval=1H",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 609,
+      "body": {
+        "status": "ready",
+        "candles": [
+          {
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "interval": "1H",
+            "bucketTimestamp": 1773392400,
+            "open": 0.0000012288710158073158,
+            "high": 0.0000012288710158073158,
+            "low": 0.0000012288710158073158,
+            "close": 0.0000012288710158073158,
+            "baseVolume": 4068.775270702608,
+            "quoteVolume": 0.005,
+            "tradeCount": 1,
+            "startBlock": 86326727,
+            "endBlock": 86326727,
+            "lastUpdated": "2026-07-11T07:52:05.568Z"
+          },
+          {
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "interval": "1H",
+            "bucketTimestamp": 1783753200,
+            "open": 6.315197318963169e-7,
+            "high": 6.315197318963169e-7,
+            "low": 6.315197318963169e-7,
+            "close": 6.315197318963169e-7,
+            "baseVolume": 179.86469788584677,
+            "quoteVolume": 0.000113588105786482,
+            "tradeCount": 1,
+            "startBlock": 109323984,
+            "endBlock": 109323984,
+            "lastUpdated": "2026-07-12T02:50:09.869Z"
+          },
+          {
+            "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+            "interval": "1H",
+            "bucketTimestamp": 1783850400,
+            "open": 6.257506629677963e-7,
+            "high": 6.257506629677963e-7,
+            "low": 6.257506629677963e-7,
+            "close": 6.257506629677963e-7,
+            "baseVolume": 350.840866828602,
+            "quoteVolume": 0.000219538905014194,
+            "tradeCount": 1,
+            "startBlock": 109542524,
+            "endBlock": 109542524,
+            "lastUpdated": "2026-07-12T10:50:39.347Z"
+          }
+        ],
+        "meta": {
+          "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+          "slug": "marco-wbnb",
+          "interval": "1H",
+          "candleCount": 3,
+          "lastIndexedBlock": 109124340
+        }
+      }
+    },
+    "runtimeSwaps": {
+      "key": "runtimeSwaps",
+      "url": "https://www.melega.finance/api/runtime/swaps?slug=marco-wbnb",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 199,
+      "body": {
+        "transactions": [
+          {
+            "type": 0,
+            "hash": "0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61",
+            "timestamp": "1783853420",
+            "sender": "0x4cc318290743b35d6c9063e58c3ef2faa01a81a9",
+            "token0Symbol": "MARCO",
+            "token1Symbol": "WBNB",
+            "token0Address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1Address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "amountUSD": 0,
+            "amountToken0": 350.840866828602,
+            "amountToken1": 0.000219538905014194
+          },
+          {
+            "type": 0,
+            "hash": "0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d",
+            "timestamp": "1783755056",
+            "sender": "0x0c2b4fc0f8bed892f7278a6705bab41fb8ce4170",
+            "token0Symbol": "MARCO",
+            "token1Symbol": "WBNB",
+            "token0Address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1Address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "amountUSD": 0,
+            "amountToken0": 179.86469788584677,
+            "amountToken1": 0.000113588105786482
+          },
+          {
+            "type": 0,
+            "hash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+            "timestamp": "1773393280",
+            "sender": "0xc25033218d181b27d4a2944fbb04fc055da4eab3",
+            "token0Symbol": "MARCO",
+            "token1Symbol": "WBNB",
+            "token0Address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+            "token1Address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "amountUSD": 0,
+            "amountToken0": 4068.775270702608,
+            "amountToken1": 0.005
+          }
+        ],
+        "meta": {
+          "source": "bsc-rpc-log-indexer",
+          "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+          "fromBlock": 109116340,
+          "toBlock": 109567804,
+          "latestIndexedBlock": 109124340,
+          "chainHead": 109567804,
+          "indexingLag": 443464,
+          "lastSuccessfulSync": "2026-07-12T15:30:23.008Z",
+          "eventCount": 3,
+          "status": "ready"
+        }
+      }
+    },
+    "protocolActivity": {
+      "key": "protocolActivity",
+      "url": "https://www.melega.finance/api/protocol/activity?limit=40",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 414,
+      "body": {
+        "status": "ready",
+        "events": [],
+        "count": 0
+      }
+    },
+    "masterchefEmission": {
+      "key": "masterchefEmission",
+      "url": "https://www.melega.finance/api/masterchef/emission",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 206,
+      "body": {
+        "status": "ready",
+        "masterChefAddress": "0x41D5487836452d23f2c467070244E5842B412794",
+        "emissionMethod": "dexTokenPerBlock",
+        "rawEmissionPerBlock": "0x0000000000000000000000000000000000000000000000004563918244f40000",
+        "normalizedEmissionPerBlock": 5,
+        "decimals": 18,
+        "totalAllocPoint": 478453,
+        "poolLength": 387,
+        "blocksPerDay": 28800,
+        "multiplier": 1,
+        "totalDailyEmission": 144000,
+        "currentBlock": 109587121,
+        "source": "masterchef-rpc",
+        "rewardToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+        "poolAllocations": {
+          "0": 119613,
+          "1": 10000,
+          "5": 300,
+          "6": 1000,
+          "8": 1000,
+          "11": 10000,
+          "12": 5000,
+          "13": 5000,
+          "16": 5000,
+          "17": 5000,
+          "18": 5000,
+          "27": 5000,
+          "28": 5000,
+          "29": 5000
+        },
+        "examples": [
+          {
+            "pid": 0,
+            "allocPoint": 119613,
+            "lpToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+            "dailyMarco": 35999.92475749969,
+            "rawPoolInfoHex": "0x000000000000000000000000963556de0eb8138e97a85f0a86ee0acd159d210b000000000000000000000000000000000000000000000000000000000001d33d0000000000000000000000000000000000000000000000000000000006882436000000000000000000000000000000000000000000000000000020b5a25e1391",
+            "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "pid": 1,
+            "allocPoint": 10000,
+            "lpToken": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+            "dailyMarco": 3009.7000123314097,
+            "rawPoolInfoHex": "0x0000000000000000000000007286c16c3c05d4c17b689be7948ec4fa4e861d1e0000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000679f3ed000000000000000000000000000000000000000000000000002a36b56c8e6b3c",
+            "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000001"
+          },
+          {
+            "pid": 5,
+            "allocPoint": 300,
+            "lpToken": "0x8481c346D5348A7b543Cb3755beBB68799d375d0",
+            "dailyMarco": 90.2910003699423,
+            "rawPoolInfoHex": "0x0000000000000000000000008481c346d5348a7b543cb3755bebb68799d375d0000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000003407ee700000000000000000000000000000000000000000000000000144987ee1d303e",
+            "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000005"
+          }
+        ],
+        "rpc": {
+          "eth_chainId": "0x38",
+          "eth_blockNumber": "0x6882ab1",
+          "dexTokenPerBlock": {
+            "signature": "dexTokenPerBlock",
+            "selector": "0x6d7249df",
+            "calldata": "0x6d7249df",
+            "raw": "0x0000000000000000000000000000000000000000000000004563918244f40000",
+            "decodedWei": "5000000000000000000"
+          },
+          "totalAllocPoint": {
+            "selector": "0x17caf6f1",
+            "raw": "0x0000000000000000000000000000000000000000000000000000000000074cf5",
+            "decoded": "478453"
+          },
+          "poolLength": {
+            "selector": "0x081e3eda",
+            "raw": "0x0000000000000000000000000000000000000000000000000000000000000183",
+            "decoded": "387"
+          },
+          "BONUS_MULTIPLIER": {
+            "selector": "0x8aa28550",
+            "raw": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "decoded": "1"
+          },
+          "marcoDecimals": {
+            "contract": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+            "raw": "0x0000000000000000000000000000000000000000000000000000000000000012",
+            "decoded": "18"
+          }
+        },
+        "timestamp": "2026-07-12T16:25:03.226Z",
+        "provider": "https://indulgent-long-diagram.bsc.quiknode.pro/898a51f661655c8aeeef8a138bdd8128072bae0b/"
+      }
+    },
+    "poolsClassification": {
+      "key": "poolsClassification",
+      "url": "https://www.melega.finance/api/pools/classification",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 483,
+      "body": {
+        "generatedAt": "2026-07-12T16:25:10.649Z",
+        "currentBlock": 109587148,
+        "counts": {
+          "discovered": 0,
+          "verified": 0,
+          "active": 0,
+          "funded": 0,
+          "rewarding": 0,
+          "ended": 0,
+          "invalid": 0,
+          "dataSource": "on-chain-verified-multicall",
+          "note": "SmartChefFactory has no enumerable poolLength; candidates seeded from deployment inventory then verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded."
+        },
+        "rows": [],
+        "samples": []
+      }
+    }
+  },
+  "summary": {
+    "ok": 12,
+    "total": 12,
+    "failed": []
+  }
+}

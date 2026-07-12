@@ -30,8 +30,8 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
   const [sourceIndex, setSourceIndex] = useState(0)
 
   const handleError = useCallback(() => {
-    setSourceIndex((i) => Math.min(i + 1, sources.length))
-  }, [sources.length])
+    setSourceIndex((i) => i + 1)
+  }, [])
 
   const borderRadius = radius === 'circle' ? '50%' : `${radius}px`
   const label = (name || symbol || '?').slice(0, 1).toUpperCase()

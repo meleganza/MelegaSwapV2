@@ -5,7 +5,6 @@ import { usePoolDatasSWR } from 'state/info/hooks'
 import useTopPoolAddresses from 'state/info/queries/pools/topPools'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { fetchAmmPairsPage } from 'lib/bsc-indexer/client/fetchDurableIndexer'
 import { formatPct, formatUsd } from './formatLiquidityRuntime'
 
@@ -202,7 +201,7 @@ export const useLiquidityTerminalData = (
           : 'Low'
     return [
       { label: 'Pool Health', value: health, tone: health === 'Stable' ? 'green' as const : 'gold' as const },
-      { label: 'Best Opportunity', value: best?.pair ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'gold' as const },
+      { label: 'Best Opportunity', value: best?.pair ?? '—', tone: 'gold' as const },
       { label: 'Risk', value: risk, tone: risk === 'Low' ? 'green' as const : 'gold' as const },
     ]
   }, [selectedPool, topPools])
