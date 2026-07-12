@@ -2,6 +2,7 @@ import type { NextApiHandler } from 'next'
 import { runFeaturedPairSync } from 'lib/bsc-indexer/indexer/featuredPairSync'
 import { FEATURED_PAIR_SLUG, MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import { loadTierPairInventory, selectTier2PairForSync } from 'lib/bsc-indexer/indexer/tierInventory'
+import { resolveCanonicalTier1Pairs } from 'lib/bsc-indexer/indexer/canonicalTierPairs'
 import { runTierPairSync } from 'lib/bsc-indexer/indexer/tierPairSync'
 import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
 
@@ -29,12 +30,16 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const featured = await runFeaturedPairSync()
     const inventory = await loadTierPairInventory()
+    const provenTier1 = await resolveCanonicalTier1Pairs().catch(() => [])
     const storage = resolveIndexerStorage()
     const checkpoint = await storage.loadCheckpoint()
     const cursor = checkpoint?.cursorPairIndex ?? 0
 
-    const tier1Extra = inventory.tier1.filter(
-      (w) => w.slug !== FEATURED_PAIR_SLUG && w.pairAddress !== MARCO_WBNB_PAIR_BSC.toLowerCase(),
+    const tier1Extra = [...inventory.tier1, ...provenTier1].filter(
+      (w, i, arr) =>
+        w.slug !== FEATURED_PAIR_SLUG &&
+        w.pairAddress !== MARCO_WBNB_PAIR_BSC.toLowerCase() &&
+        arr.findIndex((x) => x.pairAddress === w.pairAddress) === i,
     )
     const tier1Results: Array<{ slug: string; tier: string; addedEvents: number }> = []
     const tier1Target = tier1Extra.slice(0, 1)[0]
