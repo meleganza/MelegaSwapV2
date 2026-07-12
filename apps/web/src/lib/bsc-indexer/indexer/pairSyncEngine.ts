@@ -161,9 +161,10 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     toBlock = forwardTo
   }
 
-  // 2) Backward pass — fill bootstrap window when forward chunk had spare budget
+  // 2) Backward pass — only after forward cursor reaches head (never compete with gap fill)
   let phase = checkpoint.phase ?? 'bootstrap'
-  if (phase === 'bootstrap' && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
+  const forwardCaughtUp = forwardCursor >= forwardHigh - REORG_SAFETY_BLOCKS
+  if (phase === 'bootstrap' && forwardCaughtUp && normalized.length < MAX_EVENTS_PER_SYNC / 2) {
     const backwardHigh = checkpoint.backwardCursor ?? chainHead
     if (backwardHigh > bootstrapFloor) {
       const backwardLow = Math.max(bootstrapFloor, backwardHigh - BACKWARD_CHUNK_BLOCKS)
