@@ -96,7 +96,7 @@ async function runOnce(n) {
     const res = await fetch(`${BASE}/api/indexer/run/`, {
       method: 'POST',
       headers,
-      signal: AbortSignal.timeout(20_000),
+      signal: AbortSignal.timeout(70_000),
     })
     httpStatus = res.status
     triggerBody = await res.json().catch(() => ({}))
@@ -222,8 +222,9 @@ async function main() {
     cleanSequentialRuns: runs.filter(
       (r) =>
         r.ok &&
-        r.stoppedBeforeDeadline !== false &&
-        r.elapsedMs < POLL_TIMEOUT_MS + 25_000,
+        r.httpStatus === 200 &&
+        r.elapsedMs < (r.budgetMs ?? 60_000) + 15_000 &&
+        !r.failureReason,
     ).length,
     runs,
   }
