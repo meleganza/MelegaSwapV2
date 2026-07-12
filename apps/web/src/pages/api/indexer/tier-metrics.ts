@@ -9,7 +9,13 @@ import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange
 
 const SECONDS_24H = 86_400
 
-export type TierPairStatus = 'READY' | 'NO_EVENTS_IN_WINDOW' | 'RPC_UNAVAILABLE' | 'INVALID_PAIR'
+export type TierPairStatus =
+  | 'READY'
+  | 'NO_EVENTS_IN_WINDOW'
+  | 'EMPTY_VERIFIED'
+  | 'UNSCANNED'
+  | 'RPC_UNAVAILABLE'
+  | 'INVALID_PAIR'
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET') {
@@ -42,8 +48,9 @@ const handler: NextApiHandler = async (req, res) => {
         : slugFromPairAddress(watch.pairAddress, watch.token0, watch.token1)
     try {
       const storage = resolveIndexerStorageForSlug(slug)
-      const [health, candles, events] = await Promise.all([
+      const [health, checkpoint, candles, events] = await Promise.all([
         storage.loadHealth(),
+        storage.loadCheckpoint(),
         storage.listCandles(watch.pairAddress, '1H', 48),
         storage.listEvents({ pairAddress: watch.pairAddress, limit: 500 }),
       ])
@@ -60,11 +67,24 @@ const handler: NextApiHandler = async (req, res) => {
 
       const hasSignal =
         volume24hQuote > 0 || tradeCount24h > 0 || changeResult != null || recentCandles.length >= 2
-      const status: TierPairStatus = hasSignal
-        ? 'READY'
-        : health?.status === 'ready' || health?.status === 'syncing'
-          ? 'NO_EVENTS_IN_WINDOW'
-          : 'RPC_UNAVAILABLE'
+
+      const scanned = Boolean(checkpoint || health?.lastSuccessfulSync)
+      const rpcFailure =
+        health?.status === 'error' &&
+        Boolean(health?.lastFailureReason?.toLowerCase().includes('rpc'))
+
+      let status: TierPairStatus
+      if (hasSignal) {
+        status = 'READY'
+      } else if (!scanned) {
+        status = 'UNSCANNED'
+      } else if (rpcFailure) {
+        status = 'RPC_UNAVAILABLE'
+      } else if (health?.status === 'ready' || health?.status === 'syncing' || checkpoint) {
+        status = 'EMPTY_VERIFIED'
+      } else {
+        status = 'NO_EVENTS_IN_WINDOW'
+      }
 
       rows.push({
         slug,

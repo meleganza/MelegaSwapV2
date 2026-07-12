@@ -28,8 +28,10 @@ export interface IndexerRunReport {
   stageTimings: Array<{ stage: string; elapsedMs: number }>
 }
 
-export async function runIndexerOrchestrator(): Promise<IndexerRunReport> {
-  const deadline = new IndexerDeadline(Date.now(), SAFE_EXECUTION_BUDGET_MS)
+export async function runIndexerOrchestrator(
+  budgetMs: number = SAFE_EXECUTION_BUDGET_MS,
+): Promise<IndexerRunReport> {
+  const deadline = new IndexerDeadline(Date.now(), budgetMs)
   let addedEvents = 0
   let addedCandles = 0
   let forwardRangesProcessed = 0

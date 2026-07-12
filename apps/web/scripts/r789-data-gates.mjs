@@ -42,6 +42,7 @@ const inventoryPath = join(ROOT, 'public/registry/pools-canonical-inventory.json
 gate('R789-SMARTCHEF-INVENTORY-PUBLIC', existsSync(inventoryPath), 'public registry inventory present for Vercel')
 
 const r787 = read('scripts/r787-data-gates.mjs')
+gate('R789-HTTP-GATEWAY-BUDGET', read('src/lib/bsc-indexer/indexer/indexerDeadline.ts').includes('INDEXER_HTTP_GATEWAY_BUDGET_MS'), 'indexer HTTP gateway budget for Vercel 504 avoidance')
 gate('R789-INHERITS-R787-GATES', r787.includes('R787-DEADLINE-BUDGET'), 'R787 gate script retained')
 
 if (failures.length) {
