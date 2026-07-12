@@ -24,14 +24,14 @@ export const MelegaTokenAvatar: React.FC<MelegaTokenAvatarProps> = ({
   alt = '',
 }) => {
   const sources = useMemo(
-    () => resolveTokenLogoSources({ symbol, name, address, chainId, logoURI }),
+    () => resolveTokenLogoSources({ symbol, name, address, chainId, logoURI }).filter(Boolean),
     [symbol, name, address, chainId, logoURI],
   )
   const [sourceIndex, setSourceIndex] = useState(0)
 
   const handleError = useCallback(() => {
-    setSourceIndex((i) => i + 1)
-  }, [])
+    setSourceIndex((i) => Math.min(i + 1, sources.length))
+  }, [sources.length])
 
   const borderRadius = radius === 'circle' ? '50%' : `${radius}px`
   const label = (name || symbol || '?').slice(0, 1).toUpperCase()

@@ -21,7 +21,8 @@ export const ImportTokenPanel: React.FC = () => (
     data-bs-import-token
     data-bs-primary-entry
     $emphasis="primary"
-    $height={buildStudioLayout.importTokenH}
+    $height="auto"
+    $minHeight="0"
   >
     <Inner>
       <BuildStudioImportWorkflow />

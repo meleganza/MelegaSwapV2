@@ -310,10 +310,23 @@ function buildSubgraphPath(points: Array<{ value: number }>, width: number, heig
   const min = Math.min(...values)
   const max = Math.max(...values)
   const range = max - min || 1
+  const toY = (value: number) => height - ((value - min) / range) * (height - 8) - 4
+  if (points.length <= 3) {
+    return points
+      .map((p, i) => {
+        const x = (i / (points.length - 1)) * width
+        const y = toY(p.value)
+        if (i === 0) return `M ${x} ${y}`
+        const prevX = ((i - 1) / (points.length - 1)) * width
+        const prevY = toY(points[i - 1].value)
+        return `H ${x} V ${y}`
+      })
+      .join(' ')
+  }
   return points
     .map((p, i) => {
       const x = (i / (points.length - 1)) * width
-      const y = height - ((p.value - min) / range) * (height - 8) - 4
+      const y = toY(p.value)
       return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
     })
     .join(' ')
@@ -330,8 +343,8 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const [isLoading, setIsLoading] = useState(true)
   const [hasNoData, setHasNoData] = useState(false)
 
-  const hasChartHistory = pairPrices.length >= 3
-  const hasTwoPoints = pairPrices.length === 2
+  const hasChartHistory = pairPrices.length >= 2
+  const hasSparseHistory = pairPrices.length >= 2 && pairPrices.length < 3
   const hasSinglePoint = pairPrices.length === 1
   const singlePointPrice = hasSinglePoint ? pairPrices[0]?.value : undefined
 
@@ -352,9 +365,7 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
   const debouncedLoading = useDebounce(isLoading, 800)
   const showTv = Boolean(symbol) && !hasNoData && !hasChartHistory && !hasSinglePoint
   const showUnavailable =
-    (hasNoData || !symbol || emptyReason === 'insufficient_history') && !hasChartHistory && !hasSinglePoint
-  const showInsufficientHistory =
-    (hasSinglePoint || hasTwoPoints) && (emptyReason === 'insufficient_history' || pairPrices.length < 3)
+    (hasNoData || !symbol) && !hasChartHistory && !hasSinglePoint
   const showSkeleton = showTv && (isLoading || debouncedLoading)
   const subgraphPath = useMemo(() => buildSubgraphPath(pairPrices, 360, 160), [pairPrices])
   const friendlyCopy = EMPTY_REASON_COPY[emptyReason ?? ''] ?? EMPTY_REASON_COPY.chart_unavailable
@@ -388,23 +399,10 @@ export const TradeChartPanel: React.FC<TradeChartPanelProps> = ({
               </linearGradient>
             </defs>
           </SubgraphSvg>
-          <SubgraphLabel>Indexed pair price · Melega durable indexer</SubgraphLabel>
+          <SubgraphLabel>
+            {hasSparseHistory ? 'Indexed price · limited history' : 'Indexed pair price · Melega durable indexer'}
+          </SubgraphLabel>
         </SubgraphChart>
-      )}
-      {showInsufficientHistory && (
-        <UnavailableState data-trade-chart-insufficient>
-          <UnavailableIcon aria-hidden>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-            </svg>
-          </UnavailableIcon>
-          <UnavailableTitle>
-            {singlePointPrice != null ? `$${singlePointPrice.toFixed(6)}` : 'Current price'}
-          </UnavailableTitle>
-          <UnavailableDesc>{EMPTY_REASON_COPY.insufficient_history}</UnavailableDesc>
-          <TradeTechnicalDetails detail={emptyDetail} />
-        </UnavailableState>
       )}
       {showTv && (
         <TvWrap $show={!showSkeleton}>

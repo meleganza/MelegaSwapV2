@@ -2,7 +2,6 @@ import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsSectionTitle } from './liquidityStudioPrimitives'
@@ -84,10 +83,7 @@ export const TopPoolsPanel: React.FC = () => {
       <LsSectionTitle>Top Pools</LsSectionTitle>
       {topPoolsUnavailableReason || topPools.length === 0 ? (
         <UnavailableWrap data-ls-top-pools-unavailable>
-          <UnavailableTitle>{RUNTIME_UNAVAILABLE_LABEL}</UnavailableTitle>
-          <UnavailableReason>
-            Reason: {topPoolsUnavailableReason ?? 'Waiting for first indexed pool event'}
-          </UnavailableReason>
+          <UnavailableTitle>No indexed pool data</UnavailableTitle>
           <TradeTechnicalDetails detail={JSON.stringify(machine, null, 2)} />
         </UnavailableWrap>
       ) : (

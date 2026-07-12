@@ -141,7 +141,9 @@ export const PoolsKpiRow: React.FC = () => {
               <KpiIcon aria-hidden>{KPI_ICONS[kpi.id] ?? '•'}</KpiIcon>
               <KpiLabel>{label}</KpiLabel>
               {isFeaturedEmpty ? (
-                <KpiSecondary data-ps-kpi-value>{RUNTIME_UNAVAILABLE_LABEL}</KpiSecondary>
+                <KpiValue data-ps-kpi-value $center>
+                  {kpi.value || '—'}
+                </KpiValue>
               ) : kpi.id === 'featured' ? (
                 <>
                   <KpiValue data-ps-kpi-value>{kpi.value}</KpiValue>
@@ -154,9 +156,9 @@ export const PoolsKpiRow: React.FC = () => {
                     $center={isUnavailableApr}
                     data-ps-kpi-value
                   >
-                    {isUnavailableApr ? RUNTIME_UNAVAILABLE_LABEL : formatKpiValue(kpi.id, kpi.value)}
+                    {isUnavailableApr ? '—' : formatKpiValue(kpi.id, kpi.value)}
                   </KpiValue>
-                  {kpi.secondary ? <KpiSecondary>{kpi.secondary}</KpiSecondary> : null}
+                  {kpi.secondary && !isUnavailableApr ? <KpiSecondary>{kpi.secondary}</KpiSecondary> : null}
                 </>
               )}
             </KpiCard>

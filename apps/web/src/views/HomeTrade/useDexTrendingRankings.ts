@@ -163,9 +163,15 @@ export function useDexTrendingRankings() {
     dedupingInterval: 120_000,
   })
 
+  const effectiveBnbUsd = useMemo(() => {
+    if (bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0) return bnbUsd
+    const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+    return wbnbUsd != null && Number.isFinite(wbnbUsd) && wbnbUsd > 0 ? wbnbUsd : undefined
+  }, [bnbUsd, wbnbPrice])
+
   const marcoMetrics = useMemo(
-    () => marcoIndexerMetrics(candles, transactions, bnbUsd),
-    [candles, transactions, bnbUsd],
+    () => marcoIndexerMetrics(candles, transactions, effectiveBnbUsd),
+    [candles, transactions, effectiveBnbUsd],
   )
 
   const rankedAssets = useMemo((): RankedAsset[] => {
@@ -207,7 +213,7 @@ export function useDexTrendingRankings() {
 
       tierMetrics.forEach((row) => {
         if (row.token0 !== addrKey && row.token1 !== addrKey) return
-        const volUsd = row.volume24hQuote > 0 && bnbUsd ? row.volume24hQuote * bnbUsd : 0
+        const volUsd = row.volume24hQuote > 0 && effectiveBnbUsd ? row.volume24hQuote * effectiveBnbUsd : 0
         if (volUsd > volume24h) {
           volume24h = volUsd
           signals.push('tier-volume24h')
@@ -263,6 +269,33 @@ export function useDexTrendingRankings() {
       }
     })
 
+    if (bySymbol.size === 0 && marcoMetrics.tradeCount > 0) {
+      const marcoUsd =
+        marcoPrice?.toNumber() && marcoPrice.toNumber() > 0
+          ? marcoPrice.toNumber()
+          : marcoMetrics.marcoUsdFromCandle
+      if (marcoUsd && marcoUsd > 0) {
+        const marcoAsset = assets.find(
+          (a) => a.symbol.toUpperCase() === 'MARCO' || a.address?.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase(),
+        )
+        if (marcoAsset?.address) {
+          bySymbol.set('MARCO', {
+            symbol: marcoAsset.symbol,
+            slug: marcoAsset.registrySlug ?? marcoAsset.id,
+            address: marcoAsset.address,
+            chainId: marcoAsset.chainId,
+            displayName: marcoAsset.name ?? marcoAsset.symbol,
+            priceUsd: marcoUsd,
+            change24h: marcoMetrics.marcoChange,
+            volume24h: marcoMetrics.volumeUsd,
+            tradeCount24h: marcoMetrics.tradeCount,
+            liquidityScore: liquidityScoreForAddress(pairRows, marcoAsset.address),
+            rankingSignals: ['runtime-swap-24h'],
+          })
+        }
+      }
+    }
+
     return [...bySymbol.values()]
       .sort((a, b) => {
         if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
@@ -273,7 +306,7 @@ export function useDexTrendingRankings() {
         return bCh - aCh
       })
       .slice(0, TRENDING_LIMIT)
-  }, [pairRows, marcoPrice, wbnbPrice, cakePrice, busdPrice, marcoMetrics, tierMetrics, bnbUsd])
+  }, [pairRows, marcoPrice, wbnbPrice, cakePrice, busdPrice, marcoMetrics, tierMetrics, effectiveBnbUsd])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {

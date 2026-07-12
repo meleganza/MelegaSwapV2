@@ -216,7 +216,10 @@ export const useHomeTradeData = () => {
   const { pools: allPools = [] } = usePoolsWithVault(chainId)
   const { topFarms, fetchStatus: farmsFetchStatus } = useGetTopFarmsByApr(true)
   const { topPools, fetchStatus: poolsFetchStatus } = useGetTopPoolsByApr(true)
-  const { total: liquidPairCount } = useAmmPairRegistry({ classification: 'tradeable', pageSize: 1 })
+  const { total: liquidPairCount, pairs: tradeablePairs } = useAmmPairRegistry({
+    classification: 'tradeable',
+    pageSize: 24,
+  })
   const currentBlock = useCurrentBlock()
 
   const indexedTransactions = useMemo(
@@ -416,8 +419,24 @@ export const useHomeTradeData = () => {
       })
     }
 
-    return cards
-  }, [farms, allPools, currentBlock])
+    const topLiquidityPair = [...tradeablePairs]
+      .sort((a, b) => {
+        const scoreA = BigInt(a.reserve0 ?? '0') + BigInt(a.reserve1 ?? '0')
+        const scoreB = BigInt(b.reserve0 ?? '0') + BigInt(b.reserve1 ?? '0')
+        return scoreB > scoreA ? 1 : scoreB < scoreA ? -1 : 0
+      })[0]
+
+    if (topLiquidityPair?.symbol0 && topLiquidityPair?.symbol1) {
+      cards.push({
+        id: 'highest-liquidity',
+        label: 'Highest Liquidity Pair',
+        value: `${topLiquidityPair.symbol0} / ${topLiquidityPair.symbol1}`,
+        href: '/trade',
+      })
+    }
+
+    return cards.slice(0, 3)
+  }, [farms, allPools, currentBlock, tradeablePairs])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms
@@ -498,14 +517,14 @@ export const useHomeTradeData = () => {
       reason,
     })
     return {
-      message: 'Protocol activity is not yet available from the production indexer.',
+      message: 'No protocol activity detected.',
       timestamp: diagnostic.lastAttempt,
       reason: diagnostic.reason,
       source: diagnostic.source,
       indexer: diagnostic.indexer,
       lastAttempt: diagnostic.lastAttempt,
     }
-  }, [isActivityIndexing, activityRows.length, indexerState])
+  }, [isActivityIndexing, protocolRows.length, indexerState])
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)

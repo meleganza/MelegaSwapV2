@@ -191,15 +191,14 @@ const LiveEconomyBlock = styled.div`
 `
 
 const LiveEconomyStrip = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, max-content);
-  column-gap: 28px;
-  row-gap: 0;
+  display: flex;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: start;
+  gap: 28px;
+  overflow: hidden;
 
-  @media (max-width: 1279px) {
-    grid-template-columns: repeat(2, max-content);
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
     row-gap: 10px;
   }
 `

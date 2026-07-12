@@ -38,6 +38,8 @@ export const NetworkModal = ({ pageSupportedChains = SUPPORT_MULTI_CHAINS }: { p
 
   if (['/', '/about', '/bitcoin-funds', 'venture-funds', '/venture-funds', '/exchange'].includes(pathname)) return null
 
+  if (isBNBOnlyPage) return null
+
   if ((chain?.unsupported ?? false) || isPageNotSupported) {
     return (
       <ModalV2 isOpen closeOnOverlayClick={false}>

@@ -388,9 +388,15 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
     : isRewarding
       ? 'Rewards Active'
       : isEnded
-        ? 'Rewards Concluded'
-        : 'Unavailable'
+        ? 'ENDED'
+        : '—'
   const healthScore = pool.healthScore ?? pool.sustainabilityScore ?? 0
+  const showHealth = !isEnded && healthScore > 0
+  const showRemainingRewards =
+    !isEnded &&
+    pool.remainingRewards &&
+    pool.remainingRewards !== '—' &&
+    pool.remainingRewards !== 'Unavailable'
   const lockLabel = pool.lockPeriod ?? pool.visualType ?? pool.poolTypeLabel ?? '—'
   const duration = pool.estimatedDuration ?? preview?.duration ?? preview?.emissionEndEstimate ?? '—'
   const contractShort = shortenContract(pool.contractAddress, pool.contractLabel ?? preview?.contract)
@@ -430,17 +436,23 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
             <PoolName data-ps-pool-name>{pool.name}</PoolName>
             <BadgeRow>
               {isRewarding ? <Pill $variant="live">LIVE</Pill> : isEnded ? <Pill $variant="community">ENDED</Pill> : null}
-              {rewardBadge ? <Pill $variant={rewardBadge}>{pool.rewardBadge ?? pool.visualType}</Pill> : null}
+              {rewardBadge && !isEnded ? <Pill $variant={rewardBadge}>{pool.rewardBadge ?? pool.visualType}</Pill> : null}
             </BadgeRow>
           </TitleRow>
         </HeaderRow>
 
-        <AprValue data-ps-pool-apr $ended={isEnded || !isLive}>
-          {aprText}
-        </AprValue>
+        {!isEnded ? (
+          <AprValue data-ps-pool-apr $ended={!isLive}>
+            {aprText}
+          </AprValue>
+        ) : null}
 
         {!analyzeOpen ? (
           <InfoGrid data-ps-collapsed-info>
+            <MetricCell>
+              <MetricLabel>Stake Token</MetricLabel>
+              <MetricValue>{pool.stakeToken ?? pool.name?.split(' ')[0] ?? '—'}</MetricValue>
+            </MetricCell>
             <MetricCell>
               <MetricLabel>Reward Token</MetricLabel>
               <MetricValue>{pool.rewardToken}</MetricValue>
@@ -449,17 +461,25 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               <MetricLabel>Lock Type</MetricLabel>
               <MetricValue>{lockLabel}</MetricValue>
             </MetricCell>
-            <MetricCell>
-              <MetricLabel>Remaining Rewards</MetricLabel>
-              <MetricValue>{pool.remainingRewards ?? preview?.remainingRewards ?? '—'}</MetricValue>
-            </MetricCell>
-            <HealthCell data-ps-pool-health>
-              <MetricLabel>Pool Health</MetricLabel>
-              <MetricValue>{healthScore}/100</MetricValue>
-              <HealthBarTrack aria-hidden>
-                <HealthBarFill $score={healthScore} />
-              </HealthBarTrack>
-            </HealthCell>
+            {showRemainingRewards ? (
+              <MetricCell>
+                <MetricLabel>Remaining Rewards</MetricLabel>
+                <MetricValue>{pool.remainingRewards ?? preview?.remainingRewards}</MetricValue>
+              </MetricCell>
+            ) : showHealth ? (
+              <HealthCell data-ps-pool-health>
+                <MetricLabel>Pool Health</MetricLabel>
+                <MetricValue>{healthScore}/100</MetricValue>
+                <HealthBarTrack aria-hidden>
+                  <HealthBarFill $score={healthScore} />
+                </HealthBarTrack>
+              </HealthCell>
+            ) : isEnded && duration !== '—' ? (
+              <MetricCell>
+                <MetricLabel>Duration</MetricLabel>
+                <MetricValue>{duration}</MetricValue>
+              </MetricCell>
+            ) : null}
           </InfoGrid>
         ) : null}
 

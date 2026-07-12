@@ -10,14 +10,14 @@ const shimmer = keyframes`
   100% { background-position: 200% 0; }
 `
 
-const Panel = styled.section`
+const Panel = styled.section<{ $empty?: boolean }>`
   background: ${tradeColors.panel};
   border: 1px solid ${tradeColors.border};
   border-radius: ${tradeLayout.cardRadius};
   padding: ${tradeLayout.cardPadding};
   box-sizing: border-box;
-  height: ${tradeLayout.recentSwapsHeight};
-  min-height: ${tradeLayout.recentSwapsHeight};
+  height: ${({ $empty }) => ($empty ? '176px' : tradeLayout.recentSwapsHeight)};
+  min-height: ${({ $empty }) => ($empty ? '176px' : tradeLayout.recentSwapsHeight)};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -170,9 +170,10 @@ export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
   technicalDetail,
 }) => {
   const displayRows = rows.slice(0, 8)
+  const isEmpty = !isIndexing && displayRows.length === 0
 
   return (
-    <Panel data-trade-recent-swaps>
+    <Panel data-trade-recent-swaps $empty={isEmpty}>
       <Head>
         <Title>Recent swaps</Title>
       </Head>

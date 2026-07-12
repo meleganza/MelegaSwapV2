@@ -130,8 +130,12 @@ const swapRouteLabel = (tx: Transaction): string => `${tx.token0Symbol}→${tx.t
 
 const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean => {
   if (!token0 || !token1) return true
-  const symbols = new Set([tx.token0Symbol.toUpperCase(), tx.token1Symbol.toUpperCase()])
-  return symbols.has(token0.toUpperCase()) && symbols.has(token1.toUpperCase())
+  const normalize = (sym: string) => {
+    const upper = sym.toUpperCase()
+    return upper === 'BNB' ? 'WBNB' : upper
+  }
+  const symbols = new Set([normalize(tx.token0Symbol), normalize(tx.token1Symbol)])
+  return symbols.has(normalize(token0)) && symbols.has(normalize(token1))
 }
 
 function resolveCanonicalOutputAddress(
@@ -253,9 +257,10 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
 
   const recentSwaps = useMemo((): TradeSwapRow[] => {
     if (!transactions?.length) return []
-    return transactions
-      .filter((tx) => tx.type === TransactionType.SWAP)
-      .filter((tx) => matchesPair(tx, displayInput, displayOutput))
+    const swapTxs = transactions.filter((tx) => tx.type === TransactionType.SWAP)
+    const pairFiltered = swapTxs.filter((tx) => matchesPair(tx, displayInput, displayOutput))
+    const source = pairFiltered.length > 0 ? pairFiltered : swapTxs
+    return source
       .slice(0, 12)
       .map((tx) => {
         const receivedSymbol = displayOutput ?? tx.token1Symbol

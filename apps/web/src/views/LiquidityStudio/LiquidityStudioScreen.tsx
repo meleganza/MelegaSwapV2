@@ -45,38 +45,31 @@ const Content = styled.div`
   }
 `
 
-/** R781 — institutional pixel grid: builder | preview | right rail; activity under builder+preview only. */
+/** R788 — institutional pixel grid: builder | preview | right rail; activity spans builder+preview only. */
 const LayoutGrid = styled.div`
   display: grid;
-  gap: ${liquidityStudioLayout.columnGap};
+  gap: 20px;
   align-items: stretch;
   min-width: 0;
 
-  @media (min-width: 1280px) {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto) auto;
-    grid-template-areas:
-      'builder builder builder builder preview preview preview preview preview right right right'
-      'activity activity activity activity activity activity activity activity activity . . .';
-    gap: 18px;
-    margin-top: 0;
+  & > * {
+    min-width: 0;
   }
 
-  @media (min-width: 1100px) and (max-width: 1279px) {
-    grid-template-columns: ${liquidityStudioLayout.leftWidth} ${liquidityStudioLayout.centerWidth} ${liquidityStudioLayout.rightWidth};
-    grid-template-rows: minmax(${liquidityStudioLayout.builderMinHeight}, auto) auto;
+  @media (min-width: 1200px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(300px, 0.72fr);
+    grid-template-rows: auto auto;
     grid-template-areas:
       'builder preview right'
       'activity activity .';
-    max-width: ${liquidityStudioLayout.gridWidth};
   }
 
-  @media (max-width: 1099px) and (min-width: 768px) {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+  @media (min-width: 768px) and (max-width: 1199px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      'builder builder builder builder builder builder preview preview preview preview preview preview'
-      'right right right right right right right right right right right right'
-      'activity activity activity activity activity activity activity activity activity activity activity activity';
+      'builder preview'
+      'right right'
+      'activity activity';
     gap: 18px;
   }
 
@@ -85,7 +78,6 @@ const LayoutGrid = styled.div`
     grid-template-areas:
       'builder'
       'preview'
-      'lpinfo'
       'market'
       'advisor'
       'pools'
@@ -121,22 +113,22 @@ const AreaPreview = styled.div`
 
 const AreaRight = styled.div`
   grid-area: right;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 20px;
+  align-content: start;
   min-width: 0;
   width: 100%;
-  min-height: ${liquidityStudioLayout.builderMinHeight};
 
   & > * {
     width: 100%;
     box-sizing: border-box;
+    min-width: 0;
   }
 
-  @media (max-width: 1099px) and (min-width: 768px) {
-    display: grid;
+  @media (max-width: 1199px) and (min-width: 768px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-rows: auto;
   }
 
   @media (max-width: 767px) {
@@ -147,11 +139,7 @@ const AreaRight = styled.div`
 const AreaActivity = styled.div`
   grid-area: activity;
   min-width: 0;
-  margin-top: 20px;
-
-  @media (min-width: 1280px) {
-    margin-top: 20px;
-  }
+  margin-top: 0;
 `
 
 const AreaLpInfo = styled.div`

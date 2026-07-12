@@ -138,19 +138,23 @@ const EmptyWrap = styled.div`
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
 `
 
-const EmptyTitle = styled.p`
-  margin: 0 0 6px;
-  font-size: 15px;
-  font-weight: 700;
-  color: ${premiumStudioColors.text};
+const EmptyIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${premiumStudioColors.gold};
+  margin-bottom: 8px;
 `
 
-const EmptyDesc = styled.p`
+const EmptyTitle = styled.p`
   margin: 0;
-  font-size: ${homeTypography.statSubline.size};
+  font-size: 14px;
+  font-weight: 600;
   color: ${premiumStudioColors.muted};
-  line-height: 1.45;
-  max-width: 420px;
 `
 
 const SkeletonRow = styled.div`
@@ -198,13 +202,6 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
     }
     return undefined
   }, [isIndexing, activityUnavailable, indexerState])
-
-  const emptyDescription = useMemo(() => {
-    if (isIndexing) {
-      return undefined
-    }
-    return undefined
-  }, [isIndexing])
 
   const filledCount = displaySlots.filter((s) => s.row).length
   const isEmpty = !isIndexing && !hasFilledSlots && !hasRows
@@ -264,10 +261,14 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
           </SlotList>
         ) : (
           <EmptyWrap>
+            <EmptyIcon aria-hidden>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M8 12h8" />
+              </svg>
+            </EmptyIcon>
             <EmptyTitle>
-              {isIndexing
-                ? RUNTIME_LOADING_LABEL
-                : 'Protocol activity is not yet available from the production indexer.'}
+              {isIndexing ? RUNTIME_LOADING_LABEL : 'No protocol activity detected.'}
             </EmptyTitle>
             <TradeTechnicalDetails detail={technicalDetail} />
           </EmptyWrap>

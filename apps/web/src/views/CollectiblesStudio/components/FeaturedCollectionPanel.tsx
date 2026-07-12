@@ -265,7 +265,11 @@ export const FeaturedCollectionPanel: React.FC = () => {
   const [coinSrc, setCoinSrc] = useState(babyMarcoArt)
 
   const handleCoinError = () => {
-    if (coinSrc !== '/images/page/1.svg') setCoinSrc('/images/page/1.svg')
+    if (coinSrc !== '/images/collectibles/hero-civilization-reference.png') {
+      setCoinSrc('/images/collectibles/hero-civilization-reference.png')
+    } else if (coinSrc !== '/images/melega.png') {
+      setCoinSrc('/images/melega.png')
+    }
   }
 
   return (

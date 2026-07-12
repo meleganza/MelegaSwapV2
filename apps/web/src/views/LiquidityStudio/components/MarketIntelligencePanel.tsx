@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import TradeTechnicalDetails from 'views/Trade/components/TradeTechnicalDetails'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { liquidityStudioColors, liquidityStudioLayout } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { LsPanel, LsRightLabel, LsRightRow, LsRightValue, LsSectionTitle } from './liquidityStudioPrimitives'
@@ -72,10 +71,7 @@ export const MarketIntelligencePanel: React.FC = () => {
       <LsSectionTitle>Market intelligence</LsSectionTitle>
       {marketUnavailableReason || !hasLiveMetrics ? (
         <UnavailableWrap data-ls-market-unavailable>
-          <UnavailableTitle>{RUNTIME_UNAVAILABLE_LABEL}</UnavailableTitle>
-          <UnavailableReason>
-            Reason: {marketUnavailableReason ?? 'Pool metrics not indexed in current subgraph window'}
-          </UnavailableReason>
+          <UnavailableTitle>Pool metrics not indexed</UnavailableTitle>
           <TradeTechnicalDetails detail={technicalDetail} />
         </UnavailableWrap>
       ) : (

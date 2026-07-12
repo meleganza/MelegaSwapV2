@@ -131,11 +131,14 @@ export const useLiquidityTerminalData = (
 
     if (subgraphRows.length >= 3) return subgraphRows
 
-    const registryRows = (registryPairs?.rows ?? []).slice(0, 3).map((pair: { pairAddress: string; token0?: string; token1?: string }) => ({
+    const registryRows = (registryPairs?.rows ?? []).slice(0, 3).map((pair: { pairAddress: string; symbol0?: string; symbol1?: string; token0?: string; token1?: string }) => ({
       id: pair.pairAddress,
-      pair: `${pair.token0?.slice(0, 6) ?? '???'}… / ${pair.token1?.slice(0, 6) ?? '???'}…`,
-      apr: RUNTIME_UNAVAILABLE_LABEL,
-      tvl: RUNTIME_UNAVAILABLE_LABEL,
+      pair:
+        pair.symbol0 && pair.symbol1
+          ? `${pair.symbol0} / ${pair.symbol1}`
+          : `${pair.token0?.slice(0, 6) ?? '???'}… / ${pair.token1?.slice(0, 6) ?? '???'}…`,
+      apr: '—',
+      tvl: '—',
       href: `/add/${pair.token0}/${pair.token1}`,
     }))
 
@@ -182,9 +185,9 @@ export const useLiquidityTerminalData = (
     const pool = selectedPool
     if (!pool) {
       return [
-        { label: 'Pool Health', value: RUNTIME_UNAVAILABLE_LABEL, tone: 'muted' as const },
-        { label: 'Best Opportunity', value: best?.pair ?? RUNTIME_UNAVAILABLE_LABEL, tone: 'muted' as const },
-        { label: 'Risk', value: RUNTIME_UNAVAILABLE_LABEL, tone: 'muted' as const },
+        { label: 'Pool Health', value: '—', tone: 'muted' as const },
+        { label: 'Best Opportunity', value: '—', tone: 'muted' as const },
+        { label: 'Risk', value: '—', tone: 'muted' as const },
       ]
     }
     const health =

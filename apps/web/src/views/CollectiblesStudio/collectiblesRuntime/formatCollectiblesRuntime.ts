@@ -13,6 +13,7 @@ import { buildMembershipStatus } from './buildMembershipStatus'
 import type { WalletCollectibleOwnership } from './useWalletCollectibleOwnership'
 
 const UNAVAILABLE = '—'
+const BABYMARCO_FALLBACK_IMAGE = '/images/collectibles/hero-civilization-reference.png'
 
 const ART_THEME: Record<StaticCollectibleRecord['category'], CollectionCard['artTheme']> = {
   mascot_ecosystem: 'genesis',
@@ -58,7 +59,7 @@ export function mapRecordToCollectionCard(
     creator: project?.displayName ?? 'Melega Registry',
     slug: record.slug,
     floorPrice: UNAVAILABLE,
-    volume24h: UNAVAILABLE,
+    volume24h: 'Market data not indexed',
     items: record.supply.statedMaxSupply ? String(record.supply.statedMaxSupply) : UNAVAILABLE,
     aiScore: health.score,
     badges: badgesFor(record, owned),
@@ -82,8 +83,8 @@ export function mapRecordToCollectionCard(
           : undefined,
     fallbackImageUrl:
       record.slug === 'babymarco-genesis'
-        ? `${DETECTED_BABYMARCO_PINATA_GATEWAY}/DOG1.png`
-        : '/images/page/1.svg',
+        ? BABYMARCO_FALLBACK_IMAGE
+        : '/images/melega.png',
   }
 }
 

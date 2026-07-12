@@ -375,15 +375,15 @@ export const FeaturedPoolHero: React.FC = () => {
       discoveredCount === 0
         ? 'No pools discovered'
         : endedCount > 0
-          ? 'No active rewarding pools'
+          ? 'Historical Pools'
           : 'No rewarding pools yet'
     const emptySubtitle =
       discoveredCount === 0
         ? 'Verified SmartChef contracts will appear when indexed from chain.'
         : endedCount > 0
-          ? 'Historical pools are listed below under Finished.'
+          ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
           : 'Create or fund a reward pool to activate staking opportunities.'
-    const showCreateCta = discoveredCount === 0 || (rewardingCount === 0 && endedCount === 0)
+    const showCreateCta = discoveredCount === 0
 
     return (
       <EmptyCard

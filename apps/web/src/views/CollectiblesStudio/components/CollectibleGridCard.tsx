@@ -349,14 +349,19 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
   const [fav, setFav] = useState(false)
   const [reserved, setReserved] = useState(false)
   const [imageSrc, setImageSrc] = useState(
-    collection.previewImageUrl ?? collection.fallbackImageUrl ?? '/images/page/1.svg',
+    collection.previewImageUrl ?? collection.fallbackImageUrl ?? '/images/collectibles/hero-civilization-reference.png',
   )
   const visibleBadges = collection.badges.slice(0, 2)
   const identityAccent = resolveIdentityAccent(collection)
 
   const handleImageError = () => {
-    const fallback = collection.fallbackImageUrl ?? '/images/page/1.svg'
-    if (imageSrc !== fallback) setImageSrc(fallback)
+    const chain = [
+      collection.fallbackImageUrl,
+      '/images/collectibles/hero-civilization-reference.png',
+      '/images/melega.png',
+    ].filter(Boolean) as string[]
+    const next = chain.find((src) => src !== imageSrc)
+    if (next) setImageSrc(next)
   }
 
   return (
@@ -411,7 +416,11 @@ export const CollectibleGridCard: React.FC<Props> = ({ collection }) => {
           </Metric>
           <Metric>
             <MetricLabel>24h Vol</MetricLabel>
-            <MetricValue>{premiumUiValue(collection.volume24h)}</MetricValue>
+            <MetricValue>
+              {collection.volume24h === 'Market data not indexed'
+                ? collection.volume24h
+                : premiumUiValue(collection.volume24h)}
+            </MetricValue>
           </Metric>
           <Metric>
             <MetricLabel>Items</MetricLabel>
