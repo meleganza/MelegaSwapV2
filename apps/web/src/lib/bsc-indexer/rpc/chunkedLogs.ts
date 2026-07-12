@@ -298,7 +298,7 @@ export async function getLogsChunked(params: {
   rpcUrls?: string[]
 }): Promise<{ logs: RawLog[]; finalChunkSize: number }> {
   const rpcUrls = params.rpcUrls ?? resolveFeaturedPairLogRpcUrls()
-  let chunk = Math.min(params.initialChunk ?? DEFAULT_CHUNK_SIZE, DEFAULT_CHUNK_SIZE)
+  let chunk = Math.max(MIN_CHUNK_SIZE, params.initialChunk ?? DEFAULT_CHUNK_SIZE)
   const logs: RawLog[] = []
   let cursor = params.fromBlock
 

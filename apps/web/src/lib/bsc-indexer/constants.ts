@@ -35,7 +35,7 @@ export const RECENT_BOOTSTRAP_BLOCKS = 250
 export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
 /** Legacy R768 genesis — not used by v2 featured-pair indexer. */
 export const DEFAULT_START_BLOCK = 26_000_000
-export const DEFAULT_CHUNK_SIZE = 1
+export const DEFAULT_CHUNK_SIZE = 200
 export const MIN_CHUNK_SIZE = 1
 export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
