@@ -100,17 +100,16 @@ gate(
   'line chart requires 3+ valid points',
 )
 
-// GATE 1-3 — trade reconciliation gates in terminal data
-const tradeTerminal = read('src/views/Trade/useTradeTerminalData.ts')
+// GATE 1-3 — trade reconciliation gates in shared module
+const tradeRecon = read('src/lib/data-truth/tradeReconciliation.ts')
 gate(
   'G1-TRADE-SWAPS-RECONCILE',
-  tradeTerminal.includes("reconciliationStatus === 'inconsistent'") &&
-    tradeTerminal.includes('tradeCount > 0 && recentSwaps.length === 0'),
+  tradeRecon.includes('tradeCount24h > 0 && input.recentSwaps.length === 0'),
   'tradeCount>0 requires recent swaps or inconsistent status',
 )
 gate(
   'G3-LIQUIDITY-RESERVE-GATE',
-  tradeTerminal.includes('reserveLiquidityUsd') && tradeTerminal.includes('liquidityStat?.reasonCode'),
+  tradeRecon.includes('reserveLiquidityUsd') && tradeRecon.includes('liquidityDisplayed'),
   'reserve liquidity reconciliation gate',
 )
 

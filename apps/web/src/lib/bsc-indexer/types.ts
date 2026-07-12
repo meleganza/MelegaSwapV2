@@ -60,6 +60,10 @@ export interface IndexerCheckpoint {
   resetAt?: string
   /** R773 — verified R772 anchor block ingested once after topic reset. */
   anchorSeeded?: boolean
+  /** R786 — forward live sync cursor (highest block indexed toward head). */
+  forwardCursor?: number
+  /** R786 — backward bootstrap cursor (fills historical window). */
+  backwardCursor?: number
 }
 
 export interface IndexerHealthSnapshot {

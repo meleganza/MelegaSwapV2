@@ -17,7 +17,7 @@ import { fetchMarcoPublicMarket } from 'lib/trade-market/fetchPublicTokenMarket'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
-import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
+import { reconcileTradeSurface, type TradeReconciliationStatus } from 'lib/data-truth/tradeReconciliation'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { PairState, usePairs } from 'hooks/usePairs'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
@@ -79,7 +79,8 @@ export interface TradeDataMachinePayload {
   holder_status: 'configured' | 'not_configured' | 'error'
   holder_reason?: string
   timestamp: string
-  status?: 'ok' | 'inconsistent'
+  status?: TradeReconciliationStatus
+  reconciliationReasons?: string[]
 }
 
 const formatTimeAgo = (timestamp: string): string => {
@@ -519,38 +520,54 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     Boolean(tokenAddress) &&
     !publicMarket
 
-  const reconciliationStatus = useMemo((): 'ok' | 'inconsistent' => {
-    if (!useDurableIndexer || !isMarcoRoute) return 'ok'
-    const tradeCount = indexerMetrics24h?.tradeCount ?? 0
-    const hasVolume =
-      (indexerMetrics24h?.volumeUsd ?? 0) > 0 || (indexerMetrics24h?.quoteVolumeWbnb ?? 0) > 0
-    if (tradeCount > 0 && recentSwaps.length === 0) return 'inconsistent'
-    if (hasVolume && indexerCandles.length === 0) return 'inconsistent'
-    const liquidityStat = pairStats.find((stat) => stat.id === 'liquidity')
-    if (reserveLiquidityUsd != null && reserveLiquidityUsd > 0 && liquidityStat?.reasonCode) {
-      return 'inconsistent'
+  const tradeReconciliation = useMemo(() => {
+    if (!useDurableIndexer || !isMarcoRoute) {
+      return { status: 'ready' as TradeReconciliationStatus, reasons: [] }
     }
-    return 'ok'
+    const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
+    const swapEvents24h =
+      transactions?.filter(
+        (tx) => tx.type === 0 && Number.isFinite(Number(tx.timestamp)) && Number(tx.timestamp) >= cutoff,
+      ).length ?? 0
+    const liquidityStat = pairStats.find((stat) => stat.id === 'liquidity')
+    return reconcileTradeSurface({
+      tradeCount24h: indexerMetrics24h?.tradeCount ?? 0,
+      volume24h: indexerMetrics24h?.volumeUsd ?? indexerMetrics24h?.quoteVolumeWbnb ?? 0,
+      swapEventCount24h: swapEvents24h,
+      recentSwaps,
+      candles: indexerCandles,
+      reserveLiquidityUsd,
+      liquidityDisplayed: Boolean(liquidityStat?.value && !liquidityStat.reasonCode),
+      indexerPhase: indexerState.status,
+      indexerLag: indexerState.indexingLag,
+    })
   }, [
     useDurableIndexer,
     isMarcoRoute,
     indexerMetrics24h,
-    recentSwaps.length,
-    indexerCandles.length,
+    transactions,
+    recentSwaps,
+    indexerCandles,
     reserveLiquidityUsd,
     pairStats,
+    indexerState,
   ])
 
-  const gatedPairStats = reconciliationStatus === 'inconsistent' ? [] : pairStats
-  const gatedRecentSwaps = reconciliationStatus === 'inconsistent' ? [] : recentSwaps
+  const reconciliationStatus = tradeReconciliation.status
+  const reconciliationBlocked =
+    reconciliationStatus === 'inconsistent' || reconciliationStatus === 'unavailable'
+
+  const gatedPairStats = reconciliationBlocked ? [] : pairStats
+  const gatedRecentSwaps = reconciliationBlocked ? [] : recentSwaps
 
   return {
     recentSwaps: gatedRecentSwaps,
     pairStats: gatedPairStats,
-    pairPrice: reconciliationStatus === 'inconsistent' ? undefined : pairPrice,
+    pairPrice: reconciliationBlocked ? undefined : pairPrice,
     machine: {
       ...machine,
-      status: reconciliationStatus === 'inconsistent' ? 'inconsistent' : 'ok',
+      status: reconciliationStatus,
+      reconciliationReasons: tradeReconciliation.reasons,
     },
     missingReason,
     missingReasonDetail,
@@ -561,10 +578,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     isIndexingMetrics,
     hasSwapData: indexerState.status === 'ready',
     reconciliationStatus,
+    tradeReconciliation,
     swapEmptyReason:
       reconciliationStatus === 'inconsistent'
         ? 'DATA_INCONSISTENT'
-        : !isActivityIndexing && recentSwaps.length === 0
+        : reconciliationStatus === 'syncing'
+          ? 'INDEXER_SYNCING'
+          : reconciliationStatus === 'unavailable'
+            ? 'NO_EVENTS_INDEXED'
+            : !isActivityIndexing && recentSwaps.length === 0
           ? indexerState.status === 'error' || indexerState.status === 'unavailable'
             ? 'DATA_SOURCE_NOT_CONFIGURED'
             : 'NO_EVENTS_INDEXED'

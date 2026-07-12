@@ -39,6 +39,8 @@ export async function createFreshFeaturedPairCheckpoint(
     lastSuccessfulSync: new Date(0).toISOString(),
     chunkSize: DEFAULT_CHUNK_SIZE,
     cursorPairIndex: 0,
+    forwardCursor: Math.max(0, chainHead - REORG_SAFETY_BLOCKS),
+    backwardCursor: chainHead,
     legacyNote: LEGACY_INDEXER_NOTE,
     resetReason,
     resetAt: new Date().toISOString(),

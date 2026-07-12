@@ -38,16 +38,16 @@ export const MELEGA_PRODUCTION_CONTRACTS = {
 export const INDEXER_TIER_DEFINITIONS = {
   TIER_1: {
     id: 'TIER_1',
-    label: 'Featured + highest liquidity',
-    definition: 'MARCO/WBNB and top liquid pairs — full recent history + candles',
-    maxPairs: 5,
-    bootstrapDays: 30,
+    label: 'Core pairs',
+    definition: 'MARCO/WBNB and Factory-proven core pairs — continuous forward + 7d bootstrap',
+    maxPairs: 8,
+    bootstrapDays: 7,
   },
   TIER_2: {
     id: 'TIER_2',
-    label: 'All liquid tradeable pairs',
-    definition: 'Tradeable AMM pairs with reserves — recent events + 24H aggregates',
-    maxPairs: 25,
+    label: 'Active pairs',
+    definition: 'Up to 20 tradeable pairs ranked by reserves + indexed swap activity',
+    maxPairs: 20,
     bootstrapDays: 7,
   },
   TIER_3: {

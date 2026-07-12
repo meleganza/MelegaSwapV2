@@ -43,7 +43,7 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
     useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
 
   const orderedStats = useMemo((): TradePairStat[] => {
-    if (reconciliationStatus === 'inconsistent') return []
+    if (reconciliationStatus === 'inconsistent' || reconciliationStatus === 'unavailable') return []
     const priceChange =
       pairPrice?.change24h != null && Number.isFinite(pairPrice.change24h)
         ? {

@@ -8,6 +8,10 @@ export function featuredPairPrefix(slug = FEATURED_PAIR_SLUG): string {
   return `${INDEXER_V2_ROOT}/featured-pairs/${slug}`
 }
 
+export function blobPathForSlug(slug = FEATURED_PAIR_SLUG): string {
+  return featuredPairPrefix(slug)
+}
+
 export function registryBlobKey(): string {
   return `${INDEXER_V2_ROOT}/registry/bsc-mainnet.json`
 }
