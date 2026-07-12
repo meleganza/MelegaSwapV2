@@ -25,8 +25,8 @@ import type { PairWatch } from './featuredPairSync'
 
 const BLOCKS_PER_DAY = Math.floor(86_400 / BSC_AVG_BLOCK_SECONDS)
 const FORWARD_WINDOW_BLOCKS = BLOCKS_PER_DAY
-const FORWARD_BLOCKS_PER_SYNC = 120
-const BACKWARD_BLOCKS_PER_SYNC = 120
+const FORWARD_BLOCKS_PER_SYNC = 60
+const BACKWARD_BLOCKS_PER_SYNC = 60
 
 function normalizeLogs(
   logs: RawLog[],
