@@ -1,30 +1,8 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
-import masterchefABI from 'config/abi/masterchef.json'
 import { BLOCKS_PER_DAY } from 'config'
-import { getBalanceAmount, getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import { MELEGA_PRODUCTION_CONTRACTS } from './ontology'
 import { useFarms } from 'state/farms/hooks'
-import { useActiveChainId } from 'hooks/useActiveChainId'
-
-const MASTER_CHEF_BSC = MELEGA_PRODUCTION_CONTRACTS.masterChef
-
-async function readDexTokenPerBlock(chainId: number): Promise<number | undefined> {
-  if (chainId !== 56) return undefined
-  try {
-    const provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org')
-    const contract = new ethers.Contract(MASTER_CHEF_BSC, masterchefABI, provider)
-    const raw = await contract.dexTokenPerBlock()
-    const bn = getBalanceAmount(new BigNumber(raw.toString()))
-    const n = bn.toNumber()
-    return Number.isFinite(n) && n > 0 ? n : undefined
-  } catch (e) {
-    console.error('[useMasterChefEmission] dexTokenPerBlock read failed', e)
-    return undefined
-  }
-}
+import { MELEGA_PRODUCTION_CONTRACTS } from './ontology'
 
 export interface MasterChefEmission {
   perBlock: number
@@ -35,34 +13,47 @@ export interface MasterChefEmission {
   readError?: string
 }
 
-/** Canonical MARCO emission from MasterChef dexTokenPerBlock with Redux + direct RPC fallback. */
+async function fetchMasterChefEmission(): Promise<{ perBlock: number; perDay: number; source: string } | null> {
+  const res = await fetch('/api/masterchef/emission')
+  if (!res.ok) return null
+  const json = (await res.json()) as { perBlock?: number; perDay?: number; source?: string }
+  if (json.perBlock == null || json.perBlock <= 0) return null
+  return {
+    perBlock: json.perBlock,
+    perDay: json.perDay ?? json.perBlock * BLOCKS_PER_DAY,
+    source: json.source ?? 'MasterChef API',
+  }
+}
+
+/** Canonical MARCO emission from MasterChef dexTokenPerBlock with Redux + API fallback. */
 export function useMasterChefEmission(): MasterChefEmission {
-  const { chainId } = useActiveChainId()
   const { regularCakePerBlock } = useFarms()
-  const { data: directPerBlock } = useSWR(
-    chainId === 56 ? ['masterchef-dexTokenPerBlock', chainId] : null,
-    () => readDexTokenPerBlock(chainId!),
-    { revalidateOnFocus: false, dedupingInterval: 120_000 },
-  )
+  const { data: apiEmission } = useSWR('masterchef-emission-api', fetchMasterChefEmission, {
+    revalidateOnFocus: false,
+    dedupingInterval: 120_000,
+  })
 
   return useMemo(() => {
     const perBlock =
-      regularCakePerBlock > 0 ? regularCakePerBlock : directPerBlock != null && directPerBlock > 0 ? directPerBlock : 0
-    const perDayBn = new BigNumber(perBlock).times(BLOCKS_PER_DAY)
-    const perDay = getBalanceNumber(perDayBn, 18)
+      regularCakePerBlock > 0
+        ? regularCakePerBlock
+        : apiEmission?.perBlock != null && apiEmission.perBlock > 0
+          ? apiEmission.perBlock
+          : 0
+    const perDay = perBlock > 0 ? perBlock * BLOCKS_PER_DAY : apiEmission?.perDay ?? 0
     const source =
       regularCakePerBlock > 0
         ? 'MasterChef dexTokenPerBlock via Redux farms state'
-        : directPerBlock != null && directPerBlock > 0
-          ? 'MasterChef dexTokenPerBlock via direct eth_call'
+        : apiEmission?.perBlock
+          ? apiEmission.source
           : 'unavailable'
     return {
       perBlock,
       perDay,
       perDayLabel: perBlock > 0 ? `${perDay.toLocaleString(undefined, { maximumFractionDigits: 2 })} MARCO` : '',
       source,
-      contract: MASTER_CHEF_BSC,
-      readError: perBlock <= 0 ? 'dexTokenPerBlock returned zero or RPC read failed' : undefined,
+      contract: MELEGA_PRODUCTION_CONTRACTS.masterChef,
+      readError: perBlock <= 0 ? 'dexTokenPerBlock unavailable from Redux and API' : undefined,
     }
-  }, [regularCakePerBlock, directPerBlock])
+  }, [regularCakePerBlock, apiEmission])
 }

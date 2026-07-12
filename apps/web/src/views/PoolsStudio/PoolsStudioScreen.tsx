@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
@@ -174,21 +175,29 @@ export const PoolsStudioScreen: React.FC = () => (
       <Content data-ps-content>
         <PoolsStudioPageHeader />
         <KpiSection>
-          <PoolsKpiRow />
+          <DataSurfaceErrorBoundary surface="Pools KPIs" userReason="Pool totals are temporarily unavailable.">
+            <PoolsKpiRow />
+          </DataSurfaceErrorBoundary>
         </KpiSection>
         <MainGrid data-ps-main-grid>
           <MainColumn>
-            <FeaturedPoolHero />
+            <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">
+              <FeaturedPoolHero />
+            </DataSurfaceErrorBoundary>
           </MainColumn>
           <SidebarColumn>
             <PoolsSidebar />
           </SidebarColumn>
           <ExplorerSection data-ps-pool-explorer data-r708-explorer>
             <PoolsViewToolbar />
-            <PoolsGrid />
+            <DataSurfaceErrorBoundary surface="Pools Grid" userReason="Pool cards are temporarily unavailable.">
+              <PoolsGrid />
+            </DataSurfaceErrorBoundary>
           </ExplorerSection>
           <CreatePoolSection data-ps-create-pool-section>
-            <CreatePoolCta />
+            <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
+              <CreatePoolCta />
+            </DataSurfaceErrorBoundary>
           </CreatePoolSection>
         </MainGrid>
         <BelowFold data-ps-below-fold>

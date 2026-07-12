@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
@@ -80,18 +81,26 @@ export const FarmsStudioScreen: React.FC = () => (
       <FarmsActionHost />
       <Content>
         <FarmsStudioPageHeader />
-        <FarmsKpiRow />
+        <DataSurfaceErrorBoundary surface="Farms KPIs" userReason="Farm totals are temporarily unavailable.">
+          <FarmsKpiRow />
+        </DataSurfaceErrorBoundary>
         <PageColumnGrid data-fs-page-grid>
           <FeaturedSlot>
-            <FeaturedFarmPanel />
+            <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
+              <FeaturedFarmPanel />
+            </DataSurfaceErrorBoundary>
           </FeaturedSlot>
           <AdvisorSlot>
             <AIYieldAdvisorPanel />
           </AdvisorSlot>
         </PageColumnGrid>
         <FarmsFilterRow />
-        <FarmsGrid />
-        <FarmsActivityTable />
+        <DataSurfaceErrorBoundary surface="Farms Grid" userReason="Farm cards are temporarily unavailable.">
+          <FarmsGrid />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
+          <FarmsActivityTable />
+        </DataSurfaceErrorBoundary>
       </Content>
     </FarmsRuntimeProvider>
   </Root>
