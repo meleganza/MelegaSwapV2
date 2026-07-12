@@ -1,0 +1,384 @@
+{
+  "mission": "R789",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-12T18:00:47.919Z",
+  "production": {
+    "swaps": {
+      "transactions": [
+        {
+          "type": 0,
+          "hash": "0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61",
+          "timestamp": "1783853420",
+          "sender": "0x4cc318290743b35d6c9063e58c3ef2faa01a81a9",
+          "token0Symbol": "MARCO",
+          "token1Symbol": "WBNB",
+          "token0Address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "token1Address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "amountUSD": 0,
+          "amountToken0": 350.840866828602,
+          "amountToken1": 0.000219538905014194
+        },
+        {
+          "type": 0,
+          "hash": "0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d",
+          "timestamp": "1783755056",
+          "sender": "0x0c2b4fc0f8bed892f7278a6705bab41fb8ce4170",
+          "token0Symbol": "MARCO",
+          "token1Symbol": "WBNB",
+          "token0Address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "token1Address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "amountUSD": 0,
+          "amountToken0": 179.86469788584677,
+          "amountToken1": 0.000113588105786482
+        },
+        {
+          "type": 0,
+          "hash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+          "timestamp": "1773393280",
+          "sender": "0xc25033218d181b27d4a2944fbb04fc055da4eab3",
+          "token0Symbol": "MARCO",
+          "token1Symbol": "WBNB",
+          "token0Address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "token1Address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "amountUSD": 0,
+          "amountToken0": 4068.775270702608,
+          "amountToken1": 0.005
+        }
+      ],
+      "meta": {
+        "source": "bsc-rpc-log-indexer",
+        "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+        "fromBlock": 109119039,
+        "toBlock": 109599410,
+        "latestIndexedBlock": 109127039,
+        "chainHead": 109599410,
+        "indexingLag": 472971,
+        "lastSuccessfulSync": "2026-07-12T18:00:32.931Z",
+        "eventCount": 3,
+        "status": "ready"
+      }
+    },
+    "candles": {
+      "status": "ready",
+      "candles": [
+        {
+          "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+          "interval": "1H",
+          "bucketTimestamp": 1773392400,
+          "open": 0.0000012288710158073158,
+          "high": 0.0000012288710158073158,
+          "low": 0.0000012288710158073158,
+          "close": 0.0000012288710158073158,
+          "baseVolume": 4068.775270702608,
+          "quoteVolume": 0.005,
+          "tradeCount": 1,
+          "startBlock": 86326727,
+          "endBlock": 86326727,
+          "lastUpdated": "2026-07-11T07:52:05.568Z"
+        },
+        {
+          "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+          "interval": "1H",
+          "bucketTimestamp": 1783753200,
+          "open": 6.315197318963169e-7,
+          "high": 6.315197318963169e-7,
+          "low": 6.315197318963169e-7,
+          "close": 6.315197318963169e-7,
+          "baseVolume": 179.86469788584677,
+          "quoteVolume": 0.000113588105786482,
+          "tradeCount": 1,
+          "startBlock": 109323984,
+          "endBlock": 109323984,
+          "lastUpdated": "2026-07-12T02:50:09.869Z"
+        },
+        {
+          "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+          "interval": "1H",
+          "bucketTimestamp": 1783850400,
+          "open": 6.257506629677963e-7,
+          "high": 6.257506629677963e-7,
+          "low": 6.257506629677963e-7,
+          "close": 6.257506629677963e-7,
+          "baseVolume": 350.840866828602,
+          "quoteVolume": 0.000219538905014194,
+          "tradeCount": 1,
+          "startBlock": 109542524,
+          "endBlock": 109542524,
+          "lastUpdated": "2026-07-12T10:50:39.347Z"
+        }
+      ],
+      "meta": {
+        "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+        "slug": "marco-wbnb",
+        "interval": "1H",
+        "candleCount": 3,
+        "lastIndexedBlock": 109126439
+      }
+    },
+    "tierMetrics": {
+      "generatedAt": "2026-07-12T18:00:47.980Z",
+      "tier1Count": 6,
+      "tier2Count": 12,
+      "rows": [
+        {
+          "slug": "marco-wbnb",
+          "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+          "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_1",
+          "status": "READY",
+          "volume24hQuote": 0.000219538905014194,
+          "tradeCount24h": 1,
+          "candleCount": 3,
+          "eventCount24h": 1,
+          "indexingLag": 472971
+        },
+        {
+          "slug": "55d398-963556",
+          "pairAddress": "0xb1857b7a6650c5711ccfae451d79bf86c6cbaca4",
+          "token0": "0x55d398326f99059ff775485246999027b3197955",
+          "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "tier": "TIER_1",
+          "status": "EMPTY_VERIFIED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0,
+          "indexingLag": 202000
+        },
+        {
+          "slug": "8ac76a-963556",
+          "pairAddress": "0x6804d8b2be83f8e38b26552ad445906c696a671c",
+          "token0": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+          "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "tier": "TIER_1",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "55d398-8ac76a",
+          "pairAddress": "0x3e8b46eb75a574d0e2dd40d786fe05ad7272bc08",
+          "token0": "0x55d398326f99059ff775485246999027b3197955",
+          "token1": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+          "tier": "TIER_1",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "8ac76a-bb4cdb",
+          "pairAddress": "0x7165b14cf9d03061b67e3237078e5f5a03fe01a9",
+          "token0": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_1",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "55d398-bb4cdb",
+          "pairAddress": "0x94fadf053bad0c9d0a3874f82b1a09001926a548",
+          "token0": "0x55d398326f99059ff775485246999027b3197955",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_1",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "403487-502eed",
+          "pairAddress": "0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+          "token0": "0x4034875250f797d00b819e9011c5bb9c2e799631",
+          "token1": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "52abb0-bb4cdb",
+          "pairAddress": "0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+          "token0": "0x52abb09ceb590f04c7d70be9d6aa420177e94744",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "502eed-bb4cdb",
+          "pairAddress": "0xd656c120e843012c33187e8732b83f0c1fc1f858",
+          "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "502eed-6effc3",
+          "pairAddress": "0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+          "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "token1": "0x6effc3b9ea59a081e7132ad2e491d1ae523394f5",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "502eed-963556",
+          "pairAddress": "0x2261f5434dd3e352563b09c9e462956082606f5a",
+          "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "502eed-b1c137",
+          "pairAddress": "0x5b1405a8157285ab1f5912a05b5fc8023a666346",
+          "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "token1": "0xb1c137d4ab6d56529efb6e4f3616ee6558083b7b",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "9acda5-bb4cdb",
+          "pairAddress": "0x9819ba5974e5a5062d9cc91ed1a39e5eeb8d43f8",
+          "token0": "0x9acda5b7ba829172036d030d5a664298ea0a7129",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "502eed-76fa56",
+          "pairAddress": "0xe69b45a33419a5456ea8db9533224d0fc98faae3",
+          "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "token1": "0x76fa566136cfa5b720d37259cabe45a9c407116b",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "002742-963556",
+          "pairAddress": "0xe1ac7b27398a538c20cc7e0930b4a46aaa45aabe",
+          "token0": "0x00274214c88e481ecc63460f11b264923c67f602",
+          "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "9acda5-e7ba8b",
+          "pairAddress": "0x8386dbc0ef580285626379b0505311525290600d",
+          "token0": "0x9acda5b7ba829172036d030d5a664298ea0a7129",
+          "token1": "0xe7ba8bcf0fe998c77163b42c96c0b12a834b06ed",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "502eed-ede11c",
+          "pairAddress": "0x1db96e2c7d7b286048983089392977b6b52a507a",
+          "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+          "token1": "0xede11c43598c814d39548423eb2d2a66a4db3cc2",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        },
+        {
+          "slug": "138455-bb4cdb",
+          "pairAddress": "0x2b2b1cb7cef2d72fc77bb8405d32e5cd75f5d74a",
+          "token0": "0x1384555d00144c7725ac71da2bb1fd67b9ad889a",
+          "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+          "tier": "TIER_2",
+          "status": "UNSCANNED",
+          "volume24hQuote": 0,
+          "tradeCount24h": 0,
+          "candleCount": 0,
+          "eventCount24h": 0
+        }
+      ]
+    },
+    "pair": {},
+    "coverage": {
+      "generatedAt": "2026-07-12T18:00:46.820Z",
+      "slug": "marco-wbnb",
+      "bootstrapWindow": {
+        "fromBlock": 109122940,
+        "toBlock": 109599884,
+        "coveredBlocks": 4100,
+        "uncoveredBlocks": 472845,
+        "coveragePercent": 0.8596379037415216,
+        "gaps": [
+          {
+            "fromBlock": 109127040,
+            "toBlock": 109599884
+          }
+        ],
+        "complete": false
+      },
+      "forwardCursor": 109127039,
+      "gapFillCursor": 109127039,
+      "backwardCursor": null,
+      "coverageRanges": [
+        {
+          "fromBlock": 109122940,
+          "toBlock": 109127039
+        }
+      ],
+      "chainHead": 109599896
+    }
+  },
+  "reconciliation": {
+    "slug": "marco-wbnb",
+    "tradeCount24h": 0,
+    "volume24h": 0,
+    "swapRows": 3,
+    "candleRows": 3,
+    "candlesWithVolume": 3,
+    "coverageComplete": false,
+    "status": "PARTIAL"
+  },
+  "g2Pass": false
+}

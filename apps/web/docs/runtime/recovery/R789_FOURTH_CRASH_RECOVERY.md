@@ -48,4 +48,21 @@ Live verification at fourth-crash recovery confirmed:
 6. Re-verify 88/88 on post-fix SHA
 7. Commit certification artifacts
 
-**Verdict remains:** `R789_PRODUCTION_BLOCKED` until Gate A indexer persistence is proven on production.
+## Delta Since Third Crash (continued)
+
+Fourth-crash session completed repository-owned indexer repairs across commits `26616335`, `acb71313`, `798fce59`:
+
+| Fix | Result |
+|-----|--------|
+| `INDEXER_HTTP_GATEWAY_BUDGET_MS` + bounded orchestrator | Eliminated blind 504 (no persistence) |
+| `vercel.json` `maxDuration: 300` for indexer routes | FUNCTION_INVOCATION_TIMEOUT resolved |
+| RPC `AbortSignal.timeout(5s)` | Prevents hung eth_call |
+| `shouldStop` safe margin for short budgets | Gap-fill loop no longer instant-exits |
+| Tier metrics `UNSCANNED` / `EMPTY_VERIFIED` | Mislabeled `RPC_UNAVAILABLE` corrected |
+
+**Production indexer @ `798fce59` (2026-07-12T18:00Z):**
+- 10/10 clean sequential runs (`r789-indexer-sequential-runs.json`, `clean: 10`)
+- MARCO/WBNB coverage: 4100 blocks (0.86%), `gapFillCursor` 109127039, `complete: false`
+- `lastOrchestratorRun` persisted on health API
+
+**Still open:** full 7-day coverage completion, tier-2 ≥3 scans, protocol activity feed, trending proof, `dex.melega.ai` TLS.

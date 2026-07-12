@@ -68,6 +68,8 @@ export interface PairSyncParams {
   bootstrapDays?: number
   existingCheckpoint?: IndexerCheckpoint | null
   deadline?: IndexerDeadline
+  /** Cap gap-fill chunks per invocation so orchestrator can reach tier/protocol stages. */
+  maxGapRangesPerRun?: number
 }
 
 export interface PairSyncResult {
@@ -177,7 +179,13 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   }
 
   // 2) Gap fill — newest uncovered interval toward head
-  while (!deadline?.shouldStop() && normalized.length < MAX_EVENTS_PER_SYNC) {
+  let gapIterations = 0
+  const gapIterationCap = params.maxGapRangesPerRun ?? Number.POSITIVE_INFINITY
+  while (
+    !deadline?.shouldStop() &&
+    normalized.length < MAX_EVENTS_PER_SYNC &&
+    gapIterations < gapIterationCap
+  ) {
     const gaps = findCoverageGaps(coverageRanges, bootstrapFloor, forwardHigh)
     const nextGap = selectNextGap(gaps)
     if (!nextGap) {
@@ -197,6 +205,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
         coverageRanges = addCoverageRange(coverageRanges, { fromBlock: forwardFrom, toBlock: forwardTo })
         gapFillCursor = forwardTo
         gapRangesProcessed += 1
+        gapIterations += 1
         fromBlock = forwardFrom
         toBlock = forwardTo
         await storage.saveCheckpoint({
@@ -228,6 +237,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     coverageRanges = addCoverageRange(coverageRanges, { fromBlock: gapFrom, toBlock: gapTo })
     gapFillCursor = Math.max(gapFillCursor, gapTo)
     gapRangesProcessed += 1
+    gapIterations += 1
     fromBlock = gapFrom
     toBlock = gapTo
     await storage.saveCheckpoint({

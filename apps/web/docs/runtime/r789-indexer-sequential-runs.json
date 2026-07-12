@@ -1,0 +1,1871 @@
+{
+  "mission": "R789",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-12T18:00:33.776Z",
+  "authMode": "vercel-cron-trigger-poll",
+  "requestedRuns": 10,
+  "completedRuns": 10,
+  "cleanSequentialRuns": 10,
+  "runs": [
+    {
+      "run": 1,
+      "timestamp": "2026-07-12T17:51:12.844Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 52748,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": false,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 2,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109124839
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109124839
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109124840",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 50928
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109598486,
+        "coveredBlocks": 1700,
+        "uncoveredBlocks": 473847,
+        "coveragePercent": 0.3574830668682591,
+        "gaps": [
+          {
+            "fromBlock": 109124640,
+            "toBlock": 109598486
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109598608,
+        "coveredBlocks": 1700,
+        "uncoveredBlocks": 473969,
+        "coveragePercent": 0.35739137929947085,
+        "gaps": [
+          {
+            "fromBlock": 109124640,
+            "toBlock": 109598608
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 50928,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": false,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 2,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109124839,
+            "chainHeadAtSync": 109598506,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:51:11.871Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109124839,
+            "gapFillCursor": 109124839,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109124839
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 2,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109598494,
+            "coveredBlocks": 1900,
+            "uncoveredBlocks": 473655,
+            "coveragePercent": 0.3995331770247395,
+            "gaps": [
+              {
+                "fromBlock": 109124840,
+                "toBlock": 109598494
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109124839,
+            "chainHead": 109598506,
+            "indexingLag": 473667,
+            "lastSuccessfulSync": "2026-07-12T17:51:11.871Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:51:11.981Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109124740,
+              "to": 109124839
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:50:21.664Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:05:21.829Z",
+                "lastFailureAt": "2026-07-12T17:50:21.829Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:51:11.743Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109124839
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109124839
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109124840",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 50928
+          }
+        ]
+      }
+    },
+    {
+      "run": 2,
+      "timestamp": "2026-07-12T17:52:05.610Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 49206,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": false,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109124939
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109124939
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109124940",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 48534
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109598615,
+        "coveredBlocks": 1700,
+        "uncoveredBlocks": 473976,
+        "coveragePercent": 0.3573861199640091,
+        "gaps": [
+          {
+            "fromBlock": 109124640,
+            "toBlock": 109598615
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109598725,
+        "coveredBlocks": 2000,
+        "uncoveredBlocks": 473786,
+        "coveragePercent": 0.42035705127935663,
+        "gaps": [
+          {
+            "fromBlock": 109124940,
+            "toBlock": 109598725
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 48534,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": false,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109124939,
+            "chainHeadAtSync": 109598629,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:52:04.923Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109124939,
+            "gapFillCursor": 109124939,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109124939
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109598617,
+            "coveredBlocks": 2000,
+            "uncoveredBlocks": 473678,
+            "coveragePercent": 0.42045249097078274,
+            "gaps": [
+              {
+                "fromBlock": 109124940,
+                "toBlock": 109598617
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109124939,
+            "chainHead": 109598629,
+            "indexingLag": 473690,
+            "lastSuccessfulSync": "2026-07-12T17:52:04.923Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:52:05.053Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109124840,
+              "to": 109124939
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:50:21.664Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:05:21.829Z",
+                "lastFailureAt": "2026-07-12T17:50:21.829Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:52:04.738Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109124939
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109124939
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109124940",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 48534
+          }
+        ]
+      }
+    },
+    {
+      "run": 3,
+      "timestamp": "2026-07-12T17:53:04.226Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 55046,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": false,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109125239
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109125239
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109125240",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 53591
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109598733,
+        "coveredBlocks": 2000,
+        "uncoveredBlocks": 473794,
+        "coveragePercent": 0.4203499833961757,
+        "gaps": [
+          {
+            "fromBlock": 109124940,
+            "toBlock": 109598733
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109598855,
+        "coveredBlocks": 2300,
+        "uncoveredBlocks": 473616,
+        "coveragePercent": 0.4832785617630002,
+        "gaps": [
+          {
+            "fromBlock": 109125240,
+            "toBlock": 109598855
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 53591,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": false,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109125239,
+            "chainHeadAtSync": 109598748,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:53:03.499Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109125239,
+            "gapFillCursor": 109125239,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109125239
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109598736,
+            "coveredBlocks": 2300,
+            "uncoveredBlocks": 473497,
+            "coveragePercent": 0.48339943295144777,
+            "gaps": [
+              {
+                "fromBlock": 109125240,
+                "toBlock": 109598736
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109125239,
+            "chainHead": 109598748,
+            "indexingLag": 473509,
+            "lastSuccessfulSync": "2026-07-12T17:53:03.499Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:53:03.622Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109125140,
+              "to": 109125239
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:53:03.294Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109125239
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109125239
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109125240",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 53591
+          }
+        ]
+      }
+    },
+    {
+      "run": 4,
+      "timestamp": "2026-07-12T17:54:05.309Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 57543,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": true,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 2,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109125439
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109125439
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109125440",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 1
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 56757
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109598863,
+        "coveredBlocks": 2300,
+        "uncoveredBlocks": 473624,
+        "coveragePercent": 0.4832704381371815,
+        "gaps": [
+          {
+            "fromBlock": 109125240,
+            "toBlock": 109598863
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109598991,
+        "coveredBlocks": 2500,
+        "uncoveredBlocks": 473552,
+        "coveragePercent": 0.5251527144093503,
+        "gaps": [
+          {
+            "fromBlock": 109125440,
+            "toBlock": 109598991
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 56758,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 2,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109125439,
+            "chainHeadAtSync": 109598876,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:54:04.554Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109125439,
+            "gapFillCursor": 109125439,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109125439
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 2,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109598864,
+            "coveredBlocks": 2500,
+            "uncoveredBlocks": 473425,
+            "coveragePercent": 0.5252928507643011,
+            "gaps": [
+              {
+                "fromBlock": 109125440,
+                "toBlock": 109598864
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109125439,
+            "chainHead": 109598876,
+            "indexingLag": 473437,
+            "lastSuccessfulSync": "2026-07-12T17:54:04.554Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:54:04.689Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109125340,
+              "to": 109125439
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:54:04.417Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109125439
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109125439
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109125440",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 1
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 56757
+          }
+        ]
+      }
+    },
+    {
+      "run": 5,
+      "timestamp": "2026-07-12T17:55:08.063Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 59246,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": true,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109125739
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109125739
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109125740",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 58417
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109598999,
+        "coveredBlocks": 2500,
+        "uncoveredBlocks": 473560,
+        "coveragePercent": 0.5251438894257027,
+        "gaps": [
+          {
+            "fromBlock": 109125440,
+            "toBlock": 109598999
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109599131,
+        "coveredBlocks": 2800,
+        "uncoveredBlocks": 473392,
+        "coveragePercent": 0.5879981184060211,
+        "gaps": [
+          {
+            "fromBlock": 109125740,
+            "toBlock": 109599131
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 58417,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109125739,
+            "chainHeadAtSync": 109599012,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:55:07.218Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109125739,
+            "gapFillCursor": 109125739,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109125739
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109599000,
+            "coveredBlocks": 2800,
+            "uncoveredBlocks": 473261,
+            "coveragePercent": 0.5881599206824336,
+            "gaps": [
+              {
+                "fromBlock": 109125740,
+                "toBlock": 109599000
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109125739,
+            "chainHead": 109599012,
+            "indexingLag": 473273,
+            "lastSuccessfulSync": "2026-07-12T17:55:07.218Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:55:07.353Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109125640,
+              "to": 109125739
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:55:07.048Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109125739
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109125739
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109125740",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 58417
+          }
+        ]
+      }
+    },
+    {
+      "run": 6,
+      "timestamp": "2026-07-12T17:56:10.210Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 58622,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": true,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109126039
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109126039
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109126040",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 57819
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109599138,
+        "coveredBlocks": 2800,
+        "uncoveredBlocks": 473399,
+        "coveragePercent": 0.5879894749883977,
+        "gaps": [
+          {
+            "fromBlock": 109125740,
+            "toBlock": 109599138
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109599269,
+        "coveredBlocks": 3100,
+        "uncoveredBlocks": 473230,
+        "coveragePercent": 0.6508093128713287,
+        "gaps": [
+          {
+            "fromBlock": 109126040,
+            "toBlock": 109599269
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 57819,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109126039,
+            "chainHeadAtSync": 109599151,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:56:09.385Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109126039,
+            "gapFillCursor": 109126039,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109126039
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109599139,
+            "coveredBlocks": 3100,
+            "uncoveredBlocks": 473100,
+            "coveragePercent": 0.6509869802603948,
+            "gaps": [
+              {
+                "fromBlock": 109126040,
+                "toBlock": 109599139
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109126039,
+            "chainHead": 109599151,
+            "indexingLag": 473112,
+            "lastSuccessfulSync": "2026-07-12T17:56:09.385Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:56:09.510Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109125940,
+              "to": 109126039
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:56:09.241Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109126039
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109126039
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109126040",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 57819
+          }
+        ]
+      }
+    },
+    {
+      "run": 7,
+      "timestamp": "2026-07-12T17:57:04.462Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 50731,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": false,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109126339
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109126339
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109126340",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 50084
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109599276,
+        "coveredBlocks": 3100,
+        "uncoveredBlocks": 473237,
+        "coveragePercent": 0.6507997489172581,
+        "gaps": [
+          {
+            "fromBlock": 109126040,
+            "toBlock": 109599276
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109599390,
+        "coveredBlocks": 3100,
+        "uncoveredBlocks": 473351,
+        "coveragePercent": 0.6506440326497374,
+        "gaps": [
+          {
+            "fromBlock": 109126040,
+            "toBlock": 109599390
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 50085,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": false,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109126339,
+            "chainHeadAtSync": 109599289,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:57:03.759Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109126339,
+            "gapFillCursor": 109126339,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109126339
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109599277,
+            "coveredBlocks": 3400,
+            "uncoveredBlocks": 472938,
+            "coveragePercent": 0.7137788713056695,
+            "gaps": [
+              {
+                "fromBlock": 109126340,
+                "toBlock": 109599277
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109126339,
+            "chainHead": 109599289,
+            "indexingLag": 472950,
+            "lastSuccessfulSync": "2026-07-12T17:57:03.759Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:57:03.945Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109126240,
+              "to": 109126339
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:57:03.614Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109126339
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109126339
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109126340",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 50084
+          }
+        ]
+      }
+    },
+    {
+      "run": 8,
+      "timestamp": "2026-07-12T17:58:08.889Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 60692,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": true,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 4,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109126439
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109126439
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109126440",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 59895
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109599397,
+        "coveredBlocks": 3100,
+        "uncoveredBlocks": 473358,
+        "coveragePercent": 0.650634473552758,
+        "gaps": [
+          {
+            "fromBlock": 109126040,
+            "toBlock": 109599397
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109599532,
+        "coveredBlocks": 3500,
+        "uncoveredBlocks": 473093,
+        "coveragePercent": 0.7343792292375255,
+        "gaps": [
+          {
+            "fromBlock": 109126440,
+            "toBlock": 109599532
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 59895,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 4,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109126439,
+            "chainHeadAtSync": 109599410,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:58:08.089Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109126439,
+            "gapFillCursor": 109126439,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109126439
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 4,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109599398,
+            "coveredBlocks": 3500,
+            "uncoveredBlocks": 472959,
+            "coveragePercent": 0.7345857670859403,
+            "gaps": [
+              {
+                "fromBlock": 109126440,
+                "toBlock": 109599398
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109126439,
+            "chainHead": 109599410,
+            "indexingLag": 472971,
+            "lastSuccessfulSync": "2026-07-12T17:58:08.089Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:58:08.201Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109126340,
+              "to": 109126439
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:58:07.876Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109126439
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109126439
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109126440",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 59895
+          }
+        ]
+      }
+    },
+    {
+      "run": 9,
+      "timestamp": "2026-07-12T17:59:20.425Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 68057,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": true,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109126739
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109126739
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109126740",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 67303
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109599540,
+        "coveredBlocks": 3500,
+        "uncoveredBlocks": 473101,
+        "coveragePercent": 0.7343669022935327,
+        "gaps": [
+          {
+            "fromBlock": 109126440,
+            "toBlock": 109599540
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109599691,
+        "coveredBlocks": 3800,
+        "uncoveredBlocks": 472952,
+        "coveragePercent": 0.7970601067221533,
+        "gaps": [
+          {
+            "fromBlock": 109126740,
+            "toBlock": 109599691
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 67303,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109126739,
+            "chainHeadAtSync": 109599553,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T17:59:19.548Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109126739,
+            "gapFillCursor": 109126739,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109126739
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109599541,
+            "coveredBlocks": 3800,
+            "uncoveredBlocks": 472802,
+            "coveragePercent": 0.797310963865028,
+            "gaps": [
+              {
+                "fromBlock": 109126740,
+                "toBlock": 109599541
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109126739,
+            "chainHead": 109599553,
+            "indexingLag": 472814,
+            "lastSuccessfulSync": "2026-07-12T17:59:19.548Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T17:59:19.809Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109126640,
+              "to": 109126739
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T17:59:19.376Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109126739
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109126739
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109126740",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 67303
+          }
+        ]
+      }
+    },
+    {
+      "run": 10,
+      "timestamp": "2026-07-12T18:00:33.775Z",
+      "mode": "direct-response",
+      "httpStatus": 200,
+      "ok": true,
+      "elapsedMs": 69819,
+      "budgetMs": 55000,
+      "stoppedBeforeDeadline": true,
+      "partialProgress": true,
+      "providerUsed": "chunked-forward-eth_getLogs",
+      "featuredPairProcessed": true,
+      "protocolActivityProcessed": false,
+      "tier1Processed": false,
+      "tier2Processed": false,
+      "rangesScanned": 3,
+      "eventsAdded": 0,
+      "candlesAdded": 0,
+      "cursorsBefore": {
+        "marco-wbnb": 109127039
+      },
+      "cursorsAfter": {
+        "marco-wbnb": 109127039
+      },
+      "nextWorkItem": "gap-fill:marco-wbnb:109127040",
+      "stageTimings": [
+        {
+          "stage": "init",
+          "elapsedMs": 0
+        },
+        {
+          "stage": "featured-sync",
+          "elapsedMs": 69001
+        }
+      ],
+      "coverageBefore": {
+        "fromBlock": 109122940,
+        "toBlock": 109599699,
+        "coveredBlocks": 3800,
+        "uncoveredBlocks": 472960,
+        "coveragePercent": 0.7970467321083984,
+        "gaps": [
+          {
+            "fromBlock": 109126740,
+            "toBlock": 109599699
+          }
+        ],
+        "complete": false
+      },
+      "coverageAfter": {
+        "fromBlock": 109122940,
+        "toBlock": 109599855,
+        "coveredBlocks": 4100,
+        "uncoveredBlocks": 472816,
+        "coveragePercent": 0.8596901760477736,
+        "gaps": [
+          {
+            "fromBlock": 109127040,
+            "toBlock": 109599855
+          }
+        ],
+        "complete": false
+      },
+      "raw": {
+        "ok": true,
+        "partialProgress": true,
+        "elapsedMs": 69001,
+        "budgetMs": 55000,
+        "stoppedBeforeDeadline": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "forwardRangesProcessed": 0,
+        "gapRangesProcessed": 3,
+        "pairJobsProcessed": 1,
+        "featured": {
+          "addedEvents": 0,
+          "addedCandles": 0,
+          "checkpoint": {
+            "schemaVersion": 2,
+            "phase": "bootstrap",
+            "featuredPairSlug": "marco-wbnb",
+            "bootstrapStartBlock": 109122940,
+            "bootstrapDays": 7,
+            "chainId": 56,
+            "lastIndexedBlock": 109127039,
+            "chainHeadAtSync": 109599712,
+            "reorgSafetyBlocks": 12,
+            "lastSuccessfulSync": "2026-07-12T18:00:32.931Z",
+            "chunkSize": 1,
+            "cursorPairIndex": 0,
+            "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+            "resetReason": "R772_MALFORMED_SWAP_TOPIC_CORRECTION",
+            "resetAt": "2026-07-11T07:35:06.978Z",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "forwardCursor": 109127039,
+            "gapFillCursor": 109127039,
+            "coverageRanges": [
+              {
+                "fromBlock": 109122940,
+                "toBlock": 109127039
+              }
+            ]
+          },
+          "forwardRangesProcessed": 0,
+          "gapRangesProcessed": 3,
+          "partialProgress": true,
+          "coverageSummary": {
+            "fromBlock": 109122940,
+            "toBlock": 109599700,
+            "coveredBlocks": 4100,
+            "uncoveredBlocks": 472661,
+            "coveragePercent": 0.8599696703379681,
+            "gaps": [
+              {
+                "fromBlock": 109127040,
+                "toBlock": 109599700
+              }
+            ],
+            "complete": false
+          },
+          "health": {
+            "status": "ready",
+            "storageBackend": "vercel-blob-v2-featured-pair",
+            "storageConfigured": true,
+            "lastIndexedBlock": 109127039,
+            "chainHead": 109599712,
+            "indexingLag": 472673,
+            "lastSuccessfulSync": "2026-07-12T18:00:32.931Z",
+            "eventCounts": {
+              "Swap": 3
+            },
+            "finishedAt": "2026-07-12T18:00:33.079Z",
+            "indexerGeneration": "v2-featured-pair",
+            "featuredPairSlug": "marco-wbnb",
+            "phase": "bootstrap",
+            "providerUsed": "chunked-forward-eth_getLogs",
+            "indexedBlockRange": {
+              "from": 109126940,
+              "to": 109127039
+            },
+            "bootstrapDays": 7,
+            "bootstrapStartBlock": 109122940,
+            "providerHealth": [
+              {
+                "url": "https://indulgent-long-diagram.bsc.q…",
+                "label": "quicknode",
+                "healthy": false,
+                "consecutiveFailures": 2,
+                "lastSuccessAt": "2026-07-12T17:52:10.702Z",
+                "lastFailureReason": "HTTP 429",
+                "quarantinedUntil": "2026-07-12T18:07:10.823Z",
+                "lastFailureAt": "2026-07-12T17:52:10.823Z"
+              },
+              {
+                "url": "https://rpc.ankr.com/bsc/650fb29eb99…",
+                "label": "ankr",
+                "healthy": true,
+                "consecutiveFailures": 0,
+                "lastSuccessAt": "2026-07-12T18:00:32.774Z"
+              }
+            ]
+          }
+        },
+        "tier1Job": null,
+        "tier2Job": null,
+        "protocolActivity": null,
+        "cursorsBefore": {
+          "marco-wbnb": 109127039
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109127039
+        },
+        "nextWorkItem": "gap-fill:marco-wbnb:109127040",
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 69001
+          }
+        ]
+      }
+    }
+  ]
+}

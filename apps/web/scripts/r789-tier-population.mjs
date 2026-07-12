@@ -25,33 +25,29 @@ const [pairs, tierMetrics, coverage, events] = await Promise.all([
   getJson('/api/indexer/events?slug=marco-wbnb&limit=50'),
 ])
 
-const tier1 = (pairs.body?.pairs ?? pairs.body?.rows ?? []).filter((p) => p.tier === 1 || p.tier === '1')
-const tier2 = (pairs.body?.pairs ?? pairs.body?.rows ?? []).filter((p) => p.tier === 2 || p.tier === '2')
+const metricRows = tierMetrics.body?.rows ?? []
+const tier1Metrics = metricRows.filter((p) => p.tier === 'TIER_1' || p.tier === 1)
+const tier2Metrics = metricRows.filter((p) => p.tier === 'TIER_2' || p.tier === 2)
 
-const summarize = (p) => ({
+const summarizeMetric = (p) => ({
   slug: p.slug,
-  pairAddress: p.pairAddress ?? p.address,
+  pairAddress: p.pairAddress,
   token0: p.token0,
   token1: p.token1,
-  namespace: p.namespace,
-  scanStatus: p.scanStatus ?? p.status,
-  coverageState: p.coverageState ?? p.coverage?.complete,
-  swapCount: p.eventCounts?.Swap ?? p.swapCount,
-  mintCount: p.eventCounts?.Mint ?? p.mintCount,
-  burnCount: p.eventCounts?.Burn ?? p.burnCount,
-  candleCounts: p.candleCounts,
-  volume24h: p.volume24h ?? p.volumeUSD24h,
-  trades24h: p.trades24h ?? p.tradeCount24h,
-  price: p.price,
-  priceChange24h: p.priceChange24h,
-  latestEvent: p.latestEvent,
-  exactStatus: p.exactStatus ?? p.status,
+  tier: p.tier,
+  status: p.status,
+  volume24h: p.volume24hQuote,
+  trades24h: p.tradeCount24h,
+  candleCount: p.candleCount,
+  eventCount24h: p.eventCount24h,
+  indexingLag: p.indexingLag,
 })
 
 const report = {
   mission: 'R789',
   base: BASE,
   capturedAt: new Date().toISOString(),
+  repositorySha: process.env.R789_REPO_SHA ?? '798fce59',
   marcoWbnbCoverage: coverage.body,
   marcoWbnbEvents: {
     status: events.status,
@@ -59,12 +55,13 @@ const report = {
     sample: (events.body?.events ?? []).slice(0, 5),
   },
   tierMetrics: tierMetrics.body,
-  tier1: tier1.map(summarize),
-  tier2: tier2.map(summarize),
+  tier1: tier1Metrics.map(summarizeMetric),
+  tier2: tier2Metrics.map(summarizeMetric),
   gates: {
     marcoPopulated: Boolean((events.body?.events ?? []).length > 0),
-    tier1Scanned: tier1.filter((p) => (p.scanStatus ?? p.status) && (p.scanStatus ?? p.status) !== 'UNSCANNED').length,
-    tier2Scanned: tier2.filter((p) => (p.scanStatus ?? p.status) && (p.scanStatus ?? p.status) !== 'UNSCANNED').length,
+    tier1Scanned: tier1Metrics.filter((p) => p.status && p.status !== 'UNSCANNED').length,
+    tier2Scanned: tier2Metrics.filter((p) => p.status && p.status !== 'UNSCANNED').length,
+    tier2ScannedMinimum: tier2Metrics.filter((p) => p.status && p.status !== 'UNSCANNED').length >= 3,
   },
 }
 await writeFile(OUT, JSON.stringify(report, null, 2))

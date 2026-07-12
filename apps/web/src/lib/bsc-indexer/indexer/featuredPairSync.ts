@@ -97,6 +97,7 @@ export async function runFeaturedPairSync(
     bootstrapDays: 7,
     existingCheckpoint: checkpoint,
     deadline,
+    maxGapRangesPerRun: 2,
   })
 
   return {

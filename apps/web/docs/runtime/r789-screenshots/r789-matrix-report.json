@@ -1,7 +1,7 @@
 {
   "mission": "R789",
   "base": "https://www.melega.finance",
-  "capturedAt": "2026-07-12T16:47:31.197Z",
+  "capturedAt": "2026-07-12T18:08:24.673Z",
   "expected": 88,
   "actual": 88,
   "pass": true,
@@ -1327,6 +1327,5 @@
       },
       "file": "360x800/status.png"
     }
-  ],
-  "repositorySha": "02fa57bf"
+  ]
 }
