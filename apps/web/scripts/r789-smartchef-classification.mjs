@@ -22,7 +22,7 @@ const report = {
   httpStatus: res.status,
   ok: res.ok,
   counts: json.counts ?? null,
-  candidates: json.candidates ?? json.results ?? [],
+  candidates: json.candidates ?? json.results ?? json.raw?.rows ?? [],
   raw: json,
 }
 await writeFile(OUT, JSON.stringify(report, null, 2))

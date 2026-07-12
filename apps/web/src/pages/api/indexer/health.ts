@@ -37,6 +37,7 @@ const handler: NextApiHandler = async (_req, res) => {
     lastSuccessfulSync: checkpoint?.lastSuccessfulSync ?? health?.lastSuccessfulSync,
     lastFailureReason: checkpoint?.lastFailureReason ?? health?.lastFailureReason,
     eventCounts,
+    lastOrchestratorRun: health?.lastOrchestratorRun,
   })
 }
 

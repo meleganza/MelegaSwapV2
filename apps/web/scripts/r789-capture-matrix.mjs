@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const src = path.join(__dirname, 'r788-capture-matrix.mjs')
 let code = readFileSync(src, 'utf8')
-code = code.replace(/R788/g, 'R789').replace(/r788-screenshots/g, 'r789-screenshots')
+code = code.replace(/R788/g, 'R789').replace(/r788-screenshots/g, 'r789-screenshots').replace(/r788-matrix-report/g, 'r789-matrix-report')
 const tmp = path.join(__dirname, '_r789-capture-matrix-run.mjs')
 writeFileSync(tmp, code)
 execSync(`node "${tmp}"`, { stdio: 'inherit', env: { ...process.env, R789_BASE: process.env.R789_BASE || 'https://www.melega.finance' } })

@@ -47,8 +47,11 @@ const homeData = readText('src/views/HomeTrade/useHomeTradeData.ts')
 if (!homeData.includes('LIVE_ACTIVITY_WINDOW_SEC')) {
   fail('G-ACTIVITY-WINDOW', 'Homepage activity must use LIVE_ACTIVITY_WINDOW_SEC')
 }
-if (!homeData.includes('Protocol activity is not yet available from the production indexer')) {
-  fail('G-ACTIVITY-MESSAGE', 'Homepage empty activity message not spec-compliant (R785/R786)')
+if (
+  !homeData.includes('Protocol activity is not yet available from the production indexer') &&
+  !homeData.includes('No protocol activity detected.')
+) {
+  fail('G-ACTIVITY-MESSAGE', 'Homepage empty activity message not spec-compliant (R785/R786/R788)')
 }
 
 // Gate: chart must not draw flat line for single point

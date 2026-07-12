@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * R789 — sequential production indexer invocations with full telemetry.
+ * R789 — sequential production indexer invocations with trigger + health poll telemetry.
+ * External POST may return 504 while the orchestrator completes; poll /api/indexer/health for lastOrchestratorRun.
  */
 import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -18,7 +19,8 @@ async function loadEnvFile(relPath) {
       if (eq <= 0) continue
       const key = trimmed.slice(0, eq).trim()
       const value = trimmed.slice(eq + 1).trim().replace(/^['"]|['"]$/g, '')
-      if (!process.env[key]) process.env[key] = value
+      const current = process.env[key]
+      if (!current || String(current).trim().length === 0) process.env[key] = value
     }
   } catch {
     /* optional env file */
@@ -32,15 +34,12 @@ const OUT = path.join(__dirname, '../docs/runtime/r789-indexer-sequential-runs.j
 const BASE = (process.env.R789_BASE || 'https://www.melega.finance').replace(/\/$/, '')
 const BYPASS = process.env.VERCEL_BYPASS || 'MVa5gLdCeuFd5saGeRqRXnJLi1w6AQO4'
 const SECRET = (process.env.INDEXER_CRON_SECRET || process.env.CRON_SECRET || '').trim()
-const HAS_SECRET = SECRET.length > 0
+const HAS_SECRET = SECRET.length >= 16
 const USE_VERCEL_CRON = process.env.R789_USE_VERCEL_CRON === '1' || !HAS_SECRET
 const RUNS = Number(process.env.R789_INDEXER_RUNS || 10)
-const DELAY_MS = Number(process.env.R789_INDEXER_DELAY_MS || 3000)
-
-if (!HAS_SECRET && !USE_VERCEL_CRON) {
-  console.error('INDEXER_CRON_SECRET or CRON_SECRET required (or set R789_USE_VERCEL_CRON=1)')
-  process.exit(1)
-}
+const DELAY_MS = Number(process.env.R789_INDEXER_DELAY_MS || 5000)
+const POLL_MS = Number(process.env.R789_INDEXER_POLL_MS || 5000)
+const POLL_TIMEOUT_MS = Number(process.env.R789_INDEXER_POLL_TIMEOUT_MS || 290_000)
 
 async function fetchCoverage() {
   const res = await fetch(`${BASE}/api/indexer/coverage`, {
@@ -50,8 +49,39 @@ async function fetchCoverage() {
   return res.json()
 }
 
+async function fetchHealth() {
+  const res = await fetch(`${BASE}/api/indexer/health`, {
+    headers: { 'x-vercel-protection-bypass': BYPASS },
+  })
+  if (!res.ok) return null
+  return res.json()
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function waitForOrchestratorRun(previousCapturedAt, startedAt) {
+  const deadline = Date.now() + POLL_TIMEOUT_MS
+  while (Date.now() < deadline) {
+    const health = await fetchHealth()
+    const run = health?.lastOrchestratorRun
+    if (
+      run?.capturedAt &&
+      run.capturedAt !== previousCapturedAt &&
+      new Date(run.capturedAt).getTime() >= startedAt - 2000
+    ) {
+      return { health, run, pollElapsedMs: POLL_TIMEOUT_MS - (deadline - Date.now()) }
+    }
+    await sleep(POLL_MS)
+  }
+  return { health: await fetchHealth(), run: null, pollElapsedMs: POLL_TIMEOUT_MS, timedOut: true }
+}
+
 async function runOnce(n) {
   const coverageBefore = await fetchCoverage()
+  const healthBefore = await fetchHealth()
+  const previousCapturedAt = healthBefore?.lastOrchestratorRun?.capturedAt ?? null
   const started = Date.now()
   const headers = {
     'x-vercel-protection-bypass': BYPASS,
@@ -60,58 +90,112 @@ async function runOnce(n) {
   if (HAS_SECRET) headers.authorization = `Bearer ${SECRET}`
   if (USE_VERCEL_CRON) headers['x-vercel-cron'] = '1'
 
-  const res = await fetch(`${BASE}/api/indexer/run/`, {
-    method: 'POST',
-    headers,
-    signal: AbortSignal.timeout(285_000),
-  })
-  const elapsedMs = Date.now() - started
-  const json = await res.json().catch(() => ({}))
+  let httpStatus = 0
+  let triggerBody = {}
+  try {
+    const res = await fetch(`${BASE}/api/indexer/run/`, {
+      method: 'POST',
+      headers,
+      signal: AbortSignal.timeout(20_000),
+    })
+    httpStatus = res.status
+    triggerBody = await res.json().catch(() => ({}))
+    if (res.ok) {
+      const coverageAfter = await fetchCoverage()
+      return {
+        run: n,
+        timestamp: new Date().toISOString(),
+        mode: 'direct-response',
+        httpStatus,
+        ok: triggerBody.ok !== false,
+        elapsedMs: Date.now() - started,
+        budgetMs: triggerBody.budgetMs,
+        stoppedBeforeDeadline: triggerBody.stoppedBeforeDeadline,
+        partialProgress: triggerBody.partialProgress,
+        providerUsed: triggerBody.providerUsed,
+        featuredPairProcessed: Boolean(triggerBody.featured),
+        protocolActivityProcessed: Boolean(triggerBody.protocolActivity),
+        tier1Processed: Boolean(triggerBody.tier1Job),
+        tier2Processed: Boolean(triggerBody.tier2Job),
+        rangesScanned:
+          (triggerBody.forwardRangesProcessed ?? 0) + (triggerBody.gapRangesProcessed ?? 0),
+        eventsAdded: triggerBody.addedEvents,
+        candlesAdded: triggerBody.addedCandles,
+        cursorsBefore: triggerBody.cursorsBefore,
+        cursorsAfter: triggerBody.cursorsAfter,
+        nextWorkItem: triggerBody.nextWorkItem,
+        stageTimings: triggerBody.stageTimings,
+        failureReason: triggerBody.reason || triggerBody.error,
+        coverageBefore: coverageBefore?.bootstrapWindow,
+        coverageAfter: coverageAfter?.bootstrapWindow,
+        raw: triggerBody,
+      }
+    }
+  } catch (e) {
+    httpStatus = httpStatus || 504
+    triggerBody = { triggerError: e instanceof Error ? e.message : String(e) }
+  }
+
+  const polled = await waitForOrchestratorRun(previousCapturedAt, started)
   const coverageAfter = await fetchCoverage()
+  const run = polled.run
+  const ok =
+    Boolean(run?.ok) &&
+    run?.stoppedBeforeDeadline !== false &&
+    !polled.timedOut &&
+    (httpStatus === 200 || httpStatus === 504 || httpStatus === 0)
+
   return {
     run: n,
     timestamp: new Date().toISOString(),
-    httpStatus: res.status,
-    ok: res.ok && json.ok !== false,
-    elapsedMs,
-    budgetMs: json.budgetMs,
-    stoppedBeforeDeadline: json.stoppedBeforeDeadline,
-    partialProgress: json.partialProgress,
-    providerUsed: json.providerUsed,
-    featuredPairProcessed: json.featuredPairProcessed,
-    protocolActivityProcessed: json.protocolActivityProcessed,
-    tier1Processed: json.tier1Processed,
-    tier2Processed: json.tier2Processed,
-    rangesScanned: json.rangesScanned,
-    eventsAdded: json.eventsAdded,
-    candlesAdded: json.candlesAdded,
-    cursorsBefore: json.cursorsBefore,
-    cursorsAfter: json.cursorsAfter,
-    nextWorkItem: json.nextWorkItem,
-    stageTimings: json.stageTimings,
-    failureReason: json.reason || json.error,
+    mode: 'trigger-poll',
+    httpStatus: httpStatus || 504,
+    triggerAccepted: httpStatus === 504 || httpStatus === 200,
+    ok,
+    elapsedMs: Date.now() - started,
+    pollElapsedMs: polled.pollElapsedMs,
+    pollTimedOut: Boolean(polled.timedOut),
+    budgetMs: run?.budgetMs,
+    stoppedBeforeDeadline: run?.stoppedBeforeDeadline,
+    partialProgress: run?.partialProgress,
+    providerUsed: run?.providerUsed,
+    featuredPairProcessed: run?.pairJobsProcessed ? run.pairJobsProcessed >= 1 : undefined,
+    protocolActivityProcessed: undefined,
+    tier1Processed: run?.pairJobsProcessed ? run.pairJobsProcessed >= 2 : undefined,
+    tier2Processed: run?.pairJobsProcessed ? run.pairJobsProcessed >= 3 : undefined,
+    rangesScanned: undefined,
+    eventsAdded: run?.addedEvents,
+    candlesAdded: run?.addedCandles,
+    cursorsBefore: run?.cursorsBefore,
+    cursorsAfter: run?.cursorsAfter,
+    nextWorkItem: run?.nextWorkItem,
+    stageTimings: run?.stageTimings,
+    failureReason: polled.timedOut ? 'poll-timeout' : run?.ok === false ? 'orchestrator-not-ok' : triggerBody,
     coverageBefore: coverageBefore?.bootstrapWindow,
     coverageAfter: coverageAfter?.bootstrapWindow,
-    raw: json,
+    healthBefore: {
+      lastSuccessfulSync: healthBefore?.lastSuccessfulSync,
+      lastIndexedBlock: healthBefore?.lastIndexedBlock,
+      lastOrchestratorRun: healthBefore?.lastOrchestratorRun?.capturedAt,
+    },
+    healthAfter: {
+      lastSuccessfulSync: polled.health?.lastSuccessfulSync,
+      lastIndexedBlock: polled.health?.lastIndexedBlock,
+      lastOrchestratorRun: polled.health?.lastOrchestratorRun,
+    },
+    raw: { triggerBody, orchestratorRun: run },
   }
 }
 
 async function main() {
   await mkdir(path.dirname(OUT), { recursive: true })
   const runs = []
-  let cleanStreak = 0
   for (let i = 1; i <= RUNS; i += 1) {
     try {
       const row = await runOnce(i)
       runs.push(row)
-      const clean =
-        row.ok &&
-        row.httpStatus === 200 &&
-        row.stoppedBeforeDeadline !== false &&
-        row.elapsedMs < 285000
-      cleanStreak = clean ? cleanStreak + 1 : 0
       console.log(
-        `[r789-indexer] ${i}/${RUNS} ok=${row.ok} status=${row.httpStatus} elapsed=${row.elapsedMs}ms events=${row.eventsAdded ?? 0} partial=${row.partialProgress ?? false}`,
+        `[r789-indexer] ${i}/${RUNS} ok=${row.ok} mode=${row.mode} status=${row.httpStatus} elapsed=${row.elapsedMs}ms events=${row.eventsAdded ?? 0} stopped=${row.stoppedBeforeDeadline ?? '?'}`,
       )
       if (!row.ok) {
         console.error(`[r789-indexer] run ${i} failed:`, row.failureReason || row.httpStatus)
@@ -126,16 +210,20 @@ async function main() {
       })
       break
     }
-    if (i < RUNS) await new Promise((r) => setTimeout(r, DELAY_MS))
+    if (i < RUNS) await sleep(DELAY_MS)
   }
   const report = {
     mission: 'R789',
     base: BASE,
     capturedAt: new Date().toISOString(),
+    authMode: HAS_SECRET ? 'bearer' : 'vercel-cron-trigger-poll',
     requestedRuns: RUNS,
     completedRuns: runs.length,
     cleanSequentialRuns: runs.filter(
-      (r) => r.ok && r.httpStatus === 200 && r.stoppedBeforeDeadline !== false && r.elapsedMs < 295000,
+      (r) =>
+        r.ok &&
+        r.stoppedBeforeDeadline !== false &&
+        r.elapsedMs < POLL_TIMEOUT_MS + 25_000,
     ).length,
     runs,
   }

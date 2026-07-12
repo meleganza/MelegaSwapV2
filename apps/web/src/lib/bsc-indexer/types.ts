@@ -115,6 +115,22 @@ export interface IndexerHealthSnapshot {
     lastFailureReason?: string
     quarantinedUntil?: string
   }>
+  lastOrchestratorRun?: {
+    capturedAt: string
+    ok: boolean
+    elapsedMs: number
+    budgetMs: number
+    stoppedBeforeDeadline: boolean
+    partialProgress: boolean
+    addedEvents: number
+    addedCandles: number
+    pairJobsProcessed: number
+    providerUsed?: string
+    nextWorkItem?: string
+    cursorsBefore?: Record<string, number | null>
+    cursorsAfter?: Record<string, number | null>
+    stageTimings?: Array<{ stage: string; elapsedMs: number }>
+  }
 }
 
 export interface OhlcvCandle {
