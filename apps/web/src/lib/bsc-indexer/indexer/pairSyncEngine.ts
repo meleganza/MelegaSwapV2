@@ -26,8 +26,8 @@ import { buildCandlesFromSwaps } from './candles'
 import type { PairWatch } from './featuredPairSync'
 
 const BLOCKS_PER_DAY = Math.floor(86_400 / BSC_AVG_BLOCK_SECONDS)
-const FORWARD_CHUNK_BLOCKS = BOOTSTRAP_MAX_BLOCKS_PER_SYNC
-const BACKWARD_CHUNK_BLOCKS = BOOTSTRAP_MAX_BLOCKS_PER_SYNC
+const FORWARD_CHUNK_BLOCKS = 100
+const BACKWARD_CHUNK_BLOCKS = 100
 
 function normalizeLogs(
   logs: RawLog[],
