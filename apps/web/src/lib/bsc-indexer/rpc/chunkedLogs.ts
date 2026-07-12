@@ -94,6 +94,7 @@ async function postRpc<T>(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+    signal: AbortSignal.timeout(5_000),
   })
   const json = (await res.json()) as { result?: T; error?: { message: string } }
   if (!res.ok || json.error) {

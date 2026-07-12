@@ -8,5 +8,13 @@
       "path": "/api/indexer/registry/refresh/",
       "schedule": "0 3 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "src/pages/api/indexer/run.ts": {
+      "maxDuration": 300
+    },
+    "src/pages/api/indexer/registry/refresh.ts": {
+      "maxDuration": 300
+    }
+  }
 }

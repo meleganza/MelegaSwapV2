@@ -2,7 +2,7 @@ export const VERCEL_MAX_DURATION_MS = 300_000
 export const SAFE_EXECUTION_MARGIN_MS = 60_000
 export const SAFE_EXECUTION_BUDGET_MS = VERCEL_MAX_DURATION_MS - SAFE_EXECUTION_MARGIN_MS
 /** Vercel HTTP gateway returns 504 ~15s; bounded invocations must finish and persist before that. */
-export const INDEXER_HTTP_GATEWAY_BUDGET_MS = 12_000
+export const INDEXER_HTTP_GATEWAY_BUDGET_MS = 8_000
 export const STOP_MARGIN_MS = 8_000
 
 export interface StageTiming {
