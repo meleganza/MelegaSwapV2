@@ -344,7 +344,8 @@ export function aggregateKpis(
   })
 
   const displayable = listUsablePools(previewCards)
-  const highestApr = displayable.reduce<{ apr?: string; exact: number }>(
+  const rewardingDisplayable = listRewardingPools(previewCards)
+  const highestApr = rewardingDisplayable.reduce<{ apr?: string; exact: number }>(
     (best, p) => {
       const exact = parseFloat(p.sustainableAprDisplay?.replace('%', '') || '0') || p.aprExact || 0
       const label = p.sustainableAprDisplay ?? p.apr
