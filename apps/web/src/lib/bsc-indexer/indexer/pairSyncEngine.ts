@@ -72,9 +72,7 @@ async function resolveForwardCursor(
 ): Promise<number> {
   const newestBlock = await newestStoredBlock(storage)
   let cursor = checkpoint.forwardCursor ?? Math.max(bootstrapFloor, newestBlock)
-  const nearHead = forwardHigh - cursor <= REORG_SAFETY_BLOCKS
-  const gapBehind = newestBlock > 0 && forwardHigh - newestBlock > FORWARD_CHUNK_BLOCKS * 2
-  if (nearHead && gapBehind) {
+  if (newestBlock > 0 && cursor > newestBlock + REORG_SAFETY_BLOCKS) {
     cursor = Math.max(bootstrapFloor, newestBlock)
   }
   return Math.min(cursor, forwardHigh)
