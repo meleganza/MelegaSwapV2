@@ -45,6 +45,7 @@ export interface FarmPreviewCard {
   participants?: string
   explorerUrl?: string
   masterChefExplorerUrl?: string
+  emissionState?: 'active' | 'zero' | 'no_allocation' | 'paused' | 'unavailable'
 }
 
 export interface FarmsActivityRow {

@@ -7,6 +7,7 @@ import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getAddressExplorerUrl } from 'utils/blockExplorer'
 import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
 import type { MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
+import { resolveFarmEmissionState, formatTotalDailyEmissionKpi, formatHumanMarcoAmount } from 'lib/data-truth/masterChefEmissionMath'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 
 export const formatUsd = (value?: number | null): string => {
@@ -29,6 +30,8 @@ export const formatTokenAmount = (amount?: BigNumber, decimals = 18, symbol?: st
   return symbol ? `${text} ${symbol}` : text
 }
 
+export const formatHumanTokenAmount = formatHumanMarcoAmount
+
 function farmStatus(farm: FarmWithStakedValue): FarmStatus {
   if (farm.multiplier === '0X') return 'finished'
   if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) return 'indexing'
@@ -37,22 +40,17 @@ function farmStatus(farm: FarmWithStakedValue): FarmStatus {
 
 export function mapFarmToPreviewCard(
   farm: FarmWithStakedValue,
-  regularCakePerBlock: number,
+  emission: MasterChefEmission,
 ): FarmPreviewCard {
   const status = farmStatus(farm)
   const liquidityUsd = farm.liquidity?.toNumber() ?? 0
   const totalApr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
   const displayApr = getDisplayApr(farm.apr, farm.lpRewardsApr)
 
-  const dailyRewardBn =
-    farm.poolWeight && regularCakePerBlock > 0
-      ? farm.poolWeight.times(regularCakePerBlock).times(BLOCKS_PER_DAY)
-      : null
-  const resolvedDailyBn =
-    dailyRewardBn ??
-    (totalApr > 0 && farm.poolWeight && regularCakePerBlock > 0
-      ? farm.poolWeight.times(regularCakePerBlock).times(BLOCKS_PER_DAY)
-      : null)
+  const pid = farm.pid ?? -1
+  const poolWeight = farm.poolWeight?.toNumber()
+  const { dailyMarco, state: emissionState } = resolveFarmEmissionState(emission, pid, poolWeight)
+  const rewardSymbol = farm.earningToken?.symbol ?? 'MARCO'
 
   const token0 = farm.token?.symbol ?? '?'
   const token1 = farm.quoteToken?.symbol ?? '?'
@@ -64,9 +62,7 @@ export function mapFarmToPreviewCard(
   const analyzePreview: FarmAnalyzePreview = {
     aprHistory: displayApr ? `${displayApr}%` : '—',
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
-    emission: resolvedDailyBn
-      ? `${formatTokenAmount(resolvedDailyBn, 18, farm.earningToken?.symbol ?? 'MARCO')} / day`
-      : '—',
+    emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : '—',
     contract: farm.lpAddress ?? 'On-chain',
     contractExplorerUrl: lpExplorerUrl,
     risk: farm.isStable ? 'Stable pair' : 'Standard',
@@ -83,7 +79,12 @@ export function mapFarmToPreviewCard(
     status,
     tvl: formatUsd(liquidityUsd),
     liquidity: formatUsd(liquidityUsd),
-    dailyRewards: resolvedDailyBn ? formatTokenAmount(resolvedDailyBn, 18, farm.earningToken?.symbol) : '—',
+    dailyRewards:
+      emissionState === 'active'
+        ? formatHumanTokenAmount(dailyMarco, rewardSymbol)
+        : emissionState === 'unavailable'
+          ? '—'
+          : '0 MARCO',
     multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : '—',
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
     participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : '—',
@@ -96,18 +97,17 @@ export function mapFarmToPreviewCard(
     lpLabel: farm.lpSymbol,
     explorerUrl: lpExplorerUrl,
     masterChefExplorerUrl,
+    emissionState,
   }
 }
 
 export function aggregateKpis(
   farms: FarmWithStakedValue[],
-  regularCakePerBlock: number,
+  emission: MasterChefEmission,
   featuredPair?: string,
-  emissionMeta?: MasterChefEmission,
 ): FarmsKpiItem[] {
   let totalTvl = 0
   let activeFarms = 0
-  let dailyEmissions = 0
   let highestApr = 0
 
   farms.forEach((farm) => {
@@ -116,25 +116,10 @@ export function aggregateKpis(
     totalTvl += liq
     const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
     if (apr > highestApr) highestApr = apr
-    if (regularCakePerBlock > 0 && farm.poolWeight?.gt(0)) {
-      dailyEmissions += getBalanceNumber(farm.poolWeight.times(regularCakePerBlock).times(BLOCKS_PER_DAY))
-    }
   })
 
-  // Canonical total: MasterChef dexTokenPerBlock × blocks/day (pool weights sum ≈ 1 when loaded).
-  const masterChefDailyTotal =
-    regularCakePerBlock > 0
-      ? getBalanceNumber(new BigNumber(regularCakePerBlock).times(BLOCKS_PER_DAY))
-      : 0
-  const resolvedDailyEmissions = dailyEmissions > 0 ? dailyEmissions : masterChefDailyTotal
-
-  const perBlock = emissionMeta?.perBlock ?? regularCakePerBlock
-  const emissionValue =
-    perBlock > 0
-      ? formatTokenAmount(new BigNumber(perBlock).times(BLOCKS_PER_DAY), 18, 'MARCO')
-      : emissionMeta?.readError
-        ? '—'
-        : '0 MARCO'
+  const perBlock = emission.perBlock
+  const emissionValue = formatTotalDailyEmissionKpi(emission)
 
   return [
     { id: 'tvl', label: 'Total TVL', value: formatUsd(totalTvl) },

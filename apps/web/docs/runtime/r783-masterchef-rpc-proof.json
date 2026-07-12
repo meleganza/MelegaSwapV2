@@ -1,0 +1,156 @@
+{
+  "mission": "R783",
+  "emissionMethod": "dexTokenPerBlock",
+  "masterChefAddress": "0x41D5487836452d23f2c467070244E5842B412794",
+  "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "eth_chainId": {
+    "raw": "0x38",
+    "decoded": 56
+  },
+  "eth_blockNumber": {
+    "raw": "0x687246a",
+    "decoded": 109519978
+  },
+  "reads": [
+    {
+      "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+      "method": "dexTokenPerBlock",
+      "calldata": "0x6d7249df",
+      "rawHex": "0x0000000000000000000000000000000000000000000000004563918244f40000",
+      "decoded": [
+        "5000000000000000000"
+      ],
+      "blockNumber": 109519978,
+      "timestamp": "2026-07-12T08:01:13.082Z",
+      "provider": "https://bsc-dataseed.binance.org",
+      "success": true
+    },
+    {
+      "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+      "method": "totalAllocPoint",
+      "calldata": "0x17caf6f1",
+      "rawHex": "0x0000000000000000000000000000000000000000000000000000000000074cf5",
+      "decoded": [
+        "478453"
+      ],
+      "blockNumber": 109519978,
+      "timestamp": "2026-07-12T08:01:13.082Z",
+      "provider": "https://bsc-dataseed.binance.org",
+      "success": true
+    },
+    {
+      "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+      "method": "poolLength",
+      "calldata": "0x081e3eda",
+      "rawHex": "0x0000000000000000000000000000000000000000000000000000000000000183",
+      "decoded": [
+        "387"
+      ],
+      "blockNumber": 109519978,
+      "timestamp": "2026-07-12T08:01:13.082Z",
+      "provider": "https://bsc-dataseed.binance.org",
+      "success": true
+    },
+    {
+      "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+      "method": "BONUS_MULTIPLIER",
+      "calldata": "0x8aa28550",
+      "rawHex": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "decoded": [
+        "1"
+      ],
+      "blockNumber": 109519978,
+      "timestamp": "2026-07-12T08:01:13.082Z",
+      "provider": "https://bsc-dataseed.binance.org",
+      "success": true
+    },
+    {
+      "contract": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "method": "decimals",
+      "calldata": "0x313ce567",
+      "rawHex": "0x0000000000000000000000000000000000000000000000000000000000000012",
+      "decoded": [
+        "18"
+      ],
+      "blockNumber": 109519978,
+      "timestamp": "2026-07-12T08:01:13.082Z",
+      "provider": "https://bsc-dataseed.binance.org",
+      "success": true
+    }
+  ],
+  "computed": {
+    "normalizedEmissionPerBlock": 5,
+    "blocksPerDay": 28800,
+    "multiplier": 1,
+    "totalDailyMarco": 144000
+  },
+  "activeFarmExamples": [
+    {
+      "pid": 0,
+      "allocPoint": 119613,
+      "lpToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "farmDailyMarco": 35999.92475749969,
+      "poolInfo": {
+        "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+        "method": "poolInfo",
+        "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000000",
+        "rawHex": "0x000000000000000000000000963556de0eb8138e97a85f0a86ee0acd159d210b000000000000000000000000000000000000000000000000000000000001d33d0000000000000000000000000000000000000000000000000000000006871942000000000000000000000000000000000000000000000000000020b52321db48",
+        "decoded": [
+          "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+          "119613",
+          "109517122",
+          "35962350590792"
+        ],
+        "blockNumber": 109519978,
+        "timestamp": "2026-07-12T08:01:13.082Z",
+        "provider": "https://bsc-dataseed.binance.org",
+        "success": true
+      }
+    },
+    {
+      "pid": 1,
+      "allocPoint": 10000,
+      "lpToken": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+      "farmDailyMarco": 3009.7000123314097,
+      "poolInfo": {
+        "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+        "method": "poolInfo",
+        "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000001",
+        "rawHex": "0x0000000000000000000000007286c16c3c05d4c17b689be7948ec4fa4e861d1e0000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000679f3ed000000000000000000000000000000000000000000000000002a36b56c8e6b3c",
+        "decoded": [
+          "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+          "10000",
+          "108655597",
+          "11882101860100924"
+        ],
+        "blockNumber": 109519978,
+        "timestamp": "2026-07-12T08:01:13.082Z",
+        "provider": "https://bsc-dataseed.binance.org",
+        "success": true
+      }
+    },
+    {
+      "pid": 5,
+      "allocPoint": 300,
+      "lpToken": "0x8481c346D5348A7b543Cb3755beBB68799d375d0",
+      "farmDailyMarco": 90.2910003699423,
+      "poolInfo": {
+        "contract": "0x41D5487836452d23f2c467070244E5842B412794",
+        "method": "poolInfo",
+        "calldata": "0x1526fe270000000000000000000000000000000000000000000000000000000000000005",
+        "rawHex": "0x0000000000000000000000008481c346d5348a7b543cb3755bebb68799d375d0000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000003407ee700000000000000000000000000000000000000000000000000144987ee1d303e",
+        "decoded": [
+          "0x8481c346D5348A7b543Cb3755beBB68799d375d0",
+          "300",
+          "54558439",
+          "5710347698516030"
+        ],
+        "blockNumber": 109519978,
+        "timestamp": "2026-07-12T08:01:13.082Z",
+        "provider": "https://bsc-dataseed.binance.org",
+        "success": true
+      }
+    }
+  ],
+  "timestamp": "2026-07-12T08:01:13.082Z"
+}

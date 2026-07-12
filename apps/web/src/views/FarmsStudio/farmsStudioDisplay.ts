@@ -27,4 +27,4 @@ export const shortenContractAddress = (address?: string): string => {
 export const MARCO_EMITS_TODAY_LABEL = 'Marco Emits Today'
 
 export const MARCO_EMISSION_UNAVAILABLE_REASON =
-  'MasterChef regularCakePerBlock or active pool weight unavailable — emission cannot be read from chain.'
+  'MasterChef dexTokenPerBlock RPC read failed — emission cannot be certified from chain.'

@@ -18,7 +18,7 @@ import {
 } from './formatFarmsRuntime'
 import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErrors'
 import { useFarmsTerminalData } from './useFarmsTerminalData'
-import { useMasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
+import { useMasterChefEmission, type MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 
 export type FarmsRuntimePhase =
   | 'idle'
@@ -80,6 +80,7 @@ export interface FarmsStakingRuntime {
   kpis: ReturnType<typeof aggregateKpis>
   advisorItems: FarmsAdvisorItem[]
   terminal: ReturnType<typeof useFarmsTerminalData>
+  masterChefEmission: MasterChefEmission
   machine: FarmsMachinePayload
   account?: string
   userDataLoaded: boolean
@@ -179,7 +180,11 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   usePollFarmsWithUserData()
   const loadingKeys = useAppSelector((state) => state.farms.loadingKeys)
   const { data: farmsLP, userDataLoaded, regularCakePerBlock } = useFarms()
-  const masterChefEmission = useMasterChefEmission()
+  const farmPids = useMemo(
+    () => (farmsLP ?? []).map((farm) => farm.pid).filter((pid) => Number.isInteger(pid) && pid >= 0),
+    [farmsLP],
+  )
+  const masterChefEmission = useMasterChefEmission(farmPids)
   const canonicalPerBlock = masterChefEmission.perBlock > 0 ? masterChefEmission.perBlock : regularCakePerBlock
   const cakePrice = usePriceCakeBusd()
   const terminal = useFarmsTerminalData()
@@ -192,8 +197,8 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
 
   const previewCards = useMemo(() => {
     if (!enrichedFarms.length) return []
-    return enrichedFarms.map((f) => mapFarmToPreviewCard(f, canonicalPerBlock))
-  }, [enrichedFarms, canonicalPerBlock])
+    return enrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
+  }, [enrichedFarms, masterChefEmission])
 
   const filteredFarms = useMemo(() => filterFarms(previewCards, filter), [previewCards, filter])
 
@@ -233,8 +238,8 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   }, [featuredCard, enrichedFarms])
 
   const kpis = useMemo(
-    () => aggregateKpis(enrichedFarms, canonicalPerBlock, featured.pair, masterChefEmission),
-    [enrichedFarms, canonicalPerBlock, featured.pair, masterChefEmission],
+    () => aggregateKpis(enrichedFarms, masterChefEmission, featured.pair),
+    [enrichedFarms, masterChefEmission, featured.pair],
   )
 
   const advisorItems = useMemo((): FarmsAdvisorItem[] => {
@@ -334,6 +339,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     kpis,
     advisorItems,
     terminal,
+    masterChefEmission,
     machine,
     account,
     userDataLoaded,

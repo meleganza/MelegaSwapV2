@@ -92,8 +92,25 @@ function formatKpiDisplayValue(id: string, raw: string, gold?: boolean): string 
 }
 
 export const FarmsKpiRow: React.FC = () => {
-  const { kpis, loadingLabel, featured } = useFarmsRuntime()
+  const { kpis, loadingLabel, featured, masterChefEmission } = useFarmsRuntime()
   const sparkline = featured.sparkline
+  const emissionDiagnostics = masterChefEmission
+    ? [
+        `MasterChef: ${masterChefEmission.contract}`,
+        `Method: ${masterChefEmission.method}`,
+        `Raw/block: ${masterChefEmission.rawPerBlockWei || masterChefEmission.rawPerBlockHex || '—'}`,
+        `Normalized/block: ${masterChefEmission.perBlock}`,
+        `Decimals: ${masterChefEmission.rewardDecimals}`,
+        `totalAllocPoint: ${masterChefEmission.totalAllocPoint}`,
+        `Block: ${masterChefEmission.currentBlock}`,
+        `Blocks/day: ${masterChefEmission.blocksPerDay}`,
+        `Multiplier: ${masterChefEmission.bonusMultiplier}`,
+        `Daily emission: ${masterChefEmission.perDay}`,
+        masterChefEmission.reason ? `Reason: ${masterChefEmission.reason}` : null,
+      ]
+        .filter(Boolean)
+        .join('\n')
+    : ''
 
   return (
     <Row data-fs-kpi-row>
@@ -118,7 +135,9 @@ export const FarmsKpiRow: React.FC = () => {
                   {kpi.delta ? <FsKpiDelta $positive={kpi.deltaPositive}>{kpi.delta}</FsKpiDelta> : null}
                 </ValueRow>
                 {emissionUnavailable ? (
-                  <TradeTechnicalDetails detail={MARCO_EMISSION_UNAVAILABLE_REASON} />
+                  <TradeTechnicalDetails detail={`${MARCO_EMISSION_UNAVAILABLE_REASON}\n${emissionDiagnostics}`} />
+                ) : kpi.id === 'rewards' && emissionDiagnostics ? (
+                  <TradeTechnicalDetails detail={emissionDiagnostics} />
                 ) : null}
                 {kpi.id === 'tvl' && sparkline.length > 0 ? <MiniSparkline points={sparkline} /> : null}
               </ValueBlock>
