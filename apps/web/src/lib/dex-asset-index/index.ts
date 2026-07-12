@@ -8,6 +8,7 @@ export type {
 export {
   buildDexAssetIndex,
   buildDexAssetIndexPayload,
+  getCanonicalIndexedAssets,
   getProjectSurfaceAssets,
   getTrendingSurfaceAssets,
   getTradeSurfaceAssets,

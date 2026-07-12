@@ -84,6 +84,24 @@ if (!audit) {
   fail('G-AUDIT', 'Missing r780-data-truth-audit.json')
 }
 
+// Gate: dex-asset-index barrel exports match buildDexAssetIndex public API
+const dexBarrel = readText('src/lib/dex-asset-index/index.ts')
+const dexBuild = readText('src/lib/dex-asset-index/buildDexAssetIndex.ts')
+const requiredDexExports = ['getCanonicalIndexedAssets', 'getTradeSurfaceAssets', 'buildDexAssetIndex']
+requiredDexExports.forEach((symbol) => {
+  if (!dexBuild.includes(`export function ${symbol}`) && !dexBuild.includes(`export const ${symbol}`)) {
+    fail('G-DEX-EXPORT-SOURCE', `buildDexAssetIndex missing export ${symbol}`)
+  }
+  if (!dexBarrel.includes(symbol)) {
+    fail('G-DEX-EXPORT-BARREL', `lib/dex-asset-index barrel missing re-export ${symbol}`)
+  }
+})
+
+const homeImportsCanonical = homeData.includes('getCanonicalIndexedAssets')
+if (homeImportsCanonical && !dexBarrel.includes('getCanonicalIndexedAssets')) {
+  fail('G-DEX-CANONICAL-BARREL', 'useHomeTradeData imports getCanonicalIndexedAssets but barrel does not export it')
+}
+
 const report = {
   mission: 'R780 data quality gates',
   timestamp: new Date().toISOString(),

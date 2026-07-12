@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
+import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography, MelegaCinematicPanel, type MelegaPulseRow } from 'design-system/melega'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import TrendingRibbon from './TrendingRibbon'
@@ -75,6 +76,29 @@ const LowerRow = styled.div<{ $hasEarn?: boolean }>`
 `
 
 export const HomeTradeScreen: React.FC = () => {
+  return (
+    <Root data-home-trade-screen data-r200-premium="true">
+      <PageMeta />
+      <HomeTradeGlobalStyle />
+      <Content>
+        <DataSurfaceErrorBoundary
+          surface="Trending"
+          userReason="Trending market rankings are temporarily unavailable."
+        >
+          <TrendingRibbon />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary
+          surface="Homepage"
+          userReason="Homepage market modules are temporarily unavailable."
+        >
+          <HomeTradeScreenContent />
+        </DataSurfaceErrorBoundary>
+      </Content>
+    </Root>
+  )
+}
+
+const HomeTradeScreenContent: React.FC = () => {
   const data = useHomeTradeData()
 
   const machine = useMemo(
@@ -100,17 +124,18 @@ export const HomeTradeScreen: React.FC = () => {
   }, [data.marketCards])
 
   return (
-    <Root data-home-trade-screen data-r200-premium="true">
-      <PageMeta />
-      <HomeTradeGlobalStyle />
-      <Content>
-        <TrendingRibbon />
+    <>
         <HeroRow>
           <HomeSwapPanel />
-          <MelegaCinematicPanel
-            pulseRows={pulseRows.length ? pulseRows : undefined}
-            liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
-          />
+          <DataSurfaceErrorBoundary
+            surface="Live Economy"
+            userReason="Live economy metrics are temporarily unavailable."
+          >
+            <MelegaCinematicPanel
+              pulseRows={pulseRows.length ? pulseRows : undefined}
+              liveEconomy={data.liveEconomyMetrics.length ? data.liveEconomyMetrics : undefined}
+            />
+          </DataSurfaceErrorBoundary>
         </HeroRow>
         <HomeMarketOverview />
         <HomeQuickActions />
@@ -122,17 +147,21 @@ export const HomeTradeScreen: React.FC = () => {
           )}
           <MarketPulsePanel />
         </LowerRow>
-        <LiveActivityFeed
-          slots={data.activitySlots}
-          rows={data.activityRows}
-          isIndexing={data.isActivityIndexing}
-          activityUnavailable={data.activityUnavailable}
-          indexerState={data.indexerState}
-        />
+        <DataSurfaceErrorBoundary
+          surface="Live Activity"
+          userReason="Live protocol activity feed is temporarily unavailable."
+        >
+          <LiveActivityFeed
+            slots={data.activitySlots}
+            rows={data.activityRows}
+            isIndexing={data.isActivityIndexing}
+            activityUnavailable={data.activityUnavailable}
+            indexerState={data.indexerState}
+          />
+        </DataSurfaceErrorBoundary>
         <HomeTradeFooter />
         <HomeMachinePanel machine={machine} />
-      </Content>
-    </Root>
+    </>
   )
 }
 
