@@ -152,6 +152,7 @@ const HomeTradeScreenContent: React.FC = () => {
           userReason="Live protocol activity feed is temporarily unavailable."
         >
           <LiveActivityFeed
+            title={data.activityScopeTitle}
             slots={data.activitySlots}
             rows={data.activityRows}
             isIndexing={data.isActivityIndexing}

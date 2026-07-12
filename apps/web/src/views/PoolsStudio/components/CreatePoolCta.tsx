@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import styled, { css, keyframes } from 'styled-components'
 import { poolsStudioColors } from '../poolsStudioTokens'
 import CreatePoolWizardPreview from './CreatePoolWizardPreview'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import { WBNB } from '@pancakeswap/sdk'
 import {
   WIZARD_STEP_LABELS,
   TOKEN_OPTIONS,
@@ -13,6 +16,11 @@ import {
   type CreatePoolWizardState,
   type WizardStep,
 } from './createPoolWizardState'
+
+const WIZARD_TOKEN_META: Record<string, { address?: string; chainId: number }> = {
+  MARCO: { address: MARCO_BSC_ADDRESS, chainId: 56 },
+  BNB: { address: WBNB[56].address, chainId: 56 },
+}
 
 const Card = styled.section<{ $expanded?: boolean }>`
   width: 100%;
@@ -800,6 +808,20 @@ type TokenSelectorProps = {
   onChange: (v: string) => void
 }
 
+const TokenAvatar: React.FC<{ symbol: string }> = ({ symbol }) => {
+  const meta = WIZARD_TOKEN_META[symbol]
+  return (
+    <MelegaTokenAvatar
+      name={symbol}
+      symbol={symbol}
+      size={22}
+      address={meta?.address}
+      chainId={meta?.chainId ?? 56}
+      radius="circle"
+    />
+  )
+}
+
 const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange }) => {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -829,7 +851,7 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
           data-ps-create-token-select
           onClick={() => setOpen((v) => !v)}
         >
-          <TokenLogo>{value.slice(0, 1)}</TokenLogo>
+          <TokenAvatar symbol={value} />
           <span>{value || 'Select token'}</span>
         </SelectBtn>
         {open ? (
@@ -851,7 +873,7 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
                   setQuery('')
                 }}
               >
-                <TokenLogo>{token.slice(0, 1)}</TokenLogo>
+                <TokenAvatar symbol={token} />
                 {token}
               </DropdownItem>
             ))}

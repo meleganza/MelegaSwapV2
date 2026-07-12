@@ -60,14 +60,15 @@ const TrackWrap = styled.div`
   }
 `
 
-const Track = styled.div<{ $paused?: boolean }>`
+const Track = styled.div<{ $paused?: boolean; $static?: boolean }>`
   display: flex;
   align-items: center;
   width: max-content;
   white-space: nowrap;
   will-change: transform;
-  animation: ${melegaTicker} 40s linear infinite;
-  animation-play-state: ${({ $paused }) => ($paused ? 'paused' : 'running')};
+  padding-left: ${({ $static }) => ($static ? '0' : '0')};
+  animation: ${({ $static }) => ($static ? 'none' : melegaTicker)} 40s linear infinite;
+  animation-play-state: ${({ $paused, $static }) => ($static || $paused ? 'paused' : 'running')};
 
   @media (min-width: 768px) {
     animation-duration: 40s;
@@ -191,6 +192,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   const dragRef = useRef(false)
 
   const safeItems = Array.isArray(items) ? items : []
+  const marqueeEnabled = safeItems.length >= 3
 
   if (disabled) return null
 
@@ -207,7 +209,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     )
   }
 
-  const scrollItems = [...safeItems, ...safeItems]
+  const scrollItems = marqueeEnabled ? [...safeItems, ...safeItems] : safeItems
   const paused = pausedProp ?? hoverPaused ?? dragPaused
 
   const handlePointerDown = () => {
@@ -242,7 +244,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
         onPointerLeave={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        <Track $paused={paused} data-ticker-track>
+        <Track $paused={paused} $static={!marqueeEnabled} data-ticker-track>
           <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
           <Dot aria-hidden />
           {scrollItems.map((item, i) => (

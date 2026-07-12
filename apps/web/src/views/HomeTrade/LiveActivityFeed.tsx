@@ -12,7 +12,7 @@ const shimmer = keyframes`
   100% { background-position: 200% 0; }
 `
 
-const Shell = styled.section`
+const Shell = styled.section<{ $compact?: boolean }>`
   background: ${premiumStudioColors.card};
   border: 1px solid ${premiumStudioColors.cardBorder};
   border-radius: ${homeTradeLayout.cardRadius};
@@ -21,8 +21,8 @@ const Shell = styled.section`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: ${homeTradeLayout.liveActivityHeight};
-  min-height: ${homeTradeLayout.liveActivityHeight};
+  height: ${({ $compact }) => ($compact ? 'auto' : homeTradeLayout.liveActivityHeight)};
+  min-height: ${({ $compact }) => ($compact ? '0' : 'auto')};
 `
 
 const Header = styled.div`
@@ -154,6 +154,7 @@ const SkeletonRow = styled.div`
 const SKELETON_ROWS = 5
 
 export interface LiveActivityFeedProps {
+  title?: string
   rows?: ActivityRow[]
   slots?: ActivitySlot[]
   isIndexing?: boolean
@@ -167,6 +168,7 @@ export interface LiveActivityFeedProps {
 }
 
 export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
+  title = 'Recent protocol activity',
   rows = [],
   slots = [],
   isIndexing = false,
@@ -197,10 +199,13 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
     return 'No protocol activity indexed in the last 24 hours.'
   }, [isIndexing, activityUnavailable, indexerState?.reason])
 
+  const filledCount = displaySlots.filter((s) => s.row).length + (hasRows ? rows.length : 0)
+  const isCompact = filledCount <= 2 && !isIndexing
+
   return (
-    <Shell data-live-activity-feed>
+    <Shell data-live-activity-feed $compact={isCompact}>
       <Header>
-        <Title>Live activity</Title>
+        <Title>{title}</Title>
         <SectionLink href="/trade">View all →</SectionLink>
       </Header>
       <Body>

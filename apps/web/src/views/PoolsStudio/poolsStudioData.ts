@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import { Token } from '@pancakeswap/sdk'
 import { Pool } from '@pancakeswap/uikit'
 import { VaultKey } from 'state/types'
+import type { PoolLifecycleFlags } from 'lib/data-truth/poolLifecycle'
 
 export type PoolStatus = 'live' | 'indexing' | 'ended'
 
@@ -75,6 +76,8 @@ export interface PoolPreviewCard {
   visibilityStatus?: PoolVisibilityStatus
   discoveryClass?: PoolDiscoveryClass
   hiddenReason?: string
+  hiddenReasonLabel?: string
+  lifecycle?: PoolLifecycleFlags
   healthScore?: number
   rewardBadge?: 'Official' | 'Partner' | 'Community'
   visualType?: string

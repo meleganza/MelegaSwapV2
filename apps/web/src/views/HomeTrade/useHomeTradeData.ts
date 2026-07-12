@@ -271,13 +271,11 @@ export const useHomeTradeData = () => {
       if (sym === 'MARCO') {
         return {
           price: formatTickerPrice(marcoUsd),
-          change: formatTickerChange(0),
         }
       }
       if (sym === 'WBNB') {
         return {
           price: formatTickerPrice(wbnbUsd),
-          change: formatTickerChange(0),
         }
       }
       return {}
@@ -588,6 +586,25 @@ export const useHomeTradeData = () => {
     return 'No tradeable assets with live quotes'
   }, [trendingTickerItems.length, indexerState, marcoPriceLabel])
 
+  const activityScopeTitle = useMemo(() => {
+    if (activityRows.length === 0) return 'Recent protocol activity'
+    const source = indexerState.source ?? ''
+    const newestTs = Math.max(
+      ...indexedTransactions
+        .map((tx) => Number(tx.timestamp))
+        .filter((ts) => Number.isFinite(ts) && ts > 0),
+      0,
+    )
+    const ageSec = newestTs > 0 ? Math.floor(Date.now() / 1000 - newestTs) : Number.POSITIVE_INFINITY
+    const marcoOnly = activityRows.every((row) => /marco/i.test(row.context ?? row.type ?? ''))
+    if (source.includes('durable') && marcoOnly && activityRows.length <= 3) {
+      return 'MARCO / WBNB activity'
+    }
+    if (ageSec <= 15 * 60) return 'Live activity'
+    if (ageSec <= LIVE_ACTIVITY_WINDOW_SEC) return 'Recent protocol activity'
+    return 'Historical protocol activity'
+  }, [activityRows, indexedTransactions, indexerState.source])
+
   const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 
   return {
@@ -606,6 +623,7 @@ export const useHomeTradeData = () => {
     isActivityIndexing,
     isTrendingIndexing,
     activityUnavailable,
+    activityScopeTitle,
     indexerState,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,

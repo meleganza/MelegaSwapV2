@@ -13,6 +13,7 @@ import {
   formatUsd,
   listActivePools,
   listUsablePools,
+  listRewardingPools,
   mapPoolToPreviewCard,
   selectFeaturedPool,
   sortPoolsDefault,
@@ -22,6 +23,7 @@ import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErr
 import usePoolsTerminalData from './usePoolsTerminalData'
 import { getAprData } from 'views/Pools/helpers'
 import { buildPoolGateReport, POOL_GATE_POLICY_NOTE } from './buildPoolGateReport'
+import { reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
 import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 
@@ -133,6 +135,8 @@ export interface PoolsStakingRuntime {
   requestModal: (pool: PoolPreviewCard, action: Exclude<PoolsModalAction, null>) => void
   modalRequest: { pool: PoolPreviewCard; action: Exclude<PoolsModalAction, null> } | null
   clearModal: () => void
+  rewardingCount: number
+  poolReconciliation: ReturnType<typeof import('lib/data-truth/poolLifecycle').reconcilePoolLifecycle>
 }
 
 function matchesDurationFilter(visualType?: string, filter?: string): boolean {
@@ -301,12 +305,15 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock, previewCards),
     [rawPools, featuredCard, currentBlock, previewCards],
   )
+  const poolReconciliation = useMemo(
+    () => reconcilePoolLifecycle(rawPools ?? [], currentBlock),
+    [rawPools, currentBlock],
+  )
+  const rewardingCount = poolReconciliation.rewarding
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
   const advisorItems = useMemo(() => {
-    const eligible = listUsablePools(previewCards).filter(
-      (p) => p.status === 'live' && p.sustainableAprDisplay && p.stakeToken && p.rewardToken,
-    )
+    const eligible = listRewardingPools(previewCards)
     if (!eligible.length) {
       return [
         {
@@ -516,5 +523,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     requestModal,
     modalRequest,
     clearModal,
+    rewardingCount,
+    poolReconciliation,
   }
 }

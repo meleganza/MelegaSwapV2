@@ -7,22 +7,20 @@ import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { buildPoolMachineV2 } from '../poolsRuntime/formatPoolPresentation'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 
-const Card = styled.article<{ $expanded?: boolean }>`
+const Card = styled.article<{ $expanded?: boolean; $ended?: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  height: ${({ $expanded }) => ($expanded ? 'auto' : poolsStudioLayout.poolCardHeight)};
-  min-height: ${poolsStudioLayout.poolCardHeight};
-  padding: 22px;
-  padding-bottom: 74px;
+  min-height: ${({ $ended }) => ($ended ? '280px' : poolsStudioLayout.poolCardHeight)};
+  padding: 24px;
   border-radius: 18px;
   background: #141414;
   border: 1px solid rgba(212, 175, 55, 0.18);
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden;
   transition: box-shadow 180ms ease-out;
 
   &:hover {
@@ -32,8 +30,7 @@ const Card = styled.article<{ $expanded?: boolean }>`
   }
 
   @media (max-width: 767px) {
-    height: ${({ $expanded }) => ($expanded ? 'auto' : '244px')};
-    min-height: ${({ $expanded }) => ($expanded ? poolsStudioLayout.poolCardHeight : '244px')};
+    min-height: ${({ $expanded, $ended }) => ($expanded ? 'auto' : $ended ? '260px' : '244px')};
   }
 `
 
@@ -42,48 +39,52 @@ const CardBody = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  gap: 12px;
 `
 
-const AprValue = styled.div`
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+`
+
+const AprValue = styled.div<{ $ended?: boolean }>`
   font-family: Orbitron, sans-serif;
-  font-size: 56px;
+  font-size: ${({ $ended }) => ($ended ? 'clamp(18px, 4vw, 24px)' : 'clamp(32px, 5vw, 48px)')};
   font-weight: 800;
-  line-height: 60px;
-  color: #19f08a;
-  margin: 0 0 8px;
-  white-space: nowrap;
-  overflow: visible;
+  line-height: 1.15;
+  color: ${({ $ended }) => ($ended ? '#8a8a8a' : '#19f08a')};
+  margin: 0;
   flex-shrink: 0;
 `
 
 const TitleRow = styled.div`
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 7px;
-  min-height: 28px;
+  flex-direction: column;
+  gap: 6px;
   min-width: 0;
-  margin-bottom: 10px;
+  flex: 1;
 `
 
 const PoolName = styled.span`
   font-family: Orbitron, sans-serif;
-  font-size: 20px;
+  font-size: clamp(16px, 2.2vw, 20px);
   font-weight: 700;
-  line-height: 28px;
+  line-height: 1.3;
   color: #f7f7f7;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 100%;
+  word-break: break-word;
 `
 
 const BadgeRow = styled.div`
   display: inline-flex;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 7px;
   flex-shrink: 0;
 `
@@ -256,13 +257,11 @@ const CopyBtn = styled.button`
 `
 
 const Footer = styled.div`
-  position: absolute;
-  left: 22px;
-  right: 22px;
-  bottom: 22px;
   display: flex;
   gap: ${poolsStudioLayout.poolCardBtnGap};
   flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 16px;
 
   @media (max-width: 767px) {
     flex-direction: column;
@@ -371,12 +370,19 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const { requestModal } = usePoolsRuntime()
   const { chainId } = useActiveChainId()
   const preview = pool.analyzePreview
+  const isRewarding = Boolean(pool.lifecycle?.rewarding)
+  const isEnded = pool.status === 'ended' || pool.lifecycle?.finished
   const isLive =
-    pool.displayStatus === 'LIVE' &&
-    pool.status === 'live' &&
+    isRewarding &&
     pool.sustainableAprDisplay &&
     !isForbiddenAprDisplay(pool.sustainableAprDisplay)
-  const aprText = isLive ? pool.sustainableAprDisplay! : 'Ended'
+  const aprText = isLive
+    ? pool.sustainableAprDisplay!
+    : isRewarding
+      ? 'Rewards Active'
+      : isEnded
+        ? 'Rewards Concluded'
+        : 'Unavailable'
   const healthScore = pool.healthScore ?? pool.sustainabilityScore ?? 0
   const lockLabel = pool.lockPeriod ?? pool.visualType ?? pool.poolTypeLabel ?? '—'
   const duration = pool.estimatedDuration ?? preview?.duration ?? preview?.emissionEndEstimate ?? '—'
@@ -407,19 +413,24 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
       data-r717-pool-card
       data-r718-pool-card
       $expanded={analyzeOpen}
+      $ended={isEnded}
     >
       <MachineHidden data-melega-pool-v2={machineJson} data-pools-machine-json aria-hidden />
 
       <CardBody data-ps-card-body>
-        <AprValue data-ps-pool-apr>{aprText}</AprValue>
+        <HeaderRow>
+          <TitleRow>
+            <PoolName data-ps-pool-name>{pool.name}</PoolName>
+            <BadgeRow>
+              {isRewarding ? <Pill $variant="live">LIVE</Pill> : isEnded ? <Pill $variant="community">ENDED</Pill> : null}
+              {rewardBadge ? <Pill $variant={rewardBadge}>{pool.rewardBadge ?? pool.visualType}</Pill> : null}
+            </BadgeRow>
+          </TitleRow>
+        </HeaderRow>
 
-        <TitleRow>
-          <PoolName data-ps-pool-name>{pool.name}</PoolName>
-          <BadgeRow>
-            {isLive ? <Pill $variant="live">LIVE</Pill> : null}
-            {rewardBadge ? <Pill $variant={rewardBadge}>{pool.rewardBadge ?? pool.visualType}</Pill> : null}
-          </BadgeRow>
-        </TitleRow>
+        <AprValue data-ps-pool-apr $ended={isEnded || !isLive}>
+          {aprText}
+        </AprValue>
 
         {!analyzeOpen ? (
           <InfoGrid data-ps-collapsed-info>
@@ -509,7 +520,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
       </CardBody>
 
       <Footer data-ps-card-footer>
-        {isLive ? (
+        {isRewarding ? (
           <>
             <PoolBtn type="button" onClick={() => requestModal(pool, 'stake')} data-ps-stake-btn>
               Stake

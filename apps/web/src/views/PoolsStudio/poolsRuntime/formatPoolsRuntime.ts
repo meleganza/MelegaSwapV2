@@ -5,6 +5,8 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { derivePoolLifecycle, reconcilePoolLifecycle, POOL_HIDDEN_REASON_LABELS } from 'lib/data-truth/poolLifecycle'
+import type { PoolLifecycleFlags } from 'lib/data-truth/poolLifecycle'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
 import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
@@ -250,6 +252,10 @@ export function mapPoolToPreviewCard(
   }
 
   const visibility = evaluatePoolVisibility(pool, status, aprDisplay.display, rewardBudgetDisplay, currentBlock)
+  const lifecycle = derivePoolLifecycle(pool, currentBlock)
+  const humanHiddenReason = visibility.hiddenReason
+    ? POOL_HIDDEN_REASON_LABELS[visibility.hiddenReason] ?? visibility.hiddenReason
+    : undefined
 
   return {
     id: pool.vaultKey ? `${pool.vaultKey}` : `sous-${pool.sousId}`,
@@ -270,6 +276,8 @@ export function mapPoolToPreviewCard(
     visibilityStatus: visibility.visibilityStatus,
     discoveryClass: visibility.discoveryClass,
     hiddenReason: visibility.hiddenReason,
+    hiddenReasonLabel: humanHiddenReason,
+    lifecycle,
     healthScore: sustainability.score,
     rewardBadge: getRewardBadge(pool),
     visualType: getPoolVisualType(pool),
@@ -315,29 +323,27 @@ export function aggregateKpis(
 ): PoolsKpiItem[] {
   let totalStakedUsd = 0
   let dailyRewardsUsd = 0
-  const displayable = listUsablePools(previewCards)
-  const discoveredCount = listDiscoverablePools(previewCards).length
-  const activeLive = listActivePools(previewCards).activePools.length
-  const fundedCount = displayable.filter((p) => {
-    const n = parseFloat(p.rewardBudgetUsd?.replace(/[^0-9.]/g, '') || '0')
-    return Number.isFinite(n) && n > 0
-  }).length
-  const rewardingCount = displayable.filter((p) => p.status === 'live').length
+  const reconciliation = reconcilePoolLifecycle(pools, currentBlock)
+  const discoveredCount = reconciliation.discovered
+  const activeLive = reconciliation.active
+  const fundedCount = reconciliation.funded
+  const rewardingCount = reconciliation.rewarding
   let stakerPositions = 0
 
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
-    const status = poolStatus(pool, currentBlock)
+    const lc = derivePoolLifecycle(pool, currentBlock)
     const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
     totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
     if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
     const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
-    if (perBlock.gt(0) && status === 'live') {
+    if (perBlock.gt(0) && lc.rewarding) {
       const dailyTokens = getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
       dailyRewardsUsd += dailyTokens * (pool.earningTokenPrice || pool.stakingTokenPrice || 0)
     }
   })
 
+  const displayable = listUsablePools(previewCards)
   const highestApr = displayable.reduce<{ apr?: string; exact: number }>(
     (best, p) => {
       const exact = parseFloat(p.sustainableAprDisplay?.replace('%', '') || '0') || p.aprExact || 0
@@ -415,15 +421,24 @@ export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[
 }
 
 export function selectFeaturedPool(cards: PoolPreviewCard[]): PoolPreviewCard | undefined {
-  const live = cards.filter((p) => p.discoveryClass === 'tradeable' || p.visibilityStatus === 'VISIBLE')
-  const ranked = live.length ? live : listDiscoverablePools(cards).filter((p) => p.status === 'live')
-  if (!ranked.length) return undefined
-  return [...ranked].sort((a, b) => {
+  const rewarding = cards.filter((p) => p.lifecycle?.rewarding)
+  const ranked = rewarding.length
+    ? rewarding
+    : cards.filter((p) => p.lifecycle?.active && p.lifecycle?.rewardPerBlockPositive)
+  const poolSet = ranked.length ? ranked : listDiscoverablePools(cards).filter((p) => p.status === 'live')
+  if (!poolSet.length) return undefined
+  return [...poolSet].sort((a, b) => {
     const aprDiff = (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0)
     if (aprDiff !== 0) return aprDiff
     return (b.aprExact ?? 0) - (a.aprExact ?? 0)
   })[0]
 }
+
+export function listRewardingPools(cards: PoolPreviewCard[]): PoolPreviewCard[] {
+  return cards.filter((p) => p.lifecycle?.rewarding)
+}
+
+export { reconcilePoolLifecycle, type PoolLifecycleFlags }
 
 export function listActivePools(cards: PoolPreviewCard[]): {
   activePools: string[]

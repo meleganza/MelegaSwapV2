@@ -4,7 +4,8 @@ import { WBNB } from '@pancakeswap/sdk'
 import { CAKE, BUSD } from '@pancakeswap/tokens'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
-import { getTradeSurfaceAssets } from 'lib/dex-asset-index'
+import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
+import { computeValid24hPriceChange, format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { OhlcvCandle } from 'lib/bsc-indexer/types'
@@ -15,6 +16,7 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 
 const SECONDS_24H = 86_400
 const TRENDING_LIMIT = 10
+const MIN_MARQUEE_ITEMS = 3
 
 type PairRow = {
   token0?: string
@@ -27,7 +29,7 @@ type PairRow = {
 type RankedAsset = {
   symbol: string
   slug: string
-  address?: string
+  address: string
   chainId: number
   displayName: string
   priceUsd?: number
@@ -35,6 +37,7 @@ type RankedAsset = {
   volume24h: number
   liquidityScore: number
   tradeCount24h: number
+  rankingSignals: string[]
 }
 
 async function fetchTradeablePairs(): Promise<PairRow[]> {
@@ -61,7 +64,16 @@ async function fetchTierMetrics(): Promise<
   try {
     const res = await fetch('/api/indexer/tier-metrics')
     if (!res.ok) return []
-    const json = (await res.json()) as { rows?: Array<{ token0: string; token1: string; volume24hQuote: number; tradeCount24h: number; priceChange24h?: number; status: string }> }
+    const json = (await res.json()) as {
+      rows?: Array<{
+        token0: string
+        token1: string
+        volume24hQuote: number
+        tradeCount24h: number
+        priceChange24h?: number
+        status: string
+      }>
+    }
     return (json.rows ?? []).filter((r) => r.status === 'READY')
   } catch {
     return []
@@ -90,21 +102,6 @@ const formatTickerPrice = (price?: number): string | undefined => {
   return `$${price.toFixed(6)}`
 }
 
-function computeChange24hFromCandles(candles: OhlcvCandle[]): { text: string; positive: boolean } | undefined {
-  if (candles.length < 2) return undefined
-  const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
-  const recent = candles.filter((c) => c.bucketTimestamp >= cutoff)
-  const window = recent.length >= 2 ? recent : candles
-  const open = window[0]?.open
-  const close = window[window.length - 1]?.close
-  if (open == null || close == null || !Number.isFinite(open) || !Number.isFinite(close) || open <= 0) {
-    return undefined
-  }
-  const pct = ((close - open) / open) * 100
-  const positive = pct >= 0
-  return { text: `${positive ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%`, positive }
-}
-
 function liquidityScoreForAddress(pairs: PairRow[], address?: string): number {
   if (!address) return 0
   const key = address.toLowerCase()
@@ -114,6 +111,36 @@ function liquidityScoreForAddress(pairs: PairRow[], address?: string): number {
     if (pair.token1?.toLowerCase() === key) score += BigInt(pair.reserve1 ?? '0')
   })
   return Number(score > BigInt(Number.MAX_SAFE_INTEGER) ? Number.MAX_SAFE_INTEGER : score)
+}
+
+function assetDedupKey(chainId: number, address?: string): string | undefined {
+  if (!address || chainId !== 56) return undefined
+  return `${chainId}:${address.toLowerCase()}`
+}
+
+function marcoIndexerMetrics(
+  candles: OhlcvCandle[],
+  transactions: ReturnType<typeof useProtocolTransactionsIndexer>['transactions'],
+  bnbUsd?: number,
+) {
+  const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
+  const recentCandles = candles.filter((c) => c.bucketTimestamp >= cutoff)
+  const quoteVolumeWbnb = recentCandles.reduce((sum, c) => sum + (c.quoteVolume ?? 0), 0)
+  const tradeCount = recentCandles.reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
+  const txCount24h =
+    transactions?.filter((tx) => {
+      const ts = Number(tx.timestamp)
+      return tx.type === TransactionType.SWAP && Number.isFinite(ts) && ts >= cutoff
+    }).length ?? 0
+  const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h
+  const volumeUsd =
+    quoteVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) ? quoteVolumeWbnb * bnbUsd : 0
+  const marcoChange = computeValid24hPriceChange(candles)
+  const marcoUsdFromCandle =
+    candles[candles.length - 1]?.close != null && bnbUsd
+      ? candles[candles.length - 1].close * bnbUsd
+      : undefined
+  return { volumeUsd, tradeCount: resolvedTradeCount, marcoChange, marcoUsdFromCandle }
 }
 
 export function useDexTrendingRankings() {
@@ -136,91 +163,81 @@ export function useDexTrendingRankings() {
     dedupingInterval: 120_000,
   })
 
-  const indexerMetrics24h = useMemo(() => {
-    const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
-    const recentCandles = candles.filter((c) => c.bucketTimestamp >= cutoff)
-    const window = recentCandles.length > 0 ? recentCandles : candles
-    const quoteVolumeWbnb = window.reduce((sum, c) => sum + (c.quoteVolume ?? 0), 0)
-    const tradeCount = window.reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
-    const txCount24h =
-      transactions?.filter((tx) => {
-        const ts = Number(tx.timestamp)
-        return tx.type === TransactionType.SWAP && Number.isFinite(ts) && ts >= cutoff
-      }).length ?? 0
-    const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h
-    const volumeUsd =
-      quoteVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) ? quoteVolumeWbnb * bnbUsd : 0
-    const marcoChange = computeChange24hFromCandles(candles)
-    const marcoUsdFromCandle =
-      candles[candles.length - 1]?.close != null && bnbUsd
-        ? candles[candles.length - 1].close * bnbUsd
-        : undefined
-    return {
-      volumeUsd,
-      tradeCount: resolvedTradeCount,
-      marcoChange,
-      marcoUsdFromCandle,
-      hasIndexerData: candleStatus === 'ready' && candles.length > 0,
-    }
-  }, [candles, transactions, bnbUsd, candleStatus])
+  const marcoMetrics = useMemo(
+    () => marcoIndexerMetrics(candles, transactions, bnbUsd),
+    [candles, transactions, bnbUsd],
+  )
 
   const rankedAssets = useMemo((): RankedAsset[] => {
-    const tradeAssets = getTradeSurfaceAssets()
+    const assets = getCanonicalIndexedAssets()
     const marcoUsd = marcoPrice?.toNumber()
     const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
     const cakeUsd = cakePrice ? Number(cakePrice.toSignificant(6)) : undefined
     const busdUsd = busdPrice ? Number(busdPrice.toSignificant(6)) : undefined
-    const bySymbol = new Map<string, RankedAsset>()
+    const byAddress = new Map<string, RankedAsset>()
 
-    tradeAssets.forEach((asset) => {
+    assets.forEach((asset) => {
+      const dedupKey = assetDedupKey(asset.chainId, asset.address)
+      if (!dedupKey || byAddress.has(dedupKey)) return
+
       const sym = asset.symbol.toUpperCase()
-      if (bySymbol.has(sym)) return
+      const addrKey = asset.address!.toLowerCase()
       let priceUsd: number | undefined
       let change24h: RankedAsset['change24h']
       let volume24h = 0
       let tradeCount24h = 0
+      const signals: string[] = []
       const liquidityScore = liquidityScoreForAddress(pairRows, asset.address)
 
-      if (sym === 'MARCO') {
-        priceUsd = marcoUsd && marcoUsd > 0 ? marcoUsd : indexerMetrics24h.marcoUsdFromCandle
-        change24h = indexerMetrics24h.marcoChange
-        volume24h = indexerMetrics24h.volumeUsd
-        tradeCount24h = indexerMetrics24h.tradeCount
+      if (sym === 'MARCO' || addrKey === MARCO_BSC_ADDRESS.toLowerCase()) {
+        priceUsd = marcoUsd && marcoUsd > 0 ? marcoUsd : marcoMetrics.marcoUsdFromCandle
+        change24h = marcoMetrics.marcoChange
+        volume24h = marcoMetrics.volumeUsd
+        tradeCount24h = marcoMetrics.tradeCount
+        if (volume24h > 0) signals.push('volume24h')
+        if (tradeCount24h > 0) signals.push('trades24h')
+        if (change24h) signals.push('change24h')
       } else if (sym === 'WBNB') {
         priceUsd = wbnbUsd
       } else if (sym === 'CAKE') {
         priceUsd = cakeUsd
       } else if (sym === 'BUSD') {
         priceUsd = busdUsd && busdUsd > 0 ? busdUsd : undefined
-      } else if (asset.address?.toLowerCase() === MARCO_BSC_ADDRESS.toLowerCase()) {
-        priceUsd = marcoUsd
-        change24h = indexerMetrics24h.marcoChange
-        volume24h = indexerMetrics24h.volumeUsd
-        tradeCount24h = indexerMetrics24h.tradeCount
       }
 
-      const addrKey = asset.address?.toLowerCase()
       tierMetrics.forEach((row) => {
         if (row.token0 !== addrKey && row.token1 !== addrKey) return
         const volUsd = row.volume24hQuote > 0 && bnbUsd ? row.volume24hQuote * bnbUsd : 0
-        if (volUsd > volume24h) volume24h = volUsd
-        if (row.tradeCount24h > tradeCount24h) tradeCount24h = row.tradeCount24h
-        if (row.priceChange24h != null && !change24h && sym !== 'MARCO') {
-          const positive = row.priceChange24h >= 0
-          change24h = { text: `${positive ? '▲' : '▼'} ${Math.abs(row.priceChange24h).toFixed(2)}%`, positive }
+        if (volUsd > volume24h) {
+          volume24h = volUsd
+          signals.push('tier-volume24h')
+        }
+        if (row.tradeCount24h > tradeCount24h) {
+          tradeCount24h = row.tradeCount24h
+          signals.push('tier-trades24h')
+        }
+        if (
+          row.priceChange24h != null &&
+          Number.isFinite(row.priceChange24h) &&
+          !change24h &&
+          sym !== 'MARCO' &&
+          addrKey !== MARCO_BSC_ADDRESS.toLowerCase()
+        ) {
+          change24h = format24hChangePct(row.priceChange24h)
+          signals.push('tier-change24h')
         }
       })
 
-      if (!priceUsd || priceUsd <= 0) return
-      if (!asset.logo && !asset.logoFallback) return
+      if (liquidityScore > 0) signals.push('liquidity')
 
-      const hasMarketSignal = volume24h > 0 || tradeCount24h > 0 || Boolean(change24h)
+      if (!priceUsd || priceUsd <= 0) return
+      const hasMarketSignal = volume24h > 0 || tradeCount24h > 0 || Boolean(change24h) || liquidityScore > 0
       if (!hasMarketSignal) return
 
-      bySymbol.set(sym, {
+      byAddress.set(dedupKey, {
         symbol: asset.symbol,
         slug: asset.registrySlug ?? asset.id,
-        address: asset.address,
+        address: asset.address!,
         chainId: asset.chainId,
         displayName: asset.name ?? asset.symbol,
         priceUsd,
@@ -228,10 +245,11 @@ export function useDexTrendingRankings() {
         volume24h,
         liquidityScore,
         tradeCount24h,
+        rankingSignals: [...new Set(signals)],
       })
     })
 
-    return [...bySymbol.values()]
+    return [...byAddress.values()]
       .sort((a, b) => {
         if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
         if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
@@ -241,7 +259,7 @@ export function useDexTrendingRankings() {
         return bCh - aCh
       })
       .slice(0, TRENDING_LIMIT)
-  }, [pairRows, marcoPrice, wbnbPrice, cakePrice, busdPrice, indexerMetrics24h, tierMetrics, bnbUsd])
+  }, [pairRows, marcoPrice, wbnbPrice, cakePrice, busdPrice, marcoMetrics, tierMetrics, bnbUsd])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
@@ -285,9 +303,9 @@ export function useDexTrendingRankings() {
   }, [trendingTickerItems.length, candleStatus])
 
   const indexerScopeNote = useMemo(() => {
-    if (!indexerMetrics24h.hasIndexerData) return undefined
-    return '24H volume and change ranked from Tier-1/Tier-2 durable indexer pairs'
-  }, [indexerMetrics24h.hasIndexerData])
+    if (rankedAssets.length === 0) return undefined
+    return 'Ranked by 24H DEX volume, trades, liquidity, and valid price change per canonical token address'
+  }, [rankedAssets.length])
 
   return {
     items: trendingTickerItems,
@@ -295,6 +313,8 @@ export function useDexTrendingRankings() {
     unavailableReason: trendingUnavailableReason,
     indexerScopeNote,
     rankedCount: rankedAssets.length,
+    rankedAssets,
+    useMarquee: rankedAssets.length >= MIN_MARQUEE_ITEMS,
     indexerState,
   }
 }

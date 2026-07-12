@@ -5,6 +5,8 @@ import { FEATURED_PAIR_SLUG } from 'lib/bsc-indexer/v2/paths'
 import { slugFromPairAddress } from 'lib/bsc-indexer/v2/pairSlug'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 
+import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
+
 const SECONDS_24H = 86_400
 
 export type TierPairStatus = 'READY' | 'NO_EVENTS_IN_WINDOW' | 'RPC_UNAVAILABLE' | 'INVALID_PAIR'
@@ -48,23 +50,16 @@ const handler: NextApiHandler = async (req, res) => {
 
       const recentEvents = events.filter((e) => e.blockTimestamp >= cutoff)
       const recentCandles = candles.filter((c) => c.bucketTimestamp >= cutoff)
-      const windowCandles = recentCandles.length >= 2 ? recentCandles : candles.slice(-24)
-
-      const volume24hQuote = windowCandles.reduce((sum, c) => sum + (c.quoteVolume ?? 0), 0)
+      const volume24hQuote = recentCandles.reduce((sum, c) => sum + (c.quoteVolume ?? 0), 0)
       const tradeCount24h =
         recentEvents.filter((e) => e.eventType === 'Swap').length ||
-        windowCandles.reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
+        recentCandles.reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
 
-      let priceChange24h: number | undefined
-      if (windowCandles.length >= 2) {
-        const open = windowCandles[0]?.open
-        const close = windowCandles[windowCandles.length - 1]?.close
-        if (open != null && close != null && open > 0) {
-          priceChange24h = ((close - open) / open) * 100
-        }
-      }
+      const changeResult = computeValid24hPriceChange(candles)
+      const priceChange24h = changeResult?.pct
 
-      const hasSignal = volume24hQuote > 0 || tradeCount24h > 0 || windowCandles.length >= 2
+      const hasSignal =
+        volume24hQuote > 0 || tradeCount24h > 0 || changeResult != null || recentCandles.length >= 2
       const status: TierPairStatus = hasSignal
         ? 'READY'
         : health?.status === 'ready' || health?.status === 'syncing'

@@ -17,7 +17,7 @@ import {
   mapFarmToPreviewCard,
 } from './formatFarmsRuntime'
 import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErrors'
-import useFarmsTerminalData from './useFarmsTerminalData'
+import { useMasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 
 export type FarmsRuntimePhase =
   | 'idle'
@@ -178,19 +178,21 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   usePollFarmsWithUserData()
   const loadingKeys = useAppSelector((state) => state.farms.loadingKeys)
   const { data: farmsLP, userDataLoaded, regularCakePerBlock } = useFarms()
+  const masterChefEmission = useMasterChefEmission()
+  const canonicalPerBlock = masterChefEmission.perBlock > 0 ? masterChefEmission.perBlock : regularCakePerBlock
   const cakePrice = usePriceCakeBusd()
   const terminal = useFarmsTerminalData()
 
   const enrichedFarms = useMemo(() => {
     if (!farmsLP?.length || !chainId) return []
     const active = farmsLP.filter((farm) => farm.pid !== 0 && !isArchivedPid(farm.pid))
-    return enrichFarmsWithApr(active, chainId, cakePrice, regularCakePerBlock)
-  }, [farmsLP, chainId, cakePrice, regularCakePerBlock])
+    return enrichFarmsWithApr(active, chainId, cakePrice, canonicalPerBlock)
+  }, [farmsLP, chainId, cakePrice, canonicalPerBlock])
 
   const previewCards = useMemo(() => {
     if (!enrichedFarms.length) return []
-    return enrichedFarms.map((f) => mapFarmToPreviewCard(f, regularCakePerBlock))
-  }, [enrichedFarms, regularCakePerBlock])
+    return enrichedFarms.map((f) => mapFarmToPreviewCard(f, canonicalPerBlock))
+  }, [enrichedFarms, canonicalPerBlock])
 
   const filteredFarms = useMemo(() => filterFarms(previewCards, filter), [previewCards, filter])
 
@@ -230,8 +232,8 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   }, [featuredCard, enrichedFarms])
 
   const kpis = useMemo(
-    () => aggregateKpis(enrichedFarms, regularCakePerBlock, featured.pair),
-    [enrichedFarms, regularCakePerBlock, featured.pair],
+    () => aggregateKpis(enrichedFarms, canonicalPerBlock, featured.pair, masterChefEmission),
+    [enrichedFarms, canonicalPerBlock, featured.pair, masterChefEmission],
   )
 
   const advisorItems = useMemo((): FarmsAdvisorItem[] => {

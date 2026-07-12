@@ -6,6 +6,7 @@ import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getAddressExplorerUrl } from 'utils/blockExplorer'
 import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
+import type { MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 
 export const formatUsd = (value?: number | null): string => {
@@ -44,9 +45,14 @@ export function mapFarmToPreviewCard(
   const displayApr = getDisplayApr(farm.apr, farm.lpRewardsApr)
 
   const dailyRewardBn =
-    farm.poolWeight && regularCakePerBlock
+    farm.poolWeight && regularCakePerBlock > 0
       ? farm.poolWeight.times(regularCakePerBlock).times(BLOCKS_PER_DAY)
       : null
+  const resolvedDailyBn =
+    dailyRewardBn ??
+    (totalApr > 0 && farm.poolWeight && regularCakePerBlock > 0
+      ? farm.poolWeight.times(regularCakePerBlock).times(BLOCKS_PER_DAY)
+      : null)
 
   const token0 = farm.token?.symbol ?? '?'
   const token1 = farm.quoteToken?.symbol ?? '?'
@@ -58,7 +64,9 @@ export function mapFarmToPreviewCard(
   const analyzePreview: FarmAnalyzePreview = {
     aprHistory: displayApr ? `${displayApr}%` : '—',
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
-    emission: dailyRewardBn ? `${formatTokenAmount(dailyRewardBn, 18, farm.earningToken?.symbol ?? 'MARCO')} / day` : '—',
+    emission: resolvedDailyBn
+      ? `${formatTokenAmount(resolvedDailyBn, 18, farm.earningToken?.symbol ?? 'MARCO')} / day`
+      : '—',
     contract: farm.lpAddress ?? 'On-chain',
     contractExplorerUrl: lpExplorerUrl,
     risk: farm.isStable ? 'Stable pair' : 'Standard',
@@ -75,7 +83,7 @@ export function mapFarmToPreviewCard(
     status,
     tvl: formatUsd(liquidityUsd),
     liquidity: formatUsd(liquidityUsd),
-    dailyRewards: dailyRewardBn ? formatTokenAmount(dailyRewardBn, 18, farm.earningToken?.symbol) : '—',
+    dailyRewards: resolvedDailyBn ? formatTokenAmount(resolvedDailyBn, 18, farm.earningToken?.symbol) : '—',
     multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : '—',
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
     participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : '—',
@@ -95,6 +103,7 @@ export function aggregateKpis(
   farms: FarmWithStakedValue[],
   regularCakePerBlock: number,
   featuredPair?: string,
+  emissionMeta?: MasterChefEmission,
 ): FarmsKpiItem[] {
   let totalTvl = 0
   let activeFarms = 0
@@ -119,10 +128,13 @@ export function aggregateKpis(
       : 0
   const resolvedDailyEmissions = dailyEmissions > 0 ? dailyEmissions : masterChefDailyTotal
 
+  const perBlock = emissionMeta?.perBlock ?? regularCakePerBlock
   const emissionValue =
-    regularCakePerBlock > 0
-      ? formatTokenAmount(new BigNumber(regularCakePerBlock).times(BLOCKS_PER_DAY), 18, 'MARCO')
-      : '0 MARCO'
+    perBlock > 0
+      ? formatTokenAmount(new BigNumber(perBlock).times(BLOCKS_PER_DAY), 18, 'MARCO')
+      : emissionMeta?.readError
+        ? '—'
+        : '0 MARCO'
 
   return [
     { id: 'tvl', label: 'Total TVL', value: formatUsd(totalTvl) },

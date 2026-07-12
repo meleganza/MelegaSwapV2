@@ -102,6 +102,49 @@ if (homeImportsCanonical && !dexBarrel.includes('getCanonicalIndexedAssets')) {
   fail('G-DEX-CANONICAL-BARREL', 'useHomeTradeData imports getCanonicalIndexedAssets but barrel does not export it')
 }
 
+// R783 gates
+const trendingRankings = readText('src/views/HomeTrade/useDexTrendingRankings.ts')
+if (!trendingRankings.includes('getCanonicalIndexedAssets')) {
+  fail('G-TRENDING-UNIQUE-ADDRESS', 'Trending must rank canonical assets by address')
+}
+if (!trendingRankings.includes('computeValid24hPriceChange')) {
+  fail('G-TRENDING-CHANGE-HISTORY', 'Trending must use valid 24H change helper')
+}
+if (!readText('src/lib/data-truth/compute24hPriceChange.ts').includes('window.length < 2')) {
+  fail('G-TRENDING-CHANGE-HISTORY', '24H change helper must reject insufficient window')
+}
+
+const poolsRuntime = readText('src/views/PoolsStudio/poolsRuntime/formatPoolsRuntime.ts')
+if (!poolsRuntime.includes('derivePoolLifecycle')) {
+  fail('G-POOL-RECONCILIATION', 'Pools runtime must derive canonical lifecycle flags')
+}
+if (!poolsRuntime.includes('listRewardingPools')) {
+  fail('G-POOL-RECONCILIATION', 'Pools runtime must expose rewarding pool list')
+}
+
+const featuredHero = readText('src/views/PoolsStudio/components/FeaturedPoolHero.tsx')
+if (!featuredHero.includes('rewardingCount')) {
+  fail('G-POOL-HERO-CONSISTENCY', 'Featured pool hero must respect rewarding count')
+}
+
+const farmsRuntime = readText('src/views/FarmsStudio/farmsRuntime/useFarmsStakingRuntime.ts')
+if (!farmsRuntime.includes('useMasterChefEmission')) {
+  fail('G-FARM-EMISSION-CONSISTENCY', 'Farms runtime must use canonical MasterChef emission hook')
+}
+
+const createPool = readText('src/views/PoolsStudio/components/CreatePoolCta.tsx')
+if (!createPool.includes('MelegaTokenAvatar')) {
+  fail('G-MARCO-OFFICIAL-ASSET', 'Create Pool wizard must use MelegaTokenAvatar')
+}
+if (createPool.includes('value.slice(0, 1)') && createPool.includes('TokenLogo')) {
+  fail('G-MARCO-OFFICIAL-ASSET', 'Create Pool wizard must not use generic letter avatars')
+}
+
+const poolCard = readText('src/views/PoolsStudio/components/PoolGridCard.tsx')
+if (poolCard.includes('position: absolute') && poolCard.includes('Footer')) {
+  fail('G-CARD-NO-OVERFLOW', 'Pool cards must not use absolute footer positioning')
+}
+
 const report = {
   mission: 'R780 data quality gates',
   timestamp: new Date().toISOString(),

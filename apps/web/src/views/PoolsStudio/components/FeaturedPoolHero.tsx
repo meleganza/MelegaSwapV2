@@ -357,16 +357,18 @@ function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | nu
 }
 
 export const FeaturedPoolHero: React.FC = () => {
-  const { featured, requestModal, hiddenPoolReasons } = usePoolsRuntime()
+  const { featured, requestModal, hiddenPoolReasons, rewardingCount } = usePoolsRuntime()
   const card = featured.card
-  const isLive = card?.displayStatus === 'LIVE' && card?.status === 'live'
+  const isRewarding = Boolean(card?.lifecycle?.rewarding)
   const aprText =
-    isLive && card?.sustainableAprDisplay && !isForbiddenAprDisplay(card.sustainableAprDisplay)
+    isRewarding && card?.sustainableAprDisplay && !isForbiddenAprDisplay(card.sustainableAprDisplay)
       ? card.sustainableAprDisplay
-      : null
+      : isRewarding
+        ? 'Rewards Active'
+        : null
   const hiddenReason = hiddenPoolReasons.length ? hiddenPoolReasons.join(' · ') : null
 
-  if (!card || !isLive || !aprText) {
+  if (!card || !isRewarding || rewardingCount === 0) {
     return (
       <EmptyCard
         data-ps-featured-hero
