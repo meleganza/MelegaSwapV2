@@ -297,13 +297,20 @@ export async function getLogsChunked(params: {
   toBlock: number
   initialChunk?: number
   rpcUrls?: string[]
-}): Promise<{ logs: RawLog[]; finalChunkSize: number }> {
+  /** When true, stop after the current chunk and return partial logs. */
+  shouldAbort?: () => boolean
+}): Promise<{ logs: RawLog[]; finalChunkSize: number; aborted?: boolean }> {
   const rpcUrls = params.rpcUrls ?? resolveFeaturedPairLogRpcUrls()
   let chunk = Math.max(MIN_CHUNK_SIZE, params.initialChunk ?? DEFAULT_CHUNK_SIZE)
   const logs: RawLog[] = []
   let cursor = params.fromBlock
+  let aborted = false
 
   while (cursor <= params.toBlock) {
+    if (params.shouldAbort?.()) {
+      aborted = true
+      break
+    }
     const end = Math.min(cursor + chunk - 1, params.toBlock)
     try {
       if (chunk === 1 && cursor === end) {
@@ -355,7 +362,7 @@ export async function getLogsChunked(params: {
     }
   }
 
-  return { logs, finalChunkSize: chunk }
+  return { logs, finalChunkSize: chunk, aborted }
 }
 
 const blockTsCache = new Map<number, number>()

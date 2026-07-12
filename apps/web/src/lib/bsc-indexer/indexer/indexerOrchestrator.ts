@@ -4,7 +4,7 @@ import { runFeaturedPairSync } from './featuredPairSync'
 import { loadTierPairInventory } from './tierInventory'
 import { runTierPairSync } from './tierPairSync'
 import { loadTierSchedulerState, pickRotatingPair, saveTierSchedulerState } from './tierScheduler'
-import { syncProtocolActivityRecent } from './protocolActivitySync'
+import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
 
 export interface IndexerRunReport {
   ok: boolean
@@ -54,7 +54,7 @@ export async function runIndexerOrchestrator(
   cursorsAfter[FEATURED_PAIR_SLUG] = featured.checkpoint.gapFillCursor ?? featured.checkpoint.forwardCursor ?? null
   deadline.markStage('featured-sync')
 
-  if (!deadline.shouldStop()) {
+  if (!deadline.shouldStop() && deadline.remainingMs() > PROTOCOL_ACTIVITY_MIN_REMAINING_MS) {
     protocolActivity = await syncProtocolActivityRecent(deadline)
     deadline.markStage('protocol-activity')
   }

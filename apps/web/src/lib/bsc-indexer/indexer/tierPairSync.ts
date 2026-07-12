@@ -22,6 +22,7 @@ export async function runTierPairSync(watch: TierPairWatch, deadline?: IndexerDe
     slug: watch.slug,
     bootstrapDays,
     deadline,
+    maxGapRangesPerRun: 1,
   })
 
   return {

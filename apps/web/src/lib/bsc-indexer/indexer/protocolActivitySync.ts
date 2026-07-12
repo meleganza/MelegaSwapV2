@@ -2,16 +2,21 @@ import { put, head } from '@vercel/blob'
 import {
   MELEGA_CHAIN_ID,
   MELEGA_MASTERCHEF_BSC,
-  BSC_AVG_BLOCK_SECONDS,
+  MAX_BLOCKS_PER_SYNC,
 } from '../constants'
 import { getBlockNumber, getLogsChunked, getBlockTimestamp } from '../rpc/chunkedLogs'
 import type { IndexerDeadline } from './indexerDeadline'
+import { resolveProtocolActivityScanWindow } from './protocolActivityBounds'
+
+export { resolveProtocolActivityScanWindow } from './protocolActivityBounds'
+/** Minimum remaining orchestrator budget before protocol activity starts. */
+export const PROTOCOL_ACTIVITY_MIN_REMAINING_MS = 12_000
 
 const DEPOSIT_TOPIC = '0x90890809c654f11f630942b0e6f67ee8cb438cbdfb1d1f45533e7576391dc195'
 const WITHDRAW_TOPIC = '0x884edad9d98d948abe3ec11b0219356438e6b1a3177dd72c77492e294984e937'
 const EMERGENCY_WITHDRAW_TOPIC = '0x692a3d7b60c25ad266c2e35b7d0894e6fe081d9121eb2f2b6d690c84242e8a85'
 const ACTIVITY_KEY = 'melega-indexer/v2/protocol-activity/events.json'
-const RECENT_BLOCKS = Math.floor((7 * 86_400) / BSC_AVG_BLOCK_SECONDS)
+const CURSOR_KEY = 'melega-indexer/v2/protocol-activity/cursor.json'
 
 export interface ProtocolActivityEvent {
   chainId: number
@@ -28,6 +33,11 @@ export interface ProtocolActivityEvent {
   amounts: string[]
   pairOrPoolIdentity?: string
   explorerUrl: string
+}
+
+interface ProtocolActivityCursor {
+  lastScannedBlock: number
+  updatedAt: string
 }
 
 async function readEvents(): Promise<ProtocolActivityEvent[]> {
@@ -55,21 +65,61 @@ async function writeEvents(events: ProtocolActivityEvent[]) {
   })
 }
 
-/** R787 — bounded MasterChef recent activity sync. */
+async function loadCursor(): Promise<ProtocolActivityCursor | null> {
+  const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
+  if (!token) return null
+  try {
+    const meta = await head(CURSOR_KEY, { token })
+    const res = await fetch(meta.url, { headers: { authorization: `Bearer ${token}` } })
+    if (!res.ok) return null
+    return (await res.json()) as ProtocolActivityCursor
+  } catch {
+    return null
+  }
+}
+
+async function saveCursor(lastScannedBlock: number) {
+  const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
+  if (!token) return
+  const payload: ProtocolActivityCursor = {
+    lastScannedBlock,
+    updatedAt: new Date().toISOString(),
+  }
+  await put(CURSOR_KEY, JSON.stringify(payload), {
+    access: 'private',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: 'application/json',
+    token,
+  })
+}
+
+/** R787/R789 — bounded MasterChef recent activity sync under orchestrator deadline. */
 export async function syncProtocolActivityRecent(deadline?: IndexerDeadline) {
   if (deadline?.shouldStop()) {
-    return { added: 0, scannedBlocks: 0, source: 'masterchef' as const }
+    return { added: 0, scannedBlocks: 0, source: 'masterchef' as const, partial: true }
+  }
+  if (deadline && deadline.remainingMs() <= PROTOCOL_ACTIVITY_MIN_REMAINING_MS) {
+    return { added: 0, scannedBlocks: 0, source: 'masterchef' as const, skipped: true as const }
   }
 
   const chainHead = await getBlockNumber()
-  const fromBlock = Math.max(0, chainHead - RECENT_BLOCKS)
-  const toBlock = chainHead
-  const { logs } = await getLogsChunked({
+  const stored = await loadCursor()
+  const window = resolveProtocolActivityScanWindow({
+    chainHead,
+    storedCursor: stored?.lastScannedBlock ?? null,
+  })
+  if (window.caughtUp) {
+    return { added: 0, scannedBlocks: 0, source: 'masterchef' as const, caughtUp: true as const }
+  }
+
+  const { logs, aborted } = await getLogsChunked({
     address: MELEGA_MASTERCHEF_BSC,
     topics: [[DEPOSIT_TOPIC, WITHDRAW_TOPIC, EMERGENCY_WITHDRAW_TOPIC]],
-    fromBlock,
-    toBlock,
+    fromBlock: window.fromBlock,
+    toBlock: window.toBlock,
     initialChunk: 200,
+    shouldAbort: () => deadline?.shouldStop() ?? false,
   })
 
   const existing = await readEvents()
@@ -112,7 +162,18 @@ export async function syncProtocolActivityRecent(deadline?: IndexerDeadline) {
     await writeEvents(merged)
   }
 
-  return { added: added.length, scannedBlocks: toBlock - fromBlock + 1, source: 'masterchef' as const }
+  if (!aborted) {
+    await saveCursor(window.toBlock)
+  }
+
+  return {
+    added: added.length,
+    scannedBlocks: window.toBlock - window.fromBlock + 1,
+    source: 'masterchef' as const,
+    partial: Boolean(aborted),
+    fromBlock: window.fromBlock,
+    toBlock: window.toBlock,
+  }
 }
 
 export async function listProtocolActivityEvents(limit = 20): Promise<ProtocolActivityEvent[]> {
