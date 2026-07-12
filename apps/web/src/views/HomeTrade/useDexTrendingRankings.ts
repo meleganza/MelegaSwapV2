@@ -232,8 +232,7 @@ export function useDexTrendingRankings() {
 
       if (!priceUsd || priceUsd <= 0) return
       if (!asset.symbol?.trim()) return
-      if (tradeCount24h <= 0) return
-      if (!change24h) return
+      if (tradeCount24h <= 0 && volume24h <= 0) return
 
       byAddress.set(dedupKey, {
         symbol: asset.symbol,
@@ -279,11 +278,17 @@ export function useDexTrendingRankings() {
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
       const change = asset.change24h
+      const activityAccent =
+        asset.tradeCount24h > 0
+          ? `${asset.tradeCount24h} trade${asset.tradeCount24h === 1 ? '' : 's'}`
+          : asset.volume24h > 0
+            ? '24H vol'
+            : undefined
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
         secondary: formatTickerPrice(asset.priceUsd),
-        accent: change?.text,
+        accent: change?.text ?? activityAccent,
         accentPositive: change ? change.positive : undefined,
       }
     })
@@ -305,7 +310,7 @@ export function useDexTrendingRankings() {
 
   const indexerScopeNote = useMemo(() => {
     if (rankedAssets.length === 0) return undefined
-    return 'Ranked by 24H DEX volume, trades, liquidity, and valid price change per canonical token address'
+    return 'Ranked by 24H DEX volume, trades, liquidity, and change when computable'
   }, [rankedAssets.length])
 
   return {

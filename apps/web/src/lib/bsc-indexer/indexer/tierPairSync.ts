@@ -3,9 +3,10 @@ import { runPairSyncEngine } from './pairSyncEngine'
 import type { TierPairWatch } from './tierInventory'
 import type { PairWatch } from './featuredPairSync'
 import { getProviderHealthSnapshot } from '../rpc/chunkedLogs'
+import type { IndexerDeadline } from './indexerDeadline'
 
-/** R786 — bounded sync for one tier pair (separate durable namespace, forward-priority). */
-export async function runTierPairSync(watch: TierPairWatch) {
+/** R787 — bounded sync for one tier pair under invocation deadline. */
+export async function runTierPairSync(watch: TierPairWatch, deadline?: IndexerDeadline) {
   const pair: PairWatch = {
     pairAddress: watch.pairAddress,
     token0: watch.token0,
@@ -20,6 +21,7 @@ export async function runTierPairSync(watch: TierPairWatch) {
     pair,
     slug: watch.slug,
     bootstrapDays,
+    deadline,
   })
 
   return {

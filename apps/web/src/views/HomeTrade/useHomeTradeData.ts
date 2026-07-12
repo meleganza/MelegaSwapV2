@@ -5,7 +5,7 @@ import { Token } from '@pancakeswap/sdk'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
-import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
+import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/dex-asset-index'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { WBNB } from '@pancakeswap/sdk'
@@ -65,6 +65,7 @@ export interface ActivityRow {
   context: string
   value?: string
   time?: string
+  href?: string
 }
 
 export interface ActivitySlot {
@@ -205,7 +206,7 @@ const txToRow = (tx: Transaction): ActivityRow => {
 }
 
 export const useHomeTradeData = () => {
-  const { transactions, indexerState, isActivityIndexing } = useProtocolTransactionsIndexer()
+  const { rows: protocolRows, indexerState, isActivityIndexing } = useProtocolActivityFeed()
   const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const wbnbPrice = useBUSDPrice(WBNB[56])
@@ -218,7 +219,24 @@ export const useHomeTradeData = () => {
   const { total: liquidPairCount } = useAmmPairRegistry({ classification: 'tradeable', pageSize: 1 })
   const currentBlock = useCurrentBlock()
 
-  const indexedTransactions = useMemo(() => transactions ?? [], [transactions])
+  const indexedTransactions = useMemo(
+    () =>
+      protocolRows
+        .filter((r) => r.sourceType === 'amm')
+        .map(
+          (r) =>
+            ({
+              hash: r.transactionHash,
+              timestamp: String(r.timestamp),
+              sender: r.wallet,
+              type: TransactionType.SWAP,
+              token0Symbol: r.context.split('/')[0]?.trim(),
+              token1Symbol: r.context.split('/')[1]?.trim(),
+              amountUSD: Number(r.value ?? 0),
+            }) as Transaction,
+        ),
+    [protocolRows],
+  )
 
   const recentTransactions = useMemo(
     () => indexedTransactions.filter((tx) => isRecentIndexedEvent(tx.timestamp)),
@@ -437,21 +455,20 @@ export const useHomeTradeData = () => {
   }, [pools])
 
   const activitySlots = useMemo((): ActivitySlot[] => {
-    const sorted = [...indexedTransactions].sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
-
-    const slotLabel = (tx: Transaction): string => {
-      if (tx.type === TransactionType.SWAP) return 'Swap'
-      if (tx.type === TransactionType.MINT) return 'Liquidity'
-      if (tx.type === TransactionType.BURN) return 'Liquidity'
-      return 'Activity'
-    }
-
-    return sorted.slice(0, 6).map((tx, index) => ({
-      id: `activity-${tx.hash}-${index}`,
-      label: slotLabel(tx),
-      row: txToRow(tx),
+    const sorted = [...protocolRows].sort((a, b) => b.timestamp - a.timestamp)
+    return sorted.slice(0, 6).map((row, index) => ({
+      id: `activity-${row.transactionHash}-${index}`,
+      label: row.eventType,
+      row: {
+        id: row.id,
+        type: row.eventType,
+        context: row.context,
+        value: row.value,
+        time: formatTimeAgo(String(row.timestamp)),
+        href: row.explorerUrl,
+      },
     }))
-  }, [indexedTransactions])
+  }, [protocolRows])
 
   const isTrendingIndexing = useMemo(() => {
     const farmsLoading =
@@ -469,7 +486,7 @@ export const useHomeTradeData = () => {
 
   const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
     if (isActivityIndexing) return undefined
-    if (indexedTransactions.length > 0) return undefined
+    if (protocolRows.length > 0) return undefined
     const reason =
       indexerState.status === 'error' || indexerState.status === 'unavailable'
         ? indexerState.reason ?? 'Indexer unavailable'

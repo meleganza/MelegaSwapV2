@@ -231,7 +231,13 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
                 {slot.row ? (
                   <>
                     <div style={{ minWidth: 0 }}>
-                      <SlotTitle>{slot.row.type}</SlotTitle>
+                      {slot.row.href ? (
+                        <a href={slot.row.href} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                          <SlotTitle>{slot.row.type}</SlotTitle>
+                        </a>
+                      ) : (
+                        <SlotTitle>{slot.row.type}</SlotTitle>
+                      )}
                       {slot.row.context ? <SlotMeta>{slot.row.context}</SlotMeta> : null}
                     </div>
                     <SlotTime>{slot.row.time || slot.row.value || ''}</SlotTime>

@@ -170,9 +170,20 @@ export const NetworkSwitcher = () => {
   }
 
   const visibleChains = filterMelegaVisibleSwitcherChains(chains)
+  const isBnbOnlyProduction = visibleChains.length === 1 && visibleChains[0]?.id === ChainId.BSC
+
+  if (isBnbOnlyProduction && account && (isWrongNetwork || isNotMatched)) {
+    return (
+      <Box height="100%" px="16px" data-network-status-pill>
+        <Button scale="sm" onClick={() => switchNetworkAsync(ChainId.BSC)}>
+          Switch wallet to BNB Smart Chain
+        </Button>
+      </Box>
+    )
+  }
+
   const isBnbOnlyStatus =
-    visibleChains.length === 1 &&
-    visibleChains[0]?.id === ChainId.BSC &&
+    isBnbOnlyProduction &&
     chainId === ChainId.BSC &&
     !isWrongNetwork &&
     !isNotMatched

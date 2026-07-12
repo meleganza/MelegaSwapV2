@@ -11,11 +11,18 @@ import { resolveIndexerStorage } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot } from '../types'
 import { getProviderHealthSnapshot, getBlockNumber, normalizeSwapLog, scanBlockRangeEvents } from '../rpc/chunkedLogs'
 import { runPairSyncEngine } from './pairSyncEngine'
+import type { IndexerDeadline } from './indexerDeadline'
+import { bootstrapWindowSummary } from './coverageRanges'
 
 export interface SyncResult {
   addedEvents: number
+  addedCandles: number
   checkpoint: IndexerCheckpoint
   health: IndexerHealthSnapshot
+  forwardRangesProcessed: number
+  gapRangesProcessed: number
+  partialProgress: boolean
+  coverageSummary?: ReturnType<typeof bootstrapWindowSummary>
 }
 
 export interface PairWatch {
@@ -34,8 +41,11 @@ function isV2Checkpoint(cp: IndexerCheckpoint | null): cp is IndexerCheckpoint {
   return Boolean(cp && cp.schemaVersion === INDEXER_SCHEMA_VERSION)
 }
 
-/** R773/R786 — MARCO/WBNB featured pair with anchor seed + forward-priority engine. */
-export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Promise<SyncResult> {
+/** R773/R786/R787 — MARCO/WBNB featured pair with anchor seed + deadline-budgeted engine. */
+export async function runFeaturedPairSync(
+  deadline?: IndexerDeadline,
+  pair: PairWatch = DEFAULT_WATCH,
+): Promise<SyncResult> {
   assertIndexerEventTopicsValid()
   const storage = resolveIndexerStorage()
   const eventCountsPreflight = await storage.countEvents()
@@ -86,11 +96,17 @@ export async function runFeaturedPairSync(pair: PairWatch = DEFAULT_WATCH): Prom
     slug: FEATURED_PAIR_SLUG,
     bootstrapDays: 7,
     existingCheckpoint: checkpoint,
+    deadline,
   })
 
   return {
     addedEvents: result.addedEvents,
+    addedCandles: result.addedCandles,
     checkpoint: result.checkpoint,
+    forwardRangesProcessed: result.forwardRangesProcessed,
+    gapRangesProcessed: result.gapRangesProcessed,
+    partialProgress: result.partialProgress,
+    coverageSummary: result.coverageSummary,
     health: {
       ...result.health,
       providerHealth: getProviderHealthSnapshot(),

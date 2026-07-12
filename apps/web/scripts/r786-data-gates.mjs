@@ -32,7 +32,7 @@ const recon = read('src/lib/data-truth/tradeReconciliation.ts')
 gate('R786-G2-COMPLETE', recon.includes('volume24h>0 but no normalized Swap events') && recon.includes('volume24h>0 but no volume-bearing candles'), 'G2 full reconciliation')
 
 const runApi = read('src/pages/api/indexer/run.ts')
-gate('R786-TIER1-SYNC', runApi.includes('tier1Extra') && runApi.includes('runTierPairSync'), 'cron syncs tier1 pairs beyond featured')
+gate('R786-TIER1-SYNC', runApi.includes('runIndexerOrchestrator') || (runApi.includes('tier1Extra') && runApi.includes('runTierPairSync')), 'cron syncs tier pairs via orchestrator')
 
 gate('R786-INVENTORY-API', read('src/pages/api/indexer/inventory.ts').includes('forwardCursor'), 'pair inventory diagnostic API')
 

@@ -64,9 +64,30 @@ export interface IndexerCheckpoint {
   forwardCursor?: number
   /** R786 — monotonic gap-fill scan cursor (never jumps to head without scanning). */
   gapFillCursor?: number
+  /** R787 — merged non-overlapping scanned intervals. */
+  coverageRanges?: Array<{ fromBlock: number; toBlock: number }>
   /** R786 — backward bootstrap cursor (fills historical window). */
   backwardCursor?: number
 }
+
+export interface TierSchedulerState {
+  tier1RotationIndex: number
+  tier2RotationIndex: number
+  lastAttemptedAt?: string
+  lastSuccessfulAt?: string
+  consecutiveFailures: number
+  lastProviderResult?: string
+}
+
+export type TierMetricStatus =
+  | 'READY'
+  | 'INSUFFICIENT_HISTORY'
+  | 'SYNCING'
+  | 'EMPTY_VERIFIED'
+  | 'RPC_UNAVAILABLE'
+  | 'INCONSISTENT'
+  | 'NOT_STARTED'
+  | 'NO_EVENTS_IN_WINDOW'
 
 export interface IndexerHealthSnapshot {
   status: 'ready' | 'syncing' | 'error' | 'unavailable'

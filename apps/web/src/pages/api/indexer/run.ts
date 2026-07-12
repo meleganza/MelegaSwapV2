@@ -1,8 +1,5 @@
 import type { NextApiHandler } from 'next'
-import { LIVE_LAG_THRESHOLD_BLOCKS, FEATURED_PAIR_SLUG } from 'lib/bsc-indexer/constants'
-import { runFeaturedPairSync } from 'lib/bsc-indexer/indexer/featuredPairSync'
-import { loadTierPairInventory } from 'lib/bsc-indexer/indexer/tierInventory'
-import { runTierPairSync } from 'lib/bsc-indexer/indexer/tierPairSync'
+import { runIndexerOrchestrator } from 'lib/bsc-indexer/indexer/indexerOrchestrator'
 
 export const config = {
   maxDuration: 300,
@@ -26,25 +23,8 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    const featured = await runFeaturedPairSync()
-    let tier1Extra: Awaited<ReturnType<typeof runTierPairSync>> | null = null
-    const lag = featured.health?.indexingLag ?? 0
-    if (lag < LIVE_LAG_THRESHOLD_BLOCKS) {
-      const inventory = await loadTierPairInventory()
-      const nextTier1 = inventory.tier1.find((pair) => pair.slug !== FEATURED_PAIR_SLUG)
-      if (nextTier1) {
-        tier1Extra = await runTierPairSync(nextTier1)
-      }
-    }
-
-    return res.status(200).json({
-      ok: true,
-      addedEvents: featured.addedEvents + (tier1Extra?.addedEvents ?? 0),
-      featured,
-      tier1Extra,
-      checkpoint: featured.checkpoint,
-      health: featured.health,
-    })
+    const report = await runIndexerOrchestrator()
+    return res.status(200).json(report)
   } catch (e) {
     return res.status(502).json({
       ok: false,
