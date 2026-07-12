@@ -62,6 +62,8 @@ export interface IndexerCheckpoint {
   anchorSeeded?: boolean
   /** R786 — forward live sync cursor (highest block indexed toward head). */
   forwardCursor?: number
+  /** R786 — monotonic gap-fill scan cursor (never jumps to head without scanning). */
+  gapFillCursor?: number
   /** R786 — backward bootstrap cursor (fills historical window). */
   backwardCursor?: number
 }
