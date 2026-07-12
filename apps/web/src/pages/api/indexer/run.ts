@@ -37,12 +37,13 @@ const handler: NextApiHandler = async (req, res) => {
       (w) => w.slug !== FEATURED_PAIR_SLUG && w.pairAddress !== MARCO_WBNB_PAIR_BSC.toLowerCase(),
     )
     const tier1Results: Array<{ slug: string; tier: string; addedEvents: number }> = []
-    for (const watch of tier1Extra.slice(0, 2)) {
-      const result = await runTierPairSync(watch)
+    const tier1Target = tier1Extra.slice(0, 1)[0]
+    if (tier1Target) {
+      const result = await runTierPairSync(tier1Target)
       tier1Results.push({ slug: result.slug, tier: result.tier, addedEvents: result.addedEvents })
     }
 
-    const tierBatch = 2
+    const tierBatch = 1
     const tier2Results: Array<{ slug: string; tier: string; addedEvents: number }> = []
     for (let i = 0; i < tierBatch; i += 1) {
       const idx = (cursor + i) % Math.max(inventory.tier2.length, 1)

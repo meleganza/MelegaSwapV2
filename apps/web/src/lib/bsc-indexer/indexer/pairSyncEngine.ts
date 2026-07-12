@@ -25,8 +25,8 @@ import type { PairWatch } from './featuredPairSync'
 
 const BLOCKS_PER_DAY = Math.floor(86_400 / BSC_AVG_BLOCK_SECONDS)
 const FORWARD_WINDOW_BLOCKS = BLOCKS_PER_DAY
-const FORWARD_BLOCKS_PER_SYNC = 400
-const BACKWARD_BLOCKS_PER_SYNC = 200
+const FORWARD_BLOCKS_PER_SYNC = 120
+const BACKWARD_BLOCKS_PER_SYNC = 120
 
 function normalizeLogs(
   logs: RawLog[],
@@ -121,16 +121,17 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     const forwardFrom = Math.max(forwardCursor + 1, forwardHigh - FORWARD_BLOCKS_PER_SYNC)
     const forwardTo = forwardHigh
     const topicBatches: RawLog[] = []
-    for (const topic of [AMM_TOPICS.swap, AMM_TOPICS.mint, AMM_TOPICS.burn]) {
+    let forwardChunkSize = checkpoint.chunkSize ?? DEFAULT_CHUNK_SIZE
+    for (const topic of [AMM_TOPICS.swap]) {
       const chunked = await getLogsChunked({
         address: pair.pairAddress,
         topics: [topic],
         fromBlock: forwardFrom,
         toBlock: forwardTo,
-        initialChunk: Math.min(checkpoint.chunkSize ?? DEFAULT_CHUNK_SIZE, 50),
+        initialChunk: Math.min(forwardChunkSize, 50),
       })
       topicBatches.push(...chunked.logs)
-      checkpoint = { ...checkpoint, chunkSize: chunked.finalChunkSize }
+      forwardChunkSize = chunked.finalChunkSize
     }
     providerUsed = 'chunked-forward'
     const tsMap = await hydrateTimestamps(topicBatches)
@@ -138,7 +139,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     checkpoint = {
       ...checkpoint,
       forwardCursor: forwardTo,
-      chunkSize: chunked.finalChunkSize,
+      chunkSize: forwardChunkSize,
     }
     fromBlock = forwardFrom
     toBlock = forwardTo

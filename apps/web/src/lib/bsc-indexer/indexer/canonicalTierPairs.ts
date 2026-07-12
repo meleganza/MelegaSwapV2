@@ -91,7 +91,13 @@ function pairSlug(token0: string, token1: string): string {
   return `${t0}-${t1}`.toLowerCase()
 }
 
+let cachedCanonicalTier1: TierPairWatch[] | null = null
+let cachedCanonicalTier1At = 0
+
 export async function resolveCanonicalTier1Pairs(): Promise<TierPairWatch[]> {
+  if (cachedCanonicalTier1 && Date.now() - cachedCanonicalTier1At < 300_000) {
+    return cachedCanonicalTier1
+  }
   const out: TierPairWatch[] = []
   const seen = new Set<string>()
 
@@ -120,5 +126,7 @@ export async function resolveCanonicalTier1Pairs(): Promise<TierPairWatch[]> {
     })
   }
 
+  cachedCanonicalTier1 = out
+  cachedCanonicalTier1At = Date.now()
   return out
 }
