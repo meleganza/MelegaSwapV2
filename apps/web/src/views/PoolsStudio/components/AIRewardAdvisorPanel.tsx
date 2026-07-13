@@ -181,8 +181,6 @@ const List = styled.div<{ $compact?: boolean }>`
         `}
 `
 
-const ROW_TITLES = ['Best Sustainability', 'Highest APR', 'Lowest Risk', 'Best Long Term'] as const
-
 const humanAdvisorValue = (value: string) => {
   if (/NEEDS_FUNDING|POOL_ENDED|INDEXING|Hidden/i.test(value)) return RUNTIME_UNAVAILABLE_LABEL
   return value
@@ -208,14 +206,16 @@ export const AIRewardAdvisorPanel: React.FC<{ embedded?: boolean; compact?: bool
         {loadingLabel ? (
           <RowTitle $compact={compact}>{loadingLabel}</RowTitle>
         ) : isEmptyState ? (
-          <RowTitle $compact={compact}>No eligible active rewarding pools.</RowTitle>
+          <RowTitle $compact={compact}>
+            {advisorItems[0]?.label ?? 'No eligible rewarding pools.'}
+          </RowTitle>
         ) : (
           rows.map((row, index) => {
             const display = humanAdvisorValue(row.value)
             return (
-              <Row key={ROW_TITLES[index]} $compact={compact}>
+              <Row key={`${row.label}-${index}`} $compact={compact}>
                 {!compact ? <Icon aria-hidden>{row.icon}</Icon> : null}
-                <RowTitle $compact={compact}>{ROW_TITLES[index]}</RowTitle>
+                <RowTitle $compact={compact}>{row.label}</RowTitle>
                 <RowValue $tone={compact ? valueTone(display) : 'default'}>{display}</RowValue>
               </Row>
             )

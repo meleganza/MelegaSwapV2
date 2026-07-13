@@ -16,12 +16,6 @@ const MarketGrid = styled.div<{ $count: number }>`
 
 const CardSlot = styled.div`
   min-width: 0;
-
-  & > * {
-    min-height: 126px;
-    padding: 24px 26px;
-    box-sizing: border-box;
-  }
 `
 
 export interface QuickMarketStripProps {

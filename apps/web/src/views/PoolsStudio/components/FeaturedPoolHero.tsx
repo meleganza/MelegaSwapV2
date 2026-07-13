@@ -374,15 +374,19 @@ export const FeaturedPoolHero: React.FC = () => {
     const emptyTitle =
       discoveredCount === 0
         ? 'No pools discovered'
-        : endedCount > 0
-          ? 'Historical Pools'
-          : 'No rewarding pools yet'
+        : rewardingCount === 0 && endedCount > 0
+          ? 'No active rewarding pools'
+          : rewardingCount === 0
+            ? 'No rewarding pools yet'
+            : 'Historical Pools'
     const emptySubtitle =
       discoveredCount === 0
         ? 'Verified SmartChef contracts will appear when indexed from chain.'
-        : endedCount > 0
-          ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
-          : 'Create or fund a reward pool to activate staking opportunities.'
+        : rewardingCount === 0 && discoveredCount > 0
+          ? `${discoveredCount} pools discovered on-chain — none are currently emitting rewards. Ended pools appear under Finished.`
+          : endedCount > 0
+            ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
+            : 'Create or fund a reward pool to activate staking opportunities.'
     const showCreateCta = discoveredCount === 0
 
     return (

@@ -188,7 +188,12 @@ export const ContractInputHero: React.FC<Props> = ({ embedded }) => {
             </ChainBtn>
           ))}
         </ChainRow>
-        <AnalyzeBtn type="button" $height="56px" onClick={handlePrimary} data-iet-analyze-btn>
+        <AnalyzeBtn
+          type="button"
+          $height={embedded ? '42px' : '56px'}
+          onClick={handlePrimary}
+          data-iet-analyze-btn
+        >
           {primaryLabel}
         </AnalyzeBtn>
       </DesktopRow>

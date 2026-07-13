@@ -74,7 +74,9 @@ async function fetchTierMetrics(): Promise<
         status: string
       }>
     }
-    return (json.rows ?? []).filter((r) => r.status === 'READY')
+    return (json.rows ?? []).filter(
+      (r) => r.tradeCount24h > 0 || r.volume24hQuote > 0 || r.status === 'READY',
+    )
   } catch {
     return []
   }
@@ -111,6 +113,18 @@ function liquidityScoreForAddress(pairs: PairRow[], address?: string): number {
     if (pair.token1?.toLowerCase() === key) score += BigInt(pair.reserve1 ?? '0')
   })
   return Number(score > BigInt(Number.MAX_SAFE_INTEGER) ? Number.MAX_SAFE_INTEGER : score)
+}
+
+function tokenSymbolFromAddress(address: string): string {
+  const key = address.toLowerCase()
+  const known: Record<string, string> = {
+    '0x963556de0eb8138e97a85f0a86ee0acd159d210b': 'MARCO',
+    '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c': 'WBNB',
+    '0x55d398326f99059ff775485246999027b3197955': 'USDT',
+    '0xe9e7cea3dedca5984780bafc599bd69add087d56': 'BUSD',
+    '0x0e09fabb73bd3ade98a3cab8c5aa94c2e0f70d5': 'CAKE',
+  }
+  return known[key] ?? `${address.slice(0, 6)}…${address.slice(-4)}`
 }
 
 function assetDedupKey(chainId: number, address?: string): string | undefined {
@@ -236,9 +250,14 @@ export function useDexTrendingRankings() {
 
       if (liquidityScore > 0) signals.push('liquidity')
 
+      const hasActivity = tradeCount24h > 0 || volume24h > 0
+      const hasLiquidity = liquidityScore > 0
+      const hasChange = Boolean(change24h)
+      const isReferenceQuote = sym === 'WBNB' || sym === 'CAKE' || sym === 'BUSD'
+
       if (!priceUsd || priceUsd <= 0) return
       if (!asset.symbol?.trim()) return
-      if (tradeCount24h <= 0 && volume24h <= 0) return
+      if (!hasActivity && !hasLiquidity && !hasChange && !isReferenceQuote) return
 
       byAddress.set(dedupKey, {
         symbol: asset.symbol,
@@ -252,6 +271,40 @@ export function useDexTrendingRankings() {
         liquidityScore,
         tradeCount24h,
         rankingSignals: [...new Set(signals)],
+      })
+    })
+
+    pairRows.forEach((pair) => {
+      const tokens = [
+        { address: pair.token0, reserve: pair.reserve0 },
+        { address: pair.token1, reserve: pair.reserve1 },
+      ]
+      tokens.forEach(({ address, reserve }) => {
+        if (!address) return
+        const dedupKey = assetDedupKey(56, address)
+        if (!dedupKey || byAddress.has(dedupKey)) return
+        const sym = tokenSymbolFromAddress(address)
+        if (!sym || sym.includes('…')) return
+        const liquidityScore = Number(reserve ?? 0)
+        if (liquidityScore <= 0) return
+        let priceUsd: number | undefined
+        if (sym === 'WBNB') priceUsd = wbnbUsd
+        else if (sym === 'CAKE') priceUsd = cakeUsd
+        else if (sym === 'BUSD') priceUsd = busdUsd
+        else if (sym === 'MARCO') priceUsd = marcoUsd && marcoUsd > 0 ? marcoUsd : marcoMetrics.marcoUsdFromCandle
+        if (!priceUsd || priceUsd <= 0) return
+        byAddress.set(dedupKey, {
+          symbol: sym,
+          slug: sym.toLowerCase(),
+          address,
+          chainId: 56,
+          displayName: sym,
+          priceUsd,
+          volume24h: 0,
+          liquidityScore,
+          tradeCount24h: 0,
+          rankingSignals: ['pair-liquidity'],
+        })
       })
     })
 
@@ -343,7 +396,7 @@ export function useDexTrendingRankings() {
 
   const indexerScopeNote = useMemo(() => {
     if (rankedAssets.length === 0) return undefined
-    return 'Ranked by 24H DEX volume, trades, liquidity, and change when computable'
+    return 'Ranked by 24H volume → trades → liquidity → price change'
   }, [rankedAssets.length])
 
   return {

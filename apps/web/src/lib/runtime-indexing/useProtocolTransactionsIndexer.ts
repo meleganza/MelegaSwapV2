@@ -65,7 +65,7 @@ export function useProtocolTransactionsIndexer(pairAddress?: string) {
 
   const transactions = useMemo(() => {
     if (useSubgraph && Array.isArray(data)) return data
-    if (useDurableIndexer && indexerPayload?.transactions?.length) return indexerPayload.transactions
+    if (useDurableIndexer && indexerPayload) return indexerPayload.transactions ?? []
     return undefined
   }, [useSubgraph, data, useDurableIndexer, indexerPayload])
 

@@ -45,7 +45,7 @@ const Content = styled.div`
   }
 `
 
-/** R788 — institutional pixel grid: builder | preview | right rail; activity spans builder+preview only. */
+/** R791 — institutional grid: builder | preview | right rail; activity | activity | top pools. */
 const LayoutGrid = styled.div`
   display: grid;
   gap: 20px;
@@ -61,7 +61,7 @@ const LayoutGrid = styled.div`
     grid-template-rows: auto auto;
     grid-template-areas:
       'builder preview right'
-      'activity activity .';
+      'activity activity topPools';
   }
 
   @media (min-width: 768px) and (max-width: 1199px) {
@@ -114,7 +114,7 @@ const AreaPreview = styled.div`
 const AreaRight = styled.div`
   grid-area: right;
   display: grid;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: auto auto;
   gap: 20px;
   align-content: start;
   min-width: 0;
@@ -164,6 +164,18 @@ const AreaAdvisor = styled.div`
   }
 `
 
+const AreaTopPools = styled.div`
+  grid-area: topPools;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  & > * {
+    flex: 1;
+    width: 100%;
+  }
+`
+
 const AreaPools = styled.div`
   @media (max-width: 767px) {
     grid-area: pools;
@@ -192,13 +204,13 @@ export const LiquidityStudioScreen: React.FC = () => (
             <AreaAdvisor>
               <AILiquidityAdvisorPanel />
             </AreaAdvisor>
-            <AreaPools>
-              <TopPoolsPanel />
-            </AreaPools>
           </AreaRight>
           <AreaActivity>
             <LiquidityActivityTable />
           </AreaActivity>
+          <AreaTopPools>
+            <TopPoolsPanel />
+          </AreaTopPools>
           <AreaLpInfo>
             <LiquidityLpInfoPanel />
           </AreaLpInfo>

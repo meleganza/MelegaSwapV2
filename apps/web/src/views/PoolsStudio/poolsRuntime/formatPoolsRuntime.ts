@@ -327,7 +327,9 @@ export function aggregateKpis(
   const discoveredCount = reconciliation.discovered
   const activeLive = reconciliation.active
   const fundedCount = reconciliation.funded
-  const rewardingCount = reconciliation.rewarding
+  const displayable = listUsablePools(previewCards)
+  const rewardingDisplayable = listRewardingPools(previewCards)
+  const rewardingCount = rewardingDisplayable.length
   let stakerPositions = 0
 
   pools.forEach((pool) => {
@@ -339,12 +341,10 @@ export function aggregateKpis(
     const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
     if (perBlock.gt(0) && lc.rewarding) {
       const dailyTokens = getBalanceNumber(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals)
-      dailyRewardsUsd += dailyTokens * (pool.earningTokenPrice || pool.stakingTokenPrice || 0)
+      dailyRewardsUsd += dailyTokens * (pool.earningTokenPrice || 0)
     }
   })
 
-  const displayable = listUsablePools(previewCards)
-  const rewardingDisplayable = listRewardingPools(previewCards)
   const highestApr = rewardingDisplayable.reduce<{ apr?: string; exact: number }>(
     (best, p) => {
       const exact = parseFloat(p.sustainableAprDisplay?.replace('%', '') || '0') || p.aprExact || 0

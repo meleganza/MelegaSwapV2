@@ -49,6 +49,12 @@ export function reconcileTradeSurface(input: TradeReconciliationInput): TradeRec
   }
 
   if (reasons.length) {
+    const hasIndexedSwaps = input.recentSwaps.length > 0 || input.swapEventCount24h > 0
+    const bootstrapInProgress =
+      input.indexerPhase === 'bootstrap' || (input.indexerLag ?? 0) > 5_000
+    if (hasIndexedSwaps && bootstrapInProgress) {
+      return { status: 'syncing', reasons: [...reasons, 'Indexer bootstrap converging — partial data visible'] }
+    }
     return { status: 'inconsistent', reasons }
   }
 

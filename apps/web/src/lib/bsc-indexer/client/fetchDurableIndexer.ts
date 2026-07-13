@@ -19,6 +19,21 @@ export interface DurableIndexerResponse {
   meta: DurableIndexerMeta
 }
 
+async function fetchBnbUsdHint(): Promise<number | undefined> {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd',
+      { headers: { accept: 'application/json' } },
+    )
+    if (!res.ok) return undefined
+    const json = (await res.json()) as { binancecoin?: { usd?: number } }
+    const usd = json.binancecoin?.usd
+    return usd != null && Number.isFinite(usd) && usd > 0 ? usd : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export async function fetchDurableIndexerTransactions(params?: {
   pairAddress?: string
   limit?: number
@@ -56,14 +71,17 @@ export async function fetchDurableIndexerTransactions(params?: {
       })
     }
 
-    const payload = (await eventsRes.json()) as {
-      status: string
-      reason?: string
-      events: NormalizedIndexerEvent[]
-      meta?: { lastIndexedBlock?: number; indexingLag?: number; eventCounts?: Record<string, number> }
-    }
+    const [bnbUsd, payload] = await Promise.all([
+      fetchBnbUsdHint(),
+      eventsRes.json() as Promise<{
+        status: string
+        reason?: string
+        events: NormalizedIndexerEvent[]
+        meta?: { lastIndexedBlock?: number; indexingLag?: number; eventCounts?: Record<string, number> }
+      }>,
+    ])
 
-    const transactions = mapIndexerEventsToTransactions(payload.events ?? [])
+    const transactions = mapIndexerEventsToTransactions(payload.events ?? [], { bnbUsd })
     const status =
       payload.status === 'ready' || transactions.length > 0
         ? 'ready'
