@@ -37,7 +37,8 @@ import {
   type AdaptiveScanTelemetry,
 } from './adaptiveGapScan'
 
-const FORWARD_CHUNK_BLOCKS = 100
+const FORWARD_CHUNK_BLOCKS = 200
+const MIN_GAP_CHUNK_SIZE = 25
 
 function normalizeLogs(
   logs: RawLog[],
@@ -250,10 +251,11 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
           )
           if (scan.aborted) break
           scanSamples.push({ latencyMs: scan.elapsedMs, blocks: forwardTo - forwardFrom + 1 })
-          chunkSize = scan.finalChunkSize
+          chunkSize = Math.max(MIN_GAP_CHUNK_SIZE, scan.finalChunkSize)
+          adaptiveTelemetry.scannedBlockCount += forwardTo - forwardFrom + 1
         } catch {
           scanSamples.push({ latencyMs: 0, blocks: 0, failed: true })
-          chunkSize = Math.max(1, Math.floor(chunkSize / 2))
+          chunkSize = Math.max(MIN_GAP_CHUNK_SIZE, Math.floor(chunkSize / 2))
           break
         }
         providerUsed = scan.providerUsed
@@ -303,10 +305,11 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
       )
       if (scan.aborted) break
       scanSamples.push({ latencyMs: scan.elapsedMs, blocks: gapTo - gapFrom + 1 })
-      chunkSize = scan.finalChunkSize
+      chunkSize = Math.max(MIN_GAP_CHUNK_SIZE, scan.finalChunkSize)
+      adaptiveTelemetry.scannedBlockCount += gapTo - gapFrom + 1
     } catch {
       scanSamples.push({ latencyMs: 0, blocks: 0, failed: true })
-      chunkSize = Math.max(1, Math.floor(chunkSize / 2))
+      chunkSize = Math.max(MIN_GAP_CHUNK_SIZE, Math.floor(chunkSize / 2))
       break
     }
     providerUsed = scan.providerUsed

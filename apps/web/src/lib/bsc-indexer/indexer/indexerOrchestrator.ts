@@ -66,7 +66,6 @@ export async function runIndexerOrchestrator(
   )
 
   if (
-    featuredBootstrapComplete &&
     !deadline.shouldStop() &&
     deadline.remainingMs() > PROTOCOL_ACTIVITY_MIN_REMAINING_MS
   ) {

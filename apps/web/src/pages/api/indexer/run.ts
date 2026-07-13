@@ -72,7 +72,7 @@ const handler: NextApiHandler = async (req, res) => {
   const auth = req.headers.authorization
   const cronSecrets = [process.env.CRON_SECRET, process.env.INDEXER_CRON_SECRET].filter(Boolean)
   const vercelCron = req.headers['x-vercel-cron'] === '1'
-  const fullBudget = req.query.budget === 'full'
+  const fullBudget = req.query.budget === 'full' || vercelCron
 
   if (!vercelCron) {
     const authorized = cronSecrets.some((secret) => auth === `Bearer ${secret}`)

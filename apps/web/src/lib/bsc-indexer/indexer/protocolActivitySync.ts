@@ -1,12 +1,10 @@
 import { put, head } from '@vercel/blob'
-import {
-  MELEGA_CHAIN_ID,
-  MELEGA_MASTERCHEF_BSC,
-  MAX_BLOCKS_PER_SYNC,
-} from '../constants'
+import { MELEGA_CHAIN_ID, MELEGA_MASTERCHEF_BSC, MAX_BLOCKS_PER_SYNC } from '../constants'
 import { getBlockNumber, getLogsChunked, getBlockTimestamp } from '../rpc/chunkedLogs'
-import type { IndexerDeadline } from './indexerDeadline'
+import { resolveIndexerStorage } from '../storage'
+import type { NormalizedIndexerEvent } from '../types'
 import { resolveProtocolActivityScanWindow } from './protocolActivityBounds'
+import type { IndexerDeadline } from './indexerDeadline'
 
 export { resolveProtocolActivityScanWindow } from './protocolActivityBounds'
 /** Minimum remaining orchestrator budget before protocol activity starts. */
@@ -179,7 +177,54 @@ export async function syncProtocolActivityRecent(deadline?: IndexerDeadline) {
   }
 }
 
+function ammEventToProtocolRow(event: NormalizedIndexerEvent): ProtocolActivityEvent {
+  const eventType =
+    event.eventType === 'Swap'
+      ? 'Swap'
+      : event.eventType === 'Mint'
+        ? 'LiquidityAdd'
+        : event.eventType === 'Burn'
+          ? 'LiquidityRemove'
+          : event.eventType
+  return {
+    chainId: event.chainId,
+    sourceType: 'amm',
+    contractAddress: event.pairAddress?.toLowerCase() ?? event.contractAddress.toLowerCase(),
+    eventType,
+    transactionHash: event.txHash,
+    logIndex: event.logIndex,
+    blockNumber: event.blockNumber,
+    timestamp: event.blockTimestamp,
+    wallet: event.wallet,
+    assetAddresses: [event.token0, event.token1].filter(Boolean) as string[],
+    resolvedSymbols: [],
+    amounts: [event.amount0 ?? '0', event.amount1 ?? '0'],
+    pairOrPoolIdentity: `${event.token0?.slice(0, 6)}…/${event.token1?.slice(0, 6)}…`,
+    explorerUrl: event.explorerUrl,
+  }
+}
+
+async function readAmmActivityEvents(limit: number): Promise<ProtocolActivityEvent[]> {
+  try {
+    const storage = resolveIndexerStorage()
+    const events = await storage.listEvents({ limit: Math.min(limit * 3, 200) })
+    return events
+      .filter((e) => e.eventType === 'Swap' || e.eventType === 'Mint' || e.eventType === 'Burn')
+      .map(ammEventToProtocolRow)
+  } catch {
+    return []
+  }
+}
+
 export async function listProtocolActivityEvents(limit = 20): Promise<ProtocolActivityEvent[]> {
-  const rows = await readEvents()
-  return rows.slice(0, limit)
+  const [stored, amm] = await Promise.all([readEvents(), readAmmActivityEvents(limit)])
+  const seen = new Set<string>()
+  const merged: ProtocolActivityEvent[] = []
+  for (const row of [...amm, ...stored]) {
+    const key = `${row.chainId}:${row.transactionHash}:${row.logIndex}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    merged.push(row)
+  }
+  return merged.sort((a, b) => b.blockNumber - a.blockNumber).slice(0, limit)
 }

@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/indexer/run/",
+      "path": "/api/indexer/run/?budget=full",
       "schedule": "*/5 * * * *"
     },
     {

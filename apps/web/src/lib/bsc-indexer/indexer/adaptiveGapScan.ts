@@ -1,9 +1,9 @@
 /** R790 — deadline-primary adaptive gap scan sizing and telemetry. */
 
-export const VERCEL_HARD_TIMEOUT_RESERVE_MS = 15_000
-export const ADAPTIVE_MIN_BLOCK_SPAN = 100
+export const VERCEL_HARD_TIMEOUT_RESERVE_MS = 10_000
+export const ADAPTIVE_MIN_BLOCK_SPAN = 200
 export const ADAPTIVE_MAX_BLOCK_SPAN = 50_000
-export const ADAPTIVE_DEFAULT_BLOCKS_PER_SECOND = 4
+export const ADAPTIVE_DEFAULT_BLOCKS_PER_SECOND = 8
 
 export interface AdaptiveScanTelemetry {
   requestedBlockCount: number
