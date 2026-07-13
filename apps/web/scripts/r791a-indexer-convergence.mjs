@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** R791A — indexer convergence evidence only (no UI). */
+/** R791A — indexer convergence evidence only (no UI). Max 5 sequential production runs. */
 import { writeFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -8,14 +8,37 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUT = path.join(__dirname, '../docs/runtime/r791a-indexer-convergence.json')
 const BASE = (process.env.R791A_BASE || 'https://www.melega.finance').replace(/\/$/, '')
 const BYPASS = process.env.VERCEL_BYPASS || 'MVa5gLdCeuFd5saGeRqRXnJLi1w6AQO4'
-const RUNS = Number(process.env.R791A_RUNS || 5)
+const MAX_RUNS = 5
+const RUNS = Math.min(MAX_RUNS, Math.max(1, Number(process.env.R791A_RUNS || MAX_RUNS)))
 const REPO_SHA = process.env.R791A_REPO_SHA || 'unknown'
+const READ_TIMEOUT_MS = 30_000
+const RUN_TIMEOUT_MS = 300_000
+const SECRET = (process.env.INDEXER_CRON_SECRET || process.env.CRON_SECRET || '').trim()
+
 const headers = { 'x-vercel-protection-bypass': BYPASS, accept: 'application/json' }
 
-async function getJson(url, init) {
-  const res = await fetch(url, { ...init, headers: { ...headers, ...(init?.headers ?? {}) } })
+function runAuthHeaders() {
+  const reqHeaders = { ...headers }
+  if (SECRET.length >= 16) {
+    reqHeaders.authorization = `Bearer ${SECRET}`
+  } else {
+    reqHeaders['x-vercel-cron'] = '1'
+  }
+  return reqHeaders
+}
+
+async function getJson(url, init, timeoutMs = READ_TIMEOUT_MS) {
+  const res = await fetch(url, {
+    ...init,
+    headers: { ...headers, ...(init?.headers ?? {}) },
+    signal: AbortSignal.timeout(timeoutMs),
+  })
   const body = await res.json().catch(() => ({}))
   return { status: res.status, body }
+}
+
+function isUnexpectedStatus(status) {
+  return status === 504 || status < 200 || status >= 300
 }
 
 function sleep(ms) {
@@ -25,27 +48,59 @@ function sleep(ms) {
 async function main() {
   await mkdir(path.dirname(OUT), { recursive: true })
   const baseline = await getJson(`${BASE}/api/indexer/coverage/`)
+  if (isUnexpectedStatus(baseline.status)) {
+    throw new Error(`Baseline coverage HTTP ${baseline.status}`)
+  }
   const baselineHealth = await getJson(`${BASE}/api/indexer/health/`)
+  if (isUnexpectedStatus(baselineHealth.status)) {
+    throw new Error(`Baseline health HTTP ${baselineHealth.status}`)
+  }
+
   const runs = []
 
   for (let n = 1; n <= RUNS; n += 1) {
     const covBefore = await getJson(`${BASE}/api/indexer/coverage/`)
-    const healthBefore = await getJson(`${BASE}/api/indexer/health/`)
+    if (isUnexpectedStatus(covBefore.status)) {
+      throw new Error(`Run ${n} coverage-before HTTP ${covBefore.status}`)
+    }
+
     const started = Date.now()
-    const run = await getJson(`${BASE}/api/indexer/run/?budget=full`, {
-      method: 'POST',
-      headers: { 'x-vercel-cron': '1' },
-      signal: AbortSignal.timeout(300_000),
-    })
+    const run = await getJson(
+      `${BASE}/api/indexer/run/?budget=full`,
+      { method: 'POST', headers: runAuthHeaders() },
+      RUN_TIMEOUT_MS,
+    )
+
+    if (isUnexpectedStatus(run.status)) {
+      runs.push({
+        run: n,
+        timestamp: new Date().toISOString(),
+        httpStatus: run.status,
+        skipped: false,
+        ok: false,
+        elapsedMs: Date.now() - started,
+        error: `Unexpected HTTP ${run.status}`,
+      })
+      break
+    }
+
     const covAfter = await getJson(`${BASE}/api/indexer/coverage/`)
+    if (isUnexpectedStatus(covAfter.status)) {
+      throw new Error(`Run ${n} coverage-after HTTP ${covAfter.status}`)
+    }
+
     const healthAfter = await getJson(`${BASE}/api/indexer/health/`)
+    if (isUnexpectedStatus(healthAfter.status)) {
+      throw new Error(`Run ${n} health-after HTTP ${healthAfter.status}`)
+    }
+
     const row = {
       run: n,
       timestamp: new Date().toISOString(),
       httpStatus: run.status,
       skipped: Boolean(run.body.skipped),
       skipReason: run.body.reason ?? null,
-      ok: run.status === 200 && !run.body.skipped && run.body.ok !== false && run.status !== 504,
+      ok: run.status === 200 && !run.body.skipped && run.body.ok !== false,
       elapsedMs: Date.now() - started,
       budgetMs: run.body.budgetMs,
       lockState: run.body.lockState ?? healthAfter.body?.lockState,
@@ -62,16 +117,27 @@ async function main() {
     }
     runs.push(row)
     console.log(
-      `[r791a] ${n}/${RUNS} status=${row.httpStatus} ok=${row.ok} skipped=${row.skipped} coverage=${row.coverageAfter?.coveragePercent?.toFixed(2)}% scanned=${row.scannedBlocks ?? '?'}`,
+      `[r791a] ${n}/${RUNS} status=${row.httpStatus} ok=${row.ok} skipped=${row.skipped} coverage=${row.coverageAfter?.coveragePercent?.toFixed(2) ?? '?'}%`,
     )
+
     if (row.coverageAfter?.complete) break
+    if (n >= RUNS) break
     if (row.skipped) await sleep(95_000)
     else await sleep(10_000)
   }
 
   const finalCoverage = await getJson(`${BASE}/api/indexer/coverage/`)
+  if (isUnexpectedStatus(finalCoverage.status)) {
+    throw new Error(`Final coverage HTTP ${finalCoverage.status}`)
+  }
   const finalHealth = await getJson(`${BASE}/api/indexer/health/`)
+  if (isUnexpectedStatus(finalHealth.status)) {
+    throw new Error(`Final health HTTP ${finalHealth.status}`)
+  }
   const finalTier = await getJson(`${BASE}/api/indexer/tier-metrics/`)
+  if (isUnexpectedStatus(finalTier.status)) {
+    throw new Error(`Final tier-metrics HTTP ${finalTier.status}`)
+  }
 
   const tier1 = (finalTier.body?.rows ?? []).filter((r) => r.tier === 'TIER_1')
   const tier2 = (finalTier.body?.rows ?? []).filter((r) => r.tier === 'TIER_2')
@@ -81,6 +147,8 @@ async function main() {
     repositorySha: REPO_SHA,
     base: BASE,
     capturedAt: new Date().toISOString(),
+    maxRuns: MAX_RUNS,
+    requestedRuns: RUNS,
     baseline: {
       coverage: baseline.body?.bootstrapWindow,
       budgetMs: baselineHealth.body?.lastOrchestratorRun?.budgetMs,
