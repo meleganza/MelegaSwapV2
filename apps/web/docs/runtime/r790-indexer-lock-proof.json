@@ -1,0 +1,250 @@
+{
+  "capturedAt": "2026-07-13T06:15:08.513Z",
+  "lockObservations": [
+    {
+      "run": 1,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783918809653",
+      "skipped": false
+    },
+    {
+      "run": 2,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783918868068",
+      "skipped": false
+    },
+    {
+      "run": 3,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783918926819",
+      "skipped": false
+    },
+    {
+      "run": 4,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783918946824",
+      "skipped": false
+    },
+    {
+      "run": 5,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919057705",
+      "skipped": false
+    },
+    {
+      "run": 6,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919114537",
+      "skipped": false
+    },
+    {
+      "run": 7,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919235925",
+      "skipped": false
+    },
+    {
+      "run": 8,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919370194",
+      "skipped": false
+    },
+    {
+      "run": 9,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919523386",
+      "skipped": false
+    },
+    {
+      "run": 10,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919546006",
+      "skipped": false
+    },
+    {
+      "run": 11,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919698638",
+      "skipped": false
+    },
+    {
+      "run": 12,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919852223",
+      "skipped": false
+    },
+    {
+      "run": 13,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919891462",
+      "skipped": false
+    },
+    {
+      "run": 14,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783919920927",
+      "skipped": false
+    },
+    {
+      "run": 15,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920047275",
+      "skipped": false
+    },
+    {
+      "run": 16,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920200005",
+      "skipped": false
+    },
+    {
+      "run": 17,
+      "lockState": "held",
+      "lockOwner": "manual:20ae144:iad1:1783920343114",
+      "skipped": true
+    },
+    {
+      "run": 18,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920457672",
+      "skipped": false
+    },
+    {
+      "run": 19,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920572383",
+      "skipped": false
+    },
+    {
+      "run": 20,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920591600",
+      "skipped": false
+    },
+    {
+      "run": 21,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920744925",
+      "skipped": false
+    },
+    {
+      "run": 22,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920774289",
+      "skipped": false
+    },
+    {
+      "run": 23,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783920926993",
+      "skipped": false
+    },
+    {
+      "run": 24,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921052419",
+      "skipped": false
+    },
+    {
+      "run": 25,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921205131",
+      "skipped": false
+    },
+    {
+      "run": 26,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921357889",
+      "skipped": false
+    },
+    {
+      "run": 27,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921510353",
+      "skipped": false
+    },
+    {
+      "run": 28,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921663672",
+      "skipped": false
+    },
+    {
+      "run": 29,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921787119",
+      "skipped": false
+    },
+    {
+      "run": 30,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:20ae144:iad1:1783921937972",
+      "skipped": false
+    },
+    {
+      "run": 31,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922092024",
+      "skipped": false
+    },
+    {
+      "run": 32,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922246010",
+      "skipped": false
+    },
+    {
+      "run": 33,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922356848",
+      "skipped": false
+    },
+    {
+      "run": 34,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922511073",
+      "skipped": false
+    },
+    {
+      "run": 35,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922663935",
+      "skipped": false
+    },
+    {
+      "run": 36,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922816740",
+      "skipped": false
+    },
+    {
+      "run": 37,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922848555",
+      "skipped": false
+    },
+    {
+      "run": 38,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783922971321",
+      "skipped": false
+    },
+    {
+      "run": 39,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783923107484",
+      "skipped": false
+    },
+    {
+      "run": 40,
+      "lockState": "acquired",
+      "lockOwner": "vercel-cron:b4082dd:iad1:1783923259981",
+      "skipped": false
+    }
+  ],
+  "finalHealth": {
+    "lockState": "held",
+    "lockOwner": "vercel-cron:b4082dd:iad1:1783923259981",
+    "lockExpiresAt": "2026-07-13T06:15:50.037Z"
+  }
+}

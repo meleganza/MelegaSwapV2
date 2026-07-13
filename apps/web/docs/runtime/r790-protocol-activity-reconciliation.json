@@ -1,0 +1,19 @@
+{
+  "mission": "R790",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-13T06:15:48.154Z",
+  "repositorySha": "b4082ddd",
+  "httpStatus": 200,
+  "elapsedMs": 298,
+  "count": 0,
+  "bySource": {
+    "amm": 0,
+    "masterchef": 0,
+    "smartchef": 0
+  },
+  "dedupPolicy": "chainId:transactionHash:logIndex",
+  "duplicateKeyCount": 0,
+  "sample": [],
+  "failures": [],
+  "pass": true
+}

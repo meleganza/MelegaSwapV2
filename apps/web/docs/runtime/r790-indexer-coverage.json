@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-07-13T06:15:08.513Z",
+  "generatedAt": "2026-07-13T06:15:08.477Z",
+  "slug": "marco-wbnb",
+  "bootstrapWindow": {
+    "fromBlock": 109122940,
+    "toBlock": 109697787,
+    "coveredBlocks": 35855,
+    "uncoveredBlocks": 538993,
+    "coveragePercent": 6.23730099087063,
+    "gaps": [
+      {
+        "fromBlock": 109158795,
+        "toBlock": 109697787
+      }
+    ],
+    "complete": false
+  },
+  "forwardCursor": 109158794,
+  "gapFillCursor": 109158794,
+  "backwardCursor": null,
+  "coverageRanges": [
+    {
+      "fromBlock": 109122940,
+      "toBlock": 109158794
+    }
+  ],
+  "chainHead": 109697799
+}

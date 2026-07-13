@@ -1,0 +1,24 @@
+{
+  "mission": "R790",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-13T06:15:47.771Z",
+  "repositorySha": "b4082ddd",
+  "classificationHttpStatus": 200,
+  "counts": {
+    "discovered": 239,
+    "verified": 239,
+    "active": 0,
+    "funded": 229,
+    "rewarding": 0,
+    "ended": 239,
+    "invalid": 0,
+    "dataSource": "on-chain-verified-multicall",
+    "note": "SmartChefFactory has no enumerable poolLength; candidates seeded from deployment inventory then verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded."
+  },
+  "smartchefEventCount": 0,
+  "sampleEvents": [],
+  "stage": "EMPTY_VERIFIED",
+  "note": "Phase-A proves on-chain SmartChef inventory via /api/pools/classification; event feed indexing for smartchef sourceType is not yet wired in orchestrator.",
+  "failures": [],
+  "pass": true
+}

@@ -1,0 +1,145 @@
+{
+  "mission": "R790",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-13T06:15:36.499Z",
+  "repositorySha": "b4082ddd",
+  "bootstrapWindow": {
+    "fromBlock": 109122940,
+    "toBlock": 109697849,
+    "coveredBlocks": 35855,
+    "uncoveredBlocks": 539055,
+    "coveragePercent": 6.236628341827417,
+    "gaps": [
+      {
+        "fromBlock": 109158795,
+        "toBlock": 109697849
+      }
+    ],
+    "complete": false
+  },
+  "featuredBootstrapComplete": false,
+  "tier1": [
+    {
+      "slug": "marco-wbnb",
+      "status": "READY",
+      "tradeCount24h": 1,
+      "volume24hQuote": 0.000219538905014194
+    },
+    {
+      "slug": "55d398-963556",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "8ac76a-963556",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "55d398-8ac76a",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "8ac76a-bb4cdb",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "55d398-bb4cdb",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    }
+  ],
+  "tier2": [
+    {
+      "slug": "403487-502eed",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "52abb0-bb4cdb",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "502eed-bb4cdb",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "502eed-6effc3",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "502eed-963556",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "502eed-b1c137",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "9acda5-bb4cdb",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "502eed-76fa56",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "002742-963556",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "9acda5-e7ba8b",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "502eed-ede11c",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    },
+    {
+      "slug": "138455-bb4cdb",
+      "status": "UNSCANNED",
+      "tradeCount24h": 0,
+      "volume24hQuote": 0
+    }
+  ],
+  "gates": {
+    "tier1Count": 6,
+    "tier2Count": 12,
+    "tier1Explicit": false,
+    "tier2Explicit": false,
+    "tier2Unscanned": 12,
+    "emptyVerifiedWithoutBootstrap": 0
+  },
+  "failures": [
+    "tier2-unscanned:12"
+  ],
+  "pass": false
+}

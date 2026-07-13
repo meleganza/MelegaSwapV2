@@ -1,0 +1,19 @@
+{
+  "mission": "R790",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-13T06:15:36.938Z",
+  "repositorySha": "b4082ddd",
+  "bootstrapComplete": false,
+  "featuredBootstrapComplete": false,
+  "protocolActivityRun": null,
+  "activityHttpStatus": 200,
+  "eventCount": 0,
+  "masterchefEventCount": 0,
+  "sampleEvents": [],
+  "stage": "BLOCKED_BOOTSTRAP",
+  "failures": [
+    "featured-bootstrap-incomplete",
+    "protocol-activity-gated"
+  ],
+  "pass": false
+}

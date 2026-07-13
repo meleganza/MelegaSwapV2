@@ -1,0 +1,20 @@
+{
+  "mission": "R790",
+  "capturedAt": "2026-07-13T06:15:48.672Z",
+  "base": "https://www.melega.finance",
+  "gates": {
+    "bootstrapComplete": false,
+    "coveragePercent": 6.2363354593633735,
+    "tier1Count": 6,
+    "tier2Count": 12,
+    "tier2Unscanned": 12,
+    "protocolActivityCount": 0,
+    "lockState": "free",
+    "leaseVisible": true
+  },
+  "failures": [
+    "bootstrap-not-complete",
+    "tier2-unscanned:12"
+  ],
+  "pass": false
+}

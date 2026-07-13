@@ -86,3 +86,12 @@ Log at recovery: run 28/40, coverage ~5.90%, lease skips retried successfully.
 - Protocol activity events: 0 (orchestrator gates protocol scan until featured bootstrap complete)
 - Lease: durable blob, `lockState: free` between runs
 - Adaptive telemetry: ~2175 runs remaining @ ~7.3 blocks/s effective
+
+## Post-recovery updates (2026-07-13T06:22Z)
+
+| Item | Value |
+|------|-------|
+| Tier classification commit | `b4082ddd` |
+| 40-run certification complete | 39/40 clean, 0×504, coverage 6.24% |
+| Tier-2 after honesty fix | 12/12 UNSCANNED (orchestrator gated) |
+| Final report | `R790_PRODUCTION_INDEXER_COMPLETION_REPORT.md` |
