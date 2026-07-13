@@ -30,6 +30,12 @@ import type { IndexerDeadline } from './indexerDeadline'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
 import { buildCandlesFromSwaps } from './candles'
 import type { PairWatch } from './featuredPairSync'
+import {
+  computeAdaptiveBlockSpan,
+  createEmptyAdaptiveTelemetry,
+  finalizeAdaptiveTelemetry,
+  type AdaptiveScanTelemetry,
+} from './adaptiveGapScan'
 
 const FORWARD_CHUNK_BLOCKS = 100
 
@@ -70,6 +76,8 @@ export interface PairSyncParams {
   deadline?: IndexerDeadline
   /** Cap gap-fill chunks per invocation so orchestrator can reach tier/protocol stages. */
   maxGapRangesPerRun?: number
+  /** R790 — deadline-primary adaptive gap scanning (featured pair). */
+  adaptiveGapFill?: boolean
 }
 
 export interface PairSyncResult {
@@ -83,6 +91,7 @@ export interface PairSyncResult {
   stoppedBeforeDeadline: boolean
   partialProgress: boolean
   coverageSummary?: ReturnType<typeof bootstrapWindowSummary>
+  adaptiveTelemetry?: AdaptiveScanTelemetry
 }
 
 function freshCheckpoint(chainHead: number, slug: string, bootstrapDays: number): IndexerCheckpoint {
@@ -115,17 +124,30 @@ async function scanRange(
   chunkSize: number,
   cap: number,
   out: NormalizedIndexerEvent[],
-) {
+  deadline?: IndexerDeadline,
+): Promise<{
+  finalChunkSize: number
+  providerUsed: 'chunked-forward-eth_getLogs'
+  elapsedMs: number
+  aborted: boolean
+}> {
+  const started = Date.now()
   const result = await getLogsChunked({
     address: pair.pairAddress,
     topics: [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC],
     fromBlock,
     toBlock,
     initialChunk: chunkSize,
+    shouldAbort: () => deadline?.shouldStop() ?? false,
   })
   const tsMap = await hydrateTimestamps(result.logs)
   normalizeLogs(result.logs, pair, tsMap, cap, out)
-  return { finalChunkSize: result.finalChunkSize, providerUsed: 'chunked-forward-eth_getLogs' as const }
+  return {
+    finalChunkSize: result.finalChunkSize,
+    providerUsed: 'chunked-forward-eth_getLogs',
+    elapsedMs: Date.now() - started,
+    aborted: Boolean(result.aborted),
+  }
 }
 
 /** R787 — deadline-budgeted pair sync with explicit coverage ranges. */
@@ -180,7 +202,18 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
 
   // 2) Gap fill — newest uncovered interval toward head
   let gapIterations = 0
-  const gapIterationCap = params.maxGapRangesPerRun ?? Number.POSITIVE_INFINITY
+  const adaptive = Boolean(params.adaptiveGapFill)
+  const gapIterationCap = adaptive ? Number.POSITIVE_INFINITY : (params.maxGapRangesPerRun ?? Number.POSITIVE_INFINITY)
+  const scanSamples: Array<{ latencyMs: number; blocks: number; failed?: boolean }> = []
+  let chunkSize = checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS
+  const gapsAtStart = findCoverageGaps(coverageRanges, bootstrapFloor, forwardHigh)
+  const blocksRemainingStart = gapsAtStart.reduce((sum, g) => sum + (g.toBlock - g.fromBlock + 1), 0)
+  let adaptiveTelemetry = createEmptyAdaptiveTelemetry(
+    chunkSize,
+    blocksRemainingStart,
+    deadline?.remainingMs() ?? 0,
+  )
+
   while (
     !deadline?.shouldStop() &&
     normalized.length < MAX_EVENTS_PER_SYNC &&
@@ -188,18 +221,41 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   ) {
     const gaps = findCoverageGaps(coverageRanges, bootstrapFloor, forwardHigh)
     const nextGap = selectNextGap(gaps)
+    const blocksRemaining = gaps.reduce((sum, g) => sum + (g.toBlock - g.fromBlock + 1), 0)
+
     if (!nextGap) {
       if (gapFillCursor < forwardHigh) {
         const forwardFrom = Math.max(bootstrapFloor, gapFillCursor + 1)
-        const forwardTo = Math.min(forwardHigh, forwardFrom + FORWARD_CHUNK_BLOCKS - 1)
-        const scan = await scanRange(
-          pair,
-          forwardFrom,
-          forwardTo,
-          checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS,
-          MAX_EVENTS_PER_SYNC - normalized.length,
-          normalized,
-        )
+        const span = adaptive
+          ? computeAdaptiveBlockSpan({
+              remainingMs: deadline?.remainingMs() ?? 0,
+              blocksRemaining: forwardHigh - forwardFrom + 1,
+              currentChunkSize: chunkSize,
+              recentBlocksPerSecond: adaptiveTelemetry.effectiveBlocksPerSecond || undefined,
+              recentAverageLatencyMs: adaptiveTelemetry.averageRpcLatencyMs || undefined,
+            })
+          : FORWARD_CHUNK_BLOCKS
+        const forwardTo = Math.min(forwardHigh, forwardFrom + span - 1)
+        adaptiveTelemetry.requestedBlockCount += forwardTo - forwardFrom + 1
+        let scan
+        try {
+          scan = await scanRange(
+            pair,
+            forwardFrom,
+            forwardTo,
+            chunkSize,
+            MAX_EVENTS_PER_SYNC - normalized.length,
+            normalized,
+            deadline,
+          )
+          if (scan.aborted) break
+          scanSamples.push({ latencyMs: scan.elapsedMs, blocks: forwardTo - forwardFrom + 1 })
+          chunkSize = scan.finalChunkSize
+        } catch {
+          scanSamples.push({ latencyMs: 0, blocks: 0, failed: true })
+          chunkSize = Math.max(1, Math.floor(chunkSize / 2))
+          break
+        }
         providerUsed = scan.providerUsed
         checkpoint = { ...checkpoint, chunkSize: scan.finalChunkSize }
         coverageRanges = addCoverageRange(coverageRanges, { fromBlock: forwardFrom, toBlock: forwardTo })
@@ -223,15 +279,36 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     }
 
     const gapFrom = nextGap.fromBlock
-    const gapTo = Math.min(nextGap.toBlock, gapFrom + FORWARD_CHUNK_BLOCKS - 1)
-    const scan = await scanRange(
-      pair,
-      gapFrom,
-      gapTo,
-      checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS,
-      MAX_EVENTS_PER_SYNC - normalized.length,
-      normalized,
-    )
+    const span = adaptive
+      ? computeAdaptiveBlockSpan({
+          remainingMs: deadline?.remainingMs() ?? 0,
+          blocksRemaining,
+          currentChunkSize: chunkSize,
+          recentBlocksPerSecond: adaptiveTelemetry.effectiveBlocksPerSecond || undefined,
+          recentAverageLatencyMs: adaptiveTelemetry.averageRpcLatencyMs || undefined,
+        })
+      : FORWARD_CHUNK_BLOCKS
+    const gapTo = Math.min(nextGap.toBlock, gapFrom + span - 1)
+    adaptiveTelemetry.requestedBlockCount += gapTo - gapFrom + 1
+    let scan
+    try {
+      scan = await scanRange(
+        pair,
+        gapFrom,
+        gapTo,
+        chunkSize,
+        MAX_EVENTS_PER_SYNC - normalized.length,
+        normalized,
+        deadline,
+      )
+      if (scan.aborted) break
+      scanSamples.push({ latencyMs: scan.elapsedMs, blocks: gapTo - gapFrom + 1 })
+      chunkSize = scan.finalChunkSize
+    } catch {
+      scanSamples.push({ latencyMs: 0, blocks: 0, failed: true })
+      chunkSize = Math.max(1, Math.floor(chunkSize / 2))
+      break
+    }
     providerUsed = scan.providerUsed
     checkpoint = { ...checkpoint, chunkSize: scan.finalChunkSize }
     coverageRanges = addCoverageRange(coverageRanges, { fromBlock: gapFrom, toBlock: gapTo })
@@ -250,6 +327,15 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
       lastSuccessfulSync: new Date().toISOString(),
     })
   }
+
+  const remainingGaps = findCoverageGaps(coverageRanges, bootstrapFloor, forwardHigh)
+  const blocksRemainingEnd = remainingGaps.reduce((sum, g) => sum + (g.toBlock - g.fromBlock + 1), 0)
+  adaptiveTelemetry = finalizeAdaptiveTelemetry(
+    { ...adaptiveTelemetry, adaptiveChunkSizeEnd: chunkSize },
+    scanSamples,
+    deadline?.remainingMs() ?? 0,
+    blocksRemainingEnd,
+  )
 
   if (gapFillCursor >= forwardHigh - REORG_SAFETY_BLOCKS) {
     phase = 'incremental'
@@ -315,5 +401,6 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     stoppedBeforeDeadline,
     partialProgress: stoppedBeforeDeadline || gapRangesProcessed > 0 || forwardRangesProcessed > 0,
     coverageSummary,
+    adaptiveTelemetry: adaptive ? adaptiveTelemetry : undefined,
   }
 }

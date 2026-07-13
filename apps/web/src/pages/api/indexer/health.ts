@@ -1,13 +1,15 @@
 import type { NextApiHandler } from 'next'
 import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
 import { getBlockNumber } from 'lib/bsc-indexer/rpc/chunkedLogs'
+import { isLeaseActive, readIndexerLease } from 'lib/bsc-indexer/indexer/indexerLease'
 
 const handler: NextApiHandler = async (_req, res) => {
   const storage = resolveIndexerStorage()
-  const [health, checkpoint, eventCounts] = await Promise.all([
+  const [health, checkpoint, eventCounts, lease] = await Promise.all([
     storage.loadHealth(),
     storage.loadCheckpoint(),
     storage.countEvents(),
+    readIndexerLease(),
   ])
   let chainHead: number | undefined
   try {
@@ -38,6 +40,13 @@ const handler: NextApiHandler = async (_req, res) => {
     lastFailureReason: checkpoint?.lastFailureReason ?? health?.lastFailureReason,
     eventCounts,
     lastOrchestratorRun: health?.lastOrchestratorRun,
+    lockState: isLeaseActive(lease) ? 'held' : 'free',
+    lockOwner: lease?.ownerId ?? null,
+    lockAcquiredAt: lease?.acquiredAt ?? null,
+    lockExpiresAt: lease?.expiresAt ?? null,
+    lockHeartbeatAt: lease?.heartbeatAt ?? null,
+    activeRunType: lease?.runType ?? null,
+    activeDeploymentSha: lease?.deploymentSha ?? null,
   })
 }
 

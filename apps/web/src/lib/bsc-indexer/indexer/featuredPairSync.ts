@@ -23,6 +23,7 @@ export interface SyncResult {
   gapRangesProcessed: number
   partialProgress: boolean
   coverageSummary?: ReturnType<typeof bootstrapWindowSummary>
+  adaptiveTelemetry?: import('./adaptiveGapScan').AdaptiveScanTelemetry
 }
 
 export interface PairWatch {
@@ -97,7 +98,7 @@ export async function runFeaturedPairSync(
     bootstrapDays: 7,
     existingCheckpoint: checkpoint,
     deadline,
-    maxGapRangesPerRun: 2,
+    adaptiveGapFill: true,
   })
 
   return {
@@ -108,6 +109,7 @@ export async function runFeaturedPairSync(
     gapRangesProcessed: result.gapRangesProcessed,
     partialProgress: result.partialProgress,
     coverageSummary: result.coverageSummary,
+    adaptiveTelemetry: result.adaptiveTelemetry,
     health: {
       ...result.health,
       providerHealth: getProviderHealthSnapshot(),

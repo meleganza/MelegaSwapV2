@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * R789 — MARCO/WBNB trade reconciliation artifact (R790 rows[] fix).
+ * R790 — MARCO/WBNB G2 trade reconciliation (rows[] parsing).
  */
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const OUT = path.join(__dirname, '../docs/runtime/r789-trade-reconciliation.json')
-const BASE = (process.env.R789_BASE || 'https://www.melega.finance').replace(/\/$/, '')
+const OUT = path.join(__dirname, '../docs/runtime/r790-g2-reconciliation.json')
+const BASE = (process.env.R790_BASE || 'https://www.melega.finance').replace(/\/$/, '')
 const BYPASS = process.env.VERCEL_BYPASS || 'MVa5gLdCeuFd5saGeRqRXnJLi1w6AQO4'
 const headers = { 'x-vercel-protection-bypass': BYPASS, accept: 'application/json' }
 
@@ -33,10 +33,10 @@ const [swaps, candles, tierMetrics, storeConsistency, coverage] = await Promise.
 ])
 
 const metrics = resolveMarcoRow(tierMetrics.body)
-const swapRows = swaps.body?.transactions ?? swaps.body?.swaps ?? swaps.body?.rows ?? []
-const candleRows = candles.body?.candles ?? candles.body?.rows ?? []
-const tradeCount24h = metrics.tradeCount24h ?? metrics.trades24h ?? 0
-const volume24h = metrics.volume24hQuote ?? metrics.volume24h ?? metrics.volumeUSD24h ?? 0
+const swapRows = swaps.body?.transactions ?? []
+const candleRows = candles.body?.candles ?? []
+const tradeCount24h = metrics.tradeCount24h ?? 0
+const volume24hQuote = metrics.volume24hQuote ?? 0
 const failures = []
 if (metrics.status === 'READY' && swapRows.length === 0 && candleRows.length === 0) {
   failures.push('READY without durable data')
@@ -44,22 +44,29 @@ if (metrics.status === 'READY' && swapRows.length === 0 && candleRows.length ===
 if (tradeCount24h > 0 && (metrics.eventCount24h ?? 0) === 0) {
   failures.push('tradeCount24h without eventCount24h')
 }
+if (volume24hQuote > 0 && !candleRows.some((c) => (c.quoteVolume ?? c.baseVolume ?? 0) > 0)) {
+  failures.push('volume24hQuote without candle volume')
+}
+if (storeConsistency.body?.consistent === false) {
+  failures.push('store consistency mismatch')
+}
 
 const reconciliation = {
   slug: 'marco-wbnb',
   namespace: 'melega-indexer/v2/featured-pairs/marco-wbnb',
   status: metrics.status,
   tradeCount24h,
-  volume24h,
+  volume24hQuote,
   eventCount24h: metrics.eventCount24h ?? 0,
-  swapRows: swapRows.length,
-  candleRows: candleRows.length,
-  candlesWithVolume: candleRows.filter((c) => (c.quoteVolume ?? c.baseVolume ?? c.volume ?? 0) > 0).length,
-  coverageComplete: coverage.body?.bootstrapWindow?.complete ?? coverage.body?.complete,
-  coveragePercent: coverage.body?.bootstrapWindow?.coveragePercent,
+  swapRowsTotal: swapRows.length,
+  swapsIn24hWindow: tradeCount24h,
+  candleCount: candleRows.length,
+  candleVolumeTotal: candleRows.reduce((s, c) => s + (c.quoteVolume ?? c.baseVolume ?? 0), 0),
+  coverageComplete: coverage.body?.bootstrapWindow?.complete ?? false,
+  coveragePercent: coverage.body?.bootstrapWindow?.coveragePercent ?? 0,
   storeConsistent: storeConsistency.body?.consistent !== false,
   failures,
-  statusG2:
+  g2Status:
     failures.length > 0
       ? 'FAIL'
       : tradeCount24h > 0 && swapRows.length > 0 && candleRows.length >= 1
@@ -70,9 +77,10 @@ const reconciliation = {
 }
 
 const report = {
-  mission: 'R789',
+  mission: 'R790',
   base: BASE,
   capturedAt: new Date().toISOString(),
+  repositorySha: process.env.R790_REPO_SHA ?? 'unknown',
   production: {
     swaps: swaps.body,
     candles: candles.body,
@@ -81,8 +89,9 @@ const report = {
     coverage: coverage.body,
   },
   reconciliation,
-  g2Pass: reconciliation.statusG2 === 'READY' || reconciliation.statusG2 === 'EMPTY_VERIFIED',
+  g2Pass: reconciliation.g2Status === 'READY' || reconciliation.g2Status === 'EMPTY_VERIFIED',
 }
+
 await writeFile(OUT, JSON.stringify(report, null, 2))
-console.log(JSON.stringify(reconciliation, null, 2))
-process.exit(failures.length ? 1 : 0)
+console.log(JSON.stringify({ g2Status: reconciliation.g2Status, g2Pass: report.g2Pass, failures }, null, 2))
+process.exit(reconciliation.g2Status === 'FAIL' ? 1 : 0)

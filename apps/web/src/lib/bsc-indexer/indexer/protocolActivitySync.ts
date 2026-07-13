@@ -12,9 +12,12 @@ export { resolveProtocolActivityScanWindow } from './protocolActivityBounds'
 /** Minimum remaining orchestrator budget before protocol activity starts. */
 export const PROTOCOL_ACTIVITY_MIN_REMAINING_MS = 12_000
 
-const DEPOSIT_TOPIC = '0x90890809c654f11f630942b0e6f67ee8cb438cbdfb1d1f45533e7576391dc195'
-const WITHDRAW_TOPIC = '0x884edad9d98d948abe3ec11b0219356438e6b1a3177dd72c77492e294984e937'
-const EMERGENCY_WITHDRAW_TOPIC = '0x692a3d7b60c25ad266c2e35b7d0894e6fe081d9121eb2f2b6d690c84242e8a85'
+import {
+  MASTERCHEF_ACTIVITY_TOPICS,
+  MASTERCHEF_EMERGENCY_WITHDRAW_TOPIC,
+  MASTERCHEF_DEPOSIT_TOPIC,
+  MASTERCHEF_WITHDRAW_TOPIC,
+} from './masterchefTopics'
 const ACTIVITY_KEY = 'melega-indexer/v2/protocol-activity/events.json'
 const CURSOR_KEY = 'melega-indexer/v2/protocol-activity/cursor.json'
 
@@ -115,7 +118,7 @@ export async function syncProtocolActivityRecent(deadline?: IndexerDeadline) {
 
   const { logs, aborted } = await getLogsChunked({
     address: MELEGA_MASTERCHEF_BSC,
-    topics: [[DEPOSIT_TOPIC, WITHDRAW_TOPIC, EMERGENCY_WITHDRAW_TOPIC]],
+    topics: [[MASTERCHEF_DEPOSIT_TOPIC, MASTERCHEF_WITHDRAW_TOPIC, MASTERCHEF_EMERGENCY_WITHDRAW_TOPIC]],
     fromBlock: window.fromBlock,
     toBlock: window.toBlock,
     initialChunk: 200,
@@ -134,8 +137,8 @@ export async function syncProtocolActivityRecent(deadline?: IndexerDeadline) {
     if (seen.has(key)) continue
     const topic = log.topics[0]?.toLowerCase()
     let eventType = 'Deposit'
-    if (topic === WITHDRAW_TOPIC.toLowerCase()) eventType = 'Withdraw'
-    if (topic === EMERGENCY_WITHDRAW_TOPIC.toLowerCase()) eventType = 'EmergencyWithdraw'
+    if (topic === MASTERCHEF_WITHDRAW_TOPIC.toLowerCase()) eventType = 'Withdraw'
+    if (topic === MASTERCHEF_EMERGENCY_WITHDRAW_TOPIC.toLowerCase()) eventType = 'EmergencyWithdraw'
     const wallet = `0x${log.topics[1]?.slice(26) ?? '0'.repeat(40)}`
     const timestamp = await getBlockTimestamp(blockNumber)
     added.push({

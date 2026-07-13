@@ -5,6 +5,7 @@ import { loadTierPairInventory } from './tierInventory'
 import { runTierPairSync } from './tierPairSync'
 import { loadTierSchedulerState, pickRotatingPair, saveTierSchedulerState } from './tierScheduler'
 import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
+import { isBootstrapWindowComplete } from './bootstrapWindow'
 
 export interface IndexerRunReport {
   ok: boolean
@@ -26,6 +27,8 @@ export interface IndexerRunReport {
   nextWorkItem: string
   providerUsed?: string
   stageTimings: Array<{ stage: string; elapsedMs: number }>
+  featuredBootstrapComplete?: boolean
+  adaptiveTelemetry?: import('./adaptiveGapScan').AdaptiveScanTelemetry
 }
 
 export async function runIndexerOrchestrator(
@@ -54,12 +57,24 @@ export async function runIndexerOrchestrator(
   cursorsAfter[FEATURED_PAIR_SLUG] = featured.checkpoint.gapFillCursor ?? featured.checkpoint.forwardCursor ?? null
   deadline.markStage('featured-sync')
 
-  if (!deadline.shouldStop() && deadline.remainingMs() > PROTOCOL_ACTIVITY_MIN_REMAINING_MS) {
+  const featuredBootstrapComplete = Boolean(
+    featured.coverageSummary &&
+      isBootstrapWindowComplete(
+        featured.coverageSummary.coveragePercent,
+        featured.coverageSummary.gaps,
+      ),
+  )
+
+  if (
+    featuredBootstrapComplete &&
+    !deadline.shouldStop() &&
+    deadline.remainingMs() > PROTOCOL_ACTIVITY_MIN_REMAINING_MS
+  ) {
     protocolActivity = await syncProtocolActivityRecent(deadline)
     deadline.markStage('protocol-activity')
   }
 
-  if (!deadline.shouldStop()) {
+  if (featuredBootstrapComplete && !deadline.shouldStop()) {
     const inventory = await loadTierPairInventory()
     const scheduler = await loadTierSchedulerState()
     const tier1Candidates = inventory.tier1.filter((p) => p.slug !== FEATURED_PAIR_SLUG)
@@ -127,5 +142,7 @@ export async function runIndexerOrchestrator(
     nextWorkItem,
     providerUsed: featured?.health.providerUsed,
     stageTimings: snap.stages,
+    featuredBootstrapComplete,
+    adaptiveTelemetry: featured?.adaptiveTelemetry,
   }
 }

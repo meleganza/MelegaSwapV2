@@ -8,6 +8,14 @@ import {
   SAFE_EXECUTION_BUDGET_MS,
 } from 'lib/bsc-indexer/indexer/indexerDeadline'
 import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
+import {
+  buildLeaseOwnerId,
+  heartbeatIndexerLease,
+  isLeaseActive,
+  readIndexerLease,
+  releaseIndexerLease,
+  tryAcquireIndexerLease,
+} from 'lib/bsc-indexer/indexer/indexerLease'
 
 export const config = {
   maxDuration: 300,
@@ -43,6 +51,8 @@ async function persistOrchestratorSummary(report: IndexerRunReport): Promise<voi
       cursorsBefore: report.cursorsBefore,
       cursorsAfter: report.cursorsAfter,
       stageTimings: report.stageTimings,
+      adaptiveTelemetry: report.adaptiveTelemetry,
+      featuredBootstrapComplete: report.featuredBootstrapComplete,
     },
   })
 }
@@ -71,17 +81,46 @@ const handler: NextApiHandler = async (req, res) => {
     }
   }
 
+  const runType = vercelCron ? 'vercel-cron' : 'manual'
+  const deploymentSha = process.env.VERCEL_GIT_COMMIT_SHA ?? 'unknown'
+  const ownerId = buildLeaseOwnerId(runType)
+  const leaseAttempt = await tryAcquireIndexerLease({ ownerId, runType, deploymentSha })
+  if (!leaseAttempt.acquired) {
+    const lease = leaseAttempt.lease ?? (await readIndexerLease())
+    return res.status(200).json({
+      ok: true,
+      skipped: true,
+      reason: leaseAttempt.reason ?? 'lease-held',
+      lockState: isLeaseActive(lease) ? 'held' : 'expired',
+      lockOwner: lease?.ownerId ?? null,
+      lockAcquiredAt: lease?.acquiredAt ?? null,
+      lockExpiresAt: lease?.expiresAt ?? null,
+      lockHeartbeatAt: lease?.heartbeatAt ?? null,
+      activeRunType: lease?.runType ?? null,
+      activeDeploymentSha: lease?.deploymentSha ?? null,
+    })
+  }
+
   const budgetMs = fullBudget ? SAFE_EXECUTION_BUDGET_MS : resolveInvocationBudget()
 
   try {
+    await heartbeatIndexerLease(ownerId)
     const report = await runIndexerOrchestrator(budgetMs)
     await persistOrchestratorSummary(report)
-    return res.status(200).json(report)
+    return res.status(200).json({
+      ...report,
+      lockState: 'acquired',
+      lockOwner: ownerId,
+      activeRunType: runType,
+      activeDeploymentSha: deploymentSha,
+    })
   } catch (e) {
     return res.status(502).json({
       ok: false,
       reason: e instanceof Error ? e.message : 'Indexer sync failed',
     })
+  } finally {
+    await releaseIndexerLease(ownerId)
   }
 }
 
