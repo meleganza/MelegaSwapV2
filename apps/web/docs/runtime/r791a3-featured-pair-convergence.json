@@ -1,0 +1,607 @@
+{
+  "mission": "R791A.3",
+  "repositorySha": "37f594387dea19a88f3d697cdb3c6c79fe5ef092",
+  "productionBuildId": "fra1::jjjct-1783951307306-cfd88295d473",
+  "productionAuthority": "https://www.melega.finance",
+  "base": "https://www.melega.finance",
+  "capturedAt": "2026-07-13T14:01:36.947740+00:00",
+  "baseline": {
+    "timestamp": "2026-07-13T14:00:30.653447+00:00",
+    "readiness": {
+      "timestamp": "2026-07-13T14:00:29.004Z",
+      "verdict": "ready",
+      "components": {
+        "registryDiscovery": "READY",
+        "featuredPairIndexer": "READY",
+        "multiPairHistoricalIndexer": "SYNCING",
+        "holderProvider": "READY",
+        "subgraph": "NOT_CONFIGURED"
+      },
+      "checks": [
+        {
+          "name": "BSC_RPC_URL",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "BSC_RPC_FALLBACK_URL",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "BSCSCAN_API_KEY",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "BLOB_READ_WRITE_TOKEN",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "INDEXER_CRON_SECRET",
+          "configured": true,
+          "status": "ready"
+        }
+      ],
+      "indexer": {
+        "storageBackend": "vercel-blob-v2-featured-pair",
+        "storageConfigured": true,
+        "durableProductionStorage": true,
+        "indexerGeneration": "v2-featured-pair",
+        "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+        "blobRoundTrip": {
+          "ok": true
+        },
+        "rpcPrimary": {
+          "ok": true,
+          "chainHead": 109759827
+        },
+        "rpcFallback": {
+          "ok": true,
+          "chainHead": 109759827
+        },
+        "lastIndexedBlock": 109759756,
+        "chainHead": 109759827,
+        "indexingLag": 71,
+        "eventCounts": {
+          "Swap": 3
+        },
+        "lastSuccessfulSync": "2026-07-13T14:00:04.954Z",
+        "featuredPairSlug": "marco-wbnb",
+        "phase": "incremental",
+        "bootstrapStartBlock": 109122940,
+        "bootstrapDays": 7,
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "registrySource": "blob",
+        "registryPairCount": 516,
+        "registryRefreshedAt": "2026-07-13T03:00:32.167Z"
+      },
+      "vercelSecretsChecklist": [
+        "BSC_RPC_URL",
+        "BSC_RPC_FALLBACK_URL (optional)",
+        "BSCSCAN_API_KEY (optional \u2014 holders)",
+        "BLOB_READ_WRITE_TOKEN",
+        "INDEXER_CRON_SECRET",
+        "CRON_SECRET (Vercel cron auth header)"
+      ]
+    },
+    "health": {
+      "lockState": "free",
+      "lockOwner": "manual:37f5943:iad1:1783950920761",
+      "lastIndexedBlock": 109759756,
+      "indexingLag": 32,
+      "lastSuccessfulSync": "2026-07-13T14:00:04.954Z",
+      "lastOrchestratorRun": {
+        "capturedAt": "2026-07-13T13:55:26.208Z",
+        "ok": true,
+        "elapsedMs": 4974,
+        "budgetMs": 240000,
+        "stoppedBeforeDeadline": false,
+        "partialProgress": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "pairJobsProcessed": 3,
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "nextWorkItem": "tier2:502eed-b1c137",
+        "cursorsBefore": {
+          "marco-wbnb": 109759133
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109759133,
+          "55d398-963556": 109345253,
+          "502eed-b1c137": 109419731
+        },
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 2720
+          },
+          {
+            "stage": "protocol-activity",
+            "elapsedMs": 473
+          },
+          {
+            "stage": "tier1-sync",
+            "elapsedMs": 1145
+          },
+          {
+            "stage": "tier2-sync",
+            "elapsedMs": 558
+          }
+        ],
+        "adaptiveTelemetry": {
+          "requestedBlockCount": 459,
+          "scannedBlockCount": 459,
+          "successfulChunkCount": 1,
+          "failedChunkCount": 0,
+          "adaptiveChunkSizeStart": 25,
+          "adaptiveChunkSizeEnd": 25,
+          "averageRpcLatencyMs": 1994,
+          "maximumRpcLatencyMs": 1994,
+          "effectiveBlocksPerSecond": 230.19057171514544,
+          "deadlineRemainingMs": 237529,
+          "blocksRemaining": 0,
+          "estimatedRunsRemaining": 0,
+          "estimatedCompletionTimestamp": "2026-07-13T13:55:23.667Z"
+        },
+        "featuredBootstrapComplete": true
+      }
+    },
+    "coverage": {
+      "generatedAt": "2026-07-13T14:00:29.687Z",
+      "slug": "marco-wbnb",
+      "bootstrapWindow": {
+        "fromBlock": 109122940,
+        "toBlock": 109759818,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 62,
+        "coveragePercent": 99.99026502679473,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759818
+          }
+        ],
+        "complete": false
+      },
+      "forwardCursor": 109759756,
+      "gapFillCursor": 109759756,
+      "backwardCursor": null,
+      "coverageRanges": [
+        {
+          "fromBlock": 109122940,
+          "toBlock": 109759756
+        }
+      ],
+      "chainHead": 109759830
+    },
+    "storeConsistency": {
+      "generatedAt": "2026-07-13T14:00:30.590Z",
+      "canonicalNamespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+      "featuredPairSlug": "marco-wbnb",
+      "consumers": {
+        "events": {
+          "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+          "eventSample": 3,
+          "checkpoint": 109759756
+        },
+        "candles": {
+          "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+          "candleSample": 3
+        },
+        "runtimeSwaps": {
+          "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+          "transactionSample": 3
+        },
+        "health": {
+          "lastIndexedBlock": 109758185,
+          "forwardCursor": 109759756,
+          "phase": "incremental"
+        }
+      },
+      "consistent": true,
+      "legacyNote": "bsc-indexer/* is not an active read source \u2014 v2 featured-pairs namespace is canonical"
+    },
+    "bootstrapWindow": {
+      "fromBlock": 109122940,
+      "toBlock": 109759818,
+      "coveredBlocks": 636817,
+      "uncoveredBlocks": 62,
+      "coveragePercent": 99.99026502679473,
+      "gaps": [
+        {
+          "fromBlock": 109759757,
+          "toBlock": 109759818
+        }
+      ],
+      "complete": false
+    }
+  },
+  "runs": [
+    {
+      "attempt": 1,
+      "timestamp": "2026-07-13T14:00:51.433432+00:00",
+      "leaseBefore": "held",
+      "lockOwnerBefore": "manual:37f5943:iad1:1783951201457",
+      "coverageBefore": {
+        "label": "before",
+        "complete": false,
+        "coveragePercent": 99.98272957497484,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 110,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759866
+          }
+        ],
+        "gapFillCursor": 109759756,
+        "chainHead": 109759878
+      },
+      "gapFillBefore": 109759756,
+      "lastIndexedBefore": 109759756,
+      "httpStatus": 200,
+      "ok": false,
+      "skipped": true,
+      "skipReason": "lease-held-before-run",
+      "elapsedMs": 0,
+      "coverageAfter": {
+        "label": "after",
+        "complete": false,
+        "coveragePercent": 99.98257259847267,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 111,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759867
+          }
+        ],
+        "gapFillCursor": 109759756,
+        "chainHead": 109759879
+      }
+    },
+    {
+      "attempt": 2,
+      "timestamp": "2026-07-13T14:01:12.406332+00:00",
+      "leaseBefore": "held",
+      "lockOwnerBefore": "manual:37f5943:iad1:1783951201457",
+      "coverageBefore": {
+        "label": "before",
+        "complete": false,
+        "coveragePercent": 99.9755091660086,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 156,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759912
+          }
+        ],
+        "gapFillCursor": 109759756,
+        "chainHead": 109759924
+      },
+      "gapFillBefore": 109759756,
+      "lastIndexedBefore": 109759756,
+      "httpStatus": 200,
+      "ok": false,
+      "skipped": true,
+      "skipReason": "lease-held-before-run",
+      "elapsedMs": 0,
+      "coverageAfter": {
+        "label": "after",
+        "complete": false,
+        "coveragePercent": 99.97535221217821,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 157,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759913
+          }
+        ],
+        "gapFillCursor": 109759756,
+        "chainHead": 109759925
+      }
+    },
+    {
+      "attempt": 3,
+      "timestamp": "2026-07-13T14:01:33.410677+00:00",
+      "leaseBefore": "held",
+      "lockOwnerBefore": "manual:37f5943:iad1:1783951201457",
+      "coverageBefore": {
+        "label": "before",
+        "complete": false,
+        "coveragePercent": 99.96813286866974,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 203,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759959
+          }
+        ],
+        "gapFillCursor": 109759756,
+        "chainHead": 109759971
+      },
+      "gapFillBefore": 109759756,
+      "lastIndexedBefore": 109759756,
+      "httpStatus": 200,
+      "ok": false,
+      "skipped": true,
+      "skipReason": "lease-held-before-run",
+      "elapsedMs": 0,
+      "coverageAfter": {
+        "label": "after",
+        "complete": false,
+        "coveragePercent": 99.96797593799892,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 204,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759960
+          }
+        ],
+        "gapFillCursor": 109759756,
+        "chainHead": 109759972
+      }
+    }
+  ],
+  "final": {
+    "readiness": {
+      "timestamp": "2026-07-13T14:00:29.004Z",
+      "verdict": "ready",
+      "components": {
+        "registryDiscovery": "READY",
+        "featuredPairIndexer": "READY",
+        "multiPairHistoricalIndexer": "SYNCING",
+        "holderProvider": "READY",
+        "subgraph": "NOT_CONFIGURED"
+      },
+      "checks": [
+        {
+          "name": "BSC_RPC_URL",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "BSC_RPC_FALLBACK_URL",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "BSCSCAN_API_KEY",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "BLOB_READ_WRITE_TOKEN",
+          "configured": true,
+          "status": "ready"
+        },
+        {
+          "name": "INDEXER_CRON_SECRET",
+          "configured": true,
+          "status": "ready"
+        }
+      ],
+      "indexer": {
+        "storageBackend": "vercel-blob-v2-featured-pair",
+        "storageConfigured": true,
+        "durableProductionStorage": true,
+        "indexerGeneration": "v2-featured-pair",
+        "legacyNote": "LEGACY_UNIVERSAL_INDEXER_NOT_ACTIVE_SOURCE",
+        "blobRoundTrip": {
+          "ok": true
+        },
+        "rpcPrimary": {
+          "ok": true,
+          "chainHead": 109759827
+        },
+        "rpcFallback": {
+          "ok": true,
+          "chainHead": 109759827
+        },
+        "lastIndexedBlock": 109759756,
+        "chainHead": 109759827,
+        "indexingLag": 71,
+        "eventCounts": {
+          "Swap": 3
+        },
+        "lastSuccessfulSync": "2026-07-13T14:00:04.954Z",
+        "featuredPairSlug": "marco-wbnb",
+        "phase": "incremental",
+        "bootstrapStartBlock": 109122940,
+        "bootstrapDays": 7,
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "registrySource": "blob",
+        "registryPairCount": 516,
+        "registryRefreshedAt": "2026-07-13T03:00:32.167Z"
+      },
+      "vercelSecretsChecklist": [
+        "BSC_RPC_URL",
+        "BSC_RPC_FALLBACK_URL (optional)",
+        "BSCSCAN_API_KEY (optional \u2014 holders)",
+        "BLOB_READ_WRITE_TOKEN",
+        "INDEXER_CRON_SECRET",
+        "CRON_SECRET (Vercel cron auth header)"
+      ]
+    },
+    "health": {
+      "lockState": "free",
+      "lockOwner": "manual:37f5943:iad1:1783951201457",
+      "lastIndexedBlock": 109759756,
+      "indexingLag": 215,
+      "lastSuccessfulSync": "2026-07-13T14:00:04.954Z",
+      "lastOrchestratorRun": {
+        "capturedAt": "2026-07-13T14:00:07.368Z",
+        "ok": true,
+        "elapsedMs": 5369,
+        "budgetMs": 240000,
+        "stoppedBeforeDeadline": false,
+        "partialProgress": true,
+        "addedEvents": 0,
+        "addedCandles": 0,
+        "pairJobsProcessed": 3,
+        "providerUsed": "chunked-forward-eth_getLogs",
+        "nextWorkItem": "tier2:9acda5-bb4cdb",
+        "cursorsBefore": {
+          "marco-wbnb": 109759756
+        },
+        "cursorsAfter": {
+          "marco-wbnb": 109759756,
+          "8ac76a-963556": 109420368,
+          "9acda5-bb4cdb": 109419836
+        },
+        "stageTimings": [
+          {
+            "stage": "init",
+            "elapsedMs": 0
+          },
+          {
+            "stage": "featured-sync",
+            "elapsedMs": 3250
+          },
+          {
+            "stage": "protocol-activity",
+            "elapsedMs": 411
+          },
+          {
+            "stage": "tier1-sync",
+            "elapsedMs": 1042
+          },
+          {
+            "stage": "tier2-sync",
+            "elapsedMs": 560
+          }
+        ],
+        "adaptiveTelemetry": {
+          "requestedBlockCount": 623,
+          "scannedBlockCount": 623,
+          "successfulChunkCount": 1,
+          "failedChunkCount": 0,
+          "adaptiveChunkSizeStart": 25,
+          "adaptiveChunkSizeEnd": 25,
+          "averageRpcLatencyMs": 2763,
+          "maximumRpcLatencyMs": 2763,
+          "effectiveBlocksPerSecond": 225.47955121245025,
+          "deadlineRemainingMs": 237010,
+          "blocksRemaining": 0,
+          "estimatedRunsRemaining": 0,
+          "estimatedCompletionTimestamp": "2026-07-13T14:00:04.915Z"
+        },
+        "featuredBootstrapComplete": true
+      }
+    },
+    "coverage": {
+      "generatedAt": "2026-07-13T14:01:34.386Z",
+      "slug": "marco-wbnb",
+      "bootstrapWindow": {
+        "fromBlock": 109122940,
+        "toBlock": 109759962,
+        "coveredBlocks": 636817,
+        "uncoveredBlocks": 206,
+        "coveragePercent": 99.96766207813532,
+        "gaps": [
+          {
+            "fromBlock": 109759757,
+            "toBlock": 109759962
+          }
+        ],
+        "complete": false
+      },
+      "forwardCursor": 109759756,
+      "gapFillCursor": 109759756,
+      "backwardCursor": null,
+      "coverageRanges": [
+        {
+          "fromBlock": 109122940,
+          "toBlock": 109759756
+        }
+      ],
+      "chainHead": 109759974
+    },
+    "storeConsistency": {
+      "generatedAt": "2026-07-13T14:01:34.856Z",
+      "canonicalNamespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+      "featuredPairSlug": "marco-wbnb",
+      "consumers": {
+        "events": {
+          "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+          "eventSample": 3,
+          "checkpoint": 109759756
+        },
+        "candles": {
+          "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+          "candleSample": 3
+        },
+        "runtimeSwaps": {
+          "namespace": "melega-indexer/v2/featured-pairs/marco-wbnb",
+          "transactionSample": 3
+        },
+        "health": {
+          "lastIndexedBlock": 109758185,
+          "forwardCursor": 109759756,
+          "phase": "incremental"
+        }
+      },
+      "consistent": true,
+      "legacyNote": "bsc-indexer/* is not an active read source \u2014 v2 featured-pairs namespace is canonical"
+    },
+    "tierMetricsSummary": {
+      "tier1": [
+        {
+          "slug": "marco-wbnb",
+          "status": "EMPTY_VERIFIED"
+        },
+        {
+          "slug": "55d398-963556",
+          "status": "UNSCANNED"
+        },
+        {
+          "slug": "8ac76a-963556",
+          "status": "UNSCANNED"
+        },
+        {
+          "slug": "55d398-8ac76a",
+          "status": "UNSCANNED"
+        },
+        {
+          "slug": "8ac76a-bb4cdb",
+          "status": "UNSCANNED"
+        },
+        {
+          "slug": "55d398-bb4cdb",
+          "status": "UNSCANNED"
+        }
+      ],
+      "tier2Unscanned": 12
+    }
+  },
+  "summary": {
+    "attempts": 3,
+    "cleanRuns": 0,
+    "skipped": 3,
+    "http504": 0,
+    "coverageStart": 99.99026502679473,
+    "coverageEnd": 99.96766207813532,
+    "uncoveredStart": 62,
+    "uncoveredEnd": 206,
+    "bootstrapWindowComplete": false,
+    "interiorBootstrapComplete": true,
+    "interiorNote": "Single continuous coverage range 109122940-109759756; uncovered blocks begin at gapFillCursor+1 (head-edge only)",
+    "liveHeadLagBlocks": 218,
+    "storeConsistent": true,
+    "leaseSkips": 3,
+    "hardTimeouts": 0,
+    "checkpointRegression": false,
+    "falseCursorJump": false
+  },
+  "verdict": "R791A_3_FEATURED_PAIR_COVERAGE_PARTIAL"
+}
