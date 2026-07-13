@@ -1,31 +1,53 @@
 import { describe, expect, it } from 'vitest'
-import { isLeaseActive } from '../indexer/indexerLeaseUtils'
+import {
+  classifyLeaseHealth,
+  isLeaseActive,
+  isLeaseHealthy,
+  isLeaseStale,
+} from '../indexer/indexerLeaseUtils'
+import { INDEXER_LEASE_TTL_MS } from '../indexer/indexerLease'
 import type { IndexerLease } from '../indexer/indexerLease'
 import { isValidTopicHash } from '../indexer/masterchefTopics'
+import { SAFE_EXECUTION_BUDGET_MS } from '../indexer/indexerDeadline'
+
+function sampleLease(overrides: Partial<IndexerLease> = {}): IndexerLease {
+  const now = Date.now()
+  return {
+    ownerId: 'manual:abc1234:iad1:1700000000000',
+    acquiredAt: new Date(now).toISOString(),
+    expiresAt: new Date(now + 60_000).toISOString(),
+    heartbeatAt: new Date(now).toISOString(),
+    runType: 'manual',
+    deploymentSha: 'abc1234',
+    ...overrides,
+  }
+}
 
 describe('indexerLease', () => {
   it('detects active lease by expiresAt', () => {
-    const lease: IndexerLease = {
-      ownerId: 'test:abc',
-      acquiredAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 60_000).toISOString(),
-      heartbeatAt: new Date().toISOString(),
-      runType: 'manual',
-      deploymentSha: 'abc1234',
-    }
-    expect(isLeaseActive(lease)).toBe(true)
+    expect(isLeaseActive(sampleLease())).toBe(true)
+    expect(isLeaseHealthy(sampleLease())).toBe(true)
+    expect(classifyLeaseHealth(sampleLease())).toBe('healthy')
   })
 
-  it('treats expired lease as inactive', () => {
-    const lease: IndexerLease = {
-      ownerId: 'test:abc',
+  it('treats expired lease as stale and inactive', () => {
+    const lease = sampleLease({
       acquiredAt: new Date(Date.now() - 120_000).toISOString(),
       expiresAt: new Date(Date.now() - 1_000).toISOString(),
       heartbeatAt: new Date(Date.now() - 60_000).toISOString(),
-      runType: 'manual',
-      deploymentSha: 'abc1234',
-    }
+    })
     expect(isLeaseActive(lease)).toBe(false)
+    expect(isLeaseStale(lease)).toBe(true)
+    expect(classifyLeaseHealth(lease)).toBe('stale')
+  })
+
+  it('treats released marker as free', () => {
+    const lease = sampleLease({ released: true })
+    expect(classifyLeaseHealth(lease)).toBe('free')
+  })
+
+  it('covers full orchestrator budget in lease ttl', () => {
+    expect(INDEXER_LEASE_TTL_MS).toBeGreaterThan(SAFE_EXECUTION_BUDGET_MS)
   })
 })
 

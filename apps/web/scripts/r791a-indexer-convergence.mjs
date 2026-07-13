@@ -45,6 +45,14 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+function isLeaseHeldByOther(body) {
+  return (
+    body?.reason === 'LEASE_ACTIVE_BY_OTHER_WORKER' ||
+    body?.reason === 'lease-held-by-other' ||
+    body?.lockHealth === 'healthy'
+  )
+}
+
 async function main() {
   await mkdir(path.dirname(OUT), { recursive: true })
   const baseline = await getJson(`${BASE}/api/indexer/coverage/`)
@@ -59,6 +67,28 @@ async function main() {
   const runs = []
 
   for (let n = 1; n <= RUNS; n += 1) {
+    const healthBefore = await getJson(`${BASE}/api/indexer/health/`)
+    if (isUnexpectedStatus(healthBefore.status)) {
+      throw new Error(`Run ${n} health-before HTTP ${healthBefore.status}`)
+    }
+    if (healthBefore.body?.lockState === 'held' && healthBefore.body?.lockHealth === 'healthy') {
+      runs.push({
+        run: n,
+        timestamp: new Date().toISOString(),
+        httpStatus: 200,
+        skipped: true,
+        skipReason: 'LEASE_ACTIVE_BY_OTHER_WORKER',
+        ok: false,
+        elapsedMs: 0,
+        lockState: healthBefore.body.lockState,
+        lockOwner: healthBefore.body.lockOwner,
+        lockHealth: healthBefore.body.lockHealth,
+        preflightExit: true,
+      })
+      console.log(`[r791a] ${n}/${RUNS} preflight exit — healthy lease held by ${healthBefore.body.lockOwner}`)
+      break
+    }
+
     const covBefore = await getJson(`${BASE}/api/indexer/coverage/`)
     if (isUnexpectedStatus(covBefore.status)) {
       throw new Error(`Run ${n} coverage-before HTTP ${covBefore.status}`)
@@ -122,8 +152,12 @@ async function main() {
 
     if (row.coverageAfter?.complete) break
     if (n >= RUNS) break
-    if (row.skipped) await sleep(95_000)
-    else await sleep(10_000)
+    if (isLeaseHeldByOther(run.body)) {
+      console.log(`[r791a] ${n}/${RUNS} exit — ${run.body.reason ?? 'healthy lease active'}`)
+      break
+    }
+    if (row.skipped) break
+    await sleep(10_000)
   }
 
   const finalCoverage = await getJson(`${BASE}/api/indexer/coverage/`)

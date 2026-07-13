@@ -1,7 +1,13 @@
 import type { NextApiHandler } from 'next'
 import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
 import { getBlockNumber } from 'lib/bsc-indexer/rpc/chunkedLogs'
-import { isLeaseActive, readIndexerLease } from 'lib/bsc-indexer/indexer/indexerLease'
+import {
+  classifyLeaseHealth,
+  INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
+  INDEXER_LEASE_TTL_MS,
+  isLeaseActive,
+  readIndexerLease,
+} from 'lib/bsc-indexer/indexer/indexerLease'
 
 const handler: NextApiHandler = async (_req, res) => {
   const storage = resolveIndexerStorage()
@@ -45,6 +51,9 @@ const handler: NextApiHandler = async (_req, res) => {
     lockAcquiredAt: lease?.acquiredAt ?? null,
     lockExpiresAt: lease?.expiresAt ?? null,
     lockHeartbeatAt: lease?.heartbeatAt ?? null,
+    lockHealth: classifyLeaseHealth(lease),
+    leaseTtlMs: INDEXER_LEASE_TTL_MS,
+    leaseHeartbeatIntervalMs: INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
     activeRunType: lease?.runType ?? null,
     activeDeploymentSha: lease?.deploymentSha ?? null,
   })

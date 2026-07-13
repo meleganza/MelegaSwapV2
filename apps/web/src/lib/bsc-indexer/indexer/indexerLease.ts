@@ -1,11 +1,26 @@
 import { head, put } from '@vercel/blob'
 import { INDEXER_V2_ROOT } from '../v2/paths'
-import { isLeaseActive } from './indexerLeaseUtils'
+import { SAFE_EXECUTION_BUDGET_MS } from './indexerDeadline'
+import {
+  INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
+  classifyLeaseHealth,
+  isLeaseActive,
+  isLeaseHealthy,
+} from './indexerLeaseUtils'
 
-export { isLeaseActive } from './indexerLeaseUtils'
+export {
+  INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
+  INDEXER_LEASE_STALE_GRACE_MS,
+  classifyLeaseHealth,
+  isLeaseActive,
+  isLeaseHealthy,
+  isLeaseStale,
+} from './indexerLeaseUtils'
+export type { LeaseHealth } from './indexerLeaseUtils'
 
 const LEASE_KEY = `${INDEXER_V2_ROOT}/orchestrator-lease.json`
-export const INDEXER_LEASE_TTL_MS = 90_000
+/** Must cover full orchestrator budget; renewed on heartbeat during long runs. */
+export const INDEXER_LEASE_TTL_MS = SAFE_EXECUTION_BUDGET_MS + 30_000
 
 export interface IndexerLease {
   ownerId: string
@@ -67,12 +82,25 @@ export async function tryAcquireIndexerLease(params: {
   runType: string
   deploymentSha: string
   ttlMs?: number
-}): Promise<{ acquired: boolean; lease: IndexerLease | null; reason?: string }> {
+}): Promise<{
+  acquired: boolean
+  lease: IndexerLease | null
+  reason?: string
+  recoveredFromStale?: boolean
+}> {
   const existing = await readIndexerLease()
   const now = Date.now()
-  if (isLeaseActive(existing, now) && existing!.ownerId !== params.ownerId) {
-    return { acquired: false, lease: existing, reason: 'lease-held-by-other' }
+  const health = classifyLeaseHealth(existing, now)
+
+  if (health === 'healthy' && existing!.ownerId !== params.ownerId) {
+    return {
+      acquired: false,
+      lease: existing,
+      reason: 'LEASE_ACTIVE_BY_OTHER_WORKER',
+    }
   }
+
+  const recoveredFromStale = health === 'stale'
   const ttl = params.ttlMs ?? INDEXER_LEASE_TTL_MS
   const lease: IndexerLease = {
     ownerId: params.ownerId,
@@ -83,12 +111,12 @@ export async function tryAcquireIndexerLease(params: {
     deploymentSha: params.deploymentSha,
   }
   await writeIndexerLease(lease)
-  return { acquired: true, lease }
+  return { acquired: true, lease, recoveredFromStale }
 }
 
 export async function heartbeatIndexerLease(ownerId: string): Promise<IndexerLease | null> {
   const existing = await readIndexerLease()
-  if (!existing || existing.ownerId !== ownerId) return existing
+  if (!existing || existing.ownerId !== ownerId || !isLeaseHealthy(existing)) return existing
   const now = Date.now()
   const lease: IndexerLease = {
     ...existing,

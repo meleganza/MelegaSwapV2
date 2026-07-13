@@ -10,7 +10,10 @@ import {
 import { resolveIndexerStorage } from 'lib/bsc-indexer/storage'
 import {
   buildLeaseOwnerId,
+  classifyLeaseHealth,
   heartbeatIndexerLease,
+  INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
+  INDEXER_LEASE_TTL_MS,
   isLeaseActive,
   readIndexerLease,
   releaseIndexerLease,
@@ -90,21 +93,28 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(200).json({
       ok: true,
       skipped: true,
-      reason: leaseAttempt.reason ?? 'lease-held',
+      reason: leaseAttempt.reason ?? 'LEASE_ACTIVE_BY_OTHER_WORKER',
       lockState: isLeaseActive(lease) ? 'held' : 'expired',
       lockOwner: lease?.ownerId ?? null,
       lockAcquiredAt: lease?.acquiredAt ?? null,
       lockExpiresAt: lease?.expiresAt ?? null,
       lockHeartbeatAt: lease?.heartbeatAt ?? null,
+      lockHealth: classifyLeaseHealth(lease),
+      leaseTtlMs: INDEXER_LEASE_TTL_MS,
+      leaseHeartbeatIntervalMs: INDEXER_LEASE_HEARTBEAT_INTERVAL_MS,
       activeRunType: lease?.runType ?? null,
       activeDeploymentSha: lease?.deploymentSha ?? null,
     })
   }
 
   const budgetMs = fullBudget ? SAFE_EXECUTION_BUDGET_MS : resolveInvocationBudget()
+  let heartbeatTimer: ReturnType<typeof setInterval> | undefined
 
   try {
     await heartbeatIndexerLease(ownerId)
+    heartbeatTimer = setInterval(() => {
+      void heartbeatIndexerLease(ownerId)
+    }, INDEXER_LEASE_HEARTBEAT_INTERVAL_MS)
     const report = await runIndexerOrchestrator(budgetMs)
     await persistOrchestratorSummary(report)
     return res.status(200).json({
@@ -113,6 +123,7 @@ const handler: NextApiHandler = async (req, res) => {
       lockOwner: ownerId,
       activeRunType: runType,
       activeDeploymentSha: deploymentSha,
+      leaseRecoveredFromStale: leaseAttempt.recoveredFromStale ?? false,
     })
   } catch (e) {
     return res.status(502).json({
@@ -120,6 +131,7 @@ const handler: NextApiHandler = async (req, res) => {
       reason: e instanceof Error ? e.message : 'Indexer sync failed',
     })
   } finally {
+    if (heartbeatTimer) clearInterval(heartbeatTimer)
     await releaseIndexerLease(ownerId)
   }
 }
