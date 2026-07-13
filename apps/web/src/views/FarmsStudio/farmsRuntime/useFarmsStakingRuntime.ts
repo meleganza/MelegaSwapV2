@@ -14,7 +14,9 @@ import {
   aggregateKpis,
   buildAprSparkline,
   formatUsd,
+  listRewardingFarms,
   mapFarmToPreviewCard,
+  selectFeaturedFarm,
 } from './formatFarmsRuntime'
 import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErrors'
 import { useFarmsTerminalData } from './useFarmsTerminalData'
@@ -46,6 +48,7 @@ export interface FarmsMachinePayload {
   displayedFarms?: string[]
   sourceMethod?: string
   featuredFarm?: string
+  rewardingFarms?: number
   error?: FarmsRuntimeError | null
   timestamp: string
 }
@@ -79,6 +82,7 @@ export interface FarmsStakingRuntime {
   featured: FarmsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   advisorItems: FarmsAdvisorItem[]
+  rewardingFarmCount: number
   terminal: ReturnType<typeof useFarmsTerminalData>
   masterChefEmission: MasterChefEmission
   machine: FarmsMachinePayload
@@ -202,27 +206,21 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
 
   const filteredFarms = useMemo(() => filterFarms(previewCards, filter), [previewCards, filter])
 
-  const featuredCard = useMemo(() => {
-    const live = previewCards.filter((f) => f.status === 'live' && f.apr)
-    const byApr = live.sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
-    if (byApr) return byApr
-    const byWeight = [...previewCards]
-      .filter((f) => f.status === 'live')
-      .sort((a, b) => {
-        const aW = a.rawFarm?.poolWeight?.toNumber() ?? 0
-        const bW = b.rawFarm?.poolWeight?.toNumber() ?? 0
-        return bW - aW
-      })[0]
-    return byWeight ?? previewCards[0]
-  }, [previewCards])
+  const featuredCard = useMemo(() => selectFeaturedFarm(previewCards), [previewCards])
+
+  const rewardingFarmCount = useMemo(() => listRewardingFarms(previewCards).length, [previewCards])
 
   const featured = useMemo((): FarmsFeaturedMetrics => {
     const card = featuredCard
     const dailyRewardsRaw = card?.dailyRewards
     const dailyRewards =
-      dailyRewardsRaw && !isUnavailableFarmMetric(dailyRewardsRaw)
-        ? stripTokenSymbol(dailyRewardsRaw)
-        : RUNTIME_UNAVAILABLE_LABEL
+      dailyRewardsRaw === '—'
+        ? RUNTIME_UNAVAILABLE_LABEL
+        : dailyRewardsRaw && !isUnavailableFarmMetric(dailyRewardsRaw)
+          ? stripTokenSymbol(dailyRewardsRaw, card?.rewardToken ?? 'MARCO')
+          : dailyRewardsRaw === '0.00'
+            ? '0.00'
+            : RUNTIME_UNAVAILABLE_LABEL
     return {
       pair: displayFarmMetric(card?.pair),
       tokens: card?.tokens ?? ['', ''],
@@ -243,46 +241,45 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   )
 
   const advisorItems = useMemo((): FarmsAdvisorItem[] => {
-    const highest = [...previewCards].sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
-    const stable = previewCards.find((f) => f.rawFarm?.isStable && f.status === 'live')
-    const utilization =
-      enrichedFarms.length > 0
-        ? enrichedFarms.filter((f) => f.liquidity?.gt(0)).length / enrichedFarms.length
-        : 0
-    const budgetFarm = [...previewCards].sort((a, b) => {
-      const aW = a.rawFarm?.poolWeight?.toNumber() ?? 0
-      const bW = b.rawFarm?.poolWeight?.toNumber() ?? 0
-      return bW - aW
-    })[0]
+    const eligible = listRewardingFarms(previewCards)
+    if (!eligible.length) {
+      return [{ label: 'No eligible rewarding farms.', value: '', tone: 'muted' }]
+    }
+    const top = [...eligible].sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
+    const stableTop = [...eligible]
+      .filter((f) => f.rawFarm?.isStable)
+      .sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
+    const dailyReward =
+      top?.dailyRewards === '—'
+        ? RUNTIME_UNAVAILABLE_LABEL
+        : top?.dailyRewards === '0.00'
+          ? '0.00'
+          : top?.dailyRewards && !isUnavailableFarmMetric(top.dailyRewards)
+            ? stripTokenSymbol(top.dailyRewards, top.rewardToken ?? 'MARCO')
+            : RUNTIME_UNAVAILABLE_LABEL
     return [
       {
-        label: 'Best Risk / Reward',
-        value: displayFarmMetric(stable?.pair ?? highest?.pair),
+        label: 'Top pick',
+        value: displayFarmMetric(top?.pair),
         tone: 'green',
       },
       {
-        label: 'Highest Stable APR',
-        value: displayFarmMetric(stable?.pair ?? highest?.pair),
+        label: 'APR',
+        value: displayFarmMetric(top?.apr),
         tone: 'green',
       },
       {
-        label: 'Best for AI Agents',
-        value: displayFarmMetric(budgetFarm?.pair ?? highest?.pair),
+        label: stableTop ? 'Highest Stable APR' : 'TVL',
+        value: displayFarmMetric(stableTop?.apr ?? top?.tvl),
+        tone: 'green',
+      },
+      {
+        label: 'Rewards / day',
+        value: dailyReward,
         tone: 'gold',
       },
-      {
-        label: 'Auto-compound',
-        value: utilization > 0.5 ? 'Manual harvest' : RUNTIME_UNAVAILABLE_LABEL,
-        tone: 'muted',
-      },
-      {
-        label: 'Risk',
-        value:
-          utilization >= 0.6 ? 'Low' : utilization >= 0.3 ? 'Moderate' : RUNTIME_UNAVAILABLE_LABEL,
-        tone: utilization >= 0.6 ? 'green' : 'gold',
-      },
     ]
-  }, [previewCards, enrichedFarms])
+  }, [previewCards])
 
   const phase: FarmsRuntimePhase = useMemo(() => {
     const fetching = Object.values(loadingKeys ?? {}).some(Boolean)
@@ -308,10 +305,11 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
       displayedFarms: filteredFarms.slice(0, 10).map((f) => f.pair),
       sourceMethod: 'master_chef_config_rpc',
       featuredFarm: featured.pair,
+      rewardingFarms: rewardingFarmCount,
       error,
       timestamp: new Date().toISOString(),
     }
-  }, [phase, chainId, account, filter, previewCards, filteredFarms, featured.pair, error])
+  }, [phase, chainId, account, filter, previewCards, filteredFarms, featured.pair, rewardingFarmCount, error])
 
   const loadingLabel =
     phase === 'loading_farms'
@@ -338,6 +336,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     featured,
     kpis,
     advisorItems,
+    rewardingFarmCount,
     terminal,
     masterChefEmission,
     machine,

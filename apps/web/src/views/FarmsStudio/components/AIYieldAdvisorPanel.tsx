@@ -69,7 +69,10 @@ const DetailsWrap = styled.div`
 `
 
 export const AIYieldAdvisorPanel: React.FC = () => {
-  const { advisorItems, loadingLabel, machine } = useFarmsRuntime()
+  const { advisorItems, loadingLabel, machine, rewardingFarmCount } = useFarmsRuntime()
+  const noRewarding = rewardingFarmCount === 0
+  const isEmptyState = noRewarding || (advisorItems.length === 1 && !advisorItems[0]?.value)
+  const rows = isEmptyState ? [] : advisorItems.slice(0, 4)
 
   const technicalDetail = useMemo(() => JSON.stringify(machine, null, 2), [machine])
 
@@ -78,22 +81,26 @@ export const AIYieldAdvisorPanel: React.FC = () => {
       data-fs-panel
       data-fs-advisor
       $width="100%"
-      $height="auto"
+      $height="320px"
       style={{
         padding: '18px 18px 24px',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        minHeight: 0,
+        minHeight: '260px',
+        maxHeight: '320px',
+        boxSizing: 'border-box',
       }}
     >
       <FsSectionTitle>AI Yield Advisor</FsSectionTitle>
       <List>
         {loadingLabel ? (
           <Label>{loadingLabel}</Label>
+        ) : isEmptyState ? (
+          <Label>{advisorItems[0]?.label ?? 'No eligible rewarding farms.'}</Label>
         ) : (
-          advisorItems.map((row) => (
-            <Row key={row.label}>
+          rows.map((row, index) => (
+            <Row key={`${row.label}-${index}`}>
               <Label>{row.label}</Label>
               <Value $tone={row.value === RUNTIME_UNAVAILABLE_LABEL ? 'muted' : row.tone}>
                 {row.value}

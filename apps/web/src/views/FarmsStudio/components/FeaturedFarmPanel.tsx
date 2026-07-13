@@ -194,14 +194,16 @@ export const FeaturedFarmPanel: React.FC = () => {
       data-fs-panel
       data-fs-featured
       $width="100%"
-      $height={farmsStudioLayout.featuredHeight}
-      style={{ padding: '18px' }}
+      $height="320px"
+      style={{ padding: '18px', minHeight: '260px', maxHeight: '320px', boxSizing: 'border-box' }}
     >
       <FsPanelTitle style={{ marginBottom: 10 }}>Featured Farm</FsPanelTitle>
       <Inner $hasSparkline={hasSparkline}>
         <Main>
           {loadingLabel ? (
             <LoadingLine>{loadingLabel}</LoadingLine>
+          ) : !card ? (
+            <LoadingLine>No live farms with active emission. Finished farms appear under Finished.</LoadingLine>
           ) : (
             <>
               <Pair>{displayFarmMetric(featured.pair)}</Pair>

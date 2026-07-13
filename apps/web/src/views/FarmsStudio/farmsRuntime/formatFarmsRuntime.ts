@@ -1,14 +1,13 @@
 import BigNumber from 'bignumber.js'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
-import { BLOCKS_PER_DAY } from 'config'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import { getAddressExplorerUrl } from 'utils/blockExplorer'
-import { getDisplayApr } from 'views/Farms/components/getDisplayApr'
 import type { MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
 import { resolveFarmEmissionState, formatTotalDailyEmissionKpi, formatHumanMarcoAmount } from 'lib/data-truth/masterChefEmissionMath'
+import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
+import type { FarmEmissionState } from 'lib/data-truth/masterChefEmissionMath'
 
 export const formatUsd = (value?: number | null): string => {
   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return '—'
@@ -38,14 +37,49 @@ function farmStatus(farm: FarmWithStakedValue): FarmStatus {
   return 'live'
 }
 
+function formatFarmDailyRewards(
+  emissionState: FarmEmissionState,
+  dailyMarco: number,
+  rewardSymbol: string,
+): string {
+  if (emissionState === 'unavailable') return '—'
+  if (emissionState === 'active' && dailyMarco > 0) {
+    return formatHumanTokenAmount(dailyMarco, rewardSymbol)
+  }
+  return '0.00'
+}
+
+export function formatFarmDisplayApr(farm: FarmWithStakedValue, status: FarmStatus): string | undefined {
+  if (status !== 'live') return undefined
+  const totalApr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
+  if (!Number.isFinite(totalApr) || totalApr <= 0) return undefined
+  return formatApr(totalApr)
+}
+
+export function listRewardingFarms(cards: FarmPreviewCard[]): FarmPreviewCard[] {
+  return cards.filter(
+    (f) =>
+      f.status === 'live' &&
+      f.emissionState === 'active' &&
+      f.apr &&
+      !isUnavailableFarmMetric(f.apr) &&
+      f.rawFarm?.multiplier !== '0X',
+  )
+}
+
+export function selectFeaturedFarm(cards: FarmPreviewCard[]): FarmPreviewCard | undefined {
+  const rewarding = listRewardingFarms(cards)
+  if (!rewarding.length) return undefined
+  return [...rewarding].sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
+}
+
 export function mapFarmToPreviewCard(
   farm: FarmWithStakedValue,
   emission: MasterChefEmission,
 ): FarmPreviewCard {
   const status = farmStatus(farm)
   const liquidityUsd = farm.liquidity?.toNumber() ?? 0
-  const totalApr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
-  const displayApr = getDisplayApr(farm.apr, farm.lpRewardsApr)
+  const aprDisplay = formatFarmDisplayApr(farm, status)
 
   const pid = farm.pid ?? -1
   const poolWeight = farm.poolWeight ? new BigNumber(farm.poolWeight).toNumber() : undefined
@@ -60,7 +94,7 @@ export function mapFarmToPreviewCard(
   const masterChefExplorerUrl = getAddressExplorerUrl(getMasterChefAddress(chainId), chainId)
 
   const analyzePreview: FarmAnalyzePreview = {
-    aprHistory: displayApr ? `${displayApr}%` : '—',
+    aprHistory: aprDisplay ?? '—',
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
     emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : '—',
     contract: farm.lpAddress ?? 'On-chain',
@@ -75,16 +109,11 @@ export function mapFarmToPreviewCard(
     pid: farm.pid,
     pair: `${token0} / ${token1}`,
     tokens: [token0, token1],
-    apr: status === 'live' && totalApr > 0 ? formatApr(totalApr) : status === 'indexing' ? undefined : undefined,
+    apr: aprDisplay,
     status,
     tvl: formatUsd(liquidityUsd),
     liquidity: formatUsd(liquidityUsd),
-    dailyRewards:
-      emissionState === 'active'
-        ? formatHumanTokenAmount(dailyMarco, rewardSymbol)
-        : emissionState === 'unavailable'
-          ? '—'
-          : '0 MARCO',
+    dailyRewards: formatFarmDailyRewards(emissionState, dailyMarco, rewardSymbol),
     multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : '—',
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
     participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : '—',
@@ -93,7 +122,7 @@ export function mapFarmToPreviewCard(
     rawFarm: farm,
     userStaked: farm.userData?.stakedBalance,
     pendingReward: farm.userData?.earnings,
-    displayApr: displayApr ?? undefined,
+    displayApr: aprDisplay,
     lpLabel: farm.lpSymbol,
     explorerUrl: lpExplorerUrl,
     masterChefExplorerUrl,

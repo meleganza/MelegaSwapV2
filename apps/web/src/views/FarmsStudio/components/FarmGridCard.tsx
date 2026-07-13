@@ -385,7 +385,7 @@ function renderTokenIcon(
 function aprVariant(farm: FarmPreviewCard): 'live' | 'indexing' | 'coming-soon' | undefined {
   if (farm.status === 'coming-soon') return 'coming-soon'
   if (farm.status === 'indexing') return 'indexing'
-  if (farm.apr) return 'live'
+  if (farm.displayApr ?? farm.apr) return 'live'
   return undefined
 }
 
@@ -396,11 +396,14 @@ function rewardTokenFor(farm: FarmPreviewCard) {
 
 function aprDisplay(farm: FarmPreviewCard) {
   if (farm.status === 'finished') return 'Ended'
-  if (farm.apr) return farm.apr
+  const apr = farm.displayApr ?? farm.apr
+  if (apr) return apr
   return RUNTIME_UNAVAILABLE_LABEL
 }
 
 function formatRewardValue(value: string) {
+  if (value === '—') return RUNTIME_UNAVAILABLE_LABEL
+  if (value === '0.00') return '0.00'
   if (isUnavailableFarmMetric(value)) return RUNTIME_UNAVAILABLE_LABEL
   return formatCompactDisplay(value.replace(/\s*MARCO\s*$/i, ''))
 }
