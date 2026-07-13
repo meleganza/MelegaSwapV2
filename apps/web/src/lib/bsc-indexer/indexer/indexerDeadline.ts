@@ -13,12 +13,20 @@ export interface StageTiming {
 export class IndexerDeadline {
   readonly startMs: number
   readonly budgetMs: number
+  readonly parent?: IndexerDeadline
   private readonly stages: StageTiming[] = []
   private stageStart = Date.now()
 
-  constructor(startMs = Date.now(), budgetMs = SAFE_EXECUTION_BUDGET_MS) {
+  constructor(startMs = Date.now(), budgetMs = SAFE_EXECUTION_BUDGET_MS, parent?: IndexerDeadline) {
     this.startMs = startMs
     this.budgetMs = budgetMs
+    this.parent = parent
+  }
+
+  /** Child deadline capped by stage budget and remaining global budget. */
+  static forStage(parent: IndexerDeadline, stageBudgetMs: number): IndexerDeadline {
+    const budgetMs = Math.min(Math.max(0, parent.remainingMs()), stageBudgetMs)
+    return new IndexerDeadline(Date.now(), budgetMs, parent)
   }
 
   get deadlineMs(): number {
@@ -34,6 +42,7 @@ export class IndexerDeadline {
   }
 
   shouldStop(marginMs = STOP_MARGIN_MS): boolean {
+    if (this.parent?.shouldStop(marginMs)) return true
     const safeMargin = Math.min(marginMs, Math.max(1_000, this.budgetMs - 1_000))
     return this.remainingMs() <= safeMargin
   }
