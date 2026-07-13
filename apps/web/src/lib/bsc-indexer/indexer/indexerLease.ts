@@ -5,7 +5,7 @@ import { isLeaseActive } from './indexerLeaseUtils'
 export { isLeaseActive } from './indexerLeaseUtils'
 
 const LEASE_KEY = `${INDEXER_V2_ROOT}/orchestrator-lease.json`
-export const INDEXER_LEASE_TTL_MS = 120_000
+export const INDEXER_LEASE_TTL_MS = 90_000
 
 export interface IndexerLease {
   ownerId: string
@@ -14,6 +14,7 @@ export interface IndexerLease {
   heartbeatAt: string
   runType: string
   deploymentSha: string
+  released?: boolean
 }
 
 function leaseToken(): string | null {

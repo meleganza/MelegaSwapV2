@@ -119,6 +119,19 @@ async function main() {
   while (n < MAX_RUNS) {
     n += 1
     const row = await runOnce(n)
+    if (row.skipped) {
+      console.log(`[r790-indexer] run ${n} skipped (${row.skipReason}); waiting for lease expiry`)
+      await sleep(95_000)
+      const retry = await runOnce(n)
+      runs.push(retry)
+      console.log(
+        `[r790-indexer] ${n}/${MAX_RUNS} retry status=${retry.httpStatus} ok=${retry.ok} skipped=${retry.skipped} coverage=${retry.coverageAfter?.coveragePercent?.toFixed(2) ?? '?'}%`,
+      )
+      if (!retry.ok && !retry.skipped) break
+      if (UNTIL_COMPLETE && retry.coverageAfter?.complete) break
+      if (n < MAX_RUNS) await sleep(DELAY_MS)
+      continue
+    }
     runs.push(row)
     console.log(
       `[r790-indexer] ${n}/${MAX_RUNS} status=${row.httpStatus} ok=${row.ok} skipped=${row.skipped} coverage=${row.coverageAfter?.coveragePercent?.toFixed(2) ?? '?'}% blocks=${row.coverageAfter?.coveredBlocks ?? '?'}`,
