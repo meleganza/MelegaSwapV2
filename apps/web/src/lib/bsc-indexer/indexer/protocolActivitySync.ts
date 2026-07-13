@@ -126,14 +126,14 @@ export async function syncProtocolActivityRecent(deadline?: IndexerDeadline) {
   })
 
   const existing = await readEvents()
-  const seen = new Set(existing.map((e) => `${e.transactionHash}:${e.logIndex}`))
+  const seen = new Set(existing.map((e) => `${e.chainId}:${e.transactionHash}:${e.logIndex}`))
   const added: ProtocolActivityEvent[] = []
 
   for (const log of logs) {
     if (deadline?.shouldStop()) break
     const blockNumber = parseInt(log.blockNumber, 16)
     const logIndex = parseInt(log.logIndex, 16)
-    const key = `${log.transactionHash}:${logIndex}`
+    const key = `${MELEGA_CHAIN_ID}:${log.transactionHash}:${logIndex}`
     if (seen.has(key)) continue
     const topic = log.topics[0]?.toLowerCase()
     let eventType = 'Deposit'

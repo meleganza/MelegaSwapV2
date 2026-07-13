@@ -48,9 +48,9 @@ export function createJsonFileStorage(rootDir = process.env.BSC_INDEXER_DATA_DIR
     },
     async appendEvents(events) {
       const existing = readJson<NormalizedIndexerEvent[]>(eventsFile) ?? []
-      const seen = new Set(existing.map((e) => `${e.txHash}:${e.logIndex}`))
+      const seen = new Set(existing.map((e) => `${e.chainId}:${e.txHash}:${e.logIndex}`))
       const added = events.filter((e) => {
-        const key = `${e.txHash}:${e.logIndex}`
+        const key = `${e.chainId}:${e.txHash}:${e.logIndex}`
         if (seen.has(key)) return false
         seen.add(key)
         return true

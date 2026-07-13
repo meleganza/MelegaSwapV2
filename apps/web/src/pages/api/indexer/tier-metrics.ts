@@ -3,7 +3,9 @@ import { loadTierPairInventory } from 'lib/bsc-indexer/indexer/tierInventory'
 import { resolveIndexerStorageForSlug } from 'lib/bsc-indexer/storage'
 import { FEATURED_PAIR_SLUG } from 'lib/bsc-indexer/v2/paths'
 import { slugFromPairAddress } from 'lib/bsc-indexer/v2/pairSlug'
-import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
+import { MARCO_WBNB_PAIR_BSC, REORG_SAFETY_BLOCKS } from 'lib/bsc-indexer/constants'
+import { isBootstrapWindowComplete } from 'lib/bsc-indexer/indexer/bootstrapWindow'
+import { bootstrapWindowSummary } from 'lib/bsc-indexer/indexer/coverageRanges'
 
 import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 
@@ -68,7 +70,16 @@ const handler: NextApiHandler = async (req, res) => {
       const hasSignal =
         volume24hQuote > 0 || tradeCount24h > 0 || changeResult != null || recentCandles.length >= 2
 
-      const scanned = Boolean(checkpoint || health?.lastSuccessfulSync)
+      const touched = Boolean(checkpoint || health?.lastSuccessfulSync)
+      const coverageRanges = checkpoint?.coverageRanges ?? []
+      const bootstrapStart = checkpoint?.bootstrapStartBlock ?? 0
+      const chainHeadRef = checkpoint?.chainHeadAtSync ?? checkpoint?.lastIndexedBlock ?? 0
+      const forwardHigh = Math.max(0, chainHeadRef - REORG_SAFETY_BLOCKS)
+      const windowSummary = bootstrapWindowSummary(coverageRanges, bootstrapStart, forwardHigh)
+      const windowComplete = isBootstrapWindowComplete(
+        windowSummary.coveragePercent,
+        windowSummary.gaps,
+      )
       const rpcFailure =
         health?.status === 'error' &&
         Boolean(health?.lastFailureReason?.toLowerCase().includes('rpc'))
@@ -76,11 +87,11 @@ const handler: NextApiHandler = async (req, res) => {
       let status: TierPairStatus
       if (hasSignal) {
         status = 'READY'
-      } else if (!scanned) {
+      } else if (!touched || !windowComplete) {
         status = 'UNSCANNED'
       } else if (rpcFailure) {
         status = 'RPC_UNAVAILABLE'
-      } else if (health?.status === 'ready' || health?.status === 'syncing' || checkpoint) {
+      } else if (health?.status === 'ready' || health?.status === 'syncing') {
         status = 'EMPTY_VERIFIED'
       } else {
         status = 'NO_EVENTS_IN_WINDOW'
