@@ -1,4 +1,6 @@
-import { FEATURED_PAIR_SLUG } from '../constants'
+import { FEATURED_PAIR_SLUG, REORG_SAFETY_BLOCKS } from '../constants'
+import { resolveIndexerStorage } from '../storage'
+import { getBlockNumber } from '../rpc/chunkedLogs'
 import { IndexerDeadline, SAFE_EXECUTION_BUDGET_MS } from './indexerDeadline'
 import { runFeaturedPairSync } from './featuredPairSync'
 import { loadTierPairInventory } from './tierInventory'
@@ -6,6 +8,11 @@ import { runTierPairSync } from './tierPairSync'
 import { loadTierSchedulerState, pickRotatingPair, saveTierSchedulerState } from './tierScheduler'
 import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
 import { isBootstrapWindowComplete } from './bootstrapWindow'
+import {
+  resolveOrchestratorStageMode,
+  resolveStageDeadline,
+  shouldRunTierStages,
+} from './orchestratorStageBudget'
 
 export interface IndexerRunReport {
   ok: boolean
@@ -35,6 +42,17 @@ export async function runIndexerOrchestrator(
   budgetMs: number = SAFE_EXECUTION_BUDGET_MS,
 ): Promise<IndexerRunReport> {
   const deadline = new IndexerDeadline(Date.now(), budgetMs)
+  const storage = resolveIndexerStorage()
+  const [checkpoint, chainHead] = await Promise.all([storage.loadCheckpoint(), getBlockNumber()])
+  const bootstrapFloor = checkpoint?.bootstrapStartBlock ?? 0
+  const coverageCtx = {
+    bootstrapFloor,
+    forwardHigh: Math.max(0, chainHead - REORG_SAFETY_BLOCKS),
+    gapFillCursor: checkpoint?.gapFillCursor ?? checkpoint?.forwardCursor ?? bootstrapFloor,
+    coverageRanges: checkpoint?.coverageRanges ?? [],
+  }
+  const stageMode = resolveOrchestratorStageMode(coverageCtx)
+
   let addedEvents = 0
   let addedCandles = 0
   let forwardRangesProcessed = 0
@@ -48,7 +66,8 @@ export async function runIndexerOrchestrator(
   const cursorsAfter: Record<string, number | null> = {}
 
   deadline.markStage('init')
-  featured = await runFeaturedPairSync(deadline)
+  const featuredDeadline = resolveStageDeadline(deadline, stageMode)
+  featured = await runFeaturedPairSync(featuredDeadline)
   cursorsBefore[FEATURED_PAIR_SLUG] = featured.checkpoint.gapFillCursor ?? featured.checkpoint.forwardCursor ?? null
   addedEvents += featured.addedEvents
   forwardRangesProcessed += featured.forwardRangesProcessed ?? 0
@@ -65,15 +84,18 @@ export async function runIndexerOrchestrator(
       ),
   )
 
-  if (
-    !deadline.shouldStop() &&
-    deadline.remainingMs() > PROTOCOL_ACTIVITY_MIN_REMAINING_MS
-  ) {
-    protocolActivity = await syncProtocolActivityRecent(deadline)
+  const tierStagesEligible = shouldRunTierStages(stageMode, featuredBootstrapComplete)
+
+  const protocolMinRemaining =
+    stageMode === 'head-edge-only' ? 1_000 : PROTOCOL_ACTIVITY_MIN_REMAINING_MS
+
+  if (!deadline.shouldStop() && deadline.remainingMs() > protocolMinRemaining) {
+    const protocolDeadline = resolveStageDeadline(deadline, stageMode)
+    protocolActivity = await syncProtocolActivityRecent(protocolDeadline)
     deadline.markStage('protocol-activity')
   }
 
-  if (featuredBootstrapComplete && !deadline.shouldStop()) {
+  if (tierStagesEligible && !deadline.shouldStop()) {
     const inventory = await loadTierPairInventory()
     const scheduler = await loadTierSchedulerState()
     const tier1Candidates = inventory.tier1.filter((p) => p.slug !== FEATURED_PAIR_SLUG)
@@ -81,7 +103,8 @@ export async function runIndexerOrchestrator(
 
     const tier1Pick = pickRotatingPair(tier1Candidates, scheduler.tier1RotationIndex)
     if (tier1Pick.pair) {
-      tier1Job = await runTierPairSync(tier1Pick.pair, deadline)
+      const tier1Deadline = resolveStageDeadline(deadline, stageMode)
+      tier1Job = await runTierPairSync(tier1Pick.pair, tier1Deadline)
       addedEvents += tier1Job.addedEvents
       pairJobsProcessed += 1
       scheduler.tier1RotationIndex = tier1Pick.nextIndex
@@ -93,7 +116,8 @@ export async function runIndexerOrchestrator(
     if (!deadline.shouldStop()) {
       const tier2Pick = pickRotatingPair(tier2Candidates, scheduler.tier2RotationIndex)
       if (tier2Pick.pair) {
-        tier2Job = await runTierPairSync(tier2Pick.pair, deadline)
+        const tier2Deadline = resolveStageDeadline(deadline, stageMode)
+        tier2Job = await runTierPairSync(tier2Pick.pair, tier2Deadline)
         addedEvents += tier2Job.addedEvents
         pairJobsProcessed += 1
         scheduler.tier2RotationIndex = tier2Pick.nextIndex
