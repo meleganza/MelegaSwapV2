@@ -1,0 +1,95 @@
+{
+  "mission": "R791A.5",
+  "repositorySha": "50d3ca3a33118ee7e014111f02cda09b6b1964de",
+  "productionBuildId": "fra1::hw2r8-1783954714735-97a70e47519b",
+  "productionAuthority": "https://www.melega.finance",
+  "capturedAt": "2026-07-13T14:59:25.000Z",
+  "preflight": {
+    "branch": "main",
+    "head": "50d3ca3a33118ee7e014111f02cda09b6b1964de",
+    "originMain": "50d3ca3a33118ee7e014111f02cda09b6b1964de",
+    "leaseFixCommitInHistory": true,
+    "productionDeploymentSha": "50d3ca3a33118ee7e014111f02cda09b6b1964de",
+    "leaseTtlMs": 270000,
+    "leaseHeartbeatIntervalMs": 30000
+  },
+  "initial": {
+    "timestamp": "2026-07-13T14:58:36.282Z",
+    "health": {
+      "lockState": "held",
+      "lockHealth": "healthy",
+      "lockOwner": "manual:50d3ca3:iad1:1783954528303",
+      "lockAcquiredAt": "2026-07-13T14:55:28.368Z",
+      "lockExpiresAt": "2026-07-13T14:59:58.368Z",
+      "lockHeartbeatAt": "2026-07-13T14:55:28.368Z",
+      "activeRunType": "manual",
+      "activeDeploymentSha": "50d3ca3a33118ee7e014111f02cda09b6b1964de",
+      "lastIndexedBlock": 109767145,
+      "chainHead": 109767574,
+      "indexingLag": 429,
+      "lastSuccessfulSync": "2026-07-13T14:55:31.598Z",
+      "lastOrchestratorRun": {
+        "capturedAt": "2026-07-13T14:55:34.216Z",
+        "ok": true,
+        "featuredBootstrapComplete": true
+      }
+    },
+    "coverage": {
+      "coveragePercent": 99.93531102675517,
+      "coveredBlocks": 644206,
+      "uncoveredBlocks": 417,
+      "gaps": [{ "fromBlock": 109767146, "toBlock": 109767562 }],
+      "gapFillCursor": 109767145,
+      "forwardCursor": 109767145,
+      "bootstrapWindowComplete": false,
+      "coverageRanges": [{ "fromBlock": 109122940, "toBlock": 109767145 }],
+      "chainHead": 109767574
+    },
+    "storeConsistency": true,
+    "readinessVerdict": "ready"
+  },
+  "decision": {
+    "case": "B",
+    "reason": "healthy lease held by active worker",
+    "manualExecution": false,
+    "waitSeconds": 35,
+    "reReadTimestamp": "2026-07-13T14:59:24.975Z"
+  },
+  "afterWait": {
+    "health": {
+      "lockState": "held",
+      "lockHealth": "healthy",
+      "lockOwner": "manual:50d3ca3:iad1:1783954528303",
+      "lockExpiresAt": "2026-07-13T14:59:58.368Z",
+      "lastIndexedBlock": 109767145,
+      "chainHead": 109767682,
+      "indexingLag": 537,
+      "lastSuccessfulSync": "2026-07-13T14:55:31.598Z",
+      "coverageAdvanced": false
+    },
+    "coverage": {
+      "coveragePercent": 99.91841571381597,
+      "coveredBlocks": 644206,
+      "uncoveredBlocks": 526,
+      "gaps": [{ "fromBlock": 109767146, "toBlock": 109767671 }],
+      "gapFillCursor": 109767145,
+      "bootstrapWindowComplete": false,
+      "chainHead": 109767683
+    }
+  },
+  "certification": {
+    "bootstrapWindowComplete": false,
+    "historicalBootstrapComplete": true,
+    "historicalNote": "Single continuous interior range 109122940-109767145; no interior gaps",
+    "forwardLiveSync": "active",
+    "currentHeadLagBlocks": 538,
+    "interiorGapRemaining": false,
+    "storeConsistency": true,
+    "cursorRegression": false,
+    "falseCursorJump": false,
+    "http504": 0,
+    "hardTimeouts": 0,
+    "featuredBootstrapComplete": true
+  },
+  "verdict": "R791A_5_FEATURED_PAIR_FORWARD_SYNC_ACTIVE"
+}
