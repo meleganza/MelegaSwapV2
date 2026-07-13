@@ -3,6 +3,7 @@
 import { writeFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { resolveIndexerRunAuthHeaders } from './indexerRunAuth.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUT = path.join(__dirname, '../docs/runtime/r791a-indexer-convergence.json')
@@ -13,18 +14,10 @@ const RUNS = Math.min(MAX_RUNS, Math.max(1, Number(process.env.R791A_RUNS || MAX
 const REPO_SHA = process.env.R791A_REPO_SHA || 'unknown'
 const READ_TIMEOUT_MS = 30_000
 const RUN_TIMEOUT_MS = 300_000
-const SECRET = (process.env.INDEXER_CRON_SECRET || process.env.CRON_SECRET || '').trim()
-
 const headers = { 'x-vercel-protection-bypass': BYPASS, accept: 'application/json' }
 
 function runAuthHeaders() {
-  const reqHeaders = { ...headers }
-  if (SECRET.length >= 16) {
-    reqHeaders.authorization = `Bearer ${SECRET}`
-  } else {
-    reqHeaders['x-vercel-cron'] = '1'
-  }
-  return reqHeaders
+  return resolveIndexerRunAuthHeaders(headers)
 }
 
 async function getJson(url, init, timeoutMs = READ_TIMEOUT_MS) {
