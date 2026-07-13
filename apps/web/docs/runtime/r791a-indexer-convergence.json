@@ -1,19 +1,21 @@
 {
   "mission": "R791A",
-  "repositorySha": "5f331009",
+  "repositorySha": "a4a0c900",
   "base": "https://www.melega.finance",
-  "capturedAt": "2026-07-13T11:46:47.886Z",
+  "capturedAt": "2026-07-13T13:52:12.112Z",
+  "maxRuns": 5,
+  "requestedRuns": 5,
   "baseline": {
     "coverage": {
       "fromBlock": 109122940,
-      "toBlock": 109739608,
-      "coveredBlocks": 149127,
-      "uncoveredBlocks": 467542,
-      "coveragePercent": 24.182665254780115,
+      "toBlock": 109758123,
+      "coveredBlocks": 634849,
+      "uncoveredBlocks": 335,
+      "coveragePercent": 99.9472593768105,
       "gaps": [
         {
-          "fromBlock": 109272067,
-          "toBlock": 109739608
+          "fromBlock": 109757789,
+          "toBlock": 109758123
         }
       ],
       "complete": false
@@ -23,132 +25,132 @@
   "runs": [
     {
       "run": 1,
-      "timestamp": "2026-07-13T11:32:47.773Z",
+      "timestamp": "2026-07-13T13:48:03.868Z",
       "httpStatus": 200,
       "skipped": false,
       "skipReason": null,
       "ok": true,
-      "elapsedMs": 234850,
+      "elapsedMs": 16050,
       "budgetMs": 240000,
       "lockState": "acquired",
-      "lockOwner": "vercel-cron:5f33100:iad1:1783942134110",
-      "scannedBlocks": 52377,
-      "effectiveBps": 234.34165372896598,
-      "gapRangesProcessed": 93,
-      "featuredBootstrapComplete": false,
-      "pairJobsProcessed": 1,
+      "lockOwner": "vercel-cron:a4a0c90:iad1:1783950467968",
+      "scannedBlocks": 338,
+      "effectiveBps": 228.3783783783784,
+      "gapRangesProcessed": 1,
+      "featuredBootstrapComplete": true,
+      "pairJobsProcessed": 3,
       "coverageBefore": {
         "fromBlock": 109122940,
-        "toBlock": 109739608,
-        "coveredBlocks": 149127,
-        "uncoveredBlocks": 467542,
-        "coveragePercent": 24.182665254780115,
+        "toBlock": 109758125,
+        "coveredBlocks": 634849,
+        "uncoveredBlocks": 337,
+        "coveragePercent": 99.9469446744733,
         "gaps": [
           {
-            "fromBlock": 109272067,
-            "toBlock": 109739608
+            "fromBlock": 109757789,
+            "toBlock": 109758125
           }
         ],
         "complete": false
       },
       "coverageAfter": {
         "fromBlock": 109122940,
-        "toBlock": 109740130,
-        "coveredBlocks": 198304,
-        "uncoveredBlocks": 418887,
-        "coveragePercent": 32.13008614837222,
+        "toBlock": 109758161,
+        "coveredBlocks": 635187,
+        "uncoveredBlocks": 35,
+        "coveragePercent": 99.99449011526679,
         "gaps": [
           {
-            "fromBlock": 109321244,
-            "toBlock": 109740130
+            "fromBlock": 109758127,
+            "toBlock": 109758161
           }
         ],
         "complete": false
       },
-      "tier1Job": null,
-      "tier2Job": null
+      "tier1Job": "8ac76a-963556",
+      "tier2Job": "52abb0-bb4cdb"
     },
     {
       "run": 2,
-      "timestamp": "2026-07-13T11:36:51.804Z",
+      "timestamp": "2026-07-13T13:48:29.794Z",
       "httpStatus": 200,
       "skipped": false,
       "skipReason": null,
       "ok": true,
-      "elapsedMs": 233645,
+      "elapsedMs": 15679,
       "budgetMs": 240000,
       "lockState": "acquired",
-      "lockOwner": "vercel-cron:5f33100:iad1:1783942378330",
-      "scannedBlocks": 52464,
-      "effectiveBps": 235.7159224164656,
-      "gapRangesProcessed": 92,
-      "featuredBootstrapComplete": false,
-      "pairJobsProcessed": 1,
+      "lockOwner": "vercel-cron:a4a0c90:iad1:1783950494255",
+      "scannedBlocks": 59,
+      "effectiveBps": 191.55844155844156,
+      "gapRangesProcessed": 1,
+      "featuredBootstrapComplete": true,
+      "pairJobsProcessed": 3,
       "coverageBefore": {
         "fromBlock": 109122940,
-        "toBlock": 109740153,
-        "coveredBlocks": 204531,
-        "uncoveredBlocks": 412683,
-        "coveragePercent": 33.13777717290923,
+        "toBlock": 109758184,
+        "coveredBlocks": 635187,
+        "uncoveredBlocks": 58,
+        "coveragePercent": 99.99086966446016,
         "gaps": [
           {
-            "fromBlock": 109327471,
-            "toBlock": 109740153
+            "fromBlock": 109758127,
+            "toBlock": 109758184
           }
         ],
         "complete": false
       },
       "coverageAfter": {
         "fromBlock": 109122940,
-        "toBlock": 109740671,
-        "coveredBlocks": 256995,
-        "uncoveredBlocks": 360737,
-        "coveragePercent": 41.602992883645335,
+        "toBlock": 109758218,
+        "coveredBlocks": 635187,
+        "uncoveredBlocks": 92,
+        "coveragePercent": 99.9855181739047,
         "gaps": [
           {
-            "fromBlock": 109379935,
-            "toBlock": 109740671
+            "fromBlock": 109758127,
+            "toBlock": 109758218
           }
         ],
         "complete": false
       },
-      "tier1Job": null,
-      "tier2Job": null
+      "tier1Job": "55d398-8ac76a",
+      "tier2Job": "502eed-bb4cdb"
     },
     {
       "run": 3,
-      "timestamp": "2026-07-13T11:37:02.522Z",
+      "timestamp": "2026-07-13T13:48:40.618Z",
       "httpStatus": 200,
       "skipped": true,
       "skipReason": "lease-held-by-other",
       "ok": false,
-      "elapsedMs": 475,
+      "elapsedMs": 572,
       "lockState": "held",
-      "lockOwner": "manual:5f33100:iad1:1783942543366",
+      "lockOwner": "vercel-cron:a4a0c90:iad1:1783950494255",
       "coverageBefore": {
         "fromBlock": 109122940,
-        "toBlock": 109740694,
-        "coveredBlocks": 251850,
-        "uncoveredBlocks": 365905,
-        "coveragePercent": 40.76858948936067,
+        "toBlock": 109758241,
+        "coveredBlocks": 635187,
+        "uncoveredBlocks": 115,
+        "coveragePercent": 99.98189837274242,
         "gaps": [
           {
-            "fromBlock": 109374790,
-            "toBlock": 109740694
+            "fromBlock": 109758127,
+            "toBlock": 109758241
           }
         ],
         "complete": false
       },
       "coverageAfter": {
         "fromBlock": 109122940,
-        "toBlock": 109740695,
-        "coveredBlocks": 251850,
-        "uncoveredBlocks": 365906,
-        "coveragePercent": 40.76852349471312,
+        "toBlock": 109758242,
+        "coveredBlocks": 635187,
+        "uncoveredBlocks": 116,
+        "coveragePercent": 99.98174099602866,
         "gaps": [
           {
-            "fromBlock": 109374790,
-            "toBlock": 109740695
+            "fromBlock": 109758127,
+            "toBlock": 109758242
           }
         ],
         "complete": false
@@ -158,44 +160,38 @@
     },
     {
       "run": 4,
-      "timestamp": "2026-07-13T11:42:31.545Z",
+      "timestamp": "2026-07-13T13:50:18.407Z",
       "httpStatus": 200,
-      "skipped": false,
-      "skipReason": null,
-      "ok": true,
-      "elapsedMs": 233544,
-      "budgetMs": 240000,
-      "lockState": "acquired",
-      "lockOwner": "vercel-cron:5f33100:iad1:1783942718176",
-      "scannedBlocks": 52576,
-      "effectiveBps": 235.67909701770193,
-      "gapRangesProcessed": 93,
-      "featuredBootstrapComplete": false,
-      "pairJobsProcessed": 1,
+      "skipped": true,
+      "skipReason": "lease-held-by-other",
+      "ok": false,
+      "elapsedMs": 2571,
+      "lockState": "held",
+      "lockOwner": "manual:a4a0c90:iad1:1783950615143",
       "coverageBefore": {
         "fromBlock": 109122940,
-        "toBlock": 109740907,
-        "coveredBlocks": 260304,
-        "uncoveredBlocks": 357664,
-        "coveragePercent": 42.12256945343448,
+        "toBlock": 109758454,
+        "coveredBlocks": 635246,
+        "uncoveredBlocks": 269,
+        "coveragePercent": 99.95767212418275,
         "gaps": [
           {
-            "fromBlock": 109383244,
-            "toBlock": 109740907
+            "fromBlock": 109758186,
+            "toBlock": 109758454
           }
         ],
         "complete": false
       },
       "coverageAfter": {
         "fromBlock": 109122940,
-        "toBlock": 109741426,
-        "coveredBlocks": 326415,
-        "uncoveredBlocks": 292072,
-        "coveragePercent": 52.77637201752018,
+        "toBlock": 109758459,
+        "coveredBlocks": 635246,
+        "uncoveredBlocks": 274,
+        "coveragePercent": 99.9568856998993,
         "gaps": [
           {
-            "fromBlock": 109449355,
-            "toBlock": 109741426
+            "fromBlock": 109758186,
+            "toBlock": 109758459
           }
         ],
         "complete": false
@@ -205,111 +201,113 @@
     },
     {
       "run": 5,
-      "timestamp": "2026-07-13T11:46:35.479Z",
+      "timestamp": "2026-07-13T13:52:09.760Z",
       "httpStatus": 200,
       "skipped": false,
       "skipReason": null,
       "ok": true,
-      "elapsedMs": 233686,
+      "elapsedMs": 16143,
       "budgetMs": 240000,
       "lockState": "acquired",
-      "lockOwner": "vercel-cron:5f33100:iad1:1783942961950",
-      "scannedBlocks": 52153,
-      "effectiveBps": 233.30604503017372,
-      "gapRangesProcessed": 91,
-      "featuredBootstrapComplete": false,
-      "pairJobsProcessed": 1,
+      "lockOwner": "vercel-cron:a4a0c90:iad1:1783950714459",
+      "scannedBlocks": 221,
+      "effectiveBps": 222.33400402414486,
+      "gapRangesProcessed": 1,
+      "featuredBootstrapComplete": true,
+      "pairJobsProcessed": 3,
       "coverageBefore": {
         "fromBlock": 109122940,
-        "toBlock": 109741449,
-        "coveredBlocks": 326415,
-        "uncoveredBlocks": 292095,
-        "coveragePercent": 52.77440946791483,
+        "toBlock": 109758671,
+        "coveredBlocks": 635514,
+        "uncoveredBlocks": 218,
+        "coveragePercent": 99.96570882069803,
         "gaps": [
           {
-            "fromBlock": 109449355,
-            "toBlock": 109741449
+            "fromBlock": 109758454,
+            "toBlock": 109758671
           }
         ],
         "complete": false
       },
       "coverageAfter": {
         "fromBlock": 109122940,
-        "toBlock": 109741967,
-        "coveredBlocks": 378568,
-        "uncoveredBlocks": 240460,
-        "coveragePercent": 61.155230458072985,
+        "toBlock": 109758706,
+        "coveredBlocks": 635514,
+        "uncoveredBlocks": 253,
+        "coveragePercent": 99.96020554700071,
         "gaps": [
           {
-            "fromBlock": 109501508,
-            "toBlock": 109741967
+            "fromBlock": 109758454,
+            "toBlock": 109758706
           }
         ],
         "complete": false
       },
-      "tier1Job": null,
-      "tier2Job": null
+      "tier1Job": "55d398-bb4cdb",
+      "tier2Job": "502eed-963556"
     }
   ],
   "summary": {
     "completedRuns": 5,
-    "cleanRuns": 4,
+    "cleanRuns": 3,
     "http504": 0,
-    "skipped": 1,
-    "coverageStart": 24.182665254780115,
-    "coverageEnd": 61.15285953360945,
-    "coveredBlocksStart": 149127,
-    "coveredBlocksEnd": 378568,
-    "blocksAdvanced": 229441,
+    "skipped": 2,
+    "coverageStart": 99.9472593768105,
+    "coverageEnd": 99.96004831951278,
+    "coveredBlocksStart": 634849,
+    "coveredBlocksEnd": 635514,
+    "blocksAdvanced": 665,
     "bootstrapComplete": false
   },
   "finalCoverage": {
-    "generatedAt": "2026-07-13T11:46:45.810Z",
+    "generatedAt": "2026-07-13T13:52:09.931Z",
     "slug": "marco-wbnb",
     "bootstrapWindow": {
       "fromBlock": 109122940,
-      "toBlock": 109741991,
-      "coveredBlocks": 378568,
-      "uncoveredBlocks": 240484,
-      "coveragePercent": 61.15285953360945,
+      "toBlock": 109758707,
+      "coveredBlocks": 635514,
+      "uncoveredBlocks": 254,
+      "coveragePercent": 99.96004831951278,
       "gaps": [
         {
-          "fromBlock": 109501508,
-          "toBlock": 109741991
+          "fromBlock": 109758454,
+          "toBlock": 109758707
         }
       ],
       "complete": false
     },
-    "forwardCursor": 109501507,
-    "gapFillCursor": 109501507,
+    "forwardCursor": 109758453,
+    "gapFillCursor": 109758453,
     "backwardCursor": null,
     "coverageRanges": [
       {
         "fromBlock": 109122940,
-        "toBlock": 109501507
+        "toBlock": 109758453
       }
     ],
-    "chainHead": 109742003
+    "chainHead": 109758719
   },
   "finalHealth": {
     "lockState": "held",
     "lastOrchestratorRun": {
-      "capturedAt": "2026-07-13T11:44:36.150Z",
+      "capturedAt": "2026-07-13T13:52:09.137Z",
       "ok": true,
-      "elapsedMs": 232336,
+      "elapsedMs": 14154,
       "budgetMs": 240000,
       "stoppedBeforeDeadline": false,
       "partialProgress": true,
       "addedEvents": 0,
       "addedCandles": 0,
-      "pairJobsProcessed": 1,
+      "pairJobsProcessed": 3,
       "providerUsed": "chunked-forward-eth_getLogs",
-      "nextWorkItem": "gap-fill:marco-wbnb:109477849",
+      "nextWorkItem": "tier2:502eed-963556",
       "cursorsBefore": {
-        "marco-wbnb": 109477848
+        "marco-wbnb": 109758674
       },
       "cursorsAfter": {
-        "marco-wbnb": 109477848
+        "marco-wbnb": 109758674,
+        "55d398-bb4cdb": 109420616,
+        "502eed-963556": 109419617
       },
       "stageTimings": [
         {
@@ -318,32 +316,44 @@
         },
         {
           "stage": "featured-sync",
-          "elapsedMs": 232336
+          "elapsedMs": 11645
+        },
+        {
+          "stage": "protocol-activity",
+          "elapsedMs": 422
+        },
+        {
+          "stage": "tier1-sync",
+          "elapsedMs": 1441
+        },
+        {
+          "stage": "tier2-sync",
+          "elapsedMs": 567
         }
       ],
       "adaptiveTelemetry": {
-        "requestedBlockCount": 52922,
-        "scannedBlockCount": 52722,
-        "successfulChunkCount": 93,
+        "requestedBlockCount": 221,
+        "scannedBlockCount": 221,
+        "successfulChunkCount": 1,
         "failedChunkCount": 0,
         "adaptiveChunkSizeStart": 25,
         "adaptiveChunkSizeEnd": 25,
-        "averageRpcLatencyMs": 2397.4086021505377,
-        "maximumRpcLatencyMs": 7676,
-        "effectiveBlocksPerSecond": 236.4650002915334,
-        "deadlineRemainingMs": 7903,
-        "blocksRemaining": 263339,
-        "estimatedRunsRemaining": 5,
-        "estimatedCompletionTimestamp": "2026-07-13T12:03:10.650Z"
+        "averageRpcLatencyMs": 994,
+        "maximumRpcLatencyMs": 994,
+        "effectiveBlocksPerSecond": 222.33400402414486,
+        "deadlineRemainingMs": 228696,
+        "blocksRemaining": 0,
+        "estimatedRunsRemaining": 0,
+        "estimatedCompletionTimestamp": "2026-07-13T13:52:06.229Z"
       },
-      "featuredBootstrapComplete": false
+      "featuredBootstrapComplete": true
     }
   },
   "tierPopulation": {
     "tier1": [
       {
         "slug": "marco-wbnb",
-        "status": "UNSCANNED"
+        "status": "EMPTY_VERIFIED"
       },
       {
         "slug": "55d398-963556",
