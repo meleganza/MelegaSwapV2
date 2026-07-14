@@ -55,8 +55,8 @@ export const TrendingNowGrid: React.FC = () => {
       <TrSectionTitle>Trending Now</TrSectionTitle>
       {singleCard ? (
         <Notice>
-          Showing {cards.length} ranked asset listing when tier metrics are available. Project entities are listed on
-          Projects.
+          {cards.length} tier-ranked asset from production indexer. Ranked by 24H volume → trades → liquidity →
+          price change.
         </Notice>
       ) : null}
       {filterEmptyMessage ? <Empty>{filterEmptyMessage}</Empty> : null}

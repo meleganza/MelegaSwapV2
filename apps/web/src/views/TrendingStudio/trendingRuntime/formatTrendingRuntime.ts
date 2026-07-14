@@ -14,8 +14,24 @@ import type {
   TrendingKpiItem,
   TrendingProjectCard,
 } from '../trendingStudioData'
+import type { TierRankedAsset } from 'lib/trending/tierTrendingModel'
 
 const UNAVAILABLE = 'Unavailable'
+const EM_DASH = '—'
+
+function formatUsdCompact(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return EM_DASH
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(2)}K`
+  return `$${value.toFixed(2)}`
+}
+
+function formatLiquidityScore(score: number): string {
+  if (!Number.isFinite(score) || score <= 0) return EM_DASH
+  if (score >= 1e18) return `${(score / 1e18).toFixed(2)} LP`
+  if (score >= 1e15) return `${(score / 1e15).toFixed(2)}K LP`
+  return String(score)
+}
 
 function chainLabel(project: EnrichedProjectRecord): string {
   const id = project.supportedChains[0]
@@ -47,6 +63,107 @@ function provenanceLabel(project: EnrichedProjectRecord): string {
 
 function sparklineFromScore(_score: number): number[] {
   return []
+}
+
+export function mapTierRankedAssetToTrendingCard(
+  asset: TierRankedAsset,
+  rank: number,
+  project?: EnrichedProjectRecord,
+): TrendingProjectCard {
+  const sym = asset.symbol
+  const change =
+    asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h : undefined
+  const tags: string[] = [asset.tierStatus === 'READY' ? 'Live Signal' : 'Verified Empty']
+  if (project?.trustBadges.includes('canonical')) tags.push('Canonical')
+  tags.push('Tier Metrics')
+
+  return {
+    rank,
+    name: project?.displayName ?? asset.displayName,
+    pair: `${sym} · BNB Chain`,
+    symbol: sym,
+    chain: 'BNB Chain',
+    slug: project?.slug ?? asset.slug,
+    tags,
+    aiScore: 0,
+    signalLabel: asset.tierStatus,
+    summary: project
+      ? buildAiSummary(project)
+      : `Ranked from tier-metrics pair ${asset.pairSlug} on Melega DEX.`,
+    holders: EM_DASH,
+    liquidity: formatLiquidityScore(asset.liquidityScore),
+    volume: formatUsdCompact(asset.volume24h),
+    growth: change?.text ?? EM_DASH,
+    growthPositive: change?.positive,
+    sparkline: [],
+    provenance: 'Indexer · Tier Metrics',
+    projectHref: project ? `/projects/${project.slug}` : '/projects',
+    radarHref: asset.address ? `/radar?contract=${asset.address}` : undefined,
+    tradeHref: asset.address ? `/swap?outputCurrency=${asset.address}` : '/trade',
+  }
+}
+
+export function mapTierRankedToHeatmapRows(assets: TierRankedAsset[]): HeatmapRow[] {
+  return assets.map((asset, index) => ({
+    rank: index + 1,
+    project: asset.displayName,
+    symbol: asset.symbol,
+    momentum: asset.change24h ? Math.abs(asset.change24h.pct) : 0,
+    liquidity: asset.liquidityScore,
+    holders: 0,
+    aiScore: 0,
+    social: 0,
+    whales: 0,
+    volume: asset.volume24h,
+    slug: asset.slug,
+    provenance: 'Tier Metrics',
+  }))
+}
+
+export function aggregateTierTrendingKpis(
+  rankedAssets: TierRankedAsset[],
+  liveEvents: RadarLiveEvent[],
+): TrendingKpiItem[] {
+  const readyCount = rankedAssets.filter((a) => a.tierStatus === 'READY').length
+  const verifiedEmpty = rankedAssets.filter((a) => a.tierStatus === 'EMPTY_VERIFIED').length
+
+  return [
+    {
+      id: 'ranked',
+      label: 'Tier Ranked',
+      value: String(rankedAssets.length),
+      delta: '',
+      sparkline: [],
+    },
+    {
+      id: 'signals',
+      label: 'Live Signals',
+      value: String(readyCount),
+      delta: '',
+      sparkline: [],
+    },
+    {
+      id: 'verified',
+      label: 'Verified Empty',
+      value: String(verifiedEmpty),
+      delta: '',
+      sparkline: [],
+    },
+    {
+      id: 'events',
+      label: 'Runtime Events',
+      value: String(liveEvents.length),
+      delta: '',
+      sparkline: [],
+    },
+    {
+      id: 'whales',
+      label: 'Whale Alerts',
+      value: UNAVAILABLE,
+      delta: '',
+      sparkline: [],
+    },
+  ]
 }
 
 export function mapProjectToTrendingCard(

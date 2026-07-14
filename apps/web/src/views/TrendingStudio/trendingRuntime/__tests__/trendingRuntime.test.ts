@@ -9,6 +9,7 @@ import {
   buildRuntimeOpportunity,
   filterTrendingProjects,
   mapProjectToTrendingCard,
+  mapTierRankedAssetToTrendingCard,
 } from '../formatTrendingRuntime'
 import { createTrendingRuntimeError } from '../trendingRuntimeErrors'
 
@@ -17,6 +18,30 @@ describe('trendingRuntime', () => {
 
   beforeEach(() => {
     resetPendingProjectRegistryForTests()
+  })
+
+  it('maps tier-ranked asset without Unavailable ticker fields', () => {
+    const card = mapTierRankedAssetToTrendingCard(
+      {
+        symbol: 'MARCO',
+        slug: 'marco',
+        pairSlug: 'marco-wbnb',
+        address: '0x963556de0eb8138e97a85f0a86ee0acd159d210b',
+        chainId: 56,
+        displayName: 'MARCO',
+        tierStatus: 'EMPTY_VERIFIED',
+        priceUsd: 0.12,
+        volume24h: 0,
+        liquidityScore: 1000,
+        tradeCount24h: 0,
+        rankingSignals: ['liquidity'],
+      },
+      1,
+    )
+    expect(card.signalLabel).toBe('EMPTY_VERIFIED')
+    expect(card.volume).toBe('—')
+    expect(card.growth).toBe('—')
+    expect(card.provenance).toMatch(/Tier Metrics/)
   })
 
   it('maps registry project to trending card with provenance and links', () => {

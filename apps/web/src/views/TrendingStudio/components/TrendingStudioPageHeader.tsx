@@ -78,13 +78,13 @@ export const TrendingStudioPageHeader: React.FC = () => {
     <Row>
       <Left>
         <Title>TRENDING</Title>
-        <Subtitle>Discover the fastest growing crypto opportunities ranked by Melega AI.</Subtitle>
+        <Subtitle>Live tier-ranked assets from Melega indexer — volume, trades, liquidity, and price change.</Subtitle>
       </Left>
       <Right>
         <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }} onClick={() => router.push('/projects')}>
           ✦ AI Discovery Engine
         </TrGhostBtn>
-        <LivePill>Updated every minute</LivePill>
+        <LivePill>Tier metrics live</LivePill>
       </Right>
     </Row>
   </div>
