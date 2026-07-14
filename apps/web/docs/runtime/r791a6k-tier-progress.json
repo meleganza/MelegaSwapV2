@@ -1,0 +1,172 @@
+{
+  "mission": "R791A.6K",
+  "title": "Post-Worker Tier Progress and Single-Run Certification",
+  "productionAuthoritySha": "c444e8b7654f271cf5328027a9b073d733c22380",
+  "buildId": "y_bp67MMr2J-YFqwprUJu",
+  "verifiedAt": "2026-07-14T13:30:20.386Z",
+  "initialSnapshot": {
+    "readAt": "2026-07-14T13:28:57.978Z",
+    "activeDeploymentSha": "c444e8b7654f271cf5328027a9b073d733c22380",
+    "lockState": "held",
+    "lockHealth": "healthy",
+    "lockOwner": "manual:c444e8b:iad1:1784035548253",
+    "lockExpiresAt": "2026-07-14T13:30:18.292Z",
+    "activeRunType": "manual",
+    "lastOrchestratorRun": {
+      "capturedAt": "2026-07-14T13:25:54.762Z",
+      "ok": true,
+      "elapsedMs": 6257,
+      "budgetMs": 240000,
+      "stoppedBeforeDeadline": false,
+      "partialProgress": true,
+      "pairJobsProcessed": 3,
+      "nextWorkItem": "tier2:52abb0-bb4cdb",
+      "stageTimings": [
+        { "stage": "init", "elapsedMs": 38 },
+        { "stage": "featured-sync", "elapsedMs": 3737 },
+        { "stage": "protocol-activity", "elapsedMs": 466 },
+        { "stage": "tier1-sync", "elapsedMs": 1248 },
+        { "stage": "tier2-sync", "elapsedMs": 685 }
+      ],
+      "cursorsAfter": {
+        "marco-wbnb": 109947134,
+        "55d398-8ac76a": 109429714,
+        "52abb0-bb4cdb": 109422969
+      },
+      "adaptiveTelemetry": {
+        "deadlineRemainingMs": 26684
+      }
+    },
+    "coverage": {
+      "coveragePercent": 99.94894593362244,
+      "coveredBlocks": 824195,
+      "uncoveredBlocks": 421,
+      "gapFillCursor": 109947134,
+      "gaps": [{ "fromBlock": 109947135, "toBlock": 109947555 }]
+    },
+    "storeConsistency": true
+  },
+  "postWaitSnapshot": {
+    "readAt": "2026-07-14T13:30:12.269Z",
+    "waitSeconds": 70,
+    "lockState": "held",
+    "lockHealth": "healthy",
+    "lockOwner": "manual:c444e8b:iad1:1784035548253",
+    "lockExpiresAt": "2026-07-14T13:30:18.292Z",
+    "lastOrchestratorRunCapturedAt": "2026-07-14T13:25:54.762Z",
+    "lastOrchestratorRunChanged": false,
+    "gapFillCursor": 109947134,
+    "gapFillCursorChanged": false,
+    "coverage": {
+      "coveragePercent": 99.92895083664634,
+      "coveredBlocks": 824195,
+      "uncoveredBlocks": 586,
+      "gapFillCursor": 109947134,
+      "gaps": [{ "fromBlock": 109947135, "toBlock": 109947720 }]
+    },
+    "coverageChanged": true,
+    "coverageChangeReason": "chain_head_drift_without_indexer_advance",
+    "tierStatusChanged": false
+  },
+  "manualExecution": {
+    "performed": false,
+    "skipReason": "AUTONOMOUS_WORKER_ACTIVE",
+    "caseApplied": "CASE_A_AND_CASE_C",
+    "caseNotes": "Healthy lease remained held by original owner; coverage metric drifted from chain-head growth triggering Case A no-manual-run rule."
+  },
+  "finalSnapshot": {
+    "readAt": "2026-07-14T13:30:20.386Z",
+    "storeConsistency": true
+  },
+  "latestStageTimings": {
+    "featured-sync": 3737,
+    "protocol-activity": 466,
+    "tier1-sync": 1248,
+    "tier2-sync": 685,
+    "totalElapsedMs": 6257,
+    "budgetMs": 240000,
+    "deadlineRemainingMs": 26684
+  },
+  "coverageDelta": {
+    "beforePercent": 99.94894593362244,
+    "afterPercent": 99.92895083664634,
+    "coveredBlocksBefore": 824195,
+    "coveredBlocksAfter": 824195,
+    "uncoveredBlocksBefore": 421,
+    "uncoveredBlocksAfter": 586
+  },
+  "gapFillCursorDelta": {
+    "before": 109947134,
+    "after": 109947134,
+    "monotonic": true
+  },
+  "processedSlugs": {
+    "featured": "marco-wbnb",
+    "tier1": "55d398-8ac76a",
+    "tier2": "52abb0-bb4cdb"
+  },
+  "tier1Reconciliation": {
+    "total": 6,
+    "READY": 0,
+    "EMPTY_VERIFIED": 1,
+    "SYNCING": 0,
+    "NOT_STARTED": 5,
+    "RPC_UNAVAILABLE": 0,
+    "INCONSISTENT": 0,
+    "errors": 0,
+    "rows": [
+      { "slug": "marco-wbnb", "classification": "EMPTY_VERIFIED", "productionStatus": "EMPTY_VERIFIED" },
+      { "slug": "55d398-963556", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "8ac76a-963556", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "55d398-8ac76a", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED", "orchestratorCursor": 109429714 },
+      { "slug": "8ac76a-bb4cdb", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "55d398-bb4cdb", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" }
+    ]
+  },
+  "tier2Reconciliation": {
+    "total": 12,
+    "READY": 0,
+    "EMPTY_VERIFIED": 0,
+    "SYNCING": 0,
+    "NOT_STARTED": 12,
+    "RPC_UNAVAILABLE": 0,
+    "INCONSISTENT": 0,
+    "errors": 0,
+    "rows": [
+      { "slug": "403487-502eed", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "52abb0-bb4cdb", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED", "orchestratorCursor": 109422969 },
+      { "slug": "502eed-bb4cdb", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "502eed-6effc3", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "502eed-963556", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "502eed-b1c137", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "9acda5-bb4cdb", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "502eed-76fa56", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "002742-963556", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "9acda5-e7ba8b", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "502eed-ede11c", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" },
+      { "slug": "138455-bb4cdb", "classification": "NOT_STARTED", "productionStatus": "UNSCANNED" }
+    ]
+  },
+  "stageBudgetCertification": {
+    "featuredSyncBounded": true,
+    "featuredSyncMs": 3737,
+    "protocolActivitySlot": true,
+    "protocolActivityMs": 466,
+    "tier1Slot": true,
+    "tier1Ms": 1248,
+    "tier2Slot": true,
+    "tier2Ms": 685,
+    "executionOrderCorrect": true,
+    "featuredMonopolization": false,
+    "http504": 0,
+    "hardTimeouts": 0,
+    "storeConsistencyTrue": true,
+    "checkpointsMonotonic": true
+  },
+  "errorsSkipsTimeouts": {
+    "http504": 0,
+    "hardTimeouts": 0,
+    "manualRunSkipped": "AUTONOMOUS_WORKER_ACTIVE"
+  },
+  "verdict": "R791A_6K_STAGE_BUDGET_PASS_TIER_PROGRESS_PARTIAL"
+}
