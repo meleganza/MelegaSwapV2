@@ -8,16 +8,15 @@ import { isBootstrapWindowComplete } from 'lib/bsc-indexer/indexer/bootstrapWind
 import { bootstrapWindowSummary } from 'lib/bsc-indexer/indexer/coverageRanges'
 
 import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
+import {
+  buildTierPairStatusInput,
+  resolveTierPairStatus,
+} from 'lib/bsc-indexer/indexer/tierPairStatus'
+import type { TierMetricStatus } from 'lib/bsc-indexer/types'
 
 const SECONDS_24H = 86_400
 
-export type TierPairStatus =
-  | 'READY'
-  | 'NO_EVENTS_IN_WINDOW'
-  | 'EMPTY_VERIFIED'
-  | 'UNSCANNED'
-  | 'RPC_UNAVAILABLE'
-  | 'INVALID_PAIR'
+export type TierPairStatus = TierMetricStatus | 'INVALID_PAIR'
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET') {
@@ -70,7 +69,6 @@ const handler: NextApiHandler = async (req, res) => {
       const hasSignal =
         volume24hQuote > 0 || tradeCount24h > 0 || changeResult != null || recentCandles.length >= 2
 
-      const touched = Boolean(checkpoint || health?.lastSuccessfulSync)
       const coverageRanges = checkpoint?.coverageRanges ?? []
       const bootstrapStart = checkpoint?.bootstrapStartBlock ?? 0
       const chainHeadRef = checkpoint?.chainHeadAtSync ?? checkpoint?.lastIndexedBlock ?? 0
@@ -80,22 +78,15 @@ const handler: NextApiHandler = async (req, res) => {
         windowSummary.coveragePercent,
         windowSummary.gaps,
       )
-      const rpcFailure =
-        health?.status === 'error' &&
-        Boolean(health?.lastFailureReason?.toLowerCase().includes('rpc'))
 
-      let status: TierPairStatus
-      if (hasSignal) {
-        status = 'READY'
-      } else if (!touched || !windowComplete) {
-        status = 'UNSCANNED'
-      } else if (rpcFailure) {
-        status = 'RPC_UNAVAILABLE'
-      } else if (health?.status === 'ready' || health?.status === 'syncing') {
-        status = 'EMPTY_VERIFIED'
-      } else {
-        status = 'NO_EVENTS_IN_WINDOW'
-      }
+      const status = resolveTierPairStatus(
+        buildTierPairStatusInput({
+          hasSignal,
+          checkpoint,
+          health,
+          windowComplete,
+        }),
+      )
 
       rows.push({
         slug,
