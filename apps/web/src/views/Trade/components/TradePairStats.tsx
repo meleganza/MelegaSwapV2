@@ -132,7 +132,7 @@ export const TradePairStats: React.FC<TradePairStatsProps> = ({ stats }) => (
             </Value>
           </ValueSlot>
           {subline ? <Subline>{subline}</Subline> : null}
-          {stat.change && !muted ? (
+          {stat.change && !muted && Math.abs(parseFloat(stat.change.replace(/[^0-9.-]/g, '') || '0')) > 0.0001 ? (
             <Change $positive={stat.changePositive}>{stat.change}</Change>
           ) : null}
         </Card>

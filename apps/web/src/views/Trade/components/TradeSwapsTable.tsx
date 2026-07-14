@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { RUNTIME_LOADING_LABEL } from 'lib/runtime-truth'
 import { tradeColors, tradeLayout, tradeTypography } from '../tradeTokens'
 import type { TradeSwapRow } from '../useTradeTerminalData'
 import TradeTechnicalDetails from './TradeTechnicalDetails'
@@ -16,8 +17,8 @@ const Panel = styled.section<{ $empty?: boolean }>`
   border-radius: ${tradeLayout.cardRadius};
   padding: ${tradeLayout.cardPadding};
   box-sizing: border-box;
-  height: ${({ $empty }) => ($empty ? '176px' : tradeLayout.recentSwapsHeight)};
-  min-height: ${({ $empty }) => ($empty ? '176px' : tradeLayout.recentSwapsHeight)};
+  height: ${({ $empty }) => ($empty ? '132px' : tradeLayout.recentSwapsHeight)};
+  min-height: ${({ $empty }) => ($empty ? '132px' : tradeLayout.recentSwapsHeight)};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -28,7 +29,7 @@ const Head = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   flex-shrink: 0;
 `
 
@@ -60,7 +61,7 @@ const Th = styled.th`
   top: 0;
   z-index: 1;
   height: ${tradeLayout.swapTableHeadHeight};
-  padding: 0 12px;
+  padding: 0 10px;
   text-align: left;
   font-size: ${tradeTypography.tableHead.size};
   font-weight: ${tradeTypography.tableHead.weight};
@@ -73,7 +74,7 @@ const Th = styled.th`
 
 const Td = styled.td`
   height: ${tradeLayout.swapRowHeight};
-  padding: 0 12px;
+  padding: 0 10px;
   font-size: ${tradeTypography.tableCell.size};
   font-weight: ${tradeTypography.tableCell.weight};
   line-height: ${tradeTypography.tableCell.lineHeight};
@@ -91,17 +92,28 @@ const MutedCell = styled(Td)`
   color: ${tradeColors.muted};
 `
 
-const DirectionPill = styled.span<{ $buy?: boolean }>`
+const PairCell = styled.div`
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 11px;
+  gap: 6px;
+  min-width: 0;
+`
+
+const TokenIcons = styled.div`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+`
+
+const ExplorerLink = styled.a`
+  font-size: 12px;
   font-weight: 700;
-  color: ${({ $buy }) => ($buy ? tradeColors.green : tradeColors.muted)};
-  border: 1px solid ${({ $buy }) => ($buy ? tradeColors.green : tradeColors.border)};
-  background: ${({ $buy }) => ($buy ? 'rgba(27, 231, 122, 0.08)' : 'transparent')};
+  color: ${tradeColors.gold};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 const EmptyState = styled.div`
@@ -112,33 +124,33 @@ const EmptyState = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 24px 16px;
+  padding: 12px 16px;
   border-radius: 12px;
   border: 1px dashed rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+  background: rgba(255, 255, 255, 0.02);
 `
 
 const EmptyTitle = styled.div`
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: ${tradeColors.text};
 `
 
 const EmptyDesc = styled.p`
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   max-width: 420px;
   font-size: ${tradeTypography.statSubline.size};
-  line-height: 1.45;
+  line-height: 1.4;
   color: ${tradeColors.muted};
 `
 
 const SkeletonRow = styled.div`
   height: ${tradeLayout.swapRowHeight};
   display: grid;
-  grid-template-columns: 72px 1.2fr 1fr 1fr 0.8fr 88px;
-  gap: 12px;
+  grid-template-columns: 72px 1.4fr 1fr 0.9fr 72px 56px;
+  gap: 10px;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 `
 
@@ -152,7 +164,7 @@ const SkeletonBar = styled.span<{ $w?: string }>`
   animation: ${shimmer} 1.6s ease-in-out infinite;
 `
 
-const SKELETON_ROWS = 5
+const SKELETON_ROWS = 3
 
 export interface TradeSwapsTableProps {
   rows: TradeSwapRow[]
@@ -165,7 +177,7 @@ export interface TradeSwapsTableProps {
 export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
   rows,
   isIndexing,
-  emptyTitle = RUNTIME_UNAVAILABLE_LABEL,
+  emptyTitle = 'No indexed swaps yet',
   emptyDescription,
   technicalDetail,
 }) => {
@@ -194,9 +206,7 @@ export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
       ) : displayRows.length === 0 ? (
         <EmptyState data-trade-swaps-empty>
           <EmptyTitle>{isIndexing ? RUNTIME_LOADING_LABEL : emptyTitle}</EmptyTitle>
-          <EmptyDesc>
-            {emptyDescription ?? 'Waiting for first indexed event'}
-          </EmptyDesc>
+          <EmptyDesc>{emptyDescription ?? 'Runtime swaps appear here after the indexer records activity.'}</EmptyDesc>
           <TradeTechnicalDetails detail={technicalDetail} />
         </EmptyState>
       ) : (
@@ -207,9 +217,8 @@ export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
                 <Th style={{ width: '72px' }}>Time</Th>
                 <Th>Pair</Th>
                 <Th>Amount</Th>
-                <Th>Received</Th>
-                <Th>Route</Th>
-                <Th style={{ width: '88px' }}>Wallet</Th>
+                <Th style={{ width: '96px' }}>Wallet</Th>
+                <Th style={{ width: '56px' }}>Tx</Th>
               </tr>
             </thead>
             <tbody>
@@ -217,15 +226,21 @@ export const TradeSwapsTable: React.FC<TradeSwapsTableProps> = ({
                 <tr key={row.id}>
                   <MutedCell>{row.time}</MutedCell>
                   <Td>
-                    <DirectionPill $buy={row.direction === 'buy'}>
-                      {row.direction === 'buy' ? 'Buy' : 'Sell'}
-                    </DirectionPill>{' '}
-                    {row.pair}
+                    <PairCell>
+                      <TokenIcons>
+                        <MelegaTokenAvatar name={row.token0Symbol} symbol={row.token0Symbol} size={18} />
+                        <MelegaTokenAvatar name={row.token1Symbol} symbol={row.token1Symbol} size={18} />
+                      </TokenIcons>
+                      {row.token0Symbol}/{row.token1Symbol}
+                    </PairCell>
                   </Td>
                   <Td title={row.amountReason}>{row.amount}</Td>
-                  <Td title={row.receivedReason}>{row.received ?? RUNTIME_UNAVAILABLE_LABEL}</Td>
-                  <MutedCell>{row.route ?? 'Melega route'}</MutedCell>
                   <MutedCell>{row.wallet}</MutedCell>
+                  <Td>
+                    <ExplorerLink href={row.explorerUrl} target="_blank" rel="noopener noreferrer">
+                      View
+                    </ExplorerLink>
+                  </Td>
                 </tr>
               ))}
             </tbody>

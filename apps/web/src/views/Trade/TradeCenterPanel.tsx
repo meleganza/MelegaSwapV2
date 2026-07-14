@@ -45,7 +45,9 @@ export const TradeCenterPanel: React.FC<TradeCenterPanelProps> = ({
   const orderedStats = useMemo((): TradePairStat[] => {
     if (reconciliationStatus === 'inconsistent' || reconciliationStatus === 'unavailable') return []
     const priceChange =
-      pairPrice?.change24h != null && Number.isFinite(pairPrice.change24h)
+      pairPrice?.change24h != null &&
+      Number.isFinite(pairPrice.change24h) &&
+      Math.abs(pairPrice.change24h) > 0.0001
         ? {
             text: `${pairPrice.change24h >= 0 ? '+' : ''}${pairPrice.change24h.toFixed(2)}%`,
             positive: pairPrice.change24h >= 0,

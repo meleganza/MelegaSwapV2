@@ -4,13 +4,9 @@ import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAv
 import { isMarcoSymbol, MARCO_BSC_ADDRESS, MARCO_BSC_CHAIN_ID } from 'design-system/melega/constants/brand'
 import { BSC_TESTNET_ADDRESSES } from 'config/constants/bscTestnet'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { resolveTradeMarketContext } from 'lib/trade-market/resolveTradeMarketContext'
 import { RUNTIME_LOADING_LABEL, RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { tradeColors, TRADE_TIMEFRAMES, tradeTypography, type TradeTimeframeId } from '../tradeTokens'
-import { useFetchPairPrices } from 'state/swap/hooks'
-import { PairDataTimeWindowEnum } from 'state/swap/types'
 import { getTokenAddress } from 'views/Swap/components/Chart/utils'
-import { getTimeWindowChange } from 'views/Swap/components/Chart/utils'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import TradeChartPanel from './TradeChartPanel'
@@ -78,18 +74,10 @@ const PriceUsd = styled.div`
   font-variant-numeric: ${tradeTypography.fontVariantNumeric};
 `
 
-const HeaderRight = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  flex-shrink: 0;
-`
-
-const Change = styled.div<{ $positive?: boolean; $muted?: boolean }>`
+const Change = styled.div<{ $positive?: boolean }>`
   font-size: ${tradeTypography.heroChange.size};
   font-weight: ${tradeTypography.heroChange.weight};
-  color: ${({ $positive, $muted }) =>
-    $muted ? tradeColors.muted : $positive ? tradeColors.green : tradeColors.red};
+  color: ${({ $positive }) => ($positive ? tradeColors.green : tradeColors.red)};
   white-space: nowrap;
   padding-top: 8px;
   font-variant-numeric: ${tradeTypography.fontVariantNumeric};
@@ -136,12 +124,6 @@ const timeframeToIndexerInterval = (id: TradeTimeframeId): '1H' | '4H' | '1D' =>
   return '1H'
 }
 
-const timeframeToEnum = (id: TradeTimeframeId): PairDataTimeWindowEnum => {
-  if (id === '1d' || id === '4h') return PairDataTimeWindowEnum.DAY
-  if (id === '1h' || id === '15m') return PairDataTimeWindowEnum.WEEK
-  return PairDataTimeWindowEnum.DAY
-}
-
 export interface TradePriceChartProps {
   inputSymbol: string
   outputSymbol: string
@@ -168,7 +150,6 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   const [timeframe, setTimeframe] = useState<TradeTimeframeId>('1h')
   const { chainId: activeChainId } = useActiveChainId()
   const token0Address = getTokenAddress(inputCurrencyId)
-  const token1Address = getTokenAddress(outputCurrencyId)
 
   const avatarChainId = useMemo(() => {
     if (activeChainId) return activeChainId
@@ -183,13 +164,6 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
     return token0Address
   }, [inputSymbol, activeChainId, token0Address])
 
-  const { pairPrices: subgraphPrices = [] } = useFetchPairPrices({
-    token0Address,
-    token1Address,
-    timeWindow: timeframeToEnum(timeframe),
-    currentSwapPrice: {},
-  })
-
   const indexerInterval = timeframeToIndexerInterval(timeframe)
   const pairForIndexer =
     isMarcoSymbol(inputSymbol) || isMarcoSymbol(outputSymbol) ? MARCO_WBNB_PAIR_BSC : undefined
@@ -199,41 +173,30 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
   )
 
   const pairPrices = useMemo(() => {
-    if (subgraphPrices.length >= 2) return subgraphPrices
     if (indexerCandles.length >= 2) {
       return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
     }
     if (indexerCandles.length === 1) {
       return indexerCandles.map((c) => ({ time: c.time, value: c.close }))
     }
-    if (subgraphPrices.length === 1) return subgraphPrices
     return []
-  }, [subgraphPrices, indexerCandles])
+  }, [indexerCandles])
 
   const resolvedChartEmptyReason =
     chartEmptyReason ??
-    (pairPrices.length === 1
+    (pairPrices.length > 0 && pairPrices.length < 2
       ? 'insufficient_history'
-      : pairPrices.length < 1 && indexerCandleStatus === 'empty'
-        ? 'No swap events in selected interval'
-        : pairPrices.length < 1 && indexerCandleStatus === 'unavailable'
-          ? 'Durable indexer candles unavailable'
-          : chartEmptyReason)
+      : pairPrices.length < 1 && indexerCandleStatus === 'loading'
+        ? 'loading'
+        : pairPrices.length < 1
+          ? 'insufficient_history'
+          : null)
 
-  const chartChange = useMemo(() => getTimeWindowChange(pairPrices), [pairPrices])
-  const lastPrice = pairPrices[pairPrices.length - 1]?.value
-  const displayPrice = priceUsd ?? lastPrice
-  const displayChange = change24h ?? Number(chartChange.changePercentage)
-
-  const publicSources = useMemo(() => {
-    const ctx = resolveTradeMarketContext({
-      outputAddress: isMarcoSymbol(outputSymbol) ? MARCO_BSC_ADDRESS : token1Address,
-      hasPairPrices: pairPrices.length >= 1,
-      hasSwaps: false,
-      routeConfigured: Boolean(token0Address && token1Address),
-    })
-    return ctx.sources.filter((s) => s.href).map((s) => ({ label: s.label, href: s.href! }))
-  }, [outputSymbol, token1Address, token0Address, pairPrices.length])
+  const displayPrice = priceUsd
+  const validChange =
+    change24h != null && Number.isFinite(change24h) && Math.abs(change24h) > 0.0001
+      ? change24h
+      : undefined
 
   const priceText =
     displayPrice != null && Number.isFinite(displayPrice)
@@ -266,18 +229,12 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
             {priceText ? <PriceUsd>USD ${priceText}</PriceUsd> : null}
           </div>
         </PairBlock>
-        <HeaderRight>
-          {Number.isFinite(displayChange) && !priceLoading ? (
-            <Change $positive={displayChange >= 0}>
-              {displayChange >= 0 ? '+' : ''}
-              {displayChange.toFixed(2)}% (24H)
-            </Change>
-          ) : (
-            <Change $muted>
-              {priceLoading ? `${RUNTIME_LOADING_LABEL} (24H)` : `${RUNTIME_UNAVAILABLE_LABEL} (24H)`}
-            </Change>
-          )}
-        </HeaderRight>
+        {validChange != null && !priceLoading ? (
+          <Change $positive={validChange >= 0}>
+            {validChange >= 0 ? '+' : ''}
+            {validChange.toFixed(2)}% (24H)
+          </Change>
+        ) : null}
       </Header>
       <ChartBlock>
         <Timeframes role="tablist" aria-label="Chart timeframe">
@@ -295,12 +252,11 @@ export const TradePriceChart: React.FC<TradePriceChartProps> = ({
           ))}
         </Timeframes>
         <TradeChartPanel
-          inputSymbol={inputSymbol}
-          outputSymbol={outputSymbol}
           pairPrices={pairPrices}
           emptyReason={resolvedChartEmptyReason}
           emptyDetail={chartEmptyDetail}
-          publicSources={isMarcoSymbol(outputSymbol) ? publicSources : []}
+          currentPriceUsd={displayPrice}
+          isLoading={indexerCandleStatus === 'loading'}
         />
       </ChartBlock>
     </Shell>

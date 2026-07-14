@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import { DATA_REASON_LABELS } from 'lib/data-policy/dataReasonCodes'
-import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { TradeSwapRow } from '../useTradeTerminalData'
 import TradeSwapsTable from './TradeSwapsTable'
 
@@ -63,7 +62,7 @@ export const TradeRecentSwaps: React.FC<TradeRecentSwapsProps> = ({
     <TradeSwapsTable
       rows={rows}
       isIndexing={isIndexing}
-      emptyTitle={RUNTIME_UNAVAILABLE_LABEL}
+      emptyTitle="No indexed swaps yet"
       emptyDescription={emptyDescription}
       technicalDetail={technicalDetail}
     />

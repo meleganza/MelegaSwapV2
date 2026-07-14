@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { Token, WNATIVE } from '@pancakeswap/sdk'
+import { Token, WBNB, WNATIVE } from '@pancakeswap/sdk'
 import { Transaction, TransactionType } from 'state/info/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
@@ -18,7 +18,9 @@ import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
 import type { TradeDataMissingReason } from './tradeRuntime/buildTradeMachinePayload'
 import { reconcileTradeSurface, type TradeReconciliationStatus } from 'lib/data-truth/tradeReconciliation'
+import { computeValid24hPriceChange } from 'lib/data-truth/compute24hPriceChange'
 import { usePriceCakeBusd } from 'state/farms/hooks'
+import useBUSDPrice from 'hooks/useBUSDPrice'
 import { PairState, usePairs } from 'hooks/usePairs'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 
@@ -44,12 +46,16 @@ export interface TradeSwapRow {
   time: string
   wallet: string
   pair: string
+  token0Symbol: string
+  token1Symbol: string
+  token0Address?: string
+  token1Address?: string
   amount: string
   amountReason?: string
   received?: string
   receivedReason?: string
   direction: 'buy' | 'sell'
-  route?: string
+  explorerUrl: string
 }
 
 export interface TradePairStat {
@@ -108,7 +114,7 @@ const formatUsd = (value: number): string | undefined => {
 }
 
 const formatPct = (value: number): { text: string; positive: boolean } | undefined => {
-  if (!Number.isFinite(value)) return undefined
+  if (!Number.isFinite(value) || Math.abs(value) <= 0.0001) return undefined
   const sign = value >= 0 ? '+' : ''
   return { text: `${sign}${value.toFixed(2)}%`, positive: value >= 0 }
 }
@@ -126,7 +132,8 @@ const formatTokenAmount = (value: number, symbol: string): string | undefined =>
   return `${value.toFixed(4)} ${symbol}`
 }
 
-const swapRouteLabel = (tx: Transaction): string => `${tx.token0Symbol}→${tx.token1Symbol}`
+
+const bscExplorerTx = (hash: string): string => `https://bscscan.com/tx/${hash}`
 
 const matchesPair = (tx: Transaction, token0?: string, token1?: string): boolean => {
   if (!token0 || !token1) return true
@@ -179,6 +186,12 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     { refreshInterval: 120_000, revalidateOnFocus: false },
   )
   const marcoOnChainPrice = usePriceCakeBusd({ forceMainnet: true })
+  const wbnbOnChainPrice = useBUSDPrice(chainId ? WBNB[chainId] : WBNB[56])
+  const effectiveBnbUsd = useMemo(() => {
+    if (bnbUsdPrice != null && Number.isFinite(bnbUsdPrice) && bnbUsdPrice > 0) return bnbUsdPrice
+    const wbnbUsd = wbnbOnChainPrice ? Number(wbnbOnChainPrice.toSignificant(6)) : undefined
+    return wbnbUsd != null && Number.isFinite(wbnbUsd) && wbnbUsd > 0 ? wbnbUsd : undefined
+  }, [bnbUsdPrice, wbnbOnChainPrice])
   const marcoToken = useMemo(
     () => (chainId === 56 ? new Token(56, MARCO_BSC_ADDRESS, 18, 'MARCO') : undefined),
     [chainId],
@@ -189,7 +202,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   const reserveLiquidityUsd = useMemo(() => {
     if (!isMarcoRoute || pairState !== PairState.EXISTS || !pair) return undefined
     const marcoUsd = marcoOnChainPrice?.toNumber()
-    const bnbUsd = bnbUsdPrice
+    const bnbUsd = effectiveBnbUsd
     if (!marcoUsd || !bnbUsd) return undefined
     const marcoReserve = pair.token0.symbol === 'MARCO'
       ? getBalanceNumber(pair.reserve0, pair.token0.decimals)
@@ -199,7 +212,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       : getBalanceNumber(pair.reserve1, pair.token1.decimals)
     const total = marcoReserve * marcoUsd + bnbReserve * bnbUsd
     return total > 0 ? total : undefined
-  }, [isMarcoRoute, pairState, pair, marcoOnChainPrice, bnbUsdPrice])
+  }, [isMarcoRoute, pairState, pair, marcoOnChainPrice, effectiveBnbUsd])
 
   const indexerMetrics24h = useMemo(() => {
     if (!useDurableIndexer || !isMarcoRoute) return undefined
@@ -216,8 +229,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const swapEventCount = indexerState.eventCounts?.Swap ?? 0
     const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h > 0 ? txCount24h : swapEventCount
     const volumeUsd =
-      quoteVolumeWbnb > 0 && bnbUsdPrice != null && Number.isFinite(bnbUsdPrice)
-        ? quoteVolumeWbnb * bnbUsdPrice
+      quoteVolumeWbnb > 0 && effectiveBnbUsd != null && Number.isFinite(effectiveBnbUsd)
+        ? quoteVolumeWbnb * effectiveBnbUsd
         : undefined
     const hasData = resolvedTradeCount > 0 || quoteVolumeWbnb > 0 || indexerCandleStatus === 'ready'
     if (!hasData) return undefined
@@ -233,7 +246,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     indexerCandles,
     transactions,
     indexerState.eventCounts,
-    bnbUsdPrice,
+    effectiveBnbUsd,
     indexerCandleStatus,
   ])
 
@@ -260,7 +273,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const swapTxs = transactions.filter((tx) => tx.type === TransactionType.SWAP)
     const pairFiltered = swapTxs.filter((tx) => matchesPair(tx, displayInput, displayOutput))
     const source = pairFiltered.length > 0 ? pairFiltered : swapTxs
-    return source
+    return [...source]
+      .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
       .slice(0, 12)
       .map((tx) => {
         const receivedSymbol = displayOutput ?? tx.token1Symbol
@@ -273,21 +287,26 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
           time: formatTimeAgo(tx.timestamp),
           wallet: shortenWallet(tx.sender),
           pair: `${tx.token0Symbol} / ${tx.token1Symbol}`,
-          amount: formatUsd(tx.amountUSD) ?? RUNTIME_UNAVAILABLE_LABEL,
+          token0Symbol: tx.token0Symbol,
+          token1Symbol: tx.token1Symbol,
+          token0Address: tx.token0Address,
+          token1Address: tx.token1Address,
+          amount: formatUsd(tx.amountUSD) ?? formatTokenAmount(Math.max(tx.amountToken0, tx.amountToken1), tx.token0Symbol) ?? '—',
           amountReason:
             tx.amountUSD > 0 ? undefined : DATA_REASON_LABELS.NO_EVENTS_INDEXED,
           received: receivedAmount,
           receivedReason: receivedAmount ? undefined : 'Swap output amount not indexed',
           direction: swapDirection(tx, displayOutput),
-          route: swapRouteLabel(tx),
+          explorerUrl: bscExplorerTx(tx.hash),
         }
       })
   }, [transactions, displayInput, displayOutput])
 
   const pairStats = useMemo((): TradePairStat[] => {
-    const volChange = formatPct(tokenData?.volumeUSDChange ?? NaN)
-    const liqChange = formatPct(tokenData?.liquidityUSDChange ?? NaN)
-    const txChange = formatPct(tokenData?.txCountChange ?? NaN)
+    const useCanonicalIndexerStats = useDurableIndexer && isMarcoRoute
+    const volChange = useCanonicalIndexerStats ? undefined : formatPct(tokenData?.volumeUSDChange ?? NaN)
+    const liqChange = useCanonicalIndexerStats ? undefined : formatPct(tokenData?.liquidityUSDChange ?? NaN)
+    const txChange = useCanonicalIndexerStats ? undefined : formatPct(tokenData?.txCountChange ?? NaN)
 
     const indexedVolumeValue =
       indexerMetrics24h?.volumeUsd != null
@@ -300,12 +319,15 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
         ? indexerMetrics24h.tradeCount.toLocaleString()
         : undefined
 
-    const volumeValue =
-      indexedVolumeValue ?? formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
+    const volumeValue = useCanonicalIndexerStats
+      ? indexedVolumeValue
+      : indexedVolumeValue ?? formatUsd(tokenData?.volumeUSD ?? publicMarket?.volume24hUsd ?? 0)
     const liquidityValue =
       reserveLiquidityUsd != null
         ? formatUsd(reserveLiquidityUsd)
-        : formatUsd(tokenData?.liquidityUSD ?? 0)
+        : useCanonicalIndexerStats
+          ? undefined
+          : formatUsd(tokenData?.liquidityUSD ?? 0)
     const mcapValue = formatCompactUsd(publicMarket?.marketCapUsd)
     const fdvValue = formatCompactUsd(publicMarket?.fdvUsd)
     const supplyValue = formatSupply(publicMarket?.circulatingSupply)
@@ -324,13 +346,17 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     const liquidityReason: DataReasonCode | undefined =
       reserveLiquidityUsd != null
         ? undefined
-        : tokenData === undefined && subgraphReport.melegaNativeConfigured
+        : pairState === PairState.EXISTS && isMarcoRoute
           ? 'SUBGRAPH_LOADING'
-          : !tokenData?.exists
-            ? 'PAIR_NOT_INDEXED'
-            : !tokenData.liquidityUSD
-              ? 'NO_POOL_FOUND'
-              : undefined
+          : useCanonicalIndexerStats
+            ? 'NO_POOL_FOUND'
+            : tokenData === undefined && subgraphReport.melegaNativeConfigured
+              ? 'SUBGRAPH_LOADING'
+              : !tokenData?.exists
+                ? 'PAIR_NOT_INDEXED'
+                : !tokenData.liquidityUSD
+                  ? 'NO_POOL_FOUND'
+                  : undefined
 
     const tradesReason: DataReasonCode | undefined =
       indexedTradeValue
@@ -385,7 +411,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       {
         id: 'transactions',
         label: '24H Trades',
-        value: indexedTradeValue ?? (tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined),
+        value: indexedTradeValue ?? (useCanonicalIndexerStats ? undefined : tokenData?.txCount ? tokenData.txCount.toLocaleString() : undefined),
         change: txChange?.text,
         changePositive: txChange?.positive,
         reasonCode: tradesReason,
@@ -405,7 +431,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
               : 'EXPLORER_SOURCE_MISSING',
       },
     ]
-  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading, indexerMetrics24h, transactions, subgraphReport.melegaNativeConfigured, reserveLiquidityUsd])
+  }, [tokenData, publicMarket, tokenAddress, holderCount, holderLoading, indexerMetrics24h, transactions, subgraphReport.melegaNativeConfigured, reserveLiquidityUsd, useDurableIndexer, isMarcoRoute, pairState])
 
   const pairPrice = useMemo(() => {
     const onChain = marcoOnChainPrice?.toNumber()
@@ -426,8 +452,8 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
     }
     const close = indexerMetrics24h?.lastClose
     if (close != null && close > 0 && Number.isFinite(close)) {
-      if (bnbUsdPrice != null && Number.isFinite(bnbUsdPrice) && bnbUsdPrice > 0) {
-        const priceUsd = close * bnbUsdPrice
+      if (effectiveBnbUsd != null && Number.isFinite(effectiveBnbUsd) && effectiveBnbUsd > 0) {
+        const priceUsd = close * effectiveBnbUsd
         if (Number.isFinite(priceUsd) && priceUsd > 0) {
           return {
             value: priceUsd,
@@ -443,7 +469,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
       }
     }
     return undefined
-  }, [tokenData, indexerMetrics24h, bnbUsdPrice, marcoOnChainPrice, isMarcoRoute, indexerCandles])
+  }, [tokenData, indexerMetrics24h, effectiveBnbUsd, marcoOnChainPrice, isMarcoRoute, indexerCandles])
 
   const missingReason = useMemo((): TradeDataMissingReason => {
     if (useDurableIndexer && (transactions?.length || indexerCandles.length > 0)) return null
@@ -559,8 +585,7 @@ export const useTradeTerminalData = (inputSymbol?: string, outputSymbol?: string
   ])
 
   const reconciliationStatus = tradeReconciliation.status
-  const reconciliationBlocked =
-    reconciliationStatus === 'inconsistent' || reconciliationStatus === 'unavailable'
+  const reconciliationBlocked = reconciliationStatus === 'inconsistent'
 
   const gatedPairStats = reconciliationBlocked ? [] : pairStats
   const gatedRecentSwaps = reconciliationBlocked ? [] : recentSwaps
