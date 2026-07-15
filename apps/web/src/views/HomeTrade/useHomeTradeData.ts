@@ -6,6 +6,7 @@ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
+import { formatHomeActivityRows } from './formatHomeActivity'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/dex-asset-index'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { WBNB } from '@pancakeswap/sdk'
@@ -68,10 +69,13 @@ export interface ActivityRow {
   href?: string
 }
 
-export interface ActivitySlot {
-  id: string
-  label: string
-  row?: ActivityRow
+export interface ActivityUnavailable {
+  message: string
+  timestamp: string
+  reason: string
+  source: string
+  indexer: string
+  lastAttempt: string
 }
 
 export interface IndexedRibbonAsset {
@@ -81,7 +85,6 @@ export interface IndexedRibbonAsset {
   chainId?: number
   displayName: string
 }
-
 
 export interface LiveEconomyMetric {
   id: string
@@ -93,15 +96,6 @@ export interface LiveEconomyMetric {
   owner?: string
   href?: string
   asOf?: string
-}
-
-export interface ActivityUnavailable {
-  message: string
-  timestamp: string
-  reason: string
-  source: string
-  indexer: string
-  lastAttempt: string
 }
 
 export const isRecentIndexedEvent = (timestamp: string | number): boolean => {
@@ -177,36 +171,22 @@ const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => {
   return apr > 0 ? apr : undefined
 }
 
-const txToRow = (tx: Transaction): ActivityRow => {
-  if (tx.type === TransactionType.SWAP) {
-    return {
-      id: tx.hash,
-      type: 'Swap',
-      context: `${tx.token0Symbol} → ${tx.token1Symbol}`,
-      value: tx.amountUSD > 0 ? formatUsd(tx.amountUSD) : undefined,
-      time: formatTimeAgo(tx.timestamp),
-    }
-  }
-  if (tx.type === TransactionType.MINT) {
-    return {
-      id: tx.hash,
-      type: 'Liquidity Added',
-      context: `${tx.token0Symbol} / ${tx.token1Symbol}`,
-      value: tx.amountUSD > 0 ? formatUsd(tx.amountUSD) : undefined,
-      time: formatTimeAgo(tx.timestamp),
-    }
-  }
-  return {
-    id: tx.hash,
-    type: 'Liquidity Removed',
-    context: `${tx.token0Symbol} / ${tx.token1Symbol}`,
-    value: tx.amountUSD > 0 ? formatUsd(tx.amountUSD) : undefined,
-    time: formatTimeAgo(tx.timestamp),
-  }
-}
-
 export const useHomeTradeData = () => {
-  const { rows: protocolRows, indexerState, isActivityIndexing } = useProtocolActivityFeed()
+  const {
+    rows: protocolRows,
+    totalCount,
+    ammCount,
+    masterchefCount,
+    smartchefCount,
+    newestTimestamp,
+    oldestTimestamp,
+    duplicatesRemoved,
+    mergeStats,
+    indexerState,
+    isLoading: protocolActivityLoading,
+    isError: protocolActivityError,
+    protocolError,
+  } = useProtocolActivityFeed()
   const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
   const wbnbPrice = useBUSDPrice(WBNB[56])
@@ -225,19 +205,20 @@ export const useHomeTradeData = () => {
   const indexedTransactions = useMemo(
     () =>
       protocolRows
-        .filter((r) => r.sourceType === 'amm')
-        .map(
-          (r) =>
-            ({
-              hash: r.transactionHash,
-              timestamp: String(r.timestamp),
-              sender: r.wallet,
-              type: TransactionType.SWAP,
-              token0Symbol: r.context.split('/')[0]?.trim(),
-              token1Symbol: r.context.split('/')[1]?.trim(),
-              amountUSD: Number(r.value ?? 0),
-            }) as Transaction,
-        ),
+        .filter((r) => r.sourceType === 'amm' && r.eventType === 'Swap')
+        .map((r) => {
+          const symbols = (r.resolvedSymbols ?? []).filter(Boolean)
+          const fromPair = (r.pairOrPoolIdentity ?? '').split('/').map((part) => part.trim())
+          return {
+            hash: r.transactionHash,
+            timestamp: String(r.timestamp),
+            sender: r.wallet ?? '',
+            type: TransactionType.SWAP,
+            token0Symbol: symbols[0] ?? fromPair[0] ?? '',
+            token1Symbol: symbols[1] ?? fromPair[1] ?? '',
+            amountUSD: 0,
+          } as Transaction
+        }),
     [protocolRows],
   )
 
@@ -473,21 +454,42 @@ export const useHomeTradeData = () => {
       .filter((row) => row.apr || row.tvl)
   }, [pools])
 
-  const activitySlots = useMemo((): ActivitySlot[] => {
-    const sorted = [...protocolRows].sort((a, b) => b.timestamp - a.timestamp)
-    return sorted.slice(0, 6).map((row, index) => ({
-      id: `activity-${row.transactionHash}-${index}`,
-      label: row.eventType,
-      row: {
-        id: row.id,
-        type: row.eventType,
-        context: row.context,
-        value: row.value,
-        time: formatTimeAgo(String(row.timestamp)),
-        href: row.explorerUrl,
-      },
-    }))
+  const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
+
+  const activityViewAllHref = useMemo(() => {
+    if (protocolRows.length === 0) return '/trade'
+    return protocolRows.some((row) => row.sourceType !== 'amm') ? '/farms' : '/trade'
   }, [protocolRows])
+
+  const isActivityIndexing = protocolActivityLoading && protocolRows.length === 0
+
+  const activityDiagnostic = useMemo(() => {
+    const parts = [
+      `Canonical total ${totalCount}`,
+      `AMM ${ammCount}`,
+      `MasterChef ${masterchefCount}`,
+      `SmartChef ${smartchefCount}`,
+      duplicatesRemoved > 0 ? `Duplicates removed ${duplicatesRemoved}` : undefined,
+      newestTimestamp ? `Newest ${new Date(newestTimestamp * 1000).toISOString()}` : undefined,
+      oldestTimestamp ? `Oldest ${new Date(oldestTimestamp * 1000).toISOString()}` : undefined,
+      protocolActivityLoading ? 'Canonical feed loading' : undefined,
+      protocolActivityError ? `Protocol error ${protocolError ?? 'request failed'}` : undefined,
+      indexerState.status !== 'ready' ? `Indexer ${indexerState.status}` : undefined,
+    ].filter(Boolean)
+    return parts.join(' · ')
+  }, [
+    totalCount,
+    ammCount,
+    masterchefCount,
+    smartchefCount,
+    duplicatesRemoved,
+    newestTimestamp,
+    oldestTimestamp,
+    protocolActivityLoading,
+    protocolActivityError,
+    protocolError,
+    indexerState.status,
+  ])
 
   const isTrendingIndexing = useMemo(() => {
     const farmsLoading =
@@ -498,18 +500,15 @@ export const useHomeTradeData = () => {
     return farmsLoading || poolsLoading || indexerState.status === 'loading'
   }, [farmsFetchStatus, poolsFetchStatus, indexerState.status])
 
-  const activityRows = useMemo(
-    (): ActivityRow[] => activitySlots.filter((s) => s.row).map((s) => s.row!),
-    [activitySlots],
-  )
+  const activityEmptySecondary = useMemo(() => {
+    if (protocolRows.length > 0 || isActivityIndexing || protocolActivityError) return undefined
+    return 'The indexed activity window is currently empty.'
+  }, [protocolRows.length, isActivityIndexing, protocolActivityError])
 
   const activityUnavailable = useMemo((): ActivityUnavailable | undefined => {
-    if (isActivityIndexing) return undefined
-    if (protocolRows.length > 0) return undefined
-    const reason =
-      indexerState.status === 'error' || indexerState.status === 'unavailable'
-        ? indexerState.reason ?? 'Indexer unavailable'
-        : 'No indexed swaps, liquidity events, pools, farms, or builds in the current window.'
+    if (protocolRows.length > 0 || isActivityIndexing) return undefined
+    if (!protocolActivityError) return undefined
+    const reason = protocolError ?? indexerState.reason ?? 'Protocol activity request failed'
     const diagnostic = buildIndexerActivityDiagnostic({
       source: indexerState.source,
       indexer: indexerState.indexer,
@@ -517,14 +516,14 @@ export const useHomeTradeData = () => {
       reason,
     })
     return {
-      message: 'No protocol activity detected.',
+      message: 'Protocol activity is temporarily unavailable.',
       timestamp: diagnostic.lastAttempt,
       reason: diagnostic.reason,
       source: diagnostic.source,
       indexer: diagnostic.indexer,
       lastAttempt: diagnostic.lastAttempt,
     }
-  }, [isActivityIndexing, protocolRows.length, indexerState])
+  }, [protocolRows.length, isActivityIndexing, protocolActivityError, protocolError, indexerState])
 
   const showEarn = farmRows.length > 0 || poolRows.length > 0
   const showEarnNote = farmRows.some((r) => r.apr) || poolRows.some((r) => r.apr)
@@ -581,13 +580,6 @@ export const useHomeTradeData = () => {
     return 'No tradeable assets with live quotes'
   }, [trendingTickerItems.length, indexerState, marcoPriceLabel])
 
-  const activityScopeTitle = useMemo(() => {
-    if (indexedTransactions.length === 0) return 'Protocol Activity'
-    const hasRecent = indexedTransactions.some((tx) => isRecentIndexedEvent(tx.timestamp))
-    if (hasRecent) return 'Live Activity'
-    return 'Recent Protocol Activity'
-  }, [indexedTransactions])
-
   const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 
   return {
@@ -597,8 +589,20 @@ export const useHomeTradeData = () => {
     marketCards,
     farmRows,
     poolRows,
-    activityRows,
-    activitySlots,
+    homeActivityRows,
+    activityViewAllHref,
+    activityEmptySecondary,
+    activityMergeStats: mergeStats,
+    activityDuplicatesRemoved: duplicatesRemoved,
+    activityTotalCount: totalCount,
+    activityAmmCount: ammCount,
+    activityMasterchefCount: masterchefCount,
+    activitySmartchefCount: smartchefCount,
+    activityNewestTimestamp: newestTimestamp,
+    activityOldestTimestamp: oldestTimestamp,
+    activityIsError: protocolActivityError,
+    activityErrorDetail: protocolActivityError ? activityDiagnostic : undefined,
+    activityDiagnostic,
     liveEconomyMetrics,
     showEarn,
     showEarnNote,
@@ -606,7 +610,8 @@ export const useHomeTradeData = () => {
     isActivityIndexing,
     isTrendingIndexing,
     activityUnavailable,
-    activityScopeTitle,
+    /** @deprecated LiveActivityFeed derives title from row timestamps. */
+    activityScopeTitle: '',
     indexerState,
     showRibbon: ribbonItems.length > 0,
     showMarket: marketCards.length > 0,
