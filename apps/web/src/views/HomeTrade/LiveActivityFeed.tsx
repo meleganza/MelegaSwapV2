@@ -279,12 +279,47 @@ export interface LiveActivityFeedProps {
   /** @deprecated Title is derived from row timestamps inside the component. */
   title?: string
   rows?: HomeActivityDisplayRow[]
+  /** @deprecated Legacy slot rows — never rendered when canonical rows are supplied. */
+  slots?: HomeActivityDisplayRow[]
+  /** @deprecated Legacy item rows — never rendered when canonical rows are supplied. */
+  items?: HomeActivityDisplayRow[]
   viewAllHref?: string
   isIndexing?: boolean
   isError?: boolean
   emptySecondary?: string
   errorDetail?: string
   maxRows?: number
+}
+
+function extractTransactionHash(row: HomeActivityDisplayRow): string | undefined {
+  const match = row.explorerUrl?.match(/0x[a-fA-F0-9]{64}/i)
+  return match ? match[0].toLowerCase() : undefined
+}
+
+/** One canonical visible row per formatted id and on-chain transaction. */
+export function selectCanonicalActivityRows(
+  rows: readonly HomeActivityDisplayRow[],
+): HomeActivityDisplayRow[] {
+  const seenIds = new Set<string>()
+  const seenTransactions = new Set<string>()
+  const canonical: HomeActivityDisplayRow[] = []
+
+  for (const row of rows) {
+    if (!row?.id || seenIds.has(row.id)) continue
+    const txHash = extractTransactionHash(row)
+    if (txHash && seenTransactions.has(txHash)) continue
+    seenIds.add(row.id)
+    if (txHash) seenTransactions.add(txHash)
+    canonical.push(row)
+  }
+
+  return canonical
+}
+
+export function resolveVisibleRowLimit(isMobile: boolean, isTablet: boolean, maxRows = 6): number {
+  if (isMobile) return 4
+  if (isTablet) return 5
+  return maxRows
 }
 
 function formatRelativeTime(timestamp: number): string | undefined {
@@ -358,9 +393,10 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
   maxRows = 6,
 }) => {
   const { isMobile, isTablet } = useMatchBreakpoints()
-  const rowLimit = isMobile ? 4 : isTablet ? 5 : maxRows
-  const panelTitle = useMemo(() => resolveActivityTitle(rows), [rows])
-  const displayRows = rows.slice(0, rowLimit)
+  const canonicalRows = useMemo(() => selectCanonicalActivityRows(rows), [rows])
+  const rowLimit = resolveVisibleRowLimit(isMobile, isTablet, maxRows)
+  const panelTitle = useMemo(() => resolveActivityTitle(canonicalRows), [canonicalRows])
+  const displayRows = canonicalRows.slice(0, rowLimit)
   const hasRows = displayRows.length > 0
   const showSkeleton = isIndexing && !hasRows
   const skeletonCount = isMobile ? 3 : 4
@@ -391,7 +427,7 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
               const explorerLabel = `View ${row.identity} transaction on BscScan`
 
               return (
-                <Row key={row.id} data-live-activity-row>
+                <Row key={row.id} data-activity-row data-activity-row-id={row.id} data-live-activity-row>
                   <IconWrap aria-hidden>{eventIcon(row.eventLabel)}</IconWrap>
                   <Content>
                     <PrimaryLine title={primaryText}>{primaryText}</PrimaryLine>
@@ -445,4 +481,4 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
 
 export default LiveActivityFeed
 
-export { resolveActivityTitle, formatRelativeTime, isValidExplorerUrl }
+export { resolveActivityTitle, formatRelativeTime, isValidExplorerUrl, extractTransactionHash }
