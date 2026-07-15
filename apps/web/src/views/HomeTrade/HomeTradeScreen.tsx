@@ -100,18 +100,19 @@ export const HomeTradeScreen: React.FC = () => {
 
 const HomeTradeScreenContent: React.FC = () => {
   const data = useHomeTradeData()
+  const activityRows = Array.isArray(data.homeActivityRows) ? data.homeActivityRows : []
 
   const machine = useMemo(
     () =>
       buildHomeMachine({
         indexedProjects: getAllProjects().length,
         marketCards: data.marketCards,
-        activityRows: data.activityRows.length,
+        activityRows: activityRows.length,
         earnRows: data.farmRows.length + data.poolRows.length,
         subgraphEndpoint: data.indexerState?.configuredEndpoint,
         subgraphBlocker: data.indexerState?.blockerCode,
       }),
-    [data],
+    [data, activityRows.length],
   )
 
   const pulseRows = useMemo((): MelegaPulseRow[] => {
@@ -152,12 +153,12 @@ const HomeTradeScreenContent: React.FC = () => {
           userReason="Live protocol activity feed is temporarily unavailable."
         >
           <LiveActivityFeed
-            title={data.activityScopeTitle}
-            slots={data.activitySlots}
-            rows={data.activityRows}
+            rows={activityRows}
+            viewAllHref={data.activityViewAllHref}
             isIndexing={data.isActivityIndexing}
-            activityUnavailable={data.activityUnavailable}
-            indexerState={data.indexerState}
+            isError={data.activityIsError}
+            errorDetail={data.activityErrorDetail}
+            emptySecondary={data.activityEmptySecondary}
           />
         </DataSurfaceErrorBoundary>
         <HomeTradeFooter />
