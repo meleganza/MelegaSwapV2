@@ -1,0 +1,64 @@
+{
+  "capturedAt": "2026-07-15T13:18:38.505Z",
+  "endpoint": "https://www.melega.finance/api/protocol/activity?limit=40",
+  "httpStatus": 200,
+  "status": "ready",
+  "count": 3,
+  "sourceCounts": {
+    "amm": 3,
+    "masterchef": 0,
+    "smartchef": 0
+  },
+  "eventTypeCounts": {
+    "Swap": 3
+  },
+  "newestTimestamp": 1783853420,
+  "oldestTimestamp": 1773393280,
+  "eventsWithin24h": 0,
+  "duplicateKeysDetected": 0,
+  "duplicateKeys": [],
+  "sortedNewestFirst": true,
+  "transactionHashes": [
+    "0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61",
+    "0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d",
+    "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9"
+  ],
+  "rows": [
+    {
+      "chainId": 56,
+      "sourceType": "amm",
+      "eventType": "Swap",
+      "transactionHash": "0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61",
+      "logIndex": 355,
+      "timestamp": 1783853420,
+      "wallet": "0x4cc318290743b35d6c9063e58c3ef2faa01a81a9",
+      "explorerUrl": "https://bscscan.com/tx/0x6ea8256066280d0972c204fdf7832c2bd394f3d721ba0834898875512bd8fc61"
+    },
+    {
+      "chainId": 56,
+      "sourceType": "amm",
+      "eventType": "Swap",
+      "transactionHash": "0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d",
+      "logIndex": 266,
+      "timestamp": 1783755056,
+      "wallet": "0x0c2b4fc0f8bed892f7278a6705bab41fb8ce4170",
+      "explorerUrl": "https://bscscan.com/tx/0xb43c9d1bdc6a9d2015ba8fade20a2d4e7840ab6c894e4835a88a6df2c514152d"
+    },
+    {
+      "chainId": 56,
+      "sourceType": "amm",
+      "eventType": "Swap",
+      "transactionHash": "0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9",
+      "logIndex": 485,
+      "timestamp": 1773393280,
+      "wallet": "0xc25033218d181b27d4a2944fbb04fc055da4eab3",
+      "explorerUrl": "https://bscscan.com/tx/0x76c0b12d2fe149a6c524661f2bdd93fe51da373e561b870b53c9141b0db240c9"
+    }
+  ],
+  "validation": {
+    "allHashesValid": true,
+    "allTimestampsFinite": true,
+    "noUndefinedFields": true,
+    "noSyntheticRegistry": true
+  }
+}
