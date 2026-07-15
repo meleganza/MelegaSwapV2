@@ -23,7 +23,8 @@ import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErr
 import usePoolsTerminalData from './usePoolsTerminalData'
 import { getAprData } from 'views/Pools/helpers'
 import { buildPoolGateReport, POOL_GATE_POLICY_NOTE } from './buildPoolGateReport'
-import { reconcilePoolLifecycle } from 'lib/data-truth/poolLifecycle'
+import { classificationToReconciliation, resolveLifecycleCounts } from './poolClassificationSummary'
+import { usePoolClassificationSummary } from './usePoolClassificationSummary'
 import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 
@@ -137,6 +138,7 @@ export interface PoolsStakingRuntime {
   clearModal: () => void
   rewardingCount: number
   poolReconciliation: ReturnType<typeof import('lib/data-truth/poolLifecycle').reconcilePoolLifecycle>
+  poolClassificationSummary: ReturnType<typeof usePoolClassificationSummary>
 }
 
 function matchesDurationFilter(visualType?: string, filter?: string): boolean {
@@ -230,6 +232,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const initialBlock = useInitialBlock()
   const { pools: rawPools, userDataLoaded } = usePoolsWithVault(chainId)
   const terminal = usePoolsTerminalData()
+  const poolClassificationSummary = usePoolClassificationSummary()
 
   const performanceFee = 0
 
@@ -303,14 +306,30 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   }, [featuredCard])
 
   const kpis = useMemo(
-    () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock, previewCards),
-    [rawPools, featuredCard, currentBlock, previewCards],
+    () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock, previewCards, poolClassificationSummary),
+    [rawPools, featuredCard, currentBlock, previewCards, poolClassificationSummary],
   )
-  const poolReconciliation = useMemo(
-    () => reconcilePoolLifecycle(rawPools ?? [], currentBlock),
-    [rawPools, currentBlock],
+  const canonicalLifecycleCounts = resolveLifecycleCounts(poolClassificationSummary)
+  const poolReconciliation = useMemo(() => {
+    if (canonicalLifecycleCounts) {
+      return classificationToReconciliation(canonicalLifecycleCounts)
+    }
+    return {
+      discovered: 0,
+      validContracts: 0,
+      future: 0,
+      active: 0,
+      funded: 0,
+      rewarding: 0,
+      finished: 0,
+      invalid: 0,
+      unresolved: 0,
+    }
+  }, [canonicalLifecycleCounts])
+  const rewardingCount = useMemo(
+    () => canonicalLifecycleCounts?.rewarding ?? 0,
+    [canonicalLifecycleCounts],
   )
-  const rewardingCount = useMemo(() => listRewardingPools(previewCards).length, [previewCards])
   const donutSegments = useMemo(() => buildDonutSegments(rawPools ?? []), [rawPools])
 
   const advisorItems = useMemo(() => {
@@ -526,5 +545,6 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     clearModal,
     rewardingCount,
     poolReconciliation,
+    poolClassificationSummary,
   }
 }

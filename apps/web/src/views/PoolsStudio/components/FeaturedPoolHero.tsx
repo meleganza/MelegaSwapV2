@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { displayStudioMetric } from 'design-system/melega'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { resolveLifecycleCounts } from '../poolsRuntime/poolClassificationSummary'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import FeaturedPoolAllocation from './FeaturedPoolAllocation'
 import { poolsFeaturedHero } from '../poolsStudioTokens'
@@ -357,11 +358,13 @@ function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | nu
 }
 
 export const FeaturedPoolHero: React.FC = () => {
-  const { featured, hiddenPoolReasons, rewardingCount, poolReconciliation, machine } = usePoolsRuntime()
+  const { featured, hiddenPoolReasons, rewardingCount, poolClassificationSummary, machine } = usePoolsRuntime()
   const card = featured.card
   const isRewarding = Boolean(card?.lifecycle?.rewarding)
-  const endedCount = machine?.integrity?.ended ?? poolReconciliation?.finished ?? 0
-  const discoveredCount = poolReconciliation?.discovered ?? 0
+  const lifecycleCounts = resolveLifecycleCounts(poolClassificationSummary)
+  const endedCount = lifecycleCounts?.ended ?? 0
+  const discoveredCount = lifecycleCounts?.discovered
+  const classificationReady = poolClassificationSummary.status === 'ready' && lifecycleCounts != null
   const aprText =
     isRewarding && card?.sustainableAprDisplay && !isForbiddenAprDisplay(card.sustainableAprDisplay)
       ? card.sustainableAprDisplay
@@ -372,7 +375,9 @@ export const FeaturedPoolHero: React.FC = () => {
 
   if (!card || !isRewarding || rewardingCount === 0) {
     const emptyTitle =
-      discoveredCount === 0
+      !classificationReady
+        ? 'No active rewarding pools'
+        : discoveredCount === 0
         ? 'No pools discovered'
         : rewardingCount === 0 && endedCount > 0
           ? 'No active rewarding pools'
@@ -380,14 +385,18 @@ export const FeaturedPoolHero: React.FC = () => {
             ? 'No rewarding pools yet'
             : 'Historical Pools'
     const emptySubtitle =
-      discoveredCount === 0
-        ? 'Verified SmartChef contracts will appear when indexed from chain.'
-        : rewardingCount === 0 && discoveredCount > 0
-          ? `${discoveredCount} pools discovered on-chain — none are currently emitting rewards. Ended pools appear under Finished.`
-          : endedCount > 0
-            ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
-            : 'Create or fund a reward pool to activate staking opportunities.'
-    const showCreateCta = discoveredCount === 0
+      poolClassificationSummary.status === 'loading'
+        ? 'Loading on-chain pool classification…'
+        : poolClassificationSummary.status === 'unavailable'
+          ? 'Pool lifecycle totals are temporarily unavailable.'
+          : discoveredCount === 0
+            ? 'Verified SmartChef contracts will appear when indexed from chain.'
+            : rewardingCount === 0 && (discoveredCount ?? 0) > 0
+              ? `${discoveredCount} pools discovered on-chain — none are currently emitting rewards. Ended pools appear under Finished.`
+              : endedCount > 0
+                ? 'These pools have completed their reward campaigns. Browse historical configurations below.'
+                : 'Create or fund a reward pool to activate staking opportunities.'
+    const showCreateCta = classificationReady && discoveredCount === 0
 
     return (
       <EmptyCard

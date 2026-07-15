@@ -6,6 +6,10 @@ import { PoolCategory } from 'config/constants/types'
 import { VaultKey } from 'state/types'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { derivePoolLifecycle, reconcilePoolLifecycle, POOL_HIDDEN_REASON_LABELS } from 'lib/data-truth/poolLifecycle'
+import {
+  resolveKpiLifecycleFields,
+  type PoolClassificationSummary,
+} from './poolClassificationSummary'
 import type { PoolLifecycleFlags } from 'lib/data-truth/poolLifecycle'
 import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
@@ -320,16 +324,16 @@ export function aggregateKpis(
   featured?: PoolPreviewCard,
   currentBlock = 0,
   previewCards: PoolPreviewCard[] = [],
+  classification?: PoolClassificationSummary,
 ): PoolsKpiItem[] {
   let totalStakedUsd = 0
   let dailyRewardsUsd = 0
-  const reconciliation = reconcilePoolLifecycle(pools, currentBlock)
-  const discoveredCount = reconciliation.discovered
-  const activeLive = reconciliation.active
-  const fundedCount = reconciliation.funded
+  const lifecycleFields = resolveKpiLifecycleFields(classification ?? { status: 'unavailable' })
+  const lifecycleReady = lifecycleFields.lifecycleReady
+  const canonicalRewarding = lifecycleFields.rewarding
   const displayable = listUsablePools(previewCards)
   const rewardingDisplayable = listRewardingPools(previewCards)
-  const rewardingCount = rewardingDisplayable.length
+  const rewardingCount = lifecycleReady ? canonicalRewarding! : rewardingDisplayable.length
   let stakerPositions = 0
 
   pools.forEach((pool) => {
@@ -358,12 +362,16 @@ export function aggregateKpis(
   )
 
   const rewardBudgetLive =
-    rewardingCount > 0
-      ? String(rewardingCount)
-      : RUNTIME_UNAVAILABLE_LABEL
+    lifecycleReady && canonicalRewarding === 0
+      ? RUNTIME_UNAVAILABLE_LABEL
+      : rewardingCount > 0
+        ? String(rewardingCount)
+        : RUNTIME_UNAVAILABLE_LABEL
   const dailyEmissionLabel =
     dailyRewardsUsd > 0 ? `${formatUsd(dailyRewardsUsd)}/day emission` : undefined
-  const tokenCount = new Set(displayable.map((p) => p.rewardToken)).size
+
+  const lifecycleSecondary = lifecycleFields.lifecycleSecondary
+  const discoveredKpiValue = lifecycleFields.discoveredValue
 
   const featuredApr =
     featured?.sustainableAprDisplay && !isForbiddenAprDisplay(featured.sustainableAprDisplay)
@@ -381,14 +389,17 @@ export function aggregateKpis(
     {
       id: 'active',
       label: 'Pools Discovered',
-      value: String(discoveredCount),
-      secondary: `${activeLive} active · ${fundedCount} funded · ${rewardingCount} rewarding`,
+      value: discoveredKpiValue,
+      secondary: lifecycleSecondary,
     },
     {
       id: 'budget',
       label: 'Pools Rewarding',
       value: rewardBudgetLive,
-      secondary: dailyEmissionLabel ?? `${rewardingCount} with on-chain emission`,
+      secondary:
+        lifecycleReady && canonicalRewarding === 0
+          ? `${canonicalRewarding} with on-chain emission`
+          : dailyEmissionLabel ?? (lifecycleReady ? `${canonicalRewarding} with on-chain emission` : undefined),
     },
     {
       id: 'highestApr',
