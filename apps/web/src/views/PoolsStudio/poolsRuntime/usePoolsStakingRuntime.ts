@@ -18,6 +18,7 @@ import {
   selectFeaturedPool,
   sortPoolsDefault,
 } from './formatPoolsRuntime'
+import { deduplicatePoolPreviewCards } from './poolCardInventoryDedup'
 import { buildPoolMachineV2 } from './formatPoolPresentation'
 import { runtimeErrorFromPhase, type PoolsRuntimeError } from './poolsRuntimeErrors'
 import usePoolsTerminalData from './usePoolsTerminalData'
@@ -241,11 +242,12 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       return getPoolsUxFixtureCards()
     }
     if (!rawPools?.length) return []
-    return rawPools
+    const cards = rawPools
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
       .map((p) => mapPoolToPreviewCard(p, currentBlock, performanceFee))
       .filter((c): c is PoolPreviewCard => c !== null)
-  }, [rawPools, currentBlock])
+    return deduplicatePoolPreviewCards(cards, chainId ?? 56)
+  }, [rawPools, currentBlock, chainId])
 
   const filteredPools = useMemo(() => {
     const tabbed = filterByTab(previewCards, poolTab, account)
