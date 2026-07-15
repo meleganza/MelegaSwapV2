@@ -1,0 +1,94 @@
+{
+  "capturedAt": "2026-07-15T15:36:20.877Z",
+  "endpoint": "https://www.melega.finance/api/pools/classification/",
+  "httpStatus": 200,
+  "ok": true,
+  "generatedAt": "2026-07-15T15:36:30.751Z",
+  "currentBlock": 110156497,
+  "counts": {
+    "discovered": 239,
+    "verified": 239,
+    "active": 0,
+    "funded": 229,
+    "rewarding": 0,
+    "ended": 239,
+    "invalid": 0,
+    "dataSource": "on-chain-verified-multicall",
+    "note": "SmartChefFactory has no enumerable poolLength; candidates seeded from deployment inventory then verified via eth_call. Invalid bytecode or missing rewardPerBlock excluded."
+  },
+  "rowCount": 239,
+  "positiveStakedContracts": 0,
+  "positiveRewardPerBlockContracts": 239,
+  "positiveRewardTokenBalanceContracts": 229,
+  "samples": [
+    {
+      "address": "0x99a44d26defb3f0a5b4e306ce45538c66c05b69e",
+      "active": false,
+      "rewarding": false,
+      "ended": true,
+      "funded": true,
+      "rewardPerBlock": "110000000000000000",
+      "rewardTokenBalance": "6098474953773348638838682",
+      "reasonCodes": [
+        "ENDED"
+      ]
+    },
+    {
+      "address": "0x7b072c20d2f03393145c6829175e9ac975fa2cfe",
+      "active": false,
+      "rewarding": false,
+      "ended": true,
+      "funded": true,
+      "rewardPerBlock": "170000000000000000000000000",
+      "rewardTokenBalance": "24564356570959760229828416705990884",
+      "reasonCodes": [
+        "ENDED"
+      ]
+    },
+    {
+      "address": "0x2bd7d2a773b525133c9a87910ae6baf8159d9484",
+      "active": false,
+      "rewarding": false,
+      "ended": true,
+      "funded": true,
+      "rewardPerBlock": "15975000000000000",
+      "rewardTokenBalance": "32799440854740248837077",
+      "reasonCodes": [
+        "ENDED"
+      ]
+    },
+    {
+      "address": "0x1ea5c2f8fe1da2e1a45b780f7a95ab94c0d3a00d",
+      "active": false,
+      "rewarding": false,
+      "ended": true,
+      "funded": true,
+      "rewardPerBlock": "9000000000000000000",
+      "rewardTokenBalance": "317618965931741734094011522",
+      "reasonCodes": [
+        "ENDED"
+      ]
+    },
+    {
+      "address": "0xcffd535ac335593ae328351b40215d39edc4d37b",
+      "active": false,
+      "rewarding": false,
+      "ended": true,
+      "funded": true,
+      "rewardPerBlock": "1000000000000000000",
+      "rewardTokenBalance": "510762823430349436448255238",
+      "reasonCodes": [
+        "ENDED"
+      ]
+    }
+  ],
+  "definitions": {
+    "discovered": "candidate pool contracts present in the canonical inventory",
+    "verified": "candidate contracts with bytecode and compatible callable methods",
+    "active": "startBlock <= currentBlock < endBlock",
+    "funded": "pool reward-token balance > 0",
+    "rewarding": "ACTIVE AND rewardPerBlock > 0 AND reward-token balance > 0",
+    "ended": "currentBlock >= endBlock or terminal condition satisfied",
+    "invalid": "contract absent or incompatible with required SmartChef reads"
+  }
+}
