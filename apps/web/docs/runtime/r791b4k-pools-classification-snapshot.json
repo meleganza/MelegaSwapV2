@@ -1,0 +1,18 @@
+{
+  "verificationTimestamp": "2026-07-17T17:36:40.934Z",
+  "source": "https://www.melega.finance/api/pools/classification/",
+  "httpStatus": 200,
+  "totals": {
+    "discovered": 239,
+    "verified": 239,
+    "active": 0,
+    "funded": 229,
+    "rewarding": 0,
+    "ended": 239,
+    "invalid": 0
+  },
+  "generatedAt": "2026-07-17T17:36:49.228Z",
+  "updatedAt": "2026-07-17T17:36:49.228Z",
+  "currentBlock": 110556415,
+  "dataSource": "on-chain-verified-multicall"
+}
