@@ -379,6 +379,8 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const preview = pool.analyzePreview
   const isRewarding = Boolean(pool.lifecycle?.rewarding)
   const isEnded = pool.status === 'ended' || pool.lifecycle?.finished
+  /** Canonical card presentation status — drives ended badge / Official / health visibility. */
+  const isDisplayEnded = pool.displayStatus === 'ENDED'
   const isLive =
     isRewarding &&
     pool.sustainableAprDisplay &&
@@ -391,7 +393,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
         ? 'ENDED'
         : '—'
   const healthScore = pool.healthScore ?? pool.sustainabilityScore ?? 0
-  const showHealth = !isEnded && healthScore > 0
+  const showHealth = !isDisplayEnded && healthScore > 0
   const showRemainingRewards =
     !isEnded &&
     pool.remainingRewards &&
@@ -434,9 +436,21 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
         <HeaderRow>
           <TitleRow>
             <PoolName data-ps-pool-name>{pool.name}</PoolName>
-            <BadgeRow>
-              {isRewarding ? <Pill $variant="live">LIVE</Pill> : isEnded ? <Pill $variant="community">ENDED</Pill> : null}
-              {rewardBadge && !isEnded ? <Pill $variant={rewardBadge}>{pool.rewardBadge ?? pool.visualType}</Pill> : null}
+            <BadgeRow data-ps-lifecycle-badges>
+              {isDisplayEnded ? (
+                <Pill $variant="community" data-ps-lifecycle-badge>
+                  ENDED
+                </Pill>
+              ) : isRewarding ? (
+                <Pill $variant="live" data-ps-lifecycle-badge>
+                  LIVE
+                </Pill>
+              ) : null}
+              {rewardBadge && !isDisplayEnded ? (
+                <Pill $variant={rewardBadge} data-ps-product-badge>
+                  {pool.rewardBadge ?? pool.visualType}
+                </Pill>
+              ) : null}
             </BadgeRow>
           </TitleRow>
         </HeaderRow>
