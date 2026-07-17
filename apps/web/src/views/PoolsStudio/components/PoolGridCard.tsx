@@ -217,6 +217,13 @@ const AnalysisGrid = styled.div`
   min-height: 0;
 `
 
+const PrimaryExplorerRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+`
+
 const ChipBtn = styled.button`
   display: inline-flex;
   align-items: center;
@@ -499,6 +506,21 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
           </InfoGrid>
         ) : null}
 
+        {explorerUrl ? (
+          <PrimaryExplorerRow data-ps-primary-explorer>
+            <MetricLabel>Explorer</MetricLabel>
+            <ChipBtn
+              type="button"
+              onClick={() => window.open(explorerUrl, '_blank', 'noopener,noreferrer')}
+              data-ps-bscscan-btn
+              data-ps-explorer-url={explorerUrl}
+              aria-label="View contract on BscScan"
+            >
+              BscScan
+            </ChipBtn>
+          </PrimaryExplorerRow>
+        ) : null}
+
         {preview ? (
           <AnalysisSection $open={analyzeOpen} data-ps-pool-analyze-panel>
             <AnalysisHeading>Pool Analysis</AnalysisHeading>
@@ -506,10 +528,6 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               <MetricCell>
                 <MetricLabel>Duration</MetricLabel>
                 <MetricValue>{duration}</MetricValue>
-              </MetricCell>
-              <MetricCell>
-                <MetricLabel>Daily Rewards</MetricLabel>
-                <MetricValue>{preview.dailyEmission ?? pool.dailyRewards ?? pool.estimatedDailyReward ?? '—'}</MetricValue>
               </MetricCell>
               <MetricCell>
                 <MetricLabel>Contract</MetricLabel>
@@ -532,21 +550,9 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               </MetricCell>
               <MetricCell>
                 <MetricLabel>Emission/day</MetricLabel>
-                <MetricValue>{preview.emission ?? preview.dailyEmission ?? '—'}</MetricValue>
-              </MetricCell>
-              <MetricCell>
-                <MetricLabel>BscScan</MetricLabel>
-                {explorerUrl ? (
-                  <ChipBtn
-                    type="button"
-                    onClick={() => window.open(explorerUrl, '_blank', 'noopener,noreferrer')}
-                    data-ps-bscscan-btn
-                  >
-                    BscScan
-                  </ChipBtn>
-                ) : (
-                  <MetricValue>—</MetricValue>
-                )}
+                <MetricValue data-ps-emission-value>
+                  {preview.emission ?? preview.dailyEmission ?? '—'}
+                </MetricValue>
               </MetricCell>
               <MetricCell>
                 <MetricLabel>Machine</MetricLabel>

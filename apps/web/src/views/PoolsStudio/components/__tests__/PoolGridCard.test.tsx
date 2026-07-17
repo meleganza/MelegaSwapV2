@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, fireEvent } from '@testing-library/react'
 import type { PoolPreviewCard } from '../../poolsStudioData'
 import PoolGridCard from '../PoolGridCard'
 
@@ -276,5 +276,134 @@ describe('PoolGridCard ended lifecycle presentation', () => {
     const cta = within(footer).getByRole('button', { name: 'Ended' })
     expect((cta as HTMLButtonElement).disabled).toBe(true)
     expect(within(footer).queryByRole('button', { name: 'View Details' })).toBeNull()
+  })
+})
+
+const EXPLORER_URL = 'https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794'
+const EMISSION_VALUE = '1,240 / day'
+
+function rewardRatePool(overrides: Partial<PoolPreviewCard> = {}): PoolPreviewCard {
+  return basePool({
+    displayStatus: 'ENDED',
+    dailyRewards: EMISSION_VALUE,
+    estimatedDailyReward: EMISSION_VALUE,
+    analyzePreview: {
+      ...basePool().analyzePreview!,
+      dailyEmission: EMISSION_VALUE,
+      emission: EMISSION_VALUE,
+      contractExplorerUrl: EXPLORER_URL,
+    },
+    ...overrides,
+  })
+}
+
+describe('PoolGridCard analysis panel duplicate information', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('TEST 1 — Expanded card explorer count is exactly one', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    const explorers = card.querySelectorAll('[data-ps-bscscan-btn]')
+    expect(explorers).toHaveLength(1)
+  })
+
+  it('TEST 2 — Explorer destination preserved', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    const btn = card.querySelector('[data-ps-bscscan-btn]') as HTMLElement
+    expect(btn.getAttribute('data-ps-explorer-url')).toBe(EXPLORER_URL)
+  })
+
+  it('TEST 3 — Collapsed card primary explorer remains present', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(card.querySelector('[data-ps-primary-explorer]')).toBeTruthy()
+    expect(card.querySelectorAll('[data-ps-bscscan-btn]')).toHaveLength(1)
+    expect(within(card).queryByText('Hide Analysis')).toBeNull()
+  })
+
+  it('TEST 4 — Duplicate reward-rate fields: Emission once, no Daily Rewards', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    const panel = card.querySelector('[data-ps-pool-analyze-panel]') as HTMLElement
+    expect(within(panel).queryByText('Daily Rewards')).toBeNull()
+    expect(within(panel).getAllByText('Emission/day')).toHaveLength(1)
+  })
+
+  it('TEST 5 — Retained Emission value preserved', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(card.querySelector('[data-ps-emission-value]')?.textContent).toBe(EMISSION_VALUE)
+  })
+
+  it('TEST 6 — No empty analysis rows after duplicate removal', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    const panel = card.querySelector('[data-ps-pool-analyze-panel]') as HTMLElement
+    expect(within(panel).queryByText('Daily Rewards')).toBeNull()
+    expect(panel.querySelector('[data-ps-bscscan-btn]')).toBeNull()
+    const blankRows = [...panel.querySelectorAll('div')].filter((el) => {
+      const t = el.textContent?.trim() ?? ''
+      return el.children.length === 0 && t === ''
+    })
+    expect(blankRows).toHaveLength(0)
+  })
+
+  it('TEST 7 — Ended CTA regression View Details / Hide Analysis', () => {
+    const { container } = render(<PoolGridCard pool={rewardRatePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    const footer = card.querySelector('[data-ps-card-footer]') as HTMLElement
+    const details = within(footer).getByRole('button', { name: 'View Details' })
+    expect(details).toBeTruthy()
+    fireEvent.click(details)
+    expect(within(footer).getByRole('button', { name: 'Hide Analysis' })).toBeTruthy()
+  })
+
+  it('TEST 8 — Ended lifecycle regression', () => {
+    const { container } = render(
+      <PoolGridCard pool={rewardRatePool({ rewardBadge: 'Official', healthScore: 22 })} />,
+    )
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(within(card).getByText('ENDED')).toBeTruthy()
+    expect(within(card).queryByText('Official')).toBeNull()
+    expect(within(card).queryByText('Pool Health')).toBeNull()
+  })
+
+  it('TEST 9 — Non-ended regression: analysis expands, unique fields and explorer remain', () => {
+    const { container } = render(
+      <PoolGridCard
+        pool={rewardRatePool({
+          displayStatus: 'LIVE',
+          status: 'live',
+          cta: 'stake',
+          rewardBadge: 'Official',
+          lifecycle: {
+            ...basePool().lifecycle!,
+            finished: false,
+            ended: false,
+            rewarding: true,
+            active: true,
+            rewardPerBlockPositive: true,
+            rewardBalancePositive: true,
+          },
+          sustainableAprDisplay: '12.00%',
+        })}
+      />,
+    )
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(card.querySelectorAll('[data-ps-bscscan-btn]')).toHaveLength(1)
+    fireEvent.click(within(card).getByRole('button', { name: 'Analyze' }))
+    const panel = card.querySelector('[data-ps-pool-analyze-panel]') as HTMLElement
+    expect(panel).toBeTruthy()
+    expect(within(panel).getByText('Emission/day')).toBeTruthy()
+    expect(within(panel).queryByText('Daily Rewards')).toBeNull()
+    expect(within(panel).getByText('Contract')).toBeTruthy()
+    expect(card.querySelectorAll('[data-ps-bscscan-btn]')).toHaveLength(1)
   })
 })
