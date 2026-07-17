@@ -291,6 +291,7 @@ function rewardRatePool(overrides: Partial<PoolPreviewCard> = {}): PoolPreviewCa
       ...basePool().analyzePreview!,
       dailyEmission: EMISSION_VALUE,
       emission: EMISSION_VALUE,
+      estimatedRoi: '12.00%',
       contractExplorerUrl: EXPLORER_URL,
     },
     ...overrides,
@@ -405,5 +406,196 @@ describe('PoolGridCard analysis panel duplicate information', () => {
     expect(within(panel).queryByText('Daily Rewards')).toBeNull()
     expect(within(panel).getByText('Contract')).toBeTruthy()
     expect(card.querySelectorAll('[data-ps-bscscan-btn]')).toHaveLength(1)
+  })
+})
+
+function roiProjectionPool(overrides: Partial<PoolPreviewCard> = {}): PoolPreviewCard {
+  const base = rewardRatePool()
+  return rewardRatePool({
+    analyzePreview: {
+      ...base.analyzePreview!,
+      estimatedRoi: '28.45%',
+    },
+    ...overrides,
+  })
+}
+
+function liveRewardingPool(overrides: Partial<PoolPreviewCard> = {}): PoolPreviewCard {
+  return roiProjectionPool({
+    displayStatus: 'LIVE',
+    status: 'live',
+    cta: 'stake',
+    rewardBadge: 'Official',
+    lifecycle: {
+      ...basePool().lifecycle!,
+      finished: false,
+      ended: false,
+      rewarding: true,
+      active: true,
+      rewardPerBlockPositive: true,
+      rewardBalancePositive: true,
+    },
+    sustainableAprDisplay: '28.45%',
+    ...overrides,
+  })
+}
+
+describe('PoolGridCard ended analysis ROI semantics', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('TEST 1 — Ended card suppresses ROI heading', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(within(card).queryByText('Estimated ROI')).toBeNull()
+    expect(within(card).queryByText(/^ROI$/)).toBeNull()
+    expect(card.querySelector('[data-ps-estimated-roi]')).toBeNull()
+  })
+
+  it('TEST 2 — Ended card suppresses period projections', () => {
+    const { container } = render(
+      <PoolGridCard
+        pool={roiProjectionPool({
+          analyzePreview: {
+            ...roiProjectionPool().analyzePreview!,
+            estimatedRoi: '1D 0.08% · 7D 0.54% · 30D 2.3% · 365D 28.45%',
+          },
+        })}
+      />,
+    )
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    const text = card.textContent || ''
+    expect(text).not.toMatch(/\b1D\b/)
+    expect(text).not.toMatch(/\b7D\b/)
+    expect(text).not.toMatch(/\b30D\b/)
+    expect(text).not.toMatch(/\b365D\b/)
+    expect(within(card).queryByText('Estimated ROI')).toBeNull()
+  })
+
+  it('TEST 3 — ROI absent from hidden DOM before and after expand', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(within(card).queryByText('Estimated ROI')).toBeNull()
+    expect(card.querySelector('[data-ps-estimated-roi]')).toBeNull()
+    expect(card.textContent || '').not.toContain('28.45%')
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(within(card).queryByText('Estimated ROI')).toBeNull()
+    expect(card.querySelector('[data-ps-estimated-roi]')).toBeNull()
+    expect(card.textContent || '').not.toContain('28.45%')
+  })
+
+  it('TEST 4 — No replacement ROI state', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(within(card).queryByText('Estimated ROI')).toBeNull()
+    expect(card.querySelector('[data-ps-estimated-roi]')).toBeNull()
+    const panel = card.querySelector('[data-ps-pool-analyze-panel]') as HTMLElement
+    expect(within(panel).queryByText('0%')).toBeNull()
+    expect(within(panel).queryByText('0.00%')).toBeNull()
+    expect(within(panel).queryByText('N/A')).toBeNull()
+    expect(within(panel).queryByText('Unavailable')).toBeNull()
+  })
+
+  it('TEST 5 — Active ROI preserved', () => {
+    const { container } = render(<PoolGridCard pool={liveRewardingPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'Analyze' }))
+    const roi = card.querySelector('[data-ps-estimated-roi]') as HTMLElement
+    expect(roi).toBeTruthy()
+    expect(within(roi).getByText('Estimated ROI')).toBeTruthy()
+    expect(within(roi).getByText('28.45%')).toBeTruthy()
+  })
+
+  it('TEST 6 — Future regression', () => {
+    const { container } = render(
+      <PoolGridCard
+        pool={roiProjectionPool({
+          displayStatus: 'INDEXING',
+          status: 'indexing',
+          cta: 'analyze',
+          lifecycle: {
+            ...basePool().lifecycle!,
+            finished: false,
+            ended: false,
+            rewarding: false,
+            active: false,
+          },
+        })}
+      />,
+    )
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    // FUTURE non-ended: Estimated ROI still renders in analysis DOM
+    expect(card.querySelector('[data-ps-estimated-roi]')).toBeTruthy()
+    expect(within(card).getByText('Estimated ROI')).toBeTruthy()
+  })
+
+  it('TEST 7 — Unavailable regression', () => {
+    const { container } = render(
+      <PoolGridCard
+        pool={roiProjectionPool({
+          displayStatus: 'LIVE',
+          status: 'live',
+          cta: 'none',
+          visibilityStatus: 'HIDDEN',
+          lifecycle: {
+            ...basePool().lifecycle!,
+            finished: false,
+            ended: false,
+            rewarding: false,
+            active: false,
+          },
+        })}
+      />,
+    )
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(card.querySelector('[data-ps-estimated-roi]')).toBeTruthy()
+    expect(within(card).getByText('Estimated ROI')).toBeTruthy()
+  })
+
+  it('TEST 8 — Emission regression', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(within(card).getAllByText('Emission/day')).toHaveLength(1)
+    expect(card.querySelector('[data-ps-emission-value]')?.textContent).toBe(EMISSION_VALUE)
+  })
+
+  it('TEST 9 — Explorer regression', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(card.querySelectorAll('[data-ps-bscscan-btn]')).toHaveLength(1)
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(card.querySelectorAll('[data-ps-bscscan-btn]')).toHaveLength(1)
+  })
+
+  it('TEST 10 — CTA and lifecycle regression', () => {
+    const { container } = render(
+      <PoolGridCard pool={roiProjectionPool({ rewardBadge: 'Official', healthScore: 22 })} />,
+    )
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(within(card).getByText('ENDED')).toBeTruthy()
+    expect(within(card).queryByText('Official')).toBeNull()
+    expect(within(card).queryByText('Pool Health')).toBeNull()
+    const footer = card.querySelector('[data-ps-card-footer]') as HTMLElement
+    fireEvent.click(within(footer).getByRole('button', { name: 'View Details' }))
+    expect(within(footer).getByRole('button', { name: 'Hide Analysis' })).toBeTruthy()
+  })
+
+  it('TEST 11 — No empty analysis structure', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    const panel = card.querySelector('[data-ps-pool-analyze-panel]') as HTMLElement
+    expect(panel.querySelector('[data-ps-estimated-roi]')).toBeNull()
+    expect(within(panel).queryByText('Estimated ROI')).toBeNull()
+    const blankRows = [...panel.querySelectorAll('div')].filter((el) => {
+      const t = el.textContent?.trim() ?? ''
+      return el.children.length === 0 && t === ''
+    })
+    expect(blankRows).toHaveLength(0)
   })
 })

@@ -544,10 +544,12 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
                 <MetricLabel>Cooldown</MetricLabel>
                 <MetricValue>{pool.cooldown ?? '—'}</MetricValue>
               </MetricCell>
-              <MetricCell>
-                <MetricLabel>Estimated ROI</MetricLabel>
-                <MetricValue>{preview.estimatedRoi ?? '—'}</MetricValue>
-              </MetricCell>
+              {!isDisplayEnded ? (
+                <MetricCell data-ps-estimated-roi>
+                  <MetricLabel>Estimated ROI</MetricLabel>
+                  <MetricValue>{preview.estimatedRoi ?? '—'}</MetricValue>
+                </MetricCell>
+              ) : null}
               <MetricCell>
                 <MetricLabel>Emission/day</MetricLabel>
                 <MetricValue data-ps-emission-value>
