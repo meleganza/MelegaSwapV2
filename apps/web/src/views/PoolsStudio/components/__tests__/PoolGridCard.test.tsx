@@ -599,3 +599,69 @@ describe('PoolGridCard ended analysis ROI semantics', () => {
     expect(blankRows).toHaveLength(0)
   })
 })
+
+describe('PoolGridCard reward token label responsive clipping', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('TEST 1 — Exact Reward Token label', () => {
+    const { container } = render(<PoolGridCard pool={basePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    const labels = card.querySelectorAll('[data-ps-reward-token-label]')
+    expect(labels).toHaveLength(1)
+    expect(labels[0].textContent?.trim()).toBe('Reward Token')
+    expect(labels[0].textContent).not.toMatch(/REWARD TOK[^E]/)
+    expect(within(card).queryByText('REWARD TOK')).toBeNull()
+  })
+
+  it('TEST 2 — Stake Token regression', () => {
+    const { container } = render(<PoolGridCard pool={basePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    const labels = card.querySelectorAll('[data-ps-stake-token-label]')
+    expect(labels).toHaveLength(1)
+    expect(labels[0].textContent?.trim()).toBe('Stake Token')
+    expect(card.querySelector('[data-ps-stake-token-value]')?.textContent?.trim()).toBe('MARCO')
+  })
+
+  it('TEST 3 — Ended lifecycle regression', () => {
+    const { container } = render(<PoolGridCard pool={basePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(within(card).getByText('ENDED')).toBeTruthy()
+    expect(within(card).queryByText('Official')).toBeNull()
+    expect(within(card).queryByText('Pool Health')).toBeNull()
+  })
+
+  it('TEST 4 — CTA regression', () => {
+    const { container } = render(<PoolGridCard pool={basePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    const footer = card.querySelector('[data-ps-card-footer]') as HTMLElement
+    fireEvent.click(within(footer).getByRole('button', { name: 'View Details' }))
+    expect(within(footer).getByRole('button', { name: 'Hide Analysis' })).toBeTruthy()
+  })
+
+  it('TEST 5 — Analysis regression', () => {
+    const { container } = render(<PoolGridCard pool={roiProjectionPool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    fireEvent.click(within(card).getByRole('button', { name: 'View Details' }))
+    expect(within(card).getAllByText('Emission/day')).toHaveLength(1)
+    expect(within(card).queryByText('Estimated ROI')).toBeNull()
+    expect(card.querySelectorAll('[data-ps-primary-explorer]')).toHaveLength(1)
+  })
+
+  it('TEST 6 — Token identity regression', () => {
+    const { container } = render(<PoolGridCard pool={basePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(card.querySelector('[data-ps-reward-token-value]')?.textContent?.trim()).toBe('MARCO')
+    expect(card.querySelector('[data-ps-stake-token-value]')?.textContent?.trim()).toBe('MARCO')
+  })
+
+  it('TEST 7 — No duplicated labels', () => {
+    const { container } = render(<PoolGridCard pool={basePool()} />)
+    const card = container.querySelector('[data-ps-pool-card]') as HTMLElement
+    expect(card.querySelectorAll('[data-ps-reward-token-label]')).toHaveLength(1)
+    expect(card.querySelectorAll('[data-ps-stake-token-label]')).toHaveLength(1)
+    expect(within(card).getAllByText('Reward Token')).toHaveLength(1)
+    expect(within(card).getAllByText('Stake Token')).toHaveLength(1)
+  })
+})

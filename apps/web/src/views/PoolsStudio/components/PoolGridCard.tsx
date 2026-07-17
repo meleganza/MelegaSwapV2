@@ -150,9 +150,15 @@ const MetricLabel = styled.span`
   font-family: Inter, sans-serif;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1.3px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #7d7d7d;
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: break-word;
 `
 
 const MetricValue = styled.span`
@@ -473,12 +479,12 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
         {!analyzeOpen ? (
           <InfoGrid data-ps-collapsed-info>
             <MetricCell>
-              <MetricLabel>Stake Token</MetricLabel>
-              <MetricValue>{pool.stakeToken ?? pool.name?.split(' ')[0] ?? '—'}</MetricValue>
+              <MetricLabel data-ps-stake-token-label>Stake Token</MetricLabel>
+              <MetricValue data-ps-stake-token-value>{pool.stakeToken ?? pool.name?.split(' ')[0] ?? '—'}</MetricValue>
             </MetricCell>
             <MetricCell>
-              <MetricLabel>Reward Token</MetricLabel>
-              <MetricValue>{pool.rewardToken}</MetricValue>
+              <MetricLabel data-ps-reward-token-label>Reward Token</MetricLabel>
+              <MetricValue data-ps-reward-token-value>{pool.rewardToken}</MetricValue>
             </MetricCell>
             <MetricCell>
               <MetricLabel>Lock Type</MetricLabel>
