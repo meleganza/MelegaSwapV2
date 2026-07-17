@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -153,8 +153,12 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     return CAKE[chainId]?.address ?? USDC[chainId]?.address
   }, [chainId])
 
-  const resolvedIdA = currencyIdA ?? native.symbol
-  const resolvedIdB = currencyIdB ?? defaultB
+  const isRemoveMode = mode === 'Remove Liquidity'
+  const isPositionsMode = mode === 'My Positions'
+
+  // Remove Liquidity must not force BNB/MARCO while wallet LP ownership is the source of truth.
+  const resolvedIdA = currencyIdA ?? (isRemoveMode || isPositionsMode ? undefined : native.symbol)
+  const resolvedIdB = currencyIdB ?? (isRemoveMode || isPositionsMode ? undefined : defaultB)
 
   const currencyA = useCurrency(resolvedIdA)
   const currencyB = useCurrency(resolvedIdB)
@@ -191,10 +195,33 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
 
   const { positions, isLoading: positionsLoading } = useLiquidityPositions()
   const selectedPosition = useMemo(
-    () => positions.find((p) => p.id === selectedPositionId) ?? positions[0],
-    [positions, selectedPositionId],
+    () => positions.find((p) => p.id === selectedPositionId) ?? (isRemoveMode || isPositionsMode ? positions[0] : undefined),
+    [positions, selectedPositionId, isRemoveMode, isPositionsMode],
   )
   const positionDetails = useLiquidityPositionDetails(selectedPosition)
+
+  // Auto-select the sole direct-wallet LP and sync burn currencies from that pair.
+  useEffect(() => {
+    if (!isRemoveMode && !isPositionsMode) return
+    if (positionsLoading) return
+    if (positions.length === 1) {
+      const only = positions[0]
+      if (selectedPositionId !== only.id) setSelectedPositionId(only.id)
+    }
+    if (positions.length === 0) {
+      if (selectedPositionId) setSelectedPositionId(undefined)
+      return
+    }
+  }, [isRemoveMode, isPositionsMode, positions, positionsLoading, selectedPositionId])
+
+  useEffect(() => {
+    if (!selectedPosition?.pair) return
+    if (!isRemoveMode && !isPositionsMode) return
+    const nextA = selectedPosition.pair.token0.address
+    const nextB = selectedPosition.pair.token1.address
+    if (currencyIdA !== nextA) setCurrencyIdA(nextA)
+    if (currencyIdB !== nextB) setCurrencyIdB(nextB)
+  }, [selectedPosition, isRemoveMode, isPositionsMode, currencyIdA, currencyIdB])
 
   const terminal = useLiquidityTerminalData(
     poolAddress,
@@ -289,11 +316,15 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
 
   const preview = useMemo((): LiquidityPreviewMetrics => {
     const feeTier = '0.25%'
-    if (isPositions && selectedPosition) {
+    if ((isPositions || isRemove) && selectedPosition) {
       const share = formatPercentShare(positionDetails.poolShare)
       const lpApr = lpAprData?.lpApr7d
+      const removeParsed = burnInfo.parsedAmounts
       return {
-        expectedLp: formatAmount(selectedPosition.lpBalance, '0.0000'),
+        expectedLp: isRemove
+          ? formatAmount(removeParsed[BurnField.LIQUIDITY], '0.0000') ||
+            formatAmount(selectedPosition.lpBalance, '0.0000')
+          : formatAmount(selectedPosition.lpBalance, '0.0000'),
         poolShare: share,
         apr: lpApr != null ? `${lpApr.toFixed(2)}%` : '—',
         feeTier,
@@ -310,10 +341,24 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
       }
     }
 
+    if (isRemove && !selectedPosition) {
+      return {
+        expectedLp: '—',
+        poolShare: '—',
+        apr: '—',
+        feeTier,
+        tokenAPct: 0,
+        tokenBPct: 0,
+        tokenASymbol: '—',
+        tokenBSymbol: '—',
+        impermanentLoss: '—',
+      }
+    }
+
     const removeParsed = burnInfo.parsedAmounts
     return {
       expectedLp: isRemove
-        ? formatAmount(removeParsed[BurnField.LIQUIDITY] as Token | undefined, '0.0000')
+        ? formatAmount(removeParsed[BurnField.LIQUIDITY], '0.0000')
         : formatAmount(liquidityMinted, '0.0000'),
       poolShare: isRemove
         ? formatPercentShare(removeParsed[BurnField.LIQUIDITY_PERCENT])
@@ -333,11 +378,11 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     }
   }, [
     isPositions,
+    isRemove,
     selectedPosition,
     positionDetails,
     lpAprData,
     terminal,
-    isRemove,
     burnInfo.parsedAmounts,
     liquidityMinted,
     poolTokenPercentage,
@@ -719,12 +764,15 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     phase === 'calculating'
       ? 'Calculating…'
       : phase === 'reading_lp'
-        ? 'Reading LP…'
+        ? 'Scanning wallet liquidity positions…'
         : phase === 'approval_required'
           ? 'Waiting Wallet…'
           : attemptingTxn
             ? 'Broadcasting…'
             : undefined
+
+  const resolvedPairLabel = selectedPosition?.pairLabel
+    || (currencyA && currencyB ? pairLabel(currencyA, currencyB) : isRemove ? 'Select a liquidity position' : pairLabel(currencyA, currencyB))
 
   return {
     mode,
@@ -743,7 +791,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     typedValueB: isRemove ? burnInfo.parsedAmounts[BurnField.CURRENCY_B]?.toSignificant(6) ?? '0.0' : typedValueB,
     slippageLabel: formatSlippage(allowedSlippage),
     preview,
-    pairLabel: pairLabel(currencyA, currencyB),
+    pairLabel: resolvedPairLabel,
     noLiquidity,
     approvalA,
     approvalB,

@@ -182,15 +182,20 @@ const SplitDivider = styled.span`
 `
 
 export const PositionPreviewPanel: React.FC = () => {
-  const { preview, loadingLabel, mode } = useLiquidityRuntime()
+  const { preview, loadingLabel, mode, selectedPosition } = useLiquidityRuntime()
   const tokenASymbol =
-    preview.tokenASymbol && preview.tokenASymbol !== 'A' ? preview.tokenASymbol : 'BNB'
+    preview.tokenASymbol && preview.tokenASymbol !== 'A' && preview.tokenASymbol !== '—'
+      ? preview.tokenASymbol
+      : '—'
   const tokenBSymbol =
-    preview.tokenBSymbol && preview.tokenBSymbol !== 'B' ? preview.tokenBSymbol : 'MARCO'
-  const leftPct = preview.tokenAPct > 0 ? preview.tokenAPct : 50
-  const rightPct = preview.tokenBPct > 0 ? preview.tokenBPct : 50
-  const leftScale = Math.max(0.35, leftPct / 100)
-  const rightScale = Math.max(0.35, rightPct / 100)
+    preview.tokenBSymbol && preview.tokenBSymbol !== 'B' && preview.tokenBSymbol !== '—'
+      ? preview.tokenBSymbol
+      : '—'
+  const leftPct = preview.tokenAPct > 0 ? preview.tokenAPct : mode === 'Remove Liquidity' && !selectedPosition ? 0 : 50
+  const rightPct = preview.tokenBPct > 0 ? preview.tokenBPct : mode === 'Remove Liquidity' && !selectedPosition ? 0 : 50
+  const leftScale = Math.max(0.35, Number(leftPct) / 100 || 0.35)
+  const rightScale = Math.max(0.35, Number(rightPct) / 100 || 0.35)
+  const showEmptyRemove = mode === 'Remove Liquidity' && !selectedPosition
 
   return (
     <LsPanel
@@ -202,13 +207,21 @@ export const PositionPreviewPanel: React.FC = () => {
       style={{ minHeight: liquidityStudioLayout.previewMinHeight }}
     >
       <Head>
-        <LsPanelTitle style={{ margin: 0 }}>Position preview</LsPanelTitle>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <LsPanelTitle style={{ margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          Position preview
+        </LsPanelTitle>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, minWidth: 0 }}>
           {loadingLabel ? <StatusNote>{loadingLabel}</StatusNote> : null}
-          <FeeBadge>Fee tier {preview.feeTier}</FeeBadge>
+          <FeeBadge data-ls-fee-badge>Fee {preview.feeTier}</FeeBadge>
         </div>
       </Head>
       <Body>
+        {showEmptyRemove ? (
+          <StatusNote style={{ marginTop: 24, whiteSpace: 'normal' }}>
+            Select a wallet-held liquidity position to preview removal amounts.
+          </StatusNote>
+        ) : (
+          <>
         <Bars>
           <BarCol>
             <Bar $scale={leftScale} data-ls-liquidity-bar />
@@ -233,7 +246,7 @@ export const PositionPreviewPanel: React.FC = () => {
         <Metrics>
           <MetricCard>
             <MetricLabel>{mode === 'Remove Liquidity' ? 'LP removed' : 'Expected LP'}</MetricLabel>
-            <MetricValue>{preview.expectedLp}</MetricValue>
+            <MetricValue style={{ overflowWrap: 'anywhere' }}>{preview.expectedLp}</MetricValue>
           </MetricCard>
           <MetricCard>
             <MetricLabel>Pool share</MetricLabel>
@@ -274,6 +287,8 @@ export const PositionPreviewPanel: React.FC = () => {
             </IlSvg>
           </IlChart>
         </IlBlock>
+          </>
+        )}
       </Body>
     </LsPanel>
   )

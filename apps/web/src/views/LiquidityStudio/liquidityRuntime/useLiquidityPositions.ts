@@ -9,6 +9,10 @@ import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks'
 import { useLPTokensWithBalanceByAccount } from 'views/Swap/StableSwap/hooks/useStableConfig'
 import { multiplyPriceByAmount } from 'utils/prices'
+import {
+  OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
+  type WalletLpOwnershipSource,
+} from './walletLpPositionMath'
 
 export interface LiquidityPositionRow {
   id: string
@@ -16,6 +20,10 @@ export interface LiquidityPositionRow {
   pairLabel: string
   lpBalance: CurrencyAmount<Token>
   isStable?: boolean
+  chainId?: number
+  pairAddress?: string
+  walletAddress?: string
+  ownershipSource?: WalletLpOwnershipSource
 }
 
 function usePositionUsdValue(
@@ -75,22 +83,29 @@ export function useLiquidityPositions() {
 
   const v2Positions = useMemo((): LiquidityPositionRow[] => {
     if (!v2Pairs) return []
-    return v2Pairs
-      .map((entry, index) => {
-        const [, pair] = entry
-        if (!pair) return null
-        const userBalance = v2PairsBalances[pair.liquidityToken.address]
-        if (!userBalance?.greaterThan(0)) return null
-        return {
-          id: pair.liquidityToken.address,
-          pair,
-          pairLabel: `${pair.token0.symbol} / ${pair.token1.symbol}`,
-          lpBalance: userBalance,
-          isStable: false,
-        }
+    const byPair = new Map<string, LiquidityPositionRow>()
+    v2Pairs.forEach((entry) => {
+      const [, pair] = entry
+      if (!pair) return
+      const pairAddress = pair.liquidityToken.address
+      const userBalance = v2PairsBalances[pairAddress]
+      if (!userBalance?.greaterThan(0)) return
+      const key = pairAddress.toLowerCase()
+      if (byPair.has(key)) return
+      byPair.set(key, {
+        id: pairAddress,
+        pair,
+        pairLabel: `${pair.token0.symbol} / ${pair.token1.symbol}`,
+        lpBalance: userBalance,
+        isStable: false,
+        chainId: pair.liquidityToken.chainId,
+        pairAddress,
+        walletAddress: account,
+        ownershipSource: OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
       })
-      .filter(Boolean) as LiquidityPositionRow[]
-  }, [v2Pairs, v2PairsBalances])
+    })
+    return [...byPair.values()]
+  }, [v2Pairs, v2PairsBalances, account])
 
   const stablePositions = useMemo((): LiquidityPositionRow[] => {
     if (!stablePairs?.length) return []

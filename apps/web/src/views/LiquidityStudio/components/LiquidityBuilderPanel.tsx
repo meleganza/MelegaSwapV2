@@ -270,6 +270,13 @@ export const LiquidityBuilderPanel: React.FC = () => {
   const isRemove = mode === 'Remove Liquidity'
   const isSimulation = mode === 'Simulation'
 
+  const selectOwnedPosition = useCallback(
+    (id: string) => {
+      setSelectedPositionId(id)
+    },
+    [setSelectedPositionId],
+  )
+
   return (
     <LsPanel
       data-ls-panel
@@ -283,51 +290,106 @@ export const LiquidityBuilderPanel: React.FC = () => {
           Read-only simulation using live pool math. Adjust amounts to preview LP share, APR, and IL — no on-chain execution.
         </StatusLine>
       ) : null}
-      {isPositions ? (
+      {isPositions || isRemove ? (
         <>
-          <PairText style={{ display: 'block', marginBottom: 12 }}>Your LP Positions</PairText>
+          <PairText style={{ display: 'block', marginBottom: 8 }} data-ls-owned-position-heading>
+            Your Liquidity Position
+          </PairText>
           {!account ? (
             <StatusLine>Connect wallet to view positions.</StatusLine>
           ) : positionsLoading ? (
-            <StatusLine>Reading LP…</StatusLine>
+            <StatusLine data-ls-positions-loading>Scanning wallet liquidity positions…</StatusLine>
           ) : positions.length === 0 ? (
-            <StatusLine>No LP positions found.</StatusLine>
+            <StatusLine data-ls-positions-empty>No wallet-held liquidity positions detected.</StatusLine>
           ) : (
-            <PositionList>
+            <PositionList data-ls-owned-positions>
               {positions.map((pos) => (
                 <PositionItem
                   key={pos.id}
                   type="button"
+                  data-ls-owned-position
+                  data-ls-pair-address={pos.pairAddress ?? pos.id}
                   $active={selectedPositionId === pos.id}
-                  onClick={() => setSelectedPositionId(pos.id)}
+                  onClick={() => selectOwnedPosition(pos.id)}
                 >
-                  {pos.pairLabel}
+                  <div style={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {pos.pairLabel}
+                  </div>
+                  <div style={{ fontSize: 12, color: liquidityStudioColors.muted, marginTop: 4 }}>
+                    LP {pos.lpBalance.toSignificant(6)}
+                  </div>
                 </PositionItem>
               ))}
             </PositionList>
           )}
-          <LsPrimaryBtn type="button" data-ls-primary-btn onClick={() => router.push('/liquidity')}>
-            {primaryCtaLabel}
-          </LsPrimaryBtn>
+          {isRemove && selectedPositionId && account ? (
+            <>
+              <TokenRow style={{ marginTop: 12 }}>
+                <TokenLabel>Expected Output A</TokenLabel>
+                <TokenInput value={typedValueA} readOnly placeholder="0.0" data-ls-expected-a />
+                <TokenSelect type="button" disabled style={{ cursor: 'default' }}>
+                  {currencyA?.symbol ?? '—'}
+                </TokenSelect>
+              </TokenRow>
+              <TokenRow>
+                <TokenLabel>Expected Output B</TokenLabel>
+                <TokenInput value={typedValueB} readOnly placeholder="0.0" data-ls-expected-b />
+                <TokenSelect type="button" disabled style={{ cursor: 'default' }}>
+                  {currencyB?.symbol ?? '—'}
+                </TokenSelect>
+              </TokenRow>
+              <TokenRow style={{ height: 56, minHeight: 56 }}>
+                <TokenLabel>LP amount to remove %</TokenLabel>
+                <TokenInput
+                  value={removePercent}
+                  onChange={(e) => onRemovePercent(e.target.value)}
+                  placeholder="50"
+                  inputMode="numeric"
+                  data-ls-remove-pct
+                />
+              </TokenRow>
+              <SlippageRow>
+                <SlippageLabel>Slippage tolerance</SlippageLabel>
+                <SlippageValue>{slippageLabel}</SlippageValue>
+              </SlippageRow>
+              <LiquidityExecutionSteps />
+            </>
+          ) : null}
+          {isPositions ? (
+            <LsPrimaryBtn type="button" data-ls-primary-btn onClick={() => router.push('/liquidity')}>
+              {primaryCtaLabel}
+            </LsPrimaryBtn>
+          ) : !account ? (
+            <ConnectWrap>
+              <ConnectWalletButton>{primaryCtaLabel}</ConnectWalletButton>
+            </ConnectWrap>
+          ) : (
+            <LsPrimaryBtn
+              type="button"
+              data-ls-primary-btn
+              onClick={onPrimaryAction}
+              disabled={!selectedPositionId || positions.length === 0}
+            >
+              {primaryCtaLabel}
+            </LsPrimaryBtn>
+          )}
         </>
       ) : (
         <>
-          <PairSelect type="button" onClick={() => openPicker('A')}>
-            <PairText>{pairLabel}</PairText>
+          <PairSelect type="button" onClick={() => openPicker('A')} data-ls-pair-select>
+            <PairText style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '90%' }}>
+              {pairLabel}
+            </PairText>
             <Chevron aria-hidden>▾</Chevron>
           </PairSelect>
           <TokenRow>
-            <TokenLabel>{isRemove ? 'Expected Output A' : 'Token A'}</TokenLabel>
-            {isRemove ? (
-              <TokenInput value={typedValueA} readOnly placeholder="0.0" />
-            ) : (
-              <TokenInput
-                value={typedValueA === '0.0' ? '' : typedValueA}
-                onChange={(e) => onFieldAInput(e.target.value)}
-                placeholder="0.0"
-                inputMode="decimal"
-              />
-            )}
+            <TokenLabel>Token A</TokenLabel>
+            <TokenInput
+              value={typedValueA === '0.0' ? '' : typedValueA}
+              onChange={(e) => onFieldAInput(e.target.value)}
+              placeholder="0.0"
+              inputMode="decimal"
+            />
             <TokenSelect type="button" onClick={() => openPicker('A')}>
               {currencyA?.symbol ?? '—'}
             </TokenSelect>
@@ -338,17 +400,13 @@ export const LiquidityBuilderPanel: React.FC = () => {
             </SwapBtn>
           </SwapMid>
           <TokenRow>
-            <TokenLabel>{isRemove ? 'Expected Output B' : 'Token B'}</TokenLabel>
-            {isRemove ? (
-              <TokenInput value={typedValueB} readOnly placeholder="0.0" />
-            ) : (
-              <TokenInput
-                value={typedValueB === '0.0' ? '' : typedValueB}
-                onChange={(e) => onFieldBInput(e.target.value)}
-                placeholder="0.0"
-                inputMode="decimal"
-              />
-            )}
+            <TokenLabel>Token B</TokenLabel>
+            <TokenInput
+              value={typedValueB === '0.0' ? '' : typedValueB}
+              onChange={(e) => onFieldBInput(e.target.value)}
+              placeholder="0.0"
+              inputMode="decimal"
+            />
             <TokenSelect type="button" onClick={() => openPicker('B')}>
               {currencyB?.symbol ?? '—'}
             </TokenSelect>
@@ -360,17 +418,6 @@ export const LiquidityBuilderPanel: React.FC = () => {
             </span>
           </RatioHead>
           <RatioBar $pct={preview.tokenAPct} aria-hidden />
-          {isRemove && (
-            <TokenRow style={{ height: 56, minHeight: 56 }}>
-              <TokenLabel>Remove %</TokenLabel>
-              <TokenInput
-                value={removePercent}
-                onChange={(e) => onRemovePercent(e.target.value)}
-                placeholder="50"
-                inputMode="numeric"
-              />
-            </TokenRow>
-          )}
           <SlippageRow>
             <SlippageLabel>Slippage tolerance</SlippageLabel>
             <SlippageValue>{slippageLabel}</SlippageValue>
