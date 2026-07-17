@@ -14,7 +14,18 @@ vi.mock('../../poolsRuntime/PoolsRuntimeContext', () => ({
 }))
 
 vi.mock('../../poolsRuntime/formatPoolPresentation', () => ({
-  buildPoolMachineV2: () => ({ schema: 'melega.pool.v2', poolId: 'test' }),
+  buildPoolMachineV2: (card: { id?: string; displayStatus?: string }) => ({
+    schema: 'melega.pool.v2',
+    poolId: card?.id ?? 'test',
+    status: card?.displayStatus,
+    recommendedAction: card?.displayStatus === 'ENDED' ? 'none' : 'stake',
+  }),
+  resolvePoolMachineRecommendedAction: (card: { displayStatus?: string; status?: string; cta?: string }) => {
+    if (card.displayStatus === 'ENDED' || card.status === 'ended') return 'none'
+    if (card.cta === 'stake') return 'stake'
+    if (card.cta === 'analyze') return 'analyze'
+    return 'none'
+  },
 }))
 
 function basePool(overrides: Partial<PoolPreviewCard> = {}): PoolPreviewCard {
@@ -172,12 +183,14 @@ describe('PoolGridCard ended lifecycle presentation', () => {
     expect(document.querySelector('[data-ps-pool-health]')).toBeTruthy()
   })
 
-  it('TEST 7 — Ended CTA remains disabled Ended', () => {
-    render(<PoolGridCard pool={basePool({ displayStatus: 'ENDED' })} />)
+  it('TEST 7 — Ended CTA is View Details, not Ended', () => {
+    render(<PoolGridCard pool={basePool({ displayStatus: 'ENDED', cta: 'stake' })} />)
     const footer = document.querySelector('[data-ps-card-footer]') as HTMLElement
-    const cta = within(footer).getByRole('button', { name: 'Ended' })
+    expect(within(footer).queryByRole('button', { name: 'Ended' })).toBeNull()
+    const cta = within(footer).getByRole('button', { name: 'View Details' })
     expect(cta).toBeTruthy()
-    expect((cta as HTMLButtonElement).disabled).toBe(true)
+    expect((cta as HTMLButtonElement).disabled).toBe(false)
+    expect(screen.getByText('ENDED')).toBeTruthy()
   })
 
   it('TEST 8 — No simultaneous ENDED + Official + Pool Health', () => {
@@ -189,5 +202,79 @@ describe('PoolGridCard ended lifecycle presentation', () => {
     expect(text).toMatch(/ENDED/)
     expect(within(primary).queryByText('Official')).toBeNull()
     expect(within(primary).queryByText('Pool Health')).toBeNull()
+  })
+
+  it('TEST 9 — ACTIVE CTA unchanged (Stake + Analyze)', () => {
+    render(
+      <PoolGridCard
+        pool={basePool({
+          displayStatus: 'LIVE',
+          status: 'live',
+          cta: 'stake',
+          rewardBadge: 'Official',
+          lifecycle: {
+            ...basePool().lifecycle!,
+            finished: false,
+            ended: false,
+            rewarding: true,
+            active: true,
+            rewardPerBlockPositive: true,
+            rewardBalancePositive: true,
+          },
+          sustainableAprDisplay: '12.00%',
+        })}
+      />,
+    )
+    const footer = document.querySelector('[data-ps-card-footer]') as HTMLElement
+    expect(within(footer).getByRole('button', { name: 'Stake' })).toBeTruthy()
+    expect(within(footer).getByRole('button', { name: 'Analyze' })).toBeTruthy()
+    expect(within(footer).queryByRole('button', { name: 'View Details' })).toBeNull()
+  })
+
+  it('TEST 10 — FUTURE CTA unchanged (disabled Ended)', () => {
+    render(
+      <PoolGridCard
+        pool={basePool({
+          displayStatus: 'INDEXING',
+          status: 'indexing',
+          cta: 'analyze',
+          lifecycle: {
+            ...basePool().lifecycle!,
+            finished: false,
+            ended: false,
+            rewarding: false,
+            active: false,
+          },
+        })}
+      />,
+    )
+    const footer = document.querySelector('[data-ps-card-footer]') as HTMLElement
+    const cta = within(footer).getByRole('button', { name: 'Ended' })
+    expect((cta as HTMLButtonElement).disabled).toBe(true)
+    expect(within(footer).queryByRole('button', { name: 'View Details' })).toBeNull()
+  })
+
+  it('TEST 11 — UNAVAILABLE CTA unchanged (disabled Ended)', () => {
+    render(
+      <PoolGridCard
+        pool={basePool({
+          displayStatus: 'LIVE',
+          status: 'live',
+          cta: 'none',
+          visibilityStatus: 'HIDDEN',
+          lifecycle: {
+            ...basePool().lifecycle!,
+            finished: false,
+            ended: false,
+            rewarding: false,
+            active: false,
+          },
+        })}
+      />,
+    )
+    const footer = document.querySelector('[data-ps-card-footer]') as HTMLElement
+    const cta = within(footer).getByRole('button', { name: 'Ended' })
+    expect((cta as HTMLButtonElement).disabled).toBe(true)
+    expect(within(footer).queryByRole('button', { name: 'View Details' })).toBeNull()
   })
 })

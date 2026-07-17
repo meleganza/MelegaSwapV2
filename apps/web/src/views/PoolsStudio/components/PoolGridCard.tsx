@@ -4,7 +4,7 @@ import type { PoolPreviewCard } from '../poolsStudioData'
 import { poolsStudioLayout } from '../poolsStudioTokens'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
-import { buildPoolMachineV2 } from '../poolsRuntime/formatPoolPresentation'
+import { buildPoolMachineV2, resolvePoolMachineRecommendedAction } from '../poolsRuntime/formatPoolPresentation'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 
 const Card = styled.article<{ $expanded?: boolean; $ended?: boolean }>`
@@ -381,6 +381,8 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const isEnded = pool.status === 'ended' || pool.lifecycle?.finished
   /** Canonical card presentation status — drives ended badge / Official / health visibility. */
   const isDisplayEnded = pool.displayStatus === 'ENDED'
+  const recommendedAction = resolvePoolMachineRecommendedAction(pool)
+  const showEndedViewDetails = isDisplayEnded && recommendedAction === 'none'
   const isLive =
     isRewarding &&
     pool.sustainableAprDisplay &&
@@ -579,6 +581,21 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               {analyzeOpen ? 'Hide Analysis' : 'Analyze'}
             </AnalyzeBtn>
           </>
+        ) : showEndedViewDetails ? (
+          <AnalyzeBtn
+            type="button"
+            data-ps-analyze-toggle
+            data-ps-ended-details-cta
+            style={{ width: '100%', minWidth: 0 }}
+            onClick={() => {
+              setAnalyzeOpen((v) => {
+                if (v) setJsonOpen(false)
+                return !v
+              })
+            }}
+          >
+            {analyzeOpen ? 'Hide Analysis' : 'View Details'}
+          </AnalyzeBtn>
         ) : (
           <AnalyzeBtn disabled style={{ width: '100%', minWidth: 0 }}>
             Ended
