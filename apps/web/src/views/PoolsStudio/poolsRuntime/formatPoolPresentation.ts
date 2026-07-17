@@ -296,6 +296,13 @@ export function getTokenExplorerUrl(address: unknown, chainId = 56): string {
   return buildTokenExplorerUrl(normalized, chainId)
 }
 
+export function resolvePoolMachineRecommendedAction(card: PoolPreviewCard): 'stake' | 'analyze' | 'none' {
+  if (card.displayStatus === 'ENDED' || card.status === 'ended') return 'none'
+  if (card.cta === 'stake') return 'stake'
+  if (card.cta === 'analyze') return 'analyze'
+  return 'none'
+}
+
 export function buildPoolMachineV2(card: PoolPreviewCard, chainId = 56) {
   const pool = card.rawPool
   const contract = pool ? getContractRef(pool, chainId) : { address: card.contractAddress ?? '', explorerUrl: card.explorerUrl ?? '', label: card.contractLabel ?? '' }
@@ -326,7 +333,6 @@ export function buildPoolMachineV2(card: PoolPreviewCard, chainId = 56) {
       card.displayStatus === 'LIVE' &&
       Boolean(card.sustainableAprDisplay),
     status: card.displayStatus,
-    recommendedAction:
-      card.status === 'ended' ? 'none' : card.cta === 'stake' ? 'stake' : card.cta === 'analyze' ? 'analyze' : 'none',
+    recommendedAction: resolvePoolMachineRecommendedAction(card),
   }
 }
