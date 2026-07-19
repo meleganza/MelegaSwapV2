@@ -28,13 +28,14 @@ describe('LB012 production dependency closure artifact', () => {
     expect(g.activationAuthorized).toBe(false)
   })
 
-  it('activation-gate-final LB012 remains unauthorized', () => {
+  it('activation-gate-final remains unauthorized after LB012 baseline', () => {
     const p = path.resolve(
       __dirname,
       '../../../../../../deployments/liquidity-building/chain-56/activation-gate-final.v1.json',
     )
     const doc = JSON.parse(readFileSync(p, 'utf8'))
-    expect(doc.mission).toBe('LB012')
+    // Living gate artifact advances per mission; LB012 must remain in lineage and stay fail-closed.
+    expect(doc.priorMissions || []).toEqual(expect.arrayContaining(['LB012']))
     expect(doc.activationAuthorized).toBe(false)
     expect(doc.mainnetCycleExecuted).toBe(false)
   })

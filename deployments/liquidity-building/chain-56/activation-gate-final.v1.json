@@ -1,154 +1,122 @@
 {
   "schemaVersion": "melega.liquidity-building.activation-gate-final.v1",
-  "mission": "LB013",
-  "assessedAt": "2026-07-19T18:14:00Z",
-  "baselineCommit": "359966e96e64080df1e990e0bb4fe936b2846f71",
-  "priorMissions": ["LB011", "LB012"],
+  "mission": "LB013-B",
+  "assessedAt": "2026-07-19T18:58:00Z",
+  "baselineCommit": "d00fa0635b406259bbbe9f32538ca98d32381710",
+  "priorMissions": ["LB011", "LB012", "LB013"],
   "dependencyMatrix": "deployments/liquidity-building/chain-56/external-dependency-closure-matrix.v1.json",
   "dependencyClosureArtifact": "deployments/liquidity-building/chain-56/production-dependency-closure.v1.json",
+  "deploymentInputs": "deployments/liquidity-building/chain-56/LiquidityBuildingV1.inputs.json",
+  "bindingDoc": "docs/LB013B_MELEGA_DEPLOYMENT_BINDING.md",
   "chainId": 56,
   "activationAuthorized": false,
   "mainnetCycleAuthorized": false,
   "mainnetCycleExecuted": false,
-  "stopReason": "LB013 planning complete — external blockers remain OPEN; activationAuthorized stays false until every blocking gate PASS",
+  "manualOverrideForbidden": true,
+  "stopReason": "LB013-B — Treasury Runtime did not publish a verified LB fee receiver; no production bind; activationAuthorized remains false",
   "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
   "runtimeHealthExpected": "BLOCKED",
-  "note": "LB013 does not close infrastructure. See LB013_EXTERNAL_DEPENDENCY_CLOSURE_MATRIX.md for owners/actions.",
+  "note": "Never manually override gates. Bind Treasury receiver only after Treasury Runtime publishes verified production values.",
   "gates": [
-    {
-      "gate": "Production authority",
-      "status": "FAIL",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "external-dependency-closure-matrix.v1.json#LB-G03B",
-      "blocker": "LB-G03B",
-      "blockingReason": "AUTONOMOUS_AUTHORITY_NOT_PROVISIONED"
-    },
-    {
-      "gate": "Signature normalization",
-      "status": "FAIL",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "matrix#LB-G11",
-      "blocker": "LB-G11",
-      "blockingReason": "Production KMS→Authorizer verification pending (module already implemented)"
-    },
-    {
-      "gate": "Authorizer binding",
-      "status": "FAIL",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "LiquidityBuildingV1.inputs.json#authorizer",
-      "blocker": "LB-G03B",
-      "blockingReason": "NOT_DEPLOYED"
-    },
     {
       "gate": "Treasury receiver",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "matrix#LB-G04B",
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "LiquidityBuildingV1.inputs.json#treasury.lb013bBindingAttempt",
       "blocker": "LB-G04B",
-      "blockingReason": "PRODUCTION_BINDING_NOT_FOUND"
+      "blockingReason": "PRODUCTION_BINDING_NOT_FOUND — registry chain-56 intake is zero / pending_deployment"
     },
     {
-      "gate": "Treasury Runtime ingestion",
+      "gate": "Fee Sink",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "matrix#LB-G04C/LB-G12",
-      "blocker": "LB-G04C/LB-G12",
-      "blockingReason": "Treasury Runtime LB ingestion not operational"
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "LiquidityBuildingV1.inputs.json#treasury.feeSinkAddress",
+      "blocker": "LB-G04B",
+      "blockingReason": "feeSinkAddress null — cannot bind until verified receiver exists"
+    },
+    {
+      "gate": "Factory",
+      "status": "PASS",
+      "blocking": true,
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "canonicalMelega.factory=0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+      "blocker": null,
+      "blockingReason": null
     },
     {
       "gate": "Quote policy",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "matrix#LB-G08",
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "quotePolicies=[] / LB-G08",
       "blocker": "LB-G08",
-      "blockingReason": "Founder ratification pending"
+      "blockingReason": "Founder ratification pending — no RATIFIED active policy in inputs"
+    },
+    {
+      "gate": "Runtime ingestion",
+      "status": "FAIL",
+      "blocking": true,
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "runtimeIngestion.status=NOT_IMPLEMENTED",
+      "blocker": "LB-G04C/LB-G12",
+      "blockingReason": "Treasury Runtime LB ingestion not operational (health: development / chain none)"
+    },
+    {
+      "gate": "Signer",
+      "status": "FAIL",
+      "blocking": true,
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "productionAuthority.verdict=AUTONOMOUS_AUTHORITY_NOT_READY",
+      "blocker": "LB-G03B/LB-G11",
+      "blockingReason": "Non-exportable KMS authority not provisioned; prod KMS→Authorizer verify pending"
+    },
+    {
+      "gate": "Relay",
+      "status": "FAIL",
+      "blocking": true,
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "relay.status=DISABLED",
+      "blocker": "LB-G03C",
+      "blockingReason": "Relay infrastructure NOT_IDENTIFIED_AS_GIT_REPO / DISABLED"
     },
     {
       "gate": "Finality",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "matrix#LB-G10",
+      "timestamp": "2026-07-19T18:58:00Z",
+      "evidence": "finality.verdict=FINALITY_EVIDENCE_INSUFFICIENT",
       "blocker": "LB-G10",
-      "blockingReason": "FINALITY_EVIDENCE_INSUFFICIENT"
+      "blockingReason": "FINALITY_EVIDENCE_INSUFFICIENT at configured depth 15"
     },
     {
       "gate": "Deployment validator",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
+      "timestamp": "2026-07-19T18:58:00Z",
       "evidence": "validate-lb-v1-inputs.mjs",
       "blocker": null,
       "blockingReason": "DEPLOYMENT_INPUTS_BLOCKED"
     },
     {
-      "gate": "Runtime health",
-      "status": "FAIL",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "assessLiquidityBuildingRuntimeHealth",
-      "blocker": null,
-      "blockingReason": "BLOCKED"
-    },
-    {
-      "gate": "Contract verification",
-      "status": "FAIL",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "inputs addresses null",
-      "blocker": null,
-      "blockingReason": "LB contracts not mainnet-deployed"
-    },
-    {
-      "gate": "Permissionless relay",
-      "status": "FAIL",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "matrix#LB-G03C",
-      "blocker": "LB-G03C",
-      "blockingReason": "Relay infrastructure NOT_IDENTIFIED_AS_GIT_REPO / DISABLED"
-    },
-    {
-      "gate": "Canonical Melega Factory",
-      "status": "PASS",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
-      "blocker": null,
-      "blockingReason": null
-    },
-    {
       "gate": "Canonical Melega Router",
       "status": "PASS",
       "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
+      "timestamp": "2026-07-19T18:58:00Z",
       "evidence": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
-      "blocker": null,
-      "blockingReason": null
-    },
-    {
-      "gate": "Stale Pancake router closure",
-      "status": "PASS",
-      "blocking": true,
-      "timestamp": "2026-07-19T18:14:00Z",
-      "evidence": "LB-G07",
       "blocker": null,
       "blockingReason": null
     }
   ],
   "actionsNotTaken": [
-    "NO mainnet transaction",
-    "NO deployment",
-    "NO economic execution",
-    "NO LB005-LB007 contract rework",
-    "NO LB009 architecture rework",
-    "NO invented relay repository",
-    "NO activationAuthorized=true"
+    "NO bind of zero/pending registry intake as Treasury receiver",
+    "NO invented production Treasury address",
+    "NO Liquidity Building execution contract modification",
+    "NO economic logic change",
+    "NO Treasury authority introduced into MelegaSwapV2",
+    "NO manual gate override",
+    "NO activationAuthorized=true",
+    "NO mainnet cycle"
   ]
 }

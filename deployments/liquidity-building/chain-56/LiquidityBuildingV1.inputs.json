@@ -3,9 +3,13 @@
   "chainId": 56,
   "network": "bsc-mainnet",
   "factoryVersion": "LiquidityBuildingFactoryV1",
-  "sourceCommit": "2c2c0b75fb1abc879f5b4b6c021aa5ded06b7b7a",
+  "sourceCommit": "d00fa0635b406259bbbe9f32538ca98d32381710",
   "lb010AssessedAtUtc": "2026-07-19T17:56:00Z",
   "lb012AssessedAtUtc": "2026-07-19T18:10:00Z",
+  "lb013AssessedAtUtc": "2026-07-19T18:14:00Z",
+  "lb013bAssessedAtUtc": "2026-07-19T18:58:00Z",
+  "deploymentStatus": "BLOCKED",
+  "treasuryBindingDoc": "docs/LB013B_MELEGA_DEPLOYMENT_BINDING.md",
   "observationBlock": 110942904,
   "compiler": {
     "solc": "0.8.20",
@@ -74,8 +78,18 @@
   "treasury": {
     "feeSinkAddress": null,
     "receiverAddress": null,
+    "receiverBytecodeBytes": null,
+    "feeSinkBoundReceiver": null,
     "receiverVerdict": "PRODUCTION_BINDING_NOT_FOUND",
-    "reprobeUtc": "2026-07-19T17:56:00Z",
+    "reprobeUtc": "2026-07-19T18:58:00Z",
+    "lb013bBindingAttempt": {
+      "source": "https://treasury.melega.ai/registry/treasury/index.json",
+      "chain56Intake": "0x0000000000000000000000000000000000000000",
+      "chain56Status": "pending_deployment",
+      "lastVerifiedAt": null,
+      "lbReceiverPublished": false,
+      "action": "NO_BIND — zero intake and pending_deployment are not production LB receivers"
+    },
     "rejectedCandidates": [
       {
         "label": "MELEGA_VAULT_BSC",
@@ -94,6 +108,12 @@
         "address": "0xb5a8707FfA045E0FC7db6eFC63161e853C80139a",
         "codeBytes": 0,
         "reason": "EOA — forbidden"
+      },
+      {
+        "label": "TREASURY_REGISTRY_CHAIN56_INTAKE",
+        "address": "0x0000000000000000000000000000000000000000",
+        "codeBytes": 0,
+        "reason": "Registry status pending_deployment — not a verified LB receiver"
       }
     ]
   },
