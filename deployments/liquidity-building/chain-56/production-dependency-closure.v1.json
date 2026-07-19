@@ -1,0 +1,174 @@
+{
+  "schemaVersion": "melega.liquidity-building.production-dependency-closure.v1",
+  "mission": "LB012",
+  "assessedAt": "2026-07-19T18:10:00Z",
+  "baselineCommit": "2c2c0b75fb1abc879f5b4b6c021aa5ded06b7b7a",
+  "chainId": 56,
+  "activationAuthorized": false,
+  "mainnetCycleAuthorized": false,
+  "verdict": "LB012_IMPLEMENTED_WITH_BLOCKERS",
+  "authorities": {
+    "productionAuthority": {
+      "verdict": "AUTONOMOUS_AUTHORITY_NOT_PROVISIONED",
+      "provider": null,
+      "keyType": null,
+      "publicAddress": null,
+      "exportability": null,
+      "accessPolicy": null,
+      "signingScope": "LiquidityBuilding ExecutionIntent V1 only (required; not provisioned)",
+      "auditCapability": null,
+      "status": "NOT_PROVISIONED",
+      "blocker": "LB-G03B",
+      "externalDependency": "Provision non-exportable secp256k1 KMS/HSM key + service identity; wire into KERL/LB signer (kerl-signing-gate kms_hsm currently MISSING)",
+      "rejected": ["HOT_SIGNER", "local_private_key", "vm.sign", "human_wallet"]
+    },
+    "signatureNormalization": {
+      "moduleStatus": "IMPLEMENTED_IN_MELEGASWAPV2",
+      "modulePath": "apps/web/src/lib/liquidity-building-runtime/kms-signature-normalization.ts",
+      "productionKmsVerified": false,
+      "authorizerAcceptanceWithProductionKey": false,
+      "status": "BLOCKED",
+      "blocker": "LB-G11",
+      "externalDependency": "Real production-authority DER signature over non-executable Intent → Authorizer validateExecutionIntent PASS"
+    },
+    "authorizePipeline": {
+      "runtimeToIntent": "READY",
+      "kmsSigner": "DISABLED",
+      "normalization": "CODE_READY_AWAITING_PROD_KEY",
+      "authorizer": "NOT_DEPLOYED",
+      "program": "NOT_DEPLOYED",
+      "status": "BLOCKED"
+    }
+  },
+  "relay": {
+    "submitTransaction": "DISABLED",
+    "monitor": "INTERFACE_ONLY",
+    "retry": "INTERFACE_ONLY",
+    "replacement": "INTERFACE_ONLY",
+    "duplicateHandling": "LOCAL_IDEM_KEY",
+    "health": "BLOCKED",
+    "blocker": "LB-G03C",
+    "externalDependency": "Deploy permissionless gas-funded relay service that submits opaque calldata only (no signing, no economic choice)"
+  },
+  "treasury": {
+    "receiver": {
+      "verdict": "PRODUCTION_BINDING_NOT_FOUND",
+      "reprobeUtc": "2026-07-19T18:10:00Z",
+      "candidates": [
+        {
+          "label": "MELEGA_VAULT_BSC",
+          "address": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C",
+          "codeBytes": 9883,
+          "result": "REJECTED_ROLE_UNPROVEN"
+        },
+        {
+          "label": "MELEGA_TREASURY_BSC",
+          "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+          "codeBytes": 23,
+          "result": "REJECTED_EIP7702"
+        },
+        {
+          "label": "MELEGA_FEE_COLLECTOR_BSC",
+          "address": "0xb5a8707FfA045E0FC7db6eFC63161e853C80139a",
+          "codeBytes": 0,
+          "result": "REJECTED_EOA"
+        }
+      ],
+      "blocker": "LB-G04B",
+      "externalDependency": "Implement TreasuryLiquidityBuildingReceiverV1 (or equivalent) inside D99/Treasury custody boundary and publish chain-56 address"
+    },
+    "runtimeIngestion": {
+      "status": "NOT_IMPLEMENTED",
+      "liveHealth": {
+        "url": "https://treasury.melega.ai/api/v1/health",
+        "environment": "development",
+        "chain": "none",
+        "contract": "smartdrop.v1",
+        "lbSettlementSupport": false
+      },
+      "localRepo": {
+        "origin": "https://github.com/meleganza/melega-kiri-treasury-runtime.git",
+        "path": "/Users/marcomelega/Desktop/melega-kiri-treasury-runtime",
+        "branch": "phase-a-topology-clean",
+        "lbIngestionCodePresent": false,
+        "modifiedInLb012": false,
+        "note": "Checkout verified; no Liquidity Building settlement routes found — do not invent ingestion inside MelegaSwapV2"
+      },
+      "blocker": "LB-G04C/LB-G12",
+      "externalDependency": "Implement melega.treasury.liquidity-building-settlement.v1 ingestion in meleganza/melega-kiri-treasury-runtime and deploy to production with chainId 56"
+    }
+  },
+  "quotePolicies": {
+    "WBNB": {
+      "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "decimals": 18,
+      "enabled": false,
+      "minimumGrossQuoteFloor": "41052631578947370",
+      "minimumQuoteReserve": "10263157894736842500",
+      "gasConversionMode": "NativeEquivalent",
+      "policyStatus": "PROPOSED_FOR_RATIFICATION",
+      "activationStatus": "BLOCKED_PENDING_RATIFICATION_AND_BINDINGS",
+      "blocker": "LB-G08"
+    },
+    "USDT": {
+      "address": "0x55d398326f99059fF775485246999027B3197955",
+      "decimals": 18,
+      "enabled": false,
+      "gasConversionMode": "NotActive",
+      "policyStatus": "CALCULATED",
+      "activationStatus": "NOT_ACTIVE",
+      "blocker": "LB-G09"
+    },
+    "USDC": {
+      "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+      "decimals": 18,
+      "enabled": false,
+      "gasConversionMode": "NotActive",
+      "policyStatus": "CALCULATED",
+      "activationStatus": "NOT_ACTIVE",
+      "blocker": "LB-G09"
+    },
+    "ratificationRequired": true,
+    "productionQuotePoliciesArrayEmpty": true
+  },
+  "finality": {
+    "configuredDepth": 15,
+    "verdict": "FINALITY_EVIDENCE_INSUFFICIENT",
+    "indexerReorgSafetyBlocks": 12,
+    "blocker": "LB-G10",
+    "externalDependency": "Ops certification of BSC reorg depth / provider finality covering LB observer + Treasury ingestion ≥ 15"
+  },
+  "deployment": {
+    "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
+    "readinessState": "BLOCKED",
+    "contractsDeployedMainnet": false,
+    "bscscanVerified": false,
+    "forkValidation": "NOT_RUN_DEPENDENCIES_MISSING"
+  },
+  "securityScan": {
+    "NO_HUMAN_SIGNER": true,
+    "NO_PRIVATE_KEY_FALLBACK": true,
+    "NO_FUNDED_EXECUTION_WALLET": true,
+    "NO_EOA_TREASURY_RECEIVER": true,
+    "NO_MANUAL_FEE_SETTLEMENT": true,
+    "NO_MOCK_PRODUCTION_DEPENDENCY": true,
+    "NO_TEST_ONLY_AUTHORITY": true,
+    "NO_TEST_ONLY_TREASURY": true,
+    "NO_UNVERIFIED_QUOTE_POLICY_AS_PRODUCTION": true,
+    "NO_CENTRALIZED_GAS_PRICE_AS_ONCHAIN_SOURCE": true,
+    "NO_STALE_PANCAKE_PATH": true
+  },
+  "blockersRemaining": [
+    "LB-G03B",
+    "LB-G03C",
+    "LB-G04B",
+    "LB-G04C",
+    "LB-G08",
+    "LB-G09",
+    "LB-G10",
+    "LB-G11",
+    "LB-G12"
+  ],
+  "closedInPriorMissions": ["LB-G02A", "LB-G03A", "LB-G04A", "LB-G07"],
+  "runtimeCodeReadyButActivationBlocked": ["LB-G02B"]
+}

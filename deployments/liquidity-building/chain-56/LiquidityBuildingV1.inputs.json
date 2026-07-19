@@ -3,8 +3,9 @@
   "chainId": 56,
   "network": "bsc-mainnet",
   "factoryVersion": "LiquidityBuildingFactoryV1",
-  "sourceCommit": "61771b0a9760b5358619660a23f5e04254210dca",
+  "sourceCommit": "2c2c0b75fb1abc879f5b4b6c021aa5ded06b7b7a",
   "lb010AssessedAtUtc": "2026-07-19T17:56:00Z",
+  "lb012AssessedAtUtc": "2026-07-19T18:10:00Z",
   "observationBlock": 110942904,
   "compiler": {
     "solc": "0.8.20",
