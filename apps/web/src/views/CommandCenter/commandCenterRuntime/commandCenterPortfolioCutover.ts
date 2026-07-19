@@ -1,9 +1,9 @@
 /**
- * Command Center → WalletPortfolio + View Engine cutover (R791D.3B / R791D.3D).
+ * Command Center → WalletPortfolio + View Engine cutover (R791D.3B / R791D.3D / R791D.3E).
  *
  * Aggregation: Portfolio Service (createWalletPortfolio).
  * Filtering: Portfolio View Engine (resolvePortfolioView).
- * Command Center: presentation preparation only — no duplicated business filters.
+ * My Positions: presentation preparation only — no ownership/filter business rules.
  */
 
 import {
@@ -29,7 +29,11 @@ import {
 } from 'lib/wallet-portfolio/viewEngine'
 import {
   createEmptyWalletPortfolio,
+  type PortfolioActionType,
   type PortfolioPosition,
+  type PortfolioPositionAction,
+  type PortfolioPositionLifecycle,
+  type PortfolioPositionType,
   type PortfolioSummary,
   type WalletPortfolio,
   type WalletPortfolioSectionStatus,
@@ -464,4 +468,249 @@ export function projectPoolView(positions: readonly PortfolioPosition[]): PoolPo
     apr: p.apr ?? 'Unavailable',
     pending: p.claimableValueUsd ?? p.pendingRewardsValueUsd ?? 'Unavailable',
   }))
+}
+
+// ─── R791D.3E My Positions experience foundation ────────────────────────────
+
+export type MyPositionsExperienceState = 'READY' | 'EMPTY' | 'WALLET_NOT_CONNECTED'
+
+export interface MyPositionCardModel {
+  positionId: string
+  type: PortfolioPositionType
+  title: string
+  subtitle: string | null
+  icon: string | null
+  value: {
+    currentValueUsd: string | null
+    principalValueUsd: string | null
+  }
+  claimables: {
+    claimableValueUsd: string | null
+    pendingRewardsValueUsd: string | null
+  }
+  lifecycle: {
+    status: PortfolioPositionLifecycle
+    startedAt: string | null
+    endsAt: string | null
+    updatedAt: string | null
+  }
+  primaryAction: PortfolioPositionAction
+  secondaryActions: PortfolioPositionAction[]
+  navigation: {
+    productRoute: string | null
+    openRoute: string | null
+    manageRoute: string | null
+    analyticsRoute: string | null
+  }
+  status: PortfolioPositionLifecycle
+  attention: boolean
+}
+
+/** Presentation groups — not portfolio root product arrays. */
+export interface MyPositionsGroups {
+  Liquidity: MyPositionCardModel[]
+  Farm: MyPositionCardModel[]
+  Pool: MyPositionCardModel[]
+  /** Future position types (VAULT, LENDING, …) — engine-compatible bucket. */
+  Other: MyPositionCardModel[]
+}
+
+export interface MyPositionsSummary {
+  totalPositions: number
+  liquidityCount: number
+  farmCount: number
+  poolCount: number
+  claimablePositions: number
+  attentionPositions: number
+}
+
+export interface MyPositionsExperience {
+  myPositionsView: PortfolioViewResult
+  myPositionsGroups: MyPositionsGroups
+  myPositionsSummary: MyPositionsSummary
+  state: MyPositionsExperienceState
+}
+
+function collectEnabledActions(position: PortfolioPosition): PortfolioPositionAction[] {
+  const seen = new Set<string>()
+  const out: PortfolioPositionAction[] = []
+  const push = (action: PortfolioPositionAction | null | undefined) => {
+    if (!action || !action.enabled || action.type === 'NONE') return
+    const key = `${action.type}:${action.label}:${action.route ?? ''}`
+    if (seen.has(key)) return
+    seen.add(key)
+    out.push(action)
+  }
+  push(position.recommendedAction)
+  push(position.actions?.primary)
+  for (const a of position.actions?.secondary ?? []) push(a)
+  push(position.actions?.open)
+  push(position.actions?.manage)
+  push(position.actions?.analytics)
+  return out
+}
+
+function hasEnabledType(actions: readonly PortfolioPositionAction[], types: readonly PortfolioActionType[]): boolean {
+  return actions.some((a) => types.includes(a.type))
+}
+
+/**
+ * Order existing PortfolioPosition.actions — never invent actions.
+ * Priority: claimable Claim/Harvest → product Manage/Remove|Harvest|Withdraw → View Details (OPEN/ANALYTICS).
+ */
+export function prioritizeMyPositionActions(position: PortfolioPosition): {
+  primaryAction: PortfolioPositionAction
+  secondaryActions: PortfolioPositionAction[]
+} {
+  const available = collectEnabledActions(position)
+  const claimableHint =
+    hasEnabledType(available, ['CLAIM', 'HARVEST']) ||
+    (position.claimableValueUsd != null && Number(position.claimableValueUsd) > 0) ||
+    (position.pendingRewardsValueUsd != null && Number(position.pendingRewardsValueUsd) > 0)
+
+  const unavailable = position.status === 'UNAVAILABLE' || position.dataState === 'UNAVAILABLE'
+
+  let preferred: PortfolioActionType[]
+  if (unavailable) {
+    preferred = ['OPEN', 'ANALYTICS', 'MANAGE']
+  } else if (position.positionType === 'LIQUIDITY') {
+    preferred = claimableHint
+      ? ['CLAIM', 'HARVEST', 'MANAGE', 'REMOVE_LIQUIDITY', 'ADD_LIQUIDITY', 'OPEN', 'ANALYTICS']
+      : ['MANAGE', 'REMOVE_LIQUIDITY', 'ADD_LIQUIDITY', 'OPEN', 'ANALYTICS', 'CLAIM', 'HARVEST']
+  } else if (position.positionType === 'FARM') {
+    preferred = claimableHint
+      ? ['HARVEST', 'CLAIM', 'MANAGE', 'WITHDRAW', 'UNSTAKE', 'OPEN', 'ANALYTICS']
+      : ['MANAGE', 'HARVEST', 'WITHDRAW', 'UNSTAKE', 'CLAIM', 'OPEN', 'ANALYTICS']
+  } else if (position.positionType === 'POOL') {
+    preferred = claimableHint
+      ? ['CLAIM', 'HARVEST', 'MANAGE', 'WITHDRAW', 'UNSTAKE', 'OPEN', 'ANALYTICS']
+      : ['MANAGE', 'CLAIM', 'WITHDRAW', 'UNSTAKE', 'HARVEST', 'OPEN', 'ANALYTICS']
+  } else {
+    preferred = claimableHint
+      ? ['CLAIM', 'HARVEST', 'MANAGE', 'WITHDRAW', 'OPEN', 'ANALYTICS']
+      : ['MANAGE', 'OPEN', 'ANALYTICS', 'CLAIM', 'HARVEST', 'WITHDRAW']
+  }
+
+  const rank = new Map(preferred.map((t, i) => [t, i]))
+  const ordered = [...available].sort((a, b) => {
+    const ra = rank.has(a.type) ? rank.get(a.type)! : 1000
+    const rb = rank.has(b.type) ? rank.get(b.type)! : 1000
+    if (ra !== rb) return ra - rb
+    return a.priority - b.priority
+  })
+
+  if (ordered.length === 0) {
+    const fallback = position.recommendedAction ?? position.actions.primary
+    return { primaryAction: fallback, secondaryActions: [] }
+  }
+  return { primaryAction: ordered[0], secondaryActions: ordered.slice(1) }
+}
+
+/** Project PortfolioPosition → My Position card model (no product math). */
+export function projectMyPositionCard(position: PortfolioPosition): MyPositionCardModel {
+  const { primaryAction, secondaryActions } = prioritizeMyPositionActions(position)
+  return {
+    positionId: position.positionId,
+    type: position.positionType,
+    title: position.title,
+    subtitle: position.subtitle,
+    icon: position.icon,
+    value: {
+      currentValueUsd: position.currentValueUsd,
+      principalValueUsd: position.principalValueUsd,
+    },
+    claimables: {
+      claimableValueUsd: position.claimableValueUsd,
+      pendingRewardsValueUsd: position.pendingRewardsValueUsd,
+    },
+    lifecycle: {
+      status: position.status,
+      startedAt: position.startedAt,
+      endsAt: position.endsAt,
+      updatedAt: position.updatedAt,
+    },
+    primaryAction,
+    secondaryActions,
+    navigation: {
+      productRoute: position.productRoute,
+      openRoute: position.openRoute,
+      manageRoute: position.manageRoute,
+      analyticsRoute: position.analyticsRoute,
+    },
+    status: position.status,
+    attention: position.requiresAttention === true,
+  }
+}
+
+/** Group My Position cards — future types land in Other without breaking. */
+export function groupMyPositionCards(cards: readonly MyPositionCardModel[]): MyPositionsGroups {
+  const groups: MyPositionsGroups = {
+    Liquidity: [],
+    Farm: [],
+    Pool: [],
+    Other: [],
+  }
+  for (const card of cards) {
+    if (card.type === 'LIQUIDITY') groups.Liquidity.push(card)
+    else if (card.type === 'FARM') groups.Farm.push(card)
+    else if (card.type === 'POOL') groups.Pool.push(card)
+    else groups.Other.push(card)
+  }
+  return groups
+}
+
+function summarizeMyPositions(
+  cards: readonly MyPositionCardModel[],
+  myPositionsView: PortfolioViewResult,
+  resolveView: ResolvePortfolioViewFn,
+): MyPositionsSummary {
+  const shell = shellPortfolio(myPositionsView.positions)
+  return {
+    totalPositions: cards.length,
+    liquidityCount: cards.filter((c) => c.type === 'LIQUIDITY').length,
+    farmCount: cards.filter((c) => c.type === 'FARM').length,
+    poolCount: cards.filter((c) => c.type === 'POOL').length,
+    claimablePositions: resolveView(shell, 'CLAIMABLE').count,
+    attentionPositions: resolveView(shell, 'NEEDS_ATTENTION').count,
+  }
+}
+
+/**
+ * Build My Positions experience from WalletPortfolio via View Engine MY_POSITIONS.
+ * No local ownership filtering — View Engine owns that rule.
+ */
+export function buildMyPositionsExperience(input: {
+  portfolio: WalletPortfolio
+  walletConnected: boolean
+  resolveView?: ResolvePortfolioViewFn
+}): MyPositionsExperience {
+  const resolveView = input.resolveView ?? resolvePortfolioView
+  const myPositionsView = resolveView(input.portfolio, 'MY_POSITIONS')
+
+  if (!input.walletConnected) {
+    return {
+      myPositionsView,
+      myPositionsGroups: { Liquidity: [], Farm: [], Pool: [], Other: [] },
+      myPositionsSummary: {
+        totalPositions: 0,
+        liquidityCount: 0,
+        farmCount: 0,
+        poolCount: 0,
+        claimablePositions: 0,
+        attentionPositions: 0,
+      },
+      state: 'WALLET_NOT_CONNECTED',
+    }
+  }
+
+  const cards = myPositionsView.positions.map(projectMyPositionCard)
+  const myPositionsGroups = groupMyPositionCards(cards)
+  const myPositionsSummary = summarizeMyPositions(cards, myPositionsView, resolveView)
+
+  return {
+    myPositionsView,
+    myPositionsGroups,
+    myPositionsSummary,
+    state: cards.length === 0 ? 'EMPTY' : 'READY',
+  }
 }

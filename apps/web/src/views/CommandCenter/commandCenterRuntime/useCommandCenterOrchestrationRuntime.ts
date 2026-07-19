@@ -35,6 +35,7 @@ import {
 import { createCommandCenterError, type CommandCenterRuntimeError } from './commandCenterRuntimeErrors'
 import {
   buildCommandCenterWalletPortfolio,
+  buildMyPositionsExperience,
   projectFarmView,
   projectLiquidityView,
   projectPoolView,
@@ -175,6 +176,17 @@ export function useCommandCenterOrchestrationRuntime() {
     () => resolveCommandCenterPortfolioViews(walletPortfolio),
     [walletPortfolio],
   )
+
+  // My Positions experience — View Engine MY_POSITIONS only (no local ownership filter).
+  const myPositionsExperience = useMemo(
+    () =>
+      buildMyPositionsExperience({
+        portfolio: walletPortfolio,
+        walletConnected: Boolean(account),
+      }),
+    [walletPortfolio, account],
+  )
+
   const liquidityRows = useMemo(
     () => projectLiquidityView(portfolioViews.LIQUIDITY.positions),
     [portfolioViews],
@@ -662,6 +674,11 @@ export function useCommandCenterOrchestrationRuntime() {
     portfolio: walletPortfolio,
     /** View Engine results — source of all portfolio filters. */
     portfolioViews,
+    /** My Positions experience (R791D.3E) — View Engine MY_POSITIONS + presentation prep. */
+    myPositionsView: myPositionsExperience.myPositionsView,
+    myPositionsGroups: myPositionsExperience.myPositionsGroups,
+    myPositionsSummary: myPositionsExperience.myPositionsSummary,
+    myPositionsState: myPositionsExperience.state,
     /** Canonical summary / section status (aliases kept for existing consumers). */
     summary: walletPortfolio.summary,
     sectionStatus: walletPortfolio.sectionStatus,
