@@ -28,14 +28,19 @@ import {
 import {
   countPendingActions,
   formatAssetRows,
-  formatFarmPositionRows,
-  formatLiquidityRows,
-  formatPoolPositionRows,
   safePortfolioSection,
   sumPendingRewardsUsd,
   type PortfolioSectionStatus,
 } from './formatCommandCenterRuntime'
 import { createCommandCenterError, type CommandCenterRuntimeError } from './commandCenterRuntimeErrors'
+import {
+  buildCommandCenterWalletPortfolio,
+  filterPortfolioPositions,
+  projectFarmView,
+  projectLiquidityView,
+  projectPoolView,
+} from './commandCenterPortfolioCutover'
+import type { WalletPortfolioSectionStatus } from 'lib/wallet-portfolio/contracts'
 import {
   commandCenterIdentitySummary,
   formatCommandCenterCollectibles,
@@ -87,28 +92,122 @@ export function useCommandCenterOrchestrationRuntime() {
   const trending = useTrendingIntelligenceRuntime()
   const civilizationRuntime = useCivilizationRuntimeSync()
 
-  // Each portfolio section formats in isolation — one source throw must not reject the page.
+  // Assets remain isolated; LP/Farm/Pool flow through WalletPortfolio (single aggregation).
   const assetsSection = useMemo(
     () => safePortfolioSection(() => formatAssetRows(trade.assets, account)),
     [trade.assets, account],
   )
-  const liquiditySection = useMemo(
-    () => safePortfolioSection(() => formatLiquidityRows(liquidity.positions)),
-    [liquidity.positions],
-  )
-  const poolsSection = useMemo(
-    () => safePortfolioSection(() => formatPoolPositionRows(pools.pools)),
-    [pools.pools],
-  )
-  const farmsSection = useMemo(
-    () => safePortfolioSection(() => formatFarmPositionRows(farms.farms)),
-    [farms.farms],
+  const assets = assetsSection.rows
+
+  const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
+
+  const portfolioSectionStatus: WalletPortfolioSectionStatus = useMemo(() => {
+    const mapStatus = (s: PortfolioSectionStatus): WalletPortfolioSectionStatus['positions']['status'] => {
+      if (!account) return 'WALLET_NOT_CONNECTED'
+      if (s === 'unavailable') return 'UNAVAILABLE'
+      if (s === 'empty') return 'EMPTY'
+      if (s === 'ok') return 'READY'
+      return 'PARTIAL'
+    }
+    // Producer isolation: mark positions section from studio availability, not a global crash.
+    const liqUnavailable = false
+    const status = !account
+      ? 'WALLET_NOT_CONNECTED'
+      : liqUnavailable
+        ? 'UNAVAILABLE'
+        : 'PARTIAL'
+    const stamp = null
+    return {
+      summary: { status: mapStatus(assetsSection.status), updatedAt: stamp, errorCode: null, message: null },
+      positions: { status, updatedAt: stamp, errorCode: null, message: null },
+      claimables: { status, updatedAt: stamp, errorCode: null, message: null },
+      approvals: { status: 'EMPTY', updatedAt: stamp, errorCode: null, message: null },
+      activity: { status: 'EMPTY', updatedAt: stamp, errorCode: null, message: null },
+    }
+  }, [account, assetsSection.status])
+
+  const walletPortfolio = useMemo(
+    () =>
+      runIsolated(
+        buildCommandCenterWalletPortfolio({
+          wallet: null,
+          chainId: null,
+          chainName,
+          generatedAt: '1970-01-01T00:00:00.000Z',
+          liquidityRows: [],
+          farmCards: [],
+          poolCards: [],
+          sectionStatus: portfolioSectionStatus,
+          summary: {
+            netValueUsd: null,
+            claimableValueUsd: null,
+            activePositionCount: 0,
+            historicalPositionCount: 0,
+            attentionPositionCount: 0,
+            pendingActionCount: 0,
+          },
+        }),
+        () =>
+          buildCommandCenterWalletPortfolio({
+            wallet: account ?? null,
+            chainId: chainId ?? null,
+            chainName,
+            generatedAt: new Date().toISOString(),
+            liquidityRows: liquidity.positions ?? [],
+            farmCards: farms.farms ?? [],
+            poolCards: pools.pools ?? [],
+            sectionStatus: portfolioSectionStatus,
+            summary: {
+              netValueUsd: null,
+              claimableValueUsd: null,
+              activePositionCount: 0,
+              historicalPositionCount: 0,
+              attentionPositionCount: 0,
+              pendingActionCount: 0,
+            },
+          }),
+      ),
+    [account, chainId, chainName, liquidity.positions, farms.farms, pools.pools, portfolioSectionStatus],
   )
 
-  const assets = assetsSection.rows
-  const liquidityRows = liquiditySection.rows
-  const poolRows = poolsSection.rows
-  const farmRows = farmsSection.rows
+  // Product views: filter portfolio.positions only — never rebuild independent roots.
+  const liquidityRows = useMemo(
+    () => projectLiquidityView(filterPortfolioPositions(walletPortfolio, 'LIQUIDITY')),
+    [walletPortfolio],
+  )
+  const farmRows = useMemo(
+    () => projectFarmView(filterPortfolioPositions(walletPortfolio, 'FARM')),
+    [walletPortfolio],
+  )
+  const poolRows = useMemo(
+    () => projectPoolView(filterPortfolioPositions(walletPortfolio, 'POOL')),
+    [walletPortfolio],
+  )
+
+  const liquiditySection = useMemo(
+    () => ({
+      rows: liquidityRows,
+      status: (liquidityRows.length > 0 ? 'ok' : 'empty') as PortfolioSectionStatus,
+      error: undefined as string | undefined,
+    }),
+    [liquidityRows],
+  )
+  const poolsSection = useMemo(
+    () => ({
+      rows: poolRows,
+      status: (poolRows.length > 0 ? 'ok' : 'empty') as PortfolioSectionStatus,
+      error: undefined as string | undefined,
+    }),
+    [poolRows],
+  )
+  const farmsSection = useMemo(
+    () => ({
+      rows: farmRows,
+      status: (farmRows.length > 0 ? 'ok' : 'empty') as PortfolioSectionStatus,
+      error: undefined as string | undefined,
+    }),
+    [farmRows],
+  )
 
   const infrastructureScore = useMemo(
     () =>
@@ -555,7 +654,10 @@ export function useCommandCenterOrchestrationRuntime() {
   return {
     account,
     chainId,
+    /** Canonical wallet portfolio — sole aggregation result. */
+    portfolio: walletPortfolio,
     assets,
+    /** Filtered views of portfolio.positions (not independent product roots). */
     liquidity: liquidityRows,
     pools: poolRows,
     farms: farmRows,
@@ -574,6 +676,8 @@ export function useCommandCenterOrchestrationRuntime() {
     settlement,
     runtimeErrors,
     sectionStatuses: sectionStatuses ?? EMPTY_SECTION_STATUSES,
+    portfolioSummary: walletPortfolio.summary,
+    portfolioSectionStatus: walletPortfolio.sectionStatus,
     sectionErrors: {
       assets: assetsSection.error,
       liquidity: liquiditySection.error,
