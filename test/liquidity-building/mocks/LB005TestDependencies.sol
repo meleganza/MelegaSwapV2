@@ -106,6 +106,8 @@ contract LB005MockPair is IMelegaV2Pair {
     address public override token1;
     uint112 public r0;
     uint112 public r1;
+    mapping(address => uint256) private _balances;
+    uint256 private _totalSupply;
 
     constructor(address t0, address t1, uint112 reserve0, uint112 reserve1) {
         token0 = t0;
@@ -121,6 +123,19 @@ contract LB005MockPair is IMelegaV2Pair {
     function setReserves(uint112 a, uint112 b) external {
         r0 = a;
         r1 = b;
+    }
+
+    function balanceOf(address owner) external view returns (uint256) {
+        return _balances[owner];
+    }
+
+    function totalSupply() external view returns (uint256) {
+        return _totalSupply;
+    }
+
+    function mintTo(address to, uint256 amount) external {
+        _balances[to] += amount;
+        _totalSupply += amount;
     }
 }
 
