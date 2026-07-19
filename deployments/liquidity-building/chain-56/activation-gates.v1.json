@@ -23,6 +23,6 @@
     { "id": "AUTONOMOUS_DEPLOYMENT_MECHANISM", "status": "FAIL", "blocking": true },
     { "id": "PERMISSIONLESS_RELAY", "status": "FAIL", "blocking": true, "blocker": "LB-G03C" },
     { "id": "EXTERNAL_SECURITY_REVIEW", "status": "NOT_DONE", "blocking": true },
-    { "id": "LOW_VALUE_REAL_CYCLE", "status": "NOT_DONE", "blocking": false, "deferredTo": "LB011" }
+    { "id": "LOW_VALUE_REAL_CYCLE", "status": "NOT_DONE", "blocking": false, "deferredTo": "LB011", "lb011Verdict": "LB011_BLOCKED_BEFORE_MAINNET_EXECUTION" }
   ]
 }
