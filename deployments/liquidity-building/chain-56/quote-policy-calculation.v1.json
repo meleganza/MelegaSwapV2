@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "melega.liquidity-building.quote-policy-calculation.v1",
+  "chainId": 56,
+  "network": "bsc-mainnet",
+  "calculatedAtUtc": "2026-07-19T17:15:00Z",
+  "observationBlock": 110937361,
+  "gasPriceSource": "eth_gasPrice via bsc-dataseed.binance.org",
+  "observedGasPriceWei": "50000000",
+  "observedGasPriceGwei": "0.05",
+  "conservativeGasPriceWei": "3000000000",
+  "conservativeGasPriceGwei": "3",
+  "estimatedAtomicExecutionGas": "650000",
+  "maximumGasCostShareBps": 1000,
+  "successFeeBps": 500,
+  "safetyMarginMultiplier": 2,
+  "methodology": [
+    "estimatedGasCostNative = estimatedExecutionGas × conservativeGasPrice",
+    "minimumNetLiquidityQuoteFromGas = ceil(gasCostQuote × 10000 / 1000)",
+    "minimumGrossQuote = ceil(minimumNet × 10000 / 9500) accounting for 5% success fee",
+    "selectedFloor = minimumGross × safetyMarginMultiplier",
+    "reserveFloorOperating = selectedFloor × 250 (G/Y ≤ 40 bps operating headroom)",
+    "reserveFloorHard = selectedFloor × 100 (G/Y ≤ 100 bps hard impact bound)"
+  ],
+  "assets": [
+    {
+      "symbol": "WBNB",
+      "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "decimalsVerifiedOnChain": 18,
+      "bytecodeBytes": 3124,
+      "gasConversionMode": "NativeEquivalent",
+      "gasConversionReference": null,
+      "observedFloorWei": "684210526315790",
+      "conservativeFloorWei": "41052631578947370",
+      "proposedMinimumGrossQuoteFloor": "41052631578947370",
+      "proposedMinimumGrossQuoteFloorHuman": "0.04105263157894737 WBNB",
+      "proposedMinimumQuoteReserve": "10263157894736842500",
+      "proposedMinimumQuoteReserveHuman": "10.263157894736842 WBNB",
+      "reserveFloorBasis": "250 × gross floor (40 bps operating headroom)",
+      "activationCandidate": true,
+      "ratificationStatus": "PROPOSED_FOR_FOUNDER_RATIFICATION",
+      "notes": "NATIVE_EQUIVALENT — no external price conversion required."
+    },
+    {
+      "symbol": "USDT",
+      "address": "0x55d398326f99059fF775485246999027B3197955",
+      "decimalsVerifiedOnChain": 18,
+      "bytecodeBytes": 4413,
+      "gasConversionMode": "NotActive",
+      "gasConversionReference": null,
+      "melegaWbnbPair": "0x94fadf053bad0c9d0a3874f82b1a09001926a548",
+      "pairReservesObserved": {
+        "token0": "USDT",
+        "r0": "858037982913909658",
+        "r1": "1522729740580272",
+        "verdict": "INSUFFICIENT_LIQUIDITY_FOR_GAS_CONVERSION"
+      },
+      "proposedMinimumGrossQuoteFloor": null,
+      "proposedMinimumQuoteReserve": null,
+      "activationCandidate": false,
+      "ratificationStatus": "CALCULATED",
+      "notes": "LB-G09 open — Melega WBNB/USDT pair reserves too thin for pinned conversion; policy remains NotActive."
+    },
+    {
+      "symbol": "USDC",
+      "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+      "decimalsVerifiedOnChain": 18,
+      "bytecodeBytes": 1596,
+      "gasConversionMode": "NotActive",
+      "gasConversionReference": null,
+      "melegaWbnbPair": "0x7165b14cf9d03061b67e3237078e5f5a03fe01a9",
+      "pairReservesObserved": {
+        "token0": "USDC",
+        "r0": "2287427677999051158",
+        "r1": "4066360550000867",
+        "verdict": "INSUFFICIENT_LIQUIDITY_FOR_GAS_CONVERSION"
+      },
+      "proposedMinimumGrossQuoteFloor": null,
+      "proposedMinimumQuoteReserve": null,
+      "activationCandidate": false,
+      "ratificationStatus": "CALCULATED",
+      "notes": "LB-G09 open — Melega WBNB/USDC pair reserves too thin for pinned conversion; policy remains NotActive."
+    }
+  ],
+  "disclaimer": "Values are CALCULATED / PROPOSED_FOR_FOUNDER_RATIFICATION. Not RATIFIED. Not DEPLOYED. Not production Factory constructor inputs."
+}

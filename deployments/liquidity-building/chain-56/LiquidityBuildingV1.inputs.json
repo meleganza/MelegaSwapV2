@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "melega.liquidity-building.v1.deployment-inputs",
+  "chainId": 56,
+  "network": "bsc-mainnet",
+  "factoryVersion": "LiquidityBuildingFactoryV1",
+  "sourceCommit": "cc796f5aee87ba5e0d65f9a996fda0a81e20a9a2",
+  "compiler": {
+    "solc": "0.8.20",
+    "optimizer": true,
+    "optimizerRuns": 200,
+    "viaIR": true
+  },
+  "canonicalMelega": {
+    "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "masterChef": "0x41D5487836452d23f2c467070244E5842B412794"
+  },
+  "bytecode": {
+    "LiquidityBuildingExecutionAuthorizerV1": {
+      "deployedBytecodeSha256": "0x3dad300b23fc1f31365aa3c47f073ec6279ff39ca4dfe2bda49a934c1adc1282",
+      "deployedBytes": 2869
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "deployedBytecodeSha256": "0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0",
+      "deployedBytes": 3105
+    },
+    "LiquidityBuildingFactoryV1": {
+      "deployedBytecodeSha256": "0xd7574a777496df07e1c878c7baf23a2243e8785bba3ac6355dfa1a9ec258c2ff",
+      "deployedBytes": 8052
+    },
+    "LiquidityBuildingExecutionMathV1": {
+      "deployedBytecodeSha256": "0x03b84d6ab2b43a50368ccdbc34eb4e2ae1a1b945b1736e713090cb19a89036d8",
+      "deployedBytes": 3746
+    },
+    "LiquidityBuildingProgramV1": {
+      "deployedBytes": 22911,
+      "eip170Ok": true,
+      "note": "Linked-library bytecode hash deferred until production CREATE with library addresses fixed."
+    }
+  },
+  "protocolParameters": {
+    "successFeeBps": 500,
+    "strategyCeilingBps": 5000,
+    "operatingCurveImpactBps": 40,
+    "hardCurveImpactBps": 100,
+    "hardEffectiveDeviationBps": 150,
+    "decisionExecutionDriftBps": 100,
+    "swapSlippageOperatingBps": 50,
+    "hardSlippageBps": 100,
+    "remainingBudgetEpochCapBps": 500,
+    "totalBudgetEpochCapBps": 200,
+    "rolling24hTotalBudgetCapBps": 2000,
+    "maximumGasCostShareBps": 1000,
+    "initialFinalityDepth": 15,
+    "maxSuccessfulExecutionsPerEpoch": 1
+  },
+  "productionAuthority": {
+    "address": null,
+    "authorityType": null,
+    "providerClass": null,
+    "publicKeyFingerprint": null,
+    "nonExportable": null,
+    "verdict": "AUTONOMOUS_AUTHORITY_NOT_FOUND"
+  },
+  "authorizer": {
+    "address": null,
+    "schemaVersion": "LIQUIDITY_BUILDING_EXECUTION_INTENT_V1",
+    "status": "NOT_DEPLOYED"
+  },
+  "treasury": {
+    "feeSinkAddress": null,
+    "receiverAddress": null,
+    "receiverVerdict": "PRODUCTION_BINDING_NOT_FOUND",
+    "rejectedCandidates": [
+      {
+        "label": "MELEGA_VAULT_BSC",
+        "address": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C",
+        "reason": "Named Vault only; LB fee-sink role unproven"
+      },
+      {
+        "label": "MELEGA_TREASURY_BSC",
+        "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+        "reason": "23-byte EIP-7702 designator — not durable intake"
+      },
+      {
+        "label": "MELEGA_FEE_COLLECTOR_BSC",
+        "address": "0xb5a8707FfA045E0FC7db6eFC63161e853C80139a",
+        "reason": "EOA — forbidden"
+      }
+    ]
+  },
+  "quotePolicies": [],
+  "quotePolicyCalculationArtifact": "deployments/liquidity-building/chain-56/quote-policy-calculation.v1.json",
+  "finality": {
+    "configuredDepth": 15,
+    "verdict": "FINALITY_EVIDENCE_INSUFFICIENT",
+    "indexerReorgSafetyBlocks": 12,
+    "notes": "LB-G10 open — contract default 15 retained; ops certification incomplete"
+  },
+  "runtimeIngestion": {
+    "treasuryRuntimeUrl": "https://treasury.melega.ai",
+    "lbReceiptSchema": null,
+    "status": "NOT_IMPLEMENTED",
+    "handoff": "docs/handoffs/LB008_TREASURY_RUNTIME_LB_INGESTION.md"
+  },
+  "signatureNormalization": {
+    "status": "NOT_IMPLEMENTED",
+    "handoff": "docs/handoffs/LB008_KERL_KMS_SIGNATURE_NORMALIZATION.md"
+  },
+  "unresolvedBlockers": [
+    "LB-G03B",
+    "LB-G04B",
+    "LB-G04C",
+    "LB-G08",
+    "LB-G09",
+    "LB-G10",
+    "LB-G11",
+    "LB-G12",
+    "LB-G02B",
+    "LB-G03C"
+  ],
+  "deploymentReadinessState": "BLOCKED",
+  "validatorExpectedResult": "DEPLOYMENT_INPUTS_BLOCKED"
+}

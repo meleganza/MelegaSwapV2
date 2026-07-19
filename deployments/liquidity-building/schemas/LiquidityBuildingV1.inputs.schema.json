@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "melega.liquidity-building.v1.deployment-inputs",
+  "title": "LiquidityBuildingV1 deployment inputs",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "chainId",
+    "network",
+    "factoryVersion",
+    "sourceCommit",
+    "compiler",
+    "canonicalMelega",
+    "protocolParameters",
+    "productionAuthority",
+    "authorizer",
+    "treasury",
+    "quotePolicies",
+    "unresolvedBlockers",
+    "deploymentReadinessState"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "melega.liquidity-building.v1.deployment-inputs" },
+    "chainId": { "const": 56 },
+    "network": { "const": "bsc-mainnet" },
+    "deploymentReadinessState": {
+      "enum": ["BLOCKED", "DRY_RUN_READY", "VALID", "DEPLOYED"]
+    }
+  },
+  "additionalProperties": true
+}
