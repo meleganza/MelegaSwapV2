@@ -1,41 +1,43 @@
 {
   "schemaVersion": "melega.liquidity-building.activation-gate-final.v1",
-  "mission": "LB012",
-  "assessedAt": "2026-07-19T18:10:00Z",
-  "baselineCommit": "2c2c0b75fb1abc879f5b4b6c021aa5ded06b7b7a",
-  "supersedes": "LB011 activation-gate-final at 2026-07-19T18:06:00Z",
+  "mission": "LB013",
+  "assessedAt": "2026-07-19T18:14:00Z",
+  "baselineCommit": "359966e96e64080df1e990e0bb4fe936b2846f71",
+  "priorMissions": ["LB011", "LB012"],
+  "dependencyMatrix": "deployments/liquidity-building/chain-56/external-dependency-closure-matrix.v1.json",
   "dependencyClosureArtifact": "deployments/liquidity-building/chain-56/production-dependency-closure.v1.json",
   "chainId": 56,
   "activationAuthorized": false,
   "mainnetCycleAuthorized": false,
   "mainnetCycleExecuted": false,
-  "stopReason": "LB012 dependency closure reassessment — blocking production dependencies remain unresolved",
+  "stopReason": "LB013 planning complete — external blockers remain OPEN; activationAuthorized stays false until every blocking gate PASS",
   "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
   "runtimeHealthExpected": "BLOCKED",
+  "note": "LB013 does not close infrastructure. See LB013_EXTERNAL_DEPENDENCY_CLOSURE_MATRIX.md for owners/actions.",
   "gates": [
     {
       "gate": "Production authority",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "production-dependency-closure.v1.json#authorities.productionAuthority",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "external-dependency-closure-matrix.v1.json#LB-G03B",
       "blocker": "LB-G03B",
-      "blockingReason": "AUTONOMOUS_AUTHORITY_NOT_PROVISIONED — kms_hsm MISSING; no env LB/KMS production key"
+      "blockingReason": "AUTONOMOUS_AUTHORITY_NOT_PROVISIONED"
     },
     {
       "gate": "Signature normalization",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "kms-signature-normalization.ts + closure#signatureNormalization",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "matrix#LB-G11",
       "blocker": "LB-G11",
-      "blockingReason": "Code ready; production KMS→Authorizer verification not available"
+      "blockingReason": "Production KMS→Authorizer verification pending (module already implemented)"
     },
     {
       "gate": "Authorizer binding",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
+      "timestamp": "2026-07-19T18:14:00Z",
       "evidence": "LiquidityBuildingV1.inputs.json#authorizer",
       "blocker": "LB-G03B",
       "blockingReason": "NOT_DEPLOYED"
@@ -44,44 +46,44 @@
       "gate": "Treasury receiver",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "production-dependency-closure.v1.json#treasury.receiver",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "matrix#LB-G04B",
       "blocker": "LB-G04B",
-      "blockingReason": "PRODUCTION_BINDING_NOT_FOUND — Vault/EIP-7702/EOA rejected"
+      "blockingReason": "PRODUCTION_BINDING_NOT_FOUND"
     },
     {
       "gate": "Treasury Runtime ingestion",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "treasury.melega.ai/api/v1/health + local melega-kiri-treasury-runtime (no LB routes)",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "matrix#LB-G04C/LB-G12",
       "blocker": "LB-G04C/LB-G12",
-      "blockingReason": "development/smartdrop.v1; chain none; LB ingestion absent in verified Runtime checkout"
+      "blockingReason": "Treasury Runtime LB ingestion not operational"
     },
     {
       "gate": "Quote policy",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "quote-policy-calculation.v1.json",
-      "blocker": "LB-G08/LB-G09",
-      "blockingReason": "WBNB proposed only; USDT/USDC NotActive; production quotePolicies []"
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "matrix#LB-G08",
+      "blocker": "LB-G08",
+      "blockingReason": "Founder ratification pending"
     },
     {
       "gate": "Finality",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "LiquidityBuildingV1.inputs.json#finality",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "matrix#LB-G10",
       "blocker": "LB-G10",
-      "blockingReason": "FINALITY_EVIDENCE_INSUFFICIENT — 15 retained"
+      "blockingReason": "FINALITY_EVIDENCE_INSUFFICIENT"
     },
     {
       "gate": "Deployment validator",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:09:49Z",
-      "evidence": "validate-lb-v1-inputs.mjs → DEPLOYMENT_INPUTS_BLOCKED",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "validate-lb-v1-inputs.mjs",
       "blocker": null,
       "blockingReason": "DEPLOYMENT_INPUTS_BLOCKED"
     },
@@ -89,35 +91,35 @@
       "gate": "Runtime health",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "assessLiquidityBuildingRuntimeHealth()",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "assessLiquidityBuildingRuntimeHealth",
       "blocker": null,
-      "blockingReason": "BLOCKED — not READY"
+      "blockingReason": "BLOCKED"
     },
     {
       "gate": "Contract verification",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "inputs authorizer/treasury addresses null",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "inputs addresses null",
       "blocker": null,
-      "blockingReason": "LB Factory/Authorizer/Sink not mainnet-deployed"
+      "blockingReason": "LB contracts not mainnet-deployed"
     },
     {
       "gate": "Permissionless relay",
       "status": "FAIL",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "production-dependency-closure.v1.json#relay",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "matrix#LB-G03C",
       "blocker": "LB-G03C",
-      "blockingReason": "Relay DISABLED — infrastructure not provisioned"
+      "blockingReason": "Relay infrastructure NOT_IDENTIFIED_AS_GIT_REPO / DISABLED"
     },
     {
       "gate": "Canonical Melega Factory",
       "status": "PASS",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C code present",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
       "blocker": null,
       "blockingReason": null
     },
@@ -125,8 +127,8 @@
       "gate": "Canonical Melega Router",
       "status": "PASS",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3 code present",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
       "blocker": null,
       "blockingReason": null
     },
@@ -134,19 +136,19 @@
       "gate": "Stale Pancake router closure",
       "status": "PASS",
       "blocking": true,
-      "timestamp": "2026-07-19T18:10:00Z",
-      "evidence": "LB-G07 closed LB008",
+      "timestamp": "2026-07-19T18:14:00Z",
+      "evidence": "LB-G07",
       "blocker": null,
       "blockingReason": null
     }
   ],
   "actionsNotTaken": [
-    "NO mainnet Liquidity Building cycle",
-    "NO private-key / HOT_SIGNER fallback",
-    "NO EOA Treasury receiver",
-    "NO mock Runtime ingestion presented as production",
-    "NO Founder ratification forged",
-    "NO Treasury Runtime code invented inside MelegaSwapV2",
-    "NO chain-56 fork claimed as activation"
+    "NO mainnet transaction",
+    "NO deployment",
+    "NO economic execution",
+    "NO LB005-LB007 contract rework",
+    "NO LB009 architecture rework",
+    "NO invented relay repository",
+    "NO activationAuthorized=true"
   ]
 }

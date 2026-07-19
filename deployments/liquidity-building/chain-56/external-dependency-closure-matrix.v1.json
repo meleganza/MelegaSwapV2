@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "melega.liquidity-building.external-dependency-closure-matrix.v1",
+  "mission": "LB013",
+  "assessedAt": "2026-07-19T18:14:00Z",
+  "baselineCommit": "359966e96e64080df1e990e0bb4fe936b2846f71",
+  "activationAuthorized": false,
+  "mainnetCycleAuthorized": false,
+  "mainnetCycleExecuted": false,
+  "implementationFrozen": {
+    "LB005": true,
+    "LB006": true,
+    "LB007": true,
+    "LB009_runtime_architecture": true,
+    "note": "No contract/runtime rework unless a concrete defect is discovered during external closure"
+  },
+  "repositories": {
+    "melegaSwapV2": {
+      "origin": "https://github.com/meleganza/MelegaSwapV2.git",
+      "role": "LB contracts, runtime observe/decide/intent, deployment validator, activation gates"
+    },
+    "treasuryRuntime": {
+      "origin": "https://github.com/meleganza/melega-kiri-treasury-runtime.git",
+      "role": "Treasury LB settlement ingestion, reconciliation, accounting acknowledgement",
+      "localCheckoutVerified": true,
+      "lbIngestionPresent": false
+    },
+    "kerlSigning": {
+      "origin": "embedded in MelegaSwapV2 apps/web/src/lib/kerl-signing-gate (no separate sibling repo under Projects/)",
+      "role": "KMS_HSM adapter currently MISSING; HOT_SIGNER rejected for LB"
+    },
+    "relayInfra": {
+      "origin": "NOT_IDENTIFIED_AS_GIT_REPO",
+      "role": "Permissionless submission service — must be provisioned without inventing a repository name"
+    }
+  },
+  "blockers": [
+    {
+      "id": "LB-G03B",
+      "dependency": "Non-exportable secp256k1 KMS/HSM signing authority for ExecutionIntent V1 digests only",
+      "requiredArtifact": "Public Ethereum authority address + provider class + non-exportability verdict + service policy summary (no secrets)",
+      "repository": "Infra KMS project + kerl-signing-gate adapter (MelegaSwapV2) + Authorizer deploy inputs",
+      "technicalOwner": "Infrastructure / signing service",
+      "repositoryOwner": "meleganza (MelegaSwapV2 for Authorizer binding; KMS account owner for key)",
+      "requiredAction": "Provision KMS/HSM key; derive address; bind service identity; forbid HOT_SIGNER/private key; publish address into LiquidityBuildingV1.inputs.json",
+      "acceptanceEvidence": "AUTONOMOUS_AUTHORITY_PRODUCTION_READY in deployment inputs; nonExportable=true; address nonzero",
+      "verificationMethod": "validate-lb-v1-inputs.mjs PASS on authority fields; Authorizer.signingAuthority() == published address after deploy",
+      "activationImpact": "Blocks signing, Authorizer deploy, Factory deploy, LB011/LB014 cycle",
+      "status": "OPEN",
+      "gapType": "INFRASTRUCTURE"
+    },
+    {
+      "id": "LB-G11",
+      "dependency": "Production KMS DER→Ethereum normalization validated against LB006 Authorizer",
+      "requiredArtifact": "Production (or production-authority) signature validation report: digest, recovered address, Authorizer validateExecutionIntent PASS; NON-EXECUTABLE intent only",
+      "repository": "MelegaSwapV2 (normalization module already present) + KMS signer service",
+      "technicalOwner": "Signing service + MelegaSwapV2 protocol eng",
+      "repositoryOwner": "meleganza/MelegaSwapV2",
+      "requiredAction": "Sign non-executable Intent digest with production authority; run normalizeKmsDerSignature; call Authorizer validation on fork or deployed Authorizer",
+      "acceptanceEvidence": "signatureNormalization.status=VERIFIED; productionKmsVerified=true",
+      "verificationMethod": "Unit + Authorizer eth_call/fork test with production-format 65-byte sig; wrong-signer reject",
+      "activationImpact": "Blocks authorize pipeline and activationAuthorized",
+      "status": "OPEN",
+      "gapType": "INFRASTRUCTURE_PLUS_VERIFICATION",
+      "implementationNote": "DER/low-s/v module already in apps/web/src/lib/liquidity-building-runtime/kms-signature-normalization.ts — not an implementation gap"
+    },
+    {
+      "id": "LB-G03C",
+      "dependency": "Permissionless gas-funded relay that submits opaque signed calldata only",
+      "requiredArtifact": "Relay service URL/health + capability matrix (submit/monitor/retry/replacement/duplicate) + proof relayer address irrelevant to economics",
+      "repository": "NOT_IDENTIFIED_AS_GIT_REPO — must be provisioned; do not invent repo name",
+      "technicalOwner": "Execution infrastructure / ops",
+      "repositoryOwner": "TBD after relay service origin is verified",
+      "requiredAction": "Deploy relay; wire LB runtime DisabledLiquidityBuildingRelay → production adapter; expose health READY",
+      "acceptanceEvidence": "RELAY_READY; health endpoint; duplicate/idempotency tests green",
+      "verificationMethod": "Two relayer identities submit identical signed intent → identical Program economic outcome; modified calldata fails",
+      "activationImpact": "Blocks permissionless submission of signed intents",
+      "status": "OPEN",
+      "gapType": "INFRASTRUCTURE"
+    },
+    {
+      "id": "LB-G04B",
+      "dependency": "Canonical chain-56 Treasury LB fee receiver (contract, non-EOA, Treasury/D99 custody)",
+      "requiredArtifact": "Address + bytecode hash + role proof + Runtime binding + custody/withdrawal model",
+      "repository": "meleganza/melega-kiri-treasury-runtime (or Treasury contracts repo once origin verified) — NOT MelegaSwapV2 DEX app authority",
+      "technicalOwner": "Treasury architecture / D99",
+      "repositoryOwner": "meleganza (Treasury Runtime)",
+      "requiredAction": "Implement/bind TreasuryLiquidityBuildingReceiverV1 (or equivalent); reject Vault/EIP-7702/EOA; publish address for Sink constructor",
+      "acceptanceEvidence": "PRODUCTION_BINDING_IDENTIFIED; Sink treasuryReceiver matches; no human withdrawal path",
+      "verificationMethod": "On-chain code.length>0; interface check; LB006 Sink constructor accept; Runtime config points to same address",
+      "activationImpact": "Blocks Fee Sink deploy and all fee settlement",
+      "status": "OPEN",
+      "gapType": "INFRASTRUCTURE",
+      "rejectedCandidates": [
+        "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C Vault role unproven",
+        "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b EIP-7702",
+        "0xb5a8707FfA045E0FC7db6eFC63161e853C80139a EOA"
+      ]
+    },
+    {
+      "id": "LB-G04C",
+      "dependency": "Treasury Runtime ingestion of LiquidityBuildingFeeSettled + related events",
+      "requiredArtifact": "Schema melega.treasury.liquidity-building-settlement.v1 + JSON API + tests",
+      "repository": "https://github.com/meleganza/melega-kiri-treasury-runtime.git",
+      "technicalOwner": "Treasury Runtime eng",
+      "repositoryOwner": "meleganza/melega-kiri-treasury-runtime",
+      "requiredAction": "Implement ingestion validating chain/Factory/Sink/receiver/Program/executionId/amount/finality; deploy with chainId 56 (leave development/smartdrop-only)",
+      "acceptanceEvidence": "runtimeIngestion.status=OPERATIONAL; health shows chainId 56 + LB capability",
+      "verificationMethod": "Fixture finalized Sink event → ACCOUNTED; duplicate idempotency; wrong Sink REJECTED",
+      "activationImpact": "Blocks economic completion of any LB cycle",
+      "status": "OPEN",
+      "gapType": "INFRASTRUCTURE",
+      "currentLiveState": "treasury.melega.ai development / chain none / smartdrop.v1"
+    },
+    {
+      "id": "LB-G12",
+      "dependency": "Runtime reconciliation distinguishing executionId, settlement receipt, Runtime acknowledgement ID",
+      "requiredArtifact": "End-to-end ACCOUNTED record with three distinct IDs + idempotency key chainId+sink+settlementKey+txHash+logIndex",
+      "repository": "https://github.com/meleganza/melega-kiri-treasury-runtime.git",
+      "technicalOwner": "Treasury Runtime eng",
+      "repositoryOwner": "meleganza/melega-kiri-treasury-runtime",
+      "requiredAction": "Complete reconciliation state machine through ACCOUNTED; no tx-hash-only dedupe",
+      "acceptanceEvidence": "Finalized LB settlement reaches ACCOUNTED with acknowledgement referencing settlement receipt",
+      "verificationMethod": "Integration test suite LB008 handoff §28 items 1–25",
+      "activationImpact": "Blocks LB011/LB014 success criteria for Treasury evidence",
+      "status": "OPEN",
+      "gapType": "INFRASTRUCTURE"
+    },
+    {
+      "id": "LB-G08",
+      "dependency": "Founder-ratified production quote floors for enabled assets",
+      "requiredArtifact": "quotePolicies[] in LiquidityBuildingV1.inputs.json with ratificationStatus RATIFIED or DEPLOYED",
+      "repository": "meleganza/MelegaSwapV2 (policy artifact) + Founder ratification record",
+      "technicalOwner": "Founder (ratification) + protocol eng (artifact publish)",
+      "repositoryOwner": "meleganza/MelegaSwapV2",
+      "requiredAction": "Ratify WBNB proposed floors (and any enabled asset); populate quotePolicies; never mark CALCULATED as RATIFIED",
+      "acceptanceEvidence": "At least one enabled asset RATIFIED; validator accepts quote floors",
+      "verificationMethod": "validate-lb-v1-inputs.mjs; Factory constructor acceptance with ratified policy on deploy",
+      "activationImpact": "Blocks Factory production deploy and WBNB activation",
+      "status": "OPEN",
+      "gapType": "POLICY_RATIFICATION",
+      "calculatedArtifact": "deployments/liquidity-building/chain-56/quote-policy-calculation.v1.json"
+    },
+    {
+      "id": "LB-G09",
+      "dependency": "Pinned on-chain stable gas conversion for USDT/USDC if activated",
+      "requiredArtifact": "gasConversionMode PinnedOnChainPair|PinnedTreasurySource + pair/source + reserve floors + staleness/drift bounds — or explicit NOT_ACTIVE",
+      "repository": "meleganza/MelegaSwapV2 (policy) + Markets/Treasury for liquidity sources",
+      "technicalOwner": "Markets / Treasury",
+      "repositoryOwner": "meleganza/MelegaSwapV2 (config) + liquidity providers",
+      "requiredAction": "Either provision sufficient Melega WBNB/stable reserves and pin path, or keep USDT/USDC NOT_ACTIVE (allowed)",
+      "acceptanceEvidence": "Per-asset ACTIVE only with verified path; otherwise NotActive without claiming activation",
+      "verificationMethod": "On-chain reserve probe; policy validator rejects HTTP/relayer rates",
+      "activationImpact": "Does not block WBNB-only activation if WBNB ratified and other gates pass",
+      "status": "OPEN",
+      "gapType": "MARKET_LIQUIDITY_OR_POLICY"
+    },
+    {
+      "id": "LB-G10",
+      "dependency": "Infrastructure finality evidence supporting 15 confirmations",
+      "requiredArtifact": "Ops report: reorg observations, RPC/indexer/Treasury finality policies vs depth 15",
+      "repository": "MelegaSwapV2 indexer constants (REORG_SAFETY_BLOCKS=12) + Treasury Runtime + ops docs",
+      "technicalOwner": "Infrastructure / indexer / Treasury ops",
+      "repositoryOwner": "meleganza/MelegaSwapV2 (indexer) + Treasury Runtime",
+      "requiredAction": "Certify FINALITY_15_CONFIRMED or document FINALITY_INCREASE_REQUIRED with new immutable candidate; do not silently reduce",
+      "acceptanceEvidence": "finality.verdict != FINALITY_EVIDENCE_INSUFFICIENT",
+      "verificationMethod": "Written evidence pack cited from activation-gate-final; indexer/Treasury configs aligned",
+      "activationImpact": "Blocks claiming finalized observation/ingestion safety",
+      "status": "OPEN",
+      "gapType": "OPERATIONS_EVIDENCE"
+    }
+  ],
+  "derivedGatesStillBlocked": [
+    "Authorizer binding (depends LB-G03B + deploy)",
+    "Fee Sink binding (depends LB-G04B + deploy)",
+    "Deployment validator PASS (depends all blocking fields)",
+    "Contract verification (depends deploy)",
+    "Runtime health READY (depends KMS/relay/Treasury/quote/deploy)"
+  ],
+  "securityConfirmations": {
+    "NO_HUMAN_SIGNER": true,
+    "NO_PRIVATE_KEY_FALLBACK": true,
+    "NO_FUNDED_EXECUTION_WALLET": true,
+    "NO_EOA_TREASURY_RECEIVER": true,
+    "NO_MANUAL_FEE_SETTLEMENT": true,
+    "NO_MOCK_PRODUCTION_DEPENDENCY": true,
+    "NO_TEST_AUTHORITY_USED_FOR_ACTIVATION": true,
+    "NO_TEST_TREASURY_USED_FOR_ACTIVATION": true,
+    "NO_CENTRALIZED_PRICE_API": true,
+    "NO_UNVERIFIED_GAS_PATH": true
+  },
+  "nextMissionIfAllClosed": "LB014 — First Controlled Mainnet Liquidity Building Cycle",
+  "nextMissionIfBlocked": "Execute only the specific external closure identified by blocker ID (do not start another generic implementation mission)"
+}
