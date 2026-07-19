@@ -11,6 +11,8 @@ import {
     LBTypes
 } from "./interfaces/ILiquidityBuildingFactoryV1.sol";
 import { ILiquidityBuildingProgramV1 } from "./interfaces/ILiquidityBuildingProgramV1.sol";
+import { ILiquidityBuildingExecutionAuthorizerV1 } from "./interfaces/ILiquidityBuildingExecutionAuthorizerV1.sol";
+import { ILiquidityBuildingTreasuryFeeSinkV1 } from "./interfaces/ILiquidityBuildingTreasuryFeeSinkV1.sol";
 import { LiquidityBuildingProgramV1 } from "./LiquidityBuildingProgramV1.sol";
 
 /**
@@ -34,6 +36,8 @@ contract LiquidityBuildingFactoryV1 is ILiquidityBuildingFactoryV1 {
     error InvalidEpoch();
     error DuplicateActiveProgram();
     error ProjectEqualsQuote();
+    error IncompatibleAuthorizer();
+    error IncompatibleTreasurySink();
 
     bytes32 public immutable override factoryVersion;
     uint256 public immutable override deploymentChainId;
@@ -88,6 +92,8 @@ contract LiquidityBuildingFactoryV1 is ILiquidityBuildingFactoryV1 {
         _requireCode(melegaRouter_);
         _requireCode(executionAuthorizer_);
         _requireCode(treasuryFeeSink_);
+        _requireCompatibleAuthorizer(executionAuthorizer_);
+        _requireCompatibleTreasurySink(treasuryFeeSink_);
 
         if (params_.successFeeBps != 500) revert InvalidQuotePolicy();
         if (params_.strategyCeilingBps != 5000) revert InvalidQuotePolicy();
@@ -296,6 +302,49 @@ contract LiquidityBuildingFactoryV1 is ILiquidityBuildingFactoryV1 {
 
     function _requireCode(address account) internal view {
         if (account.code.length == 0) revert DependencyWithoutCode();
+    }
+
+    function _requireCompatibleAuthorizer(address authorizer_) internal view {
+        ILiquidityBuildingExecutionAuthorizerV1 authorizer = ILiquidityBuildingExecutionAuthorizerV1(authorizer_);
+        try authorizer.executionIntentSchemaVersion() returns (bytes32 schema) {
+            if (schema != keccak256("LIQUIDITY_BUILDING_EXECUTION_INTENT_V1")) revert IncompatibleAuthorizer();
+        } catch {
+            revert IncompatibleAuthorizer();
+        }
+        try authorizer.executionIntentTypeHash() returns (bytes32 typeHash) {
+            if (typeHash == bytes32(0)) revert IncompatibleAuthorizer();
+        } catch {
+            revert IncompatibleAuthorizer();
+        }
+        try authorizer.signingAuthority() returns (address authority) {
+            if (authority == address(0)) revert IncompatibleAuthorizer();
+        } catch {
+            revert IncompatibleAuthorizer();
+        }
+        try authorizer.authorityType() returns (
+            ILiquidityBuildingExecutionAuthorizerV1.AuthorityType
+        ) {
+        // interface probe only
+        }
+        catch {
+            revert IncompatibleAuthorizer();
+        }
+    }
+
+    function _requireCompatibleTreasurySink(address sink_) internal view {
+        ILiquidityBuildingTreasuryFeeSinkV1 sink = ILiquidityBuildingTreasuryFeeSinkV1(sink_);
+        try sink.treasurySinkVersion() returns (bytes32 version) {
+            if (version != keccak256("LiquidityBuildingTreasuryFeeSinkV1")) revert IncompatibleTreasurySink();
+        } catch {
+            revert IncompatibleTreasurySink();
+        }
+        address receiver;
+        try sink.treasuryReceiver() returns (address r) {
+            receiver = r;
+        } catch {
+            revert IncompatibleTreasurySink();
+        }
+        if (receiver == address(0) || receiver.code.length == 0) revert IncompatibleTreasurySink();
     }
 
     function _validateEpoch(uint32 seconds_) internal pure {

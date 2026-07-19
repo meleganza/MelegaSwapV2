@@ -138,8 +138,38 @@ contract LB005MockPair is IMelegaV2Pair {
     }
 
     /// @dev Minimal bytecode placeholders for Authorizer / Treasury / Router deps.
+    ///      LB006: when used as Authorizer or Sink, exposes compatibility views so Factory hardening passes.
+    ///      TEST ONLY — NOT PRODUCTION — NOT MAINNET BINDING EVIDENCE
     contract LB005MockCodeDependency {
         function ping() external pure returns (bool) {
             return true;
+        }
+
+        // --- Authorizer compatibility (LB006 Factory checks) ---
+        function executionIntentSchemaVersion() external pure returns (bytes32) {
+            return keccak256("LIQUIDITY_BUILDING_EXECUTION_INTENT_V1");
+        }
+
+        function executionIntentTypeHash() external pure returns (bytes32) {
+            return keccak256(
+                "ExecutionIntentV1(bytes32 schemaVersion,uint256 chainId,address factory,bytes32 factoryVersion,address program,address pair,address projectToken,address quoteAsset,uint256 epochId,uint64 epochStartTimestamp,uint64 epochEndTimestamp,uint64 observationStartBlock,uint64 observationEndBlock,uint64 anchorBlock,uint256 anchorProjectReserve,uint256 anchorQuoteReserve,uint256 eligibleNetBuyFlow,uint8 strategyMode,uint16 effectiveStrategyRateBps,uint256 grossQuoteTarget,uint256 maximumProjectTokenIn,uint256 configNonce,uint256 executionNonce,bytes32 strategyEngineVersion,uint64 decisionDeadline,uint256 maximumGasPrice,bytes32 observationRoot,bytes32 excludedFlowCommitment,bytes32 treasuryAuthorizationReference)"
+            );
+        }
+
+        function signingAuthority() external view returns (address) {
+            return address(this);
+        }
+
+        function authorityType() external pure returns (uint8) {
+            return 1; // ERC1271
+        }
+
+        // --- Treasury Sink compatibility (LB006 Factory checks) ---
+        function treasurySinkVersion() external pure returns (bytes32) {
+            return keccak256("LiquidityBuildingTreasuryFeeSinkV1");
+        }
+
+        function treasuryReceiver() external view returns (address) {
+            return address(this);
         }
     }
