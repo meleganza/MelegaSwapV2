@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "melega.liquidity-building.decision.v1",
+  "title": "Liquidity Building Decision V1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "program",
+    "epochId",
+    "eligibleNetBuyFlow",
+    "strategyMode",
+    "selectedRateBps",
+    "grossQuoteTarget",
+    "decision",
+    "reasonCode"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "melega.liquidity-building.decision.v1" },
+    "decision": { "enum": ["EXECUTE", "WAIT", "SKIP"] },
+    "selectedRateBps": { "type": "integer", "minimum": 0, "maximum": 5000 }
+  }
+}

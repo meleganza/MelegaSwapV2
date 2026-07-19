@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "melega.liquidity-building.execution.v1",
+  "title": "Liquidity Building Execution Artifact V1",
+  "type": "object",
+  "required": ["schemaVersion", "intent", "signingStatus"],
+  "properties": {
+    "schemaVersion": { "const": "melega.liquidity-building.execution.v1" },
+    "signingStatus": { "enum": ["UNSIGNED", "SIGNED", "DISABLED", "REJECTED"] }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "melega.liquidity-building.reconciliation.v1",
+  "title": "Liquidity Building Reconciliation V1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "chainId",
+    "program",
+    "executionId",
+    "treasuryStatus"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "melega.liquidity-building.reconciliation.v1" },
+    "treasuryStatus": {
+      "enum": [
+        "OBSERVED",
+        "AWAITING_FINALITY",
+        "VALIDATING",
+        "RECONCILED",
+        "ACCOUNTED",
+        "REJECTED",
+        "REORGED",
+        "ERROR"
+      ]
+    }
+  }
+}

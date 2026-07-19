@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "melega.liquidity-building.observation.v1",
+  "title": "Liquidity Building Observation V1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "chainId",
+    "factory",
+    "pair",
+    "program",
+    "projectToken",
+    "quoteAsset",
+    "observationStartBlock",
+    "observationEndBlock",
+    "finalityDepth",
+    "observed",
+    "excluded",
+    "eligible",
+    "eligibleNetBuyFlow",
+    "excludedFlowCommitment",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "melega.liquidity-building.observation.v1" },
+    "chainId": { "const": 56 },
+    "eligibleNetBuyFlow": { "type": "string", "pattern": "^[0-9]+$" }
+  }
+}
