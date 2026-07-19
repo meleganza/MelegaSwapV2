@@ -35,10 +35,10 @@ import {
 import { createCommandCenterError, type CommandCenterRuntimeError } from './commandCenterRuntimeErrors'
 import {
   buildCommandCenterWalletPortfolio,
-  filterPortfolioPositions,
   projectFarmView,
   projectLiquidityView,
   projectPoolView,
+  resolveCommandCenterPortfolioViews,
 } from './commandCenterPortfolioCutover'
 import type { WalletPortfolioSectionStatus } from 'lib/wallet-portfolio/contracts'
 import {
@@ -170,18 +170,22 @@ export function useCommandCenterOrchestrationRuntime() {
     [account, chainId, chainName, liquidity.positions, farms.farms, pools.pools, portfolioSectionStatus],
   )
 
-  // Product views: filter portfolio.positions only — never rebuild independent roots.
-  const liquidityRows = useMemo(
-    () => projectLiquidityView(filterPortfolioPositions(walletPortfolio, 'LIQUIDITY')),
+  // View Engine owns filtering — Command Center only projects for legacy consumers.
+  const portfolioViews = useMemo(
+    () => resolveCommandCenterPortfolioViews(walletPortfolio),
     [walletPortfolio],
+  )
+  const liquidityRows = useMemo(
+    () => projectLiquidityView(portfolioViews.LIQUIDITY.positions),
+    [portfolioViews],
   )
   const farmRows = useMemo(
-    () => projectFarmView(filterPortfolioPositions(walletPortfolio, 'FARM')),
-    [walletPortfolio],
+    () => projectFarmView(portfolioViews.FARM.positions),
+    [portfolioViews],
   )
   const poolRows = useMemo(
-    () => projectPoolView(filterPortfolioPositions(walletPortfolio, 'POOL')),
-    [walletPortfolio],
+    () => projectPoolView(portfolioViews.POOL.positions),
+    [portfolioViews],
   )
 
   const liquiditySection = useMemo(
@@ -656,8 +660,16 @@ export function useCommandCenterOrchestrationRuntime() {
     chainId,
     /** Canonical wallet portfolio — sole aggregation result. */
     portfolio: walletPortfolio,
+    /** View Engine results — source of all portfolio filters. */
+    portfolioViews,
+    /** Canonical summary / section status (aliases kept for existing consumers). */
+    summary: walletPortfolio.summary,
+    sectionStatus: walletPortfolio.sectionStatus,
     assets,
-    /** Filtered views of portfolio.positions (not independent product roots). */
+    /**
+     * Legacy consumer projections from View Engine positions only.
+     * Not portfolio root product arrays.
+     */
     liquidity: liquidityRows,
     pools: poolRows,
     farms: farmRows,

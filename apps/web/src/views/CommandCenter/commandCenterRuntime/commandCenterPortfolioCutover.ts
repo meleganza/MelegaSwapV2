@@ -1,9 +1,9 @@
 /**
- * Command Center → WalletPortfolio cutover helpers (R791D.3B).
+ * Command Center → WalletPortfolio + View Engine cutover (R791D.3B / R791D.3D).
  *
- * Maps studio producer rows through product adapters into createWalletPortfolio.
- * Product-specific UI views must filter portfolio.positions — not rebuild roots.
- * Pure where possible; no React; no second aggregation after the service.
+ * Aggregation: Portfolio Service (createWalletPortfolio).
+ * Filtering: Portfolio View Engine (resolvePortfolioView).
+ * Command Center: presentation preparation only — no duplicated business filters.
  */
 
 import {
@@ -22,11 +22,17 @@ import {
   adaptPoolPositionToPortfolioPosition,
   type PoolPositionFacts,
 } from 'lib/wallet-portfolio/adapters/poolPositionAdapter'
-import type {
-  PortfolioPosition,
-  PortfolioSummary,
-  WalletPortfolio,
-  WalletPortfolioSectionStatus,
+import {
+  resolvePortfolioView,
+  type PortfolioViewResult,
+  type PortfolioViewType,
+} from 'lib/wallet-portfolio/viewEngine'
+import {
+  createEmptyWalletPortfolio,
+  type PortfolioPosition,
+  type PortfolioSummary,
+  type WalletPortfolio,
+  type WalletPortfolioSectionStatus,
 } from 'lib/wallet-portfolio/contracts'
 import type { LiquidityPosition, FarmPosition, PoolPosition } from '../commandCenterData'
 import type { LiquidityPositionRow } from 'views/LiquidityStudio/liquidityRuntime/useLiquidityPositions'
@@ -301,18 +307,69 @@ export function adaptStudioRowsToPortfolioPositions(input: {
   return { liquidityPositions, farmPositions, poolPositions }
 }
 
+/** Shell portfolio so View Engine can count without Command Center filter logic. */
+function shellPortfolio(positions: readonly PortfolioPosition[]): WalletPortfolio {
+  const empty = createEmptyWalletPortfolio({
+    wallet: null,
+    generatedAt: '1970-01-01T00:00:00.000Z',
+  })
+  return { ...empty, positions: [...positions] }
+}
+
+/**
+ * Summary counts via View Engine only (no local lifecycle / attention filters).
+ * pendingActionCount remains presentation prep over recommendedAction.
+ */
 function summaryFromPositions(
   positions: readonly PortfolioPosition[],
   base: PortfolioSummary,
+  resolveView: ResolvePortfolioViewFn = resolvePortfolioView,
 ): PortfolioSummary {
+  const shell = shellPortfolio(positions)
   return {
     netValueUsd: base.netValueUsd,
     claimableValueUsd: base.claimableValueUsd,
-    activePositionCount: positions.filter((p) => p.status === 'ACTIVE').length,
-    historicalPositionCount: positions.filter((p) => p.status === 'ENDED').length,
-    attentionPositionCount: positions.filter((p) => p.requiresAttention).length,
+    activePositionCount: resolveView(shell, 'ACTIVE').count,
+    historicalPositionCount: resolveView(shell, 'HISTORICAL').count,
+    attentionPositionCount: resolveView(shell, 'NEEDS_ATTENTION').count,
     pendingActionCount: positions.filter((p) => p.recommendedAction.type !== 'NONE').length,
   }
+}
+
+/** Views Command Center must consume from the View Engine (R791D.3D). */
+export const COMMAND_CENTER_VIEW_TYPES = [
+  'MY_POSITIONS',
+  'LIQUIDITY',
+  'FARM',
+  'POOL',
+  'ACTIVE',
+  'HISTORICAL',
+  'CLAIMABLE',
+  'NEEDS_ATTENTION',
+] as const satisfies readonly PortfolioViewType[]
+
+export type CommandCenterViewType = (typeof COMMAND_CENTER_VIEW_TYPES)[number]
+
+export type CommandCenterPortfolioViews = Record<CommandCenterViewType, PortfolioViewResult>
+
+export type ResolvePortfolioViewFn = (
+  portfolio: WalletPortfolio,
+  view: PortfolioViewType,
+) => PortfolioViewResult
+
+/**
+ * Resolve all Command Center portfolio views through the View Engine.
+ * Inject `resolveView` only for tests — production always uses resolvePortfolioView.
+ */
+export function resolveCommandCenterPortfolioViews(
+  portfolio: WalletPortfolio,
+  resolveView: ResolvePortfolioViewFn = resolvePortfolioView,
+): CommandCenterPortfolioViews {
+  const views = {} as CommandCenterPortfolioViews
+  for (const view of COMMAND_CENTER_VIEW_TYPES) {
+    views[view] = resolveView(portfolio, view)
+  }
+  return views
 }
 
 /**
@@ -369,14 +426,18 @@ export function buildCommandCenterWalletPortfolio(input: CommandCenterPortfolioB
   })
 }
 
+/**
+ * @deprecated Prefer portfolioViews from resolveCommandCenterPortfolioViews.
+ * Thin View Engine bridge for legacy LIQUIDITY/FARM/POOL callers — no local filter.
+ */
 export function filterPortfolioPositions(
   portfolio: WalletPortfolio,
-  positionType: PortfolioPosition['positionType'],
+  positionType: Extract<PortfolioPosition['positionType'], 'LIQUIDITY' | 'FARM' | 'POOL'>,
 ): PortfolioPosition[] {
-  return portfolio.positions.filter((p) => p.positionType === positionType)
+  return resolvePortfolioView(portfolio, positionType).positions
 }
 
-/** Legacy display projection for existing cards — derived only from filtered PortfolioPosition. */
+/** Legacy display projection — derived only from View Engine position lists. */
 export function projectLiquidityView(positions: readonly PortfolioPosition[]): LiquidityPosition[] {
   return positions.map((p) => ({
     id: p.positionId,
