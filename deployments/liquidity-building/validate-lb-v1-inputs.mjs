@@ -171,7 +171,13 @@ function main() {
     reasons.push(`runtimeIngestion.status=${doc.runtimeIngestion?.status} (need OPERATIONAL)`);
   }
   if (doc.signatureNormalization?.status !== 'VERIFIED') {
-    reasons.push(`signatureNormalization.status=${doc.signatureNormalization?.status}`);
+    reasons.push(`signatureNormalization.status=${doc.signatureNormalization?.status}`)
+  }
+  if (doc.activationAuthorized === true && doc.deploymentReadinessState !== 'VALID' && doc.deploymentReadinessState !== 'DEPLOYED') {
+    reasons.push('activationAuthorized true while deployment not VALID')
+  }
+  if (doc.productionAuthority?.verdict === 'AUTONOMOUS_AUTHORITY_NOT_READY') {
+    reasons.push('productionAuthority.verdict=AUTONOMOUS_AUTHORITY_NOT_READY (LB-G03B)')
   }
 
   if (reasons.length) {

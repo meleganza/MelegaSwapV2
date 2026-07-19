@@ -3,7 +3,9 @@
   "chainId": 56,
   "network": "bsc-mainnet",
   "factoryVersion": "LiquidityBuildingFactoryV1",
-  "sourceCommit": "cc796f5aee87ba5e0d65f9a996fda0a81e20a9a2",
+  "sourceCommit": "61771b0a9760b5358619660a23f5e04254210dca",
+  "lb010AssessedAtUtc": "2026-07-19T17:56:00Z",
+  "observationBlock": 110942904,
   "compiler": {
     "solc": "0.8.20",
     "optimizer": true,
@@ -60,7 +62,8 @@
     "providerClass": null,
     "publicKeyFingerprint": null,
     "nonExportable": null,
-    "verdict": "AUTONOMOUS_AUTHORITY_NOT_FOUND"
+    "verdict": "AUTONOMOUS_AUTHORITY_NOT_READY",
+    "rejectedModels": ["HOT_SIGNER", "local_private_key", "vm.sign"]
   },
   "authorizer": {
     "address": null,
@@ -71,54 +74,91 @@
     "feeSinkAddress": null,
     "receiverAddress": null,
     "receiverVerdict": "PRODUCTION_BINDING_NOT_FOUND",
+    "reprobeUtc": "2026-07-19T17:56:00Z",
     "rejectedCandidates": [
       {
         "label": "MELEGA_VAULT_BSC",
         "address": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C",
+        "codeBytes": 9883,
         "reason": "Named Vault only; LB fee-sink role unproven"
       },
       {
         "label": "MELEGA_TREASURY_BSC",
         "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-        "reason": "23-byte EIP-7702 designator — not durable intake"
+        "codeBytes": 23,
+        "reason": "EIP-7702 designator — not durable intake"
       },
       {
         "label": "MELEGA_FEE_COLLECTOR_BSC",
         "address": "0xb5a8707FfA045E0FC7db6eFC63161e853C80139a",
+        "codeBytes": 0,
         "reason": "EOA — forbidden"
       }
     ]
   },
   "quotePolicies": [],
   "quotePolicyCalculationArtifact": "deployments/liquidity-building/chain-56/quote-policy-calculation.v1.json",
+  "quoteActivationAssessment": {
+    "WBNB": {
+      "gasPath": "NativeEquivalent",
+      "floors": "PROPOSED_FOR_FOUNDER_RATIFICATION",
+      "activationStatus": "BLOCKED_PENDING_RATIFICATION_AND_BINDINGS",
+      "independentOfStables": true
+    },
+    "USDT": {
+      "gasPath": "NotActive",
+      "activationStatus": "NOT_ACTIVE",
+      "blocker": "LB-G09"
+    },
+    "USDC": {
+      "gasPath": "NotActive",
+      "activationStatus": "NOT_ACTIVE",
+      "blocker": "LB-G09"
+    }
+  },
   "finality": {
     "configuredDepth": 15,
     "verdict": "FINALITY_EVIDENCE_INSUFFICIENT",
     "indexerReorgSafetyBlocks": 12,
-    "notes": "LB-G10 open — contract default 15 retained; ops certification incomplete"
+    "treasuryRuntimeChainId": null,
+    "notes": "LB contract/runtime use 15; BSC indexer REORG_SAFETY_BLOCKS=12; Treasury Runtime health reports chain=none / development. Do not reduce below 15."
   },
   "runtimeIngestion": {
     "treasuryRuntimeUrl": "https://treasury.melega.ai",
     "lbReceiptSchema": null,
     "status": "NOT_IMPLEMENTED",
+    "healthProbe": {
+      "path": "/api/v1/health",
+      "environment": "development",
+      "deploymentMode": "development",
+      "chain": "none",
+      "contract": "smartdrop.v1",
+      "lbSettlementSupport": false
+    },
     "handoff": "docs/handoffs/LB008_TREASURY_RUNTIME_LB_INGESTION.md"
   },
   "signatureNormalization": {
-    "status": "NOT_IMPLEMENTED",
+    "status": "IMPLEMENTED_AWAITING_PRODUCTION_AUTHORITY",
+    "module": "apps/web/src/lib/liquidity-building-runtime/kms-signature-normalization.ts",
+    "productionKmsVerified": false,
     "handoff": "docs/handoffs/LB008_KERL_KMS_SIGNATURE_NORMALIZATION.md"
+  },
+  "relay": {
+    "status": "DISABLED",
+    "blocker": "LB-G03C"
   },
   "unresolvedBlockers": [
     "LB-G03B",
+    "LB-G03C",
     "LB-G04B",
     "LB-G04C",
     "LB-G08",
     "LB-G09",
     "LB-G10",
     "LB-G11",
-    "LB-G12",
-    "LB-G02B",
-    "LB-G03C"
+    "LB-G12"
   ],
   "deploymentReadinessState": "BLOCKED",
-  "validatorExpectedResult": "DEPLOYMENT_INPUTS_BLOCKED"
+  "validatorExpectedResult": "DEPLOYMENT_INPUTS_BLOCKED",
+  "activationAuthorized": false
 }

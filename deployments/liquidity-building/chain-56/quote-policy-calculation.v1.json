@@ -81,5 +81,18 @@
       "notes": "LB-G09 open — Melega WBNB/USDC pair reserves too thin for pinned conversion; policy remains NotActive."
     }
   ],
+  "lb010Reassessment": {
+    "assessedAtUtc": "2026-07-19T17:56:00Z",
+    "observationBlock": 110942904,
+    "observedGasPriceWei": "50000000",
+    "WBNB": {
+      "activationAssessment": "CAN_ACTIVATE_INDEPENDENTLY_AFTER_RATIFICATION_AND_BINDINGS",
+      "ratificationStatus": "PROPOSED_FOR_FOUNDER_RATIFICATION",
+      "gasConversionMode": "NativeEquivalent",
+      "blockingDependencies": ["LB-G03B", "LB-G03C", "LB-G04B", "LB-G04C", "LB-G08", "LB-G10", "LB-G11", "LB-G12", "DEPLOYMENT"]
+    },
+    "USDT": { "activationStatus": "NOT_ACTIVE", "blocker": "LB-G09" },
+    "USDC": { "activationStatus": "NOT_ACTIVE", "blocker": "LB-G09" }
+  },
   "disclaimer": "Values are CALCULATED / PROPOSED_FOR_FOUNDER_RATIFICATION. Not RATIFIED. Not DEPLOYED. Not production Factory constructor inputs."
 }

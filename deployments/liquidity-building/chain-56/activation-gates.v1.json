@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "melega.liquidity-building.activation-gates.v1",
+  "assessedAt": "2026-07-19T17:56:00Z",
+  "chainId": 56,
+  "activationAuthorized": false,
+  "firstMainnetCycleAuthorized": false,
+  "gates": [
+    { "id": "CANONICAL_MELEGA_FACTORY", "status": "PASS", "blocking": true },
+    { "id": "CANONICAL_MELEGA_ROUTER", "status": "PASS", "blocking": true },
+    { "id": "PROGRAM_BYTECODE_FROZEN", "status": "PASS", "blocking": true },
+    { "id": "AUTHORIZER_BYTECODE_FROZEN", "status": "PASS", "blocking": true },
+    { "id": "NON_EXPORTABLE_AUTHORITY", "status": "FAIL", "blocking": true, "blocker": "LB-G03B" },
+    { "id": "SIGNATURE_NORMALIZATION", "status": "FAIL", "blocking": true, "blocker": "LB-G11", "note": "Module implemented; production KMS verify pending" },
+    { "id": "TREASURY_RECEIVER", "status": "FAIL", "blocking": true, "blocker": "LB-G04B" },
+    { "id": "FEE_SINK_BINDING", "status": "FAIL", "blocking": true },
+    { "id": "RUNTIME_INGESTION", "status": "FAIL", "blocking": true, "blocker": "LB-G04C/LB-G12" },
+    { "id": "WBNB_QUOTE_POLICY", "status": "FAIL", "blocking": true, "blocker": "LB-G08" },
+    { "id": "USDT_GAS_PATH", "status": "FAIL", "blocking": true, "blocker": "LB-G09" },
+    { "id": "USDC_GAS_PATH", "status": "FAIL", "blocking": true, "blocker": "LB-G09" },
+    { "id": "FINALITY_DEPTH", "status": "FAIL", "blocking": true, "blocker": "LB-G10" },
+    { "id": "STALE_ROUTER_CLOSED", "status": "PASS", "blocking": true },
+    { "id": "DEPLOYMENT_INPUTS", "status": "FAIL", "blocking": true },
+    { "id": "AUTONOMOUS_DEPLOYMENT_MECHANISM", "status": "FAIL", "blocking": true },
+    { "id": "PERMISSIONLESS_RELAY", "status": "FAIL", "blocking": true, "blocker": "LB-G03C" },
+    { "id": "EXTERNAL_SECURITY_REVIEW", "status": "NOT_DONE", "blocking": true },
+    { "id": "LOW_VALUE_REAL_CYCLE", "status": "NOT_DONE", "blocking": false, "deferredTo": "LB011" }
+  ]
+}
