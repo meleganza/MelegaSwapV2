@@ -10,7 +10,6 @@ import styled from 'styled-components'
 import {
   CC_FONT_BODY,
   commandCenterColors,
-  commandCenterLayout,
   commandCenterType,
 } from '../commandCenterTokens'
 
@@ -37,17 +36,17 @@ export const VISUAL_PRIORITY = {
 export type VisualPriorityLevel = 1 | 2 | 3 | 4
 
 /**
- * Spacing system — reusable tokens only.
- * Exact pixel polish is deferred to R791D.4G.
+ * Spacing system — reusable tokens (R791D.4G applies generous whitespace).
  */
 export const CC_VISUAL_SPACING = {
-  pageGap: commandCenterLayout.sectionGap,
-  pageGapMobile: commandCenterLayout.sectionGapMobile,
-  sectionGap: commandCenterLayout.cardGap,
-  sectionGapTight: '12px',
-  cardGap: '12px',
-  cardPadding: '14px 16px',
-  headerMarginBottom: '12px',
+  pageGap: '40px',
+  pageGapMobile: '24px',
+  sectionGap: '24px',
+  sectionGapTight: '14px',
+  cardGap: '14px',
+  cardPadding: '16px 18px',
+  headerMarginBottom: '16px',
+  secondaryOpacity: '0.92',
 } as const
 
 /** Premium card language — shared principles, not product-specific chrome. */
@@ -115,8 +114,16 @@ const SectionRoot = styled.section<{ $priority: VisualPriorityLevel }>`
   min-width: 0;
   overflow-x: hidden;
   box-sizing: border-box;
-  /* Priority is structural (DOM + data-visual-priority). Pixel weight deferred to 4G. */
   flex-shrink: 0;
+  padding-bottom: ${({ $priority }) => ($priority <= 2 ? '8px' : '0')};
+  border-bottom: ${({ $priority }) =>
+    $priority <= 3 ? `1px solid ${commandCenterColors.divider}` : 'none'};
+  margin-bottom: ${({ $priority }) => ($priority <= 3 ? CC_VISUAL_SPACING.sectionGapTight : '0')};
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
 `
 
 const HeaderRoot = styled.header`
@@ -159,7 +166,7 @@ const MetricLabel = styled.div`
 
 const MetricValue = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   color: ${commandCenterColors.white};
   line-height: 1.2;
@@ -282,11 +289,12 @@ const SecondaryLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${CC_VISUAL_SPACING.pageGapMobile};
+  opacity: ${CC_VISUAL_SPACING.secondaryOpacity};
 
   @media (min-width: ${CC_RESPONSIVE.desktopBreakpoint}) {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: ${CC_VISUAL_SPACING.pageGap};
+    gap: ${CC_VISUAL_SPACING.sectionGap};
     align-items: start;
   }
 `
@@ -314,6 +322,7 @@ export function CommandCenterVisualShell({
       data-cc-r791d-4c
       data-cc-r791d-4e
       data-cc-r791d-4f="visual-foundation"
+      data-cc-r791d-4g="premium-ui"
       data-visual-hierarchy={COMMAND_CENTER_HIERARCHY.join('|')}
       data-visual-state={state}
       data-wallet-connected={walletConnected ? 'true' : 'false'}
@@ -334,12 +343,16 @@ export function PortfolioSection({
   testId,
   state,
   'data-cc-r791d-4e': dataCcR791d4e,
+  'data-cc-r791d-4g': dataCcR791d4g,
+  'data-awareness': dataAwareness,
 }: {
   center: CommandCenterCenter
   children: ReactNode
   testId?: string
   state?: string
   'data-cc-r791d-4e'?: boolean | string
+  'data-cc-r791d-4g'?: boolean | string
+  'data-awareness'?: string
 }) {
   const priority = VISUAL_PRIORITY[center] as VisualPriorityLevel
   return (
@@ -351,6 +364,8 @@ export function PortfolioSection({
       data-state={state}
       data-composition={center.toLowerCase().replace(/_/g, '-')}
       data-cc-r791d-4e={dataCcR791d4e}
+      data-cc-r791d-4g={dataCcR791d4g}
+      data-awareness={dataAwareness}
     >
       {children}
     </SectionRoot>

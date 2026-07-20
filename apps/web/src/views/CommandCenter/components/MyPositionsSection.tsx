@@ -87,19 +87,6 @@ const SummaryValue = styled.div`
   line-height: 1.1;
 `
 
-const GroupBlock = styled.div`
-  margin-bottom: 24px;
-  min-width: 0;
-`
-
-const GroupTitle = styled.h3`
-  margin: 0 0 12px;
-  font-family: ${CC_FONT_DISPLAY};
-  font-size: 16px;
-  font-weight: 700;
-  color: ${commandCenterColors.white};
-`
-
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -122,6 +109,19 @@ const CardGrid = styled.div`
     min-width: 0;
     max-width: 100%;
   }
+`
+
+const GroupBlock = styled.div`
+  margin-bottom: 28px;
+  min-width: 0;
+`
+
+const GroupTitle = styled.h3`
+  margin: 0 0 12px;
+  font-family: ${CC_FONT_DISPLAY};
+  font-size: 16px;
+  font-weight: 700;
+  color: ${commandCenterColors.white};
 `
 
 const EmptyState = styled.div`

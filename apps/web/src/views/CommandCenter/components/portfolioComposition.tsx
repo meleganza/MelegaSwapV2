@@ -1,8 +1,8 @@
 /**
- * Command Center visual portfolio composition (R791D.4C + R791D.4F foundation).
+ * Command Center premium portfolio composition (R791D.4C/4F/4G).
  *
- * Wallet Operating Center structure via shared visual primitives.
- * No final pixel polish. No product-specific section roots.
+ * Implements hierarchy with existing primitives + portfolio/intelligence data.
+ * Premium clarity — no new visual language, no fabricated values.
  */
 
 import React from 'react'
@@ -14,10 +14,11 @@ import type {
   WalletPortfolio,
 } from 'lib/wallet-portfolio/contracts'
 import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
-import {
-  CC_FONT_BODY,
-  commandCenterColors,
-} from '../commandCenterTokens'
+import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
+import type {
+  PortfolioIntelligenceActionItem,
+  PortfolioIntelligenceModel,
+} from '../commandCenterRuntime/portfolioIntelligence'
 import {
   ActionItem,
   ActionItemRow,
@@ -27,16 +28,13 @@ import {
   PositionGroup,
   SectionHeader,
 } from './commandCenterVisualFoundation'
-import {
-  MyPositionsSection,
-  type MyPositionsSectionProps,
-} from './MyPositionsSection'
+import { MyPositionsSection, type MyPositionsSectionProps } from './MyPositionsSection'
 import {
   PORTFOLIO_VIEW_LABEL,
   type PortfolioViewSelectorModel,
 } from '../commandCenterRuntime/commandCenterPortfolioCutover'
 
-/** Action types allowed in Today's Actions — must already exist on the position. */
+/** Action types allowed in Action Center — must already exist on the position/intelligence. */
 const PRIORITY_ACTION_TYPES = new Set([
   'CLAIM',
   'HARVEST',
@@ -51,6 +49,7 @@ export interface PriorityItem {
   title: string
   action: PortfolioPositionAction
   requiresAttention: boolean
+  reason?: string | null
 }
 
 function collectPositionActions(position: PortfolioPosition): PortfolioPositionAction[] {
@@ -88,29 +87,83 @@ export function buildTodaysPriorities(positions: readonly PortfolioPosition[]): 
         title: position.title,
         action,
         requiresAttention: position.requiresAttention === true,
+        reason: position.reason,
       })
     }
   }
   return items
 }
 
+/** Prefer intelligence action items when provided — no invented actions. */
+export function resolveActionCenterItems(
+  positions: readonly PortfolioPosition[],
+  actionItems?: readonly PortfolioIntelligenceActionItem[] | null,
+): PriorityItem[] {
+  if (actionItems && actionItems.length > 0) {
+    return actionItems
+      .filter((item) => PRIORITY_ACTION_TYPES.has(item.action.type) && item.action.enabled === true)
+      .map((item) => ({
+        id: item.id,
+        positionId: item.positionId,
+        title: item.positionTitle,
+        action: item.action,
+        requiresAttention: false,
+        reason: item.reason,
+      }))
+  }
+  return buildTodaysPriorities(positions)
+}
+
 const HeroIdentity = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: ${commandCenterColors.label};
   margin-bottom: 8px;
 `
 
 const HeroWallet = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: 14px;
-  color: ${commandCenterColors.muted};
-  margin-bottom: 12px;
+  font-size: 15px;
+  color: ${commandCenterColors.white};
+  margin-bottom: 16px;
   word-break: break-all;
 `
 
+const StateRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+  min-width: 0;
+`
+
+const StateChip = styled.span<{ $tone?: 'attention' | 'claimable' | 'neutral' }>`
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid
+    ${({ $tone }) =>
+      $tone === 'attention'
+        ? commandCenterColors.gold
+        : $tone === 'claimable'
+          ? commandCenterColors.green
+          : commandCenterColors.cardBorder};
+  background: ${commandCenterColors.cardBg};
+  font-family: ${CC_FONT_BODY};
+  font-size: 12px;
+  color: ${commandCenterColors.white};
+`
+
+const ChipLabel = styled.span`
+  color: ${commandCenterColors.muted};
+`
+
 const EmptyState = styled.div`
-  padding: 20px 16px;
+  padding: 24px 18px;
   border: 1px solid ${commandCenterColors.cardBorder};
   border-radius: 12px;
   background: ${commandCenterColors.cardBg};
@@ -122,13 +175,14 @@ const EmptyState = styled.div`
 const FilterShell = styled.div`
   width: 100%;
   min-width: 0;
+  margin-bottom: 8px;
 `
 
 const FilterPrompt = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: 12px;
+  font-size: 13px;
   color: ${commandCenterColors.muted};
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 `
 
 const ChipRow = styled.div`
@@ -170,25 +224,26 @@ function shortenWallet(wallet: string | null): string {
   return `${w.slice(0, 6)}…${w.slice(-4)}`
 }
 
-/** 1. Portfolio Hero — identity + portfolio state (LEVEL 1). */
+/** 1. Portfolio Hero — identity + summary + attention/claimable (LEVEL 1). */
 export function PortfolioHero({
   portfolio,
   walletConnected,
+  intelligence,
 }: {
   portfolio: WalletPortfolio
   walletConnected: boolean
+  intelligence?: PortfolioIntelligenceModel | null
 }) {
   const summary: PortfolioSummary = portfolio.summary
+  const attentionCount = intelligence?.summary.attentionCount ?? summary.attentionPositionCount
+  const claimableCount = intelligence?.summary.claimableCount ?? 0
+  const hasClaimableValue = summary.claimableValueUsd != null && String(summary.claimableValueUsd).trim() !== ''
 
   if (!walletConnected) {
     return (
-      <PortfolioSection
-        center="PORTFOLIO_HERO"
-        testId="portfolio-hero"
-        state="WALLET_NOT_CONNECTED"
-      >
+      <PortfolioSection center="PORTFOLIO_HERO" testId="portfolio-hero" state="WALLET_NOT_CONNECTED">
         <div data-testid="portfolio-summary-section" data-state="WALLET_NOT_CONNECTED">
-          <SectionHeader title="Portfolio" />
+          <SectionHeader title="Portfolio" subtitle="Connect a wallet to see your positions." />
           <EmptyState data-testid="portfolio-hero-empty">Wallet not connected.</EmptyState>
           <span data-testid="portfolio-summary-empty" hidden aria-hidden="true" />
         </div>
@@ -197,13 +252,42 @@ export function PortfolioHero({
   }
 
   return (
-    <PortfolioSection center="PORTFOLIO_HERO" testId="portfolio-hero" state="READY">
-      <div data-testid="portfolio-summary-section" data-state="READY">
-        <SectionHeader title="Portfolio" />
+    <PortfolioSection
+      center="PORTFOLIO_HERO"
+      testId="portfolio-hero"
+      state="READY"
+      data-cc-r791d-4g="hero"
+    >
+      <div
+        data-testid="portfolio-summary-section"
+        data-state="READY"
+        data-attention={attentionCount > 0 ? 'true' : 'false'}
+      >
+        <SectionHeader title="Portfolio" subtitle="Wallet operating summary" />
         <HeroIdentity data-testid="portfolio-hero-label">PORTFOLIO</HeroIdentity>
         <HeroWallet data-testid="portfolio-hero-wallet">
           {portfolio.wallet ? shortenWallet(portfolio.wallet) : 'Wallet unavailable'}
         </HeroWallet>
+
+        <StateRow data-testid="portfolio-hero-states" aria-label="Portfolio states">
+          <StateChip
+            $tone={attentionCount > 0 ? 'attention' : 'neutral'}
+            data-testid="portfolio-hero-attention"
+            data-count={attentionCount}
+          >
+            <ChipLabel>Attention</ChipLabel>
+            <span>{attentionCount}</span>
+          </StateChip>
+          <StateChip
+            $tone={hasClaimableValue || claimableCount > 0 ? 'claimable' : 'neutral'}
+            data-testid="portfolio-hero-claimable-state"
+            data-count={claimableCount}
+          >
+            <ChipLabel>Claimable</ChipLabel>
+            <span>{hasClaimableValue ? formatUsd(summary.claimableValueUsd) : claimableCount}</span>
+          </StateChip>
+        </StateRow>
+
         <MetricBlockRow testId="portfolio-summary-grid">
           <MetricBlock
             label="Portfolio value"
@@ -233,23 +317,25 @@ export function PortfolioHero({
 }
 
 /**
- * 2. Action Center — Today's Actions (LEVEL 2).
- * Only canonical types: Claim, Harvest, Withdraw, Remove Liquidity, Approve.
+ * 2. Action Center — canonical operational actions (LEVEL 2).
+ * Source preference: PortfolioIntelligenceModel.actionItems.
  */
 export function PortfolioActions({
   positions,
   walletConnected,
+  actionItems,
 }: {
   positions: readonly PortfolioPosition[]
   walletConnected: boolean
+  actionItems?: readonly PortfolioIntelligenceActionItem[] | null
 }) {
-  const items = walletConnected ? buildTodaysPriorities(positions) : []
+  const items = walletConnected ? resolveActionCenterItems(positions, actionItems) : []
   const state = !walletConnected ? 'WALLET_NOT_CONNECTED' : items.length ? 'READY' : 'EMPTY'
 
   return (
     <PortfolioSection center="ACTION_CENTER" testId="portfolio-actions" state={state}>
-      <div data-testid="todays-priorities-section" data-state={state}>
-        <SectionHeader title="Today's Actions" />
+      <div data-testid="todays-priorities-section" data-state={state} data-cc-r791d-4g="actions">
+        <SectionHeader title="Today's Actions" subtitle="Canonical operations requiring attention" />
         {!walletConnected ? (
           <EmptyState>Wallet not connected.</EmptyState>
         ) : items.length === 0 ? (
@@ -263,7 +349,9 @@ export function PortfolioActions({
                 positionId={item.positionId}
                 actionType={item.action.type}
                 title={item.title}
-                meta={`${item.action.type}${item.requiresAttention ? ' · attention' : ''}`}
+                meta={[item.action.type, item.reason, item.requiresAttention ? 'attention' : null]
+                  .filter(Boolean)
+                  .join(' · ')}
                 href={item.action.route}
                 actionLabel={item.action.label}
                 attention={item.requiresAttention}
@@ -324,7 +412,7 @@ export function PortfolioViewSelector({
   )
 }
 
-/** 3. Positions Center — owned assets via PositionCard groups (LEVEL 3). */
+/** 3. Positions Center — My Positions via PositionCard groups (LEVEL 3). */
 export function PositionsCenter({
   myPositions,
   viewSelector,

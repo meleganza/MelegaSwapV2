@@ -1,8 +1,8 @@
 /**
- * Command Center Portfolio Dashboard — Wallet Operating Center (R791D.4C/4E/4F).
+ * Command Center Portfolio Dashboard — Wallet Operating Center (R791D.4C–4G).
  *
  * Hierarchy: Hero → Action Center → Intelligence Center → Positions Center → Secondary.
- * Visual foundation via shared primitives. No product-specific section roots.
+ * Premium UI implements foundation — no product-specific section roots.
  */
 
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
@@ -453,7 +453,23 @@ export function PortfolioDashboard({
     (!portfolio.claimables || portfolio.claimables.length === 0)
 
   const intelligence = buildPortfolioIntelligence({ portfolio, walletConnected })
-  const visualState = !walletConnected ? 'DISCONNECTED' : emptyPortfolio ? 'EMPTY' : 'CONNECTED'
+
+  let visualState: 'DISCONNECTED' | 'EMPTY' | 'CONNECTED' | 'ATTENTION' | 'PARTIAL' | 'UNAVAILABLE' | 'HISTORICAL' =
+    'CONNECTED'
+  if (!walletConnected) visualState = 'DISCONNECTED'
+  else if (emptyPortfolio) visualState = 'EMPTY'
+  else if (intelligence.summary.attentionCount > 0) visualState = 'ATTENTION'
+  else if (intelligence.summary.unavailableCount > 0) visualState = 'UNAVAILABLE'
+  else if (
+    intelligence.summary.historicalCount > 0 &&
+    intelligence.summary.activePositions === 0
+  ) {
+    visualState = 'HISTORICAL'
+  } else if (
+    Object.values(portfolio.sectionStatus).some((s) => s.status === 'PARTIAL')
+  ) {
+    visualState = 'PARTIAL'
+  }
 
   return (
     <CommandCenterVisualShell
@@ -467,11 +483,19 @@ export function PortfolioDashboard({
       ) : null}
 
       <DashboardSectionBoundary section="hero">
-        <PortfolioHero portfolio={portfolio} walletConnected={walletConnected} />
+        <PortfolioHero
+          portfolio={portfolio}
+          walletConnected={walletConnected}
+          intelligence={intelligence}
+        />
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="actions">
-        <PortfolioActions positions={portfolio.positions} walletConnected={walletConnected} />
+        <PortfolioActions
+          positions={portfolio.positions}
+          walletConnected={walletConnected}
+          actionItems={intelligence.actionItems}
+        />
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="portfolio-intelligence">
@@ -488,7 +512,7 @@ export function PortfolioDashboard({
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="secondary">
-        <PortfolioSection center="SECONDARY" testId="portfolio-secondary-center">
+        <PortfolioSection center="SECONDARY" testId="portfolio-secondary-center" data-cc-r791d-4g="secondary">
           <SecondaryRail testId="portfolio-secondary">
             <SecondaryColumn data-testid="portfolio-secondary-claimables">
               <ClaimablesSection claimables={portfolio.claimables} walletConnected={walletConnected} />

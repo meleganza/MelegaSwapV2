@@ -1,6 +1,7 @@
 /**
- * Portfolio Intelligence section (R791D.4E + R791D.4F visual foundation).
- * Operational items only — no scoring / advice / fetch.
+ * Portfolio Intelligence section (R791D.4E + R791D.4G premium UI).
+ * Operational awareness: attention + health (+ actions retained for compatibility).
+ * No scoring / advice / fetch.
  */
 
 import React from 'react'
@@ -14,7 +15,7 @@ import {
 } from './commandCenterVisualFoundation'
 
 const EmptyState = styled.div`
-  padding: 20px 16px;
+  padding: 24px 18px;
   border: 1px solid ${commandCenterColors.cardBorder};
   border-radius: 12px;
   background: ${commandCenterColors.cardBg};
@@ -27,7 +28,7 @@ const SummaryRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   min-width: 0;
 `
 
@@ -50,13 +51,13 @@ const ChipLabel = styled.span`
 const Columns = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
 
   @media (min-width: 1024px) {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 16px;
     align-items: start;
   }
 `
@@ -66,7 +67,7 @@ const Column = styled.div`
 `
 
 const ColumnTitle = styled.h4`
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-family: ${CC_FONT_BODY};
   font-size: 13px;
   color: ${commandCenterColors.label};
@@ -79,7 +80,7 @@ const List = styled.ul`
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
 `
 
@@ -98,7 +99,7 @@ export function PortfolioIntelligenceSection({
         state="WALLET_NOT_CONNECTED"
         data-cc-r791d-4e
       >
-        <SectionHeader title="Portfolio Intelligence" />
+        <SectionHeader title="Portfolio Intelligence" subtitle="Operational awareness" />
         <EmptyState data-testid="portfolio-intelligence-empty">Wallet not connected.</EmptyState>
       </PortfolioSection>
     )
@@ -112,13 +113,21 @@ export function PortfolioIntelligenceSection({
         state="EMPTY"
         data-cc-r791d-4e
       >
-        <SectionHeader title="Portfolio Intelligence" />
+        <SectionHeader title="Portfolio Intelligence" subtitle="Operational awareness" />
         <EmptyState data-testid="portfolio-intelligence-empty">No intelligence available.</EmptyState>
       </PortfolioSection>
     )
   }
 
   const { summary, attentionItems, actionItems, healthItems } = model
+  const awareness =
+    summary.attentionCount > 0
+      ? 'ATTENTION'
+      : summary.unavailableCount > 0
+        ? 'UNAVAILABLE'
+        : summary.historicalCount > 0 && summary.activePositions === 0
+          ? 'HISTORICAL'
+          : 'READY'
 
   return (
     <PortfolioSection
@@ -126,8 +135,13 @@ export function PortfolioIntelligenceSection({
       testId="portfolio-intelligence-section"
       state="READY"
       data-cc-r791d-4e
+      data-cc-r791d-4g="intelligence"
+      data-awareness={awareness}
     >
-      <SectionHeader title="Portfolio Intelligence" />
+      <SectionHeader
+        title="Portfolio Intelligence"
+        subtitle="Attention, availability, and operational health"
+      />
       <SummaryRow data-testid="portfolio-intelligence-summary" aria-label="Intelligence summary">
         <SummaryChip data-testid="intelligence-active-positions">
           <ChipLabel>Active</ChipLabel>
