@@ -1,3 +1,7 @@
+/**
+ * R791D.3G foundation + R791D.4D position experience polish tests.
+ */
+
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
@@ -45,6 +49,7 @@ function baseCard(overrides: Partial<MyPositionCardModel> = {}): MyPositionCardM
       principalValueUsd: null,
       claimableValueUsd: null,
       pendingRewardsValueUsd: null,
+      balanceFormatted: '12.5 LP',
     },
     claimables: {
       hasClaimable: false,
@@ -66,7 +71,7 @@ function baseCard(overrides: Partial<MyPositionCardModel> = {}): MyPositionCardM
       productRoute: '/liquidity-studio',
       openRoute: '/liquidity-studio/open',
       manageRoute: '/liquidity-studio/manage',
-      analyticsRoute: null,
+      analyticsRoute: '/liquidity-studio/analytics',
     },
     attention: {
       requiresAttention: false,
@@ -186,16 +191,18 @@ describe('R791D.3G PositionCard renderer', () => {
             principalValueUsd: null,
             claimableValueUsd: null,
             pendingRewardsValueUsd: null,
+            balanceFormatted: null,
           },
           claimables: { hasClaimable: false, valueUsd: null, tokens: [], actions: [] },
         })}
       />,
     )
-    const body = screen.getByTestId('position-card').querySelector('[data-section="body"]')
-    expect(body?.textContent).not.toMatch(/\$0/)
-    expect(body?.textContent).not.toMatch(/\b0%\b/)
-    expect(body?.textContent).not.toMatch(/Unavailable/)
+    const valueArea = screen.getByTestId('position-value-area')
+    expect(valueArea.textContent).not.toMatch(/\$0/)
+    expect(valueArea.textContent).not.toMatch(/\b0%\b/)
+    expect(valueArea.textContent).not.toMatch(/Unavailable/)
     expect(screen.queryByTestId('claimable-value')).toBeNull()
+    expect(screen.queryByTestId('position-current-value')).toBeNull()
   })
 
   it('TEST 8 — Ended lifecycle renders', () => {
@@ -243,10 +250,7 @@ describe('R791D.3G PositionCard renderer', () => {
   })
 
   it('TEST 11 — No product-specific branches', () => {
-    const source = readFileSync(
-      path.resolve(__dirname, '../PositionCard.tsx'),
-      'utf8',
-    )
+    const source = readFileSync(path.resolve(__dirname, '../PositionCard.tsx'), 'utf8')
     expect(source).not.toMatch(/positionType\s*===\s*['"]FARM['"]/)
     expect(source).not.toMatch(/positionType\s*===\s*['"]POOL['"]/)
     expect(source).not.toMatch(/positionType\s*===\s*['"]LIQUIDITY['"]/)
@@ -277,5 +281,200 @@ describe('R791D.3G PositionCard renderer', () => {
   it('returns null when position missing', () => {
     const { container } = render(<PositionCard position={null} />)
     expect(container.firstChild).toBeNull()
+  })
+})
+
+describe('R791D.4D PositionCard experience polish', () => {
+  it('TEST 1 — Title/lifecycle render', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          title: 'MARCO/WBNB LP',
+          lifecycle: { status: 'ACTIVE', startedAt: null, endsAt: null, updatedAt: null },
+        })}
+      />,
+    )
+    expect(screen.getByRole('heading', { name: 'MARCO/WBNB LP' })).toBeTruthy()
+    expect(screen.getByTestId('position-lifecycle').textContent).toBe('ACTIVE')
+    expect(screen.getByTestId('position-protocol').textContent).toBe('melega-v2')
+    expect(screen.getByTestId('position-type-chip').textContent).toBe('LIQUIDITY')
+  })
+
+  it('TEST 2 — Current value renders only when available', () => {
+    const { rerender } = render(<PositionCard position={baseCard()} />)
+    expect(screen.getByTestId('position-current-value').textContent).toContain('100.5')
+    rerender(
+      <PositionCard
+        position={baseCard({
+          value: {
+            currentValueUsd: null,
+            principalValueUsd: null,
+            claimableValueUsd: null,
+            pendingRewardsValueUsd: null,
+            balanceFormatted: '1 LP',
+          },
+        })}
+      />,
+    )
+    expect(screen.queryByTestId('position-current-value')).toBeNull()
+    expect(screen.getByTestId('position-balance').textContent).toContain('1 LP')
+  })
+
+  it('TEST 3 — Null economics hidden', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          value: {
+            currentValueUsd: null,
+            principalValueUsd: null,
+            claimableValueUsd: null,
+            pendingRewardsValueUsd: null,
+            balanceFormatted: null,
+          },
+          claimables: { hasClaimable: false, valueUsd: null, tokens: [], actions: [] },
+        })}
+      />,
+    )
+    const card = screen.getByTestId('position-card')
+    expect(card.textContent).not.toMatch(/\$0/)
+    expect(card.textContent).not.toMatch(/\b0%\b/)
+    expect(screen.queryByTestId('position-current-value')).toBeNull()
+    expect(screen.queryByTestId('position-balance')).toBeNull()
+  })
+
+  it('TEST 4 — Claimable indicator', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          claimables: { hasClaimable: true, valueUsd: null, tokens: [], actions: [] },
+        })}
+      />,
+    )
+    expect(screen.getByTestId('claimable-indicator')).toHaveAttribute('data-has-claimable', 'true')
+    expect(screen.getByTestId('claimable-flag').textContent).toBe('Available')
+  })
+
+  it('TEST 5 — Primary action', () => {
+    const remove = action('REMOVE_LIQUIDITY', 'Remove Liquidity')
+    render(
+      <PositionCard position={baseCard({ actions: { primaryAction: remove, secondaryActions: [] } })} />,
+    )
+    const primary = screen.getByTestId('position-primary-action')
+    expect(primary).toHaveAttribute('data-action-kind', 'primary')
+    expect(primary).toHaveAttribute('data-action-type', 'REMOVE_LIQUIDITY')
+    expect(primary.textContent).toContain('Remove Liquidity')
+  })
+
+  it('TEST 6 — Secondary actions order', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          actions: {
+            primaryAction: action('HARVEST', 'Harvest'),
+            secondaryActions: [action('WITHDRAW', 'Withdraw'), action('APPROVE', 'Approve')],
+          },
+        })}
+      />,
+    )
+    const actions = screen.getByTestId('position-actions')
+    const labels = within(actions)
+      .getAllByRole('link')
+      .map((el) => el.getAttribute('aria-label'))
+    expect(labels).toEqual(['Harvest', 'Withdraw', 'Approve'])
+  })
+
+  it('TEST 7 — Attention state', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          requiresAttention: true,
+          attention: { requiresAttention: true, attentionReason: 'Unlock pending' },
+        })}
+      />,
+    )
+    expect(screen.getByTestId('attention-indicator')).toBeTruthy()
+    expect(screen.getByTestId('attention-reason').textContent).toContain('Unlock pending')
+  })
+
+  it('TEST 8 — Navigation actions', () => {
+    render(<PositionCard position={baseCard()} />)
+    const footer = screen.getByTestId('position-nav-footer')
+    const nav = within(footer).getAllByRole('link')
+    expect(nav.map((el) => el.getAttribute('data-nav'))).toEqual(['manage', 'analytics', 'open'])
+    expect(nav[0]).toHaveAttribute('href', '/liquidity-studio/manage')
+    expect(nav[1]).toHaveAttribute('href', '/liquidity-studio/analytics')
+    expect(nav[2]).toHaveAttribute('href', '/liquidity-studio/open')
+  })
+
+  it('TEST 9 — Liquidity position', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          positionType: 'LIQUIDITY',
+          actions: {
+            primaryAction: action('REMOVE_LIQUIDITY', 'Remove Liquidity'),
+            secondaryActions: [],
+          },
+        })}
+      />,
+    )
+    expect(screen.getByTestId('position-card')).toHaveAttribute('data-position-type', 'LIQUIDITY')
+    expect(screen.getByTestId('position-primary-action')).toHaveAttribute('data-action-type', 'REMOVE_LIQUIDITY')
+  })
+
+  it('TEST 10 — Farm position', () => {
+    const harvest = action('HARVEST', 'Harvest')
+    render(
+      <PositionCard
+        position={baseCard({
+          positionType: 'FARM',
+          title: 'MARCO Farm',
+          claimables: { hasClaimable: true, valueUsd: '4.1', tokens: [], actions: [harvest] },
+          actions: { primaryAction: harvest, secondaryActions: [] },
+        })}
+      />,
+    )
+    expect(screen.getByTestId('position-card')).toHaveAttribute('data-position-type', 'FARM')
+    expect(screen.getByTestId('position-primary-action')).toHaveAttribute('data-action-type', 'HARVEST')
+    expect(screen.getByTestId('claimable-value').textContent).toBe('4.1')
+  })
+
+  it('TEST 11 — Pool position', () => {
+    const claim = action('CLAIM', 'Claim')
+    render(
+      <PositionCard
+        position={baseCard({
+          positionType: 'POOL',
+          title: 'MARCO Pool',
+          actions: { primaryAction: claim, secondaryActions: [] },
+        })}
+      />,
+    )
+    expect(screen.getByTestId('position-card')).toHaveAttribute('data-position-type', 'POOL')
+    expect(screen.getByTestId('position-primary-action')).toHaveAttribute('data-action-type', 'CLAIM')
+  })
+
+  it('TEST 12 — Ended position', () => {
+    render(
+      <PositionCard
+        position={baseCard({
+          status: 'ENDED',
+          lifecycle: { status: 'ENDED', startedAt: null, endsAt: '2026-01-01', updatedAt: null },
+        })}
+      />,
+    )
+    expect(screen.getByTestId('position-lifecycle').textContent).toBe('ENDED')
+    expect(screen.getByLabelText('Lifecycle ENDED')).toBeTruthy()
+  })
+
+  it('TEST 13 — Mobile-safe rendering', () => {
+    render(<PositionCard position={baseCard()} />)
+    const card = screen.getByTestId('position-card')
+    expect(card).toHaveAttribute('data-experience', 'r791d-4d')
+    const source = readFileSync(path.resolve(__dirname, '../PositionCard.tsx'), 'utf8')
+    expect(source).toMatch(/overflow-x:\s*hidden/)
+    expect(source).toMatch(/max-width:\s*100%/)
+    expect(source).toMatch(/flex-wrap:\s*wrap/)
+    expect(source).not.toMatch(/overflow-x:\s*scroll/)
   })
 })

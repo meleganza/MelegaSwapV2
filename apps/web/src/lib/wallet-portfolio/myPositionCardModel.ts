@@ -24,6 +24,8 @@ export interface PositionValueSummary {
   principalValueUsd: string | null
   claimableValueUsd: string | null
   pendingRewardsValueUsd: string | null
+  /** Canonical balance display string from PortfolioPosition.balance.formatted — null when unavailable. */
+  balanceFormatted: string | null
 }
 
 export interface PositionClaimableSummary {
@@ -229,6 +231,10 @@ export function projectMyPositionCard(position: PortfolioPosition): MyPositionCa
       principalValueUsd: position.principalValueUsd,
       claimableValueUsd: position.claimableValueUsd,
       pendingRewardsValueUsd: position.pendingRewardsValueUsd,
+      balanceFormatted:
+        position.balance?.formatted != null && String(position.balance.formatted).trim() !== ''
+          ? String(position.balance.formatted)
+          : null,
     },
     claimables: projectClaimables(position),
     lifecycle: {
