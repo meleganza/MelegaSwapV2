@@ -270,10 +270,26 @@ export const LiquidityBuildingPanel: React.FC = () => {
                 <br />
                 {LB_UX.activationRequiredBody}
                 <ReadinessRow style={{ marginTop: 10 }}>
-                  <ReadyPill data-testid="lb-ready-contracts">{LB_UX.readinessContracts}</ReadyPill>
-                  <ReadyPill data-testid="lb-ready-runtime">{LB_UX.readinessRuntime}</ReadyPill>
-                  <ReadyPill $pending data-testid="lb-ready-activation">
-                    {LB_UX.readinessActivation}
+                  <ReadyPill
+                    data-testid="lb-ready-contracts"
+                    data-state={card.readiness.contracts}
+                    $pending={card.readiness.contracts === 'Pending'}
+                  >
+                    {LB_UX.readinessContracts}: {card.readiness.contracts === 'Ready' ? LB_UX.readinessReady : LB_UX.readinessPending}
+                  </ReadyPill>
+                  <ReadyPill
+                    data-testid="lb-ready-runtime"
+                    data-state={card.readiness.runtime}
+                    $pending={card.readiness.runtime === 'Pending'}
+                  >
+                    {LB_UX.readinessRuntime}: {card.readiness.runtime === 'Ready' ? LB_UX.readinessReady : LB_UX.readinessPending}
+                  </ReadyPill>
+                  <ReadyPill
+                    $pending
+                    data-testid="lb-ready-activation"
+                    data-state={card.readiness.activation}
+                  >
+                    {LB_UX.readinessActivation}: {LB_UX.readinessPending}
                   </ReadyPill>
                 </ReadinessRow>
               </Notice>
@@ -293,7 +309,15 @@ export const LiquidityBuildingPanel: React.FC = () => {
                   Symbol {card.draft.tokenSymbol}
                   {card.selectedCurrency?.decimals != null ? ` · ${card.selectedCurrency.decimals} decimals` : ''}
                   {card.walletBalanceLabel ? ` · Wallet ${card.walletBalanceLabel}` : ''}
-                  {' · Pools & quote assets detected on Melega when available'}
+                </Hint>
+              ) : null}
+              {card.draft.tokenSymbol ? (
+                <Hint data-testid="lb-pair-detection">
+                  {card.pairDetection.loading
+                    ? LB_UX.pairLoading
+                    : card.pairDetection.available
+                      ? `${LB_UX.pairDetected} · ${card.pairDetection.quoteSymbol} · reserves ${card.pairDetection.reserveProject ?? '—'} / ${card.pairDetection.reserveQuote ?? '—'}`
+                      : LB_UX.pairNotDetected}
                 </Hint>
               ) : null}
             </Field>
@@ -398,7 +422,13 @@ export const LiquidityBuildingPanel: React.FC = () => {
               </ReviewRow>
               <ReviewRow>
                 <span>Liquidity Pair</span>
-                <span>Detected on Melega when available</span>
+                <span data-testid="lb-review-pair">
+                  {card.pairDetection.available
+                    ? `${card.draft.tokenSymbol}/${card.pairDetection.quoteSymbol}`
+                    : card.pairDetection.loading
+                      ? LB_UX.pairLoading
+                      : LB_UX.pairNotDetected}
+                </span>
               </ReviewRow>
               <ReviewRow>
                 <span>LP Ownership</span>
@@ -462,10 +492,13 @@ export const LiquidityBuildingPanel: React.FC = () => {
           <summary style={{ cursor: 'pointer', fontSize: 12, fontWeight: 700, color: liquidityStudioColors.muted }}>
             {LB_UX.technicalTitle}
           </summary>
-          <Notice style={{ marginTop: 8 }}>
-            Program address: Unavailable until deployed
+          <Notice style={{ marginTop: 8 }} data-testid="lb-technical-body">
+            Program address: {card.programSource === 'ON_CHAIN' ? 'On-chain' : 'Unavailable until deployed'}
             <br />
-            Pair: Unavailable until detected
+            Pair: {card.pairDetection.pairAddress ?? 'Unavailable until detected'}
+            <br />
+            Source: {card.programSource}
+            {card.programReason ? ` (${card.programReason})` : ''}
             <br />
             Execution history: Real receipts only
           </Notice>

@@ -3,9 +3,7 @@ import { useAccount, useNetwork } from 'wagmi'
 import { ChainId, Currency } from '@pancakeswap/sdk'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import {
-  BLOCKED_ACTIVATION_GATES,
   EMPTY_SETUP_DRAFT,
-  type ActivationGateSummary,
   type EpochSeconds,
   type ProgramStatus,
   type SetupDraft,
@@ -23,43 +21,26 @@ import {
   type ProgramMetrics,
   availableManageActions,
 } from './uxCopy'
-
-type HealthPayload = {
-  status?: string
-  blockers?: string[]
-  reasons?: string[]
-  ok?: boolean
-  ready?: boolean
-}
-
-function gatesFromHealth(payload: HealthPayload | null): ActivationGateSummary {
-  if (!payload) return { ...BLOCKED_ACTIVATION_GATES }
-  const blockers = [...(payload.blockers || []), ...(payload.reasons || [])]
-  const runtimeReady = payload.status === 'READY' && payload.ready === true
-  const deploymentInputsValid = !blockers.some((b) => String(b).includes('DEPLOYMENT_INPUTS'))
-  return {
-    activationAuthorized: false,
-    mainnetCycleAuthorized: false,
-    contractsDeployed: false,
-    deploymentInputsValid,
-    runtimeReady,
-    blockers: blockers.length ? blockers.map(String) : [...BLOCKED_ACTIVATION_GATES.blockers],
-  }
-}
+import { useActivationReadiness } from './useActivationReadiness'
+import { useMelegaPairDetection, type MelegaPairDetection } from './useMelegaPairDetection'
+import { useProgramReadModel } from './useProgramReadModel'
 
 export type LiquidityBuildingCardState = {
   status: ProgramStatus
   phase: LbUxPhase
   draft: SetupDraft
-  gates: ActivationGateSummary
   activationPending: boolean
   walletConnected: boolean
   correctChain: boolean
   account: string | null
   selectedCurrency: Currency | null
   walletBalanceLabel: string | null
+  pairDetection: MelegaPairDetection
+  readiness: ReturnType<typeof useActivationReadiness>
   metrics: ProgramMetrics
   activity: LbActivityItem[]
+  programSource: 'ON_CHAIN' | 'UNAVAILABLE'
+  programReason: string | null
   manageActions: ManageAction[]
   technicalOpen: boolean
   mutateGate: ReturnType<typeof canSubmitMutatingAction>
@@ -90,42 +71,55 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   const [status, setStatus] = useState<ProgramStatus>('NOT_ACTIVE')
   const [phase, setPhase] = useState<LbUxPhase>('entry')
   const [draft, setDraft] = useState<SetupDraft>(EMPTY_SETUP_DRAFT)
-  const [gates, setGates] = useState<ActivationGateSummary>({ ...BLOCKED_ACTIVATION_GATES })
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [technicalOpen, setTechnicalOpen] = useState(false)
-  const [metrics] = useState<ProgramMetrics>(EMPTY_PROGRAM_METRICS)
-  const [activity] = useState<LbActivityItem[]>([])
+
+  const readiness = useActivationReadiness()
+  const pairDetection = useMelegaPairDetection(selectedCurrency)
+  const programRead = useProgramReadModel({
+    owner: address ?? null,
+    projectTokenAddress: draft.tokenAddress,
+  })
 
   const balance = useCurrencyBalance(address ?? undefined, selectedCurrency ?? undefined)
   const walletConnected = Boolean(address)
   const correctChain = chain?.id === ChainId.BSC
-  const activationPending = !gates.activationAuthorized
+  const activationPending = !readiness.gates.activationAuthorized
 
+  /** When on-chain program exists, surface active/manage phases from live lifecycle. */
   useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      try {
-        const res = await fetch('/api/liquidity-building/health', { cache: 'no-store' })
-        const json = (await res.json()) as HealthPayload
-        if (!cancelled) setGates(gatesFromHealth(json))
-      } catch {
-        if (!cancelled) setGates({ ...BLOCKED_ACTIVATION_GATES, blockers: ['RUNTIME_HEALTH_UNAVAILABLE'] })
-      }
-    })()
-    return () => {
-      cancelled = true
+    const live = programRead.snapshot.status
+    if (!live || programRead.source !== 'ON_CHAIN') return
+    if (['ACTIVE', 'PAUSED', 'SAFETY_PAUSED', 'BUDGET_DEPLETED', 'STOPPED'].includes(live)) {
+      setPhase((p) => (p === 'manage' ? p : 'active'))
+      setStatus(live)
+    } else if (live === 'READY' || live === 'AWAITING_DEPOSIT') {
+      setPhase((p) => (p === 'entry' ? 'review' : p))
+      setStatus(live)
     }
-  }, [])
+  }, [programRead.snapshot.status, programRead.source])
 
   const mutateGate = useMemo(
-    () => canSubmitMutatingAction({ walletConnected, correctChain, gates }),
-    [walletConnected, correctChain, gates],
+    () =>
+      canSubmitMutatingAction({
+        walletConnected,
+        correctChain,
+        gates: readiness.gates,
+      }),
+    [walletConnected, correctChain, readiness.gates],
   )
 
   const draftReady = setupDraftReadyForReview(draft)
-  const manageActions = availableManageActions(status)
+
+  /** On-chain status wins when program is live; else local UX navigation status. */
+  const effectiveStatus: ProgramStatus = programRead.snapshot.status ?? status
+  const manageActions = availableManageActions(effectiveStatus)
   const decisionFrequencyLabel =
     DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? 'Every 5 minutes'
+
+  const metrics: ProgramMetrics =
+    programRead.source === 'ON_CHAIN' ? programRead.snapshot.metrics : EMPTY_PROGRAM_METRICS
+  const activity: LbActivityItem[] = programRead.source === 'ON_CHAIN' ? programRead.activity : []
 
   const walletBalanceLabel = useMemo(() => {
     if (!selectedCurrency || !walletConnected || !balance) return null
@@ -141,18 +135,21 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   }, [])
 
   return {
-    status,
+    status: effectiveStatus,
     phase,
     draft,
-    gates,
     activationPending,
     walletConnected,
     correctChain,
     account: address ?? null,
     selectedCurrency,
     walletBalanceLabel,
+    pairDetection,
+    readiness,
     metrics,
     activity,
+    programSource: programRead.source,
+    programReason: programRead.reason,
     manageActions,
     technicalOpen,
     mutateGate,
@@ -210,7 +207,8 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
       setPhase('active')
     },
     openManage: () => setPhase('manage'),
-    closeManage: () => setPhase(['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED'].includes(status) ? 'active' : 'entry'),
+    closeManage: () =>
+      setPhase(['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED'].includes(effectiveStatus) ? 'active' : 'entry'),
     toggleTechnical: () => setTechnicalOpen((v) => !v),
     reset,
   }

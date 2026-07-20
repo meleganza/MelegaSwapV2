@@ -29,8 +29,8 @@ describe('LB016 Liquidity Building UX freeze', () => {
   it('blocked state uses Activation Pending — not infra jargon', () => {
     expect(LB_UX.activationPendingTitle).toBe('Liquidity Building Ready')
     expect(LB_UX.activationPendingBadge).toBe('Activation Pending')
-    expect(LB_UX.readinessContracts).toBe('Contracts Ready')
-    expect(LB_UX.readinessRuntime).toBe('Runtime Ready')
+    expect(LB_UX.readinessContracts).toBe('Contracts')
+    expect(LB_UX.readinessRuntime).toBe('Runtime')
     expect(LB_UX.activationPendingBody).not.toMatch(/KMS|Treasury|BC003S/i)
     const panel = readFileSync(path.join(__dirname, '../../components/LiquidityBuildingPanel.tsx'), 'utf8')
     expect(panel).toMatch(/lb-blocked-banner/)
