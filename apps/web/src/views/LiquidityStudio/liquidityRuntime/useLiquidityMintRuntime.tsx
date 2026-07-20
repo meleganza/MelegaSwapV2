@@ -48,8 +48,14 @@ import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gra
 import { buildLiquidityCanonicalOwnership } from 'lib/liquidity-runtime/canonicalOwnership'
 import { routeLiquidityInstruction } from 'lib/routing-layer/facade'
 import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
+import {
+  LIQUIDITY_STUDIO_VIEW_BY_MODE,
+  liquidityStudioModeFromView,
+  type LiquidityStudioMode,
+} from './liquidityStudioView'
 
-export type LiquidityStudioMode = 'Add Liquidity' | 'Remove Liquidity' | 'My Positions' | 'Simulation'
+export type { LiquidityStudioMode }
+export { LIQUIDITY_STUDIO_VIEW_BY_MODE, liquidityStudioModeFromView }
 
 export type LiquidityRuntimePhase =
   | 'idle'
@@ -149,7 +155,8 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
 
-  const [mode, setModeState] = useState<LiquidityStudioMode>('My Positions')
+  const initialModeFromView = liquidityStudioModeFromView(router.query.view) ?? 'My Positions'
+  const [mode, setModeState] = useState<LiquidityStudioMode>(initialModeFromView)
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
@@ -161,10 +168,14 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
 
   const isRemoveMode = mode === 'Remove Liquidity'
   const isPositionsMode = mode === 'My Positions'
+  const isBuildingMode = mode === 'Liquidity Building'
 
   // Remove Liquidity must not force BNB/MARCO while wallet LP ownership is the source of truth.
-  const resolvedIdA = currencyIdA ?? (isRemoveMode || isPositionsMode ? undefined : native.symbol)
-  const resolvedIdB = currencyIdB ?? (isRemoveMode || isPositionsMode ? undefined : defaultB)
+  // Liquidity Building uses its own token picker — do not force default mint pair.
+  const resolvedIdA =
+    currencyIdA ?? (isRemoveMode || isPositionsMode || isBuildingMode ? undefined : native.symbol)
+  const resolvedIdB =
+    currencyIdB ?? (isRemoveMode || isPositionsMode || isBuildingMode ? undefined : defaultB)
 
   const currencyA = useCurrency(resolvedIdA)
   const currencyB = useCurrency(resolvedIdB)
@@ -174,12 +185,28 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const { onUserInput: onBurnInput } = useBurnActionHandlers()
   const { typedValue: burnTypedValue } = useBurnState()
 
+  // LB024 — deep-link / refresh survival for Liquidity Building and other studio views.
+  useEffect(() => {
+    const fromQuery = liquidityStudioModeFromView(router.query.view)
+    if (fromQuery && fromQuery !== mode) {
+      setModeState(fromQuery)
+      if (fromQuery === 'Remove Liquidity') onBurnInput('50')
+    }
+    // Only react to query changes (refresh / shared URL), not local mode loops.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: sync from URL
+  }, [router.query.view])
+
   const setMode = useCallback(
     (next: LiquidityStudioMode) => {
       setModeState(next)
       if (next === 'Remove Liquidity') onBurnInput('50')
+      const view = LIQUIDITY_STUDIO_VIEW_BY_MODE[next]
+      const current = Array.isArray(router.query.view) ? router.query.view[0] : router.query.view
+      if (current === view) return
+      const nextQuery = { ...router.query, view }
+      router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true }).catch(() => undefined)
     },
-    [onBurnInput],
+    [onBurnInput, router],
   )
 
   const mintInfo = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)

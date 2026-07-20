@@ -1,0 +1,52 @@
+{
+  "mission": "LB024",
+  "base": "http://localhost:3490",
+  "verifiedAt": "2026-07-20T22:42:28.137Z",
+  "checks": [
+    {
+      "id": "add-liquidity-title",
+      "ok": true,
+      "addTitle": "Add Liquidity",
+      "builderLabelCount": 0,
+      "tabAdd": 1,
+      "screenshot": "/Users/marcomelega/Projects/MelegaSwapV2/apps/web/docs/runtime/lb024-screenshots/01-add-liquidity-1440.png"
+    },
+    {
+      "id": "liquidity-building-mounted",
+      "ok": true,
+      "panel": 1,
+      "setupCta": "Set Up Liquidity Building",
+      "entryLead": "Dedicate part of your token reserve. Melega automatically converts eligible market activity into protocol-owned liquidity while you retain ownership of the resulting LP position.",
+      "pending": 2,
+      "noBuilderUnderBuilding": 0,
+      "screenshot": "/Users/marcomelega/Projects/MelegaSwapV2/apps/web/docs/runtime/lb024-screenshots/02-liquidity-building-1440.png",
+      "overflow1440": false
+    },
+    {
+      "id": "setup-accessible",
+      "ok": true,
+      "setupView": 1,
+      "screenshot": "/Users/marcomelega/Projects/MelegaSwapV2/apps/web/docs/runtime/lb024-screenshots/03-setup-1440.png"
+    },
+    {
+      "id": "responsive",
+      "ok": true,
+      "tab768": 1,
+      "tab390": 1,
+      "overflow768": false,
+      "overflow390": false,
+      "screenshots": [
+        "/Users/marcomelega/Projects/MelegaSwapV2/apps/web/docs/runtime/lb024-screenshots/04-building-768.png",
+        "/Users/marcomelega/Projects/MelegaSwapV2/apps/web/docs/runtime/lb024-screenshots/05-building-390.png"
+      ]
+    },
+    {
+      "id": "url-refresh",
+      "ok": true,
+      "afterRefresh": 1,
+      "url": "http://localhost:3490/liquidity-studio/?view=building",
+      "screenshot": "/Users/marcomelega/Projects/MelegaSwapV2/apps/web/docs/runtime/lb024-screenshots/06-refresh-building-1440.png"
+    }
+  ],
+  "verdict": "LB024_LIVE_VERIFIED"
+}

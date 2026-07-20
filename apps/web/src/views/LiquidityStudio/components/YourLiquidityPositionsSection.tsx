@@ -172,14 +172,21 @@ export function YourLiquidityPositionsSection() {
           data-testid="ls-explore-liquidity"
           onClick={() => setMode('Add Liquidity')}
         >
-          Explore Liquidity
+          Add Liquidity
         </ExploreButton>
         <ExploreButton
           type="button"
           data-testid="ls-create-position"
           onClick={() => setMode('Add Liquidity')}
         >
-          Create New Position
+          Create Liquidity Position
+        </ExploreButton>
+        <ExploreButton
+          type="button"
+          data-testid="ls-open-liquidity-building"
+          onClick={() => setMode('Liquidity Building')}
+        >
+          Liquidity Building
         </ExploreButton>
       </ExploreRow>
     </Section>

@@ -1,7 +1,8 @@
 /**
- * R791E.8 — Liquidity Studio UX copy consistency.
+ * R791E.8 / LB024 — Liquidity Studio UX copy consistency.
  *
- * Presentation labels only. Runtime modes (My Positions / Add Liquidity / …) unchanged.
+ * Presentation labels: Add Liquidity (manual) vs Liquidity Building (automated).
+ * No "Liquidity Builder" / "LP Builder" for standard two-sided provision.
  */
 
 import React from 'react'
@@ -53,7 +54,8 @@ describe('R791E.8 liquidityTerminologyAlignment', () => {
     expect(SECTION_SRC).not.toMatch(/>Liquidity Builder</)
     expect(BUILDER_SRC).not.toMatch(/'Manage Position'/)
     expect(BUILDER_SRC).toMatch(/'Manage Liquidity'/)
-    expect(BUILDER_SRC).toMatch(/'Explore Liquidity'/)
+    expect(BUILDER_SRC).toMatch(/'Add Liquidity'/)
+    expect(BUILDER_SRC).not.toMatch(/'Explore Liquidity'/)
   })
 
   it('TEST 2: Your Liquidity Positions visible', () => {
@@ -72,7 +74,7 @@ describe('R791E.8 liquidityTerminologyAlignment', () => {
     expect(BUILDER_SRC).toMatch(/Your Liquidity Positions/)
   })
 
-  it('TEST 3: Explore Liquidity visible', () => {
+  it('TEST 3: Add Liquidity + Liquidity Building visible', () => {
     mockRuntime = {
       mode: 'My Positions',
       setMode: vi.fn(),
@@ -83,10 +85,11 @@ describe('R791E.8 liquidityTerminologyAlignment', () => {
       setSelectedPositionId: vi.fn(),
     }
     render(<LiquidityStudioPageHeader />)
-    expect(screen.getByTestId('ls-tab-explore')).toHaveTextContent('Explore Liquidity')
+    expect(screen.getByTestId('ls-tab-add-liquidity')).toHaveTextContent('Add Liquidity')
+    expect(screen.getByTestId('ls-tab-liquidity-building')).toHaveTextContent('Liquidity Building')
     render(<YourLiquidityPositionsSection />)
-    expect(screen.getByTestId('ls-explore-liquidity')).toHaveTextContent('Explore Liquidity')
-    expect(screen.getByTestId('ls-create-position')).toHaveTextContent('Create New Position')
+    expect(screen.getByTestId('ls-explore-liquidity')).toHaveTextContent('Add Liquidity')
+    expect(screen.getByTestId('ls-create-position')).toHaveTextContent('Create Liquidity Position')
   })
 
   it('TEST 4: Disconnected copy', () => {
@@ -128,12 +131,14 @@ describe('R791E.8 liquidityTerminologyAlignment', () => {
     )
   })
 
-  it('TEST 6: Runtime identifiers unchanged', () => {
+  it('TEST 6: Runtime identifiers include Liquidity Building', () => {
     expect(HEADER_SRC).toMatch(/mode:\s*'My Positions'/)
     expect(HEADER_SRC).toMatch(/mode:\s*'Add Liquidity'/)
     expect(HEADER_SRC).toMatch(/mode:\s*'Remove Liquidity'/)
+    expect(HEADER_SRC).toMatch(/mode:\s*'Liquidity Building'/)
     expect(HEADER_SRC).toMatch(/mode:\s*'Simulation'/)
     expect(SECTION_SRC).toMatch(/setMode\('Add Liquidity'\)/)
+    expect(SECTION_SRC).toMatch(/setMode\('Liquidity Building'\)/)
     expect(BUILDER_SRC).toMatch(/mode === 'My Positions'/)
     expect(BUILDER_SRC).toMatch(/mode === 'Remove Liquidity'/)
     expect(BUILDER_SRC).toMatch(/mode === 'Simulation'/)

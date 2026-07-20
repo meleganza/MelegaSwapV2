@@ -9,6 +9,7 @@ import {
 } from 'design-system/melega'
 import { liquidityStudioColors } from '../liquidityStudioTokens'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
+import type { LiquidityStudioMode } from '../liquidityRuntime/liquidityStudioView'
 
 const TabRow = styled.div`
   display: flex;
@@ -17,6 +18,8 @@ const TabRow = styled.div`
   border-bottom: 1px solid ${liquidityStudioColors.rowBorder};
   min-width: 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 `
 
 const Tab = styled.button<{ $active?: boolean }>`
@@ -29,6 +32,7 @@ const Tab = styled.button<{ $active?: boolean }>`
   color: ${({ $active }) => ($active ? liquidityStudioColors.text : liquidityStudioColors.muted)};
   cursor: pointer;
   white-space: nowrap;
+  flex: 0 0 auto;
 
   &::after {
     content: '';
@@ -42,11 +46,12 @@ const Tab = styled.button<{ $active?: boolean }>`
   }
 `
 
-const TABS: { mode: 'My Positions' | 'Add Liquidity' | 'Remove Liquidity' | 'Simulation'; label: string }[] = [
-  { mode: 'My Positions', label: 'My Positions' },
-  { mode: 'Add Liquidity', label: 'Explore Liquidity' },
-  { mode: 'Remove Liquidity', label: 'Remove Liquidity' },
-  { mode: 'Simulation', label: 'Simulation' },
+const TABS: { mode: LiquidityStudioMode; label: string; testId: string }[] = [
+  { mode: 'My Positions', label: 'My Positions', testId: 'ls-tab-my-positions' },
+  { mode: 'Add Liquidity', label: 'Add Liquidity', testId: 'ls-tab-add-liquidity' },
+  { mode: 'Remove Liquidity', label: 'Remove Liquidity', testId: 'ls-tab-remove-liquidity' },
+  { mode: 'Liquidity Building', label: 'Liquidity Building', testId: 'ls-tab-liquidity-building' },
+  { mode: 'Simulation', label: 'Simulation', testId: 'ls-tab-simulation' },
 ]
 
 export const LiquidityStudioPageHeader: React.FC = () => {
@@ -57,7 +62,7 @@ export const LiquidityStudioPageHeader: React.FC = () => {
       data-studio-header="liquidity"
       data-ls-wallet-first-header="true"
       title={STUDIO_PAGE_TITLES.liquidity}
-      subtitle="Your liquidity positions first — then explore and create new positions."
+      subtitle="Your liquidity positions first — then add liquidity or set up Liquidity Building."
       badge={
         <MelegaStudioLiveBadge>
           <MelegaStudioLiveDot aria-hidden />
@@ -65,13 +70,15 @@ export const LiquidityStudioPageHeader: React.FC = () => {
         </MelegaStudioLiveBadge>
       }
       footer={
-        <TabRow data-testid="ls-mode-tabs">
+        <TabRow data-testid="ls-mode-tabs" role="tablist" aria-label="Liquidity Studio modes">
           {TABS.map((tab) => (
             <Tab
               key={tab.mode}
               type="button"
+              role="tab"
+              aria-selected={mode === tab.mode}
               $active={mode === tab.mode}
-              data-testid={`ls-tab-${tab.mode === 'Add Liquidity' ? 'explore' : tab.mode.toLowerCase().replace(/\s+/g, '-')}`}
+              data-testid={tab.testId}
               onClick={() => setMode(tab.mode)}
             >
               {tab.label}

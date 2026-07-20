@@ -4,10 +4,11 @@ import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import LiquidityStudioGlobalStyle from './LiquidityStudioGlobalStyle'
-import { LiquidityRuntimeProvider } from './liquidityRuntime/LiquidityRuntimeContext'
+import { LiquidityRuntimeProvider, useLiquidityRuntime } from './liquidityRuntime/LiquidityRuntimeContext'
 import LiquidityStudioPageHeader from './components/LiquidityStudioPageHeader'
 import YourLiquidityPositionsSection from './components/YourLiquidityPositionsSection'
 import LiquidityBuilderPanel from './components/LiquidityBuilderPanel'
+import LiquidityBuildingPanel from './components/LiquidityBuildingPanel'
 import PositionPreviewPanel from './components/PositionPreviewPanel'
 import MarketIntelligencePanel from './components/MarketIntelligencePanel'
 import AILiquidityAdvisorPanel from './components/AILiquidityAdvisorPanel'
@@ -86,6 +87,21 @@ const LayoutGrid = styled.div`
   }
 `
 
+const BuildingLayout = styled.div`
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+  width: 100%;
+
+  @media (min-width: 1200px) {
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  }
+
+  @media (max-width: 1199px) {
+    grid-template-columns: 1fr;
+  }
+`
+
 const AreaBuilder = styled.div`
   grid-area: builder;
   min-width: 0;
@@ -96,6 +112,18 @@ const AreaBuilder = styled.div`
   & > * {
     flex: 1;
     width: 100%;
+  }
+`
+
+const AreaBuildingPrimary = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  & > * {
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
   }
 `
 
@@ -177,21 +205,24 @@ const AreaTopPools = styled.div`
   }
 `
 
-const AreaPools = styled.div`
-  @media (max-width: 767px) {
-    grid-area: pools;
-  }
-`
+const LiquidityStudioBody: React.FC = () => {
+  const { mode } = useLiquidityRuntime()
+  const isBuilding = mode === 'Liquidity Building'
 
-export const LiquidityStudioScreen: React.FC = () => (
-  <Root data-liquidity-studio-screen="true" data-r200-premium="true" data-ls-wallet-first="true">
-    <PageMeta />
-    <LiquidityStudioGlobalStyle />
-    <TrendingRibbon />
-    <LiquidityRuntimeProvider>
-      <Content>
-        <LiquidityStudioPageHeader />
-        <YourLiquidityPositionsSection />
+  return (
+    <Content>
+      <LiquidityStudioPageHeader />
+      {!isBuilding ? <YourLiquidityPositionsSection /> : null}
+      {isBuilding ? (
+        <BuildingLayout data-testid="ls-liquidity-building-layout" data-ls-building-view="true">
+          <AreaBuildingPrimary>
+            <LiquidityBuildingPanel />
+          </AreaBuildingPrimary>
+          <AreaMarket>
+            <MarketIntelligencePanel />
+          </AreaMarket>
+        </BuildingLayout>
+      ) : (
         <LayoutGrid data-ls-explore-grid="true">
           <AreaBuilder>
             <LiquidityBuilderPanel />
@@ -217,7 +248,18 @@ export const LiquidityStudioScreen: React.FC = () => (
             <LiquidityLpInfoPanel />
           </AreaLpInfo>
         </LayoutGrid>
-      </Content>
+      )}
+    </Content>
+  )
+}
+
+export const LiquidityStudioScreen: React.FC = () => (
+  <Root data-liquidity-studio-screen="true" data-r200-premium="true" data-ls-wallet-first="true">
+    <PageMeta />
+    <LiquidityStudioGlobalStyle />
+    <TrendingRibbon />
+    <LiquidityRuntimeProvider>
+      <LiquidityStudioBody />
     </LiquidityRuntimeProvider>
   </Root>
 )

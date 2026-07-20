@@ -285,7 +285,7 @@ export const LiquidityBuilderPanel: React.FC = () => {
       $height={liquidityStudioLayout.builderHeight}
     >
       <LsPanelTitle data-testid="ls-builder-title">
-        {isPositions ? 'Manage Liquidity' : isRemove ? 'Remove Liquidity' : 'Explore Liquidity'}
+        {isPositions ? 'Manage Liquidity' : isRemove ? 'Remove Liquidity' : isSimulation ? 'Simulation' : 'Add Liquidity'}
       </LsPanelTitle>
       {isSimulation ? (
         <StatusLine style={{ marginBottom: 12 }}>
