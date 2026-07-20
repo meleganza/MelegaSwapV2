@@ -10,26 +10,30 @@ import {
   CcSpecInfrastructureStatus,
   CcSpecMachineSummary,
   CcSpecNotifications,
-  CcSpecPortfolioOverview,
-  CcSpecRecentActivity,
   CcSpecSettlement,
-  CcSpecTodaysPriorities,
 } from './components/canonical/CommandCenterCanonicalSections'
-import { MyPositionsSection } from './components/MyPositionsSection'
+import { PortfolioDashboard } from './components/PortfolioDashboard'
 
-function CcSpecMyPositions() {
+function CcSpecPortfolioDashboard() {
   const {
+    account,
+    portfolio,
     myPositionsView,
     myPositionsGroups,
     myPositionsSummary,
     myPositionsState,
   } = useCommandRuntime()
+
   return (
-    <MyPositionsSection
-      myPositionsView={myPositionsView}
-      myPositionsGroups={myPositionsGroups}
-      myPositionsSummary={myPositionsSummary}
-      myPositionsState={myPositionsState}
+    <PortfolioDashboard
+      portfolio={portfolio}
+      walletConnected={Boolean(account)}
+      myPositions={{
+        myPositionsView,
+        myPositionsGroups,
+        myPositionsSummary,
+        myPositionsState,
+      }}
     />
   )
 }
@@ -71,19 +75,20 @@ export interface CommandCenterScreenProps {
   runtimeSafeMode?: boolean
 }
 
+/**
+ * Command Center shell — portfolio dashboard IA (R791D.4A):
+ * Summary → Priorities → My Positions → Claimables → Quick Actions → Activity
+ */
 export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = () => (
   <CommandRuntimeProvider>
-    <Root data-command-center-screen data-cc-r111a-canonical>
+    <Root data-command-center-screen data-cc-r111a-canonical data-cc-r791d-4a>
       <PageMeta />
       <CommandCenterGlobalStyle />
       <Shell>
         <CcSpecHeader />
         <CcSpecDailyBriefing />
-        <CcSpecPortfolioOverview />
-        <CcSpecMyPositions />
-        <CcSpecTodaysPriorities />
+        <CcSpecPortfolioDashboard />
         <CcSpecInfrastructureStatus />
-        <CcSpecRecentActivity />
         <CcSpecNotifications />
         <CcSpecSettlement />
         <CcSpecMachineSummary />
