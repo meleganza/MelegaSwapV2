@@ -16,6 +16,7 @@ import type {
   PortfolioSummary,
   WalletPortfolio,
 } from 'lib/wallet-portfolio/contracts'
+import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
 import {
   CC_FONT_BODY,
   commandCenterColors,
@@ -27,6 +28,10 @@ import {
   MyPositionsSection,
   type MyPositionsSectionProps,
 } from './MyPositionsSection'
+import {
+  PORTFOLIO_VIEW_LABEL,
+  type PortfolioViewSelectorModel,
+} from '../commandCenterRuntime/commandCenterPortfolioCutover'
 
 /** Action types allowed in Today's Priorities — must already exist on the position. */
 const PRIORITY_ACTION_TYPES = new Set([
@@ -41,6 +46,8 @@ export interface PortfolioDashboardProps {
   portfolio: WalletPortfolio
   myPositions: MyPositionsSectionProps
   walletConnected: boolean
+  viewSelector?: PortfolioViewSelectorModel
+  onSelectView?: (view: PortfolioViewType) => void
 }
 
 const Section = styled.section`
@@ -135,6 +142,46 @@ const EmptyState = styled.div`
   color: ${commandCenterColors.body};
   font-family: ${CC_FONT_BODY};
   font-size: 14px;
+`
+
+const FilterShell = styled.div`
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 16px;
+`
+
+const FilterPrompt = styled.div`
+  font-family: ${CC_FONT_BODY};
+  font-size: 12px;
+  color: ${commandCenterColors.muted};
+  margin-bottom: 10px;
+`
+
+const ChipRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+`
+
+const ViewChip = styled.button<{ $active?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid
+    ${({ $active }) => ($active ? commandCenterColors.gold : commandCenterColors.cardBorder)};
+  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.12)' : commandCenterColors.cardBg)};
+  color: ${commandCenterColors.white};
+  font-family: ${CC_FONT_BODY};
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 12px;
+`
+
+const CountMeta = styled.span`
+  font-weight: 500;
+  color: ${commandCenterColors.muted};
+  margin-left: 4px;
 `
 
 const Fallback = styled.div`
@@ -469,9 +516,60 @@ export function PortfolioActivitySection({
 
 /**
  * Canonical portfolio dashboard order:
- * Summary → Priorities → My Positions → Claimables → Quick Actions → Activity
+ * Summary → Priorities → View Filter → My Positions → Claimables → Quick Actions → Activity
  */
-export function PortfolioDashboard({ portfolio, myPositions, walletConnected }: PortfolioDashboardProps) {
+export function PortfolioViewSelector({
+  model,
+  onSelectView,
+}: {
+  model: PortfolioViewSelectorModel
+  onSelectView?: (view: PortfolioViewType) => void
+}) {
+  return (
+    <FilterShell data-testid="portfolio-view-selector" data-current-view={model.currentView}>
+      <FilterPrompt>How do I want to see my wallet?</FilterPrompt>
+      <ChipRow data-testid="portfolio-view-primary">
+        {model.primaryViews.map((view) => (
+          <ViewChip
+            key={view}
+            type="button"
+            $active={model.currentView === view}
+            data-testid={`portfolio-view-${view}`}
+            data-active={model.currentView === view ? 'true' : 'false'}
+            onClick={() => onSelectView?.(view)}
+          >
+            {PORTFOLIO_VIEW_LABEL[view]}
+            <CountMeta>
+              {view === model.currentView ? model.count : ''}
+            </CountMeta>
+          </ViewChip>
+        ))}
+      </ChipRow>
+      <ChipRow data-testid="portfolio-view-secondary" style={{ marginTop: 8 }}>
+        {model.secondaryViews.map((view) => (
+          <ViewChip
+            key={view}
+            type="button"
+            $active={model.currentView === view}
+            data-testid={`portfolio-view-${view}`}
+            data-active={model.currentView === view ? 'true' : 'false'}
+            onClick={() => onSelectView?.(view)}
+          >
+            {PORTFOLIO_VIEW_LABEL[view]}
+          </ViewChip>
+        ))}
+      </ChipRow>
+    </FilterShell>
+  )
+}
+
+export function PortfolioDashboard({
+  portfolio,
+  myPositions,
+  walletConnected,
+  viewSelector,
+  onSelectView,
+}: PortfolioDashboardProps) {
   const emptyPortfolio =
     walletConnected &&
     Array.isArray(portfolio.positions) &&
@@ -498,8 +596,23 @@ export function PortfolioDashboard({ portfolio, myPositions, walletConnected }: 
 
       <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />
 
+      <DashboardSectionBoundary section="portfolio-view-filter">
+        {viewSelector ? (
+          <PortfolioViewSelector model={viewSelector} onSelectView={onSelectView} />
+        ) : null}
+      </DashboardSectionBoundary>
+
       <DashboardSectionBoundary section="my-positions">
-        <MyPositionsSection {...myPositions} />
+        {walletConnected && viewSelector?.empty ? (
+          <Section data-testid="my-positions-section" data-state="EMPTY" data-view={viewSelector.currentView}>
+            <SectionHeading>My Positions</SectionHeading>
+            <EmptyState data-testid="portfolio-view-empty" data-view={viewSelector.currentView}>
+              {viewSelector.emptyMessage}
+            </EmptyState>
+          </Section>
+        ) : (
+          <MyPositionsSection {...myPositions} />
+        )}
       </DashboardSectionBoundary>
 
       <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />

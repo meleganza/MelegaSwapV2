@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
@@ -41,6 +41,8 @@ import {
   projectPoolView,
   resolveCommandCenterPortfolioViews,
 } from './commandCenterPortfolioCutover'
+import { buildPortfolioViewSelectorModel } from './commandCenterPortfolioCutover'
+import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
 import type { WalletPortfolioSectionStatus } from 'lib/wallet-portfolio/contracts'
 import {
   commandCenterIdentitySummary,
@@ -79,6 +81,10 @@ function runIsolated<T>(fallback: T, run: () => T): T {
 export function useCommandCenterOrchestrationRuntime() {
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
+  const [portfolioView, setPortfolioViewState] = useState<PortfolioViewType>('ALL')
+  const setPortfolioView = useCallback((view: PortfolioViewType) => {
+    setPortfolioViewState(view)
+  }, [])
   const allTransactions = useAllTransactions()
 
   const trade = useTradeSwapRuntime()
@@ -177,14 +183,24 @@ export function useCommandCenterOrchestrationRuntime() {
     [walletPortfolio],
   )
 
-  // My Positions experience — View Engine MY_POSITIONS only (no local ownership filter).
+  // My Positions experience — View Engine view selected by Command Center (default ALL).
   const myPositionsExperience = useMemo(
     () =>
       buildMyPositionsExperience({
         portfolio: walletPortfolio,
         walletConnected: Boolean(account),
+        view: portfolioView,
       }),
-    [walletPortfolio, account],
+    [walletPortfolio, account, portfolioView],
+  )
+
+  const portfolioViewSelector = useMemo(
+    () =>
+      buildPortfolioViewSelectorModel({
+        portfolio: walletPortfolio,
+        currentView: portfolioView,
+      }),
+    [walletPortfolio, portfolioView],
   )
 
   const liquidityRows = useMemo(
@@ -674,7 +690,11 @@ export function useCommandCenterOrchestrationRuntime() {
     portfolio: walletPortfolio,
     /** View Engine results — source of all portfolio filters. */
     portfolioViews,
-    /** My Positions experience (R791D.3E) — View Engine MY_POSITIONS + presentation prep. */
+    /** Global portfolio view selector (R791D.4B) — Command Center owns selection. */
+    portfolioView,
+    portfolioViewSelector,
+    setPortfolioView,
+    /** My Positions experience — filtered by selected PortfolioViewType via View Engine. */
     myPositionsView: myPositionsExperience.myPositionsView,
     myPositionsGroups: myPositionsExperience.myPositionsGroups,
     myPositionsSummary: myPositionsExperience.myPositionsSummary,

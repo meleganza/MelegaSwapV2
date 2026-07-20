@@ -676,16 +676,19 @@ function summarizeMyPositions(
 }
 
 /**
- * Build My Positions experience from WalletPortfolio via View Engine MY_POSITIONS.
+ * Build My Positions experience from WalletPortfolio via View Engine.
+ * Default view MY_POSITIONS; Command Center may pass another PortfolioViewType.
  * No local ownership filtering — View Engine owns that rule.
  */
 export function buildMyPositionsExperience(input: {
   portfolio: WalletPortfolio
   walletConnected: boolean
+  view?: PortfolioViewType
   resolveView?: ResolvePortfolioViewFn
 }): MyPositionsExperience {
   const resolveView = input.resolveView ?? resolvePortfolioView
-  const myPositionsView = resolveView(input.portfolio, 'MY_POSITIONS')
+  const view = input.view ?? 'MY_POSITIONS'
+  const myPositionsView = resolveView(input.portfolio, view)
 
   if (!input.walletConnected) {
     return {
@@ -712,5 +715,87 @@ export function buildMyPositionsExperience(input: {
     myPositionsGroups,
     myPositionsSummary,
     state: cards.length === 0 ? 'EMPTY' : 'READY',
+  }
+}
+/**
+ * Command Center Global Portfolio Filter model (R791D.4B).
+ *
+ * View Engine owns filtering. This model only packages selector presentation
+ * over resolvePortfolioView results — no local position predicates.
+ */
+
+/** Primary views — "How do I want to see my wallet?" */
+export const PRIMARY_PORTFOLIO_VIEWS = [
+  'ALL',
+  'MY_POSITIONS',
+  'NEEDS_ATTENTION',
+  'CLAIMABLE',
+  'HISTORICAL',
+] as const satisfies readonly PortfolioViewType[]
+
+/** Secondary product-perspective views (still portfolio views, not page nav). */
+export const SECONDARY_PORTFOLIO_VIEWS = ['LIQUIDITY', 'FARM', 'POOL'] as const satisfies readonly PortfolioViewType[]
+
+export const AVAILABLE_PORTFOLIO_VIEWS = [
+  ...PRIMARY_PORTFOLIO_VIEWS,
+  ...SECONDARY_PORTFOLIO_VIEWS,
+] as const satisfies readonly PortfolioViewType[]
+
+/** Canonical UI labels — only source of selector copy. */
+export const PORTFOLIO_VIEW_LABEL: Record<PortfolioViewType, string> = {
+  ALL: 'All',
+  MY_POSITIONS: 'My Positions',
+  ACTIVE: 'Active',
+  HISTORICAL: 'Historical',
+  CLAIMABLE: 'Claimable',
+  NEEDS_ATTENTION: 'Needs Attention',
+  LIQUIDITY: 'Liquidity',
+  FARM: 'Farm',
+  POOL: 'Pool',
+}
+
+/** Empty-state copy for each view — not owned by View Engine. */
+export const PORTFOLIO_VIEW_EMPTY_MESSAGE: Record<PortfolioViewType, string> = {
+  ALL: 'No positions found.',
+  MY_POSITIONS: 'No positions found.',
+  ACTIVE: 'No active positions.',
+  HISTORICAL: 'No historical positions.',
+  CLAIMABLE: 'No claimable rewards.',
+  NEEDS_ATTENTION: 'Nothing needs attention.',
+  LIQUIDITY: 'No liquidity positions.',
+  FARM: 'No farm positions.',
+  POOL: 'No pool positions.',
+}
+
+export interface PortfolioViewSelectorModel {
+  currentView: PortfolioViewType
+  availableViews: readonly PortfolioViewType[]
+  primaryViews: readonly PortfolioViewType[]
+  secondaryViews: readonly PortfolioViewType[]
+  viewResult: PortfolioViewResult
+  count: number
+  empty: boolean
+  label: string
+  emptyMessage: string
+}
+
+export function buildPortfolioViewSelectorModel(input: {
+  portfolio: WalletPortfolio
+  currentView: PortfolioViewType
+  resolveView?: typeof resolvePortfolioView
+}): PortfolioViewSelectorModel {
+  const resolveView = input.resolveView ?? resolvePortfolioView
+  const view = input.currentView
+  const viewResult = resolveView(input.portfolio, view)
+  return {
+    currentView: view,
+    availableViews: AVAILABLE_PORTFOLIO_VIEWS,
+    primaryViews: PRIMARY_PORTFOLIO_VIEWS,
+    secondaryViews: SECONDARY_PORTFOLIO_VIEWS,
+    viewResult,
+    count: viewResult.count,
+    empty: viewResult.empty,
+    label: PORTFOLIO_VIEW_LABEL[view],
+    emptyMessage: PORTFOLIO_VIEW_EMPTY_MESSAGE[view],
   }
 }

@@ -22,12 +22,16 @@ function CcSpecPortfolioDashboard() {
     myPositionsGroups,
     myPositionsSummary,
     myPositionsState,
+    portfolioViewSelector,
+    setPortfolioView,
   } = useCommandRuntime()
 
   return (
     <PortfolioDashboard
       portfolio={portfolio}
       walletConnected={Boolean(account)}
+      viewSelector={portfolioViewSelector}
+      onSelectView={setPortfolioView}
       myPositions={{
         myPositionsView,
         myPositionsGroups,
