@@ -261,14 +261,26 @@ export const LiquidityBuildingPanel: React.FC = () => {
           <>
             <Lead data-testid="lb-entry-lead">{LB_UX.entryLead}</Lead>
             {card.activationPending ? (
-              <Notice data-testid="lb-blocked-banner">
-                <strong style={{ color: liquidityStudioColors.text }}>{LB_UX.activationPendingTitle}</strong>
+              <Notice data-testid="lb-blocked-banner" data-lb-ui-mode={card.readiness.uiMode} data-lb-product-status={card.readiness.productStatus}>
+                <strong style={{ color: liquidityStudioColors.text }}>
+                  {card.readiness.uiMode === 'available'
+                    ? LB_UX.activationAvailableTitle
+                    : card.readiness.uiMode === 'blocked'
+                      ? LB_UX.activationBlockedTitle
+                      : LB_UX.activationPendingTitle}
+                </strong>
                 <br />
-                <span data-testid="lb-activation-pending-badge">{LB_UX.activationPendingBadge}</span>
+                <span data-testid="lb-activation-pending-badge">
+                  {card.readiness.uiMode === 'available' ? LB_UX.readinessReady : LB_UX.activationPendingBadge}
+                </span>
                 <br />
-                {LB_UX.activationPendingBody}
+                {card.readiness.uiMode === 'available'
+                  ? LB_UX.activationAvailableBody
+                  : card.readiness.uiMode === 'blocked'
+                    ? LB_UX.activationBlockedBody
+                    : LB_UX.activationWaitingBody}
                 <br />
-                {LB_UX.activationRequiredBody}
+                {card.readiness.uiMode === 'available' ? null : LB_UX.activationRequiredBody}
                 <ReadinessRow style={{ marginTop: 10 }}>
                   <ReadyPill
                     data-testid="lb-ready-contracts"
@@ -285,11 +297,12 @@ export const LiquidityBuildingPanel: React.FC = () => {
                     {LB_UX.readinessRuntime}: {card.readiness.runtime === 'Ready' ? LB_UX.readinessReady : LB_UX.readinessPending}
                   </ReadyPill>
                   <ReadyPill
-                    $pending
+                    $pending={card.readiness.activation === 'Pending'}
                     data-testid="lb-ready-activation"
                     data-state={card.readiness.activation}
                   >
-                    {LB_UX.readinessActivation}: {LB_UX.readinessPending}
+                    {LB_UX.readinessActivation}:{' '}
+                    {card.readiness.activation === 'Ready' ? LB_UX.readinessReady : LB_UX.readinessPending}
                   </ReadyPill>
                 </ReadinessRow>
               </Notice>

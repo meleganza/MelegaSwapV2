@@ -15,6 +15,13 @@ export const LB_UX = {
     'The system is fully prepared. Production activation requirements are being completed.',
   activationRequiredBody:
     'Liquidity Building is prepared but unavailable until production activation requirements are completed. No fake liquidity, executions, APY, or simulated activity.',
+  /** LB021 product status copy — no infrastructure terminology */
+  activationAvailableTitle: 'Liquidity Building Ready',
+  activationAvailableBody: 'Liquidity Building available.',
+  activationBlockedTitle: 'Liquidity Building Ready',
+  activationBlockedBadge: 'Activation Pending',
+  activationBlockedBody: 'Activation requirements are incomplete.',
+  activationWaitingBody: 'Liquidity Building is prepared and waiting for production activation.',
   readinessContracts: 'Contracts',
   readinessRuntime: 'Runtime',
   readinessActivation: 'Activation',
