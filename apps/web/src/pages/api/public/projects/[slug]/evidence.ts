@@ -1,15 +1,9 @@
 import type { NextApiHandler } from 'next'
-import stringify from 'fast-json-stable-stringify'
-import {
-  loadProjectEvidencePack,
-  normalizeProjectSlugInput,
-  toEvidenceSummaryForProjectApi,
-  toPublicProjectJson,
-} from 'registry/projects/identity'
+import { loadProjectEvidencePack, normalizeProjectSlugInput, stableEvidencePayload } from 'registry/projects/identity'
 
 /**
- * GET /api/public/projects/{slug}
- * PP001 project document + additive PP002 evidenceSummary (schema remains melega.project-page.v1).
+ * GET /api/public/projects/{slug}/evidence
+ * PP002 machine-readable evidence pack (schema melega.project-evidence.v1).
  */
 const handler: NextApiHandler = (req, res) => {
   if (req.method !== 'GET') {
@@ -33,11 +27,8 @@ const handler: NextApiHandler = (req, res) => {
     return res.status(404).json({ ok: false, reason: 'NOT_FOUND', message: 'Unknown project slug' })
   }
 
-  const body = toPublicProjectJson(loaded.document, {
-    evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
-  })
-  const payload = stringify(body)
-  const etag = `"${loaded.document.revision}"`
+  const payload = stableEvidencePayload(loaded.evidencePack)
+  const etag = `"${loaded.evidencePack.projectRevision}-ev"`
 
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
   res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

@@ -7,15 +7,16 @@ import {
   canonicalProjectAbsoluteUrl,
   canonicalProjectPath,
   getAllResolvableProjectSlugs,
-  loadCanonicalProjectDocument,
+  loadProjectEvidencePack,
   normalizeProjectSlugInput,
-  resolveProjectBySlug,
 } from 'registry/projects/identity'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
+import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
 import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
+  evidencePack: ProjectEvidencePack | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -31,6 +32,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       ? document.identity.shortPurpose.value
       : `${document.identity.displayName} project identity on Melega DEX.`
   const jsonAlternate = `/api/public/projects/${document.slug}/`
+  const evidenceAlternate = `/api/public/projects/${document.slug}/evidence/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
 
   return (
@@ -39,6 +41,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalAbs} />
       <link rel="alternate" type="application/json" href={jsonAlternate} />
+      <link rel="alternate" type="application/json" href={evidenceAlternate} title="Project evidence" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalAbs} />
@@ -58,12 +61,12 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   )
 }
 
-const ProjectHqPage = ({ document, jsonLd }: ProjectHqPageProps) => {
-  if (!document || !jsonLd) {
+const ProjectHqPage = ({ document, evidencePack, jsonLd }: ProjectHqPageProps) => {
+  if (!document || !jsonLd || !evidencePack) {
     return <NotFound />
   }
 
-  return <ProjectIdentityShell document={document} />
+  return <ProjectIdentityShell document={document} evidencePack={evidencePack} />
 }
 
 export const getStaticPaths: GetStaticPaths = () => ({
@@ -89,22 +92,18 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     }
   }
 
-  const resolved = resolveProjectBySlug(requestedSlug)
-  if (!resolved.ok) {
-    return { notFound: true }
-  }
-
-  const document = loadCanonicalProjectDocument(resolved.slug, {
+  const loaded = loadProjectEvidencePack(requestedSlug, {
     generatedAt: new Date().toISOString(),
   })
-  if (!document) {
+  if (!loaded) {
     return { notFound: true }
   }
 
   return {
     props: {
-      document,
-      jsonLd: buildProjectJsonLd(document),
+      document: loaded.document,
+      evidencePack: loaded.evidencePack,
+      jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },
   }

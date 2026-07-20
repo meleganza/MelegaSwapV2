@@ -2,6 +2,8 @@ import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
+import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
+import TrustEvidencePanel from './TrustEvidencePanel'
 
 /** Avoid Layout/Page — its PageMeta would overwrite Project Page SEO. */
 const PageFrame = styled.div`
@@ -185,9 +187,10 @@ const SrOnly = styled.span`
 
 interface Props {
   document: CanonicalProjectDocument
+  evidencePack: ProjectEvidencePack
 }
 
-const ProjectIdentityShell: React.FC<Props> = ({ document: doc }) => {
+const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const onCopy = useCallback(async (id: string, value: string) => {
@@ -273,31 +276,13 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc }) => {
         </Section>
 
         <Section $mobileOrder={3} id="trust" aria-labelledby="trust-heading" data-testid="project-trust-state">
-          <Heading as="h2" id="trust-heading" scale="md">
-            Trust state
-          </Heading>
-          <Text fontSize="13px" color="textSubtle">
-            Factual evidence summary. This is not a safety claim.
-          </Text>
-          <List>
-            {doc.evidence.map((item) => (
-              <ListItem key={`${item.evidenceType}-${item.reference}`}>
-                <Text fontSize="14px">{item.reference}</Text>
-                <Fact>
-                  {item.evidenceType.replace(/_/g, ' ')}
-                  {item.freshness === 'stale' ? ' · Evidence stale' : ''}
-                  {item.status === 'conflicted' ? ' · Conflicting contract information' : ''}
-                  {item.status === 'unavailable' ? ' · Unavailable' : ''}
-                </Fact>
-              </ListItem>
-            ))}
-          </List>
+          <TrustEvidencePanel pack={evidencePack} />
           {doc.identity.readiness.meta.availability === 'AVAILABLE' && doc.identity.readiness.value ? (
             <div>
               <Text fontSize="14px">
                 {doc.identity.readiness.value.label}: {doc.identity.readiness.value.score}
               </Text>
-              <Fact>{doc.identity.readiness.value.disclaimer}</Fact>
+              <Fact>{doc.identity.readiness.value.disclaimer} Readiness is not a safety rating.</Fact>
             </div>
           ) : null}
         </Section>
@@ -375,7 +360,7 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc }) => {
           </Heading>
           {assetsToShow.length > 0 ? (
             <div>
-              <Heading as="h3" scale="sm" mb="8px">
+              <Heading as="h3" scale="md" style={{ marginBottom: 8 }}>
                 Principal assets
               </Heading>
               <List>
@@ -407,7 +392,7 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc }) => {
 
           {doc.contracts.length > 0 ? (
             <div>
-              <Heading as="h3" scale="sm" mb="8px">
+              <Heading as="h3" scale="md" style={{ marginBottom: 8 }}>
                 Classified contracts
               </Heading>
               <List>

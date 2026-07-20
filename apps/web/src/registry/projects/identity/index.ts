@@ -46,3 +46,5 @@ export {
   loadCanonicalProjectDocument,
 } from './resolveProject'
 export type { ProjectSlugResolveResult } from './resolveProject'
+
+export * from './evidence'
