@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "melega.liquidity-building.lb015-external-gate-status.v1",
+  "mission": "LB015",
+  "assessedAt": "2026-07-20T01:20:00Z",
+  "baselineCommit": "2db31b82e926c4439e46e918b9f2889884d0874b",
+  "priorMissions": ["LB011", "LB012", "LB013", "LB013-B", "LB014"],
+  "verdict": "LB015_IMPLEMENTED_WITH_BLOCKERS",
+  "scopeFrozen": true,
+  "productPath": "Melega DEX → Liquidity Studio → Liquidity Building",
+  "activationAuthorized": false,
+  "mainnetCycleAuthorized": false,
+  "mainnetCycleExecuted": false,
+  "manualOverrideForbidden": true,
+  "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
+  "readyInMelegaDex": [
+    "LB contracts source",
+    "Atomic execution engine",
+    "Economic math",
+    "Runtime observation/decision (fail-closed)",
+    "Liquidity Studio LB card",
+    "Canonical Factory/Router bindings",
+    "Fail-closed deployment validator"
+  ],
+  "blockedByExternalInfrastructure": [
+    {
+      "gate": "LB-G03B",
+      "ownerSystem": "Infrastructure/KERL",
+      "status": "OPEN",
+      "requiredEvidence": "production authority address + non-exportable proof + PRODUCTION_READY"
+    },
+    {
+      "gate": "LB-G11",
+      "ownerSystem": "Infrastructure/KERL + Authorizer verify",
+      "status": "OPEN",
+      "requiredEvidence": "production signature accepted by LB006 Authorizer; signatureNormalization=VERIFIED"
+    },
+    {
+      "gate": "LB-G03C",
+      "ownerSystem": "Execution infra/ops",
+      "status": "OPEN",
+      "requiredEvidence": "relay endpoint + submit/retry/duplicate handling; RELAY_READY"
+    },
+    {
+      "gate": "LB-G04B",
+      "ownerSystem": "Treasury Runtime/D99",
+      "status": "OPEN",
+      "requiredEvidence": "canonical receiver address + bytecode + Runtime binding"
+    },
+    {
+      "gate": "LB-G04C/LB-G12",
+      "ownerSystem": "melega-kiri-treasury-runtime",
+      "status": "OPEN",
+      "requiredEvidence": "Fee Sink ingestion + reconciliation + ACCOUNTED; OPERATIONAL"
+    },
+    {
+      "gate": "LB-G10",
+      "ownerSystem": "Indexer + Treasury + ops",
+      "status": "OPEN",
+      "requiredEvidence": "finality evidence pack for accepted confirmation depth"
+    }
+  ],
+  "blockedByMelegaDex": [
+    {
+      "gate": "LB-G08",
+      "ownerSystem": "Melega DEX/Founder",
+      "status": "OPEN",
+      "requiredEvidence": "Founder-ratified quote floors; WBNB policy in quotePolicies[]"
+    }
+  ],
+  "security": {
+    "noHumanExecutionWallet": true,
+    "noPrivateKeyFallback": true,
+    "noManualFeeSettlement": true,
+    "noEoaTreasuryReceiver": true,
+    "noMockProductionDependency": true,
+    "noFakeMetrics": true,
+    "noBypassActivationSwitch": true,
+    "noManualGateOverride": true
+  },
+  "runbook": "docs/LB015_FIRST_CONTROLLED_MAINNET_CYCLE_RUNBOOK.md",
+  "gateStatusDoc": "docs/LB015_EXTERNAL_GATE_STATUS.md"
+}

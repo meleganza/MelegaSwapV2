@@ -173,31 +173,42 @@ export const LiquidityBuildingPanel: React.FC = () => {
   )
 
   const primaryForStatus = () => {
+    const blocked = !card.mutateGate.ok
     switch (card.status) {
       case 'NOT_ACTIVE':
         return 'Start Building Liquidity'
       case 'SETUP_REQUIRED':
-        return card.reviewOpen ? 'Continue to Approve' : 'Review'
+        if (!card.reviewOpen) return 'Review'
+        return blocked ? 'Unavailable until activation' : 'Continue to Approve'
       case 'AWAITING_APPROVAL':
-        return 'Approve Token'
+        return blocked ? 'Unavailable until activation' : 'Approve Token'
       case 'AWAITING_DEPOSIT':
-        return 'Deposit Budget'
+        return blocked ? 'Unavailable until activation' : 'Deposit Budget'
       case 'READY':
-        return 'Activate'
+        return blocked ? 'Unavailable until activation' : 'Activate'
       case 'ACTIVE':
         return 'View Activity'
       case 'PAUSED':
-        return 'Resume'
+        return blocked ? 'Unavailable until activation' : 'Resume'
       case 'BUDGET_DEPLETED':
-        return 'Add Budget'
+        return blocked ? 'Unavailable until activation' : 'Add Budget'
       case 'STOPPED':
         return 'View Activity'
       default:
-        return 'Retry'
+        return blocked ? 'Unavailable until activation' : 'Retry'
     }
   }
 
+  const mutatingBlocked =
+    !card.mutateGate.ok &&
+    (card.status === 'SETUP_REQUIRED'
+      ? card.reviewOpen
+      : ['AWAITING_APPROVAL', 'AWAITING_DEPOSIT', 'READY', 'PAUSED', 'BUDGET_DEPLETED', 'ERROR'].includes(
+          card.status,
+        ))
+
   const onPrimary = () => {
+    if (mutatingBlocked) return
     switch (card.status) {
       case 'NOT_ACTIVE':
         card.startSetup()
@@ -356,7 +367,7 @@ export const LiquidityBuildingPanel: React.FC = () => {
         <Notice data-testid="lb-activation-notice">
           {card.gates.activationAuthorized
             ? 'Activation authorized.'
-            : 'Mainnet activation is blocked until production deployment inputs validate. No simulated balances, rewards, or liquidity are shown.'}
+            : 'Liquidity Building unavailable until production activation requirements are completed. No fake liquidity, executions, APY, or simulated activity.'}
           {card.gates.blockers.length ? (
             <>
               <br />
@@ -389,8 +400,12 @@ export const LiquidityBuildingPanel: React.FC = () => {
               type="button"
               data-testid="lb-primary-cta"
               data-ls-primary-btn
+              data-lb-mutating-blocked={mutatingBlocked ? 'true' : 'false'}
               onClick={onPrimary}
-              disabled={card.status === 'SETUP_REQUIRED' && !card.reviewOpen && !card.draftReady}
+              disabled={
+                mutatingBlocked ||
+                (card.status === 'SETUP_REQUIRED' && !card.reviewOpen && !card.draftReady)
+              }
             >
               {primaryForStatus()}
             </LsPrimaryBtn>
