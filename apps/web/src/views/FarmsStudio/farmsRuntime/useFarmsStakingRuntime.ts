@@ -8,6 +8,7 @@ import { useAppSelector } from 'state'
 import { getFarmApr } from 'utils/apr'
 import isArchivedPid from 'utils/farmHelpers'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import type { FarmFilterChip, FarmPreviewCard } from '../farmsStudioData'
 import { displayFarmMetric, isUnavailableFarmMetric, stripTokenSymbol } from '../farmsStudioDisplay'
 import {
@@ -18,6 +19,7 @@ import {
   mapFarmToPreviewCard,
   selectFeaturedFarm,
 } from './formatFarmsRuntime'
+import { buildFarmsWalletPortfolio, type FarmsPortfolioViewMode } from './buildFarmsWalletPortfolio'
 import { runtimeErrorFromPhase, type FarmsRuntimeError } from './farmsRuntimeErrors'
 import { useFarmsTerminalData } from './useFarmsTerminalData'
 import { useMasterChefEmission, type MasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
@@ -81,6 +83,10 @@ export interface FarmsStakingRuntime {
   farms: FarmPreviewCard[]
   /** Full unfiltered inventory for wallet portfolio (not UI filter chips). */
   portfolioFarms: FarmPreviewCard[]
+  /** WalletPortfolio from portfolioFarms — no second farm scan. */
+  farmsWalletPortfolio: WalletPortfolio
+  portfolioViewMode: FarmsPortfolioViewMode
+  setPortfolioViewMode: (mode: FarmsPortfolioViewMode) => void
   featured: FarmsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   advisorItems: FarmsAdvisorItem[]
@@ -177,11 +183,23 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
 export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
-  const [filter, setFilter] = useState<FarmFilterChip>('All')
+  const [filter, setFilter] = useState<FarmFilterChip>('My Farms')
+  const [portfolioViewMode, setPortfolioViewModeState] = useState<FarmsPortfolioViewMode>('MY_FARMS')
   const [modalRequest, setModalRequest] = useState<{
     farm: FarmPreviewCard
     action: Exclude<FarmsModalAction, null>
   } | null>(null)
+
+  const setPortfolioViewMode = useCallback((mode: FarmsPortfolioViewMode) => {
+    setPortfolioViewModeState(mode)
+    setFilter(mode === 'MY_FARMS' ? 'My Farms' : 'All')
+  }, [])
+
+  const setFilterSynced = useCallback((next: FarmFilterChip) => {
+    setFilter(next)
+    if (next === 'My Farms') setPortfolioViewModeState('MY_FARMS')
+    else if (next === 'All') setPortfolioViewModeState('ALL')
+  }, [])
 
   usePollFarmsWithUserData()
   const loadingKeys = useAppSelector((state) => state.farms.loadingKeys)
@@ -205,6 +223,21 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     if (!enrichedFarms.length) return []
     return enrichedFarms.map((f) => mapFarmToPreviewCard(f, masterChefEmission))
   }, [enrichedFarms, masterChefEmission])
+
+  const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
+  const positionsLoading = Boolean(account) && !userDataLoaded
+  const farmsWalletPortfolio = useMemo(
+    () =>
+      buildFarmsWalletPortfolio({
+        wallet: account ?? null,
+        chainId: chainId ?? null,
+        chainName,
+        generatedAt: '1970-01-01T00:00:00.000Z',
+        farmCards: previewCards,
+        positionsLoading,
+      }),
+    [account, chainId, chainName, positionsLoading, previewCards],
+  )
 
   const filteredFarms = useMemo(() => filterFarms(previewCards, filter), [previewCards, filter])
 
@@ -333,9 +366,12 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     loadingLabel,
     error,
     filter,
-    setFilter,
+    setFilter: setFilterSynced,
     farms: filteredFarms,
     portfolioFarms: previewCards,
+    farmsWalletPortfolio,
+    portfolioViewMode,
+    setPortfolioViewMode,
     featured,
     kpis,
     advisorItems,

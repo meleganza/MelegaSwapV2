@@ -8,6 +8,7 @@ import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
 import FarmsStudioPageHeader from './components/FarmsStudioPageHeader'
+import YourFarmsSection from './components/YourFarmsSection'
 import FarmsKpiRow from './components/FarmsKpiRow'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
 import AIYieldAdvisorPanel from './components/AIYieldAdvisorPanel'
@@ -73,7 +74,7 @@ export const AdvisorSlot = styled.div`
 `
 
 export const FarmsStudioScreen: React.FC = () => (
-  <Root data-farms-studio-screen="true" data-r200-premium="true">
+  <Root data-farms-studio-screen="true" data-r200-premium="true" data-fs-wallet-first="true">
     <PageMeta />
     <FarmsStudioGlobalStyle />
     <TrendingRibbon />
@@ -81,10 +82,11 @@ export const FarmsStudioScreen: React.FC = () => (
       <FarmsActionHost />
       <Content>
         <FarmsStudioPageHeader />
+        <YourFarmsSection />
         <DataSurfaceErrorBoundary surface="Farms KPIs" userReason="Farm totals are temporarily unavailable.">
           <FarmsKpiRow />
         </DataSurfaceErrorBoundary>
-        <PageColumnGrid data-fs-page-grid>
+        <PageColumnGrid data-fs-page-grid data-fs-explore-farms="true">
           <FeaturedSlot>
             <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
               <FeaturedFarmPanel />

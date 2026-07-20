@@ -18,10 +18,11 @@ const Meta = styled.div`
 export const FarmsStudioPageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="farms"
+    data-fs-wallet-first-header="true"
     title={STUDIO_PAGE_TITLES.farms}
     subtitle={
       <Meta>
-        <span>Earn yield across the Melega ecosystem.</span>
+        <span>Your farm positions first — then explore and stake new farms.</span>
         <DexPricingFeesLink />
       </Meta>
     }
