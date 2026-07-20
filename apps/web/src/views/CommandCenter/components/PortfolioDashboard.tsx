@@ -36,6 +36,10 @@ import {
 import { PortfolioIntelligenceSection } from './PortfolioIntelligenceSection'
 import { buildPortfolioIntelligence } from '../commandCenterRuntime/portfolioIntelligence'
 import {
+  buildPortfolioAssistantContext,
+  type PortfolioAssistantContext,
+} from '../commandCenterRuntime/portfolioAssistantContext'
+import {
   CommandCenterVisualShell,
   PortfolioSection,
   SecondaryRail,
@@ -44,6 +48,7 @@ import {
 export { buildTodaysPriorities, type PriorityItem }
 export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
 export { buildPortfolioIntelligence }
+export { buildPortfolioAssistantContext, type PortfolioAssistantContext }
 
 export interface PortfolioDashboardProps {
   portfolio: WalletPortfolio
@@ -453,6 +458,11 @@ export function PortfolioDashboard({
     (!portfolio.claimables || portfolio.claimables.length === 0)
 
   const intelligence = buildPortfolioIntelligence({ portfolio, walletConnected })
+  const assistantContext = buildPortfolioAssistantContext({
+    portfolio,
+    intelligence,
+    walletConnected,
+  })
 
   let visualState: 'DISCONNECTED' | 'EMPTY' | 'CONNECTED' | 'ATTENTION' | 'PARTIAL' | 'UNAVAILABLE' | 'HISTORICAL' =
     'CONNECTED'
@@ -478,6 +488,13 @@ export function PortfolioDashboard({
       activePositions={portfolio.summary.activePositionCount}
       pendingActions={portfolio.summary.pendingActionCount}
     >
+      <div
+        hidden
+        data-testid="portfolio-assistant-context"
+        data-cc-assistant-state={assistantContext.state}
+        data-cc-assistant-views={assistantContext.availableViews.join(',')}
+        data-cc-assistant-summary-count={String(assistantContext.summary.lines.length)}
+      />
       {emptyPortfolio ? (
         <EmptyState data-testid="portfolio-dashboard-empty">Portfolio empty.</EmptyState>
       ) : null}
