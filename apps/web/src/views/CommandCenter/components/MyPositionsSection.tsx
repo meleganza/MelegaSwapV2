@@ -12,6 +12,7 @@ import {
   projectMyPositionCard,
   type MyPositionCardModel as LibMyPositionCardModel,
 } from 'lib/wallet-portfolio/myPositionCardModel'
+import { CommandCenterHumanizedEmpty } from './commandCenterEmptyStatePresentation'
 import type { PortfolioPosition } from 'lib/wallet-portfolio/contracts'
 import type { PortfolioViewResult } from 'lib/wallet-portfolio/viewEngine'
 import {
@@ -124,16 +125,6 @@ const GroupTitle = styled.h3`
   color: ${commandCenterColors.white};
 `
 
-const EmptyState = styled.div`
-  padding: 28px 20px;
-  border: 1px solid ${commandCenterColors.cardBorder};
-  border-radius: ${commandCenterLayout.cardRadius};
-  background: ${commandCenterColors.cardBg};
-  color: ${commandCenterColors.body};
-  font-family: ${CC_FONT_BODY};
-  font-size: 14px;
-`
-
 const UnavailableCard = styled.div`
   padding: 16px;
   border: 1px dashed ${commandCenterColors.cardBorder};
@@ -238,9 +229,10 @@ export function MyPositionsSection({
     return (
       <Section data-testid="my-positions-section" data-state="WALLET_NOT_CONNECTED">
         <SectionHeading>My Positions</SectionHeading>
-        <EmptyState data-testid="my-positions-empty" data-state="WALLET_NOT_CONNECTED">
-          WALLET_NOT_CONNECTED
-        </EmptyState>
+        <CommandCenterHumanizedEmpty
+          state="WALLET_NOT_CONNECTED"
+          testId="my-positions-empty"
+        />
       </Section>
     )
   }
@@ -250,9 +242,7 @@ export function MyPositionsSection({
       <Section data-testid="my-positions-section" data-state="EMPTY">
         <SectionHeading>My Positions</SectionHeading>
         <SummaryHeader summary={myPositionsSummary} />
-        <EmptyState data-testid="my-positions-empty" data-state="EMPTY">
-          EMPTY
-        </EmptyState>
+        <CommandCenterHumanizedEmpty state="EMPTY" testId="my-positions-empty" />
       </Section>
     )
   }

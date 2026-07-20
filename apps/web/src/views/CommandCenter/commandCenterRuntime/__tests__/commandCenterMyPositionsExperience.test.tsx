@@ -218,7 +218,8 @@ describe('R791D.3H Command Center My Positions experience', () => {
     )
     const emptyEl = screen.getByTestId('my-positions-empty')
     expect(emptyEl).toHaveAttribute('data-state', 'EMPTY')
-    expect(emptyEl.textContent).toContain('EMPTY')
+    expect(emptyEl.textContent).toContain('No positions yet')
+    expect(emptyEl.textContent).not.toContain('EMPTY')
     expect(screen.queryByTestId('position-card')).toBeNull()
   })
 
@@ -238,7 +239,8 @@ describe('R791D.3H Command Center My Positions experience', () => {
     )
     const emptyEl = screen.getByTestId('my-positions-empty')
     expect(emptyEl).toHaveAttribute('data-state', 'WALLET_NOT_CONNECTED')
-    expect(emptyEl.textContent).toContain('WALLET_NOT_CONNECTED')
+    expect(emptyEl.textContent).toContain('Connect your wallet')
+    expect(emptyEl.textContent).not.toContain('WALLET_NOT_CONNECTED')
   })
 
   it('TEST 6 — Claimable position exposes canonical action', () => {

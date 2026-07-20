@@ -48,7 +48,9 @@ import {
   CommandCenterVisualShell,
   PortfolioSection,
   SecondaryRail,
+  SectionHeader,
 } from './commandCenterVisualFoundation'
+import { CommandCenterHumanizedEmpty } from './commandCenterEmptyStatePresentation'
 
 export { buildTodaysPriorities, type PriorityItem }
 export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
@@ -326,7 +328,7 @@ export function ClaimablesSection({
     return (
       <Section data-testid="claimables-section" data-state="WALLET_NOT_CONNECTED">
         <SectionHeading>Claimables</SectionHeading>
-        <EmptyState>Wallet not connected.</EmptyState>
+        <CommandCenterHumanizedEmpty state="WALLET_NOT_CONNECTED" testId="claimables-empty" />
       </Section>
     )
   }
@@ -336,7 +338,7 @@ export function ClaimablesSection({
     <Section data-testid="claimables-section" data-state={rows.length ? 'READY' : 'EMPTY'}>
       <SectionHeading>Claimables</SectionHeading>
       {rows.length === 0 ? (
-        <EmptyState data-testid="claimables-empty">No claimables.</EmptyState>
+        <CommandCenterHumanizedEmpty state="EMPTY" testId="claimables-empty" />
       ) : (
         <List data-testid="claimables-list">
           {rows.map((item) => (
@@ -374,7 +376,7 @@ export function QuickActionsSection({
     return (
       <Section data-testid="quick-actions-section" data-state="WALLET_NOT_CONNECTED">
         <SectionHeading>Quick Actions</SectionHeading>
-        <EmptyState>Wallet not connected.</EmptyState>
+        <CommandCenterHumanizedEmpty state="WALLET_NOT_CONNECTED" testId="quick-actions-empty" />
       </Section>
     )
   }
@@ -384,7 +386,7 @@ export function QuickActionsSection({
     <Section data-testid="quick-actions-section" data-state={rows.length ? 'READY' : 'EMPTY'}>
       <SectionHeading>Quick Actions</SectionHeading>
       {rows.length === 0 ? (
-        <EmptyState data-testid="quick-actions-empty">No quick actions.</EmptyState>
+        <CommandCenterHumanizedEmpty state="EMPTY" testId="quick-actions-empty" />
       ) : (
         <List data-testid="quick-actions-list">
           {rows.map((item) => (
@@ -516,15 +518,28 @@ export function PortfolioDashboard({
         data-blocked-count={String(actionOrchestration.blockedActions.length)}
       />
       {emptyPortfolio ? (
-        <EmptyState data-testid="portfolio-dashboard-empty">Portfolio empty.</EmptyState>
+        <CommandCenterHumanizedEmpty state="EMPTY" testId="portfolio-dashboard-empty" />
       ) : null}
 
       <DashboardSectionBoundary section="hero">
-        <PortfolioHero
-          portfolio={portfolio}
-          walletConnected={walletConnected}
-          intelligence={intelligence}
-        />
+        {!walletConnected ? (
+          <PortfolioSection center="PORTFOLIO_HERO" testId="portfolio-hero" state="WALLET_NOT_CONNECTED">
+            <div data-testid="portfolio-summary-section" data-state="WALLET_NOT_CONNECTED">
+              <SectionHeader title="Portfolio" subtitle="Connect your wallet" />
+              <CommandCenterHumanizedEmpty
+                state="WALLET_NOT_CONNECTED"
+                testId="portfolio-hero-empty"
+              />
+              <span data-testid="portfolio-summary-empty" hidden aria-hidden="true" />
+            </div>
+          </PortfolioSection>
+        ) : (
+          <PortfolioHero
+            portfolio={portfolio}
+            walletConnected={walletConnected}
+            intelligence={intelligence}
+          />
+        )}
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="actions">
@@ -537,7 +552,32 @@ export function PortfolioDashboard({
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="portfolio-intelligence">
-        <PortfolioIntelligenceSection model={intelligence} walletConnected={walletConnected} />
+        {!walletConnected || intelligence.generatedState === 'WALLET_NOT_CONNECTED' ? (
+          <PortfolioSection
+            center="INTELLIGENCE_CENTER"
+            testId="portfolio-intelligence-section"
+            state="WALLET_NOT_CONNECTED"
+            data-cc-r791d-4e
+          >
+            <SectionHeader title="Portfolio Intelligence" subtitle="Operational awareness" />
+            <CommandCenterHumanizedEmpty
+              state="WALLET_NOT_CONNECTED"
+              testId="portfolio-intelligence-empty"
+            />
+          </PortfolioSection>
+        ) : intelligence.generatedState === 'EMPTY' ? (
+          <PortfolioSection
+            center="INTELLIGENCE_CENTER"
+            testId="portfolio-intelligence-section"
+            state="EMPTY"
+            data-cc-r791d-4e
+          >
+            <SectionHeader title="Portfolio Intelligence" subtitle="Operational awareness" />
+            <CommandCenterHumanizedEmpty state="EMPTY" testId="portfolio-intelligence-empty" />
+          </PortfolioSection>
+        ) : (
+          <PortfolioIntelligenceSection model={intelligence} walletConnected={walletConnected} />
+        )}
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="ai-portfolio-assistant">
