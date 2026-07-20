@@ -37,8 +37,28 @@ export const LIVE_LAG_THRESHOLD_BLOCKS = 5_000
 export const DEFAULT_START_BLOCK = 26_000_000
 export const DEFAULT_CHUNK_SIZE = 200
 export const MIN_CHUNK_SIZE = 1
+/** Floor for checkpoint-persisted chunk sizes — prevents sticky chunk=1 poisoning. */
+export const MIN_PERSISTED_CHUNK_SIZE = 25
 export const REORG_SAFETY_BLOCKS = 12
 export const MAX_EVENTS_PER_SYNC = 500
+
+/**
+ * R791-INFRA-003 — never persist or reload poisoned chunk=1.
+ * Temporary shrink may still happen in-memory during getLogsChunked.
+ */
+export function sanitizePersistedChunkSize(chunkSize: number | null | undefined): number {
+  if (chunkSize == null || !Number.isFinite(chunkSize) || chunkSize < MIN_PERSISTED_CHUNK_SIZE) {
+    return DEFAULT_CHUNK_SIZE
+  }
+  return Math.min(DEFAULT_CHUNK_SIZE, Math.floor(chunkSize))
+}
+
+/** After a successful scan, never persist below floor; gradually recover toward DEFAULT. */
+export function nextPersistedChunkSize(finalChunkSize: number, previousChunkSize: number): number {
+  const floor = Math.max(MIN_PERSISTED_CHUNK_SIZE, finalChunkSize)
+  const grown = Math.min(DEFAULT_CHUNK_SIZE, Math.max(floor, previousChunkSize * 2))
+  return sanitizePersistedChunkSize(grown)
+}
 
 export const INTERVAL_SECONDS = {
   '1H': 3600,

@@ -3,7 +3,10 @@ import {
   INDEXER_SCHEMA_VERSION,
   MAX_EVENTS_PER_SYNC,
   MELEGA_CHAIN_ID,
+  MIN_PERSISTED_CHUNK_SIZE,
+  nextPersistedChunkSize,
   REORG_SAFETY_BLOCKS,
+  sanitizePersistedChunkSize,
   SWAP_TOPIC,
   MINT_TOPIC,
   BURN_TOPIC,
@@ -37,8 +40,10 @@ import {
   type AdaptiveScanTelemetry,
 } from './adaptiveGapScan'
 
+export { nextPersistedChunkSize, sanitizePersistedChunkSize }
+
 const FORWARD_CHUNK_BLOCKS = 200
-const MIN_GAP_CHUNK_SIZE = 25
+const MIN_GAP_CHUNK_SIZE = Math.max(25, MIN_PERSISTED_CHUNK_SIZE)
 
 function normalizeLogs(
   logs: RawLog[],
@@ -206,7 +211,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   const adaptive = Boolean(params.adaptiveGapFill)
   const gapIterationCap = adaptive ? Number.POSITIVE_INFINITY : (params.maxGapRangesPerRun ?? Number.POSITIVE_INFINITY)
   const scanSamples: Array<{ latencyMs: number; blocks: number; failed?: boolean }> = []
-  let chunkSize = checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS
+  let chunkSize = sanitizePersistedChunkSize(checkpoint.chunkSize ?? FORWARD_CHUNK_BLOCKS)
   const gapsAtStart = findCoverageGaps(coverageRanges, bootstrapFloor, forwardHigh)
   const blocksRemainingStart = gapsAtStart.reduce((sum, g) => sum + (g.toBlock - g.fromBlock + 1), 0)
   let adaptiveTelemetry = createEmptyAdaptiveTelemetry(
@@ -239,6 +244,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
         const forwardTo = Math.min(forwardHigh, forwardFrom + span - 1)
         adaptiveTelemetry.requestedBlockCount += forwardTo - forwardFrom + 1
         let scan
+        const previousChunk = chunkSize
         try {
           scan = await scanRange(
             pair,
@@ -259,7 +265,11 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
           break
         }
         providerUsed = scan.providerUsed
-        checkpoint = { ...checkpoint, chunkSize: scan.finalChunkSize }
+        checkpoint = {
+          ...checkpoint,
+          chunkSize: nextPersistedChunkSize(scan.finalChunkSize, previousChunk),
+        }
+        chunkSize = checkpoint.chunkSize
         coverageRanges = addCoverageRange(coverageRanges, { fromBlock: forwardFrom, toBlock: forwardTo })
         gapFillCursor = forwardTo
         gapRangesProcessed += 1
@@ -293,6 +303,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     const gapTo = Math.min(nextGap.toBlock, gapFrom + span - 1)
     adaptiveTelemetry.requestedBlockCount += gapTo - gapFrom + 1
     let scan
+    const previousGapChunk = chunkSize
     try {
       scan = await scanRange(
         pair,
@@ -313,7 +324,11 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
       break
     }
     providerUsed = scan.providerUsed
-    checkpoint = { ...checkpoint, chunkSize: scan.finalChunkSize }
+    checkpoint = {
+      ...checkpoint,
+      chunkSize: nextPersistedChunkSize(scan.finalChunkSize, previousGapChunk),
+    }
+    chunkSize = checkpoint.chunkSize
     coverageRanges = addCoverageRange(coverageRanges, { fromBlock: gapFrom, toBlock: gapTo })
     gapFillCursor = Math.max(gapFillCursor, gapTo)
     gapRangesProcessed += 1

@@ -13,6 +13,7 @@ import { toBlockQuantity, blockQuantityVariants } from './blockQuantity'
 import {
   getProviderHealthSnapshot,
   isProviderQuarantined,
+  isRateLimitReason,
   recordProviderFailure,
   recordProviderSuccess,
 } from './providerHealth'
@@ -79,8 +80,22 @@ export { getProviderHealthSnapshot }
 
 function classifyRpcFailure(error: unknown, httpStatus?: number): string {
   const msg = error instanceof Error ? error.message : String(error)
+  if (httpStatus === 429 || /429/.test(msg)) return `HTTP 429: ${msg}`
   if (httpStatus === 404 || msg.includes('404')) return `HTTP 404: ${msg}`
+  if (httpStatus && httpStatus >= 400) return `HTTP ${httpStatus}: ${msg}`
   return msg
+}
+
+/** Max attempts on one URL for a single call. Rate-limits get a single attempt. */
+export function maxAttemptsForFailureReason(reason: string | null): number {
+  if (reason && isRateLimitReason(reason)) return 1
+  return 3
+}
+
+export function backoffDelayMs(reason: string, attempt: number): number {
+  if (isRateLimitReason(reason)) return 0
+  const rateLike = reason.toLowerCase().includes('limit')
+  return rateLike ? 800 * 2 ** attempt : 250 * 2 ** attempt
 }
 
 async function postRpc<T>(
@@ -121,16 +136,20 @@ export async function rpcCallWithFailover<T>(
   for (const url of rpcUrls) {
     if (isProviderQuarantined(url)) continue
     const label = url.includes('quiknode') ? 'quicknode' : url.includes('ankr') ? 'ankr' : 'public'
-    for (let attempt = 0; attempt < 3; attempt += 1) {
+    let attemptsAllowed = 3
+    for (let attempt = 0; attempt < attemptsAllowed; attempt += 1) {
       try {
         const result = await postRpc<T>(url, method, params, label)
         return { result, url }
       } catch (e) {
         lastError = e instanceof Error ? e : new Error(String(e))
-        if (isProviderQuarantined(url)) break
-        const msg = lastError.message.toLowerCase()
-        const delay = msg.includes('limit') ? 800 * 2 ** attempt : 250 * 2 ** attempt
-        if (attempt < 2) await new Promise((r) => setTimeout(r, delay))
+        const reason = lastError.message
+        attemptsAllowed = maxAttemptsForFailureReason(reason)
+        if (isProviderQuarantined(url) || isRateLimitReason(reason)) break
+        const delay = backoffDelayMs(reason, attempt)
+        if (attempt < attemptsAllowed - 1 && delay > 0) {
+          await new Promise((r) => setTimeout(r, delay))
+        }
       }
     }
   }
@@ -365,12 +384,25 @@ export async function getLogsChunked(params: {
   return { logs, finalChunkSize: chunk, aborted }
 }
 
+const MAX_BLOCK_TS_CACHE = 4096
 const blockTsCache = new Map<number, number>()
+
+export function getBlockTimestampCacheSize(): number {
+  return blockTsCache.size
+}
+
+export function clearBlockTimestampCacheForTests(): void {
+  blockTsCache.clear()
+}
 
 export async function getBlockTimestamp(blockNumber: number): Promise<number> {
   if (blockTsCache.has(blockNumber)) return blockTsCache.get(blockNumber)!
   const hex = await rpcCall<{ timestamp: string }>('eth_getBlockByNumber', [toBlockHex(blockNumber), false])
   const ts = parseInt(hex.timestamp, 16)
+  if (blockTsCache.size >= MAX_BLOCK_TS_CACHE) {
+    const oldest = blockTsCache.keys().next().value
+    if (oldest !== undefined) blockTsCache.delete(oldest)
+  }
   blockTsCache.set(blockNumber, ts)
   return ts
 }
