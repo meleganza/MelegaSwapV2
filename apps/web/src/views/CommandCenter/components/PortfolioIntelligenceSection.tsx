@@ -1,31 +1,22 @@
 /**
- * Portfolio Intelligence section (R791D.4E) — operational items only.
- * Presentation of PortfolioIntelligenceModel. No scoring / advice / fetch.
+ * Portfolio Intelligence section (R791D.4E + R791D.4F visual foundation).
+ * Operational items only — no scoring / advice / fetch.
  */
 
 import React from 'react'
 import styled from 'styled-components'
-import {
-  CC_FONT_BODY,
-  commandCenterColors,
-  commandCenterLayout,
-  commandCenterType,
-} from '../commandCenterTokens'
-import { SectionHeading } from './canonical/commandCenterSpecPrimitives'
+import { CC_FONT_BODY, commandCenterColors } from '../commandCenterTokens'
 import type { PortfolioIntelligenceModel } from '../commandCenterRuntime/portfolioIntelligence'
-
-const Section = styled.section`
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-  box-sizing: border-box;
-`
+import {
+  IntelligenceItem,
+  PortfolioSection,
+  SectionHeader,
+} from './commandCenterVisualFoundation'
 
 const EmptyState = styled.div`
   padding: 20px 16px;
   border: 1px solid ${commandCenterColors.cardBorder};
-  border-radius: ${commandCenterLayout.cardRadius};
+  border-radius: 12px;
   background: ${commandCenterColors.cardBg};
   color: ${commandCenterColors.body};
   font-family: ${CC_FONT_BODY};
@@ -77,7 +68,7 @@ const Column = styled.div`
 const ColumnTitle = styled.h4`
   margin: 0 0 8px;
   font-family: ${CC_FONT_BODY};
-  font-size: ${commandCenterType.label};
+  font-size: 13px;
   color: ${commandCenterColors.label};
   font-weight: 700;
 `
@@ -92,38 +83,6 @@ const List = styled.ul`
   min-width: 0;
 `
 
-const ListItem = styled.li`
-  padding: 10px 12px;
-  border: 1px solid ${commandCenterColors.cardBorder};
-  border-radius: 10px;
-  background: ${commandCenterColors.cardBg};
-  min-width: 0;
-`
-
-const ItemTitle = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: 13px;
-  font-weight: 600;
-  color: ${commandCenterColors.white};
-  word-break: break-word;
-`
-
-const ItemMeta = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: 12px;
-  color: ${commandCenterColors.muted};
-  margin-top: 4px;
-  word-break: break-word;
-`
-
-const ActionLink = styled.a`
-  font-family: ${CC_FONT_BODY};
-  font-size: 12px;
-  font-weight: 600;
-  color: ${commandCenterColors.gold};
-  text-decoration: none;
-`
-
 export function PortfolioIntelligenceSection({
   model,
   walletConnected,
@@ -133,31 +92,42 @@ export function PortfolioIntelligenceSection({
 }) {
   if (!walletConnected || model.generatedState === 'WALLET_NOT_CONNECTED') {
     return (
-      <Section
-        data-testid="portfolio-intelligence-section"
-        data-state="WALLET_NOT_CONNECTED"
+      <PortfolioSection
+        center="INTELLIGENCE_CENTER"
+        testId="portfolio-intelligence-section"
+        state="WALLET_NOT_CONNECTED"
         data-cc-r791d-4e
       >
-        <SectionHeading>Portfolio Intelligence</SectionHeading>
+        <SectionHeader title="Portfolio Intelligence" />
         <EmptyState data-testid="portfolio-intelligence-empty">Wallet not connected.</EmptyState>
-      </Section>
+      </PortfolioSection>
     )
   }
 
   if (model.generatedState === 'EMPTY') {
     return (
-      <Section data-testid="portfolio-intelligence-section" data-state="EMPTY" data-cc-r791d-4e>
-        <SectionHeading>Portfolio Intelligence</SectionHeading>
+      <PortfolioSection
+        center="INTELLIGENCE_CENTER"
+        testId="portfolio-intelligence-section"
+        state="EMPTY"
+        data-cc-r791d-4e
+      >
+        <SectionHeader title="Portfolio Intelligence" />
         <EmptyState data-testid="portfolio-intelligence-empty">No intelligence available.</EmptyState>
-      </Section>
+      </PortfolioSection>
     )
   }
 
   const { summary, attentionItems, actionItems, healthItems } = model
 
   return (
-    <Section data-testid="portfolio-intelligence-section" data-state="READY" data-cc-r791d-4e>
-      <SectionHeading>Portfolio Intelligence</SectionHeading>
+    <PortfolioSection
+      center="INTELLIGENCE_CENTER"
+      testId="portfolio-intelligence-section"
+      state="READY"
+      data-cc-r791d-4e
+    >
+      <SectionHeader title="Portfolio Intelligence" />
       <SummaryRow data-testid="portfolio-intelligence-summary" aria-label="Intelligence summary">
         <SummaryChip data-testid="intelligence-active-positions">
           <ChipLabel>Active</ChipLabel>
@@ -193,13 +163,13 @@ export function PortfolioIntelligenceSection({
           ) : (
             <List data-testid="intelligence-attention-list">
               {attentionItems.map((item) => (
-                <ListItem key={item.id} data-testid="intelligence-attention-item" data-source={item.source}>
-                  <ItemTitle>{item.title}</ItemTitle>
-                  <ItemMeta>
-                    {item.reason ?? item.source}
-                    {item.positionId ? ` · ${item.positionId}` : ''}
-                  </ItemMeta>
-                </ListItem>
+                <IntelligenceItem
+                  key={item.id}
+                  testId="intelligence-attention-item"
+                  source={item.source}
+                  title={item.title}
+                  meta={`${item.reason ?? item.source}${item.positionId ? ` · ${item.positionId}` : ''}`}
+                />
               ))}
             </List>
           )}
@@ -212,25 +182,16 @@ export function PortfolioIntelligenceSection({
           ) : (
             <List data-testid="intelligence-actions-list">
               {actionItems.map((item) => (
-                <ListItem
+                <IntelligenceItem
                   key={item.id}
-                  data-testid="intelligence-action-item"
-                  data-action-type={item.action.type}
-                  data-position-id={item.positionId}
-                >
-                  <ItemTitle>{item.positionTitle}</ItemTitle>
-                  <ItemMeta>
-                    {item.action.type}
-                    {item.reason ? ` · ${item.reason}` : ''}
-                  </ItemMeta>
-                  {item.route ? (
-                    <ActionLink href={item.route} aria-label={item.action.label}>
-                      {item.action.label}
-                    </ActionLink>
-                  ) : (
-                    <ItemMeta>{item.action.label}</ItemMeta>
-                  )}
-                </ListItem>
+                  testId="intelligence-action-item"
+                  actionType={item.action.type}
+                  positionId={item.positionId}
+                  title={item.positionTitle}
+                  meta={`${item.action.type}${item.reason ? ` · ${item.reason}` : ''}`}
+                  href={item.route}
+                  actionLabel={item.action.label}
+                />
               ))}
             </List>
           )}
@@ -243,19 +204,19 @@ export function PortfolioIntelligenceSection({
           ) : (
             <List data-testid="intelligence-health-list">
               {healthItems.map((item) => (
-                <ListItem key={item.id} data-testid="intelligence-health-item" data-health-kind={item.kind}>
-                  <ItemTitle>{item.title}</ItemTitle>
-                  <ItemMeta>
-                    {item.kind}
-                    {item.detail ? ` · ${item.detail}` : ''}
-                  </ItemMeta>
-                </ListItem>
+                <IntelligenceItem
+                  key={item.id}
+                  testId="intelligence-health-item"
+                  kind={item.kind}
+                  title={item.title}
+                  meta={`${item.kind}${item.detail ? ` · ${item.detail}` : ''}`}
+                />
               ))}
             </List>
           )}
         </Column>
       </Columns>
-    </Section>
+    </PortfolioSection>
   )
 }
 

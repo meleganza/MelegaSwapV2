@@ -1,8 +1,8 @@
 /**
- * Command Center Portfolio Dashboard — Wallet Operating Center composition (R791D.4C).
+ * Command Center Portfolio Dashboard — Wallet Operating Center (R791D.4C/4E/4F).
  *
- * Hierarchy: Hero → Actions → Positions Center (with view selector) → Secondary rail.
- * No product root arrays. No manual economics. No fetch. No card redesign.
+ * Hierarchy: Hero → Action Center → Intelligence Center → Positions Center → Secondary.
+ * Visual foundation via shared primitives. No product-specific section roots.
  */
 
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
@@ -35,6 +35,11 @@ import {
 } from './portfolioComposition'
 import { PortfolioIntelligenceSection } from './PortfolioIntelligenceSection'
 import { buildPortfolioIntelligence } from '../commandCenterRuntime/portfolioIntelligence'
+import {
+  CommandCenterVisualShell,
+  PortfolioSection,
+  SecondaryRail,
+} from './commandCenterVisualFoundation'
 
 export { buildTodaysPriorities, type PriorityItem }
 export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
@@ -157,33 +162,6 @@ const ActionLink = styled.a`
   font-weight: 600;
   color: ${commandCenterColors.gold};
   text-decoration: none;
-`
-
-const OperatingShell = styled.div`
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: ${commandCenterLayout.sectionGap};
-`
-
-const SecondaryShell = styled.section`
-  width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: ${commandCenterLayout.sectionGap};
-
-  @media (min-width: 1024px) {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: ${commandCenterLayout.sectionGap};
-    align-items: start;
-  }
 `
 
 const SecondaryColumn = styled.div`
@@ -458,8 +436,8 @@ export function PortfolioActivitySection({
 }
 
 /**
- * Wallet Operating Center order:
- * Hero → Today's Actions → Portfolio Intelligence → Positions Center → Claimables / Activity / Quick Actions
+ * Wallet Operating Center order (R791D.4F):
+ * PORTFOLIO_HERO → ACTION_CENTER → INTELLIGENCE_CENTER → POSITIONS_CENTER → SECONDARY
  */
 export function PortfolioDashboard({
   portfolio,
@@ -475,17 +453,14 @@ export function PortfolioDashboard({
     (!portfolio.claimables || portfolio.claimables.length === 0)
 
   const intelligence = buildPortfolioIntelligence({ portfolio, walletConnected })
+  const visualState = !walletConnected ? 'DISCONNECTED' : emptyPortfolio ? 'EMPTY' : 'CONNECTED'
 
   return (
-    <OperatingShell
-      data-testid="portfolio-dashboard"
-      data-wallet-operating-center="true"
-      data-cc-r791d-4c
-      data-cc-r791d-4e
-      data-wallet-connected={walletConnected ? 'true' : 'false'}
-      data-responsive="stack-mobile-columns-desktop"
-      data-active-positions={portfolio.summary.activePositionCount}
-      data-pending-actions={portfolio.summary.pendingActionCount}
+    <CommandCenterVisualShell
+      walletConnected={walletConnected}
+      visualState={visualState}
+      activePositions={portfolio.summary.activePositionCount}
+      pendingActions={portfolio.summary.pendingActionCount}
     >
       {emptyPortfolio ? (
         <EmptyState data-testid="portfolio-dashboard-empty">Portfolio empty.</EmptyState>
@@ -513,22 +488,24 @@ export function PortfolioDashboard({
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="secondary">
-        <SecondaryShell data-testid="portfolio-secondary" data-composition="portfolio-secondary">
-          <SecondaryColumn data-testid="portfolio-secondary-claimables">
-            <ClaimablesSection claimables={portfolio.claimables} walletConnected={walletConnected} />
-          </SecondaryColumn>
-          <SecondaryColumn data-testid="portfolio-secondary-activity">
-            <PortfolioActivitySection
-              recentActivity={portfolio.recentActivity}
-              walletConnected={walletConnected}
-            />
-          </SecondaryColumn>
-          <SecondaryColumn data-testid="portfolio-secondary-quick-actions">
-            <QuickActionsSection quickActions={portfolio.quickActions} walletConnected={walletConnected} />
-          </SecondaryColumn>
-        </SecondaryShell>
+        <PortfolioSection center="SECONDARY" testId="portfolio-secondary-center">
+          <SecondaryRail testId="portfolio-secondary">
+            <SecondaryColumn data-testid="portfolio-secondary-claimables">
+              <ClaimablesSection claimables={portfolio.claimables} walletConnected={walletConnected} />
+            </SecondaryColumn>
+            <SecondaryColumn data-testid="portfolio-secondary-activity">
+              <PortfolioActivitySection
+                recentActivity={portfolio.recentActivity}
+                walletConnected={walletConnected}
+              />
+            </SecondaryColumn>
+            <SecondaryColumn data-testid="portfolio-secondary-quick-actions">
+              <QuickActionsSection quickActions={portfolio.quickActions} walletConnected={walletConnected} />
+            </SecondaryColumn>
+          </SecondaryRail>
+        </PortfolioSection>
       </DashboardSectionBoundary>
-    </OperatingShell>
+    </CommandCenterVisualShell>
   )
 }
 

@@ -1,8 +1,8 @@
 /**
- * Command Center visual portfolio composition foundation (R791D.4C).
+ * Command Center visual portfolio composition (R791D.4C + R791D.4F foundation).
  *
- * Information hierarchy only — Wallet Operating Center structure.
- * No font/color/shadow/spacing polish. No card redesign.
+ * Wallet Operating Center structure via shared visual primitives.
+ * No final pixel polish. No product-specific section roots.
  */
 
 import React from 'react'
@@ -17,10 +17,16 @@ import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
 import {
   CC_FONT_BODY,
   commandCenterColors,
-  commandCenterLayout,
-  commandCenterType,
 } from '../commandCenterTokens'
-import { SectionHeading } from './canonical/commandCenterSpecPrimitives'
+import {
+  ActionItem,
+  ActionItemRow,
+  MetricBlock,
+  MetricBlockRow,
+  PortfolioSection,
+  PositionGroup,
+  SectionHeader,
+} from './commandCenterVisualFoundation'
 import {
   MyPositionsSection,
   type MyPositionsSectionProps,
@@ -88,16 +94,9 @@ export function buildTodaysPriorities(positions: readonly PortfolioPosition[]): 
   return items
 }
 
-const HeroShell = styled.section`
-  width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-  box-sizing: border-box;
-`
-
 const HeroIdentity = styled.div`
   font-family: ${CC_FONT_BODY};
-  font-size: ${commandCenterType.label};
+  font-size: 13px;
   color: ${commandCenterColors.label};
   margin-bottom: 8px;
 `
@@ -110,118 +109,14 @@ const HeroWallet = styled.div`
   word-break: break-all;
 `
 
-const HeroMetrics = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  min-width: 0;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-`
-
-const HeroMetric = styled.div`
-  min-width: 0;
-  padding: 14px 16px;
-  border: 1px solid ${commandCenterColors.cardBorder};
-  border-radius: 12px;
-  background: ${commandCenterColors.cardBg};
-  box-sizing: border-box;
-`
-
-const MetricLabel = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: ${commandCenterType.label};
-  color: ${commandCenterColors.label};
-  margin-bottom: 6px;
-`
-
-const MetricValue = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: 18px;
-  font-weight: 700;
-  color: ${commandCenterColors.white};
-  line-height: 1.2;
-  word-break: break-word;
-`
-
 const EmptyState = styled.div`
   padding: 20px 16px;
   border: 1px solid ${commandCenterColors.cardBorder};
-  border-radius: ${commandCenterLayout.cardRadius};
+  border-radius: 12px;
   background: ${commandCenterColors.cardBg};
   color: ${commandCenterColors.body};
   font-family: ${CC_FONT_BODY};
   font-size: 14px;
-`
-
-const ActionsRow = styled.section`
-  width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-`
-
-const List = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 0;
-`
-
-const ListItem = styled.li`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid ${commandCenterColors.cardBorder};
-  border-radius: 12px;
-  background: ${commandCenterColors.cardBg};
-  min-width: 0;
-`
-
-const ItemTitle = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: 14px;
-  font-weight: 600;
-  color: ${commandCenterColors.white};
-`
-
-const ItemMeta = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: 12px;
-  color: ${commandCenterColors.muted};
-`
-
-const ActionLink = styled.a`
-  font-family: ${CC_FONT_BODY};
-  font-size: 13px;
-  font-weight: 600;
-  color: ${commandCenterColors.gold};
-  text-decoration: none;
-`
-
-const PositionsShell = styled.section`
-  width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-`
-
-const PositionsGrid = styled.div`
-  width: 100%;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 `
 
 const FilterShell = styled.div`
@@ -275,7 +170,7 @@ function shortenWallet(wallet: string | null): string {
   return `${w.slice(0, 6)}…${w.slice(-4)}`
 }
 
-/** 1. Portfolio Hero — identity from walletPortfolio.summary (+ wallet). */
+/** 1. Portfolio Hero — identity + portfolio state (LEVEL 1). */
 export function PortfolioHero({
   portfolio,
   walletConnected,
@@ -287,52 +182,58 @@ export function PortfolioHero({
 
   if (!walletConnected) {
     return (
-      <HeroShell data-testid="portfolio-hero" data-composition="portfolio-hero" data-state="WALLET_NOT_CONNECTED">
-        <section data-testid="portfolio-summary-section" data-state="WALLET_NOT_CONNECTED">
-          <SectionHeading>Portfolio</SectionHeading>
+      <PortfolioSection
+        center="PORTFOLIO_HERO"
+        testId="portfolio-hero"
+        state="WALLET_NOT_CONNECTED"
+      >
+        <div data-testid="portfolio-summary-section" data-state="WALLET_NOT_CONNECTED">
+          <SectionHeader title="Portfolio" />
           <EmptyState data-testid="portfolio-hero-empty">Wallet not connected.</EmptyState>
-          <EmptyState data-testid="portfolio-summary-empty">Wallet not connected.</EmptyState>
-        </section>
-      </HeroShell>
+          <span data-testid="portfolio-summary-empty" hidden aria-hidden="true" />
+        </div>
+      </PortfolioSection>
     )
   }
 
   return (
-    <HeroShell data-testid="portfolio-hero" data-composition="portfolio-hero" data-state="READY">
-      <section data-testid="portfolio-summary-section" data-state="READY">
-        <SectionHeading>Portfolio</SectionHeading>
+    <PortfolioSection center="PORTFOLIO_HERO" testId="portfolio-hero" state="READY">
+      <div data-testid="portfolio-summary-section" data-state="READY">
+        <SectionHeader title="Portfolio" />
         <HeroIdentity data-testid="portfolio-hero-label">PORTFOLIO</HeroIdentity>
         <HeroWallet data-testid="portfolio-hero-wallet">
           {portfolio.wallet ? shortenWallet(portfolio.wallet) : 'Wallet unavailable'}
         </HeroWallet>
-        <HeroMetrics data-testid="portfolio-summary-grid" data-composition="hero-metrics">
-          <HeroMetric>
-            <MetricLabel>Portfolio value</MetricLabel>
-            <MetricValue data-testid="summary-net-value">{formatUsd(summary.netValueUsd)}</MetricValue>
-          </HeroMetric>
-          <HeroMetric>
-            <MetricLabel>Claimables</MetricLabel>
-            <MetricValue data-testid="summary-claimable-value">{formatUsd(summary.claimableValueUsd)}</MetricValue>
-          </HeroMetric>
-          <HeroMetric>
-            <MetricLabel>Active positions</MetricLabel>
-            <MetricValue data-testid="summary-active-positions">{summary.activePositionCount}</MetricValue>
-          </HeroMetric>
-          <HeroMetric>
-            <MetricLabel>Actions required</MetricLabel>
-            <MetricValue data-testid="summary-pending-actions">{summary.pendingActionCount}</MetricValue>
-          </HeroMetric>
-        </HeroMetrics>
+        <MetricBlockRow testId="portfolio-summary-grid">
+          <MetricBlock
+            label="Portfolio value"
+            value={<span data-testid="summary-net-value">{formatUsd(summary.netValueUsd)}</span>}
+          />
+          <MetricBlock
+            label="Claimables"
+            value={
+              <span data-testid="summary-claimable-value">{formatUsd(summary.claimableValueUsd)}</span>
+            }
+          />
+          <MetricBlock
+            label="Active positions"
+            value={<span data-testid="summary-active-positions">{summary.activePositionCount}</span>}
+          />
+          <MetricBlock
+            label="Actions required"
+            value={<span data-testid="summary-pending-actions">{summary.pendingActionCount}</span>}
+          />
+        </MetricBlockRow>
         <span data-testid="summary-historical-positions" hidden aria-hidden="true">
           {summary.historicalPositionCount}
         </span>
-      </section>
-    </HeroShell>
+      </div>
+    </PortfolioSection>
   )
 }
 
 /**
- * 2. Command Actions — Today's Actions from PortfolioPosition.actions / requiresAttention.
+ * 2. Action Center — Today's Actions (LEVEL 2).
  * Only canonical types: Claim, Harvest, Withdraw, Remove Liquidity, Approve.
  */
 export function PortfolioActions({
@@ -343,51 +244,39 @@ export function PortfolioActions({
   walletConnected: boolean
 }) {
   const items = walletConnected ? buildTodaysPriorities(positions) : []
+  const state = !walletConnected ? 'WALLET_NOT_CONNECTED' : items.length ? 'READY' : 'EMPTY'
 
   return (
-    <ActionsRow
-      data-testid="portfolio-actions"
-      data-composition="portfolio-actions"
-      data-state={!walletConnected ? 'WALLET_NOT_CONNECTED' : items.length ? 'READY' : 'EMPTY'}
-    >
-      {/* Compatibility alias for prior priorities section tests */}
-      <section
-        data-testid="todays-priorities-section"
-        data-state={!walletConnected ? 'WALLET_NOT_CONNECTED' : items.length ? 'READY' : 'EMPTY'}
-      >
-        <SectionHeading>Today&apos;s Actions</SectionHeading>
+    <PortfolioSection center="ACTION_CENTER" testId="portfolio-actions" state={state}>
+      <div data-testid="todays-priorities-section" data-state={state}>
+        <SectionHeader title="Today's Actions" />
         {!walletConnected ? (
           <EmptyState>Wallet not connected.</EmptyState>
         ) : items.length === 0 ? (
           <EmptyState data-testid="todays-priorities-empty">No priorities right now.</EmptyState>
         ) : (
-          <List data-testid="todays-priorities-list">
+          <ActionItemRow testId="todays-priorities-list">
             {items.map((item) => (
-              <ListItem key={item.id} data-testid="priority-item" data-position-id={item.positionId} data-action-type={item.action.type}>
-                <div>
-                  <ItemTitle>{item.title}</ItemTitle>
-                  <ItemMeta>
-                    {item.action.type}
-                    {item.requiresAttention ? ' · attention' : ''}
-                  </ItemMeta>
-                </div>
-                {item.action.route ? (
-                  <ActionLink href={item.action.route} aria-label={item.action.label}>
-                    {item.action.label}
-                  </ActionLink>
-                ) : (
-                  <ItemMeta>{item.action.label}</ItemMeta>
-                )}
-              </ListItem>
+              <ActionItem
+                key={item.id}
+                testId="priority-item"
+                positionId={item.positionId}
+                actionType={item.action.type}
+                title={item.title}
+                meta={`${item.action.type}${item.requiresAttention ? ' · attention' : ''}`}
+                href={item.action.route}
+                actionLabel={item.action.label}
+                attention={item.requiresAttention}
+              />
             ))}
-          </List>
+          </ActionItemRow>
         )}
-      </section>
-    </ActionsRow>
+      </div>
+    </PortfolioSection>
   )
 }
 
-/** 4. Portfolio view selector — primary + secondary chips (not product page tabs). */
+/** Portfolio view selector — primary + secondary chips (not product page tabs). */
 export function PortfolioViewSelector({
   model,
   onSelectView,
@@ -435,7 +324,7 @@ export function PortfolioViewSelector({
   )
 }
 
-/** 3. Positions Center — dominant My Positions via PositionCard groups. */
+/** 3. Positions Center — owned assets via PositionCard groups (LEVEL 3). */
 export function PositionsCenter({
   myPositions,
   viewSelector,
@@ -448,20 +337,20 @@ export function PositionsCenter({
   walletConnected: boolean
 }) {
   return (
-    <PositionsShell data-testid="positions-center" data-composition="positions-center">
-      <PositionsGrid data-testid="positions-center-grid">
+    <PortfolioSection center="POSITIONS_CENTER" testId="positions-center">
+      <PositionGroup testId="positions-center-grid">
         {viewSelector ? <PortfolioViewSelector model={viewSelector} onSelectView={onSelectView} /> : null}
         {walletConnected && viewSelector?.empty ? (
-          <section data-testid="my-positions-section" data-state="EMPTY" data-view={viewSelector.currentView}>
-            <SectionHeading>My Positions</SectionHeading>
+          <div data-testid="my-positions-section" data-state="EMPTY" data-view={viewSelector.currentView}>
+            <SectionHeader title="My Positions" />
             <EmptyState data-testid="portfolio-view-empty" data-view={viewSelector.currentView}>
               {viewSelector.emptyMessage}
             </EmptyState>
-          </section>
+          </div>
         ) : (
           <MyPositionsSection {...myPositions} />
         )}
-      </PositionsGrid>
-    </PositionsShell>
+      </PositionGroup>
+    </PortfolioSection>
   )
 }
