@@ -6,6 +6,16 @@ import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/ty
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
+import dynamic from 'next/dynamic'
+
+/** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
+const ClientWalletRelationship = dynamic(
+  () => import('./ProjectWalletRelationship'),
+  { ssr: false },
+) as React.ComponentType<{
+  document: CanonicalProjectDocument
+  evidencePack: ProjectEvidencePack
+}>
 
 /** Avoid Layout/Page — its PageMeta would overwrite Project Page SEO. */
 const PageFrame = styled.div`
@@ -293,9 +303,8 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           ) : null}
         </Section>
 
-        <Section $mobileOrder={3} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
-          <ReadinessTrustSnapshot readiness={readinessDocument} />
-          <TrustEvidencePanel pack={evidencePack} />
+        <Section $mobileOrder={3} data-testid="project-wallet-relationship-slot">
+          <ClientWalletRelationship document={doc} evidencePack={evidencePack} />
         </Section>
 
         <Section $mobileOrder={4} id="overview" aria-labelledby="overview-heading" data-testid="project-overview">
@@ -309,8 +318,13 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           )}
         </Section>
 
+        <Section $mobileOrder={5} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
+          <ReadinessTrustSnapshot readiness={readinessDocument} />
+          <TrustEvidencePanel pack={evidencePack} />
+        </Section>
+
         <Section
-          $mobileOrder={5}
+          $mobileOrder={6}
           id="ecosystem"
           aria-labelledby="deployments-heading"
           data-testid="project-deployments"
@@ -340,7 +354,7 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           )}
         </Section>
 
-        <Section $mobileOrder={6} aria-labelledby="resources-heading" data-testid="project-resources">
+        <Section $mobileOrder={7} aria-labelledby="resources-heading" data-testid="project-resources">
           <Heading as="h2" id="resources-heading" scale="md">
             Official resources
           </Heading>
@@ -365,7 +379,7 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           )}
         </Section>
 
-        <Section $mobileOrder={7} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
+        <Section $mobileOrder={8} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
           <Heading as="h2" id="assets-heading" scale="md">
             Assets and contracts
           </Heading>

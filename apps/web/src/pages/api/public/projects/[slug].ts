@@ -2,6 +2,7 @@ import type { NextApiHandler } from 'next'
 import stringify from 'fast-json-stable-stringify'
 import {
   buildProjectReadinessDocument,
+  buildWalletRelationshipSupportMetadata,
   loadProjectEvidencePack,
   normalizeProjectSlugInput,
   resolveProjectBySlug,
@@ -54,6 +55,10 @@ const handler: NextApiHandler = (req, res) => {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
     trustSnapshotSummary: toTrustSnapshotSummaryForProjectApi(readinessDoc) as unknown as Record<
+      string,
+      unknown
+    >,
+    walletRelationshipSupport: buildWalletRelationshipSupportMetadata(loaded.document.slug) as unknown as Record<
       string,
       unknown
     >,
