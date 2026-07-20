@@ -10,6 +10,7 @@ import LiquidityBuilderPanel from './components/LiquidityBuilderPanel'
 import PositionPreviewPanel from './components/PositionPreviewPanel'
 import MarketIntelligencePanel from './components/MarketIntelligencePanel'
 import AILiquidityAdvisorPanel from './components/AILiquidityAdvisorPanel'
+import LiquidityBuildingPanel from './components/LiquidityBuildingPanel'
 import TopPoolsPanel from './components/TopPoolsPanel'
 import LiquidityActivityTable from './components/LiquidityActivityTable'
 import LiquidityLpInfoPanel from './components/LiquidityLpInfoPanel'
@@ -80,6 +81,7 @@ const LayoutGrid = styled.div`
       'preview'
       'market'
       'advisor'
+      'lb'
       'pools'
       'activity';
   }
@@ -114,7 +116,7 @@ const AreaPreview = styled.div`
 const AreaRight = styled.div`
   grid-area: right;
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   gap: 20px;
   align-content: start;
   min-width: 0;
@@ -164,6 +166,12 @@ const AreaAdvisor = styled.div`
   }
 `
 
+const AreaLiquidityBuilding = styled.div`
+  @media (max-width: 767px) {
+    grid-area: lb;
+  }
+`
+
 const AreaTopPools = styled.div`
   grid-area: topPools;
   min-width: 0;
@@ -204,6 +212,9 @@ export const LiquidityStudioScreen: React.FC = () => (
             <AreaAdvisor>
               <AILiquidityAdvisorPanel />
             </AreaAdvisor>
+            <AreaLiquidityBuilding>
+              <LiquidityBuildingPanel />
+            </AreaLiquidityBuilding>
           </AreaRight>
           <AreaActivity>
             <LiquidityActivityTable />
