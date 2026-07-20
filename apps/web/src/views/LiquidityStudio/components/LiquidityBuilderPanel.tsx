@@ -285,7 +285,7 @@ export const LiquidityBuilderPanel: React.FC = () => {
       $height={liquidityStudioLayout.builderHeight}
     >
       <LsPanelTitle data-testid="ls-builder-title">
-        {isPositions ? 'Manage Position' : isRemove ? 'Remove Liquidity' : 'Explore Liquidity'}
+        {isPositions ? 'Manage Liquidity' : isRemove ? 'Remove Liquidity' : 'Explore Liquidity'}
       </LsPanelTitle>
       {isSimulation ? (
         <StatusLine style={{ marginBottom: 12 }}>
@@ -295,14 +295,16 @@ export const LiquidityBuilderPanel: React.FC = () => {
       {isPositions || isRemove ? (
         <>
           <PairText style={{ display: 'block', marginBottom: 8 }} data-ls-owned-position-heading>
-            Your Liquidity Position
+            Your Liquidity Positions
           </PairText>
           {!account ? (
-            <StatusLine>Connect wallet to view positions.</StatusLine>
+            <StatusLine data-testid="ls-builder-disconnected">Connect wallet to view liquidity.</StatusLine>
           ) : positionsLoading ? (
-            <StatusLine data-ls-positions-loading>Scanning wallet liquidity positions…</StatusLine>
+            <StatusLine data-ls-positions-loading>Loading liquidity positions…</StatusLine>
           ) : positions.length === 0 ? (
-            <StatusLine data-ls-positions-empty>No wallet-held liquidity positions detected.</StatusLine>
+            <StatusLine data-ls-positions-empty data-testid="ls-builder-empty">
+              No liquidity positions found.
+            </StatusLine>
           ) : (
             <PositionList data-ls-owned-positions>
               {positions.map((pos) => (

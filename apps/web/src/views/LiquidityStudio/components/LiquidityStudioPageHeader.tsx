@@ -57,7 +57,7 @@ export const LiquidityStudioPageHeader: React.FC = () => {
       data-studio-header="liquidity"
       data-ls-wallet-first-header="true"
       title={STUDIO_PAGE_TITLES.liquidity}
-      subtitle="Your liquidity positions first — then explore and create new LP."
+      subtitle="Your liquidity positions first — then explore and create new positions."
       badge={
         <MelegaStudioLiveBadge>
           <MelegaStudioLiveDot aria-hidden />

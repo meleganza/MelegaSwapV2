@@ -127,7 +127,7 @@ export function YourLiquidityPositionsSection() {
     >
       <Header>
         <Title>Your Liquidity Positions</Title>
-        <Subtitle>Owned LP positions from your wallet portfolio.</Subtitle>
+        <Subtitle>Owned liquidity positions from your wallet portfolio.</Subtitle>
       </Header>
 
       {!account ? (
