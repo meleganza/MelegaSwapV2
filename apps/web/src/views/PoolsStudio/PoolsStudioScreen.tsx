@@ -8,6 +8,7 @@ import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
 import PoolsStudioPageHeader from './components/PoolsStudioPageHeader'
+import YourPoolsSection from './components/YourPoolsSection'
 import PoolsKpiRow from './components/PoolsKpiRow'
 import FeaturedPoolHero from './components/FeaturedPoolHero'
 import PoolsSidebar from './components/PoolsSidebar'
@@ -159,6 +160,7 @@ const BelowFold = styled.div`
 export const PoolsStudioScreen: React.FC = () => (
   <Root
     data-pools-studio-screen="true"
+    data-ps-wallet-first="true"
     data-r706b-step2b="true"
     data-r711-pools-screen
     data-r712-pools-screen
@@ -174,12 +176,13 @@ export const PoolsStudioScreen: React.FC = () => (
       <PoolsActionHost />
       <Content data-ps-content>
         <PoolsStudioPageHeader />
+        <YourPoolsSection />
         <KpiSection>
           <DataSurfaceErrorBoundary surface="Pools KPIs" userReason="Pool totals are temporarily unavailable.">
             <PoolsKpiRow />
           </DataSurfaceErrorBoundary>
         </KpiSection>
-        <MainGrid data-ps-main-grid>
+        <MainGrid data-ps-main-grid data-ps-explore-pools="true">
           <MainColumn>
             <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">
               <FeaturedPoolHero />

@@ -3,6 +3,15 @@ import styled from 'styled-components'
 import { POOL_FILTER_CHIPS } from '../poolsStudioData'
 import { poolsStudioColors, poolsStudioLayout } from '../poolsStudioTokens'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import type { PoolsPortfolioViewMode } from '../poolsRuntime/buildPoolsWalletPortfolio'
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  overflow: visible;
+`
 
 const Row = styled.div`
   display: flex;
@@ -28,17 +37,45 @@ const Chip = styled.button<{ $active?: boolean }>`
   flex-shrink: 0;
 `
 
+const VIEW_CHIPS: { mode: PoolsPortfolioViewMode; label: string }[] = [
+  { mode: 'MY_POOLS', label: 'My Pools' },
+  { mode: 'ALL', label: 'All Pools' },
+]
+
 export const PoolsFilterRow: React.FC = () => {
-  const { filter, setFilter } = usePoolsRuntime()
+  const { filter, setFilter, portfolioViewMode, setPortfolioViewMode } = usePoolsRuntime()
 
   return (
-    <Row data-ps-filters>
-      {POOL_FILTER_CHIPS.map((chip) => (
-        <Chip key={chip} type="button" $active={filter === chip} onClick={() => setFilter(chip)}>
-          {chip}
-        </Chip>
-      ))}
-    </Row>
+    <Wrap data-ps-filters data-ps-portfolio-view={portfolioViewMode}>
+      <Row data-testid="ps-view-filters" aria-label="Pool portfolio views">
+        {VIEW_CHIPS.map((chip) => (
+          <Chip
+            key={chip.mode}
+            type="button"
+            $active={portfolioViewMode === chip.mode}
+            data-testid={`ps-view-${chip.mode === 'MY_POOLS' ? 'my-pools' : 'all-pools'}`}
+            onClick={() => setPortfolioViewMode(chip.mode)}
+          >
+            {chip.label}
+          </Chip>
+        ))}
+      </Row>
+      <Row data-testid="ps-explore-filters" aria-label="Explore pool filters">
+        {POOL_FILTER_CHIPS.map((chip) => (
+          <Chip
+            key={chip}
+            type="button"
+            $active={filter === chip}
+            onClick={() => {
+              setPortfolioViewMode('ALL')
+              setFilter(chip)
+            }}
+          >
+            {chip}
+          </Chip>
+        ))}
+      </Row>
+    </Wrap>
   )
 }
 

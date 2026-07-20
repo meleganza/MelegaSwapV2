@@ -28,6 +28,8 @@ import { classificationToReconciliation, resolveLifecycleCounts } from './poolCl
 import { usePoolClassificationSummary } from './usePoolClassificationSummary'
 import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
+import { buildPoolsWalletPortfolio, type PoolsPortfolioViewMode } from './buildPoolsWalletPortfolio'
 
 export type PoolsRuntimePhase =
   | 'idle'
@@ -126,6 +128,10 @@ export interface PoolsStakingRuntime {
   pools: PoolPreviewCard[]
   /** Real producer inventory for wallet portfolio — never UX fixtures, never tab-filtered. */
   portfolioPools: PoolPreviewCard[]
+  /** WalletPortfolio from portfolioPools — no second pool scan. */
+  poolsWalletPortfolio: WalletPortfolio
+  portfolioViewMode: PoolsPortfolioViewMode
+  setPortfolioViewMode: (mode: PoolsPortfolioViewMode) => void
   featured: PoolsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   donutSegments: ReturnType<typeof buildDonutSegments>
@@ -223,13 +229,29 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const { chainId } = useActiveChainId()
   const currentBlock = useCurrentBlock()
   const [filter, setFilter] = useState<PoolFilterChip>('All')
+  const [portfolioViewMode, setPortfolioViewModeState] = useState<PoolsPortfolioViewMode>('MY_POOLS')
   const [viewMode, setViewMode] = useState<PoolsViewMode>('grid')
-  const [poolTab, setPoolTab] = useState<PoolTab>('all')
+  const [poolTab, setPoolTab] = useState<PoolTab>('positions')
   const [sortMode, setSortMode] = useState<PoolsSortMode>('apr')
   const [modalRequest, setModalRequest] = useState<{
     pool: PoolPreviewCard
     action: Exclude<PoolsModalAction, null>
   } | null>(null)
+
+  const setPortfolioViewMode = useCallback((mode: PoolsPortfolioViewMode) => {
+    setPortfolioViewModeState(mode)
+    if (mode === 'MY_POOLS') {
+      setPoolTab('positions')
+    } else {
+      setPoolTab('all')
+      setFilter('All')
+    }
+  }, [])
+
+  const setPoolTabSynced = useCallback((tab: PoolTab) => {
+    setPoolTab(tab)
+    setPortfolioViewModeState(tab === 'positions' ? 'MY_POOLS' : 'ALL')
+  }, [])
 
   usePoolsPageFetch()
   const initialBlock = useInitialBlock()
@@ -255,6 +277,21 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     }
     return realPreviewCards
   }, [realPreviewCards])
+
+  const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
+  const positionsLoading = Boolean(account) && !userDataLoaded
+  const poolsWalletPortfolio = useMemo(
+    () =>
+      buildPoolsWalletPortfolio({
+        wallet: account ?? null,
+        chainId: chainId ?? null,
+        chainName,
+        generatedAt: '1970-01-01T00:00:00.000Z',
+        poolCards: realPreviewCards,
+        positionsLoading,
+      }),
+    [account, chainId, chainName, positionsLoading, realPreviewCards],
+  )
 
   const filteredPools = useMemo(() => {
     const tabbed = filterByTab(previewCards, poolTab, account)
@@ -532,7 +569,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     viewMode,
     setViewMode,
     poolTab,
-    setPoolTab,
+    setPoolTab: setPoolTabSynced,
     sortMode,
     setSortMode,
     positionsCount,
@@ -540,6 +577,9 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     poolsIndexingDiagnostic,
     pools: filteredPools,
     portfolioPools: realPreviewCards,
+    poolsWalletPortfolio,
+    portfolioViewMode,
+    setPortfolioViewMode,
     featured,
     kpis,
     donutSegments,

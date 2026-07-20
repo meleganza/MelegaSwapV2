@@ -20,10 +20,11 @@ const scrollToCreatePool = () => {
 export const PoolsStudioPageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="pools"
+    data-ps-wallet-first-header="true"
     title={STUDIO_PAGE_TITLES.pools}
     subtitle={
       <>
-        Stake assets. Earn rewards. Build long-term positions.
+        Your pool positions first — then explore and stake new pools.
       </>
     }
     badge={
