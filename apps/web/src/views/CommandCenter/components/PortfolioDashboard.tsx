@@ -33,9 +33,12 @@ import {
   buildTodaysPriorities,
   type PriorityItem,
 } from './portfolioComposition'
+import { PortfolioIntelligenceSection } from './PortfolioIntelligenceSection'
+import { buildPortfolioIntelligence } from '../commandCenterRuntime/portfolioIntelligence'
 
 export { buildTodaysPriorities, type PriorityItem }
 export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
+export { buildPortfolioIntelligence }
 
 export interface PortfolioDashboardProps {
   portfolio: WalletPortfolio
@@ -456,7 +459,7 @@ export function PortfolioActivitySection({
 
 /**
  * Wallet Operating Center order:
- * Hero → Today's Actions → Positions Center (filter + My Positions) → Claimables / Activity / Quick Actions
+ * Hero → Today's Actions → Portfolio Intelligence → Positions Center → Claimables / Activity / Quick Actions
  */
 export function PortfolioDashboard({
   portfolio,
@@ -471,11 +474,14 @@ export function PortfolioDashboard({
     portfolio.positions.length === 0 &&
     (!portfolio.claimables || portfolio.claimables.length === 0)
 
+  const intelligence = buildPortfolioIntelligence({ portfolio, walletConnected })
+
   return (
     <OperatingShell
       data-testid="portfolio-dashboard"
       data-wallet-operating-center="true"
       data-cc-r791d-4c
+      data-cc-r791d-4e
       data-wallet-connected={walletConnected ? 'true' : 'false'}
       data-responsive="stack-mobile-columns-desktop"
       data-active-positions={portfolio.summary.activePositionCount}
@@ -491,6 +497,10 @@ export function PortfolioDashboard({
 
       <DashboardSectionBoundary section="actions">
         <PortfolioActions positions={portfolio.positions} walletConnected={walletConnected} />
+      </DashboardSectionBoundary>
+
+      <DashboardSectionBoundary section="portfolio-intelligence">
+        <PortfolioIntelligenceSection model={intelligence} walletConnected={walletConnected} />
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="positions-center">
