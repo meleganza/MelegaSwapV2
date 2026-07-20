@@ -38,8 +38,8 @@ const Chip = styled.button<{ $active?: boolean }>`
 `
 
 const VIEW_CHIPS: { mode: PoolsPortfolioViewMode; label: string }[] = [
-  { mode: 'MY_POOLS', label: 'My Pools' },
-  { mode: 'ALL', label: 'All Pools' },
+  { mode: 'MY_POOLS', label: 'My Positions' },
+  { mode: 'ALL', label: 'Explore Pools' },
 ]
 
 export const PoolsFilterRow: React.FC = () => {
@@ -53,7 +53,8 @@ export const PoolsFilterRow: React.FC = () => {
             key={chip.mode}
             type="button"
             $active={portfolioViewMode === chip.mode}
-            data-testid={`ps-view-${chip.mode === 'MY_POOLS' ? 'my-pools' : 'all-pools'}`}
+            data-testid={chip.mode === 'MY_POOLS' ? 'ps-view-my-positions' : 'ps-view-explore-pools'}
+            data-view-mode={chip.mode}
             onClick={() => setPortfolioViewMode(chip.mode)}
           >
             {chip.label}

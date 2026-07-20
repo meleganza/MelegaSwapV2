@@ -45,8 +45,8 @@ const TabLabel = styled.span<{ $active?: boolean }>`
 export const PoolsTabsRow: React.FC = () => {
   const { poolTab, setPoolTab, positionsCount } = usePoolsRuntime()
   const tabs: { id: PoolTab; label: string }[] = [
-    { id: 'all', label: 'All Pools' },
     { id: 'positions', label: `My Positions (${positionsCount})` },
+    { id: 'all', label: 'Explore Pools' },
     { id: 'finished', label: 'Finished' },
   ]
 

@@ -1,5 +1,5 @@
 /**
- * Your Pools — wallet-first primary surface (R791E.4).
+ * Your Pool Positions — wallet-first primary surface (R791E.4 / R791E.7).
  *
  * Consumes WalletPortfolio POOL positions via View Engine.
  * No local pool scanning. No fake opportunities first.
@@ -124,7 +124,7 @@ export function YourPoolsSection() {
       data-position-count={poolPositions.length}
     >
       <Header>
-        <Title>Your Pools</Title>
+        <Title>Your Pool Positions</Title>
         <Subtitle>Staked pool positions from your wallet portfolio — including ended ownership.</Subtitle>
       </Header>
 
