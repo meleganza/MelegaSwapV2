@@ -4,6 +4,7 @@ import { NotFound } from '@pancakeswap/uikit'
 import { CHAIN_IDS } from 'utils/wagmi'
 import {
   buildProjectJsonLd,
+  buildProjectMarketsDocument,
   buildProjectReadinessDocument,
   canonicalProjectAbsoluteUrl,
   canonicalProjectPath,
@@ -15,12 +16,14 @@ import {
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
+import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
   evidencePack: ProjectEvidencePack | null
   readinessDocument: ProjectReadinessDocument | null
+  marketsDocument: ProjectMarketsDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -38,6 +41,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   const jsonAlternate = `/api/public/projects/${document.slug}/`
   const evidenceAlternate = `/api/public/projects/${document.slug}/evidence/`
   const readinessAlternate = `/api/public/projects/${document.slug}/readiness/`
+  const marketsAlternate = `/api/public/projects/${document.slug}/markets/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
 
   return (
@@ -48,6 +52,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       <link rel="alternate" type="application/json" href={jsonAlternate} />
       <link rel="alternate" type="application/json" href={evidenceAlternate} title="Project evidence" />
       <link rel="alternate" type="application/json" href={readinessAlternate} title="Project readiness" />
+      <link rel="alternate" type="application/json" href={marketsAlternate} title="Project markets" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalAbs} />
@@ -67,8 +72,14 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   )
 }
 
-const ProjectHqPage = ({ document, evidencePack, readinessDocument, jsonLd }: ProjectHqPageProps) => {
-  if (!document || !jsonLd || !evidencePack || !readinessDocument) {
+const ProjectHqPage = ({
+  document,
+  evidencePack,
+  readinessDocument,
+  marketsDocument,
+  jsonLd,
+}: ProjectHqPageProps) => {
+  if (!document || !jsonLd || !evidencePack || !readinessDocument || !marketsDocument) {
     return <NotFound />
   }
 
@@ -77,6 +88,7 @@ const ProjectHqPage = ({ document, evidencePack, readinessDocument, jsonLd }: Pr
       document={document}
       evidencePack={evidencePack}
       readinessDocument={readinessDocument}
+      marketsDocument={marketsDocument}
     />
   )
 }
@@ -121,11 +133,18 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     generatedAt,
   })
 
+  const marketsDocument = buildProjectMarketsDocument({
+    project: resolved.project,
+    document: loaded.document,
+    context: { generatedAt },
+  })
+
   return {
     props: {
       document: loaded.document,
       evidencePack: loaded.evidencePack,
       readinessDocument,
+      marketsDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },

@@ -4,8 +4,10 @@ import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
+import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
+import ProjectMarketsSection from './ProjectMarketsSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
@@ -129,6 +131,22 @@ const Chip = styled.span`
   color: ${({ theme }) => theme.colors.text};
 `
 
+const HeroAction = styled.a`
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 4px;
+  color: ${({ theme }) => theme.colors.secondary};
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: 14px;
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    outline-offset: 2px;
+  }
+`
+
 const ResourceLink = styled.a`
   color: ${({ theme }) => theme.colors.secondary};
   text-decoration: underline;
@@ -201,9 +219,15 @@ interface Props {
   document: CanonicalProjectDocument
   evidencePack: ProjectEvidencePack
   readinessDocument: ProjectReadinessDocument
+  marketsDocument: ProjectMarketsDocument
 }
 
-const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, readinessDocument }) => {
+const ProjectIdentityShell: React.FC<Props> = ({
+  document: doc,
+  evidencePack,
+  readinessDocument,
+  marketsDocument,
+}) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const onCopy = useCallback(async (id: string, value: string) => {
@@ -225,11 +249,31 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
   const primaryAssets = doc.assets.filter((asset) => asset.projectRole === 'primary')
   const assetsToShow = primaryAssets.length ? primaryAssets : doc.assets
 
+  const preferredMarket = marketsDocument.preferredMarkets[0] ?? null
+  const heroSwapDestination =
+    (preferredMarket &&
+      marketsDocument.swapDestinations.find(
+        (d) => d.marketId === preferredMarket.marketId && d.status === 'READY' && d.label.includes('buy'),
+      )) ||
+    marketsDocument.swapDestinations.find((d) => d.status === 'READY') ||
+    null
+
+  const navSections = (() => {
+    const sections = [...doc.navSections]
+    const overviewIdx = sections.findIndex((s) => s.id === 'overview')
+    const participate = { id: 'participate', label: 'Participate' }
+    if (!sections.some((s) => s.id === 'participate')) {
+      if (overviewIdx >= 0) sections.splice(overviewIdx + 1, 0, participate)
+      else sections.push(participate)
+    }
+    return sections
+  })()
+
   return (
     <PageFrame>
       <Shell as="main" id="project-identity-shell" data-testid="project-identity-shell">
         <Nav aria-label="Project page sections">
-          {doc.navSections.map((section) => (
+          {navSections.map((section) => (
             <NavLink key={section.id} href={`#${section.id}`}>
               {section.label}
             </NavLink>
@@ -280,6 +324,15 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
                   </Chip>
                 ) : null}
               </MetaRow>
+              {heroSwapDestination ? (
+                <HeroAction
+                  href={heroSwapDestination.href}
+                  data-testid="hero-open-swap"
+                  aria-label={`Open Swap for ${doc.identity.displayName} on Melega DEX`}
+                >
+                  Open Swap
+                </HeroAction>
+              ) : null}
             </Flex>
           </Flex>
         </Section>
@@ -318,13 +371,17 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           )}
         </Section>
 
-        <Section $mobileOrder={5} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
+        <Section $mobileOrder={5} data-testid="project-participate-slot">
+          <ProjectMarketsSection markets={marketsDocument} />
+        </Section>
+
+        <Section $mobileOrder={6} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
           <ReadinessTrustSnapshot readiness={readinessDocument} />
           <TrustEvidencePanel pack={evidencePack} />
         </Section>
 
         <Section
-          $mobileOrder={6}
+          $mobileOrder={7}
           id="ecosystem"
           aria-labelledby="deployments-heading"
           data-testid="project-deployments"
@@ -354,7 +411,7 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           )}
         </Section>
 
-        <Section $mobileOrder={7} aria-labelledby="resources-heading" data-testid="project-resources">
+        <Section $mobileOrder={8} aria-labelledby="resources-heading" data-testid="project-resources">
           <Heading as="h2" id="resources-heading" scale="md">
             Official resources
           </Heading>
@@ -379,7 +436,7 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, re
           )}
         </Section>
 
-        <Section $mobileOrder={8} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
+        <Section $mobileOrder={9} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
           <Heading as="h2" id="assets-heading" scale="md">
             Assets and contracts
           </Heading>

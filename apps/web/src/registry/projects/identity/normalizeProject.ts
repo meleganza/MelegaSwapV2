@@ -489,6 +489,8 @@ export function toPublicProjectJson(
     trustSnapshotSummary?: Record<string, unknown>
     /** Static support metadata only — never wallet balances or positions. */
     walletRelationshipSupport?: Record<string, unknown>
+    /** Public-safe markets summary only — never wallet-specific market state. */
+    marketsSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -562,6 +564,11 @@ export function toPublicProjectJson(
   // PP004 — static support metadata only (no wallet-specific fields)
   if (options?.walletRelationshipSupport) {
     body.walletRelationshipSupport = options.walletRelationshipSupport
+  }
+
+  // PP005 — public-safe markets summary (no quotes, balances, or wallet context)
+  if (options?.marketsSummary) {
+    body.marketsSummary = options.marketsSummary
   }
 
   return body
