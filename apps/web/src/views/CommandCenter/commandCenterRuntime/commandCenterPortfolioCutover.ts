@@ -30,6 +30,7 @@ import {
 import {
   createEmptyWalletPortfolio,
   type PortfolioActionType,
+  type PortfolioClaimableItem,
   type PortfolioPosition,
   type PortfolioPositionAction,
   type PortfolioPositionLifecycle,
@@ -311,6 +312,63 @@ export function adaptStudioRowsToPortfolioPositions(input: {
   return { liquidityPositions, farmPositions, poolPositions }
 }
 
+function claimAction(
+  type: Extract<PortfolioActionType, 'CLAIM' | 'HARVEST'>,
+  label: string,
+  route: string,
+): PortfolioPositionAction {
+  return {
+    type,
+    label,
+    priority: 1,
+    route,
+    enabled: true,
+    reasonDisabled: null,
+  }
+}
+
+/**
+ * Claimables from real producer pending rewards only — no fabricated amounts.
+ */
+export function buildClaimablesFromStudioCards(input: {
+  farmCards: readonly FarmPreviewCard[]
+  poolCards: readonly PoolPreviewCard[]
+}): PortfolioClaimableItem[] {
+  const items: PortfolioClaimableItem[] = []
+
+  for (const card of input.farmCards) {
+    if (!bnPositive(card.pendingReward)) continue
+    const amount = card.pendingReward?.toString() ?? null
+    const id = `claimable:farm:${card.pid ?? card.id}`
+    items.push({
+      id,
+      positionId: null,
+      sourceType: 'FARM',
+      title: `${card.pair ?? 'Farm'} rewards`,
+      amount,
+      valueUsd: null,
+      action: claimAction('HARVEST', 'Harvest', '/farms'),
+    })
+  }
+
+  for (const card of input.poolCards) {
+    if (!bnPositive(card.pendingReward)) continue
+    const amount = card.pendingReward?.toString() ?? null
+    const id = `claimable:pool:${card.sousId ?? card.id}`
+    items.push({
+      id,
+      positionId: null,
+      sourceType: 'POOL',
+      title: `${card.name ?? 'Pool'} rewards`,
+      amount,
+      valueUsd: null,
+      action: claimAction('CLAIM', 'Claim', '/pools'),
+    })
+  }
+
+  return items
+}
+
 /** Shell portfolio so View Engine can count without Command Center filter logic. */
 function shellPortfolio(positions: readonly PortfolioPosition[]): WalletPortfolio {
   const empty = createEmptyWalletPortfolio({
@@ -415,14 +473,25 @@ export function buildCommandCenterWalletPortfolio(input: CommandCenterPortfolioB
     ...adapted.poolPositions,
   ]
 
+  const claimables =
+    input.claimables != null
+      ? [...input.claimables]
+      : buildClaimablesFromStudioCards({
+          farmCards: input.farmCards,
+          poolCards: input.poolCards,
+        })
+
   return createWalletPortfolio({
     wallet,
     generatedAt: input.generatedAt,
-    summary: summaryFromPositions(mergedForCounts, input.summary),
+    summary: summaryFromPositions(mergedForCounts, {
+      ...input.summary,
+      claimableValueUsd: input.summary.claimableValueUsd,
+    }),
     liquidityPositions: adapted.liquidityPositions,
     farmPositions: adapted.farmPositions,
     poolPositions: adapted.poolPositions,
-    claimables: input.claimables ? [...input.claimables] : [],
+    claimables,
     approvals: input.approvals ? [...input.approvals] : [],
     recentActivity: input.recentActivity ? [...input.recentActivity] : [],
     quickActions: input.quickActions ? [...input.quickActions] : [],

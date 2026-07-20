@@ -124,6 +124,8 @@ export interface PoolsStakingRuntime {
     integrity: PoolsMachinePayload['integrity']
   }
   pools: PoolPreviewCard[]
+  /** Real producer inventory for wallet portfolio — never UX fixtures, never tab-filtered. */
+  portfolioPools: PoolPreviewCard[]
   featured: PoolsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   donutSegments: ReturnType<typeof buildDonutSegments>
@@ -237,10 +239,8 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
   const performanceFee = 0
 
-  const previewCards = useMemo(() => {
-    if (isPoolsUxFixtureEnabled()) {
-      return getPoolsUxFixtureCards()
-    }
+  /** Canonical pool cards from live producers — never fixture data. */
+  const realPreviewCards = useMemo(() => {
     if (!rawPools?.length) return []
     const cards = rawPools
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
@@ -248,6 +248,13 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       .filter((c): c is PoolPreviewCard => c !== null)
     return deduplicatePoolPreviewCards(cards, chainId ?? 56)
   }, [rawPools, currentBlock, chainId])
+
+  const previewCards = useMemo(() => {
+    if (isPoolsUxFixtureEnabled()) {
+      return getPoolsUxFixtureCards()
+    }
+    return realPreviewCards
+  }, [realPreviewCards])
 
   const filteredPools = useMemo(() => {
     const tabbed = filterByTab(previewCards, poolTab, account)
@@ -532,6 +539,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     hiddenPoolReasons,
     poolsIndexingDiagnostic,
     pools: filteredPools,
+    portfolioPools: realPreviewCards,
     featured,
     kpis,
     donutSegments,

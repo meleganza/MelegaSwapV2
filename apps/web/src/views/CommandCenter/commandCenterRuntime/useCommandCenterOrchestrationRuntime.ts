@@ -43,7 +43,11 @@ import {
 } from './commandCenterPortfolioCutover'
 import { buildPortfolioViewSelectorModel } from './commandCenterPortfolioCutover'
 import type { PortfolioViewType } from 'lib/wallet-portfolio/viewEngine'
-import type { WalletPortfolioSectionStatus } from 'lib/wallet-portfolio/contracts'
+import type {
+  PortfolioSectionStatusCode,
+  WalletPortfolio,
+  WalletPortfolioSectionStatus,
+} from 'lib/wallet-portfolio/contracts'
 import {
   commandCenterIdentitySummary,
   formatCommandCenterCollectibles,
@@ -109,29 +113,45 @@ export function useCommandCenterOrchestrationRuntime() {
   const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
 
   const portfolioSectionStatus: WalletPortfolioSectionStatus = useMemo(() => {
-    const mapStatus = (s: PortfolioSectionStatus): WalletPortfolioSectionStatus['positions']['status'] => {
-      if (!account) return 'WALLET_NOT_CONNECTED'
-      if (s === 'unavailable') return 'UNAVAILABLE'
-      if (s === 'empty') return 'EMPTY'
-      if (s === 'ok') return 'READY'
-      return 'PARTIAL'
-    }
-    // Producer isolation: mark positions section from studio availability, not a global crash.
-    const liqUnavailable = false
-    const status = !account
-      ? 'WALLET_NOT_CONNECTED'
-      : liqUnavailable
-        ? 'UNAVAILABLE'
-        : 'PARTIAL'
     const stamp = null
+    if (!account) {
+      return {
+        summary: { status: 'WALLET_NOT_CONNECTED', updatedAt: stamp, errorCode: null, message: null },
+        positions: { status: 'WALLET_NOT_CONNECTED', updatedAt: stamp, errorCode: null, message: null },
+        claimables: { status: 'WALLET_NOT_CONNECTED', updatedAt: stamp, errorCode: null, message: null },
+        approvals: { status: 'EMPTY', updatedAt: stamp, errorCode: null, message: null },
+        activity: { status: 'EMPTY', updatedAt: stamp, errorCode: null, message: null },
+      }
+    }
+
+    const producersLoading =
+      !farms.userDataLoaded || !pools.userDataLoaded || Boolean(liquidity.isLoading)
+    const farmFailed = Boolean(farms.error)
+    const poolFailed = Boolean(pools.error)
+    const bothFailed = farmFailed && poolFailed
+
+    const loadingOrPartial = producersLoading ? 'LOADING' : bothFailed ? 'UNAVAILABLE' : 'PARTIAL'
+
     return {
-      summary: { status: mapStatus(assetsSection.status), updatedAt: stamp, errorCode: null, message: null },
-      positions: { status, updatedAt: stamp, errorCode: null, message: null },
-      claimables: { status, updatedAt: stamp, errorCode: null, message: null },
+      summary: {
+        status: producersLoading ? 'LOADING' : 'PARTIAL',
+        updatedAt: stamp,
+        errorCode: null,
+        message: null,
+      },
+      positions: { status: loadingOrPartial, updatedAt: stamp, errorCode: null, message: null },
+      claimables: { status: loadingOrPartial, updatedAt: stamp, errorCode: null, message: null },
       approvals: { status: 'EMPTY', updatedAt: stamp, errorCode: null, message: null },
       activity: { status: 'EMPTY', updatedAt: stamp, errorCode: null, message: null },
     }
-  }, [account, assetsSection.status])
+  }, [
+    account,
+    farms.userDataLoaded,
+    farms.error,
+    pools.userDataLoaded,
+    pools.error,
+    liquidity.isLoading,
+  ])
 
   const walletPortfolio = useMemo(
     () =>
@@ -154,15 +174,16 @@ export function useCommandCenterOrchestrationRuntime() {
             pendingActionCount: 0,
           },
         }),
-        () =>
-          buildCommandCenterWalletPortfolio({
+        () => {
+          const built = buildCommandCenterWalletPortfolio({
             wallet: account ?? null,
             chainId: chainId ?? null,
             chainName,
             generatedAt: new Date().toISOString(),
+            // Real producer inventory — not UI-filtered farms/pools lists
             liquidityRows: liquidity.positions ?? [],
-            farmCards: farms.farms ?? [],
-            poolCards: pools.pools ?? [],
+            farmCards: farms.portfolioFarms ?? farms.farms ?? [],
+            poolCards: pools.portfolioPools ?? pools.pools ?? [],
             sectionStatus: portfolioSectionStatus,
             summary: {
               netValueUsd: null,
@@ -172,9 +193,77 @@ export function useCommandCenterOrchestrationRuntime() {
               attentionPositionCount: 0,
               pendingActionCount: 0,
             },
-          }),
-      ),
-    [account, chainId, chainName, liquidity.positions, farms.farms, pools.pools, portfolioSectionStatus],
+          })
+
+          if (!account) return built
+
+          const producersLoading =
+            !farms.userDataLoaded || !pools.userDataLoaded || Boolean(liquidity.isLoading)
+          if (producersLoading) return built
+
+          const hasPositions = built.positions.length > 0
+          const hasClaimables = built.claimables.length > 0
+          const farmFailed = Boolean(farms.error)
+          const poolFailed = Boolean(pools.error)
+          const partialFailure = farmFailed || poolFailed
+
+          const summaryStatus: PortfolioSectionStatusCode = partialFailure
+            ? 'PARTIAL'
+            : hasPositions
+              ? 'READY'
+              : 'EMPTY'
+          const positionsStatus: PortfolioSectionStatusCode = partialFailure
+            ? 'PARTIAL'
+            : hasPositions
+              ? 'READY'
+              : 'EMPTY'
+          const claimablesStatus: PortfolioSectionStatusCode =
+            partialFailure && !hasClaimables ? 'PARTIAL' : hasClaimables ? 'READY' : 'EMPTY'
+
+          const refined: WalletPortfolio = {
+            ...built,
+            sectionStatus: {
+              summary: {
+                status: summaryStatus,
+                updatedAt: built.sectionStatus.summary.updatedAt,
+                errorCode: built.sectionStatus.summary.errorCode,
+                message: built.sectionStatus.summary.message,
+              },
+              positions: {
+                status: positionsStatus,
+                updatedAt: built.sectionStatus.positions.updatedAt,
+                errorCode: built.sectionStatus.positions.errorCode,
+                message: built.sectionStatus.positions.message,
+              },
+              claimables: {
+                status: claimablesStatus,
+                updatedAt: built.sectionStatus.claimables.updatedAt,
+                errorCode: built.sectionStatus.claimables.errorCode,
+                message: built.sectionStatus.claimables.message,
+              },
+              approvals: built.sectionStatus.approvals,
+              activity: built.sectionStatus.activity,
+            },
+          }
+          return refined
+        },
+      ) as WalletPortfolio,
+    [
+      account,
+      chainId,
+      chainName,
+      liquidity.positions,
+      liquidity.isLoading,
+      farms.portfolioFarms,
+      farms.farms,
+      farms.userDataLoaded,
+      farms.error,
+      pools.portfolioPools,
+      pools.pools,
+      pools.userDataLoaded,
+      pools.error,
+      portfolioSectionStatus,
+    ],
   )
 
   // View Engine owns filtering — Command Center only projects for legacy consumers.

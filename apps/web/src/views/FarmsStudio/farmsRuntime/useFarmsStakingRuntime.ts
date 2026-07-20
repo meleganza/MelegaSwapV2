@@ -79,6 +79,8 @@ export interface FarmsStakingRuntime {
   filter: FarmFilterChip
   setFilter: (chip: FarmFilterChip) => void
   farms: FarmPreviewCard[]
+  /** Full unfiltered inventory for wallet portfolio (not UI filter chips). */
+  portfolioFarms: FarmPreviewCard[]
   featured: FarmsFeaturedMetrics
   kpis: ReturnType<typeof aggregateKpis>
   advisorItems: FarmsAdvisorItem[]
@@ -333,6 +335,7 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     filter,
     setFilter,
     farms: filteredFarms,
+    portfolioFarms: previewCards,
     featured,
     kpis,
     advisorItems,
