@@ -1,8 +1,8 @@
 /**
- * Command Center Portfolio Dashboard — Wallet Operating Center (R791D.4C–4G).
+ * Command Center Portfolio Dashboard — Wallet Operating Center (R791D.4C–4G + 5B).
  *
- * Hierarchy: Hero → Action Center → Intelligence Center → Positions Center → Secondary.
- * Premium UI implements foundation — no product-specific section roots.
+ * Hierarchy: Hero → Today's Actions → Portfolio Intelligence → AI Portfolio Assistant
+ * → My Positions → Claimables / Activity / Quick Actions.
  */
 
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
@@ -34,6 +34,7 @@ import {
   type PriorityItem,
 } from './portfolioComposition'
 import { PortfolioIntelligenceSection } from './PortfolioIntelligenceSection'
+import { PortfolioAssistantPanel } from './PortfolioAssistantPanel'
 import { buildPortfolioIntelligence } from '../commandCenterRuntime/portfolioIntelligence'
 import {
   buildPortfolioAssistantContext,
@@ -49,6 +50,7 @@ export { buildTodaysPriorities, type PriorityItem }
 export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
 export { buildPortfolioIntelligence }
 export { buildPortfolioAssistantContext, type PortfolioAssistantContext }
+export { PortfolioAssistantPanel }
 
 export interface PortfolioDashboardProps {
   portfolio: WalletPortfolio
@@ -441,8 +443,9 @@ export function PortfolioActivitySection({
 }
 
 /**
- * Wallet Operating Center order (R791D.4F):
- * PORTFOLIO_HERO → ACTION_CENTER → INTELLIGENCE_CENTER → POSITIONS_CENTER → SECONDARY
+ * Wallet Operating Center order (R791D.4F + R791D.5B):
+ * PORTFOLIO_HERO → ACTION_CENTER → INTELLIGENCE_CENTER → AI Portfolio Assistant
+ * → POSITIONS_CENTER → SECONDARY
  */
 export function PortfolioDashboard({
   portfolio,
@@ -517,6 +520,10 @@ export function PortfolioDashboard({
 
       <DashboardSectionBoundary section="portfolio-intelligence">
         <PortfolioIntelligenceSection model={intelligence} walletConnected={walletConnected} />
+      </DashboardSectionBoundary>
+
+      <DashboardSectionBoundary section="ai-portfolio-assistant">
+        <PortfolioAssistantPanel context={assistantContext} />
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="positions-center">
