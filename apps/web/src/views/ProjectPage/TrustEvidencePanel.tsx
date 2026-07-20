@@ -144,7 +144,7 @@ const TrustEvidencePanel: React.FC<Props> = ({ pack }) => {
   return (
     <Stack data-testid="trust-evidence-panel">
       <div>
-        <Heading as="h2" id="trust-heading" scale="md">
+        <Heading as="h3" id="trust-heading" scale="md">
           Trust evidence
         </Heading>
         <Text fontSize="13px" color="textSubtle" style={{ marginTop: 8, marginBottom: 12 }}>

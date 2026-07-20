@@ -1,15 +1,20 @@
 import type { NextApiHandler } from 'next'
 import stringify from 'fast-json-stable-stringify'
 import {
+  buildProjectReadinessDocument,
   loadProjectEvidencePack,
   normalizeProjectSlugInput,
+  resolveProjectBySlug,
   toEvidenceSummaryForProjectApi,
   toPublicProjectJson,
+  toReadinessSummaryForProjectApi,
+  toTrustSnapshotSummaryForProjectApi,
 } from 'registry/projects/identity'
 
 /**
  * GET /api/public/projects/{slug}
- * PP001 project document + additive PP002 evidenceSummary (schema remains melega.project-page.v1).
+ * PP001 project document + PP002 evidenceSummary + PP003 readiness/trust summaries
+ * (schema remains melega.project-page.v1).
  */
 const handler: NextApiHandler = (req, res) => {
   if (req.method !== 'GET') {
@@ -25,16 +30,33 @@ const handler: NextApiHandler = (req, res) => {
     return res.status(404).json({ ok: false, reason: 'NOT_FOUND', message: 'Malformed or unknown project slug' })
   }
 
-  const loaded = loadProjectEvidencePack(slug, {
-    generatedAt: new Date().toISOString(),
-  })
+  const generatedAt = new Date().toISOString()
+  const resolved = resolveProjectBySlug(slug)
+  if (!resolved.ok) {
+    res.setHeader('Cache-Control', 'public, max-age=60')
+    return res.status(404).json({ ok: false, reason: 'NOT_FOUND', message: 'Unknown project slug' })
+  }
+
+  const loaded = loadProjectEvidencePack(resolved.slug, { generatedAt })
   if (!loaded) {
     res.setHeader('Cache-Control', 'public, max-age=60')
     return res.status(404).json({ ok: false, reason: 'NOT_FOUND', message: 'Unknown project slug' })
   }
 
+  const readinessDoc = buildProjectReadinessDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
+    readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
+    trustSnapshotSummary: toTrustSnapshotSummaryForProjectApi(readinessDoc) as unknown as Record<
+      string,
+      unknown
+    >,
   })
   const payload = stringify(body)
   const etag = `"${loaded.document.revision}"`

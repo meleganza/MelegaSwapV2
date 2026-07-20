@@ -4,19 +4,23 @@ import { NotFound } from '@pancakeswap/uikit'
 import { CHAIN_IDS } from 'utils/wagmi'
 import {
   buildProjectJsonLd,
+  buildProjectReadinessDocument,
   canonicalProjectAbsoluteUrl,
   canonicalProjectPath,
   getAllResolvableProjectSlugs,
   loadProjectEvidencePack,
   normalizeProjectSlugInput,
+  resolveProjectBySlug,
 } from 'registry/projects/identity'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
+import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
   evidencePack: ProjectEvidencePack | null
+  readinessDocument: ProjectReadinessDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -33,6 +37,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       : `${document.identity.displayName} project identity on Melega DEX.`
   const jsonAlternate = `/api/public/projects/${document.slug}/`
   const evidenceAlternate = `/api/public/projects/${document.slug}/evidence/`
+  const readinessAlternate = `/api/public/projects/${document.slug}/readiness/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
 
   return (
@@ -42,6 +47,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       <link rel="canonical" href={canonicalAbs} />
       <link rel="alternate" type="application/json" href={jsonAlternate} />
       <link rel="alternate" type="application/json" href={evidenceAlternate} title="Project evidence" />
+      <link rel="alternate" type="application/json" href={readinessAlternate} title="Project readiness" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalAbs} />
@@ -61,12 +67,18 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   )
 }
 
-const ProjectHqPage = ({ document, evidencePack, jsonLd }: ProjectHqPageProps) => {
-  if (!document || !jsonLd || !evidencePack) {
+const ProjectHqPage = ({ document, evidencePack, readinessDocument, jsonLd }: ProjectHqPageProps) => {
+  if (!document || !jsonLd || !evidencePack || !readinessDocument) {
     return <NotFound />
   }
 
-  return <ProjectIdentityShell document={document} evidencePack={evidencePack} />
+  return (
+    <ProjectIdentityShell
+      document={document}
+      evidencePack={evidencePack}
+      readinessDocument={readinessDocument}
+    />
+  )
 }
 
 export const getStaticPaths: GetStaticPaths = () => ({
@@ -92,17 +104,28 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     }
   }
 
-  const loaded = loadProjectEvidencePack(requestedSlug, {
-    generatedAt: new Date().toISOString(),
-  })
+  const generatedAt = new Date().toISOString()
+  const resolved = resolveProjectBySlug(requestedSlug)
+  if (!resolved.ok) {
+    return { notFound: true }
+  }
+  const loaded = loadProjectEvidencePack(requestedSlug, { generatedAt })
   if (!loaded) {
     return { notFound: true }
   }
+
+  const readinessDocument = buildProjectReadinessDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
 
   return {
     props: {
       document: loaded.document,
       evidencePack: loaded.evidencePack,
+      readinessDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },

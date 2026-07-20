@@ -23,6 +23,10 @@ import { getAllProjects } from './getAllProjects'
  * - Multi-chain presence (10%): min(100, supportedChains.length / 4 × 100) for current platform max
  * - Trust & registry signals (5%): canonical badge, observed verification, listed status
  */
+/**
+ * Fractional weights (sum = 1). Point caps are weight × CIVILIZATION_READINESS_MAX.
+ * TRUST_EVIDENCE in PP003 maps to trustSignals (registry signals) — not a new formula.
+ */
 export const CIVILIZATION_READINESS_WEIGHTS = {
   identity: 0.15,
   capabilities: 0.3,
@@ -31,6 +35,19 @@ export const CIVILIZATION_READINESS_WEIGHTS = {
   multiChain: 0.1,
   trustSignals: 0.05,
 } as const
+
+export const CIVILIZATION_READINESS_MAX = 100 as const
+
+export const CIVILIZATION_READINESS_POINT_CAPS = {
+  identity: 15,
+  capabilities: 30,
+  ecosystemSurfaces: 25,
+  machineReadiness: 15,
+  multiChain: 10,
+  trustSignals: 5,
+} as const
+
+export const CIVILIZATION_READINESS_CALCULATION_REVISION = 'CIVILIZATION_READINESS_V1' as const
 
 const ECOSYSTEM_SURFACE_KEYS: (keyof ProjectCapabilities)[] = [
   'smartdrop',
@@ -41,6 +58,30 @@ const ECOSYSTEM_SURFACE_KEYS: (keyof ProjectCapabilities)[] = [
 ]
 
 const PLATFORM_CHAIN_COUNT = 4
+
+export type CivilizationReadinessComponentKey = keyof typeof CIVILIZATION_READINESS_WEIGHTS
+
+export interface CivilizationReadinessSubScores {
+  identity: number
+  capabilities: number
+  ecosystemSurfaces: number
+  machineReadiness: number
+  multiChain: number
+  trustSignals: number
+}
+
+export interface CivilizationReadinessBreakdown {
+  calculationRevision: typeof CIVILIZATION_READINESS_CALCULATION_REVISION
+  maxScore: typeof CIVILIZATION_READINESS_MAX
+  /** Canonical total — Math.round of weighted sum (unchanged Organ 01 semantics). */
+  totalScore: number
+  /** Pre-round weighted sum for explainability. */
+  totalExact: number
+  subScores: CivilizationReadinessSubScores
+  /** Achieved points per component (subScore × weight), before total rounding. */
+  achievedPoints: Record<CivilizationReadinessComponentKey, number>
+  pointCaps: typeof CIVILIZATION_READINESS_POINT_CAPS
+}
 
 export type DiscoverySortOption =
   | 'alphabetical'
@@ -149,7 +190,10 @@ export const buildSearchableText = (project: StaticProjectRecord): string => {
   return parts.filter(Boolean).join(' ').toLowerCase()
 }
 
-export const computeCivilizationReadiness = (project: StaticProjectRecord): number => {
+/** Canonical explainable breakdown — same inputs and rounding as Organ 01. */
+export const computeCivilizationReadinessBreakdown = (
+  project: StaticProjectRecord,
+): CivilizationReadinessBreakdown => {
   const identityScore = computeIdentityCompleteness(project)
 
   const capabilityEntries = Object.values(project.capabilities)
@@ -163,13 +207,11 @@ export const computeCivilizationReadiness = (project: StaticProjectRecord): numb
     ecosystemEntries.length
 
   const machineScore =
-    (capabilityStatusScore(project.capabilities.machineManifest.status) * 0.7 +
-      capabilityStatusScore(project.capabilities.aiReport.status) * 0.3)
+    capabilityStatusScore(project.capabilities.machineManifest.status) * 0.7 +
+    capabilityStatusScore(project.capabilities.aiReport.status) * 0.3
 
-  const multiChainScore = Math.min(
-    100,
-    (project.supportedChains.length / PLATFORM_CHAIN_COUNT) * 100,
-  )
+  const uniqueChains = [...new Set(project.supportedChains)]
+  const multiChainScore = Math.min(100, (uniqueChains.length / PLATFORM_CHAIN_COUNT) * 100)
 
   let trustScore = 0
   if (project.trustBadges.includes('canonical')) trustScore += 40
@@ -177,16 +219,45 @@ export const computeCivilizationReadiness = (project: StaticProjectRecord): numb
   if (project.registryStatus === 'listed') trustScore += 30
   trustScore = Math.min(100, trustScore)
 
-  const weighted =
-    identityScore * CIVILIZATION_READINESS_WEIGHTS.identity +
-    capabilityScore * CIVILIZATION_READINESS_WEIGHTS.capabilities +
-    ecosystemScore * CIVILIZATION_READINESS_WEIGHTS.ecosystemSurfaces +
-    machineScore * CIVILIZATION_READINESS_WEIGHTS.machineReadiness +
-    multiChainScore * CIVILIZATION_READINESS_WEIGHTS.multiChain +
-    trustScore * CIVILIZATION_READINESS_WEIGHTS.trustSignals
+  const subScores: CivilizationReadinessSubScores = {
+    identity: identityScore,
+    capabilities: capabilityScore,
+    ecosystemSurfaces: ecosystemScore,
+    machineReadiness: machineScore,
+    multiChain: multiChainScore,
+    trustSignals: trustScore,
+  }
 
-  return Math.round(weighted)
+  const achievedPoints = {
+    identity: subScores.identity * CIVILIZATION_READINESS_WEIGHTS.identity,
+    capabilities: subScores.capabilities * CIVILIZATION_READINESS_WEIGHTS.capabilities,
+    ecosystemSurfaces: subScores.ecosystemSurfaces * CIVILIZATION_READINESS_WEIGHTS.ecosystemSurfaces,
+    machineReadiness: subScores.machineReadiness * CIVILIZATION_READINESS_WEIGHTS.machineReadiness,
+    multiChain: subScores.multiChain * CIVILIZATION_READINESS_WEIGHTS.multiChain,
+    trustSignals: subScores.trustSignals * CIVILIZATION_READINESS_WEIGHTS.trustSignals,
+  }
+
+  const totalExact =
+    achievedPoints.identity +
+    achievedPoints.capabilities +
+    achievedPoints.ecosystemSurfaces +
+    achievedPoints.machineReadiness +
+    achievedPoints.multiChain +
+    achievedPoints.trustSignals
+
+  return {
+    calculationRevision: CIVILIZATION_READINESS_CALCULATION_REVISION,
+    maxScore: CIVILIZATION_READINESS_MAX,
+    totalScore: Math.round(totalExact),
+    totalExact,
+    subScores,
+    achievedPoints,
+    pointCaps: CIVILIZATION_READINESS_POINT_CAPS,
+  }
 }
+
+export const computeCivilizationReadiness = (project: StaticProjectRecord): number =>
+  computeCivilizationReadinessBreakdown(project).totalScore
 
 export const enrichProject = (project: StaticProjectRecord): EnrichedProjectRecord => ({
   ...project,

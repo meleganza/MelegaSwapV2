@@ -3,7 +3,9 @@ import styled from 'styled-components'
 import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
+import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import TrustEvidencePanel from './TrustEvidencePanel'
+import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 
 /** Avoid Layout/Page — its PageMeta would overwrite Project Page SEO. */
 const PageFrame = styled.div`
@@ -188,9 +190,10 @@ const SrOnly = styled.span`
 interface Props {
   document: CanonicalProjectDocument
   evidencePack: ProjectEvidencePack
+  readinessDocument: ProjectReadinessDocument
 }
 
-const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack }) => {
+const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack, readinessDocument }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const onCopy = useCallback(async (id: string, value: string) => {
@@ -251,6 +254,21 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack }) 
                 {doc.identity.categories.map((category) => (
                   <Chip key={category}>{category}</Chip>
                 ))}
+                <Chip data-testid="hero-readiness-chip" title="Civilization readiness — not a safety rating">
+                  Readiness {readinessDocument.readiness.score}/{readinessDocument.readiness.maxScore}
+                </Chip>
+                <Chip data-testid="hero-readiness-state">{readinessDocument.readiness.stateLabel}</Chip>
+                {readinessDocument.trustSnapshot.missingEvidenceSummary.missingExpectedCount > 0 ? (
+                  <Chip data-testid="hero-evidence-gaps">
+                    {readinessDocument.trustSnapshot.missingEvidenceSummary.missingExpectedCount} evidence gaps
+                  </Chip>
+                ) : null}
+                {readinessDocument.trustSnapshot.conflictSummary.activeConflictCount > 0 ? (
+                  <Chip data-testid="hero-conflicts">
+                    {readinessDocument.trustSnapshot.conflictSummary.activeConflictCount} unresolved conflict
+                    {readinessDocument.trustSnapshot.conflictSummary.activeConflictCount === 1 ? '' : 's'}
+                  </Chip>
+                ) : null}
               </MetaRow>
             </Flex>
           </Flex>
@@ -275,16 +293,9 @@ const ProjectIdentityShell: React.FC<Props> = ({ document: doc, evidencePack }) 
           ) : null}
         </Section>
 
-        <Section $mobileOrder={3} id="trust" aria-labelledby="trust-heading" data-testid="project-trust-state">
+        <Section $mobileOrder={3} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
+          <ReadinessTrustSnapshot readiness={readinessDocument} />
           <TrustEvidencePanel pack={evidencePack} />
-          {doc.identity.readiness.meta.availability === 'AVAILABLE' && doc.identity.readiness.value ? (
-            <div>
-              <Text fontSize="14px">
-                {doc.identity.readiness.value.label}: {doc.identity.readiness.value.score}
-              </Text>
-              <Fact>{doc.identity.readiness.value.disclaimer} Readiness is not a safety rating.</Fact>
-            </div>
-          ) : null}
         </Section>
 
         <Section $mobileOrder={4} id="overview" aria-labelledby="overview-heading" data-testid="project-overview">

@@ -483,7 +483,11 @@ export function normalizeProjectDocument(
 /** Deterministic public JSON (sorted keys via stable stringify at API boundary). */
 export function toPublicProjectJson(
   doc: CanonicalProjectDocument,
-  options?: { evidenceSummary?: Record<string, unknown> },
+  options?: {
+    evidenceSummary?: Record<string, unknown>
+    readinessSummary?: Record<string, unknown>
+    trustSnapshotSummary?: Record<string, unknown>
+  },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     schemaVersion: doc.schemaVersion,
@@ -543,6 +547,14 @@ export function toPublicProjectJson(
   // PP002 additive extension — schemaVersion remains melega.project-page.v1
   if (options?.evidenceSummary) {
     body.evidenceSummary = options.evidenceSummary
+  }
+
+  // PP003 additive extensions — schemaVersion remains melega.project-page.v1
+  if (options?.readinessSummary) {
+    body.readinessSummary = options.readinessSummary
+  }
+  if (options?.trustSnapshotSummary) {
+    body.trustSnapshotSummary = options.trustSnapshotSummary
   }
 
   return body
