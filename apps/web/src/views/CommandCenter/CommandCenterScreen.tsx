@@ -80,12 +80,12 @@ export interface CommandCenterScreenProps {
 }
 
 /**
- * Command Center shell — portfolio dashboard IA (R791D.4A):
- * Summary → Priorities → My Positions → Claimables → Quick Actions → Activity
+ * Command Center shell — Wallet Operating Center IA (R791D.4C):
+ * Hero → Today's Actions → Positions Center → Claimables / Activity / Quick Actions
  */
 export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = () => (
   <CommandRuntimeProvider>
-    <Root data-command-center-screen data-cc-r111a-canonical data-cc-r791d-4a>
+    <Root data-command-center-screen data-cc-r111a-canonical data-cc-r791d-4c>
       <PageMeta />
       <CommandCenterGlobalStyle />
       <Shell>

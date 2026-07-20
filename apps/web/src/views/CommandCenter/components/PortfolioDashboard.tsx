@@ -1,8 +1,8 @@
 /**
- * Command Center Portfolio Dashboard composition (R791D.4A).
+ * Command Center Portfolio Dashboard — Wallet Operating Center composition (R791D.4C).
  *
- * Information architecture only — consumes WalletPortfolio + My Positions props.
- * No product root arrays. No manual economics. No fetch.
+ * Hierarchy: Hero → Actions → Positions Center (with view selector) → Secondary rail.
+ * No product root arrays. No manual economics. No fetch. No card redesign.
  */
 
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
@@ -11,7 +11,6 @@ import type {
   PortfolioActivityItem,
   PortfolioClaimableItem,
   PortfolioPosition,
-  PortfolioPositionAction,
   PortfolioQuickAction,
   PortfolioSummary,
   WalletPortfolio,
@@ -24,23 +23,19 @@ import {
   commandCenterType,
 } from '../commandCenterTokens'
 import { SectionHeading } from './canonical/commandCenterSpecPrimitives'
+import type { MyPositionsSectionProps } from './MyPositionsSection'
+import type { PortfolioViewSelectorModel } from '../commandCenterRuntime/commandCenterPortfolioCutover'
 import {
-  MyPositionsSection,
-  type MyPositionsSectionProps,
-} from './MyPositionsSection'
-import {
-  PORTFOLIO_VIEW_LABEL,
-  type PortfolioViewSelectorModel,
-} from '../commandCenterRuntime/commandCenterPortfolioCutover'
+  PortfolioActions,
+  PortfolioHero,
+  PortfolioViewSelector,
+  PositionsCenter,
+  buildTodaysPriorities,
+  type PriorityItem,
+} from './portfolioComposition'
 
-/** Action types allowed in Today's Priorities — must already exist on the position. */
-const PRIORITY_ACTION_TYPES = new Set([
-  'CLAIM',
-  'HARVEST',
-  'WITHDRAW',
-  'REMOVE_LIQUIDITY',
-  'APPROVE',
-])
+export { buildTodaysPriorities, type PriorityItem }
+export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
 
 export interface PortfolioDashboardProps {
   portfolio: WalletPortfolio
@@ -144,46 +139,6 @@ const EmptyState = styled.div`
   font-size: 14px;
 `
 
-const FilterShell = styled.div`
-  width: 100%;
-  min-width: 0;
-  margin-bottom: 16px;
-`
-
-const FilterPrompt = styled.div`
-  font-family: ${CC_FONT_BODY};
-  font-size: 12px;
-  color: ${commandCenterColors.muted};
-  margin-bottom: 10px;
-`
-
-const ChipRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  min-width: 0;
-`
-
-const ViewChip = styled.button<{ $active?: boolean }>`
-  appearance: none;
-  cursor: pointer;
-  border-radius: 999px;
-  border: 1px solid
-    ${({ $active }) => ($active ? commandCenterColors.gold : commandCenterColors.cardBorder)};
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.12)' : commandCenterColors.cardBg)};
-  color: ${commandCenterColors.white};
-  font-family: ${CC_FONT_BODY};
-  font-size: 12px;
-  font-weight: 700;
-  padding: 8px 12px;
-`
-
-const CountMeta = styled.span`
-  font-weight: 500;
-  color: ${commandCenterColors.muted};
-  margin-left: 4px;
-`
-
 const Fallback = styled.div`
   padding: 16px;
   border: 1px dashed ${commandCenterColors.cardBorder};
@@ -201,58 +156,41 @@ const ActionLink = styled.a`
   text-decoration: none;
 `
 
+const OperatingShell = styled.div`
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: ${commandCenterLayout.sectionGap};
+`
+
+const SecondaryShell = styled.section`
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: ${commandCenterLayout.sectionGap};
+
+  @media (min-width: 1024px) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: ${commandCenterLayout.sectionGap};
+    align-items: start;
+  }
+`
+
+const SecondaryColumn = styled.div`
+  min-width: 0;
+  overflow-x: hidden;
+`
+
 function formatUsd(value: string | null | undefined): string {
   if (value == null || String(value).trim() === '') return 'Unavailable'
   return String(value)
-}
-
-function collectPositionActions(position: PortfolioPosition): PortfolioPositionAction[] {
-  const out: PortfolioPositionAction[] = []
-  const push = (a: PortfolioPositionAction | null | undefined) => {
-    if (!a || a.type === 'NONE') return
-    out.push(a)
-  }
-  push(position.actions?.primary)
-  for (const a of position.actions?.secondary ?? []) push(a)
-  push(position.actions?.open)
-  push(position.actions?.manage)
-  push(position.actions?.analytics)
-  push(position.recommendedAction)
-  return out
-}
-
-export interface PriorityItem {
-  id: string
-  positionId: string
-  title: string
-  action: PortfolioPositionAction
-  requiresAttention: boolean
-}
-
-/** Presentation prep — only surfaces canonical priority action types already on positions. */
-export function buildTodaysPriorities(positions: readonly PortfolioPosition[]): PriorityItem[] {
-  const items: PriorityItem[] = []
-  for (const position of positions) {
-    const seen = new Set<string>()
-    const actions = collectPositionActions(position).filter((a) => {
-      if (a.enabled !== true || !PRIORITY_ACTION_TYPES.has(a.type)) return false
-      const key = `${a.type}:${a.label}:${a.route ?? ''}`
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
-    if (!position.requiresAttention && actions.length === 0) continue
-    for (const action of actions) {
-      items.push({
-        id: `${position.positionId}:${action.type}:${action.label}`,
-        positionId: position.positionId,
-        title: position.title,
-        action,
-        requiresAttention: position.requiresAttention === true,
-      })
-    }
-  }
-  return items
 }
 
 interface BoundaryState {
@@ -289,6 +227,7 @@ export class DashboardSectionBoundary extends Component<
   }
 }
 
+/** @deprecated Prefer PortfolioHero — retained for focused legacy tests. */
 export function PortfolioSummarySection({
   summary,
   walletConnected,
@@ -334,6 +273,7 @@ export function PortfolioSummarySection({
   )
 }
 
+/** @deprecated Prefer PortfolioActions — retained for focused legacy tests. */
 export function TodaysPrioritiesSection({
   positions,
   walletConnected,
@@ -515,54 +455,9 @@ export function PortfolioActivitySection({
 }
 
 /**
- * Canonical portfolio dashboard order:
- * Summary → Priorities → View Filter → My Positions → Claimables → Quick Actions → Activity
+ * Wallet Operating Center order:
+ * Hero → Today's Actions → Positions Center (filter + My Positions) → Claimables / Activity / Quick Actions
  */
-export function PortfolioViewSelector({
-  model,
-  onSelectView,
-}: {
-  model: PortfolioViewSelectorModel
-  onSelectView?: (view: PortfolioViewType) => void
-}) {
-  return (
-    <FilterShell data-testid="portfolio-view-selector" data-current-view={model.currentView}>
-      <FilterPrompt>How do I want to see my wallet?</FilterPrompt>
-      <ChipRow data-testid="portfolio-view-primary">
-        {model.primaryViews.map((view) => (
-          <ViewChip
-            key={view}
-            type="button"
-            $active={model.currentView === view}
-            data-testid={`portfolio-view-${view}`}
-            data-active={model.currentView === view ? 'true' : 'false'}
-            onClick={() => onSelectView?.(view)}
-          >
-            {PORTFOLIO_VIEW_LABEL[view]}
-            <CountMeta>
-              {view === model.currentView ? model.count : ''}
-            </CountMeta>
-          </ViewChip>
-        ))}
-      </ChipRow>
-      <ChipRow data-testid="portfolio-view-secondary" style={{ marginTop: 8 }}>
-        {model.secondaryViews.map((view) => (
-          <ViewChip
-            key={view}
-            type="button"
-            $active={model.currentView === view}
-            data-testid={`portfolio-view-${view}`}
-            data-active={model.currentView === view ? 'true' : 'false'}
-            onClick={() => onSelectView?.(view)}
-          >
-            {PORTFOLIO_VIEW_LABEL[view]}
-          </ViewChip>
-        ))}
-      </ChipRow>
-    </FilterShell>
-  )
-}
-
 export function PortfolioDashboard({
   portfolio,
   myPositions,
@@ -577,65 +472,53 @@ export function PortfolioDashboard({
     (!portfolio.claimables || portfolio.claimables.length === 0)
 
   return (
-    <div data-testid="portfolio-dashboard" data-wallet-connected={walletConnected ? 'true' : 'false'}>
+    <OperatingShell
+      data-testid="portfolio-dashboard"
+      data-wallet-operating-center="true"
+      data-cc-r791d-4c
+      data-wallet-connected={walletConnected ? 'true' : 'false'}
+      data-responsive="stack-mobile-columns-desktop"
+      data-active-positions={portfolio.summary.activePositionCount}
+      data-pending-actions={portfolio.summary.pendingActionCount}
+    >
       {emptyPortfolio ? (
-        <EmptyState data-testid="portfolio-dashboard-empty" style={{ marginBottom: 20 }}>
-          Portfolio empty.
-        </EmptyState>
+        <EmptyState data-testid="portfolio-dashboard-empty">Portfolio empty.</EmptyState>
       ) : null}
 
-      <DashboardSectionBoundary section="summary">
-        <PortfolioSummarySection summary={portfolio.summary} walletConnected={walletConnected} />
+      <DashboardSectionBoundary section="hero">
+        <PortfolioHero portfolio={portfolio} walletConnected={walletConnected} />
       </DashboardSectionBoundary>
 
-      <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />
-
-      <DashboardSectionBoundary section="priorities">
-        <TodaysPrioritiesSection positions={portfolio.positions} walletConnected={walletConnected} />
+      <DashboardSectionBoundary section="actions">
+        <PortfolioActions positions={portfolio.positions} walletConnected={walletConnected} />
       </DashboardSectionBoundary>
 
-      <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />
-
-      <DashboardSectionBoundary section="portfolio-view-filter">
-        {viewSelector ? (
-          <PortfolioViewSelector model={viewSelector} onSelectView={onSelectView} />
-        ) : null}
-      </DashboardSectionBoundary>
-
-      <DashboardSectionBoundary section="my-positions">
-        {walletConnected && viewSelector?.empty ? (
-          <Section data-testid="my-positions-section" data-state="EMPTY" data-view={viewSelector.currentView}>
-            <SectionHeading>My Positions</SectionHeading>
-            <EmptyState data-testid="portfolio-view-empty" data-view={viewSelector.currentView}>
-              {viewSelector.emptyMessage}
-            </EmptyState>
-          </Section>
-        ) : (
-          <MyPositionsSection {...myPositions} />
-        )}
-      </DashboardSectionBoundary>
-
-      <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />
-
-      <DashboardSectionBoundary section="claimables">
-        <ClaimablesSection claimables={portfolio.claimables} walletConnected={walletConnected} />
-      </DashboardSectionBoundary>
-
-      <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />
-
-      <DashboardSectionBoundary section="quick-actions">
-        <QuickActionsSection quickActions={portfolio.quickActions} walletConnected={walletConnected} />
-      </DashboardSectionBoundary>
-
-      <div style={{ height: commandCenterLayout.sectionGap }} aria-hidden="true" />
-
-      <DashboardSectionBoundary section="activity">
-        <PortfolioActivitySection
-          recentActivity={portfolio.recentActivity}
+      <DashboardSectionBoundary section="positions-center">
+        <PositionsCenter
+          myPositions={myPositions}
+          viewSelector={viewSelector}
+          onSelectView={onSelectView}
           walletConnected={walletConnected}
         />
       </DashboardSectionBoundary>
-    </div>
+
+      <DashboardSectionBoundary section="secondary">
+        <SecondaryShell data-testid="portfolio-secondary" data-composition="portfolio-secondary">
+          <SecondaryColumn data-testid="portfolio-secondary-claimables">
+            <ClaimablesSection claimables={portfolio.claimables} walletConnected={walletConnected} />
+          </SecondaryColumn>
+          <SecondaryColumn data-testid="portfolio-secondary-activity">
+            <PortfolioActivitySection
+              recentActivity={portfolio.recentActivity}
+              walletConnected={walletConnected}
+            />
+          </SecondaryColumn>
+          <SecondaryColumn data-testid="portfolio-secondary-quick-actions">
+            <QuickActionsSection quickActions={portfolio.quickActions} walletConnected={walletConnected} />
+          </SecondaryColumn>
+        </SecondaryShell>
+      </DashboardSectionBoundary>
+    </OperatingShell>
   )
 }
 
