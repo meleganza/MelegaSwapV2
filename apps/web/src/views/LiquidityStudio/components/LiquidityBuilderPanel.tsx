@@ -284,7 +284,9 @@ export const LiquidityBuilderPanel: React.FC = () => {
       $width={liquidityStudioLayout.leftWidth}
       $height={liquidityStudioLayout.builderHeight}
     >
-      <LsPanelTitle>Liquidity Builder</LsPanelTitle>
+      <LsPanelTitle data-testid="ls-builder-title">
+        {isPositions ? 'Manage Position' : isRemove ? 'Remove Liquidity' : 'Explore Liquidity'}
+      </LsPanelTitle>
       {isSimulation ? (
         <StatusLine style={{ marginBottom: 12 }}>
           Read-only simulation using live pool math. Adjust amounts to preview LP share, APR, and IL — no on-chain execution.

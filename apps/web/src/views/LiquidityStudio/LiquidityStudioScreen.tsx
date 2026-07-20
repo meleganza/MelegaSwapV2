@@ -6,6 +6,7 @@ import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import LiquidityStudioGlobalStyle from './LiquidityStudioGlobalStyle'
 import { LiquidityRuntimeProvider } from './liquidityRuntime/LiquidityRuntimeContext'
 import LiquidityStudioPageHeader from './components/LiquidityStudioPageHeader'
+import YourLiquidityPositionsSection from './components/YourLiquidityPositionsSection'
 import LiquidityBuilderPanel from './components/LiquidityBuilderPanel'
 import PositionPreviewPanel from './components/PositionPreviewPanel'
 import MarketIntelligencePanel from './components/MarketIntelligencePanel'
@@ -183,14 +184,15 @@ const AreaPools = styled.div`
 `
 
 export const LiquidityStudioScreen: React.FC = () => (
-  <Root data-liquidity-studio-screen="true" data-r200-premium="true">
+  <Root data-liquidity-studio-screen="true" data-r200-premium="true" data-ls-wallet-first="true">
     <PageMeta />
     <LiquidityStudioGlobalStyle />
     <TrendingRibbon />
     <LiquidityRuntimeProvider>
       <Content>
         <LiquidityStudioPageHeader />
-        <LayoutGrid>
+        <YourLiquidityPositionsSection />
+        <LayoutGrid data-ls-explore-grid="true">
           <AreaBuilder>
             <LiquidityBuilderPanel />
           </AreaBuilder>

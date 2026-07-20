@@ -42,7 +42,12 @@ const Tab = styled.button<{ $active?: boolean }>`
   }
 `
 
-const TABS = ['Add Liquidity', 'Remove Liquidity', 'My Positions', 'Simulation'] as const
+const TABS: { mode: 'My Positions' | 'Add Liquidity' | 'Remove Liquidity' | 'Simulation'; label: string }[] = [
+  { mode: 'My Positions', label: 'My Positions' },
+  { mode: 'Add Liquidity', label: 'Explore Liquidity' },
+  { mode: 'Remove Liquidity', label: 'Remove Liquidity' },
+  { mode: 'Simulation', label: 'Simulation' },
+]
 
 export const LiquidityStudioPageHeader: React.FC = () => {
   const { mode, setMode } = useLiquidityRuntime()
@@ -50,8 +55,9 @@ export const LiquidityStudioPageHeader: React.FC = () => {
   return (
     <MelegaStudioPageHeader
       data-studio-header="liquidity"
+      data-ls-wallet-first-header="true"
       title={STUDIO_PAGE_TITLES.liquidity}
-      subtitle="Build markets, manage liquidity and optimise LP performance."
+      subtitle="Your liquidity positions first — then explore and create new LP."
       badge={
         <MelegaStudioLiveBadge>
           <MelegaStudioLiveDot aria-hidden />
@@ -59,10 +65,16 @@ export const LiquidityStudioPageHeader: React.FC = () => {
         </MelegaStudioLiveBadge>
       }
       footer={
-        <TabRow>
+        <TabRow data-testid="ls-mode-tabs">
           {TABS.map((tab) => (
-            <Tab key={tab} type="button" $active={mode === tab} onClick={() => setMode(tab)}>
-              {tab}
+            <Tab
+              key={tab.mode}
+              type="button"
+              $active={mode === tab.mode}
+              data-testid={`ls-tab-${tab.mode === 'Add Liquidity' ? 'explore' : tab.mode.toLowerCase().replace(/\s+/g, '-')}`}
+              onClick={() => setMode(tab.mode)}
+            >
+              {tab.label}
             </Tab>
           ))}
         </TabRow>

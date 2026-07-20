@@ -38,6 +38,10 @@ import {
 } from './formatLiquidityRuntime'
 import { runtimeErrorFromPhase, type LiquidityRuntimeError } from './liquidityRuntimeErrors'
 import { useLiquidityPositions, useLiquidityPositionDetails, type LiquidityPositionRow } from './useLiquidityPositions'
+import {
+  buildLiquidityWalletPortfolio,
+} from './buildLiquidityWalletPortfolio'
+import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import useLiquidityTerminalData from './useLiquidityTerminalData'
 import { buildMelegaLiquidityV1 } from 'lib/dex-gravity/buildLiquidityMachineV1'
 import { consumeOpportunityRef, parseOpportunityRefFromQuery } from 'lib/dex-gravity/radarConsumption'
@@ -117,6 +121,8 @@ export interface LiquidityMintRuntime {
   account?: string
   positions: LiquidityPositionRow[]
   positionsLoading: boolean
+  /** WalletPortfolio assembled from the same producer rows — no second scan. */
+  liquidityWalletPortfolio: WalletPortfolio
   selectedPositionId?: string
   setSelectedPositionId: (id: string) => void
   selectedPosition?: LiquidityPositionRow
@@ -143,7 +149,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
 
-  const [mode, setModeState] = useState<LiquidityStudioMode>('Add Liquidity')
+  const [mode, setModeState] = useState<LiquidityStudioMode>('My Positions')
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
@@ -194,6 +200,20 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const poolAddress = pair?.liquidityToken?.address
 
   const { positions, isLoading: positionsLoading } = useLiquidityPositions()
+
+  const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
+  const liquidityWalletPortfolio = useMemo(
+    () =>
+      buildLiquidityWalletPortfolio({
+        wallet: account ?? null,
+        chainId: chainId ?? null,
+        chainName,
+        generatedAt: '1970-01-01T00:00:00.000Z',
+        liquidityRows: positions,
+        positionsLoading,
+      }),
+    [account, chainId, chainName, positions, positionsLoading],
+  )
   const selectedPosition = useMemo(
     () => positions.find((p) => p.id === selectedPositionId) ?? (isRemoveMode || isPositionsMode ? positions[0] : undefined),
     [positions, selectedPositionId, isRemoveMode, isPositionsMode],
@@ -798,6 +818,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     account,
     positions,
     positionsLoading,
+    liquidityWalletPortfolio,
     selectedPositionId: selectedPosition?.id,
     setSelectedPositionId,
     selectedPosition,
