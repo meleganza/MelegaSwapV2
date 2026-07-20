@@ -49,9 +49,17 @@ export interface ProjectCapabilities {
 export interface StaticProjectRecord {
   upi: string
   slug: string
+  /** Optional public aliases that resolve to this project without creating a second identity. */
+  aliases?: string[]
   displayName: string
   tagline?: string
   description: string
+  /** Optional explicit project type; when absent, Project Page may derive from sector tags. */
+  projectType?: string
+  /** Optional lifecycle label; when absent, mapped from registryStatus. */
+  lifecycleStatus?: string
+  /** Optional HTTPS logo URL from registry — never fabricated when missing. */
+  logoUrl?: string
   registryStatus: ProjectRegistryStatus
   phase: 'legacy_import' | 'registered'
   verificationStatus: ProjectVerificationStatus

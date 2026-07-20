@@ -4,10 +4,13 @@ import { StaticProjectRecord } from './types'
 const melegaDex: StaticProjectRecord = {
   upi: 'upi://melega/project/melega-dex@1',
   slug: 'melega-dex',
+  aliases: ['melega'],
   displayName: 'Melega DEX',
   tagline: 'AI-native liquidity surface of Melega AI | KIRI Civilization',
   description:
     'Melega DEX is the decentralized economic execution layer for swap, liquidity, farms, and pools across BSC, Ethereum, Polygon, and Base. MARCO is the native coordination token across the platform.',
+  projectType: 'Decentralized exchange',
+  lifecycleStatus: 'operational',
   registryStatus: 'listed',
   phase: 'legacy_import',
   verificationStatus: 'observed',

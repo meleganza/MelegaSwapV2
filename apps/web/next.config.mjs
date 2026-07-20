@@ -80,7 +80,17 @@ const config = {
     unoptimized: true,
   },
   async rewrites() {
-    return []
+    return [
+      // PP001: canonical public Project Page `/@{slug}` → internal page route
+      {
+        source: '/@:slug',
+        destination: '/project-hq/:slug',
+      },
+      {
+        source: '/@:slug/',
+        destination: '/project-hq/:slug/',
+      },
+    ]
   },
   async headers() {
     return [
@@ -101,11 +111,22 @@ const config = {
             value: 'public, immutable, max-age=31536000',
           },
         ],
-      }
+      },
     ]
   },
   async redirects() {
     return [
+      // PP001: legacy project detail → canonical `/@{slug}` (discovery `/projects` unchanged)
+      {
+        source: '/projects/:slug',
+        destination: '/@:slug',
+        permanent: true,
+      },
+      {
+        source: '/projects/:slug/',
+        destination: '/@:slug/',
+        permanent: true,
+      },
       {
         source: '/send',
         destination: '/swap',
