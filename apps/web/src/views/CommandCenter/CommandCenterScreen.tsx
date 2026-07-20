@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import CommandCenterGlobalStyle from './CommandCenterGlobalStyle'
 import { commandCenterColors, commandCenterLayout } from './commandCenterTokens'
-import { CommandRuntimeProvider } from './commandCenterRuntime/CommandRuntimeContext'
+import { CommandRuntimeProvider, useCommandRuntime } from './commandCenterRuntime/CommandRuntimeContext'
 import {
   CcSpecDailyBriefing,
   CcSpecHeader,
@@ -15,6 +15,24 @@ import {
   CcSpecSettlement,
   CcSpecTodaysPriorities,
 } from './components/canonical/CommandCenterCanonicalSections'
+import { MyPositionsSection } from './components/MyPositionsSection'
+
+function CcSpecMyPositions() {
+  const {
+    myPositionsView,
+    myPositionsGroups,
+    myPositionsSummary,
+    myPositionsState,
+  } = useCommandRuntime()
+  return (
+    <MyPositionsSection
+      myPositionsView={myPositionsView}
+      myPositionsGroups={myPositionsGroups}
+      myPositionsSummary={myPositionsSummary}
+      myPositionsState={myPositionsState}
+    />
+  )
+}
 
 const Root = styled.div`
   color: ${commandCenterColors.white};
@@ -62,6 +80,7 @@ export const CommandCenterScreen: React.FC<CommandCenterScreenProps> = () => (
         <CcSpecHeader />
         <CcSpecDailyBriefing />
         <CcSpecPortfolioOverview />
+        <CcSpecMyPositions />
         <CcSpecTodaysPriorities />
         <CcSpecInfrastructureStatus />
         <CcSpecRecentActivity />
