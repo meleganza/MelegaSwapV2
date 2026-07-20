@@ -14,12 +14,13 @@ import {
   LsSectionTitle,
 } from './liquidityStudioPrimitives'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
+import { PROGRAM_STATUS_LABEL, PROGRAM_STATUSES, type ProgramStatus } from '../liquidityBuilding/programStatus'
+import { LbActiveDashboardView } from '../liquidityBuilding/LbActiveDashboardView'
 import {
-  EPOCH_OPTIONS,
-  PROGRAM_STATUS_LABEL,
-  PROGRAM_STATUSES,
-  type ProgramStatus,
-} from '../liquidityBuilding/programStatus'
+  DECISION_FREQUENCY_OPTIONS,
+  LB_UX,
+  MANAGE_ACTION_LABEL,
+} from '../liquidityBuilding/uxCopy'
 
 const Head = styled.div`
   display: flex;
@@ -47,23 +48,15 @@ const Body = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   min-height: 0;
 `
 
 const Lead = styled.p`
   margin: 0;
   font-size: 13px;
-  line-height: 1.45;
-  color: ${liquidityStudioColors.muted};
-`
-
-const Bullet = styled.ul`
-  margin: 0;
-  padding-left: 18px;
-  font-size: 12px;
   line-height: 1.5;
-  color: ${liquidityStudioColors.text};
+  color: ${liquidityStudioColors.muted};
 `
 
 const Field = styled.label`
@@ -72,6 +65,13 @@ const Field = styled.label`
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
+  color: ${liquidityStudioColors.muted};
+`
+
+const Hint = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
   color: ${liquidityStudioColors.muted};
 `
 
@@ -88,48 +88,89 @@ const Input = styled.input`
   font-weight: 600;
 `
 
-const SelectRow = styled.div`
+const StrategyCard = styled.button<{ $active?: boolean }>`
+  text-align: left;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid
+    ${({ $active }) => ($active ? liquidityStudioColors.gold : liquidityStudioColors.border)};
+  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.1)' : 'rgba(0, 0, 0, 0.18)')};
+  color: ${liquidityStudioColors.text};
+  cursor: pointer;
+`
+
+const StrategyTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 4px;
+`
+
+const Tag = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${liquidityStudioColors.goldBright};
+`
+
+const ChipRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 `
 
 const ChipBtn = styled.button<{ $active?: boolean }>`
-  height: 36px;
+  min-height: 36px;
   border-radius: 10px;
   border: 1px solid
     ${({ $active }) => ($active ? liquidityStudioColors.gold : liquidityStudioColors.border)};
   background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.12)' : 'transparent')};
   color: ${liquidityStudioColors.text};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
+  padding: 8px;
 `
 
 const Notice = styled.div`
-  margin-top: 4px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   border: 1px solid ${liquidityStudioColors.border};
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.22);
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: ${liquidityStudioColors.muted};
 `
 
-const ConnectWrap = styled.div`
-  width: 100%;
-  margin-top: ${liquidityStudioLayout.executionButtonGap};
+const ReadinessRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+`
 
-  & > button {
-    width: 100%;
-  }
+const ReadyPill = styled.span<{ $pending?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid
+    ${({ $pending }) => ($pending ? liquidityStudioColors.gold : liquidityStudioColors.green)};
+  color: ${({ $pending }) => ($pending ? liquidityStudioColors.goldBright : liquidityStudioColors.green)};
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 `
 
 const ReviewBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 12px;
   color: ${liquidityStudioColors.text};
 `
@@ -140,7 +181,20 @@ const ReviewRow = styled.div`
   gap: 12px;
 `
 
-/** Exported for tests — renders any LB002 status label without inventing metrics. */
+const ConnectWrap = styled.div`
+  width: 100%;
+  margin-top: ${liquidityStudioLayout.executionButtonGap};
+  & > button {
+    width: 100%;
+  }
+`
+
+const ActionStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
 export function LiquidityBuildingStatusBadge({ status }: { status: ProgramStatus }) {
   return (
     <StatusBadge data-testid="lb-status-badge" data-status={status} $muted={status === 'NOT_ACTIVE'}>
@@ -148,6 +202,8 @@ export function LiquidityBuildingStatusBadge({ status }: { status: ProgramStatus
     </StatusBadge>
   )
 }
+
+export { LbActiveDashboardView } from '../liquidityBuilding/LbActiveDashboardView'
 
 export const LiquidityBuildingPanel: React.FC = () => {
   const card = useLiquidityBuildingCard()
@@ -162,7 +218,7 @@ export const LiquidityBuildingPanel: React.FC = () => {
   const [onPresentCurrencyModal] = useModal(
     <CurrencySearchModal
       onCurrencySelect={onCurrencySelect}
-      selectedCurrency={undefined}
+      selectedCurrency={card.selectedCurrency ?? undefined}
       otherSelectedCurrency={undefined}
       showCommonBases
       commonBasesType="LIQUIDITY"
@@ -172,110 +228,77 @@ export const LiquidityBuildingPanel: React.FC = () => {
     'lbCurrencyModal',
   )
 
-  const primaryForStatus = () => {
-    const blocked = !card.mutateGate.ok
-    switch (card.status) {
-      case 'NOT_ACTIVE':
-        return 'Start Building Liquidity'
-      case 'SETUP_REQUIRED':
-        if (!card.reviewOpen) return 'Review'
-        return blocked ? 'Unavailable until activation' : 'Continue to Approve'
-      case 'AWAITING_APPROVAL':
-        return blocked ? 'Unavailable until activation' : 'Approve Token'
-      case 'AWAITING_DEPOSIT':
-        return blocked ? 'Unavailable until activation' : 'Deposit Budget'
-      case 'READY':
-        return blocked ? 'Unavailable until activation' : 'Activate'
-      case 'ACTIVE':
-        return 'View Activity'
-      case 'PAUSED':
-        return blocked ? 'Unavailable until activation' : 'Resume'
-      case 'BUDGET_DEPLETED':
-        return blocked ? 'Unavailable until activation' : 'Add Budget'
-      case 'STOPPED':
-        return 'View Activity'
-      default:
-        return blocked ? 'Unavailable until activation' : 'Retry'
-    }
-  }
-
-  const mutatingBlocked =
-    !card.mutateGate.ok &&
-    (card.status === 'SETUP_REQUIRED'
-      ? card.reviewOpen
-      : ['AWAITING_APPROVAL', 'AWAITING_DEPOSIT', 'READY', 'PAUSED', 'BUDGET_DEPLETED', 'ERROR'].includes(
-          card.status,
-        ))
-
-  const onPrimary = () => {
-    if (mutatingBlocked) return
-    switch (card.status) {
-      case 'NOT_ACTIVE':
-        card.startSetup()
-        return
-      case 'SETUP_REQUIRED':
-        if (!card.reviewOpen) {
-          card.openReview()
-          return
-        }
-        card.requestApproval()
-        return
-      case 'AWAITING_APPROVAL':
-        card.requestApproval()
-        return
-      case 'AWAITING_DEPOSIT':
-        card.requestDeposit()
-        return
-      case 'READY':
-        card.requestActivate()
-        return
-      default:
-        return
-    }
-  }
+  const statusBadge =
+    card.activationPending && card.phase === 'entry' ? (
+      <StatusBadge data-testid="lb-activation-required">{LB_UX.activationRequired}</StatusBadge>
+    ) : card.phase === 'active' || card.phase === 'manage' ? (
+      <LiquidityBuildingStatusBadge status={card.status} />
+    ) : (
+      <StatusBadge $muted>{PROGRAM_STATUS_LABEL[card.status]}</StatusBadge>
+    )
 
   return (
     <LsPanel
       data-ls-panel
       data-liquidity-building-panel
-      data-lb014="true"
+      data-lb016="true"
+      data-lb-phase={card.phase}
       $width={liquidityStudioLayout.rightWidth}
       $height="auto"
       $radius={liquidityStudioLayout.rightPanelRadius}
       $pad={liquidityStudioLayout.rightPanelPadding}
     >
       <Head>
-        <LsSectionTitle style={{ margin: 0 }}>Liquidity Building</LsSectionTitle>
+        <LsSectionTitle style={{ margin: 0 }}>{LB_UX.productName}</LsSectionTitle>
         <BadgeRow>
-          <StatusBadge>AI Powered</StatusBadge>
-          <LiquidityBuildingStatusBadge status={card.status} />
+          <StatusBadge>{LB_UX.aiBadge}</StatusBadge>
+          {statusBadge}
         </BadgeRow>
       </Head>
 
       <Body>
-        <Lead>
-          Use your available token supply to build liquidity from real market demand.
-        </Lead>
-
-        {card.status === 'NOT_ACTIVE' ? (
-          <Bullet>
-            <li>Budget-based execution</li>
-            <li>Dynamic AI strategy</li>
-            <li>Automatic Melega DEX liquidity</li>
-            <li>Owner-controlled LP</li>
-          </Bullet>
+        {card.phase === 'entry' ? (
+          <>
+            <Lead data-testid="lb-entry-lead">{LB_UX.entryLead}</Lead>
+            {card.activationPending ? (
+              <Notice data-testid="lb-blocked-banner">
+                <strong style={{ color: liquidityStudioColors.text }}>{LB_UX.activationPendingTitle}</strong>
+                <br />
+                <span data-testid="lb-activation-pending-badge">{LB_UX.activationPendingBadge}</span>
+                <br />
+                {LB_UX.activationPendingBody}
+                <br />
+                {LB_UX.activationRequiredBody}
+                <ReadinessRow style={{ marginTop: 10 }}>
+                  <ReadyPill data-testid="lb-ready-contracts">{LB_UX.readinessContracts}</ReadyPill>
+                  <ReadyPill data-testid="lb-ready-runtime">{LB_UX.readinessRuntime}</ReadyPill>
+                  <ReadyPill $pending data-testid="lb-ready-activation">
+                    {LB_UX.readinessActivation}
+                  </ReadyPill>
+                </ReadinessRow>
+              </Notice>
+            ) : null}
+          </>
         ) : null}
 
-        {card.status === 'SETUP_REQUIRED' || card.status === 'AWAITING_APPROVAL' ? (
-          <>
+        {card.phase === 'setup' ? (
+          <div data-testid="lb-setup-view">
             <Field>
-              Project token
+              Token
               <ChipBtn type="button" onClick={onPresentCurrencyModal} data-testid="lb-token-select">
                 {card.draft.tokenSymbol || 'Select token'}
               </ChipBtn>
+              {card.draft.tokenSymbol ? (
+                <Hint data-testid="lb-token-meta">
+                  Symbol {card.draft.tokenSymbol}
+                  {card.selectedCurrency?.decimals != null ? ` · ${card.selectedCurrency.decimals} decimals` : ''}
+                  {card.walletBalanceLabel ? ` · Wallet ${card.walletBalanceLabel}` : ''}
+                  {' · Pools & quote assets detected on Melega when available'}
+                </Hint>
+              ) : null}
             </Field>
             <Field>
-              Token budget
+              {LB_UX.budgetLabel}
               <Input
                 data-testid="lb-budget-input"
                 inputMode="decimal"
@@ -283,146 +306,234 @@ export const LiquidityBuildingPanel: React.FC = () => {
                 value={card.draft.tokenBudget}
                 onChange={(e) => card.setBudget(e.target.value)}
               />
+              <Hint>{LB_UX.budgetSupport}</Hint>
             </Field>
             <Field>
               Strategy
-              <SelectRow>
-                <ChipBtn
-                  type="button"
-                  $active={card.draft.strategy === 'FULL_AI'}
-                  onClick={() => card.setStrategy('FULL_AI')}
-                >
-                  Full AI
-                </ChipBtn>
-                <ChipBtn
-                  type="button"
-                  $active={card.draft.strategy === 'DYNAMIC_RANGE'}
-                  onClick={() => card.setStrategy('DYNAMIC_RANGE')}
-                >
-                  Dynamic Range
-                </ChipBtn>
-              </SelectRow>
+              <StrategyCard
+                type="button"
+                $active={card.draft.strategy === 'FULL_AI'}
+                data-testid="lb-strategy-full-ai"
+                onClick={() => card.setStrategy('FULL_AI')}
+              >
+                <StrategyTitle>
+                  {LB_UX.strategyFullAiTitle} <Tag>{LB_UX.strategyFullAiTag}</Tag>
+                </StrategyTitle>
+                <Hint as="span">{LB_UX.strategyFullAiBody}</Hint>
+              </StrategyCard>
+              <StrategyCard
+                type="button"
+                $active={card.draft.strategy === 'DYNAMIC_RANGE'}
+                data-testid="lb-strategy-dynamic"
+                onClick={() => card.setStrategy('DYNAMIC_RANGE')}
+                style={{ marginTop: 8 }}
+              >
+                <StrategyTitle>
+                  {LB_UX.strategyRangeTitle} <Tag>{LB_UX.strategyRangeTag}</Tag>
+                </StrategyTitle>
+                <Hint as="span">{LB_UX.strategyRangeBody}</Hint>
+              </StrategyCard>
             </Field>
             {card.draft.strategy === 'DYNAMIC_RANGE' ? (
-              <SelectRow>
+              <ChipRow>
                 <Field>
-                  Min rate (bps)
+                  Minimum intensity
                   <Input
                     value={card.draft.minimumRateBps}
                     onChange={(e) => card.setRateRange(e.target.value, card.draft.maximumRateBps)}
                   />
                 </Field>
                 <Field>
-                  Max rate (bps)
+                  Maximum intensity
                   <Input
                     value={card.draft.maximumRateBps}
                     onChange={(e) => card.setRateRange(card.draft.minimumRateBps, e.target.value)}
                   />
                 </Field>
-              </SelectRow>
+              </ChipRow>
             ) : null}
             <Field>
-              Epoch
-              <SelectRow>
-                {EPOCH_OPTIONS.map((opt) => (
+              {LB_UX.decisionFrequencyLabel}
+              <Hint>{LB_UX.decisionFrequencyHelp}</Hint>
+              <ChipRow>
+                {DECISION_FREQUENCY_OPTIONS.map((opt) => (
                   <ChipBtn
                     key={opt.seconds}
                     type="button"
                     $active={card.draft.epochSeconds === opt.seconds}
+                    data-testid={`lb-freq-${opt.seconds}`}
                     onClick={() => card.setEpoch(opt.seconds)}
                   >
                     {opt.label}
                   </ChipBtn>
                 ))}
-              </SelectRow>
+              </ChipRow>
             </Field>
-          </>
+          </div>
         ) : null}
 
-        {card.reviewOpen ? (
-          <ReviewBlock data-testid="lb-review">
-            <ReviewRow>
-              <span>Token</span>
-              <span>{card.draft.tokenSymbol || '—'}</span>
-            </ReviewRow>
-            <ReviewRow>
-              <span>Budget</span>
-              <span>{card.draft.tokenBudget || '—'}</span>
-            </ReviewRow>
-            <ReviewRow>
-              <span>Strategy</span>
-              <span>{card.draft.strategy === 'FULL_AI' ? 'Full AI — Recommended' : 'Dynamic Range'}</span>
-            </ReviewRow>
-            <ReviewRow>
-              <span>Epoch</span>
-              <span>{EPOCH_OPTIONS.find((o) => o.seconds === card.draft.epochSeconds)?.label}</span>
-            </ReviewRow>
-            <ReviewRow>
-              <span>Fee</span>
-              <span>5% success fee on quote acquired</span>
-            </ReviewRow>
-          </ReviewBlock>
+        {card.phase === 'review' ? (
+          <div data-testid="lb-review-view">
+            <LsSectionTitle style={{ margin: 0, fontSize: 14 }}>{LB_UX.reviewTitle}</LsSectionTitle>
+            <ReviewBlock>
+              <ReviewRow>
+                <span>Token</span>
+                <span>{card.draft.tokenSymbol || '—'}</span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>Budget</span>
+                <span>{card.draft.tokenBudget || '—'}</span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>Strategy</span>
+                <span>
+                  {card.draft.strategy === 'FULL_AI'
+                    ? `${LB_UX.strategyFullAiTitle} — ${LB_UX.strategyFullAiTag}`
+                    : `${LB_UX.strategyRangeTitle} — ${LB_UX.strategyRangeTag}`}
+                </span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>Decision Frequency</span>
+                <span>{card.decisionFrequencyLabel}</span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>Liquidity Pair</span>
+                <span>Detected on Melega when available</span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>LP Ownership</span>
+                <span>{LB_UX.lpOwnedByOwner}</span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>Melega Success Fee</span>
+                <span>5% on quote acquired</span>
+              </ReviewRow>
+              <ReviewRow>
+                <span>Safety</span>
+                <span>
+                  {LB_UX.safetyNoGuarantees} {LB_UX.safetyNoManipulation} {LB_UX.safetyNoOutcomes}
+                </span>
+              </ReviewRow>
+            </ReviewBlock>
+          </div>
         ) : null}
 
-        <Notice data-testid="lb-activation-notice">
-          {card.gates.activationAuthorized
-            ? 'Activation authorized.'
-            : 'Liquidity Building unavailable until production activation requirements are completed. No fake liquidity, executions, APY, or simulated activity.'}
-          {card.gates.blockers.length ? (
-            <>
-              <br />
-              Blockers: {card.gates.blockers.slice(0, 4).join('; ')}
-              {card.gates.blockers.length > 4 ? '…' : ''}
-            </>
-          ) : null}
-        </Notice>
-
-        {card.blockerMessage ? (
-          <Notice data-testid="lb-blocker-message">{card.blockerMessage}</Notice>
+        {card.phase === 'active' || card.phase === 'manage' ? (
+          <LbActiveDashboardView status={card.status} metrics={card.metrics} activity={card.activity} />
         ) : null}
 
-        {/* Hidden catalog ensures required LB014 labels remain present for tests / a11y. */}
+        {card.phase === 'manage' ? (
+          <ActionStack data-testid="lb-manage-panel">
+            <LsSectionTitle style={{ margin: 0, fontSize: 14 }}>{LB_UX.manageTitle}</LsSectionTitle>
+            {card.manageActions.map((action) => {
+              const disabled = !card.mutateGate.ok && action !== 'MANAGE_LP'
+              const onClick = () => {
+                if (disabled) return
+                if (action === 'PAUSE') card.pause()
+                if (action === 'RESUME') card.resume()
+                if (action === 'STOP') card.stop()
+              }
+              return (
+                <LsOutlineBtn
+                  key={action}
+                  type="button"
+                  data-testid={`lb-manage-${action}`}
+                  disabled={disabled}
+                  onClick={onClick}
+                >
+                  {MANAGE_ACTION_LABEL[action]}
+                </LsOutlineBtn>
+              )
+            })}
+            <LsGhostBtn type="button" onClick={card.closeManage}>
+              {LB_UX.back}
+            </LsGhostBtn>
+          </ActionStack>
+        ) : null}
+
+        <details
+          data-testid="lb-technical-details"
+          open={card.technicalOpen}
+          onToggle={(e) => {
+            const open = (e.target as HTMLDetailsElement).open
+            if (open !== card.technicalOpen) card.toggleTechnical()
+          }}
+        >
+          <summary style={{ cursor: 'pointer', fontSize: 12, fontWeight: 700, color: liquidityStudioColors.muted }}>
+            {LB_UX.technicalTitle}
+          </summary>
+          <Notice style={{ marginTop: 8 }}>
+            Program address: Unavailable until deployed
+            <br />
+            Pair: Unavailable until detected
+            <br />
+            Execution history: Real receipts only
+          </Notice>
+        </details>
+
         <span data-testid="lb-status-catalog" hidden>
           {PROGRAM_STATUSES.map((s) => PROGRAM_STATUS_LABEL[s]).join('|')}
         </span>
 
         {!card.walletConnected ? (
           <ConnectWrap>
-            <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+            <ConnectWalletButton>{LB_UX.walletConnect}</ConnectWalletButton>
           </ConnectWrap>
         ) : !card.correctChain ? (
           <LsPrimaryBtn type="button" disabled>
-            Switch Network
+            {LB_UX.switchNetwork}
           </LsPrimaryBtn>
         ) : (
-          <>
-            <LsPrimaryBtn
-              type="button"
-              data-testid="lb-primary-cta"
-              data-ls-primary-btn
-              data-lb-mutating-blocked={mutatingBlocked ? 'true' : 'false'}
-              onClick={onPrimary}
-              disabled={
-                mutatingBlocked ||
-                (card.status === 'SETUP_REQUIRED' && !card.reviewOpen && !card.draftReady)
-              }
-            >
-              {primaryForStatus()}
-            </LsPrimaryBtn>
-            {card.status === 'AWAITING_APPROVAL' ? (
-              <LsOutlineBtn type="button" onClick={card.cancelApproval}>
-                Cancel
-              </LsOutlineBtn>
+          <ActionStack>
+            {card.phase === 'entry' ? (
+              <LsPrimaryBtn type="button" data-testid="lb-primary-cta" data-ls-primary-btn onClick={card.startSetup}>
+                {LB_UX.startCta}
+              </LsPrimaryBtn>
             ) : null}
-            {card.status !== 'NOT_ACTIVE' ? (
-              <LsGhostBtn type="button" onClick={card.reset}>
-                Reset
-              </LsGhostBtn>
+            {card.phase === 'setup' ? (
+              <>
+                <LsPrimaryBtn
+                  type="button"
+                  data-testid="lb-primary-cta"
+                  disabled={!card.draftReady}
+                  onClick={card.openReview}
+                >
+                  {LB_UX.review}
+                </LsPrimaryBtn>
+                <LsGhostBtn type="button" onClick={card.backToEntry}>
+                  {LB_UX.back}
+                </LsGhostBtn>
+              </>
             ) : null}
-          </>
+            {card.phase === 'review' ? (
+              <>
+                <LsPrimaryBtn
+                  type="button"
+                  data-testid="lb-primary-cta"
+                  data-lb-mutating-blocked={!card.mutateGate.ok ? 'true' : 'false'}
+                  disabled={!card.mutateGate.ok}
+                  onClick={card.requestDepositAndActivate}
+                >
+                  {card.mutateGate.ok ? LB_UX.reviewCta : LB_UX.activationRequired}
+                </LsPrimaryBtn>
+                <LsGhostBtn type="button" onClick={card.backToSetup}>
+                  {LB_UX.back}
+                </LsGhostBtn>
+              </>
+            ) : null}
+            {card.phase === 'active' ? (
+              <>
+                <LsPrimaryBtn type="button" data-testid="lb-primary-cta" onClick={card.openManage}>
+                  {LB_UX.manageTitle}
+                </LsPrimaryBtn>
+                <LsGhostBtn type="button" onClick={card.reset}>
+                  Reset
+                </LsGhostBtn>
+              </>
+            ) : null}
+          </ActionStack>
         )}
       </Body>
-
     </LsPanel>
   )
 }

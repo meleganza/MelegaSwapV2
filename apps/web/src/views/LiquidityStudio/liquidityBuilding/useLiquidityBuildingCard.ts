@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
-import { ChainId } from '@pancakeswap/sdk'
-import type { Currency } from '@pancakeswap/sdk'
+import { ChainId, Currency } from '@pancakeswap/sdk'
+import { useCurrencyBalance } from 'state/wallet/hooks'
 import {
   BLOCKED_ACTIVATION_GATES,
   EMPTY_SETUP_DRAFT,
@@ -14,6 +14,15 @@ import {
   setupDraftReadyForReview,
   transitionProgramStatus,
 } from './programStatus'
+import {
+  DECISION_FREQUENCY_OPTIONS,
+  EMPTY_PROGRAM_METRICS,
+  type LbActivityItem,
+  type LbUxPhase,
+  type ManageAction,
+  type ProgramMetrics,
+  availableManageActions,
+} from './uxCopy'
 
 type HealthPayload = {
   status?: string
@@ -29,9 +38,9 @@ function gatesFromHealth(payload: HealthPayload | null): ActivationGateSummary {
   const runtimeReady = payload.status === 'READY' && payload.ready === true
   const deploymentInputsValid = !blockers.some((b) => String(b).includes('DEPLOYMENT_INPUTS'))
   return {
-    activationAuthorized: false, // never invent authorization from health alone
+    activationAuthorized: false,
     mainnetCycleAuthorized: false,
-    contractsDeployed: false, // LB Factory not bound on mainnet
+    contractsDeployed: false,
     deploymentInputsValid,
     runtimeReady,
     blockers: blockers.length ? blockers.map(String) : [...BLOCKED_ACTIVATION_GATES.blockers],
@@ -40,27 +49,38 @@ function gatesFromHealth(payload: HealthPayload | null): ActivationGateSummary {
 
 export type LiquidityBuildingCardState = {
   status: ProgramStatus
+  phase: LbUxPhase
   draft: SetupDraft
   gates: ActivationGateSummary
+  activationPending: boolean
   walletConnected: boolean
   correctChain: boolean
   account: string | null
-  reviewOpen: boolean
-  blockerMessage: string | null
+  selectedCurrency: Currency | null
+  walletBalanceLabel: string | null
+  metrics: ProgramMetrics
+  activity: LbActivityItem[]
+  manageActions: ManageAction[]
+  technicalOpen: boolean
   mutateGate: ReturnType<typeof canSubmitMutatingAction>
   draftReady: boolean
+  decisionFrequencyLabel: string
   setToken: (currency: Currency | null) => void
   setBudget: (value: string) => void
   setStrategy: (mode: StrategyMode) => void
   setRateRange: (min: string, max: string) => void
   setEpoch: (seconds: EpochSeconds) => void
   startSetup: () => void
+  backToEntry: () => void
+  backToSetup: () => void
   openReview: () => void
-  closeReview: () => void
-  requestApproval: () => void
-  requestDeposit: () => void
-  requestActivate: () => void
-  cancelApproval: () => void
+  requestDepositAndActivate: () => void
+  pause: () => void
+  resume: () => void
+  stop: () => void
+  openManage: () => void
+  closeManage: () => void
+  toggleTechnical: () => void
   reset: () => void
 }
 
@@ -68,13 +88,18 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   const { address } = useAccount()
   const { chain } = useNetwork()
   const [status, setStatus] = useState<ProgramStatus>('NOT_ACTIVE')
+  const [phase, setPhase] = useState<LbUxPhase>('entry')
   const [draft, setDraft] = useState<SetupDraft>(EMPTY_SETUP_DRAFT)
   const [gates, setGates] = useState<ActivationGateSummary>({ ...BLOCKED_ACTIVATION_GATES })
-  const [reviewOpen, setReviewOpen] = useState(false)
-  const [blockerMessage, setBlockerMessage] = useState<string | null>(null)
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
+  const [technicalOpen, setTechnicalOpen] = useState(false)
+  const [metrics] = useState<ProgramMetrics>(EMPTY_PROGRAM_METRICS)
+  const [activity] = useState<LbActivityItem[]>([])
 
+  const balance = useCurrencyBalance(address ?? undefined, selectedCurrency ?? undefined)
   const walletConnected = Boolean(address)
   const correctChain = chain?.id === ChainId.BSC
+  const activationPending = !gates.activationAuthorized
 
   useEffect(() => {
     let cancelled = false
@@ -98,36 +123,50 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   )
 
   const draftReady = setupDraftReadyForReview(draft)
+  const manageActions = availableManageActions(status)
+  const decisionFrequencyLabel =
+    DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? 'Every 5 minutes'
 
-  const refuseMutation = useCallback(
-    (action: string) => {
-      const reason = mutateGate.reason || 'ACTIVATION_NOT_AUTHORIZED'
-      setBlockerMessage(
-        `${action} blocked: ${reason}. Liquidity Building remains fail-closed until deployment inputs validate and external activation gates pass.`,
-      )
-    },
-    [mutateGate.reason],
-  )
+  const walletBalanceLabel = useMemo(() => {
+    if (!selectedCurrency || !walletConnected || !balance) return null
+    return `${balance.toSignificant(6)} ${selectedCurrency.symbol ?? ''}`.trim()
+  }, [balance, selectedCurrency, walletConnected])
+
+  const reset = useCallback(() => {
+    setStatus('NOT_ACTIVE')
+    setPhase('entry')
+    setDraft(EMPTY_SETUP_DRAFT)
+    setSelectedCurrency(null)
+    setTechnicalOpen(false)
+  }, [])
 
   return {
     status,
+    phase,
     draft,
     gates,
+    activationPending,
     walletConnected,
     correctChain,
     account: address ?? null,
-    reviewOpen,
-    blockerMessage,
+    selectedCurrency,
+    walletBalanceLabel,
+    metrics,
+    activity,
+    manageActions,
+    technicalOpen,
     mutateGate,
     draftReady,
+    decisionFrequencyLabel,
     setToken: (currency) => {
+      setSelectedCurrency(currency)
       setDraft((d) => ({
         ...d,
         tokenAddress: currency?.wrapped?.address ?? null,
         tokenSymbol: currency?.symbol ?? null,
       }))
       setStatus((s) => (s === 'NOT_ACTIVE' ? 'SETUP_REQUIRED' : s))
-      setBlockerMessage(null)
+      setPhase('setup')
     },
     setBudget: (value) => setDraft((d) => ({ ...d, tokenBudget: value })),
     setStrategy: (mode) => setDraft((d) => ({ ...d, strategy: mode })),
@@ -135,46 +174,44 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     setEpoch: (seconds) => setDraft((d) => ({ ...d, epochSeconds: seconds })),
     startSetup: () => {
       setStatus((s) => transitionProgramStatus(s, 'START_SETUP'))
-      setBlockerMessage(null)
+      setPhase('setup')
     },
-    openReview: () => {
-      if (!draftReady) {
-        setBlockerMessage('Complete token, budget, strategy, and epoch before review.')
-        return
-      }
-      setReviewOpen(true)
-      setBlockerMessage(null)
-    },
-    closeReview: () => setReviewOpen(false),
-    requestApproval: () => {
-      if (!mutateGate.ok) {
-        refuseMutation('Approve')
-        // Surface Awaiting Approval only as the intended next step — do not claim on-chain success.
-        setStatus((s) => transitionProgramStatus(s, 'REQUEST_APPROVAL'))
-        return
-      }
-      setStatus((s) => transitionProgramStatus(s, 'REQUEST_APPROVAL'))
-    },
-    requestDeposit: () => {
-      if (!mutateGate.ok) {
-        refuseMutation('Deposit')
-        return
-      }
-      setStatus((s) => transitionProgramStatus(s, 'APPROVAL_CONFIRMED'))
-    },
-    requestActivate: () => {
-      if (!mutateGate.ok) {
-        refuseMutation('Activation')
-        return
-      }
-      setStatus((s) => transitionProgramStatus(s, 'ACTIVATE'))
-    },
-    cancelApproval: () => setStatus((s) => transitionProgramStatus(s, 'CANCEL_TO_SETUP')),
-    reset: () => {
+    backToEntry: () => {
+      setPhase('entry')
       setStatus('NOT_ACTIVE')
-      setDraft(EMPTY_SETUP_DRAFT)
-      setReviewOpen(false)
-      setBlockerMessage(null)
     },
+    backToSetup: () => setPhase('setup'),
+    openReview: () => {
+      if (!draftReady) return
+      setPhase('review')
+    },
+    requestDepositAndActivate: () => {
+      if (!mutateGate.ok) return
+      setStatus((s) => {
+        let next = transitionProgramStatus(s, 'REQUEST_APPROVAL')
+        next = transitionProgramStatus(next, 'APPROVAL_CONFIRMED')
+        next = transitionProgramStatus(next, 'DEPOSIT_CONFIRMED')
+        next = transitionProgramStatus(next, 'ACTIVATE')
+        return next
+      })
+      setPhase('active')
+    },
+    pause: () => {
+      if (!mutateGate.ok) return
+      setStatus((s) => transitionProgramStatus(s, 'PAUSE'))
+    },
+    resume: () => {
+      if (!mutateGate.ok) return
+      setStatus((s) => transitionProgramStatus(s, 'RESUME'))
+    },
+    stop: () => {
+      if (!mutateGate.ok) return
+      setStatus((s) => transitionProgramStatus(s, 'STOP'))
+      setPhase('active')
+    },
+    openManage: () => setPhase('manage'),
+    closeManage: () => setPhase(['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED'].includes(status) ? 'active' : 'entry'),
+    toggleTechnical: () => setTechnicalOpen((v) => !v),
+    reset,
   }
 }

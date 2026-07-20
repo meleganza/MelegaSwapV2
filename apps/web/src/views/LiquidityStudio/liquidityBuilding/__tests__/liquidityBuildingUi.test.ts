@@ -1,3 +1,6 @@
+/**
+ * Update LB014 UI source guards for LB016 copy freeze.
+ */
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
@@ -81,9 +84,10 @@ describe('LB014 Liquidity Building UI domain', () => {
     expect(screen).not.toMatch(/Coming soon/i)
 
     const panel = readFileSync(path.join(__dirname, '../../components/LiquidityBuildingPanel.tsx'), 'utf8')
-    expect(panel).toMatch(/Start Building Liquidity/)
+    const copy = readFileSync(path.join(__dirname, '../uxCopy.ts'), 'utf8')
+    expect(copy).toMatch(/Start Building Liquidity/)
     expect(panel).toMatch(/data-liquidity-building-panel/)
-    expect(panel).toMatch(/unavailable until production activation requirements are completed/i)
+    expect(copy).toMatch(/unavailable until production activation requirements are completed/i)
     expect(panel).not.toMatch(/Coming soon/i)
   })
 })

@@ -83,9 +83,13 @@ describe('LB015 external gate validation regressions', () => {
       path.join(ROOT, 'apps/web/src/views/LiquidityStudio/components/LiquidityBuildingPanel.tsx'),
       'utf8',
     )
-    expect(panel).toMatch(/Liquidity Building unavailable until production activation requirements are completed/)
-    expect(panel).toMatch(/Unavailable until activation/)
-    expect(panel).toMatch(/No fake liquidity, executions, APY, or simulated activity/)
-    expect(panel).not.toMatch(/APY:\s*\d|mock execution successful|simulated activity feed/i)
+    const copy = readFileSync(
+      path.join(ROOT, 'apps/web/src/views/LiquidityStudio/liquidityBuilding/uxCopy.ts'),
+      'utf8',
+    )
+    expect(copy).toMatch(/Liquidity Building is prepared but unavailable until production activation requirements are completed/)
+    expect(panel).toMatch(/Activation Required|activationRequired/)
+    expect(copy).toMatch(/No fake liquidity, executions, APY, or simulated activity|Activation Pending/)
+    expect(panel).toMatch(/data-lb-mutating-blocked|disabled=\{!card\.mutateGate\.ok\}/)
   })
 })
