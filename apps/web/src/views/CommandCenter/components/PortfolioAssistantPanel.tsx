@@ -13,6 +13,10 @@ import type {
   PortfolioAssistantContext,
   PortfolioAssistantState,
 } from '../commandCenterRuntime/portfolioAssistantContext'
+import type {
+  PortfolioActionCardModel,
+  PortfolioActionOrchestrationModel,
+} from '../commandCenterRuntime/portfolioActionOrchestration'
 import {
   ActionItem,
   SectionHeader,
@@ -142,30 +146,43 @@ const NavLink = styled.a`
 export type AssistantNavLinkKind = 'View' | 'Manage' | 'Open'
 
 export function resolveAssistantNavLinks(
-  action: PortfolioAssistantActionContext,
+  action: Pick<PortfolioAssistantActionContext, 'type' | 'enabled' | 'route'> | PortfolioActionCardModel,
 ): AssistantNavLinkKind[] {
-  if (!action.enabled || !action.route) return []
-  switch (action.type) {
+  const type = 'actionType' in action ? action.actionType : action.type
+  const enabled = action.enabled
+  const route = action.route
+  if (!enabled || !route) return []
+  switch (type) {
     case 'APPROVE':
     case 'WITHDRAW':
     case 'REMOVE_LIQUIDITY':
+    case 'MANAGE':
       return ['Manage', 'View']
     case 'CLAIM':
     case 'HARVEST':
+    case 'OPEN':
       return ['Open', 'View']
+    case 'ANALYTICS':
+      return ['View']
     default:
       return ['View']
   }
 }
 
-export function buildPositionInsights(context: PortfolioAssistantContext): string[] {
+export function buildPositionInsights(
+  context: PortfolioAssistantContext,
+  orchestration?: PortfolioActionOrchestrationModel | null,
+): string[] {
+  const sourceTitles = orchestration?.availableActions?.length
+    ? orchestration.availableActions.map((a) => a.positionTitle)
+    : context.actions.map((a) => a.position)
   const seen = new Set<string>()
   const insights: string[] = []
-  for (const action of context.actions) {
-    const title = action.position?.trim()
-    if (!title || seen.has(title)) continue
-    seen.add(title)
-    insights.push(`${title} has available actions.`)
+  for (const title of sourceTitles) {
+    const trimmed = title?.trim()
+    if (!trimmed || seen.has(trimmed)) continue
+    seen.add(trimmed)
+    insights.push(`${trimmed} has available actions.`)
   }
   return insights
 }
@@ -176,10 +193,24 @@ function pickSummaryLine(lines: readonly string[], matcher: RegExp): string | nu
 
 export function PortfolioAssistantPanel({
   context,
+  orchestration,
 }: {
   context: PortfolioAssistantContext
+  orchestration?: PortfolioActionOrchestrationModel | null
 }) {
-  const { state, summary, actions } = context
+  const { state, summary } = context
+  const orchestratedActions = orchestration?.availableActions ?? null
+  const actions: Array<
+    | PortfolioAssistantActionContext
+    | (PortfolioActionCardModel & { position: string; type: string })
+  > = orchestratedActions
+    ? orchestratedActions.map((a) => ({
+        ...a,
+        position: a.positionTitle,
+        type: a.actionType,
+      }))
+    : context.actions
+
   const isTerminalEmpty =
     state === 'DISCONNECTED' || state === 'EMPTY' || state === 'UNAVAILABLE'
 
@@ -206,13 +237,13 @@ export function PortfolioAssistantPanel({
       ? pickSummaryLine(summary.lines, /claimable rewards|operational action/i) ??
         (summary.farmClaimableCount > 0
           ? `${summary.farmClaimableCount} farm${summary.farmClaimableCount === 1 ? '' : 's'} ${summary.farmClaimableCount === 1 ? 'has' : 'have'} claimable rewards.`
-          : summary.actionCount > 0
-            ? `${summary.actionCount} operational action${summary.actionCount === 1 ? '' : 's'} ${summary.actionCount === 1 ? 'is' : 'are'} available.`
+          : (orchestratedActions?.length ?? summary.actionCount) > 0
+            ? `${orchestratedActions?.length ?? summary.actionCount} operational action${(orchestratedActions?.length ?? summary.actionCount) === 1 ? '' : 's'} ${(orchestratedActions?.length ?? summary.actionCount) === 1 ? 'is' : 'are'} available.`
             : null)
       : null
 
   const positionInsights =
-    state === 'READY' || state === 'PARTIAL' ? buildPositionInsights(context) : []
+    state === 'READY' || state === 'PARTIAL' ? buildPositionInsights(context, orchestration) : []
 
   const showOperational =
     !isTerminalEmpty &&
@@ -223,9 +254,11 @@ export function PortfolioAssistantPanel({
       data-testid="portfolio-assistant-panel"
       data-state={state}
       data-cc-r791d-5b="assistant-panel"
+      data-cc-r791d-5c={orchestration ? 'action-orchestration' : undefined}
       data-awareness="ai-portfolio-assistant"
       data-cc-assistant-center="AI_PORTFOLIO_ASSISTANT"
       data-visual-priority="2"
+      data-orchestration-state={orchestration?.state ?? 'legacy'}
     >
       <SectionHeader
         title="AI Portfolio Assistant"
@@ -291,14 +324,18 @@ export function PortfolioAssistantPanel({
                   <BlockLabel>Available actions</BlockLabel>
                   <InsightList as="div" data-testid="portfolio-assistant-actions-list">
                     {actions.map((action, index) => {
+                      const positionTitle =
+                        'positionTitle' in action ? action.positionTitle : action.position
+                      const actionType = 'actionType' in action ? action.actionType : action.type
+                      const group = 'group' in action ? action.group : null
                       const navLinks = resolveAssistantNavLinks(action)
                       return (
-                        <div key={`${action.type}:${action.position}:${action.route}:${index}`}>
+                        <div key={`${actionType}:${positionTitle}:${action.route}:${index}`}>
                           <ActionItem
                             testId="portfolio-assistant-action-item"
-                            title={action.position}
-                            meta={`${action.type}${action.reason ? ` · ${action.reason}` : ''}`}
-                            actionType={action.type}
+                            title={positionTitle}
+                            meta={`${actionType}${group ? ` · ${group}` : ''}${action.reason ? ` · ${action.reason}` : ''}`}
+                            actionType={actionType}
                           />
                           {navLinks.length > 0 && action.route ? (
                             <LinkRow data-testid="portfolio-assistant-action-links">
@@ -308,7 +345,7 @@ export function PortfolioAssistantPanel({
                                   href={action.route!}
                                   data-testid={`portfolio-assistant-nav-${kind.toLowerCase()}`}
                                   data-nav-kind={kind}
-                                  aria-label={`${kind}: ${action.label} for ${action.position}`}
+                                  aria-label={`${kind}: ${action.label} for ${positionTitle}`}
                                 >
                                   {kind}
                                 </NavLink>

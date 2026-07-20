@@ -19,6 +19,10 @@ import type {
   PortfolioIntelligenceActionItem,
   PortfolioIntelligenceModel,
 } from '../commandCenterRuntime/portfolioIntelligence'
+import type {
+  PortfolioActionCardModel,
+  PortfolioActionOrchestrationModel,
+} from '../commandCenterRuntime/portfolioActionOrchestration'
 import {
   ActionItem,
   ActionItemRow,
@@ -318,31 +322,73 @@ export function PortfolioHero({
 
 /**
  * 2. Action Center — canonical operational actions (LEVEL 2).
- * Source preference: PortfolioIntelligenceModel.actionItems.
+ * Prefers PortfolioActionOrchestrationModel (R791D.5C); legacy actionItems fallback.
  */
 export function PortfolioActions({
   positions,
   walletConnected,
   actionItems,
+  orchestration,
 }: {
   positions: readonly PortfolioPosition[]
   walletConnected: boolean
   actionItems?: readonly PortfolioIntelligenceActionItem[] | null
+  orchestration?: PortfolioActionOrchestrationModel | null
 }) {
-  const items = walletConnected ? resolveActionCenterItems(positions, actionItems) : []
-  const state = !walletConnected ? 'WALLET_NOT_CONNECTED' : items.length ? 'READY' : 'EMPTY'
+  const orchestrated = walletConnected && orchestration ? orchestration.priorityActions : null
+  const legacyItems = walletConnected && !orchestrated ? resolveActionCenterItems(positions, actionItems) : []
+  const cards: PortfolioActionCardModel[] = orchestrated ?? []
+  const useOrchestration = Boolean(orchestrated)
+
+  const state = !walletConnected
+    ? 'WALLET_NOT_CONNECTED'
+    : useOrchestration
+      ? orchestration!.state === 'DISCONNECTED'
+        ? 'WALLET_NOT_CONNECTED'
+        : orchestration!.priorityActions.length
+          ? orchestration!.state
+          : 'EMPTY'
+      : legacyItems.length
+        ? 'READY'
+        : 'EMPTY'
 
   return (
     <PortfolioSection center="ACTION_CENTER" testId="portfolio-actions" state={state}>
-      <div data-testid="todays-priorities-section" data-state={state} data-cc-r791d-4g="actions">
+      <div
+        data-testid="todays-priorities-section"
+        data-state={state}
+        data-cc-r791d-4g="actions"
+        data-cc-r791d-5c={useOrchestration ? 'action-orchestration' : undefined}
+        data-orchestration-state={orchestration?.state ?? 'legacy'}
+      >
         <SectionHeader title="Today's Actions" subtitle="Canonical operations requiring attention" />
         {!walletConnected ? (
           <EmptyState>Wallet not connected.</EmptyState>
-        ) : items.length === 0 ? (
+        ) : useOrchestration ? (
+          cards.length === 0 ? (
+            <EmptyState data-testid="todays-priorities-empty">No available actions.</EmptyState>
+          ) : (
+            <ActionItemRow testId="todays-priorities-list">
+              {cards.map((item) => (
+                <ActionItem
+                  key={`${item.positionId}:${item.actionType}:${item.label}:${item.route ?? ''}`}
+                  testId="priority-item"
+                  positionId={item.positionId}
+                  actionType={item.actionType}
+                  title={item.positionTitle}
+                  meta={[item.actionType, item.group, item.reason].filter(Boolean).join(' · ')}
+                  href={item.route}
+                  actionLabel={item.label}
+                  attention={item.group === 'ATTENTION_REQUIRED'}
+                />
+              ))}
+            </ActionItemRow>
+          )
+        ) : legacyItems.length === 0 ? (
           <EmptyState data-testid="todays-priorities-empty">No priorities right now.</EmptyState>
         ) : (
           <ActionItemRow testId="todays-priorities-list">
-            {items.map((item) => (
+            {legacyItems.map((item) => (
               <ActionItem
                 key={item.id}
                 testId="priority-item"

@@ -41,6 +41,10 @@ import {
   type PortfolioAssistantContext,
 } from '../commandCenterRuntime/portfolioAssistantContext'
 import {
+  buildPortfolioActionOrchestration,
+  type PortfolioActionOrchestrationModel,
+} from '../commandCenterRuntime/portfolioActionOrchestration'
+import {
   CommandCenterVisualShell,
   PortfolioSection,
   SecondaryRail,
@@ -50,6 +54,7 @@ export { buildTodaysPriorities, type PriorityItem }
 export { PortfolioViewSelector, PortfolioHero, PortfolioActions, PositionsCenter }
 export { buildPortfolioIntelligence }
 export { buildPortfolioAssistantContext, type PortfolioAssistantContext }
+export { buildPortfolioActionOrchestration, type PortfolioActionOrchestrationModel }
 export { PortfolioAssistantPanel }
 
 export interface PortfolioDashboardProps {
@@ -466,6 +471,11 @@ export function PortfolioDashboard({
     intelligence,
     walletConnected,
   })
+  const actionOrchestration = buildPortfolioActionOrchestration({
+    assistantContext,
+    portfolio,
+    walletConnected,
+  })
 
   let visualState: 'DISCONNECTED' | 'EMPTY' | 'CONNECTED' | 'ATTENTION' | 'PARTIAL' | 'UNAVAILABLE' | 'HISTORICAL' =
     'CONNECTED'
@@ -498,6 +508,13 @@ export function PortfolioDashboard({
         data-cc-assistant-views={assistantContext.availableViews.join(',')}
         data-cc-assistant-summary-count={String(assistantContext.summary.lines.length)}
       />
+      <div
+        hidden
+        data-testid="portfolio-action-orchestration"
+        data-orchestration-state={actionOrchestration.state}
+        data-available-count={String(actionOrchestration.availableActions.length)}
+        data-blocked-count={String(actionOrchestration.blockedActions.length)}
+      />
       {emptyPortfolio ? (
         <EmptyState data-testid="portfolio-dashboard-empty">Portfolio empty.</EmptyState>
       ) : null}
@@ -515,6 +532,7 @@ export function PortfolioDashboard({
           positions={portfolio.positions}
           walletConnected={walletConnected}
           actionItems={intelligence.actionItems}
+          orchestration={actionOrchestration}
         />
       </DashboardSectionBoundary>
 
@@ -523,7 +541,7 @@ export function PortfolioDashboard({
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="ai-portfolio-assistant">
-        <PortfolioAssistantPanel context={assistantContext} />
+        <PortfolioAssistantPanel context={assistantContext} orchestration={actionOrchestration} />
       </DashboardSectionBoundary>
 
       <DashboardSectionBoundary section="positions-center">
