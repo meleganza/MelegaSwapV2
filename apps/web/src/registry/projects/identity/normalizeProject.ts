@@ -491,6 +491,8 @@ export function toPublicProjectJson(
     walletRelationshipSupport?: Record<string, unknown>
     /** Public-safe markets summary only — never wallet-specific market state. */
     marketsSummary?: Record<string, unknown>
+    /** Public-safe participation summary only — never wallet positions. */
+    participationSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -569,6 +571,11 @@ export function toPublicProjectJson(
   // PP005 — public-safe markets summary (no quotes, balances, or wallet context)
   if (options?.marketsSummary) {
     body.marketsSummary = options.marketsSummary
+  }
+
+  // PP006 — public-safe participation summary (no wallet positions or rewards)
+  if (options?.participationSummary) {
+    body.participationSummary = options.participationSummary
   }
 
   return body

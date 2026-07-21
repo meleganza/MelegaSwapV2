@@ -5,9 +5,11 @@ import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
+import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
+import ProjectParticipationSection from './ProjectParticipationSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
@@ -220,6 +222,7 @@ interface Props {
   evidencePack: ProjectEvidencePack
   readinessDocument: ProjectReadinessDocument
   marketsDocument: ProjectMarketsDocument
+  participationDocument: ProjectParticipationDocument
 }
 
 const ProjectIdentityShell: React.FC<Props> = ({
@@ -227,6 +230,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
   evidencePack,
   readinessDocument,
   marketsDocument,
+  participationDocument,
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -373,6 +377,11 @@ const ProjectIdentityShell: React.FC<Props> = ({
 
         <Section $mobileOrder={5} data-testid="project-participate-slot">
           <ProjectMarketsSection markets={marketsDocument} />
+          <ProjectParticipationSection
+            participation={participationDocument}
+            document={doc}
+            evidencePack={evidencePack}
+          />
         </Section>
 
         <Section $mobileOrder={6} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
