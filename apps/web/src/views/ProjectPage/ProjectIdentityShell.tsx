@@ -29,6 +29,11 @@ const ClientWalletRelationship = dynamic(() => import('./ProjectWalletRelationsh
   evidencePack: ProjectEvidencePack
 }>
 
+/** Manage Project is authenticated-only — never SSR into public HTML. */
+const ClientManageEntry = dynamic(() => import('./ProjectManageEntry'), {
+  ssr: false,
+}) as React.ComponentType<{ slug: string }>
+
 /** Avoid Layout/Page — its PageMeta would overwrite Project Page SEO. */
 const PageFrame = styled.div`
   width: 100%;
@@ -388,6 +393,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
                   Open Liquidity Building
                 </HeroAction>
               ) : null}
+              <ClientManageEntry slug={doc.slug} />
             </Flex>
           </Flex>
         </Section>

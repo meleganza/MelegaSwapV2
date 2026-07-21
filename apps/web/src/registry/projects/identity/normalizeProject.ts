@@ -503,6 +503,8 @@ export function toPublicProjectJson(
     developerSummary?: Record<string, unknown>
     /** Public-safe governance summary only — never treasury balances or voting state. */
     governanceSummary?: Record<string, unknown>
+    /** Public-safe control-center claim/verification only — never private drafts or secrets. */
+    controlCenterSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -611,6 +613,11 @@ export function toPublicProjectJson(
   // PP011 — public-safe governance summary (disclosure only; no treasury payload)
   if (options?.governanceSummary) {
     body.governanceSummary = options.governanceSummary
+  }
+
+  // PP012 — public-safe claim/verification only (no private drafts, roles detail, or secrets)
+  if (options?.controlCenterSummary) {
+    body.controlCenterSummary = options.controlCenterSummary
   }
 
   return body
