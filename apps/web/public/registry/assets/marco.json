@@ -6,8 +6,8 @@
   "asset_type": "fungible",
   "lifecycle": "observed",
   "project_binding": {
-    "project_upi": "upi://melega/project/melega-dex@1",
-    "project_slug": "melega-dex",
+    "project_upi": "upi://melega/project/marco@1",
+    "project_slug": "marco",
     "is_primary": true,
     "binding_source": "legacy_import",
     "bound_at": "2026-06-26"
@@ -17,24 +17,64 @@
   "symbol": "MARCO",
   "decimals": 18,
   "name": "MARCO (BSC)",
-  "description": "MARCO coordination token on BSC — linked asset of Melega DEX project.",
-  "tags": ["native", "coordination", "fungible"],
+  "description": "MARCO coordination token on BSC \u2014 primary asset of the MARCO project.",
+  "tags": [
+    "native",
+    "coordination",
+    "fungible"
+  ],
   "trust": {
-    "badges": ["canonical", "observed"],
+    "badges": [
+      "canonical",
+      "observed"
+    ],
     "verification_status": "observed"
   },
   "capabilities": {
-    "tradable": { "status": "live", "notes": "MARCO on legacy default token lists" },
-    "liquidity": { "status": "live", "notes": "Platform liquidity routes via /liquidity" },
-    "farm": { "status": "live", "notes": "Legacy MasterChef farms via /farms" },
-    "pool": { "status": "live", "notes": "MARCO staking pools via /pools" },
-    "lock": { "status": "planned", "notes": "Lock Center indexing — Phase 2" },
-    "governance": { "status": "planned", "notes": "Governance linkage — Phase 2" },
-    "smartdrop": { "status": "planned", "notes": "SmartDrop campaigns — Phase 2" },
-    "radar": { "status": "planned", "notes": "Radar incident feed — Phase 2" },
-    "space": { "status": "partial", "notes": "Community link only; bind not live" },
-    "labs": { "status": "planned", "notes": "Labs experiments — Phase 2" },
-    "treasury": { "status": "planned", "notes": "MARCO fee SKUs — Treasury Runtime Phase 2" }
+    "tradable": {
+      "status": "live",
+      "notes": "MARCO on legacy default token lists"
+    },
+    "liquidity": {
+      "status": "live",
+      "notes": "Platform liquidity routes via /liquidity"
+    },
+    "farm": {
+      "status": "live",
+      "notes": "Legacy MasterChef farms via /farms"
+    },
+    "pool": {
+      "status": "live",
+      "notes": "MARCO staking pools via /pools"
+    },
+    "lock": {
+      "status": "planned",
+      "notes": "Lock Center indexing \u2014 Phase 2"
+    },
+    "governance": {
+      "status": "planned",
+      "notes": "Governance linkage \u2014 Phase 2"
+    },
+    "smartdrop": {
+      "status": "planned",
+      "notes": "SmartDrop campaigns \u2014 Phase 2"
+    },
+    "radar": {
+      "status": "planned",
+      "notes": "Radar incident feed \u2014 Phase 2"
+    },
+    "space": {
+      "status": "partial",
+      "notes": "Community link only; bind not live"
+    },
+    "labs": {
+      "status": "planned",
+      "notes": "Labs experiments \u2014 Phase 2"
+    },
+    "treasury": {
+      "status": "planned",
+      "notes": "MARCO fee SKUs \u2014 Treasury Runtime Phase 2"
+    }
   },
   "relationships": {
     "liquidity_pools": [],
@@ -43,10 +83,10 @@
     "campaigns": [],
     "treasury_skus": [],
     "relationship_status": "not_indexed",
-    "relationship_notes": "Relationship placeholders only — no indexed pools or campaigns in static MVP."
+    "relationship_notes": "Relationship placeholders only \u2014 no indexed pools or campaigns in static MVP."
   },
   "mvp_static": true,
   "data_source": "asset-registry-static",
   "as_of": "2026-06-26",
-  "disclaimer": "Listed ≠ audited. Static asset registry MVP — automated verification not live. Observed = legacy-indexed data only."
+  "disclaimer": "Listed \u2260 audited. Static asset registry MVP \u2014 automated verification not live. Observed = legacy-indexed data only."
 }

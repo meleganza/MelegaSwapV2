@@ -99,8 +99,9 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 
   [data-melega-app-shell] .melega-shell-mobile-network button,
   [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
-    height: 36px !important;
-    max-width: 145px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-width: 132px !important;
     border-radius: 10px !important;
     background: ${colors.surface1} !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -109,21 +110,25 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     box-shadow: none !important;
     display: inline-flex !important;
     align-items: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   @media (max-width: 419px) {
     [data-melega-app-shell] .melega-shell-mobile-network button,
     [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
-      max-width: 72px !important;
-      min-width: 72px !important;
-      padding: 0 10px !important;
+      max-width: 96px !important;
+      min-width: 88px !important;
+      padding: 0 8px !important;
     }
   }
 
   [data-melega-app-shell] .melega-shell-mobile-connect {
     min-width: 72px !important;
     width: auto !important;
-    height: 36px !important;
+    height: 44px !important;
+    min-height: 44px !important;
     padding: 0 12px !important;
     border-radius: 10px !important;
     border: 1px solid ${colors.gold} !important;

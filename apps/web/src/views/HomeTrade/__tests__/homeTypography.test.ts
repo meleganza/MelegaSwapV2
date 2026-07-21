@@ -10,7 +10,7 @@ describe('R760 homeTypography', () => {
   })
 
   it('uses fixed live activity height aligned with Trade swaps', () => {
-    expect(homeTradeLayout.liveActivityHeight).toBe('320px')
+    expect(homeTradeLayout.liveActivityHeight).toBe('260px')
     expect(homeTradeLayout.activityRowHeight).toBe('52px')
     expect(homeTradeLayout.sectionGap).toBe('28px')
   })

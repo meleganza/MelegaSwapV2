@@ -6,8 +6,8 @@ import { getAssetBySlug, getAssetsByProjectSlug } from '../getAssetBySlug'
 import { serializeAssetManifest, serializeAssetRegistryIndex } from '../manifest'
 
 describe('assets.data', () => {
-  it('derives MARCO assets from Organ 01 token refs', () => {
-    const project = getProjectBySlug('melega-dex')
+  it('derives MARCO assets from MARCO project token refs', () => {
+    const project = getProjectBySlug('marco')
     expect(STATIC_ASSETS).toHaveLength(project?.resources.tokens.length ?? 0)
     STATIC_ASSETS.forEach((asset, index) => {
       const token = project!.resources.tokens[index]
@@ -15,6 +15,7 @@ describe('assets.data', () => {
       expect(asset.contractAddress).toBe(token.address)
       expect(asset.chainId).toBe(token.chainId)
       expect(asset.projectBinding.projectUpi).toBe(project!.upi)
+      expect(asset.projectBinding.projectSlug).toBe('marco')
     })
   })
 
@@ -66,7 +67,8 @@ describe('manifest', () => {
 })
 
 describe('getAssetsByProjectSlug', () => {
-  it('returns all MARCO assets for melega-dex', () => {
-    expect(getAssetsByProjectSlug('melega-dex')).toHaveLength(4)
+  it('returns all MARCO assets for marco project', () => {
+    expect(getAssetsByProjectSlug('marco')).toHaveLength(4)
+    expect(getAssetsByProjectSlug('melega-dex')).toHaveLength(0)
   })
 })

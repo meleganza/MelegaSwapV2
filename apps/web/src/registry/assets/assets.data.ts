@@ -51,7 +51,7 @@ const tokenRefToAsset = (token: TokenRef, projectSlug: string, projectUpi: strin
     symbol: token.symbol,
     decimals: 18,
     name: `MARCO (${chainLabel})`,
-    description: `MARCO coordination token on ${chainLabel} — linked asset of Melega DEX project.`,
+    description: `MARCO coordination token on ${chainLabel} — primary asset of the MARCO project.`,
     tags: ['native', 'coordination', 'fungible'],
     trust: {
       badges: ['canonical', 'observed'],
@@ -75,7 +75,7 @@ const tokenRefToAsset = (token: TokenRef, projectSlug: string, projectUpi: strin
 }
 
 const buildStaticAssets = (): StaticAssetRecord[] => {
-  const project = getProjectBySlug('melega-dex')
+  const project = getProjectBySlug('marco')
   if (!project) {
     return []
   }

@@ -19,7 +19,7 @@ export const ProjectsStudioPageHeader: React.FC = () => (
         <MelegaStudioGhostBtn as="a" href="/import-existing-token?mode=claim" style={{ textDecoration: 'none' }}>
           Claim Existing Project
         </MelegaStudioGhostBtn>
-        <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
+        <MelegaStudioGhostBtn as="a" href="/@marco/" style={{ textDecoration: 'none' }}>
           Open Project Page
         </MelegaStudioGhostBtn>
       </>

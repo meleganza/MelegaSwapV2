@@ -28,6 +28,7 @@ const FIXED_AT = '2026-07-20T22:00:00.000Z'
 const WALLET = 'eip155:56:0x1111111111111111111111111111111111111111'
 
 function cloneProject(overrides: Partial<StaticProjectRecord> = {}): StaticProjectRecord {
+  // Liquidity Building certified binding remains on Melega DEX (exchange surface).
   const base = STATIC_PROJECTS.find((p) => p.slug === 'melega-dex') ?? STATIC_PROJECTS[0]
   return {
     ...base,

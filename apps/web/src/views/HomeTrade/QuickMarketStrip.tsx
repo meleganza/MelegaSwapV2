@@ -10,8 +10,12 @@ const Strip = styled.div`
 const MarketGrid = styled.div<{ $count: number }>`
   display: grid;
   gap: 12px;
-  grid-template-columns: ${({ $count }) =>
-    $count === 1 ? 'minmax(0, 520px)' : $count === 2 ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))'};
+  grid-template-columns: 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: ${({ $count }) =>
+      $count === 1 ? 'minmax(0, 520px)' : $count === 2 ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))'};
+  }
 `
 
 const CardSlot = styled.div`

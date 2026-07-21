@@ -31,7 +31,7 @@ const MARCO_BSC = '0x963556de0eb8138e97a85f0a86ee0acd159d210b'
 const UNRELATED = '0x2222222222222222222222222222222222222222'
 
 function cloneProject(overrides: Partial<StaticProjectRecord> = {}): StaticProjectRecord {
-  const base = STATIC_PROJECTS.find((p) => p.slug === 'melega-dex') ?? STATIC_PROJECTS[0]
+  const base = STATIC_PROJECTS.find((p) => p.slug === 'marco') ?? STATIC_PROJECTS[0]
   return {
     ...base,
     ...overrides,
@@ -646,7 +646,7 @@ describe('PP004 UX language and invalidation semantics', () => {
     )
     expect(doc.status).toBe('PARTIAL')
     expect(doc.projectId).toBeTruthy()
-    expect(doc.slug).toBe('melega-dex')
+    expect(doc.slug).toBe('marco')
   })
 })
 

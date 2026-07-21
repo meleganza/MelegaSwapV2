@@ -50,17 +50,21 @@ export interface MelegaCinematicPanelProps {
 const Panel = styled.div`
   display: block;
   position: relative;
-  height: 260px;
-  max-height: 260px;
+  min-height: 200px;
+  height: auto;
+  max-height: none;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
   background: #050505;
   box-shadow: none;
+  padding-bottom: 16px;
 
   @media (min-width: 768px) {
     height: 100%;
     max-height: 404px;
+    min-height: 0;
+    padding-bottom: 0;
   }
 `
 
@@ -170,16 +174,18 @@ const HorizonArc = styled.div`
 `
 
 const Copy = styled.div`
-  position: absolute;
-  left: 44px;
-  top: 72px;
+  position: relative;
   z-index: 3;
-  max-width: 380px;
+  max-width: 100%;
+  padding: 20px 16px 8px;
+  box-sizing: border-box;
 
-  @media (max-width: 767px) {
-    left: 20px;
-    top: 28px;
-    max-width: calc(100% - 40px);
+  @media (min-width: 768px) {
+    position: absolute;
+    left: 44px;
+    top: 72px;
+    max-width: 380px;
+    padding: 0;
   }
 `
 
@@ -269,13 +275,14 @@ const HeadlineBlock = styled.div`
 
 const HeadlineLine = styled.div`
   font-family: ${typography.fontFamily.body};
-  font-size: 50px;
+  font-size: 28px;
   font-weight: 800;
-  line-height: 1.02;
+  line-height: 1.15;
   color: ${colors.textPrimary};
 
-  @media (max-width: 767px) {
-    font-size: 42px;
+  @media (min-width: 768px) {
+    font-size: 50px;
+    line-height: 1.02;
   }
 `
 

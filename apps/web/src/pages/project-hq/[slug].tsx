@@ -33,7 +33,11 @@ import type { ProjectDeveloperDocument } from 'registry/projects/identity/develo
 import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
 import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
-import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
+import { buildProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/buildProjectTokenomicsDocument'
+import { buildProjectRoadmapDocument } from 'registry/projects/identity/roadmap/buildProjectRoadmapDocument'
+import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
+import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
+import ProjectConsumerShell from 'views/ProjectPage/consumer/ProjectConsumerShell'
 
 interface ProjectHqPageProps {
   document: CanonicalProjectDocument | null
@@ -48,6 +52,8 @@ interface ProjectHqPageProps {
   governanceDocument: ProjectGovernanceDocument | null
   growthDocument: ProjectGrowthDocument | null
   machineDocument: ProjectMachineDocument | null
+  tokenomicsDocument: ProjectTokenomicsDocument | null
+  roadmapDocument: ProjectRoadmapDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -137,6 +143,8 @@ const ProjectHqPage = ({
   governanceDocument,
   growthDocument,
   machineDocument,
+  tokenomicsDocument,
+  roadmapDocument,
   jsonLd,
 }: ProjectHqPageProps) => {
   if (
@@ -158,7 +166,7 @@ const ProjectHqPage = ({
   }
 
   return (
-    <ProjectIdentityShell
+    <ProjectConsumerShell
       document={document}
       evidencePack={evidencePack}
       readinessDocument={readinessDocument}
@@ -171,6 +179,8 @@ const ProjectHqPage = ({
       governanceDocument={governanceDocument}
       growthDocument={growthDocument}
       machineDocument={machineDocument}
+      tokenomicsDocument={tokenomicsDocument}
+      roadmapDocument={roadmapDocument}
     />
   )
 }
@@ -274,6 +284,9 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     generatedAt,
   })
 
+  const tokenomicsDocument = buildProjectTokenomicsDocument(requestedSlug, generatedAt)
+  const roadmapDocument = buildProjectRoadmapDocument(requestedSlug, generatedAt)
+
   return {
     props: {
       document: loaded.document,
@@ -288,6 +301,8 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
       governanceDocument,
       growthDocument,
       machineDocument,
+      tokenomicsDocument,
+      roadmapDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },

@@ -22,12 +22,21 @@ function normalizeAddress(address: string): string {
 
 function findCanonicalProject(contract: string, chainId?: number): StaticProjectRecord | undefined {
   const normalized = normalizeAddress(contract)
-  return getAllProjects().find((project) =>
+  const matches = getAllProjects().filter((project) =>
     project.resources.tokens.some(
       (token) =>
         token.address.toLowerCase() === normalized && (chainId == null || token.chainId === chainId),
     ),
   )
+  if (matches.length === 0) return undefined
+  // Prefer dedicated token/crypto project identities over exchange platform projects.
+  const tokenProject = matches.find(
+    (project) =>
+      project.projectType === 'Cryptocurrency' ||
+      project.slug === 'marco' ||
+      project.resources.tokens.some((t) => t.symbol.toUpperCase() === project.displayName.toUpperCase()),
+  )
+  return tokenProject ?? matches[0]
 }
 
 export function resolveProjectRegistryLookup(

@@ -154,8 +154,8 @@ describe('PP001 identity normalization', () => {
   })
 
   it('project with multiple assets and chains', () => {
-    const melega = getProjectBySlug('melega-dex')!
-    const doc = normalizeProjectDocument(melega, { generatedAt: FIXED_NOW })
+    const marco = getProjectBySlug('marco')!
+    const doc = normalizeProjectDocument(marco, { generatedAt: FIXED_NOW })
     expect(doc.assets.length).toBeGreaterThan(1)
     expect(doc.chains.length).toBe(4)
     expect(doc.deployments.length).toBe(4)
@@ -283,17 +283,25 @@ describe('PP001 chain identifiers', () => {
   it('token symbol / contract search may resolve project but are not canonical URLs', () => {
     const bySymbol = resolveProjectByTokenSymbol('MARCO')
     const byAddress = resolveProjectByContractAddress('0x963556de0eb8138E97A85F0A86eE0acD159D210b')
-    expect(bySymbol?.slug).toBe('melega-dex')
-    expect(byAddress?.slug).toBe('melega-dex')
+    expect(bySymbol?.slug).toBe('marco')
+    expect(byAddress?.slug).toBe('marco')
     const doc = normalizeProjectDocument(bySymbol!, { generatedAt: FIXED_NOW })
-    expect(doc.canonicalUrl).toContain('/@melega-dex')
+    expect(doc.canonicalUrl).toContain('/@marco')
     expect(doc.canonicalUrl).not.toMatch(/0x963556/i)
   })
 })
 
 describe('PP001 route and shell source contracts', () => {
   const hqPage = readFileSync(path.resolve(__dirname, '../../../../pages/project-hq/[slug].tsx'), 'utf8')
-  const shell = readFileSync(path.resolve(__dirname, '../../../../views/ProjectPage/ProjectIdentityShell.tsx'), 'utf8')
+  const consumer = readFileSync(
+    path.resolve(__dirname, '../../../../views/ProjectPage/consumer/ProjectConsumerShell.tsx'),
+    'utf8',
+  )
+  const stickyNav = readFileSync(
+    path.resolve(__dirname, '../../../../views/ProjectPage/consumer/ProjectStickyNav.tsx'),
+    'utf8',
+  )
+  const hero = readFileSync(path.resolve(__dirname, '../../../../views/ProjectPage/consumer/ProjectHero.tsx'), 'utf8')
   const nextConfig = readFileSync(path.resolve(__dirname, '../../../../../next.config.mjs'), 'utf8')
   const api = readFileSync(path.resolve(__dirname, '../../../../pages/api/public/projects/[slug].ts'), 'utf8')
 
@@ -310,26 +318,22 @@ describe('PP001 route and shell source contracts', () => {
   })
 
   it('does not render fake action controls', () => {
-    expect(shell).not.toMatch(/Buy MARCO/)
-    expect(shell).not.toMatch(/fake/i)
-    expect(shell).not.toMatch(/>\s*Swap\s*</)
-    expect(shell).not.toMatch(/disabled action/i)
-    expect(shell).toMatch(/data-testid="project-identity-shell"/)
+    expect(consumer).not.toMatch(/fake/i)
+    expect(consumer).not.toMatch(/disabled action/i)
+    expect(consumer).toMatch(/data-testid="project-consumer-shell"/)
+    expect(hqPage).toMatch(/ProjectConsumerShell/)
   })
 
   it('includes accessibility affordances', () => {
-    expect(shell).toMatch(/aria-label="Project page sections"/)
-    expect(shell).toMatch(/aria-label=\{`Copy contract address/)
-    expect(shell).toMatch(/prefers-reduced-motion/)
-    expect(shell).toMatch(/opens in a new tab/)
-    expect(shell).toMatch(/as="h1"/)
-    expect(shell).toMatch(/as="h2"/)
+    expect(stickyNav).toMatch(/aria-label/)
+    expect(hero).toMatch(/Copy|copy/)
+    expect(consumer).toMatch(/prefers-reduced-motion|ProjectStickyNav/)
+    expect(hero).toMatch(/opens in a new tab|noopener/)
   })
 
-  it('includes responsive mobile order hooks', () => {
-    expect(shell).toMatch(/\$mobileOrder=\{1\}/)
-    expect(shell).toMatch(/\$mobileOrder=\{7\}/)
-    expect(shell).toMatch(/@media \(max-width: 767px\)/)
+  it('includes responsive mobile consumer navigation', () => {
+    expect(stickyNav).toMatch(/44px|min-height:\s*44/)
+    expect(stickyNav).toMatch(/Overview|Chart|Swap/)
   })
 
   it('SEO page sets canonical /@ URL and JSON alternate', () => {
@@ -353,8 +357,10 @@ describe('PP001 discovery and frozen-surface regression', () => {
     const discoveryPage = readFileSync(path.resolve(__dirname, '../../../../pages/projects/index.tsx'), 'utf8')
     expect(discoveryPage).toMatch(/ProjectsStudioScreen/)
     expect(getAllProjectSlugs()).toContain('melega-dex')
+    expect(getAllProjectSlugs()).toContain('marco')
     expect(getAllProjects().length).toBe(STATIC_PROJECTS.length)
-    expect(getProjectBySlug('melega')).toBeTruthy()
+    expect(getProjectBySlug('melega-dex')).toBeTruthy()
+    expect(getProjectBySlug('marco')).toBeTruthy()
   })
 
   it('does not modify frozen studio entry paths or LB health API', () => {

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://melega.finance/schemas/project/v1",
+  "upi": "upi://melega/project/marco@1",
+  "slug": "marco",
+  "aliases": [],
+  "display_name": "MARCO",
+  "tagline": "Coordination token of the Melega ecosystem",
+  "description": "MARCO is the native coordination token of the Melega ecosystem. It powers trading, liquidity, farming, and staking utilities on Melega DEX across BNB Smart Chain and related networks. MARCO is a crypto-asset project identity \u2014 not the Melega DEX exchange itself.",
+  "project_type": "Cryptocurrency",
+  "lifecycle_status": "operational",
+  "logo_url": "https://www.melega.finance/images/melega.png",
+  "registry_status": "listed",
+  "phase": "legacy_import",
+  "verification_status": "observed",
+  "trust_badges": [
+    "canonical",
+    "observed"
+  ],
+  "endorsement_status": "none",
+  "risk_tier": "low",
+  "legacy_import": true,
+  "is_canonical": true,
+  "mvp_static": true,
+  "sector_tags": [
+    "DeFi",
+    "Utility Token"
+  ],
+  "supported_chains": [
+    56,
+    1,
+    137,
+    8453
+  ],
+  "website_url": "https://www.melega.finance",
+  "docs_url": "https://www.melega.finance/about",
+  "space_profile_url": "https://melega.space/",
+  "social_links": [
+    {
+      "type": "telegram",
+      "url": "https://t.me/melegacommunity"
+    },
+    {
+      "type": "twitter",
+      "url": "https://x.com/meleganews"
+    },
+    {
+      "type": "instagram",
+      "url": "https://www.instagram.com/melega.finance/"
+    }
+  ],
+  "resources": {
+    "tokens": [
+      {
+        "chain_id": 56,
+        "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+        "symbol": "MARCO",
+        "ref": "token://56/0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+      },
+      {
+        "chain_id": 1,
+        "address": "0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76",
+        "symbol": "MARCO",
+        "ref": "token://1/0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76"
+      },
+      {
+        "chain_id": 137,
+        "address": "0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+        "symbol": "MARCO",
+        "ref": "token://137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2"
+      },
+      {
+        "chain_id": 8453,
+        "address": "0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7",
+        "symbol": "MARCO",
+        "ref": "token://8453/0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7"
+      }
+    ],
+    "liquidity_pools": [],
+    "farms": [],
+    "staking_pools": []
+  },
+  "related_project_slugs": [
+    "melega-dex"
+  ],
+  "primary_token_refs": [
+    "token://56/0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "token://1/0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76",
+    "token://137/0xD3e28c74177B812d1543A406aD1A97ee3C398AC2",
+    "token://8453/0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7"
+  ],
+  "deep_links": {
+    "swap": "/trade?chain=bsc&inputCurrency=BNB&outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "liquidity": "/liquidity",
+    "farms": "/farms",
+    "pools": "/pools",
+    "buy_marco": "/trade?chain=bsc&inputCurrency=BNB&outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+  },
+  "disclaimer": "Listed \u2260 audited. Static registry MVP \u2014 automated verification not live. Observed = legacy-indexed data only.",
+  "as_of": "2026-06-26"
+}

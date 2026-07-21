@@ -122,7 +122,13 @@ function marketFromSpotLpVenue(input: {
       .map((a) => normalizeEvmAddress(a.contractAddress ?? ''))
       .filter(Boolean) as string[],
   )
-  if (!projectAddrs.has(baseAddr) && !projectAddrs.has(quoteAddr)) {
+  const venueBoundToProject = venue.projectBinding.projectSlug === document.slug
+  const assetLinked =
+    venue.assetBindings.some((b) => b.role === 'base' && b.assetSlug === document.slug) ||
+    projectAddrs.has(baseAddr) ||
+    projectAddrs.has(quoteAddr)
+  // DEX venues may attribute markets without owning token assets (related token project).
+  if (!venueBoundToProject && !assetLinked) {
     return null
   }
 

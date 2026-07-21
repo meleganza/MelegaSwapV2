@@ -31,7 +31,8 @@ const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 const PAIR = '0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e'
 
 function cloneProject(overrides: Partial<StaticProjectRecord> = {}): StaticProjectRecord {
-  const base = STATIC_PROJECTS.find((p) => p.slug === 'melega-dex') ?? STATIC_PROJECTS[0]
+  // Token-bearing project identity (UX001 separated MARCO from Melega DEX).
+  const base = STATIC_PROJECTS.find((p) => p.slug === 'marco') ?? STATIC_PROJECTS[0]
   return {
     ...base,
     ...overrides,

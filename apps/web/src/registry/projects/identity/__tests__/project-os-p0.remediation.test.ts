@@ -11,17 +11,20 @@ import { discoverProjectFromContract } from 'views/ProjectsStudio/projectsRuntim
 const ROOT = path.join(__dirname, '../../../../')
 
 describe('PROJECT_OS_P0 remediation', () => {
-  it('P0-01/P0-05: melega-dex and marco aliases resolve', () => {
+  it('P0-01/P0-05: melega-dex and marco resolve as distinct identities (UX001)', () => {
     expect(resolveProjectBySlug('melega-dex').ok).toBe(true)
     expect(resolveProjectBySlug('melega').ok).toBe(true)
     expect(resolveProjectBySlug('marco').ok).toBe(true)
     const a = resolveProjectBySlug('melega-dex')
     const b = resolveProjectBySlug('marco')
-    expect(a.ok && b.ok).toBe(true)
-    if (a.ok && b.ok) {
-      expect(a.project.upi).toBe(b.project.upi)
+    const alias = resolveProjectBySlug('melega')
+    expect(a.ok && b.ok && alias.ok).toBe(true)
+    if (a.ok && b.ok && alias.ok) {
+      expect(a.project.upi).not.toBe(b.project.upi)
       expect(a.slug).toBe('melega-dex')
-      expect(b.slug).toBe('melega-dex')
+      expect(b.slug).toBe('marco')
+      expect(alias.slug).toBe('melega-dex')
+      expect(alias.project.upi).toBe(a.project.upi)
     }
     const slugs = getAllResolvableProjectSlugs()
     expect(slugs).toContain('melega-dex')
@@ -41,15 +44,15 @@ describe('PROJECT_OS_P0 remediation', () => {
     expect(vercel).toContain('/project-hq/:slug')
   })
 
-  it('P0-03: MARCO BSC contract resolves to canonical project', () => {
+  it('P0-03: MARCO BSC contract resolves to canonical MARCO project', () => {
     const marco = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
     const discovery = discoverProjectFromContract(marco, 56)
     expect(discovery.found).toBe(true)
     expect(discovery.registryTier).toBe('canonical')
-    expect(discovery.project?.slug).toBe('melega-dex')
+    expect(discovery.project?.slug).toBe('marco')
     const analysis = runImportAnalysis(marco, 'bnb')
     expect(analysis.found).toBe(true)
-    expect(analysis.project?.slug).toBe('melega-dex')
+    expect(analysis.project?.slug).toBe('marco')
     expect(analysis.projectName).not.toMatch(/unknown/i)
   })
 
@@ -78,7 +81,7 @@ describe('PROJECT_OS_P0 remediation', () => {
 
   it('P0-04: Open Project Page uses /@slug', () => {
     const trade = readFileSync(path.join(ROOT, 'views/Trade/components/TradePageHeader.tsx'), 'utf8')
-    expect(trade).toContain('/@melega-dex/')
+    expect(trade).toContain('/@marco/')
     expect(trade).toContain('Open Project Page')
     const cards = readFileSync(path.join(ROOT, 'views/ProjectsStudio/components/ProjectGridCard.tsx'), 'utf8')
     expect(cards).toContain('/@${project.slug}/')
@@ -87,10 +90,11 @@ describe('PROJECT_OS_P0 remediation', () => {
     expect(search).toContain('/@${project.slug}/')
   })
 
-  it('P0-05: /@marco loads full Project OS machine document', () => {
+  it('P0-05: /@marco loads MARCO Project OS machine document', () => {
     const machine = loadProjectMachineDocument('marco', '2026-07-21T00:00:00.000Z')
     expect(machine).not.toBeNull()
-    expect(machine!.slug).toBe('melega-dex')
+    expect(machine!.slug).toBe('marco')
+    expect(machine!.projectId).toBe('upi://melega/project/marco@1')
     expect(machine!.capabilities.length).toBeGreaterThan(0)
     expect(machine!.schemas.some((s) => s.hub === 'PP014')).toBe(true)
   })

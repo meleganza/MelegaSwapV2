@@ -12,7 +12,7 @@ export const TradePageHeader: React.FC = () => (
     title={STUDIO_PAGE_TITLES.trade}
     subtitle="Professional trading with best multichain routes."
     actions={
-      <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
+      <MelegaStudioGhostBtn as="a" href="/@marco/" style={{ textDecoration: 'none' }}>
         Open Project Page
       </MelegaStudioGhostBtn>
     }

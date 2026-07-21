@@ -27,11 +27,12 @@ import GlobalSearch from './components/GlobalSearch'
 
 const DesktopMain = styled.main`
   margin-left: 0;
-  padding: 70px 14px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: calc(56px + env(safe-area-inset-top, 0px)) 12px calc(96px + env(safe-area-inset-bottom, 0px));
   background: #0a0a0a;
   min-height: 100dvh;
   min-height: 100vh;
   box-sizing: border-box;
+  overflow-x: hidden;
 
   @media (min-width: 768px) {
     margin-left: ${MELEGA_SIDEBAR_WIDTH};
@@ -61,16 +62,17 @@ const MobileHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: ${spacing[3]};
+  gap: 8px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 58px;
-  padding: 0 14px;
+  height: calc(52px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 12px 0;
   background: ${colors.canvas};
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 95;
+  box-sizing: border-box;
 
   @media (min-width: 768px) {
     display: none;

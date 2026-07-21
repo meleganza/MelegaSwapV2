@@ -31,7 +31,8 @@ const Root = styled.div`
   overflow-x: hidden;
 
   @media (max-width: 767px) {
-    padding: 0 ${homeTradeLayout.contentPaddingX} ${homeTradeLayout.mobileBottomPad};
+    /* Shell already applies bottom safe-area pad — avoid double stacking. */
+    padding: 0 0 8px;
   }
 `
 
@@ -47,7 +48,7 @@ const Content = styled.div`
   min-width: 0;
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${homeTradeLayout.mobileBottomPad};
+    padding: 12px 12px 24px;
   }
 `
 

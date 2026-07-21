@@ -83,6 +83,8 @@ export interface StaticProjectRecord {
   }
   capabilities: ProjectCapabilities
   primaryTokenRefs: string[]
+  /** Deterministic related project slugs (never aliases — distinct projectIds). */
+  relatedProjectSlugs?: string[]
   deepLinks: {
     swap?: string
     liquidity?: string

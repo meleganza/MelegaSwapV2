@@ -46,15 +46,24 @@ const Inner = styled.div`
   flex: 1;
   min-height: 0;
   height: 100%;
-  padding: 24px 24px 24px 24px;
+  padding: 16px;
   box-sizing: border-box;
   overflow: hidden;
+
+  @media (min-width: 768px) {
+    padding: 24px;
+  }
 `
 
 const Header = styled.div`
   position: relative;
   flex-shrink: 0;
   box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 12px;
 `
 
 const TitleBlock = styled.div`
@@ -62,16 +71,21 @@ const TitleBlock = styled.div`
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  max-width: calc(100% - 100px);
+  flex: 1 1 160px;
 `
 
 const Title = styled.h1`
   margin: 0;
   font-family: ${typography.fontFamily.body};
-  font-size: 38px;
+  font-size: 28px;
   font-weight: 800;
   color: #ffffff;
-  line-height: 40px;
+  line-height: 1.2;
+
+  @media (min-width: 768px) {
+    font-size: 38px;
+    line-height: 40px;
+  }
 `
 
 const Subtitle = styled.p`
@@ -80,36 +94,50 @@ const Subtitle = styled.p`
   font-size: 13px;
   font-weight: 500;
   color: #a8a8a8;
-  line-height: 16px;
+  line-height: 1.45;
 `
 
 const PairSlot = styled.div`
-  position: absolute;
-  top: 24px;
-  right: 112px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  max-width: 150px;
+  max-width: 100%;
   font-size: 12px;
   font-weight: 600;
   line-height: 14px;
   color: #8a8a8a;
   white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: right;
-  pointer-events: none;
+  order: 3;
+  flex: 1 1 100%;
+
+  @media (min-width: 768px) {
+    position: absolute;
+    top: 24px;
+    right: 112px;
+    order: 0;
+    flex: none;
+    max-width: 150px;
+    pointer-events: none;
+  }
 `
 
 const Toolbar = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+
+  @media (min-width: 768px) {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    margin-left: 0;
+  }
 `
 
 const Divider = styled.div`
