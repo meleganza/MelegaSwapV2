@@ -11,6 +11,7 @@ import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
 import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
 import type { ProjectDeveloperDocument } from 'registry/projects/identity/developer'
 import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
+import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
@@ -19,6 +20,7 @@ import ProjectUpdatesSection from './ProjectUpdatesSection'
 import ProjectEcosystemSection from './ProjectEcosystemSection'
 import ProjectDeveloperSection from './ProjectDeveloperSection'
 import ProjectGovernanceSection from './ProjectGovernanceSection'
+import ProjectGrowthSection from './ProjectGrowthSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
@@ -241,6 +243,7 @@ interface Props {
   ecosystemDocument: ProjectEcosystemDocument
   developerDocument: ProjectDeveloperDocument
   governanceDocument: ProjectGovernanceDocument
+  growthDocument: ProjectGrowthDocument
 }
 
 const ProjectIdentityShell: React.FC<Props> = ({
@@ -254,6 +257,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
   ecosystemDocument,
   developerDocument,
   governanceDocument,
+  growthDocument,
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -316,6 +320,14 @@ const ProjectIdentityShell: React.FC<Props> = ({
       if (developerIdx >= 0) sections.splice(developerIdx + 1, 0, governance)
       else if (trustIdx >= 0) sections.splice(trustIdx + 1, 0, governance)
       else sections.push(governance)
+    }
+    if (growthDocument.programs.length > 0 && !sections.some((s) => s.id === 'growth')) {
+      const participateIdx = sections.findIndex((s) => s.id === 'participate')
+      const updatesIdx = sections.findIndex((s) => s.id === 'updates')
+      const growth = { id: 'growth', label: 'Growth' }
+      if (participateIdx >= 0) sections.splice(participateIdx + 1, 0, growth)
+      else if (updatesIdx >= 0) sections.splice(updatesIdx, 0, growth)
+      else sections.push(growth)
     }
     return sections
   })()
@@ -442,12 +454,16 @@ const ProjectIdentityShell: React.FC<Props> = ({
           />
         </Section>
 
-        <Section $mobileOrder={6} data-testid="project-updates-slot">
+        <Section $mobileOrder={6} data-testid="project-growth-slot">
+          <ProjectGrowthSection growthDocument={growthDocument} />
+        </Section>
+
+        <Section $mobileOrder={7} data-testid="project-updates-slot">
           <ProjectUpdatesSection updatesDocument={updatesDocument} />
         </Section>
 
         <Section
-          $mobileOrder={7}
+          $mobileOrder={8}
           id="trust"
           aria-labelledby="readiness-overview-heading"
           data-testid="project-trust-state"
@@ -456,19 +472,19 @@ const ProjectIdentityShell: React.FC<Props> = ({
           <TrustEvidencePanel pack={evidencePack} />
         </Section>
 
-        <Section $mobileOrder={8} data-testid="project-ecosystem-slot">
+        <Section $mobileOrder={9} data-testid="project-ecosystem-slot">
           <ProjectEcosystemSection ecosystemDocument={ecosystemDocument} document={doc} />
         </Section>
 
-        <Section $mobileOrder={9} data-testid="project-developer-slot">
+        <Section $mobileOrder={10} data-testid="project-developer-slot">
           <ProjectDeveloperSection developerDocument={developerDocument} />
         </Section>
 
-        <Section $mobileOrder={10} data-testid="project-governance-slot">
+        <Section $mobileOrder={11} data-testid="project-governance-slot">
           <ProjectGovernanceSection governanceDocument={governanceDocument} />
         </Section>
 
-        <Section $mobileOrder={11} aria-labelledby="resources-heading" data-testid="project-resources">
+        <Section $mobileOrder={12} aria-labelledby="resources-heading" data-testid="project-resources">
           <Heading as="h2" id="resources-heading" scale="md">
             Official resources
           </Heading>
@@ -493,7 +509,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
           )}
         </Section>
 
-        <Section $mobileOrder={12} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
+        <Section $mobileOrder={13} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
           <Heading as="h2" id="assets-heading" scale="md">
             Assets and contracts
           </Heading>

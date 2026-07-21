@@ -505,6 +505,8 @@ export function toPublicProjectJson(
     governanceSummary?: Record<string, unknown>
     /** Public-safe control-center claim/verification only — never private drafts or secrets. */
     controlCenterSummary?: Record<string, unknown>
+    /** Public-safe growth summary only — never campaign metrics or reward claims. */
+    growthSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -618,6 +620,11 @@ export function toPublicProjectJson(
   // PP012 — public-safe claim/verification only (no private drafts, roles detail, or secrets)
   if (options?.controlCenterSummary) {
     body.controlCenterSummary = options.controlCenterSummary
+  }
+
+  // PP013 — public-safe growth summary (discovery only; no metrics or execution)
+  if (options?.growthSummary) {
+    body.growthSummary = options.growthSummary
   }
 
   return body
