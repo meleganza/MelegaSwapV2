@@ -1,6 +1,7 @@
 import type { NextApiHandler } from 'next'
 import stringify from 'fast-json-stable-stringify'
 import {
+  buildProjectDeveloperDocument,
   buildProjectEcosystemDocument,
   buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
@@ -11,6 +12,7 @@ import {
   loadProjectEvidencePack,
   normalizeProjectSlugInput,
   resolveProjectBySlug,
+  toDeveloperSummaryForProjectApi,
   toEcosystemSummaryForProjectApi,
   toEvidenceSummaryForProjectApi,
   toLiquidityBuildingSummaryForProjectApi,
@@ -93,6 +95,13 @@ const handler: NextApiHandler = (req, res) => {
     generatedAt,
   })
 
+  const developerDoc = buildProjectDeveloperDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
@@ -109,6 +118,7 @@ const handler: NextApiHandler = (req, res) => {
     >,
     ecosystemSummary: toEcosystemSummaryForProjectApi(ecosystemDoc) as unknown as Record<string, unknown>,
     updatesSummary: toUpdatesSummaryForProjectApi(updatesDoc) as unknown as Record<string, unknown>,
+    developerSummary: toDeveloperSummaryForProjectApi(developerDoc) as unknown as Record<string, unknown>,
   })
   const payload = stringify(body)
   const etag = `"${loaded.document.revision}"`

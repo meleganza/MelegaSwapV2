@@ -499,6 +499,8 @@ export function toPublicProjectJson(
     updatesSummary?: Record<string, unknown>
     /** Public-safe ecosystem summary only — never private services. */
     ecosystemSummary?: Record<string, unknown>
+    /** Public-safe developer summary only — never private integration secrets. */
+    developerSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -597,6 +599,11 @@ export function toPublicProjectJson(
   // PP009 — public-safe ecosystem summary (service graph discovery only)
   if (options?.ecosystemSummary) {
     body.ecosystemSummary = options.ecosystemSummary
+  }
+
+  // PP010 — public-safe developer summary (integration discovery only)
+  if (options?.developerSummary) {
+    body.developerSummary = options.developerSummary
   }
 
   return body
