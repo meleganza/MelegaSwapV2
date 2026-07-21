@@ -293,52 +293,24 @@ const ProjectIdentityShell: React.FC<Props> = ({
     marketsDocument.swapDestinations.find((d) => d.status === 'READY') ||
     null
 
+  /** Canonical Project OS IA (PP-CERT): Identity → Wallet → Overview → Participate → Trust → Updates → Ecosystem → Developer → Governance → Growth → Machine */
   const navSections = (() => {
-    const sections = [...doc.navSections]
-    const overviewIdx = sections.findIndex((s) => s.id === 'overview')
-    const participate = { id: 'participate', label: 'Participate' }
-    if (!sections.some((s) => s.id === 'participate')) {
-      if (overviewIdx >= 0) sections.splice(overviewIdx + 1, 0, participate)
-      else sections.push(participate)
+    const baseIds = new Set(doc.navSections.map((s) => s.id))
+    const sections: Array<{ id: string; label: string }> = [
+      { id: 'identity', label: 'Identity' },
+      { id: 'wallet-relationship', label: 'Wallet' },
+      { id: 'overview', label: 'Overview' },
+      { id: 'participate', label: 'Participate' },
+    ]
+    if (baseIds.has('trust')) sections.push({ id: 'trust', label: 'Trust' })
+    if (updatesDocument.updates.length > 0) sections.push({ id: 'updates', label: 'Updates' })
+    if (baseIds.has('ecosystem')) sections.push({ id: 'ecosystem', label: 'Ecosystem' })
+    if (developerDocument.resources.length > 0) sections.push({ id: 'developer', label: 'Developer' })
+    if (governanceDocument.governance.length > 0 || governanceDocument.treasury.length > 0) {
+      sections.push({ id: 'governance', label: 'Governance' })
     }
-    if (updatesDocument.updates.length > 0 && !sections.some((s) => s.id === 'updates')) {
-      const participateIdx = sections.findIndex((s) => s.id === 'participate')
-      const updates = { id: 'updates', label: 'Updates' }
-      if (participateIdx >= 0) sections.splice(participateIdx + 1, 0, updates)
-      else if (overviewIdx >= 0) sections.splice(overviewIdx + 1, 0, updates)
-      else sections.push(updates)
-    }
-    if (developerDocument.resources.length > 0 && !sections.some((s) => s.id === 'developer')) {
-      const ecosystemIdx = sections.findIndex((s) => s.id === 'ecosystem')
-      const developer = { id: 'developer', label: 'Developer' }
-      if (ecosystemIdx >= 0) sections.splice(ecosystemIdx + 1, 0, developer)
-      else sections.push(developer)
-    }
-    if (
-      (governanceDocument.governance.length > 0 || governanceDocument.treasury.length > 0) &&
-      !sections.some((s) => s.id === 'governance')
-    ) {
-      const developerIdx = sections.findIndex((s) => s.id === 'developer')
-      const trustIdx = sections.findIndex((s) => s.id === 'trust')
-      const governance = { id: 'governance', label: 'Governance' }
-      if (developerIdx >= 0) sections.splice(developerIdx + 1, 0, governance)
-      else if (trustIdx >= 0) sections.splice(trustIdx + 1, 0, governance)
-      else sections.push(governance)
-    }
-    if (growthDocument.programs.length > 0 && !sections.some((s) => s.id === 'growth')) {
-      const participateIdx = sections.findIndex((s) => s.id === 'participate')
-      const updatesIdx = sections.findIndex((s) => s.id === 'updates')
-      const growth = { id: 'growth', label: 'Growth' }
-      if (participateIdx >= 0) sections.splice(participateIdx + 1, 0, growth)
-      else if (updatesIdx >= 0) sections.splice(updatesIdx, 0, growth)
-      else sections.push(growth)
-    }
-    if (machineDocument.capabilities.length > 0 && !sections.some((s) => s.id === 'machine')) {
-      const developerIdx = sections.findIndex((s) => s.id === 'developer')
-      const machine = { id: 'machine', label: 'Machine' }
-      if (developerIdx >= 0) sections.splice(developerIdx + 1, 0, machine)
-      else sections.push(machine)
-    }
+    if (growthDocument.programs.length > 0) sections.push({ id: 'growth', label: 'Growth' })
+    if (machineDocument.capabilities.length > 0) sections.push({ id: 'machine', label: 'Machine' })
     return sections
   })()
 
@@ -353,7 +325,12 @@ const ProjectIdentityShell: React.FC<Props> = ({
           ))}
         </Nav>
 
-        <Section $mobileOrder={1} aria-labelledby="project-identity-heading" data-testid="project-identity-hero">
+        <Section
+          $mobileOrder={1}
+          id="identity"
+          aria-labelledby="project-identity-heading"
+          data-testid="project-identity-hero"
+        >
           <Flex style={{ gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
             {doc.identity.logoUrl.meta.availability === 'AVAILABLE' && doc.identity.logoUrl.value ? (
               <LogoImg
@@ -464,16 +441,8 @@ const ProjectIdentityShell: React.FC<Props> = ({
           />
         </Section>
 
-        <Section $mobileOrder={6} data-testid="project-growth-slot">
-          <ProjectGrowthSection growthDocument={growthDocument} />
-        </Section>
-
-        <Section $mobileOrder={7} data-testid="project-updates-slot">
-          <ProjectUpdatesSection updatesDocument={updatesDocument} />
-        </Section>
-
         <Section
-          $mobileOrder={8}
+          $mobileOrder={6}
           id="trust"
           aria-labelledby="readiness-overview-heading"
           data-testid="project-trust-state"
@@ -482,20 +451,28 @@ const ProjectIdentityShell: React.FC<Props> = ({
           <TrustEvidencePanel pack={evidencePack} />
         </Section>
 
-        <Section $mobileOrder={9} data-testid="project-ecosystem-slot">
+        <Section $mobileOrder={7} data-testid="project-updates-slot">
+          <ProjectUpdatesSection updatesDocument={updatesDocument} />
+        </Section>
+
+        <Section $mobileOrder={8} data-testid="project-ecosystem-slot">
           <ProjectEcosystemSection ecosystemDocument={ecosystemDocument} document={doc} />
         </Section>
 
-        <Section $mobileOrder={10} data-testid="project-developer-slot">
+        <Section $mobileOrder={9} data-testid="project-developer-slot">
           <ProjectDeveloperSection developerDocument={developerDocument} />
         </Section>
 
-        <Section $mobileOrder={11} data-testid="project-machine-slot">
-          <ProjectMachineSection machineDocument={machineDocument} />
+        <Section $mobileOrder={10} data-testid="project-governance-slot">
+          <ProjectGovernanceSection governanceDocument={governanceDocument} />
         </Section>
 
-        <Section $mobileOrder={12} data-testid="project-governance-slot">
-          <ProjectGovernanceSection governanceDocument={governanceDocument} />
+        <Section $mobileOrder={11} data-testid="project-growth-slot">
+          <ProjectGrowthSection growthDocument={growthDocument} />
+        </Section>
+
+        <Section $mobileOrder={12} data-testid="project-machine-slot">
+          <ProjectMachineSection machineDocument={machineDocument} />
         </Section>
 
         <Section $mobileOrder={13} aria-labelledby="resources-heading" data-testid="project-resources">

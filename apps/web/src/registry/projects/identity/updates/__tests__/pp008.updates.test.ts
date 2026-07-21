@@ -173,8 +173,9 @@ describe('PP008 update model and chronology', () => {
     const participateIdx = shell.indexOf('project-participate-slot')
     const updatesIdx = shell.indexOf('project-updates-slot')
     const trustIdx = shell.indexOf('project-trust-state')
-    expect(updatesIdx).toBeGreaterThan(participateIdx)
-    expect(trustIdx).toBeGreaterThan(updatesIdx)
+    // PP-CERT IA: Participate → Trust → Updates
+    expect(trustIdx).toBeGreaterThan(participateIdx)
+    expect(updatesIdx).toBeGreaterThan(trustIdx)
   })
 })
 

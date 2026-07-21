@@ -72,6 +72,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   const ecosystemAlternate = `/api/public/projects/${document.slug}/ecosystem/`
   const developerAlternate = `/api/public/projects/${document.slug}/developer/`
   const governanceAlternate = `/api/public/projects/${document.slug}/governance/`
+  const controlCenterAlternate = `/api/public/projects/${document.slug}/control-center/`
   const growthAlternate = `/api/public/projects/${document.slug}/growth/`
   const machineAlternate = `/api/public/projects/${document.slug}/machine/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
@@ -96,6 +97,12 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       <link rel="alternate" type="application/json" href={ecosystemAlternate} title="Project ecosystem" />
       <link rel="alternate" type="application/json" href={developerAlternate} title="Project developer" />
       <link rel="alternate" type="application/json" href={governanceAlternate} title="Project governance" />
+      <link
+        rel="alternate"
+        type="application/json"
+        href={controlCenterAlternate}
+        title="Project control center (public claim)"
+      />
       <link rel="alternate" type="application/json" href={growthAlternate} title="Project growth" />
       <link rel="alternate" type="application/json" href={machineAlternate} title="Project machine interface" />
       <meta property="og:title" content={title} />

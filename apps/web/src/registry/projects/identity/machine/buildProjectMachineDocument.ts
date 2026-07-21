@@ -78,6 +78,12 @@ const HUB_SCHEMAS: MachineSchemaEntity[] = [
   { schemaId: 'schema:project-page', schemaVersion: 'melega.project-page.v1', title: 'Project Page', hub: 'PP001' },
   { schemaId: 'schema:evidence', schemaVersion: 'melega.project-evidence.v1', title: 'Evidence', hub: 'PP002' },
   { schemaId: 'schema:readiness', schemaVersion: 'melega.project-readiness.v1', title: 'Readiness', hub: 'PP003' },
+  {
+    schemaId: 'schema:wallet-relationship',
+    schemaVersion: 'melega.project-wallet-relationship.v1',
+    title: 'Wallet Relationship',
+    hub: 'PP004',
+  },
   { schemaId: 'schema:markets', schemaVersion: 'melega.project-markets.v1', title: 'Markets', hub: 'PP005' },
   {
     schemaId: 'schema:participation',
