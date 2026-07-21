@@ -507,6 +507,8 @@ export function toPublicProjectJson(
     controlCenterSummary?: Record<string, unknown>
     /** Public-safe growth summary only — never campaign metrics or reward claims. */
     growthSummary?: Record<string, unknown>
+    /** Public-safe machine summary only — discovery counts/endpoints; never execution. */
+    machineSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -625,6 +627,11 @@ export function toPublicProjectJson(
   // PP013 — public-safe growth summary (discovery only; no metrics or execution)
   if (options?.growthSummary) {
     body.growthSummary = options.growthSummary
+  }
+
+  // PP014 — public-safe machine summary (discovery only; no execution authority)
+  if (options?.machineSummary) {
+    body.machineSummary = options.machineSummary
   }
 
   return body

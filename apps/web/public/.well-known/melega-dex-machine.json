@@ -1,0 +1,14 @@
+{
+  "name": "Melega DEX Project Machine Interface",
+  "version": "1.0.0",
+  "status": "discovery",
+  "schemaVersion": "melega.project-machine.v1",
+  "machine": "/api/public/projects/melega-dex/machine/",
+  "project": "/api/public/projects/melega-dex/",
+  "discovery": "/.well-known/melega-dex-discovery.json",
+  "documentation": "/project-hq/melega-dex#machine",
+  "limitations": [
+    "Discovery and navigation descriptors only.",
+    "No autonomous transactions, quotes, calldata, signatures, or runtime authority."
+  ]
+}

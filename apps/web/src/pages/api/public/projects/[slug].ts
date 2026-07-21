@@ -5,6 +5,7 @@ import {
   buildProjectEcosystemDocument,
   buildProjectGovernanceDocument,
   buildProjectGrowthDocument,
+  buildProjectMachineDocument,
   buildProjectControlCenterDocument,
   buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
@@ -20,6 +21,7 @@ import {
   toEvidenceSummaryForProjectApi,
   toGovernanceSummaryForProjectApi,
   toGrowthSummaryForProjectApi,
+  toMachineSummaryForProjectApi,
   toControlCenterSummaryForProjectApi,
   toLiquidityBuildingSummaryForProjectApi,
   toMarketsSummaryForProjectApi,
@@ -129,6 +131,12 @@ const handler: NextApiHandler = (req, res) => {
     generatedAt,
   })
 
+  const machineDoc = buildProjectMachineDocument({
+    project: resolved.project,
+    document: loaded.document,
+    generatedAt,
+  })
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
@@ -149,6 +157,7 @@ const handler: NextApiHandler = (req, res) => {
     governanceSummary: toGovernanceSummaryForProjectApi(governanceDoc) as unknown as Record<string, unknown>,
     controlCenterSummary: toControlCenterSummaryForProjectApi(controlCenterDoc) as unknown as Record<string, unknown>,
     growthSummary: toGrowthSummaryForProjectApi(growthDoc) as unknown as Record<string, unknown>,
+    machineSummary: toMachineSummaryForProjectApi(machineDoc) as unknown as Record<string, unknown>,
   })
   const payload = stringify(body)
   const etag = `"${loaded.document.revision}"`
