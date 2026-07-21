@@ -7,10 +7,12 @@ import type { ProjectReadinessDocument } from 'registry/projects/identity/readin
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
 import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
+import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
 import ProjectParticipationSection from './ProjectParticipationSection'
+import ProjectUpdatesSection from './ProjectUpdatesSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
@@ -224,6 +226,7 @@ interface Props {
   marketsDocument: ProjectMarketsDocument
   participationDocument: ProjectParticipationDocument
   liquidityBuildingDocument: ProjectLiquidityBuildingDocument
+  updatesDocument: ProjectUpdatesDocument
 }
 
 const ProjectIdentityShell: React.FC<Props> = ({
@@ -233,6 +236,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
   marketsDocument,
   participationDocument,
   liquidityBuildingDocument,
+  updatesDocument,
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -271,6 +275,13 @@ const ProjectIdentityShell: React.FC<Props> = ({
     if (!sections.some((s) => s.id === 'participate')) {
       if (overviewIdx >= 0) sections.splice(overviewIdx + 1, 0, participate)
       else sections.push(participate)
+    }
+    if (updatesDocument.updates.length > 0 && !sections.some((s) => s.id === 'updates')) {
+      const participateIdx = sections.findIndex((s) => s.id === 'participate')
+      const updates = { id: 'updates', label: 'Updates' }
+      if (participateIdx >= 0) sections.splice(participateIdx + 1, 0, updates)
+      else if (overviewIdx >= 0) sections.splice(overviewIdx + 1, 0, updates)
+      else sections.push(updates)
     }
     return sections
   })()
@@ -396,8 +407,12 @@ const ProjectIdentityShell: React.FC<Props> = ({
           />
         </Section>
 
+        <Section $mobileOrder={6} data-testid="project-updates-slot">
+          <ProjectUpdatesSection updatesDocument={updatesDocument} />
+        </Section>
+
         <Section
-          $mobileOrder={6}
+          $mobileOrder={7}
           id="trust"
           aria-labelledby="readiness-overview-heading"
           data-testid="project-trust-state"
@@ -407,7 +422,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
         </Section>
 
         <Section
-          $mobileOrder={7}
+          $mobileOrder={8}
           id="ecosystem"
           aria-labelledby="deployments-heading"
           data-testid="project-deployments"
@@ -437,7 +452,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
           )}
         </Section>
 
-        <Section $mobileOrder={8} aria-labelledby="resources-heading" data-testid="project-resources">
+        <Section $mobileOrder={9} aria-labelledby="resources-heading" data-testid="project-resources">
           <Heading as="h2" id="resources-heading" scale="md">
             Official resources
           </Heading>
@@ -462,7 +477,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
           )}
         </Section>
 
-        <Section $mobileOrder={9} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
+        <Section $mobileOrder={10} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
           <Heading as="h2" id="assets-heading" scale="md">
             Assets and contracts
           </Heading>

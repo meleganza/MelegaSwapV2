@@ -8,6 +8,7 @@ import {
   buildProjectMarketsDocument,
   buildProjectParticipationDocument,
   buildProjectReadinessDocument,
+  buildProjectUpdatesDocument,
   canonicalProjectAbsoluteUrl,
   canonicalProjectPath,
   getAllResolvableProjectSlugs,
@@ -21,6 +22,7 @@ import type { ProjectReadinessDocument } from 'registry/projects/identity/readin
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
 import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
+import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
 import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
 
 interface ProjectHqPageProps {
@@ -30,6 +32,7 @@ interface ProjectHqPageProps {
   marketsDocument: ProjectMarketsDocument | null
   participationDocument: ProjectParticipationDocument | null
   liquidityBuildingDocument: ProjectLiquidityBuildingDocument | null
+  updatesDocument: ProjectUpdatesDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -50,6 +53,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   const marketsAlternate = `/api/public/projects/${document.slug}/markets/`
   const participationAlternate = `/api/public/projects/${document.slug}/participation/`
   const liquidityBuildingAlternate = `/api/public/projects/${document.slug}/liquidity-building/`
+  const updatesAlternate = `/api/public/projects/${document.slug}/updates/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
 
   return (
@@ -68,6 +72,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
         href={liquidityBuildingAlternate}
         title="Project liquidity building"
       />
+      <link rel="alternate" type="application/json" href={updatesAlternate} title="Project updates" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalAbs} />
@@ -94,6 +99,7 @@ const ProjectHqPage = ({
   marketsDocument,
   participationDocument,
   liquidityBuildingDocument,
+  updatesDocument,
   jsonLd,
 }: ProjectHqPageProps) => {
   if (
@@ -103,7 +109,8 @@ const ProjectHqPage = ({
     !readinessDocument ||
     !marketsDocument ||
     !participationDocument ||
-    !liquidityBuildingDocument
+    !liquidityBuildingDocument ||
+    !updatesDocument
   ) {
     return <NotFound />
   }
@@ -116,6 +123,7 @@ const ProjectHqPage = ({
       marketsDocument={marketsDocument}
       participationDocument={participationDocument}
       liquidityBuildingDocument={liquidityBuildingDocument}
+      updatesDocument={updatesDocument}
     />
   )
 }
@@ -178,6 +186,13 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     generatedAt,
   })
 
+  const updatesDocument = buildProjectUpdatesDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
+
   return {
     props: {
       document: loaded.document,
@@ -186,6 +201,7 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
       marketsDocument,
       participationDocument,
       liquidityBuildingDocument,
+      updatesDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },

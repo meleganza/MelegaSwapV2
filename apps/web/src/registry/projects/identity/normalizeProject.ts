@@ -495,6 +495,8 @@ export function toPublicProjectJson(
     participationSummary?: Record<string, unknown>
     /** Public-safe Liquidity Building summary only — never execution or wallet data. */
     liquidityBuildingSummary?: Record<string, unknown>
+    /** Public-safe updates summary only — never private or draft updates. */
+    updatesSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -583,6 +585,11 @@ export function toPublicProjectJson(
   // PP007 — public-safe Liquidity Building summary (discovery only)
   if (options?.liquidityBuildingSummary) {
     body.liquidityBuildingSummary = options.liquidityBuildingSummary
+  }
+
+  // PP008 — public-safe updates summary (no private drafts or social metrics)
+  if (options?.updatesSummary) {
+    body.updatesSummary = options.updatesSummary
   }
 
   return body

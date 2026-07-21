@@ -5,6 +5,7 @@ import {
   buildProjectMarketsDocument,
   buildProjectParticipationDocument,
   buildProjectReadinessDocument,
+  buildProjectUpdatesDocument,
   buildWalletRelationshipSupportMetadata,
   loadProjectEvidencePack,
   normalizeProjectSlugInput,
@@ -16,6 +17,7 @@ import {
   toPublicProjectJson,
   toReadinessSummaryForProjectApi,
   toTrustSnapshotSummaryForProjectApi,
+  toUpdatesSummaryForProjectApi,
 } from 'registry/projects/identity'
 
 /**
@@ -75,6 +77,13 @@ const handler: NextApiHandler = (req, res) => {
     generatedAt,
   })
 
+  const updatesDoc = buildProjectUpdatesDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
@@ -89,6 +98,7 @@ const handler: NextApiHandler = (req, res) => {
       string,
       unknown
     >,
+    updatesSummary: toUpdatesSummaryForProjectApi(updatesDoc) as unknown as Record<string, unknown>,
   })
   const payload = stringify(body)
   const etag = `"${loaded.document.revision}"`
