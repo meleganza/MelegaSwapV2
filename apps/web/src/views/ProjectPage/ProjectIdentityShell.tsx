@@ -10,6 +10,7 @@ import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identit
 import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
 import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
 import type { ProjectDeveloperDocument } from 'registry/projects/identity/developer'
+import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
@@ -17,6 +18,7 @@ import ProjectParticipationSection from './ProjectParticipationSection'
 import ProjectUpdatesSection from './ProjectUpdatesSection'
 import ProjectEcosystemSection from './ProjectEcosystemSection'
 import ProjectDeveloperSection from './ProjectDeveloperSection'
+import ProjectGovernanceSection from './ProjectGovernanceSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
@@ -233,6 +235,7 @@ interface Props {
   updatesDocument: ProjectUpdatesDocument
   ecosystemDocument: ProjectEcosystemDocument
   developerDocument: ProjectDeveloperDocument
+  governanceDocument: ProjectGovernanceDocument
 }
 
 const ProjectIdentityShell: React.FC<Props> = ({
@@ -245,6 +248,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
   updatesDocument,
   ecosystemDocument,
   developerDocument,
+  governanceDocument,
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -296,6 +300,17 @@ const ProjectIdentityShell: React.FC<Props> = ({
       const developer = { id: 'developer', label: 'Developer' }
       if (ecosystemIdx >= 0) sections.splice(ecosystemIdx + 1, 0, developer)
       else sections.push(developer)
+    }
+    if (
+      (governanceDocument.governance.length > 0 || governanceDocument.treasury.length > 0) &&
+      !sections.some((s) => s.id === 'governance')
+    ) {
+      const developerIdx = sections.findIndex((s) => s.id === 'developer')
+      const trustIdx = sections.findIndex((s) => s.id === 'trust')
+      const governance = { id: 'governance', label: 'Governance' }
+      if (developerIdx >= 0) sections.splice(developerIdx + 1, 0, governance)
+      else if (trustIdx >= 0) sections.splice(trustIdx + 1, 0, governance)
+      else sections.push(governance)
     }
     return sections
   })()
@@ -443,7 +458,11 @@ const ProjectIdentityShell: React.FC<Props> = ({
           <ProjectDeveloperSection developerDocument={developerDocument} />
         </Section>
 
-        <Section $mobileOrder={10} aria-labelledby="resources-heading" data-testid="project-resources">
+        <Section $mobileOrder={10} data-testid="project-governance-slot">
+          <ProjectGovernanceSection governanceDocument={governanceDocument} />
+        </Section>
+
+        <Section $mobileOrder={11} aria-labelledby="resources-heading" data-testid="project-resources">
           <Heading as="h2" id="resources-heading" scale="md">
             Official resources
           </Heading>
@@ -468,7 +487,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
           )}
         </Section>
 
-        <Section $mobileOrder={11} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
+        <Section $mobileOrder={12} aria-labelledby="assets-heading" data-testid="project-assets-contracts">
           <Heading as="h2" id="assets-heading" scale="md">
             Assets and contracts
           </Heading>

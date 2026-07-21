@@ -5,6 +5,7 @@ import { CHAIN_IDS } from 'utils/wagmi'
 import {
   buildProjectDeveloperDocument,
   buildProjectEcosystemDocument,
+  buildProjectGovernanceDocument,
   buildProjectJsonLd,
   buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
@@ -27,6 +28,7 @@ import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identit
 import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
 import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
 import type { ProjectDeveloperDocument } from 'registry/projects/identity/developer'
+import type { ProjectGovernanceDocument } from 'registry/projects/identity/governance'
 import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
 
 interface ProjectHqPageProps {
@@ -39,6 +41,7 @@ interface ProjectHqPageProps {
   updatesDocument: ProjectUpdatesDocument | null
   ecosystemDocument: ProjectEcosystemDocument | null
   developerDocument: ProjectDeveloperDocument | null
+  governanceDocument: ProjectGovernanceDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -62,6 +65,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   const updatesAlternate = `/api/public/projects/${document.slug}/updates/`
   const ecosystemAlternate = `/api/public/projects/${document.slug}/ecosystem/`
   const developerAlternate = `/api/public/projects/${document.slug}/developer/`
+  const governanceAlternate = `/api/public/projects/${document.slug}/governance/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
 
   return (
@@ -83,6 +87,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       <link rel="alternate" type="application/json" href={updatesAlternate} title="Project updates" />
       <link rel="alternate" type="application/json" href={ecosystemAlternate} title="Project ecosystem" />
       <link rel="alternate" type="application/json" href={developerAlternate} title="Project developer" />
+      <link rel="alternate" type="application/json" href={governanceAlternate} title="Project governance" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalAbs} />
@@ -112,6 +117,7 @@ const ProjectHqPage = ({
   updatesDocument,
   ecosystemDocument,
   developerDocument,
+  governanceDocument,
   jsonLd,
 }: ProjectHqPageProps) => {
   if (
@@ -124,7 +130,8 @@ const ProjectHqPage = ({
     !liquidityBuildingDocument ||
     !updatesDocument ||
     !ecosystemDocument ||
-    !developerDocument
+    !developerDocument ||
+    !governanceDocument
   ) {
     return <NotFound />
   }
@@ -140,6 +147,7 @@ const ProjectHqPage = ({
       updatesDocument={updatesDocument}
       ecosystemDocument={ecosystemDocument}
       developerDocument={developerDocument}
+      governanceDocument={governanceDocument}
     />
   )
 }
@@ -223,6 +231,13 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     generatedAt,
   })
 
+  const governanceDocument = buildProjectGovernanceDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
+
   return {
     props: {
       document: loaded.document,
@@ -234,6 +249,7 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
       updatesDocument,
       ecosystemDocument,
       developerDocument,
+      governanceDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },

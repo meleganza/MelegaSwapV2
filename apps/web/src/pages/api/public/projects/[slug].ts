@@ -3,6 +3,7 @@ import stringify from 'fast-json-stable-stringify'
 import {
   buildProjectDeveloperDocument,
   buildProjectEcosystemDocument,
+  buildProjectGovernanceDocument,
   buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
   buildProjectParticipationDocument,
@@ -15,6 +16,7 @@ import {
   toDeveloperSummaryForProjectApi,
   toEcosystemSummaryForProjectApi,
   toEvidenceSummaryForProjectApi,
+  toGovernanceSummaryForProjectApi,
   toLiquidityBuildingSummaryForProjectApi,
   toMarketsSummaryForProjectApi,
   toParticipationSummaryForProjectApi,
@@ -102,6 +104,13 @@ const handler: NextApiHandler = (req, res) => {
     generatedAt,
   })
 
+  const governanceDoc = buildProjectGovernanceDocument({
+    project: resolved.project,
+    document: loaded.document,
+    evidencePack: loaded.evidencePack,
+    generatedAt,
+  })
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
@@ -119,6 +128,7 @@ const handler: NextApiHandler = (req, res) => {
     ecosystemSummary: toEcosystemSummaryForProjectApi(ecosystemDoc) as unknown as Record<string, unknown>,
     updatesSummary: toUpdatesSummaryForProjectApi(updatesDoc) as unknown as Record<string, unknown>,
     developerSummary: toDeveloperSummaryForProjectApi(developerDoc) as unknown as Record<string, unknown>,
+    governanceSummary: toGovernanceSummaryForProjectApi(governanceDoc) as unknown as Record<string, unknown>,
   })
   const payload = stringify(body)
   const etag = `"${loaded.document.revision}"`

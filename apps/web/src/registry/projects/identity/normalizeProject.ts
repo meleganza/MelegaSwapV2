@@ -501,6 +501,8 @@ export function toPublicProjectJson(
     ecosystemSummary?: Record<string, unknown>
     /** Public-safe developer summary only — never private integration secrets. */
     developerSummary?: Record<string, unknown>
+    /** Public-safe governance summary only — never treasury balances or voting state. */
+    governanceSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -604,6 +606,11 @@ export function toPublicProjectJson(
   // PP010 — public-safe developer summary (integration discovery only)
   if (options?.developerSummary) {
     body.developerSummary = options.developerSummary
+  }
+
+  // PP011 — public-safe governance summary (disclosure only; no treasury payload)
+  if (options?.governanceSummary) {
+    body.governanceSummary = options.governanceSummary
   }
 
   return body
