@@ -1,6 +1,7 @@
 import type { NextApiHandler } from 'next'
 import stringify from 'fast-json-stable-stringify'
 import {
+  buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
   buildProjectParticipationDocument,
   buildProjectReadinessDocument,
@@ -9,6 +10,7 @@ import {
   normalizeProjectSlugInput,
   resolveProjectBySlug,
   toEvidenceSummaryForProjectApi,
+  toLiquidityBuildingSummaryForProjectApi,
   toMarketsSummaryForProjectApi,
   toParticipationSummaryForProjectApi,
   toPublicProjectJson,
@@ -67,19 +69,23 @@ const handler: NextApiHandler = (req, res) => {
     generatedAt,
   })
 
+  const liquidityBuildingDoc = buildProjectLiquidityBuildingDocument({
+    project: resolved.project,
+    document: loaded.document,
+    generatedAt,
+  })
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
-    trustSnapshotSummary: toTrustSnapshotSummaryForProjectApi(readinessDoc) as unknown as Record<
-      string,
-      unknown
-    >,
+    trustSnapshotSummary: toTrustSnapshotSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
     walletRelationshipSupport: buildWalletRelationshipSupportMetadata(loaded.document.slug) as unknown as Record<
       string,
       unknown
     >,
     marketsSummary: toMarketsSummaryForProjectApi(marketsDoc) as unknown as Record<string, unknown>,
-    participationSummary: toParticipationSummaryForProjectApi(participationDoc) as unknown as Record<
+    participationSummary: toParticipationSummaryForProjectApi(participationDoc) as unknown as Record<string, unknown>,
+    liquidityBuildingSummary: toLiquidityBuildingSummaryForProjectApi(liquidityBuildingDoc) as unknown as Record<
       string,
       unknown
     >,

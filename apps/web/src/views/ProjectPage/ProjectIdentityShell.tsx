@@ -6,6 +6,7 @@ import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/ty
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
+import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
@@ -13,10 +14,9 @@ import ProjectParticipationSection from './ProjectParticipationSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
-const ClientWalletRelationship = dynamic(
-  () => import('./ProjectWalletRelationship'),
-  { ssr: false },
-) as React.ComponentType<{
+const ClientWalletRelationship = dynamic(() => import('./ProjectWalletRelationship'), {
+  ssr: false,
+}) as React.ComponentType<{
   document: CanonicalProjectDocument
   evidencePack: ProjectEvidencePack
 }>
@@ -223,6 +223,7 @@ interface Props {
   readinessDocument: ProjectReadinessDocument
   marketsDocument: ProjectMarketsDocument
   participationDocument: ProjectParticipationDocument
+  liquidityBuildingDocument: ProjectLiquidityBuildingDocument
 }
 
 const ProjectIdentityShell: React.FC<Props> = ({
@@ -231,6 +232,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
   readinessDocument,
   marketsDocument,
   participationDocument,
+  liquidityBuildingDocument,
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -336,6 +338,15 @@ const ProjectIdentityShell: React.FC<Props> = ({
                 >
                   Open Swap
                 </HeroAction>
+              ) : liquidityBuildingDocument.heroActionAllowed &&
+                liquidityBuildingDocument.destination?.availability === 'AVAILABLE' ? (
+                <HeroAction
+                  href={liquidityBuildingDocument.destination.href}
+                  data-testid="hero-open-liquidity-building"
+                  aria-label={`Open Liquidity Building for ${doc.identity.displayName}`}
+                >
+                  Open Liquidity Building
+                </HeroAction>
               ) : null}
             </Flex>
           </Flex>
@@ -379,12 +390,18 @@ const ProjectIdentityShell: React.FC<Props> = ({
           <ProjectMarketsSection markets={marketsDocument} />
           <ProjectParticipationSection
             participation={participationDocument}
+            liquidityBuilding={liquidityBuildingDocument}
             document={doc}
             evidencePack={evidencePack}
           />
         </Section>
 
-        <Section $mobileOrder={6} id="trust" aria-labelledby="readiness-overview-heading" data-testid="project-trust-state">
+        <Section
+          $mobileOrder={6}
+          id="trust"
+          aria-labelledby="readiness-overview-heading"
+          data-testid="project-trust-state"
+        >
           <ReadinessTrustSnapshot readiness={readinessDocument} />
           <TrustEvidencePanel pack={evidencePack} />
         </Section>

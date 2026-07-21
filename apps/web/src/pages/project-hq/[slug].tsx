@@ -4,6 +4,7 @@ import { NotFound } from '@pancakeswap/uikit'
 import { CHAIN_IDS } from 'utils/wagmi'
 import {
   buildProjectJsonLd,
+  buildProjectLiquidityBuildingDocument,
   buildProjectMarketsDocument,
   buildProjectParticipationDocument,
   buildProjectReadinessDocument,
@@ -19,6 +20,7 @@ import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/ty
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
+import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
 import ProjectIdentityShell from 'views/ProjectPage/ProjectIdentityShell'
 
 interface ProjectHqPageProps {
@@ -27,6 +29,7 @@ interface ProjectHqPageProps {
   readinessDocument: ProjectReadinessDocument | null
   marketsDocument: ProjectMarketsDocument | null
   participationDocument: ProjectParticipationDocument | null
+  liquidityBuildingDocument: ProjectLiquidityBuildingDocument | null
   jsonLd: Record<string, unknown> | null
   requestedSlug: string | null
 }
@@ -46,6 +49,7 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
   const readinessAlternate = `/api/public/projects/${document.slug}/readiness/`
   const marketsAlternate = `/api/public/projects/${document.slug}/markets/`
   const participationAlternate = `/api/public/projects/${document.slug}/participation/`
+  const liquidityBuildingAlternate = `/api/public/projects/${document.slug}/liquidity-building/`
   const isAliasView = Boolean(requestedSlug && requestedSlug !== document.slug)
 
   return (
@@ -58,6 +62,12 @@ const ProjectHqMeta = ({ document, jsonLd, requestedSlug }: ProjectHqPageProps) 
       <link rel="alternate" type="application/json" href={readinessAlternate} title="Project readiness" />
       <link rel="alternate" type="application/json" href={marketsAlternate} title="Project markets" />
       <link rel="alternate" type="application/json" href={participationAlternate} title="Project participation" />
+      <link
+        rel="alternate"
+        type="application/json"
+        href={liquidityBuildingAlternate}
+        title="Project liquidity building"
+      />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalAbs} />
@@ -83,6 +93,7 @@ const ProjectHqPage = ({
   readinessDocument,
   marketsDocument,
   participationDocument,
+  liquidityBuildingDocument,
   jsonLd,
 }: ProjectHqPageProps) => {
   if (
@@ -91,7 +102,8 @@ const ProjectHqPage = ({
     !evidencePack ||
     !readinessDocument ||
     !marketsDocument ||
-    !participationDocument
+    !participationDocument ||
+    !liquidityBuildingDocument
   ) {
     return <NotFound />
   }
@@ -103,6 +115,7 @@ const ProjectHqPage = ({
       readinessDocument={readinessDocument}
       marketsDocument={marketsDocument}
       participationDocument={participationDocument}
+      liquidityBuildingDocument={liquidityBuildingDocument}
     />
   )
 }
@@ -159,6 +172,12 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
     generatedAt,
   })
 
+  const liquidityBuildingDocument = buildProjectLiquidityBuildingDocument({
+    project: resolved.project,
+    document: loaded.document,
+    generatedAt,
+  })
+
   return {
     props: {
       document: loaded.document,
@@ -166,6 +185,7 @@ export const getStaticProps: GetStaticProps<ProjectHqPageProps> = async ({ param
       readinessDocument,
       marketsDocument,
       participationDocument,
+      liquidityBuildingDocument,
       jsonLd: buildProjectJsonLd(loaded.document),
       requestedSlug,
     },

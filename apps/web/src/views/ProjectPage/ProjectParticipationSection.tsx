@@ -2,7 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import { Flex, Text, Heading } from '@pancakeswap/uikit'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
+import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
 import ProjectParticipationPositions from './ProjectParticipationPositions'
+import ProjectLiquidityBuildingSection from './ProjectLiquidityBuildingSection'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
 
@@ -63,6 +65,7 @@ const StatusText = styled.span`
 
 interface Props {
   participation: ProjectParticipationDocument
+  liquidityBuilding: ProjectLiquidityBuildingDocument
   document: CanonicalProjectDocument
   evidencePack: ProjectEvidencePack
 }
@@ -90,10 +93,7 @@ const OpportunityList: React.FC<{
               · {row.status} · {row.source}
             </StatusText>
             {row.destination?.availability === 'AVAILABLE' ? (
-              <CtaLink
-                href={row.destination.href}
-                aria-label={`${row.destination.label} for ${row.displayLabel}`}
-              >
+              <CtaLink href={row.destination.href} aria-label={`${row.destination.label} for ${row.displayLabel}`}>
                 {row.destination.label}
               </CtaLink>
             ) : (
@@ -106,9 +106,8 @@ const OpportunityList: React.FC<{
   </Stack>
 )
 
-const ProjectParticipationSection: React.FC<Props> = ({ participation, document, evidencePack }) => {
-  const total =
-    participation.pools.length + participation.farms.length + participation.stakingPools.length
+const ProjectParticipationSection: React.FC<Props> = ({ participation, liquidityBuilding, document, evidencePack }) => {
+  const total = participation.pools.length + participation.farms.length + participation.stakingPools.length
 
   return (
     <Stack data-testid="project-participation-section" data-pp006="true" aria-label="Liquidity farms and pools">
@@ -150,6 +149,8 @@ const ProjectParticipationSection: React.FC<Props> = ({ participation, document,
           No Melega DEX participation opportunities are currently registered for this project.
         </Fact>
       ) : null}
+
+      <ProjectLiquidityBuildingSection liquidityBuilding={liquidityBuilding} />
 
       <ProjectParticipationPositions document={document} evidencePack={evidencePack} />
 
