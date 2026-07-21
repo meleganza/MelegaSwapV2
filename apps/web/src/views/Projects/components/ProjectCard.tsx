@@ -27,7 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const { t } = useTranslation()
 
   return (
-    <Link href={`/projects/${project.slug}`} passHref legacyBehavior>
+    <Link href={`/@${project.slug}/`} passHref legacyBehavior>
       <StyledCard as="a" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
         <Flex flexDirection="column" style={{ gap: '12px' }}>
           <Heading as="h3" scale="lg" color="secondary">

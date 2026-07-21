@@ -141,11 +141,29 @@ export const PendingReviewCard: React.FC = () => {
   return (
     <Panel data-iet-pending-review>
       <ItSectionLabel>Pending Registry Review</ItSectionLabel>
-      <Title>{pending.name.available ? pending.name.value : 'Unknown Project'}</Title>
+      <Title>
+        {pending.name.available
+          ? pending.name.value
+          : pending.symbol.available
+            ? pending.symbol.value
+            : 'Unnamed pending project'}
+      </Title>
       <StatusBadge $tone={statusTone(reviewStatus)}>
         {formatPendingReviewStatusLabel(reviewStatus)}
       </StatusBadge>
       <Body>{analysis.summary}</Body>
+      {analysis.discoveryReason ? (
+        <Body data-testid="import-discovery-reason">
+          Why discovery stopped: {analysis.discoveryReason}
+        </Body>
+      ) : null}
+      {!pending.name.available && !pending.symbol.available ? (
+        <Body data-testid="import-missing-metadata">
+          On-chain name and symbol were not available. This is not silently labelled as an unknown
+          project — re-run analysis after confirming the contract is a standard BEP-20/ERC-20 on the
+          selected chain.
+        </Body>
+      ) : null}
       <Meta>
         <span>Pending ID: {pending.id}</span>
         <span>Contract: {pending.contract}</span>

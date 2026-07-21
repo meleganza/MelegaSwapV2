@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import {
+  MelegaStudioGhostBtn,
   MelegaStudioLiveBadge,
   MelegaStudioLiveDot,
   MelegaStudioPageHeader,
@@ -63,6 +64,11 @@ export const LiquidityStudioPageHeader: React.FC = () => {
           <MelegaStudioLiveDot aria-hidden />
           {STUDIO_LIVE_RUNTIME_LABEL}
         </MelegaStudioLiveBadge>
+      }
+      actions={
+        <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
+          Open Project Page
+        </MelegaStudioGhostBtn>
       }
       footer={
         <TabRow data-testid="ls-mode-tabs">

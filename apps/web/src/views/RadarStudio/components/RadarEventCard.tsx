@@ -412,7 +412,7 @@ export const RadarEventCard: React.FC<Props> = ({ event, index }) => {
           </RdPrimaryBtn>
           <RdGhostBtn
             as={Link}
-            to={event.projectHref ?? `/projects/${event.projectSlug ?? ''}`}
+            to={event.projectHref ?? `/@${event.projectSlug ?? ''}/`}
             type="button"
             style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >

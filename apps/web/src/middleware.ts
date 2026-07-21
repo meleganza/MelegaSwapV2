@@ -6,12 +6,24 @@ const BLOCK_COUNTRIES = { BY: 'BY', CU: 'CU', CD: 'CD', IR: 'IR', IQ: 'IQ', KP: 
 // Sanctioned Regions: Crimea
 const BLOCK_REGIONS = { 'UA-43': 'UA-43' }
 
+/**
+ * PROJECT_OS_P0: rewrite canonical `/@{slug}` → `/project-hq/{slug}` at the edge.
+ * Complements next.config rewrites so production always resolves Project Pages.
+ */
+function rewriteCanonicalProjectPage(req: NextRequest): NextResponse | null {
+  const { pathname } = req.nextUrl
+  const match = pathname.match(/^\/@([a-z0-9-]+)\/?$/)
+  if (!match) return null
+  const slug = match[1]
+  const url = req.nextUrl.clone()
+  url.pathname = `/project-hq/${slug}`
+  return NextResponse.rewrite(url)
+}
+
 export async function middleware(req: NextRequest) {
-  // const url = req.nextUrl.clone();
-  // if (url.protocol === 'http:') {
-  //   url.protocol = 'https:';
-  //   return NextResponse.redirect(url);
-  // }
+  const projectRewrite = rewriteCanonicalProjectPage(req)
+  if (projectRewrite) return projectRewrite
+
   const res = NextResponse.next()
   const { geo } = req
   const { country, region } = geo
@@ -43,5 +55,7 @@ export const config = {
     '/viewNFTs',
     '/nftmarket',
     '/info/:path*',
+    '/@:slug',
+    '/@:slug/',
   ],
 }

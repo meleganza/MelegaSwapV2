@@ -163,7 +163,7 @@ export function mapProjectToRadarEvent(
     projectSlug: project.slug,
     contractAddress: token?.address,
     tradeHref: token?.address ? `/swap?outputCurrency=${token.address}` : '/trade',
-    projectHref: `/projects/${project.slug}`,
+    projectHref: `/@${project.slug}/`,
   }
 }
 

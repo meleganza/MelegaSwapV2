@@ -39,9 +39,15 @@ export interface ImportAnalysisResult {
   detections: ImportDetectionItem[]
   pipelineComplete: boolean[]
   errors: BuildRuntimeError[]
+  /** Exact reason when discovery cannot continue — never silent Unknown. */
+  discoveryReason?: string | null
 }
 
-export function runImportAnalysis(contract: string, chainKey: string): ImportAnalysisResult {
+export function runImportAnalysis(
+  contract: string,
+  chainKey: string,
+  hints?: { name?: string | null; symbol?: string | null },
+): ImportAnalysisResult {
   const chainId = CHAIN_ID_MAP[chainKey] ?? 56
   const errors: BuildRuntimeError[] = []
 
@@ -55,10 +61,11 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
       detections: [],
       pipelineComplete: [false, false, false, false, false],
       errors,
+      discoveryReason: 'Enter a valid 0x contract address.',
     }
   }
 
-  const discovery = discoverProjectFromContract(contract.trim(), chainId)
+  const discovery = discoverProjectFromContract(contract.trim(), chainId, hints)
 
   if (discovery.registryTier === 'pending' && discovery.pending) {
     const pending = discovery.pending
@@ -70,11 +77,16 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
       projectName: pending.name.available ? pending.name.value : undefined,
     })
     emitCivilizationEvent('registry_indexed', 'registry', { tier: 'pending', contract: contract.trim() })
+    const displayName = pending.name.available
+      ? pending.name.value
+      : pending.symbol.available
+        ? pending.symbol.value
+        : null
     return {
       found: false,
       pending: true,
       pendingProject: pending,
-      projectName: pending.name.available ? pending.name.value ?? undefined : undefined,
+      projectName: displayName ?? undefined,
       symbol: pending.symbol.available ? pending.symbol.value ?? undefined : undefined,
       score: {
         score: pending.health.readiness_score,
@@ -86,6 +98,7 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
       detections,
       pipelineComplete: [true, true, true, pending.health.review_ready, false],
       errors: [],
+      discoveryReason: discovery.discoveryReason ?? null,
     }
   }
 
@@ -95,10 +108,13 @@ export function runImportAnalysis(contract: string, chainKey: string): ImportAna
       found: false,
       score: { score: 0, confidence: 0, reason: 'Project not indexed.' },
       suggestions: [],
-      summary: 'Contract not found in Melega registry. Import requires registry indexing first.',
+      summary:
+        discovery.discoveryReason ??
+        'Contract not found in Melega registry. Import requires registry indexing first.',
       detections: buildUnavailableDetections(),
       pipelineComplete: [true, true, false, false, false],
       errors,
+      discoveryReason: discovery.discoveryReason ?? 'No canonical project and no pending profile.',
     }
   }
 

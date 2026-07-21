@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  MelegaStudioGhostBtn,
   MelegaStudioLiveBadge,
   MelegaStudioLiveDot,
   MelegaStudioPageHeader,
@@ -34,9 +35,14 @@ export const PoolsStudioPageHeader: React.FC = () => (
       </MelegaStudioLiveBadge>
     }
     actions={
-      <MelegaStudioPrimaryBtn type="button" data-ps-header-create-pool onClick={scrollToCreatePool}>
-        + Create Pool
-      </MelegaStudioPrimaryBtn>
+      <>
+        <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
+          Open Project Page
+        </MelegaStudioGhostBtn>
+        <MelegaStudioPrimaryBtn type="button" data-ps-header-create-pool onClick={scrollToCreatePool}>
+          + Create Pool
+        </MelegaStudioPrimaryBtn>
+      </>
     }
   />
 )

@@ -92,7 +92,7 @@ export function buildGlobalSearchIndex(): GlobalSearchEntry[] {
           id: `project-${project.slug}`,
           label: project.displayName,
           subtitle: project.tagline ?? project.description,
-          href: `/projects/${project.slug}`,
+          href: `/@${project.slug}/`,
           category: 'project',
           keywords: [
             project.slug,

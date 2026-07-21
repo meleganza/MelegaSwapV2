@@ -14,9 +14,14 @@ export const ProjectsStudioPageHeader: React.FC = () => (
     actions={
       <>
         <MelegaStudioPrimaryBtn as="a" href="/import-existing-token" style={{ textDecoration: 'none' }}>
-          List Your Project
+          Import Existing Token
         </MelegaStudioPrimaryBtn>
-        <MelegaStudioGhostBtn type="button">AI Indexing: How it works</MelegaStudioGhostBtn>
+        <MelegaStudioGhostBtn as="a" href="/import-existing-token?mode=claim" style={{ textDecoration: 'none' }}>
+          Claim Existing Project
+        </MelegaStudioGhostBtn>
+        <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
+          Open Project Page
+        </MelegaStudioGhostBtn>
       </>
     }
   />

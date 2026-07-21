@@ -21,16 +21,8 @@ const Title = styled.h2`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 10px;
-
-  @media (max-width: 1099px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 `
 
 const QUICK_ACTIONS = [
@@ -38,6 +30,8 @@ const QUICK_ACTIONS = [
   { id: 'liquidity', label: 'Liquidity', href: '/liquidity-studio' },
   { id: 'pools', label: 'Pools', href: '/pools' },
   { id: 'farms', label: 'Farms', href: '/farms' },
+  { id: 'projects', label: 'Projects', href: '/projects' },
+  { id: 'import', label: 'Import', href: '/import-existing-token' },
   { id: 'build', label: 'Build', href: '/build-studio' },
 ] as const
 

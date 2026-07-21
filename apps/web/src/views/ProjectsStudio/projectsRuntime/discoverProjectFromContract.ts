@@ -24,7 +24,13 @@ export interface ContractDiscoveryResult {
   github?: string
   whitepaper?: string
   explorer?: string
+  discoveryReason?: string | null
   errors: ProjectsRuntimeError[]
+}
+
+export interface ContractDiscoveryHints {
+  name?: string | null
+  symbol?: string | null
 }
 
 function normalizeAddress(address: string): string {
@@ -59,7 +65,11 @@ function mapRegistryProject(project: StaticProjectRecord): ContractDiscoveryResu
   }
 }
 
-function mapPendingProject(pending: PendingProjectRecord, pendingCreated?: boolean): ContractDiscoveryResult {
+function mapPendingProject(
+  pending: PendingProjectRecord,
+  pendingCreated?: boolean,
+  discoveryReason?: string | null,
+): ContractDiscoveryResult {
   return {
     found: false,
     registryTier: 'pending',
@@ -73,6 +83,7 @@ function mapPendingProject(pending: PendingProjectRecord, pendingCreated?: boole
     discord: pending.socials.discord?.available ? pending.socials.discord.value ?? undefined : undefined,
     github: pending.socials.github?.available ? pending.socials.github.value ?? undefined : undefined,
     explorer: pending.contract,
+    discoveryReason: discoveryReason ?? null,
     errors: [],
   }
 }
@@ -80,6 +91,7 @@ function mapPendingProject(pending: PendingProjectRecord, pendingCreated?: boole
 export function discoverProjectFromContract(
   contract: string,
   chainId?: number,
+  hints?: ContractDiscoveryHints,
 ): ContractDiscoveryResult {
   const normalized = normalizeAddress(contract)
   if (!normalized || !normalized.startsWith('0x') || normalized.length < 10) {
@@ -87,6 +99,7 @@ export function discoverProjectFromContract(
       found: false,
       registryTier: 'none',
       errors: [createProjectsRuntimeError('NO_CONTRACT')],
+      discoveryReason: 'Invalid contract address.',
     }
   }
 
@@ -102,29 +115,57 @@ export function discoverProjectFromContract(
 
   if (match) return mapRegistryProject(match)
 
+  // Cross-chain honesty: same address listed on another chain — explain, do not silent-unknown.
+  const otherChain = projects.find((project) =>
+    project.resources.tokens.some((token) => token.address.toLowerCase() === normalized),
+  )
+  if (otherChain && chainId != null) {
+    const token = otherChain.resources.tokens.find((t) => t.address.toLowerCase() === normalized)
+    return {
+      found: false,
+      registryTier: 'none',
+      project: otherChain,
+      name: otherChain.displayName,
+      ticker: token?.symbol,
+      errors: [createProjectsRuntimeError('UNKNOWN')],
+      discoveryReason: `Contract is registered on chain ${token?.chainId} for project ${otherChain.slug}, not on selected chain ${chainId}. Open /@${otherChain.slug}/ or switch chain.`,
+    }
+  }
+
   const dexMatch = buildDexTokenIndex().find(
     (entry) => entry.address.toLowerCase() === normalized && (chainId == null || entry.chainId === chainId),
   )
   if (dexMatch) {
-    return {
-      found: true,
-      registryTier: 'canonical',
-      name: dexMatch.symbol,
-      ticker: dexMatch.symbol,
-      explorer: `https://bscscan.com/token/${dexMatch.address}`,
-      errors: [],
+    const lookup = resolveProjectRegistryLookup(normalized, resolvedChainId, {
+      name: hints?.name ?? dexMatch.symbol,
+      symbol: hints?.symbol ?? dexMatch.symbol,
+    })
+    if (lookup.tier === 'pending' && lookup.pending) {
+      return mapPendingProject(
+        lookup.pending,
+        lookup.pendingCreated,
+        'Token appears on Melega DEX lists but has no canonical Project Page yet — pending review profile created.',
+      )
     }
   }
 
-  const lookup = resolveProjectRegistryLookup(normalized, resolvedChainId)
+  const lookup = resolveProjectRegistryLookup(normalized, resolvedChainId, {
+    name: hints?.name ?? null,
+    symbol: hints?.symbol ?? null,
+  })
   if (lookup.tier === 'pending' && lookup.pending) {
-    return mapPendingProject(lookup.pending, lookup.pendingCreated)
+    const reason =
+      !lookup.pending.name.available && !lookup.pending.symbol.available
+        ? 'No on-chain name/symbol hints were provided. Re-run Import via the API path to fetch ERC-20 metadata.'
+        : null
+    return mapPendingProject(lookup.pending, lookup.pendingCreated, reason)
   }
 
   return {
     found: false,
     registryTier: 'none',
     errors: [createProjectsRuntimeError('UNKNOWN')],
+    discoveryReason: 'Contract not found in Melega registry and pending upsert failed.',
   }
 }
 

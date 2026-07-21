@@ -101,7 +101,7 @@ export const AIHeatmapTable: React.FC = () => {
           <tbody>
             {heatmap.map((row) => {
               const tone = aiScoreColor(row.aiScore)
-              const href = row.slug ? `/projects/${row.slug}` : undefined
+              const href = row.slug ? `/@${row.slug}/` : undefined
               return (
                 <tr key={`${row.project}-${row.rank}`}>
                   <Td>{row.rank}</Td>

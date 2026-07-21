@@ -97,7 +97,7 @@ export function mapTierRankedAssetToTrendingCard(
     growthPositive: change?.positive,
     sparkline: [],
     provenance: 'Indexer · Tier Metrics',
-    projectHref: project ? `/projects/${project.slug}` : '/projects',
+    projectHref: project ? `/@${project.slug}/` : '/projects',
     radarHref: asset.address ? `/radar?contract=${asset.address}` : undefined,
     tradeHref: asset.address ? `/swap?outputCurrency=${asset.address}` : '/trade',
   }
@@ -198,7 +198,7 @@ export function mapProjectToTrendingCard(
     growthPositive: undefined,
     sparkline: [],
     provenance: provenanceLabel(project),
-    projectHref: `/projects/${project.slug}`,
+    projectHref: `/@${project.slug}/`,
     radarHref: addr ? `/radar?contract=${addr}` : undefined,
     tradeHref: addr ? `/swap?outputCurrency=${addr}` : '/trade',
   }

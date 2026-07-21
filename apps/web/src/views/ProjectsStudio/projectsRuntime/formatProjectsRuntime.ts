@@ -124,7 +124,7 @@ export function mapProjectToPreviewCard(
       ? `/swap?outputCurrency=${token.address}`
       : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/trade',
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
-    projectHref: `/projects/${project.slug}`,
+    projectHref: `/@${project.slug}/`,
   }
 }
 
@@ -282,7 +282,7 @@ export function buildFeaturedProject(
     contractAddress: token?.address,
     spaceUrl: project.spaceProfileUrl,
     tradeHref: project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
-    projectHref: `/projects/${project.slug}`,
+    projectHref: `/@${project.slug}/`,
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
     price,
     priceChange,

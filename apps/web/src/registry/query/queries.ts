@@ -189,7 +189,7 @@ export const findNotIndexedRelationships = (): QueryResultItem[] => {
         slug: `${project.slug}-treasury-compat`,
         identity: project.upi,
         displayName: `${project.displayName} treasury compatibility`,
-        href: `/projects/${project.slug}`,
+        href: `/@${project.slug}/`,
         status: 'not_indexed',
         notes: project.capabilities.treasuryCompatible.notes,
       })

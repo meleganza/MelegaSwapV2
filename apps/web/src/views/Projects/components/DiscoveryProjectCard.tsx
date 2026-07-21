@@ -43,7 +43,7 @@ const DiscoveryProjectCard: React.FC<DiscoveryProjectCardProps> = ({ project }) 
   )
 
   return (
-    <Link href={`/projects/${project.slug}`} passHref legacyBehavior>
+    <Link href={`/@${project.slug}/`} passHref legacyBehavior>
       <StyledCard as="a" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
         <Flex flexDirection="column" style={{ gap: '12px' }}>
           <Flex justifyContent="space-between" alignItems="flex-start" flexWrap="wrap" style={{ gap: '8px' }}>

@@ -1,5 +1,6 @@
 import type { NextApiHandler } from 'next'
 import {
+  fetchErc20OnChainIdentity,
   getCanonicalPromotionRule,
   getPendingProjectRegistry,
   resolveProjectRegistryLookup,
@@ -32,13 +33,20 @@ const handler: NextApiHandler = async (req, res) => {
     })
   }
 
-  const onChain =
+  const bodyOnChain =
     typeof body.onChain === 'object' && body.onChain
       ? {
           name: typeof body.onChain.name === 'string' ? body.onChain.name : null,
           symbol: typeof body.onChain.symbol === 'string' ? body.onChain.symbol : null,
         }
       : undefined
+
+  // Always attempt on-chain identity for verified discovery honesty.
+  const onChainIdentity = await fetchErc20OnChainIdentity(chainId, contract)
+  const onChain = {
+    name: bodyOnChain?.name ?? onChainIdentity.name,
+    symbol: bodyOnChain?.symbol ?? onChainIdentity.symbol,
+  }
 
   const lookup = resolveProjectRegistryLookup(contract, chainId, onChain)
 
@@ -51,11 +59,21 @@ const handler: NextApiHandler = async (req, res) => {
       project: lookup.canonical,
       machine: serializeProjectManifest(lookup.canonical),
       enriched,
+      onChain: {
+        ...onChainIdentity,
+        name: onChain.name,
+        symbol: onChain.symbol,
+      },
       promotion: getCanonicalPromotionRule(),
     })
   }
 
   if (lookup.tier === 'pending' && lookup.pending) {
+    const reason =
+      onChainIdentity.reasonUnavailable ??
+      (!lookup.pending.name.available && !lookup.pending.symbol.available
+        ? 'On-chain ERC-20 metadata was not available; pending profile created without a display name.'
+        : null)
     return res.status(lookup.pendingCreated ? 201 : 200).json({
       ok: true,
       tier: 'pending',
@@ -64,11 +82,22 @@ const handler: NextApiHandler = async (req, res) => {
       profile: lookup.pending,
       machine: lookup.machine ?? serializePendingProjectProfile(lookup.pending),
       summary: lookup.summary,
+      onChain: {
+        ...onChainIdentity,
+        name: onChain.name,
+        symbol: onChain.symbol,
+      },
+      discoveryReason: reason,
       promotion: getCanonicalPromotionRule(),
     })
   }
 
-  return res.status(500).json({ ok: false, machine_code: 'REGISTRY_LOOKUP_FAILED' })
+  return res.status(500).json({
+    ok: false,
+    machine_code: 'REGISTRY_LOOKUP_FAILED',
+    reason: onChainIdentity.reasonUnavailable ?? 'Registry lookup failed.',
+    onChain: onChainIdentity,
+  })
 }
 
 export default handler

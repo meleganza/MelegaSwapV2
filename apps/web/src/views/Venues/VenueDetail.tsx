@@ -81,7 +81,7 @@ const VenueDetail: React.FC<VenueDetailProps> = ({ venue, manifest }) => {
         </Heading>
         <Text color="text">
           {t('Project')}:{' '}
-          <Link href={`/projects/${venue.projectBinding.projectSlug}`}>
+          <Link href={`/@${venue.projectBinding.projectSlug}/`}>
             <Text as="span" color="primary">
               {venue.projectBinding.projectSlug}
             </Text>

@@ -47,7 +47,7 @@ export const resolveUserWorkspaceReadModel = (): UserWorkspaceReadModel => {
       items: projects.map((project) => ({
         id: project.slug,
         label: project.displayName,
-        href: `/projects/${project.slug}`,
+        href: `/@${project.slug}/`,
         status: project.registryStatus,
         notes: project.upi,
       })),

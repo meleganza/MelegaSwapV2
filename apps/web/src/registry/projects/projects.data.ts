@@ -4,7 +4,7 @@ import { StaticProjectRecord } from './types'
 const melegaDex: StaticProjectRecord = {
   upi: 'upi://melega/project/melega-dex@1',
   slug: 'melega-dex',
-  aliases: ['melega'],
+  aliases: ['melega', 'marco'],
   displayName: 'Melega DEX',
   tagline: 'AI-native liquidity surface of Melega AI | KIRI Civilization',
   description:

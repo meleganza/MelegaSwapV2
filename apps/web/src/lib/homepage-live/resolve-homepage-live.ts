@@ -16,7 +16,7 @@ const toProjectItems = (limit = 6): HomepageLiveItem[] =>
       id: project.slug,
       label: project.displayName ?? project.slug,
       meta: project.status,
-      href: `/projects/${project.slug}`,
+      href: `/@${project.slug}/`,
     }))
 
 const toAssetItems = (limit = 6): HomepageLiveItem[] =>

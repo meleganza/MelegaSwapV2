@@ -1,13 +1,14 @@
 import React from 'react'
 import { MelegaCtaCard, MelegaProjectCube } from 'design-system/melega'
 
+/** Home entry for Create / Import Project → certified Import Existing Token flow. */
 export const ListProjectCta: React.FC = () => (
   <div data-list-project-cta="true">
     <MelegaCtaCard
-      href="/build-studio"
+      href="/import-existing-token"
       visual={<MelegaProjectCube />}
-      title="Build with Melega"
-      description="List your token, add liquidity, create a farm, or launch on Melega infrastructure."
+      title="Create / Import Project"
+      description="Import an existing token, open a Project Page, or continue into Build Studio infrastructure tools."
     />
   </div>
 )

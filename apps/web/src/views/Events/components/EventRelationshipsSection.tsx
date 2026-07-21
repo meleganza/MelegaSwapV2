@@ -36,7 +36,7 @@ const EventRelationshipsSection: React.FC<EventRelationshipsSectionProps> = ({ r
         <Flex flexDirection="column" style={{ gap: '4px' }}>
           <Text fontSize="12px" color="textSubtle">
             {t('Project')}:{' '}
-            <Link href={`/projects/${relationships.projectSlug}`}>
+            <Link href={`/@${relationships.projectSlug}/`}>
               <Text as="span" color="primary">
                 {relationships.projectSlug}
               </Text>

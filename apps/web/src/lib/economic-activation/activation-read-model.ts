@@ -191,14 +191,14 @@ export const resolveActivationForProject = (projectSlug: string): ActivationPipe
         validationStatus,
         `Verification: ${project.verificationStatus}`,
         project.disclaimer,
-        `/projects/${projectSlug}`,
+        `/@${projectSlug}/`,
       ),
       buildStage(
         'project_registry',
         'READY',
         `${project.displayName} listed`,
         project.upi,
-        `/projects/${projectSlug}`,
+        `/@${projectSlug}/`,
       ),
       buildStage(
         'canonical_asset',

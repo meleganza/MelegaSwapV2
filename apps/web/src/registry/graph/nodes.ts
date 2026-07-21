@@ -9,7 +9,7 @@ export const projectToNode = (project: StaticProjectRecord): GraphNodeRef => ({
   slug: project.slug,
   identity: project.upi,
   displayName: project.displayName,
-  href: `/projects/${project.slug}`,
+  href: `/@${project.slug}/`,
 })
 
 export const assetToNode = (asset: StaticAssetRecord): GraphNodeRef => ({

@@ -77,7 +77,7 @@ const AssetDetail: React.FC<AssetDetailProps> = ({ asset, manifest }) => {
         </Heading>
         <Text color="text">
           {t('Project')}:{' '}
-          <Link href={`/projects/${asset.projectBinding.projectSlug}`}>
+          <Link href={`/@${asset.projectBinding.projectSlug}/`}>
             <Text as="span" color="primary">
               {asset.projectBinding.projectSlug}
             </Text>

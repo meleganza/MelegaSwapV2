@@ -211,7 +211,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   }, [project.slug])
 
   const tradeHref = project.tradeHref ?? '/trade'
-  const projectHref = project.importHref ?? project.projectHref ?? `/projects/${project.slug}`
+  const projectHref = project.importHref ?? project.projectHref ?? `/@${project.slug}/`
   const radarHref = project.radarHref
 
   return (
@@ -284,7 +284,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
       </Split>
       <ButtonRow data-pr-action-bar>
         <PrCardPrimaryBtn href={tradeHref}>Trade</PrCardPrimaryBtn>
-        <PrCardOutlineBtn href={projectHref}>Open Project</PrCardOutlineBtn>
+        <PrCardOutlineBtn href={projectHref}>Open Project Page</PrCardOutlineBtn>
         {radarHref ? (
           <PrCardOutlineBtn href={radarHref}>Radar</PrCardOutlineBtn>
         ) : (

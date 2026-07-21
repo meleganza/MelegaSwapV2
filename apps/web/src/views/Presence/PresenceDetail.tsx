@@ -91,7 +91,7 @@ const PresenceDetail: React.FC<PresenceDetailProps> = ({ record, manifest }) => 
         </Heading>
         <Text color="text">
           {t('Project')}:{' '}
-          <Link href={`/projects/${record.projectSlug}`}>
+          <Link href={`/@${record.projectSlug}/`}>
             <Text as="span" color="primary">
               {record.projectSlug}
             </Text>

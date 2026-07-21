@@ -349,7 +349,7 @@ export const useHomeTradeData = () => {
           id: 'project-listed',
           title: 'Latest listing',
           subtitle: projectName,
-          href: `/projects/${latestProject.slug}`,
+          href: `/@${latestProject.slug}/`,
           icon: 'project',
         })
       }
