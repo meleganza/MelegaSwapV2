@@ -67,7 +67,6 @@ const ProjectMarketSnapshot: React.FC<Props> = ({ marketsDocument }) => {
       )}
 
       {observedAt ? <MutedText>{observedAt}</MutedText> : null}
-      <MutedText>{marketsDocument.limitations[0]}</MutedText>
     </Card>
   )
 }

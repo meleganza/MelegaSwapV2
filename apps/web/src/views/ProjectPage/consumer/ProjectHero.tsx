@@ -194,11 +194,15 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument, liquidityBuil
       ? document.identity.shortPurpose.value
       : null
 
-  const verificationLabel =
-    document.identity.verificationState.meta.availability === 'AVAILABLE' &&
-    document.identity.verificationState.value
-      ? humanEnumLabel(document.identity.verificationState.value)
+  const rawVerification =
+    document.identity.verificationState.meta.availability === 'AVAILABLE'
+      ? document.identity.verificationState.value
       : null
+  const verificationLabel = rawVerification
+    ? /observed|canonical/i.test(rawVerification)
+      ? 'Project identity partially verified'
+      : humanEnumLabel(rawVerification)
+    : null
 
   const symbol =
     primaryAsset?.symbol.meta.availability === 'AVAILABLE' ? primaryAsset.symbol.value : null
