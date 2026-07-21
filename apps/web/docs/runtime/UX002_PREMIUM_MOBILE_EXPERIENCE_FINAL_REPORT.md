@@ -210,7 +210,13 @@ Viewports exercised via Playwright against local `next start` build: **360, 375,
 
 ## 13. Deployment
 
-Push mission branch + fast-forward `main` for Vercel production (same pattern as UX001). Live after screenshots may be re-captured post-deploy against `https://www.melega.finance`.
+| Field | Value |
+| ----- | ----- |
+| Commit | `b4bb3d0d8da68717cb26c9c7ecc39e81f5686710` |
+| Mission branch | `mission-ux002-premium-mobile-experience` (pushed) |
+| `main` | fast-forwarded to same commit |
+| Vercel Production | `success` — `https://melega-swap-v2-3zpjskeo9-melegazas-projects.vercel.app` |
+| Live alias check | `https://www.melega.finance/@marco` renders **Buy MARCO**, **Verified project**, bottom nav **Own** |
 
 ---
 
