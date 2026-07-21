@@ -497,6 +497,8 @@ export function toPublicProjectJson(
     liquidityBuildingSummary?: Record<string, unknown>
     /** Public-safe updates summary only — never private or draft updates. */
     updatesSummary?: Record<string, unknown>
+    /** Public-safe ecosystem summary only — never private services. */
+    ecosystemSummary?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -590,6 +592,11 @@ export function toPublicProjectJson(
   // PP008 — public-safe updates summary (no private drafts or social metrics)
   if (options?.updatesSummary) {
     body.updatesSummary = options.updatesSummary
+  }
+
+  // PP009 — public-safe ecosystem summary (service graph discovery only)
+  if (options?.ecosystemSummary) {
+    body.ecosystemSummary = options.ecosystemSummary
   }
 
   return body

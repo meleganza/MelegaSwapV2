@@ -8,11 +8,13 @@ import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
 import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
 import type { ProjectUpdatesDocument } from 'registry/projects/identity/updates'
+import type { ProjectEcosystemDocument } from 'registry/projects/identity/ecosystem'
 import TrustEvidencePanel from './TrustEvidencePanel'
 import ReadinessTrustSnapshot from './ReadinessTrustSnapshot'
 import ProjectMarketsSection from './ProjectMarketsSection'
 import ProjectParticipationSection from './ProjectParticipationSection'
 import ProjectUpdatesSection from './ProjectUpdatesSection'
+import ProjectEcosystemSection from './ProjectEcosystemSection'
 import dynamic from 'next/dynamic'
 
 /** Wallet relationship uses client wallet/RPC readers — keep out of SSR. */
@@ -227,6 +229,7 @@ interface Props {
   participationDocument: ProjectParticipationDocument
   liquidityBuildingDocument: ProjectLiquidityBuildingDocument
   updatesDocument: ProjectUpdatesDocument
+  ecosystemDocument: ProjectEcosystemDocument
 }
 
 const ProjectIdentityShell: React.FC<Props> = ({
@@ -237,6 +240,7 @@ const ProjectIdentityShell: React.FC<Props> = ({
   participationDocument,
   liquidityBuildingDocument,
   updatesDocument,
+  ecosystemDocument,
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -421,35 +425,8 @@ const ProjectIdentityShell: React.FC<Props> = ({
           <TrustEvidencePanel pack={evidencePack} />
         </Section>
 
-        <Section
-          $mobileOrder={8}
-          id="ecosystem"
-          aria-labelledby="deployments-heading"
-          data-testid="project-deployments"
-        >
-          <Heading as="h2" id="deployments-heading" scale="md">
-            Supported chains and deployments
-          </Heading>
-          {doc.deployments.length > 0 ? (
-            <List>
-              {doc.deployments.map((deployment) => (
-                <ListItem key={deployment.deploymentId}>
-                  <Text fontSize="14px">
-                    {doc.chains.find((c) => c.chainId === deployment.chainId)?.label ?? deployment.caip2}
-                  </Text>
-                  <Fact>
-                    {deployment.caip2}
-                    {deployment.status.meta.availability === 'AVAILABLE' && deployment.status.value
-                      ? ` · ${deployment.status.value}`
-                      : ''}
-                    {` · ${deployment.associatedContractIds.length} associated contract(s)`}
-                  </Fact>
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Fact>No deployments listed in registry.</Fact>
-          )}
+        <Section $mobileOrder={8} data-testid="project-ecosystem-slot">
+          <ProjectEcosystemSection ecosystemDocument={ecosystemDocument} document={doc} />
         </Section>
 
         <Section $mobileOrder={9} aria-labelledby="resources-heading" data-testid="project-resources">
