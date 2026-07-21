@@ -1,14 +1,26 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
 
 export const CANVAS = '#0a0a0a'
-export const CARD_BG = '#141414'
-export const CARD_BORDER = '#2a2a2a'
+export const CARD_BG = 'rgba(20, 20, 20, 0.72)'
+export const CARD_BORDER = 'rgba(255, 255, 255, 0.08)'
 export const GOLD = '#d4af37'
 export const MUTED = '#8f8f8f'
 export const TEXT = '#ffffff'
 export const BODY_SIZE = '17px'
-export const BODY_LINE = 1.5
+export const BODY_LINE = 1.55
+export const SECTION_GAP = '38px'
+
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
 
 export const PageFrame = styled.div`
   width: 100%;
@@ -23,7 +35,7 @@ export const PageFrame = styled.div`
 export const Shell = styled.main`
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: ${SECTION_GAP};
   max-width: 720px;
   margin: 0 auto;
   width: 100%;
@@ -38,10 +50,18 @@ export const Shell = styled.main`
   }
 `
 
+export const AnimatedSection = styled.div`
+  animation: ${fadeInUp} 0.45s ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`
+
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   scroll-margin-top: calc(56px + env(safe-area-inset-top, 0px));
 `
 
@@ -82,11 +102,18 @@ export const MutedText = styled.p`
 export const Card = styled.div`
   background: ${CARD_BG};
   border: 1px solid ${CARD_BORDER};
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 18px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  backdrop-filter: blur(8px);
+`
+
+export const SoftCard = styled(Card)`
+  background: linear-gradient(145deg, rgba(22, 22, 22, 0.9) 0%, rgba(14, 14, 14, 0.85) 100%);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
 `
 
 export const MetricGrid = styled.div`
@@ -131,7 +158,7 @@ export const PrimaryButton = styled.a`
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 0 18px;
   border-radius: 12px;
   background: ${GOLD};
   color: #0a0a0a;
@@ -152,7 +179,7 @@ export const SecondaryButton = styled.a`
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 0 18px;
   border-radius: 12px;
   background: transparent;
   color: ${TEXT};
@@ -212,6 +239,62 @@ export const AccordionSummary = styled.summary`
     outline: 2px solid ${GOLD};
     outline-offset: 2px;
   }
+`
+
+export const EmptyState = styled.div`
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.06) 0%, rgba(20, 20, 20, 0.92) 45%, rgba(27, 231, 122, 0.04) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  &::before {
+    width: 120px;
+    height: 120px;
+    top: -40px;
+    right: -20px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, transparent 70%);
+  }
+
+  &::after {
+    width: 80px;
+    height: 80px;
+    bottom: -24px;
+    left: -12px;
+    background: radial-gradient(circle, rgba(27, 231, 122, 0.18) 0%, transparent 70%);
+  }
+`
+
+export const EmptyStateTitle = styled.p`
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: ${TEXT};
+  position: relative;
+  z-index: 1;
+`
+
+export const EmptyStateBody = styled.p`
+  margin: 0;
+  font-size: 15px;
+  line-height: ${BODY_LINE};
+  color: ${MUTED};
+  position: relative;
+  z-index: 1;
 `
 
 export const SkeletonBlock = styled.div`

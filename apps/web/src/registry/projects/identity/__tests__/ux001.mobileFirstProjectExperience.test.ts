@@ -70,15 +70,15 @@ describe('UX001 human presentation adapters', () => {
 })
 
 describe('UX001 Project Page consumer surfaces', () => {
-  it('11–13. sticky nav, hero, swap modules exist', () => {
+  it('11–13. sticky nav, hero, buy modules exist', () => {
     expect(existsSync(path.join(CONSUMER, 'ProjectStickyNav.tsx'))).toBe(true)
     expect(existsSync(path.join(CONSUMER, 'ProjectHero.tsx'))).toBe(true)
     expect(existsSync(path.join(CONSUMER, 'ProjectSwapCard.tsx'))).toBe(true)
     const nav = readFileSync(path.join(CONSUMER, 'ProjectStickyNav.tsx'), 'utf8')
-    expect(nav).toMatch(/Overview|Chart|Swap|Tokenomics|Roadmap|Earn|Updates|More/)
+    expect(nav).toMatch(/Overview|Chart|Buy|About|Community|Tokenomics|Roadmap|Earn|More/)
     expect(nav).toContain('44px')
     const hero = readFileSync(path.join(CONSUMER, 'ProjectHero.tsx'), 'utf8')
-    expect(hero).toMatch(/Buy|Swap/)
+    expect(hero).toMatch(/Buy MARCO|Buy/)
     expect(hero).not.toContain('Owner access')
     expect(hero).not.toContain('upi://')
   })
@@ -94,7 +94,7 @@ describe('UX001 Project Page consumer surfaces', () => {
   it('16–18. chart uses indexer candles; unavailable path present', () => {
     const chart = readFileSync(path.join(CONSUMER, 'ProjectChartPanel.tsx'), 'utf8')
     expect(chart).toContain('useIndexerCandles')
-    expect(chart).toMatch(/unavailable|Unavailable/i)
+    expect(chart).toMatch(/not available yet|unavailable/i)
     expect(chart).not.toMatch(/synthetic|fabricat/i)
   })
 
@@ -126,7 +126,8 @@ describe('UX001 Project Page consumer surfaces', () => {
     const updates = readFileSync(path.join(CONSUMER, 'ProjectUpdatesPreview.tsx'), 'utf8')
     expect(updates).toMatch(/PREVIEW_COUNT\s*=\s*[23]|slice\(0,\s*PREVIEW_COUNT\)/)
     const trust = readFileSync(path.join(CONSUMER, 'ProjectTransparencySummary.tsx'), 'utf8')
-    expect(trust).toMatch(/technical transparency|View technical/i)
+    expect(trust).toContain('Security & Transparency')
+    expect(trust).toMatch(/View technical report/i)
   })
 })
 

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import type { ProjectEvidencePack } from 'registry/projects/identity/evidence/types'
 import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectReadinessDocument } from 'registry/projects/identity/readiness/types'
-import { Accordion, AccordionSummary, BodyText, Card, MutedText, Section, SectionTitle } from './theme'
+import { Accordion, AccordionSummary, BodyText, MutedText, Section, SectionTitle, SoftCard } from './theme'
 
 const ReadinessTrustSnapshot = dynamic(() => import('../ReadinessTrustSnapshot'), { ssr: false })
 const TrustEvidencePanel = dynamic(() => import('../TrustEvidencePanel'), { ssr: false })
@@ -23,12 +23,12 @@ const ProjectTransparencySummary: React.FC<Props> = ({
   const [open, setOpen] = useState(false)
 
   return (
-    <Section aria-labelledby="transparency-heading" data-testid="project-transparency-summary">
-      <SectionTitle id="transparency-heading">Transparency</SectionTitle>
-      <Card>
+    <Section aria-labelledby="trust-heading" data-testid="project-transparency-summary">
+      <SectionTitle id="trust-heading">Security & Transparency</SectionTitle>
+      <SoftCard>
         <BodyText style={{ fontSize: 16 }}>
-          This project publishes registry-backed trust and readiness signals. Detailed machine evidence
-          stays available for reviewers who need the full technical report.
+          Registry-backed trust and readiness signals for this project. Open the technical report
+          when you need the full evidence trail.
         </BodyText>
         <MutedText>
           Readiness {readinessDocument.readiness.score}/{readinessDocument.readiness.maxScore} ·{' '}
@@ -41,7 +41,7 @@ const ProjectTransparencySummary: React.FC<Props> = ({
             setOpen(next)
           }}
         >
-          <AccordionSummary>View technical transparency report</AccordionSummary>
+          <AccordionSummary>View technical report</AccordionSummary>
           {open ? (
             <>
               <ReadinessTrustSnapshot readiness={readinessDocument} />
@@ -50,7 +50,7 @@ const ProjectTransparencySummary: React.FC<Props> = ({
             </>
           ) : null}
         </Accordion>
-      </Card>
+      </SoftCard>
     </Section>
   )
 }

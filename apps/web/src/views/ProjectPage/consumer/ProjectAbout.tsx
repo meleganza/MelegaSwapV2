@@ -1,6 +1,6 @@
 import React from 'react'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
-import { BodyText, MutedText, Section, SectionTitle } from './theme'
+import { BodyText, EmptyState, EmptyStateBody, EmptyStateTitle, MutedText, Section, SectionTitle } from './theme'
 
 interface Props {
   document: CanonicalProjectDocument
@@ -13,12 +13,15 @@ const ProjectAbout: React.FC<Props> = ({ document }) => {
       : null
 
   return (
-    <Section id="overview" aria-labelledby="overview-heading">
-      <SectionTitle id="overview-heading">Overview</SectionTitle>
+    <Section aria-labelledby="about-heading">
+      <SectionTitle id="about-heading">About</SectionTitle>
       {description ? (
         <BodyText>{description}</BodyText>
       ) : (
-        <MutedText>Overview description unavailable in registry.</MutedText>
+        <EmptyState>
+          <EmptyStateTitle>Not available yet</EmptyStateTitle>
+          <EmptyStateBody>A project overview will appear here once it is published.</EmptyStateBody>
+        </EmptyState>
       )}
     </Section>
   )

@@ -27,7 +27,7 @@ import GlobalSearch from './components/GlobalSearch'
 
 const DesktopMain = styled.main`
   margin-left: 0;
-  padding: calc(56px + env(safe-area-inset-top, 0px)) 12px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(68px + env(safe-area-inset-bottom, 0px));
   background: #0a0a0a;
   min-height: 100dvh;
   min-height: 100vh;
@@ -62,13 +62,13 @@ const MobileHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(52px + env(safe-area-inset-top, 0px));
-  padding: env(safe-area-inset-top, 0px) 12px 0;
+  height: calc(48px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 10px 0;
   background: ${colors.canvas};
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 95;
@@ -151,7 +151,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
       />
 
       <MobileHeader data-melega-mobile-header>
-        <MelegaBrandLockup size="mobile" />
+        <MelegaBrandLockup size="mobile" iconOnly />
         <MobileNetwork className="melega-shell-mobile-network">
           <NetworkSwitcher />
         </MobileNetwork>

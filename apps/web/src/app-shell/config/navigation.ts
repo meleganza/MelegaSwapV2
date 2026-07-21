@@ -144,9 +144,9 @@ export const shellBottomNavItems = [
   {
     id: 'trade',
     label: 'Trade',
-    href: '/trade',
+    href: '/',
     icon: 'swap' as MelegaNavIcon,
-    match: (p: string) => p === '/trade' || p.startsWith('/trade/'),
+    match: (p: string) => p === '/' || p === '/trade' || p.startsWith('/trade/'),
   },
   {
     id: 'earn',
@@ -171,7 +171,7 @@ export const shellBottomNavItems = [
   },
   {
     id: 'command-center',
-    label: 'Command Center',
+    label: 'Own',
     href: '/command-center',
     icon: 'command' as MelegaNavIcon,
     match: (p: string) =>

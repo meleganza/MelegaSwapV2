@@ -21,20 +21,45 @@ import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { HomeSwapIconButton, HomeSwapPanelShell } from 'views/HomeTrade/HomeSwapPanelShell'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
-import { Card, MutedText, SectionTitle } from './theme'
+import { humanChainName } from '../presentation/humanLabels'
+import { EmptyState, EmptyStateBody, EmptyStateTitle, MutedText, Section, SectionTitle } from './theme'
+import { getBuySectionTitle } from './helpers'
+
+const BuySurface = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+`
+
+const QuietSwapShell = styled.div`
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(12, 12, 12, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  .home-trade-swap {
+    padding: 0;
+  }
+
+  [class*='HomeSwapPanelShell'] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+`
 
 const SwapSkeleton = styled.div`
-  min-height: 320px;
+  min-height: 280px;
   border-radius: 16px;
-  background: linear-gradient(180deg, #141414 0%, #101010 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(20, 20, 20, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 `
 
 const SwapInner = dynamic(
   () => Promise.resolve({ default: ProjectSwapInner }),
   {
     ssr: false,
-    loading: () => <SwapSkeleton aria-label="Loading swap form" />,
+    loading: () => <SwapSkeleton aria-label="Loading buy form" />,
   },
 ) as React.ComponentType<Props>
 
@@ -131,40 +156,60 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
   }, [])
 
   if (!defaultPair) {
-    return <MutedText>Swap is unavailable for this project on Melega DEX.</MutedText>
+    return (
+      <EmptyState>
+        <EmptyStateTitle>Not available yet</EmptyStateTitle>
+        <EmptyStateBody>Buying is not available for this project on Melega DEX right now.</EmptyStateBody>
+      </EmptyState>
+    )
   }
 
   return (
-    <HomeSwapPanelShell
-      pairIndicator={pairIndicator}
-      toolbar={
-        <>
-          <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-            ⚙
-          </HomeSwapIconButton>
-          <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
-            ↻
-          </HomeSwapIconButton>
-        </>
-      }
-    >
-      <div ref={swapBodyRef} className={`home-trade-swap${account ? '' : ' is-disconnected'}`}>
-        <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-      </div>
-    </HomeSwapPanelShell>
+    <QuietSwapShell>
+      <HomeSwapPanelShell
+        pairIndicator={pairIndicator}
+        toolbar={
+          <>
+            <HomeSwapIconButton type="button" aria-label="Buy settings" onClick={onPresentSettingsModal}>
+              ⚙
+            </HomeSwapIconButton>
+            <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
+              ↻
+            </HomeSwapIconButton>
+          </>
+        }
+      >
+        <div ref={swapBodyRef} className={`home-trade-swap${account ? '' : ' is-disconnected'}`}>
+          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+        </div>
+      </HomeSwapPanelShell>
+    </QuietSwapShell>
   )
 }
 
-const ProjectSwapCard: React.FC<Props> = ({ slug, marketsDocument }) => (
-  <Card aria-labelledby="swap-heading">
-    <SectionTitle as="h2" id="swap-heading" style={{ fontSize: '22px' }}>
-      Swap
-    </SectionTitle>
-    <MutedText>Trade on Melega DEX without leaving this project page.</MutedText>
-    <SwapFeaturesProvider>
-      <SwapInner slug={slug} marketsDocument={marketsDocument} />
-    </SwapFeaturesProvider>
-  </Card>
-)
+const ProjectSwapCard: React.FC<Props> = ({ slug, marketsDocument }) => {
+  const preferred = marketsDocument.preferredMarkets[0]
+  const symbol =
+    slug === 'marco'
+      ? 'MARCO'
+      : preferred?.baseSymbol ?? preferred?.quoteSymbol ?? null
+  const title = getBuySectionTitle(slug, symbol)
+  const chainId = preferred?.chainId ?? 56
+  const chainName = humanChainName(chainId)
+
+  return (
+    <Section aria-labelledby="buy-heading">
+      <BuySurface>
+        <SectionTitle as="h2" id="buy-heading">
+          {title}
+        </SectionTitle>
+        <MutedText>Buy with BNB on {chainName}</MutedText>
+        <SwapFeaturesProvider>
+          <SwapInner slug={slug} marketsDocument={marketsDocument} />
+        </SwapFeaturesProvider>
+      </BuySurface>
+    </Section>
+  )
+}
 
 export default ProjectSwapCard

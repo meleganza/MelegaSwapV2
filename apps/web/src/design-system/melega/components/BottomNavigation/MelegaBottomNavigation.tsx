@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography, spacing } from '../../tokens'
+import { colors, typography } from '../../tokens'
 import { layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
 
@@ -21,14 +21,16 @@ const Nav = styled.nav<{
   $margin?: MelegaLayoutProps['margin']
 }>`
   display: flex;
+  align-items: stretch;
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(78px + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: ${colors.canvas};
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: calc(56px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 4px env(safe-area-inset-bottom, 0px);
+  background: rgba(5, 5, 5, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 200;
   box-shadow: none;
 
@@ -45,39 +47,52 @@ const Item = styled.a<{ $active?: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: ${spacing[1]};
+  gap: 5px;
+  min-height: 48px;
+  min-width: 48px;
+  padding: 6px 4px;
   text-decoration: none;
   position: relative;
-  padding-top: ${spacing[2]};
-  color: ${({ $active }) => ($active ? colors.gold : colors.textSecondary)};
+  border-radius: 12px;
+  color: ${({ $active }) => ($active ? colors.textPrimary : colors.textSecondary)};
+  transition: color 160ms ease, background 160ms ease;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.04);
+  }
 `
 
 const Indicator = styled.div`
   position: absolute;
-  top: 0;
-  width: 56px;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
+  top: 2px;
+  width: 20px;
+  height: 2px;
+  border-radius: 999px;
   background: ${colors.gold};
+  opacity: 0.9;
 `
 
-const Icon = styled.span`
-  width: 22px;
-  height: 22px;
+const Icon = styled.span<{ $active?: boolean }>`
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ $active }) => ($active ? colors.gold : 'inherit')};
+  transition: color 160ms ease;
 
   svg {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
   }
 `
 
-const Label = styled.span`
+const Label = styled.span<{ $active?: boolean }>`
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize.xs};
-  font-weight: ${typography.fontWeight.medium};
+  font-size: 11px;
+  font-weight: ${({ $active }) => ($active ? typography.fontWeight.semibold : typography.fontWeight.medium)};
+  letter-spacing: 0.01em;
+  line-height: 1;
 `
 
 export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
@@ -93,8 +108,8 @@ export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
       return (
         <Item key={item.id} href={disabled ? '#' : item.href} $active={active} aria-current={active ? 'page' : undefined}>
           {active && <Indicator />}
-          <Icon>{item.icon}</Icon>
-          <Label>{item.label}</Label>
+          <Icon $active={active}>{item.icon}</Icon>
+          <Label $active={active}>{item.label}</Label>
         </Item>
       )
     })}

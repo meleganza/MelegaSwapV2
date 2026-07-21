@@ -99,13 +99,14 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 
   [data-melega-app-shell] .melega-shell-mobile-network button,
   [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
-    height: 44px !important;
-    min-height: 44px !important;
-    max-width: 132px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-width: 120px !important;
+    padding: 0 10px !important;
     border-radius: 10px !important;
     background: ${colors.surface1} !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     font-weight: 700 !important;
     box-shadow: none !important;
     display: inline-flex !important;
@@ -118,18 +119,18 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
   @media (max-width: 419px) {
     [data-melega-app-shell] .melega-shell-mobile-network button,
     [data-melega-app-shell] .melega-shell-mobile-network [role='button'] {
-      max-width: 96px !important;
-      min-width: 88px !important;
-      padding: 0 8px !important;
+      max-width: 88px !important;
+      min-width: 76px !important;
+      padding: 0 6px !important;
     }
   }
 
   [data-melega-app-shell] .melega-shell-mobile-connect {
-    min-width: 72px !important;
+    min-width: 68px !important;
     width: auto !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0 12px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 10px !important;
     border-radius: 10px !important;
     border: 1px solid ${colors.gold} !important;
     background: transparent !important;
@@ -160,6 +161,7 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 const WalletIconBtn = styled.div`
   width: 40px;
   height: 40px;
+  min-width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;

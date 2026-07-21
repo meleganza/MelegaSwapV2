@@ -64,6 +64,13 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px 12px;
+  min-height: 0;
+
+  @media (max-width: 767px) {
+    justify-content: flex-end;
+    gap: 8px;
+    min-height: 40px;
+  }
 `
 
 const TitleBlock = styled.div`
@@ -72,6 +79,10 @@ const TitleBlock = styled.div`
   gap: 6px;
   min-width: 0;
   flex: 1 1 160px;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 `
 
 const Title = styled.h1`
@@ -114,6 +125,14 @@ const PairSlot = styled.div`
   order: 3;
   flex: 1 1 100%;
 
+  @media (max-width: 767px) {
+    order: 1;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    max-width: calc(100% - 96px);
+    text-align: left;
+  }
+
   @media (min-width: 768px) {
     position: absolute;
     top: 24px;
@@ -131,6 +150,11 @@ const Toolbar = styled.div`
   gap: 8px;
   flex-shrink: 0;
   margin-left: auto;
+
+  @media (max-width: 767px) {
+    order: 2;
+    margin-left: 0;
+  }
 
   @media (min-width: 768px) {
     position: absolute;

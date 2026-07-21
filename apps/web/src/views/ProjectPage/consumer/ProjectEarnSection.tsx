@@ -1,8 +1,59 @@
 import React from 'react'
+import styled from 'styled-components'
 import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
 import type { ProjectParticipationDocument } from 'registry/projects/identity/participation'
-import { humanEnumLabel } from '../presentation/humanLabels'
-import { BodyText, Card, MutedText, Section, SectionTitle, SubTitle, TextLink } from './theme'
+import {
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateTitle,
+  MutedText,
+  PrimaryButton,
+  Section,
+  SectionTitle,
+  SoftCard,
+} from './theme'
+
+const EarnGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`
+
+const EarnCard = styled(SoftCard)`
+  gap: 10px;
+  min-height: 160px;
+`
+
+const EarnIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  font-size: 20px;
+`
+
+const EarnTitle = styled.h3`
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+`
+
+const EarnDescription = styled.p`
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #8f8f8f;
+  flex: 1;
+`
 
 interface Props {
   participationDocument: ProjectParticipationDocument
@@ -10,79 +61,91 @@ interface Props {
 }
 
 const ProjectEarnSection: React.FC<Props> = ({ participationDocument, liquidityBuildingDocument }) => {
-  const farms = participationDocument.farms.slice(0, 3)
-  const pools = participationDocument.pools.slice(0, 3)
+  const farm = participationDocument.farms.find((f) => f.destination?.href) ?? participationDocument.farms[0] ?? null
+  const pool = participationDocument.pools.find((p) => p.destination?.href) ?? participationDocument.pools[0] ?? null
   const liquidityHref =
     liquidityBuildingDocument.destination?.availability === 'AVAILABLE'
       ? liquidityBuildingDocument.destination.href
       : null
 
+  const cards = [
+    pool?.destination?.href
+      ? {
+          key: 'liquidity',
+          icon: '💧',
+          title: 'Liquidity',
+          description: 'Provide liquidity and earn trading fees on Melega pools.',
+          href: pool.destination.href,
+          cta: 'Add liquidity',
+        }
+      : null,
+    farm?.destination?.href
+      ? {
+          key: 'farm',
+          icon: '🌾',
+          title: 'Farm',
+          description: 'Stake LP tokens to earn MARCO and partner rewards.',
+          href: farm.destination.href,
+          cta: 'Start farming',
+        }
+      : null,
+    pool?.destination?.href
+      ? {
+          key: 'stake',
+          icon: '🏊',
+          title: 'Stake / Pools',
+          description: 'Explore staking pools tied to this project.',
+          href: pool.destination.href,
+          cta: 'View pools',
+        }
+      : null,
+    liquidityHref
+      ? {
+          key: 'building',
+          icon: '📈',
+          title: 'Liquidity Building',
+          description: 'Grow depth through the Melega Liquidity Building program.',
+          href: liquidityHref,
+          cta: 'Open program',
+        }
+      : null,
+  ].filter(Boolean) as Array<{
+    key: string
+    icon: string
+    title: string
+    description: string
+    href: string
+    cta: string
+  }>
+
   return (
-    <Section id="earn" aria-labelledby="earn-heading">
+    <Section aria-labelledby="earn-heading">
       <SectionTitle id="earn-heading">Earn</SectionTitle>
       <MutedText>
-        {participationDocument.summary.farmCount + participationDocument.summary.liquidityPoolCount > 0
-          ? 'Participate through registered Melega earn surfaces.'
-          : 'No earn opportunities are currently registered for this project.'}
+        {cards.length > 0
+          ? 'Ways to participate and grow with this project on Melega.'
+          : 'Earn opportunities will appear here when they are registered.'}
       </MutedText>
 
-      {farms.length > 0 ? (
-        <Card>
-          <SubTitle as="h3">Farms</SubTitle>
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {farms.map((farm) => (
-              <li key={farm.participationId}>
-                <BodyText style={{ fontWeight: 600 }}>{farm.displayLabel}</BodyText>
-                <MutedText style={{ fontSize: 14 }}>
-                  {humanEnumLabel(farm.status)} · {humanEnumLabel(farm.availability)}
-                </MutedText>
-                {farm.destination?.href ? (
-                  <TextLink href={farm.destination.href} aria-label={`Open ${farm.displayLabel}`}>
-                    Open farm
-                  </TextLink>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </Card>
-      ) : null}
-
-      {pools.length > 0 ? (
-        <Card>
-          <SubTitle as="h3">Liquidity pools</SubTitle>
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {pools.map((pool) => (
-              <li key={pool.participationId}>
-                <BodyText style={{ fontWeight: 600 }}>{pool.displayLabel}</BodyText>
-                <MutedText style={{ fontSize: 14 }}>
-                  {humanEnumLabel(pool.status)} · {humanEnumLabel(pool.availability)}
-                </MutedText>
-                {pool.destination?.href ? (
-                  <TextLink href={pool.destination.href} aria-label={`Open ${pool.displayLabel}`}>
-                    Open pool
-                  </TextLink>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </Card>
-      ) : null}
-
-      {liquidityBuildingDocument.availability === 'AVAILABLE' ? (
-        <Card>
-          <SubTitle as="h3">Liquidity Building</SubTitle>
-          <BodyText style={{ fontSize: 15 }}>
-            Grow liquidity through the Melega Liquidity Building program.
-          </BodyText>
-          {liquidityHref ? (
-            <TextLink href={liquidityHref} aria-label="Open Liquidity Building">
-              Open Liquidity Building
-            </TextLink>
-          ) : (
-            <MutedText>Liquidity Building destination unavailable.</MutedText>
-          )}
-        </Card>
-      ) : null}
+      {cards.length > 0 ? (
+        <EarnGrid>
+          {cards.map((card) => (
+            <EarnCard key={card.key}>
+              <EarnIcon aria-hidden="true">{card.icon}</EarnIcon>
+              <EarnTitle>{card.title}</EarnTitle>
+              <EarnDescription>{card.description}</EarnDescription>
+              <PrimaryButton href={card.href} aria-label={card.cta} style={{ alignSelf: 'flex-start' }}>
+                {card.cta}
+              </PrimaryButton>
+            </EarnCard>
+          ))}
+        </EarnGrid>
+      ) : (
+        <EmptyState>
+          <EmptyStateTitle>Not available yet</EmptyStateTitle>
+          <EmptyStateBody>No earn destinations are registered for this project right now.</EmptyStateBody>
+        </EmptyState>
+      )}
     </Section>
   )
 }

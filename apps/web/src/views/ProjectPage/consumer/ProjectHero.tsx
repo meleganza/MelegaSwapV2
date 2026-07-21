@@ -1,75 +1,95 @@
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import type { CanonicalProjectDocument } from 'registry/projects/identity/types'
-import type { ProjectLiquidityBuildingDocument } from 'registry/projects/identity/liquidityBuilding'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
 import { PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
 import { humanEnumLabel, shortenAddress } from '../presentation/humanLabels'
 import {
   ActionRow,
-  BodyText,
-  Card,
+  MetricCell,
+  MetricGrid,
+  MetricLabel,
+  MetricValue,
   MutedText,
   PrimaryButton,
   SecondaryButton,
+  SoftCard,
 } from './theme'
 import {
-  getPreferredBuyHref,
+  getBuyCtaLabel,
   getPrimaryAsset,
   getPrimaryChainLabel,
   getSocialResources,
 } from './helpers'
 
-const HeroCard = styled(Card)`
-  gap: 16px;
-  padding: 20px 16px;
+const HeroCard = styled(SoftCard)`
+  gap: 24px;
+  padding: 28px 20px 32px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 `
 
-const TopRow = styled.div`
+const TopBlock = styled.div`
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
 `
 
 const LogoImg = styled.img`
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
+  width: 92px;
+  height: 92px;
+  border-radius: 22px;
   object-fit: cover;
-  border: 1px solid #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+
+  @media (min-width: 480px) {
+    width: 96px;
+    height: 96px;
+  }
 `
 
 const LogoFallback = styled.div`
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  border: 1px solid #2a2a2a;
-  background: #141414;
+  width: 92px;
+  height: 92px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, #1a1a1a 0%, #101010 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: ${PREMIUM_FONT_DISPLAY};
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 700;
   color: #8f8f8f;
   flex-shrink: 0;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+
+  @media (min-width: 480px) {
+    width: 96px;
+    height: 96px;
+  }
 `
 
 const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  align-items: center;
   min-width: 0;
-  flex: 1;
+  width: 100%;
 `
 
 const HeroTitle = styled.h1`
   margin: 0;
   font-family: ${PREMIUM_FONT_DISPLAY};
-  font-size: clamp(26px, 6vw, 34px);
+  font-size: clamp(28px, 7vw, 36px);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.12;
   color: #ffffff;
   word-break: break-word;
 `
@@ -77,20 +97,39 @@ const HeroTitle = styled.h1`
 const SymbolTag = styled.span`
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
   min-height: 28px;
-  padding: 0 10px;
+  padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid rgba(212, 175, 55, 0.35);
   font-size: 13px;
   font-weight: 600;
   color: #d4af37;
+  letter-spacing: 0.02em;
+`
+
+const BadgeRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+`
+
+const ChainBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 600;
+  color: #c8c8c8;
 `
 
 const VerifiedBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
   min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
@@ -101,11 +140,17 @@ const VerifiedBadge = styled.span`
   color: #1be77a;
 `
 
-const MetaRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
+const MissionLine = styled.p`
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: #c8c8c8;
+  max-width: 36ch;
+`
+
+const PriceBlock = styled(SoftCard)`
+  padding: 16px;
+  gap: 0;
 `
 
 const ContractRow = styled.div`
@@ -113,27 +158,29 @@ const ContractRow = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  justify-content: center;
 `
 
 const Mono = styled.code`
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 13px;
-  color: #ffffff;
+  font-size: 12px;
+  color: #8f8f8f;
   word-break: break-all;
 `
 
 const CopyButton = styled.button`
   appearance: none;
-  border: 1px solid #2a2a2a;
-  background: #101010;
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 0 12px;
-  min-height: 44px;
-  min-width: 44px;
-  font-size: 13px;
+  border: none;
+  background: transparent;
+  color: #8f8f8f;
+  border-radius: 8px;
+  padding: 0 8px;
+  min-height: 32px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 
   &:focus-visible {
     outline: 2px solid #d4af37;
@@ -141,25 +188,16 @@ const CopyButton = styled.button`
   }
 `
 
-const SocialRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`
-
-const SocialLink = styled.a`
+const QuietLink = styled.a`
+  color: #8f8f8f;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  min-height: 32px;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid #2a2a2a;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
+  padding: 0 8px;
 
   &:focus-visible {
     outline: 2px solid #d4af37;
@@ -170,18 +208,12 @@ const SocialLink = styled.a`
 interface Props {
   document: CanonicalProjectDocument
   marketsDocument: ProjectMarketsDocument
-  liquidityBuildingDocument: ProjectLiquidityBuildingDocument
 }
 
-const ProjectHero: React.FC<Props> = ({ document, marketsDocument, liquidityBuildingDocument }) => {
+const ProjectHero: React.FC<Props> = ({ document, marketsDocument }) => {
   const [copied, setCopied] = useState(false)
   const primaryAsset = getPrimaryAsset(document)
   const chainLabel = getPrimaryChainLabel(document)
-  const buyHref = getPreferredBuyHref(marketsDocument)
-  const liquidityHref =
-    liquidityBuildingDocument.destination?.availability === 'AVAILABLE'
-      ? liquidityBuildingDocument.destination.href
-      : null
 
   const initials = document.identity.displayName
     .split(/\s+/)
@@ -200,7 +232,7 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument, liquidityBuil
       : null
   const verificationLabel = rawVerification
     ? /observed|canonical/i.test(rawVerification)
-      ? 'Project identity partially verified'
+      ? 'Verified project'
       : humanEnumLabel(rawVerification)
     : null
 
@@ -208,6 +240,10 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument, liquidityBuil
     primaryAsset?.symbol.meta.availability === 'AVAILABLE' ? primaryAsset.symbol.value : null
 
   const contractAddress = primaryAsset?.contractAddress ?? null
+  const buyLabel = getBuyCtaLabel(document.slug, symbol)
+  const website = getSocialResources(document).find(
+    (r) => r.resourceType === 'website' && Boolean(r.href),
+  )
 
   const onCopy = useCallback(async () => {
     if (!contractAddress) return
@@ -220,71 +256,83 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument, liquidityBuil
     }
   }, [contractAddress])
 
-  const socials = getSocialResources(document)
+  const hasActiveMarkets = marketsDocument.summary.activeMarketCount > 0
 
   return (
     <HeroCard data-testid="project-consumer-hero">
-      <TopRow>
+      <TopBlock>
         {document.identity.logoUrl.meta.availability === 'AVAILABLE' && document.identity.logoUrl.value ? (
           <LogoImg
             src={document.identity.logoUrl.value}
             alt={`${document.identity.displayName} logo`}
-            width={72}
-            height={72}
+            width={92}
+            height={92}
           />
         ) : (
           <LogoFallback aria-hidden="true">{initials || '?'}</LogoFallback>
         )}
+
         <TitleBlock>
           <HeroTitle>{document.identity.displayName}</HeroTitle>
           {symbol ? <SymbolTag>{symbol}</SymbolTag> : null}
-          {shortPurpose ? <BodyText>{shortPurpose}</BodyText> : null}
-          <MutedText>{chainLabel}</MutedText>
-          {verificationLabel ? <VerifiedBadge>{verificationLabel}</VerifiedBadge> : null}
+          {shortPurpose ? <MissionLine>{shortPurpose}</MissionLine> : null}
+          <BadgeRow>
+            <ChainBadge>{chainLabel}</ChainBadge>
+            {verificationLabel ? <VerifiedBadge>{verificationLabel}</VerifiedBadge> : null}
+          </BadgeRow>
         </TitleBlock>
-      </TopRow>
+      </TopBlock>
 
-      {contractAddress ? (
+      <PriceBlock aria-label="Market price summary">
+        <MetricGrid style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+          <MetricCell>
+            <MetricLabel>Price</MetricLabel>
+            <MetricValue>—</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <MetricLabel>24h</MetricLabel>
+            <MetricValue>—</MetricValue>
+          </MetricCell>
+          <MetricCell>
+            <MetricLabel>Markets</MetricLabel>
+            <MetricValue>
+              {hasActiveMarkets
+                ? String(marketsDocument.summary.activeMarketCount)
+                : 'Not available yet'}
+            </MetricValue>
+          </MetricCell>
+        </MetricGrid>
+      </PriceBlock>
+
+      {contractAddress || website ? (
         <ContractRow>
-          <Mono title={contractAddress}>{shortenAddress(contractAddress)}</Mono>
-          <CopyButton type="button" onClick={onCopy} aria-label={`Copy contract address ${contractAddress}`}>
-            {copied ? 'Copied' : 'Copy'}
-          </CopyButton>
-        </ContractRow>
-      ) : (
-        <MutedText>Contract address unavailable in registry.</MutedText>
-      )}
-
-      {socials.length > 0 ? (
-        <SocialRow aria-label="Official social links">
-          {socials.map((resource) => (
-            <SocialLink
-              key={resource.url}
-              href={resource.url}
+          {contractAddress ? (
+            <>
+              <Mono title={contractAddress}>{shortenAddress(contractAddress)}</Mono>
+              <CopyButton type="button" onClick={onCopy} aria-label={`Copy contract address ${contractAddress}`}>
+                {copied ? 'Copied' : 'Copy contract'}
+              </CopyButton>
+            </>
+          ) : null}
+          {website?.href ? (
+            <QuietLink
+              href={website.href}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${resource.label} (opens in a new tab)`}
+              aria-label="Website (opens in a new tab)"
             >
-              {resource.label}
-            </SocialLink>
-          ))}
-        </SocialRow>
+              Website
+            </QuietLink>
+          ) : null}
+        </ContractRow>
       ) : null}
 
-      <ActionRow>
-        <PrimaryButton href={buyHref ?? '#swap'} aria-label={`Buy or swap ${document.identity.displayName}`}>
-          Buy / Swap
+      <ActionRow style={{ justifyContent: 'center' }}>
+        <PrimaryButton href="#buy" aria-label={buyLabel}>
+          {buyLabel}
         </PrimaryButton>
         <SecondaryButton href="#chart" aria-label="View price chart">
           Chart
-        </SecondaryButton>
-        {liquidityHref ? (
-          <SecondaryButton href={liquidityHref} aria-label="Add liquidity">
-            Add Liquidity
-          </SecondaryButton>
-        ) : null}
-        <SecondaryButton href="#earn" aria-label="View earn opportunities">
-          Earn
         </SecondaryButton>
       </ActionRow>
     </HeroCard>

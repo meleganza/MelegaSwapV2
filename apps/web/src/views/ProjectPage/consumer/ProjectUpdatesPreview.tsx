@@ -61,7 +61,7 @@ const ProjectUpdatesPreview: React.FC<Props> = ({ updatesDocument }) => {
       <SectionTitle id="updates-heading">Updates</SectionTitle>
 
       {preview.length === 0 ? (
-        <MutedText>No public project updates are currently registered.</MutedText>
+        <MutedText style={{ fontSize: 15 }}>No public updates yet.</MutedText>
       ) : (
         <>
           <Card>

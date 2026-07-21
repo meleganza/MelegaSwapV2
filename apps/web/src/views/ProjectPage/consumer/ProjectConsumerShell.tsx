@@ -16,19 +16,17 @@ import type { ProjectTokenomicsDocument } from 'registry/projects/identity/token
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
 import ProjectStickyNav from './ProjectStickyNav'
 import ProjectHero from './ProjectHero'
-import ProjectMarketSnapshot from './ProjectMarketSnapshot'
 import ProjectChartPanel from './ProjectChartPanel'
 import ProjectSwapCard from './ProjectSwapCard'
 import ProjectAbout from './ProjectAbout'
 import ProjectTokenomicsSection from './ProjectTokenomicsSection'
 import ProjectRoadmapSection from './ProjectRoadmapSection'
-import ProjectUtilitiesSection from './ProjectUtilitiesSection'
 import ProjectEarnSection from './ProjectEarnSection'
 import ProjectUpdatesPreview from './ProjectUpdatesPreview'
 import ProjectCommunitySection from './ProjectCommunitySection'
 import ProjectTransparencySummary from './ProjectTransparencySummary'
 import ProjectMoreSection from './ProjectMoreSection'
-import { PageFrame, Shell } from './theme'
+import { AnimatedSection, PageFrame, Shell } from './theme'
 
 const ClientWalletRelationship = dynamic(() => import('./ProjectWalletConsumer'), {
   ssr: false,
@@ -74,40 +72,69 @@ const ProjectConsumerShell: React.FC<Props> = ({
   <PageFrame>
     <Shell id="project-consumer-shell" data-testid="project-consumer-shell">
       <ProjectStickyNav />
-      <ProjectHero
-        document={document}
-        marketsDocument={marketsDocument}
-        liquidityBuildingDocument={liquidityBuildingDocument}
-      />
-      <ProjectMarketSnapshot marketsDocument={marketsDocument} />
-      <ClientWalletRelationship document={document} evidencePack={evidencePack} />
-      <ProjectAbout document={document} />
+      <SectionAnchor id="overview">
+        <ProjectHero document={document} marketsDocument={marketsDocument} />
+      </SectionAnchor>
       <SectionAnchor id="chart">
-        <ProjectChartPanel slug={document.slug} marketsDocument={marketsDocument} />
+        <AnimatedSection>
+          <ProjectChartPanel slug={document.slug} marketsDocument={marketsDocument} />
+        </AnimatedSection>
       </SectionAnchor>
-      <SectionAnchor id="swap">
-        <ProjectSwapCard slug={document.slug} marketsDocument={marketsDocument} />
+      <SectionAnchor id="buy">
+        <AnimatedSection>
+          <ProjectSwapCard slug={document.slug} marketsDocument={marketsDocument} />
+        </AnimatedSection>
       </SectionAnchor>
-      <ProjectTokenomicsSection tokenomicsDocument={tokenomicsDocument} />
-      <ProjectRoadmapSection roadmapDocument={roadmapDocument} />
-      <ProjectEarnSection
-        participationDocument={participationDocument}
-        liquidityBuildingDocument={liquidityBuildingDocument}
-      />
-      <ProjectUtilitiesSection ecosystemDocument={ecosystemDocument} />
-      <ProjectUpdatesPreview updatesDocument={updatesDocument} />
-      <ProjectCommunitySection document={document} ecosystemDocument={ecosystemDocument} />
-      <ProjectTransparencySummary
-        evidencePack={evidencePack}
-        readinessDocument={readinessDocument}
-        machineDocument={machineDocument}
-      />
-      <ProjectMoreSection
-        document={document}
-        developerDocument={developerDocument}
-        governanceDocument={governanceDocument}
-        growthDocument={growthDocument}
-      />
+      <AnimatedSection>
+        <ClientWalletRelationship document={document} evidencePack={evidencePack} />
+      </AnimatedSection>
+      <SectionAnchor id="about">
+        <AnimatedSection>
+          <ProjectAbout document={document} />
+        </AnimatedSection>
+      </SectionAnchor>
+      <SectionAnchor id="community">
+        <AnimatedSection>
+          <ProjectCommunitySection document={document} ecosystemDocument={ecosystemDocument} />
+        </AnimatedSection>
+      </SectionAnchor>
+      <AnimatedSection>
+        <ProjectTokenomicsSection tokenomicsDocument={tokenomicsDocument} />
+      </AnimatedSection>
+      <AnimatedSection>
+        <ProjectRoadmapSection roadmapDocument={roadmapDocument} />
+      </AnimatedSection>
+      <SectionAnchor id="earn">
+        <AnimatedSection>
+          <ProjectEarnSection
+            participationDocument={participationDocument}
+            liquidityBuildingDocument={liquidityBuildingDocument}
+          />
+        </AnimatedSection>
+      </SectionAnchor>
+      <AnimatedSection>
+        <ProjectUpdatesPreview updatesDocument={updatesDocument} />
+      </AnimatedSection>
+      <SectionAnchor id="trust">
+        <AnimatedSection>
+          <ProjectTransparencySummary
+            evidencePack={evidencePack}
+            readinessDocument={readinessDocument}
+            machineDocument={machineDocument}
+          />
+        </AnimatedSection>
+      </SectionAnchor>
+      <SectionAnchor id="more">
+        <AnimatedSection>
+          <ProjectMoreSection
+            document={document}
+            developerDocument={developerDocument}
+            governanceDocument={governanceDocument}
+            growthDocument={growthDocument}
+            ecosystemDocument={ecosystemDocument}
+          />
+        </AnimatedSection>
+      </SectionAnchor>
     </Shell>
   </PageFrame>
 )

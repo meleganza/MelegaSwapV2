@@ -5,11 +5,12 @@ import { CANVAS, CARD_BORDER, GOLD, MUTED } from './theme'
 const NAV_ITEMS = [
   { id: 'overview', label: 'Overview' },
   { id: 'chart', label: 'Chart' },
-  { id: 'swap', label: 'Swap' },
+  { id: 'buy', label: 'Buy' },
+  { id: 'about', label: 'About' },
+  { id: 'community', label: 'Community' },
   { id: 'tokenomics', label: 'Tokenomics' },
   { id: 'roadmap', label: 'Roadmap' },
   { id: 'earn', label: 'Earn' },
-  { id: 'updates', label: 'Updates' },
   { id: 'more', label: 'More' },
 ] as const
 

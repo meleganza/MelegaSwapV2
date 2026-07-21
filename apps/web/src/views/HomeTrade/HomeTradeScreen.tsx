@@ -15,10 +15,11 @@ import GrowInsideMelegaPanel from './GrowInsideMelegaPanel'
 import MarketPulsePanel from './MarketPulsePanel'
 import HomeTradeFooter from './HomeTradeFooter'
 import HomeMachinePanel from './components/HomeMachinePanel'
+import HomeHeroStatement from './HomeHeroStatement'
 import useHomeTradeData from './useHomeTradeData'
 import { buildHomeMachine } from './buildHomeMachine'
 import { getAllProjects } from 'registry/projects/getAllProjects'
-import { homeTradeLayout } from './homeTradeTokens'
+import { homeTradeLayout, homeTypography } from './homeTradeTokens'
 import { premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
 
 const Root = styled.div`
@@ -33,6 +34,7 @@ const Root = styled.div`
   @media (max-width: 767px) {
     /* Shell already applies bottom safe-area pad — avoid double stacking. */
     padding: 0 0 8px;
+    font-size: ${homeTypography.mobileBody.size};
   }
 `
 
@@ -48,31 +50,42 @@ const Content = styled.div`
   min-width: 0;
 
   @media (max-width: 767px) {
-    padding: 12px 12px 24px;
+    padding: 8px 16px 28px;
+    gap: ${homeTradeLayout.mobileSectionGap};
   }
 `
 
-const HeroRow = styled.div`
+const HomeLayout = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${homeTradeLayout.heroGap};
-  margin-top: 0;
+  gap: inherit;
+  min-width: 0;
 
   @media (min-width: 768px) {
     display: grid;
     grid-template-columns: ${homeTradeLayout.swapWidth} 1fr;
-    height: ${homeTradeLayout.heroMaxHeight};
-    max-height: ${homeTradeLayout.heroMaxHeight};
-    align-items: stretch;
+    gap: ${homeTradeLayout.sectionGap} ${homeTradeLayout.columnGap};
+    grid-template-areas:
+      'trending trending'
+      'swap cinematic'
+      'market market'
+      'quick quick'
+      'list list'
+      'grow grow'
+      'earn earn'
+      'activity activity'
+      'footer footer'
+      'machine machine';
   }
 `
 
-const LowerRow = styled.div<{ $hasEarn?: boolean }>`
-  display: grid;
-  gap: ${homeTradeLayout.columnGap};
+const HomeSection = styled.div<{ $area: string; $mobileOrder: number }>`
+  min-width: 0;
+  order: ${({ $mobileOrder }) => $mobileOrder};
 
   @media (min-width: 768px) {
-    grid-template-columns: ${({ $hasEarn }) => ($hasEarn ? '1fr 1fr' : '1fr')};
+    order: unset;
+    grid-area: ${({ $area }) => $area};
   }
 `
 
@@ -82,12 +95,6 @@ export const HomeTradeScreen: React.FC = () => {
       <PageMeta />
       <HomeTradeGlobalStyle />
       <Content>
-        <DataSurfaceErrorBoundary
-          surface="Trending"
-          userReason="Trending market rankings are temporarily unavailable."
-        >
-          <TrendingRibbon />
-        </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary
           surface="Homepage"
           userReason="Homepage market modules are temporarily unavailable."
@@ -126,29 +133,59 @@ const HomeTradeScreenContent: React.FC = () => {
   }, [data.marketCards])
 
   return (
-    <>
-        <HeroRow>
-          <HomeSwapPanel />
-          <DataSurfaceErrorBoundary
-            surface="Live Economy"
-            userReason="Live economy metrics are temporarily unavailable."
-          >
-            <MelegaCinematicPanel
-              pulseRows={pulseRows.length ? pulseRows : undefined}
-              liveEconomy={data.liveEconomyMetrics}
-            />
-          </DataSurfaceErrorBoundary>
-        </HeroRow>
+    <HomeLayout>
+      <HomeSection $area="hero" $mobileOrder={1} data-home-section="hero">
+        <HomeHeroStatement />
+      </HomeSection>
+
+      <HomeSection $area="swap" $mobileOrder={2} data-home-section="swap">
+        <HomeSwapPanel />
+      </HomeSection>
+
+      <HomeSection $area="trending" $mobileOrder={3} data-home-section="trending">
+        <DataSurfaceErrorBoundary
+          surface="Trending"
+          userReason="Trending market rankings are temporarily unavailable."
+        >
+          <TrendingRibbon />
+        </DataSurfaceErrorBoundary>
+      </HomeSection>
+
+      <HomeSection $area="market" $mobileOrder={4} data-home-section="market">
         <HomeMarketOverview cards={data.marketCards} />
+      </HomeSection>
+
+      <HomeSection $area="quick" $mobileOrder={5} data-home-section="quick-actions">
         <HomeQuickActions />
+      </HomeSection>
+
+      <HomeSection $area="cinematic" $mobileOrder={6} data-home-section="cinematic">
+        <DataSurfaceErrorBoundary
+          surface="Live Economy"
+          userReason="Live economy metrics are temporarily unavailable."
+        >
+          <MelegaCinematicPanel pulseRows={pulseRows.length ? pulseRows : undefined} liveEconomy={data.liveEconomyMetrics} />
+        </DataSurfaceErrorBoundary>
+      </HomeSection>
+
+      <HomeSection $area="list" $mobileOrder={7} data-home-section="list-cta">
         <ListProjectCta />
+      </HomeSection>
+
+      <HomeSection $area="grow" $mobileOrder={8} data-home-section="grow">
         <GrowInsideMelegaPanel />
+      </HomeSection>
+
+      <HomeSection $area="earn" $mobileOrder={9} data-home-section="earn">
         <LowerRow $hasEarn={data.showEarn}>
           {data.showEarn && (
             <EarnOpportunities farmRows={data.farmRows} poolRows={data.poolRows} showNote={data.showEarnNote} />
           )}
           <MarketPulsePanel />
         </LowerRow>
+      </HomeSection>
+
+      <HomeSection $area="activity" $mobileOrder={10} data-home-section="activity">
         <DataSurfaceErrorBoundary
           surface="Live Activity"
           userReason="Live protocol activity feed is temporarily unavailable."
@@ -162,10 +199,26 @@ const HomeTradeScreenContent: React.FC = () => {
             emptySecondary={data.activityEmptySecondary}
           />
         </DataSurfaceErrorBoundary>
+      </HomeSection>
+
+      <HomeSection $area="footer" $mobileOrder={11}>
         <HomeTradeFooter />
+      </HomeSection>
+
+      <HomeSection $area="machine" $mobileOrder={12}>
         <HomeMachinePanel machine={machine} />
-    </>
+      </HomeSection>
+    </HomeLayout>
   )
 }
+
+const LowerRow = styled.div<{ $hasEarn?: boolean }>`
+  display: grid;
+  gap: ${homeTradeLayout.columnGap};
+
+  @media (min-width: 768px) {
+    grid-template-columns: ${({ $hasEarn }) => ($hasEarn ? '1fr 1fr' : '1fr')};
+  }
+`
 
 export default HomeTradeScreen

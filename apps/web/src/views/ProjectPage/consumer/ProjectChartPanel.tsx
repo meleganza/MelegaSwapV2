@@ -94,7 +94,7 @@ const ProjectChartPanel: React.FC<Props> = ({ slug, marketsDocument }) => {
           Chart
         </SectionTitle>
         <MutedText>
-          Indexed price chart is unavailable for this project. Charts render only when a supported
+          Indexed price chart is not available yet for this project. Charts render when a supported
           Melega indexer pair is registered.
         </MutedText>
       </Card>
@@ -107,7 +107,7 @@ const ProjectChartPanel: React.FC<Props> = ({ slug, marketsDocument }) => {
         Chart
       </SectionTitle>
       <MutedText>{pairLabel} · Indexed candles only</MutedText>
-      {priceText ? <PriceLine>{priceText}</PriceLine> : <MutedText>Price unavailable</MutedText>}
+      {priceText ? <PriceLine>{priceText}</PriceLine> : <MutedText>Not available yet</MutedText>}
       <Timeframes role="tablist" aria-label="Chart timeframe">
         {TIMEFRAMES.map((tf) => (
           <TfButton

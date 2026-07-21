@@ -51,6 +51,22 @@ export function getSocialResources(document: CanonicalProjectDocument) {
   )
 }
 
+export function getBuySectionTitle(slug: string, symbol: string | null): string {
+  if (slug === 'marco') return 'Buy MARCO'
+  if (symbol) return `Buy ${symbol}`
+  return 'Buy'
+}
+
+export function getBuyCtaLabel(slug: string, symbol: string | null): string {
+  return getBuySectionTitle(slug, symbol)
+}
+
+export function humanProvenanceLabel(provenance: string): string {
+  if (/ON_CHAIN|ONCHAIN/i.test(provenance)) return 'On-chain'
+  if (/PROJECT|DECLARED|ATTESTED/i.test(provenance)) return 'Declared by project'
+  return provenance
+}
+
 export function getPreferredBuyHref(marketsDocument: ProjectMarketsDocument): string | null {
   const preferred = marketsDocument.preferredMarkets[0]
   const preferredBuy =

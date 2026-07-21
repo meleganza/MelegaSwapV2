@@ -14,6 +14,8 @@ export const homeTradeLayout = {
   swapWidth: '470px',
   liveActivityHeight: tradeLayout.recentSwapsHeight,
   activityRowHeight: tradeLayout.swapRowHeight,
+  /** UX002 — airier mobile stack between major blocks. */
+  mobileSectionGap: '36px',
 } as const
 
 /** R760 — mirrors Trade numeric surfaces for institutional parity. */
@@ -23,6 +25,14 @@ export const homeTypography = {
   heroTitle: { size: '38px', weight: 800, lineHeight: '1.05' },
   heroSubtitle: { size: '13px', weight: 500, lineHeight: '1.35' },
   heroSubtitleMaxWidth: studioConstitutionLayout.heroSubtitleMaxWidth,
+  /** UX002 — mobile emotional hero + body rhythm. */
+  mobileHeroTitle: { size: '26px', weight: 700, lineHeight: '1.12' },
+  mobileBody: {
+    fontFamily: "'Inter', sans-serif",
+    size: '17px',
+    weight: 400,
+    lineHeight: '1.45',
+  },
 } as const
 
 /** Legacy tokens for orphaned pre-DS-002 HomeTrade shell modules (not mounted on `/`). */
