@@ -93,9 +93,15 @@ const LiquidityStudioBody: React.FC = () => {
   return (
     <>
       <ScrollTop viewKey={String(viewParam)} />
-      <LiquidityStudioProductHeader mode={activeMode} />
+      {/* DS001.4 — Liquidity Building owns its product header; do not stack Studio product header. */}
+      {activeMode === 'Liquidity Building' ? null : <LiquidityStudioProductHeader mode={activeMode} />}
       {activeMode === 'Liquidity Building' ? (
-        <div data-testid="ls-liquidity-building-surface" data-ls-view="building">
+        <div
+          data-testid="ls-liquidity-building-surface"
+          data-ls-liquidity-building-layout
+          data-ls-view="building"
+          className="ls-liquidity-building-layout"
+        >
           <LiquidityBuildingPanel />
         </div>
       ) : null}

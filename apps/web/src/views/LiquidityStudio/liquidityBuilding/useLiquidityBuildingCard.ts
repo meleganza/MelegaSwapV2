@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
 import { useAccount, useNetwork } from 'wagmi'
 import { ChainId, Currency } from '@pancakeswap/sdk'
 import { useCurrencyBalance } from 'state/wallet/hooks'
@@ -16,14 +17,59 @@ import {
   DECISION_FREQUENCY_OPTIONS,
   EMPTY_PROGRAM_METRICS,
   type LbActivityItem,
-  type LbUxPhase,
   type ManageAction,
   type ProgramMetrics,
   availableManageActions,
 } from './uxCopy'
+import type { LbUxPhase } from './liquidityBuildingStep'
+import { phaseToStep, stepFromQuery, stepToPhase } from './liquidityBuildingStep'
 import { useActivationReadiness } from './useActivationReadiness'
 import { useMelegaPairDetection, type MelegaPairDetection } from './useMelegaPairDetection'
 import { useProgramReadModel } from './useProgramReadModel'
+
+export type LiquiditySeriesPoint = { label: string; value: number; at: string }
+
+export type ProgramSnapshotView = {
+  programAddress: string | null
+  tokenSymbol: string | null
+  pairLabel: string | null
+  lpOwner: string | null
+  lpRecipient: string | null
+  initialBudgetLabel: string | null
+  remainingBudgetLabel: string | null
+  tokensSoldLabel: string | null
+  tokensMatchedLabel: string | null
+  grossQuoteLabel: string | null
+  feePaidLabel: string | null
+  netQuoteLabel: string | null
+  lpMintedLabel: string | null
+  inFlightLabel: string | null
+  availableToAddLabel: string | null
+  lastDecisionLabel: string | null
+  nextDecisionLabel: string | null
+  liquidityBuiltLabel: string | null
+}
+
+const EMPTY_SNAPSHOT: ProgramSnapshotView = {
+  programAddress: null,
+  tokenSymbol: null,
+  pairLabel: null,
+  lpOwner: null,
+  lpRecipient: null,
+  initialBudgetLabel: null,
+  remainingBudgetLabel: null,
+  tokensSoldLabel: null,
+  tokensMatchedLabel: null,
+  grossQuoteLabel: null,
+  feePaidLabel: null,
+  netQuoteLabel: null,
+  lpMintedLabel: null,
+  inFlightLabel: null,
+  availableToAddLabel: null,
+  lastDecisionLabel: null,
+  nextDecisionLabel: null,
+  liquidityBuiltLabel: null,
+}
 
 export type LiquidityBuildingCardState = {
   status: ProgramStatus
@@ -41,6 +87,8 @@ export type LiquidityBuildingCardState = {
   activity: LbActivityItem[]
   programSource: 'ON_CHAIN' | 'UNAVAILABLE'
   programReason: string | null
+  programSnapshot: ProgramSnapshotView
+  liquiditySeries: LiquiditySeriesPoint[]
   manageActions: ManageAction[]
   technicalOpen: boolean
   mutateGate: ReturnType<typeof canSubmitMutatingAction>
@@ -55,17 +103,76 @@ export type LiquidityBuildingCardState = {
   backToEntry: () => void
   backToSetup: () => void
   openReview: () => void
+  openStatus: () => void
   requestDepositAndActivate: () => void
   pause: () => void
   resume: () => void
   stop: () => void
   openManage: () => void
   closeManage: () => void
+  goToPhase: (phase: LbUxPhase) => void
   toggleTechnical: () => void
   reset: () => void
 }
 
+function buildSnapshot(
+  programRead: ReturnType<typeof useProgramReadModel>,
+  draftSymbol: string | null,
+  pairLabel: string | null,
+): ProgramSnapshotView {
+  if (programRead.source !== 'ON_CHAIN') {
+    return {
+      ...EMPTY_SNAPSHOT,
+      tokenSymbol: draftSymbol,
+      pairLabel,
+    }
+  }
+  const s = programRead.snapshot
+  return {
+    programAddress: s.programAddress,
+    tokenSymbol: draftSymbol,
+    pairLabel: s.pair ? pairLabel : pairLabel,
+    lpOwner: s.owner,
+    lpRecipient: s.lpRecipient,
+    initialBudgetLabel: s.view?.totalDepositedBudget != null ? String(s.view.totalDepositedBudget) : null,
+    remainingBudgetLabel: s.metrics.budgetRemainingLabel,
+    tokensSoldLabel: s.tokensSold,
+    tokensMatchedLabel: s.tokensMatched,
+    grossQuoteLabel: s.grossQuoteAcquired,
+    feePaidLabel: s.totalFeePaid,
+    netQuoteLabel: s.view?.totalQuoteAdded != null ? String(s.view.totalQuoteAdded) : null,
+    lpMintedLabel: s.totalLpMinted,
+    inFlightLabel: null,
+    availableToAddLabel: null,
+    lastDecisionLabel: null,
+    nextDecisionLabel: null,
+    liquidityBuiltLabel: s.metrics.liquidityBuiltLabel,
+  }
+}
+
+/** Build chart series only from real completed execution observations. */
+function seriesFromActivity(activity: LbActivityItem[]): LiquiditySeriesPoint[] {
+  const points: LiquiditySeriesPoint[] = []
+  let cumulative = 0
+  for (const item of activity) {
+    if (item.kind !== 'EXECUTION_COMPLETED') continue
+    const raw = item.liquidityAdded ?? item.quoteAcquired
+    if (raw == null) continue
+    const n = Number(String(raw).replace(/[^0-9.]/g, ''))
+    if (!Number.isFinite(n) || n <= 0) continue
+    cumulative += n
+    const at = item.at ?? new Date().toISOString()
+    points.push({
+      at,
+      value: cumulative,
+      label: new Date(at).toLocaleDateString(),
+    })
+  }
+  return points
+}
+
 export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
+  const router = useRouter()
   const { address } = useAccount()
   const { chain } = useNetwork()
   const [status, setStatus] = useState<ProgramStatus>('NOT_ACTIVE')
@@ -73,6 +180,8 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   const [draft, setDraft] = useState<SetupDraft>(EMPTY_SETUP_DRAFT)
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null)
   const [technicalOpen, setTechnicalOpen] = useState(false)
+  const applyingUrl = useRef(false)
+  const urlReady = useRef(false)
 
   const readiness = useActivationReadiness()
   const pairDetection = useMelegaPairDetection(selectedCurrency)
@@ -85,6 +194,36 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   const walletConnected = Boolean(address)
   const correctChain = chain?.id === ChainId.BSC
   const activationPending = !readiness.gates.activationAuthorized
+
+  /** Hydrate phase from durable query step (refresh / back / forward). */
+  useEffect(() => {
+    if (!router.isReady) return
+    const q = stepFromQuery(router.query.step) ?? 'intro'
+    let next = stepToPhase(q)
+    if ((next === 'active' || next === 'manage') && programRead.source !== 'ON_CHAIN') {
+      next = 'entry'
+    }
+    applyingUrl.current = true
+    setPhase(next)
+    urlReady.current = true
+    // programRead.source intentionally omitted — avoid clobbering in-progress setup navigation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, router.query.step])
+
+  /** Persist phase into query string for browser history. */
+  useEffect(() => {
+    if (!router.isReady || !urlReady.current) return
+    if (applyingUrl.current) {
+      applyingUrl.current = false
+      return
+    }
+    const step = phaseToStep(phase)
+    const nextQuery: Record<string, string> = { view: 'building' }
+    if (step !== 'intro') nextQuery.step = step
+    const currentStep = stepFromQuery(router.query.step) ?? 'intro'
+    if (currentStep === step && router.query.view === 'building') return
+    router.replace({ pathname: '/liquidity-studio', query: nextQuery }, undefined, { shallow: true })
+  }, [phase, router])
 
   /** When on-chain program exists, surface active/manage phases from live lifecycle. */
   useEffect(() => {
@@ -111,15 +250,25 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
 
   const draftReady = setupDraftReadyForReview(draft)
 
-  /** On-chain status wins when program is live; else local UX navigation status. */
   const effectiveStatus: ProgramStatus = programRead.snapshot.status ?? status
   const manageActions = availableManageActions(effectiveStatus)
   const decisionFrequencyLabel =
-    DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? 'Every 5 minutes'
+    DECISION_FREQUENCY_OPTIONS.find((o) => o.seconds === draft.epochSeconds)?.label ?? '5 minutes'
 
   const metrics: ProgramMetrics =
     programRead.source === 'ON_CHAIN' ? programRead.snapshot.metrics : EMPTY_PROGRAM_METRICS
   const activity: LbActivityItem[] = programRead.source === 'ON_CHAIN' ? programRead.activity : []
+  const liquiditySeries = useMemo(() => seriesFromActivity(activity), [activity])
+
+  const pairLabel =
+    pairDetection.available && draft.tokenSymbol
+      ? `${draft.tokenSymbol}/${pairDetection.quoteSymbol}`
+      : null
+
+  const programSnapshot = useMemo(
+    () => buildSnapshot(programRead, draft.tokenSymbol, pairLabel),
+    [programRead, draft.tokenSymbol, pairLabel],
+  )
 
   const walletBalanceLabel = useMemo(() => {
     if (!selectedCurrency || !walletConnected || !balance) return null
@@ -132,6 +281,10 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     setDraft(EMPTY_SETUP_DRAFT)
     setSelectedCurrency(null)
     setTechnicalOpen(false)
+  }, [])
+
+  const goToPhase = useCallback((next: LbUxPhase) => {
+    setPhase(next)
   }, [])
 
   return {
@@ -150,6 +303,8 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     activity,
     programSource: programRead.source,
     programReason: programRead.reason,
+    programSnapshot,
+    liquiditySeries,
     manageActions,
     technicalOpen,
     mutateGate,
@@ -182,8 +337,13 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
       if (!draftReady) return
       setPhase('review')
     },
+    openStatus: () => setPhase('status'),
     requestDepositAndActivate: () => {
-      if (!mutateGate.ok) return
+      // Fail-closed — never fabricate ACTIVE without real authorization + on-chain program.
+      if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') {
+        setPhase('status')
+        return
+      }
       setStatus((s) => {
         let next = transitionProgramStatus(s, 'REQUEST_APPROVAL')
         next = transitionProgramStatus(next, 'APPROVAL_CONFIRMED')
@@ -194,21 +354,22 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
       setPhase('active')
     },
     pause: () => {
-      if (!mutateGate.ok) return
+      if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') return
       setStatus((s) => transitionProgramStatus(s, 'PAUSE'))
     },
     resume: () => {
-      if (!mutateGate.ok) return
+      if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') return
       setStatus((s) => transitionProgramStatus(s, 'RESUME'))
     },
     stop: () => {
-      if (!mutateGate.ok) return
+      if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') return
       setStatus((s) => transitionProgramStatus(s, 'STOP'))
       setPhase('active')
     },
     openManage: () => setPhase('manage'),
     closeManage: () =>
-      setPhase(['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED'].includes(effectiveStatus) ? 'active' : 'entry'),
+      setPhase(['ACTIVE', 'PAUSED', 'BUDGET_DEPLETED', 'STOPPED', 'SAFETY_PAUSED'].includes(effectiveStatus) ? 'active' : 'entry'),
+    goToPhase,
     toggleTechnical: () => setTechnicalOpen((v) => !v),
     reset,
   }

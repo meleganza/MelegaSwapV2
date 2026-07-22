@@ -76,13 +76,14 @@ export const LB_UX = {
 } as const
 
 export const DECISION_FREQUENCY_OPTIONS = [
-  { label: 'Every 5 minutes', seconds: 300 as const },
-  { label: 'Every 15 minutes', seconds: 900 as const },
-  { label: 'Every 30 minutes', seconds: 1800 as const },
-  { label: 'Every hour', seconds: 3600 as const },
+  { label: '5 minutes', seconds: 300 as const },
+  { label: '15 minutes', seconds: 900 as const },
+  { label: '30 minutes', seconds: 1800 as const },
+  { label: '1 hour', seconds: 3600 as const },
 ]
 
-export type LbUxPhase = 'entry' | 'setup' | 'review' | 'active' | 'manage'
+export type { LbUxPhase } from './liquidityBuildingStep'
+export type { LbProductStep } from './liquidityBuildingStep'
 
 export type LbActivityKind = 'EXECUTION_COMPLETED' | 'EXECUTION_SKIPPED' | 'WAITING'
 

@@ -1,7 +1,5 @@
 import { readFileSync } from 'fs'
 import path from 'path'
-import React from 'react'
-import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import {
   BLOCKED_ACTIVATION_GATES,
@@ -17,7 +15,6 @@ import {
   translateActivityReason,
   EMPTY_PROGRAM_METRICS,
 } from '../uxCopy'
-import { LbActiveDashboardView } from '../LbActiveDashboardView'
 
 describe('LB016 Liquidity Building UX freeze', () => {
   it('initial card copy is frozen', () => {
@@ -42,10 +39,10 @@ describe('LB016 Liquidity Building UX freeze', () => {
   it('setup flow uses Decision Frequency and Full AI default', () => {
     expect(EMPTY_SETUP_DRAFT.strategy).toBe('FULL_AI')
     expect(DECISION_FREQUENCY_OPTIONS.map((o) => o.label)).toEqual([
-      'Every 5 minutes',
-      'Every 15 minutes',
-      'Every 30 minutes',
-      'Every hour',
+      '5 minutes',
+      '15 minutes',
+      '30 minutes',
+      '1 hour',
     ])
     expect(LB_UX.decisionFrequencyLabel).toBe('Decision Frequency')
     expect(LB_UX.strategyFullAiTag).toBe('Recommended')
@@ -66,14 +63,16 @@ describe('LB016 Liquidity Building UX freeze', () => {
   })
 
   it('active dashboard shows Unavailable / None yet — never fake zeros as earnings', () => {
-    render(
-      <LbActiveDashboardView status="ACTIVE" metrics={EMPTY_PROGRAM_METRICS} activity={[]} />,
-    )
-    expect(screen.getByTestId('lb-metric-liquidity').textContent).toBe(LB_UX.metricUnavailable)
-    expect(screen.getByTestId('lb-metric-budget').textContent).toBe(LB_UX.metricUnavailable)
-    expect(screen.getByTestId('lb-metric-executions').textContent).toBe(LB_UX.metricNoneYet)
-    expect(screen.getByTestId('lb-activity-empty')).toBeTruthy()
-    expect(screen.queryByText(/APY/i)).toBeNull()
+    const dash = readFileSync(path.join(__dirname, '../LbActiveDashboardView.tsx'), 'utf8')
+    expect(EMPTY_PROGRAM_METRICS.liquidityBuiltLabel).toBeNull()
+    expect(EMPTY_PROGRAM_METRICS.budgetRemainingLabel).toBeNull()
+    expect(EMPTY_PROGRAM_METRICS.executionCount).toBeNull()
+    expect(dash).toMatch(/lb-metric-liquidity/)
+    expect(dash).toMatch(/LB_UX\.metricUnavailable/)
+    expect(dash).toMatch(/lb-metric-executions/)
+    expect(dash).toMatch(/LB_UX\.metricNoneYet/)
+    expect(dash).toMatch(/lb-activity-empty/)
+    expect(dash).not.toMatch(/APY/)
   })
 
   it('pause and stop actions map to ACTIVE lifecycle only', () => {

@@ -105,7 +105,8 @@
     "swr": "^2.0.1",
     "typescript": "^4.9.4",
     "wagmi": "^0.10.10",
-    "zod": "^3.20.2"
+    "zod": "^3.20.2",
+    "lucide-react": "0.468.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "13.1.2",

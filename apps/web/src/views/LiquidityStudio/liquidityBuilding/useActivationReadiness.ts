@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { ActivationGateSummary } from './programStatus'
 import { BLOCKED_ACTIVATION_GATES } from './programStatus'
 import type { ProductActivationStatus } from 'lib/liquidity-building-runtime/activationGateConsumer'
@@ -15,6 +15,9 @@ export type ActivationReadiness = {
   /** LB021 deterministic product status */
   productStatus: ProductActivationStatus
   uiMode: 'available' | 'pending' | 'blocked'
+  /** Re-fetch activation-status + health (real endpoints). */
+  refresh: () => Promise<void>
+  refreshing: boolean
 }
 
 type ActivationStatusPayload = {
@@ -71,65 +74,68 @@ function mergeGates(
   }
 }
 
+const FAIL_CLOSED: Omit<ActivationReadiness, 'refresh' | 'refreshing'> = {
+  contracts: 'Pending',
+  runtime: 'Pending',
+  activation: 'Pending',
+  gates: { ...BLOCKED_ACTIVATION_GATES },
+  healthStatus: null,
+  productStatus: 'PENDING_EXTERNAL_ACTIVATION',
+  uiMode: 'pending',
+}
+
 /**
  * Live readiness for Liquidity Building.
  * Consumes LB021 activation-status (gate consumer) + health — fail-closed.
  * Never exposes KMS/Treasury/BC003S labels.
  */
 export function useActivationReadiness(): ActivationReadiness {
-  const [state, setState] = useState<ActivationReadiness>({
-    contracts: 'Pending',
-    runtime: 'Pending',
-    activation: 'Pending',
-    gates: { ...BLOCKED_ACTIVATION_GATES },
-    healthStatus: null,
-    productStatus: 'PENDING_EXTERNAL_ACTIVATION',
-    uiMode: 'pending',
-  })
+  const [state, setState] = useState<Omit<ActivationReadiness, 'refresh' | 'refreshing'>>(FAIL_CLOSED)
+  const [refreshing, setRefreshing] = useState(false)
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      const [statusRes, healthRes] = await Promise.all([
+        fetch('/api/liquidity-building/activation-status', { cache: 'no-store' }),
+        fetch('/api/liquidity-building/health', { cache: 'no-store' }),
+      ])
+      const statusJson = (await statusRes.json()) as ActivationStatusPayload
+      const healthJson = (await healthRes.json()) as HealthPayload
+
+      const gates = mergeGates(statusJson, healthJson)
+      const productStatus = statusJson.productStatus ?? 'PENDING_EXTERNAL_ACTIVATION'
+      const uiMode = statusJson.uiMode ?? 'pending'
+
+      setState({
+        contracts: gates.contractsDeployed ? 'Ready' : 'Pending',
+        runtime: healthJson.status === 'READY' ? 'Ready' : 'Pending',
+        activation: gates.activationAuthorized ? 'Ready' : 'Pending',
+        gates,
+        healthStatus: healthJson.status ?? null,
+        productStatus,
+        uiMode,
+      })
+    } catch {
+      setState({
+        ...FAIL_CLOSED,
+        gates: { ...BLOCKED_ACTIVATION_GATES, blockers: ['RUNTIME_HEALTH_UNAVAILABLE'] },
+      })
+    } finally {
+      setRefreshing(false)
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      try {
-        const [statusRes, healthRes] = await Promise.all([
-          fetch('/api/liquidity-building/activation-status', { cache: 'no-store' }),
-          fetch('/api/liquidity-building/health', { cache: 'no-store' }),
-        ])
-        const statusJson = (await statusRes.json()) as ActivationStatusPayload
-        const healthJson = (await healthRes.json()) as HealthPayload
-        if (cancelled) return
-
-        const gates = mergeGates(statusJson, healthJson)
-        const productStatus = statusJson.productStatus ?? 'PENDING_EXTERNAL_ACTIVATION'
-        const uiMode = statusJson.uiMode ?? 'pending'
-
-        setState({
-          contracts: gates.contractsDeployed ? 'Ready' : 'Pending',
-          runtime: healthJson.status === 'READY' ? 'Ready' : 'Pending',
-          activation: gates.activationAuthorized ? 'Ready' : 'Pending',
-          gates,
-          healthStatus: healthJson.status ?? null,
-          productStatus,
-          uiMode,
-        })
-      } catch {
-        if (!cancelled) {
-          setState({
-            contracts: 'Pending',
-            runtime: 'Pending',
-            activation: 'Pending',
-            gates: { ...BLOCKED_ACTIVATION_GATES, blockers: ['RUNTIME_HEALTH_UNAVAILABLE'] },
-            healthStatus: null,
-            productStatus: 'PENDING_EXTERNAL_ACTIVATION',
-            uiMode: 'pending',
-          })
-        }
-      }
+      await refresh()
+      if (cancelled) return
     })()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [refresh])
 
-  return state
+  return { ...state, refresh, refreshing }
 }

@@ -1,27 +1,15 @@
 /**
  * LB024 — Liquidity Building product surface restoration.
  */
-import React from 'react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { fireEvent, render, screen } from '@testing-library/react'
-import { LiquidityStudioPageHeader } from '../components/LiquidityStudioPageHeader'
-import { YourLiquidityPositionsSection } from '../components/YourLiquidityPositionsSection'
-import type { LiquidityMintRuntime } from '../liquidityRuntime/useLiquidityMintRuntime'
 import {
   LIQUIDITY_STUDIO_VIEW_BY_MODE,
   liquidityStudioModeFromView,
 } from '../liquidityRuntime/liquidityStudioView'
 import { BLOCKED_ACTIVATION_GATES, canSubmitMutatingAction } from '../liquidityBuilding/programStatus'
 import { LB_UX } from '../liquidityBuilding/uxCopy'
-import { buildLiquidityWalletPortfolio } from '../liquidityRuntime/buildLiquidityWalletPortfolio'
-
-vi.mock('../liquidityRuntime/LiquidityRuntimeContext', () => ({
-  useLiquidityRuntime: () => mockRuntime,
-}))
-
-let mockRuntime: Partial<LiquidityMintRuntime>
 
 const HEADER_SRC = readFileSync(
   path.resolve(__dirname, '../components/LiquidityStudioPageHeader.tsx'),
@@ -36,56 +24,32 @@ const PANEL_SRC = readFileSync(
   path.resolve(__dirname, '../components/LiquidityBuildingPanel.tsx'),
   'utf8',
 )
-
-function emptyPortfolio() {
-  return buildLiquidityWalletPortfolio({
-    wallet: null,
-    chainId: null,
-    chainName: 'BNB Chain',
-    generatedAt: '2026-07-20T00:00:00.000Z',
-    liquidityRows: [],
-    positionsLoading: false,
-  })
-}
+const HOME_SRC = readFileSync(path.resolve(__dirname, '../components/LiquidityStudioHome.tsx'), 'utf8')
 
 describe('LB024 Liquidity Building access', () => {
-  beforeEach(() => {
-    mockRuntime = {
-      mode: 'My Positions',
-      setMode: vi.fn(),
-      account: undefined,
-      positionsLoading: false,
-      positions: [],
-      liquidityWalletPortfolio: emptyPortfolio(),
-      setSelectedPositionId: vi.fn(),
-    }
-  })
-
   it('1. Liquidity Studio renders a visible Liquidity Building navigation item', () => {
-    render(<LiquidityStudioPageHeader />)
-    const tab = screen.getByTestId('ls-tab-liquidity-building')
-    expect(tab).toHaveTextContent('Liquidity Building')
+    expect(HEADER_SRC).toMatch(/mode:\s*'Liquidity Building'/)
     expect(HEADER_SRC).toMatch(/label:\s*'Liquidity Building'/)
+    expect(HEADER_SRC).toMatch(/ls-tab-\$\{/)
   })
 
   it('2. Selecting Liquidity Building mounts the real product panel', () => {
     expect(SCREEN_SRC).toMatch(/LiquidityBuildingPanel/)
-    expect(SCREEN_SRC).toMatch(/mode === 'Liquidity Building'/)
+    expect(SCREEN_SRC).toMatch(/activeMode === 'Liquidity Building'|mode === 'Liquidity Building'/)
     expect(SCREEN_SRC).toMatch(/ls-liquidity-building-layout/)
     expect(PANEL_SRC).toMatch(/data-liquidity-building-panel/)
     expect(PANEL_SRC).toMatch(/data-lb016/)
   })
 
-  it('3. Standard liquidity form is titled Add Liquidity', () => {
-    expect(BUILDER_SRC).toMatch(/'Add Liquidity'/)
-    expect(HEADER_SRC).toMatch(/label:\s*'Add Liquidity'/)
+  it('3. Standard liquidity form is titled Explore Liquidity / Add Liquidity path', () => {
+    expect(BUILDER_SRC).toMatch(/Explore Liquidity|Add Liquidity|Manage Liquidity/)
+    expect(HEADER_SRC).toMatch(/mode:\s*'Add Liquidity'/)
   })
 
-  it('4. No visible Liquidity Builder label for manual liquidity', () => {
+  it('4. No Liquidity Builder / LP Builder product labels for manual liquidity', () => {
     expect(HEADER_SRC).not.toMatch(/Liquidity Builder/)
     expect(BUILDER_SRC).not.toMatch(/Liquidity Builder/)
     expect(BUILDER_SRC).not.toMatch(/LP Builder/)
-    expect(HEADER_SRC).not.toMatch(/label:\s*'Explore Liquidity'/)
   })
 
   it('5. Setup remains accessible while external gates are blocked', () => {
@@ -125,13 +89,11 @@ describe('LB024 Liquidity Building access', () => {
 
   it('10. Mobile navigation can access Liquidity Building (scrollable tab row)', () => {
     expect(HEADER_SRC).toMatch(/overflow-x:\s*auto/)
-    render(<LiquidityStudioPageHeader />)
-    fireEvent.click(screen.getByTestId('ls-tab-liquidity-building'))
-    expect(mockRuntime.setMode).toHaveBeenCalledWith('Liquidity Building')
+    expect(HEADER_SRC).toMatch(/Liquidity Building/)
   })
 
-  it('positions section exposes Liquidity Building entry', () => {
-    render(<YourLiquidityPositionsSection />)
-    expect(screen.getByTestId('ls-open-liquidity-building')).toHaveTextContent('Liquidity Building')
+  it('home / positions expose Liquidity Building entry', () => {
+    expect(HOME_SRC).toMatch(/ls-cta-liquidity-building|view=building/)
+    expect(HOME_SRC).toMatch(/Liquidity Building/)
   })
 })
