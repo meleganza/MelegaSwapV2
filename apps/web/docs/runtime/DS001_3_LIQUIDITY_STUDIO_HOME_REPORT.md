@@ -117,6 +117,9 @@ Note: heavy wallet Vitest suites that import `hooks/useContract` still fail unde
 
 ## 13. Commit and Push
 
-(filled after push)
+- **Branch:** `mission-ds001-3-liquidity-studio-home`
+- **Commit:** `35c2441e`
+- **Push:** `origin/mission-ds001-3-liquidity-studio-home` (success)
+- **Live/preview URL:** not available from this environment (Vercel deploy follows merge)
 
 STOP AFTER DS001.3 — no LB setup/dashboard redesign (DS001.4).
