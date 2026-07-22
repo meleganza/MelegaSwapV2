@@ -7,51 +7,49 @@ import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import {
   MelegaBrandLockup,
-  MelegaSidebar,
-  MelegaMarcoCard,
-  MelegaAppHeader,
-  MELEGA_SIDEBAR_WIDTH,
+  MelegaGlobalHeader,
   MELEGA_APP_HEADER_HEIGHT,
-  MelegaSocialIcons,
   MelegaBottomNavigation,
   colors,
-  spacing,
+  ds001Colors,
+  ds001Layout,
 } from 'design-system/melega'
-import { shellNavigation, shellBottomNavItems } from './config/navigation'
+import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
-import MelegaLanguageControl from './MelegaLanguageControl'
-import SidebarExpandableSection from './SidebarExpandableSection'
-import useAppShellData from './hooks/useAppShellData'
-import GlobalSearch from './components/GlobalSearch'
 
 const DesktopMain = styled.main`
   margin-left: 0;
   padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(68px + env(safe-area-inset-bottom, 0px));
-  background: #0a0a0a;
+  background: ${ds001Colors.background};
   min-height: 100dvh;
   min-height: 100vh;
   box-sizing: border-box;
   overflow-x: hidden;
 
-  @media (min-width: 768px) {
-    margin-left: ${MELEGA_SIDEBAR_WIDTH};
-    padding: 80px 24px 24px;
-    max-width: none;
+  @media (min-width: 1024px) {
+    margin-left: 0;
+    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${ds001Layout.pagePaddingTopBelowHeader})
+      ${ds001Layout.pagePaddingX} ${ds001Layout.pagePaddingBottom};
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    padding-left: 24px;
+    padding-right: 24px;
   }
 `
 
 const Root = styled.div`
   min-height: 100vh;
-  background: #0a0a0a;
+  background: ${ds001Colors.background};
   color: ${colors.textPrimary};
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Sora', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
   width: 100%;
 `
 
 const Content = styled.div`
-  max-width: 1180px;
+  max-width: ${ds001Layout.contentMaxWidth};
   margin: 0 auto;
   width: 100%;
   min-width: 0;
@@ -69,12 +67,12 @@ const MobileHeader = styled.div`
   right: 0;
   height: calc(48px + env(safe-area-inset-top, 0px));
   padding: env(safe-area-inset-top, 0px) 10px 0;
-  background: ${colors.canvas};
+  background: ${ds001Colors.background};
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 95;
   box-sizing: border-box;
 
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     display: none;
   }
 `
@@ -90,24 +88,14 @@ export interface MelegaAppShellProps {
   children: React.ReactNode
 }
 
+/**
+ * DS001.2 — Shared Melega DEX shell.
+ * Desktop: 72px global header, no permanent left sidebar.
+ * Mobile (<1024): compact mobile header + bottom navigation.
+ */
 const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
   const { address } = useAccount()
-  const { marcoPriceLabel } = useAppShellData()
-
-  const navigation = useMemo(
-    () =>
-      shellNavigation.map((section) => (
-        <SidebarExpandableSection
-          key={section.label}
-          label={section.label}
-          items={section.items}
-          visibleCount={section.visibleCount}
-          pathname={pathname}
-        />
-      )),
-    [pathname],
-  )
 
   const bottomItems = useMemo(
     () =>
@@ -123,32 +111,11 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
   const activeBottomId = shellBottomNavItems.find((item) => item.match(pathname))?.id
 
   return (
-    <Root data-melega-app-shell>
+    <Root data-melega-app-shell data-melega-shell-no-sidebar>
       <AppShellUIKitNeutralizer />
 
-      <MelegaSidebar
-        brand={<MelegaBrandLockup size="desktop" />}
-        navigation={navigation}
-        footer={<MelegaMarcoCard priceLabel={marcoPriceLabel} />}
-      />
-
-      <MelegaAppHeader
-        left={<GlobalSearch />}
-        right={
-          <>
-            <MelegaSocialIcons />
-            <MelegaLanguageControl />
-            <div className="melega-shell-network">
-              <NetworkSwitcher />
-            </div>
-            {address ? (
-              <UserMenu />
-            ) : (
-              <ConnectWalletButton className="melega-shell-connect">Connect Wallet</ConnectWalletButton>
-            )}
-          </>
-        }
-      />
+      {/* Desktop permanent sidebar removed (DS001.2). Navigation lives in MelegaGlobalHeader. */}
+      <MelegaGlobalHeader />
 
       <MobileHeader data-melega-mobile-header>
         <MelegaBrandLockup size="mobile" iconOnly />
@@ -166,7 +133,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
         )}
       </MobileHeader>
 
-      <DesktopMain>
+      <DesktopMain data-melega-shell-main>
         <Content>{children}</Content>
       </DesktopMain>
 

@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import BigNumber from 'bignumber.js'
 import { useAccount } from 'wagmi'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
@@ -183,17 +184,39 @@ function filterFarms(cards: FarmPreviewCard[], filter: FarmFilterChip): FarmPrev
 export function useFarmsStakingRuntime(): FarmsStakingRuntime {
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
-  const [filter, setFilter] = useState<FarmFilterChip>('My Farms')
-  const [portfolioViewMode, setPortfolioViewModeState] = useState<FarmsPortfolioViewMode>('MY_FARMS')
+  const router = useRouter()
+  const initialFarmView = typeof router.query.view === 'string' ? router.query.view : undefined
+  const [filter, setFilter] = useState<FarmFilterChip>(
+    initialFarmView === 'explore' ? 'All' : 'My Farms',
+  )
+  const [portfolioViewMode, setPortfolioViewModeState] = useState<FarmsPortfolioViewMode>(
+    initialFarmView === 'explore' ? 'ALL' : 'MY_FARMS',
+  )
   const [modalRequest, setModalRequest] = useState<{
     farm: FarmPreviewCard
     action: Exclude<FarmsModalAction, null>
   } | null>(null)
 
-  const setPortfolioViewMode = useCallback((mode: FarmsPortfolioViewMode) => {
-    setPortfolioViewModeState(mode)
-    setFilter(mode === 'MY_FARMS' ? 'My Farms' : 'All')
-  }, [])
+  useEffect(() => {
+    const view = typeof router.query.view === 'string' ? router.query.view : undefined
+    if (view === 'explore') {
+      setPortfolioViewModeState('ALL')
+      setFilter('All')
+    } else if (view === 'my') {
+      setPortfolioViewModeState('MY_FARMS')
+      setFilter('My Farms')
+    }
+  }, [router.query.view])
+
+  const setPortfolioViewMode = useCallback(
+    (mode: FarmsPortfolioViewMode) => {
+      setPortfolioViewModeState(mode)
+      setFilter(mode === 'MY_FARMS' ? 'My Farms' : 'All')
+      const nextQuery = { ...router.query, view: mode === 'MY_FARMS' ? 'my' : 'explore' }
+      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
+    },
+    [router],
+  )
 
   const setFilterSynced = useCallback((next: FarmFilterChip) => {
     setFilter(next)

@@ -4,7 +4,7 @@ import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
 import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import LiquidityStudioGlobalStyle from './LiquidityStudioGlobalStyle'
-import { LiquidityRuntimeProvider } from './liquidityRuntime/LiquidityRuntimeContext'
+import { LiquidityRuntimeProvider, useLiquidityRuntime } from './liquidityRuntime/LiquidityRuntimeContext'
 import LiquidityStudioPageHeader from './components/LiquidityStudioPageHeader'
 import YourLiquidityPositionsSection from './components/YourLiquidityPositionsSection'
 import LiquidityBuilderPanel from './components/LiquidityBuilderPanel'
@@ -183,6 +183,77 @@ const AreaPools = styled.div`
   }
 `
 
+const BuildingDiscovery = styled.section`
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111111;
+  color: ${liquidityStudioColors.secondary};
+  font-size: 14px;
+  line-height: 1.5;
+
+  h2 {
+    margin: 0 0 8px;
+    color: ${liquidityStudioColors.text};
+    font-size: 20px;
+    font-weight: 700;
+  }
+`
+
+/** Thin discovery surface for `?view=building` — full LB content redesign is out of DS001.2 scope. */
+const LiquidityBuildingDiscoveryPanel: React.FC = () => (
+  <BuildingDiscovery data-testid="ls-liquidity-building-discovery" data-ls-view="building">
+    <h2>Liquidity Building</h2>
+    <p>
+      Liquidity Building discovery is available at this certified destination. Activation and execution remain
+      governed by Liquidity Building V1 readiness — content redesign is deferred.
+    </p>
+  </BuildingDiscovery>
+)
+
+const LiquidityStudioBody: React.FC = () => {
+  const { mode } = useLiquidityRuntime()
+  if (mode === 'Liquidity Building') {
+    return (
+      <>
+        <LiquidityStudioPageHeader />
+        <LiquidityBuildingDiscoveryPanel />
+      </>
+    )
+  }
+  return (
+    <>
+      <LiquidityStudioPageHeader />
+      <YourLiquidityPositionsSection />
+      <LayoutGrid data-ls-explore-grid="true">
+        <AreaBuilder>
+          <LiquidityBuilderPanel />
+        </AreaBuilder>
+        <AreaPreview>
+          <PositionPreviewPanel />
+        </AreaPreview>
+        <AreaRight>
+          <AreaMarket>
+            <MarketIntelligencePanel />
+          </AreaMarket>
+          <AreaAdvisor>
+            <AILiquidityAdvisorPanel />
+          </AreaAdvisor>
+        </AreaRight>
+        <AreaActivity>
+          <LiquidityActivityTable />
+        </AreaActivity>
+        <AreaTopPools>
+          <TopPoolsPanel />
+        </AreaTopPools>
+        <AreaLpInfo>
+          <LiquidityLpInfoPanel />
+        </AreaLpInfo>
+      </LayoutGrid>
+    </>
+  )
+}
+
 export const LiquidityStudioScreen: React.FC = () => (
   <Root data-liquidity-studio-screen="true" data-r200-premium="true" data-ls-wallet-first="true">
     <PageMeta />
@@ -190,33 +261,7 @@ export const LiquidityStudioScreen: React.FC = () => (
     <TrendingRibbon />
     <LiquidityRuntimeProvider>
       <Content>
-        <LiquidityStudioPageHeader />
-        <YourLiquidityPositionsSection />
-        <LayoutGrid data-ls-explore-grid="true">
-          <AreaBuilder>
-            <LiquidityBuilderPanel />
-          </AreaBuilder>
-          <AreaPreview>
-            <PositionPreviewPanel />
-          </AreaPreview>
-          <AreaRight>
-            <AreaMarket>
-              <MarketIntelligencePanel />
-            </AreaMarket>
-            <AreaAdvisor>
-              <AILiquidityAdvisorPanel />
-            </AreaAdvisor>
-          </AreaRight>
-          <AreaActivity>
-            <LiquidityActivityTable />
-          </AreaActivity>
-          <AreaTopPools>
-            <TopPoolsPanel />
-          </AreaTopPools>
-          <AreaLpInfo>
-            <LiquidityLpInfoPanel />
-          </AreaLpInfo>
-        </LayoutGrid>
+        <LiquidityStudioBody />
       </Content>
     </LiquidityRuntimeProvider>
   </Root>

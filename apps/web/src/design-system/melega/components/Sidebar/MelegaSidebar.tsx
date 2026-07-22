@@ -2,11 +2,18 @@ import React from 'react'
 import styled from 'styled-components'
 import { colors } from '../../tokens'
 
-const ASIDE_WIDTH = '228px'
+/** Historical width — DS001.2 shell no longer reserves this offset (always 0). */
+const ASIDE_WIDTH = '0px'
+const LEGACY_ASIDE_WIDTH = '228px'
+void LEGACY_ASIDE_WIDTH
 const SIDEBAR_BG = '#050505'
 
+/**
+ * DS001.2 — permanent desktop sidebar retired.
+ * Component retained for design-system catalogue / tests; never mounted in MelegaAppShell.
+ */
 const Aside = styled.aside`
-  display: none;
+  display: none !important;
   position: fixed;
   left: 0;
   top: 0;
@@ -19,11 +26,7 @@ const Aside = styled.aside`
   box-sizing: border-box;
   flex-direction: column;
   box-shadow: none;
-
-  @media (min-width: 768px) {
-    display: flex;
-    overflow: hidden;
-  }
+  pointer-events: none;
 `
 
 const BrandRow = styled.div`

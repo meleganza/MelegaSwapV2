@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
 import { useActiveChainId } from 'hooks/useActiveChainId'
@@ -227,31 +228,57 @@ function filterByTab(cards: PoolPreviewCard[], tab: PoolTab, account?: string): 
 export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const { address: account } = useAccount()
   const { chainId } = useActiveChainId()
+  const router = useRouter()
   const currentBlock = useCurrentBlock()
+  const initialPoolView = typeof router.query.view === 'string' ? router.query.view : undefined
   const [filter, setFilter] = useState<PoolFilterChip>('All')
-  const [portfolioViewMode, setPortfolioViewModeState] = useState<PoolsPortfolioViewMode>('MY_POOLS')
+  const [portfolioViewMode, setPortfolioViewModeState] = useState<PoolsPortfolioViewMode>(
+    initialPoolView === 'explore' ? 'ALL' : 'MY_POOLS',
+  )
   const [viewMode, setViewMode] = useState<PoolsViewMode>('grid')
-  const [poolTab, setPoolTab] = useState<PoolTab>('positions')
+  const [poolTab, setPoolTab] = useState<PoolTab>(initialPoolView === 'explore' ? 'all' : 'positions')
   const [sortMode, setSortMode] = useState<PoolsSortMode>('apr')
   const [modalRequest, setModalRequest] = useState<{
     pool: PoolPreviewCard
     action: Exclude<PoolsModalAction, null>
   } | null>(null)
 
-  const setPortfolioViewMode = useCallback((mode: PoolsPortfolioViewMode) => {
-    setPortfolioViewModeState(mode)
-    if (mode === 'MY_POOLS') {
-      setPoolTab('positions')
-    } else {
+  useEffect(() => {
+    const view = typeof router.query.view === 'string' ? router.query.view : undefined
+    if (view === 'explore') {
+      setPortfolioViewModeState('ALL')
       setPoolTab('all')
       setFilter('All')
+    } else if (view === 'positions') {
+      setPortfolioViewModeState('MY_POOLS')
+      setPoolTab('positions')
     }
-  }, [])
+  }, [router.query.view])
 
-  const setPoolTabSynced = useCallback((tab: PoolTab) => {
-    setPoolTab(tab)
-    setPortfolioViewModeState(tab === 'positions' ? 'MY_POOLS' : 'ALL')
-  }, [])
+  const setPortfolioViewMode = useCallback(
+    (mode: PoolsPortfolioViewMode) => {
+      setPortfolioViewModeState(mode)
+      if (mode === 'MY_POOLS') {
+        setPoolTab('positions')
+      } else {
+        setPoolTab('all')
+        setFilter('All')
+      }
+      const nextQuery = { ...router.query, view: mode === 'MY_POOLS' ? 'positions' : 'explore' }
+      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
+    },
+    [router],
+  )
+
+  const setPoolTabSynced = useCallback(
+    (tab: PoolTab) => {
+      setPoolTab(tab)
+      setPortfolioViewModeState(tab === 'positions' ? 'MY_POOLS' : 'ALL')
+      const nextQuery = { ...router.query, view: tab === 'positions' ? 'positions' : 'explore' }
+      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
+    },
+    [router],
+  )
 
   usePoolsPageFetch()
   const initialBlock = useInitialBlock()

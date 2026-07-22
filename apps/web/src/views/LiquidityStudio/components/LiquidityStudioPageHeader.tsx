@@ -43,9 +43,13 @@ const Tab = styled.button<{ $active?: boolean }>`
   }
 `
 
-const TABS: { mode: 'My Positions' | 'Add Liquidity' | 'Remove Liquidity' | 'Simulation'; label: string }[] = [
+const TABS: {
+  mode: 'My Positions' | 'Add Liquidity' | 'Remove Liquidity' | 'Simulation' | 'Liquidity Building'
+  label: string
+}[] = [
   { mode: 'My Positions', label: 'My Positions' },
   { mode: 'Add Liquidity', label: 'Explore Liquidity' },
+  { mode: 'Liquidity Building', label: 'Liquidity Building' },
   { mode: 'Remove Liquidity', label: 'Remove Liquidity' },
   { mode: 'Simulation', label: 'Simulation' },
 ]

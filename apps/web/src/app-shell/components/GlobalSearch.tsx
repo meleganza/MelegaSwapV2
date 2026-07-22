@@ -11,10 +11,15 @@ import {
 
 const Root = styled.div`
   position: relative;
-  width: 500px;
+  width: clamp(190px, 18vw, 300px);
   max-width: 100%;
+  flex-shrink: 1;
 
-  @media (max-width: 767px) {
+  @media (max-width: 1279px) {
+    width: clamp(180px, 16vw, 210px);
+  }
+
+  @media (max-width: 1023px) {
     width: 100%;
   }
 `
@@ -156,7 +161,7 @@ const GlobalSearch: React.FC = () => {
   }
 
   return (
-    <Root ref={rootRef} data-global-search-root>
+    <Root ref={rootRef} data-global-search-root data-melega-global-search>
       <MelegaSearchBar
         placeholder="Search tokens, farms, projects..."
         value={query}

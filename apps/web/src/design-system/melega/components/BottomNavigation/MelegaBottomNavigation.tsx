@@ -34,7 +34,8 @@ const Nav = styled.nav<{
   z-index: 200;
   box-shadow: none;
 
-  @media (min-width: 768px) {
+  /* DS001.2 — desktop global header from 1024px; keep bottom nav for tablet/mobile. */
+  @media (min-width: 1024px) {
     display: none;
   }
 

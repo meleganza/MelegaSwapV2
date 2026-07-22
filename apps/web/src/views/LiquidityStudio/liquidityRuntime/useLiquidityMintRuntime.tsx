@@ -49,7 +49,29 @@ import { buildLiquidityCanonicalOwnership } from 'lib/liquidity-runtime/canonica
 import { routeLiquidityInstruction } from 'lib/routing-layer/facade'
 import { LP_SUBMIT_DEFERRAL } from 'lib/liquidity-runtime/lpSubmitDeferral'
 
-export type LiquidityStudioMode = 'Add Liquidity' | 'Remove Liquidity' | 'My Positions' | 'Simulation'
+export type LiquidityStudioMode =
+  | 'Add Liquidity'
+  | 'Remove Liquidity'
+  | 'My Positions'
+  | 'Simulation'
+  /** Discovery destination for `/liquidity-studio?view=building` — content redesign deferred (DS001.3+). */
+  | 'Liquidity Building'
+
+const LIQUIDITY_VIEW_TO_MODE: Record<string, LiquidityStudioMode> = {
+  add: 'Add Liquidity',
+  building: 'Liquidity Building',
+  positions: 'My Positions',
+  remove: 'Remove Liquidity',
+  simulation: 'Simulation',
+}
+
+const LIQUIDITY_MODE_TO_VIEW: Partial<Record<LiquidityStudioMode, string>> = {
+  'Add Liquidity': 'add',
+  'Liquidity Building': 'building',
+  'My Positions': 'positions',
+  'Remove Liquidity': 'remove',
+  Simulation: 'simulation',
+}
 
 export type LiquidityRuntimePhase =
   | 'idle'
@@ -149,10 +171,20 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const routerContract = useRouterContract()
   const deadline = useTransactionDeadline()
 
-  const [mode, setModeState] = useState<LiquidityStudioMode>('My Positions')
+  const initialView = typeof router.query.view === 'string' ? router.query.view : undefined
+  const [mode, setModeState] = useState<LiquidityStudioMode>(
+    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'My Positions',
+  )
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
   const [selectedPositionId, setSelectedPositionId] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    const view = typeof router.query.view === 'string' ? router.query.view : undefined
+    if (!view) return
+    const next = LIQUIDITY_VIEW_TO_MODE[view]
+    if (next) setModeState(next)
+  }, [router.query.view])
 
   const defaultB = useMemo(() => {
     if (!chainId) return undefined
@@ -178,8 +210,13 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     (next: LiquidityStudioMode) => {
       setModeState(next)
       if (next === 'Remove Liquidity') onBurnInput('50')
+      const view = LIQUIDITY_MODE_TO_VIEW[next]
+      const nextQuery = { ...router.query }
+      if (view) nextQuery.view = view
+      else delete nextQuery.view
+      void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
     },
-    [onBurnInput],
+    [onBurnInput, router],
   )
 
   const mintInfo = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)

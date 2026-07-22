@@ -65,8 +65,11 @@ describe('DS001.1 foundation tokens', () => {
     expect(ds001Icons.strokeWidth).toBe(1.75)
   })
 
-  it('stores header geometry for DS001.2 without implying shell migration', () => {
+  it('stores DS001.2 header geometry tokens', () => {
     expect(ds001Layout.headerHeight).toBe('72px')
+    expect(ds001Layout.headerZIndex).toBe(1000)
+    expect(ds001Layout.headerLogoBlockWidth).toBe('180px')
+    expect(ds001Layout.headerLogoSize).toBe('36px')
     expect(ds001Layout.contentMaxWidth).toBe('1380px')
     expect(ds001Layout.pagePaddingTopBelowHeader).toBe('32px')
     expect(ds001Tokens.mission).toBe('DS001.1')
