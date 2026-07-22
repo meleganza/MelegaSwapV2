@@ -28,8 +28,13 @@ type ActivationStatusPayload = {
   contractsDeployed?: boolean
   validatorResult?: string | null
   blockers?: string[]
+  executionBlockers?: string[]
+  accountingBlockers?: string[]
+  warnings?: string[]
   uiMode?: 'available' | 'pending' | 'blocked'
   allRequiredGatesReady?: boolean
+  executionCriticalGatesReady?: boolean
+  accountingDegraded?: boolean
 }
 
 type HealthPayload = {
@@ -37,10 +42,13 @@ type HealthPayload = {
   blockers?: string[]
   reasons?: string[]
   ready?: boolean
+  accountingDegraded?: boolean
   components?: {
     programDiscovery?: string
   }
 }
+
+const ACCOUNTING_NOISE = /LB-G04C|LB-G12|TREASURY_ACCOUNTING_DEGRADED|TREASURY_INGESTION|TREASURY_UNAVAILABLE/i
 
 function mergeGates(
   status: ActivationStatusPayload | null,
@@ -48,11 +56,13 @@ function mergeGates(
 ): ActivationGateSummary {
   if (!status && !health) return { ...BLOCKED_ACTIVATION_GATES }
 
+  // Execution blockers only — never mix accounting degradation into activation blockers.
   const blockers = [
-    ...(status?.blockers ?? []),
+    ...(status?.executionBlockers ?? status?.blockers ?? []),
     ...(health?.blockers ?? []),
-    ...(health?.reasons ?? []),
-  ].map(String)
+  ]
+    .map(String)
+    .filter((b) => !ACCOUNTING_NOISE.test(b))
 
   const frontendBound =
     isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFactory) &&
@@ -64,12 +74,16 @@ function mergeGates(
   // Never elevate authorization beyond consumer + fail-closed defaults.
   const activationAuthorized = status?.activationAuthorized === true && deploymentInputsValid
 
+  const runtimeReady =
+    (health?.status === 'READY' || health?.status === 'DEGRADED') &&
+    (health?.ready === true || health?.status === 'DEGRADED' || health?.status === 'READY')
+
   return {
     activationAuthorized,
     mainnetCycleAuthorized: status?.mainnetCycleAuthorized === true && activationAuthorized,
     contractsDeployed,
     deploymentInputsValid,
-    runtimeReady: health?.status === 'READY' && health?.ready === true,
+    runtimeReady: Boolean(runtimeReady && health?.status !== 'BLOCKED' && health?.status !== 'FAILED'),
     blockers: blockers.length ? blockers : [...BLOCKED_ACTIVATION_GATES.blockers],
   }
 }
@@ -107,9 +121,13 @@ export function useActivationReadiness(): ActivationReadiness {
       const productStatus = statusJson.productStatus ?? 'PENDING_EXTERNAL_ACTIVATION'
       const uiMode = statusJson.uiMode ?? 'pending'
 
+      const runtimeOk =
+        healthJson.status === 'READY' ||
+        (healthJson.status === 'DEGRADED' && statusJson.executionCriticalGatesReady !== false)
+
       setState({
         contracts: gates.contractsDeployed ? 'Ready' : 'Pending',
-        runtime: healthJson.status === 'READY' ? 'Ready' : 'Pending',
+        runtime: runtimeOk ? 'Ready' : 'Pending',
         activation: gates.activationAuthorized ? 'Ready' : 'Pending',
         gates,
         healthStatus: healthJson.status ?? null,

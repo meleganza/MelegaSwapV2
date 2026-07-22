@@ -235,9 +235,22 @@ export type RuntimeHealthReport = {
     quotePolicy: RuntimeHealthStatus
     programDiscovery: RuntimeHealthStatus
   }
+  /** Execution-critical blockers only (Treasury ingestion excluded). */
   blockers: string[]
+  /** Async accounting / reconciliation gaps — do not block execution. */
+  accountingBlockers?: string[]
+  warnings?: string[]
+  accountingDegraded?: boolean
+  accountingReadiness?: boolean
   generatedAt: string
 }
+
+/**
+ * ABI / wire field name remains treasuryAuthorizationReference (frozen).
+ * Semantics: provenance reference only — not a live Treasury Runtime authorization ticket.
+ * Prefer treasuryProvenanceReference in new application comments and helpers.
+ */
+export type TreasuryProvenanceReference = string
 
 export type DecisionEngineInput = {
   eligibleNetBuyFlow: BaseUnitString

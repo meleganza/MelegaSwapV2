@@ -34,7 +34,8 @@ describe('LB012 production dependency closure artifact', () => {
       '../../../../../../deployments/liquidity-building/chain-56/activation-gate-final.v1.json',
     )
     const doc = JSON.parse(readFileSync(p, 'utf8'))
-    expect(doc.mission).toBe('LB012')
+    // Artifact mission field advances with later LB planning missions; authorization stays false.
+    expect(['LB012', 'LB013']).toContain(doc.mission)
     expect(doc.activationAuthorized).toBe(false)
     expect(doc.mainnetCycleExecuted).toBe(false)
   })

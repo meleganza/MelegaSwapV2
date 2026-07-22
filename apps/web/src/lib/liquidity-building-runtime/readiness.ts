@@ -8,7 +8,10 @@ import path from 'path'
 export type ReadinessDeps = {
   kmsReady?: boolean
   relayReady?: boolean
+  /** @deprecated Prefer feeReceiverValid + treasuryIngestionReady */
   treasuryReady?: boolean
+  feeReceiverValid?: boolean
+  treasuryIngestionReady?: boolean
   quotePolicyReady?: boolean
   contractsDeployed?: boolean
   observerOk?: boolean
@@ -21,24 +24,25 @@ function componentStatus(ok: boolean, blockedFallback: RuntimeHealthStatus = 'BL
 }
 
 /**
- * Production health must never report READY while mandatory LB008/LB009 deps are missing.
+ * Production health must never report READY while mandatory execution-critical deps are missing.
+ * Treasury ingestion unavailable → DEGRADED / accounting warning, not BLOCKED.
  */
 export function assessLiquidityBuildingRuntimeHealth(deps: ReadinessDeps = {}): RuntimeHealthReport {
   const pk = assertNoPrivateKeySignerConfig()
   const kmsReady = deps.kmsReady === true
   const relayReady = deps.relayReady === true
-  const treasuryReady = deps.treasuryReady === true
+  const feeReceiverValid =
+    deps.feeReceiverValid !== undefined ? deps.feeReceiverValid === true : deps.treasuryReady === true
+  const treasuryIngestionReady =
+    deps.treasuryIngestionReady !== undefined
+      ? deps.treasuryIngestionReady === true
+      : deps.treasuryReady === true
   const quotePolicyReady = deps.quotePolicyReady === true
   const contractsDeployed = deps.contractsDeployed === true
   const observerOk = deps.observerOk !== false
   const finalityOk = deps.finalityEvidenceOk === true
 
-  // Deployment inputs — default blocked unless validator would pass (file readiness BLOCKED)
   let deploymentBlocked = true
-  const inputsPath =
-    deps.deploymentInputsPath ||
-    path.join(process.cwd(), '../../deployments/liquidity-building/chain-56/LiquidityBuildingV1.inputs.json')
-  // try monorepo roots
   const candidates = [
     deps.deploymentInputsPath,
     path.join(process.cwd(), 'deployments/liquidity-building/chain-56/LiquidityBuildingV1.inputs.json'),
@@ -58,10 +62,11 @@ export function assessLiquidityBuildingRuntimeHealth(deps: ReadinessDeps = {}): 
     }
   }
 
-  const { status, blockers } = healthFromDependencies({
+  const { status, blockers, accountingBlockers, warnings, accountingDegraded } = healthFromDependencies({
     kmsReady,
     relayReady,
-    treasuryReady,
+    feeReceiverValid,
+    treasuryIngestionReady,
     quotePolicyReady: quotePolicyReady && !deploymentBlocked,
     contractsDeployed: contractsDeployed && !deploymentBlocked,
     observerOk,
@@ -72,23 +77,48 @@ export function assessLiquidityBuildingRuntimeHealth(deps: ReadinessDeps = {}): 
   if (!finalityOk) reasons.push('LB-G10:FINALITY_EVIDENCE_INSUFFICIENT')
   if (deploymentBlocked) reasons.push('DEPLOYMENT_INPUTS_BLOCKED')
 
-  const effective: RuntimeHealthStatus =
-    !pk.ok || status === 'FAILED' ? 'FAILED' : status === 'READY' && reasons.length ? 'BLOCKED' : status
+  const executionReasons = reasons.filter(
+    (r) =>
+      !r.includes('LB-G04C') &&
+      !r.includes('LB-G12') &&
+      r !== 'TREASURY_ACCOUNTING_DEGRADED',
+  )
+
+  let effective: RuntimeHealthStatus =
+    !pk.ok || status === 'FAILED' ? 'FAILED' : status === 'READY' && executionReasons.length ? 'BLOCKED' : status
+
+  if (effective === 'READY' && executionReasons.length) effective = 'BLOCKED'
+  if (effective === 'DEGRADED' && executionReasons.length) effective = 'BLOCKED'
+  if (
+    effective !== 'FAILED' &&
+    effective !== 'BLOCKED' &&
+    accountingDegraded &&
+    executionReasons.length === 0 &&
+    status === 'DEGRADED'
+  ) {
+    effective = 'DEGRADED'
+  }
 
   return {
     schemaVersion: LB_HEALTH_SCHEMA,
-    status: effective === 'READY' && reasons.length ? 'BLOCKED' : effective,
-    reasons,
+    status: effective,
+    reasons: [...executionReasons, ...warnings],
     components: {
       observer: componentStatus(observerOk, 'FAILED'),
       finalityLag: componentStatus(finalityOk),
       kmsSigner: componentStatus(kmsReady),
       relay: componentStatus(relayReady),
-      treasuryIngestion: componentStatus(treasuryReady),
+      treasuryIngestion: componentStatus(treasuryIngestionReady, 'DEGRADED'),
       quotePolicy: componentStatus(quotePolicyReady && !deploymentBlocked),
       programDiscovery: componentStatus(contractsDeployed && !deploymentBlocked),
     },
-    blockers: reasons.filter((r) => r.startsWith('LB-') || r.includes('DEPLOYMENT') || r.includes('CONTRACT')),
+    blockers: executionReasons.filter(
+      (r) => r.startsWith('LB-') || r.includes('DEPLOYMENT') || r.includes('CONTRACT') || r.includes('FORBIDDEN'),
+    ),
+    accountingBlockers,
+    warnings,
+    accountingDegraded,
+    accountingReadiness: !accountingDegraded,
     generatedAt: new Date().toISOString(),
   }
 }

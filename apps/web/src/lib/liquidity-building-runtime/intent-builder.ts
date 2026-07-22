@@ -22,9 +22,30 @@ export type IntentBuildInput = {
   executionNonce: string
   maximumProjectTokenIn: string
   maximumGasPrice: string
+  /**
+   * ABI wire name (frozen): treasuryAuthorizationReference.
+   * Semantics: treasuryProvenanceReference — non-zero bytes32 provenance only,
+   * not a live Treasury Runtime authorization ticket.
+   */
   treasuryAuthorizationReference: string
+  /** Preferred semantic alias; used when treasuryAuthorizationReference omitted. */
+  treasuryProvenanceReference?: string
   /** Must be FINALIZED before signing path is allowed */
   requireFinalized?: boolean
+}
+
+const ZERO_BYTES32 = `0x${'00'.repeat(32)}`
+
+function resolveTreasuryProvenanceReference(input: IntentBuildInput): { ok: true; value: string } | { ok: false; reason: string } {
+  const raw = input.treasuryAuthorizationReference || input.treasuryProvenanceReference || ''
+  if (!/^0x[0-9a-fA-F]{64}$/.test(raw)) {
+    return { ok: false, reason: 'TREASURY_PROVENANCE_REFERENCE_INVALID_FORMAT' }
+  }
+  if (raw.toLowerCase() === ZERO_BYTES32) {
+    return { ok: false, reason: 'TREASURY_PROVENANCE_REFERENCE_ZERO' }
+  }
+  // Provenance only — never treated as a live execution ticket / authorization service call.
+  return { ok: true, value: raw }
 }
 
 export type IntentBuildResult =
@@ -50,6 +71,11 @@ export function buildExecutionIntent(input: IntentBuildInput): IntentBuildResult
   }
   if (input.decision.grossQuoteTarget === '0') {
     return { ok: false, reason: 'ZERO_GROSS_TARGET' }
+  }
+
+  const provenance = resolveTreasuryProvenanceReference(input)
+  if (!provenance.ok) {
+    return { ok: false, reason: provenance.reason }
   }
 
   const intent: ExecutionIntentV1Wire = {
@@ -86,7 +112,7 @@ export function buildExecutionIntent(input: IntentBuildInput): IntentBuildResult
     maximumGasPrice: input.maximumGasPrice,
     observationRoot: input.observation.observationRoot,
     excludedFlowCommitment: input.observation.excludedFlowCommitment,
-    treasuryAuthorizationReference: input.treasuryAuthorizationReference,
+    treasuryAuthorizationReference: provenance.value,
   }
 
   // Ensure strategyEngineVersion is valid bytes32 hex

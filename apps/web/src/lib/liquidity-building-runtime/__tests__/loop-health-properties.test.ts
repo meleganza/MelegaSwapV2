@@ -88,8 +88,10 @@ describe('LB009 properties / loop / health', () => {
     expect(h.status).not.toBe('READY')
     expect(h.status).toBe('BLOCKED')
     expect(h.components.kmsSigner).toBe('BLOCKED')
-    expect(h.components.treasuryIngestion).toBe('BLOCKED')
+    // LB-ACT-003: ingestion is accounting-async → DEGRADED component, not execution BLOCKED.
+    expect(h.components.treasuryIngestion).toBe('DEGRADED')
     expect(h.components.relay).toBe('BLOCKED')
+    expect(h.accountingDegraded).toBe(true)
   })
 
   it('economic success requires full evidence chain', () => {
@@ -170,5 +172,7 @@ describe('LB009 properties / loop / health', () => {
     expect(result.state).toBe('SIGNING_UNAVAILABLE')
     expect(result.artifact?.signingStatus).toBe('DISABLED')
     expect(result.health.status).toBe('BLOCKED')
+    expect(result.blockedReasons.join(' ')).not.toMatch(/TREASURY_UNAVAILABLE/)
+    expect(result.warnings).toBeDefined()
   })
 })
