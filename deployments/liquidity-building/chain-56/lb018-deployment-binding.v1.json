@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "melega.liquidity-building.lb018-deployment-binding.v1",
+  "mission": "LB018",
+  "assessedAt": "2026-07-20T01:40:00Z",
+  "baselineCommit": "35fa35df321f5090f000b0c70c1faccf38a3b34f",
+  "verdict": "LB018_IMPLEMENTED_WITH_BLOCKERS",
+  "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
+  "activationAuthorized": false,
+  "mainnetCycleAuthorized": false,
+  "mainnetDeployExecuted": false,
+  "manualOverrideForbidden": true,
+  "contracts": {
+    "LiquidityBuildingFactoryV1": { "status": "NOT_DEPLOYED", "address": null },
+    "LiquidityBuildingProgramV1": { "status": "NOT_DEPLOYED", "address": null },
+    "LiquidityBuildingExecutionAuthorizerV1": { "status": "NOT_DEPLOYED", "address": null },
+    "LiquidityBuildingTreasuryFeeSinkV1": { "status": "NOT_DEPLOYED", "address": null },
+    "MelegaFactory": {
+      "status": "BOUND",
+      "address": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C"
+    },
+    "MelegaRouter": {
+      "status": "BOUND",
+      "address": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3"
+    }
+  },
+  "frontendBinding": {
+    "file": "apps/web/src/views/LiquidityStudio/liquidityBuilding/addresses.ts",
+    "LB_DEPLOYED_ADDRESSES": {
+      "lbFactory": null,
+      "lbAuthorizer": null,
+      "lbFeeSink": null,
+      "programAddress": null
+    },
+    "resolveProductionBinding": "rejects while DEPLOYMENT_INPUTS_BLOCKED"
+  },
+  "forkValidation": {
+    "smoke": "LB006/LB007 mainnetFork tests",
+    "fullE2EWithProductionDeps": "NOT_RUN_DEPENDENCIES_MISSING",
+    "productionEconomicCycle": "NOT_EXECUTED"
+  },
+  "blockers": [
+    "LB-G03B",
+    "LB-G11",
+    "LB-G03C",
+    "LB-G04B",
+    "LB-G04C",
+    "LB-G12",
+    "LB-G08",
+    "LB-G10"
+  ],
+  "stopReason": "Validator DEPLOYMENT_INPUTS_BLOCKED — no deploy, no placeholder addresses, no gate override"
+}

@@ -172,8 +172,9 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
   const deadline = useTransactionDeadline()
 
   const initialView = typeof router.query.view === 'string' ? router.query.view : undefined
+  /** DS001.3 — default landing is Studio home (no view). Mode only applies to deep-linked products. */
   const [mode, setModeState] = useState<LiquidityStudioMode>(
-    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'My Positions',
+    (initialView && LIQUIDITY_VIEW_TO_MODE[initialView]) || 'Add Liquidity',
   )
   const [currencyIdA, setCurrencyIdA] = useState<string | undefined>(undefined)
   const [currencyIdB, setCurrencyIdB] = useState<string | undefined>(undefined)
