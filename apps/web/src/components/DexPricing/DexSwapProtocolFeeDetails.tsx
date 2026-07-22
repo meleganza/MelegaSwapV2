@@ -24,7 +24,7 @@ export function DexSwapProtocolFeeDetails({ trade }: Props) {
         })}
       </Text>
       {ctx.buyMarcoApplied ? (
-        <Text fontSize="14px" color="#D4AF37">
+        <Text fontSize="14px" color="#F4C430">
           - {t('MARCO buy incentive — reduced protocol fee applied')}
         </Text>
       ) : null}

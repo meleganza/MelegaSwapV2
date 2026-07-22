@@ -68,7 +68,7 @@ const DonutCard = styled(SidebarCard)`
 
 const DonutTitle = styled.h3`
   margin: 0 0 10px;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 20px;
   line-height: 1.2;
   font-weight: 700;

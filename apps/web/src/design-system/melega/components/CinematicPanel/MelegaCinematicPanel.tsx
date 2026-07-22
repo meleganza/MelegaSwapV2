@@ -144,7 +144,7 @@ const Planet = styled.div`
   width: 68%;
   height: 55%;
   background:
-    radial-gradient(ellipse 82% 66% at 50% 50%, rgba(244, 197, 66, 1) 0%, rgba(212, 175, 55, 0.52) 28%, rgba(0, 0, 0, 0) 52%);
+    radial-gradient(ellipse 82% 66% at 50% 50%, rgba(244, 197, 66, 1) 0%, rgba(244, 196, 48, 0.52) 28%, rgba(0, 0, 0, 0) 52%);
   filter: blur(80px);
   opacity: 0.57;
   animation: ${melegaPlanetGlow} 8s ease-in-out infinite;

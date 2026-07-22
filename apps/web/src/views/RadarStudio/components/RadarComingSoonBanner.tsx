@@ -4,8 +4,8 @@ import { DEX_INTELLIGENCE_DISPOSITION } from 'lib/data-truth/dexIntelligenceDisp
 import { RADAR_FONT_BODY, radarStudioColors } from '../radarStudioTokens'
 
 const Banner = styled.div`
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: rgba(244, 196, 48, 0.08);
   border-radius: 14px;
   padding: 14px 16px;
   font-family: ${RADAR_FONT_BODY};

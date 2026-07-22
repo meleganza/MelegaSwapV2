@@ -9,6 +9,7 @@ export {
   PREMIUM_FONT_DISPLAY,
   premiumStudioColors,
   premiumStudioLayout,
+  premiumStudioShadows,
   premiumStudioType,
 } from './premiumStudio'
 export {
@@ -26,14 +27,39 @@ export {
   isStudioMetricUnavailable,
 } from './studioDisplay'
 
+export {
+  ds001Tokens,
+  ds001Colors,
+  ds001GoldSoft,
+  ds001Typography,
+  ds001FontFamily,
+  ds001FontSize,
+  ds001FontWeight,
+  ds001TypeRoles,
+  ds001Spacing,
+  DS001_SPACING_SCALE,
+  assertDs001Spacing,
+  snapToDs001Spacing,
+  ds001Radius,
+  ds001Shadows,
+  ds001Layout,
+  ds001Buttons,
+  ds001Icons,
+} from './ds001'
+
 import { colors } from './colors'
 import { typography } from './typography'
 import { spacing } from './spacing'
 import { radius } from './radius'
 import { animation } from './animation'
+import { ds001Tokens } from './ds001'
 
-/** Unified token export — single source of truth for Melega DEX UI. */
+/**
+ * Unified token export — DS001.1 is the single source of truth.
+ * Legacy `colors` / `spacing` / `radius` / `typography` keys are compatibility aliases.
+ */
 export const melegaTokens = {
+  foundation: ds001Tokens,
   colors,
   typography,
   spacing,

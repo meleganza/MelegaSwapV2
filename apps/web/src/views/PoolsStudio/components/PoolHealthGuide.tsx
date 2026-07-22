@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const Title = styled.h3`
   margin: 0 0 6px;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 18px;
   line-height: 1.2;
   font-weight: 700;

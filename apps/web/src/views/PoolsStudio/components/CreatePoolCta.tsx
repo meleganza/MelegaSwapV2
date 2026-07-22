@@ -28,7 +28,7 @@ const Card = styled.section<{ $expanded?: boolean }>`
   box-sizing: border-box;
   background: #141414;
   border: 1px solid
-    ${({ $expanded }) => ($expanded ? 'rgba(212, 175, 55, 0.45)' : 'rgba(212, 175, 55, 0.32)')};
+    ${({ $expanded }) => ($expanded ? 'rgba(244, 196, 48, 0.45)' : 'rgba(244, 196, 48, 0.32)')};
   border-radius: 22px;
   padding: ${({ $expanded }) => ($expanded ? '32px 36px 34px' : '28px 32px')};
   display: flex;
@@ -52,7 +52,7 @@ const Card = styled.section<{ $expanded?: boolean }>`
 
 const CompactTitle = styled.h2`
   margin: 0;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 30px;
   line-height: 36px;
   font-weight: 700;
@@ -91,7 +91,7 @@ const CompactCreateBtn = styled.button`
   height: 46px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f0d050 0%, #d4af37 55%, #c9a227 100%);
+  background: linear-gradient(180deg, #f0d050 0%, #F4C430 55%, #c9a227 100%);
   color: #050505;
   font-family: Inter, sans-serif;
   font-size: 14px;
@@ -156,8 +156,8 @@ const CloseBtn = styled.button`
     color 150ms ease;
 
   &:hover {
-    border-color: #d4af37;
-    color: #d4af37;
+    border-color: #F4C430;
+    color: #F4C430;
   }
 `
 
@@ -171,7 +171,7 @@ const Header = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 32px;
   line-height: 38px;
   font-weight: 700;
@@ -281,9 +281,9 @@ const StepCircle = styled.div<{ $active?: boolean; $completed?: boolean }>`
         `
       : $active
         ? css`
-            background: rgba(212, 175, 55, 0.14);
-            border: 1px solid #d4af37;
-            color: #d4af37;
+            background: rgba(244, 196, 48, 0.14);
+            border: 1px solid #F4C430;
+            color: #F4C430;
           `
         : css`
             background: #1d1d1d;
@@ -298,7 +298,7 @@ const StepLabel = styled.span<{ $active?: boolean; $completed?: boolean }>`
   line-height: 14px;
   font-weight: 600;
   white-space: nowrap;
-  color: ${({ $completed, $active }) => ($completed ? '#18f089' : $active ? '#d4af37' : '#707070')};
+  color: ${({ $completed, $active }) => ($completed ? '#18f089' : $active ? '#F4C430' : '#707070')};
   transition: color 180ms ease;
 `
 
@@ -544,7 +544,7 @@ const TokenLogo = styled.span`
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d4af37 0%, #8a7020 100%);
+  background: linear-gradient(135deg, #F4C430 0%, #8a7020 100%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -721,7 +721,7 @@ const ReviewStepHeader = styled.div`
 
 const ReviewStepTitle = styled.h3`
   margin: 0;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 24px;
   line-height: 30px;
   font-weight: 700;

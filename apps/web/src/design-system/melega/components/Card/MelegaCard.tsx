@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import { colors, typography, spacing, radius } from '../../tokens'
+import { colors, typography, spacing, radius, ds001Colors, ds001Layout, ds001Shadows } from '../../tokens'
 import { media } from '../../theme'
 import { layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
@@ -16,15 +16,15 @@ export interface MelegaCardProps extends MelegaLayoutProps, React.HTMLAttributes
 const sizeStyles: Record<MelegaCardSize, ReturnType<typeof css>> = {
   sm: css`
     padding: ${spacing[3]};
-    min-height: 74px;
+    min-height: 80px;
   `,
   md: css`
-    padding: ${spacing[4]};
-    min-height: 108px;
+    padding: ${ds001Layout.cardPadding};
+    min-height: 112px;
   `,
   lg: css`
-    padding: ${spacing[5]};
-    min-height: 138px;
+    padding: ${spacing[8]};
+    min-height: 128px;
   `,
 }
 
@@ -35,13 +35,16 @@ const StyledCard = styled.div<{
   $margin?: MelegaLayoutProps['margin']
   $radius?: MelegaLayoutProps['radius']
 }>`
-  background: ${colors.surface2};
-  border: 1px solid ${colors.border};
-  border-radius: ${radius.lg};
-  box-shadow: none;
+  background: ${ds001Colors.surface};
+  border: 1px solid ${ds001Colors.border};
+  border-radius: ${radius.card};
+  box-shadow: ${ds001Shadows.default};
   font-family: ${typography.fontFamily.body};
   color: ${colors.textPrimary};
-  transition: border-color 150ms ease, background 150ms ease;
+  transition:
+    border-color ${ds001Layout.cardTransition},
+    background ${ds001Layout.cardTransition},
+    box-shadow ${ds001Layout.cardTransition};
 
   ${({ $size }) => sizeStyles[$size]}
   ${({ $padding, $margin, $radius: r }) => layoutStyles({ padding: $padding, margin: $margin, radius: r })}
@@ -52,13 +55,14 @@ const StyledCard = styled.div<{
       cursor: pointer;
 
       &:hover {
-        border-color: ${colors.borderStrong};
-        background: ${colors.surface3};
+        border-color: ${ds001Colors.cardHoverBorder};
+        background: ${ds001Colors.cardHoverBackground};
+        box-shadow: ${ds001Shadows.hover};
       }
     `}
 
   ${media.mobile} {
-    border-radius: ${radius.xl};
+    border-radius: ${radius.card};
   }
 `
 

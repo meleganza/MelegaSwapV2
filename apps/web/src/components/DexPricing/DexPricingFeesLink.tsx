@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 const StyledLink = styled(Link)`
   font-size: 12px;
-  color: #d4af37;
+  color: #F4C430;
   text-decoration: none;
 
   &:hover {

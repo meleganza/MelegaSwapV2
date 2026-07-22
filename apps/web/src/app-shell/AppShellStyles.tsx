@@ -11,7 +11,7 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
     line-height: 40px !important;
     padding: 0 16px !important;
     border-radius: 12px !important;
-    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
+    background: linear-gradient(180deg, #f4c542 0%, #F4C430 100%) !important;
     color: #050505 !important;
     font-size: 15px !important;
     font-weight: 700 !important;
@@ -77,7 +77,7 @@ export const AppShellUIKitNeutralizer = createGlobalStyle`
 
   [data-melega-app-shell] .melega-shell-settings:hover {
     color: ${colors.textPrimary};
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(244, 196, 48, 0.35);
   }
 
   [data-melega-app-shell] .melega-shell-settings button {

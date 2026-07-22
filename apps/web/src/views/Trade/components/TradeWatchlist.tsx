@@ -48,8 +48,8 @@ const Item = styled(Link)`
   }
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.35);
-    background: rgba(212, 175, 55, 0.04);
+    border-color: rgba(244, 196, 48, 0.35);
+    background: rgba(244, 196, 48, 0.04);
   }
 
   &:active {

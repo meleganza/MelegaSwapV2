@@ -52,7 +52,7 @@ const TitleRow = styled.div`
 
 const PoolName = styled.h2`
   margin: 0;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 36px;
   font-weight: 800;
   color: ${poolsStudioColors.text};

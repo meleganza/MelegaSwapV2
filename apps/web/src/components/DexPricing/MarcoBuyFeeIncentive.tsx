@@ -13,8 +13,8 @@ const Banner = styled.div`
   margin-top: 8px;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: rgba(244, 196, 48, 0.08);
 `
 
 type Props = {
@@ -38,7 +38,7 @@ export function MarcoBuyFeeIncentive({ trade, outputAddress, outputSymbol, compa
 
   return (
     <Banner data-d87-marco-buy-incentive>
-      <Text fontSize={compact ? '12px' : '13px'} color="#D4AF37" bold>
+      <Text fontSize={compact ? '12px' : '13px'} color="#F4C430" bold>
         {getMarcoBuyIncentiveShortCopy()}
       </Text>
       <Text fontSize={compact ? '11px' : '12px'} color="#B8B8B8" mt="4px">

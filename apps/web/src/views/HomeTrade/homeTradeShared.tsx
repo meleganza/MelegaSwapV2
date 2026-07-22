@@ -9,7 +9,7 @@ const Circle = styled.div<{ $size: number }>`
   border-radius: 50%;
   flex-shrink: 0;
   background: linear-gradient(145deg, #1a1508 0%, #0a0a0a 55%, #1f1806 100%);
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  border: 1px solid rgba(244, 196, 48, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;

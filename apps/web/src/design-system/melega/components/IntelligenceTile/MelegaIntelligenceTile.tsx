@@ -27,7 +27,7 @@ const Tile = styled.a`
   transition: border-color 150ms ease, transform 150ms ease;
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.4);
+    border-color: rgba(244, 196, 48, 0.4);
     transform: translateY(-2px);
   }
 
@@ -85,8 +85,8 @@ const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant; $offsetX: number
       width: 100%;
       height: 120%;
       border-radius: 50%;
-      border: 1px solid rgba(212,175,55,0.3);
-      background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(212,175,55,0.1) 10deg 11deg);
+      border: 1px solid rgba(244, 196, 48,0.3);
+      background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(244, 196, 48,0.1) 10deg 11deg);
     }
     &::after {
       content: '';
@@ -96,7 +96,7 @@ const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant; $offsetX: number
       width: 55%;
       height: 55%;
       border-radius: 50%;
-      border: 1px solid rgba(212,175,55,0.2);
+      border: 1px solid rgba(244, 196, 48,0.2);
     }
   `}
 
@@ -110,7 +110,7 @@ const Thumb = styled.div<{ $variant: MelegaIntelligenceVariant; $offsetX: number
       bottom: -40%;
       width: 110%;
       height: 120%;
-      background: radial-gradient(ellipse 80% 70% at 75% 95%, rgba(244,197,66,0.6) 0%, rgba(212,175,55,0.25) 35%, transparent 60%);
+      background: radial-gradient(ellipse 80% 70% at 75% 95%, rgba(244,197,66,0.6) 0%, rgba(244, 196, 48,0.25) 35%, transparent 60%);
     }
   `}
 

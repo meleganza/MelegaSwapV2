@@ -32,15 +32,15 @@ const TfButton = styled.button<{ $active?: boolean }>`
   min-height: 44px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1px solid ${({ $active }) => ($active ? '#d4af37' : '#2a2a2a')};
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.1)' : 'transparent')};
-  color: ${({ $active }) => ($active ? '#d4af37' : '#8f8f8f')};
+  border: 1px solid ${({ $active }) => ($active ? '#F4C430' : '#2a2a2a')};
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.1)' : 'transparent')};
+  color: ${({ $active }) => ($active ? '#F4C430' : '#8f8f8f')};
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid #F4C430;
     outline-offset: 2px;
   }
 `

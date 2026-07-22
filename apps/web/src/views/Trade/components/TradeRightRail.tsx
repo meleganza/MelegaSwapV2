@@ -173,7 +173,7 @@ const OutlineBtn = styled.button`
   transition: border-color 150ms ease, background 150ms ease, transform 120ms ease;
 
   &:hover {
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(244, 196, 48, 0.08);
   }
 
   &:active {

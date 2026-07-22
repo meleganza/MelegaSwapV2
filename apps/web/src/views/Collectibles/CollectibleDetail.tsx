@@ -27,8 +27,8 @@ const Hero = styled.div`
   gap: 28px;
   padding: 24px;
   border-radius: 24px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: linear-gradient(145deg, rgba(212, 175, 55, 0.06) 0%, rgba(255, 255, 255, 0.02) 55%);
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: linear-gradient(145deg, rgba(244, 196, 48, 0.06) 0%, rgba(255, 255, 255, 0.02) 55%);
   overflow: hidden;
 
   @media (max-width: 767px) {
@@ -115,10 +115,10 @@ const ChipRow = styled.div`
 const Chip = styled.span`
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(244, 196, 48, 0.35);
   font-size: 12px;
   font-weight: 600;
-  color: #d4af37;
+  color: #F4C430;
 `
 
 const ToggleBtn = styled.button`
@@ -133,7 +133,7 @@ const ToggleBtn = styled.button`
   cursor: pointer;
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.45);
+    border-color: rgba(244, 196, 48, 0.45);
     color: #fff;
   }
 `

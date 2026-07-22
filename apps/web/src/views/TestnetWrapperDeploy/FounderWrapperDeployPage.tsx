@@ -58,10 +58,10 @@ const cardStyle: React.CSSProperties = {
   maxWidth: 680,
   margin: '0 auto',
   background: 'linear-gradient(145deg, #1a1a00 0%, #0d0d00 100%)',
-  border: '3px solid #d4af37',
+  border: '3px solid #F4C430',
   borderRadius: 12,
   padding: '24px 20px',
-  boxShadow: '0 0 40px rgba(212, 175, 55, 0.25)',
+  boxShadow: '0 0 40px rgba(244, 196, 48, 0.25)',
 }
 
 const rowStyle: React.CSSProperties = {
@@ -73,7 +73,7 @@ const rowStyle: React.CSSProperties = {
 }
 
 const labelStyle: React.CSSProperties = {
-  color: '#d4af37',
+  color: '#F4C430',
   fontSize: 11,
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
@@ -111,7 +111,7 @@ const warnStyle: React.CSSProperties = {
   marginTop: 16,
   padding: 12,
   background: '#3d2800',
-  border: '1px solid #d4af37',
+  border: '1px solid #F4C430',
   borderRadius: 8,
   color: '#ffd966',
   fontSize: 14,
@@ -146,7 +146,7 @@ const btnStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: 10,
   cursor: 'pointer',
-  background: '#d4af37',
+  background: '#F4C430',
   color: '#0a0a0a',
 }
 
@@ -178,7 +178,7 @@ function FounderWrapperDeployShell({ diagnostics, onActionClick, actionLabel, ac
   return (
     <div id="r746b-wrapper-deploy-root" style={rootStyle}>
       <div style={cardStyle}>
-        <h1 style={{ margin: '0 0 8px', fontSize: 28, color: '#d4af37' }}>Wrapper Deploy</h1>
+        <h1 style={{ margin: '0 0 8px', fontSize: 28, color: '#F4C430' }}>Wrapper Deploy</h1>
         <p style={{ margin: '0 0 20px', color: '#ccc', fontSize: 15 }}>
           MelegaSmartRouterWrapper — BNB Testnet (97) founder ceremony
         </p>
@@ -189,7 +189,7 @@ function FounderWrapperDeployShell({ diagnostics, onActionClick, actionLabel, ac
 
         {preview && (
           <div id="r746b-constructor-preview" style={panelStyle}>
-            <div style={{ color: '#d4af37', marginBottom: 8, fontWeight: 700 }}>Constructor Preview</div>
+            <div style={{ color: '#F4C430', marginBottom: 8, fontWeight: 700 }}>Constructor Preview</div>
             <div>
               <strong>underlyingRouter:</strong> {String(preview.underlyingRouter)}
             </div>
@@ -229,7 +229,7 @@ function FounderWrapperDeployShell({ diagnostics, onActionClick, actionLabel, ac
 
         {diagnostics.txHash && (
           <div id="r746b-tx-hash" style={panelStyle}>
-            <div style={{ color: '#d4af37', marginBottom: 8, fontWeight: 700 }}>Deploy Transaction</div>
+            <div style={{ color: '#F4C430', marginBottom: 8, fontWeight: 700 }}>Deploy Transaction</div>
             <div style={monoStyle}>{diagnostics.txHash}</div>
             <a href={txExplorerUrl(diagnostics.txHash)} target="_blank" rel="noreferrer" style={linkStyle}>
               View on BscScan Testnet
@@ -239,7 +239,7 @@ function FounderWrapperDeployShell({ diagnostics, onActionClick, actionLabel, ac
 
         {diagnostics.wrapperAddress && diagnostics.receiptStatus === 'success' && (
           <div id="r746b-wrapper-address" style={panelStyle}>
-            <div style={{ color: '#d4af37', marginBottom: 8, fontWeight: 700 }}>Wrapper Address (confirmed)</div>
+            <div style={{ color: '#F4C430', marginBottom: 8, fontWeight: 700 }}>Wrapper Address (confirmed)</div>
             <div style={monoStyle}>{diagnostics.wrapperAddress}</div>
             <a
               href={addressExplorerUrl(diagnostics.wrapperAddress)}
@@ -267,7 +267,7 @@ function FounderWrapperDeployShell({ diagnostics, onActionClick, actionLabel, ac
 
         {diagnostics.verification && diagnostics.receiptStatus === 'success' && (
           <div id="r746b-verification" style={panelStyle}>
-            <div style={{ color: '#d4af37', marginBottom: 8, fontWeight: 700 }}>
+            <div style={{ color: '#F4C430', marginBottom: 8, fontWeight: 700 }}>
               Immutable Verification {diagnostics.verificationPass === 'YES' ? '✓ PASS' : ''}
             </div>
             {diagnostics.verification}

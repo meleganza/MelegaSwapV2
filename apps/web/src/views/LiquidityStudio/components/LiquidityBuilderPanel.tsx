@@ -112,7 +112,7 @@ const SwapBtn = styled.button`
   width: ${liquidityStudioLayout.swapIconSize};
   height: ${liquidityStudioLayout.swapIconSize};
   border-radius: 50%;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(244, 196, 48, 0.35);
   background: #121212;
   color: ${liquidityStudioColors.goldBright};
   font-size: 14px;

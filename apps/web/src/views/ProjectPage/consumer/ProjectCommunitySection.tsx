@@ -33,7 +33,7 @@ const IconButton = styled.a`
   text-align: center;
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid #F4C430;
     outline-offset: 2px;
   }
 `
@@ -45,8 +45,8 @@ const IconGlyph = styled.span`
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(244, 196, 48, 0.1);
+  border: 1px solid rgba(244, 196, 48, 0.25);
   font-size: 20px;
   line-height: 1;
 `

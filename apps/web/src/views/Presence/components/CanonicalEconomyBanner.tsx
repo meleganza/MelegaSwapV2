@@ -12,9 +12,9 @@ const Banner = styled(Flex)`
   flex-direction: column;
   gap: 8px;
   padding: 16px 20px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(244, 196, 48, 0.35);
   border-radius: 16px;
-  background: rgba(212, 175, 55, 0.06);
+  background: rgba(244, 196, 48, 0.06);
 `
 
 const LiveDot = styled.span`

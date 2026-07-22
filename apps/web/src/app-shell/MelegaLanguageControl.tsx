@@ -26,7 +26,7 @@ const Slot = styled.div`
   }
 
   button:hover {
-    border-color: rgba(212, 175, 55, 0.35) !important;
+    border-color: rgba(244, 196, 48, 0.35) !important;
     color: #ffffff !important;
   }
 

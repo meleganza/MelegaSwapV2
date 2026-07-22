@@ -7,8 +7,11 @@ import {
   PREMIUM_FONT_DISPLAY,
   premiumStudioColors,
   premiumStudioLayout,
+  premiumStudioShadows,
   premiumStudioType,
 } from './premiumStudio'
+import { ds001TypeRoles } from './ds001/typography'
+import { ds001Spacing } from './ds001/spacing'
 
 export const STUDIO_FONT_DISPLAY = PREMIUM_FONT_DISPLAY
 export const STUDIO_FONT_BODY = PREMIUM_FONT_BODY
@@ -27,22 +30,23 @@ export const studioConstitutionLayout = {
   kpiHeight: premiumStudioLayout.kpiHeight,
   btnHeight: premiumStudioLayout.btnHeight,
   btnRadius: premiumStudioLayout.btnRadius,
-  heroMinHeight: '96px',
-  heroTitleSize: '44px',
-  heroTitleSizeMobile: '36px',
-  heroTitleLineHeight: '1.05',
+  heroMinHeight: ds001Spacing[96],
+  heroTitleSize: ds001TypeRoles.h1.size,
+  heroTitleSizeMobile: ds001TypeRoles.h2.size,
+  heroTitleLineHeight: ds001TypeRoles.h1.lineHeight,
   heroSubtitleMaxWidth: '720px',
   heroSubtitleSize: premiumStudioType.pageSubtitle,
-  heroSubtitleLineHeight: '1.5',
-  heroInnerGap: '6px',
-  heroRowGap: '16px',
+  heroSubtitleLineHeight: ds001TypeRoles.body.lineHeight,
+  /** 6px was outside DS001.1 allow-list → 8. */
+  heroInnerGap: ds001Spacing[8],
+  heroRowGap: ds001Spacing[16],
   heroMarginBottom: premiumStudioLayout.sectionGap,
   heroActionsGap: premiumStudioLayout.actionGroupGap,
   badgeHeight: premiumStudioLayout.tagHeight,
   badgeRadius: premiumStudioLayout.tagRadius,
-  cardBorder: '1px solid rgba(255, 255, 255, 0.08)',
-  cardShadow: 'none',
-  cardShadowHover: '0 10px 24px rgba(212, 175, 55, 0.08)',
+  cardBorder: `1px solid ${premiumStudioColors.cardBorder}`,
+  cardShadow: premiumStudioShadows.default,
+  cardShadowHover: premiumStudioShadows.hover,
   cardHoverLift: 'translateY(-2px)',
   mobileBreakpoint: '767px',
   tabletBreakpoint: premiumStudioLayout.stackBreakpoint,

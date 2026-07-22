@@ -98,7 +98,7 @@ export const RdGhostBtn = styled.button`
 `
 
 export const RdIntelBtn = styled(RdGhostBtn)`
-  border-color: rgba(212, 175, 55, 0.45);
+  border-color: rgba(244, 196, 48, 0.45);
 `
 
 export const RdOutlineGoldBtn = styled.button`

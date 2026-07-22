@@ -45,7 +45,7 @@ const ResultButton = styled.button<{ $active?: boolean }>`
   padding: 10px 12px;
   text-align: left;
   cursor: pointer;
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.12)' : 'transparent')};
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.12)' : 'transparent')};
   color: ${colors.textPrimary};
   font-family: ${typography.fontFamily.body};
 
@@ -72,7 +72,7 @@ const CategoryTag = styled.span`
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #d4af37;
+  color: #F4C430;
 `
 
 const EmptyState = styled.div`

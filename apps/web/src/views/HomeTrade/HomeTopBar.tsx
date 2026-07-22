@@ -41,7 +41,7 @@ const Search = styled.div`
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.16);
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.05);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.05);
   }
 `
 
@@ -109,7 +109,7 @@ const WalletBtn = styled(ConnectWalletButton)`
   &:hover {
     filter: brightness(1.05) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 0 16px rgba(212, 175, 55, 0.18) !important;
+    box-shadow: 0 0 16px rgba(244, 196, 48, 0.18) !important;
   }
 `
 

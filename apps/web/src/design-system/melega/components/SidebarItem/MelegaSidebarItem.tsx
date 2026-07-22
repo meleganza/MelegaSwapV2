@@ -31,7 +31,7 @@ const ItemBase = styled.a<{
   font-weight: 500;
   color: ${({ $active, $highlighted }) => ($active || $highlighted ? colors.gold : '#B5B5B5')};
   background: ${({ $active, $highlighted }) =>
-    $active ? 'rgba(212,175,55,0.12)' : $highlighted ? 'rgba(212,175,55,0.08)' : 'transparent'};
+    $active ? 'rgba(244, 196, 48,0.12)' : $highlighted ? 'rgba(244, 196, 48,0.08)' : 'transparent'};
   position: relative;
   cursor: pointer;
   transition:
@@ -51,14 +51,14 @@ const ItemBase = styled.a<{
         bottom: 6px;
         width: 2px;
         border-radius: 2px;
-        background: #d4af37;
+        background: #F4C430;
       }
     `}
 
   &:hover {
-    background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.045)')};
+    background: ${({ $active }) => ($active ? 'rgba(244, 196, 48,0.12)' : 'rgba(255,255,255,0.045)')};
     color: ${({ $active }) => ($active ? colors.gold : colors.textPrimary)};
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(244, 196, 48, 0.35);
   }
 
   ${({ $active }) =>

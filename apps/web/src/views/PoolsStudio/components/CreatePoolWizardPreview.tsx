@@ -41,7 +41,7 @@ const BlockTitle = styled.span`
 `
 
 const AprValue = styled.span<{ $pending?: boolean }>`
-  font-family: ${({ $pending }) => ($pending ? 'Inter, sans-serif' : 'Orbitron, sans-serif')};
+  font-family: ${({ $pending }) => ($pending ? 'Inter, sans-serif' : 'Sora, sans-serif')};
   font-size: ${({ $pending }) => ($pending ? '14px' : '28px')};
   line-height: ${({ $pending }) => ($pending ? '20px' : '32px')};
   font-weight: ${({ $pending }) => ($pending ? 600 : 700)};
@@ -81,7 +81,7 @@ const GraphBar = styled.div<{ $h: number }>`
   min-width: 0;
   height: ${({ $h }) => $h}%;
   border-radius: 3px 3px 0 0;
-  background: linear-gradient(180deg, #d4af37 0%, #8a7020 100%);
+  background: linear-gradient(180deg, #F4C430 0%, #8a7020 100%);
   transition: height 180ms ease;
 `
 
@@ -110,7 +110,7 @@ const Donut = styled.div`
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: conic-gradient(#d4af37 var(--pct), #2a2a2a 0);
+  background: conic-gradient(#F4C430 var(--pct), #2a2a2a 0);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -136,9 +136,9 @@ const StatusPill = styled.span<{ $ok?: boolean }>`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: ${({ $ok }) => ($ok ? '#18f089' : '#d4af37')};
-  background: ${({ $ok }) => ($ok ? 'rgba(24, 240, 137, 0.12)' : 'rgba(212, 175, 55, 0.12)')};
-  border: 1px solid ${({ $ok }) => ($ok ? 'rgba(24, 240, 137, 0.35)' : 'rgba(212, 175, 55, 0.35)')};
+  color: ${({ $ok }) => ($ok ? '#18f089' : '#F4C430')};
+  background: ${({ $ok }) => ($ok ? 'rgba(24, 240, 137, 0.12)' : 'rgba(244, 196, 48, 0.12)')};
+  border: 1px solid ${({ $ok }) => ($ok ? 'rgba(24, 240, 137, 0.35)' : 'rgba(244, 196, 48, 0.35)')};
 `
 
 function parseNum(raw: string): number {

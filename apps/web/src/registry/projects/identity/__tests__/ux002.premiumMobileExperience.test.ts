@@ -75,9 +75,9 @@ describe('UX002 premium mobile consumer IA', () => {
 
   it('theme spacing and motion respect reduced motion', () => {
     const theme = readFileSync(path.join(CONSUMER, 'theme.ts'), 'utf8')
-    expect(theme).toContain('17px')
-    expect(theme).toContain('1.55')
-    expect(theme).toContain('38px')
+    // DS001.1 — body 16px / section gap on allow-list; motion retained from UX002.
+    expect(theme).toMatch(/ds001TypeRoles\.body\.size|BODY_SIZE/)
+    expect(theme).toContain('ds001Spacing')
     expect(theme).toContain('prefers-reduced-motion')
     expect(theme).toContain('fadeInUp')
   })

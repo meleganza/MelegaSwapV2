@@ -121,9 +121,9 @@ const ecoCardStyles = `
   transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 
   &:hover:not(:disabled) {
-    border-color: rgba(212, 175, 55, 0.55);
+    border-color: rgba(244, 196, 48, 0.55);
     transform: translateY(-2px);
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.08);
+    box-shadow: 0 0 24px rgba(244, 196, 48, 0.08);
   }
 
   @media (max-width: 767px) {

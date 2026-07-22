@@ -19,7 +19,7 @@ const Banner = styled.div`
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(212, 175, 55, 0.18) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(244, 196, 48, 0.18) 0%, transparent 55%),
       radial-gradient(ellipse 120% 80% at 50% 120%, rgba(255, 160, 60, 0.08) 0%, transparent 50%),
       linear-gradient(180deg, #000000 0%, #0a0a0a 40%, #111111 100%);
     pointer-events: none;

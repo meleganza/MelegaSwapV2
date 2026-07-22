@@ -25,7 +25,7 @@ const Badge = styled.span<{ $tone: 'success' | 'gold' | 'muted' | 'danger' | 'wa
       $tone === 'success'
         ? '#31d0aa'
         : $tone === 'gold'
-          ? '#d4af37'
+          ? '#F4C430'
           : $tone === 'danger'
             ? '#f87171'
             : $tone === 'warning'

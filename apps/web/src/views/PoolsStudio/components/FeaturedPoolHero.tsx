@@ -15,7 +15,7 @@ const LiveCard = styled.section`
   min-height: 300px;
   max-height: 300px;
   background: #141414;
-  border: 1px solid rgba(212, 175, 55, 0.18);
+  border: 1px solid rgba(244, 196, 48, 0.18);
   border-radius: 18px;
   padding: 30px 34px 28px;
   box-sizing: border-box;
@@ -24,7 +24,7 @@ const LiveCard = styled.section`
 
   &:hover {
     box-shadow:
-      0 0 0 1px rgba(212, 175, 55, 0.35),
+      0 0 0 1px rgba(244, 196, 48, 0.35),
       0 12px 28px rgba(0, 0, 0, 0.28);
   }
 `
@@ -35,7 +35,7 @@ const EmptyCard = styled.section`
   min-height: ${poolsFeaturedHero.height};
   max-height: ${poolsFeaturedHero.height};
   background: #141414;
-  border: 1px solid rgba(212, 175, 55, 0.42);
+  border: 1px solid rgba(244, 196, 48, 0.42);
   border-radius: 22px;
   box-shadow: none;
   padding: 34px 38px;
@@ -80,7 +80,7 @@ const LiveRight = styled.div`
 `
 
 const LiveApr = styled.div`
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: ${poolsFeaturedHero.aprSize};
   font-weight: 800;
   line-height: ${poolsFeaturedHero.aprLineHeight};
@@ -94,7 +94,7 @@ const LiveApr = styled.div`
 const LivePoolName = styled.h2`
   margin: 0 0 ${poolsFeaturedHero.gapNameBadges};
   max-width: 260px;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 28px;
@@ -131,13 +131,13 @@ const LiveBadge = styled.span<{ $variant: 'live' | 'official' | 'partner' | 'com
   border: 1px solid
     ${({ $variant }) => {
       if ($variant === 'live') return '#19f08a'
-      if ($variant === 'official') return '#d4af37'
+      if ($variant === 'official') return '#F4C430'
       if ($variant === 'partner') return '#4da3ff'
       return '#a86cff'
     }};
   color: ${({ $variant }) => {
     if ($variant === 'live') return '#19f08a'
-    if ($variant === 'official') return '#d4af37'
+    if ($variant === 'official') return '#F4C430'
     if ($variant === 'partner') return '#4da3ff'
     return '#a86cff'
   }};
@@ -173,8 +173,8 @@ const KpiBox = styled.div`
 
   &:hover {
     background: #1a1a1a;
-    border-color: rgba(212, 175, 55, 0.35);
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
+    border-color: rgba(244, 196, 48, 0.35);
+    box-shadow: 0 0 18px rgba(244, 196, 48, 0.08);
   }
 `
 
@@ -213,7 +213,7 @@ const LiveStakeBtn = styled.button`
   height: 46px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f6d44a 0%, #d4af37 100%);
+  background: linear-gradient(180deg, #f6d44a 0%, #F4C430 100%);
   color: #080808;
   font-family: Inter, sans-serif;
   font-size: 14px;
@@ -223,7 +223,7 @@ const LiveStakeBtn = styled.button`
   transition: box-shadow 180ms ease-out;
 
   &:hover {
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.32);
+    box-shadow: 0 0 24px rgba(244, 196, 48, 0.32);
   }
 `
 
@@ -231,10 +231,10 @@ const LiveAnalyzeBtn = styled.button`
   width: 156px;
   min-width: 156px;
   height: 46px;
-  border: 1px solid #d4af37;
+  border: 1px solid #F4C430;
   border-radius: 12px;
   background: transparent;
-  color: #d4af37;
+  color: #F4C430;
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 800;
@@ -243,13 +243,13 @@ const LiveAnalyzeBtn = styled.button`
   transition: box-shadow 180ms ease-out;
 
   &:hover {
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.35);
   }
 `
 
 const EmptyTitle = styled.h2`
   margin: 0 0 12px;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 28px;
   line-height: 34px;
   font-weight: 800;
@@ -303,7 +303,7 @@ const EmptyPrimaryBtn = styled(Link)`
   height: 44px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f6d44a 0%, #d4af37 100%);
+  background: linear-gradient(180deg, #f6d44a 0%, #F4C430 100%);
   color: #080808;
   font-family: Inter, sans-serif;
   font-size: 13px;
@@ -325,9 +325,9 @@ const EmptyGhostBtn = styled(Link)`
   min-width: 168px;
   height: 44px;
   border-radius: 12px;
-  border: 1px solid #d4af37;
+  border: 1px solid #F4C430;
   background: transparent;
-  color: #d4af37;
+  color: #F4C430;
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 800;

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import { colors, typography, spacing, radius, animation } from '../../tokens'
+import { colors, typography, spacing, radius, animation, ds001Buttons, ds001Colors } from '../../tokens'
 import { media } from '../../theme'
 import { disabledStyles, focusRing, layoutStyles, loadingStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
@@ -15,52 +15,56 @@ export interface MelegaButtonProps extends MelegaLayoutProps, React.ButtonHTMLAt
   as?: React.ElementType
 }
 
+/** DS001.1 §14 button variants — solid primary, no gradients. */
 const variantStyles: Record<MelegaButtonVariant, ReturnType<typeof css>> = {
   primary: css`
-    background: linear-gradient(180deg, ${colors.goldHover} 0%, ${colors.gold} 100%);
-    color: ${colors.canvas};
-    border: 1px solid ${colors.gold};
+    background: ${ds001Buttons.primary.background};
+    color: ${ds001Buttons.primary.color};
+    border: 1px solid ${ds001Buttons.primary.background};
 
     &:hover:not(:disabled) {
-      filter: brightness(1.08);
-      transform: translateY(-1px);
+      background: ${ds001Buttons.primary.hoverBackground};
+      border-color: ${ds001Buttons.primary.hoverBackground};
+    }
+
+    &:active:not(:disabled) {
+      background: ${ds001Buttons.primary.pressedBackground};
+      border-color: ${ds001Buttons.primary.pressedBackground};
     }
   `,
   secondary: css`
-    background: transparent;
-    color: ${colors.gold};
-    border: 1px solid rgba(212, 175, 55, 0.55);
+    background: ${ds001Buttons.secondary.background};
+    color: ${colors.textPrimary};
+    border: ${ds001Buttons.secondary.border};
 
     &:hover:not(:disabled) {
-      border-color: ${colors.gold};
-      background: ${colors.goldSoft};
+      background: ${ds001Buttons.secondary.hoverBackground};
     }
   `,
   ghost: css`
-    background: transparent;
+    background: ${ds001Buttons.ghost.background};
     color: ${colors.textSecondary};
-    border: 1px solid ${colors.border};
+    border: none;
 
     &:hover:not(:disabled) {
       color: ${colors.textPrimary};
-      border-color: ${colors.borderStrong};
-      background: rgba(255, 255, 255, 0.04);
+      background: ${ds001Buttons.ghost.hoverBackground};
     }
   `,
   danger: css`
     background: rgba(239, 68, 68, 0.12);
-    color: ${colors.red};
+    color: ${ds001Colors.danger};
     border: 1px solid rgba(239, 68, 68, 0.45);
 
     &:hover:not(:disabled) {
       background: rgba(239, 68, 68, 0.2);
-      border-color: ${colors.red};
+      border-color: ${ds001Colors.danger};
     }
   `,
   disabled: css`
-    background: ${colors.surface3};
-    color: ${colors.textMuted};
-    border: 1px solid ${colors.border};
+    background: ${ds001Buttons.primary.disabledBackground};
+    color: ${ds001Buttons.primary.disabledColor};
+    border: 1px solid ${ds001Colors.border};
   `,
 }
 
@@ -80,20 +84,20 @@ const StyledButton = styled.button.withConfig({
   align-items: center;
   justify-content: center;
   gap: ${spacing[2]};
-  min-height: 40px;
+  min-height: ${ds001Buttons.height};
+  height: ${ds001Buttons.height};
   padding: 0 ${spacing[5]};
-  border-radius: ${radius.md};
+  border-radius: ${radius.button};
   font-family: ${typography.fontFamily.body};
-  font-size: ${typography.fontSize.base};
-  font-weight: ${typography.fontWeight.bold};
+  font-size: ${ds001Buttons.fontSize};
+  font-weight: ${ds001Buttons.fontWeight};
   line-height: ${typography.lineHeight.tight};
   white-space: nowrap;
   cursor: pointer;
   transition:
     background ${animation.hover},
     border-color ${animation.hover},
-    color ${animation.hover},
-    transform ${animation.hover};
+    color ${animation.hover};
   box-shadow: none;
 
   ${({ $fullWidth }) => $fullWidth && 'width: 100%;'}
@@ -109,13 +113,9 @@ const StyledButton = styled.button.withConfig({
   ${({ $disabled, $variant }) => ($disabled || $variant === 'disabled') && disabledStyles}
   ${focusRing}
 
-  &:active:not(:disabled) {
-    transform: scale(0.985);
-  }
-
   ${media.mobile} {
-    min-height: 44px;
-    font-size: ${typography.fontSize.lg};
+    min-height: ${ds001Buttons.height};
+    font-size: ${ds001Buttons.fontSize};
   }
 `
 

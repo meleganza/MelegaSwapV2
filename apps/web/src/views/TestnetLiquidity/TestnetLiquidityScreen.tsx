@@ -99,7 +99,7 @@ const Mono = styled.div`
 
 const Ratio = styled.div`
   font-size: 15px;
-  color: #d4af37;
+  color: #F4C430;
   margin-top: 8px;
 `
 
@@ -112,7 +112,7 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  background: ${({ $primary, disabled }) => (disabled ? '#2a2a2a' : $primary ? '#d4af37' : '#1f1f1f')};
+  background: ${({ $primary, disabled }) => (disabled ? '#2a2a2a' : $primary ? '#F4C430' : '#1f1f1f')};
   color: ${({ $primary, disabled }) => (disabled ? '#666' : $primary ? '#0a0a0a' : '#f5f5f5')};
   border: 1px solid ${({ disabled }) => (disabled ? '#333' : '#444')};
 
@@ -171,7 +171,7 @@ const WarnText = styled.div`
 `
 
 const Link = styled.a`
-  color: #d4af37;
+  color: #F4C430;
   text-decoration: underline;
 `
 

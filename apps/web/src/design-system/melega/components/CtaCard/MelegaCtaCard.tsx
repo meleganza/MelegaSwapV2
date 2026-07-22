@@ -25,8 +25,8 @@ const cardStyles = `
   min-height: 136px;
   max-height: 136px;
   padding: 10px 18px;
-  background: linear-gradient(90deg, rgba(212, 175, 55, 0.14) 0%, #101010 45%, #0b0b0b 100%);
-  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: linear-gradient(90deg, rgba(244, 196, 48, 0.14) 0%, #101010 45%, #0b0b0b 100%);
+  border: 1px solid rgba(244, 196, 48, 0.28);
   border-radius: 20px;
   box-shadow: none;
   box-sizing: border-box;
@@ -59,7 +59,7 @@ const CardLink = styled(Link)<{ $interactive?: boolean }>`
     $interactive &&
     `
     &:hover {
-      border-color: rgba(212, 175, 55, 0.55);
+      border-color: rgba(244, 196, 48, 0.55);
       transform: translateY(-1px);
       filter: brightness(1.03);
     }
@@ -147,7 +147,7 @@ const ActionLink = styled(Link)<{ $variant?: 'primary' | 'secondary' }>`
       ? `
     background: transparent;
     color: ${colors.gold};
-    border: 1px solid rgba(212, 175, 55, 0.55);
+    border: 1px solid rgba(244, 196, 48, 0.55);
 
     &:hover {
       border-color: ${colors.gold};

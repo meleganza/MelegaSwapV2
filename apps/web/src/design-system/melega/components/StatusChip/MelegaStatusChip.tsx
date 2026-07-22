@@ -25,7 +25,7 @@ const variantStyles: Record<MelegaStatusChipVariant, ReturnType<typeof css>> = {
   warning: css`
     color: ${colors.gold};
     background: ${colors.goldSoft};
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(244, 196, 48, 0.35);
   `,
   error: css`
     color: ${colors.red};
@@ -35,7 +35,7 @@ const variantStyles: Record<MelegaStatusChipVariant, ReturnType<typeof css>> = {
   gold: css`
     color: ${colors.gold};
     background: ${colors.goldSoft};
-    border-color: rgba(212, 175, 55, 0.45);
+    border-color: rgba(244, 196, 48, 0.45);
   `,
 }
 

@@ -24,8 +24,8 @@ const Tab = styled.button<{ $active?: boolean }>`
   height: 30px;
   padding: 0 12px;
   border-radius: 8px;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(212,175,55,0.30)' : 'rgba(255,255,255,0.08)')};
-  background: ${({ $active }) => ($active ? 'rgba(212,175,55,0.13)' : 'transparent')};
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(244, 196, 48,0.30)' : 'rgba(255,255,255,0.08)')};
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48,0.13)' : 'transparent')};
   color: ${({ $active }) => ($active ? colors.gold : colors.textSecondary)};
   font-size: 12px;
   font-weight: 700;
@@ -33,7 +33,7 @@ const Tab = styled.button<{ $active?: boolean }>`
   transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
 
   &:hover {
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(244, 196, 48, 0.35);
     color: ${colors.textPrimary};
   }
 `

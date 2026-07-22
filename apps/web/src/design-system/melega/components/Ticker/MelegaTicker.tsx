@@ -37,9 +37,9 @@ const Strip = styled.div<{
   align-items: center;
   width: 100%;
   height: 48px;
-  border-top: 1px solid rgba(212, 175, 55, 0.1);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-  background: rgba(212, 175, 55, 0.035);
+  border-top: 1px solid rgba(244, 196, 48, 0.1);
+  border-bottom: 1px solid rgba(244, 196, 48, 0.1);
+  background: rgba(244, 196, 48, 0.035);
   overflow: hidden;
   box-shadow: none;
 

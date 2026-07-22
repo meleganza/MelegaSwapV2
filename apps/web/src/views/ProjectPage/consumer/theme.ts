@@ -1,15 +1,16 @@
 import styled, { keyframes } from 'styled-components'
 import { PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
+import { ds001Colors, ds001Spacing, ds001TypeRoles } from 'design-system/melega/tokens/ds001'
 
-export const CANVAS = '#0a0a0a'
-export const CARD_BG = 'rgba(20, 20, 20, 0.72)'
-export const CARD_BORDER = 'rgba(255, 255, 255, 0.08)'
-export const GOLD = '#d4af37'
-export const MUTED = '#8f8f8f'
-export const TEXT = '#ffffff'
-export const BODY_SIZE = '17px'
-export const BODY_LINE = 1.55
-export const SECTION_GAP = '38px'
+export const CANVAS = ds001Colors.background
+export const CARD_BG = ds001Colors.surface
+export const CARD_BORDER = ds001Colors.border
+export const GOLD = ds001Colors.primaryGold
+export const MUTED = ds001Colors.muted
+export const TEXT = ds001Colors.primaryText
+export const BODY_SIZE = ds001TypeRoles.body.size
+export const BODY_LINE = 1.5
+export const SECTION_GAP = ds001Spacing[40]
 
 const fadeInUp = keyframes`
   from {

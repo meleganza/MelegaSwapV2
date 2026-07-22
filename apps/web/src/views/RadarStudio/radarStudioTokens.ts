@@ -1,6 +1,7 @@
-/** Radar Console — R758 aligned to studio constitution. */
-import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
+/** Radar Console — DS001.1 foundations + studio constitution. */
+import { premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
 import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+import { ds001Colors, ds001FontFamily, ds001Shadows } from 'design-system/melega/tokens/ds001'
 
 export const radarStudioLayout = {
   ...premiumStudioLayout,
@@ -35,38 +36,38 @@ export const radarStudioLayout = {
 } as const
 
 export const radarStudioColors = {
-  pageBg: '#050505',
-  contentBg: '#070707',
-  panel: '#131313',
-  panelAlt: '#111111',
-  panelGradient: 'linear-gradient(180deg, #141414 0%, #0E0E0E 100%)',
-  panelGradientAlt: 'linear-gradient(180deg, #141414 0%, #101010 100%)',
-  border: '#262626',
-  borderMuted: '#262626',
-  borderInput: '#292929',
+  pageBg: ds001Colors.background,
+  contentBg: ds001Colors.background,
+  panel: ds001Colors.surface,
+  panelAlt: ds001Colors.surfaceElevated,
+  panelGradient: `linear-gradient(180deg, ${ds001Colors.surface} 0%, ${ds001Colors.background} 100%)`,
+  panelGradientAlt: `linear-gradient(180deg, ${ds001Colors.surfaceElevated} 0%, ${ds001Colors.background} 100%)`,
+  border: ds001Colors.divider,
+  borderMuted: ds001Colors.divider,
+  borderInput: ds001Colors.controlBorder,
   inputBg: '#1A1A1A',
-  gold: '#D4AF37',
-  goldHover: '#D6B445',
-  goldBorder: 'rgba(212,175,55,0.72)',
-  goldBorderSoft: 'rgba(212,175,55,0.32)',
-  goldShadow: 'rgba(214,180,69,0.18)',
-  goldBg: 'rgba(212,175,55,0.06)',
-  green: '#00E884',
-  red: '#FF4D4D',
-  orange: '#FFB84D',
-  yellow: '#D4AF37',
-  white: '#FFFFFF',
-  muted: '#9A9A9A',
-  secondary: '#B8B8B8',
-  subtitle: '#A8A8A8',
-  label: '#8F8F8F',
-  divider: '#242424',
-  chipBg: '#0D0D0D',
-  heatInactive: '#222222',
-  hoverBorder: '#D6B445',
-  shadow: '0 16px 42px rgba(0,0,0,0.32)',
+  gold: ds001Colors.primaryGold,
+  goldHover: ds001Colors.hoverGold,
+  goldBorder: 'rgba(244,196,48,0.72)',
+  goldBorderSoft: 'rgba(244,196,48,0.32)',
+  goldShadow: 'rgba(244,196,48,0.18)',
+  goldBg: 'rgba(244,196,48,0.06)',
+  green: ds001Colors.success,
+  red: ds001Colors.danger,
+  orange: ds001Colors.warning,
+  yellow: ds001Colors.primaryGold,
+  white: ds001Colors.primaryText,
+  muted: ds001Colors.muted,
+  secondary: ds001Colors.secondaryText,
+  subtitle: ds001Colors.secondaryText,
+  label: ds001Colors.muted,
+  divider: ds001Colors.divider,
+  chipBg: ds001Colors.background,
+  heatInactive: ds001Colors.divider,
+  hoverBorder: ds001Colors.hoverGold,
+  shadow: ds001Shadows.hover,
   transition: '180ms',
 } as const
 
-export const RADAR_FONT_DISPLAY = 'Orbitron, sans-serif'
-export const RADAR_FONT_BODY = '"Inter", -apple-system, BlinkMacSystemFont, sans-serif'
+export const RADAR_FONT_DISPLAY = ds001FontFamily.display
+export const RADAR_FONT_BODY = ds001FontFamily.body

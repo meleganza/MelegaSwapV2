@@ -105,7 +105,7 @@ export const FearGreedGauge: React.FC<FearGreedGaugeProps> = ({ value, classific
         <path
           d="M 14 58 A 51 51 0 0 1 116 58"
           fill="none"
-          stroke="#D4AF37"
+          stroke="#F4C430"
           strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray="32 128"

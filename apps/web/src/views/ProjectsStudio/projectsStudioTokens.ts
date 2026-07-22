@@ -1,9 +1,10 @@
 import { premiumStudioColors, premiumStudioLayout } from 'design-system/melega/tokens/premiumStudio'
 import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+import { ds001FontFamily, ds001Spacing } from 'design-system/melega/tokens/ds001'
 
-/** R111B canonical Projects Studio tokens — R758 constitution rhythm. */
-export const PR_FONT_DISPLAY = "'Orbitron', sans-serif"
-export const PR_FONT_BODY = "'Inter', sans-serif"
+/** Projects Studio tokens — DS001.1 foundations + constitution rhythm. */
+export const PR_FONT_DISPLAY = ds001FontFamily.display
+export const PR_FONT_BODY = ds001FontFamily.body
 
 export const projectsStudioLayout = {
   ...premiumStudioLayout,
@@ -19,7 +20,7 @@ export const projectsStudioLayout = {
   featuredSplitLeft: '68%',
   featuredSplitRight: '32%',
   featuredMetricGapY: '16px',
-  featuredMetricGapX: '28px',
+  featuredMetricGapX: ds001Spacing[32],
   featuredChartHeight: '220px',
   featuredChartHeightMobile: '143px',
   cardSplitLeft: '65%',
@@ -46,7 +47,7 @@ export const projectsStudioColors = {
   ...premiumStudioColors,
   goldBright: premiumStudioColors.gold,
   chartBg: premiumStudioColors.card,
-  goldBorder: 'rgba(212,175,55,0.55)',
+  goldBorder: 'rgba(244, 196, 48,0.55)',
 } as const
 
 export const projectsStudioType = {

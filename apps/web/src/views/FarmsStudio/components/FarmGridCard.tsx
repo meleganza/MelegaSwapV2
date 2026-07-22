@@ -278,7 +278,7 @@ const CardConnectBtn = styled(ConnectWalletButton)`
     padding: 0 12px;
     border: none;
     border-radius: 12px;
-    background: #d4af37;
+    background: #F4C430;
     color: #050505;
     font-size: 13px;
     font-weight: 700;
@@ -306,7 +306,7 @@ const CardStakeBtn = styled.button`
   height: ${farmsStudioLayout.farmCardBtnHeight};
   border: none;
   border-radius: 12px;
-  background: #d4af37;
+  background: #F4C430;
   color: #050505;
   font-size: 13px;
   font-weight: 700;
@@ -330,9 +330,9 @@ const CardAnalyzeBtn = styled.button`
   max-width: 120px;
   height: ${farmsStudioLayout.farmCardBtnHeight};
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.55);
+  border: 1px solid rgba(244, 196, 48, 0.55);
   background: transparent;
-  color: #d4af37;
+  color: #F4C430;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;

@@ -227,7 +227,7 @@ export function heatBlockColor(value: number, invert = false): string {
   if (value <= 0) return '#222222'
   const v = invert ? 100 - value : value
   if (v >= 80) return '#00E884'
-  if (v >= 60) return '#D4AF37'
+  if (v >= 60) return '#F4C430'
   if (v >= 40) return '#FFB84D'
   return '#FF4D4D'
 }

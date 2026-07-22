@@ -19,14 +19,14 @@ const Card = styled.article<{ $expanded?: boolean; $ended?: boolean }>`
   gap: 16px;
   border-radius: 18px;
   background: #141414;
-  border: 1px solid rgba(212, 175, 55, 0.18);
+  border: 1px solid rgba(244, 196, 48, 0.18);
   box-sizing: border-box;
   overflow: hidden;
   transition: box-shadow 180ms ease-out;
 
   &:hover {
     box-shadow:
-      0 0 0 1px rgba(212, 175, 55, 0.35),
+      0 0 0 1px rgba(244, 196, 48, 0.35),
       0 12px 28px rgba(0, 0, 0, 0.28);
   }
 
@@ -54,7 +54,7 @@ const HeaderRow = styled.div`
 `
 
 const AprValue = styled.div<{ $ended?: boolean }>`
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: ${({ $ended }) => ($ended ? '44px' : 'clamp(32px, 5vw, 48px)')};
   font-weight: 800;
   line-height: 1;
@@ -76,7 +76,7 @@ const TitleRow = styled.div`
 `
 
 const PoolName = styled.span`
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.15;
@@ -114,14 +114,14 @@ const Pill = styled.span<{ $variant: 'live' | 'official' | 'partner' | 'communit
   border: 1px solid
     ${({ $variant }) => {
       if ($variant === 'live') return '#19f08a'
-      if ($variant === 'official') return '#d4af37'
+      if ($variant === 'official') return '#F4C430'
       if ($variant === 'partner') return '#4da3ff'
       if ($variant === 'community') return '#a86cff'
       return '#ff9f43'
     }};
   color: ${({ $variant }) => {
     if ($variant === 'live') return '#19f08a'
-    if ($variant === 'official') return '#d4af37'
+    if ($variant === 'official') return '#F4C430'
     if ($variant === 'partner') return '#4da3ff'
     if ($variant === 'community') return '#a86cff'
     return '#ff9f43'
@@ -206,7 +206,7 @@ const AnalysisSection = styled.div<{ $open: boolean }>`
 `
 
 const AnalysisHeading = styled.div`
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-size: 14px;
   font-weight: 700;
   line-height: 18px;
@@ -237,9 +237,9 @@ const ChipBtn = styled.button`
   height: 32px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1px solid #d4af37;
-  background: rgba(212, 175, 55, 0.06);
-  color: #d4af37;
+  border: 1px solid #F4C430;
+  background: rgba(244, 196, 48, 0.06);
+  color: #F4C430;
   font-family: Inter, sans-serif;
   font-size: 12px;
   font-weight: 700;
@@ -249,7 +249,7 @@ const ChipBtn = styled.button`
   max-width: 100%;
 
   &:hover {
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.35);
   }
 `
 
@@ -270,7 +270,7 @@ const CopyBtn = styled.button`
   padding: 0;
   border: none;
   background: transparent;
-  color: #d4af37;
+  color: #F4C430;
   cursor: pointer;
   flex-shrink: 0;
   font-size: 11px;
@@ -295,7 +295,7 @@ const PoolBtn = styled.button`
   min-height: ${poolsStudioLayout.poolCardBtnHeight};
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #f6d44a 0%, #d4af37 100%);
+  background: linear-gradient(180deg, #f6d44a 0%, #F4C430 100%);
   color: #080808;
   font-family: Inter, sans-serif;
   font-size: 13px;
@@ -305,7 +305,7 @@ const PoolBtn = styled.button`
   transition: box-shadow 180ms ease-out;
 
   &:hover {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.28);
+    box-shadow: 0 0 20px rgba(244, 196, 48, 0.28);
   }
 
   @media (max-width: 767px) {
@@ -319,10 +319,10 @@ const AnalyzeBtn = styled.button`
   min-width: ${poolsStudioLayout.poolCardBtnWidth};
   height: ${poolsStudioLayout.poolCardBtnHeight};
   min-height: ${poolsStudioLayout.poolCardBtnHeight};
-  border: 1px solid #d4af37;
+  border: 1px solid #F4C430;
   border-radius: 12px;
   background: transparent;
-  color: #d4af37;
+  color: #F4C430;
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 800;
@@ -331,7 +331,7 @@ const AnalyzeBtn = styled.button`
   transition: box-shadow 180ms ease-out;
 
   &:hover {
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.35);
   }
 
   @media (max-width: 767px) {

@@ -288,7 +288,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
+    background: linear-gradient(180deg, #f4c542 0%, #F4C430 100%) !important;
     color: #050505 !important;
     font-weight: 700 !important;
     font-size: 16px !important;
@@ -723,7 +723,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 46px !important;
     width: 100% !important;
     border-radius: 12px !important;
-    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
+    background: linear-gradient(180deg, #f4c542 0%, #F4C430 100%) !important;
     color: #050505 !important;
     font-weight: 700 !important;
     font-size: 16px !important;

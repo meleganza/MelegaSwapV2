@@ -76,7 +76,7 @@ const ProjectWalletConsumer: React.FC<Props> = ({ document, evidencePack }) => {
                 <a
                   href={row.deepLink.href}
                   style={{
-                    color: '#d4af37',
+                    color: '#F4C430',
                     fontSize: 13,
                     minHeight: 44,
                     display: 'inline-flex',

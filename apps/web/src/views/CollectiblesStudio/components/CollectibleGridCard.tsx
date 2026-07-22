@@ -25,7 +25,7 @@ const Card = styled.article<{ $identity?: string }>`
   border: 1px solid
     ${({ $identity }) =>
       $identity === 'genesis'
-        ? 'rgba(212, 175, 55, 0.55)'
+        ? 'rgba(244, 196, 48, 0.55)'
         : $identity === 'builder'
           ? 'rgba(77, 163, 255, 0.45)'
           : $identity === 'validator'
@@ -175,7 +175,7 @@ const UtilChip = styled.span<{ $accent?: 'genesis' | 'builder' | 'validator' }>`
   border-radius: 999px;
   background: ${({ $accent }) =>
     $accent === 'genesis'
-      ? 'rgba(212, 175, 55, 0.1)'
+      ? 'rgba(244, 196, 48, 0.1)'
       : $accent === 'builder'
         ? 'rgba(77, 163, 255, 0.1)'
         : $accent === 'validator'
@@ -184,7 +184,7 @@ const UtilChip = styled.span<{ $accent?: 'genesis' | 'builder' | 'validator' }>`
   border: 1px solid
     ${({ $accent }) =>
       $accent === 'genesis'
-        ? 'rgba(212, 175, 55, 0.35)'
+        ? 'rgba(244, 196, 48, 0.35)'
         : $accent === 'builder'
           ? 'rgba(77, 163, 255, 0.35)'
           : $accent === 'validator'

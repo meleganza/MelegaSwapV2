@@ -100,10 +100,10 @@ const SymbolTag = styled.span`
   min-height: 28px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(244, 196, 48, 0.35);
   font-size: 13px;
   font-weight: 600;
-  color: #d4af37;
+  color: #F4C430;
   letter-spacing: 0.02em;
 `
 
@@ -183,7 +183,7 @@ const CopyButton = styled.button`
   text-underline-offset: 2px;
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid #F4C430;
     outline-offset: 2px;
   }
 `
@@ -200,7 +200,7 @@ const QuietLink = styled.a`
   padding: 0 8px;
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid #F4C430;
     outline-offset: 2px;
   }
 `

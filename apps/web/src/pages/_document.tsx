@@ -65,6 +65,11 @@ class MyDocument extends Document {
 
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&amp;display=swap" rel="stylesheet" />
+          {/* DS001.1 — Sora primary, Inter fallback */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+            rel="stylesheet"
+          />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="apple-touch-icon" href="/main.jpg" />
           <link rel="manifest" href="/manifest.json" />

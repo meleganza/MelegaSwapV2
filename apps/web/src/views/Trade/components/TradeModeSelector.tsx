@@ -27,10 +27,10 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
   gap: 8px;
   height: 44px;
   border: 1px solid ${({ $active, $smart }) =>
-    $active && $smart ? 'rgba(212, 175, 55, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
+    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
   border-radius: 10px;
   background: ${({ $active, $smart }) =>
-    $active && $smart ? 'rgba(212, 175, 55, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
+    $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
   font-size: 13px;
   font-weight: 700;
@@ -41,7 +41,7 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
     background 150ms ease,
     color 150ms ease,
     box-shadow 150ms ease;
-  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(212, 175, 55, 0.08)' : 'none')};
+  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
 
   &:hover {
     color: ${colors.textPrimary};
@@ -55,7 +55,7 @@ const Badge = styled.span`
   height: 18px;
   padding: 0 6px;
   border-radius: 6px;
-  background: rgba(212, 175, 55, 0.18);
+  background: rgba(244, 196, 48, 0.18);
   color: ${colors.gold};
   font-size: 10px;
   font-weight: 800;

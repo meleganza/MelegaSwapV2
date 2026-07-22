@@ -66,10 +66,10 @@ const cardStyle: React.CSSProperties = {
   maxWidth: 720,
   margin: '0 auto',
   background: 'linear-gradient(145deg, #1a1a00 0%, #0d0d00 100%)',
-  border: '3px solid #d4af37',
+  border: '3px solid #F4C430',
   borderRadius: 12,
   padding: '24px 20px',
-  boxShadow: '0 0 40px rgba(212, 175, 55, 0.25)',
+  boxShadow: '0 0 40px rgba(244, 196, 48, 0.25)',
 }
 
 const routeCardStyle: React.CSSProperties = {
@@ -89,7 +89,7 @@ const rowStyle: React.CSSProperties = {
 }
 
 const labelStyle: React.CSSProperties = {
-  color: '#d4af37',
+  color: '#F4C430',
   fontSize: 11,
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
@@ -107,7 +107,7 @@ const inputStyle: React.CSSProperties = {
   fontSize: 14,
   padding: '10px 12px',
   borderRadius: 8,
-  border: '1px solid #d4af37',
+  border: '1px solid #F4C430',
   background: '#111',
   color: '#fff8dc',
   width: '100%',
@@ -139,7 +139,7 @@ const warnStyle: React.CSSProperties = {
   marginTop: 16,
   padding: 12,
   background: '#3d2800',
-  border: '1px solid #d4af37',
+  border: '1px solid #F4C430',
   borderRadius: 8,
   color: '#ffd966',
   fontSize: 14,
@@ -176,7 +176,7 @@ const btnStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: 8,
   cursor: 'pointer',
-  background: '#d4af37',
+  background: '#F4C430',
   color: '#0a0a0a',
 }
 
@@ -202,7 +202,7 @@ function FounderWrapperValidateShell({
   return (
     <div id="r746e-validate-root" style={rootStyle}>
       <div style={cardStyle}>
-        <h1 style={{ margin: '0 0 8px', fontSize: 28, color: '#d4af37' }}>Wrapper Validate</h1>
+        <h1 style={{ margin: '0 0 8px', fontSize: 28, color: '#F4C430' }}>Wrapper Validate</h1>
         <p style={{ margin: '0 0 16px', color: '#ccc', fontSize: 15 }}>
           Constitutional swap ceremony — BNB Testnet (97)
         </p>
@@ -263,7 +263,7 @@ function FounderWrapperValidateShell({
           return (
             <div key={route.id} id={`r746e-route-${route.id}`} style={routeCardStyle}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                <strong style={{ color: '#d4af37', fontSize: 16 }}>{route.title}</strong>
+                <strong style={{ color: '#F4C430', fontSize: 16 }}>{route.title}</strong>
                 {pass && (
                   <span style={pass === 'PASS' ? passStyle : failStyle}>{pass}</span>
                 )}
@@ -374,7 +374,7 @@ function FounderWrapperValidateShell({
 
         {diagnostics.validationReport && (
           <div id="r746e-validation-report" style={{ ...panelStyle, marginTop: 20 }}>
-            <div style={{ color: '#d4af37', fontWeight: 700, marginBottom: 8 }}>
+            <div style={{ color: '#F4C430', fontWeight: 700, marginBottom: 8 }}>
               Validation Report — {diagnostics.validationVerdict}
             </div>
             {diagnostics.validationReport}

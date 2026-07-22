@@ -6,7 +6,7 @@ import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 
 const Title = styled.h3<{ $compact?: boolean }>`
   margin: 0;
-  font-family: Orbitron, sans-serif;
+  font-family: Sora, sans-serif;
   font-weight: 700;
   color: #ffffff;
   white-space: nowrap;
@@ -49,8 +49,8 @@ const AskBtn = styled.button<{ $compact?: boolean }>`
   white-space: nowrap;
   font-family: Inter, ${typography.fontFamily.body};
   font-weight: 800;
-  color: #d4af37;
-  border: 1px solid #d4af37;
+  color: #F4C430;
+  border: 1px solid #F4C430;
 
   ${({ $compact }) =>
     $compact

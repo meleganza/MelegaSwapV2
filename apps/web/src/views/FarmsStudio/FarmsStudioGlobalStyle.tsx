@@ -32,13 +32,13 @@ const FarmsStudioGlobalStyle = createGlobalStyle`
   [data-farms-studio-screen] [data-fs-panel]:hover,
   [data-farms-studio-screen] [data-fs-kpi-card]:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(212, 175, 55, 0.08);
+    box-shadow: 0 10px 24px rgba(244, 196, 48, 0.08);
   }
 
   [data-farms-studio-screen] [data-fs-farm-card]:hover {
     transform: translateY(-2px);
-    border-color: rgba(212, 175, 55, 0.55);
-    box-shadow: 0 12px 28px rgba(212, 175, 55, 0.08);
+    border-color: rgba(244, 196, 48, 0.55);
+    box-shadow: 0 12px 28px rgba(244, 196, 48, 0.08);
   }
 
   [data-farms-studio-screen] [data-fs-mini-chart] {

@@ -97,7 +97,7 @@ const TfButton = styled.button<{ $active?: boolean }>`
   padding: 0;
   border-radius: 8px;
   border: 1px solid ${({ $active }) => ($active ? tradeColors.gold : 'rgba(255, 255, 255, 0.06)')};
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.08)' : 'transparent')};
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.08)' : 'transparent')};
   color: ${({ $active }) => ($active ? tradeColors.goldBright : '#8a8a8a')};
   font-size: 12px;
   font-weight: 600;
@@ -107,7 +107,7 @@ const TfButton = styled.button<{ $active?: boolean }>`
   &:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(244, 196, 48, 0.35);
   }
 `
 

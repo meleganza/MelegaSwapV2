@@ -193,8 +193,8 @@ export const PriorityBadge = styled.span`
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: ${commandCenterColors.gold};
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.08);
 `
 
 export const ActionPill = styled.span`

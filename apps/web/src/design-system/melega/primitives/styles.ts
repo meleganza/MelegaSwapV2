@@ -1,5 +1,6 @@
 import { css } from 'styled-components'
 import { spacing, radius as radiusTokens } from '../tokens'
+import { ds001Colors } from '../tokens/ds001/colors'
 import type { RadiusToken, SpacingToken } from '../tokens'
 import { media } from '../theme'
 
@@ -46,7 +47,10 @@ export const loadingStyles = css`
 
 export const focusRing = css`
   &:focus-visible {
-    outline: 2px solid rgba(212, 175, 55, 0.55);
+    outline: 2px solid rgba(244, 196, 48, 0.55);
     outline-offset: 2px;
   }
 `
+
+/** Prefer `ds001Colors.primaryGold` for new focus treatments. */
+export const focusRingGold = ds001Colors.primaryGold

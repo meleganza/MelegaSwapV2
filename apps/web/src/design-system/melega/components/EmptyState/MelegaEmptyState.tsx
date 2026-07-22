@@ -33,7 +33,7 @@ const Icon = styled.span`
   height: 18px;
   border-radius: 50%;
   background: ${colors.goldSoft};
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(244, 196, 48, 0.35);
   flex-shrink: 0;
   animation: ${pulse} 1.5s ease-in-out infinite;
 

@@ -56,7 +56,7 @@ const PricingLink = styled(Link)`
   display: inline-block;
   margin-top: 8px;
   font-size: 12px;
-  color: #d4af37;
+  color: #F4C430;
   text-decoration: none;
 
   &:hover {
@@ -122,7 +122,7 @@ export function DexSwapFeeDisclosure({ trade }: Props) {
         </Value>
       </Row>
       {ctx.buyMarcoApplied ? (
-        <Note color="#D4AF37">
+        <Note color="#F4C430">
           BUY MARCO incentive applied: protocol fee reduced to 0.20%.
         </Note>
       ) : (

@@ -1,37 +1,37 @@
 import { premiumStudioLayout, premiumStudioColors } from 'design-system/melega/tokens/premiumStudio'
 import { studioConstitutionLayout } from 'design-system/melega/tokens/studioConstitution'
+import { ds001Colors, ds001FontFamily, ds001Spacing, ds001TypeRoles } from 'design-system/melega/tokens/ds001'
 import { tradeTypography, tradeLayout } from 'views/Trade/tradeTokens'
 
-/** Home / Overview — R758 constitution + R760 Trade-aligned typography. */
+/** Home / Overview — DS001.1 foundations + R760 Trade-aligned typography. */
 export const homeTradeLayout = {
   ...premiumStudioLayout,
   ...studioConstitutionLayout,
-  columnGap: '16px',
-  compactGap: '12px',
-  gridGutter: '16px',
+  columnGap: ds001Spacing[16],
+  compactGap: ds001Spacing[12],
+  gridGutter: ds001Spacing[16],
   heroGap: studioConstitutionLayout.sectionGap,
   heroMaxHeight: '404px',
   swapWidth: '470px',
   liveActivityHeight: tradeLayout.recentSwapsHeight,
   activityRowHeight: tradeLayout.swapRowHeight,
-  /** UX002 — airier mobile stack between major blocks. */
-  mobileSectionGap: '36px',
+  /** 36px outside DS001.1 allow-list → 40. */
+  mobileSectionGap: ds001Spacing[40],
 } as const
 
-/** R760 — mirrors Trade numeric surfaces for institutional parity. */
+/** R760 — mirrors Trade numeric surfaces; type roles snapped to DS001.1. */
 export const homeTypography = {
   ...tradeTypography,
-  sectionTitle: { size: '18px', weight: 800, lineHeight: '1.2' },
-  heroTitle: { size: '38px', weight: 800, lineHeight: '1.05' },
-  heroSubtitle: { size: '13px', weight: 500, lineHeight: '1.35' },
+  sectionTitle: { size: ds001TypeRoles.bodyLarge.size, weight: 700, lineHeight: '1.2' },
+  heroTitle: { size: ds001TypeRoles.h2.size, weight: 700, lineHeight: '1.12' },
+  heroSubtitle: { size: ds001TypeRoles.caption.size, weight: 500, lineHeight: '1.35' },
   heroSubtitleMaxWidth: studioConstitutionLayout.heroSubtitleMaxWidth,
-  /** UX002 — mobile emotional hero + body rhythm. */
-  mobileHeroTitle: { size: '26px', weight: 700, lineHeight: '1.12' },
+  mobileHeroTitle: { size: ds001TypeRoles.h3.size, weight: 700, lineHeight: '1.12' },
   mobileBody: {
-    fontFamily: "'Inter', sans-serif",
-    size: '17px',
+    fontFamily: ds001FontFamily.body,
+    size: ds001TypeRoles.body.size,
     weight: 400,
-    lineHeight: '1.45',
+    lineHeight: '1.5',
   },
 } as const
 
@@ -41,29 +41,29 @@ export const ht = {
   canvas: premiumStudioColors.canvas,
   surface1: premiumStudioColors.card,
   surface2: premiumStudioColors.card,
-  surface3: '#1C1C1C',
-  surfaceHover: '#1E1E1E',
+  surface3: ds001Colors.surfaceElevated,
+  surfaceHover: ds001Colors.cardHoverBackground,
   borderSoft: premiumStudioColors.cardBorder,
   borderSidebar: premiumStudioColors.divider,
   borderMedium: premiumStudioColors.cardBorder,
-  borderGold: 'rgba(212,175,55,0.42)',
+  borderGold: 'rgba(244,196,48,0.42)',
   gold: premiumStudioColors.gold,
   goldBright: premiumStudioColors.gold,
-  goldDark: '#8F6D16',
+  goldDark: ds001Colors.pressedGold,
   goldSoftBg: premiumStudioColors.goldBg,
   white: premiumStudioColors.text,
-  textMain: '#F5F5F5',
+  textMain: ds001Colors.primaryText,
   textMuted: premiumStudioColors.muted,
   textPlaceholder: premiumStudioColors.muted,
   textNavInactive: premiumStudioColors.secondary,
   textSoft: premiumStudioColors.muted,
   textMeta: premiumStudioColors.secondary,
   green: premiumStudioColors.green,
-  greenSoftBg: 'rgba(27,231,122,0.10)',
+  greenSoftBg: 'rgba(34,197,94,0.10)',
   red: premiumStudioColors.red,
   sidebarBg: premiumStudioColors.canvas,
-  fontBody: "'Inter', sans-serif",
-  fontDisplay: "'Orbitron', sans-serif",
+  fontBody: ds001FontFamily.body,
+  fontDisplay: ds001FontFamily.display,
   sidebarWidth: '230px',
   mainOffset: '250px',
   marcoLogoUri: '/images/melega.png',

@@ -481,7 +481,7 @@ export function sortPoolsDefault(cards: PoolPreviewCard[]): PoolPreviewCard[] {
 }
 
 export function buildDonutSegments(pools: Pool.DeserializedPool<Token>[]) {
-  const colors = ['#D4AF37', '#00E676', '#4DA3FF', '#A78BFA']
+  const colors = ['#F4C430', '#00E676', '#4DA3FF', '#A78BFA']
   const buckets = [
     { label: '0–1K', max: 1000, value: 0 },
     { label: '1K–10K', max: 10000, value: 0 },

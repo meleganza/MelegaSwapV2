@@ -144,7 +144,7 @@ export const FeaturedPoolAllocation: React.FC = () => {
     const distDash = (distributedPct / 100) * LIVE_C
     return [
       { color: '#19F08A', dash: remDash, gap: LIVE_C - remDash, offset: 0 },
-      { color: '#D4AF37', dash: distDash, gap: LIVE_C - distDash, offset: -remDash },
+      { color: '#F4C430', dash: distDash, gap: LIVE_C - distDash, offset: -remDash },
     ]
   }, [remainingPct, distributedPct])
 

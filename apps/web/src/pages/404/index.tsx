@@ -29,7 +29,7 @@ const Message = styled.p`
 `
 
 const Brand = styled.span`
-  color: #d4af37;
+  color: #F4C430;
 `
 
 const HomeLink = styled(Link)`
@@ -39,7 +39,7 @@ const HomeLink = styled(Link)`
   min-height: 44px;
   padding: 0 20px;
   border-radius: 10px;
-  background: #d4af37;
+  background: #F4C430;
   color: #000000;
   font-weight: 700;
   text-decoration: none;

@@ -46,7 +46,7 @@ const Card = styled.a<{ $interactive?: boolean }>`
     ${({ $interactive }) =>
       $interactive &&
       `
-      border-color: rgba(212,175,55,0.35);
+      border-color: rgba(244, 196, 48,0.35);
       transform: translateY(-2px);
     `}
   }

@@ -11,7 +11,7 @@ const Box = styled.div`
   padding: 8px 10px;
   box-sizing: border-box;
   background: #171512;
-  border: 1px solid rgba(212, 175, 55, 0.18);
+  border: 1px solid rgba(244, 196, 48, 0.18);
   border-radius: 12px;
   display: flex;
   flex-direction: column;

@@ -10,7 +10,7 @@ const Panel = styled(RdPanel)`
   min-height: ${radarStudioLayout.heatmapMinHeight};
   margin-top: ${radarStudioLayout.heatmapMarginTop};
   padding: ${radarStudioLayout.cardPadding};
-  border-color: rgba(212, 175, 55, 0.58);
+  border-color: rgba(244, 196, 48, 0.58);
 `
 
 const Header = styled.div`

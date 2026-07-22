@@ -393,7 +393,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 12px !important;
-    background: linear-gradient(180deg, #f4c542 0%, #d4af37 100%) !important;
+    background: linear-gradient(180deg, #f4c542 0%, #F4C430 100%) !important;
     color: #050505 !important;
     font-weight: 800 !important;
     font-size: 15px !important;
@@ -424,8 +424,8 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   .trade-terminal-swap.is-smartswap [data-trade-cockpit-shell] {
-    border-color: rgba(212, 175,  55, 0.35) !important;
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.06) !important;
+    border-color: rgba(244, 196, 48, 0.35) !important;
+    box-shadow: 0 0 24px rgba(244, 196, 48, 0.06) !important;
   }
 
   [data-trade-chart-area] {
@@ -436,7 +436,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   [data-trade-price-chart] [data-trade-pair-stats] > div:hover {
-    border-color: rgba(212, 175, 55, 0.45);
+    border-color: rgba(244, 196, 48, 0.45);
   }
 
   @media (max-width: 1023px) {

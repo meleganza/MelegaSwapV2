@@ -1,21 +1,32 @@
-/** Melega DEX design system — color tokens (Home V2 cockpit). */
+/**
+ * Melega DEX design system — color tokens.
+ * Backed by DS001.1 foundations. Legacy keys preserved as aliases.
+ */
+import { ds001Colors, ds001GoldSoft } from './ds001/colors'
+
 export const colors = {
-  background: '#0A0A0A',
-  canvas: '#0A0A0A',
-  surface1: '#101010',
-  surface2: '#171717',
-  surface3: '#1C1C1C',
-  gold: '#D4AF37',
-  goldHover: '#F4C542',
-  goldGlow: '#FFD55A',
-  goldSoft: 'rgba(212,175,55,0.13)',
-  border: 'rgba(255,255,255,0.08)',
-  borderStrong: 'rgba(255,255,255,0.14)',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#B3B3B3',
-  textMuted: '#707070',
-  green: '#00E676',
-  red: '#EF4444',
+  background: ds001Colors.background,
+  canvas: ds001Colors.background,
+  surface1: ds001Colors.surface,
+  surface2: ds001Colors.surfaceElevated,
+  surface3: ds001Colors.surfaceElevated,
+  gold: ds001Colors.primaryGold,
+  goldHover: ds001Colors.hoverGold,
+  /** @deprecated DS001.1 forbids glow — alias of hover gold. */
+  goldGlow: ds001Colors.hoverGold,
+  goldSoft: ds001GoldSoft,
+  goldPressed: ds001Colors.pressedGold,
+  border: ds001Colors.border,
+  borderStrong: ds001Colors.cardHoverBorder,
+  divider: ds001Colors.divider,
+  textPrimary: ds001Colors.primaryText,
+  textSecondary: ds001Colors.secondaryText,
+  textMuted: ds001Colors.muted,
+  green: ds001Colors.success,
+  red: ds001Colors.danger,
+  warning: ds001Colors.warning,
+  info: ds001Colors.info,
+  placeholder: ds001Colors.placeholder,
 } as const
 
 export type MelegaColors = typeof colors

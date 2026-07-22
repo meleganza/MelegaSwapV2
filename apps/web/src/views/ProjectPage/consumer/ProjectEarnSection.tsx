@@ -35,8 +35,8 @@ const EarnIcon = styled.span`
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(244, 196, 48, 0.1);
+  border: 1px solid rgba(244, 196, 48, 0.25);
   font-size: 20px;
 `
 

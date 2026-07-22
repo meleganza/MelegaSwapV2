@@ -57,7 +57,7 @@ export const farmsStudioColors = {
   purple: '#A78BFA',
   border: premiumStudioColors.cardBorder,
   rowBorder: premiumStudioColors.divider,
-  goldBorder: 'rgba(212,175,55,0.45)',
+  goldBorder: 'rgba(244, 196, 48,0.45)',
   previewBadgeBg: premiumStudioColors.goldBg,
 } as const
 

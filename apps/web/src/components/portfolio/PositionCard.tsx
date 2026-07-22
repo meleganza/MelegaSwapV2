@@ -100,7 +100,7 @@ const Chip = styled.span`
 `
 
 const LifecycleChip = styled(Chip)`
-  border-color: rgba(212, 175, 55, 0.45);
+  border-color: rgba(244, 196, 48, 0.45);
   color: #f0d78c;
 `
 
@@ -147,8 +147,8 @@ const ClaimableBanner = styled.div`
   min-width: 0;
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(244, 196, 48, 0.35);
+  background: rgba(244, 196, 48, 0.08);
 `
 
 const Actions = styled.div`
@@ -172,7 +172,7 @@ const PrimaryAction = styled.a`
   max-width: 100%;
   padding: 10px 16px;
   border-radius: 10px;
-  background: #d4af37;
+  background: #F4C430;
   color: #1a1408;
   font-size: 14px;
   font-weight: 800;
@@ -189,8 +189,8 @@ const PrimaryButton = styled.button`
   max-width: 100%;
   padding: 10px 16px;
   border-radius: 10px;
-  border: 1px solid rgba(212, 175, 55, 0.5);
-  background: rgba(212, 175, 55, 0.18);
+  border: 1px solid rgba(244, 196, 48, 0.5);
+  background: rgba(244, 196, 48, 0.18);
   color: #f0d78c;
   font-size: 14px;
   font-weight: 800;
@@ -246,7 +246,7 @@ const Footer = styled.footer`
 const NavLink = styled.a`
   font-size: 12px;
   font-weight: 600;
-  color: #d4af37;
+  color: #F4C430;
   text-decoration: none;
   word-break: break-word;
 `

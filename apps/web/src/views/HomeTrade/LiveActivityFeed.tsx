@@ -102,8 +102,8 @@ const IconWrap = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(244, 196, 48, 0.22);
+  background: rgba(244, 196, 48, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -215,11 +215,11 @@ const ExplorerLink = styled.a`
   border-radius: 8px;
   color: ${premiumStudioColors.gold};
   text-decoration: none;
-  border: 1px solid rgba(212, 175, 55, 0.18);
-  background: rgba(212, 175, 55, 0.06);
+  border: 1px solid rgba(244, 196, 48, 0.18);
+  background: rgba(244, 196, 48, 0.06);
 
   &:hover {
-    background: rgba(212, 175, 55, 0.12);
+    background: rgba(244, 196, 48, 0.12);
   }
 `
 

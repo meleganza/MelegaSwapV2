@@ -25,7 +25,7 @@ const variantStyles: Record<MelegaBadgeVariant, ReturnType<typeof css>> = {
   `,
   waiting: css`
     color: ${colors.gold};
-    border-color: rgba(212, 175, 55, 0.35);
+    border-color: rgba(244, 196, 48, 0.35);
     background: ${colors.goldSoft};
   `,
   error: css`

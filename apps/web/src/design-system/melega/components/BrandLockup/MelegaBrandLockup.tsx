@@ -31,7 +31,7 @@ const Circle = styled.div<{ $size: number }>`
   border-radius: 50%;
   flex-shrink: 0;
   background: ${colors.background};
-  border: 2px solid #d4af37;
+  border: 2px solid #F4C430;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +62,7 @@ const MelegaWord = styled.span`
 `
 
 const DexWord = styled.span`
-  color: #d4af37;
+  color: #F4C430;
 `
 
 export interface MelegaBrandLockupProps {

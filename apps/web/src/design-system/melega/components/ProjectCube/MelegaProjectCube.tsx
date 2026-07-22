@@ -29,10 +29,10 @@ const Face = styled.div`
   inset: 0;
   border-radius: 16px;
   background: linear-gradient(145deg, rgba(12, 10, 4, 0.55) 0%, rgba(4, 4, 4, 0.85) 50%, rgba(18, 14, 4, 0.65) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.5);
+  border: 1px solid rgba(244, 196, 48, 0.5);
   box-shadow:
     inset 0 0 40px rgba(244, 197, 66, 0.1),
-    0 0 30px rgba(212, 175, 55, 0.12);
+    0 0 30px rgba(244, 196, 48, 0.12);
   backdrop-filter: blur(2px);
 `
 
@@ -51,7 +51,7 @@ const Core = styled.div`
   height: 24px;
   transform: translate(-50%, -50%);
   border-radius: 4px;
-  background: radial-gradient(circle, rgba(244, 197, 66, 0.9) 0%, rgba(212, 175, 55, 0.45) 60%, transparent 100%);
+  background: radial-gradient(circle, rgba(244, 197, 66, 0.9) 0%, rgba(244, 196, 48, 0.45) 60%, transparent 100%);
   box-shadow: 0 0 20px rgba(244, 197, 66, 0.55);
 `
 
@@ -60,9 +60,9 @@ export const MelegaProjectCube: React.FC = () => (
     <Glow />
     <Face />
     <Wire viewBox="0 0 68 68" fill="none">
-      <rect x="8" y="8" width="52" height="52" stroke="rgba(212,175,55,0.45)" strokeWidth="1" />
+      <rect x="8" y="8" width="52" height="52" stroke="rgba(244, 196, 48,0.45)" strokeWidth="1" />
       <path d="M8 8 L34 34 M60 8 L34 34 M8 60 L34 34 M60 60 L34 34" stroke="rgba(244,197,66,0.35)" strokeWidth="0.75" />
-      <rect x="20" y="20" width="28" height="28" stroke="rgba(212,175,55,0.25)" strokeWidth="0.75" strokeDasharray="3 2" />
+      <rect x="20" y="20" width="28" height="28" stroke="rgba(244, 196, 48,0.25)" strokeWidth="0.75" strokeDasharray="3 2" />
     </Wire>
     <Core />
   </Cube>

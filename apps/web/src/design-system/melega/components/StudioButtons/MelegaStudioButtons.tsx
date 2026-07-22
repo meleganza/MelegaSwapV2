@@ -31,7 +31,7 @@ export const MelegaStudioPrimaryBtn = styled.button`
   border-radius: ${studioConstitutionLayout.btnRadius};
   background: linear-gradient(180deg, #f6d44a 0%, ${studioConstitutionColors.gold} 100%);
   color: #050505;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 20px rgba(244, 196, 48, 0.2);
 
   &:hover:not(:disabled) {
     filter: brightness(1.05);
@@ -56,7 +56,7 @@ export const MelegaStudioOutlineBtn = styled.button`
 
   &:hover:not(:disabled) {
     border-color: ${studioConstitutionColors.cardBorderHover};
-    background: rgba(212, 175, 55, 0.2);
+    background: rgba(244, 196, 48, 0.2);
   }
 
   &:disabled {
@@ -76,7 +76,7 @@ export const MelegaStudioGhostBtn = styled.button`
   color: ${studioConstitutionColors.text};
 
   &:hover:not(:disabled) {
-    border-color: rgba(212, 175, 55, 0.45);
+    border-color: rgba(244, 196, 48, 0.45);
     color: ${studioConstitutionColors.gold};
   }
 

@@ -10,7 +10,7 @@ const Timeline = styled.ol`
   display: flex;
   flex-direction: column;
   gap: 0;
-  border-left: 2px solid rgba(212, 175, 55, 0.25);
+  border-left: 2px solid rgba(244, 196, 48, 0.25);
 `
 
 const Milestone = styled.li`
@@ -28,9 +28,9 @@ const Milestone = styled.li`
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #d4af37;
+    background: #F4C430;
     border: 2px solid #0a0a0a;
-    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 0 2px rgba(244, 196, 48, 0.35);
   }
 
   &:last-child {
@@ -51,7 +51,7 @@ const StatusPill = styled.span<{ $tone: 'done' | 'active' | 'upcoming' | 'planne
     $tone === 'done'
       ? '#1be77a'
       : $tone === 'active'
-        ? '#d4af37'
+        ? '#F4C430'
         : $tone === 'upcoming'
           ? '#c8c8c8'
           : '#8f8f8f'};
@@ -59,14 +59,14 @@ const StatusPill = styled.span<{ $tone: 'done' | 'active' | 'upcoming' | 'planne
     $tone === 'done'
       ? 'rgba(27, 231, 122, 0.12)'
       : $tone === 'active'
-        ? 'rgba(212, 175, 55, 0.12)'
+        ? 'rgba(244, 196, 48, 0.12)'
         : 'rgba(255, 255, 255, 0.06)'};
   border: 1px solid
     ${({ $tone }) =>
       $tone === 'done'
         ? 'rgba(27, 231, 122, 0.35)'
         : $tone === 'active'
-          ? 'rgba(212, 175, 55, 0.35)'
+          ? 'rgba(244, 196, 48, 0.35)'
           : 'rgba(255, 255, 255, 0.08)'};
 `
 

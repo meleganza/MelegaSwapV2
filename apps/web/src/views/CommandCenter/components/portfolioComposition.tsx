@@ -202,7 +202,7 @@ const ViewChip = styled.button<{ $active?: boolean }>`
   border-radius: 999px;
   border: 1px solid
     ${({ $active }) => ($active ? commandCenterColors.gold : commandCenterColors.cardBorder)};
-  background: ${({ $active }) => ($active ? 'rgba(212, 175, 55, 0.12)' : commandCenterColors.cardBg)};
+  background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.12)' : commandCenterColors.cardBg)};
   color: ${commandCenterColors.white};
   font-family: ${CC_FONT_BODY};
   font-size: 12px;

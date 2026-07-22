@@ -31,7 +31,7 @@ const Horizon = styled.div`
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 78% 90%, rgba(244, 197, 66, 0.65) 0%, rgba(212, 175, 55, 0.3) 22%, rgba(0, 0, 0, 0) 48%),
+    radial-gradient(ellipse at 78% 90%, rgba(244, 197, 66, 0.65) 0%, rgba(244, 196, 48, 0.3) 22%, rgba(0, 0, 0, 0) 48%),
     linear-gradient(180deg, #000000 0%, #020202 100%);
   animation: ${glowAnim} 9s ease-in-out infinite;
 
@@ -59,7 +59,7 @@ const Stars = styled.div`
     radial-gradient(1.5px 1.5px at 48% 18%, rgba(255, 255, 255, 0.35), transparent),
     radial-gradient(1px 1px at 68% 28%, rgba(255, 255, 255, 0.25), transparent),
     radial-gradient(1px 1px at 85% 12%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 35% 62%, rgba(212, 175, 55, 0.18), transparent);
+    radial-gradient(1px 1px at 35% 62%, rgba(244, 196, 48, 0.18), transparent);
   animation: ${twinkle} 7s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;

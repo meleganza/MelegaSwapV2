@@ -54,7 +54,7 @@ const NavLink = styled.a`
   &:hover,
   &:focus-visible {
     color: ${GOLD};
-    border-color: rgba(212, 175, 55, 0.45);
+    border-color: rgba(244, 196, 48, 0.45);
     outline: none;
   }
 
