@@ -1,6 +1,6 @@
 /**
- * DS001.2 — Global header navigation destinations.
- * Routes must be live; no dead links.
+ * UX003 / DS001.2 — Global header navigation.
+ * Primary labels follow the approved Project Website mockup.
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -19,7 +19,6 @@ export type HeaderNavItem =
       kind: 'link'
       href: string
       match: (pathname: string) => boolean
-      /** Hide in compact desktop primary row (moved into More). */
       compactHide?: boolean
     }
   | {
@@ -119,8 +118,14 @@ export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   },
 ]
 
-export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
-  { id: 'trending', label: 'Trending', href: '/trending', match: (p) => p === '/trending' },
+/** Mockup primary “Build” menu — secondary surfaces. */
+export const BUILD_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
+  {
+    id: 'build-studio',
+    label: 'Build Studio',
+    href: '/build-studio',
+    match: (p) => p.startsWith('/build-studio'),
+  },
   { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
   {
     id: 'collectibles',
@@ -134,12 +139,7 @@ export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
     href: IDENTITY_CONSOLE_ROUTE,
     match: (p) => p === '/identity' || p.startsWith('/identity/'),
   },
-  {
-    id: 'build-studio',
-    label: 'Build Studio',
-    href: '/build-studio',
-    match: (p) => p.startsWith('/build-studio'),
-  },
+  { id: 'trending', label: 'Trending', href: '/trending', match: (p) => p === '/trending' },
   {
     id: 'command-center',
     label: 'Command Center',
@@ -148,7 +148,9 @@ export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   },
 ]
 
-/** Analytics lives in More below 1280px. */
+/** @deprecated UX003 mockup uses Build — kept for tests that reference More. */
+export const MORE_DROPDOWN_ITEMS = BUILD_DROPDOWN_ITEMS
+
 export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   id: 'analytics',
   label: 'Analytics',
@@ -196,18 +198,11 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
     match: (p) => p.startsWith('/projects') || p.startsWith('/project-hq') || p.startsWith('/@'),
   },
   {
-    id: 'analytics',
-    label: 'Analytics',
-    kind: 'link',
-    href: '/radar',
-    match: (p) => p === '/radar',
-    compactHide: true,
-  },
-  {
-    id: 'more',
-    label: 'More',
+    id: 'build',
+    label: 'Build',
     kind: 'menu',
     menuWidth: 228,
+    compactHide: true,
     match: (p) =>
       p === '/trending' ||
       p === '/radar' ||
@@ -218,6 +213,6 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
       p.startsWith('/build-studio') ||
       p.startsWith('/command-center') ||
       p.startsWith('/portfolio'),
-    items: MORE_DROPDOWN_ITEMS,
+    items: BUILD_DROPDOWN_ITEMS,
   },
 ]

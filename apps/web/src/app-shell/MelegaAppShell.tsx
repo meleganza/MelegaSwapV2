@@ -90,7 +90,7 @@ export interface MelegaAppShellProps {
 
 /**
  * DS001.2 — Shared Melega DEX shell.
- * Desktop: 72px global header, no permanent left sidebar.
+ * Desktop: 64px global header (UX003 mockup), no permanent left sidebar.
  * Mobile (<1024): compact mobile header + bottom navigation.
  */
 const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {

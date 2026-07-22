@@ -8,11 +8,7 @@ import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
 import { ds001Colors, ds001FontFamily, ds001Layout } from '../../tokens/ds001'
-import {
-  ANALYTICS_MORE_ITEM,
-  GLOBAL_HEADER_NAV,
-  type HeaderNavItem,
-} from 'app-shell/config/globalHeaderNav'
+import { GLOBAL_HEADER_NAV, type HeaderNavItem } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
 import GlobalSearch from 'app-shell/components/GlobalSearch'
 import HeaderNavDropdown from './HeaderNavDropdown'
@@ -49,7 +45,11 @@ const Inner = styled.div`
   gap: 0;
   box-sizing: border-box;
 
-  @media (min-width: 1600px) {
+  @media (min-width: 1280px) {
+    padding: 0 22px;
+  }
+
+  @media (min-width: 1440px) {
     padding: 0 ${ds001Layout.headerPaddingXWide};
   }
 `
@@ -84,6 +84,7 @@ const Logo = styled.img`
   flex: 0 0 ${ds001Layout.headerLogoSize};
   object-fit: contain;
   border-radius: 50%;
+  border: 1px solid #d8b328;
 `
 
 const Wordmark = styled.span`
@@ -91,10 +92,10 @@ const Wordmark = styled.span`
   align-items: baseline;
   white-space: nowrap;
   font-family: ${ds001FontFamily.sans};
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 21px;
+  line-height: 1;
   font-weight: 700;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.02em;
 `
 
 const MelegaWord = styled.span`
@@ -112,7 +113,7 @@ const Nav = styled.nav`
   gap: ${ds001Layout.headerNavItemGap};
   height: ${ds001Layout.headerHeight};
   flex-shrink: 0;
-  margin-left: 0;
+  margin-left: 30px;
 `
 
 const NavItemWrap = styled.div`
@@ -120,6 +121,12 @@ const NavItemWrap = styled.div`
   display: inline-flex;
   align-items: center;
   height: ${ds001Layout.headerHeight};
+
+  &[data-compact-hide='true'] {
+    @media (max-width: 1179px) {
+      display: none;
+    }
+  }
 `
 
 const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
@@ -128,26 +135,27 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
   padding: 0 ${ds001Layout.headerNavItemPaddingX};
   border-radius: ${ds001Layout.headerNavItemRadius};
   border: 0;
-  background: ${({ $open }) => ($open ? '#181818' : 'transparent')};
+  background: ${({ $open, $active }) =>
+    $open || $active ? 'rgba(255, 255, 255, 0.055)' : 'transparent'};
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
   font-family: ${ds001FontFamily.sans};
-  font-size: 13px;
+  font-size: 14px;
   line-height: 18px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.1px;
   color: ${({ $active, $open }) =>
-    $active ? ds001Colors.primaryGold : $open ? '#FFFFFF' : '#D4D4D4'};
+    $active || $open ? '#FFFFFF' : 'rgba(255, 255, 255, 0.68)'};
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color 160ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color 140ms ease,
+    color 140ms ease;
 
   &:hover {
-    background: #141414;
+    background: rgba(255, 255, 255, 0.055);
     color: #ffffff;
   }
 
@@ -157,7 +165,7 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
   }
 
   &[data-compact-hide='true'] {
-    @media (max-width: 1279px) {
+    @media (max-width: 1179px) {
       display: none;
     }
   }
@@ -175,19 +183,20 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   justify-content: center;
   gap: 5px;
   font-family: ${ds001FontFamily.sans};
-  font-size: 13px;
+  font-size: 14px;
   line-height: 18px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.1px;
-  color: ${({ $active }) => ($active ? ds001Colors.primaryGold : '#D4D4D4')};
+  color: ${({ $active }) => ($active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.68)')};
+  background: ${({ $active }) => ($active ? 'rgba(255, 255, 255, 0.055)' : 'transparent')};
   white-space: nowrap;
   text-decoration: none;
   transition:
-    background-color 160ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color 140ms ease,
+    color 140ms ease;
 
   &:hover {
-    background: #141414;
+    background: rgba(255, 255, 255, 0.055);
     color: #ffffff;
   }
 
@@ -197,20 +206,14 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   }
 
   &[data-compact-hide='true'] {
-    @media (max-width: 1279px) {
+    @media (max-width: 1179px) {
       display: none;
     }
   }
 `
 
 const ActiveBar = styled.span`
-  position: absolute;
-  bottom: 0;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  border-radius: 2px 2px 0 0;
-  background: ${ds001Colors.primaryGold};
+  display: none;
 `
 
 const Chevron = styled.span<{ $open?: boolean }>`
@@ -229,12 +232,18 @@ const SearchRegion = styled.div`
   margin-right: 8px;
 
   [data-melega-global-search] {
-    width: clamp(190px, 18vw, 300px);
+    width: clamp(240px, 22vw, 320px);
   }
 
   @media (max-width: 1279px) {
     [data-melega-global-search] {
-      width: clamp(180px, 16vw, 210px);
+      width: clamp(210px, 18vw, 280px);
+    }
+  }
+
+  @media (max-width: 1179px) {
+    [data-melega-global-search] {
+      width: clamp(180px, 16vw, 240px);
     }
   }
 `
@@ -245,6 +254,15 @@ const RightCluster = styled.div`
   gap: 8px;
   height: ${ds001Layout.headerHeight};
   flex-shrink: 0;
+`
+
+const OverflowWrap = styled.div`
+  position: relative;
+  display: none;
+
+  @media (max-width: 1179px) {
+    display: block;
+  }
 `
 
 const OverflowBtn = styled.button`
@@ -302,14 +320,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
     return pathname
   }, [asPath, pathname])
 
-  const moreItems = useMemo(() => {
-    const base = GLOBAL_HEADER_NAV.find((i) => i.id === 'more')
-    if (!base || base.kind !== 'menu') return []
-    // Below 1280px Analytics moves into More — always include in menu data; CSS hides primary Analytics.
-    const hasAnalytics = base.items.some((i) => i.id === 'analytics')
-    return hasAnalytics ? base.items : [ANALYTICS_MORE_ITEM, ...base.items]
-  }, [])
-
   const closeMenus = useCallback(() => setOpenMenu(null), [])
 
   useEffect(() => {
@@ -329,7 +339,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
     <Bar ref={rootRef} data-melega-app-header data-melega-global-header data-testid="melega-global-header">
       <Inner>
         <Brand href="/" aria-label="Melega DEX home" data-testid="melega-header-brand">
-          <Logo src={MELEGA_LOGO_URI} alt="" width={36} height={36} />
+          <Logo src={MELEGA_LOGO_URI} alt="" width={38} height={38} />
           <Wordmark>
             <MelegaWord>Melega</MelegaWord>
             <DexWord>DEX</DexWord>
@@ -341,11 +351,10 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             const active = isNavActive(item, resolvedPath)
             if (item.kind === 'link') {
               return (
-                <NavItemWrap key={item.id}>
+                <NavItemWrap key={item.id} data-compact-hide={item.compactHide ? 'true' : undefined}>
                   <NavLink
                     href={item.href}
                     $active={active}
-                    data-compact-hide={item.compactHide ? 'true' : undefined}
                     aria-current={active ? 'page' : undefined}
                     data-testid={`melega-header-nav-${item.id}`}
                   >
@@ -357,9 +366,8 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
             }
 
             const open = openMenu === item.id
-            const menuItems = item.id === 'more' ? moreItems : item.items
             return (
-              <NavItemWrap key={item.id}>
+              <NavItemWrap key={item.id} data-compact-hide={item.compactHide ? 'true' : undefined}>
                 <NavTrigger
                   type="button"
                   $active={active}
@@ -377,13 +385,13 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                 </NavTrigger>
                 {open ? (
                   <HeaderNavDropdown
-                    items={menuItems}
+                    items={item.items}
                     width={item.menuWidth}
                     pathname={resolvedPath}
                     query={query}
                     onClose={closeMenus}
                     onNavigate={closeMenus}
-                    showIcons={item.id === 'more'}
+                    showIcons={item.id === 'build'}
                   />
                 ) : null}
               </NavItemWrap>
@@ -409,16 +417,35 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
               Connect Wallet
             </ConnectWalletButton>
           )}
-          <OverflowBtn
-            type="button"
-            aria-label="Open application menu"
-            aria-haspopup="menu"
-            aria-expanded={openMenu === 'more'}
-            data-testid="melega-header-overflow"
-            onClick={() => setOpenMenu(openMenu === 'more' ? null : 'more')}
-          >
-            <IconMenu />
-          </OverflowBtn>
+          <OverflowWrap>
+            <OverflowBtn
+              type="button"
+              aria-label="Open Build menu"
+              aria-haspopup="menu"
+              aria-expanded={openMenu === 'overflow-build'}
+              data-testid="melega-header-overflow"
+              onClick={() => setOpenMenu(openMenu === 'overflow-build' ? null : 'overflow-build')}
+            >
+              <IconMenu />
+            </OverflowBtn>
+            {openMenu === 'overflow-build'
+              ? (() => {
+                  const build = GLOBAL_HEADER_NAV.find((i) => i.id === 'build')
+                  if (!build || build.kind !== 'menu') return null
+                  return (
+                    <HeaderNavDropdown
+                      items={build.items}
+                      width={build.menuWidth}
+                      pathname={resolvedPath}
+                      query={query}
+                      onClose={closeMenus}
+                      onNavigate={closeMenus}
+                      showIcons
+                    />
+                  )
+                })()
+              : null}
+          </OverflowWrap>
         </RightCluster>
       </Inner>
     </Bar>

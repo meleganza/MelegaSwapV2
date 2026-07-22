@@ -25,17 +25,29 @@ import { humanChainName } from '../presentation/humanLabels'
 import { EmptyState, EmptyStateBody, EmptyStateTitle, MutedText, Section, SectionTitle } from './theme'
 import { getBuySectionTitle } from './helpers'
 
-const BuySurface = styled.div`
+const BuySurface = styled.div<{ $dense?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: ${({ $dense }) => ($dense ? '10px' : '14px')};
+  background: ${({ $dense }) => ($dense ? '#111111' : 'transparent')};
+  border: ${({ $dense }) => ($dense ? '1px solid rgba(255, 255, 255, 0.075)' : 'none')};
+  border-radius: ${({ $dense }) => ($dense ? '16px' : '0')};
+  padding: ${({ $dense }) => ($dense ? '18px' : '0')};
+  box-shadow: ${({ $dense }) => ($dense ? '0 14px 40px rgba(0, 0, 0, 0.28)' : 'none')};
+  min-height: ${({ $dense }) => ($dense ? '270px' : 'auto')};
+
+  @media (min-width: 1024px) {
+    min-height: ${({ $dense }) => ($dense ? '280px' : 'auto')};
+    max-height: ${({ $dense }) => ($dense ? '306px' : 'none')};
+    overflow: auto;
+  }
 `
 
 const QuietSwapShell = styled.div`
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  background: rgba(12, 12, 12, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.065);
 
   .home-trade-swap {
     padding: 0;
@@ -46,6 +58,12 @@ const QuietSwapShell = styled.div`
     border: none !important;
     box-shadow: none !important;
   }
+`
+
+const SwapSubtitle = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.42);
 `
 
 const SwapSkeleton = styled.div`
@@ -66,6 +84,7 @@ const SwapInner = dynamic(
 interface Props {
   slug: string
   marketsDocument: ProjectMarketsDocument
+  dense?: boolean
 }
 
 function resolveDefaultPair(slug: string, marketsDocument: ProjectMarketsDocument) {
@@ -187,7 +206,7 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
   )
 }
 
-const ProjectSwapCard: React.FC<Props> = ({ slug, marketsDocument }) => {
+const ProjectSwapCard: React.FC<Props> = ({ slug, marketsDocument, dense = false }) => {
   const preferred = marketsDocument.preferredMarkets[0]
   const symbol =
     slug === 'marco'
@@ -198,12 +217,16 @@ const ProjectSwapCard: React.FC<Props> = ({ slug, marketsDocument }) => {
   const chainName = humanChainName(chainId)
 
   return (
-    <Section aria-labelledby="buy-heading">
-      <BuySurface>
-        <SectionTitle as="h2" id="buy-heading">
+    <Section aria-labelledby="buy-heading" style={{ margin: 0 }}>
+      <BuySurface $dense={dense}>
+        <SectionTitle as="h2" id="buy-heading" style={{ fontSize: dense ? 22 : undefined }}>
           {title}
         </SectionTitle>
-        <MutedText>Buy with BNB on {chainName}</MutedText>
+        {dense ? (
+          <SwapSubtitle>Trade instantly on Melega DEX</SwapSubtitle>
+        ) : (
+          <MutedText>Buy with BNB on {chainName}</MutedText>
+        )}
         <SwapFeaturesProvider>
           <SwapInner slug={slug} marketsDocument={marketsDocument} />
         </SwapFeaturesProvider>

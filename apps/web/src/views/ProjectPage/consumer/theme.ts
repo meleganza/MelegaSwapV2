@@ -26,7 +26,9 @@ const fadeInUp = keyframes`
 export const PageFrame = styled.div`
   width: 100%;
   min-height: calc(100vh - 64px);
-  background: ${CANVAS};
+  background:
+    radial-gradient(circle at 24% 0%, rgba(221, 185, 47, 0.045), transparent 30%),
+    linear-gradient(180deg, #070707 0%, #050505 100%);
   color: ${TEXT};
   font-family: ${PREMIUM_FONT_BODY};
   font-size: ${BODY_SIZE};
@@ -36,18 +38,56 @@ export const PageFrame = styled.div`
 export const Shell = styled.main`
   display: flex;
   flex-direction: column;
-  gap: ${SECTION_GAP};
-  max-width: 720px;
+  gap: 14px;
+  max-width: 1384px;
   margin: 0 auto;
   width: 100%;
-  padding: 0 16px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: 18px 16px calc(88px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    gap: 14px;
+    padding: 18px 18px calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+
+  @media (min-width: 1280px) {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  @media (min-width: 1440px) {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     * {
       animation: none !important;
       transition: none !important;
     }
+  }
+`
+
+export const ChartSwapRow = styled.div`
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: stretch;
+    min-height: 280px;
+    max-height: 306px;
+  }
+`
+
+export const BottomTriple = styled.div`
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr);
   }
 `
 

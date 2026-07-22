@@ -78,3 +78,31 @@ export function getPreferredBuyHref(marketsDocument: ProjectMarketsDocument): st
     null
   return preferredBuy?.href ?? null
 }
+
+/**
+ * UX003 — token-project website template vs protocol template.
+ * Derived from registered primary asset + projectType — never slug hacks.
+ */
+export function isTokenProjectTemplate(document: CanonicalProjectDocument): boolean {
+  const primary = getPrimaryAsset(document)
+  const hasTradablePrimary =
+    Boolean(primary?.contractAddress) &&
+    (primary?.projectRole === 'primary' || primary?.projectRole === 'secondary')
+  const typeLabel =
+    document.identity.projectType?.meta.availability === 'AVAILABLE'
+      ? String(document.identity.projectType.value ?? '')
+      : ''
+  if (/exchange|protocol|infrastructure|platform/i.test(typeLabel) && !hasTradablePrimary) {
+    return false
+  }
+  return hasTradablePrimary
+}
+
+export function getProjectTypeLabel(document: CanonicalProjectDocument): string | null {
+  if (document.identity.projectType?.meta.availability !== 'AVAILABLE') return null
+  return document.identity.projectType.value ? String(document.identity.projectType.value) : null
+}
+
+export function getWebsiteResource(document: CanonicalProjectDocument) {
+  return getSocialResources(document).find((r) => r.resourceType === 'website' && Boolean(r.url))
+}

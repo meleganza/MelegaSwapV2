@@ -12,9 +12,9 @@ import { ds001Layout } from 'design-system/melega/tokens/ds001'
 
 const ROOT = path.resolve(__dirname, '../..')
 
-describe('DS001.2 global header shell contracts', () => {
-  it('exports 72px header height from DS001 layout and GlobalHeader source', () => {
-    expect(ds001Layout.headerHeight).toBe('72px')
+describe('DS001.2 / UX003 global header shell contracts', () => {
+  it('exports 64px header height from DS001 layout and GlobalHeader source', () => {
+    expect(ds001Layout.headerHeight).toBe('64px')
     const header = readFileSync(
       path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
       'utf8',
@@ -57,28 +57,26 @@ describe('DS001.2 global header shell contracts', () => {
     expect(POOLS_DROPDOWN_ITEMS.some((i) => /My Pools/i.test(i.label))).toBe(false)
   })
 
-  it('primary navigation includes Trade through More with Analytics label', () => {
+  it('primary navigation matches approved mockup: Trade through Build', () => {
     expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
       'Trade',
       'Liquidity',
       'Farms',
       'Pools',
       'Projects',
-      'Analytics',
-      'More',
+      'Build',
     ])
-    const analytics = GLOBAL_HEADER_NAV.find((i) => i.id === 'analytics')
-    expect(analytics?.kind).toBe('link')
-    if (analytics?.kind === 'link') expect(analytics.href).toBe('/radar')
+    const build = GLOBAL_HEADER_NAV.find((i) => i.id === 'build')
+    expect(build?.kind).toBe('menu')
   })
 
-  it('More menu includes secondary surfaces', () => {
+  it('Build menu includes secondary surfaces', () => {
     expect(MORE_DROPDOWN_ITEMS.map((i) => i.label)).toEqual([
-      'Trending',
+      'Build Studio',
       'DEX Intelligence',
       'Identity Hub',
       'Identity Console',
-      'Build Studio',
+      'Trending',
       'Command Center',
     ])
   })
