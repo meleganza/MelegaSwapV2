@@ -1,0 +1,222 @@
+{
+  "schemaVersion": "melega.liquidity-building.treasury-boundary-audit.v1",
+  "missionId": "LB-ARCH-001",
+  "assessedAtUtc": "2026-07-22T21:30:00Z",
+  "verdict": "LIQUIDITY_BUILDING_TREASURY_BOUNDARY_PARTIALLY_OVERENGINEERED",
+  "summary": {
+    "treasuryHttpApisCalledByLbExecution": false,
+    "onChainFeeAtomic": true,
+    "feeBpsOnChain": 500,
+    "treasuryRuntimeBlocksActivation": true,
+    "treasuryRuntimeBlocksPerEpochExecutionHttp": false,
+    "treasuryIngestionBlocksOffchainLoopSuccessClaim": true
+  },
+  "treasuryEndpoints": [
+    {
+      "endpoint": "/api/v1/economic-quote",
+      "invokedByLbExecutionCode": false,
+      "callerRepository": null,
+      "callerFile": null,
+      "function": null,
+      "trigger": null,
+      "blocking": false,
+      "notes": "No imports/fetches in apps/web/src/lib/liquidity-building-runtime. Historical probe docs only (LB001/LB006)."
+    },
+    {
+      "endpoint": "/api/v1/execution-authorization",
+      "invokedByLbExecutionCode": false,
+      "callerRepository": null,
+      "callerFile": null,
+      "function": null,
+      "trigger": null,
+      "blocking": false,
+      "notes": "Not wired. Authorizer is on-chain EIP-712 vs KMS signingAuthority."
+    },
+    {
+      "endpoint": "/api/v1/execution-ticket",
+      "invokedByLbExecutionCode": false,
+      "callerRepository": null,
+      "callerFile": null,
+      "function": null,
+      "trigger": null,
+      "blocking": false,
+      "notes": "Not wired. Intent field treasuryAuthorizationReference is bytes32 metadata, not an HTTP ticket."
+    },
+    {
+      "endpoint": "/api/v1/receipt",
+      "invokedByLbExecutionCode": false,
+      "callerRepository": null,
+      "callerFile": null,
+      "function": null,
+      "trigger": null,
+      "blocking": false,
+      "notes": "Generic batch receipt exists on Treasury Runtime; LB settlement schema NOT_IMPLEMENTED. BlockedTreasuryIngestor never HTTP-calls Runtime."
+    },
+    {
+      "endpoint": "/api/v1/health",
+      "invokedByLbExecutionCode": false,
+      "callerRepository": "MelegaSwapV2 (activation/ops probes only)",
+      "callerFile": "deployments/.../LiquidityBuildingV1.inputs.json healthProbe record; docs probes",
+      "function": "manual/ops probe; not loop.ts",
+      "trigger": "activation readiness evidence",
+      "blocking": true,
+      "notes": "Live: CONNECTED but environment=development chain=none — used as activation evidence, not per-epoch."
+    }
+  ],
+  "gates": [
+    {
+      "gateId": "LB-G03B",
+      "currentPurpose": "Non-exportable KMS/HSM signing authority for ExecutionIntent digests",
+      "actualCaller": "signing-adapter.ts / authorize-path.ts (DisabledLiquidityBuildingKmsSigner until provisioned)",
+      "executionFrequency": "once_per_signed_intent",
+      "blocking": true,
+      "classification": "REQUIRED_SECURITY_GATE",
+      "retain": true,
+      "proposedBehavior": "Retain. Executor identity only — not Treasury permission.",
+      "evidence": "LiquidityBuildingExecutionAuthorizerV1.validateExecutionIntent; DisabledLiquidityBuildingKmsSigner"
+    },
+    {
+      "gateId": "LB-G11",
+      "currentPurpose": "Production KMS signature normalization verified against Authorizer",
+      "actualCaller": "kms-signature-normalization.ts + authorize-path.ts",
+      "executionFrequency": "once_at_authority_commissioning_plus_per_sign_path",
+      "blocking": true,
+      "classification": "REQUIRED_SECURITY_GATE",
+      "retain": true,
+      "proposedBehavior": "Retain as one-time production verification + ongoing signer readiness.",
+      "evidence": "signatureNormalization.productionKmsVerified=false in inputs"
+    },
+    {
+      "gateId": "LB-G03C",
+      "currentPurpose": "Permissionless relay submits opaque signed calldata",
+      "actualCaller": "relay.ts DisabledLiquidityBuildingRelay; loop.ts",
+      "executionFrequency": "once_per_execution_submit",
+      "blocking": true,
+      "classification": "REQUIRED_SECURITY_GATE",
+      "retain": true,
+      "proposedBehavior": "Retain. Must not alter economics; no Treasury ticket required.",
+      "evidence": "relay.ts; loop.ts submit path"
+    },
+    {
+      "gateId": "LB-G04B",
+      "currentPurpose": "Canonical non-EOA Treasury fee receiver address for FeeSink constructor",
+      "actualCaller": "LiquidityBuildingTreasuryFeeSinkV1 constructor; Factory binding checks; activation-gates.ts",
+      "executionFrequency": "once_at_deploy",
+      "blocking": true,
+      "classification": "REQUIRED_DEPLOYMENT_INPUT",
+      "retain": true,
+      "proposedBehavior": "Retain as deploy-time binding. Do not require live Runtime HTTP.",
+      "evidence": "FeeSink immutable treasuryReceiver; inputs receiverAddress=null"
+    },
+    {
+      "gateId": "LB-G04C",
+      "currentPurpose": "Treasury Runtime ingestion of LiquidityBuildingFeeSettled",
+      "actualCaller": "treasury-integration.ts BlockedTreasuryIngestor; readiness.ts treasuryReady; activationGateConsumer",
+      "executionFrequency": "activation_gate_and_post_execution_reconcile",
+      "blocking": true,
+      "classification": "UNNECESSARY_SYNCHRONOUS_DEPENDENCY",
+      "retain": false,
+      "proposedBehavior": "Convert to asynchronous observability. Must not block activationAuthorized or on-chain execute. Index events after FeePaid.",
+      "evidence": "activation-gate-final FAIL; loop.ts TREASURY_UNAVAILABLE after submit; no HTTP client to Runtime"
+    },
+    {
+      "gateId": "LB-G12",
+      "currentPurpose": "Reconciliation distinguishing executionId / settlementReceipt / Runtime ack",
+      "actualCaller": "treasury-integration.ts validateAndStore; monitoring.isEconomicallySuccessful",
+      "executionFrequency": "post_execution_async",
+      "blocking": true,
+      "classification": "ACCOUNTING_OBSERVABILITY_ONLY",
+      "retain": true,
+      "proposedBehavior": "Retain as async accounting requirement. Do not gate activation or atomic on-chain success.",
+      "evidence": "Blocked with LB-G04C in activation matrix; isEconomicallySuccessful requires treasurySettled"
+    },
+    {
+      "gateId": "LB-G08",
+      "currentPurpose": "Founder-ratified quote floors published into deploy inputs / on-chain quotePolicy",
+      "actualCaller": "Factory.quotePolicy; Math.validateQuotePolicy during execute; activation gates",
+      "executionFrequency": "once_at_policy_ratification_then_on_chain_per_execution",
+      "blocking": true,
+      "classification": "REQUIRED_DEPLOYMENT_INPUT",
+      "retain": true,
+      "proposedBehavior": "Retain as versioned/on-chain policy. Not live Treasury quote API per epoch.",
+      "evidence": "quotePolicies=[]; Factory successFeeBps==500; quotePolicy checks in Program.execute"
+    },
+    {
+      "gateId": "LB-G09",
+      "currentPurpose": "USDT/USDC gas conversion path or explicit NOT_ACTIVE",
+      "actualCaller": "quote policy artifacts; Factory quotePolicy",
+      "executionFrequency": "policy_time",
+      "blocking": false,
+      "classification": "REQUIRED_DEPLOYMENT_INPUT",
+      "retain": true,
+      "proposedBehavior": "Keep USDT/USDC NOT_ACTIVE for WBNB-only activation.",
+      "evidence": "quote-policy-calculation.v1.json"
+    },
+    {
+      "gateId": "LB-G10",
+      "currentPurpose": "Finality depth 15 evidence for observation/ingestion safety",
+      "actualCaller": "eligible-flow assessFinality; readiness finalityEvidenceOk; activation gates",
+      "executionFrequency": "per_observation_and_activation",
+      "blocking": true,
+      "classification": "REQUIRED_SECURITY_GATE",
+      "retain": true,
+      "proposedBehavior": "Retain for observation finality. Align indexer; do not couple to Treasury SPA environment.",
+      "evidence": "finality.verdict FINALITY_EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "gateId": "CONTRACTS_NOT_DEPLOYED",
+      "currentPurpose": "LB Factory/Authorizer/FeeSink addresses bound",
+      "actualCaller": "activationGateConsumer contractsDeployed check",
+      "executionFrequency": "once_at_deploy",
+      "blocking": true,
+      "classification": "REQUIRED_DEPLOYMENT_INPUT",
+      "retain": true,
+      "proposedBehavior": "Retain.",
+      "evidence": "addresses null in inputs"
+    },
+    {
+      "gateId": "DEPLOYMENT_INPUTS_BLOCKED",
+      "currentPurpose": "Validator aggregate over inputs file",
+      "actualCaller": "validate-lb-v1-inputs.mjs; readiness.ts; activationGateConsumer",
+      "executionFrequency": "activation",
+      "blocking": true,
+      "classification": "REQUIRED_DEPLOYMENT_INPUT",
+      "retain": true,
+      "proposedBehavior": "Retain but remove LB-G04C OPERATIONAL as mandatory validator precondition.",
+      "evidence": "validatorResult DEPLOYMENT_INPUTS_BLOCKED"
+    },
+    {
+      "gateId": "TREASURY_AUTHORIZATION_REFERENCE_FIELD",
+      "currentPurpose": "bytes32 carried in Intent → Sink settlement record / receipt hash",
+      "actualCaller": "intent-builder; Program._settleFee; FeeSink.settleLiquidityBuildingFee",
+      "executionFrequency": "once_per_execution",
+      "blocking": true,
+      "classification": "DUPLICATED_AUTHORITY",
+      "retain": true,
+      "proposedBehavior": "Retain as on-chain provenance/idempotency reference generated by executor (e.g. hash of executionId+epoch). Rename mentally from 'Treasury ticket'. Do not fetch via Runtime API.",
+      "evidence": "FeeSink only checks != 0; tests use keccak256('auth-ref'); no Runtime signature check"
+    },
+    {
+      "gateId": "OFFCHAIN_LOOP_TREASURY_READY",
+      "currentPurpose": "loop.ts refuses to claim success when BlockedTreasuryIngestor.ready=false",
+      "actualCaller": "loop.ts after relay.submit",
+      "executionFrequency": "once_per_loop_step_after_submit",
+      "blocking": true,
+      "classification": "UNNECESSARY_SYNCHRONOUS_DEPENDENCY",
+      "retain": false,
+      "proposedBehavior": "On-chain success is ExecutionCompleted+FeeSettled+LP. Runtime ingest becomes async job; loop may COMPLETE with RECONCILE_PENDING.",
+      "evidence": "loop.ts lines ~151-155 TREASURY_UNAVAILABLE"
+    },
+    {
+      "gateId": "MELEGA_FACTORY_ROUTER",
+      "currentPurpose": "Canonical Melega DEX bindings",
+      "actualCaller": "Factory constructor / Program router calls",
+      "executionFrequency": "once_at_deploy_then_every_execution",
+      "blocking": false,
+      "classification": "REQUIRED_DEPLOYMENT_INPUT",
+      "retain": true,
+      "proposedBehavior": "Retain (already PASS).",
+      "evidence": "activation-gate-final PASS rows; eth_getCode nonzero"
+    }
+  ]
+}
