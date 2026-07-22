@@ -109,4 +109,8 @@ Primary:
 
 ## 17. Commit and Push
 
-Filled after git commit/push.
+- **branch:** `mission-ds001-4-liquidity-building-experience`
+- **commit:** `690291aaa3d256f51867d6646b84cc2ab93faa73`
+- **push:** succeeded → `origin/mission-ds001-4-liquidity-building-experience`
+- **preview URL:** pending Vercel for branch
+- **remaining uncommitted:** none in mission scope (worktree clean after this note)
