@@ -1,6 +1,6 @@
 /**
- * DS001.2 — Global header navigation destinations.
- * Routes must be live; no dead links.
+ * Melega DEX Complete UX Rebuild — canonical top-level navigation.
+ * Home · Liquidity · Farms · Pools · List · Passport
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -18,8 +18,8 @@ export type HeaderNavItem =
       label: string
       kind: 'link'
       href: string
+      badge?: 'NEW'
       match: (pathname: string) => boolean
-      /** Hide in compact desktop primary row (moved into More). */
       compactHide?: boolean
     }
   | {
@@ -37,6 +37,7 @@ const q = (query: Record<string, string | string[] | undefined>, key: string) =>
   return Array.isArray(v) ? v[0] : v
 }
 
+/** Deep-link destinations retained for Liquidity Studio (not primary dropdown). */
 export const LIQUIDITY_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   {
     id: 'liquidity-studio',
@@ -80,19 +81,19 @@ export const LIQUIDITY_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 export const FARMS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   {
     id: 'farms-studio',
-    label: 'Farms Studio',
+    label: 'Farms',
     href: '/farms',
     match: (p, query) => p.startsWith('/farms') && !q(query, 'view'),
   },
   {
     id: 'my-farms',
-    label: 'My Farms',
+    label: 'My Positions',
     href: '/farms?view=my',
     match: (p, query) => p.startsWith('/farms') && q(query, 'view') === 'my',
   },
   {
     id: 'explore-farms',
-    label: 'Explore Farms',
+    label: 'All Farms',
     href: '/farms?view=explore',
     match: (p, query) => p.startsWith('/farms') && q(query, 'view') === 'explore',
   },
@@ -101,7 +102,7 @@ export const FARMS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   {
     id: 'pools-studio',
-    label: 'Pools Studio',
+    label: 'Pools',
     href: '/pools',
     match: (p, query) => p.startsWith('/pools') && !q(query, 'view'),
   },
@@ -113,12 +114,13 @@ export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   },
   {
     id: 'explore-pools',
-    label: 'Explore Pools',
+    label: 'All Pools',
     href: '/pools?view=explore',
     match: (p, query) => p.startsWith('/pools') && q(query, 'view') === 'explore',
   },
 ]
 
+/** Secondary surfaces — available via search / deep links, not primary nav. */
 export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
   { id: 'trending', label: 'Trending', href: '/trending', match: (p) => p === '/trending' },
   { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
@@ -140,15 +142,8 @@ export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
     href: '/build-studio',
     match: (p) => p.startsWith('/build-studio'),
   },
-  {
-    id: 'command-center',
-    label: 'Command Center',
-    href: '/command-center',
-    match: (p) => p.startsWith('/command-center') || p.startsWith('/portfolio'),
-  },
 ]
 
-/** Analytics lives in More below 1280px. */
 export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   id: 'analytics',
   label: 'Analytics',
@@ -156,68 +151,58 @@ export const ANALYTICS_MORE_ITEM: HeaderDropdownItem = {
   match: (p) => p === '/radar',
 }
 
+/** Canonical primary navigation — flat links matching approved mockup. */
 export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
   {
-    id: 'trade',
-    label: 'Trade',
+    id: 'home',
+    label: 'Home',
     kind: 'link',
-    href: '/trade',
+    href: '/',
     match: (p) => p === '/' || p === '/trade' || p.startsWith('/trade/'),
   },
   {
     id: 'liquidity',
     label: 'Liquidity',
-    kind: 'menu',
-    menuWidth: 220,
-    match: (p) => p.startsWith('/liquidity-studio'),
-    items: LIQUIDITY_DROPDOWN_ITEMS,
+    kind: 'link',
+    href: '/liquidity-studio',
+    match: (p) => p.startsWith('/liquidity-studio') || p === '/liquidity',
   },
   {
     id: 'farms',
     label: 'Farms',
-    kind: 'menu',
-    menuWidth: 190,
+    kind: 'link',
+    href: '/farms',
     match: (p) => p.startsWith('/farms'),
-    items: FARMS_DROPDOWN_ITEMS,
   },
   {
     id: 'pools',
     label: 'Pools',
-    kind: 'menu',
-    menuWidth: 190,
+    kind: 'link',
+    href: '/pools',
     match: (p) => p.startsWith('/pools'),
-    items: POOLS_DROPDOWN_ITEMS,
   },
   {
-    id: 'projects',
-    label: 'Projects',
+    id: 'list',
+    label: 'List',
     kind: 'link',
-    href: '/projects',
-    match: (p) => p.startsWith('/projects') || p.startsWith('/project-hq') || p.startsWith('/@'),
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    kind: 'link',
-    href: '/radar',
-    match: (p) => p === '/radar',
-    compactHide: true,
-  },
-  {
-    id: 'more',
-    label: 'More',
-    kind: 'menu',
-    menuWidth: 228,
+    href: '/list',
+    badge: 'NEW',
     match: (p) =>
-      p === '/trending' ||
-      p === '/radar' ||
-      p.startsWith('/collectibles') ||
-      p.startsWith('/nft') ||
-      p === '/identity' ||
-      p.startsWith('/identity/') ||
-      p.startsWith('/build-studio') ||
+      p === '/list' ||
+      p === '/import-existing-token' ||
+      p === '/launch' ||
+      p === '/new-project' ||
+      p.startsWith('/build-studio'),
+  },
+  {
+    id: 'passport',
+    label: 'Passport',
+    kind: 'link',
+    href: '/passport',
+    match: (p) =>
+      p.startsWith('/passport') ||
       p.startsWith('/command-center') ||
-      p.startsWith('/portfolio'),
-    items: MORE_DROPDOWN_ITEMS,
+      p.startsWith('/portfolio') ||
+      p.startsWith('/workspace'),
   },
 ]

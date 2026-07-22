@@ -1,17 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
-import { CANVAS, CARD_BORDER, GOLD, MUTED } from './theme'
+import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 
+/** Canonical Project Page internal navigation (UX rebuild). */
 const NAV_ITEMS = [
   { id: 'overview', label: 'Overview' },
-  { id: 'chart', label: 'Chart' },
-  { id: 'buy', label: 'Buy' },
+  { id: 'markets', label: 'Markets' },
+  { id: 'liquidity', label: 'Liquidity' },
+  { id: 'farms', label: 'Farms' },
+  { id: 'pools', label: 'Pools' },
   { id: 'about', label: 'About' },
-  { id: 'community', label: 'Community' },
   { id: 'tokenomics', label: 'Tokenomics' },
   { id: 'roadmap', label: 'Roadmap' },
-  { id: 'earn', label: 'Earn' },
-  { id: 'more', label: 'More' },
+  { id: 'community', label: 'Community' },
 ] as const
 
 const NavBar = styled.nav`
@@ -20,8 +21,9 @@ const NavBar = styled.nav`
   z-index: 20;
   margin: 0 -16px;
   padding: 8px 16px calc(8px + env(safe-area-inset-top, 0px));
-  background: ${CANVAS};
-  border-bottom: 1px solid ${CARD_BORDER};
+  background: ${uxRebuildColors.pageBg};
+  border-bottom: 1px solid ${uxRebuildColors.border};
+  font-family: ${uxRebuildFont};
 `
 
 const ScrollRow = styled.div`
@@ -44,8 +46,8 @@ const NavLink = styled.a`
   min-height: 44px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid ${CARD_BORDER};
-  color: ${MUTED};
+  border: 1px solid ${uxRebuildColors.border};
+  color: ${uxRebuildColors.muted};
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -53,19 +55,19 @@ const NavLink = styled.a`
 
   &:hover,
   &:focus-visible {
-    color: ${GOLD};
-    border-color: rgba(244, 196, 48, 0.45);
+    color: ${uxRebuildColors.gold};
+    border-color: rgba(221, 185, 47, 0.45);
     outline: none;
   }
 
   &:focus-visible {
-    outline: 2px solid ${GOLD};
+    outline: 2px solid ${uxRebuildColors.gold};
     outline-offset: 2px;
   }
 `
 
 const ProjectStickyNav: React.FC = () => (
-  <NavBar aria-label="Project page sections">
+  <NavBar aria-label="Project page sections" data-ux-rebuild-project-nav>
     <ScrollRow role="list">
       {NAV_ITEMS.map((item) => (
         <NavLink

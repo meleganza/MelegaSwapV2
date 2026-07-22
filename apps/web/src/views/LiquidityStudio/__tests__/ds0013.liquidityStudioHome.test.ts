@@ -10,23 +10,23 @@ function load(rel: string) {
   return readFileSync(path.join(ROOT, rel), 'utf8')
 }
 
-describe('DS001.3 Liquidity Studio home', () => {
-  it('default /liquidity-studio renders home with exactly two primary product cards', () => {
+describe('DS001.3 Liquidity Studio home (compat) + UX rebuild dense studio', () => {
+  it('default /liquidity-studio uses dense chrome; legacy two-card home at ?view=home', () => {
     const screen = load('LiquidityStudioScreen.tsx')
     const home = load('components/LiquidityStudioHome.tsx')
+    const chrome = load('components/LiquidityStudioChrome.tsx')
+    expect(screen).toContain('LiquidityStudioChrome')
+    expect(screen).toContain('isLegacyHomeView')
     expect(screen).toContain('LiquidityStudioHome')
-    expect(screen).toContain('isHome')
+    expect(chrome).toContain('Positions')
+    expect(chrome).toContain('Liquidity Building')
     expect(home).toContain('data-testid="ls-card-add-liquidity"')
     expect(home).toContain('data-testid="ls-card-liquidity-building"')
-    expect(home).toContain('Add Liquidity')
-    expect(home).toContain('Liquidity Building')
     expect(home.match(/data-testid="ls-card-/g)?.length).toBe(2)
   })
 
-  it('old page tabs and positions grid are absent from Studio home', () => {
-    const screen = load('LiquidityStudioScreen.tsx')
+  it('legacy marketing home remains free of old page tabs', () => {
     const home = load('components/LiquidityStudioHome.tsx')
-    expect(screen).not.toContain('LiquidityStudioPageHeader')
     expect(home).not.toContain('ls-mode-tabs')
     expect(home).not.toContain('Explore Liquidity')
     expect(home).not.toContain('My Positions')
@@ -34,7 +34,6 @@ describe('DS001.3 Liquidity Studio home', () => {
     expect(home).not.toContain('MarketIntelligencePanel')
     expect(home).not.toContain('AILiquidityAdvisorPanel')
     expect(home).not.toContain('Liquidity Activity')
-    expect(home).not.toContain('Liquidity Builder')
   })
 
   it('primary CTAs route to certified deep links', () => {
@@ -46,22 +45,27 @@ describe('DS001.3 Liquidity Studio home', () => {
     expect(home).toMatch(/view=building" data-testid="ls-cta-program-status"/)
   })
 
-  it('view query mapping preserves deep links and home has no view', () => {
+  it('view query mapping preserves deep links; null view defaults in screen to positions', () => {
     expect(liquidityStudioModeFromView(undefined)).toBeNull()
     expect(liquidityStudioModeFromView('add')).toBe('Add Liquidity')
+    expect(liquidityStudioModeFromView('explore')).toBe('Add Liquidity')
     expect(liquidityStudioModeFromView('building')).toBe('Liquidity Building')
     expect(liquidityStudioModeFromView('positions')).toBe('My Positions')
     expect(liquidityStudioModeFromView('remove')).toBe('Remove Liquidity')
     expect(liquidityStudioModeFromView('simulation')).toBe('Simulation')
+    const screen = load('LiquidityStudioScreen.tsx')
+    expect(screen).toContain("'My Positions'")
   })
 
-  it('product views expose Back to Liquidity Studio without page tabs', () => {
-    const header = load('components/LiquidityStudioProductHeader.tsx')
+  it('studio chrome exposes segmented navigation', () => {
+    const chrome = load('components/LiquidityStudioChrome.tsx')
     const screen = load('LiquidityStudioScreen.tsx')
-    expect(header).toContain('Back to Liquidity Studio')
-    expect(header).toContain('href="/liquidity-studio"')
-    expect(screen).toContain('LiquidityStudioProductHeader')
-    expect(header).not.toContain('ls-mode-tabs')
+    expect(chrome).toContain('ls-mode-tabs')
+    expect(chrome).toContain('ls-seg-positions')
+    expect(chrome).toContain('ls-seg-explore')
+    expect(chrome).toContain('ls-seg-add')
+    expect(chrome).toContain('ls-seg-building')
+    expect(screen).toContain('LiquidityStudioChrome')
   })
 
   it('trust strip fee uses canonical LB success fee bps', () => {
@@ -79,8 +83,8 @@ describe('DS001.3 Liquidity Studio home', () => {
     expect(home).toContain('formatUsd')
   })
 
-  it('content max width follows DS001 container', () => {
+  it('content max width follows UX rebuild container', () => {
     const screen = load('LiquidityStudioScreen.tsx')
-    expect(screen).toContain('ds001Layout.contentMaxWidth')
+    expect(screen).toContain('uxRebuildLayout.contentMax')
   })
 })

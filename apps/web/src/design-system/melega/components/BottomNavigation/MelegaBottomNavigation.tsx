@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography } from '../../tokens'
+import { typography } from '../../tokens'
 import { layoutStyles } from '../../primitives'
 import type { MelegaLayoutProps } from '../../primitives'
 
@@ -26,11 +26,11 @@ const Nav = styled.nav<{
   left: 0;
   right: 0;
   bottom: 0;
-  min-height: calc(56px + env(safe-area-inset-bottom, 0px));
+  min-height: calc(68px + env(safe-area-inset-bottom, 0px));
   padding: 6px 4px env(safe-area-inset-bottom, 0px);
-  background: rgba(5, 5, 5, 0.96);
+  background: #080808;
   backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #1f1f1f;
   z-index: 200;
   box-shadow: none;
 
@@ -55,7 +55,7 @@ const Item = styled.a<{ $active?: boolean }>`
   text-decoration: none;
   position: relative;
   border-radius: 12px;
-  color: ${({ $active }) => ($active ? colors.textPrimary : colors.textSecondary)};
+  color: ${({ $active }) => ($active ? '#DDB92F' : '#747474')};
   transition: color 160ms ease, background 160ms ease;
 
   &:active {
@@ -69,7 +69,7 @@ const Indicator = styled.div`
   width: 20px;
   height: 2px;
   border-radius: 999px;
-  background: ${colors.gold};
+  background: #ddb92f;
   opacity: 0.9;
 `
 
@@ -79,7 +79,7 @@ const Icon = styled.span<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $active }) => ($active ? colors.gold : 'inherit')};
+  color: ${({ $active }) => ($active ? '#DDB92F' : '#747474')};
   transition: color 160ms ease;
 
   svg {
@@ -94,6 +94,7 @@ const Label = styled.span<{ $active?: boolean }>`
   font-weight: ${({ $active }) => ($active ? typography.fontWeight.semibold : typography.fontWeight.medium)};
   letter-spacing: 0.01em;
   line-height: 1;
+  color: inherit;
 `
 
 export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({

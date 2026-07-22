@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography } from 'design-system/melega'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
@@ -171,7 +170,6 @@ export const PoolsStudioScreen: React.FC = () => (
   >
     <PageMeta />
     <PoolsStudioGlobalStyle />
-    <TrendingRibbon />
     <PoolsRuntimeProvider>
       <PoolsActionHost />
       <Content data-ps-content>

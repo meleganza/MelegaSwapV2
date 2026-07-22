@@ -16,6 +16,18 @@ export default defineConfig({
       '@pancakeswap/wagmi/connectors/blocto': r('../../packages/wagmi/connectors/blocto/index.ts'),
       '@pancakeswap/wagmi/connectors/miniProgram': r('../../packages/wagmi/connectors/miniProgram/index.ts'),
       '@pancakeswap/wagmi/connectors/trustWallet': r('../../packages/wagmi/connectors/trustWallet/index.ts'),
+      // Worktree + symlinked node_modules: vite-tsconfig-paths intermittently drops baseUrl maps.
+      hooks: r('src/hooks'),
+      config: r('src/config'),
+      components: r('src/components'),
+      utils: r('src/utils'),
+      state: r('src/state'),
+      views: r('src/views'),
+      lib: r('src/lib'),
+      registry: r('src/registry'),
+      contexts: r('src/contexts'),
+      'design-system': r('src/design-system'),
+      'app-shell': r('src/app-shell'),
     },
   },
   test: {

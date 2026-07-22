@@ -14,6 +14,7 @@ import {
   ds001Colors,
   ds001Layout,
 } from 'design-system/melega'
+import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
@@ -21,7 +22,7 @@ import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
 const DesktopMain = styled.main`
   margin-left: 0;
   padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(68px + env(safe-area-inset-bottom, 0px));
-  background: ${ds001Colors.background};
+  background: ${uxRebuildColors.pageBg};
   min-height: 100dvh;
   min-height: 100vh;
   box-sizing: border-box;
@@ -41,9 +42,9 @@ const DesktopMain = styled.main`
 
 const Root = styled.div`
   min-height: 100vh;
-  background: ${ds001Colors.background};
+  background: ${uxRebuildColors.pageBg};
   color: ${colors.textPrimary};
-  font-family: 'Sora', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: ${uxRebuildFont};
   overflow-x: hidden;
   width: 100%;
 `
@@ -65,10 +66,10 @@ const MobileHeader = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  height: calc(48px + env(safe-area-inset-top, 0px));
+  height: calc(60px + env(safe-area-inset-top, 0px));
   padding: env(safe-area-inset-top, 0px) 10px 0;
-  background: ${ds001Colors.background};
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: ${uxRebuildColors.pageBg};
+  border-bottom: 1px solid ${uxRebuildColors.divider};
   z-index: 95;
   box-sizing: border-box;
 

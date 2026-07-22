@@ -22,12 +22,9 @@ export const PoolsStudioPageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="pools"
     data-ps-wallet-first-header="true"
+    data-ux-rebuild-pools-header="true"
     title={STUDIO_PAGE_TITLES.pools}
-    subtitle={
-      <>
-        Your pool positions first — then explore and stake new pools.
-      </>
-    }
+    subtitle="Explore pools, manage positions and create liquidity markets."
     badge={
       <MelegaStudioLiveBadge data-ps-live-runtime>
         <MelegaStudioLiveDot data-ps-live-dot aria-hidden />
@@ -36,11 +33,11 @@ export const PoolsStudioPageHeader: React.FC = () => (
     }
     actions={
       <>
-        <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
-          Open Project Page
+        <MelegaStudioGhostBtn as="a" href="/liquidity-studio?view=add" style={{ textDecoration: 'none' }}>
+          Add Liquidity
         </MelegaStudioGhostBtn>
         <MelegaStudioPrimaryBtn type="button" data-ps-header-create-pool onClick={scrollToCreatePool}>
-          + Create Pool
+          Create Pool
         </MelegaStudioPrimaryBtn>
       </>
     }

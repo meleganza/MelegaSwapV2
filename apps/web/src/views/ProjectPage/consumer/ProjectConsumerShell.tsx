@@ -75,12 +75,12 @@ const ProjectConsumerShell: React.FC<Props> = ({
       <SectionAnchor id="overview">
         <ProjectHero document={document} marketsDocument={marketsDocument} />
       </SectionAnchor>
-      <SectionAnchor id="chart">
+      <SectionAnchor id="markets">
+        <span id="chart" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
         <AnimatedSection>
           <ProjectChartPanel slug={document.slug} marketsDocument={marketsDocument} />
         </AnimatedSection>
-      </SectionAnchor>
-      <SectionAnchor id="buy">
+        <span id="buy" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
         <AnimatedSection>
           <ProjectSwapCard slug={document.slug} marketsDocument={marketsDocument} />
         </AnimatedSection>
@@ -104,7 +104,10 @@ const ProjectConsumerShell: React.FC<Props> = ({
       <AnimatedSection>
         <ProjectRoadmapSection roadmapDocument={roadmapDocument} />
       </AnimatedSection>
-      <SectionAnchor id="earn">
+      <SectionAnchor id="liquidity">
+        <span id="farms" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
+        <span id="pools" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
+        <span id="earn" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
         <AnimatedSection>
           <ProjectEarnSection
             participationDocument={participationDocument}

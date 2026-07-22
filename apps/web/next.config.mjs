@@ -116,7 +116,29 @@ const config = {
   },
   async redirects() {
     return [
-      // PP001: legacy project detail → canonical `/@{slug}` (discovery `/projects` unchanged)
+      // UX Rebuild: Trade landing consolidates into Home Instant Swap
+      {
+        source: '/trade',
+        destination: '/?focus=swap',
+        permanent: false,
+      },
+      {
+        source: '/trade/',
+        destination: '/?focus=swap',
+        permanent: false,
+      },
+      // UX Rebuild: Projects directory consolidates into Home discovery
+      {
+        source: '/projects',
+        destination: '/?focus=projects',
+        permanent: false,
+      },
+      {
+        source: '/projects/',
+        destination: '/?focus=projects',
+        permanent: false,
+      },
+      // PP001: legacy project detail → canonical `/@{slug}`
       {
         source: '/projects/:slug',
         destination: '/@:slug',

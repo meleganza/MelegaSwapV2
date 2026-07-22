@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography } from 'design-system/melega'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
@@ -77,7 +76,6 @@ export const FarmsStudioScreen: React.FC = () => (
   <Root data-farms-studio-screen="true" data-r200-premium="true" data-fs-wallet-first="true">
     <PageMeta />
     <FarmsStudioGlobalStyle />
-    <TrendingRibbon />
     <FarmsRuntimeProvider>
       <FarmsActionHost />
       <Content>

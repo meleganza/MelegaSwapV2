@@ -163,7 +163,7 @@ const GlobalSearch: React.FC = () => {
   return (
     <Root ref={rootRef} data-global-search-root data-melega-global-search>
       <MelegaSearchBar
-        placeholder="Search tokens, farms, projects..."
+        placeholder="Search tokens, projects, pools..."
         value={query}
         onChange={(value) => {
           setQuery(value)

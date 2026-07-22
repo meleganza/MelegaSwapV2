@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import {
-  MelegaStudioGhostBtn,
   MelegaStudioLiveBadge,
   MelegaStudioLiveDot,
   MelegaStudioPageHeader,
@@ -20,10 +19,11 @@ export const FarmsStudioPageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="farms"
     data-fs-wallet-first-header="true"
+    data-ux-rebuild-farms-header="true"
     title={STUDIO_PAGE_TITLES.farms}
     subtitle={
       <Meta>
-        <span>Your farm positions first — then explore and stake new farms.</span>
+        <span>Earn rewards from active Melega DEX farms.</span>
         <DexPricingFeesLink />
       </Meta>
     }
@@ -32,11 +32,6 @@ export const FarmsStudioPageHeader: React.FC = () => (
         <MelegaStudioLiveDot aria-hidden />
         {FARMS_STUDIO_PREVIEW_LABEL}
       </MelegaStudioLiveBadge>
-    }
-    actions={
-      <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
-        Open Project Page
-      </MelegaStudioGhostBtn>
     }
   />
 )

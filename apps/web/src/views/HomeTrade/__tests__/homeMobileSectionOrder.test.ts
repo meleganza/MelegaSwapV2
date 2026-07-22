@@ -1,5 +1,5 @@
 /**
- * UX002 — Home mobile section order (presentation markers only).
+ * UX rebuild — Home mobile section order (presentation markers only).
  */
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
@@ -8,24 +8,22 @@ import { HOME_MOBILE_SECTION_ORDER } from '../homeMobileSections'
 
 const ROOT = path.join(__dirname, '../')
 
-describe('UX002 home mobile section order', () => {
+describe('UX rebuild home mobile section order', () => {
   it('exports canonical mobile section sequence', () => {
     expect(HOME_MOBILE_SECTION_ORDER).toEqual([
       'hero',
       'swap',
-      'trending',
-      'market',
+      'kpi',
       'quick-actions',
-      'cinematic',
-      'list-cta',
-      'grow',
-      'earn',
-      'activity',
+      'discovery',
+      'builder',
+      'passport',
+      'trust',
     ])
   })
 
-  it('HomeTradeScreen mounts sections in mobile order via data-home-section markers', () => {
-    const screen = readFileSync(path.join(ROOT, 'HomeTradeScreen.tsx'), 'utf8')
+  it('DexHomeScreen mounts sections in mobile order via data-home-section markers', () => {
+    const screen = readFileSync(path.join(ROOT, 'DexHomeScreen.tsx'), 'utf8')
     const markerPositions = HOME_MOBILE_SECTION_ORDER.map((id) => {
       const needle = `data-home-section="${id}"`
       const index = screen.indexOf(needle)
@@ -38,10 +36,11 @@ describe('UX002 home mobile section order', () => {
     }
   })
 
-  it('HomeHeroStatement is mobile-only with display typography', () => {
-    const hero = readFileSync(path.join(ROOT, 'HomeHeroStatement.tsx'), 'utf8')
-    expect(hero).toContain('PREMIUM_FONT_DISPLAY')
-    expect(hero).toContain('display: none')
-    expect(hero).toContain('data-home-section="hero"')
+  it('HomeTradeScreen re-exports DexHomeScreen with Instant Swap hero', () => {
+    const entry = readFileSync(path.join(ROOT, 'HomeTradeScreen.tsx'), 'utf8')
+    const dex = readFileSync(path.join(ROOT, 'DexHomeScreen.tsx'), 'utf8')
+    expect(entry).toMatch(/DexHomeScreen/)
+    expect(dex).toContain('Instant Swap')
+    expect(dex).toContain('data-home-section="hero"')
   })
 })

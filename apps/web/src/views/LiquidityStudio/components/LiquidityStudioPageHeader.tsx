@@ -1,11 +1,13 @@
+/**
+ * Legacy page header — kept for LB024 / terminology regression tests.
+ * Production Studio uses LiquidityStudioChrome (UX rebuild).
+ */
 import React from 'react'
 import styled from 'styled-components'
 import {
-  MelegaStudioGhostBtn,
   MelegaStudioLiveBadge,
   MelegaStudioLiveDot,
   MelegaStudioPageHeader,
-  STUDIO_PAGE_TITLES,
   STUDIO_LIVE_RUNTIME_LABEL,
 } from 'design-system/melega'
 import { liquidityStudioColors } from '../liquidityStudioTokens'
@@ -61,18 +63,13 @@ export const LiquidityStudioPageHeader: React.FC = () => {
     <MelegaStudioPageHeader
       data-studio-header="liquidity"
       data-ls-wallet-first-header="true"
-      title={STUDIO_PAGE_TITLES.liquidity}
-      subtitle="Your liquidity positions first — then explore and create new positions."
+      title="Liquidity"
+      subtitle="Manage positions, add liquidity and build project liquidity."
       badge={
         <MelegaStudioLiveBadge>
           <MelegaStudioLiveDot aria-hidden />
           {STUDIO_LIVE_RUNTIME_LABEL}
         </MelegaStudioLiveBadge>
-      }
-      actions={
-        <MelegaStudioGhostBtn as="a" href="/@melega-dex/" style={{ textDecoration: 'none' }}>
-          Open Project Page
-        </MelegaStudioGhostBtn>
       }
       footer={
         <TabRow data-testid="ls-mode-tabs">

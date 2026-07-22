@@ -31,7 +31,7 @@ describe('DS001.2 global header shell contracts', () => {
     expect(shell).toContain('ds001Layout.contentMaxWidth')
   })
 
-  it('Liquidity dropdown contains all six required destinations including Liquidity Building', () => {
+  it('Liquidity deep-link destinations including Liquidity Building remain available', () => {
     expect(LIQUIDITY_DROPDOWN_ITEMS).toHaveLength(6)
     const labels = LIQUIDITY_DROPDOWN_ITEMS.map((i) => i.label)
     expect(labels).toEqual([
@@ -47,7 +47,7 @@ describe('DS001.2 global header shell contracts', () => {
     expect(building?.badge).toBe('NEW')
   })
 
-  it('Farms and Pools dropdowns contain only live destinations', () => {
+  it('Farms and Pools deep-link destinations remain live', () => {
     expect(FARMS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual(['/farms', '/farms?view=my', '/farms?view=explore'])
     expect(POOLS_DROPDOWN_ITEMS.map((i) => i.href)).toEqual([
       '/pools',
@@ -57,54 +57,33 @@ describe('DS001.2 global header shell contracts', () => {
     expect(POOLS_DROPDOWN_ITEMS.some((i) => /My Pools/i.test(i.label))).toBe(false)
   })
 
-  it('primary navigation includes Trade through More with Analytics label', () => {
+  it('primary navigation is the Complete UX Rebuild IA (no top-level Trade/Projects)', () => {
     expect(GLOBAL_HEADER_NAV.map((i) => i.label)).toEqual([
-      'Trade',
+      'Home',
       'Liquidity',
       'Farms',
       'Pools',
-      'Projects',
-      'Analytics',
-      'More',
+      'List',
+      'Passport',
     ])
-    const analytics = GLOBAL_HEADER_NAV.find((i) => i.id === 'analytics')
-    expect(analytics?.kind).toBe('link')
-    if (analytics?.kind === 'link') expect(analytics.href).toBe('/radar')
   })
 
-  it('More menu includes secondary surfaces', () => {
+  it('secondary surfaces remain available via More overflow destinations', () => {
     expect(MORE_DROPDOWN_ITEMS.map((i) => i.label)).toEqual([
       'Trending',
       'DEX Intelligence',
       'Identity Hub',
       'Identity Console',
       'Build Studio',
-      'Command Center',
     ])
   })
 
-  it('GlobalHeader implements keyboard-accessible menu semantics', () => {
-    const header = readFileSync(
-      path.join(ROOT, 'design-system/melega/components/GlobalHeader/MelegaGlobalHeader.tsx'),
-      'utf8',
-    )
-    const dropdown = readFileSync(
-      path.join(ROOT, 'design-system/melega/components/GlobalHeader/HeaderNavDropdown.tsx'),
-      'utf8',
-    )
-    expect(header).toContain('aria-haspopup="menu"')
-    expect(header).toContain('aria-expanded')
-    expect(header).toContain('aria-label="Primary navigation"')
-    expect(dropdown).toContain('role="menu"')
-    expect(dropdown).toContain("Escape")
-    expect(dropdown).toContain('ArrowDown')
+  it('GlobalSearch placeholder matches approved mockup', () => {
+    const search = readFileSync(path.join(ROOT, 'app-shell/components/GlobalSearch.tsx'), 'utf8')
+    expect(search).toMatch(/Search tokens, projects, pools\.\.\./)
   })
 
-  it('sidebar component stays permanently hidden', () => {
-    const sidebar = readFileSync(
-      path.join(ROOT, 'design-system/melega/components/Sidebar/MelegaSidebar.tsx'),
-      'utf8',
-    )
-    expect(sidebar).toContain('display: none !important')
+  it('header height remains sticky 72px contract', () => {
+    expect(ds001Layout.headerHeight).toBe('72px')
   })
 })

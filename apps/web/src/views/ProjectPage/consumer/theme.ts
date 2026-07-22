@@ -2,12 +2,12 @@ import styled, { keyframes } from 'styled-components'
 import { PREMIUM_FONT_BODY, PREMIUM_FONT_DISPLAY } from 'design-system/melega/tokens/premiumStudio'
 import { ds001Colors, ds001Spacing, ds001TypeRoles } from 'design-system/melega/tokens/ds001'
 
-export const CANVAS = ds001Colors.background
-export const CARD_BG = ds001Colors.surface
-export const CARD_BORDER = ds001Colors.border
-export const GOLD = ds001Colors.primaryGold
-export const MUTED = ds001Colors.muted
-export const TEXT = ds001Colors.primaryText
+export const CANVAS = '#050505'
+export const CARD_BG = '#101010'
+export const CARD_BORDER = '#1F1F1F'
+export const GOLD = '#DDB92F'
+export const MUTED = '#747474'
+export const TEXT = '#F5F5F5'
 export const BODY_SIZE = ds001TypeRoles.body.size
 export const BODY_LINE = 1.5
 export const SECTION_GAP = ds001Spacing[40]

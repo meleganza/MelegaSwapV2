@@ -2,24 +2,23 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
-import { typography } from 'design-system/melega'
-import { ds001Layout } from 'design-system/melega/tokens/ds001'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
+import { uxRebuildColors, uxRebuildFont, uxRebuildLayout } from 'design-system/melega/tokens/uxRebuild'
 import LiquidityStudioGlobalStyle from './LiquidityStudioGlobalStyle'
 import { LiquidityRuntimeProvider, useLiquidityRuntime } from './liquidityRuntime/LiquidityRuntimeContext'
+import LiquidityStudioChrome from './components/LiquidityStudioChrome'
 import LiquidityStudioHome from './components/LiquidityStudioHome'
-import LiquidityStudioProductHeader from './components/LiquidityStudioProductHeader'
+import LiquidityExploreSection from './components/LiquidityExploreSection'
 import YourLiquidityPositionsSection from './components/YourLiquidityPositionsSection'
 import LiquidityBuilderPanel from './components/LiquidityBuilderPanel'
 import LiquidityBuildingPanel from './components/LiquidityBuildingPanel'
 import PositionPreviewPanel from './components/PositionPreviewPanel'
-import { liquidityStudioColors, liquidityStudioLayout } from './liquidityStudioTokens'
+import { liquidityStudioLayout } from './liquidityStudioTokens'
 import { liquidityStudioModeFromView } from './liquidityRuntime/liquidityStudioView'
 
 const Root = styled.div`
-  color: ${liquidityStudioColors.text};
-  font-family: ${typography.fontFamily.body};
-  background: ${liquidityStudioColors.canvas};
+  color: ${uxRebuildColors.text};
+  font-family: ${uxRebuildFont};
+  background: ${uxRebuildColors.pageBg};
   padding: 0 0 32px;
   min-width: 0;
   overflow-x: hidden;
@@ -30,10 +29,10 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${ds001Layout.contentMaxWidth};
+  max-width: ${uxRebuildLayout.contentMax};
   width: calc(100% - 64px);
   margin: 0 auto;
-  padding: ${ds001Layout.pagePaddingTopBelowHeader} 0 64px;
+  padding: 24px 0 64px;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -47,10 +46,6 @@ const Content = styled.div`
 
   @media (max-width: 767px) {
     width: 100%;
-    padding: 16px 24px ${liquidityStudioLayout.mobileBottomPad};
-  }
-
-  @media (max-width: 390px) {
     padding: 16px 16px ${liquidityStudioLayout.mobileBottomPad};
   }
 `
@@ -72,14 +67,23 @@ const ScrollTop: React.FC<{ viewKey: string }> = ({ viewKey }) => {
   return null
 }
 
+function isExploreView(view: unknown): boolean {
+  const raw = Array.isArray(view) ? view[0] : view
+  return typeof raw === 'string' && raw.trim().toLowerCase() === 'explore'
+}
+
+function isLegacyHomeView(view: unknown): boolean {
+  const raw = Array.isArray(view) ? view[0] : view
+  return typeof raw === 'string' && raw.trim().toLowerCase() === 'home'
+}
+
 const LiquidityStudioBody: React.FC = () => {
   const router = useRouter()
-  const { mode } = useLiquidityRuntime()
+  useLiquidityRuntime()
   const viewParam = router.query.view
-  const resolvedFromQuery = liquidityStudioModeFromView(viewParam)
-  const isHome = !resolvedFromQuery
 
-  if (isHome) {
+  // Legacy two-product marketing home preserved behind ?view=home
+  if (isLegacyHomeView(viewParam)) {
     return (
       <>
         <ScrollTop viewKey="home" />
@@ -88,13 +92,15 @@ const LiquidityStudioBody: React.FC = () => {
     )
   }
 
-  const activeMode = resolvedFromQuery ?? mode
+  const resolvedFromQuery = liquidityStudioModeFromView(viewParam)
+  // Default (no view) → Positions dense studio (do not inherit runtime Add Liquidity default)
+  const activeMode = resolvedFromQuery ?? 'My Positions'
+  const explore = isExploreView(viewParam)
 
   return (
     <>
-      <ScrollTop viewKey={String(viewParam)} />
-      {/* DS001.4 — Liquidity Building owns its product header; do not stack Studio product header. */}
-      {activeMode === 'Liquidity Building' ? null : <LiquidityStudioProductHeader mode={activeMode} />}
+      <ScrollTop viewKey={String(viewParam ?? 'positions')} />
+      <LiquidityStudioChrome mode={activeMode} />
       {activeMode === 'Liquidity Building' ? (
         <div
           data-testid="ls-liquidity-building-surface"
@@ -110,8 +116,14 @@ const LiquidityStudioBody: React.FC = () => {
           <YourLiquidityPositionsSection />
         </div>
       ) : null}
-      {activeMode === 'Add Liquidity' || activeMode === 'Remove Liquidity' || activeMode === 'Simulation' ? (
-        <ProductLayout data-ls-view={activeMode === 'Add Liquidity' ? 'add' : activeMode === 'Remove Liquidity' ? 'remove' : 'simulation'}>
+      {explore ? <LiquidityExploreSection /> : null}
+      {!explore &&
+      (activeMode === 'Add Liquidity' || activeMode === 'Remove Liquidity' || activeMode === 'Simulation') ? (
+        <ProductLayout
+          data-ls-view={
+            activeMode === 'Add Liquidity' ? 'add' : activeMode === 'Remove Liquidity' ? 'remove' : 'simulation'
+          }
+        >
           <LiquidityBuilderPanel />
           <PositionPreviewPanel />
         </ProductLayout>
@@ -121,10 +133,14 @@ const LiquidityStudioBody: React.FC = () => {
 }
 
 export const LiquidityStudioScreen: React.FC = () => (
-  <Root data-liquidity-studio-screen="true" data-r200-premium="true" data-ls-wallet-first="true" data-ds0013-home="true">
+  <Root
+    data-liquidity-studio-screen="true"
+    data-r200-premium="true"
+    data-ls-wallet-first="true"
+    data-ux-rebuild-liquidity="true"
+  >
     <PageMeta />
     <LiquidityStudioGlobalStyle />
-    <TrendingRibbon />
     <LiquidityRuntimeProvider>
       <Content>
         <LiquidityStudioBody />

@@ -7,10 +7,12 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import UserMenu from 'components/Menu/UserMenu'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { MELEGA_LOGO_URI } from '../../constants/brand'
-import { ds001Colors, ds001FontFamily, ds001Layout } from '../../tokens/ds001'
+import { ds001FontFamily, ds001Layout } from '../../tokens/ds001'
+import { uxRebuildColors } from '../../tokens/uxRebuild'
 import {
   ANALYTICS_MORE_ITEM,
   GLOBAL_HEADER_NAV,
+  MORE_DROPDOWN_ITEMS,
   type HeaderNavItem,
 } from 'app-shell/config/globalHeaderNav'
 import MelegaLanguageControl from 'app-shell/MelegaLanguageControl'
@@ -27,10 +29,10 @@ const Bar = styled.header`
   width: 100%;
   height: ${ds001Layout.headerHeight};
   z-index: ${ds001Layout.headerZIndex};
-  background: ${ds001Layout.headerBackground};
-  backdrop-filter: blur(${ds001Layout.headerBackdropBlur});
-  -webkit-backdrop-filter: blur(${ds001Layout.headerBackdropBlur});
-  border-bottom: 1px solid ${ds001Layout.headerBorder};
+  background: ${uxRebuildColors.headerBg};
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid ${uxRebuildColors.divider};
   box-shadow: none;
   box-sizing: border-box;
 
@@ -72,7 +74,7 @@ const Brand = styled(Link)`
   }
 
   &:focus-visible {
-    outline: 2px solid ${ds001Colors.primaryGold};
+    outline: 2px solid ${uxRebuildColors.gold};
     outline-offset: 4px;
     border-radius: 10px;
   }
@@ -102,7 +104,7 @@ const MelegaWord = styled.span`
 `
 
 const DexWord = styled.span`
-  color: ${ds001Colors.primaryGold};
+  color: ${uxRebuildColors.gold};
   margin-left: 3px;
 `
 
@@ -134,12 +136,12 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
   justify-content: center;
   gap: 5px;
   font-family: ${ds001FontFamily.sans};
-  font-size: 13px;
+  font-size: 14px;
   line-height: 18px;
-  font-weight: 600;
+  font-weight: 550;
   letter-spacing: -0.1px;
   color: ${({ $active, $open }) =>
-    $active ? ds001Colors.primaryGold : $open ? '#FFFFFF' : '#D4D4D4'};
+    $active ? uxRebuildColors.gold : $open ? uxRebuildColors.text : uxRebuildColors.secondary};
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -147,12 +149,12 @@ const NavTrigger = styled.button<{ $active?: boolean; $open?: boolean }>`
     color 160ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background: #141414;
-    color: #ffffff;
+    background: ${uxRebuildColors.hover};
+    color: ${uxRebuildColors.text};
   }
 
   &:focus-visible {
-    outline: 2px solid ${ds001Colors.primaryGold};
+    outline: 2px solid ${uxRebuildColors.gold};
     outline-offset: 2px;
   }
 
@@ -167,32 +169,33 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   position: relative;
   height: ${ds001Layout.headerNavItemHeight};
   padding: 0 ${ds001Layout.headerNavItemPaddingX};
-  border-radius: ${ds001Layout.headerNavItemRadius};
-  border: 0;
-  background: transparent;
+  border-radius: 999px;
+  border: ${({ $active }) => ($active ? `1px solid rgba(221,185,47,0.45)` : '1px solid transparent')};
+  background: ${({ $active }) => ($active ? 'rgba(221,185,47,0.08)' : 'transparent')};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   font-family: ${ds001FontFamily.sans};
-  font-size: 13px;
+  font-size: 14px;
   line-height: 18px;
-  font-weight: 600;
+  font-weight: 550;
   letter-spacing: -0.1px;
-  color: ${({ $active }) => ($active ? ds001Colors.primaryGold : '#D4D4D4')};
+  color: ${({ $active }) => ($active ? uxRebuildColors.gold : uxRebuildColors.secondary)};
   white-space: nowrap;
   text-decoration: none;
   transition:
     background-color 160ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+    color 160ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 160ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background: #141414;
-    color: #ffffff;
+    background: ${uxRebuildColors.hover};
+    color: ${uxRebuildColors.text};
   }
 
   &:focus-visible {
-    outline: 2px solid ${ds001Colors.primaryGold};
+    outline: 2px solid ${uxRebuildColors.gold};
     outline-offset: 2px;
   }
 
@@ -203,14 +206,16 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   }
 `
 
-const ActiveBar = styled.span`
-  position: absolute;
-  bottom: 0;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  border-radius: 2px 2px 0 0;
-  background: ${ds001Colors.primaryGold};
+const NewBadge = styled.span`
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: ${uxRebuildColors.newViolet};
+  color: #ffffff;
+  font-size: 8px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 `
 
 const Chevron = styled.span<{ $open?: boolean }>`
@@ -253,20 +258,20 @@ const OverflowBtn = styled.button`
   border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  color: ${ds001Colors.secondaryText};
+  color: ${uxRebuildColors.secondary};
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 
   &:hover {
-    background: #141414;
-    border-color: #232323;
-    color: #ffffff;
+    background: ${uxRebuildColors.hover};
+    border-color: ${uxRebuildColors.borderStrong};
+    color: ${uxRebuildColors.text};
   }
 
   &:focus-visible {
-    outline: 2px solid ${ds001Colors.primaryGold};
+    outline: 2px solid ${uxRebuildColors.gold};
     outline-offset: 2px;
   }
 `
@@ -303,11 +308,8 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
   }, [asPath, pathname])
 
   const moreItems = useMemo(() => {
-    const base = GLOBAL_HEADER_NAV.find((i) => i.id === 'more')
-    if (!base || base.kind !== 'menu') return []
-    // Below 1280px Analytics moves into More — always include in menu data; CSS hides primary Analytics.
-    const hasAnalytics = base.items.some((i) => i.id === 'analytics')
-    return hasAnalytics ? base.items : [ANALYTICS_MORE_ITEM, ...base.items]
+    const hasAnalytics = MORE_DROPDOWN_ITEMS.some((i) => i.id === 'analytics')
+    return hasAnalytics ? MORE_DROPDOWN_ITEMS : [ANALYTICS_MORE_ITEM, ...MORE_DROPDOWN_ITEMS]
   }, [])
 
   const closeMenus = useCallback(() => setOpenMenu(null), [])
@@ -350,7 +352,7 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                     data-testid={`melega-header-nav-${item.id}`}
                   >
                     {item.label}
-                    {active ? <ActiveBar aria-hidden /> : null}
+                    {item.badge === 'NEW' ? <NewBadge aria-label="New">NEW</NewBadge> : null}
                   </NavLink>
                 </NavItemWrap>
               )
@@ -373,7 +375,6 @@ const MelegaGlobalHeader: React.FC<MelegaGlobalHeaderProps> = ({ pathnameOverrid
                   <Chevron $open={open}>
                     <IconChevronDown />
                   </Chevron>
-                  {active && !open ? <ActiveBar aria-hidden /> : null}
                 </NavTrigger>
                 {open ? (
                   <HeaderNavDropdown

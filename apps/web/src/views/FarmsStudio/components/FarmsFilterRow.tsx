@@ -40,7 +40,7 @@ const Chip = styled.button<{ $active?: boolean }>`
 `
 
 const VIEW_CHIPS: { mode: FarmsPortfolioViewMode; label: string }[] = [
-  { mode: 'MY_FARMS', label: 'My Farms' },
+  { mode: 'MY_FARMS', label: 'My Positions' },
   { mode: 'ALL', label: 'All Farms' },
 ]
 

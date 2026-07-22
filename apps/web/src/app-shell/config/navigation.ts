@@ -28,17 +28,6 @@ export const BABYMARCO_NFT_ROUTE = '/nft/'
 export const COLLECTIBLES_ROUTE = '/collectibles'
 export const IDENTITY_CONSOLE_ROUTE = '/identity'
 
-const matchesFindSurface = (pathname: string): boolean =>
-  pathname === '/trending' ||
-  pathname.startsWith('/projects') ||
-  pathname === '/radar' ||
-  pathname.startsWith('/collectibles') ||
-  pathname.startsWith('/nft') ||
-  pathname === '/identity' ||
-  pathname.startsWith('/identity/') ||
-  pathname.startsWith('/assets') ||
-  pathname.startsWith('/query')
-
 export const shellNavigation: ShellNavSection[] = [
   {
     label: 'HOME',
@@ -123,10 +112,14 @@ export const shellNavigation: ShellNavSection[] = [
     items: [
       {
         id: 'command-center',
-        label: 'Command Center',
-        href: '/command-center',
+        label: 'Passport',
+        href: '/passport',
         icon: 'command',
-        match: (p) => p === '/command-center' || p.startsWith('/command-center/'),
+        match: (p) =>
+          p === '/passport' ||
+          p.startsWith('/passport/') ||
+          p === '/command-center' ||
+          p.startsWith('/command-center/'),
       },
       {
         id: 'portfolio-overview',
@@ -140,41 +133,45 @@ export const shellNavigation: ShellNavSection[] = [
   },
 ]
 
+/** Mobile bottom rail — Home · Liquidity · Farms · Pools · Passport */
 export const shellBottomNavItems = [
   {
-    id: 'trade',
-    label: 'Trade',
+    id: 'home',
+    label: 'Home',
     href: '/',
     icon: 'swap' as MelegaNavIcon,
     match: (p: string) => p === '/' || p === '/trade' || p.startsWith('/trade/'),
   },
   {
-    id: 'earn',
-    label: 'Earn',
+    id: 'liquidity',
+    label: 'Liquidity',
+    href: '/liquidity-studio',
+    icon: 'drop' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/liquidity-studio') || p === '/liquidity',
+  },
+  {
+    id: 'farms',
+    label: 'Farms',
     href: '/farms',
     icon: 'coins' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/farms') || p.startsWith('/pools'),
+    match: (p: string) => p.startsWith('/farms'),
   },
   {
-    id: 'find',
-    label: 'Find',
-    href: '/trending',
-    icon: 'star' as MelegaNavIcon,
-    match: matchesFindSurface,
+    id: 'pools',
+    label: 'Pools',
+    href: '/pools',
+    icon: 'coins' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/pools'),
   },
   {
-    id: 'build',
-    label: 'Build',
-    href: '/build-studio',
-    icon: 'rocket' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/build-studio'),
-  },
-  {
-    id: 'command-center',
-    label: 'Own',
-    href: '/command-center',
+    id: 'passport',
+    label: 'Passport',
+    href: '/passport',
     icon: 'command' as MelegaNavIcon,
     match: (p: string) =>
-      p.startsWith('/command-center') || p.startsWith('/portfolio') || p.startsWith('/workspace'),
+      p.startsWith('/passport') ||
+      p.startsWith('/command-center') ||
+      p.startsWith('/portfolio') ||
+      p.startsWith('/workspace'),
   },
 ]
