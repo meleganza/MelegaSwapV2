@@ -1,12 +1,13 @@
 /**
- * List Studio — MODULE_001 hero only.
- * Import / Create / Claim / AI / workflow modules are intentionally not mounted.
+ * List Studio — MODULE_001 Hero + MODULE_002 action cards.
+ * Workflow forms / Why / How modules are not mounted yet.
  */
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import { ListPageHero } from './ListPageHero'
+import { ListActionCards } from './ListActionCards'
 import { listOne } from './listTokens'
 
 const Root = styled.div`
@@ -33,17 +34,18 @@ const Content = styled.div`
 
   @media (max-width: 767px) {
     width: 100%;
-    /* Shell pads ~12px; add 4px → ~16px page inset for Hero (358 @ 390) */
+    /* Shell pads ~12px; add 4px → ~16px page inset (358 @ 390) */
     padding: 0 4px 40px;
   }
 `
 
 export const ListStudioScreen: React.FC = () => {
   return (
-    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="001">
+    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="002">
       <PageMeta />
       <Content data-testid="list-one-content">
         <ListPageHero />
+        <ListActionCards />
       </Content>
     </Root>
   )

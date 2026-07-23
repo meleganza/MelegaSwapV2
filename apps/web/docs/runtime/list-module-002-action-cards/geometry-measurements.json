@@ -1,0 +1,898 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "hero": {
+      "x": 32,
+      "y": 140,
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "right": 1408,
+      "bottom": 500,
+      "left": 32
+    },
+    "row": {
+      "x": 32,
+      "y": 524,
+      "width": 1376,
+      "height": 272,
+      "top": 524,
+      "right": 1408,
+      "bottom": 796,
+      "left": 32
+    },
+    "heroToCardsGap": 24,
+    "cards": [
+      {
+        "testid": "list-action-import-token",
+        "intent": "import-token",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 32,
+          "y": 524,
+          "width": 256,
+          "height": 272,
+          "top": 524,
+          "right": 288,
+          "bottom": 796,
+          "left": 32
+        }
+      },
+      {
+        "testid": "list-action-create-token",
+        "intent": "create-token",
+        "featured": "0",
+        "available": "0",
+        "box": {
+          "x": 312,
+          "y": 524,
+          "width": 256,
+          "height": 272,
+          "top": 524,
+          "right": 568,
+          "bottom": 796,
+          "left": 312
+        }
+      },
+      {
+        "testid": "list-action-claim-project",
+        "intent": "claim-project",
+        "featured": "1",
+        "available": "1",
+        "box": {
+          "x": 592,
+          "y": 524,
+          "width": 256,
+          "height": 272,
+          "top": 524,
+          "right": 848,
+          "bottom": 796,
+          "left": 592
+        }
+      },
+      {
+        "testid": "list-action-create-project",
+        "intent": "create-project",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 872,
+          "y": 524,
+          "width": 256,
+          "height": 272,
+          "top": 524,
+          "right": 1128,
+          "bottom": 796,
+          "left": 872
+        }
+      },
+      {
+        "testid": "list-action-ai-assistant",
+        "intent": "ai-assistant",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 1152,
+          "y": 524,
+          "width": 256,
+          "height": 272,
+          "top": 524,
+          "right": 1408,
+          "bottom": 796,
+          "left": 1152
+        }
+      }
+    ],
+    "gaps": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "ctas": [
+      {
+        "testid": "list-action-cta-import-token",
+        "box": {
+          "x": 53,
+          "y": 731,
+          "width": 216,
+          "height": 44,
+          "top": 731,
+          "right": 269,
+          "bottom": 775,
+          "left": 53
+        }
+      },
+      {
+        "testid": "list-action-cta-create-token",
+        "box": {
+          "x": 333,
+          "y": 731,
+          "width": 216,
+          "height": 44,
+          "top": 731,
+          "right": 549,
+          "bottom": 775,
+          "left": 333
+        }
+      },
+      {
+        "testid": "list-action-cta-claim-project",
+        "box": {
+          "x": 613,
+          "y": 731,
+          "width": 216,
+          "height": 44,
+          "top": 731,
+          "right": 829,
+          "bottom": 775,
+          "left": 613
+        }
+      },
+      {
+        "testid": "list-action-cta-create-project",
+        "box": {
+          "x": 893,
+          "y": 731,
+          "width": 216,
+          "height": 44,
+          "top": 731,
+          "right": 1109,
+          "bottom": 775,
+          "left": 893
+        }
+      },
+      {
+        "testid": "list-action-cta-ai-assistant",
+        "box": {
+          "x": 1173,
+          "y": 731,
+          "width": 216,
+          "height": 44,
+          "top": 731,
+          "right": 1389,
+          "bottom": 775,
+          "left": 1173
+        }
+      }
+    ],
+    "badge": {
+      "x": 686,
+      "y": 515,
+      "width": 68,
+      "height": 20,
+      "top": 515,
+      "right": 754,
+      "bottom": 535,
+      "left": 686
+    },
+    "icon": {
+      "x": 53,
+      "y": 545,
+      "width": 56,
+      "height": 56,
+      "top": 545,
+      "right": 109,
+      "bottom": 601,
+      "left": 53
+    },
+    "overflowX": false,
+    "path": "/list/",
+    "search": "",
+    "pageScrollWidth": 1440
+  },
+  "tablet": {
+    "row": {
+      "x": 24,
+      "y": 524,
+      "width": 976,
+      "height": 752,
+      "top": 524,
+      "right": 1000,
+      "bottom": 1276,
+      "left": 24
+    },
+    "cards": [
+      {
+        "testid": "list-action-import-token",
+        "intent": "import-token",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 24,
+          "y": 524,
+          "width": 480,
+          "height": 240,
+          "top": 524,
+          "right": 504,
+          "bottom": 764,
+          "left": 24
+        }
+      },
+      {
+        "testid": "list-action-create-token",
+        "intent": "create-token",
+        "featured": "0",
+        "available": "0",
+        "box": {
+          "x": 520,
+          "y": 524,
+          "width": 480,
+          "height": 240,
+          "top": 524,
+          "right": 1000,
+          "bottom": 764,
+          "left": 520
+        }
+      },
+      {
+        "testid": "list-action-claim-project",
+        "intent": "claim-project",
+        "featured": "1",
+        "available": "1",
+        "box": {
+          "x": 24,
+          "y": 780,
+          "width": 480,
+          "height": 240,
+          "top": 780,
+          "right": 504,
+          "bottom": 1020,
+          "left": 24
+        }
+      },
+      {
+        "testid": "list-action-create-project",
+        "intent": "create-project",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 520,
+          "y": 780,
+          "width": 480,
+          "height": 240,
+          "top": 780,
+          "right": 1000,
+          "bottom": 1020,
+          "left": 520
+        }
+      },
+      {
+        "testid": "list-action-ai-assistant",
+        "intent": "ai-assistant",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 24,
+          "y": 1036,
+          "width": 976,
+          "height": 240,
+          "top": 1036,
+          "right": 1000,
+          "bottom": 1276,
+          "left": 24
+        }
+      }
+    ]
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 900
+    },
+    "hero": {
+      "x": 16,
+      "y": 116,
+      "width": 358,
+      "height": 666,
+      "top": 116,
+      "right": 374,
+      "bottom": 782,
+      "left": 16
+    },
+    "row": {
+      "x": 16,
+      "y": 806,
+      "width": 358,
+      "height": 450,
+      "top": 806,
+      "right": 374,
+      "bottom": 1256,
+      "left": 16
+    },
+    "heroToCardsGap": 24,
+    "cards": [
+      {
+        "testid": "list-action-import-token",
+        "intent": "import-token",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 16,
+          "y": 806,
+          "width": 358,
+          "height": 82,
+          "top": 806,
+          "right": 374,
+          "bottom": 888,
+          "left": 16
+        }
+      },
+      {
+        "testid": "list-action-create-token",
+        "intent": "create-token",
+        "featured": "0",
+        "available": "0",
+        "box": {
+          "x": 16,
+          "y": 898,
+          "width": 358,
+          "height": 82,
+          "top": 898,
+          "right": 374,
+          "bottom": 980,
+          "left": 16
+        }
+      },
+      {
+        "testid": "list-action-claim-project",
+        "intent": "claim-project",
+        "featured": "1",
+        "available": "1",
+        "box": {
+          "x": 16,
+          "y": 990,
+          "width": 358,
+          "height": 82,
+          "top": 990,
+          "right": 374,
+          "bottom": 1072,
+          "left": 16
+        }
+      },
+      {
+        "testid": "list-action-create-project",
+        "intent": "create-project",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 16,
+          "y": 1082,
+          "width": 358,
+          "height": 82,
+          "top": 1082,
+          "right": 374,
+          "bottom": 1164,
+          "left": 16
+        }
+      },
+      {
+        "testid": "list-action-ai-assistant",
+        "intent": "ai-assistant",
+        "featured": "0",
+        "available": "1",
+        "box": {
+          "x": 16,
+          "y": 1174,
+          "width": 358,
+          "height": 82,
+          "top": 1174,
+          "right": 374,
+          "bottom": 1256,
+          "left": 16
+        }
+      }
+    ],
+    "gaps": [
+      10,
+      10,
+      10,
+      10
+    ],
+    "ctas": [
+      {
+        "testid": "list-action-cta-import-token",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "testid": "list-action-cta-create-token",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "testid": "list-action-cta-claim-project",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "testid": "list-action-cta-create-project",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "testid": "list-action-cta-ai-assistant",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    ],
+    "badge": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "icon": {
+      "x": 29,
+      "y": 824,
+      "width": 46,
+      "height": 46,
+      "top": 824,
+      "right": 75,
+      "bottom": 870,
+      "left": 29
+    },
+    "overflowX": false,
+    "path": "/list/",
+    "search": "",
+    "pageScrollWidth": 390
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "heroWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroHeight",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroToCardsGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rowWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rowHeight",
+        "actual": 272,
+        "target": 272,
+        "tol": 4,
+        "ok": true
+      },
+      {
+        "name": "cardCount",
+        "actual": 5,
+        "target": 5,
+        "ok": true
+      },
+      {
+        "name": "card0Width",
+        "actual": 256,
+        "target": 256,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card0Height",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card1Width",
+        "actual": 256,
+        "target": 256,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card1Height",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card2Width",
+        "actual": 256,
+        "target": 256,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card2Height",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card3Width",
+        "actual": 256,
+        "target": 256,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card3Height",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card4Width",
+        "actual": 256,
+        "target": 256,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card4Height",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "gap0",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap1",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap2",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap3",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta0Width",
+        "actual": 216,
+        "target": 216,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta0Height",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta1Width",
+        "actual": 216,
+        "target": 216,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta1Height",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta2Width",
+        "actual": 216,
+        "target": 216,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta2Height",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta3Width",
+        "actual": 216,
+        "target": 216,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta3Height",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta4Width",
+        "actual": 216,
+        "target": 216,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "cta4Height",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "iconTile",
+        "actual": 56,
+        "target": 56,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "iconTileH",
+        "actual": 56,
+        "target": 56,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "badgeW",
+        "actual": 68,
+        "target": 68,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "badgeH",
+        "actual": 20,
+        "target": 20,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "onList",
+        "actual": "/list/",
+        "target": "/list",
+        "ok": true
+      },
+      {
+        "name": "claimFeatured",
+        "actual": "1",
+        "target": "1",
+        "ok": true
+      },
+      {
+        "name": "createUnavailable",
+        "actual": "0",
+        "target": "0",
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "rowWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardCount",
+        "actual": 5,
+        "target": 5,
+        "ok": true
+      },
+      {
+        "name": "card0Width",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card0Height",
+        "actual": 82,
+        "target": 82,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card1Width",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card1Height",
+        "actual": 82,
+        "target": 82,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card2Width",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card2Height",
+        "actual": 82,
+        "target": 82,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card3Width",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card3Height",
+        "actual": 82,
+        "target": 82,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card4Width",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "card4Height",
+        "actual": 82,
+        "target": 82,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "gap0",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap1",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap2",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap3",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "pass": true,
+  "deviationTargetPct": 3
+}

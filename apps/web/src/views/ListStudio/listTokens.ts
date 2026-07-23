@@ -43,8 +43,59 @@ export const listOne = {
   /* Mobile */
   heroWMobile: '358px',
 
+  /* MODULE_002 — action cards (geometry only; hero locks unchanged) */
+  cardsTop: '24px',
+  cardsRowH: '272px',
+  cardW: '256px',
+  cardH: '272px',
+  cardGap: '24px',
+  cardPad: '20px',
+  cardRadius: '16px',
+  iconTile: '56px',
+  iconSize: '24px',
+  contentGap: '14px',
+  titleH: '26px',
+  descH: '66px',
+  ctaW: '216px',
+  ctaH: '44px',
+  badgeW: '68px',
+  badgeH: '20px',
+  badgeTop: '-10px',
+
+  /* Mobile cards */
+  mobileCardW: '358px',
+  mobileCardH: '82px',
+  mobileCardGap: '10px',
+  mobileCardRadius: '13px',
+  mobileCardPad: '12px',
+  mobileIcon: '46px',
+  mobileBadgeW: '52px',
+  mobileBadgeH: '16px',
+
+  /* Tablet */
+  tabletCardH: '240px',
+  tabletGap: '16px',
+
   font: "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 } as const
 
 export const LIST_HERO_BG = '/images/list/list-hero-background.png'
 export const LIST_HERO_ART = '/images/list/list-hero-artwork.png'
+
+export type ListIntent =
+  | 'import-token'
+  | 'create-token'
+  | 'claim-project'
+  | 'create-project'
+  | 'ai-assistant'
+
+export const LIST_INTENTS: readonly ListIntent[] = [
+  'import-token',
+  'create-token',
+  'claim-project',
+  'create-project',
+  'ai-assistant',
+] as const
+
+/** Create Token factory is not certified-operational on List — honest Coming Soon. */
+export const LIST_CREATE_TOKEN_AVAILABLE = false
