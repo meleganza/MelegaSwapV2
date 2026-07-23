@@ -40,11 +40,14 @@ export const liqOne = {
   lbProgramH: '44px',
   lbPadX: '20px',
 
-  /* Right column */
+  /* Right column — MODULE_003 Add Liquidity: 96+70+250+44+60 = 520 */
   addH: '520px',
-  addArtH: '120px',
-  addFormH: '300px',
-  addCtaH: '100px',
+  addHeaderH: '96px',
+  addPairH: '70px',
+  addFormH: '250px',
+  addSummaryH: '44px',
+  addFooterH: '60px',
+  addPadX: '20px',
   snapH: '324px',
   rightGap: '16px',
   snapHeadH: '40px',

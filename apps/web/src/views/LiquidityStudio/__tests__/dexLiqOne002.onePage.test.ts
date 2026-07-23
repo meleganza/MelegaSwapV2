@@ -45,7 +45,9 @@ describe('DEX-LIQ-ONE-002 Liquidity one-page final', () => {
     const add = load('onePage/AddLiquidityCard.tsx')
     expect(add).toContain('View Your Positions')
     expect(add).not.toContain('View Pools')
-    expect(add).toContain('LiquidityBuilderPanel')
+    expect(add).not.toContain('Explore Liquidity')
+    expect(add).not.toContain('LiquidityBuilderPanel')
+    expect(add).not.toContain('CurrencySearchModal')
   })
 
   it('DEX snapshot refuses fabricated TVL', () => {

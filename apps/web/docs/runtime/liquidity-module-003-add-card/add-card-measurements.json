@@ -1,0 +1,288 @@
+{
+  "generatedAt": "2026-07-23T14:30:41.110Z",
+  "desktop": {
+    "card": {
+      "w": 672,
+      "h": 520,
+      "x": 736,
+      "y": 380
+    },
+    "header": {
+      "w": 670,
+      "h": 96,
+      "x": 737,
+      "y": 381
+    },
+    "pair": {
+      "w": 670,
+      "h": 70,
+      "x": 737,
+      "y": 477
+    },
+    "form": {
+      "w": 670,
+      "h": 250,
+      "x": 737,
+      "y": 547
+    },
+    "summary": {
+      "w": 670,
+      "h": 44,
+      "x": 737,
+      "y": 797
+    },
+    "footer": {
+      "w": 670,
+      "h": 60,
+      "x": 737,
+      "y": 841
+    },
+    "artwork": {
+      "w": 160,
+      "h": 110,
+      "x": 1235,
+      "y": 381
+    },
+    "pairSelect": {
+      "w": 630,
+      "h": 48,
+      "x": 757,
+      "y": 488
+    },
+    "tokenA": {
+      "w": 630,
+      "h": 72,
+      "x": 757,
+      "y": 564
+    },
+    "tokenB": {
+      "w": 630,
+      "h": 72,
+      "x": 757,
+      "y": 708
+    },
+    "swap": {
+      "w": 40,
+      "h": 40,
+      "x": 1052,
+      "y": 652
+    },
+    "cta": {
+      "w": 630,
+      "h": 44,
+      "x": 757,
+      "y": 841
+    },
+    "exploreLiquidityPresent": false,
+    "overflowX": false,
+    "text": "MANUAL\nAdd Liquidity\n\nAdd liquidity to an existing pool or create a new one. You will receive LP tokens.\n\n+\nBNB / MARCO\n▾\nBNB\nBalance —\nMAX\n⇅\nMARCO\nBalance —\nMAX\nSTATUS\nConnect your wallet to manage liquidity.\nPOOL SHARE\n0.00%\nPRICE IMPACT\n—\nConnect Wallet\nView Your Positions ↓"
+  },
+  "mobile": {
+    "card": {
+      "w": 358,
+      "h": 593,
+      "x": 16,
+      "y": 905
+    },
+    "header": {
+      "w": 356,
+      "h": 161,
+      "x": 17,
+      "y": 906
+    },
+    "pair": {
+      "w": 356,
+      "h": 64,
+      "x": 17,
+      "y": 1067
+    },
+    "form": {
+      "w": 356,
+      "h": 240,
+      "x": 17,
+      "y": 1131
+    },
+    "summary": {
+      "w": 356,
+      "h": 44,
+      "x": 17,
+      "y": 1371
+    },
+    "footer": {
+      "w": 356,
+      "h": 82,
+      "x": 17,
+      "y": 1415
+    },
+    "artwork": {
+      "w": 160,
+      "h": 110,
+      "x": 201,
+      "y": 906
+    },
+    "pairSelect": {
+      "w": 316,
+      "h": 48,
+      "x": 37,
+      "y": 1075
+    },
+    "tokenA": {
+      "w": 316,
+      "h": 72,
+      "x": 37,
+      "y": 1143
+    },
+    "tokenB": {
+      "w": 316,
+      "h": 72,
+      "x": 37,
+      "y": 1287
+    },
+    "swap": {
+      "w": 40,
+      "h": 40,
+      "x": 175,
+      "y": 1231
+    },
+    "cta": {
+      "w": 316,
+      "h": 44,
+      "x": 37,
+      "y": 1425
+    },
+    "exploreLiquidityPresent": false,
+    "overflowX": false,
+    "text": "MANUAL\nAdd Liquidity\n\nAdd liquidity to an existing pool or create a new one. You will receive LP tokens.\n\n+\nBNB / MARCO\n▾\nBNB\nBalance —\nMAX\n⇅\nMARCO\nBalance —\nMAX\nSTATUS\nConnect your wallet to manage liquidity.\nPOOL SHARE\n0.00%\nPRICE IMPACT\n—\nConnect Wallet\nView Your Positions ↓"
+  },
+  "checks": [
+    {
+      "name": "cardW",
+      "actual": 672,
+      "target": 672,
+      "ok": true
+    },
+    {
+      "name": "cardH",
+      "actual": 520,
+      "target": 520,
+      "ok": true
+    },
+    {
+      "name": "headerH",
+      "actual": 96,
+      "target": 96,
+      "ok": true
+    },
+    {
+      "name": "pairH",
+      "actual": 70,
+      "target": 70,
+      "ok": true
+    },
+    {
+      "name": "formH",
+      "actual": 250,
+      "target": 250,
+      "ok": true
+    },
+    {
+      "name": "summaryH",
+      "actual": 44,
+      "target": 44,
+      "ok": true
+    },
+    {
+      "name": "footerH",
+      "actual": 60,
+      "target": 60,
+      "ok": true
+    },
+    {
+      "name": "artworkW",
+      "actual": 160,
+      "target": 160,
+      "ok": true
+    },
+    {
+      "name": "artworkH",
+      "actual": 110,
+      "target": 110,
+      "ok": true
+    },
+    {
+      "name": "pairSelectH",
+      "actual": 48,
+      "target": 48,
+      "ok": true
+    },
+    {
+      "name": "tokenAH",
+      "actual": 72,
+      "target": 72,
+      "ok": true
+    },
+    {
+      "name": "tokenBH",
+      "actual": 72,
+      "target": 72,
+      "ok": true
+    },
+    {
+      "name": "swapW",
+      "actual": 40,
+      "target": 40,
+      "ok": true
+    },
+    {
+      "name": "swapH",
+      "actual": 40,
+      "target": 40,
+      "ok": true
+    },
+    {
+      "name": "ctaH",
+      "actual": 44,
+      "target": 44,
+      "ok": true
+    },
+    {
+      "name": "sectionSum520",
+      "actual": 520,
+      "target": 520,
+      "ok": true
+    },
+    {
+      "name": "noExploreLiquidity",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "noOverflowDesktop",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "mobileNaturalHeight",
+      "actual": 593,
+      "target": "auto/natural",
+      "ok": true
+    },
+    {
+      "name": "viewYourPositionsOnly",
+      "actual": true,
+      "target": true,
+      "ok": true
+    }
+  ],
+  "overlayStats": {
+    "mae": 20.286290445658647,
+    "size": [
+      672,
+      520
+    ],
+    "maePctOf255": 7.955408017905352
+  },
+  "pass": true
+}
