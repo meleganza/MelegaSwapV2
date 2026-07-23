@@ -1,0 +1,453 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 72,
+      "top": 0,
+      "right": 1440,
+      "bottom": 72,
+      "left": 0
+    },
+    "trending": {
+      "x": 0,
+      "y": 72,
+      "width": 1440,
+      "height": 44,
+      "top": 72,
+      "right": 1440,
+      "bottom": 116,
+      "left": 0
+    },
+    "hero": {
+      "x": 32,
+      "y": 140,
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "right": 1408,
+      "bottom": 500,
+      "left": 32
+    },
+    "text": {
+      "x": 64,
+      "y": 160,
+      "width": 671.828125,
+      "height": 248,
+      "top": 160,
+      "right": 735.828125,
+      "bottom": 408,
+      "left": 64
+    },
+    "headline": {
+      "x": 64,
+      "y": 160,
+      "width": 520,
+      "height": 180,
+      "top": 160,
+      "right": 584,
+      "bottom": 340,
+      "left": 64
+    },
+    "description": {
+      "x": 64,
+      "y": 360,
+      "width": 480,
+      "height": 48,
+      "top": 360,
+      "right": 544,
+      "bottom": 408,
+      "left": 64
+    },
+    "stats": {
+      "x": 64,
+      "y": 436,
+      "width": 528,
+      "height": 72,
+      "top": 436,
+      "right": 592,
+      "bottom": 508,
+      "left": 64
+    },
+    "artFrame": {
+      "x": 789.90625,
+      "y": 174,
+      "width": 560,
+      "height": 320,
+      "top": 174,
+      "right": 1349.90625,
+      "bottom": 494,
+      "left": 789.90625
+    },
+    "statCards": [
+      {
+        "x": 64,
+        "y": 436,
+        "width": 120,
+        "height": 72,
+        "top": 436,
+        "right": 184,
+        "bottom": 508,
+        "left": 64
+      },
+      {
+        "x": 200,
+        "y": 436,
+        "width": 120,
+        "height": 72,
+        "top": 436,
+        "right": 320,
+        "bottom": 508,
+        "left": 200
+      },
+      {
+        "x": 336,
+        "y": 436,
+        "width": 120,
+        "height": 72,
+        "top": 436,
+        "right": 456,
+        "bottom": 508,
+        "left": 336
+      },
+      {
+        "x": 472,
+        "y": 436,
+        "width": 120,
+        "height": 72,
+        "top": 436,
+        "right": 592,
+        "bottom": 508,
+        "left": 472
+      }
+    ],
+    "trendingToHeroGap": 24,
+    "overflowX": false,
+    "heroBackgroundImage": "url(\"http://127.0.0.1:3495/images/list/list-hero-background.png\")",
+    "artSrc": "/images/list/list-hero-artwork.png",
+    "headlineText": "List, Launch,and Growon Melega.",
+    "statValues": [
+      "—Listed Tokens",
+      "—Projects",
+      "—Total Market Cap",
+      "—Networks"
+    ],
+    "pageScrollWidth": 1440
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "header": null,
+    "trending": {
+      "x": 0,
+      "y": 60,
+      "width": 390,
+      "height": 40,
+      "top": 60,
+      "right": 390,
+      "bottom": 100,
+      "left": 0
+    },
+    "hero": {
+      "x": 16,
+      "y": 116,
+      "width": 358,
+      "height": 666,
+      "top": 116,
+      "right": 374,
+      "bottom": 782,
+      "left": 16
+    },
+    "text": {
+      "x": 32,
+      "y": 140,
+      "width": 326,
+      "height": 206,
+      "top": 140,
+      "right": 358,
+      "bottom": 346,
+      "left": 32
+    },
+    "headline": {
+      "x": 32,
+      "y": 140,
+      "width": 326,
+      "height": 120,
+      "top": 140,
+      "right": 358,
+      "bottom": 260,
+      "left": 32
+    },
+    "description": {
+      "x": 32,
+      "y": 280,
+      "width": 326,
+      "height": 66,
+      "top": 280,
+      "right": 358,
+      "bottom": 346,
+      "left": 32
+    },
+    "stats": {
+      "x": 32,
+      "y": 606,
+      "width": 326,
+      "height": 156,
+      "top": 606,
+      "right": 358,
+      "bottom": 762,
+      "left": 32
+    },
+    "artFrame": {
+      "x": 32,
+      "y": 382.859375,
+      "width": 326,
+      "height": 186.28125,
+      "top": 382.859375,
+      "right": 358,
+      "bottom": 569.140625,
+      "left": 32
+    },
+    "statCards": [
+      {
+        "x": 32,
+        "y": 606,
+        "width": 157,
+        "height": 72,
+        "top": 606,
+        "right": 189,
+        "bottom": 678,
+        "left": 32
+      },
+      {
+        "x": 201,
+        "y": 606,
+        "width": 157,
+        "height": 72,
+        "top": 606,
+        "right": 358,
+        "bottom": 678,
+        "left": 201
+      },
+      {
+        "x": 32,
+        "y": 690,
+        "width": 157,
+        "height": 72,
+        "top": 690,
+        "right": 189,
+        "bottom": 762,
+        "left": 32
+      },
+      {
+        "x": 201,
+        "y": 690,
+        "width": 157,
+        "height": 72,
+        "top": 690,
+        "right": 358,
+        "bottom": 762,
+        "left": 201
+      }
+    ],
+    "trendingToHeroGap": 16,
+    "overflowX": false,
+    "heroBackgroundImage": "url(\"http://127.0.0.1:3495/images/list/list-hero-background.png\")",
+    "artSrc": "/images/list/list-hero-artwork.png",
+    "headlineText": "List, Launch,and Growon Melega.",
+    "statValues": [
+      "—Listed Tokens",
+      "—Projects",
+      "—Total Market Cap",
+      "—Networks"
+    ],
+    "pageScrollWidth": 390
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "headerHeight",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "trendingHeight",
+        "actual": 44,
+        "target": 44,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "trendingToHeroGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroHeight",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroRightMargin",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "artWidth",
+        "actual": 560,
+        "target": 560,
+        "tol": 4,
+        "ok": true
+      },
+      {
+        "name": "artHeight",
+        "actual": 320,
+        "target": 320,
+        "tol": 4,
+        "ok": true
+      },
+      {
+        "name": "stat0Width",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat0Height",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat1Width",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat1Height",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat2Width",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat2Height",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat3Width",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "stat3Height",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "exactHeroImage",
+        "actual": "url(\"http://127.0.0.1:3495/images/list/list-hero-background.png\")",
+        "target": "list-hero-background.png",
+        "ok": true
+      },
+      {
+        "name": "exactArtwork",
+        "actual": "/images/list/list-hero-artwork.png",
+        "target": "/images/list/list-hero-artwork.png",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "noFakeStats",
+        "actual": "[\"—Listed Tokens\",\"—Projects\",\"—Total Market Cap\",\"—Networks\"]",
+        "target": "—",
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "heroWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroAutoHeight",
+        "actual": 666,
+        "target": ">320",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "statCardCount",
+        "actual": 4,
+        "target": 4,
+        "ok": true
+      }
+    ]
+  },
+  "pass": true,
+  "deviationTargetPct": 3
+}

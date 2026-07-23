@@ -66,7 +66,7 @@ describe('DEX UX Rebuild navigation', () => {
     expect(readFileSync(path.join(ROOT, 'pages/list/index.tsx'), 'utf8')).toMatch(/ListStudioScreen/)
     expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/PassportScreen/)
     expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(
-      /Import Existing Token/,
+      /ListPageHero/,
     )
     expect(readFileSync(path.join(ROOT, 'views/Passport/PassportScreen.tsx'), 'utf8')).toMatch(
       /MARCO Passport/,
