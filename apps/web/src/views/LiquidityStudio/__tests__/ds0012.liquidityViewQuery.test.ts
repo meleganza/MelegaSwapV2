@@ -18,9 +18,12 @@ describe('DS001.2 / DS001.3 Liquidity Studio view query wiring', () => {
 
   it('renders the restored Liquidity Building product surface for view=building', () => {
     const src = readFileSync(SCREEN, 'utf8')
-    expect(src).toContain('LiquidityBuildingPanel')
-    expect(src).toContain('ls-liquidity-building-surface')
-    expect(src).toContain("activeMode === 'Liquidity Building'")
+    const card = readFileSync(
+      path.resolve(__dirname, '../onePage/LiquidityBuildingCard.tsx'),
+      'utf8',
+    )
+    expect(src).toContain('UnifiedLiquidityPage')
+    expect(card).toContain('LiquidityBuildingPanel')
     expect(src).not.toContain('ls-liquidity-building-discovery')
   })
 })

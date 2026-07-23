@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "shots": [
+    "desktop-1440-disconnected-default.png",
+    "desktop-1440-building-focus.png",
+    "desktop-1440-add-focus.png",
+    "desktop-1440-positions-focus.png",
+    "mobile-390-page-top.png",
+    "mobile-390-building.png",
+    "mobile-390-add.png",
+    "mobile-390-bottom.png"
+  ],
+  "at": "2026-07-23T00:09:55.155Z"
+}

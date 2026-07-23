@@ -80,7 +80,9 @@ describe('LB014 Liquidity Building UI domain', () => {
 
   it('Liquidity Studio mounts Liquidity Building panel (no placeholder CTA)', () => {
     const screen = readFileSync(path.join(__dirname, '../../LiquidityStudioScreen.tsx'), 'utf8')
-    expect(screen).toMatch(/LiquidityBuildingPanel/)
+    const onePage = readFileSync(path.join(__dirname, '../../onePage/LiquidityBuildingCard.tsx'), 'utf8')
+    expect(screen).toMatch(/UnifiedLiquidityPage/)
+    expect(onePage).toMatch(/LiquidityBuildingPanel/)
     expect(screen).not.toMatch(/Coming soon/i)
 
     const panel = readFileSync(path.join(__dirname, '../../components/LiquidityBuildingPanel.tsx'), 'utf8')

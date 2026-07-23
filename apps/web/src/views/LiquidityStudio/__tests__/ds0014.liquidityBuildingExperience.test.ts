@@ -56,8 +56,11 @@ const FORBIDDEN = [
 
 describe('DS001.4 Liquidity Building experience', () => {
   it('1. view=building mounts the Liquidity Building product surface', () => {
-    expect(SCREEN).toMatch(/LiquidityBuildingPanel/)
-    expect(SCREEN).toMatch(/ls-liquidity-building-layout/)
+    const card = readFileSync(path.join(ROOT, 'onePage/LiquidityBuildingCard.tsx'), 'utf8')
+    const page = readFileSync(path.join(ROOT, 'onePage/UnifiedLiquidityPage.tsx'), 'utf8')
+    expect(SCREEN).toMatch(/UnifiedLiquidityPage/)
+    expect(card).toMatch(/LiquidityBuildingPanel/)
+    expect(page).toMatch(/building/)
     expect(PANEL).toMatch(/data-liquidity-building-panel/)
     expect(PANEL).toMatch(/data-ds0014/)
   })

@@ -11,15 +11,13 @@ function load(rel: string) {
 }
 
 describe('DS001.3 Liquidity Studio home (compat) + UX rebuild dense studio', () => {
-  it('default /liquidity-studio uses dense chrome; legacy two-card home at ?view=home', () => {
+  it('default /liquidity-studio uses one-page unified surface; legacy two-card home at ?view=home', () => {
     const screen = load('LiquidityStudioScreen.tsx')
     const home = load('components/LiquidityStudioHome.tsx')
-    const chrome = load('components/LiquidityStudioChrome.tsx')
-    expect(screen).toContain('LiquidityStudioChrome')
+    expect(screen).toContain('UnifiedLiquidityPage')
+    expect(screen).not.toContain('LiquidityStudioChrome')
     expect(screen).toContain('isLegacyHomeView')
     expect(screen).toContain('LiquidityStudioHome')
-    expect(chrome).toContain('Positions')
-    expect(chrome).toContain('Liquidity Building')
     expect(home).toContain('data-testid="ls-card-add-liquidity"')
     expect(home).toContain('data-testid="ls-card-liquidity-building"')
     expect(home.match(/data-testid="ls-card-/g)?.length).toBe(2)
@@ -45,7 +43,7 @@ describe('DS001.3 Liquidity Studio home (compat) + UX rebuild dense studio', () 
     expect(home).toMatch(/view=building" data-testid="ls-cta-program-status"/)
   })
 
-  it('view query mapping preserves deep links; null view defaults in screen to positions', () => {
+  it('view query mapping preserves deep links; one-page handles focus without mode tabs', () => {
     expect(liquidityStudioModeFromView(undefined)).toBeNull()
     expect(liquidityStudioModeFromView('add')).toBe('Add Liquidity')
     expect(liquidityStudioModeFromView('explore')).toBe('Add Liquidity')
@@ -54,18 +52,16 @@ describe('DS001.3 Liquidity Studio home (compat) + UX rebuild dense studio', () 
     expect(liquidityStudioModeFromView('remove')).toBe('Remove Liquidity')
     expect(liquidityStudioModeFromView('simulation')).toBe('Simulation')
     const screen = load('LiquidityStudioScreen.tsx')
-    expect(screen).toContain("'My Positions'")
+    expect(screen).toContain('UnifiedLiquidityPage')
   })
 
-  it('studio chrome exposes segmented navigation', () => {
+  it('public segmented navigation is removed from default Liquidity page', () => {
     const chrome = load('components/LiquidityStudioChrome.tsx')
     const screen = load('LiquidityStudioScreen.tsx')
+    // Chrome component may still exist for legacy references, but is not mounted.
     expect(chrome).toContain('ls-mode-tabs')
-    expect(chrome).toContain('ls-seg-positions')
-    expect(chrome).toContain('ls-seg-explore')
-    expect(chrome).toContain('ls-seg-add')
-    expect(chrome).toContain('ls-seg-building')
-    expect(screen).toContain('LiquidityStudioChrome')
+    expect(screen).not.toContain('LiquidityStudioChrome')
+    expect(screen).not.toContain('ls-mode-tabs')
   })
 
   it('trust strip fee uses canonical LB success fee bps', () => {
@@ -85,6 +81,6 @@ describe('DS001.3 Liquidity Studio home (compat) + UX rebuild dense studio', () 
 
   it('content max width follows UX rebuild container', () => {
     const screen = load('LiquidityStudioScreen.tsx')
-    expect(screen).toContain('uxRebuildLayout.contentMax')
+    expect(screen).toContain("liqOne.contentMax")
   })
 })

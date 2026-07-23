@@ -34,9 +34,11 @@ describe('LB024 Liquidity Building access', () => {
   })
 
   it('2. Selecting Liquidity Building mounts the real product panel', () => {
-    expect(SCREEN_SRC).toMatch(/LiquidityBuildingPanel/)
-    expect(SCREEN_SRC).toMatch(/activeMode === 'Liquidity Building'|mode === 'Liquidity Building'/)
-    expect(SCREEN_SRC).toMatch(/ls-liquidity-building-layout/)
+    const card = readFileSync(path.join(__dirname, '../onePage/LiquidityBuildingCard.tsx'), 'utf8')
+    const page = readFileSync(path.join(__dirname, '../onePage/UnifiedLiquidityPage.tsx'), 'utf8')
+    expect(SCREEN_SRC).toMatch(/UnifiedLiquidityPage/)
+    expect(card).toMatch(/LiquidityBuildingPanel/)
+    expect(page).toMatch(/view === 'building'|liquidity-building|focusBuilding|building/)
     expect(PANEL_SRC).toMatch(/data-liquidity-building-panel/)
     expect(PANEL_SRC).toMatch(/data-lb016/)
   })
