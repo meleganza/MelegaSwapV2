@@ -10,7 +10,7 @@
 
 ## 3. Commit
 
-_Filled at push time — see git log on branch tip._
+
 
 ## 4. Exact image source path
 
