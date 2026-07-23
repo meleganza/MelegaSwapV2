@@ -1,0 +1,624 @@
+{
+  "schemaVersion": "melega.liquidity-building.v1.founder-approval-pack",
+  "missionId": {
+    "value": "LB-ACT-005",
+    "status": "VERIFIED"
+  },
+  "chainId": {
+    "value": 56,
+    "status": "VERIFIED"
+  },
+  "generatedAt": {
+    "value": "2026-07-23T01:05:00Z",
+    "status": "VERIFIED"
+  },
+  "baselineCommit": {
+    "value": "0925f9f3af00c3847319a7646aa42650bd312a1d",
+    "status": "VERIFIED"
+  },
+  "documents": {
+    "quotePolicy": {
+      "path": "apps/web/docs/runtime/LB_QUOTE_POLICY_FOUNDER_DECISION.md",
+      "status": "AWAITING_APPROVAL"
+    },
+    "deploymentApproval": {
+      "path": "apps/web/docs/runtime/LB_V1_FOUNDER_DEPLOYMENT_APPROVAL.md",
+      "status": "AWAITING_APPROVAL"
+    }
+  },
+  "quotePolicy": {
+    "version": {
+      "value": "melega.lb.quote-policy.v1",
+      "status": "PROPOSED"
+    },
+    "initialEnabled": {
+      "value": [
+        "WBNB"
+      ],
+      "status": "PROPOSED"
+    },
+    "disabled": {
+      "value": [
+        "USDT",
+        "USDC"
+      ],
+      "status": "PROPOSED",
+      "explanation": "USDT/USDC Melega pairs exist but reserves are too thin for gas-conversion floors (LB-G09). USDC excluded from initial launch."
+    },
+    "defaultEpochSeconds": {
+      "value": 300,
+      "status": "VERIFIED"
+    },
+    "maxSlippageOperatingBps": {
+      "value": 50,
+      "status": "VERIFIED"
+    },
+    "maxSlippageHardBps": {
+      "value": 100,
+      "status": "VERIFIED"
+    },
+    "maxPriceImpactOperatingBps": {
+      "value": 40,
+      "status": "VERIFIED"
+    },
+    "maxPriceImpactHardBps": {
+      "value": 100,
+      "status": "VERIFIED"
+    },
+    "finalityConfirmations": {
+      "value": 15,
+      "status": "VERIFIED"
+    },
+    "successFeeBps": {
+      "value": 500,
+      "status": "VERIFIED"
+    },
+    "assets": {
+      "WBNB": {
+        "symbol": {
+          "value": "WBNB",
+          "status": "VERIFIED"
+        },
+        "name": {
+          "value": "Wrapped BNB",
+          "status": "VERIFIED"
+        },
+        "address": {
+          "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "status": "VERIFIED"
+        },
+        "decimals": {
+          "value": 18,
+          "status": "VERIFIED"
+        },
+        "bytecodeBytes": {
+          "value": 3124,
+          "status": "VERIFIED"
+        },
+        "enabled": {
+          "value": true,
+          "status": "PROPOSED"
+        },
+        "minimumGrossQuoteFloorWei": {
+          "value": "41052631578947370",
+          "status": "PROPOSED"
+        },
+        "minimumQuoteReserveWei": {
+          "value": "10263157894736842500",
+          "status": "PROPOSED"
+        },
+        "absoluteMaxPerEpochWei": {
+          "value": "205263157894736850",
+          "status": "PROPOSED",
+          "explanation": "5x minimumGrossQuoteFloor canary ceiling; Founder may choose relative-caps-only instead"
+        },
+        "gasConversionMode": {
+          "value": "NativeEquivalent",
+          "status": "VERIFIED"
+        },
+        "recommendation": {
+          "value": "ENABLE_FOR_V1",
+          "status": "PROPOSED"
+        }
+      },
+      "USDT": {
+        "symbol": {
+          "value": "USDT",
+          "status": "VERIFIED"
+        },
+        "name": {
+          "value": "Tether USD",
+          "status": "VERIFIED"
+        },
+        "address": {
+          "value": "0x55d398326f99059fF775485246999027B3197955",
+          "status": "VERIFIED"
+        },
+        "decimals": {
+          "value": 18,
+          "status": "VERIFIED"
+        },
+        "bytecodeBytes": {
+          "value": 4413,
+          "status": "VERIFIED"
+        },
+        "enabled": {
+          "value": false,
+          "status": "PROPOSED"
+        },
+        "melegaPair": {
+          "value": "0x94fadf053bad0c9d0a3874f82b1a09001926a548",
+          "status": "VERIFIED"
+        },
+        "pairReserves": {
+          "value": {
+            "reserve0": "858037982913909658",
+            "reserve1": "1522729740580272"
+          },
+          "status": "VERIFIED",
+          "explanation": "Insufficient for gas conversion floors"
+        },
+        "minimumGrossQuoteFloorWei": {
+          "value": null,
+          "status": "BLOCKED",
+          "explanation": "No safe floor calculated"
+        },
+        "recommendation": {
+          "value": "KEEP_DISABLED",
+          "status": "PROPOSED"
+        }
+      },
+      "USDC": {
+        "symbol": {
+          "value": "USDC",
+          "status": "VERIFIED"
+        },
+        "name": {
+          "value": "USD Coin",
+          "status": "VERIFIED"
+        },
+        "address": {
+          "value": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+          "status": "VERIFIED"
+        },
+        "decimals": {
+          "value": 18,
+          "status": "VERIFIED"
+        },
+        "bytecodeBytes": {
+          "value": 1596,
+          "status": "VERIFIED"
+        },
+        "enabled": {
+          "value": false,
+          "status": "PROPOSED"
+        },
+        "melegaPair": {
+          "value": "0x7165b14cf9d03061b67e3237078e5f5a03fe01a9",
+          "status": "VERIFIED"
+        },
+        "recommendation": {
+          "value": "EXCLUDE_FROM_V1_ENABLED_SET",
+          "status": "PROPOSED"
+        }
+      }
+    },
+    "treasuryRuntimeRequired": {
+      "value": false,
+      "status": "VERIFIED"
+    },
+    "approvalStatus": {
+      "value": "AWAITING_APPROVAL",
+      "status": "AWAITING_APPROVAL"
+    }
+  },
+  "quotePolicyHash": {
+    "value": "0x6905d8975f7335dcaf293a73a8e25ed35065ddaf1ec754c0adf035f94dc451b7",
+    "status": "VERIFIED",
+    "explanation": "sha256 of canonical quotePolicy object"
+  },
+  "contractPack": {
+    "scope": {
+      "value": [
+        "LiquidityBuildingTreasuryFeeReceiverV1",
+        "LiquidityBuildingExecutionAuthorizerV1",
+        "LiquidityBuildingTreasuryFeeSinkV1",
+        "LiquidityBuildingExecutionMathV1",
+        "LiquidityBuildingProgramV1",
+        "LiquidityBuildingFactoryV1"
+      ],
+      "status": "VERIFIED"
+    },
+    "canonicalBindings": {
+      "melegaFactory": {
+        "value": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+        "status": "VERIFIED"
+      },
+      "melegaRouter": {
+        "value": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+        "status": "VERIFIED"
+      },
+      "masterBuilder": {
+        "value": "0x41D5487836452d23f2c467070244E5842B412794",
+        "status": "VERIFIED"
+      },
+      "successFeeBps": {
+        "value": 500,
+        "status": "VERIFIED"
+      }
+    },
+    "invalidFeeReceiverVault": {
+      "value": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C",
+      "status": "BLOCKED",
+      "explanation": "NOT VALID FOR LIQUIDITY BUILDING FEE RECEIPT"
+    },
+    "contracts": {
+      "LiquidityBuildingTreasuryFeeReceiverV1": {
+        "source": {
+          "value": "contracts/liquidity-building/LiquidityBuildingTreasuryFeeReceiverV1.sol",
+          "status": "VERIFIED"
+        },
+        "bytecodeHash": {
+          "value": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+          "status": "VERIFIED"
+        },
+        "constructor": {
+          "value": [
+            "governor_",
+            "beneficiary_"
+          ],
+          "status": "VERIFIED"
+        },
+        "governor": {
+          "value": null,
+          "status": "AWAITING_APPROVAL",
+          "explanation": "Founder must nominate"
+        },
+        "beneficiary": {
+          "value": null,
+          "status": "AWAITING_APPROVAL",
+          "explanation": "Founder must nominate"
+        },
+        "estimatedGas": {
+          "value": 212878,
+          "status": "PROPOSED"
+        },
+        "deploymentOrder": {
+          "value": 1,
+          "status": "APPROVED"
+        }
+      },
+      "LiquidityBuildingExecutionAuthorizerV1": {
+        "source": {
+          "value": "contracts/liquidity-building/LiquidityBuildingExecutionAuthorizerV1.sol",
+          "status": "VERIFIED"
+        },
+        "bytecodeHash": {
+          "value": "0x3dad300b23fc1f31365aa3c47f073ec6279ff39ca4dfe2bda49a934c1adc1282",
+          "status": "VERIFIED"
+        },
+        "constructor": {
+          "value": [
+            "signingAuthority_"
+          ],
+          "status": "VERIFIED"
+        },
+        "signingAuthority": {
+          "value": null,
+          "status": "BLOCKED",
+          "explanation": "KMS address not published"
+        },
+        "estimatedGas": {
+          "value": 777142,
+          "status": "PROPOSED"
+        },
+        "deploymentOrder": {
+          "value": 2,
+          "status": "APPROVED"
+        }
+      },
+      "LiquidityBuildingTreasuryFeeSinkV1": {
+        "source": {
+          "value": "contracts/liquidity-building/LiquidityBuildingTreasuryFeeSinkV1.sol",
+          "status": "VERIFIED"
+        },
+        "bytecodeHash": {
+          "value": "0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0",
+          "status": "VERIFIED"
+        },
+        "constructor": {
+          "value": [
+            "treasuryReceiver_"
+          ],
+          "status": "VERIFIED"
+        },
+        "treasuryReceiver": {
+          "value": null,
+          "status": "BLOCKED",
+          "explanation": "Equals FeeReceiver after deploy; Vault forbidden"
+        },
+        "estimatedGas": {
+          "value": 836850,
+          "status": "PROPOSED"
+        },
+        "deploymentOrder": {
+          "value": 3,
+          "status": "APPROVED"
+        }
+      },
+      "LiquidityBuildingExecutionMathV1": {
+        "source": {
+          "value": "contracts/liquidity-building/libraries/LiquidityBuildingExecutionMathV1.sol",
+          "status": "VERIFIED"
+        },
+        "bytecodeHash": {
+          "value": "0x03b84d6ab2b43a50368ccdbc34eb4e2ae1a1b945b1736e713090cb19a89036d8",
+          "status": "VERIFIED"
+        },
+        "estimatedGas": {
+          "value": 992026,
+          "status": "PROPOSED"
+        },
+        "deploymentOrder": {
+          "value": 4,
+          "status": "APPROVED"
+        }
+      },
+      "LiquidityBuildingProgramV1": {
+        "source": {
+          "value": "contracts/liquidity-building/LiquidityBuildingProgramV1.sol",
+          "status": "VERIFIED"
+        },
+        "bytecodeHash": {
+          "value": null,
+          "status": "BLOCKED",
+          "explanation": "Production linked-library hash deferred until CREATE with fixed library addresses"
+        },
+        "estimatedGas": {
+          "value": 5754038,
+          "status": "PROPOSED"
+        },
+        "deploymentOrder": {
+          "value": 5,
+          "status": "APPROVED"
+        }
+      },
+      "LiquidityBuildingFactoryV1": {
+        "source": {
+          "value": "contracts/liquidity-building/LiquidityBuildingFactoryV1.sol",
+          "status": "VERIFIED"
+        },
+        "bytecodeHash": {
+          "value": "0xd7574a777496df07e1c878c7baf23a2243e8785bba3ac6355dfa1a9ec258c2ff",
+          "status": "VERIFIED"
+        },
+        "estimatedGas": {
+          "value": 2121805,
+          "status": "PROPOSED"
+        },
+        "deploymentOrder": {
+          "value": 6,
+          "status": "APPROVED"
+        }
+      }
+    }
+  },
+  "contractPackHash": {
+    "value": "0x3192d6d89858e74d0ce6b2fb146a381a10230694af598fb660ed7ab60c2d2c7b",
+    "status": "VERIFIED",
+    "explanation": "sha256 of canonical contractPack object"
+  },
+  "feeReceiver": {
+    "architecture": {
+      "value": "LiquidityBuildingTreasuryFeeReceiverV1",
+      "status": "VERIFIED"
+    },
+    "retainsFundsUntilRecovery": {
+      "value": true,
+      "status": "VERIFIED"
+    },
+    "settlementEventsOnFeeSink": {
+      "value": true,
+      "status": "VERIFIED"
+    },
+    "acceptsNativeBnb": {
+      "value": false,
+      "status": "VERIFIED"
+    },
+    "preferredFeeAsset": {
+      "value": "WBNB",
+      "status": "PROPOSED"
+    },
+    "authorizesExecution": {
+      "value": false,
+      "status": "VERIFIED"
+    },
+    "holdsLpOrProjectBudget": {
+      "value": false,
+      "status": "VERIFIED"
+    },
+    "requiresTreasuryRuntimeHttp": {
+      "value": false,
+      "status": "VERIFIED"
+    },
+    "governor": {
+      "value": null,
+      "status": "AWAITING_APPROVAL"
+    },
+    "beneficiary": {
+      "value": null,
+      "status": "AWAITING_APPROVAL"
+    },
+    "invalidVault": {
+      "value": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C",
+      "status": "BLOCKED",
+      "explanation": "NOT VALID FOR LIQUIDITY BUILDING FEE RECEIPT"
+    }
+  },
+  "kms": {
+    "authoritativeHandoff": {
+      "value": "docs/handoffs/LB008_KERL_KMS_SIGNATURE_NORMALIZATION.md",
+      "status": "VERIFIED"
+    },
+    "followUpPrompt": {
+      "value": "apps/web/docs/runtime/LB_ACT004_FOLLOWUP_KMS_RELAY_PROMPTS.md#prompt-1",
+      "status": "VERIFIED"
+    },
+    "derivedEvmAddress": {
+      "value": null,
+      "status": "BLOCKED"
+    },
+    "productionKmsVerified": {
+      "value": false,
+      "status": "BLOCKED"
+    },
+    "hotKeyFallback": {
+      "value": "FORBIDDEN",
+      "status": "VERIFIED"
+    },
+    "chain56Authorization": {
+      "value": null,
+      "status": "AWAITING_APPROVAL",
+      "explanation": "Awaiting infra evidence"
+    },
+    "status": {
+      "value": "AWAITING_INFRA",
+      "status": "BLOCKED"
+    }
+  },
+  "relay": {
+    "followUpPrompt": {
+      "value": "apps/web/docs/runtime/LB_ACT004_FOLLOWUP_KMS_RELAY_PROMPTS.md#prompt-2",
+      "status": "VERIFIED"
+    },
+    "productionUrl": {
+      "value": null,
+      "status": "BLOCKED"
+    },
+    "relayStatus": {
+      "value": "DISABLED",
+      "status": "BLOCKED"
+    },
+    "executeSelector": {
+      "value": "0xe8ef6644",
+      "status": "VERIFIED"
+    },
+    "status": {
+      "value": "AWAITING_INFRA",
+      "status": "BLOCKED"
+    }
+  },
+  "finality": {
+    "configuredDepth": {
+      "value": 15,
+      "status": "VERIFIED"
+    },
+    "gateStatus": {
+      "value": "FINALITY_EVIDENCE_INSUFFICIENT",
+      "status": "BLOCKED"
+    },
+    "requiresTreasuryRuntime": {
+      "value": false,
+      "status": "VERIFIED"
+    }
+  },
+  "gasEstimate": {
+    "method": {
+      "value": "forge_compile_create_heuristic_v1",
+      "status": "PROPOSED",
+      "explanation": "21000+32000+200*deployedBytes+16*creationBytes * 1.15"
+    },
+    "observationBlock": {
+      "value": 111574308,
+      "status": "VERIFIED"
+    },
+    "spotGasPriceWei": {
+      "value": "50000000",
+      "status": "VERIFIED"
+    },
+    "conservativeGasPriceWei": {
+      "value": "3000000000",
+      "status": "PROPOSED"
+    },
+    "totalEstimatedGas": {
+      "value": 10694739,
+      "status": "PROPOSED"
+    },
+    "expectedSpendBnbConservative": {
+      "value": "0.03208422",
+      "status": "PROPOSED"
+    },
+    "contingencyPct": {
+      "value": 30,
+      "status": "PROPOSED"
+    }
+  },
+  "maximumAuthorizedBnb": {
+    "value": "0.05",
+    "status": "AWAITING_APPROVAL",
+    "explanation": "Founder-readable ceiling rounded up from ~0.04171 BNB (conservative*1.3)"
+  },
+  "fundingSourceReference": {
+    "value": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "status": "VERIFIED",
+    "explanation": "Bootstrap/infrastructure funding reference only; NOT deployer; NOT KMS signer; EIP-7702 designator code_bytes=23"
+  },
+  "approvals": {
+    "quotePolicy": {
+      "value": false,
+      "status": "AWAITING_APPROVAL"
+    },
+    "deploymentPack": {
+      "value": false,
+      "status": "AWAITING_APPROVAL"
+    },
+    "maximumBnb": {
+      "value": false,
+      "status": "AWAITING_APPROVAL"
+    },
+    "founderActivationApproved": {
+      "value": false,
+      "status": "BLOCKED",
+      "explanation": "Must remain false until post-deploy pack-scoped attestation; not set by LB-ACT-005"
+    }
+  },
+  "blockers": {
+    "value": [
+      "QUOTE_POLICY_AWAITING_FOUNDER",
+      "FEE_RECEIVER_GOVERNOR_BENEFICIARY_MISSING",
+      "LB-G03B_KMS_NOT_CONFIGURED",
+      "LB-G11_KMS_NOT_VERIFIED",
+      "LB-G03C_RELAY_DISABLED",
+      "LB-G10_FINALITY_EVIDENCE_INSUFFICIENT",
+      "PROGRAM_LINKED_BYTECODE_HASH_MISSING",
+      "FOUNDER_DEPLOYMENT_APPROVAL_UNSIGNED",
+      "MAXIMUM_BNB_NOT_APPROVED"
+    ],
+    "status": "VERIFIED"
+  },
+  "goNoGo": {
+    "verdict": {
+      "value": "NO_GO",
+      "status": "BLOCKED"
+    },
+    "rule": {
+      "value": "Every blocking matrix row must be PASS before broadcast",
+      "status": "VERIFIED"
+    }
+  },
+  "broadcast": {
+    "contractsDeployed": {
+      "value": false,
+      "status": "VERIFIED"
+    },
+    "fundsSpent": {
+      "value": false,
+      "status": "VERIFIED"
+    }
+  },
+  "packHash": {
+    "value": "0xf65fc748e5af3786601afadd260dbab5489e960b9537e74641e49f92e7f662a1",
+    "status": "VERIFIED",
+    "explanation": "sha256 of pack excluding packHash field"
+  }
+}
