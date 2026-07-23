@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "melega.liquidity-building.v1.production-deployment-inputs-pack",
+  "mission": "LB-ACT-004",
+  "assessedAtUtc": "2026-07-23T00:20:00Z",
+  "chainId": { "value": 56, "status": "VERIFIED" },
+  "Factory": {
+    "value": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "role": "Melega DEX Factory (pair factory)",
+    "status": "VERIFIED",
+    "evidence": "on-chain bytecode bytes=10852 @ block ~111569161"
+  },
+  "Router": {
+    "value": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "role": "Melega DEX Router",
+    "status": "VERIFIED",
+    "evidence": "on-chain bytecode bytes=17845"
+  },
+  "MasterBuilder": {
+    "value": "0x41D5487836452d23f2c467070244E5842B412794",
+    "note": "Canonical MasterChef / MasterBuilder dependency used by Melega earn surface",
+    "status": "VERIFIED",
+    "evidence": "on-chain bytecode bytes=7309"
+  },
+  "feeBps": { "value": 500, "status": "VERIFIED", "note": "Factory constructor hard-requires successFeeBps==500" },
+  "TreasuryFeeReceiver": {
+    "value": null,
+    "status": "MISSING",
+    "proposedContract": "contracts/liquidity-building/LiquidityBuildingTreasuryFeeReceiverV1.sol",
+    "invalidCandidates": [
+      {
+        "address": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C",
+        "label": "MELEGA_VAULT_BSC",
+        "status": "BLOCKED",
+        "reason": "Named Vault only; LB fee-sink role unproven; code_bytes=9883"
+      }
+    ]
+  },
+  "KmsExecutorAddress": {
+    "value": null,
+    "status": "MISSING",
+    "productionKmsVerified": false,
+    "authorityVerdict": "AUTONOMOUS_AUTHORITY_NOT_READY",
+    "rejectedModels": ["HOT_SIGNER", "local_private_key", "vm.sign"],
+    "authoritativeHandoff": "docs/handoffs/LB008_KERL_KMS_SIGNATURE_NORMALIZATION.md"
+  },
+  "relayUrl": { "value": null, "status": "MISSING", "liveBinding": "relay.status=DISABLED" },
+  "relayAuthorityIdentity": { "value": null, "status": "MISSING" },
+  "quotePolicyVersion": { "value": null, "status": "MISSING" },
+  "quoteAssets": {
+    "WBNB": {
+      "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "status": "BLOCKED",
+      "reason": "PROPOSED_FOR_FOUNDER_RATIFICATION — see LB_QUOTE_POLICY_FOUNDER_DECISION.md"
+    },
+    "USDT": { "address": "0x55d398326f99059fF775485246999027B3197955", "status": "BLOCKED", "reason": "NOT_ACTIVE LB-G09" },
+    "USDC": { "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", "status": "BLOCKED", "reason": "NOT_ACTIVE LB-G09" }
+  },
+  "finalityPolicy": {
+    "configuredDepth": 15,
+    "status": "BLOCKED",
+    "verdict": "FINALITY_EVIDENCE_INSUFFICIENT",
+    "note": "Runtime assessFinality requires >=15 confirmations on chain 56; ops evidence still open (LB-G10)"
+  },
+  "governor": { "value": null, "status": "MISSING", "note": "Required for FeeReceiver + pause authority identity" },
+  "pauseAuthority": { "value": null, "status": "MISSING" },
+  "lpOwnershipPolicy": {
+    "value": "LP minted to configured program owner / LP owner binding at Program create",
+    "status": "VERIFIED",
+    "note": "On-chain Program path already sends LP to configured owner; no redesign"
+  },
+  "AuthorizerConstructorInputs": {
+    "signingAuthority": { "value": null, "status": "MISSING" },
+    "status": "BLOCKED"
+  },
+  "FeeSinkConstructorInputs": {
+    "treasuryReceiver": { "value": null, "status": "MISSING" },
+    "status": "BLOCKED"
+  },
+  "FactoryConstructorInputs": {
+    "factoryVersion": { "value": "LiquidityBuildingFactoryV1", "status": "VERIFIED" },
+    "implementation": { "value": null, "status": "MISSING" },
+    "melegaFactory": { "value": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C", "status": "VERIFIED" },
+    "melegaRouter": { "value": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3", "status": "VERIFIED" },
+    "executionAuthorizer": { "value": null, "status": "MISSING" },
+    "treasuryFeeSink": { "value": null, "status": "MISSING" },
+    "protocolParameters": { "status": "VERIFIED", "source": "LiquidityBuildingV1.inputs.json#protocolParameters" },
+    "quotePolicies": { "value": [], "status": "BLOCKED" }
+  },
+  "bytecodeHashes": {
+    "LiquidityBuildingExecutionAuthorizerV1": {
+      "deployedBytecodeSha256": "0x3dad300b23fc1f31365aa3c47f073ec6279ff39ca4dfe2bda49a934c1adc1282",
+      "status": "VERIFIED"
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "deployedBytecodeSha256": "0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0",
+      "status": "VERIFIED"
+    },
+    "LiquidityBuildingFactoryV1": {
+      "deployedBytecodeSha256": "0xd7574a777496df07e1c878c7baf23a2243e8785bba3ac6355dfa1a9ec258c2ff",
+      "status": "VERIFIED"
+    },
+    "LiquidityBuildingExecutionMathV1": {
+      "deployedBytecodeSha256": "0x03b84d6ab2b43a50368ccdbc34eb4e2ae1a1b945b1736e713090cb19a89036d8",
+      "status": "VERIFIED"
+    },
+    "LiquidityBuildingProgramV1": {
+      "status": "MISSING",
+      "note": "Linked-library hash deferred until production CREATE with fixed library addresses"
+    },
+    "LiquidityBuildingTreasuryFeeReceiverV1": {
+      "status": "MISSING",
+      "note": "Source added in LB-ACT-004; compile/hash before Founder deploy approval"
+    }
+  },
+  "predictedAddresses": { "value": null, "status": "NOT_APPLICABLE", "note": "No CREATE2 salt pack approved for production yet" },
+  "deploymentOrder": {
+    "value": [
+      "1) LiquidityBuildingTreasuryFeeReceiverV1",
+      "2) LiquidityBuildingExecutionAuthorizerV1(signingAuthority)",
+      "3) LiquidityBuildingTreasuryFeeSinkV1(treasuryReceiver)",
+      "4) LiquidityBuildingProgramV1 implementation (+ library link)",
+      "5) LiquidityBuildingFactoryV1(...)",
+      "6) Bind addresses into LiquidityBuildingV1.inputs.json + activation-gate-final"
+    ],
+    "status": "APPROVED"
+  },
+  "requiredGas": { "value": null, "status": "MISSING", "note": "Estimate after Founder-approved constructor identities; dry-run local only today" },
+  "deploymentFundingSource": {
+    "value": null,
+    "status": "BLOCKED",
+    "note": "Must not auto-spend MELEGA TREASURY WALLET; Founder authorization required"
+  },
+  "approvalStatus": { "value": "PENDING_FOUNDER", "status": "BLOCKED" },
+  "blockerList": {
+    "value": [
+      "LB-G03B",
+      "LB-G11",
+      "LB-G03C",
+      "LB-G04B",
+      "LB-G08",
+      "LB-G10",
+      "TREASURY_FEE_RECEIVER_MISSING",
+      "DEPLOYMENT_INPUTS_BLOCKED",
+      "CONTRACTS_NOT_DEPLOYED",
+      "FOUNDER_ACTIVATION_NOT_APPROVED"
+    ],
+    "status": "VERIFIED"
+  },
+  "accountingAsyncNotDeploymentBlockers": {
+    "value": ["LB-G04C", "LB-G12"],
+    "status": "VERIFIED",
+    "note": "Post LB-ACT-003: accounting degradation must not block activationAuthorized"
+  }
+}

@@ -188,7 +188,8 @@
     "executionCriticalGatesReady": "LB-G03B ∧ LB-G11 ∧ LB-G03C ∧ LB-G04B ∧ LB-G08 ∧ LB-G10",
     "accountingReadiness": "LB-G04C ∧ LB-G12",
     "deploymentInputsValid": "validatorOk ∧ readinessOk ∧ contractsDeployed ∧ feeReceiverValid",
-    "activationAuthorized": "gateDoc.activationAuthorized ∧ executionCriticalGatesReady ∧ deploymentInputsValid",
-    "note": "accountingReadiness is never included in activationAuthorized"
+    "FounderActivationApproved": "gateDoc.founderActivationApproved (legacy alias: gateDoc.activationAuthorized) — Founder policy approval only",
+    "activationAuthorized": "FounderActivationApproved ∧ executionCriticalGatesReady ∧ deploymentInputsValid",
+    "note": "accountingReadiness is never included in activationAuthorized; FounderActivationApproved cannot bypass factual gates"
   }
 }

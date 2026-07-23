@@ -57,7 +57,16 @@ export type ConsumedGate = {
 }
 
 export type ActivationGateConsumerInput = {
-  activationAuthorized: boolean
+  /**
+   * @deprecated Prefer `founderActivationApproved`.
+   * Legacy gateDoc field — treated as Founder policy approval only, never as computed readiness.
+   */
+  activationAuthorized?: boolean
+  /**
+   * Founder policy approval after reviewing verified deployment inputs.
+   * Does NOT claim KMS/relay/contracts/quote readiness — those remain computed gates.
+   */
+  founderActivationApproved?: boolean
   mainnetCycleAuthorized?: boolean
   manualOverrideForbidden?: boolean
   validatorResult: string | null
@@ -87,7 +96,10 @@ export type ActivationGateConsumerInput = {
 export type ActivationGateConsumerResult = {
   schemaVersion: 'melega.liquidity-building.activation-gate-consumer.v1'
   productStatus: ProductActivationStatus
+  /** Computed final activation: FounderActivationApproved ∧ executionCriticalGatesReady ∧ deploymentInputsValid */
   activationAuthorized: boolean
+  /** Gate-doc / Founder policy flag only — never a computed readiness claim. */
+  founderActivationApproved: boolean
   mainnetCycleAuthorized: boolean
   deploymentInputsValid: boolean
   contractsDeployed: boolean
@@ -114,6 +126,13 @@ export type ActivationGateConsumerResult = {
   assessedAt: string
   manualOverrideForbidden: true
   secondaryWarning: string | null
+}
+
+function resolveFounderActivationApproved(input: ActivationGateConsumerInput): boolean {
+  if (typeof input.founderActivationApproved === 'boolean') {
+    return input.founderActivationApproved === true
+  }
+  return input.activationAuthorized === true
 }
 
 function normalizeBlocker(raw: string | null | undefined): string[] {
@@ -169,9 +188,12 @@ function isExecutionCritical(id: Lb021GateId): id is LbExecutionCriticalGateId {
  * Pure consumer — deterministic, fail-closed, no network, no authority.
  *
  * activationAuthorized =
- *   gateDoc.activationAuthorized
+ *   FounderActivationApproved
  *   AND executionCriticalGatesReady
  *   AND deploymentInputsValid
+ *
+ * FounderActivationApproved is a policy flag only (gateDoc.founderActivationApproved,
+ * legacy alias gateDoc.activationAuthorized). It must never bypass factual gates.
  *
  * accountingReadiness is reported separately and never participates in activationAuthorized.
  */
@@ -180,6 +202,7 @@ export function consumeActivationGates(
   assessedAt = new Date().toISOString(),
 ): ActivationGateConsumerResult {
   const manualOverrideForbidden = true
+  const founderActivationApproved = resolveFounderActivationApproved(input)
   const consumed: ConsumedGate[] = LB_DIAGNOSTIC_GATE_IDS.map((id) => {
     const { ready, source, evidence } = gatePasses(input.gates, id)
     return {
@@ -214,7 +237,7 @@ export function consumeActivationGates(
   const readinessOk =
     input.deploymentReadinessState === 'VALID' || input.deploymentReadinessState === 'DEPLOYED'
 
-  // Deployment inputs do not require gateDoc.activationAuthorized (avoids circular formula)
+  // Deployment inputs do not require FounderActivationApproved (avoids circular formula)
   // and do not require Treasury ingestion readiness.
   const deploymentInputsValid = validatorOk && readinessOk && contractsDeployed && feeReceiverValid
 
@@ -228,7 +251,11 @@ export function consumeActivationGates(
   if (input.manualActivationAttempt) executionBlockers.push('MANUAL_ACTIVATION_FORBIDDEN')
   if (input.privateKeyConfigViolation) executionBlockers.push('PRIVATE_KEY_CONFIG_FORBIDDEN')
   if (input.manualOverrideForbidden === false) executionBlockers.push('OVERRIDE_FLAG_REJECTED')
-  if (input.activationAuthorized !== true) executionBlockers.push('GATE_DOC_ACTIVATION_NOT_AUTHORIZED')
+  if (!founderActivationApproved) {
+    executionBlockers.push('FOUNDER_ACTIVATION_NOT_APPROVED')
+    // Legacy alias retained for existing ops dashboards / reports.
+    executionBlockers.push('GATE_DOC_ACTIVATION_NOT_AUTHORIZED')
+  }
 
   const accountingBlockers: string[] = []
   for (const g of accountingGates) {
@@ -279,7 +306,7 @@ export function consumeActivationGates(
   })
 
   const activationAuthorized =
-    input.activationAuthorized === true &&
+    founderActivationApproved &&
     executionCriticalGatesReady &&
     deploymentInputsValid &&
     !input.manualActivationAttempt &&
@@ -292,15 +319,11 @@ export function consumeActivationGates(
   } else if (activationAuthorized) {
     // Accounting degradation does not demote primary readiness.
     productStatus = 'READY'
-  } else if (
-    executionCriticalGatesReady &&
-    deploymentInputsValid &&
-    input.activationAuthorized !== true
-  ) {
+  } else if (executionCriticalGatesReady && deploymentInputsValid && !founderActivationApproved) {
     productStatus = 'READY_FOR_ACTIVATION'
   } else if (!contractsDeployed) {
     productStatus = 'BLOCKED'
-  } else if (!executionCriticalGatesReady || input.activationAuthorized !== true) {
+  } else if (!executionCriticalGatesReady || !founderActivationApproved) {
     productStatus = 'PENDING_EXTERNAL_ACTIVATION'
   } else {
     productStatus = 'BLOCKED'
@@ -321,6 +344,7 @@ export function consumeActivationGates(
     schemaVersion: 'melega.liquidity-building.activation-gate-consumer.v1',
     productStatus,
     activationAuthorized,
+    founderActivationApproved,
     mainnetCycleAuthorized: input.mainnetCycleAuthorized === true && activationAuthorized,
     deploymentInputsValid,
     contractsDeployed,
@@ -376,6 +400,7 @@ export function loadAndConsumeActivationGates(assessedAt = new Date().toISOStrin
   if (!gateDoc) {
     return consumeActivationGates(
       {
+        founderActivationApproved: false,
         activationAuthorized: false,
         validatorResult: 'DEPLOYMENT_INPUTS_BLOCKED',
         deploymentReadinessState: 'BLOCKED',
@@ -397,10 +422,15 @@ export function loadAndConsumeActivationGates(assessedAt = new Date().toISOStrin
   const treasury = (inputsDoc?.treasury ?? {}) as Record<string, unknown>
   const authorizer = (inputsDoc?.authorizer ?? {}) as Record<string, unknown>
   const factory = (inputsDoc?.factory ?? {}) as Record<string, unknown>
+  const founderActivationApproved =
+    gateDoc.founderActivationApproved === true ||
+    (gateDoc.founderActivationApproved === undefined && gateDoc.activationAuthorized === true)
 
   return consumeActivationGates(
     {
-      activationAuthorized: gateDoc.activationAuthorized === true,
+      founderActivationApproved,
+      // Preserve legacy field for callers/tests that still assert gateDoc aliasing.
+      activationAuthorized: founderActivationApproved,
       mainnetCycleAuthorized: gateDoc.mainnetCycleAuthorized === true,
       manualOverrideForbidden: gateDoc.manualOverrideForbidden !== false,
       validatorResult: typeof gateDoc.validatorResult === 'string' ? gateDoc.validatorResult : null,
