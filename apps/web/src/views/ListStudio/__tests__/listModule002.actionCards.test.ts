@@ -101,7 +101,7 @@ describe('LIST_MODULE_002 Action Cards', () => {
     expect(screen).toContain('ListPageHero')
     expect(screen).toContain('ListActionCards')
     expect(screen.indexOf('ListPageHero')).toBeLessThan(screen.indexOf('ListActionCards'))
-    expect(screen).not.toMatch(/Why build|How it works|Import Existing Token/i)
+    expect(screen).not.toContain('Import Existing Token')
   })
 
   it('features Claim Project Page without enlarging card geometry', () => {

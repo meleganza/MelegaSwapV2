@@ -1,0 +1,709 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "hero": {
+      "x": 32,
+      "y": 140,
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "right": 1408,
+      "bottom": 500,
+      "left": 32
+    },
+    "cards": {
+      "x": 32,
+      "y": 524,
+      "width": 1376,
+      "height": 272,
+      "top": 524,
+      "right": 1408,
+      "bottom": 796,
+      "left": 32
+    },
+    "why": {
+      "x": 32,
+      "y": 820,
+      "width": 1376,
+      "height": 112,
+      "top": 820,
+      "right": 1408,
+      "bottom": 932,
+      "left": 32
+    },
+    "inner": {
+      "x": 49,
+      "y": 837,
+      "width": 1342,
+      "height": 80,
+      "top": 837,
+      "right": 1391,
+      "bottom": 917,
+      "left": 49
+    },
+    "intro": {
+      "x": 49,
+      "y": 837,
+      "width": 220,
+      "height": 80,
+      "top": 837,
+      "right": 269,
+      "bottom": 917,
+      "left": 49
+    },
+    "benefits": [
+      {
+        "x": 285,
+        "y": 837,
+        "width": 265,
+        "height": 80,
+        "top": 837,
+        "right": 550,
+        "bottom": 917,
+        "left": 285
+      },
+      {
+        "x": 566,
+        "y": 837,
+        "width": 265,
+        "height": 80,
+        "top": 837,
+        "right": 831,
+        "bottom": 917,
+        "left": 566
+      },
+      {
+        "x": 847,
+        "y": 837,
+        "width": 265,
+        "height": 80,
+        "top": 837,
+        "right": 1112,
+        "bottom": 917,
+        "left": 847
+      },
+      {
+        "x": 1128,
+        "y": 837,
+        "width": 265,
+        "height": 80,
+        "top": 837,
+        "right": 1393,
+        "bottom": 917,
+        "left": 1128
+      }
+    ],
+    "icons": [
+      {
+        "x": 285,
+        "y": 855,
+        "width": 44,
+        "height": 44,
+        "top": 855,
+        "right": 329,
+        "bottom": 899,
+        "left": 285
+      },
+      {
+        "x": 566,
+        "y": 855,
+        "width": 44,
+        "height": 44,
+        "top": 855,
+        "right": 610,
+        "bottom": 899,
+        "left": 566
+      },
+      {
+        "x": 847,
+        "y": 855,
+        "width": 44,
+        "height": 44,
+        "top": 855,
+        "right": 891,
+        "bottom": 899,
+        "left": 847
+      },
+      {
+        "x": 1128,
+        "y": 855,
+        "width": 44,
+        "height": 44,
+        "top": 855,
+        "right": 1172,
+        "bottom": 899,
+        "left": 1128
+      }
+    ],
+    "gaps": [
+      16,
+      16,
+      16
+    ],
+    "cardsToWhyGap": 24,
+    "heroUnchanged": true,
+    "cardsUnchanged": true,
+    "placeholderAfterWhy": true,
+    "overflowX": false,
+    "semantic": {
+      "section": true,
+      "heading": true,
+      "list": true,
+      "items": true,
+      "itemCount": 4
+    }
+  },
+  "tablet": {
+    "why": {
+      "x": 24,
+      "y": 1300,
+      "width": 976,
+      "height": 250,
+      "top": 1300,
+      "right": 1000,
+      "bottom": 1550,
+      "left": 24
+    },
+    "benefits": [
+      {
+        "x": 41,
+        "y": 1377,
+        "width": 465,
+        "height": 72,
+        "top": 1377,
+        "right": 506,
+        "bottom": 1449,
+        "left": 41
+      },
+      {
+        "x": 518,
+        "y": 1377,
+        "width": 465,
+        "height": 72,
+        "top": 1377,
+        "right": 983,
+        "bottom": 1449,
+        "left": 518
+      },
+      {
+        "x": 41,
+        "y": 1461,
+        "width": 465,
+        "height": 72,
+        "top": 1461,
+        "right": 506,
+        "bottom": 1533,
+        "left": 41
+      },
+      {
+        "x": 518,
+        "y": 1461,
+        "width": 465,
+        "height": 72,
+        "top": 1461,
+        "right": 983,
+        "bottom": 1533,
+        "left": 518
+      }
+    ]
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 900
+    },
+    "hero": {
+      "x": 16,
+      "y": 116,
+      "width": 358,
+      "height": 666,
+      "top": 116,
+      "right": 374,
+      "bottom": 782,
+      "left": 16
+    },
+    "cards": {
+      "x": 16,
+      "y": 806,
+      "width": 358,
+      "height": 450,
+      "top": 806,
+      "right": 374,
+      "bottom": 1256,
+      "left": 16
+    },
+    "why": {
+      "x": 16,
+      "y": 1280,
+      "width": 358,
+      "height": 394,
+      "top": 1280,
+      "right": 374,
+      "bottom": 1674,
+      "left": 16
+    },
+    "inner": {
+      "x": 33,
+      "y": 1297,
+      "width": 324,
+      "height": 360,
+      "top": 1297,
+      "right": 357,
+      "bottom": 1657,
+      "left": 33
+    },
+    "intro": {
+      "x": 33,
+      "y": 1297,
+      "width": 324,
+      "height": 60,
+      "top": 1297,
+      "right": 357,
+      "bottom": 1357,
+      "left": 33
+    },
+    "benefits": [
+      {
+        "x": 33,
+        "y": 1371,
+        "width": 324,
+        "height": 64,
+        "top": 1371,
+        "right": 357,
+        "bottom": 1435,
+        "left": 33
+      },
+      {
+        "x": 33,
+        "y": 1445,
+        "width": 324,
+        "height": 64,
+        "top": 1445,
+        "right": 357,
+        "bottom": 1509,
+        "left": 33
+      },
+      {
+        "x": 33,
+        "y": 1519,
+        "width": 324,
+        "height": 64,
+        "top": 1519,
+        "right": 357,
+        "bottom": 1583,
+        "left": 33
+      },
+      {
+        "x": 33,
+        "y": 1593,
+        "width": 324,
+        "height": 64,
+        "top": 1593,
+        "right": 357,
+        "bottom": 1657,
+        "left": 33
+      }
+    ],
+    "icons": [
+      {
+        "x": 33,
+        "y": 1381,
+        "width": 44,
+        "height": 44,
+        "top": 1381,
+        "right": 77,
+        "bottom": 1425,
+        "left": 33
+      },
+      {
+        "x": 33,
+        "y": 1455,
+        "width": 44,
+        "height": 44,
+        "top": 1455,
+        "right": 77,
+        "bottom": 1499,
+        "left": 33
+      },
+      {
+        "x": 33,
+        "y": 1529,
+        "width": 44,
+        "height": 44,
+        "top": 1529,
+        "right": 77,
+        "bottom": 1573,
+        "left": 33
+      },
+      {
+        "x": 33,
+        "y": 1603,
+        "width": 44,
+        "height": 44,
+        "top": 1603,
+        "right": 77,
+        "bottom": 1647,
+        "left": 33
+      }
+    ],
+    "gaps": [
+      10,
+      10,
+      10
+    ],
+    "cardsToWhyGap": 24,
+    "heroUnchanged": false,
+    "cardsUnchanged": false,
+    "placeholderAfterWhy": true,
+    "overflowX": false,
+    "semantic": {
+      "section": true,
+      "heading": true,
+      "list": true,
+      "items": true,
+      "itemCount": 4
+    }
+  },
+  "mobile430": {
+    "why": {
+      "x": 16,
+      "y": 1280,
+      "width": 358,
+      "height": 394,
+      "top": 1280,
+      "right": 374,
+      "bottom": 1674,
+      "left": 16
+    },
+    "overflowX": false
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "heroW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroH",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardsW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardsH",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardsToWhyGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "whyW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "whyH",
+        "actual": 112,
+        "target": 112,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "innerW",
+        "actual": 1342,
+        "target": 1344,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "innerH",
+        "actual": 80,
+        "target": 80,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "introW",
+        "actual": 220,
+        "target": 220,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "introH",
+        "actual": 80,
+        "target": 80,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit0W",
+        "actual": 265,
+        "target": 265,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit0H",
+        "actual": 80,
+        "target": 80,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit1W",
+        "actual": 265,
+        "target": 265,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit1H",
+        "actual": 80,
+        "target": 80,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit2W",
+        "actual": 265,
+        "target": 265,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit2H",
+        "actual": 80,
+        "target": 80,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit3W",
+        "actual": 265,
+        "target": 265,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit3H",
+        "actual": 80,
+        "target": 80,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "gap0",
+        "actual": 16,
+        "target": 16,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap1",
+        "actual": 16,
+        "target": 16,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap2",
+        "actual": 16,
+        "target": 16,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon0W",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon0H",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon1W",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon1H",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon2W",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon2H",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon3W",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "icon3H",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "placeholderAfterWhy",
+        "actual": true,
+        "target": true,
+        "ok": true
+      },
+      {
+        "name": "semanticSection",
+        "actual": true,
+        "target": true,
+        "ok": true
+      },
+      {
+        "name": "semanticList",
+        "actual": true,
+        "target": true,
+        "ok": true
+      },
+      {
+        "name": "semanticItems",
+        "actual": true,
+        "target": true,
+        "ok": true
+      },
+      {
+        "name": "benefitCount",
+        "actual": 4,
+        "target": 4,
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "whyW",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "whyAutoHeight",
+        "actual": 394,
+        "target": "360-410",
+        "ok": true
+      },
+      {
+        "name": "benefit0H",
+        "actual": 64,
+        "target": 64,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit1H",
+        "actual": 64,
+        "target": 64,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit2H",
+        "actual": 64,
+        "target": 64,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "benefit3H",
+        "actual": 64,
+        "target": 64,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "gap0",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap1",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "gap2",
+        "actual": 10,
+        "target": 10,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "pass": true,
+  "deviationTargetPct": 3
+}

@@ -1,0 +1,25 @@
+{
+  "pass": true,
+  "desktop": {
+    "section": true,
+    "heading": true,
+    "list": true,
+    "items": true,
+    "itemCount": 4
+  },
+  "tablet": {
+    "section": true,
+    "heading": true,
+    "list": true,
+    "items": true,
+    "itemCount": 4
+  },
+  "mobile": {
+    "section": true,
+    "heading": true,
+    "list": true,
+    "items": true,
+    "itemCount": 4
+  },
+  "mobile430Width": 358
+}

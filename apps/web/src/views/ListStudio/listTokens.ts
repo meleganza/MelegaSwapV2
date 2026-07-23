@@ -76,6 +76,26 @@ export const listOne = {
   tabletCardH: '240px',
   tabletGap: '16px',
 
+  /* MODULE_003 — Why build on Melega rail (hero + cards locks unchanged) */
+  whyTop: '24px',
+  whyW: '1376px',
+  whyH: '112px',
+  whyPad: '16px',
+  whyRadius: '16px',
+  whyInnerW: '1344px',
+  whyInnerH: '80px',
+  whyIntroW: '220px',
+  whyBenefitW: '265px',
+  whyColGap: '16px',
+  whyIconTile: '44px',
+  whyIconSize: '20px',
+  whyTextW: '209px',
+  whySepH: '48px',
+  whyMobileBenefitH: '64px',
+  whyMobileGap: '10px',
+  whyTabletBenefitH: '72px',
+  whyTabletGap: '12px',
+
   font: "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 } as const
 
