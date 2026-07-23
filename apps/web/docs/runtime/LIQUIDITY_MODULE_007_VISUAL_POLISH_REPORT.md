@@ -3,7 +3,7 @@
 **Mission:** `LIQUIDITY_MODULE_007_VISUAL_POLISH`  
 **Verdict:** `LIQUIDITY_MODULE_007_VISUAL_POLISH_CERTIFIED`  
 **Branch:** `mission-liquidity-module-007-visual-polish`  
-**Commit:** _(filled after commit)_  
+**Commit:** `67ab4674`  
 **Base:** `origin/mission-liquidity-module-006-positions` @ `91921879`
 
 ---
