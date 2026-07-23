@@ -37,7 +37,7 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(card).toContain('liqOne.lbBodyH')
     expect(card).toContain('liqOne.lbFooterH')
     expect(card).toContain('overflow: hidden')
-    expect(card).toContain('data-pixel-lb-body="540"')
+    expect(card).toMatch(/data-pixel-lb-body=\{heroCollapsed \? '580' : '442'\}/)
     expect(card).not.toContain('Back to Liquidity Studio')
     expect(card).not.toContain('View Pools')
     expect(card).not.toContain('View Old Liquidity')

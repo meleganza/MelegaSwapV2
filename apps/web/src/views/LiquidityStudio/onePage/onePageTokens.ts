@@ -29,13 +29,16 @@ export const liqOne = {
   mainRowH: '860px',
   belowMainGap: '24px',
 
-  /* Left Liquidity Building card */
-  lbHeaderExpanded: '120px',
+  /* Left Liquidity Building card — MODULE_002: 210+48+442+160 = 860
+   * When hero collapses 210→72, body grows 442→580 so card stays 860. */
+  lbHeaderExpanded: '210px',
   lbHeaderCollapsed: '72px',
   lbWizardH: '48px',
-  lbBodyH: '540px',
-  lbFooterH: '80px',
-  lbPadY: '36px', /* 36+36 = 72 → 120+48+540+80+72 = 860 */
+  lbBodyH: '442px',
+  lbBodyHCollapsed: '580px', /* 442 + (210-72) */
+  lbFooterH: '160px',
+  lbProgramH: '44px',
+  lbPadX: '20px',
 
   /* Right column */
   addH: '520px',
