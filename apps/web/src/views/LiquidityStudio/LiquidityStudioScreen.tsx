@@ -24,25 +24,21 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  /* 1440 canvas → 32px margins → 1376 content */
+  /*
+   * App shell <main> already supplies horizontal page padding (32px @ ≥1024).
+   * Fill to 1376 — required for Hero 1376×216 with 32px side margins.
+   */
   max-width: ${liqOne.contentMax};
-  width: calc(100% - 64px);
+  width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
 
-  @media (max-width: 1439px) {
-    width: calc(100% - 64px);
-  }
-
-  @media (max-width: 1279px) {
-    width: calc(100% - 48px);
-  }
-
   @media (max-width: 767px) {
     width: 100%;
-    padding: 0 16px;
+    /* Shell pads ~12px; add 4px → ~16px page inset for Hero (calc(100vw - 32px)) */
+    padding: 0 4px;
     padding-bottom: ${liquidityStudioLayout.mobileBottomPad};
   }
 `

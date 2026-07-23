@@ -25,6 +25,7 @@ describe('DS001.2 global header shell contracts', () => {
   it('shell mounts MelegaGlobalHeader and removes desktop sidebar mount', () => {
     const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
     expect(shell).toContain('MelegaGlobalHeader')
+    expect(shell).toContain('GlobalTrendingBar')
     expect(shell).toContain('data-melega-shell-no-sidebar')
     expect(shell).not.toMatch(/<MelegaSidebar[\s/>]/)
     expect(shell).toContain('MELEGA_APP_HEADER_HEIGHT')

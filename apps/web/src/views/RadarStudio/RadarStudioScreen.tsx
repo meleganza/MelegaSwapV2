@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import RadarStudioGlobalStyle from './RadarStudioGlobalStyle'
 import { RadarRuntimeProvider, useRadarRuntime } from './radarRuntime/RadarRuntimeContext'
 import RadarContractIntelligenceInput from './components/RadarContractIntelligenceInput'
@@ -111,7 +110,6 @@ export const RadarStudioScreen: React.FC = () => (
     <Root data-radar-studio-screen="true">
       <PageMeta />
       <RadarStudioGlobalStyle />
-      <TrendingRibbon />
       <RadarIntelligenceBody />
     </Root>
   </RadarRuntimeProvider>

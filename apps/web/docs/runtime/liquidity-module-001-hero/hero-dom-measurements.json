@@ -1,0 +1,274 @@
+{
+  "generatedAt": "2026-07-23T02:07:59.065Z",
+  "base": "http://127.0.0.1:3492",
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 500
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 72,
+      "top": 0,
+      "right": 1440,
+      "bottom": 72,
+      "left": 0
+    },
+    "trending": {
+      "x": 0,
+      "y": 72,
+      "width": 1440,
+      "height": 44,
+      "top": 72,
+      "right": 1440,
+      "bottom": 116,
+      "left": 0
+    },
+    "hero": {
+      "x": 32,
+      "y": 140,
+      "width": 1376,
+      "height": 216,
+      "top": 140,
+      "right": 1408,
+      "bottom": 356,
+      "left": 32
+    },
+    "textBlock": {
+      "x": 65,
+      "y": 171,
+      "width": 560,
+      "height": 110,
+      "top": 171,
+      "right": 625,
+      "bottom": 281,
+      "left": 65
+    },
+    "networkCard": {
+      "x": 1205,
+      "y": 169,
+      "width": 174,
+      "height": 66,
+      "top": 169,
+      "right": 1379,
+      "bottom": 235,
+      "left": 1205
+    },
+    "productGrid": {
+      "x": 32,
+      "y": 380,
+      "width": 1376,
+      "height": 860,
+      "top": 380,
+      "right": 1408,
+      "bottom": 1240,
+      "left": 32
+    },
+    "trendingToHeroGap": 24,
+    "heroToProductGap": 24,
+    "overflowX": false,
+    "trendingBarCount": 1,
+    "heroBackgroundImage": "url(\"http://127.0.0.1:3492/images/liquidity/liquidity-hero-background.png\")",
+    "pageScrollWidth": 1440
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 500
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "trending": {
+      "x": 0,
+      "y": 60,
+      "width": 390,
+      "height": 40,
+      "top": 60,
+      "right": 390,
+      "bottom": 100,
+      "left": 0
+    },
+    "hero": {
+      "x": 16,
+      "y": 116,
+      "width": 358,
+      "height": 224,
+      "top": 116,
+      "right": 374,
+      "bottom": 340,
+      "left": 16
+    },
+    "textBlock": {
+      "x": 37,
+      "y": 137,
+      "width": 270,
+      "height": 90,
+      "top": 137,
+      "right": 307,
+      "bottom": 227,
+      "left": 37
+    },
+    "networkCard": {
+      "x": 209,
+      "y": 267,
+      "width": 148,
+      "height": 56,
+      "top": 267,
+      "right": 357,
+      "bottom": 323,
+      "left": 209
+    },
+    "productGrid": {
+      "x": 16,
+      "y": 364,
+      "width": 358,
+      "height": 1540,
+      "top": 364,
+      "right": 374,
+      "bottom": 1904,
+      "left": 16
+    },
+    "trendingToHeroGap": 16,
+    "heroToProductGap": 24,
+    "overflowX": false,
+    "trendingBarCount": 1,
+    "heroBackgroundImage": "url(\"http://127.0.0.1:3492/images/liquidity/liquidity-hero-background.png\")",
+    "pageScrollWidth": 390
+  },
+  "acceptanceDesktop": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "headerHeight",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "trendingHeight",
+        "actual": 44,
+        "target": 44,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "trendingToHeroGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroHeight",
+        "actual": 216,
+        "target": 216,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroRightMargin",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "networkWidth",
+        "actual": 174,
+        "target": 174,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "networkHeight",
+        "actual": 66,
+        "target": 66,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroToProductGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "singleTrendingBar",
+        "actual": 1,
+        "target": 1,
+        "ok": true
+      },
+      {
+        "name": "exactHeroImage",
+        "actual": "url(\"http://127.0.0.1:3492/images/liquidity/liquidity-hero-background.png\")",
+        "target": "liquidity-hero-background.png",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "routePresence": [
+    {
+      "route": "/",
+      "trendingBars": 1,
+      "ok": true
+    },
+    {
+      "route": "/liquidity-studio",
+      "trendingBars": 1,
+      "ok": true
+    },
+    {
+      "route": "/farms",
+      "trendingBars": 1,
+      "ok": true
+    },
+    {
+      "route": "/pools",
+      "trendingBars": 1,
+      "ok": true
+    },
+    {
+      "route": "/list",
+      "trendingBars": 1,
+      "ok": true
+    },
+    {
+      "route": "/passport",
+      "trendingBars": 1,
+      "ok": true
+    }
+  ],
+  "verdict": "HERO_GEOMETRY_PASS"
+}

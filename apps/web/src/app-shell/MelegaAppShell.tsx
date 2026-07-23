@@ -11,17 +11,25 @@ import {
   MELEGA_APP_HEADER_HEIGHT,
   MelegaBottomNavigation,
   colors,
-  ds001Colors,
   ds001Layout,
 } from 'design-system/melega'
 import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRebuild'
 import { shellBottomNavItems } from './config/navigation'
 import { ShellNavIcon } from './icons'
 import { AppShellUIKitNeutralizer, MobileWalletSlot } from './AppShellStyles'
+import {
+  GlobalTrendingBar,
+  MELEGA_TRENDING_BAR_DESKTOP_HEIGHT,
+  MELEGA_TRENDING_BAR_MOBILE_HEIGHT,
+} from './GlobalTrendingBar'
+
+const MOBILE_HEADER_H = '60px'
 
 const DesktopMain = styled.main`
   margin-left: 0;
-  padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(68px + env(safe-area-inset-bottom, 0px));
+  /* Mobile sticky stack: mobile header + trending bar */
+  padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px) + ${MELEGA_TRENDING_BAR_MOBILE_HEIGHT})
+    12px calc(68px + env(safe-area-inset-bottom, 0px));
   background: ${uxRebuildColors.pageBg};
   min-height: 100dvh;
   min-height: 100vh;
@@ -30,7 +38,8 @@ const DesktopMain = styled.main`
 
   @media (min-width: 1024px) {
     margin-left: 0;
-    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${ds001Layout.pagePaddingTopBelowHeader})
+    /* Desktop sticky stack: 72 header + 44 trending — content begins below stack */
+    padding: calc(${MELEGA_APP_HEADER_HEIGHT} + ${MELEGA_TRENDING_BAR_DESKTOP_HEIGHT})
       ${ds001Layout.pagePaddingX} ${ds001Layout.pagePaddingBottom};
   }
 
@@ -66,7 +75,7 @@ const MobileHeader = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  height: calc(60px + env(safe-area-inset-top, 0px));
+  height: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px));
   padding: env(safe-area-inset-top, 0px) 10px 0;
   background: ${uxRebuildColors.pageBg};
   border-bottom: 1px solid ${uxRebuildColors.divider};
@@ -91,8 +100,8 @@ export interface MelegaAppShellProps {
 
 /**
  * DS001.2 — Shared Melega DEX shell.
- * Desktop: 72px global header, no permanent left sidebar.
- * Mobile (<1024): compact mobile header + bottom navigation.
+ * Desktop: 72px global header + 44px Trending Bar, no permanent left sidebar.
+ * Mobile (<1024): compact mobile header + 40px Trending Bar + bottom navigation.
  */
 const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
   const { pathname } = useRouter()
@@ -115,8 +124,8 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
     <Root data-melega-app-shell data-melega-shell-no-sidebar>
       <AppShellUIKitNeutralizer />
 
-      {/* Desktop permanent sidebar removed (DS001.2). Navigation lives in MelegaGlobalHeader. */}
       <MelegaGlobalHeader />
+      <GlobalTrendingBar />
 
       <MobileHeader data-melega-mobile-header>
         <MelegaBrandLockup size="mobile" iconOnly />

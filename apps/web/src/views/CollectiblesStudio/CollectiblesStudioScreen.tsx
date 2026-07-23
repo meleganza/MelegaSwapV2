@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import CollectiblesStudioGlobalStyle from './CollectiblesStudioGlobalStyle'
 import { CollectiblesRuntimeProvider } from './collectiblesRuntime/CollectiblesRuntimeContext'
 import AICollectionAdvisorPanel from './components/AICollectionAdvisorPanel'
@@ -79,7 +78,6 @@ export const CollectiblesStudioScreen: React.FC = () => (
   <Root data-collectibles-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <CollectiblesStudioGlobalStyle />
-    <TrendingRibbon />
     <Content>
       <CollectiblesStudioPageHeader />
       <CollectiblesKpiRow />

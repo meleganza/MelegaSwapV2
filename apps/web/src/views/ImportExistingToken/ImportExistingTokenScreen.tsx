@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import AIDiscoveryPipeline from './components/AIDiscoveryPipeline'
 import AIManifestSection from './components/AIManifestSection'
 import AIReadinessScore from './components/AIReadinessScore'
@@ -72,7 +71,6 @@ const ImportContent: React.FC = () => {
     <Root data-import-existing-token-screen data-r200-premium="true">
       <PageMeta />
       <ImportExistingTokenGlobalStyle />
-      <TrendingRibbon />
       <Content>
         <ImportPageHeader />
         <MainGrid data-iet-main-grid>

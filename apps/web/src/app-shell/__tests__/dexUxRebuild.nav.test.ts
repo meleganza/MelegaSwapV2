@@ -73,16 +73,12 @@ describe('DEX UX Rebuild navigation', () => {
     )
   })
 
-  it('Liquidity Studio uses dense chrome segments (not marketing-only default)', () => {
+  it('Liquidity Studio uses one-page surface without a page-level TrendingRibbon', () => {
     const screen = readFileSync(path.join(ROOT, 'views/LiquidityStudio/LiquidityStudioScreen.tsx'), 'utf8')
-    const chrome = readFileSync(
-      path.join(ROOT, 'views/LiquidityStudio/components/LiquidityStudioChrome.tsx'),
-      'utf8',
-    )
-    expect(screen).toMatch(/LiquidityStudioChrome/)
+    const shell = readFileSync(path.join(ROOT, 'app-shell/MelegaAppShell.tsx'), 'utf8')
+    expect(screen).toMatch(/UnifiedLiquidityPage/)
     expect(screen).not.toMatch(/TrendingRibbon/)
-    expect(chrome).toMatch(/Positions/)
-    expect(chrome).toMatch(/Start Liquidity Building/)
+    expect(shell).toMatch(/GlobalTrendingBar/)
   })
 
   it('Farms and Pools drop Open Project Page chrome clutter', () => {
