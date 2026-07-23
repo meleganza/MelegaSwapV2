@@ -43,6 +43,8 @@ const Card = styled.section`
     height: auto;
     min-height: 0;
     max-height: none;
+    padding: 20px 16px;
+    overflow: visible;
   }
 `
 
@@ -57,6 +59,14 @@ const Header = styled.div<{ $collapsed: boolean }>`
   gap: 12px;
   overflow: hidden;
   box-sizing: border-box;
+
+  @media (max-width: 1375px) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
 `
 
 const HeaderCopy = styled.div`
@@ -105,6 +115,10 @@ const Desc = styled.p<{ $collapsed: boolean }>`
   font-size: 13px;
   line-height: 18px;
   color: ${liqOne.bodySoft};
+
+  @media (max-width: 1375px) {
+    max-width: 100%;
+  }
 `
 
 const Artwork = styled.div<{ $collapsed: boolean }>`
@@ -113,6 +127,10 @@ const Artwork = styled.div<{ $collapsed: boolean }>`
   width: 148px;
   height: 96px;
   flex-shrink: 0;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 `
 
 const Orbit = styled.div`
@@ -152,6 +170,14 @@ const Wizard = styled.nav`
   border-top: 1px solid ${liqOne.borderDefault};
   border-bottom: 1px solid ${liqOne.borderDefault};
   overflow: hidden;
+
+  @media (max-width: 1375px) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: ${liqOne.lbWizardH};
+    max-height: none;
+    overflow: visible;
+  }
 `
 
 const StepBtn = styled.button<{ $active?: boolean; $done?: boolean }>`
@@ -198,6 +224,14 @@ const Body = styled.div`
   & > * {
     max-width: 100% !important;
     margin: 0 !important;
+  }
+
+  @media (max-width: 1375px) {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
   }
 `
 
@@ -250,6 +284,15 @@ const Footer = styled.div`
   box-sizing: border-box;
   padding-top: 8px;
   overflow: hidden;
+
+  @media (max-width: 1375px) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: ${liqOne.lbFooterH};
+    max-height: none;
+    overflow: visible;
+    flex-wrap: wrap;
+  }
 `
 
 const Primary = styled.button`
@@ -297,6 +340,11 @@ const CloseBtn = styled.button`
   border: 0;
   border-radius: 8px;
   background: transparent;
+
+  @media (max-width: 767px) {
+    width: 44px;
+    height: 44px;
+  }
   color: ${liqOne.muted};
   display: grid;
   place-items: center;

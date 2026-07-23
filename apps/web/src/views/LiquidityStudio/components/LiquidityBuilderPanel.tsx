@@ -120,6 +120,11 @@ const SwapBtn = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 767px) {
+    width: 44px;
+    height: 44px;
+  }
 `
 
 const RatioHead = styled.div`

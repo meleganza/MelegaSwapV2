@@ -42,6 +42,14 @@ const Art = styled.div`
   padding: 16px 20px 0;
   box-sizing: border-box;
   overflow: hidden;
+
+  @media (max-width: 1375px) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
 `
 
 const Eyebrow = styled.div`
@@ -66,6 +74,10 @@ const Desc = styled.p`
   font-size: 13px;
   line-height: 18px;
   color: ${liqOne.bodySoft};
+
+  @media (max-width: 1375px) {
+    max-width: 100%;
+  }
 `
 
 const Artwork = styled.div`
@@ -75,6 +87,10 @@ const Artwork = styled.div`
   top: 12px;
   width: 140px;
   height: 96px;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 `
 
 const Disc = styled.div<{ $x: string; $y: string }>`
@@ -113,6 +129,15 @@ const Form = styled.div`
   overflow-x: hidden;
   padding: 0 20px;
   box-sizing: border-box;
+
+  @media (max-width: 1375px) {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    padding: 0 16px;
+  }
 `
 
 const Cta = styled.div`
@@ -126,6 +151,15 @@ const Cta = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
+
+  @media (max-width: 1375px) {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    padding: 8px 16px 12px;
+  }
 `
 
 const PositionsAnchor = styled.button`
@@ -141,6 +175,7 @@ const PositionsAnchor = styled.button`
   cursor: pointer;
   text-align: center;
   padding: 4px;
+  min-height: 44px;
   font-family: ${liqOne.font};
 `
 

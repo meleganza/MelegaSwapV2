@@ -1,0 +1,683 @@
+{
+  "generatedAt": "2026-07-23T01:52:28.075Z",
+  "base": "http://127.0.0.1:3491",
+  "mockup": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-001/approved-mockup.png",
+  "viewports": {
+    "1440x1200": {
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "pageScrollWidth": 1440,
+      "overflowX": false,
+      "contentLeft": 32,
+      "contentRight": 1408,
+      "contentWidth": 1376,
+      "marginLeft": 32,
+      "marginRight": 32,
+      "pageTopOffset": 104,
+      "leftColumnWidth": 672,
+      "rightColumnWidth": 672,
+      "columnGap": 32,
+      "mainRowHeight": 860,
+      "liquidityBuilding": {
+        "width": 672,
+        "height": 860,
+        "headerH": 120,
+        "headerCollapsed": "0",
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80
+      },
+      "addLiquidity": {
+        "width": 672,
+        "height": 520
+      },
+      "snapshot": {
+        "width": 672,
+        "height": 324
+      },
+      "rightColumnInternalGap": 16,
+      "overviewTopGap": 24,
+      "overviewHeight": 150,
+      "positionRowHeights": [],
+      "positionRowHeightProbe": 72,
+      "educationHeight": 96,
+      "boxes": {
+        "page": {
+          "x": 32,
+          "y": 104,
+          "width": 1376,
+          "height": 1472,
+          "top": 104,
+          "left": 32,
+          "right": 1408,
+          "bottom": 1576
+        },
+        "grid": {
+          "x": 32,
+          "y": 250,
+          "width": 1376,
+          "height": 860,
+          "top": 250,
+          "left": 32,
+          "right": 1408,
+          "bottom": 1110
+        },
+        "lb": {
+          "x": 32,
+          "y": 250,
+          "width": 672,
+          "height": 860,
+          "top": 250,
+          "left": 32,
+          "right": 704,
+          "bottom": 1110
+        },
+        "right": {
+          "x": 736,
+          "y": 250,
+          "width": 672,
+          "height": 860,
+          "top": 250,
+          "left": 736,
+          "right": 1408,
+          "bottom": 1110
+        },
+        "add": {
+          "x": 736,
+          "y": 250,
+          "width": 672,
+          "height": 520,
+          "top": 250,
+          "left": 736,
+          "right": 1408,
+          "bottom": 770
+        },
+        "snap": {
+          "x": 736,
+          "y": 786,
+          "width": 672,
+          "height": 324,
+          "top": 786,
+          "left": 736,
+          "right": 1408,
+          "bottom": 1110
+        },
+        "overview": {
+          "x": 32,
+          "y": 1134,
+          "width": 1376,
+          "height": 150,
+          "top": 1134,
+          "left": 32,
+          "right": 1408,
+          "bottom": 1284
+        },
+        "education": {
+          "x": 32,
+          "y": 1432,
+          "width": 1376,
+          "height": 96,
+          "top": 1432,
+          "left": 32,
+          "right": 1408,
+          "bottom": 1528
+        },
+        "positions": {
+          "x": 32,
+          "y": 1324,
+          "width": 1376,
+          "height": 92,
+          "top": 1324,
+          "left": 32,
+          "right": 1408,
+          "bottom": 1416
+        }
+      }
+    },
+    "1376x1200": {
+      "viewport": {
+        "width": 1376,
+        "height": 1200
+      },
+      "pageScrollWidth": 1376,
+      "overflowX": false,
+      "contentLeft": 32,
+      "contentRight": 1344,
+      "contentWidth": 1312,
+      "marginLeft": 32,
+      "marginRight": 32,
+      "pageTopOffset": 104,
+      "leftColumnWidth": 672,
+      "rightColumnWidth": 672,
+      "columnGap": 32,
+      "mainRowHeight": 860,
+      "liquidityBuilding": {
+        "width": 672,
+        "height": 860,
+        "headerH": 120,
+        "headerCollapsed": "0",
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80
+      },
+      "addLiquidity": {
+        "width": 672,
+        "height": 520
+      },
+      "snapshot": {
+        "width": 672,
+        "height": 324
+      },
+      "rightColumnInternalGap": 16,
+      "overviewTopGap": 24,
+      "overviewHeight": 150,
+      "positionRowHeights": [],
+      "positionRowHeightProbe": 72,
+      "educationHeight": 96,
+      "boxes": {
+        "page": {
+          "x": 32,
+          "y": 104,
+          "width": 1312,
+          "height": 1472,
+          "top": 104,
+          "left": 32,
+          "right": 1344,
+          "bottom": 1576
+        },
+        "grid": {
+          "x": 32,
+          "y": 250,
+          "width": 1312,
+          "height": 860,
+          "top": 250,
+          "left": 32,
+          "right": 1344,
+          "bottom": 1110
+        },
+        "lb": {
+          "x": 32,
+          "y": 250,
+          "width": 672,
+          "height": 860,
+          "top": 250,
+          "left": 32,
+          "right": 704,
+          "bottom": 1110
+        },
+        "right": {
+          "x": 736,
+          "y": 250,
+          "width": 672,
+          "height": 860,
+          "top": 250,
+          "left": 736,
+          "right": 1408,
+          "bottom": 1110
+        },
+        "add": {
+          "x": 736,
+          "y": 250,
+          "width": 672,
+          "height": 520,
+          "top": 250,
+          "left": 736,
+          "right": 1408,
+          "bottom": 770
+        },
+        "snap": {
+          "x": 736,
+          "y": 786,
+          "width": 672,
+          "height": 324,
+          "top": 786,
+          "left": 736,
+          "right": 1408,
+          "bottom": 1110
+        },
+        "overview": {
+          "x": 32,
+          "y": 1134,
+          "width": 1312,
+          "height": 150,
+          "top": 1134,
+          "left": 32,
+          "right": 1344,
+          "bottom": 1284
+        },
+        "education": {
+          "x": 32,
+          "y": 1432,
+          "width": 1312,
+          "height": 96,
+          "top": 1432,
+          "left": 32,
+          "right": 1344,
+          "bottom": 1528
+        },
+        "positions": {
+          "x": 32,
+          "y": 1324,
+          "width": 1312,
+          "height": 92,
+          "top": 1324,
+          "left": 32,
+          "right": 1344,
+          "bottom": 1416
+        }
+      }
+    },
+    "1600x1200": {
+      "viewport": {
+        "width": 1600,
+        "height": 1200
+      },
+      "pageScrollWidth": 1600,
+      "overflowX": false,
+      "contentLeft": 112,
+      "contentRight": 1488,
+      "contentWidth": 1376,
+      "marginLeft": 112,
+      "marginRight": 112,
+      "pageTopOffset": 104,
+      "leftColumnWidth": 672,
+      "rightColumnWidth": 672,
+      "columnGap": 32,
+      "mainRowHeight": 860,
+      "liquidityBuilding": {
+        "width": 672,
+        "height": 860,
+        "headerH": 120,
+        "headerCollapsed": "0",
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80
+      },
+      "addLiquidity": {
+        "width": 672,
+        "height": 520
+      },
+      "snapshot": {
+        "width": 672,
+        "height": 324
+      },
+      "rightColumnInternalGap": 16,
+      "overviewTopGap": 24,
+      "overviewHeight": 150,
+      "positionRowHeights": [],
+      "positionRowHeightProbe": 72,
+      "educationHeight": 96,
+      "boxes": {
+        "page": {
+          "x": 112,
+          "y": 104,
+          "width": 1376,
+          "height": 1472,
+          "top": 104,
+          "left": 112,
+          "right": 1488,
+          "bottom": 1576
+        },
+        "grid": {
+          "x": 112,
+          "y": 250,
+          "width": 1376,
+          "height": 860,
+          "top": 250,
+          "left": 112,
+          "right": 1488,
+          "bottom": 1110
+        },
+        "lb": {
+          "x": 112,
+          "y": 250,
+          "width": 672,
+          "height": 860,
+          "top": 250,
+          "left": 112,
+          "right": 784,
+          "bottom": 1110
+        },
+        "right": {
+          "x": 816,
+          "y": 250,
+          "width": 672,
+          "height": 860,
+          "top": 250,
+          "left": 816,
+          "right": 1488,
+          "bottom": 1110
+        },
+        "add": {
+          "x": 816,
+          "y": 250,
+          "width": 672,
+          "height": 520,
+          "top": 250,
+          "left": 816,
+          "right": 1488,
+          "bottom": 770
+        },
+        "snap": {
+          "x": 816,
+          "y": 786,
+          "width": 672,
+          "height": 324,
+          "top": 786,
+          "left": 816,
+          "right": 1488,
+          "bottom": 1110
+        },
+        "overview": {
+          "x": 112,
+          "y": 1134,
+          "width": 1376,
+          "height": 150,
+          "top": 1134,
+          "left": 112,
+          "right": 1488,
+          "bottom": 1284
+        },
+        "education": {
+          "x": 112,
+          "y": 1432,
+          "width": 1376,
+          "height": 96,
+          "top": 1432,
+          "left": 112,
+          "right": 1488,
+          "bottom": 1528
+        },
+        "positions": {
+          "x": 112,
+          "y": 1324,
+          "width": 1376,
+          "height": 92,
+          "top": 1324,
+          "left": 112,
+          "right": 1488,
+          "bottom": 1416
+        }
+      }
+    }
+  },
+  "acceptance1440": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "contentWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "marginLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "marginRight",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "leftColumnWidth",
+        "actual": 672,
+        "target": 672,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rightColumnWidth",
+        "actual": 672,
+        "target": 672,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "columnGap",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "mainRowHeight",
+        "actual": 860,
+        "target": 860,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "lbHeight",
+        "actual": 860,
+        "target": 860,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "addHeight",
+        "actual": 520,
+        "target": 520,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "snapHeight",
+        "actual": 324,
+        "target": 324,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rightInternalGap",
+        "actual": 16,
+        "target": 16,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "overviewTopGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "overviewHeight",
+        "actual": 150,
+        "target": 150,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "educationHeight",
+        "actual": 96,
+        "target": 96,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "positionRowProbe",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "noHorizontalOverflow",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "overlayStats": {
+    "mae": 23.39979783950488,
+    "maxAbs": 255,
+    "renderSize": [
+      1440,
+      1200
+    ],
+    "mockScaled": [
+      1440,
+      2158
+    ]
+  },
+  "wizard": {
+    "states": [
+      {
+        "label": "initial",
+        "cardHeight": 860,
+        "headerH": 120,
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80,
+        "cardOk": true,
+        "bodyOk": true,
+        "wizardOk": true,
+        "footerOk": true
+      },
+      {
+        "label": "wizard-step-1",
+        "cardHeight": 860,
+        "headerH": 72,
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80,
+        "cardOk": true,
+        "bodyOk": true,
+        "wizardOk": true,
+        "footerOk": true
+      },
+      {
+        "label": "wizard-step-2",
+        "cardHeight": 860,
+        "headerH": 72,
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80,
+        "cardOk": true,
+        "bodyOk": true,
+        "wizardOk": true,
+        "footerOk": true
+      },
+      {
+        "label": "wizard-step-3",
+        "cardHeight": 860,
+        "headerH": 72,
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80,
+        "cardOk": true,
+        "bodyOk": true,
+        "wizardOk": true,
+        "footerOk": true
+      },
+      {
+        "label": "wizard-step-4",
+        "cardHeight": 860,
+        "headerH": 72,
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80,
+        "cardOk": true,
+        "bodyOk": true,
+        "wizardOk": true,
+        "footerOk": true
+      },
+      {
+        "label": "wizard-step-5",
+        "cardHeight": 860,
+        "headerH": 72,
+        "wizardH": 48,
+        "bodyH": 540,
+        "footerH": 80,
+        "cardOk": true,
+        "bodyOk": true,
+        "wizardOk": true,
+        "footerOk": true
+      }
+    ],
+    "stable": true
+  },
+  "mobile": [
+    {
+      "name": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "overflowX": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "lbHeight": 1732,
+      "addHeight": 863.65625,
+      "snapHeight": 124,
+      "stacked": true,
+      "narrowTextCount": 0,
+      "narrowText": [],
+      "smallTouchCount": 1,
+      "smallTouch": [
+        {
+          "h": 38,
+          "w": 38,
+          "text": ""
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "mobile-393",
+      "width": 393,
+      "height": 852,
+      "overflowX": false,
+      "scrollWidth": 393,
+      "clientWidth": 393,
+      "lbHeight": 1798,
+      "addHeight": 863.65625,
+      "snapHeight": 124,
+      "stacked": true,
+      "narrowTextCount": 0,
+      "narrowText": [],
+      "smallTouchCount": 1,
+      "smallTouch": [
+        {
+          "h": 38,
+          "w": 38,
+          "text": ""
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "mobile-430",
+      "width": 430,
+      "height": 932,
+      "overflowX": false,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "lbHeight": 1698,
+      "addHeight": 863.65625,
+      "snapHeight": 124,
+      "stacked": true,
+      "narrowTextCount": 0,
+      "narrowText": [],
+      "smallTouchCount": 1,
+      "smallTouch": [
+        {
+          "h": 38,
+          "w": 38,
+          "text": ""
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "verdict": "GEOMETRY_PASS"
+}

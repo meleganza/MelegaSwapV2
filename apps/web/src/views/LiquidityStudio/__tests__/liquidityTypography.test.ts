@@ -11,7 +11,8 @@ describe('R761 liquidityTypography', () => {
   })
 
   it('keeps activity and preview at fixed institutional heights', () => {
-    expect(liquidityStudioLayout.activityHeight).toBe('320px')
+    // Sourced from tradeLayout.recentSwapsHeight (Trade-aligned).
+    expect(liquidityStudioLayout.activityHeight).toBe('260px')
     expect(liquidityStudioLayout.previewMinHeight).toBe('440px')
     expect(liquidityStudioLayout.builderMinHeight).toBe('440px')
     expect(liquidityStudioLayout.executionStepGap).toBe('10px')

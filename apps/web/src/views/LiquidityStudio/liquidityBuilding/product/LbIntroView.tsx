@@ -18,7 +18,8 @@ const Grid = styled.div`
   gap: 24px;
   align-items: stretch;
 
-  @media (max-width: 1279px) {
+  /* Stack before card columns go <280px (inside 672 desktop card + all mobile) */
+  @media (max-width: 1375px) {
     grid-template-columns: 1fr;
   }
 `
@@ -40,13 +41,13 @@ const Hero = styled.section`
   overflow: hidden;
   box-sizing: border-box;
 
-  @media (max-width: 768px) {
-    padding: 28px;
+  @media (max-width: 767px) {
+    padding: 16px;
+    border-radius: 18px;
   }
 
   @media (max-width: 390px) {
-    padding: 20px;
-    border-radius: 18px;
+    padding: 14px;
   }
 `
 

@@ -24,25 +24,22 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  /* 1440 canvas → 32px margins → 1376 content */
+  /*
+   * App shell <main> already supplies horizontal page padding (32px @ ≥1024).
+   * Fill that area up to 1376 — do not subtract another 64px (double inset).
+   * At 1440: main pad 32 → content 1376 → margins 32.
+   */
   max-width: ${liqOne.contentMax};
-  width: calc(100% - 64px);
+  width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
 
-  @media (max-width: 1439px) {
-    width: calc(100% - 64px);
-  }
-
-  @media (max-width: 1279px) {
-    width: calc(100% - 48px);
-  }
-
   @media (max-width: 767px) {
     width: 100%;
-    padding: 0 16px;
+    /* Shell already pads ~12px; avoid a second inset that collapses text <280px */
+    padding: 0;
     padding-bottom: ${liquidityStudioLayout.mobileBottomPad};
   }
 `

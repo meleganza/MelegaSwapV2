@@ -46,6 +46,12 @@ const Title = styled.h2`
   line-height: 20px;
   font-weight: 700;
   color: ${liqOne.text};
+  min-width: 0;
+  flex: 1;
+
+  @media (max-width: 767px) {
+    font-size: 14px;
+  }
 `
 
 const Tip = styled.span`
