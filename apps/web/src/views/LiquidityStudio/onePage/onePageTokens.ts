@@ -58,8 +58,16 @@ export const liqOne = {
   snapKpiW: '310px',
   rightGap: '16px',
 
-  /* Bottom */
-  overviewH: '150px',
+  /* Bottom — MODULE_005 Wallet Overview: 180 outer, 148 inner (16 pad) */
+  overviewH: '180px',
+  overviewInnerH: '148px',
+  overviewPad: '16px',
+  overviewGap: '12px',
+  overviewColA: '336px',
+  overviewColB: '336px',
+  overviewColC: '216px',
+  overviewColD: '216px',
+  overviewColE: '192px',
   positionsHeadH: '64px',
   positionsRowH: '72px',
   educationH: '96px',

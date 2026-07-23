@@ -65,7 +65,8 @@ describe('DEX-LIQ-ONE-002 Liquidity one-page final', () => {
     const overview = load('onePage/WalletLiquidityOverview.tsx')
     expect(overview).toContain('Total LP Value')
     expect(overview).not.toMatch(/>\s*TVL\s*</)
-    expect(overview).toContain('Fee accrual unavailable')
+    expect(overview).toContain('Fees unavailable')
+    expect(overview).toContain('Connect your wallet to view your liquidity overview')
   })
 
   it('LB lifecycle remains inside the Liquidity Building card shell', () => {

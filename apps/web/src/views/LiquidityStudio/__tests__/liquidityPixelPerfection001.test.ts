@@ -74,16 +74,22 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(snap).not.toContain('$58.74M')
   })
 
-  it('overview is 150px with five equal columns', () => {
+  it('overview is 180px with locked five-column widths', () => {
+    const tokens = load('onePage/onePageTokens.ts')
     const overview = load('onePage/WalletLiquidityOverview.tsx')
+    expect(tokens).toContain("overviewH: '180px'")
+    expect(tokens).toContain("overviewInnerH: '148px'")
+    expect(tokens).toContain("overviewColA: '336px'")
+    expect(tokens).toContain("overviewColE: '192px'")
     expect(overview).toContain('liqOne.overviewH')
-    expect(overview).toContain('repeat(5, minmax(0, 1fr))')
+    expect(overview).toContain('liqOne.overviewColA')
     expect(overview).toContain('Total LP Value')
     expect(overview).toContain('Holdings Breakdown')
     expect(overview).toContain('Active Positions')
     expect(overview).toContain('Networks')
     expect(overview).toContain('Unclaimed Fees')
-    expect(overview).toContain('Fee accrual unavailable')
+    expect(overview).toContain('Fees unavailable')
+    expect(overview).not.toMatch(/>\s*TVL\s*</)
   })
 
   it('positions rows are 72px and education is 96px', () => {

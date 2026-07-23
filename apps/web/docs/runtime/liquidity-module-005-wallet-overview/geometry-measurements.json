@@ -1,0 +1,351 @@
+{
+  "generatedAt": "2026-07-23T17:18:55.743Z",
+  "disconnected": {
+    "module": {
+      "w": 1376,
+      "h": 180,
+      "padT": 16,
+      "padX": 32
+    },
+    "grid": null,
+    "colA": null,
+    "colB": null,
+    "colC": null,
+    "colD": null,
+    "colE": null,
+    "gapAB": null,
+    "disconnected": true,
+    "overflowX": false,
+    "text": "Connect your wallet to view your liquidity overview.\n\nConnect Wallet"
+  },
+  "noPositions": {
+    "module": {
+      "w": 1376,
+      "h": 180,
+      "padT": 16,
+      "padX": 32
+    },
+    "grid": {
+      "w": 1342,
+      "h": 148,
+      "padT": 0,
+      "padX": 0
+    },
+    "colA": {
+      "w": 336,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colB": {
+      "w": 336,
+      "h": 148,
+      "padT": 14,
+      "padX": 28
+    },
+    "colC": {
+      "w": 216,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colD": {
+      "w": 216,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colE": {
+      "w": 192,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "gapAB": 12,
+    "disconnected": false,
+    "overflowX": false,
+    "text": "TOTAL LP VALUE\n$0.00\nNo LP value yet\nHOLDINGS BREAKDOWN\nNo holdings yet\nACTIVE POSITIONS\n0\nTotal Positions 0\nLB Programs 0\nNETWORKS\n0\nNo networks represented\nUNCLAIMED FEES\n$0.00\nNo unclaimed fees"
+  },
+  "unavailable": {
+    "module": {
+      "w": 1376,
+      "h": 180,
+      "padT": 16,
+      "padX": 32
+    },
+    "grid": {
+      "w": 1342,
+      "h": 148,
+      "padT": 0,
+      "padX": 0
+    },
+    "colA": {
+      "w": 336,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colB": {
+      "w": 336,
+      "h": 148,
+      "padT": 14,
+      "padX": 28
+    },
+    "colC": {
+      "w": 216,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colD": {
+      "w": 216,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colE": {
+      "w": 192,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "gapAB": 12,
+    "disconnected": false,
+    "overflowX": false,
+    "text": "TOTAL LP VALUE\n—\nValuation unavailable\nHOLDINGS BREAKDOWN\nNo holdings yet\nACTIVE POSITIONS\n0\nTotal Positions 0\nLB Programs 0\nNETWORKS\n0\nNo networks represented\nUNCLAIMED FEES\n—\nFees unavailable"
+  },
+  "mixed": {
+    "module": {
+      "w": 1376,
+      "h": 180,
+      "padT": 16,
+      "padX": 32
+    },
+    "grid": {
+      "w": 1342,
+      "h": 148,
+      "padT": 0,
+      "padX": 0
+    },
+    "colA": {
+      "w": 336,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colB": {
+      "w": 336,
+      "h": 148,
+      "padT": 14,
+      "padX": 28
+    },
+    "colC": {
+      "w": 216,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colD": {
+      "w": 216,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "colE": {
+      "w": 192,
+      "h": 148,
+      "padT": 16,
+      "padX": 32
+    },
+    "gapAB": 12,
+    "disconnected": false,
+    "overflowX": false,
+    "text": "TOTAL LP VALUE\n$1,540.5\nAs of Dec 31, 04:00 PM\nHOLDINGS BREAKDOWN\nTOKEN_A\n46.8%\n$720.3\nTOKEN_B\n42.2%\n$650.2\nTOKEN_C\n11.0%\n$170\nACTIVE POSITIONS\n2\nTotal Positions 3\nLB Programs 1\nNETWORKS\n1\nBSC\nUNCLAIMED FEES\n—\nFees unavailable"
+  },
+  "mobileDisc": {
+    "module": {
+      "w": 358,
+      "h": 176,
+      "padT": 16,
+      "padX": 32
+    },
+    "grid": null,
+    "colA": null,
+    "colB": null,
+    "colC": null,
+    "colD": null,
+    "colE": null,
+    "gapAB": null,
+    "disconnected": true,
+    "overflowX": false,
+    "text": "Connect your wallet to view your liquidity overview.\n\nConnect Wallet"
+  },
+  "mobileMixed": {
+    "module": {
+      "w": 358,
+      "h": 589,
+      "padT": 16,
+      "padX": 32
+    },
+    "grid": {
+      "w": 324,
+      "h": 555,
+      "padT": 0,
+      "padX": 0
+    },
+    "colA": {
+      "w": 324,
+      "h": 116,
+      "padT": 16,
+      "padX": 32
+    },
+    "colB": {
+      "w": 324,
+      "h": 156,
+      "padT": 14,
+      "padX": 28
+    },
+    "colC": {
+      "w": 156,
+      "h": 135,
+      "padT": 16,
+      "padX": 32
+    },
+    "colD": {
+      "w": 156,
+      "h": 135,
+      "padT": 16,
+      "padX": 32
+    },
+    "colE": {
+      "w": 156,
+      "h": 112,
+      "padT": 16,
+      "padX": 32
+    },
+    "gapAB": -324,
+    "disconnected": false,
+    "overflowX": false,
+    "text": "TOTAL LP VALUE\n$1,540.5\nAs of Dec 31, 04:00 PM\nHOLDINGS BREAKDOWN\nTOKEN_A\n46.8%\n$720.3\nTOKEN_B\n42.2%\n$650.2\nTOKEN_C\n11.0%\n$170\nACTIVE POSITIONS\n2\nTotal Positions 3\nLB Programs 1\nNETWORKS\n1\nBSC\nUNCLAIMED FEES\n—\nFees unavailable"
+  },
+  "checks": [
+    {
+      "name": "moduleW",
+      "actual": 1376,
+      "target": 1376,
+      "ok": true
+    },
+    {
+      "name": "moduleH",
+      "actual": 180,
+      "target": 180,
+      "ok": true
+    },
+    {
+      "name": "padApprox",
+      "actual": 16,
+      "target": 16,
+      "ok": true
+    },
+    {
+      "name": "gridW",
+      "actual": 1342,
+      "target": 1344,
+      "ok": true
+    },
+    {
+      "name": "gridH",
+      "actual": 148,
+      "target": 148,
+      "ok": true
+    },
+    {
+      "name": "colA",
+      "actual": 336,
+      "target": 336,
+      "ok": true
+    },
+    {
+      "name": "colB",
+      "actual": 336,
+      "target": 336,
+      "ok": true
+    },
+    {
+      "name": "colC",
+      "actual": 216,
+      "target": 216,
+      "ok": true
+    },
+    {
+      "name": "colD",
+      "actual": 216,
+      "target": 216,
+      "ok": true
+    },
+    {
+      "name": "colE",
+      "actual": 192,
+      "target": 192,
+      "ok": true
+    },
+    {
+      "name": "colAH",
+      "actual": 148,
+      "target": 148,
+      "ok": true
+    },
+    {
+      "name": "gapAB",
+      "actual": 12,
+      "target": 12,
+      "ok": true
+    },
+    {
+      "name": "disconnectedCompact",
+      "actual": true,
+      "target": true,
+      "ok": true
+    },
+    {
+      "name": "noOverflowDesktop",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "mobileNoHScroll",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "noPositionsZeroValue",
+      "actual": true,
+      "target": true,
+      "ok": true
+    },
+    {
+      "name": "unavailableHonest",
+      "actual": true,
+      "target": true,
+      "ok": true
+    },
+    {
+      "name": "mixedHasHoldings",
+      "actual": true,
+      "target": true,
+      "ok": true
+    }
+  ],
+  "overlayStats": {
+    "mae": 11.423679748062183,
+    "size": [
+      1376,
+      180
+    ],
+    "maePctOf255": 4.4798744110047775
+  },
+  "geometryDeviationPct": 0,
+  "pass": true
+}
