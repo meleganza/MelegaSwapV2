@@ -21,7 +21,7 @@ Both Founder documents are complete and Founder-readable. Verified values are po
 
 ## 3. Commit
 
-*(filled at push time — see git tip on branch)*
+`f76fab5eaf8f5d243d48c747635a4ea48da22de9`
 
 Baseline content derived from `origin/main` `0925f9f3`.
 
