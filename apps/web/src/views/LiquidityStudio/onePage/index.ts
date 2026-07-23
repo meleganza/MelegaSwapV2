@@ -1,4 +1,5 @@
 export { UnifiedLiquidityPage } from './UnifiedLiquidityPage'
+export { LiquidityOnePagePolishStyle } from './LiquidityOnePagePolishStyle'
 export { LiquidityPageHeader } from './LiquidityPageHeader'
 export { LiquidityBuildingCard } from './LiquidityBuildingCard'
 export { AddLiquidityCard } from './AddLiquidityCard'

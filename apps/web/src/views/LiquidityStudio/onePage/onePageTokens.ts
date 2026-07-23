@@ -1,23 +1,30 @@
-/** LIQUIDITY_PIXEL_PERFECTION_001 — exact desktop art-direction tokens. */
+/** LIQUIDITY_PIXEL_PERFECTION_001 — exact desktop art-direction tokens.
+ * MODULE_007: color/polish values only — geometry locks unchanged. */
 export const liqOne = {
   pageBg: '#050505',
   card: '#101010',
   elevated: '#151515',
   input: '#121212',
-  border: '#252525',
-  borderDefault: '#1F1F1F',
-  borderStrong: '#2A2A2A',
+  border: 'rgba(255,255,255,0.05)',
+  borderDefault: 'rgba(255,255,255,0.04)',
+  borderStrong: 'rgba(255,255,255,0.08)',
   text: '#F5F5F5',
   secondary: '#A8A8A8',
   muted: '#747474',
   bodySoft: '#B5B5B5',
-  gold: '#DDB92F',
-  goldHover: '#E8C83B',
-  goldBorder: 'rgba(221,185,47,0.55)',
-  goldBorderSoft: 'rgba(221,185,47,0.45)',
+  /* Restrained gold — CTAs / active / key KPI only */
+  gold: '#C9A84A',
+  goldHover: '#D4B45C',
+  goldBorder: 'rgba(201,168,74,0.45)',
+  goldBorderSoft: 'rgba(201,168,74,0.32)',
   positive: '#16D977',
   warning: '#F4B942',
   error: '#F04F5F',
+  /* Visual polish (non-geometry) */
+  cardShadow: '0 16px 40px rgba(0,0,0,0.35)',
+  cardHighlight: 'inset 0 1px 0 rgba(255,255,255,0.03)',
+  transitionMs: '120ms',
+  transitionEase: 'ease',
 
   /* Global grid @ 1440 */
   canvas: 1440,

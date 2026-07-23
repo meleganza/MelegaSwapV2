@@ -10,6 +10,7 @@ import { DexLiquiditySnapshot } from './DexLiquiditySnapshot'
 import { WalletLiquidityOverview } from './WalletLiquidityOverview'
 import { LiquidityPositions } from './LiquidityPositions'
 import { LiquidityEducationRail } from './LiquidityEducationRail'
+import { LiquidityOnePagePolishStyle } from './LiquidityOnePagePolishStyle'
 
 const Page = styled.div`
   width: 100%;
@@ -144,6 +145,7 @@ export const UnifiedLiquidityPage: React.FC = () => {
 
   return (
     <Page data-testid="liq-one-unified-page" data-liquidity-one-page="true" data-pixel-perfection="001">
+      <LiquidityOnePagePolishStyle />
       <LiquidityPageHeader />
 
       <ProductGrid data-testid="liq-one-product-grid" data-pixel-main-row="860">
