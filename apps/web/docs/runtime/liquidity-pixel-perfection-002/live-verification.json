@@ -1,0 +1,216 @@
+{
+  "capturedAt": "2026-07-23T01:58:22.477Z",
+  "base": "https://www.melega.finance",
+  "shots": [
+    {
+      "name": "live-1440-liquidity-studio",
+      "w": 1440,
+      "h": 1200,
+      "path": "/liquidity-studio",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-002/live-1440-liquidity-studio.png",
+      "info": {
+        "pixel": "001",
+        "onePage": "true",
+        "contentW": 1376,
+        "contentLeft": 32,
+        "lb": {
+          "x": 32,
+          "w": 672,
+          "h": 860
+        },
+        "add": {
+          "x": 736,
+          "w": 672,
+          "h": 520
+        },
+        "snap": {
+          "x": 736,
+          "w": 672,
+          "h": 324
+        },
+        "right": {
+          "x": 736,
+          "w": 672,
+          "h": 860
+        },
+        "hasUnified": true,
+        "title": "Liquidity Studio | Melega DEX | $0.0004"
+      }
+    },
+    {
+      "name": "live-1440-building",
+      "w": 1440,
+      "h": 1200,
+      "path": "/liquidity-studio?view=building",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-002/live-1440-building.png",
+      "info": {
+        "pixel": "001",
+        "onePage": "true",
+        "contentW": 1376,
+        "contentLeft": 32,
+        "lb": {
+          "x": 32,
+          "w": 672,
+          "h": 860
+        },
+        "add": {
+          "x": 736,
+          "w": 672,
+          "h": 520
+        },
+        "snap": {
+          "x": 736,
+          "w": 672,
+          "h": 324
+        },
+        "right": {
+          "x": 736,
+          "w": 672,
+          "h": 860
+        },
+        "hasUnified": true,
+        "title": "Liquidity Studio | Melega DEX | $0.0004"
+      }
+    },
+    {
+      "name": "live-1440-add",
+      "w": 1440,
+      "h": 1200,
+      "path": "/liquidity-studio?view=add",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-002/live-1440-add.png",
+      "info": {
+        "pixel": "001",
+        "onePage": "true",
+        "contentW": 1376,
+        "contentLeft": 32,
+        "lb": {
+          "x": 32,
+          "w": 672,
+          "h": 860
+        },
+        "add": {
+          "x": 736,
+          "w": 672,
+          "h": 520
+        },
+        "snap": {
+          "x": 736,
+          "w": 672,
+          "h": 324
+        },
+        "right": {
+          "x": 736,
+          "w": 672,
+          "h": 860
+        },
+        "hasUnified": true,
+        "title": "Liquidity Studio | Melega DEX | $0.0004"
+      }
+    },
+    {
+      "name": "live-390-liquidity-studio",
+      "w": 390,
+      "h": 844,
+      "path": "/liquidity-studio",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-002/live-390-liquidity-studio.png",
+      "info": {
+        "pixel": "001",
+        "onePage": "true",
+        "contentW": 366,
+        "contentLeft": 12,
+        "lb": {
+          "x": 12,
+          "w": 366,
+          "h": 1732
+        },
+        "add": {
+          "x": 12,
+          "w": 366,
+          "h": 863.65625
+        },
+        "snap": {
+          "x": 12,
+          "w": 366,
+          "h": 124
+        },
+        "right": {
+          "x": 12,
+          "w": 366,
+          "h": 1003.65625
+        },
+        "hasUnified": true,
+        "title": "Liquidity Studio | Melega DEX | $0.0004"
+      }
+    },
+    {
+      "name": "live-390-building",
+      "w": 390,
+      "h": 844,
+      "path": "/liquidity-studio?view=building",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-002/live-390-building.png",
+      "info": {
+        "pixel": "001",
+        "onePage": "true",
+        "contentW": 366,
+        "contentLeft": 12,
+        "lb": {
+          "x": 12,
+          "w": 366,
+          "h": 1732
+        },
+        "add": {
+          "x": 12,
+          "w": 366,
+          "h": 863.65625
+        },
+        "snap": {
+          "x": 12,
+          "w": 366,
+          "h": 124
+        },
+        "right": {
+          "x": 12,
+          "w": 366,
+          "h": 1003.65625
+        },
+        "hasUnified": true,
+        "title": "Liquidity Studio | Melega DEX | $0.0004"
+      }
+    },
+    {
+      "name": "live-390-add",
+      "w": 390,
+      "h": 844,
+      "path": "/liquidity-studio?view=add",
+      "file": "/Users/marcomelega/Projects/MelegaSwapV2-liq-pixel002/apps/web/docs/runtime/liquidity-pixel-perfection-002/live-390-add.png",
+      "info": {
+        "pixel": "001",
+        "onePage": "true",
+        "contentW": 366,
+        "contentLeft": 12,
+        "lb": {
+          "x": 12,
+          "w": 366,
+          "h": 1732
+        },
+        "add": {
+          "x": 12,
+          "w": 366,
+          "h": 863.65625
+        },
+        "snap": {
+          "x": 12,
+          "w": 366,
+          "h": 124
+        },
+        "right": {
+          "x": 12,
+          "w": 366,
+          "h": 1003.65625
+        },
+        "hasUnified": true,
+        "title": "Liquidity Studio | Melega DEX | $0.0004"
+      }
+    }
+  ]
+}
