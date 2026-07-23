@@ -10,7 +10,7 @@
 
 ## 3. Commit
 
-(filled after commit)
+ded6c491
 
 ## 4. Certified base verification
 
