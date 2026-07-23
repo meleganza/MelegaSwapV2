@@ -1,11 +1,12 @@
 /**
- * LIST_MODULE_006 — Premium unified List workspace (internals only).
- * Outer shell 1376×920 / 64·760·72 locked from MODULE_005.
+ * LIST_MODULE_006/007 — Premium workspace shell + AI Copilot panel.
+ * Outer shell 1376×920 / 64·760·72 locked. MODULE_007 adds product-copilot assist.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import styled, { css, keyframes } from 'styled-components'
 import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTokens'
 import { useListIntent } from './useListIntent'
+import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -38,7 +39,11 @@ const REQUIRED: Record<ListIntent, FieldDef[]> = {
     { key: 'category', label: 'Category', required: true },
     { key: 'description', label: 'Description', required: true },
   ],
-  'ai-assistant': [{ key: 'prompt', label: 'Prompt', required: false }],
+  'ai-assistant': [
+    { key: 'name', label: 'Project Name', required: true },
+    { key: 'category', label: 'Category', required: true },
+    { key: 'description', label: 'Description', required: true },
+  ],
 }
 
 const TOTAL_DOTS = 5
@@ -646,27 +651,17 @@ export const ListWorkspace: React.FC = () => {
   const [attempted, setAttempted] = useState(false)
   const [savedAt, setSavedAt] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; text: string }[]>([
-    {
-      role: 'assistant',
-      text: 'Draft and refine listing copy here. Outputs stay in this workspace.',
-    },
-  ])
+  const [pendingDescription, setPendingDescription] = useState<string | null>(null)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setStep(0)
     setAttempted(false)
     setSavedAt(null)
-    setMessages([
-      {
-        role: 'assistant',
-        text: 'Draft and refine listing copy here. Outputs stay in this workspace.',
-      },
-    ])
+    setPendingDescription(null)
     if (listIntent === 'import-token') setValues({ chain: 'bsc' })
     else if (listIntent === 'create-token') setValues({ decimals: '18' })
-    else if (listIntent === 'create-project') setValues({ category: 'defi' })
+    else if (listIntent === 'create-project' || listIntent === 'ai-assistant') setValues({ category: 'defi' })
     else if (listIntent === 'claim-project') setValues({ verification: 'pending' })
     else setValues({})
   }, [listIntent])
@@ -701,12 +696,34 @@ export const ListWorkspace: React.FC = () => {
   const savedLabel = relativeSaved(savedAt, now)
   const primaryLabel = step >= TOTAL_DOTS - 1 || (listIntent === 'ai-assistant' && step >= 0 && pct >= 75) ? 'Publish' : 'Continue'
   const canPublishish = listIntent !== 'create-token' || LIST_CREATE_TOKEN_AVAILABLE || primaryLabel === 'Continue'
+  const usesCopilot = listIntent === 'create-project' || listIntent === 'ai-assistant'
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setValues((v) => ({ ...v, [key]: e.target.value }))
 
   const invalid = (key: string, required = true) =>
     attempted && required && !filled(values[key])
+
+  const applySuggestion = (s: CopilotSuggestion) => {
+    if (s.kind === 'category') setValues((v) => ({ ...v, category: 'wallet' }))
+    if (s.kind === 'tags') setValues((v) => ({ ...v, aiNote: s.preview }))
+    if (s.kind === 'website') {
+      const url = `https://${(values.name || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '')}.io`
+      setValues((v) => ({ ...v, website: url }))
+    }
+    if (s.kind === 'social') {
+      const handle = `@${(values.name || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 14)}`
+      setValues((v) => ({ ...v, twitter: handle, social: handle }))
+    }
+    if (s.kind === 'logo') setValues((v) => ({ ...v, logo: 'pending://logo-preview' }))
+  }
+
+  const generateDescription = () => {
+    const name = values.name?.trim() || 'This project'
+    setPendingDescription(
+      `${name} is building on Melega. Draft generated locally for review — pending backend AI. Nothing was published.`,
+    )
+  }
 
   const onContinue = () => {
     if (!listIntent) return
@@ -818,7 +835,7 @@ export const ListWorkspace: React.FC = () => {
       )
     }
 
-    if (listIntent === 'create-project') {
+    if (listIntent === 'create-project' || listIntent === 'ai-assistant') {
       return (
         <FormStack data-testid="list-workspace-form">
           <Field label="Project Name" ok={filled(values.name)} invalid={invalid('name')}>
@@ -827,6 +844,7 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Category" ok={filled(values.category)} invalid={invalid('category')}>
             <Select value={values.category || 'defi'} onChange={set('category')}>
               <option value="defi">DeFi</option>
+              <option value="wallet">Wallet</option>
               <option value="gamefi">GameFi</option>
               <option value="infra">Infrastructure</option>
               <option value="other">Other</option>
@@ -838,11 +856,30 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Social" ok={filled(values.social)} invalid={false} optional>
             <Input value={values.social || ''} onChange={set('social')} placeholder="X / Telegram / Discord" />
           </Field>
-          <Field label="Description" ok={filled(values.description)} invalid={invalid('description')}>
-            <TextArea value={values.description || ''} onChange={set('description')} placeholder="Describe the project" />
+          <Field
+            label="Description"
+            ok={filled(values.description)}
+            invalid={invalid('description')}
+            hint={!filled(values.description) ? 'AI can propose a draft — never auto-applied.' : undefined}
+          >
+            <TextArea
+              value={values.description || ''}
+              onChange={set('description')}
+              placeholder="Describe the project"
+            />
+            {!filled(values.description) ? (
+              <Chip type="button" onClick={generateDescription} style={{ alignSelf: 'flex-start', marginTop: 4 }}>
+                Generate Description
+              </Chip>
+            ) : null}
+            {pendingDescription ? (
+              <Banner>
+                Preview ready in AI Copilot — Apply or Discard. Your field is unchanged until you Apply.
+              </Banner>
+            ) : null}
           </Field>
-          <Field label="AI assist notes" ok={filled(values.aiNote)} invalid={false} optional>
-            <Input value={values.aiNote || ''} onChange={set('aiNote')} placeholder="Local drafting notes" />
+          <Field label="Logo" ok={filled(values.logo)} invalid={false} optional>
+            <Input value={values.logo || ''} onChange={set('logo')} placeholder="https://… or pending preview" />
           </Field>
           <Field
             label="Token"
@@ -857,59 +894,7 @@ export const ListWorkspace: React.FC = () => {
       )
     }
 
-    return (
-      <Chat data-testid="list-workspace-form">
-        <Transcript data-testid="list-workspace-ai-transcript" aria-live="polite">
-          {messages.map((m, i) => (
-            <Bubble key={`${m.role}-${i}`} $user={m.role === 'user'}>
-              {m.text}
-            </Bubble>
-          ))}
-        </Transcript>
-        <Field label="Prompt" ok={filled(values.prompt)} invalid={false} optional>
-          <TextArea value={values.prompt || ''} onChange={set('prompt')} placeholder="Ask for a draft or improvement" />
-        </Field>
-        <Chips>
-          <Chip
-            type="button"
-            onClick={() => {
-              setMessages((prev) => [
-                ...prev,
-                { role: 'user', text: 'Generate Description' },
-                { role: 'assistant', text: 'Generated a local draft. Nothing was published.' },
-              ])
-              setValues((v) => ({ ...v, summary: 'Local draft description ready for review.' }))
-            }}
-          >
-            Generate Description
-          </Chip>
-          <Chip
-            type="button"
-            onClick={() => {
-              setMessages((prev) => [
-                ...prev,
-                { role: 'user', text: 'Improve Description' },
-                { role: 'assistant', text: 'Improved the local draft for clarity.' },
-              ])
-            }}
-          >
-            Improve Description
-          </Chip>
-          <Chip
-            type="button"
-            onClick={() => {
-              setMessages((prev) => [
-                ...prev,
-                { role: 'user', text: 'Find Existing Information' },
-                { role: 'assistant', text: 'Searched local notes only. Sources are not auto-verified.' },
-              ])
-            }}
-          >
-            Find Existing Information
-          </Chip>
-        </Chips>
-      </Chat>
-    )
+    return null
   })()
 
   const right = (() => {
@@ -1014,67 +999,34 @@ export const ListWorkspace: React.FC = () => {
       )
     }
 
-    if (listIntent === 'create-project') {
-      const missing = REQUIRED['create-project'].filter((f) => f.required && !filled(values[f.key])).map((f) => f.label)
-      const hasAny = filled(values.name) || filled(values.description) || filled(values.website)
+    if (usesCopilot && listIntent) {
       return (
-        <>
-          {ring}
-          {hasAny ? (
-            <ContextCard data-testid="list-workspace-context">
-              <ContextTitle>Project intelligence</ContextTitle>
-              <ContextRow>
-                AI Suggestions <strong>{filled(values.aiNote) ? 'Notes captured' : 'None yet'}</strong>
-              </ContextRow>
-              <ContextRow>
-                Category <strong>{values.category || 'defi'}</strong>
-              </ContextRow>
-              <ContextRow>
-                Completeness <strong>{pct}%</strong>
-              </ContextRow>
-              <ContextRow>
-                Missing Fields <strong>{missing.length ? missing.join(', ') : 'None'}</strong>
-              </ContextRow>
-              <ContextRow>
-                Visibility Score <strong>{pct}%</strong>
-              </ContextRow>
-            </ContextCard>
-          ) : (
-            <ContextEmpty label="Start the project form to unlock suggestions." />
-          )}
-        </>
+        <ListAiCopilot
+          intent={listIntent}
+          values={values}
+          completionPct={pct}
+          onApply={applySuggestion}
+          onReject={() => undefined}
+          onGenerateDescription={generateDescription}
+          pendingDescription={pendingDescription}
+          onApplyDescription={() => {
+            if (pendingDescription) {
+              setValues((v) => ({ ...v, description: pendingDescription }))
+              setPendingDescription(null)
+            }
+          }}
+          onDiscardDescription={() => setPendingDescription(null)}
+        />
       )
     }
 
-    return (
-      <>
-        {ring}
-        <ContextCard data-testid="list-workspace-context">
-          <ContextTitle>Conversation Memory</ContextTitle>
-          <ContextRow>
-            Messages <strong>{messages.length}</strong>
-          </ContextRow>
-          <ContextRow>
-            Suggestions <strong>Generate · Improve · Find</strong>
-          </ContextRow>
-          <ContextRow>
-            Generated Summary <strong>{values.summary || '—'}</strong>
-          </ContextRow>
-          <ContextRow>
-            Confidence <strong>Local only</strong>
-          </ContextRow>
-          <ContextRow>
-            Sources <strong>Workspace notes</strong>
-          </ContextRow>
-        </ContextCard>
-      </>
-    )
+    return <ContextEmpty label="Select a flow to open contextual guidance." />
   })()
 
   return (
     <Shell
       data-testid="list-workspace"
-      data-list-module="006"
+      data-list-module="007"
       data-list-intent={listIntent || ''}
       data-pixel-workspace="1376x920"
       aria-labelledby="list-workspace-title"

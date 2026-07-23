@@ -147,6 +147,15 @@ export const listOne = {
   workspaceAnimMs: '120ms',
   workspaceAnimSlide: '8px',
 
+  /* MODULE_007 — AI Copilot panel internals (001–006 outer locks unchanged) */
+  aiSuggestSectionH: '260px',
+  aiSuggestCardH: '52px',
+  aiSuggestCardPad: '12px',
+  aiAnalysisH: '120px',
+  aiMemoryH: '120px',
+  aiStatusH: '24px',
+  aiTitleSize: '16px',
+
   font: "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 } as const
 

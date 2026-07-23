@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "states": {
+    "ready": "Ready",
+    "searching": "Ready",
+    "suggestion": "Ready",
+    "waiting": "Waiting Confirmation",
+    "applied": "Ready",
+    "rejected": "Ready"
+  }
+}

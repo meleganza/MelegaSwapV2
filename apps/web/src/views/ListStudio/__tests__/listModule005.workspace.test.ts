@@ -60,8 +60,8 @@ describe('LIST_MODULE_005 Workspace', () => {
     expect(ws).toContain('Website')
     expect(ws).toContain('optional — never mandatory')
     expect(ws).toContain('Generate Description')
-    expect(ws).toContain('Improve Description')
-    expect(ws).toContain('Find Existing Information')
+    // MODULE_007 replaces chat actions with product-copilot suggestions
+    expect(ws).toContain('ListAiCopilot')
     expect(ws).toContain('Continue')
     expect(ws).toContain('Cancel')
     // MODULE_006 footer is Cancel + Continue/Publish only (no Back)
