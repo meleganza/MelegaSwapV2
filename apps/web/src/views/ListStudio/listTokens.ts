@@ -96,6 +96,32 @@ export const listOne = {
   whyTabletBenefitH: '72px',
   whyTabletGap: '12px',
 
+  /* MODULE_004 — How it works (001–003 locks unchanged) */
+  howTop: '24px',
+  howW: '1376px',
+  howH: '176px',
+  howPad: '20px',
+  howRadius: '16px',
+  howHeaderH: '28px',
+  howHeaderGap: '20px',
+  howTimelineW: '1336px',
+  howTimelineH: '108px',
+  howStepW: '208px',
+  howStepH: '108px',
+  howCircle: '32px',
+  howDescW: '190px',
+  howConnectorL: '124px',
+  howConnectorR: '1212px',
+  howConnectorW: '1088px',
+  howConnectorY: '22px',
+  howMobileStepMinH: '48px',
+  howMobileGap: '8px',
+  howMobileCircle: '28px',
+  howMobileTitleRow: '44px',
+  howTabletGapX: '16px',
+  howTabletGapY: '20px',
+  howTabletStepMinH: '88px',
+
   font: "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 } as const
 

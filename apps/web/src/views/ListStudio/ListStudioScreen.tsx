@@ -1,6 +1,6 @@
 /**
- * List Studio — MODULE_001 Hero + MODULE_002 action cards + MODULE_003 Why rail.
- * Workflow forms and later rails are not mounted yet.
+ * List Studio — MODULE_001–004 introductory rails.
+ * Workflow forms are not mounted yet.
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -9,6 +9,7 @@ import { uxRebuildColors, uxRebuildFont } from 'design-system/melega/tokens/uxRe
 import { ListPageHero } from './ListPageHero'
 import { ListActionCards } from './ListActionCards'
 import { ListWhyBuildRail } from './ListWhyBuildRail'
+import { ListHowItWorks } from './ListHowItWorks'
 import { listOne } from './listTokens'
 
 const Root = styled.div`
@@ -25,8 +26,8 @@ const Content = styled.div`
    * App shell <main> already supplies horizontal page padding (32px @ ≥1024).
    * Fill to 1376 — required for Hero 1376×360 with 32px side margins.
    *
-   * Flex order keeps Action Cards → Why (24px) → intent placeholder,
-   * without editing certified ListActionCards (which also mounts the placeholder).
+   * Flex order: Hero → Cards → Why → How → intent placeholder
+   * (placeholder ships from ListActionCards; order keeps it last).
    */
   max-width: ${listOne.contentMax};
   width: 100%;
@@ -50,8 +51,12 @@ const Content = styled.div`
     order: 3;
   }
 
-  & > [data-testid='list-intent-placeholder'] {
+  & > [data-testid='list-how-it-works'] {
     order: 4;
+  }
+
+  & > [data-testid='list-intent-placeholder'] {
+    order: 5;
   }
 
   @media (max-width: 767px) {
@@ -63,12 +68,13 @@ const Content = styled.div`
 
 export const ListStudioScreen: React.FC = () => {
   return (
-    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="003">
+    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="004">
       <PageMeta />
       <Content data-testid="list-one-content">
         <ListPageHero />
         <ListActionCards />
         <ListWhyBuildRail />
+        <ListHowItWorks />
       </Content>
     </Root>
   )
