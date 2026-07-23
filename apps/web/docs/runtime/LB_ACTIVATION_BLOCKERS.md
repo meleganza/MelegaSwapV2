@@ -14,8 +14,8 @@ Source: `apps/web/src/lib/liquidity-building-runtime/activationGateConsumer.ts` 
 
 ```text
 activationAuthorized =
-  gateDoc.activationAuthorized === true
-  AND allRequiredGatesReady === true          // every LB021_REQUIRED_GATES row status PASS
+  FounderActivationApproved === true          // gateDoc.founderActivationApproved (legacy alias: gateDoc.activationAuthorized)
+  AND executionCriticalGatesReady === true    // EXECUTION_CRITICAL gates only
   AND deploymentInputsValid === true
   AND manualActivationAttempt === false
   AND privateKeyConfigViolation === false
@@ -24,13 +24,18 @@ activationAuthorized =
 where deploymentInputsValid =
   validatorResult ∈ { VALID, DEPLOYMENT_INPUTS_VALID, PASS }
   AND deploymentReadinessState ∈ { VALID, DEPLOYED }
-  AND contractsDeployed === true              // lbFactory ∧ lbAuthorizer ∧ lbFeeSink nonzero code addresses
-  AND allRequiredGatesReady === true
-  AND gateDoc.activationAuthorized === true
+  AND contractsDeployed === true              // lbFactory ∧ lbAuthorizer ∧ lbFeeSink nonzero addresses
+  AND feeReceiverValid === true
+  // intentionally does NOT require FounderActivationApproved or accounting readiness
 
-LB021_REQUIRED_GATES =
-  LB-G03B, LB-G11, LB-G03C, LB-G04B, LB-G04C/G12, LB-G08, LB-G10
+executionCriticalGatesReady gates =
+  LB-G03B, LB-G11, LB-G03C, LB-G04B, LB-G08, LB-G10
+
+accountingReadiness (async; does not block activation) =
+  LB-G04C/G12
 ```
+
+**Supersession note (LB-ACT-003 / LB-ACT-004):** Prefer this formula and `LIQUIDITY_BUILDING_PRODUCTION_CONVERGENCE_REPORT.md`. Older checklist rows below may still mention pre-simplification blockers.
 
 Artifact load paths (server cwd / repo root):
 
