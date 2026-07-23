@@ -3,7 +3,7 @@
 **Mission:** `LIQUIDITY_MODULE_005_WALLET_OVERVIEW`  
 **Verdict:** `LIQUIDITY_MODULE_005_WALLET_OVERVIEW_CERTIFIED`  
 **Branch:** `mission-liquidity-module-005-wallet-overview`  
-**Commit:** _(filled on push)_  
+**Commit:** `41760865`  
 **Base:** `origin/mission-liquidity-module-004-dex-snapshot` @ `18f2acd8`
 
 ---
@@ -18,7 +18,7 @@
 
 ## 3. Commit
 
-See git tip after push.
+`41760865`
 
 ## 4. Locked modules preserved
 
