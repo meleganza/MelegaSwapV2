@@ -8,15 +8,25 @@ const Rail = styled.section`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
-  margin-top: ${liqOne.sectionGap};
-  padding: 14px 16px;
+  height: ${liqOne.educationH};
+  min-height: ${liqOne.educationH};
+  max-height: ${liqOne.educationH};
+  margin: 0;
+  padding: 0 16px;
   box-sizing: border-box;
   background: ${liqOne.card};
   border: 1px solid ${liqOne.border};
   border-radius: 14px;
+  align-items: center;
+  overflow: hidden;
+  font-family: ${liqOne.font};
 
   @media (max-width: 1023px) {
+    height: auto;
+    min-height: 0;
+    max-height: none;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 14px 16px;
   }
 
   @media (max-width: 767px) {
@@ -58,7 +68,7 @@ const Title = styled.h3`
 const Body = styled.p`
   margin: 4px 0 0;
   font-size: 12px;
-  line-height: 17px;
+  line-height: 16px;
   color: ${liqOne.secondary};
 `
 
@@ -80,25 +90,27 @@ const ITEMS = [
   },
   {
     title: 'Security First',
-    body: 'Limits, protections and automatic safety controls remain enforced.',
+    body: 'Core contracts follow Melega’s audited DEX architecture.',
     Icon: Shield,
   },
 ] as const
 
-export const LiquidityEducationRail: React.FC = () => (
-  <Rail data-testid="liq-one-education-rail">
-    {ITEMS.map(({ title, body, Icon }) => (
-      <Block key={title}>
-        <IconTile>
-          <Icon size={14} strokeWidth={2.2} />
-        </IconTile>
-        <Text>
-          <Title>{title}</Title>
-          <Body>{body}</Body>
-        </Text>
-      </Block>
-    ))}
-  </Rail>
-)
+export const LiquidityEducationRail: React.FC = () => {
+  return (
+    <Rail data-testid="liq-one-education" data-pixel-education="96">
+      {ITEMS.map(({ title, body, Icon }) => (
+        <Block key={title}>
+          <IconTile>
+            <Icon size={14} />
+          </IconTile>
+          <Text>
+            <Title>{title}</Title>
+            <Body>{body}</Body>
+          </Text>
+        </Block>
+      ))}
+    </Rail>
+  )
+}
 
 export default LiquidityEducationRail

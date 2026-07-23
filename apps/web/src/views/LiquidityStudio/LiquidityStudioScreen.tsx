@@ -24,12 +24,17 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
+  /* 1440 canvas → 32px margins → 1376 content */
   max-width: ${liqOne.contentMax};
   width: calc(100% - 64px);
   margin: 0 auto;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
+
+  @media (max-width: 1439px) {
+    width: calc(100% - 64px);
+  }
 
   @media (max-width: 1279px) {
     width: calc(100% - 48px);

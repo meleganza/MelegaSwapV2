@@ -40,24 +40,35 @@ const Head = styled.div`
   display: grid;
   grid-template-columns: 1.4fr 1.1fr 0.9fr 0.8fr 0.9fr 0.9fr 0.9fr;
   gap: 8px;
-  padding: 12px 16px;
+  height: ${liqOne.positionsHeadH};
+  min-height: ${liqOne.positionsHeadH};
+  max-height: ${liqOne.positionsHeadH};
+  padding: 0 16px;
+  align-items: center;
+  box-sizing: border-box;
   font-size: 11px;
   font-weight: 650;
   color: ${liqOne.muted};
   border-bottom: 1px solid ${liqOne.borderDefault};
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  overflow: hidden;
 `
 
 const Row = styled.div`
   display: grid;
   grid-template-columns: 1.4fr 1.1fr 0.9fr 0.8fr 0.9fr 0.9fr 0.9fr;
   gap: 8px;
-  padding: 14px 16px;
+  height: ${liqOne.positionsRowH};
+  min-height: ${liqOne.positionsRowH};
+  max-height: ${liqOne.positionsRowH};
+  padding: 0 16px;
   align-items: center;
+  box-sizing: border-box;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   font-size: 13px;
   color: ${liqOne.text};
+  overflow: hidden;
 
   &:last-child {
     border-bottom: none;

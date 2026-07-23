@@ -5,30 +5,45 @@ import { useAllTokenHighLight, useProtocolDataSWR } from 'state/info/hooks'
 import { liqOne } from './onePageTokens'
 
 const Card = styled.section`
-  margin-top: 12px;
-  min-height: 286px;
-  padding: 16px;
+  width: 100%;
+  height: ${liqOne.snapH};
+  min-height: ${liqOne.snapH};
+  max-height: ${liqOne.snapH};
+  margin: 0;
+  padding: 0 16px;
   box-sizing: border-box;
   border-radius: 14px;
   border: 1px solid ${liqOne.goldBorderSoft};
   background:
     radial-gradient(circle at 88% 12%, rgba(221, 185, 47, 0.1) 0%, transparent 42%),
-    radial-gradient(circle at 12% 88%, rgba(221, 185, 47, 0.05) 0%, transparent 40%),
     ${liqOne.card};
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: ${liqOne.font};
+
+  @media (max-width: 1375px) {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
 `
 
 const Head = styled.div`
+  flex: 0 0 ${liqOne.snapHeadH};
+  height: ${liqOne.snapHeadH};
+  min-height: ${liqOne.snapHeadH};
+  max-height: ${liqOne.snapHeadH};
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 14px;
+  box-sizing: border-box;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 15px;
+  line-height: 20px;
   font-weight: 700;
   color: ${liqOne.text};
 `
@@ -40,21 +55,25 @@ const Tip = styled.span`
 `
 
 const Metrics = styled.div`
+  flex: 0 0 ${liqOne.snapKpiH};
+  height: ${liqOne.snapKpiH};
+  min-height: ${liqOne.snapKpiH};
+  max-height: ${liqOne.snapKpiH};
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-
-  @media (max-width: 360px) {
-    grid-template-columns: 1fr;
-  }
+  box-sizing: border-box;
+  overflow: hidden;
 `
 
 const Metric = styled.div`
   background: rgba(21, 21, 21, 0.9);
   border: 1px solid ${liqOne.borderDefault};
   border-radius: 10px;
-  padding: 12px;
+  padding: 10px 12px;
   min-width: 0;
+  height: 100%;
+  box-sizing: border-box;
 `
 
 const MetricLabel = styled.div`
@@ -64,46 +83,67 @@ const MetricLabel = styled.div`
 `
 
 const MetricValue = styled.div`
-  margin-top: 6px;
-  font-size: 24px;
-  line-height: 28px;
+  margin-top: 4px;
+  font-size: 22px;
+  line-height: 26px;
   font-weight: 700;
   color: ${liqOne.text};
-  letter-spacing: -0.02em;
 `
 
 const MetricDelta = styled.div<{ $pos?: boolean }>`
-  margin-top: 4px;
-  font-size: 12px;
+  margin-top: 2px;
+  font-size: 11px;
   color: ${({ $pos }) => ($pos ? liqOne.positive : liqOne.secondary)};
 `
 
-const Bottom = styled.div`
-  margin-top: 14px;
+const ChartRow = styled.div`
+  flex: 0 0 ${liqOne.snapDonutH};
+  height: ${liqOne.snapDonutH};
+  min-height: ${liqOne.snapDonutH};
+  max-height: ${liqOne.snapDonutH};
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
-
-  @media (max-width: 360px) {
-    grid-template-columns: 1fr;
-  }
+  box-sizing: border-box;
+  overflow: hidden;
 `
 
 const DonutWrap = styled.div`
   width: 112px;
   height: 112px;
+  border-radius: 50%;
   position: relative;
 `
 
-const AssetList = styled.ul`
+const DonutCenter = styled.div`
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  background: ${liqOne.card};
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: ${liqOne.text};
+  line-height: 1.2;
+`
+
+const Legend = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
+  flex: 0 0 ${liqOne.snapLegendH};
+  height: ${liqOne.snapLegendH};
+  min-height: ${liqOne.snapLegendH};
+  max-height: ${liqOne.snapLegendH};
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: center;
+  gap: 4px;
   min-width: 0;
+  overflow: hidden;
 `
 
 const AssetRow = styled.li`
@@ -111,7 +151,7 @@ const AssetRow = styled.li`
   grid-template-columns: 10px minmax(0, 1fr) auto auto;
   gap: 8px;
   align-items: center;
-  font-size: 12px;
+  font-size: 11px;
   color: ${liqOne.secondary};
 `
 
@@ -123,21 +163,18 @@ const Swatch = styled.span<{ $c: string }>`
 `
 
 const Unavailable = styled.div`
-  margin-top: 8px;
-  padding: 14px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
   border-radius: 10px;
   border: 1px dashed ${liqOne.borderStrong};
   color: ${liqOne.secondary};
-  font-size: 13px;
-  line-height: 20px;
-`
-
-const SectionLabel = styled.div`
-  grid-column: 1 / -1;
   font-size: 12px;
-  font-weight: 650;
-  color: ${liqOne.text};
-  margin-bottom: 2px;
+  line-height: 18px;
+  text-align: center;
+  margin: 8px 0 12px;
 `
 
 const COLORS = ['#DDB92F', '#16D977', '#5B8CFF', '#F4B942', '#A8A8A8']
@@ -156,10 +193,6 @@ function formatPct(n: number | undefined | null): string | null {
   return `${sign}${n.toFixed(2)}%`
 }
 
-/**
- * DEX Liquidity Snapshot — real indexer / protocol data only.
- * Never fabricates TVL, sparklines, or asset shares.
- */
 export const DexLiquiditySnapshot: React.FC = () => {
   const protocol = useProtocolDataSWR()
   const highlight = useAllTokenHighLight()
@@ -210,25 +243,17 @@ export const DexLiquiditySnapshot: React.FC = () => {
   const unavailable = !tvlLabel && !depthOrVolLabel
 
   return (
-    <Card data-testid="liq-one-dex-snapshot" id="liq-dex-snapshot">
+    <Card data-testid="liq-one-dex-snapshot" id="liq-dex-snapshot" data-pixel-snap="324">
       <Head>
         <Title>DEX Liquidity Snapshot</Title>
-        <Tip
-          title={
-            unavailable
-              ? 'Source: Melega info subgraph / protocol overview. Liquidity data awaiting indexer.'
-              : 'Source: Melega info subgraph protocol overview. Values refresh with indexed blocks.'
-          }
-        >
+        <Tip title="Source: Melega info subgraph / protocol overview.">
           <Info size={14} />
         </Tip>
       </Head>
 
       {unavailable ? (
         <Unavailable data-testid="liq-one-dex-snapshot-unavailable">
-          Liquidity data awaiting indexer.
-          <br />
-          Blocker: protocol overview TVL/volume not available from the certified info subgraph.
+          Liquidity data awaiting indexer. Charts unavailable — no empty placeholders.
         </Unavailable>
       ) : (
         <>
@@ -243,38 +268,48 @@ export const DexLiquiditySnapshot: React.FC = () => {
               )}
             </Metric>
             <Metric>
-              <MetricLabel>24H Volume</MetricLabel>
+              <MetricLabel>Liquidity Depth</MetricLabel>
               <MetricValue>{depthOrVolLabel ?? '—'}</MetricValue>
               {formatPct(volChange) ? (
                 <MetricDelta $pos={(volChange ?? 0) >= 0}>{formatPct(volChange)} (24h)</MetricDelta>
               ) : (
-                <MetricDelta>Trend unavailable</MetricDelta>
+                <MetricDelta>24h volume proxy</MetricDelta>
               )}
             </Metric>
           </Metrics>
 
-          <Bottom>
-            <SectionLabel>Top Liquid Assets by TVL</SectionLabel>
+          <ChartRow>
             {assets.length ? (
               <>
-                <DonutWrap aria-hidden style={{ background: donutGradient, borderRadius: '50%' }} />
-                <AssetList>
-                  {assets.map((a) => (
-                    <AssetRow key={a.symbol}>
-                      <Swatch $c={a.color} />
-                      <span style={{ color: liqOne.text, fontWeight: 650 }}>{a.symbol}</span>
-                      <span>{a.pct.toFixed(1)}%</span>
-                      <span>{formatUsd(a.value)}</span>
-                    </AssetRow>
-                  ))}
-                </AssetList>
+                <DonutWrap aria-hidden style={{ background: donutGradient }}>
+                  <DonutCenter>
+                    {tvlLabel}
+                    <br />
+                    <span style={{ color: liqOne.muted, fontWeight: 600 }}>TVL</span>
+                  </DonutCenter>
+                </DonutWrap>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 650, color: liqOne.text, marginBottom: 4 }}>
+                    Top Liquid Assets by TVL
+                  </div>
+                  <Legend>
+                    {assets.slice(0, 4).map((a) => (
+                      <AssetRow key={a.symbol}>
+                        <Swatch $c={a.color} />
+                        <span style={{ color: liqOne.text, fontWeight: 650 }}>{a.symbol}</span>
+                        <span>{a.pct.toFixed(1)}%</span>
+                        <span>{formatUsd(a.value)}</span>
+                      </AssetRow>
+                    ))}
+                  </Legend>
+                </div>
               </>
             ) : (
-              <Unavailable style={{ gridColumn: '1 / -1', marginTop: 0 }}>
+              <Unavailable style={{ gridColumn: '1 / -1', margin: 0, height: '100%' }}>
                 Top liquid assets unavailable until token liquidity is indexed.
               </Unavailable>
             )}
-          </Bottom>
+          </ChartRow>
         </>
       )}
     </Card>

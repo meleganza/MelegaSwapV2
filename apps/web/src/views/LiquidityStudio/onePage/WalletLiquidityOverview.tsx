@@ -7,52 +7,74 @@ import { liqOne } from './onePageTokens'
 
 const Card = styled.section`
   width: 100%;
-  margin-top: ${liqOne.sectionGap};
-  padding: 14px 16px;
+  height: ${liqOne.overviewH};
+  min-height: ${liqOne.overviewH};
+  max-height: ${liqOne.overviewH};
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
   background: ${liqOne.card};
   border: 1px solid ${liqOne.border};
   border-radius: 14px;
+  overflow: hidden;
+  font-family: ${liqOne.font};
+
+  @media (max-width: 1100px) {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
 `
 
 const Title = styled.h2`
-  margin: 0 0 12px;
-  font-size: 16px;
-  line-height: 22px;
+  margin: 0;
+  padding: 10px 16px 0;
+  font-size: 15px;
+  line-height: 20px;
   font-weight: 700;
   color: ${liqOne.text};
+  height: 30px;
+  box-sizing: border-box;
 `
 
 const Grid = styled.div`
+  height: calc(${liqOne.overviewH} - 30px);
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 1100px) {
+    height: auto;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   @media (max-width: 767px) {
     display: flex;
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 10px;
-    padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
-
     & > * {
       flex: 0 0 min(220px, 78vw);
-      scroll-snap-align: start;
     }
   }
 `
 
 const Block = styled.div`
   min-width: 0;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: ${liqOne.elevated};
-  border: 1px solid ${liqOne.borderDefault};
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  border-right: 1px solid ${liqOne.borderDefault};
+  overflow: hidden;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  @media (max-width: 1100px) {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid ${liqOne.borderDefault};
+  }
 `
 
 const Label = styled.div`
@@ -62,15 +84,15 @@ const Label = styled.div`
 `
 
 const Value = styled.div`
-  margin-top: 6px;
-  font-size: 18px;
+  margin-top: 8px;
+  font-size: 20px;
   line-height: 24px;
   font-weight: 700;
   color: ${liqOne.text};
 `
 
 const Sub = styled.div`
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 12px;
   color: ${liqOne.secondary};
 `
@@ -92,12 +114,8 @@ function parseUsd(raw: string | null | undefined): number | null {
   return Number.isFinite(n) && n > 0 ? n : null
 }
 
-/**
- * Wallet liquidity overview — Total LP Value is the user's aggregate LP estimate.
- * Never fabricates USD, fees, or holdings when sources are unavailable.
- */
 export const WalletLiquidityOverview: React.FC<Props> = ({ lbProgramCount = 0 }) => {
-  const { address, isConnected } = useAccount()
+  const { isConnected } = useAccount()
   const { liquidityWalletPortfolio } = useLiquidityRuntime()
   const positions = useMemo(
     () => selectLiquidityPortfolioPositions(liquidityWalletPortfolio),
@@ -111,10 +129,11 @@ export const WalletLiquidityOverview: React.FC<Props> = ({ lbProgramCount = 0 })
     const weights = new Map<string, number>()
     for (const p of positions) {
       const assets = p.underlyingAssets?.length
-        ? p.underlyingAssets.map(
-            (a) => a.token?.symbol || a.token?.address?.slice(0, 6) || 'Token',
-          )
-        : (p.title || 'LP').split(/[/\-]/).map((s) => s.trim()).filter(Boolean)
+        ? p.underlyingAssets.map((a) => a.token?.symbol || a.token?.address?.slice(0, 6) || 'Token')
+        : (p.title || 'LP')
+            .split(/[/\-]/)
+            .map((s) => s.trim())
+            .filter(Boolean)
       const symbols = assets.length ? assets : ['LP']
       const weight = parseUsd(p.currentValueUsd) ?? 1
       for (const s of symbols) {
@@ -122,16 +141,11 @@ export const WalletLiquidityOverview: React.FC<Props> = ({ lbProgramCount = 0 })
       }
     }
     const entries = [...weights.entries()].sort((a, b) => b[1] - a[1])
-    const total = entries.reduce((s, [, v]) => s + v, 0)
-    if (!total) return [] as { symbol: string; pct: number }[]
-    const top = entries.slice(0, 3)
-    const topSum = top.reduce((s, [, v]) => s + v, 0)
-    const mapped = top.map(([symbol, v]) => ({ symbol, pct: (v / total) * 100 }))
-    if (total - topSum > 0.01) mapped.push({ symbol: 'Others', pct: ((total - topSum) / total) * 100 })
-    return mapped
+    const total = entries.reduce((s, [, v]) => s + v, 0) || 1
+    return entries.slice(0, 4).map(([symbol, v]) => ({ symbol, pct: (v / total) * 100 }))
   }, [positions])
 
-  const totalLpUsd = useMemo(() => {
+  const totalLp = useMemo(() => {
     let sum = 0
     let any = false
     for (const p of positions) {
@@ -157,36 +171,26 @@ export const WalletLiquidityOverview: React.FC<Props> = ({ lbProgramCount = 0 })
   }, [holdings])
 
   return (
-    <Card data-testid="liq-one-wallet-overview" id="liq-wallet-overview">
+    <Card data-testid="liq-one-overview" data-pixel-overview="150">
       <Title>Your Liquidity Overview</Title>
       <Grid>
         <Block>
           <Label>Total LP Value</Label>
           <Value>
-            {!isConnected || !address
-              ? '—'
-              : totalLpUsd != null
-                ? `$${totalLpUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-                : '—'}
+            {!isConnected ? '—' : totalLp != null ? `$${totalLp.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : '—'}
           </Value>
-          <Sub>
-            {!isConnected
-              ? 'Connect wallet'
-              : totalLpUsd != null
-                ? 'Wallet LP estimate'
-                : 'USD valuation unavailable'}
-          </Sub>
+          <Sub>{!isConnected ? 'Connect wallet' : totalLp == null ? 'Value unavailable' : 'Wallet LP estimate'}</Sub>
         </Block>
         <Block>
           <Label>Holdings Breakdown</Label>
-          {holdings.length ? (
-            <>
-              <Donut style={{ background: donut }} aria-hidden />
-              <Sub>{holdings.map((h) => `${h.symbol} ${h.pct.toFixed(0)}%`).join(' · ')}</Sub>
-            </>
-          ) : (
-            <Value>—</Value>
-          )}
+          <Donut style={{ background: donut }} aria-hidden />
+          <Sub>
+            {holdings.length
+              ? holdings.map((h) => h.symbol).join(' · ')
+              : isConnected
+                ? 'No holdings indexed'
+                : 'Connect wallet'}
+          </Sub>
         </Block>
         <Block>
           <Label>Active Positions</Label>
@@ -195,7 +199,7 @@ export const WalletLiquidityOverview: React.FC<Props> = ({ lbProgramCount = 0 })
         </Block>
         <Block>
           <Label>Networks</Label>
-          <Value>{isConnected && activeManual + lbProgramCount > 0 ? '1' : isConnected ? '0' : '—'}</Value>
+          <Value>{isConnected ? '1' : '—'}</Value>
           <Sub>BNB Smart Chain</Sub>
         </Block>
         <Block>

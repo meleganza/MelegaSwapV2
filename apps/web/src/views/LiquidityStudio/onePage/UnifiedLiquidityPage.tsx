@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
-import { liquidityStudioLayout } from '../liquidityStudioTokens'
 import { liqOne } from './onePageTokens'
 import { LiquidityPageHeader } from './LiquidityPageHeader'
 import { LiquidityBuildingCard } from './LiquidityBuildingCard'
@@ -20,30 +19,67 @@ const Page = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: ${liqOne.sectionGap};
+  gap: 0;
   min-width: 0;
+  font-family: ${liqOne.font};
 
-  @media (max-width: 767px) {
-    padding: 20px 0 calc(${liquidityStudioLayout.mobileBottomPad});
-    gap: 14px;
+  @media (max-width: 1375px) {
+    padding: 24px 0 ${liqOne.bottomPad};
   }
 `
 
+/** Desktop: 672 + 32 + 672 = 1376. Fixed row height 860. */
 const ProductGrid = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: stretch;
-  min-width: 0;
+  grid-template-columns: ${liqOne.col} ${liqOne.col};
+  column-gap: ${liqOne.colGap};
+  align-items: start;
+  width: ${liqOne.contentMax};
+  max-width: 100%;
+  height: ${liqOne.mainRowH};
+  min-height: ${liqOne.mainRowH};
+  max-height: ${liqOne.mainRowH};
+  box-sizing: border-box;
+  overflow: hidden;
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1375px) {
+    width: 100%;
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    row-gap: 16px;
+    overflow: visible;
   }
 `
 
 const RightCol = styled.div`
+  width: ${liqOne.col};
+  max-width: 100%;
+  height: ${liqOne.mainRowH};
+  min-height: ${liqOne.mainRowH};
+  max-height: ${liqOne.mainRowH};
   display: flex;
   flex-direction: column;
+  gap: ${liqOne.rightGap};
+  box-sizing: border-box;
+  overflow: hidden;
+
+  @media (max-width: 1375px) {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
+`
+
+const Below = styled.div`
+  margin-top: ${liqOne.belowMainGap};
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
   min-width: 0;
 `
 
@@ -53,11 +89,8 @@ function viewRaw(view: unknown): string | null {
 }
 
 /**
- * Unified one-page Liquidity experience (DEX-LIQ-ONE-002).
- * No public tab rail. Deep links focus/scroll sections in place.
- *
- * Liquidity Building state lives only inside LiquidityBuildingPanel
- * (single useLiquidityBuildingCard instance).
+ * Pixel-perfect unified Liquidity page (LIQUIDITY_PIXEL_PERFECTION_001).
+ * Fixed 860px main row. Wizard never changes page layout.
  */
 export const UnifiedLiquidityPage: React.FC = () => {
   const router = useRouter()
@@ -69,23 +102,6 @@ export const UnifiedLiquidityPage: React.FC = () => {
     if (!el) return
     el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [])
-
-  const focusBuilding = useCallback(
-    (step?: string) => {
-      setMode('Liquidity Building')
-      const query: Record<string, string> = { view: 'building' }
-      if (step) query.step = step
-      void router.replace({ pathname: '/liquidity-studio', query }, undefined, { shallow: true })
-      requestAnimationFrame(() => scrollTo(buildingRef.current))
-    },
-    [router, scrollTo, setMode],
-  )
-
-  const focusAdd = useCallback(() => {
-    setMode('Add Liquidity')
-    void router.replace({ pathname: '/liquidity-studio', query: { view: 'add' } }, undefined, { shallow: true })
-    requestAnimationFrame(() => scrollTo(addRef.current))
-  }, [router, scrollTo, setMode])
 
   const focusPositions = useCallback(() => {
     const el = document.getElementById('liq-your-positions')
@@ -125,16 +141,16 @@ export const UnifiedLiquidityPage: React.FC = () => {
   }, [router.isReady, router.query.view, router, setMode, scrollTo, focusPositions])
 
   return (
-    <Page data-testid="liq-one-unified-page" data-liquidity-one-page="true">
+    <Page data-testid="liq-one-unified-page" data-liquidity-one-page="true" data-pixel-perfection="001">
       <LiquidityPageHeader />
 
-      <ProductGrid data-testid="liq-one-product-grid">
+      <ProductGrid data-testid="liq-one-product-grid" data-pixel-main-row="860">
         <LiquidityBuildingCard
           ref={(node) => {
             buildingRef.current = node
           }}
         />
-        <RightCol>
+        <RightCol data-testid="liq-one-right-col" data-pixel-right="860">
           <AddLiquidityCard
             ref={(node) => {
               addRef.current = node
@@ -145,15 +161,20 @@ export const UnifiedLiquidityPage: React.FC = () => {
         </RightCol>
       </ProductGrid>
 
-      <WalletLiquidityOverview lbProgramCount={0} />
-
-      <LiquidityPositions
-        lbPrograms={[]}
-        onManageLb={() => focusBuilding('manage')}
-        onAddManual={() => focusAdd()}
-      />
-
-      <LiquidityEducationRail />
+      <Below>
+        <WalletLiquidityOverview lbProgramCount={0} />
+        <LiquidityPositions
+          onAddLiquidity={() => {
+            setMode('Add Liquidity')
+            requestAnimationFrame(() => scrollTo(addRef.current))
+          }}
+          onOpenBuilding={() => {
+            setMode('Liquidity Building')
+            requestAnimationFrame(() => scrollTo(buildingRef.current))
+          }}
+        />
+        <LiquidityEducationRail />
+      </Below>
     </Page>
   )
 }

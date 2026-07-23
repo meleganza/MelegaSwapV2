@@ -4,28 +4,44 @@ import LiquidityBuilderPanel from '../components/LiquidityBuilderPanel'
 import { liqOne } from './onePageTokens'
 
 const Card = styled.section`
-  position: relative;
   width: 100%;
-  min-width: 0;
-  min-height: 610px;
-  padding: 20px;
+  height: ${liqOne.addH};
+  min-height: ${liqOne.addH};
+  max-height: ${liqOne.addH};
   box-sizing: border-box;
+  padding: 0;
   border-radius: ${liqOne.cardRadius};
   border: 1px solid ${liqOne.border};
   background: ${liqOne.card};
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: ${liqOne.font};
 
-  @media (max-width: 767px) {
+  @media (max-width: 1375px) {
+    height: auto;
     min-height: 0;
+    max-height: none;
   }
 
-  /* Re-skin existing builder into one-page card */
   [data-ls-panel] {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
+    height: 100%;
   }
+`
+
+const Art = styled.div`
+  flex: 0 0 ${liqOne.addArtH};
+  height: ${liqOne.addArtH};
+  min-height: ${liqOne.addArtH};
+  max-height: ${liqOne.addArtH};
+  position: relative;
+  padding: 16px 20px 0;
+  box-sizing: border-box;
+  overflow: hidden;
 `
 
 const Eyebrow = styled.div`
@@ -34,22 +50,21 @@ const Eyebrow = styled.div`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${liqOne.gold};
-  margin-bottom: 8px;
 `
 
 const Title = styled.h2`
-  margin: 0;
-  font-size: 26px;
-  line-height: 32px;
+  margin: 6px 0 0;
+  font-size: 24px;
+  line-height: 30px;
   font-weight: 750;
   color: ${liqOne.text};
 `
 
 const Desc = styled.p`
-  margin: 8px 0 0;
-  max-width: 340px;
-  font-size: 14px;
-  line-height: 21px;
+  margin: 6px 0 0;
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 18px;
   color: ${liqOne.bodySoft};
 `
 
@@ -57,40 +72,20 @@ const Artwork = styled.div`
   pointer-events: none;
   position: absolute;
   right: 16px;
-  top: 18px;
-  width: 180px;
-  height: 120px;
-  opacity: 0.85;
-
-  @media (max-width: 767px) {
-    width: 110px;
-    height: 72px;
-    opacity: 0.4;
-  }
+  top: 12px;
+  width: 140px;
+  height: 96px;
 `
 
 const Disc = styled.div<{ $x: string; $y: string }>`
   position: absolute;
   left: ${({ $x }) => $x};
   top: ${({ $y }) => $y};
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #2c2c2c, #121212);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-`
-
-const Drop = styled.div`
-  position: absolute;
-  left: 46%;
-  top: 38%;
-  width: 34px;
-  height: 34px;
-  border-radius: 50% 50% 50% 8px;
-  transform: rotate(45deg);
-  background: radial-gradient(circle at 30% 30%, rgba(221, 185, 47, 0.55), rgba(221, 185, 47, 0.12));
-  border: 1px solid rgba(221, 185, 47, 0.45);
 `
 
 const Plus = styled.div`
@@ -109,17 +104,35 @@ const Plus = styled.div`
   line-height: 1;
 `
 
-const Body = styled.div`
-  position: relative;
-  z-index: 1;
-  margin-top: 18px;
+const Form = styled.div`
+  flex: 0 0 ${liqOne.addFormH};
+  height: ${liqOne.addFormH};
+  min-height: ${liqOne.addFormH};
+  max-height: ${liqOne.addFormH};
+  overflow: auto;
+  overflow-x: hidden;
+  padding: 0 20px;
+  box-sizing: border-box;
+`
+
+const Cta = styled.div`
+  flex: 0 0 ${liqOne.addCtaH};
+  height: ${liqOne.addCtaH};
+  min-height: ${liqOne.addCtaH};
+  max-height: ${liqOne.addCtaH};
+  padding: 8px 20px 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
 `
 
 const PositionsAnchor = styled.button`
   appearance: none;
   display: block;
   width: 100%;
-  margin-top: 12px;
+  margin-top: 8px;
   background: transparent;
   border: none;
   color: ${liqOne.gold};
@@ -127,37 +140,44 @@ const PositionsAnchor = styled.button`
   font-weight: 650;
   cursor: pointer;
   text-align: center;
-  padding: 8px;
+  padding: 4px;
+  font-family: ${liqOne.font};
 `
 
 type Props = {
   onViewPositions: () => void
 }
 
-/**
- * Manual Add Liquidity card — transaction lifecycle stays in-card via LiquidityBuilderPanel.
- */
 export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function AddLiquidityCard(
   { onViewPositions },
   ref,
 ) {
   return (
-    <Card ref={ref as React.Ref<HTMLElement>} id="liq-add-card" data-testid="liq-one-add-card" data-ls-card-add-liquidity="true">
-      <Eyebrow>MANUAL</Eyebrow>
-      <Title>Add Liquidity</Title>
-      <Desc>Add liquidity to an existing pool or create a new one. You will receive LP tokens.</Desc>
-      <Artwork aria-hidden>
-        <Disc $x="10%" $y="28%" />
-        <Disc $x="48%" $y="18%" />
-        <Drop />
-        <Plus>+</Plus>
-      </Artwork>
-      <Body>
+    <Card
+      ref={ref as React.Ref<HTMLElement>}
+      id="liq-add-card"
+      data-testid="liq-one-add-card"
+      data-ls-card-add-liquidity="true"
+      data-pixel-add="520"
+    >
+      <Art>
+        <Eyebrow>MANUAL</Eyebrow>
+        <Title>Add Liquidity</Title>
+        <Desc>Add liquidity to an existing pool or create a new one. You will receive LP tokens.</Desc>
+        <Artwork aria-hidden>
+          <Disc $x="10%" $y="28%" />
+          <Disc $x="38%" $y="18%" />
+          <Plus>+</Plus>
+        </Artwork>
+      </Art>
+      <Form data-testid="liq-add-form">
         <LiquidityBuilderPanel />
-        <PositionsAnchor type="button" data-testid="liq-one-view-positions" onClick={onViewPositions}>
-          View Your Positions ↓
+      </Form>
+      <Cta>
+        <PositionsAnchor type="button" onClick={onViewPositions}>
+          View Your Positions →
         </PositionsAnchor>
-      </Body>
+      </Cta>
     </Card>
   )
 })

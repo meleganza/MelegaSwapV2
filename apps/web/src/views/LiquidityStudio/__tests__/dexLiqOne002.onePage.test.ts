@@ -63,9 +63,10 @@ describe('DEX-LIQ-ONE-002 Liquidity one-page final', () => {
     expect(overview).toContain('Fee accrual unavailable')
   })
 
-  it('LB lifecycle remains inside LiquidityBuildingPanel', () => {
+  it('LB lifecycle remains inside the Liquidity Building card shell', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('LiquidityBuildingPanel')
+    expect(card).toContain('useLiquidityBuildingCard')
+    expect(card).toContain('data-liquidity-building-panel')
     expect(card).toContain('liq-one-building-card')
   })
 
