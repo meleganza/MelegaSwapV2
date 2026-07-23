@@ -1,0 +1,157 @@
+{
+  "generatedAt": "2026-07-23T14:39:51.199Z",
+  "desktop": {
+    "card": {
+      "w": 672,
+      "h": 324
+    },
+    "header": {
+      "w": 670,
+      "h": 44
+    },
+    "kpis": {
+      "w": 670,
+      "h": 76
+    },
+    "chart": {
+      "w": 670,
+      "h": 132
+    },
+    "footer": {
+      "w": 670,
+      "h": 72
+    },
+    "kpiTvl": {
+      "w": 310,
+      "h": 76
+    },
+    "kpiVol": {
+      "w": 310,
+      "h": 76
+    },
+    "donut": null,
+    "hasFabricated": false,
+    "hasAwaiting": true,
+    "overflowX": false,
+    "text": "DEX Liquidity Snapshot\nAwaiting sync\nDEX TVL\n—\nAwaiting Indexer\n24H Volume\n—\nAwaiting Indexer\nAwaiting Indexer\nLast Indexed Block —\nLast Attempt —\nRefresh\nINDEXED POOLS\n—\nINDEXED TOKENS\n—\nLAST SYNC\n—"
+  },
+  "mobile": {
+    "card": {
+      "w": 358,
+      "h": 500
+    },
+    "header": {
+      "w": 356,
+      "h": 44
+    },
+    "kpis": {
+      "w": 356,
+      "h": 180
+    },
+    "chart": {
+      "w": 356,
+      "h": 148
+    },
+    "footer": {
+      "w": 356,
+      "h": 126
+    },
+    "kpiTvl": {
+      "w": 310,
+      "h": 80
+    },
+    "kpiVol": {
+      "w": 310,
+      "h": 80
+    },
+    "donut": null,
+    "hasFabricated": false,
+    "hasAwaiting": true,
+    "overflowX": false,
+    "text": "DEX Liquidity Snapshot\nAwaiting sync\nDEX TVL\n—\nAwaiting Indexer\n24H Volume\n—\nAwaiting Indexer\nAwaiting Indexer\nLast Indexed Block —\nLast Attempt —\nRefresh\nINDEXED POOLS\n—\nINDEXED TOKENS\n—\nLAST SYNC\n—"
+  },
+  "checks": [
+    {
+      "name": "cardW",
+      "actual": 672,
+      "target": 672,
+      "ok": true
+    },
+    {
+      "name": "cardH",
+      "actual": 324,
+      "target": 324,
+      "ok": true
+    },
+    {
+      "name": "headerH",
+      "actual": 44,
+      "target": 44,
+      "ok": true
+    },
+    {
+      "name": "kpisH",
+      "actual": 76,
+      "target": 76,
+      "ok": true
+    },
+    {
+      "name": "chartH",
+      "actual": 132,
+      "target": 132,
+      "ok": true
+    },
+    {
+      "name": "footerH",
+      "actual": 72,
+      "target": 72,
+      "ok": true
+    },
+    {
+      "name": "kpiTvlH",
+      "actual": 76,
+      "target": 76,
+      "ok": true
+    },
+    {
+      "name": "kpiVolH",
+      "actual": 76,
+      "target": 76,
+      "ok": true
+    },
+    {
+      "name": "sectionSum324",
+      "actual": 324,
+      "target": 324,
+      "ok": true
+    },
+    {
+      "name": "noFabricated",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "noOverflowDesktop",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "mobileNaturalHeight",
+      "actual": 500,
+      "target": "auto/natural",
+      "ok": true
+    }
+  ],
+  "overlayStats": {
+    "mae": 7.357374032434238,
+    "size": [
+      672,
+      324
+    ],
+    "maePctOf255": 2.885244718601662
+  },
+  "geometryDeviationPct": 0,
+  "pass": true
+}

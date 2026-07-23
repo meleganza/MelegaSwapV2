@@ -53,9 +53,12 @@ describe('DEX-LIQ-ONE-002 Liquidity one-page final', () => {
   it('DEX snapshot refuses fabricated TVL', () => {
     const snap = load('onePage/DexLiquiditySnapshot.tsx')
     expect(snap).toContain('useProtocolDataSWR')
-    expect(snap).toContain('Liquidity data awaiting indexer')
+    expect(snap).toContain('Awaiting Indexer')
     expect(snap).not.toContain('$58.74M')
     expect(snap).not.toContain('Top 50 Pairs')
+    expect(snap).not.toContain("'BNB'")
+    expect(snap).not.toContain("'USDT'")
+    expect(snap).not.toContain("'MARCO'")
   })
 
   it('overview uses Total LP Value label and truthful fee unavailable', () => {

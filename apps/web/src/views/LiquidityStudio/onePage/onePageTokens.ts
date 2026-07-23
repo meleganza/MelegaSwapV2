@@ -48,12 +48,15 @@ export const liqOne = {
   addSummaryH: '44px',
   addFooterH: '60px',
   addPadX: '20px',
+  /* MODULE_004 DEX Snapshot: 44+76+132+72 = 324 */
   snapH: '324px',
+  snapHeadH: '44px',
+  snapKpiH: '76px',
+  snapChartH: '132px',
+  snapFooterH: '72px',
+  snapPadX: '20px',
+  snapKpiW: '310px',
   rightGap: '16px',
-  snapHeadH: '40px',
-  snapKpiH: '92px',
-  snapDonutH: '120px',
-  snapLegendH: '72px',
 
   /* Bottom */
   overviewH: '150px',
