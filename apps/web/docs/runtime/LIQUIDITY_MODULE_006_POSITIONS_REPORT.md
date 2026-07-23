@@ -3,7 +3,7 @@
 **Mission:** `LIQUIDITY_MODULE_006_POSITIONS`  
 **Verdict:** `LIQUIDITY_MODULE_006_POSITIONS_CERTIFIED`  
 **Branch:** `mission-liquidity-module-006-positions`  
-**Commit:** _(filled on push)_  
+**Commit:** `a73e1161`  
 **Base:** `origin/mission-liquidity-module-005-wallet-overview` @ `17c5cca6`
 
 ---
