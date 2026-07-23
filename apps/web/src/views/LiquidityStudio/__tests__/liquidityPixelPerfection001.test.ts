@@ -92,10 +92,15 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(overview).not.toMatch(/>\s*TVL\s*</)
   })
 
-  it('positions rows are 72px and education is 96px', () => {
+  it('positions chrome/table/row heights and education 96px', () => {
+    const tokens = load('onePage/onePageTokens.ts')
     const positions = load('onePage/LiquidityPositions.tsx')
     const edu = load('onePage/LiquidityEducationRail.tsx')
+    expect(tokens).toContain("positionsHeadH: '64px'")
+    expect(tokens).toContain("positionsTableHeadH: '52px'")
+    expect(tokens).toContain("positionsRowH: '68px'")
     expect(positions).toContain('liqOne.positionsHeadH')
+    expect(positions).toContain('liqOne.positionsTableHeadH')
     expect(positions).toContain('liqOne.positionsRowH')
     expect(edu).toContain('liqOne.educationH')
   })

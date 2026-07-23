@@ -68,8 +68,11 @@ export const liqOne = {
   overviewColC: '216px',
   overviewColD: '216px',
   overviewColE: '192px',
+  /* MODULE_006 Your Positions: chrome 64 + table head 52 + rows 68 */
   positionsHeadH: '64px',
-  positionsRowH: '72px',
+  positionsTableHeadH: '52px',
+  positionsRowH: '68px',
+  positionsPad: '16px',
   educationH: '96px',
 
   sectionGap: '24px',

@@ -1,0 +1,193 @@
+{
+  "generatedAt": "2026-07-23T17:34:36.958Z",
+  "disconnected": {
+    "section": {
+      "w": 1376,
+      "h": 278
+    },
+    "shell": {
+      "w": 1376,
+      "h": 278
+    },
+    "chrome": {
+      "w": 1342,
+      "h": 64
+    },
+    "thead": null,
+    "row": null,
+    "hideClosedOnlyAction": true,
+    "overflowX": false,
+    "text": "Your Positions\nAll\nManual\nBuilding\nHide Closed\nConnect wallet to view positions",
+    "rowCount": 0
+  },
+  "mixed": {
+    "section": {
+      "w": 1376,
+      "h": 290
+    },
+    "shell": {
+      "w": 1376,
+      "h": 290
+    },
+    "chrome": {
+      "w": 1342,
+      "h": 64
+    },
+    "thead": {
+      "w": 1342,
+      "h": 52
+    },
+    "row": {
+      "w": 1342,
+      "h": 68
+    },
+    "hideClosedOnlyAction": true,
+    "overflowX": false,
+    "text": "Your Positions\nAll\nManual\nBuilding\nHide Closed\nPAIR\nTYPE\nVALUE\nPOOL SHARE\nFEES\nSTATUS\nACTIONS\nTO\nTO\nTOKEN_A / TOKEN_B\n0.25% fee\nManual\n$1,200.50\n0.42%\n—\nActive\nAdd\nRemove\nTO\nTO\nTOKEN_C / TOKEN_B\nProgram\nLiquidity Building\n—\n—\n—\nActive\nManage\nView",
+    "rowCount": 2
+  },
+  "withClosed": {
+    "section": {
+      "w": 1376,
+      "h": 358
+    },
+    "shell": {
+      "w": 1376,
+      "h": 358
+    },
+    "chrome": {
+      "w": 1342,
+      "h": 64
+    },
+    "thead": {
+      "w": 1342,
+      "h": 52
+    },
+    "row": {
+      "w": 1342,
+      "h": 68
+    },
+    "hideClosedOnlyAction": true,
+    "overflowX": false,
+    "text": "Your Positions\nAll\nManual\nBuilding\nHide Closed\nPAIR\nTYPE\nVALUE\nPOOL SHARE\nFEES\nSTATUS\nACTIONS\nTO\nTO\nTOKEN_A / TOKEN_B\n0.25% fee\nManual\n$1,200.50\n0.42%\n—\nActive\nAdd\nRemove\nTO\nTO\nTOKEN_C / TOKEN_B\nProgram\nLiquidity Building\n—\n—\n—\nActive\nManage\nView\nTO\nTO\nTOKEN_D / TOKEN_A\n0.25% fee\nManual\n$80.00\n0.01%\n—\nStopped\nAdd\nRemove",
+    "rowCount": 3
+  },
+  "mobileEmpty": {
+    "section": {
+      "w": 358,
+      "h": 380
+    },
+    "shell": {
+      "w": 358,
+      "h": 380
+    },
+    "chrome": {
+      "w": 324,
+      "h": 166
+    },
+    "thead": null,
+    "row": null,
+    "hideClosedOnlyAction": true,
+    "overflowX": false,
+    "text": "Your Positions\nAll\nManual\nBuilding\nHide Closed\nConnect wallet to view positions",
+    "rowCount": 0
+  },
+  "mobileMixed": {
+    "section": {
+      "w": 358,
+      "h": 702
+    },
+    "shell": {
+      "w": 358,
+      "h": 702
+    },
+    "chrome": {
+      "w": 324,
+      "h": 166
+    },
+    "thead": {
+      "w": 0,
+      "h": 0
+    },
+    "row": {
+      "w": 0,
+      "h": 0
+    },
+    "hideClosedOnlyAction": true,
+    "overflowX": false,
+    "text": "Your Positions\nAll\nManual\nBuilding\nHide Closed\nTOKEN_A / TOKEN_B\nManual\nActive\nValue $1,200.50\nShare 0.42%\nFees —\n0.25% fee\nAdd\nRemove\nTOKEN_C / TOKEN_B\nLiquidity Building\nActive\nValue —\nShare —\nFees —\nProgram\nManage\nTOKEN_D / TOKEN_A\nManual\nStopped\nValue $80.00\nShare 0.01%\nFees —\n0.25% fee\nAdd\nRemove",
+    "rowCount": 3
+  },
+  "checks": [
+    {
+      "name": "sectionW",
+      "actual": 1376,
+      "target": 1376,
+      "ok": true
+    },
+    {
+      "name": "chromeH",
+      "actual": 64,
+      "target": 64,
+      "ok": true
+    },
+    {
+      "name": "theadH",
+      "actual": 52,
+      "target": 52,
+      "ok": true
+    },
+    {
+      "name": "rowH",
+      "actual": 68,
+      "target": 68,
+      "ok": true
+    },
+    {
+      "name": "hideClosedPresent",
+      "actual": true,
+      "target": true,
+      "ok": true
+    },
+    {
+      "name": "noOverflowDesktop",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "mobileNoOverflow",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "hideClosedFilters",
+      "actual": 2,
+      "target": 2,
+      "ok": true
+    },
+    {
+      "name": "showClosedAddsRow",
+      "actual": 3,
+      "target": 3,
+      "ok": true
+    },
+    {
+      "name": "hasTableColumns",
+      "actual": true,
+      "target": true,
+      "ok": true
+    }
+  ],
+  "overlayStats": {
+    "mae": 4.575992694216728,
+    "size": [
+      1376,
+      278
+    ],
+    "maePctOf255": 1.7945069389085206
+  },
+  "geometryDeviationPct": 0,
+  "pass": true
+}
