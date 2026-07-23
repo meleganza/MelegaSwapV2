@@ -1,0 +1,586 @@
+{
+  "desktopIdle": {
+    "viewport": {
+      "width": 1440,
+      "height": 1400
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "bottom": 500,
+      "left": 32,
+      "right": 1408
+    },
+    "cards": {
+      "width": 1376,
+      "height": 272,
+      "top": 524,
+      "bottom": 796,
+      "left": 32,
+      "right": 1408
+    },
+    "why": {
+      "width": 1376,
+      "height": 112,
+      "top": 820,
+      "bottom": 932,
+      "left": 32,
+      "right": 1408
+    },
+    "how": {
+      "width": 1376,
+      "height": 176,
+      "top": 956,
+      "bottom": 1132,
+      "left": 32,
+      "right": 1408
+    },
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 1156,
+      "bottom": 2076,
+      "left": 32,
+      "right": 1408
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 1168,
+      "bottom": 1232,
+      "left": 57,
+      "right": 1383
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992,
+      "left": 57,
+      "right": 1383
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1992,
+      "bottom": 2064,
+      "left": 57,
+      "right": 1383
+    },
+    "pad": {
+      "top": 11,
+      "right": 24,
+      "bottom": 11,
+      "left": 24
+    },
+    "howToWsGap": 24,
+    "placeholderDisplay": "none",
+    "overflowX": false,
+    "pathname": "/list/",
+    "intent": null,
+    "hasModal": false,
+    "title": "List Workspace",
+    "hasContinue": false,
+    "hasCancel": false
+  },
+  "desktopImport": {
+    "viewport": {
+      "width": 1440,
+      "height": 1400
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "bottom": 500,
+      "left": 32,
+      "right": 1408
+    },
+    "cards": {
+      "width": 1376,
+      "height": 272,
+      "top": 524,
+      "bottom": 796,
+      "left": 32,
+      "right": 1408
+    },
+    "why": {
+      "width": 1376,
+      "height": 112,
+      "top": 820,
+      "bottom": 932,
+      "left": 32,
+      "right": 1408
+    },
+    "how": {
+      "width": 1376,
+      "height": 176,
+      "top": 956,
+      "bottom": 1132,
+      "left": 32,
+      "right": 1408
+    },
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 1156,
+      "bottom": 2076,
+      "left": 32,
+      "right": 1408
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 1168,
+      "bottom": 1232,
+      "left": 57,
+      "right": 1383
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992,
+      "left": 57,
+      "right": 1383
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1992,
+      "bottom": 2064,
+      "left": 57,
+      "right": 1383
+    },
+    "pad": {
+      "top": 11,
+      "right": 24,
+      "bottom": 11,
+      "left": 24
+    },
+    "howToWsGap": 24,
+    "placeholderDisplay": "none",
+    "overflowX": false,
+    "pathname": "/list/",
+    "intent": "import-token",
+    "hasModal": false,
+    "title": "Import Token",
+    "hasContinue": true,
+    "hasCancel": true
+  },
+  "importMeasure": {
+    "viewport": {
+      "width": 1440,
+      "height": 1400
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "bottom": 500,
+      "left": 32,
+      "right": 1408
+    },
+    "cards": {
+      "width": 1376,
+      "height": 272,
+      "top": 524,
+      "bottom": 796,
+      "left": 32,
+      "right": 1408
+    },
+    "why": {
+      "width": 1376,
+      "height": 112,
+      "top": 820,
+      "bottom": 932,
+      "left": 32,
+      "right": 1408
+    },
+    "how": {
+      "width": 1376,
+      "height": 176,
+      "top": 956,
+      "bottom": 1132,
+      "left": 32,
+      "right": 1408
+    },
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 1156,
+      "bottom": 2076,
+      "left": 32,
+      "right": 1408
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 1168,
+      "bottom": 1232,
+      "left": 57,
+      "right": 1383
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992,
+      "left": 57,
+      "right": 1383
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1992,
+      "bottom": 2064,
+      "left": 57,
+      "right": 1383
+    },
+    "pad": {
+      "top": 11,
+      "right": 24,
+      "bottom": 11,
+      "left": 24
+    },
+    "howToWsGap": 24,
+    "placeholderDisplay": "none",
+    "overflowX": false,
+    "pathname": "/list/",
+    "intent": "ai-assistant",
+    "hasModal": false,
+    "title": "AI Assistant",
+    "hasContinue": false,
+    "hasCancel": true
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 900
+    },
+    "hero": {
+      "width": 358,
+      "height": 666,
+      "top": 116,
+      "bottom": 782,
+      "left": 16,
+      "right": 374
+    },
+    "cards": {
+      "width": 358,
+      "height": 450,
+      "top": 806,
+      "bottom": 1256,
+      "left": 16,
+      "right": 374
+    },
+    "why": {
+      "width": 358,
+      "height": 394,
+      "top": 1280,
+      "bottom": 1674,
+      "left": 16,
+      "right": 374
+    },
+    "how": {
+      "width": 358,
+      "height": 380,
+      "top": 1698,
+      "bottom": 2078,
+      "left": 16,
+      "right": 374
+    },
+    "workspace": {
+      "width": 358,
+      "height": 576,
+      "top": 2102,
+      "bottom": 2678,
+      "left": 16,
+      "right": 374
+    },
+    "header": {
+      "width": 324,
+      "height": 100,
+      "top": 2119,
+      "bottom": 2219,
+      "left": 33,
+      "right": 357
+    },
+    "body": {
+      "width": 324,
+      "height": 389,
+      "top": 2219,
+      "bottom": 2608,
+      "left": 33,
+      "right": 357
+    },
+    "footer": {
+      "width": 324,
+      "height": 53,
+      "top": 2608,
+      "bottom": 2661,
+      "left": 33,
+      "right": 357
+    },
+    "pad": {
+      "top": 16,
+      "right": 16,
+      "bottom": 16,
+      "left": 16
+    },
+    "howToWsGap": 24,
+    "placeholderDisplay": "none",
+    "overflowX": false,
+    "pathname": "/list/",
+    "intent": "import-token",
+    "hasModal": false,
+    "title": "Import Token",
+    "hasContinue": true,
+    "hasCancel": true
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "heroW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroH",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardsW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardsH",
+        "actual": 272,
+        "target": 272,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "whyW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "whyH",
+        "actual": 112,
+        "target": 112,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "howW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "howH",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "howToWsGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "workspaceW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "workspaceH",
+        "actual": 920,
+        "target": 920,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "padX",
+        "actual": 24,
+        "target": 24,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "headerH",
+        "actual": 64,
+        "target": 64,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "bodyH",
+        "actual": 760,
+        "target": 760,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "footerH",
+        "actual": 72,
+        "target": 72,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "placeholderHidden",
+        "actual": "none",
+        "target": "none",
+        "ok": true
+      },
+      {
+        "name": "noModal",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "onList",
+        "actual": "/list/",
+        "target": "/list",
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": [
+    {
+      "name": "workspaceW",
+      "ok": true,
+      "actual": 358
+    },
+    {
+      "name": "noOverflowX",
+      "ok": true,
+      "actual": false
+    },
+    {
+      "name": "naturalHeight",
+      "ok": true,
+      "actual": 576
+    },
+    {
+      "name": "onList",
+      "ok": true,
+      "actual": "/list/"
+    },
+    {
+      "name": "noModal",
+      "ok": true,
+      "actual": false
+    }
+  ],
+  "intents": [
+    {
+      "intent": "import-token",
+      "ok": true,
+      "title": "Import Token",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "create-token",
+      "ok": true,
+      "title": "Create Token",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "claim-project",
+      "ok": true,
+      "title": "Claim Project",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "create-project",
+      "ok": true,
+      "title": "Create Project",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "ai-assistant",
+      "ok": true,
+      "title": "AI Assistant",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": false,
+      "pathname": "/list/",
+      "labelOk": true
+    }
+  ],
+  "pass": true
+}

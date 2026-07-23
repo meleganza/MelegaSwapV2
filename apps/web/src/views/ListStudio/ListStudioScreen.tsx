@@ -1,6 +1,6 @@
 /**
- * List Studio — MODULE_001–004 introductory rails.
- * Workflow forms are not mounted yet.
+ * List Studio — MODULE_001–005 introductory rails + unified workspace.
+ * Workflow content stays inside ListWorkspace (no separate routes).
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -10,6 +10,7 @@ import { ListPageHero } from './ListPageHero'
 import { ListActionCards } from './ListActionCards'
 import { ListWhyBuildRail } from './ListWhyBuildRail'
 import { ListHowItWorks } from './ListHowItWorks'
+import { ListWorkspace } from './ListWorkspace'
 import { listOne } from './listTokens'
 
 const Root = styled.div`
@@ -26,8 +27,9 @@ const Content = styled.div`
    * App shell <main> already supplies horizontal page padding (32px @ ≥1024).
    * Fill to 1376 — required for Hero 1376×360 with 32px side margins.
    *
-   * Flex order: Hero → Cards → Why → How → intent placeholder
-   * (placeholder ships from ListActionCards; order keeps it last).
+   * Flex order: Hero → Cards → Why → How → Workspace
+   * Module 002 placeholder is visually retired (display:none) so MODULE_005
+   * owns the workspace surface without editing ListActionCards.tsx.
    */
   max-width: ${listOne.contentMax};
   width: 100%;
@@ -55,8 +57,13 @@ const Content = styled.div`
     order: 4;
   }
 
-  & > [data-testid='list-intent-placeholder'] {
+  & > [data-testid='list-workspace'] {
     order: 5;
+  }
+
+  & > [data-testid='list-intent-placeholder'] {
+    order: 6;
+    display: none !important;
   }
 
   @media (max-width: 767px) {
@@ -68,13 +75,14 @@ const Content = styled.div`
 
 export const ListStudioScreen: React.FC = () => {
   return (
-    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="004">
+    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="005">
       <PageMeta />
       <Content data-testid="list-one-content">
         <ListPageHero />
         <ListActionCards />
         <ListWhyBuildRail />
         <ListHowItWorks />
+        <ListWorkspace />
       </Content>
     </Root>
   )

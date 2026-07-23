@@ -1,0 +1,85 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "intent": "import-token",
+      "ok": true,
+      "title": "Import Token",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "create-token",
+      "ok": true,
+      "title": "Create Token",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "claim-project",
+      "ok": true,
+      "title": "Claim Project",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "create-project",
+      "ok": true,
+      "title": "Create Project",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": true,
+      "pathname": "/list/",
+      "labelOk": true
+    },
+    {
+      "intent": "ai-assistant",
+      "ok": true,
+      "title": "AI Assistant",
+      "workspace": {
+        "width": 1376,
+        "height": 920,
+        "top": 1156,
+        "bottom": 2076,
+        "left": 32,
+        "right": 1408
+      },
+      "hasContinue": false,
+      "pathname": "/list/",
+      "labelOk": true
+    }
+  ]
+}
