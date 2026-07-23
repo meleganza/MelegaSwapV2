@@ -10,7 +10,7 @@
 
 ## 3. Commit
 
-_(filled after commit)_
+`07266c1b`
 
 ## 4. Certified base verification
 
@@ -112,7 +112,7 @@ Inner content width measured 1342px vs 1344px target (within ±2px tolerance). N
 
 ## 17. Working-tree status
 
-_(filled after push)_
+Clean. Pushed to origin.
 
 ## Certification
 
