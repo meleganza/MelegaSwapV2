@@ -10,7 +10,8 @@
 
 ## 3. Commit
 
-
+`14735f51` — hero + trending bar implementation  
+`6c1c165a` — report hash note (tip: update after this docs fix)
 
 ## 4. Exact image source path
 
