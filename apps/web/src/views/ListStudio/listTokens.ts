@@ -135,6 +135,18 @@ export const listOne = {
   workspaceFooterH: '72px',
   workspaceBg: '#101010',
 
+  /* MODULE_006 — premium workspace internals (001–005 outer locks unchanged) */
+  workspaceSplitLeft: '65%',
+  workspaceSplitRight: '35%',
+  workspaceContextW: '340px',
+  workspaceProgressDot: '20px',
+  workspaceProgressGap: '12px',
+  workspaceStatusH: '24px',
+  workspaceCompleteRing: '72px',
+  workspaceFieldGap: '24px',
+  workspaceAnimMs: '120ms',
+  workspaceAnimSlide: '8px',
+
   font: "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 } as const
 

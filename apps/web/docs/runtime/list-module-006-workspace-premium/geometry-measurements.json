@@ -1,0 +1,424 @@
+{
+  "desktop": {
+    "pathname": "/list/",
+    "intent": "import-token",
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 1156,
+      "bottom": 2076,
+      "left": 32,
+      "right": 1408
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 1168,
+      "bottom": 1232,
+      "left": 57,
+      "right": 1383
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992,
+      "left": 57,
+      "right": 1383
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1992,
+      "bottom": 2064,
+      "left": 57,
+      "right": 1383
+    },
+    "left": {
+      "width": 966,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992,
+      "left": 57,
+      "right": 1023
+    },
+    "right": {
+      "width": 340,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992,
+      "left": 1043,
+      "right": 1383
+    },
+    "progress": {
+      "width": 148,
+      "height": 20,
+      "top": 1190,
+      "bottom": 1210,
+      "left": 646,
+      "right": 794
+    },
+    "dots": [
+      {
+        "width": 20,
+        "height": 20,
+        "top": 1190,
+        "bottom": 1210,
+        "left": 646,
+        "right": 666
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 1190,
+        "bottom": 1210,
+        "left": 678,
+        "right": 698
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 1190,
+        "bottom": 1210,
+        "left": 710,
+        "right": 730
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 1190,
+        "bottom": 1210,
+        "left": 742,
+        "right": 762
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 1190,
+        "bottom": 1210,
+        "left": 774,
+        "right": 794
+      }
+    ],
+    "dotStates": [
+      "current",
+      "future",
+      "future",
+      "future",
+      "future"
+    ],
+    "completeness": {
+      "width": 323,
+      "height": 72,
+      "top": 1232,
+      "bottom": 1304,
+      "left": 1060,
+      "right": 1383
+    },
+    "ring": {
+      "width": 72,
+      "height": 72,
+      "top": 1232,
+      "bottom": 1304,
+      "left": 1060,
+      "right": 1132
+    },
+    "autosave": "Draft",
+    "status": "Draft",
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "bottom": 500,
+      "left": 32,
+      "right": 1408
+    },
+    "how": {
+      "width": 1376,
+      "height": 176,
+      "top": 956,
+      "bottom": 1132,
+      "left": 32,
+      "right": 1408
+    },
+    "footerButtons": [
+      "Cancel",
+      "Continue"
+    ],
+    "hasModal": false,
+    "overflowX": false,
+    "module": "006"
+  },
+  "afterSave": {
+    "autosave": "Autosaved↓ just now",
+    "status": "Ready"
+  },
+  "mobile": {
+    "pathname": "/list/",
+    "intent": "import-token",
+    "workspace": {
+      "width": 358,
+      "height": 861,
+      "top": 2102,
+      "bottom": 2963,
+      "left": 16,
+      "right": 374
+    },
+    "header": {
+      "width": 324,
+      "height": 114,
+      "top": 2119,
+      "bottom": 2233,
+      "left": 33,
+      "right": 357
+    },
+    "body": {
+      "width": 324,
+      "height": 660,
+      "top": 2233,
+      "bottom": 2893,
+      "left": 33,
+      "right": 357
+    },
+    "footer": {
+      "width": 324,
+      "height": 53,
+      "top": 2893,
+      "bottom": 2946,
+      "left": 33,
+      "right": 357
+    },
+    "left": {
+      "width": 324,
+      "height": 423,
+      "top": 2233,
+      "bottom": 2656,
+      "left": 33,
+      "right": 357
+    },
+    "right": {
+      "width": 324,
+      "height": 221,
+      "top": 2672,
+      "bottom": 2893,
+      "left": 33,
+      "right": 357
+    },
+    "progress": {
+      "width": 324,
+      "height": 20,
+      "top": 2151,
+      "bottom": 2171,
+      "left": 33,
+      "right": 357
+    },
+    "dots": [
+      {
+        "width": 20,
+        "height": 20,
+        "top": 2151,
+        "bottom": 2171,
+        "left": 121,
+        "right": 141
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 2151,
+        "bottom": 2171,
+        "left": 153,
+        "right": 173
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 2151,
+        "bottom": 2171,
+        "left": 185,
+        "right": 205
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 2151,
+        "bottom": 2171,
+        "left": 217,
+        "right": 237
+      },
+      {
+        "width": 20,
+        "height": 20,
+        "top": 2151,
+        "bottom": 2171,
+        "left": 249,
+        "right": 269
+      }
+    ],
+    "dotStates": [
+      "current",
+      "future",
+      "future",
+      "future",
+      "future"
+    ],
+    "completeness": {
+      "width": 324,
+      "height": 72,
+      "top": 2687,
+      "bottom": 2759,
+      "left": 33,
+      "right": 357
+    },
+    "ring": {
+      "width": 72,
+      "height": 72,
+      "top": 2687,
+      "bottom": 2759,
+      "left": 33,
+      "right": 105
+    },
+    "autosave": "Draft",
+    "status": "Draft",
+    "hero": {
+      "width": 358,
+      "height": 666,
+      "top": 116,
+      "bottom": 782,
+      "left": 16,
+      "right": 374
+    },
+    "how": {
+      "width": 358,
+      "height": 380,
+      "top": 1698,
+      "bottom": 2078,
+      "left": 16,
+      "right": 374
+    },
+    "footerButtons": [
+      "Cancel",
+      "Continue"
+    ],
+    "hasModal": false,
+    "overflowX": false,
+    "module": "006"
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "workspaceW",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "workspaceH",
+        "actual": 920,
+        "target": 920,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "headerH",
+        "actual": 64,
+        "target": 64,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "bodyH",
+        "actual": 760,
+        "target": 760,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "footerH",
+        "actual": 72,
+        "target": 72,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "rightW",
+        "actual": 340,
+        "target": 340,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rightH",
+        "actual": 760,
+        "target": 760,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroH",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "howH",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "dots",
+        "actual": 5,
+        "target": 5,
+        "ok": true
+      },
+      {
+        "name": "dotSize",
+        "actual": 20,
+        "target": 20,
+        "ok": true
+      },
+      {
+        "name": "ringApprox",
+        "actual": 72,
+        "target": 72,
+        "ok": true
+      },
+      {
+        "name": "footerMax2",
+        "actual": 2,
+        "target": "<=2",
+        "ok": true
+      },
+      {
+        "name": "noModal",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "onList",
+        "actual": "/list/",
+        "target": "/list",
+        "ok": true
+      },
+      {
+        "name": "module006",
+        "actual": "006",
+        "target": "006",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "mobileOk": true,
+  "pass": true
+}
