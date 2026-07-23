@@ -2,6 +2,7 @@
 
 **Mission:** LB-ACT-004  
 **Branch:** `mission-lb-act-004-production-convergence`  
+**Mission commit:** `44c923444830560960469fcf72948b6039fd68b4`  
 **Assessed (UTC):** 2026-07-23T00:25:00Z  
 **Canonical domain:** https://www.melega.finance
 
@@ -34,8 +35,9 @@ Execution-critical gates remain factually open (KMS, relay, fee receiver, quote 
 
 | Item | Value |
 |------|-------|
-| `origin/main` | `bd3bf66c9e52783f9d48db993fbd1a9508fe9d0d` |
-| Serves LB-ACT-003 consumer | Yes (live API fields present) |
+| `origin/main` (LB-ACT-003 tip) | `bd3bf66c9e52783f9d48db993fbd1a9508fe9d0d` |
+| `origin/main` (LB-ACT-004 tip, live) | `44c923444830560960469fcf72948b6039fd68b4` |
+| Serves LB-ACT-003 + ACT-004 consumer | Yes |
 
 ---
 
@@ -44,12 +46,12 @@ Execution-critical gates remain factually open (KMS, relay, fee receiver, quote 
 | Item | Value |
 |------|-------|
 | Project | `melegazas-projects/melega-swap-v2-web` |
-| GitHub Production deployment id | `5564839953` |
-| SHA | `bd3bf66c` |
+| GitHub Production deployment id (ACT-003) | `5564839953` @ `bd3bf66c` |
+| GitHub Production deployment id (ACT-004, current) | `5564914333` |
+| SHA | `44c92344` |
 | Status | `success` |
-| Created | `2026-07-23T00:14:12Z` |
-| Deployment URL | https://melega-swap-v2-m62gom3jq-melegazas-projects.vercel.app |
-| Vercel inspect | https://vercel.com/melegazas-projects/melega-swap-v2-web/F1gDstX79XfQywA8oqE2VorQ9h2g |
+| Created | `2026-07-23T00:22:58Z` |
+| Deployment URL | https://melega-swap-v2-1r8chbzrh-melegazas-projects.vercel.app |
 | Production domain | https://www.melega.finance |
 | Aliases | Production environment URL above + `www.melega.finance` |
 | Secrets exposed | None |
@@ -60,17 +62,18 @@ Execution-critical gates remain factually open (KMS, relay, fee receiver, quote 
 
 `GET https://www.melega.finance/api/liquidity-building/activation-status/` (trailing slash; GET)
 
-Observed (post-deploy):
+Observed (post ACT-004 deploy `44c92344`):
 
 | Field | Live value |
 |-------|------------|
 | activationAuthorized | `false` |
+| founderActivationApproved | `false` |
 | executionCriticalGatesReady | `false` |
 | deploymentInputsValid | `false` |
 | accountingReadiness | `false` |
 | accountingDegraded | `true` |
 | warnings | `["TREASURY_ACCOUNTING_DEGRADED"]` |
-| executionBlockers | LB-G03B, LB-G11, LB-G03C, LB-G04B, LB-G08, LB-G10, TREASURY_FEE_RECEIVER_MISSING, DEPLOYMENT_INPUTS_BLOCKED, CONTRACTS_NOT_DEPLOYED, GATE_DOC_ACTIVATION_NOT_AUTHORIZED |
+| executionBlockers | LB-G03B, LB-G11, LB-G03C, LB-G04B, LB-G08, LB-G10, TREASURY_FEE_RECEIVER_MISSING, DEPLOYMENT_INPUTS_BLOCKED, CONTRACTS_NOT_DEPLOYED, FOUNDER_ACTIVATION_NOT_APPROVED, GATE_DOC_ACTIVATION_NOT_AUTHORIZED |
 | accountingBlockers | LB-G04C/G12, LB-G04C, LB-G12 |
 | gateClassifications | present (14+) |
 
