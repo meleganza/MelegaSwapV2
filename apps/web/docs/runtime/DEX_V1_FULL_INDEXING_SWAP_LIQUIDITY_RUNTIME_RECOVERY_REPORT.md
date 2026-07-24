@@ -12,7 +12,7 @@ Substantial runtime smoking-gun fixes landed and are pushed, but certification r
 
 ## 3. Mission commit
 
-(filled after push)
+`77f82aee`
 
 ## 4. Certified base
 
