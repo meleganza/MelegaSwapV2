@@ -1,0 +1,7 @@
+{
+  "manualManage": "/liquidity-studio/?view=positions&position=manual-1",
+  "buildingManage": "/liquidity-studio/?view=building&program=0xprog",
+  "expectedManualContains": "view=positions",
+  "expectedBuildingContains": "view=building",
+  "ok": true
+}

@@ -1,0 +1,790 @@
+{
+  "measuredAt": "2026-07-24T04:21:59.545Z",
+  "base": "http://127.0.0.1:52305",
+  "desktopDisconnected": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "left": 32,
+      "top": 140,
+      "bottom": 500
+    },
+    "portfolio": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 516,
+      "bottom": 692
+    },
+    "assets": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 708,
+      "bottom": 884
+    },
+    "projects": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 900,
+      "bottom": 1076
+    },
+    "module": {
+      "width": 1376,
+      "height": 232,
+      "left": 32,
+      "top": 1092,
+      "bottom": 1324
+    },
+    "header": {
+      "width": 1374,
+      "height": 64,
+      "left": 33,
+      "top": 1093,
+      "bottom": 1157
+    },
+    "table": null,
+    "tableWrap": null,
+    "thead": null,
+    "row": null,
+    "card": null,
+    "projectsToLiquidityGap": 16,
+    "overflowX": false,
+    "empty": "false",
+    "disconnected": "true",
+    "count": "0",
+    "colWidths": [],
+    "laterActivity": false,
+    "manageHrefs": []
+  },
+  "desktopEmpty": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "left": 32,
+      "top": 140,
+      "bottom": 500
+    },
+    "portfolio": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 516,
+      "bottom": 692
+    },
+    "assets": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 708,
+      "bottom": 884
+    },
+    "projects": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 900,
+      "bottom": 1076
+    },
+    "module": {
+      "width": 1376,
+      "height": 232,
+      "left": 32,
+      "top": 1092,
+      "bottom": 1324
+    },
+    "header": {
+      "width": 1374,
+      "height": 64,
+      "left": 33,
+      "top": 1093,
+      "bottom": 1157
+    },
+    "table": null,
+    "tableWrap": null,
+    "thead": null,
+    "row": null,
+    "card": null,
+    "projectsToLiquidityGap": 16,
+    "overflowX": false,
+    "empty": "true",
+    "disconnected": "false",
+    "count": "0",
+    "colWidths": [],
+    "laterActivity": false,
+    "manageHrefs": []
+  },
+  "desktopMixed": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "left": 32,
+      "top": 140,
+      "bottom": 500
+    },
+    "portfolio": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 516,
+      "bottom": 692
+    },
+    "assets": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 708,
+      "bottom": 884
+    },
+    "projects": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 900,
+      "bottom": 1076
+    },
+    "module": {
+      "width": 1376,
+      "height": 332,
+      "left": 32,
+      "top": 1092,
+      "bottom": 1424
+    },
+    "header": {
+      "width": 1374,
+      "height": 64,
+      "left": 33,
+      "top": 1093,
+      "bottom": 1157
+    },
+    "table": {
+      "width": 1336,
+      "height": 252.5,
+      "left": 53,
+      "top": 1157,
+      "bottom": 1409.5
+    },
+    "tableWrap": {
+      "width": 1334,
+      "height": 252.5,
+      "left": 53,
+      "top": 1157,
+      "bottom": 1409.5
+    },
+    "thead": {
+      "width": 1336,
+      "height": 48,
+      "left": 53,
+      "top": 1157,
+      "bottom": 1205
+    },
+    "row": {
+      "width": 1336,
+      "height": 68,
+      "left": 53,
+      "top": 1205,
+      "bottom": 1273
+    },
+    "card": {
+      "width": 0,
+      "height": 0,
+      "left": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "projectsToLiquidityGap": 16,
+    "overflowX": false,
+    "empty": "false",
+    "disconnected": "false",
+    "count": "3",
+    "colWidths": [
+      300,
+      160,
+      180,
+      180,
+      180,
+      156,
+      180
+    ],
+    "laterActivity": false,
+    "manageHrefs": [
+      "/liquidity-studio/?view=positions&position=m1",
+      "/liquidity-studio/?view=building&program=0xlb",
+      "/liquidity-studio/?view=positions&position=m2"
+    ]
+  },
+  "mobileEmpty": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "hero": {
+      "width": 358,
+      "height": 573,
+      "left": 16,
+      "top": 116,
+      "bottom": 689
+    },
+    "portfolio": {
+      "width": 358,
+      "height": 729,
+      "left": 16,
+      "top": 705,
+      "bottom": 1434
+    },
+    "assets": {
+      "width": 358,
+      "height": 714,
+      "left": 16,
+      "top": 1450,
+      "bottom": 2164
+    },
+    "projects": {
+      "width": 358,
+      "height": 260,
+      "left": 16,
+      "top": 2180,
+      "bottom": 2440
+    },
+    "module": {
+      "width": 358,
+      "height": 288,
+      "left": 16,
+      "top": 2456,
+      "bottom": 2744
+    },
+    "header": {
+      "width": 356,
+      "height": 64,
+      "left": 17,
+      "top": 2457,
+      "bottom": 2521
+    },
+    "table": null,
+    "tableWrap": null,
+    "thead": null,
+    "row": null,
+    "card": null,
+    "projectsToLiquidityGap": 16,
+    "overflowX": false,
+    "empty": "true",
+    "disconnected": "false",
+    "count": "0",
+    "colWidths": [],
+    "laterActivity": false,
+    "manageHrefs": []
+  },
+  "mobileMixed": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "hero": {
+      "width": 358,
+      "height": 573,
+      "left": 16,
+      "top": 116,
+      "bottom": 689
+    },
+    "portfolio": {
+      "width": 358,
+      "height": 729,
+      "left": 16,
+      "top": 705,
+      "bottom": 1434
+    },
+    "assets": {
+      "width": 358,
+      "height": 714,
+      "left": 16,
+      "top": 1450,
+      "bottom": 2164
+    },
+    "projects": {
+      "width": 358,
+      "height": 260,
+      "left": 16,
+      "top": 2180,
+      "bottom": 2440
+    },
+    "module": {
+      "width": 358,
+      "height": 792,
+      "left": 16,
+      "top": 2456,
+      "bottom": 3248
+    },
+    "header": {
+      "width": 356,
+      "height": 64,
+      "left": 17,
+      "top": 2457,
+      "bottom": 2521
+    },
+    "table": {
+      "width": 0,
+      "height": 0,
+      "left": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "tableWrap": {
+      "width": 0,
+      "height": 0,
+      "left": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "thead": {
+      "width": 0,
+      "height": 0,
+      "left": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "row": {
+      "width": 0,
+      "height": 0,
+      "left": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "card": {
+      "width": 324,
+      "height": 230,
+      "left": 33,
+      "top": 2521,
+      "bottom": 2751
+    },
+    "projectsToLiquidityGap": 16,
+    "overflowX": false,
+    "empty": "false",
+    "disconnected": "false",
+    "count": "3",
+    "colWidths": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "laterActivity": false,
+    "manageHrefs": [
+      "/liquidity-studio/?view=positions&position=m1",
+      "/liquidity-studio/?view=building&program=0xlb",
+      "/liquidity-studio/?view=positions&position=m2"
+    ]
+  },
+  "tablet": {
+    "viewport": {
+      "width": 1024,
+      "height": 900
+    },
+    "hero": {
+      "width": 976,
+      "height": 668,
+      "left": 24,
+      "top": 140,
+      "bottom": 808
+    },
+    "portfolio": {
+      "width": 976,
+      "height": 473,
+      "left": 24,
+      "top": 824,
+      "bottom": 1297
+    },
+    "assets": {
+      "width": 976,
+      "height": 393,
+      "left": 24,
+      "top": 1313,
+      "bottom": 1706
+    },
+    "projects": {
+      "width": 976,
+      "height": 247,
+      "left": 24,
+      "top": 1722,
+      "bottom": 1969
+    },
+    "module": {
+      "width": 976,
+      "height": 334.5,
+      "left": 24,
+      "top": 1985,
+      "bottom": 2319.5
+    },
+    "header": {
+      "width": 974,
+      "height": 64,
+      "left": 25,
+      "top": 1986,
+      "bottom": 2050
+    },
+    "table": {
+      "width": 1336,
+      "height": 252.5,
+      "left": 41,
+      "top": 2050,
+      "bottom": 2302.5
+    },
+    "tableWrap": {
+      "width": 942,
+      "height": 252.5,
+      "left": 41,
+      "top": 2050,
+      "bottom": 2302.5
+    },
+    "thead": {
+      "width": 1336,
+      "height": 48,
+      "left": 41,
+      "top": 2050,
+      "bottom": 2098
+    },
+    "row": {
+      "width": 1336,
+      "height": 68,
+      "left": 41,
+      "top": 2098,
+      "bottom": 2166
+    },
+    "card": {
+      "width": 0,
+      "height": 0,
+      "left": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "projectsToLiquidityGap": 16,
+    "overflowX": false,
+    "empty": "false",
+    "disconnected": "false",
+    "count": "3",
+    "colWidths": [
+      300,
+      160,
+      180,
+      180,
+      180,
+      156,
+      180
+    ],
+    "laterActivity": false,
+    "manageHrefs": [
+      "/liquidity-studio/?view=positions&position=m1",
+      "/liquidity-studio/?view=building&program=0xlb",
+      "/liquidity-studio/?view=positions&position=m2"
+    ]
+  },
+  "desktopDisconnectedChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleHeight",
+        "actual": 232,
+        "target": 232,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "headerHeight",
+        "actual": 64,
+        "target": 64,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "projectsToLiquidityGap",
+        "actual": 16,
+        "target": 16,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "heroHeightFrozen",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "portfolioHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "assetsHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "projectsHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "noModule006",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "desktopEmptyChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleHeight",
+        "actual": 232,
+        "target": 232,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "headerHeight",
+        "actual": 64,
+        "target": 64,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "projectsToLiquidityGap",
+        "actual": 16,
+        "target": 16,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "heroHeightFrozen",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "portfolioHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "assetsHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "projectsHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "noModule006",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "desktopTableChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "tableWidth",
+        "actual": 1336,
+        "target": 1336,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "theadHeight",
+        "actual": 48,
+        "target": 48,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "rowHeight",
+        "actual": 68,
+        "target": 68,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "col0",
+        "actual": 300,
+        "target": 300,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "col1",
+        "actual": 160,
+        "target": 160,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "col2",
+        "actual": 180,
+        "target": 180,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "col3",
+        "actual": 180,
+        "target": 180,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "col4",
+        "actual": 180,
+        "target": 180,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "col5",
+        "actual": 156,
+        "target": 156,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "col6",
+        "actual": 180,
+        "target": 180,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleHeight3",
+        "actual": 332,
+        "target": 332,
+        "tol": 2,
+        "ok": true
+      }
+    ]
+  },
+  "mobileEmptyChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "mobileMixedChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardWidth",
+        "actual": 324,
+        "target": 326,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "deepLinks": {
+    "manualManage": "/liquidity-studio/?view=positions&position=manual-1",
+    "buildingManage": "/liquidity-studio/?view=building&program=0xprog",
+    "expectedManualContains": "view=positions",
+    "expectedBuildingContains": "view=building",
+    "ok": true
+  },
+  "pass": true,
+  "mockupSha256": "14e0f0e570583aa05d06dc67b1e3f327bf890a17f6bd06b5787664bd699024df"
+}

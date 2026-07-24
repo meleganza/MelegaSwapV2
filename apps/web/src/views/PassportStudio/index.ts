@@ -23,3 +23,10 @@ export { PassportProjects } from './PassportProjects'
 export { usePassportProjects } from './usePassportProjects'
 export { buildPassportProjectsViewModel } from './buildPassportProjectsViewModel'
 export type { PassportProjectsViewModel, PassportProjectCardModel } from './passportProjectsTypes'
+export { PassportLiquidity } from './PassportLiquidity'
+export { usePassportLiquidityPositions } from './usePassportLiquidityPositions'
+export { buildPassportLiquidityPositionsViewModel } from './buildPassportLiquidityPositionsViewModel'
+export type {
+  PassportLiquidityPositionsViewModel,
+  PassportLiquidityPosition,
+} from './passportLiquidityTypes'

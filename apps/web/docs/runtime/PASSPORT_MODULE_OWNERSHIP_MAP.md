@@ -88,13 +88,14 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportLiquidity.tsx` (future) |
-| **Owned styles** | `liquidityW`, `liquidityMinH` |
-| **Permitted hooks** | Certified Liquidity position model / wallet portfolio LP cutover |
-| **Forbidden** | Farms in this section; duplicating full Liquidity management |
-| **Bounding box** | 1376 wide, min 232px |
-| **Data sources** | Manual LP + Liquidity Building where relevant; Manage → Liquidity page |
-| **Depends on** | MODULE 004 |
+| **Owned components** | `PassportLiquidity.tsx`, `PassportLiquidityRow.tsx`, `usePassportLiquidityPositions.ts`, `buildPassportLiquidityPositionsViewModel.ts`, `passportLiquidityTypes.ts` |
+| **Owned styles** | `liquidityW`, `liquidityMinH`, table 1336 / cols 300·160·180·180·180·156·180, header 64, row 68 |
+| **Permitted hooks** | `usePassportLiquidityPositions`; `useLiquidityPositions`; `useProgramReadModel`; `useAccount` |
+| **Forbidden** | Farms; duplicating Liquidity management; modifying MODULE 001–004; inventing valuations |
+| **Bounding box** | Desktop 1376×232 empty; up to 332 with 3 rows |
+| **Data sources** | Manual wallet LP + Liquidity Building on-chain read; Manage → `/liquidity-studio` |
+| **Depends on** | MODULE 004 certified (frozen) |
+| **Mount** | `PassportScreen` mounts Module 005 below Module 004 |
 
 ---
 

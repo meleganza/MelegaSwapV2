@@ -102,8 +102,26 @@ export const passportOne = {
   projectsEmptyExplainW: '640px',
   /** 256×5 + 16×4 = 1344; padX 16+16 = 1376 */
 
+  /* MODULE 005 — Liquidity Positions (do not alter MODULE 001–004 geometry tokens) */
   liquidityW: '1376px',
   liquidityMinH: '232px',
+  liquidityHeaderH: '64px',
+  liquidityTableHeaderH: '48px',
+  liquidityRowH: '68px',
+  liquidityTableW: '1336px',
+  liquidityModulePadX: '20px',
+  liquidityModuleBg:
+    'linear-gradient(145deg, rgba(17,17,17,0.99) 0%, rgba(12,12,12,0.99) 100%)',
+  liquidityModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  liquidityModuleShadow: '0 16px 38px rgba(0,0,0,0.28)',
+  liquidityColPair: '300px',
+  liquidityColType: '160px',
+  liquidityColValue: '180px',
+  liquidityColShare: '180px',
+  liquidityColFees: '180px',
+  liquidityColStatus: '156px',
+  liquidityColAction: '180px',
+  /** empty 232; 3 rows → 64+48+204+16 = 332 */
 
   bottomColW: '680px',
   bottomGap: '16px',

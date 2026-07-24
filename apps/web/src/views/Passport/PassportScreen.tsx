@@ -9,6 +9,7 @@ import { PassportHeroIdentityModule } from 'views/PassportStudio/PassportHeroIde
 import { PassportPortfolioOverview } from 'views/PassportStudio/PassportPortfolioOverview'
 import { PassportAssets } from 'views/PassportStudio/PassportAssets'
 import { PassportProjects } from 'views/PassportStudio/PassportProjects'
+import { PassportLiquidity } from 'views/PassportStudio/PassportLiquidity'
 import { passportOne } from 'views/PassportStudio/passportTokens'
 
 const Root = styled.div`
@@ -90,8 +91,9 @@ const Ghost = styled(Link)`
  * MODULE 001: Hero + Identity Card (frozen).
  * MODULE 002: Portfolio Overview (frozen).
  * MODULE 003: Assets (frozen).
- * MODULE 004: My Projects.
- * Connected: Command Center preserved below Module 004 until later modules cut over.
+ * MODULE 004: My Projects (frozen).
+ * MODULE 005: Liquidity Positions.
+ * Connected: Command Center preserved below Module 005 until later modules cut over.
  * Disconnected: guest bridge with Connect (outside Hero — global shell also owns connect).
  */
 export const PassportScreen: React.FC = () => {
@@ -107,6 +109,7 @@ export const PassportScreen: React.FC = () => {
       data-passport-module-002="mounted"
       data-passport-module-003="mounted"
       data-passport-module-004="mounted"
+      data-passport-module-005="mounted"
     >
       <PageMeta />
       <Content data-testid="passport-page-content">
@@ -115,6 +118,7 @@ export const PassportScreen: React.FC = () => {
         <PassportPortfolioOverview />
         <PassportAssets />
         <PassportProjects />
+        <PassportLiquidity />
         {address ? (
           <CommandCenterScreen />
         ) : (
