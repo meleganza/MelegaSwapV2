@@ -1,0 +1,7 @@
+{
+  "mode": "modal",
+  "before": "/liquidity-studio/?view=add",
+  "afterOpen": "/liquidity-studio/?view=add",
+  "afterCancel": "/liquidity-studio/?view=add",
+  "ok": true
+}

@@ -39,6 +39,26 @@ describe('DEX UX Rebuild navigation', () => {
     ])
   })
 
+  it('Home nav active state covers Trade aliases and Project Pages (Discover parent)', () => {
+    const home = GLOBAL_HEADER_NAV.find((i) => i.id === 'home')
+    expect(home?.kind).toBe('link')
+    if (home?.kind !== 'link') return
+    expect(home.match('/')).toBe(true)
+    expect(home.match('/swap')).toBe(true)
+    expect(home.match('/project-hq/marco')).toBe(true)
+    expect(home.match('/@marco')).toBe(true)
+    expect(home.match('/@marco/')).toBe(true)
+    expect(home.match('/passport')).toBe(false)
+    expect(home.match('/list')).toBe(false)
+    expect(home.match('/liquidity-studio')).toBe(false)
+
+    const bottomHome = shellBottomNavItems.find((i) => i.id === 'home')
+    expect(bottomHome?.match('/swap')).toBe(true)
+    expect(bottomHome?.match('/project-hq/marco')).toBe(true)
+    expect(bottomHome?.match('/@marco/')).toBe(true)
+    expect(bottomHome?.match('/passport')).toBe(false)
+  })
+
   it('Liquidity Building deep links remain available', () => {
     expect(LIQUIDITY_DROPDOWN_ITEMS.find((i) => i.id === 'liquidity-building')?.href).toBe(
       '/liquidity-studio?view=building',

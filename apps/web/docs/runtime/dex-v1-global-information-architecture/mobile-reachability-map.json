@@ -1,0 +1,14 @@
+{
+  "bottomNav": [
+    "Home",
+    "Liquidity",
+    "Farms",
+    "Pools",
+    "Passport"
+  ],
+  "listAccess": "Global header List link (not bottom rail) — by design",
+  "viewports": [
+    "390x844",
+    "430x932"
+  ]
+}

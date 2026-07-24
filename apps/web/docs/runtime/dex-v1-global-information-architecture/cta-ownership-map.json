@@ -1,0 +1,642 @@
+{
+  "generatedAt": "2026-07-24T07:05:16.930Z",
+  "sampleSize": 127,
+  "ctas": [
+    {
+      "source": "/",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/",
+      "label": "Explore Projects",
+      "href": "/#projects"
+    },
+    {
+      "source": "/",
+      "label": "Explore ProjectsDiscover verified projects",
+      "href": "/#projects"
+    },
+    {
+      "source": "/",
+      "label": "Top FarmsHigh-yield opportunities",
+      "href": "/farms/"
+    },
+    {
+      "source": "/",
+      "label": "Top PoolsBest liquidity pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/",
+      "label": "Liquidity BuilderLaunch & grow liquidity",
+      "href": "/liquidity-studio/?view=building"
+    },
+    {
+      "source": "/",
+      "label": "View all",
+      "href": "/trending/"
+    },
+    {
+      "source": "/",
+      "label": "1MARCOMARCO (BSC)$0.000371",
+      "href": "/@melega-dex/"
+    },
+    {
+      "source": "/",
+      "label": "2WBNBhttps://www.melegaswap.finance/babymarco$563.49",
+      "href": "/@56:0x7d48423feac5aa05380db98a1f24ce17d641754d/"
+    },
+    {
+      "source": "/",
+      "label": "View all →",
+      "href": "/farms/"
+    },
+    {
+      "source": "/",
+      "label": "View all →",
+      "href": "/pools/"
+    },
+    {
+      "source": "/",
+      "label": "View all →",
+      "href": "/list/"
+    },
+    {
+      "source": "/",
+      "label": "·MARCOMARCOIndexed",
+      "href": "/@marco/"
+    },
+    {
+      "source": "/",
+      "label": "Launch Builder",
+      "href": "/liquidity-studio/?view=building"
+    },
+    {
+      "source": "/",
+      "label": "Go to Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/",
+      "label": "Passport",
+      "href": "/passport"
+    },
+    {
+      "source": "/list",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/list",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/list",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/list",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/list",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/list",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/list",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/list",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/list",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/list",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/list",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/list",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/list",
+      "label": "Passport",
+      "href": "/passport"
+    },
+    {
+      "source": "/passport",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/passport",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/passport",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/passport",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/passport",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/passport",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/passport",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/passport",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/passport",
+      "label": "Explore the Ecosystem",
+      "href": "/"
+    },
+    {
+      "source": "/passport",
+      "label": "Create Project",
+      "href": "/list/?intent=create-project"
+    },
+    {
+      "source": "/passport",
+      "label": "Explore Home",
+      "href": "/"
+    },
+    {
+      "source": "/passport",
+      "label": "List a Project",
+      "href": "/list/"
+    },
+    {
+      "source": "/passport",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/passport",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/passport",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/passport",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/passport",
+      "label": "Passport",
+      "href": "/passport"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/liquidity-studio",
+      "label": "Passport",
+      "href": "/passport"
+    },
+    {
+      "source": "/@marco",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/@marco",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Website (opens in a new tab)",
+      "href": "https://www.melega.finance"
+    },
+    {
+      "source": "/@marco",
+      "label": "Melega Space (opens in a new tab)",
+      "href": "https://melega.space/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Telegram (opens in a new tab)",
+      "href": "https://t.me/melegacommunity"
+    },
+    {
+      "source": "/@marco",
+      "label": "X (opens in a new tab)",
+      "href": "https://x.com/meleganews"
+    },
+    {
+      "source": "/@marco",
+      "label": "Instagram (opens in a new tab)",
+      "href": "https://www.instagram.com/melega.finance/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Add liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/@marco",
+      "label": "Start farming",
+      "href": "/farms"
+    },
+    {
+      "source": "/@marco",
+      "label": "View pools",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/@marco",
+      "label": "View Melega DEX project page",
+      "href": "/@melega-dex/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Official website (opens in a new tab)",
+      "href": "https://www.melega.finance"
+    },
+    {
+      "source": "/@marco",
+      "label": "Documentation (opens in a new tab)",
+      "href": "https://www.melega.finance/about"
+    },
+    {
+      "source": "/@marco",
+      "label": "Melega Space (opens in a new tab)",
+      "href": "https://melega.space/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Telegram (opens in a new tab)",
+      "href": "https://t.me/melegacommunity"
+    },
+    {
+      "source": "/@marco",
+      "label": "X (Twitter) (opens in a new tab)",
+      "href": "https://x.com/meleganews"
+    },
+    {
+      "source": "/@marco",
+      "label": "Instagram (opens in a new tab)",
+      "href": "https://www.instagram.com/melega.finance/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/@marco",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/@marco",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/@marco",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/@marco",
+      "label": "Passport",
+      "href": "/passport"
+    },
+    {
+      "source": "/farms",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/farms",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/farms",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/farms",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/farms",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/farms",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/farms",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/farms",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/farms",
+      "label": "Pricing & Fees",
+      "href": "/pricing-fees/"
+    },
+    {
+      "source": "/farms",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/farms",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/farms",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/farms",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/farms",
+      "label": "Passport",
+      "href": "/passport"
+    },
+    {
+      "source": "/pools",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/pools",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/pools",
+      "label": "Liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "source": "/pools",
+      "label": "Farms",
+      "href": "/farms/"
+    },
+    {
+      "source": "/pools",
+      "label": "Pools",
+      "href": "/pools/"
+    },
+    {
+      "source": "/pools",
+      "label": "ListNEW",
+      "href": "/list/"
+    },
+    {
+      "source": "/pools",
+      "label": "Passport",
+      "href": "/passport/"
+    },
+    {
+      "source": "/pools",
+      "label": "Melega DEX home",
+      "href": "/"
+    },
+    {
+      "source": "/pools",
+      "label": "Add Liquidity",
+      "href": "/liquidity-studio?view=add"
+    },
+    {
+      "source": "/pools",
+      "label": "Learn more →",
+      "href": "/pools#pool-health"
+    },
+    {
+      "source": "/pools",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "source": "/pools",
+      "label": "Liquidity",
+      "href": "/liquidity-studio"
+    },
+    {
+      "source": "/pools",
+      "label": "Farms",
+      "href": "/farms"
+    },
+    {
+      "source": "/pools",
+      "label": "Pools",
+      "href": "/pools"
+    },
+    {
+      "source": "/pools",
+      "label": "Passport",
+      "href": "/passport"
+    }
+  ],
+  "dead": []
+}

@@ -1,0 +1,75 @@
+{
+  "aliases": [
+    {
+      "from": "/trade",
+      "to": "/?focus=swap",
+      "permanent": false,
+      "preserveQuery": false
+    },
+    {
+      "from": "/projects",
+      "to": "/?focus=projects",
+      "permanent": false,
+      "preserveQuery": false
+    },
+    {
+      "from": "/projects/:slug",
+      "to": "/@:slug",
+      "permanent": true,
+      "preserveQuery": true
+    },
+    {
+      "from": "/@:slug",
+      "to": "/project-hq/:slug",
+      "type": "rewrite",
+      "permanent": null
+    },
+    {
+      "from": "/send",
+      "to": "/swap",
+      "permanent": true
+    },
+    {
+      "from": "/pool",
+      "to": "/liquidity",
+      "permanent": true
+    },
+    {
+      "from": "/staking",
+      "to": "/pools",
+      "permanent": true
+    },
+    {
+      "from": "/syrup",
+      "to": "/pools",
+      "permanent": true
+    },
+    {
+      "from": "/nfts",
+      "to": "/collectibles",
+      "permanent": true
+    },
+    {
+      "from": "/info",
+      "to": "/radar",
+      "permanent": false
+    },
+    {
+      "from": "/dex-intelligence",
+      "to": "/radar",
+      "permanent": false
+    },
+    {
+      "from": "/liquidity",
+      "to": "/liquidity-studio",
+      "type": "soft-alias",
+      "note": "Legacy page still renders; nav treats as Liquidity active"
+    },
+    {
+      "from": "/command-center",
+      "to": "/passport",
+      "type": "soft-alias",
+      "note": "Passport nav active; CC still mountable"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "found": [
+    {
+      "id": "DEFECT-IA-001",
+      "currentBehavior": "Home nav inactive on /swap and public /@{slug} Project Pages (asPath); Project Pages had no parent active state",
+      "expected": "Home active for Trade aliases and Project Pages via /@* and /project-hq/*",
+      "journeys": [
+        "A",
+        "F",
+        "I"
+      ],
+      "routes": [
+        "/swap",
+        "/@{slug}",
+        "/project-hq/:slug"
+      ],
+      "filesChanged": [
+        "apps/web/src/app-shell/config/globalHeaderNav.ts",
+        "apps/web/src/app-shell/config/navigation.ts",
+        "apps/web/src/app-shell/__tests__/dexUxRebuild.nav.test.ts"
+      ],
+      "certifiedModuleFileChanged": false,
+      "unavoidable": true,
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-IA-002",
+      "currentBehavior": "featuredPairSync imported scanBlockRangeEvents from chunkedLogs where it is not exported — next build failed collecting page data",
+      "expected": "Import from rpc/scanBlockRange (actual export site) so production build succeeds",
+      "journeys": [
+        "build"
+      ],
+      "routes": [
+        "n/a — build-time"
+      ],
+      "filesChanged": [
+        "apps/web/src/lib/bsc-indexer/indexer/featuredPairSync.ts"
+      ],
+      "certifiedModuleFileChanged": false,
+      "unavoidable": true,
+      "status": "fixed",
+      "note": "Pre-existing on PASSPORT_V1 tip 70d2bd19; blocks Next build required for this mission"
+    }
+  ],
+  "fixed": [
+    "DEFECT-IA-001",
+    "DEFECT-IA-002"
+  ],
+  "deferred": []
+}

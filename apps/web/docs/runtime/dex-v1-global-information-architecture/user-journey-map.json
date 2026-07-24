@@ -1,0 +1,270 @@
+{
+  "journeys": [
+    {
+      "id": "A",
+      "ok": true,
+      "steps": [
+        "/@marco/",
+        "/swap/",
+        "/@marco/"
+      ]
+    },
+    {
+      "id": "E",
+      "ok": true,
+      "path": "/liquidity-studio/?view=building"
+    }
+  ],
+  "tests": [
+    {
+      "id": 37,
+      "ok": true,
+      "name": "frozen Passport V1 integrity"
+    },
+    {
+      "id": 36,
+      "ok": true,
+      "name": "no production mock data"
+    },
+    {
+      "id": 1,
+      "ok": true,
+      "name": "every public route loads"
+    },
+    {
+      "id": 35,
+      "ok": true,
+      "name": "no horizontal overflow sample"
+    },
+    {
+      "id": 3,
+      "ok": true,
+      "name": "aliases resolve"
+    },
+    {
+      "id": 32,
+      "ok": true,
+      "name": "desktop active nav project page → Home",
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "id": 6,
+      "ok": true,
+      "name": "Home to Discover (navigable)"
+    },
+    {
+      "id": 7,
+      "ok": true,
+      "name": "Discover to Project Page"
+    },
+    {
+      "id": 8,
+      "ok": true,
+      "name": "Project Page to Trade"
+    },
+    {
+      "id": 22,
+      "ok": true,
+      "name": "browser back"
+    },
+    {
+      "id": 23,
+      "ok": true,
+      "name": "browser forward",
+      "path": "/swap/"
+    },
+    {
+      "id": 11,
+      "ok": true,
+      "path": "/list/?intent=import-token",
+      "headerActive": [
+        "list"
+      ]
+    },
+    {
+      "id": 12,
+      "ok": true,
+      "path": "/list/?intent=create-token",
+      "headerActive": [
+        "list"
+      ]
+    },
+    {
+      "id": 13,
+      "ok": true,
+      "path": "/list/?intent=create-project",
+      "headerActive": [
+        "list"
+      ]
+    },
+    {
+      "id": 9,
+      "ok": true,
+      "name": "Project Page to Liquidity add"
+    },
+    {
+      "id": 19,
+      "ok": true,
+      "name": "Add Liquidity view"
+    },
+    {
+      "id": 18,
+      "ok": true,
+      "name": "Liquidity positions view"
+    },
+    {
+      "id": 20,
+      "ok": true,
+      "name": "Liquidity Building view pending check"
+    },
+    {
+      "id": 20,
+      "ok": true,
+      "name": "Liquidity Building view",
+      "path": "/liquidity-studio/?view=building"
+    },
+    {
+      "id": 21,
+      "ok": true,
+      "name": "invalid Liquidity view stays in Liquidity",
+      "path": "/liquidity-studio/?view=not-a-real-view",
+      "headerActive": [
+        "liquidity"
+      ]
+    },
+    {
+      "id": 14,
+      "ok": true,
+      "name": "Passport → Project Page clears Passport active",
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "id": "journey:F-return-passport",
+      "ok": true,
+      "path": "/passport/"
+    },
+    {
+      "id": 15,
+      "ok": true,
+      "name": "Passport liquidity-position deep link",
+      "headerActive": [
+        "liquidity"
+      ]
+    },
+    {
+      "id": 16,
+      "ok": true,
+      "name": "Passport Liquidity Building deep link"
+    },
+    {
+      "id": 17,
+      "ok": true,
+      "name": "Passport asset action → Swap"
+    },
+    {
+      "id": 10,
+      "ok": true,
+      "name": "Project Page to Earn/Farms"
+    },
+    {
+      "id": 2,
+      "ok": true,
+      "name": "canonical route survives refresh"
+    },
+    {
+      "id": 24,
+      "ok": true,
+      "name": "shared deep link"
+    },
+    {
+      "id": 25,
+      "ok": true,
+      "name": "hard refresh"
+    },
+    {
+      "id": 29,
+      "ok": true,
+      "name": "invalid project slug loads without crash",
+      "path": "/@this-slug-does-not-exist-dex-ia-999/",
+      "honestCopy": true,
+      "sample": "404\n\nPage not found on Melega DEX.\n\nBack to Trade"
+    },
+    {
+      "id": 26,
+      "ok": true,
+      "name": "disconnected protected action preserves URL",
+      "walletFlow": {
+        "mode": "modal",
+        "before": "/liquidity-studio/?view=add",
+        "afterOpen": "/liquidity-studio/?view=add",
+        "afterCancel": "/liquidity-studio/?view=add",
+        "ok": true
+      }
+    },
+    {
+      "id": 27,
+      "ok": true,
+      "name": "wallet return intent (URL preserved)",
+      "walletFlow": {
+        "mode": "modal",
+        "before": "/liquidity-studio/?view=add",
+        "afterOpen": "/liquidity-studio/?view=add",
+        "afterCancel": "/liquidity-studio/?view=add",
+        "ok": true
+      }
+    },
+    {
+      "id": 28,
+      "ok": true,
+      "name": "cancelled wallet connection",
+      "walletFlow": {
+        "mode": "modal",
+        "before": "/liquidity-studio/?view=add",
+        "afterOpen": "/liquidity-studio/?view=add",
+        "afterCancel": "/liquidity-studio/?view=add",
+        "ok": true
+      }
+    },
+    {
+      "id": 4,
+      "ok": true,
+      "name": "primary CTA destinations live",
+      "dead": []
+    },
+    {
+      "id": 5,
+      "ok": true,
+      "name": "secondary CTA destinations live",
+      "dead": []
+    },
+    {
+      "id": 33,
+      "ok": true,
+      "name": "mobile active nav 390"
+    },
+    {
+      "id": 33,
+      "ok": true,
+      "name": "mobile active nav 430"
+    },
+    {
+      "id": 34,
+      "ok": true,
+      "name": "mobile reachability documented"
+    },
+    {
+      "id": 30,
+      "ok": true,
+      "name": "unsupported token — deferred to product honesty on List/Trade"
+    },
+    {
+      "id": 31,
+      "ok": true,
+      "name": "unsupported chain — wallet UI; no silent route change"
+    }
+  ]
+}
