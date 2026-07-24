@@ -87,8 +87,20 @@ export const passportOne = {
   assetsCardGap: '16px',
   /** 320×4 + 16×3 = 1328; padX 24+24 = 1376 */
 
+  /* MODULE 004 — My Projects (do not alter MODULE 001–003 geometry tokens) */
   projectsW: '1376px',
   projectsH: '176px',
+  projectsModuleRadius: '16px',
+  projectsModulePadY: '16px',
+  projectsModulePadX: '16px',
+  projectsModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  projectsModuleBg: '#101010',
+  projectsModuleShadow: '0 14px 40px rgba(0,0,0,0.28)',
+  projectsCardW: '256px',
+  projectsCardH: '144px',
+  projectsCardGap: '16px',
+  projectsEmptyExplainW: '640px',
+  /** 256×5 + 16×4 = 1344; padX 16+16 = 1376 */
 
   liquidityW: '1376px',
   liquidityMinH: '232px',

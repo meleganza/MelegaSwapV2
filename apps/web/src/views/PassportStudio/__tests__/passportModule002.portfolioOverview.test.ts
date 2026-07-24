@@ -99,9 +99,9 @@ describe('PASSPORT_MODULE_002 Portfolio Overview', () => {
     expect(screen).toContain('data-passport-module-002')
   })
 
-  it('does not implement Modules 004–009', () => {
+  it('does not implement Modules 005–009', () => {
     const files = readdirSync(ROOT)
-    expect(files.some((f) => /PassportProjects|PassportLiquidity|PassportActivity|PassportSecurity/.test(f))).toBe(
+    expect(files.some((f) => /PassportLiquidity|PassportActivity|PassportSecurity/.test(f))).toBe(
       false,
     )
   })

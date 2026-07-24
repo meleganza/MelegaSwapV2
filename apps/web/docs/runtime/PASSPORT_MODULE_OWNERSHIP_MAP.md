@@ -73,13 +73,14 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportProjects.tsx` (future) |
-| **Owned styles** | `projectsW/H` |
-| **Permitted hooks** | Project control / ownership / role assignments |
-| **Forbidden** | Inferring ownership from token holdings alone; recreating List create-project form |
-| **Bounding box** | 1376×176 |
-| **Data sources** | Controlled/administered projects; Create → `/list?intent=create-project` |
-| **Depends on** | MODULE 003 |
+| **Owned components** | `PassportProjects.tsx`, `PassportProjectCard.tsx`, `PassportCreateProjectCard.tsx`, `usePassportProjects.ts`, `buildPassportProjectsViewModel.ts`, `passportProjectsTypes.ts` |
+| **Owned styles** | `projectsW/H`, cards 256×144, gap 16, padX 16 |
+| **Permitted hooks** | `usePassportProjects`; `useAccount` for session only; future controlled-projects producer |
+| **Forbidden** | Inferring ownership from token holdings; inventing status/role; recreating List create-project form; modifying MODULE 001–003 |
+| **Bounding box** | Desktop 1376×176 |
+| **Data sources** | Controlled/administered projects only; Create → `/list?intent=create-project` |
+| **Depends on** | MODULE 003 certified (frozen) |
+| **Mount** | `PassportScreen` mounts Module 004 below Module 003 |
 
 ---
 

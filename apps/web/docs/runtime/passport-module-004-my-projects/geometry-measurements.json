@@ -1,0 +1,242 @@
+{
+  "measuredAt": "2026-07-24T04:04:17.266Z",
+  "base": "http://127.0.0.1:52304",
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "left": 32,
+      "top": 140,
+      "right": 1408,
+      "bottom": 500
+    },
+    "portfolio": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 516,
+      "right": 1408,
+      "bottom": 692
+    },
+    "assets": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 708,
+      "right": 1408,
+      "bottom": 884
+    },
+    "module": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 900,
+      "right": 1408,
+      "bottom": 1076
+    },
+    "create": {
+      "width": 256,
+      "height": 144,
+      "left": 705,
+      "top": 917,
+      "right": 961,
+      "bottom": 1061
+    },
+    "explain": {
+      "width": 640,
+      "height": 19,
+      "left": 49,
+      "top": 979.5,
+      "right": 689,
+      "bottom": 998.5
+    },
+    "assetsToProjectsGap": 16,
+    "overflowX": false,
+    "createHref": "/list/?intent=create-project",
+    "empty": "true",
+    "projectCards": 0,
+    "laterLiquidity": false
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "hero": {
+      "width": 358,
+      "height": 573,
+      "left": 16,
+      "top": 116,
+      "right": 374,
+      "bottom": 689
+    },
+    "portfolio": {
+      "width": 358,
+      "height": 729,
+      "left": 16,
+      "top": 705,
+      "right": 374,
+      "bottom": 1434
+    },
+    "assets": {
+      "width": 358,
+      "height": 714,
+      "left": 16,
+      "top": 1450,
+      "right": 374,
+      "bottom": 2164
+    },
+    "module": {
+      "width": 358,
+      "height": 260,
+      "left": 16,
+      "top": 2180,
+      "right": 374,
+      "bottom": 2440
+    },
+    "create": {
+      "width": 356,
+      "height": 144,
+      "left": 17,
+      "top": 2231,
+      "right": 373,
+      "bottom": 2375
+    },
+    "explain": {
+      "width": 356,
+      "height": 38,
+      "left": 17,
+      "top": 2385,
+      "right": 373,
+      "bottom": 2423
+    },
+    "assetsToProjectsGap": 16,
+    "overflowX": false,
+    "createHref": "/list/?intent=create-project",
+    "empty": "true",
+    "projectCards": 0,
+    "laterLiquidity": false
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleHeight",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroHeightFrozen",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "portfolioHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "assetsHeightFrozen",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "assetsToProjectsGap",
+        "actual": 16,
+        "target": 16,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "createWidth",
+        "actual": 256,
+        "target": 256,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "createHeight",
+        "actual": 144,
+        "target": 144,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "createHref",
+        "actual": "/list/?intent=create-project",
+        "target": "/list?intent=create-project",
+        "ok": true
+      },
+      {
+        "name": "emptyState",
+        "actual": "true",
+        "target": "true",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "noModule005",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleAutoHeight",
+        "actual": 260,
+        "target": ">160",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "pass": true,
+  "mockupSha256": "14e0f0e570583aa05d06dc67b1e3f327bf890a17f6bd06b5787664bd699024df"
+}
