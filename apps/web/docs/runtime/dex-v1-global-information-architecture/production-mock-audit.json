@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "scanned": [
+    "apps/web/src/views/PassportStudio",
+    "apps/web/src/views/ListStudio",
+    "apps/web/src/app-shell/config"
+  ],
+  "hits": []
+}

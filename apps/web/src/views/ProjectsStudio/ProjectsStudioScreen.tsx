@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import ProjectsStudioGlobalStyle from './ProjectsStudioGlobalStyle'
 import AIProjectAdvisorPanel from './components/AIProjectAdvisorPanel'
 import FeaturedProjectPanel from './components/FeaturedProjectPanel'
@@ -50,7 +49,6 @@ export const ProjectsStudioScreen: React.FC = () => (
     <Root data-projects-studio-screen data-pr-r111b-canonical>
       <PageMeta />
       <ProjectsStudioGlobalStyle />
-      <TrendingRibbon />
       <Content>
         <ProjectsStudioPageHeader />
         <ProjectsKpiRow />

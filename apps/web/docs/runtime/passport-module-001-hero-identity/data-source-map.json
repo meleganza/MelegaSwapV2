@@ -1,0 +1,41 @@
+{
+  "displayName": {
+    "source": "Passport profile API (missing) → shortened useAccount.address → Guest",
+    "production": "guest or shortened wallet only"
+  },
+  "handle": {
+    "source": "Passport profile API (missing)",
+    "production": "honest fallback copy"
+  },
+  "verificationState": {
+    "source": "Passport verification evidence (missing)",
+    "production": "unavailable (guest) | not_verified (wallet-only)",
+    "neverDefaultVerified": true
+  },
+  "memberSince": {
+    "source": "Passport binding date (missing)",
+    "production": "—"
+  },
+  "accountType": {
+    "source": "Passport classification (missing)",
+    "production": "Guest | Unavailable"
+  },
+  "connectedWalletCount": {
+    "source": "Active wagmi useAccount address count (0|1); multi-wallet registry missing",
+    "production": "0 or 1"
+  },
+  "passportIdentifier": {
+    "source": "missing",
+    "production": null
+  },
+  "managementRoute": {
+    "source": "missing Create/Manage Passport route",
+    "production": null
+  },
+  "forbiddenSources": [
+    "Economic Identity",
+    "Command Center collectibles AI Passport",
+    "Project Control Center verification",
+    "mockup illustrative identity"
+  ]
+}

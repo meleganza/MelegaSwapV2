@@ -5,7 +5,6 @@ import { typography } from 'design-system/melega'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
 import TradePageHeader from './components/TradePageHeader'
 import TradeTabBar from './components/TradeTabBar'
@@ -131,7 +130,6 @@ export const TradeTerminalScreen: React.FC = () => {
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
-      <TrendingRibbon />
       <TradeUiProvider value={{ mode, setMode, helpOpen: false, setHelpOpen: () => undefined }}>
       <Content>
         <TradePageHeader />

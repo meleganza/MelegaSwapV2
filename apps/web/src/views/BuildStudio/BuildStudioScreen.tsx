@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import BuildStudioGlobalStyle from './BuildStudioGlobalStyle'
 import { BuildRuntimeProvider } from './buildRuntime/BuildRuntimeContext'
 import { buildStudioColors, buildStudioLayout } from './buildStudioTokens'
@@ -112,7 +111,6 @@ export const BuildStudioScreen: React.FC = () => (
     <Root data-build-studio-screen data-r200-premium="true">
       <PageMeta />
       <BuildStudioGlobalStyle />
-      <TrendingRibbon />
       <Content>
         <BuildStudioPageHeader />
         <BuildKpiRow />

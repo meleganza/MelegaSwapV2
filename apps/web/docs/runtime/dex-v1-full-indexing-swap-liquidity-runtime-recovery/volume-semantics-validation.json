@@ -1,0 +1,13 @@
+{
+  "defectId": "RECERT-VOL-001",
+  "priorIssue": "amountUSD=0 on indexed swaps caused count-only data to still be labeled 24H Volume",
+  "policySelected": "OPTION_B",
+  "behavior": {
+    "whenUsdSumFinitePositive": {"label": "24H Volume", "id": "volume-24h", "meta": "Partial · USD-valued indexed swaps"},
+    "whenUsdSumZeroButSwapCountPositive": {"label": "24H Swaps", "id": "volume-24h-activity", "meta": "Indexed swap count · USD valuation unavailable"},
+    "whenNoSwaps": "omit card"
+  },
+  "forbidden": ["hardcoded prices", "ad-hoc third-party price API", "other DEX prices labeled Melega"],
+  "filesChanged": ["apps/web/src/views/HomeTrade/useHomeTradeData.ts", "apps/web/src/views/HomeTrade/DexHomeScreen.tsx"],
+  "geometryPreserved": true
+}

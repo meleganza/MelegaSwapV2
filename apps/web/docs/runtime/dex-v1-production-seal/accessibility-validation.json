@@ -1,0 +1,678 @@
+{
+  "ok": true,
+  "samples": {
+    "desktop:/": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/?focus=swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/?focus=projects": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Swap | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/list": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/list?intent=create-project": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/liquidity-studio": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/liquidity-studio?view=positions": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/liquidity-studio?view=add": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/liquidity-studio?view=building": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/passport": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/farms": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Farms | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/pools": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Pools | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "desktop:/@marco": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "MARCO | Melega DEX Project",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/?focus=swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/?focus=projects": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Swap | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/list": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/list?intent=create-project": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/liquidity-studio": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/liquidity-studio?view=positions": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/liquidity-studio?view=add": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/liquidity-studio?view=building": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/passport": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/farms": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Farms | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/pools": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Pools | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "tablet:/@marco": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "MARCO | Melega DEX Project",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/?focus=swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/?focus=projects": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Swap | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/list": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/list?intent=create-project": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/liquidity-studio": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/liquidity-studio?view=positions": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/liquidity-studio?view=add": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/liquidity-studio?view=building": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/passport": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/farms": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Farms | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/pools": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Pools | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-390:/@marco": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "MARCO | Melega DEX Project",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/?focus=swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/?focus=projects": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Home | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/swap": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "Swap | Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/list": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/list?intent=create-project": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/liquidity-studio": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/liquidity-studio?view=positions": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/liquidity-studio?view=add": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/liquidity-studio?view=building": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Liquidity Studio | Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/passport": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Melega DEX",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/farms": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Farms | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/pools": {
+      "landmarks": {
+        "main": true,
+        "h1": 1,
+        "nav": 2
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 1,
+      "title": "Pools | Melega DEX | $0.0004",
+      "ok": true,
+      "issues": []
+    },
+    "mobile-430:/@marco": {
+      "landmarks": {
+        "main": true,
+        "h1": 2,
+        "nav": 3
+      },
+      "imagesMissingAlt": 0,
+      "buttonsNoName": 6,
+      "title": "MARCO | Melega DEX Project",
+      "ok": true,
+      "issues": []
+    }
+  },
+  "notes": "Smoke a11y: landmarks, unlabeled buttons threshold, page titles. Not a full WCAG audit."
+}

@@ -1,0 +1,568 @@
+{
+  "measuredAt": "2026-07-24T02:07:14.980Z",
+  "base": "http://127.0.0.1:52237",
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 72,
+      "top": 0,
+      "right": 1440,
+      "bottom": 72,
+      "left": 0
+    },
+    "trending": {
+      "x": 0,
+      "y": 72,
+      "width": 1440,
+      "height": 44,
+      "top": 72,
+      "right": 1440,
+      "bottom": 116,
+      "left": 0
+    },
+    "module": {
+      "x": 32,
+      "y": 140,
+      "width": 1376,
+      "height": 360,
+      "top": 140,
+      "right": 1408,
+      "bottom": 500,
+      "left": 32
+    },
+    "inner": {
+      "x": 61,
+      "y": 169,
+      "width": 1318,
+      "height": 304,
+      "top": 169,
+      "right": 1379,
+      "bottom": 473,
+      "left": 61
+    },
+    "left": {
+      "x": 61,
+      "y": 169,
+      "width": 616,
+      "height": 304,
+      "top": 169,
+      "right": 677,
+      "bottom": 473,
+      "left": 61
+    },
+    "right": {
+      "x": 717,
+      "y": 169,
+      "width": 664,
+      "height": 304,
+      "top": 169,
+      "right": 1381,
+      "bottom": 473,
+      "left": 717
+    },
+    "card": {
+      "x": 729,
+      "y": 169,
+      "width": 640,
+      "height": 304,
+      "top": 169,
+      "right": 1369,
+      "bottom": 473,
+      "left": 729
+    },
+    "primary": {
+      "x": 61,
+      "y": 459,
+      "width": 186,
+      "height": 44,
+      "top": 459,
+      "right": 247,
+      "bottom": 503,
+      "left": 61
+    },
+    "secondary": {
+      "x": 259,
+      "y": 459,
+      "width": 124,
+      "height": 44,
+      "top": 459,
+      "right": 383,
+      "bottom": 503,
+      "left": 259
+    },
+    "badge": {
+      "x": 1232,
+      "y": 194,
+      "width": 112,
+      "height": 44,
+      "top": 194,
+      "right": 1344,
+      "bottom": 238,
+      "left": 1232
+    },
+    "modulePadding": "28px",
+    "trendingToModuleGap": 24,
+    "overflowX": false,
+    "displayName": "Guest",
+    "handle": "Create or connect your MARCO Passport",
+    "verification": "unavailable",
+    "verificationLabel": "UNAVAILABLE",
+    "walletCount": "0 wallets",
+    "accountType": "Guest",
+    "memberSince": "—",
+    "headline": "Your identity.Your assets.Your ecosystem.",
+    "laterModulesMounted": false,
+    "guestBridge": true
+  },
+  "tablet": {
+    "viewport": {
+      "width": 1024,
+      "height": 900
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1024,
+      "height": 72,
+      "top": 0,
+      "right": 1024,
+      "bottom": 72,
+      "left": 0
+    },
+    "trending": {
+      "x": 0,
+      "y": 72,
+      "width": 1024,
+      "height": 44,
+      "top": 72,
+      "right": 1024,
+      "bottom": 116,
+      "left": 0
+    },
+    "module": {
+      "x": 24,
+      "y": 140,
+      "width": 976,
+      "height": 668,
+      "top": 140,
+      "right": 1000,
+      "bottom": 808,
+      "left": 24
+    },
+    "inner": {
+      "x": 49,
+      "y": 165,
+      "width": 926,
+      "height": 618,
+      "top": 165,
+      "right": 975,
+      "bottom": 783,
+      "left": 49
+    },
+    "left": {
+      "x": 49,
+      "y": 165,
+      "width": 926,
+      "height": 294,
+      "top": 165,
+      "right": 975,
+      "bottom": 459,
+      "left": 49
+    },
+    "right": {
+      "x": 49,
+      "y": 479,
+      "width": 926,
+      "height": 304,
+      "top": 479,
+      "right": 975,
+      "bottom": 783,
+      "left": 49
+    },
+    "card": {
+      "x": 172,
+      "y": 479,
+      "width": 680,
+      "height": 304,
+      "top": 479,
+      "right": 852,
+      "bottom": 783,
+      "left": 172
+    },
+    "primary": {
+      "x": 49,
+      "y": 415,
+      "width": 186,
+      "height": 44,
+      "top": 415,
+      "right": 235,
+      "bottom": 459,
+      "left": 49
+    },
+    "secondary": {
+      "x": 247,
+      "y": 415,
+      "width": 124,
+      "height": 44,
+      "top": 415,
+      "right": 371,
+      "bottom": 459,
+      "left": 247
+    },
+    "badge": {
+      "x": 715,
+      "y": 504,
+      "width": 112,
+      "height": 44,
+      "top": 504,
+      "right": 827,
+      "bottom": 548,
+      "left": 715
+    },
+    "modulePadding": "24px",
+    "trendingToModuleGap": 24,
+    "overflowX": false,
+    "displayName": "Guest",
+    "handle": "Create or connect your MARCO Passport",
+    "verification": "unavailable",
+    "verificationLabel": "UNAVAILABLE",
+    "walletCount": "0 wallets",
+    "accountType": "Guest",
+    "memberSince": "—",
+    "headline": "Your identity.Your assets.Your ecosystem.",
+    "laterModulesMounted": false,
+    "guestBridge": true
+  },
+  "mobileGuest": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "header": null,
+    "trending": {
+      "x": 0,
+      "y": 60,
+      "width": 390,
+      "height": 40,
+      "top": 60,
+      "right": 390,
+      "bottom": 100,
+      "left": 0
+    },
+    "module": {
+      "x": 16,
+      "y": 116,
+      "width": 358,
+      "height": 573,
+      "top": 116,
+      "right": 374,
+      "bottom": 689,
+      "left": 16
+    },
+    "inner": {
+      "x": 17,
+      "y": 137,
+      "width": 356,
+      "height": 531,
+      "top": 137,
+      "right": 373,
+      "bottom": 668,
+      "left": 17
+    },
+    "left": {
+      "x": 17,
+      "y": 137,
+      "width": 356,
+      "height": 267,
+      "top": 137,
+      "right": 373,
+      "bottom": 404,
+      "left": 17
+    },
+    "right": {
+      "x": 17,
+      "y": 424,
+      "width": 356,
+      "height": 244,
+      "top": 424,
+      "right": 373,
+      "bottom": 668,
+      "left": 17
+    },
+    "card": {
+      "x": 17,
+      "y": 424,
+      "width": 356,
+      "height": 244,
+      "top": 424,
+      "right": 373,
+      "bottom": 668,
+      "left": 17
+    },
+    "primary": {
+      "x": 17,
+      "y": 360,
+      "width": 204,
+      "height": 44,
+      "top": 360,
+      "right": 221,
+      "bottom": 404,
+      "left": 17
+    },
+    "secondary": {
+      "x": 231,
+      "y": 360,
+      "width": 130,
+      "height": 44,
+      "top": 360,
+      "right": 361,
+      "bottom": 404,
+      "left": 231
+    },
+    "badge": {
+      "x": 250,
+      "y": 443,
+      "width": 104,
+      "height": 44,
+      "top": 443,
+      "right": 354,
+      "bottom": 487,
+      "left": 250
+    },
+    "modulePadding": "20px 0px",
+    "trendingToModuleGap": 16,
+    "overflowX": false,
+    "displayName": "Guest",
+    "handle": "Create or connect your MARCO Passport",
+    "verification": "unavailable",
+    "verificationLabel": "UNAVAILABLE",
+    "walletCount": "0 wallets",
+    "accountType": "Guest",
+    "memberSince": "—",
+    "headline": "Your identity.Your assets.Your ecosystem.",
+    "laterModulesMounted": false,
+    "guestBridge": true
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "headerHeight",
+        "actual": 72,
+        "target": 72,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "trendingHeight",
+        "actual": 44,
+        "target": 44,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "trendingToModuleGap",
+        "actual": 24,
+        "target": 24,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleHeight",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "innerWidth",
+        "actual": 1318,
+        "target": 1320,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "innerHeight",
+        "actual": 304,
+        "target": 304,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "leftWidth",
+        "actual": 616,
+        "target": 616,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "leftHeight",
+        "actual": 304,
+        "target": 304,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rightWidth",
+        "actual": 664,
+        "target": 664,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "rightHeight",
+        "actual": 304,
+        "target": 304,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardWidth",
+        "actual": 640,
+        "target": 640,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardHeight",
+        "actual": 304,
+        "target": 304,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "primaryWidth",
+        "actual": 186,
+        "target": 186,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "primaryHeight",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "secondaryWidth",
+        "actual": 124,
+        "target": 124,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "secondaryHeight",
+        "actual": 44,
+        "target": 44,
+        "tol": 1,
+        "ok": true
+      },
+      {
+        "name": "badgeWidth",
+        "actual": 112,
+        "target": 112,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "badgeHeight",
+        "actual": 44,
+        "target": 44,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "modulePadding",
+        "actual": "28px",
+        "target": "28px",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "noLaterModules",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "guestDisplayName",
+        "actual": "Guest",
+        "target": "Guest",
+        "ok": true
+      },
+      {
+        "name": "verificationNotDefaultVerified",
+        "actual": "unavailable",
+        "target": "unavailable|not_verified",
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "cardWidth",
+        "actual": 356,
+        "target": 358,
+        "tol": 3,
+        "ok": true
+      },
+      {
+        "name": "cardHeight",
+        "actual": 244,
+        "target": 244,
+        "tol": 3,
+        "ok": true
+      },
+      {
+        "name": "moduleAutoHeight",
+        "actual": 573,
+        "target": ">=560",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "pass": true,
+  "deviationTargetPct": 3,
+  "note": "Values are getBoundingClientRect() measurements, not CSS targets."
+}

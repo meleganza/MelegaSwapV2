@@ -41,26 +41,34 @@ describe('DEX-LIQ-ONE-002 Liquidity one-page final', () => {
     expect(liquidityStudioModeFromView('explore')).toBe('Add Liquidity')
   })
 
-  it('Add Liquidity card only anchors to positions', () => {
+  it('Add Liquidity card only anchors to positions and unlocks token search', () => {
     const add = load('onePage/AddLiquidityCard.tsx')
     expect(add).toContain('View Your Positions')
     expect(add).not.toContain('View Pools')
-    expect(add).toContain('LiquidityBuilderPanel')
+    expect(add).not.toContain('Explore Liquidity')
+    expect(add).not.toContain('LiquidityBuilderPanel')
+    // Legacy recovery: full CurrencySearchModal (MARCO/BNB default suggestion only).
+    expect(add).toContain('CurrencySearchModal')
+    expect(add).toContain('MARCO_BSC_ADDRESS')
   })
 
   it('DEX snapshot refuses fabricated TVL', () => {
     const snap = load('onePage/DexLiquiditySnapshot.tsx')
     expect(snap).toContain('useProtocolDataSWR')
-    expect(snap).toContain('Liquidity data awaiting indexer')
+    expect(snap).toContain('Awaiting Indexer')
     expect(snap).not.toContain('$58.74M')
     expect(snap).not.toContain('Top 50 Pairs')
+    expect(snap).not.toContain("'BNB'")
+    expect(snap).not.toContain("'USDT'")
+    expect(snap).not.toContain("'MARCO'")
   })
 
   it('overview uses Total LP Value label and truthful fee unavailable', () => {
     const overview = load('onePage/WalletLiquidityOverview.tsx')
     expect(overview).toContain('Total LP Value')
     expect(overview).not.toMatch(/>\s*TVL\s*</)
-    expect(overview).toContain('Fee accrual unavailable')
+    expect(overview).toContain('Fees unavailable')
+    expect(overview).toContain('Connect your wallet to view your liquidity overview')
   })
 
   it('LB lifecycle remains inside the Liquidity Building card shell', () => {

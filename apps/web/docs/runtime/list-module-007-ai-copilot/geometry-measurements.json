@@ -1,0 +1,512 @@
+{
+  "ready": {
+    "pathname": "/list/",
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 1156,
+      "bottom": 2076
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 1168,
+      "bottom": 1232
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1992,
+      "bottom": 2064
+    },
+    "right": {
+      "width": 340,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992
+    },
+    "copilot": {
+      "width": 323,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992
+    },
+    "suggestions": {
+      "width": 323,
+      "height": 260,
+      "top": 1506,
+      "bottom": 1766
+    },
+    "analysis": {
+      "width": 323,
+      "height": 120,
+      "top": 1776,
+      "bottom": 1896
+    },
+    "memory": {
+      "width": 323,
+      "height": 120,
+      "top": 1906,
+      "bottom": 2026
+    },
+    "status": "Ready",
+    "cardHeights": [],
+    "hasChat": false,
+    "hasModal": false,
+    "module": "007",
+    "overflowX": false
+  },
+  "suggestion": {
+    "pathname": "/list/",
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 1156,
+      "bottom": 2076
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 1168,
+      "bottom": 1232
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1992,
+      "bottom": 2064
+    },
+    "right": {
+      "width": 340,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992
+    },
+    "copilot": {
+      "width": 323,
+      "height": 760,
+      "top": 1232,
+      "bottom": 1992
+    },
+    "suggestions": {
+      "width": 323,
+      "height": 260,
+      "top": 1506,
+      "bottom": 1766
+    },
+    "analysis": {
+      "width": 323,
+      "height": 120,
+      "top": 1776,
+      "bottom": 1896
+    },
+    "memory": {
+      "width": 323,
+      "height": 120,
+      "top": 1906,
+      "bottom": 2026
+    },
+    "status": "Ready",
+    "cardHeights": [
+      52,
+      52,
+      52,
+      52,
+      52
+    ],
+    "hasChat": false,
+    "hasModal": false,
+    "module": "007",
+    "overflowX": false
+  },
+  "waiting": {
+    "pathname": "/list/",
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 384,
+      "bottom": 1304
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 396,
+      "bottom": 460
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1220,
+      "bottom": 1292
+    },
+    "right": {
+      "width": 340,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "copilot": {
+      "width": 323,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "suggestions": {
+      "width": 323,
+      "height": 260,
+      "top": 734,
+      "bottom": 994
+    },
+    "analysis": {
+      "width": 323,
+      "height": 120,
+      "top": 1004,
+      "bottom": 1124
+    },
+    "memory": {
+      "width": 323,
+      "height": 120,
+      "top": 1134,
+      "bottom": 1254
+    },
+    "status": "Waiting Confirmation",
+    "cardHeights": [
+      52,
+      52,
+      52,
+      52,
+      52
+    ],
+    "hasChat": false,
+    "hasModal": false,
+    "module": "007",
+    "overflowX": false
+  },
+  "applied": {
+    "pathname": "/list/",
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 384,
+      "bottom": 1304
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 396,
+      "bottom": 460
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1220,
+      "bottom": 1292
+    },
+    "right": {
+      "width": 340,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "copilot": {
+      "width": 323,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "suggestions": {
+      "width": 323,
+      "height": 260,
+      "top": 734,
+      "bottom": 994
+    },
+    "analysis": {
+      "width": 323,
+      "height": 120,
+      "top": 1004,
+      "bottom": 1124
+    },
+    "memory": {
+      "width": 323,
+      "height": 120,
+      "top": 1134,
+      "bottom": 1254
+    },
+    "status": "Ready",
+    "cardHeights": [
+      52,
+      52,
+      52,
+      52
+    ],
+    "hasChat": false,
+    "hasModal": false,
+    "module": "007",
+    "overflowX": false
+  },
+  "rejected": {
+    "pathname": "/list/",
+    "workspace": {
+      "width": 1376,
+      "height": 920,
+      "top": 384,
+      "bottom": 1304
+    },
+    "header": {
+      "width": 1326,
+      "height": 64,
+      "top": 396,
+      "bottom": 460
+    },
+    "body": {
+      "width": 1326,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "footer": {
+      "width": 1326,
+      "height": 72,
+      "top": 1220,
+      "bottom": 1292
+    },
+    "right": {
+      "width": 340,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "copilot": {
+      "width": 323,
+      "height": 760,
+      "top": 460,
+      "bottom": 1220
+    },
+    "suggestions": {
+      "width": 323,
+      "height": 260,
+      "top": 734,
+      "bottom": 994
+    },
+    "analysis": {
+      "width": 323,
+      "height": 120,
+      "top": 1004,
+      "bottom": 1124
+    },
+    "memory": {
+      "width": 323,
+      "height": 120,
+      "top": 1134,
+      "bottom": 1254
+    },
+    "status": "Ready",
+    "cardHeights": [
+      52,
+      52,
+      52
+    ],
+    "hasChat": false,
+    "hasModal": false,
+    "module": "007",
+    "overflowX": false
+  },
+  "mobile": {
+    "pathname": "/list/",
+    "workspace": {
+      "width": 358,
+      "height": 1622,
+      "top": 2102,
+      "bottom": 3724
+    },
+    "header": {
+      "width": 324,
+      "height": 114,
+      "top": 2119,
+      "bottom": 2233
+    },
+    "body": {
+      "width": 324,
+      "height": 1421,
+      "top": 2233,
+      "bottom": 3654
+    },
+    "footer": {
+      "width": 324,
+      "height": 53,
+      "top": 3654,
+      "bottom": 3707
+    },
+    "right": {
+      "width": 324,
+      "height": 655,
+      "top": 2999,
+      "bottom": 3654
+    },
+    "copilot": {
+      "width": 324,
+      "height": 640,
+      "top": 3014,
+      "bottom": 3654
+    },
+    "suggestions": {
+      "width": 302,
+      "height": 106,
+      "top": 3283,
+      "bottom": 3389
+    },
+    "analysis": {
+      "width": 324,
+      "height": 162,
+      "top": 3408,
+      "bottom": 3570
+    },
+    "memory": {
+      "width": 324,
+      "height": 74,
+      "top": 3580,
+      "bottom": 3654
+    },
+    "status": "Ready",
+    "cardHeights": [],
+    "hasChat": false,
+    "hasModal": false,
+    "module": "007",
+    "overflowX": false
+  },
+  "checks": [
+    {
+      "name": "workspaceW",
+      "actual": 1376,
+      "target": 1376,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "workspaceH",
+      "actual": 920,
+      "target": 920,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "headerH",
+      "actual": 64,
+      "target": 64,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "bodyH",
+      "actual": 760,
+      "target": 760,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "footerH",
+      "actual": 72,
+      "target": 72,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "rightW",
+      "actual": 340,
+      "target": 340,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "rightH",
+      "actual": 760,
+      "target": 760,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "suggestH",
+      "actual": 260,
+      "target": 260,
+      "tol": 4,
+      "ok": true
+    },
+    {
+      "name": "analysisH",
+      "actual": 120,
+      "target": 120,
+      "tol": 4,
+      "ok": true
+    },
+    {
+      "name": "memoryH",
+      "actual": 120,
+      "target": 120,
+      "tol": 4,
+      "ok": true
+    },
+    {
+      "name": "noChat",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "module007",
+      "actual": "007",
+      "target": "007",
+      "ok": true
+    },
+    {
+      "name": "cardH",
+      "actual": 52,
+      "target": 52,
+      "ok": true
+    },
+    {
+      "name": "onList",
+      "actual": "/list/",
+      "target": "/list",
+      "ok": true
+    },
+    {
+      "name": "noModal",
+      "actual": false,
+      "target": false,
+      "ok": true
+    }
+  ],
+  "states": {
+    "ready": "Ready",
+    "searching": "Ready",
+    "suggestion": "Ready",
+    "waiting": "Waiting Confirmation",
+    "applied": "Ready",
+    "rejected": "Ready"
+  },
+  "pass": true
+}

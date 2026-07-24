@@ -1,0 +1,36 @@
+{
+  "localUrl": "http://127.0.0.1:4310",
+  "serverCommand": "yarn next start -p 4310",
+  "mode": "production-build-serve",
+  "environmentFiles": [".env", ".env.production"],
+  "nodeEnv": "production",
+  "chainId": 56,
+  "buildCommit": "eb9c33eaeea01e55b5c603f572d90b6d7e7777df",
+  "buildId": "CN6ZEiu1uKvNjZ_Hw1nSy",
+  "runtimeStartTimestamp": "2026-07-24T22:18:00.000Z",
+  "capturedAt": "2026-07-24T22:22:59Z",
+  "contracts": {
+    "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "masterChef": "0x41D5487836452d23f2c467070244E5842B412794",
+    "smartChefFactory": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf"
+  },
+  "providerConfiguration": {
+    "rpcHosts": ["bsc-dataseed.binance.org", "bsc-dataseed1.binance.org"],
+    "credentials": "none-public-seeds-only",
+    "redacted": true
+  },
+  "apiHealth": {
+    "indexerPairs": {
+      "url": "/api/indexer/pairs/?page=1&pageSize=1",
+      "httpStatus": 200,
+      "total": 516,
+      "source": "disk",
+      "dataSource": "direct-contract-state-registry",
+      "discoveryMethod": "factory-allPairs-enumeration"
+    },
+    "homeHtml": { "httpStatus": 200 }
+  },
+  "fixtures": "none",
+  "mocks": "none"
+}

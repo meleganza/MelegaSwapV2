@@ -1,0 +1,8 @@
+{
+  "mode": "partial",
+  "source": "protocol activity swaps",
+  "usdOftenZero": "amountUSD currently 0 on indexed rows \u2192 show swap count",
+  "recertPolicy": "OPTION_B",
+  "activityLabel": "24H Swaps",
+  "dollarLabelOnlyWhenUsdPositive": true
+}

@@ -1,0 +1,17 @@
+{
+  "priorFalseNegative": "looked for [role=dialog]; CurrencySearchModal does not use that role",
+  "proofTrade": "after click open-currency-select-button body contains 'Select a Token' and lists USDT/USDC",
+  "proofLiquidity": "liq-add-token-a-select visible; after click Search inputs present (count>=3)",
+  "compactLbDom": {
+    "desktop1440": {
+      "compactAttr": "1",
+      "heightPx": 338,
+      "not860": true
+    },
+    "mobile390": {
+      "compactAttr": "1",
+      "heightPx": 297,
+      "horizontalOverflow": false
+    }
+  }
+}

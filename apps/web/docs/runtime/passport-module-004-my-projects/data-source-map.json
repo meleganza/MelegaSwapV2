@@ -1,0 +1,10 @@
+{
+  "controlledProjects": {
+    "production": "empty — no Passport controlled-projects producer",
+    "neverInferFromHoldings": true
+  },
+  "createProject": {
+    "href": "/list?intent=create-project"
+  },
+  "statusRole": "only from factual control records when available"
+}

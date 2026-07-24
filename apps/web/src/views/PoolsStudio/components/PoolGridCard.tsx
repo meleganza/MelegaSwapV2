@@ -390,10 +390,11 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
   const { requestModal } = usePoolsRuntime()
   const { chainId } = useActiveChainId()
   const preview = pool.analyzePreview
-  const isRewarding = Boolean(pool.lifecycle?.rewarding)
-  const isEnded = pool.status === 'ended' || pool.lifecycle?.finished
+  const isAmmFactoryPair = pool.id.startsWith('amm-')
+  const isRewarding = Boolean(pool.lifecycle?.rewarding) && !isAmmFactoryPair
+  const isEnded = !isAmmFactoryPair && (pool.status === 'ended' || Boolean(pool.lifecycle?.finished))
   /** Canonical card presentation status — drives ended badge / Official / health visibility. */
-  const isDisplayEnded = pool.displayStatus === 'ENDED'
+  const isDisplayEnded = !isAmmFactoryPair && pool.displayStatus === 'ENDED'
   const recommendedAction = resolvePoolMachineRecommendedAction(pool)
   const showEndedViewDetails = isDisplayEnded && recommendedAction === 'none'
   const isLive =
@@ -577,7 +578,16 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
       </CardBody>
 
       <Footer data-ps-card-footer>
-        {isRewarding ? (
+        {isAmmFactoryPair ? (
+          <PoolBtn
+            as="a"
+            href="/liquidity-studio?view=add"
+            data-ps-amm-add-liquidity
+            style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}
+          >
+            Add Liquidity
+          </PoolBtn>
+        ) : isRewarding ? (
           <>
             <PoolBtn type="button" onClick={() => requestModal(pool, 'stake')} data-ps-stake-btn>
               Stake

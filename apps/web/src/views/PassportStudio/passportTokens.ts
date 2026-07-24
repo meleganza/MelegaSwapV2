@@ -1,0 +1,188 @@
+/**
+ * PASSPORT_ARCHITECTURE_000 — MARCO Passport design tokens + geometry contracts.
+ * Visual source of truth: founder-approved mockup (docs/runtime/passport-architecture-000/).
+ * Illustrative mockup numbers are NEVER production data.
+ */
+export const passportOne = {
+  /* Product */
+  productName: 'MARCO Passport',
+  navLabel: 'Passport',
+  route: '/passport',
+
+  /* Page canvas */
+  pageBg: '#050505',
+  card: '#101010',
+  elevated: '#151515',
+  input: '#121212',
+  border: '#1F1F1F',
+  borderStrong: '#2A2A2A',
+  text: '#F5F5F5',
+  secondary: '#A8A8A8',
+  muted: '#747474',
+  gold: '#DDB92F',
+  goldHover: '#E8C83B',
+  positive: '#16D977',
+  warning: '#F4B942',
+  error: '#F04F5F',
+
+  canvas: 1440,
+  contentMax: '1376px',
+  pageInset: '32px',
+  topAfterTrending: '24px',
+  moduleGap: '16px',
+  sectionGapLarge: '24px',
+  pageBottomPad: '48px',
+  radius: '16px',
+  radiusCompact: '12px',
+
+  /* MODULE 001 geometry targets (desktop 1440) — MODULE_001 locks right region 664 */
+  heroW: '1376px',
+  heroH: '360px',
+  heroModuleRadius: '18px',
+  heroModulePad: '28px',
+  heroModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  heroModuleBg: '#090B0E',
+  heroModuleShadow: '0 22px 60px rgba(0,0,0,0.38)',
+  heroLeftW: '616px',
+  heroGap: '40px',
+  heroRightW: '664px',
+  identityCardW: '640px',
+  identityCardH: '304px',
+  identityCardRadius: '20px',
+  heroPrimaryCtaW: '186px',
+  heroSecondaryCtaW: '124px',
+  heroCtaH: '44px',
+
+  /* MODULE 002 — Portfolio Overview (do not alter MODULE 001 hero* tokens) */
+  portfolioW: '1376px',
+  portfolioH: '176px',
+  portfolioModuleRadius: '16px',
+  portfolioModulePadY: '16px',
+  portfolioModulePadX: '0px',
+  portfolioModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  portfolioModuleBg: '#101010',
+  portfolioModuleShadow: '0 14px 40px rgba(0,0,0,0.28)',
+  portfolioLeftW: '560px',
+  portfolioChartW: '320px',
+  portfolioRightW: '480px',
+  portfolioColGap: '16px',
+  portfolioKpiW: '160px',
+  portfolioKpiH: '120px',
+  /**
+   * Desktop columns 560 + 320 + 480 = 1360; space-between distributes the remaining 16px
+   * across inter-column gaps inside the locked 1376 module width (page moduleGap remains 16).
+   */
+
+  /* MODULE 003 — Assets (do not alter MODULE 001–002 geometry tokens) */
+  assetsW: '1376px',
+  assetsH: '176px',
+  assetsModuleRadius: '16px',
+  assetsModulePadY: '16px',
+  assetsModulePadX: '24px',
+  assetsModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  assetsModuleBg: '#101010',
+  assetsModuleShadow: '0 14px 40px rgba(0,0,0,0.28)',
+  assetsCardW: '320px',
+  assetsCardH: '144px',
+  assetsCardGap: '16px',
+  /** 320×4 + 16×3 = 1328; padX 24+24 = 1376 */
+
+  /* MODULE 004 — My Projects (do not alter MODULE 001–003 geometry tokens) */
+  projectsW: '1376px',
+  projectsH: '176px',
+  projectsModuleRadius: '16px',
+  projectsModulePadY: '16px',
+  projectsModulePadX: '16px',
+  projectsModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  projectsModuleBg: '#101010',
+  projectsModuleShadow: '0 14px 40px rgba(0,0,0,0.28)',
+  projectsCardW: '256px',
+  projectsCardH: '144px',
+  projectsCardGap: '16px',
+  projectsEmptyExplainW: '640px',
+  /** 256×5 + 16×4 = 1344; padX 16+16 = 1376 */
+
+  /* MODULE 005 — Liquidity Positions (do not alter MODULE 001–004 geometry tokens) */
+  liquidityW: '1376px',
+  liquidityMinH: '232px',
+  liquidityHeaderH: '64px',
+  liquidityTableHeaderH: '48px',
+  liquidityRowH: '68px',
+  liquidityTableW: '1336px',
+  liquidityModulePadX: '20px',
+  liquidityModuleBg:
+    'linear-gradient(145deg, rgba(17,17,17,0.99) 0%, rgba(12,12,12,0.99) 100%)',
+  liquidityModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  liquidityModuleShadow: '0 16px 38px rgba(0,0,0,0.28)',
+  liquidityColPair: '300px',
+  liquidityColType: '160px',
+  liquidityColValue: '180px',
+  liquidityColShare: '180px',
+  liquidityColFees: '180px',
+  liquidityColStatus: '156px',
+  liquidityColAction: '180px',
+  /** empty 232; 3 rows → 64+48+204+16 = 332 */
+
+  /* MODULE 006 — Recent Activity (do not alter MODULE 001–005 geometry tokens) */
+  activityW: '680px',
+  activityH: '360px',
+  activityHeaderH: '64px',
+  activityBodyH: '256px',
+  activityFooterH: '40px',
+  activityRowH: '64px',
+  activityContentW: '644px',
+  activityModulePadX: '18px',
+  bottomColW: '680px',
+  bottomGap: '16px',
+  /** bottom grid: 680 + 16 + 680 = 1376 */
+
+  /* MODULE 007 — Security (do not alter MODULE 001–006 geometry tokens) */
+  securityW: '680px',
+  securityH: '360px',
+  securityHeaderH: '64px',
+  securityRowH: '52px',
+  securityRowGap: '8px',
+
+  /* Mobile */
+  mobileCanvas: 390,
+  mobileContentW: '358px',
+  mobilePadX: '16px',
+  mobileMinTextCol: '280px',
+  mobileTouchMin: '44px',
+
+  font: "Inter, 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+} as const
+
+/** Locked module order — never reorder. */
+export const PASSPORT_MODULE_ORDER = [
+  '001-hero-identity',
+  '002-portfolio',
+  '003-assets',
+  '004-projects',
+  '005-liquidity',
+  '006-activity',
+  '007-security',
+  '008-mobile',
+  '009-polish',
+] as const
+
+export type PassportModuleId = (typeof PASSPORT_MODULE_ORDER)[number]
+
+/** Forbidden product names in Passport UI copy. */
+export const PASSPORT_FORBIDDEN_LABELS = [
+  'Melega Passport',
+  'Passport Wallet',
+  'Melega Wallet',
+  'user wallet',
+  'exchange account',
+] as const
+
+export const PASSPORT_MOCKUP = {
+  relativePath: 'apps/web/docs/runtime/passport-architecture-000/founder-approved-passport-mockup.png',
+  sha256: '14e0f0e570583aa05d06dc67b1e3f327bf890a17f6bd06b5787664bd699024df',
+  bytes: 147547,
+  width: 844,
+  height: 1024,
+  /** Asset bytes are JPEG JFIF despite .png filename (Founder export as provided). */
+  format: 'jpeg',
+} as const

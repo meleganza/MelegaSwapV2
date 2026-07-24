@@ -1,0 +1,65 @@
+{
+  "navClicks": [
+    {
+      "href": "/",
+      "path": "http://127.0.0.1:52608/"
+    },
+    {
+      "href": "/liquidity-studio",
+      "path": "http://127.0.0.1:52608/liquidity-studio/"
+    },
+    {
+      "href": "/farms",
+      "path": "http://127.0.0.1:52608/farms/"
+    },
+    {
+      "href": "/pools",
+      "path": "http://127.0.0.1:52608/pools/"
+    },
+    {
+      "href": "/passport",
+      "path": "http://127.0.0.1:52608/passport/"
+    }
+  ],
+  "poolsMeasure": {
+    "path": "/pools/",
+    "navExists": true,
+    "position": "fixed",
+    "bottom": 844,
+    "top": 776,
+    "visible": true,
+    "inViewport": true,
+    "headerActive": [
+      "pools"
+    ],
+    "bottomLinks": [
+      {
+        "href": "/",
+        "text": "Home",
+        "current": null
+      },
+      {
+        "href": "/liquidity-studio",
+        "text": "Liquidity",
+        "current": null
+      },
+      {
+        "href": "/farms",
+        "text": "Farms",
+        "current": null
+      },
+      {
+        "href": "/pools",
+        "text": "Pools",
+        "current": "page"
+      },
+      {
+        "href": "/passport",
+        "text": "Passport",
+        "current": null
+      }
+    ],
+    "overflowX": false,
+    "kpiText": false
+  }
+}

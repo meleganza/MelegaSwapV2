@@ -1,0 +1,17 @@
+{
+  "cryptoAssets": {
+    "production": "unavailable — no full wallet inventory"
+  },
+  "mCredits": {
+    "production": "unavailable",
+    "neverErc20": true,
+    "neverMixedWithCrypto": true
+  },
+  "linkedWallets": {
+    "production": "useAccount active wallet 0|1"
+  },
+  "quickActions": {
+    "send": "/swap when connected",
+    "others": "unsupported — shown unavailable"
+  }
+}

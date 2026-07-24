@@ -1,0 +1,13 @@
+{
+  "logoDir": "apps/web/public/images/56/tokens",
+  "pngCount": 536,
+  "bscListCoverage": {
+    "withLocalLogo": 272,
+    "withoutLocalLogo": 1,
+    "coveragePct": 99.63
+  },
+  "resolver": "lib/token-logo/localTokenLogoPath.ts + resolveTokenLogoSources (checksum then lowercase)",
+  "bscListWithLocalLogo": 273,
+  "bscListWithoutLocalLogo": 0,
+  "recertNote": "AETX copied to images/56/tokens"
+}

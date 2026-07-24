@@ -1,0 +1,428 @@
+{
+  "generatedAt": "2026-07-24T07:05:16.930Z",
+  "base": "http://127.0.0.1:52408",
+  "passportBaseTip": "70d2bd19",
+  "head": "70d2bd1965bc32b1045d667bd45ecc7f97ad97b5",
+  "branch": "dex-v1-global-information-architecture",
+  "worktree": "/Users/marcomelega/Projects/MelegaSwapV2/MelegaSwapV2-dex-ia",
+  "tests": [
+    {
+      "id": 37,
+      "ok": true,
+      "name": "frozen Passport V1 integrity"
+    },
+    {
+      "id": 36,
+      "ok": true,
+      "name": "no production mock data"
+    },
+    {
+      "id": "route:/",
+      "ok": true,
+      "status": 200,
+      "path": "/"
+    },
+    {
+      "id": "route:/swap",
+      "ok": true,
+      "status": 200,
+      "path": "/swap/"
+    },
+    {
+      "id": "route:/list",
+      "ok": true,
+      "status": 200,
+      "path": "/list/"
+    },
+    {
+      "id": "route:/list?intent=import-token",
+      "ok": true,
+      "status": 200,
+      "path": "/list/?intent=import-token"
+    },
+    {
+      "id": "route:/list?intent=create-token",
+      "ok": true,
+      "status": 200,
+      "path": "/list/?intent=create-token"
+    },
+    {
+      "id": "route:/list?intent=create-project",
+      "ok": true,
+      "status": 200,
+      "path": "/list/?intent=create-project"
+    },
+    {
+      "id": "route:/liquidity-studio",
+      "ok": true,
+      "status": 200,
+      "path": "/liquidity-studio/"
+    },
+    {
+      "id": "route:/liquidity-studio?view=positions",
+      "ok": true,
+      "status": 200,
+      "path": "/liquidity-studio/?view=positions"
+    },
+    {
+      "id": "route:/liquidity-studio?view=add",
+      "ok": true,
+      "status": 200,
+      "path": "/liquidity-studio/?view=add"
+    },
+    {
+      "id": "route:/liquidity-studio?view=building",
+      "ok": true,
+      "status": 200,
+      "path": "/liquidity-studio/?view=building"
+    },
+    {
+      "id": "route:/liquidity-studio?view=not-a-real-view",
+      "ok": true,
+      "status": 200,
+      "path": "/liquidity-studio/?view=not-a-real-view"
+    },
+    {
+      "id": "route:/farms",
+      "ok": true,
+      "status": 200,
+      "path": "/farms/"
+    },
+    {
+      "id": "route:/pools",
+      "ok": true,
+      "status": 200,
+      "path": "/pools/"
+    },
+    {
+      "id": "route:/passport",
+      "ok": true,
+      "status": 200,
+      "path": "/passport/"
+    },
+    {
+      "id": "route:/@marco",
+      "ok": true,
+      "status": 200,
+      "path": "/@marco/"
+    },
+    {
+      "id": "route:/trending",
+      "ok": true,
+      "status": 200,
+      "path": "/trending/"
+    },
+    {
+      "id": "route:/radar",
+      "ok": true,
+      "status": 200,
+      "path": "/radar/"
+    },
+    {
+      "id": "route:/this-route-should-404-dex-ia",
+      "ok": true,
+      "status": 404,
+      "path": "/this-route-should-404-dex-ia/"
+    },
+    {
+      "id": 1,
+      "ok": true,
+      "name": "every public route loads"
+    },
+    {
+      "id": 35,
+      "ok": true,
+      "name": "no horizontal overflow sample"
+    },
+    {
+      "id": "alias:/trade",
+      "ok": true,
+      "actual": "/?focus=swap"
+    },
+    {
+      "id": "alias:/projects",
+      "ok": true,
+      "actual": "/?focus=projects"
+    },
+    {
+      "id": "alias:/projects/marco",
+      "ok": true,
+      "actual": "/@marco/"
+    },
+    {
+      "id": 3,
+      "ok": true,
+      "name": "aliases resolve"
+    },
+    {
+      "id": 32,
+      "ok": true,
+      "name": "desktop active nav project page → Home",
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "id": "nav:passport",
+      "ok": true,
+      "headerActive": [
+        "passport"
+      ]
+    },
+    {
+      "id": 6,
+      "ok": true,
+      "name": "Home to Discover (navigable)"
+    },
+    {
+      "id": 7,
+      "ok": true,
+      "name": "Discover to Project Page"
+    },
+    {
+      "id": 8,
+      "ok": true,
+      "name": "Project Page to Trade"
+    },
+    {
+      "id": 22,
+      "ok": true,
+      "name": "browser back"
+    },
+    {
+      "id": 23,
+      "ok": true,
+      "name": "browser forward",
+      "path": "/swap/"
+    },
+    {
+      "id": 11,
+      "ok": true,
+      "path": "/list/?intent=import-token",
+      "headerActive": [
+        "list"
+      ]
+    },
+    {
+      "id": 12,
+      "ok": true,
+      "path": "/list/?intent=create-token",
+      "headerActive": [
+        "list"
+      ]
+    },
+    {
+      "id": 13,
+      "ok": true,
+      "path": "/list/?intent=create-project",
+      "headerActive": [
+        "list"
+      ]
+    },
+    {
+      "id": 9,
+      "ok": true,
+      "name": "Project Page to Liquidity add"
+    },
+    {
+      "id": 19,
+      "ok": true,
+      "name": "Add Liquidity view"
+    },
+    {
+      "id": 18,
+      "ok": true,
+      "name": "Liquidity positions view"
+    },
+    {
+      "id": 20,
+      "ok": true,
+      "name": "Liquidity Building view pending check"
+    },
+    {
+      "id": 20,
+      "ok": true,
+      "name": "Liquidity Building view",
+      "path": "/liquidity-studio/?view=building"
+    },
+    {
+      "id": 21,
+      "ok": true,
+      "name": "invalid Liquidity view stays in Liquidity",
+      "path": "/liquidity-studio/?view=not-a-real-view",
+      "headerActive": [
+        "liquidity"
+      ]
+    },
+    {
+      "id": 14,
+      "ok": true,
+      "name": "Passport → Project Page clears Passport active",
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "id": "journey:F-return-passport",
+      "ok": true,
+      "path": "/passport/"
+    },
+    {
+      "id": 15,
+      "ok": true,
+      "name": "Passport liquidity-position deep link",
+      "headerActive": [
+        "liquidity"
+      ]
+    },
+    {
+      "id": 16,
+      "ok": true,
+      "name": "Passport Liquidity Building deep link"
+    },
+    {
+      "id": 17,
+      "ok": true,
+      "name": "Passport asset action → Swap"
+    },
+    {
+      "id": 10,
+      "ok": true,
+      "name": "Project Page to Earn/Farms"
+    },
+    {
+      "id": 2,
+      "ok": true,
+      "name": "canonical route survives refresh"
+    },
+    {
+      "id": 24,
+      "ok": true,
+      "name": "shared deep link"
+    },
+    {
+      "id": 25,
+      "ok": true,
+      "name": "hard refresh"
+    },
+    {
+      "id": 29,
+      "ok": true,
+      "name": "invalid project slug loads without crash",
+      "path": "/@this-slug-does-not-exist-dex-ia-999/",
+      "honestCopy": true,
+      "sample": "404\n\nPage not found on Melega DEX.\n\nBack to Trade"
+    },
+    {
+      "id": 26,
+      "ok": true,
+      "name": "disconnected protected action preserves URL",
+      "walletFlow": {
+        "mode": "modal",
+        "before": "/liquidity-studio/?view=add",
+        "afterOpen": "/liquidity-studio/?view=add",
+        "afterCancel": "/liquidity-studio/?view=add",
+        "ok": true
+      }
+    },
+    {
+      "id": 27,
+      "ok": true,
+      "name": "wallet return intent (URL preserved)",
+      "walletFlow": {
+        "mode": "modal",
+        "before": "/liquidity-studio/?view=add",
+        "afterOpen": "/liquidity-studio/?view=add",
+        "afterCancel": "/liquidity-studio/?view=add",
+        "ok": true
+      }
+    },
+    {
+      "id": 28,
+      "ok": true,
+      "name": "cancelled wallet connection",
+      "walletFlow": {
+        "mode": "modal",
+        "before": "/liquidity-studio/?view=add",
+        "afterOpen": "/liquidity-studio/?view=add",
+        "afterCancel": "/liquidity-studio/?view=add",
+        "ok": true
+      }
+    },
+    {
+      "id": 4,
+      "ok": true,
+      "name": "primary CTA destinations live",
+      "dead": []
+    },
+    {
+      "id": 5,
+      "ok": true,
+      "name": "secondary CTA destinations live",
+      "dead": []
+    },
+    {
+      "id": "mobile-list-390",
+      "ok": true,
+      "name": "List reachable at 390",
+      "mobileReach": {
+        "path": "/list/",
+        "overflowX": false,
+        "headerActive": [
+          "list"
+        ],
+        "listInHeader": true
+      }
+    },
+    {
+      "id": 33,
+      "ok": true,
+      "name": "mobile active nav 390"
+    },
+    {
+      "id": "overflow-mobile-390",
+      "ok": true,
+      "name": "mobile overflow 390"
+    },
+    {
+      "id": "mobile-list-430",
+      "ok": true,
+      "name": "List reachable at 430",
+      "mobileReach": {
+        "path": "/list/",
+        "overflowX": false,
+        "headerActive": [
+          "list"
+        ],
+        "listInHeader": true
+      }
+    },
+    {
+      "id": 33,
+      "ok": true,
+      "name": "mobile active nav 430"
+    },
+    {
+      "id": "overflow-mobile-430",
+      "ok": true,
+      "name": "mobile overflow 430"
+    },
+    {
+      "id": 34,
+      "ok": true,
+      "name": "mobile reachability documented"
+    },
+    {
+      "id": 30,
+      "ok": true,
+      "name": "unsupported token — deferred to product honesty on List/Trade"
+    },
+    {
+      "id": 31,
+      "ok": true,
+      "name": "unsupported chain — wallet UI; no silent route change"
+    }
+  ],
+  "defects": [],
+  "pass": true
+}

@@ -1,0 +1,4 @@
+{
+  "policy": "When a Liquidity Building program and a wallet LP share the same pair address, Passport shows a single Liquidity Building summary row.",
+  "testedInUnit": true
+}

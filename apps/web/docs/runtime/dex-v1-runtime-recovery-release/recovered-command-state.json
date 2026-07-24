@@ -1,0 +1,24 @@
+{
+  "completedBeforeCrash": [
+    "discover production topology (main + Vercel; live prod dpl_6xaRHRz5 @ 74b4f2e)",
+    "create worktree MelegaSwapV2-runtime-release from origin/main",
+    "non-ff merge 2e8f6c2e -> c209b971 with conflict resolution",
+    "certified integrity source guards ALL_OK",
+    "focused tests pass after pixel assertion update (19/19)",
+    "yarn next build PASSED (~70s)",
+    "tsc baseline 484 vs RC 487; category A=0",
+    "local next start -p 4320",
+    "partial/full preproduction smoke artifacts written"
+  ],
+  "inFlightAtCrash": [
+    "AwaitShell on next start / Playwright preprod smoke"
+  ],
+  "notCompleted": [
+    "push release branch",
+    "preview deploy for RC tip",
+    "merge to main",
+    "production deploy",
+    "production live smoke",
+    "full release report"
+  ]
+}

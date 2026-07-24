@@ -9,15 +9,6 @@ import {
   STUDIO_LIVE_RUNTIME_LABEL,
 } from 'design-system/melega'
 
-const scrollToCreatePool = () => {
-  const el = document.getElementById('create-pool')
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    return
-  }
-  window.location.href = '/build-studio?intent=staking-pool#create-pool'
-}
-
 export const PoolsStudioPageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="pools"
@@ -36,7 +27,12 @@ export const PoolsStudioPageHeader: React.FC = () => (
         <MelegaStudioGhostBtn as="a" href="/liquidity-studio?view=add" style={{ textDecoration: 'none' }}>
           Add Liquidity
         </MelegaStudioGhostBtn>
-        <MelegaStudioPrimaryBtn type="button" data-ps-header-create-pool onClick={scrollToCreatePool}>
+        <MelegaStudioPrimaryBtn
+          as="a"
+          href="/liquidity-studio?view=add"
+          data-ps-header-create-pool
+          style={{ textDecoration: 'none' }}
+        >
           Create Pool
         </MelegaStudioPrimaryBtn>
       </>

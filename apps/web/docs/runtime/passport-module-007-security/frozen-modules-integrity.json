@@ -1,0 +1,210 @@
+{
+  "ok": true,
+  "files": {
+    "PassportHeroIdentityModule.tsx": {
+      "expected": "5bc8a6180cde2a1d6fd86c841c2d495b2488accec05b097d7cd2ec82e1a4d312",
+      "actual": "5bc8a6180cde2a1d6fd86c841c2d495b2488accec05b097d7cd2ec82e1a4d312",
+      "ok": true
+    },
+    "PassportHeroCopy.tsx": {
+      "expected": "b4c6c7a1dc69149f68c765f89f630f80991d3015ffb99547d7e955537cd4f462",
+      "actual": "b4c6c7a1dc69149f68c765f89f630f80991d3015ffb99547d7e955537cd4f462",
+      "ok": true
+    },
+    "PassportIdentityCard.tsx": {
+      "expected": "6b3f86b7497876d617d77cd39480e8551312fb6610fe40609ca3fab543f745cd",
+      "actual": "6b3f86b7497876d617d77cd39480e8551312fb6610fe40609ca3fab543f745cd",
+      "ok": true
+    },
+    "PassportVerificationBadge.tsx": {
+      "expected": "130f1634a6f0c3a9c328a58854d9fa86ea6f85af986bdb821ddb4c0f05d57573",
+      "actual": "130f1634a6f0c3a9c328a58854d9fa86ea6f85af986bdb821ddb4c0f05d57573",
+      "ok": true
+    },
+    "PassportIdentityMetadata.tsx": {
+      "expected": "17fc487ef45c0d3a9bb8c9b8b38e9be167da2158ca44108cbef0c8f800162abc",
+      "actual": "17fc487ef45c0d3a9bb8c9b8b38e9be167da2158ca44108cbef0c8f800162abc",
+      "ok": true
+    },
+    "PassportHeroBackground.tsx": {
+      "expected": "54c32f02a185bdd7728b93e3b88b9c6eeed841099c4b622a66ab037d9a09a593",
+      "actual": "54c32f02a185bdd7728b93e3b88b9c6eeed841099c4b622a66ab037d9a09a593",
+      "ok": true
+    },
+    "usePassportHeroIdentity.ts": {
+      "expected": "45dc27ea531bb2c403d31d26f83d5d7e9d1ecbd57ff9b1d3bb93d8384a8c1b6c",
+      "actual": "45dc27ea531bb2c403d31d26f83d5d7e9d1ecbd57ff9b1d3bb93d8384a8c1b6c",
+      "ok": true
+    },
+    "buildPassportHeroIdentityViewModel.ts": {
+      "expected": "ba5ed5180edaef4c338f2f1381fbec97747b3c0c00b78e6bc869493e6d46ee5c",
+      "actual": "ba5ed5180edaef4c338f2f1381fbec97747b3c0c00b78e6bc869493e6d46ee5c",
+      "ok": true
+    },
+    "passportHeroIdentityTypes.ts": {
+      "expected": "0193b8d7c3b03d5539c7252209ad45e1933f9c331018eb6ad3a317a02f9bb517",
+      "actual": "0193b8d7c3b03d5539c7252209ad45e1933f9c331018eb6ad3a317a02f9bb517",
+      "ok": true
+    },
+    "PassportPortfolioOverview.tsx": {
+      "expected": "780a09316b6a520e1ade3e816d778cc0f2dff50b068e5e703d0d22bc48474318",
+      "actual": "780a09316b6a520e1ade3e816d778cc0f2dff50b068e5e703d0d22bc48474318",
+      "ok": true
+    },
+    "PassportPortfolioSummary.tsx": {
+      "expected": "21e3e693984a58a8a5ecb078bebf8fabbf1aede40d6ee179d5a2ea11882c8513",
+      "actual": "21e3e693984a58a8a5ecb078bebf8fabbf1aede40d6ee179d5a2ea11882c8513",
+      "ok": true
+    },
+    "PassportPortfolioChart.tsx": {
+      "expected": "c6604fa32a1f606158b098caf2cc8665ca784c1540b43685c0f2cfc58af6cd54",
+      "actual": "c6604fa32a1f606158b098caf2cc8665ca784c1540b43685c0f2cfc58af6cd54",
+      "ok": true
+    },
+    "PassportPortfolioKpiCard.tsx": {
+      "expected": "9c05f13c5f9cb32866d5b0f74357afd2ab5fae593fb406f0e46c59043bb2df01",
+      "actual": "9c05f13c5f9cb32866d5b0f74357afd2ab5fae593fb406f0e46c59043bb2df01",
+      "ok": true
+    },
+    "usePassportPortfolioOverview.ts": {
+      "expected": "c0b403f675d4cb8480dc932bf102c52914684e7d0509660cd2b95ee52b9d4da6",
+      "actual": "c0b403f675d4cb8480dc932bf102c52914684e7d0509660cd2b95ee52b9d4da6",
+      "ok": true
+    },
+    "buildPassportPortfolioOverviewViewModel.ts": {
+      "expected": "1d90f63470ccdfaaf8b1cf0b5934e68caf855080a7d7c1ec0e97c714669618cb",
+      "actual": "1d90f63470ccdfaaf8b1cf0b5934e68caf855080a7d7c1ec0e97c714669618cb",
+      "ok": true
+    },
+    "passportPortfolioOverviewTypes.ts": {
+      "expected": "e8b2c243a56b776855ff276334e2c763f8ad2c374453b727faf43e32b9c8fd31",
+      "actual": "e8b2c243a56b776855ff276334e2c763f8ad2c374453b727faf43e32b9c8fd31",
+      "ok": true
+    },
+    "PassportAssets.tsx": {
+      "expected": "a8a81135cb218d973c739f5d8ece70acfbb76df64b3574ad881bd415f9feaeb6",
+      "actual": "a8a81135cb218d973c739f5d8ece70acfbb76df64b3574ad881bd415f9feaeb6",
+      "ok": true
+    },
+    "PassportAssetCardShell.tsx": {
+      "expected": "7eea2f6a6b6b0fed11a5b242361a3ead377e04e64cf2c9384f21fc95aec506aa",
+      "actual": "7eea2f6a6b6b0fed11a5b242361a3ead377e04e64cf2c9384f21fc95aec506aa",
+      "ok": true
+    },
+    "PassportAssetsCryptoCard.tsx": {
+      "expected": "f74f995f9a4a1e6a0c6474a29ab8cfd791ad8ef63314f771ad487f3acce3b984",
+      "actual": "f74f995f9a4a1e6a0c6474a29ab8cfd791ad8ef63314f771ad487f3acce3b984",
+      "ok": true
+    },
+    "PassportAssetsMCreditsCard.tsx": {
+      "expected": "f0b3a97dfa1e7a050776ccf0dfc1f0a9654adb43a9450ecee6ec3f281b7a15ad",
+      "actual": "f0b3a97dfa1e7a050776ccf0dfc1f0a9654adb43a9450ecee6ec3f281b7a15ad",
+      "ok": true
+    },
+    "PassportAssetsWalletsCard.tsx": {
+      "expected": "4b5e68611f3c6fc34fb799e13579d0811e91eeaa23a9094ecc275b8be4674a9e",
+      "actual": "4b5e68611f3c6fc34fb799e13579d0811e91eeaa23a9094ecc275b8be4674a9e",
+      "ok": true
+    },
+    "PassportAssetsActionsCard.tsx": {
+      "expected": "060c7287ff023dbeb026637ea4aa3635745d25f891454bda6c7b53dd2382d1ee",
+      "actual": "060c7287ff023dbeb026637ea4aa3635745d25f891454bda6c7b53dd2382d1ee",
+      "ok": true
+    },
+    "usePassportAssets.ts": {
+      "expected": "d708427551d5e1d0726adb10fccd891c29dc439da42ce1e74fb8ff188fab4818",
+      "actual": "d708427551d5e1d0726adb10fccd891c29dc439da42ce1e74fb8ff188fab4818",
+      "ok": true
+    },
+    "buildPassportAssetsViewModel.ts": {
+      "expected": "ff130fc3a8045d967fc9d1ab9e5f4c4aa97cb35864991a7ca089bd6420bb1cc5",
+      "actual": "ff130fc3a8045d967fc9d1ab9e5f4c4aa97cb35864991a7ca089bd6420bb1cc5",
+      "ok": true
+    },
+    "passportAssetsTypes.ts": {
+      "expected": "71f98e7d91ee6d642ca5bc52a166dc77453d2cae8bd80e11893f17d54dab6c17",
+      "actual": "71f98e7d91ee6d642ca5bc52a166dc77453d2cae8bd80e11893f17d54dab6c17",
+      "ok": true
+    },
+    "PassportProjects.tsx": {
+      "expected": "55946ed210cf79716a60e70ea71bd2697589fe23002acda6349d466479ed7173",
+      "actual": "55946ed210cf79716a60e70ea71bd2697589fe23002acda6349d466479ed7173",
+      "ok": true
+    },
+    "PassportProjectCard.tsx": {
+      "expected": "336117554fff0df050037d565c22e47a7e4f05a0026d1aa3d9d0615df98fdd9a",
+      "actual": "336117554fff0df050037d565c22e47a7e4f05a0026d1aa3d9d0615df98fdd9a",
+      "ok": true
+    },
+    "PassportCreateProjectCard.tsx": {
+      "expected": "b681b82328b29555104fe735d32c3e761ff09d28317178ab06f04769c3a7c441",
+      "actual": "b681b82328b29555104fe735d32c3e761ff09d28317178ab06f04769c3a7c441",
+      "ok": true
+    },
+    "usePassportProjects.ts": {
+      "expected": "700ca1e239f8af912b347214c774d85ac97d493401203d66048bd90afc15bf3c",
+      "actual": "700ca1e239f8af912b347214c774d85ac97d493401203d66048bd90afc15bf3c",
+      "ok": true
+    },
+    "buildPassportProjectsViewModel.ts": {
+      "expected": "74155576a76d55890df8398dd2e45ef7709b0a18786b9f2593f16632dcfd554f",
+      "actual": "74155576a76d55890df8398dd2e45ef7709b0a18786b9f2593f16632dcfd554f",
+      "ok": true
+    },
+    "passportProjectsTypes.ts": {
+      "expected": "11e980d23b555fceb8f0eec3dcfb9f38770945d56f091b0564d1e9e7c7cd1fc0",
+      "actual": "11e980d23b555fceb8f0eec3dcfb9f38770945d56f091b0564d1e9e7c7cd1fc0",
+      "ok": true
+    },
+    "PassportLiquidity.tsx": {
+      "expected": "69e68bed3f5c060b5717be839e76dfe0e0cbec3e3139bab10178978cd137ef85",
+      "actual": "69e68bed3f5c060b5717be839e76dfe0e0cbec3e3139bab10178978cd137ef85",
+      "ok": true
+    },
+    "PassportLiquidityRow.tsx": {
+      "expected": "b6259cd1e1a0644525cce775a51a8a8c71352e8dd1ab9aeb9442a40d33447e46",
+      "actual": "b6259cd1e1a0644525cce775a51a8a8c71352e8dd1ab9aeb9442a40d33447e46",
+      "ok": true
+    },
+    "usePassportLiquidityPositions.ts": {
+      "expected": "f937c9bd413248cb9b63a5b1fc0dc4db13b741f0ede6854adfb9146cb43e7e79",
+      "actual": "f937c9bd413248cb9b63a5b1fc0dc4db13b741f0ede6854adfb9146cb43e7e79",
+      "ok": true
+    },
+    "buildPassportLiquidityPositionsViewModel.ts": {
+      "expected": "fd36ac738a0e9bc249e1f3853f385604ed2b72e425f27200eb29cb2cbaf9908a",
+      "actual": "fd36ac738a0e9bc249e1f3853f385604ed2b72e425f27200eb29cb2cbaf9908a",
+      "ok": true
+    },
+    "passportLiquidityTypes.ts": {
+      "expected": "e38c5ad654a366465e90675a9c4b37fba235190d8852f5380f0d2cb8b5f5e4c8",
+      "actual": "e38c5ad654a366465e90675a9c4b37fba235190d8852f5380f0d2cb8b5f5e4c8",
+      "ok": true
+    },
+    "PassportActivity.tsx": {
+      "expected": "0a369220d7dd71eafd9b8a553a580a00bdbea9466d943a91939fb5d88707821f",
+      "actual": "0a369220d7dd71eafd9b8a553a580a00bdbea9466d943a91939fb5d88707821f",
+      "ok": true
+    },
+    "PassportActivityRow.tsx": {
+      "expected": "ed4d58ce2253b98437029dd6a30141e6a0d021d5cc1a4a2f1e46f2f5117787d2",
+      "actual": "ed4d58ce2253b98437029dd6a30141e6a0d021d5cc1a4a2f1e46f2f5117787d2",
+      "ok": true
+    },
+    "usePassportRecentActivity.ts": {
+      "expected": "429f7ad6ae9efe98ef3fe40e6407b82ddf32ac86b19fed247abef8258a656af2",
+      "actual": "429f7ad6ae9efe98ef3fe40e6407b82ddf32ac86b19fed247abef8258a656af2",
+      "ok": true
+    },
+    "buildPassportRecentActivityViewModel.ts": {
+      "expected": "f4323b96162ec08f314dffc015983f777913c4c070b7053478799e06990d3417",
+      "actual": "f4323b96162ec08f314dffc015983f777913c4c070b7053478799e06990d3417",
+      "ok": true
+    },
+    "passportActivityTypes.ts": {
+      "expected": "d74c94d835ba69c7991e8af93e2c9e6d65a1c049b400cfe7e253a3a861a86393",
+      "actual": "d74c94d835ba69c7991e8af93e2c9e6d65a1c049b400cfe7e253a3a861a86393",
+      "ok": true
+    }
+  }
+}

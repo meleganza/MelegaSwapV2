@@ -1,0 +1,94 @@
+{
+  "rules": [
+    "Home active on /, /swap, /project-hq/*",
+    "Liquidity active on /liquidity-studio*",
+    "Passport active on /passport*",
+    "List active on /list*",
+    "Farms/Pools exclusive on their routes"
+  ],
+  "projectPageDesktop": {
+    "path": "/@marco/",
+    "headerActive": [
+      "home"
+    ],
+    "header": [
+      {
+        "id": "home",
+        "current": true,
+        "text": "Home"
+      },
+      {
+        "id": "liquidity",
+        "current": false,
+        "text": "Liquidity"
+      },
+      {
+        "id": "farms",
+        "current": false,
+        "text": "Farms"
+      },
+      {
+        "id": "pools",
+        "current": false,
+        "text": "Pools"
+      },
+      {
+        "id": "list",
+        "current": false,
+        "text": "ListNEW"
+      },
+      {
+        "id": "passport",
+        "current": false,
+        "text": "Passport"
+      }
+    ],
+    "bottomActive": [],
+    "bottom": [],
+    "overflowX": false,
+    "title": "MARCO | Melega DEX Project"
+  },
+  "passportDesktop": {
+    "path": "/passport/",
+    "headerActive": [
+      "passport"
+    ],
+    "header": [
+      {
+        "id": "home",
+        "current": false,
+        "text": "Home"
+      },
+      {
+        "id": "liquidity",
+        "current": false,
+        "text": "Liquidity"
+      },
+      {
+        "id": "farms",
+        "current": false,
+        "text": "Farms"
+      },
+      {
+        "id": "pools",
+        "current": false,
+        "text": "Pools"
+      },
+      {
+        "id": "list",
+        "current": false,
+        "text": "ListNEW"
+      },
+      {
+        "id": "passport",
+        "current": true,
+        "text": "Passport"
+      }
+    ],
+    "bottomActive": [],
+    "bottom": [],
+    "overflowX": false,
+    "title": "Melega DEX"
+  },
+  "defectFixed": "DEFECT-IA-001"
+}

@@ -158,7 +158,16 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
     label: 'Home',
     kind: 'link',
     href: '/',
-    match: (p) => p === '/' || p === '/trade' || p.startsWith('/trade/'),
+    // Home owns Discover + Trade entry; Project Pages map to Discover parent domain.
+    // Public Project Page URLs stay `/@{slug}` (rewrite); header match uses asPath.
+    match: (p) =>
+      p === '/' ||
+      p === '/trade' ||
+      p.startsWith('/trade/') ||
+      p === '/swap' ||
+      p.startsWith('/swap/') ||
+      p.startsWith('/project-hq') ||
+      p.startsWith('/@'),
   },
   {
     id: 'liquidity',

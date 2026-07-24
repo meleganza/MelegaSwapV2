@@ -1,0 +1,19 @@
+{
+  "verdict": "CERTIFIED",
+  "readyForCertification": true,
+  "blockersClosed": [
+    "Playwright live screenshot pack (37 shots)",
+    "Factory allPairsLength=516 proven COMPLETE vs on-disk/API",
+    "Router calldata + gas + eth_call simulation evidence",
+    "Volume semantics OPTION B (24H Swaps when USD unavailable)",
+    "Factual wallet direct-read LP + removeLiquidity simulation ok",
+    "Mission-path TypeScript category A/B cleared"
+  ],
+  "documentedLimitations": [
+    "No irreversible mainnet broadcast (read-only certification)",
+    "Browser extension wallet not connected; LP UI reconciliation via direct reads + factory index membership",
+    "Repo-wide yarn tsc remains red on pre-existing category C debt (~484); next build is authoritative gate",
+    "USD 24h volume still unavailable when amountUSD=0 \u2014 truthful 24H Swaps shown instead"
+  ],
+  "finalVerdict": "DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY_CERTIFIED"
+}

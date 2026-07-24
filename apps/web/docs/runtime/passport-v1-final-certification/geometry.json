@@ -1,0 +1,1053 @@
+{
+  "measuredAt": "2026-07-24T06:32:25.879Z",
+  "base": "http://127.0.0.1:52308",
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1400
+    },
+    "modules": {
+      "hero": {
+        "width": 1376,
+        "height": 360,
+        "left": 32,
+        "top": 140,
+        "right": 1408,
+        "bottom": 500
+      },
+      "portfolio": {
+        "width": 1376,
+        "height": 176,
+        "left": 32,
+        "top": 516,
+        "right": 1408,
+        "bottom": 692
+      },
+      "assets": {
+        "width": 1376,
+        "height": 176,
+        "left": 32,
+        "top": 708,
+        "right": 1408,
+        "bottom": 884
+      },
+      "projects": {
+        "width": 1376,
+        "height": 176,
+        "left": 32,
+        "top": 900,
+        "right": 1408,
+        "bottom": 1076
+      },
+      "liquidity": {
+        "width": 1376,
+        "height": 232,
+        "left": 32,
+        "top": 1092,
+        "right": 1408,
+        "bottom": 1324
+      },
+      "activity": {
+        "width": 680,
+        "height": 360,
+        "left": 32,
+        "top": 1340,
+        "right": 712,
+        "bottom": 1700
+      },
+      "security": {
+        "width": 680,
+        "height": 360,
+        "left": 728,
+        "top": 1340,
+        "right": 1408,
+        "bottom": 1700
+      }
+    },
+    "gaps": {
+      "heroToportfolio": 16,
+      "portfolioToassets": 16,
+      "assetsToprojects": 16,
+      "projectsToliquidity": 16,
+      "liquidityToBottom": 16,
+      "activityToSecurity": 16
+    },
+    "flags": {
+      "001": "mounted",
+      "002": "mounted",
+      "003": "mounted",
+      "004": "mounted",
+      "005": "mounted",
+      "006": "mounted",
+      "007": "mounted"
+    },
+    "overflowX": false,
+    "landmarks": {
+      "sections": 7,
+      "headings": 6
+    },
+    "reducedMotion": false,
+    "focusableSample": [
+      {
+        "tag": "a",
+        "testid": "melega-header-brand",
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-home",
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-liquidity",
+        "href": "/liquidity-studio/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-farms",
+        "href": "/farms/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-pools",
+        "href": "/pools/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-list",
+        "href": "/list/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-passport",
+        "href": "/passport/"
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": "melega-header-connect",
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": "melega-header-overflow",
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-hero-cta-primary",
+        "href": "/"
+      },
+      {
+        "tag": "button",
+        "testid": "passport-hero-cta-secondary",
+        "href": null
+      }
+    ],
+    "overlap": true
+  },
+  "tablet": {
+    "viewport": {
+      "width": 1024,
+      "height": 1200
+    },
+    "modules": {
+      "hero": {
+        "width": 976,
+        "height": 668,
+        "left": 24,
+        "top": 140,
+        "right": 1000,
+        "bottom": 808
+      },
+      "portfolio": {
+        "width": 976,
+        "height": 473,
+        "left": 24,
+        "top": 824,
+        "right": 1000,
+        "bottom": 1297
+      },
+      "assets": {
+        "width": 976,
+        "height": 393,
+        "left": 24,
+        "top": 1313,
+        "right": 1000,
+        "bottom": 1706
+      },
+      "projects": {
+        "width": 976,
+        "height": 247,
+        "left": 24,
+        "top": 1722,
+        "right": 1000,
+        "bottom": 1969
+      },
+      "liquidity": {
+        "width": 976,
+        "height": 234,
+        "left": 24,
+        "top": 1985,
+        "right": 1000,
+        "bottom": 2219
+      },
+      "activity": {
+        "width": 976,
+        "height": 362,
+        "left": 24,
+        "top": 2235,
+        "right": 1000,
+        "bottom": 2597
+      },
+      "security": {
+        "width": 976,
+        "height": 302,
+        "left": 24,
+        "top": 2613,
+        "right": 1000,
+        "bottom": 2915
+      }
+    },
+    "gaps": {
+      "heroToportfolio": 16,
+      "portfolioToassets": 16,
+      "assetsToprojects": 16,
+      "projectsToliquidity": 16,
+      "liquidityToBottom": 16,
+      "activityToSecurity": -976
+    },
+    "flags": {
+      "001": "mounted",
+      "002": "mounted",
+      "003": "mounted",
+      "004": "mounted",
+      "005": "mounted",
+      "006": "mounted",
+      "007": "mounted"
+    },
+    "overflowX": false,
+    "landmarks": {
+      "sections": 7,
+      "headings": 6
+    },
+    "reducedMotion": false,
+    "focusableSample": [
+      {
+        "tag": "a",
+        "testid": "melega-header-brand",
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-home",
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-liquidity",
+        "href": "/liquidity-studio/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-farms",
+        "href": "/farms/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-pools",
+        "href": "/pools/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-list",
+        "href": "/list/"
+      },
+      {
+        "tag": "a",
+        "testid": "melega-header-nav-passport",
+        "href": "/passport/"
+      },
+      {
+        "tag": "button",
+        "testid": "melega-header-connect",
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": "melega-header-overflow",
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-hero-cta-primary",
+        "href": "/"
+      },
+      {
+        "tag": "button",
+        "testid": "passport-hero-cta-secondary",
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-create-project-cta",
+        "href": "/list/?intent=create-project"
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/list/"
+      }
+    ],
+    "overlap": true
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "modules": {
+      "hero": {
+        "width": 358,
+        "height": 573,
+        "left": 16,
+        "top": 116,
+        "right": 374,
+        "bottom": 689
+      },
+      "portfolio": {
+        "width": 358,
+        "height": 729,
+        "left": 16,
+        "top": 705,
+        "right": 374,
+        "bottom": 1434
+      },
+      "assets": {
+        "width": 358,
+        "height": 714,
+        "left": 16,
+        "top": 1450,
+        "right": 374,
+        "bottom": 2164
+      },
+      "projects": {
+        "width": 358,
+        "height": 260,
+        "left": 16,
+        "top": 2180,
+        "right": 374,
+        "bottom": 2440
+      },
+      "liquidity": {
+        "width": 358,
+        "height": 224,
+        "left": 16,
+        "top": 2456,
+        "right": 374,
+        "bottom": 2680
+      },
+      "activity": {
+        "width": 358,
+        "height": 278,
+        "left": 16,
+        "top": 2696,
+        "right": 374,
+        "bottom": 2974
+      },
+      "security": {
+        "width": 358,
+        "height": 294,
+        "left": 16,
+        "top": 2990,
+        "right": 374,
+        "bottom": 3284
+      }
+    },
+    "gaps": {
+      "heroToportfolio": 16,
+      "portfolioToassets": 16,
+      "assetsToprojects": 16,
+      "projectsToliquidity": 16,
+      "liquidityToBottom": 16,
+      "activityToSecurity": -358
+    },
+    "flags": {
+      "001": "mounted",
+      "002": "mounted",
+      "003": "mounted",
+      "004": "mounted",
+      "005": "mounted",
+      "006": "mounted",
+      "007": "mounted"
+    },
+    "overflowX": false,
+    "landmarks": {
+      "sections": 7,
+      "headings": 6
+    },
+    "reducedMotion": false,
+    "focusableSample": [
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-hero-cta-primary",
+        "href": "/"
+      },
+      {
+        "tag": "button",
+        "testid": "passport-hero-cta-secondary",
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-create-project-cta",
+        "href": "/list/?intent=create-project"
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/list/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/liquidity-studio"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/farms"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/pools"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/passport"
+      }
+    ],
+    "overlap": true
+  },
+  "mobile430": {
+    "viewport": {
+      "width": 430,
+      "height": 932
+    },
+    "modules": {
+      "hero": {
+        "width": 398,
+        "height": 573,
+        "left": 16,
+        "top": 116,
+        "right": 414,
+        "bottom": 689
+      },
+      "portfolio": {
+        "width": 398,
+        "height": 729,
+        "left": 16,
+        "top": 705,
+        "right": 414,
+        "bottom": 1434
+      },
+      "assets": {
+        "width": 398,
+        "height": 714,
+        "left": 16,
+        "top": 1450,
+        "right": 414,
+        "bottom": 2164
+      },
+      "projects": {
+        "width": 398,
+        "height": 260,
+        "left": 16,
+        "top": 2180,
+        "right": 414,
+        "bottom": 2440
+      },
+      "liquidity": {
+        "width": 398,
+        "height": 204,
+        "left": 16,
+        "top": 2456,
+        "right": 414,
+        "bottom": 2660
+      },
+      "activity": {
+        "width": 398,
+        "height": 278,
+        "left": 16,
+        "top": 2676,
+        "right": 414,
+        "bottom": 2954
+      },
+      "security": {
+        "width": 398,
+        "height": 294,
+        "left": 16,
+        "top": 2970,
+        "right": 414,
+        "bottom": 3264
+      }
+    },
+    "gaps": {
+      "heroToportfolio": 16,
+      "portfolioToassets": 16,
+      "assetsToprojects": 16,
+      "projectsToliquidity": 16,
+      "liquidityToBottom": 16,
+      "activityToSecurity": -398
+    },
+    "flags": {
+      "001": "mounted",
+      "002": "mounted",
+      "003": "mounted",
+      "004": "mounted",
+      "005": "mounted",
+      "006": "mounted",
+      "007": "mounted"
+    },
+    "overflowX": false,
+    "landmarks": {
+      "sections": 7,
+      "headings": 6
+    },
+    "reducedMotion": false,
+    "focusableSample": [
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-hero-cta-primary",
+        "href": "/"
+      },
+      {
+        "tag": "button",
+        "testid": "passport-hero-cta-secondary",
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": "passport-create-project-cta",
+        "href": "/list/?intent=create-project"
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "button",
+        "testid": null,
+        "href": null
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/list/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/liquidity-studio"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/farms"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/pools"
+      },
+      {
+        "tag": "a",
+        "testid": null,
+        "href": "/passport"
+      }
+    ],
+    "overlap": true
+  },
+  "desktopGeometryChecks": [
+    {
+      "name": "heroH",
+      "actual": 360,
+      "target": 360,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "portfolioH",
+      "actual": 176,
+      "target": 176,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "assetsH",
+      "actual": 176,
+      "target": 176,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "projectsH",
+      "actual": 176,
+      "target": 176,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "liquidityH",
+      "actual": 232,
+      "target": 232,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "activityH",
+      "actual": 360,
+      "target": 360,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "securityH",
+      "actual": 360,
+      "target": 360,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "activityW",
+      "actual": 680,
+      "target": 680,
+      "tol": 2,
+      "ok": true
+    },
+    {
+      "name": "securityW",
+      "actual": 680,
+      "target": 680,
+      "tol": 2,
+      "ok": true
+    }
+  ],
+  "gapChecks": [
+    {
+      "name": "desktop.heroToPortfolio",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "desktop.portfolioToAssets",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "desktop.assetsToProjects",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "desktop.projectsToLiquidity",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "desktop.liquidityToBottom",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "desktop.activityToSecurity",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "desktop.noOverflowX",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "tablet.heroToPortfolio",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "tablet.portfolioToAssets",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "tablet.assetsToProjects",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "tablet.projectsToLiquidity",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "tablet.liquidityToBottom",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "tablet.noOverflowX",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "mobile390.heroToPortfolio",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile390.portfolioToAssets",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile390.assetsToProjects",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile390.projectsToLiquidity",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile390.liquidityToBottom",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile390.noOverflowX",
+      "actual": false,
+      "target": false,
+      "ok": true
+    },
+    {
+      "name": "mobile430.heroToPortfolio",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile430.portfolioToAssets",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile430.assetsToProjects",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile430.projectsToLiquidity",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile430.liquidityToBottom",
+      "actual": 16,
+      "target": 16,
+      "tol": 1,
+      "ok": true
+    },
+    {
+      "name": "mobile430.noOverflowX",
+      "actual": false,
+      "target": false,
+      "ok": true
+    }
+  ],
+  "pass": true
+}

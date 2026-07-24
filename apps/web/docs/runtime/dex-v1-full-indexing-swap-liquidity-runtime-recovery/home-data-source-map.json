@@ -1,0 +1,8 @@
+{
+  "tvl": "sum farm.liquidity USD (partial)",
+  "volume24h": "indexed swap count / amountUSD when present (partial)",
+  "farms": "active multiplier farms",
+  "pools": "rewarding else configured pool count",
+  "indexedTokens": "getCanonicalIndexedAssets length",
+  "activeProjects": "getAllProjects length"
+}

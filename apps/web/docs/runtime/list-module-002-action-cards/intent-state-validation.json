@@ -1,0 +1,58 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "intent": "import-token",
+      "path": "/list/",
+      "search": "?intent=import-token",
+      "placeholder": "import-token",
+      "selected": "import-token",
+      "ok": true
+    },
+    {
+      "intent": "create-token",
+      "path": "/list/",
+      "search": "?intent=create-token",
+      "placeholder": "create-token",
+      "selected": "create-token",
+      "ok": true
+    },
+    {
+      "intent": "claim-project",
+      "path": "/list/",
+      "search": "?intent=claim-project",
+      "placeholder": "claim-project",
+      "selected": "claim-project",
+      "ok": true
+    },
+    {
+      "intent": "create-project",
+      "path": "/list/",
+      "search": "?intent=create-project",
+      "placeholder": "create-project",
+      "selected": "create-project",
+      "ok": true
+    },
+    {
+      "intent": "ai-assistant",
+      "path": "/list/",
+      "search": "?intent=ai-assistant",
+      "placeholder": "ai-assistant",
+      "selected": "ai-assistant",
+      "ok": true
+    },
+    {
+      "intent": "invalid",
+      "path": "/list/",
+      "selected": null,
+      "placeholder": "",
+      "ok": true
+    },
+    {
+      "intent": "history",
+      "back": "?intent=import-token",
+      "forward": "?intent=claim-project",
+      "ok": true
+    }
+  ]
+}

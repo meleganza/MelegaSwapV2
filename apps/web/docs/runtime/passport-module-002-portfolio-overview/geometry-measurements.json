@@ -1,0 +1,359 @@
+{
+  "measuredAt": "2026-07-24T03:20:29.022Z",
+  "base": "http://127.0.0.1:58171",
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 1200
+    },
+    "trending": {
+      "width": 1440,
+      "height": 44,
+      "left": 0,
+      "top": 72,
+      "right": 1440,
+      "bottom": 116
+    },
+    "hero": {
+      "width": 1376,
+      "height": 360,
+      "left": 32,
+      "top": 140,
+      "right": 1408,
+      "bottom": 500
+    },
+    "module": {
+      "width": 1376,
+      "height": 176,
+      "left": 32,
+      "top": 516,
+      "right": 1408,
+      "bottom": 692
+    },
+    "summary": {
+      "width": 560,
+      "height": 144,
+      "left": 33,
+      "top": 533,
+      "right": 593,
+      "bottom": 677
+    },
+    "chart": {
+      "width": 320,
+      "height": 144,
+      "left": 600,
+      "top": 533,
+      "right": 920,
+      "bottom": 677
+    },
+    "kpiRow": {
+      "width": 480,
+      "height": 144,
+      "left": 927,
+      "top": 533,
+      "right": 1407,
+      "bottom": 677
+    },
+    "kpis": [
+      {
+        "id": "passport-portfolio-kpi-row",
+        "width": 480,
+        "height": 144,
+        "left": 927,
+        "top": 533,
+        "right": 1407,
+        "bottom": 677
+      },
+      {
+        "id": "passport-portfolio-kpi-crypto",
+        "width": 160,
+        "height": 120,
+        "left": 927,
+        "top": 545,
+        "right": 1087,
+        "bottom": 665
+      },
+      {
+        "id": "passport-portfolio-kpi-mcredits",
+        "width": 160,
+        "height": 120,
+        "left": 1087,
+        "top": 545,
+        "right": 1247,
+        "bottom": 665
+      },
+      {
+        "id": "passport-portfolio-kpi-projects",
+        "width": 160,
+        "height": 120,
+        "left": 1247,
+        "top": 545,
+        "right": 1407,
+        "bottom": 665
+      }
+    ],
+    "heroToPortfolioGap": 16,
+    "overflowX": false,
+    "totalText": "—",
+    "chartPlaceholder": "Performance history unavailable",
+    "laterAssets": false,
+    "heroHeight": 360
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "trending": {
+      "width": 390,
+      "height": 40,
+      "left": 0,
+      "top": 60,
+      "right": 390,
+      "bottom": 100
+    },
+    "hero": {
+      "width": 358,
+      "height": 573,
+      "left": 16,
+      "top": 116,
+      "right": 374,
+      "bottom": 689
+    },
+    "module": {
+      "width": 358,
+      "height": 729,
+      "left": 16,
+      "top": 705,
+      "right": 374,
+      "bottom": 1434
+    },
+    "summary": {
+      "width": 356,
+      "height": 143,
+      "left": 17,
+      "top": 722,
+      "right": 373,
+      "bottom": 865
+    },
+    "chart": {
+      "width": 356,
+      "height": 140,
+      "left": 17,
+      "top": 881,
+      "right": 373,
+      "bottom": 1021
+    },
+    "kpiRow": {
+      "width": 356,
+      "height": 380,
+      "left": 17,
+      "top": 1037,
+      "right": 373,
+      "bottom": 1417
+    },
+    "kpis": [
+      {
+        "id": "passport-portfolio-kpi-row",
+        "width": 356,
+        "height": 380,
+        "left": 17,
+        "top": 1037,
+        "right": 373,
+        "bottom": 1417
+      },
+      {
+        "id": "passport-portfolio-kpi-crypto",
+        "width": 356,
+        "height": 120,
+        "left": 17,
+        "top": 1037,
+        "right": 373,
+        "bottom": 1157
+      },
+      {
+        "id": "passport-portfolio-kpi-mcredits",
+        "width": 356,
+        "height": 120,
+        "left": 17,
+        "top": 1167,
+        "right": 373,
+        "bottom": 1287
+      },
+      {
+        "id": "passport-portfolio-kpi-projects",
+        "width": 356,
+        "height": 120,
+        "left": 17,
+        "top": 1297,
+        "right": 373,
+        "bottom": 1417
+      }
+    ],
+    "heroToPortfolioGap": 16,
+    "overflowX": false,
+    "totalText": "—",
+    "chartPlaceholder": "Performance history unavailable",
+    "laterAssets": false,
+    "heroHeight": 573
+  },
+  "desktopChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 1376,
+        "target": 1376,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleHeight",
+        "actual": 176,
+        "target": 176,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleLeft",
+        "actual": 32,
+        "target": 32,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroHeightFrozen",
+        "actual": 360,
+        "target": 360,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "heroToPortfolioGap",
+        "actual": 16,
+        "target": 16,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "summaryWidth",
+        "actual": 560,
+        "target": 560,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "chartWidth",
+        "actual": 320,
+        "target": 320,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpiRowWidth",
+        "actual": 480,
+        "target": 480,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpiCount",
+        "actual": 3,
+        "target": 3,
+        "ok": true
+      },
+      {
+        "name": "kpi0Width",
+        "actual": 160,
+        "target": 160,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpi0Height",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpi1Width",
+        "actual": 160,
+        "target": 160,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpi1Height",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpi2Width",
+        "actual": 160,
+        "target": 160,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "kpi2Height",
+        "actual": 120,
+        "target": 120,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "noFakeTotal",
+        "actual": "—",
+        "target": "—",
+        "ok": true
+      },
+      {
+        "name": "noFakeChart",
+        "actual": "Performance history unavailable",
+        "target": "unavailable",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      },
+      {
+        "name": "noModule003",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "mobileChecks": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "moduleWidth",
+        "actual": 358,
+        "target": 358,
+        "tol": 2,
+        "ok": true
+      },
+      {
+        "name": "moduleAutoHeight",
+        "actual": 729,
+        "target": ">300",
+        "ok": true
+      },
+      {
+        "name": "noOverflowX",
+        "actual": false,
+        "target": false,
+        "ok": true
+      }
+    ]
+  },
+  "pass": true,
+  "mockupSha256": "14e0f0e570583aa05d06dc67b1e3f327bf890a17f6bd06b5787664bd699024df"
+}

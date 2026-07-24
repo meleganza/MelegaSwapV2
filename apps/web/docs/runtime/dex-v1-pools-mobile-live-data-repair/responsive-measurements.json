@@ -1,0 +1,302 @@
+{
+  "generatedAt": "2026-07-24T15:53:42.027Z",
+  "checks": [
+    {
+      "id": "nav-visible-390",
+      "ok": true,
+      "path": "/pools/",
+      "navExists": true,
+      "position": "fixed",
+      "bottom": 844,
+      "top": 776,
+      "visible": true,
+      "inViewport": true,
+      "headerActive": [
+        "pools"
+      ],
+      "bottomLinks": [
+        {
+          "href": "/",
+          "text": "Home",
+          "current": null
+        },
+        {
+          "href": "/liquidity-studio",
+          "text": "Liquidity",
+          "current": null
+        },
+        {
+          "href": "/farms",
+          "text": "Farms",
+          "current": null
+        },
+        {
+          "href": "/pools",
+          "text": "Pools",
+          "current": "page"
+        },
+        {
+          "href": "/passport",
+          "text": "Passport",
+          "current": null
+        }
+      ],
+      "overflowX": false,
+      "kpiText": false
+    },
+    {
+      "id": "nav-active-pools-390",
+      "ok": true,
+      "headerActive": [
+        "pools"
+      ],
+      "bottom": [
+        {
+          "href": "/",
+          "text": "Home",
+          "current": null
+        },
+        {
+          "href": "/liquidity-studio",
+          "text": "Liquidity",
+          "current": null
+        },
+        {
+          "href": "/farms",
+          "text": "Farms",
+          "current": null
+        },
+        {
+          "href": "/pools",
+          "text": "Pools",
+          "current": "page"
+        },
+        {
+          "href": "/passport",
+          "text": "Passport",
+          "current": null
+        }
+      ]
+    },
+    {
+      "id": "overflow-390",
+      "ok": true,
+      "overflowX": false
+    },
+    {
+      "id": "liq-nav-fixed-390",
+      "ok": true,
+      "position": "fixed"
+    },
+    {
+      "id": "bottom-nav-destinations",
+      "ok": true,
+      "navClicks": [
+        {
+          "href": "/",
+          "path": "http://127.0.0.1:52608/"
+        },
+        {
+          "href": "/liquidity-studio",
+          "path": "http://127.0.0.1:52608/liquidity-studio/"
+        },
+        {
+          "href": "/farms",
+          "path": "http://127.0.0.1:52608/farms/"
+        },
+        {
+          "href": "/pools",
+          "path": "http://127.0.0.1:52608/pools/"
+        },
+        {
+          "href": "/passport",
+          "path": "http://127.0.0.1:52608/passport/"
+        }
+      ]
+    },
+    {
+      "id": "nav-visible-430",
+      "ok": true,
+      "path": "/pools/",
+      "navExists": true,
+      "position": "fixed",
+      "bottom": 932,
+      "top": 864,
+      "visible": true,
+      "inViewport": true,
+      "headerActive": [
+        "pools"
+      ],
+      "bottomLinks": [
+        {
+          "href": "/",
+          "text": "Home",
+          "current": null
+        },
+        {
+          "href": "/liquidity-studio",
+          "text": "Liquidity",
+          "current": null
+        },
+        {
+          "href": "/farms",
+          "text": "Farms",
+          "current": null
+        },
+        {
+          "href": "/pools",
+          "text": "Pools",
+          "current": "page"
+        },
+        {
+          "href": "/passport",
+          "text": "Passport",
+          "current": null
+        }
+      ],
+      "overflowX": false,
+      "kpiText": false
+    },
+    {
+      "id": "nav-active-pools-430",
+      "ok": true,
+      "headerActive": [
+        "pools"
+      ],
+      "bottom": [
+        {
+          "href": "/",
+          "text": "Home",
+          "current": null
+        },
+        {
+          "href": "/liquidity-studio",
+          "text": "Liquidity",
+          "current": null
+        },
+        {
+          "href": "/farms",
+          "text": "Farms",
+          "current": null
+        },
+        {
+          "href": "/pools",
+          "text": "Pools",
+          "current": "page"
+        },
+        {
+          "href": "/passport",
+          "text": "Passport",
+          "current": null
+        }
+      ]
+    },
+    {
+      "id": "overflow-430",
+      "ok": true,
+      "overflowX": false
+    },
+    {
+      "id": "liq-nav-fixed-430",
+      "ok": true,
+      "position": "fixed"
+    },
+    {
+      "id": "nav-visible-desktop",
+      "ok": true,
+      "path": "/pools/",
+      "navExists": true,
+      "position": "fixed",
+      "bottom": 0,
+      "top": 0,
+      "visible": false,
+      "inViewport": false,
+      "headerActive": [
+        "pools"
+      ],
+      "bottomLinks": [
+        {
+          "href": "/",
+          "text": "Home",
+          "current": null
+        },
+        {
+          "href": "/liquidity-studio",
+          "text": "Liquidity",
+          "current": null
+        },
+        {
+          "href": "/farms",
+          "text": "Farms",
+          "current": null
+        },
+        {
+          "href": "/pools",
+          "text": "Pools",
+          "current": "page"
+        },
+        {
+          "href": "/passport",
+          "text": "Passport",
+          "current": null
+        }
+      ],
+      "overflowX": false,
+      "kpiText": false,
+      "note": "Bottom nav intentionally hidden at desktop breakpoints (>=1024px); header nav is canonical"
+    },
+    {
+      "id": "nav-active-pools-desktop",
+      "ok": true,
+      "headerActive": [
+        "pools"
+      ],
+      "bottom": [
+        {
+          "href": "/",
+          "text": "Home",
+          "current": null
+        },
+        {
+          "href": "/liquidity-studio",
+          "text": "Liquidity",
+          "current": null
+        },
+        {
+          "href": "/farms",
+          "text": "Farms",
+          "current": null
+        },
+        {
+          "href": "/pools",
+          "text": "Pools",
+          "current": "page"
+        },
+        {
+          "href": "/passport",
+          "text": "Passport",
+          "current": null
+        }
+      ]
+    },
+    {
+      "id": "overflow-desktop",
+      "ok": true,
+      "overflowX": false
+    },
+    {
+      "id": "liq-nav-fixed-desktop",
+      "ok": true,
+      "position": "fixed",
+      "note": "Bottom nav intentionally hidden at desktop breakpoints (>=1024px); header nav is canonical"
+    },
+    {
+      "id": "factory-pairs-api",
+      "ok": true,
+      "status": "ready",
+      "total": 516,
+      "method": "factory-allPairs-enumeration"
+    }
+  ],
+  "pass": true
+}
