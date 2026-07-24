@@ -133,8 +133,6 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   if (asset.volume24h > 0) {
     return { accent: '24H vol' }
   }
-  if (asset.liquidityScore > 0) {
-    return { accent: 'Liquidity' }
-  }
+  // Do not surface the word "Liquidity" as a fake ticker price movement.
   return {}
 }

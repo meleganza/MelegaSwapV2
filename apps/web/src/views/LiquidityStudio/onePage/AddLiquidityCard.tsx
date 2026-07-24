@@ -593,14 +593,33 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
       <PairSection data-testid="liq-add-pair" data-pixel-add-pair="70">
         <PairSelect
           type="button"
-          onClick={cycleSuggestedPair}
+          onClick={onPresentSelectA}
           data-testid="liq-add-pair-select"
           data-ls-pair-select
-          title="Cycle suggested pairs (BNB/MARCO default). Use token buttons to pick any supported asset."
+          title="Open token search to choose any supported pair. BNB/MARCO is only the default suggestion."
         >
           <PairText>{pairLabel || 'BNB / MARCO'}</PairText>
           <Chevron aria-hidden>▾</Chevron>
         </PairSelect>
+        <button
+          type="button"
+          onClick={cycleSuggestedPair}
+          data-testid="liq-add-pair-suggest"
+          title="Cycle suggested pairs only"
+          style={{
+            marginTop: 6,
+            appearance: 'none',
+            border: 0,
+            background: 'transparent',
+            color: '#A8A8A8',
+            fontSize: 11,
+            cursor: 'pointer',
+            padding: 0,
+            fontFamily: 'inherit',
+          }}
+        >
+          Cycle suggestions
+        </button>
       </PairSection>
 
       <FormSection data-testid="liq-add-form" data-pixel-add-form="250">

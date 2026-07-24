@@ -70,17 +70,49 @@ export function mapFactoryPairToPreviewCard(pair: ClassifiedAmmPair): PoolPrevie
   }
 }
 
+const PAGE_SIZE = 100
+const MAX_PAGES = 40
+
 async function fetchFactoryPairs(): Promise<PairsApiResponse> {
-  const res = await fetch('/api/indexer/pairs?pageSize=100')
-  if (!res.ok) {
-    return { status: 'unavailable', error: `HTTP ${res.status}`, total: 0, rows: [] }
+  const all: ClassifiedAmmPair[] = []
+  let page = 1
+  let total = Infinity
+  let source: string | undefined
+  let discoveryMethod: string | undefined
+  let status = 'ready'
+
+  while (all.length < total && page <= MAX_PAGES) {
+    const res = await fetch(`/api/indexer/pairs?page=${page}&pageSize=${PAGE_SIZE}`)
+    if (!res.ok) {
+      if (page === 1) {
+        return { status: 'unavailable', error: `HTTP ${res.status}`, total: 0, rows: [] }
+      }
+      break
+    }
+    const data = (await res.json()) as PairsApiResponse
+    source = data.source ?? source
+    discoveryMethod = data.discoveryMethod ?? discoveryMethod
+    status = data.status ?? status
+    const rows = data.rows ?? []
+    total = typeof data.total === 'number' ? data.total : all.length + rows.length
+    all.push(...rows)
+    if (rows.length === 0) break
+    page += 1
   }
-  return (await res.json()) as PairsApiResponse
+
+  return {
+    status,
+    total: all.length,
+    rows: all,
+    source,
+    discoveryMethod,
+    error: all.length === 0 && status === 'unavailable' ? 'Factory pairs unavailable' : undefined,
+  }
 }
 
 export function useMelegaFactoryPools(activeChainId?: number): MelegaFactoryPoolsResult {
   const supported = activeChainId == null || activeChainId === MELEGA_CHAIN_ID
-  const { data, error, isLoading } = useSWR(supported ? 'melega-factory-pools-v1' : null, fetchFactoryPairs, {
+  const { data, error, isLoading } = useSWR(supported ? 'melega-factory-pools-v2-paginated' : null, fetchFactoryPairs, {
     revalidateOnFocus: false,
     dedupingInterval: 60_000,
   })

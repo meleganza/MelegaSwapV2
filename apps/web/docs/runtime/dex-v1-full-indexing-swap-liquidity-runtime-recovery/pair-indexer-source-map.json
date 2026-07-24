@@ -1,0 +1,6 @@
+{
+  "api": "/api/indexer/pairs",
+  "diskRegistry": "apps/web/public/registry/onchain/bsc-mainnet.json",
+  "discoveryMethod": "factory-allPairs-enumeration",
+  "pairCountOnDisk": 516
+}

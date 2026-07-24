@@ -12,7 +12,7 @@ function load(rel: string) {
 }
 
 describe('LIQUIDITY_MODULE_002_LB_CARD', () => {
-  it('locks 210 + 48 + 442 + 160 = 860 desktop sections', () => {
+  it('locks active-flow geometry tokens; inactive summary may compact', () => {
     const tokens = load('onePage/onePageTokens.ts')
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(tokens).toContain("lbHeaderExpanded: '210px'")
@@ -21,9 +21,10 @@ describe('LIQUIDITY_MODULE_002_LB_CARD', () => {
     expect(tokens).toContain("lbBodyH: '442px'")
     expect(tokens).toContain("lbBodyHCollapsed: '580px'")
     expect(tokens).toContain("lbFooterH: '160px'")
-    expect(card).toContain("data-pixel-lb-body={heroCollapsed ? '580' : '442'}")
+    // Runtime recovery geometry exception: compact inactive avoids 860px empty shell.
+    expect(card).toContain('compactInactive')
+    expect(card).toContain("data-lb-compact={compactInactive ? '1' : '0'}")
     expect(card).toContain('data-lb-module="002"')
-    expect(card).toContain('overflow: hidden')
   })
 
   it('keeps a single footer CTA path and Learn More accordion', () => {

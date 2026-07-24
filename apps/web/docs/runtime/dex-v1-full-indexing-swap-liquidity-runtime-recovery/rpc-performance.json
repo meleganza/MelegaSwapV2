@@ -1,0 +1,5 @@
+{
+  "pairsApi": "paginated server registry read",
+  "walletLp": "multicall balances via existing useTokenBalancesWithLoadingIndicator",
+  "note": "no new unbounded client RPC loops added"
+}

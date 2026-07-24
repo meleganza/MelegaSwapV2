@@ -4,6 +4,7 @@ import uriToHttp from '@pancakeswap/utils/uriToHttp'
 import { getTokenLogoPosition, getTokenLogoURLByAddress } from 'utils/getTokenLogoURL'
 import { isMarcoSymbol, MARCO_LOGO_URI } from 'design-system/melega/constants/brand'
 import pancakeDefaultList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { localBscTokenLogoCandidates } from './localTokenLogoPath'
 
 export interface TokenLogoInput {
   symbol?: string | null
@@ -59,6 +60,11 @@ export function resolveTokenLogoSources(input: TokenLogoInput): string[] {
     const listLogo = tokenListLogoByKey.get(listKey)
     if (listLogo) {
       uriToHttp(listLogo).forEach((url) => pushUnique(sources, seen, url))
+    }
+
+    // Local historical logos first (checksummed filenames under public/images/56/tokens).
+    if (input.chainId === 56) {
+      localBscTokenLogoCandidates(input.address).forEach((url) => pushUnique(sources, seen, url))
     }
 
     pushUnique(sources, seen, getTokenLogoURLByAddress(normalized, input.chainId))

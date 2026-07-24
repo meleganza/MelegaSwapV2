@@ -1,14 +1,14 @@
 import type { DexAssetRecord } from './types'
-
-const LOCAL_LOGO_PREFIX = '/images/56/tokens/'
+import { localBscTokenLogoPath } from 'lib/token-logo/localTokenLogoPath'
 
 /** Resolve logo URI with explicit fallback — never emit broken relative paths. */
 export function resolveAssetLogo(address?: string, logoURI?: string): { logo?: string; logoFallback: 'initials' | 'generic' } {
   if (logoURI?.startsWith('http') || logoURI?.startsWith('/')) {
     return { logo: logoURI, logoFallback: 'initials' }
   }
-  if (address && /^0x[a-f0-9]{40}$/i.test(address)) {
-    return { logo: `${LOCAL_LOGO_PREFIX}${address.toLowerCase()}.png`, logoFallback: 'initials' }
+  const local = localBscTokenLogoPath(address)
+  if (local) {
+    return { logo: local, logoFallback: 'initials' }
   }
   return { logoFallback: 'generic' }
 }

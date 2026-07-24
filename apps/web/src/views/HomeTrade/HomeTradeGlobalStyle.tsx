@@ -223,20 +223,22 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     left: auto !important;
     transform: none !important;
   }
+  /* Disconnected: allow amount entry + token selection so Instant Swap is usable
+   * before connect. Connect CTA remains the execution gate. */
   .home-trade-swap.is-disconnected .token-amount-input {
-    pointer-events: none !important;
-    opacity: 0.45 !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
   }
 
   .home-trade-swap.is-disconnected .open-currency-select-button,
   .home-trade-swap.is-disconnected [class*='OpenCurrencySelectButton'] {
-    pointer-events: none !important;
-    opacity: 0.5 !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
   }
 
   .home-trade-swap.is-disconnected [class*='SwitchButton'] button {
-    pointer-events: none !important;
-    opacity: 0.4 !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
   }
 
   .home-trade-swap-execution-summary {

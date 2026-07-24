@@ -1,0 +1,25 @@
+{
+  "verdict": "BLOCKED",
+  "readyForCertification": false,
+  "implementedSmokingGuns": [
+    "checksummed local logo resolver",
+    "farm/pool decimal formatting",
+    "duplicate Manage/Open footer removed",
+    "Instant Swap disconnected input unlocked",
+    "Smart Swap Home entry",
+    "Liquidity pair select opens full search",
+    "LB compact inactive geometry",
+    "Home TVL/Volume partial KPI cards",
+    "Factory pairs pagination for Pools discovery",
+    "ticker Liquidity accent removed"
+  ],
+  "blockers": [
+    "Browser screenshot evidence pack not captured",
+    "Mainnet read validation of Factory allPairsLength not executed in this session",
+    "Swap/AddLiquidity/CreatePool transaction construction not gas-simulated end-to-end",
+    "24h USD volume still often unavailable (indexed amountUSD=0) — partial swap-count fallback only",
+    "Wallet position reconstruction not live-verified with a known-balance wallet",
+    "Full project-wide typecheck fails on pre-existing errors outside mission scope"
+  ],
+  "nextAction": "Run local production server against BSC reads + Playwright evidence pack for Home/Swap/Liquidity/Farms/Pools; simulate Router calls; then re-open certification."
+}

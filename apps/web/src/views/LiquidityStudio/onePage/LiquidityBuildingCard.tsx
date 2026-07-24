@@ -16,11 +16,12 @@ const WIZARD_STEPS = ['Setup', 'Budget', 'Strategy', 'Review', 'Activate'] as co
 /** Canonical MARCO — default suggestion only; Custom opens full token search. */
 const MARCO_ADDR = MARCO_BSC_ADDRESS
 
-const Card = styled.section`
+const Card = styled.section<{ $compact?: boolean }>`
   width: ${liqOne.col};
   max-width: 100%;
-  height: ${liqOne.mainRowH};
-  max-height: ${liqOne.mainRowH};
+  /* Geometry exception: inactive summary stays compact — no 860px empty shell. */
+  height: ${({ $compact }) => ($compact ? 'auto' : liqOne.mainRowH)};
+  max-height: ${({ $compact }) => ($compact ? 'none' : liqOne.mainRowH)};
   box-sizing: border-box;
   padding: 0;
   border-radius: ${liqOne.cardRadius};
@@ -31,7 +32,7 @@ const Card = styled.section`
   box-shadow:
     0 18px 48px rgba(0, 0, 0, 0.35),
     0 0 34px rgba(221, 185, 47, 0.06);
-  overflow: hidden;
+  overflow: ${({ $compact }) => ($compact ? 'visible' : 'hidden')};
   display: flex;
   flex-direction: column;
   font-family: ${liqOne.font};
@@ -180,11 +181,11 @@ const Disc = styled.div<{ $x: string; $y: string; $c: string }>`
   border: 1px solid ${({ $c }) => $c};
 `
 
-const Wizard = styled.nav`
-  flex: 0 0 ${liqOne.lbWizardH};
-  height: ${liqOne.lbWizardH};
-  max-height: ${liqOne.lbWizardH};
-  display: grid;
+const Wizard = styled.nav<{ $hidden?: boolean }>`
+  flex: 0 0 ${({ $hidden }) => ($hidden ? '0px' : liqOne.lbWizardH)};
+  height: ${({ $hidden }) => ($hidden ? '0px' : liqOne.lbWizardH)};
+  max-height: ${({ $hidden }) => ($hidden ? '0px' : liqOne.lbWizardH)};
+  display: ${({ $hidden }) => ($hidden ? 'none' : 'grid')};
   grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: center;
   gap: 4px;
@@ -196,8 +197,8 @@ const Wizard = styled.nav`
 
   @media (max-width: 1375px) {
     flex: 0 0 auto;
-    height: auto;
-    max-height: none;
+    height: ${({ $hidden }) => ($hidden ? '0px' : 'auto')};
+    max-height: ${({ $hidden }) => ($hidden ? '0px' : 'none')};
     overflow: visible;
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -236,11 +237,15 @@ const StepDot = styled.span<{ $active?: boolean; $done?: boolean }>`
   border: 1px solid ${({ $active, $done }) => ($active || $done ? liqOne.gold : liqOne.borderStrong)};
 `
 
-const Body = styled.div<{ $heroCollapsed: boolean }>`
-  flex: 0 0 ${({ $heroCollapsed }) => ($heroCollapsed ? liqOne.lbBodyHCollapsed : liqOne.lbBodyH)};
-  height: ${({ $heroCollapsed }) => ($heroCollapsed ? liqOne.lbBodyHCollapsed : liqOne.lbBodyH)};
-  max-height: ${({ $heroCollapsed }) => ($heroCollapsed ? liqOne.lbBodyHCollapsed : liqOne.lbBodyH)};
-  overflow: hidden;
+const Body = styled.div<{ $heroCollapsed: boolean; $compact?: boolean }>`
+  flex: 0 0
+    ${({ $compact, $heroCollapsed }) =>
+      $compact ? 'auto' : $heroCollapsed ? liqOne.lbBodyHCollapsed : liqOne.lbBodyH};
+  height: ${({ $compact, $heroCollapsed }) =>
+    $compact ? 'auto' : $heroCollapsed ? liqOne.lbBodyHCollapsed : liqOne.lbBodyH};
+  max-height: ${({ $compact, $heroCollapsed }) =>
+    $compact ? 'none' : $heroCollapsed ? liqOne.lbBodyHCollapsed : liqOne.lbBodyH};
+  overflow: ${({ $compact }) => ($compact ? 'visible' : 'hidden')};
   overflow-x: hidden;
   box-sizing: border-box;
   padding: 0;
@@ -550,6 +555,8 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
   const isActive = card.phase === 'active' || card.phase === 'manage'
   const inFlow = setupStarted || (card.phase !== 'entry' && !isActive)
   const heroCollapsed = inFlow || isActive
+  /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
+  const compactInactive = !inFlow && !isActive
 
   const activeStep = useMemo(() => {
     if (isActive) return -1
@@ -967,26 +974,28 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
       data-lb024="true"
       data-ds0014="true"
       data-lb-phase={card.phase}
-      data-pixel-lb-card="860"
+      data-pixel-lb-card={compactInactive ? 'compact' : '860'}
       data-lb-module="002"
+      data-lb-compact={compactInactive ? '1' : '0'}
+      $compact={compactInactive}
     >
-      <Hero $collapsed={heroCollapsed} data-testid="liq-lb-header" data-collapsed={heroCollapsed ? '1' : '0'}>
+      <Hero $collapsed={heroCollapsed || compactInactive} data-testid="liq-lb-header" data-collapsed={heroCollapsed || compactInactive ? '1' : '0'}>
         <HeroCopy>
           <EyebrowRow>
             <Eyebrow>AI-POWERED</Eyebrow>
             <Badge>RECOMMENDED</Badge>
           </EyebrowRow>
           <Title>Liquidity Building</Title>
-          <Desc $collapsed={heroCollapsed}>
+          <Desc $collapsed={heroCollapsed || compactInactive}>
             Let Melega convert eligible project activity into LP liquidity over time — you keep ownership.
           </Desc>
-          <Benefits $collapsed={heroCollapsed}>
+          <Benefits $collapsed={heroCollapsed || compactInactive}>
             <Benefit>Budget-limited progressive LP</Benefit>
             <Benefit>You keep ownership of LP</Benefit>
             <Benefit>Pause or stop anytime</Benefit>
           </Benefits>
         </HeroCopy>
-        <Artwork $collapsed={heroCollapsed} aria-hidden>
+        <Artwork $collapsed={heroCollapsed || compactInactive} aria-hidden>
           <Orbit />
           <Orbit2 />
           <Disc $x="12%" $y="18%" $c="rgba(221,185,47,0.7)" />
@@ -1012,7 +1021,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
           </StepBtn>
         </Wizard>
       ) : (
-        <Wizard data-testid="liq-lb-wizard" aria-label="Liquidity Building steps">
+        <Wizard $hidden={compactInactive} data-testid="liq-lb-wizard" aria-label="Liquidity Building steps">
           {WIZARD_STEPS.map((label, i) => (
             <StepBtn key={label} type="button" $active={activeStep === i} $done={activeStep > i}>
               <StepDot $active={activeStep === i} $done={activeStep > i}>
@@ -1026,8 +1035,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
 
       <Body
         $heroCollapsed={heroCollapsed}
+        $compact={compactInactive}
         data-testid="liq-lb-body"
-        data-pixel-lb-body={heroCollapsed ? '580' : '442'}
+        data-pixel-lb-body={compactInactive ? 'auto' : heroCollapsed ? '580' : '442'}
       >
         {showProgramBar ? (
           <ProgramBar data-testid="liq-lb-program-bar">
