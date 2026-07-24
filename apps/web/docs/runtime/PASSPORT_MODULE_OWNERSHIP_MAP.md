@@ -28,13 +28,14 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportStudio/PassportHero.tsx`, `PassportIdentityCard.tsx` (future) |
-| **Owned styles** | Hero geometry tokens (`heroW/H`, left/right columns) |
-| **Permitted hooks** | Identity/display sources when certified; `useAccount` for wallet presence only |
-| **Forbidden** | Fake verified badges; labeling external wallet as Passport; mockup numbers |
-| **Bounding box** | Desktop 1376×360; left 616 + gap 40 + right 680 |
-| **Data sources** | Real display name / handle / member-since / verification / Passport id / connected-wallet count — or honest unavailable |
+| **Owned components** | `PassportHeroIdentityModule.tsx`, `PassportHeroCopy.tsx`, `PassportIdentityCard.tsx`, `PassportVerificationBadge.tsx`, `PassportIdentityMetadata.tsx`, `PassportHeroBackground.tsx`, `usePassportHeroIdentity.ts`, `buildPassportHeroIdentityViewModel.ts`, `passportHeroIdentityTypes.ts` |
+| **Owned styles** | Module 001 geometry tokens (`heroW/H`, left 616 / gap 40 / right 664, identity card 640×304, CTA sizes) |
+| **Permitted hooks** | `usePassportHeroIdentity` (normalized); `useAccount` for wallet presence / active address only |
+| **Forbidden** | Fake verified badges; labeling external wallet as Passport; mockup numbers; inventing Create Passport routes; Modules 002–009 UI |
+| **Bounding box** | Desktop 1376×360; pad 28; inner 1320×304; left 616 + gap 40 + right 664; card 640×304 |
+| **Data sources** | Real display name / handle / member-since / verification / Passport id / connected-wallet count — or honest unavailable/guest/wallet-only |
 | **Depends on** | ARCHITECTURE_000 |
+| **Mount** | `PassportScreen` mounts Module 001; Command Center preserved below when connected |
 
 ---
 

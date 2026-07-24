@@ -1,0 +1,22 @@
+{
+  "productionBuilderStates": [
+    "guest",
+    "wallet-only",
+    "source-unavailable"
+  ],
+  "fixtureValidatedInUnitTests": [
+    "unverified",
+    "pending",
+    "verified",
+    "long-name",
+    "missing-handle",
+    "zero-wallets",
+    "multi-wallets",
+    "individual",
+    "business",
+    "organization"
+  ],
+  "liveGuestScreenshot": "desktop-1440-guest.png",
+  "neverDefaultVerified": true,
+  "mockupNumbersNotUsed": true
+}

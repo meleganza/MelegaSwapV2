@@ -35,12 +35,23 @@ export const passportOne = {
   radius: '16px',
   radiusCompact: '12px',
 
-  /* MODULE geometry targets (desktop 1440) — validated per module mission */
+  /* MODULE 001 geometry targets (desktop 1440) — MODULE_001 locks right region 664 */
   heroW: '1376px',
   heroH: '360px',
+  heroModuleRadius: '18px',
+  heroModulePad: '28px',
+  heroModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  heroModuleBg: '#090B0E',
+  heroModuleShadow: '0 22px 60px rgba(0,0,0,0.38)',
   heroLeftW: '616px',
   heroGap: '40px',
-  heroRightW: '680px',
+  heroRightW: '664px',
+  identityCardW: '640px',
+  identityCardH: '304px',
+  identityCardRadius: '20px',
+  heroPrimaryCtaW: '186px',
+  heroSecondaryCtaW: '124px',
+  heroCtaH: '44px',
 
   portfolioW: '1376px',
   portfolioH: '176px',

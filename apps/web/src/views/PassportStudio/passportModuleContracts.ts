@@ -19,7 +19,7 @@ export const PASSPORT_DESKTOP_CONTRACTS: BoxContract[] = [
     widthPx: 1376,
     heightPx: 360,
     gapAfterPx: 16,
-    notes: 'Left 616 + gap 40 + right 680',
+    notes: 'Left 616 + gap 40 + right 664; identity card 640×304; pad 28',
   },
   {
     module: '002-portfolio',
