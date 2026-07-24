@@ -110,5 +110,18 @@ farm/pool known symbols ────────┘              │
 
 ## Delivery
 
-- Push branch only — **no merge, no deploy**
-- Forbidden files untouched (`exchange.ts`, `contracts.ts`, router, wallet core, token list JSON, farms/pools MasterChef configs)
+| Field | Value |
+| --- | --- |
+| Branch | `dex-v1-legacy-asset-and-liquidity-recovery` |
+| Commit | `8a984bf8` |
+| Push | `origin/dex-v1-legacy-asset-and-liquidity-recovery` |
+| Merge | not performed |
+| Deploy | not performed |
+| Forbidden files | untouched |
+
+## Final report checklist
+
+- Tests: **67 passed** (mission + related Liquidity/portfolio suite)
+- `next build`: **passed**
+- Working tree: clean after docs tip fill
+- Vercel: not triggered (no deploy)

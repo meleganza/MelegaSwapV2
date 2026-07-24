@@ -51,9 +51,11 @@
     "liquidityInjectFixtures": "window.__LIQ_MODULE_*_FIXTURE__ opt-in only"
   },
   "validation": {
-    "missionTests": "39 passed (canonical registry, portfolio, liquidity recovery, module guards)",
+    "missionTests": "67 passed (canonical registry, portfolio, liquidity recovery, module guards, ds0014)",
     "ds0014": "28 passed (pre-existing panel assertion repaired)",
     "nextBuild": "passed",
-    "forbiddenFilesUntouched": true
+    "forbiddenFilesUntouched": true,
+    "commit": "8a984bf8",
+    "push": "origin/dex-v1-legacy-asset-and-liquidity-recovery"
   }
 }
