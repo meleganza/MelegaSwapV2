@@ -18,9 +18,19 @@ export const TrendingRibbon: React.FC = () => {
       (items ?? []).slice(0, displayLimit).map((item) => {
         const slug = item.id.replace(/^trade-asset-/, '').replace(/^indexed-asset-/, '')
         const asset = avatarBySlug[slug]
-        if (!asset) return item
-        return {
+        const href = asset?.address
+          ? `/swap?outputCurrency=${asset.address}`
+          : slug
+            ? `/@${slug}`
+            : undefined
+        const base = {
           ...item,
+          secondary: item.secondary || '—',
+          href,
+        }
+        if (!asset) return base
+        return {
+          ...base,
           icon: (
             <MelegaTokenAvatar
               name={asset.displayName}
@@ -36,9 +46,12 @@ export const TrendingRibbon: React.FC = () => {
     [items, avatarBySlug, displayLimit],
   )
 
+  // "Trending" only when factual ranking items exist; otherwise truthful Live label.
+  const label = trendingEmpty ? 'Live on Melega DEX' : 'Trending on Melega DEX'
+
   return (
     <MelegaTicker
-      label="Trending on Melega DEX"
+      label={label}
       items={enrichedItems}
       marqueeMinItems={useMarquee ? 6 : Number.MAX_SAFE_INTEGER}
       emptyPrimary={

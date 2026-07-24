@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "poolsUxFixtureDefaultOff": true,
+  "hardcodedMarco000036": false,
+  "notes": [
+    "poolsUxFixture test-only when env=1",
+    "no production $0.00036 literal"
+  ]
+}

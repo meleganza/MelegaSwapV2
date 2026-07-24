@@ -129,11 +129,11 @@ export function YourPoolsSection() {
       </Header>
 
       {!account ? (
-        <Empty data-testid="ps-pools-disconnected">Connect wallet to view pools.</Empty>
+        <Empty data-testid="ps-pools-disconnected">Connect wallet to view your pool positions.</Empty>
       ) : positionsLoading ? (
         <Empty data-testid="ps-pools-loading">Loading pool positions…</Empty>
       ) : poolPositions.length === 0 ? (
-        <Empty data-testid="ps-pools-empty">No pool positions found.</Empty>
+        <Empty data-testid="ps-pools-empty">No pool positions found for this wallet.</Empty>
       ) : (
         <Grid data-testid="ps-pools-grid">
           {poolPositions.map((position) => {
@@ -161,6 +161,10 @@ export function YourPoolsSection() {
             setPortfolioViewMode('ALL')
             setFilter('All')
             setPoolTab('all')
+            const el = document.querySelector('[data-ps-pool-explorer]')
+            if (el instanceof HTMLElement) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
           }}
         >
           Explore Pools

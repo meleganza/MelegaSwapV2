@@ -1,0 +1,7 @@
+{
+  "addLiquidity": "/liquidity-studio?view=add",
+  "createPool": "/liquidity-studio?view=add",
+  "explorePools": "scroll [data-ps-pool-explorer] + set ALL filter",
+  "positionManage": "/liquidity-studio?view=positions (portfolio cards)",
+  "ammCardCta": "/liquidity-studio?view=add"
+}

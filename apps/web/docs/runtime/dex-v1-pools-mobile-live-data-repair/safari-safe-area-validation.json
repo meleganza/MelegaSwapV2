@@ -1,0 +1,5 @@
+{
+  "note": "Bottom nav uses shared MelegaBottomNavigation fixed + env(safe-area-inset-bottom) from design system",
+  "poolsOverrideRemoved": true,
+  "pass": false
+}

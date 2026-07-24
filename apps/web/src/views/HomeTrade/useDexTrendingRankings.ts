@@ -261,12 +261,14 @@ export function useDexTrendingRankings() {
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
       const { accent, accentPositive } = trendingTickerAccent(asset)
+      const priceLabel = formatTrendingTickerPrice(asset.priceUsd)
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        secondary: formatTrendingTickerPrice(asset.priceUsd),
+        secondary: priceLabel || '—',
         accent,
         accentPositive,
+        href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
       }
     })
   }, [rankedAssets])

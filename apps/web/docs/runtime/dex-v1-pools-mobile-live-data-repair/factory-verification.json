@@ -1,0 +1,8 @@
+{
+  "expected": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+  "constant": "MELEGA_FACTORY_BSC",
+  "matchesFounderInput": true,
+  "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+  "masterbuilder": "0x41D5487836452d23f2c467070244E5842B412794",
+  "vault": "0xb2d57B1A40E61AAb3F88361228E1188E0fB6A21C"
+}

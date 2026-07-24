@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-07-24T15:53:07.661Z",
+  "defects": [
+    {
+      "id": "DEFECT-POOLS-001",
+      "severity": "PoolsStudioGlobalStyle sticky demotion",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-002",
+      "severity": "User trapped on Pools mobile",
+      "root": "same as 001",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-003",
+      "severity": "Inconsistent shell vs Liquidity",
+      "root": "Pools-only sticky override",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-004",
+      "severity": "Trending appears static / false Trending label",
+      "root": "empty ranking still labeled Trending",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-005",
+      "severity": "MARCO price appears fixed",
+      "root": "no hardcoded 0.00036; live format can look static when stale",
+      "status": "mitigated"
+    },
+    {
+      "id": "DEFECT-POOLS-006",
+      "severity": "Pools not connected to Melega factory",
+      "root": "staking-only producers",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-007",
+      "severity": "No credible discovered pools without factory query",
+      "root": "KPI not factory-backed",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-008",
+      "severity": "Positions / metrics not factual",
+      "root": "wallet portfolio + unavailable valuation policy",
+      "status": "mitigated"
+    },
+    {
+      "id": "DEFECT-POOLS-009",
+      "severity": "Dead/misleading CTAs",
+      "root": "Create Pool → build-studio; Explore no scroll",
+      "status": "fixed"
+    },
+    {
+      "id": "DEFECT-POOLS-010",
+      "severity": "Production mock risk",
+      "root": "UX fixture opt-in only; audit clean",
+      "status": "pass"
+    }
+  ]
+}

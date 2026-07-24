@@ -1,0 +1,5 @@
+{
+  "ok": true,
+  "command": "yarn next build",
+  "log": "/tmp/pools-repair-build.log"
+}
