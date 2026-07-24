@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
-import { Currency, CurrencyAmount, Pair, Percent, Token } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ERC20Token, Pair, Percent, Token } from '@pancakeswap/sdk'
 import { useAccount } from 'wagmi'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import useTotalSupply from 'hooks/useTotalSupply'
@@ -13,6 +13,14 @@ import {
   OWNERSHIP_SOURCE_DIRECT_WALLET_LP,
   type WalletLpOwnershipSource,
 } from './walletLpPositionMath'
+import { useFactoryLiquidityTokenPairs } from './useFactoryLiquidityTokenPairs'
+
+function pairKey(tokens: [ERC20Token, ERC20Token]): string {
+  return [tokens[0].address, tokens[1].address]
+    .map((a) => a.toLowerCase())
+    .sort()
+    .join('-')
+}
 
 export interface LiquidityPositionRow {
   id: string
@@ -49,10 +57,24 @@ function usePositionUsdValue(
 export function useLiquidityPositions() {
   const { address: account } = useAccount()
   const trackedTokenPairs = useTrackedTokenPairs()
+  const { factoryTokenPairs, factoryPairCount } = useFactoryLiquidityTokenPairs(Boolean(account))
+
+  /** Tracked + factory-enumerated pairs (deduped). Balance gate hides empty LPs. */
+  const discoveryTokenPairs = useMemo(() => {
+    const seen = new Set<string>()
+    const out: [ERC20Token, ERC20Token][] = []
+    for (const tokens of [...trackedTokenPairs, ...factoryTokenPairs]) {
+      const key = pairKey(tokens)
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(tokens)
+    }
+    return out
+  }, [trackedTokenPairs, factoryTokenPairs])
 
   const tokenPairsWithLiquidityTokens = useMemo(
-    () => trackedTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-    [trackedTokenPairs],
+    () => discoveryTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
+    [discoveryTokenPairs],
   )
 
   const liquidityTokens = useMemo(
@@ -142,7 +164,7 @@ export function useLiquidityPositions() {
     })
   }, [positions.length, account])
 
-  return { positions, isLoading, account }
+  return { positions, isLoading, account, factoryPairCount, discoveryPairCount: discoveryTokenPairs.length }
 }
 
 export function useLiquidityPositionDetails(position?: LiquidityPositionRow) {

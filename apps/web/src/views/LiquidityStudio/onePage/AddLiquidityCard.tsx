@@ -1,26 +1,28 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
+import { useModal } from '@pancakeswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { useCurrency } from 'hooks/Tokens'
 import { useCurrencyBalances } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { liqOne } from './onePageTokens'
 
-/** BSC common bases for in-card pair/token pick (no modal / no drawer). */
-const MARCO_ADDR = '0x963556de11697ddaae61460e815fcbcd84614778'
+/** Canonical MARCO on BSC — default suggestion only, never a forced pair. */
+const MARCO_ADDR = MARCO_BSC_ADDRESS
 const USDT_ADDR = '0x55d398326f99059fF775485246999027B3197955'
 const WBNB_ADDR = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
 
+/** Suggested pair presets (default first). Users may pick any supported tokens via search. */
 const PAIR_PRESETS: Array<{ a: string; b: string }> = [
   { a: 'BNB', b: MARCO_ADDR },
   { a: MARCO_ADDR, b: USDT_ADDR },
   { a: 'BNB', b: USDT_ADDR },
   { a: WBNB_ADDR, b: MARCO_ADDR },
 ]
-
-const TOKEN_CYCLE = ['BNB', MARCO_ADDR, USDT_ADDR, WBNB_ADDR] as const
 
 const Card = styled.section`
   width: ${liqOne.col};
@@ -452,23 +454,6 @@ function dash(v?: string | null): string {
   return v
 }
 
-function currencyKey(c?: Currency | null): string {
-  if (!c) return ''
-  if (c.isNative || c.symbol === 'BNB') return 'BNB'
-  return c.wrapped?.address?.toLowerCase() ?? ''
-}
-
-function nextTokenId(current?: Currency | null, other?: Currency | null): string {
-  const cur = currencyKey(current)
-  const otherId = currencyKey(other)
-  const idx = TOKEN_CYCLE.findIndex((id) => id.toLowerCase() === cur.toLowerCase())
-  for (let i = 1; i <= TOKEN_CYCLE.length; i += 1) {
-    const cand = TOKEN_CYCLE[(Math.max(idx, 0) + i) % TOKEN_CYCLE.length]
-    if (cand.toLowerCase() !== otherId.toLowerCase()) return cand
-  }
-  return TOKEN_CYCLE[0]
-}
-
 type Props = {
   onViewPositions: () => void
 }
@@ -522,7 +507,8 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
     [bnb, marco, usdt, wbnb],
   )
 
-  const cyclePair = useCallback(() => {
+  /** Cycle suggested presets only — never locks the user to MARCO/BNB. */
+  const cycleSuggestedPair = useCallback(() => {
     const next = (pairIdx + 1) % PAIR_PRESETS.length
     setPairIdx(next)
     const a = resolveId(PAIR_PRESETS[next].a)
@@ -533,15 +519,29 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
     }
   }, [pairIdx, resolveId, setCurrencyA, setCurrencyB])
 
-  const onPickA = useCallback(() => {
-    const c = resolveId(nextTokenId(currencyA, currencyB))
-    if (c) setCurrencyA(c)
-  }, [currencyA, currencyB, resolveId, setCurrencyA])
+  const [onPresentSelectA] = useModal(
+    <CurrencySearchModal
+      onCurrencySelect={(c: Currency) => setCurrencyA(c)}
+      selectedCurrency={currencyA}
+      otherSelectedCurrency={currencyB}
+      showCommonBases
+    />,
+    true,
+    true,
+    'add-liquidity-select-a',
+  )
 
-  const onPickB = useCallback(() => {
-    const c = resolveId(nextTokenId(currencyB, currencyA))
-    if (c) setCurrencyB(c)
-  }, [currencyA, currencyB, resolveId, setCurrencyB])
+  const [onPresentSelectB] = useModal(
+    <CurrencySearchModal
+      onCurrencySelect={(c: Currency) => setCurrencyB(c)}
+      selectedCurrency={currencyB}
+      otherSelectedCurrency={currencyA}
+      showCommonBases
+    />,
+    true,
+    true,
+    'add-liquidity-select-b',
+  )
 
   const ctaLabel = useMemo(() => {
     if (!account) return 'Connect Wallet'
@@ -591,7 +591,13 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
       </Header>
 
       <PairSection data-testid="liq-add-pair" data-pixel-add-pair="70">
-        <PairSelect type="button" onClick={cyclePair} data-testid="liq-add-pair-select" data-ls-pair-select>
+        <PairSelect
+          type="button"
+          onClick={cycleSuggestedPair}
+          data-testid="liq-add-pair-select"
+          data-ls-pair-select
+          title="Cycle suggested pairs (BNB/MARCO default). Use token buttons to pick any supported asset."
+        >
           <PairText>{pairLabel || 'BNB / MARCO'}</PairText>
           <Chevron aria-hidden>▾</Chevron>
         </PairSelect>
@@ -606,7 +612,7 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
             inputMode="decimal"
             aria-label="Token A amount"
           />
-          <TokenSelect type="button" onClick={onPickA} data-testid="liq-add-token-a-select">
+          <TokenSelect type="button" onClick={onPresentSelectA} data-testid="liq-add-token-a-select">
             {currencyA?.symbol ?? '—'}
           </TokenSelect>
           <BalanceRow>
@@ -636,7 +642,7 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
             inputMode="decimal"
             aria-label="Token B amount"
           />
-          <TokenSelect type="button" onClick={onPickB} data-testid="liq-add-token-b-select">
+          <TokenSelect type="button" onClick={onPresentSelectB} data-testid="liq-add-token-b-select">
             {currencyB?.symbol ?? '—'}
           </TokenSelect>
           <BalanceRow>

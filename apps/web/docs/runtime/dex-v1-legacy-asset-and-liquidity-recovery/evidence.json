@@ -1,0 +1,59 @@
+{
+  "mission": "DEX_V1_LEGACY_ASSET_AND_LIQUIDITY_RECOVERY",
+  "certifiedBase": "DEX_V1_POOLS_MOBILE_LIVE_DATA_REPAIR_CERTIFIED",
+  "baseTip": "9b6953e4",
+  "branch": "dex-v1-legacy-asset-and-liquidity-recovery",
+  "generatedAt": "2026-07-24T17:42:00.000Z",
+  "historicalTokenList": {
+    "path": "apps/web/src/config/constants/tokenLists/pancake-default.tokenlist.json",
+    "tokenCount": 326,
+    "logoUriCount": 326,
+    "bscTokenCount": 273,
+    "canonicalMarco": "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+  },
+  "canonicalTokenRegistry": {
+    "module": "apps/web/src/lib/canonical-token-registry",
+    "implementationBacking": "lib/dex-asset-index (no duplicated registry data)",
+    "consumersUpdated": [
+      "views/HomeTrade/useHomeTradeData.ts",
+      "views/HomeTrade/useDexTrendingRankings.ts",
+      "components/SearchModal (via useAllTokens → default token list)",
+      "Liquidity CurrencySearchModal",
+      "Passport / Pools / Liquidity via shared WalletPortfolio model"
+    ]
+  },
+  "liquidityUnlock": {
+    "addLiquidityCard": "CurrencySearchModal for token A/B; MARCO/BNB cycleSuggestedPair default only",
+    "liquidityBuildingCard": "MARCO chip default; Custom opens CurrencySearchModal",
+    "removedWrongMarco": "0x963556de11697ddaae61460e815fcbcd84614778"
+  },
+  "legacyLpDiscovery": {
+    "hook": "useFactoryLiquidityTokenPairs",
+    "api": "/api/indexer/pairs (factory-allPairs-enumeration, paginated)",
+    "merge": "useLiquidityPositions.discoveryTokenPairs = tracked ∪ factory",
+    "balanceGate": true
+  },
+  "stakingRecovery": {
+    "source": "usePoolsStakingRuntime + buildPoolsWalletPortfolio (existing)",
+    "endedOwnedPreserved": true,
+    "withdrawView": "WITHDRAW_OPPORTUNITIES on WalletPortfolio view engine"
+  },
+  "normalizedPortfolio": {
+    "schema": "melega.normalized-user-portfolio.v1",
+    "walletPortfolioSchema": "melega.wallet-portfolio.v1",
+    "liquidity": "selectNormalizedLiquidityPortfolio",
+    "pools": "selectNormalizedPoolsPortfolio",
+    "passport": "usePassportNormalizedPortfolio"
+  },
+  "mockAudit": {
+    "productionMocksRemoved": "no production mock position arrays introduced; fixtures remain localhost/NEXT_PUBLIC flag gated",
+    "poolsUxFixture": "NEXT_PUBLIC_POOLS_UX_FIXTURE===1 only",
+    "liquidityInjectFixtures": "window.__LIQ_MODULE_*_FIXTURE__ opt-in only"
+  },
+  "validation": {
+    "missionTests": "39 passed (canonical registry, portfolio, liquidity recovery, module guards)",
+    "ds0014": "28 passed (pre-existing panel assertion repaired)",
+    "nextBuild": "passed",
+    "forbiddenFilesUntouched": true
+  }
+}

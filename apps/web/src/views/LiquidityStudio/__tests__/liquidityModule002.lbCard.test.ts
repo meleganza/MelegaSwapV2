@@ -31,8 +31,10 @@ describe('LIQUIDITY_MODULE_002_LB_CARD', () => {
     expect(card).toContain('Set Up Liquidity Building')
     expect(card).toContain('Learn More')
     expect(card).toContain('liq-lb-footer')
-    expect(card).not.toContain('CurrencySearchModal')
-    expect(card).not.toContain('useModal')
+    // Legacy recovery: Custom token opens CurrencySearchModal (MARCO remains default chip).
+    expect(card).toContain('CurrencySearchModal')
+    expect(card).toContain('useModal')
+    expect(card).toContain('MARCO_BSC_ADDRESS')
     expect(card).toContain('ConnectSlot')
     // Single ConnectWalletButton usage (footer activate step only)
     expect((card.match(/<ConnectWalletButton/g) || []).length).toBe(1)

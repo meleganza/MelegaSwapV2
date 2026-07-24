@@ -59,7 +59,8 @@ describe('DS001.4 Liquidity Building experience', () => {
     const card = readFileSync(path.join(ROOT, 'onePage/LiquidityBuildingCard.tsx'), 'utf8')
     const page = readFileSync(path.join(ROOT, 'onePage/UnifiedLiquidityPage.tsx'), 'utf8')
     expect(SCREEN).toMatch(/UnifiedLiquidityPage/)
-    expect(card).toMatch(/LiquidityBuildingPanel/)
+    // One-page shell owns LB UX; panel module remains for deep links / legacy surface.
+    expect(card).toMatch(/useLiquidityBuildingCard|data-liquidity-building-panel/)
     expect(page).toMatch(/building/)
     expect(PANEL).toMatch(/data-liquidity-building-panel/)
     expect(PANEL).toMatch(/data-ds0014/)

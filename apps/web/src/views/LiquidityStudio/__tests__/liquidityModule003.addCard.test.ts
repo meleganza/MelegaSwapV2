@@ -38,11 +38,13 @@ describe('LIQUIDITY_MODULE_003 Add Liquidity card', () => {
     expect(add).toContain('data-testid="liq-add-footer"')
   })
 
-  it('forbids Explore Liquidity, modal picker, and duplicated nav CTAs', () => {
+  it('unlocks full token search; keeps positions CTA; forbids duplicated nav CTAs', () => {
     const add = load('onePage/AddLiquidityCard.tsx')
     expect(add).not.toContain('Explore Liquidity')
-    expect(add).not.toContain('CurrencySearchModal')
-    expect(add).not.toContain('useModal')
+    // DEX_V1_LEGACY_ASSET_AND_LIQUIDITY_RECOVERY — MARCO/BNB must not be a forced pair.
+    expect(add).toContain('CurrencySearchModal')
+    expect(add).toContain('useModal')
+    expect(add).toContain('MARCO_BSC_ADDRESS')
     expect(add).not.toContain('LiquidityBuilderPanel')
     expect(add).not.toContain('View Pools')
     expect(add).not.toContain('Create Position')

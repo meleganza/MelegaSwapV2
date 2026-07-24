@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
+import { useModal } from '@pancakeswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
+import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { useCurrency } from 'hooks/Tokens'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
 import { EPOCH_OPTIONS, PROGRAM_STATUS_LABEL } from '../liquidityBuilding/programStatus'
@@ -10,9 +13,8 @@ import { liqOne } from './onePageTokens'
 
 const WIZARD_STEPS = ['Setup', 'Budget', 'Strategy', 'Review', 'Activate'] as const
 
-/** BSC common bases for in-card picker (no modal). */
-const MARCO_ADDR = '0x963556de11697ddaae61460e815fcbcd84614778'
-const WBNB_ADDR = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+/** Canonical MARCO — default suggestion only; Custom opens full token search. */
+const MARCO_ADDR = MARCO_BSC_ADDRESS
 
 const Card = styled.section`
   width: ${liqOne.col};
@@ -528,7 +530,22 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
   const [advancedOpen, setAdvancedOpen] = useState(false)
 
   const marco = useCurrency(MARCO_ADDR)
-  const wbnb = useCurrency(WBNB_ADDR)
+  const selectedProjectToken = useCurrency(card.draft.tokenAddress ?? undefined)
+
+  const [onPresentCustomToken] = useModal(
+    <CurrencySearchModal
+      onCurrencySelect={(c: Currency) => {
+        card.setToken(c)
+        setSetupStarted(true)
+        setUiStep(0)
+      }}
+      selectedCurrency={selectedProjectToken ?? undefined}
+      showCommonBases
+    />,
+    true,
+    true,
+    'lb-custom-token-select',
+  )
 
   const isActive = card.phase === 'active' || card.phase === 'manage'
   const inFlow = setupStarted || (card.phase !== 'entry' && !isActive)
@@ -746,9 +763,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
               <TokenChip
                 type="button"
                 $on={Boolean(card.draft.tokenSymbol && card.draft.tokenSymbol !== 'MARCO')}
-                onClick={() => pickToken(wbnb)}
+                onClick={onPresentCustomToken}
+                data-testid="lb-token-select"
+                title="Search any supported project token (WBNB remains a quick suggestion via search)"
               >
-                Custom / WBNB
+                Custom / Search
               </TokenChip>
             </TokenRow>
             <MetaValue style={{ marginTop: 6 }}>{card.draft.tokenSymbol || 'Select a project token'}</MetaValue>

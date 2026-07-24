@@ -26,6 +26,8 @@ export type PortfolioViewType =
   | 'LIQUIDITY'
   | 'FARM'
   | 'POOL'
+  | 'LEGACY'
+  | 'WITHDRAW_OPPORTUNITIES'
 
 export const PORTFOLIO_VIEW_TYPES = [
   'ALL',
@@ -37,6 +39,8 @@ export const PORTFOLIO_VIEW_TYPES = [
   'LIQUIDITY',
   'FARM',
   'POOL',
+  'LEGACY',
+  'WITHDRAW_OPPORTUNITIES',
 ] as const satisfies readonly PortfolioViewType[]
 
 // ─── View result ────────────────────────────────────────────────────────────
@@ -93,6 +97,25 @@ function isClaimablePosition(position: PortfolioPosition): boolean {
   return hasClaimableEconomics(position) || hasClaimableActionEnabled(position)
 }
 
+function isWithdrawAction(action: PortfolioPositionAction | null | undefined): boolean {
+  if (!action || !action.enabled) return false
+  return action.type === 'WITHDRAW' || action.type === 'UNSTAKE' || action.type === 'REMOVE_LIQUIDITY'
+}
+
+function isWithdrawOpportunity(position: PortfolioPosition): boolean {
+  if (isWithdrawAction(position.recommendedAction)) return true
+  if (isWithdrawAction(position.actions?.primary)) return true
+  const secondary = position.actions?.secondary
+  if (Array.isArray(secondary) && secondary.some(isWithdrawAction)) return true
+  return false
+}
+
+function isLegacyPosition(position: PortfolioPosition): boolean {
+  if (position.status === 'ENDED' || position.status === 'UNAVAILABLE') return true
+  if (position.importance === 'ARCHIVED') return true
+  return false
+}
+
 // ─── View predicates (filters only — no ranking) ────────────────────────────
 
 type ViewPredicate = (position: PortfolioPosition) => boolean
@@ -107,6 +130,8 @@ const VIEW_PREDICATES: Record<PortfolioViewType, ViewPredicate> = {
   LIQUIDITY: (p) => p.positionType === 'LIQUIDITY',
   FARM: (p) => p.positionType === 'FARM',
   POOL: (p) => p.positionType === 'POOL',
+  LEGACY: isLegacyPosition,
+  WITHDRAW_OPPORTUNITIES: isWithdrawOpportunity,
 }
 
 function buildViewSummary(positions: readonly PortfolioPosition[]): PortfolioViewSummary {

@@ -41,13 +41,15 @@ describe('DEX-LIQ-ONE-002 Liquidity one-page final', () => {
     expect(liquidityStudioModeFromView('explore')).toBe('Add Liquidity')
   })
 
-  it('Add Liquidity card only anchors to positions', () => {
+  it('Add Liquidity card only anchors to positions and unlocks token search', () => {
     const add = load('onePage/AddLiquidityCard.tsx')
     expect(add).toContain('View Your Positions')
     expect(add).not.toContain('View Pools')
     expect(add).not.toContain('Explore Liquidity')
     expect(add).not.toContain('LiquidityBuilderPanel')
-    expect(add).not.toContain('CurrencySearchModal')
+    // Legacy recovery: full CurrencySearchModal (MARCO/BNB default suggestion only).
+    expect(add).toContain('CurrencySearchModal')
+    expect(add).toContain('MARCO_BSC_ADDRESS')
   })
 
   it('DEX snapshot refuses fabricated TVL', () => {

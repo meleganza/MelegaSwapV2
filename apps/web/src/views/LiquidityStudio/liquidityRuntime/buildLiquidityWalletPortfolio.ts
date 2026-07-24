@@ -11,6 +11,11 @@ import type {
   WalletPortfolio,
   WalletPortfolioSectionStatus,
 } from 'lib/wallet-portfolio/contracts'
+import { resolvePortfolioView } from 'lib/wallet-portfolio/viewEngine'
+import {
+  normalizeExistingWalletPortfolio,
+  type NormalizedUserPortfolio,
+} from 'lib/melega-user-portfolio'
 import { adaptStudioRowsToPortfolioPositions } from 'views/CommandCenter/commandCenterRuntime/commandCenterPortfolioCutover'
 import type { LiquidityPositionRow } from './useLiquidityPositions'
 
@@ -130,5 +135,12 @@ export function buildLiquidityWalletPortfolio(input: {
 export function selectLiquidityPortfolioPositions(
   portfolio: WalletPortfolio,
 ): PortfolioPosition[] {
-  return portfolio.positions.filter((p) => p.positionType === 'LIQUIDITY')
+  return resolvePortfolioView(portfolio, 'LIQUIDITY').positions
+}
+
+/** Same normalized model Passport / Pools consume. */
+export function selectNormalizedLiquidityPortfolio(
+  portfolio: WalletPortfolio,
+): NormalizedUserPortfolio {
+  return normalizeExistingWalletPortfolio(portfolio)
 }
