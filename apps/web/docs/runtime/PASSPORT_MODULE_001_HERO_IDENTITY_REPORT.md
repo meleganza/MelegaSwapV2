@@ -26,7 +26,7 @@ Recovery actions:
 
 ## 5. Final commit
 
-(filled after commit)
+ab8715c8427acb958a9ded4e83eacdfde7bf4448
 
 ## 6. Certified architecture base
 
