@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-07-24T23:02:34.878Z",
+  "indexerTotal": 516,
+  "indexerStatus": "ready",
+  "factoryExpected": 516,
+  "match": true,
+  "productionUrl": "https://www.melega.finance",
+  "deploymentId": "dpl_ApvFtihb4e95dMe8wigDrDneqPx2",
+  "deployedCommit": "8f336d9e"
+}

@@ -1,11 +1,12 @@
 {
   "afterRecovery": {
-    "mergedToMain": false,
-    "pushedReleaseBranch": false,
-    "productionDeployId": "dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb",
-    "productionCommitLive": "74b4f2e4 (liquidity module 007 lineage)",
-    "releaseCandidateLocal": "5d9cd6d0",
-    "autoDeployOnMainMerge": true,
-    "actionTaken": "none \u2014 pre-merge gates still required"
+    "mergedToMain": true,
+    "mergeCommit": "8f336d9e",
+    "pr": "https://github.com/meleganza/MelegaSwapV2/pull/3",
+    "pushedReleaseBranch": true,
+    "productionDeployId": "dpl_ApvFtihb4e95dMe8wigDrDneqPx2",
+    "productionCommitLive": "8f336d9e",
+    "releaseCandidate": "af92742e",
+    "autoDeployOnMainMerge": true
   }
 }

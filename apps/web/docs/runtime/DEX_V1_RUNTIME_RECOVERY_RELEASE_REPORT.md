@@ -2,93 +2,68 @@
 
 ## 1. Final verdict
 
-**IN PROGRESS — CRASH RECOVERED; PRE-MERGE GATES GREEN; DEPLOY PENDING**
+**MELEGA_DEX_V1_RUNTIME_RECOVERY_DEPLOYED**
 
 ## CRASH RECOVERY
 
 ### 1. Crash point
 
-Cursor interrupted during `DEX_V1_RUNTIME_RECOVERY_RELEASE_AND_DEPLOY` while local RC server (`next start -p 4320`) / pre-production Playwright smoke was in flight, after the pixel-test assertion commit.
+Cursor interrupted during pre-production smoke / local RC server await after pixel-test commit `5d9cd6d0`.
 
 ### 2. Recovery method
 
-Inspected `git worktree list`, release branch reflog, local commits, `/tmp` test/build/tsc artifacts, untracked evidence directory, listening ports, and live Vercel production inspect. No partial work discarded. Local safety tag `crash-recovery-dex-v1-runtime-release-5d9cd6d0` created (not pushed).
+Worktree/reflog/tmp artifact inspection; local safety tag `crash-recovery-dex-v1-runtime-release-5d9cd6d0` (not pushed). No partial work discarded.
 
-### 3. Recovered worktree
+### 3–5. Recovered worktree / branch / HEAD
 
-`/Users/marcomelega/Projects/MelegaSwapV2/MelegaSwapV2-runtime-release`
+- Path: `/Users/marcomelega/Projects/MelegaSwapV2/MelegaSwapV2-runtime-release`
+- Branch: `dex-v1-runtime-recovery-release`
+- Recovered tip at analysis: `5d9cd6d0` → evidence commit `af92742e`
+- Base: `origin/main@1d422eb5`
+- Certified source: `2e8f6c2e`
 
-### 4. Recovered branch
+### 6–8. Recovered files / pixel test
 
-`dex-v1-runtime-recovery-release`
+Committed assertion update for certified `compactInactive` LB body (`auto` / 580 / 442). DOM measured inactive height **338px** desktop / **297px** mobile (not 860 void). Strict pattern retained.
 
-### 5. Recovered HEAD
+### 9. TypeScript error-diff
 
-`5d9cd6d0` (pixel test align) atop merge `c209b971` of `origin/main@1d422eb5` + certified `2e8f6c2e`.
+Baseline 484 → candidate 487; **category A = 0**. Soft-added 3 errors from `main` `lb-act004` BigInt literals.
 
-### 6. Recovered files
+### 10–11. Phases / post-recovery work
 
-- Merge integration of certified recovery (committed)
-- `liquidityPixelPerfection001.test.ts` assertion update (committed `5d9cd6d0`)
-- Untracked evidence under `apps/web/docs/runtime/dex-v1-runtime-recovery-release/`
-- Local RC server still on port 4320
+Completed remaining pre-merge gates, preview, main merge, production smoke. See phase map JSON.
 
-### 7. Recovered test modification
+### 12–15. Merge / deploy / rollback / production state
 
-Obsolete expectation:
-
-`data-pixel-lb-body={heroCollapsed ? '580' : '442'}`
-
-Updated to certified compact form:
-
-`data-pixel-lb-body={compactInactive ? 'auto' : heroCollapsed ? '580' : '442'}`
-
-### 8. Why the pixel test required updating
-
-Certified recovery introduced `compactInactive` LB geometry. Expanded heights **580/442 remain**. Inactive shell uses content-driven `auto` (measured **338px** desktop / **297px** mobile) — not an 860px empty void. Update preserves strict pattern matching; does not broaden tolerances or disable validation.
-
-### 9. TypeScript error-diff recovery
-
-| Set | Count |
-| --- | ---: |
-| Baseline (`2e8f6c2e`) | 484 |
-| Candidate (RC) | 487 |
-| Category A (mission-introduced) | **0** |
-| Soft-added | 3 (`lb-act004` BigInt literals imported from `main`) |
-
-### 10. Phases already completed
-
-COMPLETE: topology, production branch, deployed commit, provider, worktree, drift audit, merge, integrity gates, focused tests, build, TS diff.  
-PARTIAL: preprod smoke, rollback docs, evidence/report.  
-NOT STARTED at recovery: preview push, main merge, production deploy, production smoke.
-
-### 11. Work completed after recovery
-
-Crash-recovery artifacts; normalized TS diff; pixel isolation + DOM measurements; Liquidity/Home test group 27/27; selector runtime proof (Trade “Select a Token” / Liquidity search inputs); pre-merge gate status GREEN.
-
-### 12. Merge status
-
-Release merge commit exists locally (`c209b971`). **Not merged to `main`. Not pushed.**
-
-### 13. Deployment status
-
-Production still `dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb` @ `74b4f2e4`. No RC production deploy.
-
-### 14. Rollback status
-
-Documented against `dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb` / `vercel rollback`.
-
-### 15. Final production state
-
-Unchanged until controlled push + main merge.
+- PR [#3](https://github.com/meleganza/MelegaSwapV2/pull/3) merged → `8f336d9e` on `main`
+- Production: `dpl_ApvFtihb4e95dMe8wigDrDneqPx2` → `https://www.melega.finance`
+- Rollback: `dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb` / `74b4f2e4`
 
 ---
 
-## Release topology (summary)
+## Release summary
 
-- Production branch: `main` (auto-deploy enabled)
-- Live production SHA before release: `74b4f2e4` (in certified ancestry)
-- Certified source: `2e8f6c2e`
-- Release candidate: `5d9cd6d0`
+| Item | Value |
+| --- | --- |
+| 2. Certified source | `2e8f6c2e` |
+| 3. Production target | `main` |
+| 4. Previous production | `74b4f2e4` / `dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb` |
+| 5. Release candidate | `af92742e` (merge `c209b971` + pixel + docs) |
+| 6. Drift | main pixel/LB-ACT004 reconciled; live prod was already in cert ancestry |
+| 7. Merge strategy | non-FF release merge + GitHub PR merge to main |
+| 8. Conflicts | Add/LB → certified; StudioScreen → main inset fix |
+| 10. Tests | 27 focused passed |
+| 11. Build | `next build` passed |
+| 12. TS | category A 0 |
+| 13. Preview | `dpl_7Rde7JadwHg8owavDRp7gNEqTYNU` Ready |
+| 16. Production deployment | `dpl_ApvFtihb4e95dMe8wigDrDneqPx2` |
+| 17. Deployed commit | `8f336d9e` |
+| 18. Production URL | https://www.melega.finance |
+| 19–20. Live smoke | desktop 10/10, mobile 3/3 |
+| 28. Factory/indexer | total **516** |
+| 35. Rollback | prepared, not executed |
+| 37. Working tree | cleaned after final evidence push |
+| 38. Exact production state | main@`8f336d9e` serving www.melega.finance |
 
-See evidence directory for machine-readable artifacts.
+Honest limitations: read-only release (no irreversible mainnet txs); repo-wide `tsc` remains red on pre-existing category-C debt; USD 24h volume uses `24H Swaps` when `amountUSD=0`.
