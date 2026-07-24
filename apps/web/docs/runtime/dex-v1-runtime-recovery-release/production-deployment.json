@@ -1,0 +1,14 @@
+{
+  "deploymentId": "dpl_ApvFtihb4e95dMe8wigDrDneqPx2",
+  "url": "https://melega-swap-v2-qxdx711uv-melegazas-projects.vercel.app",
+  "aliases": [
+    "https://www.melega.finance",
+    "https://melega.finance"
+  ],
+  "commit": "8f336d9e",
+  "githubDeploymentId": 5596428323,
+  "previousDeploymentId": "dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb",
+  "previousCommit": "74b4f2e4",
+  "status": "Ready",
+  "createdAt": "2026-07-24T22:59:43Z"
+}

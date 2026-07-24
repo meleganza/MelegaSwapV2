@@ -1,0 +1,27 @@
+{
+  "base": "https://www.melega.finance",
+  "commitExpected": "8f336d9e",
+  "timestamp": "2026-07-24T23:02:04.285Z",
+  "checks": [
+    {
+      "name": "no_h_overflow",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "name": "home_loads",
+      "ok": true,
+      "detail": "Home | Melega DEX | $0.0004"
+    },
+    {
+      "name": "pools_loads",
+      "ok": true,
+      "detail": "https://www.melega.finance/pools/"
+    }
+  ],
+  "shots": [],
+  "summary": {
+    "passed": 3,
+    "failed": 0
+  }
+}
