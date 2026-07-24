@@ -80,16 +80,22 @@ const Note = styled.p`
 `
 
 /**
- * Passport — identity & portfolio hub.
- * Connected: reuses Command Center portfolio orchestration (no duplicate portfolio engine).
+ * MARCO Passport — shared identity and account layer (not a crypto wallet).
+ * Connected: reuses Command Center portfolio orchestration until MODULE_001+ cutover.
  * Disconnected: truthful benefits + connect CTA.
+ * Architecture lock: PASSPORT_ARCHITECTURE_000 (PassportStudio tokens + ownership map).
  */
 export const PassportScreen: React.FC = () => {
   const { address } = useAccount()
 
   if (address) {
     return (
-      <Root data-passport-screen data-ux-rebuild-passport data-passport-connected="true">
+      <Root
+        data-passport-screen
+        data-ux-rebuild-passport
+        data-passport-connected="true"
+        data-passport-architecture="000"
+      >
         <Intro>
           <Title>MARCO Passport</Title>
           <Subtitle>Your identity and portfolio hub. External wallet remains the signing authority.</Subtitle>
@@ -103,7 +109,12 @@ export const PassportScreen: React.FC = () => {
   }
 
   return (
-    <Root data-passport-screen data-ux-rebuild-passport data-passport-connected="false">
+    <Root
+      data-passport-screen
+      data-ux-rebuild-passport
+      data-passport-connected="false"
+      data-passport-architecture="000"
+    >
       <PageMeta />
       <Intro>
         <Title>MARCO Passport</Title>
