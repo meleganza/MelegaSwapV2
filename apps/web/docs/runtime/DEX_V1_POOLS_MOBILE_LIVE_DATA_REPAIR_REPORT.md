@@ -10,7 +10,7 @@
 
 ## 3. Mission commit
 
-See tip after mission commit (filled in follow-up docs commit).
+`b619ea30` (`b619ea30dcbd1d72ef233b13bde4a92fd38c36d5`)
 
 ## 4. Certified base
 
