@@ -10,7 +10,7 @@
 
 ## 3. Mission commit
 
-See git tip after mission commit (this report is included in the mission commit).
+`14f00a1b` (`14f00a1bc7e293415eae15bd90eed8e254eb9cda`)
 
 ## 4. Certified base
 
