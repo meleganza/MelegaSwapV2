@@ -1,0 +1,7 @@
+{
+  "releaseCandidateCommit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+  "includesCertifiedTip": "2e8f6c2e",
+  "includesMerge": "c209b971",
+  "includesMainTip": "1d422eb5",
+  "traceability": "git merge-base --is-ancestor 2e8f6c2e 5d9cd6d0"
+}

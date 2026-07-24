@@ -1,0 +1,15 @@
+{
+  "port4310": "free",
+  "port4320": {
+    "listening": true,
+    "pid": 7420,
+    "command": "next start -p 4320",
+    "http": 200
+  },
+  "releaseBranchOnRemote": false,
+  "productionDeployUnchanged": {
+    "id": "dpl_6xaRHRz5hkHUAGpvDZ1TURYzs2yb",
+    "url": "https://www.melega.finance",
+    "note": "still prior liquidity-module deploy; no RC production deploy occurred"
+  }
+}

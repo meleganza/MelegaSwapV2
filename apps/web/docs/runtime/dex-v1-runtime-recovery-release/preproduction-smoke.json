@@ -1,0 +1,256 @@
+{
+  "base": "http://127.0.0.1:4320",
+  "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+  "timestamp": "2026-07-24T22:39:45.386Z",
+  "checks": [
+    {
+      "name": "home_loads",
+      "ok": true,
+      "detail": "Home | Melega DEX | $0.0004"
+    },
+    {
+      "name": "instant_swap_input",
+      "ok": true,
+      "detail": "1.25"
+    },
+    {
+      "name": "smart_swap_cta",
+      "ok": true,
+      "detail": "/trade"
+    },
+    {
+      "name": "mobile_shell",
+      "ok": true,
+      "detail": {
+        "overflow": false
+      }
+    },
+    {
+      "name": "trade_loads",
+      "ok": true,
+      "detail": "http://127.0.0.1:4320/?focus=swap"
+    },
+    {
+      "name": "trade_amount_input",
+      "ok": true,
+      "detail": "0.5"
+    },
+    {
+      "name": "trade_token_selector",
+      "ok": false,
+      "detail": "locator.click: Timeout 12000ms exceeded.\nCall log:\n  - waiting for locator('button').filter({ hasText: /BNB|MARCO|Select|CAKE/i }).first()\n    - locator resolved to <button scale=\"sm\" class=\"sc-52be255b-0 cwwjUK sc-227d6f65-1 cpToQy open-currency-select-button\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <p class=\"sc-20b31a82-5 bYFoEn\">Trade instantly on Melega DEX</p> from <div class=\"sc-20b31a82-2 YuZkg\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - <p class=\"sc-20b31a82-5 bYFoEn\">Trade instantly on Melega DEX</p> from <div class=\"sc-20b31a82-2 YuZkg\">…</div> subtree intercepts pointer events\n  2 × retrying click action\n      - waiting 100ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <button scale=\"sm\" class=\"sc-52be255b-0 cwwjUK\">…</button> from <header class=\"sc-e7552145-0 jvDEJW\" data-melega-app-header=\"true\" data-melega-global-header=\"true\" data-testid=\"melega-global-header\">…</header> subtree intercepts pointer events\n  5 × retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <p class=\"sc-20b31a82-5 bYFoEn\">Trade instantly on Melega DEX</p> from <div class=\"sc-20b31a82-2 YuZkg\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <p class=\"sc-20b31a82-5 bYFoEn\">Trade instantly on Melega DEX</p> from <div class=\"sc-20b31a82-2 YuZkg\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <button scale=\"sm\" class=\"sc-52be255b-0 cwwjUK\">…</button> from <header class=\"sc-e7552145-0 jvDEJW\" data-melega-app-header=\"true\" data-melega-global-header=\"true\" data-testid=\"melega-global-header\">…</header> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <button scale=\"sm\" class=\"sc-52be255b-0 cwwjUK\">…</button> from <header class=\"sc-e7552145-0 jvDEJW\" data-melega-app-header=\"true\" data-melega-global-header=\"true\" data-testid=\"melega-global-header\">…</header> subtree intercepts pointer events\n  2 × retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <p class=\"sc-20b31a82-5 bYFoEn\">Trade instantly on Melega DEX</p> from <div class=\"sc-20b31a82-2 YuZkg\">…</div> subtree intercepts pointer events\n  - retrying click action\n    - waiting 500ms\n"
+    },
+    {
+      "name": "liquidity_loads",
+      "ok": true,
+      "detail": "http://127.0.0.1:4320/liquidity-studio/"
+    },
+    {
+      "name": "liq_token_a",
+      "ok": true,
+      "detail": "opened"
+    },
+    {
+      "name": "lb_compact_attr",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "farms_loads",
+      "ok": true,
+      "detail": "http://127.0.0.1:4320/farms/"
+    },
+    {
+      "name": "pools_loads",
+      "ok": true,
+      "detail": "http://127.0.0.1:4320/pools/"
+    },
+    {
+      "name": "passport_loads",
+      "ok": true,
+      "detail": "http://127.0.0.1:4320/passport/"
+    },
+    {
+      "name": "indexer_pairs_total",
+      "ok": true,
+      "detail": 516
+    }
+  ],
+  "shots": [
+    {
+      "file": "preprod-home-desktop.png",
+      "url": "http://127.0.0.1:4320/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:39:49.928Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-ticker.png",
+      "url": "http://127.0.0.1:4320/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:39:50.034Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-home-mobile.png",
+      "url": "http://127.0.0.1:4320/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timestamp": "2026-07-24T22:39:52.931Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-swap-input.png",
+      "url": "http://127.0.0.1:4320/?focus=swap",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:39:56.594Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-liquidity-token-selector.png",
+      "url": "http://127.0.0.1:4320/liquidity-studio/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:40:13.710Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-liquidity-usdt-selected.png",
+      "url": "http://127.0.0.1:4320/liquidity-studio/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:40:15.657Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-liquidity-building.png",
+      "url": "http://127.0.0.1:4320/liquidity-studio/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:40:15.773Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-farms.png",
+      "url": "http://127.0.0.1:4320/farms/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:40:18.543Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-pools.png",
+      "url": "http://127.0.0.1:4320/pools/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:40:21.291Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-passport.png",
+      "url": "http://127.0.0.1:4320/passport/",
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "timestamp": "2026-07-24T22:40:24.039Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    },
+    {
+      "file": "preprod-pools-mobile-nav.png",
+      "url": "http://127.0.0.1:4320/pools/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timestamp": "2026-07-24T22:40:26.738Z",
+      "commit": "5d9cd6d0cdb600552956b512fb8d241a41f3cca7",
+      "walletConnected": false,
+      "chain": 56
+    }
+  ],
+  "passed": 13,
+  "failed": 1,
+  "recoveryResmoke": {
+    "base": "http://127.0.0.1:4320",
+    "commit": "5d9cd6d0",
+    "timestamp": "2026-07-24T22:53:40.227Z",
+    "checks": [
+      {
+        "name": "liq_token_a_selector",
+        "ok": false,
+        "detail": "no dialog"
+      },
+      {
+        "name": "usdt_search",
+        "ok": true,
+        "detail": true
+      },
+      {
+        "name": "trade_token_selector_force",
+        "ok": false,
+        "detail": "no dialog"
+      },
+      {
+        "name": "instant_swap_input",
+        "ok": true,
+        "detail": "0.5"
+      },
+      {
+        "name": "smart_swap",
+        "ok": true,
+        "detail": "/trade"
+      },
+      {
+        "name": "factory_pairs_516",
+        "ok": true,
+        "detail": 516
+      }
+    ]
+  },
+  "recoveryResmokeSummary": {
+    "passed": 4,
+    "failed": 2
+  }
+}

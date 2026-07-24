@@ -1,0 +1,21 @@
+{
+  "1_release_topology_discovery": "COMPLETE",
+  "2_production_branch_discovery": "COMPLETE",
+  "3_currently_deployed_commit": "COMPLETE",
+  "4_deploy_provider": "COMPLETE",
+  "5_rollback_path": "PARTIAL",
+  "6_isolated_release_worktree": "COMPLETE",
+  "7_production_drift_audit": "COMPLETE",
+  "8_integration_merge": "COMPLETE",
+  "9_certified_integrity_gates": "COMPLETE",
+  "10_focused_tests": "COMPLETE",
+  "11_production_build": "COMPLETE",
+  "12_typescript_baseline_diff": "COMPLETE",
+  "13_preview_deployment": "NOT STARTED",
+  "14_preproduction_smoke": "PARTIAL",
+  "15_rollback_preparation": "PARTIAL",
+  "16_production_merge": "NOT STARTED",
+  "17_production_deployment": "NOT STARTED",
+  "18_production_smoke": "NOT STARTED",
+  "19_evidence_and_report": "PARTIAL"
+}

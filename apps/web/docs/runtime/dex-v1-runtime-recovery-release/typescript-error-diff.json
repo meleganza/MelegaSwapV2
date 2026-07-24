@@ -1,0 +1,72 @@
+{
+  "normalization": "file|line|column|code (message path-stripped); soft key ignores residual message variance",
+  "baselineSource": "2e8f6c2e /tmp/tsc-cert-tip.txt",
+  "candidateSource": "RC merge /tmp/tsc-rc.txt (equiv tip 5d9cd6d0 for TS sources)",
+  "baselineCount": 484,
+  "candidateCount": 487,
+  "addedSoft": [
+    {
+      "file": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts",
+      "line": 114,
+      "column": 19,
+      "code": "TS2737",
+      "message": "BigInt literals are not available when targeting lower than ES2020.",
+      "key": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts|114|19|TS2737|BigInt literals are not available when targeting lower than ES2020."
+    },
+    {
+      "file": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts",
+      "line": 115,
+      "column": 56,
+      "code": "TS2737",
+      "message": "BigInt literals are not available when targeting lower than ES2020.",
+      "key": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts|115|56|TS2737|BigInt literals are not available when targeting lower than ES2020."
+    },
+    {
+      "file": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts",
+      "line": 116,
+      "column": 22,
+      "code": "TS2737",
+      "message": "BigInt literals are not available when targeting lower than ES2020.",
+      "key": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts|116|22|TS2737|BigInt literals are not available when targeting lower than ES2020."
+    }
+  ],
+  "removedSoft": [],
+  "classification": {
+    "A_newlyIntroducedByRelease": [],
+    "B_existingChangedByRelease": [],
+    "C_unchangedPreexistingCount": 484,
+    "C_importedFromMainMerge": [
+      {
+        "file": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts",
+        "line": 114,
+        "column": 19,
+        "code": "TS2737",
+        "message": "BigInt literals are not available when targeting lower than ES2020.",
+        "key": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts|114|19|TS2737|BigInt literals are not available when targeting lower than ES2020."
+      },
+      {
+        "file": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts",
+        "line": 115,
+        "column": 56,
+        "code": "TS2737",
+        "message": "BigInt literals are not available when targeting lower than ES2020.",
+        "key": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts|115|56|TS2737|BigInt literals are not available when targeting lower than ES2020."
+      },
+      {
+        "file": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts",
+        "line": 116,
+        "column": 22,
+        "code": "TS2737",
+        "message": "BigInt literals are not available when targeting lower than ES2020.",
+        "key": "apps/web/src/lib/liquidity-building-runtime/__tests__/lb-act004-production-convergence.test.ts|116|22|TS2737|BigInt literals are not available when targeting lower than ES2020."
+      }
+    ],
+    "D_removed": [],
+    "E_pathMessageNoise": []
+  },
+  "gate": {
+    "categoryACount": 0,
+    "categoryBCount": 0,
+    "pass": true
+  }
+}
