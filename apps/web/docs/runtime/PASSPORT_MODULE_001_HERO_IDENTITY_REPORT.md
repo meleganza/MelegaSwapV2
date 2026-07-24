@@ -196,11 +196,11 @@ No Passport identity profile product (display name, handle, verification evidenc
 
 ## 28. Push result
 
-(filled after push)
+pushed to origin/mission-passport-module-001-hero-identity
 
 ## 29. Working-tree status
 
-(filled after push)
+Clean
 
 ## 30. Exact next mission
 
