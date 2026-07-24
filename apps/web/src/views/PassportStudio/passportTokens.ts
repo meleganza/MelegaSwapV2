@@ -73,8 +73,19 @@ export const passportOne = {
    * across inter-column gaps inside the locked 1376 module width (page moduleGap remains 16).
    */
 
+  /* MODULE 003 — Assets (do not alter MODULE 001–002 geometry tokens) */
   assetsW: '1376px',
   assetsH: '176px',
+  assetsModuleRadius: '16px',
+  assetsModulePadY: '16px',
+  assetsModulePadX: '24px',
+  assetsModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  assetsModuleBg: '#101010',
+  assetsModuleShadow: '0 14px 40px rgba(0,0,0,0.28)',
+  assetsCardW: '320px',
+  assetsCardH: '144px',
+  assetsCardGap: '16px',
+  /** 320×4 + 16×3 = 1328; padX 24+24 = 1376 */
 
   projectsW: '1376px',
   projectsH: '176px',

@@ -58,13 +58,14 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportAssets.tsx` (future) |
-| **Owned styles** | `assetsW/H` |
-| **Permitted hooks** | External-wallet balances; M-Credits account (distinct) |
-| **Forbidden** | Mixing M-Credits into indistinguishable token list; fake sparklines |
-| **Bounding box** | 1376×176 |
-| **Data sources** | Wallet asset inventory (upgrade beyond trade-pair-only); M-Credits ledger |
-| **Depends on** | MODULE 002 |
+| **Owned components** | `PassportAssets.tsx`, `PassportAssetCardShell.tsx`, `PassportAssetsCryptoCard.tsx`, `PassportAssetsMCreditsCard.tsx`, `PassportAssetsWalletsCard.tsx`, `PassportAssetsActionsCard.tsx`, `usePassportAssets.ts`, `buildPassportAssetsViewModel.ts`, `passportAssetsTypes.ts` |
+| **Owned styles** | `assetsW/H`, four cards 320×144, gap 16, padX 24 |
+| **Permitted hooks** | `usePassportAssets`; `useAccount` / `useNetwork` for linked wallet presence |
+| **Forbidden** | Mixing M-Credits into crypto list; fake sparklines/trends; modifying MODULE 001–002 files; inventing unsupported actions |
+| **Bounding box** | Desktop 1376×176 |
+| **Data sources** | Crypto inventory (or unavailable); M-Credits from Treasury Runtime (or unavailable); connected wallets; supported quick actions only |
+| **Depends on** | MODULE 002 certified (frozen) |
+| **Mount** | `PassportScreen` mounts Module 003 below Module 002 |
 
 ---
 
