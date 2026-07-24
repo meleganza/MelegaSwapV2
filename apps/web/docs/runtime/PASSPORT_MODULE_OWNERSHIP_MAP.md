@@ -43,13 +43,14 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportPortfolioOverview.tsx` (future) |
-| **Owned styles** | `portfolioW/H` |
-| **Permitted hooks** | Portfolio aggregation that can factually value categories; M-Credits provenance from Treasury Runtime |
-| **Forbidden** | Treating M-Credits as ERC-20; fabricating totals; fake charts |
-| **Bounding box** | 1376×176 |
-| **Data sources** | Crypto assets value, M-Credits, projects, liquidity — omit unvalued categories from total with disclosure |
-| **Depends on** | MODULE 001 certified |
+| **Owned components** | `PassportPortfolioOverview.tsx`, `PassportPortfolioSummary.tsx`, `PassportPortfolioChart.tsx`, `PassportPortfolioKpiCard.tsx`, `usePassportPortfolioOverview.ts`, `buildPassportPortfolioOverviewViewModel.ts`, `passportPortfolioOverviewTypes.ts` |
+| **Owned styles** | `portfolioW/H`, left 560 / chart 320 / right 480 (3×160 KPI), module chrome tokens |
+| **Permitted hooks** | `usePassportPortfolioOverview`; `useAccount` for wallet presence; future certified valuation; M-Credits from Treasury Runtime |
+| **Forbidden** | Treating M-Credits as ERC-20; including M-Credits or Projects in Total; fabricating totals; fake charts; modifying MODULE 001 files |
+| **Bounding box** | Desktop 1376×176 |
+| **Data sources** | Crypto + liquidity only in Total when valued; M-Credits (Treasury Runtime) and Projects as separate KPIs; honest — / Not Available otherwise |
+| **Depends on** | MODULE 001 certified (frozen) |
+| **Mount** | `PassportScreen` mounts Module 002 below Module 001 |
 
 ---
 

@@ -6,6 +6,7 @@ import { PageMeta } from 'components/Layout/Page'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import CommandCenterScreen from 'views/CommandCenter/CommandCenterScreen'
 import { PassportHeroIdentityModule } from 'views/PassportStudio/PassportHeroIdentityModule'
+import { PassportPortfolioOverview } from 'views/PassportStudio/PassportPortfolioOverview'
 import { passportOne } from 'views/PassportStudio/passportTokens'
 
 const Root = styled.div`
@@ -82,16 +83,11 @@ const Ghost = styled(Link)`
   }
 `
 
-const NextAnchor = styled.div`
-  width: 100%;
-  height: 0;
-  overflow: hidden;
-`
-
 /**
  * MARCO Passport — shared identity and account layer (not a crypto wallet).
- * MODULE 001: Hero + Identity Card.
- * Connected: Command Center portfolio orchestration preserved below Module 001.
+ * MODULE 001: Hero + Identity Card (frozen).
+ * MODULE 002: Portfolio Overview.
+ * Connected: Command Center preserved below Module 002 until later modules cut over.
  * Disconnected: guest bridge with Connect (outside Hero — global shell also owns connect).
  */
 export const PassportScreen: React.FC = () => {
@@ -104,11 +100,13 @@ export const PassportScreen: React.FC = () => {
       data-passport-connected={address ? 'true' : 'false'}
       data-passport-architecture="000"
       data-passport-module-001="mounted"
+      data-passport-module-002="mounted"
     >
       <PageMeta />
       <Content data-testid="passport-page-content">
         <PassportHeroIdentityModule />
-        <NextAnchor id="passport-module-next" data-testid="passport-module-next" aria-hidden="true" />
+        {/* id used by Module 001 Learn More — Module 002 is the next slot (16px page gap). */}
+        <PassportPortfolioOverview />
         {address ? (
           <CommandCenterScreen />
         ) : (

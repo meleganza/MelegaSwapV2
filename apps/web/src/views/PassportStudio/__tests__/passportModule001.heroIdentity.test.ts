@@ -221,13 +221,13 @@ describe('PASSPORT_MODULE_001 Hero Identity', () => {
     expect(screen).toContain('passport-guest-bridge')
   })
 
-  it('does not mount Modules 002–009 implementations', () => {
+  it('does not mount Modules 003–009 implementations (002 may exist after certification)', () => {
     const studioFiles = readdirSync(ROOT)
-    expect(studioFiles.some((f) => /PortfolioOverview|PassportAssets|PassportProjects|PassportLiquidity|PassportActivity|PassportSecurity/.test(f))).toBe(
+    expect(studioFiles.some((f) => /PassportAssets|PassportProjects|PassportLiquidity|PassportActivity|PassportSecurity/.test(f))).toBe(
       false,
     )
     const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).not.toContain('PassportPortfolio')
+    expect(screen).not.toContain('PassportAssets')
     expect(screen).not.toContain('PassportArchitectureShell')
   })
 

@@ -53,8 +53,25 @@ export const passportOne = {
   heroSecondaryCtaW: '124px',
   heroCtaH: '44px',
 
+  /* MODULE 002 — Portfolio Overview (do not alter MODULE 001 hero* tokens) */
   portfolioW: '1376px',
   portfolioH: '176px',
+  portfolioModuleRadius: '16px',
+  portfolioModulePadY: '16px',
+  portfolioModulePadX: '0px',
+  portfolioModuleBorder: '1px solid rgba(255,255,255,0.09)',
+  portfolioModuleBg: '#101010',
+  portfolioModuleShadow: '0 14px 40px rgba(0,0,0,0.28)',
+  portfolioLeftW: '560px',
+  portfolioChartW: '320px',
+  portfolioRightW: '480px',
+  portfolioColGap: '16px',
+  portfolioKpiW: '160px',
+  portfolioKpiH: '120px',
+  /**
+   * Desktop columns 560 + 320 + 480 = 1360; space-between distributes the remaining 16px
+   * across inter-column gaps inside the locked 1376 module width (page moduleGap remains 16).
+   */
 
   assetsW: '1376px',
   assetsH: '176px',

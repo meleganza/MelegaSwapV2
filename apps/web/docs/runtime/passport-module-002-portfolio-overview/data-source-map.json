@@ -1,0 +1,26 @@
+{
+  "totalPortfolioValue": {
+    "rule": "crypto + liquidity only when certified USD exists",
+    "production": "unavailable"
+  },
+  "performance": {
+    "h24": "unavailable",
+    "d7": "unavailable",
+    "d30": "unavailable"
+  },
+  "chart": {
+    "production": "compact placeholder — no fake series"
+  },
+  "cryptoAssets": {
+    "production": "unavailable"
+  },
+  "mCredits": {
+    "production": "unavailable",
+    "neverInTotal": true,
+    "neverErc20": true
+  },
+  "projects": {
+    "production": "unavailable controlled count",
+    "neverInTotal": true
+  }
+}
