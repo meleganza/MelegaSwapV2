@@ -568,7 +568,9 @@ export const DexHomeScreen: React.FC = () => {
     const byId = Object.fromEntries(data.liveEconomyMetrics.map((m) => [m.id, m.value]))
     const byLabel = Object.fromEntries(data.liveEconomyMetrics.map((m) => [m.label.toLowerCase(), m.value]))
     const tvlCard = data.marketCards.find((c) => /tvl/i.test(c.label))
-    const volCard = data.marketCards.find((c) => /volume|24h/i.test(c.label))
+    const volCard = data.marketCards.find((c) => c.id === 'volume-24h' || /^24H Volume$/i.test(c.label))
+    const swapsCard = data.marketCards.find((c) => c.id === 'volume-24h-activity' || /^24H Swaps$/i.test(c.label))
+    const activityCard = volCard ?? swapsCard
     const farms =
       byId.activeFarms ||
       byLabel['active farms'] ||
@@ -586,7 +588,8 @@ export const DexHomeScreen: React.FC = () => {
       NA
     return [
       { label: 'TVL', value: tvlCard?.value ?? NA },
-      { label: '24H Volume', value: volCard?.value ?? NA },
+      // Preserve geometry: one activity KPI slot — dollar volume only when USD-valued.
+      { label: activityCard?.label ?? '24H Swaps', value: activityCard?.value ?? NA },
       { label: 'Active Projects', value: projectCount > 0 ? String(projectCount) : NA },
       { label: 'Farms', value: farms },
       { label: 'Pools', value: pools },

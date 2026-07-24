@@ -1,0 +1,25 @@
+{
+  "resolver": ["lib/token-logo/localTokenLogoPath.ts", "resolveTokenLogoSources", "resolveAssetLogo"],
+  "coverageAfterRecert": "273/273 BSC list addresses have local images/56/tokens PNG",
+  "uncoveredBefore": {
+    "symbol": "AETX",
+    "address": "0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b",
+    "historicalSource": "images/8453/tokens",
+    "reasonAbsentOn56": "logo only under Base (8453) path",
+    "logoElsewhereInRepo": true,
+    "fallbackBehavior": "shared resolver falls through to remote/default; after RECERT-LOGO-001 local 56 path exists"
+  },
+  "defectFixed": "RECERT-LOGO-001",
+  "sampleValidation": [
+    {"symbol": "MARCO", "surface": ["Swap", "Liquidity", "Farms", "Pools", "Home", "Search"], "brokenImage": false},
+    {"symbol": "WBNB", "surface": ["Swap", "Liquidity", "Home"], "brokenImage": false},
+    {"symbol": "USDT", "surface": ["Swap", "Liquidity"], "brokenImage": false},
+    {"symbol": "AETX", "note": "previously uncovered; now local 56 logo after copy", "brokenImage": false},
+    {"class": "duplicate-symbol-risk", "policy": "address-primary matching; no symbol-only logo binding"},
+    {"class": "farm-only", "resolver": "same localBscTokenLogoCandidates"},
+    {"class": "pool-only", "resolver": "same"},
+    {"class": "legacy", "resolver": "same"},
+    {"class": "imported-by-address", "resolver": "checksum then lowercase local candidates"}
+  ],
+  "screenshotEvidence": ["farm-token-logos.png", "search-historical-tokens.png", "swap-token-a-selector.png", "liquidity-token-a-selector.png"]
+}

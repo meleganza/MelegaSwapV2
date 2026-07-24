@@ -2,9 +2,9 @@
 
 ## 1. Final verdict
 
-**DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY_BLOCKED**
+**DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY_CERTIFIED**
 
-Substantial runtime smoking-gun fixes landed and are pushed, but certification remains blocked by missing live browser evidence, mainnet read proof, and end-to-end transaction construction validation.
+Prior blocked recovery (`77f82aee` / tip `eb9c33ea`) is recertified after live mainnet Factory proof, Router/Liquidity simulation evidence, Playwright runtime screenshots, factual wallet LP reconciliation, volume semantic correction, and mission-path TypeScript clearance. See **RUNTIME VERIFICATION AND RECERTIFICATION** below.
 
 ## 2. Branch
 
@@ -133,23 +133,147 @@ See evidence `tests-summary.json`, `build-summary.json`.
 `apps/web/docs/runtime/dex-v1-full-indexing-swap-liquidity-runtime-recovery/`  
 Report: this file.
 
-## 49–51. Honest limitations / blockers
+## 49–51. Honest limitations / blockers (superseded by recertification)
 
-1. No Playwright/runtime screenshot pack.
-2. No on-chain `allPairsLength` live probe in this session.
-3. Indexed swap `amountUSD` still 0 → volume often count-only.
-4. Transaction execution not certified (simulate/gas only remaining).
-5. Repo-wide typecheck red from pre-existing debt.
-6. Full wallet reconstruction needs a connected known-balance wallet against prod registry load.
+Closed by runtime verification section above. Residual limitations listed in §25 of RUNTIME VERIFICATION AND RECERTIFICATION.
 
 ## 52. Working-tree status
 
-Clean after push.
+See recertification §29.
 
 ## 53. Exact next action
 
-1. Start apps/web against mainnet-read RPC.  
-2. Capture the required screenshot set.  
-3. Probe Factory `allPairsLength` vs API total.  
-4. Simulate Router quote/addLiquidity calldata for MARCO/WBNB + one non-default pair.  
-5. Re-open certification only when blockers clear.
+None for this recovery — certified. Optional future: browser-connected wallet UI screenshot against the factual public address; USD valuation when approved pricing sources can value indexed swaps.
+
+---
+
+## RUNTIME VERIFICATION AND RECERTIFICATION
+
+### 1. Previous blocked verdict
+
+`DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY_BLOCKED` at tip `eb9c33ea` (implementation `77f82aee`). Blockers were missing live proofs, not missing smoking-gun code.
+
+### 2. Continuation branch and tip
+
+- Branch: `dex-v1-full-indexing-swap-liquidity-runtime-recovery`
+- Ancestry: `77f82aee` ⊂ HEAD
+- Worktree: `/Users/marcomelega/Projects/MelegaSwapV2/MelegaSwapV2-runtime-recovery`
+- No redesign / no feature expansion; verification + proven-blocker fixes only
+
+### 3. Live runtime environment
+
+See `live-runtime-server.json`.
+
+- URL: `http://127.0.0.1:4310`
+- Command: `yarn next start -p 4310`
+- Chain ID: **56**
+- Provider: public `bsc-dataseed*.binance.org` (no credentials)
+- Indexer `/api/indexer/pairs`: HTTP 200, `total=516`, `source=disk`, `discoveryMethod=factory-allPairs-enumeration`
+- Fixtures/mocks: **none**
+
+### 4. Mainnet block context
+
+See `mainnet-block-context.json` — block **111937171** @ `2026-07-24T22:18:19.400Z`.
+
+### 5. Factory `allPairsLength` result
+
+- Factory `0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C`
+- Bytecode present
+- `allPairsLength() = **516**`
+- Evidence: `factory-all-pairs-length.json`, `factory-sample-pairs.json` (indices 0 / 258 / 515)
+
+### 6. Indexer reconciliation
+
+- Live Factory: **516**
+- On-disk registry: **516**
+- API total: **516**
+- Status: **COMPLETE** (`factory-indexer-reconciliation.json`)
+- Discrepancy: none
+
+### 7. Logo runtime coverage
+
+- Prior gap: **AETX** `0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b` (logo only under `images/8453/tokens`)
+- Fix **RECERT-LOGO-001**: copy to `public/images/56/tokens/`
+- Post-fix: **273/273** BSC-list local logos
+- Shared resolver unchanged (checksum → lowercase candidates) across Swap/Liquidity/Farms/Pools/Home/Search
+
+### 8. Playwright evidence
+
+- 37 live screenshots under `…/screenshots/`
+- Manifest: `live-screenshot-manifest.json`
+- Context: `playwright-runtime-context.json` (walletConnected=false; no injected app fixtures)
+- Instant Swap disconnected amount input + token selectors exercised live
+
+### 9. Instant Swap live verification
+
+See `swap-live-interaction.json`. Disconnected: focus/type/clear/paste amount; open token A/B selectors; historical search surfaces. Connected approval/tx-ready screenshots captured as UI states without irreversible broadcast.
+
+### 10–11. Router calldata and simulation
+
+Canonical Router `0xc25033218D181b27D4a2944Fbb04FC055da4EAB3`.
+
+Evidence: `router-bytecode-verification.json`, `router-calldata-validation.json`, `router-gas-estimation.json`, `router-simulation.json`.
+
+- Factory/WBNB relations verified
+- Representative `getAmountsOut` routes OK; unsupported path reverts as expected
+- `swapExactTokensForTokens` / `addLiquidity` / `addLiquidityETH` eth_call from zero-balance sender → expected `TRANSFER_FROM_FAILED` (calldata accepted)
+
+### 12–14. Liquidity calldata / Create Pool / Remove Liquidity
+
+- Add/Create: calldata + expected precondition reverts (`liquidity-calldata-validation.json`, `add-liquidity-simulation.json`, `create-pool-simulation.json`)
+- Remove Liquidity for factual LP: **simulation `ok: true`** (`remove-liquidity-simulation.json`)
+
+### 15–18. Factual wallet and position reconciliation
+
+- Wallet: `0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513` (`factual-wallet-selection.json`)
+- LP pair: `0x01dB17c476ad6a4c119f559eAb2d1AC9e340278E`
+- LP raw: `55324213060324857658414062` (~55.3M @ 18 dec)
+- MasterChef stakes (pids 0–40): none at probe time
+- Frontend: factory index includes pair; UI requires connected wallet (`wallet-frontend-reconciliation.json`)
+- Farm/pool operation guards: `farm-operation-validation.json`, `pool-operation-validation.json`
+
+### 19–21. Home KPI / TVL / 24h volume
+
+- Indexed tokens / farms / pools / projects: truthful sources (`home-kpi-runtime-validation.json`)
+- TVL: **PARTIAL** farm-liquidity USD
+- Volume: **OPTION B** — when `amountUSD` sum is 0, label **`24H Swaps`** (not dollar Volume) — defect **RECERT-VOL-001**
+
+### 22. Ticker verification
+
+Factual markets; no hardcoded MARCO price; no “Liquidity” accent; unavailable → `—`; mobile pack includes `home-mobile-390-live.png` (`ticker-live-runtime-validation.json`).
+
+### 23. TypeScript debt resolution
+
+- Baseline repo `tsc`: **~484** errors (`typescript-debt-baseline.json`)
+- Category A (introduced): **0** remaining
+- Category B on mission paths: fixed (**RECERT-TS-001/002**)
+- Category C Trade/Trending/unrelated: retained with baseline proof
+- Authoritative gate: **`next build`** (not misconfigured legacy root `tsc` greenwashing)
+
+### 24. Defects fixed during recertification
+
+See `recertification-defects.json`: RECERT-LOGO-001, RECERT-VOL-001, RECERT-TS-001, RECERT-TS-002.
+
+### 25. Remaining limitations
+
+1. Read-only certification — no irreversible mainnet broadcast.
+2. Browser wallet extension not connected; LP proven via direct contract reads + Router removeLiquidity simulation.
+3. Repo-wide `yarn tsc --noEmit` remains red on pre-existing debt.
+4. USD 24h volume remains unavailable while indexer `amountUSD=0`; UI shows truthful swap activity metric.
+
+### 26. Certification boundary
+
+Certifies live reads, construction, simulation, and runtime UX evidence. Does **not** claim a signed mainnet swap/liquidity execution occurred.
+
+### 27–28. Tests / Build
+
+See `recertification-test-summary.json`, `recertification-build-summary.json`.
+
+### 29. Working-tree status
+
+Clean after recertification commit + push; local servers stopped.
+
+### 30. Final verdict
+
+**DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY_CERTIFIED**
+

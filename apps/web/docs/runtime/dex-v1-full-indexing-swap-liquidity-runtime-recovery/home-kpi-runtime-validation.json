@@ -1,0 +1,37 @@
+{
+  "commit": "eb9c33ea+",
+  "kpis": {
+    "indexedTokens": {
+      "definition": "unique valid BSC surface assets from getCanonicalIndexedAssets / trade surface",
+      "doNotDisplayIfStale": 275,
+      "source": "lib/canonical-token-registry"
+    },
+    "farms": {
+      "definition": "configured farm definitions (packages/farms + registry)",
+      "distinguishActive": true,
+      "registryActiveApprox": 66
+    },
+    "pools": {
+      "definition": "product staking pools (SmartChef sousIds), NOT AMM pair count",
+      "ammPairsSeparate": 516,
+      "stakingPoolsConfigured": 241
+    },
+    "activeProjects": {
+      "definition": "Project Page / project registry only",
+      "notDerivedFromTokenCount": true
+    },
+    "tvl": {
+      "mode": "PARTIAL",
+      "source": "sum of farm liquidity USD when priced",
+      "label": "TVL",
+      "meta": "Partial · farm liquidity"
+    },
+    "volumeOrActivity": {
+      "policy": "OPTION B when amountUSD sum is 0",
+      "usdLabel": "24H Volume",
+      "activityLabel": "24H Swaps",
+      "neverLabelZeroUsdAsDollarVolume": true
+    }
+  },
+  "screenshots": ["home-kpis-live.png"]
+}

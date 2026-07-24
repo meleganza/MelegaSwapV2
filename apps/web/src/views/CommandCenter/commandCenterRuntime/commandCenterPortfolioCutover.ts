@@ -852,6 +852,8 @@ export const PORTFOLIO_VIEW_LABEL: Record<PortfolioViewType, string> = {
   LIQUIDITY: 'Liquidity',
   FARM: 'Farm',
   POOL: 'Pool',
+  LEGACY: 'Legacy',
+  WITHDRAW_OPPORTUNITIES: 'Withdraw',
 }
 
 /** Empty-state copy for each view — not owned by View Engine. */
@@ -865,6 +867,8 @@ export const PORTFOLIO_VIEW_EMPTY_MESSAGE: Record<PortfolioViewType, string> = {
   LIQUIDITY: 'No liquidity positions.',
   FARM: 'No farm positions.',
   POOL: 'No pool positions.',
+  LEGACY: 'No legacy positions.',
+  WITHDRAW_OPPORTUNITIES: 'No withdraw opportunities.',
 }
 
 export interface PortfolioViewSelectorModel {

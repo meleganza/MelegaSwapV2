@@ -300,7 +300,6 @@ export const useHomeTradeData = () => {
           accentPositive: quote.change?.positive,
         } satisfies MelegaTickerItem
       })
-      .filter((item): item is MelegaTickerItem => Boolean(item))
   }, [indexedRibbonAssets, marcoPrice, wbnbPrice])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
@@ -375,8 +374,13 @@ export const useHomeTradeData = () => {
     // Partial factual TVL from live farm liquidity (USD when farm runtime prices it).
     const farmTvlUsd = allFarms.reduce((sum, farm) => {
       if (farm.pid === 0 || farm.multiplier === '0X') return sum
-      const liq = farm.liquidity?.toNumber?.()
-      return Number.isFinite(liq) && (liq as number) > 0 ? sum + (liq as number) : sum
+      const withLiq = farm as FarmWithStakedValue
+      const liq = withLiq.liquidity?.toNumber?.()
+      if (Number.isFinite(liq) && (liq as number) > 0) return sum + (liq as number)
+      const lpQuote = withLiq.lpTotalInQuoteToken?.toNumber?.()
+      const quotePrice = Number(withLiq.quoteTokenPriceBusd ?? 0)
+      if (Number.isFinite(lpQuote) && quotePrice > 0) return sum + (lpQuote as number) * quotePrice
+      return sum
     }, 0)
     const tvlLabel = formatUsd(farmTvlUsd)
     if (tvlLabel) {
@@ -389,7 +393,7 @@ export const useHomeTradeData = () => {
       })
     }
 
-    // Partial 24h volume: count of indexed AMM swaps in the live window (USD when available).
+    // Volume policy: never label count-only / zero-USD data as dollar "24H Volume".
     const swapUsd = recentTransactions
       .filter((tx) => tx.type === TransactionType.SWAP)
       .reduce((sum, tx) => sum + (Number.isFinite(tx.amountUSD) ? tx.amountUSD : 0), 0)
@@ -400,15 +404,15 @@ export const useHomeTradeData = () => {
         id: 'volume-24h',
         label: '24H Volume',
         value: volLabel,
-        meta: 'Partial · indexed swaps',
+        meta: 'Partial · USD-valued indexed swaps',
         href: '/trade',
       })
     } else if (swapCount > 0) {
       cards.push({
-        id: 'volume-24h',
-        label: '24H Volume',
-        value: `${swapCount} swaps`,
-        meta: 'Partial · USD valuation pending',
+        id: 'volume-24h-activity',
+        label: '24H Swaps',
+        value: String(swapCount),
+        meta: 'Indexed swap count · USD valuation unavailable',
         href: '/trade',
       })
     }

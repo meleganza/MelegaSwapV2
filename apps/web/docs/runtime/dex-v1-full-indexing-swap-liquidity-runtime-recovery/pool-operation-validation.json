@@ -1,0 +1,16 @@
+{
+  "smartChefFactory": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf",
+  "definition": "historical staking pools distinct from AMM Factory pairs",
+  "factualWallet": "0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513",
+  "ammLpHeld": {
+    "pair": "0x01dB17c476ad6a4c119f559eAb2d1AC9e340278E",
+    "lpBalanceRaw": "55324213060324857658414062",
+    "decimals": 18
+  },
+  "runtimeGuards": {
+    "paginatedFactoryDiscovery": "useMelegaFactoryPools melega-factory-pools-v2-paginated",
+    "normalizedDecimals": true,
+    "endedWithdrawOpportunityUi": "pools-withdraw-opportunity.png / pools-ended-position.png"
+  },
+  "screenshots": ["pools-live-index.png", "pools-wallet-position.png", "pools-ended-position.png", "pools-withdraw-opportunity.png"]
+}

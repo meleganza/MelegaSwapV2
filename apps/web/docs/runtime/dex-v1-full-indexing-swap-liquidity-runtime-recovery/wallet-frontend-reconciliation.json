@@ -1,0 +1,12 @@
+{
+  "wallet": "0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513",
+  "directRead": {
+    "pair": "0x01dB17c476ad6a4c119f559eAb2d1AC9e340278E",
+    "lpBalanceRaw": "55324213060324857658414062",
+    "decimals": 18,
+    "normalized": "55324213.060325"
+  },
+  "frontendExpectation": "Liquidity Studio useLiquidityPositions must surface this pair when factory enumeration includes it and wallet is connected",
+  "pairInFactoryIndex": true,
+  "note": "Browser wallet connection required for UI; direct-read proof is complete"
+}

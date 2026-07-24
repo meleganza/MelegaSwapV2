@@ -49,6 +49,8 @@ describe('DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY', () => {
     const factories = loadSrc('views/PoolsStudio/poolsRuntime/useMelegaFactoryPools.ts')
     expect(data).toContain("label: 'TVL'")
     expect(data).toContain("label: '24H Volume'")
+    expect(data).toContain("label: '24H Swaps'")
+    expect(data).toContain('USD valuation unavailable')
     expect(factories).toContain('MAX_PAGES')
     expect(factories).toContain('melega-factory-pools-v2-paginated')
   })
