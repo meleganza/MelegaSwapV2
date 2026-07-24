@@ -14,7 +14,7 @@
 
 ## Mission commit
 
-See tip after seal commit (filled in follow-up docs commit).
+`9fb0fb72` (`9fb0fb72198021a500e22567c14af7243657ae40`)
 
 ## Crash recovery
 
@@ -24,7 +24,7 @@ See tip after seal commit (filled in follow-up docs commit).
 | Recovered worktree | `/Users/marcomelega/Projects/MelegaSwapV2/MelegaSwapV2-dex-seal` |
 | Recovered branch | `dex-v1-production-seal` |
 | Recovered HEAD (pre-commit) | `258fb26e` |
-| Recovered commit | none yet at crash (uncommitted seal pack); mission commit created after recovery |
+| Recovered commit | `9fb0fb72` (mission commit after recovery) |
 | Recovered files | Full `docs/runtime/dex-v1-production-seal/` evidence pack + all six `DEX_V1_*.md` release docs + `seal.mjs` |
 | Recovered validation | `seal-results.json` pass:true (11/11); freeze/responsive/a11y/mock already present |
 | Recovered build | `.next/BUILD_ID` `xRUeB7B17XBrFYQzJEYlu` + `/tmp/dex-seal-build.log` Done |
