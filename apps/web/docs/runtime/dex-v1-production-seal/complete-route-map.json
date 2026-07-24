@@ -1,0 +1,542 @@
+{
+  "source": "dex-v1-global-information-architecture",
+  "canonical": {
+    "home": "/",
+    "discover-home": "/?focus=projects",
+    "trade-home": "/?focus=swap",
+    "trade-terminal-legacy": "/swap",
+    "project-page": "/@{slug}",
+    "list": "/list",
+    "list-import": "/list?intent=import-token",
+    "list-create-token": "/list?intent=create-token",
+    "list-create-project": "/list?intent=create-project",
+    "list-claim-project": "/list?intent=claim-project",
+    "liquidity-studio": "/liquidity-studio",
+    "liquidity-positions": "/liquidity-studio?view=positions",
+    "liquidity-add": "/liquidity-studio?view=add",
+    "liquidity-building": "/liquidity-studio?view=building",
+    "liquidity-remove": "/liquidity-studio?view=remove",
+    "farms": "/farms",
+    "pools": "/pools",
+    "passport": "/passport",
+    "radar": "/radar",
+    "trending": "/trending"
+  },
+  "inventoryCount": 34,
+  "routes": [
+    {
+      "route": "/",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "HomeTrade/DexHomeScreen",
+      "capabilityOwner": "Discover+Trade(home)",
+      "navEntry": [
+        "header:home",
+        "bottom:home"
+      ],
+      "query": [
+        "focus=swap",
+        "focus=projects"
+      ],
+      "wallet": "optional",
+      "source": "pages/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/trade",
+      "type": "redirect",
+      "canonical": false,
+      "pageOwner": "TradeTerminalScreen",
+      "capabilityOwner": "Trade",
+      "navEntry": [
+        "header:home-active"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/trade/index.tsx",
+      "aliasOf": "/?focus=swap",
+      "redirect": "temporary"
+    },
+    {
+      "route": "/swap",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "TradeTerminalScreen",
+      "capabilityOwner": "Trade",
+      "navEntry": [
+        "legacy"
+      ],
+      "query": [
+        "outputCurrency"
+      ],
+      "wallet": "optional",
+      "source": "pages/swap/index.tsx",
+      "aliasOf": "/?focus=swap"
+    },
+    {
+      "route": "/projects",
+      "type": "redirect",
+      "canonical": false,
+      "pageOwner": "n/a",
+      "capabilityOwner": "Discover",
+      "navEntry": [],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/projects/index.tsx",
+      "aliasOf": "/?focus=projects",
+      "redirect": "temporary"
+    },
+    {
+      "route": "/@{slug}",
+      "type": "rewrite",
+      "canonical": true,
+      "pageOwner": "project-hq/[slug]",
+      "capabilityOwner": "Project Page",
+      "navEntry": [
+        "contextual"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/project-hq/[slug].tsx",
+      "aliasOf": null,
+      "rewriteTo": "/project-hq/:slug"
+    },
+    {
+      "route": "/project-hq/{slug}",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "project-hq/[slug]",
+      "capabilityOwner": "Project Page",
+      "navEntry": [
+        "internal"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/project-hq/[slug].tsx",
+      "aliasOf": "/@{slug}"
+    },
+    {
+      "route": "/list",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "List",
+      "capabilityOwner": "Build/List",
+      "navEntry": [
+        "header:list"
+      ],
+      "query": [
+        "intent"
+      ],
+      "wallet": "optional",
+      "source": "pages/list/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/list?intent=import-token",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "List",
+      "capabilityOwner": "Import Token",
+      "navEntry": [
+        "list"
+      ],
+      "query": [
+        "intent=import-token"
+      ],
+      "wallet": "optional",
+      "source": "useListIntent.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/list?intent=create-token",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "List",
+      "capabilityOwner": "Create Token",
+      "navEntry": [
+        "list"
+      ],
+      "query": [
+        "intent=create-token"
+      ],
+      "wallet": "optional",
+      "source": "useListIntent.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/list?intent=create-project",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "List",
+      "capabilityOwner": "Create Project Page",
+      "navEntry": [
+        "list",
+        "passport-create"
+      ],
+      "query": [
+        "intent=create-project"
+      ],
+      "wallet": "optional",
+      "source": "useListIntent.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/list?intent=claim-project",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "List",
+      "capabilityOwner": "Claim Project Page",
+      "navEntry": [
+        "list"
+      ],
+      "query": [
+        "intent=claim-project"
+      ],
+      "wallet": "optional",
+      "source": "useListIntent.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/list?intent=ai-assistant",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "List",
+      "capabilityOwner": "List AI",
+      "navEntry": [
+        "list"
+      ],
+      "query": [
+        "intent=ai-assistant"
+      ],
+      "wallet": "optional",
+      "source": "useListIntent.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/liquidity-studio",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "LiquidityStudio",
+      "capabilityOwner": "Liquidity",
+      "navEntry": [
+        "header:liquidity",
+        "bottom:liquidity"
+      ],
+      "query": [
+        "view",
+        "step",
+        "opportunityRef"
+      ],
+      "wallet": "optional",
+      "source": "pages/liquidity-studio.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/liquidity-studio?view=positions",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "LiquidityStudio",
+      "capabilityOwner": "Liquidity Positions",
+      "navEntry": [
+        "liquidity"
+      ],
+      "query": [
+        "view=positions"
+      ],
+      "wallet": "optional",
+      "source": "liquidityStudioView.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/liquidity-studio?view=add",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "LiquidityStudio",
+      "capabilityOwner": "Add Liquidity",
+      "navEntry": [
+        "liquidity"
+      ],
+      "query": [
+        "view=add"
+      ],
+      "wallet": "optional",
+      "source": "liquidityStudioView.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/liquidity-studio?view=building",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "LiquidityStudio",
+      "capabilityOwner": "Liquidity Building",
+      "navEntry": [
+        "liquidity"
+      ],
+      "query": [
+        "view=building",
+        "step"
+      ],
+      "wallet": "optional",
+      "source": "liquidityStudioView.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/liquidity-studio?view=remove",
+      "type": "view",
+      "canonical": true,
+      "pageOwner": "LiquidityStudio",
+      "capabilityOwner": "Remove Liquidity",
+      "navEntry": [
+        "liquidity"
+      ],
+      "query": [
+        "view=remove"
+      ],
+      "wallet": "optional",
+      "source": "liquidityStudioView.ts",
+      "aliasOf": null
+    },
+    {
+      "route": "/liquidity",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "Pool (legacy)",
+      "capabilityOwner": "Liquidity",
+      "navEntry": [
+        "legacy"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/liquidity.tsx",
+      "aliasOf": "/liquidity-studio"
+    },
+    {
+      "route": "/farms",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "Farms",
+      "capabilityOwner": "Earn/Farms",
+      "navEntry": [
+        "header:farms",
+        "bottom:farms"
+      ],
+      "query": [
+        "view"
+      ],
+      "wallet": "optional",
+      "source": "pages/farms/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/pools",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "Pools",
+      "capabilityOwner": "Earn/Pools",
+      "navEntry": [
+        "header:pools",
+        "bottom:pools"
+      ],
+      "query": [
+        "view"
+      ],
+      "wallet": "optional",
+      "source": "pages/pools/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/passport",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "PassportScreen",
+      "capabilityOwner": "Passport",
+      "navEntry": [
+        "header:passport",
+        "bottom:passport"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/passport/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/command-center",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "CommandCenter",
+      "capabilityOwner": "Passport (legacy/ops)",
+      "navEntry": [
+        "passport-active"
+      ],
+      "query": [],
+      "wallet": "recommended",
+      "source": "pages/command-center/index.tsx",
+      "aliasOf": "/passport"
+    },
+    {
+      "route": "/portfolio",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "Portfolio",
+      "capabilityOwner": "Passport (legacy)",
+      "navEntry": [
+        "passport-active"
+      ],
+      "query": [],
+      "wallet": "recommended",
+      "source": "pages/portfolio/index.tsx",
+      "aliasOf": "/passport"
+    },
+    {
+      "route": "/workspace",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "Workspace",
+      "capabilityOwner": "Passport (legacy)",
+      "navEntry": [
+        "passport-active"
+      ],
+      "query": [],
+      "wallet": "recommended",
+      "source": "pages/workspace/index.tsx",
+      "aliasOf": "/passport"
+    },
+    {
+      "route": "/import-existing-token",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "Import",
+      "capabilityOwner": "Build/List",
+      "navEntry": [
+        "list-active"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/import-existing-token/index.tsx",
+      "aliasOf": "/list?intent=import-token"
+    },
+    {
+      "route": "/launch",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "Launch",
+      "capabilityOwner": "Build/List",
+      "navEntry": [
+        "list-active"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/launch/index.tsx",
+      "aliasOf": "/list?intent=create-token"
+    },
+    {
+      "route": "/new-project",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "NewProject",
+      "capabilityOwner": "Build/List",
+      "navEntry": [
+        "list-active"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/new-project/index.tsx",
+      "aliasOf": "/list?intent=create-project"
+    },
+    {
+      "route": "/build-studio",
+      "type": "page",
+      "canonical": false,
+      "pageOwner": "BuildStudio",
+      "capabilityOwner": "Build",
+      "navEntry": [
+        "more",
+        "list-active"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/build-studio/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/radar",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "Radar",
+      "capabilityOwner": "Discover/Analytics",
+      "navEntry": [
+        "more"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/radar/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/trending",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "Trending",
+      "capabilityOwner": "Discover",
+      "navEntry": [
+        "more"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/trending/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/collectibles",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "Collectibles",
+      "capabilityOwner": "Identity Hub",
+      "navEntry": [
+        "more"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/collectibles/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/identity",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "Identity",
+      "capabilityOwner": "Identity Console",
+      "navEntry": [
+        "more"
+      ],
+      "query": [],
+      "wallet": "optional",
+      "source": "pages/identity/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/404",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "404",
+      "capabilityOwner": "Error",
+      "navEntry": [],
+      "query": [],
+      "wallet": "n/a",
+      "source": "pages/404/index.tsx",
+      "aliasOf": null
+    },
+    {
+      "route": "/451",
+      "type": "page",
+      "canonical": true,
+      "pageOwner": "451",
+      "capabilityOwner": "Error/Geo",
+      "navEntry": [],
+      "query": [],
+      "wallet": "n/a",
+      "source": "pages/451/index.tsx",
+      "aliasOf": null
+    }
+  ]
+}

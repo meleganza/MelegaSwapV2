@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-07-24T12:46:41.851Z",
+  "mission": "DEX_V1_PRODUCTION_SEAL",
+  "baseTip": "258fb26e",
+  "head": "258fb26efe8fb0b16b7178dc0e9503cd36a73d1b",
+  "branch": "dex-v1-production-seal",
+  "worktree": "/Users/marcomelega/Projects/MelegaSwapV2/MelegaSwapV2-dex-seal",
+  "ancestryOk": true,
+  "pass": true,
+  "checks": [
+    {
+      "id": "ancestry",
+      "ok": true,
+      "base": "258fb26e",
+      "head": "258fb26efe8fb0b16b7178dc0e9503cd36a73d1b"
+    },
+    {
+      "id": "freeze:passport",
+      "ok": true,
+      "checks": 48
+    },
+    {
+      "id": "freeze:list-docs",
+      "ok": true
+    },
+    {
+      "id": "freeze:ia",
+      "ok": true
+    },
+    {
+      "id": "mock-audit",
+      "ok": true,
+      "hits": [],
+      "scanned": [
+        "apps/web/src/views/PassportStudio",
+        "apps/web/src/views/ListStudio",
+        "apps/web/src/views/LiquidityStudio",
+        "apps/web/src/app-shell/config"
+      ]
+    },
+    {
+      "id": "navigation",
+      "ok": true,
+      "count": 14
+    },
+    {
+      "id": "responsive",
+      "ok": true
+    },
+    {
+      "id": "accessibility",
+      "ok": true
+    },
+    {
+      "id": "active:project-home",
+      "ok": true,
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "id": "active:swap-home",
+      "ok": true,
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "id": "active:passport",
+      "ok": true,
+      "headerActive": [
+        "passport"
+      ]
+    }
+  ]
+}

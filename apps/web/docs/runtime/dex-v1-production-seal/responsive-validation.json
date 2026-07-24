@@ -1,0 +1,430 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "routes": [
+      {
+        "route": "/",
+        "status": 200,
+        "overflowX": false,
+        "ms": 948,
+        "ok": true
+      },
+      {
+        "route": "/?focus=swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 824,
+        "ok": true
+      },
+      {
+        "route": "/?focus=projects",
+        "status": 200,
+        "overflowX": false,
+        "ms": 817,
+        "ok": true
+      },
+      {
+        "route": "/swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 994,
+        "ok": true
+      },
+      {
+        "route": "/list",
+        "status": 200,
+        "overflowX": false,
+        "ms": 754,
+        "ok": true
+      },
+      {
+        "route": "/list?intent=create-project",
+        "status": 200,
+        "overflowX": false,
+        "ms": 746,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio",
+        "status": 200,
+        "overflowX": false,
+        "ms": 756,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=positions",
+        "status": 200,
+        "overflowX": false,
+        "ms": 755,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=add",
+        "status": 200,
+        "overflowX": false,
+        "ms": 757,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=building",
+        "status": 200,
+        "overflowX": false,
+        "ms": 760,
+        "ok": true
+      },
+      {
+        "route": "/passport",
+        "status": 200,
+        "overflowX": false,
+        "ms": 741,
+        "ok": true
+      },
+      {
+        "route": "/farms",
+        "status": 200,
+        "overflowX": false,
+        "ms": 754,
+        "ok": true
+      },
+      {
+        "route": "/pools",
+        "status": 200,
+        "overflowX": false,
+        "ms": 788,
+        "ok": true
+      },
+      {
+        "route": "/@marco",
+        "status": 200,
+        "overflowX": false,
+        "ms": 966,
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  "tablet": {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "routes": [
+      {
+        "route": "/",
+        "status": 200,
+        "overflowX": false,
+        "ms": 831,
+        "ok": true
+      },
+      {
+        "route": "/?focus=swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 817,
+        "ok": true
+      },
+      {
+        "route": "/?focus=projects",
+        "status": 200,
+        "overflowX": false,
+        "ms": 855,
+        "ok": true
+      },
+      {
+        "route": "/swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 812,
+        "ok": true
+      },
+      {
+        "route": "/list",
+        "status": 200,
+        "overflowX": false,
+        "ms": 749,
+        "ok": true
+      },
+      {
+        "route": "/list?intent=create-project",
+        "status": 200,
+        "overflowX": false,
+        "ms": 743,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio",
+        "status": 200,
+        "overflowX": false,
+        "ms": 757,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=positions",
+        "status": 200,
+        "overflowX": false,
+        "ms": 743,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=add",
+        "status": 200,
+        "overflowX": false,
+        "ms": 752,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=building",
+        "status": 200,
+        "overflowX": false,
+        "ms": 752,
+        "ok": true
+      },
+      {
+        "route": "/passport",
+        "status": 200,
+        "overflowX": false,
+        "ms": 749,
+        "ok": true
+      },
+      {
+        "route": "/farms",
+        "status": 200,
+        "overflowX": false,
+        "ms": 749,
+        "ok": true
+      },
+      {
+        "route": "/pools",
+        "status": 200,
+        "overflowX": false,
+        "ms": 778,
+        "ok": true
+      },
+      {
+        "route": "/@marco",
+        "status": 200,
+        "overflowX": false,
+        "ms": 811,
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  "mobile-390": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "routes": [
+      {
+        "route": "/",
+        "status": 200,
+        "overflowX": false,
+        "ms": 826,
+        "ok": true
+      },
+      {
+        "route": "/?focus=swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 867,
+        "ok": true
+      },
+      {
+        "route": "/?focus=projects",
+        "status": 200,
+        "overflowX": false,
+        "ms": 806,
+        "ok": true
+      },
+      {
+        "route": "/swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 804,
+        "ok": true
+      },
+      {
+        "route": "/list",
+        "status": 200,
+        "overflowX": false,
+        "ms": 752,
+        "ok": true
+      },
+      {
+        "route": "/list?intent=create-project",
+        "status": 200,
+        "overflowX": false,
+        "ms": 751,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio",
+        "status": 200,
+        "overflowX": false,
+        "ms": 757,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=positions",
+        "status": 200,
+        "overflowX": false,
+        "ms": 745,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=add",
+        "status": 200,
+        "overflowX": false,
+        "ms": 757,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=building",
+        "status": 200,
+        "overflowX": false,
+        "ms": 764,
+        "ok": true
+      },
+      {
+        "route": "/passport",
+        "status": 200,
+        "overflowX": false,
+        "ms": 743,
+        "ok": true
+      },
+      {
+        "route": "/farms",
+        "status": 200,
+        "overflowX": false,
+        "ms": 747,
+        "ok": true
+      },
+      {
+        "route": "/pools",
+        "status": 200,
+        "overflowX": false,
+        "ms": 980,
+        "ok": true
+      },
+      {
+        "route": "/@marco",
+        "status": 200,
+        "overflowX": false,
+        "ms": 799,
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  "mobile-430": {
+    "viewport": {
+      "width": 430,
+      "height": 932
+    },
+    "routes": [
+      {
+        "route": "/",
+        "status": 200,
+        "overflowX": false,
+        "ms": 903,
+        "ok": true
+      },
+      {
+        "route": "/?focus=swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 785,
+        "ok": true
+      },
+      {
+        "route": "/?focus=projects",
+        "status": 200,
+        "overflowX": false,
+        "ms": 763,
+        "ok": true
+      },
+      {
+        "route": "/swap",
+        "status": 200,
+        "overflowX": false,
+        "ms": 757,
+        "ok": true
+      },
+      {
+        "route": "/list",
+        "status": 200,
+        "overflowX": false,
+        "ms": 748,
+        "ok": true
+      },
+      {
+        "route": "/list?intent=create-project",
+        "status": 200,
+        "overflowX": false,
+        "ms": 747,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio",
+        "status": 200,
+        "overflowX": false,
+        "ms": 750,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=positions",
+        "status": 200,
+        "overflowX": false,
+        "ms": 758,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=add",
+        "status": 200,
+        "overflowX": false,
+        "ms": 754,
+        "ok": true
+      },
+      {
+        "route": "/liquidity-studio?view=building",
+        "status": 200,
+        "overflowX": false,
+        "ms": 750,
+        "ok": true
+      },
+      {
+        "route": "/passport",
+        "status": 200,
+        "overflowX": false,
+        "ms": 755,
+        "ok": true
+      },
+      {
+        "route": "/farms",
+        "status": 200,
+        "overflowX": false,
+        "ms": 758,
+        "ok": true
+      },
+      {
+        "route": "/pools",
+        "status": 200,
+        "overflowX": false,
+        "ms": 764,
+        "ok": true
+      },
+      {
+        "route": "/@marco",
+        "status": 200,
+        "overflowX": false,
+        "ms": 891,
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+}

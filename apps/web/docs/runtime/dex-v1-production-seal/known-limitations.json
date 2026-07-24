@@ -1,0 +1,11 @@
+{
+  "limitations": [
+    "List not in mobile bottom rail (header discoverable)",
+    "Create Token Coming Soon on List",
+    "Passport Verified never live without identity API",
+    "Passport portfolio/activity/security may show empty/unavailable honestly",
+    "Soft aliases /command-center and /liquidity still render legacy pages",
+    "Repo-wide tsc debt predates seal (mission-scoped tests + next build gate)",
+    "Liquidity Building activation may remain externally gated"
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "ok": true,
+  "note": "Architecture-related timings only; not a full perf mission.",
+  "byViewport": {
+    "desktop": {
+      "avgMs": 811,
+      "maxMs": 994,
+      "samples": [
+        {
+          "route": "/",
+          "ms": 948
+        },
+        {
+          "route": "/?focus=swap",
+          "ms": 824
+        },
+        {
+          "route": "/?focus=projects",
+          "ms": 817
+        },
+        {
+          "route": "/swap",
+          "ms": 994
+        },
+        {
+          "route": "/list",
+          "ms": 754
+        },
+        {
+          "route": "/list?intent=create-project",
+          "ms": 746
+        },
+        {
+          "route": "/liquidity-studio",
+          "ms": 756
+        },
+        {
+          "route": "/liquidity-studio?view=positions",
+          "ms": 755
+        },
+        {
+          "route": "/liquidity-studio?view=add",
+          "ms": 757
+        },
+        {
+          "route": "/liquidity-studio?view=building",
+          "ms": 760
+        },
+        {
+          "route": "/passport",
+          "ms": 741
+        },
+        {
+          "route": "/farms",
+          "ms": 754
+        },
+        {
+          "route": "/pools",
+          "ms": 788
+        },
+        {
+          "route": "/@marco",
+          "ms": 966
+        }
+      ]
+    },
+    "tablet": {
+      "avgMs": 778,
+      "maxMs": 855,
+      "samples": [
+        {
+          "route": "/",
+          "ms": 831
+        },
+        {
+          "route": "/?focus=swap",
+          "ms": 817
+        },
+        {
+          "route": "/?focus=projects",
+          "ms": 855
+        },
+        {
+          "route": "/swap",
+          "ms": 812
+        },
+        {
+          "route": "/list",
+          "ms": 749
+        },
+        {
+          "route": "/list?intent=create-project",
+          "ms": 743
+        },
+        {
+          "route": "/liquidity-studio",
+          "ms": 757
+        },
+        {
+          "route": "/liquidity-studio?view=positions",
+          "ms": 743
+        },
+        {
+          "route": "/liquidity-studio?view=add",
+          "ms": 752
+        },
+        {
+          "route": "/liquidity-studio?view=building",
+          "ms": 752
+        },
+        {
+          "route": "/passport",
+          "ms": 749
+        },
+        {
+          "route": "/farms",
+          "ms": 749
+        },
+        {
+          "route": "/pools",
+          "ms": 778
+        },
+        {
+          "route": "/@marco",
+          "ms": 811
+        }
+      ]
+    },
+    "mobile-390": {
+      "avgMs": 793,
+      "maxMs": 980,
+      "samples": [
+        {
+          "route": "/",
+          "ms": 826
+        },
+        {
+          "route": "/?focus=swap",
+          "ms": 867
+        },
+        {
+          "route": "/?focus=projects",
+          "ms": 806
+        },
+        {
+          "route": "/swap",
+          "ms": 804
+        },
+        {
+          "route": "/list",
+          "ms": 752
+        },
+        {
+          "route": "/list?intent=create-project",
+          "ms": 751
+        },
+        {
+          "route": "/liquidity-studio",
+          "ms": 757
+        },
+        {
+          "route": "/liquidity-studio?view=positions",
+          "ms": 745
+        },
+        {
+          "route": "/liquidity-studio?view=add",
+          "ms": 757
+        },
+        {
+          "route": "/liquidity-studio?view=building",
+          "ms": 764
+        },
+        {
+          "route": "/passport",
+          "ms": 743
+        },
+        {
+          "route": "/farms",
+          "ms": 747
+        },
+        {
+          "route": "/pools",
+          "ms": 980
+        },
+        {
+          "route": "/@marco",
+          "ms": 799
+        }
+      ]
+    },
+    "mobile-430": {
+      "avgMs": 777,
+      "maxMs": 903,
+      "samples": [
+        {
+          "route": "/",
+          "ms": 903
+        },
+        {
+          "route": "/?focus=swap",
+          "ms": 785
+        },
+        {
+          "route": "/?focus=projects",
+          "ms": 763
+        },
+        {
+          "route": "/swap",
+          "ms": 757
+        },
+        {
+          "route": "/list",
+          "ms": 748
+        },
+        {
+          "route": "/list?intent=create-project",
+          "ms": 747
+        },
+        {
+          "route": "/liquidity-studio",
+          "ms": 750
+        },
+        {
+          "route": "/liquidity-studio?view=positions",
+          "ms": 758
+        },
+        {
+          "route": "/liquidity-studio?view=add",
+          "ms": 754
+        },
+        {
+          "route": "/liquidity-studio?view=building",
+          "ms": 750
+        },
+        {
+          "route": "/passport",
+          "ms": 755
+        },
+        {
+          "route": "/farms",
+          "ms": 758
+        },
+        {
+          "route": "/pools",
+          "ms": 764
+        },
+        {
+          "route": "/@marco",
+          "ms": 891
+        }
+      ]
+    }
+  }
+}

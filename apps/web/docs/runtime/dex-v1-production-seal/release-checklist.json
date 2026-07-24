@@ -1,0 +1,14 @@
+{
+  "productsIncluded": true,
+  "freezesIntact": true,
+  "noProductionMockData": true,
+  "canonicalJourneys": true,
+  "routingCanonical": true,
+  "responsive": true,
+  "accessibility": true,
+  "iaCertificationInherited": true,
+  "build": "see build-summary.json",
+  "tests": "see test-summary.json",
+  "noMerge": true,
+  "noDeploy": true
+}

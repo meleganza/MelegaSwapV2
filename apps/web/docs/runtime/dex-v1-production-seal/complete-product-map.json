@@ -1,0 +1,102 @@
+{
+  "source": "dex-v1-global-information-architecture",
+  "domains": {
+    "Discover": {
+      "global": [
+        "/",
+        "/?focus=projects",
+        "/trending",
+        "/radar"
+      ],
+      "contextual": [
+        "/@{slug}"
+      ],
+      "notes": "Discover entry is Home projects focus; /projects redirects"
+    },
+    "Trade": {
+      "global": [
+        "/",
+        "/?focus=swap",
+        "/swap"
+      ],
+      "operational": [
+        "Swap"
+      ],
+      "notes": "/trade redirects to /?focus=swap; Instant Swap on Home"
+    },
+    "Build": {
+      "global": [
+        "/list"
+      ],
+      "operational": [
+        "Import Token",
+        "Create Token",
+        "Create Project Page",
+        "Claim Project Page",
+        "AI Assistant"
+      ],
+      "aliases": [
+        "/import-existing-token",
+        "/launch",
+        "/new-project",
+        "/build-studio"
+      ]
+    },
+    "Earn": {
+      "global": [
+        "/farms",
+        "/pools"
+      ],
+      "operational": [
+        "Farm stake",
+        "Pool stake"
+      ]
+    },
+    "Liquidity": {
+      "global": [
+        "/liquidity-studio"
+      ],
+      "operational": [
+        "Add Liquidity",
+        "Manage Position",
+        "Liquidity Building",
+        "Remove Liquidity"
+      ],
+      "aliases": [
+        "/liquidity"
+      ]
+    },
+    "Passport": {
+      "global": [
+        "/passport"
+      ],
+      "contextual": [
+        "Passport projects",
+        "Passport liquidity deep links",
+        "Passport activity evidence"
+      ],
+      "aliases": [
+        "/command-center",
+        "/portfolio",
+        "/workspace"
+      ]
+    }
+  },
+  "principle": "One canonical operational owner per capability",
+  "includedProducts": [
+    "Home",
+    "Trade/Swap",
+    "Discover",
+    "Project Pages",
+    "List",
+    "Liquidity Studio",
+    "Liquidity Building",
+    "Passport V1",
+    "Farms",
+    "Pools",
+    "Global Navigation",
+    "Wallet Connection",
+    "Canonical Routing",
+    "Information Architecture"
+  ]
+}
