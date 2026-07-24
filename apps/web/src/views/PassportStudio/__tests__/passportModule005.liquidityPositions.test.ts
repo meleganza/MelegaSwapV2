@@ -217,9 +217,9 @@ describe('PASSPORT_MODULE_005 Liquidity Positions', () => {
     expect(screen).toContain('CommandCenterScreen')
   })
 
-  it('does not implement Modules 007–009', () => {
-    const files = readdirSync(ROOT)
-    expect(files.some((f) => /PassportSecurity/.test(f))).toBe(false)
+  it('does not invent farms in Module 005 scope', () => {
+    const blob = load('PassportLiquidity.tsx')
+    expect(blob).not.toContain('Farm')
   })
 
   it('skips NOT_ACTIVE and STOPPED LB programs', () => {

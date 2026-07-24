@@ -94,8 +94,9 @@ const Ghost = styled(Link)`
  * MODULE 003: Assets (frozen).
  * MODULE 004: My Projects (frozen).
  * MODULE 005: Liquidity Positions (frozen).
- * MODULE 006: Recent Activity (bottom-grid left).
- * Connected: Command Center preserved below Module 006 until later modules cut over.
+ * MODULE 006: Recent Activity (bottom-grid left, frozen).
+ * MODULE 007: Security (bottom-grid right).
+ * Connected: Command Center preserved below bottom grid until later cut over.
  * Disconnected: guest bridge with Connect (outside Hero — global shell also owns connect).
  */
 export const PassportScreen: React.FC = () => {
@@ -113,6 +114,7 @@ export const PassportScreen: React.FC = () => {
       data-passport-module-004="mounted"
       data-passport-module-005="mounted"
       data-passport-module-006="mounted"
+      data-passport-module-007="mounted"
     >
       <PageMeta />
       <Content data-testid="passport-page-content">

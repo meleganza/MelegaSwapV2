@@ -99,9 +99,10 @@ describe('PASSPORT_MODULE_002 Portfolio Overview', () => {
     expect(screen).toContain('data-passport-module-002')
   })
 
-  it('does not implement Modules 007–009', () => {
-    const files = readdirSync(ROOT)
-    expect(files.some((f) => /PassportSecurity/.test(f))).toBe(false)
+  it('Module 002 remains mounted without ArchitectureShell', () => {
+    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
+    expect(screen).toContain('data-passport-module-002')
+    expect(screen).not.toContain('PassportArchitectureShell')
   })
 
   it('Module 002 UI avoids Connect Wallet and forbidden product names', () => {

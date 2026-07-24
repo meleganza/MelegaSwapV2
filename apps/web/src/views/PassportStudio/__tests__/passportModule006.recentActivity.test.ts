@@ -225,18 +225,14 @@ describe('PASSPORT_MODULE_006 Recent Activity', () => {
     expect(live.items).toHaveLength(0)
   })
 
-  it('mounts Module 006 with prior modules and no PassportSecurity', () => {
+  it('mounts Module 006 with prior modules preserved', () => {
     const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
     expect(screen).toContain('PassportLiquidity')
     expect(screen).toContain('PassportBottomGrid')
     expect(screen).toContain('data-passport-module-006')
-    expect(screen).not.toContain('PassportSecurity')
-    expect(existsSync(path.join(ROOT, 'PassportSecurity.tsx'))).toBe(false)
   })
 
-  it('does not implement Module 007 Security or invent mockup activity amounts', () => {
-    const files = readdirSync(ROOT)
-    expect(files.some((f) => /PassportSecurity/.test(f))).toBe(false)
+  it('does not invent mockup activity amounts', () => {
     const blob = ['PassportActivity.tsx', 'buildPassportRecentActivityViewModel.ts']
       .map(load)
       .join('\n')

@@ -1,11 +1,12 @@
 /**
- * PASSPORT_MODULE_006 — desktop bottom row layout.
- * Left: Recent Activity (owned). Right: reserved Security slot (not implemented).
+ * PASSPORT bottom row layout.
+ * Left: Module 006 Recent Activity (frozen). Right: Module 007 Security.
  */
 import React from 'react'
 import styled from 'styled-components'
 import { passportOne } from './passportTokens'
 import { PassportActivity, type PassportActivityProps } from './PassportActivity'
+import { PassportSecurity, type PassportSecurityProps } from './PassportSecurity'
 
 const Grid = styled.div`
   width: 100%;
@@ -23,41 +24,17 @@ const Grid = styled.div`
   }
 `
 
-/**
- * Geometry reserve for Module 007 only — not a Security implementation.
- * Do not mount PassportSecurity here.
- */
-const SecurityReserve = styled.aside`
-  width: ${passportOne.bottomColW};
-  height: ${passportOne.activityH};
-  max-width: 100%;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  border-radius: 16px;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.015);
-  pointer-events: none;
+export type PassportBottomGridProps = PassportActivityProps & {
+  security?: PassportSecurityProps
+}
 
-  @media (max-width: 1199px) {
-    width: 100%;
-    height: 120px;
-  }
-
-  @media (max-width: 767px) {
-    height: 80px;
-  }
-`
-
-export type PassportBottomGridProps = PassportActivityProps
-
-export const PassportBottomGrid: React.FC<PassportBottomGridProps> = (props) => (
+export const PassportBottomGrid: React.FC<PassportBottomGridProps> = ({
+  security,
+  ...activityProps
+}) => (
   <Grid data-testid="passport-bottom-grid" data-passport-bottom-grid="680+16+680">
-    <PassportActivity {...props} />
-    <SecurityReserve
-      data-testid="passport-security-reserve"
-      data-passport-module-007-reserve="true"
-      aria-hidden="true"
-    />
+    <PassportActivity {...activityProps} />
+    <PassportSecurity {...security} />
   </Grid>
 )
 

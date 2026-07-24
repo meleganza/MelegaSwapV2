@@ -136,6 +136,13 @@ export const passportOne = {
   bottomGap: '16px',
   /** bottom grid: 680 + 16 + 680 = 1376 */
 
+  /* MODULE 007 — Security (do not alter MODULE 001–006 geometry tokens) */
+  securityW: '680px',
+  securityH: '360px',
+  securityHeaderH: '64px',
+  securityRowH: '52px',
+  securityRowGap: '8px',
+
   /* Mobile */
   mobileCanvas: 390,
   mobileContentW: '358px',

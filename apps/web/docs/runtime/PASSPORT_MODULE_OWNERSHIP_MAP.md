@@ -118,13 +118,15 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportSecurity.tsx` (future) |
-| **Owned styles** | Bottom grid right `680px` |
-| **Permitted hooks** | Verification, wallets, sessions — only if implemented |
-| **Forbidden** | Inventing 2FA; claiming verified without evidence; exposing secrets |
-| **Bounding box** | 680px wide |
-| **Data sources** | Real security capabilities only |
-| **Depends on** | MODULE 006 |
+| **Owned components** | `PassportSecurity.tsx`, `usePassportSecurity.ts`, `buildPassportSecurityViewModel.ts`, `passportSecurityTypes.ts` |
+| **Shared mount** | `PassportBottomGrid.tsx` (right slot; left Activity remains Module 006) |
+| **Owned styles** | Bottom grid right `680×360`, rows 52×5, gap 8 |
+| **Permitted hooks** | `usePassportSecurity`; `usePassportHeroIdentity` (read-only verification); `useAccount` |
+| **Forbidden** | Inventing 2FA/scores/risk; claiming verified without evidence; exposing secrets; modifying MODULE 001–006 activity/identity files |
+| **Bounding box** | Desktop 680×360 exact |
+| **Data sources** | Identity verification state + connected wallet presence; sessions/recovery/alerts unavailable until real producers exist |
+| **Depends on** | MODULE 006 certified (frozen) |
+| **Mount** | `PassportBottomGrid` right column |
 
 ---
 

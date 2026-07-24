@@ -38,3 +38,7 @@ export type {
   PassportRecentActivityViewModel,
   PassportActivityItem,
 } from './passportActivityTypes'
+export { PassportSecurity } from './PassportSecurity'
+export { usePassportSecurity } from './usePassportSecurity'
+export { buildPassportSecurityViewModel } from './buildPassportSecurityViewModel'
+export type { PassportSecurityViewModel, PassportSecurityRow } from './passportSecurityTypes'
