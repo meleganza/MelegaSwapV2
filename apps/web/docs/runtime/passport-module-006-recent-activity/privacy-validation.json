@@ -1,0 +1,9 @@
+{
+  "exclude": [
+    "full wallet addresses",
+    "private profile fields",
+    "excluded classification"
+  ],
+  "shortWallet": "Wallet 0x12…34AB pattern",
+  "unitTested": true
+}

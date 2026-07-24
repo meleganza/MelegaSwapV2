@@ -30,3 +30,11 @@ export type {
   PassportLiquidityPositionsViewModel,
   PassportLiquidityPosition,
 } from './passportLiquidityTypes'
+export { PassportActivity } from './PassportActivity'
+export { PassportBottomGrid } from './PassportBottomGrid'
+export { usePassportRecentActivity } from './usePassportRecentActivity'
+export { buildPassportRecentActivityViewModel } from './buildPassportRecentActivityViewModel'
+export type {
+  PassportRecentActivityViewModel,
+  PassportActivityItem,
+} from './passportActivityTypes'

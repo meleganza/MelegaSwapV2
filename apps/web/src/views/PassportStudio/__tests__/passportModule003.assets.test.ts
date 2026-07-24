@@ -89,10 +89,8 @@ describe('PASSPORT_MODULE_003 Assets', () => {
     expect(screen).toContain('data-passport-module-003')
   })
 
-  it('does not implement Modules 006–009', () => {
+  it('does not implement Modules 007–009', () => {
     const files = readdirSync(ROOT)
-    expect(files.some((f) => /PassportActivity|PassportSecurity/.test(f))).toBe(
-      false,
-    )
+    expect(files.some((f) => /PassportSecurity/.test(f))).toBe(false)
   })
 })

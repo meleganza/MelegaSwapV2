@@ -1,0 +1,8 @@
+{
+  "sample": [
+    "https://bscscan.com/tx/0xabc",
+    "/list/"
+  ],
+  "ok": true,
+  "noDeadViewAllInProduction": true
+}

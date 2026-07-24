@@ -123,8 +123,18 @@ export const passportOne = {
   liquidityColAction: '180px',
   /** empty 232; 3 rows → 64+48+204+16 = 332 */
 
+  /* MODULE 006 — Recent Activity (do not alter MODULE 001–005 geometry tokens) */
+  activityW: '680px',
+  activityH: '360px',
+  activityHeaderH: '64px',
+  activityBodyH: '256px',
+  activityFooterH: '40px',
+  activityRowH: '64px',
+  activityContentW: '644px',
+  activityModulePadX: '18px',
   bottomColW: '680px',
   bottomGap: '16px',
+  /** bottom grid: 680 + 16 + 680 = 1376 */
 
   /* Mobile */
   mobileCanvas: 390,

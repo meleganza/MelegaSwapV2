@@ -1,0 +1,44 @@
+{
+  "identity": {
+    "available": false,
+    "reason": "PASSPORT_IDENTITY_EVENTS_UNAVAILABLE"
+  },
+  "wallet": {
+    "available": false,
+    "reason": "WALLET_RELATIONSHIP_HISTORY_UNAVAILABLE"
+  },
+  "mcredits": {
+    "available": false,
+    "reason": "MCREDITS_HISTORY_UNSUPPORTED"
+  },
+  "list": {
+    "available": false,
+    "reason": "LIST_ACTIVITY_UNAVAILABLE"
+  },
+  "project_page": {
+    "available": false,
+    "reason": "PROJECT_PAGE_ACTIVITY_UNAVAILABLE"
+  },
+  "liquidity": {
+    "available": false,
+    "reason": "LIQUIDITY_PASSPORT_FEED_UNAVAILABLE"
+  },
+  "liquidity_building": {
+    "available": false,
+    "reason": "LB_EVENT_LEDGER_UNAVAILABLE"
+  },
+  "smartdrop": {
+    "available": false,
+    "reason": "SMARTDROP_ACTIVITY_UNAVAILABLE"
+  },
+  "security": {
+    "available": false,
+    "reason": "SECURITY_EVENTS_UNAVAILABLE"
+  },
+  "event_fabric": {
+    "available": false,
+    "reason": "FABRIC_NOT_DURABLE_PASSPORT_SOURCE"
+  },
+  "productionDefault": "empty — no durable Passport-scoped activity producer",
+  "fixtures": "localhost __PASSPORT_MODULE_006_FIXTURE__ only"
+}

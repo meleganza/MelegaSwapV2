@@ -99,9 +99,9 @@ describe('PASSPORT_MODULE_004 My Projects', () => {
     expect(screen).toContain('data-passport-module-004')
   })
 
-  it('does not invent mockup project counts; Modules 006–009 remain unimplemented', () => {
+  it('does not invent mockup project counts; Modules 007–009 remain unimplemented', () => {
     const files = readdirSync(ROOT)
-    expect(files.some((f) => /PassportActivity|PassportSecurity/.test(f))).toBe(false)
+    expect(files.some((f) => /PassportSecurity/.test(f))).toBe(false)
     const blob = readdirSync(ROOT)
       .filter((f) => /Project|project/.test(f))
       .map((f) => load(f))

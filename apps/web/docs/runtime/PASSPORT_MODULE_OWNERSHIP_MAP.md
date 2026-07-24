@@ -103,13 +103,14 @@ Architecture shell: `views/PassportStudio/PassportArchitectureShell.tsx` (not wi
 
 | | |
 | --- | --- |
-| **Owned components** | `PassportActivity.tsx` (future) |
-| **Owned styles** | Bottom grid left `680px` |
-| **Permitted hooks** | Passport / connected-identity activity feeds |
-| **Forbidden** | Fake activity; fabricated positive values |
-| **Bounding box** | 680px wide (desktop bottom grid) |
-| **Data sources** | Real events (credits, list, liquidity, identity/security) or compact empty state |
-| **Depends on** | MODULE 005 |
+| **Owned components** | `PassportActivity.tsx`, `PassportActivityRow.tsx`, `PassportBottomGrid.tsx`, `usePassportRecentActivity.ts`, `buildPassportRecentActivityViewModel.ts`, `passportActivityTypes.ts` |
+| **Owned styles** | Bottom grid left `680×360`, content 644, rows 64×4, gap to Security reserve 16 |
+| **Permitted hooks** | `usePassportRecentActivity`; `useAccount` for session; future Passport-scoped activity producers |
+| **Forbidden** | Fake activity; fabricating values; modifying MODULE 001–005; implementing MODULE 007 Security |
+| **Bounding box** | Desktop 680×360 exact |
+| **Data sources** | Factual Passport-scoped events only; production empty until durable feed exists |
+| **Depends on** | MODULE 005 certified (frozen) |
+| **Mount** | `PassportScreen` via `PassportBottomGrid` below Module 005 |
 
 ---
 
