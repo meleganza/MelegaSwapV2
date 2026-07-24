@@ -1,0 +1,15 @@
+{
+  "navigationTiming": {
+    "domContentLoaded": 120,
+    "loadEvent": 121,
+    "transferSize": 6224
+  },
+  "wallClockMs": 1603,
+  "notes": [
+    "No Passport React Context — modules independently call useAccount (expected)",
+    "usePassportHeroIdentity invoked by Hero + Security (documented duplicate; not changed in V1 seal)",
+    "CommandCenter still mounts below when connected (interim dual surface)",
+    "No new lazy routes or APIs added in this mission"
+  ],
+  "pass": true
+}

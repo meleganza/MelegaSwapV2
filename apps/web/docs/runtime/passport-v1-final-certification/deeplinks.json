@@ -1,0 +1,45 @@
+{
+  "destinations": [
+    {
+      "href": "/",
+      "page": "src/pages/index.tsx",
+      "ok": true
+    },
+    {
+      "href": "/passport",
+      "page": "src/pages/passport/index.tsx",
+      "ok": true
+    },
+    {
+      "href": "/list?intent=create-project",
+      "page": "src/pages/list/index.tsx",
+      "ok": true
+    },
+    {
+      "href": "/swap",
+      "page": "src/pages/swap/index.tsx",
+      "ok": true
+    },
+    {
+      "href": "/liquidity-studio?view=positions",
+      "page": "src/pages/liquidity-studio.tsx",
+      "ok": true
+    },
+    {
+      "href": "/liquidity-studio?view=add",
+      "page": "src/pages/liquidity-studio.tsx",
+      "ok": true
+    },
+    {
+      "href": "/liquidity-studio?view=building",
+      "page": "src/pages/liquidity-studio.tsx",
+      "ok": true
+    },
+    {
+      "href": "/command-center",
+      "page": "src/pages/command-center/index.tsx",
+      "ok": true
+    }
+  ],
+  "pass": true
+}
