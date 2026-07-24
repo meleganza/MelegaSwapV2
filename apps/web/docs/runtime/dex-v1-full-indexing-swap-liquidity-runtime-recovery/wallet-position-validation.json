@@ -1,0 +1,6 @@
+{
+  "lpDiscovery": "factory paginated balance-gated",
+  "stakeFormatting": "decimals via getBalanceNumber",
+  "duplicateFooterLinks": "openRoute null; manageRoute only",
+  "limitation": "staked LP still via farm userData path, not wallet ERC20 scan of MasterChef"
+}

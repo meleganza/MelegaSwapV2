@@ -7,7 +7,7 @@ import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
 import { formatHomeActivityRows } from './formatHomeActivity'
-import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/dex-asset-index'
+import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-token-registry'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { WBNB } from '@pancakeswap/sdk'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
@@ -144,6 +144,7 @@ const sanitizeRibbonText = (value?: string): string | undefined => {
   if (!value) return undefined
   const trimmed = value.trim()
   if (!trimmed || trimmed === '()' || trimmed === 'undefined') return undefined
+  if (/^https?:\/\//i.test(trimmed) || trimmed.includes('://')) return undefined
   if (/sousId|sous\s*id|sld\s*\d/i.test(trimmed)) return undefined
   if (/^\(\s*\)$/.test(trimmed)) return undefined
   return trimmed
@@ -274,32 +275,31 @@ export const useHomeTradeData = () => {
 
     const resolveQuote = (symbol: string): { price?: string; change?: { text: string; positive: boolean } } => {
       const sym = symbol.toUpperCase()
-      if (sym === 'MARCO') {
+      if (sym === 'MARCO' || sym === 'CAKE') {
         return {
           price: formatTickerPrice(marcoUsd),
         }
       }
-      if (sym === 'WBNB') {
+      if (sym === 'WBNB' || sym === 'BNB') {
         return {
           price: formatTickerPrice(wbnbUsd),
         }
       }
-      return {}
+      return { price: '—' }
     }
 
     return indexedRibbonAssets
+      .slice(0, 24)
       .map((asset) => {
         const quote = resolveQuote(asset.symbol)
-        if (!quote.price) return undefined
         return {
           id: `trade-asset-${asset.slug}`,
           primary: asset.symbol,
-          secondary: quote.price,
+          secondary: quote.price ?? '—',
           accent: quote.change?.text,
           accentPositive: quote.change?.positive,
         } satisfies MelegaTickerItem
       })
-      .filter((item): item is MelegaTickerItem => Boolean(item))
   }, [indexedRibbonAssets, marcoPrice, wbnbPrice])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
@@ -371,6 +371,52 @@ export const useHomeTradeData = () => {
   const marketCards = useMemo((): MarketCard[] => {
     const cards: MarketCard[] = []
 
+    // Partial factual TVL from live farm liquidity (USD when farm runtime prices it).
+    const farmTvlUsd = allFarms.reduce((sum, farm) => {
+      if (farm.pid === 0 || farm.multiplier === '0X') return sum
+      const withLiq = farm as FarmWithStakedValue
+      const liq = withLiq.liquidity?.toNumber?.()
+      if (Number.isFinite(liq) && (liq as number) > 0) return sum + (liq as number)
+      const lpQuote = withLiq.lpTotalInQuoteToken?.toNumber?.()
+      const quotePrice = Number(withLiq.quoteTokenPriceBusd ?? 0)
+      if (Number.isFinite(lpQuote) && quotePrice > 0) return sum + (lpQuote as number) * quotePrice
+      return sum
+    }, 0)
+    const tvlLabel = formatUsd(farmTvlUsd)
+    if (tvlLabel) {
+      cards.push({
+        id: 'tvl',
+        label: 'TVL',
+        value: tvlLabel,
+        meta: 'Partial · farm liquidity',
+        href: '/farms',
+      })
+    }
+
+    // Volume policy: never label count-only / zero-USD data as dollar "24H Volume".
+    const swapUsd = recentTransactions
+      .filter((tx) => tx.type === TransactionType.SWAP)
+      .reduce((sum, tx) => sum + (Number.isFinite(tx.amountUSD) ? tx.amountUSD : 0), 0)
+    const swapCount = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP).length
+    const volLabel = formatUsd(swapUsd)
+    if (volLabel) {
+      cards.push({
+        id: 'volume-24h',
+        label: '24H Volume',
+        value: volLabel,
+        meta: 'Partial · USD-valued indexed swaps',
+        href: '/trade',
+      })
+    } else if (swapCount > 0) {
+      cards.push({
+        id: 'volume-24h-activity',
+        label: '24H Swaps',
+        value: String(swapCount),
+        meta: 'Indexed swap count · USD valuation unavailable',
+        href: '/trade',
+      })
+    }
+
     const topFarm = farms[0]
     if (topFarm?.lpSymbol && topFarm.pid !== 0 && topFarm.multiplier !== '0X') {
       const apr = farmApr(topFarm)
@@ -416,12 +462,13 @@ export const useHomeTradeData = () => {
       })
     }
 
-    return cards.slice(0, 3)
-  }, [farms, allPools, currentBlock, tradeablePairs])
+    return cards.slice(0, 5)
+  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms
-      .slice(0, 3)
+      .filter((f) => f.pid !== 0)
+      .slice(0, 5)
       .map((farm) => {
         const apr = farmApr(farm)
         const tvl = farmTvl(farm)
@@ -433,12 +480,13 @@ export const useHomeTradeData = () => {
           href: '/farms',
         }
       })
-      .filter((row) => row.apr || row.tvl)
   }, [farms])
 
   const poolRows = useMemo((): EarnRow[] => {
-    return pools
-      .slice(0, 3)
+    // Prefer rewarding pools; fall back to configured staking pools so Home is not empty.
+    const source = pools.length > 0 ? pools : allPools
+    return source
+      .slice(0, 5)
       .map((pool) => {
         const aprValue = poolApr(pool)
         const apr = aprValue ? `${aprValue.toFixed(2)}%` : undefined
@@ -451,8 +499,7 @@ export const useHomeTradeData = () => {
           href: '/pools',
         }
       })
-      .filter((row) => row.apr || row.tvl)
-  }, [pools])
+  }, [pools, allPools])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
 
@@ -533,7 +580,8 @@ export const useHomeTradeData = () => {
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
     const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
     const poolReconciliation = reconcilePoolLifecycle(allPools, currentBlock)
-    const rewardingPoolCount = poolReconciliation.rewarding
+    // Prefer rewarding; never collapse to 0 when historical staking pools are configured.
+    const poolCount = poolReconciliation.rewarding > 0 ? poolReconciliation.rewarding : allPools.length
     const indexedAssetCount = tradeableAssetCount
 
     const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
@@ -552,7 +600,7 @@ export const useHomeTradeData = () => {
 
     return [
       pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(rewardingPoolCount))),
+      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(poolCount))),
       pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount))),
       pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.indexedAssets(String(indexedAssetCount))),
     ]

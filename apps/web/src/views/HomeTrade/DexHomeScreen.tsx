@@ -568,7 +568,9 @@ export const DexHomeScreen: React.FC = () => {
     const byId = Object.fromEntries(data.liveEconomyMetrics.map((m) => [m.id, m.value]))
     const byLabel = Object.fromEntries(data.liveEconomyMetrics.map((m) => [m.label.toLowerCase(), m.value]))
     const tvlCard = data.marketCards.find((c) => /tvl/i.test(c.label))
-    const volCard = data.marketCards.find((c) => /volume|24h/i.test(c.label))
+    const volCard = data.marketCards.find((c) => c.id === 'volume-24h' || /^24H Volume$/i.test(c.label))
+    const swapsCard = data.marketCards.find((c) => c.id === 'volume-24h-activity' || /^24H Swaps$/i.test(c.label))
+    const activityCard = volCard ?? swapsCard
     const farms =
       byId.activeFarms ||
       byLabel['active farms'] ||
@@ -586,7 +588,8 @@ export const DexHomeScreen: React.FC = () => {
       NA
     return [
       { label: 'TVL', value: tvlCard?.value ?? NA },
-      { label: '24H Volume', value: volCard?.value ?? NA },
+      // Preserve geometry: one activity KPI slot — dollar volume only when USD-valued.
+      { label: activityCard?.label ?? '24H Swaps', value: activityCard?.value ?? NA },
       { label: 'Active Projects', value: projectCount > 0 ? String(projectCount) : NA },
       { label: 'Farms', value: farms },
       { label: 'Pools', value: pools },
@@ -651,10 +654,10 @@ export const DexHomeScreen: React.FC = () => {
               </Description>
               <CtaRow>
                 <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
-                  Start Trading
+                  Instant Swap
                 </PrimaryCta>
-                <SecondaryCta href="/#projects" data-testid="dex-home-explore-projects">
-                  Explore Projects
+                <SecondaryCta href="/trade" data-testid="dex-home-smart-swap">
+                  Smart Swap
                 </SecondaryCta>
               </CtaRow>
               <Trust>
@@ -666,6 +669,19 @@ export const DexHomeScreen: React.FC = () => {
                 <SwapTitle>
                   <Zap size={18} color={uxRebuildColors.gold} aria-hidden />
                   Instant Swap
+                  <a
+                    href="/trade"
+                    data-testid="dex-home-smart-swap-entry"
+                    style={{
+                      marginLeft: 'auto',
+                      fontSize: 12,
+                      fontWeight: 650,
+                      color: uxRebuildColors.gold,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Smart Swap →
+                  </a>
                 </SwapTitle>
                 <HomeSwapPanel />
               </SwapWrap>
@@ -750,7 +766,7 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/farms">View all →</ViewAll>
               </DiscHead>
               {farmRows.length === 0 ? (
-                <EmptyRow>Awaiting indexer</EmptyRow>
+                <EmptyRow>No farm rows with live APR/TVL yet — open Farms for full inventory</EmptyRow>
               ) : (
                 farmRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/farms'}>
@@ -771,7 +787,7 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/pools">View all →</ViewAll>
               </DiscHead>
               {poolRows.length === 0 ? (
-                <EmptyRow>Awaiting indexer</EmptyRow>
+                <EmptyRow>No staking-pool rows hydrated yet — open Pools for configured inventory</EmptyRow>
               ) : (
                 poolRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/pools'}>

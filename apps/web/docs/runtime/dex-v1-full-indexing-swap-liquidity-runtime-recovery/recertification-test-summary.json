@@ -1,0 +1,13 @@
+{
+  "focused": {
+    "command": "yarn test src/views/HomeTrade/__tests__/runtimeRecoveryConvergence.test.ts src/views/LiquidityStudio/__tests__/legacyAssetLiquidityRecovery.test.ts src/lib/canonical-token-registry",
+    "result": "passed",
+    "tests": 13,
+    "files": 3
+  },
+  "volumeSemanticsGuard": {
+    "file": "runtimeRecoveryConvergence.test.ts",
+    "asserts": ["24H Volume", "24H Swaps", "USD valuation unavailable"],
+    "result": "passed"
+  }
+}

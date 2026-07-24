@@ -1,0 +1,216 @@
+{
+  "landmarks": {
+    "sections": 7,
+    "headings": 6
+  },
+  "focusableSample": [
+    {
+      "tag": "a",
+      "testid": "melega-header-brand",
+      "href": "/"
+    },
+    {
+      "tag": "a",
+      "testid": "melega-header-nav-home",
+      "href": "/"
+    },
+    {
+      "tag": "a",
+      "testid": "melega-header-nav-liquidity",
+      "href": "/liquidity-studio/"
+    },
+    {
+      "tag": "a",
+      "testid": "melega-header-nav-farms",
+      "href": "/farms/"
+    },
+    {
+      "tag": "a",
+      "testid": "melega-header-nav-pools",
+      "href": "/pools/"
+    },
+    {
+      "tag": "a",
+      "testid": "melega-header-nav-list",
+      "href": "/list/"
+    },
+    {
+      "tag": "a",
+      "testid": "melega-header-nav-passport",
+      "href": "/passport/"
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": null,
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": "melega-header-connect",
+      "href": null
+    },
+    {
+      "tag": "button",
+      "testid": "melega-header-overflow",
+      "href": null
+    },
+    {
+      "tag": "a",
+      "testid": "passport-hero-cta-primary",
+      "href": "/"
+    },
+    {
+      "tag": "button",
+      "testid": "passport-hero-cta-secondary",
+      "href": null
+    }
+  ],
+  "reducedMotionQuerySupported": true,
+  "notes": [
+    "Modules use section + headings",
+    "Status badges include text",
+    "Gold focus rings on CTAs",
+    "prefers-reduced-motion respected in module CSS"
+  ],
+  "pass": true
+}

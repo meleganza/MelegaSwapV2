@@ -28,6 +28,7 @@ import { buildPoolGateReport, POOL_GATE_POLICY_NOTE } from './buildPoolGateRepor
 import { classificationToReconciliation, resolveLifecycleCounts } from './poolClassificationSummary'
 import { usePoolClassificationSummary } from './usePoolClassificationSummary'
 import { getPoolsUxFixtureCards, isPoolsUxFixtureEnabled } from './poolsUxFixture'
+import { useMelegaFactoryPools, type MelegaFactoryPoolsResult } from './useMelegaFactoryPools'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { WalletPortfolio } from 'lib/wallet-portfolio/contracts'
 import { buildPoolsWalletPortfolio, type PoolsPortfolioViewMode } from './buildPoolsWalletPortfolio'
@@ -149,6 +150,8 @@ export interface PoolsStakingRuntime {
   rewardingCount: number
   poolReconciliation: ReturnType<typeof import('lib/data-truth/poolLifecycle').reconcilePoolLifecycle>
   poolClassificationSummary: ReturnType<typeof usePoolClassificationSummary>
+  /** Factual Melega Factory AMM discovery (indexer pairs API). */
+  factoryPools: MelegaFactoryPoolsResult
 }
 
 function matchesDurationFilter(visualType?: string, filter?: string): boolean {
@@ -285,6 +288,7 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
   const { pools: rawPools, userDataLoaded } = usePoolsWithVault(chainId)
   const terminal = usePoolsTerminalData()
   const poolClassificationSummary = usePoolClassificationSummary()
+  const factoryPools = useMelegaFactoryPools(chainId)
 
   const performanceFee = 0
 
@@ -302,8 +306,16 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     if (isPoolsUxFixtureEnabled()) {
       return getPoolsUxFixtureCards()
     }
+    // Prefer factual Melega Factory AMM pairs for discovery; keep staking cards after.
+    if (factoryPools.previewCards.length > 0) {
+      const byId = new Map<string, PoolPreviewCard>()
+      for (const card of [...factoryPools.previewCards, ...realPreviewCards]) {
+        byId.set(card.id, card)
+      }
+      return [...byId.values()]
+    }
     return realPreviewCards
-  }, [realPreviewCards])
+  }, [realPreviewCards, factoryPools.previewCards])
 
   const chainName = chainId === 56 ? 'BNB Chain' : chainId === 97 ? 'BNB Testnet' : 'Unknown'
   const positionsLoading = Boolean(account) && !userDataLoaded
@@ -378,10 +390,37 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     }
   }, [featuredCard])
 
-  const kpis = useMemo(
-    () => aggregateKpis(rawPools ?? [], featuredCard, currentBlock, previewCards, poolClassificationSummary),
-    [rawPools, featuredCard, currentBlock, previewCards, poolClassificationSummary],
-  )
+  const kpis = useMemo(() => {
+    const base = aggregateKpis(rawPools ?? [], featuredCard, currentBlock, previewCards, poolClassificationSummary)
+    return base.map((kpi) => {
+      if (kpi.id === 'active') {
+        return {
+          ...kpi,
+          value: factoryPools.discoveredKpiValue,
+          secondary: factoryPools.discoveredKpiSecondary,
+        }
+      }
+      // AMM USD valuation is not certified here — never show a fabricated TVL.
+      if (kpi.id === 'tvl' && factoryPools.discoveryState === 'ready' && realPreviewCards.length === 0) {
+        return {
+          ...kpi,
+          value: RUNTIME_UNAVAILABLE_LABEL,
+          secondary: 'Valuation unavailable',
+        }
+      }
+      return kpi
+    })
+  }, [
+    rawPools,
+    featuredCard,
+    currentBlock,
+    previewCards,
+    poolClassificationSummary,
+    factoryPools.discoveredKpiValue,
+    factoryPools.discoveredKpiSecondary,
+    factoryPools.discoveryState,
+    realPreviewCards.length,
+  ])
   const canonicalLifecycleCounts = resolveLifecycleCounts(poolClassificationSummary)
   const poolReconciliation = useMemo(() => {
     if (canonicalLifecycleCounts) {
@@ -623,5 +662,6 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     rewardingCount,
     poolReconciliation,
     poolClassificationSummary,
+    factoryPools,
   }
 }

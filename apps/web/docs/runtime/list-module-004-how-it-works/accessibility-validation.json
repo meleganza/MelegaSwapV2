@@ -1,0 +1,24 @@
+{
+  "pass": true,
+  "desktop": {
+    "section": true,
+    "heading": true,
+    "list": true,
+    "items": true,
+    "itemCount": 5
+  },
+  "tablet": {
+    "section": true,
+    "heading": true,
+    "list": true,
+    "items": true,
+    "itemCount": 5
+  },
+  "mobile": {
+    "section": true,
+    "heading": true,
+    "list": true,
+    "items": true,
+    "itemCount": 5
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "manual": "useLiquidityPositions → wallet LP rows; valuation/share/fees — when indexer unavailable",
+  "liquidityBuilding": "useProgramReadModel ON_CHAIN snapshot; skip NOT_ACTIVE/STOPPED",
+  "farms": "never included",
+  "manage": {
+    "manual": "/liquidity-studio?view=positions&position=<id>",
+    "building": "/liquidity-studio?view=building&program=<addr>",
+    "emptyAdd": "/liquidity-studio?view=add",
+    "emptyBuilding": "/liquidity-studio?view=building"
+  },
+  "fixtures": "localhost __PASSPORT_MODULE_005_FIXTURE__ only — never production default"
+}

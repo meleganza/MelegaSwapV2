@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import { typography } from 'design-system/melega'
-import TrendingRibbon from 'views/HomeTrade/TrendingRibbon'
 import AIHeatmapTable from './components/AIHeatmapTable'
 import TrendingFilterRow from './components/TrendingFilterRow'
 import TrendingKpiRow from './components/TrendingKpiRow'
@@ -62,7 +61,6 @@ const TrendingStudioContent: React.FC = () => (
   <Root data-trending-studio-screen="true" data-r200-premium="true">
     <PageMeta />
     <TrendingStudioGlobalStyle />
-    <TrendingRibbon />
     <Content>
       <PageGrid data-tr-page-grid>
         <MainColumn>

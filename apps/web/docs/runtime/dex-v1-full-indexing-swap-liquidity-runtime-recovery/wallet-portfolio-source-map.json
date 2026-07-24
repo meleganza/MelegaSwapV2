@@ -1,0 +1,7 @@
+{
+  "liquidity": "useLiquidityPositions (tracked \u222a factory pairs)",
+  "farms": "usePools/farms userData \u2192 buildFarmsWalletPortfolio",
+  "pools": "usePoolsStakingRuntime \u2192 buildPoolsWalletPortfolio",
+  "passport": "usePassportNormalizedPortfolio",
+  "normalizedSchema": "melega.normalized-user-portfolio.v1"
+}

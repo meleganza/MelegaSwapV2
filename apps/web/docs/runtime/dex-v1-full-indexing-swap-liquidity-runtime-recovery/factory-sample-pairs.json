@@ -1,0 +1,17 @@
+{
+  "samples": [
+    {
+      "index": 0,
+      "pair": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e"
+    },
+    {
+      "index": 258,
+      "pair": "0xf99df4e57f84a725326e27f959a2b3d0cf898051"
+    },
+    {
+      "index": 515,
+      "pair": "0xb9dea0c3a19e2ac7030bdedb9784c54914df61ec"
+    }
+  ],
+  "note": "Full reserve/supply evidence captured in prior probe session"
+}

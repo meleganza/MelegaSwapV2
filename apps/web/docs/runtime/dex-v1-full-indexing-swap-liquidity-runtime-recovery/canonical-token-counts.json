@@ -1,0 +1,24 @@
+{
+  "historicalTokenListAllChains": 326,
+  "historicalTokenListBsc": 273,
+  "uniqueBscAddresses": 273,
+  "logoFilesPng": 536,
+  "logoChecksummedFilenames": 514,
+  "bscTokensWithLocalLogo": 272,
+  "bscTokensWithoutLocalLogo": 1,
+  "sampleMissingLogos": [
+    "AETX"
+  ],
+  "farmPidLines": 385,
+  "uniqueFarmPids": 385,
+  "poolSousLines": 273,
+  "uniqueSousIds": 241,
+  "registryAmmPairs": 516,
+  "registryActiveAmm": 505,
+  "registryFarms": 387,
+  "registryActiveFarms": 66,
+  "registrySmartChef": 241,
+  "registryActiveSmartChef": 1,
+  "historicalPoolContract": "0x4c33eb3d40c78461dd1a079150fcac6da3c701cf",
+  "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C"
+}

@@ -1,0 +1,69 @@
+{
+  "api": {
+    "status": "ready",
+    "rows": [
+      {
+        "pairAddress": "0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+        "token0": "0x4034875250f797d00b819e9011c5bb9c2e799631",
+        "token1": "0x502eed71ffe313252cadc745fac1223e126e002e",
+        "reserve0": "61324366890069473900941",
+        "reserve1": "2827640253798889192317858894762587",
+        "classification": "tradeable",
+        "metadataStatus": "partial",
+        "active": true,
+        "lastVerified": "2026-07-10T16:34:36.599Z"
+      },
+      {
+        "pairAddress": "0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+        "token0": "0x52abb09ceb590f04c7d70be9d6aa420177e94744",
+        "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "reserve0": "1715899452133764387720326675458343",
+        "reserve1": "14838102456239393",
+        "classification": "tradeable",
+        "metadataStatus": "partial",
+        "active": true,
+        "lastVerified": "2026-07-10T16:37:12.576Z"
+      },
+      {
+        "pairAddress": "0xd656c120e843012c33187e8732b83f0c1fc1f858",
+        "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+        "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "reserve0": "738395596549612306918864760799600",
+        "reserve1": "31687407879278760",
+        "classification": "tradeable",
+        "metadataStatus": "partial",
+        "active": true,
+        "lastVerified": "2026-07-10T16:34:18.497Z"
+      },
+      {
+        "pairAddress": "0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+        "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+        "token1": "0x6effc3b9ea59a081e7132ad2e491d1ae523394f5",
+        "reserve0": "298384683104719136046771943410225",
+        "reserve1": "20879448755477176307038401",
+        "classification": "tradeable",
+        "metadataStatus": "partial",
+        "active": true,
+        "lastVerified": "2026-07-10T16:34:31.540Z"
+      },
+      {
+        "pairAddress": "0x2261f5434dd3e352563b09c9e462956082606f5a",
+        "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+        "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+        "reserve0": "72866589995290833160904022400859",
+        "reserve1": "4917750245175565200767",
+        "classification": "tradeable",
+        "metadataStatus": "partial",
+        "active": true,
+        "lastVerified": "2026-07-10T16:36:29.694Z"
+      }
+    ],
+    "total": 516,
+    "page": 1,
+    "pageSize": 5,
+    "source": "disk",
+    "dataSource": "direct-contract-state-registry",
+    "discoveryMethod": "factory-allPairs-enumeration"
+  },
+  "ok": true
+}

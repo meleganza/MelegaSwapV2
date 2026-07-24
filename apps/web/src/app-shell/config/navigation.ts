@@ -140,7 +140,15 @@ export const shellBottomNavItems = [
     label: 'Home',
     href: '/',
     icon: 'swap' as MelegaNavIcon,
-    match: (p: string) => p === '/' || p === '/trade' || p.startsWith('/trade/'),
+    // Align with header: Home owns Discover + Trade; Project Pages under Discover.
+    match: (p: string) =>
+      p === '/' ||
+      p === '/trade' ||
+      p.startsWith('/trade/') ||
+      p === '/swap' ||
+      p.startsWith('/swap/') ||
+      p.startsWith('/project-hq') ||
+      p.startsWith('/@'),
   },
   {
     id: 'liquidity',

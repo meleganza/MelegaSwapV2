@@ -1,0 +1,22 @@
+{
+  "home": "/",
+  "discover-home": "/?focus=projects",
+  "trade-home": "/?focus=swap",
+  "trade-terminal-legacy": "/swap",
+  "project-page": "/@{slug}",
+  "list": "/list",
+  "list-import": "/list?intent=import-token",
+  "list-create-token": "/list?intent=create-token",
+  "list-create-project": "/list?intent=create-project",
+  "list-claim-project": "/list?intent=claim-project",
+  "liquidity-studio": "/liquidity-studio",
+  "liquidity-positions": "/liquidity-studio?view=positions",
+  "liquidity-add": "/liquidity-studio?view=add",
+  "liquidity-building": "/liquidity-studio?view=building",
+  "liquidity-remove": "/liquidity-studio?view=remove",
+  "farms": "/farms",
+  "pools": "/pools",
+  "passport": "/passport",
+  "radar": "/radar",
+  "trending": "/trending"
+}

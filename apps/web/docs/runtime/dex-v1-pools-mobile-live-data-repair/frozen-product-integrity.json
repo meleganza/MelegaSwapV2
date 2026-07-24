@@ -1,0 +1,20 @@
+{
+  "passportV1": {
+    "ok": true,
+    "okCount": 48,
+    "bad": 0
+  },
+  "list": "unchanged (no ListStudio edits)",
+  "liquidityGeometry": "unchanged (no LiquidityStudio geometry edits)",
+  "globalIaNavContracts": "dexUxRebuild.nav tests pass",
+  "poolsFilesChanged": [
+    "PoolsStudioGlobalStyle",
+    "useMelegaFactoryPools",
+    "usePoolsStakingRuntime",
+    "PoolsStudioPageHeader",
+    "YourPoolsSection",
+    "PoolGridCard",
+    "TrendingRibbon",
+    "useDexTrendingRankings"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "masterChef": "0x41D5487836452d23f2c467070244E5842B412794",
+  "factualWallet": "0xA08f3D3Ea8b268AAB9A5b4854D7800DAFa6F4513",
+  "probe": {
+    "userInfoPidsSampled": "0-40",
+    "stakedPositionsFound": 0,
+    "note": "Wallet has wallet-held LP; no MasterChef stake in sampled pids at probe time"
+  },
+  "runtimeGuards": {
+    "normalizedDecimals": "formatStakeAmount / getBalanceNumber in commandCenterPortfolioCutover",
+    "rawUint256ForbiddenInUi": true,
+    "claimableNotErrorAlert": true,
+    "endedWithdrawPath": "supported via existing farm withdraw construction; screenshot farm-ended-withdraw.png"
+  },
+  "screenshots": ["farms-live-index.png", "farm-token-logos.png", "farm-normalized-balances.png", "farm-ended-withdraw.png"]
+}

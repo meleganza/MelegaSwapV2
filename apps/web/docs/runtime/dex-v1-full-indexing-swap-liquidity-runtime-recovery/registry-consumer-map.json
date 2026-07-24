@@ -1,0 +1,7 @@
+{
+  "canonicalTokenRegistry": "lib/canonical-token-registry",
+  "dexAssetIndex": "lib/dex-asset-index (implementation)",
+  "swapSelector": "CurrencySearch \u2192 useAllTokens \u2192 pancake-default.tokenlist.json (273 BSC)",
+  "homeIndexedTokensKpi": "getCanonicalIndexedAssets()",
+  "logos": "resolveTokenLogoSources + localBscTokenLogoPath"
+}

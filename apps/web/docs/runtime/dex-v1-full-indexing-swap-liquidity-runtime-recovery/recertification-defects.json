@@ -1,0 +1,28 @@
+{
+  "defects": [
+    {
+      "id": "RECERT-LOGO-001",
+      "provenBy": "logo coverage 272/273; AETX missing under images/56/tokens",
+      "fix": "Copied existing 8453 AETX PNG to images/56/tokens",
+      "files": ["apps/web/public/images/56/tokens/0xFe0c0B15798B8c9107CD4aa556A87Eb031263e8b.png"]
+    },
+    {
+      "id": "RECERT-VOL-001",
+      "provenBy": "amountUSD=0 caused dollar 24H Volume from count-only data",
+      "fix": "When USD sum is 0, emit 24H Swaps activity KPI instead",
+      "files": ["apps/web/src/views/HomeTrade/useHomeTradeData.ts", "apps/web/src/views/HomeTrade/DexHomeScreen.tsx"]
+    },
+    {
+      "id": "RECERT-TS-001",
+      "provenBy": "tsc errors on PORTFOLIO_VIEW_LABEL missing LEGACY/WITHDRAW_OPPORTUNITIES after prior mission views",
+      "fix": "Added LEGACY and WITHDRAW_OPPORTUNITIES labels/empty messages",
+      "files": ["apps/web/src/views/CommandCenter/commandCenterRuntime/commandCenterPortfolioCutover.ts"]
+    },
+    {
+      "id": "RECERT-TS-002",
+      "provenBy": "useHomeTradeData ticker filter type predicate + TVL farm typing errors on mission path",
+      "fix": "Removed bad type predicate; cast FarmWithStakedValue for TVL reduce",
+      "files": ["apps/web/src/views/HomeTrade/useHomeTradeData.ts"]
+    }
+  ]
+}

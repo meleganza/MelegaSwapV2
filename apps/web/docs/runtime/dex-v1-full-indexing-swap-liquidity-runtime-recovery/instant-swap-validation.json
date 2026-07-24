@@ -1,0 +1,5 @@
+{
+  "disconnectedInput": "enabled (pointer-events auto)",
+  "tokenSelector": "CurrencySearchModal via SmartSwapForm",
+  "executionGate": "Connect wallet CTA"
+}

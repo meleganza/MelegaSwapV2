@@ -1,0 +1,24 @@
+{
+  "cases": [
+    {
+      "url": "/liquidity-studio?view=positions",
+      "ok": true
+    },
+    {
+      "url": "/liquidity-studio?view=add",
+      "ok": true
+    },
+    {
+      "url": "/liquidity-studio?view=building",
+      "ok": true
+    },
+    {
+      "url": "/list?intent=create-project",
+      "ok": true
+    },
+    {
+      "url": "/@marco",
+      "ok": true
+    }
+  ]
+}

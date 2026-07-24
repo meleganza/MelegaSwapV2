@@ -1,0 +1,23 @@
+{
+  "identity": {
+    "source": "usePassportHeroIdentity.verificationState",
+    "production": "not_verified when wallet connected; unavailable when guest/source down; never invent Verified"
+  },
+  "wallets": {
+    "source": "wagmi useAccount address + connector.name",
+    "production": "count 0|1; primary short address only"
+  },
+  "sessions": {
+    "available": false,
+    "reason": "NO_PASSPORT_SESSION_INVENTORY"
+  },
+  "recovery": {
+    "available": false,
+    "reason": "NO_RECOVERY_CONFIGURATION_API"
+  },
+  "alerts": {
+    "available": false,
+    "reason": "NO_SECURITY_ALERT_FEED"
+  },
+  "fixtures": "localhost __PASSPORT_MODULE_007_FIXTURE__ only"
+}

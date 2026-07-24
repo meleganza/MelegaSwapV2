@@ -1,0 +1,14 @@
+{
+  "focusedSuite": 36,
+  "passed": 36,
+  "failed": 0,
+  "suites": [
+    "runtimeRecoveryConvergence",
+    "liquidityModule002",
+    "liquidityModule003",
+    "legacyAssetLiquidityRecovery",
+    "canonicalTokenRegistry",
+    "normalizedUserPortfolio",
+    "viewEngine"
+  ]
+}

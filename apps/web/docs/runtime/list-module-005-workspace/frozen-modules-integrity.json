@@ -1,0 +1,26 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "file": "apps/web/src/views/ListStudio/ListPageHero.tsx",
+      "unchanged": true
+    },
+    {
+      "file": "apps/web/src/views/ListStudio/ListActionCards.tsx",
+      "unchanged": true
+    },
+    {
+      "file": "apps/web/src/views/ListStudio/useListIntent.ts",
+      "unchanged": true
+    },
+    {
+      "file": "apps/web/src/views/ListStudio/ListWhyBuildRail.tsx",
+      "unchanged": true
+    },
+    {
+      "file": "apps/web/src/views/ListStudio/ListHowItWorks.tsx",
+      "unchanged": true
+    }
+  ],
+  "base": "f879c6c8"
+}

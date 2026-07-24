@@ -1,0 +1,5 @@
+{
+  "mode": "partial",
+  "source": "farm liquidity USD",
+  "neverFakeZero": true
+}

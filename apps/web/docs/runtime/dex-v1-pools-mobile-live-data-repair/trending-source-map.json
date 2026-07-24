@@ -1,0 +1,14 @@
+{
+  "component": "TrendingRibbon via GlobalTrendingBar",
+  "rankings": "useDexTrendingRankings",
+  "priceSources": [
+    "usePriceCakeBusd",
+    "indexer candles",
+    "tier-metrics API",
+    "pairs API"
+  ],
+  "hardcoded000036": false,
+  "emptyLabel": "Live on Melega DEX",
+  "rankedLabel": "Trending on Melega DEX",
+  "tickerHref": "/swap?outputCurrency=:address or /@:slug"
+}

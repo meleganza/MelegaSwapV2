@@ -13,6 +13,10 @@ import type {
   WalletPortfolioSectionStatus,
 } from 'lib/wallet-portfolio/contracts'
 import { resolvePortfolioView } from 'lib/wallet-portfolio/viewEngine'
+import {
+  normalizeExistingWalletPortfolio,
+  type NormalizedUserPortfolio,
+} from 'lib/melega-user-portfolio'
 import { adaptStudioRowsToPortfolioPositions } from 'views/CommandCenter/commandCenterRuntime/commandCenterPortfolioCutover'
 import type { PoolPreviewCard } from '../poolsStudioData'
 
@@ -145,4 +149,16 @@ export function selectMyPoolPortfolioPositions(portfolio: WalletPortfolio): Port
 export function selectHistoricalPoolPortfolioPositions(portfolio: WalletPortfolio): PortfolioPosition[] {
   const historical = resolvePortfolioView(portfolio, 'HISTORICAL').positions
   return historical.filter((p) => p.positionType === 'POOL')
+}
+
+/** Same normalized model Liquidity / Passport consume. */
+export function selectNormalizedPoolsPortfolio(portfolio: WalletPortfolio): NormalizedUserPortfolio {
+  return normalizeExistingWalletPortfolio(portfolio)
+}
+
+/** Withdraw-capable pool positions (ended / withdraw-only included when action enabled). */
+export function selectWithdrawPoolPortfolioPositions(portfolio: WalletPortfolio): PortfolioPosition[] {
+  return resolvePortfolioView(portfolio, 'WITHDRAW_OPPORTUNITIES').positions.filter(
+    (p) => p.positionType === 'POOL',
+  )
 }

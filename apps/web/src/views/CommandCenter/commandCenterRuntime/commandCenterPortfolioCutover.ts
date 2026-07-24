@@ -27,6 +27,8 @@ import {
   type PortfolioViewResult,
   type PortfolioViewType,
 } from 'lib/wallet-portfolio/viewEngine'
+import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import BigNumber from 'bignumber.js'
 import {
   createEmptyWalletPortfolio,
   type PortfolioActionType,
@@ -76,6 +78,26 @@ function bnPositive(value: { gt?: (n: number) => boolean } | null | undefined): 
     return Boolean(value?.gt?.(0))
   } catch {
     return false
+  }
+}
+
+/** Human-readable stake/reward — never render raw uint256 to users. */
+function formatStakeAmount(
+  value: { toFixed?: (d: number) => string; toString: () => string } | null | undefined,
+  decimals = 18,
+): string | null {
+  if (!value) return null
+  try {
+    const bn = new BigNumber(typeof value.toFixed === 'function' ? value.toFixed(0) : value.toString())
+    if (!bn.isFinite() || bn.lte(0)) return null
+    const n = getBalanceNumber(bn, decimals)
+    if (!Number.isFinite(n) || n <= 0) return null
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`
+    if (n >= 1_000) return `${(n / 1_000).toFixed(2)}K`
+    if (n >= 1) return n.toFixed(4)
+    return n.toFixed(6)
+  } catch {
+    return null
   }
 }
 
@@ -192,10 +214,10 @@ export function farmCardToFacts(
           },
         ]
       : [],
-    stakedBalance: { raw, formatted: card.userStaked?.toString() ?? null, decimals: 18 },
+    stakedBalance: { raw, formatted: formatStakeAmount(card.userStaked, 18), decimals: 18 },
     ownershipVerified: true,
     pendingRewards: pendingRaw
-      ? { raw: pendingRaw, formatted: card.pendingReward?.toString() ?? null, decimals: 18 }
+      ? { raw: pendingRaw, formatted: formatStakeAmount(card.pendingReward, 18), decimals: 18 }
       : null,
     hasClaimableRewards: hasClaimable,
     currentValueUsd: null,
@@ -205,7 +227,8 @@ export function farmCardToFacts(
     runtimeUnavailable: card.emissionState === 'unavailable' || card.status === 'indexing',
     unlockState: 'unlocked',
     productRoute: '/farms',
-    openRoute: '/farms',
+    // Single primary surface route — avoid duplicate Manage + Open footer links.
+    openRoute: null,
     manageRoute: '/farms',
     harvestRoute: '/farms',
     withdrawRoute: '/farms',
@@ -254,10 +277,18 @@ export function poolCardToFacts(
           },
         ]
       : [],
-    stakedBalance: { raw, formatted: card.userStaked?.toString() ?? null, decimals: 18 },
+    stakedBalance: {
+      raw,
+      formatted: formatStakeAmount(card.userStaked, card.rawPool?.stakingToken?.decimals ?? 18),
+      decimals: card.rawPool?.stakingToken?.decimals ?? 18,
+    },
     ownershipVerified: true,
     pendingRewards: pendingRaw
-      ? { raw: pendingRaw, formatted: card.pendingReward?.toString() ?? null, decimals: 18 }
+      ? {
+          raw: pendingRaw,
+          formatted: formatStakeAmount(card.pendingReward, card.rawPool?.earningToken?.decimals ?? 18),
+          decimals: card.rawPool?.earningToken?.decimals ?? 18,
+        }
       : null,
     hasClaimableRewards: hasClaimable,
     currentValueUsd: null,
@@ -267,7 +298,7 @@ export function poolCardToFacts(
     runtimeUnavailable: card.status === 'indexing' || card.displayStatus === 'INDEXING',
     unlockState: 'unlocked',
     productRoute: '/pools',
-    openRoute: '/pools',
+    openRoute: null,
     manageRoute: '/pools',
     claimRoute: '/pools',
     withdrawRoute: '/pools',
@@ -821,6 +852,8 @@ export const PORTFOLIO_VIEW_LABEL: Record<PortfolioViewType, string> = {
   LIQUIDITY: 'Liquidity',
   FARM: 'Farm',
   POOL: 'Pool',
+  LEGACY: 'Legacy',
+  WITHDRAW_OPPORTUNITIES: 'Withdraw',
 }
 
 /** Empty-state copy for each view — not owned by View Engine. */
@@ -834,6 +867,8 @@ export const PORTFOLIO_VIEW_EMPTY_MESSAGE: Record<PortfolioViewType, string> = {
   LIQUIDITY: 'No liquidity positions.',
   FARM: 'No farm positions.',
   POOL: 'No pool positions.',
+  LEGACY: 'No legacy positions.',
+  WITHDRAW_OPPORTUNITIES: 'No withdraw opportunities.',
 }
 
 export interface PortfolioViewSelectorModel {

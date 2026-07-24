@@ -1,0 +1,13 @@
+{
+  "unknownRoute": "/this-route-should-404-dex-ia",
+  "unknownProject": "/@this-slug-does-not-exist-dex-ia-999",
+  "invalidLiquidityView": "/liquidity-studio?view=not-a-real-view",
+  "distinctions": [
+    "NOT FOUND",
+    "UNAVAILABLE",
+    "DISCONNECTED",
+    "UNAUTHORIZED",
+    "UNSUPPORTED"
+  ],
+  "notes": "Pages must not silently route to an unrelated product. Invalid Liquidity view remains under Liquidity parent."
+}

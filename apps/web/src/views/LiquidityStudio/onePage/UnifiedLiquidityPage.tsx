@@ -10,12 +10,14 @@ import { DexLiquiditySnapshot } from './DexLiquiditySnapshot'
 import { WalletLiquidityOverview } from './WalletLiquidityOverview'
 import { LiquidityPositions } from './LiquidityPositions'
 import { LiquidityEducationRail } from './LiquidityEducationRail'
+import { LiquidityOnePagePolishStyle } from './LiquidityOnePagePolishStyle'
 
 const Page = styled.div`
   width: 100%;
   max-width: ${liqOne.contentMax};
   margin: 0 auto;
-  padding: ${liqOne.mainTopPad} 0 ${liqOne.bottomPad};
+  /* Hero owns trending→hero gap (24px). Product row starts 24px below hero. */
+  padding: 0 0 ${liqOne.bottomPad};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -23,8 +25,8 @@ const Page = styled.div`
   min-width: 0;
   font-family: ${liqOne.font};
 
-  @media (max-width: 1375px) {
-    padding: 24px 0 ${liqOne.bottomPad};
+  @media (max-width: 767px) {
+    padding: 0 0 ${liqOne.bottomPad};
   }
 `
 
@@ -39,6 +41,7 @@ const ProductGrid = styled.div`
   height: ${liqOne.mainRowH};
   min-height: ${liqOne.mainRowH};
   max-height: ${liqOne.mainRowH};
+  margin-top: 24px;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -142,6 +145,7 @@ export const UnifiedLiquidityPage: React.FC = () => {
 
   return (
     <Page data-testid="liq-one-unified-page" data-liquidity-one-page="true" data-pixel-perfection="001">
+      <LiquidityOnePagePolishStyle />
       <LiquidityPageHeader />
 
       <ProductGrid data-testid="liq-one-product-grid" data-pixel-main-row="860">

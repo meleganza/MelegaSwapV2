@@ -1,0 +1,229 @@
+{
+  "generatedAt": "2026-07-23T14:21:33.614Z",
+  "initial": {
+    "card": {
+      "w": 672,
+      "h": 860,
+      "x": 32,
+      "y": 380,
+      "top": 380,
+      "bottom": 1240
+    },
+    "hero": {
+      "w": 670,
+      "h": 210,
+      "x": 33,
+      "y": 381,
+      "top": 381,
+      "bottom": 591
+    },
+    "heroCollapsed": "0",
+    "wizard": {
+      "w": 670,
+      "h": 48,
+      "x": 33,
+      "y": 591,
+      "top": 591,
+      "bottom": 639
+    },
+    "body": {
+      "w": 670,
+      "h": 442,
+      "x": 33,
+      "y": 639,
+      "top": 639,
+      "bottom": 1081
+    },
+    "footer": {
+      "w": 670,
+      "h": 160,
+      "x": 33,
+      "y": 1081,
+      "top": 1081,
+      "bottom": 1241
+    },
+    "overflowX": false
+  },
+  "setup": {
+    "card": {
+      "w": 672,
+      "h": 860,
+      "x": 32,
+      "y": -1,
+      "top": -1,
+      "bottom": 859
+    },
+    "hero": {
+      "w": 670,
+      "h": 72,
+      "x": 33,
+      "y": 0,
+      "top": 0,
+      "bottom": 72
+    },
+    "heroCollapsed": "1",
+    "wizard": {
+      "w": 670,
+      "h": 48,
+      "x": 33,
+      "y": 72,
+      "top": 72,
+      "bottom": 120
+    },
+    "body": {
+      "w": 670,
+      "h": 580,
+      "x": 33,
+      "y": 120,
+      "top": 120,
+      "bottom": 700
+    },
+    "footer": {
+      "w": 670,
+      "h": 160,
+      "x": 33,
+      "y": 700,
+      "top": 700,
+      "bottom": 860
+    },
+    "overflowX": false
+  },
+  "mobile": {
+    "card": {
+      "w": 360.46875,
+      "h": 595,
+      "x": 16,
+      "y": 0,
+      "top": 0,
+      "bottom": 595
+    },
+    "hero": {
+      "w": 358.46875,
+      "h": 68,
+      "x": 17,
+      "y": 1,
+      "top": 1,
+      "bottom": 69
+    },
+    "heroCollapsed": "1",
+    "wizard": {
+      "w": 358.46875,
+      "h": 42,
+      "x": 17,
+      "y": 69,
+      "top": 69,
+      "bottom": 111
+    },
+    "body": {
+      "w": 358.46875,
+      "h": 380,
+      "x": 17,
+      "y": 111,
+      "top": 111,
+      "bottom": 491
+    },
+    "footer": {
+      "w": 358.46875,
+      "h": 103,
+      "x": 17,
+      "y": 491,
+      "top": 491,
+      "bottom": 594
+    },
+    "overflowX": false
+  },
+  "checks": [
+    {
+      "name": "cardW",
+      "actual": 672,
+      "target": 672,
+      "ok": true
+    },
+    {
+      "name": "cardH",
+      "actual": 860,
+      "target": 860,
+      "ok": true
+    },
+    {
+      "name": "heroInitial",
+      "actual": 210,
+      "target": 210,
+      "ok": true
+    },
+    {
+      "name": "wizard",
+      "actual": 48,
+      "target": 48,
+      "ok": true
+    },
+    {
+      "name": "body",
+      "actual": 442,
+      "target": 442,
+      "ok": true
+    },
+    {
+      "name": "footer",
+      "actual": 160,
+      "target": 160,
+      "ok": true
+    },
+    {
+      "name": "heroSetup",
+      "actual": 72,
+      "target": 72,
+      "ok": true
+    },
+    {
+      "name": "cardHSetup",
+      "actual": 860,
+      "target": 860,
+      "ok": true
+    },
+    {
+      "name": "bodySetup",
+      "actual": 580,
+      "target": 580,
+      "ok": true
+    },
+    {
+      "name": "footerSetup",
+      "actual": 160,
+      "target": 160,
+      "ok": true
+    },
+    {
+      "name": "wizardSetup",
+      "actual": 48,
+      "target": 48,
+      "ok": true
+    },
+    {
+      "name": "heroCollapsedAttr",
+      "actual": "1",
+      "target": "1",
+      "ok": true
+    },
+    {
+      "name": "mobileNoFixed860",
+      "actual": 595,
+      "target": "<860 or natural",
+      "ok": true
+    },
+    {
+      "name": "noOverflowDesktop",
+      "actual": false,
+      "target": false,
+      "ok": true
+    }
+  ],
+  "overlayStats": {
+    "mae": 22.819660160578913,
+    "size": [
+      672,
+      860
+    ]
+  },
+  "pass": true
+}

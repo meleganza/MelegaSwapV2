@@ -1,0 +1,29 @@
+{
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1400,
+      "overflowX": false
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "height": 1200,
+      "overflowX": false
+    },
+    {
+      "name": "mobile430",
+      "width": 430,
+      "height": 932,
+      "overflowX": false
+    },
+    {
+      "name": "mobile390",
+      "width": 390,
+      "height": 844,
+      "overflowX": false
+    }
+  ],
+  "pass": true
+}

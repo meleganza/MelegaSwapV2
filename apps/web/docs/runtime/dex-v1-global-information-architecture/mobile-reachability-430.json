@@ -1,0 +1,66 @@
+{
+  "/": {
+    "path": "/",
+    "overflowX": false,
+    "headerActive": [
+      "home"
+    ],
+    "listInHeader": true
+  },
+  "/@marco": {
+    "path": "/@marco/",
+    "overflowX": false,
+    "headerActive": [
+      "home"
+    ],
+    "listInHeader": true
+  },
+  "/list": {
+    "path": "/list/",
+    "overflowX": false,
+    "headerActive": [
+      "list"
+    ],
+    "listInHeader": true
+  },
+  "/liquidity-studio": {
+    "path": "/liquidity-studio/",
+    "overflowX": false,
+    "headerActive": [
+      "liquidity"
+    ],
+    "listInHeader": true
+  },
+  "/passport": {
+    "path": "/passport/",
+    "overflowX": false,
+    "headerActive": [
+      "passport"
+    ],
+    "listInHeader": true
+  },
+  "/farms": {
+    "path": "/farms/",
+    "overflowX": false,
+    "headerActive": [
+      "farms"
+    ],
+    "listInHeader": true
+  },
+  "/pools": {
+    "path": "/pools/",
+    "overflowX": false,
+    "headerActive": [
+      "pools"
+    ],
+    "listInHeader": true
+  },
+  "/swap": {
+    "path": "/swap/",
+    "overflowX": false,
+    "headerActive": [
+      "home"
+    ],
+    "listInHeader": true
+  }
+}

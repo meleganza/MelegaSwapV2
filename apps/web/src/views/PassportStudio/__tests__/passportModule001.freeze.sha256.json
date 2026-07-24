@@ -1,0 +1,15 @@
+{
+  "mission": "PASSPORT_MODULE_002 freezes MODULE_001",
+  "baseTip": "a3a06aa5",
+  "files": {
+    "PassportHeroIdentityModule.tsx": "5bc8a6180cde2a1d6fd86c841c2d495b2488accec05b097d7cd2ec82e1a4d312",
+    "PassportHeroCopy.tsx": "b4c6c7a1dc69149f68c765f89f630f80991d3015ffb99547d7e955537cd4f462",
+    "PassportIdentityCard.tsx": "6b3f86b7497876d617d77cd39480e8551312fb6610fe40609ca3fab543f745cd",
+    "PassportVerificationBadge.tsx": "130f1634a6f0c3a9c328a58854d9fa86ea6f85af986bdb821ddb4c0f05d57573",
+    "PassportIdentityMetadata.tsx": "17fc487ef45c0d3a9bb8c9b8b38e9be167da2158ca44108cbef0c8f800162abc",
+    "PassportHeroBackground.tsx": "54c32f02a185bdd7728b93e3b88b9c6eeed841099c4b622a66ab037d9a09a593",
+    "usePassportHeroIdentity.ts": "45dc27ea531bb2c403d31d26f83d5d7e9d1ecbd57ff9b1d3bb93d8384a8c1b6c",
+    "buildPassportHeroIdentityViewModel.ts": "ba5ed5180edaef4c338f2f1381fbec97747b3c0c00b78e6bc869493e6d46ee5c",
+    "passportHeroIdentityTypes.ts": "0193b8d7c3b03d5539c7252209ad45e1933f9c331018eb6ad3a317a02f9bb517"
+  }
+}
