@@ -77,11 +77,13 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 
 | | |
 | --- | --- |
-| **Responsibility** | Read-only strip: TVL, Active Farms, Rewards, Highest APR, Wallet Claimable |
-| **Owned components (future)** | `FarmsOverviewKpis*` |
-| **May consume** | Shared farms runtime / APR rules / wallet pending rewards |
-| **Forbidden** | Invented zeros; emission projections as 24H rewards; Modules 003–010 |
+| **Responsibility** | Read-only strip: Total Farm TVL, Active Farms, Active Farmers, 24H Rewards, Highest Sustainable APR, My Harvestable |
+| **Owned components** | `FarmsStudio/modules/FarmsOverviewKpisModule.tsx`, `useFarmsOverviewKpis.ts`, `buildFarmsOverviewKpis.ts`, `farmsOverviewKpisTokens.ts`, `farmsOverviewKpisTypes.ts` |
+| **Mount point** | `FarmsStudioScreen` mounts `<FarmsOverviewKpisModule />` directly under Hero; legacy `FarmsKpiRow` superseded for this strip |
+| **May consume** | Shared farms runtime / APR display / wallet pending rewards / cake price |
+| **Forbidden** | Invented zeros; emission projections as 24H rewards; unique-farmer estimates; Pools TVL; Modules 003–010; Module 001 edits |
 | **Depends on** | MODULE 001 |
+| **Status** | Implemented on `farms-module-002-overview-kpis` |
 
 ---
 

@@ -1,0 +1,7 @@
+{
+  "domain": "LP farming only",
+  "excludesPools": true,
+  "excludesWalletLp": true,
+  "partialAllowed": true,
+  "pass": true
+}

@@ -1,0 +1,8 @@
+{
+  "tvl": "farm.liquidity LP farms only",
+  "activeFarms": "live/indexing non-zero multiplier",
+  "activeFarmers": "unavailable — no unique wallet index",
+  "rewards24h": "unavailable — no indexed distribution; emission forbidden",
+  "sustainableApr": "listRewardingFarms + liquidity filter",
+  "harvestable": "userData.earnings × cakePriceBusd"
+}

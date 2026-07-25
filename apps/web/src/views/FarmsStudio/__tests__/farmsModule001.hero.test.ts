@@ -89,13 +89,12 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(screen).toContain('FarmsHeroModule')
     expect(screen).toContain('data-farms-module-001="mounted"')
     expect(screen).toContain('YourFarmsSection')
-    expect(screen).toContain('FarmsKpiRow')
     expect(screen).toContain('FarmsGrid')
     expect(screen).toContain('AIYieldAdvisorPanel')
     expect(screen).not.toContain('FarmsStudioPageHeader')
-    expect(screen).not.toContain('data-farms-module="002"')
+    // Module 002 may mount after Hero; Modules 003+ remain forbidden here.
+    expect(screen).not.toContain('data-farms-module="003"')
     expect(screen).not.toContain('data-farms-module="008"')
-    expect(screen).not.toContain('FarmsOverviewKpis')
     expect(screen).not.toContain('FarmsMyFarms')
     expect(screen).not.toContain('FarmsYieldAdvisorModule')
   })
@@ -116,10 +115,10 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(screen).toContain('id="explore-farms"')
   })
 
-  it('keeps Modules 002–008 unmounted', () => {
+  it('keeps Modules 003–010 unmounted (Module 002 may follow Hero)', () => {
     const screen = load('FarmsStudioScreen.tsx')
     expect(screen).toContain('FarmsHeroModule')
-    for (const id of ['002', '003', '004', '005', '006', '007', '008', '009', '010']) {
+    for (const id of ['003', '004', '005', '006', '007', '008', '009', '010']) {
       expect(screen).not.toContain(`data-farms-module="${id}"`)
     }
     expect(FARMS_MODULE_PLAN.find((m) => m.id === '001-hero')).toBeTruthy()

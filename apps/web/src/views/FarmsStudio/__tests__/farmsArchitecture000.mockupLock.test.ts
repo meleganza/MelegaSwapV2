@@ -128,14 +128,14 @@ describe('FARMS_ARCHITECTURE_000 Mockup Lock', () => {
     expect(report).toContain('FARMS_ARCHITECTURE_000_CERTIFIED')
   })
 
-  it('keeps Architecture 000 freeze: no ArchitectureShell cutover; legacy body retained under Hero', () => {
+  it('keeps Architecture 000 freeze: no ArchitectureShell cutover; legacy body retained under modular stack', () => {
     const screen = readFileSync(path.join(WEB, 'src/views/FarmsStudio/FarmsStudioScreen.tsx'), 'utf8')
-    // Module 001 may mount Hero; Integration 009 owns full modular shell cutover.
+    // Modules 001–002 may mount; Integration 009 owns full modular shell cutover.
     expect(screen).toContain('AIYieldAdvisorPanel')
     expect(screen).toContain('FarmsGrid')
     expect(screen).toContain('YourFarmsSection')
     expect(screen).not.toContain('FarmsArchitectureShell')
-    expect(screen).not.toContain('data-farms-module="002"')
+    expect(screen).not.toContain('data-farms-module="003"')
     expect(screen).not.toContain('data-farms-module="008"')
   })
 })

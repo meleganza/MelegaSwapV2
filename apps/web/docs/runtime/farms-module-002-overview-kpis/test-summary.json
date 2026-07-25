@@ -1,0 +1,10 @@
+{
+  "suites": [
+    "farmsModule002.overviewKpis.test.ts",
+    "farmsModule001.hero.test.ts",
+    "farmsArchitecture000.mockupLock.test.ts"
+  ],
+  "passed": 26,
+  "failed": 0,
+  "pass": true
+}

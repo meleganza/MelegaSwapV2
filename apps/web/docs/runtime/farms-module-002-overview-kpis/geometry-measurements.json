@@ -1,0 +1,492 @@
+{
+  "auditedAt": "2026-07-25T17:52:37.051Z",
+  "viewports": {
+    "desktop-1440": {
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "module": {
+        "x": 32,
+        "y": 416,
+        "width": 1376,
+        "height": 112,
+        "top": 416,
+        "right": 1408,
+        "bottom": 528,
+        "left": 32
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260,
+        "top": 140,
+        "right": 1408,
+        "bottom": 400,
+        "left": 32
+      },
+      "gapHeroToKpis": 16,
+      "cards": [
+        {
+          "id": "farms-kpi-tvl",
+          "state": "unavailable",
+          "x": 32,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "top": 416,
+          "right": 248,
+          "bottom": 528,
+          "left": 32,
+          "label": "Total Farm TVL"
+        },
+        {
+          "id": "farms-kpi-activeFarms",
+          "state": "available",
+          "x": 264,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "top": 416,
+          "right": 480,
+          "bottom": 528,
+          "left": 264,
+          "label": "Active Farms"
+        },
+        {
+          "id": "farms-kpi-activeFarmers",
+          "state": "unavailable",
+          "x": 496,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "top": 416,
+          "right": 712,
+          "bottom": 528,
+          "left": 496,
+          "label": "Active Farmers"
+        },
+        {
+          "id": "farms-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 728,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "top": 416,
+          "right": 944,
+          "bottom": 528,
+          "left": 728,
+          "label": "24H Rewards"
+        },
+        {
+          "id": "farms-kpi-sustainableApr",
+          "state": "unavailable",
+          "x": 960,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "top": 416,
+          "right": 1176,
+          "bottom": 528,
+          "left": 960,
+          "label": "Highest Sustainable APR"
+        },
+        {
+          "id": "farms-kpi-harvestable",
+          "state": "unavailable",
+          "x": 1192,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "top": 416,
+          "right": 1408,
+          "bottom": 528,
+          "left": 1192,
+          "label": "My Harvestable"
+        }
+      ],
+      "cardCount": 6,
+      "overflow": false,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "module001": true,
+      "module002": true,
+      "module003": false,
+      "legacyKpiRow": false
+    },
+    "tablet-1024": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "module": {
+        "x": 24,
+        "y": 636,
+        "width": 976,
+        "height": 240,
+        "top": 636,
+        "right": 1000,
+        "bottom": 876,
+        "left": 24
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480,
+        "top": 140,
+        "right": 1000,
+        "bottom": 620,
+        "left": 24
+      },
+      "gapHeroToKpis": 16,
+      "cards": [
+        {
+          "id": "farms-kpi-tvl",
+          "state": "available",
+          "x": 24,
+          "y": 636,
+          "width": 314.65625,
+          "height": 112,
+          "top": 636,
+          "right": 338.65625,
+          "bottom": 748,
+          "left": 24,
+          "label": "Total Farm TVL"
+        },
+        {
+          "id": "farms-kpi-activeFarms",
+          "state": "available",
+          "x": 354.65625,
+          "y": 636,
+          "width": 314.671875,
+          "height": 112,
+          "top": 636,
+          "right": 669.328125,
+          "bottom": 748,
+          "left": 354.65625,
+          "label": "Active Farms"
+        },
+        {
+          "id": "farms-kpi-activeFarmers",
+          "state": "unavailable",
+          "x": 685.328125,
+          "y": 636,
+          "width": 314.65625,
+          "height": 112,
+          "top": 636,
+          "right": 999.984375,
+          "bottom": 748,
+          "left": 685.328125,
+          "label": "Active Farmers"
+        },
+        {
+          "id": "farms-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 24,
+          "y": 764,
+          "width": 314.65625,
+          "height": 112,
+          "top": 764,
+          "right": 338.65625,
+          "bottom": 876,
+          "left": 24,
+          "label": "24H Rewards"
+        },
+        {
+          "id": "farms-kpi-sustainableApr",
+          "state": "available",
+          "x": 354.65625,
+          "y": 764,
+          "width": 314.671875,
+          "height": 112,
+          "top": 764,
+          "right": 669.328125,
+          "bottom": 876,
+          "left": 354.65625,
+          "label": "Highest Sustainable APR"
+        },
+        {
+          "id": "farms-kpi-harvestable",
+          "state": "unavailable",
+          "x": 685.328125,
+          "y": 764,
+          "width": 314.65625,
+          "height": 112,
+          "top": 764,
+          "right": 999.984375,
+          "bottom": 876,
+          "left": 685.328125,
+          "label": "My Harvestable"
+        }
+      ],
+      "cardCount": 6,
+      "overflow": false,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "module001": true,
+      "module002": true,
+      "module003": false,
+      "legacyKpiRow": false
+    },
+    "mobile-430": {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "module": {
+        "x": 16,
+        "y": 782,
+        "width": 398,
+        "height": 368,
+        "top": 782,
+        "right": 414,
+        "bottom": 1150,
+        "left": 16
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650,
+        "top": 116,
+        "right": 414,
+        "bottom": 766,
+        "left": 16
+      },
+      "gapHeroToKpis": 16,
+      "cards": [
+        {
+          "id": "farms-kpi-tvl",
+          "state": "available",
+          "x": 16,
+          "y": 782,
+          "width": 191,
+          "height": 112,
+          "top": 782,
+          "right": 207,
+          "bottom": 894,
+          "left": 16,
+          "label": "Total Farm TVL"
+        },
+        {
+          "id": "farms-kpi-activeFarms",
+          "state": "available",
+          "x": 223,
+          "y": 782,
+          "width": 191,
+          "height": 112,
+          "top": 782,
+          "right": 414,
+          "bottom": 894,
+          "left": 223,
+          "label": "Active Farms"
+        },
+        {
+          "id": "farms-kpi-activeFarmers",
+          "state": "unavailable",
+          "x": 16,
+          "y": 910,
+          "width": 191,
+          "height": 112,
+          "top": 910,
+          "right": 207,
+          "bottom": 1022,
+          "left": 16,
+          "label": "Active Farmers"
+        },
+        {
+          "id": "farms-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 223,
+          "y": 910,
+          "width": 191,
+          "height": 112,
+          "top": 910,
+          "right": 414,
+          "bottom": 1022,
+          "left": 223,
+          "label": "24H Rewards"
+        },
+        {
+          "id": "farms-kpi-sustainableApr",
+          "state": "available",
+          "x": 16,
+          "y": 1038,
+          "width": 191,
+          "height": 112,
+          "top": 1038,
+          "right": 207,
+          "bottom": 1150,
+          "left": 16,
+          "label": "Highest Sustainable APR"
+        },
+        {
+          "id": "farms-kpi-harvestable",
+          "state": "unavailable",
+          "x": 223,
+          "y": 1038,
+          "width": 191,
+          "height": 112,
+          "top": 1038,
+          "right": 414,
+          "bottom": 1150,
+          "left": 223,
+          "label": "My Harvestable"
+        }
+      ],
+      "cardCount": 6,
+      "overflow": false,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "module001": true,
+      "module002": true,
+      "module003": false,
+      "legacyKpiRow": false
+    },
+    "mobile-390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "module": {
+        "x": 16,
+        "y": 782,
+        "width": 358,
+        "height": 368,
+        "top": 782,
+        "right": 374,
+        "bottom": 1150,
+        "left": 16
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650,
+        "top": 116,
+        "right": 374,
+        "bottom": 766,
+        "left": 16
+      },
+      "gapHeroToKpis": 16,
+      "cards": [
+        {
+          "id": "farms-kpi-tvl",
+          "state": "available",
+          "x": 16,
+          "y": 782,
+          "width": 171,
+          "height": 112,
+          "top": 782,
+          "right": 187,
+          "bottom": 894,
+          "left": 16,
+          "label": "Total Farm TVL"
+        },
+        {
+          "id": "farms-kpi-activeFarms",
+          "state": "available",
+          "x": 203,
+          "y": 782,
+          "width": 171,
+          "height": 112,
+          "top": 782,
+          "right": 374,
+          "bottom": 894,
+          "left": 203,
+          "label": "Active Farms"
+        },
+        {
+          "id": "farms-kpi-activeFarmers",
+          "state": "unavailable",
+          "x": 16,
+          "y": 910,
+          "width": 171,
+          "height": 112,
+          "top": 910,
+          "right": 187,
+          "bottom": 1022,
+          "left": 16,
+          "label": "Active Farmers"
+        },
+        {
+          "id": "farms-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 203,
+          "y": 910,
+          "width": 171,
+          "height": 112,
+          "top": 910,
+          "right": 374,
+          "bottom": 1022,
+          "left": 203,
+          "label": "24H Rewards"
+        },
+        {
+          "id": "farms-kpi-sustainableApr",
+          "state": "available",
+          "x": 16,
+          "y": 1038,
+          "width": 171,
+          "height": 112,
+          "top": 1038,
+          "right": 187,
+          "bottom": 1150,
+          "left": 16,
+          "label": "Highest Sustainable APR"
+        },
+        {
+          "id": "farms-kpi-harvestable",
+          "state": "unavailable",
+          "x": 203,
+          "y": 1038,
+          "width": 171,
+          "height": 112,
+          "top": 1038,
+          "right": 374,
+          "bottom": 1150,
+          "left": 203,
+          "label": "My Harvestable"
+        }
+      ],
+      "cardCount": 6,
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "module001": true,
+      "module002": true,
+      "module003": false,
+      "legacyKpiRow": false
+    }
+  },
+  "desktop1440Pass": {
+    "moduleWidth": true,
+    "moduleHeight": true,
+    "gapAfterHero": true,
+    "cardCount": true,
+    "cardWidth": true,
+    "cardHeight": true,
+    "noOverflow": true,
+    "module001": true,
+    "module002": true,
+    "noModule003": true,
+    "gapCards": true
+  },
+  "desktop1440AllPass": true,
+  "responsive": {
+    "tabletOverflow": true,
+    "mobile390Overflow": true,
+    "mobile430Overflow": true,
+    "mobile390CardW": true,
+    "mobile430CardW": true,
+    "mobileTwoCol": true
+  },
+  "independentFailure": {
+    "note": "Active Farmers and 24H Rewards remain unavailable without collapsing the strip",
+    "cardCount": 6,
+    "pass": true
+  }
+}

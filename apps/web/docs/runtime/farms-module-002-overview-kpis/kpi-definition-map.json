@@ -1,0 +1,15 @@
+{
+  "order": [
+    "Total Farm TVL",
+    "Active Farms",
+    "Active Farmers",
+    "24H Rewards",
+    "Highest Sustainable APR",
+    "My Harvestable"
+  ],
+  "geometry": {
+    "module": "1376x112",
+    "card": "216x112",
+    "gap": 16
+  }
+}
