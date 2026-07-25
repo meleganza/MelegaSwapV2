@@ -1,0 +1,471 @@
+{
+  "auditedAt": "2026-07-25T17:28:41.130Z",
+  "viewports": {
+    "desktop-1440": {
+      "viewport": {
+        "width": 1440,
+        "height": 1200
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260,
+        "top": 140,
+        "right": 1408,
+        "bottom": 400,
+        "left": 32
+      },
+      "left": {
+        "x": 32,
+        "y": 164,
+        "width": 440,
+        "height": 212,
+        "top": 164,
+        "right": 472,
+        "bottom": 376,
+        "left": 32
+      },
+      "artwork": {
+        "x": 520,
+        "y": 155,
+        "width": 480,
+        "height": 230,
+        "top": 155,
+        "right": 1000,
+        "bottom": 385,
+        "left": 520
+      },
+      "trust": {
+        "x": 1048,
+        "y": 155,
+        "width": 360,
+        "height": 230,
+        "top": 155,
+        "right": 1408,
+        "bottom": 385,
+        "left": 1048
+      },
+      "content": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 1611,
+        "top": 140,
+        "right": 1408,
+        "bottom": 1751,
+        "left": 32
+      },
+      "trending": {
+        "x": 0,
+        "y": 72,
+        "width": 1440,
+        "height": 44,
+        "top": 72,
+        "right": 1440,
+        "bottom": 116,
+        "left": 0
+      },
+      "gaps": {
+        "leftToArt": 48,
+        "artToTrust": 48,
+        "top": {
+          "heroY": 140,
+          "assumedStackPx": 116,
+          "gapAfterStack": 24
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "hasExploreAnchor": true,
+      "module002": false,
+      "module008": false,
+      "titleText": "Farms",
+      "exploreHref": "#explore-farms",
+      "howHref": null,
+      "howRendered": false,
+      "legacyHeader": false,
+      "rootMounted": true
+    },
+    "desktop-1280": {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 260,
+        "top": 140,
+        "right": 1248,
+        "bottom": 400,
+        "left": 32
+      },
+      "left": {
+        "x": 32,
+        "y": 164,
+        "width": 440,
+        "height": 212,
+        "top": 164,
+        "right": 472,
+        "bottom": 376,
+        "left": 32
+      },
+      "artwork": {
+        "x": 520,
+        "y": 155,
+        "width": 480,
+        "height": 230,
+        "top": 155,
+        "right": 1000,
+        "bottom": 385,
+        "left": 520
+      },
+      "trust": {
+        "x": 1048,
+        "y": 155,
+        "width": 360,
+        "height": 230,
+        "top": 155,
+        "right": 1408,
+        "bottom": 385,
+        "left": 1048
+      },
+      "content": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 1611,
+        "top": 140,
+        "right": 1248,
+        "bottom": 1751,
+        "left": 32
+      },
+      "trending": {
+        "x": 0,
+        "y": 72,
+        "width": 1280,
+        "height": 44,
+        "top": 72,
+        "right": 1280,
+        "bottom": 116,
+        "left": 0
+      },
+      "gaps": {
+        "leftToArt": 48,
+        "artToTrust": 48,
+        "top": {
+          "heroY": 140,
+          "assumedStackPx": 116,
+          "gapAfterStack": 24
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "hasExploreAnchor": true,
+      "module002": false,
+      "module008": false,
+      "titleText": "Farms",
+      "exploreHref": "#explore-farms",
+      "howHref": null,
+      "howRendered": false,
+      "legacyHeader": false,
+      "rootMounted": true
+    },
+    "tablet-1024": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480,
+        "top": 140,
+        "right": 1000,
+        "bottom": 620,
+        "left": 24
+      },
+      "left": {
+        "x": 24,
+        "y": 149,
+        "width": 476,
+        "height": 212,
+        "top": 149,
+        "right": 500,
+        "bottom": 361,
+        "left": 24
+      },
+      "artwork": {
+        "x": 524,
+        "y": 140,
+        "width": 476,
+        "height": 230,
+        "top": 140,
+        "right": 1000,
+        "bottom": 370,
+        "left": 524
+      },
+      "trust": {
+        "x": 24,
+        "y": 390,
+        "width": 360,
+        "height": 230,
+        "top": 390,
+        "right": 384,
+        "bottom": 620,
+        "left": 24
+      },
+      "content": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 1831,
+        "top": 140,
+        "right": 1000,
+        "bottom": 1971,
+        "left": 24
+      },
+      "trending": {
+        "x": 0,
+        "y": 72,
+        "width": 1024,
+        "height": 44,
+        "top": 72,
+        "right": 1024,
+        "bottom": 116,
+        "left": 0
+      },
+      "gaps": {
+        "leftToArt": 24,
+        "artToTrust": -976,
+        "top": {
+          "heroY": 140,
+          "assumedStackPx": 116,
+          "gapAfterStack": 24
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "hasExploreAnchor": true,
+      "module002": false,
+      "module008": false,
+      "titleText": "Farms",
+      "exploreHref": "#explore-farms",
+      "howHref": null,
+      "howRendered": false,
+      "legacyHeader": false,
+      "rootMounted": true
+    },
+    "mobile-430": {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650,
+        "top": 116,
+        "right": 414,
+        "bottom": 766,
+        "left": 16
+      },
+      "left": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 200,
+        "top": 116,
+        "right": 414,
+        "bottom": 316,
+        "left": 16
+      },
+      "artwork": {
+        "x": 52,
+        "y": 336,
+        "width": 326,
+        "height": 190,
+        "top": 336,
+        "right": 378,
+        "bottom": 526,
+        "left": 52
+      },
+      "trust": {
+        "x": 52,
+        "y": 546,
+        "width": 326,
+        "height": 312,
+        "top": 546,
+        "right": 378,
+        "bottom": 858,
+        "left": 52
+      },
+      "content": {
+        "x": 12,
+        "y": 116,
+        "width": 406,
+        "height": 2593.484375,
+        "top": 116,
+        "right": 418,
+        "bottom": 2709.484375,
+        "left": 12
+      },
+      "trending": {
+        "x": 0,
+        "y": 60,
+        "width": 430,
+        "height": 40,
+        "top": 60,
+        "right": 430,
+        "bottom": 100,
+        "left": 0
+      },
+      "gaps": {
+        "leftToArt": -362,
+        "artToTrust": -326,
+        "top": {
+          "heroY": 116,
+          "assumedStackPx": 116,
+          "gapAfterStack": 16
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "hasExploreAnchor": true,
+      "module002": false,
+      "module008": false,
+      "titleText": "Farms",
+      "exploreHref": "#explore-farms",
+      "howHref": null,
+      "howRendered": false,
+      "legacyHeader": false,
+      "rootMounted": true
+    },
+    "mobile-390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650,
+        "top": 116,
+        "right": 374,
+        "bottom": 766,
+        "left": 16
+      },
+      "left": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 200,
+        "top": 116,
+        "right": 374,
+        "bottom": 316,
+        "left": 16
+      },
+      "artwork": {
+        "x": 32,
+        "y": 336,
+        "width": 326,
+        "height": 190,
+        "top": 336,
+        "right": 358,
+        "bottom": 526,
+        "left": 32
+      },
+      "trust": {
+        "x": 32,
+        "y": 546,
+        "width": 326,
+        "height": 312,
+        "top": 546,
+        "right": 358,
+        "bottom": 858,
+        "left": 32
+      },
+      "content": {
+        "x": 12,
+        "y": 116,
+        "width": 366,
+        "height": 2604.484375,
+        "top": 116,
+        "right": 378,
+        "bottom": 2720.484375,
+        "left": 12
+      },
+      "trending": {
+        "x": 0,
+        "y": 60,
+        "width": 390,
+        "height": 40,
+        "top": 60,
+        "right": 390,
+        "bottom": 100,
+        "left": 0
+      },
+      "gaps": {
+        "leftToArt": -342,
+        "artToTrust": -326,
+        "top": {
+          "heroY": 116,
+          "assumedStackPx": 116,
+          "gapAfterStack": 16
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasExploreAnchor": true,
+      "module002": false,
+      "module008": false,
+      "titleText": "Farms",
+      "exploreHref": "#explore-farms",
+      "howHref": null,
+      "howRendered": false,
+      "legacyHeader": false,
+      "rootMounted": true
+    }
+  },
+  "desktop1440Pass": {
+    "heroWidth": true,
+    "heroHeight": true,
+    "topGap": true,
+    "left": true,
+    "artwork": true,
+    "trust": true,
+    "gapLeftArt": true,
+    "gapArtTrust": true,
+    "noOverflow": true,
+    "title": true,
+    "exploreHref": true,
+    "howOmitted": true,
+    "noModule002": true,
+    "noLegacyHeader": true,
+    "rootMounted": true
+  },
+  "desktop1440AllPass": true,
+  "accessibility": {
+    "reducedMotionEmulated": true,
+    "focusTarget": "farms-hero-explore-farms",
+    "exploreScrollAfterEnter": true,
+    "pass": true
+  },
+  "responsive": {
+    "tabletOverflow": true,
+    "mobile390Overflow": true,
+    "mobile430Overflow": true,
+    "mobile390WidthOk": true,
+    "mobile430WidthOk": true
+  }
+}

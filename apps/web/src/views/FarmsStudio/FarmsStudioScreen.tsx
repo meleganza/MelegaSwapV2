@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
-import FarmsStudioPageHeader from './components/FarmsStudioPageHeader'
 import YourFarmsSection from './components/YourFarmsSection'
 import FarmsKpiRow from './components/FarmsKpiRow'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
@@ -15,6 +14,8 @@ import FarmsFilterRow from './components/FarmsFilterRow'
 import FarmsGrid from './components/FarmsGrid'
 import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
+import { FarmsHeroModule } from './modules/FarmsHeroModule'
+import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
   color: ${farmsStudioColors.text};
@@ -23,6 +24,7 @@ const Root = styled.div`
   padding: 0 0 32px;
   min-width: 0;
   overflow-x: hidden;
+  width: 100%;
 
   @media (max-width: 767px) {
     padding: 0 0 ${farmsStudioLayout.mobileBottomPad};
@@ -30,10 +32,15 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${farmsStudioLayout.contentMax};
-  margin: 0 auto;
-  padding: ${farmsStudioLayout.contentPaddingTop} ${farmsStudioLayout.contentPaddingX}
-    ${farmsStudioLayout.contentPaddingBottom};
+  /*
+   * App shell supplies horizontal page padding (32px @ ≥1024).
+   * Module 001 requires 24px top gap after Trending Bar and 1376 content width.
+   * Legacy Studio body remains mounted beneath the Hero until Integration 009.
+   */
+  max-width: ${farmsHero.contentMax};
+  width: 100%;
+  margin: ${farmsHero.topAfterTrending} auto 0;
+  padding: 0 0 ${farmsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -42,7 +49,8 @@ const Content = styled.div`
   gap: ${farmsStudioLayout.sectionGap};
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${farmsStudioLayout.mobileBottomPad};
+    margin-top: 16px;
+    padding: 0 4px ${farmsStudioLayout.mobileBottomPad};
   }
 `
 
@@ -73,18 +81,24 @@ export const AdvisorSlot = styled.div`
 `
 
 export const FarmsStudioScreen: React.FC = () => (
-  <Root data-farms-studio-screen="true" data-r200-premium="true" data-fs-wallet-first="true">
+  <Root
+    data-farms-studio-screen="true"
+    data-farms-module-001="mounted"
+    data-farms-architecture="000"
+    data-r200-premium="true"
+    data-fs-wallet-first="true"
+  >
     <PageMeta />
     <FarmsStudioGlobalStyle />
     <FarmsRuntimeProvider>
       <FarmsActionHost />
-      <Content>
-        <FarmsStudioPageHeader />
+      <Content data-fs-content>
+        <FarmsHeroModule />
         <YourFarmsSection />
         <DataSurfaceErrorBoundary surface="Farms KPIs" userReason="Farm totals are temporarily unavailable.">
           <FarmsKpiRow />
         </DataSurfaceErrorBoundary>
-        <PageColumnGrid data-fs-page-grid data-fs-explore-farms="true">
+        <PageColumnGrid id="explore-farms" data-fs-page-grid data-fs-explore-farms="true">
           <FeaturedSlot>
             <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
               <FeaturedFarmPanel />

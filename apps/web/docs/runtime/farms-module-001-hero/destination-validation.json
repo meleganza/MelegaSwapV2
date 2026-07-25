@@ -1,0 +1,15 @@
+{
+  "exploreFarms": {
+    "href": "#explore-farms",
+    "reservedForModule": "004",
+    "temporaryLegacyDestination": "on-page #explore-farms band (legacy featured/explore)",
+    "onPageElementPresent": true,
+    "deadButton": false
+  },
+  "howFarmingWorks": {
+    "rendered": false,
+    "reason": "No dedicated factual How Farming Works destination exists on-site; omitted honestly per Architecture.",
+    "blankModal": false,
+    "newExplanatoryContentCreated": false
+  }
+}

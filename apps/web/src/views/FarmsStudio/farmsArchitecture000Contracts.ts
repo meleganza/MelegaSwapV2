@@ -45,7 +45,7 @@ export type FarmsCanonicalStatus = (typeof FARMS_CANONICAL_STATUS)[number]
 
 export const FARMS_MODULE_PLAN = [
   { id: '000-architecture', name: 'Architecture Lock', phase: 'certified-by-this-mission' },
-  { id: '001-hero', name: 'Hero', phase: 'future' },
+  { id: '001-hero', name: 'Hero', phase: 'certified-by-module-001' },
   { id: '002-overview-kpis', name: 'Overview KPIs', phase: 'future' },
   { id: '003-my-farms', name: 'My Farms', phase: 'future' },
   { id: '004-explore-farms', name: 'Explore Farms', phase: 'future' },

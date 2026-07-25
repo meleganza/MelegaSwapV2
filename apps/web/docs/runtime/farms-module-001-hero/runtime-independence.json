@@ -1,0 +1,11 @@
+{
+  "heroQueriesRuntime": false,
+  "rendersWhen": [
+    "Wallet disconnected",
+    "Wallet connected",
+    "Chain unsupported",
+    "Runtime unavailable",
+    "MasterChef unavailable"
+  ],
+  "pass": true
+}

@@ -63,11 +63,13 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 
 | | |
 | --- | --- |
-| **Responsibility** | Introduce LP Yield Farming; primary framing CTAs (How it Works / create intent as product allows) |
-| **Owned components (future)** | `FarmsHero*` |
-| **May consume** | Static product copy only |
-| **Forbidden** | Inventing live KPIs; owning wallet/reward state; Modules 002–010 |
+| **Responsibility** | Introduce LP Yield Farming; primary framing CTAs (Explore Farms / How Farming Works when factual) |
+| **Owned components** | `FarmsStudio/modules/FarmsHeroModule.tsx`, `FarmsHeroArtwork.tsx`, `FarmsHeroTrustPanel.tsx`, `farmsHeroTokens.ts` |
+| **Mount point** | `FarmsStudioScreen` prepends `<FarmsHeroModule />`; legacy `FarmsStudioPageHeader` superseded for title/CTAs; legacy body (Your Farms / KPIs / Featured / Explore / Grid) retained until Integration 009 |
+| **May consume** | Static product copy only; reserved `#explore-farms` Module 004 anchor (temporary legacy band) |
+| **Forbidden** | Inventing live KPIs; owning wallet/reward state; redesigning Global Header; Modules 002–010 |
 | **Depends on** | ARCHITECTURE_000 certified |
+| **Status** | Implemented on `farms-module-001-hero` |
 
 ---
 

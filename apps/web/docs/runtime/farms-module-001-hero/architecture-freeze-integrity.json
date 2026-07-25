@@ -1,0 +1,11 @@
+{
+  "architectureId": "FARMS_ARCHITECTURE_000",
+  "certifiedTip": "8edd68d4ea94af3550b8100796592aafd5a09d97",
+  "missionCommit": "bd655190",
+  "mockupSha256": "a19e506f7d7a5194050d52481f0b220bad30e4a774e3fde2529b37e830db848a",
+  "pageEntry": "pages/farms/index.tsx \u2192 FarmsStudioScreen",
+  "architectureShellCutover": false,
+  "modules002to008Mounted": false,
+  "legacyBodyRetained": true,
+  "pass": true
+}
