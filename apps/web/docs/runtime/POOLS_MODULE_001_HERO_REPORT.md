@@ -10,7 +10,7 @@
 
 ## 3. Mission commit
 
-_(filled after commit)_
+
 
 ## 4. Certified base
 
