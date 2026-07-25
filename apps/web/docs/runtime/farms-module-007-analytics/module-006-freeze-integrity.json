@@ -1,0 +1,17 @@
+{
+  "FarmsYieldAdvisorModule": {
+    "expected": "38a249133e0d64841c517beccc7ea2df8dd4aba3ea96c1f06e1554443442d38d",
+    "actual": "38a249133e0d64841c517beccc7ea2df8dd4aba3ea96c1f06e1554443442d38d",
+    "pass": true
+  },
+  "FarmsYieldAdvisorCard": {
+    "expected": "28d318a28251cfa6f9340a244eb667b740d4f4aa1432ec6b470e2ba94a1d9b4d",
+    "actual": "28d318a28251cfa6f9340a244eb667b740d4f4aa1432ec6b470e2ba94a1d9b4d",
+    "pass": true
+  },
+  "buildFarmsYieldAdvisor": {
+    "expected": "b23d0a2a064b92e717ccb2f71b2cab346ea66f6d64809b8e96ba6a8ba7714c05",
+    "actual": "b23d0a2a064b92e717ccb2f71b2cab346ea66f6d64809b8e96ba6a8ba7714c05",
+    "pass": true
+  }
+}

@@ -148,11 +148,13 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 
 | | |
 | --- | --- |
-| **Responsibility** | Distribution / reward tokens / participation / farm health — factual only |
-| **Owned components (future)** | `FarmsAnalytics*` |
-| **May consume** | Shared aggregation from inventory |
-| **Forbidden** | Mock charts; estimates/projections; Modules 008–010 |
-| **Depends on** | MODULE 004 |
+| **Responsibility** | Factual LP farm ecosystem summary: Farm Distribution, Reward Distribution, Participation, Farm Health |
+| **Owned components** | `FarmsAnalyticsModule.tsx`, `FarmsAnalyticsPanel.tsx`, `farmsAnalyticsTokens.ts`, `farmsAnalyticsTypes.ts`, `buildFarmsAnalytics.ts`, `useFarmsAnalytics.ts` |
+| **Mount point** | `FarmsStudioScreen` after Module 006 Yield Advisor; desktop band 1376×240 with four 330px panels and 18px gaps |
+| **May consume** | Shared `portfolioFarms` aggregation only (no second indexer) |
+| **Forbidden** | Mock charts; estimates/projections; predicted APR/TVL; modifying Modules 001–006; Module 008 |
+| **Depends on** | MODULE 004 inventory (+ 001–006 composition freeze) |
+| **Status** | Implemented on `farms-module-007-analytics` |
 
 ---
 

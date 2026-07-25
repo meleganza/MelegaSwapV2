@@ -15,6 +15,7 @@ import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
 import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
 import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
 import { FarmsYieldAdvisorModule } from './modules/FarmsYieldAdvisorModule'
+import { FarmsAnalyticsModule } from './modules/FarmsAnalyticsModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
@@ -90,6 +91,7 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-module-004="mounted"
     data-farms-module-005="mounted"
     data-farms-module-006="mounted"
+    data-farms-module-007="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -114,6 +116,9 @@ export const FarmsStudioScreen: React.FC = () => (
         </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Yield Advisor" userReason="Yield advisor is temporarily unavailable.">
           <FarmsYieldAdvisorModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Farms Analytics" userReason="Farm analytics are temporarily unavailable.">
+          <FarmsAnalyticsModule />
         </DataSurfaceErrorBoundary>
         <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
           <FeaturedSlot>
