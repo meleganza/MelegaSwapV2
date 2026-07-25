@@ -1,0 +1,17 @@
+{
+  "chain": "000 \u2192 001 \u2192 002 \u2192 003 \u2192 004 \u2192 005 \u2192 006 \u2192 007 \u2192 008 \u2192 009 \u2192 010",
+  "gates": [
+    "Founder mockup SHA frozen",
+    "One responsibility per module mission",
+    "Predecessors frozen after certify",
+    "No production mock numbers",
+    "Shared runtime boundaries enforced",
+    "Route cutover only in 009",
+    "Full staking-center certify in 010"
+  ],
+  "forbiddenUntilIntegration": [
+    "Replacing /pools mount",
+    "Deleting legacy write hooks without replacement",
+    "Shipping modular UI as default without 009"
+  ]
+}
