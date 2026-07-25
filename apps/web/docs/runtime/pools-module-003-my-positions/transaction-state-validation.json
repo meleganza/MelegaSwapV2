@@ -1,0 +1,8 @@
+{
+  "busyLabels": [
+    "Claiming…",
+    "Withdrawing…"
+  ],
+  "host": "PoolsActionHost",
+  "noIdleWhilePending": true
+}

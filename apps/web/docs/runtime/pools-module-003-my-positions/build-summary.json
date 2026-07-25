@@ -1,0 +1,6 @@
+{
+  "command": "yarn build",
+  "cwd": "apps/web",
+  "result": "passed",
+  "auditedAt": "2026-07-25T12:30:00.000Z"
+}

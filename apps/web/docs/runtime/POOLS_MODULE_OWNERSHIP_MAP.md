@@ -91,11 +91,13 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 | | |
 | --- | --- |
-| **Responsibility** | Pools that belong to the connected wallet: staked, APR, rewards, claimable, Claim / Manage |
-| **Owned components (future)** | `PoolsMyPositions*` |
-| **May consume** | Shared wallet portfolio builder + single action host |
-| **Forbidden** | Second wallet portfolio implementation; embedding Explore registry; Farms positions |
+| **Responsibility** | Pools that belong to the connected wallet: staked, rewards, claimable, Claim / Manage / Withdraw |
+| **Owned components** | `PoolsStudio/modules/PoolsMyPositionsModule.tsx`, `PoolsMyPositionCard.tsx`, `usePoolsWalletPositions.ts`, `buildPoolsWalletPositions.ts`, `poolsMyPositionsTokens.ts`, `poolsMyPositionsTypes.ts` |
+| **Mount point** | `PoolsStudioScreen` immediately after Module 002 Overview KPIs; legacy `YourPoolsSection` superseded for the My Positions surface (file retained for legacy tests) |
+| **May consume** | Shared `portfolioPools` + `PoolsActionHost` (`requestModal`); wallet connect button |
+| **Forbidden** | Second wallet portfolio scan; Farms / LP / Factory ownership; Modules 004–010 content; mutating Hero / KPI geometry |
 | **Depends on** | MODULE 002 |
+| **Status** | Implemented on `pools-module-003-my-positions` |
 
 ---
 

@@ -1,0 +1,5 @@
+{
+  "usesVerifiedTokenDecimals": true,
+  "neverShowsRawUint256": true,
+  "zeroClaimableAfterSuccessfulRead": "0 SYMBOL"
+}

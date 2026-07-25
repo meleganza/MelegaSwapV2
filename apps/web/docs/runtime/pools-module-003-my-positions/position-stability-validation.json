@@ -1,0 +1,6 @@
+{
+  "lastGoodRetention": true,
+  "publicDataWipeDoesNotBecomeZero": true,
+  "stableSortTieBreaker": "positionId",
+  "claimableBucket": "cents"
+}

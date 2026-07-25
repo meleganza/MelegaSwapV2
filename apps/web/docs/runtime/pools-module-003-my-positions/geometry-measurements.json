@@ -1,0 +1,292 @@
+{
+  "auditedAt": "2026-07-25T12:30:26.200Z",
+  "base": "http://127.0.0.1:3013",
+  "viewports": {
+    "desktop-1440": {
+      "row": {
+        "x": 32,
+        "y": 544,
+        "width": 1376,
+        "height": 360
+      },
+      "surface": {
+        "x": 32,
+        "y": 544,
+        "width": 936,
+        "height": 360
+      },
+      "slot": {
+        "x": 984,
+        "y": 544,
+        "width": 424,
+        "height": 360
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260
+      },
+      "kpis": {
+        "x": 32,
+        "y": 416,
+        "width": 1376,
+        "height": 112
+      },
+      "content": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 2036
+      },
+      "header": {
+        "x": 33,
+        "y": 545,
+        "width": 934,
+        "height": 60
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterKpis": 16,
+      "columnGap": 16,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "state": "disconnected"
+    },
+    "desktop-1280": {
+      "row": {
+        "x": 32,
+        "y": 544,
+        "width": 1216,
+        "height": 360
+      },
+      "surface": {
+        "x": 32,
+        "y": 544,
+        "width": 825.875,
+        "height": 360
+      },
+      "slot": {
+        "x": 873.875,
+        "y": 544,
+        "width": 374.125,
+        "height": 360
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 260
+      },
+      "kpis": {
+        "x": 32,
+        "y": 416,
+        "width": 1216,
+        "height": 112
+      },
+      "content": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 2036
+      },
+      "header": {
+        "x": 33,
+        "y": 545,
+        "width": 823.875,
+        "height": 60
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterKpis": 16,
+      "columnGap": 16,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "state": "disconnected"
+    },
+    "tablet-1024": {
+      "row": {
+        "x": 24,
+        "y": 892,
+        "width": 976,
+        "height": 360
+      },
+      "surface": {
+        "x": 24,
+        "y": 892,
+        "width": 976,
+        "height": 360
+      },
+      "slot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480
+      },
+      "kpis": {
+        "x": 24,
+        "y": 636,
+        "width": 976,
+        "height": 240
+      },
+      "content": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 3070
+      },
+      "header": {
+        "x": 25,
+        "y": 893,
+        "width": 974,
+        "height": 60
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterKpis": 16,
+      "columnGap": null,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "state": "disconnected"
+    },
+    "mobile-430": {
+      "row": {
+        "x": 16,
+        "y": 1166,
+        "width": 398,
+        "height": 316
+      },
+      "surface": {
+        "x": 16,
+        "y": 1166,
+        "width": 398,
+        "height": 316
+      },
+      "slot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650
+      },
+      "kpis": {
+        "x": 16,
+        "y": 782,
+        "width": 398,
+        "height": 368
+      },
+      "content": {
+        "x": 12,
+        "y": 116,
+        "width": 406,
+        "height": 3594
+      },
+      "header": {
+        "x": 17,
+        "y": 1167,
+        "width": 396,
+        "height": 56
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterKpis": 16,
+      "columnGap": null,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "state": "disconnected"
+    },
+    "mobile-390": {
+      "row": {
+        "x": 16,
+        "y": 1166,
+        "width": 358,
+        "height": 316
+      },
+      "surface": {
+        "x": 16,
+        "y": 1166,
+        "width": 358,
+        "height": 316
+      },
+      "slot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650
+      },
+      "kpis": {
+        "x": 16,
+        "y": 782,
+        "width": 358,
+        "height": 368
+      },
+      "content": {
+        "x": 12,
+        "y": 116,
+        "width": 366,
+        "height": 3688
+      },
+      "header": {
+        "x": 17,
+        "y": 1167,
+        "width": 356,
+        "height": 56
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterKpis": 16,
+      "columnGap": null,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "state": "disconnected"
+    }
+  },
+  "desktop1440Pass": {
+    "rowWidth": true,
+    "surface": true,
+    "slot": true,
+    "columnGap": true,
+    "topGap": true,
+    "header": true,
+    "cards": null,
+    "noOverflow": true,
+    "module001": true,
+    "module002": true,
+    "module003": true,
+    "noModule004": true,
+    "heroHeight": true
+  },
+  "desktop1440AllPass": true
+}

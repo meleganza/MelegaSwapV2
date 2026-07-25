@@ -1,0 +1,5 @@
+{
+  "generationBumpOnWalletOrChainChange": true,
+  "ignoreStalePreviousAcrossWallets": true,
+  "sourcesFailedKeepsLastGood": true
+}

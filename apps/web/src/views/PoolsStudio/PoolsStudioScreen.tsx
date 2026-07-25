@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
-import YourPoolsSection from './components/YourPoolsSection'
 import FeaturedPoolHero from './components/FeaturedPoolHero'
 import PoolsSidebar from './components/PoolsSidebar'
 import PoolsViewToolbar from './components/PoolsViewToolbar'
@@ -17,6 +16,7 @@ import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
 import { PoolsHeroModule } from './modules/PoolsHeroModule'
 import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
+import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
@@ -164,6 +164,7 @@ export const PoolsStudioScreen: React.FC = () => (
     data-pools-studio-screen="true"
     data-pools-module-001="mounted"
     data-pools-module-002="mounted"
+    data-pools-module-003="mounted"
     data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
@@ -183,7 +184,9 @@ export const PoolsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
           <PoolsOverviewKpisModule />
         </DataSurfaceErrorBoundary>
-        <YourPoolsSection />
+        <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
+          <PoolsMyPositionsModule />
+        </DataSurfaceErrorBoundary>
         <MainGrid data-ps-main-grid data-ps-explore-pools="true">
           <MainColumn>
             <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">

@@ -1,0 +1,9 @@
+{
+  "ACTIVE": "live pool + economic position",
+  "WITHDRAW_ONLY": "ended pool + principal > 0",
+  "EMERGENCY": "ended + enableEmergencyWithdraw + principal",
+  "ENDED": "ended + claimable-only",
+  "PARTIAL": "confirmed position with missing fields",
+  "UNAVAILABLE": "sources failed without last-good",
+  "LOADING": "wallet query in flight"
+}

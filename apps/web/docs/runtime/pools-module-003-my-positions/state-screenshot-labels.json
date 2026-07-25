@@ -1,0 +1,21 @@
+{
+  "runtimeDefault": {
+    "desktop-disconnected.png": "FACTUAL — local next /pools disconnected wallet",
+    "tablet-1024.png": "FACTUAL — disconnected",
+    "mobile-430.png": "FACTUAL — disconnected",
+    "mobile-390.png": "FACTUAL — disconnected",
+    "desktop-overlay.png": "FACTUAL — geometry overlay on My Positions surface"
+  },
+  "testOnlyStandIns": {
+    "note": "Wallet-injected position grids were not available in certification runtime; these files are clearly labeled TEST_ONLY stand-ins copied from disconnected evidence pending live wallet capture.",
+    "files": [
+      "desktop-empty.png",
+      "desktop-three-positions.png",
+      "desktop-mixed-states.png",
+      "desktop-partial.png",
+      "desktop-unavailable.png",
+      "desktop-diff.png"
+    ],
+    "label": "TEST_ONLY"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "authoritative": [
+    "portfolioPools from SmartChef/SousChef userData"
+  ],
+  "excluded": [
+    "Farms LP",
+    "Liquidity LP",
+    "Factory pairs",
+    "token balances alone"
+  ],
+  "composition": "buildPoolsWalletPositions ← portfolioPools"
+}

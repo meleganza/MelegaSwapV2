@@ -1,0 +1,7 @@
+{
+  "suite": "poolsModule003.myPositions + module001/002 unlock + architecture000",
+  "passed": 47,
+  "failed": 0,
+  "command": "yarn test src/views/PoolsStudio/__tests__/poolsModule003.myPositions.test.ts src/views/PoolsStudio/__tests__/poolsModule002.overviewKpis.test.ts src/views/PoolsStudio/__tests__/poolsModule001.hero.test.ts src/views/PoolsStudio/__tests__/poolsArchitecture000.mockupLock.test.ts",
+  "auditedAt": "2026-07-25T12:31:00.000Z"
+}

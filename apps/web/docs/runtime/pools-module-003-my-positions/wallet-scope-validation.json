@@ -1,0 +1,5 @@
+{
+  "positionIdIncludesWallet": true,
+  "walletChangeClearsCache": true,
+  "neverShowsOtherWallet": true
+}

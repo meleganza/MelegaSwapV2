@@ -1,0 +1,4 @@
+{
+  "resolver": "PoolTokenIcon + address + chainId",
+  "noSymbolOnlyNonMarco": true
+}

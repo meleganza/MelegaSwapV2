@@ -1,0 +1,7 @@
+{
+  "claim": "requestModal(card, claim) when pendingReward > 0 and rawPool",
+  "withdraw": "requestModal(card, unstake) when WITHDRAW_ONLY",
+  "emergency": "requestModal(card, unstake) when EMERGENCY",
+  "manage": "requestModal(card, stake|unstake) when ACTIVE",
+  "unsupportedWithoutRawPool": true
+}

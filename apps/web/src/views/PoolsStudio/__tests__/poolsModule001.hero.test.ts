@@ -78,14 +78,12 @@ describe('POOLS_MODULE_001 Hero', () => {
     const screen = load('PoolsStudioScreen.tsx')
     expect(screen).toContain('PoolsHeroModule')
     expect(screen).toContain('data-pools-module-001="mounted"')
-    expect(screen).toContain('YourPoolsSection')
     expect(screen).toContain('PoolsGrid')
     expect(screen).toContain('CreatePoolCta')
     expect(screen).not.toContain('PoolsStudioPageHeader')
-    expect(screen).not.toContain('PoolsMyPositions')
     expect(screen).not.toContain('PoolsFinished')
-    // Module 002 may mount after Hero; Modules 003+ remain forbidden here.
-    expect(screen).not.toContain('data-pools-module="003"')
+    // Modules 002–003 may mount after Hero; Modules 004+ remain forbidden here.
+    expect(screen).not.toContain('data-pools-module="004"')
   })
 
   it('uses factual Create Pool destination and reserved How it Works behavior', () => {
@@ -97,10 +95,10 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(mod).toContain('pools-hero-how-it-works')
   })
 
-  it('keeps Modules 003–010 unmounted (Module 002 may follow Hero)', () => {
+  it('keeps Modules 004–010 unmounted (Modules 002–003 may follow Hero)', () => {
     const screen = load('PoolsStudioScreen.tsx')
     expect(screen).toContain('PoolsHeroModule')
-    expect(screen).not.toContain('data-pools-module="003"')
+    expect(screen).not.toContain('data-pools-module="004"')
     expect(screen).not.toContain('data-pools-module="009"')
     expect(POOLS_MODULE_PLAN.find((m) => m.id === '001-hero')).toBeTruthy()
   })

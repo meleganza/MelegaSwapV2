@@ -1,0 +1,10 @@
+{
+  "includeWhen": [
+    "staked > 0",
+    "claimable > 0"
+  ],
+  "excludeWhen": [
+    "zero principal and zero claimable",
+    "config-only pools"
+  ]
+}

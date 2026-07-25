@@ -1,0 +1,8 @@
+{
+  "sectionHeading": true,
+  "listSemantics": true,
+  "statusText": true,
+  "politeLiveRegion": true,
+  "focusRing": "2px gold + 2px offset",
+  "touchMin": 44
+}
