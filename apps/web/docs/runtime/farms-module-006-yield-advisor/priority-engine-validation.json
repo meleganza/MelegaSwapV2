@@ -1,0 +1,16 @@
+{
+  "order": [
+    "emergency_withdraw",
+    "withdraw_finished",
+    "harvest_rewards",
+    "harvest_active",
+    "inactive_attention",
+    "all_clear"
+  ],
+  "maxVisible": 4,
+  "noAi": true,
+  "noAprOpportunity": true,
+  "noPredictions": true,
+  "actionHostOnly": true,
+  "pass": true
+}

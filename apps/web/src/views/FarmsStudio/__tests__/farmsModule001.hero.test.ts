@@ -89,12 +89,13 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(screen).toContain('FarmsHeroModule')
     expect(screen).toContain('data-farms-module-001="mounted"')
     expect(screen).toContain('FarmsMyFarmsModule')
-    expect(screen).toContain('FarmsGrid')
-    expect(screen).toContain('AIYieldAdvisorPanel')
+    expect(screen).toContain('FarmsYieldAdvisorModule')
+    expect(screen).not.toContain('AIYieldAdvisorPanel')
     expect(screen).not.toContain('FarmsStudioPageHeader')
-    // Modules 002–003 may mount after Hero; Modules 004+ remain forbidden here.
+    // Modules 002–006 may mount after Hero; Modules 007+ remain forbidden here.
+    expect(screen).not.toContain('data-farms-module="007"')
     expect(screen).not.toContain('data-farms-module="008"')
-    expect(screen).not.toContain('FarmsYieldAdvisorModule')
+    expect(screen).not.toContain('FarmsAnalyticsModule')
   })
 
   it('uses Module 004 Explore Farms anchor and omits How Farming Works without a factual destination', () => {
@@ -109,14 +110,14 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(mod).not.toContain('farms-hero-how-farming-works')
     expect(mod).not.toContain('How Farming Works')
 
-    const screen = load('FarmsStudioScreen.tsx')
-    expect(screen).toContain('id="explore-farms"')
+    const explore = load('modules/FarmsExploreFarmsModule.tsx')
+    expect(explore).toContain('id="explore-farms"')
   })
 
-  it('keeps Modules 004–010 unmounted (Modules 002–003 may follow Hero)', () => {
+  it('keeps Modules 007–010 unmounted (Modules 002–006 may follow Hero)', () => {
     const screen = load('FarmsStudioScreen.tsx')
     expect(screen).toContain('FarmsHeroModule')
-    for (const id of ['004', '005', '006', '007', '008', '009', '010']) {
+    for (const id of ['007', '008', '009', '010']) {
       expect(screen).not.toContain(`data-farms-module="${id}"`)
     }
     expect(FARMS_MODULE_PLAN.find((m) => m.id === '001-hero')).toBeTruthy()

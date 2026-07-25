@@ -133,11 +133,13 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 
 | | |
 | --- | --- |
-| **Responsibility** | Deterministic priorities: harvest, withdraw ended LP, emergency, high APR opportunity |
-| **Owned components (future)** | `FarmsYieldAdvisor*` |
-| **May consume** | Shared portfolio + ActionHost + APR rules |
-| **Forbidden** | AI / predicted advice; dead actions; modifying Modules 001–005; Modules 007–010 |
+| **Responsibility** | Deterministic action priorities from factual wallet farm state: emergency withdraw, withdraw finished, harvest finished/active, inactive attention, or all-clear / unavailable |
+| **Owned components** | `FarmsYieldAdvisorModule.tsx`, `FarmsYieldAdvisorCard.tsx`, `farmsYieldAdvisorTokens.ts`, `farmsYieldAdvisorTypes.ts`, `buildFarmsYieldAdvisor.ts`, `useFarmsYieldAdvisor.ts` |
+| **Mount point** | `FarmsStudioScreen` after Module 005; portals into Module 003 reserved `[data-farms-module-006-slot="reserved"]` (424×360). Inline below Finished Farms at ≤1199px. Supersedes legacy `AIYieldAdvisorPanel` in the Featured/Advisor grid (file retained). |
+| **May consume** | Shared portfolio + `FarmsActionHost` (Harvest / Withdraw / Emergency Withdraw only) |
+| **Forbidden** | AI / predicted advice; APR opportunity recommendations; future earnings; modifying Modules 001–005; Modules 007–010 |
 | **Depends on** | MODULE 003–005 |
+| **Status** | Implemented on `farms-module-006-yield-advisor` |
 | **Note** | Mockup may label this “AI”; rebuild product name is **Yield Advisor** — factual only |
 
 ---

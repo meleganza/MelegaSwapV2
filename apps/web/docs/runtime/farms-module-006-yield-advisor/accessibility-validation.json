@@ -1,0 +1,10 @@
+{
+  "section": true,
+  "list": true,
+  "article": true,
+  "buttons": true,
+  "focusRing": "2px solid #F4C430",
+  "touchMin": "44px",
+  "reducedMotion": true,
+  "pass": true
+}

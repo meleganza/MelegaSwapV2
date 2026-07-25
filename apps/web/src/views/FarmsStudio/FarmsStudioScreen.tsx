@@ -7,7 +7,6 @@ import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
-import AIYieldAdvisorPanel from './components/AIYieldAdvisorPanel'
 import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
 import { FarmsHeroModule } from './modules/FarmsHeroModule'
@@ -15,6 +14,7 @@ import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
 import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
 import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
 import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
+import { FarmsYieldAdvisorModule } from './modules/FarmsYieldAdvisorModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
@@ -78,6 +78,7 @@ export const FeaturedSlot = styled.div`
 
 export const AdvisorSlot = styled.div`
   min-width: 0;
+  /* Legacy AI Yield Advisor superseded by Module 006 (portaled into My Farms slot). */
 `
 
 export const FarmsStudioScreen: React.FC = () => (
@@ -88,6 +89,7 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-module-003="mounted"
     data-farms-module-004="mounted"
     data-farms-module-005="mounted"
+    data-farms-module-006="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -110,15 +112,16 @@ export const FarmsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Finished Farms" userReason="Finished farm positions are temporarily unavailable.">
           <FarmsFinishedFarmsModule />
         </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Yield Advisor" userReason="Yield advisor is temporarily unavailable.">
+          <FarmsYieldAdvisorModule />
+        </DataSurfaceErrorBoundary>
         <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
           <FeaturedSlot>
             <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
               <FeaturedFarmPanel />
             </DataSurfaceErrorBoundary>
           </FeaturedSlot>
-          <AdvisorSlot>
-            <AIYieldAdvisorPanel />
-          </AdvisorSlot>
+          <AdvisorSlot data-fs-advisor-superseded="module-006" aria-hidden="true" />
         </PageColumnGrid>
         <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
           <FarmsActivityTable />

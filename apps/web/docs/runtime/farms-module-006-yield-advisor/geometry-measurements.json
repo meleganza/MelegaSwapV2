@@ -1,0 +1,289 @@
+{
+  "geometry": {
+    "auditedAt": "2026-07-25T22:35:50.433Z",
+    "base": "http://127.0.0.1:3526",
+    "viewports": {
+      "desktop-1440": {
+        "slot": {
+          "x": 984,
+          "y": 544,
+          "width": 424,
+          "height": 360,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "advisorSlot": {
+          "x": 984,
+          "y": 544,
+          "width": 424,
+          "height": 360,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "advisorInline": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "inlineWrap": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible"
+        },
+        "finished": {
+          "x": 32,
+          "y": 1999,
+          "width": 1376,
+          "height": 220,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "myFarms": {
+          "x": 32,
+          "y": 544,
+          "width": 1376,
+          "height": 360,
+          "display": "grid",
+          "visibility": "visible"
+        },
+        "hero": {
+          "x": 32,
+          "y": 140,
+          "width": 1376,
+          "height": 260,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "cards": [
+          {
+            "x": 997,
+            "y": 617,
+            "width": 390,
+            "height": 64,
+            "display": "flex",
+            "visibility": "visible"
+          },
+          {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "display": "flex",
+            "visibility": "visible"
+          }
+        ],
+        "overflow": false,
+        "module001": true,
+        "module003": true,
+        "module005": true,
+        "module006": true,
+        "module007": false,
+        "aiPanel": false,
+        "belowFinished": -2219,
+        "state": "disconnected"
+      },
+      "tablet-1024": {
+        "slot": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible"
+        },
+        "advisorSlot": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "advisorInline": {
+          "x": 333,
+          "y": 3155,
+          "width": 358,
+          "height": 150,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "inlineWrap": {
+          "x": 24,
+          "y": 3155,
+          "width": 976,
+          "height": 150,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "finished": {
+          "x": 24,
+          "y": 2919,
+          "width": 976,
+          "height": 220,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "myFarms": {
+          "x": 24,
+          "y": 892,
+          "width": 976,
+          "height": 360,
+          "display": "grid",
+          "visibility": "visible"
+        },
+        "hero": {
+          "x": 24,
+          "y": 140,
+          "width": 976,
+          "height": 480,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "cards": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "display": "flex",
+            "visibility": "visible"
+          },
+          {
+            "x": 346,
+            "y": 3228,
+            "width": 332,
+            "height": 64,
+            "display": "flex",
+            "visibility": "visible"
+          }
+        ],
+        "overflow": false,
+        "module001": true,
+        "module003": true,
+        "module005": true,
+        "module006": true,
+        "module007": false,
+        "aiPanel": false,
+        "belowFinished": 16,
+        "state": "disconnected"
+      },
+      "mobile-390": {
+        "slot": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible"
+        },
+        "advisorSlot": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "advisorInline": {
+          "x": 16,
+          "y": 4869,
+          "width": 358,
+          "height": 150,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "inlineWrap": {
+          "x": 16,
+          "y": 4869,
+          "width": 358,
+          "height": 150,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "finished": {
+          "x": 16,
+          "y": 4603,
+          "width": 358,
+          "height": 250,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "myFarms": {
+          "x": 16,
+          "y": 1166,
+          "width": 358,
+          "height": 360,
+          "display": "grid",
+          "visibility": "visible"
+        },
+        "hero": {
+          "x": 16,
+          "y": 116,
+          "width": 358,
+          "height": 650,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "cards": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "display": "flex",
+            "visibility": "visible"
+          },
+          {
+            "x": 29,
+            "y": 4942,
+            "width": 332,
+            "height": 64,
+            "display": "flex",
+            "visibility": "visible"
+          }
+        ],
+        "overflow": false,
+        "module001": true,
+        "module003": true,
+        "module005": true,
+        "module006": true,
+        "module007": false,
+        "aiPanel": false,
+        "belowFinished": 16,
+        "state": "disconnected"
+      }
+    }
+  },
+  "desktopPass": {
+    "slotWidth": true,
+    "slotHeight": true,
+    "advisorInSlot": true,
+    "advisorHeight": true,
+    "inlineHidden": true,
+    "noOverflow": true,
+    "modules": true,
+    "noAiPanel": true,
+    "myFarmsFrozen": true
+  },
+  "tabletPass": {
+    "inlineVisible": true,
+    "module006": true,
+    "noModule007": true,
+    "noOverflow": true
+  },
+  "mobilePass": {
+    "inlineVisible": true,
+    "module006": true,
+    "noModule007": true,
+    "noOverflow": true,
+    "widthOk": true
+  },
+  "freezePass": true,
+  "allPass": true
+}

@@ -115,13 +115,12 @@ describe('FARMS_MODULE_005 Finished Farms', () => {
     expect(farmsFinished.historyHref).toBe('/farms/history')
   })
 
-  it('mounts Module 005 after Explore without Modules 006–008', () => {
+  it('mounts Module 005 after Explore without Modules 007–008', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('FarmsFinishedFarmsModule')
     expect(screen).toContain('data-farms-module-005="mounted"')
     expect(screen.indexOf('FarmsExploreFarmsModule')).toBeLessThan(screen.indexOf('FarmsFinishedFarmsModule'))
-    expect(screen).not.toContain('data-farms-module="006"')
-    expect(screen).not.toContain('FarmsYieldAdvisorModule')
+    expect(screen).not.toContain('data-farms-module="007"')
     expect(screen).not.toContain('FarmsAnalyticsModule')
   })
 
