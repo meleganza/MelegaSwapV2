@@ -1,0 +1,335 @@
+{
+  "auditedAt": "2026-07-25T11:33:59.128Z",
+  "viewports": {
+    "desktop-1440": {
+      "module": {
+        "x": 32,
+        "y": 416,
+        "width": 1376,
+        "height": 112
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260
+      },
+      "topGapAfterHero": 16,
+      "cards": [
+        {
+          "id": "pools-kpi-tvl",
+          "state": "available",
+          "x": 32,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "label": "Total Value Locked",
+          "text": "TOTAL VALUE LOCKED\n$76.7K\nStaking pools"
+        },
+        {
+          "id": "pools-kpi-discovered",
+          "state": "loading",
+          "x": 264,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "label": "Pools Discovered",
+          "text": "POOLS DISCOVERED"
+        },
+        {
+          "id": "pools-kpi-rewarding",
+          "state": "loading",
+          "x": 496,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "label": "Pools Rewarding",
+          "text": "POOLS REWARDING"
+        },
+        {
+          "id": "pools-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 728,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "label": "Total Rewards — 24H",
+          "text": "TOTAL REWARDS — 24H\n—\n24H reward data unavailable"
+        },
+        {
+          "id": "pools-kpi-sustainableApr",
+          "state": "unavailable",
+          "x": 960,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "label": "Highest Sustainable APR",
+          "text": "HIGHEST SUSTAINABLE APR\n—\nSustainable APR unavailable"
+        },
+        {
+          "id": "pools-kpi-claimable",
+          "state": "unavailable",
+          "x": 1192,
+          "y": 416,
+          "width": 216,
+          "height": 112,
+          "label": "My Claimable",
+          "text": "MY CLAIMABLE\n—\nConnect wallet to view"
+        }
+      ],
+      "overflow": false,
+      "module002": true,
+      "module003": false
+    },
+    "tablet-1024": {
+      "module": {
+        "x": 24,
+        "y": 636,
+        "width": 976,
+        "height": 240
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480
+      },
+      "topGapAfterHero": 16,
+      "cards": [
+        {
+          "id": "pools-kpi-tvl",
+          "state": "unavailable",
+          "x": 24,
+          "y": 636,
+          "width": 314.66,
+          "height": 112,
+          "label": "Total Value Locked",
+          "text": "TOTAL VALUE LOCKED\n—\nValuation unavailable"
+        },
+        {
+          "id": "pools-kpi-discovered",
+          "state": "loading",
+          "x": 354.66,
+          "y": 636,
+          "width": 314.67,
+          "height": 112,
+          "label": "Pools Discovered",
+          "text": "POOLS DISCOVERED"
+        },
+        {
+          "id": "pools-kpi-rewarding",
+          "state": "loading",
+          "x": 685.33,
+          "y": 636,
+          "width": 314.66,
+          "height": 112,
+          "label": "Pools Rewarding",
+          "text": "POOLS REWARDING"
+        },
+        {
+          "id": "pools-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 24,
+          "y": 764,
+          "width": 314.66,
+          "height": 112,
+          "label": "Total Rewards — 24H",
+          "text": "TOTAL REWARDS — 24H\n—\n24H reward data unavailable"
+        },
+        {
+          "id": "pools-kpi-sustainableApr",
+          "state": "unavailable",
+          "x": 354.66,
+          "y": 764,
+          "width": 314.67,
+          "height": 112,
+          "label": "Highest Sustainable APR",
+          "text": "HIGHEST SUSTAINABLE APR\n—\nSustainable APR unavailable"
+        },
+        {
+          "id": "pools-kpi-claimable",
+          "state": "unavailable",
+          "x": 685.33,
+          "y": 764,
+          "width": 314.66,
+          "height": 112,
+          "label": "My Claimable",
+          "text": "MY CLAIMABLE\n—\nConnect wallet to view"
+        }
+      ],
+      "overflow": false,
+      "module002": true,
+      "module003": false
+    },
+    "mobile-430": {
+      "module": {
+        "x": 16,
+        "y": 782,
+        "width": 398,
+        "height": 368
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650
+      },
+      "topGapAfterHero": 16,
+      "cards": [
+        {
+          "id": "pools-kpi-tvl",
+          "state": "unavailable",
+          "x": 16,
+          "y": 782,
+          "width": 191,
+          "height": 112,
+          "label": "Total Value Locked",
+          "text": "TOTAL VALUE LOCKED\n—\nValuation unavailable"
+        },
+        {
+          "id": "pools-kpi-discovered",
+          "state": "loading",
+          "x": 223,
+          "y": 782,
+          "width": 191,
+          "height": 112,
+          "label": "Pools Discovered",
+          "text": "POOLS DISCOVERED"
+        },
+        {
+          "id": "pools-kpi-rewarding",
+          "state": "loading",
+          "x": 16,
+          "y": 910,
+          "width": 191,
+          "height": 112,
+          "label": "Pools Rewarding",
+          "text": "POOLS REWARDING"
+        },
+        {
+          "id": "pools-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 223,
+          "y": 910,
+          "width": 191,
+          "height": 112,
+          "label": "Total Rewards — 24H",
+          "text": "TOTAL REWARDS — 24H\n—\n24H reward data unavailable"
+        },
+        {
+          "id": "pools-kpi-sustainableApr",
+          "state": "unavailable",
+          "x": 16,
+          "y": 1038,
+          "width": 191,
+          "height": 112,
+          "label": "Highest Sustainable APR",
+          "text": "HIGHEST SUSTAINABLE APR\n—\nSustainable APR unavailable"
+        },
+        {
+          "id": "pools-kpi-claimable",
+          "state": "unavailable",
+          "x": 223,
+          "y": 1038,
+          "width": 191,
+          "height": 112,
+          "label": "My Claimable",
+          "text": "MY CLAIMABLE\n—\nConnect wallet to view"
+        }
+      ],
+      "overflow": false,
+      "module002": true,
+      "module003": false
+    },
+    "mobile-390": {
+      "module": {
+        "x": 16,
+        "y": 782,
+        "width": 358,
+        "height": 368
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650
+      },
+      "topGapAfterHero": 16,
+      "cards": [
+        {
+          "id": "pools-kpi-tvl",
+          "state": "unavailable",
+          "x": 16,
+          "y": 782,
+          "width": 171,
+          "height": 112,
+          "label": "Total Value Locked",
+          "text": "TOTAL VALUE LOCKED\n—\nValuation unavailable"
+        },
+        {
+          "id": "pools-kpi-discovered",
+          "state": "loading",
+          "x": 203,
+          "y": 782,
+          "width": 171,
+          "height": 112,
+          "label": "Pools Discovered",
+          "text": "POOLS DISCOVERED"
+        },
+        {
+          "id": "pools-kpi-rewarding",
+          "state": "loading",
+          "x": 16,
+          "y": 910,
+          "width": 171,
+          "height": 112,
+          "label": "Pools Rewarding",
+          "text": "POOLS REWARDING"
+        },
+        {
+          "id": "pools-kpi-rewards24h",
+          "state": "unavailable",
+          "x": 203,
+          "y": 910,
+          "width": 171,
+          "height": 112,
+          "label": "Total Rewards — 24H",
+          "text": "TOTAL REWARDS — 24H\n—\n24H reward data unavailable"
+        },
+        {
+          "id": "pools-kpi-sustainableApr",
+          "state": "unavailable",
+          "x": 16,
+          "y": 1038,
+          "width": 171,
+          "height": 112,
+          "label": "Highest Sustainable APR",
+          "text": "HIGHEST SUSTAINABLE APR\n—\nSustainable APR unavailable"
+        },
+        {
+          "id": "pools-kpi-claimable",
+          "state": "unavailable",
+          "x": 203,
+          "y": 1038,
+          "width": 171,
+          "height": 112,
+          "label": "My Claimable",
+          "text": "MY CLAIMABLE\n—\nConnect wallet to view"
+        }
+      ],
+      "overflow": false,
+      "module002": true,
+      "module003": false
+    }
+  },
+  "desktop1440Pass": {
+    "moduleWidth": true,
+    "moduleHeight": true,
+    "topGap": true,
+    "card": true,
+    "sixCards": true,
+    "noOverflow": true,
+    "heroUnchangedHeight": true
+  },
+  "desktop1440AllPass": true
+}

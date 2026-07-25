@@ -1,0 +1,18 @@
+{
+  "order": [
+    "tvl",
+    "discovered",
+    "rewarding",
+    "rewards24h",
+    "sustainableApr",
+    "claimable"
+  ],
+  "definitions": {
+    "tvl": "USD value locked in staking-pool domain (totalStaked \u00d7 stakingTokenPrice); not Factory pair TVL",
+    "discovered": "SmartChef classification counts.discovered \u2014 not Factory allPairsLength",
+    "rewarding": "Classification counts.rewarding (active+funded emission)",
+    "rewards24h": "Indexed rolling 24H distributed rewards \u2014 unavailable (no feed); emission projections forbidden",
+    "sustainableApr": "Max poolsAprRules sustainable display among rewarding non-ended pools",
+    "claimable": "Sum pendingReward \u00d7 earningTokenPrice for connected wallet; $0.00 only after successful zero read"
+  }
+}

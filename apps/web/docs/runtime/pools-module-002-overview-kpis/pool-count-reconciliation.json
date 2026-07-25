@@ -1,0 +1,18 @@
+{
+  "domains": {
+    "factoryAmmPairs": "Melega Factory allPairs / indexer pairs \u2014 NOT used by Module 002 Discovered",
+    "farms": "Farms product \u2014 out of scope",
+    "historicalPoolsConfig": "config/constants/pools \u2014 legacy config inventory",
+    "smartChefClassification": "Canonical Module 002 Pools Discovered / Rewarding source",
+    "studioPreviewCards": "Mapped staking pools for TVL/APR/claimable composition"
+  },
+  "homeKpiDifference": "Home 'Pools' KPI may still reflect Factory/AMM pair discovery; Module 002 uses SmartChef staking-pool classification only. Home not changed in this mission.",
+  "liveDesktopCardStates": {
+    "pools-kpi-tvl": "available",
+    "pools-kpi-discovered": "loading",
+    "pools-kpi-rewarding": "loading",
+    "pools-kpi-rewards24h": "unavailable",
+    "pools-kpi-sustainableApr": "unavailable",
+    "pools-kpi-claimable": "unavailable"
+  }
+}

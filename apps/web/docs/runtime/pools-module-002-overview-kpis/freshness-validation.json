@@ -1,0 +1,10 @@
+{
+  "states": [
+    "live",
+    "partial",
+    "stale",
+    "unavailable",
+    "loading"
+  ],
+  "timestampsInA11y": true
+}

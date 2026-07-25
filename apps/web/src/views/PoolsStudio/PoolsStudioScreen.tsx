@@ -7,7 +7,6 @@ import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
 import YourPoolsSection from './components/YourPoolsSection'
-import PoolsKpiRow from './components/PoolsKpiRow'
 import FeaturedPoolHero from './components/FeaturedPoolHero'
 import PoolsSidebar from './components/PoolsSidebar'
 import PoolsViewToolbar from './components/PoolsViewToolbar'
@@ -17,6 +16,7 @@ import PoolsBelowFold from './components/PoolsBelowFold'
 import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
 import { PoolsHeroModule } from './modules/PoolsHeroModule'
+import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
@@ -54,10 +54,6 @@ const Content = styled.div`
     margin-top: 16px;
     padding: 0 4px ${poolsStudioLayout.mobileBottomPad};
   }
-`
-
-const KpiSection = styled.div`
-  margin-top: 0;
 `
 
 const MainGrid = styled.div`
@@ -167,6 +163,7 @@ export const PoolsStudioScreen: React.FC = () => (
   <Root
     data-pools-studio-screen="true"
     data-pools-module-001="mounted"
+    data-pools-module-002="mounted"
     data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
@@ -183,12 +180,10 @@ export const PoolsStudioScreen: React.FC = () => (
       <PoolsActionHost />
       <Content data-ps-content>
         <PoolsHeroModule />
+        <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
+          <PoolsOverviewKpisModule />
+        </DataSurfaceErrorBoundary>
         <YourPoolsSection />
-        <KpiSection>
-          <DataSurfaceErrorBoundary surface="Pools KPIs" userReason="Pool totals are temporarily unavailable.">
-            <PoolsKpiRow />
-          </DataSurfaceErrorBoundary>
-        </KpiSection>
         <MainGrid data-ps-main-grid data-ps-explore-pools="true">
           <MainColumn>
             <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">

@@ -1,0 +1,9 @@
+{
+  "tvl": "portfolioPools[].rawPool totalStaked \u00d7 stakingTokenPrice",
+  "discovered": "GET /api/pools/classification \u2192 counts.discovered",
+  "rewarding": "classification counts.rewarding",
+  "rewards24h": "none",
+  "sustainableApr": "previewCard.sustainableAprDisplay via poolsAprRules",
+  "claimable": "rawPool.userData.pendingReward \u00d7 earningTokenPrice",
+  "factoryPairsNotUsed": true
+}

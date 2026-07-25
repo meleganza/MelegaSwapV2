@@ -1,0 +1,4 @@
+{
+  "rule": "each KPI fails independently",
+  "observed": "rewards24h unavailable while tvl may be available"
+}

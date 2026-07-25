@@ -1,0 +1,8 @@
+{
+  "passed": 26,
+  "files": [
+    "poolsModule002.overviewKpis.test.ts",
+    "poolsModule001.hero.test.ts",
+    "poolsArchitecture000.mockupLock.test.ts"
+  ]
+}

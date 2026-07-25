@@ -79,13 +79,13 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(screen).toContain('PoolsHeroModule')
     expect(screen).toContain('data-pools-module-001="mounted"')
     expect(screen).toContain('YourPoolsSection')
-    expect(screen).toContain('PoolsKpiRow')
     expect(screen).toContain('PoolsGrid')
     expect(screen).toContain('CreatePoolCta')
     expect(screen).not.toContain('PoolsStudioPageHeader')
-    expect(screen).not.toContain('PoolsOverviewKpis')
     expect(screen).not.toContain('PoolsMyPositions')
     expect(screen).not.toContain('PoolsFinished')
+    // Module 002 may mount after Hero; Modules 003+ remain forbidden here.
+    expect(screen).not.toContain('data-pools-module="003"')
   })
 
   it('uses factual Create Pool destination and reserved How it Works behavior', () => {
@@ -97,13 +97,12 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(mod).toContain('pools-hero-how-it-works')
   })
 
-  it('does not introduce Modules 002–010 plan cutover', () => {
-    expect(POOLS_MODULE_PLAN.find((m) => m.id === '001-hero')?.phase).toBe('future')
-    // Module plan phase strings stay architectural; live mount is Module 001 only.
+  it('keeps Modules 003–010 unmounted (Module 002 may follow Hero)', () => {
     const screen = load('PoolsStudioScreen.tsx')
-    expect(screen).not.toContain('data-pools-module="002"')
+    expect(screen).toContain('PoolsHeroModule')
     expect(screen).not.toContain('data-pools-module="003"')
     expect(screen).not.toContain('data-pools-module="009"')
+    expect(POOLS_MODULE_PLAN.find((m) => m.id === '001-hero')).toBeTruthy()
   })
 
   it('ownership map records Module 001 file assignment', () => {

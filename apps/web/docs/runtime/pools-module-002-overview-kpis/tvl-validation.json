@@ -1,0 +1,4 @@
+{
+  "policy": "partial disclosure; never $0 for missing prices; staking-only",
+  "liveState": "available"
+}

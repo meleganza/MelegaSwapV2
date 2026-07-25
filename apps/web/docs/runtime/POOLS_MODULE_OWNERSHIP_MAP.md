@@ -78,10 +78,12 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 | | |
 | --- | --- |
 | **Responsibility** | Read-only ecosystem health strip (TVL, pools discovered, rewarding, 24h rewards, highest APR, my claimable) |
-| **Owned components (future)** | `PoolsOverviewKpis*` |
-| **May consume** | Shared pools aggregation + wallet claimable summary |
-| **Forbidden** | Duplicating Explore table logic; fabricating percentages; wallet write paths |
+| **Owned components** | `PoolsStudio/modules/PoolsOverviewKpisModule.tsx`, `usePoolsOverviewKpis.ts`, `poolsOverviewKpisTokens.ts`, `poolsOverviewKpisTypes.ts` |
+| **Mount point** | `PoolsStudioScreen` immediately after Module 001 Hero; legacy `PoolsKpiRow` superseded |
+| **May consume** | Shared pools runtime / classification / `poolsAprRules` / wallet pending rewards |
+| **Forbidden** | Factory pair counts as Pools Discovered; inventing 24H rewards from emission projections; false `$0` for unavailable valuation; Modules 003–010 |
 | **Depends on** | MODULE 001 |
+| **Status** | Implemented on `pools-module-002-overview-kpis` |
 
 ---
 
