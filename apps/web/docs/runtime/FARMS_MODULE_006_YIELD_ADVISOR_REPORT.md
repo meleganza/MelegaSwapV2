@@ -80,7 +80,7 @@ Push `farms-module-006-yield-advisor`. No merge. No deploy.
 
 ## Mission commit
 
-_PENDING_PUSH_
+`2ffc179525db1ba880ff73aa669aeaef4f1886a3`
 
 ## Verdict
 
