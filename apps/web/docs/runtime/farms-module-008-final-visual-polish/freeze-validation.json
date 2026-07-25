@@ -1,0 +1,20 @@
+{
+  "expected": {
+    "FarmsHeroModule": "d9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b",
+    "FarmsMyFarmsModule": "ec17ce83d74f9822a3ee1e4428f2e4fd1a50b03a2984c185e4e70089f204c21f",
+    "FarmsYieldAdvisorModule": "38a249133e0d64841c517beccc7ea2df8dd4aba3ea96c1f06e1554443442d38d",
+    "FarmsAnalyticsModule": "e369e7e82921e6df3ad94ac084bc31602255367199ad7cf4150e4f1613246e56"
+  },
+  "actual": {
+    "FarmsHeroModule": "d9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b",
+    "FarmsMyFarmsModule": "ec17ce83d74f9822a3ee1e4428f2e4fd1a50b03a2984c185e4e70089f204c21f",
+    "FarmsYieldAdvisorModule": "38a249133e0d64841c517beccc7ea2df8dd4aba3ea96c1f06e1554443442d38d",
+    "FarmsAnalyticsModule": "e369e7e82921e6df3ad94ac084bc31602255367199ad7cf4150e4f1613246e56"
+  },
+  "pass": true,
+  "mockup": {
+    "sha256": "a19e506f7d7a5194050d52481f0b220bad30e4a774e3fde2529b37e830db848a",
+    "expected": "a19e506f7d7a5194050d52481f0b220bad30e4a774e3fde2529b37e830db848a",
+    "pass": true
+  }
+}

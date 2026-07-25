@@ -16,6 +16,7 @@ import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
 import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
 import { FarmsYieldAdvisorModule } from './modules/FarmsYieldAdvisorModule'
 import { FarmsAnalyticsModule } from './modules/FarmsAnalyticsModule'
+import { FarmsVisualPolishModule } from './modules/FarmsVisualPolishModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
@@ -92,6 +93,7 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-module-005="mounted"
     data-farms-module-006="mounted"
     data-farms-module-007="mounted"
+    data-farms-module-008="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -99,6 +101,7 @@ export const FarmsStudioScreen: React.FC = () => (
     <PageMeta />
     <FarmsStudioGlobalStyle />
     <FarmsRuntimeProvider>
+      <FarmsVisualPolishModule />
       <FarmsActionHost />
       <Content data-fs-content>
         <FarmsHeroModule />

@@ -115,13 +115,13 @@ describe('FARMS_MODULE_005 Finished Farms', () => {
     expect(farmsFinished.historyHref).toBe('/farms/history')
   })
 
-  it('mounts Module 005 after Explore without Module 008', () => {
+  it('mounts Module 005 after Explore without Modules 009–010', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('FarmsFinishedFarmsModule')
     expect(screen).toContain('data-farms-module-005="mounted"')
     expect(screen.indexOf('FarmsExploreFarmsModule')).toBeLessThan(screen.indexOf('FarmsFinishedFarmsModule'))
-    expect(screen).not.toContain('data-farms-module="008"')
-    expect(screen).not.toContain('FarmsVisualPolishModule')
+    expect(screen).not.toContain('data-farms-module="009"')
+    expect(screen).not.toContain('FarmsIntegrationModule')
   })
 
   it('includes only wallet-owned finished/recovery farms; excludes active and closed zero', () => {

@@ -1,0 +1,269 @@
+{
+  "geometry": {
+    "auditedAt": "2026-07-25T23:57:51.255Z",
+    "base": "http://127.0.0.1:3528",
+    "viewports": {
+      "desktop-1440": {
+        "hero": {
+          "x": 32,
+          "y": 140,
+          "width": 1376,
+          "height": 260
+        },
+        "kpis": {
+          "x": 32,
+          "y": 416,
+          "width": 1376,
+          "height": 112
+        },
+        "myFarms": {
+          "x": 32,
+          "y": 544,
+          "width": 1376,
+          "height": 360
+        },
+        "explore": {
+          "x": 32,
+          "y": 920,
+          "width": 1376,
+          "height": 1063
+        },
+        "finished": {
+          "x": 32,
+          "y": 1999,
+          "width": 1376,
+          "height": 220
+        },
+        "advisor": {
+          "x": 984,
+          "y": 544,
+          "width": 424,
+          "height": 360
+        },
+        "analyticsGrid": {
+          "x": 32,
+          "y": 2267,
+          "width": 1376,
+          "height": 240
+        },
+        "overflow": false,
+        "module008": true,
+        "module009": false,
+        "polishCssPresent": true,
+        "polishMs": "120ms",
+        "polishGold": "#C9A84A"
+      },
+      "mobile-390": {
+        "hero": {
+          "x": 16,
+          "y": 116,
+          "width": 358,
+          "height": 650
+        },
+        "kpis": {
+          "x": 16,
+          "y": 782,
+          "width": 358,
+          "height": 368
+        },
+        "myFarms": {
+          "x": 16,
+          "y": 1166,
+          "width": 358,
+          "height": 360
+        },
+        "explore": {
+          "x": 16,
+          "y": 1542,
+          "width": 358,
+          "height": 3045
+        },
+        "finished": {
+          "x": 16,
+          "y": 4603,
+          "width": 358,
+          "height": 250
+        },
+        "advisor": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "analyticsGrid": {
+          "x": 16,
+          "y": 5067,
+          "width": 358,
+          "height": 854
+        },
+        "overflow": false,
+        "module008": true,
+        "module009": false,
+        "polishCssPresent": true,
+        "polishMs": "120ms",
+        "polishGold": "#C9A84A"
+      },
+      "desktop-1280": {
+        "hero": {
+          "x": 32,
+          "y": 140,
+          "width": 1216,
+          "height": 260
+        },
+        "kpis": {
+          "x": 32,
+          "y": 416,
+          "width": 1216,
+          "height": 112
+        },
+        "myFarms": {
+          "x": 32,
+          "y": 544,
+          "width": 1216,
+          "height": 360
+        },
+        "explore": {
+          "x": 32,
+          "y": 920,
+          "width": 1216,
+          "height": 1063
+        },
+        "finished": {
+          "x": 32,
+          "y": 1999,
+          "width": 1216,
+          "height": 220
+        },
+        "advisor": {
+          "x": 873.875,
+          "y": 544,
+          "width": 374.125,
+          "height": 360
+        },
+        "analyticsGrid": {
+          "x": 32,
+          "y": 2267,
+          "width": 1216,
+          "height": 240
+        },
+        "overflow": false,
+        "module008": true,
+        "module009": false,
+        "polishCssPresent": true,
+        "polishMs": "120ms",
+        "polishGold": "#C9A84A"
+      },
+      "tablet-1024": {
+        "hero": {
+          "x": 24,
+          "y": 140,
+          "width": 976,
+          "height": 480
+        },
+        "kpis": {
+          "x": 24,
+          "y": 636,
+          "width": 976,
+          "height": 240
+        },
+        "myFarms": {
+          "x": 24,
+          "y": 892,
+          "width": 976,
+          "height": 360
+        },
+        "explore": {
+          "x": 24,
+          "y": 1268,
+          "width": 976,
+          "height": 1635
+        },
+        "finished": {
+          "x": 24,
+          "y": 2919,
+          "width": 976,
+          "height": 220
+        },
+        "advisor": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "analyticsGrid": {
+          "x": 24,
+          "y": 3353,
+          "width": 976,
+          "height": 418
+        },
+        "overflow": false,
+        "module008": true,
+        "module009": false,
+        "polishCssPresent": true,
+        "polishMs": "120ms",
+        "polishGold": "#C9A84A"
+      },
+      "mobile-430": {
+        "hero": {
+          "x": 16,
+          "y": 116,
+          "width": 398,
+          "height": 650
+        },
+        "kpis": {
+          "x": 16,
+          "y": 782,
+          "width": 398,
+          "height": 368
+        },
+        "myFarms": {
+          "x": 16,
+          "y": 1166,
+          "width": 398,
+          "height": 360
+        },
+        "explore": {
+          "x": 16,
+          "y": 1542,
+          "width": 398,
+          "height": 3045
+        },
+        "finished": {
+          "x": 16,
+          "y": 4603,
+          "width": 398,
+          "height": 235
+        },
+        "advisor": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "analyticsGrid": {
+          "x": 16,
+          "y": 5052,
+          "width": 398,
+          "height": 854
+        },
+        "overflow": false,
+        "module008": true,
+        "module009": false,
+        "polishCssPresent": true,
+        "polishMs": "120ms",
+        "polishGold": "#C9A84A"
+      }
+    }
+  },
+  "desktopPass": {
+    "analyticsWidth": true,
+    "analyticsHeight": true,
+    "myFarmsHeight": true,
+    "noOverflow": true,
+    "polishMounted": true,
+    "polishCss": true,
+    "noModule009": true
+  },
+  "responsivePass": true,
+  "allPass": true
+}

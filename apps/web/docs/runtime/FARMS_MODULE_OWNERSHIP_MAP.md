@@ -162,9 +162,12 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 
 | | |
 | --- | --- |
-| **Responsibility** | Style-layer polish only |
-| **Forbidden** | Geometry changes; runtime / queries / contracts; Modules 009–010 cutover logic |
+| **Responsibility** | Style-layer polish only — borders, shadows, hover/focus/pressed, skeletons, reduced motion, restrained gold `#C9A84A` |
+| **Owned components** | `FarmsVisualPolishModule.tsx`, `FarmsVisualPolishStyle.tsx`, `farmsVisualPolishTokens.ts` |
+| **Mount point** | `FarmsStudioScreen` injects `<FarmsVisualPolishModule />` (global style scoped to `[data-farms-studio-screen]`) |
+| **Forbidden** | Geometry changes; runtime / queries / contracts / hooks / ActionHost; modifying Modules 001–007 sources; Modules 009–010 cutover logic |
 | **Depends on** | MODULE 001–007 certified composition |
+| **Status** | Implemented on `farms-module-008-final-visual-polish` |
 
 ---
 

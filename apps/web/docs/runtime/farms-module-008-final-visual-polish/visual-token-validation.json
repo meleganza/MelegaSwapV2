@@ -1,0 +1,9 @@
+{
+  "gold": "#C9A84A",
+  "canvas": "#0D0D0D",
+  "transitionMs": "120ms",
+  "cardShadow": "0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03)",
+  "measuredGold": "#C9A84A",
+  "measuredMs": "120ms",
+  "pass": true
+}

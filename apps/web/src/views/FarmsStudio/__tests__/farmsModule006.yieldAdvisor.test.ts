@@ -142,14 +142,14 @@ describe('FARMS_MODULE_006 Yield Advisor', () => {
     )
   })
 
-  it('mounts Module 006 after Finished; Module 008 stays unmounted', () => {
+  it('mounts Module 006 after Finished; Modules 009–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('FarmsYieldAdvisorModule')
     expect(screen).toContain('data-farms-module-006="mounted"')
     expect(screen.indexOf('FarmsFinishedFarmsModule')).toBeLessThan(screen.indexOf('FarmsYieldAdvisorModule'))
     expect(screen).not.toContain('AIYieldAdvisorPanel')
-    expect(screen).not.toContain('data-farms-module="008"')
-    expect(screen).not.toContain('FarmsVisualPolishModule')
+    expect(screen).not.toContain('data-farms-module="009"')
+    expect(screen).not.toContain('FarmsIntegrationModule')
   })
 
   it('locks desktop slot 424×360 and card 390×64 with max 4', () => {
