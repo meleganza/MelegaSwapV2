@@ -1,0 +1,21 @@
+{
+  "factualOnly": true,
+  "noAi": true,
+  "noPredictions": true,
+  "maxVisible": 4,
+  "order": [
+    "claim",
+    "withdraw",
+    "emergency_withdraw",
+    "ending_soon",
+    "high_apr",
+    "all_clear"
+  ],
+  "actions": [
+    "Claim",
+    "Withdraw",
+    "Emergency Withdraw",
+    "Stake",
+    "View Pool"
+  ]
+}

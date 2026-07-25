@@ -1,0 +1,13 @@
+{
+  "suite": "poolsModule001–006 focused",
+  "passed": 73,
+  "failed": 0,
+  "files": [
+    "poolsModule001.hero.test.ts",
+    "poolsModule002.overviewKpis.test.ts",
+    "poolsModule003.myPositions.test.ts",
+    "poolsModule004.explorePools.test.ts",
+    "poolsModule005.finishedPools.test.ts",
+    "poolsModule006.rewardAdvisor.test.ts"
+  ]
+}

@@ -133,11 +133,13 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 | | |
 | --- | --- |
-| **Responsibility** | Compact advisory sidebar: strategy selector, top recommendation, analyze CTA |
-| **Owned components (future)** | `PoolsRewardAdvisor*` |
-| **May consume** | Shared live pool metrics only; must disclose heuristic/partial when incomplete |
-| **Forbidden** | Fabricated AI certainty; second APR engine; purchase/stake execution outside action host |
-| **Depends on** | MODULE 003–004 data availability |
+| **Responsibility** | Factual priority advisor: claim / withdraw / emergency / ending soon / high APR |
+| **Owned components** | `PoolsStudio/modules/PoolsRewardAdvisorModule.tsx`, `PoolsRewardAdvisorCard.tsx`, `usePoolsRewardAdvisor.ts`, `buildPoolsRewardAdvisor.ts`, `poolsRewardAdvisorTokens.ts`, `poolsRewardAdvisorTypes.ts` |
+| **Mount point** | Portals into Module 003 reserved `data-pools-module-006-slot`; tablet/mobile inline after Module 005 |
+| **May consume** | Shared `portfolioPools` + `PoolsActionHost` + `poolsAprRules` |
+| **Forbidden** | AI / predicted advice; dead actions; modifying Modules 001–005; Modules 007–010 |
+| **Depends on** | MODULE 003 reserved slot + MODULE 005 |
+| **Status** | Implemented on `pools-module-006-reward-advisor` |
 
 ---
 

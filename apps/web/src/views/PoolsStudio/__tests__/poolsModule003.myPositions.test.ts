@@ -86,14 +86,13 @@ describe('POOLS_MODULE_003 My Positions', () => {
     )
   })
 
-  it('mounts Module 003 after KPIs; Modules 004–005 may follow; Modules 006–010 stay unmounted', () => {
+  it('mounts Module 003 after KPIs; Modules 004–006 may follow; Modules 007–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('PoolsMyPositionsModule')
     expect(screen).toContain('data-pools-module-003="mounted"')
     expect(screen.indexOf('PoolsOverviewKpisModule')).toBeLessThan(screen.indexOf('PoolsMyPositionsModule'))
     expect(screen).not.toContain('YourPoolsSection')
-    expect(screen).not.toContain('data-pools-module="006"')
-    expect(screen).not.toContain('PoolsRewardAdvisorModule')
+    expect(screen).not.toContain('data-pools-module="007"')
     expect(screen).not.toContain('PoolsAnalyticsModule')
   })
 
@@ -518,10 +517,10 @@ describe('POOLS_MODULE_003 My Positions', () => {
     expect(src).not.toContain('fixturePosition')
   })
 
-  it('reserved advisor slot present; no Module 006 implementation', () => {
+  it('reserved advisor slot present for Module 006 portal mount', () => {
     const mod = readFileSync(path.join(MODULES, 'PoolsMyPositionsModule.tsx'), 'utf8')
     expect(mod).toContain('data-pools-module-006-slot="reserved"')
-    expect(existsSync(path.join(MODULES, 'PoolsRewardAdvisorModule.tsx'))).toBe(false)
+    expect(existsSync(path.join(MODULES, 'PoolsRewardAdvisorModule.tsx'))).toBe(true)
   })
 
   it('actions require rawPool capability; unsupported actions hidden', () => {

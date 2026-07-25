@@ -1,0 +1,246 @@
+{
+  "auditedAt": "2026-07-25T15:12:35.892Z",
+  "base": "http://127.0.0.1:3016",
+  "viewports": {
+    "desktop-1440": {
+      "slot": {
+        "x": 984,
+        "y": 544,
+        "width": 424,
+        "height": 360,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "advisorSlot": {
+        "x": 984,
+        "y": 544,
+        "width": 424,
+        "height": 360,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "advisorInline": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "inlineWrap": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "finished": {
+        "x": 32,
+        "y": 1174,
+        "width": 1376,
+        "height": 165,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "positions": {
+        "x": 32,
+        "y": 544,
+        "width": 1376,
+        "height": 360,
+        "display": "grid",
+        "visibility": "visible"
+      },
+      "explore": {
+        "x": 32,
+        "y": 920,
+        "width": 1376,
+        "height": 238,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "overflow": false,
+      "module001": true,
+      "module005": true,
+      "module006": true,
+      "module007": false,
+      "belowFinished": -1339,
+      "state": "disconnected"
+    },
+    "tablet-1024": {
+      "slot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "advisorSlot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "advisorInline": {
+        "x": 24,
+        "y": 1703,
+        "width": 976,
+        "height": 118,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "inlineWrap": {
+        "x": 24,
+        "y": 1703,
+        "width": 976,
+        "height": 118,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "finished": {
+        "x": 24,
+        "y": 1522,
+        "width": 976,
+        "height": 165,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "positions": {
+        "x": 24,
+        "y": 892,
+        "width": 976,
+        "height": 360,
+        "display": "grid",
+        "visibility": "visible"
+      },
+      "explore": {
+        "x": 24,
+        "y": 1268,
+        "width": 976,
+        "height": 238,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "overflow": false,
+      "module001": true,
+      "module005": true,
+      "module006": true,
+      "module007": false,
+      "belowFinished": 16,
+      "state": "disconnected"
+    },
+    "mobile-390": {
+      "slot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "advisorSlot": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "advisorInline": {
+        "x": 16,
+        "y": 2044,
+        "width": 358,
+        "height": 118,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "inlineWrap": {
+        "x": 16,
+        "y": 2044,
+        "width": 358,
+        "height": 118,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "finished": {
+        "x": 16,
+        "y": 1848,
+        "width": 358,
+        "height": 180,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "positions": {
+        "x": 16,
+        "y": 1166,
+        "width": 358,
+        "height": 316,
+        "display": "grid",
+        "visibility": "visible"
+      },
+      "explore": {
+        "x": 16,
+        "y": 1498,
+        "width": 358,
+        "height": 334,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "overflow": false,
+      "module001": true,
+      "module005": true,
+      "module006": true,
+      "module007": false,
+      "belowFinished": 16,
+      "state": "disconnected"
+    }
+  },
+  "desktop1440Pass": {
+    "slotWidth": true,
+    "slotHeight": true,
+    "advisorInSlot": true,
+    "inlineHidden": true,
+    "noOverflow": true,
+    "modules": true,
+    "positionsFrozen": true
+  },
+  "tablet1024Pass": {
+    "inlineVisible": true,
+    "module006": true,
+    "noModule007": true
+  },
+  "mobile390Pass": {
+    "inlineVisible": true,
+    "module006": true,
+    "singleColumn": true
+  },
+  "desktop1440AllPass": true,
+  "responsivePass": true
+}

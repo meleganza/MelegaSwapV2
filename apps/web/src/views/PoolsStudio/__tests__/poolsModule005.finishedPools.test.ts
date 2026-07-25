@@ -95,13 +95,12 @@ describe('POOLS_MODULE_005 Finished Pools', () => {
     )
   })
 
-  it('mounts Module 005 after Explore without Modules 006–010', () => {
+  it('mounts Module 005 after Explore; Module 006 may follow; Modules 007–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('PoolsFinishedPoolsModule')
     expect(screen).toContain('data-pools-module-005="mounted"')
     expect(screen.indexOf('PoolsExplorePoolsModule')).toBeLessThan(screen.indexOf('PoolsFinishedPoolsModule'))
-    expect(screen).not.toContain('data-pools-module="006"')
-    expect(screen).not.toContain('PoolsRewardAdvisorModule')
+    expect(screen).not.toContain('data-pools-module="007"')
     expect(screen).not.toContain('PoolsAnalyticsModule')
   })
 

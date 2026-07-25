@@ -1,0 +1,6 @@
+{
+  "command": "yarn build",
+  "cwd": "apps/web",
+  "result": "passed",
+  "notes": "Compiled with pre-existing unrelated warnings; /pools route built"
+}
