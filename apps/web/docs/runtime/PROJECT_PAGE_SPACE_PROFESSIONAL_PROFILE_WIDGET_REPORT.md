@@ -110,7 +110,7 @@ Clean after push.
 ## SPACE PUBLIC CONTRACT RECERTIFICATION
 
 Mission ID: `PROJECT_PAGE_SPACE_PROFESSIONAL_PROFILE_WIDGET_RECERTIFICATION`  
-Continuation of blocked tip `0273a76e` / implementation `f8540638` on branch `project-page-space-professional-profile-widget`.  
+Continuation of blocked tip `0273a76e` / implementation `f8540638`; recert tip `f269d5eab747dc26674c609ff0d3cd74f83e9a82` on branch `project-page-space-professional-profile-widget`.  
 Production baseline unchanged: `origin/main` @ `ff6d6179` (contains `8f336d9e`, `2e8f6c2e`). Ahead 2 / behind 0 — no rebase required.
 
 ### 1. Previous blocked verdict
