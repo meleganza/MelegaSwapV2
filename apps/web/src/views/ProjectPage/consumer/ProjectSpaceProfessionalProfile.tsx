@@ -134,6 +134,8 @@ function titleForStatus(status: SpaceProfessionalProfileSnapshot['status']): str
       return 'SPACE profile temporarily unavailable'
     case 'SUSPENDED_PROFILE':
       return 'SPACE profile suspended'
+    case 'PROFILE_NOT_FOUND':
+      return 'SPACE profile not found'
     case 'PARTIAL_DATA':
       return 'SPACE Professional Profile'
     case 'STALE_DATA':
@@ -177,7 +179,8 @@ const ProjectSpaceProfessionalProfile: React.FC<Props> = ({ slug }) => {
   const showEmpty =
     snapshot.status === 'NO_CANONICAL_LINK' ||
     snapshot.status === 'SPACE_UNAVAILABLE' ||
-    snapshot.status === 'SUSPENDED_PROFILE'
+    snapshot.status === 'SUSPENDED_PROFILE' ||
+    snapshot.status === 'PROFILE_NOT_FOUND'
 
   return (
     <Section aria-labelledby="space-profile-heading" data-testid="project-space-widget">

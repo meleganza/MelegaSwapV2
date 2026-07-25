@@ -1,0 +1,17 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "adapter": "apps/web/src/lib/space-professional-profile/fetchSpaceProfile.ts",
+  "defaultBase": "https://space.melega.ai",
+  "detailPath": "/api/public/professional-profiles/{profileId}",
+  "enrichmentPaths": [
+    "/services",
+    "/credentials"
+  ],
+  "timeoutMs": 2500,
+  "schema": "space.professional-profile.public.v1",
+  "notFoundMapping": "PROFILE_NOT_FOUND (not NO_BADGES / EMPTY_ACTIVE_PROFILE)",
+  "canonicalHostAllowlist": [
+    "space.melega.ai"
+  ],
+  "secondAdapterCreated": false
+}

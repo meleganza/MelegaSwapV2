@@ -1,0 +1,25 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "schema": "space.professional-profile.public.v1",
+  "authority": "SPACE",
+  "requiredSchema": "space.professional-profile.public.v1",
+  "indexConforms": true,
+  "statusVocabulariesPresent": true,
+  "items": [],
+  "total": 0,
+  "detailNotFoundEnvelope": {
+    "schema": "space.professional-profile.public.v1",
+    "error": {
+      "code": "PROFILE_NOT_FOUND",
+      "message": "profile not found",
+      "profile_id": "does-not-exist-profile-xyz",
+      "authority": "SPACE",
+      "generated_at": "2026-07-25T01:05:11.650Z"
+    }
+  },
+  "notes": [
+    "No public profile detail payload available (total=0); schema validated on index + typed error envelopes",
+    "Adapter rejects schema mismatch and maps PROFILE_NOT_FOUND distinctly from SPACE_UNAVAILABLE"
+  ],
+  "pass": true
+}

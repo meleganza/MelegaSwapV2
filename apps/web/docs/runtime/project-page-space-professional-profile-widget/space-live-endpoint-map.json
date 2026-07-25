@@ -1,0 +1,125 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "authority": "SPACE",
+  "schema": "space.professional-profile.public.v1",
+  "baseUrl": "https://space.melega.ai",
+  "endpoints": {
+    "capabilityDiscovery": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/capabilities",
+      "status": 200,
+      "contentType": "application/json",
+      "cacheControl": "no-store, max-age=0",
+      "etag": null,
+      "lastModified": null,
+      "advertised": {
+        "professional_profiles_index": "/api/public/professional-profiles",
+        "professional_profile_detail": "/api/public/professional-profiles/{profile_id}",
+        "professional_profile_services": "/api/public/professional-profiles/{profile_id}/services",
+        "professional_profile_credentials": "/api/public/professional-profiles/{profile_id}/credentials",
+        "professional_profile_provenance": "/api/public/professional-profiles/{profile_id}/provenance",
+        "professional_profile_version": "/api/public/professional-profiles/{profile_id}/version",
+        "professional_profile_schema": "space.professional-profile.public.v1",
+        "professional_profile_authority": "SPACE"
+      }
+    },
+    "index": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/professional-profiles?page=1&page_size=5",
+      "status": 200,
+      "contentType": "application/json",
+      "cacheControl": "public, max-age=30",
+      "etag": null,
+      "lastModified": null,
+      "total": 0,
+      "authority": "SPACE",
+      "schema": "space.professional-profile.public.v1",
+      "generatedAt": "2026-07-25T01:05:10.682Z"
+    },
+    "detail": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/professional-profiles/does-not-exist-profile-xyz",
+      "status": 404,
+      "contentType": "application/json",
+      "cacheControl": "no-store",
+      "etag": null,
+      "lastModified": null,
+      "stableError": {
+        "code": "PROFILE_NOT_FOUND",
+        "message": "profile not found",
+        "profile_id": "does-not-exist-profile-xyz",
+        "authority": "SPACE",
+        "generated_at": "2026-07-25T01:05:11.650Z"
+      }
+    },
+    "services": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/professional-profiles/does-not-exist-profile-xyz/services",
+      "status": 404,
+      "contentType": "application/json",
+      "cacheControl": "no-store",
+      "etag": null,
+      "lastModified": null,
+      "stableError": {
+        "code": "PROFILE_NOT_FOUND",
+        "message": "profile not found",
+        "profile_id": "does-not-exist-profile-xyz",
+        "authority": "SPACE",
+        "generated_at": "2026-07-25T01:05:12.895Z"
+      }
+    },
+    "credentials": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/professional-profiles/does-not-exist-profile-xyz/credentials",
+      "status": 404,
+      "contentType": "application/json",
+      "cacheControl": "no-store",
+      "etag": null,
+      "lastModified": null,
+      "stableError": {
+        "code": "PROFILE_NOT_FOUND",
+        "message": "profile not found",
+        "profile_id": "does-not-exist-profile-xyz",
+        "authority": "SPACE",
+        "generated_at": "2026-07-25T01:05:13.873Z"
+      }
+    },
+    "provenance": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/professional-profiles/does-not-exist-profile-xyz/provenance",
+      "status": 404,
+      "contentType": "application/json",
+      "cacheControl": "no-store",
+      "etag": null,
+      "lastModified": null,
+      "stableError": {
+        "code": "PROFILE_NOT_FOUND",
+        "message": "profile not found",
+        "profile_id": "does-not-exist-profile-xyz",
+        "authority": "SPACE",
+        "generated_at": "2026-07-25T01:05:14.634Z"
+      }
+    },
+    "version": {
+      "method": "GET",
+      "url": "https://space.melega.ai/api/public/professional-profiles/does-not-exist-profile-xyz/version",
+      "status": 404,
+      "contentType": "application/json",
+      "cacheControl": "no-store",
+      "etag": null,
+      "lastModified": null,
+      "stableError": {
+        "code": "PROFILE_NOT_FOUND",
+        "message": "profile not found",
+        "profile_id": "does-not-exist-profile-xyz",
+        "authority": "SPACE",
+        "generated_at": "2026-07-25T01:05:15.644Z"
+      }
+    },
+    "canonicalProfilePage": {
+      "note": "No live public profile exists to resolve a canonical page URL; SPACE returns PROFILE_NOT_FOUND for unknown IDs",
+      "patternFromCapability": "https://space.melega.ai + canonical_url from detail response only"
+    }
+  },
+  "allRequiredEndpointsLive": true
+}

@@ -1,0 +1,10 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "indexProvenance": {
+    "authority": "SPACE",
+    "source": "space-professional-profile-store",
+    "generated_at": "2026-07-25T01:05:10.682Z"
+  },
+  "authorityRequired": "SPACE",
+  "pass": true
+}

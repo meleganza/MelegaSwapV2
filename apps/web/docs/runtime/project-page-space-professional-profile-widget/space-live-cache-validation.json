@@ -1,0 +1,18 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "observed": {
+    "index": "public, max-age=30",
+    "detailNotFound": "no-store",
+    "credentialsNotFound": "no-store",
+    "capabilities": "no-store, max-age=0"
+  },
+  "etagObservedOnIndex": null,
+  "etagObservedOnDetail404": null,
+  "policy": {
+    "indexExpected": "public, max-age=30",
+    "credentialsExpectedMaxAge": 15,
+    "dexApiCache": "s-maxage=60, stale-while-revalidate=120",
+    "noIndefiniteStaticCredentialCache": true
+  },
+  "pass": true
+}

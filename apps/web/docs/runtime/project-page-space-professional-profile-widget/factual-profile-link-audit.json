@@ -1,0 +1,31 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "projectsInvestigated": [
+    "marco",
+    "melega-dex"
+  ],
+  "liveIndexTotal": 0,
+  "queries": {
+    "handle_marco": {
+      "status": 200,
+      "total": 0,
+      "items": []
+    },
+    "handle_melega-dex": {
+      "status": 200,
+      "total": 0,
+      "items": []
+    }
+  },
+  "spaceOrganInitialAudit": "NONE_ON_RECORD for MARCO / Melega DEX",
+  "forbiddenMethodsNotUsed": [
+    "DISPLAY_NAME",
+    "TOKEN_SYMBOL",
+    "LOGO",
+    "HOMEPAGE_URL_ONLY",
+    "FUZZY_TEXT",
+    "SOCIAL_SIMILARITY"
+  ],
+  "factualLinkFound": false,
+  "blocker": "NO_FACTUAL_PROJECT_SPACE_PROFILE_REFERENCE"
+}

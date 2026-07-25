@@ -29,6 +29,7 @@ export type SpaceWidgetStatus =
   | 'SPACE_UNAVAILABLE'
   | 'STALE_DATA'
   | 'SUSPENDED_PROFILE'
+  | 'PROFILE_NOT_FOUND'
 
 export type SpaceCredentialVisualStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'SUSPENDED' | 'UNAVAILABLE'
 
@@ -76,6 +77,8 @@ export interface SpaceServiceSnapshot {
   shortOutcome?: string
   status?: string
   priceStatus?: string
+  mCreditsSupported?: boolean
+  directCryptoSupported?: boolean
   serviceUrl?: string
   provenance: 'SPACE'
 }

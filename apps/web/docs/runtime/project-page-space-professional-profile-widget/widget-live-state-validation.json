@@ -1,0 +1,7 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "linkedActive": "UNAVAILABLE_NO_FACTUAL_PROFILE",
+  "noCanonicalLink": "REQUIRED_AND_HONEST",
+  "partialUnavailableSuspendedStaleNotFound": "ADAPTER_COVERED_UNIT_TESTED",
+  "liveScreenshotPolicy": "Only honest unlinked live screenshots; linked-state screenshots marked unavailable (no fixtures)"
+}

@@ -36,7 +36,12 @@ const handler: NextApiHandler = async (req, res) => {
     projectId: resolved.project.upi,
     linkReason,
     spaceProfessionalProfile: summary,
-    profile: snapshot.status === 'NO_CANONICAL_LINK' || snapshot.status === 'SPACE_UNAVAILABLE' ? null : snapshot,
+    profile:
+      snapshot.status === 'NO_CANONICAL_LINK' ||
+      snapshot.status === 'SPACE_UNAVAILABLE' ||
+      snapshot.status === 'PROFILE_NOT_FOUND'
+        ? null
+        : snapshot,
   }
 
   const payload = stringify(body)

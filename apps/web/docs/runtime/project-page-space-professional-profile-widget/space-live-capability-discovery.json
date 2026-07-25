@@ -1,0 +1,19 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "url": "https://space.melega.ai/api/public/capabilities",
+  "status": 200,
+  "cacheControl": "no-store, max-age=0",
+  "machineDocumentationProfessionalProfile": {
+    "professional_profiles_index": "/api/public/professional-profiles",
+    "professional_profile_detail": "/api/public/professional-profiles/{profile_id}",
+    "professional_profile_services": "/api/public/professional-profiles/{profile_id}/services",
+    "professional_profile_credentials": "/api/public/professional-profiles/{profile_id}/credentials",
+    "professional_profile_provenance": "/api/public/professional-profiles/{profile_id}/provenance",
+    "professional_profile_version": "/api/public/professional-profiles/{profile_id}/version",
+    "professional_profile_schema": "space.professional-profile.public.v1",
+    "professional_profile_authority": "SPACE"
+  },
+  "schemaAdvertised": "space.professional-profile.public.v1",
+  "authorityAdvertised": "SPACE",
+  "pass": true
+}

@@ -1,0 +1,46 @@
+{
+  "auditedAt": "2026-07-25T01:07:31Z",
+  "endpoint": "/api/public/projects/{slug}/space-professional-profile/",
+  "marcoLive": {
+    "authority": "SPACE",
+    "linkReason": "spaceProfileUrl is a marketing/homepage link only and is not a canonical SPACE Professional Profile identifier",
+    "ok": true,
+    "profile": null,
+    "projectId": "upi://melega/project/marco@1",
+    "schemaVersion": "melega.project-space-professional-profile.v1",
+    "slug": "marco",
+    "spaceProfessionalProfile": {
+      "authority": "SPACE",
+      "badgesSummary": {
+        "active": 0,
+        "total": 0
+      },
+      "canonicalUrl": null,
+      "certificationsSummary": {
+        "active": 0,
+        "total": 0
+      },
+      "errorState": null,
+      "fetchedAt": "2026-07-25T01:07:31.757Z",
+      "freshness": "unknown",
+      "message": "This Project Page is not currently linked to a verified SPACE Professional Profile.",
+      "partialData": false,
+      "profileId": null,
+      "profileStatus": null,
+      "profileType": null,
+      "provenance": "SPACE",
+      "servicesSummary": {
+        "shown": 0,
+        "total": 0
+      },
+      "status": "NO_CANONICAL_LINK",
+      "updatedAt": null,
+      "verificationState": null,
+      "version": null
+    }
+  },
+  "authorityField": "SPACE",
+  "status": "NO_CANONICAL_LINK",
+  "privatePayloadProxied": false,
+  "pass": true
+}

@@ -1,0 +1,15 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "livePublicServicesAvailable": false,
+  "reason": "index total=0; no profile to hydrate services",
+  "adapterRules": {
+    "maxShown": 3,
+    "excludeStatuses": [
+      "HIDDEN",
+      "SUSPENDED",
+      "UNAVAILABLE"
+    ],
+    "noInventedPrices": true,
+    "ctaHost": "space.melega.ai only"
+  }
+}

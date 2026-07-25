@@ -1,0 +1,23 @@
+{
+  "linkedScreenshots": "UNAVAILABLE",
+  "reason": "NO_FACTUAL_PROJECT_SPACE_PROFILE_REFERENCE",
+  "captured": [
+    "project-page-space-unlinked-live.png",
+    "project-page-space-unlinked-live-mobile-390.png",
+    "project-page-space-unlinked-live-mobile-430.png",
+    "project-page-space-unavailable-live.png"
+  ],
+  "skippedLinkedEvidence": [
+    "project-page-space-linked-desktop.png",
+    "project-page-space-linked-mobile-390.png",
+    "project-page-space-linked-mobile-430.png",
+    "project-page-space-services-live.png",
+    "project-page-space-badges-live.png",
+    "project-page-space-certifications-live.png",
+    "project-page-space-verification-live.png",
+    "project-page-space-partial-live.png",
+    "project-page-space-suspended-live.png",
+    "project-page-space-stale-live.png",
+    "project-page-space-canonical-cta.png"
+  ]
+}

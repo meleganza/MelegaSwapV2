@@ -1,0 +1,15 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "configuredReferences": [],
+  "reason": "No factual SPACE Professional Profile exists for MARCO or Melega DEX; registry spaceProfileReference left unset",
+  "projectsRemain": {
+    "marco": {
+      "spaceProfileReference": null,
+      "resolved": "NO_CANONICAL_LINK"
+    },
+    "melega-dex": {
+      "spaceProfileReference": null,
+      "resolved": "NO_CANONICAL_LINK"
+    }
+  }
+}

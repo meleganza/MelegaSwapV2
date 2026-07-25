@@ -1,0 +1,12 @@
+{
+  "auditedAt": "2026-07-25T01:07:31Z",
+  "spacePublicContractsLive": true,
+  "schema": "space.professional-profile.public.v1",
+  "adapterConnectedToLiveBase": true,
+  "defaultBase": "https://space.melega.ai",
+  "factualProjectProfileReference": false,
+  "verdict": "BLOCKED",
+  "blocker": "NO_FACTUAL_PROJECT_SPACE_PROFILE_REFERENCE",
+  "readyForCertification": false,
+  "previousBlockerClosed": "SPACE_PUBLIC_PROFESSIONAL_PROFILE_API_MISSING"
+}

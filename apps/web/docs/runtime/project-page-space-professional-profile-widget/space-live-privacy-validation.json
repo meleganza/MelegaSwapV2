@@ -1,0 +1,20 @@
+{
+  "auditedAt": "2026-07-25T01:05:07Z",
+  "strategy": "explicit field/token audit of live index + 404 envelopes; SPACE allowlist-only serializer documented by SPACE organ",
+  "livePayloadKeys": [
+    "schema",
+    "authority",
+    "page",
+    "page_size",
+    "total",
+    "has_more",
+    "filters_applied",
+    "status_vocabularies",
+    "items",
+    "provenance"
+  ],
+  "forbiddenTokenHitsInLiveBodies": [],
+  "pass": true,
+  "spaceOrganPrivacyValidation": true,
+  "note": "No profile detail bodies available yet; privacy re-audit required when first public profile is published"
+}

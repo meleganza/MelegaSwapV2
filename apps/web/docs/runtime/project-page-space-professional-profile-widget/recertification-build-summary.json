@@ -1,0 +1,5 @@
+{
+  "auditedAt": "2026-07-25T01:07:31Z",
+  "command": "yarn next build",
+  "result": "passed"
+}
