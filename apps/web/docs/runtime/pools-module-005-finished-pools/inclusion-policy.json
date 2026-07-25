@@ -1,0 +1,13 @@
+{
+  "includeStatuses": [
+    "ENDED",
+    "WITHDRAW_ONLY",
+    "EMERGENCY"
+  ],
+  "requireWalletOwnership": true,
+  "exclude": [
+    "ACTIVE",
+    "unowned historical",
+    "AMM"
+  ]
+}

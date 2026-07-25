@@ -1,0 +1,5 @@
+{
+  "withdraw": "requestModal unstake when principal > 0",
+  "emergency": "secondary when enableEmergencyWithdraw",
+  "claim": "claimable-only ended residue"
+}

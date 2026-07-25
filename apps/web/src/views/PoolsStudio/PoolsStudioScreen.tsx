@@ -16,6 +16,7 @@ import { PoolsHeroModule } from './modules/PoolsHeroModule'
 import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
 import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
 import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
+import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
@@ -146,6 +147,7 @@ export const PoolsStudioScreen: React.FC = () => (
     data-pools-module-002="mounted"
     data-pools-module-003="mounted"
     data-pools-module-004="mounted"
+    data-pools-module-005="mounted"
     data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
@@ -170,6 +172,9 @@ export const PoolsStudioScreen: React.FC = () => (
         </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
           <PoolsExplorePoolsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Finished Pools" userReason="Finished pool positions are temporarily unavailable.">
+          <PoolsFinishedPoolsModule />
         </DataSurfaceErrorBoundary>
         <MainGrid data-ps-main-grid>
           <MainColumn>

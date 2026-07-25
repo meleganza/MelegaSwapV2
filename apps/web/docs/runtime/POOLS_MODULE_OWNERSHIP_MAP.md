@@ -119,11 +119,13 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 | | |
 | --- | --- |
-| **Responsibility** | Ended / withdraw-only archive: withdraw path, honest ended status |
-| **Owned components (future)** | `PoolsFinished*` |
-| **May consume** | Shared status resolver (`ENDED`, `WITHDRAW_ONLY`) + action host withdraw |
-| **Forbidden** | Showing ended pools as Active; hiding withdrawable stakes |
+| **Responsibility** | Wallet-scoped ended archive: Withdraw / Emergency Withdraw / remaining claim |
+| **Owned components** | `PoolsStudio/modules/PoolsFinishedPoolsModule.tsx`, `PoolsFinishedPoolCard.tsx`, `usePoolsFinishedPools.ts`, `buildPoolsFinishedPools.ts`, `poolsFinishedPoolsTokens.ts`, `poolsFinishedPoolsTypes.ts` |
+| **Mount point** | `PoolsStudioScreen` immediately after Module 004 Explore Pools |
+| **May consume** | Shared `portfolioPools` + `PoolsActionHost`; amount formatters from Module 003 (read-only import) |
+| **Forbidden** | ACTIVE explore pools; historical pools without wallet ownership; Modules 006–010 |
 | **Depends on** | MODULE 004 |
+| **Status** | Implemented on `pools-module-005-finished-pools` |
 
 ---
 

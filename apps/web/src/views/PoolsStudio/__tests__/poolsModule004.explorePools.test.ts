@@ -96,15 +96,14 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     )
   })
 
-  it('mounts Module 004 after My Positions without Modules 005–010', () => {
+  it('mounts Module 004 after My Positions; Module 005 may follow; Modules 006–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('PoolsExplorePoolsModule')
     expect(screen).toContain('data-pools-module-004="mounted"')
     expect(screen.indexOf('PoolsMyPositionsModule')).toBeLessThan(screen.indexOf('PoolsExplorePoolsModule'))
     expect(screen).not.toContain('PoolsViewToolbar')
     expect(screen).not.toContain('PoolsGrid')
-    expect(screen).not.toContain('data-pools-module="005"')
-    expect(screen).not.toContain('PoolsFinishedModule')
+    expect(screen).not.toContain('data-pools-module="006"')
     expect(screen).not.toContain('PoolsRewardAdvisorModule')
   })
 

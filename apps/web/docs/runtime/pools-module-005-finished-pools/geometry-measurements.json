@@ -1,0 +1,116 @@
+{
+  "auditedAt": "2026-07-25T14:58:46.352Z",
+  "base": "http://127.0.0.1:3015",
+  "viewports": {
+    "desktop-1440": {
+      "module": {
+        "x": 32,
+        "y": 1174,
+        "width": 1376,
+        "height": 165
+      },
+      "explore": {
+        "x": 32,
+        "y": 920,
+        "width": 1376,
+        "height": 238
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260
+      },
+      "positions": {
+        "x": 32,
+        "y": 544,
+        "width": 1376,
+        "height": 360
+      },
+      "cards": [],
+      "topGapAfterExplore": 16,
+      "overflow": false,
+      "module001": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "state": "disconnected"
+    },
+    "tablet-1024": {
+      "module": {
+        "x": 24,
+        "y": 1522,
+        "width": 976,
+        "height": 165
+      },
+      "explore": {
+        "x": 24,
+        "y": 1268,
+        "width": 976,
+        "height": 238
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480
+      },
+      "positions": {
+        "x": 24,
+        "y": 892,
+        "width": 976,
+        "height": 360
+      },
+      "cards": [],
+      "topGapAfterExplore": 16,
+      "overflow": false,
+      "module001": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "state": "disconnected"
+    },
+    "mobile-390": {
+      "module": {
+        "x": 16,
+        "y": 1848,
+        "width": 358,
+        "height": 180
+      },
+      "explore": {
+        "x": 16,
+        "y": 1498,
+        "width": 358,
+        "height": 334
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650
+      },
+      "positions": {
+        "x": 16,
+        "y": 1166,
+        "width": 358,
+        "height": 316
+      },
+      "cards": [],
+      "topGapAfterExplore": 16,
+      "overflow": false,
+      "module001": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "state": "disconnected"
+    }
+  },
+  "desktop1440Pass": {
+    "moduleWidth": true,
+    "topGap": true,
+    "noOverflow": true,
+    "modules": true,
+    "positionsFrozen": true
+  },
+  "desktop1440AllPass": true
+}

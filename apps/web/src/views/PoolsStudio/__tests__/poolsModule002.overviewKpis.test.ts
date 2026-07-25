@@ -235,14 +235,13 @@ describe('POOLS_MODULE_002 Overview KPIs', () => {
     expect(valued.cards.find((c) => c.id === 'claimable')!.supporting).toContain('1 claimable')
   })
 
-  it('mounts Module 002 after Hero; Modules 003–004 may follow; Modules 005–010 stay unmounted', () => {
+  it('mounts Module 002 after Hero; Modules 003–005 may follow; Modules 006–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('PoolsHeroModule')
     expect(screen).toContain('PoolsOverviewKpisModule')
     expect(screen.indexOf('PoolsHeroModule')).toBeLessThan(screen.indexOf('PoolsOverviewKpisModule'))
     expect(screen).not.toContain('PoolsKpiRow')
-    expect(screen).not.toContain('data-pools-module="005"')
-    expect(screen).not.toContain('PoolsFinishedModule')
+    expect(screen).not.toContain('data-pools-module="006"')
     expect(screen).not.toContain('PoolsRewardAdvisor')
   })
 
