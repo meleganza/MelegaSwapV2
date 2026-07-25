@@ -157,13 +157,17 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 ---
 
-## MODULE 008 — Visual Polish
+## MODULE 008 — Final Visual Polish
 
 | | |
 | --- | --- |
-| **Responsibility** | Cross-module visual fidelity to Founder mockup; spacing, legend, footer CTA band |
-| **Forbidden** | Geometry changes to certified modules without recert; production mock numbers |
-| **Depends on** | MODULE 001–007 desktop composition |
+| **Responsibility** | Cross-module style-layer polish (surfaces, borders, shadows, hover/focus, skeletons, reduced motion) |
+| **Owned components** | `PoolsStudio/modules/PoolsVisualPolishModule.tsx`, `PoolsVisualPolishStyle.tsx`, `poolsVisualPolishTokens.ts` |
+| **Mount point** | `PoolsStudioScreen` style injection (no layout band) |
+| **May consume** | Existing `data-testid` / `data-pools-module` selectors only |
+| **Forbidden** | Geometry changes; runtime / queries / contracts; modifying Modules 001–007 sources; Modules 009–010 |
+| **Depends on** | MODULE 001–007 certified composition |
+| **Status** | Implemented on `pools-module-008-final-visual-polish` |
 
 ---
 

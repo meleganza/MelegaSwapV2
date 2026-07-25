@@ -19,6 +19,7 @@ import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
 import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
 import { PoolsRewardAdvisorModule } from './modules/PoolsRewardAdvisorModule'
 import { PoolsAnalyticsModule } from './modules/PoolsAnalyticsModule'
+import { PoolsVisualPolishModule } from './modules/PoolsVisualPolishModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
@@ -152,6 +153,7 @@ export const PoolsStudioScreen: React.FC = () => (
     data-pools-module-005="mounted"
     data-pools-module-006="mounted"
     data-pools-module-007="mounted"
+    data-pools-module-008="mounted"
     data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
@@ -164,6 +166,7 @@ export const PoolsStudioScreen: React.FC = () => (
   >
     <PageMeta />
     <PoolsStudioGlobalStyle />
+    <PoolsVisualPolishModule />
     <PoolsRuntimeProvider>
       <PoolsActionHost />
       <Content data-ps-content>

@@ -1,0 +1,261 @@
+{
+  "auditedAt": "2026-07-25T15:46:07.387Z",
+  "base": "http://127.0.0.1:3018",
+  "viewports": {
+    "desktop-1440": {
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260
+      },
+      "kpis": {
+        "x": 32,
+        "y": 416,
+        "width": 1376,
+        "height": 112
+      },
+      "positions": {
+        "x": 32,
+        "y": 544,
+        "width": 1376,
+        "height": 360
+      },
+      "explore": {
+        "x": 32,
+        "y": 920,
+        "width": 1376,
+        "height": 238
+      },
+      "finished": {
+        "x": 32,
+        "y": 1174,
+        "width": 1376,
+        "height": 165
+      },
+      "advisor": {
+        "x": 984,
+        "y": 544,
+        "width": 424,
+        "height": 360
+      },
+      "analyticsGrid": {
+        "x": 32,
+        "y": 1387,
+        "width": 1376,
+        "height": 240
+      },
+      "overflow": false,
+      "module008": true,
+      "module009": false,
+      "polishCssPresent": true,
+      "focusSample": ""
+    },
+    "desktop-1280": {
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 260
+      },
+      "kpis": {
+        "x": 32,
+        "y": 416,
+        "width": 1216,
+        "height": 112
+      },
+      "positions": {
+        "x": 32,
+        "y": 544,
+        "width": 1216,
+        "height": 360
+      },
+      "explore": {
+        "x": 32,
+        "y": 920,
+        "width": 1216,
+        "height": 238
+      },
+      "finished": {
+        "x": 32,
+        "y": 1174,
+        "width": 1216,
+        "height": 165
+      },
+      "advisor": {
+        "x": 873.875,
+        "y": 544,
+        "width": 374.125,
+        "height": 360
+      },
+      "analyticsGrid": {
+        "x": 32,
+        "y": 1387,
+        "width": 1216,
+        "height": 240
+      },
+      "overflow": false,
+      "module008": true,
+      "module009": false,
+      "polishCssPresent": true,
+      "focusSample": ""
+    },
+    "tablet-1024": {
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480
+      },
+      "kpis": {
+        "x": 24,
+        "y": 636,
+        "width": 976,
+        "height": 240
+      },
+      "positions": {
+        "x": 24,
+        "y": 892,
+        "width": 976,
+        "height": 360
+      },
+      "explore": {
+        "x": 24,
+        "y": 1268,
+        "width": 976,
+        "height": 238
+      },
+      "finished": {
+        "x": 24,
+        "y": 1522,
+        "width": 976,
+        "height": 165
+      },
+      "advisor": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "analyticsGrid": {
+        "x": 24,
+        "y": 1869,
+        "width": 976,
+        "height": 418
+      },
+      "overflow": false,
+      "module008": true,
+      "module009": false,
+      "polishCssPresent": true,
+      "focusSample": ""
+    },
+    "mobile-430": {
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650
+      },
+      "kpis": {
+        "x": 16,
+        "y": 782,
+        "width": 398,
+        "height": 368
+      },
+      "positions": {
+        "x": 16,
+        "y": 1166,
+        "width": 398,
+        "height": 316
+      },
+      "explore": {
+        "x": 16,
+        "y": 1498,
+        "width": 398,
+        "height": 334
+      },
+      "finished": {
+        "x": 16,
+        "y": 1848,
+        "width": 398,
+        "height": 180
+      },
+      "advisor": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "analyticsGrid": {
+        "x": 16,
+        "y": 2210,
+        "width": 398,
+        "height": 854
+      },
+      "overflow": false,
+      "module008": true,
+      "module009": false,
+      "polishCssPresent": true,
+      "focusSample": ""
+    },
+    "mobile-390": {
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650
+      },
+      "kpis": {
+        "x": 16,
+        "y": 782,
+        "width": 358,
+        "height": 368
+      },
+      "positions": {
+        "x": 16,
+        "y": 1166,
+        "width": 358,
+        "height": 316
+      },
+      "explore": {
+        "x": 16,
+        "y": 1498,
+        "width": 358,
+        "height": 334
+      },
+      "finished": {
+        "x": 16,
+        "y": 1848,
+        "width": 358,
+        "height": 180
+      },
+      "advisor": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "analyticsGrid": {
+        "x": 16,
+        "y": 2210,
+        "width": 358,
+        "height": 854
+      },
+      "overflow": false,
+      "module008": true,
+      "module009": false,
+      "polishCssPresent": true,
+      "focusSample": ""
+    }
+  },
+  "desktop1440Pass": {
+    "analyticsWidth": true,
+    "analyticsHeight": true,
+    "positionsHeight": true,
+    "noOverflow": true,
+    "polishMounted": true,
+    "noModule009": true
+  },
+  "desktop1440AllPass": true,
+  "responsiveNoOverflow": true
+}

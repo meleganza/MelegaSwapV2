@@ -86,14 +86,14 @@ describe('POOLS_MODULE_003 My Positions', () => {
     )
   })
 
-  it('mounts Module 003 after KPIs; Modules 004–007 may follow; Modules 008–010 stay unmounted', () => {
+  it('mounts Module 003 after KPIs; Modules 004–008 may follow; Modules 009–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('PoolsMyPositionsModule')
     expect(screen).toContain('data-pools-module-003="mounted"')
     expect(screen.indexOf('PoolsOverviewKpisModule')).toBeLessThan(screen.indexOf('PoolsMyPositionsModule'))
     expect(screen).not.toContain('YourPoolsSection')
-    expect(screen).not.toContain('data-pools-module="008"')
-    expect(screen).not.toContain('PoolsVisualPolishModule')
+    expect(screen).not.toContain('data-pools-module="009"')
+    expect(screen).not.toContain('PoolsIntegrationModule')
   })
 
   it('uses Architecture 000 status vocabulary', () => {

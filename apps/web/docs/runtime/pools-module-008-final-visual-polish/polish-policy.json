@@ -1,0 +1,15 @@
+{
+  "styleLayerOnly": true,
+  "noGeometry": true,
+  "noRuntime": true,
+  "noBusinessLogic": true,
+  "parityTargets": [
+    "Liquidity",
+    "Passport",
+    "List"
+  ],
+  "transitionMs": 120,
+  "gold": "#C9A84A",
+  "reducedMotion": true,
+  "focusVisible": true
+}
