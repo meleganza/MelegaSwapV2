@@ -125,7 +125,7 @@ No duplicated wallet / reward / pool / status / action logic introduced.
 
 ### Commit
 
-_(stamped after commit)_
+`92676d89f86349443229f2e426652368c86863cd`
 
 ### Branch
 
