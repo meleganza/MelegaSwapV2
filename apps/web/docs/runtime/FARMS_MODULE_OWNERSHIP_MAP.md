@@ -92,10 +92,12 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 | | |
 | --- | --- |
 | **Responsibility** | Wallet-scoped LP positions: stake, pending rewards, Harvest / Withdraw / Manage |
-| **Owned components (future)** | `FarmsMyFarms*` |
+| **Owned components** | `FarmsMyFarmsModule.tsx`, `FarmsMyFarmCard.tsx`, `farmsMyFarmsTokens.ts`, `farmsMyFarmsTypes.ts`, `buildFarmsWalletPositions.ts`, `useFarmsWalletPositions.ts` |
+| **Mount point** | `FarmsStudioScreen` directly after Module 002; supersedes legacy `YourFarmsSection` for the My Farms surface. The View all destination temporarily scrolls to `#explore-farms`. |
 | **May consume** | Shared farm portfolio + `FarmsActionHost` |
 | **Forbidden** | Second wallet LP scan; Pools SmartChef ownership; Modules 004–010 content |
 | **Depends on** | MODULE 002 |
+| **Status** | Implemented on `farms-module-003-my-farms` |
 
 ---
 

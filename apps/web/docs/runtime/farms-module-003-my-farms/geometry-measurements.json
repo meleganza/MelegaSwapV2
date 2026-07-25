@@ -1,0 +1,263 @@
+{
+  "auditedAt": "2026-07-25T19:40:49.081Z",
+  "viewports": {
+    "desktop-1440": {
+      "viewport": {
+        "width": 1440,
+        "height": 1400
+      },
+      "row": {
+        "width": 1376,
+        "height": 360,
+        "top": 544,
+        "left": 32,
+        "right": 1408,
+        "bottom": 904
+      },
+      "surface": {
+        "width": 936,
+        "height": 360,
+        "top": 544,
+        "left": 32,
+        "right": 968,
+        "bottom": 904
+      },
+      "kpis": {
+        "width": 1376,
+        "height": 112,
+        "top": 416,
+        "left": 32,
+        "right": 1408,
+        "bottom": 528
+      },
+      "hero": {
+        "width": 1376,
+        "height": 260,
+        "top": 140,
+        "left": 32,
+        "right": 1408,
+        "bottom": 400
+      },
+      "advisor": {
+        "width": 424,
+        "height": 360,
+        "top": 544,
+        "left": 984,
+        "right": 1408,
+        "bottom": 904
+      },
+      "gapAfterKpis": 16,
+      "gapSurfaceAdvisor": 16,
+      "cards": [],
+      "cardCount": 0,
+      "skeletonCount": 0,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "legacyYourFarms": false
+    },
+    "tablet-1024": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "row": {
+        "width": 976,
+        "height": 360,
+        "top": 892,
+        "left": 24,
+        "right": 1000,
+        "bottom": 1252
+      },
+      "surface": {
+        "width": 976,
+        "height": 360,
+        "top": 892,
+        "left": 24,
+        "right": 1000,
+        "bottom": 1252
+      },
+      "kpis": {
+        "width": 976,
+        "height": 240,
+        "top": 636,
+        "left": 24,
+        "right": 1000,
+        "bottom": 876
+      },
+      "hero": {
+        "width": 976,
+        "height": 480,
+        "top": 140,
+        "left": 24,
+        "right": 1000,
+        "bottom": 620
+      },
+      "advisor": {
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0
+      },
+      "gapAfterKpis": 16,
+      "gapSurfaceAdvisor": -1000,
+      "cards": [],
+      "cardCount": 0,
+      "skeletonCount": 0,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "legacyYourFarms": false
+    },
+    "mobile-430": {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "row": {
+        "width": 398,
+        "height": 360,
+        "top": 1166,
+        "left": 16,
+        "right": 414,
+        "bottom": 1526
+      },
+      "surface": {
+        "width": 398,
+        "height": 360,
+        "top": 1166,
+        "left": 16,
+        "right": 414,
+        "bottom": 1526
+      },
+      "kpis": {
+        "width": 398,
+        "height": 368,
+        "top": 782,
+        "left": 16,
+        "right": 414,
+        "bottom": 1150
+      },
+      "hero": {
+        "width": 398,
+        "height": 650,
+        "top": 116,
+        "left": 16,
+        "right": 414,
+        "bottom": 766
+      },
+      "advisor": {
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0
+      },
+      "gapAfterKpis": 16,
+      "gapSurfaceAdvisor": -414,
+      "cards": [],
+      "cardCount": 0,
+      "skeletonCount": 0,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "legacyYourFarms": false
+    },
+    "mobile-390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "row": {
+        "width": 358,
+        "height": 360,
+        "top": 1166,
+        "left": 16,
+        "right": 374,
+        "bottom": 1526
+      },
+      "surface": {
+        "width": 358,
+        "height": 360,
+        "top": 1166,
+        "left": 16,
+        "right": 374,
+        "bottom": 1526
+      },
+      "kpis": {
+        "width": 358,
+        "height": 368,
+        "top": 782,
+        "left": 16,
+        "right": 374,
+        "bottom": 1150
+      },
+      "hero": {
+        "width": 358,
+        "height": 650,
+        "top": 116,
+        "left": 16,
+        "right": 374,
+        "bottom": 766
+      },
+      "advisor": {
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0
+      },
+      "gapAfterKpis": 16,
+      "gapSurfaceAdvisor": -374,
+      "cards": [],
+      "cardCount": 0,
+      "skeletonCount": 0,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": false,
+      "legacyYourFarms": false
+    }
+  },
+  "desktop1440Pass": {
+    "rowWidth": true,
+    "surfaceW": true,
+    "surfaceH": true,
+    "surfaceHExact": true,
+    "advisorW": true,
+    "gapAfterKpis": true,
+    "gapColumns": true,
+    "noOverflow": true,
+    "modules": true,
+    "noLegacyYourFarms": true
+  },
+  "desktop1440AllPass": true,
+  "freezes": {
+    "mockup": true,
+    "module001": true,
+    "module002": true
+  }
+}

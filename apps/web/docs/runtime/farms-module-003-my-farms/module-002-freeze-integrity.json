@@ -1,0 +1,17 @@
+{
+  "expected": {
+    "FarmsOverviewKpisModule": "437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3",
+    "farmsOverviewKpisTokens": "c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b",
+    "buildFarmsOverviewKpis": "f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5",
+    "useFarmsOverviewKpis": "d93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c",
+    "farmsOverviewKpisTypes": "bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9"
+  },
+  "actual": {
+    "FarmsOverviewKpisModule": "437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3",
+    "farmsOverviewKpisTokens": "c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b",
+    "buildFarmsOverviewKpis": "f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5",
+    "useFarmsOverviewKpis": "d93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c",
+    "farmsOverviewKpisTypes": "bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9"
+  },
+  "pass": true
+}

@@ -1,0 +1,47 @@
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import { typography } from 'design-system/melega'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
+import { farmsMyFarms } from './farmsMyFarmsTokens'
+import type { FarmsPositionAction, FarmsWalletPosition } from './farmsMyFarmsTypes'
+
+const Card = styled.article`width:100%;max-width:${farmsMyFarms.cardW};height:${farmsMyFarms.cardH};box-sizing:border-box;padding:${farmsMyFarms.cardPad};border-radius:${farmsMyFarms.cardRadius};border:${farmsMyFarms.cardBorder};background:${farmsMyFarms.cardBg};display:flex;flex-direction:column;gap:10px;font-family:${typography.fontFamily.body};@media(max-width:${farmsMyFarms.tabletBreak}){max-width:none;height:auto;min-height:${farmsMyFarms.cardH}}`
+const Header = styled.div`display:flex;justify-content:space-between;gap:8px;min-width:0`
+const Identity = styled.div`display:flex;align-items:center;gap:10px;min-width:0`
+const Logos = styled.div`display:flex;align-items:center;flex-shrink:0`
+const Logo = styled.span<{ $offset?: boolean; $reward?: boolean }>`display:inline-flex;margin-left:${({ $offset }) => ($offset ? '-8px' : '0')};position:relative;z-index:${({ $reward }) => ($reward ? 3 : 2)};`
+const Title = styled.h3`margin:0;font-size:17px;line-height:22px;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis`
+const Subtitle = styled.p`margin:2px 0 0;font-size:11px;color:rgba(255,255,255,.5)`
+const Badge = styled.span<{ $tone: string }>`height:24px;padding:0 10px;border-radius:999px;display:inline-flex;align-items:center;flex-shrink:0;font-size:11px;font-weight:700;color:${({ $tone }) => $tone === 'Active' ? '#6DDC8C' : $tone === 'Emergency' ? '#FF8A65' : '#F4C430'};background:rgba(244,196,48,.12)`
+const Metrics = styled.div`display:flex;flex-direction:column;gap:9px;flex:1`
+const Label = styled.span`font-size:11px;color:rgba(255,255,255,.5)`
+const Value = styled.span`display:block;margin-top:2px;font-size:15px;line-height:20px;font-weight:700;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis`
+const Support = styled.span`font-size:11px;color:rgba(255,255,255,.45)`
+const State = styled.p`margin:0;font-size:11px;color:rgba(255,255,255,.55)`
+const Actions = styled.div`display:flex;gap:8px;margin-top:auto`
+const Button = styled.button<{ $primary?: boolean }>`flex:1;min-width:0;height:36px;min-height:${farmsMyFarms.touchMin};border-radius:10px;border:1px solid ${({ $primary }) => $primary ? 'rgba(244,196,48,.45)' : 'rgba(255,255,255,.12)'};background:${({ $primary }) => $primary ? 'rgba(244,196,48,.16)' : 'rgba(255,255,255,.04)'};color:${({ $primary }) => $primary ? farmsMyFarms.gold : '#f5f5f5'};font-size:12px;font-weight:700;cursor:pointer;&:disabled{opacity:.55;cursor:not-allowed}`
+
+function busyLabel(action: FarmsPositionAction) { return action.kind === 'claim' ? 'Harvesting…' : action.kind === 'unstake' ? 'Withdrawing…' : action.label }
+export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ position }) => {
+  const { requestModal } = useFarmsRuntime()
+  const [busy, setBusy] = useState<FarmsPositionAction['kind'] | null>(null)
+  const onAction = (action: FarmsPositionAction) => {
+    if (!action.enabled || !action.modalAction) return
+    setBusy(action.kind)
+    try { requestModal(position.sourceCard, action.modalAction) } finally { window.setTimeout(() => setBusy(null), 1200) }
+  }
+  return <Card data-testid="farms-my-farm-card" data-position-id={position.positionId} data-position-status={position.positionStatus}>
+    <Header><Identity><Logos aria-hidden="true">
+      <Logo><MelegaTokenAvatar name={position.token0.symbol} symbol={position.token0.symbol} address={position.token0.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.stakeLogo} radius="circle" /></Logo>
+      <Logo $offset><MelegaTokenAvatar name={position.token1.symbol} symbol={position.token1.symbol} address={position.token1.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.stakeLogo} radius="circle" /></Logo>
+      <Logo $offset $reward><MelegaTokenAvatar name={position.rewardToken.symbol} symbol={position.rewardToken.symbol} address={position.rewardToken.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.rewardLogo} radius="circle" /></Logo>
+    </Logos><div style={{ minWidth: 0 }}><Title title={position.title}>{position.title}</Title><Subtitle>{position.subtitle}</Subtitle></div></Identity><Badge $tone={position.statusLabel}>{position.statusLabel}</Badge></Header>
+    <Metrics><div><Label>Staked LP</Label><Value>{position.stakedFormatted}</Value>{position.stakedValue && <Support>{position.stakedValue}</Support>}</div>
+      <div><Label>Harvestable</Label><Value>{position.pendingFormatted}</Value>{position.pendingValue && <Support>{position.pendingValue}</Support>}</div>
+      {position.apr && <div><Label>APR</Label><Value>{position.apr}</Value></div>}
+      <State>{position.farmStateLine}</State></Metrics>
+    {position.actions.length > 0 && <Actions>{position.actions.map((action, i) => <Button key={`${action.kind}-${action.label}`} type="button" $primary={i === 0} disabled={busy === action.kind || !action.enabled} aria-label={action.accessibleName} onClick={() => onAction(action)}>{busy === action.kind ? busyLabel(action) : action.label}</Button>)}</Actions>}
+  </Card>
+}
+export default FarmsMyFarmCard

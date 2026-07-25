@@ -1,0 +1,5 @@
+{
+  "ACTIVE": "live+stake/pending",
+  "WITHDRAW_ONLY": "finished+stake",
+  "EMERGENCY": "finished+enableEmergencyWithdraw+stake"
+}

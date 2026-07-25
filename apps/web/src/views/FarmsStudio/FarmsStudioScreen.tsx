@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
-import YourFarmsSection from './components/YourFarmsSection'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
 import AIYieldAdvisorPanel from './components/AIYieldAdvisorPanel'
 import FarmsFilterRow from './components/FarmsFilterRow'
@@ -15,6 +14,7 @@ import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
 import { FarmsHeroModule } from './modules/FarmsHeroModule'
 import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
+import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
@@ -85,6 +85,7 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-studio-screen="true"
     data-farms-module-001="mounted"
     data-farms-module-002="mounted"
+    data-farms-module-003="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -98,7 +99,9 @@ export const FarmsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Farms Overview KPIs" userReason="Farm overview metrics are temporarily unavailable.">
           <FarmsOverviewKpisModule />
         </DataSurfaceErrorBoundary>
-        <YourFarmsSection />
+        <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
+          <FarmsMyFarmsModule />
+        </DataSurfaceErrorBoundary>
         <PageColumnGrid id="explore-farms" data-fs-page-grid data-fs-explore-farms="true">
           <FeaturedSlot>
             <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">

@@ -1,0 +1,11 @@
+{
+  "include": [
+    "staked>0",
+    "pending>0"
+  ],
+  "exclude": [
+    "config-only",
+    "pid0-token-only",
+    "zero-zero"
+  ]
+}

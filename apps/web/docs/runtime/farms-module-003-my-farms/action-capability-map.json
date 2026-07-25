@@ -1,0 +1,10 @@
+{
+  "maxActions": 2,
+  "host": "FarmsActionHost",
+  "labels": [
+    "Harvest",
+    "Manage",
+    "Withdraw",
+    "Emergency Withdraw"
+  ]
+}

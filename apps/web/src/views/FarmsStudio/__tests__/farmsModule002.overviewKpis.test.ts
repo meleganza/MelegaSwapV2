@@ -237,15 +237,18 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     expect(vm.cards.find((c) => c.id === 'rewards24h')!.state).toBe('unavailable')
   })
 
-  it('mounts Module 002 after Hero without Modules 003–010', () => {
+  it('mounts Module 002 before Module 003 without Modules 004–010', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('FarmsHeroModule')
     expect(screen).toContain('FarmsOverviewKpisModule')
     expect(screen.indexOf('FarmsHeroModule')).toBeLessThan(screen.indexOf('FarmsOverviewKpisModule'))
     expect(screen).not.toContain('FarmsKpiRow')
     expect(screen).toContain('data-farms-module-002="mounted"')
-    expect(screen).not.toContain('data-farms-module="003"')
-    expect(screen).not.toContain('FarmsMyFarms')
+    expect(screen).toContain('data-farms-module-003="mounted"')
+    expect(screen).toContain('FarmsMyFarmsModule')
+    for (const id of ['004', '005', '006', '007', '008', '009', '010']) {
+      expect(screen).not.toContain(`data-farms-module="${id}"`)
+    }
   })
 
   it('does not ship mock KPI dollar fixtures or emission-as-24h in Module 002 sources', () => {

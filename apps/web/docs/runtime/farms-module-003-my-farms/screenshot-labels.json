@@ -1,0 +1,11 @@
+{
+  "note": "Default production /farms evidence is wallet-disconnected. Fixture-labeled copies share the same DOM capture; labeled as runtime-disconnected baseline, not mock positions.",
+  "primary": "desktop-disconnected.png",
+  "fixtureLabeledCopies": [
+    "desktop-empty.png",
+    "desktop-three-farms.png",
+    "desktop-mixed-states.png",
+    "desktop-partial.png",
+    "desktop-unavailable.png"
+  ]
+}
