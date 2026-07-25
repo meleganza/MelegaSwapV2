@@ -1,0 +1,24 @@
+{
+  "filters": [
+    "All",
+    "Single Asset",
+    "LP",
+    "Flexible",
+    "Locked",
+    "High APR",
+    "Highest TVL",
+    "Newest"
+  ],
+  "sorts": [
+    "Highest APR",
+    "Highest TVL",
+    "Newest",
+    "Alphabetical"
+  ],
+  "search": [
+    "pool",
+    "token",
+    "reward",
+    "address"
+  ]
+}

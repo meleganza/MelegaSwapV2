@@ -105,11 +105,13 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 | | |
 | --- | --- |
-| **Responsibility** | Public registry: search, filters, category tabs, pool rows, Stake entry |
-| **Owned components (future)** | `PoolsExplore*`, filters, table/list presentation |
-| **May consume** | Shared inventory + status resolver + action host |
-| **Forbidden** | Mixing Finished into Explore without status discipline; inventing APR; duplicating My Positions cards |
+| **Responsibility** | Public registry of currently ACTIVE stakeable pools: search, filters, sort, Stake entry |
+| **Owned components** | `PoolsStudio/modules/PoolsExplorePoolsModule.tsx`, `PoolsExplorePoolCard.tsx`, `usePoolsExplorePools.ts`, `buildPoolsExplorePools.ts`, `poolsExplorePoolsTokens.ts`, `poolsExplorePoolsTypes.ts` |
+| **Mount point** | `PoolsStudioScreen` immediately after Module 003; supersedes legacy `PoolsViewToolbar` + `PoolsGrid` explorer surface |
+| **May consume** | Shared `portfolioPools` + `poolsAprRules` + `PoolsActionHost` |
+| **Forbidden** | Ended / withdraw-only / historical pools; Factory AMM as staking pools; inventing APR/TVL; Modules 005–010 |
 | **Depends on** | MODULE 003 |
+| **Status** | Implemented on `pools-module-004-explore-pools` |
 
 ---
 

@@ -1,0 +1,5 @@
+{
+  "apr": "sustainableAprDisplay when factual; else — APR unavailable",
+  "tvl": "totalStaked × price; never $0 fallback",
+  "participants": "factual or —"
+}

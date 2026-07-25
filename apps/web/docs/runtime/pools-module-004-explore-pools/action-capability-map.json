@@ -1,0 +1,4 @@
+{
+  "stake": "requestModal(card, stake) when stakeable",
+  "details": "omitted — no canonical /pools/[id] route"
+}

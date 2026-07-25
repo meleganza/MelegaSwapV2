@@ -1,0 +1,323 @@
+/**
+ * POOLS_MODULE_004 — pure Explore Pools builder.
+ * ACTIVE stakeable SmartChef pools only. No Farms / AMM / Finished.
+ */
+
+import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import type { PoolPreviewCard } from '../poolsStudioData'
+import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
+import type {
+  PoolsExploreFilter,
+  PoolsExploreLockType,
+  PoolsExplorePoolCardModel,
+  PoolsExplorePoolsViewModel,
+  PoolsExploreSort,
+  PoolsExploreStatus,
+} from './poolsExplorePoolsTypes'
+
+const HIGH_APR_THRESHOLD = 20
+
+export function isActiveStakeableExplorePool(card: PoolPreviewCard): boolean {
+  if (!card.rawPool) return false
+  if (card.id.startsWith('amm-')) return false
+  if (card.status === 'ended' || card.displayStatus === 'ENDED') return false
+  if (card.status !== 'live' && card.displayStatus !== 'LIVE') return false
+  // Currently enterable today
+  if (card.cta !== 'stake') return false
+  if (card.discoveryClass === 'invalid_contract') return false
+  return true
+}
+
+export function resolveExploreLockType(card: PoolPreviewCard): PoolsExploreLockType {
+  const visual = (card.visualType || card.lockPeriod || card.poolTypeLabel || '').toLowerCase()
+  if (visual.includes('365')) return '365 Days'
+  if (visual.includes('180')) return '180 Days'
+  if (visual.includes('90')) return '90 Days'
+  if (visual.includes('30')) return '30 Days'
+  if (visual.includes('flexible') || visual.includes('auto compound')) return 'Flexible'
+  if (visual.includes('locked') || visual.includes('fixed')) return 'Custom'
+  if (card.lockPeriod && card.lockPeriod !== '—' && !card.lockPeriod.toLowerCase().includes('flex')) {
+    return 'Custom'
+  }
+  return 'Flexible'
+}
+
+function parseTvlUsd(card: PoolPreviewCard): number {
+  const pool = card.rawPool
+  if (pool?.totalStaked && pool.stakingToken?.decimals && pool.stakingTokenPrice && pool.stakingTokenPrice > 0) {
+    return getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * pool.stakingTokenPrice
+  }
+  const fromLabel = Number(String(card.tvl || '').replace(/[^0-9.]/g, ''))
+  if (String(card.tvl || '').includes('M')) return fromLabel * 1_000_000
+  if (String(card.tvl || '').includes('K')) return fromLabel * 1_000
+  return Number.isFinite(fromLabel) ? fromLabel : 0
+}
+
+function resolveApr(card: PoolPreviewCard): { display: string; support: string | null; sort: number; ok: boolean } {
+  const candidate = card.sustainableAprDisplay || card.apr
+  if (candidate && !isForbiddenAprDisplay(candidate) && card.aprDisplayReason !== 'APR_ESTIMATED_FROM_POOL_TYPE') {
+    const n = card.aprExact ?? parseFloat(candidate.replace('%', ''))
+    return {
+      display: candidate,
+      support: null,
+      sort: Number.isFinite(n) ? n : 0,
+      ok: true,
+    }
+  }
+  return { display: '—', support: 'APR unavailable', sort: 0, ok: false }
+}
+
+function resolveTvl(card: PoolPreviewCard): {
+  display: string
+  support: string | null
+  sort: number
+  partial: boolean
+  ok: boolean
+} {
+  const pool = card.rawPool
+  const staked =
+    pool?.totalStaked && pool.stakingToken?.decimals
+      ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
+      : 0
+  const price = pool?.stakingTokenPrice || 0
+  if (staked > 0 && price <= 0) {
+    return {
+      display: '—',
+      support: 'Valuation unavailable',
+      sort: 0,
+      partial: true,
+      ok: false,
+    }
+  }
+  const usd = parseTvlUsd(card)
+  if (usd <= 0) {
+    const label = card.tvl
+    if (!label || label === '—' || label === RUNTIME_UNAVAILABLE_LABEL || label === '$0' || label === '$0.00') {
+      return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
+    }
+  }
+  if (usd > 0) {
+    const display =
+      usd >= 1_000_000
+        ? `$${(usd / 1_000_000).toFixed(2)}M`
+        : usd >= 1_000
+          ? `$${(usd / 1_000).toFixed(1)}K`
+          : `$${usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+    return { display, support: null, sort: usd, partial: false, ok: true }
+  }
+  return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
+}
+
+function resolveParticipants(card: PoolPreviewCard): string {
+  const p = card.participants
+  if (!p || p === '—' || p === RUNTIME_UNAVAILABLE_LABEL) return '—'
+  return p
+}
+
+function buildDescription(card: PoolPreviewCard, lock: PoolsExploreLockType): string {
+  const stake = card.stakeToken || card.tokens?.[0] || 'Token'
+  const reward = card.rewardToken || 'rewards'
+  if (lock === 'Flexible') return `Flexible ${stake} staking earning ${reward}.`
+  return `${lock} ${stake} staking earning ${reward}.`
+}
+
+export function cardToExploreModel(card: PoolPreviewCard, chainId: number): PoolsExplorePoolCardModel | null {
+  if (!isActiveStakeableExplorePool(card)) return null
+
+  const apr = resolveApr(card)
+  const tvl = resolveTvl(card)
+  const lockType = resolveExploreLockType(card)
+  const partialReasons: string[] = []
+  if (!apr.ok) partialReasons.push('APR unavailable')
+  if (tvl.partial || !tvl.ok) partialReasons.push(tvl.support || 'TVL unavailable')
+
+  let status: PoolsExploreStatus = 'ACTIVE'
+  let statusLabel: PoolsExplorePoolCardModel['statusLabel'] = 'Active'
+  if (partialReasons.length > 0) {
+    status = 'PARTIAL'
+    statusLabel = 'Partial'
+  }
+
+  const stakeSymbol = card.stakeToken || card.tokens?.[0] || 'TOKEN'
+  const rewardSymbol = card.rewardToken || 'REWARD'
+  const isLp =
+    Boolean(card.rawPool?.stakingToken?.symbol?.includes('LP')) ||
+    /lp/i.test(stakeSymbol) ||
+    Boolean(card.poolTypeLabel?.toLowerCase().includes('lp'))
+
+  const stakeEnabled = card.cta === 'stake' && Boolean(card.rawPool)
+
+  return {
+    poolId: card.id,
+    title: card.name,
+    description: buildDescription(card, lockType),
+    status,
+    statusLabel,
+    aprDisplay: apr.display,
+    aprSupport: apr.support,
+    tvlDisplay: tvl.display,
+    tvlSupport: tvl.support,
+    participantsDisplay: resolveParticipants(card),
+    lockType,
+    stakeToken: {
+      symbol: stakeSymbol,
+      address: card.stakeContractAddress || card.rawPool?.stakingToken?.address || null,
+      chainId,
+    },
+    rewardToken: {
+      symbol: rewardSymbol,
+      address: card.rewardContractAddress || card.rawPool?.earningToken?.address || null,
+      chainId,
+    },
+    stakeEnabled,
+    stakeLabel: stakeEnabled ? 'Stake' : 'Unavailable',
+    // No canonical /pools/[id] detail route — omit Details per Architecture.
+    detailsHref: null,
+    sourceCard: card,
+    sortApr: apr.sort,
+    sortTvl: tvl.sort,
+    sortNewest: card.sousId ?? 0,
+    sortTitle: card.name.toLowerCase(),
+    isLp,
+    isFlexible: lockType === 'Flexible',
+    isLocked: lockType !== 'Flexible',
+    partialReasons,
+  }
+}
+
+export function filterExplorePools(
+  pools: PoolsExplorePoolCardModel[],
+  filter: PoolsExploreFilter,
+): PoolsExplorePoolCardModel[] {
+  switch (filter) {
+    case 'Single Asset':
+      return pools.filter((p) => !p.isLp)
+    case 'LP':
+      return pools.filter((p) => p.isLp)
+    case 'Flexible':
+      return pools.filter((p) => p.isFlexible)
+    case 'Locked':
+      return pools.filter((p) => p.isLocked)
+    case 'High APR':
+      return pools.filter((p) => p.sortApr >= HIGH_APR_THRESHOLD)
+    case 'Highest TVL':
+      return [...pools].sort((a, b) => b.sortTvl - a.sortTvl)
+    case 'Newest':
+      return [...pools].sort((a, b) => b.sortNewest - a.sortNewest)
+    default:
+      return pools
+  }
+}
+
+export function sortExplorePools(
+  pools: PoolsExplorePoolCardModel[],
+  sort: PoolsExploreSort,
+): PoolsExplorePoolCardModel[] {
+  const list = [...pools]
+  switch (sort) {
+    case 'Highest APR':
+      return list.sort((a, b) => b.sortApr - a.sortApr || a.sortTitle.localeCompare(b.sortTitle))
+    case 'Highest TVL':
+      return list.sort((a, b) => b.sortTvl - a.sortTvl || a.sortTitle.localeCompare(b.sortTitle))
+    case 'Newest':
+      return list.sort((a, b) => b.sortNewest - a.sortNewest || a.sortTitle.localeCompare(b.sortTitle))
+    case 'Alphabetical':
+      return list.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle))
+    default:
+      return list
+  }
+}
+
+export function searchExplorePools(pools: PoolsExplorePoolCardModel[], query: string): PoolsExplorePoolCardModel[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return pools
+  return pools.filter((p) => {
+    const hay = [
+      p.title,
+      p.stakeToken.symbol,
+      p.rewardToken.symbol,
+      p.poolId,
+      p.sourceCard.contractAddress,
+      p.stakeToken.address,
+      p.rewardToken.address,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+    return hay.includes(q)
+  })
+}
+
+export function buildPoolsExplorePoolsViewModel(input: {
+  portfolioPools: PoolPreviewCard[]
+  poolsLoading: boolean
+  chainId: number
+  filter: PoolsExploreFilter
+  sort: PoolsExploreSort
+  search: string
+  sourcesFailed?: boolean
+}): PoolsExplorePoolsViewModel {
+  if (input.poolsLoading && !input.portfolioPools.length) {
+    return {
+      state: 'loading',
+      pools: [],
+      totalActive: 0,
+      filter: input.filter,
+      sort: input.sort,
+      search: input.search,
+      disclosure: null,
+      liveRegion: 'Loading active staking pools',
+    }
+  }
+
+  if (input.sourcesFailed && !input.portfolioPools.length) {
+    return {
+      state: 'unavailable',
+      pools: [],
+      totalActive: 0,
+      filter: input.filter,
+      sort: input.sort,
+      search: input.search,
+      disclosure: null,
+      liveRegion: 'Active staking pools are temporarily unavailable',
+    }
+  }
+
+  const built = input.portfolioPools
+    .map((c) => cardToExploreModel(c, input.chainId))
+    .filter((p): p is PoolsExplorePoolCardModel => Boolean(p))
+
+  if (!built.length) {
+    return {
+      state: 'empty',
+      pools: [],
+      totalActive: 0,
+      filter: input.filter,
+      sort: input.sort,
+      search: input.search,
+      disclosure: null,
+      liveRegion: 'No active staking pools',
+    }
+  }
+
+  let list = filterExplorePools(built, input.filter)
+  list = searchExplorePools(list, input.search)
+  // Highest TVL / Newest filters already sorted; still apply explicit sort unless filter owns order
+  if (input.filter !== 'Highest TVL' && input.filter !== 'Newest') {
+    list = sortExplorePools(list, input.sort)
+  }
+
+  const anyPartial = list.some((p) => p.status === 'PARTIAL')
+
+  return {
+    state: anyPartial ? 'partial' : 'ready',
+    pools: list,
+    totalActive: built.length,
+    filter: input.filter,
+    sort: input.sort,
+    search: input.search,
+    disclosure: anyPartial ? 'Some pool metrics are temporarily unavailable.' : null,
+    liveRegion: `${list.length} active staking pool${list.length === 1 ? '' : 's'}`,
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "auditedAt": "2026-07-25T13:03:35.112Z",
+  "base": "http://127.0.0.1:3014",
+  "viewports": {
+    "desktop-1440": {
+      "module": {
+        "x": 32,
+        "y": 920,
+        "width": 1376,
+        "height": 238
+      },
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260
+      },
+      "kpis": {
+        "x": 32,
+        "y": 416,
+        "width": 1376,
+        "height": 112
+      },
+      "positions": {
+        "x": 32,
+        "y": 544,
+        "width": 1376,
+        "height": 360
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterPositions": 16,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": false,
+      "state": "empty",
+      "cardCount": 0
+    },
+    "tablet-1024": {
+      "module": {
+        "x": 24,
+        "y": 1268,
+        "width": 976,
+        "height": 238
+      },
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480
+      },
+      "kpis": {
+        "x": 24,
+        "y": 636,
+        "width": 976,
+        "height": 240
+      },
+      "positions": {
+        "x": 24,
+        "y": 892,
+        "width": 976,
+        "height": 360
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterPositions": 16,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": false,
+      "state": "empty",
+      "cardCount": 0
+    },
+    "mobile-430": {
+      "module": {
+        "x": 16,
+        "y": 1498,
+        "width": 398,
+        "height": 334
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650
+      },
+      "kpis": {
+        "x": 16,
+        "y": 782,
+        "width": 398,
+        "height": 368
+      },
+      "positions": {
+        "x": 16,
+        "y": 1166,
+        "width": 398,
+        "height": 316
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterPositions": 16,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": false,
+      "state": "empty",
+      "cardCount": 0
+    },
+    "mobile-390": {
+      "module": {
+        "x": 16,
+        "y": 1498,
+        "width": 358,
+        "height": 334
+      },
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650
+      },
+      "kpis": {
+        "x": 16,
+        "y": 782,
+        "width": 358,
+        "height": 368
+      },
+      "positions": {
+        "x": 16,
+        "y": 1166,
+        "width": 358,
+        "height": 316
+      },
+      "grid": null,
+      "cards": [],
+      "topGapAfterPositions": 16,
+      "overflow": false,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": false,
+      "state": "empty",
+      "cardCount": 0
+    }
+  },
+  "desktop1440Pass": {
+    "moduleWidth": true,
+    "topGap": true,
+    "threeColumns": null,
+    "cards": null,
+    "noOverflow": true,
+    "modulesMounted": true,
+    "heroHeight": true,
+    "positionsHeight": true
+  },
+  "desktop1440AllPass": true
+}

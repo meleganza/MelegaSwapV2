@@ -1,0 +1,14 @@
+{
+  "include": [
+    "status live",
+    "displayStatus LIVE",
+    "cta stake",
+    "rawPool SmartChef"
+  ],
+  "exclude": [
+    "ended",
+    "withdraw-only",
+    "amm factory",
+    "indexing analyze-only"
+  ]
+}

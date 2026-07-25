@@ -1,0 +1,7 @@
+{
+  "suite": "poolsModule004.explorePools + modules 000–003",
+  "passed": 57,
+  "failed": 0,
+  "command": "yarn test poolsModule004 + poolsModule003 + poolsModule002 + poolsModule001 + poolsArchitecture000",
+  "auditedAt": "2026-07-25T13:05:00.000Z"
+}

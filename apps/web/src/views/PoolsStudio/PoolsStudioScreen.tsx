@@ -8,8 +8,6 @@ import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
 import FeaturedPoolHero from './components/FeaturedPoolHero'
 import PoolsSidebar from './components/PoolsSidebar'
-import PoolsViewToolbar from './components/PoolsViewToolbar'
-import PoolsGrid from './components/PoolsGrid'
 import CreatePoolCta from './components/CreatePoolCta'
 import PoolsBelowFold from './components/PoolsBelowFold'
 import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
@@ -17,6 +15,7 @@ import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
 import { PoolsHeroModule } from './modules/PoolsHeroModule'
 import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
 import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
+import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
@@ -107,7 +106,7 @@ const SidebarColumn = styled.div`
   }
 `
 
-const ExplorerSection = styled.section`
+const CreatePoolSection = styled.div`
   grid-column: 1;
   grid-row: 2;
   margin-top: 48px;
@@ -117,29 +116,10 @@ const ExplorerSection = styled.section`
 
   @media (max-width: 1099px) {
     grid-column: 1;
-    margin-top: 32px;
   }
 
   @media (max-width: 767px) {
     order: 3;
-    margin-top: 28px;
-  }
-`
-
-const CreatePoolSection = styled.div`
-  grid-column: 1;
-  grid-row: 3;
-  margin-top: 48px;
-  min-width: 0;
-  width: 100%;
-  max-width: ${poolsStudioLayout.explorerMaxWidth};
-
-  @media (max-width: 1099px) {
-    grid-column: 1;
-  }
-
-  @media (max-width: 767px) {
-    order: 4;
     margin-top: 32px;
     width: 100%;
     max-width: 100%;
@@ -165,6 +145,7 @@ export const PoolsStudioScreen: React.FC = () => (
     data-pools-module-001="mounted"
     data-pools-module-002="mounted"
     data-pools-module-003="mounted"
+    data-pools-module-004="mounted"
     data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
@@ -187,7 +168,10 @@ export const PoolsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
           <PoolsMyPositionsModule />
         </DataSurfaceErrorBoundary>
-        <MainGrid data-ps-main-grid data-ps-explore-pools="true">
+        <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
+          <PoolsExplorePoolsModule />
+        </DataSurfaceErrorBoundary>
+        <MainGrid data-ps-main-grid>
           <MainColumn>
             <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">
               <FeaturedPoolHero />
@@ -196,12 +180,6 @@ export const PoolsStudioScreen: React.FC = () => (
           <SidebarColumn>
             <PoolsSidebar />
           </SidebarColumn>
-          <ExplorerSection data-ps-pool-explorer data-r708-explorer>
-            <PoolsViewToolbar />
-            <DataSurfaceErrorBoundary surface="Pools Grid" userReason="Pool cards are temporarily unavailable.">
-              <PoolsGrid />
-            </DataSurfaceErrorBoundary>
-          </ExplorerSection>
           <CreatePoolSection data-ps-create-pool-section>
             <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
               <CreatePoolCta />
