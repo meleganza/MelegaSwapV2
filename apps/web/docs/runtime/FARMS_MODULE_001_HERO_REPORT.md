@@ -10,7 +10,7 @@
 
 ## 3. Mission commit
 
-_(stamped after commit)_
+`3cf49b342ae9745e7e55b2e061db411804cfbbcd`
 
 ## 4. Certified base
 
