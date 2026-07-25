@@ -1,0 +1,5 @@
+{
+  "command": "yarn build",
+  "cwd": "apps/web",
+  "result": "passed"
+}

@@ -1,0 +1,8 @@
+{
+  "semanticSections": true,
+  "headings": true,
+  "focusableSampleCount": 50,
+  "reducedMotionSupported": true,
+  "polishFocusRings": true,
+  "keyboard": "Buttons and links focusable; polish layer provides :focus-visible rings"
+}

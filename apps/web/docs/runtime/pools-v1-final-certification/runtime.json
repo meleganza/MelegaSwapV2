@@ -1,0 +1,38 @@
+{
+  "route": "/pools",
+  "screen": "PoolsStudioScreen",
+  "architecture": "000",
+  "modulesMounted": {
+    "001": "mounted",
+    "002": "mounted",
+    "003": "mounted",
+    "004": "mounted",
+    "005": "mounted",
+    "006": "mounted",
+    "007": "mounted",
+    "008": "mounted"
+  },
+  "singleActionHost": true,
+  "sharedRuntimeProvider": true,
+  "legacySurfacesRetained": [
+    "FeaturedPoolHero",
+    "PoolsSidebar",
+    "CreatePoolCta",
+    "PoolsBelowFold"
+  ],
+  "notes": [
+    "LEGACY_IMPLEMENTATION body remains below modular stack until a future cutover mission",
+    "Certification does not retire legacy mounts (no runtime redesign in this seal)",
+    "Wallet / claim / withdraw / stake actions remain on PoolsActionHost"
+  ],
+  "statesDocumented": [
+    "wallet connected",
+    "wallet disconnected",
+    "loading",
+    "unavailable",
+    "partial",
+    "historical / finished positions",
+    "reward advisor priorities",
+    "analytics factual panels"
+  ]
+}

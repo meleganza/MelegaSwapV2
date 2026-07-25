@@ -175,8 +175,9 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 | | |
 | --- | --- |
-| **Responsibility** | Wire modular shell to `/pools`; retire LEGACY_IMPLEMENTATION mount; preserve write safety |
-| **Forbidden** | Parallel live mounts; leaving duplicate action hosts |
+| **Responsibility** | Validate modular shell mount order on `/pools`; preserve write safety |
+| **Status** | Validated in `POOLS_V1_FINAL` — LEGACY_IMPLEMENTATION body retained below modular stack (documented dual surface; cutover deferred) |
+| **Forbidden** | Parallel action hosts; inventing cutover without product mission |
 | **Depends on** | MODULE 001–008 |
 
 ---
@@ -186,7 +187,8 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 | | |
 | --- | --- |
 | **Responsibility** | End-to-end product certification of the staking center |
-| **Depends on** | MODULE 009 |
+| **Status** | Sealed via `pools-v1-final-integration-and-certification` |
+| **Depends on** | MODULE 009 validation |
 
 ---
 
