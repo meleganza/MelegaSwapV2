@@ -1,0 +1,21 @@
+{
+  "allowed": [
+    "EXPLICIT_SPACE_PROFILE_ID",
+    "PASSPORT_SUBJECT",
+    "VERIFIED_SHARED_OWNERSHIP",
+    "TOKEN_CONTRACT",
+    "ORG_WALLET",
+    "REGISTRY_RELATIONSHIP",
+    "APPROVED_ALIAS"
+  ],
+  "forbidden": [
+    "DISPLAY_NAME",
+    "SIMILAR_NAME",
+    "TOKEN_SYMBOL",
+    "LOGO",
+    "UNVERIFIED_SOCIAL",
+    "FUZZY_TEXT",
+    "HOMEPAGE_URL_ONLY"
+  ],
+  "currentRegistry": "spaceProfileReference unset on all projects; spaceProfileUrl treated as homepage-only"
+}

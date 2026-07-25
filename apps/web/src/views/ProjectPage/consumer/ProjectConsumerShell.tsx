@@ -19,6 +19,7 @@ import ProjectHero from './ProjectHero'
 import ProjectChartPanel from './ProjectChartPanel'
 import ProjectSwapCard from './ProjectSwapCard'
 import ProjectAbout from './ProjectAbout'
+import ProjectSpaceProfessionalProfile from './ProjectSpaceProfessionalProfile'
 import ProjectTokenomicsSection from './ProjectTokenomicsSection'
 import ProjectRoadmapSection from './ProjectRoadmapSection'
 import ProjectEarnSection from './ProjectEarnSection'
@@ -91,6 +92,11 @@ const ProjectConsumerShell: React.FC<Props> = ({
       <SectionAnchor id="about">
         <AnimatedSection>
           <ProjectAbout document={document} />
+        </AnimatedSection>
+      </SectionAnchor>
+      <SectionAnchor id="space-professional-profile">
+        <AnimatedSection>
+          <ProjectSpaceProfessionalProfile slug={document.slug} />
         </AnimatedSection>
       </SectionAnchor>
       <SectionAnchor id="community">

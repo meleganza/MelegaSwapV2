@@ -1,0 +1,5 @@
+{
+  "productionMocksRemovedOrAbsent": true,
+  "noSampleMarcoProfile": true,
+  "fixtures": "test-only unit tests"
+}

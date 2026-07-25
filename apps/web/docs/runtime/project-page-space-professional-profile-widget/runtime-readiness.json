@@ -1,0 +1,5 @@
+{
+  "verdict": "BLOCKED",
+  "readyForCertification": false,
+  "blocker": "No authoritative SPACE Professional Profile public API discovered; widget correctly renders NO_CANONICAL_LINK; cannot certify live SPACE reads"
+}

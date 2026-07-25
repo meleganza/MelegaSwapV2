@@ -1,0 +1,5 @@
+{
+  "schemaVersion": "melega.project-space-professional-profile.v1",
+  "embeddedIn": "melega.project-page.v1 as spaceProfessionalProfile",
+  "authority": "SPACE"
+}

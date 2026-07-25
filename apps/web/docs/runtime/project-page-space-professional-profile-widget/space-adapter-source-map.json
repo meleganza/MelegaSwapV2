@@ -1,0 +1,13 @@
+{
+  "files": [
+    "apps/web/src/lib/space-professional-profile/*",
+    "apps/web/src/pages/api/public/projects/[slug]/space-professional-profile.ts",
+    "apps/web/src/pages/api/public/projects/[slug].ts",
+    "apps/web/src/views/ProjectPage/consumer/ProjectSpaceProfessionalProfile.tsx",
+    "apps/web/src/views/ProjectPage/consumer/useProjectSpaceProfessionalProfile.ts"
+  ],
+  "env": [
+    "SPACE_PUBLIC_PROFILE_API_BASE"
+  ],
+  "timeoutMs": 2500
+}

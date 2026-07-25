@@ -1,0 +1,12 @@
+{
+  "productionBranch": "main",
+  "worktreeBase": "ff6d6179",
+  "requiredAncestry": [
+    "8f336d9e",
+    "77f82aee",
+    "eb9c33ea",
+    "2e8f6c2e"
+  ],
+  "ancestryVerified": true,
+  "productionUrl": "https://www.melega.finance"
+}

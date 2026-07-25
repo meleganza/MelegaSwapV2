@@ -1,0 +1,10 @@
+{
+  "focusedSpaceTests": {
+    "passed": 7,
+    "file": "spaceProfessionalProfile.test.ts"
+  },
+  "projectPageBaseline": {
+    "note": "pre-existing failures unrelated to SPACE widget (discovery count, ux001 comment)"
+  },
+  "missionPathTsc": "clean"
+}

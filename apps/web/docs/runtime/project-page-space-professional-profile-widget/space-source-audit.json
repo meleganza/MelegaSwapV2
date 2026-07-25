@@ -1,0 +1,44 @@
+{
+  "auditAt": "2026-07-25T00:10:00Z",
+  "sourcesInvestigated": [
+    {
+      "url": "https://melega.space/",
+      "http": 200,
+      "type": "marketing HTML",
+      "professionalProfileApi": false
+    },
+    {
+      "url": "https://melega.space/api",
+      "http": 404
+    },
+    {
+      "url": "https://melega.space/api/profiles",
+      "http": 404
+    },
+    {
+      "url": "https://melega.space/api/professional-profiles",
+      "http": 404
+    },
+    {
+      "url": "https://melega.space/.well-known/space",
+      "http": 404
+    },
+    {
+      "url": "https://melega.space/sitemap.xml",
+      "http": 200,
+      "note": "only homepage URL"
+    },
+    {
+      "url": "https://space.melega.io/",
+      "http": "ERR/unreachable"
+    },
+    {
+      "url": "https://api.melega.space/",
+      "http": "ERR/unreachable"
+    }
+  ],
+  "dexRepoSpaceApis": [],
+  "spaceRepositoryOnDisk": null,
+  "authoritativePublicProfessionalProfileApi": null,
+  "blocker": "No authoritative SPACE Professional Profile public API/contract available to Melega DEX"
+}

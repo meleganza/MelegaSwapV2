@@ -1,0 +1,4 @@
+{
+  "rule": "Distinct from badges/verification; active only from SPACE status",
+  "spaceCertifiedLabel": "only when SPACE exposes matching active certification"
+}

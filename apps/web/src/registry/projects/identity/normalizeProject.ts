@@ -509,6 +509,8 @@ export function toPublicProjectJson(
     growthSummary?: Record<string, unknown>
     /** Public-safe machine summary only — discovery counts/endpoints; never execution. */
     machineSummary?: Record<string, unknown>
+    /** SPACE-authoritative Professional Profile relationship summary — never local credentials. */
+    spaceProfessionalProfile?: Record<string, unknown>
   },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -632,6 +634,11 @@ export function toPublicProjectJson(
   // PP014 — public-safe machine summary (discovery only; no execution authority)
   if (options?.machineSummary) {
     body.machineSummary = options.machineSummary
+  }
+
+  // SPACE Professional Profile relationship (authority: SPACE; no local credential ownership)
+  if (options?.spaceProfessionalProfile) {
+    body.spaceProfessionalProfile = options.spaceProfessionalProfile
   }
 
   return body

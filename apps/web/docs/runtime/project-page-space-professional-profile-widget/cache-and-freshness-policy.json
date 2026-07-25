@@ -1,0 +1,5 @@
+{
+  "apiCache": "s-maxage=60,stale-while-revalidate=120",
+  "credentialSafety": "never serve revoked as active from invented cache",
+  "staleLabel": "Last verified from SPACE [timestamp]"
+}

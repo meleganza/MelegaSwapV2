@@ -1,0 +1,4 @@
+{
+  "rule": "ACTIVE only when SPACE status ACTIVE/VALID; revoked/expired never active",
+  "localBadgesForbidden": true
+}

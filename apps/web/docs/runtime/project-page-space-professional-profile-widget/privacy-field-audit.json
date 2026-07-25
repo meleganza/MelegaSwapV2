@@ -1,0 +1,13 @@
+{
+  "forbiddenExposure": [
+    "private email",
+    "phone",
+    "KYC",
+    "internal notes",
+    "hidden services"
+  ],
+  "sanitization": [
+    "strip HTML",
+    "https-only URLs"
+  ]
+}

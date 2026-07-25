@@ -31,13 +31,14 @@ import {
   toTrustSnapshotSummaryForProjectApi,
   toUpdatesSummaryForProjectApi,
 } from 'registry/projects/identity'
+import { resolveProjectSpaceProfessionalProfile } from 'lib/space-professional-profile'
 
 /**
  * GET /api/public/projects/{slug}
  * PP001 project document + PP002 evidenceSummary + PP003 readiness/trust summaries
  * (schema remains melega.project-page.v1).
  */
-const handler: NextApiHandler = (req, res) => {
+const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET')
     return res.status(405).json({ ok: false, reason: 'METHOD_NOT_ALLOWED' })
@@ -137,6 +138,8 @@ const handler: NextApiHandler = (req, res) => {
     generatedAt,
   })
 
+  const spaceProfile = await resolveProjectSpaceProfessionalProfile(resolved.project)
+
   const body = toPublicProjectJson(loaded.document, {
     evidenceSummary: toEvidenceSummaryForProjectApi(loaded.evidencePack),
     readinessSummary: toReadinessSummaryForProjectApi(readinessDoc) as unknown as Record<string, unknown>,
@@ -158,6 +161,7 @@ const handler: NextApiHandler = (req, res) => {
     controlCenterSummary: toControlCenterSummaryForProjectApi(controlCenterDoc) as unknown as Record<string, unknown>,
     growthSummary: toGrowthSummaryForProjectApi(growthDoc) as unknown as Record<string, unknown>,
     machineSummary: toMachineSummaryForProjectApi(machineDoc) as unknown as Record<string, unknown>,
+    spaceProfessionalProfile: spaceProfile.summary as unknown as Record<string, unknown>,
   })
   const payload = stringify(body)
   const etag = `"${loaded.document.revision}"`

@@ -73,7 +73,26 @@ export interface StaticProjectRecord {
   supportedChains: number[]
   websiteUrl?: string
   docsUrl?: string
+  /** Marketing/homepage URL for Melega Space — not a Professional Profile identifier. */
   spaceProfileUrl?: string
+  /**
+   * Canonical SPACE Professional Profile reference only.
+   * Do not populate from display name, symbol, logo, or homepage URL heuristics.
+   * SPACE remains authority for profile contents; this field is link metadata only.
+   */
+  spaceProfileReference?: {
+    profileId: string
+    source:
+      | 'EXPLICIT_SPACE_PROFILE_ID'
+      | 'PASSPORT_SUBJECT'
+      | 'VERIFIED_SHARED_OWNERSHIP'
+      | 'TOKEN_CONTRACT'
+      | 'ORG_WALLET'
+      | 'REGISTRY_RELATIONSHIP'
+      | 'APPROVED_ALIAS'
+    linkedAt: string
+    linkProvenance: string
+  }
   socialLinks?: { type: string; url: string }[]
   resources: {
     tokens: TokenRef[]

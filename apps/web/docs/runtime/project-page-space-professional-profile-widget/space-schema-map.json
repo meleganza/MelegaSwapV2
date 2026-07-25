@@ -1,0 +1,9 @@
+{
+  "dexNormalizedModels": [
+    "SpaceProfileReference",
+    "SpaceProfessionalProfileSnapshot",
+    "SpaceProfessionalProfileApiSummary"
+  ],
+  "spaceNativeSchema": "NOT_DISCOVERED",
+  "mappingPolicy": "Adapter maps only when SPACE_PUBLIC_PROFILE_API_BASE returns JSON; never invents fields"
+}
