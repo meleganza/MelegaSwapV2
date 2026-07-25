@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
-import PoolsStudioPageHeader from './components/PoolsStudioPageHeader'
 import YourPoolsSection from './components/YourPoolsSection'
 import PoolsKpiRow from './components/PoolsKpiRow'
 import FeaturedPoolHero from './components/FeaturedPoolHero'
@@ -17,6 +16,8 @@ import CreatePoolCta from './components/CreatePoolCta'
 import PoolsBelowFold from './components/PoolsBelowFold'
 import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
+import { PoolsHeroModule } from './modules/PoolsHeroModule'
+import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
   color: ${poolsStudioColors.text};
@@ -33,10 +34,15 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${poolsStudioLayout.contentMax};
-  margin: 0 auto;
-  padding: ${poolsStudioLayout.contentPaddingTop} ${poolsStudioLayout.contentPaddingX}
-    ${poolsStudioLayout.contentPaddingBottom};
+  /*
+   * App shell supplies horizontal page padding (32px @ ≥1024).
+   * Module 001 requires 24px top gap after Trending Bar and 1376 content width.
+   * Legacy Studio body remains mounted beneath the Hero until Integration 009.
+   */
+  max-width: ${poolsHero.contentMax};
+  width: 100%;
+  margin: ${poolsHero.topAfterTrending} auto 0;
+  padding: 0 0 ${poolsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -45,7 +51,8 @@ const Content = styled.div`
   gap: ${poolsStudioLayout.sectionGap};
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${poolsStudioLayout.mobileBottomPad};
+    margin-top: 16px;
+    padding: 0 4px ${poolsStudioLayout.mobileBottomPad};
   }
 `
 
@@ -159,6 +166,8 @@ const BelowFold = styled.div`
 export const PoolsStudioScreen: React.FC = () => (
   <Root
     data-pools-studio-screen="true"
+    data-pools-module-001="mounted"
+    data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
     data-r711-pools-screen
@@ -173,7 +182,7 @@ export const PoolsStudioScreen: React.FC = () => (
     <PoolsRuntimeProvider>
       <PoolsActionHost />
       <Content data-ps-content>
-        <PoolsStudioPageHeader />
+        <PoolsHeroModule />
         <YourPoolsSection />
         <KpiSection>
           <DataSurfaceErrorBoundary surface="Pools KPIs" userReason="Pool totals are temporarily unavailable.">

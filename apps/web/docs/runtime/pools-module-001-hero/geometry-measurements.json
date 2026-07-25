@@ -1,0 +1,261 @@
+{
+  "auditedAt": "2026-07-25T10:49:40.677Z",
+  "viewports": {
+    "desktop-1440": {
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 260
+      },
+      "left": {
+        "x": 32,
+        "y": 188,
+        "width": 440,
+        "height": 164
+      },
+      "artwork": {
+        "x": 520,
+        "y": 155,
+        "width": 480,
+        "height": 230
+      },
+      "trust": {
+        "x": 1048,
+        "y": 155,
+        "width": 360,
+        "height": 230
+      },
+      "content": {
+        "x": 32,
+        "y": 140,
+        "width": 1376,
+        "height": 1868
+      },
+      "gaps": {
+        "leftToArt": 48,
+        "artToTrust": 48,
+        "top": {
+          "heroY": 140,
+          "assumedStackPx": 116,
+          "gapAfterStack": 24
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "hasCreate": true,
+      "module002": false,
+      "titleText": "Pools",
+      "createHref": "#create-pool",
+      "howHref": "#create-pool"
+    },
+    "desktop-1280": {
+      "hero": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 260
+      },
+      "left": {
+        "x": 32,
+        "y": 188,
+        "width": 440,
+        "height": 164
+      },
+      "artwork": {
+        "x": 520,
+        "y": 155,
+        "width": 480,
+        "height": 230
+      },
+      "trust": {
+        "x": 1048,
+        "y": 155,
+        "width": 360,
+        "height": 230
+      },
+      "content": {
+        "x": 32,
+        "y": 140,
+        "width": 1216,
+        "height": 1868
+      },
+      "gaps": {
+        "leftToArt": 48,
+        "artToTrust": 48,
+        "top": {
+          "heroY": 140,
+          "assumedStackPx": 116,
+          "gapAfterStack": 24
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "hasCreate": true,
+      "module002": false,
+      "titleText": "Pools",
+      "createHref": "#create-pool",
+      "howHref": "#create-pool"
+    },
+    "tablet-1024": {
+      "hero": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 480
+      },
+      "left": {
+        "x": 24,
+        "y": 173,
+        "width": 476,
+        "height": 164
+      },
+      "artwork": {
+        "x": 524,
+        "y": 140,
+        "width": 476,
+        "height": 230
+      },
+      "trust": {
+        "x": 24,
+        "y": 390,
+        "width": 360,
+        "height": 230
+      },
+      "content": {
+        "x": 24,
+        "y": 140,
+        "width": 976,
+        "height": 2902
+      },
+      "gaps": {
+        "leftToArt": 24,
+        "artToTrust": -976,
+        "top": {
+          "heroY": 140,
+          "assumedStackPx": 116,
+          "gapAfterStack": 24
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "hasCreate": true,
+      "module002": false,
+      "titleText": "Pools",
+      "createHref": "#create-pool",
+      "howHref": "#create-pool"
+    },
+    "mobile-430": {
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 650
+      },
+      "left": {
+        "x": 16,
+        "y": 116,
+        "width": 398,
+        "height": 152
+      },
+      "artwork": {
+        "x": 52,
+        "y": 288,
+        "width": 326,
+        "height": 190
+      },
+      "trust": {
+        "x": 52,
+        "y": 498,
+        "width": 326,
+        "height": 288
+      },
+      "content": {
+        "x": 12,
+        "y": 116,
+        "width": 406,
+        "height": 3177
+      },
+      "gaps": {
+        "leftToArt": -362,
+        "artToTrust": -326,
+        "top": {
+          "heroY": 116,
+          "assumedStackPx": 116,
+          "gapAfterStack": 0
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "hasCreate": true,
+      "module002": false,
+      "titleText": "Pools",
+      "createHref": "#create-pool",
+      "howHref": "#create-pool"
+    },
+    "mobile-390": {
+      "hero": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 650
+      },
+      "left": {
+        "x": 16,
+        "y": 116,
+        "width": 358,
+        "height": 152
+      },
+      "artwork": {
+        "x": 32,
+        "y": 288,
+        "width": 326,
+        "height": 190
+      },
+      "trust": {
+        "x": 32,
+        "y": 498,
+        "width": 326,
+        "height": 288
+      },
+      "content": {
+        "x": 12,
+        "y": 116,
+        "width": 366,
+        "height": 3261
+      },
+      "gaps": {
+        "leftToArt": -342,
+        "artToTrust": -326,
+        "top": {
+          "heroY": 116,
+          "assumedStackPx": 116,
+          "gapAfterStack": 0
+        }
+      },
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasCreate": true,
+      "module002": false,
+      "titleText": "Pools",
+      "createHref": "#create-pool",
+      "howHref": "#create-pool"
+    }
+  },
+  "desktop1440Pass": {
+    "heroWidth": true,
+    "heroHeight": true,
+    "topGap": true,
+    "left": true,
+    "artwork": true,
+    "trust": true,
+    "gapLeftArt": true,
+    "gapArtTrust": true
+  },
+  "desktop1440AllPass": true
+}

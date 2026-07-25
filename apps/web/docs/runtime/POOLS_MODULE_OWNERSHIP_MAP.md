@@ -64,10 +64,12 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 | | |
 | --- | --- |
 | **Responsibility** | Staking-center positioning, primary CTAs (Create Pool / How it Works), why-stake framing |
-| **Owned components (future)** | `PoolsStudio/modules/PoolsHero*` |
-| **May consume** | Static product copy; Create Pool deep-link target when certified |
-| **Forbidden** | Inventing live KPIs; owning wallet/reward state; redesigning Global Header |
+| **Owned components** | `PoolsStudio/modules/PoolsHeroModule.tsx`, `PoolsHeroArtwork.tsx`, `PoolsHeroTrustPanel.tsx`, `poolsHeroTokens.ts` |
+| **Mount point** | `PoolsStudioScreen` prepends `<PoolsHeroModule />`; legacy `PoolsStudioPageHeader` superseded for title/CTAs; legacy body (positions/KPIs/explore/create) retained until Integration 009 |
+| **May consume** | Static product copy; `#create-pool` / Build Studio staking intent |
+| **Forbidden** | Inventing live KPIs; owning wallet/reward state; redesigning Global Header; Modules 002–010 |
 | **Depends on** | ARCHITECTURE_000 certified |
+| **Status** | Implemented on `pools-module-001-hero` |
 
 ---
 

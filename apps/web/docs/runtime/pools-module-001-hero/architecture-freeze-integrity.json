@@ -1,0 +1,10 @@
+{
+  "architectureId": "POOLS_ARCHITECTURE_000",
+  "certifiedTipRequired": "f1d1fd11",
+  "architectureLockCommit": "1c86c8eb",
+  "mockupSha256": "549ca3bb663315730945de4ada9bc36559399cf3e9ce72a59de4d10f89558d4f",
+  "mockupBytes": 166617,
+  "pass": true,
+  "modules002to010NotMounted": true,
+  "pageEntryStillPoolsStudioScreen": true
+}

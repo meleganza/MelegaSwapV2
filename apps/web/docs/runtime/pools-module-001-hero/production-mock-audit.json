@@ -1,0 +1,9 @@
+{
+  "heroContainsLivePoolRuntime": false,
+  "fakeApr": false,
+  "fakeTvl": false,
+  "fakeRewardTotals": false,
+  "fakePoolCounts": false,
+  "illustrativeBalances": false,
+  "copyDeviationsDocumented": true
+}

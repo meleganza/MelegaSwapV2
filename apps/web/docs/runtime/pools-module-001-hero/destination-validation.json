@@ -1,0 +1,16 @@
+{
+  "createPool": {
+    "href": "#create-pool",
+    "fallback": "/build-studio?intent=staking-pool#create-pool",
+    "onPageElementPresent": true,
+    "deadButton": false
+  },
+  "howItWorks": {
+    "rendered": true,
+    "reason": "Architecture 000 / Module 001 ownership reserves the Hero CTA",
+    "href": "#create-pool",
+    "behavior": "Scrolls to on-page Create Pool builder as factual guided entry until a dedicated How it Works section exists",
+    "blankModal": false,
+    "newExplanatoryContentCreated": false
+  }
+}
