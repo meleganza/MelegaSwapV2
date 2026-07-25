@@ -48,7 +48,7 @@ export const FARMS_MODULE_PLAN = [
   { id: '001-hero', name: 'Hero', phase: 'certified-by-module-001' },
   { id: '002-overview-kpis', name: 'Overview KPIs', phase: 'certified-by-module-002' },
   { id: '003-my-farms', name: 'My Farms', phase: 'certified-by-module-003' },
-  { id: '004-explore-farms', name: 'Explore Farms', phase: 'future' },
+  { id: '004-explore-farms', name: 'Explore Farms', phase: 'certified-by-module-004' },
   { id: '005-finished-farms', name: 'Finished Farms', phase: 'future' },
   { id: '006-yield-advisor', name: 'Yield Advisor', phase: 'future' },
   { id: '007-analytics', name: 'Analytics', phase: 'future' },

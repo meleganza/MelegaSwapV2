@@ -1,0 +1,15 @@
+{
+  "landmarks": [
+    "section",
+    "h2",
+    "search region",
+    "list",
+    "article"
+  ],
+  "logoDescription": "TOKEN0 and TOKEN1 LP earning REWARD",
+  "actionName": "Stake TOKEN0 TOKEN1 LP in farm earning REWARD",
+  "focusRing": "2px gold + 2px offset",
+  "touchMin": 44,
+  "reducedMotion": true,
+  "liveRegion": "polite"
+}

@@ -1,0 +1,20 @@
+{
+  "include": [
+    "live|indexing",
+    "cta=stake",
+    "valid lpAddress",
+    "pid!=0",
+    "emission active|unavailable",
+    "non-zero multiplier"
+  ],
+  "exclude": [
+    "finished",
+    "emergency-only",
+    "withdraw-only",
+    "zero/no_allocation/paused emission",
+    "invalid LP",
+    "pid 0 token-only",
+    "Pools"
+  ],
+  "validator": "isActiveStakeableExploreFarm"
+}

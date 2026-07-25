@@ -1,0 +1,13 @@
+{
+  "fields": [
+    "token0/1 symbol+name",
+    "LP pair",
+    "LP address exact",
+    "reward symbol+name+address exact",
+    "farmId",
+    "pid"
+  ],
+  "addressMatching": "exact chain-aware lowercase 0x40",
+  "placeholder": "Search LP pair, reward token or address",
+  "noFuzzyContractIdentity": true
+}

@@ -1,0 +1,10 @@
+{
+  "desktop-active-farms.png": "factual runtime @1440",
+  "desktop-partial.png": "module capture (may be ready or partial from runtime)",
+  "desktop-empty.png": "filter/search empty \u2014 not factual zero active universe",
+  "desktop-unavailable.png": "test-only placeholder (runtime unavailable not forced)",
+  "desktop-more-than-nine.png": "factual runtime when >=9; else same as active set",
+  "tablet-1024.png": "factual runtime",
+  "mobile-430.png": "factual runtime",
+  "mobile-390.png": "factual runtime"
+}

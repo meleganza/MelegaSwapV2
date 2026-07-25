@@ -106,10 +106,12 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 | | |
 | --- | --- |
 | **Responsibility** | Public registry of currently ACTIVE LP farms: search, filters, sort, Stake, Details |
-| **Owned components (future)** | `FarmsExploreFarms*` |
+| **Owned components** | `FarmsExploreFarmsModule.tsx`, `FarmsExploreFarmCard.tsx`, `farmsExploreFarmsTokens.ts`, `farmsExploreFarmsTypes.ts`, `buildFarmsExploreFarms.ts`, `useFarmsExploreFarms.ts` |
+| **Mount point** | `FarmsStudioScreen` directly after Module 003; owns `#explore-farms`. Supersedes legacy `FarmsFilterRow` + `FarmsGrid` active browser (files retained). |
 | **May consume** | Shared farm inventory + APR rules + ActionHost |
 | **Forbidden** | Ended / historical farms; inventing APR/TVL; Modules 005–010 |
 | **Depends on** | MODULE 003 |
+| **Status** | Implemented on `farms-module-004-explore-farms` |
 
 ---
 

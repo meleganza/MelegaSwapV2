@@ -1,0 +1,10 @@
+{
+  "initialLimit": 9,
+  "pageStep": 9,
+  "preserves": [
+    "filter",
+    "search",
+    "sort"
+  ],
+  "noInfiniteScroll": true
+}

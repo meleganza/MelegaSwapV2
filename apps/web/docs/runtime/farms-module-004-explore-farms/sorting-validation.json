@@ -1,0 +1,12 @@
+{
+  "sorts": [
+    "Highest Sustainable APR",
+    "Highest TVL",
+    "Newest",
+    "Alphabetical",
+    "Wallet LP Balance"
+  ],
+  "unavailableAfterAvailable": true,
+  "tieBreaker": "farmId",
+  "newestProvenance": "auctionHostingStartSeconds || MasterChef pid"
+}

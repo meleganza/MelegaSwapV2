@@ -1,0 +1,7 @@
+{
+  "source": "userData.tokenBalance",
+  "disconnected": "Connect wallet to view LP balance",
+  "zero": "0 LP",
+  "unavailable": "LP balance unavailable",
+  "independentOfPublicRegistry": true
+}

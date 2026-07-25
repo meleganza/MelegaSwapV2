@@ -1,0 +1,14 @@
+{
+  "superseded": [
+    "FarmsFilterRow",
+    "FarmsGrid"
+  ],
+  "retained": [
+    "FarmsActivityTable",
+    "FeaturedFarmPanel",
+    "AIYieldAdvisorPanel",
+    "FarmsActionHost"
+  ],
+  "exploreAnchorOwner": "FarmsExploreFarmsModule #explore-farms",
+  "duplicateActiveGrid": false
+}

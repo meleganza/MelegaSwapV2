@@ -1,0 +1,12 @@
+{
+  "primary": [
+    "Connect Wallet",
+    "Switch Network",
+    "Approve LP",
+    "Stake LP",
+    "Farm Unavailable"
+  ],
+  "host": "requestModal(sourceCard, stake) \u2192 FarmsActionHost",
+  "details": "omitted \u2014 no /farms/[id] destination",
+  "noTxLogicInModule004": true
+}

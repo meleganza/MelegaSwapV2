@@ -1,0 +1,7 @@
+{
+  "primaryLabelWhenValidated": "Sustainable APR",
+  "fallbackLabel": "APR",
+  "unavailableDisplay": "\u2014",
+  "policy": "displayApr/apr from formatFarmDisplayApr; sustainable when live+emission active",
+  "noZeroFallback": true
+}

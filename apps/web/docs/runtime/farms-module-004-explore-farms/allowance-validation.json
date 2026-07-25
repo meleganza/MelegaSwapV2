@@ -1,0 +1,10 @@
+{
+  "states": [
+    "Approval required",
+    "Approved",
+    "Unavailable",
+    "Disconnected"
+  ],
+  "noRawValues": true,
+  "notRequiredForCardRender": true
+}

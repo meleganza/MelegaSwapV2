@@ -1,0 +1,6 @@
+{
+  "resolver": "MelegaTokenAvatar address+chainId",
+  "lpLogos": "34x34 overlap -9",
+  "rewardLogo": "22x22 visually distinct data-reward-token",
+  "neverSymbolOnly": true
+}

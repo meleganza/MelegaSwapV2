@@ -1,0 +1,10 @@
+{
+  "publicRegistryStableDuringWalletReads": true,
+  "failedRefreshRetainsLastGood": true,
+  "transientMetricFailureDoesNotRemoveFarm": true,
+  "dedupe": [
+    "pid",
+    "lpAddress"
+  ],
+  "chainChangeDropsRetainedRegistry": true
+}

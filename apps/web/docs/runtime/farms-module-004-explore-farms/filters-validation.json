@@ -1,0 +1,15 @@
+{
+  "filters": [
+    "All",
+    "Stable LP",
+    "Volatile LP",
+    "Native Pair",
+    "High APR",
+    "High TVL",
+    "Wallet Has LP",
+    "Approved",
+    "Stakeable Now"
+  ],
+  "noFinishedFilter": true,
+  "walletFiltersDeferUntilUserData": true
+}

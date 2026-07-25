@@ -1,0 +1,6 @@
+{
+  "identityAlways": "rewardToken.symbol",
+  "rateFrom": "dailyRewards when factual",
+  "noFabricatedDaily": true,
+  "noRawUint256": true
+}

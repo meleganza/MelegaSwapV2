@@ -1,0 +1,7 @@
+{
+  "source": "rawFarm.liquidity (farm staked LP USD)",
+  "notPairAmmTvlUnlessSame": true,
+  "unavailableDisplay": "\u2014",
+  "partialState": "Partial valuation",
+  "noZeroAsFailure": true
+}

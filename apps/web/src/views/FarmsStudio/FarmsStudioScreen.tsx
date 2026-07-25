@@ -8,13 +8,12 @@ import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
 import AIYieldAdvisorPanel from './components/AIYieldAdvisorPanel'
-import FarmsFilterRow from './components/FarmsFilterRow'
-import FarmsGrid from './components/FarmsGrid'
 import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
 import { FarmsHeroModule } from './modules/FarmsHeroModule'
 import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
 import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
+import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
@@ -86,6 +85,7 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-module-001="mounted"
     data-farms-module-002="mounted"
     data-farms-module-003="mounted"
+    data-farms-module-004="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -102,7 +102,10 @@ export const FarmsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
           <FarmsMyFarmsModule />
         </DataSurfaceErrorBoundary>
-        <PageColumnGrid id="explore-farms" data-fs-page-grid data-fs-explore-farms="true">
+        <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
+          <FarmsExploreFarmsModule />
+        </DataSurfaceErrorBoundary>
+        <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
           <FeaturedSlot>
             <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
               <FeaturedFarmPanel />
@@ -112,10 +115,6 @@ export const FarmsStudioScreen: React.FC = () => (
             <AIYieldAdvisorPanel />
           </AdvisorSlot>
         </PageColumnGrid>
-        <FarmsFilterRow />
-        <DataSurfaceErrorBoundary surface="Farms Grid" userReason="Farm cards are temporarily unavailable.">
-          <FarmsGrid />
-        </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
           <FarmsActivityTable />
         </DataSurfaceErrorBoundary>

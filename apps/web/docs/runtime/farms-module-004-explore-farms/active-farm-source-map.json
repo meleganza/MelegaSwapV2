@@ -1,0 +1,7 @@
+{
+  "authoritativeSource": "portfolioFarms \u2192 FarmPreviewCard \u2192 FarmWithStakedValue",
+  "builder": "buildFarmsExploreFarms.ts",
+  "hook": "useExploreFarms / useFarmsExploreFarms",
+  "noSecondIndexer": true,
+  "masterbuilder": "getMasterChefAddress(chainId)"
+}
