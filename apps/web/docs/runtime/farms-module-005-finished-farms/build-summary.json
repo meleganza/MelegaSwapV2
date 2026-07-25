@@ -1,0 +1,5 @@
+{
+  "command": "yarn build",
+  "exitCode": 0,
+  "pass": true
+}

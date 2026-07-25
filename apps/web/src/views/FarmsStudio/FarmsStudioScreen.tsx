@@ -14,6 +14,7 @@ import { FarmsHeroModule } from './modules/FarmsHeroModule'
 import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
 import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
 import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
+import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
@@ -86,6 +87,7 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-module-002="mounted"
     data-farms-module-003="mounted"
     data-farms-module-004="mounted"
+    data-farms-module-005="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -104,6 +106,9 @@ export const FarmsStudioScreen: React.FC = () => (
         </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
           <FarmsExploreFarmsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Finished Farms" userReason="Finished farm positions are temporarily unavailable.">
+          <FarmsFinishedFarmsModule />
         </DataSurfaceErrorBoundary>
         <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
           <FeaturedSlot>

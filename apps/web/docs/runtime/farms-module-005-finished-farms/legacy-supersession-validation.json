@@ -1,0 +1,9 @@
+{
+  "supersededPresentation": "Finished-chip / wallet recovery archive in legacy FarmsGrid",
+  "retained": [
+    "/farms/history via Show closed history",
+    "FarmsActivityTable",
+    "FeaturedFarmPanel"
+  ],
+  "duplicateFinishedGrid": false
+}

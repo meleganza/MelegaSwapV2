@@ -1,0 +1,9 @@
+{
+  "host": "requestModal \u2192 FarmsActionHost",
+  "primary": {
+    "WITHDRAW_ONLY": "Withdraw LP",
+    "EMERGENCY": "Emergency Withdraw",
+    "ENDED": "Harvest"
+  },
+  "noWithdrawWhenEmergencyOnly": true
+}

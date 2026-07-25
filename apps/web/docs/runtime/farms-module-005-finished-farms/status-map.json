@@ -1,0 +1,17 @@
+{
+  "vocabulary": [
+    "ENDED",
+    "WITHDRAW_ONLY",
+    "EMERGENCY",
+    "PARTIAL",
+    "UNAVAILABLE",
+    "LOADING"
+  ],
+  "neverActive": true,
+  "mapping": {
+    "EMERGENCY": "ended + LP + enableEmergencyWithdraw",
+    "WITHDRAW_ONLY": "ended + LP + normal withdraw",
+    "ENDED": "ended + reward only",
+    "PARTIAL": "principal present + reward read missing"
+  }
+}

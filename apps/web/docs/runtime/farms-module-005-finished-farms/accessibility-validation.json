@@ -1,0 +1,12 @@
+{
+  "landmarks": [
+    "section",
+    "heading",
+    "list",
+    "article"
+  ],
+  "focusRing": "2px gold + 2px offset",
+  "touchMin": 44,
+  "emergencyNotColorOnly": true,
+  "liveRegion": "polite"
+}

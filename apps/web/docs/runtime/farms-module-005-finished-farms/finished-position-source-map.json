@@ -1,0 +1,6 @@
+{
+  "authoritativeSource": "portfolioFarms \u2192 finished/recovery residue",
+  "builder": "buildFarmsFinishedFarms.ts",
+  "hook": "useFinishedFarmPositions / useFarmsFinishedFarms",
+  "noSecondIndexer": true
+}

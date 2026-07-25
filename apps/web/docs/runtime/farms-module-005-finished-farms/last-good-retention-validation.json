@@ -1,0 +1,6 @@
+{
+  "retainOnFailedRefresh": true,
+  "walletChangeClears": true,
+  "chainChangeClears": true,
+  "authoritativeZeroRemoves": true
+}

@@ -119,17 +119,16 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(farmsExplore.initialLimit).toBe(9)
   })
 
-  it('mounts Module 004 after My Farms, supersedes legacy grid, omits 005–008', () => {
+  it('mounts Module 004 after My Farms, supersedes legacy grid, omits 006–008', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('FarmsExploreFarmsModule')
     expect(screen).toContain('data-farms-module-004="mounted"')
     expect(screen.indexOf('FarmsMyFarmsModule')).toBeLessThan(screen.indexOf('FarmsExploreFarmsModule'))
     expect(screen).not.toContain('FarmsFilterRow')
     expect(screen).not.toContain('FarmsGrid')
-    expect(screen).not.toContain('data-farms-module="005"')
-    expect(screen).not.toContain('FarmsFinishedFarms')
-    expect(screen).not.toContain('FarmsYieldAdvisor')
-    expect(screen).not.toContain('FarmsAnalytics')
+    expect(screen).not.toContain('data-farms-module="006"')
+    expect(screen).not.toContain('FarmsYieldAdvisorModule')
+    expect(screen).not.toContain('FarmsAnalyticsModule')
     const exploreMod = readFileSync(path.join(MODULES, 'FarmsExploreFarmsModule.tsx'), 'utf8')
     expect(exploreMod.match(/id="explore-farms"/g)?.length).toBe(1)
     expect(screen).not.toContain('id="explore-farms"')

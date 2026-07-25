@@ -1,0 +1,4 @@
+{
+  "resolver": "MelegaTokenAvatar address+chainId",
+  "rewardDistinct": "data-reward-token"
+}

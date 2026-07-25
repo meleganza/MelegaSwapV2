@@ -120,10 +120,12 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 | | |
 | --- | --- |
 | **Responsibility** | Wallet-scoped ended archive: Withdraw / Emergency Withdraw / remaining claim |
-| **Owned components (future)** | `FarmsFinishedFarms*` |
+| **Owned components** | `FarmsFinishedFarmsModule.tsx`, `FarmsFinishedFarmCard.tsx`, `farmsFinishedFarmsTokens.ts`, `farmsFinishedFarmsTypes.ts`, `buildFarmsFinishedFarms.ts`, `useFarmsFinishedFarms.ts` |
+| **Mount point** | `FarmsStudioScreen` directly after Module 004; owns `#finished-farms`. Supersedes legacy Finished-chip / history-grid presentation of wallet recovery positions (files retained; `/farms/history` remains available via Show closed history). |
 | **May consume** | Shared farm portfolio + ActionHost |
 | **Forbidden** | ACTIVE explore farms; historical farms without wallet ownership; Modules 006–010 |
 | **Depends on** | MODULE 004 |
+| **Status** | Implemented on `farms-module-005-finished-farms` |
 
 ---
 

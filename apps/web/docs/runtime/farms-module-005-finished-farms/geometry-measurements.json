@@ -1,0 +1,182 @@
+{
+  "auditedAt": "2026-07-25T22:15:58.241Z",
+  "viewports": {
+    "desktop-1440": {
+      "viewport": {
+        "width": 1440,
+        "height": 1800
+      },
+      "finished": {
+        "width": 1376,
+        "height": 220,
+        "top": 1999,
+        "left": 32,
+        "right": 1408,
+        "bottom": 2219
+      },
+      "explore": {
+        "width": 1376,
+        "height": 1063,
+        "top": 920,
+        "left": 32,
+        "right": 1408,
+        "bottom": 1983
+      },
+      "gapAfterExplore": 16,
+      "cards": [],
+      "cardCount": 0,
+      "gapX": null,
+      "gapY": null,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "exploreAnchors": 1,
+      "finishedAnchors": 1
+    },
+    "tablet-1024": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "finished": {
+        "width": 976,
+        "height": 220,
+        "top": 2919,
+        "left": 24,
+        "right": 1000,
+        "bottom": 3139
+      },
+      "explore": {
+        "width": 976,
+        "height": 1635,
+        "top": 1268,
+        "left": 24,
+        "right": 1000,
+        "bottom": 2903
+      },
+      "gapAfterExplore": 16,
+      "cards": [],
+      "cardCount": 0,
+      "gapX": null,
+      "gapY": null,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "exploreAnchors": 1,
+      "finishedAnchors": 1
+    },
+    "mobile-430": {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "finished": {
+        "width": 398,
+        "height": 235,
+        "top": 4603,
+        "left": 16,
+        "right": 414,
+        "bottom": 4838
+      },
+      "explore": {
+        "width": 398,
+        "height": 3045,
+        "top": 1542,
+        "left": 16,
+        "right": 414,
+        "bottom": 4587
+      },
+      "gapAfterExplore": 16,
+      "cards": [],
+      "cardCount": 0,
+      "gapX": null,
+      "gapY": null,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "exploreAnchors": 1,
+      "finishedAnchors": 1
+    },
+    "mobile-390": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "finished": {
+        "width": 358,
+        "height": 250,
+        "top": 4603,
+        "left": 16,
+        "right": 374,
+        "bottom": 4853
+      },
+      "explore": {
+        "width": 358,
+        "height": 3045,
+        "top": 1542,
+        "left": 16,
+        "right": 374,
+        "bottom": 4587
+      },
+      "gapAfterExplore": 16,
+      "cards": [],
+      "cardCount": 0,
+      "gapX": null,
+      "gapY": null,
+      "moduleState": "disconnected",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "module001": true,
+      "module002": true,
+      "module003": true,
+      "module004": true,
+      "module005": true,
+      "module006": false,
+      "exploreAnchors": 1,
+      "finishedAnchors": 1
+    }
+  },
+  "desktop1440Pass": {
+    "moduleWidth": true,
+    "topGap": true,
+    "cardW": true,
+    "cardH": true,
+    "gapX": true,
+    "gapY": true,
+    "threeCol": true,
+    "noOverflow": true,
+    "modules": true,
+    "oneFinishedAnchor": true,
+    "oneExploreAnchor": true
+  },
+  "desktop1440AllPass": true,
+  "freezes": {
+    "mockup": true,
+    "module001": true,
+    "module002": true,
+    "module003": true,
+    "module004": true
+  }
+}

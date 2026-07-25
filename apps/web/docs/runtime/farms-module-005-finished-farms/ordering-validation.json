@@ -1,0 +1,17 @@
+{
+  "order": [
+    "EMERGENCY",
+    "WITHDRAW_ONLY+reward",
+    "WITHDRAW_ONLY",
+    "ENDED reward",
+    "PARTIAL",
+    "UNAVAILABLE"
+  ],
+  "tieBreakers": [
+    "staked quantized",
+    "pending quantized",
+    "ended date",
+    "pid",
+    "positionId"
+  ]
+}

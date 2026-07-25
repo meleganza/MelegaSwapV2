@@ -1,0 +1,5 @@
+{
+  "lpDecimalsFromLpTokenOrToken0": true,
+  "rewardDecimalsFromEarningToken": true,
+  "noRawUint256": true
+}

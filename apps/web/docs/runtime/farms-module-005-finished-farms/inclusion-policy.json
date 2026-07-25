@@ -1,0 +1,14 @@
+{
+  "include": [
+    "finished/multiplier 0X",
+    "disabled-deposit with wallet LP/reward",
+    "staked>0 OR pending>0"
+  ],
+  "exclude": [
+    "active stakeable",
+    "config-only",
+    "closed zero LP+reward",
+    "Pools",
+    "pid0 token-only"
+  ]
+}

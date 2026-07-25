@@ -1,0 +1,9 @@
+{
+  "desktop-disconnected.png": "factual runtime wallet-disconnected @1440",
+  "desktop-empty.png": "module capture (disconnected or empty \u2014 label by data-module-state)",
+  "desktop-withdraw-only.png": "fixture-labeled placeholder when no wallet finished positions in runtime",
+  "desktop-emergency.png": "fixture-labeled placeholder when no emergency positions in runtime",
+  "desktop-mixed-states.png": "runtime module capture",
+  "desktop-partial.png": "runtime module capture",
+  "desktop-unavailable.png": "test-only placeholder (unavailable not forced)"
+}
