@@ -147,11 +147,13 @@ Hero, KPIs, Reward Advisor, and Analytics are modules that support those domains
 
 | | |
 | --- | --- |
-| **Responsibility** | Distribution / summary analytics for the staking center (e.g. type mix, totals) |
-| **Owned components (future)** | `PoolsAnalytics*` |
-| **May consume** | Shared aggregation from inventory |
-| **Forbidden** | Mock charts; conflicting totals vs Overview KPIs without provenance |
-| **Depends on** | MODULE 004 |
+| **Responsibility** | Factual ecosystem analytics: pool distribution, reward share, participation, pool health |
+| **Owned components** | `PoolsStudio/modules/PoolsAnalyticsModule.tsx`, `PoolsAnalyticsPanel.tsx`, `usePoolsAnalytics.ts`, `buildPoolsAnalytics.ts`, `poolsAnalyticsTokens.ts`, `poolsAnalyticsTypes.ts` |
+| **Mount point** | `PoolsStudioScreen` immediately after Module 006 Reward Advisor |
+| **May consume** | Shared `portfolioPools` + classification rewarding count |
+| **Forbidden** | Mock charts; estimates/projections; animated graphs; modifying Modules 001–006; Modules 008–010 |
+| **Depends on** | MODULE 004–006 inventory |
+| **Status** | Implemented on `pools-module-007-analytics` |
 
 ---
 

@@ -1,0 +1,12 @@
+{
+  "noEstimation": true,
+  "noPrediction": true,
+  "noMockValues": true,
+  "unavailableShowsEmDash": true,
+  "panels": [
+    "Pool Distribution",
+    "Reward Distribution",
+    "Participation",
+    "Pool Health"
+  ]
+}

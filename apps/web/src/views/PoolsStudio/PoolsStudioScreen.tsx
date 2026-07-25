@@ -18,6 +18,7 @@ import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
 import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
 import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
 import { PoolsRewardAdvisorModule } from './modules/PoolsRewardAdvisorModule'
+import { PoolsAnalyticsModule } from './modules/PoolsAnalyticsModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
@@ -150,6 +151,7 @@ export const PoolsStudioScreen: React.FC = () => (
     data-pools-module-004="mounted"
     data-pools-module-005="mounted"
     data-pools-module-006="mounted"
+    data-pools-module-007="mounted"
     data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
@@ -180,6 +182,9 @@ export const PoolsStudioScreen: React.FC = () => (
         </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Reward Advisor" userReason="Reward advisor is temporarily unavailable.">
           <PoolsRewardAdvisorModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
+          <PoolsAnalyticsModule />
         </DataSurfaceErrorBoundary>
         <MainGrid data-ps-main-grid>
           <MainColumn>

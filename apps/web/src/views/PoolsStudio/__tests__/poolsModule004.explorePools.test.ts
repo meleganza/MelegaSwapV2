@@ -96,15 +96,15 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     )
   })
 
-  it('mounts Module 004 after My Positions; Modules 005–006 may follow; Modules 007–010 stay unmounted', () => {
+  it('mounts Module 004 after My Positions; Modules 005–007 may follow; Modules 008–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('PoolsExplorePoolsModule')
     expect(screen).toContain('data-pools-module-004="mounted"')
     expect(screen.indexOf('PoolsMyPositionsModule')).toBeLessThan(screen.indexOf('PoolsExplorePoolsModule'))
     expect(screen).not.toContain('PoolsViewToolbar')
     expect(screen).not.toContain('PoolsGrid')
-    expect(screen).not.toContain('data-pools-module="007"')
-    expect(screen).not.toContain('PoolsAnalyticsModule')
+    expect(screen).not.toContain('data-pools-module="008"')
+    expect(screen).not.toContain('PoolsVisualPolishModule')
   })
 
   it('includes only active stakeable pools; excludes ended and AMM', () => {

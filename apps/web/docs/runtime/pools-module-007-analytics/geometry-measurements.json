@@ -1,0 +1,234 @@
+{
+  "auditedAt": "2026-07-25T15:31:49.763Z",
+  "base": "http://127.0.0.1:3017",
+  "viewports": {
+    "desktop-1440": {
+      "module": {
+        "x": 32,
+        "y": 1355,
+        "width": 1376,
+        "height": 272,
+        "display": "flex",
+        "gridTemplateColumns": "none"
+      },
+      "grid": {
+        "x": 32,
+        "y": 1387,
+        "width": 1376,
+        "height": 240,
+        "display": "grid",
+        "gridTemplateColumns": "330.5px 330.5px 330.5px 330.5px"
+      },
+      "panels": [
+        {
+          "x": 32,
+          "y": 1387,
+          "width": 330.5,
+          "height": 240,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 380.5,
+          "y": 1387,
+          "width": 330.5,
+          "height": 240,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 729,
+          "y": 1387,
+          "width": 330.5,
+          "height": 240,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 1077.5,
+          "y": 1387,
+          "width": 330.5,
+          "height": 240,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        }
+      ],
+      "panelCount": 4,
+      "gaps": [
+        18,
+        18,
+        18
+      ],
+      "advisor": {
+        "x": 984,
+        "y": 544,
+        "width": 424,
+        "height": 360,
+        "display": "flex",
+        "gridTemplateColumns": "none"
+      },
+      "overflow": false,
+      "module006": true,
+      "module007": true,
+      "module008": false,
+      "state": "partial"
+    },
+    "tablet-1024": {
+      "module": {
+        "x": 24,
+        "y": 1837,
+        "width": 976,
+        "height": 450,
+        "display": "flex",
+        "gridTemplateColumns": "none"
+      },
+      "grid": {
+        "x": 24,
+        "y": 1869,
+        "width": 976,
+        "height": 418,
+        "display": "grid",
+        "gridTemplateColumns": "479px 479px"
+      },
+      "panels": [
+        {
+          "x": 24,
+          "y": 1869,
+          "width": 479,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 521,
+          "y": 1869,
+          "width": 479,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 24,
+          "y": 2087,
+          "width": 479,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 521,
+          "y": 2087,
+          "width": 479,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        }
+      ],
+      "panelCount": 4,
+      "gaps": [
+        18,
+        18
+      ],
+      "advisor": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "flex",
+        "gridTemplateColumns": "none"
+      },
+      "overflow": false,
+      "module006": true,
+      "module007": true,
+      "module008": false,
+      "state": "partial"
+    },
+    "mobile-390": {
+      "module": {
+        "x": 16,
+        "y": 2178,
+        "width": 358,
+        "height": 886,
+        "display": "flex",
+        "gridTemplateColumns": "none"
+      },
+      "grid": {
+        "x": 16,
+        "y": 2210,
+        "width": 358,
+        "height": 854,
+        "display": "grid",
+        "gridTemplateColumns": "358px"
+      },
+      "panels": [
+        {
+          "x": 16,
+          "y": 2210,
+          "width": 358,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 16,
+          "y": 2428,
+          "width": 358,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 16,
+          "y": 2646,
+          "width": 358,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        },
+        {
+          "x": 16,
+          "y": 2864,
+          "width": 358,
+          "height": 200,
+          "display": "flex",
+          "gridTemplateColumns": "none"
+        }
+      ],
+      "panelCount": 4,
+      "gaps": [],
+      "advisor": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "display": "flex",
+        "gridTemplateColumns": "none"
+      },
+      "overflow": false,
+      "module006": true,
+      "module007": true,
+      "module008": false,
+      "state": "partial"
+    }
+  },
+  "desktop1440Pass": {
+    "gridWidth": true,
+    "gridHeight": true,
+    "fourPanels": true,
+    "gap18": true,
+    "noOverflow": true,
+    "modules": true
+  },
+  "tablet1024Pass": {
+    "module007": true,
+    "multiColOrStack": true,
+    "noModule008": true
+  },
+  "mobile390Pass": {
+    "module007": true,
+    "singleColumn": true,
+    "noModule008": true
+  },
+  "desktop1440AllPass": true,
+  "responsivePass": true
+}
