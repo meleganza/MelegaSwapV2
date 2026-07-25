@@ -1,0 +1,16 @@
+{
+  "primaryDomains": ["My Farms", "Explore Farms", "Finished Farms"],
+  "modules": [
+    { "id": "000", "name": "Architecture Lock", "role": "Mockup + ownership + contracts" },
+    { "id": "001", "name": "Hero", "role": "Introduce LP Yield Farming; no runtime data" },
+    { "id": "002", "name": "Overview KPIs", "role": "TVL, Active Farms, Rewards, Highest APR, Wallet Claimable — factual only" },
+    { "id": "003", "name": "My Farms", "role": "Wallet-scoped LP positions; Stake / Harvest / Withdraw" },
+    { "id": "004", "name": "Explore Farms", "role": "ACTIVE LP farms only; search, filters, sort, Stake, Details" },
+    { "id": "005", "name": "Finished Farms", "role": "Wallet-scoped ended LP; Withdraw / Claim / Emergency" },
+    { "id": "006", "name": "Yield Advisor", "role": "Deterministic priorities only — no AI / prediction" },
+    { "id": "007", "name": "Analytics", "role": "Distribution, reward tokens, participation, farm health — factual" },
+    { "id": "008", "name": "Final Visual Polish", "role": "Style layer only; no geometry; no runtime" },
+    { "id": "009", "name": "Integration", "role": "Cutover /farms; retire LEGACY_IMPLEMENTATION mount" },
+    { "id": "010", "name": "Certification", "role": "End-to-end Farms V1 certification" }
+  ]
+}

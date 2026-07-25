@@ -1,0 +1,13 @@
+{
+  "steps": [
+    "ARCHITECTURE_000 locks mockup + ownership + contracts (this mission)",
+    "Each MODULE_00X implements one responsibility against the Founder mockup",
+    "Predecessor modules become byte/geometry frozen after certification",
+    "No module may reintroduce card-grid-as-page IA or duplicate wallet/reward/LP logic",
+    "Yield Advisor remains factual/deterministic — never AI predictions",
+    "Integration (009) is the only mission authorized to cut /farms away from LEGACY_IMPLEMENTATION",
+    "Certification (010) requires live wallet LP positions, explore registry, finished withdraw/harvest path, honest unavailable/partial states, build + focused tests, no production mock numbers"
+  ],
+  "responsiveGates": [1440, 1024, 430, 390],
+  "overflow": "No horizontal overflow"
+}

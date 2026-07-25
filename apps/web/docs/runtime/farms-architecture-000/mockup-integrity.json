@@ -1,0 +1,13 @@
+{
+  "mission": "FARMS_ARCHITECTURE_000_MOCKUP_LOCK",
+  "relativePath": "apps/web/docs/runtime/farms-architecture-000/farms-founder-mockup-lock.png",
+  "sourceAsset": "MELEGADEX_FARMS_PAGE-5f95d1a6-4ebf-4e87-acea-2d86624f08ea.png",
+  "sha256": "a19e506f7d7a5194050d52481f0b220bad30e4a774e3fde2529b37e830db848a",
+  "bytes": 148024,
+  "width": 1024,
+  "height": 682,
+  "format": "JPEG JFIF",
+  "storedExtension": ".png",
+  "byteIdenticalToSource": true,
+  "note": "Illustrative mockup metrics are NEVER production data. Yield Advisor in rebuild is factual/deterministic — mockup 'AI' label is visual reference only."
+}
