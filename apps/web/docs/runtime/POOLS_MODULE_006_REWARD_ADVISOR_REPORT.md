@@ -71,4 +71,4 @@ Push `pools-module-006-reward-advisor`. No merge. No deploy.
 
 ## Mission commit
 
-_(stamped after commit)_
+`fafb02c01a1cd96be0e39a2c7b05b9a4bd3b14c3`
