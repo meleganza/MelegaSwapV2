@@ -1,0 +1,50 @@
+{
+  "mission": "SMART_SWAP_MAINNET_EXECUTION_READINESS_CRASH_RECOVERY",
+  "recoveredAt": "2026-07-26T12:01:00.000Z",
+  "postRecoveryRun": {
+    "ready": true,
+    "verdict": "SMART_SWAP_MAINNET_EXECUTION_READY",
+    "rpcCalls": 46,
+    "bigintSerializeFix": true
+  },
+  "worktree": "/Users/marcomelega/Projects/MelegaSwapV2-smart-swap-mainnet-ready",
+  "branch": "smart-swap-mainnet-execution-readiness",
+  "headAtRecovery": "3e4f5fe09ee352966b65ada92d537390f0279d31",
+  "certifiedBase": {
+    "module006": "SMART_SWAP_MODULE_006_AI_ASSISTANCE_CERTIFIED",
+    "tip": "3e4f5fe0",
+    "mission": "f3ddcfe6",
+    "architecture": "47892a9d"
+  },
+  "crashSymptom": "Script run-mainnet-execution-readiness.mjs failed after partial evidence write: Do not know how to serialize a BigInt",
+  "recoveredFiles": [
+    "scripts/run-mainnet-execution-readiness.mjs",
+    "router-validation.json",
+    "mainnet-contract-context.json",
+    "route-live-validation.json",
+    "quote-validation.json",
+    "calldata-validation.json",
+    "router-calldata-validation.json",
+    "gas-validation.json",
+    "simulation-validation.json",
+    "test-summary.json (blocked / incomplete)"
+  ],
+  "missingAtCrash": [
+    "approval-validation.json",
+    "wallet-validation.json",
+    "fee-path-validation.json",
+    "failure-state-validation.json",
+    "performance-validation.json",
+    "mock-audit.json",
+    "ui-flow-validation.json",
+    "build-summary.json",
+    "SMART_SWAP_MAINNET_EXECUTION_READINESS_REPORT.md"
+  ],
+  "localSafetySnapshot": {
+    "stash": "safety-snapshot-mainnet-execution-readiness-crash-recovery",
+    "localBranchPrefix": "safety/smart-swap-mainnet-execution-readiness-crash-recovery-*",
+    "pushed": false
+  },
+  "restartFromScratch": false,
+  "broadcast": false
+}

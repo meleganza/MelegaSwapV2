@@ -1,0 +1,20 @@
+{
+  "mission": "SMART_SWAP_MAINNET_EXECUTION_READINESS",
+  "phases": 12,
+  "ready": true,
+  "verdict": "SMART_SWAP_MAINNET_EXECUTION_READY",
+  "freeze": {
+    "smartSwapFormSha": "93a1fc4407a19c1279ab9535352573b4e29bb7b4e3a7ef13940b90ebcc3c4797",
+    "libsPresent": {
+      "smartSwapForm": true,
+      "routeEngine": true,
+      "executionPreview": true,
+      "feeTransparency": true,
+      "aiAssistance": true,
+      "history": true
+    }
+  },
+  "rpcCalls": 46,
+  "rpcUsed": "https://bsc-dataseed.binance.org",
+  "durationMs": 5346
+}

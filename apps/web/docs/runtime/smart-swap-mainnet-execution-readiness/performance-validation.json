@@ -1,0 +1,13 @@
+{
+  "routeDiscoveryMs": 666,
+  "quoteLatencyMs": 1278,
+  "previewLatencyMs": "N/A — UI hook; library build is sync",
+  "routerValidationMs": 707,
+  "gasValidationMs": 2086,
+  "totalRpcCalls": 46,
+  "rpcUsed": "https://bsc-dataseed.binance.org",
+  "duplicateQueryNotes": "Script issues sequential RPC calls; no architecture rewrite.",
+  "walletReconnectRaces": "Not exercised in headless read-only run",
+  "totalMs": 5345,
+  "pass": true
+}

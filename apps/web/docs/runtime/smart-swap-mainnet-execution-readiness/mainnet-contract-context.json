@@ -1,0 +1,22 @@
+{
+  "chainId": 56,
+  "rpcEndpoints": [
+    "https://bsc-dataseed.binance.org",
+    "https://bsc-dataseed1.defibit.io",
+    "https://bsc-rpc.publicnode.com",
+    "https://bsc.publicnode.com"
+  ],
+  "rpcUsed": "https://bsc-dataseed.binance.org",
+  "anchors": {
+    "bscSmartRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+    "bscV2Router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "WBNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "USDT": "0x55d398326f99059fF775485246999027B3197955",
+    "MARCO": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "MARCO_WBNB_PAIR": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+    "nativeSentinel": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+  },
+  "source": "SMART_SWAP_CONTRACT_ANCHORS + bsc-indexer constants + live eth_call",
+  "mockData": false
+}

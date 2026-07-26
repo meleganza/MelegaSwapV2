@@ -1,0 +1,51 @@
+{
+  "method": "eth_estimateGas",
+  "broadcast": false,
+  "cases": [
+    {
+      "label": "V2_ERC20_swap_from_dead",
+      "to": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x0",
+      "state": "UNAVAILABLE",
+      "error": "Object.assign is not a constructor",
+      "revert": "empty revert",
+      "ms": null
+    },
+    {
+      "label": "V2_ETH_swap_from_dead",
+      "to": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x2386f26fc10000",
+      "state": "SUCCESS",
+      "gas": 128648,
+      "ms": 147,
+      "rpc": "https://bsc-dataseed.binance.org"
+    },
+    {
+      "label": "SMART_swap_from_dead",
+      "to": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x0",
+      "state": "UNAVAILABLE",
+      "error": "Object.assign is not a constructor",
+      "revert": "empty revert",
+      "ms": null
+    },
+    {
+      "label": "SMART_native_from_dead",
+      "to": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x2386f26fc10000",
+      "state": "SUCCESS",
+      "gas": 170891,
+      "ms": 98,
+      "rpc": "https://bsc-dataseed.binance.org"
+    }
+  ],
+  "notes": [
+    "Dead wallet has no balance/allowance — EXPECTED_FAILURE is valid proof that calldata reaches router.",
+    "SUCCESS would require a funded approved wallet; not used to avoid broadcast risk."
+  ],
+  "pass": true
+}

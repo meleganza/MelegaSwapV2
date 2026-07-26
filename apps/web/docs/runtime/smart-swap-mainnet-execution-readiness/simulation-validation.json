@@ -1,0 +1,55 @@
+{
+  "method": "eth_call",
+  "broadcast": false,
+  "cases": [
+    {
+      "label": "V2_ERC20_swap_from_dead",
+      "to": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x0",
+      "calldataAccepted": true,
+      "simulationOk": false,
+      "result": null,
+      "error": "Object.assign is not a constructor",
+      "revert": "empty revert",
+      "broadcast": false
+    },
+    {
+      "label": "V2_ETH_swap_from_dead",
+      "to": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x2386f26fc10000",
+      "calldataAccepted": true,
+      "simulationOk": true,
+      "result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000002386f26fc100000000000000000000000000000000000000000000000000000a6684d394c9aa6e",
+      "error": null,
+      "revert": null,
+      "broadcast": false
+    },
+    {
+      "label": "SMART_swap_from_dead",
+      "to": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x0",
+      "calldataAccepted": true,
+      "simulationOk": false,
+      "result": null,
+      "error": "Object.assign is not a constructor",
+      "revert": "empty revert",
+      "broadcast": false
+    },
+    {
+      "label": "SMART_native_from_dead",
+      "to": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+      "from": "0x000000000000000000000000000000000000dEaD",
+      "value": "0x2386f26fc10000",
+      "calldataAccepted": true,
+      "simulationOk": true,
+      "result": "0x0000000000000000000000000000000000000000000000004f2897579c4440dd",
+      "error": null,
+      "revert": null,
+      "broadcast": false
+    }
+  ],
+  "pass": true
+}

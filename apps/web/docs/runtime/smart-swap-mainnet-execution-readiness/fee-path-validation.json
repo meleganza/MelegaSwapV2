@@ -1,0 +1,15 @@
+{
+  "path": [
+    "Swap",
+    "Protocol Fee",
+    "Treasury Runtime reference",
+    "KERL attribution status"
+  ],
+  "displayOnly": true,
+  "settlementExecuted": false,
+  "allocationModified": false,
+  "consumesCanonicalFeeEngine": true,
+  "treasuryOwnerReference": true,
+  "noFscSplitDuplication": true,
+  "pass": true
+}

@@ -1,0 +1,91 @@
+{
+  "mockRoutes": false,
+  "routes": [
+    {
+      "type": "DIRECT",
+      "path": [
+        "0x55d398326f99059fF775485246999027B3197955",
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      ],
+      "symbols": [
+        "USDT",
+        "WBNB"
+      ],
+      "pools": [
+        "0x94FADf053BaD0c9d0a3874F82b1a09001926A548"
+      ],
+      "reservesSource": "pair.getReserves",
+      "reserves": {
+        "reserve0": "863159610602210664",
+        "reserve1": "1513716987658871",
+        "source": "pair.getReserves"
+      },
+      "freshness": "2026-07-26T12:00:59.349Z",
+      "confidence": "HIGH",
+      "failureReason": null
+    },
+    {
+      "type": "NATIVE_RELATED",
+      "path": [
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+      ],
+      "symbols": [
+        "WBNB",
+        "MARCO"
+      ],
+      "pools": [
+        "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E"
+      ],
+      "knownPair": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+      "pairMatch": true,
+      "reservesSource": "pair.getReserves",
+      "reserves": {
+        "reserve0": "5030463374710496266342924",
+        "reserve1": "3279777242837504593",
+        "source": "pair.getReserves"
+      },
+      "freshness": "2026-07-26T12:00:59.349Z",
+      "confidence": "HIGH",
+      "failureReason": null
+    },
+    {
+      "type": "MULTI_HOP",
+      "path": [
+        "0x55d398326f99059fF775485246999027B3197955",
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+      ],
+      "symbols": [
+        "USDT",
+        "WBNB",
+        "MARCO"
+      ],
+      "pools": [
+        "0x94FADf053BaD0c9d0a3874F82b1a09001926A548",
+        "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E"
+      ],
+      "reservesSource": "pair.getReserves (each hop)",
+      "freshness": "2026-07-26T12:00:59.349Z",
+      "confidence": "HIGH",
+      "failureReason": null
+    },
+    {
+      "type": "UNSUPPORTED",
+      "path": [
+        "0x55d398326f99059fF775485246999027B3197955",
+        "0x0000000000000000000000000000000000000001"
+      ],
+      "symbols": [
+        "USDT",
+        "UNSUPPORTED"
+      ],
+      "pools": [],
+      "reservesSource": null,
+      "freshness": "2026-07-26T12:00:59.349Z",
+      "confidence": "UNAVAILABLE",
+      "failureReason": "NO_ROUTE / TOKEN_UNSUPPORTED — getPair returned zero"
+    }
+  ],
+  "pass": true
+}

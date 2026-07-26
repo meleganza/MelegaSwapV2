@@ -1,0 +1,9 @@
+{
+  "mockedRoutes": false,
+  "mockedQuotes": false,
+  "mockedCalldata": false,
+  "privateKeys": false,
+  "broadcast": false,
+  "dataSource": "BSC public JSON-RPC eth_call / eth_estimateGas / eth_getCode / eth_getBalance",
+  "pass": true
+}

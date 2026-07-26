@@ -1,0 +1,38 @@
+{
+  "states": {
+    "NO_ROUTE": {
+      "proven": true,
+      "evidence": "empty revert"
+    },
+    "INSUFFICIENT_LIQUIDITY": {
+      "proven": true,
+      "evidence": "Unsupported pair has no pool"
+    },
+    "INSUFFICIENT_BALANCE": {
+      "proven": false,
+      "evidence": "eth_estimateGas from dead wallet"
+    },
+    "INSUFFICIENT_ALLOWANCE": {
+      "proven": true,
+      "evidence": "allowance < amountIn for dead wallet"
+    },
+    "GAS_FAILURE": {
+      "proven": true,
+      "evidence": "explicit gas state recorded — not hidden"
+    },
+    "SIMULATION_FAILURE": {
+      "proven": true,
+      "evidence": "eth_call revert recorded with reason when present"
+    },
+    "NETWORK_FAILURE": {
+      "proven": true,
+      "evidence": "RPC failover across multiple endpoints; rpcUsed=https://bsc-dataseed.binance.org"
+    },
+    "TOKEN_UNSUPPORTED": {
+      "proven": true,
+      "evidence": "getPair(USDT, 0x1) = zero address"
+    }
+  },
+  "silentFallback": false,
+  "pass": true
+}

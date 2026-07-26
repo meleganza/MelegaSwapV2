@@ -1,0 +1,54 @@
+{
+  "flow": [
+    "Trade terminal",
+    "Smart Swap mode",
+    "Token selection",
+    "Amount input",
+    "Route Engine",
+    "Execution Preview",
+    "Fee Transparency",
+    "AI Assistance (optional)",
+    "Confirmation state (SmartSwapForm)"
+  ],
+  "mounts": {
+    "smartSwapFormInCockpit": true,
+    "previewModuleInCockpit": true,
+    "feeInPreviewModule": true,
+    "aiInPreviewModule": true
+  },
+  "files": {
+    "tradeTerminal": {
+      "path": "src/views/Trade/TradeTerminalScreen.tsx",
+      "exists": true,
+      "sha256": "0065952125197ce99fa911118e4e7bde7fdf0c966605fdcda91d1b3d7c16663d"
+    },
+    "tradeCockpit": {
+      "path": "src/views/Trade/TradeCockpit.tsx",
+      "exists": true,
+      "sha256": "59a25dae00b33db41595acf8f62de4818ca50699bf0ab2f2f3964fc7942bbd73"
+    },
+    "smartSwapForm": {
+      "path": "src/views/Swap/SmartSwap/index.tsx",
+      "exists": true,
+      "sha256": "93a1fc4407a19c1279ab9535352573b4e29bb7b4e3a7ef13940b90ebcc3c4797"
+    },
+    "executionPreviewModule": {
+      "path": "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx",
+      "exists": true,
+      "sha256": "8749c7f8c71c1f0bbd5e11bfab74e2025d7303e34b4426817a2e817f63034d52"
+    },
+    "feePanel": {
+      "path": "src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/SmartSwapFeeTransparencyPanel.tsx",
+      "exists": true,
+      "sha256": "798f0b532268e336b9de6706799aa29973c853415fdfdecd0058ea8592a6296c"
+    },
+    "aiPanel": {
+      "path": "src/views/SmartSwapStudio/modules/SmartSwapAIAssistance/SmartSwapAIAssistancePanel.tsx",
+      "exists": true,
+      "sha256": "b1e3466b9af628706843182dce00c0a238e5eb251695e00c1dc74784b38c9d89"
+    }
+  },
+  "redesign": false,
+  "newComponents": false,
+  "pass": true
+}

@@ -1,0 +1,45 @@
+{
+  "chainId": 56,
+  "chain": "BNB Smart Chain Mainnet",
+  "broadcast": false,
+  "smartRouter": {
+    "address": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+    "bytecodePresent": true,
+    "bytecodeBytes": 7675,
+    "methods": [
+      "swap",
+      "swapMulti"
+    ],
+    "selectors": {
+      "swap": "0xa6cbf417",
+      "swapMulti": "0xca24fde8"
+    },
+    "wethCallOk": true
+  },
+  "v2Router": {
+    "address": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "bytecodePresent": true,
+    "bytecodeBytes": 17845,
+    "factoryOnchain": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "factoryExpected": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "factoryMatch": true,
+    "wethOnchain": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "wethExpected": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "wethMatch": true,
+    "methods": [
+      "swapExactTokensForTokens",
+      "swapExactETHForTokens",
+      "swapExactTokensForETH",
+      "getAmountsOut"
+    ]
+  },
+  "factory": {
+    "address": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "bytecodePresent": true
+  },
+  "abiCompatibility": {
+    "smartRouterSwap": true,
+    "v2GetAmountsOut": true
+  },
+  "pass": true
+}

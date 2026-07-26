@@ -1,0 +1,114 @@
+{
+  "mockQuotes": false,
+  "cases": [
+    {
+      "name": "ERC20→ERC20",
+      "path": [
+        "USDT",
+        "WBNB"
+      ],
+      "ok": true,
+      "amounts": [
+        "1000000000000000000",
+        "811503988470533"
+      ],
+      "amountIn": "1000000000000000000",
+      "amountOut": "811503988470533",
+      "minimumReceived": "807446468528180",
+      "slippageBips": 50,
+      "decimalsIn": 18,
+      "decimalsOut": 18,
+      "ms": 86,
+      "priceImpact": {
+        "note": "Price impact % requires mid-price oracle; raw amounts recorded only (no fake impact).",
+        "amountIn": "1000000000000000000",
+        "amountOut": "811503988470533"
+      }
+    },
+    {
+      "name": "BNB→ERC20",
+      "path": [
+        "WBNB",
+        "USDT"
+      ],
+      "ok": true,
+      "amounts": [
+        "10000000000000000",
+        "749432432272976494"
+      ],
+      "amountIn": "10000000000000000",
+      "amountOut": "749432432272976494",
+      "minimumReceived": "745685270111611611",
+      "slippageBips": 50,
+      "decimalsIn": 18,
+      "decimalsOut": 18,
+      "ms": 122,
+      "priceImpact": {
+        "note": "Price impact % requires mid-price oracle; raw amounts recorded only (no fake impact).",
+        "amountIn": "10000000000000000",
+        "amountOut": "749432432272976494"
+      }
+    },
+    {
+      "name": "ERC20→BNB",
+      "path": [
+        "USDT",
+        "WBNB"
+      ],
+      "ok": true,
+      "amounts": [
+        "1000000000000000000",
+        "811503988470533"
+      ],
+      "amountIn": "1000000000000000000",
+      "amountOut": "811503988470533",
+      "minimumReceived": "807446468528180",
+      "slippageBips": 50,
+      "decimalsIn": 18,
+      "decimalsOut": 18,
+      "ms": 82,
+      "priceImpact": {
+        "note": "Price impact % requires mid-price oracle; raw amounts recorded only (no fake impact).",
+        "amountIn": "1000000000000000000",
+        "amountOut": "811503988470533"
+      }
+    },
+    {
+      "name": "MULTI_HOP USDT→WBNB→MARCO",
+      "path": [
+        "USDT",
+        "WBNB",
+        "MARCO"
+      ],
+      "ok": true,
+      "amounts": [
+        "1000000000000000000",
+        "811503988470533",
+        "1241252202624901402792"
+      ],
+      "amountIn": "1000000000000000000",
+      "amountOut": "1241252202624901402792",
+      "minimumReceived": "1235045941611776895778",
+      "slippageBips": 50,
+      "decimalsIn": 18,
+      "decimalsOut": 18,
+      "ms": 83,
+      "priceImpact": {
+        "note": "Price impact % requires mid-price oracle; raw amounts recorded only (no fake impact).",
+        "amountIn": "1000000000000000000",
+        "amountOut": "1241252202624901402792"
+      }
+    },
+    {
+      "name": "UNSUPPORTED",
+      "path": [
+        "USDT",
+        "UNSUPPORTED"
+      ],
+      "ok": false,
+      "error": "Object.assign is not a constructor",
+      "revert": "empty revert"
+    }
+  ],
+  "pass": true
+}
