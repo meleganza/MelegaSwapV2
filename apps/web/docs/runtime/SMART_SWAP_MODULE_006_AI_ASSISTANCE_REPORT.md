@@ -64,6 +64,10 @@ Panel after Execution Preview + Fee Transparency inside `SmartSwapExecutionPrevi
 - Freeze guards — pass  
 - `yarn build` — see build-summary.json  
 
+## Mission commit
+
+`f3ddcfe60640943961ba1f18cd203c0bfee3730b`
+
 ## Delivery
 
 Push only. No merge. No deploy. Certification servers stopped.
