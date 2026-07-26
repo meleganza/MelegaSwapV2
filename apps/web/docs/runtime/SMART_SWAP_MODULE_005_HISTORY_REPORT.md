@@ -64,6 +64,10 @@ Pagination: latest-first, page size 10, hard cap 20.
 - Architecture / SmartSwapForm freeze — pass  
 - `yarn build` — see build-summary.json  
 
+## Mission commit
+
+`2f210afbe1269bae2d10565bf2045f17a1718721`
+
 ## Delivery
 
 Push only. No merge. No deploy. Certification servers stopped.
