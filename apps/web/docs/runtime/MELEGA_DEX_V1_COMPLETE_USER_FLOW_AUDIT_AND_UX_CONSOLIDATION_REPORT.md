@@ -10,6 +10,7 @@
 | --- | --- |
 | Prior tip | `17c5331d` (`SMART_SWAP_LIVE_TERMINAL_FORENSIC_REPAIR_CERTIFIED`) |
 | Branch | `melega-dex-v1-user-flow-audit` |
+| Mission commit | `06cee9de9af663437ebb11e93f8050a4d8cc77cb` |
 
 ## 1. Duplicate UX removed
 
