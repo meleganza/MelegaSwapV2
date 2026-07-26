@@ -11,6 +11,7 @@
 | Prior | `SMART_SWAP_MAINNET_EXECUTION_READY` tip `3ab555e8` |
 | Branch | `smart-swap-mainnet-execution-handoff` |
 | Architecture | `47892a9d` |
+| Mission commit | `1d7f6bad178cfe190d5b5eee7bf753c80ba9bbd1` |
 
 ## Current blocker (resolved)
 
