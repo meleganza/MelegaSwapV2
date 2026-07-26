@@ -10,6 +10,7 @@
 | --- | --- |
 | Prior | `SMART_SWAP_TERMINAL_UX_REPAIR_CERTIFIED` tip `f0008a9d` |
 | Branch | `smart-swap-live-terminal-forensic-repair` |
+| Mission commit | `57adb432c23cbe707f4d2eec26ca6dde62f5fbc8` |
 
 ## Runtime path (actual)
 
