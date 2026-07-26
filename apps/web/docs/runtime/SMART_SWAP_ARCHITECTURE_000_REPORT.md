@@ -119,7 +119,7 @@ Architecture Vitest only — lock contracts + doc presence + ownership invariant
 
 ## Mission commit
 
-`PENDING_MISSION_COMMIT`
+`fef1c68a30f132a0cd6e2928581173b991903acc`
 
 ## Delivery
 
