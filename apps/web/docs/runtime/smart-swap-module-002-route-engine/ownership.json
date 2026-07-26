@@ -1,0 +1,26 @@
+{
+  "module": "SMART_SWAP_MODULE_002_ROUTE_ENGINE",
+  "owns": [
+    "route intelligence",
+    "route presentation model",
+    "route comparison",
+    "execution explanation",
+    "confidence scoring"
+  ],
+  "doesNotOwn": [
+    "swap execution",
+    "Router contracts",
+    "fee settlement",
+    "Treasury truth",
+    "KERL attribution",
+    "custody"
+  ],
+  "dataSources": [
+    "canonical-token-registry",
+    "smart-router / pair reserves",
+    "TradeWithStableSwap snapshots",
+    "liquidity indexer (inventory only)"
+  ],
+  "noSecondDex": true,
+  "smartSwapFormUnchanged": true
+}

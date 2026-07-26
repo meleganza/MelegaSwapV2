@@ -1,0 +1,10 @@
+{
+  "mission": "SMART_SWAP_MODULE_002_ROUTE_ENGINE",
+  "verdict": "SMART_SWAP_MODULE_002_ROUTE_ENGINE_CERTIFIED",
+  "scope": "runtime-model-adapter-tests-only",
+  "noUi": true,
+  "noContractChanges": true,
+  "noFeeChanges": true,
+  "smartSwapFormUnchanged": true,
+  "pass": true
+}

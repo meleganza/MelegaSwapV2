@@ -1,0 +1,9 @@
+{
+  "focused": [
+    "smartSwapModule002.routeEngine.test.ts",
+    "smartSwapModule001.hero.test.ts",
+    "smartSwapArchitecture000.test.ts"
+  ],
+  "testsPassed": 25,
+  "pass": true
+}

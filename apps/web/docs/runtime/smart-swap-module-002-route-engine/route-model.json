@@ -1,0 +1,35 @@
+{
+  "type": "SmartSwapRoute",
+  "fields": [
+    "routeId",
+    "routeType",
+    "inputToken",
+    "outputToken",
+    "hops",
+    "pools",
+    "expectedOutputRaw",
+    "expectedOutputFormatted",
+    "priceImpact",
+    "gasEstimate",
+    "feeEstimate",
+    "confidence",
+    "source",
+    "freshness",
+    "warnings",
+    "explanation"
+  ],
+  "routeTypes": ["DIRECT", "MULTI_HOP", "NATIVE", "STABLE", "UNSUPPORTED"],
+  "failures": [
+    "NO_ROUTE",
+    "PARTIAL_ROUTE_DATA",
+    "QUOTE_UNAVAILABLE",
+    "LIQUIDITY_UNAVAILABLE",
+    "NETWORK_UNAVAILABLE",
+    "UNSUPPORTED_PAIR"
+  ],
+  "ranking": {
+    "weights": { "output": 0.45, "impact": 0.25, "gas": 0.1, "reliability": 0.2 },
+    "label": "recommended route",
+    "forbiddenLabel": "best route guaranteed"
+  }
+}
