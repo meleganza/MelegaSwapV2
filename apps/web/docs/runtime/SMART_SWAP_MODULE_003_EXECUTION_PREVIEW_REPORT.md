@@ -63,6 +63,10 @@ Unavailable values render as `—`. No fake savings / gas / fees / route quality
 - Architecture / SmartSwapForm freeze guards — pass  
 - `yarn build` — see build-summary.json  
 
+## Mission commit
+
+`bf664718046839db2dbdca5d343e5921f58a733b`
+
 ## Delivery
 
 Push only. No merge. No deploy.
