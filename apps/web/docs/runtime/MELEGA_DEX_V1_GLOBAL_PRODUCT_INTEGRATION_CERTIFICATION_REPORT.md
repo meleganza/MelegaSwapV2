@@ -187,7 +187,7 @@ Required JSON + `certify.mjs` + screenshots + `certify-summary.json`.
 
 ### Mission commit
 
-`PENDING_MISSION_COMMIT`
+`723e3e1161637f7769e4840e45f39d1f114ae079`
 
 ### Branch
 
