@@ -82,7 +82,7 @@ Hero module has no wallet, Router, quote, liquidity, Treasury, or KERL imports. 
 
 ## Mission commit
 
-`PENDING_MISSION_COMMIT`
+`f392f4847320739bbb21405607707cca9b5a6595`
 
 ## Delivery
 
