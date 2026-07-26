@@ -1,0 +1,38 @@
+{
+  "mission": "SMART_SWAP_V2_UX_CONCEPT_REDESIGN",
+  "base": "smart-swap-ux-redesign-and-home-integration@7ff1ff8f",
+  "timestamp": "2026-07-26T21:34:20.188Z",
+  "checks": [
+    {
+      "name": "desktop smart split",
+      "pass": true,
+      "detail": "L/R"
+    },
+    {
+      "name": "900px breakpoint",
+      "pass": true,
+      "detail": "desktop"
+    },
+    {
+      "name": "v2 stack marker",
+      "pass": true,
+      "detail": "v2"
+    },
+    {
+      "name": "insight cards",
+      "pass": true,
+      "detail": "Route/Fee/AI"
+    },
+    {
+      "name": "home single CTA",
+      "pass": true,
+      "detail": "home"
+    },
+    {
+      "name": "gas soft copy",
+      "pass": true,
+      "detail": "gas"
+    }
+  ],
+  "pass": true
+}

@@ -103,7 +103,7 @@ export function SmartSwapExecutionPreviewPanel({
         {!embedded ? <Title>Execution preview</Title> : null}
         <Failure role="status" style={isGasOnly ? { color: '#9ca3af' } : undefined}>
           {isGasOnly
-            ? 'Gas estimate unavailable. Transaction will be simulated by wallet before signing.'
+            ? 'Gas estimate unavailable. Wallet will verify before signing.'
             : `${(failure?.failure ?? 'EXECUTION_UNAVAILABLE').replace(/_/g, ' ')}${
                 failure?.message ? ` — ${failure.message}` : ''
               }`}

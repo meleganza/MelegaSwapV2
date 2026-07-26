@@ -24,7 +24,7 @@ export function formatGasEstimateDisplay(input: {
 }): { state: GasEstimateUiState; title: string; detail: string; tone: 'ok' | 'muted' | 'warn' } {
   const state = resolveGasEstimateUiState(input)
   if (state === 'estimating') {
-    return { state, title: 'Estimating gas…', detail: '', tone: 'muted' }
+    return { state, title: 'Estimating execution cost…', detail: '', tone: 'muted' }
   }
   if (state === 'available') {
     const value =
@@ -35,7 +35,7 @@ export function formatGasEstimateDisplay(input: {
   return {
     state,
     title: 'Gas estimate unavailable',
-    detail: 'Transaction will be simulated by wallet before signing.',
+    detail: 'Wallet will verify before signing.',
     tone: 'muted',
   }
 }

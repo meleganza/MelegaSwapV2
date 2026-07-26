@@ -4,15 +4,11 @@ import { formatImpactLabel } from 'lib/smart-swap-execution-preview'
 import { SmartSwapExecutionPreviewPanel } from './SmartSwapExecutionPreviewPanel'
 import { SmartSwapVisualRoute } from './SmartSwapVisualRoute'
 import { SmartSwapCompactMetrics } from './SmartSwapCompactMetrics'
+import { SmartSwapInsightCard } from './SmartSwapInsightCard'
+import { resolveExecutionSourceLabel } from './resolveExecutionSourceLabel'
 import { useSmartSwapExecutionPreview } from './useSmartSwapExecutionPreview'
-import {
-  SmartSwapFeeTransparencyPanel,
-  useSmartSwapFeeTransparency,
-} from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
-import {
-  SmartSwapAIAssistancePanel,
-  useSmartSwapAIAssistance,
-} from 'views/SmartSwapStudio/modules/SmartSwapAIAssistance'
+import { useSmartSwapFeeTransparency } from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
+import { useSmartSwapAIAssistance } from 'views/SmartSwapStudio/modules/SmartSwapAIAssistance'
 import {
   SmartSwapExecutionHandoffPanel,
   useSmartSwapExecutionHandoff,
@@ -29,6 +25,16 @@ const Stack = styled.div`
   gap: 10px;
   width: 100%;
   min-width: 0;
+`
+
+const InsightRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 `
 
 const AccordionShell = styled.div`
@@ -94,9 +100,8 @@ const Hint = styled.p`
 `
 
 /**
- * Smart-only stack — progressive disclosure.
- * Primary: route → metrics → AI → fee.
- * Secondary (accordion): preview rows, gas, handoff diagnostics.
+ * Smart execution cockpit — horizontal route, key metrics, compact insights.
+ * Secondary: gas / freshness / diagnostics in accordion.
  */
 function SmartTransparencyStack() {
   const result = useSmartSwapExecutionPreview()
@@ -107,7 +112,7 @@ function SmartTransparencyStack() {
 
   const preview = result.status === 'ok' ? result.preview : null
   const hops = preview?.hopVisualization ?? []
-  const direct = Boolean(preview && preview.routeHops.length <= 1 && hops.length > 0)
+  const source = resolveExecutionSourceLabel(preview)
 
   const impact = preview
     ? formatImpactLabel(preview.priceImpactPercent, preview.priceImpactSeverity)
@@ -125,21 +130,24 @@ function SmartTransparencyStack() {
   const confidenceTone =
     preview && preview.confidence >= 70 ? 'ok' : preview && preview.confidence < 40 ? 'warn' : 'neutral'
 
+  const expected =
+    preview?.expectedOutputFormatted != null
+      ? `${preview.expectedOutputFormatted} ${preview.outputToken.symbol}`
+      : '—'
+  const minimum =
+    preview?.minimumReceivedFormatted != null
+      ? `${preview.minimumReceivedFormatted} ${preview.outputToken.symbol}`
+      : '—'
+
   const metrics = [
-    {
-      label: 'Slippage',
-      value: preview ? `${(preview.slippageBips / 100).toFixed(2)}%` : '—',
-      sub: 'Auto',
-    },
+    { label: 'Expected output', value: expected },
+    { label: 'Minimum received', value: minimum },
     {
       label: 'Price impact',
       value: impact,
       tone: impactTone as 'ok' | 'warn' | 'neutral',
     },
-    {
-      label: 'Protocol fee',
-      value: feeLabel,
-    },
+    { label: 'Protocol fee', value: feeLabel },
     {
       label: 'Confidence',
       value: preview ? `${preview.confidence}%` : '—',
@@ -148,12 +156,41 @@ function SmartTransparencyStack() {
     },
   ]
 
+  const aiBody =
+    aiResult.status === 'ok' && aiResult.assistance
+      ? aiResult.assistance.explanation
+      : 'AI insight unavailable for this quote.'
+
+  const feeBody =
+    feeModel.flowSteps.find((s) => /protocol fee/i.test(s.label))?.value ||
+    feeModel.unavailableReason ||
+    'Fee information unavailable'
+
+  const feeSub = feeModel.flowSteps
+    .filter((s) => !/protocol fee/i.test(s.label))
+    .slice(0, 2)
+    .map((s) => s.value)
+    .filter(Boolean)
+    .join(' · ')
+
   return (
-    <Stack data-smart-transparency-stack data-smart-ux-redesign="true">
-      <SmartSwapVisualRoute hops={hops} direct={direct} />
+    <Stack data-smart-transparency-stack data-smart-ux-v2="true">
+      <SmartSwapVisualRoute
+        hops={hops}
+        executionSourceLabel={source.label}
+        executionSourceDetail={source.detail}
+      />
       <SmartSwapCompactMetrics items={metrics} />
-      <SmartSwapAIAssistancePanel result={aiResult} compact />
-      <SmartSwapFeeTransparencyPanel model={feeModel} compact />
+      <InsightRow data-smart-insight-row>
+        <SmartSwapInsightCard
+          data-insight="route"
+          title="Route"
+          body={source.label}
+          sub={source.detail}
+        />
+        <SmartSwapInsightCard data-insight="fee" title="Fee" body={feeBody} sub={feeSub || undefined} />
+        <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
+      </InsightRow>
 
       <AccordionShell data-execution-details-accordion data-execution-details-open={executionDetailsOpen ? 'true' : 'false'}>
         <Toggle
@@ -163,7 +200,7 @@ function SmartTransparencyStack() {
           aria-controls="smart-execution-details-panel"
           onClick={() => toggleExecutionDetailsOpen()}
         >
-          <span>Execution preview & details</span>
+          <span>Details</span>
           <Chevron $open={executionDetailsOpen} aria-hidden>
             ▾
           </Chevron>
@@ -188,8 +225,7 @@ function SmartTransparencyStack() {
 }
 
 /**
- * Smart experience stack with compact hierarchy.
- * SmartSwapForm remains the execution engine (user confirms there).
+ * Smart experience cockpit. SmartSwapForm remains the execution engine.
  */
 export function SmartSwapExecutionPreviewModule({
   showSmartTransparency = true,

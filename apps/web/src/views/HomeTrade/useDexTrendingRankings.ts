@@ -25,7 +25,8 @@ import {
 } from 'lib/trending/tierTrendingModel'
 
 const SECONDS_24H = 86_400
-const TRENDING_LIMIT = 10
+const TRENDING_LIMIT = 12
+const MIN_TARGET_ITEMS = 10
 const MIN_MARQUEE_ITEMS = 3
 
 type PairRow = {
@@ -247,6 +248,48 @@ export function useDexTrendingRankings() {
       })
     }
 
+    // Backfill from tradeable pairs so the ticker can show multiple real assets
+    // when tier-metrics coverage is thin — still no fake % movement.
+    if (candidates.length < MIN_TARGET_ITEMS) {
+      const seen = new Set(candidates.map((c) => c.address.toLowerCase()))
+      for (const pair of pairRows) {
+        if (candidates.length >= TRENDING_LIMIT) break
+        const baseAddress = pickTrendingBaseToken(pair.token0 ?? '', pair.token1 ?? '')
+        if (!baseAddress) continue
+        const key = baseAddress.toLowerCase()
+        if (seen.has(key)) continue
+        const canonical = canonicalByAddress.get(key)
+        if (!canonical?.address) continue
+        const liquidityScore = liquidityScoreForAddress(pairRows, canonical.address)
+        if (liquidityScore <= 0) continue
+        const priceUsd = resolveTokenPriceUsd(
+          canonical.address,
+          canonical.symbol,
+          marcoUsd,
+          marcoMetrics.marcoUsdFromCandle,
+          wbnbUsd,
+          cakeUsd,
+          busdUsd,
+        )
+        seen.add(key)
+        candidates.push({
+          symbol: canonical.symbol,
+          slug: canonical.registrySlug ?? canonical.id,
+          pairSlug: `${canonical.symbol.toLowerCase()}-pair`,
+          address: canonical.address,
+          chainId: canonical.chainId,
+          displayName: canonical.name ?? canonical.symbol,
+          tierStatus: 'EMPTY_VERIFIED',
+          priceUsd: priceUsd && priceUsd > 0 ? priceUsd : undefined,
+          change24h: undefined,
+          volume24h: 0,
+          liquidityScore,
+          tradeCount24h: 0,
+          rankingSignals: ['liquidity', ...(priceUsd && priceUsd > 0 ? ['priceUsd'] : [])],
+        })
+      }
+    }
+
     return rankTierAssets(candidates, TRENDING_LIMIT)
   }, [
     tierMetrics,
@@ -261,17 +304,15 @@ export function useDexTrendingRankings() {
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
-      const { accent, accentPositive } = trendingTickerAccent(asset)
+      const { accent, accentPositive, accentUnavailable } = trendingTickerAccent(asset)
       const priceLabel = formatTrendingTickerPrice(asset.priceUsd)
-      const changeLabel =
-        asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h.text : undefined
-      const secondary = [priceLabel || 'Price unavailable', changeLabel].filter(Boolean).join(' · ')
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        secondary,
-        accent: accent ?? (asset.tradeCount24h > 0 ? `${asset.tradeCount24h} trades` : 'Live'),
+        secondary: priceLabel || 'Price unavailable',
+        accent: accent ?? '—',
         accentPositive,
+        accentUnavailable,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
       }
     })
@@ -304,7 +345,7 @@ export function useDexTrendingRankings() {
     indexerScopeNote,
     rankedCount: rankedAssets.length,
     rankedAssets,
-    useMarquee: rankedAssets.length >= MIN_MARQUEE_ITEMS,
+    useMarquee: rankedAssets.length >= MIN_MARQUEE_ITEMS || rankedAssets.length >= MIN_TARGET_ITEMS,
     indexerState,
   }
 }

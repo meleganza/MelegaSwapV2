@@ -119,11 +119,14 @@ export function formatTrendingTickerPrice(price?: number): string | undefined {
 export function trendingTickerAccent(asset: TierRankedAsset): {
   accent?: string
   accentPositive?: boolean
+  accentUnavailable?: boolean
 } {
   const change =
     asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h : undefined
   if (change) {
-    return { accent: change.text, accentPositive: change.positive }
+    const arrow = change.positive ? '↑' : '↓'
+    const pct = `${Math.abs(change.pct).toFixed(1)}%`
+    return { accent: `${arrow} ${pct}`, accentPositive: change.positive }
   }
   if (asset.tradeCount24h > 0) {
     return {
@@ -133,6 +136,6 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   if (asset.volume24h > 0) {
     return { accent: '24H vol' }
   }
-  // Do not surface the word "Liquidity" as a fake ticker price movement.
-  return {}
+  // Honest unavailable — never invent % movement.
+  return { accent: '—', accentUnavailable: true }
 }

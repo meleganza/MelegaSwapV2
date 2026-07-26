@@ -53,7 +53,7 @@ export const TrendingRibbon: React.FC = () => {
     <MelegaTicker
       label={label}
       items={enrichedItems}
-      marqueeMinItems={useMarquee ? 6 : Number.MAX_SAFE_INTEGER}
+      marqueeMinItems={useMarquee ? 3 : Number.MAX_SAFE_INTEGER}
       emptyPrimary={
         trendingEmpty ? 'Market ranking temporarily unavailable' : undefined
       }

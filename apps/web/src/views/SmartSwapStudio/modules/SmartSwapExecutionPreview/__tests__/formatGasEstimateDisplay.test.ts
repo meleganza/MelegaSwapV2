@@ -13,14 +13,14 @@ describe('formatGasEstimateDisplay', () => {
   it('shows estimating state', () => {
     const r = formatGasEstimateDisplay({ availability: 'unavailable', units: null, estimating: true })
     expect(r.state).toBe('estimating')
-    expect(r.title).toMatch(/Estimating gas/)
+    expect(r.title).toMatch(/Estimating execution cost/)
   })
 
   it('softens unavailable — not a hard error', () => {
     const r = formatGasEstimateDisplay({ availability: 'unavailable', units: null })
     expect(r.state).toBe('unavailable')
     expect(r.tone).toBe('muted')
-    expect(r.detail).toMatch(/simulated by wallet/i)
+    expect(r.detail).toMatch(/Wallet will verify/i)
     expect(r.title).not.toMatch(/error/i)
   })
 })

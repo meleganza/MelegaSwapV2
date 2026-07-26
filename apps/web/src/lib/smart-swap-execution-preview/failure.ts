@@ -24,8 +24,7 @@ export function previewFailure(
     NO_ROUTE: 'No route available to preview.',
     QUOTE_UNAVAILABLE: 'Quote unavailable — execution preview cannot be built.',
     EXECUTION_UNAVAILABLE: 'Execution preview is unavailable for this trade.',
-    GAS_UNAVAILABLE:
-      'Gas estimate unavailable. Transaction will be simulated by wallet before signing.',
+    GAS_UNAVAILABLE: 'Gas estimate unavailable. Wallet will verify before signing.',
     PARTIAL_DATA: 'Preview data is incomplete.',
     STALE_DATA: 'Preview data is stale — refresh the quote.',
   }

@@ -6,7 +6,7 @@ export const tradeLayout = {
   ...premiumStudioLayout,
   ...studioConstitutionLayout,
   cockpitWidth: '420px',
-  cockpitSmartWidth: '860px',
+  cockpitSmartWidth: '920px',
   centerWidth: '520px',
   rightRailWidth: '300px',
   columnGap: '16px',

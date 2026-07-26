@@ -1,0 +1,28 @@
+{
+  "mission": "SMART_SWAP_V2_UX_CONCEPT_REDESIGN",
+  "base": "smart-swap-ux-redesign-and-home-integration@7ff1ff8f",
+  "timestamp": "2026-07-26T21:34:20.188Z",
+  "checks": [
+    {
+      "name": "horizontal orientation",
+      "pass": true,
+      "detail": "→ hops"
+    },
+    {
+      "name": "execution source shown",
+      "pass": true,
+      "detail": "source label"
+    },
+    {
+      "name": "never Direct pool alone",
+      "pass": true,
+      "detail": "context"
+    },
+    {
+      "name": "arrow is →",
+      "pass": true,
+      "detail": "horizontal arrow"
+    }
+  ],
+  "pass": true
+}

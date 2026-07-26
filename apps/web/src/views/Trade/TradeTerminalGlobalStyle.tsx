@@ -20,7 +20,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   [data-trade-cockpit][data-swap-experience='smart'] {
-    max-width: min(100%, 860px);
+    max-width: min(100%, 920px);
   }
 
   @media (max-width: 899px) {
