@@ -1,7 +1,7 @@
 {
   "mission": "SMART_SWAP_V3_PREMIUM_UX_REFINEMENT",
   "base": "ee796adf",
-  "timestamp": "2026-07-26T22:07:02.907Z",
+  "timestamp": "2026-07-26T22:07:30.069Z",
   "checks": [
     {
       "name": "movers only filter",
@@ -10,11 +10,11 @@
     },
     {
       "name": "no Price unavailable string",
-      "pass": false,
+      "pass": true,
       "detail": "clean"
     },
     {
-      "name": "arrow accents via trendingTickerAccent",
+      "name": "uses trendingTickerAccent",
       "pass": true,
       "detail": "↑↓"
     },
@@ -24,5 +24,5 @@
       "detail": "no separators"
     }
   ],
-  "pass": false
+  "pass": true
 }

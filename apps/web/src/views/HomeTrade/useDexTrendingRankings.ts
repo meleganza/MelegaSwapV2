@@ -273,7 +273,7 @@ export function useDexTrendingRankings() {
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        // TOKEN + direction % only — no price / "Price unavailable" secondary.
+        // TOKEN + direction % only — no price secondary line.
         accent,
         accentPositive,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
