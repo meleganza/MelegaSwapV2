@@ -1,5 +1,8 @@
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { useExecutionDetailsOpen } from 'hooks/useExecutionDetailsOpen'
+import { Field } from 'state/swap/actions'
+import { useSwapState } from 'state/swap/hooks'
+import { useCurrency } from 'hooks/Tokens'
 import { formatImpactLabel } from 'lib/smart-swap-execution-preview'
 import { SmartSwapExecutionPreviewPanel } from './SmartSwapExecutionPreviewPanel'
 import { SmartSwapVisualRoute } from './SmartSwapVisualRoute'
@@ -15,14 +18,13 @@ import {
 } from 'views/SmartSwapStudio/modules/SmartSwapExecutionHandoff'
 
 export type SmartSwapExecutionPreviewModuleProps = {
-  /** When false, hide transparency + handoff (Instant mode). */
   showSmartTransparency?: boolean
 }
 
 const Stack = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   min-width: 0;
 `
@@ -30,7 +32,7 @@ const Stack = styled.div`
 const InsightRow = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 6px;
 
   @media (min-width: 900px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -86,29 +88,30 @@ const PanelBody = styled.div`
   padding: 0 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: min(55vh, 420px);
+  gap: 8px;
+  max-height: min(40vh, 280px);
   overflow-y: auto;
   overscroll-behavior: contain;
 `
 
-const Hint = styled.p`
-  margin: 0;
-  font-size: 11px;
-  color: #9ca3af;
-  text-align: center;
-`
-
 /**
- * Smart execution cockpit — horizontal route, key metrics, compact insights.
- * Secondary: gas / freshness / diagnostics in accordion.
+ * Premium Smart cockpit — compact route, metrics, insights.
+ * Details accordion uses local controlled state (open/close without refresh).
  */
 function SmartTransparencyStack() {
   const result = useSmartSwapExecutionPreview()
   const feeModel = useSmartSwapFeeTransparency(result)
   const aiResult = useSmartSwapAIAssistance(result, feeModel)
   const handoff = useSmartSwapExecutionHandoff(result, feeModel)
-  const { executionDetailsOpen, toggleExecutionDetailsOpen } = useExecutionDetailsOpen()
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const toggleDetails = useCallback(() => setDetailsOpen((v) => !v), [])
+
+  const {
+    [Field.INPUT]: { currencyId: inputCurrencyId },
+    [Field.OUTPUT]: { currencyId: outputCurrencyId },
+  } = useSwapState()
+  const inputCurrency = useCurrency(inputCurrencyId)
+  const outputCurrency = useCurrency(outputCurrencyId)
 
   const preview = result.status === 'ok' ? result.preview : null
   const hops = preview?.hopVisualization ?? []
@@ -142,17 +145,12 @@ function SmartTransparencyStack() {
   const metrics = [
     { label: 'Expected output', value: expected },
     { label: 'Minimum received', value: minimum },
-    {
-      label: 'Price impact',
-      value: impact,
-      tone: impactTone as 'ok' | 'warn' | 'neutral',
-    },
+    { label: 'Price impact', value: impact, tone: impactTone as 'ok' | 'warn' | 'neutral' },
     { label: 'Protocol fee', value: feeLabel },
     {
       label: 'Confidence',
       value: preview ? `${preview.confidence}%` : '—',
       tone: confidenceTone as 'ok' | 'warn' | 'neutral',
-      sub: preview && preview.confidence >= 70 ? 'High' : undefined,
     },
   ]
 
@@ -166,52 +164,44 @@ function SmartTransparencyStack() {
     feeModel.unavailableReason ||
     'Fee information unavailable'
 
-  const feeSub = feeModel.flowSteps
-    .filter((s) => !/protocol fee/i.test(s.label))
-    .slice(0, 2)
-    .map((s) => s.value)
-    .filter(Boolean)
-    .join(' · ')
-
   return (
-    <Stack data-smart-transparency-stack data-smart-ux-v2="true">
+    <Stack data-smart-transparency-stack data-smart-ux-v3="true">
       <SmartSwapVisualRoute
         hops={hops}
         executionSourceLabel={source.label}
         executionSourceDetail={source.detail}
+        inputCurrency={inputCurrency}
+        outputCurrency={outputCurrency}
       />
       <SmartSwapCompactMetrics items={metrics} />
       <InsightRow data-smart-insight-row>
-        <SmartSwapInsightCard
-          data-insight="route"
-          title="Route"
-          body={source.label}
-          sub={source.detail}
-        />
-        <SmartSwapInsightCard data-insight="fee" title="Fee" body={feeBody} sub={feeSub || undefined} />
+        <SmartSwapInsightCard data-insight="route" title="Route" body={source.label} sub={source.detail} />
+        <SmartSwapInsightCard data-insight="fee" title="Fee" body={feeBody} />
         <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
       </InsightRow>
 
-      <AccordionShell data-execution-details-accordion data-execution-details-open={executionDetailsOpen ? 'true' : 'false'}>
+      <AccordionShell data-execution-details-accordion data-execution-details-open={detailsOpen ? 'true' : 'false'}>
         <Toggle
           type="button"
           id="smart-execution-details-toggle"
-          aria-expanded={executionDetailsOpen}
+          aria-expanded={detailsOpen}
           aria-controls="smart-execution-details-panel"
-          onClick={() => toggleExecutionDetailsOpen()}
+          onClick={toggleDetails}
         >
           <span>Details</span>
-          <Chevron $open={executionDetailsOpen} aria-hidden>
+          <Chevron $open={detailsOpen} aria-hidden>
             ▾
           </Chevron>
         </Toggle>
-        <Panel $open={executionDetailsOpen}>
+        <Panel $open={detailsOpen}>
           <PanelInner>
             <PanelBody id="smart-execution-details-panel" role="region" aria-labelledby="smart-execution-details-toggle">
-              {executionDetailsOpen ? (
+              {detailsOpen ? (
                 <>
                   <SmartSwapExecutionPreviewPanel result={result} embedded />
-                  {preview?.freshness ? <Hint>Freshness: {preview.freshness}</Hint> : null}
+                  {preview?.freshness ? (
+                    <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }}>Freshness: {preview.freshness}</p>
+                  ) : null}
                   <SmartSwapExecutionHandoffPanel handoff={handoff} compact />
                 </>
               ) : null}
@@ -219,14 +209,10 @@ function SmartTransparencyStack() {
           </PanelInner>
         </Panel>
       </AccordionShell>
-      <Hint>Wallet signature required</Hint>
     </Stack>
   )
 }
 
-/**
- * Smart experience cockpit. SmartSwapForm remains the execution engine.
- */
 export function SmartSwapExecutionPreviewModule({
   showSmartTransparency = true,
 }: SmartSwapExecutionPreviewModuleProps) {

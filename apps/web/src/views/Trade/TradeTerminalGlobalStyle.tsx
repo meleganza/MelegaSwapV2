@@ -44,7 +44,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     opacity: 1 !important;
     pointer-events: auto !important;
     height: auto !important;
-    min-height: 44px !important;
+    min-height: 34px !important;
     overflow: visible !important;
     position: relative !important;
     z-index: 3 !important;
@@ -54,8 +54,8 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     display: inline-flex !important;
     visibility: visible !important;
     pointer-events: auto !important;
-    min-height: 44px !important;
-    height: 44px !important;
+    min-height: 34px !important;
+    height: 34px !important;
   }
 
   [data-trade-cockpit-shell],

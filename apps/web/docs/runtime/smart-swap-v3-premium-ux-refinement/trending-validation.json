@@ -1,0 +1,28 @@
+{
+  "mission": "SMART_SWAP_V3_PREMIUM_UX_REFINEMENT",
+  "base": "ee796adf",
+  "timestamp": "2026-07-26T22:07:02.907Z",
+  "checks": [
+    {
+      "name": "movers only filter",
+      "pass": true,
+      "detail": "no pad"
+    },
+    {
+      "name": "no Price unavailable string",
+      "pass": false,
+      "detail": "clean"
+    },
+    {
+      "name": "arrow accents via trendingTickerAccent",
+      "pass": true,
+      "detail": "↑↓"
+    },
+    {
+      "name": "no ticker borders",
+      "pass": true,
+      "detail": "no separators"
+    }
+  ],
+  "pass": false
+}

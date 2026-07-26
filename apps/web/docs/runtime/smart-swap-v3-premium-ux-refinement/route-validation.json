@@ -1,0 +1,28 @@
+{
+  "mission": "SMART_SWAP_V3_PREMIUM_UX_REFINEMENT",
+  "base": "ee796adf",
+  "timestamp": "2026-07-26T22:06:13.670Z",
+  "checks": [
+    {
+      "name": "horizontal",
+      "pass": true,
+      "detail": "→"
+    },
+    {
+      "name": "CurrencyLogo",
+      "pass": true,
+      "detail": "logos"
+    },
+    {
+      "name": "no scroll overflow-x auto",
+      "pass": true,
+      "detail": "max-height clip"
+    },
+    {
+      "name": "Melega Router source",
+      "pass": true,
+      "detail": "source"
+    }
+  ],
+  "pass": true
+}

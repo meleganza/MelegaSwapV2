@@ -14,7 +14,6 @@ import { TransactionType } from 'state/info/types'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import {
-  formatTrendingTickerPrice,
   hasTrendingMarketSignal,
   isTrendingTierStatus,
   pickTrendingBaseToken,
@@ -25,8 +24,7 @@ import {
 } from 'lib/trending/tierTrendingModel'
 
 const SECONDS_24H = 86_400
-const TRENDING_LIMIT = 12
-const MIN_TARGET_ITEMS = 10
+const TRENDING_LIMIT = 10
 const MIN_MARQUEE_ITEMS = 3
 
 type PairRow = {
@@ -248,49 +246,16 @@ export function useDexTrendingRankings() {
       })
     }
 
-    // Backfill from tradeable pairs so the ticker can show multiple real assets
-    // when tier-metrics coverage is thin — still no fake % movement.
-    if (candidates.length < MIN_TARGET_ITEMS) {
-      const seen = new Set(candidates.map((c) => c.address.toLowerCase()))
-      for (const pair of pairRows) {
-        if (candidates.length >= TRENDING_LIMIT) break
-        const baseAddress = pickTrendingBaseToken(pair.token0 ?? '', pair.token1 ?? '')
-        if (!baseAddress) continue
-        const key = baseAddress.toLowerCase()
-        if (seen.has(key)) continue
-        const canonical = canonicalByAddress.get(key)
-        if (!canonical?.address) continue
-        const liquidityScore = liquidityScoreForAddress(pairRows, canonical.address)
-        if (liquidityScore <= 0) continue
-        const priceUsd = resolveTokenPriceUsd(
-          canonical.address,
-          canonical.symbol,
-          marcoUsd,
-          marcoMetrics.marcoUsdFromCandle,
-          wbnbUsd,
-          cakeUsd,
-          busdUsd,
-        )
-        seen.add(key)
-        candidates.push({
-          symbol: canonical.symbol,
-          slug: canonical.registrySlug ?? canonical.id,
-          pairSlug: `${canonical.symbol.toLowerCase()}-pair`,
-          address: canonical.address,
-          chainId: canonical.chainId,
-          displayName: canonical.name ?? canonical.symbol,
-          tierStatus: 'EMPTY_VERIFIED',
-          priceUsd: priceUsd && priceUsd > 0 ? priceUsd : undefined,
-          change24h: undefined,
-          volume24h: 0,
-          liquidityScore,
-          tradeCount24h: 0,
-          rankingSignals: ['liquidity', ...(priceUsd && priceUsd > 0 ? ['priceUsd'] : [])],
-        })
-      }
-    }
-
-    return rankTierAssets(candidates, TRENDING_LIMIT)
+    // Premium ticker: only factual 24h movers — never invent %; never pad without change data.
+    const movers = candidates.filter(
+      (c) => c.change24h != null && Number.isFinite(c.change24h.pct) && Math.abs(c.change24h.pct) > 0.0001,
+    )
+    movers.sort((a, b) => {
+      const aScore = Math.abs(a.change24h?.pct ?? 0) * 1000 + a.tradeCount24h + a.volume24h
+      const bScore = Math.abs(b.change24h?.pct ?? 0) * 1000 + b.tradeCount24h + b.volume24h
+      return bScore - aScore
+    })
+    return rankTierAssets(movers, TRENDING_LIMIT)
   }, [
     tierMetrics,
     pairRows,
@@ -304,15 +269,13 @@ export function useDexTrendingRankings() {
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
-      const { accent, accentPositive, accentUnavailable } = trendingTickerAccent(asset)
-      const priceLabel = formatTrendingTickerPrice(asset.priceUsd)
+      const { accent, accentPositive } = trendingTickerAccent(asset)
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        secondary: priceLabel || 'Price unavailable',
-        accent: accent ?? '—',
+        // TOKEN + direction % only — no price / "Price unavailable" secondary.
+        accent,
         accentPositive,
-        accentUnavailable,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
       }
     })
@@ -334,7 +297,7 @@ export function useDexTrendingRankings() {
 
   const indexerScopeNote = useMemo(() => {
     if (rankedAssets.length === 0) return undefined
-    return 'Tier metrics · 24H volume → trades → liquidity → price change'
+    return 'Indexed 24H movers · factual price change only'
   }, [rankedAssets.length])
 
   return {
@@ -345,7 +308,7 @@ export function useDexTrendingRankings() {
     indexerScopeNote,
     rankedCount: rankedAssets.length,
     rankedAssets,
-    useMarquee: rankedAssets.length >= MIN_MARQUEE_ITEMS || rankedAssets.length >= MIN_TARGET_ITEMS,
+    useMarquee: rankedAssets.length >= MIN_MARQUEE_ITEMS,
     indexerState,
   }
 }

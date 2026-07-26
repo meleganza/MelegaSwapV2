@@ -45,20 +45,25 @@ const SmartBody = styled.div<{ $smart: boolean }>`
   width: 100%;
   min-width: 0;
   flex: 1;
+  align-items: ${({ $smart }) => ($smart ? 'stretch' : 'center')};
 
   @media (min-width: 900px) {
     display: ${({ $smart }) => ($smart ? 'grid' : 'flex')};
-    grid-template-columns: ${({ $smart }) => ($smart ? 'minmax(280px, 420px) minmax(260px, 1fr)' : 'none')};
+    grid-template-columns: ${({ $smart }) => ($smart ? 'minmax(280px, 400px) minmax(240px, 1fr)' : 'none')};
     align-items: start;
-    gap: 16px;
+    justify-content: ${({ $smart }) => ($smart ? 'stretch' : 'center')};
+    gap: 14px;
   }
 `
 
 const FormColumn = styled.div`
   min-width: 0;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  margin: 0 auto;
 `
 
 const IntelColumn = styled.aside`
@@ -76,7 +81,7 @@ const Panel = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 18px;
+  padding: 14px 16px 16px;
   background: ${tradeColors.panelGradient};
   border: 1px solid ${tradeColors.border};
   border-radius: 18px;
@@ -91,52 +96,63 @@ const Panel = styled.div`
 const ModeSelectorSlot = styled.div`
   flex-shrink: 0;
   width: 100%;
-  margin-bottom: 10px;
+  max-width: 400px;
+  margin: 0 auto 8px;
 `
 
 const CockpitHeader = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
+  margin-bottom: 8px;
 `
 
 const TitleBlock = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 800;
-  line-height: 38px;
+  line-height: 1;
   color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 `
 
-const Subtitle = styled.p`
-  margin: 0;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 16px;
-  color: #a8a8a8;
+const Bolt = styled.span`
+  color: #f7c948;
+  font-size: 22px;
+  line-height: 1;
+`
+
+const LivePill = styled.span<{ $on?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ $on }) => ($on ? '#22c55e' : '#9ca3af')};
+`
+
+const LiveDot = styled.span<{ $on?: boolean }>`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: ${({ $on }) => ($on ? '#22c55e' : '#5f5f5f')};
 `
 
 const Toolbar = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  padding-top: 4px;
-`
-
-const Divider = styled.div`
-  height: 1px;
-  background: rgba(255, 255, 255, 0.06);
-  margin: 10px 0 12px;
+  gap: 6px;
   flex-shrink: 0;
 `
 
@@ -296,16 +312,18 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   return (
     <Shell data-trade-cockpit data-swap-experience={experience}>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
-        <CockpitHeader data-trade-cockpit-header>
+        <CockpitHeader data-trade-cockpit-header data-premium-header="true">
           <TitleBlock>
-            <Title>Swap</Title>
-            <Subtitle>
-              {isSmartExperience
-                ? 'Smart mode — same engine, clearer route and fees.'
-                : 'Instant mode — same Melega DEX engine, simpler path.'}
-            </Subtitle>
+            <Title>
+              <Bolt aria-hidden>⚡</Bolt>
+              Swap
+            </Title>
           </TitleBlock>
           <Toolbar data-trade-cockpit-toolbar>
+            <LivePill $on={walletConnected} data-live-status>
+              <LiveDot $on={walletConnected} aria-hidden />
+              {walletConnected ? 'Live' : 'Offline'}
+            </LivePill>
             <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
               <SettingsIcon />
             </IconBtn>
@@ -314,13 +332,12 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
             </IconBtn>
           </Toolbar>
         </CockpitHeader>
-        <Divider />
         <ModeSelectorSlot data-trade-mode-selector-slot>
           <TradeModeSelector mode={experience} onChange={setExperience} />
         </ModeSelectorSlot>
         <TradeExecutionStatusStrip />
         <SmartBody $smart={isSmartExperience} data-smart-body={isSmartExperience ? 'true' : 'false'}>
-          <FormColumn>
+          <FormColumn data-swap-form-column>
             <SwapFormWrap
               ref={swapBodyRef}
               className={`trade-terminal-swap${walletConnected ? '' : ' is-disconnected'} is-smartswap`}

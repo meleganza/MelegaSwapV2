@@ -1,14 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Currency } from '@pancakeswap/sdk'
+import { CurrencyLogo, DoubleCurrencyLogo } from 'components/Logo'
 import type { SmartSwapRouteHopDisplay } from 'lib/smart-swap-execution-preview'
 
 const Root = styled.div`
   width: 100%;
-  padding: 12px;
+  padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(247, 201, 72, 0.18);
   background: #171512;
   box-sizing: border-box;
+  max-height: 112px;
+  overflow: hidden;
 `
 
 const Header = styled.div`
@@ -16,7 +20,7 @@ const Header = styled.div`
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `
 
 const Label = styled.div`
@@ -32,7 +36,7 @@ const Source = styled.div`
   font-weight: 600;
   color: #f7c948;
   text-align: right;
-  line-height: 1.25;
+  line-height: 1.2;
 `
 
 const SourceDetail = styled.div`
@@ -48,36 +52,29 @@ const Track = styled.ol`
   padding: 0;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 6px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
 `
 
-const Node = styled.li<{ $pool?: boolean }>`
+const Node = styled.li`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  min-width: ${({ $pool }) => ($pool ? '72px' : '56px')};
-  flex: 0 0 auto;
+  gap: 3px;
+  min-width: 0;
+  flex: 0 1 auto;
 `
 
-const Icon = styled.span<{ $pool?: boolean }>`
-  width: ${({ $pool }) => ($pool ? '40px' : '34px')};
-  height: ${({ $pool }) => ($pool ? '40px' : '34px')};
-  border-radius: ${({ $pool }) => ($pool ? '12px' : '50%')};
-  border: 1px solid ${({ $pool }) => ($pool ? 'rgba(247, 201, 72, 0.45)' : 'rgba(247, 201, 72, 0.35)')};
-  background: ${({ $pool }) => ($pool ? 'rgba(247, 201, 72, 0.08)' : '#121212')};
+const LogoWrap = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ $pool }) => ($pool ? '10px' : '11px')};
-  font-weight: 800;
-  color: #f7c948;
-  letter-spacing: 0.02em;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 `
 
 const Caption = styled.span`
@@ -85,15 +82,17 @@ const Caption = styled.span`
   font-weight: 600;
   color: #f8fafc;
   text-align: center;
-  line-height: 1.2;
-  max-width: 88px;
-  word-break: break-word;
+  line-height: 1.15;
+  white-space: nowrap;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const Type = styled.span`
   font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: #9ca3af;
 `
@@ -102,10 +101,10 @@ const Arrow = styled.li`
   list-style: none;
   color: #f7c948;
   font-size: 14px;
-  line-height: 34px;
+  line-height: 1;
   opacity: 0.9;
   flex: 0 0 auto;
-  padding: 0 2px;
+  padding-bottom: 14px;
 `
 
 const Empty = styled.p`
@@ -115,34 +114,21 @@ const Empty = styled.p`
   text-align: center;
 `
 
-function initials(label: string, pool?: boolean): string {
-  if (pool) {
-    const pair = label.replace(/\s*Pool.*$/i, '').trim()
-    const parts = pair.split(/[\/\-]/).filter(Boolean)
-    if (parts.length >= 2) return `${parts[0].slice(0, 1)}${parts[1].slice(0, 1)}`.toUpperCase()
-    return 'LP'
-  }
-  return label.slice(0, 3).toUpperCase()
-}
-
-function hopType(kind: 'token' | 'pool', detail?: string): string {
-  if (kind === 'token') return 'Token'
-  if (detail === 'stable') return 'Stable pool'
-  if (detail === 'v2') return 'V2 pool'
-  return 'Pool'
-}
-
 export type SmartSwapVisualRouteProps = {
   hops: SmartSwapRouteHopDisplay[]
   executionSourceLabel?: string
   executionSourceDetail?: string
+  inputCurrency?: Currency | null
+  outputCurrency?: Currency | null
 }
 
-/** Horizontal icon-led route with explicit execution source context. */
+/** Compact horizontal route with token/pool logos — no scroll, no abbreviated letter marks. */
 export function SmartSwapVisualRoute({
   hops,
   executionSourceLabel,
   executionSourceDetail,
+  inputCurrency,
+  outputCurrency,
 }: SmartSwapVisualRouteProps) {
   if (!hops.length) {
     return (
@@ -159,6 +145,10 @@ export function SmartSwapVisualRoute({
     )
   }
 
+  const tokenHops = hops.filter((h) => h.kind === 'token')
+  const firstToken = tokenHops[0]?.label
+  const lastToken = tokenHops[tokenHops.length - 1]?.label
+
   return (
     <Root data-smart-visual-route data-route-orientation="horizontal" data-route-state="ready">
       <Header>
@@ -169,18 +159,31 @@ export function SmartSwapVisualRoute({
         </Source>
       </Header>
       <Track aria-label="Swap route">
-        {hops.map((hop, i) => (
-          <React.Fragment key={`${hop.kind}-${hop.label}-${i}`}>
-            {i > 0 ? <Arrow aria-hidden>→</Arrow> : null}
-            <Node $pool={hop.kind === 'pool'}>
-              <Icon $pool={hop.kind === 'pool'} aria-hidden>
-                {initials(hop.label, hop.kind === 'pool')}
-              </Icon>
-              <Caption>{hop.label}</Caption>
-              <Type>{hopType(hop.kind, hop.detail)}</Type>
-            </Node>
-          </React.Fragment>
-        ))}
+        {hops.map((hop, i) => {
+          const isInput = hop.kind === 'token' && hop.label === firstToken
+          const isOutput = hop.kind === 'token' && hop.label === lastToken && hop.label !== firstToken
+          const logo =
+            hop.kind === 'pool' ? (
+              <DoubleCurrencyLogo currency0={inputCurrency ?? undefined} currency1={outputCurrency ?? undefined} size={16} />
+            ) : isInput && inputCurrency ? (
+              <CurrencyLogo currency={inputCurrency} size="28px" />
+            ) : isOutput && outputCurrency ? (
+              <CurrencyLogo currency={outputCurrency} size="28px" />
+            ) : (
+              <CurrencyLogo currency={inputCurrency ?? outputCurrency ?? undefined} size="28px" />
+            )
+
+          return (
+            <React.Fragment key={`${hop.kind}-${hop.label}-${i}`}>
+              {i > 0 ? <Arrow aria-hidden>→</Arrow> : null}
+              <Node>
+                <LogoWrap aria-hidden>{logo}</LogoWrap>
+                <Caption title={hop.label}>{hop.label}</Caption>
+                <Type>{hop.kind === 'pool' ? 'Pool' : 'Token'}</Type>
+              </Node>
+            </React.Fragment>
+          )
+        })}
       </Track>
     </Root>
   )

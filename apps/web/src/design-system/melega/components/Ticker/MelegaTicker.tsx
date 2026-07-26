@@ -37,9 +37,9 @@ const Strip = styled.div<{
   align-items: center;
   width: 100%;
   height: 48px;
-  border-top: 1px solid rgba(244, 196, 48, 0.1);
-  border-bottom: 1px solid rgba(244, 196, 48, 0.1);
-  background: rgba(244, 196, 48, 0.035);
+  border-top: none;
+  border-bottom: none;
+  background: rgba(244, 196, 48, 0.04);
   overflow: hidden;
   box-shadow: none;
 
@@ -205,7 +205,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   padding,
   margin,
   disabled,
-  emptyPrimary = 'Market ranking temporarily unavailable',
+  emptyPrimary = 'Trending unavailable',
   emptySecondary,
 }) => {
   const [hoverPaused, setHoverPaused] = useState(false)

@@ -1,0 +1,18 @@
+{
+  "mission": "SMART_SWAP_V3_PREMIUM_UX_REFINEMENT",
+  "base": "ee796adf",
+  "timestamp": "2026-07-26T22:06:13.670Z",
+  "checks": [
+    {
+      "name": "local detailsOpen",
+      "pass": true,
+      "detail": "controlled"
+    },
+    {
+      "name": "v3 marker",
+      "pass": true,
+      "detail": "v3"
+    }
+  ],
+  "pass": true
+}

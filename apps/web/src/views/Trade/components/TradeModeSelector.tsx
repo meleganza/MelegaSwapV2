@@ -7,7 +7,6 @@ import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
 const Shell = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
   width: 100%;
   flex-shrink: 0;
   position: relative;
@@ -17,11 +16,11 @@ const Shell = styled.div`
 const Segmented = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 4px;
+  gap: 4px;
+  padding: 3px;
   background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border-radius: 12px;
 `
 
 const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
@@ -29,9 +28,8 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  height: 44px;
+  min-height: 34px;
+  height: 34px;
   border: 1px solid
     ${({ $active, $smart }) =>
       $active && $smart
@@ -39,21 +37,18 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
         : $active
           ? 'rgba(255, 255, 255, 0.12)'
           : 'transparent'};
-  border-radius: 10px;
+  border-radius: 9px;
   background: ${({ $active, $smart }) =>
     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   cursor: pointer;
   transition:
     border-color 150ms ease,
     background 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease;
-  box-shadow: ${({ $active, $smart }) =>
-    $active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none'};
+    color 150ms ease;
 
   &:hover {
     color: ${colors.textPrimary};
@@ -63,17 +58,6 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
     outline: 2px solid ${colors.gold};
     outline-offset: 2px;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-`
-
-const Description = styled.p`
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: #9e9e9e;
 `
 
 export interface TradeModeSelectorProps {
@@ -82,10 +66,10 @@ export interface TradeModeSelectorProps {
 }
 
 /**
- * Instant | Smart selector — both experiences use SmartSwapForm (same engine).
+ * Compact Instant | Smart — no explanatory paragraph in the terminal.
  */
 export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
-  <Shell data-trade-mode-selector data-swap-experience={mode}>
+  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
     <Segmented role="tablist" aria-label="Swap mode">
       <Tab
         type="button"
@@ -113,11 +97,6 @@ export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onCh
         Smart
       </Tab>
     </Segmented>
-    <Description>
-      {mode === 'smart'
-        ? 'Optimized route with execution preview, fee transparency, and readiness checks before wallet confirmation.'
-        : 'Fast direct swap on the same Melega DEX engine — without the Smart transparency stack.'}
-    </Description>
   </Shell>
 )
 

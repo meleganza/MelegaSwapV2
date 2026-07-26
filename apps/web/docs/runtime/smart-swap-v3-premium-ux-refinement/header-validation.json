@@ -1,0 +1,28 @@
+{
+  "mission": "SMART_SWAP_V3_PREMIUM_UX_REFINEMENT",
+  "base": "ee796adf",
+  "timestamp": "2026-07-26T22:06:13.670Z",
+  "checks": [
+    {
+      "name": "no Optimized route copy",
+      "pass": true,
+      "detail": "removed"
+    },
+    {
+      "name": "premium header",
+      "pass": true,
+      "detail": "⚡ Swap"
+    },
+    {
+      "name": "live status",
+      "pass": true,
+      "detail": "Live/Offline"
+    },
+    {
+      "name": "no subtitle description",
+      "pass": true,
+      "detail": "compact"
+    }
+  ],
+  "pass": true
+}

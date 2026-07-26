@@ -128,14 +128,6 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
     const pct = `${Math.abs(change.pct).toFixed(1)}%`
     return { accent: `${arrow} ${pct}`, accentPositive: change.positive }
   }
-  if (asset.tradeCount24h > 0) {
-    return {
-      accent: `${asset.tradeCount24h} trade${asset.tradeCount24h === 1 ? '' : 's'}`,
-    }
-  }
-  if (asset.volume24h > 0) {
-    return { accent: '24H vol' }
-  }
-  // Honest unavailable — never invent % movement.
-  return { accent: '—', accentUnavailable: true }
+  // No fallback fake % / "Price unavailable" — movers without change are filtered upstream.
+  return {}
 }

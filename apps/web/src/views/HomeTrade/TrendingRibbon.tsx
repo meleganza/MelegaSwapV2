@@ -46,17 +46,14 @@ export const TrendingRibbon: React.FC = () => {
     [items, avatarBySlug, displayLimit],
   )
 
-  // "Trending" only when factual ranking items exist; otherwise truthful Live label.
-  const label = trendingEmpty ? 'Live on Melega DEX' : 'Trending on Melega DEX'
+  const label = trendingEmpty ? 'Trending' : 'Trending'
 
   return (
     <MelegaTicker
       label={label}
       items={enrichedItems}
       marqueeMinItems={useMarquee ? 3 : Number.MAX_SAFE_INTEGER}
-      emptyPrimary={
-        trendingEmpty ? 'Market ranking temporarily unavailable' : undefined
-      }
+      emptyPrimary={trendingEmpty ? 'Trending unavailable' : undefined}
     />
   )
 }
