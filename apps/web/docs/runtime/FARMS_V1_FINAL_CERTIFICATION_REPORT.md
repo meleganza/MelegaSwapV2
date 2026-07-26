@@ -145,7 +145,7 @@ Evidence: `mock-audit.json`
 
 ### Commit
 
-`PENDING_MISSION_COMMIT`
+`dd874193a806528de8541d1fdcee554961e609a0`
 
 ### Branch
 
