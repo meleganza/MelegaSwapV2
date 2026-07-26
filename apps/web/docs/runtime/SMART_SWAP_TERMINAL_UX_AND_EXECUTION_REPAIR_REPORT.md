@@ -11,6 +11,7 @@
 | Prior | `SMART_SWAP_MAINNET_EXECUTION_HANDOFF_CERTIFIED` tip `5951b1c8` |
 | Branch | `smart-swap-terminal-ux-repair` |
 | Architecture | `47892a9d` |
+| Mission commit | `b7c0511e378ad5ef2da183c89330423dc1c94118` |
 
 ## 2. Root cause
 
