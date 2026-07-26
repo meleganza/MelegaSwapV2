@@ -1,0 +1,198 @@
+{
+  "base": "http://127.0.0.1:3530",
+  "canonicalRouteMap": {
+    "home": "/",
+    "discover-home": "/?focus=projects",
+    "trade-home": "/?focus=swap",
+    "trade-terminal-legacy": "/swap",
+    "project-page": "/@{slug}",
+    "list": "/list",
+    "list-import": "/list?intent=import-token",
+    "list-create-token": "/list?intent=create-token",
+    "list-create-project": "/list?intent=create-project",
+    "list-claim-project": "/list?intent=claim-project",
+    "liquidity-studio": "/liquidity-studio",
+    "liquidity-positions": "/liquidity-studio?view=positions",
+    "liquidity-add": "/liquidity-studio?view=add",
+    "liquidity-building": "/liquidity-studio?view=building",
+    "liquidity-remove": "/liquidity-studio?view=remove",
+    "farms": "/farms",
+    "pools": "/pools",
+    "passport": "/passport",
+    "radar": "/radar",
+    "trending": "/trending"
+  },
+  "routes": [
+    {
+      "id": "home",
+      "path": "/",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "home"
+      ],
+      "title": "Home | Melega DEX | $0.0004",
+      "pathAfter": "/"
+    },
+    {
+      "id": "trade",
+      "path": "/trade",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "home"
+      ],
+      "title": "Home | Melega DEX | $0.0004",
+      "pathAfter": "/?focus=swap"
+    },
+    {
+      "id": "swap-alias",
+      "path": "/swap",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "home"
+      ],
+      "title": "Swap | Melega DEX | $0.0004",
+      "pathAfter": "/swap/"
+    },
+    {
+      "id": "projects",
+      "path": "/projects",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "home"
+      ],
+      "title": "Home | Melega DEX | $0.0004",
+      "pathAfter": "/?focus=projects"
+    },
+    {
+      "id": "project-page",
+      "path": "/@melega-dex",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "home"
+      ],
+      "title": "Melega DEX | Melega DEX Project",
+      "pathAfter": "/@melega-dex/"
+    },
+    {
+      "id": "list",
+      "path": "/list",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "list"
+      ],
+      "title": "Melega DEX",
+      "pathAfter": "/list/"
+    },
+    {
+      "id": "liquidity",
+      "path": "/liquidity-studio",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "liquidity"
+      ],
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "pathAfter": "/liquidity-studio/"
+    },
+    {
+      "id": "pools",
+      "path": "/pools",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "pools"
+      ],
+      "title": "Pools | Melega DEX | $0.0004",
+      "pathAfter": "/pools/"
+    },
+    {
+      "id": "farms",
+      "path": "/farms",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "farms"
+      ],
+      "title": "Farms | Melega DEX | $0.0004",
+      "pathAfter": "/farms/"
+    },
+    {
+      "id": "passport",
+      "path": "/passport",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "passport"
+      ],
+      "title": "Melega DEX",
+      "pathAfter": "/passport/"
+    },
+    {
+      "id": "trending",
+      "path": "/trending",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [],
+      "title": "Trending | Melega DEX | $0.0004",
+      "pathAfter": "/trending/"
+    },
+    {
+      "id": "radar",
+      "path": "/radar",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [],
+      "title": "Radar | Melega DEX | $0.0004",
+      "pathAfter": "/radar/"
+    },
+    {
+      "id": "legacy-liquidity",
+      "path": "/liquidity",
+      "status": 200,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [
+        "liquidity"
+      ],
+      "title": "Liquidity | Melega DEX | $0.0004",
+      "pathAfter": "/liquidity/"
+    },
+    {
+      "id": "not-found",
+      "path": "/__global-cert-missing-route__",
+      "status": 404,
+      "ok": true,
+      "overflowX": false,
+      "headerActive": [],
+      "title": "Page not found | Melega DEX",
+      "pathAfter": "/__global-cert-missing-route__/"
+    },
+    {
+      "id": "history-back-forward",
+      "path": "/ → /farms",
+      "ok": true,
+      "afterBack": "/",
+      "afterForward": "/farms/",
+      "forwardOk": true
+    }
+  ],
+  "pass": true
+}

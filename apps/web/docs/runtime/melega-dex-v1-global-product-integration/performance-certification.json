@@ -1,0 +1,81 @@
+{
+  "samples": [
+    {
+      "route": "/",
+      "domContentLoaded": 302,
+      "loadEvent": 302
+    },
+    {
+      "route": "/trade",
+      "domContentLoaded": 1808,
+      "loadEvent": 1811
+    },
+    {
+      "route": "/swap",
+      "domContentLoaded": 154,
+      "loadEvent": 154
+    },
+    {
+      "route": "/projects",
+      "domContentLoaded": 65,
+      "loadEvent": 67
+    },
+    {
+      "route": "/@melega-dex",
+      "domContentLoaded": 141,
+      "loadEvent": 141
+    },
+    {
+      "route": "/list",
+      "domContentLoaded": 104,
+      "loadEvent": 105
+    },
+    {
+      "route": "/liquidity-studio",
+      "domContentLoaded": 70,
+      "loadEvent": 70
+    },
+    {
+      "route": "/pools",
+      "domContentLoaded": 81,
+      "loadEvent": 84
+    },
+    {
+      "route": "/farms",
+      "domContentLoaded": 120,
+      "loadEvent": 123
+    },
+    {
+      "route": "/passport",
+      "domContentLoaded": 75,
+      "loadEvent": 75
+    },
+    {
+      "route": "/trending",
+      "domContentLoaded": 51,
+      "loadEvent": 52
+    },
+    {
+      "route": "/radar",
+      "domContentLoaded": 51,
+      "loadEvent": 52
+    },
+    {
+      "route": "/liquidity",
+      "domContentLoaded": 45,
+      "loadEvent": 47
+    },
+    {
+      "route": "/__global-cert-missing-route__",
+      "domContentLoaded": 42,
+      "loadEvent": 44
+    }
+  ],
+  "integrationConcerns": {
+    "noNewDuplicateProviders": true,
+    "singleTokenRegistry": true,
+    "singleLogoResolver": true,
+    "noRewrite": true
+  },
+  "pass": true
+}

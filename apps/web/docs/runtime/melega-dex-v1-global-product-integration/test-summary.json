@@ -1,0 +1,14 @@
+{
+  "focused": [
+    "melegaDexV1.globalProductCertification.test.ts",
+    "dexUxRebuild.nav.test.ts",
+    "farmsV1.finalCertification.test.ts",
+    "poolsV1.finalCertification.test.ts",
+    "passportV1.finalIntegration.test.ts",
+    "canonicalTokenRegistry.test.ts"
+  ],
+  "testFiles": 6,
+  "testsPassed": 45,
+  "pass": true,
+  "auditedAt": "2026-07-26T00:41:40.000Z"
+}

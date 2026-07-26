@@ -1,0 +1,30 @@
+{
+  "ownership": {
+    "addLiquidity": {
+      "owner": "LiquidityStudio",
+      "route": "/liquidity-studio?view=add"
+    },
+    "stakeLp": {
+      "owner": "FarmsStudio + FarmsActionHost",
+      "route": "/farms"
+    },
+    "singleTokenStake": {
+      "owner": "PoolsStudio + PoolsActionHost",
+      "route": "/pools"
+    },
+    "tokenOnboarding": {
+      "owner": "ListStudio",
+      "route": "/list"
+    },
+    "swap": {
+      "owner": "Trade/Swap (Home focus + /swap|/trade)",
+      "route": "/trade"
+    },
+    "passportAssets": {
+      "owner": "PassportStudio",
+      "route": "/passport"
+    }
+  },
+  "noDuplicateWorkflowHosts": true,
+  "pass": true
+}

@@ -1,0 +1,18 @@
+{
+  "desktop": {
+    "hasTrending": true,
+    "hasSwap": true,
+    "hasFarms": true,
+    "hasPools": true,
+    "hasProjects": true,
+    "hasList": true,
+    "overflowX": false,
+    "oops": false
+  },
+  "rules": {
+    "noMockDataIntroduced": true,
+    "noHardcodedPricesInThisMission": true,
+    "factualOwnersRequired": true
+  },
+  "pass": true
+}

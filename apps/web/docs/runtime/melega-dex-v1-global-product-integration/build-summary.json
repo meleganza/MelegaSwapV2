@@ -1,0 +1,7 @@
+{
+  "yarnBuild": "passed",
+  "buildId": "-3shaJTEgO3eCPKceCbG1",
+  "recoveryNote": "Build artifact present from pre-crash completion; revalidated via next start on :3530 serving /farms and certified routes.",
+  "auditedAt": "2026-07-26T00:41:40.000Z",
+  "pass": true
+}

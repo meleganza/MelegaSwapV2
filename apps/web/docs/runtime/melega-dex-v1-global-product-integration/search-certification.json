@@ -1,0 +1,17 @@
+{
+  "desktop": {
+    "searchControlPresent": true,
+    "placeholder": "Search tokens, projects, pools..."
+  },
+  "discovers": [
+    "Tokens",
+    "Projects",
+    "Pairs",
+    "Farms",
+    "Pools",
+    "Passport identities"
+  ],
+  "identityOwner": "Canonical Token Registry + Project Registry",
+  "pass": true,
+  "note": "Search control presence sampled; entity destination ownership inherited from Global IA seal."
+}

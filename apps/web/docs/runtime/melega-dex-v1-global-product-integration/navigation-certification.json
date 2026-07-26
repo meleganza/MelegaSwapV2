@@ -1,0 +1,173 @@
+{
+  "headerPrimary": [
+    "home",
+    "liquidity",
+    "farms",
+    "pools",
+    "list",
+    "passport"
+  ],
+  "bottomPrimary": [
+    "home",
+    "liquidity",
+    "farms",
+    "pools",
+    "passport"
+  ],
+  "samples": [
+    {
+      "route": "/",
+      "headerActive": [
+        "home"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/trade",
+      "headerActive": [
+        "home"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/swap",
+      "headerActive": [
+        "home"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/projects",
+      "headerActive": [
+        "home"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/@melega-dex",
+      "headerActive": [
+        "home"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/list",
+      "headerActive": [
+        "list"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/liquidity-studio",
+      "headerActive": [
+        "liquidity"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/pools",
+      "headerActive": [
+        "pools"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/farms",
+      "headerActive": [
+        "farms"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/passport",
+      "headerActive": [
+        "passport"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/trending",
+      "headerActive": [],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/radar",
+      "headerActive": [],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/liquidity",
+      "headerActive": [
+        "liquidity"
+      ],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "route": "/__global-cert-missing-route__",
+      "headerActive": [],
+      "bottomActive": [],
+      "singleHeaderActive": true,
+      "brokenLogos": 0
+    },
+    {
+      "hop": "pools-to-liquidity",
+      "path": "/liquidity-studio/",
+      "ok": true,
+      "headerActive": [
+        "liquidity"
+      ]
+    },
+    {
+      "hop": "farms-to-liquidity",
+      "path": "/liquidity-studio/",
+      "ok": true,
+      "headerActive": [
+        "liquidity"
+      ]
+    },
+    {
+      "hop": "passport-to-project",
+      "path": "/@melega-dex/",
+      "ok": true,
+      "headerActive": [
+        "home"
+      ]
+    },
+    {
+      "hop": "project-to-trade",
+      "path": "/?focus=swap",
+      "ok": true,
+      "headerActive": [
+        "home"
+      ]
+    }
+  ],
+  "crossProductHopsValidated": true,
+  "pass": true
+}

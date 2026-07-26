@@ -1,0 +1,90 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_PRODUCT_INTEGRATION_CERTIFICATION",
+  "generatedAt": "2026-07-26T00:20:00.000Z",
+  "worktreeBase": "2f834b4568a37e4e481ddbe6ec555cc55d2eec75",
+  "worktreeBaseShort": "2f834b45",
+  "worktreeBaseLabel": "FARMS_V1_CERTIFIED tip (union of certified product chain)",
+  "production": {
+    "environment": "Production",
+    "commit": "ff6d6179243dd754570e870adc5564ed2d0c9498",
+    "commitShort": "ff6d6179",
+    "ref": "ff6d6179243dd754570e870adc5564ed2d0c9498",
+    "label": "MELEGA_DEX_V1_RUNTIME_RECOVERY_DEPLOYED (main merge PR #4)",
+    "isAncestorOfWorktreeBase": true
+  },
+  "baselines": {
+    "liquidity": {
+      "label": "Liquidity pixel / one-page certified lineage (no *.final.freeze.sha256.json)",
+      "branch": "mission-liquidity-pixel-perfection-002",
+      "tip": "1d422eb5836e8302326d31796f78a51545b3fcb4",
+      "tipShort": "1d422eb5",
+      "isAncestorOfWorktreeBase": true,
+      "relatedOnePageFinal": "f965c84c7c34aa395920015031c1d08241003f9f"
+    },
+    "pools": {
+      "label": "POOLS_V1_CERTIFIED",
+      "branch": "pools-v1-final-integration-and-certification",
+      "tip": "9925857434c2018edf1c3479a934058a8f90d0ed",
+      "tipShort": "99258574",
+      "freeze": "apps/web/src/views/PoolsStudio/__tests__/poolsV1.final.freeze.sha256.json",
+      "isAncestorOfWorktreeBase": true
+    },
+    "farms": {
+      "label": "FARMS_V1_CERTIFIED",
+      "branch": "farms-v1-final-integration-and-certification",
+      "tip": "2f834b4568a37e4e481ddbe6ec555cc55d2eec75",
+      "tipShort": "2f834b45",
+      "missionCommit": "dd874193a806528de8541d1fdcee554961e609a0",
+      "freeze": "apps/web/src/views/FarmsStudio/__tests__/farmsV1.final.freeze.sha256.json",
+      "isAncestorOfWorktreeBase": true
+    },
+    "passport": {
+      "label": "PASSPORT_V1_CERTIFIED",
+      "branch": "passport-v1-final-integration-and-certification",
+      "tip": "70d2bd1965bc32b1045d667bd45ecc7f97ad97b5",
+      "tipShort": "70d2bd19",
+      "freeze": "apps/web/src/views/PassportStudio/__tests__/passportV1.final.freeze.sha256.json",
+      "isAncestorOfWorktreeBase": true
+    },
+    "list": {
+      "label": "List Module 007 certified lineage (no *.final.freeze.sha256.json)",
+      "branch": "mission-list-module-007-ai-copilot",
+      "tip": "7a29e691f2bad28f64c1448e8dcab512ade1c2ec",
+      "tipShort": "7a29e691",
+      "integrityDocs": [
+        "apps/web/docs/runtime/list-module-004-how-it-works/frozen-modules-integrity.json",
+        "apps/web/docs/runtime/list-module-005-workspace/frozen-modules-integrity.json",
+        "apps/web/docs/runtime/list-module-006-workspace-premium/frozen-modules-integrity.json",
+        "apps/web/docs/runtime/list-module-007-ai-copilot/frozen-modules-integrity.json"
+      ],
+      "isAncestorOfWorktreeBase": true
+    },
+    "globalIa": {
+      "label": "DEX_V1_GLOBAL_INFORMATION_ARCHITECTURE_CERTIFIED",
+      "branch": "dex-v1-global-information-architecture",
+      "tip": "258fb26efe8fb0b16b7178dc0e9503cd36a73d1b",
+      "tipShort": "258fb26e",
+      "integrity": "apps/web/docs/runtime/dex-v1-global-information-architecture/frozen-module-integrity.json",
+      "isAncestorOfWorktreeBase": true
+    },
+    "runtimeRecovery": {
+      "label": "MELEGA_DEX_V1_RUNTIME_RECOVERY",
+      "branch": "dex-v1-full-indexing-swap-liquidity-runtime-recovery",
+      "tip": "2e8f6c2ec81fb487abde437bf3c2649d935af224",
+      "tipShort": "2e8f6c2e",
+      "isAncestorOfWorktreeBase": true
+    }
+  },
+  "canonicalOwnership": {
+    "tokenIdentity": "Canonical Token Registry (lib/canonical-token-registry)",
+    "logos": "Canonical Asset Resolver (lib/dex-asset-index / resolveAssetLogo)",
+    "walletPortfolio": "Normalized Portfolio Runtime",
+    "projectIdentity": "Project Registry",
+    "professionalIdentity": "SPACE",
+    "marketData": "Approved market/runtime sources"
+  },
+  "notes": [
+    "Liquidity V1 and List V1 do not ship *.final.freeze.sha256.json; integrity is certified via module evidence docs and ancestry.",
+    "Worktree base is Farms V1 tip — linear descendant of Pools, Passport, Global IA, runtime recovery, List 007, Liquidity pixel."
+  ]
+}

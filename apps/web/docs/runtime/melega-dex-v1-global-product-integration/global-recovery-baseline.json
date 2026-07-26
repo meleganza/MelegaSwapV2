@@ -1,0 +1,89 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_PRODUCT_INTEGRATION_CERTIFICATION_CRASH_RECOVERY",
+  "recoveredAt": "2026-07-26T00:40:12.000Z",
+  "worktree": "/Users/marcomelega/Projects/MelegaSwapV2-dex-v1-global",
+  "branch": "melega-dex-v1-global-product-integration-certification",
+  "currentHead": "2f834b4568a37e4e481ddbe6ec555cc55d2eec75",
+  "currentHeadShort": "2f834b45",
+  "baseLabel": "FARMS_V1_CERTIFIED tip (union of certified product chain)",
+  "safetySnapshot": {
+    "filesystem": "/Users/marcomelega/Projects/MelegaSwapV2-dex-v1-global-safety-20260725174012",
+    "localGitBranch": "safety/melega-dex-v1-global-crash-recovery-20260725174012",
+    "pushed": false
+  },
+  "recoveredFiles": [
+    "apps/web/docs/runtime/melega-dex-v1-global-product-integration/global-certification-baseline.json",
+    "apps/web/docs/runtime/melega-dex-v1-global-product-integration/certify.mjs",
+    "apps/web/src/app-shell/__tests__/melegaDexV1.globalProductCertification.test.ts"
+  ],
+  "incompleteAtCrash": [
+    "yarn build (tool interrupted; .next/BUILD_ID present — revalidated)",
+    "Playwright certify evidence pack",
+    "MELEGA_DEX_V1_GLOBAL_PRODUCT_INTEGRATION_CERTIFICATION_REPORT.md",
+    "commit + push"
+  ],
+  "completedAfterRecovery": [
+    "Vitest global + freeze suites (45 passed)",
+    "next start revalidation on :3530",
+    "Playwright certify → MELEGA_DEX_V1_GLOBAL_PRODUCT_CERTIFIED",
+    "Evidence pack + certification report"
+  ],
+
+  "production": {
+    "environment": "Production",
+    "commit": "ff6d6179243dd754570e870adc5564ed2d0c9498",
+    "commitShort": "ff6d6179",
+    "label": "MELEGA_DEX_V1_RUNTIME_RECOVERY_DEPLOYED",
+    "isAncestorOfHead": true
+  },
+  "baselines": {
+    "liquidity": {
+      "tip": "1d422eb5836e8302326d31796f78a51545b3fcb4",
+      "tipShort": "1d422eb5",
+      "branch": "mission-liquidity-pixel-perfection-002",
+      "isAncestorOfHead": true
+    },
+    "pools": {
+      "tip": "9925857434c2018edf1c3479a934058a8f90d0ed",
+      "tipShort": "99258574",
+      "branch": "pools-v1-final-integration-and-certification",
+      "isAncestorOfHead": true
+    },
+    "farms": {
+      "tip": "2f834b4568a37e4e481ddbe6ec555cc55d2eec75",
+      "tipShort": "2f834b45",
+      "branch": "farms-v1-final-integration-and-certification",
+      "isAncestorOfHead": true
+    },
+    "passport": {
+      "tip": "70d2bd1965bc32b1045d667bd45ecc7f97ad97b5",
+      "tipShort": "70d2bd19",
+      "branch": "passport-v1-final-integration-and-certification",
+      "isAncestorOfHead": true
+    },
+    "list": {
+      "tip": "7a29e691f2bad28f64c1448e8dcab512ade1c2ec",
+      "tipShort": "7a29e691",
+      "branch": "mission-list-module-007-ai-copilot",
+      "isAncestorOfHead": true
+    },
+    "globalIa": {
+      "tip": "258fb26efe8fb0b16b7178dc0e9503cd36a73d1b",
+      "tipShort": "258fb26e",
+      "branch": "dex-v1-global-information-architecture",
+      "label": "DEX_V1_GLOBAL_INFORMATION_ARCHITECTURE_CERTIFIED",
+      "isAncestorOfHead": true
+    },
+    "runtimeRecovery": {
+      "tip": "2e8f6c2ec81fb487abde437bf3c2649d935af224",
+      "tipShort": "2e8f6c2e",
+      "branch": "dex-v1-full-indexing-swap-liquidity-runtime-recovery",
+      "isAncestorOfHead": true
+    }
+  },
+  "notes": [
+    "Recovered untracked certification bootstrap files intact; no product source changes.",
+    "Did not recreate baseline/test/certify from scratch — continued existing files.",
+    "Safety snapshot not pushed."
+  ]
+}

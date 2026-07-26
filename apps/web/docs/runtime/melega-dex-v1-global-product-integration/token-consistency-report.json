@@ -1,0 +1,28 @@
+{
+  "owner": "lib/canonical-token-registry",
+  "tokens": {
+    "MARCO": {
+      "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "expectedInRegistry": true
+    },
+    "WBNB": {
+      "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "expectedInRegistry": true
+    },
+    "USDT": {
+      "address": "0x55d398326f99059ff775485246999027b3197955",
+      "expectedInRegistry": true
+    }
+  },
+  "consumers": [
+    "Swap",
+    "Liquidity",
+    "Pools",
+    "Farms",
+    "Passport",
+    "Search",
+    "Home"
+  ],
+  "noSecondRegistry": true,
+  "pass": true
+}

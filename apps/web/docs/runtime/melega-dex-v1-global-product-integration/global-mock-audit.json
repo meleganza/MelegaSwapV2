@@ -1,0 +1,162 @@
+{
+  "banned": [
+    "mockPositions",
+    "fakeApr",
+    "fakeTvl",
+    "fakeRewards",
+    "fakeWallets",
+    "DEMO_ONLY",
+    "mockProduction",
+    "getFarmsUxFixture",
+    "fixtureFarm",
+    "SAMPLE_POSITION",
+    "illustrativeApr"
+  ],
+  "scanned": [
+    "src/views/FarmsStudio",
+    "src/views/PoolsStudio",
+    "src/views/PassportStudio",
+    "src/views/LiquidityStudio",
+    "src/views/ListStudio",
+    "src/app-shell/config",
+    "src/lib/canonical-token-registry",
+    "src/lib/dex-asset-index"
+  ],
+  "hits": [],
+  "classified": {
+    "production": [],
+    "testOnly": [
+      {
+        "file": "FarmsStudio/__tests__/farmsArchitecture000.mockupLock.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule001.hero.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule003.myFarms.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule005.finishedFarms.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule007.analytics.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsModule008.visualPolish.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsV1.finalCertification.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "FarmsStudio/__tests__/farmsWalletFirst.test.tsx",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsArchitecture000.mockupLock.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule001.hero.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule002.overviewKpis.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule003.myPositions.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule004.explorePools.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule005.finishedPools.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule006.rewardAdvisor.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule007.analytics.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsModule008.visualPolish.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsTerminologyAlignment.test.tsx",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsV1.finalCertification.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PoolsStudio/__tests__/poolsWalletFirst.test.tsx",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportArchitecture000.mockupLock.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule001.heroIdentity.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule002.portfolioOverview.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule003.assets.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule004.myProjects.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule005.liquidityPositions.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule006.recentActivity.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportModule007.security.test.ts",
+        "class": "test-only"
+      },
+      {
+        "file": "PassportStudio/__tests__/passportV1.finalIntegration.test.ts",
+        "class": "test-only"
+      }
+    ],
+    "configuration": [],
+    "historicalFactual": []
+  },
+  "pass": true
+}

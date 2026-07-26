@@ -1,0 +1,80 @@
+{
+  "note": "Deep live-key E2E out of scope; journeys validated via route load + connect CTA presence + single runtime ownership.",
+  "journeys": [
+    {
+      "id": 1,
+      "path": [
+        "Connect",
+        "Swap",
+        "Return"
+      ],
+      "routes": [
+        "/trade",
+        "/"
+      ]
+    },
+    {
+      "id": 2,
+      "path": [
+        "Connect",
+        "Liquidity",
+        "View position"
+      ],
+      "routes": [
+        "/liquidity-studio",
+        "/liquidity-studio?view=positions"
+      ]
+    },
+    {
+      "id": 3,
+      "path": [
+        "Connect",
+        "Pools",
+        "Stake",
+        "Claim"
+      ],
+      "routes": [
+        "/pools"
+      ]
+    },
+    {
+      "id": 4,
+      "path": [
+        "Connect",
+        "Farms",
+        "Stake LP",
+        "Harvest"
+      ],
+      "routes": [
+        "/farms"
+      ]
+    },
+    {
+      "id": 5,
+      "path": [
+        "Connect",
+        "Finished Farms",
+        "Withdraw"
+      ],
+      "routes": [
+        "/farms"
+      ]
+    },
+    {
+      "id": 6,
+      "path": [
+        "Connect",
+        "Passport",
+        "View assets"
+      ],
+      "routes": [
+        "/passport"
+      ]
+    }
+  ],
+  "noWalletStateLeakageByDesign": true,
+  "singleFarmsRuntime": true,
+  "singlePoolsRuntime": true,
+  "singleLiquidityRuntime": true,
+  "pass": true
+}

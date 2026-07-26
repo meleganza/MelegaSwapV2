@@ -1,0 +1,137 @@
+{
+  "viewports": [
+    {
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "entries": [
+        {
+          "route": "/",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/trade",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/list",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/liquidity-studio",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/pools",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/farms",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/passport",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/@melega-dex",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "viewport": {
+        "name": "mobile-430",
+        "width": 430,
+        "height": 932
+      },
+      "entries": [
+        {
+          "route": "/",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/trade",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/list",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/liquidity-studio",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/pools",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/farms",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/passport",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        },
+        {
+          "route": "/@melega-dex",
+          "overflowX": false,
+          "oops": false,
+          "bottomLinks": 0,
+          "ok": true
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

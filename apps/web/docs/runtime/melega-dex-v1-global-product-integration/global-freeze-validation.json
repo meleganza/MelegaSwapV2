@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-07-26T00:40:51.375Z",
+  "head": "2f834b4568a37e4e481ddbe6ec555cc55d2eec75",
+  "branch": "melega-dex-v1-global-product-integration-certification",
+  "ancestry": {
+    "production": {
+      "tip": "ff6d6179",
+      "pass": true
+    },
+    "globalIa": {
+      "tip": "258fb26e",
+      "pass": true
+    },
+    "passport": {
+      "tip": "70d2bd19",
+      "pass": true
+    },
+    "pools": {
+      "tip": "99258574",
+      "pass": true
+    },
+    "farms": {
+      "tip": "2f834b45",
+      "pass": true
+    },
+    "list": {
+      "tip": "7a29e691",
+      "pass": true
+    },
+    "liquidity": {
+      "tip": "1d422eb5",
+      "pass": true
+    },
+    "runtime": {
+      "tip": "2e8f6c2e",
+      "pass": true
+    }
+  },
+  "farms": {
+    "pass": true,
+    "fileCount": 44
+  },
+  "pools": {
+    "pass": true,
+    "fileCount": 43
+  },
+  "passport": {
+    "pass": true,
+    "fileCount": 48
+  },
+  "listIntegrityDocs": [
+    {
+      "root": "list-module-004-how-it-works",
+      "exists": true,
+      "path": "/Users/marcomelega/Projects/MelegaSwapV2-dex-v1-global/apps/web/docs/runtime/list-module-004-how-it-works/frozen-modules-integrity.json"
+    },
+    {
+      "root": "list-module-005-workspace",
+      "exists": true,
+      "path": "/Users/marcomelega/Projects/MelegaSwapV2-dex-v1-global/apps/web/docs/runtime/list-module-005-workspace/frozen-modules-integrity.json"
+    },
+    {
+      "root": "list-module-006-workspace-premium",
+      "exists": true,
+      "path": "/Users/marcomelega/Projects/MelegaSwapV2-dex-v1-global/apps/web/docs/runtime/list-module-006-workspace-premium/frozen-modules-integrity.json"
+    },
+    {
+      "root": "list-module-007-ai-copilot",
+      "exists": true,
+      "path": "/Users/marcomelega/Projects/MelegaSwapV2-dex-v1-global/apps/web/docs/runtime/list-module-007-ai-copilot/frozen-modules-integrity.json"
+    }
+  ],
+  "globalIaIntegrity": {
+    "exists": true
+  },
+  "liquidityEvidence": {
+    "pixelCertify": true
+  },
+  "pass": true
+}

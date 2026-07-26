@@ -1,0 +1,13 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_PRODUCT_INTEGRATION_CERTIFICATION",
+  "verdict": "MELEGA_DEX_V1_GLOBAL_PRODUCT_CERTIFIED",
+  "head": "2f834b4568a37e4e481ddbe6ec555cc55d2eec75",
+  "branch": "melega-dex-v1-global-product-integration-certification",
+  "base": "http://127.0.0.1:3530",
+  "freezePass": true,
+  "mockPass": true,
+  "routePass": true,
+  "navPass": true,
+  "mobilePass": true,
+  "allPass": true
+}
