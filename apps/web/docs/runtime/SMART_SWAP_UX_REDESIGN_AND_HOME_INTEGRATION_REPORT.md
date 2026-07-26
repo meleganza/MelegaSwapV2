@@ -4,6 +4,7 @@
 **Severity:** P0 — Product UX refinement after mainnet execution proof  
 **Branch:** `smart-swap-ux-redesign-and-home-integration`  
 **Base:** `smart-swap-post-mainnet-ux-stability-repair` @ `71273b62`  
+**Delivery commit:** `60cabc88`
 **Reference:** Founder Smart Swap UX redesign mockup (information hierarchy, not pixel copy)
 
 ---
