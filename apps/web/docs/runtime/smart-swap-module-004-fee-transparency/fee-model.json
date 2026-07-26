@@ -1,0 +1,36 @@
+{
+  "model": "SmartSwapFeeTransparency",
+  "fields": [
+    "swapAmount",
+    "feeAmount",
+    "feeAsset",
+    "feeRate",
+    "protocolFee",
+    "treasuryDestination",
+    "allocationStatus",
+    "economicAttribution",
+    "source",
+    "freshness",
+    "unavailableReason",
+    "state",
+    "flowSteps"
+  ],
+  "states": ["AVAILABLE", "PARTIAL", "UNAVAILABLE", "STALE", "NOT_APPLICABLE"],
+  "unavailableDisplay": "—",
+  "noFabrication": [
+    "fake fee values",
+    "estimated civilization contribution",
+    "fake KERL rewards",
+    "fake Treasury allocation",
+    "projected impact",
+    "FSC-01 split percentages"
+  ],
+  "consumes": [
+    "resolveSwapProtocolFeeContextFromFields",
+    "computeGrossProtocolFeeAmount",
+    "getFsc01Constitution().owner"
+  ],
+  "doesNotDuplicate": ["D87 fee rules", "FSC-01 split", "Treasury allocation"],
+  "mount": "SmartSwapExecutionPreviewModule after execution preview",
+  "library": "apps/web/src/lib/smart-swap-fee-transparency/"
+}

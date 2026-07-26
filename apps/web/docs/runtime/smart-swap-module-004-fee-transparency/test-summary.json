@@ -1,0 +1,20 @@
+{
+  "suite": "src/lib/smart-swap-fee-transparency/__tests__/smartSwapModule004.feeTransparency.test.ts",
+  "tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "coverage": [
+    "Fee available",
+    "Fee unavailable",
+    "Partial attribution",
+    "Treasury unavailable",
+    "KERL unavailable",
+    "Different fee assets",
+    "Native swap",
+    "ERC20 swap",
+    "SmartSwapForm unchanged",
+    "D87 unchanged",
+    "FSC-01 unchanged",
+    "Architecture freeze"
+  ]
+}

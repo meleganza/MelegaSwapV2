@@ -1,10 +1,21 @@
 import { SmartSwapExecutionPreviewPanel } from './SmartSwapExecutionPreviewPanel'
 import { useSmartSwapExecutionPreview } from './useSmartSwapExecutionPreview'
+import {
+  SmartSwapFeeTransparencyPanel,
+  useSmartSwapFeeTransparency,
+} from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
 
 /**
- * Module 003 mount point — transparency only; SmartSwapForm remains the execution engine.
+ * Module 003 + 004 mount — preview then fee transparency.
+ * SmartSwapForm remains the execution engine.
  */
 export function SmartSwapExecutionPreviewModule() {
   const result = useSmartSwapExecutionPreview()
-  return <SmartSwapExecutionPreviewPanel result={result} />
+  const feeModel = useSmartSwapFeeTransparency(result)
+  return (
+    <>
+      <SmartSwapExecutionPreviewPanel result={result} />
+      <SmartSwapFeeTransparencyPanel model={feeModel} />
+    </>
+  )
 }

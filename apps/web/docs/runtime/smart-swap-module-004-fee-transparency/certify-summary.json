@@ -1,0 +1,16 @@
+{
+  "mission": "SMART_SWAP_MODULE_004_FEE_TRANSPARENCY",
+  "verdict": "SMART_SWAP_MODULE_004_FEE_TRANSPARENCY_CERTIFIED",
+  "baseTip": "a6b6ff83",
+  "missionBase": "bf664718",
+  "architecture": "47892a9d",
+  "branch": "smart-swap-module-004-fee-transparency",
+  "smartSwapFormUnchanged": true,
+  "d87Unchanged": true,
+  "fsc01Unchanged": true,
+  "noTreasuryChanges": true,
+  "noKerlChanges": true,
+  "testsPass": true,
+  "buildPass": true,
+  "pass": true
+}

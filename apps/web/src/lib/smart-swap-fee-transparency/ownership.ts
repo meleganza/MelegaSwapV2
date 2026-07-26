@@ -1,0 +1,21 @@
+export const SMART_SWAP_FEE_TRANSPARENCY_OWNERSHIP = {
+  module: 'SMART_SWAP_MODULE_004_FEE_TRANSPARENCY',
+  owns: ['fee presentation', 'economic visibility copy', 'transparency flow UI'],
+  doesNotOwn: [
+    'fee calculation',
+    'fee mutation',
+    'D87 fee rules',
+    'FSC-01 split',
+    'Treasury settlement',
+    'Treasury execution',
+    'KERL mint / allocate / reward simulation',
+    'custody',
+    'signing',
+    'swap execution',
+  ],
+  feeAuthority: 'Canonical fee engine (D87 via resolveSwapProtocolFeeContext*)',
+  settlementAuthority: 'Treasury Runtime',
+  allocationAuthority: 'FSC-01 / Treasury Runtime',
+  attributionAuthority: 'KERL',
+  engine: 'SmartSwapForm unchanged — presentation consumes authoritative snapshots',
+} as const

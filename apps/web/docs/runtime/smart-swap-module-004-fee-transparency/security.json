@@ -1,0 +1,13 @@
+{
+  "custody": false,
+  "signing": false,
+  "execution": false,
+  "feeMutation": false,
+  "treasuryBypass": false,
+  "treasuryExecution": false,
+  "kerlAuthority": false,
+  "d87Modified": false,
+  "fsc01Modified": false,
+  "smartSwapFormModified": false,
+  "notes": "Display-only economic visibility. Fee amounts/rates come from the canonical fee engine. Settlement remains Treasury Runtime; attribution remains KERL."
+}
