@@ -14,4 +14,13 @@ describe('Smart details accordion', () => {
   it('does not depend on global executionDetailsOpen in this module', () => {
     expect(src).not.toMatch(/useExecutionDetailsOpen/)
   })
+
+  it('keeps details panel content mounted for reliable close', () => {
+    expect(src).toMatch(/SmartSwapExecutionPreviewPanel/)
+    expect(src).not.toMatch(/detailsOpen \? \(/)
+  })
+
+  it('marks final pixel stack', () => {
+    expect(src).toMatch(/data-smart-ux-final/)
+  })
 })

@@ -30,8 +30,37 @@ const HomeSwapStack = styled.div`
   min-width: 0;
 `
 
-const ModeWrap = styled.div`
-  width: 100%;
+const HeaderLeading = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+`
+
+const Title = styled.h2`
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+`
+
+const Bolt = styled.span`
+  color: #f7c948;
+  font-size: 16px;
+  line-height: 1;
+`
+
+const TabsInline = styled.div`
+  flex: 0 1 180px;
+  min-width: 132px;
+  max-width: 200px;
 `
 
 const SettingsIcon = () => (
@@ -123,6 +152,21 @@ const HomeSwapInner: React.FC = () => {
     [walletConnected, inputSymbol, outputSymbol],
   )
 
+  const headerLeading = useMemo(
+    () => (
+      <HeaderLeading data-home-swap-header-leading>
+        <Title>
+          <Bolt aria-hidden>⚡</Bolt>
+          Swap
+        </Title>
+        <TabsInline data-trade-mode-selector-slot>
+          <TradeModeSelector mode={experience} onChange={setExperience} />
+        </TabsInline>
+      </HeaderLeading>
+    ),
+    [experience],
+  )
+
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
       onCurrencySelection(Field.OUTPUT, newCurrencyOutput)
@@ -147,12 +191,9 @@ const HomeSwapInner: React.FC = () => {
   }, [])
 
   return (
-    <HomeSwapStack data-home-swap-stack data-swap-experience={experience}>
-      {/* Outside fixed-height shell so Instant | Smart tabs are never clipped. */}
-      <ModeWrap>
-        <TradeModeSelector mode={experience} onChange={setExperience} />
-      </ModeWrap>
+    <HomeSwapStack data-home-swap-stack data-swap-experience={experience} data-final-pixel="true">
       <HomeSwapPanelShell
+        headerLeading={headerLeading}
         pairIndicator={pairIndicator}
         toolbar={
           <>
@@ -191,7 +232,6 @@ const HomeSwapInner: React.FC = () => {
           )}
         </div>
       </HomeSwapPanelShell>
-      {/* Smart transparency below shell — same engine, no second form. */}
       <SmartSwapExecutionPreviewModule showSmartTransparency={isSmartExperience} />
     </HomeSwapStack>
   )

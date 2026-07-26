@@ -11,6 +11,7 @@ export type ExecutionSourceKind =
   | 'melega_v2'
   | 'stable_pool'
   | 'external_liquidity'
+  | 'idle'
   | 'unavailable'
 
 export function resolveExecutionSourceLabel(preview: SmartSwapExecutionPreview | null | undefined): {
@@ -19,7 +20,8 @@ export function resolveExecutionSourceLabel(preview: SmartSwapExecutionPreview |
   detail: string
 } {
   if (!preview || preview.routeHops.length === 0) {
-    return { kind: 'unavailable', label: 'Route unavailable', detail: 'No execution source yet' }
+    // Silent empty — never surface "Route unavailable" in idle UI.
+    return { kind: 'idle', label: '', detail: '' }
   }
 
   const pools = preview.liquiditySources ?? []

@@ -31,6 +31,12 @@ const Failure = styled.div`
   color: #fbbf24;
 `
 
+const IdleNote = styled.div`
+  font-size: 12px;
+  line-height: 1.45;
+  color: #9ca3af;
+`
+
 const Grid = styled.dl`
   margin: 0;
   display: grid;
@@ -85,15 +91,31 @@ export type SmartSwapExecutionPreviewPanelProps = {
   result: SmartSwapPreviewResult
   /** When true, hide title (parent accordion supplies heading). */
   embedded?: boolean
+  /** No amount entered — silent, no failure colors. */
+  idle?: boolean
 }
 
 export function SmartSwapExecutionPreviewPanel({
   result,
   embedded = false,
+  idle = false,
 }: SmartSwapExecutionPreviewPanelProps) {
+  if (idle) {
+    return (
+      <Root data-smart-swap-module="003" data-preview-state="idle">
+        {!embedded ? <Title>Execution preview</Title> : null}
+        <IdleNote role="status">Enter amount to preview route</IdleNote>
+      </Root>
+    )
+  }
+
   if (result.status !== 'ok' || !result.preview) {
     const failure = result.status === 'failure' ? result : null
     const isGasOnly = failure?.failure === 'GAS_UNAVAILABLE'
+    const isSoft =
+      failure?.failure === 'QUOTE_UNAVAILABLE' ||
+      failure?.failure === 'PARTIAL_DATA' ||
+      failure?.failure === 'NO_ROUTE'
     return (
       <Root
         data-smart-swap-module="003"
@@ -101,13 +123,21 @@ export function SmartSwapExecutionPreviewPanel({
         data-failure-code={failure?.failure ?? 'EXECUTION_UNAVAILABLE'}
       >
         {!embedded ? <Title>Execution preview</Title> : null}
-        <Failure role="status" style={isGasOnly ? { color: '#9ca3af' } : undefined}>
-          {isGasOnly
-            ? 'Gas estimate unavailable. Wallet will verify before signing.'
-            : `${(failure?.failure ?? 'EXECUTION_UNAVAILABLE').replace(/_/g, ' ')}${
-                failure?.message ? ` — ${failure.message}` : ''
-              }`}
-        </Failure>
+        {isSoft ? (
+          <IdleNote role="status">
+            {failure?.failure === 'NO_ROUTE'
+              ? 'No executable route for this pair and amount.'
+              : failure?.message || 'Enter amount to preview route'}
+          </IdleNote>
+        ) : (
+          <Failure role="status" style={isGasOnly ? { color: '#9ca3af' } : undefined}>
+            {isGasOnly
+              ? 'Gas estimate unavailable. Wallet will verify before signing.'
+              : `${(failure?.failure ?? 'EXECUTION_UNAVAILABLE').replace(/_/g, ' ')}${
+                  failure?.message ? ` — ${failure.message}` : ''
+                }`}
+          </Failure>
+        )}
       </Root>
     )
   }
@@ -130,7 +160,7 @@ export function SmartSwapExecutionPreviewPanel({
       {!embedded ? <Title>Execution preview</Title> : null}
       <Grid>
         <Row label="Input" value={`${p.inputAmount} ${p.inputToken.symbol}`} />
-        <Row label="Expected" value={`${expectedDisplay} ${p.outputToken.symbol}`} />
+        <Row label="Expected output" value={`${expectedDisplay} ${p.outputToken.symbol}`} />
         <Row label="Minimum received" value={`${minDisplay} ${p.outputToken.symbol}`} />
         <Row label="Slippage" value={`${(p.slippageBips / 100).toFixed(2)}%`} />
         <Row label="Price impact" value={impactLabel} />

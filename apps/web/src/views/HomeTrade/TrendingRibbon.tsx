@@ -15,7 +15,7 @@ export const TrendingRibbon: React.FC = () => {
 
   const enrichedItems = useMemo(
     () =>
-      (items ?? []).slice(0, displayLimit).map((item) => {
+      (items ?? []).slice(0, Math.min(displayLimit, 10)).map((item) => {
         const slug = item.id.replace(/^trade-asset-/, '').replace(/^indexed-asset-/, '')
         const asset = avatarBySlug[slug]
         const href = asset?.address
@@ -25,7 +25,7 @@ export const TrendingRibbon: React.FC = () => {
             : undefined
         const base = {
           ...item,
-          secondary: item.secondary || '—',
+          secondary: undefined,
           href,
         }
         if (!asset) return base
@@ -46,14 +46,12 @@ export const TrendingRibbon: React.FC = () => {
     [items, avatarBySlug, displayLimit],
   )
 
-  const label = trendingEmpty ? 'Trending' : 'Trending'
-
   return (
     <MelegaTicker
-      label={label}
+      label="🔥 TRENDING"
       items={enrichedItems}
-      marqueeMinItems={useMarquee ? 3 : Number.MAX_SAFE_INTEGER}
-      emptyPrimary={trendingEmpty ? 'Trending unavailable' : undefined}
+      marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
+      emptyPrimary={trendingEmpty ? 'Market activity unavailable' : undefined}
     />
   )
 }

@@ -10,6 +10,7 @@ import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
+import { useCurrency } from 'hooks/Tokens'
 import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useTradeWarningImport from './hooks/useTradeWarningImport'
@@ -32,6 +33,7 @@ const Shell = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
 
   &[data-swap-experience='smart'] {
     max-width: min(100%, ${tradeLayout.cockpitSmartWidth});
@@ -45,13 +47,14 @@ const SmartBody = styled.div<{ $smart: boolean }>`
   width: 100%;
   min-width: 0;
   flex: 1;
-  align-items: ${({ $smart }) => ($smart ? 'stretch' : 'center')};
+  align-items: center;
+  justify-content: flex-start;
 
   @media (min-width: 900px) {
     display: ${({ $smart }) => ($smart ? 'grid' : 'flex')};
     grid-template-columns: ${({ $smart }) => ($smart ? 'minmax(280px, 400px) minmax(240px, 1fr)' : 'none')};
     align-items: start;
-    justify-content: ${({ $smart }) => ($smart ? 'stretch' : 'center')};
+    justify-content: center;
     gap: 14px;
   }
 `
@@ -59,15 +62,19 @@ const SmartBody = styled.div<{ $smart: boolean }>`
 const FormColumn = styled.div`
   min-width: 0;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin: 0 auto;
+  padding: 0 4px;
+  box-sizing: border-box;
+  align-self: center;
 `
 
 const IntelColumn = styled.aside`
   min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -81,7 +88,7 @@ const Panel = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 14px 16px 16px;
+  padding: 14px 18px 16px;
   background: ${tradeColors.panelGradient};
   border: 1px solid ${tradeColors.border};
   border-radius: 18px;
@@ -93,44 +100,47 @@ const Panel = styled.div`
   overscroll-behavior: contain;
 `
 
-const ModeSelectorSlot = styled.div`
-  flex-shrink: 0;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto 8px;
-`
-
+/** Single premium header row — no second Swap title, no subtitle. */
 const CockpitHeader = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 8px 10px;
   flex-shrink: 0;
-  margin-bottom: 8px;
-`
-
-const TitleBlock = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
+  margin-bottom: 10px;
+  width: 100%;
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 `
 
 const Bolt = styled.span`
   color: #f7c948;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1;
+`
+
+const TabsInline = styled.div`
+  flex: 0 1 200px;
+  min-width: 140px;
+  max-width: 220px;
+`
+
+const PairLine = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a8a8a;
+  white-space: nowrap;
+  flex-shrink: 0;
 `
 
 const LivePill = styled.span<{ $on?: boolean }>`
@@ -140,6 +150,7 @@ const LivePill = styled.span<{ $on?: boolean }>`
   font-size: 11px;
   font-weight: 700;
   color: ${({ $on }) => ($on ? '#22c55e' : '#9ca3af')};
+  margin-left: auto;
 `
 
 const LiveDot = styled.span<{ $on?: boolean }>`
@@ -157,8 +168,8 @@ const Toolbar = styled.div`
 `
 
 const IconBtn = styled.button`
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #121212;
@@ -168,20 +179,15 @@ const IconBtn = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
 
   &:hover {
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.14);
   }
 
-  &:active {
-    transform: scale(0.99);
-  }
-
   svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
   }
 `
 
@@ -236,8 +242,11 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = useSwapState()
+  const inputCurrency = useCurrency(inputCurrencyId)
+  const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
   const isSmartExperience = experience === 'smart'
+  const pairLabel = `${inputCurrency?.symbol ?? '—'} / ${outputCurrency?.symbol ?? '—'}`
 
   useEffect(() => {
     publishSwapExperienceMode(experience)
@@ -248,7 +257,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
       else url.searchParams.set('experience', experience)
       window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
     } catch {
-      /* ignore history sync failures */
+      /* ignore */
     }
   }, [experience])
 
@@ -310,20 +319,22 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   }
 
   return (
-    <Shell data-trade-cockpit data-swap-experience={experience}>
+    <Shell data-trade-cockpit data-swap-experience={experience} data-final-pixel="true">
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
-        <CockpitHeader data-trade-cockpit-header data-premium-header="true">
-          <TitleBlock>
-            <Title>
-              <Bolt aria-hidden>⚡</Bolt>
-              Swap
-            </Title>
-          </TitleBlock>
+        <CockpitHeader data-trade-cockpit-header data-premium-header="true" data-single-header-row="true">
+          <Title>
+            <Bolt aria-hidden>⚡</Bolt>
+            Swap
+          </Title>
+          <TabsInline data-trade-mode-selector-slot>
+            <TradeModeSelector mode={experience} onChange={setExperience} />
+          </TabsInline>
+          <PairLine data-swap-pair>{pairLabel}</PairLine>
+          <LivePill $on={walletConnected} data-live-status>
+            <LiveDot $on={walletConnected} aria-hidden />
+            {walletConnected ? 'Live' : 'Offline'}
+          </LivePill>
           <Toolbar data-trade-cockpit-toolbar>
-            <LivePill $on={walletConnected} data-live-status>
-              <LiveDot $on={walletConnected} aria-hidden />
-              {walletConnected ? 'Live' : 'Offline'}
-            </LivePill>
             <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
               <SettingsIcon />
             </IconBtn>
@@ -332,9 +343,6 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
             </IconBtn>
           </Toolbar>
         </CockpitHeader>
-        <ModeSelectorSlot data-trade-mode-selector-slot>
-          <TradeModeSelector mode={experience} onChange={setExperience} />
-        </ModeSelectorSlot>
         <TradeExecutionStatusStrip />
         <SmartBody $smart={isSmartExperience} data-smart-body={isSmartExperience ? 'true' : 'false'}>
           <FormColumn data-swap-form-column>

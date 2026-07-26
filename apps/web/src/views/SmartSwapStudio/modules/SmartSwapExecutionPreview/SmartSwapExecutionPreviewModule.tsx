@@ -11,6 +11,7 @@ import { SmartSwapInsightCard } from './SmartSwapInsightCard'
 import { resolveExecutionSourceLabel } from './resolveExecutionSourceLabel'
 import { useSmartSwapExecutionPreview } from './useSmartSwapExecutionPreview'
 import { useSmartSwapFeeTransparency } from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
+import { SmartSwapFeeTransparencyPanel } from 'views/SmartSwapStudio/modules/SmartSwapFeeTransparency'
 import { useSmartSwapAIAssistance } from 'views/SmartSwapStudio/modules/SmartSwapAIAssistance'
 import {
   SmartSwapExecutionHandoffPanel,
@@ -27,16 +28,6 @@ const Stack = styled.div`
   gap: 8px;
   width: 100%;
   min-width: 0;
-`
-
-const InsightRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 `
 
 const AccordionShell = styled.div`
@@ -95,8 +86,8 @@ const PanelBody = styled.div`
 `
 
 /**
- * Premium Smart cockpit — compact route, metrics, insights.
- * Details accordion uses local controlled state (open/close without refresh).
+ * Premium Smart cockpit — compact route, metrics, fee, AI, single Details accordion.
+ * Details uses local controlled state (open/close without refresh).
  */
 function SmartTransparencyStack() {
   const result = useSmartSwapExecutionPreview()
@@ -105,11 +96,12 @@ function SmartTransparencyStack() {
   const handoff = useSmartSwapExecutionHandoff(result, feeModel)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const toggleDetails = useCallback(() => setDetailsOpen((v) => !v), [])
-
   const {
+    typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = useSwapState()
+  const idle = !typedValue || !String(typedValue).trim()
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
 
@@ -155,30 +147,25 @@ function SmartTransparencyStack() {
   ]
 
   const aiBody =
-    aiResult.status === 'ok' && aiResult.assistance
-      ? aiResult.assistance.explanation
-      : 'AI insight unavailable for this quote.'
-
-  const feeBody =
-    feeModel.flowSteps.find((s) => /protocol fee/i.test(s.label))?.value ||
-    feeModel.unavailableReason ||
-    'Fee information unavailable'
+    idle
+      ? '—'
+      : aiResult.status === 'ok' && aiResult.assistance
+        ? aiResult.assistance.explanation
+        : 'AI insight unavailable for this quote.'
 
   return (
-    <Stack data-smart-transparency-stack data-smart-ux-v3="true">
+    <Stack data-smart-transparency-stack data-smart-ux-final="true" data-smart-idle={idle ? 'true' : 'false'}>
       <SmartSwapVisualRoute
         hops={hops}
-        executionSourceLabel={source.label}
-        executionSourceDetail={source.detail}
+        executionSourceLabel={source.label || undefined}
+        executionSourceDetail={source.detail || undefined}
         inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
+        idle={idle}
       />
       <SmartSwapCompactMetrics items={metrics} />
-      <InsightRow data-smart-insight-row>
-        <SmartSwapInsightCard data-insight="route" title="Route" body={source.label} sub={source.detail} />
-        <SmartSwapInsightCard data-insight="fee" title="Fee" body={feeBody} />
-        <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
-      </InsightRow>
+      <SmartSwapFeeTransparencyPanel model={feeModel} compact />
+      <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
 
       <AccordionShell data-execution-details-accordion data-execution-details-open={detailsOpen ? 'true' : 'false'}>
         <Toggle
@@ -196,15 +183,12 @@ function SmartTransparencyStack() {
         <Panel $open={detailsOpen}>
           <PanelInner>
             <PanelBody id="smart-execution-details-panel" role="region" aria-labelledby="smart-execution-details-toggle">
-              {detailsOpen ? (
-                <>
-                  <SmartSwapExecutionPreviewPanel result={result} embedded />
-                  {preview?.freshness ? (
-                    <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }}>Freshness: {preview.freshness}</p>
-                  ) : null}
-                  <SmartSwapExecutionHandoffPanel handoff={handoff} compact />
-                </>
+              {/* Keep mounted so close never remounts / refreshes / sticks open. */}
+              <SmartSwapExecutionPreviewPanel result={result} embedded idle={idle} />
+              {preview?.freshness ? (
+                <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }}>Freshness: {preview.freshness}</p>
               ) : null}
+              <SmartSwapExecutionHandoffPanel handoff={handoff} compact />
             </PanelBody>
           </PanelInner>
         </Panel>

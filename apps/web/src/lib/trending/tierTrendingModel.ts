@@ -126,7 +126,7 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   if (change) {
     const arrow = change.positive ? '↑' : '↓'
     const pct = `${Math.abs(change.pct).toFixed(1)}%`
-    return { accent: `${arrow} ${pct}`, accentPositive: change.positive }
+    return { accent: `${arrow}${pct}`, accentPositive: change.positive }
   }
   // No fallback fake % / "Price unavailable" — movers without change are filtered upstream.
   return {}

@@ -14,18 +14,18 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   [data-trade-cockpit] {
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     overflow: visible;
     box-sizing: border-box;
   }
 
   [data-trade-cockpit][data-swap-experience='smart'] {
-    max-width: min(100%, 920px);
+    max-width: min(100%, 960px);
   }
 
   @media (max-width: 899px) {
     [data-trade-cockpit][data-swap-experience='smart'] {
-      max-width: 420px;
+      max-width: 440px;
     }
 
     [data-smart-body] {
@@ -365,65 +365,18 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     max-height: 72px !important;
   }
 
+  /* Hide form "Show details" — single Smart Details accordion lives in intel column. */
   .trade-terminal-swap [class*='AdvancedDetailsFooter'],
+  .trade-terminal-swap [class*='AdvancedSwapDetails'],
   .trade-terminal-swap [data-execution-details-accordion] {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: ${tradeLayout.executionDetailsGap} 0 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-    z-index: 2 !important;
-  }
-
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'] {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    align-items: center !important;
-    min-height: 32px !important;
-    height: auto !important;
-    max-height: none !important;
-    font-size: 12px !important;
-    line-height: 1.35 !important;
+    display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
     margin: 0 !important;
-    padding: 4px 0 !important;
-    overflow: visible !important;
-    gap: 8px !important;
-  }
-
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] span,
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] [class*='Text'] {
-    font-size: 12px !important;
-    color: #b5b5b5 !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-  }
-
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] [class*='RowBetween'] > :last-child {
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    text-align: right !important;
-  }
-
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:has([class*='Slippage']) > :last-child,
-  .trade-terminal-swap [class*='AdvancedSwapDetails'] [class*='RowBetween']:last-child > :last-child {
-    color: ${tradeColors.goldBright} !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   .trade-terminal-swap .pancake-button--primary,

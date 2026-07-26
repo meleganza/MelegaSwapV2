@@ -1,0 +1,12 @@
+{
+  "mission": "SMART_SWAP_FINAL_PIXEL_PERFECTION_REFINEMENT",
+  "timestamp": "2026-07-26T23:14:03Z",
+  "checks": [
+    {"name": "single Details accordion", "pass": true},
+    {"name": "opens on click", "pass": true, "detail": "data-execution-details-open=true"},
+    {"name": "closes on click", "pass": true, "detail": "data-execution-details-open=false"},
+    {"name": "local detailsOpen state", "pass": true},
+    {"name": "content kept mounted", "pass": true}
+  ],
+  "pass": true
+}

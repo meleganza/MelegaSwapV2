@@ -1,0 +1,13 @@
+{
+  "mission": "SMART_SWAP_FINAL_PIXEL_PERFECTION_REFINEMENT",
+  "timestamp": "2026-07-26T23:14:03Z",
+  "checks": [
+    {"name": "empty copy Market activity unavailable", "pass": true},
+    {"name": "no Trending unavailable", "pass": true},
+    {"name": "label 🔥 TRENDING", "pass": true},
+    {"name": "movers accent ↑pct / ↓pct", "pass": true},
+    {"name": "bullet separators", "pass": true},
+    {"name": "top 10 by activity/volume/change", "pass": true}
+  ],
+  "pass": true
+}

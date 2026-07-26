@@ -1,0 +1,11 @@
+{
+  "mission": "SMART_SWAP_FINAL_PIXEL_PERFECTION_REFINEMENT",
+  "timestamp": "2026-07-26T23:14:03Z",
+  "checks": [
+    {"name": "no Route unavailable in idle", "pass": true, "detail": "routeState=idle soft copy only"},
+    {"name": "Enter amount to preview route in Route section", "pass": true},
+    {"name": "no NO_ROUTE warning colors when idle", "pass": true},
+    {"name": "no Show details form accordion", "pass": true, "detail": "showDetailsCount=0"}
+  ],
+  "pass": true
+}

@@ -3,7 +3,6 @@
  * No fee mutation, Treasury execution, or KERL authority.
  */
 
-import React, { useState } from 'react'
 import styled from 'styled-components'
 import type { SmartSwapFeeTransparency } from 'lib/smart-swap-fee-transparency'
 
@@ -35,7 +34,7 @@ const Flow = styled.ol`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 2px;
+  gap: 4px;
 `
 
 const Step = styled.li`
@@ -55,15 +54,6 @@ const Value = styled.span`
   font-variant-numeric: tabular-nums;
 `
 
-const Arrow = styled.li`
-  color: #f7c948;
-  font-size: 11px;
-  text-align: center;
-  line-height: 1;
-  list-style: none;
-  opacity: 0.7;
-`
-
 const Note = styled.p`
   margin: 8px 0 0;
   font-size: 11px;
@@ -71,18 +61,27 @@ const Note = styled.p`
   color: #9ca3af;
 `
 
-const More = styled.button`
-  margin-top: 8px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-`
+/** Compact fee rows: Protocol Fee → Treasury Runtime → KERL. */
+function compactFeeRows(model: SmartSwapFeeTransparency): Array<{ label: string; value: string }> {
+  const protocol =
+    model.flowSteps.find((s) => /protocol fee/i.test(s.label))?.value ||
+    model.unavailableReason ||
+    UNAVAILABLE
+  const treasury =
+    model.flowSteps.find((s) => /destination|treasury/i.test(s.label))?.value ||
+    model.treasuryDestination ||
+    'Treasury Runtime'
+  const kerl =
+    model.flowSteps.find((s) => /attribution|kerl/i.test(s.label))?.value ||
+    model.economicAttribution ||
+    'KERL'
+
+  return [
+    { label: 'Protocol Fee', value: protocol },
+    { label: 'Treasury Runtime', value: treasury },
+    { label: 'KERL attribution', value: kerl },
+  ]
+}
 
 export type SmartSwapFeeTransparencyPanelProps = {
   model: SmartSwapFeeTransparency
@@ -90,16 +89,37 @@ export type SmartSwapFeeTransparencyPanelProps = {
 }
 
 export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartSwapFeeTransparencyPanelProps) {
-  const [expanded, setExpanded] = useState(false)
   const showUnavailableCopy =
     model.state === 'UNAVAILABLE' || model.state === 'NOT_APPLICABLE' || model.state === 'STALE'
+
+  if (compact) {
+    const rows = compactFeeRows(model)
+    return (
+      <Root
+        data-smart-swap-module="004"
+        data-fee-state={model.state}
+        data-fee-source={model.source}
+        data-fee-compact="true"
+      >
+        <Title>Fee</Title>
+        <Flow aria-label="Fee transparency">
+          {rows.map((step) => (
+            <Step key={step.label}>
+              <Label>{step.label}</Label>
+              <Value>{step.value || UNAVAILABLE}</Value>
+            </Step>
+          ))}
+        </Flow>
+      </Root>
+    )
+  }
 
   return (
     <Root
       data-smart-swap-module="004"
       data-fee-state={model.state}
       data-fee-source={model.source}
-      data-fee-compact={compact ? 'true' : 'false'}
+      data-fee-compact="false"
     >
       <Title>Fee transparency</Title>
 
@@ -109,34 +129,12 @@ export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartS
       ) : (
         <Flow aria-label="Fee transparency flow">
           {model.flowSteps.map((step, i) => (
-            <React.Fragment key={`${step.label}-${i}`}>
-              {i > 0 ? <Arrow aria-hidden>↓</Arrow> : null}
-              <Step>
-                <Label>{step.label}</Label>
-                <Value>{step.value || UNAVAILABLE}</Value>
-              </Step>
-            </React.Fragment>
+            <Step key={`${step.label}-${i}`}>
+              <Label>{step.label}</Label>
+              <Value>{step.value || UNAVAILABLE}</Value>
+            </Step>
           ))}
         </Flow>
-      )}
-
-      {compact ? (
-        <>
-          <More type="button" aria-expanded={expanded} onClick={() => setExpanded((v) => !v)}>
-            {expanded ? 'Hide fee details' : 'Fee details'}
-          </More>
-          {expanded ? (
-            <>
-              <Note>{model.explanation}</Note>
-              {model.freshness ? <Note>Freshness: {model.freshness}</Note> : null}
-            </>
-          ) : null}
-        </>
-      ) : (
-        <>
-          <Note>{model.explanation}</Note>
-          {model.freshness ? <Note>Freshness: {model.freshness}</Note> : null}
-        </>
       )}
     </Root>
   )

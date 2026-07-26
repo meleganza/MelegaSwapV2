@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
-import { FolderKanban, Sprout, Droplets, ChartNoAxesCombined, Zap, ArrowRight } from 'lucide-react'
+import { FolderKanban, Sprout, Droplets, ChartNoAxesCombined, ArrowRight } from 'lucide-react'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
 import useHomeTradeData from './useHomeTradeData'
@@ -201,17 +201,6 @@ const SwapWrap = styled.div`
   [data-melega-swap-shell] {
     max-width: none !important;
   }
-`
-
-const SwapTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  margin-bottom: 12px;
-  font-size: 16px;
-  font-weight: 650;
-  color: ${uxRebuildColors.text};
 `
 
 const KpiRail = styled.section`
@@ -655,10 +644,6 @@ export const DexHomeScreen: React.FC = () => {
             </HeroLeft>
             <HeroRight ref={swapRef} id="swap" data-home-section="swap">
               <SwapWrap data-testid="dex-home-instant-swap">
-                <SwapTitle>
-                  <Zap size={18} color={uxRebuildColors.gold} aria-hidden />
-                  Swap
-                </SwapTitle>
                 <HomeSwapPanel />
               </SwapWrap>
             </HeroRight>

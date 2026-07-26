@@ -39,6 +39,13 @@ function preview(partial: Partial<SmartSwapExecutionPreview>): SmartSwapExecutio
 }
 
 describe('resolveExecutionSourceLabel', () => {
+  it('returns silent idle labels when no preview hops', () => {
+    const r = resolveExecutionSourceLabel(null)
+    expect(r.kind).toBe('idle')
+    expect(r.label).toBe('')
+    expect(r.label).not.toMatch(/unavailable/i)
+  })
+
   it('labels direct single hop as Melega Router · Direct Pool', () => {
     const r = resolveExecutionSourceLabel(
       preview({

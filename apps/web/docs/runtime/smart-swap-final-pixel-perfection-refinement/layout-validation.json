@@ -1,0 +1,14 @@
+{
+  "mission": "SMART_SWAP_FINAL_PIXEL_PERFECTION_REFINEMENT",
+  "timestamp": "2026-07-26T23:14:03Z",
+  "checks": [
+    {"name": "single header row ⚡ Swap + Instant|Smart + pair + Live + settings/refresh", "pass": true},
+    {"name": "no Trade instantly subtitle", "pass": true},
+    {"name": "no duplicate outer Swap title on home", "pass": true},
+    {"name": "form column centered max-width 420", "pass": true},
+    {"name": "route logos Melega Router Direct Pool", "pass": true, "detail": "BNB → BNB/MARCO Pool → MARCO"},
+    {"name": "stack order Route Metrics Fee AI Details", "pass": true},
+    {"name": "mobile 390/430 hierarchy preserved", "pass": true}
+  ],
+  "pass": true
+}

@@ -55,14 +55,16 @@ const Track = styled.ol`
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   overflow: hidden;
+  min-height: 52px;
 `
 
 const Node = styled.li`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 3px;
   min-width: 0;
   flex: 0 1 auto;
@@ -84,9 +86,6 @@ const Caption = styled.span`
   text-align: center;
   line-height: 1.15;
   white-space: nowrap;
-  max-width: 96px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
 
 const Type = styled.span`
@@ -104,7 +103,11 @@ const Arrow = styled.li`
   line-height: 1;
   opacity: 0.9;
   flex: 0 0 auto;
-  padding-bottom: 14px;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  height: 32px;
+  margin-top: -18px;
 `
 
 const Empty = styled.p`
@@ -112,6 +115,7 @@ const Empty = styled.p`
   font-size: 12px;
   color: #9ca3af;
   text-align: center;
+  padding: 10px 0 4px;
 `
 
 export type SmartSwapVisualRouteProps = {
@@ -120,6 +124,8 @@ export type SmartSwapVisualRouteProps = {
   executionSourceDetail?: string
   inputCurrency?: Currency | null
   outputCurrency?: Currency | null
+  /** When true, no amount entered — silent soft prompt only. */
+  idle?: boolean
 }
 
 /** Compact horizontal route with token/pool logos — no scroll, no abbreviated letter marks. */
@@ -129,18 +135,15 @@ export function SmartSwapVisualRoute({
   executionSourceDetail,
   inputCurrency,
   outputCurrency,
+  idle = false,
 }: SmartSwapVisualRouteProps) {
   if (!hops.length) {
     return (
-      <Root data-smart-visual-route data-route-orientation="horizontal" data-route-state="unavailable">
+      <Root data-smart-visual-route data-route-orientation="horizontal" data-route-state={idle ? 'idle' : 'empty'}>
         <Header>
           <Label>Route</Label>
-          <Source>
-            Route unavailable
-            <SourceDetail>No execution source</SourceDetail>
-          </Source>
         </Header>
-        <Empty>Enter an amount to preview the route</Empty>
+        <Empty>{idle || !executionSourceLabel ? 'Enter amount to preview route' : null}</Empty>
       </Root>
     )
   }
