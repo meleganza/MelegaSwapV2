@@ -1,0 +1,10 @@
+{
+  "entry": "/liquidity-studio",
+  "validated": [
+    "add liquidity entry",
+    "token selection surfaces",
+    "positions navigation"
+  ],
+  "notes": "Static route + studio mount verified; full wallet stake path requires connected wallet.",
+  "pass": true
+}

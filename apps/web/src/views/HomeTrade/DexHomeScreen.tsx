@@ -175,24 +175,6 @@ const PrimaryCta = styled.button`
   }
 `
 
-const SecondaryCta = styled.a`
-  height: 42px;
-  padding: 0 22px;
-  border-radius: 10px;
-  border: 1px solid ${uxRebuildColors.borderStrong};
-  background: ${uxRebuildColors.card};
-  color: ${uxRebuildColors.text};
-  font-size: 14px;
-  font-weight: 650;
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-
-  &:hover {
-    border-color: rgba(221, 185, 47, 0.45);
-  }
-`
-
 const Trust = styled.p`
   margin: 18px 0 0;
   font-size: 13px;
@@ -653,12 +635,10 @@ export const DexHomeScreen: React.FC = () => {
                 Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance.
               </Description>
               <CtaRow>
+                {/* Single Swap entry — on-page terminal with Instant|Smart mode tabs. No duplicate Instant/Smart CTAs. */}
                 <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
-                  Start Trading
+                  Swap
                 </PrimaryCta>
-                <SecondaryCta href="/trade" data-testid="dex-home-smart-swap">
-                  Trade Terminal
-                </SecondaryCta>
               </CtaRow>
               <Trust>
                 Powered by AI. Secured by <strong>MARCO</strong>.

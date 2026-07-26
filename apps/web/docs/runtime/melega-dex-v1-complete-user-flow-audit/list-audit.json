@@ -1,0 +1,11 @@
+{
+  "entry": "/list",
+  "createTokenHiddenWhenUnavailable": true,
+  "availableIntents": [
+    "import-token",
+    "claim-project",
+    "create-project",
+    "ai-assistant"
+  ],
+  "pass": true
+}

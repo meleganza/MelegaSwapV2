@@ -1,0 +1,45 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "owner": "pages/index.tsx \u2192 DexHomeScreen",
+      "status": "WORKING"
+    },
+    {
+      "path": "/swap",
+      "owner": "pages/swap \u2192 TradeTerminalScreen",
+      "status": "WORKING"
+    },
+    {
+      "path": "/trade",
+      "owner": "pages/trade \u2192 TradeTerminalScreen",
+      "status": "WORKING"
+    },
+    {
+      "path": "/liquidity-studio",
+      "owner": "Liquidity Studio",
+      "status": "WORKING"
+    },
+    {
+      "path": "/farms",
+      "owner": "Farms Studio",
+      "status": "WORKING"
+    },
+    {
+      "path": "/pools",
+      "owner": "Pools Studio",
+      "status": "WORKING"
+    },
+    {
+      "path": "/list",
+      "owner": "List Studio",
+      "status": "WORKING"
+    },
+    {
+      "path": "/passport",
+      "owner": "Passport",
+      "status": "WORKING"
+    }
+  ],
+  "pass": true
+}

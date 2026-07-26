@@ -1,0 +1,29 @@
+{
+  "searched": [
+    "mock",
+    "fake",
+    "placeholder",
+    "demo",
+    "sample",
+    "hardcoded",
+    "fixtures"
+  ],
+  "productionReachableFindings": [
+    {
+      "item": "List AI detections local placeholders",
+      "status": "DISCLOSED",
+      "action": "Kept with explicit local-placeholder copy (not presented as live backend)"
+    },
+    {
+      "item": "List Create Token Coming Soon card",
+      "status": "REMOVED_FROM_UI",
+      "action": "Filtered when LIST_CREATE_TOKEN_AVAILABLE=false"
+    },
+    {
+      "item": "Status DEX Intelligence Coming Soon",
+      "status": "REMAINING",
+      "action": "Status disclosure page \u2014 not a primary CTA"
+    }
+  ],
+  "pass": true
+}

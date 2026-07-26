@@ -84,13 +84,13 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(screen).not.toContain('data-pools-module="009"')
   })
 
-  it('uses factual Create Pool destination and reserved How it Works behavior', () => {
+  it('uses factual Create Pool destination without duplicate How it Works CTA', () => {
     expect(poolsHero.createPoolHref).toBe('#create-pool')
     expect(poolsHero.createPoolFallback).toContain('build-studio')
-    expect(poolsHero.howItWorksReserved).toBe(true)
+    expect(poolsHero.howItWorksReserved).toBe(false)
     const mod = load('modules/PoolsHeroModule.tsx')
     expect(mod).toContain('create-pool')
-    expect(mod).toContain('pools-hero-how-it-works')
+    expect(mod).toContain('pools-hero-create-pool')
   })
 
   it('keeps Modules 009–010 unmounted (Modules 002–008 may follow Hero)', () => {

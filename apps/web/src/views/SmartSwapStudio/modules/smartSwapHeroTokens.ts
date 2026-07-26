@@ -57,7 +57,7 @@ export const smartSwapHero = {
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
 
-  /** Scroll to on-page Smart Swap cockpit (same engine — not a second DEX). */
+  /** Scroll to on-page Swap cockpit (same engine — Smart mode is selected via Instant|Smart tabs only). */
   startSmartSwapHref: '#smart-swap-execution',
   /** Factual How It Works panel already exists on Trade terminal. */
   howItWorksHref: '#smart-swap-how-it-works',
@@ -80,10 +80,10 @@ export const SMART_SWAP_HERO_COPY = {
   title: 'Smart Swap',
   description:
     'Find better execution routes with transparent pricing, liquidity paths and\nexecution details.',
-  primaryCta: 'Start Smart Swap',
+  primaryCta: 'Go to Swap',
   secondaryCta: 'How It Works',
   relationship:
-    'Instant Swap and Smart Swap are two experiences over the same Melega DEX swap engine — not a new exchange.',
+    'Instant and Smart are modes over the same Melega DEX swap engine — pick a mode in the Swap terminal tabs.',
   trustTitle: 'Why Smart Swap?',
   trustItems: [
     {

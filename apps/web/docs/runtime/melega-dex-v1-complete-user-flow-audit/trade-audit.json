@@ -1,0 +1,15 @@
+{
+  "mount": "/swap|/trade \u2192 TradeTerminalScreen \u2192 TradeCockpit \u2192 SmartSwapForm",
+  "modes": [
+    "instant",
+    "smart"
+  ],
+  "smartLayers": [
+    "preview",
+    "fees",
+    "AI",
+    "handoff"
+  ],
+  "heroPrimaryCta": "Go to Swap (scroll only)",
+  "pass": true
+}

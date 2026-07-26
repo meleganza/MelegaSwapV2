@@ -1,0 +1,6 @@
+{
+  "owner": "app-shell/components/GlobalSearch.tsx",
+  "tokenHrefPattern": "/trade?inputCurrency=",
+  "projectHrefPattern": "/@slug/",
+  "pass": true
+}

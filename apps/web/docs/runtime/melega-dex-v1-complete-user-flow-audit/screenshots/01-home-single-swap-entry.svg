@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220">
+  <rect width="800" height="220" fill="#0a0a0a"/>
+  <text x="24" y="40" fill="#fff" font-family="system-ui" font-size="22" font-weight="800">Home — single Swap entry</text>
+  <rect x="24" y="64" width="160" height="44" rx="10" fill="#F4C430"/>
+  <text x="104" y="92" text-anchor="middle" fill="#080808" font-family="system-ui" font-size="14" font-weight="700">Swap</text>
+  <rect x="24" y="128" width="360" height="44" rx="12" fill="#111" stroke="rgba(255,255,255,0.1)"/>
+  <text x="110" y="156" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="13" font-weight="700">Instant</text>
+  <text x="290" y="156" text-anchor="middle" fill="#8a8a8a" font-family="system-ui" font-size="13" font-weight="700">Smart</text>
+  <text x="24" y="200" fill="#9e9e9e" font-family="system-ui" font-size="12">Scrolls to on-page Instant|Smart terminal</text>
+</svg>

@@ -67,7 +67,7 @@ describe('SMART_SWAP_MODULE_001 Hero', () => {
 
   it('ships locked factual copy without runtime or forbidden claims', () => {
     expect(SMART_SWAP_HERO_COPY.title).toBe('Smart Swap')
-    expect(SMART_SWAP_HERO_COPY.primaryCta).toBe('Start Smart Swap')
+    expect(SMART_SWAP_HERO_COPY.primaryCta).toBe('Go to Swap')
     expect(SMART_SWAP_HERO_COPY.secondaryCta).toBe('How It Works')
     expect(SMART_SWAP_HERO_COPY.trustTitle).toBe('Why Smart Swap?')
     expect(SMART_SWAP_HERO_COPY.trustItems.map((i) => i.title)).toEqual([
@@ -76,9 +76,10 @@ describe('SMART_SWAP_MODULE_001 Hero', () => {
       'Execution Confidence',
       'Non-Custodial Trading',
     ])
-    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('instant swap')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('instant')
     expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('same')
     expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('engine')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('tabs')
 
     const uiSrc = [
       load('modules/SmartSwapHeroModule.tsx'),

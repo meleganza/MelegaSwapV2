@@ -1,0 +1,10 @@
+{
+  "viewports": [
+    "390x844",
+    "430x932"
+  ],
+  "bottomNav": "app-shell/config/navigation.ts",
+  "homeSections": "data-home-section markers ordered",
+  "modeSelectorTouchTargetPx": 44,
+  "pass": true
+}

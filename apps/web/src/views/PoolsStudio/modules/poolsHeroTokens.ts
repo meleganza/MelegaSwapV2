@@ -65,7 +65,8 @@ export const poolsHero = {
    * Create Pool builder (`#create-pool`) as the factual guided entry.
    */
   howItWorksHref: '#create-pool',
-  howItWorksReserved: true,
+  // Duplicate of Create Pool destination — removed for UX consolidation.
+  howItWorksReserved: false,
 
   mobileTitleSize: '42px',
   mobileTitleLine: '46px',

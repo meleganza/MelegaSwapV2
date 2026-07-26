@@ -1,0 +1,11 @@
+{
+  "entry": "/pools",
+  "createPool": "#create-pool",
+  "duplicateHowItWorksRemoved": true,
+  "validated": [
+    "explore",
+    "create pool scroll",
+    "positions surfaces"
+  ],
+  "pass": true
+}

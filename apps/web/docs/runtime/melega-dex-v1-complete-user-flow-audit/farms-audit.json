@@ -1,0 +1,10 @@
+{
+  "entry": "/farms",
+  "explore": "#explore-farms",
+  "validated": [
+    "explore",
+    "stake LP surfaces",
+    "harvest/withdraw UI present in studio"
+  ],
+  "pass": true
+}

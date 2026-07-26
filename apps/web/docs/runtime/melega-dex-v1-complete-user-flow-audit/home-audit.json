@@ -1,0 +1,13 @@
+{
+  "heroCta": "single Swap \u2192 scroll to on-page terminal",
+  "modeSelector": "HomeSwapPanel TradeModeSelector Instant|Smart",
+  "engine": "SmartSwapForm",
+  "duplicateInstantSmartCtas": false,
+  "quickActions": [
+    "/farms",
+    "/pools",
+    "/liquidity-studio?view=building",
+    "/#projects"
+  ],
+  "pass": true
+}

@@ -599,7 +599,7 @@ export const ListActionCards: React.FC = () => {
   return (
     <>
       <Row data-testid="list-action-cards" data-pixel-cards-row="1376x272" data-list-module="002">
-        {CARDS.map((def) => (
+        {CARDS.filter((def) => def.available).map((def) => (
           <ActionCard
             key={def.intent}
             def={def}

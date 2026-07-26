@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-07-26",
+  "buttons": [
+    {
+      "label": "Home",
+      "location": "Global header",
+      "owner": "app-shell/config/globalHeaderNav.ts",
+      "destination": "/",
+      "expected": "Open Home",
+      "actual": "Navigates to /",
+      "status": "WORKING"
+    },
+    {
+      "label": "Liquidity",
+      "location": "Global header",
+      "owner": "app-shell/config/globalHeaderNav.ts",
+      "destination": "/liquidity-studio",
+      "expected": "Open Liquidity Studio",
+      "actual": "Navigates",
+      "status": "WORKING"
+    },
+    {
+      "label": "Farms",
+      "location": "Global header",
+      "owner": "app-shell/config/globalHeaderNav.ts",
+      "destination": "/farms",
+      "expected": "Open Farms",
+      "actual": "Navigates",
+      "status": "WORKING"
+    },
+    {
+      "label": "Pools",
+      "location": "Global header",
+      "owner": "app-shell/config/globalHeaderNav.ts",
+      "destination": "/pools",
+      "expected": "Open Pools",
+      "actual": "Navigates",
+      "status": "WORKING"
+    },
+    {
+      "label": "List",
+      "location": "Global header",
+      "owner": "app-shell/config/globalHeaderNav.ts",
+      "destination": "/list",
+      "expected": "Open List Studio",
+      "actual": "Navigates",
+      "status": "WORKING"
+    },
+    {
+      "label": "Passport",
+      "location": "Global header",
+      "owner": "app-shell/config/globalHeaderNav.ts",
+      "destination": "/passport",
+      "expected": "Open Passport",
+      "actual": "Navigates",
+      "status": "WORKING"
+    },
+    {
+      "label": "Swap",
+      "location": "Home hero",
+      "owner": "views/HomeTrade/DexHomeScreen.tsx",
+      "destination": "scroll #swap",
+      "expected": "Focus on-page SmartSwapForm",
+      "actual": "scrollToSwap",
+      "status": "WORKING"
+    },
+    {
+      "label": "Instant|Smart tabs",
+      "location": "Home swap panel + Trade cockpit",
+      "owner": "views/Trade/components/TradeModeSelector.tsx",
+      "destination": "mode state",
+      "expected": "Same form, Smart layers when Smart",
+      "actual": "publishSwapExperienceMode + showSmartTransparency",
+      "status": "WORKING"
+    },
+    {
+      "label": "Trade Terminal (removed)",
+      "location": "Home hero",
+      "owner": "views/HomeTrade/DexHomeScreen.tsx",
+      "destination": "/trade",
+      "expected": "Removed duplicate entry",
+      "actual": "Removed",
+      "status": "REMOVED"
+    },
+    {
+      "label": "Instant Swap / Smart Swap hero CTAs (removed)",
+      "location": "Home hero",
+      "owner": "views/HomeTrade/DexHomeScreen.tsx",
+      "destination": "n/a",
+      "expected": "No duplicate Instant/Smart CTAs",
+      "actual": "Removed earlier; confirmed absent",
+      "status": "REMOVED"
+    },
+    {
+      "label": "Go to Swap",
+      "location": "Trade Smart Swap hero",
+      "owner": "views/SmartSwapStudio/modules/smartSwapHeroTokens.ts",
+      "destination": "#smart-swap-execution",
+      "expected": "Scroll to terminal; mode via tabs",
+      "actual": "scrollToExecution",
+      "status": "WORKING"
+    },
+    {
+      "label": "Start Smart Swap (renamed)",
+      "location": "Trade hero",
+      "owner": "smartSwapHeroTokens.ts",
+      "destination": "n/a",
+      "expected": "Not a second Smart entry",
+      "actual": "Renamed to Go to Swap",
+      "status": "FIXED"
+    },
+    {
+      "label": "Create Pool",
+      "location": "Pools hero",
+      "owner": "views/PoolsStudio/modules/PoolsHeroModule.tsx",
+      "destination": "#create-pool",
+      "expected": "Scroll to builder",
+      "actual": "scrollToCreatePool",
+      "status": "WORKING"
+    },
+    {
+      "label": "How it Works (Pools)",
+      "location": "Pools hero",
+      "owner": "poolsHeroTokens.ts",
+      "destination": "duplicate create-pool",
+      "expected": "Remove duplicate",
+      "actual": "howItWorksReserved=false",
+      "status": "REMOVED"
+    },
+    {
+      "label": "Create Token",
+      "location": "List action cards",
+      "owner": "views/ListStudio/ListActionCards.tsx",
+      "destination": "unavailable",
+      "expected": "No Coming Soon CTA",
+      "actual": "Filtered out when !available",
+      "status": "REMOVED"
+    },
+    {
+      "label": "Import Token",
+      "location": "List",
+      "owner": "ListActionCards.tsx",
+      "destination": "list intent",
+      "expected": "Select import flow",
+      "actual": "setListIntent",
+      "status": "WORKING"
+    },
+    {
+      "label": "Explore Farms",
+      "location": "Farms hero",
+      "owner": "FarmsHeroModule.tsx",
+      "destination": "#explore-farms",
+      "expected": "Scroll inventory",
+      "actual": "scroll",
+      "status": "WORKING"
+    },
+    {
+      "label": "Global Search",
+      "location": "Header",
+      "owner": "app-shell/components/GlobalSearch.tsx",
+      "destination": "result.href",
+      "expected": "Navigate to token/project/venue",
+      "actual": "router.push",
+      "status": "WORKING"
+    }
+  ],
+  "counts": {
+    "WORKING": 13,
+    "REMOVED": 4,
+    "FIXED": 1
+  },
+  "pass": true
+}
