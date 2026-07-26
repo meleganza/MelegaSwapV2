@@ -6,6 +6,7 @@
 **Branch:** `smart-swap-post-mainnet-ux-stability-repair`  
 **Base HEAD (pre-mission):** `74a76e4f` (MELEGA_DEX_V1_USER_FLOW_AUDIT_CERTIFIED tip)  
 **Local safety snapshot (not pushed):** `safety/smart-swap-post-mainnet-ux-stability-repair-crash-recovery` @ `271aa7e3`
+**Delivery commit:** `49bf5276` (`49bf527620838c0c5c98ac625027d41ae565e6f0`)
 
 ---
 
