@@ -1,0 +1,10 @@
+{
+  "mission": "FARMS_V1_FINAL_INTEGRATION_AND_CERTIFICATION",
+  "verdict": "FARMS_V1_CERTIFIED",
+  "freezePass": true,
+  "mockPass": true,
+  "mockAuditPass": true,
+  "desktopPass": true,
+  "responsivePass": true,
+  "allPass": true
+}

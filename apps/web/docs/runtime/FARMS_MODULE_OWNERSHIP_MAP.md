@@ -186,7 +186,8 @@ Hero, KPIs, Yield Advisor, and Analytics support those domains — they are not 
 | | |
 | --- | --- |
 | **Responsibility** | End-to-end product certification of the LP farming center |
-| **Depends on** | MODULE 009 |
+| **Depends on** | MODULE 001–008 certified composition (Integration 009 remains future cutover) |
+| **Status** | V1 seal on `farms-v1-final-integration-and-certification` (Modules 001–008 + dual-surface legacy retained until 009) |
 
 ---
 
