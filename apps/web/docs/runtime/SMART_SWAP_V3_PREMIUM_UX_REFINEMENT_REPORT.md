@@ -4,6 +4,7 @@
 **Severity:** P1 — Presentation only  
 **Branch:** `smart-swap-v3-premium-ux-refinement`  
 **Base:** `SMART_SWAP_V2_UX_CONCEPT_REDESIGN_CERTIFIED` @ `ee796adf`
+**Delivery commit:** `d875530b`
 
 ---
 
