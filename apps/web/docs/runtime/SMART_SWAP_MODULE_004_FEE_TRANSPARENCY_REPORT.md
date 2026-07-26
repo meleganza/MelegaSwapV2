@@ -64,6 +64,10 @@ Flow: Swap → Protocol fee → Economic destination → Economic attribution.
 - Architecture / SmartSwapForm / D87 / FSC-01 freeze guards — pass  
 - `yarn build` — see build-summary.json  
 
+## Mission commit
+
+`f2799a5f8d02f6f9360d19a7c1eb1e3b30f1335d`
+
 ## Delivery
 
 Push only. No merge. No deploy.
