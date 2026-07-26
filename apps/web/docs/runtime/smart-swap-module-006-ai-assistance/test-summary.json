@@ -1,0 +1,20 @@
+{
+  "suite": "src/lib/smart-swap-ai-assistance/__tests__/smartSwapModule006.aiAssistance.test.ts",
+  "tests": 8,
+  "passed": 8,
+  "failed": 0,
+  "coverage": [
+    "Route explanation",
+    "Price impact explanation",
+    "Fee explanation",
+    "Liquidity explanation",
+    "No route explanation",
+    "Missing data",
+    "AI unavailable",
+    "Timeout",
+    "Forbidden language guard",
+    "SmartSwapForm unchanged",
+    "Route Engine / Preview / Fee libs freeze",
+    "Architecture freeze"
+  ]
+}

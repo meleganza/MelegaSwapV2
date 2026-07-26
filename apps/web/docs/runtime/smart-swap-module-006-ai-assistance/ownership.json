@@ -1,0 +1,19 @@
+{
+  "module": "SMART_SWAP_MODULE_006_AI_ASSISTANCE",
+  "owns": ["explanation", "education", "contextual assistance"],
+  "doesNotOwn": [
+    "route selection",
+    "swap execution",
+    "transaction mutation",
+    "fee calculation or mutation",
+    "Treasury settlement",
+    "KERL attribution",
+    "user decision override",
+    "financial advice",
+    "portfolio management",
+    "custody",
+    "signing"
+  ],
+  "principle": "AI is an assistant — optional, non-blocking, explanation only",
+  "implementation": "Grounded context builder (no private data, no advisory LLM authority)"
+}

@@ -1,0 +1,44 @@
+{
+  "model": "SmartSwapAIAssistance",
+  "fields": [
+    "contextType",
+    "explanation",
+    "source",
+    "confidence",
+    "confidenceReason",
+    "generatedAt",
+    "freshness",
+    "relatedRoute",
+    "relatedToken",
+    "warnings"
+  ],
+  "contextTypes": [
+    "ROUTE_EXPLANATION",
+    "PRICE_IMPACT_EXPLANATION",
+    "LIQUIDITY_EXPLANATION",
+    "FEE_EXPLANATION",
+    "ERROR_EXPLANATION"
+  ],
+  "confidence": ["HIGH", "MEDIUM", "LOW", "UNAVAILABLE"],
+  "failures": [
+    "AI_UNAVAILABLE",
+    "CONTEXT_UNAVAILABLE",
+    "INSUFFICIENT_DATA",
+    "TIMEOUT",
+    "PARTIAL_CONTEXT"
+  ],
+  "optional": true,
+  "blocksExecution": false,
+  "forbiddenOutputs": [
+    "Buy this token",
+    "Sell this token",
+    "best investment",
+    "maximize profit",
+    "increase your position",
+    "Guaranteed savings",
+    "Guaranteed better price",
+    "Guaranteed outcome"
+  ],
+  "mount": "SmartSwapExecutionPreviewModule after fee transparency",
+  "library": "apps/web/src/lib/smart-swap-ai-assistance/"
+}

@@ -1,0 +1,17 @@
+{
+  "execution": false,
+  "signing": false,
+  "custody": false,
+  "routingChanges": false,
+  "feeChanges": false,
+  "treasuryAccess": false,
+  "kerlAccess": false,
+  "privateKeys": false,
+  "seedPhrases": false,
+  "hiddenWalletInfo": false,
+  "smartSwapFormModified": false,
+  "routeEngineModified": false,
+  "executionPreviewLibModified": false,
+  "feeTransparencyLibModified": false,
+  "notes": "Optional explanation layer. Consumes public preview/fee context only. Failures never block swaps."
+}
