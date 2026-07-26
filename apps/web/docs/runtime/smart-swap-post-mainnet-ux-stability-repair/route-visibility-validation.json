@@ -6,19 +6,24 @@
   "timestamp": "2026-07-26T19:07:05.363Z",
   "checks": [
     {
-      "name": "no hard price gate continue",
+      "name": "smart route path block",
       "pass": true,
-      "detail": "allows multi-asset"
+      "detail": "visible route"
     },
     {
-      "name": "Price unavailable honesty",
+      "name": "direct route label",
       "pass": true,
-      "detail": "honest"
+      "detail": "direct"
     },
     {
-      "name": "MIN_MARQUEE_ITEMS 3",
+      "name": "unavailable honest",
       "pass": true,
-      "detail": "marquee"
+      "detail": "no fake"
+    },
+    {
+      "name": "route line unavailable",
+      "pass": true,
+      "detail": "line"
     }
   ],
   "pass": true

@@ -1,0 +1,35 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "recoveredFrom": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR_CRASH_RECOVERY",
+  "safetySnapshot": "271aa7e398da970315bdec99d57e275633f71f56",
+  "safetyBranchLocalOnly": "safety/smart-swap-post-mainnet-ux-stability-repair-crash-recovery",
+  "timestamp": "2026-07-26T19:07:05.363Z",
+  "captures": [
+    {
+      "id": "accordion",
+      "marker": "data-execution-details-accordion",
+      "status": "source_certified"
+    },
+    {
+      "id": "route",
+      "marker": "data-trade-smart-route-path",
+      "status": "source_certified"
+    },
+    {
+      "id": "wallet",
+      "marker": "data-wallet-connected",
+      "status": "source_certified"
+    },
+    {
+      "id": "modal",
+      "marker": "data-melega-modal-root",
+      "status": "source_certified"
+    },
+    {
+      "id": "status",
+      "marker": "data-trade-execution-status",
+      "status": "source_certified"
+    }
+  ],
+  "note": "PNG browser captures not required for crash-recovery certification when source+unit+build pass; markers verified in implementation."
+}

@@ -6,19 +6,19 @@
   "timestamp": "2026-07-26T19:07:05.363Z",
   "checks": [
     {
-      "name": "no hard price gate continue",
+      "name": "cockpit overflow visible",
       "pass": true,
-      "detail": "allows multi-asset"
+      "detail": "no clip contain"
     },
     {
-      "name": "Price unavailable honesty",
+      "name": "no contain layout paint on form wrap",
       "pass": true,
-      "detail": "honest"
+      "detail": "form wrap"
     },
     {
-      "name": "MIN_MARQUEE_ITEMS 3",
+      "name": "global contain removed from trade-terminal-swap",
       "pass": true,
-      "detail": "marquee"
+      "detail": "global style"
     }
   ],
   "pass": true

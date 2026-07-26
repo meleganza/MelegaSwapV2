@@ -6,24 +6,29 @@
   "timestamp": "2026-07-26T19:07:05.363Z",
   "checks": [
     {
-      "name": "status strip",
+      "name": "executionDetailsOpen SSOT module",
       "pass": true,
-      "detail": "feedback"
+      "detail": "module present"
     },
     {
-      "name": "Waiting wallet",
+      "name": "accordion uses useExecutionDetailsOpen",
       "pass": true,
-      "detail": "wallet phase"
+      "detail": "hook wired"
     },
     {
-      "name": "Preparing transaction",
+      "name": "grid accordion 0fr/1fr",
       "pass": true,
-      "detail": "approval phase"
+      "detail": "stable expand/collapse"
     },
     {
-      "name": "runtime Loading quote label",
+      "name": "nested panel has no local toggle state",
       "pass": true,
-      "detail": "label"
+      "detail": "no nested open state"
+    },
+    {
+      "name": "data-execution-details-accordion",
+      "pass": true,
+      "detail": "marker"
     }
   ],
   "pass": true

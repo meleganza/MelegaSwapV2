@@ -1,0 +1,9 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "recoveredFrom": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR_CRASH_RECOVERY",
+  "command": "yarn build",
+  "cwd": "apps/web",
+  "result": "pass",
+  "pass": true,
+  "notes": "next build completed; routes /swap and /trade emitted"
+}
