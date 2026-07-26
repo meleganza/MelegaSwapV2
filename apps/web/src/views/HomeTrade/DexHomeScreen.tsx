@@ -612,7 +612,16 @@ export const DexHomeScreen: React.FC = () => {
   }, [])
 
   const scrollToSwap = () => {
-    swapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const root = swapRef.current
+    root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // Focus the on-page terminal input — no second Swap surface.
+    window.setTimeout(() => {
+      const input =
+        root?.querySelector<HTMLElement>('.home-trade-swap input.token-amount-input') ||
+        root?.querySelector<HTMLElement>('.home-trade-swap input') ||
+        root?.querySelector<HTMLElement>('[data-home-swap-panel] input')
+      input?.focus({ preventScroll: true })
+    }, 280)
   }
 
   return (

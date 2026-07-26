@@ -16,8 +16,6 @@ import useTradeWarningImport from './hooks/useTradeWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
 import { tradeColors, tradeLayout } from './tradeTokens'
-import TradeRouteLine from './components/TradeRouteLine'
-import TradeSmartRouteBox from './components/TradeSmartRouteBox'
 import TradeExecutionStatusStrip from './components/TradeExecutionStatusStrip'
 import TradeRouterPanel from './components/TradeRouterPanel'
 import { SmartSwapHistoryModule } from 'views/SmartSwapStudio/modules/SmartSwapHistory'
@@ -34,6 +32,44 @@ const Shell = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+
+  &[data-swap-experience='smart'] {
+    max-width: min(100%, ${tradeLayout.cockpitSmartWidth});
+  }
+`
+
+const SmartBody = styled.div<{ $smart: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+
+  @media (min-width: 900px) {
+    display: ${({ $smart }) => ($smart ? 'grid' : 'flex')};
+    grid-template-columns: ${({ $smart }) => ($smart ? 'minmax(280px, 420px) minmax(260px, 1fr)' : 'none')};
+    align-items: start;
+    gap: 16px;
+  }
+`
+
+const FormColumn = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`
+
+const IntelColumn = styled.aside`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @media (max-width: 899px) {
+    order: 2;
+  }
 `
 
 const Panel = styled.div`
@@ -265,8 +301,8 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
             <Title>Swap</Title>
             <Subtitle>
               {isSmartExperience
-                ? 'Smart mode — route, fees, and readiness before wallet confirmation.'
-                : 'Instant mode — same Melega DEX engine, simpler confirmation path.'}
+                ? 'Smart mode — same engine, clearer route and fees.'
+                : 'Instant mode — same Melega DEX engine, simpler path.'}
             </Subtitle>
           </TitleBlock>
           <Toolbar data-trade-cockpit-toolbar>
@@ -282,19 +318,25 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
         <ModeSelectorSlot data-trade-mode-selector-slot>
           <TradeModeSelector mode={experience} onChange={setExperience} />
         </ModeSelectorSlot>
-        {isSmartExperience ? <TradeSmartRouteBox /> : null}
         <TradeExecutionStatusStrip />
-        <SwapFormWrap
-          ref={swapBodyRef}
-          className={`trade-terminal-swap${walletConnected ? '' : ' is-disconnected'} is-smartswap`}
-          data-wallet-connected={walletConnected ? 'true' : 'false'}
-          data-trade-swap-form
-          data-swap-experience={experience}
-        >
-          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-          <SmartSwapExecutionPreviewModule showSmartTransparency={isSmartExperience} />
-          <TradeRouteLine />
-        </SwapFormWrap>
+        <SmartBody $smart={isSmartExperience} data-smart-body={isSmartExperience ? 'true' : 'false'}>
+          <FormColumn>
+            <SwapFormWrap
+              ref={swapBodyRef}
+              className={`trade-terminal-swap${walletConnected ? '' : ' is-disconnected'} is-smartswap`}
+              data-wallet-connected={walletConnected ? 'true' : 'false'}
+              data-trade-swap-form
+              data-swap-experience={experience}
+            >
+              <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+            </SwapFormWrap>
+          </FormColumn>
+          {isSmartExperience ? (
+            <IntelColumn data-smart-intel-panel>
+              <SmartSwapExecutionPreviewModule showSmartTransparency />
+            </IntelColumn>
+          ) : null}
+        </SmartBody>
       </Panel>
     </Shell>
   )

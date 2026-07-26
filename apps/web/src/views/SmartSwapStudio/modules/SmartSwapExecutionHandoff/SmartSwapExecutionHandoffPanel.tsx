@@ -86,9 +86,13 @@ const Item = styled.li<{ $ok?: boolean }>`
 
 export type SmartSwapExecutionHandoffPanelProps = {
   handoff: SmartSwapExecutionHandoff
+  compact?: boolean
 }
 
-export function SmartSwapExecutionHandoffPanel({ handoff }: SmartSwapExecutionHandoffPanelProps) {
+export function SmartSwapExecutionHandoffPanel({
+  handoff,
+  compact = false,
+}: SmartSwapExecutionHandoffPanelProps) {
   const [showDiagnostics, setShowDiagnostics] = useState(false)
 
   return (
@@ -96,16 +100,20 @@ export function SmartSwapExecutionHandoffPanel({ handoff }: SmartSwapExecutionHa
       data-smart-swap-module="handoff"
       data-handoff-certified={handoff.certified ? 'true' : 'false'}
       data-handoff-lifecycle={handoff.lifecycle}
+      data-handoff-compact={compact ? 'true' : 'false'}
       aria-label="Execution readiness"
+      style={compact ? { marginTop: 0, padding: '10px' } : undefined}
     >
       <Title>
         Execution readiness
         <Badge $ok={handoff.certified}>{handoff.certified ? 'READY' : 'ACTION NEEDED'}</Badge>
       </Title>
       <Body role="status">{handoff.message}</Body>
-      <Meta>
-        Confirm in the swap form to request a wallet signature. Signing and broadcast are never automatic.
-      </Meta>
+      {!compact ? (
+        <Meta>
+          Confirm in the swap form to request a wallet signature. Signing and broadcast are never automatic.
+        </Meta>
+      ) : null}
       <DiagnosticsToggle
         type="button"
         aria-expanded={showDiagnostics}

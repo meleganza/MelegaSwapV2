@@ -1,9 +1,9 @@
 /**
- * Smart Swap Module 004 — Fee Transparency panel (presentation only).
+ * Smart Swap Module 004 — Fee Transparency (compact card).
  * No fee mutation, Treasury execution, or KERL authority.
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import type { SmartSwapFeeTransparency } from 'lib/smart-swap-fee-transparency'
 
@@ -11,7 +11,6 @@ const UNAVAILABLE = '—'
 
 const Root = styled.section`
   width: 100%;
-  margin-top: 10px;
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.14);
@@ -26,7 +25,7 @@ const Title = styled.h4`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #9ca3af;
 `
 
 const Flow = styled.ol`
@@ -47,7 +46,7 @@ const Step = styled.li`
 `
 
 const Label = styled.span`
-  color: #94a3b8;
+  color: #9ca3af;
 `
 
 const Value = styled.span`
@@ -57,35 +56,41 @@ const Value = styled.span`
 `
 
 const Arrow = styled.li`
-  color: #64748b;
+  color: #f7c948;
   font-size: 11px;
   text-align: center;
   line-height: 1;
   list-style: none;
+  opacity: 0.7;
 `
 
 const Note = styled.p`
   margin: 8px 0 0;
   font-size: 11px;
   line-height: 1.4;
-  color: #94a3b8;
+  color: #9ca3af;
 `
 
-const StateBadge = styled.span<{ $state: string }>`
-  display: inline-block;
-  margin-left: 6px;
-  font-size: 10px;
+const More = styled.button`
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.03em;
-  color: ${({ $state }) =>
-    $state === 'AVAILABLE' ? '#86efac' : $state === 'PARTIAL' ? '#fcd34d' : '#fca5a5'};
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 `
 
 export type SmartSwapFeeTransparencyPanelProps = {
   model: SmartSwapFeeTransparency
+  compact?: boolean
 }
 
-export function SmartSwapFeeTransparencyPanel({ model }: SmartSwapFeeTransparencyPanelProps) {
+export function SmartSwapFeeTransparencyPanel({ model, compact = false }: SmartSwapFeeTransparencyPanelProps) {
+  const [expanded, setExpanded] = useState(false)
   const showUnavailableCopy =
     model.state === 'UNAVAILABLE' || model.state === 'NOT_APPLICABLE' || model.state === 'STALE'
 
@@ -94,13 +99,12 @@ export function SmartSwapFeeTransparencyPanel({ model }: SmartSwapFeeTransparenc
       data-smart-swap-module="004"
       data-fee-state={model.state}
       data-fee-source={model.source}
+      data-fee-compact={compact ? 'true' : 'false'}
     >
-      <Title>
-        Fee transparency
-        <StateBadge $state={model.state}>{model.state.replace(/_/g, ' ')}</StateBadge>
-      </Title>
+      <Title>Fee transparency</Title>
 
-      {showUnavailableCopy && !model.flowSteps.some((s) => s.label === 'Protocol fee' && s.value !== 'Fee information unavailable') ? (
+      {showUnavailableCopy &&
+      !model.flowSteps.some((s) => s.label === 'Protocol fee' && s.value !== 'Fee information unavailable') ? (
         <Note role="status">{model.unavailableReason ?? 'Fee information unavailable'}</Note>
       ) : (
         <Flow aria-label="Fee transparency flow">
@@ -116,8 +120,24 @@ export function SmartSwapFeeTransparencyPanel({ model }: SmartSwapFeeTransparenc
         </Flow>
       )}
 
-      <Note>{model.explanation}</Note>
-      {model.freshness ? <Note>Freshness: {model.freshness}</Note> : null}
+      {compact ? (
+        <>
+          <More type="button" aria-expanded={expanded} onClick={() => setExpanded((v) => !v)}>
+            {expanded ? 'Hide fee details' : 'Fee details'}
+          </More>
+          {expanded ? (
+            <>
+              <Note>{model.explanation}</Note>
+              {model.freshness ? <Note>Freshness: {model.freshness}</Note> : null}
+            </>
+          ) : null}
+        </>
+      ) : (
+        <>
+          <Note>{model.explanation}</Note>
+          {model.freshness ? <Note>Freshness: {model.freshness}</Note> : null}
+        </>
+      )}
     </Root>
   )
 }

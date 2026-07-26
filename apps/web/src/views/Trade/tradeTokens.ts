@@ -5,7 +5,8 @@ import { studioConstitutionLayout } from 'design-system/melega/tokens/studioCons
 export const tradeLayout = {
   ...premiumStudioLayout,
   ...studioConstitutionLayout,
-  cockpitWidth: '360px',
+  cockpitWidth: '420px',
+  cockpitSmartWidth: '860px',
   centerWidth: '520px',
   rightRailWidth: '300px',
   columnGap: '16px',

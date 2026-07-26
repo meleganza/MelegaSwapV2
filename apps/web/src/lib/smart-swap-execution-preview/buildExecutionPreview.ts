@@ -94,7 +94,7 @@ function collectWarnings(input: SmartSwapExecutionPreviewInput): SmartSwapPrevie
   if (input.gasUnits == null) {
     warnings.push({
       code: 'GAS_ESTIMATION_UNAVAILABLE',
-      message: 'Gas estimation unavailable — preview still shows quote fields.',
+      message: 'Gas estimate unavailable — wallet will simulate before signing.',
       source: 'gas-estimator',
     })
   }

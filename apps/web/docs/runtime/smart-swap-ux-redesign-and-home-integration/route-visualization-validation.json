@@ -1,0 +1,28 @@
+{
+  "mission": "SMART_SWAP_UX_REDESIGN_AND_HOME_INTEGRATION",
+  "base": "smart-swap-post-mainnet-ux-stability-repair@71273b62",
+  "timestamp": "2026-07-26T19:37:26.083Z",
+  "checks": [
+    {
+      "name": "visual route component",
+      "pass": true,
+      "detail": "SmartSwapVisualRoute"
+    },
+    {
+      "name": "icon hops not long text path only",
+      "pass": true,
+      "detail": "icon-led"
+    },
+    {
+      "name": "module mounts visual route first",
+      "pass": true,
+      "detail": "hierarchy"
+    },
+    {
+      "name": "unavailable honest",
+      "pass": true,
+      "detail": "no fake"
+    }
+  ],
+  "pass": true
+}

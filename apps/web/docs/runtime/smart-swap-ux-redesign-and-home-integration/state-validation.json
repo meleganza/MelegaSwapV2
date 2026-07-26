@@ -1,0 +1,23 @@
+{
+  "mission": "SMART_SWAP_UX_REDESIGN_AND_HOME_INTEGRATION",
+  "base": "smart-swap-post-mainnet-ux-stability-repair@71273b62",
+  "timestamp": "2026-07-26T19:37:26.083Z",
+  "checks": [
+    {
+      "name": "executionDetailsOpen SSOT accordion",
+      "pass": true,
+      "detail": "accordion"
+    },
+    {
+      "name": "grid 0fr/1fr",
+      "pass": true,
+      "detail": "stable"
+    },
+    {
+      "name": "smart desktop split",
+      "pass": true,
+      "detail": "layout"
+    }
+  ],
+  "pass": true
+}

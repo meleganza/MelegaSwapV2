@@ -13,10 +13,25 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   }
 
   [data-trade-cockpit] {
-    width: 360px;
-    max-width: 360px;
+    width: 100%;
+    max-width: 420px;
     overflow: visible;
     box-sizing: border-box;
+  }
+
+  [data-trade-cockpit][data-swap-experience='smart'] {
+    max-width: min(100%, 860px);
+  }
+
+  @media (max-width: 899px) {
+    [data-trade-cockpit][data-swap-experience='smart'] {
+      max-width: 420px;
+    }
+
+    [data-smart-body] {
+      display: flex !important;
+      flex-direction: column !important;
+    }
   }
 
   /* Forensic: Instant | Smart must remain visible in the live /swap cockpit. */

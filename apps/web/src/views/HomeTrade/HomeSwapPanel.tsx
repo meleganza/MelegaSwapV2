@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
+import { useAccount } from 'wagmi'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
@@ -87,6 +88,8 @@ const LiveText = styled.span<{ $live?: boolean }>`
 const HomeSwapInner: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
+  const { address: wagmiAddress } = useAccount()
+  const walletConnected = Boolean(account || wagmiAddress)
   const [experience, setExperience] = useState<SwapExperienceMode>('instant')
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
@@ -113,11 +116,11 @@ const HomeSwapInner: React.FC = () => {
           {inputSymbol} / {outputSymbol}
         </PairLine>
         <span style={{ color: '#5f5f5f', fontSize: 12 }}>•</span>
-        <LiveDot $live={Boolean(account)} aria-hidden />
-        <LiveText $live={Boolean(account)}>Live</LiveText>
+        <LiveDot $live={walletConnected} aria-hidden />
+        <LiveText $live={walletConnected}>Live</LiveText>
       </>
     ),
-    [account, inputSymbol, outputSymbol],
+    [walletConnected, inputSymbol, outputSymbol],
   )
 
   const handleOutputSelect = useCallback(
@@ -164,12 +167,13 @@ const HomeSwapInner: React.FC = () => {
       >
         <div
           ref={swapBodyRef}
-          className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
-          data-wallet-connected={account ? 'true' : 'false'}
+          className={`home-trade-swap${walletConnected ? '' : ' is-disconnected'}`}
+          data-wallet-connected={walletConnected ? 'true' : 'false'}
+          data-home-swap-panel
           data-swap-experience={experience}
         >
           <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-          {!account && (
+          {!walletConnected && (
             <div className="home-trade-swap-slippage-strip slippage-row" role="group" aria-label="Slippage tolerance">
               <span className="home-trade-swap-slippage-label-row">
                 <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
