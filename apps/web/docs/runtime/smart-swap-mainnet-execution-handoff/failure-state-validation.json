@@ -1,0 +1,16 @@
+{
+  "states": [
+    "WALLET_NOT_CONNECTED",
+    "WRONG_NETWORK",
+    "NO_ROUTE",
+    "STALE_QUOTE",
+    "INSUFFICIENT_BALANCE",
+    "INSUFFICIENT_ALLOWANCE",
+    "GAS_ESTIMATION_FAILED",
+    "SIMULATION_FAILED",
+    "CALLDATA_INVALID",
+    "EXECUTION_UNAVAILABLE"
+  ],
+  "silentFallback": false,
+  "pass": true
+}

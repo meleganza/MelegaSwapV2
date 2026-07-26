@@ -656,7 +656,7 @@ export const DexHomeScreen: React.FC = () => {
                 <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
                   Instant Swap
                 </PrimaryCta>
-                <SecondaryCta href="/trade" data-testid="dex-home-smart-swap">
+                <SecondaryCta href="/trade?experience=smart" data-testid="dex-home-smart-swap">
                   Smart Swap
                 </SecondaryCta>
               </CtaRow>
@@ -670,7 +670,7 @@ export const DexHomeScreen: React.FC = () => {
                   <Zap size={18} color={uxRebuildColors.gold} aria-hidden />
                   Instant Swap
                   <a
-                    href="/trade"
+                    href="/trade?experience=smart"
                     data-testid="dex-home-smart-swap-entry"
                     style={{
                       marginLeft: 'auto',

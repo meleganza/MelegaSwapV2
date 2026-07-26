@@ -1,0 +1,20 @@
+{
+  "modes": [
+    "instant",
+    "smart"
+  ],
+  "sameEngine": "SmartSwapForm",
+  "selectorFile": "src/views/Trade/components/TradeModeSelector.tsx",
+  "touchTargetMinPx": 44,
+  "ariaLabels": [
+    "Instant Swap mode selected",
+    "Smart Swap mode selected"
+  ],
+  "smartShowsTransparency": true,
+  "instantHidesTransparency": true,
+  "homeCtas": {
+    "instant": "scroll-to-swap",
+    "smart": "/trade?experience=smart"
+  },
+  "pass": true
+}

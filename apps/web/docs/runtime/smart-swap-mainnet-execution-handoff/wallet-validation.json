@@ -1,0 +1,10 @@
+{
+  "privateKeys": false,
+  "checks": [
+    "connected",
+    "chainId=56",
+    "balance",
+    "allowance via ApprovalState"
+  ],
+  "pass": true
+}

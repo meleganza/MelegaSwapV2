@@ -1,0 +1,8 @@
+{
+  "suite": "src/lib/smart-swap-execution-handoff/__tests__/smartSwapMainnetExecutionHandoff.test.ts",
+  "tests": 5,
+  "passed": 5,
+  "smartSwapFormSha": "93a1fc4407a19c1279ab9535352573b4e29bb7b4e3a7ef13940b90ebcc3c4797",
+  "verdict": "SMART_SWAP_MAINNET_EXECUTION_HANDOFF_CERTIFIED",
+  "pass": true
+}

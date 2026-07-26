@@ -1,0 +1,30 @@
+{
+  "module": "SMART_SWAP_MAINNET_EXECUTION_HANDOFF",
+  "broadcast": false,
+  "autoSign": false,
+  "samples": {
+    "ready": {
+      "certified": true,
+      "lifecycle": "HANDOFF_READY",
+      "requiresUserConfirmation": true,
+      "autoSignForbidden": true,
+      "autoBroadcastForbidden": true,
+      "failures": [],
+      "message": "Certified handoff ready. Confirm explicitly in the swap form to request your wallet signature. No automatic signing or broadcast."
+    },
+    "walletDisconnected": {
+      "certified": false,
+      "lifecycle": "UNAVAILABLE",
+      "failures": [
+        "WALLET_NOT_CONNECTED"
+      ]
+    },
+    "allowanceMissing": {
+      "certified": false,
+      "failures": [
+        "INSUFFICIENT_ALLOWANCE"
+      ]
+    }
+  },
+  "pass": true
+}

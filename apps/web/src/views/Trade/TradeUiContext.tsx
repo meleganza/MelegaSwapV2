@@ -1,9 +1,12 @@
 import React, { createContext, useContext } from 'react'
 import type { TradeMode } from './tradeTokens'
+import type { SwapExperienceMode } from './swapExperience'
 
 export interface TradeUiState {
   mode: TradeMode
   setMode: (mode: TradeMode) => void
+  experience: SwapExperienceMode
+  setExperience: (experience: SwapExperienceMode) => void
   helpOpen: boolean
   setHelpOpen: (open: boolean) => void
 }

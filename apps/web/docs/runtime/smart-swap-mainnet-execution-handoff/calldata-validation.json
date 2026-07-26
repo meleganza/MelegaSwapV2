@@ -1,0 +1,5 @@
+{
+  "note": "Calldata construction remains in SmartSwapForm / useSwapCallArguments \u2014 handoff verifies trade+preview present",
+  "routerUnchanged": true,
+  "pass": true
+}

@@ -19,6 +19,7 @@ import useTradeTerminalData from './useTradeTerminalData'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
 import { TradeUiProvider } from './TradeUiContext'
 import { tradeColors, tradeLayout, type TradeMode } from './tradeTokens'
+import { parseSwapExperience, type SwapExperienceMode } from './swapExperience'
 
 const Root = styled.div`
   color: ${tradeColors.text};
@@ -133,6 +134,10 @@ const AreaSwaps = styled.div`
 
 export const TradeTerminalScreen: React.FC = () => {
   const [mode, setMode] = useState<TradeMode>('smartswap')
+  const [experience, setExperience] = useState<SwapExperienceMode>(() => {
+    if (typeof window === 'undefined') return 'smart'
+    return parseSwapExperience(new URLSearchParams(window.location.search).get('experience'))
+  })
   const [helpOpen, setHelpOpen] = useState(false)
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
@@ -157,7 +162,7 @@ export const TradeTerminalScreen: React.FC = () => {
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
-      <TradeUiProvider value={{ mode, setMode, helpOpen, setHelpOpen }}>
+      <TradeUiProvider value={{ mode, setMode, experience, setExperience, helpOpen, setHelpOpen }}>
       <HeroShell>
         <SmartSwapHeroModule onHowItWorks={() => setHelpOpen(true)} />
         <span id="smart-swap-how-it-works" hidden aria-hidden="true" />

@@ -1,0 +1,14 @@
+{
+  "flow": [
+    "Prepare",
+    "Wallet signature (user)",
+    "Broadcast (wallet)",
+    "Pending",
+    "Receipt",
+    "Refresh history/balances"
+  ],
+  "autoExecution": false,
+  "engine": "SmartSwapForm",
+  "handoffRole": "readiness certification only",
+  "pass": true
+}

@@ -19,6 +19,8 @@ import TradeSmartRouteBox from './components/TradeSmartRouteBox'
 import TradeRouterPanel from './components/TradeRouterPanel'
 import { SmartSwapHistoryModule } from 'views/SmartSwapStudio/modules/SmartSwapHistory'
 import TradeLimitOrdersPanel from './components/TradeLimitOrdersPanel'
+import TradeModeSelector from './components/TradeModeSelector'
+import { useTradeUi } from './TradeUiContext'
 import type { TradeMode } from './tradeTokens'
 
 const Shell = styled.div`
@@ -164,6 +166,7 @@ export interface TradeCockpitProps {
 export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
+  const { experience, setExperience } = useTradeUi()
   const warningSwapHandler = useTradeWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -171,6 +174,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = useSwapState()
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
+  const isSmartExperience = experience === 'smart'
 
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
@@ -230,12 +234,16 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   }
 
   return (
-    <Shell data-trade-cockpit>
+    <Shell data-trade-cockpit data-swap-experience={experience}>
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header>
           <TitleBlock>
             <Title>Swap</Title>
-            <Subtitle>Swap through the best available multichain route.</Subtitle>
+            <Subtitle>
+              {isSmartExperience
+                ? 'Smart mode — route transparency and certified handoff before wallet confirmation.'
+                : 'Instant mode — same Melega DEX engine, simpler confirmation path.'}
+            </Subtitle>
           </TitleBlock>
           <Toolbar data-trade-cockpit-toolbar>
             <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
@@ -247,15 +255,17 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
           </Toolbar>
         </CockpitHeader>
         <Divider />
-        <TradeSmartRouteBox />
+        <TradeModeSelector mode={experience} onChange={setExperience} />
+        {isSmartExperience ? <TradeSmartRouteBox /> : null}
         <SwapFormWrap
           ref={swapBodyRef}
           className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
           data-wallet-connected={account ? 'true' : 'false'}
           data-trade-swap-form
+          data-swap-experience={experience}
         >
           <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-          <SmartSwapExecutionPreviewModule />
+          <SmartSwapExecutionPreviewModule showSmartTransparency={isSmartExperience} />
           <TradeRouteLine />
         </SwapFormWrap>
       </Panel>

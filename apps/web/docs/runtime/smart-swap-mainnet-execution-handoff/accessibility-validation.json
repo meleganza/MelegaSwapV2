@@ -1,0 +1,9 @@
+{
+  "modeSelector": {
+    "role": "tablist",
+    "touchTargetPx": 44,
+    "focusVisible": true,
+    "screenReaderLabels": true
+  },
+  "pass": true
+}
