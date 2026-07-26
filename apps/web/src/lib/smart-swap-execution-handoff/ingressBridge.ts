@@ -42,7 +42,8 @@ export function publishSmartSwapHandoffCertification(input: {
   experience?: SwapExperienceMode
 }): void {
   snapshot = {
-    experience: input.experience ?? snapshot.experience,
+    // Only update experience when explicitly provided — never clobber Instant.
+    experience: input.experience !== undefined ? input.experience : snapshot.experience,
     certified: input.certified,
     handoffCompatible: input.certified,
     failures: input.failures ?? [],

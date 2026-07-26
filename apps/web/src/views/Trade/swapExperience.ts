@@ -7,6 +7,7 @@ export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
 }
 
 export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
-  if (value === 'instant') return 'instant'
-  return 'smart'
+  if (value === 'smart') return 'smart'
+  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
+  return 'instant'
 }

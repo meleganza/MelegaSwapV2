@@ -120,11 +120,12 @@ export function useSmartSwapExecutionHandoff(
   ])
 
   useEffect(() => {
+    // Do not force experience here — TradeCockpit / Home own Instant|Smart mode.
+    // Forcing `smart` previously overwrote Instant and blocked Confirm Swap.
     publishSmartSwapHandoffCertification({
       certified: handoff.certified,
       failures: handoff.failures,
       userMessage: handoff.message,
-      experience: 'smart',
     })
   }, [handoff])
 

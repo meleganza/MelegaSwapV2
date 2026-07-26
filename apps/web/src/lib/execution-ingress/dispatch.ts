@@ -13,6 +13,7 @@ import {
   getConfiguredExecutionMode,
   EXECUTION_MODE_OFF,
   isMainnetChainId,
+  isTestnetChainId,
 } from '../execution-modes'
 import { isCanonicalIngressEnabled, isIngressDispatchActive } from './activation'
 import { evaluateDexCanonicalIngressGates } from './dexCanonicalGates'
@@ -87,11 +88,13 @@ export async function dispatchExecutionInstruction(
 
   const mode = getConfiguredExecutionMode()
   const chainId = context.chainId ?? instruction.chainId
-  // Mainnet DEX wallet swaps must not inherit KRMP testnet live gates.
-  // Instant + Smart both use SmartSwapForm → ingress with user confirmation.
+  // Forensic rule (live terminal):
+  // - Chain 56 / non-testnet → DEX canonical ingress (never KRMP certified_handoff)
+  // - Chain 97 → may use live testnet gates with certified handoff
+  // - Undefined chainId must NOT fall into KRMP live gates (race / stale arming)
   const useDexCanonicalGates =
     isCanonicalIngressEnabled() &&
-    (mode === EXECUTION_MODE_OFF || isMainnetChainId(chainId))
+    (mode === EXECUTION_MODE_OFF || !isTestnetChainId(chainId) || isMainnetChainId(chainId))
 
   const liveGates = useDexCanonicalGates
     ? evaluateDexCanonicalIngressGates({

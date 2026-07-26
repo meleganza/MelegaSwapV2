@@ -1,0 +1,8 @@
+{
+  "selector": "data-trade-mode-selector",
+  "slot": "data-trade-mode-selector-slot",
+  "flexShrinkZero": true,
+  "cssGuard": true,
+  "defaultExperience": "instant",
+  "pass": true
+}

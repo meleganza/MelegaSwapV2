@@ -1,0 +1,32 @@
+{
+  "route": "/swap",
+  "flow": [
+    "Open /swap",
+    "Select Instant|Smart",
+    "Enter BNB\u2192MARCO",
+    "Quote",
+    "Confirm Swap",
+    "Wallet request"
+  ],
+  "findings": [
+    "Smart handoff hook previously mounted under Instant and forced experience=smart",
+    "Mode selector could be clipped (overflow + flex-shrink)",
+    "Default experience was smart; now instant",
+    "Non-testnet chainIds use DEX canonical ingress"
+  ],
+  "pass": true,
+  "liveLocalRepro": {
+    "url": "http://127.0.0.1:3460/swap/",
+    "instantTabsVisible": true,
+    "smartTabVisible": true,
+    "defaultSelected": "Instant Swap mode selected",
+    "smartSwitchUrl": "/swap/?experience=smart",
+    "smartShows": [
+      "Execution preview",
+      "Fee transparency",
+      "AI assistance",
+      "Execution readiness"
+    ],
+    "actionableHandoffMessage": "Wallet connection required."
+  }
+}

@@ -9,6 +9,9 @@ const Shell = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 `
 
 const Segmented = styled.div`

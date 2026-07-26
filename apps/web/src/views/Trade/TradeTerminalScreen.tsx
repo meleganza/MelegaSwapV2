@@ -135,7 +135,7 @@ const AreaSwaps = styled.div`
 export const TradeTerminalScreen: React.FC = () => {
   const [mode, setMode] = useState<TradeMode>('smartswap')
   const [experience, setExperience] = useState<SwapExperienceMode>(() => {
-    if (typeof window === 'undefined') return 'smart'
+    if (typeof window === 'undefined') return 'instant'
     return parseSwapExperience(new URLSearchParams(window.location.search).get('experience'))
   })
   const [helpOpen, setHelpOpen] = useState(false)

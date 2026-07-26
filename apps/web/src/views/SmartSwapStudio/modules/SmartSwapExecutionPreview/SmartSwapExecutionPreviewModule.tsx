@@ -19,18 +19,14 @@ export type SmartSwapExecutionPreviewModuleProps = {
 }
 
 /**
- * Smart experience stack: preview → fee → AI → certified handoff.
- * SmartSwapForm remains the execution engine (user confirms there).
+ * Smart-only stack. Mounted only when Smart experience is selected so Instant
+ * never publishes Smart handoff state into the ingress bridge.
  */
-export function SmartSwapExecutionPreviewModule({
-  showSmartTransparency = true,
-}: SmartSwapExecutionPreviewModuleProps) {
+function SmartTransparencyStack() {
   const result = useSmartSwapExecutionPreview()
   const feeModel = useSmartSwapFeeTransparency(result)
   const aiResult = useSmartSwapAIAssistance(result, feeModel)
   const handoff = useSmartSwapExecutionHandoff(result, feeModel)
-
-  if (!showSmartTransparency) return null
 
   return (
     <>
@@ -40,4 +36,16 @@ export function SmartSwapExecutionPreviewModule({
       <SmartSwapExecutionHandoffPanel handoff={handoff} />
     </>
   )
+}
+
+/**
+ * Smart experience stack: preview → fee → AI → certified handoff.
+ * SmartSwapForm remains the execution engine (user confirms there).
+ */
+export function SmartSwapExecutionPreviewModule({
+  showSmartTransparency = true,
+}: SmartSwapExecutionPreviewModuleProps) {
+  // Early return BEFORE hooks in child — Instant must not touch handoff bridge.
+  if (!showSmartTransparency) return null
+  return <SmartTransparencyStack />
 }

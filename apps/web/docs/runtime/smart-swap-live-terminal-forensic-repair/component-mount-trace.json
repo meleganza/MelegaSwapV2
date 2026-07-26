@@ -1,0 +1,12 @@
+{
+  "chain": [
+    "pages/swap/index.tsx",
+    "views/Trade/TradeTerminalScreen.tsx",
+    "views/Trade/TradeCockpit.tsx",
+    "views/Swap/SmartSwap (SmartSwapForm)",
+    "SmartSwapExecutionPreviewModule (Smart only)",
+    "useSmartSwapExecutionHandoff \u2192 ingressBridge",
+    "SmartSwapCommitButton \u2192 useSmartSwapExecution \u2192 submitSwapViaIngress \u2192 dispatch"
+  ],
+  "pass": true
+}

@@ -19,6 +19,30 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  /* Forensic: Instant | Smart must remain visible in the live /swap cockpit. */
+  [data-trade-mode-selector-slot],
+  [data-trade-mode-selector] {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-shrink: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    height: auto !important;
+    min-height: 44px !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 3 !important;
+  }
+
+  [data-trade-mode-selector] button[role='tab'] {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    min-height: 44px !important;
+    height: 44px !important;
+  }
+
   [data-trade-cockpit-shell],
   .trade-swap-cockpit {
     width: 100%;

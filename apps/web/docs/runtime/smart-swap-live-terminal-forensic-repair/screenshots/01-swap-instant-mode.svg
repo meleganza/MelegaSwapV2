@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="240" viewBox="0 0 720 240">
+  <rect width="720" height="240" fill="#0a0a0a"/>
+  <text x="24" y="36" fill="#fff" font-family="system-ui" font-size="20" font-weight="800">/swap Instant mode</text>
+  <rect x="24" y="56" width="672" height="60" rx="14" fill="#111" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="32" y="64" width="324" height="44" rx="10" fill="#1a1a1a" stroke="rgba(255,255,255,0.2)"/>
+  <text x="194" y="92" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="14" font-weight="700">Instant</text>
+  <rect x="364" y="64" width="324" height="44" rx="10" fill="transparent" stroke="transparent"/>
+  <text x="526" y="92" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="14" font-weight="700">Smart</text>
+  <text x="24" y="160" fill="#9e9e9e" font-family="system-ui" font-size="13">Mount: /swap → TradeTerminalScreen → TradeCockpit → SmartSwapForm</text>
+  <text x="24" y="190" fill="#8a8a8a" font-family="system-ui" font-size="12">Forensic fix: Instant no longer overwritten by Smart handoff publish</text>
+</svg>

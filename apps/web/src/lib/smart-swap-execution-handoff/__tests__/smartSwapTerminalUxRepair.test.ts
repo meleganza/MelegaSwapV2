@@ -76,9 +76,9 @@ describe('SMART_SWAP_TERMINAL_UX_AND_EXECUTION_REPAIR', () => {
     publishSwapExperienceMode('smart')
     expect(resolveIngressCertifiedHandoff({ userConfirmedExecution: true }).certifiedHandoff).toBe(false)
 
+    publishSwapExperienceMode('smart')
     publishSmartSwapHandoffCertification({
       certified: true,
-      experience: 'smart',
       failures: [],
       userMessage: 'Ready to swap. Confirm in the form to request your wallet signature.',
     })

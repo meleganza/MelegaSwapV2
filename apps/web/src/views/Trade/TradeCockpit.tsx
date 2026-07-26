@@ -45,8 +45,15 @@ const Panel = styled.div`
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   contain: layout paint;
+`
+
+const ModeSelectorSlot = styled.div`
+  flex-shrink: 0;
+  width: 100%;
+  margin-bottom: 10px;
 `
 
 const CockpitHeader = styled.div`
@@ -179,6 +186,15 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
 
   useEffect(() => {
     publishSwapExperienceMode(experience)
+    if (typeof window === 'undefined') return
+    try {
+      const url = new URL(window.location.href)
+      if (experience === 'instant') url.searchParams.delete('experience')
+      else url.searchParams.set('experience', experience)
+      window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
+    } catch {
+      /* ignore history sync failures */
+    }
   }, [experience])
 
   const handleOutputSelect = useCallback(
@@ -260,7 +276,9 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
           </Toolbar>
         </CockpitHeader>
         <Divider />
-        <TradeModeSelector mode={experience} onChange={setExperience} />
+        <ModeSelectorSlot data-trade-mode-selector-slot>
+          <TradeModeSelector mode={experience} onChange={setExperience} />
+        </ModeSelectorSlot>
         {isSmartExperience ? <TradeSmartRouteBox /> : null}
         <SwapFormWrap
           ref={swapBodyRef}

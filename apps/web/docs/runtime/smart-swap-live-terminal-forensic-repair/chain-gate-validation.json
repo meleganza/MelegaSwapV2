@@ -1,0 +1,7 @@
+{
+  "chain56": "DEX canonical ingress (no KRMP certified_handoff)",
+  "chain97": "live testnet gates with certified handoff",
+  "undefinedChainId": "treated as non-testnet \u2192 DEX canonical",
+  "krmpActivation": "scoped to chain 97 in Updaters",
+  "pass": true
+}

@@ -1,0 +1,6 @@
+{
+  "rootCause": "useSmartSwapExecutionHandoff published experience:smart even when Instant UI was active (hooks before early return)",
+  "fix": "SmartTransparencyStack only mounts when showSmartTransparency; publish no longer forces experience",
+  "instantConfirm": "resolveIngressCertifiedHandoff(userConfirmed) \u2192 certifiedHandoff true",
+  "pass": true
+}
