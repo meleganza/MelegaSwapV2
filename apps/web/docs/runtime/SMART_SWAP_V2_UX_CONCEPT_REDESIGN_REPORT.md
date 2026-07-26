@@ -4,6 +4,7 @@
 **Severity:** P0 — Product UX redesign (functionality already proven)  
 **Branch:** `smart-swap-v2-ux-concept-redesign`  
 **Base:** `smart-swap-ux-redesign-and-home-integration` @ `7ff1ff8f`
+**Delivery commit:** `50d573e3`
 
 ---
 
