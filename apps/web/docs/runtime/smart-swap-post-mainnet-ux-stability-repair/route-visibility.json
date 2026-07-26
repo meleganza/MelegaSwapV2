@@ -1,0 +1,26 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "smart route path block",
+      "pass": true,
+      "detail": "visible route"
+    },
+    {
+      "name": "direct route label",
+      "pass": true,
+      "detail": "direct"
+    },
+    {
+      "name": "unavailable honest",
+      "pass": true,
+      "detail": "no fake"
+    },
+    {
+      "name": "route line unavailable",
+      "pass": true,
+      "detail": "line"
+    }
+  ],
+  "pass": true
+}

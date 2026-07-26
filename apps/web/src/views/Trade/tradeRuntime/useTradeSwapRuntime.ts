@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { Currency, Trade, TradeType } from '@pancakeswap/sdk'
 import { useWeb3React } from '@pancakeswap/wagmi'
+import { useAccount } from 'wagmi'
 import { useAtomValue } from 'jotai'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
@@ -120,6 +121,8 @@ export interface TradeSwapRuntime {
 
 export function useTradeSwapRuntime(): TradeSwapRuntime {
   const { account } = useWeb3React()
+  const { address: wagmiAddress } = useAccount()
+  const connectedAccount = account || wagmiAddress || undefined
   const router = useRouter()
   const { chainId } = useActiveChainId()
   const settlementMetadata = useTradeSettlementMetadata()
@@ -181,15 +184,15 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
   const routing = hasAmount && !tradeInfo && Boolean(inputCurrency && outputCurrency)
 
   const phase: TradeRuntimePhase = useMemo(() => {
-    if (!account && hasAmount && tradeInfo) return 'wallet_required'
-    if (approval === ApprovalState.NOT_APPROVED && account && tradeInfo && amountToApprove) {
+    if (!connectedAccount && hasAmount && tradeInfo) return 'wallet_required'
+    if (approval === ApprovalState.NOT_APPROVED && connectedAccount && tradeInfo && amountToApprove) {
       return 'approval_required'
     }
     if (tradeInfo?.inputError) return 'error'
     if (routing) return 'routing'
     if (tradeInfo && hasAmount) return 'ready'
     return 'idle'
-  }, [account, hasAmount, tradeInfo, routing, approval, amountToApprove])
+  }, [connectedAccount, hasAmount, tradeInfo, routing, approval, amountToApprove])
 
   const error = useMemo(
     () => runtimeErrorFromPhase(phase === 'routing' ? 'routing' : 'idle', tradeInfo?.inputError),
@@ -321,7 +324,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     () => ({
       status: phase,
       chainId,
-      wallet: account,
+      wallet: connectedAccount,
       inputSymbol: inputCurrency?.symbol,
       outputSymbol: outputCurrency?.symbol,
       routePath: routeSteps,
@@ -347,7 +350,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     [
       phase,
       chainId,
-      account,
+      connectedAccount,
       inputCurrency?.symbol,
       outputCurrency?.symbol,
       routeSteps,
@@ -361,9 +364,18 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     ],
   )
 
+  const loadingLabel =
+    phase === 'routing'
+      ? 'Loading quote'
+      : phase === 'wallet_required'
+        ? 'Waiting wallet'
+        : phase === 'approval_required'
+          ? 'Preparing transaction'
+          : undefined
+
   return {
     phase,
-    loadingLabel: phase === 'routing' ? 'Routing…' : undefined,
+    loadingLabel,
     error,
     tradeInfo,
     routeEntries,
@@ -374,7 +386,7 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     smartRouteSavings,
     executionSpeed: tradeInfo ? 'Fast' : undefined,
     approval,
-    account,
+    account: connectedAccount,
     machine,
     watchlistHrefs,
   }

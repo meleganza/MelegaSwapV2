@@ -15,7 +15,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   [data-trade-cockpit] {
     width: 360px;
     max-width: 360px;
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
   }
 
@@ -47,7 +47,8 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-swap-cockpit {
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
     box-sizing: border-box;
   }
@@ -58,8 +59,7 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     min-height: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    overflow: hidden !important;
-    contain: layout paint;
+    overflow: visible !important;
     box-sizing: border-box !important;
     gap: 0 !important;
   }
@@ -350,13 +350,17 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     max-height: 72px !important;
   }
 
-  .trade-terminal-swap [class*='AdvancedDetailsFooter'] {
+  .trade-terminal-swap [class*='AdvancedDetailsFooter'],
+  .trade-terminal-swap [data-execution-details-accordion] {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: ${tradeLayout.executionDetailsGap} 0 0 !important;
     padding: 0 !important;
     overflow: visible !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    z-index: 2 !important;
   }
 
   .trade-terminal-swap [class*='AdvancedSwapDetails'] {

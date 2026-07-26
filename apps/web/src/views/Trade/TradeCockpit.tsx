@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
+import { useAccount } from 'wagmi'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
@@ -17,6 +18,7 @@ import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/S
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
+import TradeExecutionStatusStrip from './components/TradeExecutionStatusStrip'
 import TradeRouterPanel from './components/TradeRouterPanel'
 import { SmartSwapHistoryModule } from 'views/SmartSwapStudio/modules/SmartSwapHistory'
 import TradeLimitOrdersPanel from './components/TradeLimitOrdersPanel'
@@ -28,7 +30,7 @@ const Shell = styled.div`
   width: 100%;
   max-width: ${tradeLayout.cockpitWidth};
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -47,7 +49,7 @@ const Panel = styled.div`
   max-width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  contain: layout paint;
+  overscroll-behavior: contain;
 `
 
 const ModeSelectorSlot = styled.div`
@@ -134,8 +136,7 @@ const IconBtn = styled.button`
 const SwapFormWrap = styled.div`
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
-  contain: layout paint;
+  overflow: visible;
   box-sizing: border-box;
   flex: 1;
   min-height: 0;
@@ -174,6 +175,8 @@ export interface TradeCockpitProps {
 export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
+  const { address: wagmiAddress } = useAccount()
+  const walletConnected = Boolean(account || wagmiAddress)
   const { experience, setExperience } = useTradeUi()
   const warningSwapHandler = useTradeWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
@@ -280,10 +283,11 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
           <TradeModeSelector mode={experience} onChange={setExperience} />
         </ModeSelectorSlot>
         {isSmartExperience ? <TradeSmartRouteBox /> : null}
+        <TradeExecutionStatusStrip />
         <SwapFormWrap
           ref={swapBodyRef}
-          className={`trade-terminal-swap${account ? '' : ' is-disconnected'} is-smartswap`}
-          data-wallet-connected={account ? 'true' : 'false'}
+          className={`trade-terminal-swap${walletConnected ? '' : ' is-disconnected'} is-smartswap`}
+          data-wallet-connected={walletConnected ? 'true' : 'false'}
           data-trade-swap-form
           data-swap-experience={experience}
         >

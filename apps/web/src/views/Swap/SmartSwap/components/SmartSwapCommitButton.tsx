@@ -19,6 +19,7 @@ import {
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { WrapType } from 'hooks/useWrapCallback'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { isKerlRoutingAuthorityEnforced, useKerlConstitutionalSwap } from 'lib/kerl-constitutional'
 import { routeSmartSwapQuoteFromTrade } from 'lib/routing-layer/facade'
@@ -82,6 +83,9 @@ export default function SwapCommitButton({
 }: SwapCommitButtonPropsType) {
   const { t } = useTranslation()
   const { chainId } = useActiveChainId()
+  const { address: wagmiAddress } = useAccount()
+  /** Single connected truth across web3-react prop + wagmi (header SSOT). */
+  const walletConnected = Boolean(account || wagmiAddress)
   const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
   const [singleHopOnly] = useUserSingleHopOnly()
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade?.route ? trade : null)
@@ -229,8 +233,12 @@ export default function SwapCommitButton({
     )
   }
 
-  if (!account) {
-    return <ConnectWalletButton width="100%" />
+  if (!walletConnected) {
+    return (
+      <span data-wallet-connected="false" style={{ display: 'block', width: '100%' }}>
+        <ConnectWalletButton width="100%" />
+      </span>
+    )
   }
 
   if (showWrap) {

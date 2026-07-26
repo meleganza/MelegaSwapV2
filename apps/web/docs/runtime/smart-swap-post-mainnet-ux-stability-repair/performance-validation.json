@@ -1,0 +1,26 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "status strip",
+      "pass": true,
+      "detail": "feedback"
+    },
+    {
+      "name": "Waiting wallet",
+      "pass": true,
+      "detail": "wallet phase"
+    },
+    {
+      "name": "Preparing transaction",
+      "pass": true,
+      "detail": "approval phase"
+    },
+    {
+      "name": "runtime Loading quote label",
+      "pass": true,
+      "detail": "label"
+    }
+  ],
+  "pass": true
+}

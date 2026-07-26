@@ -21,7 +21,7 @@ export function ConfirmationPendingContent({ pendingText }: { pendingText?: stri
       <AutoColumn gap="12px" justify="center">
         {pendingText ? (
           <>
-            <Text fontSize="20px">{t("Waiting For Confirmation")}</Text>
+            <Text fontSize="20px">{t("Pending confirmation")}</Text>
             <AutoColumn gap="12px" justify="center">
               <Text bold small textAlign="center">
                 {pendingText}

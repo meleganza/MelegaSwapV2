@@ -1,0 +1,24 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "modal z-index 2100",
+      "pass": true,
+      "detail": "above header 1000"
+    },
+    {
+      "name": "portal to document.body",
+      "pass": true,
+      "detail": "root overlay"
+    },
+    {
+      "name": "data-melega-modal-root",
+      "pass": true,
+      "detail": "marker"
+    }
+  ],
+  "headerZ": 1000,
+  "trendingZ": 999,
+  "modalZ": 2100,
+  "pass": true
+}

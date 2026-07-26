@@ -95,7 +95,7 @@ export const TradeRouteLine: React.FC = () => {
         <Placeholder>{loadingLabel ?? 'Routing…'}</Placeholder>
       )}
       {phase !== 'routing' && steps.length === 0 && (
-        <Placeholder>Enter amount to preview route</Placeholder>
+        <Placeholder data-route-unavailable>Route unavailable</Placeholder>
       )}
       {steps.length > 0 && (
         <Track>

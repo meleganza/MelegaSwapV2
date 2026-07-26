@@ -1,0 +1,26 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "commit uses wagmi useAccount",
+      "pass": true,
+      "detail": "wagmi"
+    },
+    {
+      "name": "walletConnected SSOT",
+      "pass": true,
+      "detail": "unified"
+    },
+    {
+      "name": "cockpit data-wallet-connected from walletConnected",
+      "pass": true,
+      "detail": "cockpit"
+    },
+    {
+      "name": "runtime connectedAccount",
+      "pass": true,
+      "detail": "runtime"
+    }
+  ],
+  "pass": true
+}

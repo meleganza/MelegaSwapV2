@@ -1,0 +1,21 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "no hard price gate continue",
+      "pass": true,
+      "detail": "allows multi-asset"
+    },
+    {
+      "name": "Price unavailable honesty",
+      "pass": true,
+      "detail": "honest"
+    },
+    {
+      "name": "MIN_MARQUEE_ITEMS 3",
+      "pass": true,
+      "detail": "marquee"
+    }
+  ],
+  "pass": true
+}

@@ -26,7 +26,7 @@ import {
 
 const SECONDS_24H = 86_400
 const TRENDING_LIMIT = 10
-const MIN_MARQUEE_ITEMS = 6
+const MIN_MARQUEE_ITEMS = 3
 
 type PairRow = {
   token0?: string
@@ -216,8 +216,8 @@ export function useDexTrendingRankings() {
       if (tradeCount24h > 0) signals.push('trades24h')
       if (change24h) signals.push('change24h')
       if (liquidityScore > 0) signals.push('liquidity')
+      if (priceUsd && priceUsd > 0) signals.push('priceUsd')
 
-      if (!priceUsd || priceUsd <= 0) continue
       if (
         !hasTrendingMarketSignal({
           tradeCount24h,
@@ -229,6 +229,7 @@ export function useDexTrendingRankings() {
         continue
       }
 
+      // Honest price: omit USD when unknown — never invent movement.
       candidates.push({
         symbol: sym,
         slug: canonical.registrySlug ?? canonical.id,
@@ -237,7 +238,7 @@ export function useDexTrendingRankings() {
         chainId: canonical.chainId,
         displayName: canonical.name ?? sym,
         tierStatus: row.status,
-        priceUsd,
+        priceUsd: priceUsd && priceUsd > 0 ? priceUsd : undefined,
         change24h,
         volume24h,
         liquidityScore,
@@ -262,11 +263,14 @@ export function useDexTrendingRankings() {
     return rankedAssets.map((asset) => {
       const { accent, accentPositive } = trendingTickerAccent(asset)
       const priceLabel = formatTrendingTickerPrice(asset.priceUsd)
+      const changeLabel =
+        asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h.text : undefined
+      const secondary = [priceLabel || 'Price unavailable', changeLabel].filter(Boolean).join(' · ')
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        secondary: priceLabel || '—',
-        accent,
+        secondary,
+        accent: accent ?? (asset.tradeCount24h > 0 ? `${asset.tradeCount24h} trades` : 'Live'),
         accentPositive,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
       }

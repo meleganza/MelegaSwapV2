@@ -1,0 +1,21 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "cockpit overflow visible",
+      "pass": true,
+      "detail": "no clip contain"
+    },
+    {
+      "name": "no contain layout paint on form wrap",
+      "pass": true,
+      "detail": "form wrap"
+    },
+    {
+      "name": "global contain removed from trade-terminal-swap",
+      "pass": true,
+      "detail": "global style"
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,31 @@
+{
+  "mission": "SMART_SWAP_POST_MAINNET_UX_STABILITY_REPAIR",
+  "checks": [
+    {
+      "name": "executionDetailsOpen SSOT module",
+      "pass": true,
+      "detail": "module present"
+    },
+    {
+      "name": "accordion uses useExecutionDetailsOpen",
+      "pass": true,
+      "detail": "hook wired"
+    },
+    {
+      "name": "grid accordion 0fr/1fr",
+      "pass": true,
+      "detail": "stable expand/collapse"
+    },
+    {
+      "name": "nested panel has no local toggle state",
+      "pass": true,
+      "detail": "no nested open state"
+    },
+    {
+      "name": "data-execution-details-accordion",
+      "pass": true,
+      "detail": "marker"
+    }
+  ],
+  "pass": true
+}

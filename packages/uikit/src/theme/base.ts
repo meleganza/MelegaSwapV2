@@ -7,5 +7,6 @@ export default {
   spacing: vars.space,
   shadows: vars.shadows,
   radii: vars.radii,
-  zIndices: { ribbon: 9, dropdown: 10, modal: 100 },
+  /* Modal above DS001 header (1000) + trending bar (999) + mobile nav */
+  zIndices: { ribbon: 9, dropdown: 10, modal: 2100 },
 };
