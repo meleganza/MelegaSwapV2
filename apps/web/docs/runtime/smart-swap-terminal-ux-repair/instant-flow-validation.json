@@ -1,0 +1,8 @@
+{
+  "experience": "instant",
+  "transparencyHidden": true,
+  "ingress": "userConfirmedExecution \u2192 certifiedHandoff true",
+  "mainnetGates": "evaluateDexCanonicalIngressGates (no KERL certified_handoff block)",
+  "krmpActivationScopedToTestnet": true,
+  "pass": true
+}

@@ -1,0 +1,22 @@
+{
+  "modes": [
+    "instant",
+    "smart"
+  ],
+  "sameEngine": "SmartSwapForm",
+  "locations": [
+    "TradeCockpit",
+    "HomeSwapPanel"
+  ],
+  "homeCtas": {
+    "primary": "Start Trading",
+    "secondary": "Trade Terminal"
+  },
+  "removedSeparateInstantSmartCtas": true,
+  "touchTargetMinPx": 44,
+  "ariaLabels": [
+    "Instant Swap mode selected",
+    "Smart Swap mode selected"
+  ],
+  "pass": true
+}

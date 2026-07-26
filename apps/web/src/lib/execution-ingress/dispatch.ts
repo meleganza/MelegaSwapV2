@@ -12,6 +12,7 @@ import {
   evaluateLiveExecutionGates,
   getConfiguredExecutionMode,
   EXECUTION_MODE_OFF,
+  isMainnetChainId,
 } from '../execution-modes'
 import { isCanonicalIngressEnabled, isIngressDispatchActive } from './activation'
 import { evaluateDexCanonicalIngressGates } from './dexCanonicalGates'
@@ -85,7 +86,12 @@ export async function dispatchExecutionInstruction(
   }
 
   const mode = getConfiguredExecutionMode()
-  const useDexCanonicalGates = mode === EXECUTION_MODE_OFF && isCanonicalIngressEnabled()
+  const chainId = context.chainId ?? instruction.chainId
+  // Mainnet DEX wallet swaps must not inherit KRMP testnet live gates.
+  // Instant + Smart both use SmartSwapForm → ingress with user confirmation.
+  const useDexCanonicalGates =
+    isCanonicalIngressEnabled() &&
+    (mode === EXECUTION_MODE_OFF || isMainnetChainId(chainId))
 
   const liveGates = useDexCanonicalGates
     ? evaluateDexCanonicalIngressGates({
@@ -94,7 +100,7 @@ export async function dispatchExecutionInstruction(
         instructionType: validation.instructionType,
       })
     : evaluateLiveExecutionGates({
-        chainId: context.chainId ?? instruction.chainId,
+        chainId,
         account: context.account,
         instructionValid: true,
         certifiedHandoff: context.certifiedHandoff ?? false,

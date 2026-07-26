@@ -70,13 +70,13 @@ describe('SMART_SWAP_MAINNET_EXECUTION_HANDOFF', () => {
     expect(ready.requiresUserConfirmation).toBe(true)
     expect(ready.autoSignForbidden).toBe(true)
     expect(ready.autoBroadcastForbidden).toBe(true)
-    expect(ready.message).toMatch(/Confirm explicitly/)
+    expect(ready.message).toMatch(/Ready to swap|Confirm in the form/i)
   })
 
   it('surfaces wallet / network / route / allowance failures without silent fallback', () => {
-    expect(evaluateSmartSwapExecutionHandoff({ ...readyInput, walletConnected: false }).failures).toContain(
-      'WALLET_NOT_CONNECTED',
-    )
+    const walletMsg = evaluateSmartSwapExecutionHandoff({ ...readyInput, walletConnected: false })
+    expect(walletMsg.failures).toContain('WALLET_NOT_CONNECTED')
+    expect(walletMsg.message).toBe('Wallet connection required.')
     expect(evaluateSmartSwapExecutionHandoff({ ...readyInput, chainId: 1 }).failures).toContain('WRONG_NETWORK')
     expect(evaluateSmartSwapExecutionHandoff({ ...readyInput, routeAvailable: false }).failures).toContain('NO_ROUTE')
     expect(evaluateSmartSwapExecutionHandoff({ ...readyInput, quoteFresh: false }).failures).toContain('STALE_QUOTE')

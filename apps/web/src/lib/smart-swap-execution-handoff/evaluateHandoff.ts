@@ -9,6 +9,7 @@ import type {
   SmartSwapHandoffFailure,
   SmartSwapHandoffLifecycle,
 } from './types'
+import { userFacingHandoffFailureMessage, userFacingHandoffReadyMessage } from './userFacingMessages'
 
 const DEFAULT_CHAIN = 56
 
@@ -91,12 +92,11 @@ export function evaluateSmartSwapExecutionHandoff(
 
   let message: string
   if (certified) {
-    message =
-      'Certified handoff ready. Confirm explicitly in the swap form to request your wallet signature. No automatic signing or broadcast.'
+    message = userFacingHandoffReadyMessage()
   } else if (failures[0]) {
-    message = `Certified handoff blocked: ${failures[0].replace(/_/g, ' ')}. No silent fallback.`
+    message = userFacingHandoffFailureMessage(failures[0])
   } else {
-    message = 'Execution unavailable — complete readiness checks before confirming.'
+    message = userFacingHandoffFailureMessage('EXECUTION_UNAVAILABLE')
   }
 
   return {

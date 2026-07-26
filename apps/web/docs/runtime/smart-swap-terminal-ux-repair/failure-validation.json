@@ -1,0 +1,11 @@
+{
+  "actionableMessages": [
+    "Wallet connection required.",
+    "Switch to BNB Smart Chain.",
+    "Route expired. Refresh quote.",
+    "Execution preparation unavailable. Refresh quote."
+  ],
+  "technicalCertificationHiddenFromDefaultUi": true,
+  "remapsCertifiedHandoffGateString": true,
+  "pass": true
+}

@@ -1,0 +1,11 @@
+{
+  "suites": [
+    "smartSwapTerminalUxRepair.test.ts",
+    "smartSwapMainnetExecutionHandoff.test.ts",
+    "homeMobileSectionOrder.test.ts"
+  ],
+  "testsPassed": 14,
+  "smartSwapFormSha256": "93a1fc4407a19c1279ab9535352573b4e29bb7b4e3a7ef13940b90ebcc3c4797",
+  "verdict": "SMART_SWAP_TERMINAL_UX_REPAIR_CERTIFIED",
+  "pass": true
+}

@@ -1,6 +1,7 @@
 import { Fragment, ReactNode, useEffect, useMemo } from 'react'
 import { useAccount } from 'wagmi'
-import { ensureKrmpTestnetOperationalActivation } from 'lib/kerl-constitutional'
+import { ensureKrmpTestnetOperationalActivation, KRMP_TESTNET_CHAIN_ID } from 'lib/kerl-constitutional'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { BLOCKED_ADDRESSES } from './config/constants'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
@@ -9,9 +10,14 @@ import TreasuryHandoffUpdater from './state/transactions/treasuryHandoffUpdater'
 import { chains } from './utils/wagmi'
 
 export function Updaters() {
+  const { chainId } = useActiveChainId()
+
+  // KRMP live gates are testnet-only. Do not arm them on mainnet DEX swaps.
   useEffect(() => {
-    ensureKrmpTestnetOperationalActivation()
-  }, [])
+    if (chainId === KRMP_TESTNET_CHAIN_ID) {
+      ensureKrmpTestnetOperationalActivation()
+    }
+  }, [chainId])
 
   return (
     <>

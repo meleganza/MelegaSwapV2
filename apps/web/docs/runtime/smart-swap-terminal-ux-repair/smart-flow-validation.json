@@ -1,0 +1,12 @@
+{
+  "experience": "smart",
+  "shows": [
+    "Route Engine",
+    "Execution Preview",
+    "Fee Transparency",
+    "AI Assistance",
+    "Execution Handoff"
+  ],
+  "ingressRequiresPublishedCertificate": true,
+  "pass": true
+}

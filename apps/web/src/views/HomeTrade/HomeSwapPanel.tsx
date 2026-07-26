@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -14,8 +14,24 @@ import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
+import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
+import TradeModeSelector from 'views/Trade/components/TradeModeSelector'
+import type { SwapExperienceMode } from 'views/Trade/swapExperience'
+import { publishSwapExperienceMode } from 'lib/smart-swap-execution-handoff'
 import { colors } from 'design-system/melega'
 import { HomeSwapIconButton, HomeSwapPanelShell } from './HomeSwapPanelShell'
+
+const HomeSwapStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+`
+
+const ModeWrap = styled.div`
+  width: 100%;
+`
 
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -71,6 +87,7 @@ const LiveText = styled.span<{ $live?: boolean }>`
 const HomeSwapInner: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
+  const [experience, setExperience] = useState<SwapExperienceMode>('instant')
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -80,6 +97,11 @@ const HomeSwapInner: React.FC = () => {
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
+  const isSmartExperience = experience === 'smart'
+
+  useEffect(() => {
+    publishSwapExperienceMode(experience)
+  }, [experience])
 
   const inputSymbol = inputCurrency?.symbol ?? '—'
   const outputSymbol = outputCurrency?.symbol ?? '—'
@@ -122,43 +144,52 @@ const HomeSwapInner: React.FC = () => {
   }, [])
 
   return (
-    <HomeSwapPanelShell
-      pairIndicator={pairIndicator}
-      toolbar={
-        <>
-          <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-            <SettingsIcon />
-          </HomeSwapIconButton>
-          <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
-            <RefreshIcon />
-          </HomeSwapIconButton>
-        </>
-      }
-    >
-      <div
-        ref={swapBodyRef}
-        className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
-        data-wallet-connected={account ? 'true' : 'false'}
+    <HomeSwapStack data-home-swap-stack data-swap-experience={experience}>
+      {/* Outside fixed-height shell so Instant | Smart tabs are never clipped. */}
+      <ModeWrap>
+        <TradeModeSelector mode={experience} onChange={setExperience} />
+      </ModeWrap>
+      <HomeSwapPanelShell
+        pairIndicator={pairIndicator}
+        toolbar={
+          <>
+            <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+              <SettingsIcon />
+            </HomeSwapIconButton>
+            <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
+              <RefreshIcon />
+            </HomeSwapIconButton>
+          </>
+        }
       >
-        <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-        {!account && (
-          <div className="home-trade-swap-slippage-strip slippage-row" role="group" aria-label="Slippage tolerance">
-            <span className="home-trade-swap-slippage-label-row">
-              <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
-              <button
-                type="button"
-                className="home-trade-swap-slippage-edit"
-                aria-label="Edit slippage tolerance"
-                onClick={onPresentSettingsModal}
-              >
-                <PencilIcon />
-              </button>
-            </span>
-            <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
-          </div>
-        )}
-      </div>
-    </HomeSwapPanelShell>
+        <div
+          ref={swapBodyRef}
+          className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
+          data-wallet-connected={account ? 'true' : 'false'}
+          data-swap-experience={experience}
+        >
+          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+          {!account && (
+            <div className="home-trade-swap-slippage-strip slippage-row" role="group" aria-label="Slippage tolerance">
+              <span className="home-trade-swap-slippage-label-row">
+                <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
+                <button
+                  type="button"
+                  className="home-trade-swap-slippage-edit"
+                  aria-label="Edit slippage tolerance"
+                  onClick={onPresentSettingsModal}
+                >
+                  <PencilIcon />
+                </button>
+              </span>
+              <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
+            </div>
+          )}
+        </div>
+      </HomeSwapPanelShell>
+      {/* Smart transparency below shell — same engine, no second form. */}
+      <SmartSwapExecutionPreviewModule showSmartTransparency={isSmartExperience} />
+    </HomeSwapStack>
   )
 }
 

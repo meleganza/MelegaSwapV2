@@ -1,0 +1,6 @@
+{
+  "autoSign": false,
+  "autoBroadcast": false,
+  "userMustConfirmInForm": true,
+  "pass": true
+}

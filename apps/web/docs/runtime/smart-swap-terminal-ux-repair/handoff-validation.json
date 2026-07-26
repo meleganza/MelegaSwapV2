@@ -1,0 +1,7 @@
+{
+  "bridge": "lib/smart-swap-execution-handoff/ingressBridge.ts",
+  "canonicalSubmitPassesCertifiedHandoff": true,
+  "mainnetBypassesKrmpLiveGates": true,
+  "safetyGatesPreserved": true,
+  "pass": true
+}

@@ -3,7 +3,7 @@
  * Does not sign or broadcast. Does not modify SmartSwapForm.
  */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCurrency } from 'hooks/Tokens'
@@ -15,6 +15,7 @@ import type { SmartSwapPreviewResult } from 'lib/smart-swap-execution-preview'
 import type { SmartSwapFeeTransparency } from 'lib/smart-swap-fee-transparency'
 import {
   evaluateSmartSwapExecutionHandoff,
+  publishSmartSwapHandoffCertification,
   type SmartSwapExecutionHandoff,
 } from 'lib/smart-swap-execution-handoff'
 import { SMART_SWAP_CONTRACT_ANCHORS } from 'lib/smart-swap-architecture/smartSwapArchitecture000Contracts'
@@ -56,7 +57,7 @@ export function useSmartSwapExecutionHandoff(
       : SMART_SWAP_CONTRACT_ANCHORS.bscSmartRouter
   const [approval] = useApproveCallback(amountToApprove, spender)
 
-  return useMemo(() => {
+  const handoff = useMemo(() => {
     const previewOk = preview.status === 'ok' && Boolean(preview.preview)
     const p = previewOk ? preview.preview : null
     const freshnessMs = p?.freshness ? Date.now() - Date.parse(p.freshness) : Number.POSITIVE_INFINITY
@@ -117,4 +118,15 @@ export function useSmartSwapExecutionHandoff(
     approval,
     spender,
   ])
+
+  useEffect(() => {
+    publishSmartSwapHandoffCertification({
+      certified: handoff.certified,
+      failures: handoff.failures,
+      userMessage: handoff.message,
+      experience: 'smart',
+    })
+  }, [handoff])
+
+  return handoff
 }

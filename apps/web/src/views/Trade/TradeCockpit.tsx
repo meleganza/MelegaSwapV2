@@ -1,4 +1,5 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
+import { publishSwapExperienceMode } from 'lib/smart-swap-execution-handoff'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -176,6 +177,10 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
   const isSmartExperience = experience === 'smart'
 
+  useEffect(() => {
+    publishSwapExperienceMode(experience)
+  }, [experience])
+
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
       onCurrencySelection(Field.OUTPUT, newCurrencyOutput)
@@ -241,7 +246,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
             <Title>Swap</Title>
             <Subtitle>
               {isSmartExperience
-                ? 'Smart mode — route transparency and certified handoff before wallet confirmation.'
+                ? 'Smart mode — route, fees, and readiness before wallet confirmation.'
                 : 'Instant mode — same Melega DEX engine, simpler confirmation path.'}
             </Subtitle>
           </TitleBlock>

@@ -112,7 +112,7 @@ export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onCh
     </Segmented>
     <Description>
       {mode === 'smart'
-        ? 'Optimized route with execution preview, fee transparency, and certified handoff before wallet confirmation.'
+        ? 'Optimized route with execution preview, fee transparency, and readiness checks before wallet confirmation.'
         : 'Fast direct swap on the same Melega DEX engine — without the Smart transparency stack.'}
     </Description>
   </Shell>
