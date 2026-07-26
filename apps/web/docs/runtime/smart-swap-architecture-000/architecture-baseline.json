@@ -1,0 +1,16 @@
+{
+  "mission": "SMART_SWAP_ARCHITECTURE_000_LOCK",
+  "certifiedBase": "MELEGA_DEX_V1_GLOBAL_PRODUCT_CERTIFIED",
+  "tip": "94d4979a9a95f6a0e17919b2a94fb983b6458c90",
+  "productionAncestor": "ff6d6179243dd754570e870adc5564ed2d0c9498",
+  "branch": "smart-swap-architecture-000-lock",
+  "phase": { "current": "ADAPTER", "target": "WRAPPER" },
+  "engine": "SmartSwapForm",
+  "surfaces": ["instant-swap", "smart-swap"],
+  "bscSmartRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+  "protocolFeeBps": { "standard": 30, "buyMarco": 20 },
+  "lpFeeBps": 25,
+  "noImplementation": true,
+  "noUiRedesign": true,
+  "noRoutingChanges": true
+}
