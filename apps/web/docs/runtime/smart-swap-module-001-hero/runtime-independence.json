@@ -1,0 +1,7 @@
+{
+  "noWalletRequired": true,
+  "noQuotesInHero": true,
+  "noTreasuryInHero": true,
+  "noKerlInHero": true,
+  "pass": true
+}

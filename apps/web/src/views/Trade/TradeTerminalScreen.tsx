@@ -5,6 +5,7 @@ import { typography } from 'design-system/melega'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
+import { SmartSwapHeroModule } from 'views/SmartSwapStudio/modules/SmartSwapHeroModule'
 import TradeTerminalGlobalStyle from './TradeTerminalGlobalStyle'
 import TradePageHeader from './components/TradePageHeader'
 import TradeTabBar from './components/TradeTabBar'
@@ -13,6 +14,7 @@ import TradeCenterPanel from './TradeCenterPanel'
 import TradeRightRail from './components/TradeRightRail'
 import TradeRecentSwaps from './components/TradeRecentSwaps'
 import TradeMarcoIconPatch from './components/TradeMarcoIconPatch'
+import TradeHowItWorksPanel from './components/TradeHowItWorksPanel'
 import useTradeTerminalData from './useTradeTerminalData'
 import { TradeRuntimeProvider } from './tradeRuntime/TradeRuntimeContext'
 import { TradeUiProvider } from './TradeUiContext'
@@ -28,6 +30,25 @@ const Root = styled.div`
 
   @media (max-width: 767px) {
     padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+`
+
+/** Module 001 hero band — 1376px canvas, outside Trade Content padding. */
+const HeroShell = styled.div`
+  width: 100%;
+  max-width: 1376px;
+  margin: 0 auto;
+  padding: 24px 0 8px;
+  box-sizing: border-box;
+  min-width: 0;
+
+  @media (max-width: 1439px) {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  @media (max-width: 767px) {
+    padding: 16px 16px 8px;
   }
 `
 
@@ -112,6 +133,7 @@ const AreaSwaps = styled.div`
 
 export const TradeTerminalScreen: React.FC = () => {
   const [mode, setMode] = useState<TradeMode>('smartswap')
+  const [helpOpen, setHelpOpen] = useState(false)
   const {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
@@ -126,17 +148,26 @@ export const TradeTerminalScreen: React.FC = () => {
     useTradeTerminalData(inputSymbol, outputSymbol, outputCurrencyId)
 
   return (
-    <Root data-trade-terminal-screen="true" data-r200-premium="true">
+    <Root
+      data-trade-terminal-screen="true"
+      data-r200-premium="true"
+      data-smart-swap-module-001="mounted"
+      data-smart-swap-architecture="000"
+    >
       <PageMeta />
       <TradeTerminalGlobalStyle />
       <TradeMarcoIconPatch />
-      <TradeUiProvider value={{ mode, setMode, helpOpen: false, setHelpOpen: () => undefined }}>
+      <TradeUiProvider value={{ mode, setMode, helpOpen, setHelpOpen }}>
+      <HeroShell>
+        <SmartSwapHeroModule onHowItWorks={() => setHelpOpen(true)} />
+        <span id="smart-swap-how-it-works" hidden aria-hidden="true" />
+      </HeroShell>
       <Content>
         <TradePageHeader />
         <TradeTabBar active={mode} onChange={setMode} />
         <TradeRuntimeProvider>
           <PageGrid>
-            <AreaCockpit>
+            <AreaCockpit id="smart-swap-execution">
               <TradeCockpit mode={mode} />
             </AreaCockpit>
             <AreaCenter>
@@ -162,6 +193,7 @@ export const TradeTerminalScreen: React.FC = () => {
             </AreaSwaps>
           </PageGrid>
         </TradeRuntimeProvider>
+        <TradeHowItWorksPanel open={helpOpen} onClose={() => setHelpOpen(false)} />
       </Content>
       </TradeUiProvider>
     </Root>

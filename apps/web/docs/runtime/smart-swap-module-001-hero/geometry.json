@@ -1,0 +1,110 @@
+{
+  "viewports": {
+    "desktop": {
+      "path": "/swap/",
+      "mounted": true,
+      "hero": {
+        "w": 1376,
+        "h": 260,
+        "top": 140
+      },
+      "trust": {
+        "w": 360,
+        "h": 230,
+        "top": 155
+      },
+      "art": {
+        "w": 480,
+        "h": 230,
+        "top": 155
+      },
+      "overflowX": false,
+      "hasTitle": true,
+      "hasRelationship": true,
+      "hasForbidden": false,
+      "hasOops": false,
+      "startCta": true,
+      "howCta": true
+    },
+    "tablet": {
+      "path": "/swap/",
+      "mounted": true,
+      "hero": {
+        "w": 912,
+        "h": 508,
+        "top": 140
+      },
+      "trust": {
+        "w": 360,
+        "h": 230,
+        "top": 418
+      },
+      "art": {
+        "w": 444,
+        "h": 230,
+        "top": 154
+      },
+      "overflowX": false,
+      "hasTitle": true,
+      "hasRelationship": true,
+      "hasForbidden": false,
+      "hasOops": false,
+      "startCta": true,
+      "howCta": true
+    },
+    "mobile390": {
+      "path": "/swap/",
+      "mounted": true,
+      "hero": {
+        "w": 334,
+        "h": 720,
+        "top": 116
+      },
+      "trust": {
+        "w": 326,
+        "h": 312,
+        "top": 662
+      },
+      "art": {
+        "w": 326,
+        "h": 190,
+        "top": 452
+      },
+      "overflowX": false,
+      "hasTitle": true,
+      "hasRelationship": true,
+      "hasForbidden": false,
+      "hasOops": false,
+      "startCta": true,
+      "howCta": true
+    },
+    "mobile430": {
+      "path": "/swap/",
+      "mounted": true,
+      "hero": {
+        "w": 374,
+        "h": 720,
+        "top": 116
+      },
+      "trust": {
+        "w": 326,
+        "h": 312,
+        "top": 644
+      },
+      "art": {
+        "w": 326,
+        "h": 190,
+        "top": 434
+      },
+      "overflowX": false,
+      "hasTitle": true,
+      "hasRelationship": true,
+      "hasForbidden": false,
+      "hasOops": false,
+      "startCta": true,
+      "howCta": true
+    }
+  },
+  "desktopPass": true,
+  "responsivePass": true
+}

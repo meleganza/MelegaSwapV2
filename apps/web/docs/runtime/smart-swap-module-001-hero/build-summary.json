@@ -1,0 +1,5 @@
+{
+  "yarnBuild": "passed",
+  "route": "/swap",
+  "pass": true
+}
