@@ -1,0 +1,10 @@
+{
+  "semantics": ["section", "list", "article", "status text", "accessible tx hash link"],
+  "keyboard": "article tabIndex=0; pager buttons focus-visible",
+  "reducedMotion": "prefers-reduced-motion disables animation/transition",
+  "mobile": {
+    "widths": [390, 430],
+    "layout": "vertical stack",
+    "overflow": "overflow-wrap/anywhere; no horizontal overflow intended"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "custody": false,
+  "signing": false,
+  "privateKeys": false,
+  "executionAuthority": false,
+  "economicAuthority": false,
+  "feeMutation": false,
+  "treasuryChanges": false,
+  "kerlChanges": false,
+  "smartSwapFormModified": false,
+  "secondIndexer": false,
+  "fakeHistory": false,
+  "notes": "Read-only adapter over wallet swap transactions and handoff context. Blockchain remains transaction truth."
+}

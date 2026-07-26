@@ -1,0 +1,34 @@
+{
+  "model": "SmartSwapHistoryEntry",
+  "fields": [
+    "transactionHash",
+    "timestamp",
+    "inputToken",
+    "outputToken",
+    "inputAmount",
+    "outputAmount",
+    "routeId",
+    "routeHops",
+    "liquiditySources",
+    "executionStatus",
+    "protocolFee",
+    "feeState",
+    "economicAttributionState",
+    "gasUsed",
+    "gasState",
+    "source",
+    "freshness"
+  ],
+  "executionStatuses": ["SUCCESS", "PENDING", "FAILED", "PARTIAL", "UNAVAILABLE"],
+  "feeStates": ["AVAILABLE", "PARTIAL", "UNAVAILABLE", "STALE"],
+  "economicAttributionStates": ["RECORDED", "PENDING", "UNAVAILABLE", "NOT_APPLICABLE"],
+  "gasRule": "Show gasUsed only when factual; never estimate historical gas",
+  "routeRule": "Show used route only when recordedRouteSymbols present; never claim best route",
+  "pagination": {
+    "order": "latest-first",
+    "defaultPageSize": 10,
+    "maxEntries": 20
+  },
+  "mount": "TradeCockpit mode=history → SmartSwapHistoryModule",
+  "library": "apps/web/src/lib/smart-swap-history/"
+}

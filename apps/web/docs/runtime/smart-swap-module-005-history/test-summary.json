@@ -1,0 +1,20 @@
+{
+  "suite": "src/lib/smart-swap-history/__tests__/smartSwapModule005.history.test.ts",
+  "tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "coverage": [
+    "Successful swap",
+    "Failed swap",
+    "Pending swap",
+    "Partial fee data",
+    "Unavailable fee data",
+    "Route display",
+    "Gas unavailable",
+    "KERL unavailable",
+    "Pagination",
+    "Wallet change",
+    "Architecture freeze",
+    "SmartSwapForm unchanged"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "mission": "SMART_SWAP_MODULE_005_HISTORY",
+  "verdict": "SMART_SWAP_MODULE_005_HISTORY_CERTIFIED",
+  "baseTip": "fc4ebfc9",
+  "missionBase": "f2799a5f",
+  "architecture": "47892a9d",
+  "branch": "smart-swap-module-005-history",
+  "smartSwapFormUnchanged": true,
+  "noExecutionChanges": true,
+  "noFeeChanges": true,
+  "noTreasuryChanges": true,
+  "noKerlChanges": true,
+  "noSecondIndexer": true,
+  "testsPass": true,
+  "buildPass": true,
+  "certificationServers": "none listening at certify time",
+  "pass": true
+}

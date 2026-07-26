@@ -16,8 +16,8 @@ import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/S
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
-import TradeHistoryPanel from './components/TradeHistoryPanel'
 import TradeRouterPanel from './components/TradeRouterPanel'
+import { SmartSwapHistoryModule } from 'views/SmartSwapStudio/modules/SmartSwapHistory'
 import TradeLimitOrdersPanel from './components/TradeLimitOrdersPanel'
 import type { TradeMode } from './tradeTokens'
 
@@ -197,8 +197,8 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
 
   if (mode === 'history') {
     return (
-      <Shell data-trade-cockpit>
-        <TradeHistoryPanel />
+      <Shell data-trade-cockpit data-smart-swap-history-mount>
+        <SmartSwapHistoryModule />
       </Shell>
     )
   }
