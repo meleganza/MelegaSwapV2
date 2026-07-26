@@ -12,6 +12,7 @@ import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useTradeWarningImport from './hooks/useTradeWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
+import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
 import { tradeColors, tradeLayout } from './tradeTokens'
 import TradeRouteLine from './components/TradeRouteLine'
 import TradeSmartRouteBox from './components/TradeSmartRouteBox'
@@ -254,6 +255,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
           data-trade-swap-form
         >
           <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+          <SmartSwapExecutionPreviewModule />
           <TradeRouteLine />
         </SwapFormWrap>
       </Panel>

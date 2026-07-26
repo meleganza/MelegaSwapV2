@@ -1,0 +1,12 @@
+{
+  "custody": false,
+  "signing": false,
+  "privateKeys": false,
+  "executionAuthority": false,
+  "feeModification": false,
+  "routerChanges": false,
+  "treasuryChanges": false,
+  "kerlChanges": false,
+  "smartSwapFormModified": false,
+  "notes": "Preview is read-only transparency. Execution remains wallet-signed through SmartSwapForm → DEX Router."
+}

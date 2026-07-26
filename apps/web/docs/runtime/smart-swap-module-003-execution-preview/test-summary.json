@@ -1,0 +1,20 @@
+{
+  "suite": "src/lib/smart-swap-execution-preview/__tests__/smartSwapModule003.executionPreview.test.ts",
+  "tests": 10,
+  "passed": 10,
+  "failed": 0,
+  "coverage": [
+    "ERC20 swap preview",
+    "Native route preview",
+    "Multi-hop preview",
+    "No route",
+    "High impact",
+    "Gas unavailable",
+    "Partial data",
+    "Fee display",
+    "Slippage display",
+    "Route explanation",
+    "SmartSwapForm unchanged",
+    "Architecture freeze"
+  ]
+}

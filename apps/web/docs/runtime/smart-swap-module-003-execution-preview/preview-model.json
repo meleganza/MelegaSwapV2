@@ -1,0 +1,53 @@
+{
+  "model": "SmartSwapExecutionPreview",
+  "fields": [
+    "routeId",
+    "inputAmount",
+    "inputToken",
+    "outputToken",
+    "expectedOutput",
+    "minimumReceived",
+    "slippageBips",
+    "priceImpactPercent",
+    "priceImpactSeverity",
+    "gasEstimateUnits",
+    "protocolFee",
+    "routeHops",
+    "liquiditySources",
+    "hopVisualization",
+    "warnings",
+    "confidence",
+    "confidenceFactors",
+    "timestamp",
+    "freshness"
+  ],
+  "unavailableDisplay": "—",
+  "noFakeValues": [
+    "fake savings",
+    "fake gas",
+    "fake fees",
+    "fake route quality",
+    "guaranteed improvement"
+  ],
+  "failures": [
+    "NO_ROUTE",
+    "QUOTE_UNAVAILABLE",
+    "EXECUTION_UNAVAILABLE",
+    "GAS_UNAVAILABLE",
+    "PARTIAL_DATA",
+    "STALE_DATA"
+  ],
+  "warnings": [
+    "HIGH_PRICE_IMPACT",
+    "INSUFFICIENT_LIQUIDITY",
+    "ROUTE_UNAVAILABLE",
+    "GAS_ESTIMATION_UNAVAILABLE",
+    "PARTIAL_ROUTE_DATA",
+    "UNSUPPORTED_TOKEN",
+    "STALE_DATA"
+  ],
+  "priceImpactBands": ["LOW", "MEDIUM", "HIGH", "UNAVAILABLE"],
+  "mount": "TradeCockpit after SmartSwapForm",
+  "library": "apps/web/src/lib/smart-swap-execution-preview/",
+  "ui": "apps/web/src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/"
+}

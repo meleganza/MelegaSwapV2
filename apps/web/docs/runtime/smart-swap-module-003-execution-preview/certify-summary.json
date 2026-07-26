@@ -1,0 +1,15 @@
+{
+  "mission": "SMART_SWAP_MODULE_003_EXECUTION_PREVIEW",
+  "verdict": "SMART_SWAP_MODULE_003_EXECUTION_PREVIEW_CERTIFIED",
+  "baseTip": "a8bc90b1",
+  "architecture": "47892a9d",
+  "branch": "smart-swap-module-003-execution-preview",
+  "smartSwapFormUnchanged": true,
+  "noRouterChanges": true,
+  "noFeeChanges": true,
+  "noTreasuryChanges": true,
+  "noKerlChanges": true,
+  "testsPass": true,
+  "buildPass": true,
+  "pass": true
+}
