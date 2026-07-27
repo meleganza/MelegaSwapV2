@@ -111,10 +111,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Manual provide-liquidity path: pair select, amounts, ratio, slippage, mint CTA |
-| **Owned components (future)** | `LiquidityAdd*` |
-| **May consume** | Shared mint action host + selected pool from Discovery |
-| **Forbidden** | AI Builder ownership; second mint engine; Modules 005–010 |
+| **Responsibility** | Manual provide-liquidity path: pair select, amounts, ratio, slippage, approve, mint CTA |
+| **Owned components** | `LiquidityStudio/modules/LiquidityAddModule.tsx`, `liquidityAddTokens.ts`, `liquidityAddCta.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 004 **after** Module 003 Pool Discovery, **above** legacy `views/Pool` |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-004-add-liquidity/` + `LIQUIDITY_MODULE_004_ADD_LIQUIDITY_REPORT.md` |
+| **May consume** | Shared mint action host (`LiquidityRuntimeProvider` / `useLiquidityMintRuntime`), existing slippage (`useUserSlippageTolerance` via Settings), address logos |
+| **Forbidden** | Second mint engine; second slippage model; AI Builder ownership; AMM/Router/Factory/contracts edits; Modules 005–010; editing Modules 001–003 |
 | **Depends on** | MODULE 003 |
 
 ---

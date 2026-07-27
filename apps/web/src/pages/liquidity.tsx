@@ -4,11 +4,12 @@ import Liquidity from 'views/Pool'
 import { LiquidityHeroModule } from 'views/LiquidityStudio/modules/LiquidityHeroModule'
 import { LiquidityActionsModule } from 'views/LiquidityStudio/modules/LiquidityActionsModule'
 import { LiquidityPoolDiscoveryModule } from 'views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule'
+import { LiquidityAddModule } from 'views/LiquidityStudio/modules/LiquidityAddModule'
 import { liquidityHero } from 'views/LiquidityStudio/modules/liquidityHeroTokens'
 
 /**
- * LIQUIDITY_MODULE_001–003 — Hero, Actions, Pool Discovery above LEGACY body.
- * Legacy `views/Pool` remains untouched; Modules 004–010 are not mounted here.
+ * LIQUIDITY_MODULE_001–004 — Hero, Actions, Discovery, Add Liquidity above LEGACY body.
+ * Legacy `views/Pool` remains untouched; Modules 005–010 are not mounted here.
  */
 const Page = styled.div`
   width: 100%;
@@ -29,11 +30,13 @@ const LiquidityPage = () => (
     data-liquidity-module-001="mounted"
     data-liquidity-module-002="mounted"
     data-liquidity-module-003="mounted"
+    data-liquidity-module-004="mounted"
     data-liquidity-architecture="000"
   >
     <LiquidityHeroModule />
     <LiquidityActionsModule />
     <LiquidityPoolDiscoveryModule />
+    <LiquidityAddModule />
     <LegacyBody data-liquidity-legacy-body="LEGACY_IMPLEMENTATION">
       <Liquidity />
     </LegacyBody>
