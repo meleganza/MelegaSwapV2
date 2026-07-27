@@ -125,11 +125,13 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Compact factual market context (TVL / volume / APR / fees when available) |
-| **Owned components (future)** | `LiquidityMarketSnapshot*` |
-| **May consume** | Shared derived market metrics |
-| **Forbidden** | Mockup metrics as live data; Modules 006–010 |
-| **Depends on** | MODULE 004 data availability |
+| **Responsibility** | Compact factual ecosystem visibility: Total Liquidity, Active Pools, 24H Volume, Liquidity Providers (when sourced) |
+| **Owned components** | `LiquidityStudio/modules/LiquidityMarketSnapshotModule.tsx`, `useLiquidityMarketSnapshot.ts`, `buildLiquidityMarketSnapshot.ts`, `liquidityMarketSnapshotTokens.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 005 **after** Module 004 Add Liquidity, **above** legacy `views/Pool` |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-005-market-snapshot/` + `LIQUIDITY_MODULE_005_MARKET_SNAPSHOT_REPORT.md` |
+| **May consume** | `useProtocolDataSWR` (TVL / 24H volume), `useMelegaFactoryPools` (active pool count) — read-only |
+| **Forbidden** | Fake TVL/volume/users/APR; “Awaiting Indexer”; mint runtime / Router / Factory / contracts edits; Modules 006–010; editing Modules 001–004 |
+| **Depends on** | MODULE 004 |
 
 ---
 
