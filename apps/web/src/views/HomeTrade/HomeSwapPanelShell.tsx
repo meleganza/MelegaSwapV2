@@ -28,8 +28,8 @@ const Shell = styled.div`
   margin: 0 auto;
 
   @media (min-width: 768px) {
-    width: 440px;
-    max-width: 440px;
+    width: 520px;
+    max-width: 520px;
     min-height: 0;
     height: auto;
     flex-shrink: 0;

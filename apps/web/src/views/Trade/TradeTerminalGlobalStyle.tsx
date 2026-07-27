@@ -14,18 +14,18 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
 
   [data-trade-cockpit] {
     width: 100%;
-    max-width: 440px;
+    max-width: 520px;
     overflow: visible;
     box-sizing: border-box;
   }
 
   [data-trade-cockpit][data-swap-experience='smart'] {
-    max-width: min(100%, 960px);
+    max-width: min(100%, 560px);
   }
 
   @media (max-width: 899px) {
     [data-trade-cockpit][data-swap-experience='smart'] {
-      max-width: 440px;
+      max-width: 520px;
     }
 
     [data-smart-body] {

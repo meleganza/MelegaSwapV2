@@ -40,7 +40,7 @@ const Shell = styled.div`
   }
 `
 
-const SmartBody = styled.div<{ $smart: boolean }>`
+const SmartBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -49,39 +49,19 @@ const SmartBody = styled.div<{ $smart: boolean }>`
   flex: 1;
   align-items: center;
   justify-content: flex-start;
-
-  @media (min-width: 900px) {
-    display: ${({ $smart }) => ($smart ? 'grid' : 'flex')};
-    grid-template-columns: ${({ $smart }) => ($smart ? 'minmax(280px, 400px) minmax(240px, 1fr)' : 'none')};
-    align-items: start;
-    justify-content: center;
-    gap: 14px;
-  }
 `
 
 const FormColumn = styled.div`
   min-width: 0;
   width: 100%;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0 auto;
-  padding: 0 4px;
-  box-sizing: border-box;
-  align-self: center;
-`
-
-const IntelColumn = styled.aside`
-  min-width: 0;
-  width: 100%;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-
-  @media (max-width: 899px) {
-    order: 2;
-  }
+  margin: 0 auto;
+  padding: 0 8px;
+  box-sizing: border-box;
+  align-self: center;
 `
 
 const Panel = styled.div`
@@ -358,7 +338,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   }
 
   return (
-    <Shell data-trade-cockpit data-swap-experience={experience} data-final-pixel-align="true">
+    <Shell data-trade-cockpit data-swap-experience={experience} data-final-composition="true">
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
         <CockpitHeader data-trade-cockpit-header data-premium-header="true" data-single-header-row="true" data-header-zones="3">
           <Title>
@@ -385,7 +365,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
           </RightCluster>
         </CockpitHeader>
         <TradeExecutionStatusStrip />
-        <SmartBody $smart={isSmartExperience} data-smart-body={isSmartExperience ? 'true' : 'false'}>
+        <SmartBody data-smart-body={isSmartExperience ? 'true' : 'false'}>
           <FormColumn data-swap-form-column>
             <SwapFormWrap
               ref={swapBodyRef}
@@ -396,11 +376,9 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
             >
               <SmartSwapForm handleOutputSelect={handleOutputSelect} />
             </SwapFormWrap>
+            {/* After Swap button: Instant=Details only; Smart=Route/Metrics/Fee/AI/Details */}
+            <SmartSwapExecutionPreviewModule mode={experience} showSmartTransparency />
           </FormColumn>
-          {/* Instant + Smart share one Details owner after Route/Metrics/Fee/AI */}
-          <IntelColumn data-smart-intel-panel>
-            <SmartSwapExecutionPreviewModule showSmartTransparency />
-          </IntelColumn>
         </SmartBody>
       </Panel>
     </Shell>

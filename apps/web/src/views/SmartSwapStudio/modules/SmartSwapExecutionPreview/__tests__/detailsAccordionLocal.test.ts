@@ -20,7 +20,7 @@ describe('Smart details accordion', () => {
     expect(src).not.toMatch(/detailsOpen \? \(/)
   })
 
-  it('marks final pixel stack', () => {
-    expect(src).toMatch(/data-smart-ux-final/)
+  it('marks composition stack', () => {
+    expect(src).toMatch(/data-smart-ux-composition/)
   })
 })

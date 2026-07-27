@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
@@ -18,8 +18,13 @@ import {
   useSmartSwapExecutionHandoff,
 } from 'views/SmartSwapStudio/modules/SmartSwapExecutionHandoff'
 
+export type SmartSwapIntelMode = 'instant' | 'smart'
+
 export type SmartSwapExecutionPreviewModuleProps = {
+  /** @deprecated use mode */
   showSmartTransparency?: boolean
+  /** Instant = Details only; Smart = Route/Metrics/Fee/AI + Details */
+  mode?: SmartSwapIntelMode
 }
 
 const Stack = styled.div`
@@ -86,10 +91,12 @@ const PanelBody = styled.div`
 `
 
 /**
- * Premium Smart cockpit — compact route, metrics, fee, AI, single Details accordion.
- * Details uses local controlled state (open/close without refresh).
+ * Shared Instant/Smart intel surface.
+ * Instant: Details accordion only (after Swap button).
+ * Smart: Route → Metrics → Fee → AI → Details.
+ * Details open state persists across Instant ↔ Smart switches (same mount).
  */
-function SmartTransparencyStack() {
+function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
   const result = useSmartSwapExecutionPreview()
   const feeModel = useSmartSwapFeeTransparency(result)
   const aiResult = useSmartSwapAIAssistance(result, feeModel)
@@ -104,6 +111,12 @@ function SmartTransparencyStack() {
   const idle = !typedValue || !String(typedValue).trim()
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
+  const isSmart = mode === 'smart'
+
+  // Keep accordion state when switching Instant ↔ Smart (do not reset).
+  useEffect(() => {
+    /* intentional: mode changes must not clear detailsOpen */
+  }, [mode])
 
   const preview = result.status === 'ok' ? result.preview : null
   const hops = preview?.hopVisualization ?? []
@@ -154,18 +167,27 @@ function SmartTransparencyStack() {
         : 'AI insight unavailable for this quote.'
 
   return (
-    <Stack data-smart-transparency-stack data-smart-ux-final="true" data-smart-idle={idle ? 'true' : 'false'}>
-      <SmartSwapVisualRoute
-        hops={hops}
-        executionSourceLabel={source.label || undefined}
-        executionSourceDetail={source.detail || undefined}
-        inputCurrency={inputCurrency}
-        outputCurrency={outputCurrency}
-        idle={idle}
-      />
-      <SmartSwapCompactMetrics items={metrics} />
-      <SmartSwapFeeTransparencyPanel model={feeModel} compact />
-      <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
+    <Stack
+      data-smart-transparency-stack
+      data-smart-ux-composition="true"
+      data-intel-mode={mode}
+      data-smart-idle={idle ? 'true' : 'false'}
+    >
+      {isSmart ? (
+        <>
+          <SmartSwapVisualRoute
+            hops={hops}
+            executionSourceLabel={source.label || undefined}
+            executionSourceDetail={source.detail || undefined}
+            inputCurrency={inputCurrency}
+            outputCurrency={outputCurrency}
+            idle={idle}
+          />
+          <SmartSwapCompactMetrics items={metrics} />
+          <SmartSwapFeeTransparencyPanel model={feeModel} compact />
+          <SmartSwapInsightCard data-insight="ai" title="AI Insight" body={aiBody} />
+        </>
+      ) : null}
 
       <AccordionShell data-execution-details-accordion data-execution-details-open={detailsOpen ? 'true' : 'false'}>
         <Toggle
@@ -183,12 +205,11 @@ function SmartTransparencyStack() {
         <Panel $open={detailsOpen}>
           <PanelInner>
             <PanelBody id="smart-execution-details-panel" role="region" aria-labelledby="smart-execution-details-toggle">
-              {/* Keep mounted so close never remounts / refreshes / sticks open. */}
               <SmartSwapExecutionPreviewPanel result={result} embedded idle={idle} />
               {preview?.freshness ? (
                 <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }}>Freshness: {preview.freshness}</p>
               ) : null}
-              <SmartSwapExecutionHandoffPanel handoff={handoff} compact />
+              {isSmart ? <SmartSwapExecutionHandoffPanel handoff={handoff} compact /> : null}
             </PanelBody>
           </PanelInner>
         </Panel>
@@ -199,7 +220,8 @@ function SmartTransparencyStack() {
 
 export function SmartSwapExecutionPreviewModule({
   showSmartTransparency = true,
+  mode = 'smart',
 }: SmartSwapExecutionPreviewModuleProps) {
   if (!showSmartTransparency) return null
-  return <SmartTransparencyStack />
+  return <TransparencyStack mode={mode} />
 }

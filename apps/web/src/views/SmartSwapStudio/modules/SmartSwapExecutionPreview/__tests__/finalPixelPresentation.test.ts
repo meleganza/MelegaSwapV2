@@ -25,16 +25,16 @@ describe('SMART_SWAP_FINAL_PIXEL_PERFECTION presentation', () => {
     expect(src).toMatch(/headerLeading/)
     expect(src).toMatch(/headerCenter/)
     expect(src).toMatch(/TradeModeSelector/)
-    expect(src).toMatch(/showSmartTransparency/)
+    expect(src).toMatch(/mode=\{experience\}/)
     expect(src).not.toMatch(/ModeWrap/)
   })
 
-  it('TradeCockpit uses 3-zone header and always mounts Details owner', () => {
+  it('TradeCockpit uses 3-zone header and mounts intel after form', () => {
     const src = readFileSync(join(viewsRoot, 'Trade/TradeCockpit.tsx'), 'utf8')
     expect(src).toMatch(/data-header-zones="3"/)
     expect(src).toMatch(/data-header-right/)
-    expect(src).toMatch(/SmartSwapExecutionPreviewModule showSmartTransparency/)
-    expect(src).not.toMatch(/isSmartExperience \? \(/)
+    expect(src).toMatch(/mode=\{experience\}/)
+    expect(src).toMatch(/data-final-composition/)
   })
 
   it('visual route idle copy is soft, not Route unavailable', () => {

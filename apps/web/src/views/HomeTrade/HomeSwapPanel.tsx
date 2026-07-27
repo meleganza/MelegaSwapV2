@@ -214,10 +214,10 @@ const HomeSwapInner: React.FC = () => {
               <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
             </div>
           )}
+          {/* After Swap button: Instant=Details only; Smart=Route/Metrics/Fee/AI/Details */}
+          <SmartSwapExecutionPreviewModule mode={experience} showSmartTransparency />
         </div>
       </HomeSwapPanelShell>
-      {/* Instant + Smart: single Details owner after Route / Metrics / Fee / AI */}
-      <SmartSwapExecutionPreviewModule showSmartTransparency />
     </HomeSwapStack>
   )
 }

@@ -7,7 +7,11 @@ import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { getCanonicalIndexedAssets } from 'lib/canonical-token-registry'
 import { computeValid24hPriceChange, format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
-import { MARCO_WBNB_PAIR_BSC } from 'lib/bsc-indexer/constants'
+import {
+  MELEGA_FACTORY_BSC,
+  MELEGA_ROUTER_BSC,
+  MARCO_WBNB_PAIR_BSC,
+} from 'lib/bsc-indexer/constants'
 import type { OhlcvCandle } from 'lib/bsc-indexer/types'
 import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { TransactionType } from 'state/info/types'
@@ -24,9 +28,33 @@ import {
   type TierRankedAsset,
 } from 'lib/trending/tierTrendingModel'
 
+/** Melega Factory / Router — DEX activity index roots (presentation selection only). */
+export const TRENDING_DEX_FACTORY = MELEGA_FACTORY_BSC
+export const TRENDING_DEX_ROUTER = MELEGA_ROUTER_BSC
+
 const SECONDS_24H = 86_400
+/** Activity window for recent Factory/Router swap ranking (7d). */
+const SECONDS_ACTIVITY = 7 * SECONDS_24H
 const TRENDING_LIMIT = 10
-const MIN_MARQUEE_ITEMS = 3
+const MIN_MARQUEE_ITEMS = 2
+
+type ActivityBump = { trades: number; volumeUsd: number; lastTs: number }
+
+type ProtocolActivityRow = {
+  eventType?: string
+  timestamp?: number
+  assetAddresses?: string[]
+  amounts?: string[]
+}
+
+type IndexerSwapRow = {
+  eventType?: string
+  blockTimestamp?: number
+  token0?: string
+  token1?: string
+  amount0?: string
+  amount1?: string
+}
 
 type PairRow = {
   token0?: string
@@ -71,6 +99,45 @@ async function fetchBnbUsdPrice(): Promise<number | undefined> {
   } catch {
     return undefined
   }
+}
+
+/** Live Melega Factory/Router swap feed (AMM protocol activity). */
+async function fetchProtocolActivity(): Promise<ProtocolActivityRow[]> {
+  try {
+    const res = await fetch('/api/protocol/activity?limit=50')
+    if (!res.ok) return []
+    const json = (await res.json()) as { events?: ProtocolActivityRow[] }
+    return json.events ?? []
+  } catch {
+    return []
+  }
+}
+
+/** Durable indexer Swap events for Melega pairs. */
+async function fetchIndexerSwapEvents(): Promise<IndexerSwapRow[]> {
+  try {
+    const res = await fetch('/api/indexer/events?types=Swap&limit=50')
+    if (!res.ok) return []
+    const json = (await res.json()) as { events?: IndexerSwapRow[] }
+    return json.events ?? []
+  } catch {
+    return []
+  }
+}
+
+function bumpActivity(
+  map: Map<string, ActivityBump>,
+  address: string | undefined,
+  ts: number,
+  volumeUsd: number,
+) {
+  if (!address || isQuoteTokenAddress(address)) return
+  const key = address.toLowerCase()
+  const prev = map.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0 }
+  prev.trades += 1
+  prev.volumeUsd += Math.max(0, volumeUsd)
+  prev.lastTs = Math.max(prev.lastTs, ts)
+  map.set(key, prev)
 }
 
 function liquidityScoreForAddress(pairs: PairRow[], address?: string): number {
@@ -150,6 +217,16 @@ export function useDexTrendingRankings() {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
+  const { data: protocolActivity = [] } = useSWR('dex-trending-protocol-activity', fetchProtocolActivity, {
+    revalidateOnFocus: false,
+    refreshInterval: 30_000,
+    dedupingInterval: 15_000,
+  })
+  const { data: indexerSwaps = [] } = useSWR('dex-trending-indexer-swaps', fetchIndexerSwapEvents, {
+    revalidateOnFocus: false,
+    refreshInterval: 30_000,
+    dedupingInterval: 15_000,
+  })
 
   const effectiveBnbUsd = useMemo(() => {
     if (bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0) return bnbUsd
@@ -172,24 +249,68 @@ export function useDexTrendingRankings() {
     const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
     const cakeUsd = cakePrice ? Number(cakePrice.toSignificant(6)) : undefined
     const busdUsd = busdPrice ? Number(busdPrice.toSignificant(6)) : undefined
-    const cutoff = Math.floor(Date.now() / 1000) - SECONDS_24H
+    const activityCutoff = Math.floor(Date.now() / 1000) - SECONDS_ACTIVITY
 
-    // Priority 1: recent swap events → per-token swap count / volume / last activity.
-    const swapActivity = new Map<string, { trades: number; volumeUsd: number; lastTs: number }>()
+    // Priority 1: Factory/Router-indexed recent Swap events (protocol activity + durable store).
+    const swapActivity = new Map<string, ActivityBump>()
+
+    // Protocol activity + indexer Swap feeds are already recent-capped server-side.
+    for (const ev of protocolActivity) {
+      if (ev.eventType && !/swap/i.test(ev.eventType)) continue
+      const ts = Number(ev.timestamp) || Math.floor(Date.now() / 1000)
+      const addrs = ev.assetAddresses ?? []
+      let volumeUsd = 0
+      if (effectiveBnbUsd && addrs.length >= 2 && ev.amounts?.length) {
+        const iWbnb = addrs.findIndex((a) => a && isQuoteTokenAddress(a) && a.toLowerCase().startsWith('0xbb4c'))
+        if (iWbnb >= 0) {
+          const amt = Math.abs(Number(ev.amounts[iWbnb] ?? 0))
+          if (Number.isFinite(amt)) volumeUsd = amt * effectiveBnbUsd
+        }
+      }
+      for (const addr of addrs) {
+        const key = addr?.toLowerCase()
+        if (!key) continue
+        if (!canonicalByAddress.has(key) && key !== MARCO_BSC_ADDRESS.toLowerCase()) continue
+        bumpActivity(swapActivity, addr, ts, volumeUsd / Math.max(1, addrs.filter((a) => a && !isQuoteTokenAddress(a)).length))
+      }
+    }
+
+    for (const ev of indexerSwaps) {
+      if (ev.eventType && !/swap/i.test(ev.eventType)) continue
+      const ts = Number(ev.blockTimestamp) || Math.floor(Date.now() / 1000)
+      let volumeUsd = 0
+      if (effectiveBnbUsd) {
+        const t0 = ev.token0?.toLowerCase()
+        const t1 = ev.token1?.toLowerCase()
+        if (t0 && isQuoteTokenAddress(t0) && t0.startsWith('0xbb4c')) {
+          const amt = Math.abs(Number(ev.amount0 ?? 0))
+          if (Number.isFinite(amt)) volumeUsd = amt * effectiveBnbUsd
+        } else if (t1 && isQuoteTokenAddress(t1) && t1.startsWith('0xbb4c')) {
+          const amt = Math.abs(Number(ev.amount1 ?? 0))
+          if (Number.isFinite(amt)) volumeUsd = amt * effectiveBnbUsd
+        }
+      }
+      bumpActivity(swapActivity, ev.token0, ts, volumeUsd / 2)
+      bumpActivity(swapActivity, ev.token1, ts, volumeUsd / 2)
+    }
+
     for (const tx of transactions ?? []) {
       if (tx.type !== TransactionType.SWAP) continue
       const ts = Number(tx.timestamp)
-      if (!Number.isFinite(ts) || ts < cutoff) continue
-      for (const addr of [tx.token0Address, tx.token1Address]) {
-        if (!addr || isQuoteTokenAddress(addr)) continue
-        const key = addr.toLowerCase()
-        if (!canonicalByAddress.has(key)) continue
-        const prev = swapActivity.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0 }
-        prev.trades += 1
-        prev.volumeUsd += Number.isFinite(tx.amountUSD) ? Math.max(0, tx.amountUSD) / 2 : 0
-        prev.lastTs = Math.max(prev.lastTs, ts)
-        swapActivity.set(key, prev)
-      }
+      if (!Number.isFinite(ts) || ts < activityCutoff) continue
+      const vol = Number.isFinite(tx.amountUSD) ? Math.max(0, tx.amountUSD) / 2 : 0
+      bumpActivity(swapActivity, tx.token0Address, ts, vol)
+      bumpActivity(swapActivity, tx.token1Address, ts, vol)
+    }
+
+    // Always credit MARCO when candle/indexer swap count exists (featured Melega pair).
+    if (marcoMetrics.tradeCount > 0 || marcoMetrics.volumeUsd > 0) {
+      const key = MARCO_BSC_ADDRESS.toLowerCase()
+      const prev = swapActivity.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0 }
+      prev.trades = Math.max(prev.trades, marcoMetrics.tradeCount)
+      prev.volumeUsd = Math.max(prev.volumeUsd, marcoMetrics.volumeUsd)
+      prev.lastTs = Math.max(prev.lastTs, Math.floor(Date.now() / 1000))
+      swapActivity.set(key, prev)
     }
 
     const byAddress = new Map<string, TierRankedAsset>()
@@ -353,6 +474,8 @@ export function useDexTrendingRankings() {
     marcoMetrics,
     effectiveBnbUsd,
     transactions,
+    protocolActivity,
+    indexerSwaps,
   ])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
