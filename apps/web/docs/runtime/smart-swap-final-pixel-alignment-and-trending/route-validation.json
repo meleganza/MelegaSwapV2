@@ -1,0 +1,1 @@
+{"mission":"SMART_SWAP_FINAL_PIXEL_ALIGNMENT_AND_TRENDING_MARKET_INDEX_REPAIR","timestamp":"2026-07-27T00:40:05Z","checks":[{"name":"horizontal token→pool→token","pass":true},{"name":"logos vertically aligned","pass":true},{"name":"Melega Router / Direct Pool","pass":true}],"pass":true}

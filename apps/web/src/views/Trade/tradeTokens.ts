@@ -24,7 +24,7 @@ export const tradeLayout = {
   executionInputGap: '12px',
   executionRouteGap: '14px',
   executionDetailsGap: '14px',
-  executionButtonGap: '14px',
+  executionButtonGap: '16px',
 } as const
 
 /** R759 — canonical numeric typography for Trade surfaces. */

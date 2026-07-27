@@ -11,6 +11,7 @@ export interface HomeSwapPanelShellProps extends React.HTMLAttributes<HTMLDivEle
   pairIndicator?: React.ReactNode
   toolbar?: React.ReactNode
   headerLeading?: React.ReactNode
+  headerCenter?: React.ReactNode
   children: React.ReactNode
 }
 
@@ -47,21 +48,63 @@ const Inner = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  padding: 14px 16px 16px;
+  padding: 12px 16px 16px;
   box-sizing: border-box;
 `
 
+/** LEFT title · CENTER tabs · RIGHT pair/live/actions — one row on desktop. */
 const Header = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 8px 10px;
+  column-gap: 10px;
+  row-gap: 8px;
   flex-shrink: 0;
   margin-bottom: 8px;
+  min-height: 40px;
+
+  @media (max-width: 430px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const Left = styled.div`
+  display: inline-flex;
+  align-items: center;
+  grid-column: 1;
+`
+
+const Center = styled.div`
+  justify-self: center;
+  width: min(180px, 100%);
+  min-width: 132px;
+  grid-column: 2;
+
+  @media (max-width: 430px) {
+    justify-self: stretch;
+    width: 100%;
+    grid-column: 1;
+  }
+`
+
+const Right = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+  grid-column: 3;
+  flex-wrap: nowrap;
+
+  @media (max-width: 430px) {
+    justify-self: stretch;
+    justify-content: space-between;
+    grid-column: 1;
+    flex-wrap: wrap;
+  }
 `
 
 const PairSlot = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
@@ -71,11 +114,10 @@ const PairSlot = styled.div`
 `
 
 const Toolbar = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
-  margin-left: auto;
 `
 
 export const HomeSwapIconButton = styled.button`
@@ -121,15 +163,19 @@ export const HomeSwapPanelShell: React.FC<HomeSwapPanelShellProps> = ({
   pairIndicator,
   toolbar,
   headerLeading,
+  headerCenter,
   children,
   ...rest
 }) => (
-  <Shell className="home-swap-cockpit" data-home-swap-panel data-home-swap-shell data-final-pixel="true" {...rest}>
+  <Shell className="home-swap-cockpit" data-home-swap-panel data-home-swap-shell data-final-pixel-align="true" {...rest}>
     <Inner>
-      <Header data-home-swap-header data-single-header-row="true">
-        {headerLeading}
-        {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
-        {toolbar && <Toolbar>{toolbar}</Toolbar>}
+      <Header data-home-swap-header data-single-header-row="true" data-header-zones="3">
+        <Left data-header-left>{headerLeading}</Left>
+        {headerCenter ? <Center data-header-center data-trade-mode-selector-slot>{headerCenter}</Center> : null}
+        <Right data-header-right>
+          {pairIndicator ? <PairSlot>{pairIndicator}</PairSlot> : null}
+          {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+        </Right>
       </Header>
       <Body>{children}</Body>
     </Inner>

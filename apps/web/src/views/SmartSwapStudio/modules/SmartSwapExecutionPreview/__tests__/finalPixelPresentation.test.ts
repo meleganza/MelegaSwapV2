@@ -20,11 +20,21 @@ describe('SMART_SWAP_FINAL_PIXEL_PERFECTION presentation', () => {
     expect(src).toMatch(/data-single-header-row/)
   })
 
-  it('HomeSwapPanel puts Instant|Smart in the header row', () => {
+  it('HomeSwapPanel puts Instant|Smart in the centered header zone', () => {
     const src = readFileSync(join(viewsRoot, 'HomeTrade/HomeSwapPanel.tsx'), 'utf8')
     expect(src).toMatch(/headerLeading/)
+    expect(src).toMatch(/headerCenter/)
     expect(src).toMatch(/TradeModeSelector/)
+    expect(src).toMatch(/showSmartTransparency/)
     expect(src).not.toMatch(/ModeWrap/)
+  })
+
+  it('TradeCockpit uses 3-zone header and always mounts Details owner', () => {
+    const src = readFileSync(join(viewsRoot, 'Trade/TradeCockpit.tsx'), 'utf8')
+    expect(src).toMatch(/data-header-zones="3"/)
+    expect(src).toMatch(/data-header-right/)
+    expect(src).toMatch(/SmartSwapExecutionPreviewModule showSmartTransparency/)
+    expect(src).not.toMatch(/isSmartExperience \? \(/)
   })
 
   it('visual route idle copy is soft, not Route unavailable', () => {

@@ -1,0 +1,1 @@
+{"mission":"SMART_SWAP_FINAL_PIXEL_ALIGNMENT_AND_TRENDING_MARKET_INDEX_REPAIR","timestamp":"2026-07-27T00:40:05Z","checks":[{"name":"3-zone header LEFT title CENTER tabs RIGHT pair/live/actions","pass":true},{"name":"single header row desktop","pass":true},{"name":"no duplicate Swap title","pass":true},{"name":"no Trade instantly subtitle","pass":true}],"pass":true}

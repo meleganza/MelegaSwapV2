@@ -105,9 +105,10 @@ const Arrow = styled.li`
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  align-self: center;
+  justify-content: center;
+  align-self: flex-start;
   height: 32px;
-  margin-top: -18px;
+  margin-top: 0;
 `
 
 const Empty = styled.p`

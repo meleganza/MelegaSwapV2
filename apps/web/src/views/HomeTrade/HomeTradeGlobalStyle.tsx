@@ -205,7 +205,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap #swap-page > div:last-child,
   .home-trade-swap [class*='Box'][class*='mt'] {
     order: 3;
-    margin-top: 8px !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     position: relative !important;
@@ -285,7 +285,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 46px !important;
     width: 100% !important;
     border-radius: 12px !important;
-    margin-top: 8px !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
     display: flex !important;
     align-items: center !important;
@@ -578,7 +578,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 46px !important;
       min-height: 46px !important;
       max-height: 46px !important;
-      margin-top: 8px !important;
+      margin-top: 16px !important;
       margin-bottom: 0 !important;
       padding: 0 !important;
     }
@@ -599,7 +599,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 46px !important;
       min-height: 46px !important;
       max-height: 46px !important;
-      margin-top: 8px !important;
+      margin-top: 16px !important;
       margin-bottom: 0 !important;
       flex-shrink: 0 !important;
       display: flex !important;
@@ -731,7 +731,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     font-size: 16px !important;
     border: none !important;
     white-space: nowrap !important;
-    margin-top: 8px !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
     box-shadow: none !important;
     flex-shrink: 0 !important;

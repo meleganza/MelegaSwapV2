@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
+  compareTierRankedAssets,
+  hasTrendingActivitySignal,
   hasTrendingMarketSignal,
   isTrendingTierStatus,
   pickTrendingBaseToken,
   rankTierAssets,
+  trendingTickerAccent,
   type TierRankedAsset,
 } from '../tierTrendingModel'
 
@@ -39,6 +42,68 @@ describe('tierTrendingModel', () => {
         liquidityScore: 100,
       }),
     ).toBe(true)
+  })
+
+  it('activity signal rejects liquidity-only idle tokens', () => {
+    expect(
+      hasTrendingActivitySignal({
+        tradeCount24h: 0,
+        volume24h: 0,
+      }),
+    ).toBe(false)
+    expect(
+      hasTrendingActivitySignal({
+        tradeCount24h: 2,
+        volume24h: 0,
+      }),
+    ).toBe(true)
+  })
+
+  it('ranks by swap count then volume then recency', () => {
+    const lowTrades: TierRankedAsset = {
+      symbol: 'A',
+      slug: 'a',
+      pairSlug: 'a',
+      address: '0x1',
+      chainId: 56,
+      displayName: 'A',
+      tierStatus: 'READY',
+      volume24h: 1000,
+      liquidityScore: 1,
+      tradeCount24h: 1,
+      lastActivityTs: 100,
+      rankingSignals: [],
+    }
+    const highTrades: TierRankedAsset = {
+      ...lowTrades,
+      symbol: 'B',
+      slug: 'b',
+      address: '0x2',
+      volume24h: 10,
+      tradeCount24h: 50,
+      lastActivityTs: 50,
+    }
+    expect(compareTierRankedAssets(highTrades, lowTrades)).toBeLessThan(0)
+  })
+
+  it('formats ticker accent as ↑ 2.4% without Price unavailable', () => {
+    const accent = trendingTickerAccent({
+      symbol: 'MARCO',
+      slug: 'marco',
+      pairSlug: 'marco-wbnb',
+      address: '0x963556de0eb8138e97a85f0a86ee0acd159d210b',
+      chainId: 56,
+      displayName: 'MARCO',
+      tierStatus: 'READY',
+      volume24h: 1,
+      liquidityScore: 1,
+      tradeCount24h: 1,
+      change24h: { pct: 2.4, positive: true, text: '▲ 2.40%' },
+      rankingSignals: [],
+    })
+    expect(accent.accent).toBe('↑ 2.4%')
+    expect(accent.accentPositive).toBe(true)
+    expect(JSON.stringify(accent)).not.toMatch(/Price unavailable/i)
   })
 
   it('ranks by volume and dedupes symbols', () => {

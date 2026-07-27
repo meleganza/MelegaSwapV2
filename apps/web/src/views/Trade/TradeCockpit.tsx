@@ -100,20 +100,28 @@ const Panel = styled.div`
   overscroll-behavior: contain;
 `
 
-/** Single premium header row — no second Swap title, no subtitle. */
+/** One header row: LEFT title · CENTER tabs · RIGHT pair/live/actions */
 const CockpitHeader = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr) auto;
   align-items: center;
-  gap: 8px 10px;
+  column-gap: 10px;
+  row-gap: 8px;
   flex-shrink: 0;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   width: 100%;
+  min-height: 40px;
+  overflow: visible;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
 `
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
@@ -121,36 +129,67 @@ const Title = styled.h2`
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+  grid-column: 1;
 `
 
 const Bolt = styled.span`
   color: #f7c948;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1;
 `
 
-const TabsInline = styled.div`
-  flex: 0 1 200px;
+const TabsCenter = styled.div`
+  justify-self: center;
+  width: min(200px, 100%);
   min-width: 140px;
-  max-width: 220px;
+  grid-column: 2;
+
+  @media (max-width: 560px) {
+    justify-self: stretch;
+    width: 100%;
+    grid-column: 1;
+  }
+`
+
+const RightCluster = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  justify-self: end;
+  grid-column: 3;
+  white-space: nowrap;
+
+  @media (max-width: 560px) {
+    justify-self: stretch;
+    justify-content: space-between;
+    grid-column: 1;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
 `
 
 const PairLine = styled.span`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #8a8a8a;
   white-space: nowrap;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const LivePill = styled.span<{ $on?: boolean }>`
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   font-size: 11px;
   font-weight: 700;
   color: ${({ $on }) => ($on ? '#22c55e' : '#9ca3af')};
-  margin-left: auto;
+  line-height: 1;
+  flex-shrink: 0;
 `
 
 const LiveDot = styled.span<{ $on?: boolean }>`
@@ -161,7 +200,7 @@ const LiveDot = styled.span<{ $on?: boolean }>`
 `
 
 const Toolbar = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
@@ -319,29 +358,31 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
   }
 
   return (
-    <Shell data-trade-cockpit data-swap-experience={experience} data-final-pixel="true">
+    <Shell data-trade-cockpit data-swap-experience={experience} data-final-pixel-align="true">
       <Panel data-trade-cockpit-shell className="trade-swap-cockpit trade-cockpit">
-        <CockpitHeader data-trade-cockpit-header data-premium-header="true" data-single-header-row="true">
+        <CockpitHeader data-trade-cockpit-header data-premium-header="true" data-single-header-row="true" data-header-zones="3">
           <Title>
             <Bolt aria-hidden>⚡</Bolt>
             Swap
           </Title>
-          <TabsInline data-trade-mode-selector-slot>
+          <TabsCenter data-trade-mode-selector-slot>
             <TradeModeSelector mode={experience} onChange={setExperience} />
-          </TabsInline>
-          <PairLine data-swap-pair>{pairLabel}</PairLine>
-          <LivePill $on={walletConnected} data-live-status>
-            <LiveDot $on={walletConnected} aria-hidden />
-            {walletConnected ? 'Live' : 'Offline'}
-          </LivePill>
-          <Toolbar data-trade-cockpit-toolbar>
-            <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-              <SettingsIcon />
-            </IconBtn>
-            <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
-              <RefreshIcon />
-            </IconBtn>
-          </Toolbar>
+          </TabsCenter>
+          <RightCluster data-header-right>
+            <PairLine data-swap-pair>{pairLabel}</PairLine>
+            <LivePill $on={walletConnected} data-live-status>
+              <LiveDot $on={walletConnected} aria-hidden />
+              {walletConnected ? 'Live' : 'Offline'}
+            </LivePill>
+            <Toolbar data-trade-cockpit-toolbar>
+              <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+                <SettingsIcon />
+              </IconBtn>
+              <IconBtn type="button" aria-label="Refresh price" onClick={handleRefresh}>
+                <RefreshIcon />
+              </IconBtn>
+            </Toolbar>
+          </RightCluster>
         </CockpitHeader>
         <TradeExecutionStatusStrip />
         <SmartBody $smart={isSmartExperience} data-smart-body={isSmartExperience ? 'true' : 'false'}>
@@ -356,11 +397,10 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
               <SmartSwapForm handleOutputSelect={handleOutputSelect} />
             </SwapFormWrap>
           </FormColumn>
-          {isSmartExperience ? (
-            <IntelColumn data-smart-intel-panel>
-              <SmartSwapExecutionPreviewModule showSmartTransparency />
-            </IntelColumn>
-          ) : null}
+          {/* Instant + Smart share one Details owner after Route/Metrics/Fee/AI */}
+          <IntelColumn data-smart-intel-panel>
+            <SmartSwapExecutionPreviewModule showSmartTransparency />
+          </IntelColumn>
         </SmartBody>
       </Panel>
     </Shell>

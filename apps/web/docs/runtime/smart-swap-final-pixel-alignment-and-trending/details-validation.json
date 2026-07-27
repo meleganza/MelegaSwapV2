@@ -1,0 +1,1 @@
+{"mission":"SMART_SWAP_FINAL_PIXEL_ALIGNMENT_AND_TRENDING_MARKET_INDEX_REPAIR","timestamp":"2026-07-27T00:40:05Z","checks":[{"name":"form Show details CSS-hidden Instant+Smart","pass":true},{"name":"single Details accordion after Route/Metrics/Fee/AI","pass":true},{"name":"Details mounted Instant and Smart","pass":true},{"name":"open/close local state","pass":true}],"pass":true}

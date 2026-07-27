@@ -30,15 +30,6 @@ const HomeSwapStack = styled.div`
   min-width: 0;
 `
 
-const HeaderLeading = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1 1 auto;
-  min-width: 0;
-  flex-wrap: wrap;
-`
-
 const Title = styled.h2`
   margin: 0;
   font-size: 20px;
@@ -55,12 +46,6 @@ const Bolt = styled.span`
   color: #f7c948;
   font-size: 16px;
   line-height: 1;
-`
-
-const TabsInline = styled.div`
-  flex: 0 1 180px;
-  min-width: 132px;
-  max-width: 200px;
 `
 
 const SettingsIcon = () => (
@@ -129,7 +114,6 @@ const HomeSwapInner: React.FC = () => {
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
-  const isSmartExperience = experience === 'smart'
 
   useEffect(() => {
     publishSwapExperienceMode(experience)
@@ -144,7 +128,6 @@ const HomeSwapInner: React.FC = () => {
         <PairLine>
           {inputSymbol} / {outputSymbol}
         </PairLine>
-        <span style={{ color: '#5f5f5f', fontSize: 12 }}>•</span>
         <LiveDot $live={walletConnected} aria-hidden />
         <LiveText $live={walletConnected}>Live</LiveText>
       </>
@@ -154,16 +137,16 @@ const HomeSwapInner: React.FC = () => {
 
   const headerLeading = useMemo(
     () => (
-      <HeaderLeading data-home-swap-header-leading>
-        <Title>
-          <Bolt aria-hidden>⚡</Bolt>
-          Swap
-        </Title>
-        <TabsInline data-trade-mode-selector-slot>
-          <TradeModeSelector mode={experience} onChange={setExperience} />
-        </TabsInline>
-      </HeaderLeading>
+      <Title>
+        <Bolt aria-hidden>⚡</Bolt>
+        Swap
+      </Title>
     ),
+    [],
+  )
+
+  const headerCenter = useMemo(
+    () => <TradeModeSelector mode={experience} onChange={setExperience} />,
     [experience],
   )
 
@@ -194,6 +177,7 @@ const HomeSwapInner: React.FC = () => {
     <HomeSwapStack data-home-swap-stack data-swap-experience={experience} data-final-pixel="true">
       <HomeSwapPanelShell
         headerLeading={headerLeading}
+        headerCenter={headerCenter}
         pairIndicator={pairIndicator}
         toolbar={
           <>
@@ -232,7 +216,8 @@ const HomeSwapInner: React.FC = () => {
           )}
         </div>
       </HomeSwapPanelShell>
-      <SmartSwapExecutionPreviewModule showSmartTransparency={isSmartExperience} />
+      {/* Instant + Smart: single Details owner after Route / Metrics / Fee / AI */}
+      <SmartSwapExecutionPreviewModule showSmartTransparency />
     </HomeSwapStack>
   )
 }
