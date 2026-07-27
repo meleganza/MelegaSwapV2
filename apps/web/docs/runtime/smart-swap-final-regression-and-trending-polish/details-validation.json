@@ -1,0 +1,15 @@
+{
+  "mission": "SMART_SWAP_FINAL_REGRESSION_AND_TRENDING_POLISH",
+  "timestamp": "2026-07-27T05:08:26Z",
+  "checks": [
+    {
+      "name": "zero Show details UI string in stack",
+      "pass": true
+    },
+    {
+      "name": "one Details accordion Instant+Smart",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

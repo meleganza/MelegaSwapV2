@@ -383,24 +383,12 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     max-height: 72px !important;
   }
 
-  /* Hide form "Show details" accordion — single Smart Details accordion lives after Swap button. */
+  /* Hide form "Show details" accordion inside #swap-page only — keep intel-stack Details. */
+  .trade-terminal-swap #swap-page [data-execution-details-accordion],
+  .trade-terminal-swap #swap-page #execution-details-toggle,
+  .trade-terminal-swap #swap-page #execution-details-panel,
   .trade-terminal-swap [class*='AdvancedDetailsFooter'],
-  .trade-terminal-swap [class*='AdvancedSwapDetails'],
-  .trade-terminal-swap #execution-details-toggle,
-  .trade-terminal-swap #execution-details-panel {
-    display: none !important;
-    height: 0 !important;
-    max-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-
-  /* Form footer may still carry data-execution-details-accordion — hide that node only inside the form. */
-  .trade-terminal-swap > [data-execution-details-accordion],
-  .trade-terminal-swap [class*='AutoColumn'] > [data-execution-details-accordion] {
+  .trade-terminal-swap [class*='AdvancedSwapDetails'] {
     display: none !important;
     height: 0 !important;
     max-height: 0 !important;

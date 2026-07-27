@@ -1,0 +1,14 @@
+{
+  "mission": "SMART_SWAP_FINAL_REGRESSION_AND_TRENDING_POLISH_CRASH_RECOVERY",
+  "timestamp": "2026-07-27T05:08:26Z",
+  "baseTip": "cf2997a9",
+  "safetyBranch": "safety/regression-trending-polish-crash-recovery-20260726220613",
+  "safetyCommit": "14a7bf2f",
+  "recoveredFiles": [
+    "HomeTradeGlobalStyle.tsx",
+    "TradeTerminalGlobalStyle.tsx",
+    "SmartSwapExecutionPreviewModule.tsx",
+    "useDexTrendingRankings.ts (partial\u2192finished)"
+  ],
+  "pass": true
+}

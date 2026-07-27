@@ -22,11 +22,18 @@ export interface MelegaTickerProps extends MelegaLayoutProps {
   marqueeMinItems?: number
   emptyPrimary?: string
   emptySecondary?: string
+  /** Animated live indicator next to the label. */
+  showLiveDot?: boolean
 }
 
 const melegaTicker = keyframes`
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+`
+
+const livePulse = keyframes`
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
 `
 
 const Strip = styled.div<{
@@ -54,7 +61,7 @@ const Strip = styled.div<{
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
-const TrackWrap = styled.div`
+const TrackWrap = styled.div<{ $scrollable?: boolean }>`
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -64,6 +71,15 @@ const TrackWrap = styled.div`
 
   &:active {
     cursor: grabbing;
+  }
+
+  @media (max-width: 767px) {
+    overflow-x: ${({ $scrollable }) => ($scrollable ? 'auto' : 'hidden')};
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `
 
@@ -98,6 +114,7 @@ const AnchorWrap = styled.div`
 const TrendingAnchor = styled.span`
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   font-family: ${typography.fontFamily.body};
   font-size: 11px;
   font-weight: 800;
@@ -105,6 +122,19 @@ const TrendingAnchor = styled.span`
   text-transform: uppercase;
   color: #f4c542;
   flex-shrink: 0;
+`
+
+const LiveDot = styled.span`
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  animation: ${livePulse} 1.6s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `
 
 const ItemLink = styled.a`
@@ -207,6 +237,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   disabled,
   emptyPrimary = 'Market activity unavailable',
   emptySecondary,
+  showLiveDot = false,
 }) => {
   const [hoverPaused, setHoverPaused] = useState(false)
   const [dragPaused, setDragPaused] = useState(false)
@@ -217,12 +248,17 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
 
   if (disabled) return null
 
+  const labelNode = (
+    <TrendingAnchor aria-hidden>
+      <span>{label}</span>
+      {showLiveDot ? <LiveDot data-trending-live-dot aria-hidden /> : null}
+    </TrendingAnchor>
+  )
+
   if (!safeItems.length) {
     return (
       <Strip $padding={padding} $margin={margin} data-melega-ticker>
-        <AnchorWrap>
-          <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
-        </AnchorWrap>
+        <AnchorWrap>{labelNode}</AnchorWrap>
         <EmptyRow>
           <EmptyMessage>{emptyPrimary}</EmptyMessage>
           {emptySecondary ? <EmptyMessage style={{ marginLeft: 8 }}>{emptySecondary}</EmptyMessage> : null}
@@ -260,10 +296,9 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
       onTouchEnd={() => setDragPaused(false)}
       onTouchCancel={() => setDragPaused(false)}
     >
-      <AnchorWrap>
-        <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
-      </AnchorWrap>
+      <AnchorWrap>{labelNode}</AnchorWrap>
       <TrackWrap
+        $scrollable={!marqueeEnabled || safeItems.length > 0}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}

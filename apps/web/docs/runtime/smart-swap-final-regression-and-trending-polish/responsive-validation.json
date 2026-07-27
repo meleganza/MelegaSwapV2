@@ -1,0 +1,21 @@
+{
+  "mission": "SMART_SWAP_FINAL_REGRESSION_AND_TRENDING_POLISH",
+  "timestamp": "2026-07-27T05:08:26Z",
+  "viewports": [
+    1440,
+    1280,
+    390,
+    430
+  ],
+  "checks": [
+    {
+      "name": "no CTA translate clipping",
+      "pass": true
+    },
+    {
+      "name": "desktop/tablet/mobile widths preserved from prior repair",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

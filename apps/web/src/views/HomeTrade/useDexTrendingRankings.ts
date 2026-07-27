@@ -17,6 +17,7 @@ import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { TransactionType } from 'state/info/types'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { usePriceCakeBusd } from 'state/farms/hooks'
+import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
 import {
   hasTrendingActivitySignal,
   isQuoteTokenAddress,
@@ -27,6 +28,17 @@ import {
   type TierMetricRow,
   type TierRankedAsset,
 } from 'lib/trending/tierTrendingModel'
+
+type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
+
+const TOKEN_LIST_BY_ADDRESS: Map<string, TokenListEntry> = (() => {
+  const map = new Map<string, TokenListEntry>()
+  for (const raw of (defaultTokenList.tokens ?? []) as TokenListEntry[]) {
+    if (raw.chainId !== 56 || !raw.address || !raw.symbol) continue
+    map.set(raw.address.toLowerCase(), raw)
+  }
+  return map
+})()
 
 /** Melega Factory / Router — DEX activity index roots (presentation selection only). */
 export const TRENDING_DEX_FACTORY = MELEGA_FACTORY_BSC
@@ -66,6 +78,8 @@ type PairRow = {
   reserve0?: string
   reserve1?: string
   classification?: string
+  active?: boolean
+  lastVerified?: string
 }
 
 async function fetchTradeablePairs(): Promise<PairRow[]> {
@@ -168,6 +182,38 @@ function liquidityScoreForAddress(pairs: PairRow[], address?: string): number {
     if (pair.token1?.toLowerCase() === key) score += BigInt(pair.reserve1 ?? '0')
   })
   return Number(score > BigInt(Number.MAX_SAFE_INTEGER) ? Number.MAX_SAFE_INTEGER : score)
+}
+
+function resolveDisplayMeta(
+  address: string,
+  canonicalByAddress: Map<string, ReturnType<typeof getCanonicalIndexedAssets>[number]>,
+): { symbol: string; slug: string; displayName: string; chainId: number } | null {
+  const key = address.toLowerCase()
+  const canonical = canonicalByAddress.get(key)
+  if (canonical?.address && canonical.symbol) {
+    return {
+      symbol: canonical.symbol,
+      slug: canonical.registrySlug ?? canonical.id,
+      displayName: canonical.name ?? canonical.symbol,
+      chainId: canonical.chainId,
+    }
+  }
+  const listed = TOKEN_LIST_BY_ADDRESS.get(key)
+  if (listed?.symbol) {
+    return {
+      symbol: listed.symbol,
+      slug: listed.symbol.toLowerCase(),
+      displayName: listed.name ?? listed.symbol,
+      chainId: 56,
+    }
+  }
+  return null
+}
+
+function lastVerifiedTs(iso?: string): number {
+  if (!iso) return 0
+  const ms = Date.parse(iso)
+  return Number.isFinite(ms) ? Math.floor(ms / 1000) : 0
 }
 
 function marcoIndexerMetrics(
@@ -304,7 +350,7 @@ export function useDexTrendingRankings() {
       for (const addr of addrs) {
         const key = addr?.toLowerCase()
         if (!key) continue
-        if (!canonicalByAddress.has(key) && key !== MARCO_BSC_ADDRESS.toLowerCase()) continue
+        // All indexed Swap-active bases — no canonical whitelist gate.
         bumpActivity(swapActivity, addr, ts, volumeUsd / Math.max(1, addrs.filter((a) => a && !isQuoteTokenAddress(a)).length))
       }
     }
@@ -369,16 +415,15 @@ export function useDexTrendingRankings() {
       })
     }
 
-    // Priority 2/3: pair / tier metrics activity.
+    // Priority 2: tier metrics when READY / EMPTY_VERIFIED (enrich %, not membership-only).
     for (const row of tierMetrics) {
       if (!isTrendingTierStatus(row.status)) continue
 
       const baseAddress = pickTrendingBaseToken(row.token0, row.token1)
-      const canonical = canonicalByAddress.get(baseAddress.toLowerCase())
-      if (!canonical?.address) continue
+      const meta = resolveDisplayMeta(baseAddress, canonicalByAddress)
+      if (!meta) continue
 
-      const sym = canonical.symbol
-      const addrKey = canonical.address.toLowerCase()
+      const addrKey = baseAddress.toLowerCase()
       const isMarcoPair = row.slug === 'marco-wbnb' || addrKey === MARCO_BSC_ADDRESS.toLowerCase()
       const fromSwaps = swapActivity.get(addrKey)
 
@@ -415,15 +460,15 @@ export function useDexTrendingRankings() {
       }
 
       const priceUsd = resolveTokenPriceUsd(
-        canonical.address,
-        sym,
+        baseAddress,
+        meta.symbol,
         marcoUsd,
         marcoMetrics.marcoUsdFromCandle,
         wbnbUsd,
         cakeUsd,
         busdUsd,
       )
-      const liquidityScore = liquidityScoreForAddress(pairRows, canonical.address)
+      const liquidityScore = liquidityScoreForAddress(pairRows, baseAddress)
       const signals: string[] = []
       if (fromSwaps?.trades) signals.push('recentSwaps')
       if (volume24h > 0) signals.push('volume24h')
@@ -431,12 +476,12 @@ export function useDexTrendingRankings() {
       if (change24h) signals.push('change24h')
 
       upsert({
-        symbol: sym,
-        slug: canonical.registrySlug ?? canonical.id,
+        symbol: meta.symbol,
+        slug: meta.slug,
         pairSlug: row.slug,
-        address: canonical.address,
-        chainId: canonical.chainId,
-        displayName: canonical.name ?? sym,
+        address: baseAddress,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
         tierStatus: row.status as TierRankedAsset['tierStatus'],
         priceUsd: priceUsd && priceUsd > 0 ? priceUsd : undefined,
         change24h,
@@ -448,26 +493,26 @@ export function useDexTrendingRankings() {
       })
     }
 
-    // Promote swap-active canonical tokens even when tier row missing.
+    // Priority 3: promote every Swap-active token (tokenlist / canonical for symbols).
     for (const [addr, act] of swapActivity) {
       if (byAddress.has(addr)) continue
-      const canonical = canonicalByAddress.get(addr)
-      if (!canonical?.address) continue
+      const meta = resolveDisplayMeta(addr, canonicalByAddress)
+      if (!meta) continue
       if (!hasTrendingActivitySignal({ tradeCount24h: act.trades, volume24h: act.volumeUsd, lastActivityTs: act.lastTs })) {
         continue
       }
       const isMarco = addr === MARCO_BSC_ADDRESS.toLowerCase()
       upsert({
-        symbol: canonical.symbol,
-        slug: canonical.registrySlug ?? canonical.id,
-        pairSlug: isMarco ? 'marco-wbnb' : canonical.registrySlug ?? canonical.id,
-        address: canonical.address,
-        chainId: canonical.chainId,
-        displayName: canonical.name ?? canonical.symbol,
+        symbol: meta.symbol,
+        slug: meta.slug,
+        pairSlug: isMarco ? 'marco-wbnb' : meta.slug,
+        address: addr,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
         tierStatus: 'READY',
         priceUsd: resolveTokenPriceUsd(
-          canonical.address,
-          canonical.symbol,
+          addr,
+          meta.symbol,
           marcoUsd,
           marcoMetrics.marcoUsdFromCandle,
           wbnbUsd,
@@ -476,10 +521,59 @@ export function useDexTrendingRankings() {
         ),
         change24h: isMarco ? marcoMetrics.marcoChange : undefined,
         volume24h: Math.max(act.volumeUsd, isMarco ? marcoMetrics.volumeUsd : 0),
-        liquidityScore: liquidityScoreForAddress(pairRows, canonical.address),
+        liquidityScore: liquidityScoreForAddress(pairRows, addr),
         tradeCount24h: Math.max(act.trades, isMarco ? marcoMetrics.tradeCount : 0),
         lastActivityTs: act.lastTs,
         rankingSignals: ['recentSwaps'],
+      })
+    }
+
+    // Priority 4: fill top-10 from tradeable Factory pairs with factual reserves + lastVerified.
+    for (const pair of pairRows) {
+      if (!pair.token0 || !pair.token1) continue
+      if (pair.active === false) continue
+      const reserveSum = BigInt(pair.reserve0 ?? '0') + BigInt(pair.reserve1 ?? '0')
+      if (reserveSum <= 0n) continue
+      const baseAddress = pickTrendingBaseToken(pair.token0, pair.token1)
+      const addrKey = baseAddress.toLowerCase()
+      if (byAddress.has(addrKey)) continue
+      const meta = resolveDisplayMeta(baseAddress, canonicalByAddress)
+      if (!meta) continue
+      const verifiedTs = lastVerifiedTs(pair.lastVerified)
+      if (
+        !hasTrendingActivitySignal({
+          tradeCount24h: 0,
+          volume24h: 0,
+          lastActivityTs: verifiedTs || undefined,
+        })
+      ) {
+        continue
+      }
+      const fromSwaps = swapActivity.get(addrKey)
+      upsert({
+        symbol: meta.symbol,
+        slug: meta.slug,
+        pairSlug: meta.slug,
+        address: baseAddress,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
+        tierStatus: 'READY',
+        priceUsd: resolveTokenPriceUsd(
+          baseAddress,
+          meta.symbol,
+          marcoUsd,
+          marcoMetrics.marcoUsdFromCandle,
+          wbnbUsd,
+          cakeUsd,
+          busdUsd,
+        ),
+        change24h:
+          addrKey === MARCO_BSC_ADDRESS.toLowerCase() ? marcoMetrics.marcoChange : undefined,
+        volume24h: fromSwaps?.volumeUsd ?? 0,
+        liquidityScore: liquidityScoreForAddress(pairRows, baseAddress),
+        tradeCount24h: fromSwaps?.trades ?? 0,
+        lastActivityTs: Math.max(fromSwaps?.lastTs ?? 0, verifiedTs) || undefined,
+        rankingSignals: fromSwaps?.trades ? ['recentSwaps', 'tradeablePair'] : ['tradeablePair'],
       })
     }
 
@@ -491,14 +585,8 @@ export function useDexTrendingRankings() {
       }),
     )
 
-    // Display requires factual ↑/↓ % — never invent placeholder price copy.
-    const withMove = active.filter(
-      (c) => c.change24h != null && Number.isFinite(c.change24h.pct) && Math.abs(c.change24h.pct) > 0.0001,
-    )
-
-    // If activity exists but no % yet, still surface top active tokens (symbol only).
-    const pool = withMove.length > 0 ? withMove : active
-    return rankTierAssets(pool, TRENDING_LIMIT)
+    // Membership = factual activity. % enriches display only — never drop active tokens without %.
+    return rankTierAssets(active, TRENDING_LIMIT)
   }, [
     tierMetrics,
     pairRows,

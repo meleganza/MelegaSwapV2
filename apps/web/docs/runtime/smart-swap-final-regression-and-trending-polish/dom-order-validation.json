@@ -1,0 +1,39 @@
+{
+  "mission": "SMART_SWAP_FINAL_REGRESSION_AND_TRENDING_POLISH",
+  "timestamp": "2026-07-27T05:08:26Z",
+  "instant": [
+    "FROM",
+    "TO",
+    "Swap button",
+    "Details"
+  ],
+  "smart": [
+    "FROM",
+    "TO",
+    "Swap button",
+    "Route",
+    "Metrics",
+    "Fee",
+    "AI Insight",
+    "Details"
+  ],
+  "checks": [
+    {
+      "name": "CTA no translateY overlap",
+      "pass": true
+    },
+    {
+      "name": "form Details hidden in #swap-page",
+      "pass": true
+    },
+    {
+      "name": "single intel Details accordion",
+      "pass": true
+    },
+    {
+      "name": "Smart stack order Route\u2026Details",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

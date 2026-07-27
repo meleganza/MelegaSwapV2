@@ -51,6 +51,7 @@ export const TrendingRibbon: React.FC = () => {
       label="🔥 TRENDING"
       items={enrichedItems}
       marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
+      showLiveDot={!trendingEmpty && enrichedItems.length > 0}
       emptyPrimary={trendingEmpty ? 'Market activity unavailable' : undefined}
     />
   )

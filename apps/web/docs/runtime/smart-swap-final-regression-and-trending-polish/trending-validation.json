@@ -1,0 +1,87 @@
+{
+  "mission": "SMART_SWAP_FINAL_REGRESSION_AND_TRENDING_POLISH",
+  "timestamp": "2026-07-27T05:08:26Z",
+  "swapEventCount": 3,
+  "tradeablePairs": 100,
+  "top10": [
+    {
+      "symbol": "MARCO",
+      "address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "trades": 3,
+      "lastTs": 1783853420
+    },
+    {
+      "symbol": "BLION",
+      "address": "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+      "trades": 0,
+      "lastTs": 1783701451
+    },
+    {
+      "symbol": "TRUMPET",
+      "address": "0x5844cbfad5702ff56a489c99dd791d748de39e5d",
+      "trades": 0,
+      "lastTs": 1783701450
+    },
+    {
+      "symbol": "qwrx",
+      "address": "0x75a658568dfd94335861f6610be3e5a5fff4c16c",
+      "trades": 0,
+      "lastTs": 1783701441
+    },
+    {
+      "symbol": "PEPE",
+      "address": "0x25d887ce7a35172c62febfd67a1856f20faebb00",
+      "trades": 0,
+      "lastTs": 1783701440
+    },
+    {
+      "symbol": "CUBY",
+      "address": "0x488907d99ce2ac919a47acfac896e825fd23598f",
+      "trades": 0,
+      "lastTs": 1783701433
+    },
+    {
+      "symbol": "BNBDOG",
+      "address": "0x52abb09ceb590f04c7d70be9d6aa420177e94744",
+      "trades": 0,
+      "lastTs": 1783701432
+    },
+    {
+      "symbol": "TENCO",
+      "address": "0xe77e8a1a68edef172ff15945688402ed4dfa5e77",
+      "trades": 0,
+      "lastTs": 1783701425
+    },
+    {
+      "symbol": "TRAFF",
+      "address": "0x8b0c9785a4c211b345ab2f8d88b6d021ac6dd5bf",
+      "trades": 0,
+      "lastTs": 1783701424
+    },
+    {
+      "symbol": "SRT",
+      "address": "0x6dd1c1c6e1c9ebef0c82221abab30bf648756005",
+      "trades": 0,
+      "lastTs": 1783701424
+    }
+  ],
+  "checks": [
+    {
+      "name": "not MARCO-only when tradeable pairs resolve",
+      "pass": true
+    },
+    {
+      "name": "rank swaps\u2192volume\u2192recency",
+      "pass": true
+    },
+    {
+      "name": "live ticker marquee+dot",
+      "pass": true
+    },
+    {
+      "name": "no fake hardcoded list",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

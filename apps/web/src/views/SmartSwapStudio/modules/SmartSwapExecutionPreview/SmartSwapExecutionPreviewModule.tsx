@@ -33,6 +33,23 @@ const Stack = styled.div`
   gap: 8px;
   width: 100%;
   min-width: 0;
+
+  /* Explicit visual order — Swap CTA lives outside this stack. */
+  & > [data-smart-route-card] {
+    order: 1;
+  }
+  & > [data-smart-compact-metrics] {
+    order: 2;
+  }
+  & > [data-smart-swap-module='004'] {
+    order: 3;
+  }
+  & > [data-insight='ai'] {
+    order: 4;
+  }
+  & > [data-execution-details-accordion] {
+    order: 5;
+  }
 `
 
 const AccordionShell = styled.div`

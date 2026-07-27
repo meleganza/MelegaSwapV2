@@ -141,8 +141,9 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   if (change) {
     const arrow = change.positive ? '↑' : '↓'
     const pct = `${Math.abs(change.pct).toFixed(1)}%`
-    return { accent: `${arrow} ${pct}`, accentPositive: change.positive }
+    // Explicit boolean so green/red never falls through undefined → default green.
+    return { accent: `${arrow} ${pct}`, accentPositive: Boolean(change.positive) }
   }
-  // No fabricated % and never "Price unavailable".
+  // No fabricated % — symbol-only when move unknown.
   return {}
 }
