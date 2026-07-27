@@ -50,7 +50,7 @@ export const LIQUIDITY_MODULE_PLAN = [
   { id: '000-architecture', name: 'Architecture Lock', phase: 'certified-by-this-mission' },
   { id: '001-hero', name: 'Hero', phase: 'certified-by-this-mission' },
   { id: '002-liquidity-actions', name: 'Liquidity Actions', phase: 'certified-by-this-mission' },
-  { id: '003-pool-discovery', name: 'Pool Discovery', phase: 'future' },
+  { id: '003-pool-discovery', name: 'Pool Discovery', phase: 'certified-by-this-mission' },
   { id: '004-add-liquidity', name: 'Add Liquidity', phase: 'future' },
   { id: '005-market-snapshot', name: 'Market Snapshot', phase: 'future' },
   { id: '006-your-positions', name: 'Your Positions', phase: 'future' },

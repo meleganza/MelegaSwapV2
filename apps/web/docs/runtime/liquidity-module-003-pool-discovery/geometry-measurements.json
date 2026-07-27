@@ -1,0 +1,138 @@
+{
+  "desktop-1440": {
+    "hero": true,
+    "actions": true,
+    "discovery": {
+      "width": 1376,
+      "height": 1806
+    },
+    "header": {
+      "width": 1376,
+      "height": 82
+    },
+    "grid": {
+      "width": 1376,
+      "height": 1708
+    },
+    "cols": "445.328px 445.328px 445.344px",
+    "cardCount": 24,
+    "firstCard": {
+      "width": 445,
+      "height": 196
+    },
+    "search": true,
+    "empty": false,
+    "unavailable": false,
+    "skeleton": 0,
+    "ctaHref": "/add/0x9804b647a4ca2032efcac920775276591def489d/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/",
+    "overflow": false,
+    "legacy": true,
+    "module": {
+      "width": 1376,
+      "height": 1806
+    },
+    "refreshedAfterTabletFix": true
+  },
+  "tablet-1024": {
+    "hero": true,
+    "actions": true,
+    "discovery": {
+      "width": 976,
+      "height": 1806
+    },
+    "header": {
+      "width": 944,
+      "height": 82
+    },
+    "grid": {
+      "width": 944,
+      "height": 1708
+    },
+    "cols": "462px 462px",
+    "cardCount": 24,
+    "firstCard": {
+      "width": 445,
+      "height": 196
+    },
+    "search": true,
+    "empty": false,
+    "unavailable": false,
+    "skeleton": 0,
+    "ctaHref": "/add/0x9804b647a4ca2032efcac920775276591def489d/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/",
+    "overflow": false,
+    "legacy": true,
+    "module": {
+      "width": 976,
+      "height": 2670
+    },
+    "refreshedAfterTabletFix": true
+  },
+  "mobile-430": {
+    "hero": true,
+    "actions": true,
+    "discovery": {
+      "width": 406,
+      "height": 5328
+    },
+    "header": {
+      "width": 374,
+      "height": 148
+    },
+    "grid": {
+      "width": 374,
+      "height": 5164
+    },
+    "cols": "374px",
+    "cardCount": 24,
+    "firstCard": {
+      "width": 374,
+      "height": 196
+    },
+    "search": true,
+    "empty": false,
+    "unavailable": false,
+    "skeleton": 0,
+    "ctaHref": "/add/0x9804b647a4ca2032efcac920775276591def489d/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/",
+    "overflow": false,
+    "legacy": true,
+    "module": {
+      "width": 406,
+      "height": 5328
+    },
+    "refreshedAfterTabletFix": true
+  },
+  "mobile-390": {
+    "hero": true,
+    "actions": true,
+    "discovery": {
+      "width": 366,
+      "height": 5328
+    },
+    "header": {
+      "width": 334,
+      "height": 148
+    },
+    "grid": {
+      "width": 334,
+      "height": 5164
+    },
+    "cols": "334px",
+    "cardCount": 24,
+    "firstCard": {
+      "width": 334,
+      "height": 196
+    },
+    "search": true,
+    "empty": false,
+    "unavailable": false,
+    "skeleton": 0,
+    "ctaHref": "/add/0x9804b647a4ca2032efcac920775276591def489d/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/",
+    "overflow": false,
+    "legacy": true,
+    "module": {
+      "width": 366,
+      "height": 5328
+    },
+    "refreshedAfterTabletFix": true
+  }
+}

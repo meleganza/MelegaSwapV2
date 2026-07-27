@@ -1,0 +1,11 @@
+{
+  "missionId": "LIQUIDITY_MODULE_003_POOL_DISCOVERY",
+  "status": "passed",
+  "vitest": { "testFiles": 3, "tests": 28, "failed": 0 },
+  "nextBuild": "passed",
+  "suites": [
+    "liquidity-module-001-hero.test.ts",
+    "liquidity-module-002-actions.test.ts",
+    "liquidity-module-003-pool-discovery.test.ts"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "missionId": "LIQUIDITY_MODULE_003_POOL_DISCOVERY",
+  "desktop": {
+    "container": "1376px",
+    "headerMin": "64px",
+    "columns": 3,
+    "gap": "20px",
+    "cardWidth": "~445px",
+    "measuredDesktop1440": "445.3 × 3"
+  },
+  "responsive": {
+    "tablet": "2 columns @ ≤1199px",
+    "mobile": "1 column @ ≤767px"
+  }
+}

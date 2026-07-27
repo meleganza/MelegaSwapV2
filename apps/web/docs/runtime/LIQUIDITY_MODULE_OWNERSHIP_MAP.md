@@ -97,10 +97,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Discover / rank tradeable pools that feed both journeys (e.g. Top Pools) |
-| **Owned components (future)** | `LiquidityPoolDiscovery*` |
-| **May consume** | Shared Factory / pair inventory adapters |
-| **Forbidden** | Parallel pair scanners; inventing TVL/APR; Modules 004–010 |
+| **Responsibility** | Discover / search / filter / sort liquidity pools; factual metrics only; navigation to `/add` |
+| **Owned components** | `LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx`, `LiquidityPoolDiscoveryCard.tsx`, `useLiquidityPoolDiscovery.ts`, `liquidityPoolDiscoveryModel.ts`, `liquidityPoolDiscoveryTokens.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 003 **after** Module 002 Actions, **above** legacy `views/Pool` |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-003-pool-discovery/` + `LIQUIDITY_MODULE_003_POOL_DISCOVERY_REPORT.md` |
+| **May consume** | Factory indexer (`useMelegaFactoryPools` / `/api/indexer/pairs`), subgraph `usePoolDatasSWR` when present, address logo resolver |
+| **Forbidden** | Parallel pair scanners; inventing TVL/volume/fees; deposits / approvals / mint; Modules 004–010; editing Modules 001–002 / `views/Pool` / contracts |
 | **Depends on** | MODULE 002 |
 
 ---
