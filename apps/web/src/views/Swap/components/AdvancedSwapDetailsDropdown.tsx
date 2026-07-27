@@ -114,7 +114,7 @@ export default function AdvancedSwapDetailsDropdown({
         id="execution-details-toggle"
       >
         <Text fontSize="14px" color="textSubtle">
-          {executionDetailsOpen ? t('Hide details') : t('Show details')}
+          {executionDetailsOpen ? t('Hide') : t('Details')}
         </Text>
         <Flex alignItems="center">
           {executionDetailsOpen ? <ChevronUpIcon width="20px" /> : <ChevronDownIcon width="20px" />}

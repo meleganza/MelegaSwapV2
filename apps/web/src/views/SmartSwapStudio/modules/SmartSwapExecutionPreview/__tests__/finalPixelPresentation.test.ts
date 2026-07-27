@@ -46,7 +46,7 @@ describe('SMART_SWAP_FINAL_PIXEL_PERFECTION presentation', () => {
   it('trade terminal CSS hides form Show details accordion', () => {
     const src = readFileSync(join(viewsRoot, 'Trade/TradeTerminalGlobalStyle.tsx'), 'utf8')
     expect(src).toMatch(/Hide form "Show details"/)
-    expect(src).toMatch(/\.trade-terminal-swap \[data-execution-details-accordion\]/)
+    expect(src).toMatch(/#execution-details-toggle/)
     expect(src).toMatch(/display: none !important/)
   })
 

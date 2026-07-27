@@ -570,16 +570,22 @@ export const DexHomeScreen: React.FC = () => {
 
   const trendingRows = useMemo(() => {
     const assets = data.indexedRibbonAssets ?? []
-    return (data.trendingTickerItems ?? []).slice(0, 5).map((item, idx) => {
+    return (data.trendingTickerItems ?? []).slice(0, 10).map((item, idx) => {
       const asset = assets[idx]
       const slug = asset?.slug
+      const move = item.accent?.trim()
       return {
         id: item.id ?? `trend-${idx}`,
         rank: idx + 1,
         name: item.primary ?? asset?.symbol ?? 'Token',
         meta: asset?.displayName ?? asset?.symbol ?? '',
-        metric: item.secondary ?? NA,
-        href: slug ? `/@${slug}` : '/#projects',
+        // TOKEN ↑ % / TOKEN ↓ % — never "Price unavailable"
+        metric: move || undefined,
+        href: asset?.address
+          ? `/swap?outputCurrency=${asset.address}`
+          : slug
+            ? `/@${slug}`
+            : '/trade',
       }
     })
   }, [data.trendingTickerItems, data.indexedRibbonAssets])
@@ -715,7 +721,7 @@ export const DexHomeScreen: React.FC = () => {
                       <RowName>{row.name}</RowName>
                       <RowMeta>{row.meta || '—'}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric}</RowMetric>
+                    <RowMetric>{row.metric ?? ''}</RowMetric>
                   </DiscRow>
                 ))
               )}

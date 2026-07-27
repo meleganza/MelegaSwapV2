@@ -33,6 +33,7 @@ import {
   formatPoolTrendingLabel,
   POOL_APR_UNAVAILABLE_REASON,
 } from './formatTrendingLabels'
+import useDexTrendingRankings from './useDexTrendingRankings'
 
 export interface RibbonItem {
   id: string
@@ -103,20 +104,6 @@ export const isRecentIndexedEvent = (timestamp: string | number): boolean => {
   if (!ts || Number.isNaN(ts)) return false
   const ageSec = Math.floor(Date.now() / 1000 - ts)
   return ageSec >= 0 && ageSec <= LIVE_ACTIVITY_WINDOW_SEC
-}
-
-const formatTickerPrice = (price?: number): string | undefined => {
-  if (!price || price <= 0 || !Number.isFinite(price)) return undefined
-  if (price >= 1) return `$${price.toFixed(2)}`
-  if (price >= 0.01) return `$${price.toFixed(4)}`
-  return `$${price.toFixed(6)}`
-}
-
-const formatTickerChange = (change?: number): { text: string; positive: boolean } | undefined => {
-  if (change == null || !Number.isFinite(change)) return undefined
-  const positive = change >= 0
-  const arrow = positive ? '▲' : '▼'
-  return { text: `${arrow} ${Math.abs(change).toFixed(2)}%`, positive }
 }
 
 const formatTimeAgo = (timestamp: string): string | undefined => {
@@ -257,7 +244,9 @@ export const useHomeTradeData = () => {
     return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
   }, [recentTransactions])
 
-  const indexedRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
+  const dexTrending = useDexTrendingRankings()
+
+  const catalogRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
     return getTradeSurfaceAssets()
       .map((asset) => ({
         slug: asset.registrySlug ?? asset.id,
@@ -269,38 +258,36 @@ export const useHomeTradeData = () => {
       .filter((asset) => asset.displayName && asset.address)
   }, [])
 
-  const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
-    const marcoUsd = marcoPrice?.toNumber()
-    const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+  /** Prefer Factory/Router activity-ranked assets; fall back to catalog only when empty. */
+  const indexedRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
+    if (dexTrending.indexedRibbonAssets.length > 0) {
+      return dexTrending.indexedRibbonAssets.map((asset) => ({
+        slug: asset.slug,
+        symbol: asset.symbol,
+        address: asset.address,
+        chainId: asset.chainId,
+        displayName: sanitizeRibbonText(asset.displayName ?? asset.symbol) ?? asset.symbol,
+      }))
+    }
+    return catalogRibbonAssets
+  }, [dexTrending.indexedRibbonAssets, catalogRibbonAssets])
 
-    const resolveQuote = (symbol: string): { price?: string; change?: { text: string; positive: boolean } } => {
-      const sym = symbol.toUpperCase()
-      if (sym === 'MARCO' || sym === 'CAKE') {
-        return {
-          price: formatTickerPrice(marcoUsd),
-        }
-      }
-      if (sym === 'WBNB' || sym === 'BNB') {
-        return {
-          price: formatTickerPrice(wbnbUsd),
-        }
-      }
-      return { price: '—' }
+  const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
+    // Real movers from Swap-indexed ranking (swap count → volume → recency).
+    if (dexTrending.items.length > 0) {
+      return dexTrending.items
     }
 
-    return indexedRibbonAssets
-      .slice(0, 24)
-      .map((asset) => {
-        const quote = resolveQuote(asset.symbol)
-        return {
+    // Sparse fallback: never emit "Price unavailable" — omit secondary price noise.
+    return catalogRibbonAssets.slice(0, 10).map(
+      (asset) =>
+        ({
           id: `trade-asset-${asset.slug}`,
           primary: asset.symbol,
-          secondary: quote.price ?? '—',
-          accent: quote.change?.text,
-          accentPositive: quote.change?.positive,
-        } satisfies MelegaTickerItem
-      })
-  }, [indexedRibbonAssets, marcoPrice, wbnbPrice])
+          href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
+        }) satisfies MelegaTickerItem,
+    )
+  }, [dexTrending.items, catalogRibbonAssets])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -618,15 +605,17 @@ export const useHomeTradeData = () => {
   }, [marketCards.length, indexerState])
 
   const trendingUnavailableReason = useMemo(() => {
-    if (trendingTickerItems.length > 0) return undefined
-    if (indexerState.status === 'loading') {
-      return indexerState.reason ?? 'Market quotes loading'
+    if (trendingTickerItems.length > 0 || !dexTrending.trendingEmpty) return undefined
+    if (dexTrending.isLoading || indexerState.status === 'loading') {
+      return indexerState.reason ?? 'Indexing recent swaps'
     }
-    if (!marcoPriceLabel) {
-      return 'Waiting for live tradeable asset quotes'
-    }
-    return 'No tradeable assets with live quotes'
-  }, [trendingTickerItems.length, indexerState, marcoPriceLabel])
+    return 'No indexed Factory/Router swap activity in ranking window'
+  }, [
+    trendingTickerItems.length,
+    dexTrending.trendingEmpty,
+    dexTrending.isLoading,
+    indexerState,
+  ])
 
   const poolAprUnavailableReason = POOL_APR_UNAVAILABLE_REASON
 

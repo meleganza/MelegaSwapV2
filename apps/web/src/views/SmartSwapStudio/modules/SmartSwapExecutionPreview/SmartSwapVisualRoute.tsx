@@ -11,7 +11,7 @@ const Root = styled.div`
   border: 1px solid rgba(247, 201, 72, 0.18);
   background: #171512;
   box-sizing: border-box;
-  max-height: 112px;
+  max-height: none;
   overflow: hidden;
 `
 
@@ -106,7 +106,7 @@ const Arrow = styled.li`
   display: flex;
   align-items: center;
   justify-content: center;
-  align-self: flex-start;
+  align-self: center;
   height: 32px;
   margin-top: 0;
 `
@@ -140,7 +140,7 @@ export function SmartSwapVisualRoute({
 }: SmartSwapVisualRouteProps) {
   if (!hops.length) {
     return (
-      <Root data-smart-visual-route data-route-orientation="horizontal" data-route-state={idle ? 'idle' : 'empty'}>
+      <Root data-smart-visual-route data-smart-route-card data-route-orientation="horizontal" data-route-state={idle ? 'idle' : 'empty'}>
         <Header>
           <Label>Route</Label>
         </Header>
@@ -154,7 +154,7 @@ export function SmartSwapVisualRoute({
   const lastToken = tokenHops[tokenHops.length - 1]?.label
 
   return (
-    <Root data-smart-visual-route data-route-orientation="horizontal" data-route-state="ready">
+    <Root data-smart-visual-route data-smart-route-card data-route-orientation="horizontal" data-route-state="ready">
       <Header>
         <Label>Route</Label>
         <Source data-execution-source>

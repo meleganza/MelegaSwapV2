@@ -70,7 +70,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     flex-direction: column !important;
     flex: 1 !important;
     min-height: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     justify-content: flex-start !important;
   }
 
@@ -213,6 +213,20 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-width: 100% !important;
     z-index: 1 !important;
     box-sizing: border-box !important;
+  }
+
+  /* Intel stack MUST follow Swap button (order 3). Default order:0 previously floated Route/Details above From/To. */
+  .home-trade-swap [data-smart-transparency-stack] {
+    order: 5 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 16px !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .home-trade-swap [data-smart-route-card] {
+    margin-top: 0 !important;
   }
 
   .home-trade-swap [class*='ConnectWallet'],

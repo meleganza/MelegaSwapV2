@@ -62,10 +62,14 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-swap-cockpit {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: visible;
     position: relative;
     box-sizing: border-box;
+  }
+
+  /* contents: From/To/button + intel stack share FormColumn flex order space */
+  .trade-swap-cockpit .trade-terminal-swap {
+    display: contents !important;
   }
 
   .trade-terminal-swap {
@@ -108,6 +112,20 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
   .trade-swap-cockpit .trade-terminal-swap #swap-page > div:last-child,
   .trade-swap-cockpit .trade-terminal-swap [class*='Box'][class*='mt'] {
     order: 4 !important;
+  }
+
+  /* After Swap button — Instant Details / Smart Route→…→Details */
+  .trade-swap-cockpit [data-smart-transparency-stack] {
+    order: 5 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 16px !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .trade-swap-cockpit [data-smart-route-card] {
+    margin-top: 0 !important;
   }
 
   .trade-terminal-swap [class*='AutoColumn'],
@@ -365,10 +383,24 @@ const TradeTerminalGlobalStyle = createGlobalStyle`
     max-height: 72px !important;
   }
 
-  /* Hide form "Show details" — single Smart Details accordion lives in intel column. */
+  /* Hide form "Show details" accordion — single Smart Details accordion lives after Swap button. */
   .trade-terminal-swap [class*='AdvancedDetailsFooter'],
   .trade-terminal-swap [class*='AdvancedSwapDetails'],
-  .trade-terminal-swap [data-execution-details-accordion] {
+  .trade-terminal-swap #execution-details-toggle,
+  .trade-terminal-swap #execution-details-panel {
+    display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Form footer may still carry data-execution-details-accordion — hide that node only inside the form. */
+  .trade-terminal-swap > [data-execution-details-accordion],
+  .trade-terminal-swap [class*='AutoColumn'] > [data-execution-details-accordion] {
     display: none !important;
     height: 0 !important;
     max-height: 0 !important;

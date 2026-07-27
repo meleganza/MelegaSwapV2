@@ -35,8 +35,27 @@ const Shell = styled.div`
   flex-direction: column;
   margin: 0 auto;
 
+  @media (max-width: 1023px) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+  }
+
   &[data-swap-experience='smart'] {
     max-width: min(100%, ${tradeLayout.cockpitSmartWidth});
+
+    @media (max-width: 1023px) {
+      max-width: 100%;
+    }
+
+    @media (max-width: 767px) {
+      width: calc(100vw - 32px);
+      max-width: calc(100vw - 32px);
+    }
   }
 `
 
@@ -54,14 +73,14 @@ const SmartBody = styled.div`
 const FormColumn = styled.div`
   min-width: 0;
   width: 100%;
-  max-width: 500px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   margin: 0 auto;
-  padding: 0 8px;
+  padding: 0;
   box-sizing: border-box;
-  align-self: center;
+  align-self: stretch;
 `
 
 const Panel = styled.div`
@@ -75,8 +94,7 @@ const Panel = styled.div`
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
   overscroll-behavior: contain;
 `
 

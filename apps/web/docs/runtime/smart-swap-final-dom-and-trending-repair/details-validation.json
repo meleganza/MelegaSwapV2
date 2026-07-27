@@ -1,0 +1,23 @@
+{
+  "mission": "SMART_SWAP_FINAL_DOM_HIERARCHY_AND_TRENDING_PIPELINE_REPAIR",
+  "timestamp": "2026-07-27T02:33:36Z",
+  "checks": [
+    {
+      "name": "zero Show details strings in swap UI sources",
+      "pass": true
+    },
+    {
+      "name": "label is Details only",
+      "pass": true
+    },
+    {
+      "name": "form AdvancedSwapDetailsDropdown label Details/Hide",
+      "pass": true
+    },
+    {
+      "name": "Smart Details accordion after Swap button",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

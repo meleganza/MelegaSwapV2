@@ -33,8 +33,12 @@ export const TRENDING_DEX_FACTORY = MELEGA_FACTORY_BSC
 export const TRENDING_DEX_ROUTER = MELEGA_ROUTER_BSC
 
 const SECONDS_24H = 86_400
-/** Activity window for recent Factory/Router swap ranking (7d). */
-const SECONDS_ACTIVITY = 7 * SECONDS_24H
+/**
+ * Activity window for Factory/Router swap ranking.
+ * Featured-pair indexer currently retains sparse historical Swap rows — use 90d
+ * so real indexed movers are not dropped while 24h tier metrics remain empty.
+ */
+const SECONDS_ACTIVITY = 90 * SECONDS_24H
 const TRENDING_LIMIT = 10
 const MIN_MARQUEE_ITEMS = 2
 
@@ -104,7 +108,7 @@ async function fetchBnbUsdPrice(): Promise<number | undefined> {
 /** Live Melega Factory/Router swap feed (AMM protocol activity). */
 async function fetchProtocolActivity(): Promise<ProtocolActivityRow[]> {
   try {
-    const res = await fetch('/api/protocol/activity?limit=50')
+    const res = await fetch('/api/protocol/activity?limit=100')
     if (!res.ok) return []
     const json = (await res.json()) as { events?: ProtocolActivityRow[] }
     return json.events ?? []
@@ -113,16 +117,31 @@ async function fetchProtocolActivity(): Promise<ProtocolActivityRow[]> {
   }
 }
 
-/** Durable indexer Swap events for Melega pairs. */
+/** Durable indexer Swap events for Melega pairs (API may fall back to production store). */
 async function fetchIndexerSwapEvents(): Promise<IndexerSwapRow[]> {
   try {
-    const res = await fetch('/api/indexer/events?types=Swap&limit=50')
+    const res = await fetch('/api/indexer/events?types=Swap&limit=100')
     if (!res.ok) return []
     const json = (await res.json()) as { events?: IndexerSwapRow[] }
     return json.events ?? []
   } catch {
     return []
   }
+}
+
+/** Indexed-period % when rolling 24h candles are sparse but OHLCV history exists. */
+function computeIndexedMove(candles: OhlcvCandle[]): ReturnType<typeof computeValid24hPriceChange> {
+  const rolling = computeValid24hPriceChange(candles)
+  if (rolling) return rolling
+  if (candles.length < 2) return undefined
+  const open = candles[0]?.open
+  const close = candles[candles.length - 1]?.close
+  if (open == null || close == null || !Number.isFinite(open) || !Number.isFinite(close) || open <= 0) {
+    return undefined
+  }
+  const pct = ((close - open) / open) * 100
+  if (!Number.isFinite(pct) || Math.abs(pct) <= 0.0001) return undefined
+  return format24hChangePct(pct)
 }
 
 function bumpActivity(
@@ -168,12 +187,27 @@ function marcoIndexerMetrics(
   const resolvedTradeCount = tradeCount > 0 ? tradeCount : txCount24h
   const volumeUsd =
     quoteVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) ? quoteVolumeWbnb * bnbUsd : 0
-  const marcoChange = computeValid24hPriceChange(candles)
+  const marcoChange = computeIndexedMove(candles)
   const marcoUsdFromCandle =
     candles[candles.length - 1]?.close != null && bnbUsd
       ? candles[candles.length - 1].close * bnbUsd
       : undefined
-  return { volumeUsd, tradeCount: resolvedTradeCount, marcoChange, marcoUsdFromCandle }
+  // Always surface featured-pair swap count from durable indexer candles/txs in activity window.
+  const activityCutoff = Math.floor(Date.now() / 1000) - SECONDS_ACTIVITY
+  const activityTradeCount =
+    transactions?.filter((tx) => {
+      const ts = Number(tx.timestamp)
+      return tx.type === TransactionType.SWAP && Number.isFinite(ts) && ts >= activityCutoff
+    }).length ?? 0
+  const candleActivityTrades = candles
+    .filter((c) => c.bucketTimestamp >= activityCutoff)
+    .reduce((sum, c) => sum + (c.tradeCount ?? 0), 0)
+  return {
+    volumeUsd,
+    tradeCount: Math.max(resolvedTradeCount, activityTradeCount, candleActivityTrades),
+    marcoChange,
+    marcoUsdFromCandle,
+  }
 }
 
 function resolveTokenPriceUsd(
@@ -254,10 +288,10 @@ export function useDexTrendingRankings() {
     // Priority 1: Factory/Router-indexed recent Swap events (protocol activity + durable store).
     const swapActivity = new Map<string, ActivityBump>()
 
-    // Protocol activity + indexer Swap feeds are already recent-capped server-side.
     for (const ev of protocolActivity) {
       if (ev.eventType && !/swap/i.test(ev.eventType)) continue
-      const ts = Number(ev.timestamp) || Math.floor(Date.now() / 1000)
+      const ts = Number(ev.timestamp) || 0
+      if (!Number.isFinite(ts) || ts < activityCutoff) continue
       const addrs = ev.assetAddresses ?? []
       let volumeUsd = 0
       if (effectiveBnbUsd && addrs.length >= 2 && ev.amounts?.length) {
@@ -277,7 +311,8 @@ export function useDexTrendingRankings() {
 
     for (const ev of indexerSwaps) {
       if (ev.eventType && !/swap/i.test(ev.eventType)) continue
-      const ts = Number(ev.blockTimestamp) || Math.floor(Date.now() / 1000)
+      const ts = Number(ev.blockTimestamp) || 0
+      if (!Number.isFinite(ts) || ts < activityCutoff) continue
       let volumeUsd = 0
       if (effectiveBnbUsd) {
         const t0 = ev.token0?.toLowerCase()
@@ -456,7 +491,7 @@ export function useDexTrendingRankings() {
       }),
     )
 
-    // Display requires factual ↑/↓ % — never invent; never "Price unavailable".
+    // Display requires factual ↑/↓ % — never invent placeholder price copy.
     const withMove = active.filter(
       (c) => c.change24h != null && Number.isFinite(c.change24h.pct) && Math.abs(c.change24h.pct) > 0.0001,
     )

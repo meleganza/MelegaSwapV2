@@ -21,15 +21,30 @@ const Shell = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   width: 100%;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
   margin: 0 auto;
 
-  @media (min-width: 768px) {
-    width: 520px;
-    max-width: 520px;
+  @media (max-width: 1023px) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    border-radius: 20px;
+    min-height: 0;
+    max-height: none;
+    height: auto;
+  }
+
+  @media (min-width: 1024px) {
+    width: 100%;
+    max-width: 560px;
     min-height: 0;
     height: auto;
     flex-shrink: 0;
