@@ -10,7 +10,7 @@
 
 ## 3. Commit
 
-_(stamped at mission commit)_
+`f56c7eeb5949a0e5dae10530bc11ee93b129b769`
 
 ## 4. Mission scope
 
