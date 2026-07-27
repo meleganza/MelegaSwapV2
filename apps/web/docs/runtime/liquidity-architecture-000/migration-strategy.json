@@ -1,0 +1,35 @@
+{
+  "architectureId": "LIQUIDITY_ARCHITECTURE_000",
+  "strategy": "Sequential modular replacement behind architecture lock — no big-bang UI rewrite in ARCHITECTURE_000",
+  "phases": [
+    {
+      "phase": "000",
+      "name": "Architecture Lock",
+      "status": "this-mission",
+      "deliverable": "Docs, ownership, boundaries, mockup freeze, tests"
+    },
+    {
+      "phase": "001-008",
+      "name": "Module delivery",
+      "status": "future",
+      "deliverable": "One responsibility per mission; predecessor freeze after certification"
+    },
+    {
+      "phase": "009",
+      "name": "Integration",
+      "status": "future",
+      "deliverable": "Canonical route cutover; retire /liquidity views/Pool and UnifiedLiquidityPage peer-panel IA"
+    },
+    {
+      "phase": "010",
+      "name": "Certification",
+      "status": "future",
+      "deliverable": "Full liquidity-center certification across viewports"
+    }
+  ],
+  "forbiddenUntil009": [
+    "Production UI redesign of LiquidityStudioScreen / UnifiedLiquidityPage",
+    "Parallel mint hosts",
+    "Hardcoding mockup metrics into production"
+  ]
+}

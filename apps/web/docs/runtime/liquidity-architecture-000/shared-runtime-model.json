@@ -1,0 +1,32 @@
+{
+  "architectureId": "LIQUIDITY_ARCHITECTURE_000",
+  "rules": [
+    "One runtime",
+    "One wallet LP model",
+    "One pair / pool discovery model",
+    "One mint / remove action system",
+    "No duplicated liquidity logic"
+  ],
+  "sourceOfTruth": [
+    "LP balances",
+    "Pair reserves",
+    "Mint / burn events",
+    "Factory pair inventory",
+    "Wallet allowances"
+  ],
+  "derived": [
+    "Pool share",
+    "Estimated APR",
+    "24H fees",
+    "IL preview",
+    "Market snapshot deltas",
+    "Analytics aggregates"
+  ],
+  "unavailablePolicy": "Show — / Unavailable — never invent zeros or mockup metrics",
+  "todayBridges": {
+    "runtime": "views/LiquidityStudio/liquidityRuntime/LiquidityRuntimeContext",
+    "aiBuilder": "views/LiquidityStudio/liquidityBuilding/*",
+    "classicPool": "views/Pool",
+    "note": "Bridges remain until MODULE 009; modules must not fork parallel write engines"
+  }
+}
