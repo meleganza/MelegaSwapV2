@@ -55,7 +55,7 @@ export const LIQUIDITY_MODULE_PLAN = [
   { id: '005-market-snapshot', name: 'Market Snapshot', phase: 'certified-by-this-mission' },
   { id: '006-your-positions', name: 'Your Positions', phase: 'certified-by-this-mission' },
   { id: '007-analytics', name: 'Analytics', phase: 'certified-by-this-mission' },
-  { id: '008-visual-polish', name: 'Visual Polish', phase: 'future' },
+  { id: '008-visual-polish', name: 'Visual Polish', phase: 'certified-by-this-mission' },
   { id: '009-integration', name: 'Integration', phase: 'future' },
   { id: '010-certification', name: 'Certification', phase: 'future' },
 ] as const

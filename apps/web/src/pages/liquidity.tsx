@@ -9,12 +9,13 @@ import { LiquidityAddModule } from 'views/LiquidityStudio/modules/LiquidityAddMo
 import { LiquidityMarketSnapshotModule } from 'views/LiquidityStudio/modules/LiquidityMarketSnapshotModule'
 import { LiquidityMyPositionsModule } from 'views/LiquidityStudio/modules/LiquidityMyPositionsModule'
 import { LiquidityAnalyticsModule } from 'views/LiquidityStudio/modules/LiquidityAnalyticsModule'
+import { LiquidityVisualPolishModule } from 'views/LiquidityStudio/modules/LiquidityVisualPolishModule'
 import { liquidityHero } from 'views/LiquidityStudio/modules/liquidityHeroTokens'
 
 /**
- * LIQUIDITY_MODULE_001–007 — modular stack above LEGACY body.
+ * LIQUIDITY_MODULE_001–008 — modular stack above LEGACY body.
  * One LiquidityRuntimeProvider wraps Add + My Positions (single mint/positions host).
- * Analytics is read-only and mounts after positions, outside the runtime provider.
+ * Analytics is read-only after positions. Module 008 is a CSS-only style layer.
  */
 const Page = styled.div`
   width: 100%;
@@ -32,6 +33,7 @@ const LegacyBody = styled.div`
 
 const LiquidityPage = () => (
   <Page
+    data-liquidity-studio-screen="true"
     data-liquidity-module-001="mounted"
     data-liquidity-module-002="mounted"
     data-liquidity-module-003="mounted"
@@ -39,8 +41,10 @@ const LiquidityPage = () => (
     data-liquidity-module-005="mounted"
     data-liquidity-module-006="mounted"
     data-liquidity-module-007="mounted"
+    data-liquidity-module-008="mounted"
     data-liquidity-architecture="000"
   >
+    <LiquidityVisualPolishModule />
     <LiquidityHeroModule />
     <LiquidityActionsModule />
     <LiquidityPoolDiscoveryModule />

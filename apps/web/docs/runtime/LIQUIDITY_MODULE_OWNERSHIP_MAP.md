@@ -167,10 +167,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Style layer: dark surfaces, gold accents, compact cards, Apple-like hierarchy |
-| **Owned components (future)** | polish tokens / layout refinements only |
-| **May consume** | Modules 001–007 composition |
-| **Forbidden** | Geometry / runtime / query changes; inventing data |
+| **Responsibility** | Style layer only: shadows, borders, radii, hover, focus, transitions, skeletons, a11y chrome |
+| **Owned components** | `LiquidityVisualPolishModule.tsx`, `LiquidityVisualPolishStyle.tsx`, `liquidityVisualPolishTokens.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 008 as CSS-only layer (`data-liquidity-studio-screen` scope) |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-008-final-visual-polish/` + `LIQUIDITY_MODULE_008_FINAL_VISUAL_POLISH_REPORT.md` |
+| **May consume** | Modules 001–007 composition (existing `data-testid`s only) |
+| **Forbidden** | Geometry / runtime / query / provider / Add Liquidity / analytics logic changes; inventing data; Modules 009–010 |
 | **Depends on** | MODULE 001–007 composition |
 
 ---
