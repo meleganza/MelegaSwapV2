@@ -1,0 +1,10 @@
+{
+  "focusableSampleCount": 80,
+  "landmarks": {
+    "sections": 7,
+    "headings": 40
+  },
+  "reducedMotionCssPresent": true,
+  "focusVisiblePolish": true,
+  "pass": true
+}

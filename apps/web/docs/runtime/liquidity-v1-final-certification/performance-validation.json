@@ -1,0 +1,12 @@
+{
+  "navTiming": {
+    "domContentLoaded": 383,
+    "loadEvent": 383,
+    "transferSize": 6525
+  },
+  "singleRuntimeProvider": true,
+  "noDuplicateModuleProviders": true,
+  "polishStyleLayerOnly": true,
+  "noNewPollingIntroduced": true,
+  "pass": true
+}

@@ -1,0 +1,9 @@
+{
+  "missionId": "LIQUIDITY_V1_FINAL_INTEGRATION_AND_CERTIFICATION",
+  "verdict": "LIQUIDITY_V1_CERTIFIED",
+  "freezePass": true,
+  "mockPass": true,
+  "mockAuditPass": true,
+  "responsivePass": true,
+  "base": "http://127.0.0.1:3528"
+}

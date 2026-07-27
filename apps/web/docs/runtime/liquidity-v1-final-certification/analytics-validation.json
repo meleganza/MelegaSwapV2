@@ -1,0 +1,9 @@
+{
+  "snapshotCards": 4,
+  "analyticsCards": 4,
+  "awaitingIndexer": false,
+  "discoverySurface": true,
+  "mintBurnOnly": true,
+  "providerIndexHonesty": "— when no unique LP provider index",
+  "pass": true
+}

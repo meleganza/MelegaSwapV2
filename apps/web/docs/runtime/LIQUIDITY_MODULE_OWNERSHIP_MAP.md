@@ -186,12 +186,15 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 ---
 
-## MODULE 010 — Certification (future)
+## MODULE 010 — Certification
 
 | | |
 | --- | --- |
-| **Responsibility** | Full liquidity-center certification across required viewports |
-| **Forbidden** | New features / redesign during certification |
+| **Status** | `LIQUIDITY_V1_CERTIFIED` (this mission) |
+| **Responsibility** | Full liquidity-center integration validation across required viewports |
+| **Evidence** | `apps/web/docs/runtime/liquidity-v1-final-certification/` + `LIQUIDITY_V1_FINAL_CERTIFICATION_REPORT.md` |
+| **Depends on** | Architecture 000 + Modules 001–008 certified |
+| **Forbidden** | New features / redesign / runtime expansion during certification |
 
 ---
 

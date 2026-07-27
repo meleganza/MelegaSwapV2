@@ -1,0 +1,34 @@
+{
+  "journey1": {
+    "path": [
+      "Hero",
+      "Manual Liquidity",
+      "Pool Discovery",
+      "Add Liquidity",
+      "Wallet",
+      "LP Position"
+    ],
+    "wired": true,
+    "notes": "Hero/Actions → /add; Discovery → Add; Positions inside shared LiquidityRuntimeProvider"
+  },
+  "journey2": {
+    "path": [
+      "Hero",
+      "AI Liquidity Builder",
+      "Liquidity Studio"
+    ],
+    "wired": true,
+    "notes": "Actions AI CTA → /liquidity-studio"
+  },
+  "journey3": {
+    "path": [
+      "Wallet",
+      "My Positions",
+      "Manage",
+      "Remove Liquidity"
+    ],
+    "wired": true,
+    "notes": "Manage seeds Add; Remove → openRemoveModal + setMode"
+  },
+  "pass": true
+}
