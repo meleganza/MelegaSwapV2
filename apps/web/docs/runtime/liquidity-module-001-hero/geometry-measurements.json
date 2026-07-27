@@ -1,0 +1,102 @@
+{
+  "desktop-1440": {
+    "hero": {
+      "width": 1376,
+      "height": 260,
+      "top": 140,
+      "left": 32
+    },
+    "trust": {
+      "width": 360,
+      "height": 230,
+      "top": 157,
+      "left": 1048
+    },
+    "artwork": {
+      "width": 480,
+      "height": 230,
+      "top": 157,
+      "left": 520
+    },
+    "mounted": true,
+    "legacy": true,
+    "overflow": false,
+    "title": "Liquidity",
+    "journeys": "Two ways to start: provide liquidity manually, or use Melega AI Liquidity Builder."
+  },
+  "desktop-1280": {
+    "hero": {
+      "width": 1216,
+      "height": 260,
+      "top": 140,
+      "left": 32
+    },
+    "trust": {
+      "width": 360,
+      "height": 230,
+      "top": 157,
+      "left": 1048
+    },
+    "artwork": {
+      "width": 480,
+      "height": 230,
+      "top": 157,
+      "left": 520
+    },
+    "mounted": true,
+    "legacy": true,
+    "overflow": false,
+    "title": "Liquidity",
+    "journeys": "Two ways to start: provide liquidity manually, or use Melega AI Liquidity Builder."
+  },
+  "mobile-430": {
+    "hero": {
+      "width": 406,
+      "height": 720,
+      "top": 124,
+      "left": 12
+    },
+    "trust": {
+      "width": 326,
+      "height": 248,
+      "top": 598,
+      "left": 52
+    },
+    "artwork": {
+      "width": 326,
+      "height": 190,
+      "top": 392,
+      "left": 52
+    },
+    "mounted": true,
+    "legacy": true,
+    "overflow": false,
+    "title": "Liquidity",
+    "journeys": "Two ways to start: provide liquidity manually, or use Melega AI Liquidity Builder."
+  },
+  "mobile-390": {
+    "hero": {
+      "width": 366,
+      "height": 720,
+      "top": 124,
+      "left": 12
+    },
+    "trust": {
+      "width": 326,
+      "height": 248,
+      "top": 598,
+      "left": 32
+    },
+    "artwork": {
+      "width": 326,
+      "height": 190,
+      "top": 392,
+      "left": 32
+    },
+    "mounted": true,
+    "legacy": true,
+    "overflow": false,
+    "title": "Liquidity",
+    "journeys": "Two ways to start: provide liquidity manually, or use Melega AI Liquidity Builder."
+  }
+}

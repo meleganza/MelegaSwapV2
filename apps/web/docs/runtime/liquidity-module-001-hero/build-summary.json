@@ -1,0 +1,8 @@
+{
+  "missionId": "LIQUIDITY_MODULE_001_HERO",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "status": "passed",
+  "route": "/liquidity",
+  "notes": "ESLint config warning pre-existing; production build completed with /liquidity static page"
+}

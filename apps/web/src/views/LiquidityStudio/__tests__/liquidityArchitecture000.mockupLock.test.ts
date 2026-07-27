@@ -86,6 +86,7 @@ describe('LIQUIDITY_ARCHITECTURE_000 Mockup Lock', () => {
   it('freezes current liquidity mounts as LEGACY_IMPLEMENTATION without cutover', () => {
     expect(LIQUIDITY_LEGACY_IMPLEMENTATION.label).toBe('LEGACY_IMPLEMENTATION')
     const classic = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
+    // Module 001 may wrap Hero above Pool; Pool remains the legacy body.
     expect(classic).toContain('views/Pool')
     expect(classic).not.toContain('LiquidityArchitectureShell')
 
@@ -132,7 +133,7 @@ describe('LIQUIDITY_ARCHITECTURE_000 Mockup Lock', () => {
     expect(report).toContain('LIQUIDITY_ARCHITECTURE_000_CERTIFIED')
   })
 
-  it('does not redesign production LiquidityStudioScreen in this mission', () => {
+  it('keeps LiquidityStudioScreen as LEGACY_IMPLEMENTATION shell (Module 001 mounts on /liquidity)', () => {
     const screen = readFileSync(path.join(WEB, 'src/views/LiquidityStudio/LiquidityStudioScreen.tsx'), 'utf8')
     expect(screen).toContain('UnifiedLiquidityPage')
     expect(screen).toContain('LiquidityRuntimeProvider')

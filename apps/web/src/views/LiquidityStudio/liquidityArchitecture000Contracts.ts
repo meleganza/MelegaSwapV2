@@ -48,7 +48,7 @@ export const LIQUIDITY_ACTION_DOMAINS = [
 
 export const LIQUIDITY_MODULE_PLAN = [
   { id: '000-architecture', name: 'Architecture Lock', phase: 'certified-by-this-mission' },
-  { id: '001-hero', name: 'Hero', phase: 'future' },
+  { id: '001-hero', name: 'Hero', phase: 'certified-by-this-mission' },
   { id: '002-liquidity-actions', name: 'Liquidity Actions', phase: 'future' },
   { id: '003-pool-discovery', name: 'Pool Discovery', phase: 'future' },
   { id: '004-add-liquidity', name: 'Add Liquidity', phase: 'future' },

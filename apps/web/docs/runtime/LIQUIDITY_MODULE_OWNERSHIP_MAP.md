@@ -69,10 +69,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Introduce Liquidity Studio; brand-level framing; one supporting sentence |
-| **Owned components (future)** | `LiquidityHero*` |
+| **Responsibility** | Introduce Liquidity; brand-level framing; name the two journeys; no execution |
+| **Owned components** | `LiquidityStudio/modules/LiquidityHeroModule.tsx`, `LiquidityHeroArtwork.tsx`, `LiquidityHeroTrustPanel.tsx`, `liquidityHeroTokens.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 001 **above** legacy `views/Pool` (`LEGACY_IMPLEMENTATION`). Studio shell unchanged in this mission. |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-001-hero/` |
 | **May consume** | Static product copy only |
-| **Forbidden** | Inventing live KPIs; owning wallet/LP state; Modules 002–010 |
+| **Forbidden** | Inventing live KPIs / TVL / volume; owning wallet/LP state; Add Liquidity form; AI Builder execution; Modules 002–010; editing `views/Pool` / `liquidityRuntime` / contracts |
 | **Depends on** | ARCHITECTURE_000 certified |
 
 ---
