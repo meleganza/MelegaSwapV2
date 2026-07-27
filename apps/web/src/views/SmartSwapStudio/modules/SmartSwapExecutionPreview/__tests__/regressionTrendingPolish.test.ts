@@ -39,10 +39,11 @@ describe('SMART_SWAP_FINAL_REGRESSION_AND_TRENDING_POLISH', () => {
     expect(moduleSrc).toMatch(/data-insight='ai'/)
   })
 
-  it('trending ranks from swaps/pairs without withMove membership gate', () => {
+  it('trending ranks from Swap activity only — no tradeablePair discovery fill', () => {
     expect(trendingSrc).toMatch(/TOKEN_LIST_BY_ADDRESS/)
-    expect(trendingSrc).toMatch(/tradeablePair/)
+    expect(trendingSrc).toMatch(/hasTrendingSwapActivity/)
     expect(trendingSrc).toMatch(/resolveDisplayMeta/)
+    expect(trendingSrc).not.toMatch(/tradeablePair/)
     expect(trendingSrc).not.toMatch(/const pool = withMove/)
     expect(trendingSrc).toMatch(/rankTierAssets\(active,\s*TRENDING_LIMIT\)/)
   })

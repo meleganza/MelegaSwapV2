@@ -27,6 +27,7 @@ export function executionPreviewInputFromRoute(input: {
     hops: route.hops,
     pools: route.pools,
     pathSymbols: input.pathSymbols,
+    pathAddresses: route.pathAddresses,
     freshness: route.freshness,
     isBuyMarco,
     unsupportedToken: route.routeType === 'UNSUPPORTED',

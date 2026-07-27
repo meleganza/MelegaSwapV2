@@ -1,0 +1,24 @@
+{
+  "missionId": "SMART_SWAP_ROUTE_LOGO_MAPPING_AND_TRUE_TRENDING_REPAIR",
+  "verdict": "SMART_SWAP_ROUTE_LOGO_AND_TRUE_TRENDING_CERTIFIED",
+  "baseTip": "77ec697b",
+  "branch": "smart-swap-route-logo-and-true-trending-repair",
+  "severity": [
+    "Part A: SmartSwapVisualRoute address-exact logos; hop visualization attaches pathAddresses; never inherit previous hop / MARCO→BNB",
+    "Part B: Trending membership = Swap count or volume only; unique traders ranking; removed tradeablePair lastVerified discovery fill"
+  ],
+  "untouched": [
+    "SmartSwapForm",
+    "Router",
+    "Route Engine execution",
+    "fees",
+    "Treasury",
+    "KERL"
+  ],
+  "evidence": [
+    "route-logo-validation.json",
+    "trending-ranking-validation.json"
+  ],
+  "tests": "29 focused tests passed",
+  "build": "next build passed"
+}

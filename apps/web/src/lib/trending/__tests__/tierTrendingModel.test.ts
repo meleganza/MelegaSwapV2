@@ -3,6 +3,7 @@ import {
   compareTierRankedAssets,
   hasTrendingActivitySignal,
   hasTrendingMarketSignal,
+  hasTrendingSwapActivity,
   isTrendingTierStatus,
   pickTrendingBaseToken,
   rankTierAssets,
@@ -59,7 +60,29 @@ describe('tierTrendingModel', () => {
     ).toBe(true)
   })
 
-  it('ranks by swap count then volume then recency', () => {
+  it('swap activity membership ignores lastVerified-only / discovery timestamps', () => {
+    expect(
+      hasTrendingSwapActivity({
+        tradeCount24h: 0,
+        volume24h: 0,
+      }),
+    ).toBe(false)
+    expect(
+      hasTrendingActivitySignal({
+        tradeCount24h: 0,
+        volume24h: 0,
+        lastActivityTs: 1_700_000_000,
+      }),
+    ).toBe(true)
+    expect(
+      hasTrendingSwapActivity({
+        tradeCount24h: 3,
+        volume24h: 0,
+      }),
+    ).toBe(true)
+  })
+
+  it('ranks by swap count then volume then unique traders then recency', () => {
     const lowTrades: TierRankedAsset = {
       symbol: 'A',
       slug: 'a',
@@ -71,6 +94,7 @@ describe('tierTrendingModel', () => {
       volume24h: 1000,
       liquidityScore: 1,
       tradeCount24h: 1,
+      uniqueTraders: 1,
       lastActivityTs: 100,
       rankingSignals: [],
     }
@@ -81,9 +105,21 @@ describe('tierTrendingModel', () => {
       address: '0x2',
       volume24h: 10,
       tradeCount24h: 50,
+      uniqueTraders: 2,
       lastActivityTs: 50,
     }
     expect(compareTierRankedAssets(highTrades, lowTrades)).toBeLessThan(0)
+
+    const moreTraders: TierRankedAsset = {
+      ...lowTrades,
+      symbol: 'C',
+      address: '0x3',
+      tradeCount24h: 1,
+      volume24h: 1000,
+      uniqueTraders: 9,
+      lastActivityTs: 10,
+    }
+    expect(compareTierRankedAssets(moreTraders, lowTrades)).toBeLessThan(0)
   })
 
   it('formats ticker accent as ↑ 2.4% without Price unavailable', () => {

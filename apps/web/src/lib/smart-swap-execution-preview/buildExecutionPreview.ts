@@ -177,6 +177,7 @@ export function buildSmartSwapExecutionPreview(
     hops: input.hops,
     pools: input.pools,
     pathSymbols: input.pathSymbols,
+    pathAddresses: input.pathAddresses,
   })
 
   const preview: SmartSwapExecutionPreview = {

@@ -19,7 +19,7 @@ import useBUSDPrice from 'hooks/useBUSDPrice'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
 import {
-  hasTrendingActivitySignal,
+  hasTrendingSwapActivity,
   isQuoteTokenAddress,
   isTrendingTierStatus,
   pickTrendingBaseToken,
@@ -54,13 +54,14 @@ const SECONDS_ACTIVITY = 90 * SECONDS_24H
 const TRENDING_LIMIT = 10
 const MIN_MARQUEE_ITEMS = 2
 
-type ActivityBump = { trades: number; volumeUsd: number; lastTs: number }
+type ActivityBump = { trades: number; volumeUsd: number; lastTs: number; traders: Set<string> }
 
 type ProtocolActivityRow = {
   eventType?: string
   timestamp?: number
   assetAddresses?: string[]
   amounts?: string[]
+  wallet?: string
 }
 
 type IndexerSwapRow = {
@@ -70,6 +71,7 @@ type IndexerSwapRow = {
   token1?: string
   amount0?: string
   amount1?: string
+  wallet?: string
 }
 
 type PairRow = {
@@ -163,13 +165,15 @@ function bumpActivity(
   address: string | undefined,
   ts: number,
   volumeUsd: number,
+  wallet?: string,
 ) {
   if (!address || isQuoteTokenAddress(address)) return
   const key = address.toLowerCase()
-  const prev = map.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0 }
+  const prev = map.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0, traders: new Set<string>() }
   prev.trades += 1
   prev.volumeUsd += Math.max(0, volumeUsd)
   prev.lastTs = Math.max(prev.lastTs, ts)
+  if (wallet) prev.traders.add(wallet.toLowerCase())
   map.set(key, prev)
 }
 
@@ -208,12 +212,6 @@ function resolveDisplayMeta(
     }
   }
   return null
-}
-
-function lastVerifiedTs(iso?: string): number {
-  if (!iso) return 0
-  const ms = Date.parse(iso)
-  return Number.isFinite(ms) ? Math.floor(ms / 1000) : 0
 }
 
 function marcoIndexerMetrics(
@@ -351,7 +349,13 @@ export function useDexTrendingRankings() {
         const key = addr?.toLowerCase()
         if (!key) continue
         // All indexed Swap-active bases — no canonical whitelist gate.
-        bumpActivity(swapActivity, addr, ts, volumeUsd / Math.max(1, addrs.filter((a) => a && !isQuoteTokenAddress(a)).length))
+        bumpActivity(
+          swapActivity,
+          addr,
+          ts,
+          volumeUsd / Math.max(1, addrs.filter((a) => a && !isQuoteTokenAddress(a)).length),
+          ev.wallet,
+        )
       }
     }
 
@@ -371,8 +375,8 @@ export function useDexTrendingRankings() {
           if (Number.isFinite(amt)) volumeUsd = amt * effectiveBnbUsd
         }
       }
-      bumpActivity(swapActivity, ev.token0, ts, volumeUsd / 2)
-      bumpActivity(swapActivity, ev.token1, ts, volumeUsd / 2)
+      bumpActivity(swapActivity, ev.token0, ts, volumeUsd / 2, ev.wallet)
+      bumpActivity(swapActivity, ev.token1, ts, volumeUsd / 2, ev.wallet)
     }
 
     for (const tx of transactions ?? []) {
@@ -380,14 +384,14 @@ export function useDexTrendingRankings() {
       const ts = Number(tx.timestamp)
       if (!Number.isFinite(ts) || ts < activityCutoff) continue
       const vol = Number.isFinite(tx.amountUSD) ? Math.max(0, tx.amountUSD) / 2 : 0
-      bumpActivity(swapActivity, tx.token0Address, ts, vol)
-      bumpActivity(swapActivity, tx.token1Address, ts, vol)
+      bumpActivity(swapActivity, tx.token0Address, ts, vol, tx.sender)
+      bumpActivity(swapActivity, tx.token1Address, ts, vol, tx.sender)
     }
 
     // Always credit MARCO when candle/indexer swap count exists (featured Melega pair).
     if (marcoMetrics.tradeCount > 0 || marcoMetrics.volumeUsd > 0) {
       const key = MARCO_BSC_ADDRESS.toLowerCase()
-      const prev = swapActivity.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0 }
+      const prev = swapActivity.get(key) ?? { trades: 0, volumeUsd: 0, lastTs: 0, traders: new Set<string>() }
       prev.trades = Math.max(prev.trades, marcoMetrics.tradeCount)
       prev.volumeUsd = Math.max(prev.volumeUsd, marcoMetrics.volumeUsd)
       prev.lastTs = Math.max(prev.lastTs, Math.floor(Date.now() / 1000))
@@ -407,6 +411,7 @@ export function useDexTrendingRankings() {
         ...existing,
         volume24h: Math.max(existing.volume24h, asset.volume24h),
         tradeCount24h: Math.max(existing.tradeCount24h, asset.tradeCount24h),
+        uniqueTraders: Math.max(existing.uniqueTraders ?? 0, asset.uniqueTraders ?? 0),
         lastActivityTs: Math.max(existing.lastActivityTs ?? 0, asset.lastActivityTs ?? 0) || undefined,
         change24h: existing.change24h ?? asset.change24h,
         priceUsd: existing.priceUsd ?? asset.priceUsd,
@@ -449,13 +454,8 @@ export function useDexTrendingRankings() {
         change24h = marcoMetrics.marcoChange ?? change24h
       }
 
-      if (
-        !hasTrendingActivitySignal({
-          tradeCount24h,
-          volume24h,
-          lastActivityTs,
-        })
-      ) {
+      // Tier rows only enrich tokens that already have Swap/volume activity.
+      if (!hasTrendingSwapActivity({ tradeCount24h, volume24h })) {
         continue
       }
 
@@ -488,17 +488,18 @@ export function useDexTrendingRankings() {
         volume24h,
         liquidityScore,
         tradeCount24h,
+        uniqueTraders: fromSwaps?.traders.size ?? 0,
         lastActivityTs,
         rankingSignals: signals,
       })
     }
 
-    // Priority 3: promote every Swap-active token (tokenlist / canonical for symbols).
+    // Promote every Swap-active token (tokenlist / canonical for symbols). No discovery fill.
     for (const [addr, act] of swapActivity) {
       if (byAddress.has(addr)) continue
       const meta = resolveDisplayMeta(addr, canonicalByAddress)
       if (!meta) continue
-      if (!hasTrendingActivitySignal({ tradeCount24h: act.trades, volume24h: act.volumeUsd, lastActivityTs: act.lastTs })) {
+      if (!hasTrendingSwapActivity({ tradeCount24h: act.trades, volume24h: act.volumeUsd })) {
         continue
       }
       const isMarco = addr === MARCO_BSC_ADDRESS.toLowerCase()
@@ -523,69 +524,20 @@ export function useDexTrendingRankings() {
         volume24h: Math.max(act.volumeUsd, isMarco ? marcoMetrics.volumeUsd : 0),
         liquidityScore: liquidityScoreForAddress(pairRows, addr),
         tradeCount24h: Math.max(act.trades, isMarco ? marcoMetrics.tradeCount : 0),
+        uniqueTraders: act.traders.size,
         lastActivityTs: act.lastTs,
         rankingSignals: ['recentSwaps'],
       })
     }
 
-    // Priority 4: fill top-10 from tradeable Factory pairs with factual reserves + lastVerified.
-    for (const pair of pairRows) {
-      if (!pair.token0 || !pair.token1) continue
-      if (pair.active === false) continue
-      const reserveSum = BigInt(pair.reserve0 ?? '0') + BigInt(pair.reserve1 ?? '0')
-      if (reserveSum <= 0n) continue
-      const baseAddress = pickTrendingBaseToken(pair.token0, pair.token1)
-      const addrKey = baseAddress.toLowerCase()
-      if (byAddress.has(addrKey)) continue
-      const meta = resolveDisplayMeta(baseAddress, canonicalByAddress)
-      if (!meta) continue
-      const verifiedTs = lastVerifiedTs(pair.lastVerified)
-      if (
-        !hasTrendingActivitySignal({
-          tradeCount24h: 0,
-          volume24h: 0,
-          lastActivityTs: verifiedTs || undefined,
-        })
-      ) {
-        continue
-      }
-      const fromSwaps = swapActivity.get(addrKey)
-      upsert({
-        symbol: meta.symbol,
-        slug: meta.slug,
-        pairSlug: meta.slug,
-        address: baseAddress,
-        chainId: meta.chainId,
-        displayName: meta.displayName,
-        tierStatus: 'READY',
-        priceUsd: resolveTokenPriceUsd(
-          baseAddress,
-          meta.symbol,
-          marcoUsd,
-          marcoMetrics.marcoUsdFromCandle,
-          wbnbUsd,
-          cakeUsd,
-          busdUsd,
-        ),
-        change24h:
-          addrKey === MARCO_BSC_ADDRESS.toLowerCase() ? marcoMetrics.marcoChange : undefined,
-        volume24h: fromSwaps?.volumeUsd ?? 0,
-        liquidityScore: liquidityScoreForAddress(pairRows, baseAddress),
-        tradeCount24h: fromSwaps?.trades ?? 0,
-        lastActivityTs: Math.max(fromSwaps?.lastTs ?? 0, verifiedTs) || undefined,
-        rankingSignals: fromSwaps?.trades ? ['recentSwaps', 'tradeablePair'] : ['tradeablePair'],
-      })
-    }
-
     const active = [...byAddress.values()].filter((c) =>
-      hasTrendingActivitySignal({
+      hasTrendingSwapActivity({
         tradeCount24h: c.tradeCount24h,
         volume24h: c.volume24h,
-        lastActivityTs: c.lastActivityTs,
       }),
     )
 
-    // Membership = factual activity. % enriches display only — never drop active tokens without %.
+    // Membership = Swap count / volume only. % enriches display when factual.
     return rankTierAssets(active, TRENDING_LIMIT)
   }, [
     tierMetrics,

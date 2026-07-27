@@ -84,6 +84,9 @@ export function buildPreviewInputFromTrade(params: {
   const path = trade.route?.path ?? []
   const pairs = trade.route?.pairs ?? []
   const pathSymbols = path.map((t) => t.symbol ?? '—')
+  const pathAddresses = path
+    .map((t) => t.address)
+    .filter((a): a is string => typeof a === 'string' && a.length > 0)
 
   const pools: SmartSwapPoolRef[] = pairs.map((pair) => {
     const address = pair.stableSwapAddress ?? pair.liquidityToken?.address ?? '0x0'
@@ -121,6 +124,8 @@ export function buildPreviewInputFromTrade(params: {
     hops,
     pools,
     pathSymbols: pathSymbols.length >= 2 ? pathSymbols : [inputToken.symbol, outputToken.symbol],
+    pathAddresses:
+      pathAddresses.length >= 2 ? pathAddresses : [inputToken.address, outputToken.address],
     freshness,
     isBuyMarco,
     partialData: hops.length === 0,

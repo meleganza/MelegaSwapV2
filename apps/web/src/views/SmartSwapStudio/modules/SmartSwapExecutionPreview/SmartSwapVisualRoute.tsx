@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { Currency } from '@pancakeswap/sdk'
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components/Logo'
+import { ChainId, Currency, Token } from '@pancakeswap/sdk'
+import { TokenLogo } from '@pancakeswap/uikit'
+import { CurrencyLogo } from 'components/Logo'
+import { BAD_SRCS } from 'components/Logo/constants'
+import { useToken } from 'hooks/Tokens'
+import { getTokenLogoURLByAddress, getTokenLogoPosition } from 'utils/getTokenLogoURL'
 import type { SmartSwapRouteHopDisplay } from 'lib/smart-swap-execution-preview'
 
 const Root = styled.div`
@@ -119,6 +123,158 @@ const Empty = styled.p`
   padding: 10px 0 4px;
 `
 
+const Placeholder = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 700;
+`
+
+function sameAddress(a?: string | null, b?: string | null): boolean {
+  if (!a || !b) return false
+  return a.toLowerCase() === b.toLowerCase()
+}
+
+function symbolMatches(currency: Currency | null | undefined, label: string): boolean {
+  if (!currency?.symbol || !label) return false
+  const a = currency.symbol.toUpperCase()
+  const b = label.toUpperCase()
+  if (a === b) return true
+  // Native BNB ↔ WBNB labels in hop path
+  if ((a === 'BNB' || a === 'WBNB') && (b === 'BNB' || b === 'WBNB')) return true
+  return false
+}
+
+/** Address-exact logo — never falls back to another hop's currency. */
+function AddressTokenLogo({
+  address,
+  chainId = ChainId.BSC,
+  symbol,
+  size = '28px',
+}: {
+  address?: string
+  chainId?: number
+  symbol?: string
+  size?: string
+}) {
+  const token = useToken(address)
+  const srcs = useMemo(() => {
+    if (!address) return [] as string[]
+    const urls: string[] = []
+    const trust = getTokenLogoURLByAddress(address, chainId)
+    if (trust) urls.push(trust)
+    try {
+      const asToken = token ?? new Token(chainId, address, 18, symbol || 'TOKEN')
+      const local = getTokenLogoPosition(asToken)
+      if (local) urls.push(local)
+    } catch {
+      /* ignore invalid address */
+    }
+    return urls
+  }, [address, chainId, symbol, token])
+
+  if (token) {
+    return <CurrencyLogo currency={token} size={size} />
+  }
+  if (srcs.length > 0) {
+    return (
+      <TokenLogo
+        badSrcs={BAD_SRCS}
+        size={size}
+        srcs={srcs}
+        width={size}
+        alt={`${symbol ?? 'token'} logo`}
+        style={{ borderRadius: '50%' }}
+      />
+    )
+  }
+  return <Placeholder aria-hidden>{(symbol || '?').slice(0, 2).toUpperCase()}</Placeholder>
+}
+
+function resolveTokenCurrency(
+  hop: SmartSwapRouteHopDisplay,
+  inputCurrency?: Currency | null,
+  outputCurrency?: Currency | null,
+): Currency | undefined {
+  const addr = hop.address
+  if (addr && inputCurrency?.isToken && sameAddress(inputCurrency.address, addr)) return inputCurrency
+  if (addr && outputCurrency?.isToken && sameAddress(outputCurrency.address, addr)) return outputCurrency
+  if (addr && inputCurrency?.isNative && (hop.label === 'BNB' || hop.label === 'WBNB')) return inputCurrency
+  if (addr && outputCurrency?.isNative && (hop.label === 'BNB' || hop.label === 'WBNB')) return outputCurrency
+  // Symbol match only when addresses unavailable — still never cross-map input→output wrongly.
+  if (!addr) {
+    if (symbolMatches(inputCurrency, hop.label)) return inputCurrency ?? undefined
+    if (symbolMatches(outputCurrency, hop.label)) return outputCurrency ?? undefined
+  }
+  return undefined
+}
+
+function HopLogo({
+  hop,
+  inputCurrency,
+  outputCurrency,
+}: {
+  hop: SmartSwapRouteHopDisplay
+  inputCurrency?: Currency | null
+  outputCurrency?: Currency | null
+}) {
+  if (hop.kind === 'pool') {
+    const c0 =
+      hop.token0Address && inputCurrency?.isToken && sameAddress(inputCurrency.address, hop.token0Address)
+        ? inputCurrency
+        : hop.token0Address && outputCurrency?.isToken && sameAddress(outputCurrency.address, hop.token0Address)
+          ? outputCurrency
+          : undefined
+    const c1 =
+      hop.token1Address && inputCurrency?.isToken && sameAddress(inputCurrency.address, hop.token1Address)
+        ? inputCurrency
+        : hop.token1Address && outputCurrency?.isToken && sameAddress(outputCurrency.address, hop.token1Address)
+          ? outputCurrency
+          : undefined
+
+    // Prefer exact pool pair currencies; fall back to address logos — never default both to input.
+    if (c0 || c1 || hop.token0Address || hop.token1Address) {
+      return (
+        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+          {c0 ? (
+            <CurrencyLogo currency={c0} size="20px" />
+          ) : (
+            <AddressTokenLogo address={hop.token0Address} chainId={hop.chainId} size="20px" />
+          )}
+          <span style={{ width: 4 }} />
+          {c1 ? (
+            <CurrencyLogo currency={c1} size="20px" />
+          ) : (
+            <AddressTokenLogo address={hop.token1Address} chainId={hop.chainId} size="20px" />
+          )}
+        </span>
+      )
+    }
+    // Last resort: only when pool has no addresses — show generic placeholder, never wrong token.
+    return <Placeholder aria-hidden>LP</Placeholder>
+  }
+
+  const matched = resolveTokenCurrency(hop, inputCurrency, outputCurrency)
+  if (matched) {
+    return <CurrencyLogo currency={matched} size="28px" />
+  }
+  // Exact address logo path — never inherit previous hop / inputCurrency fallback.
+  return (
+    <AddressTokenLogo
+      address={hop.address}
+      chainId={hop.chainId}
+      symbol={hop.label}
+      size="28px"
+    />
+  )
+}
+
 export type SmartSwapVisualRouteProps = {
   hops: SmartSwapRouteHopDisplay[]
   executionSourceLabel?: string
@@ -129,7 +285,7 @@ export type SmartSwapVisualRouteProps = {
   idle?: boolean
 }
 
-/** Compact horizontal route with token/pool logos — no scroll, no abbreviated letter marks. */
+/** Compact horizontal route with address-exact token/pool logos. */
 export function SmartSwapVisualRoute({
   hops,
   executionSourceLabel,
@@ -149,10 +305,6 @@ export function SmartSwapVisualRoute({
     )
   }
 
-  const tokenHops = hops.filter((h) => h.kind === 'token')
-  const firstToken = tokenHops[0]?.label
-  const lastToken = tokenHops[tokenHops.length - 1]?.label
-
   return (
     <Root data-smart-visual-route data-smart-route-card data-route-orientation="horizontal" data-route-state="ready">
       <Header>
@@ -163,31 +315,18 @@ export function SmartSwapVisualRoute({
         </Source>
       </Header>
       <Track aria-label="Swap route">
-        {hops.map((hop, i) => {
-          const isInput = hop.kind === 'token' && hop.label === firstToken
-          const isOutput = hop.kind === 'token' && hop.label === lastToken && hop.label !== firstToken
-          const logo =
-            hop.kind === 'pool' ? (
-              <DoubleCurrencyLogo currency0={inputCurrency ?? undefined} currency1={outputCurrency ?? undefined} size={16} />
-            ) : isInput && inputCurrency ? (
-              <CurrencyLogo currency={inputCurrency} size="28px" />
-            ) : isOutput && outputCurrency ? (
-              <CurrencyLogo currency={outputCurrency} size="28px" />
-            ) : (
-              <CurrencyLogo currency={inputCurrency ?? outputCurrency ?? undefined} size="28px" />
-            )
-
-          return (
-            <React.Fragment key={`${hop.kind}-${hop.label}-${i}`}>
-              {i > 0 ? <Arrow aria-hidden>→</Arrow> : null}
-              <Node>
-                <LogoWrap aria-hidden>{logo}</LogoWrap>
-                <Caption title={hop.label}>{hop.label}</Caption>
-                <Type>{hop.kind === 'pool' ? 'Pool' : 'Token'}</Type>
-              </Node>
-            </React.Fragment>
-          )
-        })}
+        {hops.map((hop, i) => (
+          <React.Fragment key={`${hop.kind}-${hop.label}-${hop.address ?? hop.token0Address ?? i}-${i}`}>
+            {i > 0 ? <Arrow aria-hidden>→</Arrow> : null}
+            <Node data-route-hop={hop.kind} data-route-address={hop.address ?? undefined}>
+              <LogoWrap aria-hidden>
+                <HopLogo hop={hop} inputCurrency={inputCurrency} outputCurrency={outputCurrency} />
+              </LogoWrap>
+              <Caption title={hop.label}>{hop.label}</Caption>
+              <Type>{hop.kind === 'pool' ? 'Pool' : 'Token'}</Type>
+            </Node>
+          </React.Fragment>
+        ))}
       </Track>
     </Root>
   )

@@ -29,6 +29,8 @@ export type TierRankedAsset = {
   volume24h: number
   liquidityScore: number
   tradeCount24h: number
+  /** Distinct wallets observed on Swap events when known. */
+  uniqueTraders?: number
   /** Unix seconds of most recent swap/activity when known. */
   lastActivityTs?: number
   rankingSignals: string[]
@@ -92,10 +94,21 @@ export function hasTrendingActivitySignal(input: {
   return input.tradeCount24h > 0 || input.volume24h > 0 || (input.lastActivityTs != null && input.lastActivityTs > 0)
 }
 
-/** Rank: swap count → volume → recent activity timestamp. */
+/** True trending membership: requires Swap count or volume — never lastVerified / discovery fill. */
+export function hasTrendingSwapActivity(input: {
+  tradeCount24h: number
+  volume24h: number
+}): boolean {
+  return input.tradeCount24h > 0 || input.volume24h > 0
+}
+
+/** Rank: swap count → volume → unique traders → recency → |%|. */
 export function compareTierRankedAssets(a: TierRankedAsset, b: TierRankedAsset): number {
   if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
   if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
+  const aTraders = a.uniqueTraders ?? 0
+  const bTraders = b.uniqueTraders ?? 0
+  if (bTraders !== aTraders) return bTraders - aTraders
   const aTs = a.lastActivityTs ?? 0
   const bTs = b.lastActivityTs ?? 0
   if (bTs !== aTs) return bTs - aTs

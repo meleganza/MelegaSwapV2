@@ -34,6 +34,12 @@ export interface SmartSwapRouteHopDisplay {
   kind: 'token' | 'pool'
   label: string
   detail?: string
+  /** Exact token address for logo resolution — never inherit another hop. */
+  address?: string
+  /** Pool legs: exact pair token addresses for DoubleCurrencyLogo. */
+  token0Address?: string
+  token1Address?: string
+  chainId?: number
 }
 
 export interface SmartSwapProtocolFeeDisplay {
@@ -86,6 +92,8 @@ export interface SmartSwapExecutionPreviewInput {
   hops: SmartSwapHop[]
   pools: SmartSwapPoolRef[]
   pathSymbols?: string[]
+  /** Parallel to pathSymbols — used for per-hop logo address mapping. */
+  pathAddresses?: string[]
   freshness?: string | null
   /** Output token is MARCO → D87 buy-marco fee rule for display. */
   isBuyMarco?: boolean

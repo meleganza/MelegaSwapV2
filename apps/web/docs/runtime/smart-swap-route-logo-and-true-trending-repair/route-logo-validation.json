@@ -1,0 +1,182 @@
+{
+  "missionId": "SMART_SWAP_ROUTE_LOGO_MAPPING_AND_TRUE_TRENDING_REPAIR",
+  "part": "A",
+  "pipeline": [
+    "token address",
+    "token registry / local images",
+    "symbol",
+    "logo URI",
+    "CurrencyLogo | TokenLogo | Placeholder"
+  ],
+  "rules": {
+    "neverInheritPreviousHopLogo": true,
+    "neverFallbackMarcoToBnb": true,
+    "fallbackPriority": [
+      "exact address logo",
+      "canonical registry/local logo",
+      "generic placeholder"
+    ]
+  },
+  "routes": [
+    {
+      "path": "BNB → MARCO",
+      "pathAddresses": [
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
+      ],
+      "hopTokens": [
+        {
+          "label": "BNB",
+          "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "symbol": "BNB",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "fallback": "generic-placeholder"
+        },
+        {
+          "label": "MARCO",
+          "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+          "symbol": "MARCO",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x963556de0eb8138E97A85F0A86eE0acD159D210b/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "fallback": "generic-placeholder"
+        }
+      ],
+      "pool": {
+        "label": "BNB/MARCO Pool",
+        "token0": {
+          "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "symbol": "BNB",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "fallback": "generic-placeholder"
+        },
+        "token1": {
+          "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+          "symbol": "MARCO",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x963556de0eb8138E97A85F0A86eE0acD159D210b/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "fallback": "generic-placeholder"
+        }
+      },
+      "asserts": {
+        "bnbIsNotMarco": true,
+        "marcoNotUsingBnbLogo": true
+      }
+    },
+    {
+      "path": "BNB → ETH",
+      "pathAddresses": [
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
+      ],
+      "hopTokens": [
+        {
+          "label": "BNB",
+          "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "symbol": "BNB",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "fallback": "generic-placeholder"
+        },
+        {
+          "label": "ETH",
+          "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          "symbol": "ETH",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0x2170Ed0880ac9A755fd29B2688956BD959F933F8.png",
+          "fallback": "generic-placeholder"
+        }
+      ],
+      "pool": {
+        "label": "BNB/ETH Pool",
+        "token0": {
+          "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "symbol": "BNB",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "fallback": "generic-placeholder"
+        },
+        "token1": {
+          "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          "symbol": "ETH",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0x2170Ed0880ac9A755fd29B2688956BD959F933F8.png",
+          "fallback": "generic-placeholder"
+        }
+      }
+    },
+    {
+      "path": "BNB → MARCO → ETH",
+      "pathAddresses": [
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+        "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
+      ],
+      "hopTokens": [
+        {
+          "label": "BNB",
+          "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "symbol": "BNB",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "fallback": "generic-placeholder"
+        },
+        {
+          "label": "MARCO",
+          "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+          "symbol": "MARCO",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x963556de0eb8138E97A85F0A86eE0acD159D210b/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "fallback": "generic-placeholder"
+        },
+        {
+          "label": "ETH",
+          "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          "symbol": "ETH",
+          "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/logo.png",
+          "canonicalLocalLogo": "/images/56/tokens/0x2170Ed0880ac9A755fd29B2688956BD959F933F8.png",
+          "fallback": "generic-placeholder"
+        }
+      ],
+      "pools": [
+        {
+          "label": "BNB/MARCO Pool",
+          "token0": {
+            "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+            "symbol": "BNB",
+            "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png",
+            "canonicalLocalLogo": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+            "fallback": "generic-placeholder"
+          },
+          "token1": {
+            "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+            "symbol": "MARCO",
+            "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x963556de0eb8138E97A85F0A86eE0acD159D210b/logo.png",
+            "canonicalLocalLogo": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+            "fallback": "generic-placeholder"
+          }
+        },
+        {
+          "label": "MARCO/ETH Pool",
+          "token0": {
+            "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+            "symbol": "MARCO",
+            "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x963556de0eb8138E97A85F0A86eE0acD159D210b/logo.png",
+            "canonicalLocalLogo": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+            "fallback": "generic-placeholder"
+          },
+          "token1": {
+            "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+            "symbol": "ETH",
+            "trustWalletLogo": "https://assets-cdn.trustwallet.com/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/logo.png",
+            "canonicalLocalLogo": "/images/56/tokens/0x2170Ed0880ac9A755fd29B2688956BD959F933F8.png",
+            "fallback": "generic-placeholder"
+          }
+        }
+      ]
+    }
+  ],
+  "uiComponent": "SmartSwapVisualRoute.tsx AddressTokenLogo",
+  "verifiedAt": "2026-07-27T05:27:56.792Z"
+}
