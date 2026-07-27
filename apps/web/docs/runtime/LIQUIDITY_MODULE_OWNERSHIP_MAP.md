@@ -153,10 +153,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Position preview, activity, IL / share / fee analytics — derived only when factual |
-| **Owned components (future)** | `LiquidityAnalytics*` |
-| **May consume** | Shared derived analytics + activity feed |
-| **Forbidden** | Empty dashboard shells; invented charts; Modules 008–010 |
+| **Responsibility** | Read-only liquidity behavior: growth, pool distribution, LP mint/burn activity, provider honesty |
+| **Owned components** | `LiquidityStudio/modules/LiquidityAnalyticsModule.tsx`, `liquidityAnalyticsTokens.ts`, `buildLiquidityAnalytics.ts`, `useLiquidityAnalytics.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 007 **after** Module 006, **outside** `LiquidityRuntimeProvider` |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-007-analytics/` + `LIQUIDITY_MODULE_007_ANALYTICS_REPORT.md` |
+| **May consume** | `useProtocolDataSWR`, factory indexer pairs, `useProtocolTransactionsIndexer` (mint/burn only) |
+| **Forbidden** | Fake TVL/growth/providers/projections; swap dashboards; editing Add/Positions runtime; Router/Factory writes; Farms/Pools staking; Treasury/KERL/Economics; Modules 008–010 |
 | **Depends on** | MODULE 004–006 data availability |
 
 ---

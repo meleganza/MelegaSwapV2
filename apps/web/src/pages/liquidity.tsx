@@ -8,11 +8,13 @@ import { LiquidityPoolDiscoveryModule } from 'views/LiquidityStudio/modules/Liqu
 import { LiquidityAddModule } from 'views/LiquidityStudio/modules/LiquidityAddModule'
 import { LiquidityMarketSnapshotModule } from 'views/LiquidityStudio/modules/LiquidityMarketSnapshotModule'
 import { LiquidityMyPositionsModule } from 'views/LiquidityStudio/modules/LiquidityMyPositionsModule'
+import { LiquidityAnalyticsModule } from 'views/LiquidityStudio/modules/LiquidityAnalyticsModule'
 import { liquidityHero } from 'views/LiquidityStudio/modules/liquidityHeroTokens'
 
 /**
- * LIQUIDITY_MODULE_001–006 — modular stack above LEGACY body.
+ * LIQUIDITY_MODULE_001–007 — modular stack above LEGACY body.
  * One LiquidityRuntimeProvider wraps Add + My Positions (single mint/positions host).
+ * Analytics is read-only and mounts after positions, outside the runtime provider.
  */
 const Page = styled.div`
   width: 100%;
@@ -36,6 +38,7 @@ const LiquidityPage = () => (
     data-liquidity-module-004="mounted"
     data-liquidity-module-005="mounted"
     data-liquidity-module-006="mounted"
+    data-liquidity-module-007="mounted"
     data-liquidity-architecture="000"
   >
     <LiquidityHeroModule />
@@ -46,6 +49,7 @@ const LiquidityPage = () => (
       <LiquidityMarketSnapshotModule />
       <LiquidityMyPositionsModule />
     </LiquidityRuntimeProvider>
+    <LiquidityAnalyticsModule />
     <LegacyBody data-liquidity-legacy-body="LEGACY_IMPLEMENTATION">
       <Liquidity />
     </LegacyBody>

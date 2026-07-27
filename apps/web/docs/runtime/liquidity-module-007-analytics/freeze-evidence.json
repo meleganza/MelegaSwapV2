@@ -1,0 +1,25 @@
+{
+  "missionId": "LIQUIDITY_MODULE_007_ANALYTICS",
+  "base": "LIQUIDITY_MODULE_006_MY_POSITIONS_CERTIFIED",
+  "baseCommit": "65bf0b07",
+  "module001HeroSha256": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+  "module002ActionsSha256": "01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec",
+  "module003DiscoverySha256": "3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b",
+  "module004AddSha256": "7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc",
+  "module005SnapshotSha256": "664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa",
+  "module006MyPositionsSha256": "816a5b84a10476ed5847853085eef274d75e586567573b30790550a0d71e1004",
+  "module007AnalyticsSha256": "ba1c06bfa3d7bfd49e75e89e4d9dd1b1fbd6518e52e20e8fef07d69db569e7e1",
+  "mintRuntimeSha256": "e65b9d46ec6d0502fa1a7c7de9f44f334a5905bb5d09977aeb3cc4ae52a8b16b",
+  "mintRuntimeUntouched": true,
+  "myPositionsUntouched": true,
+  "forbiddenUntouched": {
+    "router": true,
+    "factoryWrites": true,
+    "poolsStaking": true,
+    "farms": true,
+    "treasury": true,
+    "kerl": true,
+    "economics": true,
+    "addLiquidityRuntime": true
+  }
+}
