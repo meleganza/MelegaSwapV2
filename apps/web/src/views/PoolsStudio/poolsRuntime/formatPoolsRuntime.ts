@@ -388,7 +388,7 @@ export function aggregateKpis(
     },
     {
       id: 'active',
-      label: 'Pools Discovered',
+      label: 'Total Pools',
       value: discoveredKpiValue,
       secondary: lifecycleSecondary,
     },

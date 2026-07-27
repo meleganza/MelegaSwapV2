@@ -19,8 +19,7 @@ const Module = styled.section`
   width: 100%;
   max-width: ${farmsOverviewKpis.contentMax};
   height: ${farmsOverviewKpis.moduleH};
-  /* Parent Content gap is 32px; negative margin yields 16px after Hero. */
-  margin-top: -16px;
+  margin-top: 0;
   box-sizing: border-box;
   font-family: ${typography.fontFamily.body};
   min-width: 0;

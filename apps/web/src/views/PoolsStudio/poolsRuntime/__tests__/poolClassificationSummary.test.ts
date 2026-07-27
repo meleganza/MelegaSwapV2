@@ -26,7 +26,7 @@ describe('poolClassificationSummary', () => {
   it('TEST 1 — READY canonical response maps to KPI lifecycle fields', () => {
     const fields = resolveKpiLifecycleFields(canonicalReady)
     expect(fields.discoveredValue).toBe('239')
-    expect(fields.lifecycleSecondary).toBe('0 active · 229 funded · 0 rewarding')
+    expect(fields.lifecycleSecondary).toBe('0 active · 239 finished · 0 inactive')
     expect(fields.rewarding).toBe(0)
   })
 
@@ -76,6 +76,6 @@ describe('poolClassificationSummary', () => {
         invalid: 0,
       },
     })
-    expect(buildLifecycleSecondaryCopy(counts!)).toBe('0 active · 229 funded · 0 rewarding')
+    expect(buildLifecycleSecondaryCopy(counts!)).toBe('0 active · 239 finished · 0 inactive')
   })
 })

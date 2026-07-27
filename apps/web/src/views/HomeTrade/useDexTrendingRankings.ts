@@ -13,9 +13,11 @@ import { useProtocolTransactionsIndexer } from 'lib/runtime-indexing'
 import { TransactionType } from 'state/info/types'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { usePriceCakeBusd } from 'state/farms/hooks'
+import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
 import {
   formatTrendingTickerPrice,
-  hasTrendingMarketSignal,
+  isQuoteTokenAddress,
+  isTopMoverEligible,
   isTrendingTierStatus,
   pickTrendingBaseToken,
   rankTierAssets,
@@ -26,7 +28,18 @@ import {
 
 const SECONDS_24H = 86_400
 const TRENDING_LIMIT = 10
-const MIN_MARQUEE_ITEMS = 6
+const MIN_MARQUEE_ITEMS = 2
+
+type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
+
+const TOKEN_LIST_BY_ADDRESS: Map<string, TokenListEntry> = (() => {
+  const map = new Map<string, TokenListEntry>()
+  for (const raw of (defaultTokenList.tokens ?? []) as TokenListEntry[]) {
+    if (raw.chainId !== 56 || !raw.address || !raw.symbol) continue
+    map.set(raw.address.toLowerCase(), raw)
+  }
+  return map
+})()
 
 type PairRow = {
   token0?: string
@@ -109,23 +122,65 @@ function marcoIndexerMetrics(
   return { volumeUsd, tradeCount: resolvedTradeCount, marcoChange, marcoUsdFromCandle }
 }
 
-function resolveTokenPriceUsd(
+function resolveDisplayMeta(
   address: string,
-  symbol: string,
-  marcoUsd?: number,
-  marcoUsdFromCandle?: number,
-  wbnbUsd?: number,
-  cakeUsd?: number,
-  busdUsd?: number,
-): number | undefined {
+  canonicalByAddress: Map<string, ReturnType<typeof getCanonicalIndexedAssets>[number]>,
+) {
   const key = address.toLowerCase()
-  const sym = symbol.toUpperCase()
-  if (sym === 'MARCO' || key === MARCO_BSC_ADDRESS.toLowerCase()) {
-    return marcoUsd && marcoUsd > 0 ? marcoUsd : marcoUsdFromCandle
+  const canonical = canonicalByAddress.get(key)
+  if (canonical?.symbol && canonical.address) {
+    return {
+      symbol: canonical.symbol,
+      slug: canonical.registrySlug ?? canonical.id,
+      displayName: canonical.name ?? canonical.symbol,
+      chainId: canonical.chainId,
+      address: canonical.address,
+    }
   }
-  if (sym === 'WBNB') return wbnbUsd
-  if (sym === 'CAKE') return cakeUsd
-  if (sym === 'BUSD') return busdUsd && busdUsd > 0 ? busdUsd : undefined
+  const listed = TOKEN_LIST_BY_ADDRESS.get(key)
+  if (listed?.symbol) {
+    return {
+      symbol: listed.symbol,
+      slug: listed.symbol.toLowerCase(),
+      displayName: listed.name ?? listed.symbol,
+      chainId: 56,
+      address,
+    }
+  }
+  return null
+}
+
+function resolveTokenPriceUsd(input: {
+  address: string
+  symbol: string
+  lastCloseQuote?: number
+  quoteIsBnb: boolean
+  marcoUsd?: number
+  marcoUsdFromCandle?: number
+  wbnbUsd?: number
+  cakeUsd?: number
+  busdUsd?: number
+}): number | undefined {
+  const key = input.address.toLowerCase()
+  const sym = input.symbol.toUpperCase()
+  if (sym === 'MARCO' || key === MARCO_BSC_ADDRESS.toLowerCase()) {
+    return input.marcoUsd && input.marcoUsd > 0 ? input.marcoUsd : input.marcoUsdFromCandle
+  }
+  if (sym === 'WBNB') return input.wbnbUsd
+  if (sym === 'CAKE') return input.cakeUsd
+  if (sym === 'BUSD' || sym === 'USDT' || sym === 'USDC') {
+    return input.busdUsd && input.busdUsd > 0 ? input.busdUsd : 1
+  }
+  if (
+    input.lastCloseQuote != null &&
+    Number.isFinite(input.lastCloseQuote) &&
+    input.lastCloseQuote > 0 &&
+    input.quoteIsBnb &&
+    input.wbnbUsd != null &&
+    input.wbnbUsd > 0
+  ) {
+    return input.lastCloseQuote * input.wbnbUsd
+  }
   return undefined
 }
 
@@ -142,7 +197,7 @@ export function useDexTrendingRankings() {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
-  const { data: tierMetrics = [] } = useSWR('dex-trending-tier-metrics', fetchTierMetrics, {
+  const { data: tierMetrics = [] } = useSWR('dex-top-movers-tier-metrics', fetchTierMetrics, {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
@@ -169,7 +224,7 @@ export function useDexTrendingRankings() {
         .map((asset) => [asset.address!.toLowerCase(), asset]),
     )
     const marcoUsd = marcoPrice?.toNumber()
-    const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+    const wbnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : effectiveBnbUsd
     const cakeUsd = cakePrice ? Number(cakePrice.toSignificant(6)) : undefined
     const busdUsd = busdPrice ? Number(busdPrice.toSignificant(6)) : undefined
     const candidates: TierRankedAsset[] = []
@@ -178,12 +233,17 @@ export function useDexTrendingRankings() {
       if (!isTrendingTierStatus(row.status)) continue
 
       const baseAddress = pickTrendingBaseToken(row.token0, row.token1)
-      const canonical = canonicalByAddress.get(baseAddress.toLowerCase())
-      if (!canonical?.address) continue
+      const meta = resolveDisplayMeta(baseAddress, canonicalByAddress)
+      if (!meta) continue
 
-      const sym = canonical.symbol
-      const addrKey = canonical.address.toLowerCase()
+      const addrKey = meta.address.toLowerCase()
       const isMarcoPair = row.slug === 'marco-wbnb' || addrKey === MARCO_BSC_ADDRESS.toLowerCase()
+      const quoteSide = isQuoteTokenAddress(row.token0)
+        ? row.token0
+        : isQuoteTokenAddress(row.token1)
+          ? row.token1
+          : undefined
+      const quoteIsBnb = Boolean(quoteSide?.toLowerCase().startsWith('0xbb4c'))
 
       let volume24h =
         row.volume24hQuote > 0 && effectiveBnbUsd ? row.volume24hQuote * effectiveBnbUsd : 0
@@ -194,6 +254,7 @@ export function useDexTrendingRankings() {
         Math.abs(row.priceChange24h) > 0.0001
           ? format24hChangePct(row.priceChange24h)
           : undefined
+      const liquidityActivity24h = row.mintBurnCount24h ?? 0
 
       if (isMarcoPair) {
         volume24h = Math.max(volume24h, marcoMetrics.volumeUsd)
@@ -201,47 +262,50 @@ export function useDexTrendingRankings() {
         change24h = marcoMetrics.marcoChange ?? change24h
       }
 
-      const priceUsd = resolveTokenPriceUsd(
-        canonical.address,
-        sym,
-        marcoUsd,
-        marcoMetrics.marcoUsdFromCandle,
-        wbnbUsd,
-        cakeUsd,
-        busdUsd,
-      )
-      const liquidityScore = liquidityScoreForAddress(pairRows, canonical.address)
-      const signals: string[] = []
-      if (volume24h > 0) signals.push('volume24h')
-      if (tradeCount24h > 0) signals.push('trades24h')
-      if (change24h) signals.push('change24h')
-      if (liquidityScore > 0) signals.push('liquidity')
-
-      if (!priceUsd || priceUsd <= 0) continue
       if (
-        !hasTrendingMarketSignal({
+        !isTopMoverEligible({
           tradeCount24h,
           volume24h,
-          liquidityScore,
+          liquidityActivity24h,
           change24h,
         })
       ) {
         continue
       }
 
+      const priceUsd = resolveTokenPriceUsd({
+        address: meta.address,
+        symbol: meta.symbol,
+        lastCloseQuote: row.lastCloseQuote,
+        quoteIsBnb,
+        marcoUsd,
+        marcoUsdFromCandle: marcoMetrics.marcoUsdFromCandle,
+        wbnbUsd,
+        cakeUsd,
+        busdUsd,
+      })
+
+      const liquidityScore = liquidityScoreForAddress(pairRows, meta.address)
+      const signals: string[] = []
+      if (change24h) signals.push('priceChange')
+      if (tradeCount24h > 0) signals.push('swaps')
+      if (volume24h > 0) signals.push('volume24h')
+      if (liquidityActivity24h > 0) signals.push('liquidityActivity')
+
       candidates.push({
-        symbol: sym,
-        slug: canonical.registrySlug ?? canonical.id,
+        symbol: meta.symbol,
+        slug: meta.slug,
         pairSlug: row.slug,
-        address: canonical.address,
-        chainId: canonical.chainId,
-        displayName: canonical.name ?? sym,
+        address: meta.address,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
         tierStatus: row.status,
-        priceUsd,
+        priceUsd: priceUsd && priceUsd > 0 ? priceUsd : undefined,
         change24h,
         volume24h,
         liquidityScore,
         tradeCount24h,
+        liquidityActivity24h,
         rankingSignals: signals,
       })
     }
@@ -265,7 +329,7 @@ export function useDexTrendingRankings() {
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        secondary: priceLabel || '—',
+        secondary: priceLabel,
         accent,
         accentPositive,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
@@ -289,7 +353,7 @@ export function useDexTrendingRankings() {
 
   const indexerScopeNote = useMemo(() => {
     if (rankedAssets.length === 0) return undefined
-    return 'Tier metrics · 24H volume → trades → liquidity → price change'
+    return 'Top movers · |Δ%| → swaps → volume → LP activity'
   }, [rankedAssets.length])
 
   return {

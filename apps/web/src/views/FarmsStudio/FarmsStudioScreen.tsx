@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
-import FeaturedFarmPanel from './components/FeaturedFarmPanel'
 import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
 import { FarmsHeroModule } from './modules/FarmsHeroModule'
@@ -123,14 +122,6 @@ export const FarmsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Farms Analytics" userReason="Farm analytics are temporarily unavailable.">
           <FarmsAnalyticsModule />
         </DataSurfaceErrorBoundary>
-        <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
-          <FeaturedSlot>
-            <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
-              <FeaturedFarmPanel />
-            </DataSurfaceErrorBoundary>
-          </FeaturedSlot>
-          <AdvisorSlot data-fs-advisor-superseded="module-006" aria-hidden="true" />
-        </PageColumnGrid>
         <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
           <FarmsActivityTable />
         </DataSurfaceErrorBoundary>

@@ -50,8 +50,32 @@ function finiteCount(value: unknown, fallback: number): number {
   return Number.isFinite(n) ? n : fallback
 }
 
+/**
+ * Partition every discovered pool into Active / Finished / Inactive.
+ * Active = on-chain live (API active + rewarding — ontology-aligned).
+ * Finished = ended.
+ * Inactive = invalid / unverified remainder so Total = Active + Finished + Inactive.
+ */
+export function partitionPoolStatuses(counts: PoolClassificationCounts): {
+  total: number
+  active: number
+  finished: number
+  inactive: number
+} {
+  const total = counts.discovered
+  const active = counts.active + counts.rewarding
+  const finished = counts.ended
+  const accounted = active + finished + counts.invalid
+  const inactive = Math.max(counts.invalid, total - active - finished)
+  // Prefer explicit invalid; ensure no hidden remainder.
+  const inactiveResolved = Math.max(0, total - active - finished)
+  void accounted
+  return { total, active, finished, inactive: inactiveResolved }
+}
+
 export function buildLifecycleSecondaryCopy(counts: PoolClassificationCounts): string {
-  return `${counts.active} active · ${counts.funded} funded · ${counts.rewarding} rewarding`
+  const p = partitionPoolStatuses(counts)
+  return `${p.active} active · ${p.finished} finished · ${p.inactive} inactive`
 }
 
 export function classificationToReconciliation(counts: PoolClassificationCounts): PoolReconciliation {
@@ -96,9 +120,10 @@ export function resolveKpiLifecycleFields(summary: PoolClassificationSummary): K
       rewarding: 0,
     }
   }
+  const partition = partitionPoolStatuses(counts!)
   return {
     lifecycleReady: true,
-    discoveredValue: String(counts!.discovered),
+    discoveredValue: String(partition.total),
     lifecycleSecondary: buildLifecycleSecondaryCopy(counts!),
     rewarding: counts!.rewarding,
     counts,

@@ -1,0 +1,40 @@
+{
+  "missionId": "MELEGA_DEX_V1_DATA_TRUTH_AND_PRODUCT_CONSISTENCY_AUDIT",
+  "surface": "List",
+  "hero": {
+    "style": "premium dark/gold CSS",
+    "removedBlurryBanner": true
+  },
+  "metrics": [
+    {
+      "id": "listedTokens",
+      "source": "pancake-default.tokenlist.json chainId=56 count",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "—",
+      "status": "wired"
+    },
+    {
+      "id": "projects",
+      "source": "getAllProjects() / STATIC_PROJECTS",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "—",
+      "status": "wired"
+    },
+    {
+      "id": "markets",
+      "source": "/api/indexer/pairs?classification=tradeable total",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "—",
+      "status": "wired"
+    },
+    {
+      "id": "networks",
+      "source": "SUPPORT_MULTI_CHAINS filtered to live BSC venue",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "—",
+      "status": "wired"
+    }
+  ],
+  "neverHardcodeShowcase": true,
+  "generatedAt": "2026-07-27T06:01:45.521Z"
+}

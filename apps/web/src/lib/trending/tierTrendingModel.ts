@@ -14,6 +14,9 @@ export type TierMetricRow = {
   priceChange24h?: number
   candleCount?: number
   eventCount24h?: number
+  /** Recent Mint+Burn count — liquidity activity, not static reserves. */
+  mintBurnCount24h?: number
+  lastCloseQuote?: number
 }
 
 export type TierRankedAsset = {
@@ -29,6 +32,8 @@ export type TierRankedAsset = {
   volume24h: number
   liquidityScore: number
   tradeCount24h: number
+  /** Recent LP Mint/Burn activity. */
+  liquidityActivity24h?: number
   rankingSignals: string[]
 }
 
@@ -62,6 +67,7 @@ export function pickTrendingBaseToken(token0: string, token1: string): string {
   return t0Quote ? t1 : t0
 }
 
+/** Legacy market signal (liquidity-allowed). Prefer isTopMoverEligible. */
 export function hasTrendingMarketSignal(input: {
   tradeCount24h: number
   volume24h: number
@@ -80,13 +86,45 @@ export function hasTrendingMarketSignal(input: {
   )
 }
 
+/**
+ * TOP MOVERS membership — never admit on token existence / static reserves alone.
+ * Requires factual price movement OR swap activity OR volume OR recent LP Mint/Burn.
+ */
+export function isTopMoverEligible(input: {
+  tradeCount24h: number
+  volume24h: number
+  liquidityActivity24h?: number
+  change24h?: Valid24hChange
+}): boolean {
+  const hasChange =
+    input.change24h != null &&
+    Number.isFinite(input.change24h.pct) &&
+    Math.abs(input.change24h.pct) > 0.0001
+  return (
+    hasChange ||
+    input.tradeCount24h > 0 ||
+    input.volume24h > 0 ||
+    (input.liquidityActivity24h != null && input.liquidityActivity24h > 0)
+  )
+}
+
+/**
+ * TOP MOVERS rank:
+ * 1) |price variation %|
+ * 2) swap activity
+ * 3) volume
+ * 4) recent liquidity activity
+ */
 export function compareTierRankedAssets(a: TierRankedAsset, b: TierRankedAsset): number {
-  if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
-  if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
-  if (b.liquidityScore !== a.liquidityScore) return b.liquidityScore - a.liquidityScore
   const aCh = Math.abs(a.change24h?.pct ?? 0)
   const bCh = Math.abs(b.change24h?.pct ?? 0)
-  return bCh - aCh
+  if (bCh !== aCh) return bCh - aCh
+  if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
+  if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
+  const aLiq = a.liquidityActivity24h ?? 0
+  const bLiq = b.liquidityActivity24h ?? 0
+  if (bLiq !== aLiq) return bLiq - aLiq
+  return (b.liquidityScore ?? 0) - (a.liquidityScore ?? 0)
 }
 
 export function rankTierAssets(assets: TierRankedAsset[], limit = 10): TierRankedAsset[] {
@@ -116,6 +154,7 @@ export function formatTrendingTickerPrice(price?: number): string | undefined {
   return `$${price.toFixed(6)}`
 }
 
+/** Ticker accent: ↑ 2.4% / ↓ 0.5% when factual; never invent. */
 export function trendingTickerAccent(asset: TierRankedAsset): {
   accent?: string
   accentPositive?: boolean
@@ -123,7 +162,11 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   const change =
     asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h : undefined
   if (change) {
-    return { accent: change.text, accentPositive: change.positive }
+    const arrow = change.positive ? '↑' : '↓'
+    return {
+      accent: `${arrow} ${Math.abs(change.pct).toFixed(1)}%`,
+      accentPositive: change.positive,
+    }
   }
   if (asset.tradeCount24h > 0) {
     return {
@@ -133,6 +176,5 @@ export function trendingTickerAccent(asset: TierRankedAsset): {
   if (asset.volume24h > 0) {
     return { accent: '24H vol' }
   }
-  // Do not surface the word "Liquidity" as a fake ticker price movement.
   return {}
 }

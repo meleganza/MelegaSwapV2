@@ -7,7 +7,9 @@ import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
 
 const Panel = styled.aside`
   width: ${farmsHero.trustBoxW};
-  height: ${farmsHero.trustBoxH};
+  height: auto;
+  min-height: 0;
+  max-height: none;
   max-width: 100%;
   box-sizing: border-box;
   border-radius: ${farmsHero.trustRadius};
@@ -16,13 +18,12 @@ const Panel = styled.aside`
   padding: ${farmsHero.trustPad};
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   flex: 0 0 auto;
+  overflow: hidden;
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: min(100%, ${farmsHero.mobileTrustW});
-    height: auto;
-    min-height: 0;
   }
 `
 
@@ -48,7 +49,7 @@ const Row = styled.li`
   grid-template-columns: 22px minmax(0, 1fr);
   column-gap: 10px;
   align-items: start;
-  min-height: 40px;
+  min-height: 0;
 `
 
 const Icon = styled.span`

@@ -1,0 +1,46 @@
+{
+  "missionId": "MELEGA_DEX_V1_DATA_TRUTH_AND_PRODUCT_CONSISTENCY_AUDIT",
+  "surface": "Pools",
+  "rename": {
+    "from": "Pools Discovered",
+    "to": "Total Pools"
+  },
+  "partition": [
+    "Total Pools",
+    "Active Pools",
+    "Finished Pools",
+    "Inactive Pools"
+  ],
+  "metrics": [
+    {
+      "id": "totalPools",
+      "source": "/api/pools/classification counts.discovered",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "Unavailable",
+      "status": "wired"
+    },
+    {
+      "id": "activePools",
+      "source": "classification active + rewarding",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "0",
+      "status": "wired"
+    },
+    {
+      "id": "finishedPools",
+      "source": "classification ended",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "0",
+      "status": "wired"
+    },
+    {
+      "id": "inactivePools",
+      "source": "total - active - finished (covers invalid)",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "0",
+      "status": "wired"
+    }
+  ],
+  "validationNote": "Every discovered entry maps into Active ∪ Finished ∪ Inactive",
+  "generatedAt": "2026-07-27T06:01:45.521Z"
+}

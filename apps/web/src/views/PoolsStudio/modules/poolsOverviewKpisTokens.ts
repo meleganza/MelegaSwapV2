@@ -59,7 +59,7 @@ export type PoolsOverviewKpiId = (typeof POOLS_OVERVIEW_KPI_ORDER)[number]
 
 export const POOLS_OVERVIEW_KPI_LABELS: Record<PoolsOverviewKpiId, string> = {
   tvl: 'Total Value Locked',
-  discovered: 'Pools Discovered',
+  discovered: 'Total Pools',
   rewarding: 'Pools Rewarding',
   rewards24h: 'Total Rewards — 24H',
   sustainableApr: 'Highest Sustainable APR',

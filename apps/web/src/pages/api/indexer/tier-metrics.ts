@@ -65,9 +65,17 @@ const handler: NextApiHandler = async (req, res) => {
 
       const changeResult = computeValid24hPriceChange(candles)
       const priceChange24h = changeResult?.pct
+      const mintBurnCount24h = recentEvents.filter(
+        (e) => e.eventType === 'Mint' || e.eventType === 'Burn',
+      ).length
+      const lastCloseQuote = candles[candles.length - 1]?.close
 
       const hasSignal =
-        volume24hQuote > 0 || tradeCount24h > 0 || changeResult != null || recentCandles.length >= 2
+        volume24hQuote > 0 ||
+        tradeCount24h > 0 ||
+        mintBurnCount24h > 0 ||
+        changeResult != null ||
+        recentCandles.length >= 2
 
       const coverageRanges = checkpoint?.coverageRanges ?? []
       const bootstrapStart = checkpoint?.bootstrapStartBlock ?? 0
@@ -98,6 +106,8 @@ const handler: NextApiHandler = async (req, res) => {
         volume24hQuote,
         tradeCount24h,
         priceChange24h,
+        mintBurnCount24h,
+        lastCloseQuote: lastCloseQuote != null && Number.isFinite(lastCloseQuote) ? lastCloseQuote : undefined,
         candleCount: candles.length,
         eventCount24h: recentEvents.length,
         indexingLag: health?.indexingLag,

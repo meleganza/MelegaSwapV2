@@ -7,16 +7,18 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { FarmsHeroArtwork } from './FarmsHeroArtwork'
 import { FarmsHeroTrustPanel } from './FarmsHeroTrustPanel'
+import { FarmsFeaturedCompactCard } from './FarmsFeaturedCompactCard'
 import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
 
 const Module = styled.section`
   position: relative;
   width: 100%;
   max-width: ${farmsHero.contentMax};
-  height: ${farmsHero.heroH};
+  min-height: ${farmsHero.heroH};
+  height: auto;
   min-width: 0;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden;
   font-family: ${typography.fontFamily.body};
   color: ${farmsHero.titleColor};
   background:
@@ -182,19 +184,21 @@ const ArtCol = styled.div`
 const TrustCol = styled.div`
   width: ${farmsHero.trustW};
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
   min-width: 0;
 
   @media (max-width: ${farmsHero.tabletBreak}) {
     width: 100%;
     grid-column: 1 / -1;
-    justify-content: stretch;
+    align-items: stretch;
   }
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: 100%;
-    justify-content: center;
+    align-items: center;
   }
 `
 
@@ -244,8 +248,9 @@ export const FarmsHeroModule: React.FC = () => {
         <ArtCol>
           <FarmsHeroArtwork />
         </ArtCol>
-        <TrustCol>
+        <TrustCol data-farms-hero-right>
           <FarmsHeroTrustPanel />
+          <FarmsFeaturedCompactCard />
         </TrustCol>
       </Inner>
     </Module>

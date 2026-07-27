@@ -27,16 +27,16 @@ export const farmsMyFarms = {
 } as const
 
 export const FARMS_MODULE_001_FREEZE_SHA256 = {
-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
+  FarmsHeroModule: 'a1360aff6d765b740e63a3b018b649d3ef17c83067531c7b787f718a3b19de43',
   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+  FarmsHeroTrustPanel: '93b9ff921b308fffc36a40a94dc48c8f7c85582fcf35f12c895bb9180137bbd2',
   farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
 } as const
 
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
-  FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
-  farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+  FarmsOverviewKpisModule: '188d495c6a192db43e8e5a8464b333b5c624e5010a2e78a7ebb204677c11c9f2',
+  farmsOverviewKpisTokens: '1c0696ef2bb9e5ff9189376bf0152b275e6d61a62de8a3a1e534621cbc4567f7',
+  buildFarmsOverviewKpis: '987ddde0b6f5d54c2c62b71d6bcca976cecea020533c8a9d35c896c72da3418f',
+  useFarmsOverviewKpis: '8a77b200ad62225d0d0c775a378dfcfe69b7c0a8e99115a1737451dfeadd8ec9',
+  farmsOverviewKpisTypes: '95dc90670e30f7780e0c226bf1f92a691e4a31fa580489d34081b9e7d77e0129',
 } as const

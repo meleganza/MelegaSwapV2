@@ -22,6 +22,8 @@ export interface MelegaTickerProps extends MelegaLayoutProps {
   marqueeMinItems?: number
   emptyPrimary?: string
   emptySecondary?: string
+  /** Animated live indicator beside the label. */
+  showLiveDot?: boolean
 }
 
 const melegaTicker = keyframes`
@@ -171,13 +173,24 @@ const Accent = styled.span<{ $positive?: boolean; $unavailable?: boolean }>`
     $unavailable ? '#a8a8a8' : $positive === false ? '#ff5252' : '#00e676'};
 `
 
+const livePulse = keyframes`
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+`
+
 const Dot = styled.span`
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: ${colors.gold};
   flex-shrink: 0;
-  margin: 0 12px;
+  margin: 0 10px 0 8px;
+  box-shadow: 0 0 0 0 rgba(244, 196, 48, 0.55);
+  animation: ${livePulse} 1.6s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `
 
 const EmptyRow = styled.div`
@@ -198,7 +211,7 @@ const EmptyMessage = styled.span`
 `
 
 export const MelegaTicker: React.FC<MelegaTickerProps> = ({
-  label = 'Trending',
+  label = 'Top Movers',
   items,
   paused: pausedProp,
   marqueeMinItems = 6,
@@ -207,6 +220,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
   disabled,
   emptyPrimary = 'Market ranking temporarily unavailable',
   emptySecondary,
+  showLiveDot = true,
 }) => {
   const [hoverPaused, setHoverPaused] = useState(false)
   const [dragPaused, setDragPaused] = useState(false)
@@ -222,7 +236,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
       <Strip $padding={padding} $margin={margin} data-melega-ticker>
         <AnchorWrap>
           <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
-          <Dot aria-hidden />
+          {showLiveDot ? <Dot aria-hidden data-trending-live-dot /> : null}
           <EmptyRow>
             <EmptyMessage>{emptyPrimary}</EmptyMessage>
             {emptySecondary ? <EmptyMessage style={{ marginLeft: 8 }}>{emptySecondary}</EmptyMessage> : null}
@@ -263,6 +277,7 @@ export const MelegaTicker: React.FC<MelegaTickerProps> = ({
     >
       <AnchorWrap>
         <TrendingAnchor aria-hidden>{label}</TrendingAnchor>
+        {showLiveDot ? <Dot aria-hidden data-trending-live-dot /> : null}
       </AnchorWrap>
       <TrackWrap
         onPointerDown={handlePointerDown}

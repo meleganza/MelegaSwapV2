@@ -1,0 +1,51 @@
+{
+  "missionId": "MELEGA_DEX_V1_DATA_TRUTH_AND_PRODUCT_CONSISTENCY_AUDIT",
+  "surface": "Top Movers",
+  "renamedFrom": "Trending",
+  "definition": "Assets with the strongest factual movement on Melega DEX",
+  "rankingPriority": [
+    "priceVariationPct",
+    "swapActivity",
+    "volume",
+    "recentLiquidityActivity"
+  ],
+  "membership": "isTopMoverEligible — never token existence / static reserves alone",
+  "metrics": [
+    {
+      "id": "priceChange24h",
+      "source": "/api/indexer/tier-metrics + computeValid24hPriceChange",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "omit accent if unavailable",
+      "status": "wired"
+    },
+    {
+      "id": "tradeCount24h",
+      "source": "tier-metrics Swap events / candles",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "0 excludes unless other signals",
+      "status": "wired"
+    },
+    {
+      "id": "volume24h",
+      "source": "tier-metrics quoteVolume × BNB/USD",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "0",
+      "status": "wired"
+    },
+    {
+      "id": "liquidityActivity24h",
+      "source": "tier-metrics Mint+Burn count",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "0",
+      "status": "wired"
+    }
+  ],
+  "ui": {
+    "label": "Top Movers",
+    "liveDot": true,
+    "marquee": true,
+    "accent": "↑ / ↓ %"
+  },
+  "neverHardcode": true,
+  "generatedAt": "2026-07-27T06:01:45.521Z"
+}

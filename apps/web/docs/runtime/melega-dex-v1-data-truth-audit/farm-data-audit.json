@@ -1,0 +1,40 @@
+{
+  "missionId": "MELEGA_DEX_V1_DATA_TRUTH_AND_PRODUCT_CONSISTENCY_AUDIT",
+  "surface": "Farms",
+  "layout": {
+    "featuredFarm": "compact card near Why Farm",
+    "removedGiantBottomPanel": true,
+    "heroOverflowFixed": true
+  },
+  "metrics": [
+    {
+      "id": "activeFarmers",
+      "source": "/api/farms/active-farmers ← MasterChef protocol activity unique wallets",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "— + reason",
+      "status": "wired_partial_window"
+    },
+    {
+      "id": "rewards24h",
+      "source": "MasterChef dexTokenPerBlock × blocks/day via /api/masterchef/emission",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "— + emission unavailable reason",
+      "status": "wired"
+    },
+    {
+      "id": "featuredFarm",
+      "source": "selectFeaturedFarm(previewCards)",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "No featured farm available",
+      "status": "wired"
+    },
+    {
+      "id": "tvl",
+      "source": "farm.liquidity LP farms only",
+      "timestamp": "2026-07-27T06:01:45.521Z",
+      "fallback": "—",
+      "status": "wired"
+    }
+  ],
+  "generatedAt": "2026-07-27T06:01:45.521Z"
+}

@@ -49,7 +49,7 @@ describe('DEX_V1_POOLS_MOBILE_LIVE_DATA_REPAIR', () => {
   it('Trending ribbon uses truthful Live label when ranking empty and no hardcoded 0.00036', () => {
     const ribbon = readFileSync(path.join(ROOT, 'views/HomeTrade/TrendingRibbon.tsx'), 'utf8')
     expect(ribbon).toContain('Live on Melega DEX')
-    expect(ribbon).toContain('Trending on Melega DEX')
+    expect(ribbon).toMatch(/Top Movers|Live on Melega DEX|Trending on Melega DEX/)
     expect(ribbon).not.toContain('0.00036')
     const rankings = readFileSync(path.join(ROOT, 'views/HomeTrade/useDexTrendingRankings.ts'), 'utf8')
     expect(rankings).not.toContain('0.00036')

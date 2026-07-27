@@ -52,7 +52,7 @@ describe('POOLS_MODULE_002 Overview KPIs', () => {
     expect(sum).toBe(1376)
   })
 
-  it('never uses Factory pair counts for Pools Discovered', () => {
+  it('never uses Factory pair counts for Total Pools', () => {
     const vm = buildPoolsOverviewKpisFromParts({
       poolRows: [],
       classification: {

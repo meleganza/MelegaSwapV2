@@ -94,22 +94,40 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     expect(216 * 6 + 16 * 5).toBe(1376)
   })
 
-  it('never fabricates 24H rewards from MasterChef emission', () => {
+  it('shows 24H rewards from factual MasterChef emission schedule', () => {
     const vm = buildFarmsOverviewKpisFromParts({
       previewCards: [farmCard({ pid: 1, liq: 5000, apr: '20.00%' })],
       farmsLoading: false,
       userDataLoaded: true,
       account: '0xabc',
       cakePriceUsd: 1,
+      emissionPerDayMarco: 1200,
+      emissionStatus: 'ready',
+    })
+    const r24 = vm.cards.find((c) => c.id === 'rewards24h')!
+    expect(r24.value).toBe('$1.2K')
+    expect(r24.supporting).toMatch(/emission/i)
+    expect(vm.diagnostics.rewards24hSource).toBe('masterchef_emission_per_block')
+    expect(vm.diagnostics.emissionNotUsedAs24h).toBe(false)
+  })
+
+  it('keeps 24H rewards unavailable when emission missing', () => {
+    const vm = buildFarmsOverviewKpisFromParts({
+      previewCards: [farmCard({ pid: 1, liq: 5000, apr: '20.00%' })],
+      farmsLoading: false,
+      userDataLoaded: true,
+      account: '0xabc',
+      cakePriceUsd: 1,
+      emissionStatus: 'unavailable',
+      emissionReason: 'MasterChef emission unavailable',
     })
     const r24 = vm.cards.find((c) => c.id === 'rewards24h')!
     expect(r24.value).toBe('—')
-    expect(r24.supporting).toContain('Reward valuation unavailable')
-    expect(vm.diagnostics.rewards24hSource).toBe('unavailable_no_indexed_distribution')
+    expect(r24.supporting).toMatch(/unavailable/i)
     expect(vm.diagnostics.emissionNotUsedAs24h).toBe(true)
   })
 
-  it('never estimates Active Farmers', () => {
+  it('never invents Active Farmers without indexed wallets', () => {
     const vm = buildFarmsOverviewKpisFromParts({
       previewCards: [farmCard({ pid: 1, liq: 5000 })],
       farmsLoading: false,
@@ -120,6 +138,21 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     expect(farmers.value).toBe('—')
     expect(farmers.supporting).toContain('Unique wallet data unavailable')
     expect(vm.diagnostics.activeFarmersCount).toBeNull()
+  })
+
+  it('displays Active Farmers from indexed MasterChef wallets', () => {
+    const vm = buildFarmsOverviewKpisFromParts({
+      previewCards: [farmCard({ pid: 1, liq: 5000 })],
+      farmsLoading: false,
+      userDataLoaded: false,
+      cakePriceUsd: 0,
+      activeFarmersCount: 7,
+      activeFarmersStatus: 'partial',
+      activeFarmersReason: 'Indexed MasterChef activity window',
+    })
+    const farmers = vm.cards.find((c) => c.id === 'activeFarmers')!
+    expect(farmers.value).toBe('7')
+    expect(vm.diagnostics.activeFarmersCount).toBe(7)
   })
 
   it('sums LP farm TVL only and discloses partial valuation', () => {
