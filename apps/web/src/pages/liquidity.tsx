@@ -2,11 +2,12 @@ import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
 import styled from 'styled-components'
 import Liquidity from 'views/Pool'
 import { LiquidityHeroModule } from 'views/LiquidityStudio/modules/LiquidityHeroModule'
+import { LiquidityActionsModule } from 'views/LiquidityStudio/modules/LiquidityActionsModule'
 import { liquidityHero } from 'views/LiquidityStudio/modules/liquidityHeroTokens'
 
 /**
- * LIQUIDITY_MODULE_001 — Hero mounted above LEGACY_IMPLEMENTATION body.
- * Legacy `views/Pool` remains untouched; Modules 002–010 are not mounted here.
+ * LIQUIDITY_MODULE_001 + 002 — Hero and Actions above LEGACY_IMPLEMENTATION body.
+ * Legacy `views/Pool` remains untouched; Modules 003–010 are not mounted here.
  */
 const Page = styled.div`
   width: 100%;
@@ -23,8 +24,13 @@ const LegacyBody = styled.div`
 `
 
 const LiquidityPage = () => (
-  <Page data-liquidity-module-001="mounted" data-liquidity-architecture="000">
+  <Page
+    data-liquidity-module-001="mounted"
+    data-liquidity-module-002="mounted"
+    data-liquidity-architecture="000"
+  >
     <LiquidityHeroModule />
+    <LiquidityActionsModule />
     <LegacyBody data-liquidity-legacy-body="LEGACY_IMPLEMENTATION">
       <Liquidity />
     </LegacyBody>

@@ -1,0 +1,16 @@
+{
+  "missionId": "LIQUIDITY_MODULE_002_ACTIONS",
+  "desktop": {
+    "container": "1376px",
+    "gap": "24px",
+    "cards": "676px each",
+    "sum": 1376,
+    "layout": "two-columns"
+  },
+  "responsive": {
+    "twoColMin": "900px",
+    "mobile": "single-column",
+    "viewports": ["1440", "1280", "430", "390"]
+  },
+  "source": "liquidityActionsTokens.ts + LiquidityActionsModule.tsx"
+}

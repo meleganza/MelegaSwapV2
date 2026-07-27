@@ -1,0 +1,19 @@
+{
+  "missionId": "LIQUIDITY_MODULE_002_ACTIONS",
+  "base": "LIQUIDITY_MODULE_001_HERO_CERTIFIED",
+  "baseCommit": "1afdc494b50f8dfe87fb773b8ab9bb7ce6bdac5e",
+  "module001HeroSha256": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+  "expectedModule001HeroSha256": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+  "heroFrozen": true,
+  "legacyPoolSha256": "a8976f16e5ab88d20ee27de6a337240248a69c8a3d98ecdb559aa308d70cef22",
+  "desktop1440Measured": {
+    "actionsWidth": 1376,
+    "manualCard": 676,
+    "aiCard": 676,
+    "gap": 24,
+    "cols": "676px 676px",
+    "manualHref": "/add/",
+    "aiHref": "/liquidity-studio/",
+    "overflow": false
+  }
+}

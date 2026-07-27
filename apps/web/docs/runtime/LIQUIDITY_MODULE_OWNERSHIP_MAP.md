@@ -83,10 +83,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 
 | | |
 | --- | --- |
-| **Responsibility** | Journey chooser between Manual Add and Melega AI Liquidity Builder; action domains Add Liquidity / Remove Liquidity / My Positions / Simulation |
-| **Owned components (future)** | `LiquidityActions*` |
-| **May consume** | Journey routing intent only |
-| **Forbidden** | Owning mint math; owning pool registry; Modules 003–010 content |
+| **Responsibility** | Journey chooser between Manual Add and Melega AI Liquidity Builder (navigation + explanation only) |
+| **Owned components** | `LiquidityStudio/modules/LiquidityActionsModule.tsx`, `liquidityActionsTokens.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 002 **immediately after** Module 001 Hero, **above** legacy `views/Pool` |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-002-actions/` |
+| **May consume** | Journey routing intent + static availability flag only |
+| **Forbidden** | Add Liquidity form / execution; AI Builder execution; mint math; pool registry; KPIs / fake numbers; Modules 003–010; editing Module 001 / `views/Pool` / `liquidityRuntime` / contracts |
 | **Depends on** | MODULE 001 |
 
 ---
