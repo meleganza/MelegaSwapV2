@@ -61,5 +61,5 @@ export const LIQUIDITY_MODULE_001_004_FREEZE = {
   LiquidityPoolDiscoveryModule:
     '3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b',
   LiquidityAddModule:
-    '0c63599e74b72592f54547c9a1e45d835c55eedfd770b46d27d7f963c864b5f0',
+    '7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc',
 } as const

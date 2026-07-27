@@ -1,0 +1,24 @@
+{
+  "missionId": "LIQUIDITY_MODULE_006_MY_POSITIONS",
+  "base": "LIQUIDITY_MODULE_005_MARKET_SNAPSHOT_CERTIFIED",
+  "baseCommit": "aa9137e5",
+  "module001HeroSha256": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+  "module002ActionsSha256": "01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec",
+  "module003DiscoverySha256": "3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b",
+  "module004AddSha256Prior": "0c63599e74b72592f54547c9a1e45d835c55eedfd770b46d27d7f963c864b5f0",
+  "module004AddSha256ProviderHoist": "7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc",
+  "module004Change": "provider-hoist-only-remove-nested-LiquidityRuntimeProvider",
+  "module005SnapshotSha256": "664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa",
+  "module006MyPositionsSha256": "816a5b84a10476ed5847853085eef274d75e586567573b30790550a0d71e1004",
+  "mintRuntimeSha256": "e65b9d46ec6d0502fa1a7c7de9f44f334a5905bb5d09977aeb3cc4ae52a8b16b",
+  "mintRuntimeUntouched": true,
+  "forbiddenUntouched": {
+    "router": true,
+    "poolsStaking": true,
+    "farms": true,
+    "passport": true,
+    "treasury": true,
+    "kerl": true,
+    "addLiquidityTxLogic": true
+  }
+}

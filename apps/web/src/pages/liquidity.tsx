@@ -1,16 +1,18 @@
 import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
 import styled from 'styled-components'
 import Liquidity from 'views/Pool'
+import { LiquidityRuntimeProvider } from 'views/LiquidityStudio/liquidityRuntime/LiquidityRuntimeContext'
 import { LiquidityHeroModule } from 'views/LiquidityStudio/modules/LiquidityHeroModule'
 import { LiquidityActionsModule } from 'views/LiquidityStudio/modules/LiquidityActionsModule'
 import { LiquidityPoolDiscoveryModule } from 'views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule'
 import { LiquidityAddModule } from 'views/LiquidityStudio/modules/LiquidityAddModule'
 import { LiquidityMarketSnapshotModule } from 'views/LiquidityStudio/modules/LiquidityMarketSnapshotModule'
+import { LiquidityMyPositionsModule } from 'views/LiquidityStudio/modules/LiquidityMyPositionsModule'
 import { liquidityHero } from 'views/LiquidityStudio/modules/liquidityHeroTokens'
 
 /**
- * LIQUIDITY_MODULE_001–005 — Hero → Actions → Discovery → Add → Market Snapshot → legacy.
- * Legacy `views/Pool` remains untouched; Modules 006–010 are not mounted here.
+ * LIQUIDITY_MODULE_001–006 — modular stack above LEGACY body.
+ * One LiquidityRuntimeProvider wraps Add + My Positions (single mint/positions host).
  */
 const Page = styled.div`
   width: 100%;
@@ -33,13 +35,17 @@ const LiquidityPage = () => (
     data-liquidity-module-003="mounted"
     data-liquidity-module-004="mounted"
     data-liquidity-module-005="mounted"
+    data-liquidity-module-006="mounted"
     data-liquidity-architecture="000"
   >
     <LiquidityHeroModule />
     <LiquidityActionsModule />
     <LiquidityPoolDiscoveryModule />
-    <LiquidityAddModule />
-    <LiquidityMarketSnapshotModule />
+    <LiquidityRuntimeProvider>
+      <LiquidityAddModule />
+      <LiquidityMarketSnapshotModule />
+      <LiquidityMyPositionsModule />
+    </LiquidityRuntimeProvider>
     <LegacyBody data-liquidity-legacy-body="LEGACY_IMPLEMENTATION">
       <Liquidity />
     </LegacyBody>

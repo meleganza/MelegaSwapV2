@@ -140,10 +140,12 @@ Delivery sequence: **000 → 001 → 002 → 003 → 004 → 005 → 006 → 007
 | | |
 | --- | --- |
 | **Responsibility** | Wallet-scoped LP positions: review, manage, remove entry points |
-| **Owned components (future)** | `LiquidityYourPositions*` |
-| **May consume** | Shared LP portfolio adapter + action host |
-| **Forbidden** | Second wallet LP scan; Farms MasterChef ownership; Modules 007–010 content |
-| **Depends on** | MODULE 002 |
+| **Owned components** | `LiquidityStudio/modules/LiquidityMyPositionsModule.tsx`, `liquidityMyPositionsTokens.ts`, `liquidityMyPositionsModel.ts` |
+| **Mount** | `pages/liquidity.tsx` mounts Module 006 **after** Module 005, inside shared `LiquidityRuntimeProvider` with Module 004 |
+| **Evidence** | `apps/web/docs/runtime/liquidity-module-006-my-positions/` + `LIQUIDITY_MODULE_006_MY_POSITIONS_REPORT.md` |
+| **May consume** | Shared LP rows (`useLiquidityPositions` via runtime), `useLiquidityPositionDetails`, `openRemoveModal` / `setMode` / currency seed |
+| **Forbidden** | Second wallet LP scan; Farms/Pools duplication; new transaction logic; Modules 007–010; editing mint runtime / Router / contracts |
+| **Depends on** | MODULE 002 (journey); page composition after MODULE 005 |
 
 ---
 

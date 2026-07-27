@@ -53,16 +53,20 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
 
   it('consumes existing mint runtime and slippage settings — no second engine', () => {
     const mod = load('modules/LiquidityAddModule.tsx')
-    expect(mod).toContain('LiquidityRuntimeProvider')
     expect(mod).toContain('useLiquidityRuntime')
     expect(mod).toContain('onPrimaryAction')
     expect(mod).toContain('SettingsModal')
     expect(mod).toContain('SettingsMode.SWAP_LIQUIDITY')
     expect(mod).toContain('MelegaTokenAvatar')
+    // Provider is hoisted on pages/liquidity.tsx (shared with Module 006).
+    expect(mod).not.toContain('LiquidityRuntimeProvider')
     expect(mod).not.toContain('addLiquidityETH')
     expect(mod).not.toContain('calculateSlippageAmount')
     expect(mod).not.toContain('useDerivedMintInfo')
     expect(mod).not.toContain('useRouterContract')
+
+    const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
+    expect(page).toContain('LiquidityRuntimeProvider')
   })
 
   it('maps wallet / approve / add / error CTA states without dead labels', () => {

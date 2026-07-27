@@ -17,7 +17,7 @@ import { ApprovalState } from 'hooks/useApproveCallback'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCurrencyBalances } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
-import { LiquidityRuntimeProvider, useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
+import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './liquidityAddCta'
 import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
@@ -684,6 +684,9 @@ const LiquidityAddForm: React.FC = () => {
   )
 }
 
+/**
+ * Provider is hoisted on `/liquidity` so Module 004 + 006 share one mint/positions runtime.
+ */
 export const LiquidityAddModule: React.FC = () => (
   <Shell
     id={liquidityAdd.anchorId}
@@ -695,9 +698,7 @@ export const LiquidityAddModule: React.FC = () => (
     <span id="liquidity-add-title" className="sr-only" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>
       {LIQUIDITY_ADD_COPY.title}
     </span>
-    <LiquidityRuntimeProvider>
-      <LiquidityAddForm />
-    </LiquidityRuntimeProvider>
+    <LiquidityAddForm />
   </Shell>
 )
 
