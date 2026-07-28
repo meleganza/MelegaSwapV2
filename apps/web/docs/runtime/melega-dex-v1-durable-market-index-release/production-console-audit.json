@@ -1,3 +1,6 @@
 {
-  "status": "PENDING_PRODUCTION_SMOKE"
+  "capturedAt": "2026-07-28T21:19:42Z",
+  "page": "https://www.melega.finance/",
+  "hardErrors": [],
+  "note": "No blocking console errors observed during smoke navigation"
 }

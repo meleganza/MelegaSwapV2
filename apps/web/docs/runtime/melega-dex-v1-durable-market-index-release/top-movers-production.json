@@ -1,12 +1,12 @@
 {
-  "note": "Production Top Movers will populate after deploy + cron self-heal re-backfill finds qualifying indexed swaps",
-  "ranking": [
-    "absPct",
-    "swapCount",
-    "volume",
-    "recency",
-    "address"
+  "capturedAt": "2026-07-28T21:19:42Z",
+  "emptyMessageVisible": false,
+  "tickers": [
+    {
+      "symbol": "MARCO",
+      "change": "-47.5%",
+      "direction": "down"
+    }
   ],
-  "localIndexedSwaps": 39,
-  "emptyStateMustClearWhenQualifyingEventsExist": true
+  "source": "factual indexed Melega DEX observations"
 }

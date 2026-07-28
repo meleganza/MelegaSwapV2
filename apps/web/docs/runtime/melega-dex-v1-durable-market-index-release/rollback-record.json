@@ -1,4 +1,5 @@
 {
-  "priorProductionTip": "unknown-until-deploy",
-  "rollbackAction": "Redeploy previous main SHA via Vercel"
+  "priorMainTip": "c421fc169b370015c1c66cdc69c880e6cd8aacdb",
+  "rollbackAction": "Vercel redeploy commit c421fc16 or git revert merge 212f57f5",
+  "note": "Do not deploy an older branch tip as production"
 }

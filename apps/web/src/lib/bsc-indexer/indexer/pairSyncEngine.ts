@@ -23,6 +23,7 @@ import {
   bootstrapWindowSummary,
   findCoverageGaps,
   selectNextGap,
+  contiguousCoverageCursor,
 } from './coverageRanges'
 import type { IndexerDeadline } from './indexerDeadline'
 import type { IndexerCheckpoint, IndexerHealthSnapshot, NormalizedIndexerEvent } from '../types'
@@ -279,7 +280,8 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
       break
     }
 
-    const gapFrom = nextGap.fromBlock
+    // Prefer the newest end of each gap so trailing 24H/7D product windows fill
+    // during backfill without claiming coverage for unscanned older history.
     const span = adaptive
       ? computeAdaptiveBlockSpan({
           remainingMs: deadline?.remainingMs() ?? 0,
@@ -289,7 +291,8 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
           recentAverageLatencyMs: adaptiveTelemetry.averageRpcLatencyMs || undefined,
         })
       : FORWARD_CHUNK_BLOCKS
-    const gapTo = Math.min(nextGap.toBlock, gapFrom + span - 1)
+    const gapTo = nextGap.toBlock
+    const gapFrom = Math.max(nextGap.fromBlock, gapTo - span + 1)
     adaptiveTelemetry.requestedBlockCount += gapTo - gapFrom + 1
     let scan
     try {
@@ -314,7 +317,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     providerUsed = scan.providerUsed
     checkpoint = { ...checkpoint, chunkSize: scan.finalChunkSize }
     coverageRanges = addCoverageRange(coverageRanges, { fromBlock: gapFrom, toBlock: gapTo })
-    gapFillCursor = Math.max(gapFillCursor, gapTo)
+    gapFillCursor = contiguousCoverageCursor(coverageRanges, bootstrapFloor)
     gapRangesProcessed += 1
     gapIterations += 1
     fromBlock = gapFrom
@@ -322,7 +325,7 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
     await storage.saveCheckpoint({
       ...checkpoint,
       gapFillCursor,
-      forwardCursor: gapFillCursor,
+      forwardCursor: Math.max(checkpoint.forwardCursor ?? gapFillCursor, gapTo),
       coverageRanges,
       lastIndexedBlock: gapFillCursor,
       chainHeadAtSync: chainHead,
@@ -352,10 +355,12 @@ export async function runPairSyncEngine(params: PairSyncParams): Promise<PairSyn
   if (candles.length) await storage.saveCandles(candles)
 
   const coverageSummary = bootstrapWindowSummary(coverageRanges, bootstrapFloor, forwardHigh)
+  gapFillCursor = contiguousCoverageCursor(coverageRanges, bootstrapFloor)
+  const coverageHighWater = coverageRanges.reduce((max, r) => Math.max(max, r.toBlock), bootstrapFloor)
   const nextCheckpoint: IndexerCheckpoint = {
     ...checkpoint,
     gapFillCursor,
-    forwardCursor: gapFillCursor,
+    forwardCursor: Math.max(checkpoint.forwardCursor ?? gapFillCursor, coverageHighWater),
     coverageRanges,
     lastIndexedBlock: gapFillCursor,
     chainHeadAtSync: chainHead,
