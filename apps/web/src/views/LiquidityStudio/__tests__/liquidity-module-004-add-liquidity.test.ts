@@ -47,7 +47,9 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     expect(parseInt(liquidityAdd.contentMax, 10) - panelSum).toBe(28)
 
     const mod = load('modules/LiquidityAddModule.tsx')
-    expect(mod).toContain('data-liquidity-add-geometry="900-24-424"')
+    // Standalone geometry retained; Actions IA embeds via embedded-stack.
+    expect(mod).toContain("'900-24-424'")
+    expect(mod).toContain("'embedded-stack'")
     expect(mod).toContain('grid-template-columns: 1fr')
   })
 
@@ -154,16 +156,15 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
     expect(mod).toContain('setCurrencyB')
   })
 
-  it('mounts Module 004 after Discovery and above frozen legacy Pool', () => {
+  it('mounts Module 004 inside Actions workspace (IA primary surface)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityAddModule')
     expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-004="mounted"')
-    const discovery = page.indexOf('<LiquidityPoolDiscoveryModule')
-    const add = page.indexOf('<LiquidityAddModule')
-    expect(discovery).toBeGreaterThan(-1)
-    expect(add).toBeGreaterThan(discovery)
-      })
+    expect(page).toContain('LiquidityActionsModule')
+    const actions = readFileSync(path.join(STUDIO, 'modules/LiquidityActionsModule.tsx'), 'utf8')
+    expect(actions).toContain('<LiquidityAddModule embedded')
+    expect(actions.indexOf('LiquidityAddModule')).toBeGreaterThan(-1)
+  })
 
   it('does not modify forbidden execution surfaces in this mission', () => {
     // Module 004 files must not import or rewrite router/contracts/exchange write paths.

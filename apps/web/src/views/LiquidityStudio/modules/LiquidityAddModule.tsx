@@ -22,25 +22,26 @@ import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './li
 import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 
-const Shell = styled.section`
+const Shell = styled.section<{ $embedded?: boolean }>`
   width: 100%;
-  max-width: ${liquidityAdd.contentMax};
-  margin: ${liquidityAdd.gapAfterDiscovery} auto 0;
+  max-width: ${({ $embedded }) => ($embedded ? '100%' : liquidityAdd.contentMax)};
+  margin: ${({ $embedded }) => ($embedded ? '0' : `${liquidityAdd.gapAfterDiscovery} auto 0`)};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
 
   @media (max-width: ${liquidityAdd.tabletBreak}) {
-    padding: 0 16px;
+    padding: ${({ $embedded }) => ($embedded ? '0' : '0 16px')};
   }
 `
 
-const Layout = styled.div`
+const Layout = styled.div<{ $embedded?: boolean }>`
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, ${liquidityAdd.mainW}) minmax(0, ${liquidityAdd.sideW});
+  grid-template-columns: ${({ $embedded }) =>
+    $embedded ? '1fr' : `minmax(0, ${liquidityAdd.mainW}) minmax(0, ${liquidityAdd.sideW})`};
   column-gap: ${liquidityAdd.columnGap};
-  row-gap: 16px;
+  row-gap: ${({ $embedded }) => ($embedded ? '12px' : '16px')};
   align-items: start;
   min-width: 0;
 
@@ -49,13 +50,13 @@ const Layout = styled.div`
   }
 `
 
-const Panel = styled.div`
+const Panel = styled.div<{ $embedded?: boolean }>`
   width: 100%;
   box-sizing: border-box;
   border-radius: ${liquidityAdd.cardRadius};
-  border: ${liquidityAdd.cardBorder};
-  background: ${liquidityAdd.cardBg};
-  padding: ${liquidityAdd.cardPad};
+  border: ${({ $embedded }) => ($embedded ? '1px solid rgba(255,255,255,0.06)' : liquidityAdd.cardBorder)};
+  background: ${({ $embedded }) => ($embedded ? 'rgba(8,8,8,0.55)' : liquidityAdd.cardBg)};
+  padding: ${({ $embedded }) => ($embedded ? '14px' : liquidityAdd.cardPad)};
   min-width: 0;
 `
 
@@ -371,7 +372,7 @@ function queryTokenId(raw: unknown): string | undefined {
   return undefined
 }
 
-const LiquidityAddForm: React.FC = () => {
+const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const router = useRouter()
   const { chainId } = useActiveChainId()
   const {
@@ -503,10 +504,19 @@ const LiquidityAddForm: React.FC = () => {
   }
 
   return (
-    <Layout data-testid="liquidity-add-layout" data-liquidity-add-geometry="900-24-424">
-      <Panel data-testid="liquidity-add-form-panel">
-        <Title>{LIQUIDITY_ADD_COPY.title}</Title>
-        <Desc>{LIQUIDITY_ADD_COPY.description}</Desc>
+    <Layout
+      $embedded={embedded}
+      data-testid="liquidity-add-layout"
+      data-liquidity-add-geometry={embedded ? 'embedded-stack' : '900-24-424'}
+      data-liquidity-add-embedded={embedded ? '1' : '0'}
+    >
+      <Panel $embedded={embedded} data-testid="liquidity-add-form-panel">
+        {!embedded ? (
+          <>
+            <Title>{LIQUIDITY_ADD_COPY.title}</Title>
+            <Desc>{LIQUIDITY_ADD_COPY.description}</Desc>
+          </>
+        ) : null}
 
         <PairRow data-testid="liquidity-add-pair">
           <Logos aria-hidden="true">
@@ -653,8 +663,8 @@ const LiquidityAddForm: React.FC = () => {
         <Security>{LIQUIDITY_ADD_COPY.securityNote}</Security>
       </Panel>
 
-      <Panel data-testid="liquidity-add-preview-panel">
-        <Title as="h3" style={{ fontSize: 20, lineHeight: '26px' }}>
+      <Panel $embedded={embedded} data-testid="liquidity-add-preview-panel">
+        <Title as="h3" style={{ fontSize: embedded ? 16 : 20, lineHeight: embedded ? '22px' : '26px' }}>
           {LIQUIDITY_ADD_COPY.previewTitle}
         </Title>
         <PreviewList>
@@ -686,9 +696,11 @@ const LiquidityAddForm: React.FC = () => {
 
 /**
  * Provider is hoisted on `/liquidity` so Module 004 + 006 share one mint/positions runtime.
+ * `embedded` mounts the form inside the IA primary workspace without a second page section.
  */
-export const LiquidityAddModule: React.FC = () => (
+export const LiquidityAddModule: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => (
   <Shell
+    $embedded={embedded}
     id={liquidityAdd.anchorId}
     data-testid="liquidity-add-module"
     data-liquidity-module="004-add-liquidity"
@@ -698,7 +710,7 @@ export const LiquidityAddModule: React.FC = () => (
     <span id="liquidity-add-title" className="sr-only" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>
       {LIQUIDITY_ADD_COPY.title}
     </span>
-    <LiquidityAddForm />
+    <LiquidityAddForm embedded={embedded} />
   </Shell>
 )
 

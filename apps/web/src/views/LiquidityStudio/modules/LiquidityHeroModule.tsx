@@ -88,15 +88,6 @@ const Description = styled.p`
   white-space: pre-line;
 `
 
-const Journeys = styled.p`
-  margin: ${liquidityHero.gapAfterJourney} 0 0;
-  max-width: ${liquidityHero.descMaxW};
-  font-size: ${liquidityHero.journeySize};
-  line-height: ${liquidityHero.journeyLine};
-  font-weight: 500;
-  color: ${liquidityHero.journeyColor};
-`
-
 const Actions = styled.div`
   margin-top: ${liquidityHero.gapBeforeActions};
   display: flex;
@@ -165,7 +156,6 @@ export const LiquidityHeroModule: React.FC = () => (
       <Left data-testid="liquidity-hero-left">
         <Title id="liquidity-hero-title">{LIQUIDITY_HERO_COPY.title}</Title>
         <Description>{LIQUIDITY_HERO_COPY.description}</Description>
-        <Journeys data-testid="liquidity-hero-journeys">{LIQUIDITY_HERO_COPY.journeys}</Journeys>
         <Actions>
           <PrimaryCta href={liquidityHero.addLiquidityHref} data-testid="liquidity-hero-cta-add">
             {LIQUIDITY_HERO_COPY.primaryCta}

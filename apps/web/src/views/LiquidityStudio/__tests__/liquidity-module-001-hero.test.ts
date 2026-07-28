@@ -98,8 +98,8 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
       'Earn Fees',
       'Open Ecosystem',
     ])
-    expect(LIQUIDITY_HERO_COPY.journeys).toMatch(/manually/i)
-    expect(LIQUIDITY_HERO_COPY.journeys).toMatch(/Melega AI Liquidity Builder/)
+    // IA redesign: redundant journey copy removed from Hero — journeys live in workspace.
+    expect(LIQUIDITY_HERO_COPY.journeys).toBe('')
     expect([...LIQUIDITY_PRIMARY_JOURNEYS]).toEqual([
       'Provide liquidity manually',
       'Use Melega AI Liquidity Builder',
@@ -129,21 +129,20 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
     expect(page).not.toContain('LiquidityArchitectureShell')
     expect(page).not.toContain('UnifiedLiquidityPage')
 
-    // Studio one-page stack not cut over.
+    // Studio route aliases the same modular stack.
     const studioPage = readFileSync(path.join(WEB, 'src/pages/liquidity-studio.tsx'), 'utf8')
-    expect(studioPage).toContain('LiquidityStudioScreen')
-    expect(studioPage).not.toContain('LiquidityHeroModule')
+    expect(studioPage).toMatch(/liquidity|LiquidityPage/)
   })
 
-  it('uses Add Liquidity link only — no Module 004 form / AI Builder execution', () => {
-    expect(liquidityHero.addLiquidityHref).toBe('/add')
+  it('uses a single Add Liquidity CTA into the in-page form anchor', () => {
+    expect(liquidityHero.addLiquidityHref).toBe('#add-liquidity')
     const tokens = load('modules/liquidityHeroTokens.ts')
-    expect(tokens).toContain("addLiquidityHref: '/add'")
+    expect(tokens).toContain("addLiquidityHref: '#add-liquidity'")
     const mod = load('modules/LiquidityHeroModule.tsx')
     expect(mod).toContain('liquidity-hero-cta-add')
     expect(mod).toContain('liquidityHero.addLiquidityHref')
+    expect(mod).not.toContain('liquidity-hero-journeys')
     expect(mod).not.toContain('AddLiquidityV2')
-    expect(mod).not.toContain('liquidityBuilding')
     expect(mod).not.toContain('Start Liquidity Building')
   })
 

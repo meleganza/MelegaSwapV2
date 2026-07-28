@@ -9,7 +9,9 @@ export const liquidityMyPositions = {
   dependsOn: '005-market-snapshot',
 
   contentMax: '1376px',
-  gapAfterSnapshot: '16px',
+  gapAfterSnapshot: '20px',
+  /** IA: My Positions follows primary workspace (Actions), not Market Snapshot. */
+  gapAfterActions: '20px',
   columnGap: '24px',
   mainW: '936px',
   reservedW: '424px',
@@ -64,11 +66,9 @@ export type LiquidityPositionStatus = 'ACTIVE' | 'UNAVAILABLE' | 'PARTIAL'
 
 /** Frozen Modules 001–003 + 005. Module 004 Add is provider-hoist only (new SHA). */
 export const LIQUIDITY_MODULE_001_005_FREEZE = {
-  LiquidityHeroModule:
-    '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
-  LiquidityActionsModule:
-    '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
-  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
+  LiquidityHeroModule: 'caa864ad63614015622d146437c727609e48e1348d982fa7aaaf9eaa7b42f6db',
+  LiquidityActionsModule: '2ff31b501c9bd522145802e6f775c8854c767ae75bed513aef6c9b16f5b357cf',
+  LiquidityPoolDiscoveryModule: '6c4fe13353826b7a2dffb3f75995bd8b627a7713593e867c7d60a914c881e051',
   LiquidityMarketSnapshotModule:
     '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
 } as const

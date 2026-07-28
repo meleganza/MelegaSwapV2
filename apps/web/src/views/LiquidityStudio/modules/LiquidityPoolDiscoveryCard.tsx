@@ -1,6 +1,6 @@
 /**
- * LIQUIDITY_MODULE_003 — pool discovery card (read-only).
- * Logos via address resolver. CTA navigates to /add only.
+ * LIQUIDITY_MODULE_003 — dense pool discovery card (IA redesign).
+ * Logos, pair, status, TVL/Volume/Fees, compact Add — no oversized CTA.
  */
 import React from 'react'
 import NextLink from 'next/link'
@@ -21,14 +21,14 @@ const Card = styled.article`
   padding: ${liquidityPoolDiscovery.cardPad};
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
   min-width: 0;
 `
 
 const PairRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 `
 
@@ -38,7 +38,7 @@ const Logos = styled.div`
   flex: 0 0 auto;
 
   > *:last-child {
-    margin-left: -8px;
+    margin-left: -6px;
   }
 `
 
@@ -46,13 +46,14 @@ const PairMeta = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  flex: 1 1 auto;
 `
 
 const PairName = styled.h3`
   margin: 0;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 750;
   color: ${liquidityPoolDiscovery.text};
   white-space: nowrap;
@@ -64,8 +65,8 @@ const Status = styled.span<{ $active: boolean }>`
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 10px;
+  line-height: 12px;
   font-weight: 650;
   color: ${(p) => (p.$active ? liquidityPoolDiscovery.gold : liquidityPoolDiscovery.dim)};
 `
@@ -74,7 +75,7 @@ const Metrics = styled.dl`
   margin: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 4px;
 `
 
 const Metric = styled.div`
@@ -83,15 +84,17 @@ const Metric = styled.div`
 
 const MetricLabel = styled.dt`
   margin: 0;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 9px;
+  line-height: 12px;
   color: ${liquidityPoolDiscovery.dim};
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 `
 
 const MetricValue = styled.dd`
-  margin: 4px 0 0;
-  font-size: 13px;
-  line-height: 18px;
+  margin: 1px 0 0;
+  font-size: 11px;
+  line-height: 14px;
   font-weight: 650;
   color: ${liquidityPoolDiscovery.text};
   white-space: nowrap;
@@ -108,7 +111,7 @@ const Cta = styled(NextLink)`
   border-radius: ${liquidityPoolDiscovery.ctaRadius};
   background: ${liquidityPoolDiscovery.gold};
   color: #111;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 700;
   text-decoration: none;
 
@@ -123,7 +126,7 @@ const Cta = styled(NextLink)`
 `
 
 export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel }> = ({ card }) => (
-  <Card data-testid="liquidity-pool-discovery-card" data-pair={card.pairAddress}>
+  <Card data-testid="liquidity-pool-discovery-card" data-pair={card.pairAddress} data-discovery-density="compact">
     <PairRow>
       <Logos aria-hidden="true">
         <MelegaTokenAvatar
@@ -131,7 +134,7 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
           name={card.symbol0}
           address={card.token0}
           chainId={liquidityPoolDiscovery.chainId}
-          size={32}
+          size={22}
           radius="circle"
         />
         <MelegaTokenAvatar
@@ -139,7 +142,7 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
           name={card.symbol1}
           address={card.token1}
           chainId={liquidityPoolDiscovery.chainId}
-          size={32}
+          size={22}
           radius="circle"
         />
       </Logos>

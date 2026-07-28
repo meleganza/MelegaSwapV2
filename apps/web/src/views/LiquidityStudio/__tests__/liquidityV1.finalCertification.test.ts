@@ -52,18 +52,16 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     }
   })
 
-  it('mounts Modules 001–008 in certified order on /liquidity', () => {
+  it('mounts Modules in provider-first IA order on /liquidity', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    // Polish injects first (CSS layer); product order is Hero → … → Analytics → legacy
+    // Polish injects first (CSS layer); product order is Hero → Actions → Positions → Insights → Explore
     expect(page.indexOf('LiquidityVisualPolishModule')).toBeGreaterThan(-1)
     const order = [
       'LiquidityHeroModule',
       'LiquidityActionsModule',
-      'LiquidityPoolDiscoveryModule',
-      'LiquidityAddModule',
-      'LiquidityMarketSnapshotModule',
       'LiquidityMyPositionsModule',
-      'LiquidityAnalyticsModule',
+      'LiquidityInsightsModule',
+      'LiquidityPoolDiscoveryModule',
     ]
     let prev = -1
     for (const name of order) {
@@ -78,6 +76,7 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     }
     expect(page).toContain('data-liquidity-studio-screen')
     expect(page).toContain('data-liquidity-architecture="000"')
+    expect(page).toContain('data-liquidity-ia="provider-first-v1"')
     expect(page).toContain('LiquidityRuntimeProvider')
     expect((page.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
     expect(page).toContain('data-liquidity-legacy-body="archived"')
@@ -105,7 +104,7 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     const actions = readFileSync(path.join(STUDIO, 'modules/liquidityActionsTokens.ts'), 'utf8')
     const positions = readFileSync(path.join(STUDIO, 'modules/LiquidityMyPositionsModule.tsx'), 'utf8')
 
-    expect(hero).toContain("addLiquidityHref: '/add'")
+    expect(hero).toContain("addLiquidityHref: '#add-liquidity'")
     expect(actions).toContain("manualHref: '/add'")
     expect(actions).toContain("aiBuilderHref: '/liquidity-studio'")
     expect(positions).toContain('openRemoveModal')

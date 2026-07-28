@@ -1,0 +1,177 @@
+{
+  "mission": "LIQUIDITY_V1_INFORMATION_ARCHITECTURE_REDESIGN",
+  "base": "http://127.0.0.1:3055",
+  "capturedAt": "2026-07-28T05:53:57.209Z",
+  "viewports": [
+    {
+      "name": "1440",
+      "width": 1440,
+      "height": 900,
+      "screenshots": {
+        "full": "screenshots/1440-full.png",
+        "aboveFold": "screenshots/1440-above-fold.png"
+      },
+      "ia": {
+        "iaAttr": "provider-first-v1",
+        "tops": {
+          "hero": 140,
+          "actions": 416,
+          "positions": 1372,
+          "insights": 1580,
+          "explore": 2052,
+          "addForm": 473,
+          "builder": 473,
+          "newBadge": 436,
+          "journeys": null
+        },
+        "overflowX": false,
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "addEmbedded": true,
+        "builderExpanded": true,
+        "newBadgeText": "New",
+        "journeysPresent": false,
+        "exploreCardCount": 18,
+        "cardsPerRowApprox": 6,
+        "cardWidth": 216,
+        "denseAttr": "compact"
+      }
+    },
+    {
+      "name": "1920",
+      "width": 1920,
+      "height": 1080,
+      "screenshots": {
+        "full": "screenshots/1920-full.png",
+        "aboveFold": "screenshots/1920-above-fold.png"
+      },
+      "ia": {
+        "iaAttr": "provider-first-v1",
+        "tops": {
+          "hero": 140,
+          "actions": 416,
+          "positions": 1372,
+          "insights": 1580,
+          "explore": 2052,
+          "addForm": 473,
+          "builder": 473,
+          "newBadge": 436,
+          "journeys": null
+        },
+        "overflowX": false,
+        "scrollWidth": 1920,
+        "innerWidth": 1920,
+        "addEmbedded": true,
+        "builderExpanded": true,
+        "newBadgeText": "New",
+        "journeysPresent": false,
+        "exploreCardCount": 18,
+        "cardsPerRowApprox": 6,
+        "cardWidth": 216,
+        "denseAttr": "compact"
+      }
+    },
+    {
+      "name": "1024",
+      "width": 1024,
+      "height": 768,
+      "screenshots": {
+        "full": "screenshots/1024-full.png",
+        "aboveFold": "screenshots/1024-above-fold.png"
+      },
+      "ia": {
+        "iaAttr": "provider-first-v1",
+        "tops": {
+          "hero": 140,
+          "actions": 868,
+          "positions": 1799,
+          "insights": 2007,
+          "explore": 2899,
+          "addForm": 925,
+          "builder": 925,
+          "newBadge": 888,
+          "journeys": null
+        },
+        "overflowX": false,
+        "scrollWidth": 1024,
+        "innerWidth": 1024,
+        "addEmbedded": true,
+        "builderExpanded": true,
+        "newBadgeText": "New",
+        "journeysPresent": false,
+        "exploreCardCount": 18,
+        "cardsPerRowApprox": 4,
+        "cardWidth": 216,
+        "denseAttr": "compact"
+      }
+    },
+    {
+      "name": "390",
+      "width": 390,
+      "height": 844,
+      "screenshots": {
+        "full": "screenshots/390-full.png",
+        "aboveFold": "screenshots/390-above-fold.png"
+      },
+      "ia": {
+        "iaAttr": "provider-first-v1",
+        "tops": {
+          "hero": 124,
+          "actions": 814,
+          "positions": 2559,
+          "insights": 2787,
+          "explore": 4537,
+          "addForm": 871,
+          "builder": 1927,
+          "newBadge": 1890,
+          "journeys": null
+        },
+        "overflowX": false,
+        "scrollWidth": 390,
+        "innerWidth": 390,
+        "addEmbedded": true,
+        "builderExpanded": true,
+        "newBadgeText": "New",
+        "journeysPresent": false,
+        "exploreCardCount": 18,
+        "cardsPerRowApprox": 1,
+        "cardWidth": 216,
+        "denseAttr": "compact"
+      }
+    }
+  ],
+  "hierarchy": {
+    "before": [
+      "Hero",
+      "Actions (nav cards / journey)",
+      "Explore Pools (discovery)",
+      "Add Liquidity (often below discovery)",
+      "My Positions",
+      "Market Snapshot",
+      "Liquidity Analytics"
+    ],
+    "after": [
+      "001 Hero (single Add Liquidity CTA)",
+      "002 Actions 50/50 — Add form + AI Builder expanded",
+      "003 My Positions",
+      "004 Liquidity Insights (Snapshot + Analytics merged)",
+      "005 Explore Pools (dense, bottom)"
+    ],
+    "measuredTops": {
+      "hero": 140,
+      "actions": 416,
+      "positions": 1372,
+      "insights": 1580,
+      "explore": 2052,
+      "addForm": 473,
+      "builder": 473,
+      "newBadge": 436,
+      "journeys": null
+    }
+  },
+  "overflow": [],
+  "verdictHints": [],
+  "orderOk": true,
+  "overflowOk": true,
+  "certifiedCandidate": true
+}

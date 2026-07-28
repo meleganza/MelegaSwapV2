@@ -102,26 +102,32 @@ describe('LIQUIDITY_MODULE_006 My Positions', () => {
   it('shares one LiquidityRuntimeProvider with Module 004 (no nested second host)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityRuntimeProvider')
-    expect(page).toContain('LiquidityAddModule')
+    // Add form is composed inside Actions (IA provider-first workspace).
+    expect(page).toContain('LiquidityActionsModule')
     expect(page).toContain('LiquidityMyPositionsModule')
     // Single JSX host on the page (import + comment may also mention the symbol).
     expect((page.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
     expect((page.match(/<\/LiquidityRuntimeProvider>/g) || []).length).toBe(1)
 
+    const actions = load('modules/LiquidityActionsModule.tsx')
+    expect(actions).toContain('LiquidityAddModule')
+    expect(actions).not.toContain('LiquidityRuntimeProvider')
     const add = load('modules/LiquidityAddModule.tsx')
     expect(add).not.toContain('LiquidityRuntimeProvider')
     const positions = load('modules/LiquidityMyPositionsModule.tsx')
     expect(positions).not.toContain('LiquidityRuntimeProvider')
   })
 
-  it('mounts Module 006 after Market Snapshot and above legacy Pool', () => {
+  it('mounts Module 006 after Actions workspace and before Insights', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-006="mounted"')
-    const snap = page.indexOf('<LiquidityMarketSnapshotModule')
+    const actions = page.indexOf('<LiquidityActionsModule')
     const mine = page.indexOf('<LiquidityMyPositionsModule')
-    expect(snap).toBeGreaterThan(-1)
-    expect(mine).toBeGreaterThan(snap)
+    const insights = page.indexOf('<LiquidityInsightsModule')
+    expect(actions).toBeGreaterThan(-1)
+    expect(mine).toBeGreaterThan(actions)
+    expect(insights).toBeGreaterThan(mine)
   })
 
   it('records ownership, plan certification, and evidence', () => {
