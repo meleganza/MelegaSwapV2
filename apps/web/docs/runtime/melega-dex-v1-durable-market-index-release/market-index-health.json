@@ -1,46 +1,30 @@
 {
   "schemaVersion": "melega.market-index-health.v1",
-  "measuredFrom": "local-certification-cycles",
   "chainId": 56,
   "factoryAddress": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
-  "lastIndexedBlock": 112692963,
-  "swapEventCount": 39,
+  "pairCountDiscovered": 516,
+  "pairCountIndexed": 1,
+  "lastIndexedBlock": 112277313,
+  "currentChainHead": 112697703,
+  "blockLag": 420390,
+  "backfillStatus": "in_progress",
+  "lastSuccessfulRunAt": "2026-07-28T21:25:27.167Z",
+  "lastError": null,
+  "swapEventCount": 52,
   "mintEventCount": 0,
   "burnEventCount": 0,
-  "status": "PARTIAL",
+  "candleCount": 21,
+  "trailing24hSwapCount": 5,
+  "trailing24hActivePairs": 1,
+  "status": "BACKFILLING",
   "readiness": {
     "indexServiceReachable": true,
     "recentIndexingProgressing": true,
     "trailing24hWindowReady": true,
-    "productMetricsReady": true
+    "productMetricsReady": false
   },
-  "topicsProof": {
-    "verifiedBlock": 86326727,
-    "andFlatCount": 0,
-    "orNestedCount": 1,
-    "swapsInLast100kBlocks": 22,
-    "head": 112692401,
-    "conclusion": "flat [SWAP,MINT,BURN] is AND across topic slots and returns 0; nested [[SWAP,MINT,BURN]] is OR on topic0 and finds events"
-  },
-  "idempotency": {
-    "capturedAt": "2026-07-28T20:50:52.656Z",
-    "cycle1EventTotal": 39,
-    "cycle2EventTotal": 39,
-    "cycle3EventTotal": 39,
-    "cycle1Unique": 39,
-    "cycle2Unique": 39,
-    "cycle3Unique": 39,
-    "duplicatesAnyCycle": false,
-    "swapCounts": [
-      39,
-      39,
-      39
-    ],
-    "nonDecreasingSwaps": true,
-    "lastIndexedBlocks": [
-      112692692,
-      112692937,
-      112692963
-    ]
-  }
+  "storageBackend": "vercel-blob-v2-featured-pair",
+  "storageConfigured": true,
+  "phase": "bootstrap",
+  "resetReason": "R792_PAIR_SYNC_TOPICS_OR_FILTER_CORRECTION"
 }
