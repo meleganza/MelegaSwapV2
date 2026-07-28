@@ -1,0 +1,48 @@
+{
+  "missionId": "LIQUIDITY_V1_FINAL_INTEGRATION_AND_CERTIFICATION",
+  "baseTip": "0746ab01",
+  "architectureTip": "e9708c78",
+  "mission007": "7de01db4",
+  "mission008": "0746ab01",
+  "mockupSha256": "c14eea98d6c15e4d9012378597fb6d7414ad9be2595c0ae9acd764053d35147d",
+  "files": {
+    "modules/LiquidityHeroModule.tsx": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+    "modules/LiquidityHeroArtwork.tsx": "ee0bc5a66df5db37b3d0d323defaef5310a836cefb71dac2d529e367988dbea9",
+    "modules/LiquidityHeroTrustPanel.tsx": "d53f80dc0a97bdb24ab67838beda773a4b08ac5f456d2c0763b531e4734d3039",
+    "modules/liquidityHeroTokens.ts": "ae84a154ea08b22539b9471329bda8bb972388db3a4f8f63f06425543cee1080",
+    "modules/LiquidityActionsModule.tsx": "01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec",
+    "modules/liquidityActionsTokens.ts": "f7cc179e4c8bf99d62f3a496458290e913c6d4957677fb82ff89073b9665dbda",
+    "modules/LiquidityPoolDiscoveryModule.tsx": "3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b",
+    "modules/LiquidityPoolDiscoveryCard.tsx": "86f266d127ea48cd20c77491781be422d29fffb63eb6198bb287bfa8425b05e7",
+    "modules/liquidityPoolDiscoveryTokens.ts": "0087c6e0c1f9d2de1cd4b542a34168ccdc5beb47bb09351d20c34467368e218a",
+    "modules/liquidityPoolDiscoveryModel.ts": "bfe51f2623ff7ffa109342b66996cca9f02af9140acc1103cc049c4b90346183",
+    "modules/useLiquidityPoolDiscovery.ts": "da54ff0f39ec0622742ff1be019e8349cd8227b916faf256462a6e2f7dcc8ab4",
+    "modules/LiquidityAddModule.tsx": "7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc",
+    "modules/liquidityAddTokens.ts": "5635b2cbb28478196daa1f49dce80e0f222a5eaab8a960f438f26f944ff3e9cd",
+    "modules/liquidityAddCta.ts": "8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8",
+    "modules/LiquidityMarketSnapshotModule.tsx": "664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa",
+    "modules/liquidityMarketSnapshotTokens.ts": "a37691e10906bb4cd12b2ce30b306e4929062d6a49b60191b97cc5708589eac2",
+    "modules/buildLiquidityMarketSnapshot.ts": "8ea9546d9cb1082d5bb130edc6e7605b558e758fcbc7ae000dfd781fbfa0db2b",
+    "modules/useLiquidityMarketSnapshot.ts": "e519eba1919f426c9b7ded869fc0902d2ac29c21fc46310eda9d00cc9345401f",
+    "modules/LiquidityMyPositionsModule.tsx": "816a5b84a10476ed5847853085eef274d75e586567573b30790550a0d71e1004",
+    "modules/liquidityMyPositionsTokens.ts": "fb357d8d79898de269612851707f9f478b9362ac5e1e3bdd1ea7b57d2896984e",
+    "modules/liquidityMyPositionsModel.ts": "d5d84e53426afb8d870aae39cd9e0633a544b5adebe7047282b4f4a507b19139",
+    "modules/LiquidityAnalyticsModule.tsx": "ba1c06bfa3d7bfd49e75e89e4d9dd1b1fbd6518e52e20e8fef07d69db569e7e1",
+    "modules/liquidityAnalyticsTokens.ts": "2e7c14206b57278e0e4c6a42bb86dd44a898aa8aade80209a44158c242fc4bc3",
+    "modules/buildLiquidityAnalytics.ts": "5e302f2204c34184e4e9a4da4467ad0c15d453299955f83dee297f2b46c0a5be",
+    "modules/useLiquidityAnalytics.ts": "a80da07df2c00ceac70491bd860bec1068668f490a6b45abee27676572c46e27",
+    "modules/LiquidityVisualPolishModule.tsx": "7b4a62b78e2a6d0b2aea5751c51278c9de470be97947f2b291c0c6a73501c871",
+    "modules/LiquidityVisualPolishStyle.tsx": "50bc63d32ccd7598d7489aee90d655244e578ed846ea7404b0b81c7ce9948953",
+    "modules/liquidityVisualPolishTokens.ts": "cebaad16e3d1667cd3cf23a9d432a54885475c60083f5ff578bf71c3adf7ea5b",
+    "liquidityRuntime/useLiquidityMintRuntime.tsx": "e65b9d46ec6d0502fa1a7c7de9f44f334a5905bb5d09977aeb3cc4ae52a8b16b",
+    "liquidityRuntime/LiquidityRuntimeContext.tsx": "1c17119c192b27c82e4c3d1b84a4be3c278740fc1d8ef63a18b5254de6521515"
+  },
+  "shared": {
+    "liquidityArchitecture000Contracts.ts": "b0c32c7d51fef0fcb929ccef8a3c04d9af3f09610e66b3ef39b2e60d002ff148"
+  },
+  "webFiles": {
+    "src/pages/liquidity.tsx": "9ca732f17aa01eacb796d2c579e16d616a0ab3b72260c90a2f9707b6bc6435d1",
+    "src/config/constants/exchange.ts": "db9044c6660f42cc56c8a61f6439304c3f6c29ea40a048e2848f51b9f7867552",
+    "src/config/constants/contracts.ts": "e318f8f547d7bf1c9959efd168281a456e5d09960638a7ab45b1784e21355122"
+  }
+}

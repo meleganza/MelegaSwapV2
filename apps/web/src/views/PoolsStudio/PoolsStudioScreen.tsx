@@ -6,17 +6,21 @@ import { typography } from 'design-system/melega'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
-import PoolsStudioPageHeader from './components/PoolsStudioPageHeader'
-import YourPoolsSection from './components/YourPoolsSection'
-import PoolsKpiRow from './components/PoolsKpiRow'
 import FeaturedPoolHero from './components/FeaturedPoolHero'
 import PoolsSidebar from './components/PoolsSidebar'
-import PoolsViewToolbar from './components/PoolsViewToolbar'
-import PoolsGrid from './components/PoolsGrid'
 import CreatePoolCta from './components/CreatePoolCta'
 import PoolsBelowFold from './components/PoolsBelowFold'
 import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
+import { PoolsHeroModule } from './modules/PoolsHeroModule'
+import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
+import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
+import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
+import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
+import { PoolsRewardAdvisorModule } from './modules/PoolsRewardAdvisorModule'
+import { PoolsAnalyticsModule } from './modules/PoolsAnalyticsModule'
+import { PoolsVisualPolishModule } from './modules/PoolsVisualPolishModule'
+import { poolsHero } from './modules/poolsHeroTokens'
 
 const Root = styled.div`
   color: ${poolsStudioColors.text};
@@ -33,10 +37,15 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${poolsStudioLayout.contentMax};
-  margin: 0 auto;
-  padding: ${poolsStudioLayout.contentPaddingTop} ${poolsStudioLayout.contentPaddingX}
-    ${poolsStudioLayout.contentPaddingBottom};
+  /*
+   * App shell supplies horizontal page padding (32px @ ≥1024).
+   * Module 001 requires 24px top gap after Trending Bar and 1376 content width.
+   * Legacy Studio body remains mounted beneath the Hero until Integration 009.
+   */
+  max-width: ${poolsHero.contentMax};
+  width: 100%;
+  margin: ${poolsHero.topAfterTrending} auto 0;
+  padding: 0 0 ${poolsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -45,12 +54,9 @@ const Content = styled.div`
   gap: ${poolsStudioLayout.sectionGap};
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${poolsStudioLayout.mobileBottomPad};
+    margin-top: 16px;
+    padding: 0 4px ${poolsStudioLayout.mobileBottomPad};
   }
-`
-
-const KpiSection = styled.div`
-  margin-top: 0;
 `
 
 const MainGrid = styled.div`
@@ -104,7 +110,7 @@ const SidebarColumn = styled.div`
   }
 `
 
-const ExplorerSection = styled.section`
+const CreatePoolSection = styled.div`
   grid-column: 1;
   grid-row: 2;
   margin-top: 48px;
@@ -114,29 +120,10 @@ const ExplorerSection = styled.section`
 
   @media (max-width: 1099px) {
     grid-column: 1;
-    margin-top: 32px;
   }
 
   @media (max-width: 767px) {
     order: 3;
-    margin-top: 28px;
-  }
-`
-
-const CreatePoolSection = styled.div`
-  grid-column: 1;
-  grid-row: 3;
-  margin-top: 48px;
-  min-width: 0;
-  width: 100%;
-  max-width: ${poolsStudioLayout.explorerMaxWidth};
-
-  @media (max-width: 1099px) {
-    grid-column: 1;
-  }
-
-  @media (max-width: 767px) {
-    order: 4;
     margin-top: 32px;
     width: 100%;
     max-width: 100%;
@@ -159,6 +146,15 @@ const BelowFold = styled.div`
 export const PoolsStudioScreen: React.FC = () => (
   <Root
     data-pools-studio-screen="true"
+    data-pools-module-001="mounted"
+    data-pools-module-002="mounted"
+    data-pools-module-003="mounted"
+    data-pools-module-004="mounted"
+    data-pools-module-005="mounted"
+    data-pools-module-006="mounted"
+    data-pools-module-007="mounted"
+    data-pools-module-008="mounted"
+    data-pools-architecture="000"
     data-ps-wallet-first="true"
     data-r706b-step2b="true"
     data-r711-pools-screen
@@ -170,17 +166,30 @@ export const PoolsStudioScreen: React.FC = () => (
   >
     <PageMeta />
     <PoolsStudioGlobalStyle />
+    <PoolsVisualPolishModule />
     <PoolsRuntimeProvider>
       <PoolsActionHost />
       <Content data-ps-content>
-        <PoolsStudioPageHeader />
-        <YourPoolsSection />
-        <KpiSection>
-          <DataSurfaceErrorBoundary surface="Pools KPIs" userReason="Pool totals are temporarily unavailable.">
-            <PoolsKpiRow />
-          </DataSurfaceErrorBoundary>
-        </KpiSection>
-        <MainGrid data-ps-main-grid data-ps-explore-pools="true">
+        <PoolsHeroModule />
+        <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
+          <PoolsOverviewKpisModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
+          <PoolsMyPositionsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
+          <PoolsExplorePoolsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Finished Pools" userReason="Finished pool positions are temporarily unavailable.">
+          <PoolsFinishedPoolsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Reward Advisor" userReason="Reward advisor is temporarily unavailable.">
+          <PoolsRewardAdvisorModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
+          <PoolsAnalyticsModule />
+        </DataSurfaceErrorBoundary>
+        <MainGrid data-ps-main-grid>
           <MainColumn>
             <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">
               <FeaturedPoolHero />
@@ -189,12 +198,6 @@ export const PoolsStudioScreen: React.FC = () => (
           <SidebarColumn>
             <PoolsSidebar />
           </SidebarColumn>
-          <ExplorerSection data-ps-pool-explorer data-r708-explorer>
-            <PoolsViewToolbar />
-            <DataSurfaceErrorBoundary surface="Pools Grid" userReason="Pool cards are temporarily unavailable.">
-              <PoolsGrid />
-            </DataSurfaceErrorBoundary>
-          </ExplorerSection>
           <CreatePoolSection data-ps-create-pool-section>
             <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
               <CreatePoolCta />

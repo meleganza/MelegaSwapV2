@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
-import { FolderKanban, Sprout, Droplets, ChartNoAxesCombined, Zap, ArrowRight } from 'lucide-react'
+import { FolderKanban, Sprout, Droplets, ChartNoAxesCombined, ArrowRight } from 'lucide-react'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
 import useHomeTradeData from './useHomeTradeData'
@@ -175,24 +175,6 @@ const PrimaryCta = styled.button`
   }
 `
 
-const SecondaryCta = styled.a`
-  height: 42px;
-  padding: 0 22px;
-  border-radius: 10px;
-  border: 1px solid ${uxRebuildColors.borderStrong};
-  background: ${uxRebuildColors.card};
-  color: ${uxRebuildColors.text};
-  font-size: 14px;
-  font-weight: 650;
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-
-  &:hover {
-    border-color: rgba(221, 185, 47, 0.45);
-  }
-`
-
 const Trust = styled.p`
   margin: 18px 0 0;
   font-size: 13px;
@@ -219,17 +201,6 @@ const SwapWrap = styled.div`
   [data-melega-swap-shell] {
     max-width: none !important;
   }
-`
-
-const SwapTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  margin-bottom: 12px;
-  font-size: 16px;
-  font-weight: 650;
-  color: ${uxRebuildColors.text};
 `
 
 const KpiRail = styled.section`
@@ -599,16 +570,22 @@ export const DexHomeScreen: React.FC = () => {
 
   const trendingRows = useMemo(() => {
     const assets = data.indexedRibbonAssets ?? []
-    return (data.trendingTickerItems ?? []).slice(0, 5).map((item, idx) => {
+    return (data.trendingTickerItems ?? []).slice(0, 10).map((item, idx) => {
       const asset = assets[idx]
       const slug = asset?.slug
+      const move = item.accent?.trim()
       return {
         id: item.id ?? `trend-${idx}`,
         rank: idx + 1,
         name: item.primary ?? asset?.symbol ?? 'Token',
         meta: asset?.displayName ?? asset?.symbol ?? '',
-        metric: item.secondary ?? NA,
-        href: slug ? `/@${slug}` : '/#projects',
+        // TOKEN ↑ % / TOKEN ↓ % — never "Price unavailable"
+        metric: move || undefined,
+        href: asset?.address
+          ? `/swap?outputCurrency=${asset.address}`
+          : slug
+            ? `/@${slug}`
+            : '/trade',
       }
     })
   }, [data.trendingTickerItems, data.indexedRibbonAssets])
@@ -630,7 +607,16 @@ export const DexHomeScreen: React.FC = () => {
   }, [])
 
   const scrollToSwap = () => {
-    swapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const root = swapRef.current
+    root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // Focus the on-page terminal input — no second Swap surface.
+    window.setTimeout(() => {
+      const input =
+        root?.querySelector<HTMLElement>('.home-trade-swap input.token-amount-input') ||
+        root?.querySelector<HTMLElement>('.home-trade-swap input') ||
+        root?.querySelector<HTMLElement>('[data-home-swap-panel] input')
+      input?.focus({ preventScroll: true })
+    }, 280)
   }
 
   return (
@@ -653,12 +639,10 @@ export const DexHomeScreen: React.FC = () => {
                 Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance.
               </Description>
               <CtaRow>
+                {/* Single Swap entry — on-page terminal with Instant|Smart mode tabs. No duplicate Instant/Smart CTAs. */}
                 <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
-                  Instant Swap
+                  Swap
                 </PrimaryCta>
-                <SecondaryCta href="/trade" data-testid="dex-home-smart-swap">
-                  Smart Swap
-                </SecondaryCta>
               </CtaRow>
               <Trust>
                 Powered by AI. Secured by <strong>MARCO</strong>.
@@ -666,23 +650,6 @@ export const DexHomeScreen: React.FC = () => {
             </HeroLeft>
             <HeroRight ref={swapRef} id="swap" data-home-section="swap">
               <SwapWrap data-testid="dex-home-instant-swap">
-                <SwapTitle>
-                  <Zap size={18} color={uxRebuildColors.gold} aria-hidden />
-                  Instant Swap
-                  <a
-                    href="/trade"
-                    data-testid="dex-home-smart-swap-entry"
-                    style={{
-                      marginLeft: 'auto',
-                      fontSize: 12,
-                      fontWeight: 650,
-                      color: uxRebuildColors.gold,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Smart Swap →
-                  </a>
-                </SwapTitle>
                 <HomeSwapPanel />
               </SwapWrap>
             </HeroRight>
@@ -754,7 +721,7 @@ export const DexHomeScreen: React.FC = () => {
                       <RowName>{row.name}</RowName>
                       <RowMeta>{row.meta || '—'}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric}</RowMetric>
+                    <RowMetric>{row.metric ?? ''}</RowMetric>
                   </DiscRow>
                 ))
               )}

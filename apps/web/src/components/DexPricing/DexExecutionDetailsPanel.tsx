@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import styled from 'styled-components'
-import { ChevronDownIcon, ChevronUpIcon, Flex, Text } from '@pancakeswap/uikit'
+import { Text } from '@pancakeswap/uikit'
 import { Currency, TradeType } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import {
@@ -9,6 +9,10 @@ import {
   resolveSmartRouterPolicies,
 } from 'lib/melega-smart-router'
 
+/**
+ * Nested under AdvancedSwapDetailsDropdown — visibility is owned by
+ * executionDetailsOpen (parent accordion). No second toggle / nested max-height.
+ */
 const Panel = styled.div`
   margin: 10px 16px 0;
   border-radius: 12px;
@@ -17,29 +21,14 @@ const Panel = styled.div`
   overflow: hidden;
 `
 
-const ToggleRow = styled.button`
+const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 10px 14px;
-  border: none;
-  background: transparent;
   color: #b8b8b8;
   font-size: 13px;
-  cursor: pointer;
-  text-align: left;
-
-  &:hover {
-    color: #f2f2f2;
-  }
-`
-
-const Body = styled.div<{ $open: boolean }>`
-  max-height: ${({ $open }) => ($open ? '800px' : '0')};
-  opacity: ${({ $open }) => ($open ? 1 : 0)};
-  overflow: hidden;
-  transition: max-height 300ms ease-in-out, opacity 200ms ease-in-out;
 `
 
 const Section = styled.div`
@@ -66,7 +55,7 @@ const JsonBlock = styled.pre`
   color: #d4d4d4;
   white-space: pre-wrap;
   word-break: break-word;
-  max-height: 200px;
+  max-height: 160px;
   overflow: auto;
 `
 
@@ -79,7 +68,6 @@ type Props = {
 }
 
 export function DexExecutionDetailsPanel({ trade }: Props) {
-  const [open, setOpen] = useState(false)
   const { chainId } = useActiveChainId()
 
   const payload = useMemo(() => {
@@ -112,37 +100,32 @@ export function DexExecutionDetailsPanel({ trade }: Props) {
   if (!payload) return null
 
   return (
-    <Panel data-d87-execution-details>
-      <ToggleRow type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+    <Panel data-d87-execution-details data-execution-details-nested="true">
+      <Header>
         <span>Execution Details</span>
-        <Flex alignItems="center">
-          {open ? <ChevronUpIcon width="16px" /> : <ChevronDownIcon width="16px" />}
-        </Flex>
-      </ToggleRow>
-      <Body $open={open}>
-        <Section>
-          <SectionTitle>Execution Manifest</SectionTitle>
-          <JsonBlock>{JSON.stringify(payload.executionManifest, null, 2)}</JsonBlock>
-        </Section>
-        <Section>
-          <SectionTitle>Capability Manifest</SectionTitle>
-          <JsonBlock>{JSON.stringify(payload.capabilityManifest, null, 2)}</JsonBlock>
-        </Section>
-        <Section>
-          <SectionTitle>Current Policies</SectionTitle>
-          <JsonBlock>{JSON.stringify(payload.policies, null, 2)}</JsonBlock>
-        </Section>
-        <Section>
-          <SectionTitle>Registry Source · Wrapper Phase</SectionTitle>
-          <JsonBlock>
-            {JSON.stringify(
-              { registrySource: payload.registrySource, wrapperPhase: payload.wrapperPhase },
-              null,
-              2,
-            )}
-          </JsonBlock>
-        </Section>
-      </Body>
+      </Header>
+      <Section>
+        <SectionTitle>Execution Manifest</SectionTitle>
+        <JsonBlock>{JSON.stringify(payload.executionManifest, null, 2)}</JsonBlock>
+      </Section>
+      <Section>
+        <SectionTitle>Capability Manifest</SectionTitle>
+        <JsonBlock>{JSON.stringify(payload.capabilityManifest, null, 2)}</JsonBlock>
+      </Section>
+      <Section>
+        <SectionTitle>Current Policies</SectionTitle>
+        <JsonBlock>{JSON.stringify(payload.policies, null, 2)}</JsonBlock>
+      </Section>
+      <Section>
+        <SectionTitle>Registry Source · Wrapper Phase</SectionTitle>
+        <JsonBlock>
+          {JSON.stringify(
+            { registrySource: payload.registrySource, wrapperPhase: payload.wrapperPhase },
+            null,
+            2,
+          )}
+        </JsonBlock>
+      </Section>
     </Panel>
   )
 }

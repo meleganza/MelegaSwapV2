@@ -1,0 +1,10 @@
+{
+  "missionId": "LIQUIDITY_MODULE_002_ACTIONS",
+  "suite": "apps/web/src/views/LiquidityStudio/__tests__/liquidity-module-002-actions.test.ts",
+  "alsoRun": [
+    "apps/web/src/views/LiquidityStudio/__tests__/liquidity-module-001-hero.test.ts"
+  ],
+  "status": "passed",
+  "vitest": { "testFiles": 2, "tests": 19, "failed": 0 },
+  "nextBuild": "passed"
+}

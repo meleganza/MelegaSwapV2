@@ -1,0 +1,85 @@
+{
+  "viewports": {
+    "desktop-1440": {
+      "overflowX": false,
+      "moduleFlags": {
+        "001": "mounted",
+        "002": "mounted",
+        "003": "mounted",
+        "004": "mounted",
+        "005": "mounted",
+        "006": "mounted",
+        "007": "mounted",
+        "008": "mounted"
+      },
+      "polishMounted": true,
+      "advisorPresent": true,
+      "noOverlap": true
+    },
+    "desktop-1280": {
+      "overflowX": false,
+      "moduleFlags": {
+        "001": "mounted",
+        "002": "mounted",
+        "003": "mounted",
+        "004": "mounted",
+        "005": "mounted",
+        "006": "mounted",
+        "007": "mounted",
+        "008": "mounted"
+      },
+      "polishMounted": true,
+      "advisorPresent": true,
+      "noOverlap": true
+    },
+    "tablet-1024": {
+      "overflowX": false,
+      "moduleFlags": {
+        "001": "mounted",
+        "002": "mounted",
+        "003": "mounted",
+        "004": "mounted",
+        "005": "mounted",
+        "006": "mounted",
+        "007": "mounted",
+        "008": "mounted"
+      },
+      "polishMounted": true,
+      "advisorPresent": true,
+      "noOverlap": true
+    },
+    "mobile-430": {
+      "overflowX": false,
+      "moduleFlags": {
+        "001": "mounted",
+        "002": "mounted",
+        "003": "mounted",
+        "004": "mounted",
+        "005": "mounted",
+        "006": "mounted",
+        "007": "mounted",
+        "008": "mounted"
+      },
+      "polishMounted": true,
+      "advisorPresent": true,
+      "noOverlap": true
+    },
+    "mobile-390": {
+      "overflowX": false,
+      "moduleFlags": {
+        "001": "mounted",
+        "002": "mounted",
+        "003": "mounted",
+        "004": "mounted",
+        "005": "mounted",
+        "006": "mounted",
+        "007": "mounted",
+        "008": "mounted"
+      },
+      "polishMounted": true,
+      "advisorPresent": true,
+      "noOverlap": true
+    }
+  },
+  "allNoOverflow": true
+}

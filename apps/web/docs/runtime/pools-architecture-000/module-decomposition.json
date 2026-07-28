@@ -1,0 +1,56 @@
+{
+  "plan": [
+    {
+      "id": "000",
+      "name": "Architecture"
+    },
+    {
+      "id": "001",
+      "name": "Hero"
+    },
+    {
+      "id": "002",
+      "name": "Overview KPIs"
+    },
+    {
+      "id": "003",
+      "name": "My Positions"
+    },
+    {
+      "id": "004",
+      "name": "Explore Pools"
+    },
+    {
+      "id": "005",
+      "name": "Finished Pools"
+    },
+    {
+      "id": "006",
+      "name": "Reward Advisor"
+    },
+    {
+      "id": "007",
+      "name": "Analytics"
+    },
+    {
+      "id": "008",
+      "name": "Visual Polish"
+    },
+    {
+      "id": "009",
+      "name": "Integration"
+    },
+    {
+      "id": "010",
+      "name": "Certification"
+    }
+  ],
+  "mockupModuleAnnotations": {
+    "01": "Hero",
+    "02": "Overview KPIs",
+    "03": "My Positions",
+    "04": "Explore Pools (+ Reward Advisor sidebar)",
+    "05": "Finished Pools",
+    "07": "Pool Analytics sidebar"
+  }
+}

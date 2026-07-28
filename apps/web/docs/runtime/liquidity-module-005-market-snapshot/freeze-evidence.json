@@ -1,0 +1,19 @@
+{
+  "missionId": "LIQUIDITY_MODULE_005_MARKET_SNAPSHOT",
+  "base": "LIQUIDITY_MODULE_004_ADD_LIQUIDITY_CERTIFIED",
+  "baseCommit": "2566006c7cb7dc45f0d64c7b606de2c90ca759fe",
+  "module001HeroSha256": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+  "module004AddSha256": "0c63599e74b72592f54547c9a1e45d835c55eedfd770b46d27d7f963c864b5f0",
+  "mintRuntimeSha256": "e65b9d46ec6d0502fa1a7c7de9f44f334a5905bb5d09977aeb3cc4ae52a8b16b",
+  "mintRuntimeUntouched": true,
+  "desktop1440": {
+    "moduleWidth": 1376,
+    "columns": "329px × 4",
+    "activePools": 505,
+    "tvl": "—",
+    "volume24h": "—",
+    "lpProviders": "—",
+    "awaitingIndexer": false,
+    "overflow": false
+  }
+}

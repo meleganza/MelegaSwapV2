@@ -1,0 +1,5 @@
+{
+  "missionId": "LIQUIDITY_V1_FINAL_INTEGRATION_AND_CERTIFICATION",
+  "command": "yarn next build",
+  "status": "passed"
+}

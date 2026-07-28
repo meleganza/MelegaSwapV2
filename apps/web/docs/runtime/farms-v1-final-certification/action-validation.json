@@ -1,0 +1,11 @@
+{
+  "host": "FarmsActionHost",
+  "actions": [
+    "stake",
+    "unstake",
+    "claim"
+  ],
+  "modulesRouteThroughHost": true,
+  "noTxLogicInModules": true,
+  "pass": true
+}

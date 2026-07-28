@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "check": "keyboard-focus-home",
+      "tag": "A",
+      "testid": "melega-header-nav-home",
+      "outline": "solid",
+      "outlineWidth": "2px",
+      "boxShadow": "none",
+      "ok": true
+    }
+  ]
+}

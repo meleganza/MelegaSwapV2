@@ -1,0 +1,24 @@
+{
+  "missionId": "LIQUIDITY_MODULE_008_FINAL_VISUAL_POLISH",
+  "allowed": [
+    "box-shadow",
+    "border-color",
+    "border-radius",
+    "transitions",
+    "hover",
+    "focus",
+    "skeletons",
+    "scrollbar chrome",
+    "reduced-motion"
+  ],
+  "forbidden": [
+    "padding",
+    "margin",
+    "width",
+    "height",
+    "grid-template",
+    "runtime",
+    "contracts",
+    "router"
+  ]
+}

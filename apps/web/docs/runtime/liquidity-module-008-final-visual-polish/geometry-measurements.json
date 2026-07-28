@@ -1,0 +1,77 @@
+{
+  "desktop-1440": {
+    "screen": true,
+    "polish": true,
+    "polishAttr": "style-layer",
+    "modules": {
+      "hero": true,
+      "actions": true,
+      "discovery": true,
+      "add": true,
+      "snapshot": true,
+      "positions": true,
+      "analytics": true
+    },
+    "overflow": false
+  },
+  "desktop-1280": {
+    "screen": true,
+    "polish": true,
+    "polishAttr": "style-layer",
+    "modules": {
+      "hero": true,
+      "actions": true,
+      "discovery": true,
+      "add": true,
+      "snapshot": true,
+      "positions": true,
+      "analytics": true
+    },
+    "overflow": false
+  },
+  "tablet-1024": {
+    "screen": true,
+    "polish": true,
+    "polishAttr": "style-layer",
+    "modules": {
+      "hero": true,
+      "actions": true,
+      "discovery": true,
+      "add": true,
+      "snapshot": true,
+      "positions": true,
+      "analytics": true
+    },
+    "overflow": false
+  },
+  "mobile-430": {
+    "screen": true,
+    "polish": true,
+    "polishAttr": "style-layer",
+    "modules": {
+      "hero": true,
+      "actions": true,
+      "discovery": true,
+      "add": true,
+      "snapshot": true,
+      "positions": true,
+      "analytics": true
+    },
+    "overflow": false
+  },
+  "mobile-390": {
+    "screen": true,
+    "polish": true,
+    "polishAttr": "style-layer",
+    "modules": {
+      "hero": true,
+      "actions": true,
+      "discovery": true,
+      "add": true,
+      "snapshot": true,
+      "positions": true,
+      "analytics": true
+    },
+    "overflow": false
+  }
+}

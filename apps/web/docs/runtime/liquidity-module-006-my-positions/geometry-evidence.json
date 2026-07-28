@@ -1,0 +1,11 @@
+{
+  "missionId": "LIQUIDITY_MODULE_006_MY_POSITIONS",
+  "desktop": {
+    "container": "1376px",
+    "main": "936px",
+    "gap": "24px",
+    "reserved": "424px",
+    "panelSum": 1384
+  },
+  "responsive": { "tablet": "2 columns cards", "mobile": "1 column" }
+}

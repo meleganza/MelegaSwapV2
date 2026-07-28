@@ -1,0 +1,18 @@
+{
+  "missionId": "LIQUIDITY_MODULE_003_POOL_DISCOVERY",
+  "base": "LIQUIDITY_MODULE_002_ACTIONS_CERTIFIED",
+  "baseCommit": "c218bd2ba194f2afeb6aee3034fcb392c339d606",
+  "module001HeroSha256": "71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab",
+  "module002ActionsSha256": "01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec",
+  "legacyPoolSha256": "a8976f16e5ab88d20ee27de6a337240248a69c8a3d98ecdb559aa308d70cef22",
+  "heroFrozen": true,
+  "actionsFrozen": true,
+  "desktop1440": {
+    "moduleWidth": 1376,
+    "columns": "445px × 3",
+    "cardCount": 24,
+    "overflow": false
+  },
+  "tablet1024": { "columns": 2 },
+  "mobile": { "columns": 1 }
+}

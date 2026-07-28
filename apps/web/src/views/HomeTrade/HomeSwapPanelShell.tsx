@@ -1,13 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
-import { colors, typography } from 'design-system/melega/tokens'
+import { colors } from 'design-system/melega/tokens'
 import { media } from 'design-system/melega/theme'
 
 export interface HomeSwapPanelShellProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** @deprecated Large title removed — header is composed by HomeSwapPanel. */
   title?: string
+  /** @deprecated Subtitle removed for final pixel header. */
   subtitle?: string
   pairIndicator?: React.ReactNode
   toolbar?: React.ReactNode
+  headerLeading?: React.ReactNode
+  headerCenter?: React.ReactNode
   children: React.ReactNode
 }
 
@@ -17,18 +21,32 @@ const Shell = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   width: 100%;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
-  box-shadow: none;
+  margin: 0 auto;
 
-  @media (min-width: 768px) {
-    width: 470px;
-    max-width: 470px;
-    height: 408px;
-    min-height: 408px;
-    max-height: 408px;
+  @media (max-width: 1023px) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    border-radius: 20px;
+    min-height: 0;
+    max-height: none;
+    height: auto;
+  }
+
+  @media (min-width: 1024px) {
+    width: 100%;
+    max-width: 560px;
+    min-height: 0;
+    height: auto;
     flex-shrink: 0;
   }
 
@@ -45,135 +63,81 @@ const Inner = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  height: 100%;
-  padding: 16px;
+  padding: 12px 16px 16px;
   box-sizing: border-box;
-  overflow: hidden;
-
-  @media (min-width: 768px) {
-    padding: 24px;
-  }
 `
 
+/** LEFT title · CENTER tabs · RIGHT pair/live/actions — one row on desktop. */
 const Header = styled.div`
-  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 8px;
   flex-shrink: 0;
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px 12px;
-  min-height: 0;
+  margin-bottom: 8px;
+  min-height: 40px;
 
-  @media (max-width: 767px) {
-    justify-content: flex-end;
-    gap: 8px;
-    min-height: 40px;
+  @media (max-width: 430px) {
+    grid-template-columns: 1fr;
   }
 `
 
-const TitleBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  flex: 1 1 160px;
+const Left = styled.div`
+  display: inline-flex;
+  align-items: center;
+  grid-column: 1;
+`
 
-  @media (max-width: 767px) {
-    display: none;
+const Center = styled.div`
+  justify-self: center;
+  width: min(180px, 100%);
+  min-width: 132px;
+  grid-column: 2;
+
+  @media (max-width: 430px) {
+    justify-self: stretch;
+    width: 100%;
+    grid-column: 1;
   }
 `
 
-const Title = styled.h1`
-  margin: 0;
-  font-family: ${typography.fontFamily.body};
-  font-size: 28px;
-  font-weight: 800;
-  color: #ffffff;
-  line-height: 1.2;
+const Right = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+  grid-column: 3;
+  flex-wrap: nowrap;
 
-  @media (min-width: 768px) {
-    font-size: 38px;
-    line-height: 40px;
+  @media (max-width: 430px) {
+    justify-self: stretch;
+    justify-content: space-between;
+    grid-column: 1;
+    flex-wrap: wrap;
   }
-`
-
-const Subtitle = styled.p`
-  margin: 0;
-  max-width: 720px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #a8a8a8;
-  line-height: 1.45;
 `
 
 const PairSlot = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 6px;
-  max-width: 100%;
   font-size: 12px;
   font-weight: 600;
-  line-height: 14px;
   color: #8a8a8a;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: right;
-  order: 3;
-  flex: 1 1 100%;
-
-  @media (max-width: 767px) {
-    order: 1;
-    flex: 1 1 auto;
-    justify-content: flex-start;
-    max-width: calc(100% - 96px);
-    text-align: left;
-  }
-
-  @media (min-width: 768px) {
-    position: absolute;
-    top: 24px;
-    right: 112px;
-    order: 0;
-    flex: none;
-    max-width: 150px;
-    pointer-events: none;
-  }
 `
 
 const Toolbar = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  margin-left: auto;
-
-  @media (max-width: 767px) {
-    order: 2;
-    margin-left: 0;
-  }
-
-  @media (min-width: 768px) {
-    position: absolute;
-    top: 10px;
-    right: 16px;
-    margin-left: 0;
-  }
-`
-
-const Divider = styled.div`
-  height: 1px;
-  background: rgba(255, 255, 255, 0.06);
-  margin: 10px 0 0;
+  gap: 6px;
   flex-shrink: 0;
 `
 
 export const HomeSwapIconButton = styled.button`
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #121212;
@@ -183,17 +147,15 @@ export const HomeSwapIconButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
 
   &:hover {
     color: ${colors.textPrimary};
     border-color: rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.04);
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
   }
 `
 
@@ -202,43 +164,34 @@ const Body = styled.div`
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  margin-top: 8px;
 
   .home-trade-swap {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: hidden;
     gap: 0;
-    justify-content: flex-end;
-  }
-
-  ${media.mobile} {
-    overflow: visible;
   }
 `
 
 export const HomeSwapPanelShell: React.FC<HomeSwapPanelShellProps> = ({
-  title = 'Swap',
-  subtitle = 'Trade instantly on Melega DEX',
   pairIndicator,
   toolbar,
+  headerLeading,
+  headerCenter,
   children,
   ...rest
 }) => (
-  <Shell className="home-swap-cockpit" data-home-swap-panel data-home-swap-shell {...rest}>
+  <Shell className="home-swap-cockpit" data-home-swap-panel data-home-swap-shell data-final-pixel-align="true" {...rest}>
     <Inner>
-      <Header>
-        <TitleBlock>
-          <Title>{title}</Title>
-          <Subtitle>{subtitle}</Subtitle>
-        </TitleBlock>
-        {pairIndicator && <PairSlot>{pairIndicator}</PairSlot>}
-        {toolbar && <Toolbar>{toolbar}</Toolbar>}
+      <Header data-home-swap-header data-single-header-row="true" data-header-zones="3">
+        <Left data-header-left>{headerLeading}</Left>
+        {headerCenter ? <Center data-header-center data-trade-mode-selector-slot>{headerCenter}</Center> : null}
+        <Right data-header-right>
+          {pairIndicator ? <PairSlot>{pairIndicator}</PairSlot> : null}
+          {toolbar ? <Toolbar>{toolbar}</Toolbar> : null}
+        </Right>
       </Header>
-      <Divider />
       <Body>{children}</Body>
     </Inner>
   </Shell>

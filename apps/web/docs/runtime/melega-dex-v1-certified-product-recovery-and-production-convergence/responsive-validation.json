@@ -1,0 +1,83 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "viewport": "390x844",
+      "route": "/",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "desktop1280",
+      "route": "/",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "desktop1280",
+      "route": "/liquidity",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "desktop1280",
+      "route": "/farms",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "desktop1280",
+      "route": "/pools",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "tablet1024",
+      "route": "/",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "tablet1024",
+      "route": "/liquidity",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "tablet1024",
+      "route": "/farms",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "tablet1024",
+      "route": "/pools",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "mobile430",
+      "route": "/",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "mobile430",
+      "route": "/liquidity",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "mobile430",
+      "route": "/farms",
+      "overflowX": false,
+      "pass": true
+    },
+    {
+      "viewport": "mobile430",
+      "route": "/pools",
+      "overflowX": false,
+      "pass": true
+    }
+  ]
+}

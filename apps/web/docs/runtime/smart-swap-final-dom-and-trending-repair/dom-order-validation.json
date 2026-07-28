@@ -1,0 +1,45 @@
+{
+  "mission": "SMART_SWAP_FINAL_DOM_HIERARCHY_AND_TRENDING_PIPELINE_REPAIR",
+  "timestamp": "2026-07-27T02:33:36Z",
+  "instantOrder": [
+    "Header",
+    "From",
+    "To",
+    "Swap button",
+    "Details accordion"
+  ],
+  "smartOrder": [
+    "Header",
+    "From",
+    "To",
+    "Swap button",
+    "Route",
+    "Metrics",
+    "Fee",
+    "AI Insight",
+    "Details accordion"
+  ],
+  "checks": [
+    {
+      "name": "Swap button before Details",
+      "pass": true
+    },
+    {
+      "name": "transparency stack CSS order 5",
+      "pass": true
+    },
+    {
+      "name": "Instant omits Route/Metrics/Fee/AI",
+      "pass": true
+    },
+    {
+      "name": "Smart includes Route\u2192Metrics\u2192Fee\u2192AI\u2192Details",
+      "pass": true
+    },
+    {
+      "name": "Form Advanced details hidden",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

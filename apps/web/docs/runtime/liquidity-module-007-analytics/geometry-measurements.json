@@ -1,0 +1,90 @@
+{
+  "desktop-1440": {
+    "module": {
+      "width": 1376,
+      "height": 260
+    },
+    "grid": {
+      "width": 1376,
+      "height": 200
+    },
+    "cols": "329px 329px 329px 329px",
+    "cardCount": 4,
+    "cardWidths": [
+      329,
+      329,
+      329,
+      329
+    ],
+    "positions": true,
+    "awaitingIndexer": false,
+    "overflow": false,
+    "legacy": true
+  },
+  "tablet-1024": {
+    "module": {
+      "width": 976,
+      "height": 480
+    },
+    "grid": {
+      "width": 944,
+      "height": 420
+    },
+    "cols": "462px 462px",
+    "cardCount": 4,
+    "cardWidths": [
+      329,
+      329,
+      329,
+      329
+    ],
+    "positions": true,
+    "awaitingIndexer": false,
+    "overflow": false,
+    "legacy": true
+  },
+  "mobile-430": {
+    "module": {
+      "width": 406,
+      "height": 920
+    },
+    "grid": {
+      "width": 374,
+      "height": 860
+    },
+    "cols": "374px",
+    "cardCount": 4,
+    "cardWidths": [
+      329,
+      329,
+      329,
+      329
+    ],
+    "positions": true,
+    "awaitingIndexer": false,
+    "overflow": false,
+    "legacy": true
+  },
+  "mobile-390": {
+    "module": {
+      "width": 366,
+      "height": 938
+    },
+    "grid": {
+      "width": 334,
+      "height": 860
+    },
+    "cols": "334px",
+    "cardCount": 4,
+    "cardWidths": [
+      329,
+      329,
+      329,
+      329
+    ],
+    "positions": true,
+    "awaitingIndexer": false,
+    "overflow": false,
+    "legacy": true
+  }
+}

@@ -14,24 +14,14 @@ const swapArrowPulse = keyframes`
 
 const HomeTradeGlobalStyle = createGlobalStyle`
   .home-swap-cockpit .home-trade-swap {
-    justify-content: flex-end !important;
-  }
-
-  /* R004-C: lift slippage row — card/button size unchanged */
-  .home-swap-cockpit .home-trade-swap.is-disconnected .home-trade-swap-slippage-strip {
-    transform: translateY(-12px) !important;
-  }
-
-  /* R005-B: lift Connect Wallet button only — additional 12px (24px total) */
-  .home-swap-cockpit .home-trade-swap #swap-page > div:last-child,
-  .home-swap-cockpit .home-trade-swap [class*='Box'][class*='mt'] {
-    transform: translateY(-24px) !important;
+    justify-content: flex-start !important;
   }
 
   .home-swap-cockpit .home-trade-swap #swap-page > div:last-child,
   .home-swap-cockpit .home-trade-swap [class*='Box'][class*='mt'] {
-    margin-top: auto !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
+    transform: none !important;
   }
 
   .home-swap-cockpit .home-trade-swap .pancake-button--primary,
@@ -40,10 +30,11 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-swap-cockpit .home-trade-swap #swap-page > div:last-child button,
   .home-swap-cockpit .home-trade-swap.is-disconnected [class*='ConnectWallet'],
   .home-swap-cockpit .home-trade-swap.is-disconnected a[class*='ConnectWallet'] {
-    margin-top: 12px !important;
+    margin-top: 0 !important;
     margin-bottom: 0 !important;
     border-radius: 12px !important;
-    transition: transform 140ms ease, filter 140ms ease !important;
+    transform: none !important;
+    transition: filter 140ms ease, opacity 140ms ease !important;
   }
 
   .home-swap-cockpit .home-trade-swap .pancake-button--primary:hover,
@@ -51,7 +42,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-swap-cockpit .home-trade-swap [class*='CommitButton'] button:hover,
   .home-swap-cockpit .home-trade-swap.is-disconnected [class*='ConnectWallet']:hover,
   .home-swap-cockpit .home-trade-swap.is-disconnected a[class*='ConnectWallet']:hover {
-    transform: translateY(-25px) scale(1.01) !important;
+    transform: none !important;
     filter: brightness(1.06) !important;
   }
 
@@ -70,7 +61,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     flex-direction: column !important;
     flex: 1 !important;
     min-height: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     justify-content: flex-start !important;
   }
 
@@ -175,7 +166,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     height: 14px;
   }
 
-  /* Kill duplicate slippage from SmartSwapForm footer — single custom row only */
+  /*
+   * Hide form Advanced details only (ids: execution-details-*).
+   * Never hide intel-stack Details (#smart-execution-details-toggle) which lives
+   * as a sibling of #swap-page under .home-trade-swap.
+   */
+  .home-trade-swap #swap-page [data-execution-details-accordion],
+  .home-trade-swap #execution-details-toggle,
+  .home-trade-swap #execution-details-panel,
   .home-trade-swap [class*='AdvancedDetailsFooter'],
   .home-trade-swap [class*='AdvancedSwapDetails'] {
     display: none !important;
@@ -205,7 +203,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap #swap-page > div:last-child,
   .home-trade-swap [class*='Box'][class*='mt'] {
     order: 3;
-    margin-top: 8px !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     position: relative !important;
@@ -213,6 +211,20 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-width: 100% !important;
     z-index: 1 !important;
     box-sizing: border-box !important;
+  }
+
+  /* Intel stack MUST follow Swap button (order 3). Default order:0 previously floated Route/Details above From/To. */
+  .home-trade-swap [data-smart-transparency-stack] {
+    order: 5 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 16px !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .home-trade-swap [data-smart-route-card] {
+    margin-top: 0 !important;
   }
 
   .home-trade-swap [class*='ConnectWallet'],
@@ -285,7 +297,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     max-height: 46px !important;
     width: 100% !important;
     border-radius: 12px !important;
-    margin-top: 8px !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
     display: flex !important;
     align-items: center !important;
@@ -304,13 +316,14 @@ const HomeTradeGlobalStyle = createGlobalStyle`
   .home-trade-swap.is-disconnected [class*='ConnectWallet']:hover,
   .home-trade-swap.is-disconnected button[class*='pancake-button']:only-child:hover {
     filter: brightness(1.06) !important;
-    transform: translateY(-25px) scale(1.01) !important;
+    transform: none !important;
     opacity: 0.9 !important;
   }
 
   .home-trade-swap.is-disconnected [class*='ConnectWallet']:active,
   .home-trade-swap.is-disconnected button[class*='pancake-button']:only-child:active {
-    transform: scale(0.99) !important;
+    transform: none !important;
+    filter: brightness(0.98) !important;
   }
 
   .home-trade-swap [class*='CurrencyInputHeader'] button:not([class*='OpenCurrencySelectButton']),
@@ -578,7 +591,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 46px !important;
       min-height: 46px !important;
       max-height: 46px !important;
-      margin-top: 8px !important;
+      margin-top: 16px !important;
       margin-bottom: 0 !important;
       padding: 0 !important;
     }
@@ -599,7 +612,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
       height: 46px !important;
       min-height: 46px !important;
       max-height: 46px !important;
-      margin-top: 8px !important;
+      margin-top: 16px !important;
       margin-bottom: 0 !important;
       flex-shrink: 0 !important;
       display: flex !important;
@@ -731,7 +744,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     font-size: 16px !important;
     border: none !important;
     white-space: nowrap !important;
-    margin-top: 8px !important;
+    margin-top: 16px !important;
     margin-bottom: 0 !important;
     box-shadow: none !important;
     flex-shrink: 0 !important;

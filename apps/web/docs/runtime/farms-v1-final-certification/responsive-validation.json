@@ -1,0 +1,1569 @@
+{
+  "viewports": [
+    "desktop-1440",
+    "desktop-1280",
+    "tablet-1024",
+    "mobile-430",
+    "mobile-390"
+  ],
+  "desktopPass": {
+    "modulesMounted": true,
+    "analyticsWidth": true,
+    "analyticsHeight": true,
+    "myFarmsHeight": true,
+    "noOverflow": true,
+    "noOverlap": true,
+    "polish": true,
+    "exploreAnchor": true,
+    "finishedAnchor": true
+  },
+  "responsivePass": true,
+  "geometry": {
+    "auditedAt": "2026-07-26T00:04:32.252Z",
+    "base": "http://127.0.0.1:3529",
+    "viewports": {
+      "desktop-1440": {
+        "viewport": {
+          "width": 1440,
+          "height": 1800
+        },
+        "modules": {
+          "hero": {
+            "width": 1376,
+            "height": 260,
+            "left": 32,
+            "top": 140,
+            "right": 1408,
+            "bottom": 400
+          },
+          "kpis": {
+            "width": 1376,
+            "height": 112,
+            "left": 32,
+            "top": 416,
+            "right": 1408,
+            "bottom": 528
+          },
+          "myFarms": {
+            "width": 1376,
+            "height": 360,
+            "left": 32,
+            "top": 544,
+            "right": 1408,
+            "bottom": 904
+          },
+          "explore": {
+            "width": 1376,
+            "height": 1063,
+            "left": 32,
+            "top": 920,
+            "right": 1408,
+            "bottom": 1983
+          },
+          "finished": {
+            "width": 1376,
+            "height": 220,
+            "left": 32,
+            "top": 1999,
+            "right": 1408,
+            "bottom": 2219
+          },
+          "advisorSlot": {
+            "width": 424,
+            "height": 360,
+            "left": 984,
+            "top": 544,
+            "right": 1408,
+            "bottom": 904
+          },
+          "advisorInline": {
+            "width": 0,
+            "height": 0,
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0
+          },
+          "analytics": {
+            "width": 1376,
+            "height": 272,
+            "left": 32,
+            "top": 2235,
+            "right": 1408,
+            "bottom": 2507
+          },
+          "analyticsGrid": {
+            "width": 1376,
+            "height": 240,
+            "left": 32,
+            "top": 2267,
+            "right": 1408,
+            "bottom": 2507
+          },
+          "polish": {
+            "width": 1376,
+            "height": 3175,
+            "left": 32,
+            "top": 116,
+            "right": 1408,
+            "bottom": 3291
+          }
+        },
+        "flags": {
+          "001": "mounted",
+          "002": "mounted",
+          "003": "mounted",
+          "004": "mounted",
+          "005": "mounted",
+          "006": "mounted",
+          "007": "mounted",
+          "008": "mounted"
+        },
+        "noOverlap": true,
+        "overflowX": false,
+        "landmarks": {
+          "sections": 6,
+          "headings": 26,
+          "figures": 4
+        },
+        "reducedMotionMedia": false,
+        "focusableSample": [
+          {
+            "tag": "a",
+            "testid": "melega-header-brand"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-home"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-liquidity"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-farms"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-pools"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-list"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-passport"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": "melega-header-connect"
+          },
+          {
+            "tag": "button",
+            "testid": "melega-header-overflow"
+          },
+          {
+            "tag": "a",
+            "testid": "farms-hero-explore-farms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-tvl"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarmers"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-rewards24h"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-sustainableApr"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-harvestable"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          }
+        ],
+        "polishMounted": true,
+        "advisorPresent": true,
+        "exploreAnchor": 1,
+        "finishedAnchor": 1,
+        "navTiming": {
+          "domContentLoaded": 345,
+          "loadEvent": 346,
+          "transferSize": 6427
+        }
+      },
+      "desktop-1280": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "modules": {
+          "hero": {
+            "width": 1216,
+            "height": 260,
+            "left": 32,
+            "top": 140,
+            "right": 1248,
+            "bottom": 400
+          },
+          "kpis": {
+            "width": 1216,
+            "height": 112,
+            "left": 32,
+            "top": 416,
+            "right": 1248,
+            "bottom": 528
+          },
+          "myFarms": {
+            "width": 1216,
+            "height": 360,
+            "left": 32,
+            "top": 544,
+            "right": 1248,
+            "bottom": 904
+          },
+          "explore": {
+            "width": 1216,
+            "height": 1063,
+            "left": 32,
+            "top": 920,
+            "right": 1248,
+            "bottom": 1983
+          },
+          "finished": {
+            "width": 1216,
+            "height": 220,
+            "left": 32,
+            "top": 1999,
+            "right": 1248,
+            "bottom": 2219
+          },
+          "advisorSlot": {
+            "width": 374.13,
+            "height": 360,
+            "left": 873.88,
+            "top": 544,
+            "right": 1248,
+            "bottom": 904
+          },
+          "advisorInline": {
+            "width": 0,
+            "height": 0,
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0
+          },
+          "analytics": {
+            "width": 1216,
+            "height": 272,
+            "left": 32,
+            "top": 2235,
+            "right": 1248,
+            "bottom": 2507
+          },
+          "analyticsGrid": {
+            "width": 1216,
+            "height": 240,
+            "left": 32,
+            "top": 2267,
+            "right": 1248,
+            "bottom": 2507
+          },
+          "polish": {
+            "width": 1216,
+            "height": 3175,
+            "left": 32,
+            "top": 116,
+            "right": 1248,
+            "bottom": 3291
+          }
+        },
+        "flags": {
+          "001": "mounted",
+          "002": "mounted",
+          "003": "mounted",
+          "004": "mounted",
+          "005": "mounted",
+          "006": "mounted",
+          "007": "mounted",
+          "008": "mounted"
+        },
+        "noOverlap": true,
+        "overflowX": false,
+        "landmarks": {
+          "sections": 6,
+          "headings": 26,
+          "figures": 4
+        },
+        "reducedMotionMedia": false,
+        "focusableSample": [
+          {
+            "tag": "a",
+            "testid": "melega-header-brand"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-home"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-liquidity"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-farms"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-pools"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-list"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-passport"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": "melega-header-connect"
+          },
+          {
+            "tag": "button",
+            "testid": "melega-header-overflow"
+          },
+          {
+            "tag": "a",
+            "testid": "farms-hero-explore-farms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-tvl"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarmers"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-rewards24h"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-sustainableApr"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-harvestable"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          }
+        ],
+        "polishMounted": true,
+        "advisorPresent": true,
+        "exploreAnchor": 1,
+        "finishedAnchor": 1,
+        "navTiming": {
+          "domContentLoaded": 520,
+          "loadEvent": 521,
+          "transferSize": 6427
+        }
+      },
+      "tablet-1024": {
+        "viewport": {
+          "width": 1024,
+          "height": 900
+        },
+        "modules": {
+          "hero": {
+            "width": 976,
+            "height": 480,
+            "left": 24,
+            "top": 140,
+            "right": 1000,
+            "bottom": 620
+          },
+          "kpis": {
+            "width": 976,
+            "height": 240,
+            "left": 24,
+            "top": 636,
+            "right": 1000,
+            "bottom": 876
+          },
+          "myFarms": {
+            "width": 976,
+            "height": 360,
+            "left": 24,
+            "top": 892,
+            "right": 1000,
+            "bottom": 1252
+          },
+          "explore": {
+            "width": 976,
+            "height": 1635,
+            "left": 24,
+            "top": 1268,
+            "right": 1000,
+            "bottom": 2903
+          },
+          "finished": {
+            "width": 976,
+            "height": 220,
+            "left": 24,
+            "top": 2919,
+            "right": 1000,
+            "bottom": 3139
+          },
+          "advisorSlot": {
+            "width": 0,
+            "height": 0,
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0
+          },
+          "advisorInline": {
+            "width": 358,
+            "height": 150,
+            "left": 333,
+            "top": 3155,
+            "right": 691,
+            "bottom": 3305
+          },
+          "analytics": {
+            "width": 976,
+            "height": 450,
+            "left": 24,
+            "top": 3321,
+            "right": 1000,
+            "bottom": 3771
+          },
+          "analyticsGrid": {
+            "width": 976,
+            "height": 418,
+            "left": 24,
+            "top": 3353,
+            "right": 1000,
+            "bottom": 3771
+          },
+          "polish": {
+            "width": 976,
+            "height": 4439,
+            "left": 24,
+            "top": 116,
+            "right": 1000,
+            "bottom": 4555
+          }
+        },
+        "flags": {
+          "001": "mounted",
+          "002": "mounted",
+          "003": "mounted",
+          "004": "mounted",
+          "005": "mounted",
+          "006": "mounted",
+          "007": "mounted",
+          "008": "mounted"
+        },
+        "noOverlap": true,
+        "overflowX": false,
+        "landmarks": {
+          "sections": 6,
+          "headings": 26,
+          "figures": 4
+        },
+        "reducedMotionMedia": false,
+        "focusableSample": [
+          {
+            "tag": "a",
+            "testid": "melega-header-brand"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-home"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-liquidity"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-farms"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-pools"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-list"
+          },
+          {
+            "tag": "a",
+            "testid": "melega-header-nav-passport"
+          },
+          {
+            "tag": "button",
+            "testid": "melega-header-connect"
+          },
+          {
+            "tag": "button",
+            "testid": "melega-header-overflow"
+          },
+          {
+            "tag": "a",
+            "testid": "farms-hero-explore-farms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-tvl"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarmers"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-rewards24h"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-sustainableApr"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-harvestable"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": "farms-explore-load-more"
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          }
+        ],
+        "polishMounted": true,
+        "advisorPresent": true,
+        "exploreAnchor": 1,
+        "finishedAnchor": 1,
+        "navTiming": {
+          "domContentLoaded": 147,
+          "loadEvent": 148,
+          "transferSize": 6427
+        }
+      },
+      "mobile-430": {
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "modules": {
+          "hero": {
+            "width": 398,
+            "height": 650,
+            "left": 16,
+            "top": 116,
+            "right": 414,
+            "bottom": 766
+          },
+          "kpis": {
+            "width": 398,
+            "height": 368,
+            "left": 16,
+            "top": 782,
+            "right": 414,
+            "bottom": 1150
+          },
+          "myFarms": {
+            "width": 398,
+            "height": 360,
+            "left": 16,
+            "top": 1166,
+            "right": 414,
+            "bottom": 1526
+          },
+          "explore": {
+            "width": 398,
+            "height": 3045,
+            "left": 16,
+            "top": 1542,
+            "right": 414,
+            "bottom": 4587
+          },
+          "finished": {
+            "width": 398,
+            "height": 235,
+            "left": 16,
+            "top": 4603,
+            "right": 414,
+            "bottom": 4838
+          },
+          "advisorSlot": {
+            "width": 0,
+            "height": 0,
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0
+          },
+          "advisorInline": {
+            "width": 358,
+            "height": 150,
+            "left": 36,
+            "top": 4854,
+            "right": 394,
+            "bottom": 5004
+          },
+          "analytics": {
+            "width": 398,
+            "height": 886,
+            "left": 16,
+            "top": 5020,
+            "right": 414,
+            "bottom": 5906
+          },
+          "analyticsGrid": {
+            "width": 398,
+            "height": 854,
+            "left": 16,
+            "top": 5052,
+            "right": 414,
+            "bottom": 5906
+          },
+          "polish": {
+            "width": 406,
+            "height": 6669.48,
+            "left": 12,
+            "top": 100,
+            "right": 418,
+            "bottom": 6769.48
+          }
+        },
+        "flags": {
+          "001": "mounted",
+          "002": "mounted",
+          "003": "mounted",
+          "004": "mounted",
+          "005": "mounted",
+          "006": "mounted",
+          "007": "mounted",
+          "008": "mounted"
+        },
+        "noOverlap": true,
+        "overflowX": false,
+        "landmarks": {
+          "sections": 6,
+          "headings": 26,
+          "figures": 4
+        },
+        "reducedMotionMedia": false,
+        "focusableSample": [
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": "farms-hero-explore-farms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-tvl"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarmers"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-rewards24h"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-sustainableApr"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-harvestable"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": "farms-explore-load-more"
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          }
+        ],
+        "polishMounted": true,
+        "advisorPresent": true,
+        "exploreAnchor": 1,
+        "finishedAnchor": 1,
+        "navTiming": {
+          "domContentLoaded": 210,
+          "loadEvent": 211,
+          "transferSize": 6427
+        }
+      },
+      "mobile-390": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "modules": {
+          "hero": {
+            "width": 358,
+            "height": 650,
+            "left": 16,
+            "top": 116,
+            "right": 374,
+            "bottom": 766
+          },
+          "kpis": {
+            "width": 358,
+            "height": 368,
+            "left": 16,
+            "top": 782,
+            "right": 374,
+            "bottom": 1150
+          },
+          "myFarms": {
+            "width": 358,
+            "height": 360,
+            "left": 16,
+            "top": 1166,
+            "right": 374,
+            "bottom": 1526
+          },
+          "explore": {
+            "width": 358,
+            "height": 3045,
+            "left": 16,
+            "top": 1542,
+            "right": 374,
+            "bottom": 4587
+          },
+          "finished": {
+            "width": 358,
+            "height": 250,
+            "left": 16,
+            "top": 4603,
+            "right": 374,
+            "bottom": 4853
+          },
+          "advisorSlot": {
+            "width": 0,
+            "height": 0,
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0
+          },
+          "advisorInline": {
+            "width": 358,
+            "height": 150,
+            "left": 16,
+            "top": 4869,
+            "right": 374,
+            "bottom": 5019
+          },
+          "analytics": {
+            "width": 358,
+            "height": 886,
+            "left": 16,
+            "top": 5035,
+            "right": 374,
+            "bottom": 5921
+          },
+          "analyticsGrid": {
+            "width": 358,
+            "height": 854,
+            "left": 16,
+            "top": 5067,
+            "right": 374,
+            "bottom": 5921
+          },
+          "polish": {
+            "width": 366,
+            "height": 6695.48,
+            "left": 12,
+            "top": 100,
+            "right": 378,
+            "bottom": 6795.48
+          }
+        },
+        "flags": {
+          "001": "mounted",
+          "002": "mounted",
+          "003": "mounted",
+          "004": "mounted",
+          "005": "mounted",
+          "006": "mounted",
+          "007": "mounted",
+          "008": "mounted"
+        },
+        "noOverlap": true,
+        "overflowX": false,
+        "landmarks": {
+          "sections": 6,
+          "headings": 26,
+          "figures": 4
+        },
+        "reducedMotionMedia": false,
+        "focusableSample": [
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": "farms-hero-explore-farms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-tvl"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarms"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-activeFarmers"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-rewards24h"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-sustainableApr"
+          },
+          {
+            "tag": "article",
+            "testid": "farms-kpi-harvestable"
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": "farms-explore-load-more"
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "button",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          },
+          {
+            "tag": "a",
+            "testid": null
+          }
+        ],
+        "polishMounted": true,
+        "advisorPresent": true,
+        "exploreAnchor": 1,
+        "finishedAnchor": 1,
+        "navTiming": {
+          "domContentLoaded": 156,
+          "loadEvent": 157,
+          "transferSize": 6427
+        }
+      }
+    }
+  },
+  "pass": true
+}

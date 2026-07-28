@@ -1,0 +1,5 @@
+{
+  "missionId": "LIQUIDITY_MODULE_008_FINAL_VISUAL_POLISH",
+  "command": "yarn next build",
+  "status": "passed"
+}

@@ -1,0 +1,24 @@
+{
+  "missionId": "MELEGA_DEX_V1_CERTIFIED_PRODUCT_RECOVERY_AND_PRODUCTION_CONVERGENCE",
+  "candidateBranch": "melega-dex-v1-certified-product-recovery-and-production-convergence",
+  "baseShaBeforeCommit": "2a887252081a81d1936e407ef74164523e24be4b",
+  "rollbackTarget": {
+    "sha": "2a887252",
+    "deploymentId": "5631594160"
+  },
+  "preferredPriorSmartSwapTip": "95c1cbf4",
+  "certifiedSources": {
+    "liquidity": "2a887252",
+    "smartSwap": "95c1cbf4",
+    "farms": "2f834b45",
+    "pools": "99258574",
+    "list": "7a29e691",
+    "passport": "70d2bd19"
+  },
+  "gates": {
+    "tests": true,
+    "build": true,
+    "playwright": true
+  },
+  "readyForControlledRelease": true
+}

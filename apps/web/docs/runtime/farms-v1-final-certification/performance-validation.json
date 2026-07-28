@@ -1,0 +1,13 @@
+{
+  "navTiming": {
+    "domContentLoaded": 345,
+    "loadEvent": 346,
+    "transferSize": 6427
+  },
+  "singleRuntimeProvider": true,
+  "singleActionHost": true,
+  "noDuplicateModuleProviders": true,
+  "sharedPortfolioFarms": true,
+  "noNewPollingIntroduced": true,
+  "pass": true
+}

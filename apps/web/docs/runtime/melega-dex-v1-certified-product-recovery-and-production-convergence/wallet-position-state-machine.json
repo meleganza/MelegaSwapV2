@@ -1,0 +1,15 @@
+{
+  "pools": {
+    "hook": "usePoolsWalletPositions",
+    "lastGood": true,
+    "generationCounters": true,
+    "emptyDoesNotClobberNonEmptyLastGood": true
+  },
+  "farms": {
+    "note": "Farms V1 My Farms uses shared runtime; Module 003 pattern preferred"
+  },
+  "liquidity": {
+    "note": "Liquidity My Positions via shared LiquidityRuntimeProvider"
+  },
+  "pass": true
+}

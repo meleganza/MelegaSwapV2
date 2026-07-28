@@ -1,0 +1,21 @@
+{
+  "vocabulary": [
+    "ACTIVE",
+    "ENDED",
+    "WITHDRAW_ONLY",
+    "EMERGENCY",
+    "UNAVAILABLE",
+    "PARTIAL",
+    "LOADING"
+  ],
+  "rule": "Single shared status resolver; modules must not invent parallel status enums",
+  "notes": {
+    "ACTIVE": "Open for stake/claim per pool rules",
+    "ENDED": "Finished; may still allow withdraw",
+    "WITHDRAW_ONLY": "No new stake; withdraw path available",
+    "EMERGENCY": "Emergency withdraw path only when contract exposes it",
+    "UNAVAILABLE": "Source/runtime unavailable \u2014 honest empty",
+    "PARTIAL": "Some fields missing \u2014 disclose",
+    "LOADING": "In-flight fetch"
+  }
+}

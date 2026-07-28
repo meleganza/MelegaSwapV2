@@ -6,15 +6,18 @@ import { typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
-import FarmsStudioPageHeader from './components/FarmsStudioPageHeader'
-import YourFarmsSection from './components/YourFarmsSection'
-import FarmsKpiRow from './components/FarmsKpiRow'
 import FeaturedFarmPanel from './components/FeaturedFarmPanel'
-import AIYieldAdvisorPanel from './components/AIYieldAdvisorPanel'
-import FarmsFilterRow from './components/FarmsFilterRow'
-import FarmsGrid from './components/FarmsGrid'
 import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
+import { FarmsHeroModule } from './modules/FarmsHeroModule'
+import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
+import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
+import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
+import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
+import { FarmsYieldAdvisorModule } from './modules/FarmsYieldAdvisorModule'
+import { FarmsAnalyticsModule } from './modules/FarmsAnalyticsModule'
+import { FarmsVisualPolishModule } from './modules/FarmsVisualPolishModule'
+import { farmsHero } from './modules/farmsHeroTokens'
 
 const Root = styled.div`
   color: ${farmsStudioColors.text};
@@ -23,6 +26,7 @@ const Root = styled.div`
   padding: 0 0 32px;
   min-width: 0;
   overflow-x: hidden;
+  width: 100%;
 
   @media (max-width: 767px) {
     padding: 0 0 ${farmsStudioLayout.mobileBottomPad};
@@ -30,10 +34,15 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  max-width: ${farmsStudioLayout.contentMax};
-  margin: 0 auto;
-  padding: ${farmsStudioLayout.contentPaddingTop} ${farmsStudioLayout.contentPaddingX}
-    ${farmsStudioLayout.contentPaddingBottom};
+  /*
+   * App shell supplies horizontal page padding (32px @ ≥1024).
+   * Module 001 requires 24px top gap after Trending Bar and 1376 content width.
+   * Legacy Studio body remains mounted beneath the Hero until Integration 009.
+   */
+  max-width: ${farmsHero.contentMax};
+  width: 100%;
+  margin: ${farmsHero.topAfterTrending} auto 0;
+  padding: 0 0 ${farmsStudioLayout.contentPaddingBottom};
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -42,7 +51,8 @@ const Content = styled.div`
   gap: ${farmsStudioLayout.sectionGap};
 
   @media (max-width: 767px) {
-    padding: 16px 16px ${farmsStudioLayout.mobileBottomPad};
+    margin-top: 16px;
+    padding: 0 4px ${farmsStudioLayout.mobileBottomPad};
   }
 `
 
@@ -70,34 +80,57 @@ export const FeaturedSlot = styled.div`
 
 export const AdvisorSlot = styled.div`
   min-width: 0;
+  /* Legacy AI Yield Advisor superseded by Module 006 (portaled into My Farms slot). */
 `
 
 export const FarmsStudioScreen: React.FC = () => (
-  <Root data-farms-studio-screen="true" data-r200-premium="true" data-fs-wallet-first="true">
+  <Root
+    data-farms-studio-screen="true"
+    data-farms-module-001="mounted"
+    data-farms-module-002="mounted"
+    data-farms-module-003="mounted"
+    data-farms-module-004="mounted"
+    data-farms-module-005="mounted"
+    data-farms-module-006="mounted"
+    data-farms-module-007="mounted"
+    data-farms-module-008="mounted"
+    data-farms-architecture="000"
+    data-r200-premium="true"
+    data-fs-wallet-first="true"
+  >
     <PageMeta />
     <FarmsStudioGlobalStyle />
     <FarmsRuntimeProvider>
+      <FarmsVisualPolishModule />
       <FarmsActionHost />
-      <Content>
-        <FarmsStudioPageHeader />
-        <YourFarmsSection />
-        <DataSurfaceErrorBoundary surface="Farms KPIs" userReason="Farm totals are temporarily unavailable.">
-          <FarmsKpiRow />
+      <Content data-fs-content>
+        <FarmsHeroModule />
+        <DataSurfaceErrorBoundary surface="Farms Overview KPIs" userReason="Farm overview metrics are temporarily unavailable.">
+          <FarmsOverviewKpisModule />
         </DataSurfaceErrorBoundary>
-        <PageColumnGrid data-fs-page-grid data-fs-explore-farms="true">
+        <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
+          <FarmsMyFarmsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
+          <FarmsExploreFarmsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Finished Farms" userReason="Finished farm positions are temporarily unavailable.">
+          <FarmsFinishedFarmsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Yield Advisor" userReason="Yield advisor is temporarily unavailable.">
+          <FarmsYieldAdvisorModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Farms Analytics" userReason="Farm analytics are temporarily unavailable.">
+          <FarmsAnalyticsModule />
+        </DataSurfaceErrorBoundary>
+        <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
           <FeaturedSlot>
             <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
               <FeaturedFarmPanel />
             </DataSurfaceErrorBoundary>
           </FeaturedSlot>
-          <AdvisorSlot>
-            <AIYieldAdvisorPanel />
-          </AdvisorSlot>
+          <AdvisorSlot data-fs-advisor-superseded="module-006" aria-hidden="true" />
         </PageColumnGrid>
-        <FarmsFilterRow />
-        <DataSurfaceErrorBoundary surface="Farms Grid" userReason="Farm cards are temporarily unavailable.">
-          <FarmsGrid />
-        </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
           <FarmsActivityTable />
         </DataSurfaceErrorBoundary>

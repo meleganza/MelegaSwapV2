@@ -1,0 +1,18 @@
+{
+  "banned": [
+    "mockPositions",
+    "mockAnalytics",
+    "mockFinished",
+    "SAMPLE_POSITION",
+    "SAMPLE_FARM",
+    "fakeApr",
+    "fakeTvl",
+    "fakeRewards",
+    "fakeWallets",
+    "demoFarms",
+    "getFarmsUxFixture",
+    "fixtureFarm"
+  ],
+  "hits": [],
+  "pass": true
+}
