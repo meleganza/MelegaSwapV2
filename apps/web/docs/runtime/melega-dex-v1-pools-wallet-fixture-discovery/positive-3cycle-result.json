@@ -1,0 +1,113 @@
+{
+  "mission": "MELEGA_DEX_V1_POOLS_WALLET_FIXTURE_DISCOVERY_AND_3_CYCLE_UNBLOCK",
+  "mode": "positive",
+  "expectEmpty": false,
+  "base": "http://127.0.0.1:3055",
+  "wallet": "0x245301afbdc4ed5a623f85c53b9da3815733e7e2",
+  "startedAt": "2026-07-28T07:09:58.712Z",
+  "cycles": [
+    {
+      "cycle": 1,
+      "state": null,
+      "connectedHint": true,
+      "empty": false,
+      "loading": false,
+      "cardCount": 3,
+      "cards": [
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:102",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → EYED Reward MARCO Holders Withdraw MARCO stake token and EYED reward token Staked 7,221,090.21 MARCO ($4.7K) Claimable 76,790,567,927.48 EYED ($24.3K) Ended — withdrawal available Withdraw Claim"
+        },
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:130",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → YD Reward MARCO Holders Withdraw MARCO stake token and YD reward token Staked 5,422,402.66 MARCO ($3.5K) Claimable 161,812,802,652.83 YD ($15.8K) Ended — withdrawal available Withdraw Claim"
+        },
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:146",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → RARI Reward MARCO Holders Withdraw MARCO stake token and RARI reward token Staked 2,497,014.91 MARCO ($1.6K) Claimable 5,312,074,858.62 RARI ($4.0K) Ended — withdrawal available Withdraw Claim"
+        }
+      ],
+      "snippet": "My Positions\n10\nView all positions\nMARCO → EYED\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and EYED reward token\nStaked\n7,221,090.21 MARCO\n($4.7K)\nClaimable\n76,790,567,927.48 EYED\n($24.3K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\nMARCO → YD\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and YD reward token\nStaked\n5,422,402.66 MARCO\n($3.5K)\nClaimable\n161,812,802,652.83 YD\n($15.8K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\nMARCO → RARI\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and RARI reward token\nStaked\n2,497,014.91 MARCO\n($1.6K)\nClaimable\n5,312,074,858.62 RARI\n($4.0K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\n10 pool positions\nReward Advisor\n◎\nClaim Rewards\n\nClaimable rewards are ready on this pool.\n\nPool · MARCO → EYED\n\nClaim\n↓\nWithdraw Position\n\nThis pool has ended and principal remains withdrawable.\n\nPool · MARCO → ZLT\n\nWithdraw\n2 advisor priorities\nExp",
+      "at": "2026-07-28T07:10:27.129Z"
+    },
+    {
+      "cycle": 2,
+      "state": null,
+      "connectedHint": true,
+      "empty": false,
+      "loading": false,
+      "cardCount": 3,
+      "cards": [
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:102",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → EYED Reward MARCO Holders Withdraw MARCO stake token and EYED reward token Staked 7,221,090.21 MARCO ($4.7K) Claimable 76,790,567,927.48 EYED ($24.3K) Ended — withdrawal available Withdraw Claim"
+        },
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:130",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → YD Reward MARCO Holders Withdraw MARCO stake token and YD reward token Staked 5,422,402.66 MARCO ($3.5K) Claimable 161,812,802,652.83 YD ($15.8K) Ended — withdrawal available Withdraw Claim"
+        },
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:146",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → RARI Reward MARCO Holders Withdraw MARCO stake token and RARI reward token Staked 2,497,014.91 MARCO ($1.6K) Claimable 5,312,074,858.62 RARI ($4.0K) Ended — withdrawal available Withdraw Claim"
+        }
+      ],
+      "snippet": "My Positions\n10\nView all positions\nMARCO → EYED\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and EYED reward token\nStaked\n7,221,090.21 MARCO\n($4.7K)\nClaimable\n76,790,567,927.48 EYED\n($24.3K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\nMARCO → YD\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and YD reward token\nStaked\n5,422,402.66 MARCO\n($3.5K)\nClaimable\n161,812,802,652.83 YD\n($15.8K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\nMARCO → RARI\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and RARI reward token\nStaked\n2,497,014.91 MARCO\n($1.6K)\nClaimable\n5,312,074,858.62 RARI\n($4.0K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\n10 pool positions\nReward Advisor\n◎\nClaim Rewards\n\nClaimable rewards are ready on this pool.\n\nPool · MARCO → EYED\n\nClaim\n↓\nWithdraw Position\n\nThis pool has ended and principal remains withdrawable.\n\nPool · MARCO → ZLT\n\nWithdraw\n2 advisor priorities\nExp",
+      "at": "2026-07-28T07:10:42.037Z"
+    },
+    {
+      "cycle": 3,
+      "state": null,
+      "connectedHint": true,
+      "empty": false,
+      "loading": false,
+      "cardCount": 3,
+      "cards": [
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:102",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → EYED Reward MARCO Holders Withdraw MARCO stake token and EYED reward token Staked 7,221,090.21 MARCO ($4.7K) Claimable 76,790,567,927.48 EYED ($24.3K) Ended — withdrawal available Withdraw Claim"
+        },
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:130",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → YD Reward MARCO Holders Withdraw MARCO stake token and YD reward token Staked 5,422,402.66 MARCO ($3.5K) Claimable 161,812,802,652.83 YD ($15.8K) Ended — withdrawal available Withdraw Claim"
+        },
+        {
+          "id": "pool:56:0x245301afbdc4ed5a623f85c53b9da3815733e7e2:146",
+          "sousId": null,
+          "contract": null,
+          "text": "MARCO → RARI Reward MARCO Holders Withdraw MARCO stake token and RARI reward token Staked 2,497,014.91 MARCO ($1.6K) Claimable 5,312,074,858.62 RARI ($4.0K) Ended — withdrawal available Withdraw Claim"
+        }
+      ],
+      "snippet": "My Positions\n10\nView all positions\nMARCO → EYED\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and EYED reward token\nStaked\n7,221,090.21 MARCO\n($4.7K)\nClaimable\n76,790,567,927.48 EYED\n($24.3K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\nMARCO → YD\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and YD reward token\nStaked\n5,422,402.66 MARCO\n($3.5K)\nClaimable\n161,812,802,652.83 YD\n($15.8K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\nMARCO → RARI\n\nReward MARCO Holders\n\nWithdraw\nMARCO stake token and RARI reward token\nStaked\n2,497,014.91 MARCO\n($1.6K)\nClaimable\n5,312,074,858.62 RARI\n($4.0K)\n\nEnded — withdrawal available\n\nWithdraw\nClaim\n10 pool positions\nReward Advisor\n◎\nClaim Rewards\n\nClaimable rewards are ready on this pool.\n\nPool · MARCO → EYED\n\nClaim\n↓\nWithdraw Position\n\nThis pool has ended and principal remains withdrawable.\n\nPool · MARCO → ZLT\n\nWithdraw\n2 advisor priorities\nExp",
+      "at": "2026-07-28T07:10:54.365Z"
+    }
+  ],
+  "pass": true,
+  "blocker": null,
+  "fingerprints": {
+    "cycle1": "[\"::::MARCO|MARCO|MARCO|MARCO|Ended::2,497,014.91\",\"::::MARCO|MARCO|MARCO|MARCO|Ended::7,221,090.21\",\"::::MARCO|YD|MARCO|MARCO|YD|MARCO|YD|Ended::5,422,402.66\"]",
+    "cycle2": "[\"::::MARCO|MARCO|MARCO|MARCO|Ended::2,497,014.91\",\"::::MARCO|MARCO|MARCO|MARCO|Ended::7,221,090.21\",\"::::MARCO|YD|MARCO|MARCO|YD|MARCO|YD|Ended::5,422,402.66\"]",
+    "cycle3": "[\"::::MARCO|MARCO|MARCO|MARCO|Ended::2,497,014.91\",\"::::MARCO|MARCO|MARCO|MARCO|Ended::7,221,090.21\",\"::::MARCO|YD|MARCO|MARCO|YD|MARCO|YD|Ended::5,422,402.66\"]"
+  },
+  "counts": [
+    3,
+    3,
+    3
+  ],
+  "finishedAt": "2026-07-28T07:10:54.366Z"
+}

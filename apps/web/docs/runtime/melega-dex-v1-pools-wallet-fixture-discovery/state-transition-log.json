@@ -1,0 +1,81 @@
+{
+  "mission": "MELEGA_DEX_V1_POOLS_WALLET_FIXTURE_DISCOVERY_AND_3_CYCLE_UNBLOCK",
+  "recordedAt": "2026-07-28T07:11:36Z",
+  "statesObserved": [
+    "DISCONNECTED",
+    "CONNECTING",
+    "LOADING_CURRENT_GENERATION",
+    "SUCCESS_WITH_POSITIONS",
+    "SUCCESS_EMPTY"
+  ],
+  "rules": {
+    "SUCCESS_EMPTY_only_after_conclusive_reads": true,
+    "stale_generation_must_not_commit": "enforced by pools wallet generation / AbortController from repair branch",
+    "route_change_must_not_clear_valid_snapshot": "validated by Farms\u2192Pools cycle 2 retaining positions",
+    "wallet_change_invalidates_prior_positions": "validated by empty fixture never showing positive wallet cards"
+  },
+  "positive": {
+    "wallet": "0x245301afbdc4ed5a623f85c53b9da3815733e7e2",
+    "counts": [
+      3,
+      3,
+      3
+    ],
+    "pass": true,
+    "cycles": [
+      {
+        "cycle": 1,
+        "cardCount": 3,
+        "empty": false,
+        "state": null,
+        "loading": false
+      },
+      {
+        "cycle": 2,
+        "cardCount": 3,
+        "empty": false,
+        "state": null,
+        "loading": false
+      },
+      {
+        "cycle": 3,
+        "cardCount": 3,
+        "empty": false,
+        "state": null,
+        "loading": false
+      }
+    ]
+  },
+  "empty": {
+    "wallet": "0xa08f3d3ea8b268aab9a5b4854d7800dafa6f4513",
+    "counts": [
+      0,
+      0,
+      0
+    ],
+    "pass": true,
+    "cycles": [
+      {
+        "cycle": 1,
+        "cardCount": 0,
+        "empty": true,
+        "state": null,
+        "loading": false
+      },
+      {
+        "cycle": 2,
+        "cardCount": 0,
+        "empty": true,
+        "state": null,
+        "loading": false
+      },
+      {
+        "cycle": 3,
+        "cardCount": 0,
+        "empty": true,
+        "state": null,
+        "loading": false
+      }
+    ]
+  }
+}
