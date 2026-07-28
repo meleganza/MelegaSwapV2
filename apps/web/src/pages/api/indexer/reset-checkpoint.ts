@@ -20,7 +20,9 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     const reason =
-      typeof req.body?.reason === 'string' ? req.body.reason : 'R772_MALFORMED_SWAP_TOPIC_CORRECTION'
+      typeof req.body?.reason === 'string'
+        ? req.body.reason
+        : 'R792_PAIR_SYNC_TOPICS_OR_FILTER_CORRECTION'
     const result = await resetFeaturedPairCheckpoint(reason)
     return res.status(200).json({
       ok: true,

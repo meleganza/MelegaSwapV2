@@ -21,6 +21,11 @@ describe('canonical event topics (R773)', () => {
     expect(SWAP_TOPIC).toBe('0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822')
   })
 
+  it('BURN_TOPIC matches Uniswap V2 Burn(address,uint256,uint256,address)', () => {
+    expect(BURN_TOPIC).toBe(id('Burn(address,uint256,uint256,address)'))
+    expect(BURN_TOPIC).toBe('0xdccd412f0b1252819cb1fd330b93224ca42612892bb3f4f789976e6d81936496')
+  })
+
   it('all active topics are exactly 32-byte hashes', () => {
     for (const topic of [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC, SYNC_TOPIC, PAIR_CREATED_TOPIC]) {
       expect(topic).toMatch(/^0x[0-9a-fA-F]{64}$/)

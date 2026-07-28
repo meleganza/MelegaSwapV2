@@ -1,8 +1,9 @@
 /**
  * LIQUIDITY_MODULE_003 — discovery data hook.
- * Reuses factory indexer + optional subgraph metrics. Read-only.
+ * Reuses factory indexer + optional subgraph metrics + durable tier-metrics. Read-only.
  */
 import { useMemo } from 'react'
+import useSWR from 'swr'
 import { useAccount } from 'wagmi'
 import { WBNB } from '@pancakeswap/sdk'
 import { useMelegaFactoryPools } from 'views/PoolsStudio/poolsRuntime/useMelegaFactoryPools'
@@ -10,6 +11,7 @@ import { usePoolDatasSWR } from 'state/info/hooks'
 import { useAllTokenBalances } from 'state/wallet/hooks'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+import { LP_HOLDERS_FEE } from 'config/constants/info'
 import {
   factualFilters,
   factualSorts,
@@ -51,6 +53,17 @@ export function useLiquidityPoolDiscovery(options: {
     [factory.pools],
   )
   const poolDatas = usePoolDatasSWR(pairAddresses)
+  const { data: tierMetrics } = useSWR(
+    'liquidity-discovery-tier-metrics',
+    async () => {
+      const res = await fetch('/api/indexer/tier-metrics/')
+      if (!res.ok) return null
+      return (await res.json()) as {
+        rows?: Array<{ pairAddress?: string; volume24hQuote?: number; tradeCount24h?: number; status?: string }>
+      }
+    },
+    { refreshInterval: 60_000, revalidateOnFocus: false },
+  )
 
   const metricsByPair = useMemo(() => {
     const map = new Map<string, { tvlUsd?: number; volumeUsd?: number; feesUsd?: number }>()
@@ -62,8 +75,22 @@ export function useLiquidityPoolDiscovery(options: {
         feesUsd: row.lpFees24h,
       })
     }
+    // Prefer factual indexed Melega DEX volume when subgraph metrics are missing.
+    for (const row of tierMetrics?.rows ?? []) {
+      const addr = row.pairAddress?.toLowerCase()
+      if (!addr) continue
+      const quoteVol = row.volume24hQuote
+      if (!(typeof quoteVol === 'number') || !(quoteVol > 0) || !(bnbUsd && bnbUsd > 0)) continue
+      const volumeUsd = quoteVol * bnbUsd
+      const existing = map.get(addr) ?? {}
+      if (!(existing.volumeUsd && existing.volumeUsd > 0)) {
+        existing.volumeUsd = volumeUsd
+        existing.feesUsd = volumeUsd * LP_HOLDERS_FEE
+        map.set(addr, existing)
+      }
+    }
     return map
-  }, [poolDatas])
+  }, [poolDatas, tierMetrics, bnbUsd])
 
   const myTokenAddresses = useMemo(() => {
     const set = new Set<string>()

@@ -1,0 +1,21 @@
+{
+  "capturedAt": "2026-07-28T20:50:52.656Z",
+  "cycle1EventTotal": 39,
+  "cycle2EventTotal": 39,
+  "cycle3EventTotal": 39,
+  "cycle1Unique": 39,
+  "cycle2Unique": 39,
+  "cycle3Unique": 39,
+  "duplicatesAnyCycle": false,
+  "swapCounts": [
+    39,
+    39,
+    39
+  ],
+  "nonDecreasingSwaps": true,
+  "lastIndexedBlocks": [
+    112692692,
+    112692937,
+    112692963
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "missionId": "MELEGA_DEX_V1_DURABLE_MARKET_INDEX_AND_FOUNDER_ACCEPTANCE_RELEASE",
+  "measuredAt": "2026-07-28T20:50:00Z",
+  "productionBefore": {
+    "url": "https://www.melega.finance/api/indexer/health/",
+    "lastIndexedBlock": 112690409,
+    "eventCounts": {
+      "Swap": 3
+    },
+    "featuredBootstrapComplete": true,
+    "storageBackend": "vercel-blob-v2-featured-pair",
+    "cronConfigured": true,
+    "cronPath": "/api/indexer/run/?budget=full",
+    "cronSchedule": "*/5 * * * *"
+  },
+  "localBefore": {
+    "lastIndexedBlock": 0,
+    "eventCounts": {},
+    "cause": "No BLOB_READ_WRITE_TOKEN / empty local durable store; not the production failure mode"
+  },
+  "primaryRootCause": {
+    "id": "PAIR_SYNC_ETH_GETLOGS_TOPICS_AND_FILTER",
+    "file": "apps/web/src/lib/bsc-indexer/indexer/pairSyncEngine.ts",
+    "defect": "scanRange passed topics:[SWAP_TOPIC,MINT_TOPIC,BURN_TOPIC] which means topic0=SWAP AND topic1=MINT AND topic2=BURN. Uniswap-V2 Swap/Mint/Burn never match.",
+    "measuredProof": {
+      "verifiedBlock": 86326727,
+      "andFlatCount": 0,
+      "orNestedCount": 1,
+      "swapsInLast100kBlocks": 22,
+      "head": 112692401,
+      "conclusion": "flat [SWAP,MINT,BURN] is AND across topic slots and returns 0; nested [[SWAP,MINT,BURN]] is OR on topic0 and finds events"
+    },
+    "consequence": "Gap-fill advanced coverageRanges to ~100% while finding nearly zero events; health reported ready with Swap:3 (anchor + rare head/per-topic finds)."
+  },
+  "secondaryDefect": {
+    "id": "BURN_EVENT_SIGNATURE_TRUNCATED",
+    "file": "apps/web/src/lib/bsc-indexer/eventTopics.ts",
+    "defect": "Burn(address,uint256,uint256) hashed to non-Uniswap topic; correct is Burn(address,uint256,uint256,address).",
+    "impact": "Burn events missed even under correct OR filter; Swap/Mint unaffected."
+  },
+  "ruledOut": [
+    {
+      "cause": "cron not configured",
+      "evidence": "vercel.json crons */5 -> /api/indexer/run; lastOrchestratorRun recent"
+    },
+    {
+      "cause": "Router scanned instead of pairs",
+      "evidence": "pairSyncEngine uses pair.pairAddress; Factory registry separate"
+    },
+    {
+      "cause": "database unavailable",
+      "evidence": "vercel-blob-v2-featured-pair configured; checkpoint persists"
+    },
+    {
+      "cause": "chain ID mismatch",
+      "evidence": "events chainId 56; Factory 0xb7E5..."
+    },
+    {
+      "cause": "write path disabled",
+      "evidence": "3 Swap events persisted historically"
+    }
+  ],
+  "repair": [
+    "ammPairEventTopicsOrFilter() returns [[SWAP,MINT,BURN]]",
+    "pairSyncEngine.scanRange uses OR filter",
+    "BURN_EVENT_SIGNATURE corrected",
+    "self-heal clears false-complete coverage when Swap<=3 and coverage>=90%",
+    "founder WBNB pairs prioritized into Tier-1"
+  ]
+}

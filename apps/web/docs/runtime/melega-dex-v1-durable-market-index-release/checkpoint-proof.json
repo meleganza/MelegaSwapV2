@@ -1,0 +1,24 @@
+{
+  "capturedAt": "2026-07-28T20:50:52.657Z",
+  "neverResetToZero": true,
+  "phases": [
+    "incremental",
+    "incremental",
+    "incremental"
+  ],
+  "resetReasons": [
+    "INITIAL_V2_BOOTSTRAP",
+    "INITIAL_V2_BOOTSTRAP",
+    "INITIAL_V2_BOOTSTRAP"
+  ],
+  "gapFillCursors": [
+    112692692,
+    112692937,
+    112692963
+  ],
+  "lastIndexedBlocks": [
+    112692692,
+    112692937,
+    112692963
+  ]
+}

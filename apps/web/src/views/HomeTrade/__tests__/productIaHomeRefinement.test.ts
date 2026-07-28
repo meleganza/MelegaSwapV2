@@ -32,6 +32,7 @@ describe('Product IA refinement — Home', () => {
     const featured = load('FeaturedProjectsRail.tsx')
     expect(featured).not.toContain('>Featured Projects<')
     expect(featured).toContain('resolveFounderFeaturedProjects')
+    expect(featured).toContain('useFeaturedProjectMarkets')
     expect(featured).toContain('Trade')
     expect(featured).toContain('View Project')
     const resolved = resolveFounderFeaturedProjects()

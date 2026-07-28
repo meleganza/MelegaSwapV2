@@ -16,7 +16,7 @@
     "modules/LiquidityPoolDiscoveryCard.tsx": "81abbcadb15d771059b88029e9dca45a4bbe02134f110f7bdc7d7ea1b1478d92",
     "modules/liquidityPoolDiscoveryTokens.ts": "050488ff324cf1dd821ef27120828f9fe0ef4c4760275918208dac5c478779d1",
     "modules/liquidityPoolDiscoveryModel.ts": "39742ee326928e29637ef1fa13b1d7338be382791e5ac6738acaf94e1664a16a",
-    "modules/useLiquidityPoolDiscovery.ts": "1561630a9f4069e76871746606ed0abf9ebaeb5c94b37fad6ce398f1adfea520",
+    "modules/useLiquidityPoolDiscovery.ts": "b6c10dab83483fbf1be8543ca9246a61484ff18da5c8e3b2caf48e2bac1a4e4a",
     "modules/LiquidityAddModule.tsx": "e57645b8b56c5e5530e4e7f357357656a70db39821ccade18aaffcc95a61113c",
     "modules/liquidityAddTokens.ts": "84768fc3fd89c97e9838b1777c46d5ef9a5c5008aa75651eab63b6775e0812f9",
     "modules/liquidityAddCta.ts": "8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8",

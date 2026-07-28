@@ -3,7 +3,8 @@ import { id } from '@ethersproject/hash'
 /** Canonical Uniswap V2 / PancakeSwap Pair event signatures — single source of truth (R773). */
 export const SWAP_EVENT_SIGNATURE = 'Swap(address,uint256,uint256,uint256,uint256,address)'
 export const MINT_EVENT_SIGNATURE = 'Mint(address,uint256,uint256)'
-export const BURN_EVENT_SIGNATURE = 'Burn(address,uint256,uint256)'
+/** Uniswap V2 Pair Burn — includes indexed `to` (not the 3-arg truncated form). */
+export const BURN_EVENT_SIGNATURE = 'Burn(address,uint256,uint256,address)'
 export const SYNC_EVENT_SIGNATURE = 'Sync(uint112,uint112)'
 export const PAIR_CREATED_EVENT_SIGNATURE = 'PairCreated(address,address,address,uint256)'
 
@@ -16,6 +17,15 @@ export const MINT_TOPIC = id(MINT_EVENT_SIGNATURE)
 export const BURN_TOPIC = id(BURN_EVENT_SIGNATURE)
 export const SYNC_TOPIC = id(SYNC_EVENT_SIGNATURE)
 export const PAIR_CREATED_TOPIC = id(PAIR_CREATED_EVENT_SIGNATURE)
+
+/**
+ * eth_getLogs topic0 OR-filter for Swap|Mint|Burn.
+ * MUST be nested: [[A,B,C]] — a flat [A,B,C] means topic0=A AND topic1=B AND topic2=C
+ * which matches zero Uniswap-V2 AMM events.
+ */
+export function ammPairEventTopicsOrFilter(): [string[]] {
+  return [[SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC]]
+}
 
 export const CANONICAL_EVENT_TOPICS = {
   swap: { name: 'SWAP_TOPIC', signature: SWAP_EVENT_SIGNATURE, topic: SWAP_TOPIC },

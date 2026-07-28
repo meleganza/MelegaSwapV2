@@ -1,0 +1,4 @@
+{
+  "priorProductionTip": "unknown-until-deploy",
+  "rollbackAction": "Redeploy previous main SHA via Vercel"
+}

@@ -9,6 +9,11 @@ import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { resolveFounderFeaturedProjects } from './featuredProjectsCatalog'
+import {
+  formatFeaturedChange,
+  formatFeaturedPrice,
+  useFeaturedProjectMarkets,
+} from './useFeaturedProjectMarkets'
 
 const halo = keyframes`
   0% { box-shadow: 0 0 0 0 rgba(244, 196, 48, 0.0), 0 10px 28px rgba(0, 0, 0, 0.28); }
@@ -175,6 +180,7 @@ const ViewLink = styled(Link)`
 export const FeaturedProjectsRail: React.FC = () => {
   const router = useRouter()
   const cards = useMemo(() => resolveFounderFeaturedProjects(), [])
+  const { rowsBySlug } = useFeaturedProjectMarkets()
 
   const onTrade = useCallback(
     (address?: string) => {
@@ -206,8 +212,16 @@ export const FeaturedProjectsRail: React.FC = () => {
   return (
     <Shell data-testid="dex-home-featured-projects" data-home-section="featured-projects">
       <Grid>
-        {cards.map((p) => (
-          <Card key={p.slug} data-featured-slug={p.slug} data-featured-resolved={p.resolved ? '1' : '0'}>
+        {cards.map((p) => {
+          const market = rowsBySlug[p.slug]
+          const change = formatFeaturedChange(market)
+          return (
+          <Card
+            key={p.slug}
+            data-featured-slug={p.slug}
+            data-featured-resolved={p.resolved ? '1' : '0'}
+            data-featured-market-status={market?.status ?? 'LOADING'}
+          >
             <Top>
               <Badge>Featured</Badge>
               <Network>BNB Smart Chain</Network>
@@ -228,9 +242,15 @@ export const FeaturedProjectsRail: React.FC = () => {
             </Identity>
             <Desc>{p.description || p.category || 'Listed Melega DEX project'}</Desc>
             <Metrics>
-              <Price>—</Price>
-              <Change $empty title="Factual 24H change unavailable">
-                —
+              <Price title={market?.source === 'melega-factory-reserves' ? 'Reserve price · Melega Factory' : 'Melega DEX'}>
+                {formatFeaturedPrice(market)}
+              </Price>
+              <Change
+                $empty={change.empty}
+                $positive={change.positive}
+                title={change.empty ? 'Factual Melega DEX change unavailable' : `Melega DEX · ${market?.periodLabel ?? '24H'}`}
+              >
+                {change.text}
               </Change>
             </Metrics>
             <Actions>
@@ -247,7 +267,8 @@ export const FeaturedProjectsRail: React.FC = () => {
               </ViewLink>
             </Actions>
           </Card>
-        ))}
+          )
+        })}
       </Grid>
     </Shell>
   )

@@ -1,0 +1,12 @@
+{
+  "tvl": "Factory reserves \u00d7 quote USD",
+  "volume": "Info subgraph OR /api/indexer/tier-metrics volume24hQuote \u00d7 WBNB USD",
+  "fees": "LP_HOLDERS_FEE (0.0017) \u00d7 factual volume when indexed; else \u2014",
+  "ordering": [
+    "TVL desc",
+    "24H volume desc",
+    "recency",
+    "pair address"
+  ],
+  "hook": "useLiquidityPoolDiscovery"
+}

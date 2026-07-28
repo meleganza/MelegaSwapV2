@@ -290,9 +290,12 @@ export async function scanSwapLogsFromHead(params: {
   return { logs, blockTimestamps, lastScannedBlock: parseInt(block.number, 16) }
 }
 
+/** eth_getLogs topics: string = exact slot; string[] = OR within that slot; null = any. */
+export type EthGetLogsTopics = Array<string | null | string[]>
+
 export async function getLogsChunked(params: {
   address: string
-  topics?: (string | null)[]
+  topics?: EthGetLogsTopics
   fromBlock: number
   toBlock: number
   initialChunk?: number

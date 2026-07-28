@@ -1,0 +1,8 @@
+{
+  "definition": "aggregate canonical Melega DEX Swap volume over trailing 24H from tier-metrics quote volumes",
+  "sourceApi": "/api/indexer/tier-metrics",
+  "consumer": "useHomeTradeData marketCards volume-24h",
+  "localCycleSwapCount": 39,
+  "noFabrication": true,
+  "valuation": "WBNB USD via useBUSDPrice when trustworthy"
+}

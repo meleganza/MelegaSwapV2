@@ -17,6 +17,7 @@ export {
   PAIR_CREATED_TOPIC,
   CANONICAL_EVENT_TOPICS,
   MALFORMED_SWAP_TOPIC_HISTORICAL,
+  ammPairEventTopicsOrFilter,
 } from './eventTopics'
 
 export const BOOTSTRAP_DAYS_PRIMARY = 7
