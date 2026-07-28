@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   addCoverageRange,
   bootstrapWindowSummary,
+  contiguousCoverageCursor,
   findCoverageGaps,
   mergeCoverageRanges,
   selectNextGap,
@@ -46,5 +47,13 @@ describe('coverageRanges', () => {
   it('adds scanned interval without duplication', () => {
     const merged = addCoverageRange([{ fromBlock: 100, toBlock: 120 }], { fromBlock: 121, toBlock: 140 })
     expect(merged).toEqual([{ fromBlock: 100, toBlock: 140 }])
+  })
+
+  it('contiguousCoverageCursor ignores tip islands until floor is connected', () => {
+    expect(contiguousCoverageCursor([{ fromBlock: 180, toBlock: 200 }], 100)).toBe(100)
+    expect(contiguousCoverageCursor([{ fromBlock: 100, toBlock: 120 }, { fromBlock: 180, toBlock: 200 }], 100)).toBe(
+      120,
+    )
+    expect(contiguousCoverageCursor([{ fromBlock: 100, toBlock: 200 }], 100)).toBe(200)
   })
 })

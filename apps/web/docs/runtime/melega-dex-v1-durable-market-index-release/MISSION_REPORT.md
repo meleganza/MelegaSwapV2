@@ -1,8 +1,10 @@
 # MELEGA_DEX_V1_DURABLE_MARKET_INDEX_AND_FOUNDER_ACCEPTANCE_RELEASE
 
-## Verdict (pre-production gate)
+## Verdict
 
-Code + live local certification complete. Production DEPLOYED verdict requires merge + cron self-heal progress (documented in `deployment-record.json`).
+**MELEGA_DEX_V1_DURABLE_MARKET_INDEX_AND_FOUNDER_ACCEPTANCE_RELEASE_DEPLOYED**
+
+Production merge `212f57f5` live. Cron self-heal `R792_PAIR_SYNC_TOPICS_OR_FILTER_CORRECTION` raised Swap count 3→43+. Top Movers empty state cleared (MARCO ↓ 47.5%). Featured reserve prices live. Follow-up tip-first gap-fill hotfix queued for 24H volume window readiness.
 
 ## Root cause (measured)
 

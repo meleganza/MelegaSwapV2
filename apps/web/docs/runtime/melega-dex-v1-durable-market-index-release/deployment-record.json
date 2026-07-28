@@ -1,4 +1,15 @@
 {
-  "status": "PENDING_MERGE",
-  "note": "Filled after merge to main and Vercel production deploy"
+  "status": "PRODUCTION_DEPLOYED",
+  "pr": "https://github.com/meleganza/MelegaSwapV2/pull/11",
+  "mergeCommit": "212f57f5f09ab326c3a8d243fadfae9bff58abae",
+  "productionActiveDeploymentSha": "212f57f5f09ab326c3a8d243fadfae9bff58abae",
+  "productionUrl": "https://www.melega.finance",
+  "deployedAt": "2026-07-28T21:01:00Z",
+  "indexerProgress": {
+    "swapEventCount": 43,
+    "lastIndexedBlock": 112247113,
+    "marketIndexStatus": "BACKFILLING",
+    "resetReason": "R792_PAIR_SYNC_TOPICS_OR_FILTER_CORRECTION",
+    "backfillStatus": "in_progress"
+  }
 }

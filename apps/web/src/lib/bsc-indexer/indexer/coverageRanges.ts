@@ -57,6 +57,21 @@ export function selectNextGap(gaps: CoverageRange[]): CoverageRange | null {
   return gaps[gaps.length - 1]!
 }
 
+/**
+ * Highest block contiguous from bootstrap floor.
+ * Tip-first coverage must not advance this past an unprocessed older gap.
+ */
+export function contiguousCoverageCursor(ranges: CoverageRange[], floor: number): number {
+  const merged = mergeCoverageRanges(ranges)
+  let cursor = floor - 1
+  for (const range of merged) {
+    if (range.toBlock < floor) continue
+    if (range.fromBlock > cursor + 1) break
+    cursor = Math.max(cursor, range.toBlock)
+  }
+  return cursor >= floor ? cursor : floor
+}
+
 export function countCoveredBlocks(ranges: CoverageRange[], windowFrom: number, windowTo: number): number {
   const merged = mergeCoverageRanges(ranges)
   let covered = 0
