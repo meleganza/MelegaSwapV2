@@ -2,7 +2,7 @@
   "mission": "MELEGA_DEX_V1_POOLS_WALLET_FIXTURE_DISCOVERY_AND_3_CYCLE_UNBLOCK",
   "parentMission": "MELEGA_DEX_V1_POST_RECOVERY_PRODUCT_TRUTH_AND_RUNTIME_STABILITY_REPAIR",
   "verdictCandidate": "MELEGA_DEX_V1_POST_RECOVERY_PRODUCT_TRUTH_AND_RUNTIME_STABILITY_REPAIR_DEPLOYED",
-  "completedAt": "2026-07-28T07:11:36Z",
+  "completedAt": "2026-07-28T07:18:35Z",
   "domainCorrection": "Prior blocker used AMM-LP wallet 0xA08f\u20264513 as Pools positive fixture \u2014 incorrect domain. That wallet correctly yields Pools SUCCESS_EMPTY.",
   "positiveFixture": {
     "wallet": "0x245301afbdc4ed5a623f85c53b9da3815733e7e2",
@@ -54,5 +54,13 @@
     "positive-desktop-cycle-2.png",
     "positive-desktop-cycle-3.png",
     "positive-mobile-cycle-1.png"
-  ]
+  ],
+  "verdict": "MELEGA_DEX_V1_POST_RECOVERY_PRODUCT_TRUTH_AND_RUNTIME_STABILITY_REPAIR_DEPLOYED",
+  "mergeSha": "a66f5103e81efb6a06f7f14351dd5452ef77fc9f",
+  "deploymentId": 5635679914,
+  "productionBuildId": "R-NM3CcuItRLrTQO-Hx2N",
+  "rollbackDeploymentId": 5634503877,
+  "rollbackSha": "c12163bc3250",
+  "productionSmokePass": true,
+  "pr": "https://github.com/meleganza/MelegaSwapV2/pull/8"
 }
