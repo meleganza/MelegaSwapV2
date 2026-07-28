@@ -21,7 +21,7 @@ import { LIQUIDITY_MY_POSITIONS_COPY, liquidityMyPositions } from './liquidityMy
 const Shell = styled.section`
   width: 100%;
   max-width: ${liquidityMyPositions.contentMax};
-  margin: ${liquidityMyPositions.gapAfterSnapshot} auto 0;
+  margin: ${liquidityMyPositions.gapAfterActions} auto 0;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;

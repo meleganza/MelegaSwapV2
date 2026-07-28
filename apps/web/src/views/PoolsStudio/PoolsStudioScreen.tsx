@@ -168,13 +168,18 @@ export const PoolsStudioScreen: React.FC = () => (
     <PoolsVisualPolishModule />
     <PoolsRuntimeProvider>
       <PoolsActionHost />
-      <Content data-ps-content>
+      <Content data-ps-content data-pools-ia="provider-first-v1">
+        {/* Hero owns Create Pool CTA, Featured Pool, Why Stake, Advisor summary */}
         <PoolsHeroModule />
+        {/* My Positions immediately after Hero — never demoted below discovery */}
+        <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
+          <PoolsMyPositionsModule />
+        </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
           <PoolsOverviewKpisModule />
         </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
-          <PoolsMyPositionsModule />
+        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
+          <PoolsAnalyticsModule />
         </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
           <PoolsExplorePoolsModule />
@@ -185,17 +190,14 @@ export const PoolsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Reward Advisor" userReason="Reward advisor is temporarily unavailable.">
           <PoolsRewardAdvisorModule />
         </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
-          <PoolsAnalyticsModule />
-        </DataSurfaceErrorBoundary>
         <MainGrid data-ps-main-grid>
           <MainColumn>
-            {/* Featured Pool lives compactly in Hero; legacy giant card unmounted. */}
             <div data-ps-featured-archived="true" aria-hidden="true" />
           </MainColumn>
           <SidebarColumn>
             <PoolsSidebar />
           </SidebarColumn>
+          {/* Create Pool wizard near bottom */}
           <CreatePoolSection data-ps-create-pool-section>
             <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
               <CreatePoolCta />

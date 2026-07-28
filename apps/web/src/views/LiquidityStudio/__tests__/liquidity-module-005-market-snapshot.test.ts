@@ -139,15 +139,14 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
     expect(mod).not.toMatch(/\$24\.56M|fake TVL|fake volume/i)
   })
 
-  it('mounts Module 005 after Add Liquidity and above legacy Pool', () => {
+  it('mounts Module 005 inside Liquidity Insights (merged analytics)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityMarketSnapshotModule')
+    expect(page).toContain('LiquidityInsightsModule')
     expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-005="mounted"')
-    const add = page.indexOf('<LiquidityAddModule')
-    const snap = page.indexOf('<LiquidityMarketSnapshotModule')
-    expect(add).toBeGreaterThan(-1)
-    expect(snap).toBeGreaterThan(add)
+    const insights = readFileSync(path.join(__dirname, '../modules/LiquidityInsightsModule.tsx'), 'utf8')
+    expect(insights).toContain('LiquidityMarketSnapshotModule')
+    expect(insights).toContain('Liquidity Insights')
   })
 
   it('records ownership, plan certification, and evidence', () => {

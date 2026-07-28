@@ -23,7 +23,6 @@ import {
   isQuoteTokenAddress,
   isTrendingTierStatus,
   pickTrendingBaseToken,
-  rankTierAssets,
   trendingTickerAccent,
   type TierMetricRow,
   type TierRankedAsset,
@@ -546,7 +545,7 @@ export function useDexTrendingRankings() {
       }),
     )
 
-    // Top Movers: require credible %-change evidence; rank by |Δ%| then trades/volume.
+    // Top Movers: factual % only — rank by |Δ24h%| → volume → swaps. Never fabricate history.
     const movers = active
       .filter((c) => {
         const pct = c.change24h?.pct
@@ -562,15 +561,13 @@ export function useDexTrendingRankings() {
         const da = Math.abs(a.change24h?.pct ?? 0)
         const db = Math.abs(b.change24h?.pct ?? 0)
         if (db !== da) return db - da
-        if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
         if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
+        if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
         return (b.lastActivityTs ?? 0) - (a.lastActivityTs ?? 0)
       })
 
-    if (movers.length > 0) return movers.slice(0, TRENDING_LIMIT)
-
-    // Fallback: recent markets without unproven % (no fabricated movers).
-    return rankTierAssets(active, TRENDING_LIMIT)
+    // Empty ribbon over activity-only / MARCO-only placeholders without proven %.
+    return movers.slice(0, TRENDING_LIMIT)
   }, [
     tierMetrics,
     pairRows,

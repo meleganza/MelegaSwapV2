@@ -23,6 +23,8 @@ describe('DS001.2 / DS001.3 Liquidity Studio view query wiring', () => {
       'utf8',
     )
     expect(src).toContain('UnifiedLiquidityPage')
+    // Product surface is LiquidityBuildingCard (panel attrs + LiquidityBuildingPanel surface marker).
+    expect(card).toContain('data-liquidity-building-panel')
     expect(card).toContain('LiquidityBuildingPanel')
     expect(src).not.toContain('ls-liquidity-building-discovery')
   })

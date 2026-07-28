@@ -56,8 +56,8 @@ export const liquidityHero = {
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
 
-  /** Existing Add Liquidity route — Module 004 owns the form later. */
-  addLiquidityHref: '/add',
+  /** In-page Add Liquidity form (IA primary workspace). */
+  addLiquidityHref: '#add-liquidity',
 
   mobileTitleSize: '42px',
   mobileTitleLine: '46px',
@@ -77,8 +77,7 @@ export const liquidityHero = {
 export const LIQUIDITY_HERO_COPY = {
   title: 'Liquidity',
   description: 'Provide liquidity.\nEarn fees.\nGrow markets.',
-  journeys:
-    'Two ways to start: provide liquidity manually, or use Melega AI Liquidity Builder.',
+  journeys: '',
   primaryCta: 'Add Liquidity',
   trustTitle: 'Why provide liquidity?',
   trustItems: [

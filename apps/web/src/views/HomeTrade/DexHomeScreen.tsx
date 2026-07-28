@@ -8,11 +8,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
-import { FolderKanban, Sprout, Droplets, ChartNoAxesCombined, ArrowRight } from 'lucide-react'
+import { TrendingUp, Sprout, Droplets, Sparkles, ArrowRight } from 'lucide-react'
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
 import useHomeTradeData from './useHomeTradeData'
 import { getAllProjects } from 'registry/projects/getAllProjects'
+import { FeaturedProjectsRail } from './FeaturedProjectsRail'
+import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -37,13 +39,13 @@ const Content = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
   min-width: 0;
 
   @media (max-width: 767px) {
     width: 100%;
     padding: 12px 16px 32px;
-    gap: 12px;
+    gap: 16px;
   }
 `
 
@@ -244,58 +246,6 @@ const KpiValue = styled.div`
   color: ${uxRebuildColors.text};
 `
 
-const QuickRail = styled.section`
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-`
-
-const QuickCard = styled(Link)`
-  height: 76px;
-  padding: 14px;
-  border-radius: 12px;
-  background: ${uxRebuildColors.card};
-  border: 1px solid ${uxRebuildColors.border};
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: inherit;
-  box-sizing: border-box;
-  transition: border-color 160ms ease;
-
-  &:hover {
-    border-color: rgba(221, 185, 47, 0.45);
-  }
-`
-
-const IconTile = styled.span<{ $bg: string }>`
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: ${({ $bg }) => $bg};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-`
-
-const QuickTitle = styled.div`
-  font-size: 14px;
-  font-weight: 650;
-  color: ${uxRebuildColors.text};
-`
-
-const QuickSub = styled.div`
-  margin-top: 2px;
-  font-size: 12px;
-  color: ${uxRebuildColors.muted};
-`
-
 const Discovery = styled.section`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -311,20 +261,36 @@ const Discovery = styled.section`
 `
 
 const DiscCard = styled.section`
-  min-height: 330px;
-  padding: 16px;
-  border-radius: 14px;
+  min-height: 300px;
+  padding: 18px 16px;
+  border-radius: ${uxRebuildRadius.card};
   background: ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};
+  box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
+`
+
+const DiscIcon = styled.span`
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(221, 185, 47, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 `
 
 const DiscHead = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+
+  ${/* ViewAll stays right */ ''}
+  & > a:last-child {
+    margin-left: auto;
+  }
 `
 
 const DiscTitle = styled.h2`
@@ -405,70 +371,6 @@ const EmptyRow = styled.div`
   text-align: center;
 `
 
-const BottomPanels = styled.section`
-  display: grid;
-  grid-template-columns: 2.2fr 1fr;
-  gap: 14px;
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const Panel = styled.section`
-  min-height: 190px;
-  padding: 22px;
-  border-radius: 16px;
-  background: ${uxRebuildColors.card};
-  border: 1px solid ${uxRebuildColors.border};
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-`
-
-const PanelLabel = styled.div`
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: ${uxRebuildColors.gold};
-`
-
-const PanelTitle = styled.h2`
-  margin: 10px 0 0;
-  font-size: 22px;
-  line-height: 28px;
-  font-weight: 700;
-  color: ${uxRebuildColors.text};
-`
-
-const PanelBody = styled.p`
-  margin: 8px 0 0;
-  max-width: 420px;
-  font-size: 14px;
-  line-height: 21px;
-  color: ${uxRebuildColors.secondary};
-`
-
-const PanelCta = styled(Link)`
-  margin-top: 16px;
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 10px;
-  background: ${uxRebuildColors.gold};
-  color: #080808;
-  font-size: 14px;
-  font-weight: 650;
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-
-  &[data-variant='ghost'] {
-    background: ${uxRebuildColors.input};
-    border: 1px solid ${uxRebuildColors.borderStrong};
-    color: ${uxRebuildColors.text};
-  }
-`
-
 const TrustRail = styled.footer`
   min-height: 76px;
   margin-top: 10px;
@@ -540,8 +442,6 @@ export const DexHomeScreen: React.FC = () => {
     const byLabel = Object.fromEntries(data.liveEconomyMetrics.map((m) => [m.label.toLowerCase(), m.value]))
     const tvlCard = data.marketCards.find((c) => /tvl/i.test(c.label))
     const volCard = data.marketCards.find((c) => c.id === 'volume-24h' || /^24H Volume$/i.test(c.label))
-    const swapsCard = data.marketCards.find((c) => c.id === 'volume-24h-activity' || /^24H Swaps$/i.test(c.label))
-    const activityCard = volCard ?? swapsCard
     const farms =
       byId.activeFarms ||
       byLabel['active farms'] ||
@@ -557,11 +457,12 @@ export const DexHomeScreen: React.FC = () => {
       byLabel['indexed assets'] ||
       data.liveEconomyMetrics.find((m) => /indexed|asset|token/i.test(m.label))?.value ||
       NA
+    const volumeValue = volCard?.value ?? NA
     return [
       { label: 'TVL', value: tvlCard?.value ?? NA },
-      // Preserve geometry: one activity KPI slot — dollar volume only when USD-valued.
-      { label: activityCard?.label ?? '24H Swaps', value: activityCard?.value ?? NA },
-      { label: 'Active Projects', value: projectCount > 0 ? String(projectCount) : NA },
+      // Prefer factual USD volume; show — when unavailable (never invent swaps-as-volume).
+      { label: '24H Volume', value: volumeValue },
+      { label: 'Listed Projects', value: projectCount > 0 ? String(projectCount) : NA },
       { label: 'Farms', value: farms },
       { label: 'Pools', value: pools },
       { label: 'Indexed Tokens', value: indexed },
@@ -664,48 +565,14 @@ export const DexHomeScreen: React.FC = () => {
             ))}
           </KpiRail>
 
-          <QuickRail data-testid="dex-home-quick-actions" data-home-section="quick-actions">
-            <QuickCard href="/#projects">
-              <IconTile $bg="rgba(124,58,237,0.16)">
-                <FolderKanban size={18} color="#A78BFA" aria-hidden />
-              </IconTile>
-              <div>
-                <QuickTitle>Explore Projects</QuickTitle>
-                <QuickSub>Discover verified projects</QuickSub>
-              </div>
-            </QuickCard>
-            <QuickCard href="/farms">
-              <IconTile $bg="rgba(22,217,119,0.12)">
-                <Sprout size={18} color={uxRebuildColors.positive} aria-hidden />
-              </IconTile>
-              <div>
-                <QuickTitle>Top Farms</QuickTitle>
-                <QuickSub>High-yield opportunities</QuickSub>
-              </div>
-            </QuickCard>
-            <QuickCard href="/pools">
-              <IconTile $bg="rgba(59,130,246,0.14)">
-                <Droplets size={18} color="#60A5FA" aria-hidden />
-              </IconTile>
-              <div>
-                <QuickTitle>Top Pools</QuickTitle>
-                <QuickSub>Best liquidity pools</QuickSub>
-              </div>
-            </QuickCard>
-            <QuickCard href="/liquidity-studio?view=building">
-              <IconTile $bg="rgba(221,185,47,0.14)">
-                <ChartNoAxesCombined size={18} color={uxRebuildColors.gold} aria-hidden />
-              </IconTile>
-              <div>
-                <QuickTitle>Liquidity Builder</QuickTitle>
-                <QuickSub>Launch & grow liquidity</QuickSub>
-              </div>
-            </QuickCard>
-          </QuickRail>
+          <FeaturedProjectsRail />
 
           <Discovery ref={discoveryRef} id="projects" data-testid="dex-home-discovery" data-home-section="discovery">
             <DiscCard>
               <DiscHead>
+                <DiscIcon>
+                  <TrendingUp size={14} color={uxRebuildColors.gold} aria-hidden />
+                </DiscIcon>
                 <DiscTitle>Trending Projects</DiscTitle>
                 <ViewAll href="/trending">
                   View all <ArrowRight size={12} style={{ display: 'inline' }} />
@@ -729,6 +596,9 @@ export const DexHomeScreen: React.FC = () => {
 
             <DiscCard>
               <DiscHead>
+                <DiscIcon>
+                  <Sprout size={14} color={uxRebuildColors.gold} aria-hidden />
+                </DiscIcon>
                 <DiscTitle>Top Farms</DiscTitle>
                 <ViewAll href="/farms">View all →</ViewAll>
               </DiscHead>
@@ -750,6 +620,9 @@ export const DexHomeScreen: React.FC = () => {
 
             <DiscCard>
               <DiscHead>
+                <DiscIcon>
+                  <Droplets size={14} color={uxRebuildColors.gold} aria-hidden />
+                </DiscIcon>
                 <DiscTitle>Top Pools</DiscTitle>
                 <ViewAll href="/pools">View all →</ViewAll>
               </DiscHead>
@@ -771,6 +644,9 @@ export const DexHomeScreen: React.FC = () => {
 
             <DiscCard>
               <DiscHead>
+                <DiscIcon>
+                  <Sparkles size={14} color={uxRebuildColors.gold} aria-hidden />
+                </DiscIcon>
                 <DiscTitle>New Listings</DiscTitle>
                 <ViewAll href="/list">View all →</ViewAll>
               </DiscHead>
@@ -791,24 +667,7 @@ export const DexHomeScreen: React.FC = () => {
             </DiscCard>
           </Discovery>
 
-          <BottomPanels>
-            <Panel data-home-section="builder">
-              <PanelLabel>LIQUIDITY BUILDER</PanelLabel>
-              <PanelTitle>Build liquidity. Earn more.</PanelTitle>
-              <PanelBody>
-                Create liquidity for your project and grow through Melega Liquidity Builder.
-              </PanelBody>
-              <PanelCta href="/liquidity-studio?view=building">Launch Builder</PanelCta>
-            </Panel>
-            <Panel data-home-section="passport">
-              <PanelLabel>IDENTITY</PanelLabel>
-              <PanelTitle>MARCO Passport</PanelTitle>
-              <PanelBody>Your identity and portfolio hub.</PanelBody>
-              <PanelCta href="/passport" data-variant="ghost">
-                Go to Passport
-              </PanelCta>
-            </Panel>
-          </BottomPanels>
+          <ExploreMelegaEcosystem />
 
           <TrustRail data-testid="dex-home-trust-rail" data-home-section="trust">
             <TrustLeft>

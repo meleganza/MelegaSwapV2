@@ -99,10 +99,10 @@ describe('LIQUIDITY_MODULE_008 Final Visual Polish', () => {
     expect(page).not.toContain('data-liquidity-module-009')
     expect(page).not.toContain('LiquidityIntegrationModule')
 
-    const analytics = page.indexOf('<LiquidityAnalyticsModule')
+    const insights = page.indexOf('<LiquidityInsightsModule')
     const polish = page.indexOf('<LiquidityVisualPolishModule')
     expect(polish).toBeGreaterThan(-1)
-    expect(analytics).toBeGreaterThan(-1)
+    expect(insights).toBeGreaterThan(-1)
   })
 
   it('polish is style-only — no geometry / runtime / business logic', () => {

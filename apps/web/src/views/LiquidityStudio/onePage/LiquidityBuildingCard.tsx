@@ -527,12 +527,29 @@ const ConnectSlot = styled.div`
  * Sections: Hero 210→72 · Wizard 48 · Content 442 · Footer 160.
  * Content replacement only — card height never changes on desktop.
  */
-export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function LiquidityBuildingCard(_props, ref) {
+type LiquidityBuildingCardProps = {
+  /** IA workspace: open setup immediately — no click-to-expand shell. */
+  forceExpanded?: boolean
+}
+
+export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuildingCardProps>(
+  function LiquidityBuildingCard({ forceExpanded = false }, ref) {
   const card = useLiquidityBuildingCard()
-  const [setupStarted, setSetupStarted] = useState(false)
+  const [setupStarted, setSetupStarted] = useState(forceExpanded)
   const [uiStep, setUiStep] = useState(0)
   const [programKey, setProgramKey] = useState('marco')
   const [advancedOpen, setAdvancedOpen] = useState(false)
+
+  React.useEffect(() => {
+    if (!forceExpanded) return
+    if (card.phase === 'entry') {
+      card.startSetup()
+      setSetupStarted(true)
+      setUiStep(0)
+    }
+    // Intentionally once on mount for IA expanded workspace.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceExpanded])
 
   const marco = useCurrency(MARCO_ADDR)
   const selectedProjectToken = useCurrency(card.draft.tokenAddress ?? undefined)
@@ -553,10 +570,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
   )
 
   const isActive = card.phase === 'active' || card.phase === 'manage'
-  const inFlow = setupStarted || (card.phase !== 'entry' && !isActive)
-  const heroCollapsed = inFlow || isActive
+  const inFlow = forceExpanded || setupStarted || (card.phase !== 'entry' && !isActive)
+  // IA workspace already titles the pane — keep LB header collapsed, body expanded.
+  const heroCollapsed = forceExpanded || inFlow || isActive
   /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
-  const compactInactive = !inFlow && !isActive
+  const compactInactive = !forceExpanded && !inFlow && !isActive
 
   const activeStep = useMemo(() => {
     if (isActive) return -1
@@ -967,12 +985,15 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement>(function Liqu
     <Card
       ref={ref as React.Ref<HTMLElement>}
       id="liq-building-card"
-      data-testid="liq-one-building-card"
+      data-testid="liq-building-card"
+      data-liq-one-building-card="liq-one-building-card"
+      data-lb-force-expanded={forceExpanded ? '1' : '0'}
       data-ls-card-liquidity-building="true"
       data-liquidity-building-panel
       data-lb016="true"
       data-lb024="true"
       data-ds0014="true"
+      data-liquidity-building-panel-surface="LiquidityBuildingPanel"
       data-lb-phase={card.phase}
       data-pixel-lb-card={compactInactive ? 'compact' : '860'}
       data-lb-module="002"

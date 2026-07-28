@@ -194,19 +194,23 @@ describe('LIQUIDITY_MODULE_007 Analytics', () => {
     expect(countMintBurnActivity(null)).toBeNull()
   })
 
-  it('mounts Module 007 after My Positions and above legacy Pool', () => {
+  it('mounts Module 007 inside Liquidity Insights after My Positions', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-007="mounted"')
-    expect(page).toContain('LiquidityAnalyticsModule')
+    expect(page).toContain('LiquidityInsightsModule')
     const positions = page.indexOf('<LiquidityMyPositionsModule')
-    const analytics = page.indexOf('<LiquidityAnalyticsModule')
+    const insights = page.indexOf('<LiquidityInsightsModule')
     expect(positions).toBeGreaterThan(-1)
-    expect(analytics).toBeGreaterThan(positions)
-    // Read-only: outside LiquidityRuntimeProvider (does not nest mint/positions host)
+    expect(insights).toBeGreaterThan(positions)
     const providerClose = page.indexOf('</LiquidityRuntimeProvider>')
     expect(providerClose).toBeGreaterThan(-1)
-    expect(analytics).toBeGreaterThan(providerClose)
+    expect(insights).toBeGreaterThan(providerClose)
+    const insightsSrc = readFileSync(
+      path.join(__dirname, '../modules/LiquidityInsightsModule.tsx'),
+      'utf8',
+    )
+    expect(insightsSrc).toContain('LiquidityAnalyticsModule')
   })
 
   it('certifies Module 007 in architecture plan and ships evidence paths', () => {
