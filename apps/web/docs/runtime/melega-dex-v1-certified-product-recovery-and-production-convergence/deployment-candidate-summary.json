@@ -20,5 +20,12 @@
     "build": true,
     "playwright": true
   },
-  "readyForControlledRelease": true
+  "readyForControlledRelease": true,
+  "hotfix": {
+    "issue": "Home crash: hasTrendingSwapActivity is not a function",
+    "fix": "restore apps/web/src/lib/trending from 95c1cbf4",
+    "priorProductionDeploymentId": 5632641585,
+    "priorMergeSha": "e145b6a926250f7140fabe911411ee3851079f18",
+    "at": "2026-07-28T01:45:56.388390Z"
+  }
 }
