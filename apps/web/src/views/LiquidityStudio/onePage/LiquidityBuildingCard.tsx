@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
@@ -7,7 +7,12 @@ import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { useCurrency } from 'hooks/Tokens'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
-import { EPOCH_OPTIONS, PROGRAM_STATUS_LABEL } from '../liquidityBuilding/programStatus'
+import {
+  EPOCH_OPTIONS,
+  PROGRAM_STATUS_LABEL,
+  setupBudgetPositive,
+  setupTokenResolved,
+} from '../liquidityBuilding/programStatus'
 import { LB_UX } from '../liquidityBuilding/uxCopy'
 import { liqOne } from './onePageTokens'
 
@@ -15,6 +20,19 @@ const WIZARD_STEPS = ['Setup', 'Budget', 'Strategy', 'Review', 'Activate'] as co
 
 /** Canonical MARCO — default suggestion only; Custom opens full token search. */
 const MARCO_ADDR = MARCO_BSC_ADDRESS
+
+const goldHaloPulse = keyframes`
+  0%, 100% {
+    box-shadow:
+      0 18px 48px rgba(0, 0, 0, 0.35),
+      0 0 18px rgba(221, 185, 47, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 18px 48px rgba(0, 0, 0, 0.35),
+      0 0 36px rgba(221, 185, 47, 0.22);
+  }
+`
 
 const Card = styled.section<{ $compact?: boolean }>`
   width: ${liqOne.col};
@@ -25,17 +43,22 @@ const Card = styled.section<{ $compact?: boolean }>`
   box-sizing: border-box;
   padding: 0;
   border-radius: ${liqOne.cardRadius};
-  border: 1px solid ${liqOne.goldBorder};
+  border: 1px solid rgba(255, 255, 255, 0.09);
   background:
-    radial-gradient(circle at 86% 12%, rgba(221, 185, 47, 0.14) 0%, rgba(221, 185, 47, 0.03) 34%, transparent 56%),
+    radial-gradient(circle at 86% 12%, rgba(221, 185, 47, 0.1) 0%, rgba(221, 185, 47, 0.02) 34%, transparent 56%),
     ${liqOne.card};
   box-shadow:
     0 18px 48px rgba(0, 0, 0, 0.35),
-    0 0 34px rgba(221, 185, 47, 0.06);
+    0 0 18px rgba(221, 185, 47, 0.08);
+  animation: ${goldHaloPulse} 3.6s ease-in-out infinite;
   overflow: ${({ $compact }) => ($compact ? 'visible' : 'hidden')};
   display: flex;
   flex-direction: column;
   font-family: ${liqOne.font};
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 
   @media (max-width: 1375px) {
     width: 100%;
@@ -86,17 +109,6 @@ const Eyebrow = styled.span`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: ${liqOne.gold};
-`
-
-const Badge = styled.span`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #111;
-  background: ${liqOne.gold};
-  border-radius: 999px;
-  padding: 2px 8px;
 `
 
 const Title = styled.h2`
@@ -511,6 +523,14 @@ const EmptyHint = styled.p`
   color: ${liqOne.secondary};
 `
 
+const InlineError = styled.p`
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 650;
+  color: #f87171;
+`
+
 const ConnectSlot = styled.div`
   flex: 1;
 
@@ -539,6 +559,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const [uiStep, setUiStep] = useState(0)
   const [programKey, setProgramKey] = useState('marco')
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [stepError, setStepError] = useState<string | null>(null)
 
   React.useEffect(() => {
     if (!forceExpanded) return
@@ -600,6 +621,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     card.startSetup()
     setSetupStarted(true)
     setUiStep(0)
+    setStepError(null)
   }
 
   const onCancel = () => {
@@ -607,9 +629,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     setSetupStarted(false)
     setUiStep(0)
     setAdvancedOpen(false)
+    setStepError(null)
   }
 
   const onBack = () => {
+    setStepError(null)
     if (card.phase === 'status') {
       card.backToSetup()
       setUiStep(2)
@@ -627,26 +651,56 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     onCancel()
   }
 
+  const tokenReady = setupTokenResolved(card.draft)
+  const budgetReady = setupBudgetPositive(card.draft)
+  const strategyReady = Boolean(card.draft.strategy && card.draft.epochSeconds)
+  const reviewReached = card.phase === 'review' || card.phase === 'status' || isActive
+
+  const stepDone = useMemo(
+    () => [tokenReady, budgetReady, strategyReady && (uiStep >= 2 || reviewReached), reviewReached, isActive] as const,
+    [tokenReady, budgetReady, strategyReady, uiStep, reviewReached, isActive],
+  )
+
   const onContinue = () => {
     if (!inFlow) {
       onStart()
       return
     }
     if (activeStep <= 0) {
+      if (!tokenReady) {
+        setStepError('Select a project token to continue.')
+        return
+      }
+      setStepError(null)
       setUiStep(1)
       if (card.phase === 'entry') card.startSetup()
       return
     }
     if (activeStep === 1) {
+      if (!budgetReady) {
+        setStepError('Enter a positive token budget to continue.')
+        return
+      }
+      setStepError(null)
       setUiStep(2)
       return
     }
     if (activeStep === 2) {
-      card.openReview()
+      if (!card.draftReady) {
+        setStepError('Complete token, budget, and strategy before review.')
+        return
+      }
+      const opened = card.openReview()
+      if (!opened) {
+        setStepError('Complete token, budget, and strategy before review.')
+        return
+      }
+      setStepError(null)
       setUiStep(3)
       return
     }
     if (activeStep === 3) {
+      setStepError(null)
       card.openStatus()
       setUiStep(4)
       return
@@ -797,6 +851,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             </TokenRow>
             <MetaValue style={{ marginTop: 6 }}>{card.draft.tokenSymbol || 'Select a project token'}</MetaValue>
           </Field>
+          {stepError && activeStep === 0 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
           <MetaGrid>
             <MetaCell>
               <MetaLabel>Quote Asset</MetaLabel>
@@ -852,9 +907,13 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               inputMode="decimal"
               placeholder="0.0"
               value={card.draft.tokenBudget}
-              onChange={(e) => card.setBudget(e.target.value)}
+              onChange={(e) => {
+                setStepError(null)
+                card.setBudget(e.target.value)
+              }}
             />
           </Field>
+          {stepError && activeStep === 1 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
           <MetaGrid>
             <MetaCell>
               <MetaLabel>Balance</MetaLabel>
@@ -910,6 +969,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             <summary>Advanced</summary>
             <AccordionBody>Dynamic rate bounds and custom strategy modes stay collapsed for V1 defaults.</AccordionBody>
           </Accordion>
+          {stepError && activeStep === 2 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
         </div>
       )
     }
@@ -1003,10 +1063,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       <Hero $collapsed={heroCollapsed || compactInactive} data-testid="liq-lb-header" data-collapsed={heroCollapsed || compactInactive ? '1' : '0'}>
         <HeroCopy>
           <EyebrowRow>
-            <Eyebrow>AI-POWERED</Eyebrow>
-            <Badge>RECOMMENDED</Badge>
+            <Eyebrow>AI-POWERED · RECOMMENDED</Eyebrow>
           </EyebrowRow>
-          <Title>Liquidity Building</Title>
+          {!forceExpanded ? <Title>Liquidity Building</Title> : null}
           <Desc $collapsed={heroCollapsed || compactInactive}>
             Let Melega convert eligible project activity into LP liquidity over time — you keep ownership.
           </Desc>
@@ -1044,8 +1103,8 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       ) : (
         <Wizard $hidden={compactInactive} data-testid="liq-lb-wizard" aria-label="Liquidity Building steps">
           {WIZARD_STEPS.map((label, i) => (
-            <StepBtn key={label} type="button" $active={activeStep === i} $done={activeStep > i}>
-              <StepDot $active={activeStep === i} $done={activeStep > i}>
+            <StepBtn key={label} type="button" $active={activeStep === i} $done={stepDone[i] && activeStep !== i}>
+              <StepDot $active={activeStep === i} $done={stepDone[i] && activeStep !== i}>
                 {i + 1}
               </StepDot>
               {label}
@@ -1093,11 +1152,19 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <ConnectWalletButton>{LB_UX.walletConnect}</ConnectWalletButton>
             </ConnectSlot>
           ) : (
-            <Primary type="button" onClick={onPrimary} disabled={activeStep === 3 && !card.draft.tokenSymbol}>
+            <Primary
+              type="button"
+              onClick={onPrimary}
+              disabled={activeStep === 4 && !card.mutateGate.ok}
+              data-testid="liq-lb-primary"
+            >
               {primaryLabel}
             </Primary>
           )}
         </FooterRow>
+        {stepError && (activeStep === 2 || activeStep === 0 || activeStep === 1) ? (
+          <InlineError data-testid="liq-lb-footer-error">{stepError}</InlineError>
+        ) : null}
         <TechStatus title={techLine}>{techLine}</TechStatus>
       </Footer>
     </Card>

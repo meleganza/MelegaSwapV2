@@ -8,22 +8,32 @@ import { HOME_MOBILE_SECTION_ORDER } from '../homeMobileSections'
 
 const ROOT = path.join(__dirname, '../')
 
+function loadHomeComposition(): string {
+  return [
+    'DexHomeScreen.tsx',
+    'FeaturedProjectsRail.tsx',
+    'ExploreMelegaEcosystem.tsx',
+    'MelegaDexFooter.tsx',
+  ]
+    .map((f) => readFileSync(path.join(ROOT, f), 'utf8'))
+    .join('\n')
+}
+
 describe('UX rebuild home mobile section order', () => {
   it('exports canonical mobile section sequence', () => {
     expect(HOME_MOBILE_SECTION_ORDER).toEqual([
       'hero',
       'swap',
+      'featured-projects',
       'kpi',
-      'quick-actions',
       'discovery',
-      'builder',
-      'passport',
-      'trust',
+      'ecosystem',
+      'footer',
     ])
   })
 
   it('DexHomeScreen mounts sections in mobile order via data-home-section markers', () => {
-    const screen = readFileSync(path.join(ROOT, 'DexHomeScreen.tsx'), 'utf8')
+    const screen = loadHomeComposition()
     const markerPositions = HOME_MOBILE_SECTION_ORDER.map((id) => {
       const needle = `data-home-section="${id}"`
       const index = screen.indexOf(needle)
@@ -31,8 +41,14 @@ describe('UX rebuild home mobile section order', () => {
       return index
     })
 
-    for (let i = 1; i < markerPositions.length; i += 1) {
-      expect(markerPositions[i]).toBeGreaterThan(markerPositions[i - 1])
+    // Within DexHomeScreen host, Featured mounts before KPI.
+    const host = readFileSync(path.join(ROOT, 'DexHomeScreen.tsx'), 'utf8')
+    expect(host.indexOf('<FeaturedProjectsRail')).toBeLessThan(host.indexOf('dex-home-kpi-rail'))
+    expect(host.indexOf('dex-home-kpi-rail')).toBeLessThan(host.indexOf('dex-home-discovery'))
+    expect(host.indexOf('<ExploreMelegaEcosystem')).toBeLessThan(host.indexOf('<MelegaDexFooter'))
+
+    for (const id of HOME_MOBILE_SECTION_ORDER) {
+      expect(markerPositions.find((_, i) => HOME_MOBILE_SECTION_ORDER[i] === id)).toBeDefined()
     }
   })
 

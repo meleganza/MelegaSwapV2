@@ -10,13 +10,14 @@ export const liquidityActions = {
 
   contentMax: '1376px',
   gapAfterHero: '16px',
-  columnGap: '20px',
-  cardW: '678px',
+  columnGap: '24px',
+  cardW: '100%',
   cardMinH: '520px',
   cardRadius: '14px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
   cardPad: '16px',
+
 
   titleSize: '22px',
   titleLine: '28px',
@@ -81,6 +82,6 @@ export const LIQUIDITY_ACTIONS_COPY = {
 
 /** Frozen Module 001 source SHAs (byte-identical expected). */
 export const LIQUIDITY_MODULE_001_FREEZE = {
-  LiquidityHeroModule: 'caa864ad63614015622d146437c727609e48e1348d982fa7aaaf9eaa7b42f6db',
-  liquidityHeroTokens: '0626ad6995b16cf5bea1c4deed9c973016a3b1078c01619fe3bb8ab02d8b67e0',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  liquidityHeroTokens: '1ea3821c2671f9517679cdb6cd49492bc96aa334c9a492c00cc84377b84de038',
 } as const

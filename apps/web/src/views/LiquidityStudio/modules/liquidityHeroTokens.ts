@@ -13,16 +13,18 @@ export const liquidityHero = {
   contentMax: '1376px',
   topAfterTrending: '24px',
   heroW: '1376px',
-  heroH: '260px',
+  /** Founder acceptance: hero stage min-height */
+  heroH: '300px',
 
-  leftW: '440px',
-  artworkW: '480px',
-  trustW: '360px',
-  columnGap: '48px',
+  /** Desktop ≈ 32% / 40% / 28% (left / artwork / trust) */
+  leftW: '32%',
+  artworkW: '40%',
+  trustW: '28%',
+  columnGap: '24px',
 
-  artworkBoxW: '480px',
+  artworkBoxW: '100%',
   artworkBoxH: '230px',
-  trustBoxW: '360px',
+  trustBoxW: '100%',
   trustBoxH: '230px',
   trustRadius: '14px',
   trustBorder: '1px solid rgba(255,255,255,0.09)',

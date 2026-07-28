@@ -18,6 +18,7 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { useCurrencyBalances } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { humanizeAddError, mapApprovalState, resolveLiquidityAddCta } from './liquidityAddCta'
 import { LIQUIDITY_ADD_COPY, liquidityAdd } from './liquidityAddTokens'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
@@ -523,7 +524,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             <MelegaTokenAvatar
               symbol={currencyA?.symbol}
               name={currencyA?.name}
-              address={currencyA?.isToken ? currencyA.address : undefined}
+              address={currencyA?.wrapped?.address}
               chainId={liquidityAdd.chainId}
               size={32}
               radius="circle"
@@ -531,7 +532,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             <MelegaTokenAvatar
               symbol={currencyB?.symbol}
               name={currencyB?.name}
-              address={currencyB?.isToken ? currencyB.address : undefined}
+              address={currencyB?.wrapped?.address}
               chainId={liquidityAdd.chainId}
               size={32}
               radius="circle"
@@ -547,7 +548,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               <MelegaTokenAvatar
                 symbol={currencyA?.symbol}
                 name={currencyA?.name}
-                address={currencyA?.isToken ? currencyA.address : undefined}
+                address={currencyA?.wrapped?.address}
                 chainId={liquidityAdd.chainId}
                 size={20}
                 radius="circle"
@@ -556,8 +557,9 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             </TokenSelect>
           </TokenHead>
           <AmountInput
-            value={typedValueA === '0.0' ? '' : typedValueA}
-            onChange={(e) => onFieldAInput(e.target.value)}
+            type="text"
+            value={typedValueA}
+            onChange={(e) => onFieldAInput(sanitizeDecimalInput(e.target.value))}
             placeholder="0.0"
             inputMode="decimal"
             aria-label={LIQUIDITY_ADD_COPY.amount}
@@ -585,7 +587,7 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
               <MelegaTokenAvatar
                 symbol={currencyB?.symbol}
                 name={currencyB?.name}
-                address={currencyB?.isToken ? currencyB.address : undefined}
+                address={currencyB?.wrapped?.address}
                 chainId={liquidityAdd.chainId}
                 size={20}
                 radius="circle"
@@ -594,8 +596,9 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
             </TokenSelect>
           </TokenHead>
           <AmountInput
-            value={typedValueB === '0.0' ? '' : typedValueB}
-            onChange={(e) => onFieldBInput(e.target.value)}
+            type="text"
+            value={typedValueB}
+            onChange={(e) => onFieldBInput(sanitizeDecimalInput(e.target.value))}
             placeholder="0.0"
             inputMode="decimal"
             aria-label={LIQUIDITY_ADD_COPY.amount}

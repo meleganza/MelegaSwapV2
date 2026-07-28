@@ -210,7 +210,8 @@ describe('LIQUIDITY_MODULE_007 Analytics', () => {
       path.join(__dirname, '../modules/LiquidityInsightsModule.tsx'),
       'utf8',
     )
-    expect(insightsSrc).toContain('LiquidityAnalyticsModule')
+    expect(insightsSrc).toContain('useLiquidityAnalytics')
+    expect(insightsSrc).not.toContain('LiquidityAnalyticsModule')
   })
 
   it('certifies Module 007 in architecture plan and ships evidence paths', () => {

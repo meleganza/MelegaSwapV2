@@ -1,9 +1,10 @@
 /**
- * MELEGA_DEX_V1_PRODUCT_INFORMATION_ARCHITECTURE_REFINEMENT — Home gates.
+ * MELEGA_DEX_V1 Home IA + Founder acceptance gates.
  */
 import { readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
+import { resolveFounderFeaturedProjects, FOUNDER_FEATURED_SLUGS } from '../featuredProjectsCatalog'
 
 const ROOT = path.resolve(__dirname, '..')
 
@@ -21,27 +22,50 @@ describe('Product IA refinement — Home', () => {
     expect(home).toContain('ExploreMelegaEcosystem')
     expect(home).toContain("label: 'Listed Projects'")
     expect(home).toContain("label: '24H Volume'")
+    expect(home).toContain("label: 'MARKETS'")
+    expect(home).toContain("label: 'Active Farms'")
+    expect(home).toContain("label: 'Active Pools'")
+    expect(home).not.toContain("label: 'Indexed Tokens'")
   })
 
-  it('Featured rail rotates four project cards', () => {
+  it('Featured rail renders four founder projects without detached heading', () => {
     const featured = load('FeaturedProjectsRail.tsx')
-    expect(featured).toContain('Featured Projects')
-    expect(featured).toContain('ROTATE_MS')
-    expect(featured).toContain('getAllProjects')
+    expect(featured).not.toContain('>Featured Projects<')
+    expect(featured).toContain('resolveFounderFeaturedProjects')
+    expect(featured).toContain('Trade')
+    expect(featured).toContain('View Project')
+    const resolved = resolveFounderFeaturedProjects()
+    expect(resolved).toHaveLength(4)
+    expect(FOUNDER_FEATURED_SLUGS).toEqual(['mm72', 'eyed', 'young-degens', 'blion'])
+    for (const card of resolved) {
+      expect(card.resolved).toBe(true)
+      expect(card.address).toMatch(/^0x/i)
+    }
   })
 
   it('Ecosystem grid includes required product names', () => {
     const eco = load('ExploreMelegaEcosystem.tsx')
+    const destinations = load('ecosystemDestinations.ts')
+    expect(eco).toContain('ECOSYSTEM_DESTINATIONS')
     for (const name of ['PASSPORT', 'SMARTDROP', 'LABS', 'SPACE', 'RADAR', 'MAIORA']) {
-      expect(eco).toContain(name)
+      expect(destinations).toContain(name)
     }
   })
 
-  it('Top Movers ranking prefers abs% then volume then swaps; no activity-only fallback', () => {
+  it('Top Movers ranking prefers abs% then swaps then volume; no activity-only fallback', () => {
     const rankings = load('useDexTrendingRankings.ts')
     expect(rankings).toContain('volume24h')
     expect(rankings).toContain('tradeCount24h')
     expect(rankings).toContain('Never fabricate')
+    expect(rankings).toContain('computeChangeFromObservations')
     expect(rankings).not.toContain('return rankTierAssets(active')
+  })
+
+  it('Featured mounts above KPI rail in DexHomeScreen', () => {
+    const home = load('DexHomeScreen.tsx')
+    const featuredIdx = home.indexOf('<FeaturedProjectsRail')
+    const kpiIdx = home.indexOf('dex-home-kpi-rail')
+    expect(featuredIdx).toBeGreaterThan(-1)
+    expect(kpiIdx).toBeGreaterThan(featuredIdx)
   })
 })

@@ -15,6 +15,7 @@ import useHomeTradeData from './useHomeTradeData'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
+import { MelegaDexFooter } from './MelegaDexFooter'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -371,71 +372,29 @@ const EmptyRow = styled.div`
   text-align: center;
 `
 
-const TrustRail = styled.footer`
-  min-height: 76px;
-  margin-top: 10px;
-  padding: 16px 18px;
-  border-radius: 14px;
-  background: ${uxRebuildColors.card};
-  border: 1px solid ${uxRebuildColors.border};
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  box-sizing: border-box;
-`
-
-const TrustLeft = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: ${uxRebuildColors.muted};
-`
-
-const ChainPill = styled.span`
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid ${uxRebuildColors.border};
-  background: ${uxRebuildColors.input};
-  color: ${uxRebuildColors.secondary};
-  font-size: 11px;
-  font-weight: 650;
-  display: inline-flex;
-  align-items: center;
-`
-
-const TrustRight = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  font-size: 12px;
-  color: ${uxRebuildColors.secondary};
-`
-
-const NA = 'Not available'
+const NA = '—'
 
 export const DexHomeScreen: React.FC = () => {
   const router = useRouter()
   const swapRef = useRef<HTMLDivElement>(null)
   const discoveryRef = useRef<HTMLElement>(null)
   const data = useHomeTradeData()
-  const projectCount = useMemo(() => getAllProjects().length, [])
+  const projectCount = useMemo(
+    () => getAllProjects().filter((p) => p.registryStatus === 'listed' && p.slug !== 'melega-dex').length,
+    [],
+  )
 
   const focusProjects =
     router.query.focus === 'projects' || router.query.view === 'projects' || router.asPath.includes('#projects')
 
   React.useEffect(() => {
-    if (router.query.focus === 'swap') {
+    if (router.query.focus === 'swap' || router.query.outputCurrency) {
       swapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
     if (!focusProjects) return
     discoveryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [focusProjects, router.query.focus])
+  }, [focusProjects, router.query.focus, router.query.outputCurrency])
 
   const kpiItems = useMemo(() => {
     const byId = Object.fromEntries(data.liveEconomyMetrics.map((m) => [m.id, m.value]))
@@ -448,47 +407,86 @@ export const DexHomeScreen: React.FC = () => {
       data.liveEconomyMetrics.find((m) => /farm/i.test(m.label))?.value ||
       NA
     const pools =
+      byId.activePools ||
       byId.rewardingPools ||
+      byLabel['active pools'] ||
       byLabel['rewarding pools'] ||
       data.liveEconomyMetrics.find((m) => /pool/i.test(m.label))?.value ||
       NA
-    const indexed =
-      byId.indexedAssets ||
-      byLabel['indexed assets'] ||
-      data.liveEconomyMetrics.find((m) => /indexed|asset|token/i.test(m.label))?.value ||
+    const markets =
+      byId.liquidPairs ||
+      byId.markets ||
+      byLabel['liquid pairs'] ||
+      byLabel.markets ||
       NA
     const volumeValue = volCard?.value ?? NA
+    const compact = (v: string) => (/not available/i.test(v) ? NA : v)
     return [
-      { label: 'TVL', value: tvlCard?.value ?? NA },
-      // Prefer factual USD volume; show — when unavailable (never invent swaps-as-volume).
-      { label: '24H Volume', value: volumeValue },
-      { label: 'Listed Projects', value: projectCount > 0 ? String(projectCount) : NA },
-      { label: 'Farms', value: farms },
-      { label: 'Pools', value: pools },
-      { label: 'Indexed Tokens', value: indexed },
+      {
+        label: 'TVL',
+        value: compact(tvlCard?.value ?? NA),
+        title: 'Canonical Melega DEX liquidity TVL (factual farm/liquidity sources).',
+      },
+      {
+        label: '24H Volume',
+        value: compact(volumeValue),
+        title: 'Aggregate factual Melega DEX swap volume over the last 24 hours (USD when valuation is supported).',
+      },
+      {
+        label: 'Listed Projects',
+        value: projectCount > 0 ? String(projectCount) : NA,
+        title: 'Unique canonical Project Pages / listed ecosystem projects (not raw token count).',
+      },
+      {
+        label: 'Active Farms',
+        value: compact(String(farms)),
+        title: 'Canonical currently farmable MasterBuilder farms.',
+      },
+      {
+        label: 'Active Pools',
+        value: compact(String(pools)),
+        title: 'Canonical currently active SmartChef staking pools (not historical totals).',
+      },
+      {
+        label: 'MARKETS',
+        value: compact(String(markets)),
+        title: 'Unique tradeable Factory pairs / markets from canonical Factory indexing.',
+      },
     ]
   }, [data.liveEconomyMetrics, data.marketCards, projectCount])
 
   const trendingRows = useMemo(() => {
     const assets = data.indexedRibbonAssets ?? []
-    return (data.trendingTickerItems ?? []).slice(0, 10).map((item, idx) => {
+    const seen = new Set<string>()
+    const rows: Array<{
+      id: string
+      rank: number
+      name: string
+      meta: string
+      metric?: string
+      href: string
+    }> = []
+    ;(data.trendingTickerItems ?? []).forEach((item, idx) => {
       const asset = assets[idx]
+      const key = (asset?.address || asset?.slug || item.primary || item.id || '').toLowerCase()
+      if (!key || seen.has(key)) return
+      seen.add(key)
       const slug = asset?.slug
       const move = item.accent?.trim()
-      return {
+      rows.push({
         id: item.id ?? `trend-${idx}`,
-        rank: idx + 1,
+        rank: rows.length + 1,
         name: item.primary ?? asset?.symbol ?? 'Token',
         meta: asset?.displayName ?? asset?.symbol ?? '',
-        // TOKEN ↑ % / TOKEN ↓ % — never "Price unavailable"
         metric: move || undefined,
         href: asset?.address
           ? `/swap?outputCurrency=${asset.address}`
           : slug
             ? `/@${slug}`
             : '/trade',
-      }
+      })
     })
+    return rows.slice(0, 10)
   }, [data.trendingTickerItems, data.indexedRibbonAssets])
 
   const farmRows = (data.farmRows ?? []).slice(0, 5)
@@ -556,16 +554,16 @@ export const DexHomeScreen: React.FC = () => {
             </HeroRight>
           </Hero>
 
+          <FeaturedProjectsRail />
+
           <KpiRail data-testid="dex-home-kpi-rail" data-home-section="kpi">
             {kpiItems.map((k) => (
-              <KpiCard key={k.label}>
+              <KpiCard key={k.label} title={k.title} aria-label={`${k.label}: ${k.value}. ${k.title}`}>
                 <KpiLabel>{k.label}</KpiLabel>
                 <KpiValue>{k.value}</KpiValue>
               </KpiCard>
             ))}
           </KpiRail>
-
-          <FeaturedProjectsRail />
 
           <Discovery ref={discoveryRef} id="projects" data-testid="dex-home-discovery" data-home-section="discovery">
             <DiscCard>
@@ -669,19 +667,7 @@ export const DexHomeScreen: React.FC = () => {
 
           <ExploreMelegaEcosystem />
 
-          <TrustRail data-testid="dex-home-trust-rail" data-home-section="trust">
-            <TrustLeft>
-              <span>Backed by</span>
-              <ChainPill>BNB Chain</ChainPill>
-              <ChainPill>Supported networks only</ChainPill>
-            </TrustLeft>
-            <TrustRight>
-              <span>Audited: Not available</span>
-              <span>Contract: Not available</span>
-              <span>Last Audit: Not available</span>
-              <span>Security Score: Not available</span>
-            </TrustRight>
-          </TrustRail>
+          <MelegaDexFooter />
         </DataSurfaceErrorBoundary>
       </Content>
     </Root>

@@ -9,13 +9,22 @@ describe('projects.data', () => {
     expect(new Set(slugs).size).toBe(slugs.length)
   })
 
-  it('melega-dex is canonical with MARCO on four chains', () => {
+  it('melega-dex is canonical; MARCO token identity owns multi-chain token refs', () => {
     const project = STATIC_PROJECTS.find((p) => p.slug === 'melega-dex')
+    const marco = STATIC_PROJECTS.find((p) => p.slug === 'marco')
     expect(project?.isCanonical).toBe(true)
-    expect(project?.resources.tokens).toHaveLength(4)
+    // Token contracts live on the MARCO project identity to avoid cross-project collisions.
+    expect(project?.resources.tokens).toHaveLength(0)
+    expect(marco?.resources.tokens).toHaveLength(4)
     expect(project?.trustBadges).toContain('canonical')
     expect(project?.trustBadges).toContain('observed')
     expect(project?.trustBadges).not.toContain('unverified')
+  })
+
+  it('includes founder-acceptance featured project identities', () => {
+    for (const slug of ['mm72', 'eyed', 'young-degens', 'blion']) {
+      expect(STATIC_PROJECTS.some((p) => p.slug === slug)).toBe(true)
+    }
   })
 
   it('does not mark AI report as live', () => {

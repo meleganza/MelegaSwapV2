@@ -12,9 +12,8 @@ export const liquidityMyPositions = {
   gapAfterSnapshot: '20px',
   /** IA: My Positions follows primary workspace (Actions), not Market Snapshot. */
   gapAfterActions: '20px',
-  columnGap: '24px',
-  mainW: '936px',
-  reservedW: '424px',
+  columnGap: '16px',
+  mainW: '1376px',
 
   cardRadius: '14px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
@@ -54,8 +53,6 @@ export const LIQUIDITY_MY_POSITIONS_COPY = {
   status: 'Status',
   manage: 'Manage',
   remove: 'Remove Liquidity',
-  reservedLabel: 'Reserved',
-  reservedBody: 'Future position tools will appear here.',
   emptyMetric: '—',
   statusActive: 'ACTIVE',
   statusUnavailable: 'UNAVAILABLE',
@@ -66,9 +63,9 @@ export type LiquidityPositionStatus = 'ACTIVE' | 'UNAVAILABLE' | 'PARTIAL'
 
 /** Frozen Modules 001–003 + 005. Module 004 Add is provider-hoist only (new SHA). */
 export const LIQUIDITY_MODULE_001_005_FREEZE = {
-  LiquidityHeroModule: 'caa864ad63614015622d146437c727609e48e1348d982fa7aaaf9eaa7b42f6db',
-  LiquidityActionsModule: '2ff31b501c9bd522145802e6f775c8854c767ae75bed513aef6c9b16f5b357cf',
-  LiquidityPoolDiscoveryModule: '6c4fe13353826b7a2dffb3f75995bd8b627a7713593e867c7d60a914c881e051',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
   LiquidityMarketSnapshotModule:
     '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
 } as const

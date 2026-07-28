@@ -139,13 +139,14 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
     expect(mod).not.toMatch(/\$24\.56M|fake TVL|fake volume/i)
   })
 
-  it('mounts Module 005 inside Liquidity Insights (merged analytics)', () => {
+  it('reuses Module 005 snapshot hook inside Liquidity Insights (four-card surface)', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityInsightsModule')
     expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-005="mounted"')
     const insights = readFileSync(path.join(__dirname, '../modules/LiquidityInsightsModule.tsx'), 'utf8')
-    expect(insights).toContain('LiquidityMarketSnapshotModule')
+    expect(insights).toContain('useLiquidityMarketSnapshot')
+    expect(insights).not.toContain('LiquidityMarketSnapshotModule')
     expect(insights).toContain('Liquidity Insights')
   })
 

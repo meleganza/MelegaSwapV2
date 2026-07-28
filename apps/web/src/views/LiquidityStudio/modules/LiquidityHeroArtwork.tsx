@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { liquidityHero } from './liquidityHeroTokens'
 
 const Frame = styled.div`
-  width: ${liquidityHero.artworkBoxW};
+  width: min(100%, 480px);
   height: ${liquidityHero.artworkBoxH};
   max-width: 100%;
   position: relative;
@@ -17,6 +17,7 @@ const Frame = styled.div`
   justify-content: center;
   pointer-events: none;
   flex: 0 0 auto;
+  margin: 0 auto;
 
   @media (max-width: ${liquidityHero.mobileBreak}) {
     width: min(100%, ${liquidityHero.mobileArtworkMaxW});

@@ -63,11 +63,11 @@ export type LiquidityAnalyticsCardState = 'loading' | 'available' | 'unavailable
 
 /** Frozen Modules 001–006 source SHAs (byte-identical). */
 export const LIQUIDITY_MODULE_001_006_FREEZE = {
-  LiquidityHeroModule: 'caa864ad63614015622d146437c727609e48e1348d982fa7aaaf9eaa7b42f6db',
-  LiquidityActionsModule: '2ff31b501c9bd522145802e6f775c8854c767ae75bed513aef6c9b16f5b357cf',
-  LiquidityPoolDiscoveryModule: '6c4fe13353826b7a2dffb3f75995bd8b627a7713593e867c7d60a914c881e051',
-  LiquidityAddModule: 'd657a81be28640fb36124c2159fa356f88681415ffc6d3c4fd3abd06353bc162',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
+  LiquidityAddModule: 'e57645b8b56c5e5530e4e7f357357656a70db39821ccade18aaffcc95a61113c',
   LiquidityMarketSnapshotModule:
     '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
-  LiquidityMyPositionsModule: 'dd84879a02980bf0bf8da0f7ab7e1443ec695e5d2f39db33963196456926c80f',
+  LiquidityMyPositionsModule: 'adf90fe72b8422d81675b916c44aba880df5f340d5c9aec00999fff0e17ad3dc',
 } as const

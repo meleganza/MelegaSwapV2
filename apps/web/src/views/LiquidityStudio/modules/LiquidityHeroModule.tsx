@@ -21,23 +21,28 @@ const Hero = styled.div`
   width: 100%;
   max-width: ${liquidityHero.heroW};
   min-height: ${liquidityHero.heroH};
-  height: ${liquidityHero.heroH};
   margin: 0 auto;
   box-sizing: border-box;
   display: grid;
   grid-template-columns: ${liquidityHero.leftW} ${liquidityHero.artworkW} ${liquidityHero.trustW};
+  grid-template-areas: 'left artwork trust';
   column-gap: ${liquidityHero.columnGap};
-  align-items: center;
+  align-items: stretch;
   overflow: hidden;
 
   @media (max-width: ${liquidityHero.tabletBreak}) {
-    height: auto;
     min-height: 0;
     grid-template-columns: 1fr;
+    grid-template-areas:
+      'copy'
+      'artwork'
+      'trust'
+      'actions';
     row-gap: 16px;
     justify-items: center;
     text-align: center;
     padding: 0 16px 8px;
+    overflow: visible;
   }
 
   @media (max-width: ${liquidityHero.mobileBreak}) {
@@ -47,14 +52,29 @@ const Hero = styled.div`
 `
 
 const Left = styled.div`
+  grid-area: left;
   width: 100%;
-  max-width: ${liquidityHero.leftW};
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+
+  @media (max-width: ${liquidityHero.tabletBreak}) {
+    display: contents;
+  }
+`
+
+const Copy = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
 
   @media (max-width: ${liquidityHero.tabletBreak}) {
+    grid-area: copy;
     align-items: center;
     max-width: ${liquidityHero.mobileContentW};
   }
@@ -96,6 +116,8 @@ const Actions = styled.div`
   align-items: center;
 
   @media (max-width: ${liquidityHero.tabletBreak}) {
+    grid-area: actions;
+    margin-top: 0;
     justify-content: center;
   }
 `
@@ -126,15 +148,24 @@ const PrimaryCta = styled(NextLink)`
 `
 
 const Center = styled.div`
+  grid-area: artwork;
   width: 100%;
+  height: 100%;
+  min-height: ${liquidityHero.artworkBoxH};
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
+
+  @media (max-width: ${liquidityHero.tabletBreak}) {
+    min-height: 0;
+  }
 `
 
 const Right = styled.div`
+  grid-area: trust;
   width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -152,10 +183,12 @@ export const LiquidityHeroModule: React.FC = () => (
     data-architecture="LIQUIDITY_ARCHITECTURE_000"
     aria-labelledby="liquidity-hero-title"
   >
-    <Hero data-testid="liquidity-hero-geometry" data-liquidity-hero-geometry="1376x260">
+    <Hero data-testid="liquidity-hero-geometry" data-liquidity-hero-geometry="1376x300">
       <Left data-testid="liquidity-hero-left">
-        <Title id="liquidity-hero-title">{LIQUIDITY_HERO_COPY.title}</Title>
-        <Description>{LIQUIDITY_HERO_COPY.description}</Description>
+        <Copy>
+          <Title id="liquidity-hero-title">{LIQUIDITY_HERO_COPY.title}</Title>
+          <Description>{LIQUIDITY_HERO_COPY.description}</Description>
+        </Copy>
         <Actions>
           <PrimaryCta href={liquidityHero.addLiquidityHref} data-testid="liquidity-hero-cta-add">
             {LIQUIDITY_HERO_COPY.primaryCta}

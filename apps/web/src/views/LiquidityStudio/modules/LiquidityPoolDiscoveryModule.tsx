@@ -124,16 +124,16 @@ const SortSelect = styled.select`
 const Grid = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   column-gap: ${liquidityPoolDiscovery.columnGap};
   row-gap: ${liquidityPoolDiscovery.rowGap};
   min-width: 0;
 
-  @media (max-width: 1440px) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+  @media (min-width: 1920px) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
-  @media (max-width: ${liquidityPoolDiscovery.twoColMax}) {
+  @media (max-width: ${liquidityPoolDiscovery.threeColMax}) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -264,7 +264,7 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
       ) : null}
 
       {discovery.state === 'ready' ? (
-        <Grid data-testid="liquidity-pool-discovery-grid" data-liquidity-discovery-geometry="1376-12-216-x6">
+        <Grid data-testid="liquidity-pool-discovery-grid" data-liquidity-discovery-geometry="1376-12-5col">
           {discovery.visibleCards.map((card) => (
             <LiquidityPoolDiscoveryCard key={card.id} card={card} />
           ))}

@@ -5,7 +5,11 @@ import { CAKE, BUSD } from '@pancakeswap/tokens'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { getCanonicalIndexedAssets } from 'lib/canonical-token-registry'
-import { computeValid24hPriceChange, format24hChangePct } from 'lib/data-truth/compute24hPriceChange'
+import {
+  computeFactualPriceChange,
+  computeChangeFromObservations,
+  format24hChangePct,
+} from 'lib/data-truth/compute24hPriceChange'
 import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
 import {
   MELEGA_FACTORY_BSC,
@@ -85,7 +89,7 @@ type PairRow = {
 
 async function fetchTradeablePairs(): Promise<PairRow[]> {
   try {
-    const res = await fetch('/api/indexer/pairs?pageSize=100&classification=tradeable')
+    const res = await fetch('/api/indexer/pairs?pageSize=500&classification=tradeable')
     if (!res.ok) return []
     const json = (await res.json()) as { rows?: PairRow[] }
     return json.rows ?? []
@@ -135,7 +139,7 @@ async function fetchProtocolActivity(): Promise<ProtocolActivityRow[]> {
 /** Durable indexer Swap events for Melega pairs (API may fall back to production store). */
 async function fetchIndexerSwapEvents(): Promise<IndexerSwapRow[]> {
   try {
-    const res = await fetch('/api/indexer/events?types=Swap&limit=100')
+    const res = await fetch('/api/indexer/events?types=Swap&limit=500')
     if (!res.ok) return []
     const json = (await res.json()) as { events?: IndexerSwapRow[] }
     return json.events ?? []
@@ -145,11 +149,41 @@ async function fetchIndexerSwapEvents(): Promise<IndexerSwapRow[]> {
 }
 
 /**
- * Top Movers % — prefer rolling 24h candles only.
- * Do not fall back to full multi-day OHLCV history (that produced false MARCO −49.1% style moves).
+ * Top Movers % — prefer rolling 24h candles; otherwise longest explicitly labelled factual span.
  */
-function computeIndexedMove(candles: OhlcvCandle[]): ReturnType<typeof computeValid24hPriceChange> {
-  return computeValid24hPriceChange(candles)
+function computeIndexedMove(candles: OhlcvCandle[]): ReturnType<typeof computeFactualPriceChange> {
+  return computeFactualPriceChange(candles)
+}
+
+function priceObservationsFromSwaps(
+  events: IndexerSwapRow[],
+  baseAddress: string,
+  decimalsHint = 18,
+): Array<{ ts: number; price: number }> {
+  const base = baseAddress.toLowerCase()
+  const out: Array<{ ts: number; price: number }> = []
+  for (const ev of events) {
+    if (ev.eventType && !/swap/i.test(ev.eventType)) continue
+    const ts = Number(ev.blockTimestamp) || 0
+    if (!Number.isFinite(ts) || ts <= 0) continue
+    const t0 = ev.token0?.toLowerCase()
+    const t1 = ev.token1?.toLowerCase()
+    const a0 = Math.abs(Number(ev.amount0 ?? 0))
+    const a1 = Math.abs(Number(ev.amount1 ?? 0))
+    if (!Number.isFinite(a0) || !Number.isFinite(a1) || a0 <= 0 || a1 <= 0) continue
+    let price: number | undefined
+    if (t0 === base && t1 && isQuoteTokenAddress(t1)) {
+      price = a1 / a0
+    } else if (t1 === base && t0 && isQuoteTokenAddress(t0)) {
+      price = a0 / a1
+    }
+    if (price != null && Number.isFinite(price) && price > 0 && price < 1e12) {
+      // Reject absurd decimal-scale spikes.
+      if (decimalsHint === 18 && (price > 1e9 || price < 1e-18)) continue
+      out.push({ ts, price })
+    }
+  }
+  return out
 }
 
 /** Reject extreme %-moves without enough swap evidence / liquidity. */
@@ -461,6 +495,9 @@ export function useDexTrendingRankings() {
         tradeCount24h = Math.max(tradeCount24h, marcoMetrics.tradeCount)
         change24h = marcoMetrics.marcoChange ?? change24h
       }
+      if (!change24h) {
+        change24h = computeChangeFromObservations(priceObservationsFromSwaps(indexerSwaps, baseAddress))
+      }
 
       // Tier rows only enrich tokens that already have Swap/volume activity.
       if (!hasTrendingSwapActivity({ tradeCount24h, volume24h })) {
@@ -511,6 +548,7 @@ export function useDexTrendingRankings() {
         continue
       }
       const isMarco = addr === MARCO_BSC_ADDRESS.toLowerCase()
+      const fromSwaps = computeChangeFromObservations(priceObservationsFromSwaps(indexerSwaps, addr))
       upsert({
         symbol: meta.symbol,
         slug: meta.slug,
@@ -528,7 +566,7 @@ export function useDexTrendingRankings() {
           cakeUsd,
           busdUsd,
         ),
-        change24h: isMarco ? marcoMetrics.marcoChange : undefined,
+        change24h: isMarco ? marcoMetrics.marcoChange ?? fromSwaps : fromSwaps,
         volume24h: Math.max(act.volumeUsd, isMarco ? marcoMetrics.volumeUsd : 0),
         liquidityScore: liquidityScoreForAddress(pairRows, addr),
         tradeCount24h: Math.max(act.trades, isMarco ? marcoMetrics.tradeCount : 0),
@@ -538,6 +576,23 @@ export function useDexTrendingRankings() {
       })
     }
 
+    // Enrich missing % from swap execution observations + zero-liquidity rejection.
+    for (const [key, asset] of byAddress) {
+      if (asset.liquidityScore <= 0 && asset.tradeCount24h < 1) {
+        byAddress.delete(key)
+        continue
+      }
+      if (asset.change24h) continue
+      const fromSwaps = computeChangeFromObservations(priceObservationsFromSwaps(indexerSwaps, asset.address))
+      if (fromSwaps) {
+        byAddress.set(key, {
+          ...asset,
+          change24h: fromSwaps,
+          rankingSignals: Array.from(new Set([...asset.rankingSignals, 'swapObservations'])),
+        })
+      }
+    }
+
     const active = [...byAddress.values()].filter((c) =>
       hasTrendingSwapActivity({
         tradeCount24h: c.tradeCount24h,
@@ -545,7 +600,7 @@ export function useDexTrendingRankings() {
       }),
     )
 
-    // Top Movers: factual % only — rank by |Δ24h%| → volume → swaps. Never fabricate history.
+    // Top Movers: factual % only — rank |Δ%| → swaps → volume → recency. Never fabricate history.
     const movers = active
       .filter((c) => {
         const pct = c.change24h?.pct
@@ -561,12 +616,11 @@ export function useDexTrendingRankings() {
         const da = Math.abs(a.change24h?.pct ?? 0)
         const db = Math.abs(b.change24h?.pct ?? 0)
         if (db !== da) return db - da
-        if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
         if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
+        if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
         return (b.lastActivityTs ?? 0) - (a.lastActivityTs ?? 0)
       })
 
-    // Empty ribbon over activity-only / MARCO-only placeholders without proven %.
     return movers.slice(0, TRENDING_LIMIT)
   }, [
     tierMetrics,
@@ -585,10 +639,16 @@ export function useDexTrendingRankings() {
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
       const { accent, accentPositive } = trendingTickerAccent(asset)
+      const priceLabel =
+        asset.priceUsd != null && Number.isFinite(asset.priceUsd) && asset.priceUsd > 0
+          ? asset.priceUsd >= 1
+            ? `$${asset.priceUsd.toFixed(2)}`
+            : `$${asset.priceUsd.toPrecision(4)}`
+          : undefined
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        // TOKEN + direction % only — no price secondary line.
+        secondary: priceLabel,
         accent,
         accentPositive,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,

@@ -1,0 +1,15 @@
+{
+  "cards": [
+    "Total Liquidity",
+    "24H Volume",
+    "Active Markets",
+    "Liquidity Activity"
+  ],
+  "removed": [
+    "Liquidity Growth",
+    "Pool Distribution",
+    "Liquidity Providers",
+    "Provider Activity"
+  ],
+  "browserCardCount": 4
+}

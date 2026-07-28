@@ -61,18 +61,20 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     )
   })
 
-  it('locks dense discovery geometry (1376 / ~6×216 / gap 12)', () => {
+  it('locks dense discovery geometry (5 cols desktop / 6 @1920 / gap 12)', () => {
     expect(liquidityPoolDiscovery.contentMax).toBe('1376px')
     expect(liquidityPoolDiscovery.headerH).toBe('48px')
     expect(liquidityPoolDiscovery.columnGap).toBe('12px')
-    expect(liquidityPoolDiscovery.cardW).toBe('216px')
-    const row =
-      parseInt(liquidityPoolDiscovery.cardW, 10) * 6 + parseInt(liquidityPoolDiscovery.columnGap, 10) * 5
-    expect(row).toBeGreaterThanOrEqual(1350)
-    expect(row).toBeLessThanOrEqual(1376)
+    expect(liquidityPoolDiscovery.cardMinH).toBe('158px')
+    expect(liquidityPoolDiscovery.cardPad).toBe('14px')
+    expect(liquidityPoolDiscovery.ctaH).toBe('40px')
+    expect(liquidityPoolDiscovery.desktopColumns).toBe(5)
+    expect(liquidityPoolDiscovery.wideColumns).toBe(6)
 
     const mod = load('modules/LiquidityPoolDiscoveryModule.tsx')
-    expect(mod).toContain('grid-template-columns: repeat(6, minmax(0, 1fr))')
+    expect(mod).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
+    expect(mod).toContain('min-width: 1920px')
+    expect(mod).toContain('repeat(3, minmax(0, 1fr))')
     expect(mod).toContain('repeat(2, minmax(0, 1fr))')
   })
 

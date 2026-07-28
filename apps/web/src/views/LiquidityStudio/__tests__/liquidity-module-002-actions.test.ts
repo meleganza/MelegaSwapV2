@@ -29,18 +29,17 @@ describe('LIQUIDITY_MODULE_002 Actions', () => {
     expect(actionsIdx).toBeGreaterThan(heroIdx)
   })
 
-  it('locks Actions workspace geometry (1376 / 50-50)', () => {
+  it('locks Actions workspace geometry (1376 / 50-50 / 24px gap)', () => {
     expect(liquidityActions.contentMax).toBe('1376px')
     expect(liquidityActions.gapAfterHero).toBe('16px')
-    const pair =
-      parseInt(liquidityActions.cardW, 10) +
-      parseInt(liquidityActions.columnGap, 10) +
-      parseInt(liquidityActions.cardW, 10)
-    expect(pair).toBe(1376)
+    expect(liquidityActions.columnGap).toBe('24px')
+    expect(liquidityActions.cardW).toBe('100%')
+    expect(liquidityActions.cardMinH).toBe('520px')
 
     const mod = load('modules/LiquidityActionsModule.tsx')
-    expect(mod).toContain('data-liquidity-actions-geometry="1376-20-50-50"')
+    expect(mod).toContain('data-liquidity-actions-geometry="1376-24-50-50"')
     expect(mod).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)')
+    expect(mod).toContain('align-items: stretch')
   })
 
   it('embeds expanded Add Liquidity + AI Builder with NEW badge', () => {

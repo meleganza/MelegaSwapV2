@@ -13,14 +13,13 @@ export const liquidityPoolDiscovery = {
   headerH: '48px',
   columnGap: '12px',
   rowGap: '12px',
-  /** Dense market browse — ~6 cards per desktop row. */
-  cardW: '216px',
-  /** ~40% of prior oversized discovery card footprint */
-  cardMinH: '96px',
+  /** Dense market browse — readable card footprint. */
+  cardW: '100%',
+  cardMinH: '158px',
   cardRadius: '10px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
-  cardPad: '10px',
+  cardPad: '14px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
@@ -28,7 +27,7 @@ export const liquidityPoolDiscovery = {
   muted: 'rgba(255,255,255,0.66)',
   dim: 'rgba(255,255,255,0.45)',
 
-  ctaH: '28px',
+  ctaH: '40px',
   ctaRadius: '8px',
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
@@ -39,11 +38,14 @@ export const liquidityPoolDiscovery = {
   /** Visible page size — factory inventory may be larger; no invented rows. */
   pageSize: 18,
   skeletonCount: 12,
-  desktopColumns: 6,
+  /** 5 cols ≥1440 content; 6 at 1920 when readable. */
+  desktopColumns: 5,
+  wideColumns: 6,
 
   tabletBreak: '1199px',
-  /** Below desktop content width — switch to 2 columns (tablet). */
-  twoColMax: '1199px',
+  /** ~1024 — 3 columns. */
+  threeColMax: '1199px',
+  twoColMax: '767px',
   mobileBreak: '767px',
   mobile390: '390px',
   mobile430: '430px',
@@ -82,7 +84,7 @@ export type LiquidityDiscoverySort = 'market' | 'tvl' | 'volume' | 'newest'
 
 /** Frozen Module 001 / 002 source SHAs. */
 export const LIQUIDITY_MODULE_001_002_FREEZE = {
-  LiquidityHeroModule: 'caa864ad63614015622d146437c727609e48e1348d982fa7aaaf9eaa7b42f6db',
-  LiquidityActionsModule: '2ff31b501c9bd522145802e6f775c8854c767ae75bed513aef6c9b16f5b357cf',
-  liquidityActionsTokens: '5e225af071869ec2b0f55fec980a57462ff1074315abf99a6c94187bddd4a3e4',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  liquidityActionsTokens: '492fc8041d088721054d8b80f5ed39bf2dd9bd28a879fe1275437f6270fc38d2',
 } as const

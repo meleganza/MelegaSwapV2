@@ -1,12 +1,18 @@
 /**
- * LIQUIDITY IA — unified Liquidity Insights (Market Snapshot + Analytics).
- * Presentation merge only. Reuses existing read-only builders/hooks.
+ * LIQUIDITY IA — Liquidity Insights (exactly 4 factual cards).
+ * Presentation only. Reuses snapshot + analytics builders/hooks — does not mount both modules.
  */
-import React from 'react'
-import styled from 'styled-components'
-import { LiquidityMarketSnapshotModule } from './LiquidityMarketSnapshotModule'
-import { LiquidityAnalyticsModule } from './LiquidityAnalyticsModule'
+import React, { useMemo } from 'react'
+import styled, { keyframes } from 'styled-components'
+import { useLiquidityAnalytics } from './useLiquidityAnalytics'
+import { useLiquidityMarketSnapshot } from './useLiquidityMarketSnapshot'
 import { liquidityMarketSnapshot } from './liquidityMarketSnapshotTokens'
+
+const pulse = keyframes`
+  0% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+  100% { opacity: 0.45; }
+`
 
 const Shell = styled.section`
   width: 100%;
@@ -42,43 +48,172 @@ const Description = styled.p`
   color: ${liquidityMarketSnapshot.muted};
 `
 
-const Stack = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+const Grid = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: ${liquidityMarketSnapshot.columnGap};
+  row-gap: ${liquidityMarketSnapshot.columnGap};
   min-width: 0;
 
-  /* Suppress nested module titles — one Insights heading only. */
-  [data-liquidity-module='005-market-snapshot'] > div:first-child,
-  [data-liquidity-module='007-analytics'] > div:first-child {
-    display: none;
+  @media (max-width: ${liquidityMarketSnapshot.tabletBreak}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  [data-liquidity-module='005-market-snapshot'],
-  [data-liquidity-module='007-analytics'] {
-    margin-top: 0 !important;
-    min-height: 0 !important;
-    max-width: none;
-    padding: 0 !important;
+  @media (max-width: ${liquidityMarketSnapshot.mobileBreak}) {
+    grid-template-columns: 1fr;
   }
 `
 
-export const LiquidityInsightsModule: React.FC = () => (
-  <Shell
-    data-testid="liquidity-insights-module"
-    data-liquidity-module="insights"
-    data-liquidity-insights="merged"
-    aria-labelledby="liquidity-insights-title"
-  >
-    <Header>
-      <Title id="liquidity-insights-title">Liquidity Insights</Title>
-      <Description>Factual TVL, activity, distribution, and liquidity behavior — one analytics surface.</Description>
-    </Header>
-    <Stack>
-      <LiquidityMarketSnapshotModule />
-      <LiquidityAnalyticsModule />
-    </Stack>
-  </Shell>
-)
+const Card = styled.article`
+  width: 100%;
+  min-height: 140px;
+  margin: 0;
+  box-sizing: border-box;
+  border-radius: ${liquidityMarketSnapshot.cardRadius};
+  border: ${liquidityMarketSnapshot.cardBorder};
+  background: ${liquidityMarketSnapshot.cardBg};
+  padding: ${liquidityMarketSnapshot.cardPad};
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+`
+
+const Label = styled.div`
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${liquidityMarketSnapshot.dim};
+`
+
+const Value = styled.div`
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 800;
+  color: ${liquidityMarketSnapshot.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const Support = styled.div`
+  margin-top: auto;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+`
+
+const Skeleton = styled.div`
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  animation: ${pulse} 1.4s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0.55;
+  }
+`
+
+type InsightCard = {
+  id: string
+  label: string
+  value: string
+  supporting: string
+  state: 'loading' | 'available' | 'unavailable'
+  title?: string
+}
+
+function InsightCardView({ card }: { card: InsightCard }) {
+  return (
+    <Card
+      data-testid={`liquidity-insights-card-${card.id}`}
+      data-insight-state={card.state}
+      title={card.title}
+    >
+      <Label>{card.label}</Label>
+      {card.state === 'loading' ? (
+        <Skeleton data-testid={`liquidity-insights-skeleton-${card.id}`} aria-hidden />
+      ) : (
+        <Value title={card.value}>{card.value}</Value>
+      )}
+      <Support>{card.supporting}</Support>
+    </Card>
+  )
+}
+
+export const LiquidityInsightsModule: React.FC = () => {
+  const snapshot = useLiquidityMarketSnapshot()
+  const analytics = useLiquidityAnalytics()
+
+  const cards = useMemo((): InsightCard[] => {
+    const byId = Object.fromEntries(snapshot.cards.map((c) => [c.id, c]))
+    const activity = analytics.cards.find((c) => c.id === 'activity')
+    const tvl = byId.tvl
+    const volume = byId.volume24h
+    const active = byId.activePools
+
+    return [
+      {
+        id: 'total-liquidity',
+        label: 'Total Liquidity',
+        value: tvl?.value ?? '—',
+        supporting: tvl?.state === 'available' ? 'Verified protocol liquidity' : tvl?.supporting ?? '—',
+        state: tvl?.state ?? 'unavailable',
+        title: tvl ? `${tvl.source}${tvl.timestamp ? ` · ${tvl.timestamp}` : ''}` : undefined,
+      },
+      {
+        id: 'volume-24h',
+        label: '24H Volume',
+        value: volume?.value ?? '—',
+        supporting: volume?.state === 'available' ? 'Verified 24H swap volume' : volume?.supporting ?? '—',
+        state: volume?.state ?? 'unavailable',
+        title: volume ? `${volume.source}${volume.timestamp ? ` · ${volume.timestamp}` : ''}` : undefined,
+      },
+      {
+        id: 'active-markets',
+        label: 'Active Markets',
+        value: active?.value ?? '—',
+        supporting: active?.state === 'available' ? 'Active tradeable / funded pools' : active?.supporting ?? '—',
+        state: active?.state ?? 'unavailable',
+        title: active ? `${active.source}${active.timestamp ? ` · ${active.timestamp}` : ''}` : undefined,
+      },
+      {
+        id: 'liquidity-activity',
+        label: 'Liquidity Activity',
+        value: activity?.value ?? '—',
+        supporting:
+          activity?.state === 'available' ? activity.supporting : activity?.supporting ?? '—',
+        state: activity?.state ?? 'unavailable',
+        title: activity
+          ? `${activity.source}${activity.timestamp ? ` · ${activity.timestamp}` : ''}`
+          : undefined,
+      },
+    ]
+  }, [snapshot.cards, analytics.cards])
+
+  return (
+    <Shell
+      data-testid="liquidity-insights-module"
+      data-liquidity-module="insights"
+      data-liquidity-insights="four-cards"
+      aria-labelledby="liquidity-insights-title"
+    >
+      <Header>
+        <Title id="liquidity-insights-title">Liquidity Insights</Title>
+        <Description>Factual TVL, volume, markets, and liquidity activity.</Description>
+      </Header>
+      <Grid data-testid="liquidity-insights-grid">
+        {cards.map((card) => (
+          <InsightCardView key={card.id} card={card} />
+        ))}
+      </Grid>
+    </Shell>
+  )
+}
 
 export default LiquidityInsightsModule

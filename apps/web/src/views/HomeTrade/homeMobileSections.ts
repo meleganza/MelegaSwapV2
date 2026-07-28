@@ -2,12 +2,11 @@
 export const HOME_MOBILE_SECTION_ORDER = [
   'hero',
   'swap',
+  'featured-projects',
   'kpi',
-  'quick-actions',
   'discovery',
-  'builder',
-  'passport',
-  'trust',
+  'ecosystem',
+  'footer',
 ] as const
 
 export type HomeMobileSectionId = (typeof HOME_MOBILE_SECTION_ORDER)[number]

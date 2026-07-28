@@ -1,0 +1,13 @@
+{
+  "helper": "apps/web/src/lib/input/decimalInput.ts",
+  "uikitNumericalInputType": "text",
+  "vitest": "7/7 PASS",
+  "supportedStates": [
+    "",
+    ".",
+    "0.",
+    "1.",
+    "1.0",
+    "0.0001"
+  ]
+}

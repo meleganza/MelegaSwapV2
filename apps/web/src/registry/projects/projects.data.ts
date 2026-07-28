@@ -167,5 +167,123 @@ const melegaDex: StaticProjectRecord = {
   asOf: PROJECT_REGISTRY_AS_OF,
 }
 
+const listedTokenDefaults = {
+  registryStatus: 'listed' as const,
+  phase: 'legacy_import' as const,
+  verificationStatus: 'observed' as const,
+  trustBadges: ['canonical', 'observed'] as const,
+  endorsementStatus: 'none' as const,
+  riskTier: 'unknown' as const,
+  legacyImport: true,
+  isCanonical: true,
+  mvpStatic: true as const,
+  supportedChains: [56],
+  disclaimer: PROJECT_REGISTRY_DISCLAIMER,
+  asOf: PROJECT_REGISTRY_AS_OF,
+  capabilities: {
+    tradable: { status: 'live' as const, notes: 'Listed on Melega DEX token list' },
+    liquidity: { status: 'partial' as const },
+    farm: { status: 'none' as const },
+    pool: { status: 'none' as const },
+    lock: { status: 'none' as const },
+    vesting: { status: 'none' as const },
+    launch: { status: 'none' as const },
+    smartdrop: { status: 'none' as const },
+    radar: { status: 'none' as const },
+    space: { status: 'none' as const },
+    labs: { status: 'none' as const },
+    aiReport: { status: 'none' as const },
+    machineManifest: { status: 'live' as const },
+    treasuryCompatible: { status: 'none' as const },
+  },
+}
+
+function listedBscTokenProject(input: {
+  slug: string
+  displayName: string
+  symbol: string
+  address: string
+  logoUrl: string
+  tagline: string
+  description: string
+  sectorTags: string[]
+}): StaticProjectRecord {
+  const token = {
+    chainId: 56,
+    address: input.address,
+    symbol: input.symbol,
+    ref: `token://56/${input.address}`,
+  }
+  return {
+    upi: `upi://melega/project/${input.slug}@1`,
+    slug: input.slug,
+    displayName: input.displayName,
+    tagline: input.tagline,
+    description: input.description,
+    projectType: 'Cryptocurrency',
+    lifecycleStatus: 'operational',
+    logoUrl: input.logoUrl,
+    ...listedTokenDefaults,
+    trustBadges: [...listedTokenDefaults.trustBadges],
+    sectorTags: input.sectorTags,
+    websiteUrl: 'https://www.melega.finance',
+    resources: { tokens: [token], liquidityPools: [], farms: [], stakingPools: [] },
+    primaryTokenRefs: [token.ref],
+    relatedProjectSlugs: ['melega-dex'],
+    deepLinks: {
+      swap: `/trade?chain=bsc&inputCurrency=BNB&outputCurrency=${input.address}`,
+      liquidity: '/liquidity',
+      farms: '/farms',
+      pools: '/pools',
+    },
+  }
+}
+
+/** Founder-acceptance featured listings — identities from canonical BSC token list. */
+const mm72 = listedBscTokenProject({
+  slug: 'mm72',
+  displayName: 'MM72',
+  symbol: 'MM72',
+  address: '0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E',
+  logoUrl: 'https://melega.finance/images/tokens/0xdF9e1A85dB4f985D5BB5644aD07d9D7EE5673B5E.png',
+  tagline: 'Listed Melega DEX project token',
+  description: 'MM72 is a listed project token on Melega DEX (BNB Smart Chain).',
+  sectorTags: ['DeFi'],
+})
+
+const eyed = listedBscTokenProject({
+  slug: 'eyed',
+  displayName: 'EYED',
+  symbol: 'EYED',
+  address: '0xeDd9f422bC4D8E55c93a4E2fE64615f8dAb27223',
+  logoUrl: 'https://melega.finance/images/tokens/0xeDd9f422bC4D8E55c93a4E2fE64615f8dAb27223.png',
+  tagline: 'Listed Melega DEX project token',
+  description: 'EYED is a listed project token on Melega DEX (BNB Smart Chain).',
+  sectorTags: ['DeFi'],
+})
+
+const youngDegens = listedBscTokenProject({
+  slug: 'young-degens',
+  displayName: 'Young Degens',
+  symbol: 'YD',
+  address: '0x7D1481568c72891bb87A964c3a6E6213Bd73d114',
+  logoUrl: 'https://melega.finance/images/tokens/0x7D1481568c72891bb87A964c3a6E6213Bd73d114.png',
+  tagline: 'Listed Melega DEX project token',
+  description: 'Young Degens (YD) is a listed project token on Melega DEX (BNB Smart Chain).',
+  sectorTags: ['Community'],
+})
+
+const blion = listedBscTokenProject({
+  slug: 'blion',
+  displayName: 'BLION',
+  symbol: 'BLION',
+  address: '0xd1Ff6De8297DB3839DFC3356F020d63a2E72BbD2',
+  logoUrl:
+    'https://github.com/meleganza/MelegaSwapV2/blob/main/apps/web/public/images/56/tokens/0xd1Ff6De8297DB3839DFC3356F020d63a2E72BbD2.png?raw=true',
+  tagline: 'Listed Melega DEX project token',
+  description: 'BLION is a listed project token on Melega DEX (BNB Smart Chain).',
+  sectorTags: ['Community'],
+})
+
 /** Canonical projects — MARCO listed first so token lookups prefer the token project. */
-export const STATIC_PROJECTS: StaticProjectRecord[] = [marco, melegaDex]
+export const STATIC_PROJECTS: StaticProjectRecord[] = [marco, melegaDex, mm72, eyed, youngDegens, blion]

@@ -29,7 +29,7 @@ const Grid = styled.div`
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   column-gap: ${liquidityActions.columnGap};
   row-gap: ${liquidityActions.columnGap};
-  align-items: start;
+  align-items: stretch;
   min-width: 0;
 
   @media (max-width: ${liquidityActions.twoColMin}) {
@@ -41,8 +41,9 @@ const Pane = styled.article`
   width: 100%;
   max-width: ${liquidityActions.cardW};
   min-height: ${liquidityActions.cardMinH};
+  height: 100%;
   box-sizing: border-box;
-  margin: 0 auto;
+  margin: 0;
   border-radius: ${liquidityActions.cardRadius};
   border: ${liquidityActions.cardBorder};
   background: ${liquidityActions.cardBg};
@@ -60,6 +61,7 @@ const PaneHeader = styled.div`
   justify-content: space-between;
   gap: 10px;
   min-width: 0;
+  flex: 0 0 auto;
 `
 
 const PaneTitle = styled.h2`
@@ -90,20 +92,28 @@ const NewBadge = styled.span`
 const FormSlot = styled.div`
   min-width: 0;
   width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 
   /* Collapse nested Add module chrome so the pane is the card. */
   [data-liquidity-module='004-add-liquidity'] {
     margin: 0 !important;
     max-width: none !important;
     padding: 0 !important;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Builder fills the right pane without fixed 672 desktop lock. */
   [data-testid='liq-building-card'] {
     width: 100% !important;
     max-width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
     max-height: none !important;
+    flex: 1 1 auto;
   }
 `
 
@@ -115,7 +125,7 @@ export const LiquidityActionsModule: React.FC = () => (
     data-liquidity-actions-ia="expanded-workspace"
     aria-label={LIQUIDITY_ACTIONS_COPY.sectionLabel}
   >
-    <Grid data-testid="liquidity-actions-grid" data-liquidity-actions-geometry="1376-20-50-50">
+    <Grid data-testid="liquidity-actions-grid" data-liquidity-actions-geometry="1376-24-50-50">
       <Pane data-testid="liquidity-actions-manual" data-liquidity-action="manual">
         <PaneHeader>
           <PaneTitle>{LIQUIDITY_ACTIONS_COPY.manual.title}</PaneTitle>

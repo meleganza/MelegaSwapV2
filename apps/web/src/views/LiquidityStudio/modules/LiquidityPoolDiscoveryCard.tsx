@@ -13,15 +13,16 @@ const Card = styled.article`
   width: 100%;
   max-width: ${liquidityPoolDiscovery.cardW};
   min-height: ${liquidityPoolDiscovery.cardMinH};
+  height: 100%;
   box-sizing: border-box;
-  margin: 0 auto;
+  margin: 0;
   border-radius: ${liquidityPoolDiscovery.cardRadius};
   border: ${liquidityPoolDiscovery.cardBorder};
   background: ${liquidityPoolDiscovery.cardBg};
   padding: ${liquidityPoolDiscovery.cardPad};
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
 `
 
@@ -52,8 +53,8 @@ const PairMeta = styled.div`
 
 const PairName = styled.h3`
   margin: 0;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 750;
   color: ${liquidityPoolDiscovery.text};
   white-space: nowrap;
@@ -93,8 +94,8 @@ const MetricLabel = styled.dt`
 
 const MetricValue = styled.dd`
   margin: 1px 0 0;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 650;
   color: ${liquidityPoolDiscovery.text};
   white-space: nowrap;
@@ -108,10 +109,12 @@ const Cta = styled(NextLink)`
   align-items: center;
   justify-content: center;
   height: ${liquidityPoolDiscovery.ctaH};
+  min-height: 38px;
+  max-height: 42px;
   border-radius: ${liquidityPoolDiscovery.ctaRadius};
   background: ${liquidityPoolDiscovery.gold};
   color: #111;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-decoration: none;
 

@@ -102,7 +102,7 @@ export type LiquidityBuildingCardState = {
   startSetup: () => void
   backToEntry: () => void
   backToSetup: () => void
-  openReview: () => void
+  openReview: () => boolean
   openStatus: () => void
   requestDepositAndActivate: () => void
   pause: () => void
@@ -334,8 +334,9 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     },
     backToSetup: () => setPhase('setup'),
     openReview: () => {
-      if (!draftReady) return
+      if (!setupDraftReadyForReview(draft)) return false
       setPhase('review')
+      return true
     },
     openStatus: () => setPhase('status'),
     requestDepositAndActivate: () => {

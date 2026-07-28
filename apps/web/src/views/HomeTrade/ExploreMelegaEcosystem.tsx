@@ -1,5 +1,5 @@
 /**
- * Explore Melega Ecosystem — premium equal-weight grid before Home footer/trust.
+ * Explore Melega Ecosystem — compact equal-weight destination grid.
  */
 import React from 'react'
 import Link from 'next/link'
@@ -13,60 +13,16 @@ import {
   Landmark,
 } from 'lucide-react'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
+import { ECOSYSTEM_DESTINATIONS } from './ecosystemDestinations'
 
-type EcoItem = {
-  id: string
-  title: string
-  subtitle: string
-  href?: string
-  comingSoon?: boolean
-  Icon: React.ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean }>
+const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean }>> = {
+  passport: IdCard,
+  smartdrop: Gift,
+  labs: FlaskConical,
+  space: Orbit,
+  radar: Radar,
+  maiora: Landmark,
 }
-
-const ITEMS: EcoItem[] = [
-  {
-    id: 'passport',
-    title: 'PASSPORT',
-    subtitle: 'Identity and portfolio hub.',
-    href: '/passport',
-    Icon: IdCard,
-  },
-  {
-    id: 'smartdrop',
-    title: 'SMARTDROP',
-    subtitle: 'Acquire active holders.',
-    comingSoon: true,
-    Icon: Gift,
-  },
-  {
-    id: 'labs',
-    title: 'LABS',
-    subtitle: 'Trade narratives before listing.',
-    comingSoon: true,
-    Icon: FlaskConical,
-  },
-  {
-    id: 'space',
-    title: 'SPACE',
-    subtitle: 'Increase project visibility.',
-    comingSoon: true,
-    Icon: Orbit,
-  },
-  {
-    id: 'radar',
-    title: 'RADAR',
-    subtitle: 'Discover trends and claim profiles.',
-    href: '/radar',
-    Icon: Radar,
-  },
-  {
-    id: 'maiora',
-    title: 'MAIORA',
-    subtitle: 'Melega strategic layer.',
-    comingSoon: true,
-    Icon: Landmark,
-  },
-]
 
 const Shell = styled.section`
   min-width: 0;
@@ -91,8 +47,12 @@ const Sub = styled.p`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (max-width: 1439px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
   @media (max-width: 1023px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -104,19 +64,22 @@ const Grid = styled.div`
 `
 
 const cardCss = `
-  min-height: 128px;
-  padding: 18px 16px;
+  min-height: 112px;
+  max-height: 128px;
+  height: 120px;
+  padding: 14px 14px;
   border-radius: ${uxRebuildRadius.card};
   background: ${uxRebuildColors.card};
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   box-sizing: border-box;
   text-decoration: none;
   color: inherit;
   transition: border-color 160ms ease, transform 160ms ease;
+  overflow: hidden;
 `
 
 const CardLink = styled(Link)`
@@ -127,43 +90,53 @@ const CardLink = styled(Link)`
   }
 `
 
+const CardExternal = styled.a`
+  ${cardCss}
+  &:hover {
+    border-color: rgba(221, 185, 47, 0.5);
+    transform: translateY(-1px);
+  }
+`
+
 const CardStatic = styled.div`
   ${cardCss}
-  opacity: 0.92;
+  opacity: 0.78;
+  cursor: not-allowed;
 `
 
 const IconWrap = styled.span`
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   background: rgba(221, 185, 47, 0.12);
   border: 1px solid rgba(221, 185, 47, 0.28);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
 `
 
 const CardTitle = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.04em;
   color: ${uxRebuildColors.text};
 `
 
 const CardSub = styled.div`
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 15px;
   color: ${uxRebuildColors.muted};
 `
 
-const Soon = styled.span`
+const Disabled = styled.span`
   margin-top: auto;
   width: fit-content;
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${uxRebuildColors.gold};
+  color: ${uxRebuildColors.muted};
 `
 
 export const ExploreMelegaEcosystem: React.FC = () => (
@@ -171,25 +144,36 @@ export const ExploreMelegaEcosystem: React.FC = () => (
     <Title>Explore Melega Ecosystem</Title>
     <Sub>One product surface across identity, discovery, and growth tools.</Sub>
     <Grid>
-      {ITEMS.map((item) => {
+      {ECOSYSTEM_DESTINATIONS.map((item) => {
+        const Icon = ICONS[item.id] ?? Landmark
         const body = (
           <>
             <IconWrap>
-              <item.Icon size={18} color={uxRebuildColors.gold} aria-hidden />
+              <Icon size={16} color={uxRebuildColors.gold} aria-hidden />
             </IconWrap>
             <CardTitle>{item.title}</CardTitle>
             <CardSub>{item.subtitle}</CardSub>
-            {item.comingSoon ? <Soon>Coming soon</Soon> : null}
+            {item.disabled ? <Disabled>{item.disabledLabel ?? 'Unavailable'}</Disabled> : null}
           </>
         )
-        if (item.href && !item.comingSoon) {
+
+        if (item.disabled || !item.href) {
+          return <CardStatic key={item.id}>{body}</CardStatic>
+        }
+
+        if (item.external) {
           return (
-            <CardLink key={item.id} href={item.href}>
+            <CardExternal key={item.id} href={item.href} target="_blank" rel="noopener noreferrer">
               {body}
-            </CardLink>
+            </CardExternal>
           )
         }
-        return <CardStatic key={item.id}>{body}</CardStatic>
+
+        return (
+          <CardLink key={item.id} href={item.href}>
+            {body}
+          </CardLink>
+        )
       })}
     </Grid>
   </Shell>

@@ -4,9 +4,11 @@
  */
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
+import { WBNB } from '@pancakeswap/sdk'
 import { useMelegaFactoryPools } from 'views/PoolsStudio/poolsRuntime/useMelegaFactoryPools'
 import { usePoolDatasSWR } from 'state/info/hooks'
 import { useAllTokenBalances } from 'state/wallet/hooks'
+import useBUSDPrice from 'hooks/useBUSDPrice'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import {
   factualFilters,
@@ -41,6 +43,8 @@ export function useLiquidityPoolDiscovery(options: {
   const { address: account } = useAccount()
   const factory = useMelegaFactoryPools(MELEGA_CHAIN_ID)
   const balances = useAllTokenBalances()
+  const wbnbPrice = useBUSDPrice(WBNB[56])
+  const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
 
   const pairAddresses = useMemo(
     () => factory.pools.map((p) => p.pairAddress).filter(Boolean).slice(0, 80),
@@ -102,7 +106,9 @@ export function useLiquidityPoolDiscovery(options: {
 
     const searched = searchDiscoveryPairs(factory.pools, query)
     const cards = searched
-      .map((pair) => toDiscoveryCard(pair, metricsByPair.get(pair.pairAddress.toLowerCase())))
+      .map((pair) =>
+        toDiscoveryCard(pair, metricsByPair.get(pair.pairAddress.toLowerCase()), bnbUsd),
+      )
       .filter((c): c is DiscoveryPoolCardModel => Boolean(c))
 
     if (cards.length === 0 && !query.trim()) {
@@ -155,5 +161,6 @@ export function useLiquidityPoolDiscovery(options: {
     metricsByPair,
     myTokenAddresses,
     myTokensReady,
+    bnbUsd,
   ])
 }
