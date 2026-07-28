@@ -119,18 +119,17 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
     expect(uiSrc).not.toContain('AI Liquidity Builder execution')
   })
 
-  it('mounts Module 001 above legacy Pool on /liquidity without editing Pool', () => {
+  it('mounts Module 001 on /liquidity with legacy Pool body archived', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityHeroModule')
     expect(page).toContain('data-liquidity-module-001="mounted"')
-    expect(page).toContain('views/Pool')
-    expect(page).toContain('data-liquidity-legacy-body="LEGACY_IMPLEMENTATION"')
-    expect(page).toContain('<Liquidity />')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
+    expect(page).not.toContain("import Liquidity from 'views/Pool'")
+    expect(page).not.toContain('<Liquidity />')
     expect(page).not.toContain('LiquidityArchitectureShell')
     expect(page).not.toContain('UnifiedLiquidityPage')
 
-    // Pool implementation file remains outside Module 001 ownership edits in this mission
-    // (mount-only page wrapper). Studio one-page stack not cut over.
+    // Studio one-page stack not cut over.
     const studioPage = readFileSync(path.join(WEB, 'src/pages/liquidity-studio.tsx'), 'utf8')
     expect(studioPage).toContain('LiquidityStudioScreen')
     expect(studioPage).not.toContain('LiquidityHeroModule')

@@ -113,19 +113,19 @@ describe('LIQUIDITY_MODULE_002 Actions', () => {
     expect(bundle).not.toMatch(/\bvolume\b/i)
   })
 
-  it('mounts Module 002 after Hero and above frozen legacy Pool', () => {
+  it('mounts Module 002 after Hero with legacy Pool body archived', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityActionsModule')
     expect(page).toContain('data-liquidity-module-002="mounted"')
-    expect(page).toContain('views/Pool')
-    expect(page).toContain('data-liquidity-legacy-body="LEGACY_IMPLEMENTATION"')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
+    expect(page).not.toContain("import Liquidity from 'views/Pool'")
 
     const heroIdx = page.indexOf('<LiquidityHeroModule')
     const actionsIdx = page.indexOf('<LiquidityActionsModule')
-    const legacyIdx = page.indexOf('data-liquidity-legacy-body')
+    const analyticsIdx = page.indexOf('<LiquidityAnalyticsModule')
     expect(heroIdx).toBeGreaterThan(-1)
     expect(actionsIdx).toBeGreaterThan(heroIdx)
-    expect(legacyIdx).toBeGreaterThan(actionsIdx)
+    expect(analyticsIdx).toBeGreaterThan(actionsIdx)
 
     const screen = load('LiquidityStudioScreen.tsx')
     expect(screen).not.toContain('LiquidityActionsModule')

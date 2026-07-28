@@ -1,0 +1,25 @@
+{
+  "vocabulary": [
+    "ACTIVE",
+    "ENDED",
+    "WITHDRAW_ONLY",
+    "EMERGENCY",
+    "PARTIAL",
+    "UNAVAILABLE",
+    "LOADING"
+  ],
+  "notes": {
+    "ACTIVE": "Live LP farm accepting stake",
+    "ENDED": "Farm finished; may still have claimable residue",
+    "WITHDRAW_ONLY": "Ended with withdrawable LP principal",
+    "EMERGENCY": "Emergency withdraw path enabled",
+    "PARTIAL": "Some metrics available, others unavailable",
+    "UNAVAILABLE": "Metric or surface cannot be proven — show — / Unavailable",
+    "LOADING": "Honest loading skeleton"
+  },
+  "mockupDisplayAliases": {
+    "Live": "ACTIVE",
+    "Finished": "ENDED / WITHDRAW_ONLY / EMERGENCY",
+    "Indexing": "LOADING or PARTIAL"
+  }
+}

@@ -178,16 +178,14 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
   it('mounts Module 003 after Actions and above frozen legacy Pool', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityPoolDiscoveryModule')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-003="mounted"')
     const hero = page.indexOf('<LiquidityHeroModule')
     const actions = page.indexOf('<LiquidityActionsModule')
     const discovery = page.indexOf('<LiquidityPoolDiscoveryModule')
-    const legacy = page.indexOf('data-liquidity-legacy-body')
     expect(hero).toBeLessThan(actions)
     expect(actions).toBeLessThan(discovery)
-    expect(discovery).toBeLessThan(legacy)
-    expect(page).toContain('views/Pool')
-  })
+      })
 
   it('does not invent pool databases or fake metric literals in module sources', () => {
     const bundle = [

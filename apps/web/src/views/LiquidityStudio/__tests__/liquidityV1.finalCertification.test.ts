@@ -80,7 +80,7 @@ describe('LIQUIDITY_V1 Final Integration & Certification', () => {
     expect(page).toContain('data-liquidity-architecture="000"')
     expect(page).toContain('LiquidityRuntimeProvider')
     expect((page.match(/<LiquidityRuntimeProvider>/g) || []).length).toBe(1)
-    expect(page).toContain('data-liquidity-legacy-body="LEGACY_IMPLEMENTATION"')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).not.toContain('data-liquidity-module-009')
   })
 

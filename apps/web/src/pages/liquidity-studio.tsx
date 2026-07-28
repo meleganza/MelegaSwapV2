@@ -1,8 +1,2 @@
-import { SUPPORT_MULTI_CHAINS } from 'config/constants/supportChains'
-import LiquidityStudioScreen from 'views/LiquidityStudio/LiquidityStudioScreen'
-
-const LiquidityStudioPage = () => <LiquidityStudioScreen />
-
-LiquidityStudioPage.chains = SUPPORT_MULTI_CHAINS
-
-export default LiquidityStudioPage
+/** Alias route — same certified Liquidity V1 stack as /liquidity. */
+export { default } from './liquidity'

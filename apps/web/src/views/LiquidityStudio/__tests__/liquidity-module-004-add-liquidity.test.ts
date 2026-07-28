@@ -157,15 +157,13 @@ describe('LIQUIDITY_MODULE_004 Add Liquidity', () => {
   it('mounts Module 004 after Discovery and above frozen legacy Pool', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityAddModule')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-004="mounted"')
     const discovery = page.indexOf('<LiquidityPoolDiscoveryModule')
     const add = page.indexOf('<LiquidityAddModule')
-    const legacy = page.indexOf('data-liquidity-legacy-body')
     expect(discovery).toBeGreaterThan(-1)
     expect(add).toBeGreaterThan(discovery)
-    expect(legacy).toBeGreaterThan(add)
-    expect(page).toContain('views/Pool')
-  })
+      })
 
   it('does not modify forbidden execution surfaces in this mission', () => {
     // Module 004 files must not import or rewrite router/contracts/exchange write paths.

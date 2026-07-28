@@ -101,10 +101,8 @@ describe('LIQUIDITY_MODULE_008 Final Visual Polish', () => {
 
     const analytics = page.indexOf('<LiquidityAnalyticsModule')
     const polish = page.indexOf('<LiquidityVisualPolishModule')
-    const legacy = page.indexOf('data-liquidity-legacy-body')
     expect(polish).toBeGreaterThan(-1)
     expect(analytics).toBeGreaterThan(-1)
-    expect(legacy).toBeGreaterThan(Math.max(polish, analytics))
   })
 
   it('polish is style-only — no geometry / runtime / business logic', () => {

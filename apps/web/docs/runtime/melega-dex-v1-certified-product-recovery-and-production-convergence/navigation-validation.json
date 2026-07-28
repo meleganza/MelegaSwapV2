@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "mandatoryRoutes": [
+    "/",
+    "/?focus=swap",
+    "/swap",
+    "/liquidity",
+    "/liquidity-studio",
+    "/add",
+    "/farms",
+    "/pools",
+    "/list",
+    "/passport"
+  ],
+  "notes": "All mandatory routes loaded on same local build"
+}

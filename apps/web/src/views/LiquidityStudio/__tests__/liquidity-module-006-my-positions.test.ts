@@ -116,13 +116,12 @@ describe('LIQUIDITY_MODULE_006 My Positions', () => {
 
   it('mounts Module 006 after Market Snapshot and above legacy Pool', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-006="mounted"')
     const snap = page.indexOf('<LiquidityMarketSnapshotModule')
     const mine = page.indexOf('<LiquidityMyPositionsModule')
-    const legacy = page.indexOf('data-liquidity-legacy-body')
     expect(snap).toBeGreaterThan(-1)
     expect(mine).toBeGreaterThan(snap)
-    expect(legacy).toBeGreaterThan(mine)
   })
 
   it('records ownership, plan certification, and evidence', () => {

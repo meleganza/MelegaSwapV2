@@ -1,0 +1,29 @@
+{
+  "productModel": "complete staking center",
+  "primaryDomains": [
+    "My Positions",
+    "Explore Pools",
+    "Finished"
+  ],
+  "singleOwners": {
+    "inventory": "shared pools runtime",
+    "walletPositions": "shared portfolio adapter",
+    "status": "shared status resolver",
+    "actions": "single action host",
+    "apr": "shared APR rules",
+    "classification": "shared classification"
+  },
+  "architecturalRules": [
+    "One responsibility per module",
+    "No duplicated wallet logic",
+    "No duplicated reward logic",
+    "No duplicated LP logic",
+    "No duplicated status logic",
+    "No duplicated layouts"
+  ],
+  "legacyDuplicationsToEliminate": [
+    "buildPoolsWalletPortfolio parallel to Farms/Liquidity builders",
+    "Modals vs PoolCard/Modals trees",
+    "Studio grid IA competing with positions/finished domains"
+  ]
+}

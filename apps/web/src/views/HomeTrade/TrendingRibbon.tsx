@@ -15,7 +15,7 @@ export const TrendingRibbon: React.FC = () => {
 
   const enrichedItems = useMemo(
     () =>
-      (items ?? []).slice(0, displayLimit).map((item) => {
+      (items ?? []).slice(0, Math.min(displayLimit, 10)).map((item) => {
         const slug = item.id.replace(/^trade-asset-/, '').replace(/^indexed-asset-/, '')
         const asset = avatarBySlug[slug]
         const href = asset?.address
@@ -25,7 +25,7 @@ export const TrendingRibbon: React.FC = () => {
             : undefined
         const base = {
           ...item,
-          secondary: item.secondary || '—',
+          secondary: undefined,
           href,
         }
         if (!asset) return base
@@ -46,17 +46,13 @@ export const TrendingRibbon: React.FC = () => {
     [items, avatarBySlug, displayLimit],
   )
 
-  // "Trending" only when factual ranking items exist; otherwise truthful Live label.
-  const label = trendingEmpty ? 'Live on Melega DEX' : 'Trending on Melega DEX'
-
   return (
     <MelegaTicker
-      label={label}
+      label="🔥 TRENDING"
       items={enrichedItems}
-      marqueeMinItems={useMarquee ? 6 : Number.MAX_SAFE_INTEGER}
-      emptyPrimary={
-        trendingEmpty ? 'Market ranking temporarily unavailable' : undefined
-      }
+      marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
+      showLiveDot={!trendingEmpty && enrichedItems.length > 0}
+      emptyPrimary={trendingEmpty ? 'Market activity unavailable' : undefined}
     />
   )
 }

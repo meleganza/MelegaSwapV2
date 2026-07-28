@@ -142,13 +142,12 @@ describe('LIQUIDITY_MODULE_005 Market Snapshot', () => {
   it('mounts Module 005 after Add Liquidity and above legacy Pool', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityMarketSnapshotModule')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-005="mounted"')
     const add = page.indexOf('<LiquidityAddModule')
     const snap = page.indexOf('<LiquidityMarketSnapshotModule')
-    const legacy = page.indexOf('data-liquidity-legacy-body')
     expect(add).toBeGreaterThan(-1)
     expect(snap).toBeGreaterThan(add)
-    expect(legacy).toBeGreaterThan(snap)
   })
 
   it('records ownership, plan certification, and evidence', () => {

@@ -1,0 +1,40 @@
+{
+  "missionId": "MELEGA_DEX_V1_CERTIFIED_PRODUCT_RECOVERY_AND_PRODUCTION_CONVERGENCE",
+  "capturedAt": "2026-07-28T01:04:33Z",
+  "productionUrl": "https://www.melega.finance",
+  "provider": "Vercel",
+  "headers": {
+    "server": "Vercel",
+    "x-vercel-cache": "HIT",
+    "x-matched-path": "/",
+    "last-modified": "Mon, 27 Jul 2026 23:34:01 GMT",
+    "ageSecondsObserved": 5431
+  },
+  "nextBuildId": "cxemHHwOsG-u8EDzQUG1o",
+  "githubDeployments": {
+    "productionLatest": {
+      "id": 5631594160,
+      "sha": "2a887252081a81d1936e407ef74164523e24be4b",
+      "shortSha": "2a887252",
+      "ref": "2a887252081a81d1936e407ef74164523e24be4b",
+      "environment": "Production",
+      "created_at": "2026-07-27T23:34:02Z",
+      "creator": "vercel[bot]"
+    },
+    "priorProduction": [
+      { "sha": "0746ab01", "note": "liquidity-module-008" },
+      { "sha": "2566006c", "note": "liquidity-module-004" },
+      { "sha": "eeb8100d", "note": "data-truth audit" },
+      { "sha": "95c1cbf4", "note": "smart-swap route/trending" },
+      { "sha": "ff6d6179", "note": "origin/main tip" }
+    ]
+  },
+  "conclusion": {
+    "servingMain": false,
+    "servingCommit": "2a887252",
+    "servingProduct": "liquidity-v1-final-integration-and-certification tip",
+    "regressionMechanism": "Vercel Production auto-deployed successive mission branch tips; Liquidity V1 tip overwrote prior Smart Swap / Farms / Pools certified surfaces because those products lived on divergent branches never merged into this tip.",
+    "originMain": "ff6d6179",
+    "rollbackTargetBeforeRecovery": "2a887252"
+  }
+}

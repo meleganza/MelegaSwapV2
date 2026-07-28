@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
+import { useAccount } from 'wagmi'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
@@ -14,8 +15,38 @@ import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
+import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
+import TradeModeSelector from 'views/Trade/components/TradeModeSelector'
+import type { SwapExperienceMode } from 'views/Trade/swapExperience'
+import { publishSwapExperienceMode } from 'lib/smart-swap-execution-handoff'
 import { colors } from 'design-system/melega'
 import { HomeSwapIconButton, HomeSwapPanelShell } from './HomeSwapPanelShell'
+
+const HomeSwapStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+`
+
+const Title = styled.h2`
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+`
+
+const Bolt = styled.span`
+  color: #f7c948;
+  font-size: 16px;
+  line-height: 1;
+`
 
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -71,6 +102,9 @@ const LiveText = styled.span<{ $live?: boolean }>`
 const HomeSwapInner: React.FC = () => {
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
+  const { address: wagmiAddress } = useAccount()
+  const walletConnected = Boolean(account || wagmiAddress)
+  const [experience, setExperience] = useState<SwapExperienceMode>('instant')
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -81,6 +115,10 @@ const HomeSwapInner: React.FC = () => {
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
 
+  useEffect(() => {
+    publishSwapExperienceMode(experience)
+  }, [experience])
+
   const inputSymbol = inputCurrency?.symbol ?? '—'
   const outputSymbol = outputCurrency?.symbol ?? '—'
 
@@ -90,12 +128,26 @@ const HomeSwapInner: React.FC = () => {
         <PairLine>
           {inputSymbol} / {outputSymbol}
         </PairLine>
-        <span style={{ color: '#5f5f5f', fontSize: 12 }}>•</span>
-        <LiveDot $live={Boolean(account)} aria-hidden />
-        <LiveText $live={Boolean(account)}>Live</LiveText>
+        <LiveDot $live={walletConnected} aria-hidden />
+        <LiveText $live={walletConnected}>Live</LiveText>
       </>
     ),
-    [account, inputSymbol, outputSymbol],
+    [walletConnected, inputSymbol, outputSymbol],
+  )
+
+  const headerLeading = useMemo(
+    () => (
+      <Title>
+        <Bolt aria-hidden>⚡</Bolt>
+        Swap
+      </Title>
+    ),
+    [],
+  )
+
+  const headerCenter = useMemo(
+    () => <TradeModeSelector mode={experience} onChange={setExperience} />,
+    [experience],
   )
 
   const handleOutputSelect = useCallback(
@@ -122,43 +174,51 @@ const HomeSwapInner: React.FC = () => {
   }, [])
 
   return (
-    <HomeSwapPanelShell
-      pairIndicator={pairIndicator}
-      toolbar={
-        <>
-          <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
-            <SettingsIcon />
-          </HomeSwapIconButton>
-          <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
-            <RefreshIcon />
-          </HomeSwapIconButton>
-        </>
-      }
-    >
-      <div
-        ref={swapBodyRef}
-        className={`home-trade-swap${account ? '' : ' is-disconnected'}`}
-        data-wallet-connected={account ? 'true' : 'false'}
+    <HomeSwapStack data-home-swap-stack data-swap-experience={experience} data-final-pixel="true">
+      <HomeSwapPanelShell
+        headerLeading={headerLeading}
+        headerCenter={headerCenter}
+        pairIndicator={pairIndicator}
+        toolbar={
+          <>
+            <HomeSwapIconButton type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>
+              <SettingsIcon />
+            </HomeSwapIconButton>
+            <HomeSwapIconButton type="button" aria-label="Refresh price" onClick={handleRefresh}>
+              <RefreshIcon />
+            </HomeSwapIconButton>
+          </>
+        }
       >
-        <SmartSwapForm handleOutputSelect={handleOutputSelect} />
-        {!account && (
-          <div className="home-trade-swap-slippage-strip slippage-row" role="group" aria-label="Slippage tolerance">
-            <span className="home-trade-swap-slippage-label-row">
-              <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
-              <button
-                type="button"
-                className="home-trade-swap-slippage-edit"
-                aria-label="Edit slippage tolerance"
-                onClick={onPresentSettingsModal}
-              >
-                <PencilIcon />
-              </button>
-            </span>
-            <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
-          </div>
-        )}
-      </div>
-    </HomeSwapPanelShell>
+        <div
+          ref={swapBodyRef}
+          className={`home-trade-swap${walletConnected ? '' : ' is-disconnected'}`}
+          data-wallet-connected={walletConnected ? 'true' : 'false'}
+          data-home-swap-panel
+          data-swap-experience={experience}
+        >
+          <SmartSwapForm handleOutputSelect={handleOutputSelect} />
+          {!walletConnected && (
+            <div className="home-trade-swap-slippage-strip slippage-row" role="group" aria-label="Slippage tolerance">
+              <span className="home-trade-swap-slippage-label-row">
+                <span className="home-trade-swap-execution-label">Slippage Tolerance</span>
+                <button
+                  type="button"
+                  className="home-trade-swap-slippage-edit"
+                  aria-label="Edit slippage tolerance"
+                  onClick={onPresentSettingsModal}
+                >
+                  <PencilIcon />
+                </button>
+              </span>
+              <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
+            </div>
+          )}
+          {/* After Swap button: Instant=Details only; Smart=Route/Metrics/Fee/AI/Details */}
+          <SmartSwapExecutionPreviewModule mode={experience} showSmartTransparency />
+        </div>
+      </HomeSwapPanelShell>
+    </HomeSwapStack>
   )
 }
 

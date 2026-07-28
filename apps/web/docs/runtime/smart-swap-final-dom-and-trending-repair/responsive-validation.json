@@ -1,0 +1,36 @@
+{
+  "mission": "SMART_SWAP_FINAL_DOM_HIERARCHY_AND_TRENDING_PIPELINE_REPAIR",
+  "timestamp": "2026-07-27T02:33:36Z",
+  "desktop": {
+    "maxWidth": "560px"
+  },
+  "tablet": {
+    "width": "100%"
+  },
+  "mobile": {
+    "width": "calc(100vw - 32px)"
+  },
+  "checks": [
+    {
+      "name": "desktop max-width 560px",
+      "pass": true
+    },
+    {
+      "name": "tablet width 100%",
+      "pass": true
+    },
+    {
+      "name": "mobile calc(100vw - 32px)",
+      "pass": true
+    },
+    {
+      "name": "fixed overflow clipping removed",
+      "pass": true
+    },
+    {
+      "name": "header/tabs/settings/refresh visible",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

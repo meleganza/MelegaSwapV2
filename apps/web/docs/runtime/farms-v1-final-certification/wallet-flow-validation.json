@@ -1,0 +1,7 @@
+{
+  "disconnectedShowsNoFakePositions": true,
+  "singleRuntimeProvider": true,
+  "singleActionHost": true,
+  "portfolioFarmsShared": true,
+  "pass": true
+}

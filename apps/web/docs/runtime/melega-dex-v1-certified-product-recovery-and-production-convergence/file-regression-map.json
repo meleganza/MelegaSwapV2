@@ -1,0 +1,31 @@
+{
+  "missionId": "MELEGA_DEX_V1_CERTIFIED_PRODUCT_RECOVERY_AND_PRODUCTION_CONVERGENCE",
+  "rootCauseCommit": "2a887252",
+  "mechanism": "Production tip lacked Farms/Pools modules and Smart Swap Home; page mounts pointed at legacy studio screens",
+  "files": [
+    {
+      "path": "apps/web/src/views/FarmsStudio/FarmsStudioScreen.tsx",
+      "production": "legacy card grid",
+      "certifiedSource": "2f834b45 modules stack",
+      "recovery": "checkout 2f834b45"
+    },
+    {
+      "path": "apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx",
+      "production": "legacy grid",
+      "certifiedSource": "99258574 modules stack",
+      "recovery": "checkout 99258574"
+    },
+    {
+      "path": "apps/web/src/views/HomeTrade/DexHomeScreen.tsx",
+      "production": "Instant/Smart hero CTAs",
+      "certifiedSource": "95c1cbf4 single Swap CTA + mode tabs",
+      "recovery": "checkout 95c1cbf4 HomeTrade"
+    },
+    {
+      "path": "apps/web/src/pages/liquidity.tsx",
+      "production": "Liquidity V1 + legacy Pool body",
+      "certifiedSource": "Liquidity V1 only",
+      "recovery": "remove views/Pool mount"
+    }
+  ]
+}

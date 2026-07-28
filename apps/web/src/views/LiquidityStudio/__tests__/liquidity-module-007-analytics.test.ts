@@ -196,14 +196,13 @@ describe('LIQUIDITY_MODULE_007 Analytics', () => {
 
   it('mounts Module 007 after My Positions and above legacy Pool', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
+    expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-007="mounted"')
     expect(page).toContain('LiquidityAnalyticsModule')
     const positions = page.indexOf('<LiquidityMyPositionsModule')
     const analytics = page.indexOf('<LiquidityAnalyticsModule')
-    const legacy = page.indexOf('data-liquidity-legacy-body')
     expect(positions).toBeGreaterThan(-1)
     expect(analytics).toBeGreaterThan(positions)
-    expect(legacy).toBeGreaterThan(analytics)
     // Read-only: outside LiquidityRuntimeProvider (does not nest mint/positions host)
     const providerClose = page.indexOf('</LiquidityRuntimeProvider>')
     expect(providerClose).toBeGreaterThan(-1)

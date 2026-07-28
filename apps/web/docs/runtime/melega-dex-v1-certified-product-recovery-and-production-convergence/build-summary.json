@@ -1,0 +1,8 @@
+{
+  "missionId": "MELEGA_DEX_V1_CERTIFIED_PRODUCT_RECOVERY_AND_PRODUCTION_CONVERGENCE",
+  "command": "yarn next build",
+  "pass": true,
+  "logTail": "Done in 26.87s",
+  "shaAtBuild": "2a887252081a81d1936e407ef74164523e24be4b",
+  "generatedAt": "2026-07-28T01:29:51.545616Z"
+}

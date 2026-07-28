@@ -41,7 +41,7 @@
     "liquidityArchitecture000Contracts.ts": "b0c32c7d51fef0fcb929ccef8a3c04d9af3f09610e66b3ef39b2e60d002ff148"
   },
   "webFiles": {
-    "src/pages/liquidity.tsx": "0310d0bd133f21003ed284a183083ad40bf0641f900fb995c5fd8ea2bf33e4ae",
+    "src/pages/liquidity.tsx": "9ca732f17aa01eacb796d2c579e16d616a0ab3b72260c90a2f9707b6bc6435d1",
     "src/config/constants/exchange.ts": "db9044c6660f42cc56c8a61f6439304c3f6c29ea40a048e2848f51b9f7867552",
     "src/config/constants/contracts.ts": "e318f8f547d7bf1c9959efd168281a456e5d09960638a7ab45b1784e21355122"
   }
