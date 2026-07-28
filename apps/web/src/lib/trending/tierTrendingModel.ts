@@ -29,6 +29,10 @@ export type TierRankedAsset = {
   volume24h: number
   liquidityScore: number
   tradeCount24h: number
+  /** Distinct wallets observed on Swap events when known. */
+  uniqueTraders?: number
+  /** Unix seconds of most recent swap/activity when known. */
+  lastActivityTs?: number
   rankingSignals: string[]
 }
 
@@ -62,6 +66,7 @@ export function pickTrendingBaseToken(token0: string, token1: string): string {
   return t0Quote ? t1 : t0
 }
 
+/** Legacy signal helper (liquidity allowed). Prefer hasTrendingActivitySignal for ticker. */
 export function hasTrendingMarketSignal(input: {
   tradeCount24h: number
   volume24h: number
@@ -80,10 +85,33 @@ export function hasTrendingMarketSignal(input: {
   )
 }
 
+/** Active DEX activity only — never pad with liquidity-only / idle indexed tokens. */
+export function hasTrendingActivitySignal(input: {
+  tradeCount24h: number
+  volume24h: number
+  lastActivityTs?: number
+}): boolean {
+  return input.tradeCount24h > 0 || input.volume24h > 0 || (input.lastActivityTs != null && input.lastActivityTs > 0)
+}
+
+/** True trending membership: requires Swap count or volume — never lastVerified / discovery fill. */
+export function hasTrendingSwapActivity(input: {
+  tradeCount24h: number
+  volume24h: number
+}): boolean {
+  return input.tradeCount24h > 0 || input.volume24h > 0
+}
+
+/** Rank: swap count → volume → unique traders → recency → |%|. */
 export function compareTierRankedAssets(a: TierRankedAsset, b: TierRankedAsset): number {
-  if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
   if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
-  if (b.liquidityScore !== a.liquidityScore) return b.liquidityScore - a.liquidityScore
+  if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
+  const aTraders = a.uniqueTraders ?? 0
+  const bTraders = b.uniqueTraders ?? 0
+  if (bTraders !== aTraders) return bTraders - aTraders
+  const aTs = a.lastActivityTs ?? 0
+  const bTs = b.lastActivityTs ?? 0
+  if (bTs !== aTs) return bTs - aTs
   const aCh = Math.abs(a.change24h?.pct ?? 0)
   const bCh = Math.abs(b.change24h?.pct ?? 0)
   return bCh - aCh
@@ -119,20 +147,16 @@ export function formatTrendingTickerPrice(price?: number): string | undefined {
 export function trendingTickerAccent(asset: TierRankedAsset): {
   accent?: string
   accentPositive?: boolean
+  accentUnavailable?: boolean
 } {
   const change =
     asset.change24h && Math.abs(asset.change24h.pct) > 0.0001 ? asset.change24h : undefined
   if (change) {
-    return { accent: change.text, accentPositive: change.positive }
+    const arrow = change.positive ? '↑' : '↓'
+    const pct = `${Math.abs(change.pct).toFixed(1)}%`
+    // Explicit boolean so green/red never falls through undefined → default green.
+    return { accent: `${arrow} ${pct}`, accentPositive: Boolean(change.positive) }
   }
-  if (asset.tradeCount24h > 0) {
-    return {
-      accent: `${asset.tradeCount24h} trade${asset.tradeCount24h === 1 ? '' : 's'}`,
-    }
-  }
-  if (asset.volume24h > 0) {
-    return { accent: '24H vol' }
-  }
-  // Do not surface the word "Liquidity" as a fake ticker price movement.
+  // No fabricated % — symbol-only when move unknown.
   return {}
 }
