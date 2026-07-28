@@ -572,6 +572,25 @@ export function buildPoolsWalletPositionsViewModel(input: {
     .sort(comparePoolsWalletPositions)
 
   if (built.length === 0) {
+    // Presence can be "present" with all-zero userData during a partial refresh wipe.
+    // Never treat that as authoritative empty when we still hold last-good positions.
+    if (previous?.length) {
+      return {
+        state: 'stale',
+        wallet: account,
+        chainId,
+        positions: previous,
+        visiblePositions: previous.slice(0, poolsMyPositions.maxVisibleDesktop),
+        totalCount: previous.length,
+        showCountBadge: true,
+        showViewAll: previous.length > poolsMyPositions.maxVisibleDesktop,
+        moduleDisclosure: 'Some position data is temporarily unavailable.',
+        liveRegion: 'Showing last confirmed positions during refresh',
+        freshness: 'stale',
+        authoritativeEmpty: false,
+        generation,
+      }
+    }
     return {
       state: 'empty',
       wallet: account,
@@ -589,20 +608,52 @@ export function buildPoolsWalletPositionsViewModel(input: {
     }
   }
 
-  const anyPartial = built.some((p) => p.partialData)
+  // Preserve claimable token amounts when a refresh drops reward reads or prices to zero.
+  const merged = built.map((pos) => {
+    const prior = previous?.find((p) => p.positionId === pos.positionId)
+    if (!prior) return pos
+    let next = pos
+    const claimLost =
+      (pos.claimableFormatted === '—' || pos.claimableFormatted.startsWith('0 ')) &&
+      prior.claimableFormatted &&
+      !prior.claimableFormatted.startsWith('0 ') &&
+      prior.claimableFormatted !== '—'
+    if (claimLost) {
+      next = {
+        ...next,
+        claimableFormatted: prior.claimableFormatted,
+        claimableRaw: prior.claimableRaw,
+        claimableValue: pos.claimableValue ?? prior.claimableValue,
+        freshness: 'partial',
+        partialData: true,
+        partialReasons: [...new Set([...(next.partialReasons ?? []), 'Claimable refresh incomplete — retaining last confirmed amount'])],
+      }
+    }
+    if (!next.claimableValue && next.claimableFormatted && !next.claimableFormatted.startsWith('0 ') && next.claimableFormatted !== '—') {
+      next = {
+        ...next,
+        claimableValue: null,
+        partialData: true,
+        partialReasons: [...new Set([...(next.partialReasons ?? []), 'USD value unavailable'])],
+      }
+    }
+    return next
+  })
+
+  const anyPartial = merged.some((p) => p.partialData)
   const state: PoolsMyPositionsModuleState = anyPartial ? 'partial' : 'ready'
 
   return {
     state,
     wallet: account,
     chainId,
-    positions: built,
-    visiblePositions: built.slice(0, poolsMyPositions.maxVisibleDesktop),
-    totalCount: built.length,
+    positions: merged,
+    visiblePositions: merged.slice(0, poolsMyPositions.maxVisibleDesktop),
+    totalCount: merged.length,
     showCountBadge: true,
-    showViewAll: built.length > poolsMyPositions.maxVisibleDesktop,
+    showViewAll: merged.length > poolsMyPositions.maxVisibleDesktop,
     moduleDisclosure: anyPartial ? 'Some position data is temporarily unavailable.' : null,
-    liveRegion: `${built.length} pool position${built.length === 1 ? '' : 's'}`,
+    liveRegion: `${merged.length} pool position${merged.length === 1 ? '' : 's'}`,
     freshness: anyPartial ? 'partial' : 'live',
     authoritativeEmpty: false,
     generation,

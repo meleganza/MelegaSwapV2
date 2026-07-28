@@ -1,0 +1,656 @@
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
+index b4fb0a81..35cc9df6 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
+@@ -4,6 +4,8 @@
+  */
+ import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
+ import { searchPairs } from 'lib/bsc-indexer/pairs/classify'
++import { lookupCanonicalToken } from 'lib/canonical-token-registry'
++import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+ import type { LiquidityDiscoveryFilter, LiquidityDiscoverySort } from './liquidityPoolDiscoveryTokens'
+ import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
+ 
+@@ -13,6 +15,8 @@ export type DiscoveryPoolMetrics = {
+   feesUsd?: number | null
+ }
+ 
++export type DiscoveryPoolStatus = 'Active' | 'Inactive' | 'Empty' | 'Unavailable' | 'New'
++
+ export type DiscoveryPoolCardModel = {
+   id: string
+   pairAddress: string
+@@ -21,7 +25,8 @@ export type DiscoveryPoolCardModel = {
+   symbol0: string
+   symbol1: string
+   pairName: string
+-  status: 'Active' | 'Unavailable'
++  status: DiscoveryPoolStatus
++  statusReason?: string
+   active: boolean
+   tvlLabel: string
+   volumeLabel: string
+@@ -29,9 +34,11 @@ export type DiscoveryPoolCardModel = {
+   tvlUsd: number | null
+   volumeUsd: number | null
+   feesUsd: number | null
++  metricSourceNote?: string
+   lastVerified?: string
+   addHref: string
+   classification: ClassifiedAmmPair['classification']
++  qualityScore: number
+ }
+ 
+ function shortAddr(addr?: string): string {
+@@ -39,6 +46,47 @@ function shortAddr(addr?: string): string {
+   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+ }
+ 
++export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
++  const trimmed = pairSymbol?.trim()
++  if (trimmed && !/^0x/i.test(trimmed)) return trimmed
++  const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
++  if (canonical?.symbol) return canonical.symbol
++  return shortAddr(address)
++}
++
++export function resolveDiscoveryStatus(
++  pair: ClassifiedAmmPair,
++  metrics?: DiscoveryPoolMetrics,
++): { status: DiscoveryPoolStatus; reason?: string; active: boolean } {
++  if (pair.classification === 'invalid_contract') {
++    return { status: 'Unavailable', reason: 'Invalid pair contract', active: false }
++  }
++  const hasReserves =
++    pair.classification === 'tradeable' || pair.classification === 'liquidity_present'
++  const tvl = metrics?.tvlUsd
++  const volume = metrics?.volumeUsd
++  const hasTvl = tvl != null && Number.isFinite(tvl) && tvl > 0
++  const hasVolume = volume != null && Number.isFinite(volume) && volume > 0
++
++  if (hasReserves && (hasTvl || hasVolume || pair.active)) {
++    return { status: 'Active', active: true }
++  }
++  if (pair.classification === 'empty' || (pair.active === false && !hasReserves)) {
++    return { status: 'Empty', reason: 'No reserves / empty pool', active: false }
++  }
++  if (pair.lastVerified && Date.now() - Date.parse(pair.lastVerified) < 7 * 86_400_000 && !hasReserves) {
++    return { status: 'New', reason: 'Recently verified · liquidity not confirmed', active: false }
++  }
++  if (!hasReserves) {
++    return { status: 'Inactive', reason: 'No tradeable liquidity', active: false }
++  }
++  return {
++    status: 'Unavailable',
++    reason: 'Metrics source unavailable (Info subgraph / indexer)',
++    active: false,
++  }
++}
++
+ export function formatDiscoveryUsd(value?: number | null): string {
+   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {
+     return LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
+@@ -48,11 +96,8 @@ export function formatDiscoveryUsd(value?: number | null): string {
+   return `$${value.toFixed(2)}`
+ }
+ 
+-export function isPoolActive(pair: ClassifiedAmmPair): boolean {
+-  return (
+-    pair.active === true &&
+-    (pair.classification === 'tradeable' || pair.classification === 'liquidity_present')
+-  )
++export function isPoolActive(pair: ClassifiedAmmPair, metrics?: DiscoveryPoolMetrics): boolean {
++  return resolveDiscoveryStatus(pair, metrics).active
+ }
+ 
+ export function buildAddLiquidityHref(token0?: string, token1?: string): string {
+@@ -62,6 +107,13 @@ export function buildAddLiquidityHref(token0?: string, token1?: string): string
+   return liquidityPoolDiscovery.addLiquidityHref
+ }
+ 
++function metricLabel(value: number | null, missingSource: string): { label: string; note?: string } {
++  if (value != null && Number.isFinite(value) && value > 0) {
++    return { label: formatDiscoveryUsd(value) }
++  }
++  return { label: LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable, note: missingSource }
++}
++
+ export function toDiscoveryCard(
+   pair: ClassifiedAmmPair,
+   metrics?: DiscoveryPoolMetrics,
+@@ -69,12 +121,28 @@ export function toDiscoveryCard(
+   if (!pair.pairAddress || pair.classification === 'invalid_contract') return null
+   if (!pair.token0 || !pair.token1) return null
+ 
+-  const symbol0 = pair.symbol0?.trim() || shortAddr(pair.token0)
+-  const symbol1 = pair.symbol1?.trim() || shortAddr(pair.token1)
+-  const active = isPoolActive(pair)
++  const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
++  const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
++  const resolved = resolveDiscoveryStatus(pair, metrics)
+   const tvlUsd = metrics?.tvlUsd ?? null
+   const volumeUsd = metrics?.volumeUsd ?? null
+   const feesUsd = metrics?.feesUsd ?? null
++  const tvl = metricLabel(
++    tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
++    'TVL source: Info subgraph unavailable for this pair',
++  )
++  const volume = metricLabel(
++    volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
++    '24h volume source: Info subgraph unavailable for this pair',
++  )
++  const fees = metricLabel(
++    feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
++    '24h fees source: Info subgraph unavailable for this pair',
++  )
++  const qualityScore =
++    (resolved.active ? 1_000_000 : 0) +
++    (tvlUsd && tvlUsd > 0 ? Math.min(tvlUsd, 999_999) : 0) +
++    (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
+ 
+   return {
+     id: pair.pairAddress.toLowerCase(),
+@@ -84,17 +152,20 @@ export function toDiscoveryCard(
+     symbol0,
+     symbol1,
+     pairName: `${symbol0} / ${symbol1}`,
+-    status: active ? LIQUIDITY_POOL_DISCOVERY_COPY.statusActive : LIQUIDITY_POOL_DISCOVERY_COPY.statusUnavailable,
+-    active,
+-    tvlLabel: formatDiscoveryUsd(tvlUsd),
+-    volumeLabel: formatDiscoveryUsd(volumeUsd),
+-    feesLabel: formatDiscoveryUsd(feesUsd),
++    status: resolved.status,
++    statusReason: resolved.reason,
++    active: resolved.active,
++    tvlLabel: tvl.label,
++    volumeLabel: volume.label,
++    feesLabel: fees.label,
+     tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
+     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
+     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
++    metricSourceNote: [tvl.note, volume.note, fees.note].filter(Boolean).join(' · ') || undefined,
+     lastVerified: pair.lastVerified,
+     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
+     classification: pair.classification,
++    qualityScore,
+   }
+ }
+ 
+@@ -139,7 +210,13 @@ export function sortDiscoveryCards(
+         return tb - ta || a.pairName.localeCompare(b.pairName)
+       })
+     default:
+-      return next
++      // Market quality: active + liquidity/volume first — never address-only empties first.
++      return next.sort(
++        (a, b) =>
++          b.qualityScore - a.qualityScore ||
++          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
++          a.pairName.localeCompare(b.pairName),
++      )
+   }
+ }
+ 
+diff --git a/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts b/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
+index e3b689d8..22a4931c 100644
+--- a/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
++++ b/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
+@@ -572,6 +572,25 @@ export function buildPoolsWalletPositionsViewModel(input: {
+     .sort(comparePoolsWalletPositions)
+ 
+   if (built.length === 0) {
++    // Presence can be "present" with all-zero userData during a partial refresh wipe.
++    // Never treat that as authoritative empty when we still hold last-good positions.
++    if (previous?.length) {
++      return {
++        state: 'stale',
++        wallet: account,
++        chainId,
++        positions: previous,
++        visiblePositions: previous.slice(0, poolsMyPositions.maxVisibleDesktop),
++        totalCount: previous.length,
++        showCountBadge: true,
++        showViewAll: previous.length > poolsMyPositions.maxVisibleDesktop,
++        moduleDisclosure: 'Some position data is temporarily unavailable.',
++        liveRegion: 'Showing last confirmed positions during refresh',
++        freshness: 'stale',
++        authoritativeEmpty: false,
++        generation,
++      }
++    }
+     return {
+       state: 'empty',
+       wallet: account,
+@@ -589,20 +608,52 @@ export function buildPoolsWalletPositionsViewModel(input: {
+     }
+   }
+ 
+-  const anyPartial = built.some((p) => p.partialData)
++  // Preserve claimable token amounts when a refresh drops reward reads or prices to zero.
++  const merged = built.map((pos) => {
++    const prior = previous?.find((p) => p.positionId === pos.positionId)
++    if (!prior) return pos
++    let next = pos
++    const claimLost =
++      (pos.claimableFormatted === '—' || pos.claimableFormatted.startsWith('0 ')) &&
++      prior.claimableFormatted &&
++      !prior.claimableFormatted.startsWith('0 ') &&
++      prior.claimableFormatted !== '—'
++    if (claimLost) {
++      next = {
++        ...next,
++        claimableFormatted: prior.claimableFormatted,
++        claimableRaw: prior.claimableRaw,
++        claimableValue: pos.claimableValue ?? prior.claimableValue,
++        freshness: 'partial',
++        partialData: true,
++        partialReasons: [...new Set([...(next.partialReasons ?? []), 'Claimable refresh incomplete — retaining last confirmed amount'])],
++      }
++    }
++    if (!next.claimableValue && next.claimableFormatted && !next.claimableFormatted.startsWith('0 ') && next.claimableFormatted !== '—') {
++      next = {
++        ...next,
++        claimableValue: null,
++        partialData: true,
++        partialReasons: [...new Set([...(next.partialReasons ?? []), 'USD value unavailable'])],
++      }
++    }
++    return next
++  })
++
++  const anyPartial = merged.some((p) => p.partialData)
+   const state: PoolsMyPositionsModuleState = anyPartial ? 'partial' : 'ready'
+ 
+   return {
+     state,
+     wallet: account,
+     chainId,
+-    positions: built,
+-    visiblePositions: built.slice(0, poolsMyPositions.maxVisibleDesktop),
+-    totalCount: built.length,
++    positions: merged,
++    visiblePositions: merged.slice(0, poolsMyPositions.maxVisibleDesktop),
++    totalCount: merged.length,
+     showCountBadge: true,
+-    showViewAll: built.length > poolsMyPositions.maxVisibleDesktop,
++    showViewAll: merged.length > poolsMyPositions.maxVisibleDesktop,
+     moduleDisclosure: anyPartial ? 'Some position data is temporarily unavailable.' : null,
+-    liveRegion: `${built.length} pool position${built.length === 1 ? '' : 's'}`,
++    liveRegion: `${merged.length} pool position${merged.length === 1 ? '' : 's'}`,
+     freshness: anyPartial ? 'partial' : 'live',
+     authoritativeEmpty: false,
+     generation,
+diff --git a/apps/web/src/views/Trade/components/TradeModeSelector.tsx b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+index b662285f..7ce4dc5f 100644
+--- a/apps/web/src/views/Trade/components/TradeModeSelector.tsx
++++ b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+@@ -1,22 +1,26 @@
+ import React from 'react'
+ import styled from 'styled-components'
+ import { colors } from 'design-system/melega'
+-import type { TradeMode } from '../tradeTokens'
++import type { SwapExperienceMode } from '../swapExperience'
++import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
+ 
+ const Shell = styled.div`
+   display: flex;
+   flex-direction: column;
+-  gap: 8px;
++  width: 100%;
++  flex-shrink: 0;
++  position: relative;
++  z-index: 2;
+ `
+ 
+ const Segmented = styled.div`
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+-  gap: 8px;
+-  padding: 4px;
++  gap: 4px;
++  padding: 3px;
+   background: #111111;
+   border: 1px solid rgba(255, 255, 255, 0.06);
+-  border-radius: 14px;
++  border-radius: 12px;
+ `
+ 
+ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+@@ -24,94 +28,75 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  gap: 8px;
+-  height: 44px;
+-  border: 1px solid ${({ $active, $smart }) =>
+-    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
+-  border-radius: 10px;
++  min-height: 34px;
++  height: 34px;
++  border: 1px solid
++    ${({ $active, $smart }) =>
++      $active && $smart
++        ? 'rgba(244, 196, 48, 0.55)'
++        : $active
++          ? 'rgba(255, 255, 255, 0.12)'
++          : 'transparent'};
++  border-radius: 9px;
+   background: ${({ $active, $smart }) =>
+     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
+   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
+-  font-size: 13px;
++  font-size: 12px;
+   font-weight: 700;
+-  letter-spacing: 0.04em;
++  letter-spacing: 0.03em;
+   cursor: pointer;
+   transition:
+     border-color 150ms ease,
+     background 150ms ease,
+-    color 150ms ease,
+-    box-shadow 150ms ease;
+-  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
++    color 150ms ease;
+ 
+   &:hover {
+     color: ${colors.textPrimary};
+   }
+-`
+ 
+-const Badge = styled.span`
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  height: 18px;
+-  padding: 0 6px;
+-  border-radius: 6px;
+-  background: rgba(244, 196, 48, 0.18);
+-  color: ${colors.gold};
+-  font-size: 10px;
+-  font-weight: 800;
+-  letter-spacing: 0.06em;
+-`
+-
+-const AiDot = styled.span`
+-  width: 6px;
+-  height: 6px;
+-  border-radius: 50%;
+-  background: ${colors.gold};
+-  box-shadow: 0 0 8px rgba(244, 197, 66, 0.6);
+-`
+-
+-const Description = styled.p`
+-  margin: 0;
+-  font-size: 13px;
+-  line-height: 1.45;
+-  color: #9e9e9e;
++  &:focus-visible {
++    outline: 2px solid ${colors.gold};
++    outline-offset: 2px;
++  }
+ `
+ 
+ export interface TradeModeSelectorProps {
+-  mode: TradeMode
+-  onChange: (mode: TradeMode) => void
++  mode: SwapExperienceMode
++  onChange: (mode: SwapExperienceMode) => void
+ }
+ 
++/**
++ * Compact Instant | Smart — no explanatory paragraph in the terminal.
++ */
+ export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
+-  <Shell data-trade-mode-selector>
++  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
+     <Segmented role="tablist" aria-label="Swap mode">
+       <Tab
+         type="button"
+         role="tab"
+-        aria-selected={mode === 'standard'}
+-        $active={mode === 'standard'}
+-        onClick={() => onChange('standard')}
++        id="swap-mode-instant"
++        aria-selected={mode === 'instant'}
++        aria-controls="smart-swap-execution"
++        aria-label={SWAP_EXPERIENCE_LABEL.instant}
++        $active={mode === 'instant'}
++        onClick={() => onChange('instant')}
+       >
+-        STANDARD
++        Instant
+       </Tab>
+       <Tab
+         type="button"
+         role="tab"
+-        aria-selected={mode === 'smartswap'}
+-        $active={mode === 'smartswap'}
++        id="swap-mode-smart"
++        aria-selected={mode === 'smart'}
++        aria-controls="smart-swap-execution"
++        aria-label={SWAP_EXPERIENCE_LABEL.smart}
++        $active={mode === 'smart'}
+         $smart
+-        onClick={() => onChange('smartswap')}
++        onClick={() => onChange('smart')}
+       >
+-        <AiDot aria-hidden />
+-        SMARTSWAP
+-        <Badge>NEW</Badge>
++        Smart
+       </Tab>
+     </Segmented>
+-    <Description>
+-      {mode === 'smartswap'
+-        ? 'Finds the best available route across Melega DEX and supported liquidity sources.'
+-        : 'Best route across supported liquidity on the Melega router.'}
+-    </Description>
+   </Shell>
+ )
+ 
+diff --git a/apps/web/src/views/Trade/swapExperience.ts b/apps/web/src/views/Trade/swapExperience.ts
+new file mode 100644
+index 00000000..c87ff3a3
+--- /dev/null
++++ b/apps/web/src/views/Trade/swapExperience.ts
+@@ -0,0 +1,13 @@
++/** Instant vs Smart — presentation modes over the same SmartSwapForm engine. */
++export type SwapExperienceMode = 'instant' | 'smart'
++
++export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
++  instant: 'Instant Swap mode selected',
++  smart: 'Smart Swap mode selected',
++}
++
++export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
++  if (value === 'smart') return 'smart'
++  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
++  return 'instant'
++}
+diff --git a/apps/web/src/views/Trade/components/TradeModeSelector.tsx b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+index b662285f..7ce4dc5f 100644
+--- a/apps/web/src/views/Trade/components/TradeModeSelector.tsx
++++ b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+@@ -1,22 +1,26 @@
+ import React from 'react'
+ import styled from 'styled-components'
+ import { colors } from 'design-system/melega'
+-import type { TradeMode } from '../tradeTokens'
++import type { SwapExperienceMode } from '../swapExperience'
++import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
+ 
+ const Shell = styled.div`
+   display: flex;
+   flex-direction: column;
+-  gap: 8px;
++  width: 100%;
++  flex-shrink: 0;
++  position: relative;
++  z-index: 2;
+ `
+ 
+ const Segmented = styled.div`
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+-  gap: 8px;
+-  padding: 4px;
++  gap: 4px;
++  padding: 3px;
+   background: #111111;
+   border: 1px solid rgba(255, 255, 255, 0.06);
+-  border-radius: 14px;
++  border-radius: 12px;
+ `
+ 
+ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+@@ -24,94 +28,75 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  gap: 8px;
+-  height: 44px;
+-  border: 1px solid ${({ $active, $smart }) =>
+-    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
+-  border-radius: 10px;
++  min-height: 34px;
++  height: 34px;
++  border: 1px solid
++    ${({ $active, $smart }) =>
++      $active && $smart
++        ? 'rgba(244, 196, 48, 0.55)'
++        : $active
++          ? 'rgba(255, 255, 255, 0.12)'
++          : 'transparent'};
++  border-radius: 9px;
+   background: ${({ $active, $smart }) =>
+     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
+   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
+-  font-size: 13px;
++  font-size: 12px;
+   font-weight: 700;
+-  letter-spacing: 0.04em;
++  letter-spacing: 0.03em;
+   cursor: pointer;
+   transition:
+     border-color 150ms ease,
+     background 150ms ease,
+-    color 150ms ease,
+-    box-shadow 150ms ease;
+-  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
++    color 150ms ease;
+ 
+   &:hover {
+     color: ${colors.textPrimary};
+   }
+-`
+ 
+-const Badge = styled.span`
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  height: 18px;
+-  padding: 0 6px;
+-  border-radius: 6px;
+-  background: rgba(244, 196, 48, 0.18);
+-  color: ${colors.gold};
+-  font-size: 10px;
+-  font-weight: 800;
+-  letter-spacing: 0.06em;
+-`
+-
+-const AiDot = styled.span`
+-  width: 6px;
+-  height: 6px;
+-  border-radius: 50%;
+-  background: ${colors.gold};
+-  box-shadow: 0 0 8px rgba(244, 197, 66, 0.6);
+-`
+-
+-const Description = styled.p`
+-  margin: 0;
+-  font-size: 13px;
+-  line-height: 1.45;
+-  color: #9e9e9e;
++  &:focus-visible {
++    outline: 2px solid ${colors.gold};
++    outline-offset: 2px;
++  }
+ `
+ 
+ export interface TradeModeSelectorProps {
+-  mode: TradeMode
+-  onChange: (mode: TradeMode) => void
++  mode: SwapExperienceMode
++  onChange: (mode: SwapExperienceMode) => void
+ }
+ 
++/**
++ * Compact Instant | Smart — no explanatory paragraph in the terminal.
++ */
+ export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
+-  <Shell data-trade-mode-selector>
++  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
+     <Segmented role="tablist" aria-label="Swap mode">
+       <Tab
+         type="button"
+         role="tab"
+-        aria-selected={mode === 'standard'}
+-        $active={mode === 'standard'}
+-        onClick={() => onChange('standard')}
++        id="swap-mode-instant"
++        aria-selected={mode === 'instant'}
++        aria-controls="smart-swap-execution"
++        aria-label={SWAP_EXPERIENCE_LABEL.instant}
++        $active={mode === 'instant'}
++        onClick={() => onChange('instant')}
+       >
+-        STANDARD
++        Instant
+       </Tab>
+       <Tab
+         type="button"
+         role="tab"
+-        aria-selected={mode === 'smartswap'}
+-        $active={mode === 'smartswap'}
++        id="swap-mode-smart"
++        aria-selected={mode === 'smart'}
++        aria-controls="smart-swap-execution"
++        aria-label={SWAP_EXPERIENCE_LABEL.smart}
++        $active={mode === 'smart'}
+         $smart
+-        onClick={() => onChange('smartswap')}
++        onClick={() => onChange('smart')}
+       >
+-        <AiDot aria-hidden />
+-        SMARTSWAP
+-        <Badge>NEW</Badge>
++        Smart
+       </Tab>
+     </Segmented>
+-    <Description>
+-      {mode === 'smartswap'
+-        ? 'Finds the best available route across Melega DEX and supported liquidity sources.'
+-        : 'Best route across supported liquidity on the Melega router.'}
+-    </Description>
+   </Shell>
+ )
+ 
+diff --git a/apps/web/src/views/Trade/swapExperience.ts b/apps/web/src/views/Trade/swapExperience.ts
+new file mode 100644
+index 00000000..c87ff3a3
+--- /dev/null
++++ b/apps/web/src/views/Trade/swapExperience.ts
+@@ -0,0 +1,13 @@
++/** Instant vs Smart — presentation modes over the same SmartSwapForm engine. */
++export type SwapExperienceMode = 'instant' | 'smart'
++
++export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
++  instant: 'Instant Swap mode selected',
++  smart: 'Smart Swap mode selected',
++}
++
++export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
++  if (value === 'smart') return 'smart'
++  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
++  return 'instant'
++}

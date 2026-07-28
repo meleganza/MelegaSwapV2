@@ -4,6 +4,8 @@
  */
 import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 import { searchPairs } from 'lib/bsc-indexer/pairs/classify'
+import { lookupCanonicalToken } from 'lib/canonical-token-registry'
+import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
 import type { LiquidityDiscoveryFilter, LiquidityDiscoverySort } from './liquidityPoolDiscoveryTokens'
 import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
 
@@ -13,6 +15,8 @@ export type DiscoveryPoolMetrics = {
   feesUsd?: number | null
 }
 
+export type DiscoveryPoolStatus = 'Active' | 'Inactive' | 'Empty' | 'Unavailable' | 'New'
+
 export type DiscoveryPoolCardModel = {
   id: string
   pairAddress: string
@@ -21,7 +25,8 @@ export type DiscoveryPoolCardModel = {
   symbol0: string
   symbol1: string
   pairName: string
-  status: 'Active' | 'Unavailable'
+  status: DiscoveryPoolStatus
+  statusReason?: string
   active: boolean
   tvlLabel: string
   volumeLabel: string
@@ -29,14 +34,57 @@ export type DiscoveryPoolCardModel = {
   tvlUsd: number | null
   volumeUsd: number | null
   feesUsd: number | null
+  metricSourceNote?: string
   lastVerified?: string
   addHref: string
   classification: ClassifiedAmmPair['classification']
+  qualityScore: number
 }
 
 function shortAddr(addr?: string): string {
   if (!addr || addr.length < 10) return '—'
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
+
+export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
+  const trimmed = pairSymbol?.trim()
+  if (trimmed && !/^0x/i.test(trimmed)) return trimmed
+  const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
+  if (canonical?.symbol) return canonical.symbol
+  return shortAddr(address)
+}
+
+export function resolveDiscoveryStatus(
+  pair: ClassifiedAmmPair,
+  metrics?: DiscoveryPoolMetrics,
+): { status: DiscoveryPoolStatus; reason?: string; active: boolean } {
+  if (pair.classification === 'invalid_contract') {
+    return { status: 'Unavailable', reason: 'Invalid pair contract', active: false }
+  }
+  const hasReserves =
+    pair.classification === 'tradeable' || pair.classification === 'liquidity_present'
+  const tvl = metrics?.tvlUsd
+  const volume = metrics?.volumeUsd
+  const hasTvl = tvl != null && Number.isFinite(tvl) && tvl > 0
+  const hasVolume = volume != null && Number.isFinite(volume) && volume > 0
+
+  if (hasReserves && (hasTvl || hasVolume || pair.active)) {
+    return { status: 'Active', active: true }
+  }
+  if (pair.classification === 'empty' || (pair.active === false && !hasReserves)) {
+    return { status: 'Empty', reason: 'No reserves / empty pool', active: false }
+  }
+  if (pair.lastVerified && Date.now() - Date.parse(pair.lastVerified) < 7 * 86_400_000 && !hasReserves) {
+    return { status: 'New', reason: 'Recently verified · liquidity not confirmed', active: false }
+  }
+  if (!hasReserves) {
+    return { status: 'Inactive', reason: 'No tradeable liquidity', active: false }
+  }
+  return {
+    status: 'Unavailable',
+    reason: 'Metrics source unavailable (Info subgraph / indexer)',
+    active: false,
+  }
 }
 
 export function formatDiscoveryUsd(value?: number | null): string {
@@ -48,11 +96,8 @@ export function formatDiscoveryUsd(value?: number | null): string {
   return `$${value.toFixed(2)}`
 }
 
-export function isPoolActive(pair: ClassifiedAmmPair): boolean {
-  return (
-    pair.active === true &&
-    (pair.classification === 'tradeable' || pair.classification === 'liquidity_present')
-  )
+export function isPoolActive(pair: ClassifiedAmmPair, metrics?: DiscoveryPoolMetrics): boolean {
+  return resolveDiscoveryStatus(pair, metrics).active
 }
 
 export function buildAddLiquidityHref(token0?: string, token1?: string): string {
@@ -62,6 +107,13 @@ export function buildAddLiquidityHref(token0?: string, token1?: string): string 
   return liquidityPoolDiscovery.addLiquidityHref
 }
 
+function metricLabel(value: number | null, missingSource: string): { label: string; note?: string } {
+  if (value != null && Number.isFinite(value) && value > 0) {
+    return { label: formatDiscoveryUsd(value) }
+  }
+  return { label: LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable, note: missingSource }
+}
+
 export function toDiscoveryCard(
   pair: ClassifiedAmmPair,
   metrics?: DiscoveryPoolMetrics,
@@ -69,12 +121,28 @@ export function toDiscoveryCard(
   if (!pair.pairAddress || pair.classification === 'invalid_contract') return null
   if (!pair.token0 || !pair.token1) return null
 
-  const symbol0 = pair.symbol0?.trim() || shortAddr(pair.token0)
-  const symbol1 = pair.symbol1?.trim() || shortAddr(pair.token1)
-  const active = isPoolActive(pair)
+  const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
+  const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
+  const resolved = resolveDiscoveryStatus(pair, metrics)
   const tvlUsd = metrics?.tvlUsd ?? null
   const volumeUsd = metrics?.volumeUsd ?? null
   const feesUsd = metrics?.feesUsd ?? null
+  const tvl = metricLabel(
+    tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
+    'TVL source: Info subgraph unavailable for this pair',
+  )
+  const volume = metricLabel(
+    volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
+    '24h volume source: Info subgraph unavailable for this pair',
+  )
+  const fees = metricLabel(
+    feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
+    '24h fees source: Info subgraph unavailable for this pair',
+  )
+  const qualityScore =
+    (resolved.active ? 1_000_000 : 0) +
+    (tvlUsd && tvlUsd > 0 ? Math.min(tvlUsd, 999_999) : 0) +
+    (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
 
   return {
     id: pair.pairAddress.toLowerCase(),
@@ -84,17 +152,20 @@ export function toDiscoveryCard(
     symbol0,
     symbol1,
     pairName: `${symbol0} / ${symbol1}`,
-    status: active ? LIQUIDITY_POOL_DISCOVERY_COPY.statusActive : LIQUIDITY_POOL_DISCOVERY_COPY.statusUnavailable,
-    active,
-    tvlLabel: formatDiscoveryUsd(tvlUsd),
-    volumeLabel: formatDiscoveryUsd(volumeUsd),
-    feesLabel: formatDiscoveryUsd(feesUsd),
+    status: resolved.status,
+    statusReason: resolved.reason,
+    active: resolved.active,
+    tvlLabel: tvl.label,
+    volumeLabel: volume.label,
+    feesLabel: fees.label,
     tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
+    metricSourceNote: [tvl.note, volume.note, fees.note].filter(Boolean).join(' · ') || undefined,
     lastVerified: pair.lastVerified,
     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
     classification: pair.classification,
+    qualityScore,
   }
 }
 
@@ -139,7 +210,13 @@ export function sortDiscoveryCards(
         return tb - ta || a.pairName.localeCompare(b.pairName)
       })
     default:
-      return next
+      // Market quality: active + liquidity/volume first — never address-only empties first.
+      return next.sort(
+        (a, b) =>
+          b.qualityScore - a.qualityScore ||
+          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
+          a.pairName.localeCompare(b.pairName),
+      )
   }
 }
 
