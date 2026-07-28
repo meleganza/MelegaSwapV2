@@ -153,14 +153,22 @@ export function canSubmitMutatingAction(input: {
   return { ok: true, reason: null }
 }
 
-export function setupDraftReadyForReview(draft: SetupDraft): boolean {
-  if (!draft.tokenAddress || !draft.tokenSymbol) return false
+export function setupTokenResolved(draft: SetupDraft): boolean {
+  return Boolean(draft.tokenAddress && draft.tokenSymbol)
+}
+
+export function setupBudgetPositive(draft: SetupDraft): boolean {
   const budget = Number(draft.tokenBudget)
-  if (!Number.isFinite(budget) || budget <= 0) return false
+  return Number.isFinite(budget) && budget > 0
+}
+
+export function setupDraftReadyForReview(draft: SetupDraft): boolean {
+  if (!setupTokenResolved(draft)) return false
+  if (!setupBudgetPositive(draft)) return false
   if (draft.strategy === 'DYNAMIC_RANGE') {
     const min = Number(draft.minimumRateBps)
     const max = Number(draft.maximumRateBps)
     if (!Number.isFinite(min) || !Number.isFinite(max) || min <= 0 || max < min) return false
   }
-  return true
+  return Boolean(draft.strategy && draft.epochSeconds)
 }

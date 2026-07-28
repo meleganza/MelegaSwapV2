@@ -1,5 +1,6 @@
 import { INDEXER_TIER_DEFINITIONS } from 'lib/data-truth/ontology'
 import { MARCO_WBNB_PAIR_BSC, MELEGA_CHAIN_ID } from '../constants'
+import { FOUNDER_WBNB_PAIR_ADDRESSES } from '../founderWbnbPairs'
 import { resolveOnchainRegistry } from '../registry/store'
 import { FEATURED_PAIR_SLUG } from '../v2/paths'
 import { classifyAmmPair, sortPairsDefault } from '../pairs/classify'
@@ -95,9 +96,30 @@ export async function loadTierPairInventory(): Promise<{
       liquidityScore: liquidityScore(marcoWbnb),
     })
   }
+  const founderSet = new Set(FOUNDER_WBNB_PAIR_ADDRESSES.map((a) => a.toLowerCase()))
+  const founderPairs = classified.filter(
+    (p) =>
+      founderSet.has(p.pairAddress.toLowerCase()) &&
+      p.token0 &&
+      p.token1 &&
+      p.pairAddress.toLowerCase() !== MARCO_WBNB_PAIR_BSC.toLowerCase(),
+  )
+  for (const p of founderPairs) {
+    tier1.push({
+      tier: 'TIER_1',
+      slug: pairSlug(p),
+      pairAddress: p.pairAddress.toLowerCase(),
+      token0: p.token0!.toLowerCase(),
+      token1: p.token1!.toLowerCase(),
+      liquidityScore: liquidityScore(p),
+    })
+  }
+
+  const remainingTier1Slots = Math.max(0, INDEXER_TIER_DEFINITIONS.TIER_1.maxPairs - tier1.length)
   corePairs
     .sort((a, b) => (liquidityScore(b) > liquidityScore(a) ? 1 : -1))
-    .slice(0, INDEXER_TIER_DEFINITIONS.TIER_1.maxPairs - 1)
+    .filter((p) => !founderSet.has(p.pairAddress.toLowerCase()))
+    .slice(0, remainingTier1Slots)
     .forEach((p) =>
       tier1.push({
         tier: 'TIER_1',

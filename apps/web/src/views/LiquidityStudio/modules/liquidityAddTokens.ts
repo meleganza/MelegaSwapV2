@@ -77,9 +77,7 @@ export type LiquidityAddCtaState =
 
 /** Frozen Modules 001–003 source SHAs. */
 export const LIQUIDITY_MODULE_001_003_FREEZE = {
-  LiquidityHeroModule:
-    '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
-  LiquidityActionsModule:
-    '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
-  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
 } as const

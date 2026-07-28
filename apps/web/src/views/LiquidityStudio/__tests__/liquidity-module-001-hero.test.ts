@@ -59,29 +59,23 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
     expect(heroBundle).not.toContain('exchange.ts')
   })
 
-  it('locks Hero geometry contracts (1376×260 / 440+48+480+48+360)', () => {
+  it('locks Hero geometry contracts (min-height 300 / 32%+40%+28%)', () => {
     expect(liquidityHero.heroW).toBe('1376px')
-    expect(liquidityHero.heroH).toBe('260px')
+    expect(liquidityHero.heroH).toBe('300px')
     expect(liquidityHero.topAfterTrending).toBe('24px')
-    expect(liquidityHero.leftW).toBe('440px')
-    expect(liquidityHero.artworkW).toBe('480px')
-    expect(liquidityHero.trustW).toBe('360px')
-    expect(liquidityHero.columnGap).toBe('48px')
-    expect(liquidityHero.trustBoxW).toBe('360px')
-    expect(liquidityHero.trustBoxH).toBe('230px')
-    expect(liquidityHero.artworkBoxW).toBe('480px')
+    expect(liquidityHero.leftW).toBe('32%')
+    expect(liquidityHero.artworkW).toBe('40%')
+    expect(liquidityHero.trustW).toBe('28%')
+    expect(parseInt(liquidityHero.leftW, 10) + parseInt(liquidityHero.artworkW, 10) + parseInt(liquidityHero.trustW, 10)).toBe(100)
     expect(liquidityHero.artworkBoxH).toBe('230px')
-    const sum =
-      parseInt(liquidityHero.leftW, 10) +
-      parseInt(liquidityHero.columnGap, 10) +
-      parseInt(liquidityHero.artworkW, 10) +
-      parseInt(liquidityHero.columnGap, 10) +
-      parseInt(liquidityHero.trustW, 10)
-    expect(sum).toBe(1376)
+    expect(liquidityHero.trustBoxH).toBe('230px')
 
     const mod = load('modules/LiquidityHeroModule.tsx')
-    expect(mod).toContain('data-liquidity-hero-geometry="1376x260"')
-    expect(mod).toContain('height: ${liquidityHero.heroH}')
+    expect(mod).toContain('data-liquidity-hero-geometry="1376x300"')
+    expect(mod).toContain('min-height: ${liquidityHero.heroH}')
+    expect(mod).toContain("grid-area: artwork")
+    expect(mod).toContain('display: contents')
+    expect(mod).toContain("grid-area: actions")
     expect(mod).toContain('max-width: ${liquidityHero.tabletBreak}')
     expect(mod).toContain('max-width: ${liquidityHero.mobileBreak}')
   })
@@ -98,8 +92,8 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
       'Earn Fees',
       'Open Ecosystem',
     ])
-    expect(LIQUIDITY_HERO_COPY.journeys).toMatch(/manually/i)
-    expect(LIQUIDITY_HERO_COPY.journeys).toMatch(/Melega AI Liquidity Builder/)
+    // IA redesign: redundant journey copy removed from Hero — journeys live in workspace.
+    expect(LIQUIDITY_HERO_COPY.journeys).toBe('')
     expect([...LIQUIDITY_PRIMARY_JOURNEYS]).toEqual([
       'Provide liquidity manually',
       'Use Melega AI Liquidity Builder',
@@ -129,21 +123,20 @@ describe('LIQUIDITY_MODULE_001 Hero', () => {
     expect(page).not.toContain('LiquidityArchitectureShell')
     expect(page).not.toContain('UnifiedLiquidityPage')
 
-    // Studio one-page stack not cut over.
+    // Studio route aliases the same modular stack.
     const studioPage = readFileSync(path.join(WEB, 'src/pages/liquidity-studio.tsx'), 'utf8')
-    expect(studioPage).toContain('LiquidityStudioScreen')
-    expect(studioPage).not.toContain('LiquidityHeroModule')
+    expect(studioPage).toMatch(/liquidity|LiquidityPage/)
   })
 
-  it('uses Add Liquidity link only — no Module 004 form / AI Builder execution', () => {
-    expect(liquidityHero.addLiquidityHref).toBe('/add')
+  it('uses a single Add Liquidity CTA into the in-page form anchor', () => {
+    expect(liquidityHero.addLiquidityHref).toBe('#add-liquidity')
     const tokens = load('modules/liquidityHeroTokens.ts')
-    expect(tokens).toContain("addLiquidityHref: '/add'")
+    expect(tokens).toContain("addLiquidityHref: '#add-liquidity'")
     const mod = load('modules/LiquidityHeroModule.tsx')
     expect(mod).toContain('liquidity-hero-cta-add')
     expect(mod).toContain('liquidityHero.addLiquidityHref')
+    expect(mod).not.toContain('liquidity-hero-journeys')
     expect(mod).not.toContain('AddLiquidityV2')
-    expect(mod).not.toContain('liquidityBuilding')
     expect(mod).not.toContain('Start Liquidity Building')
   })
 

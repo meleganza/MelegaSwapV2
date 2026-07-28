@@ -1,6 +1,6 @@
 /**
- * LIQUIDITY_MODULE_002 — Actions geometry + journey nav contracts.
- * Navigation / explanation only. No mint, no AI Builder execution, no KPIs.
+ * LIQUIDITY_MODULE_002 — primary workspace geometry (IA redesign).
+ * Hosts expanded Add Liquidity + AI Builder surfaces. No new execution logic.
  */
 
 export const liquidityActions = {
@@ -11,12 +11,13 @@ export const liquidityActions = {
   contentMax: '1376px',
   gapAfterHero: '16px',
   columnGap: '24px',
-  cardW: '676px',
-  cardMinH: '280px',
+  cardW: '100%',
+  cardMinH: '520px',
   cardRadius: '14px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
-  cardPad: '24px',
+  cardPad: '16px',
+
 
   titleSize: '22px',
   titleLine: '28px',
@@ -59,20 +60,20 @@ export const liquidityActions = {
 } as const
 
 export const LIQUIDITY_ACTIONS_COPY = {
-  sectionLabel: 'Choose your path',
+  sectionLabel: 'Provide liquidity',
   manual: {
     id: 'manual',
     title: 'Add Liquidity',
-    description: 'Provide liquidity to existing pools or create a new position.',
+    description: 'Provide liquidity immediately — form expanded.',
     steps: ['Select Pool', 'Deposit Pair', 'Receive LP Tokens'] as const,
     cta: 'Add Liquidity',
   },
   aiBuilder: {
     id: 'ai-builder',
     title: 'AI Liquidity Builder',
-    description: 'Let Melega progressively build liquidity while you keep ownership.',
+    description: 'Build liquidity with budget, strategy, and plan — form expanded.',
     steps: ['Choose Token', 'Set Budget', 'Select Strategy', 'Liquidity Growth'] as const,
-    cta: 'Create Liquidity Plan',
+    cta: 'Create Plan',
     unavailableTitle: 'Currently unavailable',
     unavailableBody:
       'Create Liquidity Plan opens when Melega AI Liquidity Builder is activated. No simulated plans or fake availability.',
@@ -81,8 +82,6 @@ export const LIQUIDITY_ACTIONS_COPY = {
 
 /** Frozen Module 001 source SHAs (byte-identical expected). */
 export const LIQUIDITY_MODULE_001_FREEZE = {
-  LiquidityHeroModule:
-    '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
-  liquidityHeroTokens:
-    'ae84a154ea08b22539b9471329bda8bb972388db3a4f8f63f06425543cee1080',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  liquidityHeroTokens: '1ea3821c2671f9517679cdb6cd49492bc96aa334c9a492c00cc84377b84de038',
 } as const

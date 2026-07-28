@@ -13,16 +13,18 @@ export const liquidityHero = {
   contentMax: '1376px',
   topAfterTrending: '24px',
   heroW: '1376px',
-  heroH: '260px',
+  /** Founder acceptance: hero stage min-height */
+  heroH: '300px',
 
-  leftW: '440px',
-  artworkW: '480px',
-  trustW: '360px',
-  columnGap: '48px',
+  /** Desktop ≈ 32% / 40% / 28% (left / artwork / trust) */
+  leftW: '32%',
+  artworkW: '40%',
+  trustW: '28%',
+  columnGap: '24px',
 
-  artworkBoxW: '480px',
+  artworkBoxW: '100%',
   artworkBoxH: '230px',
-  trustBoxW: '360px',
+  trustBoxW: '100%',
   trustBoxH: '230px',
   trustRadius: '14px',
   trustBorder: '1px solid rgba(255,255,255,0.09)',
@@ -56,8 +58,8 @@ export const liquidityHero = {
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
 
-  /** Existing Add Liquidity route — Module 004 owns the form later. */
-  addLiquidityHref: '/add',
+  /** In-page Add Liquidity form (IA primary workspace). */
+  addLiquidityHref: '#add-liquidity',
 
   mobileTitleSize: '42px',
   mobileTitleLine: '46px',
@@ -77,8 +79,7 @@ export const liquidityHero = {
 export const LIQUIDITY_HERO_COPY = {
   title: 'Liquidity',
   description: 'Provide liquidity.\nEarn fees.\nGrow markets.',
-  journeys:
-    'Two ways to start: provide liquidity manually, or use Melega AI Liquidity Builder.',
+  journeys: '',
   primaryCta: 'Add Liquidity',
   trustTitle: 'Why provide liquidity?',
   trustItems: [

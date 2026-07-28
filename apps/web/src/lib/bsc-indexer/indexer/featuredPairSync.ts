@@ -5,7 +5,11 @@ import {
   MAX_EVENTS_PER_SYNC,
   VERIFIED_R772_SWAP_BLOCK,
 } from '../constants'
-import { CHECKPOINT_RESET_REASON_R772, createFreshFeaturedPairCheckpoint } from '../checkpointReset'
+import {
+  CHECKPOINT_RESET_REASON_R772,
+  CHECKPOINT_RESET_REASON_TOPIC_OR,
+  createFreshFeaturedPairCheckpoint,
+} from '../checkpointReset'
 import { assertIndexerEventTopicsValid } from '../eventTopicIntegrity'
 import { resolveIndexerStorage } from '../storage'
 import type { IndexerCheckpoint, IndexerHealthSnapshot } from '../types'
@@ -70,6 +74,29 @@ export async function runFeaturedPairSync(
       CHECKPOINT_RESET_REASON_R772,
     )
     await storage.saveCheckpoint(checkpoint)
+  }
+
+  // Self-heal: coverage marked complete with near-zero Swaps = AND-filter false-negative era.
+  // Clear coverage only (keep events); gap-fill resumes with OR topic filter.
+  if (isV2Checkpoint(checkpoint) && checkpoint.resetReason !== CHECKPOINT_RESET_REASON_TOPIC_OR) {
+    const swapCount = eventCountsPreflight.Swap ?? 0
+    const ranges = checkpoint.coverageRanges ?? []
+    const floor = checkpoint.bootstrapStartBlock ?? 0
+    const high = Math.max(0, (checkpoint.chainHeadAtSync || chainHead) - 12)
+    const summary = bootstrapWindowSummary(ranges, floor, high)
+    if (ranges.length > 0 && summary.coveragePercent >= 90 && swapCount <= 3) {
+      checkpoint = {
+        ...checkpoint,
+        phase: 'bootstrap',
+        coverageRanges: [],
+        gapFillCursor: floor,
+        forwardCursor: floor,
+        lastIndexedBlock: floor,
+        resetReason: CHECKPOINT_RESET_REASON_TOPIC_OR,
+        resetAt: new Date().toISOString(),
+      }
+      await storage.saveCheckpoint(checkpoint)
+    }
   }
 
   if (

@@ -1,0 +1,12 @@
+{
+  "note": "Production Top Movers will populate after deploy + cron self-heal re-backfill finds qualifying indexed swaps",
+  "ranking": [
+    "absPct",
+    "swapCount",
+    "volume",
+    "recency",
+    "address"
+  ],
+  "localIndexedSwaps": 39,
+  "emptyStateMustClearWhenQualifyingEventsExist": true
+}

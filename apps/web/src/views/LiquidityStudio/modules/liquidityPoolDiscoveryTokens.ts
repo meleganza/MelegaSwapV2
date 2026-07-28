@@ -9,16 +9,17 @@ export const liquidityPoolDiscovery = {
   dependsOn: '002-liquidity-actions',
 
   contentMax: '1376px',
-  gapAfterActions: '16px',
-  headerH: '64px',
-  columnGap: '20px',
-  rowGap: '20px',
-  cardW: '445px',
-  cardMinH: '196px',
-  cardRadius: '14px',
+  gapAfterActions: '20px',
+  headerH: '48px',
+  columnGap: '12px',
+  rowGap: '12px',
+  /** Dense market browse — readable card footprint. */
+  cardW: '100%',
+  cardMinH: '158px',
+  cardRadius: '10px',
   cardBorder: '1px solid rgba(255,255,255,0.09)',
   cardBg: 'rgba(15,15,15,0.92)',
-  cardPad: '18px',
+  cardPad: '14px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
@@ -27,7 +28,7 @@ export const liquidityPoolDiscovery = {
   dim: 'rgba(255,255,255,0.45)',
 
   ctaH: '40px',
-  ctaRadius: '10px',
+  ctaRadius: '8px',
   focusRing: '2px solid #F4C430',
   focusOffset: '2px',
 
@@ -35,12 +36,16 @@ export const liquidityPoolDiscovery = {
   chainId: 56,
 
   /** Visible page size — factory inventory may be larger; no invented rows. */
-  pageSize: 24,
-  skeletonCount: 6,
+  pageSize: 18,
+  skeletonCount: 12,
+  /** 5 cols ≥1440 content; 6 at 1920 when readable. */
+  desktopColumns: 5,
+  wideColumns: 6,
 
   tabletBreak: '1199px',
-  /** Below desktop content width — switch to 2 columns (tablet). */
-  twoColMax: '1199px',
+  /** ~1024 — 3 columns. */
+  threeColMax: '1199px',
+  twoColMax: '767px',
   mobileBreak: '767px',
   mobile390: '390px',
   mobile430: '430px',
@@ -59,7 +64,7 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
   metricUnavailable: '—',
   statusActive: 'Active',
   statusUnavailable: 'Unavailable',
-  cta: 'Add Liquidity',
+  cta: 'Add',
   filters: {
     all: 'All',
     myTokens: 'My Tokens',
@@ -79,10 +84,7 @@ export type LiquidityDiscoverySort = 'market' | 'tvl' | 'volume' | 'newest'
 
 /** Frozen Module 001 / 002 source SHAs. */
 export const LIQUIDITY_MODULE_001_002_FREEZE = {
-  LiquidityHeroModule:
-    '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
-  LiquidityActionsModule:
-    '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
-  liquidityActionsTokens:
-    'f7cc179e4c8bf99d62f3a496458290e913c6d4957677fb82ff89073b9665dbda',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  liquidityActionsTokens: '492fc8041d088721054d8b80f5ed39bf2dd9bd28a879fe1275437f6270fc38d2',
 } as const

@@ -36,6 +36,8 @@ describe('provider health quarantine (R773)', () => {
     resetProviderHealthForTests()
     const dead = 'https://rpc.ankr.com/bsc/dead-key'
     const live = 'https://indulgent-long-diagram.bsc.quiknode.pro/key/'
+    const prevLog = process.env.BSC_LOG_RPC_URL
+    delete process.env.BSC_LOG_RPC_URL
     process.env.BSC_RPC_URL = live
     process.env.BSC_RPC_FALLBACK_URL = dead
     recordProviderFailure(dead, 'ankr', 'HTTP 404: Not Found')
@@ -46,6 +48,7 @@ describe('provider health quarantine (R773)', () => {
     expect(urls).not.toContain(dead)
     delete process.env.BSC_RPC_URL
     delete process.env.BSC_RPC_FALLBACK_URL
+    if (prevLog !== undefined) process.env.BSC_LOG_RPC_URL = prevLog
   })
 })
 

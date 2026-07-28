@@ -1,0 +1,8 @@
+{
+  "verifiedBlock": 86326727,
+  "andFlatCount": 0,
+  "orNestedCount": 1,
+  "swapsInLast100kBlocks": 22,
+  "head": 112692401,
+  "conclusion": "flat [SWAP,MINT,BURN] is AND across topic slots and returns 0; nested [[SWAP,MINT,BURN]] is OR on topic0 and finds events"
+}

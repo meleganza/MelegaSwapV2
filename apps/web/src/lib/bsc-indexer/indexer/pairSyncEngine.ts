@@ -4,10 +4,8 @@ import {
   MAX_EVENTS_PER_SYNC,
   MELEGA_CHAIN_ID,
   REORG_SAFETY_BLOCKS,
-  SWAP_TOPIC,
-  MINT_TOPIC,
-  BURN_TOPIC,
 } from '../constants'
+import { ammPairEventTopicsOrFilter } from '../eventTopics'
 import { AMM_TOPICS } from '../rpc/chunkedLogs'
 import {
   getBlockNumber,
@@ -135,7 +133,8 @@ async function scanRange(
   const started = Date.now()
   const result = await getLogsChunked({
     address: pair.pairAddress,
-    topics: [SWAP_TOPIC, MINT_TOPIC, BURN_TOPIC],
+    // Nested OR on topic0 — never flat [SWAP,MINT,BURN] (that is AND across topic slots).
+    topics: ammPairEventTopicsOrFilter(),
     fromBlock,
     toBlock,
     initialChunk: chunkSize,

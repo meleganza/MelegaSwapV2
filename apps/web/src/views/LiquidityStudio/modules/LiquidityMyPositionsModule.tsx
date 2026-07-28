@@ -21,7 +21,7 @@ import { LIQUIDITY_MY_POSITIONS_COPY, liquidityMyPositions } from './liquidityMy
 const Shell = styled.section`
   width: 100%;
   max-width: ${liquidityMyPositions.contentMax};
-  margin: ${liquidityMyPositions.gapAfterSnapshot} auto 0;
+  margin: ${liquidityMyPositions.gapAfterActions} auto 0;
   box-sizing: border-box;
   min-width: 0;
   overflow-x: hidden;
@@ -31,40 +31,10 @@ const Shell = styled.section`
   }
 `
 
-const Layout = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, ${liquidityMyPositions.reservedW});
-  column-gap: ${liquidityMyPositions.columnGap};
-  row-gap: 16px;
-  align-items: start;
-  min-width: 0;
-
-  @media (max-width: ${liquidityMyPositions.tabletBreak}) {
-    grid-template-columns: 1fr;
-  }
-`
-
 const Main = styled.div`
   width: 100%;
   max-width: ${liquidityMyPositions.mainW};
   min-width: 0;
-`
-
-const Reserved = styled.aside`
-  width: 100%;
-  max-width: ${liquidityMyPositions.reservedW};
-  min-height: 168px;
-  box-sizing: border-box;
-  border-radius: ${liquidityMyPositions.cardRadius};
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  background: rgba(15, 15, 15, 0.55);
-  padding: ${liquidityMyPositions.cardPad};
-  color: ${liquidityMyPositions.dim};
-
-  @media (max-width: ${liquidityMyPositions.tabletBreak}) {
-    display: none;
-  }
 `
 
 const Title = styled.h2`
@@ -86,9 +56,13 @@ const Desc = styled.p`
 const Grid = styled.div`
   margin-top: 16px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: ${liquidityMyPositions.columnGap};
   min-width: 0;
+
+  @media (max-width: ${liquidityMyPositions.tabletBreak}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   @media (max-width: ${liquidityMyPositions.mobileBreak}) {
     grid-template-columns: 1fr;
@@ -386,53 +360,44 @@ const LiquidityMyPositionsBody: React.FC = () => {
   )
 
   return (
-    <Layout data-testid="liquidity-my-positions-layout" data-liquidity-positions-geometry="936-24-424">
-      <Main>
-        <Title id="liquidity-my-positions-title">{LIQUIDITY_MY_POSITIONS_COPY.title}</Title>
-        <Desc>{LIQUIDITY_MY_POSITIONS_COPY.description}</Desc>
+    <Main data-testid="liquidity-my-positions-layout" data-liquidity-positions-geometry="full-width">
+      <Title id="liquidity-my-positions-title">{LIQUIDITY_MY_POSITIONS_COPY.title}</Title>
+      <Desc>{LIQUIDITY_MY_POSITIONS_COPY.description}</Desc>
 
-        {!account ? (
-          <Empty data-testid="liquidity-my-positions-disconnected">
-            <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyDisconnected}</EmptyText>
-            <EmptyActions>
-              <ConnectWrap>
-                <ConnectWalletButton>{LIQUIDITY_MY_POSITIONS_COPY.connect}</ConnectWalletButton>
-              </ConnectWrap>
-            </EmptyActions>
-          </Empty>
-        ) : null}
+      {!account ? (
+        <Empty data-testid="liquidity-my-positions-disconnected">
+          <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyDisconnected}</EmptyText>
+          <EmptyActions>
+            <ConnectWrap>
+              <ConnectWalletButton>{LIQUIDITY_MY_POSITIONS_COPY.connect}</ConnectWalletButton>
+            </ConnectWrap>
+          </EmptyActions>
+        </Empty>
+      ) : null}
 
-        {account && positionsLoading ? (
-          <Skeleton data-testid="liquidity-my-positions-skeleton" aria-label="Loading positions" />
-        ) : null}
+      {account && positionsLoading ? (
+        <Skeleton data-testid="liquidity-my-positions-skeleton" aria-label="Loading positions" />
+      ) : null}
 
-        {account && !positionsLoading && positions.length === 0 ? (
-          <Empty data-testid="liquidity-my-positions-empty">
-            <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}</EmptyText>
-            <EmptyActions>
-              <LinkBtn href={liquidityMyPositions.explorePoolsHref} data-testid="liquidity-my-positions-explore">
-                {LIQUIDITY_MY_POSITIONS_COPY.explorePools}
-              </LinkBtn>
-            </EmptyActions>
-          </Empty>
-        ) : null}
+      {account && !positionsLoading && positions.length === 0 ? (
+        <Empty data-testid="liquidity-my-positions-empty">
+          <EmptyText>{LIQUIDITY_MY_POSITIONS_COPY.emptyConnected}</EmptyText>
+          <EmptyActions>
+            <LinkBtn href={liquidityMyPositions.explorePoolsHref} data-testid="liquidity-my-positions-explore">
+              {LIQUIDITY_MY_POSITIONS_COPY.explorePools}
+            </LinkBtn>
+          </EmptyActions>
+        </Empty>
+      ) : null}
 
-        {account && !positionsLoading && positions.length > 0 ? (
-          <Grid data-testid="liquidity-my-positions-grid">
-            {positions.map((row) => (
-              <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
-            ))}
-          </Grid>
-        ) : null}
-      </Main>
-
-      <Reserved data-testid="liquidity-my-positions-reserved" aria-label={LIQUIDITY_MY_POSITIONS_COPY.reservedLabel}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          {LIQUIDITY_MY_POSITIONS_COPY.reservedLabel}
-        </div>
-        <p style={{ margin: '8px 0 0', fontSize: 13, lineHeight: '18px' }}>{LIQUIDITY_MY_POSITIONS_COPY.reservedBody}</p>
-      </Reserved>
-    </Layout>
+      {account && !positionsLoading && positions.length > 0 ? (
+        <Grid data-testid="liquidity-my-positions-grid">
+          {positions.map((row) => (
+            <PositionCard key={row.id} row={row} onManage={onManage} onRemove={onRemove} />
+          ))}
+        </Grid>
+      ) : null}
+    </Main>
   )
 }
 

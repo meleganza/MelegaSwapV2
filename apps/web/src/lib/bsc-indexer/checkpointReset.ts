@@ -14,6 +14,9 @@ import { LEGACY_INDEXER_NOTE } from './v2/paths'
 import { estimateBootstrapStartBlock } from './rpc/scanBlockRange'
 
 export const CHECKPOINT_RESET_REASON_R772 = 'R772_MALFORMED_SWAP_TOPIC_CORRECTION'
+/** Flattened topics [SWAP,MINT,BURN] AND-filter false-negative — force re-backfill with OR filter. */
+export const CHECKPOINT_RESET_REASON_TOPIC_OR =
+  'R792_PAIR_SYNC_TOPICS_OR_FILTER_CORRECTION'
 
 export async function createFreshFeaturedPairCheckpoint(
   chainHead: number,
@@ -33,14 +36,17 @@ export async function createFreshFeaturedPairCheckpoint(
     bootstrapStartBlock,
     bootstrapDays,
     chainId: MELEGA_CHAIN_ID,
-    lastIndexedBlock: chainHead,
+    // Resume from bootstrap floor — do not claim head coverage until gap-fill proves it.
+    lastIndexedBlock: bootstrapStartBlock,
     chainHeadAtSync: chainHead,
     reorgSafetyBlocks: REORG_SAFETY_BLOCKS,
     lastSuccessfulSync: new Date(0).toISOString(),
     chunkSize: DEFAULT_CHUNK_SIZE,
     cursorPairIndex: 0,
-    forwardCursor: Math.max(0, chainHead - REORG_SAFETY_BLOCKS),
+    gapFillCursor: bootstrapStartBlock,
+    forwardCursor: bootstrapStartBlock,
     backwardCursor: chainHead,
+    coverageRanges: [],
     legacyNote: LEGACY_INDEXER_NOTE,
     resetReason,
     resetAt: new Date().toISOString(),

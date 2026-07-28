@@ -4,17 +4,20 @@ import { LiquidityRuntimeProvider } from 'views/LiquidityStudio/liquidityRuntime
 import { LiquidityHeroModule } from 'views/LiquidityStudio/modules/LiquidityHeroModule'
 import { LiquidityActionsModule } from 'views/LiquidityStudio/modules/LiquidityActionsModule'
 import { LiquidityPoolDiscoveryModule } from 'views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule'
-import { LiquidityAddModule } from 'views/LiquidityStudio/modules/LiquidityAddModule'
-import { LiquidityMarketSnapshotModule } from 'views/LiquidityStudio/modules/LiquidityMarketSnapshotModule'
 import { LiquidityMyPositionsModule } from 'views/LiquidityStudio/modules/LiquidityMyPositionsModule'
-import { LiquidityAnalyticsModule } from 'views/LiquidityStudio/modules/LiquidityAnalyticsModule'
+import { LiquidityInsightsModule } from 'views/LiquidityStudio/modules/LiquidityInsightsModule'
 import { LiquidityVisualPolishModule } from 'views/LiquidityStudio/modules/LiquidityVisualPolishModule'
 import { liquidityHero } from 'views/LiquidityStudio/modules/liquidityHeroTokens'
 
 /**
- * LIQUIDITY V1 — certified modular stack only.
- * Legacy views/Pool body removed from production mount (archive remains in repo).
- * One LiquidityRuntimeProvider wraps Add + My Positions.
+ * LIQUIDITY V1 — information architecture redesign (presentation only).
+ *
+ * Order:
+ * 001 Hero
+ * 002 Primary workspace (Add Liquidity + AI Builder expanded)
+ * 003 My Positions
+ * 004 Liquidity Insights (Market Snapshot + Analytics merged)
+ * 005 Explore Pools (discovery, bottom)
  */
 const Page = styled.div`
   width: 100%;
@@ -22,6 +25,7 @@ const Page = styled.div`
   overflow-x: hidden;
   background: ${liquidityHero.pageBg};
   box-sizing: border-box;
+  padding-bottom: 32px;
 `
 
 const LiquidityPage = () => (
@@ -36,18 +40,17 @@ const LiquidityPage = () => (
     data-liquidity-module-007="mounted"
     data-liquidity-module-008="mounted"
     data-liquidity-architecture="000"
+    data-liquidity-ia="provider-first-v1"
     data-liquidity-legacy-body="archived"
   >
     <LiquidityVisualPolishModule />
     <LiquidityHeroModule />
-    <LiquidityActionsModule />
-    <LiquidityPoolDiscoveryModule />
     <LiquidityRuntimeProvider>
-      <LiquidityAddModule />
-      <LiquidityMarketSnapshotModule />
+      <LiquidityActionsModule />
       <LiquidityMyPositionsModule />
     </LiquidityRuntimeProvider>
-    <LiquidityAnalyticsModule />
+    <LiquidityInsightsModule />
+    <LiquidityPoolDiscoveryModule />
   </Page>
 )
 

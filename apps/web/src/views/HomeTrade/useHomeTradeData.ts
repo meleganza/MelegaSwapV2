@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import useSWR from 'swr'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
@@ -189,6 +190,20 @@ export const useHomeTradeData = () => {
     pageSize: 24,
   })
   const currentBlock = useCurrentBlock()
+  const { data: tierVolumeQuote } = useSWR(
+    'home-kpi-tier-volume-quote',
+    async () => {
+      try {
+        const res = await fetch('/api/indexer/tier-metrics')
+        if (!res.ok) return 0
+        const json = (await res.json()) as { rows?: Array<{ volume24hQuote?: number }> }
+        return (json.rows ?? []).reduce((sum, row) => sum + (Number(row.volume24hQuote) || 0), 0)
+      } catch {
+        return 0
+      }
+    },
+    { revalidateOnFocus: false, dedupingInterval: 120_000 },
+  )
 
   const indexedTransactions = useMemo(
     () =>
@@ -380,26 +395,22 @@ export const useHomeTradeData = () => {
       })
     }
 
-    // Volume policy: never label count-only / zero-USD data as dollar "24H Volume".
+    // Volume: prefer tier-metrics quote volume × WBNB USD; never label swap-count as dollar volume.
+    const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+    const tierUsd =
+      tierVolumeQuote != null && tierVolumeQuote > 0 && bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0
+        ? tierVolumeQuote * bnbUsd
+        : 0
     const swapUsd = recentTransactions
       .filter((tx) => tx.type === TransactionType.SWAP)
       .reduce((sum, tx) => sum + (Number.isFinite(tx.amountUSD) ? tx.amountUSD : 0), 0)
-    const swapCount = recentTransactions.filter((tx) => tx.type === TransactionType.SWAP).length
-    const volLabel = formatUsd(swapUsd)
+    const volLabel = formatUsd(Math.max(tierUsd, swapUsd))
     if (volLabel) {
       cards.push({
         id: 'volume-24h',
         label: '24H Volume',
         value: volLabel,
-        meta: 'Partial · USD-valued indexed swaps',
-        href: '/trade',
-      })
-    } else if (swapCount > 0) {
-      cards.push({
-        id: 'volume-24h-activity',
-        label: '24H Swaps',
-        value: String(swapCount),
-        meta: 'Indexed swap count · USD valuation unavailable',
+        meta: tierUsd > 0 ? 'Indexed Melega DEX Swap volume · 24H' : 'Partial · USD-valued indexed swaps',
         href: '/trade',
       })
     }
@@ -450,7 +461,7 @@ export const useHomeTradeData = () => {
     }
 
     return cards.slice(0, 5)
-  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions])
+  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions, tierVolumeQuote, wbnbPrice])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms
@@ -567,9 +578,13 @@ export const useHomeTradeData = () => {
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
     const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
     const poolReconciliation = reconcilePoolLifecycle(allPools, currentBlock)
-    // Prefer rewarding; never collapse to 0 when historical staking pools are configured.
-    const poolCount = poolReconciliation.rewarding > 0 ? poolReconciliation.rewarding : allPools.length
-    const indexedAssetCount = tradeableAssetCount
+    // Active SmartChef pools only — never substitute historical inventory totals.
+    const activePoolCount =
+      poolReconciliation.active > 0
+        ? poolReconciliation.active
+        : poolReconciliation.rewarding > 0
+          ? poolReconciliation.rewarding
+          : 0
 
     const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
       return {
@@ -587,11 +602,18 @@ export const useHomeTradeData = () => {
 
     return [
       pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(poolCount))),
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount))),
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.indexedAssets(String(indexedAssetCount))),
+      {
+        ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(activePoolCount))),
+        id: 'activePools',
+        label: 'Active Pools',
+      },
+      {
+        ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount))),
+        id: 'markets',
+        label: 'MARKETS',
+      },
     ]
-  }, [allFarms, allPools, currentBlock, tradeableAssetCount, dexProjects.length, liquidPairCount])
+  }, [allFarms, allPools, currentBlock, liquidPairCount])
 
   const marketUnavailableReason = useMemo(() => {
     if (marketCards.length > 0) return undefined

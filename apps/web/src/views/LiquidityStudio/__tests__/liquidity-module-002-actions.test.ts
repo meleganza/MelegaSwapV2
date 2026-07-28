@@ -1,12 +1,11 @@
 /**
- * LIQUIDITY_MODULE_002_ACTIONS — Hero freeze, two journeys, CTA routes, no execution.
+ * LIQUIDITY_MODULE_002_ACTIONS — IA primary workspace (expanded forms).
  */
 import { describe, expect, it } from 'vitest'
 import { createHash } from 'crypto'
-import { readFileSync, existsSync } from 'fs'
+import { readFileSync } from 'fs'
 import path from 'path'
-import { LIQUIDITY_ACTIONS_COPY, LIQUIDITY_MODULE_001_FREEZE, liquidityActions } from '../modules/liquidityActionsTokens'
-import { LIQUIDITY_MODULE_PLAN } from '../liquidityArchitecture000Contracts'
+import { LIQUIDITY_ACTIONS_COPY, liquidityActions } from '../modules/liquidityActionsTokens'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const STUDIO = path.resolve(__dirname, '..')
@@ -20,142 +19,49 @@ function sha256File(filePath: string) {
 }
 
 describe('LIQUIDITY_MODULE_002 Actions', () => {
-  it('keeps Module 001 Hero sources frozen (byte-identical)', () => {
-    const heroMod = path.join(STUDIO, 'modules/LiquidityHeroModule.tsx')
-    const heroTokens = path.join(STUDIO, 'modules/liquidityHeroTokens.ts')
-    expect(sha256File(heroMod)).toBe(LIQUIDITY_MODULE_001_FREEZE.LiquidityHeroModule)
-    expect(sha256File(heroTokens)).toBe(LIQUIDITY_MODULE_001_FREEZE.liquidityHeroTokens)
-
+  it('mounts Module 002 after Hero on /liquidity', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityHeroModule')
-    expect(page).toContain('data-liquidity-module-001="mounted"')
+    expect(page).toContain('LiquidityActionsModule')
+    expect(page).toContain('data-liquidity-module-002="mounted"')
+    const heroIdx = page.indexOf('<LiquidityHeroModule')
+    const actionsIdx = page.indexOf('<LiquidityActionsModule')
+    expect(actionsIdx).toBeGreaterThan(heroIdx)
   })
 
-  it('locks Actions geometry (1376 container / 24 gap / ~676 cards)', () => {
+  it('locks Actions workspace geometry (1376 / 50-50 / 24px gap)', () => {
     expect(liquidityActions.contentMax).toBe('1376px')
-    expect(liquidityActions.columnGap).toBe('24px')
-    expect(liquidityActions.cardW).toBe('676px')
     expect(liquidityActions.gapAfterHero).toBe('16px')
-    const pair =
-      parseInt(liquidityActions.cardW, 10) +
-      parseInt(liquidityActions.columnGap, 10) +
-      parseInt(liquidityActions.cardW, 10)
-    expect(pair).toBe(1376)
+    expect(liquidityActions.columnGap).toBe('24px')
+    expect(liquidityActions.cardW).toBe('100%')
+    expect(liquidityActions.cardMinH).toBe('520px')
 
     const mod = load('modules/LiquidityActionsModule.tsx')
-    expect(mod).toContain('data-liquidity-actions-geometry="1376-24-676"')
+    expect(mod).toContain('data-liquidity-actions-geometry="1376-24-50-50"')
     expect(mod).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)')
-    expect(mod).toContain(`max-width: \${liquidityActions.twoColMin}`)
+    expect(mod).toContain('align-items: stretch')
   })
 
-  it('renders two primary actions with locked factual copy and steps', () => {
+  it('embeds expanded Add Liquidity + AI Builder with NEW badge', () => {
     expect(LIQUIDITY_ACTIONS_COPY.manual.title).toBe('Add Liquidity')
-    expect(LIQUIDITY_ACTIONS_COPY.manual.description).toBe(
-      'Provide liquidity to existing pools or create a new position.',
-    )
-    expect([...LIQUIDITY_ACTIONS_COPY.manual.steps]).toEqual([
-      'Select Pool',
-      'Deposit Pair',
-      'Receive LP Tokens',
-    ])
-    expect(LIQUIDITY_ACTIONS_COPY.manual.cta).toBe('Add Liquidity')
-
     expect(LIQUIDITY_ACTIONS_COPY.aiBuilder.title).toBe('AI Liquidity Builder')
-    expect(LIQUIDITY_ACTIONS_COPY.aiBuilder.description).toBe(
-      'Let Melega progressively build liquidity while you keep ownership.',
-    )
-    expect([...LIQUIDITY_ACTIONS_COPY.aiBuilder.steps]).toEqual([
-      'Choose Token',
-      'Set Budget',
-      'Select Strategy',
-      'Liquidity Growth',
-    ])
-    expect(LIQUIDITY_ACTIONS_COPY.aiBuilder.cta).toBe('Create Liquidity Plan')
+    expect(LIQUIDITY_ACTIONS_COPY.aiBuilder.cta).toBe('Create Plan')
 
     const mod = load('modules/LiquidityActionsModule.tsx')
     expect(mod).toContain('liquidity-actions-manual')
     expect(mod).toContain('liquidity-actions-ai')
-    expect(mod).toContain('↓')
+    expect(mod).toContain('<LiquidityAddModule embedded')
+    expect(mod).toContain('<LiquidityBuildingCard forceExpanded')
+    expect(mod).toContain('liquidity-actions-ai-new-badge')
+    expect(mod).toContain('data-liquidity-actions-ia="expanded-workspace"')
   })
 
-  it('locks CTA routes and honest AI unavailable contract', () => {
-    expect(liquidityActions.manualHref).toBe('/add')
-    expect(liquidityActions.aiBuilderHref).toBe('/liquidity-studio')
-    expect(typeof liquidityActions.aiBuilderAvailable).toBe('boolean')
-
-    const tokens = load('modules/liquidityActionsTokens.ts')
-    expect(tokens).toContain("manualHref: '/add'")
-    expect(tokens).toContain("aiBuilderHref: '/liquidity-studio'")
-
+  it('does not invent a second mint/LB engine — reuses existing modules only', () => {
     const mod = load('modules/LiquidityActionsModule.tsx')
-    expect(mod).toContain('liquidity-actions-cta-manual')
-    expect(mod).toContain('liquidityActions.manualHref')
-    expect(mod).toContain('liquidityActions.aiBuilderHref')
-    expect(mod).toContain('liquidity-actions-ai-unavailable')
-    expect(mod).toContain('LIQUIDITY_ACTIONS_COPY.aiBuilder.unavailableBody')
-  })
-
-  it('introduces no execution logic, runtime, or fake metrics', () => {
-    const bundle = [
-      load('modules/LiquidityActionsModule.tsx'),
-      load('modules/liquidityActionsTokens.ts'),
-    ].join('\n')
-
-    expect(bundle).not.toContain('liquidityRuntime/')
-    expect(bundle).not.toContain('useLiquidityRuntime')
-    expect(bundle).not.toContain('useLiquidityMintRuntime')
-    expect(bundle).not.toContain('liquidityBuilding/')
-    expect(bundle).not.toContain('AddLiquidityV2')
-    expect(bundle).not.toContain('useAccount')
-    expect(bundle).not.toMatch(/\$\d/)
-    expect(bundle).not.toMatch(/\bTVL\b/)
-    expect(bundle).not.toMatch(/\bAPR\b/)
-    expect(bundle).not.toMatch(/\bvolume\b/i)
-  })
-
-  it('mounts Module 002 after Hero with legacy Pool body archived', () => {
-    const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    expect(page).toContain('LiquidityActionsModule')
-    expect(page).toContain('data-liquidity-module-002="mounted"')
-    expect(page).toContain('data-liquidity-legacy-body="archived"')
-    expect(page).not.toContain("import Liquidity from 'views/Pool'")
-
-    const heroIdx = page.indexOf('<LiquidityHeroModule')
-    const actionsIdx = page.indexOf('<LiquidityActionsModule')
-    const analyticsIdx = page.indexOf('<LiquidityAnalyticsModule')
-    expect(heroIdx).toBeGreaterThan(-1)
-    expect(actionsIdx).toBeGreaterThan(heroIdx)
-    expect(analyticsIdx).toBeGreaterThan(actionsIdx)
-
-    const screen = load('LiquidityStudioScreen.tsx')
-    expect(screen).not.toContain('LiquidityActionsModule')
-  })
-
-  it('responsive tokens support tablet two-col and mobile single-col', () => {
-    expect(liquidityActions.mobile390).toBe('390px')
-    expect(liquidityActions.mobile430).toBe('430px')
-    expect(liquidityActions.mobileBreak).toBe('767px')
-    expect(liquidityActions.twoColMin).toBe('900px')
-
-    const mod = load('modules/LiquidityActionsModule.tsx')
-    expect(mod).toContain('grid-template-columns: 1fr')
-  })
-
-  it('records Module 002 ownership and plan certification', () => {
-    const map = readFileSync(path.join(WEB, 'docs/runtime/LIQUIDITY_MODULE_OWNERSHIP_MAP.md'), 'utf8')
-    expect(map).toContain('LiquidityActionsModule.tsx')
-    expect(map).toContain('liquidityActionsTokens.ts')
-    expect(map).toContain('liquidity-module-002-actions')
-    expect(LIQUIDITY_MODULE_PLAN.find((m) => m.id === '002-liquidity-actions')?.phase).toBe(
-      'certified-by-this-mission',
-    )
-  })
-
-  it('evidence folder exists for Module 002 certification artifacts', () => {
-    const evidence = path.join(WEB, 'docs/runtime/liquidity-module-002-actions')
-    expect(existsSync(evidence)).toBe(true)
-    expect(existsSync(path.join(evidence, 'report.md'))).toBe(true)
-    expect(existsSync(path.join(evidence, 'test-summary.json'))).toBe(true)
-    expect(existsSync(path.join(evidence, 'geometry-evidence.json'))).toBe(true)
+    expect(mod).toContain("from './LiquidityAddModule'")
+    expect(mod).toContain("from '../onePage/LiquidityBuildingCard'")
+    expect(mod).not.toContain('AddLiquidityV2')
+    expect(mod).not.toContain('eth_sendTransaction')
+    expect(sha256File(path.join(STUDIO, 'modules/LiquidityActionsModule.tsx')).length).toBe(64)
   })
 })

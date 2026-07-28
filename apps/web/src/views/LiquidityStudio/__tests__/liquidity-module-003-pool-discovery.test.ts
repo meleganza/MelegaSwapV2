@@ -61,20 +61,21 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     )
   })
 
-  it('locks discovery geometry (1376 / header 64 / 3×~445 / gap 20)', () => {
+  it('locks dense discovery geometry (5 cols desktop / 6 @1920 / gap 12)', () => {
     expect(liquidityPoolDiscovery.contentMax).toBe('1376px')
-    expect(liquidityPoolDiscovery.headerH).toBe('64px')
-    expect(liquidityPoolDiscovery.columnGap).toBe('20px')
-    expect(liquidityPoolDiscovery.cardW).toBe('445px')
-    const row =
-      parseInt(liquidityPoolDiscovery.cardW, 10) * 3 + parseInt(liquidityPoolDiscovery.columnGap, 10) * 2
-    expect(row).toBeGreaterThanOrEqual(1374)
-    expect(row).toBeLessThanOrEqual(1376)
+    expect(liquidityPoolDiscovery.headerH).toBe('48px')
+    expect(liquidityPoolDiscovery.columnGap).toBe('12px')
+    expect(liquidityPoolDiscovery.cardMinH).toBe('158px')
+    expect(liquidityPoolDiscovery.cardPad).toBe('14px')
+    expect(liquidityPoolDiscovery.ctaH).toBe('40px')
+    expect(liquidityPoolDiscovery.desktopColumns).toBe(5)
+    expect(liquidityPoolDiscovery.wideColumns).toBe(6)
 
     const mod = load('modules/LiquidityPoolDiscoveryModule.tsx')
-    expect(mod).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
+    expect(mod).toContain('grid-template-columns: repeat(5, minmax(0, 1fr))')
+    expect(mod).toContain('min-width: 1920px')
+    expect(mod).toContain('repeat(3, minmax(0, 1fr))')
     expect(mod).toContain('repeat(2, minmax(0, 1fr))')
-    expect(mod).toContain('grid-template-columns: 1fr')
   })
 
   it('ships locked Explore Pools copy and empty / unavailable honesty', () => {
@@ -176,17 +177,19 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     expect(hook).not.toContain('useLiquidityMintRuntime')
   })
 
-  it('mounts Module 003 after Actions and above frozen legacy Pool', () => {
+  it('mounts Module 003 (Explore) at the bottom after Insights', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
     expect(page).toContain('LiquidityPoolDiscoveryModule')
     expect(page).toContain('data-liquidity-legacy-body="archived"')
     expect(page).toContain('data-liquidity-module-003="mounted"')
     const hero = page.indexOf('<LiquidityHeroModule')
     const actions = page.indexOf('<LiquidityActionsModule')
+    const insights = page.indexOf('<LiquidityInsightsModule')
     const discovery = page.indexOf('<LiquidityPoolDiscoveryModule')
     expect(hero).toBeLessThan(actions)
-    expect(actions).toBeLessThan(discovery)
-      })
+    expect(actions).toBeLessThan(insights)
+    expect(insights).toBeLessThan(discovery)
+  })
 
   it('does not invent pool databases or fake metric literals in module sources', () => {
     const bundle = [

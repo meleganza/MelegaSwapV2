@@ -86,13 +86,18 @@ describe('LIQUIDITY_ARCHITECTURE_000 Mockup Lock', () => {
   it('freezes current liquidity mounts as LEGACY_IMPLEMENTATION without cutover', () => {
     expect(LIQUIDITY_LEGACY_IMPLEMENTATION.label).toBe('LEGACY_IMPLEMENTATION')
     const classic = readFileSync(path.join(WEB, 'src/pages/liquidity.tsx'), 'utf8')
-    // Module 001 may wrap Hero above Pool; Pool remains the legacy body.
-    expect(classic).toContain('views/Pool')
+    // Provider-first modular body (legacy views/Pool archived); no architecture shell cutover.
+    expect(classic).toContain('LiquidityHeroModule')
+    expect(classic).toContain('LiquidityActionsModule')
+    expect(classic).toContain('data-liquidity-legacy-body="archived"')
     expect(classic).not.toContain('LiquidityArchitectureShell')
+    expect(classic).not.toContain('views/Pool')
 
     const studio = readFileSync(path.join(WEB, 'src/pages/liquidity-studio.tsx'), 'utf8')
-    expect(studio).toContain('LiquidityStudioScreen')
+    // Alias route re-exports certified /liquidity stack (no separate Studio shell mount).
+    expect(studio).toContain("from './liquidity'")
     expect(studio).not.toContain('modules/LiquidityHero')
+    expect(studio).not.toContain('LiquidityArchitectureShell')
 
     const freeze = JSON.parse(
       readFileSync(path.join(WEB, 'docs/runtime/liquidity-architecture-000/legacy-implementation-freeze.json'), 'utf8'),

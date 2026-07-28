@@ -1,0 +1,22 @@
+{
+  "base": "946460b1",
+  "changedFiles": [
+    "apps/web/src/lib/bsc-indexer/__tests__/eventTopicIntegrity.test.ts",
+    "apps/web/src/lib/bsc-indexer/__tests__/providerHealth.test.ts",
+    "apps/web/src/lib/bsc-indexer/checkpointReset.ts",
+    "apps/web/src/lib/bsc-indexer/constants.ts",
+    "apps/web/src/lib/bsc-indexer/eventTopics.ts",
+    "apps/web/src/lib/bsc-indexer/indexer/featuredPairSync.ts",
+    "apps/web/src/lib/bsc-indexer/indexer/pairSyncEngine.ts",
+    "apps/web/src/lib/bsc-indexer/indexer/tierInventory.ts",
+    "apps/web/src/lib/bsc-indexer/rpc/chunkedLogs.ts",
+    "apps/web/src/pages/api/indexer/health.ts",
+    "apps/web/src/pages/api/indexer/reset-checkpoint.ts",
+    "apps/web/src/views/HomeTrade/FeaturedProjectsRail.tsx",
+    "apps/web/src/views/HomeTrade/__tests__/productIaHomeRefinement.test.ts",
+    "apps/web/src/views/LiquidityStudio/__tests__/liquidityV1.final.freeze.sha256.json",
+    "apps/web/src/views/LiquidityStudio/modules/useLiquidityPoolDiscovery.ts"
+  ],
+  "forbiddenTouched": [],
+  "ok": true
+}

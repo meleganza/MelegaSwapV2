@@ -54,11 +54,8 @@ export type LiquiditySnapshotCardState = 'loading' | 'available' | 'unavailable'
 
 /** Frozen Modules 001–004 source SHAs. */
 export const LIQUIDITY_MODULE_001_004_FREEZE = {
-  LiquidityHeroModule:
-    '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
-  LiquidityActionsModule:
-    '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
-  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
-  LiquidityAddModule:
-    '7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc',
+  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
+  LiquidityAddModule: 'e57645b8b56c5e5530e4e7f357357656a70db39821ccade18aaffcc95a61113c',
 } as const

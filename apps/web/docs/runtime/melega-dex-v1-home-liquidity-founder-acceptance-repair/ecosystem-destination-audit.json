@@ -1,0 +1,37 @@
+{
+  "destinations": [
+    {
+      "id": "passport",
+      "href": "https://marco.melega.ai",
+      "status": "live"
+    },
+    {
+      "id": "smartdrop",
+      "href": "https://smartdrop.melega.ai/dashboard",
+      "status": "live"
+    },
+    {
+      "id": "labs",
+      "href": "https://labs.melega.ai/labs",
+      "status": "live"
+    },
+    {
+      "id": "space",
+      "href": "https://melega.space/",
+      "status": "live"
+    },
+    {
+      "id": "radar",
+      "href": "/radar",
+      "status": "live"
+    },
+    {
+      "id": "maiora",
+      "href": null,
+      "status": "unavailable",
+      "reason": "No canonical Maiora URL in repository"
+    }
+  ],
+  "comingSoonForLiveProducts": false,
+  "desktopLayout": "6 equal cards \u22651440; target height 112\u2013128px"
+}

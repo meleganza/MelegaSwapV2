@@ -1,0 +1,13 @@
+{
+  "desktopGrid": "32%/40%/28%",
+  "minHeightPx": 300,
+  "artworkCenteredInColumn": true,
+  "viewportsChecked": [
+    1920,
+    1600,
+    1440,
+    1024,
+    430,
+    390
+  ]
+}

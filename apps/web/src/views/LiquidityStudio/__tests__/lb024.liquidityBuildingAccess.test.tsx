@@ -37,6 +37,7 @@ describe('LB024 Liquidity Building access', () => {
     const card = readFileSync(path.join(__dirname, '../onePage/LiquidityBuildingCard.tsx'), 'utf8')
     const page = readFileSync(path.join(__dirname, '../onePage/UnifiedLiquidityPage.tsx'), 'utf8')
     expect(SCREEN_SRC).toMatch(/UnifiedLiquidityPage/)
+    expect(card).toMatch(/data-liquidity-building-panel/)
     expect(card).toMatch(/LiquidityBuildingPanel/)
     expect(page).toMatch(/view === 'building'|liquidity-building|focusBuilding|building/)
     expect(PANEL_SRC).toMatch(/data-liquidity-building-panel/)

@@ -26,6 +26,48 @@ export type DiscoveryPoolMetrics = {
   feesUsd?: number | null
 }
 
+const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+const STABLES = new Set([
+  '0x55d398326f99059ff775485246999027b3197955', // USDT
+  '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
+  '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
+])
+
+/**
+ * Factual TVL approximation from Factory reserves when a quote side is present.
+ * TVL ≈ 2 × quoteReserve × quoteUsd (standard AMM when one side is WBNB/stable).
+ * Returns null when quote valuation cannot be trusted.
+ */
+export function estimateReserveTvlUsd(
+  pair: ClassifiedAmmPair,
+  bnbUsd?: number | null,
+): number | null {
+  const t0 = pair.token0?.toLowerCase()
+  const t1 = pair.token1?.toLowerCase()
+  if (!t0 || !t1) return null
+  const r0 = Number(pair.reserve0 ?? '0')
+  const r1 = Number(pair.reserve1 ?? '0')
+  if (!Number.isFinite(r0) || !Number.isFinite(r1) || (r0 <= 0 && r1 <= 0)) return null
+
+  const human = (raw: number, decimals = 18) => raw / 10 ** decimals
+
+  if (t0 === WBNB || t1 === WBNB) {
+    if (bnbUsd == null || !Number.isFinite(bnbUsd) || bnbUsd <= 0) return null
+    const wbnbRaw = t0 === WBNB ? r0 : r1
+    const tvl = human(wbnbRaw) * bnbUsd * 2
+    return Number.isFinite(tvl) && tvl > 0 ? tvl : null
+  }
+
+  if (STABLES.has(t0) || STABLES.has(t1)) {
+    const stableRaw = STABLES.has(t0) ? r0 : r1
+    // BSC USDT/USDC/BUSD use 18 decimals in Melega listings.
+    const tvl = human(stableRaw) * 2
+    return Number.isFinite(tvl) && tvl > 0 ? tvl : null
+  }
+
+  return null
+}
+
 export type DiscoveryPoolStatus = 'Active' | 'Inactive' | 'Empty' | 'Unavailable' | 'New'
 
 export type DiscoveryPoolCardModel = {
@@ -133,6 +175,7 @@ function metricLabel(value: number | null, missingSource: string): { label: stri
 export function toDiscoveryCard(
   pair: ClassifiedAmmPair,
   metrics?: DiscoveryPoolMetrics,
+  bnbUsd?: number | null,
 ): DiscoveryPoolCardModel | null {
   if (!pair.pairAddress || pair.classification === 'invalid_contract') return null
   if (!pair.token0 || !pair.token1) return null
@@ -141,12 +184,18 @@ export function toDiscoveryCard(
   const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
   const identityResolved = isResolvedDiscoverySymbol(symbol0) && isResolvedDiscoverySymbol(symbol1)
   const resolved = resolveDiscoveryStatus(pair, metrics)
-  const tvlUsd = metrics?.tvlUsd ?? null
+  const reserveTvl = estimateReserveTvlUsd(pair, bnbUsd)
+  const tvlUsd =
+    metrics?.tvlUsd != null && Number.isFinite(metrics.tvlUsd) && metrics.tvlUsd > 0
+      ? metrics.tvlUsd
+      : reserveTvl
   const volumeUsd = metrics?.volumeUsd ?? null
   const feesUsd = metrics?.feesUsd ?? null
   const tvl = metricLabel(
     tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
-    'TVL source: Info subgraph unavailable for this pair',
+    reserveTvl
+      ? 'TVL source: Factory reserves × quote USD'
+      : 'TVL source: Info subgraph unavailable for this pair',
   )
   const volume = metricLabel(
     volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
@@ -211,6 +260,28 @@ export function filterDiscoveryCards(
   }
 }
 
+function hasDiscoveryMetrics(card: DiscoveryPoolCardModel): boolean {
+  return (card.tvlUsd != null && card.tvlUsd > 0) || (card.volumeUsd != null && card.volumeUsd > 0)
+}
+
+function recencyTs(card: DiscoveryPoolCardModel): number {
+  return card.lastVerified ? Date.parse(card.lastVerified) || 0 : 0
+}
+
+/** Default founder sort: TVL → 24H volume → recency → pair address; metric-less last. */
+export function compareDiscoveryDefault(a: DiscoveryPoolCardModel, b: DiscoveryPoolCardModel): number {
+  const aHas = hasDiscoveryMetrics(a) ? 1 : 0
+  const bHas = hasDiscoveryMetrics(b) ? 1 : 0
+  if (bHas !== aHas) return bHas - aHas
+  const tvl = (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1)
+  if (tvl !== 0) return tvl
+  const vol = (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1)
+  if (vol !== 0) return vol
+  const recency = recencyTs(b) - recencyTs(a)
+  if (recency !== 0) return recency
+  return a.pairAddress.toLowerCase().localeCompare(b.pairAddress.toLowerCase())
+}
+
 export function sortDiscoveryCards(
   cards: DiscoveryPoolCardModel[],
   sort: LiquidityDiscoverySort,
@@ -220,29 +291,28 @@ export function sortDiscoveryCards(
     case 'tvl':
       return next.sort(
         (a, b) =>
+          (hasDiscoveryMetrics(b) ? 1 : 0) - (hasDiscoveryMetrics(a) ? 1 : 0) ||
           (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
-          b.qualityScore - a.qualityScore ||
-          a.pairName.localeCompare(b.pairName),
+          (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) ||
+          a.pairAddress.toLowerCase().localeCompare(b.pairAddress.toLowerCase()),
       )
     case 'volume':
       return next.sort(
         (a, b) =>
+          (hasDiscoveryMetrics(b) ? 1 : 0) - (hasDiscoveryMetrics(a) ? 1 : 0) ||
           (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) ||
-          b.qualityScore - a.qualityScore ||
-          a.pairName.localeCompare(b.pairName),
+          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
+          a.pairAddress.toLowerCase().localeCompare(b.pairAddress.toLowerCase()),
       )
     case 'newest':
       return next.sort((a, b) => {
-        const ta = a.lastVerified ? Date.parse(a.lastVerified) : 0
-        const tb = b.lastVerified ? Date.parse(b.lastVerified) : 0
-        return tb - ta || b.qualityScore - a.qualityScore || a.pairName.localeCompare(b.pairName)
+        const ta = recencyTs(a)
+        const tb = recencyTs(b)
+        return tb - ta || compareDiscoveryDefault(a, b)
       })
     case 'market':
     default:
-      // Market quality: active + resolved identity + liquidity/volume first.
-      return next.sort(
-        (a, b) => b.qualityScore - a.qualityScore || a.pairName.localeCompare(b.pairName),
-      )
+      return next.sort(compareDiscoveryDefault)
   }
 }
 
