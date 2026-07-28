@@ -1,0 +1,503 @@
+{
+  "capturedAt": "2026-07-28T21:49:25.770Z",
+  "afterBase": "http://127.0.0.1:3491",
+  "beforeBase": "https://www.melega.finance",
+  "overflows": [],
+  "pages": {
+    "home": {
+      "name": "home",
+      "title": "Home | Melega DEX | $0.0004",
+      "uglyPlaceholders": [
+        "Not available",
+        "Unavailable"
+      ],
+      "emDashCount": 5,
+      "zeroPctCount": 0,
+      "hasInstantSmart": true,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": true,
+      "hasFooter": true,
+      "hasConnect": true,
+      "bodyLen": 2241,
+      "overflow": false
+    },
+    "swap": {
+      "name": "swap",
+      "title": "Home | Melega DEX | $0.0004",
+      "uglyPlaceholders": [
+        "Not available",
+        "Unavailable"
+      ],
+      "emDashCount": 5,
+      "zeroPctCount": 0,
+      "hasInstantSmart": true,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": true,
+      "hasFooter": true,
+      "hasConnect": true,
+      "bodyLen": 2241,
+      "overflow": false
+    },
+    "liquidity": {
+      "name": "liquidity",
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "uglyPlaceholders": [
+        "Unavailable",
+        "Unknown"
+      ],
+      "emDashCount": 43,
+      "zeroPctCount": 0,
+      "hasInstantSmart": false,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": false,
+      "hasFooter": true,
+      "hasConnect": true,
+      "bodyLen": 2982,
+      "overflow": false
+    },
+    "farms": {
+      "name": "farms",
+      "title": "Farms | Melega DEX | $0.0004",
+      "uglyPlaceholders": [
+        "Unavailable"
+      ],
+      "emDashCount": 5,
+      "zeroPctCount": 0,
+      "hasInstantSmart": false,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": false,
+      "hasFooter": false,
+      "hasConnect": true,
+      "bodyLen": 4402,
+      "overflow": false
+    },
+    "pools": {
+      "name": "pools",
+      "title": "Pools | Melega DEX | $0.0004",
+      "uglyPlaceholders": [
+        "Unavailable"
+      ],
+      "emDashCount": 11,
+      "zeroPctCount": 1,
+      "hasInstantSmart": false,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": false,
+      "hasFooter": false,
+      "hasConnect": true,
+      "bodyLen": 2561,
+      "overflow": false
+    },
+    "list": {
+      "name": "list",
+      "title": "Melega DEX",
+      "uglyPlaceholders": [
+        "Coming soon"
+      ],
+      "emDashCount": 5,
+      "zeroPctCount": 0,
+      "hasInstantSmart": false,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": false,
+      "hasFooter": true,
+      "hasConnect": true,
+      "bodyLen": 1929,
+      "overflow": false
+    },
+    "passport": {
+      "name": "passport",
+      "title": "Melega DEX",
+      "uglyPlaceholders": [
+        "Not available",
+        "Unavailable"
+      ],
+      "emDashCount": 13,
+      "zeroPctCount": 0,
+      "hasInstantSmart": false,
+      "hasTopMovers": true,
+      "hasFeaturedProjects": false,
+      "hasEcosystem": false,
+      "hasFooter": true,
+      "hasConnect": true,
+      "bodyLen": 2089,
+      "overflow": false
+    }
+  },
+  "responsive": [
+    {
+      "page": "home",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/home-1920.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/swap-1920.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/liquidity-1920.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/farms-1920.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/pools-1920.png"
+    },
+    {
+      "page": "list",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/list-1920.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "1920",
+      "overflow": false,
+      "file": "desktop/passport-1920.png"
+    },
+    {
+      "page": "home",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/home-1600.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/swap-1600.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/liquidity-1600.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/farms-1600.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/pools-1600.png"
+    },
+    {
+      "page": "list",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/list-1600.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "1600",
+      "overflow": false,
+      "file": "desktop/passport-1600.png"
+    },
+    {
+      "page": "home",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/home-1440.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/swap-1440.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/liquidity-1440.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/farms-1440.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/pools-1440.png"
+    },
+    {
+      "page": "list",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/list-1440.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "1440",
+      "overflow": false,
+      "file": "desktop/passport-1440.png"
+    },
+    {
+      "page": "home",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/home-1366.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/swap-1366.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/liquidity-1366.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/farms-1366.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/pools-1366.png"
+    },
+    {
+      "page": "list",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/list-1366.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "1366",
+      "overflow": false,
+      "file": "desktop/passport-1366.png"
+    },
+    {
+      "page": "home",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/home-1024.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/swap-1024.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/liquidity-1024.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/farms-1024.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/pools-1024.png"
+    },
+    {
+      "page": "list",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/list-1024.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "1024",
+      "overflow": false,
+      "file": "tablet/passport-1024.png"
+    },
+    {
+      "page": "home",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/home-430.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/swap-430.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/liquidity-430.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/farms-430.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/pools-430.png"
+    },
+    {
+      "page": "list",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/list-430.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "430",
+      "overflow": false,
+      "file": "mobile/passport-430.png"
+    },
+    {
+      "page": "home",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/home-390.png"
+    },
+    {
+      "page": "swap",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/swap-390.png"
+    },
+    {
+      "page": "liquidity",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/liquidity-390.png"
+    },
+    {
+      "page": "farms",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/farms-390.png"
+    },
+    {
+      "page": "pools",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/pools-390.png"
+    },
+    {
+      "page": "list",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/list-390.png"
+    },
+    {
+      "page": "passport",
+      "viewport": "390",
+      "overflow": false,
+      "file": "mobile/passport-390.png"
+    }
+  ],
+  "beforeAfter": [
+    {
+      "page": "home",
+      "side": "before",
+      "ok": true
+    },
+    {
+      "page": "home",
+      "side": "after",
+      "ok": true
+    },
+    {
+      "page": "swap",
+      "side": "before",
+      "ok": true
+    },
+    {
+      "page": "swap",
+      "side": "after",
+      "ok": true
+    },
+    {
+      "page": "liquidity",
+      "side": "before",
+      "ok": true
+    },
+    {
+      "page": "liquidity",
+      "side": "after",
+      "ok": true
+    }
+  ],
+  "consoleErrors": {
+    "desktop1440": [
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not a",
+      "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3491/_next/static/chunks/1459-091077272e2fd2ee.js:1:9231)",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not a",
+      "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3491/_next/static/chunks/1459-091077272e2fd2ee.js:1:9231)",
+      "Failed to load resource: net::ERR_FAILED",
+      "Failed to load resource: the server responded with a status of 405 (Method Not Allowed)",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Error: Abort fetching component for route: \"/liquidity-studio\"\n    at http://127.0.0.1:3491/_next/static/chunks/main-3dc53dd9bce36319.js:1:73685\n    at http://127.0.0.1:3491/_next/static/chunks/main-3dc53dd9bce36319.js:1:91728\n    at http:/",
+      "Error: Abort fetching component for route: \"/liquidity-studio\"\n    at http://127.0.0.1:3491/_next/static/chunks/main-3dc53dd9bce36319.js:1:73685\n    at http://127.0.0.1:3491/_next/static/chunks/main-3dc53dd9bce36319.js:1:91728\n    at http:/",
+      "Failed to fetch top pools Error: GraphQL Error (Code: 405): {\"response\":{\"error\":\"<!DOCTYPE html><html translate=\\\"no\\\"><head><meta charSet=\\\"utf-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1, maximum-scale=5, m",
+      "Failed to load resource: the server responded with a status of 405 (Method Not Allowed)",
+      "Failed to fetch top pools Error: GraphQL Error (Code: 405): {\"response\":{\"error\":\"<!DOCTYPE html><html translate=\\\"no\\\"><head><meta charSet=\\\"utf-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1, maximum-scale=5, m",
+      "Failed to load resource: the server responded with a status of 405 (Method Not Allowed)",
+      "Failed to fetch top pools Error: GraphQL Error (Code: 405): {\"response\":{\"error\":\"<!DOCTYPE html><html translate=\\\"no\\\"><head><meta charSet=\\\"utf-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1, maximum-scale=5, m",
+      "Failed to load resource: the server responded with a status of 405 (Method Not Allowed)",
+      "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the r",
+      "Failed to load resource: net::ERR_FAILED",
+      "Access to XMLHttpRequest at 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks' from origin 'http://127.0.0.1:3491' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not a",
+      "Failed to fetch info data TypeError: Network request failed\n    at a.onerror (http://127.0.0.1:3491/_next/static/chunks/1459-091077272e2fd2ee.js:1:9231)",
+      "Failed to load resource: net::ERR_FAILED"
+    ]
+  }
+}

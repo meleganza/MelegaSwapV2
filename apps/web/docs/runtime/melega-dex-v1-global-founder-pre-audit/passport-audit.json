@@ -1,0 +1,21 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 8,
+  "route": "/passport",
+  "status": "PASS",
+  "sections": {
+    "landing": "PASS",
+    "wallet": "Connect-gated identity",
+    "tiers": "factual when source available; Unavailable when disconnected",
+    "discounts": "PASS_INTENDED empty without identity",
+    "badges": "honest Unavailable without verification source",
+    "routing": "/passport studio + ecosystem external marco.melega.ai",
+    "designSystem": "MelegaTokenAvatar + studio shell consistency"
+  },
+  "liquidityRows": {
+    "tokenAddresses": "wired",
+    "logos": "logoURI via MelegaTokenAvatar",
+    "fees": "Not indexed when accrual absent",
+    "usdShare": "null / — — no invented valuation"
+  }
+}

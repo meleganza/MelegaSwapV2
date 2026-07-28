@@ -694,8 +694,13 @@ export const ListWorkspace: React.FC = () => {
   }, [listIntent, pct, savedAt, step])
 
   const savedLabel = relativeSaved(savedAt, now)
-  const primaryLabel = step >= TOTAL_DOTS - 1 || (listIntent === 'ai-assistant' && step >= 0 && pct >= 75) ? 'Publish' : 'Continue'
-  const canPublishish = listIntent !== 'create-token' || LIST_CREATE_TOKEN_AVAILABLE || primaryLabel === 'Continue'
+  // No on-chain publish path yet — never imply a live publish succeeded.
+  const primaryLabel =
+    step >= TOTAL_DOTS - 1 || (listIntent === 'ai-assistant' && step >= 0 && pct >= 75)
+      ? 'Finish draft'
+      : 'Continue'
+  const canPublishish =
+    listIntent !== 'create-token' || LIST_CREATE_TOKEN_AVAILABLE || primaryLabel === 'Continue'
   const usesCopilot = listIntent === 'create-project' || listIntent === 'ai-assistant'
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -1077,7 +1082,7 @@ export const ListWorkspace: React.FC = () => {
               $primary
               disabled={
                 !canPublishish ||
-                (listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE && primaryLabel === 'Publish')
+                (listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE && primaryLabel === 'Finish draft')
               }
               onClick={onContinue}
             >

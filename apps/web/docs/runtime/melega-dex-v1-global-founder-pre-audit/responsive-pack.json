@@ -1,0 +1,68 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 10,
+  "capturedAt": "2026-07-28T21:49:25.770Z",
+  "afterBase": "http://127.0.0.1:3491",
+  "beforeBase": "https://www.melega.finance",
+  "overflows": [],
+  "viewports": [
+    "1920",
+    "1600",
+    "1440",
+    "1366",
+    "1024",
+    "430",
+    "390"
+  ],
+  "pages": [
+    "home",
+    "swap",
+    "liquidity",
+    "farms",
+    "pools",
+    "list",
+    "passport"
+  ],
+  "responsiveCount": 49,
+  "overflowCount": 0,
+  "beforeAfter": [
+    {
+      "page": "home",
+      "side": "before",
+      "ok": true
+    },
+    {
+      "page": "home",
+      "side": "after",
+      "ok": true
+    },
+    {
+      "page": "swap",
+      "side": "before",
+      "ok": true
+    },
+    {
+      "page": "swap",
+      "side": "after",
+      "ok": true
+    },
+    {
+      "page": "liquidity",
+      "side": "before",
+      "ok": true
+    },
+    {
+      "page": "liquidity",
+      "side": "after",
+      "ok": true
+    }
+  ],
+  "screenshotRoots": [
+    "desktop/",
+    "tablet/",
+    "mobile/",
+    "before-after/",
+    "raw/"
+  ],
+  "status": "PASS"
+}

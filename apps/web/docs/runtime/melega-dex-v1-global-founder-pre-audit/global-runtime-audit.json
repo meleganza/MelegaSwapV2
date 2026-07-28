@@ -1,0 +1,235 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 1,
+  "auditedAt": "2026-07-28T22:00:00.000Z",
+  "base": "http://127.0.0.1:3491",
+  "policy": {
+    "bindRuntimeWhenExists": true,
+    "honestPremiumEmptyWhenMissing": true,
+    "noMockData": true,
+    "noFabricatedStatistics": true
+  },
+  "surfaces": [
+    {
+      "page": "HOME",
+      "route": "/",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "HOME-001",
+          "class": "placeholder",
+          "signal": "TVL not available on Top Farms/Pools rows",
+          "resolution": "A→B",
+          "action": "Hide meta when TVL missing; keep APR as — when factual APR absent",
+          "status": "FIXED"
+        },
+        {
+          "id": "HOME-002",
+          "class": "copy",
+          "signal": "Maiora ecosystem disabledLabel Unavailable",
+          "resolution": "B",
+          "action": "Premium label Not public yet (no public URL in codebase)",
+          "status": "FIXED"
+        },
+        {
+          "id": "HOME-003",
+          "class": "empty_state",
+          "signal": "Top Movers empty → Market activity unavailable",
+          "resolution": "B",
+          "action": "Honest empty when trailing activity index empty; no invented movers",
+          "status": "PASS_INTENDED"
+        },
+        {
+          "id": "HOME-004",
+          "class": "architecture",
+          "signal": "Featured Projects heading text absent",
+          "resolution": "A",
+          "action": "Detached heading intentionally removed; cards carry Featured badge (IA certified)",
+          "status": "PASS_INTENDED"
+        }
+      ]
+    },
+    {
+      "page": "SWAP",
+      "route": "/trade → /?focus=swap",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "SWAP-001",
+          "class": "architecture",
+          "signal": "/trade redirects to Home terminal with Instant|Smart",
+          "resolution": "A",
+          "action": "Canonical IA — single swap surface; Instant|Smart tabs live",
+          "status": "PASS_INTENDED"
+        },
+        {
+          "id": "SWAP-002",
+          "class": "placeholder",
+          "signal": "executionSpeed Fast invented",
+          "resolution": "A→B",
+          "action": "Removed invented Fast; hide speed row when unset",
+          "status": "FIXED"
+        },
+        {
+          "id": "SWAP-003",
+          "class": "placeholder",
+          "signal": "Idle preview Ready / Protocol fee duplicate",
+          "resolution": "A→B",
+          "action": "Idle Enter amount; Protocol fee removed from CompactMetrics duplicate",
+          "status": "FIXED"
+        }
+      ]
+    },
+    {
+      "page": "LIQUIDITY",
+      "route": "/liquidity",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "LIQ-001",
+          "class": "placeholder",
+          "signal": "My Positions Fees as bare —",
+          "resolution": "B",
+          "action": "Fees label Not indexed when fee accrual not in runtime",
+          "status": "FIXED"
+        },
+        {
+          "id": "LIQ-002",
+          "class": "binding",
+          "signal": "Mint preview fee unbound",
+          "resolution": "A",
+          "action": "Bound to TOTAL_FEE from config/constants/info",
+          "status": "FIXED"
+        },
+        {
+          "id": "LIQ-003",
+          "class": "empty_state",
+          "signal": "Explore pool metrics — when unindexed",
+          "resolution": "B",
+          "action": "metricUnavailableNote / em dash only for missing factual fields; no invented APR/volume",
+          "status": "PASS_INTENDED"
+        }
+      ]
+    },
+    {
+      "page": "FARMS",
+      "route": "/farms",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "FARMS-001",
+          "class": "visual",
+          "signal": "Featured compact missing token avatars",
+          "resolution": "A",
+          "action": "MelegaTokenAvatar stack on featured compact",
+          "status": "FIXED"
+        },
+        {
+          "id": "FARMS-002",
+          "class": "navigation",
+          "signal": "?view= my/explore deep links",
+          "resolution": "A",
+          "action": "Scroll-to module wiring in staking runtime",
+          "status": "FIXED"
+        }
+      ]
+    },
+    {
+      "page": "POOLS",
+      "route": "/pools",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "POOLS-001",
+          "class": "visual",
+          "signal": "Featured compact missing token avatars",
+          "resolution": "A",
+          "action": "MelegaTokenAvatar stack on featured compact",
+          "status": "FIXED"
+        },
+        {
+          "id": "POOLS-002",
+          "class": "navigation",
+          "signal": "?view= my/explore deep links",
+          "resolution": "A",
+          "action": "Scroll-to module wiring in staking runtime",
+          "status": "FIXED"
+        },
+        {
+          "id": "POOLS-003",
+          "class": "stability",
+          "signal": "Explore anti-flicker last-good cache",
+          "resolution": "A",
+          "action": "Prior certified last-good snapshot retained; no empty flash while loading_pools",
+          "status": "PASS_INTENDED"
+        }
+      ]
+    },
+    {
+      "page": "LIST",
+      "route": "/list",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "LIST-001",
+          "class": "cta",
+          "signal": "Primary CTA Publish on incomplete draft",
+          "resolution": "A",
+          "action": "Renamed Finish draft; tests updated",
+          "status": "FIXED"
+        },
+        {
+          "id": "LIST-002",
+          "class": "empty_state",
+          "signal": "Create Token Coming Soon",
+          "resolution": "B",
+          "action": "Disabled card — token creation flow not shipped; honest premium disabled state",
+          "status": "PASS_INTENDED"
+        }
+      ]
+    },
+    {
+      "page": "PASSPORT",
+      "route": "/passport",
+      "status": "PASS",
+      "findings": [
+        {
+          "id": "PASS-001",
+          "class": "binding",
+          "signal": "LP row missing token logos/addresses",
+          "resolution": "A",
+          "action": "token0/1Address + logoURI through VM; MelegaTokenAvatar in PassportLiquidityRow",
+          "status": "FIXED"
+        },
+        {
+          "id": "PASS-002",
+          "class": "empty_state",
+          "signal": "Wallet-disconnected Unavailable badges",
+          "resolution": "B",
+          "action": "Honest Unavailable / Connect wallet — no fabricated identity tiers",
+          "status": "PASS_INTENDED"
+        },
+        {
+          "id": "PASS-003",
+          "class": "empty_state",
+          "signal": "LP fees / USD share unindexed",
+          "resolution": "B",
+          "action": "Not indexed / — ; no invented valuation",
+          "status": "PASS_INTENDED"
+        }
+      ]
+    }
+  ],
+  "forbiddenTouches": {
+    "routerContracts": false,
+    "factory": false,
+    "treasury": false,
+    "economics": false,
+    "kerl": false,
+    "swapExecution": false,
+    "liquidityExecution": false,
+    "farmExecution": false,
+    "poolExecution": false
+  },
+  "verdict": "PASS"
+}

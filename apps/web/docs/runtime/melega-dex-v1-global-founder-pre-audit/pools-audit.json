@@ -1,0 +1,28 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 6,
+  "route": "/pools",
+  "status": "PASS",
+  "sections": {
+    "hero": "PASS",
+    "featuredPool": {
+      "status": "PASS",
+      "avatars": "MelegaTokenAvatar stack added"
+    },
+    "rewardAdvisor": "PASS",
+    "analytics": "PASS",
+    "myPositions": "PASS — never demoted below discovery",
+    "explorePools": "PASS — last-good anti-flicker cache"
+  },
+  "stability": {
+    "walletAntiFlicker": "PASS",
+    "disappearingCards": false,
+    "endedPools": "discoverable in inventory",
+    "activePools": "sorted factual"
+  },
+  "actions": {
+    "claim": "execution unchanged",
+    "withdraw": "execution unchanged",
+    "viewQuery": "?view= scrolls to My/Explore modules"
+  }
+}

@@ -139,46 +139,49 @@ function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
   const hops = preview?.hopVisualization ?? []
   const source = resolveExecutionSourceLabel(preview)
 
+  const idlePlaceholder = 'Enter amount'
   const impact = preview
     ? formatImpactLabel(preview.priceImpactPercent, preview.priceImpactSeverity)
-    : '—'
+    : idle
+      ? idlePlaceholder
+      : '—'
   const impactTone =
     preview?.priceImpactSeverity === 'HIGH'
       ? 'warn'
       : preview?.priceImpactSeverity === 'LOW'
         ? 'ok'
         : 'neutral'
-  const feeLabel =
-    preview?.protocolFee.availability === 'available' && preview.protocolFee.bps != null
-      ? preview.protocolFee.label
-      : '—'
   const confidenceTone =
     preview && preview.confidence >= 70 ? 'ok' : preview && preview.confidence < 40 ? 'warn' : 'neutral'
 
   const expected =
     preview?.expectedOutputFormatted != null
       ? `${preview.expectedOutputFormatted} ${preview.outputToken.symbol}`
-      : '—'
+      : idle
+        ? idlePlaceholder
+        : '—'
   const minimum =
     preview?.minimumReceivedFormatted != null
       ? `${preview.minimumReceivedFormatted} ${preview.outputToken.symbol}`
-      : '—'
+      : idle
+        ? idlePlaceholder
+        : '—'
 
+  // Protocol fee lives only in FeeTransparencyPanel — avoid duplicate KPI.
   const metrics = [
     { label: 'Expected output', value: expected },
     { label: 'Minimum received', value: minimum },
     { label: 'Price impact', value: impact, tone: impactTone as 'ok' | 'warn' | 'neutral' },
-    { label: 'Protocol fee', value: feeLabel },
     {
       label: 'Confidence',
-      value: preview ? `${preview.confidence}%` : '—',
+      value: preview ? `${preview.confidence}%` : idle ? idlePlaceholder : '—',
       tone: confidenceTone as 'ok' | 'warn' | 'neutral',
     },
   ]
 
   const aiBody =
     idle
-      ? '—'
+      ? 'Enter an amount to generate AI insight for this route.'
       : aiResult.status === 'ok' && aiResult.assistance
         ? aiResult.assistance.explanation
         : 'AI insight unavailable for this quote.'

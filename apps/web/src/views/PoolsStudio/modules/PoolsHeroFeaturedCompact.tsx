@@ -3,6 +3,7 @@
  */
 import React from 'react'
 import styled from 'styled-components'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolsHero } from './poolsHeroTokens'
 
@@ -28,6 +29,23 @@ const Eyebrow = styled.span`
   color: #f4c430;
 `
 
+const Identity = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+`
+
+const Avatars = styled.div`
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  & > *:last-child {
+    margin-left: -8px;
+  }
+`
+
 const Pair = styled.div`
   font-size: 16px;
   font-weight: 750;
@@ -35,6 +53,7 @@ const Pair = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 `
 
 const Meta = styled.div`
@@ -73,7 +92,25 @@ export const PoolsHeroFeaturedCompact: React.FC = () => {
   return (
     <Card data-testid="pools-hero-featured-compact" data-featured="ready">
       <Eyebrow>Featured Pool</Eyebrow>
-      <Pair title={title}>{title}</Pair>
+      <Identity>
+        <Avatars>
+          <MelegaTokenAvatar
+            symbol={featured.stakeToken || featured.tokens?.[0]}
+            address={featured.stakeContractAddress}
+            chainId={56}
+            size={28}
+            radius="circle"
+          />
+          <MelegaTokenAvatar
+            symbol={featured.rewardToken || featured.tokens?.[1]}
+            address={featured.rewardContractAddress}
+            chainId={56}
+            size={28}
+            radius="circle"
+          />
+        </Avatars>
+        <Pair title={title}>{title}</Pair>
+      </Identity>
       <Meta>
         {featured.apr ? <Apr>{featured.apr}</Apr> : null}
         {featured.tvl ? <span>TVL {featured.tvl}</span> : null}

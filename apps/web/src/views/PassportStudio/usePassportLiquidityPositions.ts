@@ -64,6 +64,8 @@ export function usePassportLiquidityPositions(
       token1Symbol: row.pair?.token1?.symbol || '—',
       token0LogoUrl: null,
       token1LogoUrl: null,
+      token0Address: row.pair?.token0?.address ?? null,
+      token1Address: row.pair?.token1?.address ?? null,
       pairAddress: row.pairAddress ?? row.id,
       chainLabel: chainLabel(row.chainId),
       estimatedValueUsd: null,

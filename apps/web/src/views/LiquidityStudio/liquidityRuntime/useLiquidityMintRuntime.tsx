@@ -13,6 +13,7 @@ import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { ROUTER_ADDRESS } from 'config/constants/exchange'
+import { TOTAL_FEE } from 'config/constants/info'
 import { PairState } from 'hooks/usePairs'
 import { Field } from 'state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks'
@@ -373,7 +374,7 @@ export function useLiquidityMintRuntime(): LiquidityMintRuntime {
     independentField === Field.CURRENCY_B ? typedValue : otherTypedValue || parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) || '0.0'
 
   const preview = useMemo((): LiquidityPreviewMetrics => {
-    const feeTier = '0.25%'
+    const feeTier = `${(TOTAL_FEE * 100).toFixed(2)}%`
     if ((isPositions || isRemove) && selectedPosition) {
       const share = formatPercentShare(positionDetails.poolShare)
       const lpApr = lpAprData?.lpApr7d

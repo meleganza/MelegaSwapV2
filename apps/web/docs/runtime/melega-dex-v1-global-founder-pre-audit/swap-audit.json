@@ -1,0 +1,30 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 3,
+  "routes": ["/?focus=swap", "/trade", "/swap"],
+  "status": "PASS",
+  "architecture": {
+    "note": "/trade and /swap resolve to Home Trade terminal (Instant|Smart presentation modes over SmartSwapForm). No second swap layout.",
+    "instant": "PASS",
+    "smart": "PASS",
+    "routeRendering": "TradeSmartRouteBox + SmartSwapExecutionPreview",
+    "tokenLogos": "PASS",
+    "poolLogos": "PASS when route hops known",
+    "details": "PASS",
+    "fees": "factual quote fees only",
+    "execution": "unchanged — forbidden surface",
+    "wallet": "Connect Wallet CTA when disconnected",
+    "loading": "PASS",
+    "priceImpact": "from tradeInfo",
+    "confidence": "route quality Smart Router | V2 Router",
+    "fallbacks": "V2 when smart unavailable",
+    "refresh": "Refresh price control",
+    "settings": "slippage settings",
+    "duplicatedUi": "Protocol fee row removed from CompactMetrics duplicate",
+    "inventedExecutionSpeed": "REMOVED — row hidden when unset"
+  },
+  "regressions": {
+    "oldLayouts": false,
+    "hiddenRegressions": false
+  }
+}

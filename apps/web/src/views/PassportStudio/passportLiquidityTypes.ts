@@ -47,6 +47,8 @@ export type PassportLiquidityPosition = {
   token1Symbol: string
   token0LogoUrl: string | null
   token1LogoUrl: string | null
+  token0Address?: string
+  token1Address?: string
   chainLabel: string
   supportingLine: string
   estimatedValue: string

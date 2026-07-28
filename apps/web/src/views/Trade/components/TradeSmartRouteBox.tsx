@@ -99,10 +99,12 @@ export const TradeSmartRouteBox: React.FC = () => {
         <Title>{title}</Title>
         {savingsNode}
       </TitleRow>
-      <Row>
-        <Label>Execution speed</Label>
-        <Value>{phase === 'routing' ? '…' : executionSpeed ?? '—'}</Value>
-      </Row>
+      {executionSpeed ? (
+        <Row>
+          <Label>Execution speed</Label>
+          <Value>{phase === 'routing' ? '…' : executionSpeed}</Value>
+        </Row>
+      ) : null}
     </Box>
   )
 }

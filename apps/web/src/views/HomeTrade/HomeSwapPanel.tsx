@@ -4,6 +4,7 @@ import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useAccount } from 'wagmi'
+import { useUserSlippageTolerance } from 'state/user/hooks'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { currencyId } from 'utils/currencyId'
 import replaceBrowserHistory from '@pancakeswap/utils/replaceBrowserHistory'
@@ -114,25 +115,27 @@ const HomeSwapInner: React.FC = () => {
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
+  const [userSlippageTolerance] = useUserSlippageTolerance()
+  const slippageLabel = `${(userSlippageTolerance / 100).toFixed(userSlippageTolerance % 100 === 0 ? 1 : 2)}%`
 
   useEffect(() => {
     publishSwapExperienceMode(experience)
   }, [experience])
 
-  const inputSymbol = inputCurrency?.symbol ?? '—'
-  const outputSymbol = outputCurrency?.symbol ?? '—'
+  const inputSymbol = inputCurrency?.symbol
+  const outputSymbol = outputCurrency?.symbol
+  const pairReady = Boolean(inputSymbol && outputSymbol)
+  const statusLabel = !pairReady ? 'Select pair' : walletConnected ? 'Live' : 'Ready'
 
   const pairIndicator = useMemo(
     () => (
       <>
-        <PairLine>
-          {inputSymbol} / {outputSymbol}
-        </PairLine>
-        <LiveDot $live={walletConnected} aria-hidden />
-        <LiveText $live={walletConnected}>Live</LiveText>
+        <PairLine>{pairReady ? `${inputSymbol} / ${outputSymbol}` : 'Select pair'}</PairLine>
+        <LiveDot $live={walletConnected && pairReady} aria-hidden />
+        <LiveText $live={walletConnected && pairReady}>{statusLabel}</LiveText>
       </>
     ),
-    [walletConnected, inputSymbol, outputSymbol],
+    [walletConnected, inputSymbol, outputSymbol, pairReady, statusLabel],
   )
 
   const headerLeading = useMemo(
@@ -211,7 +214,7 @@ const HomeSwapInner: React.FC = () => {
                   <PencilIcon />
                 </button>
               </span>
-              <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
+              <span className="home-trade-swap-execution-value is-slippage">{slippageLabel}</span>
             </div>
           )}
           {/* After Swap button: Instant=Details only; Smart=Route/Metrics/Fee/AI/Details */}

@@ -1,0 +1,32 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 4,
+  "route": "/liquidity",
+  "status": "PASS",
+  "ia": {
+    "hero": "PASS",
+    "addLiquidity": "PASS",
+    "aiBuilder": "PASS",
+    "myPositions": "PASS",
+    "liquidityInsights": "PASS",
+    "explorePools": "PASS last / dense"
+  },
+  "metrics": {
+    "sorting": "liquidity desc factual",
+    "logos": "PASS",
+    "pairNames": "PASS",
+    "tvl": "factual or —",
+    "volume": "factual or —",
+    "fees": "My Positions: Not indexed when accrual absent",
+    "apr": "only when factual"
+  },
+  "interactions": {
+    "decimalInput": "PASS",
+    "aiBuilderWizard": "PASS",
+    "mintPreviewFee": "TOTAL_FEE bound",
+    "deadControls": false
+  },
+  "freeze": {
+    "liquidityV1.final.freeze.sha256.json": "updated for mission-scoped module hashes"
+  }
+}

@@ -54,6 +54,6 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     title: 'MAIORA',
     subtitle: 'Melega strategic layer.',
     disabled: true,
-    disabledLabel: 'Unavailable',
+    disabledLabel: 'Not public yet',
   },
 ]

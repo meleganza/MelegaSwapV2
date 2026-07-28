@@ -202,9 +202,18 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     if (view === 'explore') {
       setPortfolioViewModeState('ALL')
       setFilter('All')
+      window.requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('[data-fs-explore-farms="true"]')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      })
     } else if (view === 'my') {
       setPortfolioViewModeState('MY_FARMS')
       setFilter('My Farms')
+      window.requestAnimationFrame(() => {
+        document.getElementById('farms-my-farms-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
     }
   }, [router.query.view])
 

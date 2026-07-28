@@ -62,6 +62,7 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
   metricVolume: 'Volume',
   metricFees: 'Fees',
   metricUnavailable: '—',
+  metricUnavailableNote: 'Source unavailable',
   statusActive: 'Active',
   statusUnavailable: 'Unavailable',
   cta: 'Add',

@@ -1,0 +1,26 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 7,
+  "route": "/list",
+  "status": "PASS",
+  "sections": {
+    "hero": "PASS — List, Launch, and Grow on Melega.",
+    "import": "PASS — Import Token live",
+    "claim": "PASS — Claim Project Page",
+    "createToken": {
+      "status": "PASS_INTENDED",
+      "state": "disabled Coming Soon — flow not shipped; no fake create success"
+    },
+    "projectPage": "PASS — Create Project Page",
+    "aiAssistant": "PASS",
+    "workspace": {
+      "primaryCta": "Finish draft (was Publish)",
+      "status": "FIXED"
+    },
+    "analytics": "hero stats from useListHeroStats — — when unavailable"
+  },
+  "placeholders": {
+    "uglyText": false,
+    "mockNumbers": false
+  }
+}

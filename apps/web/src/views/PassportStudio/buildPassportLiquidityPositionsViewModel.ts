@@ -25,6 +25,8 @@ export type ManualLpInput = {
   token1Symbol: string
   token0LogoUrl?: string | null
   token1LogoUrl?: string | null
+  token0Address?: string | null
+  token1Address?: string | null
   pairAddress?: string | null
   chainLabel?: string | null
   estimatedValueUsd?: string | null
@@ -115,13 +117,15 @@ function mapManual(row: ManualLpInput): PassportLiquidityPosition {
     token1Symbol: t1,
     token0LogoUrl: row.token0LogoUrl ?? null,
     token1LogoUrl: row.token1LogoUrl ?? null,
+    token0Address: row.token0Address ?? undefined,
+    token1Address: row.token1Address ?? undefined,
     chainLabel: row.chainLabel || 'BSC',
     supportingLine: supporting,
     estimatedValue: value,
     estimatedValueState: freshness,
     sharePrimary: share,
     shareSecondary: null,
-    feesOrProgressLabel: fees === LIQUIDITY_UNAVAILABLE ? 'Unavailable' : 'Fees',
+    feesOrProgressLabel: fees === LIQUIDITY_UNAVAILABLE ? 'Not indexed' : 'Fees',
     feesOrProgressKind: fees === LIQUIDITY_UNAVAILABLE ? 'unavailable' : 'fees',
     feesOrProgressValue: fees,
     status: 'Active',

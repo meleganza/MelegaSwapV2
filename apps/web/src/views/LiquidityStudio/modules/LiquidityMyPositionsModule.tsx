@@ -309,7 +309,9 @@ function PositionCard({
         </Metric>
         <Metric>
           <MetricLabel>{LIQUIDITY_MY_POSITIONS_COPY.feesEarned}</MetricLabel>
-          <MetricValue>{LIQUIDITY_MY_POSITIONS_COPY.emptyMetric}</MetricValue>
+          <MetricValue title="Accrued LP fees are not indexed on this surface">
+            {LIQUIDITY_MY_POSITIONS_COPY.feesNotIndexed}
+          </MetricValue>
         </Metric>
       </Metrics>
 

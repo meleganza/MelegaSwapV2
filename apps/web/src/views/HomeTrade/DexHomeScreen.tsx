@@ -501,7 +501,6 @@ export const DexHomeScreen: React.FC = () => {
         name: p.displayName || p.slug,
         meta: p.resources?.tokens?.[0]?.symbol || p.slug,
         href: `/@${p.slug}`,
-        metric: 'Indexed',
       }))
   }, [])
 
@@ -571,22 +570,22 @@ export const DexHomeScreen: React.FC = () => {
                 <DiscIcon>
                   <TrendingUp size={14} color={uxRebuildColors.gold} aria-hidden />
                 </DiscIcon>
-                <DiscTitle>Trending Projects</DiscTitle>
+                <DiscTitle>Top Movers</DiscTitle>
                 <ViewAll href="/trending">
                   View all <ArrowRight size={12} style={{ display: 'inline' }} />
                 </ViewAll>
               </DiscHead>
               {trendingRows.length === 0 ? (
-                <EmptyRow>No verified listings yet</EmptyRow>
+                <EmptyRow>Market activity unavailable</EmptyRow>
               ) : (
                 trendingRows.map((row) => (
                   <DiscRow key={row.id} href={row.href}>
                     <Rank>{row.rank}</Rank>
                     <RowMain>
                       <RowName>{row.name}</RowName>
-                      <RowMeta>{row.meta || '—'}</RowMeta>
+                      {row.meta ? <RowMeta>{row.meta}</RowMeta> : null}
                     </RowMain>
-                    <RowMetric>{row.metric ?? ''}</RowMetric>
+                    {row.metric ? <RowMetric>{row.metric}</RowMetric> : null}
                   </DiscRow>
                 ))
               )}
@@ -601,14 +600,14 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/farms">View all →</ViewAll>
               </DiscHead>
               {farmRows.length === 0 ? (
-                <EmptyRow>No farm rows with live APR/TVL yet — open Farms for full inventory</EmptyRow>
+                <EmptyRow>No live farm rankings yet. Open Farms for the full inventory.</EmptyRow>
               ) : (
                 farmRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/farms'}>
                     <Rank>·</Rank>
                     <RowMain>
                       <RowName>{row.name}</RowName>
-                      <RowMeta>{row.tvl ? `TVL ${row.tvl}` : 'TVL not available'}</RowMeta>
+                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : null}
                     </RowMain>
                     <GoldMetric>{row.apr ? `${row.apr}` : NA}</GoldMetric>
                   </DiscRow>
@@ -625,14 +624,14 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/pools">View all →</ViewAll>
               </DiscHead>
               {poolRows.length === 0 ? (
-                <EmptyRow>No staking-pool rows hydrated yet — open Pools for configured inventory</EmptyRow>
+                <EmptyRow>No live pool rankings yet. Open Pools for the full inventory.</EmptyRow>
               ) : (
                 poolRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/pools'}>
                     <Rank>·</Rank>
                     <RowMain>
                       <RowName>{row.name}</RowName>
-                      <RowMeta>{row.tvl ? `TVL ${row.tvl}` : 'TVL not available'}</RowMeta>
+                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : null}
                     </RowMain>
                     <RowMetric>{row.apr ? row.apr : NA}</RowMetric>
                   </DiscRow>
@@ -658,7 +657,6 @@ export const DexHomeScreen: React.FC = () => {
                       <RowName>{row.name}</RowName>
                       <RowMeta>{row.meta}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric}</RowMetric>
                   </DiscRow>
                 ))
               )}

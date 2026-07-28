@@ -372,7 +372,8 @@ export function useTradeSwapRuntime(): TradeSwapRuntime {
     executionSummary,
     routeSteps,
     smartRouteSavings,
-    executionSpeed: tradeInfo ? 'Fast' : undefined,
+    // Never invent execution speed — no factual ETA/gas source in this runtime.
+    executionSpeed: undefined,
     approval,
     account,
     machine,

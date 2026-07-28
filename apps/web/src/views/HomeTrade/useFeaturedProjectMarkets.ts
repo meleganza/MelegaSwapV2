@@ -71,7 +71,8 @@ export function formatFeaturedChange(row?: FeaturedMarketRow): {
   empty: boolean
 } {
   if (row?.changePct == null || !Number.isFinite(row.changePct)) {
-    return { text: '—', empty: true }
+    if (row?.status === 'LOADING' || !row) return { text: '…', empty: true }
+    return { text: 'No recent change', empty: true }
   }
   const positive = row.changePct >= 0
   const arrow = positive ? '↑' : '↓'

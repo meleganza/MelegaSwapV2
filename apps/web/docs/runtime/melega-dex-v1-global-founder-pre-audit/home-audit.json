@@ -1,0 +1,61 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 2,
+  "route": "/",
+  "status": "PASS",
+  "sections": {
+    "topMovers": {
+      "status": "PASS",
+      "ranking": "factual activity index (|Δ24h%| → volume → swaps) when available",
+      "price": "bound when market row exists",
+      "change24h": "bound when available; empty ribbon when not",
+      "volume": "bound when available",
+      "logos": "token identity resolver",
+      "symbol": "canonical",
+      "animation": "marquee when ≥2 movers",
+      "notes": "No invented movers when index empty"
+    },
+    "featuredProjects": {
+      "status": "PASS",
+      "rotation": "founder catalog 4-slot; rotates when catalog > 4",
+      "eligibility": "FOUNDER_FEATURED_SLUGS",
+      "logos": true,
+      "background": true,
+      "hover": true,
+      "cta": "Trade + View Project",
+      "marketData": "useFeaturedProjectMarkets last-good cache",
+      "visualDominance": "Featured mounts above KPI rail; no detached heading"
+    },
+    "analyticsRow": {
+      "status": "PASS",
+      "duplicatedMetrics": false,
+      "note": "KPI rail secondary to Featured; NA compact for unavailable volume/TVL"
+    },
+    "exploreEcosystem": {
+      "status": "PASS",
+      "organs": {
+        "passport": { "route": "https://marco.melega.ai", "external": true, "status": "live" },
+        "smartdrop": { "route": "https://smartdrop.melega.ai/dashboard", "external": true, "status": "live" },
+        "labs": { "route": "https://labs.melega.ai/labs", "external": true, "status": "live" },
+        "space": { "route": "https://melega.space/", "external": true, "status": "live" },
+        "radar": { "route": "/radar", "external": false, "status": "live" },
+        "maiora": { "route": null, "status": "disabled", "label": "Not public yet" }
+      }
+    },
+    "footer": {
+      "status": "PASS",
+      "copyright": "© 2026 Melega Labs. All rights reserved.",
+      "docs": "/docs",
+      "audit": "/audit",
+      "support": true,
+      "social": true,
+      "mobile": "PASS"
+    },
+    "homeSwapPanel": {
+      "status": "PASS",
+      "instantSmart": true,
+      "slippage": "useUserSlippageTolerance (not hardcoded 0.5%)",
+      "pairStatus": "Select pair / Ready / Live factual"
+    }
+  }
+}

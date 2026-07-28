@@ -3,6 +3,7 @@
  */
 import React from 'react'
 import styled from 'styled-components'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsHero } from './farmsHeroTokens'
 
@@ -28,6 +29,23 @@ const Eyebrow = styled.span`
   color: #f4c430;
 `
 
+const Identity = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+`
+
+const Avatars = styled.div`
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  & > *:last-child {
+    margin-left: -8px;
+  }
+`
+
 const Pair = styled.div`
   font-size: 16px;
   font-weight: 750;
@@ -35,6 +53,7 @@ const Pair = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 `
 
 const Meta = styled.div`
@@ -66,12 +85,24 @@ export const FarmsHeroFeaturedCompact: React.FC = () => {
       </Card>
     )
   }
+  const token0 = featured.tokens?.[0]
+  const token1 = featured.tokens?.[1]
+  const token0Addr = featured.card?.rawFarm?.token?.address
+  const token1Addr = featured.card?.rawFarm?.quoteToken?.address
   return (
     <Card data-testid="farms-hero-featured-compact" data-featured="ready">
       <Eyebrow>Featured Farm</Eyebrow>
-      <Pair title={featured.pair}>{featured.pair}</Pair>
+      <Identity>
+        <Avatars>
+          <MelegaTokenAvatar symbol={token0} address={token0Addr} chainId={56} size={28} radius="circle" />
+          <MelegaTokenAvatar symbol={token1} address={token1Addr} chainId={56} size={28} radius="circle" />
+        </Avatars>
+        <Pair title={featured.pair}>{featured.pair}</Pair>
+      </Identity>
       <Meta>
-        {featured.displayApr || featured.apr ? <Apr>{featured.displayApr ?? featured.apr}</Apr> : null}
+        {featured.card?.displayApr || featured.apr ? (
+          <Apr>{featured.card?.displayApr ?? featured.apr}</Apr>
+        ) : null}
         {featured.tvl ? <span>TVL {featured.tvl}</span> : null}
         {featured.rewardToken ? <span>Earn {featured.rewardToken}</span> : null}
       </Meta>

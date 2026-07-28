@@ -4,6 +4,7 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import { passportOne } from './passportTokens'
 import type { PassportLiquidityPosition } from './passportLiquidityTypes'
 
@@ -248,20 +249,24 @@ const ManageFull = styled(Link)`
 `
 
 function TokenMarks({ position }: { position: PassportLiquidityPosition }) {
-  const mark = (sym: string, url: string | null, side: 'a' | 'b') => (
-    <Logo aria-hidden={!url && !sym ? true : undefined}>
-      {url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt={`${sym} logo`} />
-      ) : (
-        <span aria-hidden="true">{(sym || '?').slice(0, 2)}</span>
-      )}
-    </Logo>
-  )
   return (
     <Logos>
-      {mark(position.token0Symbol, position.token0LogoUrl, 'a')}
-      {mark(position.token1Symbol, position.token1LogoUrl, 'b')}
+      <MelegaTokenAvatar
+        symbol={position.token0Symbol}
+        address={position.token0Address}
+        logoURI={position.token0LogoUrl ?? undefined}
+        chainId={56}
+        size={28}
+        radius="circle"
+      />
+      <MelegaTokenAvatar
+        symbol={position.token1Symbol}
+        address={position.token1Address}
+        logoURI={position.token1LogoUrl ?? undefined}
+        chainId={56}
+        size={28}
+        radius="circle"
+      />
     </Logos>
   )
 }

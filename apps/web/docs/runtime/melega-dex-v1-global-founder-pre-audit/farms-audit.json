@@ -1,0 +1,28 @@
+{
+  "mission": "MELEGA_DEX_V1_GLOBAL_FOUNDER_ACCEPTANCE_PRE_AUDIT",
+  "phase": 5,
+  "route": "/farms",
+  "status": "PASS",
+  "sections": {
+    "hero": "PASS",
+    "featuredFarm": {
+      "status": "PASS",
+      "avatars": "MelegaTokenAvatar stack added",
+      "apr": "factual displayApr when present",
+      "positioning": "compact hero featured"
+    },
+    "myFarms": "PASS — wallet gated",
+    "advisor": "PASS",
+    "analytics": "PASS — no invented wallet census"
+  },
+  "actions": {
+    "claim": "execution unchanged",
+    "withdraw": "execution unchanged",
+    "manage": "PASS",
+    "viewQuery": "?view= scrolls to My/Explore modules"
+  },
+  "layout": {
+    "clippedCards": false,
+    "responsive": "PASS — 0 overflows in pack"
+  }
+}

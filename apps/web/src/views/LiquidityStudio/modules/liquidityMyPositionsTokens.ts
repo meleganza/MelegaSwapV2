@@ -50,6 +50,7 @@ export const LIQUIDITY_MY_POSITIONS_COPY = {
   positionValue: 'Position value',
   poolShare: 'Pool share',
   feesEarned: 'Fees earned',
+  feesNotIndexed: 'Not indexed',
   status: 'Status',
   manage: 'Manage',
   remove: 'Remove Liquidity',

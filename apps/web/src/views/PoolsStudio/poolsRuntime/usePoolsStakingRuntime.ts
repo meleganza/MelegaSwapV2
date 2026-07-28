@@ -252,9 +252,21 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
       setPortfolioViewModeState('ALL')
       setPoolTab('all')
       setFilter('All')
+      window.requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('[data-ps-pool-explorer]')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      })
     } else if (view === 'positions') {
       setPortfolioViewModeState('MY_POOLS')
       setPoolTab('positions')
+      window.requestAnimationFrame(() => {
+        document.getElementById('pools-my-positions-title')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      })
     }
   }, [router.query.view])
 

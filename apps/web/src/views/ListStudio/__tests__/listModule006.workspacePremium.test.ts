@@ -56,7 +56,7 @@ describe('LIST_MODULE_006 Workspace Premium', () => {
     expect(ai).toContain('AI Memory')
     expect(ai).toContain('list-workspace-completeness')
     expect(ws).toContain('Autosaved')
-    expect(ws).toContain('Publish')
+    expect(ws).toContain('Finish draft')
     expect(ws).toContain('Cancel')
     expect(ws).not.toContain('createPortal')
     expect(ws).not.toContain('Modal')
