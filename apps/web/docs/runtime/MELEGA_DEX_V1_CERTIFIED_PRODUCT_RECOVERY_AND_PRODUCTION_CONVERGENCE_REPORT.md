@@ -91,7 +91,11 @@ Evidence pack: `responsive-validation.json`, `accessibility-validation.json`. Vi
 
 ## 22. Candidate deployment SHA
 
-Branch `melega-dex-v1-certified-product-recovery-and-production-convergence` — SHA recorded in commit/push after this report lands.
+- Recovery tip: `296eac5e999eb9077068343e2ee0118582a4a918`
+- Production merge SHA: `cde7086703e68c18e51a8190f1a4c044b74170ce` (contains tip)
+- Production deployment ID: `5632770591`
+- Production buildId: `0puv09Bvgf-cb1t455Xm3`
+
 
 ## 23. Rollback target
 
@@ -99,4 +103,6 @@ Previous Production: **`2a887252`** (deployment `5631594160`). Prefer redeploy p
 
 ## 24. Final verdict
 
-Local gates green. Controlled release (push → PR → merge → production smoke) follows. Verdict after production SHA match.
+Production smoke on `/`, `/liquidity`, `/farms`, `/pools`, `/list`, `/passport` passed after trending-export hotfix.
+
+MELEGA_DEX_V1_CERTIFIED_PRODUCT_RECOVERY_DEPLOYED
