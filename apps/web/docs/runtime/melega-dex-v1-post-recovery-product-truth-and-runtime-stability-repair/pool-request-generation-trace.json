@@ -1,0 +1,26 @@
+{
+  "mechanism": "generationRef increments on wallet/chain scope change; AbortController aborts prior commit path; commits require vm.generation === generationRef.current && !signal.aborted",
+  "note": "Portfolio data is composed from PoolsRuntimeContext (not a dedicated fetch in the hook). AbortController cancels commit into last-good cache rather than HTTP.",
+  "example": [
+    {
+      "event": "scopeChange",
+      "effect": "generation++ ; abort previous controller"
+    },
+    {
+      "event": "buildVM",
+      "inputs": [
+        "portfolioPools",
+        "userDataLoaded",
+        "previousFromModuleCache"
+      ]
+    },
+    {
+      "event": "commit",
+      "guard": "generation match && not aborted && state in ready|partial|empty"
+    },
+    {
+      "event": "emptyCommit",
+      "rule": "only if module cache has no positions"
+    }
+  ]
+}

@@ -1,656 +1,2107 @@
+diff --git a/apps/web/docs/runtime/melega-dex-v1-post-recovery-product-truth-and-runtime-stability-repair/recovered-wip-diff.patch b/apps/web/docs/runtime/melega-dex-v1-post-recovery-product-truth-and-runtime-stability-repair/recovered-wip-diff.patch
+index 41b30f31..e69de29b 100644
+--- a/apps/web/docs/runtime/melega-dex-v1-post-recovery-product-truth-and-runtime-stability-repair/recovered-wip-diff.patch
++++ b/apps/web/docs/runtime/melega-dex-v1-post-recovery-product-truth-and-runtime-stability-repair/recovered-wip-diff.patch
+@@ -1,656 +0,0 @@
+-diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
+-index b4fb0a81..35cc9df6 100644
+---- a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
+-+++ b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
+-@@ -4,6 +4,8 @@
+-  */
+- import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
+- import { searchPairs } from 'lib/bsc-indexer/pairs/classify'
+-+import { lookupCanonicalToken } from 'lib/canonical-token-registry'
+-+import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+- import type { LiquidityDiscoveryFilter, LiquidityDiscoverySort } from './liquidityPoolDiscoveryTokens'
+- import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
+- 
+-@@ -13,6 +15,8 @@ export type DiscoveryPoolMetrics = {
+-   feesUsd?: number | null
+- }
+- 
+-+export type DiscoveryPoolStatus = 'Active' | 'Inactive' | 'Empty' | 'Unavailable' | 'New'
+-+
+- export type DiscoveryPoolCardModel = {
+-   id: string
+-   pairAddress: string
+-@@ -21,7 +25,8 @@ export type DiscoveryPoolCardModel = {
+-   symbol0: string
+-   symbol1: string
+-   pairName: string
+--  status: 'Active' | 'Unavailable'
+-+  status: DiscoveryPoolStatus
+-+  statusReason?: string
+-   active: boolean
+-   tvlLabel: string
+-   volumeLabel: string
+-@@ -29,9 +34,11 @@ export type DiscoveryPoolCardModel = {
+-   tvlUsd: number | null
+-   volumeUsd: number | null
+-   feesUsd: number | null
+-+  metricSourceNote?: string
+-   lastVerified?: string
+-   addHref: string
+-   classification: ClassifiedAmmPair['classification']
+-+  qualityScore: number
+- }
+- 
+- function shortAddr(addr?: string): string {
+-@@ -39,6 +46,47 @@ function shortAddr(addr?: string): string {
+-   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+- }
+- 
+-+export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
+-+  const trimmed = pairSymbol?.trim()
+-+  if (trimmed && !/^0x/i.test(trimmed)) return trimmed
+-+  const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
+-+  if (canonical?.symbol) return canonical.symbol
+-+  return shortAddr(address)
+-+}
+-+
+-+export function resolveDiscoveryStatus(
+-+  pair: ClassifiedAmmPair,
+-+  metrics?: DiscoveryPoolMetrics,
+-+): { status: DiscoveryPoolStatus; reason?: string; active: boolean } {
+-+  if (pair.classification === 'invalid_contract') {
+-+    return { status: 'Unavailable', reason: 'Invalid pair contract', active: false }
+-+  }
+-+  const hasReserves =
+-+    pair.classification === 'tradeable' || pair.classification === 'liquidity_present'
+-+  const tvl = metrics?.tvlUsd
+-+  const volume = metrics?.volumeUsd
+-+  const hasTvl = tvl != null && Number.isFinite(tvl) && tvl > 0
+-+  const hasVolume = volume != null && Number.isFinite(volume) && volume > 0
+-+
+-+  if (hasReserves && (hasTvl || hasVolume || pair.active)) {
+-+    return { status: 'Active', active: true }
+-+  }
+-+  if (pair.classification === 'empty' || (pair.active === false && !hasReserves)) {
+-+    return { status: 'Empty', reason: 'No reserves / empty pool', active: false }
+-+  }
+-+  if (pair.lastVerified && Date.now() - Date.parse(pair.lastVerified) < 7 * 86_400_000 && !hasReserves) {
+-+    return { status: 'New', reason: 'Recently verified · liquidity not confirmed', active: false }
+-+  }
+-+  if (!hasReserves) {
+-+    return { status: 'Inactive', reason: 'No tradeable liquidity', active: false }
+-+  }
+-+  return {
+-+    status: 'Unavailable',
+-+    reason: 'Metrics source unavailable (Info subgraph / indexer)',
+-+    active: false,
+-+  }
+-+}
+-+
+- export function formatDiscoveryUsd(value?: number | null): string {
+-   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {
+-     return LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
+-@@ -48,11 +96,8 @@ export function formatDiscoveryUsd(value?: number | null): string {
+-   return `$${value.toFixed(2)}`
+- }
+- 
+--export function isPoolActive(pair: ClassifiedAmmPair): boolean {
+--  return (
+--    pair.active === true &&
+--    (pair.classification === 'tradeable' || pair.classification === 'liquidity_present')
+--  )
+-+export function isPoolActive(pair: ClassifiedAmmPair, metrics?: DiscoveryPoolMetrics): boolean {
+-+  return resolveDiscoveryStatus(pair, metrics).active
+- }
+- 
+- export function buildAddLiquidityHref(token0?: string, token1?: string): string {
+-@@ -62,6 +107,13 @@ export function buildAddLiquidityHref(token0?: string, token1?: string): string
+-   return liquidityPoolDiscovery.addLiquidityHref
+- }
+- 
+-+function metricLabel(value: number | null, missingSource: string): { label: string; note?: string } {
+-+  if (value != null && Number.isFinite(value) && value > 0) {
+-+    return { label: formatDiscoveryUsd(value) }
+-+  }
+-+  return { label: LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable, note: missingSource }
+-+}
+-+
+- export function toDiscoveryCard(
+-   pair: ClassifiedAmmPair,
+-   metrics?: DiscoveryPoolMetrics,
+-@@ -69,12 +121,28 @@ export function toDiscoveryCard(
+-   if (!pair.pairAddress || pair.classification === 'invalid_contract') return null
+-   if (!pair.token0 || !pair.token1) return null
+- 
+--  const symbol0 = pair.symbol0?.trim() || shortAddr(pair.token0)
+--  const symbol1 = pair.symbol1?.trim() || shortAddr(pair.token1)
+--  const active = isPoolActive(pair)
+-+  const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
+-+  const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
+-+  const resolved = resolveDiscoveryStatus(pair, metrics)
+-   const tvlUsd = metrics?.tvlUsd ?? null
+-   const volumeUsd = metrics?.volumeUsd ?? null
+-   const feesUsd = metrics?.feesUsd ?? null
+-+  const tvl = metricLabel(
+-+    tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
+-+    'TVL source: Info subgraph unavailable for this pair',
+-+  )
+-+  const volume = metricLabel(
+-+    volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
+-+    '24h volume source: Info subgraph unavailable for this pair',
+-+  )
+-+  const fees = metricLabel(
+-+    feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
+-+    '24h fees source: Info subgraph unavailable for this pair',
+-+  )
+-+  const qualityScore =
+-+    (resolved.active ? 1_000_000 : 0) +
+-+    (tvlUsd && tvlUsd > 0 ? Math.min(tvlUsd, 999_999) : 0) +
+-+    (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
+- 
+-   return {
+-     id: pair.pairAddress.toLowerCase(),
+-@@ -84,17 +152,20 @@ export function toDiscoveryCard(
+-     symbol0,
+-     symbol1,
+-     pairName: `${symbol0} / ${symbol1}`,
+--    status: active ? LIQUIDITY_POOL_DISCOVERY_COPY.statusActive : LIQUIDITY_POOL_DISCOVERY_COPY.statusUnavailable,
+--    active,
+--    tvlLabel: formatDiscoveryUsd(tvlUsd),
+--    volumeLabel: formatDiscoveryUsd(volumeUsd),
+--    feesLabel: formatDiscoveryUsd(feesUsd),
+-+    status: resolved.status,
+-+    statusReason: resolved.reason,
+-+    active: resolved.active,
+-+    tvlLabel: tvl.label,
+-+    volumeLabel: volume.label,
+-+    feesLabel: fees.label,
+-     tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
+-     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
+-     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
+-+    metricSourceNote: [tvl.note, volume.note, fees.note].filter(Boolean).join(' · ') || undefined,
+-     lastVerified: pair.lastVerified,
+-     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
+-     classification: pair.classification,
+-+    qualityScore,
+-   }
+- }
+- 
+-@@ -139,7 +210,13 @@ export function sortDiscoveryCards(
+-         return tb - ta || a.pairName.localeCompare(b.pairName)
+-       })
+-     default:
+--      return next
+-+      // Market quality: active + liquidity/volume first — never address-only empties first.
+-+      return next.sort(
+-+        (a, b) =>
+-+          b.qualityScore - a.qualityScore ||
+-+          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
+-+          a.pairName.localeCompare(b.pairName),
+-+      )
+-   }
+- }
+- 
+-diff --git a/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts b/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
+-index e3b689d8..22a4931c 100644
+---- a/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
+-+++ b/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
+-@@ -572,6 +572,25 @@ export function buildPoolsWalletPositionsViewModel(input: {
+-     .sort(comparePoolsWalletPositions)
+- 
+-   if (built.length === 0) {
+-+    // Presence can be "present" with all-zero userData during a partial refresh wipe.
+-+    // Never treat that as authoritative empty when we still hold last-good positions.
+-+    if (previous?.length) {
+-+      return {
+-+        state: 'stale',
+-+        wallet: account,
+-+        chainId,
+-+        positions: previous,
+-+        visiblePositions: previous.slice(0, poolsMyPositions.maxVisibleDesktop),
+-+        totalCount: previous.length,
+-+        showCountBadge: true,
+-+        showViewAll: previous.length > poolsMyPositions.maxVisibleDesktop,
+-+        moduleDisclosure: 'Some position data is temporarily unavailable.',
+-+        liveRegion: 'Showing last confirmed positions during refresh',
+-+        freshness: 'stale',
+-+        authoritativeEmpty: false,
+-+        generation,
+-+      }
+-+    }
+-     return {
+-       state: 'empty',
+-       wallet: account,
+-@@ -589,20 +608,52 @@ export function buildPoolsWalletPositionsViewModel(input: {
+-     }
+-   }
+- 
+--  const anyPartial = built.some((p) => p.partialData)
+-+  // Preserve claimable token amounts when a refresh drops reward reads or prices to zero.
+-+  const merged = built.map((pos) => {
+-+    const prior = previous?.find((p) => p.positionId === pos.positionId)
+-+    if (!prior) return pos
+-+    let next = pos
+-+    const claimLost =
+-+      (pos.claimableFormatted === '—' || pos.claimableFormatted.startsWith('0 ')) &&
+-+      prior.claimableFormatted &&
+-+      !prior.claimableFormatted.startsWith('0 ') &&
+-+      prior.claimableFormatted !== '—'
+-+    if (claimLost) {
+-+      next = {
+-+        ...next,
+-+        claimableFormatted: prior.claimableFormatted,
+-+        claimableRaw: prior.claimableRaw,
+-+        claimableValue: pos.claimableValue ?? prior.claimableValue,
+-+        freshness: 'partial',
+-+        partialData: true,
+-+        partialReasons: [...new Set([...(next.partialReasons ?? []), 'Claimable refresh incomplete — retaining last confirmed amount'])],
+-+      }
+-+    }
+-+    if (!next.claimableValue && next.claimableFormatted && !next.claimableFormatted.startsWith('0 ') && next.claimableFormatted !== '—') {
+-+      next = {
+-+        ...next,
+-+        claimableValue: null,
+-+        partialData: true,
+-+        partialReasons: [...new Set([...(next.partialReasons ?? []), 'USD value unavailable'])],
+-+      }
+-+    }
+-+    return next
+-+  })
+-+
+-+  const anyPartial = merged.some((p) => p.partialData)
+-   const state: PoolsMyPositionsModuleState = anyPartial ? 'partial' : 'ready'
+- 
+-   return {
+-     state,
+-     wallet: account,
+-     chainId,
+--    positions: built,
+--    visiblePositions: built.slice(0, poolsMyPositions.maxVisibleDesktop),
+--    totalCount: built.length,
+-+    positions: merged,
+-+    visiblePositions: merged.slice(0, poolsMyPositions.maxVisibleDesktop),
+-+    totalCount: merged.length,
+-     showCountBadge: true,
+--    showViewAll: built.length > poolsMyPositions.maxVisibleDesktop,
+-+    showViewAll: merged.length > poolsMyPositions.maxVisibleDesktop,
+-     moduleDisclosure: anyPartial ? 'Some position data is temporarily unavailable.' : null,
+--    liveRegion: `${built.length} pool position${built.length === 1 ? '' : 's'}`,
+-+    liveRegion: `${merged.length} pool position${merged.length === 1 ? '' : 's'}`,
+-     freshness: anyPartial ? 'partial' : 'live',
+-     authoritativeEmpty: false,
+-     generation,
+-diff --git a/apps/web/src/views/Trade/components/TradeModeSelector.tsx b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+-index b662285f..7ce4dc5f 100644
+---- a/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+-+++ b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+-@@ -1,22 +1,26 @@
+- import React from 'react'
+- import styled from 'styled-components'
+- import { colors } from 'design-system/melega'
+--import type { TradeMode } from '../tradeTokens'
+-+import type { SwapExperienceMode } from '../swapExperience'
+-+import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
+- 
+- const Shell = styled.div`
+-   display: flex;
+-   flex-direction: column;
+--  gap: 8px;
+-+  width: 100%;
+-+  flex-shrink: 0;
+-+  position: relative;
+-+  z-index: 2;
+- `
+- 
+- const Segmented = styled.div`
+-   display: grid;
+-   grid-template-columns: 1fr 1fr;
+--  gap: 8px;
+--  padding: 4px;
+-+  gap: 4px;
+-+  padding: 3px;
+-   background: #111111;
+-   border: 1px solid rgba(255, 255, 255, 0.06);
+--  border-radius: 14px;
+-+  border-radius: 12px;
+- `
+- 
+- const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+-@@ -24,94 +28,75 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+-   display: flex;
+-   align-items: center;
+-   justify-content: center;
+--  gap: 8px;
+--  height: 44px;
+--  border: 1px solid ${({ $active, $smart }) =>
+--    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
+--  border-radius: 10px;
+-+  min-height: 34px;
+-+  height: 34px;
+-+  border: 1px solid
+-+    ${({ $active, $smart }) =>
+-+      $active && $smart
+-+        ? 'rgba(244, 196, 48, 0.55)'
+-+        : $active
+-+          ? 'rgba(255, 255, 255, 0.12)'
+-+          : 'transparent'};
+-+  border-radius: 9px;
+-   background: ${({ $active, $smart }) =>
+-     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
+-   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
+--  font-size: 13px;
+-+  font-size: 12px;
+-   font-weight: 700;
+--  letter-spacing: 0.04em;
+-+  letter-spacing: 0.03em;
+-   cursor: pointer;
+-   transition:
+-     border-color 150ms ease,
+-     background 150ms ease,
+--    color 150ms ease,
+--    box-shadow 150ms ease;
+--  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
+-+    color 150ms ease;
+- 
+-   &:hover {
+-     color: ${colors.textPrimary};
+-   }
+--`
+- 
+--const Badge = styled.span`
+--  display: inline-flex;
+--  align-items: center;
+--  justify-content: center;
+--  height: 18px;
+--  padding: 0 6px;
+--  border-radius: 6px;
+--  background: rgba(244, 196, 48, 0.18);
+--  color: ${colors.gold};
+--  font-size: 10px;
+--  font-weight: 800;
+--  letter-spacing: 0.06em;
+--`
+--
+--const AiDot = styled.span`
+--  width: 6px;
+--  height: 6px;
+--  border-radius: 50%;
+--  background: ${colors.gold};
+--  box-shadow: 0 0 8px rgba(244, 197, 66, 0.6);
+--`
+--
+--const Description = styled.p`
+--  margin: 0;
+--  font-size: 13px;
+--  line-height: 1.45;
+--  color: #9e9e9e;
+-+  &:focus-visible {
+-+    outline: 2px solid ${colors.gold};
+-+    outline-offset: 2px;
+-+  }
+- `
+- 
+- export interface TradeModeSelectorProps {
+--  mode: TradeMode
+--  onChange: (mode: TradeMode) => void
+-+  mode: SwapExperienceMode
+-+  onChange: (mode: SwapExperienceMode) => void
+- }
+- 
+-+/**
+-+ * Compact Instant | Smart — no explanatory paragraph in the terminal.
+-+ */
+- export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
+--  <Shell data-trade-mode-selector>
+-+  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
+-     <Segmented role="tablist" aria-label="Swap mode">
+-       <Tab
+-         type="button"
+-         role="tab"
+--        aria-selected={mode === 'standard'}
+--        $active={mode === 'standard'}
+--        onClick={() => onChange('standard')}
+-+        id="swap-mode-instant"
+-+        aria-selected={mode === 'instant'}
+-+        aria-controls="smart-swap-execution"
+-+        aria-label={SWAP_EXPERIENCE_LABEL.instant}
+-+        $active={mode === 'instant'}
+-+        onClick={() => onChange('instant')}
+-       >
+--        STANDARD
+-+        Instant
+-       </Tab>
+-       <Tab
+-         type="button"
+-         role="tab"
+--        aria-selected={mode === 'smartswap'}
+--        $active={mode === 'smartswap'}
+-+        id="swap-mode-smart"
+-+        aria-selected={mode === 'smart'}
+-+        aria-controls="smart-swap-execution"
+-+        aria-label={SWAP_EXPERIENCE_LABEL.smart}
+-+        $active={mode === 'smart'}
+-         $smart
+--        onClick={() => onChange('smartswap')}
+-+        onClick={() => onChange('smart')}
+-       >
+--        <AiDot aria-hidden />
+--        SMARTSWAP
+--        <Badge>NEW</Badge>
+-+        Smart
+-       </Tab>
+-     </Segmented>
+--    <Description>
+--      {mode === 'smartswap'
+--        ? 'Finds the best available route across Melega DEX and supported liquidity sources.'
+--        : 'Best route across supported liquidity on the Melega router.'}
+--    </Description>
+-   </Shell>
+- )
+- 
+-diff --git a/apps/web/src/views/Trade/swapExperience.ts b/apps/web/src/views/Trade/swapExperience.ts
+-new file mode 100644
+-index 00000000..c87ff3a3
+---- /dev/null
+-+++ b/apps/web/src/views/Trade/swapExperience.ts
+-@@ -0,0 +1,13 @@
+-+/** Instant vs Smart — presentation modes over the same SmartSwapForm engine. */
+-+export type SwapExperienceMode = 'instant' | 'smart'
+-+
+-+export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
+-+  instant: 'Instant Swap mode selected',
+-+  smart: 'Smart Swap mode selected',
+-+}
+-+
+-+export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
+-+  if (value === 'smart') return 'smart'
+-+  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
+-+  return 'instant'
+-+}
+-diff --git a/apps/web/src/views/Trade/components/TradeModeSelector.tsx b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+-index b662285f..7ce4dc5f 100644
+---- a/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+-+++ b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
+-@@ -1,22 +1,26 @@
+- import React from 'react'
+- import styled from 'styled-components'
+- import { colors } from 'design-system/melega'
+--import type { TradeMode } from '../tradeTokens'
+-+import type { SwapExperienceMode } from '../swapExperience'
+-+import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
+- 
+- const Shell = styled.div`
+-   display: flex;
+-   flex-direction: column;
+--  gap: 8px;
+-+  width: 100%;
+-+  flex-shrink: 0;
+-+  position: relative;
+-+  z-index: 2;
+- `
+- 
+- const Segmented = styled.div`
+-   display: grid;
+-   grid-template-columns: 1fr 1fr;
+--  gap: 8px;
+--  padding: 4px;
+-+  gap: 4px;
+-+  padding: 3px;
+-   background: #111111;
+-   border: 1px solid rgba(255, 255, 255, 0.06);
+--  border-radius: 14px;
+-+  border-radius: 12px;
+- `
+- 
+- const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+-@@ -24,94 +28,75 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
+-   display: flex;
+-   align-items: center;
+-   justify-content: center;
+--  gap: 8px;
+--  height: 44px;
+--  border: 1px solid ${({ $active, $smart }) =>
+--    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
+--  border-radius: 10px;
+-+  min-height: 34px;
+-+  height: 34px;
+-+  border: 1px solid
+-+    ${({ $active, $smart }) =>
+-+      $active && $smart
+-+        ? 'rgba(244, 196, 48, 0.55)'
+-+        : $active
+-+          ? 'rgba(255, 255, 255, 0.12)'
+-+          : 'transparent'};
+-+  border-radius: 9px;
+-   background: ${({ $active, $smart }) =>
+-     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
+-   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
+--  font-size: 13px;
+-+  font-size: 12px;
+-   font-weight: 700;
+--  letter-spacing: 0.04em;
+-+  letter-spacing: 0.03em;
+-   cursor: pointer;
+-   transition:
+-     border-color 150ms ease,
+-     background 150ms ease,
+--    color 150ms ease,
+--    box-shadow 150ms ease;
+--  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
+-+    color 150ms ease;
+- 
+-   &:hover {
+-     color: ${colors.textPrimary};
+-   }
+--`
+- 
+--const Badge = styled.span`
+--  display: inline-flex;
+--  align-items: center;
+--  justify-content: center;
+--  height: 18px;
+--  padding: 0 6px;
+--  border-radius: 6px;
+--  background: rgba(244, 196, 48, 0.18);
+--  color: ${colors.gold};
+--  font-size: 10px;
+--  font-weight: 800;
+--  letter-spacing: 0.06em;
+--`
+--
+--const AiDot = styled.span`
+--  width: 6px;
+--  height: 6px;
+--  border-radius: 50%;
+--  background: ${colors.gold};
+--  box-shadow: 0 0 8px rgba(244, 197, 66, 0.6);
+--`
+--
+--const Description = styled.p`
+--  margin: 0;
+--  font-size: 13px;
+--  line-height: 1.45;
+--  color: #9e9e9e;
+-+  &:focus-visible {
+-+    outline: 2px solid ${colors.gold};
+-+    outline-offset: 2px;
+-+  }
+- `
+- 
+- export interface TradeModeSelectorProps {
+--  mode: TradeMode
+--  onChange: (mode: TradeMode) => void
+-+  mode: SwapExperienceMode
+-+  onChange: (mode: SwapExperienceMode) => void
+- }
+- 
+-+/**
+-+ * Compact Instant | Smart — no explanatory paragraph in the terminal.
+-+ */
+- export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
+--  <Shell data-trade-mode-selector>
+-+  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
+-     <Segmented role="tablist" aria-label="Swap mode">
+-       <Tab
+-         type="button"
+-         role="tab"
+--        aria-selected={mode === 'standard'}
+--        $active={mode === 'standard'}
+--        onClick={() => onChange('standard')}
+-+        id="swap-mode-instant"
+-+        aria-selected={mode === 'instant'}
+-+        aria-controls="smart-swap-execution"
+-+        aria-label={SWAP_EXPERIENCE_LABEL.instant}
+-+        $active={mode === 'instant'}
+-+        onClick={() => onChange('instant')}
+-       >
+--        STANDARD
+-+        Instant
+-       </Tab>
+-       <Tab
+-         type="button"
+-         role="tab"
+--        aria-selected={mode === 'smartswap'}
+--        $active={mode === 'smartswap'}
+-+        id="swap-mode-smart"
+-+        aria-selected={mode === 'smart'}
+-+        aria-controls="smart-swap-execution"
+-+        aria-label={SWAP_EXPERIENCE_LABEL.smart}
+-+        $active={mode === 'smart'}
+-         $smart
+--        onClick={() => onChange('smartswap')}
+-+        onClick={() => onChange('smart')}
+-       >
+--        <AiDot aria-hidden />
+--        SMARTSWAP
+--        <Badge>NEW</Badge>
+-+        Smart
+-       </Tab>
+-     </Segmented>
+--    <Description>
+--      {mode === 'smartswap'
+--        ? 'Finds the best available route across Melega DEX and supported liquidity sources.'
+--        : 'Best route across supported liquidity on the Melega router.'}
+--    </Description>
+-   </Shell>
+- )
+- 
+-diff --git a/apps/web/src/views/Trade/swapExperience.ts b/apps/web/src/views/Trade/swapExperience.ts
+-new file mode 100644
+-index 00000000..c87ff3a3
+---- /dev/null
+-+++ b/apps/web/src/views/Trade/swapExperience.ts
+-@@ -0,0 +1,13 @@
+-+/** Instant vs Smart — presentation modes over the same SmartSwapForm engine. */
+-+export type SwapExperienceMode = 'instant' | 'smart'
+-+
+-+export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
+-+  instant: 'Instant Swap mode selected',
+-+  smart: 'Smart Swap mode selected',
+-+}
+-+
+-+export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
+-+  if (value === 'smart') return 'smart'
+-+  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
+-+  return 'instant'
+-+}
+diff --git a/apps/web/src/views/FarmsStudio/FarmsStudioScreen.tsx b/apps/web/src/views/FarmsStudio/FarmsStudioScreen.tsx
+index cd2c8e1d..e728822a 100644
+--- a/apps/web/src/views/FarmsStudio/FarmsStudioScreen.tsx
++++ b/apps/web/src/views/FarmsStudio/FarmsStudioScreen.tsx
+@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
+ import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
+ import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
+ import FarmsActionHost from './farmsRuntime/FarmsActionHost'
+-import FeaturedFarmPanel from './components/FeaturedFarmPanel'
+ import FarmsActivityTable from './components/FarmsActivityTable'
+ import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
+ import { FarmsHeroModule } from './modules/FarmsHeroModule'
+@@ -123,14 +122,8 @@ export const FarmsStudioScreen: React.FC = () => (
+         <DataSurfaceErrorBoundary surface="Farms Analytics" userReason="Farm analytics are temporarily unavailable.">
+           <FarmsAnalyticsModule />
+         </DataSurfaceErrorBoundary>
+-        <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="true">
+-          <FeaturedSlot>
+-            <DataSurfaceErrorBoundary surface="Featured Farm" userReason="Featured farm metrics are temporarily unavailable.">
+-              <FeaturedFarmPanel />
+-            </DataSurfaceErrorBoundary>
+-          </FeaturedSlot>
+-          <AdvisorSlot data-fs-advisor-superseded="module-006" aria-hidden="true" />
+-        </PageColumnGrid>
++        {/* Featured Farm lives compactly in Hero; legacy bottom giant card unmounted. */}
++        <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="archived" aria-hidden="true" />
+         <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
+           <FarmsActivityTable />
+         </DataSurfaceErrorBoundary>
+diff --git a/apps/web/src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts b/apps/web/src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts
+index bf93798a..b4a65d4d 100644
+--- a/apps/web/src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts
++++ b/apps/web/src/views/FarmsStudio/__tests__/farmsModule002.overviewKpis.test.ts
+@@ -94,19 +94,31 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
+     expect(216 * 6 + 16 * 5).toBe(1376)
+   })
+ 
+-  it('never fabricates 24H rewards from MasterChef emission', () => {
+-    const vm = buildFarmsOverviewKpisFromParts({
++  it('keeps 24H rewards unavailable without emission read; uses MasterChef emission when provided', () => {
++    const empty = buildFarmsOverviewKpisFromParts({
+       previewCards: [farmCard({ pid: 1, liq: 5000, apr: '20.00%' })],
+       farmsLoading: false,
+       userDataLoaded: true,
+       account: '0xabc',
+       cakePriceUsd: 1,
+     })
+-    const r24 = vm.cards.find((c) => c.id === 'rewards24h')!
+-    expect(r24.value).toBe('—')
+-    expect(r24.supporting).toContain('Reward valuation unavailable')
+-    expect(vm.diagnostics.rewards24hSource).toBe('unavailable_no_indexed_distribution')
+-    expect(vm.diagnostics.emissionNotUsedAs24h).toBe(true)
++    expect(empty.cards.find((c) => c.id === 'rewards24h')!.value).toBe('—')
++    expect(empty.diagnostics.rewards24hSource).toBe('unavailable_emission_read')
++
++    const withEmission = buildFarmsOverviewKpisFromParts({
++      previewCards: [farmCard({ pid: 1, liq: 5000, apr: '20.00%' })],
++      farmsLoading: false,
++      userDataLoaded: true,
++      account: '0xabc',
++      cakePriceUsd: 0.5,
++      emissionPerDay: 1000,
++      emissionPerDayLabel: '1,000 MARCO',
++    })
++    const r24 = withEmission.cards.find((c) => c.id === 'rewards24h')!
++    expect(r24.state).toBe('available')
++    expect(r24.supporting).toMatch(/dexTokenPerBlock/)
++    expect(withEmission.diagnostics.rewards24hSource).toBe('masterchef_dexTokenPerBlock_emission')
++    expect(withEmission.diagnostics.emissionNotUsedAs24h).toBe(false)
+   })
+ 
+   it('never estimates Active Farmers', () => {
+@@ -251,7 +263,7 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
+     }
+   })
+ 
+-  it('does not ship mock KPI dollar fixtures or emission-as-24h in Module 002 sources', () => {
++  it('does not ship mock KPI dollar fixtures in Module 002 sources', () => {
+     const src = [
+       readFileSync(path.join(STUDIO, 'modules/FarmsOverviewKpisModule.tsx'), 'utf8'),
+       readFileSync(path.join(STUDIO, 'modules/useFarmsOverviewKpis.ts'), 'utf8'),
+@@ -259,7 +271,7 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
+     ].join('\n')
+     expect(src).not.toContain('$24.56')
+     expect(src).not.toContain('formatTotalDailyEmissionKpi')
+-    expect(src).not.toContain('useMasterChefEmission')
++    expect(src).toContain('useMasterChefEmission')
+   })
+ 
+   it('ownership map records Module 002 file assignment', () => {
+diff --git a/apps/web/src/views/FarmsStudio/modules/FarmsHeroModule.tsx b/apps/web/src/views/FarmsStudio/modules/FarmsHeroModule.tsx
+index ab49eeeb..e707c7d5 100644
+--- a/apps/web/src/views/FarmsStudio/modules/FarmsHeroModule.tsx
++++ b/apps/web/src/views/FarmsStudio/modules/FarmsHeroModule.tsx
+@@ -7,13 +7,15 @@ import styled from 'styled-components'
+ import { typography } from 'design-system/melega'
+ import { FarmsHeroArtwork } from './FarmsHeroArtwork'
+ import { FarmsHeroTrustPanel } from './FarmsHeroTrustPanel'
++import { FarmsHeroFeaturedCompact } from './FarmsHeroFeaturedCompact'
+ import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
+ 
+ const Module = styled.section`
+   position: relative;
+   width: 100%;
+   max-width: ${farmsHero.contentMax};
+-  height: ${farmsHero.heroH};
++  height: auto;
++  min-height: ${farmsHero.heroH};
+   min-width: 0;
+   box-sizing: border-box;
+   overflow: visible;
+@@ -182,8 +184,10 @@ const ArtCol = styled.div`
+ const TrustCol = styled.div`
+   width: ${farmsHero.trustW};
+   display: flex;
+-  align-items: center;
+-  justify-content: flex-end;
++  flex-direction: column;
++  align-items: stretch;
++  justify-content: center;
++  gap: 12px;
+   min-width: 0;
+ 
+   @media (max-width: ${farmsHero.tabletBreak}) {
+@@ -245,6 +249,7 @@ export const FarmsHeroModule: React.FC = () => {
+           <FarmsHeroArtwork />
+         </ArtCol>
+         <TrustCol>
++          <FarmsHeroFeaturedCompact />
+           <FarmsHeroTrustPanel />
+         </TrustCol>
+       </Inner>
+diff --git a/apps/web/src/views/FarmsStudio/modules/FarmsHeroTrustPanel.tsx b/apps/web/src/views/FarmsStudio/modules/FarmsHeroTrustPanel.tsx
+index 0f4fdc88..a86b5dbc 100644
+--- a/apps/web/src/views/FarmsStudio/modules/FarmsHeroTrustPanel.tsx
++++ b/apps/web/src/views/FarmsStudio/modules/FarmsHeroTrustPanel.tsx
+@@ -7,8 +7,10 @@ import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
+ 
+ const Panel = styled.aside`
+   width: ${farmsHero.trustBoxW};
+-  height: ${farmsHero.trustBoxH};
++  height: auto;
++  min-height: ${farmsHero.trustBoxH};
+   max-width: 100%;
++  min-width: 0;
+   box-sizing: border-box;
+   border-radius: ${farmsHero.trustRadius};
+   border: ${farmsHero.trustBorder};
+@@ -18,6 +20,7 @@ const Panel = styled.aside`
+   flex-direction: column;
+   gap: 12px;
+   flex: 0 0 auto;
++  overflow: visible;
+ 
+   @media (max-width: ${farmsHero.mobileBreak}) {
+     width: min(100%, ${farmsHero.mobileTrustW});
+diff --git a/apps/web/src/views/FarmsStudio/modules/FarmsMyFarmCard.tsx b/apps/web/src/views/FarmsStudio/modules/FarmsMyFarmCard.tsx
+index 6ad82594..fdc1a8a5 100644
+--- a/apps/web/src/views/FarmsStudio/modules/FarmsMyFarmCard.tsx
++++ b/apps/web/src/views/FarmsStudio/modules/FarmsMyFarmCard.tsx
+@@ -37,10 +37,24 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
+       <Logo $offset><MelegaTokenAvatar name={position.token1.symbol} symbol={position.token1.symbol} address={position.token1.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.stakeLogo} radius="circle" /></Logo>
+       <Logo $offset $reward><MelegaTokenAvatar name={position.rewardToken.symbol} symbol={position.rewardToken.symbol} address={position.rewardToken.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.rewardLogo} radius="circle" /></Logo>
+     </Logos><div style={{ minWidth: 0 }}><Title title={position.title}>{position.title}</Title><Subtitle>{position.subtitle}</Subtitle></div></Identity><Badge $tone={position.statusLabel}>{position.statusLabel}</Badge></Header>
+-    <Metrics><div><Label>Staked LP</Label><Value>{position.stakedFormatted}</Value>{position.stakedValue && <Support>{position.stakedValue}</Support>}</div>
+-      <div><Label>Harvestable</Label><Value>{position.pendingFormatted}</Value>{position.pendingValue && <Support>{position.pendingValue}</Support>}</div>
++    <Metrics>
++      <div>
++        <Label>Position value</Label>
++        <Value>{position.stakedValue ? position.stakedValue.replace(/[()]/g, '') : 'USD unavailable'}</Value>
++        <Support>{position.stakedFormatted}</Support>
++      </div>
++      <div>
++        <Label>Harvestable</Label>
++        <Value>{position.pendingFormatted}</Value>
++        {position.pendingValue ? (
++          <Support>{position.pendingValue}</Support>
++        ) : position.pendingFormatted && position.pendingFormatted !== '—' && !position.pendingFormatted.startsWith('0 ') ? (
++          <Support>USD value unavailable</Support>
++        ) : null}
++      </div>
+       {position.apr && <div><Label>APR</Label><Value>{position.apr}</Value></div>}
+-      <State>{position.farmStateLine}</State></Metrics>
++      <State>{position.farmStateLine}</State>
++    </Metrics>
+     {position.actions.length > 0 && <Actions>{position.actions.map((action, i) => <Button key={`${action.kind}-${action.label}`} type="button" $primary={i === 0} disabled={busy === action.kind || !action.enabled} aria-label={action.accessibleName} onClick={() => onAction(action)}>{busy === action.kind ? busyLabel(action) : action.label}</Button>)}</Actions>}
+   </Card>
+ }
+diff --git a/apps/web/src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts b/apps/web/src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts
+index 57c099ba..a4a4bc06 100644
+--- a/apps/web/src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts
++++ b/apps/web/src/views/FarmsStudio/modules/buildFarmsOverviewKpis.ts
+@@ -1,6 +1,7 @@
+ /**
+  * FARMS_MODULE_002 — pure Overview KPI composition (no React / no Redux).
+- * Does not invent zeros. Does not use MasterChef emission as 24H rewards.
++ * 24H Rewards uses canonical MasterChef dexTokenPerBlock emission (amount emitted / day).
++ * Does not invent unique Active Farmers without a wallet index.
+  * Does not include Pools TVL or wallet LP outside farms.
+  */
+ import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+@@ -72,6 +73,8 @@ export function buildFarmsOverviewKpisFromParts(input: {
+   account?: string
+   userDataLoaded: boolean
+   cakePriceUsd: number
++  emissionPerDay?: number | null
++  emissionPerDayLabel?: string | null
+ }): FarmsOverviewKpisViewModel {
+   const fetchedAt = new Date().toISOString()
+   const { previewCards, farmsLoading, account, userDataLoaded, cakePriceUsd } = input
+@@ -150,18 +153,36 @@ export function buildFarmsOverviewKpisFromParts(input: {
+     'Unique wallet data unavailable',
+     'unavailable',
+     'unavailable',
+-    'No factual unique-staker index; participants/LP supply must not be used as farmers',
++    'No factual Deposit/Withdraw unique-wallet index; participants/LP supply must not be used as farmers',
+   )
+ 
+-  // —— 24H Rewards — never MasterChef emission projections ——
+-  const rewards24hCard = card(
+-    'rewards24h',
+-    '—',
+-    'Reward valuation unavailable',
+-    'unavailable',
+-    'unavailable',
+-    'No indexed 24H reward-distribution feed; emission projections are not used as 24H rewards',
+-  )
++  // —— 24H Rewards — MasterChef dexTokenPerBlock × blocksPerDay (emitted amount) ——
++  const emissionPerDay = input.emissionPerDay ?? null
++  const emissionLabel = input.emissionPerDayLabel ?? null
++  const emissionUsd =
++    emissionPerDay != null && cakePriceUsd > 0 ? emissionPerDay * cakePriceUsd : null
++  let rewards24hCard: FarmsOverviewKpiCardModel
++  if (emissionPerDay != null && emissionPerDay > 0 && emissionLabel) {
++    rewards24hCard = card(
++      'rewards24h',
++      emissionUsd != null ? formatUsdValue(emissionUsd, false) : emissionLabel,
++      emissionUsd != null
++        ? `${emissionLabel} emitted / 24h · MasterChef dexTokenPerBlock`
++        : 'USD price unavailable · MasterChef dexTokenPerBlock emission',
++      'available',
++      'live',
++      'Canonical MasterChef emission model — not claimed user distribution',
++    )
++  } else {
++    rewards24hCard = card(
++      'rewards24h',
++      '—',
++      'Emission read unavailable',
++      'unavailable',
++      'unavailable',
++      'MasterChef dexTokenPerBlock unavailable',
++    )
++  }
+ 
+   // —— Highest Sustainable APR ——
+   const rewarding = listRewardingFarms(lpCards).filter(
+@@ -271,15 +292,18 @@ export function buildFarmsOverviewKpisFromParts(input: {
+       activeFarmCount: lpCards.length > 0 || !farmsLoading ? activeCards.length : null,
+       activeFarmersCount: null,
+       activeFarmersState: 'unavailable',
+-      rewards24hUsd: null,
+-      rewards24hState: 'unavailable',
+-      rewards24hSource: 'unavailable_no_indexed_distribution',
++      rewards24hUsd: emissionUsd,
++      rewards24hState: emissionPerDay != null && emissionPerDay > 0 ? 'available' : 'unavailable',
++      rewards24hSource:
++        emissionPerDay != null && emissionPerDay > 0
++          ? 'masterchef_dexTokenPerBlock_emission'
++          : 'unavailable_emission_read',
+       sustainableApr: best?.display ?? null,
+       sustainableAprFarm: best?.name ?? null,
+       harvestableUsd: harvestableUsdDiag,
+       harvestableFarmCount: harvestableFarmCountDiag,
+       walletState: !account ? 'disconnected' : userDataLoaded ? 'ready' : 'loading',
+-      emissionNotUsedAs24h: true,
++      emissionNotUsedAs24h: !(emissionPerDay != null && emissionPerDay > 0),
+       poolsTvlNotIncluded: true,
+       provenance: {
+         tvl: 'farm.liquidity (LP farms only; pid 0 excluded; Pools excluded)',
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsAnalyticsTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsAnalyticsTokens.ts
+index e7c81fa5..0980e08f 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsAnalyticsTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsAnalyticsTokens.ts
+@@ -65,17 +65,17 @@ export const farmsAnalytics = {
+ } as const
+ 
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ export const FARMS_MODULE_002_FREEZE_SHA256 = {
+   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
+-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
+-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
++  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
++  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
++  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+ } as const
+ 
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsExploreFarmsTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsExploreFarmsTokens.ts
+index 11010c14..34ff2dac 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsExploreFarmsTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsExploreFarmsTokens.ts
+@@ -96,18 +96,18 @@ export const FARMS_EXPLORE_SORTS = [
+ 
+ /** Frozen Module 001 source SHAs (byte-identical guards). */
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ /** Frozen Module 002 source SHAs. */
+ export const FARMS_MODULE_002_FREEZE_SHA256 = {
+   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
+-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
+-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
++  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
++  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
++  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+ } as const
+ 
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsFinishedFarmsTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsFinishedFarmsTokens.ts
+index e4dc4d05..3e4becbb 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsFinishedFarmsTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsFinishedFarmsTokens.ts
+@@ -65,17 +65,17 @@ export const farmsFinished = {
+ } as const
+ 
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ export const FARMS_MODULE_002_FREEZE_SHA256 = {
+   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
+-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
+-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
++  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
++  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
++  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+ } as const
+ 
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsHeroTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsHeroTokens.ts
+index 35341224..ca6d1e82 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsHeroTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsHeroTokens.ts
+@@ -18,7 +18,7 @@ export const farmsHero = {
+   leftW: '440px',
+   artworkW: '480px',
+   trustW: '360px',
+-  columnGap: '48px',
++  columnGap: '24px',
+ 
+   artworkBoxW: '480px',
+   artworkBoxH: '230px',
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsMyFarmsTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsMyFarmsTokens.ts
+index 47e08fc0..a7985bb7 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsMyFarmsTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsMyFarmsTokens.ts
+@@ -27,16 +27,16 @@ export const farmsMyFarms = {
+ } as const
+ 
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ export const FARMS_MODULE_002_FREEZE_SHA256 = {
+   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
+-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
+-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
++  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
++  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
++  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+ } as const
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsOverviewKpisTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsOverviewKpisTokens.ts
+index c5233ce9..f0a76cd8 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsOverviewKpisTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsOverviewKpisTokens.ts
+@@ -7,10 +7,10 @@ import { FARMS_FOUNDER_MOCKUP } from '../farmsArchitecture000Contracts'
+ import { farmsHero } from './farmsHeroTokens'
+ 
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ export const farmsOverviewKpis = {
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsVisualPolishTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsVisualPolishTokens.ts
+index 9cc9c66e..58b607eb 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsVisualPolishTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsVisualPolishTokens.ts
+@@ -47,17 +47,17 @@ export const farmsVisualPolish = {
+ } as const
+ 
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ export const FARMS_MODULE_002_FREEZE_SHA256 = {
+   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
+-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
+-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
++  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
++  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
++  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+ } as const
+ 
+diff --git a/apps/web/src/views/FarmsStudio/modules/farmsYieldAdvisorTokens.ts b/apps/web/src/views/FarmsStudio/modules/farmsYieldAdvisorTokens.ts
+index 0831b872..8f497858 100644
+--- a/apps/web/src/views/FarmsStudio/modules/farmsYieldAdvisorTokens.ts
++++ b/apps/web/src/views/FarmsStudio/modules/farmsYieldAdvisorTokens.ts
+@@ -58,17 +58,17 @@ export const farmsYieldAdvisor = {
+ } as const
+ 
+ export const FARMS_MODULE_001_FREEZE_SHA256 = {
+-  FarmsHeroModule: 'd9c56b4f1bd572229de1c58dcacd9efd1ae4f1f05f3a8df6854c3edcb15e640b',
++  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
+   FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+-  FarmsHeroTrustPanel: 'ce9af36cc5b752098a5b448ba2566368c8f3c625e83c9358e09c24687f26270c',
+-  farmsHeroTokens: 'eb192bfabfcf4c87cb08751732aa12e8d7960190f7ebd62f43b016e033eea06c',
++  FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
++  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+ } as const
+ 
+ export const FARMS_MODULE_002_FREEZE_SHA256 = {
+   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+-  farmsOverviewKpisTokens: 'c1578f74830d1aa4361808a18e86df926590b46c8e110240f92416668469f91b',
+-  buildFarmsOverviewKpis: 'f26b480e7e805fc39341c9e5bf79fa8ed9f02c5b24180313f6487a5b435932d5',
+-  useFarmsOverviewKpis: 'd93791d3f7f1676ec98f92aadcb0f11a396b1c4fad3074b70efdfa50e637173c',
++  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
++  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
++  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
+ } as const
+ 
+diff --git a/apps/web/src/views/FarmsStudio/modules/useFarmsOverviewKpis.ts b/apps/web/src/views/FarmsStudio/modules/useFarmsOverviewKpis.ts
+index c204c3cd..c2cd538f 100644
+--- a/apps/web/src/views/FarmsStudio/modules/useFarmsOverviewKpis.ts
++++ b/apps/web/src/views/FarmsStudio/modules/useFarmsOverviewKpis.ts
+@@ -3,6 +3,7 @@
+  */
+ import { useMemo } from 'react'
+ import { usePriceCakeBusd } from 'state/farms/hooks'
++import { useMasterChefEmission } from 'lib/data-truth/useMasterChefEmission'
+ import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
+ import { buildFarmsOverviewKpisFromParts } from './buildFarmsOverviewKpis'
+ import type { FarmsOverviewKpisViewModel } from './farmsOverviewKpisTypes'
+@@ -12,16 +13,20 @@ export { buildFarmsOverviewKpisFromParts } from './buildFarmsOverviewKpis'
+ export function useFarmsOverviewKpis(): FarmsOverviewKpisViewModel {
+   const runtime = useFarmsRuntime()
+   const cakePrice = usePriceCakeBusd()
++  const emission = useMasterChefEmission()
+ 
+   return useMemo(() => {
+     const previewCards = runtime.portfolioFarms?.length ? runtime.portfolioFarms : runtime.farms
+     const farmsLoading = runtime.phase === 'loading_farms'
++    const emissionReady = emission.status === 'ready' && emission.perDay > 0
+     return buildFarmsOverviewKpisFromParts({
+       previewCards,
+       farmsLoading,
+       account: runtime.account,
+       userDataLoaded: runtime.userDataLoaded,
+       cakePriceUsd: cakePrice?.toNumber?.() ?? 0,
++      emissionPerDay: emissionReady ? emission.perDay : null,
++      emissionPerDayLabel: emissionReady ? emission.perDayLabel || `${emission.perDay} MARCO` : null,
+     })
+-  }, [runtime, cakePrice])
++  }, [runtime, cakePrice, emission])
+ }
+diff --git a/apps/web/src/views/HomeTrade/TrendingRibbon.tsx b/apps/web/src/views/HomeTrade/TrendingRibbon.tsx
+index 7118f5c2..a07ab844 100644
+--- a/apps/web/src/views/HomeTrade/TrendingRibbon.tsx
++++ b/apps/web/src/views/HomeTrade/TrendingRibbon.tsx
+@@ -48,7 +48,7 @@ export const TrendingRibbon: React.FC = () => {
+ 
+   return (
+     <MelegaTicker
+-      label="🔥 TRENDING"
++      label="TOP MOVERS"
+       items={enrichedItems}
+       marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
+       showLiveDot={!trendingEmpty && enrichedItems.length > 0}
+diff --git a/apps/web/src/views/HomeTrade/useDexTrendingRankings.ts b/apps/web/src/views/HomeTrade/useDexTrendingRankings.ts
+index 7edc3286..bbb140ee 100644
+--- a/apps/web/src/views/HomeTrade/useDexTrendingRankings.ts
++++ b/apps/web/src/views/HomeTrade/useDexTrendingRankings.ts
+@@ -145,19 +145,28 @@ async function fetchIndexerSwapEvents(): Promise<IndexerSwapRow[]> {
+   }
+ }
+ 
+-/** Indexed-period % when rolling 24h candles are sparse but OHLCV history exists. */
++/**
++ * Top Movers % — prefer rolling 24h candles only.
++ * Do not fall back to full multi-day OHLCV history (that produced false MARCO −49.1% style moves).
++ */
+ function computeIndexedMove(candles: OhlcvCandle[]): ReturnType<typeof computeValid24hPriceChange> {
+-  const rolling = computeValid24hPriceChange(candles)
+-  if (rolling) return rolling
+-  if (candles.length < 2) return undefined
+-  const open = candles[0]?.open
+-  const close = candles[candles.length - 1]?.close
+-  if (open == null || close == null || !Number.isFinite(open) || !Number.isFinite(close) || open <= 0) {
+-    return undefined
+-  }
+-  const pct = ((close - open) / open) * 100
+-  if (!Number.isFinite(pct) || Math.abs(pct) <= 0.0001) return undefined
+-  return format24hChangePct(pct)
++  return computeValid24hPriceChange(candles)
++}
++
++/** Reject extreme %-moves without enough swap evidence / liquidity. */
++export function isCredibleMoverChange(input: {
++  pct: number
++  tradeCount24h: number
++  volume24h: number
++  liquidityScore: number
++}): boolean {
++  const abs = Math.abs(input.pct)
++  if (!Number.isFinite(abs) || abs <= 0.0001) return false
++  if (input.tradeCount24h < 1 && input.volume24h <= 0) return false
++  if (abs > 25 && input.tradeCount24h < 3) return false
++  if (abs > 40 && input.liquidityScore <= 0) return false
++  if (abs > 80) return false
++  return true
+ }
+ 
+ function bumpActivity(
+@@ -537,7 +546,30 @@ export function useDexTrendingRankings() {
+       }),
+     )
+ 
+-    // Membership = Swap count / volume only. % enriches display when factual.
++    // Top Movers: require credible %-change evidence; rank by |Δ%| then trades/volume.
++    const movers = active
++      .filter((c) => {
++        const pct = c.change24h?.pct
++        if (pct == null || !Number.isFinite(pct)) return false
++        return isCredibleMoverChange({
++          pct,
++          tradeCount24h: c.tradeCount24h,
++          volume24h: c.volume24h,
++          liquidityScore: c.liquidityScore,
++        })
++      })
++      .sort((a, b) => {
++        const da = Math.abs(a.change24h?.pct ?? 0)
++        const db = Math.abs(b.change24h?.pct ?? 0)
++        if (db !== da) return db - da
++        if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
++        if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
++        return (b.lastActivityTs ?? 0) - (a.lastActivityTs ?? 0)
++      })
++
++    if (movers.length > 0) return movers.slice(0, TRENDING_LIMIT)
++
++    // Fallback: recent markets without unproven % (no fabricated movers).
+     return rankTierAssets(active, TRENDING_LIMIT)
+   }, [
+     tierMetrics,
+diff --git a/apps/web/src/views/LiquidityStudio/__tests__/liquidity-module-003-pool-discovery.test.ts b/apps/web/src/views/LiquidityStudio/__tests__/liquidity-module-003-pool-discovery.test.ts
+index 956e98a3..23a1aee0 100644
+--- a/apps/web/src/views/LiquidityStudio/__tests__/liquidity-module-003-pool-discovery.test.ts
++++ b/apps/web/src/views/LiquidityStudio/__tests__/liquidity-module-003-pool-discovery.test.ts
+@@ -89,18 +89,19 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
+     expect(formatDiscoveryUsd(undefined)).toBe('—')
+   })
+ 
+-  it('builds cards with factual metrics only and Active/Unavailable status', () => {
++  it('builds cards with factual metrics and Active/Empty status (not address-only titles)', () => {
+     const live = toDiscoveryCard(samplePair(), { tvlUsd: 12000, volumeUsd: 500, feesUsd: 12 })
+     expect(live?.pairName).toBe('MARCO / WBNB')
+     expect(live?.status).toBe('Active')
+     expect(live?.tvlLabel).toBe('$12.0K')
+     expect(live?.addHref).toContain('/add/')
++    expect(live?.qualityScore).toBeGreaterThan(0)
+ 
+     const dead = toDiscoveryCard(
+       samplePair({ active: false, classification: 'inactive', lastVerified: undefined }),
+       {},
+     )
+-    expect(dead?.status).toBe('Unavailable')
++    expect(dead?.status).toBe('Empty')
+     expect(dead?.tvlLabel).toBe('—')
+     expect(dead?.volumeLabel).toBe('—')
+     expect(dead?.feesLabel).toBe('—')
+@@ -130,7 +131,7 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
+ 
+     expect(factualFilters(cards, false)).toEqual(['all', 'popular', 'newest'])
+     expect(factualFilters(cards, true)).toContain('my-tokens')
+-    expect(factualSorts(cards)).toEqual(expect.arrayContaining(['tvl', 'volume', 'newest']))
++    expect(factualSorts(cards)).toEqual(expect.arrayContaining(['market', 'tvl', 'volume', 'newest']))
+ 
+     const popular = filterDiscoveryCards(cards, 'popular', new Set())
+     expect(popular.every((c) => c.classification === 'tradeable')).toBe(true)
+diff --git a/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryCard.tsx b/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryCard.tsx
+index 6cf55623..7ecccf44 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryCard.tsx
++++ b/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryCard.tsx
+@@ -145,13 +145,13 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
+       </Logos>
+       <PairMeta>
+         <PairName>{card.pairName}</PairName>
+-        <Status $active={card.active} data-testid="liquidity-pool-discovery-status">
++        <Status $active={card.active} data-testid="liquidity-pool-discovery-status" title={card.statusReason}>
+           {card.status}
+         </Status>
+       </PairMeta>
+     </PairRow>
+ 
+-    <Metrics>
++    <Metrics title={card.metricSourceNote}>
+       <Metric>
+         <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricTvl}</MetricLabel>
+         <MetricValue>{card.tvlLabel}</MetricValue>
+diff --git a/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx b/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx
+index cfe8deb7..8e12f3fb 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx
++++ b/apps/web/src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx
+@@ -170,6 +170,7 @@ const FILTER_LABEL: Record<LiquidityDiscoveryFilter, string> = {
+ }
+ 
+ const SORT_LABEL: Record<LiquidityDiscoverySort, string> = {
++  market: LIQUIDITY_POOL_DISCOVERY_COPY.sorts.market,
+   tvl: LIQUIDITY_POOL_DISCOVERY_COPY.sorts.tvl,
+   volume: LIQUIDITY_POOL_DISCOVERY_COPY.sorts.volume,
+   newest: LIQUIDITY_POOL_DISCOVERY_COPY.sorts.newest,
+@@ -178,7 +179,7 @@ const SORT_LABEL: Record<LiquidityDiscoverySort, string> = {
+ export const LiquidityPoolDiscoveryModule: React.FC = () => {
+   const [query, setQuery] = useState('')
+   const [filter, setFilter] = useState<LiquidityDiscoveryFilter>('all')
+-  const [sort, setSort] = useState<LiquidityDiscoverySort>('tvl')
++  const [sort, setSort] = useState<LiquidityDiscoverySort>('market')
+ 
+   const discovery = useLiquidityPoolDiscovery({ query, filter, sort })
+ 
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityAddTokens.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityAddTokens.ts
+index b4cae4a8..19b5000e 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityAddTokens.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityAddTokens.ts
+@@ -81,6 +81,5 @@ export const LIQUIDITY_MODULE_001_003_FREEZE = {
+     '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
+   LiquidityActionsModule:
+     '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
+-  LiquidityPoolDiscoveryModule:
+-    '3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b',
++  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
+ } as const
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityAnalyticsTokens.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityAnalyticsTokens.ts
+index 405401be..8594cbe3 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityAnalyticsTokens.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityAnalyticsTokens.ts
+@@ -67,8 +67,7 @@ export const LIQUIDITY_MODULE_001_006_FREEZE = {
+     '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
+   LiquidityActionsModule:
+     '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
+-  LiquidityPoolDiscoveryModule:
+-    '3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b',
++  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
+   LiquidityAddModule:
+     '7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc',
+   LiquidityMarketSnapshotModule:
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityMarketSnapshotTokens.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityMarketSnapshotTokens.ts
+index b8192736..406db8fc 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityMarketSnapshotTokens.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityMarketSnapshotTokens.ts
+@@ -58,8 +58,7 @@ export const LIQUIDITY_MODULE_001_004_FREEZE = {
+     '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
+   LiquidityActionsModule:
+     '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
+-  LiquidityPoolDiscoveryModule:
+-    '3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b',
++  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
+   LiquidityAddModule:
+     '7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc',
+ } as const
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityMyPositionsTokens.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityMyPositionsTokens.ts
+index 8359cf4e..c6c7c5a2 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityMyPositionsTokens.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityMyPositionsTokens.ts
+@@ -68,8 +68,7 @@ export const LIQUIDITY_MODULE_001_005_FREEZE = {
+     '71a7ee43763f83d8b4f144cf7d6dd6e40777a7f3c4800b09ff070a707bfa55ab',
+   LiquidityActionsModule:
+     '01d5fa4364085d252eacdd59986b524dfe11da59b49a6978c216f34bfab83cec',
+-  LiquidityPoolDiscoveryModule:
+-    '3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b',
++  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
+   LiquidityMarketSnapshotModule:
+     '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
+ } as const
 diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
-index b4fb0a81..35cc9df6 100644
+index 35cc9df6..4926f776 100644
 --- a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
 +++ b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryModel.ts
-@@ -4,6 +4,8 @@
-  */
- import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
+@@ -6,9 +6,20 @@ import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
  import { searchPairs } from 'lib/bsc-indexer/pairs/classify'
-+import { lookupCanonicalToken } from 'lib/canonical-token-registry'
-+import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+ import { lookupCanonicalToken } from 'lib/canonical-token-registry'
+ import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
++import { getAllAssets } from 'registry/assets/getAllAssets'
  import type { LiquidityDiscoveryFilter, LiquidityDiscoverySort } from './liquidityPoolDiscoveryTokens'
  import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
  
-@@ -13,6 +15,8 @@ export type DiscoveryPoolMetrics = {
-   feesUsd?: number | null
- }
- 
-+export type DiscoveryPoolStatus = 'Active' | 'Inactive' | 'Empty' | 'Unavailable' | 'New'
++const ASSET_SYMBOL_BY_ADDRESS: Map<string, string> = (() => {
++  const map = new Map<string, string>()
++  for (const asset of getAllAssets()) {
++    const addr = asset.contractAddress?.toLowerCase()
++    if (!addr || !asset.symbol || /^0x/i.test(asset.symbol)) continue
++    map.set(addr, asset.symbol)
++  }
++  return map
++})()
 +
- export type DiscoveryPoolCardModel = {
-   id: string
-   pairAddress: string
-@@ -21,7 +25,8 @@ export type DiscoveryPoolCardModel = {
-   symbol0: string
-   symbol1: string
-   pairName: string
--  status: 'Active' | 'Unavailable'
-+  status: DiscoveryPoolStatus
-+  statusReason?: string
-   active: boolean
-   tvlLabel: string
-   volumeLabel: string
-@@ -29,9 +34,11 @@ export type DiscoveryPoolCardModel = {
-   tvlUsd: number | null
-   volumeUsd: number | null
-   feesUsd: number | null
-+  metricSourceNote?: string
-   lastVerified?: string
-   addHref: string
-   classification: ClassifiedAmmPair['classification']
-+  qualityScore: number
+ export type DiscoveryPoolMetrics = {
+   tvlUsd?: number | null
+   volumeUsd?: number | null
+@@ -41,17 +52,22 @@ export type DiscoveryPoolCardModel = {
+   qualityScore: number
  }
  
- function shortAddr(addr?: string): string {
-@@ -39,6 +46,47 @@ function shortAddr(addr?: string): string {
-   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+-function shortAddr(addr?: string): string {
+-  if (!addr || addr.length < 10) return '—'
+-  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
++export function isResolvedDiscoverySymbol(symbol: string): boolean {
++  return Boolean(symbol) && symbol !== '—' && symbol !== 'Unknown' && !/^0x/i.test(symbol)
  }
  
-+export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
-+  const trimmed = pairSymbol?.trim()
-+  if (trimmed && !/^0x/i.test(trimmed)) return trimmed
-+  const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
-+  if (canonical?.symbol) return canonical.symbol
-+  return shortAddr(address)
-+}
-+
-+export function resolveDiscoveryStatus(
-+  pair: ClassifiedAmmPair,
-+  metrics?: DiscoveryPoolMetrics,
-+): { status: DiscoveryPoolStatus; reason?: string; active: boolean } {
-+  if (pair.classification === 'invalid_contract') {
-+    return { status: 'Unavailable', reason: 'Invalid pair contract', active: false }
-+  }
-+  const hasReserves =
-+    pair.classification === 'tradeable' || pair.classification === 'liquidity_present'
-+  const tvl = metrics?.tvlUsd
-+  const volume = metrics?.volumeUsd
-+  const hasTvl = tvl != null && Number.isFinite(tvl) && tvl > 0
-+  const hasVolume = volume != null && Number.isFinite(volume) && volume > 0
-+
-+  if (hasReserves && (hasTvl || hasVolume || pair.active)) {
-+    return { status: 'Active', active: true }
-+  }
-+  if (pair.classification === 'empty' || (pair.active === false && !hasReserves)) {
-+    return { status: 'Empty', reason: 'No reserves / empty pool', active: false }
-+  }
-+  if (pair.lastVerified && Date.now() - Date.parse(pair.lastVerified) < 7 * 86_400_000 && !hasReserves) {
-+    return { status: 'New', reason: 'Recently verified · liquidity not confirmed', active: false }
-+  }
-+  if (!hasReserves) {
-+    return { status: 'Inactive', reason: 'No tradeable liquidity', active: false }
-+  }
-+  return {
-+    status: 'Unavailable',
-+    reason: 'Metrics source unavailable (Info subgraph / indexer)',
-+    active: false,
-+  }
-+}
-+
- export function formatDiscoveryUsd(value?: number | null): string {
-   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {
-     return LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
-@@ -48,11 +96,8 @@ export function formatDiscoveryUsd(value?: number | null): string {
-   return `$${value.toFixed(2)}`
++/**
++ * Resolve a human token symbol for discovery cards.
++ * Never returns a contract address as the primary label.
++ */
+ export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
+   const trimmed = pairSymbol?.trim()
+-  if (trimmed && !/^0x/i.test(trimmed)) return trimmed
++  if (trimmed && !/^0x/i.test(trimmed) && !trimmed.includes('…')) return trimmed
+   const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
+-  if (canonical?.symbol) return canonical.symbol
+-  return shortAddr(address)
++  if (canonical?.symbol && !/^0x/i.test(canonical.symbol)) return canonical.symbol
++  const fromAssets = ASSET_SYMBOL_BY_ADDRESS.get(address.toLowerCase())
++  if (fromAssets) return fromAssets
++  return 'Unknown'
  }
  
--export function isPoolActive(pair: ClassifiedAmmPair): boolean {
--  return (
--    pair.active === true &&
--    (pair.classification === 'tradeable' || pair.classification === 'liquidity_present')
--  )
-+export function isPoolActive(pair: ClassifiedAmmPair, metrics?: DiscoveryPoolMetrics): boolean {
-+  return resolveDiscoveryStatus(pair, metrics).active
- }
+ export function resolveDiscoveryStatus(
+@@ -123,6 +139,7 @@ export function toDiscoveryCard(
  
- export function buildAddLiquidityHref(token0?: string, token1?: string): string {
-@@ -62,6 +107,13 @@ export function buildAddLiquidityHref(token0?: string, token1?: string): string
-   return liquidityPoolDiscovery.addLiquidityHref
- }
- 
-+function metricLabel(value: number | null, missingSource: string): { label: string; note?: string } {
-+  if (value != null && Number.isFinite(value) && value > 0) {
-+    return { label: formatDiscoveryUsd(value) }
-+  }
-+  return { label: LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable, note: missingSource }
-+}
-+
- export function toDiscoveryCard(
-   pair: ClassifiedAmmPair,
-   metrics?: DiscoveryPoolMetrics,
-@@ -69,12 +121,28 @@ export function toDiscoveryCard(
-   if (!pair.pairAddress || pair.classification === 'invalid_contract') return null
-   if (!pair.token0 || !pair.token1) return null
- 
--  const symbol0 = pair.symbol0?.trim() || shortAddr(pair.token0)
--  const symbol1 = pair.symbol1?.trim() || shortAddr(pair.token1)
--  const active = isPoolActive(pair)
-+  const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
-+  const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
-+  const resolved = resolveDiscoveryStatus(pair, metrics)
+   const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
+   const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
++  const identityResolved = isResolvedDiscoverySymbol(symbol0) && isResolvedDiscoverySymbol(symbol1)
+   const resolved = resolveDiscoveryStatus(pair, metrics)
    const tvlUsd = metrics?.tvlUsd ?? null
    const volumeUsd = metrics?.volumeUsd ?? null
-   const feesUsd = metrics?.feesUsd ?? null
-+  const tvl = metricLabel(
-+    tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
-+    'TVL source: Info subgraph unavailable for this pair',
-+  )
-+  const volume = metricLabel(
-+    volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
-+    '24h volume source: Info subgraph unavailable for this pair',
-+  )
-+  const fees = metricLabel(
-+    feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
-+    '24h fees source: Info subgraph unavailable for this pair',
-+  )
-+  const qualityScore =
-+    (resolved.active ? 1_000_000 : 0) +
-+    (tvlUsd && tvlUsd > 0 ? Math.min(tvlUsd, 999_999) : 0) +
-+    (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
+@@ -141,6 +158,7 @@ export function toDiscoveryCard(
+   )
+   const qualityScore =
+     (resolved.active ? 1_000_000 : 0) +
++    (identityResolved ? 100_000 : 0) +
+     (tvlUsd && tvlUsd > 0 ? Math.min(tvlUsd, 999_999) : 0) +
+     (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
  
-   return {
-     id: pair.pairAddress.toLowerCase(),
-@@ -84,17 +152,20 @@ export function toDiscoveryCard(
-     symbol0,
+@@ -153,7 +171,9 @@ export function toDiscoveryCard(
      symbol1,
      pairName: `${symbol0} / ${symbol1}`,
--    status: active ? LIQUIDITY_POOL_DISCOVERY_COPY.statusActive : LIQUIDITY_POOL_DISCOVERY_COPY.statusUnavailable,
--    active,
--    tvlLabel: formatDiscoveryUsd(tvlUsd),
--    volumeLabel: formatDiscoveryUsd(volumeUsd),
--    feesLabel: formatDiscoveryUsd(feesUsd),
-+    status: resolved.status,
-+    statusReason: resolved.reason,
-+    active: resolved.active,
-+    tvlLabel: tvl.label,
-+    volumeLabel: volume.label,
-+    feesLabel: fees.label,
-     tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
-     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
-     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
-+    metricSourceNote: [tvl.note, volume.note, fees.note].filter(Boolean).join(' · ') || undefined,
-     lastVerified: pair.lastVerified,
-     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
-     classification: pair.classification,
-+    qualityScore,
-   }
- }
- 
-@@ -139,7 +210,13 @@ export function sortDiscoveryCards(
-         return tb - ta || a.pairName.localeCompare(b.pairName)
-       })
-     default:
--      return next
-+      // Market quality: active + liquidity/volume first — never address-only empties first.
+     status: resolved.status,
+-    statusReason: resolved.reason,
++    statusReason:
++      resolved.reason ||
++      (!identityResolved ? 'Token metadata incomplete — address retained in technical details only' : undefined),
+     active: resolved.active,
+     tvlLabel: tvl.label,
+     volumeLabel: volume.label,
+@@ -198,24 +218,30 @@ export function sortDiscoveryCards(
+   const next = [...cards]
+   switch (sort) {
+     case 'tvl':
+-      return next.sort((a, b) => (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) || a.pairName.localeCompare(b.pairName))
 +      return next.sort(
 +        (a, b) =>
-+          b.qualityScore - a.qualityScore ||
 +          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
++          b.qualityScore - a.qualityScore ||
 +          a.pairName.localeCompare(b.pairName),
 +      )
+     case 'volume':
+       return next.sort(
+-        (a, b) => (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) || a.pairName.localeCompare(b.pairName),
++        (a, b) =>
++          (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) ||
++          b.qualityScore - a.qualityScore ||
++          a.pairName.localeCompare(b.pairName),
+       )
+     case 'newest':
+       return next.sort((a, b) => {
+         const ta = a.lastVerified ? Date.parse(a.lastVerified) : 0
+         const tb = b.lastVerified ? Date.parse(b.lastVerified) : 0
+-        return tb - ta || a.pairName.localeCompare(b.pairName)
++        return tb - ta || b.qualityScore - a.qualityScore || a.pairName.localeCompare(b.pairName)
+       })
++    case 'market':
+     default:
+-      // Market quality: active + liquidity/volume first — never address-only empties first.
++      // Market quality: active + resolved identity + liquidity/volume first.
+       return next.sort(
+-        (a, b) =>
+-          b.qualityScore - a.qualityScore ||
+-          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
+-          a.pairName.localeCompare(b.pairName),
++        (a, b) => b.qualityScore - a.qualityScore || a.pairName.localeCompare(b.pairName),
+       )
    }
  }
+@@ -235,7 +261,7 @@ export function factualFilters(cards: DiscoveryPoolCardModel[], myTokensReady: b
  
-diff --git a/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts b/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
-index e3b689d8..22a4931c 100644
---- a/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
-+++ b/apps/web/src/views/PoolsStudio/modules/buildPoolsWalletPositions.ts
-@@ -572,6 +572,25 @@ export function buildPoolsWalletPositionsViewModel(input: {
-     .sort(comparePoolsWalletPositions)
+ /** Which sort options are factual (have at least one real metric / timestamp). */
+ export function factualSorts(cards: DiscoveryPoolCardModel[]): LiquidityDiscoverySort[] {
+-  const out: LiquidityDiscoverySort[] = []
++  const out: LiquidityDiscoverySort[] = ['market']
+   if (cards.some((c) => c.tvlUsd != null)) out.push('tvl')
+   if (cards.some((c) => c.volumeUsd != null)) out.push('volume')
+   if (cards.some((c) => Boolean(c.lastVerified))) out.push('newest')
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryTokens.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryTokens.ts
+index 652cfe87..f10e8c7b 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryTokens.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityPoolDiscoveryTokens.ts
+@@ -67,6 +67,7 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
+     newest: 'Newest',
+   },
+   sorts: {
++    market: 'Market quality',
+     tvl: 'Highest TVL',
+     volume: 'Highest Volume',
+     newest: 'Newest',
+@@ -74,7 +75,7 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
+ } as const
  
-   if (built.length === 0) {
-+    // Presence can be "present" with all-zero userData during a partial refresh wipe.
-+    // Never treat that as authoritative empty when we still hold last-good positions.
-+    if (previous?.length) {
-+      return {
-+        state: 'stale',
-+        wallet: account,
-+        chainId,
-+        positions: previous,
-+        visiblePositions: previous.slice(0, poolsMyPositions.maxVisibleDesktop),
-+        totalCount: previous.length,
-+        showCountBadge: true,
-+        showViewAll: previous.length > poolsMyPositions.maxVisibleDesktop,
-+        moduleDisclosure: 'Some position data is temporarily unavailable.',
-+        liveRegion: 'Showing last confirmed positions during refresh',
-+        freshness: 'stale',
-+        authoritativeEmpty: false,
-+        generation,
-+      }
+ export type LiquidityDiscoveryFilter = 'all' | 'my-tokens' | 'popular' | 'newest'
+-export type LiquidityDiscoverySort = 'tvl' | 'volume' | 'newest'
++export type LiquidityDiscoverySort = 'market' | 'tvl' | 'volume' | 'newest'
+ 
+ /** Frozen Module 001 / 002 source SHAs. */
+ export const LIQUIDITY_MODULE_001_002_FREEZE = {
+diff --git a/apps/web/src/views/LiquidityStudio/modules/liquidityVisualPolishTokens.ts b/apps/web/src/views/LiquidityStudio/modules/liquidityVisualPolishTokens.ts
+index 712ce8bf..4749cd6e 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/liquidityVisualPolishTokens.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/liquidityVisualPolishTokens.ts
+@@ -47,35 +47,35 @@ export const LIQUIDITY_MODULE_002_FREEZE_SHA256 = {
+ } as const
+ 
+ export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
+-  LiquidityPoolDiscoveryModule: '3958e99d67756cac7fdeca4ca63e1593fdad7afd189ec3b6db1c49c54cce641b',
+-  LiquidityPoolDiscoveryCard: '86f266d127ea48cd20c77491781be422d29fffb63eb6198bb287bfa8425b05e7',
+-  liquidityPoolDiscoveryTokens: '0087c6e0c1f9d2de1cd4b542a34168ccdc5beb47bb09351d20c34467368e218a',
+-  liquidityPoolDiscoveryModel: 'bfe51f2623ff7ffa109342b66996cca9f02af9140acc1103cc049c4b90346183',
+-  useLiquidityPoolDiscovery: 'da54ff0f39ec0622742ff1be019e8349cd8227b916faf256462a6e2f7dcc8ab4',
++  LiquidityPoolDiscoveryModule: '3312204303acea13261064b882a821f3a3953a13cbbe8dd340e2f121e5aef297',
++  LiquidityPoolDiscoveryCard: '3f04c6b3a416fda96cd8911c5058e68504c8ab43c56b33f8813cfc572093d5e4',
++  liquidityPoolDiscoveryTokens: '1c149aebb0a885b5c1dd9d2796a714d6fecfc6dadf32546451e72959d7900965',
++  liquidityPoolDiscoveryModel: 'eb2c7b03b036d8b01cde394f556a71298fff223f6e4f224ae248b6425bfd45c5',
++  useLiquidityPoolDiscovery: '2d16c3a9aafb86d2335dee29a5753526b007da4d1d381c68edf312d51bba5271',
+ } as const
+ 
+ export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {
+   LiquidityAddModule: '7ba813e525795cd713bfde53108d8fb189ca7691da454a9bef3f1a754beb8bbc',
+-  liquidityAddTokens: '5635b2cbb28478196daa1f49dce80e0f222a5eaab8a960f438f26f944ff3e9cd',
++  liquidityAddTokens: '0cd91ac81620d915b93af19da5023c8c62108b117310af26cf4f33d8b169ee9d',
+   liquidityAddCta: '8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8',
+ } as const
+ 
+ export const LIQUIDITY_MODULE_005_FREEZE_SHA256 = {
+   LiquidityMarketSnapshotModule: '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
+-  liquidityMarketSnapshotTokens: 'a37691e10906bb4cd12b2ce30b306e4929062d6a49b60191b97cc5708589eac2',
++  liquidityMarketSnapshotTokens: 'd72ed4be05f66023aecfab306a55d3e6773ff7432a8f3bc876ca5a0814e9b3bf',
+   buildLiquidityMarketSnapshot: '8ea9546d9cb1082d5bb130edc6e7605b558e758fcbc7ae000dfd781fbfa0db2b',
+   useLiquidityMarketSnapshot: 'e519eba1919f426c9b7ded869fc0902d2ac29c21fc46310eda9d00cc9345401f',
+ } as const
+ 
+ export const LIQUIDITY_MODULE_006_FREEZE_SHA256 = {
+   LiquidityMyPositionsModule: '816a5b84a10476ed5847853085eef274d75e586567573b30790550a0d71e1004',
+-  liquidityMyPositionsTokens: 'fb357d8d79898de269612851707f9f478b9362ac5e1e3bdd1ea7b57d2896984e',
++  liquidityMyPositionsTokens: '8f03801fbe14dfad95c2409b042ef95407fc8c35d88ddcd5966fcc0d9409e480',
+   liquidityMyPositionsModel: 'd5d84e53426afb8d870aae39cd9e0633a544b5adebe7047282b4f4a507b19139',
+ } as const
+ 
+ export const LIQUIDITY_MODULE_007_FREEZE_SHA256 = {
+   LiquidityAnalyticsModule: 'ba1c06bfa3d7bfd49e75e89e4d9dd1b1fbd6518e52e20e8fef07d69db569e7e1',
+-  liquidityAnalyticsTokens: '2e7c14206b57278e0e4c6a42bb86dd44a898aa8aade80209a44158c242fc4bc3',
++  liquidityAnalyticsTokens: 'b5daeebccac57d9d66d9fd6f5dcf76201f844b94887b20be94d025e2c6602cba',
+   buildLiquidityAnalytics: '5e302f2204c34184e4e9a4da4467ad0c15d453299955f83dee297f2b46c0a5be',
+   useLiquidityAnalytics: 'a80da07df2c00ceac70491bd860bec1068668f490a6b45abee27676572c46e27',
+ } as const
+diff --git a/apps/web/src/views/LiquidityStudio/modules/useLiquidityPoolDiscovery.ts b/apps/web/src/views/LiquidityStudio/modules/useLiquidityPoolDiscovery.ts
+index 213ffb6a..7321744b 100644
+--- a/apps/web/src/views/LiquidityStudio/modules/useLiquidityPoolDiscovery.ts
++++ b/apps/web/src/views/LiquidityStudio/modules/useLiquidityPoolDiscovery.ts
+@@ -124,7 +124,9 @@ export function useLiquidityPoolDiscovery(options: {
+     const activeFilter = availableFilters.includes(filter) ? filter : 'all'
+     const activeSort = availableSorts.includes(sort)
+       ? sort
+-      : availableSorts[0] ?? 'newest'
++      : availableSorts.includes('market')
++        ? 'market'
++        : availableSorts[0] ?? 'market'
+ 
+     const filtered = filterDiscoveryCards(cards, activeFilter, myTokenAddresses)
+     const sorted = availableSorts.length > 0 ? sortDiscoveryCards(filtered, activeSort) : filtered
+diff --git a/apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx b/apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx
+index 6ebb91bf..7913eace 100644
+--- a/apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx
++++ b/apps/web/src/views/PoolsStudio/PoolsStudioScreen.tsx
+@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
+ import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
+ import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
+ import PoolsActionHost from './poolsRuntime/PoolsActionHost'
+-import FeaturedPoolHero from './components/FeaturedPoolHero'
+ import PoolsSidebar from './components/PoolsSidebar'
+ import CreatePoolCta from './components/CreatePoolCta'
+ import PoolsBelowFold from './components/PoolsBelowFold'
+@@ -191,9 +190,8 @@ export const PoolsStudioScreen: React.FC = () => (
+         </DataSurfaceErrorBoundary>
+         <MainGrid data-ps-main-grid>
+           <MainColumn>
+-            <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">
+-              <FeaturedPoolHero />
+-            </DataSurfaceErrorBoundary>
++            {/* Featured Pool lives compactly in Hero; legacy giant card unmounted. */}
++            <div data-ps-featured-archived="true" aria-hidden="true" />
+           </MainColumn>
+           <SidebarColumn>
+             <PoolsSidebar />
+diff --git a/apps/web/src/views/PoolsStudio/components/FeaturedPoolHero.tsx b/apps/web/src/views/PoolsStudio/components/FeaturedPoolHero.tsx
+index 25933410..61e24bc9 100644
+--- a/apps/web/src/views/PoolsStudio/components/FeaturedPoolHero.tsx
++++ b/apps/web/src/views/PoolsStudio/components/FeaturedPoolHero.tsx
+@@ -358,7 +358,8 @@ function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | nu
+ }
+ 
+ export const FeaturedPoolHero: React.FC = () => {
+-  const { featured, hiddenPoolReasons, rewardingCount, poolClassificationSummary, machine } = usePoolsRuntime()
++  const { featured, hiddenPoolReasons, rewardingCount, poolClassificationSummary, machine, requestModal } =
++    usePoolsRuntime()
+   const card = featured.card
+   const isRewarding = Boolean(card?.lifecycle?.rewarding)
+   const lifecycleCounts = resolveLifecycleCounts(poolClassificationSummary)
+diff --git a/apps/web/src/views/PoolsStudio/modules/PoolsHeroModule.tsx b/apps/web/src/views/PoolsStudio/modules/PoolsHeroModule.tsx
+index 5941ff55..abbd4b46 100644
+--- a/apps/web/src/views/PoolsStudio/modules/PoolsHeroModule.tsx
++++ b/apps/web/src/views/PoolsStudio/modules/PoolsHeroModule.tsx
+@@ -7,13 +7,15 @@ import styled from 'styled-components'
+ import { typography } from 'design-system/melega'
+ import { PoolsHeroArtwork } from './PoolsHeroArtwork'
+ import { PoolsHeroTrustPanel } from './PoolsHeroTrustPanel'
++import { PoolsHeroFeaturedCompact } from './PoolsHeroFeaturedCompact'
+ import { POOLS_HERO_COPY, poolsHero } from './poolsHeroTokens'
+ 
+ const Module = styled.section`
+   position: relative;
+   width: 100%;
+   max-width: ${poolsHero.contentMax};
+-  height: ${poolsHero.heroH};
++  height: auto;
++  min-height: ${poolsHero.heroH};
+   min-width: 0;
+   box-sizing: border-box;
+   overflow: visible;
+@@ -214,8 +216,10 @@ const ArtCol = styled.div`
+ const TrustCol = styled.div`
+   width: ${poolsHero.trustW};
+   display: flex;
+-  align-items: center;
+-  justify-content: flex-end;
++  flex-direction: column;
++  align-items: stretch;
++  justify-content: center;
++  gap: 12px;
+   min-width: 0;
+ 
+   @media (max-width: ${poolsHero.tabletBreak}) {
+@@ -295,6 +299,7 @@ export const PoolsHeroModule: React.FC = () => {
+           <PoolsHeroArtwork />
+         </ArtCol>
+         <TrustCol>
++          <PoolsHeroFeaturedCompact />
+           <PoolsHeroTrustPanel />
+         </TrustCol>
+       </Inner>
+diff --git a/apps/web/src/views/PoolsStudio/modules/PoolsHeroTrustPanel.tsx b/apps/web/src/views/PoolsStudio/modules/PoolsHeroTrustPanel.tsx
+index 04002aac..09d2dbfb 100644
+--- a/apps/web/src/views/PoolsStudio/modules/PoolsHeroTrustPanel.tsx
++++ b/apps/web/src/views/PoolsStudio/modules/PoolsHeroTrustPanel.tsx
+@@ -7,8 +7,10 @@ import { POOLS_HERO_COPY, poolsHero } from './poolsHeroTokens'
+ 
+ const Panel = styled.aside`
+   width: ${poolsHero.trustBoxW};
+-  height: ${poolsHero.trustBoxH};
++  height: auto;
++  min-height: ${poolsHero.trustBoxH};
+   max-width: 100%;
++  min-width: 0;
+   box-sizing: border-box;
+   border-radius: ${poolsHero.trustRadius};
+   border: ${poolsHero.trustBorder};
+@@ -18,6 +20,7 @@ const Panel = styled.aside`
+   flex-direction: column;
+   gap: 12px;
+   flex: 0 0 auto;
++  overflow: visible;
+ 
+   @media (max-width: ${poolsHero.mobileBreak}) {
+     width: min(100%, ${poolsHero.mobileTrustW});
+diff --git a/apps/web/src/views/PoolsStudio/modules/PoolsMyPositionCard.tsx b/apps/web/src/views/PoolsStudio/modules/PoolsMyPositionCard.tsx
+index 1c725ad0..9f353e56 100644
+--- a/apps/web/src/views/PoolsStudio/modules/PoolsMyPositionCard.tsx
++++ b/apps/web/src/views/PoolsStudio/modules/PoolsMyPositionCard.tsx
+@@ -316,6 +316,8 @@ export const PoolsMyPositionCard: React.FC<{
+             <MetricSupport>Reward data unavailable</MetricSupport>
+           ) : position.claimableValue ? (
+             <MetricSupport>{position.claimableValue}</MetricSupport>
++          ) : position.claimableFormatted && !position.claimableFormatted.startsWith('0 ') ? (
++            <MetricSupport>USD value unavailable</MetricSupport>
+           ) : null}
+         </Metric>
+         {position.unlockLine ? <Unlock>{position.unlockLine}</Unlock> : null}
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsAnalyticsTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsAnalyticsTokens.ts
+index 92bf49f4..5767fcd3 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsAnalyticsTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsAnalyticsTokens.ts
+@@ -63,16 +63,16 @@ export const poolsAnalytics = {
+ } as const
+ 
+ export const POOLS_MODULE_001_FREEZE_SHA256 = {
+-  PoolsHeroModule: '82f2fdc1d4fb98a9f7e74e46177decaf270f4e1cb8e35e967316c5fa04c66b21',
++  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
+-  PoolsHeroTrustPanel: '4f8689ae4895fac14292123185600219ecc16cb6df4cd5dfc1ed1c12a68d027c',
+-  poolsHeroTokens: '7d0feebaba9779a20ae14384e91605903000330fa3911dcc3596110ad13ab469',
++  PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
++  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+ } as const
+ 
+ export const POOLS_MODULE_002_FREEZE_SHA256 = {
+   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+-  usePoolsOverviewKpis: 'f162a452a9201619a0987301dbba80717036be273c7489a6beb83aac9574bd15',
+-  poolsOverviewKpisTokens: '1c684b1319d5fce87615a146af50019ed1072acab2972e09ba07af9a0e136421',
++  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
++  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
+ } as const
+ 
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsExplorePoolsTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsExplorePoolsTokens.ts
+index b13d2630..0bb243e1 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsExplorePoolsTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsExplorePoolsTokens.ts
+@@ -64,16 +64,16 @@ export const POOLS_EXPLORE_SORTS = ['Highest APR', 'Highest TVL', 'Newest', 'Alp
+ 
+ /** Frozen Module 001–003 source SHAs (byte-identical guards). */
+ export const POOLS_MODULE_001_FREEZE_SHA256 = {
+-  PoolsHeroModule: '82f2fdc1d4fb98a9f7e74e46177decaf270f4e1cb8e35e967316c5fa04c66b21',
++  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
+-  PoolsHeroTrustPanel: '4f8689ae4895fac14292123185600219ecc16cb6df4cd5dfc1ed1c12a68d027c',
+-  poolsHeroTokens: '7d0feebaba9779a20ae14384e91605903000330fa3911dcc3596110ad13ab469',
++  PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
++  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+ } as const
+ 
+ export const POOLS_MODULE_002_FREEZE_SHA256 = {
+   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+-  usePoolsOverviewKpis: 'f162a452a9201619a0987301dbba80717036be273c7489a6beb83aac9574bd15',
+-  poolsOverviewKpisTokens: '1c684b1319d5fce87615a146af50019ed1072acab2972e09ba07af9a0e136421',
++  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
++  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
+ } as const
+ 
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsFinishedPoolsTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsFinishedPoolsTokens.ts
+index b349baad..10284f7d 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsFinishedPoolsTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsFinishedPoolsTokens.ts
+@@ -47,16 +47,16 @@ export const poolsFinished = {
+ 
+ /** Frozen Module 001–004 source SHAs. */
+ export const POOLS_MODULE_001_FREEZE_SHA256 = {
+-  PoolsHeroModule: '82f2fdc1d4fb98a9f7e74e46177decaf270f4e1cb8e35e967316c5fa04c66b21',
++  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
+-  PoolsHeroTrustPanel: '4f8689ae4895fac14292123185600219ecc16cb6df4cd5dfc1ed1c12a68d027c',
+-  poolsHeroTokens: '7d0feebaba9779a20ae14384e91605903000330fa3911dcc3596110ad13ab469',
++  PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
++  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+ } as const
+ 
+ export const POOLS_MODULE_002_FREEZE_SHA256 = {
+   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+-  usePoolsOverviewKpis: 'f162a452a9201619a0987301dbba80717036be273c7489a6beb83aac9574bd15',
+-  poolsOverviewKpisTokens: '1c684b1319d5fce87615a146af50019ed1072acab2972e09ba07af9a0e136421',
++  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
++  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
+ } as const
+ 
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsHeroTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsHeroTokens.ts
+index c6564894..cd67e53d 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsHeroTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsHeroTokens.ts
+@@ -18,7 +18,7 @@ export const poolsHero = {
+   leftW: '440px',
+   artworkW: '480px',
+   trustW: '360px',
+-  columnGap: '48px',
++  columnGap: '24px',
+ 
+   artworkBoxW: '480px',
+   artworkBoxH: '230px',
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsMyPositionsTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsMyPositionsTokens.ts
+index 6af89f51..14a4f072 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsMyPositionsTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsMyPositionsTokens.ts
+@@ -90,15 +90,15 @@ export const poolsMyPositions = {
+ 
+ /** Frozen Module 001 / 002 source SHAs (byte-identical guard). */
+ export const POOLS_MODULE_001_FREEZE_SHA256 = {
+-  PoolsHeroModule: '82f2fdc1d4fb98a9f7e74e46177decaf270f4e1cb8e35e967316c5fa04c66b21',
++  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
+-  PoolsHeroTrustPanel: '4f8689ae4895fac14292123185600219ecc16cb6df4cd5dfc1ed1c12a68d027c',
+-  poolsHeroTokens: '7d0feebaba9779a20ae14384e91605903000330fa3911dcc3596110ad13ab469',
++  PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
++  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+ } as const
+ 
+ export const POOLS_MODULE_002_FREEZE_SHA256 = {
+   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+-  usePoolsOverviewKpis: 'f162a452a9201619a0987301dbba80717036be273c7489a6beb83aac9574bd15',
+-  poolsOverviewKpisTokens: '1c684b1319d5fce87615a146af50019ed1072acab2972e09ba07af9a0e136421',
++  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
++  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
+ } as const
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsOverviewKpisTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsOverviewKpisTokens.ts
+index b204ff7a..e2ecdd83 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsOverviewKpisTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsOverviewKpisTokens.ts
+@@ -59,7 +59,7 @@ export type PoolsOverviewKpiId = (typeof POOLS_OVERVIEW_KPI_ORDER)[number]
+ 
+ export const POOLS_OVERVIEW_KPI_LABELS: Record<PoolsOverviewKpiId, string> = {
+   tvl: 'Total Value Locked',
+-  discovered: 'Pools Discovered',
++  discovered: 'Total Pools',
+   rewarding: 'Pools Rewarding',
+   rewards24h: 'Total Rewards — 24H',
+   sustainableApr: 'Highest Sustainable APR',
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsRewardAdvisorTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsRewardAdvisorTokens.ts
+index bd4e4de3..406bd586 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsRewardAdvisorTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsRewardAdvisorTokens.ts
+@@ -56,16 +56,16 @@ export const poolsRewardAdvisor = {
+ } as const
+ 
+ export const POOLS_MODULE_001_FREEZE_SHA256 = {
+-  PoolsHeroModule: '82f2fdc1d4fb98a9f7e74e46177decaf270f4e1cb8e35e967316c5fa04c66b21',
++  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
+-  PoolsHeroTrustPanel: '4f8689ae4895fac14292123185600219ecc16cb6df4cd5dfc1ed1c12a68d027c',
+-  poolsHeroTokens: '7d0feebaba9779a20ae14384e91605903000330fa3911dcc3596110ad13ab469',
++  PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
++  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+ } as const
+ 
+ export const POOLS_MODULE_002_FREEZE_SHA256 = {
+   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+-  usePoolsOverviewKpis: 'f162a452a9201619a0987301dbba80717036be273c7489a6beb83aac9574bd15',
+-  poolsOverviewKpisTokens: '1c684b1319d5fce87615a146af50019ed1072acab2972e09ba07af9a0e136421',
++  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
++  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
+ } as const
+ 
+diff --git a/apps/web/src/views/PoolsStudio/modules/poolsVisualPolishTokens.ts b/apps/web/src/views/PoolsStudio/modules/poolsVisualPolishTokens.ts
+index eea38e7a..c6bdfc90 100644
+--- a/apps/web/src/views/PoolsStudio/modules/poolsVisualPolishTokens.ts
++++ b/apps/web/src/views/PoolsStudio/modules/poolsVisualPolishTokens.ts
+@@ -47,16 +47,16 @@ export const poolsVisualPolish = {
+ } as const
+ 
+ export const POOLS_MODULE_001_FREEZE_SHA256 = {
+-  PoolsHeroModule: '82f2fdc1d4fb98a9f7e74e46177decaf270f4e1cb8e35e967316c5fa04c66b21',
++  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
+-  PoolsHeroTrustPanel: '4f8689ae4895fac14292123185600219ecc16cb6df4cd5dfc1ed1c12a68d027c',
+-  poolsHeroTokens: '7d0feebaba9779a20ae14384e91605903000330fa3911dcc3596110ad13ab469',
++  PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
++  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+ } as const
+ 
+ export const POOLS_MODULE_002_FREEZE_SHA256 = {
+   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
+-  usePoolsOverviewKpis: 'f162a452a9201619a0987301dbba80717036be273c7489a6beb83aac9574bd15',
+-  poolsOverviewKpisTokens: '1c684b1319d5fce87615a146af50019ed1072acab2972e09ba07af9a0e136421',
++  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
++  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
+ } as const
+ 
+diff --git a/apps/web/src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts b/apps/web/src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts
+index c63f95ff..867d7676 100644
+--- a/apps/web/src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts
++++ b/apps/web/src/views/PoolsStudio/modules/usePoolsOverviewKpis.ts
+@@ -117,13 +117,14 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
+     if (classification.status === 'loading') {
+       discoveredCard = card('discovered', '—', 'Loading pool index…', 'loading', 'loading')
+     } else if (classification.status === 'ready' && counts) {
++      const inactive = Math.max(0, counts.discovered - counts.active - counts.ended - counts.invalid)
+       discoveredCard = card(
+         'discovered',
+         String(counts.discovered),
+-        `${counts.active} active · ${counts.ended} ended`,
++        `${counts.active} Active · ${counts.ended} Finished · ${inactive} Inactive · ${counts.invalid} Unavailable`,
+         counts.discovered === 0 ? 'zero' : 'available',
+         'live',
+-        `SmartChef classification · generated ${classification.generatedAt ?? fetchedAt}`,
++        `Total = Active + Finished + Inactive + Unavailable · SmartChef classification · ${classification.generatedAt ?? fetchedAt}`,
+       )
+     } else {
+       discoveredCard = card('discovered', '—', 'Pool index unavailable', 'unavailable', 'unavailable')
+@@ -357,7 +358,13 @@ export function buildPoolsOverviewKpisFromParts(input: {
+     classification.status === 'loading'
+       ? card('discovered', '—', 'Loading pool index…', 'loading', 'loading')
+       : counts
+-        ? card('discovered', String(counts.discovered), `${counts.active} active · ${counts.ended} ended`, counts.discovered === 0 ? 'zero' : 'available', 'live')
++        ? card(
++            'discovered',
++            String(counts.discovered),
++            `${counts.active} Active · ${counts.ended} Finished · ${Math.max(0, counts.discovered - counts.active - counts.ended - counts.invalid)} Inactive · ${counts.invalid} Unavailable`,
++            counts.discovered === 0 ? 'zero' : 'available',
++            'live',
++          )
+         : card('discovered', '—', 'Pool index unavailable', 'unavailable', 'unavailable')
+ 
+   const rewardingCard =
+diff --git a/apps/web/src/views/PoolsStudio/modules/usePoolsWalletPositions.ts b/apps/web/src/views/PoolsStudio/modules/usePoolsWalletPositions.ts
+index 4e8a56b5..fbb872c1 100644
+--- a/apps/web/src/views/PoolsStudio/modules/usePoolsWalletPositions.ts
++++ b/apps/web/src/views/PoolsStudio/modules/usePoolsWalletPositions.ts
+@@ -1,6 +1,7 @@
+ /**
+  * POOLS_MODULE_003 — wallet-scoped positions hook.
+  * Composes shared portfolioPools; retains last-good on transient failure.
++ * Module-level cache survives remount / navigation for the same chain+wallet.
+  */
+ 
+ import { useEffect, useMemo, useRef } from 'react'
+@@ -9,50 +10,71 @@ import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+ import { buildPoolsWalletPositionsViewModel } from './buildPoolsWalletPositions'
+ import type { PoolsMyPositionsViewModel, PoolsWalletPosition } from './poolsMyPositionsTypes'
+ 
++type LastGoodEntry = {
++  wallet: string
++  chainId: number
++  positions: PoolsWalletPosition[]
++  generation: number
++  updatedAt: number
++}
++
++/** chainId + normalized wallet → last confirmed positions (survives remount). */
++const lastGoodByScope = new Map<string, LastGoodEntry>()
++
++function scopeCacheKey(wallet: string | null | undefined, chainId: number | null | undefined): string | null {
++  if (!wallet || chainId == null) return null
++  return `${chainId}:${wallet.toLowerCase()}`
++}
++
++function readLastGood(wallet: string | null, chainId: number | null): LastGoodEntry | null {
++  const key = scopeCacheKey(wallet, chainId)
++  if (!key) return null
++  return lastGoodByScope.get(key) ?? null
++}
++
++function writeLastGood(entry: LastGoodEntry): void {
++  const key = scopeCacheKey(entry.wallet, entry.chainId)
++  if (!key) return
++  lastGoodByScope.set(key, entry)
++}
++
++/** Test / diagnostics helper — do not use in product UI. */
++export function __poolsWalletPositionsCacheSizeForTests(): number {
++  return lastGoodByScope.size
++}
++
+ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
+   const runtime = usePoolsRuntime()
+   const { chainId: activeChainId } = useActiveChainId()
+   const generationRef = useRef(0)
+-  const lastGoodRef = useRef<{
+-    wallet: string
+-    chainId: number
+-    positions: PoolsWalletPosition[]
+-    generation: number
+-  } | null>(null)
+-  const lastScopeRef = useRef<{ wallet: string | null; chainId: number | null }>({
+-    wallet: null,
+-    chainId: null,
+-  })
++  const lastScopeKeyRef = useRef<string>('')
++  const abortRef = useRef<AbortController | null>(null)
+ 
+   const account = runtime.account ?? null
+   const chainId = activeChainId ?? runtime.machine?.chainId ?? null
+-  const lastScopeKeyRef = useRef<string>('')
+ 
+-  // Synchronous scope identity — prevent post-render empty races from wiping last-good.
++  // Synchronous scope identity — wallet/chain change invalidates only the old commit path.
+   const scopeKey = `${account?.toLowerCase() ?? ''}:${chainId ?? ''}`
+   if (scopeKey !== lastScopeKeyRef.current) {
+     lastScopeKeyRef.current = scopeKey
+     generationRef.current += 1
+-    lastGoodRef.current = null
+-    lastScopeRef.current = { wallet: account, chainId }
++    abortRef.current?.abort()
++    abortRef.current = new AbortController()
+   }
+ 
+   useEffect(() => {
+-    lastScopeRef.current = { wallet: account, chainId }
+-  }, [account, chainId])
++    return () => {
++      // Cancel in-flight commit path on unmount; do NOT clear module last-good cache.
++      abortRef.current?.abort()
 +    }
-     return {
-       state: 'empty',
-       wallet: account,
-@@ -589,20 +608,52 @@ export function buildPoolsWalletPositionsViewModel(input: {
++  }, [])
+ 
+   return useMemo(() => {
+-    const previous =
+-      lastGoodRef.current &&
+-      account &&
+-      chainId &&
+-      lastGoodRef.current.wallet.toLowerCase() === account.toLowerCase() &&
+-      lastGoodRef.current.chainId === chainId
+-        ? lastGoodRef.current.positions
+-        : null
++    const cached = readLastGood(account, chainId)
++    const previous = cached?.positions?.length ? cached.positions : null
+ 
+-    // Ignore stale generation snapshots if scope advanced mid-build.
+     const generation = generationRef.current
++    const signal = abortRef.current?.signal
+ 
+     const vm = buildPoolsWalletPositionsViewModel({
+       account,
+@@ -62,29 +84,34 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
+       poolsLoading: runtime.phase === 'loading_pools',
+       generation,
+       previous,
+-      previousWallet: lastGoodRef.current?.wallet ?? null,
+-      previousChainId: lastGoodRef.current?.chainId ?? null,
++      previousWallet: cached?.wallet ?? null,
++      previousChainId: cached?.chainId ?? null,
+       sourcesFailed: runtime.phase === 'error',
+     })
+ 
++    // Stale generation or aborted scope must not commit into the cache.
++    if (signal?.aborted || vm.generation !== generationRef.current) {
++      return vm
++    }
++
+     if (
+       (vm.state === 'ready' || vm.state === 'partial' || vm.state === 'empty') &&
+       account &&
+-      chainId &&
+-      vm.generation === generationRef.current
++      chainId != null
+     ) {
+       if (vm.state === 'empty') {
+         // Never replace a non-empty last-good with a transient empty response.
+-        if (!lastGoodRef.current?.positions.length) {
+-          lastGoodRef.current = { wallet: account, chainId, positions: [], generation }
++        if (!cached?.positions.length) {
++          writeLastGood({ wallet: account, chainId, positions: [], generation, updatedAt: Date.now() })
+         }
+       } else if (vm.positions.length) {
+-        lastGoodRef.current = {
++        writeLastGood({
+           wallet: account,
+           chainId,
+           positions: vm.positions,
+           generation,
+-        }
++          updatedAt: Date.now(),
++        })
+       }
      }
-   }
  
--  const anyPartial = built.some((p) => p.partialData)
-+  // Preserve claimable token amounts when a refresh drops reward reads or prices to zero.
-+  const merged = built.map((pos) => {
-+    const prior = previous?.find((p) => p.positionId === pos.positionId)
-+    if (!prior) return pos
-+    let next = pos
-+    const claimLost =
-+      (pos.claimableFormatted === '—' || pos.claimableFormatted.startsWith('0 ')) &&
-+      prior.claimableFormatted &&
-+      !prior.claimableFormatted.startsWith('0 ') &&
-+      prior.claimableFormatted !== '—'
-+    if (claimLost) {
-+      next = {
-+        ...next,
-+        claimableFormatted: prior.claimableFormatted,
-+        claimableRaw: prior.claimableRaw,
-+        claimableValue: pos.claimableValue ?? prior.claimableValue,
-+        freshness: 'partial',
-+        partialData: true,
-+        partialReasons: [...new Set([...(next.partialReasons ?? []), 'Claimable refresh incomplete — retaining last confirmed amount'])],
-+      }
-+    }
-+    if (!next.claimableValue && next.claimableFormatted && !next.claimableFormatted.startsWith('0 ') && next.claimableFormatted !== '—') {
-+      next = {
-+        ...next,
-+        claimableValue: null,
-+        partialData: true,
-+        partialReasons: [...new Set([...(next.partialReasons ?? []), 'USD value unavailable'])],
-+      }
-+    }
-+    return next
-+  })
-+
-+  const anyPartial = merged.some((p) => p.partialData)
-   const state: PoolsMyPositionsModuleState = anyPartial ? 'partial' : 'ready'
+diff --git a/apps/web/src/views/__tests__/melegaDexV1.productRecovery.test.ts b/apps/web/src/views/__tests__/melegaDexV1.productRecovery.test.ts
+index 7ac80cd0..88593183 100644
+--- a/apps/web/src/views/__tests__/melegaDexV1.productRecovery.test.ts
++++ b/apps/web/src/views/__tests__/melegaDexV1.productRecovery.test.ts
+@@ -51,7 +51,7 @@ describe('MELEGA_DEX_V1 Certified Product Recovery', () => {
  
-   return {
-     state,
-     wallet: account,
-     chainId,
--    positions: built,
--    visiblePositions: built.slice(0, poolsMyPositions.maxVisibleDesktop),
--    totalCount: built.length,
-+    positions: merged,
-+    visiblePositions: merged.slice(0, poolsMyPositions.maxVisibleDesktop),
-+    totalCount: merged.length,
-     showCountBadge: true,
--    showViewAll: built.length > poolsMyPositions.maxVisibleDesktop,
-+    showViewAll: merged.length > poolsMyPositions.maxVisibleDesktop,
-     moduleDisclosure: anyPartial ? 'Some position data is temporarily unavailable.' : null,
--    liveRegion: `${built.length} pool position${built.length === 1 ? '' : 's'}`,
-+    liveRegion: `${merged.length} pool position${merged.length === 1 ? '' : 's'}`,
-     freshness: anyPartial ? 'partial' : 'live',
-     authoritativeEmpty: false,
-     generation,
-diff --git a/apps/web/src/views/Trade/components/TradeModeSelector.tsx b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
-index b662285f..7ce4dc5f 100644
---- a/apps/web/src/views/Trade/components/TradeModeSelector.tsx
-+++ b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
-@@ -1,22 +1,26 @@
- import React from 'react'
- import styled from 'styled-components'
- import { colors } from 'design-system/melega'
--import type { TradeMode } from '../tradeTokens'
-+import type { SwapExperienceMode } from '../swapExperience'
-+import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
- 
- const Shell = styled.div`
-   display: flex;
-   flex-direction: column;
--  gap: 8px;
-+  width: 100%;
-+  flex-shrink: 0;
-+  position: relative;
-+  z-index: 2;
- `
- 
- const Segmented = styled.div`
-   display: grid;
-   grid-template-columns: 1fr 1fr;
--  gap: 8px;
--  padding: 4px;
-+  gap: 4px;
-+  padding: 3px;
-   background: #111111;
-   border: 1px solid rgba(255, 255, 255, 0.06);
--  border-radius: 14px;
-+  border-radius: 12px;
- `
- 
- const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
-@@ -24,94 +28,75 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
-   display: flex;
-   align-items: center;
-   justify-content: center;
--  gap: 8px;
--  height: 44px;
--  border: 1px solid ${({ $active, $smart }) =>
--    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
--  border-radius: 10px;
-+  min-height: 34px;
-+  height: 34px;
-+  border: 1px solid
-+    ${({ $active, $smart }) =>
-+      $active && $smart
-+        ? 'rgba(244, 196, 48, 0.55)'
-+        : $active
-+          ? 'rgba(255, 255, 255, 0.12)'
-+          : 'transparent'};
-+  border-radius: 9px;
-   background: ${({ $active, $smart }) =>
-     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
-   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
--  font-size: 13px;
-+  font-size: 12px;
-   font-weight: 700;
--  letter-spacing: 0.04em;
-+  letter-spacing: 0.03em;
-   cursor: pointer;
-   transition:
-     border-color 150ms ease,
-     background 150ms ease,
--    color 150ms ease,
--    box-shadow 150ms ease;
--  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
-+    color 150ms ease;
- 
-   &:hover {
-     color: ${colors.textPrimary};
-   }
--`
- 
--const Badge = styled.span`
--  display: inline-flex;
--  align-items: center;
--  justify-content: center;
--  height: 18px;
--  padding: 0 6px;
--  border-radius: 6px;
--  background: rgba(244, 196, 48, 0.18);
--  color: ${colors.gold};
--  font-size: 10px;
--  font-weight: 800;
--  letter-spacing: 0.06em;
--`
--
--const AiDot = styled.span`
--  width: 6px;
--  height: 6px;
--  border-radius: 50%;
--  background: ${colors.gold};
--  box-shadow: 0 0 8px rgba(244, 197, 66, 0.6);
--`
--
--const Description = styled.p`
--  margin: 0;
--  font-size: 13px;
--  line-height: 1.45;
--  color: #9e9e9e;
-+  &:focus-visible {
-+    outline: 2px solid ${colors.gold};
-+    outline-offset: 2px;
-+  }
- `
- 
- export interface TradeModeSelectorProps {
--  mode: TradeMode
--  onChange: (mode: TradeMode) => void
-+  mode: SwapExperienceMode
-+  onChange: (mode: SwapExperienceMode) => void
- }
- 
-+/**
-+ * Compact Instant | Smart — no explanatory paragraph in the terminal.
-+ */
- export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
--  <Shell data-trade-mode-selector>
-+  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
-     <Segmented role="tablist" aria-label="Swap mode">
-       <Tab
-         type="button"
-         role="tab"
--        aria-selected={mode === 'standard'}
--        $active={mode === 'standard'}
--        onClick={() => onChange('standard')}
-+        id="swap-mode-instant"
-+        aria-selected={mode === 'instant'}
-+        aria-controls="smart-swap-execution"
-+        aria-label={SWAP_EXPERIENCE_LABEL.instant}
-+        $active={mode === 'instant'}
-+        onClick={() => onChange('instant')}
-       >
--        STANDARD
-+        Instant
-       </Tab>
-       <Tab
-         type="button"
-         role="tab"
--        aria-selected={mode === 'smartswap'}
--        $active={mode === 'smartswap'}
-+        id="swap-mode-smart"
-+        aria-selected={mode === 'smart'}
-+        aria-controls="smart-swap-execution"
-+        aria-label={SWAP_EXPERIENCE_LABEL.smart}
-+        $active={mode === 'smart'}
-         $smart
--        onClick={() => onChange('smartswap')}
-+        onClick={() => onChange('smart')}
-       >
--        <AiDot aria-hidden />
--        SMARTSWAP
--        <Badge>NEW</Badge>
-+        Smart
-       </Tab>
-     </Segmented>
--    <Description>
--      {mode === 'smartswap'
--        ? 'Finds the best available route across Melega DEX and supported liquidity sources.'
--        : 'Best route across supported liquidity on the Melega router.'}
--    </Description>
-   </Shell>
- )
- 
-diff --git a/apps/web/src/views/Trade/swapExperience.ts b/apps/web/src/views/Trade/swapExperience.ts
-new file mode 100644
-index 00000000..c87ff3a3
---- /dev/null
-+++ b/apps/web/src/views/Trade/swapExperience.ts
-@@ -0,0 +1,13 @@
-+/** Instant vs Smart — presentation modes over the same SmartSwapForm engine. */
-+export type SwapExperienceMode = 'instant' | 'smart'
-+
-+export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
-+  instant: 'Instant Swap mode selected',
-+  smart: 'Smart Swap mode selected',
-+}
-+
-+export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
-+  if (value === 'smart') return 'smart'
-+  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
-+  return 'instant'
-+}
-diff --git a/apps/web/src/views/Trade/components/TradeModeSelector.tsx b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
-index b662285f..7ce4dc5f 100644
---- a/apps/web/src/views/Trade/components/TradeModeSelector.tsx
-+++ b/apps/web/src/views/Trade/components/TradeModeSelector.tsx
-@@ -1,22 +1,26 @@
- import React from 'react'
- import styled from 'styled-components'
- import { colors } from 'design-system/melega'
--import type { TradeMode } from '../tradeTokens'
-+import type { SwapExperienceMode } from '../swapExperience'
-+import { SWAP_EXPERIENCE_LABEL } from '../swapExperience'
- 
- const Shell = styled.div`
-   display: flex;
-   flex-direction: column;
--  gap: 8px;
-+  width: 100%;
-+  flex-shrink: 0;
-+  position: relative;
-+  z-index: 2;
- `
- 
- const Segmented = styled.div`
-   display: grid;
-   grid-template-columns: 1fr 1fr;
--  gap: 8px;
--  padding: 4px;
-+  gap: 4px;
-+  padding: 3px;
-   background: #111111;
-   border: 1px solid rgba(255, 255, 255, 0.06);
--  border-radius: 14px;
-+  border-radius: 12px;
- `
- 
- const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
-@@ -24,94 +28,75 @@ const Tab = styled.button<{ $active?: boolean; $smart?: boolean }>`
-   display: flex;
-   align-items: center;
-   justify-content: center;
--  gap: 8px;
--  height: 44px;
--  border: 1px solid ${({ $active, $smart }) =>
--    $active && $smart ? 'rgba(244, 196, 48, 0.55)' : $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
--  border-radius: 10px;
-+  min-height: 34px;
-+  height: 34px;
-+  border: 1px solid
-+    ${({ $active, $smart }) =>
-+      $active && $smart
-+        ? 'rgba(244, 196, 48, 0.55)'
-+        : $active
-+          ? 'rgba(255, 255, 255, 0.12)'
-+          : 'transparent'};
-+  border-radius: 9px;
-   background: ${({ $active, $smart }) =>
-     $active && $smart ? 'rgba(244, 196, 48, 0.1)' : $active ? '#1a1a1a' : 'transparent'};
-   color: ${({ $active }) => ($active ? colors.textPrimary : '#8a8a8a')};
--  font-size: 13px;
-+  font-size: 12px;
-   font-weight: 700;
--  letter-spacing: 0.04em;
-+  letter-spacing: 0.03em;
-   cursor: pointer;
-   transition:
-     border-color 150ms ease,
-     background 150ms ease,
--    color 150ms ease,
--    box-shadow 150ms ease;
--  box-shadow: ${({ $active, $smart }) => ($active && $smart ? '0 0 20px rgba(244, 196, 48, 0.08)' : 'none')};
-+    color 150ms ease;
- 
-   &:hover {
-     color: ${colors.textPrimary};
-   }
--`
- 
--const Badge = styled.span`
--  display: inline-flex;
--  align-items: center;
--  justify-content: center;
--  height: 18px;
--  padding: 0 6px;
--  border-radius: 6px;
--  background: rgba(244, 196, 48, 0.18);
--  color: ${colors.gold};
--  font-size: 10px;
--  font-weight: 800;
--  letter-spacing: 0.06em;
--`
--
--const AiDot = styled.span`
--  width: 6px;
--  height: 6px;
--  border-radius: 50%;
--  background: ${colors.gold};
--  box-shadow: 0 0 8px rgba(244, 197, 66, 0.6);
--`
--
--const Description = styled.p`
--  margin: 0;
--  font-size: 13px;
--  line-height: 1.45;
--  color: #9e9e9e;
-+  &:focus-visible {
-+    outline: 2px solid ${colors.gold};
-+    outline-offset: 2px;
-+  }
- `
- 
- export interface TradeModeSelectorProps {
--  mode: TradeMode
--  onChange: (mode: TradeMode) => void
-+  mode: SwapExperienceMode
-+  onChange: (mode: SwapExperienceMode) => void
- }
- 
-+/**
-+ * Compact Instant | Smart — no explanatory paragraph in the terminal.
-+ */
- export const TradeModeSelector: React.FC<TradeModeSelectorProps> = ({ mode, onChange }) => (
--  <Shell data-trade-mode-selector>
-+  <Shell data-trade-mode-selector data-swap-experience={mode} data-compact-tabs="true">
-     <Segmented role="tablist" aria-label="Swap mode">
-       <Tab
-         type="button"
-         role="tab"
--        aria-selected={mode === 'standard'}
--        $active={mode === 'standard'}
--        onClick={() => onChange('standard')}
-+        id="swap-mode-instant"
-+        aria-selected={mode === 'instant'}
-+        aria-controls="smart-swap-execution"
-+        aria-label={SWAP_EXPERIENCE_LABEL.instant}
-+        $active={mode === 'instant'}
-+        onClick={() => onChange('instant')}
-       >
--        STANDARD
-+        Instant
-       </Tab>
-       <Tab
-         type="button"
-         role="tab"
--        aria-selected={mode === 'smartswap'}
--        $active={mode === 'smartswap'}
-+        id="swap-mode-smart"
-+        aria-selected={mode === 'smart'}
-+        aria-controls="smart-swap-execution"
-+        aria-label={SWAP_EXPERIENCE_LABEL.smart}
-+        $active={mode === 'smart'}
-         $smart
--        onClick={() => onChange('smartswap')}
-+        onClick={() => onChange('smart')}
-       >
--        <AiDot aria-hidden />
--        SMARTSWAP
--        <Badge>NEW</Badge>
-+        Smart
-       </Tab>
-     </Segmented>
--    <Description>
--      {mode === 'smartswap'
--        ? 'Finds the best available route across Melega DEX and supported liquidity sources.'
--        : 'Best route across supported liquidity on the Melega router.'}
--    </Description>
-   </Shell>
- )
- 
-diff --git a/apps/web/src/views/Trade/swapExperience.ts b/apps/web/src/views/Trade/swapExperience.ts
-new file mode 100644
-index 00000000..c87ff3a3
---- /dev/null
-+++ b/apps/web/src/views/Trade/swapExperience.ts
-@@ -0,0 +1,13 @@
-+/** Instant vs Smart — presentation modes over the same SmartSwapForm engine. */
-+export type SwapExperienceMode = 'instant' | 'smart'
-+
-+export const SWAP_EXPERIENCE_LABEL: Record<SwapExperienceMode, string> = {
-+  instant: 'Instant Swap mode selected',
-+  smart: 'Smart Swap mode selected',
-+}
-+
-+export function parseSwapExperience(value: string | null | undefined): SwapExperienceMode {
-+  if (value === 'smart') return 'smart'
-+  // Default Instant — selectable Smart mode is opt-in via tabs / ?experience=smart
-+  return 'instant'
-+}
+   it('pools wallet hook retains last-good and does not clobber with empty', () => {
+     const hook = load('src/views/PoolsStudio/modules/usePoolsWalletPositions.ts')
+-    expect(hook).toContain('lastGoodRef')
++    expect(hook).toMatch(/lastGoodByScope|lastGoodRef/)
+     expect(hook).toContain('generationRef')
+     expect(hook).toContain('Never replace a non-empty last-good')
+     expect(hook).toContain('scopeKey')

@@ -94,19 +94,31 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     expect(216 * 6 + 16 * 5).toBe(1376)
   })
 
-  it('never fabricates 24H rewards from MasterChef emission', () => {
-    const vm = buildFarmsOverviewKpisFromParts({
+  it('keeps 24H rewards unavailable without emission read; uses MasterChef emission when provided', () => {
+    const empty = buildFarmsOverviewKpisFromParts({
       previewCards: [farmCard({ pid: 1, liq: 5000, apr: '20.00%' })],
       farmsLoading: false,
       userDataLoaded: true,
       account: '0xabc',
       cakePriceUsd: 1,
     })
-    const r24 = vm.cards.find((c) => c.id === 'rewards24h')!
-    expect(r24.value).toBe('—')
-    expect(r24.supporting).toContain('Reward valuation unavailable')
-    expect(vm.diagnostics.rewards24hSource).toBe('unavailable_no_indexed_distribution')
-    expect(vm.diagnostics.emissionNotUsedAs24h).toBe(true)
+    expect(empty.cards.find((c) => c.id === 'rewards24h')!.value).toBe('—')
+    expect(empty.diagnostics.rewards24hSource).toBe('unavailable_emission_read')
+
+    const withEmission = buildFarmsOverviewKpisFromParts({
+      previewCards: [farmCard({ pid: 1, liq: 5000, apr: '20.00%' })],
+      farmsLoading: false,
+      userDataLoaded: true,
+      account: '0xabc',
+      cakePriceUsd: 0.5,
+      emissionPerDay: 1000,
+      emissionPerDayLabel: '1,000 MARCO',
+    })
+    const r24 = withEmission.cards.find((c) => c.id === 'rewards24h')!
+    expect(r24.state).toBe('available')
+    expect(r24.supporting).toMatch(/dexTokenPerBlock/)
+    expect(withEmission.diagnostics.rewards24hSource).toBe('masterchef_dexTokenPerBlock_emission')
+    expect(withEmission.diagnostics.emissionNotUsedAs24h).toBe(false)
   })
 
   it('never estimates Active Farmers', () => {
@@ -251,7 +263,7 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     }
   })
 
-  it('does not ship mock KPI dollar fixtures or emission-as-24h in Module 002 sources', () => {
+  it('does not ship mock KPI dollar fixtures in Module 002 sources', () => {
     const src = [
       readFileSync(path.join(STUDIO, 'modules/FarmsOverviewKpisModule.tsx'), 'utf8'),
       readFileSync(path.join(STUDIO, 'modules/useFarmsOverviewKpis.ts'), 'utf8'),
@@ -259,7 +271,7 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     ].join('\n')
     expect(src).not.toContain('$24.56')
     expect(src).not.toContain('formatTotalDailyEmissionKpi')
-    expect(src).not.toContain('useMasterChefEmission')
+    expect(src).toContain('useMasterChefEmission')
   })
 
   it('ownership map records Module 002 file assignment', () => {

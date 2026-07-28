@@ -1,0 +1,20 @@
+{
+  "activeFarmers": {
+    "status": "unavailable",
+    "reason": "No unique-wallet MasterBuilder participation index available without estimating; KPI remains honest unavailable."
+  },
+  "rewards24h": {
+    "source": "useMasterChefEmission().perDay when status===ready",
+    "builder": "buildFarmsOverviewKpisFromParts.emissionPerDay"
+  },
+  "hero": {
+    "gapPx": 24,
+    "trustHeight": "auto",
+    "featuredCompact": "FarmsHeroFeaturedCompact mounted in TrustCol"
+  },
+  "positionHierarchy": "pair > status > USD > LP secondary > claimable token > claimable USD when factual",
+  "files": {
+    "buildFarmsOverviewKpis.ts": "86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696",
+    "FarmsMyFarmCard.tsx": "26984d361450ee0dcb47735d61c20ade1e406508e5b142ed6625ff4771168596"
+  }
+}

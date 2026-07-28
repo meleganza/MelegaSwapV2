@@ -37,10 +37,24 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
       <Logo $offset><MelegaTokenAvatar name={position.token1.symbol} symbol={position.token1.symbol} address={position.token1.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.stakeLogo} radius="circle" /></Logo>
       <Logo $offset $reward><MelegaTokenAvatar name={position.rewardToken.symbol} symbol={position.rewardToken.symbol} address={position.rewardToken.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.rewardLogo} radius="circle" /></Logo>
     </Logos><div style={{ minWidth: 0 }}><Title title={position.title}>{position.title}</Title><Subtitle>{position.subtitle}</Subtitle></div></Identity><Badge $tone={position.statusLabel}>{position.statusLabel}</Badge></Header>
-    <Metrics><div><Label>Staked LP</Label><Value>{position.stakedFormatted}</Value>{position.stakedValue && <Support>{position.stakedValue}</Support>}</div>
-      <div><Label>Harvestable</Label><Value>{position.pendingFormatted}</Value>{position.pendingValue && <Support>{position.pendingValue}</Support>}</div>
+    <Metrics>
+      <div>
+        <Label>Position value</Label>
+        <Value>{position.stakedValue ? position.stakedValue.replace(/[()]/g, '') : 'USD unavailable'}</Value>
+        <Support>{position.stakedFormatted}</Support>
+      </div>
+      <div>
+        <Label>Harvestable</Label>
+        <Value>{position.pendingFormatted}</Value>
+        {position.pendingValue ? (
+          <Support>{position.pendingValue}</Support>
+        ) : position.pendingFormatted && position.pendingFormatted !== '—' && !position.pendingFormatted.startsWith('0 ') ? (
+          <Support>USD value unavailable</Support>
+        ) : null}
+      </div>
       {position.apr && <div><Label>APR</Label><Value>{position.apr}</Value></div>}
-      <State>{position.farmStateLine}</State></Metrics>
+      <State>{position.farmStateLine}</State>
+    </Metrics>
     {position.actions.length > 0 && <Actions>{position.actions.map((action, i) => <Button key={`${action.kind}-${action.label}`} type="button" $primary={i === 0} disabled={busy === action.kind || !action.enabled} aria-label={action.accessibleName} onClick={() => onAction(action)}>{busy === action.kind ? busyLabel(action) : action.label}</Button>)}</Actions>}
   </Card>
 }

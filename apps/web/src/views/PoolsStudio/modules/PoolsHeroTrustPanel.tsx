@@ -7,8 +7,10 @@ import { POOLS_HERO_COPY, poolsHero } from './poolsHeroTokens'
 
 const Panel = styled.aside`
   width: ${poolsHero.trustBoxW};
-  height: ${poolsHero.trustBoxH};
+  height: auto;
+  min-height: ${poolsHero.trustBoxH};
   max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   border-radius: ${poolsHero.trustRadius};
   border: ${poolsHero.trustBorder};
@@ -18,6 +20,7 @@ const Panel = styled.aside`
   flex-direction: column;
   gap: 12px;
   flex: 0 0 auto;
+  overflow: visible;
 
   @media (max-width: ${poolsHero.mobileBreak}) {
     width: min(100%, ${poolsHero.mobileTrustW});

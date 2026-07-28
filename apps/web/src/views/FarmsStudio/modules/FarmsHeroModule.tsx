@@ -7,13 +7,15 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { FarmsHeroArtwork } from './FarmsHeroArtwork'
 import { FarmsHeroTrustPanel } from './FarmsHeroTrustPanel'
+import { FarmsHeroFeaturedCompact } from './FarmsHeroFeaturedCompact'
 import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
 
 const Module = styled.section`
   position: relative;
   width: 100%;
   max-width: ${farmsHero.contentMax};
-  height: ${farmsHero.heroH};
+  height: auto;
+  min-height: ${farmsHero.heroH};
   min-width: 0;
   box-sizing: border-box;
   overflow: visible;
@@ -182,8 +184,10 @@ const ArtCol = styled.div`
 const TrustCol = styled.div`
   width: ${farmsHero.trustW};
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
   min-width: 0;
 
   @media (max-width: ${farmsHero.tabletBreak}) {
@@ -245,6 +249,7 @@ export const FarmsHeroModule: React.FC = () => {
           <FarmsHeroArtwork />
         </ArtCol>
         <TrustCol>
+          <FarmsHeroFeaturedCompact />
           <FarmsHeroTrustPanel />
         </TrustCol>
       </Inner>

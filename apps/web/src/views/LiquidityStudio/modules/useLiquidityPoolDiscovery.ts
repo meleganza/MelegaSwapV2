@@ -124,7 +124,9 @@ export function useLiquidityPoolDiscovery(options: {
     const activeFilter = availableFilters.includes(filter) ? filter : 'all'
     const activeSort = availableSorts.includes(sort)
       ? sort
-      : availableSorts[0] ?? 'newest'
+      : availableSorts.includes('market')
+        ? 'market'
+        : availableSorts[0] ?? 'market'
 
     const filtered = filterDiscoveryCards(cards, activeFilter, myTokenAddresses)
     const sorted = availableSorts.length > 0 ? sortDiscoveryCards(filtered, activeSort) : filtered

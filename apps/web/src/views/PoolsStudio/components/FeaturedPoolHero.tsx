@@ -358,7 +358,8 @@ function badgeVariant(badge?: string): 'official' | 'partner' | 'community' | nu
 }
 
 export const FeaturedPoolHero: React.FC = () => {
-  const { featured, hiddenPoolReasons, rewardingCount, poolClassificationSummary, machine } = usePoolsRuntime()
+  const { featured, hiddenPoolReasons, rewardingCount, poolClassificationSummary, machine, requestModal } =
+    usePoolsRuntime()
   const card = featured.card
   const isRewarding = Boolean(card?.lifecycle?.rewarding)
   const lifecycleCounts = resolveLifecycleCounts(poolClassificationSummary)

@@ -1,0 +1,20 @@
+{
+  "labels": {
+    "instant": "Instant",
+    "smart": "Smart"
+  },
+  "forbidden": [
+    "STANDARD",
+    "SMARTSWAP",
+    "SMARTSWAP NEW"
+  ],
+  "files": {
+    "TradeModeSelector.tsx": "0d9faee9a82d4d1898c9d01067f87c428c34c8759685a24a60d649055220d2d0",
+    "swapExperience.ts": "06033e93170ab232c274fbc29eb82afeb6c55df9bdaf12e22bdacde1eecf00dd"
+  },
+  "restoredFromTip": "95c1cbf4",
+  "composition": {
+    "instant": "From, direction, To, Swap CTA, one Details \u2014 no route intelligence stack",
+    "smart": "From, direction, To, Swap CTA, Route, metrics, Fee, AI Insight, one Details"
+  }
+}

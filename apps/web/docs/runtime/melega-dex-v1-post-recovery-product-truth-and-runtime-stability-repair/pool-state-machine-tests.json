@@ -1,0 +1,44 @@
+{
+  "builder": "buildPoolsWalletPositionsViewModel",
+  "hook": "usePoolsWalletPositions",
+  "cacheKey": "chainId:normalizedWallet",
+  "moduleCache": "lastGoodByScope",
+  "generation": true,
+  "abortController": true,
+  "rules": {
+    "initialLoadingNotEmpty": true,
+    "refreshingRetainsLastGood": true,
+    "partialRetainsLastGood": true,
+    "errorRetainsLastGood": true,
+    "staleEmptyRejected": true,
+    "staleGenerationRejected": true,
+    "walletChangeIsolatesCache": true,
+    "chainChangeIsolatesCache": true,
+    "remountKeepsModuleCache": true,
+    "valuationFailureKeepsTokenAmount": true
+  },
+  "uiStatesMapped": [
+    "disconnected",
+    "loading",
+    "ready",
+    "empty",
+    "partial",
+    "stale",
+    "unavailable"
+  ],
+  "missionNamedStates": {
+    "DISCONNECTED": "disconnected",
+    "INITIAL_LOADING": "loading",
+    "SUCCESS_WITH_POSITIONS": "ready",
+    "SUCCESS_EMPTY": "empty",
+    "REFRESHING_WITH_LAST_GOOD": "stale + freshness stale during loading",
+    "PARTIAL_WITH_LAST_GOOD": "partial",
+    "ERROR_WITH_LAST_GOOD": "stale when sourcesFailed && previous",
+    "ERROR_WITHOUT_DATA": "unavailable when sourcesFailed && !previous"
+  },
+  "focusedTestsPassed": 59,
+  "fileShas": {
+    "buildPoolsWalletPositions.ts": "86932a90c0222dc09118b34c0849b400f44bb274726f6bf73883d6b6ca40109a",
+    "usePoolsWalletPositions.ts": "1839b8bc5664055dfc937aab615f3b21c4e81c3d5e958a270fa1b0df28e2b03e"
+  }
+}

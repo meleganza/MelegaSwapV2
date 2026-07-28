@@ -18,7 +18,7 @@ export const poolsHero = {
   leftW: '440px',
   artworkW: '480px',
   trustW: '360px',
-  columnGap: '48px',
+  columnGap: '24px',
 
   artworkBoxW: '480px',
   artworkBoxH: '230px',

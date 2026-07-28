@@ -1,0 +1,40 @@
+{
+  "viewports": {
+    "1440x900": {
+      "overflowX": false,
+      "path": "/"
+    },
+    "1280x800": {
+      "overflowX": false,
+      "path": "/"
+    },
+    "1024x768": {
+      "overflowX": false,
+      "path": "/"
+    },
+    "430x932": {
+      "overflowX": false,
+      "path": "/"
+    },
+    "390x844": {
+      "overflowX": false,
+      "path": "/"
+    }
+  },
+  "screenshots": [
+    "after-home-instant.png",
+    "after-home-smart-route.png",
+    "after-liquidity-pools.png",
+    "after-farms-hero.png",
+    "after-farms-values.png",
+    "after-pools-positions-cycle-1.png",
+    "after-pools-positions-cycle-2.png",
+    "after-pools-positions-cycle-3.png",
+    "after-top-movers.png",
+    "after-mobile-home.png",
+    "after-mobile-liquidity.png",
+    "after-mobile-farms.png",
+    "after-mobile-pools.png"
+  ],
+  "base": "http://127.0.0.1:3041"
+}

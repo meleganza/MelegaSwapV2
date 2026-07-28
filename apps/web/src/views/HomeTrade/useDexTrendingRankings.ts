@@ -145,19 +145,28 @@ async function fetchIndexerSwapEvents(): Promise<IndexerSwapRow[]> {
   }
 }
 
-/** Indexed-period % when rolling 24h candles are sparse but OHLCV history exists. */
+/**
+ * Top Movers % — prefer rolling 24h candles only.
+ * Do not fall back to full multi-day OHLCV history (that produced false MARCO −49.1% style moves).
+ */
 function computeIndexedMove(candles: OhlcvCandle[]): ReturnType<typeof computeValid24hPriceChange> {
-  const rolling = computeValid24hPriceChange(candles)
-  if (rolling) return rolling
-  if (candles.length < 2) return undefined
-  const open = candles[0]?.open
-  const close = candles[candles.length - 1]?.close
-  if (open == null || close == null || !Number.isFinite(open) || !Number.isFinite(close) || open <= 0) {
-    return undefined
-  }
-  const pct = ((close - open) / open) * 100
-  if (!Number.isFinite(pct) || Math.abs(pct) <= 0.0001) return undefined
-  return format24hChangePct(pct)
+  return computeValid24hPriceChange(candles)
+}
+
+/** Reject extreme %-moves without enough swap evidence / liquidity. */
+export function isCredibleMoverChange(input: {
+  pct: number
+  tradeCount24h: number
+  volume24h: number
+  liquidityScore: number
+}): boolean {
+  const abs = Math.abs(input.pct)
+  if (!Number.isFinite(abs) || abs <= 0.0001) return false
+  if (input.tradeCount24h < 1 && input.volume24h <= 0) return false
+  if (abs > 25 && input.tradeCount24h < 3) return false
+  if (abs > 40 && input.liquidityScore <= 0) return false
+  if (abs > 80) return false
+  return true
 }
 
 function bumpActivity(
@@ -537,7 +546,30 @@ export function useDexTrendingRankings() {
       }),
     )
 
-    // Membership = Swap count / volume only. % enriches display when factual.
+    // Top Movers: require credible %-change evidence; rank by |Δ%| then trades/volume.
+    const movers = active
+      .filter((c) => {
+        const pct = c.change24h?.pct
+        if (pct == null || !Number.isFinite(pct)) return false
+        return isCredibleMoverChange({
+          pct,
+          tradeCount24h: c.tradeCount24h,
+          volume24h: c.volume24h,
+          liquidityScore: c.liquidityScore,
+        })
+      })
+      .sort((a, b) => {
+        const da = Math.abs(a.change24h?.pct ?? 0)
+        const db = Math.abs(b.change24h?.pct ?? 0)
+        if (db !== da) return db - da
+        if (b.tradeCount24h !== a.tradeCount24h) return b.tradeCount24h - a.tradeCount24h
+        if (b.volume24h !== a.volume24h) return b.volume24h - a.volume24h
+        return (b.lastActivityTs ?? 0) - (a.lastActivityTs ?? 0)
+      })
+
+    if (movers.length > 0) return movers.slice(0, TRENDING_LIMIT)
+
+    // Fallback: recent markets without unproven % (no fabricated movers).
     return rankTierAssets(active, TRENDING_LIMIT)
   }, [
     tierMetrics,

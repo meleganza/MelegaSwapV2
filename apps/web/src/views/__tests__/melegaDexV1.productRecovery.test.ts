@@ -51,7 +51,7 @@ describe('MELEGA_DEX_V1 Certified Product Recovery', () => {
 
   it('pools wallet hook retains last-good and does not clobber with empty', () => {
     const hook = load('src/views/PoolsStudio/modules/usePoolsWalletPositions.ts')
-    expect(hook).toContain('lastGoodRef')
+    expect(hook).toMatch(/lastGoodByScope|lastGoodRef/)
     expect(hook).toContain('generationRef')
     expect(hook).toContain('Never replace a non-empty last-good')
     expect(hook).toContain('scopeKey')

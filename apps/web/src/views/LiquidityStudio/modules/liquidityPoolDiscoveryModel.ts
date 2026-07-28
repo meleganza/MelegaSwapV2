@@ -6,8 +6,19 @@ import type { ClassifiedAmmPair } from 'lib/bsc-indexer/types'
 import { searchPairs } from 'lib/bsc-indexer/pairs/classify'
 import { lookupCanonicalToken } from 'lib/canonical-token-registry'
 import { MELEGA_CHAIN_ID } from 'lib/bsc-indexer/constants'
+import { getAllAssets } from 'registry/assets/getAllAssets'
 import type { LiquidityDiscoveryFilter, LiquidityDiscoverySort } from './liquidityPoolDiscoveryTokens'
 import { LIQUIDITY_POOL_DISCOVERY_COPY, liquidityPoolDiscovery } from './liquidityPoolDiscoveryTokens'
+
+const ASSET_SYMBOL_BY_ADDRESS: Map<string, string> = (() => {
+  const map = new Map<string, string>()
+  for (const asset of getAllAssets()) {
+    const addr = asset.contractAddress?.toLowerCase()
+    if (!addr || !asset.symbol || /^0x/i.test(asset.symbol)) continue
+    map.set(addr, asset.symbol)
+  }
+  return map
+})()
 
 export type DiscoveryPoolMetrics = {
   tvlUsd?: number | null
@@ -41,17 +52,22 @@ export type DiscoveryPoolCardModel = {
   qualityScore: number
 }
 
-function shortAddr(addr?: string): string {
-  if (!addr || addr.length < 10) return '—'
-  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+export function isResolvedDiscoverySymbol(symbol: string): boolean {
+  return Boolean(symbol) && symbol !== '—' && symbol !== 'Unknown' && !/^0x/i.test(symbol)
 }
 
+/**
+ * Resolve a human token symbol for discovery cards.
+ * Never returns a contract address as the primary label.
+ */
 export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
   const trimmed = pairSymbol?.trim()
-  if (trimmed && !/^0x/i.test(trimmed)) return trimmed
+  if (trimmed && !/^0x/i.test(trimmed) && !trimmed.includes('…')) return trimmed
   const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
-  if (canonical?.symbol) return canonical.symbol
-  return shortAddr(address)
+  if (canonical?.symbol && !/^0x/i.test(canonical.symbol)) return canonical.symbol
+  const fromAssets = ASSET_SYMBOL_BY_ADDRESS.get(address.toLowerCase())
+  if (fromAssets) return fromAssets
+  return 'Unknown'
 }
 
 export function resolveDiscoveryStatus(
@@ -123,6 +139,7 @@ export function toDiscoveryCard(
 
   const symbol0 = resolveDiscoverySymbol(pair.token0, pair.symbol0)
   const symbol1 = resolveDiscoverySymbol(pair.token1, pair.symbol1)
+  const identityResolved = isResolvedDiscoverySymbol(symbol0) && isResolvedDiscoverySymbol(symbol1)
   const resolved = resolveDiscoveryStatus(pair, metrics)
   const tvlUsd = metrics?.tvlUsd ?? null
   const volumeUsd = metrics?.volumeUsd ?? null
@@ -141,6 +158,7 @@ export function toDiscoveryCard(
   )
   const qualityScore =
     (resolved.active ? 1_000_000 : 0) +
+    (identityResolved ? 100_000 : 0) +
     (tvlUsd && tvlUsd > 0 ? Math.min(tvlUsd, 999_999) : 0) +
     (volumeUsd && volumeUsd > 0 ? Math.min(volumeUsd, 99_999) : 0)
 
@@ -153,7 +171,9 @@ export function toDiscoveryCard(
     symbol1,
     pairName: `${symbol0} / ${symbol1}`,
     status: resolved.status,
-    statusReason: resolved.reason,
+    statusReason:
+      resolved.reason ||
+      (!identityResolved ? 'Token metadata incomplete — address retained in technical details only' : undefined),
     active: resolved.active,
     tvlLabel: tvl.label,
     volumeLabel: volume.label,
@@ -198,24 +218,30 @@ export function sortDiscoveryCards(
   const next = [...cards]
   switch (sort) {
     case 'tvl':
-      return next.sort((a, b) => (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) || a.pairName.localeCompare(b.pairName))
+      return next.sort(
+        (a, b) =>
+          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
+          b.qualityScore - a.qualityScore ||
+          a.pairName.localeCompare(b.pairName),
+      )
     case 'volume':
       return next.sort(
-        (a, b) => (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) || a.pairName.localeCompare(b.pairName),
+        (a, b) =>
+          (b.volumeUsd ?? -1) - (a.volumeUsd ?? -1) ||
+          b.qualityScore - a.qualityScore ||
+          a.pairName.localeCompare(b.pairName),
       )
     case 'newest':
       return next.sort((a, b) => {
         const ta = a.lastVerified ? Date.parse(a.lastVerified) : 0
         const tb = b.lastVerified ? Date.parse(b.lastVerified) : 0
-        return tb - ta || a.pairName.localeCompare(b.pairName)
+        return tb - ta || b.qualityScore - a.qualityScore || a.pairName.localeCompare(b.pairName)
       })
+    case 'market':
     default:
-      // Market quality: active + liquidity/volume first — never address-only empties first.
+      // Market quality: active + resolved identity + liquidity/volume first.
       return next.sort(
-        (a, b) =>
-          b.qualityScore - a.qualityScore ||
-          (b.tvlUsd ?? -1) - (a.tvlUsd ?? -1) ||
-          a.pairName.localeCompare(b.pairName),
+        (a, b) => b.qualityScore - a.qualityScore || a.pairName.localeCompare(b.pairName),
       )
   }
 }
@@ -235,7 +261,7 @@ export function factualFilters(cards: DiscoveryPoolCardModel[], myTokensReady: b
 
 /** Which sort options are factual (have at least one real metric / timestamp). */
 export function factualSorts(cards: DiscoveryPoolCardModel[]): LiquidityDiscoverySort[] {
-  const out: LiquidityDiscoverySort[] = []
+  const out: LiquidityDiscoverySort[] = ['market']
   if (cards.some((c) => c.tvlUsd != null)) out.push('tvl')
   if (cards.some((c) => c.volumeUsd != null)) out.push('volume')
   if (cards.some((c) => Boolean(c.lastVerified))) out.push('newest')
