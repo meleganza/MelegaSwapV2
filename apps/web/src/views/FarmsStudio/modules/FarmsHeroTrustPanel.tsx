@@ -7,8 +7,10 @@ import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
 
 const Panel = styled.aside`
   width: ${farmsHero.trustBoxW};
-  height: ${farmsHero.trustBoxH};
+  height: auto;
+  min-height: ${farmsHero.trustBoxH};
   max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   border-radius: ${farmsHero.trustRadius};
   border: ${farmsHero.trustBorder};
@@ -18,6 +20,7 @@ const Panel = styled.aside`
   flex-direction: column;
   gap: 12px;
   flex: 0 0 auto;
+  overflow: visible;
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: min(100%, ${farmsHero.mobileTrustW});

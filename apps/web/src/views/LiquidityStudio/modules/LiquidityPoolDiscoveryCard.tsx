@@ -145,13 +145,13 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
       </Logos>
       <PairMeta>
         <PairName>{card.pairName}</PairName>
-        <Status $active={card.active} data-testid="liquidity-pool-discovery-status">
+        <Status $active={card.active} data-testid="liquidity-pool-discovery-status" title={card.statusReason}>
           {card.status}
         </Status>
       </PairMeta>
     </PairRow>
 
-    <Metrics>
+    <Metrics title={card.metricSourceNote}>
       <Metric>
         <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricTvl}</MetricLabel>
         <MetricValue>{card.tvlLabel}</MetricValue>

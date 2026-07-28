@@ -1,6 +1,7 @@
 /**
  * POOLS_MODULE_003 — wallet-scoped positions hook.
  * Composes shared portfolioPools; retains last-good on transient failure.
+ * Module-level cache survives remount / navigation for the same chain+wallet.
  */
 
 import { useEffect, useMemo, useRef } from 'react'
@@ -9,50 +10,71 @@ import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { buildPoolsWalletPositionsViewModel } from './buildPoolsWalletPositions'
 import type { PoolsMyPositionsViewModel, PoolsWalletPosition } from './poolsMyPositionsTypes'
 
+type LastGoodEntry = {
+  wallet: string
+  chainId: number
+  positions: PoolsWalletPosition[]
+  generation: number
+  updatedAt: number
+}
+
+/** chainId + normalized wallet → last confirmed positions (survives remount). */
+const lastGoodByScope = new Map<string, LastGoodEntry>()
+
+function scopeCacheKey(wallet: string | null | undefined, chainId: number | null | undefined): string | null {
+  if (!wallet || chainId == null) return null
+  return `${chainId}:${wallet.toLowerCase()}`
+}
+
+function readLastGood(wallet: string | null, chainId: number | null): LastGoodEntry | null {
+  const key = scopeCacheKey(wallet, chainId)
+  if (!key) return null
+  return lastGoodByScope.get(key) ?? null
+}
+
+function writeLastGood(entry: LastGoodEntry): void {
+  const key = scopeCacheKey(entry.wallet, entry.chainId)
+  if (!key) return
+  lastGoodByScope.set(key, entry)
+}
+
+/** Test / diagnostics helper — do not use in product UI. */
+export function __poolsWalletPositionsCacheSizeForTests(): number {
+  return lastGoodByScope.size
+}
+
 export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
   const runtime = usePoolsRuntime()
   const { chainId: activeChainId } = useActiveChainId()
   const generationRef = useRef(0)
-  const lastGoodRef = useRef<{
-    wallet: string
-    chainId: number
-    positions: PoolsWalletPosition[]
-    generation: number
-  } | null>(null)
-  const lastScopeRef = useRef<{ wallet: string | null; chainId: number | null }>({
-    wallet: null,
-    chainId: null,
-  })
+  const lastScopeKeyRef = useRef<string>('')
+  const abortRef = useRef<AbortController | null>(null)
 
   const account = runtime.account ?? null
   const chainId = activeChainId ?? runtime.machine?.chainId ?? null
-  const lastScopeKeyRef = useRef<string>('')
 
-  // Synchronous scope identity — prevent post-render empty races from wiping last-good.
+  // Synchronous scope identity — wallet/chain change invalidates only the old commit path.
   const scopeKey = `${account?.toLowerCase() ?? ''}:${chainId ?? ''}`
   if (scopeKey !== lastScopeKeyRef.current) {
     lastScopeKeyRef.current = scopeKey
     generationRef.current += 1
-    lastGoodRef.current = null
-    lastScopeRef.current = { wallet: account, chainId }
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
   }
 
   useEffect(() => {
-    lastScopeRef.current = { wallet: account, chainId }
-  }, [account, chainId])
+    return () => {
+      // Cancel in-flight commit path on unmount; do NOT clear module last-good cache.
+      abortRef.current?.abort()
+    }
+  }, [])
 
   return useMemo(() => {
-    const previous =
-      lastGoodRef.current &&
-      account &&
-      chainId &&
-      lastGoodRef.current.wallet.toLowerCase() === account.toLowerCase() &&
-      lastGoodRef.current.chainId === chainId
-        ? lastGoodRef.current.positions
-        : null
+    const cached = readLastGood(account, chainId)
+    const previous = cached?.positions?.length ? cached.positions : null
 
-    // Ignore stale generation snapshots if scope advanced mid-build.
     const generation = generationRef.current
+    const signal = abortRef.current?.signal
 
     const vm = buildPoolsWalletPositionsViewModel({
       account,
@@ -62,29 +84,34 @@ export function usePoolsWalletPositions(): PoolsMyPositionsViewModel {
       poolsLoading: runtime.phase === 'loading_pools',
       generation,
       previous,
-      previousWallet: lastGoodRef.current?.wallet ?? null,
-      previousChainId: lastGoodRef.current?.chainId ?? null,
+      previousWallet: cached?.wallet ?? null,
+      previousChainId: cached?.chainId ?? null,
       sourcesFailed: runtime.phase === 'error',
     })
+
+    // Stale generation or aborted scope must not commit into the cache.
+    if (signal?.aborted || vm.generation !== generationRef.current) {
+      return vm
+    }
 
     if (
       (vm.state === 'ready' || vm.state === 'partial' || vm.state === 'empty') &&
       account &&
-      chainId &&
-      vm.generation === generationRef.current
+      chainId != null
     ) {
       if (vm.state === 'empty') {
         // Never replace a non-empty last-good with a transient empty response.
-        if (!lastGoodRef.current?.positions.length) {
-          lastGoodRef.current = { wallet: account, chainId, positions: [], generation }
+        if (!cached?.positions.length) {
+          writeLastGood({ wallet: account, chainId, positions: [], generation, updatedAt: Date.now() })
         }
       } else if (vm.positions.length) {
-        lastGoodRef.current = {
+        writeLastGood({
           wallet: account,
           chainId,
           positions: vm.positions,
           generation,
-        }
+          updatedAt: Date.now(),
+        })
       }
     }
 

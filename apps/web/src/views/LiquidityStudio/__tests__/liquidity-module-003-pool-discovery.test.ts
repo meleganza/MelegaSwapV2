@@ -89,18 +89,19 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     expect(formatDiscoveryUsd(undefined)).toBe('—')
   })
 
-  it('builds cards with factual metrics only and Active/Unavailable status', () => {
+  it('builds cards with factual metrics and Active/Empty status (not address-only titles)', () => {
     const live = toDiscoveryCard(samplePair(), { tvlUsd: 12000, volumeUsd: 500, feesUsd: 12 })
     expect(live?.pairName).toBe('MARCO / WBNB')
     expect(live?.status).toBe('Active')
     expect(live?.tvlLabel).toBe('$12.0K')
     expect(live?.addHref).toContain('/add/')
+    expect(live?.qualityScore).toBeGreaterThan(0)
 
     const dead = toDiscoveryCard(
       samplePair({ active: false, classification: 'inactive', lastVerified: undefined }),
       {},
     )
-    expect(dead?.status).toBe('Unavailable')
+    expect(dead?.status).toBe('Empty')
     expect(dead?.tvlLabel).toBe('—')
     expect(dead?.volumeLabel).toBe('—')
     expect(dead?.feesLabel).toBe('—')
@@ -130,7 +131,7 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
 
     expect(factualFilters(cards, false)).toEqual(['all', 'popular', 'newest'])
     expect(factualFilters(cards, true)).toContain('my-tokens')
-    expect(factualSorts(cards)).toEqual(expect.arrayContaining(['tvl', 'volume', 'newest']))
+    expect(factualSorts(cards)).toEqual(expect.arrayContaining(['market', 'tvl', 'volume', 'newest']))
 
     const popular = filterDiscoveryCards(cards, 'popular', new Set())
     expect(popular.every((c) => c.classification === 'tradeable')).toBe(true)

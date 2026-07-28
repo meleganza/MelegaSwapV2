@@ -1,6 +1,7 @@
 /**
  * FARMS_MODULE_002 — pure Overview KPI composition (no React / no Redux).
- * Does not invent zeros. Does not use MasterChef emission as 24H rewards.
+ * 24H Rewards uses canonical MasterChef dexTokenPerBlock emission (amount emitted / day).
+ * Does not invent unique Active Farmers without a wallet index.
  * Does not include Pools TVL or wallet LP outside farms.
  */
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
@@ -72,6 +73,8 @@ export function buildFarmsOverviewKpisFromParts(input: {
   account?: string
   userDataLoaded: boolean
   cakePriceUsd: number
+  emissionPerDay?: number | null
+  emissionPerDayLabel?: string | null
 }): FarmsOverviewKpisViewModel {
   const fetchedAt = new Date().toISOString()
   const { previewCards, farmsLoading, account, userDataLoaded, cakePriceUsd } = input
@@ -150,18 +153,36 @@ export function buildFarmsOverviewKpisFromParts(input: {
     'Unique wallet data unavailable',
     'unavailable',
     'unavailable',
-    'No factual unique-staker index; participants/LP supply must not be used as farmers',
+    'No factual Deposit/Withdraw unique-wallet index; participants/LP supply must not be used as farmers',
   )
 
-  // —— 24H Rewards — never MasterChef emission projections ——
-  const rewards24hCard = card(
-    'rewards24h',
-    '—',
-    'Reward valuation unavailable',
-    'unavailable',
-    'unavailable',
-    'No indexed 24H reward-distribution feed; emission projections are not used as 24H rewards',
-  )
+  // —— 24H Rewards — MasterChef dexTokenPerBlock × blocksPerDay (emitted amount) ——
+  const emissionPerDay = input.emissionPerDay ?? null
+  const emissionLabel = input.emissionPerDayLabel ?? null
+  const emissionUsd =
+    emissionPerDay != null && cakePriceUsd > 0 ? emissionPerDay * cakePriceUsd : null
+  let rewards24hCard: FarmsOverviewKpiCardModel
+  if (emissionPerDay != null && emissionPerDay > 0 && emissionLabel) {
+    rewards24hCard = card(
+      'rewards24h',
+      emissionUsd != null ? formatUsdValue(emissionUsd, false) : emissionLabel,
+      emissionUsd != null
+        ? `${emissionLabel} emitted / 24h · MasterChef dexTokenPerBlock`
+        : 'USD price unavailable · MasterChef dexTokenPerBlock emission',
+      'available',
+      'live',
+      'Canonical MasterChef emission model — not claimed user distribution',
+    )
+  } else {
+    rewards24hCard = card(
+      'rewards24h',
+      '—',
+      'Emission read unavailable',
+      'unavailable',
+      'unavailable',
+      'MasterChef dexTokenPerBlock unavailable',
+    )
+  }
 
   // —— Highest Sustainable APR ——
   const rewarding = listRewardingFarms(lpCards).filter(
@@ -271,15 +292,18 @@ export function buildFarmsOverviewKpisFromParts(input: {
       activeFarmCount: lpCards.length > 0 || !farmsLoading ? activeCards.length : null,
       activeFarmersCount: null,
       activeFarmersState: 'unavailable',
-      rewards24hUsd: null,
-      rewards24hState: 'unavailable',
-      rewards24hSource: 'unavailable_no_indexed_distribution',
+      rewards24hUsd: emissionUsd,
+      rewards24hState: emissionPerDay != null && emissionPerDay > 0 ? 'available' : 'unavailable',
+      rewards24hSource:
+        emissionPerDay != null && emissionPerDay > 0
+          ? 'masterchef_dexTokenPerBlock_emission'
+          : 'unavailable_emission_read',
       sustainableApr: best?.display ?? null,
       sustainableAprFarm: best?.name ?? null,
       harvestableUsd: harvestableUsdDiag,
       harvestableFarmCount: harvestableFarmCountDiag,
       walletState: !account ? 'disconnected' : userDataLoaded ? 'ready' : 'loading',
-      emissionNotUsedAs24h: true,
+      emissionNotUsedAs24h: !(emissionPerDay != null && emissionPerDay > 0),
       poolsTvlNotIncluded: true,
       provenance: {
         tvl: 'farm.liquidity (LP farms only; pid 0 excluded; Pools excluded)',

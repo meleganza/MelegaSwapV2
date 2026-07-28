@@ -67,6 +67,7 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
     newest: 'Newest',
   },
   sorts: {
+    market: 'Market quality',
     tvl: 'Highest TVL',
     volume: 'Highest Volume',
     newest: 'Newest',
@@ -74,7 +75,7 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
 } as const
 
 export type LiquidityDiscoveryFilter = 'all' | 'my-tokens' | 'popular' | 'newest'
-export type LiquidityDiscoverySort = 'tvl' | 'volume' | 'newest'
+export type LiquidityDiscoverySort = 'market' | 'tvl' | 'volume' | 'newest'
 
 /** Frozen Module 001 / 002 source SHAs. */
 export const LIQUIDITY_MODULE_001_002_FREEZE = {

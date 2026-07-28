@@ -48,7 +48,7 @@ export const TrendingRibbon: React.FC = () => {
 
   return (
     <MelegaTicker
-      label="🔥 TRENDING"
+      label="TOP MOVERS"
       items={enrichedItems}
       marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
       showLiveDot={!trendingEmpty && enrichedItems.length > 0}

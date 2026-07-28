@@ -1,0 +1,38 @@
+{
+  "mission": "MELEGA_DEX_V1_POOLS_WALLET_FIXTURE_DISCOVERY_AND_3_CYCLE_UNBLOCK",
+  "scannedAt": "2026-07-28T07:08:22Z",
+  "latestBlock": 112583164,
+  "masterChefExcluded": "0x41D5487836452d23f2c467070244E5842B412794",
+  "fundedPoolsSampledForMarcoBalance": 29,
+  "primaryDiscovery": {
+    "pool": "Stake CAKE \u2192 Earn YD",
+    "sousId": 130,
+    "contract": "0xa81d9DE67407269B7aa4C327f097EDf50552a050",
+    "depositEventsObservedBeforeFirstPositive": 2,
+    "walletsCheckedBeforeFirstPositive": 3,
+    "positiveWallet": "0x245301afbdc4ed5a623f85c53b9da3815733e7e2",
+    "onChainPrincipal": "5422402661200656689538666"
+  },
+  "alternativeDiscovery": {
+    "pool": "0xcffd535ac335593ae328351b40215d39edc4d37b",
+    "found": 0
+  },
+  "emptyWalletChecks": [
+    {
+      "smartChef": "0xa81d9DE67407269B7aa4C327f097EDf50552a050",
+      "amount": "0"
+    },
+    {
+      "smartChef": "0xcffd535ac335593ae328351b40215d39edc4d37b",
+      "amount": "0"
+    },
+    {
+      "smartChef": "0x99a44d26defb3f0a5b4e306ce45538c66c05b69e",
+      "amount": "0"
+    },
+    {
+      "smartChef": "0x7b072c20d2f03393145c6829175e9ac975fa2cfe",
+      "amount": "0"
+    }
+  ]
+}

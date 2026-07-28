@@ -316,6 +316,8 @@ export const PoolsMyPositionCard: React.FC<{
             <MetricSupport>Reward data unavailable</MetricSupport>
           ) : position.claimableValue ? (
             <MetricSupport>{position.claimableValue}</MetricSupport>
+          ) : position.claimableFormatted && !position.claimableFormatted.startsWith('0 ') ? (
+            <MetricSupport>USD value unavailable</MetricSupport>
           ) : null}
         </Metric>
         {position.unlockLine ? <Unlock>{position.unlockLine}</Unlock> : null}

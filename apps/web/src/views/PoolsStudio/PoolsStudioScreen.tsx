@@ -6,7 +6,6 @@ import { typography } from 'design-system/melega'
 import PoolsStudioGlobalStyle from './PoolsStudioGlobalStyle'
 import { PoolsRuntimeProvider } from './poolsRuntime/PoolsRuntimeContext'
 import PoolsActionHost from './poolsRuntime/PoolsActionHost'
-import FeaturedPoolHero from './components/FeaturedPoolHero'
 import PoolsSidebar from './components/PoolsSidebar'
 import CreatePoolCta from './components/CreatePoolCta'
 import PoolsBelowFold from './components/PoolsBelowFold'
@@ -191,9 +190,8 @@ export const PoolsStudioScreen: React.FC = () => (
         </DataSurfaceErrorBoundary>
         <MainGrid data-ps-main-grid>
           <MainColumn>
-            <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool metrics are temporarily unavailable.">
-              <FeaturedPoolHero />
-            </DataSurfaceErrorBoundary>
+            {/* Featured Pool lives compactly in Hero; legacy giant card unmounted. */}
+            <div data-ps-featured-archived="true" aria-hidden="true" />
           </MainColumn>
           <SidebarColumn>
             <PoolsSidebar />

@@ -1,0 +1,9 @@
+{
+  "label": "Total Pools",
+  "partition": "Total = Active + Finished + Inactive + Unavailable",
+  "supportStringExposed": true,
+  "files": {
+    "poolsOverviewKpisTokens.ts": "f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba",
+    "usePoolsOverviewKpis.ts": "b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6"
+  }
+}

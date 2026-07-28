@@ -117,13 +117,14 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
     if (classification.status === 'loading') {
       discoveredCard = card('discovered', '—', 'Loading pool index…', 'loading', 'loading')
     } else if (classification.status === 'ready' && counts) {
+      const inactive = Math.max(0, counts.discovered - counts.active - counts.ended - counts.invalid)
       discoveredCard = card(
         'discovered',
         String(counts.discovered),
-        `${counts.active} active · ${counts.ended} ended`,
+        `${counts.active} Active · ${counts.ended} Finished · ${inactive} Inactive · ${counts.invalid} Unavailable`,
         counts.discovered === 0 ? 'zero' : 'available',
         'live',
-        `SmartChef classification · generated ${classification.generatedAt ?? fetchedAt}`,
+        `Total = Active + Finished + Inactive + Unavailable · SmartChef classification · ${classification.generatedAt ?? fetchedAt}`,
       )
     } else {
       discoveredCard = card('discovered', '—', 'Pool index unavailable', 'unavailable', 'unavailable')
@@ -357,7 +358,13 @@ export function buildPoolsOverviewKpisFromParts(input: {
     classification.status === 'loading'
       ? card('discovered', '—', 'Loading pool index…', 'loading', 'loading')
       : counts
-        ? card('discovered', String(counts.discovered), `${counts.active} active · ${counts.ended} ended`, counts.discovered === 0 ? 'zero' : 'available', 'live')
+        ? card(
+            'discovered',
+            String(counts.discovered),
+            `${counts.active} Active · ${counts.ended} Finished · ${Math.max(0, counts.discovered - counts.active - counts.ended - counts.invalid)} Inactive · ${counts.invalid} Unavailable`,
+            counts.discovered === 0 ? 'zero' : 'available',
+            'live',
+          )
         : card('discovered', '—', 'Pool index unavailable', 'unavailable', 'unavailable')
 
   const rewardingCard =

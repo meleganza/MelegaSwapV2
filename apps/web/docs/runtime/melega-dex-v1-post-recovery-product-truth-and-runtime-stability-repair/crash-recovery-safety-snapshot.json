@@ -1,0 +1,14 @@
+{
+  "safetyBranch": "safety/melega-dex-v1-post-recovery-crash-recovery-20260727-215502",
+  "safetyCommit": "78772fe3",
+  "safetyMessage": "safety: preserve post-recovery P0 crash state",
+  "originalBranch": "melega-dex-v1-post-recovery-product-truth-and-runtime-stability-repair",
+  "originalHeadBeforePostCrashWork": "78772fe3",
+  "patchFile": "recovered-wip-diff.patch",
+  "patchSha256": "31863bd75aec0d56731c42745b2d919e09be2e39569a2a4bf4bb32eb01a90aba",
+  "pushed": false,
+  "recordedAt": "2026-07-28T05:05:05.615281+00:00",
+  "postCrashWipPatchSha256": "11924f730c885007131e10945b2215e1b91fc5ac282f1f860decedfad83263c4",
+  "postCrashWipPatchBytes": 102163,
+  "updatedAt": "2026-07-28T05:11:56.412974+00:00"
+}
