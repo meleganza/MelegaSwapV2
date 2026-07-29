@@ -1,0 +1,33 @@
+{
+  "viewports": [
+    {
+      "width": 1920,
+      "overflowX": false
+    },
+    {
+      "width": 1600,
+      "overflowX": false
+    },
+    {
+      "width": 1440,
+      "overflowX": false
+    },
+    {
+      "width": 1366,
+      "overflowX": false
+    },
+    {
+      "width": 1024,
+      "overflowX": false
+    },
+    {
+      "width": 430,
+      "overflowX": false
+    },
+    {
+      "width": 390,
+      "overflowX": false
+    }
+  ],
+  "overflowAny": false
+}

@@ -1,45 +1,57 @@
 /**
- * LIST Wave 04A — compact horizontal How it works (beside Completion in workspace row).
+ * List Final Founder Acceptance — right-side vertical How it works guide.
  */
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { listOne } from './listTokens'
+import { useListIntent } from './useListIntent'
 
 type Step = {
   n: number
   title: string
   description: string
+  stage: 'choose' | 'configure' | 'verify' | 'publish' | 'grow'
 }
 
 const STEPS: Step[] = [
   {
     n: 1,
     title: 'Choose',
-    description: 'Import, create or claim your token or project.',
+    description: 'Select Import, Create, Claim, or Project Page.',
+    stage: 'choose',
   },
   {
     n: 2,
-    title: 'Setup',
-    description: 'Complete the required information with AI assistance.',
+    title: 'Configure',
+    description: 'Enter the required identity and project details.',
+    stage: 'configure',
   },
   {
     n: 3,
-    title: 'Review',
-    description: 'Confirm the details, ownership and publishing choices.',
+    title: 'Verify',
+    description: 'Confirm ownership and review before any publish action.',
+    stage: 'verify',
   },
   {
     n: 4,
     title: 'Publish',
-    description: 'Create your Melega identity and ecosystem presence.',
+    description: 'Complete only when the selected flow can truthfully publish.',
+    stage: 'publish',
   },
   {
     n: 5,
     title: 'Grow',
-    description: 'Build visibility, liquidity and community over time.',
+    description: 'Optional Featured Home placement and ongoing discovery.',
+    stage: 'grow',
   },
 ]
 
-const Section = styled.section`
+const pulse = keyframes`
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.9; }
+`
+
+const Section = styled.aside`
   position: relative;
   width: 100%;
   max-width: none;
@@ -48,20 +60,25 @@ const Section = styled.section`
   margin: 0;
   box-sizing: border-box;
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 14px 14px 16px;
   overflow: hidden;
   font-family: ${listOne.font};
-  background: linear-gradient(145deg, rgba(17, 17, 17, 0.98) 0%, rgba(12, 12, 12, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(165deg, rgba(18, 18, 18, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+  border: 1px solid rgba(244, 196, 48, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
   pointer-events: none;
   user-select: text;
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 88px;
+  }
 `
 
 const Header = styled.div`
   display: flex;
   align-items: center;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 `
 
 const Title = styled.h2`
@@ -72,92 +89,132 @@ const Title = styled.h2`
   color: #f5f5f5;
 `
 
-const StepList = styled.ol`
+const Rail = styled.ol`
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-`
-
-const StepItem = styled.li`
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(244, 196, 48, 0.55), rgba(244, 196, 48, 0.08));
+  }
+
+  @media (max-width: 1023px) {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+
+    &::before {
+      display: none;
+    }
+  }
 `
 
-const Circle = styled.span`
-  width: 22px;
-  height: 22px;
+const StepItem = styled.li<{ $active?: boolean }>`
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 0;
+  color: ${({ $active }) => ($active ? '#f5f5f5' : 'rgba(255,255,255,0.72)')};
+
+  @media (max-width: 1023px) {
+    min-width: 132px;
+    grid-template-columns: 1fr;
+    padding: 8px;
+    border-radius: 10px;
+    background: ${({ $active }) => ($active ? 'rgba(244,196,48,0.08)' : 'rgba(255,255,255,0.02)')};
+    border: 1px solid ${({ $active }) => ($active ? 'rgba(244,196,48,0.28)' : 'rgba(255,255,255,0.05)')};
+  }
+`
+
+const Node = styled.span<{ $active?: boolean }>`
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   box-sizing: border-box;
-  border: 1px solid rgba(221, 185, 47, 0.9);
+  border: 1px solid
+    ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.95)' : 'rgba(221, 185, 47, 0.55)')};
   background: #121212;
-  color: #ddb92f;
-  font-size: 11px;
-  line-height: 14px;
+  color: #f2c84c;
+  font-size: 12px;
   font-weight: 750;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
+  box-shadow: ${({ $active }) => ($active ? '0 0 0 4px rgba(244,196,48,0.12)' : 'none')};
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ${({ $active }) => ($active ? pulse : 'none')} 2.4s ease-in-out infinite;
+  }
 `
 
 const StepTitle = styled.h3`
   margin: 0;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 700;
-  color: #f5f5f5;
 `
 
 const StepDesc = styled.p`
-  margin: 0;
-  font-size: 10px;
-  line-height: 14px;
-  font-weight: 400;
-  color: #a8a8a8;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: rgba(255, 255, 255, 0.55);
 `
 
-export const ListHowItWorks: React.FC = () => {
+function activeStageIndex(intent: string | null, stepHint = 0): number {
+  if (!intent) return 0
+  if (stepHint <= 0) return 1
+  if (stepHint === 1) return 2
+  if (stepHint === 2) return 2
+  if (stepHint >= 3) return 3
+  return 1
+}
+
+type Props = {
+  /** Optional 0-based workspace step for highlight only — never claims publish done. */
+  workflowStep?: number
+}
+
+export const ListHowItWorks: React.FC<Props> = ({ workflowStep = 0 }) => {
+  const { listIntent } = useListIntent()
+  const active = activeStageIndex(listIntent, workflowStep)
+
   return (
     <Section
       data-testid="list-how-it-works"
-      data-list-module="004"
-      data-list-how="compact"
-      aria-labelledby="list-how-it-works-title"
+      data-list-how="vertical-right"
+      data-list-how-placement="right"
+      aria-label="How it works"
     >
-      <Header data-testid="list-how-header">
-        <Title id="list-how-it-works-title">How it works</Title>
+      <Header>
+        <Title>How it works</Title>
       </Header>
-
-      <StepList data-testid="list-how-steps">
-        {STEPS.map((step) => (
-          <StepItem key={step.n} data-testid={`list-how-step-${step.n}`}>
-            <Circle data-testid={`list-how-circle-${step.n}`}>{step.n}</Circle>
-            <StepTitle>{step.title}</StepTitle>
-            <StepDesc>{step.description}</StepDesc>
+      <Rail data-testid="list-how-rail">
+        {STEPS.map((s) => (
+          <StepItem key={s.n} data-stage={s.stage} $active={active === s.n - 1 || (!listIntent && s.n === 1)}>
+            <Node $active={active === s.n - 1 || (!listIntent && s.n === 1)} aria-hidden>
+              {s.n}
+            </Node>
+            <div>
+              <StepTitle>{s.title}</StepTitle>
+              <StepDesc>{s.description}</StepDesc>
+            </div>
           </StepItem>
         ))}
-      </StepList>
+      </Rail>
     </Section>
   )
 }

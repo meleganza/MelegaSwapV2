@@ -1,0 +1,11 @@
+{
+  "melega": "/images/melega.png",
+  "bnb": "/images/home/trade/BNB.png",
+  "usdt": "/images/56/tokens/0x55d398326f99059fF775485246999027B3197955.png",
+  "textChipsRemoved": true,
+  "assetsExist": {
+    "melega": true,
+    "bnb": true,
+    "usdt": true
+  }
+}

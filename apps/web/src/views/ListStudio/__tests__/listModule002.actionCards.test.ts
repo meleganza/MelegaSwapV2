@@ -38,7 +38,7 @@ describe('LIST Wave 04A Action Cards', () => {
     ])
     expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(false)
     const cards = load('ListActionCards.tsx')
-    expect(cards).toContain('Coming Soon')
+    expect(cards).toContain('Review readiness')
     expect(cards).toContain('Claim Project Page')
     expect(cards).toContain('POPULAR')
   })

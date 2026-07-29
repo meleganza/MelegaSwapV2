@@ -1,5 +1,5 @@
 /**
- * LIST Wave 04A — workspace beside compact How it works.
+ * LIST Final — denser workspace beside right How guide.
  */
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
@@ -11,14 +11,12 @@ function load(rel: string) {
   return readFileSync(path.join(ROOT, rel), 'utf8')
 }
 
-describe('LIST Wave 04A Workspace', () => {
-  it('keeps workspace geometry tokens', () => {
+describe('LIST Workspace (founder-final)', () => {
+  it('uses auto-height denser workspace shell', () => {
     const tokens = load('listTokens.ts')
-    expect(tokens).toContain("workspaceH: '920px'")
+    expect(tokens).toContain("workspaceH: 'auto'")
     expect(tokens).toContain("workspaceW: '1376px'")
-    expect(tokens).toContain("workspaceHeaderH: '64px'")
-    expect(tokens).toContain("workspaceBodyH: '760px'")
-    expect(tokens).toContain("workspaceFooterH: '72px'")
+    expect(tokens).toContain('workspaceMinH')
   })
 
   it('implements all five intent bodies without modals or routes', () => {
@@ -34,18 +32,18 @@ describe('LIST Wave 04A Workspace', () => {
     expect(ws).not.toContain('Drawer')
   })
 
-  it('places How it works beside workspace Completion surface', () => {
+  it('places workspace left of How it works', () => {
     const screen = load('ListStudioScreen.tsx')
     expect(screen).toContain('list-workflow-bridge')
     expect(screen).toContain('<ListHowItWorks')
     expect(screen).toContain('<ListWorkspace')
-    expect(screen.indexOf('<ListHowItWorks')).toBeLessThan(screen.indexOf('<ListWorkspace'))
+    expect(screen.indexOf('<ListWorkspace')).toBeLessThan(screen.indexOf('<ListHowItWorks'))
     expect(screen).toContain('list-workspace')
   })
 
-  it('keeps create-token honest about Coming Soon', () => {
+  it('keeps create-token honest about factory deployment blocker', () => {
     const ws = load('ListWorkspace.tsx')
     expect(ws).toContain('LIST_CREATE_TOKEN_AVAILABLE')
-    expect(ws).toContain('Coming Soon')
+    expect(ws).toContain('CREATE_TOKEN_FACTORY_NOT_DEPLOYED')
   })
 })

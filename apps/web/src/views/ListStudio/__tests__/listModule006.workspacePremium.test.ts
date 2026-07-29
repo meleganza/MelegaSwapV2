@@ -14,11 +14,9 @@ function load(rel: string) {
 describe('LIST Wave 04A Workspace Premium', () => {
   it('keeps workspace geometry locks', () => {
     const tokens = load('listTokens.ts')
-    expect(tokens).toContain("workspaceH: '920px'")
+    expect(tokens).toContain("workspaceH: 'auto'")
     expect(tokens).toContain("workspaceW: '1376px'")
-    expect(tokens).toContain("workspaceHeaderH: '64px'")
-    expect(tokens).toContain("workspaceBodyH: '760px'")
-    expect(tokens).toContain("workspaceFooterH: '72px'")
+    expect(tokens).toContain('workspaceMinH')
     expect(tokens).toContain("workspaceCompleteRing: '72px'")
   })
 

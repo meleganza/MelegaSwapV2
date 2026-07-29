@@ -1,0 +1,12 @@
+{
+  "intents": [
+    "import-token",
+    "create-token",
+    "claim-project",
+    "create-project",
+    "ai-assistant"
+  ],
+  "url": "/list?intent=<intent>",
+  "workspaceHost": "ListWorkspace",
+  "howGuide": "right vertical"
+}

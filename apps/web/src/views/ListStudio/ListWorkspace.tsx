@@ -7,7 +7,9 @@ import styled, { css, keyframes } from 'styled-components'
 import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
-import { FeaturedHomePromotionCard } from 'views/shared/FeaturedHomePromotionCard'
+import { ListFeaturedCheckout } from './ListFeaturedCheckout'
+import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
+import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -30,6 +32,7 @@ const REQUIRED: Record<ListIntent, FieldDef[]> = {
     { key: 'ticker', label: 'Ticker', required: true },
     { key: 'supply', label: 'Supply', required: true },
     { key: 'decimals', label: 'Decimals', required: true },
+    { key: 'owner', label: 'Owner Wallet', required: true },
   ],
   'claim-project': [
     { key: 'contract', label: 'Contract', required: true },
@@ -58,7 +61,8 @@ const Shell = styled.section`
   position: relative;
   width: 100%;
   max-width: ${listOne.workspaceW};
-  height: ${listOne.workspaceH};
+  height: auto;
+  min-height: ${listOne.workspaceMinH};
   margin: ${listOne.workspaceTop} 0 0;
   box-sizing: border-box;
   padding: ${listOne.workspacePadY} ${listOne.workspacePadX};
@@ -177,12 +181,11 @@ const AutosaveLine = styled.div`
 
 const Body = styled.div`
   box-sizing: border-box;
-  height: ${listOne.workspaceBodyH};
-  flex: 0 0 ${listOne.workspaceBodyH};
-  min-height: 0;
+  height: auto;
+  min-height: 360px;
+  flex: 1 1 auto;
   display: grid;
-  /* 65/35 intent with locked 340px context column on desktop */
-  grid-template-columns: minmax(0, 1fr) ${listOne.workspaceContextW};
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, ${listOne.workspaceContextW});
   column-gap: 20px;
   overflow: hidden;
 
@@ -660,6 +663,20 @@ export const ListWorkspace: React.FC = () => {
     setAttempted(false)
     setSavedAt(null)
     setPendingDescription(null)
+    if (!listIntent) {
+      setValues({})
+      return
+    }
+    const restored = loadListDraft({
+      intent: listIntent,
+      wallet: 'guest',
+      chainId: 56,
+    })
+    if (restored?.values) {
+      setValues(restored.values)
+      setSavedAt(Date.parse(restored.updatedAt) || Date.now())
+      return
+    }
     if (listIntent === 'import-token') setValues({ chain: 'bsc' })
     else if (listIntent === 'create-token') setValues({ decimals: '18' })
     else if (listIntent === 'create-project' || listIntent === 'ai-assistant') setValues({ category: 'defi' })
@@ -676,9 +693,17 @@ export const ListWorkspace: React.FC = () => {
     if (!listIntent) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => {
-      if (Object.keys(values).some((k) => filled(values[k]))) {
-        setSavedAt(Date.now())
-      }
+      if (!Object.keys(values).some((k) => filled(values[k]))) return
+      // Guest-scoped by default; wallet field stored inside values for isolation checks.
+      const saved = saveListDraft({
+        intent: listIntent,
+        wallet: 'guest',
+        chainId: 56,
+        projectKey: values.contract || values.name || null,
+        values,
+        featuredOrderId: values.featuredOrderId || null,
+      })
+      setSavedAt(Date.parse(saved.updatedAt) || Date.now())
     }, 2000)
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
@@ -780,30 +805,34 @@ export const ListWorkspace: React.FC = () => {
 
     if (listIntent === 'create-token') {
       return (
-        <FormStack data-testid="list-workspace-form">
-          {!LIST_CREATE_TOKEN_AVAILABLE ? (
-            <Banner>Token creation is Coming Soon. Fields prepare a draft only — publishing is unavailable.</Banner>
-          ) : null}
+        <FormStack data-testid="list-workspace-form" data-create-token-status={CREATE_TOKEN_READINESS.status}>
+          <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
+            {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Factory: not deployed. Mintability: fixed
+            supply required. Fee recipient: unset until factory bind.
+          </Banner>
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
-            <Input value={values.name || ''} onChange={set('name')} disabled={!LIST_CREATE_TOKEN_AVAILABLE} />
+            <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Sample Token" />
           </Field>
-          <Field label="Ticker" ok={filled(values.ticker)} invalid={invalid('ticker')}>
-            <Input value={values.ticker || ''} onChange={set('ticker')} disabled={!LIST_CREATE_TOKEN_AVAILABLE} />
+          <Field label="Token Symbol" ok={filled(values.ticker)} invalid={invalid('ticker')}>
+            <Input value={values.ticker || ''} onChange={set('ticker')} placeholder="e.g. SMPL" />
           </Field>
-          <Field label="Supply" ok={filled(values.supply)} invalid={invalid('supply')}>
-            <Input value={values.supply || ''} onChange={set('supply')} disabled={!LIST_CREATE_TOKEN_AVAILABLE} />
+          <Field label="Total Supply" ok={filled(values.supply)} invalid={invalid('supply')}>
+            <Input value={values.supply || ''} onChange={set('supply')} placeholder="Fixed total supply" />
           </Field>
-          <Field label="Decimals" ok={filled(values.decimals)} invalid={invalid('decimals')}>
-            <Input value={values.decimals || '18'} onChange={set('decimals')} disabled={!LIST_CREATE_TOKEN_AVAILABLE} />
+          <Field label="Decimals" ok={filled(values.decimals)} invalid={invalid('decimals')} hint="Default 18">
+            <Input value={values.decimals || '18'} onChange={set('decimals')} />
           </Field>
-          <Field label="Logo" ok={filled(values.logo)} invalid={false} optional>
-            <Input
-              value={values.logo || ''}
-              onChange={set('logo')}
-              placeholder="https://… or upload later"
-              disabled={!LIST_CREATE_TOKEN_AVAILABLE}
-            />
+          <Field label="Owner Wallet" ok={filled(values.owner)} invalid={invalid('owner')}>
+            <Input value={values.owner || ''} onChange={set('owner')} placeholder="0x… owner / admin disclosure" />
           </Field>
+          <Field label="Logo / metadata (after deploy)" ok={filled(values.logo)} invalid={false} optional>
+            <Input value={values.logo || ''} onChange={set('logo')} placeholder="Optional — after deployment" />
+          </Field>
+          <Banner>
+            Deploy execution unavailable — CREATE_TOKEN_FACTORY_NOT_DEPLOYED ({CREATE_TOKEN_READINESS.blockerCode}).
+            Draft only until a certified factory is bound. LIST_CREATE_TOKEN_AVAILABLE=
+            {String(LIST_CREATE_TOKEN_AVAILABLE)}.
+          </Banner>
         </FormStack>
       )
     }
@@ -832,13 +861,16 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Project Preview notes" ok={filled(values.preview)} invalid={false} optional>
             <TextArea value={values.preview || ''} onChange={set('preview')} placeholder="Local claim notes" />
           </Field>
-          <FeaturedHomePromotionCard
+          <ListFeaturedCheckout
             testId="list-claim-featured-home-promotion"
-            selected={values.featuredHome === '1'}
-            onSelectedChange={(next) => setValues((v) => ({ ...v, featuredHome: next ? '1' : '' }))}
-            payAsset={(values.featuredPay as 'BNB' | 'USDT' | 'USDC' | 'MARCO') || 'BNB'}
-            onPayAssetChange={(asset) => setValues((v) => ({ ...v, featuredPay: asset }))}
-            compact
+            sourceFlow="claim-project"
+            projectId={filled(values.contract) ? `claim:${values.contract.toLowerCase()}` : ''}
+            projectContract={values.contract || null}
+            projectSlug={null}
+            buyerWallet={values.wallet || null}
+            identityReady={filled(values.contract) && filled(values.wallet)}
+            onOrderId={(id) => setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))}
+            onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
           />
         </FormStack>
       )
@@ -858,6 +890,15 @@ export const ListWorkspace: React.FC = () => {
               <option value="infra">Infrastructure</option>
               <option value="other">Other</option>
             </Select>
+          </Field>
+          <Field
+            label="Wallet"
+            ok={filled(values.wallet)}
+            invalid={false}
+            optional
+            hint="Required only if purchasing Featured placement."
+          >
+            <Input value={values.wallet || ''} onChange={set('wallet')} placeholder="0x… buyer wallet" />
           </Field>
           <Field label="Website" ok={filled(values.website)} invalid={false} optional>
             <Input value={values.website || ''} onChange={set('website')} placeholder="https://" />
@@ -900,13 +941,24 @@ export const ListWorkspace: React.FC = () => {
             <Input value={values.token || ''} onChange={set('token')} placeholder="Token contract if you have one" />
           </Field>
           {listIntent === 'create-project' ? (
-            <FeaturedHomePromotionCard
+            <ListFeaturedCheckout
               testId="list-create-featured-home-promotion"
-              selected={values.featuredHome === '1'}
-              onSelectedChange={(next) => setValues((v) => ({ ...v, featuredHome: next ? '1' : '' }))}
-              payAsset={(values.featuredPay as 'BNB' | 'USDT' | 'USDC' | 'MARCO') || 'BNB'}
-              onPayAssetChange={(asset) => setValues((v) => ({ ...v, featuredPay: asset }))}
-              compact
+              sourceFlow="create-project"
+              projectId={
+                filled(values.name)
+                  ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+                  : ''
+              }
+              projectSlug={
+                filled(values.name)
+                  ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                  : null
+              }
+              projectContract={values.token || null}
+              buyerWallet={values.wallet || null}
+              identityReady={filled(values.name) && filled(values.category) && filled(values.description)}
+              onOrderId={(id) => setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))}
+              onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
             />
           ) : null}
         </FormStack>
@@ -1083,7 +1135,20 @@ export const ListWorkspace: React.FC = () => {
       <Footer data-testid="list-workspace-footer" data-pixel-workspace-footer="72">
         <FooterLeft>
           {listIntent ? (
-            <Btn type="button" onClick={() => clearListIntent()}>
+            <Btn
+              type="button"
+              onClick={() => {
+                if (listIntent) {
+                  deleteListDraft({
+                    intent: listIntent,
+                    wallet: values.wallet || values.owner || null,
+                    chainId: 56,
+                    projectKey: values.contract || values.name || null,
+                  })
+                }
+                clearListIntent()
+              }}
+            >
               Cancel
             </Btn>
           ) : null}

@@ -1,0 +1,34 @@
+{
+  "missionId": "MELEGA_DEX_V1_LIST_FINAL_FOUNDER_ACCEPTANCE_AND_FEATURED_CONVERSION",
+  "auditedAt": "2026-07-29T18:52:02.075Z",
+  "composition": [
+    "ListPageHero",
+    "ListActionCards",
+    "ListWhyBuildRail",
+    "ListWorkspace|ListHowItWorks"
+  ],
+  "flows": {
+    "import-token": {
+      "status": "draft-ui",
+      "tx": false,
+      "registryPublish": false
+    },
+    "create-token": {
+      "status": "DEPLOYMENT_BLOCKED",
+      "factory": null,
+      "tx": false
+    },
+    "claim-project": {
+      "status": "draft-ui+optional-featured-checkout",
+      "tx": "featured-optional"
+    },
+    "create-project": {
+      "status": "draft-ui+optional-featured-checkout",
+      "tx": "featured-optional"
+    },
+    "featured": {
+      "status": "order-model+payment-paths-ready",
+      "homeModified": false
+    }
+  }
+}

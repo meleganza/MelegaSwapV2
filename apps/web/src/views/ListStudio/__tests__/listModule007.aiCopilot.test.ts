@@ -14,7 +14,7 @@ function load(rel: string) {
 describe('LIST Wave 04A AI Copilot', () => {
   it('keeps AI geometry tokens', () => {
     const tokens = load('listTokens.ts')
-    expect(tokens).toContain("workspaceH: '920px'")
+    expect(tokens).toContain("workspaceH: 'auto'")
     expect(tokens).toContain("aiSuggestSectionH: '260px'")
     expect(tokens).toContain("aiSuggestCardH: '52px'")
   })

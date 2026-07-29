@@ -48,11 +48,12 @@ const CARDS: CardDef[] = [
     intent: 'create-token',
     title: 'Create Token',
     description: 'Launch your own token with a simple and secure creation flow.',
-    cta: 'Create Token',
+    cta: LIST_CREATE_TOKEN_AVAILABLE ? 'Create Token' : 'Review readiness',
     accent: 'gold',
     Icon: Box,
-    available: LIST_CREATE_TOKEN_AVAILABLE,
-    disabledCta: 'Coming Soon',
+    // Card opens the workspace; deploy remains blocked until factory certification.
+    available: true,
+    disabledCta: 'Review readiness',
   },
   {
     intent: 'claim-project',
@@ -627,7 +628,7 @@ export const ListActionCards: React.FC = () => {
             <strong>{INTENT_LABEL[listIntent]}</strong>
             {' — '}
             {listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE
-              ? 'Token creation is not available yet on this page.'
+              ? 'Create Token readiness is open below — deploy remains blocked until a certified factory is bound.'
               : 'Continue in the workspace below. You remain on /list.'}
           </>
         ) : (

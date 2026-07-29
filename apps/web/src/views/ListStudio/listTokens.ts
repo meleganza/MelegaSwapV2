@@ -122,17 +122,17 @@ export const listOne = {
   howTabletGapY: '20px',
   howTabletStepMinH: '88px',
 
-  /* MODULE_005 — unified list workspace (001–004 locks unchanged) */
-  workspaceTop: '24px',
+  /* MODULE_005 — unified list workspace (founder-final denser shell) */
+  workspaceTop: '8px',
   workspaceW: '1376px',
-  workspaceH: '920px',
+  workspaceH: 'auto',
+  workspaceMinH: '560px',
   workspacePadX: '24px',
-  /* 11+11 vertical + 1+1 border = 24; keeps header+body+footer at 896 inside 920 */
-  workspacePadY: '11px',
+  workspacePadY: '12px',
   workspaceRadius: '16px',
-  workspaceHeaderH: '64px',
-  workspaceBodyH: '760px',
-  workspaceFooterH: '72px',
+  workspaceHeaderH: '56px',
+  workspaceBodyH: 'auto',
+  workspaceFooterH: '64px',
   workspaceBg: '#101010',
 
   /* MODULE_006 — premium workspace internals (001–005 outer locks unchanged) */

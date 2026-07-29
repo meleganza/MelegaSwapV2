@@ -1,0 +1,13 @@
+{
+  "chainId": 56,
+  "factoryAddress": null,
+  "constructorArgs": "TBD after certified artifact selection",
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "deployerAuthority": "Founder-controlled deployer — not executed in this mission",
+  "verificationCommand": "forge verify-contract <address> <contract> --chain-id 56",
+  "postDeployBind": [
+    "LIST_CREATE_TOKEN_AVAILABLE",
+    "createTokenReadiness.factoryAddress"
+  ],
+  "privateKey": "NOT_REQUESTED"
+}

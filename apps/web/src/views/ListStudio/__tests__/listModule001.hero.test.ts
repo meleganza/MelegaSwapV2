@@ -23,6 +23,9 @@ describe('LIST Wave 04A Hero', () => {
     expect(hero).toContain('list-hero-orbit-bnb')
     expect(hero).toContain('list-hero-orbit-usdt')
     expect(hero).toContain('MELEGA_LOGO_URI')
+    expect(hero).toContain('LIST_HERO_BNB_LOGO')
+    expect(hero).toContain('LIST_HERO_USDT_LOGO')
+
     expect(hero).not.toContain('list-hero-stats')
     expect(hero).not.toContain('useListHeroStats')
     expect(hero).not.toContain('LIST_HERO_ART')

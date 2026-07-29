@@ -1,0 +1,5 @@
+{
+  "status": "DEPLOYMENT_BLOCKED",
+  "blockerCode": "CREATE_TOKEN_FACTORY_NOT_DEPLOYED",
+  "chainId": 56
+}

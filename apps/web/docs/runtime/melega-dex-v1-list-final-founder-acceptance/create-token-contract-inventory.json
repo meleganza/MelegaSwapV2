@@ -1,0 +1,9 @@
+{
+  "factorySolidityInRepo": false,
+  "deployedFactoryAddress": null,
+  "listFlag": "LIST_CREATE_TOKEN_AVAILABLE=false",
+  "relatedUi": [
+    "ListWorkspace create-token",
+    "BuildStudio CreateTokenPanel"
+  ]
+}

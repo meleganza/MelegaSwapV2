@@ -43,3 +43,4 @@ debug.log*
 # R768 durable indexer runtime data (never commit)
 data/bsc-indexer/
 data/melega-indexer/
+data/featured-orders/
