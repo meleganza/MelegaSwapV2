@@ -27,14 +27,14 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(bytes.length).toBe(FARMS_FOUNDER_MOCKUP.bytes)
   })
 
-  it('locks Hero geometry contracts (1376×260 / 440+48+480+48+360)', () => {
+  it('locks Hero geometry contracts (1376×260 / 440+24+480+24+360)', () => {
     expect(farmsHero.heroW).toBe('1376px')
     expect(farmsHero.heroH).toBe('260px')
     expect(farmsHero.topAfterTrending).toBe('24px')
     expect(farmsHero.leftW).toBe('440px')
     expect(farmsHero.artworkW).toBe('480px')
     expect(farmsHero.trustW).toBe('360px')
-    expect(farmsHero.columnGap).toBe('48px')
+    expect(farmsHero.columnGap).toBe('24px')
     expect(farmsHero.trustBoxW).toBe('360px')
     expect(farmsHero.trustBoxH).toBe('230px')
     const sum =
@@ -43,7 +43,7 @@ describe('FARMS_MODULE_001 Hero', () => {
       parseInt(farmsHero.artworkW, 10) +
       parseInt(farmsHero.columnGap, 10) +
       parseInt(farmsHero.trustW, 10)
-    expect(sum).toBe(1376)
+    expect(sum).toBe(1328)
   })
 
   it('ships locked factual copy without runtime KPIs or forbidden claims', () => {

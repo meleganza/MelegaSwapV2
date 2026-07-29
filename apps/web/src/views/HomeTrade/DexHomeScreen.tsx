@@ -15,7 +15,6 @@ import useHomeTradeData from './useHomeTradeData'
 import { getAllProjects } from 'registry/projects/getAllProjects'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
-import { MelegaDexFooter } from './MelegaDexFooter'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -448,7 +447,7 @@ export const DexHomeScreen: React.FC = () => {
         title: 'Canonical currently active SmartChef staking pools (not historical totals).',
       },
       {
-        label: 'MARKETS',
+        label: 'Markets',
         value: compact(String(markets)),
         title: 'Unique tradeable Factory pairs / markets from canonical Factory indexing.',
       },
@@ -666,8 +665,6 @@ export const DexHomeScreen: React.FC = () => {
           </Discovery>
 
           <ExploreMelegaEcosystem />
-
-          <MelegaDexFooter />
         </DataSurfaceErrorBoundary>
       </Content>
     </Root>

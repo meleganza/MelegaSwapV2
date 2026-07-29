@@ -1,0 +1,39 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_FINAL_POLISH_WAVE_02",
+  "capturedAt": "2026-07-29T03:02:45.404Z",
+  "base": "http://127.0.0.1:3492",
+  "targets": {
+    "navClickVisualMs": 100,
+    "tabChangeVisualMs": 100,
+    "tokenModalOpenMs": 150,
+    "mainThreadFreezeMs": 200
+  },
+  "measured": {
+    "navClickVisualMs": null,
+    "navClickNote": "no visible /farms link"
+  },
+  "scansNavMs": {
+    "home": 3656,
+    "swap": 3562,
+    "liquidity": 3579,
+    "farms": 5242,
+    "pools": 3554,
+    "list": 3543,
+    "passport": 3539,
+    "docs": 3544,
+    "audit": 3569,
+    "support": 3542
+  },
+  "status": "PARTIAL_MEASURE",
+  "notes": [
+    "Horizontal overflow: PASS (0) across full responsive matrix",
+    "Headless nav-click probe could not locate a visible header /farms link; bottom-nav / header structure differs by viewport",
+    "Page domcontentloaded+settle navMs recorded in scans (~3.5s includes network+hydration \u2014 not the 100ms visual-response target)",
+    "Mitigations shipped: explore pagination, movers slice\u226410, no catalog pad, events aggregate"
+  ],
+  "targetsMet": {
+    "zeroHorizontalOverflow": true,
+    "navClickVisualMs_under_100": "NOT_INSTRUMENTED_HEADLESS",
+    "noPageSpinnerWhenLastGood": "CODE_CONTRACT"
+  }
+}

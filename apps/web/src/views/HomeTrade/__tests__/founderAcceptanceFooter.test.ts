@@ -25,9 +25,7 @@ describe('Founder acceptance — MelegaDexFooter', () => {
   it('links Docs → /docs and Audit → /audit', () => {
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Docs')?.href).toBe('/docs')
     expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Audit')?.href).toBe('/audit')
-    expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Support')?.href).toBe(
-      'https://t.me/melegacommunity',
-    )
+    expect(MELEGA_FOOTER_NAV.find((n) => n.label === 'Support')?.href).toBe('/support')
   })
 
   it('includes required social URLs (icons only, no raw URL labels)', () => {
@@ -49,15 +47,19 @@ describe('Founder acceptance — MelegaDexFooter', () => {
     expect(MELEGA_FOOTER_SOCIALS).toHaveLength(10)
   })
 
-  it('is mounted on DexHomeScreen and TrustRail is removed', () => {
+  it('is mounted globally via MelegaAppShell; TrustRail remains removed from Home', () => {
     const home = load('DexHomeScreen.tsx')
-    expect(home).toContain('MelegaDexFooter')
+    const shell = readFileSync(path.resolve(ROOT, '../../app-shell/MelegaAppShell.tsx'), 'utf8')
+    expect(shell).toContain('MelegaDexFooter')
+    expect(shell).toContain('melega-global-footer')
+    expect(home).not.toContain('MelegaDexFooter')
     expect(home).not.toContain('TrustRail')
     expect(home).not.toContain('dex-home-trust-rail')
     expect(home).not.toContain('Backed by')
     expect(home).not.toContain('Security Score')
   })
 })
+
 
 describe('Founder acceptance — ecosystem destinations', () => {
   it('wires live destinations without false Coming soon', () => {
@@ -124,5 +126,19 @@ describe('Founder acceptance — docs and audit pages', () => {
     expect(audit).toContain('/api/runtime/readiness')
     expect(audit).toContain('/api/indexer/health')
     expect(audit).not.toMatch(/audit score:\s*\d+/i)
+  })
+
+  it('support page exists without fabricating ticket infrastructure', () => {
+    const support = readFileSync(
+      path.resolve(__dirname, '../../../pages/support/index.tsx'),
+      'utf8',
+    )
+    expect(support).toContain('Support')
+    expect(support).toContain('/docs')
+    expect(support).toContain('/audit')
+    expect(support).toContain('MELEGA_FOOTER_SOCIALS')
+    expect(support).toContain('telegram-community')
+    expect(support).not.toMatch(/submit a ticket/i)
+    expect(support).not.toMatch(/zendesk|intercom|freshdesk/i)
   })
 })

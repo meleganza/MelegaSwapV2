@@ -79,5 +79,5 @@ export type LiquidityAddCtaState =
 export const LIQUIDITY_MODULE_001_003_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
-  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
+  LiquidityPoolDiscoveryModule: 'a150eff70692ad252c29f608b5c96f0e23791c5452265a6529b5eae45a4874dc',
 } as const

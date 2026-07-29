@@ -22,6 +22,7 @@ import {
   MELEGA_TRENDING_BAR_DESKTOP_HEIGHT,
   MELEGA_TRENDING_BAR_MOBILE_HEIGHT,
 } from './GlobalTrendingBar'
+import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
 
 const MOBILE_HEADER_H = '60px'
 
@@ -64,6 +65,19 @@ const Content = styled.div`
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
+`
+
+const FooterSlot = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* Clear mobile bottom nav */
+  padding-bottom: 8px;
+
+  @media (max-width: 1023px) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
 `
 
 const MobileHeader = styled.div`
@@ -144,7 +158,12 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
       </MobileHeader>
 
       <DesktopMain data-melega-shell-main>
-        <Content>{children}</Content>
+        <Content>
+          {children}
+          <FooterSlot data-testid="melega-global-footer">
+            <MelegaDexFooter />
+          </FooterSlot>
+        </Content>
       </DesktopMain>
 
       <MelegaBottomNavigation items={bottomItems} activeId={activeBottomId} />

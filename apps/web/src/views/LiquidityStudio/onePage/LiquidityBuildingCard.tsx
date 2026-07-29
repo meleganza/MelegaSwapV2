@@ -15,6 +15,7 @@ import {
 } from '../liquidityBuilding/programStatus'
 import { LB_UX } from '../liquidityBuilding/uxCopy'
 import { liqOne } from './onePageTokens'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 
 const WIZARD_STEPS = ['Setup', 'Strategy', 'Review'] as const
 
@@ -872,7 +873,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               value={card.draft.tokenBudget}
               onChange={(e) => {
                 setStepError(null)
-                card.setBudget(e.target.value)
+                card.setBudget(sanitizeDecimalInput(e.target.value))
               }}
             />
           </Field>

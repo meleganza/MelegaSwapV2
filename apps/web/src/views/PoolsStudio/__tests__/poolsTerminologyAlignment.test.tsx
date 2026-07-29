@@ -126,7 +126,7 @@ describe('R791E.7 poolsTerminologyAlignment', () => {
     }
     render(<YourPoolsSection />)
     expect(screen.getByTestId('ps-pools-disconnected')).toHaveTextContent(
-      'Connect wallet to view pools.',
+      'Connect wallet to view your pool positions.',
     )
 
     mockRuntime = {
@@ -142,7 +142,7 @@ describe('R791E.7 poolsTerminologyAlignment', () => {
       }),
     }
     render(<YourPoolsSection />)
-    expect(screen.getByTestId('ps-pools-empty')).toHaveTextContent('No pool positions found.')
+    expect(screen.getByTestId('ps-pools-empty')).toHaveTextContent('No pool positions found for this wallet.')
     expect(screen.queryByText('No pools found.')).toBeNull()
   })
 

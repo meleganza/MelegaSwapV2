@@ -135,7 +135,8 @@ describe('FARMS_ARCHITECTURE_000 Mockup Lock', () => {
     expect(screen).toContain('FarmsAnalyticsModule')
     expect(screen).toContain('FarmsVisualPolishModule')
     expect(screen).not.toContain('AIYieldAdvisorPanel')
-    expect(screen).toContain('FeaturedFarmPanel')
+    // Featured Farm is compact in Hero (legacy bottom FeaturedFarmPanel unmounted).
+    expect(screen).toContain('Featured Farm lives compactly in Hero')
     expect(screen).toContain('FarmsMyFarmsModule')
     expect(screen).not.toContain('FarmsArchitectureShell')
     expect(screen).toContain('data-farms-module-003="mounted"')

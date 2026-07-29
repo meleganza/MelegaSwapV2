@@ -1,0 +1,14 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_FINAL_POLISH_WAVE_02",
+  "capturedAt": "2026-07-29T02:55:26.754373+00:00",
+  "requiredCards": [
+    "Total Liquidity",
+    "24H Volume",
+    "Active Markets",
+    "Liquidity Activity"
+  ],
+  "duplicatePoolDistributionForbidden": true,
+  "source": "LiquidityInsightsModule + factory reserve TVL fallback",
+  "status": "FOUR_CARD_CONTRACT_PRESERVED",
+  "browserCapture": "PASS_0_OVERFLOW"
+}

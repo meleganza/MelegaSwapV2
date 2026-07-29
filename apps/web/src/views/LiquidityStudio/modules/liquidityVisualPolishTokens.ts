@@ -47,11 +47,11 @@ export const LIQUIDITY_MODULE_002_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
-  LiquidityPoolDiscoveryModule: '222539c3eea7247a9b6044ea6c2595d49b8a641737d372e39f234e835e731110',
+  LiquidityPoolDiscoveryModule: 'a150eff70692ad252c29f608b5c96f0e23791c5452265a6529b5eae45a4874dc',
   LiquidityPoolDiscoveryCard: '81abbcadb15d771059b88029e9dca45a4bbe02134f110f7bdc7d7ea1b1478d92',
   liquidityPoolDiscoveryTokens: '050488ff324cf1dd821ef27120828f9fe0ef4c4760275918208dac5c478779d1',
   liquidityPoolDiscoveryModel: '1d99a2422e84e88910d019c13e926f9b903c64e37cf9a2e0047d5177581959de',
-  useLiquidityPoolDiscovery: '2d16c3a9aafb86d2335dee29a5753526b007da4d1d381c68edf312d51bba5271',
+  useLiquidityPoolDiscovery: '63c17d0851fbd057875a7575be853a15631f16e1ba3b6d90f13a16d25dc38407',
 } as const
 
 export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {

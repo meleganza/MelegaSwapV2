@@ -54,7 +54,7 @@ describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
     const tokens = load('src/views/LiquidityStudio/modules/liquidityPoolDiscoveryTokens.ts')
     const card = load('src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryCard.tsx')
     const module = load('src/views/LiquidityStudio/modules/LiquidityPoolDiscoveryModule.tsx')
-    expect(tokens).toContain("cardMinH: '158px'")
+    expect(tokens).toContain("cardMinH: '188px'")
     expect(tokens).toContain('desktopColumns: 5')
     expect(tokens).toContain('wideColumns: 6')
     expect(card).toContain('data-discovery-density="compact"')

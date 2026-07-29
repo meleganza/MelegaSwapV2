@@ -28,6 +28,9 @@ export type LiquidityPoolDiscoveryView = {
   state: 'loading' | 'ready' | 'empty' | 'unavailable'
   cards: DiscoveryPoolCardModel[]
   visibleCards: DiscoveryPoolCardModel[]
+  /** Filtered+sorted count before page slice — for Load more. */
+  matchedCount: number
+  hasMore: boolean
   availableFilters: LiquidityDiscoveryFilter[]
   availableSorts: LiquidityDiscoverySort[]
   myTokensReady: boolean
@@ -40,8 +43,10 @@ export function useLiquidityPoolDiscovery(options: {
   query: string
   filter: LiquidityDiscoveryFilter
   sort: LiquidityDiscoverySort
+  /** Visible page size (defaults to module pageSize). */
+  pageSize?: number
 }): LiquidityPoolDiscoveryView {
-  const { query, filter, sort } = options
+  const { query, filter, sort, pageSize = liquidityPoolDiscovery.pageSize } = options
   const { address: account } = useAccount()
   const factory = useMelegaFactoryPools(MELEGA_CHAIN_ID)
   const balances = useAllTokenBalances()
@@ -166,12 +171,15 @@ export function useLiquidityPoolDiscovery(options: {
 
     const filtered = filterDiscoveryCards(cards, activeFilter, myTokenAddresses)
     const sorted = availableSorts.length > 0 ? sortDiscoveryCards(filtered, activeSort) : filtered
-    const visibleCards = sorted.slice(0, liquidityPoolDiscovery.pageSize)
+    const matchedCount = sorted.length
+    const visibleCards = sorted.slice(0, Math.max(1, pageSize))
 
     return {
-      state: visibleCards.length === 0 ? 'empty' : 'ready',
+      state: matchedCount === 0 ? 'empty' : 'ready',
       cards,
       visibleCards,
+      matchedCount,
+      hasMore: matchedCount > visibleCards.length,
       availableFilters,
       availableSorts,
       myTokensReady,
@@ -188,6 +196,7 @@ export function useLiquidityPoolDiscovery(options: {
     query,
     filter,
     sort,
+    pageSize,
     metricsByPair,
     myTokenAddresses,
     myTokensReady,

@@ -10,6 +10,7 @@ import { useCurrencyBalances } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { useLiquidityRuntime } from '../liquidityRuntime/LiquidityRuntimeContext'
 import { liqOne } from './onePageTokens'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 
 /** Canonical MARCO on BSC — default suggestion only, never a forced pair. */
 const MARCO_ADDR = MARCO_BSC_ADDRESS
@@ -626,7 +627,7 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
         <TokenBox data-testid="liq-add-token-a">
           <TokenAmount
             value={typedValueA === '0.0' ? '' : typedValueA}
-            onChange={(e) => onFieldAInput(e.target.value)}
+            onChange={(e) => onFieldAInput(sanitizeDecimalInput(e.target.value))}
             placeholder="0.0"
             inputMode="decimal"
             aria-label="Token A amount"
@@ -656,7 +657,7 @@ export const AddLiquidityCard = React.forwardRef<HTMLElement, Props>(function Ad
         <TokenBox data-testid="liq-add-token-b">
           <TokenAmount
             value={typedValueB === '0.0' ? '' : typedValueB}
-            onChange={(e) => onFieldBInput(e.target.value)}
+            onChange={(e) => onFieldBInput(sanitizeDecimalInput(e.target.value))}
             placeholder="0.0"
             inputMode="decimal"
             aria-label="Token B amount"

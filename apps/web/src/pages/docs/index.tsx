@@ -118,6 +118,13 @@ const SECTIONS: DocSection[] = [
     title: 'Supported networks',
     body: 'Production Melega AMM liquidity and indexing described here target BNB Smart Chain (BSC, chain id 56). Other chains in the wallet selector, if present, do not imply Melega Factory/Router parity unless explicitly documented for that chain.',
   },
+  {
+    id: 'troubleshooting',
+    title: 'Troubleshooting',
+    href: '/support',
+    body:
+      'Wallet will not connect: unlock the extension, approve the site, and confirm BSC (56). Wrong network: use the network switcher before signing. Quote stuck or unavailable: refresh price, check pair liquidity, and raise slippage only if you accept worse fill. Metrics show — / unavailable: indexer or subgraph has no factual value — do not treat empty as zero. Activate unavailable in AI Liquidity Builder: program contracts or activation gates are not ready; entered setup is retained. Token search opens behind chrome: use the latest shell build (modal layer above TOP MOVERS). For community help see Support.',
+  },
 ]
 
 const Root = styled.div`

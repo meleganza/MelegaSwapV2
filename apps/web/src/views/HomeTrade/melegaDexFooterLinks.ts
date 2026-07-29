@@ -5,7 +5,7 @@ export const MELEGA_FOOTER_COPYRIGHT = '© 2026 Melega Labs. All rights reserved
 export const MELEGA_FOOTER_NAV = [
   { label: 'Docs', href: '/docs', external: false },
   { label: 'Audit', href: '/audit', external: false },
-  { label: 'Support', href: 'https://t.me/melegacommunity', external: true },
+  { label: 'Support', href: '/support', external: false },
 ] as const
 
 export const MELEGA_FOOTER_SOCIALS = [

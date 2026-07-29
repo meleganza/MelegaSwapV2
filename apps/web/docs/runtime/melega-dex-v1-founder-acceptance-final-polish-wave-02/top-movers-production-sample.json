@@ -1,0 +1,34 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_FINAL_POLISH_WAVE_02",
+  "capturedAt": "2026-07-29T02:54:56.594Z",
+  "source": "https://www.melega.finance/api/indexer/tier-metrics",
+  "eventsMeta": {
+    "storageBackend": "vercel-blob-v2-featured-pair",
+    "lastIndexedBlock": 112740871,
+    "indexingLag": 12,
+    "eventCounts": {
+      "Swap": 147
+    }
+  },
+  "eventsUniquePairs": 1,
+  "eligibleMovers": [
+    {
+      "slug": "marco-wbnb",
+      "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+      "priceChange24h": -1.118157258185439,
+      "tradeCount24h": 39,
+      "candleCount": 48,
+      "volume24hQuote": 0.07321420423481155,
+      "status": "READY",
+      "direction": "down"
+    }
+  ],
+  "eligibleCount": 1,
+  "uiCap": 10,
+  "renderedExpectation": "Global Top Movers bar shows only factual eligible movers; currently 1 (MARCO \u2193 ~1.12%). Honest empty only if zero eligible.",
+  "codeChangesWave02": [
+    "events.ts aggregates Tier-1+Tier-2 slug stores when no pair filter",
+    "CAKE address corrected in tierInventory",
+    "Home catalog fallback removed for Top Movers list"
+  ]
+}

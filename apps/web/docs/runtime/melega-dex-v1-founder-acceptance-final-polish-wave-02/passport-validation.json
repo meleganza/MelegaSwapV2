@@ -1,0 +1,13 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_FINAL_POLISH_WAVE_02",
+  "capturedAt": "2026-07-29T02:55:26.754373+00:00",
+  "checks": [
+    "no fake profile",
+    "wallet transitions",
+    "no cross-wallet stale profile",
+    "empty/partial/unavailable",
+    "mobile complete"
+  ],
+  "status": "PRESERVED_PASSPORT_V1",
+  "browserCapture": "PASS_0_OVERFLOW"
+}

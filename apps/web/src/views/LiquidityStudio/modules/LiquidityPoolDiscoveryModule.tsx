@@ -1,7 +1,7 @@
 /**
  * LIQUIDITY_MODULE_003_POOL_DISCOVERY — Explore Pools (discovery only).
  */
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { LiquidityPoolDiscoveryCard } from './LiquidityPoolDiscoveryCard'
 import {
@@ -170,6 +170,33 @@ const Empty = styled.p`
   text-align: center;
 `
 
+const LoadMoreRow = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 8px;
+`
+
+const LoadMoreBtn = styled.button`
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.4);
+  background: rgba(244, 196, 48, 0.1);
+  color: ${liquidityPoolDiscovery.text};
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    border-color: rgba(244, 196, 48, 0.65);
+  }
+
+  &:focus-visible {
+    outline: ${liquidityPoolDiscovery.focusRing};
+    outline-offset: ${liquidityPoolDiscovery.focusOffset};
+  }
+`
+
 const FILTER_LABEL: Record<LiquidityDiscoveryFilter, string> = {
   all: LIQUIDITY_POOL_DISCOVERY_COPY.filters.all,
   'my-tokens': LIQUIDITY_POOL_DISCOVERY_COPY.filters.myTokens,
@@ -188,8 +215,13 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<LiquidityDiscoveryFilter>('all')
   const [sort, setSort] = useState<LiquidityDiscoverySort>('tvl')
+  const [pageSize, setPageSize] = useState(liquidityPoolDiscovery.pageSize)
 
-  const discovery = useLiquidityPoolDiscovery({ query, filter, sort })
+  useEffect(() => {
+    setPageSize(liquidityPoolDiscovery.pageSize)
+  }, [query, filter, sort])
+
+  const discovery = useLiquidityPoolDiscovery({ query, filter, sort, pageSize })
 
   const skeletons = useMemo(
     () => Array.from({ length: liquidityPoolDiscovery.skeletonCount }, (_, i) => i),
@@ -264,11 +296,24 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
       ) : null}
 
       {discovery.state === 'ready' ? (
-        <Grid data-testid="liquidity-pool-discovery-grid" data-liquidity-discovery-geometry="1376-12-5col">
-          {discovery.visibleCards.map((card) => (
-            <LiquidityPoolDiscoveryCard key={card.id} card={card} />
-          ))}
-        </Grid>
+        <>
+          <Grid data-testid="liquidity-pool-discovery-grid" data-liquidity-discovery-geometry="1376-12-5col">
+            {discovery.visibleCards.map((card) => (
+              <LiquidityPoolDiscoveryCard key={card.id} card={card} />
+            ))}
+          </Grid>
+          {discovery.hasMore ? (
+            <LoadMoreRow>
+              <LoadMoreBtn
+                type="button"
+                data-testid="liquidity-pool-discovery-load-more"
+                onClick={() => setPageSize((n) => n + liquidityPoolDiscovery.pageSize)}
+              >
+                Show more pools ({discovery.visibleCards.length} of {discovery.matchedCount})
+              </LoadMoreBtn>
+            </LoadMoreRow>
+          ) : null}
+        </>
       ) : null}
     </Shell>
   )

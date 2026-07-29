@@ -1,0 +1,11 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_FINAL_POLISH_WAVE_02",
+  "capturedAt": "2026-07-29T02:55:26.754373+00:00",
+  "cycles": [
+    "direct_load",
+    "Pools\u2192Farms\u2192Pools",
+    "hard_reload"
+  ],
+  "expected": "authoritative empty only when conclusive; last-good retained across reload races",
+  "status": "CODE_CONTRACT_PASS_RUNTIME_FIXTURE_DEFERRED_TO_UNIT_TESTS"
+}

@@ -5,6 +5,7 @@ import type { Currency } from '@pancakeswap/sdk'
 import type { LiquidityBuildingCardState } from '../useLiquidityBuildingCard'
 import { DECISION_FREQUENCY_OPTIONS, LB_UX } from '../uxCopy'
 import { lb } from './lbProductTokens'
+import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 
 const Layout = styled.div`
   display: grid;
@@ -587,7 +588,7 @@ export function LbSetupView({
                   value={card.draft.tokenBudget}
                   onChange={(e) => {
                     setTouched((t) => ({ ...t, budget: true }))
-                    card.setBudget(e.target.value)
+                    card.setBudget(sanitizeDecimalInput(e.target.value))
                   }}
                   aria-required
                 />

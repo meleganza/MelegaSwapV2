@@ -288,21 +288,9 @@ export const useHomeTradeData = () => {
   }, [dexTrending.indexedRibbonAssets, catalogRibbonAssets])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
-    // Real movers from Swap-indexed ranking (swap count → volume → recency).
-    if (dexTrending.items.length > 0) {
-      return dexTrending.items
-    }
-
-    // Sparse fallback: never emit "Price unavailable" — omit secondary price noise.
-    return catalogRibbonAssets.slice(0, 10).map(
-      (asset) =>
-        ({
-          id: `trade-asset-${asset.slug}`,
-          primary: asset.symbol,
-          href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,
-        }) satisfies MelegaTickerItem,
-    )
-  }, [dexTrending.items, catalogRibbonAssets])
+    // Factual movers only — never pad with catalog symbols (no fabricated activity).
+    return dexTrending.items
+  }, [dexTrending.items])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []

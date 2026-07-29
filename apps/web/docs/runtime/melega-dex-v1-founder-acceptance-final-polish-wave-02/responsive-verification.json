@@ -1,0 +1,561 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_FINAL_POLISH_WAVE_02",
+  "capturedAt": "2026-07-29T03:02:45.404Z",
+  "overflows": [],
+  "responsiveCount": 80,
+  "status": "PASS",
+  "scans": {
+    "home": {
+      "title": "Home | Melega DEX | $0.0004",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 4,
+      "hasEcosystem": true,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3656
+    },
+    "swap": {
+      "title": "Swap | Melega DEX | $0.0004",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3562
+    },
+    "liquidity": {
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": true,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3579
+    },
+    "farms": {
+      "title": "Farms | Melega DEX | $0.0004",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 5242
+    },
+    "pools": {
+      "title": "Pools | Melega DEX | $0.0004",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3554
+    },
+    "list": {
+      "title": "Melega DEX",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3543
+    },
+    "passport": {
+      "title": "Melega DEX",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3539
+    },
+    "docs": {
+      "title": "Melega DEX",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasInsights": false,
+      "hasLiveAiAudit": false,
+      "hasDocs": true,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3544
+    },
+    "audit": {
+      "title": "Melega DEX",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": false,
+      "hasInsights": false,
+      "hasLiveAiAudit": true,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3569
+    },
+    "support": {
+      "title": "Melega DEX",
+      "hasFooter": true,
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": false,
+      "hasInsights": false,
+      "hasLiveAiAudit": true,
+      "hasDocs": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 3542
+    }
+  },
+  "responsive": [
+    {
+      "page": "home",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "farms",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "list",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "passport",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "docs",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "audit",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "support",
+      "viewport": "390",
+      "overflow": false
+    }
+  ]
+}

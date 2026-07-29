@@ -1,8 +1,9 @@
 /**
  * Home Featured Projects — four equal premium cards.
- * Soft pulsating gold glow (no yellow border). Logo / name / price / 24h / CTA only.
+ * Soft pulsating gold glow (no yellow border). Logo / name / symbol / price / 24h / CTAs.
  */
 import React, { useCallback, useMemo } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -31,7 +32,6 @@ const halo = keyframes`
 
 const Shell = styled.section`
   min-width: 0;
-  /* Allow glow to extend outside cards */
   padding: 10px 6px 14px;
   margin: -10px -6px -14px;
 `
@@ -39,7 +39,7 @@ const Shell = styled.section`
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px;
   min-width: 0;
   align-items: stretch;
 
@@ -55,16 +55,16 @@ const Grid = styled.div`
 `
 
 const Card = styled.article`
-  height: 168px;
-  min-height: 168px;
-  max-height: 168px;
+  height: 196px;
+  min-height: 196px;
+  max-height: 196px;
   padding: 16px;
   border-radius: ${uxRebuildRadius.card};
   background: linear-gradient(165deg, rgba(22, 22, 22, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   box-sizing: border-box;
   animation: ${halo} 3.6s ease-in-out infinite;
   overflow: visible;
@@ -82,11 +82,24 @@ const Identity = styled.div`
   min-width: 0;
 `
 
+const Names = styled.div`
+  min-width: 0;
+`
+
 const Name = styled.div`
   font-size: 16px;
   font-weight: 750;
   color: ${uxRebuildColors.text};
   line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const Meta = styled.div`
+  font-size: 11px;
+  color: ${uxRebuildColors.muted};
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -107,7 +120,7 @@ const Price = styled.div`
 `
 
 const Change = styled.div<{ $positive?: boolean; $empty?: boolean }>`
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   ${({ $empty, $positive }) =>
     $empty
@@ -119,9 +132,15 @@ const Change = styled.div<{ $positive?: boolean; $empty?: boolean }>`
         `}
 `
 
+const Actions = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+`
+
 const TradeBtn = styled.button`
   height: 36px;
-  width: 100%;
+  min-height: 44px;
   border: none;
   border-radius: 10px;
   background: ${uxRebuildColors.gold};
@@ -129,11 +148,35 @@ const TradeBtn = styled.button`
   font-size: 13px;
   font-weight: 750;
   cursor: pointer;
-  flex: 0 0 auto;
 
   &:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${uxRebuildColors.gold};
+    outline-offset: 2px;
+  }
+`
+
+const ViewLink = styled(Link)`
+  height: 36px;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: ${uxRebuildColors.text};
+  font-size: 12px;
+  font-weight: 650;
+  box-sizing: border-box;
+
+  &:focus-visible {
+    outline: 2px solid ${uxRebuildColors.gold};
+    outline-offset: 2px;
   }
 `
 
@@ -190,7 +233,12 @@ export const FeaturedProjectsRail: React.FC = () => {
                   size={40}
                   radius="circle"
                 />
-                <Name>{p.displayName}</Name>
+                <Names>
+                  <Name>{p.displayName}</Name>
+                  <Meta>
+                    {p.symbol} · BNB Smart Chain
+                  </Meta>
+                </Names>
               </Identity>
               <Metrics>
                 <Price
@@ -214,14 +262,19 @@ export const FeaturedProjectsRail: React.FC = () => {
                   {change.text}
                 </Change>
               </Metrics>
-              <TradeBtn
-                type="button"
-                disabled={!p.address}
-                onClick={() => onTrade(p.address)}
-                data-testid={`featured-trade-${p.slug}`}
-              >
-                Trade
-              </TradeBtn>
+              <Actions>
+                <TradeBtn
+                  type="button"
+                  disabled={!p.address}
+                  onClick={() => onTrade(p.address)}
+                  data-testid={`featured-trade-${p.slug}`}
+                >
+                  Trade
+                </TradeBtn>
+                <ViewLink href={p.href} data-testid={`featured-view-${p.slug}`}>
+                  View Project
+                </ViewLink>
+              </Actions>
             </Card>
           )
         })}

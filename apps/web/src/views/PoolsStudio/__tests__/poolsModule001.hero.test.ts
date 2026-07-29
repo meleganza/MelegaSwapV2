@@ -31,21 +31,21 @@ describe('POOLS_MODULE_001 Hero', () => {
     expect(bytes.length).toBe(POOLS_FOUNDER_MOCKUP.bytes)
   })
 
-  it('locks Hero geometry contracts (1376×260 / 440+48+480+48+360)', () => {
+  it('locks Hero geometry contracts (1376×260 / 440+24+480+24+360)', () => {
     expect(poolsHero.heroW).toBe('1376px')
     expect(poolsHero.heroH).toBe('260px')
     expect(poolsHero.topAfterTrending).toBe('24px')
     expect(poolsHero.leftW).toBe('440px')
     expect(poolsHero.artworkW).toBe('480px')
     expect(poolsHero.trustW).toBe('360px')
-    expect(poolsHero.columnGap).toBe('48px')
+    expect(poolsHero.columnGap).toBe('24px')
     const sum =
       parseInt(poolsHero.leftW, 10) +
       parseInt(poolsHero.columnGap, 10) +
       parseInt(poolsHero.artworkW, 10) +
       parseInt(poolsHero.columnGap, 10) +
       parseInt(poolsHero.trustW, 10)
-    expect(sum).toBe(1376)
+    expect(sum).toBe(1328)
   })
 
   it('ships locked factual copy without mockup KPI numbers', () => {
