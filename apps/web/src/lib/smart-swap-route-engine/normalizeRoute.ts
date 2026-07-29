@@ -94,7 +94,7 @@ export function normalizeSmartSwapRoute(snapshot: SmartSwapTradeSnapshot): Smart
       lpFeeSymbol: snapshot.lpFeeSymbol ?? null,
       availability: feeAvailable ? 'available' : 'unavailable',
       source: feeAvailable ? 'realized-lp-fee' : 'unavailable',
-      note: 'LP fee display only — protocol fee settlement remains Treasury Runtime',
+      note: 'LP fee display only — protocol fee not proven in current execution path',
     },
     confidence,
     source,

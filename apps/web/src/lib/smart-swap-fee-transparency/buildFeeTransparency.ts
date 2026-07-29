@@ -1,15 +1,19 @@
 /**
- * Build fee transparency display from authoritative snapshots.
- * Consumes canonical fee context getters — does not duplicate D87/FSC-01 math.
+ * Build fee transparency display from proven quote facts only.
+ * Does not claim external settlement-runtime authority, KERL rewards, or unproven fee collection.
  */
 
 import {
   D87_PRICING_CODEX_ID,
   FSC_01_POLICY_REF,
   formatProtocolFeePercent,
-  getFsc01Constitution,
   resolveSwapProtocolFeeContextFromFields,
 } from 'lib/d87-pricing'
+import {
+  DEX_ECONOMIC_AUTHORITY,
+  MELEGA_TREASURY_WALLET_ADDRESS,
+  MELEGA_TREASURY_WALLET_LABEL,
+} from 'config/dexEconomicAuthority'
 import type {
   SmartSwapFeeTransparency,
   SmartSwapFeeTransparencyInput,
@@ -24,18 +28,13 @@ function resolveState(input: {
   stale?: boolean
   hasFeeRate: boolean
   hasFeeAmount: boolean
-  treasury: SmartSwapFeeAttributionStatus
-  kerl: SmartSwapFeeAttributionStatus
+  destination: SmartSwapFeeAttributionStatus
   forcedUnavailable?: boolean
 }): SmartSwapFeeTransparencyState {
   if (input.notApplicable) return 'NOT_APPLICABLE'
   if (input.stale) return 'STALE'
   if (input.forcedUnavailable || (!input.hasFeeRate && !input.hasFeeAmount)) return 'UNAVAILABLE'
-  const partial =
-    !input.hasFeeAmount ||
-    input.treasury !== 'factual' ||
-    input.kerl !== 'factual' ||
-    !input.hasFeeRate
+  const partial = !input.hasFeeAmount || input.destination !== 'factual' || !input.hasFeeRate
   return partial ? 'PARTIAL' : 'AVAILABLE'
 }
 
@@ -49,6 +48,7 @@ function attributionFromStatus(
 
 /**
  * Presentation builder. Never invents fee amounts or KERL rewards.
+ * Fee destination is the canonical MELEGA TREASURY WALLET when disclosed.
  */
 export function buildSmartSwapFeeTransparency(
   input: SmartSwapFeeTransparencyInput | null | undefined,
@@ -68,7 +68,11 @@ export function buildSmartSwapFeeTransparency(
       unavailableReason: 'Fee information unavailable',
       state: 'UNAVAILABLE',
       explanation: 'Fee information unavailable.',
-      flowSteps: [{ label: 'Protocol fee', value: 'Fee information unavailable' }],
+      flowSteps: [
+        { label: 'Protocol fee', value: 'Fee information unavailable' },
+        { label: 'Fee destination', value: UNAVAILABLE },
+        { label: 'Execution', value: DEX_ECONOMIC_AUTHORITY.executionModel },
+      ],
     }
   }
 
@@ -87,11 +91,13 @@ export function buildSmartSwapFeeTransparency(
       unavailableReason: input.unavailableReason ?? 'Not applicable for this trade',
       state: 'NOT_APPLICABLE',
       explanation: 'Fee transparency is not applicable for this trade.',
-      flowSteps: [{ label: 'Protocol fee', value: 'Not applicable' }],
+      flowSteps: [
+        { label: 'Protocol fee', value: 'Not applicable' },
+        { label: 'Execution', value: DEX_ECONOMIC_AUTHORITY.executionModel },
+      ],
     }
   }
 
-  // Consume canonical fee engine — do not hardcode bps.
   const ctx =
     input.protocolFeeBps != null
       ? {
@@ -108,24 +114,23 @@ export function buildSmartSwapFeeTransparency(
           outputSymbol: input.outputSymbol,
         })
 
-  const hasFeeRate = Number.isFinite(ctx.protocolFeeBps) && ctx.protocolFeeBps > 0
-  const feeAmount = input.feeAmount && input.feeAmount !== '' ? input.feeAmount : null
+  // Only surface a protocol fee when the caller marks collection as proven in the execution path.
+  // Unproven D87 policy rates must not be presented as collected fees.
+  const feeProven = input.feeCollectionProven === true
+  const hasFeeRate = feeProven && Number.isFinite(ctx.protocolFeeBps) && ctx.protocolFeeBps > 0
+  const feeAmount = feeProven && input.feeAmount && input.feeAmount !== '' ? input.feeAmount : null
   const hasFeeAmount = feeAmount != null
   const feeAsset = input.feeAsset ?? null
   const swapAmount = input.swapAmount ?? null
 
-  const fsc = getFsc01Constitution()
-  const allocationStatus = attributionFromStatus(input.treasuryStatus)
-  // Destination owner from ratified constitution — not a local split calculation.
+  const destinationStatus = attributionFromStatus(input.treasuryStatus ?? 'available')
   const treasuryDestination =
-    allocationStatus === 'factual'
-      ? fsc.owner
-      : allocationStatus === 'pending'
-        ? null
-        : null
+    destinationStatus === 'factual'
+      ? `${MELEGA_TREASURY_WALLET_LABEL} (${MELEGA_TREASURY_WALLET_ADDRESS})`
+      : null
 
-  const kerlStatus = attributionFromStatus(input.kerlStatus)
-  const economicAttribution = kerlStatus === 'factual' ? 'KERL' : null
+  // KERL is not part of the current Smart Swap execution path — never claim attribution.
+  const economicAttribution = null
 
   const feeRate = hasFeeRate
     ? `${ctx.protocolFeeBps} bps (${formatProtocolFeePercent(ctx.protocolFeeBps)})`
@@ -136,28 +141,27 @@ export function buildSmartSwapFeeTransparency(
     stale: input.stale,
     hasFeeRate,
     hasFeeAmount,
-    treasury: allocationStatus,
-    kerl: kerlStatus,
+    destination: destinationStatus,
+    forcedUnavailable: !feeProven && !input.forceShowDestinationOnly,
   })
 
   let unavailableReason: string | null = null
-  if (state === 'UNAVAILABLE') {
+  if (!feeProven) {
+    unavailableReason =
+      input.unavailableReason ??
+      'Protocol fee not proven in current execution path (wrapper undeployed on mainnet)'
+  } else if (state === 'UNAVAILABLE') {
     unavailableReason = input.unavailableReason ?? 'Fee information unavailable'
   } else if (state === 'STALE') {
     unavailableReason = input.unavailableReason ?? 'Fee data is stale — refresh the quote'
   } else if (state === 'PARTIAL') {
     const pending: string[] = []
     if (!hasFeeAmount) pending.push('fee amount pending')
-    if (allocationStatus !== 'factual') pending.push('Treasury attribution pending')
-    if (kerlStatus !== 'factual') pending.push('economic attribution pending')
+    if (destinationStatus !== 'factual') pending.push('fee destination pending')
     unavailableReason = pending.length ? pending.join('; ') : null
   }
 
   const flowSteps: Array<{ label: string; value: string }> = []
-  flowSteps.push({
-    label: 'Swap',
-    value: swapAmount && feeAsset ? `${swapAmount} ${feeAsset}` : swapAmount ?? UNAVAILABLE,
-  })
   flowSteps.push({
     label: 'Protocol fee',
     value:
@@ -165,43 +169,36 @@ export function buildSmartSwapFeeTransparency(
         ? `${feeAmount} ${feeAsset}`
         : hasFeeRate
           ? feeRate ?? UNAVAILABLE
-          : 'Fee information unavailable',
+          : UNAVAILABLE,
   })
-  if (allocationStatus === 'factual' && treasuryDestination) {
-    flowSteps.push({
-      label: 'Economic destination',
-      value: `Allocated through ${treasuryDestination}`,
-    })
-  } else if (allocationStatus === 'pending') {
-    flowSteps.push({
-      label: 'Economic destination',
-      value: 'Economic attribution pending',
-    })
-  } else if (hasFeeRate || hasFeeAmount) {
-    flowSteps.push({
-      label: 'Economic destination',
-      value: 'Treasury attribution unavailable',
-    })
-  }
-  if (economicAttribution) {
-    flowSteps.push({ label: 'Economic attribution', value: economicAttribution })
-  } else if (kerlStatus === 'pending' && (hasFeeRate || hasFeeAmount)) {
-    flowSteps.push({ label: 'Economic attribution', value: 'Economic attribution pending' })
-  }
+  flowSteps.push({
+    label: 'Fee destination',
+    value:
+      destinationStatus === 'factual' && treasuryDestination
+        ? treasuryDestination
+        : destinationStatus === 'pending'
+          ? 'Fee destination pending'
+          : UNAVAILABLE,
+  })
+  flowSteps.push({
+    label: 'Execution',
+    value: DEX_ECONOMIC_AUTHORITY.executionModel,
+  })
 
   const explanationParts: string[] = []
   if (hasFeeRate || hasFeeAmount) {
-    explanationParts.push('Protocol fee shown from the canonical fee engine (display only).')
-  }
-  if (allocationStatus === 'factual') {
-    explanationParts.push(
-      'Protocol fees contribute to ecosystem economic flows via Treasury Runtime settlement (FSC-01).',
-    )
-  } else if (hasFeeRate || hasFeeAmount) {
-    explanationParts.push('Protocol fee available. Economic attribution pending.')
+    explanationParts.push('Protocol fee shown only when proven by the active execution path.')
   } else {
-    explanationParts.push('Fee information unavailable.')
+    explanationParts.push(
+      'No separately identifiable protocol fee transfer in the current Smart Swap execution path.',
+    )
   }
+  if (destinationStatus === 'factual') {
+    explanationParts.push(
+      `Economic beneficiary: ${MELEGA_TREASURY_WALLET_LABEL} ${MELEGA_TREASURY_WALLET_ADDRESS}.`,
+    )
+  }
+  explanationParts.push(`${DEX_ECONOMIC_AUTHORITY.executionModel}.`)
 
   return {
     swapAmount,
@@ -214,12 +211,12 @@ export function buildSmartSwapFeeTransparency(
       buyMarcoApplied: hasFeeRate ? ctx.buyMarcoApplied : null,
     },
     treasuryDestination,
-    allocationStatus,
+    allocationStatus: destinationStatus,
     economicAttribution,
     source: ctx.codexId,
     freshness: input.freshness ?? null,
     unavailableReason,
-    state,
+    state: feeProven ? state : destinationStatus === 'factual' ? 'PARTIAL' : 'UNAVAILABLE',
     explanation: explanationParts.join(' '),
     flowSteps,
   }

@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-07-29T09:12:22.228Z",
+  "mode": "static-harness",
+  "amount": "factual-test-amount-not-broadcast",
+  "quoteSource": "Smart Router / Melega V2 trade derivation (existing Instant Swap path)",
+  "displayedProtocolFee": "not shown as collected (unproven)",
+  "feeDestinationDisclosure": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "treasuryRuntimeHttpRequests": 0,
+  "custodial": false,
+  "broadcast": false
+}

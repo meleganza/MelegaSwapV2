@@ -24,7 +24,7 @@ function protocolFeeDisplay(isBuyMarco: boolean | undefined): SmartSwapProtocolF
       bps: swap.protocolFeeBuyMarcoBps,
       availability: 'available',
       label: `${swap.protocolFeeBuyMarcoBps} bps (buy MARCO)`,
-      note: 'Display only — settlement remains Treasury Runtime (FSC-01)',
+      note: 'Policy rate — not proven as collected in current execution path',
       rule: 'buy-marco',
     }
   }
@@ -33,7 +33,7 @@ function protocolFeeDisplay(isBuyMarco: boolean | undefined): SmartSwapProtocolF
       bps: swap.protocolFeeStandardBps,
       availability: 'available',
       label: `${swap.protocolFeeStandardBps} bps`,
-      note: 'Display only — settlement remains Treasury Runtime (FSC-01)',
+      note: 'Policy rate — not proven as collected in current execution path',
       rule: 'standard',
     }
   }
@@ -41,7 +41,7 @@ function protocolFeeDisplay(isBuyMarco: boolean | undefined): SmartSwapProtocolF
     bps: null,
     availability: 'unavailable',
     label: '—',
-    note: 'Display only — settlement remains Treasury Runtime (FSC-01)',
+    note: 'Protocol fee not proven in current execution path',
     rule: 'unavailable',
   }
 }

@@ -65,13 +65,16 @@ export const FSC_01 = {
   authority: 'KIRI Codex',
   status: 'ratified',
   policyRef: 'codex://FSC-01',
-  owner: 'Treasury Runtime',
-  dexPolicy: 'DEX forwards gross protocol fee only — never splits locally',
+  /** Economic beneficiary — not a runtime service. */
+  owner: 'MELEGA TREASURY WALLET',
+  dexPolicy:
+    'DEX-owned application fees route directly to MELEGA TREASURY WALLET — never via Treasury Runtime; no local redistribution',
+  /** Historical policy reference only — not executed by DEX application code. */
   splits: [
-    { destination: 'treasury_melega', percent: 52.5 },
-    { destination: 'civilization_treasury', percent: 22.5 },
-    { destination: 'buyback_and_burn', percent: 10 },
-    { destination: 'referral_distribution', percent: 10, referralSpec: 'SRD-01' },
-    { destination: 'strategic_allocation', percent: 5 },
+    { destination: 'treasury_melega', percent: 52.5, label: 'Melega treasury (historical policy)' },
+    { destination: 'civilization_treasury', percent: 22.5, label: 'Civilization treasury (historical policy)' },
+    { destination: 'buyback_and_burn', percent: 10, label: 'Buyback and burn (historical policy)' },
+    { destination: 'referral_distribution', percent: 10, referralSpec: 'SRD-01', label: 'Referral (historical policy)' },
+    { destination: 'strategic_allocation', percent: 5, label: 'Strategic allocation (historical policy)' },
   ],
 } as const

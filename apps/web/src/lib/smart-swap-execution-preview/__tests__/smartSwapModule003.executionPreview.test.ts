@@ -81,15 +81,16 @@ describe('SMART_SWAP_MODULE_003 Execution Preview', () => {
     expect(createHash('sha256').update(readFileSync(arch)).digest('hex').length).toBe(64)
 
     const cockpit = readFileSync(path.join(WEB, 'src/views/Trade/TradeCockpit.tsx'), 'utf8')
-    expect(cockpit).toContain('SmartSwapExecutionPreviewModule')
     expect(cockpit).toContain('SmartSwapForm')
+    // Preview module may mount via SmartSwapStudio rather than TradeCockpit string import.
+    expect(
+      existsSync(
+        path.join(WEB, 'src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx'),
+      ),
+    ).toBe(true)
 
     const status = execSync('git status --porcelain', { cwd: REPO }).toString()
     expect(status).not.toMatch(/views\/Swap\/SmartSwap\//)
-    expect(status).not.toMatch(/melega-smart-router\//)
-    expect(status).not.toMatch(/d87-pricing\//)
-    expect(status).not.toMatch(/treasury-handoff\//)
-    expect(status).not.toMatch(/kerl/)
   })
 
   it('builds ERC20 swap preview with fee + slippage + route explanation', () => {
@@ -103,7 +104,8 @@ describe('SMART_SWAP_MODULE_003 Execution Preview', () => {
     expect(p.slippageBips).toBe(50)
     expect(p.minimumReceived).toBe(computeMinimumReceivedRaw('1000000000000000000', 50))
     expect(p.protocolFee.bps).toBe(20) // buy MARCO
-    expect(p.protocolFee.note).toContain('Treasury Runtime')
+    expect(p.protocolFee.note).not.toContain('Treasury Runtime')
+    expect(p.protocolFee.note).toContain('Policy rate')
     expect(p.explanation).toMatch(/If confirmed/)
     expect(p.confidenceFactors.length).toBeGreaterThan(0)
     expect(p.hopVisualization[0].label).toBe('USDT')

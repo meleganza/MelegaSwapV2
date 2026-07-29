@@ -64,7 +64,7 @@ export interface SmartSwapFeeEstimate {
   lpFeeSymbol: string | null
   availability: SmartSwapMetricAvailability
   source: 'realized-lp-fee' | 'unavailable'
-  note: 'LP fee display only — protocol fee settlement remains Treasury Runtime'
+  note: 'LP fee display only — protocol fee not proven in current execution path'
 }
 
 export interface SmartSwapRoute {

@@ -6,7 +6,7 @@ export const SMART_SWAP_EXECUTION_PREVIEW_OWNERSHIP = {
     'Router contract calls',
     'fee settlement',
     'D87 / FSC-01 modification',
-    'Treasury Runtime',
+    'fee beneficiary settlement',
     'KERL attribution',
     'custody',
     'signing',

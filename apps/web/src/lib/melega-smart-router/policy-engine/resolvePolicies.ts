@@ -32,7 +32,9 @@ export function resolveTreasuryPolicy() {
     version: FSC_01.version,
     dexPolicy: FSC_01.dexPolicy,
     owner: FSC_01.owner,
-    settlementOwner: 'Treasury Runtime',
+    settlementOwner: 'NONE',
+    treasuryRuntimeStatus: 'DECOMMISSIONED' as const,
+    feeBeneficiary: FSC_01.owner,
   }
 }
 
@@ -47,8 +49,9 @@ export function resolveRegistryPolicies() {
     {
       policyRef: 'treasury-runtime-registry' as const,
       version: getTreasuryRuntimeRegistryVersion(),
-      resolutionOrder: ['treasury-runtime', 'kerl', 'env'],
-      disclaimer: 'Treasury Runtime owns collector truth.',
+      resolutionOrder: ['dex-economic-authority', 'env', 'kerl'],
+      disclaimer:
+        'Treasury Runtime decommissioned. Mainnet beneficiary is MELEGA TREASURY WALLET via dexEconomicAuthority.',
     },
     {
       policyRef: 'kerl-registry' as const,
@@ -68,7 +71,7 @@ export function resolveExecutionPolicy() {
     exactInput: 'supported' as const,
     exactOutput: 'blocked' as const,
     feeOnTransfer: 'blocked' as const,
-    settlementLayer: 'treasury-runtime' as const,
+    settlementLayer: 'decommissioned' as const,
   }
 }
 

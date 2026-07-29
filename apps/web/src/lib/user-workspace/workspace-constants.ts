@@ -25,7 +25,7 @@ export const WORKSPACE_FUTURE_SURFACES = [
     label: 'Treasury',
     status: 'PLANNED' as const,
     manifest: 'manifest://melega/platform/treasury-runtime@0.2.0',
-    notes: 'Treasury Runtime — Phase 2. No amounts indexed.',
+    notes: 'Fee beneficiary MELEGA TREASURY WALLET. No amounts indexed.',
   },
   {
     id: 'labs',

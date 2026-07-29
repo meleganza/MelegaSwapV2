@@ -56,7 +56,7 @@ export const ACTIVATION_PIPELINE_STAGES: PipelineStageDefinition[] = [
   },
   {
     id: 'treasury_runtime',
-    label: 'Treasury Runtime',
+    label: 'Fee Beneficiary',
     machineSurface: 'manifest://melega/platform/treasury-runtime@0.2.0',
   },
   {

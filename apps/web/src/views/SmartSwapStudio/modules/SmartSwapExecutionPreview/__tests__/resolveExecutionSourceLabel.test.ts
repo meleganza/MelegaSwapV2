@@ -22,7 +22,7 @@ function preview(partial: Partial<SmartSwapExecutionPreview>): SmartSwapExecutio
       bps: 20,
       availability: 'available',
       label: '20 bps',
-      note: 'Display only — settlement remains Treasury Runtime (FSC-01)',
+      note: 'Display only — beneficiary is MELEGA TREASURY WALLET per FSC-01 policy',
       rule: 'standard',
     },
     routeHops: [],

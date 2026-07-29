@@ -1,6 +1,6 @@
 /**
  * Builds Module 004 fee transparency from shared swap state + Module 003 preview.
- * Consumes canonical fee engine for amounts/rates — does not mutate fees.
+ * Does not claim unproven protocol fee collection or Treasury Runtime authority.
  */
 
 import { useMemo } from 'react'
@@ -8,7 +8,7 @@ import { Field } from 'state/swap/actions'
 import { useSwapState } from 'state/swap/hooks'
 import { useCurrency } from 'hooks/Tokens'
 import { useDerivedSwapInfoWithStableSwap } from 'views/Swap/SmartSwap/hooks/useDerivedSwapInfoWithStableSwap'
-import { computeGrossProtocolFeeAmount, resolveSwapProtocolFeeContext } from 'lib/d87-pricing'
+import { resolveSwapProtocolFeeContext } from 'lib/d87-pricing'
 import {
   buildSmartSwapFeeTransparency,
   feeTransparencyInputFromPreview,
@@ -41,10 +41,11 @@ export function useSmartSwapFeeTransparency(previewResult: SmartSwapPreviewResul
     if (previewResult.status !== 'ok' || !previewResult.preview) {
       return buildSmartSwapFeeTransparency({
         unavailableReason: 'Fee information unavailable',
+        treasuryStatus: 'available',
+        forceShowDestinationOnly: true,
       })
     }
 
-    let feeAmount: string | null = null
     let protocolFeeBps: number | null = previewResult.preview.protocolFee.bps
     let buyMarcoApplied: boolean | null =
       previewResult.preview.protocolFee.rule === 'buy-marco'
@@ -55,28 +56,27 @@ export function useSmartSwapFeeTransparency(previewResult: SmartSwapPreviewResul
 
     if (trade && parsedAmount) {
       try {
-        // Canonical fee engine — Smart Swap does not implement fee math.
-        feeAmount = computeGrossProtocolFeeAmount(trade as Parameters<typeof computeGrossProtocolFeeAmount>[0])
         const ctx = resolveSwapProtocolFeeContext(trade, chainId)
         protocolFeeBps = ctx.protocolFeeBps
         buyMarcoApplied = ctx.buyMarcoApplied
       } catch {
-        feeAmount = null
+        protocolFeeBps = null
       }
     }
 
     const input = feeTransparencyInputFromPreview({
       preview: previewResult.preview,
-      feeAmount,
-      // Display-only policy path is factual (owner = Treasury Runtime). No settlement call.
+      // Protocol fee amount not proven in Pancake/Melega router calldata (wrapper undeployed).
+      feeAmount: null,
       treasuryStatus: 'available',
-      // KERL attribution status is known as the attribution layer; rewards are never shown.
-      kerlStatus: 'available',
+      kerlStatus: 'unavailable',
     })
 
     if (!input) {
       return buildSmartSwapFeeTransparency({
         unavailableReason: 'Fee information unavailable',
+        treasuryStatus: 'available',
+        forceShowDestinationOnly: true,
       })
     }
 
@@ -84,6 +84,8 @@ export function useSmartSwapFeeTransparency(previewResult: SmartSwapPreviewResul
       ...input,
       protocolFeeBps,
       buyMarcoApplied,
+      feeCollectionProven: false,
+      forceShowDestinationOnly: true,
       freshness: new Date().toISOString(),
     })
   }, [previewResult, trade, parsedAmount, chainId])

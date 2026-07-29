@@ -72,8 +72,8 @@ describe('SMART_SWAP_ARCHITECTURE_000 lock', () => {
     )
     expect(D87_DEX_PRICING_RATIFIED.lpFee.policy).toBe('unaffected')
     expect(D87_DEX_PRICING_RATIFIED.feeSplit.dexPolicy).toBe('forward_protocol_fee_only')
-    expect(FSC_01.owner).toBe('Treasury Runtime')
-    expect(SMART_SWAP_CANONICAL_OWNERSHIP.settlement).toContain('Treasury Runtime')
+    expect(FSC_01.owner).toBe('MELEGA TREASURY WALLET')
+    expect(SMART_SWAP_CANONICAL_OWNERSHIP.settlement).toMatch(/NONE|decommissioned/i)
   })
 
   it('enforces DEX handoff must never own settlement splits', () => {

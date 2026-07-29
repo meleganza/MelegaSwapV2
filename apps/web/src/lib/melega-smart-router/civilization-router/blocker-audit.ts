@@ -1,4 +1,3 @@
-import { isTreasuryRuntimeConfigured } from '../../treasury-handoff/config'
 import { getKerlRegistryVersion } from '../registry/kerlRegistry'
 import { readSmartRouterChainProfile } from '../registry/smartRouterRegistry'
 import { readTreasuryRuntimeCollector } from '../registry/runtimeRegistry'
@@ -8,7 +7,6 @@ import type { BlockerAuditRow } from './types'
 /** Phase 0 — hard blocker audit. Truth-first; no fabricated readiness. */
 export function buildBlockerAuditTable(): BlockerAuditRow[] {
   const kerlVersion = getKerlRegistryVersion()
-  const treasuryRuntimeConfigured = isTreasuryRuntimeConfigured()
   const testnetProfile = readSmartRouterChainProfile(97)
   const testnetWrapper = testnetProfile?.wrapperAddress ?? null
   const testnetCollector = readTreasuryRuntimeCollector(97)
@@ -21,7 +19,7 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
       status: 'PARTIAL',
       evidence:
         'MelegaSmartRouterWrapper.sol + 39 Foundry tests (R736); not deployed; external audit pending',
-      nextRequiredAction: 'Complete external audit; deploy after Treasury Intake publication',
+      nextRequiredAction: 'Complete external audit; deploy after collector registry publication',
     },
     {
       phase: 'Phase 0',
@@ -29,7 +27,7 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
       status: 'PARTIAL',
       evidence:
         'foundry.toml RPC/etherscan mapping + DeployMelegaSmartRouterWrapper.s.sol (R738); deploy credentials unset',
-      nextRequiredAction: 'Provision TESTNET_DEPLOYER / MAINNET_DEPLOYER and Treasury Intake addresses',
+      nextRequiredAction: 'Provision TESTNET_DEPLOYER / MAINNET_DEPLOYER and published collector addresses',
     },
     {
       phase: 'Phase 0',
@@ -50,7 +48,7 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
       requirement: 'MARCO address registered per chain',
       status: 'PARTIAL',
       evidence:
-        'Chain 56 + 97 active (R744B Treasury Runtime confirmed MARCO testnet 0x963556de0eb8138E97A85F0A86eE0acD159D210b)',
+        'Chain 56 + 97 active (MARCO testnet 0x963556de0eb8138E97A85F0A86eE0acD159D210b indexed)',
       nextRequiredAction: 'Publish treasury collector per chain; deploy wrapper when unblocked',
     },
     {
@@ -64,23 +62,22 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
           : '/registry/treasury/index.json — collector null for chains 56 and 97',
       nextRequiredAction: mainnetCollector.available
         ? 'None — collectors indexed'
-        : 'Treasury Runtime must publish BNB Chain mainnet collector address',
+        : 'Publish mainnet MELEGA TREASURY WALLET collector in /registry/treasury/index.json',
     },
     {
       phase: 'Phase 0',
       requirement: 'KERL registry writable',
       status: 'BLOCKED',
       evidence: `KERL v${kerlVersion} — static JSON read-only; intake is dry-run only`,
-      nextRequiredAction: 'Treasury Runtime / KERL operator publishes registry updates externally',
+      nextRequiredAction: 'KERL operator publishes registry updates externally',
     },
     {
       phase: 'Phase 0',
       requirement: 'Treasury Runtime intake endpoint',
-      status: treasuryRuntimeConfigured ? 'PARTIAL' : 'BLOCKED',
-      evidence: treasuryRuntimeConfigured
-        ? 'TREASURY_RUNTIME_URL configured — POST /api/treasury/settlement-events proxy live'
-        : 'TREASURY_RUNTIME_URL unset — proxy returns 503',
-      nextRequiredAction: 'Configure TREASURY_RUNTIME_URL in Vercel and verify intake accepts handoffs',
+      status: 'DECOMMISSIONED',
+      evidence:
+        'Treasury Runtime authority decommissioned — canonical beneficiary is MELEGA TREASURY WALLET; handoff API no-ops',
+      nextRequiredAction: 'None — settlement not required for DEX swap readiness',
     },
     {
       phase: 'Phase 0',
@@ -101,7 +98,7 @@ export function buildBlockerAuditTable(): BlockerAuditRow[] {
       requirement: 'D90 / D99 schemas',
       status: 'BLOCKED',
       evidence: 'NOT_DEFINED_IN_DEX — codex has D87, FSC-01, SRD-01 only',
-      nextRequiredAction: 'Treasury Runtime / Labs must publish D90 and D99 codex entries',
+      nextRequiredAction: 'Labs must publish D90 and D99 codex entries',
     },
     {
       phase: 'Phase 1',

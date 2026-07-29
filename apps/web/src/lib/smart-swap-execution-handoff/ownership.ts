@@ -11,7 +11,7 @@ export const SMART_SWAP_EXECUTION_HANDOFF_OWNERSHIP = {
     'route ranking',
     'fee calculation',
     'D87 / FSC-01',
-    'Treasury Runtime settlement',
+    'external settlement authority (decommissioned)',
     'KERL attribution',
     'automatic signing',
     'automatic broadcast',

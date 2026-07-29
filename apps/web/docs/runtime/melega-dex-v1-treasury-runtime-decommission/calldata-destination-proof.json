@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-07-29T09:12:22.228Z",
+  "method": "static-code-audit + prepareMelegaSmartRouterSwap plan metadata",
+  "finding": "Wallet-signed swap calldata targets the underlying execution router (Pancake Smart Router / Melega V2 router). No app-constructed transfer to Treasury Runtime. Separate protocol-fee transfer to MELEGA TREASURY WALLET is not present in current mainnet adapter path because wrapper is undeployed.",
+  "beneficiaryDisclosedInUi": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "inferredFeeRecipientInCalldata": null,
+  "doNotInfer": true
+}

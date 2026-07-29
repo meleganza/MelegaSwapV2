@@ -748,17 +748,17 @@ export function useCommandCenterOrchestrationRuntime() {
         txHash: undefined as string | undefined,
         settlementId: undefined as string | undefined,
         settlementTime: undefined as string | undefined,
-        treasuryStatus: 'Treasury Runtime unavailable',
+        treasuryStatus: 'Settlement not required',
         machineCode: undefined as string | undefined,
       },
       () => {
         const label = formatSettlementUserLabel(settlementMeta)
         const treasuryStatus =
           settlementMeta.treasuryRuntimeEndpointStatus === 'available'
-            ? 'Treasury Runtime available'
+            ? 'Settlement endpoint available'
             : settlementMeta.treasuryRuntimeEndpointStatus === 'unavailable'
-              ? 'Treasury Runtime unavailable'
-              : 'Treasury Runtime not configured'
+              ? 'Settlement not required'
+              : 'Settlement not required'
         return {
           label,
           tone: settlementLabelTone(label),

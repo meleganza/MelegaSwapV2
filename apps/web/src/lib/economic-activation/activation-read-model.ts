@@ -148,9 +148,9 @@ export const resolveLabsActivationPreview = (): ActivationPipelineReadModel => (
     buildStage('economic_events', 'WAITING', 'Economic events pending', 'Derived from venue graph'),
     buildStage(
       'treasury_runtime',
-      'PLANNED',
-      'Treasury Runtime — Phase 2',
-      'No treasury amounts indexed',
+      'READY',
+      'MELEGA TREASURY WALLET — direct beneficiary',
+      'Runtime decommissioned — no treasury amounts indexed',
     ),
     buildStage('radar', 'PLANNED', 'Radar — Phase 2', 'Incident feed not indexed'),
     buildStage('space', 'PLANNED', 'Space — Phase 2', 'Community bind not live for new activations'),
@@ -230,7 +230,7 @@ export const resolveActivationForProject = (projectSlug: string): ActivationPipe
       buildStage(
         'treasury_runtime',
         mapCapabilityToActivationStatus(capabilities.treasuryCompatible?.status),
-        capabilities.treasuryCompatible?.notes ?? 'Treasury Runtime',
+        capabilities.treasuryCompatible?.notes ?? 'MELEGA TREASURY WALLET — direct beneficiary',
       ),
       buildStage(
         'radar',

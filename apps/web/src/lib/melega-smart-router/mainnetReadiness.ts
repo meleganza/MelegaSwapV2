@@ -69,9 +69,9 @@ export function buildMainnetReadinessMatrix(chainId = 56): ReadinessRow[] {
     },
     {
       id: 'treasury_runtime',
-      label: 'Treasury Runtime',
-      level: 'PARTIAL',
-      reason: 'Handoff receipt path live; FSC-01 settlement external',
+      label: 'Fee beneficiary',
+      level: 'READY',
+      reason: 'DECOMMISSIONED — canonical beneficiary MELEGA TREASURY WALLET per dexEconomicAuthority',
     },
     {
       id: 'pancake_integration',

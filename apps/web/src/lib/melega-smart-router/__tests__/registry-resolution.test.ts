@@ -35,18 +35,22 @@ describe('registry resolution — Phase 2', () => {
     expect(marco.resolution.source).toBe('treasury-runtime')
   })
 
-  it('never fabricates treasury collector when registry and env empty', () => {
+  it('resolves mainnet collector to canonical MELEGA TREASURY WALLET', () => {
     const collector = resolveTreasuryCollector(56)
-    expect(collector.collectorAddress).toBeUndefined()
-    expect(collector.status).not.toBe('active')
-    expect(collector.resolution.unavailable).toBe(true)
+    expect(collector.collectorAddress?.toLowerCase()).toBe(
+      '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'.toLowerCase(),
+    )
+    expect(collector.status).toBe('active')
+    expect(collector.resolution.source).toBe('dex-economic-authority')
   })
 
-  it('falls back to env collector when runtime and kerl unavailable', () => {
+  it('ignores divergent mainnet env collector in favor of canonical wallet', () => {
     vi.stubEnv('NEXT_PUBLIC_TREASURY_COLLECTOR_BSC', COLLECTOR)
     const collector = resolveTreasuryCollector(56)
-    expect(collector.collectorAddress).toBe(COLLECTOR)
-    expect(collector.resolution.source).toBe('env')
+    expect(collector.collectorAddress?.toLowerCase()).toBe(
+      '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'.toLowerCase(),
+    )
+    expect(collector.resolution.source).toBe('dex-economic-authority')
     expect(collector.status).toBe('active')
   })
 

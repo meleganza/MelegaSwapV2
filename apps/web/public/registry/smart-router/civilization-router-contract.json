@@ -121,7 +121,7 @@
         "Treasury Collector",
         "Underlying Router"
       ],
-      "requiredSettlement": "Treasury Runtime FSC-01 post-confirmation",
+      "requiredSettlement": "MELEGA TREASURY WALLET — FSC-01 post-confirmation (direct beneficiary)",
       "machineSchema": "melega.smart-router.quote.v1"
     },
     {
@@ -141,7 +141,7 @@
         "Treasury Collector",
         "Underlying Router"
       ],
-      "requiredSettlement": "Treasury Runtime FSC-01 post-confirmation",
+      "requiredSettlement": "MELEGA TREASURY WALLET — FSC-01 post-confirmation (direct beneficiary)",
       "machineSchema": "melega.smart-router.quote.v1"
     },
     {
@@ -161,7 +161,7 @@
         "Treasury Collector",
         "Underlying Router"
       ],
-      "requiredSettlement": "Treasury Runtime FSC-01 post-confirmation",
+      "requiredSettlement": "MELEGA TREASURY WALLET — FSC-01 post-confirmation (direct beneficiary)",
       "machineSchema": "melega.smart-router.quote.v1"
     },
     {
@@ -184,12 +184,12 @@
       ],
       "requiredRegistries": [
         "KERL",
-        "Treasury Runtime",
+        "MELEGA TREASURY WALLET",
         "Smart Router Wrapper",
         "D90",
         "D99"
       ],
-      "requiredSettlement": "Treasury Runtime intake required",
+      "requiredSettlement": "DECOMMISSIONED — no runtime intake required",
       "machineSchema": "melega.civilization-router.narrative-trade.v1"
     },
     {
@@ -210,10 +210,10 @@
       ],
       "requiredRegistries": [
         "KERL",
-        "Treasury Runtime",
+        "MELEGA TREASURY WALLET",
         "Smart Router Wrapper"
       ],
-      "requiredSettlement": "Treasury Runtime intake required",
+      "requiredSettlement": "DECOMMISSIONED — no runtime intake required",
       "machineSchema": "melega.civilization-router.ai-service.v1"
     },
     {
@@ -232,9 +232,9 @@
       ],
       "requiredRegistries": [
         "KERL",
-        "Treasury Runtime"
+        "MELEGA TREASURY WALLET"
       ],
-      "requiredSettlement": "Treasury Runtime intake required",
+      "requiredSettlement": "DECOMMISSIONED — no runtime intake required",
       "machineSchema": "melega.civilization-router.marketplace-service.v1"
     },
     {
@@ -250,10 +250,10 @@
         "executionManifest"
       ],
       "requiredRegistries": [
-        "Treasury Runtime",
+        "MELEGA TREASURY WALLET",
         "KERL"
       ],
-      "requiredSettlement": "Treasury Runtime intake required",
+      "requiredSettlement": "DECOMMISSIONED — no runtime intake required",
       "machineSchema": "melega.civilization-router.marketplace-settlement.v1"
     },
     {
@@ -269,9 +269,9 @@
         "asset"
       ],
       "requiredRegistries": [
-        "Treasury Runtime"
+        "MELEGA TREASURY WALLET"
       ],
-      "requiredSettlement": "Treasury Runtime intake required",
+      "requiredSettlement": "DECOMMISSIONED — no runtime intake required",
       "machineSchema": "melega.civilization-router.treasury-transfer.v1"
     },
     {
@@ -296,16 +296,16 @@
       "supported": false,
       "planned": true,
       "blocked": true,
-      "blockerReason": "REFERRAL_BLOCKED_BY_MISSING_RUNTIME — SRD-01 owned by Treasury Runtime",
+      "blockerReason": "REFERRAL_BLOCKED_BY_MISSING_RUNTIME — SRD-01 settlement schema not published",
       "requiredInputs": [
         "referralRef",
         "settlementRef"
       ],
       "requiredRegistries": [
-        "Treasury Runtime",
+        "MELEGA TREASURY WALLET",
         "SRD-01"
       ],
-      "requiredSettlement": "Treasury Runtime intake required",
+      "requiredSettlement": "DECOMMISSIONED — no runtime intake required",
       "machineSchema": "melega.civilization-router.referral.v1"
     },
     {
@@ -321,30 +321,28 @@
       ],
       "requiredRegistries": [
         "KERL",
-        "Treasury Runtime"
+        "MELEGA TREASURY WALLET"
       ],
       "requiredSettlement": "Schema publication required",
       "machineSchema": "melega.civilization-router.propagation.v1"
     }
   ],
   "treasuryRouting": {
-    "owner": "Treasury Runtime",
+    "owner": "MELEGA TREASURY WALLET",
+    "status": "DECOMMISSIONED",
+    "authority": "NONE",
+    "runtime_dependency": false,
+    "replacement_beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
     "dexRole": [
       "route classification",
       "protocol fee metadata",
-      "execution manifest",
-      "handoff preparation"
+      "execution manifest"
     ],
     "treasuryRole": [
-      "FSC-01 settlement",
-      "D90",
-      "D99",
-      "referral settlement",
-      "accounting",
-      "treasury routing"
+      "decommissioned — no settlement authority"
     ],
     "intakePath": "/api/treasury/settlement-events",
-    "upstreamPath": "/api/public/treasury/settlement-events",
+    "upstreamPath": null,
     "configured": false,
     "d90Defined": false,
     "d99Defined": false,
@@ -362,18 +360,18 @@
       "waterfall",
       "amounts"
     ],
-    "route": "Labs → Smart Router → Treasury Runtime → D99 → D90 → Treasury",
-    "bypassAllowed": false
+    "route": "Labs → Smart Router → non-custodial wallet execution",
+    "bypassAllowed": true
   },
   "D90": {
     "status": "NOT_DEFINED_IN_DEX",
-    "owner": "Treasury Runtime",
-    "required": true
+    "owner": "NONE",
+    "required": false
   },
   "D99": {
     "status": "NOT_DEFINED_IN_DEX",
-    "owner": "Treasury Runtime",
-    "required": true
+    "owner": "NONE",
+    "required": false
   },
   "KERLVersion": "1.0.0",
   "KERLIntegration": {
@@ -382,7 +380,7 @@
     "writable": false,
     "resolutionOrder": [
       "KERL Registry",
-      "Treasury Runtime Registry",
+      "Treasury Registry",
       "Smart Router Registry",
       "env (dev only)"
     ],
@@ -483,21 +481,21 @@
       "requirement": "Treasury Collector registered per chain",
       "status": "BLOCKED",
       "evidence": "/registry/treasury/index.json — chain 97 collector active_testnet; chain 56 collector null",
-      "nextRequiredAction": "Treasury Runtime must publish BNB Chain mainnet collector address"
+      "nextRequiredAction": "Publish mainnet MELEGA TREASURY WALLET collector in /registry/treasury/index.json"
     },
     {
       "phase": "Phase 0",
       "requirement": "KERL registry writable",
       "status": "BLOCKED",
       "evidence": "KERL v1.0.0 — static JSON read-only; intake is dry-run only",
-      "nextRequiredAction": "Treasury Runtime / KERL operator publishes registry updates externally"
+      "nextRequiredAction": "KERL operator publishes registry updates externally"
     },
     {
       "phase": "Phase 0",
       "requirement": "Treasury Runtime intake endpoint",
-      "status": "BLOCKED",
-      "evidence": "TREASURY_RUNTIME_URL unset — proxy returns 503",
-      "nextRequiredAction": "Configure TREASURY_RUNTIME_URL in Vercel and verify intake accepts handoffs"
+      "status": "DECOMMISSIONED",
+      "evidence": "Treasury Runtime authority decommissioned — canonical beneficiary is MELEGA TREASURY WALLET; handoff API no-ops",
+      "nextRequiredAction": "None — settlement not required for DEX swap readiness"
     },
     {
       "phase": "Phase 0",
@@ -511,7 +509,7 @@
       "requirement": "D90 / D99 schemas",
       "status": "BLOCKED",
       "evidence": "NOT_DEFINED_IN_DEX — codex has D87, FSC-01, SRD-01 only",
-      "nextRequiredAction": "Treasury Runtime / Labs must publish D90 and D99 codex entries"
+      "nextRequiredAction": "Labs must publish D90 and D99 codex entries"
     }
   ],
   "labsBinding": {

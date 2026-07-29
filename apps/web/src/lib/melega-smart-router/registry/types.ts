@@ -1,6 +1,7 @@
 import type { RegistryStatus } from '../types'
 
 export type RegistryResolutionSource =
+  | 'dex-economic-authority'
   | 'treasury-runtime'
   | 'kerl'
   | 'env'

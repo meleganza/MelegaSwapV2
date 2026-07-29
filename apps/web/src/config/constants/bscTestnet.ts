@@ -1,6 +1,6 @@
 import { ChainId } from '@pancakeswap/sdk'
 
-/** Verified BNB Testnet (chain 97) addresses — Pancake V2 periphery + Treasury Runtime R751. */
+/** Verified BNB Testnet (chain 97) addresses — Pancake V2 periphery + testnet collector. */
 export const BSC_TESTNET_CHAIN_ID = ChainId.BSC_TESTNET
 
 export const BSC_TESTNET_ADDRESSES = {
@@ -21,7 +21,7 @@ export const BSC_TESTNET_ADDRESSES = {
   ],
   attestation: {
     router: 'PancakeSwap V2 Router — developer.pancakeswap.finance/contracts/v2/addresses',
-    treasury: 'Treasury Runtime R751 — treasury.melega.ai/registry/treasury/index.json',
-    marco: 'Treasury Runtime R744B',
+    treasury: 'Testnet collector 0xe674b1d925d79f5A0053e40cC7cdED7841AD4164 — /registry/treasury/index.json',
+    marco: 'MARCO BSC Testnet — 0x963556de0eb8138E97A85F0A86eE0acD159D210b',
   },
 } as const

@@ -35,7 +35,7 @@ export const serializeGraphManifest = (): Record<string, unknown> => {
     })),
     treasury: {
       status: 'not_indexed',
-      notes: 'Treasury SKU attribution — Treasury Runtime Phase 2',
+      notes: 'Treasury SKU attribution — beneficiary MELEGA TREASURY WALLET',
     },
     disclaimer: GRAPH_REGISTRY_DISCLAIMER,
     data_source: 'registry-graph-static',

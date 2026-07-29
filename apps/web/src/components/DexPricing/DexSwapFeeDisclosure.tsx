@@ -5,12 +5,16 @@ import { Text } from '@pancakeswap/uikit'
 import { Currency, TradeType } from '@pancakeswap/sdk'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import {
-  FSC_01_POLICY_REF,
   formatProtocolFeePercent,
   resolveSwapProtocolFeeContext,
   SWAP_PROTOCOL_FEE_BUY_MARCO_BPS,
   SWAP_PROTOCOL_FEE_STANDARD_BPS,
 } from 'lib/d87-pricing'
+import {
+  DEX_ECONOMIC_AUTHORITY,
+  MELEGA_TREASURY_WALLET_ADDRESS,
+  MELEGA_TREASURY_WALLET_LABEL,
+} from 'config/dexEconomicAuthority'
 import { MarcoBuyFeeIncentive } from './MarcoBuyFeeIncentive'
 import { useSmartRouterFeePanelContext } from './useSmartRouterFeePanelContext'
 
@@ -90,47 +94,43 @@ export function DexSwapFeeDisclosure({ trade }: Props) {
       </Row>
       <Row>
         <Label>Protocol Wrapper</Label>
-        <Value>{panel?.protocolWrapperLabel ?? 'ADAPTER → WRAPPER'}</Value>
+        <Value>{panel?.protocolWrapperLabel ?? 'ADAPTER → WRAPPER (undeployed on mainnet)'}</Value>
       </Row>
       <Row>
-        <Label>Protocol Fee</Label>
+        <Label>Protocol Fee (policy)</Label>
         <Value>
           {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_STANDARD_BPS)} standard ·{' '}
           {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_BUY_MARCO_BPS)} BUY MARCO
         </Value>
       </Row>
       <Row>
-        <Label>Applied</Label>
+        <Label>Applied (policy)</Label>
         <Value>{formatProtocolFeePercent(ctx.protocolFeeBps)}</Value>
       </Row>
       <Row>
         <Label>LP Fee</Label>
-        <Value>Separate — paid to liquidity providers (not Civilization Revenue)</Value>
+        <Value>Separate — paid to liquidity providers</Value>
       </Row>
       <Row>
-        <Label>Treasury Runtime</Label>
-        <Value>FSC-01 settlement — DEX forwards fee only</Value>
-      </Row>
-      <Row>
-        <Label>Current Collector</Label>
-        <Value>{panel?.collectorAddress ?? 'Not published'}</Value>
-      </Row>
-      <Row>
-        <Label>Registry Source</Label>
+        <Label>Fee destination</Label>
         <Value>
-          Collector: {panel?.collectorSource ?? '—'} · MARCO: {panel?.marcoSource ?? '—'}
+          {MELEGA_TREASURY_WALLET_LABEL} ({MELEGA_TREASURY_WALLET_ADDRESS})
         </Value>
+      </Row>
+      <Row>
+        <Label>Execution</Label>
+        <Value>{DEX_ECONOMIC_AUTHORITY.executionModel}</Value>
       </Row>
       {ctx.buyMarcoApplied ? (
         <Note color="#F4C430">
-          BUY MARCO incentive applied: protocol fee reduced to 0.20%.
+          BUY MARCO incentive applied: protocol fee reduced to 0.20% (policy).
         </Note>
       ) : (
-        <Note>Standard D87 protocol fee: 0.30%.</Note>
+        <Note>Standard D87 protocol fee policy: 0.30%. Collection requires deployed wrapper.</Note>
       )}
       <Note>
-        Protocol Fees are routed to Treasury Runtime under {FSC_01_POLICY_REF}. LP fees are separate
-        and remain with liquidity providers. Referral rewards are always distributed in MARCO.
+        DEX-owned application fees route directly to {MELEGA_TREASURY_WALLET_LABEL}. LP fees remain with
+        liquidity providers. Execution is non-custodial.
       </Note>
       <MarcoBuyFeeIncentive trade={trade ?? undefined} compact />
       <PricingLink href="/pricing-fees">Pricing &amp; Fees</PricingLink>

@@ -1,4 +1,3 @@
-import { TREASURY_HANDOFF_API_PATH } from './config'
 import { normalizeTreasuryIntakePayload } from './normalizeTreasuryIntakePayload'
 import { assertPayloadDoesNotOwnSettlement } from './ownership'
 import { setSettlementReference, type SettlementReference } from './settlementReferenceStore'
@@ -9,35 +8,11 @@ import type {
   TreasuryRuntimeEndpointStatus,
   TreasurySettlementResponse,
 } from './types'
-import type { TreasuryIntakePayload } from './normalizeTreasuryIntakePayload'
-
-const MAX_ATTEMPTS = 3
-const RETRY_DELAY_MS = 400
 
 export interface SubmitHandoffDeps {
   fetchImpl?: typeof fetch
   endpoint?: string
   sleep?: (ms: number) => Promise<void>
-}
-
-function sleepDefault(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
-function extractSettlementId(response: TreasurySettlementResponse): string | undefined {
-  return response.settlement_id ?? response.settlement?.settlement_id
-}
-
-function mapResponseToStatus(response: TreasurySettlementResponse): SettlementHandoffStatus {
-  const code = (response.machine_code ?? response.code)?.toUpperCase()
-  if (code === 'DUPLICATE_SETTLEMENT') return 'SETTLEMENT_DUPLICATE'
-  if (response.ok === true || extractSettlementId(response)) return 'SETTLEMENT_ACCEPTED'
-  if (response.status?.toLowerCase() === 'accepted') return 'SETTLEMENT_ACCEPTED'
-  if (response.status?.toLowerCase() === 'rejected') return 'SETTLEMENT_REJECTED'
-  if (response.status?.toLowerCase() === 'duplicate') return 'SETTLEMENT_DUPLICATE'
-  return extractSettlementId(response) ? 'SETTLEMENT_ACCEPTED' : 'SETTLEMENT_REJECTED'
 }
 
 function buildReference(
@@ -51,7 +26,7 @@ function buildReference(
     chainId: payload.chain,
     wallet: payload.wallet,
     settlementStatus: status,
-    settlementId: response ? extractSettlementId(response) : undefined,
+    settlementId: response?.settlement_id ?? response?.settlement?.settlement_id,
     machineCode: response?.machine_code,
     reason: response?.reason,
     treasuryRuntimeEndpointStatus: endpointStatus,
@@ -59,34 +34,14 @@ function buildReference(
   }
 }
 
-async function postOnce(
-  payload: TreasuryIntakePayload,
-  endpoint: string,
-  fetchImpl: typeof fetch,
-): Promise<{ ok: boolean; status: number; body: TreasurySettlementResponse | null }> {
-  const res = await fetchImpl(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-
-  let body: TreasurySettlementResponse | null = null
-  try {
-    body = (await res.json()) as TreasurySettlementResponse
-  } catch {
-    body = null
-  }
-
-  return { ok: res.ok, status: res.status, body }
-}
-
 /**
- * Submits verified execution receipt to Treasury Runtime via same-origin proxy.
- * DEX stores settlement reference only — never computes treasury truth.
+ * Treasury Runtime handoff — decommissioned.
+ * Never issues HTTP requests to Treasury Runtime or treasury.melega.ai.
+ * Swap success is independent of this path.
  */
 export async function submitSettlementHandoff(
   payload: ExecutionReceiptPayload,
-  deps: SubmitHandoffDeps = {},
+  _deps: SubmitHandoffDeps = {},
 ): Promise<SettlementHandoffResult> {
   assertPayloadDoesNotOwnSettlement(payload as unknown as Record<string, unknown>)
 
@@ -97,62 +52,20 @@ export async function submitSettlementHandoff(
       machine_code: normalized.machine_code,
       reason: normalized.reason,
     }
-    const reference = buildReference(payload, 'SETTLEMENT_REJECTED', 'available', rejected)
+    const reference = buildReference(payload, 'SETTLEMENT_REJECTED', 'decommissioned', rejected)
     setSettlementReference(reference)
     return { reference, response: rejected }
   }
 
-  const fetchImpl = deps.fetchImpl ?? fetch
-  const endpoint = deps.endpoint ?? TREASURY_HANDOFF_API_PATH
-  const sleep = deps.sleep ?? sleepDefault
-
-  let lastError: unknown
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    try {
-      const result = await postOnce(normalized.payload, endpoint, fetchImpl)
-
-      if (result.status === 503) {
-        const reference = buildReference(payload, 'SETTLEMENT_PENDING', 'not_configured')
-        setSettlementReference(reference)
-        return { reference }
-      }
-
-      if (!result.ok && result.status >= 500) {
-        throw new Error(`Treasury Runtime unavailable: HTTP ${result.status}`)
-      }
-
-      const body = result.body ?? {}
-      const machineCode = (body.machine_code ?? body.code)?.toUpperCase()
-
-      if (machineCode === 'DUPLICATE_SETTLEMENT') {
-        const reference = buildReference(payload, 'SETTLEMENT_DUPLICATE', 'available', body)
-        setSettlementReference(reference)
-        return { reference, response: body }
-      }
-
-      const status = mapResponseToStatus(body)
-      const reference = buildReference(payload, status, 'available', body)
-      setSettlementReference(reference)
-      emitCivilizationEvent('treasury_settlement', 'trade', {
-        txHash: payload.transactionHash,
-        status,
-        chainId: payload.chain,
-      })
-      emitCivilizationEvent('trade_executed', 'trade', {
-        txHash: payload.transactionHash,
-        status,
-      })
-      return { reference, response: body }
-    } catch (error) {
-      lastError = error
-      if (attempt < MAX_ATTEMPTS) {
-        await sleep(RETRY_DELAY_MS * attempt)
-      }
-    }
+  // Intentionally never call fetchImpl / upstream — TR is decommissioned.
+  void _deps
+  const decommissioned: TreasurySettlementResponse = {
+    status: 'decommissioned',
+    machine_code: 'TREASURY_RUNTIME_DECOMMISSIONED',
+    reason: 'Treasury Runtime decommissioned — no settlement handoff required',
   }
 
-  console.warn('[treasury-handoff] Treasury Runtime unavailable — swap success preserved', lastError)
-  const reference = buildReference(payload, 'SETTLEMENT_PENDING', 'unavailable')
+  const reference = buildReference(payload, 'SETTLEMENT_PENDING', 'decommissioned', decommissioned)
   setSettlementReference(reference)
-  return { reference }
+  return { reference, response: decommissioned }
 }

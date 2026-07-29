@@ -5,7 +5,7 @@
   "authority": "KIRI Codex",
   "status": "ratified",
   "policyRef": "codex://FSC-01",
-  "owner": "Treasury Runtime",
+  "owner": "MELEGA TREASURY WALLET",
   "dexPolicy": "DEX forwards gross protocol fee only — never splits locally",
   "splits": [
     { "destination": "treasury_melega", "percent": 52.5 },

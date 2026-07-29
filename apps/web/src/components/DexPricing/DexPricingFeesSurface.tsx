@@ -2,15 +2,18 @@ import React from 'react'
 import styled from 'styled-components'
 import { Text } from '@pancakeswap/uikit'
 import {
-  FSC_01_POLICY_REF,
   formatServicePricingRows,
-  getFsc01Constitution,
   SWAP_PROTOCOL_FEE_BUY_MARCO_BPS,
   SWAP_PROTOCOL_FEE_STANDARD_BPS,
   formatProtocolFeePercent,
 } from 'lib/d87-pricing'
 import { getSmartRouterReadiness, getMultiChainArchitectureNotes, buildMainnetReadinessMatrix } from 'lib/melega-smart-router'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import {
+  DEX_ECONOMIC_AUTHORITY,
+  MELEGA_TREASURY_WALLET_ADDRESS,
+  MELEGA_TREASURY_WALLET_LABEL,
+} from 'config/dexEconomicAuthority'
 
 const Root = styled.div`
   color: #f2f2f2;
@@ -69,7 +72,6 @@ const Copy = styled(Text)`
 export function DexPricingFeesSurface() {
   const { chainId } = useActiveChainId()
   const rows = formatServicePricingRows()
-  const fsc = getFsc01Constitution()
   const readiness = chainId ? getSmartRouterReadiness(chainId) : null
   const matrix = chainId ? buildMainnetReadinessMatrix(chainId) : []
   const multiChain = getMultiChainArchitectureNotes()
@@ -101,26 +103,28 @@ export function DexPricingFeesSurface() {
       <Card>
         <Title>Swap / Trading</Title>
         <Copy>
-          Standard Protocol Fee: {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_STANDARD_BPS)}
+          Standard Protocol Fee (policy): {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_STANDARD_BPS)}
           <br />
-          BUY MARCO Protocol Fee: {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_BUY_MARCO_BPS)}
+          BUY MARCO Protocol Fee (policy): {formatProtocolFeePercent(SWAP_PROTOCOL_FEE_BUY_MARCO_BPS)}
         </Copy>
-        <Copy mt="12px">Buying MARCO unlocks the reduced protocol fee.</Copy>
+        <Copy mt="12px">Buying MARCO unlocks the reduced protocol fee when the wrapper collects fees.</Copy>
         <Copy mt="8px">
-          Protocol Fees are routed to Treasury Runtime under {FSC_01_POLICY_REF}.
+          Fee destination: {MELEGA_TREASURY_WALLET_LABEL} ({MELEGA_TREASURY_WALLET_ADDRESS})
         </Copy>
         <Copy mt="8px">LP fees are separate and remain with liquidity providers.</Copy>
-        <Copy mt="8px">Referral rewards are always distributed in MARCO.</Copy>
+        <Copy mt="8px">Referral rewards are always distributed in MARCO when referral paths are active.</Copy>
       </Card>
 
       <Card>
-        <Title>FSC-01 Reference (Treasury Runtime)</Title>
-        <Copy mb="8px">DEX displays only — Treasury Runtime executes splits.</Copy>
-        {fsc.splits.map((split) => (
-          <Copy key={split.destination}>
-            {split.percent}% {split.label}
-          </Copy>
-        ))}
+        <Title>Economic Authority</Title>
+        <Copy mb="8px">
+          Canonical beneficiary is {MELEGA_TREASURY_WALLET_LABEL}. No external runtime allocates, receives, or
+          authorizes DEX fees.
+        </Copy>
+        <Copy>
+          Address: {MELEGA_TREASURY_WALLET_ADDRESS}
+        </Copy>
+        <Copy mt="8px">Execution: {DEX_ECONOMIC_AUTHORITY.executionModel}</Copy>
       </Card>
 
       {readiness && (

@@ -56,8 +56,8 @@ export const SMART_SWAP_CANONICAL_OWNERSHIP = {
   tokenIdentity: 'Canonical Token Registry',
   liquidityDiscovery: 'DEX indexed liquidity + on-chain pair reserves',
   fees: 'Canonical fee engine (D87 protocol fee policy + on-chain LP fee)',
-  settlement: 'Treasury Runtime (where applicable)',
-  economicAttribution: 'KERL / civilization economic layer (policy + handoff; Runtime settles)',
+  settlement: 'NONE — Treasury Runtime decommissioned; beneficiary MELEGA TREASURY WALLET',
+  economicAttribution: 'NONE — not proven in Smart Swap execution path',
 } as const
 
 export const SMART_SWAP_FORBIDDEN = [
