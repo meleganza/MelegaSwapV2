@@ -4,7 +4,7 @@ import { ds001Layout } from 'design-system/melega/tokens/ds001'
 import SafeTrendingRibbon from 'views/CommandCenter/components/SafeTrendingRibbon'
 
 const TRENDING_BAR_DESKTOP_H = '44px'
-const TRENDING_BAR_MOBILE_H = '40px'
+const TRENDING_BAR_MOBILE_H = '36px'
 const MOBILE_HEADER_H = '60px'
 
 /**

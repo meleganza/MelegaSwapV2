@@ -24,16 +24,17 @@ import {
 } from './GlobalTrendingBar'
 import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
 
-const MOBILE_HEADER_H = '60px'
+const MOBILE_HEADER_H = '56px'
+const MOBILE_BOTTOM_NAV_H = '64px'
 
 const DesktopMain = styled.main`
   margin-left: 0;
   /* Mobile sticky stack: mobile header + trending bar */
   padding: calc(${MOBILE_HEADER_H} + env(safe-area-inset-top, 0px) + ${MELEGA_TRENDING_BAR_MOBILE_HEIGHT})
-    12px calc(68px + env(safe-area-inset-bottom, 0px));
+    16px calc(${MOBILE_BOTTOM_NAV_H} + env(safe-area-inset-bottom, 0px));
   background: ${uxRebuildColors.pageBg};
   min-height: 100dvh;
-  min-height: 100vh;
+  min-height: 100svh;
   box-sizing: border-box;
   overflow-x: hidden;
 
@@ -51,7 +52,8 @@ const DesktopMain = styled.main`
 `
 
 const Root = styled.div`
-  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100svh;
   background: ${uxRebuildColors.pageBg};
   color: ${colors.textPrimary};
   font-family: ${uxRebuildFont};
@@ -76,7 +78,7 @@ const FooterSlot = styled.div`
   padding-bottom: 8px;
 
   @media (max-width: 1023px) {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(${MOBILE_BOTTOM_NAV_H} + 8px + env(safe-area-inset-bottom, 0px));
   }
 `
 

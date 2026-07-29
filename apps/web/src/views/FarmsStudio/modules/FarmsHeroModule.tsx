@@ -70,7 +70,7 @@ const Inner = styled.div`
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 20px;
+    gap: ${farmsHero.mobileColumnGap};
   }
 `
 
@@ -114,6 +114,12 @@ const Description = styled.p`
   font-weight: 400;
   color: ${farmsHero.descColor};
   white-space: pre-line;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    margin-top: ${farmsHero.mobileGapAfterTitle};
+    font-size: ${farmsHero.mobileDescSize};
+    line-height: ${farmsHero.mobileDescLine};
+  }
 `
 
 const Actions = styled.div`
@@ -124,10 +130,11 @@ const Actions = styled.div`
   align-items: center;
 
   @media (max-width: ${farmsHero.mobileBreak}) {
+    margin-top: ${farmsHero.mobileGapBeforeActions};
     width: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 `
 
