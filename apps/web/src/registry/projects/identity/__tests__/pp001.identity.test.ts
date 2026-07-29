@@ -294,14 +294,9 @@ describe('PP001 chain identifiers', () => {
 describe('PP001 route and shell source contracts', () => {
   const hqPage = readFileSync(path.resolve(__dirname, '../../../../pages/project-hq/[slug].tsx'), 'utf8')
   const consumer = readFileSync(
-    path.resolve(__dirname, '../../../../views/ProjectPage/consumer/ProjectConsumerShell.tsx'),
+    path.resolve(__dirname, '../../../../views/ProjectPage/v1/ProjectPageV1Shell.tsx'),
     'utf8',
   )
-  const stickyNav = readFileSync(
-    path.resolve(__dirname, '../../../../views/ProjectPage/consumer/ProjectStickyNav.tsx'),
-    'utf8',
-  )
-  const hero = readFileSync(path.resolve(__dirname, '../../../../views/ProjectPage/consumer/ProjectHero.tsx'), 'utf8')
   const nextConfig = readFileSync(path.resolve(__dirname, '../../../../../next.config.mjs'), 'utf8')
   const api = readFileSync(path.resolve(__dirname, '../../../../pages/api/public/projects/[slug].ts'), 'utf8')
 
@@ -320,20 +315,20 @@ describe('PP001 route and shell source contracts', () => {
   it('does not render fake action controls', () => {
     expect(consumer).not.toMatch(/fake/i)
     expect(consumer).not.toMatch(/disabled action/i)
-    expect(consumer).toMatch(/data-testid="project-consumer-shell"/)
-    expect(hqPage).toMatch(/ProjectConsumerShell/)
+    expect(consumer).toMatch(/data-testid="project-page-v1"/)
+    expect(hqPage).toMatch(/ProjectPageV1Shell/)
   })
 
   it('includes accessibility affordances', () => {
-    expect(stickyNav).toMatch(/aria-label/)
-    expect(hero).toMatch(/Copy|copy/)
-    expect(consumer).toMatch(/prefers-reduced-motion|ProjectStickyNav/)
-    expect(hero).toMatch(/opens in a new tab|noopener/)
+    expect(consumer).toMatch(/Copy|copy/)
+    expect(consumer).toMatch(/aria-labelledby/)
+    expect(consumer).toMatch(/noopener|noreferrer/)
   })
 
-  it('includes responsive mobile consumer navigation', () => {
-    expect(stickyNav).toMatch(/44px|min-height:\s*44/)
-    expect(stickyNav).toMatch(/Overview|Chart|Swap/)
+  it('is one long page without sticky tab navigation', () => {
+    expect(consumer).toContain('data-project-nav="none"')
+    expect(consumer).not.toContain('ProjectStickyNav')
+    expect(consumer).toContain('data-project-section="identity-hero"')
   })
 
   it('SEO page sets canonical /@ URL and JSON alternate', () => {
