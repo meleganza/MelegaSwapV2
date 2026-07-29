@@ -72,7 +72,7 @@ describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
     expect(insights).toContain('data-liquidity-insights="four-cards"')
     expect(insights).toContain('Total Liquidity')
     expect(insights).toContain('24H Volume')
-    expect(insights).toContain('Active Markets')
+    expect(insights).toContain("label: 'Markets'")
     expect(insights).toContain('Liquidity Activity')
   })
 })

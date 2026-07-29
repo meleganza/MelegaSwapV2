@@ -176,7 +176,7 @@ export const LiquidityInsightsModule: React.FC = () => {
       },
       {
         id: 'active-markets',
-        label: 'Active Markets',
+        label: 'Markets',
         value: active?.value ?? '—',
         supporting: active?.state === 'available' ? 'Active tradeable / funded pools' : active?.supporting ?? '—',
         state: active?.state ?? 'unavailable',

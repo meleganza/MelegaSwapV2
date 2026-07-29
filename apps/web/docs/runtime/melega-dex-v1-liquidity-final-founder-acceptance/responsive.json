@@ -1,0 +1,165 @@
+{
+  "missionId": "MELEGA_DEX_V1_LIQUIDITY_FINAL_FOUNDER_ACCEPTANCE",
+  "baseUrl": "http://127.0.0.1:3561",
+  "capturedAt": "2026-07-29T20:30:54.995Z",
+  "viewports": [
+    {
+      "viewport": "desktop-1440",
+      "width": 1440,
+      "height": 900,
+      "title": "Liquidity | Melega DEX | $0.0003",
+      "overflowX": false,
+      "heroArtCentered": true,
+      "heroArtBox": {
+        "w": 480,
+        "h": 230,
+        "left": 532,
+        "top": 175
+      },
+      "insightCount": 4,
+      "insightLabels": [
+        "Total Liquidity",
+        "24H Volume",
+        "Markets",
+        "Liquidity Activity"
+      ],
+      "poolCardCount": 0,
+      "firstPoolCta": "",
+      "metricLabels": [],
+      "hasApr": false,
+      "hasLiquidityDup": false,
+      "hasMarketQuality": false,
+      "hasMyTokensFilter": false,
+      "sortLabel": "Sort by liquidity",
+      "searchPresent": true,
+      "builderPresent": true,
+      "stepTrackPresent": true,
+      "stepLabels": [
+        "1Configure",
+        "2Review",
+        "3Activate"
+      ],
+      "readinessPresent": false,
+      "readinessText": "",
+      "primaryLabel": "Select Token",
+      "primaryDisabled": false,
+      "deployBlockVisible": false,
+      "walletDisconnected": true
+    },
+    {
+      "viewport": "tablet-1024",
+      "width": 1024,
+      "height": 768,
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "heroArtCentered": true,
+      "heroArtBox": {
+        "w": 480,
+        "h": 230,
+        "left": 272,
+        "top": 300
+      },
+      "insightCount": 4,
+      "insightLabels": [
+        "Total Liquidity",
+        "24H Volume",
+        "Markets",
+        "Liquidity Activity"
+      ],
+      "poolCardCount": 18,
+      "firstPoolCta": "Add Liquidity",
+      "metricLabels": [
+        "TVL",
+        "24H Volume",
+        "Fees"
+      ],
+      "hasApr": false,
+      "hasLiquidityDup": false,
+      "hasMarketQuality": false,
+      "hasMyTokensFilter": false,
+      "sortLabel": "Sort by liquidity",
+      "searchPresent": true,
+      "builderPresent": true,
+      "stepTrackPresent": true,
+      "stepLabels": [
+        "1Configure",
+        "2Review",
+        "3Activate"
+      ],
+      "readinessPresent": false,
+      "readinessText": "",
+      "primaryLabel": "Select Token",
+      "primaryDisabled": false,
+      "deployBlockVisible": false,
+      "walletDisconnected": true
+    },
+    {
+      "viewport": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "heroArtCentered": true,
+      "heroArtBox": {
+        "w": 326,
+        "h": 190,
+        "left": 32,
+        "top": 272
+      },
+      "insightCount": 4,
+      "insightLabels": [
+        "Total Liquidity",
+        "24H Volume",
+        "Markets",
+        "Liquidity Activity"
+      ],
+      "poolCardCount": 18,
+      "firstPoolCta": "Add Liquidity",
+      "metricLabels": [
+        "TVL",
+        "24H Volume",
+        "Fees"
+      ],
+      "hasApr": false,
+      "hasLiquidityDup": false,
+      "hasMarketQuality": false,
+      "hasMyTokensFilter": false,
+      "sortLabel": "Sort by liquidity",
+      "searchPresent": true,
+      "builderPresent": true,
+      "stepTrackPresent": true,
+      "stepLabels": [
+        "1Configure",
+        "2Review",
+        "3Activate"
+      ],
+      "readinessPresent": false,
+      "readinessText": "",
+      "primaryLabel": "Select Token",
+      "primaryDisabled": false,
+      "deployBlockVisible": false,
+      "walletDisconnected": true
+    }
+  ],
+  "checks": {
+    "desktopNoOverflow": true,
+    "tabletNoOverflow": true,
+    "mobileNoOverflow": true,
+    "heroArtCentered": true,
+    "insightsFourCards": true,
+    "exploreNoApr": true,
+    "exploreNoLiquidityDup": true,
+    "exploreCtaAddLiquidity": true,
+    "searchPresent": true,
+    "deployBlockHonest": true,
+    "exploreMetricsOnly": true,
+    "exploreNoMarketQuality": true,
+    "exploreNoMyTokens": true,
+    "threeStepTrack": true
+  },
+  "evidenceNotes": {
+    "desktopPoolCardsAtCapture": 0,
+    "tabletPoolCardsAtCapture": 18,
+    "note": "Desktop explore grid may still be loading at first paint; tablet/mobile confirmed Explore metrics + CTA."
+  }
+}

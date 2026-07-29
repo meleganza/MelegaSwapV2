@@ -1,6 +1,6 @@
 /**
- * LIQUIDITY_MODULE_003 — dense pool discovery card (IA redesign).
- * Logos, pair, status, TVL/Volume/Fees, compact Add — no oversized CTA.
+ * LIQUIDITY_MODULE_003 — dense pool discovery card (Founder final).
+ * Pair · TVL · 24H Volume · Fees · Add Liquidity — no APR / Liquidity duplicate.
  */
 import React from 'react'
 import NextLink from 'next/link'
@@ -169,14 +169,6 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
       <Metric>
         <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricFees}</MetricLabel>
         <MetricValue>{card.feesLabel}</MetricValue>
-      </Metric>
-      <Metric>
-        <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricApr}</MetricLabel>
-        <MetricValue>{card.aprLabel}</MetricValue>
-      </Metric>
-      <Metric>
-        <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricLiquidity}</MetricLabel>
-        <MetricValue>{card.liquidityLabel}</MetricValue>
       </Metric>
     </Metrics>
 

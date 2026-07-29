@@ -1,5 +1,5 @@
 /**
- * Founder acceptance — AI Builder single-surface advancement gates (Wave 03).
+ * Founder acceptance — AI Builder 3-step Configure → Review → Activate.
  * Source-level + programStatus unit tests (no wallet / chain writes).
  */
 import { readFileSync } from 'fs'
@@ -23,8 +23,8 @@ function draft(partial: Partial<SetupDraft>): SetupDraft {
   return { ...EMPTY_SETUP_DRAFT, ...partial }
 }
 
-describe('AI Builder single-surface advancement (Wave 03)', () => {
-  it('blocks Setup without resolved token', () => {
+describe('AI Builder founder 3-step advancement', () => {
+  it('blocks Configure without resolved token', () => {
     expect(setupTokenResolved(EMPTY_SETUP_DRAFT)).toBe(false)
     expect(
       setupTokenResolved(
@@ -38,7 +38,7 @@ describe('AI Builder single-surface advancement (Wave 03)', () => {
     ).toBe(true)
   })
 
-  it('blocks Setup without positive budget', () => {
+  it('blocks Configure without positive budget', () => {
     expect(setupBudgetPositive(draft({ tokenBudget: '' }))).toBe(false)
     expect(setupBudgetPositive(draft({ tokenBudget: '0' }))).toBe(false)
     expect(setupBudgetPositive(draft({ tokenBudget: '-1' }))).toBe(false)
@@ -71,24 +71,31 @@ describe('AI Builder single-surface advancement (Wave 03)', () => {
     expect(hook).toContain('return true')
   })
 
-  it('single surface — no WIZARD_STEPS tracker or Back navigation', () => {
+  it('exposes Configure → Review → Activate only (no Setup/Strategy/Review wizard)', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('data-lb-single-surface')
     expect(card).toContain('liq-lb-single-surface')
+    expect(card).toContain('BUILDER_STEPS')
+    expect(card).toContain("label: 'Configure'")
+    expect(card).toContain("label: 'Review'")
+    expect(card).toContain("label: 'Activate'")
+    expect(card).toContain('liq-lb-step-configure')
+    expect(card).toContain('liq-lb-step-review')
+    expect(card).toContain('liq-lb-step-activate')
+    expect(card).toContain('LbDeployReadinessPanel')
     expect(card).not.toContain('WIZARD_STEPS')
     expect(card).not.toContain("['Setup', 'Strategy', 'Review']")
-    expect(card).not.toContain('liq-lb-wizard')
     expect(card).not.toContain('AI-POWERED')
     expect(card).not.toContain('RECOMMENDED')
-    expect(card).not.toContain('>Back<')
-    expect(card).not.toContain("onClick={onBack}")
   })
 
-  it('CTA state machine labels cover Connect / Select / Budget / Pair / Activate / diagnostic', () => {
+  it('CTA state machine covers step advance / Connect / Pair / Activate / deployment block', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain("'Connect Wallet'")
     expect(card).toContain("'Select Token'")
     expect(card).toContain("'Enter Budget'")
+    expect(card).toContain("'Continue to Review'")
+    expect(card).toContain("'Continue to Activate'")
     expect(card).toContain("'Pair Required'")
     expect(card).toContain("'Approve'")
     expect(card).toContain("'Activate Liquidity Builder'")
@@ -101,6 +108,7 @@ describe('AI Builder single-surface advancement (Wave 03)', () => {
     expect(card).toContain('setupTokenResolved')
     expect(card).toContain('setupBudgetPositive')
     expect(card).toContain('liq-lb-step-error')
+    expect(card).toContain('primaryDisabled')
   })
 
   it('keeps fail-closed requestDepositAndActivate path (no fake activation)', () => {
@@ -110,5 +118,21 @@ describe('AI Builder single-surface advancement (Wave 03)', () => {
     expect(hook).toContain('if (!mutateGate.ok)')
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('card.requestDepositAndActivate()')
+  })
+
+  it('mounts founder deploy readiness panel without developer diagnostics strip', () => {
+    const panel = load('onePage/LbDeployReadinessPanel.tsx')
+    expect(panel).toContain('Detected pair')
+    expect(panel).toContain('Pool')
+    expect(panel).toContain('Factory')
+    expect(panel).toContain('Router')
+    expect(panel).toContain('Execution readiness')
+    expect(panel).toContain('Deployment readiness')
+    expect(panel).toContain('Required contracts')
+    expect(panel).not.toContain('Gate:')
+    expect(panel).not.toContain('mutateGate')
+    const card = load('onePage/LiquidityBuildingCard.tsx')
+    expect(card).not.toContain('TechStatus')
+    expect(card).not.toContain('Gate: ready')
   })
 })

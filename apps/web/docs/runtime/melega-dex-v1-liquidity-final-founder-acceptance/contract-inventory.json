@@ -1,0 +1,44 @@
+{
+  "missionId": "MELEGA_DEX_V1_LIQUIDITY_FINAL_FOUNDER_ACCEPTANCE",
+  "assessedAt": "2026-07-29T20:25:00.000Z",
+  "chainId": 56,
+  "inventory": [
+    {
+      "role": "Melega AMM Factory",
+      "address": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+      "status": "LIVE",
+      "usedBy": ["pair detection", "Explore Pools", "Add Liquidity"]
+    },
+    {
+      "role": "Melega AMM Router",
+      "address": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "status": "LIVE",
+      "usedBy": ["Add Liquidity / Remove Liquidity"]
+    },
+    {
+      "role": "LB Factory",
+      "address": null,
+      "status": "MISSING",
+      "bindingKey": "LB_DEPLOYED_ADDRESSES.lbFactory"
+    },
+    {
+      "role": "LB Authorizer",
+      "address": null,
+      "status": "MISSING",
+      "bindingKey": "LB_DEPLOYED_ADDRESSES.lbAuthorizer"
+    },
+    {
+      "role": "LB FeeSink",
+      "address": null,
+      "status": "MISSING",
+      "bindingKey": "LB_DEPLOYED_ADDRESSES.lbFeeSink"
+    },
+    {
+      "role": "LB Program",
+      "address": null,
+      "status": "MISSING",
+      "bindingKey": "LB_DEPLOYED_ADDRESSES.programAddress"
+    }
+  ],
+  "fabricatedAddresses": false
+}

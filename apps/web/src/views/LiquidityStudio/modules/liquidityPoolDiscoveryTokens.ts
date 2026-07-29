@@ -61,23 +61,15 @@ export const LIQUIDITY_POOL_DISCOVERY_COPY = {
   metricTvl: 'TVL',
   metricVolume: '24H Volume',
   metricFees: 'Fees',
-  metricApr: 'APR',
-  metricLiquidity: 'Liquidity',
   metricUnavailable: '—',
   statusActive: 'Active',
   statusUnavailable: 'Unavailable',
-  cta: 'Add',
+  cta: 'Add Liquidity',
   filters: {
     all: 'All',
-    myTokens: 'My Tokens',
-    popular: 'Popular',
-    newest: 'Newest',
   },
   sorts: {
-    market: 'Market quality',
-    tvl: 'Highest TVL',
-    volume: 'Highest Volume',
-    newest: 'Newest',
+    tvl: 'Sort by liquidity',
   },
 } as const
 

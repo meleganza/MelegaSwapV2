@@ -1,0 +1,72 @@
+{
+  "missionId": "MELEGA_DEX_V1_LIQUIDITY_FINAL_FOUNDER_ACCEPTANCE",
+  "baseUrl": "http://127.0.0.1:3561",
+  "capturedAt": "2026-07-29T20:30:54.998Z",
+  "states": {
+    "walletDisconnected": true,
+    "builderBlocked": true,
+    "steps": [
+      "Configure",
+      "Review",
+      "Activate"
+    ],
+    "deployReadinessFields": [
+      "Detected pair",
+      "Pool",
+      "Factory",
+      "Router",
+      "Execution readiness",
+      "Deployment readiness",
+      "Required contracts"
+    ]
+  },
+  "live": {
+    "title": "Liquidity Studio | Melega DEX | $0.0003",
+    "overflowX": false,
+    "heroArtCentered": true,
+    "heroArtBox": {
+      "w": 480,
+      "h": 230,
+      "left": 532,
+      "top": -263
+    },
+    "insightCount": 4,
+    "insightLabels": [
+      "Total Liquidity",
+      "24H Volume",
+      "Markets",
+      "Liquidity Activity"
+    ],
+    "poolCardCount": 18,
+    "firstPoolCta": "Add Liquidity",
+    "metricLabels": [
+      "TVL",
+      "24H Volume",
+      "Fees"
+    ],
+    "hasApr": false,
+    "hasLiquidityDup": false,
+    "hasMarketQuality": false,
+    "hasMyTokensFilter": false,
+    "sortLabel": "Sort by liquidity",
+    "searchPresent": true,
+    "builderPresent": true,
+    "stepTrackPresent": true,
+    "stepLabels": [
+      "1Configure",
+      "2Review",
+      "3Activate"
+    ],
+    "readinessPresent": true,
+    "readinessText": "Deploy readiness Detected pair MARCO/WBNB Pool 0x7286…1d1E Factory 0xb7E5…039C (Melega AMM) Router 0xc250…EAB3 (Melega AMM) Execution readiness Liquidity Building contracts not deployed on BNB Smart Chain Deployment readiness BLOCKED — LB programs not deployed Required contracts LB Factory, LB Authorizer, LB FeeSink Configuration can be completed now. Wallet activation stays unavailable until Liquidity Building contracts are deployed and bound on BNB Smart Chain (chainId 56). Melega AMM Factory/",
+    "primaryLabel": "Connect Wallet",
+    "primaryDisabled": true,
+    "deployBlockVisible": true,
+    "walletDisconnected": true
+  },
+  "sourceLocks": {
+    "threeStepBuilder": true,
+    "noDeadActivateWhenBlocked": true,
+    "lbAddressesNull": true
+  }
+}
