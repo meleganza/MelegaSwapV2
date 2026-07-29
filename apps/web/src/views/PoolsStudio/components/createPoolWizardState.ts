@@ -28,21 +28,22 @@ export const WIZARD_STEP_LABELS = ['Reward', 'Budget', 'Emission', 'Lock', 'Revi
 export const TOKEN_OPTIONS = ['MARCO', 'BNB', 'USDT', 'CAKE', 'ETH'] as const
 
 export function createDefaultWizardState(): CreatePoolWizardState {
+  // Empty budget/emission until the user configures — never seed fabricated APR (e.g. 153.3%).
   return {
     rewardToken: 'MARCO',
     stakeToken: premiumUiValue(template.stakeToken),
-    rewardBudget: '100000',
-    emissionDuration: '90',
-    dailyRewards: '420',
+    rewardBudget: '',
+    emissionDuration: '',
+    dailyRewards: '',
     lockType: 'Flexible',
-    lockPeriod: '90d',
+    lockPeriod: '',
     cooldown: 'None',
     withdrawalFee: '0%',
     depositFee: '0%',
     autoCompound: 'Optional',
     poolType: 'Official',
-    minStake: '10',
-    maxStake: '1000000',
+    minStake: '',
+    maxStake: '',
     visibility: 'Public',
   }
 }
@@ -71,7 +72,9 @@ export function computeEstimatedApr(state: CreatePoolWizardState): string {
   return `${apr.toFixed(1)}%`
 }
 
-export function computeHealthScore(state: CreatePoolWizardState): number {
+/** Returns null until configuration is complete — never a fabricated default score. */
+export function computeHealthScore(state: CreatePoolWizardState): number | null {
+  if (!hasCompletePoolEstimateParams(state)) return null
   let score = 72
   if (state.autoCompound === 'Enabled') score += 8
   if (state.lockType === 'Fixed') score += 6

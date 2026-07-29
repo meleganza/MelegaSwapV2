@@ -339,7 +339,24 @@ export function sortDiscoveryCards(
 }
 
 export function searchDiscoveryPairs(pairs: ClassifiedAmmPair[], query: string): ClassifiedAmmPair[] {
-  return searchPairs(pairs, query)
+  const q = query.trim().toLowerCase()
+  if (!q) return pairs
+  // Resolve address→symbol before matching — ClassifiedAmmPair often lacks symbol0/1.
+  return pairs.filter((p) => {
+    if (
+      p.pairAddress?.toLowerCase().includes(q) ||
+      p.token0?.toLowerCase().includes(q) ||
+      p.token1?.toLowerCase().includes(q) ||
+      p.symbol0?.toLowerCase().includes(q) ||
+      p.symbol1?.toLowerCase().includes(q)
+    ) {
+      return true
+    }
+    const s0 = resolveDiscoverySymbol(p.token0 ?? '', p.symbol0).toLowerCase()
+    const s1 = resolveDiscoverySymbol(p.token1 ?? '', p.symbol1).toLowerCase()
+    const pairName = `${s0}/${s1}`
+    return s0.includes(q) || s1.includes(q) || pairName.includes(q)
+  })
 }
 
 /** Which filter chips are factual for the current dataset. */

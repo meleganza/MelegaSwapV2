@@ -1,6 +1,6 @@
 /**
- * Home Featured Projects — four equal premium cards.
- * Soft pulsating gold glow (no yellow border). Logo / name / symbol / price / 24h / CTAs.
+ * Home Featured Projects — four compact equal premium cards (≥1280 one row).
+ * Soft ambient gold glow (no yellow border). No scientific-notation prices.
  */
 import React, { useCallback, useMemo } from 'react'
 import Link from 'next/link'
@@ -19,21 +19,21 @@ const halo = keyframes`
   0%, 100% {
     box-shadow:
       0 0 0 0 rgba(244, 196, 48, 0),
-      0 0 22px 4px rgba(244, 196, 48, 0.12),
-      0 14px 36px rgba(0, 0, 0, 0.36);
+      0 0 16px 2px rgba(244, 196, 48, 0.1),
+      0 10px 28px rgba(0, 0, 0, 0.34);
   }
   50% {
     box-shadow:
       0 0 0 0 rgba(244, 196, 48, 0),
-      0 0 36px 10px rgba(244, 196, 48, 0.28),
-      0 16px 40px rgba(0, 0, 0, 0.4);
+      0 0 26px 6px rgba(244, 196, 48, 0.2),
+      0 12px 32px rgba(0, 0, 0, 0.38);
   }
 `
 
 const Shell = styled.section`
   min-width: 0;
-  padding: 10px 6px 14px;
-  margin: -10px -6px -14px;
+  padding: 8px 4px 12px;
+  margin: -8px -4px -12px;
 `
 
 const Grid = styled.div`
@@ -43,8 +43,7 @@ const Grid = styled.div`
   min-width: 0;
   align-items: stretch;
 
-  /* Desktop ≥1440: one complete row of 4. Tablet: 2×2. Mobile: 1 column. */
-  @media (max-width: 1439px) and (min-width: 768px) {
+  @media (max-width: 1279px) and (min-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -55,23 +54,22 @@ const Grid = styled.div`
 `
 
 const Card = styled.article`
-  height: 196px;
-  min-height: 196px;
-  max-height: 196px;
-  padding: 16px;
+  min-height: 148px;
+  max-height: 168px;
+  padding: 12px 14px;
   border-radius: ${uxRebuildRadius.card};
   background: linear-gradient(165deg, rgba(22, 22, 22, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   box-sizing: border-box;
   animation: ${halo} 3.6s ease-in-out infinite;
   overflow: visible;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    box-shadow: 0 0 22px 4px rgba(244, 196, 48, 0.14), 0 14px 36px rgba(0, 0, 0, 0.36);
+    box-shadow: 0 0 16px 2px rgba(244, 196, 48, 0.12), 0 10px 28px rgba(0, 0, 0, 0.34);
   }
 `
 
@@ -84,13 +82,14 @@ const Identity = styled.div`
 
 const Names = styled.div`
   min-width: 0;
+  flex: 1;
 `
 
 const Name = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 750;
   color: ${uxRebuildColors.text};
-  line-height: 20px;
+  line-height: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -99,10 +98,22 @@ const Name = styled.div`
 const Meta = styled.div`
   font-size: 11px;
   color: ${uxRebuildColors.muted};
-  margin-top: 2px;
+  margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+
+const Desc = styled.p`
+  margin: 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: ${uxRebuildColors.muted};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 0;
 `
 
 const Metrics = styled.div`
@@ -110,17 +121,16 @@ const Metrics = styled.div`
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  margin-top: auto;
 `
 
 const Price = styled.div`
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: ${uxRebuildColors.text};
 `
 
 const Change = styled.div<{ $positive?: boolean; $empty?: boolean }>`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   ${({ $empty, $positive }) =>
     $empty
@@ -136,16 +146,17 @@ const Actions = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-top: auto;
 `
 
 const TradeBtn = styled.button`
-  height: 36px;
-  min-height: 44px;
+  height: 40px;
+  min-height: 40px;
   border: none;
   border-radius: 10px;
   background: ${uxRebuildColors.gold};
   color: #111;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 750;
   cursor: pointer;
 
@@ -161,8 +172,8 @@ const TradeBtn = styled.button`
 `
 
 const ViewLink = styled(Link)`
-  height: 36px;
-  min-height: 44px;
+  height: 40px;
+  min-height: 40px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   display: inline-flex;
@@ -230,7 +241,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   name={p.displayName}
                   address={p.address}
                   chainId={p.chainId}
-                  size={40}
+                  size={36}
                   radius="circle"
                 />
                 <Names>
@@ -240,6 +251,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   </Meta>
                 </Names>
               </Identity>
+              {p.description ? <Desc>{p.description}</Desc> : null}
               <Metrics>
                 <Price
                   title={
@@ -255,7 +267,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   $positive={change.positive}
                   title={
                     change.empty
-                      ? 'Factual Melega DEX change unavailable'
+                      ? 'Insufficient credible Melega DEX observations'
                       : `Melega DEX · ${market?.periodLabel ?? '24H'}`
                   }
                 >

@@ -30,6 +30,8 @@ export function formatSnapshotUsd(value?: number | null): string | null {
   if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
+  // Preserve sub-dollar factual volume (never round non-zero to $0.00 / —).
+  if (value < 0.01) return `$${value.toFixed(4)}`
   return `$${value.toFixed(2)}`
 }
 
@@ -67,6 +69,8 @@ export function buildLiquidityMarketSnapshot(input: {
   nowIso?: string
   /** Optional Factory-reserve TVL sum (factual) when protocol subgraph TVL is empty. */
   factoryTvlUsd?: number | null
+  /** Optional durable-index 24h volume (USD) when subgraph volume is empty. */
+  indexerVolume24hUsd?: number | null
 }): LiquidityMarketSnapshotView {
   const now = input.nowIso ?? new Date().toISOString()
   const protocolTvl = formatSnapshotUsd(input.protocol?.liquidityUSD)
@@ -77,7 +81,9 @@ export function buildLiquidityMarketSnapshot(input: {
     : factoryTvl
       ? 'Factory reserves × quote USD'
       : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable
-  const volFormatted = formatSnapshotUsd(input.protocol?.volumeUSD)
+  const protocolVol = formatSnapshotUsd(input.protocol?.volumeUSD)
+  const indexerVol = formatSnapshotUsd(input.indexerVolume24hUsd)
+  const volFormatted = protocolVol ?? indexerVol
 
   const tvl = card('tvl', {
     value: input.protocolLoading
@@ -115,12 +121,15 @@ export function buildLiquidityMarketSnapshot(input: {
       : volFormatted ?? LIQUIDITY_MARKET_SNAPSHOT_COPY.emptyMetric,
     supporting: input.protocolLoading
       ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
-      : volFormatted
+      : protocolVol
         ? 'Verified 24H swap volume'
-        : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
+        : indexerVol
+          ? 'Durable market index · Melega DEX swaps'
+          : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
     state: input.protocolLoading ? 'loading' : volFormatted ? 'available' : 'unavailable',
     timestamp: volFormatted ? now : null,
     status: input.protocolLoading ? 'loading' : volFormatted ? 'ok' : 'unavailable',
+    source: protocolVol ? undefined : indexerVol ? 'melega-durable-market-index' : undefined,
   })
 
   const lpProviders = card('lpProviders', {

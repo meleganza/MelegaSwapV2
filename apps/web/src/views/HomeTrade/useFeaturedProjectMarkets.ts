@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
+import { getFirstThreeNonZeroDecimals } from 'utils/formatInfoNumbers'
 
 type FeaturedMarketsResponse = {
   generatedAt?: string
@@ -57,12 +58,17 @@ export function useFeaturedProjectMarkets(): {
   return { rowsBySlug, loading }
 }
 
+/** Microscopic reserve ratios are not meaningful Featured product prices. */
+const FEATURED_PRICE_MIN_MEANINGFUL = 1e-6
+
 export function formatFeaturedPrice(row?: FeaturedMarketRow): string {
-  if (!row?.latestPriceQuote || !(row.latestPriceQuote > 0)) return '—'
+  if (!row?.latestPriceQuote || !(row.latestPriceQuote > 0)) return 'Price unavailable'
   const p = row.latestPriceQuote
+  if (!Number.isFinite(p) || p < FEATURED_PRICE_MIN_MEANINGFUL) return 'Price unavailable'
   if (p >= 1) return `${p.toFixed(4)} BNB`
   if (p >= 0.0001) return `${p.toFixed(6)} BNB`
-  return `${p.toExponential(2)} BNB`
+  // Leading-zero compression (approved info formatter) — never scientific notation.
+  return `${getFirstThreeNonZeroDecimals(p)} BNB`
 }
 
 export function formatFeaturedChange(row?: FeaturedMarketRow): {
@@ -71,7 +77,7 @@ export function formatFeaturedChange(row?: FeaturedMarketRow): {
   empty: boolean
 } {
   if (row?.changePct == null || !Number.isFinite(row.changePct)) {
-    return { text: 'No recent change', empty: true }
+    return { text: 'Insufficient observations', empty: true }
   }
   const positive = row.changePct >= 0
   const arrow = positive ? '↑' : '↓'

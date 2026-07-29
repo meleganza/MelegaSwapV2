@@ -7,6 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { LiquidityAddModule } from './LiquidityAddModule'
 import { LiquidityBuildingCard } from '../onePage/LiquidityBuildingCard'
+import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
 import { LIQUIDITY_ACTIONS_COPY, liquidityActions } from './liquidityActionsTokens'
 
 const Shell = styled.section`
@@ -73,19 +74,21 @@ const PaneTitle = styled.h2`
   letter-spacing: -0.02em;
 `
 
+/** Compact purple NEW — matches GlobalHeader MelegaGlobalHeader NewBadge. */
 const NewBadge = styled.span`
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 22px;
-  padding: 0 8px;
+  height: 14px;
+  padding: 0 5px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #f4c430 0%, #ffd34d 100%);
-  color: #111;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  background: ${uxRebuildColors.newViolet};
+  color: #ffffff;
+  font-size: 8px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 `
 
@@ -138,7 +141,7 @@ export const LiquidityActionsModule: React.FC = () => (
       <Pane data-testid="liquidity-actions-ai" data-liquidity-action="ai-builder">
         <PaneHeader>
           <PaneTitle>{LIQUIDITY_ACTIONS_COPY.aiBuilder.title}</PaneTitle>
-          <NewBadge data-testid="liquidity-actions-ai-new-badge">New</NewBadge>
+          <NewBadge data-testid="liquidity-actions-ai-new-badge">NEW</NewBadge>
         </PaneHeader>
         <FormSlot data-testid="liquidity-actions-ai-form">
           <LiquidityBuildingCard forceExpanded />

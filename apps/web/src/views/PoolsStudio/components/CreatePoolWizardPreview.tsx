@@ -1,7 +1,11 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import type { CreatePoolWizardState } from './createPoolWizardState'
-import { computeEstimatedApr, hasCompletePoolEstimateParams } from './createPoolWizardState'
+import {
+  computeEstimatedApr,
+  computeHealthScore,
+  hasCompletePoolEstimateParams,
+} from './createPoolWizardState'
 
 const Panel = styled.aside`
   width: 320px;
@@ -150,20 +154,16 @@ function computeApr(state: CreatePoolWizardState): string {
   return computeEstimatedApr(state)
 }
 
-function computeHealth(state: CreatePoolWizardState): number {
-  let score = 72
-  if (state.autoCompound === 'Enabled') score += 8
-  if (state.lockType === 'Fixed') score += 6
-  if (parseNum(state.withdrawalFee) === 0) score += 4
-  if (state.poolType === 'Official') score += 5
-  return Math.min(98, Math.max(42, score))
+function computeHealth(state: CreatePoolWizardState): number | null {
+  return computeHealthScore(state)
 }
 
-function computeConsumptionPct(state: CreatePoolWizardState): number {
+function computeConsumptionPct(state: CreatePoolWizardState): number | null {
+  if (!hasCompletePoolEstimateParams(state)) return null
   const budget = parseNum(state.rewardBudget)
   const daily = parseNum(state.dailyRewards)
   const days = parseNum(state.emissionDuration)
-  if (budget <= 0) return 34
+  if (budget <= 0) return null
   const projected = daily * (days || 30)
   return Math.min(96, Math.max(8, Math.round((projected / budget) * 100)))
 }
@@ -179,13 +179,14 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
   const consumption = useMemo(() => computeConsumptionPct(state), [state])
 
   const bars = useMemo(() => {
+    if (!hasCompletePoolEstimateParams(state)) return []
     const days = Math.max(6, Math.min(12, Math.round(parseNum(state.emissionDuration) / 3) || 8))
     return Array.from({ length: days }, (_, i) => {
       const t = i / (days - 1 || 1)
       const decay = 1 - t * 0.55
       return Math.max(18, Math.round(decay * 100))
     })
-  }, [state.emissionDuration])
+  }, [state])
 
   return (
     <Panel data-r722-wizard-preview data-ps-create-wizard-preview>
@@ -198,33 +199,49 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
 
       <Block>
         <BlockTitle>Emission Graph</BlockTitle>
-        <GraphWrap data-ps-wizard-emission-graph>
-          {bars.map((h, i) => (
-            <GraphBar key={i} $h={h} />
-          ))}
-        </GraphWrap>
+        {bars.length === 0 ? (
+          <MetricRow>
+            <span data-ps-wizard-emission-empty>Calculated after configuration</span>
+          </MetricRow>
+        ) : (
+          <GraphWrap data-ps-wizard-emission-graph>
+            {bars.map((h, i) => (
+              <GraphBar key={i} $h={h} />
+            ))}
+          </GraphWrap>
+        )}
       </Block>
 
       <Block>
         <BlockTitle>Pool Health</BlockTitle>
         <MetricRow>
           <span>Score</span>
-          <strong data-ps-wizard-health-score>{health} / 100</strong>
+          <strong data-ps-wizard-health-score>
+            {health == null ? 'Calculated after configuration' : `${health} / 100`}
+          </strong>
         </MetricRow>
-        <HealthBar>
-          <HealthFill $pct={health} data-ps-wizard-health-bar />
-        </HealthBar>
+        {health != null ? (
+          <HealthBar>
+            <HealthFill $pct={health} data-ps-wizard-health-bar />
+          </HealthBar>
+        ) : null}
       </Block>
 
       <Block>
         <BlockTitle>Reward Consumption</BlockTitle>
-        <DonutRow>
-          <Donut style={{ ['--pct' as string]: `${consumption}%` }} data-ps-wizard-consumption-donut />
-          <MetricRow style={{ flex: 1 }}>
-            <span>Projected use</span>
-            <strong data-ps-wizard-consumption-pct>{consumption}%</strong>
+        {consumption == null ? (
+          <MetricRow>
+            <span data-ps-wizard-consumption-empty>Calculated after configuration</span>
           </MetricRow>
-        </DonutRow>
+        ) : (
+          <DonutRow>
+            <Donut style={{ ['--pct' as string]: `${consumption}%` }} data-ps-wizard-consumption-donut />
+            <MetricRow style={{ flex: 1 }}>
+              <span>Projected use</span>
+              <strong data-ps-wizard-consumption-pct>{consumption}%</strong>
+            </MetricRow>
+          </DonutRow>
+        )}
       </Block>
 
       <Block>

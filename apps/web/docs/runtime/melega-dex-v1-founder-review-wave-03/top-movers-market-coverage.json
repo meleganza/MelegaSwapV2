@@ -1,0 +1,185 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_REVIEW_HOME_LIQUIDITY_POOLS_REPAIR_WAVE_03",
+  "capturedAt": "2026-07-29T05:22:42.359059+00:00",
+  "source": "https://www.melega.finance/api/indexer/tier-metrics",
+  "indexerRepair": "Wave03 syncs all Tier-1 pairs per cron; shouldRunTierStages no longer blocked by featured interior-gap",
+  "assets": [
+    {
+      "asset": "MARCO",
+      "tokenAddress": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+      "reserveStatus": "READY",
+      "swapCount24h": 40,
+      "observationCount": 48,
+      "priceChange24h": -1.1150481239093448,
+      "eligible": true,
+      "exclusionReasons": [
+        "eligible"
+      ]
+    },
+    {
+      "asset": "MM72",
+      "tokenAddress": "0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e",
+      "pairAddress": "0x7825da4753eb52d918dac368f59d1fb734dafb72",
+      "reserveStatus": "READY",
+      "swapCount24h": 1,
+      "observationCount": 1,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "missing_priceChange24h",
+        "candleCount_1_lt_2"
+      ]
+    },
+    {
+      "asset": "EYED",
+      "tokenAddress": null,
+      "pairAddress": "0x0ca5da766a0d95a5b16abfb974071c29391d1581",
+      "reserveStatus": "SYNCING",
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "missing_priceChange24h",
+        "candleCount_0_lt_2",
+        "tradeCount24h_lt_1"
+      ]
+    },
+    {
+      "asset": "Young Degens",
+      "tokenAddress": null,
+      "pairAddress": "0x93ca9862f9fea7636b7a143e54c6cd64d9585aef",
+      "reserveStatus": "SYNCING",
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "missing_priceChange24h",
+        "candleCount_0_lt_2",
+        "tradeCount24h_lt_1"
+      ]
+    },
+    {
+      "asset": "BLION",
+      "tokenAddress": null,
+      "pairAddress": "0x4c7a472c5356679bec7bb0b36038b2edc132255a",
+      "reserveStatus": "SYNCING",
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "missing_priceChange24h",
+        "candleCount_0_lt_2",
+        "tradeCount24h_lt_1"
+      ]
+    },
+    {
+      "asset": "CAKE",
+      "tokenAddress": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "WBNB",
+      "tokenAddress": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "ETH/WETH",
+      "tokenAddress": null,
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "ASTER",
+      "tokenAddress": null,
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "AIOT",
+      "tokenAddress": null,
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "naiive",
+      "tokenAddress": null,
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "FLOKI",
+      "tokenAddress": null,
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    },
+    {
+      "asset": "DOT",
+      "tokenAddress": null,
+      "pairAddress": null,
+      "reserveStatus": null,
+      "swapCount24h": 0,
+      "observationCount": 0,
+      "priceChange24h": null,
+      "eligible": false,
+      "exclusionReasons": [
+        "no_canonical_melega_factory_pair_in_founder_watchlist"
+      ]
+    }
+  ],
+  "eligibleCount": 1
+}

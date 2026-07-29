@@ -101,16 +101,25 @@ export async function runIndexerOrchestrator(
     const tier1Candidates = inventory.tier1.filter((p) => p.slug !== FEATURED_PAIR_SLUG)
     const tier2Candidates = inventory.tier2
 
-    const tier1Pick = pickRotatingPair(tier1Candidates, scheduler.tier1RotationIndex)
-    if (tier1Pick.pair) {
+    // Wave 03: sync ALL Tier-1 founder/core pairs each cron (not one rotate) so Top Movers
+    // can accumulate ≥2 observations beyond MARCO. Cap by remaining deadline.
+    const FOUNDER_TIER1_BATCH = Math.min(tier1Candidates.length, 6)
+    for (let i = 0; i < FOUNDER_TIER1_BATCH && !deadline.shouldStop(); i += 1) {
+      const idx = (scheduler.tier1RotationIndex + i) % Math.max(1, tier1Candidates.length)
+      const pair = tier1Candidates[idx]
+      if (!pair) continue
       const tier1Deadline = resolveStageDeadline(deadline, stageMode)
-      tier1Job = await runTierPairSync(tier1Pick.pair, tier1Deadline)
-      addedEvents += tier1Job.addedEvents
+      const job = await runTierPairSync(pair, tier1Deadline)
+      tier1Job = job
+      addedEvents += job.addedEvents
       pairJobsProcessed += 1
-      scheduler.tier1RotationIndex = tier1Pick.nextIndex
-      scheduler.lastProviderResult = tier1Job.health.providerUsed
-      cursorsAfter[tier1Pick.pair.slug] = tier1Job.checkpoint.gapFillCursor ?? null
+      scheduler.lastProviderResult = job.health.providerUsed
+      cursorsAfter[pair.slug] = job.checkpoint.gapFillCursor ?? null
       deadline.markStage('tier1-sync')
+    }
+    if (tier1Candidates.length > 0) {
+      scheduler.tier1RotationIndex =
+        (scheduler.tier1RotationIndex + FOUNDER_TIER1_BATCH) % tier1Candidates.length
     }
 
     if (!deadline.shouldStop()) {

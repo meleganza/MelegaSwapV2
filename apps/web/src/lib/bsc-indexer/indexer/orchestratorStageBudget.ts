@@ -35,8 +35,10 @@ export function shouldRunTierStages(
   stageMode: OrchestratorStageMode,
   featuredBootstrapComplete: boolean,
 ): boolean {
+  // Wave 03: never starve Tier-1/2 observation accumulation behind featured
+  // interior-gap bootstrap — Top Movers need multi-pair candles/events.
   if (stageMode === 'head-edge-only') return true
-  return featuredBootstrapComplete
+  return true
 }
 
 export function resolveStageDeadline(

@@ -1,5 +1,5 @@
 /**
- * Founder acceptance — AI Builder wizard advancement gates (3-step).
+ * Founder acceptance — AI Builder single-surface advancement gates (Wave 03).
  * Source-level + programStatus unit tests (no wallet / chain writes).
  */
 import { readFileSync } from 'fs'
@@ -23,7 +23,7 @@ function draft(partial: Partial<SetupDraft>): SetupDraft {
   return { ...EMPTY_SETUP_DRAFT, ...partial }
 }
 
-describe('AI Builder wizard advancement (Part M)', () => {
+describe('AI Builder single-surface advancement (Wave 03)', () => {
   it('blocks Setup without resolved token', () => {
     expect(setupTokenResolved(EMPTY_SETUP_DRAFT)).toBe(false)
     expect(
@@ -45,7 +45,7 @@ describe('AI Builder wizard advancement (Part M)', () => {
     expect(setupBudgetPositive(draft({ tokenBudget: '1.5' }))).toBe(true)
   })
 
-  it('requires full draft for Strategy→Review', () => {
+  it('requires full draft for activation readiness', () => {
     const incomplete = draft({
       tokenAddress: '0xabc',
       tokenSymbol: 'MARCO',
@@ -71,39 +71,44 @@ describe('AI Builder wizard advancement (Part M)', () => {
     expect(hook).toContain('return true')
   })
 
-  it('Continue to Review does not setUiStep(2) when openReview fails', () => {
+  it('single surface — no WIZARD_STEPS tracker or Back navigation', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('const opened = card.openReview()')
-    expect(card).toContain('if (!opened)')
-    expect(card).toContain('setUiStep(2)')
-    const openedIdx = card.indexOf('const opened = card.openReview()')
-    const failIdx = card.indexOf('if (!opened)', openedIdx)
-    const stepIdx = card.indexOf('setUiStep(2)', openedIdx)
-    expect(failIdx).toBeGreaterThan(openedIdx)
-    expect(stepIdx).toBeGreaterThan(failIdx)
+    expect(card).toContain('data-lb-single-surface')
+    expect(card).toContain('liq-lb-single-surface')
+    expect(card).not.toContain('WIZARD_STEPS')
+    expect(card).not.toContain("['Setup', 'Strategy', 'Review']")
+    expect(card).not.toContain('liq-lb-wizard')
+    expect(card).not.toContain('AI-POWERED')
+    expect(card).not.toContain('RECOMMENDED')
+    expect(card).not.toContain('>Back<')
+    expect(card).not.toContain("onClick={onBack}")
   })
 
-  it('final Review step surfaces Connect Wallet or Activate without silent disabled gate', () => {
+  it('CTA state machine labels cover Connect / Select / Budget / Pair / Activate / diagnostic', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('activeStep === 2 && !card.walletConnected')
-    expect(card).toContain('Continue to Review')
+    expect(card).toContain("'Connect Wallet'")
+    expect(card).toContain("'Select Token'")
+    expect(card).toContain("'Enter Budget'")
+    expect(card).toContain("'Pair Required'")
+    expect(card).toContain("'Approve'")
+    expect(card).toContain("'Activate Liquidity Builder'")
+    expect(card).toContain("'Activating'")
+    expect(card).toContain("'Active'")
+    expect(card).toContain('Liquidity Building contracts not deployed on BNB Smart Chain')
+    expect(card).not.toContain("'Activation Unavailable'")
     expect(card).toContain('eth_requestAccounts')
+    expect(card).toContain('requestDepositAndActivate')
     expect(card).toContain('setupTokenResolved')
     expect(card).toContain('setupBudgetPositive')
     expect(card).toContain('liq-lb-step-error')
   })
 
-  it('marks wizard steps complete only when corresponding valid state exists', () => {
+  it('keeps fail-closed requestDepositAndActivate path (no fake activation)', () => {
+    const hook = load('liquidityBuilding/useLiquidityBuildingCard.ts')
+    expect(hook).toContain('requestDepositAndActivate')
+    expect(hook).toContain("programRead.source !== 'ON_CHAIN'")
+    expect(hook).toContain('if (!mutateGate.ok)')
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('stepDone[i]')
-    expect(card).toContain('tokenReady')
-    expect(card).toContain('budgetReady')
-    expect(card).toContain('reviewReached')
-  })
-
-  it('wizard is three steps: Setup, Strategy, Review', () => {
-    const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain("['Setup', 'Strategy', 'Review']")
-    expect(card).not.toContain("['Setup', 'Budget', 'Strategy', 'Review', 'Activate']")
+    expect(card).toContain('card.requestDepositAndActivate()')
   })
 })

@@ -99,7 +99,8 @@ describe('DS001.4 Liquidity Building experience', () => {
 
   it('6. Full AI is the default strategy', () => {
     expect(EMPTY_SETUP_DRAFT.strategy).toBe('FULL_AI')
-    expect(SETUP).toMatch(/RECOMMENDED/)
+    // Wave 03: RECOMMENDED badge removed from setup (parent already labels AI Builder).
+    expect(SETUP).not.toMatch(/RECOMMENDED/)
     expect(SETUP).toMatch(/lb-strategy-full-ai/)
   })
 

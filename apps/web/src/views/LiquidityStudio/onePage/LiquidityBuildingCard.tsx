@@ -5,6 +5,7 @@ import { useModal } from '@pancakeswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
+import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
 import { useCurrency } from 'hooks/Tokens'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
 import {
@@ -13,14 +14,15 @@ import {
   setupBudgetPositive,
   setupTokenResolved,
 } from '../liquidityBuilding/programStatus'
+import { LB_DEPLOYED_ADDRESSES } from '../liquidityBuilding/addresses'
 import { LB_UX } from '../liquidityBuilding/uxCopy'
 import { liqOne } from './onePageTokens'
 import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 
-const WIZARD_STEPS = ['Setup', 'Strategy', 'Review'] as const
-
 /** Canonical MARCO — default suggestion only; Custom opens full token search. */
 const MARCO_ADDR = MARCO_BSC_ADDRESS
+
+const CONTRACTS_NOT_DEPLOYED = 'Liquidity Building contracts not deployed on BNB Smart Chain'
 
 const goldHaloPulse = keyframes`
   0%, 100% {
@@ -97,19 +99,11 @@ const HeroCopy = styled.div`
   flex-direction: column;
 `
 
-const EyebrowRow = styled.div`
+const TitleRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
-`
-
-const Eyebrow = styled.span`
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${liqOne.gold};
+  min-width: 0;
 `
 
 const Title = styled.h2`
@@ -118,6 +112,20 @@ const Title = styled.h2`
   line-height: 28px;
   font-weight: 750;
   color: ${liqOne.text};
+`
+
+const NewBadge = styled.span`
+  flex: 0 0 auto;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: ${uxRebuildColors.newViolet};
+  color: #ffffff;
+  font-size: 8px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 `
 
 const Desc = styled.p<{ $collapsed: boolean }>`
@@ -194,62 +202,6 @@ const Disc = styled.div<{ $x: string; $y: string; $c: string }>`
   border: 1px solid ${({ $c }) => $c};
 `
 
-const Wizard = styled.nav<{ $hidden?: boolean }>`
-  flex: 0 0 ${({ $hidden }) => ($hidden ? '0px' : liqOne.lbWizardH)};
-  height: ${({ $hidden }) => ($hidden ? '0px' : liqOne.lbWizardH)};
-  max-height: ${({ $hidden }) => ($hidden ? '0px' : liqOne.lbWizardH)};
-  display: ${({ $hidden }) => ($hidden ? 'none' : 'grid')};
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: center;
-  gap: 4px;
-  box-sizing: border-box;
-  border-top: 1px solid ${liqOne.borderDefault};
-  border-bottom: 1px solid ${liqOne.borderDefault};
-  overflow: hidden;
-  padding: 0 8px;
-
-  @media (max-width: 1375px) {
-    flex: 0 0 auto;
-    height: ${({ $hidden }) => ($hidden ? '0px' : 'auto')};
-    max-height: ${({ $hidden }) => ($hidden ? '0px' : 'none')};
-    overflow: visible;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-`
-
-const StepBtn = styled.button<{ $active?: boolean; $done?: boolean }>`
-  appearance: none;
-  border: 0;
-  background: transparent;
-  height: 40px;
-  padding: 0 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  cursor: default;
-  color: ${({ $active, $done }) => ($active ? liqOne.gold : $done ? liqOne.text : liqOne.muted)};
-  font-size: 11px;
-  font-weight: ${({ $active }) => ($active ? 750 : 650)};
-  font-family: ${liqOne.font};
-  white-space: nowrap;
-  min-width: 0;
-`
-
-const StepDot = styled.span<{ $active?: boolean; $done?: boolean }>`
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 10px;
-  font-weight: 800;
-  flex-shrink: 0;
-  color: ${({ $active, $done }) => ($active || $done ? '#111' : liqOne.muted)};
-  background: ${({ $active, $done }) => ($active || $done ? liqOne.gold : '#1a1a1a')};
-  border: 1px solid ${({ $active, $done }) => ($active || $done ? liqOne.gold : liqOne.borderStrong)};
-`
-
 const Body = styled.div<{ $heroCollapsed: boolean; $compact?: boolean }>`
   flex: 0 0
     ${({ $compact, $heroCollapsed }) =>
@@ -285,44 +237,6 @@ const BodyScroll = styled.div`
   @media (max-width: 1375px) {
     overflow: visible;
   }
-`
-
-const ProgramBar = styled.div`
-  flex: 0 0 ${liqOne.lbProgramH};
-  height: ${liqOne.lbProgramH};
-  max-height: ${liqOne.lbProgramH};
-  margin: 0;
-  padding: 0 ${liqOne.lbPadX};
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-sizing: border-box;
-  border-bottom: 1px solid ${liqOne.borderDefault};
-  background: ${liqOne.elevated};
-`
-
-const ProgramSelect = styled.select`
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: ${liqOne.text};
-  font-size: 13px;
-  font-weight: 700;
-  font-family: ${liqOne.font};
-  outline: none;
-  cursor: pointer;
-  min-width: 0;
-  flex: 1;
-  height: 100%;
-`
-
-const ActiveDot = styled.span`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${liqOne.positive};
-  box-shadow: 0 0 0 3px rgba(22, 217, 119, 0.15);
-  flex-shrink: 0;
 `
 
 const Footer = styled.div`
@@ -373,21 +287,6 @@ const Primary = styled.button`
   &:hover:not(:disabled) {
     background: ${liqOne.goldHover};
   }
-`
-
-const Ghost = styled.button`
-  appearance: none;
-  height: 48px;
-  min-width: 96px;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid ${liqOne.borderStrong};
-  background: transparent;
-  color: ${liqOne.secondary};
-  font-size: 13px;
-  font-weight: 700;
-  font-family: ${liqOne.font};
-  cursor: pointer;
 `
 
 const TechStatus = styled.div`
@@ -511,6 +410,17 @@ const AccordionBody = styled.div`
   color: ${liqOne.secondary};
 `
 
+const SummaryStrip = styled.div`
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid ${liqOne.borderDefault};
+  background: ${liqOne.elevated};
+  font-size: 12px;
+  line-height: 18px;
+  color: ${liqOne.secondary};
+`
+
 const DashGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -543,10 +453,50 @@ const ConnectSlot = styled.div`
   }
 `
 
+function humanizeGateReason(reason: string | null | undefined): string {
+  switch (reason) {
+    case 'DEPLOYMENT_INPUTS_BLOCKED':
+    case 'LB_PROGRAM_NOT_DEPLOYED':
+    case 'LB_FACTORY_MISSING':
+    case 'LB_AUTHORIZER_MISSING':
+    case 'LB_FEE_SINK_MISSING':
+      return CONTRACTS_NOT_DEPLOYED
+    case 'WALLET_NOT_CONNECTED':
+      return LB_UX.walletConnect
+    case 'WRONG_CHAIN':
+      return LB_UX.switchNetwork
+    case 'ACTIVATION_NOT_AUTHORIZED':
+      return 'Activation not authorized on this deployment'
+    case 'NO_ACTIVE_PROGRAM':
+      return 'No active Liquidity Building program for this wallet and token'
+    default:
+      return reason?.trim() || CONTRACTS_NOT_DEPLOYED
+  }
+}
+
+function resolveProgramUnavailableReason(input: {
+  programSource: 'ON_CHAIN' | 'UNAVAILABLE'
+  programReason: string | null
+  mutateGate: { ok: boolean; reason: string | null }
+}): string | null {
+  const addressesNull =
+    !LB_DEPLOYED_ADDRESSES.lbFactory &&
+    !LB_DEPLOYED_ADDRESSES.lbAuthorizer &&
+    !LB_DEPLOYED_ADDRESSES.lbFeeSink &&
+    !LB_DEPLOYED_ADDRESSES.programAddress
+
+  if (input.programSource !== 'ON_CHAIN' || addressesNull) {
+    return humanizeGateReason(input.programReason ?? 'LB_PROGRAM_NOT_DEPLOYED')
+  }
+  if (!input.mutateGate.ok) {
+    return humanizeGateReason(input.mutateGate.reason)
+  }
+  return null
+}
+
 /**
- * MODULE_002 — Fixed 672×860 Liquidity Building card.
- * Sections: Hero 210→72 · Wizard 48 · Content 442 · Footer 160.
- * Content replacement only — card height never changes on desktop.
+ * MODULE_002 — Liquidity Building card (Wave 03 single expanded surface).
+ * No Setup/Strategy/Review wizard tracker. Ambient gold glow only — no permanent yellow border.
  */
 type LiquidityBuildingCardProps = {
   /** IA workspace: open setup immediately — no click-to-expand shell. */
@@ -557,17 +507,15 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   function LiquidityBuildingCard({ forceExpanded = false }, ref) {
   const card = useLiquidityBuildingCard()
   const [setupStarted, setSetupStarted] = useState(forceExpanded)
-  const [uiStep, setUiStep] = useState(0)
-  const [programKey, setProgramKey] = useState('marco')
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
+  const [activating, setActivating] = useState(false)
 
   React.useEffect(() => {
     if (!forceExpanded) return
     if (card.phase === 'entry') {
       card.startSetup()
       setSetupStarted(true)
-      setUiStep(0)
     }
     // Intentionally once on mount for IA expanded workspace.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -581,7 +529,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       onCurrencySelect={(c: Currency) => {
         card.setToken(c)
         setSetupStarted(true)
-        setUiStep(0)
+        setStepError(null)
       }}
       selectedCurrency={selectedProjectToken ?? undefined}
       showCommonBases
@@ -598,21 +546,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
   const compactInactive = !forceExpanded && !inFlow && !isActive
 
-  const activeStep = useMemo(() => {
-    if (isActive) return -1
-    if (!inFlow) return -1
-    if (card.phase === 'status' || card.phase === 'review') return 2
-    if (card.phase === 'setup') return Math.min(uiStep, 1)
-    if (card.phase === 'entry' && setupStarted) return Math.min(uiStep, 1)
-    return Math.min(uiStep, 2)
-  }, [card.phase, inFlow, isActive, setupStarted, uiStep])
-
   const pickToken = useCallback(
     (currency: Currency | null | undefined) => {
       if (!currency) return
       card.setToken(currency)
       setSetupStarted(true)
-      setUiStep(0)
+      setStepError(null)
     },
     [card],
   )
@@ -620,144 +559,139 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const onStart = () => {
     card.startSetup()
     setSetupStarted(true)
-    setUiStep(0)
     setStepError(null)
-  }
-
-  const onCancel = () => {
-    card.backToEntry()
-    setSetupStarted(false)
-    setUiStep(0)
-    setAdvancedOpen(false)
-    setStepError(null)
-  }
-
-  const onBack = () => {
-    setStepError(null)
-    if (card.phase === 'status' || card.phase === 'review') {
-      card.backToSetup()
-      setUiStep(1)
-      return
-    }
-    if (uiStep > 0) {
-      setUiStep((s) => s - 1)
-      return
-    }
-    onCancel()
   }
 
   const tokenReady = setupTokenResolved(card.draft)
   const budgetReady = setupBudgetPositive(card.draft)
-  const strategyReady = Boolean(card.draft.strategy && card.draft.epochSeconds)
-  const reviewReached = card.phase === 'review' || card.phase === 'status' || isActive
+  const pair = card.pairDetection
+  const pairReady = Boolean(tokenReady && pair.available && !pair.loading)
+  const programBlockReason = resolveProgramUnavailableReason({
+    programSource: card.programSource,
+    programReason: card.programReason,
+    mutateGate: card.mutateGate,
+  })
 
-  const stepDone = useMemo(
-    () =>
-      [
-        tokenReady && budgetReady,
-        strategyReady && (uiStep >= 1 || reviewReached),
-        reviewReached || isActive,
-      ] as const,
-    [tokenReady, budgetReady, strategyReady, uiStep, reviewReached, isActive],
-  )
+  const eligibilityLabel = useMemo(() => {
+    if (!tokenReady) return 'Select a project token'
+    if (pair.loading) return LB_UX.pairLoading
+    if (!pair.available) return LB_UX.pairNotDetected
+    if (programBlockReason) return programBlockReason
+    if (!card.walletConnected) return 'Wallet required for activation'
+    if (!card.correctChain) return LB_UX.switchNetwork
+    if (card.readiness.uiMode === 'available' && card.mutateGate.ok) return 'Eligible — ready to activate'
+    return card.readiness.productStatus?.replace(/_/g, ' ') || 'Eligibility pending'
+  }, [
+    tokenReady,
+    pair.loading,
+    pair.available,
+    programBlockReason,
+    card.walletConnected,
+    card.correctChain,
+    card.readiness.uiMode,
+    card.readiness.productStatus,
+    card.mutateGate.ok,
+  ])
 
-  const onContinue = () => {
-    if (!inFlow) {
-      onStart()
-      return
-    }
-    if (activeStep <= 0) {
-      if (!tokenReady) {
-        setStepError('Select a project token to continue.')
-        return
-      }
-      if (!budgetReady) {
-        setStepError('Enter a positive token budget to continue.')
-        return
-      }
-      setStepError(null)
-      setUiStep(1)
-      if (card.phase === 'entry') card.startSetup()
-      return
-    }
-    if (activeStep === 1) {
-      if (!card.draftReady) {
-        setStepError('Complete token, budget, and strategy before review.')
-        return
-      }
-      const opened = card.openReview()
-      if (!opened) {
-        setStepError('Complete token, budget, and strategy before review.')
-        return
-      }
-      setStepError(null)
-      setUiStep(2)
-      return
-    }
-    if (activeStep === 2) {
-      if (!card.walletConnected) {
-        // Footer renders ConnectWalletButton — also force-open if Primary path is used.
-        const connect = document.querySelector<HTMLButtonElement>('[data-testid="liq-lb-connect-wallet"]')
-        connect?.click()
-        return
-      }
-      // Surface wallet immediately (account request) — never fake a deposit/activate receipt.
-      const eth =
-        typeof window !== 'undefined'
-          ? (
-              window as Window & {
-                ethereum?: { request?: (args: { method: string }) => Promise<unknown> }
-              }
-            ).ethereum
-          : undefined
-      void eth?.request?.({ method: 'eth_requestAccounts' }).catch(() => undefined)
-      const result = card.requestDepositAndActivate()
-      if (result && !result.ok) {
-        setStepError(result.reason)
-      }
-    }
-  }
+  const summaryLine = useMemo(() => {
+    const token = card.draft.tokenSymbol || '—'
+    const budget = card.draft.tokenBudget || '—'
+    const epoch = card.decisionFrequencyLabel
+    const pairLabel =
+      pairReady && card.draft.tokenSymbol
+        ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
+        : 'Pair not detected'
+    return `${token} · Budget ${budget} · Full AI · ${epoch} · ${pairLabel}`
+  }, [card.draft.tokenSymbol, card.draft.tokenBudget, card.decisionFrequencyLabel, pairReady, pair.quoteSymbol])
 
   const primaryLabel = useMemo(() => {
-    if (isActive) {
-      if (card.status === 'PAUSED' || card.status === 'SAFETY_PAUSED') return 'Resume'
-      return 'Pause'
-    }
+    if (stepError) return stepError
+    if (isActive) return 'Active'
+    if (activating) return 'Activating'
     if (!inFlow) return 'Set Up Liquidity Building'
-    if (activeStep <= 0) return 'Continue to Strategy'
-    if (activeStep === 1) return 'Continue to Review'
     if (!card.walletConnected) return 'Connect Wallet'
-    if (!card.mutateGate.ok || card.programSource !== 'ON_CHAIN') return 'Activation Unavailable'
+    if (!tokenReady) return 'Select Token'
+    if (!budgetReady) return 'Enter Budget'
+    if (!pairReady) return 'Pair Required'
     if (card.status === 'AWAITING_APPROVAL') return 'Approve'
-    if (card.status === 'AWAITING_DEPOSIT') return 'Deposit'
-    return 'Activate'
+    if (programBlockReason) return programBlockReason
+    return 'Activate Liquidity Builder'
   }, [
-    activeStep,
-    card.status,
-    card.walletConnected,
-    card.mutateGate.ok,
-    card.programSource,
-    inFlow,
+    stepError,
     isActive,
+    activating,
+    inFlow,
+    card.walletConnected,
+    tokenReady,
+    budgetReady,
+    pairReady,
+    card.status,
+    programBlockReason,
   ])
+
+  const showConnectSlot = inFlow && !isActive && !card.walletConnected && !stepError
+
+  const runActivate = () => {
+    if (!card.walletConnected) {
+      const connect = document.querySelector<HTMLButtonElement>('[data-testid="liq-lb-connect-wallet"]')
+      connect?.click()
+      return
+    }
+    const eth =
+      typeof window !== 'undefined'
+        ? (
+            window as Window & {
+              ethereum?: { request?: (args: { method: string }) => Promise<unknown> }
+            }
+          ).ethereum
+        : undefined
+    void eth?.request?.({ method: 'eth_requestAccounts' }).catch(() => undefined)
+
+    // Ensure review phase when draft is ready — keeps existing phase machine intact.
+    if (card.draftReady) {
+      card.openReview()
+    }
+
+    setActivating(true)
+    const result = card.requestDepositAndActivate()
+    setActivating(false)
+    if (result && !result.ok) {
+      setStepError(result.reason)
+    }
+  }
 
   const onPrimary = () => {
     if (isActive) {
       if (card.status === 'PAUSED' || card.status === 'SAFETY_PAUSED') card.resume()
-      else card.pause()
+      else if (card.status === 'ACTIVE') card.pause()
       return
     }
-    onContinue()
+    if (!inFlow) {
+      onStart()
+      return
+    }
+    if (!card.walletConnected) return
+    if (!tokenReady) {
+      onPresentCustomToken()
+      return
+    }
+    if (!budgetReady) {
+      setStepError('Enter a positive token budget to continue.')
+      return
+    }
+    if (!pairReady) {
+      setStepError(LB_UX.pairNotDetected)
+      return
+    }
+    setStepError(null)
+    runActivate()
   }
 
-  const pair = card.pairDetection
   const techLine = [
     `Status: ${PROGRAM_STATUS_LABEL[card.status] ?? card.status}`,
     card.programSource === 'ON_CHAIN' ? 'Program: on-chain' : 'Program: unavailable',
-    card.mutateGate.ok ? 'Gate: ready' : 'Gate: blocked',
+    card.mutateGate.ok ? 'Gate: ready' : `Gate: ${card.mutateGate.reason ?? 'blocked'}`,
   ].join(' · ')
-
-  const showProgramBar = inFlow || isActive
 
   const content = (() => {
     if (isActive) {
@@ -843,139 +777,117 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       )
     }
 
-    if (activeStep === 0) {
-      return (
-        <div data-testid="liq-lb-step-setup">
-          <Field>
-            Project Token
-            <TokenRow>
-              <TokenChip type="button" $on={card.draft.tokenSymbol === 'MARCO'} onClick={() => pickToken(marco)}>
-                MARCO
-              </TokenChip>
-              <TokenChip
-                type="button"
-                $on={Boolean(card.draft.tokenSymbol && card.draft.tokenSymbol !== 'MARCO')}
-                onClick={onPresentCustomToken}
-                data-testid="lb-token-select"
-                title="Search any supported project token (WBNB remains a quick suggestion via search)"
-              >
-                Custom / Search
-              </TokenChip>
-            </TokenRow>
-            <MetaValue style={{ marginTop: 6 }}>{card.draft.tokenSymbol || 'Select a project token'}</MetaValue>
-          </Field>
-          <Field>
-            Token Budget
-            <Input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.0"
-              value={card.draft.tokenBudget}
-              onChange={(e) => {
-                setStepError(null)
-                card.setBudget(sanitizeDecimalInput(e.target.value))
-              }}
-            />
-          </Field>
-          {stepError && activeStep === 0 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
-          <MetaGrid>
-            <MetaCell>
-              <MetaLabel>Quote Asset</MetaLabel>
-              <MetaValue>{pair.quoteSymbol || 'WBNB'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Balance</MetaLabel>
-              <MetaValue>{card.walletBalanceLabel || '—'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Detected Pair</MetaLabel>
-              <MetaValue>
-                {pair.available && card.draft.tokenSymbol
-                  ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
-                  : 'Not detected'}
-              </MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>LP Owner</MetaLabel>
-              <MetaValue>{card.account ? `${card.account.slice(0, 6)}…${card.account.slice(-4)}` : 'Wallet'}</MetaValue>
-            </MetaCell>
-          </MetaGrid>
-        </div>
-      )
-    }
-
-    if (activeStep === 1) {
-      return (
-        <div data-testid="liq-lb-step-strategy">
-          <Field>
-            Strategy
-            <TokenRow>
-              <TokenChip
-                type="button"
-                $on={card.draft.strategy === 'FULL_AI'}
-                onClick={() => card.setStrategy('FULL_AI')}
-              >
-                Full AI
-              </TokenChip>
-            </TokenRow>
-          </Field>
-          <Field>
-            Epoch
-            <EpochRow>
-              {EPOCH_OPTIONS.map((o) => (
-                <TokenChip
-                  key={o.seconds}
-                  type="button"
-                  $on={card.draft.epochSeconds === o.seconds}
-                  onClick={() => card.setEpoch(o.seconds)}
-                >
-                  {o.seconds === 300 ? '5m' : o.seconds === 900 ? '15m' : o.seconds === 1800 ? '30m' : '1h'}
-                </TokenChip>
-              ))}
-            </EpochRow>
-          </Field>
-          <Accordion
-            open={advancedOpen}
-            onToggle={(e) => setAdvancedOpen((e.target as HTMLDetailsElement).open)}
-          >
-            <summary>Advanced</summary>
-            <AccordionBody>Dynamic rate bounds and custom strategy modes stay collapsed for V1 defaults.</AccordionBody>
-          </Accordion>
-          {stepError && activeStep === 1 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
-        </div>
-      )
-    }
-
-    // Review + Activate (single confirmation)
+    // Wave 03 — single expanded configuration surface (no Setup/Strategy/Review tracker).
     return (
-      <div data-testid="liq-lb-step-review">
+      <div data-testid="liq-lb-single-surface" data-lb-surface="single">
+        <Field>
+          Project Token
+          <TokenRow>
+            <TokenChip type="button" $on={card.draft.tokenSymbol === 'MARCO'} onClick={() => pickToken(marco)}>
+              MARCO
+            </TokenChip>
+            <TokenChip
+              type="button"
+              $on={Boolean(card.draft.tokenSymbol && card.draft.tokenSymbol !== 'MARCO')}
+              onClick={onPresentCustomToken}
+              data-testid="lb-token-select"
+              title="Search any supported project token"
+            >
+              Search / Select
+            </TokenChip>
+          </TokenRow>
+          <MetaValue style={{ marginTop: 6 }}>{card.draft.tokenSymbol || 'Select a project token'}</MetaValue>
+        </Field>
+
+        <Field>
+          Token Budget
+          <Input
+            type="text"
+            inputMode="decimal"
+            placeholder="0.0"
+            value={card.draft.tokenBudget}
+            onChange={(e) => {
+              setStepError(null)
+              card.setBudget(sanitizeDecimalInput(e.target.value))
+            }}
+            data-testid="lb-budget-input"
+          />
+        </Field>
+
+        <Field>
+          Strategy
+          <TokenRow>
+            <TokenChip
+              type="button"
+              $on={card.draft.strategy === 'FULL_AI'}
+              onClick={() => card.setStrategy('FULL_AI')}
+              data-testid="lb-strategy-full-ai"
+            >
+              Full AI
+            </TokenChip>
+          </TokenRow>
+        </Field>
+
+        <Field>
+          Epoch
+          <EpochRow>
+            {EPOCH_OPTIONS.map((o) => (
+              <TokenChip
+                key={o.seconds}
+                type="button"
+                $on={card.draft.epochSeconds === o.seconds}
+                onClick={() => card.setEpoch(o.seconds)}
+                data-testid={`lb-freq-${o.seconds}`}
+              >
+                {o.seconds === 300 ? '5m' : o.seconds === 900 ? '15m' : o.seconds === 1800 ? '30m' : '1h'}
+              </TokenChip>
+            ))}
+          </EpochRow>
+        </Field>
+
+        <Accordion
+          open={advancedOpen}
+          onToggle={(e) => setAdvancedOpen((e.target as HTMLDetailsElement).open)}
+        >
+          <summary>Advanced</summary>
+          <AccordionBody>Dynamic rate bounds and custom strategy modes stay collapsed for V1 defaults.</AccordionBody>
+        </Accordion>
+
         <MetaGrid>
           <MetaCell>
-            <MetaLabel>Token</MetaLabel>
-            <MetaValue>{card.draft.tokenSymbol || '—'}</MetaValue>
+            <MetaLabel>Quote Asset</MetaLabel>
+            <MetaValue>{pair.quoteSymbol || 'WBNB'}</MetaValue>
           </MetaCell>
           <MetaCell>
-            <MetaLabel>Budget</MetaLabel>
-            <MetaValue>{card.draft.tokenBudget || '—'}</MetaValue>
+            <MetaLabel>Balance</MetaLabel>
+            <MetaValue>{card.walletBalanceLabel || '—'}</MetaValue>
           </MetaCell>
           <MetaCell>
-            <MetaLabel>Strategy</MetaLabel>
-            <MetaValue>Full AI</MetaValue>
+            <MetaLabel>Detected Pair</MetaLabel>
+            <MetaValue>
+              {pairReady && card.draft.tokenSymbol
+                ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
+                : 'Not detected'}
+            </MetaValue>
           </MetaCell>
           <MetaCell>
-            <MetaLabel>Epoch</MetaLabel>
-            <MetaValue>{card.decisionFrequencyLabel}</MetaValue>
+            <MetaLabel>LP Owner</MetaLabel>
+            <MetaValue>{card.account ? `${card.account.slice(0, 6)}…${card.account.slice(-4)}` : 'Wallet'}</MetaValue>
           </MetaCell>
           <MetaCell>
-            <MetaLabel>Wallet</MetaLabel>
-            <MetaValue>{card.walletConnected ? 'Connected' : 'Disconnected'}</MetaValue>
+            <MetaLabel>Eligibility</MetaLabel>
+            <MetaValue data-testid="liq-lb-eligibility">{eligibilityLabel}</MetaValue>
           </MetaCell>
           <MetaCell>
             <MetaLabel>Program</MetaLabel>
             <MetaValue>{card.programSource === 'ON_CHAIN' ? 'On-chain' : 'Unavailable'}</MetaValue>
           </MetaCell>
         </MetaGrid>
-        {stepError && activeStep === 2 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
+
+        <SummaryStrip data-testid="liq-lb-summary">{summaryLine}</SummaryStrip>
+
+        {stepError ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
+
         <span hidden aria-hidden>
           <button type="button" disabled={!card.mutateGate.ok} data-testid="lb-mutating-gate-sentinel">
             gate
@@ -1003,14 +915,17 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       data-pixel-lb-card={compactInactive ? 'compact' : '860'}
       data-lb-module="002"
       data-lb-compact={compactInactive ? '1' : '0'}
+      data-lb-single-surface="1"
       $compact={compactInactive}
     >
       <Hero $collapsed={heroCollapsed || compactInactive} data-testid="liq-lb-header" data-collapsed={heroCollapsed || compactInactive ? '1' : '0'}>
         <HeroCopy>
-          <EyebrowRow>
-            <Eyebrow>AI-POWERED · RECOMMENDED</Eyebrow>
-          </EyebrowRow>
-          {!forceExpanded ? <Title>Liquidity Building</Title> : null}
+          {!forceExpanded ? (
+            <TitleRow>
+              <Title>AI Liquidity Builder</Title>
+              <NewBadge data-testid="liq-lb-new-badge">NEW</NewBadge>
+            </TitleRow>
+          ) : null}
           <Desc $collapsed={heroCollapsed || compactInactive}>
             Let Melega convert eligible project activity into LP liquidity over time — you keep ownership.
           </Desc>
@@ -1029,34 +944,8 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         </Artwork>
       </Hero>
 
-      {isActive ? (
-        <Wizard data-testid="liq-lb-wizard" aria-label="Active program strip" style={{ gridTemplateColumns: '1fr auto' }}>
-          <StepBtn type="button" $active style={{ justifyContent: 'flex-start', paddingLeft: 8 }}>
-            <ActiveDot aria-hidden />
-            ACTIVE · Dashboard
-          </StepBtn>
-          <StepBtn
-            type="button"
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              card.openManage()
-            }}
-          >
-            Manage
-          </StepBtn>
-        </Wizard>
-      ) : (
-        <Wizard $hidden={compactInactive} data-testid="liq-lb-wizard" aria-label="Liquidity Building steps">
-          {WIZARD_STEPS.map((label, i) => (
-            <StepBtn key={label} type="button" $active={activeStep === i} $done={stepDone[i] && activeStep !== i}>
-              <StepDot $active={activeStep === i} $done={stepDone[i] && activeStep !== i}>
-                {i + 1}
-              </StepDot>
-              {label}
-            </StepBtn>
-          ))}
-        </Wizard>
-      )}
+      {/* Wizard strip removed (Wave 03). Geometry tokens lbWizardH retained in onePageTokens for legacy locks. */}
+      <div hidden aria-hidden data-lb-wizard-removed style={{ height: 0, maxHeight: 0 }} />
 
       <Body
         $heroCollapsed={heroCollapsed}
@@ -1064,35 +953,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         data-testid="liq-lb-body"
         data-pixel-lb-body={compactInactive ? 'auto' : heroCollapsed ? '580' : '442'}
       >
-        {showProgramBar ? (
-          <ProgramBar data-testid="liq-lb-program-bar">
-            {isActive ? <ActiveDot aria-hidden /> : null}
-            <ProgramSelect
-              aria-label="Program"
-              value={programKey}
-              onChange={(e) => setProgramKey(e.target.value)}
-            >
-              <option value="marco">MARCO</option>
-              <option value="new">NEW PROGRAM</option>
-            </ProgramSelect>
-          </ProgramBar>
-        ) : null}
-        <BodyScroll key={`${programKey}-${activeStep}-${card.phase}`}>{content}</BodyScroll>
+        <BodyScroll key={`${card.phase}-${isActive ? 'active' : 'setup'}`}>{content}</BodyScroll>
       </Body>
 
       <Footer data-testid="liq-lb-footer">
         <FooterRow>
-          {inFlow && !isActive ? (
-            <Ghost type="button" onClick={onBack}>
-              {uiStep === 0 && card.phase !== 'review' && card.phase !== 'status' ? 'Cancel' : 'Back'}
-            </Ghost>
-          ) : null}
-          {inFlow && !isActive && activeStep > 0 ? (
-            <Ghost type="button" onClick={onCancel}>
-              Cancel
-            </Ghost>
-          ) : null}
-          {activeStep === 2 && !card.walletConnected && !isActive ? (
+          {showConnectSlot ? (
             <ConnectSlot>
               <ConnectWalletButton data-testid="liq-lb-connect-wallet">{LB_UX.walletConnect}</ConnectWalletButton>
             </ConnectSlot>
@@ -1100,16 +966,15 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             <Primary
               type="button"
               onClick={onPrimary}
-              disabled={false}
+              disabled={activating}
               data-testid="liq-lb-primary"
+              title={programBlockReason ?? undefined}
             >
               {primaryLabel}
             </Primary>
           )}
         </FooterRow>
-        {stepError && (activeStep === 2 || activeStep === 0 || activeStep === 1) ? (
-          <InlineError data-testid="liq-lb-footer-error">{stepError}</InlineError>
-        ) : null}
+        {stepError ? <InlineError data-testid="liq-lb-footer-error">{stepError}</InlineError> : null}
         <TechStatus title={techLine}>{techLine}</TechStatus>
       </Footer>
     </Card>

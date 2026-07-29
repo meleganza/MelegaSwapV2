@@ -270,19 +270,6 @@ const StrategyTitle = styled.div`
   align-items: center;
 `
 
-const RecBadge = styled.span`
-  margin-left: 7px;
-  height: 18px;
-  padding: 0 7px;
-  border-radius: 999px;
-  background: ${lb.gold};
-  color: ${lb.ink};
-  font-size: 8px;
-  line-height: 18px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-`
-
 const StrategyDesc = styled.p`
   margin: 8px 0 0;
   max-width: 260px;
@@ -637,9 +624,7 @@ export function LbSetupView({
                       <Check size={12} color={lb.ink} strokeWidth={2.2} />
                     </StrategyCheck>
                   ) : null}
-                  <StrategyTitle>
-                    Full AI <RecBadge>RECOMMENDED</RecBadge>
-                  </StrategyTitle>
+                  <StrategyTitle>Full AI</StrategyTitle>
                   <StrategyDesc>Melega chooses the operating range within fixed safety limits.</StrategyDesc>
                 </StrategyCard>
                 <StrategyCard

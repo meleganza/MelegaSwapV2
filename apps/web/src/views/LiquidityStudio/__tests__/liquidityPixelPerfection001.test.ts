@@ -28,12 +28,13 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(page).toContain('data-pixel-main-row="860"')
   })
 
-  it('left LB card uses fixed header/wizard/body/footer heights', () => {
+  it('left LB card uses fixed header/body/footer heights (wizard strip removed Wave 03)', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
+    const tokens = load('onePage/onePageTokens.ts')
     expect(card).toContain('liqOne.mainRowH')
     expect(card).toContain('liqOne.lbHeaderExpanded')
     expect(card).toContain('liqOne.lbHeaderCollapsed')
-    expect(card).toContain('liqOne.lbWizardH')
+    expect(tokens).toContain('lbWizardH')
     expect(card).toContain('liqOne.lbBodyH')
     expect(card).toContain('liqOne.lbFooterH')
     expect(card).toContain('overflow: hidden')
@@ -108,9 +109,10 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
     expect(edu).toContain('liqOne.educationH')
   })
 
-  it('wizard steps stay in-card without navigation routes', () => {
+  it('single-surface builder stays in-card without navigation routes', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain("['Setup', 'Strategy', 'Review']")
+    expect(card).toContain('data-lb-single-surface')
+    expect(card).not.toContain('WIZARD_STEPS')
     expect(card).not.toContain("router.push('/liquidity-studio?view=building&step=")
     expect(card).toContain('useLiquidityBuildingCard')
   })

@@ -1,0 +1,171 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_REVIEW_HOME_LIQUIDITY_POOLS_REPAIR_WAVE_03",
+  "overflows": [],
+  "status": "PASS",
+  "scans": {
+    "home": {
+      "scientific": false,
+      "featuredCount": 4,
+      "hasInsufficientObs": true,
+      "hasWizardTracker": false,
+      "hasAiPowered": true,
+      "hasContractsNotDeployed": false,
+      "hasExplore": false,
+      "hasMyTokensFilter": false,
+      "hasRewardAdvisor": false,
+      "hasViewContract": false,
+      "moverItems": 1,
+      "overflow": false
+    },
+    "liquidity": {
+      "scientific": false,
+      "featuredCount": 0,
+      "hasInsufficientObs": false,
+      "hasWizardTracker": false,
+      "hasAiPowered": false,
+      "hasContractsNotDeployed": false,
+      "hasExplore": true,
+      "hasMyTokensFilter": false,
+      "hasRewardAdvisor": false,
+      "hasViewContract": false,
+      "moverItems": 1,
+      "overflow": false
+    },
+    "pools": {
+      "scientific": false,
+      "featuredCount": 0,
+      "hasInsufficientObs": false,
+      "hasWizardTracker": false,
+      "hasAiPowered": false,
+      "hasContractsNotDeployed": false,
+      "hasExplore": true,
+      "hasMyTokensFilter": false,
+      "hasRewardAdvisor": false,
+      "hasViewContract": false,
+      "moverItems": 1,
+      "overflow": false
+    }
+  },
+  "responsive": [
+    {
+      "page": "home",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "768",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "pools",
+      "viewport": "390",
+      "overflow": false
+    }
+  ]
+}

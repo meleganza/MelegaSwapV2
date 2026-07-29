@@ -64,8 +64,8 @@ export type LiquidityPositionStatus = 'ACTIVE' | 'UNAVAILABLE' | 'PARTIAL'
 /** Frozen Modules 001–003 + 005. Module 004 Add is provider-hoist only (new SHA). */
 export const LIQUIDITY_MODULE_001_005_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
-  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
-  LiquidityPoolDiscoveryModule: 'a150eff70692ad252c29f608b5c96f0e23791c5452265a6529b5eae45a4874dc',
+  LiquidityActionsModule: 'e4026979e1dfe49150b26ef6e8f3a5d36ef4c0745a803e2452721b6871ae5462',
+  LiquidityPoolDiscoveryModule: 'b24a5bb65ce654d386e696ee1a0028da8288baaba84f3aaa8d2849148ea0e31e',
   LiquidityMarketSnapshotModule:
     '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
 } as const

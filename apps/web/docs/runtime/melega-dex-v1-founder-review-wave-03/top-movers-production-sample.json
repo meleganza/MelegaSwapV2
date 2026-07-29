@@ -1,0 +1,20 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_REVIEW_HOME_LIQUIDITY_POOLS_REPAIR_WAVE_03",
+  "eligibleMovers": [
+    {
+      "asset": "MARCO",
+      "tokenAddress": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+      "reserveStatus": "READY",
+      "swapCount24h": 40,
+      "observationCount": 48,
+      "priceChange24h": -1.1150481239093448,
+      "eligible": true,
+      "exclusionReasons": [
+        "eligible"
+      ]
+    }
+  ],
+  "uiCap": 10,
+  "note": "Production may still show MARCO-only until new cron cycles fill Tier-1 stores after deploy of Wave 03 orchestrator."
+}

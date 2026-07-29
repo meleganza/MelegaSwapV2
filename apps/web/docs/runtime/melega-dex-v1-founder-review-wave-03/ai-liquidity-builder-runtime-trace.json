@@ -1,0 +1,16 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_REVIEW_HOME_LIQUIDITY_POOLS_REPAIR_WAVE_03",
+  "LB_DEPLOYED_ADDRESSES": {
+    "lbFactory": null,
+    "lbAuthorizer": null,
+    "lbFeeSink": null,
+    "programAddress": null
+  },
+  "deploymentBinding": "deployments/liquidity-building/chain-56/lb018-deployment-binding.v1.json",
+  "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
+  "activationAuthorized": false,
+  "contractsStatus": "NOT_DEPLOYED",
+  "ui": "single_surface_precise_diagnostic",
+  "fakeActivation": false,
+  "blocker": "LiquidityBuildingFactoryV1 / Authorizer / FeeSink not deployed on chain 56"
+}

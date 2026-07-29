@@ -932,7 +932,7 @@ export const CreatePoolCta: React.FC = () => {
       ['Cooldown', state.cooldown],
       ['Auto Compound', state.autoCompound],
       ['Pool Type', state.poolType],
-      ['Health Score', `${healthScore} / 100`],
+      ['Health Score', healthScore == null ? 'Calculated after configuration' : `${healthScore} / 100`],
       ['Machine Status', machineStatus],
     ],
     [state, estimatedApr, healthScore, machineStatus],

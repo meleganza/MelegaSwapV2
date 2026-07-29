@@ -52,8 +52,11 @@ export const LiquidityHeroArtwork: React.FC = () => (
   <Frame data-testid="liquidity-hero-artwork" data-liquidity-hero-artwork aria-hidden="true">
     <Glow />
     <Svg viewBox="0 0 480 230" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Optical center nudge — composition was biased left/down vs trust panel. */}
-      <g transform="translate(8, -4)">
+      {/*
+        Centered composition in 480×230 viewBox (midpoint x≈240).
+        Content span ~52…440 → shift −6 so geometric center lands on 240.
+      */}
+      <g transform="translate(-6, 0)">
         {/* Stage 1 — Token (asset) */}
         <circle cx="88" cy="108" r="36" fill="#161616" stroke="#F4C430" strokeWidth="2" />
         <circle cx="88" cy="108" r="16" fill="#F4C430" opacity="0.92" />

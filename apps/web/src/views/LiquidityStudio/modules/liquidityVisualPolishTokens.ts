@@ -36,46 +36,46 @@ export const liquidityVisualPolish = {
 /** Frozen Module 001 sources (byte-identical at Module 007 tip). */
 export const LIQUIDITY_MODULE_001_FREEZE_SHA256 = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
-  LiquidityHeroArtwork: '9cb813dabac35cc5bd7185223c119473ea61766e8e17d988dbd9a16ebbe553ee',
+  LiquidityHeroArtwork: '34e498efc7dc9f658109284b65c4334712affacb40ba3309cc00efe23f59b0d4',
   LiquidityHeroTrustPanel: 'd53f80dc0a97bdb24ab67838beda773a4b08ac5f456d2c0763b531e4734d3039',
   liquidityHeroTokens: '1ea3821c2671f9517679cdb6cd49492bc96aa334c9a492c00cc84377b84de038',
 } as const
 
 export const LIQUIDITY_MODULE_002_FREEZE_SHA256 = {
-  LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
+  LiquidityActionsModule: 'e4026979e1dfe49150b26ef6e8f3a5d36ef4c0745a803e2452721b6871ae5462',
   liquidityActionsTokens: '2913c12cc629f7eda2ca85ac1762ab5a760eedec6c09a7c776833b86b7fd6c54',
 } as const
 
 export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
-  LiquidityPoolDiscoveryModule: 'a150eff70692ad252c29f608b5c96f0e23791c5452265a6529b5eae45a4874dc',
-  LiquidityPoolDiscoveryCard: '81abbcadb15d771059b88029e9dca45a4bbe02134f110f7bdc7d7ea1b1478d92',
-  liquidityPoolDiscoveryTokens: '050488ff324cf1dd821ef27120828f9fe0ef4c4760275918208dac5c478779d1',
-  liquidityPoolDiscoveryModel: '1d99a2422e84e88910d019c13e926f9b903c64e37cf9a2e0047d5177581959de',
+  LiquidityPoolDiscoveryModule: 'b24a5bb65ce654d386e696ee1a0028da8288baaba84f3aaa8d2849148ea0e31e',
+  LiquidityPoolDiscoveryCard: '40cd45120785fb1627366ebd50a646a744bee61bdc4e411fefea9b2ee7ebe464',
+  liquidityPoolDiscoveryTokens: '39f492465f59aba733480a91f3aa593175d5508eac6af71167b085bf85d41d69',
+  liquidityPoolDiscoveryModel: '7611bdbf9aad0ee8d53d615a82427282e8430e2f09500a5375211646c8b70bb0',
   useLiquidityPoolDiscovery: '63c17d0851fbd057875a7575be853a15631f16e1ba3b6d90f13a16d25dc38407',
 } as const
 
 export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {
   LiquidityAddModule: 'e57645b8b56c5e5530e4e7f357357656a70db39821ccade18aaffcc95a61113c',
-  liquidityAddTokens: '84768fc3fd89c97e9838b1777c46d5ef9a5c5008aa75651eab63b6775e0812f9',
+  liquidityAddTokens: 'bb4805a4aa00eb8556181c6339c46041fa63641758a9e18232733c9e928d9bc1',
   liquidityAddCta: '8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8',
 } as const
 
 export const LIQUIDITY_MODULE_005_FREEZE_SHA256 = {
   LiquidityMarketSnapshotModule: '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
-  liquidityMarketSnapshotTokens: '9c314542d9ca22a95e01c14cbb502fcd386970a9b369cdcf8eef1ff56638cdc3',
-  buildLiquidityMarketSnapshot: '8ea9546d9cb1082d5bb130edc6e7605b558e758fcbc7ae000dfd781fbfa0db2b',
-  useLiquidityMarketSnapshot: 'e519eba1919f426c9b7ded869fc0902d2ac29c21fc46310eda9d00cc9345401f',
+  liquidityMarketSnapshotTokens: 'fc7fd2eb70cf995f9af3a5b7a8fe0b3bc438a568ca3a834830ce2a1035379c05',
+  buildLiquidityMarketSnapshot: 'adf31f9621acc6536e5f7dc059e4dd9f453c0bda934b553c05d34b242b4209c9',
+  useLiquidityMarketSnapshot: 'a0ac70595000381a739cf289f48103fc20261a2a9b6397f406ecb5b979011bca',
 } as const
 
 export const LIQUIDITY_MODULE_006_FREEZE_SHA256 = {
   LiquidityMyPositionsModule: 'adf90fe72b8422d81675b916c44aba880df5f340d5c9aec00999fff0e17ad3dc',
-  liquidityMyPositionsTokens: 'a96ebbf05e3b77f5f413bde9b8eea2795820fbcac50306eb3eff66805a1f0a8d',
+  liquidityMyPositionsTokens: '6dd2bfd1e204fc926f46dfa406a17f528ba9c696a7974969f4b4c4e58eb851c5',
   liquidityMyPositionsModel: 'd5d84e53426afb8d870aae39cd9e0633a544b5adebe7047282b4f4a507b19139',
 } as const
 
 export const LIQUIDITY_MODULE_007_FREEZE_SHA256 = {
   LiquidityAnalyticsModule: 'ba1c06bfa3d7bfd49e75e89e4d9dd1b1fbd6518e52e20e8fef07d69db569e7e1',
-  liquidityAnalyticsTokens: '7971a348d9c1bc0bc806d2983ee8c83969aacabf19074d114cd598449ea52e80',
+  liquidityAnalyticsTokens: '25bc2563cfebbace1e5cc1723fe279285ffb1f0707b955d13f26a8fb55251e53',
   buildLiquidityAnalytics: '5e302f2204c34184e4e9a4da4467ad0c15d453299955f83dee297f2b46c0a5be',
   useLiquidityAnalytics: 'a80da07df2c00ceac70491bd860bec1068668f490a6b45abee27676572c46e27',
 } as const

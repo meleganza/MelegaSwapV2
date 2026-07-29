@@ -47,7 +47,7 @@
     "modules/poolsVisualPolishTokens.ts": "3ec630966d5849304d48559178ecb726e245ca7a35541b4d96fb10a00ad084d8"
   },
   "shared": {
-    "PoolsStudioScreen.tsx": "306db75a84518032671227b0f9830e4f26d846e21427bbf26b4ff3eebedfe7d8",
+    "PoolsStudioScreen.tsx": "de96d369181cde0a20552af2d3d8d5900f3fc5fc47c58bf03c62dcba383c8048",
     "poolsArchitecture000Contracts.ts": "4177d16e7ea39fde7777149fb0d70c4b8d03beee7f51ce0aa5b27cf7cdd8787a"
   },
   "recoveryNote": "usePoolsWalletPositions last-good empty-clobber fix for MELEGA_DEX_V1 recovery"

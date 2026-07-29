@@ -213,13 +213,13 @@ const SORT_LABEL: Record<LiquidityDiscoverySort, string> = {
 
 export const LiquidityPoolDiscoveryModule: React.FC = () => {
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<LiquidityDiscoveryFilter>('all')
+  const filter: LiquidityDiscoveryFilter = 'all'
   const [sort, setSort] = useState<LiquidityDiscoverySort>('tvl')
   const [pageSize, setPageSize] = useState(liquidityPoolDiscovery.pageSize)
 
   useEffect(() => {
     setPageSize(liquidityPoolDiscovery.pageSize)
-  }, [query, filter, sort])
+  }, [query, sort])
 
   const discovery = useLiquidityPoolDiscovery({ query, filter, sort, pageSize })
 
@@ -249,33 +249,15 @@ export const LiquidityPoolDiscoveryModule: React.FC = () => {
             placeholder={LIQUIDITY_POOL_DISCOVERY_COPY.searchPlaceholder}
             aria-label={LIQUIDITY_POOL_DISCOVERY_COPY.searchPlaceholder}
           />
-          <ChipRow data-testid="liquidity-pool-discovery-filters" role="group" aria-label="Pool filters">
-            {discovery.availableFilters.map((id) => (
-              <Chip
-                key={id}
-                type="button"
-                $active={filter === id}
-                data-testid={`liquidity-pool-discovery-filter-${id}`}
-                onClick={() => setFilter(id)}
-              >
-                {FILTER_LABEL[id]}
-              </Chip>
-            ))}
-          </ChipRow>
-          {discovery.availableSorts.length > 0 ? (
-            <SortSelect
-              data-testid="liquidity-pool-discovery-sort"
-              value={discovery.availableSorts.includes(sort) ? sort : discovery.availableSorts[0]}
-              onChange={(e) => setSort(e.target.value as LiquidityDiscoverySort)}
-              aria-label="Sort pools"
-            >
-              {discovery.availableSorts.map((id) => (
-                <option key={id} value={id}>
-                  {SORT_LABEL[id]}
-                </option>
-              ))}
-            </SortSelect>
-          ) : null}
+          {/* Wave 03: search-only explorer — no My Tokens / Popular / Newest / Market Quality chips. */}
+          <SortSelect
+            data-testid="liquidity-pool-discovery-sort"
+            value="tvl"
+            onChange={(e) => setSort(e.target.value as LiquidityDiscoverySort)}
+            aria-label="Sort pools"
+          >
+            <option value="tvl">Highest Liquidity</option>
+          </SortSelect>
         </Controls>
       </Header>
 
