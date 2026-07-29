@@ -23,73 +23,72 @@ import {
 } from './helpers'
 
 const HeroCard = styled(SoftCard)`
-  gap: 24px;
-  padding: 28px 20px 32px;
-  border: none;
-  background: transparent;
-  box-shadow: none;
+  gap: 14px;
+  padding: 16px 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(165deg, rgba(20, 20, 20, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 `
 
 const TopBlock = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  text-align: center;
-  gap: 18px;
-`
+  text-align: left;
+  gap: 14px;
 
-const LogoImg = styled.img`
-  width: 92px;
-  height: 92px;
-  border-radius: 22px;
-  object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
-
-  @media (min-width: 480px) {
-    width: 96px;
-    height: 96px;
+  @media (max-width: 479px) {
+    flex-direction: column;
+    text-align: center;
   }
 `
 
+const LogoImg = styled.img`
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+`
+
 const LogoFallback = styled.div`
-  width: 92px;
-  height: 92px;
-  border-radius: 22px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(145deg, #1a1a1a 0%, #101010 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: ${PREMIUM_FONT_DISPLAY};
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
   color: #8f8f8f;
   flex-shrink: 0;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
-
-  @media (min-width: 480px) {
-    width: 96px;
-    height: 96px;
-  }
 `
 
 const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  align-items: center;
+  gap: 6px;
+  align-items: flex-start;
   min-width: 0;
-  width: 100%;
+  flex: 1;
+
+  @media (max-width: 479px) {
+    align-items: center;
+    width: 100%;
+  }
 `
 
 const HeroTitle = styled.h1`
   margin: 0;
   font-family: ${PREMIUM_FONT_DISPLAY};
-  font-size: clamp(28px, 7vw, 36px);
+  font-size: clamp(22px, 5vw, 28px);
   font-weight: 700;
-  line-height: 1.12;
+  line-height: 1.15;
   color: #ffffff;
   word-break: break-word;
 `
@@ -142,10 +141,14 @@ const VerifiedBadge = styled.span`
 
 const MissionLine = styled.p`
   margin: 0;
-  font-size: 17px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.45;
   color: #c8c8c8;
-  max-width: 36ch;
+  max-width: 48ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 const PriceBlock = styled(SoftCard)`
@@ -327,12 +330,12 @@ const ProjectHero: React.FC<Props> = ({ document, marketsDocument }) => {
         </ContractRow>
       ) : null}
 
-      <ActionRow style={{ justifyContent: 'center' }}>
-        <PrimaryButton href="#buy" aria-label={buyLabel}>
+      <ActionRow style={{ justifyContent: 'flex-start' }}>
+        <PrimaryButton href="#trade" aria-label={buyLabel}>
           {buyLabel}
         </PrimaryButton>
-        <SecondaryButton href="#chart" aria-label="View price chart">
-          Chart
+        <SecondaryButton href="#markets" aria-label="View markets">
+          Markets
         </SecondaryButton>
       </ActionRow>
     </HeroCard>

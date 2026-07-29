@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
-import { getFirstThreeNonZeroDecimals } from 'utils/formatInfoNumbers'
 
 type FeaturedMarketsResponse = {
   generatedAt?: string
@@ -30,7 +29,6 @@ export function useFeaturedProjectMarkets(): {
         const next: Record<string, FeaturedMarketRow> = { ...lastGood.current }
         for (const row of body.rows ?? []) {
           if (row.status === 'UNAVAILABLE' && lastGood.current[row.slug]) {
-            // Keep last-good unless this is a permanent identity miss with no prior data.
             continue
           }
           next[row.slug] = row
@@ -58,17 +56,32 @@ export function useFeaturedProjectMarkets(): {
   return { rowsBySlug, loading }
 }
 
-/** Microscopic reserve ratios are not meaningful Featured product prices. */
-const FEATURED_PRICE_MIN_MEANINGFUL = 1e-6
+/** Human decimal string — never scientific notation. */
+export function formatHumanDecimal(value: number, maxDecimals = 12): string {
+  if (!Number.isFinite(value) || value <= 0) return ''
+  if (value >= 1) return value.toFixed(4).replace(/\.?0+$/, '')
+  if (value >= 0.0001) return value.toFixed(6).replace(/\.?0+$/, '')
+  // Founder examples: 0.000000427 or <0.000001 — never 4.27e-10.
+  if (value < 1e-12) return '<0.000001'
+  const fixed = value.toFixed(maxDecimals)
+  const trimmed = fixed.replace(/0+$/, '').replace(/\.$/, '')
+  if (!trimmed || trimmed === '0') return '<0.000001'
+  return trimmed
+}
 
 export function formatFeaturedPrice(row?: FeaturedMarketRow): string {
-  if (!row?.latestPriceQuote || !(row.latestPriceQuote > 0)) return 'Price unavailable'
-  const p = row.latestPriceQuote
-  if (!Number.isFinite(p) || p < FEATURED_PRICE_MIN_MEANINGFUL) return 'Price unavailable'
-  if (p >= 1) return `${p.toFixed(4)} BNB`
-  if (p >= 0.0001) return `${p.toFixed(6)} BNB`
-  // Leading-zero compression (approved info formatter) — never scientific notation.
-  return `${getFirstThreeNonZeroDecimals(p)} BNB`
+  if (!row?.latestPriceQuote || !(row.latestPriceQuote > 0) || !Number.isFinite(row.latestPriceQuote)) {
+    return 'Price unavailable'
+  }
+  return `${formatHumanDecimal(row.latestPriceQuote)} BNB`
+}
+
+export function formatFeaturedMetric(value?: number, unit = 'BNB'): string {
+  if (value == null || !Number.isFinite(value) || value <= 0) return '—'
+  if (value >= 1000) return `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} ${unit}`
+  if (value >= 1) return `${value.toFixed(2)} ${unit}`
+  if (value >= 0.0001) return `${value.toFixed(4)} ${unit}`
+  return `${formatHumanDecimal(value)} ${unit}`
 }
 
 export function formatFeaturedChange(row?: FeaturedMarketRow): {

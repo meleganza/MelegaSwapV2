@@ -33,6 +33,10 @@ export type FeaturedMarketRow = {
   changePct?: number
   periodLabel: '24H' | string
   volume24hQuote?: number
+  /** Approximate WBNB-side liquidity (2× quote reserve when pair is token/WBNB). */
+  liquidityQuote?: number
+  /** Market cap in WBNB when circulating supply is known — omitted when unavailable. */
+  marketCapQuote?: number
   tradeCount24h?: number
   lastTradeTimestamp?: number
   quoteSymbol: 'WBNB'
@@ -59,6 +63,23 @@ function reservePriceTokenInWbnb(params: {
   if (!(r0 > 0) || !(r1 > 0)) return undefined
   if (token === t0 && t1 === WBNB) return r1 / r0
   if (token === t1 && t0 === WBNB) return r0 / r1
+  return undefined
+}
+
+/** Token/WBNB pair liquidity ≈ 2 × WBNB reserve (honest AMM approximation). */
+function liquidityQuoteWbnb(params: {
+  token0: string
+  token1: string
+  reserve0: string
+  reserve1: string
+}): number | undefined {
+  const t0 = params.token0.toLowerCase()
+  const t1 = params.token1.toLowerCase()
+  const r0 = Number(params.reserve0) / 1e18
+  const r1 = Number(params.reserve1) / 1e18
+  if (!(r0 > 0) || !(r1 > 0)) return undefined
+  if (t0 === WBNB) return r0 * 2
+  if (t1 === WBNB) return r1 * 2
   return undefined
 }
 
@@ -180,6 +201,13 @@ export async function buildFeaturedProjectMarkets(): Promise<{
     const lag = health?.indexingLag ?? 0
     if (status === 'LIVE' && lag > 5_000) status = 'STALE'
 
+    const liquidityQuote = liquidityQuoteWbnb({
+      token0: pair.token0,
+      token1: pair.token1,
+      reserve0: pair.reserve0,
+      reserve1: pair.reserve1,
+    })
+
     rows.push({
       slug: project.slug,
       symbol: project.symbol,
@@ -190,6 +218,7 @@ export async function buildFeaturedProjectMarkets(): Promise<{
       changePct: change?.pct,
       periodLabel,
       volume24hQuote: volume24hQuote > 0 ? volume24hQuote : undefined,
+      liquidityQuote: liquidityQuote != null && liquidityQuote > 0 ? liquidityQuote : undefined,
       tradeCount24h: recentSwaps.length || undefined,
       lastTradeTimestamp: lastTradeTimestamp || undefined,
       quoteSymbol: 'WBNB',

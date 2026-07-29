@@ -25,6 +25,8 @@ interface Props {
   governanceDocument: ProjectGovernanceDocument
   growthDocument: ProjectGrowthDocument
   ecosystemDocument: ProjectEcosystemDocument
+  /** Wave 04A — dense long page shows every block expanded (no accordion menu). */
+  alwaysExpanded?: boolean
 }
 
 const ProjectMoreSection: React.FC<Props> = ({
@@ -33,6 +35,7 @@ const ProjectMoreSection: React.FC<Props> = ({
   governanceDocument,
   growthDocument,
   ecosystemDocument,
+  alwaysExpanded = false,
 }) => {
   const relatedHref = getRelatedProjectHref(document.slug)
   const relatedLabel = getRelatedProjectLabel(document.slug)
@@ -46,27 +49,40 @@ const ProjectMoreSection: React.FC<Props> = ({
   const hasRelated = Boolean(relatedHref && relatedLabel)
   const hasUtilities = utilities.length > 0
 
+  const Wrap: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) =>
+    alwaysExpanded ? (
+      <SoftCard style={{ gap: 8, marginTop: 10 }}>
+        <BodyText style={{ fontWeight: 700, fontSize: 15 }}>{title}</BodyText>
+        {children}
+      </SoftCard>
+    ) : (
+      <Accordion>
+        <AccordionSummary>{title}</AccordionSummary>
+        <div style={{ marginTop: 12 }}>{children}</div>
+      </Accordion>
+    )
+
   return (
     <Section aria-labelledby="more-heading">
-      <SectionTitle id="more-heading">More</SectionTitle>
-      <MutedText>Developer, governance, and growth details — collapsed by default.</MutedText>
+      <SectionTitle id="more-heading">{alwaysExpanded ? 'Project links & developer' : 'More'}</SectionTitle>
+      {!alwaysExpanded ? (
+        <MutedText>Developer, governance, and growth details — collapsed by default.</MutedText>
+      ) : null}
 
       {hasRelated ? (
-        <Accordion>
-          <AccordionSummary>Related project</AccordionSummary>
-          <SoftCard style={{ marginTop: 12, border: 'none', padding: 0, background: 'transparent' }}>
+        <Wrap title="Related project">
+          <SoftCard style={{ border: 'none', padding: 0, background: 'transparent' }}>
             <TextLink href={relatedHref!} aria-label={`View ${relatedLabel} project page`}>
               View {relatedLabel}
             </TextLink>
           </SoftCard>
-        </Accordion>
+        </Wrap>
       ) : null}
 
       {hasResources ? (
-        <Accordion>
-          <AccordionSummary>Official resources</AccordionSummary>
-          <SoftCard as="ul" style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, gap: 8, border: 'none', background: 'transparent' }}>
-            {document.resources.slice(0, 6).map((resource) => (
+        <Wrap title="Project links">
+          <SoftCard as="ul" style={{ listStyle: 'none', margin: 0, padding: 0, gap: 8, border: 'none', background: 'transparent' }}>
+            {document.resources.slice(0, 8).map((resource) => (
               <li key={resource.url}>
                 <TextLink
                   href={resource.url}
@@ -79,13 +95,12 @@ const ProjectMoreSection: React.FC<Props> = ({
               </li>
             ))}
           </SoftCard>
-        </Accordion>
+        </Wrap>
       ) : null}
 
       {hasUtilities ? (
-        <Accordion>
-          <AccordionSummary>Utilities</AccordionSummary>
-          <SoftCard as="ul" style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, gap: 12, border: 'none', background: 'transparent' }}>
+        <Wrap title="Utilities">
+          <SoftCard as="ul" style={{ listStyle: 'none', margin: 0, padding: 0, gap: 12, border: 'none', background: 'transparent' }}>
             {utilities.map((service) => {
               const href = service.route ?? service.externalUrl
               return (
@@ -112,14 +127,13 @@ const ProjectMoreSection: React.FC<Props> = ({
               )
             })}
           </SoftCard>
-        </Accordion>
+        </Wrap>
       ) : null}
 
       {hasDeveloper ? (
-        <Accordion>
-          <AccordionSummary>Developer</AccordionSummary>
-          <SoftCard as="ul" style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, gap: 8, border: 'none', background: 'transparent' }}>
-            {developerDocument.resources.slice(0, 4).map((resource) => {
+        <Wrap title="Developer">
+          <SoftCard as="ul" style={{ listStyle: 'none', margin: 0, padding: 0, gap: 8, border: 'none', background: 'transparent' }}>
+            {developerDocument.resources.slice(0, 6).map((resource) => {
               const href = resource.route ?? resource.url
               return (
                 <li key={resource.resourceId}>
@@ -140,13 +154,12 @@ const ProjectMoreSection: React.FC<Props> = ({
               )
             })}
           </SoftCard>
-        </Accordion>
+        </Wrap>
       ) : null}
 
       {hasGovernance ? (
-        <Accordion>
-          <AccordionSummary>Governance</AccordionSummary>
-          <SoftCard style={{ marginTop: 12, border: 'none', padding: 0, background: 'transparent' }}>
+        <Wrap title="Treasury & governance">
+          <SoftCard style={{ border: 'none', padding: 0, background: 'transparent' }}>
             <MutedText>
               {governanceDocument.governance.length} governance record
               {governanceDocument.governance.length === 1 ? '' : 's'}
@@ -157,13 +170,12 @@ const ProjectMoreSection: React.FC<Props> = ({
                 : ''}
             </MutedText>
           </SoftCard>
-        </Accordion>
+        </Wrap>
       ) : null}
 
       {hasGrowth ? (
-        <Accordion>
-          <AccordionSummary>Growth programs</AccordionSummary>
-          <SoftCard as="ul" style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, gap: 8, border: 'none', background: 'transparent' }}>
+        <Wrap title="Growth programs">
+          <SoftCard as="ul" style={{ listStyle: 'none', margin: 0, padding: 0, gap: 8, border: 'none', background: 'transparent' }}>
             {growthDocument.programs.slice(0, 4).map((program) => (
               <li key={program.programId}>
                 <BodyText style={{ fontWeight: 600, fontSize: 15 }}>{program.title}</BodyText>
@@ -171,7 +183,7 @@ const ProjectMoreSection: React.FC<Props> = ({
               </li>
             ))}
           </SoftCard>
-        </Accordion>
+        </Wrap>
       ) : null}
     </Section>
   )

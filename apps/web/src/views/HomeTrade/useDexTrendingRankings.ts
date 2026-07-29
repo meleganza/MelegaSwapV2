@@ -112,7 +112,7 @@ async function fetchTierMetrics(): Promise<TierMetricRow[]> {
 async function fetchBnbUsdPrice(): Promise<number | undefined> {
   try {
     const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd',
+      'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd&include_24hr_change=true',
       { headers: { accept: 'application/json' } },
     )
     if (!res.ok) return undefined
@@ -122,6 +122,102 @@ async function fetchBnbUsdPrice(): Promise<number | undefined> {
   } catch {
     return undefined
   }
+}
+
+type ExternalTokenQuote = {
+  priceUsd: number
+  change24hPct: number
+  volume24hUsd?: number
+  source: 'coingecko'
+}
+
+/**
+ * Well-known CoinGecko coin IDs mapped to BSC contract addresses.
+ * Free CG tiers reject multi-contract `token_price` batches — use `simple/price` IDs first.
+ */
+const COINGECKO_ID_BY_ADDRESS: Record<string, string> = {
+  [MARCO_BSC_ADDRESS.toLowerCase()]: 'melega',
+  '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82': 'pancakeswap-token', // CAKE
+  '0xfb5b838b6cfeedc2873ab27866079ac55363d37e': 'floki', // FLOKI BSC
+  '0x7083609fce4d1d8dc0c979aab8c869ea2c873402': 'polkadot', // DOT BSC peg
+  '0x2170ed0880ac9a755fd29b2688956bd959f933f8': 'ethereum', // ETH BSC
+  '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c': 'bitcoin', // BTCB
+}
+
+function ingestCgQuote(
+  out: Map<string, ExternalTokenQuote>,
+  address: string,
+  row?: { usd?: number; usd_24h_change?: number; usd_24h_vol?: number },
+) {
+  const priceUsd = row?.usd
+  const change = row?.usd_24h_change
+  if (priceUsd == null || !Number.isFinite(priceUsd) || priceUsd <= 0) return
+  if (change == null || !Number.isFinite(change)) return
+  out.set(address.toLowerCase(), {
+    priceUsd,
+    change24hPct: change,
+    volume24hUsd:
+      row.usd_24h_vol != null && Number.isFinite(row.usd_24h_vol) && row.usd_24h_vol > 0
+        ? row.usd_24h_vol
+        : undefined,
+    source: 'coingecko',
+  })
+}
+
+/**
+ * CoinGecko factual external prices / 24h % / volume.
+ * Priority: simple/price by coin id → sequential single-contract token_price.
+ * Never invents missing contracts.
+ */
+async function fetchCoinGeckoTokenQuotes(addresses: string[]): Promise<Map<string, ExternalTokenQuote>> {
+  const out = new Map<string, ExternalTokenQuote>()
+  const unique = Array.from(
+    new Set(addresses.map((a) => a.toLowerCase()).filter((a) => /^0x[a-f0-9]{40}$/.test(a))),
+  )
+
+  const idPairs = Object.entries(COINGECKO_ID_BY_ADDRESS).filter(([addr]) => unique.includes(addr) || unique.length === 0)
+  // Always request the known ecosystem set even when pair index is sparse.
+  const idList = Array.from(new Set([...idPairs.map(([, id]) => id), ...Object.values(COINGECKO_ID_BY_ADDRESS)]))
+  if (idList.length) {
+    try {
+      const url =
+        `https://api.coingecko.com/api/v3/simple/price?ids=${idList.join(',')}` +
+        `&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true`
+      const res = await fetch(url, { headers: { accept: 'application/json' } })
+      if (res.ok) {
+        const json = (await res.json()) as Record<
+          string,
+          { usd?: number; usd_24h_change?: number; usd_24h_vol?: number }
+        >
+        for (const [addr, id] of Object.entries(COINGECKO_ID_BY_ADDRESS)) {
+          ingestCgQuote(out, addr, json[id])
+        }
+      }
+    } catch {
+      // keep going to contract path
+    }
+  }
+
+  // Free tier: 1 contract address per token_price request — probe remaining candidates.
+  const remaining = unique.filter((a) => !out.has(a)).slice(0, 8)
+  for (const addr of remaining) {
+    try {
+      const url =
+        `https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain` +
+        `?contract_addresses=${addr}` +
+        `&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true`
+      const res = await fetch(url, { headers: { accept: 'application/json' } })
+      if (!res.ok) continue
+      const json = (await res.json()) as Record<
+        string,
+        { usd?: number; usd_24h_change?: number; usd_24h_vol?: number }
+      >
+      ingestCgQuote(out, addr, json[addr] ?? json[Object.keys(json)[0] ?? ''])
+    } catch {
+      // keep partial
+    }
+  }
+  return out
 }
 
 /** Live Melega Factory/Router swap feed (AMM protocol activity). */
@@ -186,20 +282,40 @@ function priceObservationsFromSwaps(
   return out
 }
 
-/** Reject extreme %-moves without enough swap evidence / liquidity. */
+/** Reject extreme %-moves without enough swap / external / liquidity evidence. */
 export function isCredibleMoverChange(input: {
   pct: number
   tradeCount24h: number
   volume24h: number
   liquidityScore: number
+  externalVolumeUsd?: number
+  hasExternalChange?: boolean
 }): boolean {
   const abs = Math.abs(input.pct)
   if (!Number.isFinite(abs) || abs <= 0.0001) return false
-  if (input.tradeCount24h < 1 && input.volume24h <= 0) return false
-  if (abs > 25 && input.tradeCount24h < 3) return false
-  if (abs > 40 && input.liquidityScore <= 0) return false
-  if (abs > 80) return false
+  const hasInternal = input.tradeCount24h >= 1 || input.volume24h > 0
+  const hasExternal =
+    Boolean(input.hasExternalChange) &&
+    ((input.externalVolumeUsd != null && input.externalVolumeUsd > 0) || input.liquidityScore > 0)
+  if (!hasInternal && !hasExternal) return false
+  if (hasInternal) {
+    if (abs > 25 && input.tradeCount24h < 3) return false
+    if (abs > 40 && input.liquidityScore <= 0) return false
+    if (abs > 80) return false
+  } else if (abs > 60) {
+    return false
+  }
   return true
+}
+
+function formatTickerPriceUsd(priceUsd: number): string {
+  if (!Number.isFinite(priceUsd) || priceUsd <= 0) return ''
+  if (priceUsd >= 1000) return `$${priceUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+  if (priceUsd >= 1) return `$${priceUsd.toFixed(2)}`
+  if (priceUsd >= 0.0001) return `$${priceUsd.toFixed(6)}`.replace(/0+$/, '').replace(/\.$/, '')
+  if (priceUsd < 1e-9) return '$<0.000001'
+  const fixed = priceUsd.toFixed(12).replace(/0+$/, '').replace(/\.$/, '')
+  return `$${fixed}`
 }
 
 function bumpActivity(
@@ -353,6 +469,42 @@ export function useDexTrendingRankings() {
       revalidateOnFocus: false,
       refreshInterval: 60_000,
       dedupingInterval: 45_000,
+    },
+  )
+
+  /** Candidate contract addresses from pair index + canonical registry for external quotes. */
+  const candidateAddresses = useMemo(() => {
+    const set = new Set<string>()
+    for (const pair of pairRows) {
+      const base = pickTrendingBaseToken(pair.token0 ?? '', pair.token1 ?? '')
+      if (base && !isQuoteTokenAddress(base)) set.add(base.toLowerCase())
+    }
+    for (const asset of getCanonicalIndexedAssets()) {
+      if (asset.address) set.add(asset.address.toLowerCase())
+    }
+    // Always request well-known ecosystem tokens when address is known from token list.
+    for (const [addr] of TOKEN_LIST_BY_ADDRESS) {
+      const listed = TOKEN_LIST_BY_ADDRESS.get(addr)
+      const sym = listed?.symbol?.toUpperCase()
+      if (
+        sym &&
+        ['CAKE', 'FLOKI', 'DOT', 'ASTER', 'EYED', 'MM72', 'AIOT', 'NAIVE', 'MARCO'].includes(sym)
+      ) {
+        set.add(addr)
+      }
+    }
+    set.add(MARCO_BSC_ADDRESS.toLowerCase())
+    set.add(CAKE[56].address.toLowerCase())
+    return Array.from(set).slice(0, 120)
+  }, [pairRows])
+
+  const { data: externalQuotes = new Map<string, ExternalTokenQuote>() } = useSWR(
+    candidateAddresses.length ? ['dex-trending-coingecko-quotes', candidateAddresses.join(',')] : null,
+    () => fetchCoinGeckoTokenQuotes(candidateAddresses),
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 120_000,
+      dedupingInterval: 90_000,
     },
   )
 
@@ -584,9 +736,101 @@ export function useDexTrendingRankings() {
       })
     }
 
-    // Enrich missing % from swap execution observations + zero-liquidity rejection.
+    // Priority 3: seed ALL tradeable pair bases from the internal pair index (liquidity-backed).
+    for (const pair of pairRows) {
+      if (pair.classification && pair.classification !== 'tradeable') continue
+      if (pair.active === false) continue
+      const baseAddress = pickTrendingBaseToken(pair.token0 ?? '', pair.token1 ?? '')
+      if (!baseAddress || isQuoteTokenAddress(baseAddress)) continue
+      const meta = resolveDisplayMeta(baseAddress, canonicalByAddress)
+      if (!meta) continue
+      const addrKey = baseAddress.toLowerCase()
+      if (byAddress.has(addrKey)) {
+        const existing = byAddress.get(addrKey)!
+        byAddress.set(addrKey, {
+          ...existing,
+          liquidityScore: Math.max(existing.liquidityScore, liquidityScoreForAddress(pairRows, baseAddress)),
+          rankingSignals: Array.from(new Set([...existing.rankingSignals, 'pairIndex'])),
+        })
+        continue
+      }
+      upsert({
+        symbol: meta.symbol,
+        slug: meta.slug,
+        pairSlug: meta.slug,
+        address: baseAddress,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
+        tierStatus: 'READY',
+        priceUsd: resolveTokenPriceUsd(
+          baseAddress,
+          meta.symbol,
+          marcoUsd,
+          marcoMetrics.marcoUsdFromCandle,
+          wbnbUsd,
+          cakeUsd,
+          busdUsd,
+        ),
+        volume24h: 0,
+        liquidityScore: liquidityScoreForAddress(pairRows, baseAddress),
+        tradeCount24h: 0,
+        rankingSignals: ['pairIndex'],
+      })
+    }
+
+    // Priority 4: CoinGecko / external tracked quotes — factual % and volume when indexed.
+    for (const [addr, quote] of externalQuotes) {
+      if (isQuoteTokenAddress(addr)) continue
+      const meta = resolveDisplayMeta(addr, canonicalByAddress)
+      if (!meta) continue
+      const existing = byAddress.get(addr)
+      const cgChange = format24hChangePct(quote.change24hPct)
+      const volume24h = quote.volume24hUsd ?? 0
+      if (existing) {
+        const internalAbs = Math.abs(existing.change24h?.pct ?? 0)
+        // Prefer Melega-indexed % when meaningful; otherwise use factual external %.
+        const preferExternal = !existing.change24h || internalAbs < 0.05
+        byAddress.set(addr, {
+          ...existing,
+          priceUsd: existing.priceUsd ?? quote.priceUsd,
+          change24h: preferExternal ? cgChange : existing.change24h,
+          volume24h: Math.max(existing.volume24h, volume24h),
+          rankingSignals: Array.from(
+            new Set([
+              ...existing.rankingSignals,
+              'coingecko',
+              ...(preferExternal ? ['externalTrackedPrice'] : []),
+            ]),
+          ),
+        })
+        continue
+      }
+      upsert({
+        symbol: meta.symbol,
+        slug: meta.slug,
+        pairSlug: meta.slug,
+        address: addr,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
+        tierStatus: 'READY',
+        priceUsd: quote.priceUsd,
+        change24h: cgChange,
+        volume24h,
+        liquidityScore: liquidityScoreForAddress(pairRows, addr),
+        tradeCount24h: 0,
+        rankingSignals: ['coingecko', 'externalTrackedPrice'],
+      })
+    }
+
+    // Enrich missing % from swap execution observations + drop idle shells with no signal.
     for (const [key, asset] of byAddress) {
-      if (asset.liquidityScore <= 0 && asset.tradeCount24h < 1) {
+      const external = externalQuotes.get(key)
+      if (
+        asset.liquidityScore <= 0 &&
+        asset.tradeCount24h < 1 &&
+        asset.volume24h <= 0 &&
+        !external
+      ) {
         byAddress.delete(key)
         continue
       }
@@ -598,26 +842,32 @@ export function useDexTrendingRankings() {
           change24h: fromSwaps,
           rankingSignals: Array.from(new Set([...asset.rankingSignals, 'swapObservations'])),
         })
+        continue
+      }
+      if (external) {
+        byAddress.set(key, {
+          ...asset,
+          change24h: format24hChangePct(external.change24hPct),
+          priceUsd: asset.priceUsd ?? external.priceUsd,
+          volume24h: Math.max(asset.volume24h, external.volume24hUsd ?? 0),
+          rankingSignals: Array.from(new Set([...asset.rankingSignals, 'coingecko', 'historicalObservation'])),
+        })
       }
     }
 
-    const active = [...byAddress.values()].filter((c) =>
-      hasTrendingSwapActivity({
-        tradeCount24h: c.tradeCount24h,
-        volume24h: c.volume24h,
-      }),
-    )
-
-    // Top Movers: factual % only — rank |Δ%| → swaps → volume → recency. Never fabricate history.
-    const movers = active
+    // Top Movers: factual % from any integrated source. Never fabricate history.
+    const movers = [...byAddress.values()]
       .filter((c) => {
         const pct = c.change24h?.pct
         if (pct == null || !Number.isFinite(pct)) return false
+        const external = externalQuotes.get(c.address.toLowerCase())
         return isCredibleMoverChange({
           pct,
           tradeCount24h: c.tradeCount24h,
           volume24h: c.volume24h,
           liquidityScore: c.liquidityScore,
+          externalVolumeUsd: external?.volume24hUsd,
+          hasExternalChange: Boolean(external) || c.rankingSignals.includes('coingecko'),
         })
       })
       .sort((a, b) => {
@@ -642,6 +892,7 @@ export function useDexTrendingRankings() {
     transactions,
     protocolActivity,
     indexerSwaps,
+    externalQuotes,
   ])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
@@ -649,14 +900,12 @@ export function useDexTrendingRankings() {
       const { accent, accentPositive } = trendingTickerAccent(asset)
       const priceLabel =
         asset.priceUsd != null && Number.isFinite(asset.priceUsd) && asset.priceUsd > 0
-          ? asset.priceUsd >= 1
-            ? `$${asset.priceUsd.toFixed(2)}`
-            : `$${asset.priceUsd.toPrecision(4)}`
+          ? formatTickerPriceUsd(asset.priceUsd)
           : undefined
       return {
         id: `trade-asset-${asset.slug}`,
         primary: asset.symbol,
-        secondary: priceLabel,
+        secondary: priceLabel || undefined,
         accent,
         accentPositive,
         href: asset.address ? `/swap?outputCurrency=${asset.address}` : `/@${asset.slug}`,

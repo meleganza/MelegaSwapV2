@@ -1,6 +1,6 @@
 /**
- * Home Featured Projects — four compact equal premium cards (≥1280 one row).
- * Soft ambient gold glow (no yellow border). No scientific-notation prices.
+ * Home Featured Projects — four compact equal premium cards on ONE desktop row.
+ * Soft ambient gold glow only (no yellow border). Human-formatted prices.
  */
 import React, { useCallback, useMemo } from 'react'
 import Link from 'next/link'
@@ -11,6 +11,7 @@ import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/ux
 import { resolveFounderFeaturedProjects } from './featuredProjectsCatalog'
 import {
   formatFeaturedChange,
+  formatFeaturedMetric,
   formatFeaturedPrice,
   useFeaturedProjectMarkets,
 } from './useFeaturedProjectMarkets'
@@ -19,64 +20,69 @@ const halo = keyframes`
   0%, 100% {
     box-shadow:
       0 0 0 0 rgba(244, 196, 48, 0),
-      0 0 16px 2px rgba(244, 196, 48, 0.1),
-      0 10px 28px rgba(0, 0, 0, 0.34);
+      0 0 14px 2px rgba(244, 196, 48, 0.12),
+      0 8px 22px rgba(0, 0, 0, 0.34);
   }
   50% {
     box-shadow:
       0 0 0 0 rgba(244, 196, 48, 0),
-      0 0 26px 6px rgba(244, 196, 48, 0.2),
-      0 12px 32px rgba(0, 0, 0, 0.38);
+      0 0 28px 8px rgba(244, 196, 48, 0.26),
+      0 10px 26px rgba(0, 0, 0, 0.4);
   }
 `
 
 const Shell = styled.section`
   min-width: 0;
-  padding: 8px 4px 12px;
-  margin: -8px -4px -12px;
+  padding: 6px 4px 10px;
+  margin: -6px -4px -10px;
 `
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
   align-items: stretch;
 
-  @media (max-width: 1279px) and (min-width: 768px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
+  /* Never 2×2 — tablet/mobile become a horizontal snap rail */
+  @media (max-width: 1023px) {
+    display: flex;
+    overflow-x: auto;
     gap: 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+
+    & > * {
+      flex: 0 0 min(248px, 78vw);
+      scroll-snap-align: start;
+    }
   }
 `
 
 const Card = styled.article`
-  min-height: 148px;
-  max-height: 168px;
-  padding: 12px 14px;
+  min-height: 0;
+  padding: 10px 12px;
   border-radius: ${uxRebuildRadius.card};
   background: linear-gradient(165deg, rgba(22, 22, 22, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   box-sizing: border-box;
-  animation: ${halo} 3.6s ease-in-out infinite;
+  animation: ${halo} 2.8s ease-in-out infinite;
   overflow: visible;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    box-shadow: 0 0 16px 2px rgba(244, 196, 48, 0.12), 0 10px 28px rgba(0, 0, 0, 0.34);
+    box-shadow: 0 0 16px 2px rgba(244, 196, 48, 0.14), 0 8px 22px rgba(0, 0, 0, 0.34);
   }
 `
 
 const Identity = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
 `
 
@@ -86,34 +92,22 @@ const Names = styled.div`
 `
 
 const Name = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 750;
   color: ${uxRebuildColors.text};
-  line-height: 18px;
+  line-height: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
 const Meta = styled.div`
-  font-size: 11px;
+  font-size: 10px;
   color: ${uxRebuildColors.muted};
   margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`
-
-const Desc = styled.p`
-  margin: 0;
-  font-size: 11px;
-  line-height: 15px;
-  color: ${uxRebuildColors.muted};
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 0;
 `
 
 const Metrics = styled.div`
@@ -124,9 +118,10 @@ const Metrics = styled.div`
 `
 
 const Price = styled.div`
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: ${uxRebuildColors.text};
+  font-variant-numeric: tabular-nums;
 `
 
 const Change = styled.div<{ $positive?: boolean; $empty?: boolean }>`
@@ -142,21 +137,50 @@ const Change = styled.div<{ $positive?: boolean; $empty?: boolean }>`
         `}
 `
 
+const StatGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px 6px;
+`
+
+const Stat = styled.div`
+  min-width: 0;
+`
+
+const StatLabel = styled.div`
+  font-size: 9px;
+  line-height: 12px;
+  color: ${uxRebuildColors.muted};
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+`
+
+const StatValue = styled.div`
+  font-size: 10px;
+  line-height: 13px;
+  font-weight: 650;
+  color: ${uxRebuildColors.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+`
+
 const Actions = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: auto;
+  gap: 6px;
+  margin-top: 2px;
 `
 
 const TradeBtn = styled.button`
-  height: 40px;
-  min-height: 40px;
+  height: 32px;
+  min-height: 32px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: ${uxRebuildColors.gold};
   color: #111;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 750;
   cursor: pointer;
 
@@ -172,16 +196,16 @@ const TradeBtn = styled.button`
 `
 
 const ViewLink = styled(Link)`
-  height: 40px;
-  min-height: 40px;
-  border-radius: 10px;
+  height: 32px;
+  min-height: 32px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   color: ${uxRebuildColors.text};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 650;
   box-sizing: border-box;
 
@@ -241,7 +265,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   name={p.displayName}
                   address={p.address}
                   chainId={p.chainId}
-                  size={36}
+                  size={30}
                   radius="circle"
                 />
                 <Names>
@@ -251,7 +275,6 @@ export const FeaturedProjectsRail: React.FC = () => {
                   </Meta>
                 </Names>
               </Identity>
-              {p.description ? <Desc>{p.description}</Desc> : null}
               <Metrics>
                 <Price
                   title={
@@ -274,6 +297,20 @@ export const FeaturedProjectsRail: React.FC = () => {
                   {change.text}
                 </Change>
               </Metrics>
+              <StatGrid>
+                <Stat>
+                  <StatLabel>Liquidity</StatLabel>
+                  <StatValue>{formatFeaturedMetric(market?.liquidityQuote, 'BNB')}</StatValue>
+                </Stat>
+                <Stat>
+                  <StatLabel>Volume</StatLabel>
+                  <StatValue>{formatFeaturedMetric(market?.volume24hQuote, 'BNB')}</StatValue>
+                </Stat>
+                <Stat>
+                  <StatLabel>Mkt Cap</StatLabel>
+                  <StatValue>{formatFeaturedMetric(market?.marketCapQuote, 'BNB')}</StatValue>
+                </Stat>
+              </StatGrid>
               <Actions>
                 <TradeBtn
                   type="button"

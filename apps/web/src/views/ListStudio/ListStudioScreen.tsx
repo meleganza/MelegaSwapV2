@@ -1,6 +1,6 @@
 /**
- * List Studio — MODULE_001–005 introductory rails + unified workspace.
- * Workflow content stays inside ListWorkspace (no separate routes).
+ * List Studio — Wave 04A composition.
+ * Hero → Action cards → Why → Workspace row (How compact + Completion surface).
  */
 import React from 'react'
 import styled from 'styled-components'
@@ -23,14 +23,6 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  /*
-   * App shell <main> already supplies horizontal page padding (32px @ ≥1024).
-   * Fill to 1376 — required for Hero 1376×360 with 32px side margins.
-   *
-   * Flex order: Hero → Cards → Why → How → Workspace
-   * Module 002 placeholder is visually retired (display:none) so MODULE_005
-   * owns the workspace surface without editing ListActionCards.tsx.
-   */
   max-width: ${listOne.contentMax};
   width: 100%;
   margin: 0 auto;
@@ -53,36 +45,59 @@ const Content = styled.div`
     order: 3;
   }
 
-  & > [data-testid='list-how-it-works'] {
+  & > [data-testid='list-workflow-bridge'] {
     order: 4;
   }
 
-  & > [data-testid='list-workspace'] {
-    order: 5;
-  }
-
   & > [data-testid='list-intent-placeholder'] {
-    order: 6;
+    order: 5;
     display: none !important;
   }
 
   @media (max-width: 767px) {
     width: 100%;
-    /* Shell pads ~12px; add 4px → ~16px page inset (358 @ 390) */
     padding: 0 4px 40px;
+  }
+`
+
+const WorkflowBridge = styled.div`
+  order: 4;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+  gap: 14px;
+  align-items: stretch;
+  min-width: 0;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const WorkspaceCol = styled.div`
+  min-width: 0;
+
+  & [data-testid='list-workspace'] {
+    margin-top: 0;
+    max-width: none;
+    width: 100%;
   }
 `
 
 export const ListStudioScreen: React.FC = () => {
   return (
-    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="005">
+    <Root data-list-studio-screen data-ux-rebuild-list data-list-module="005" data-list-wave="04a">
       <PageMeta />
       <Content data-testid="list-one-content">
         <ListPageHero />
         <ListActionCards />
         <ListWhyBuildRail />
-        <ListHowItWorks />
-        <ListWorkspace />
+        <WorkflowBridge data-testid="list-workflow-bridge" data-list-connect="actions-to-workspace">
+          <ListHowItWorks />
+          <WorkspaceCol>
+            <ListWorkspace />
+          </WorkspaceCol>
+        </WorkflowBridge>
       </Content>
     </Root>
   )

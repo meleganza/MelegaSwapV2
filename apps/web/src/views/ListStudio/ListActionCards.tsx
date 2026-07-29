@@ -592,9 +592,15 @@ export const ListActionCards: React.FC = () => {
 
   useEffect(() => {
     if (!listIntent) return
-    placeholderRef.current?.focus({ preventScroll: false })
-    placeholderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    // Visually connect Import / Claim / Create / AI into the workspace below.
+    const workspace = document.querySelector<HTMLElement>('[data-testid="list-workspace"]')
+    workspace?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    placeholderRef.current?.focus({ preventScroll: true })
   }, [listIntent])
+
+  const onSelect = (intent: ListIntent) => {
+    setListIntent(intent)
+  }
 
   return (
     <>
@@ -604,7 +610,7 @@ export const ListActionCards: React.FC = () => {
             key={def.intent}
             def={def}
             selected={listIntent === def.intent}
-            onSelect={setListIntent}
+            onSelect={onSelect}
           />
         ))}
       </Row>
@@ -622,7 +628,7 @@ export const ListActionCards: React.FC = () => {
             {' — '}
             {listIntent === 'create-token' && !LIST_CREATE_TOKEN_AVAILABLE
               ? 'Token creation is not available yet on this page.'
-              : 'Inline flow will open here. You remain on /list.'}
+              : 'Continue in the workspace below. You remain on /list.'}
           </>
         ) : (
           'Select a path above to continue. Forms open on this page — no separate route.'

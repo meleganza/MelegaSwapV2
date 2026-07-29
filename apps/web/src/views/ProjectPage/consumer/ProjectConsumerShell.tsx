@@ -14,8 +14,8 @@ import type { ProjectGrowthDocument } from 'registry/projects/identity/growth'
 import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
-import ProjectStickyNav from './ProjectStickyNav'
 import ProjectHero from './ProjectHero'
+import ProjectMarketSnapshot from './ProjectMarketSnapshot'
 import ProjectChartPanel from './ProjectChartPanel'
 import ProjectSwapCard from './ProjectSwapCard'
 import ProjectAbout from './ProjectAbout'
@@ -53,6 +53,12 @@ interface Props {
   roadmapDocument?: ProjectRoadmapDocument | null
 }
 
+/**
+ * Dense one-long-page Project consumer — no sticky anchor menu.
+ * Order: Hero → Market snapshot → Trade → Description → Token metrics →
+ * Markets → Liquidity/Pools/Farms → Socials → Roadmap → Trust/Contract/Audit →
+ * Treasury/Links/Developer → Machine data.
+ */
 const ProjectConsumerShell: React.FC<Props> = ({
   document,
   evidencePack,
@@ -70,55 +76,74 @@ const ProjectConsumerShell: React.FC<Props> = ({
   roadmapDocument = null,
 }) => (
   <PageFrame>
-    <Shell id="project-consumer-shell" data-testid="project-consumer-shell">
-      <ProjectStickyNav />
-      <SectionAnchor id="overview">
+    <Shell
+      id="project-consumer-shell"
+      data-testid="project-consumer-shell"
+      data-project-layout="dense-long-page"
+      data-project-nav="none"
+    >
+      <DenseBlock>
         <ProjectHero document={document} marketsDocument={marketsDocument} />
-      </SectionAnchor>
-      <SectionAnchor id="markets">
-        <span id="chart" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
+      </DenseBlock>
+
+      <DenseBlock>
         <AnimatedSection>
-          <ProjectChartPanel slug={document.slug} marketsDocument={marketsDocument} />
+          <ProjectMarketSnapshot marketsDocument={marketsDocument} />
         </AnimatedSection>
-        <span id="buy" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
+      </DenseBlock>
+
+      <DenseBlock id="trade">
         <AnimatedSection>
           <ProjectSwapCard slug={document.slug} marketsDocument={marketsDocument} />
         </AnimatedSection>
-      </SectionAnchor>
-      <AnimatedSection>
-        <ClientWalletRelationship document={document} evidencePack={evidencePack} />
-      </AnimatedSection>
-      <SectionAnchor id="about">
+      </DenseBlock>
+
+      <DenseBlock>
         <AnimatedSection>
           <ProjectAbout document={document} />
         </AnimatedSection>
-      </SectionAnchor>
-      <SectionAnchor id="community">
+      </DenseBlock>
+
+      <DenseBlock>
         <AnimatedSection>
-          <ProjectCommunitySection document={document} ecosystemDocument={ecosystemDocument} />
+          <ProjectTokenomicsSection tokenomicsDocument={tokenomicsDocument} />
         </AnimatedSection>
-      </SectionAnchor>
-      <AnimatedSection>
-        <ProjectTokenomicsSection tokenomicsDocument={tokenomicsDocument} />
-      </AnimatedSection>
-      <AnimatedSection>
-        <ProjectRoadmapSection roadmapDocument={roadmapDocument} />
-      </AnimatedSection>
-      <SectionAnchor id="liquidity">
-        <span id="farms" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
-        <span id="pools" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
-        <span id="earn" aria-hidden style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} />
+      </DenseBlock>
+
+      <DenseBlock id="markets">
+        <AnimatedSection>
+          <ProjectChartPanel slug={document.slug} marketsDocument={marketsDocument} />
+        </AnimatedSection>
+      </DenseBlock>
+
+      <DenseBlock>
         <AnimatedSection>
           <ProjectEarnSection
             participationDocument={participationDocument}
             liquidityBuildingDocument={liquidityBuildingDocument}
           />
         </AnimatedSection>
-      </SectionAnchor>
-      <AnimatedSection>
-        <ProjectUpdatesPreview updatesDocument={updatesDocument} />
-      </AnimatedSection>
-      <SectionAnchor id="trust">
+      </DenseBlock>
+
+      <DenseBlock>
+        <AnimatedSection>
+          <ClientWalletRelationship document={document} evidencePack={evidencePack} />
+        </AnimatedSection>
+      </DenseBlock>
+
+      <DenseBlock>
+        <AnimatedSection>
+          <ProjectCommunitySection document={document} ecosystemDocument={ecosystemDocument} />
+        </AnimatedSection>
+      </DenseBlock>
+
+      <DenseBlock>
+        <AnimatedSection>
+          <ProjectRoadmapSection roadmapDocument={roadmapDocument} />
+        </AnimatedSection>
+      </DenseBlock>
+
+      <DenseBlock>
         <AnimatedSection>
           <ProjectTransparencySummary
             evidencePack={evidencePack}
@@ -126,8 +151,15 @@ const ProjectConsumerShell: React.FC<Props> = ({
             machineDocument={machineDocument}
           />
         </AnimatedSection>
-      </SectionAnchor>
-      <SectionAnchor id="more">
+      </DenseBlock>
+
+      <DenseBlock>
+        <AnimatedSection>
+          <ProjectUpdatesPreview updatesDocument={updatesDocument} />
+        </AnimatedSection>
+      </DenseBlock>
+
+      <DenseBlock>
         <AnimatedSection>
           <ProjectMoreSection
             document={document}
@@ -135,15 +167,20 @@ const ProjectConsumerShell: React.FC<Props> = ({
             governanceDocument={governanceDocument}
             growthDocument={growthDocument}
             ecosystemDocument={ecosystemDocument}
+            alwaysExpanded
           />
         </AnimatedSection>
-      </SectionAnchor>
+      </DenseBlock>
     </Shell>
   </PageFrame>
 )
 
-const SectionAnchor: React.FC<{ id: string; children: React.ReactNode }> = ({ id, children }) => (
-  <div id={id} style={{ scrollMarginTop: 'calc(56px + env(safe-area-inset-top, 0px))' }}>
+const DenseBlock: React.FC<{ id?: string; children: React.ReactNode }> = ({ id, children }) => (
+  <div
+    id={id}
+    data-project-block={id || 'section'}
+    style={{ marginBottom: 10, minWidth: 0 }}
+  >
     {children}
   </div>
 )
