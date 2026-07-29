@@ -1,11 +1,18 @@
 /**
- * LB018 — production address binding helpers.
+ * LB018 / Mainnet Activation — production address binding helpers.
+ * Canonical source: apps/web/src/config/constants/liquidityBuildingDeployment.ts
+ * Artifact twin: deployments/liquidity-building/chain-56/deployed-addresses.v1.json
  * Bind only verified chain-56 deployments. Never placeholders / test wallets.
  */
 
-import { MELEGA_FACTORY, MELEGA_ROUTER } from 'lib/liquidity-building-runtime/types'
+import {
+  LB_CANONICAL_DEPLOYED_ADDRESSES,
+  LB_MELEGA_AMM,
+  readCanonicalLbAddresses,
+} from 'config/constants/liquidityBuildingDeployment'
 
-export { MELEGA_FACTORY, MELEGA_ROUTER }
+export const MELEGA_FACTORY = LB_MELEGA_AMM.factory
+export const MELEGA_ROUTER = LB_MELEGA_AMM.router
 
 /** Zero address — never treat as a deployed program. */
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -19,15 +26,14 @@ export type LiquidityBuildingDeployedAddresses = {
 }
 
 /**
- * Production LB contract bindings.
- * Populated only from verified deployment — never placeholders or test addresses.
- * LB018: remains all-null while `DEPLOYMENT_INPUTS_BLOCKED`.
+ * Production LB contract bindings — single canonical read.
+ * Remains all-null while mainnet deploy has not been verified.
  */
 export const LB_DEPLOYED_ADDRESSES: LiquidityBuildingDeployedAddresses = {
-  lbFactory: null,
-  lbAuthorizer: null,
-  lbFeeSink: null,
-  programAddress: null,
+  lbFactory: LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory,
+  lbAuthorizer: LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer,
+  lbFeeSink: LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink,
+  programAddress: LB_CANONICAL_DEPLOYED_ADDRESSES.programAddress,
 }
 
 export function isDeployedAddress(value: string | null | undefined): value is string {
@@ -83,4 +89,26 @@ export function resolveProductionBinding(candidate: DeploymentBindingCandidate):
       programAddress: isDeployedAddress(candidate.programAddress ?? null) ? candidate.programAddress! : null,
     },
   }
+}
+
+/** Runtime readiness from the canonical binding (no fabricated READY). */
+export function assessExecutionReadiness(addrs: LiquidityBuildingDeployedAddresses = readCanonicalLbAddresses()): {
+  ready: boolean
+  status: 'READY' | 'BLOCKED'
+  reason: string | null
+  missing: string[]
+} {
+  const missing: string[] = []
+  if (!isDeployedAddress(addrs.lbFactory)) missing.push('LB Factory')
+  if (!isDeployedAddress(addrs.lbAuthorizer)) missing.push('LB Authorizer')
+  if (!isDeployedAddress(addrs.lbFeeSink)) missing.push('LB FeeSink')
+  if (missing.length) {
+    return {
+      ready: false,
+      status: 'BLOCKED',
+      reason: 'LB_PROGRAM_NOT_DEPLOYED',
+      missing,
+    }
+  }
+  return { ready: true, status: 'READY', reason: null, missing: [] }
 }

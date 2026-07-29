@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "melega.liquidity-building.deployed-addresses.v1",
+  "chainId": 56,
+  "network": "bsc-mainnet",
+  "status": "NOT_DEPLOYED",
+  "mainnetDeployExecuted": false,
+  "addresses": {
+    "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "lbFactory": null,
+    "lbAuthorizer": null,
+    "lbFeeSink": null,
+    "lbFeeReceiver": null,
+    "lbProgramImplementation": null,
+    "lbExecutionMathLibrary": null,
+    "programAddress": null
+  },
+  "deployments": {},
+  "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. Nulls are intentional — never fabricate."
+}

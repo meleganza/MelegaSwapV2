@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "melega.liquidity-builder.mainnet-activation.deployment-summary.v1",
+  "missionId": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MAINNET_ACTIVATION",
+  "assessedAt": "2026-07-29T21:09:38.980Z",
+  "chainId": 56,
+  "mainnetDeployExecuted": false,
+  "fabricatedAddresses": false,
+  "fabricatedDeployment": false,
+  "envProbe": {
+    "MAINNET_DEPLOYER": "UNSET",
+    "LB_PRODUCTION_AUTHORITY": "UNSET",
+    "LB_FEE_RECEIVER_GOVERNOR": "UNSET",
+    "LB_FEE_RECEIVER_BENEFICIARY": "UNSET",
+    "BNB_MAINNET_RPC_URL": "UNSET",
+    "BSCSCAN_API_KEY": "UNSET",
+    "AWS_KMS_KEY_ID": "UNSET",
+    "LB_RELAY_URL": "UNSET",
+    "LB_MAINNET_DEPLOY_AUTHORIZED": "UNSET_OR_0"
+  },
+  "validator": {
+    "result": "DEPLOYMENT_INPUTS_BLOCKED",
+    "reasons": [
+      "productionAuthority.address missing or invalid (BLOCKER LB-G03B)",
+      "productionAuthority.verdict=AUTONOMOUS_AUTHORITY_NOT_READY (need PRODUCTION_READY)",
+      "productionAuthority.nonExportable must be true",
+      "authorizer.address missing (not deployed / not bound)",
+      "treasury.feeSinkAddress missing",
+      "treasury.receiverAddress missing (BLOCKER LB-G04B)",
+      "quotePolicies empty (BLOCKER LB-G08)",
+      "unresolved BLOCKER LB-G03B",
+      "unresolved BLOCKER LB-G04B",
+      "unresolved BLOCKER LB-G04C",
+      "unresolved BLOCKER LB-G08",
+      "unresolved BLOCKER LB-G11",
+      "unresolved BLOCKER LB-G12",
+      "deploymentReadinessState is BLOCKED",
+      "runtimeIngestion.status=NOT_IMPLEMENTED (need OPERATIONAL)",
+      "signatureNormalization.status=IMPLEMENTED_AWAITING_PRODUCTION_AUTHORITY",
+      "productionAuthority.verdict=AUTONOMOUS_AUTHORITY_NOT_READY (LB-G03B)"
+    ]
+  },
+  "deployedAddressesArtifact": {
+    "schemaVersion": "melega.liquidity-building.deployed-addresses.v1",
+    "chainId": 56,
+    "network": "bsc-mainnet",
+    "status": "NOT_DEPLOYED",
+    "mainnetDeployExecuted": false,
+    "addresses": {
+      "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+      "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "lbFactory": null,
+      "lbAuthorizer": null,
+      "lbFeeSink": null,
+      "lbFeeReceiver": null,
+      "lbProgramImplementation": null,
+      "lbExecutionMathLibrary": null,
+      "programAddress": null
+    },
+    "deployments": {},
+    "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. Nulls are intentional — never fabricate."
+  },
+  "forgeDryRun": {
+    "exitCode": 0,
+    "ok": true,
+    "excerpt": [
+      "No files changed, compilation skipped",
+      "Script ran successfully.",
+      "Gas used: 7984506",
+      "",
+      "== Logs ==",
+      "  LB008 DryRunDeployLiquidityBuildingV1",
+      "  MODE: SIMULATION / LOCAL ONLY - NO MAINNET BROADCAST",
+      "  canonicalMelegaFactory 0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+      "  canonicalMelegaRouter 0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+      "  localAuthorizer 0xcD95e0E356A5f414894Be4bAD363acdaCcAb30a9",
+      "  localSink 0x961e384b66ae2Bb90c9bBdd3d5105397E70a7A37",
+      "  localImpl 0x41b343Df2196081e42ac8Da11a1aA38De08e8658",
+      "  localFactory 0xC33F7eF76C2bBC678794516f038e62Ce3fAE6072",
+      "  VERDICT: DRY_RUN_STRUCTURE_OK - PRODUCTION_BROADCAST_BLOCKED",
+      "",
+      "If you wish to simulate on-chain transactions pass a RPC URL.",
+      ""
+    ]
+  },
+  "forgeBroadcast": {
+    "attempted": false,
+    "result": "DEPLOYMENT_BLOCKED",
+    "reason": "Physical inability to publish: missing deployment authority and/or DEPLOYMENT_INPUTS_BLOCKED",
+    "missingEnv": [
+      "MAINNET_DEPLOYER",
+      "LB_PRODUCTION_AUTHORITY",
+      "LB_FEE_RECEIVER_GOVERNOR",
+      "LB_FEE_RECEIVER_BENEFICIARY",
+      "BNB_MAINNET_RPC_URL",
+      "BSCSCAN_API_KEY"
+    ],
+    "validatorResult": "DEPLOYMENT_INPUTS_BLOCKED",
+    "activationAuthorizedFlag": false
+  },
+  "blocker": {
+    "code": "DEPLOYMENT_AUTHORITY_UNAVAILABLE",
+    "detail": "MAINNET_DEPLOYER, LB_PRODUCTION_AUTHORITY (non-exportable KMS), fee-receiver governor/beneficiary, BNB_MAINNET_RPC_URL, BSCSCAN_API_KEY, and LB_MAINNET_DEPLOY_AUTHORIZED=1 are required. LiquidityBuildingV1.inputs.json remains DEPLOYMENT_INPUTS_BLOCKED (authority/treasury/quotePolicies/runtimeIngestion).",
+    "missingEnv": [
+      "MAINNET_DEPLOYER",
+      "LB_PRODUCTION_AUTHORITY",
+      "LB_FEE_RECEIVER_GOVERNOR",
+      "LB_FEE_RECEIVER_BENEFICIARY",
+      "BNB_MAINNET_RPC_URL",
+      "BSCSCAN_API_KEY"
+    ]
+  },
+  "contracts": {
+    "LiquidityBuildingFactoryV1": {
+      "status": "NOT_DEPLOYED",
+      "address": null,
+      "deploymentTx": null
+    },
+    "LiquidityBuildingExecutionAuthorizerV1": {
+      "status": "NOT_DEPLOYED",
+      "address": null,
+      "deploymentTx": null
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "status": "NOT_DEPLOYED",
+      "address": null,
+      "deploymentTx": null
+    },
+    "LiquidityBuildingTreasuryFeeReceiverV1": {
+      "status": "NOT_DEPLOYED",
+      "address": null,
+      "deploymentTx": null
+    },
+    "LiquidityBuildingProgramV1": {
+      "status": "NOT_DEPLOYED",
+      "address": null,
+      "deploymentTx": null
+    },
+    "LiquidityBuildingExecutionMathV1": {
+      "status": "NOT_DEPLOYED",
+      "address": null,
+      "deploymentTx": null
+    }
+  }
+}

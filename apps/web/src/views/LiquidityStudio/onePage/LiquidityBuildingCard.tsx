@@ -15,6 +15,7 @@ import {
   setupTokenResolved,
 } from '../liquidityBuilding/programStatus'
 import { LB_DEPLOYED_ADDRESSES } from '../liquidityBuilding/addresses'
+import { humanizeActivationFailure } from '../liquidityBuilding/activationErrors'
 import { LB_UX } from '../liquidityBuilding/uxCopy'
 import { liqOne } from './onePageTokens'
 import { sanitizeDecimalInput } from 'lib/input/decimalInput'
@@ -507,24 +508,19 @@ const ConnectSlot = styled.div`
 `
 
 function humanizeGateReason(reason: string | null | undefined): string {
-  switch (reason) {
-    case 'DEPLOYMENT_INPUTS_BLOCKED':
-    case 'LB_PROGRAM_NOT_DEPLOYED':
-    case 'LB_FACTORY_MISSING':
-    case 'LB_AUTHORIZER_MISSING':
-    case 'LB_FEE_SINK_MISSING':
-      return CONTRACTS_NOT_DEPLOYED
-    case 'WALLET_NOT_CONNECTED':
-      return LB_UX.walletConnect
-    case 'WRONG_CHAIN':
-      return LB_UX.switchNetwork
-    case 'ACTIVATION_NOT_AUTHORIZED':
-      return 'Activation not authorized on this deployment'
-    case 'NO_ACTIVE_PROGRAM':
-      return 'No active Liquidity Building program for this wallet and token'
-    default:
-      return reason?.trim() || CONTRACTS_NOT_DEPLOYED
+  if (reason === 'NO_ACTIVE_PROGRAM') {
+    return 'No active Liquidity Building program for this wallet and token'
   }
+  if (
+    reason === 'DEPLOYMENT_INPUTS_BLOCKED' ||
+    reason === 'LB_PROGRAM_NOT_DEPLOYED' ||
+    reason === 'LB_FACTORY_MISSING' ||
+    reason === 'LB_AUTHORIZER_MISSING' ||
+    reason === 'LB_FEE_SINK_MISSING'
+  ) {
+    return CONTRACTS_NOT_DEPLOYED
+  }
+  return humanizeActivationFailure(reason)
 }
 
 function resolveProgramUnavailableReason(input: {

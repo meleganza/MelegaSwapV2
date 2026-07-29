@@ -1,0 +1,81 @@
+{
+  "missionId": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MAINNET_ACTIVATION",
+  "assessedAt": "2026-07-29T21:15:21.977498Z",
+  "chainId": 56,
+  "compiler": {
+    "solc": "0.8.20",
+    "optimizer": true,
+    "optimizerRuns": 200,
+    "viaIR": true
+  },
+  "contracts": [
+    {
+      "name": "LiquidityBuildingFactoryV1",
+      "address": null,
+      "bscscan": null,
+      "verificationStatus": "NOT_DEPLOYED",
+      "abiChecksum": null,
+      "deploymentTx": null,
+      "creationBlock": null,
+      "gasUsed": null,
+      "owner": null
+    },
+    {
+      "name": "LiquidityBuildingExecutionAuthorizerV1",
+      "address": null,
+      "bscscan": null,
+      "verificationStatus": "NOT_DEPLOYED",
+      "abiChecksum": null,
+      "deploymentTx": null,
+      "creationBlock": null,
+      "gasUsed": null,
+      "owner": null
+    },
+    {
+      "name": "LiquidityBuildingTreasuryFeeSinkV1",
+      "address": null,
+      "bscscan": null,
+      "verificationStatus": "NOT_DEPLOYED",
+      "abiChecksum": null,
+      "deploymentTx": null,
+      "creationBlock": null,
+      "gasUsed": null,
+      "owner": null
+    },
+    {
+      "name": "LiquidityBuildingTreasuryFeeReceiverV1",
+      "address": null,
+      "bscscan": null,
+      "verificationStatus": "NOT_DEPLOYED",
+      "abiChecksum": null,
+      "deploymentTx": null,
+      "creationBlock": null,
+      "gasUsed": null,
+      "owner": null
+    },
+    {
+      "name": "LiquidityBuildingProgramV1",
+      "address": null,
+      "bscscan": null,
+      "verificationStatus": "NOT_DEPLOYED",
+      "abiChecksum": null,
+      "deploymentTx": null,
+      "creationBlock": null,
+      "gasUsed": null,
+      "owner": null
+    },
+    {
+      "name": "LiquidityBuildingExecutionMathV1",
+      "address": null,
+      "bscscan": null,
+      "verificationStatus": "NOT_DEPLOYED",
+      "abiChecksum": null,
+      "deploymentTx": null,
+      "creationBlock": null,
+      "gasUsed": null,
+      "owner": null
+    }
+  ],
+  "fabricatedVerification": false,
+  "note": "No BscScan verification possible until contracts are published on-chain."
+}

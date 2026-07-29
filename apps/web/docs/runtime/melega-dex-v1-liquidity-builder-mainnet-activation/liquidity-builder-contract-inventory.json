@@ -1,0 +1,120 @@
+{
+  "missionId": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MAINNET_ACTIVATION",
+  "assessedAt": "2026-07-29T21:10:00.000Z",
+  "alias": "liquidity-builder-contract-inventory.json",
+  "contracts": [
+    {
+      "contractName": "LiquidityBuildingFactoryV1",
+      "purpose": "Immutable factory/registry; deploys Program clones via CREATE2 clones",
+      "status": "undeployed",
+      "deployed": false,
+      "undeployed": true,
+      "missing": false,
+      "incomplete": false,
+      "path": "contracts/liquidity-building/LiquidityBuildingFactoryV1.sol",
+      "constructor": "(bytes32 factoryVersion, address implementation, address melegaFactory, address melegaRouter, address executionAuthorizer, address treasuryFeeSink, ProtocolParameters, QuoteAssetPolicy[])",
+      "ownerModel": "none (constructor-immutable)",
+      "upgradeability": "non-upgradeable; creates EIP-1167 clones",
+      "externalDependencies": ["MelegaFactory", "MelegaRouter", "Program impl", "Authorizer", "FeeSink"],
+      "address": null
+    },
+    {
+      "contractName": "LiquidityBuildingProgramV1",
+      "purpose": "Per-program custody + executeLiquidityBuilding",
+      "status": "undeployed",
+      "deployed": false,
+      "undeployed": true,
+      "missing": false,
+      "incomplete": false,
+      "path": "contracts/liquidity-building/LiquidityBuildingProgramV1.sol",
+      "constructor": "constructor() disables initializers; initialize(...)",
+      "ownerModel": "program owner (onlyOwner lifecycle/budget)",
+      "upgradeability": "clone + Initializable; impl fixed at factory deploy",
+      "externalDependencies": ["MelegaRouter", "Authorizer", "FeeSink", "ExecutionMath", "Factory"],
+      "address": null
+    },
+    {
+      "contractName": "LiquidityBuildingExecutionAuthorizerV1",
+      "purpose": "EIP-712 ExecutionIntent signature verification",
+      "status": "undeployed",
+      "deployed": false,
+      "undeployed": true,
+      "missing": false,
+      "incomplete": false,
+      "path": "contracts/liquidity-building/LiquidityBuildingExecutionAuthorizerV1.sol",
+      "constructor": "(address signingAuthority)",
+      "ownerModel": "immutable signingAuthority (EOA or EIP-1271)",
+      "upgradeability": "non-upgradeable",
+      "externalDependencies": ["production non-exportable KMS/HSM authority address"],
+      "address": null
+    },
+    {
+      "contractName": "LiquidityBuildingTreasuryFeeSinkV1",
+      "purpose": "Exact success-fee forwarder Program → Treasury with receipts",
+      "status": "undeployed",
+      "deployed": false,
+      "undeployed": true,
+      "missing": false,
+      "incomplete": false,
+      "path": "contracts/liquidity-building/LiquidityBuildingTreasuryFeeSinkV1.sol",
+      "constructor": "(address treasuryReceiver)",
+      "ownerModel": "none; immutable treasuryReceiver",
+      "upgradeability": "non-upgradeable",
+      "externalDependencies": ["non-EOA treasury receiver contract"],
+      "address": null
+    },
+    {
+      "contractName": "LiquidityBuildingTreasuryFeeReceiverV1",
+      "purpose": "Purpose-specific ERC-20 fee intake + governor recovery",
+      "status": "undeployed",
+      "deployed": false,
+      "undeployed": true,
+      "missing": false,
+      "incomplete": false,
+      "path": "contracts/liquidity-building/LiquidityBuildingTreasuryFeeReceiverV1.sol",
+      "constructor": "(address governor, address beneficiary)",
+      "ownerModel": "immutable governor/beneficiary",
+      "upgradeability": "non-upgradeable",
+      "externalDependencies": [],
+      "address": null
+    },
+    {
+      "contractName": "LiquidityBuildingExecutionMathV1",
+      "purpose": "Linked pure math library (EIP-170 split)",
+      "status": "undeployed",
+      "deployed": false,
+      "undeployed": true,
+      "missing": false,
+      "incomplete": false,
+      "path": "contracts/liquidity-building/libraries/LiquidityBuildingExecutionMathV1.sol",
+      "constructor": "n/a",
+      "ownerModel": "n/a",
+      "upgradeability": "n/a",
+      "externalDependencies": [],
+      "address": null
+    }
+  ],
+  "deploymentScripts": [
+    {
+      "path": "script/liquidity-building/DryRunDeployLiquidityBuildingV1.s.sol",
+      "role": "local simulation only",
+      "broadcast": false,
+      "measured": "DRY_RUN_STRUCTURE_OK"
+    },
+    {
+      "path": "script/liquidity-building/DeployLiquidityBuildingV1Mainnet.s.sol",
+      "role": "production BSC mainnet deploy (fail-closed)",
+      "broadcast": "requires LB_MAINNET_DEPLOY_AUTHORIZED=1 + authority env",
+      "measured": "NOT_EXECUTABLE_WITHOUT_AUTHORITY"
+    },
+    {
+      "path": "deployments/liquidity-building/attempt-mainnet-activation.mjs",
+      "role": "measured activation gate + evidence writer",
+      "broadcast": false
+    }
+  ],
+  "melegaAmmBound": {
+    "factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3"
+  }
+}
