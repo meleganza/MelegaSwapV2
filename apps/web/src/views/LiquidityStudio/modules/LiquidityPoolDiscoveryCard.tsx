@@ -76,7 +76,7 @@ const Metrics = styled.dl`
   margin: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
+  gap: 6px 4px;
 `
 
 const Metric = styled.div`
@@ -169,6 +169,14 @@ export const LiquidityPoolDiscoveryCard: React.FC<{ card: DiscoveryPoolCardModel
       <Metric>
         <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricFees}</MetricLabel>
         <MetricValue>{card.feesLabel}</MetricValue>
+      </Metric>
+      <Metric>
+        <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricApr}</MetricLabel>
+        <MetricValue>{card.aprLabel}</MetricValue>
+      </Metric>
+      <Metric>
+        <MetricLabel>{LIQUIDITY_POOL_DISCOVERY_COPY.metricLiquidity}</MetricLabel>
+        <MetricValue>{card.liquidityLabel}</MetricValue>
       </Metric>
     </Metrics>
 

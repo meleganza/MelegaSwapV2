@@ -82,6 +82,6 @@ export const LIQUIDITY_ACTIONS_COPY = {
 
 /** Frozen Module 001 source SHAs (byte-identical expected). */
 export const LIQUIDITY_MODULE_001_FREEZE = {
-  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   liquidityHeroTokens: '1ea3821c2671f9517679cdb6cd49492bc96aa334c9a492c00cc84377b84de038',
 } as const

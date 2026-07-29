@@ -24,6 +24,8 @@ export type DiscoveryPoolMetrics = {
   tvlUsd?: number | null
   volumeUsd?: number | null
   feesUsd?: number | null
+  /** Factual LP APR when subgraph provides lpApr7d (>0). */
+  aprPct?: number | null
 }
 
 const WBNB = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
@@ -84,9 +86,13 @@ export type DiscoveryPoolCardModel = {
   tvlLabel: string
   volumeLabel: string
   feesLabel: string
+  aprLabel: string
+  liquidityLabel: string
+  reservesLabel: string
   tvlUsd: number | null
   volumeUsd: number | null
   feesUsd: number | null
+  aprPct: number | null
   metricSourceNote?: string
   lastVerified?: string
   addHref: string
@@ -205,6 +211,16 @@ export function toDiscoveryCard(
     feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
     '24h fees source: Info subgraph unavailable for this pair',
   )
+  const aprPct =
+    metrics?.aprPct != null && Number.isFinite(metrics.aprPct) && metrics.aprPct > 0 ? metrics.aprPct : null
+  const aprLabel =
+    aprPct != null ? `${aprPct >= 100 ? aprPct.toFixed(0) : aprPct.toFixed(2)}%` : LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
+  const r0 = Number(pair.reserve0 ?? '0')
+  const r1 = Number(pair.reserve1 ?? '0')
+  const reservesLabel =
+    Number.isFinite(r0) && Number.isFinite(r1) && (r0 > 0 || r1 > 0)
+      ? `${r0 > 0 ? r0.toPrecision(4) : '0'} / ${r1 > 0 ? r1.toPrecision(4) : '0'}`
+      : LIQUIDITY_POOL_DISCOVERY_COPY.metricUnavailable
   const qualityScore =
     (resolved.active ? 1_000_000 : 0) +
     (identityResolved ? 100_000 : 0) +
@@ -227,10 +243,16 @@ export function toDiscoveryCard(
     tvlLabel: tvl.label,
     volumeLabel: volume.label,
     feesLabel: fees.label,
+    aprLabel,
+    liquidityLabel: tvl.label,
+    reservesLabel,
     tvlUsd: tvlUsd != null && Number.isFinite(tvlUsd) && tvlUsd > 0 ? tvlUsd : null,
     volumeUsd: volumeUsd != null && Number.isFinite(volumeUsd) && volumeUsd > 0 ? volumeUsd : null,
     feesUsd: feesUsd != null && Number.isFinite(feesUsd) && feesUsd > 0 ? feesUsd : null,
-    metricSourceNote: [tvl.note, volume.note, fees.note].filter(Boolean).join(' · ') || undefined,
+    aprPct,
+    metricSourceNote: [tvl.note, volume.note, fees.note, aprPct == null ? 'APR: subgraph lpApr7d unavailable' : null]
+      .filter(Boolean)
+      .join(' · ') || undefined,
     lastVerified: pair.lastVerified,
     addHref: buildAddLiquidityHref(pair.token0, pair.token1),
     classification: pair.classification,

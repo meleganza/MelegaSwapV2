@@ -1,0 +1,153 @@
+{
+  "capturedAt": "2026-07-29T02:22:13.276Z",
+  "base": "http://127.0.0.1:3492",
+  "overflows": [],
+  "scans": {
+    "home": {
+      "title": "Home | Melega DEX | $0.0004",
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 4,
+      "hasEcosystem": true,
+      "hasWizard3": true,
+      "hasActivate": true,
+      "hasInsights": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 4507
+    },
+    "liquidity": {
+      "title": "Liquidity Studio | Melega DEX | $0.0004",
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 0,
+      "hasEcosystem": false,
+      "hasWizard3": true,
+      "hasActivate": true,
+      "hasInsights": true,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 4074
+    },
+    "swap": {
+      "title": "Home | Melega DEX | $0.0004",
+      "hasTopMovers": true,
+      "hasMarketUnavailable": false,
+      "featuredCount": 4,
+      "hasEcosystem": true,
+      "hasWizard3": true,
+      "hasActivate": true,
+      "hasInsights": false,
+      "moverItems": 1,
+      "overflow": false,
+      "navMs": 6517
+    }
+  },
+  "responsive": [
+    {
+      "page": "home",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1920",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1600",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1440",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1366",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "1024",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "430",
+      "overflow": false
+    },
+    {
+      "page": "home",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "liquidity",
+      "viewport": "390",
+      "overflow": false
+    },
+    {
+      "page": "swap",
+      "viewport": "390",
+      "overflow": false
+    }
+  ]
+}

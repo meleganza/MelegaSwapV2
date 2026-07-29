@@ -9,7 +9,8 @@ const handler: NextApiHandler = async (req, res) => {
 
   const storage = resolveIndexerStorage()
   const pair = typeof req.query.pair === 'string' ? req.query.pair : undefined
-  const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 30))
+  // Cap raised so Top Movers can consume enough Swap observations for factual % change.
+  const limit = Math.min(500, Math.max(1, Number(req.query.limit) || 30))
   const offset = Math.max(0, Number(req.query.offset) || 0)
   const types = typeof req.query.types === 'string' ? req.query.types.split(',') : undefined
 

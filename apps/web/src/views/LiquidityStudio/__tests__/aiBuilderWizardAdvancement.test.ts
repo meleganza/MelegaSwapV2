@@ -1,5 +1,5 @@
 /**
- * Founder acceptance Part M — AI Builder wizard advancement gates.
+ * Founder acceptance — AI Builder wizard advancement gates (3-step).
  * Source-level + programStatus unit tests (no wallet / chain writes).
  */
 import { readFileSync } from 'fs'
@@ -24,7 +24,7 @@ function draft(partial: Partial<SetupDraft>): SetupDraft {
 }
 
 describe('AI Builder wizard advancement (Part M)', () => {
-  it('blocks Setup→Budget without resolved token', () => {
+  it('blocks Setup without resolved token', () => {
     expect(setupTokenResolved(EMPTY_SETUP_DRAFT)).toBe(false)
     expect(
       setupTokenResolved(
@@ -38,7 +38,7 @@ describe('AI Builder wizard advancement (Part M)', () => {
     ).toBe(true)
   })
 
-  it('blocks Budget→Strategy without positive budget', () => {
+  it('blocks Setup without positive budget', () => {
     expect(setupBudgetPositive(draft({ tokenBudget: '' }))).toBe(false)
     expect(setupBudgetPositive(draft({ tokenBudget: '0' }))).toBe(false)
     expect(setupBudgetPositive(draft({ tokenBudget: '-1' }))).toBe(false)
@@ -67,27 +67,27 @@ describe('AI Builder wizard advancement (Part M)', () => {
     const hook = load('liquidityBuilding/useLiquidityBuildingCard.ts')
     expect(hook).toContain('openReview: () => boolean')
     expect(hook).toContain('if (!setupDraftReadyForReview(draft)) return false')
-    expect(hook).toContain('setPhase(\'review\')')
+    expect(hook).toContain("setPhase('review')")
     expect(hook).toContain('return true')
   })
 
-  it('Continue to Review does not setUiStep(3) when openReview fails', () => {
+  it('Continue to Review does not setUiStep(2) when openReview fails', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('const opened = card.openReview()')
     expect(card).toContain('if (!opened)')
-    expect(card).toContain('setUiStep(3)')
-    // Gate order: draftReady / opened checked before advancing UI step.
+    expect(card).toContain('setUiStep(2)')
     const openedIdx = card.indexOf('const opened = card.openReview()')
     const failIdx = card.indexOf('if (!opened)', openedIdx)
-    const stepIdx = card.indexOf('setUiStep(3)', openedIdx)
+    const stepIdx = card.indexOf('setUiStep(2)', openedIdx)
     expect(failIdx).toBeGreaterThan(openedIdx)
     expect(stepIdx).toBeGreaterThan(failIdx)
   })
 
-  it('activation gate only disables final Activate — not Review advance', () => {
+  it('final Review step surfaces Connect Wallet or Activate without silent disabled gate', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('disabled={activeStep === 4 && !card.mutateGate.ok}')
+    expect(card).toContain('activeStep === 2 && !card.walletConnected')
     expect(card).toContain('Continue to Review')
+    expect(card).toContain('eth_requestAccounts')
     expect(card).toContain('setupTokenResolved')
     expect(card).toContain('setupBudgetPositive')
     expect(card).toContain('liq-lb-step-error')
@@ -99,5 +99,11 @@ describe('AI Builder wizard advancement (Part M)', () => {
     expect(card).toContain('tokenReady')
     expect(card).toContain('budgetReady')
     expect(card).toContain('reviewReached')
+  })
+
+  it('wizard is three steps: Setup, Strategy, Review', () => {
+    const card = load('onePage/LiquidityBuildingCard.tsx')
+    expect(card).toContain("['Setup', 'Strategy', 'Review']")
+    expect(card).not.toContain("['Setup', 'Budget', 'Strategy', 'Review', 'Activate']")
   })
 })

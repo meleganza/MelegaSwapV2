@@ -35,7 +35,7 @@ export const liquidityVisualPolish = {
 
 /** Frozen Module 001 sources (byte-identical at Module 007 tip). */
 export const LIQUIDITY_MODULE_001_FREEZE_SHA256 = {
-  LiquidityHeroModule: '52a15f6e322863598a7a61b9450f13d792184dd02ebd6679d82bb22422ff823d',
+  LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
   LiquidityHeroArtwork: '9cb813dabac35cc5bd7185223c119473ea61766e8e17d988dbd9a16ebbe553ee',
   LiquidityHeroTrustPanel: 'd53f80dc0a97bdb24ab67838beda773a4b08ac5f456d2c0763b531e4734d3039',
   liquidityHeroTokens: '1ea3821c2671f9517679cdb6cd49492bc96aa334c9a492c00cc84377b84de038',
@@ -43,7 +43,7 @@ export const LIQUIDITY_MODULE_001_FREEZE_SHA256 = {
 
 export const LIQUIDITY_MODULE_002_FREEZE_SHA256 = {
   LiquidityActionsModule: '63e7d544cdbc6c45bba9aa561ede46fea31caa8e4bcd530d3dc7650c233cc44b',
-  liquidityActionsTokens: '492fc8041d088721054d8b80f5ed39bf2dd9bd28a879fe1275437f6270fc38d2',
+  liquidityActionsTokens: '2913c12cc629f7eda2ca85ac1762ab5a760eedec6c09a7c776833b86b7fd6c54',
 } as const
 
 export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {

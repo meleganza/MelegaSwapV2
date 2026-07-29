@@ -66,13 +66,14 @@ export function useLiquidityPoolDiscovery(options: {
   )
 
   const metricsByPair = useMemo(() => {
-    const map = new Map<string, { tvlUsd?: number; volumeUsd?: number; feesUsd?: number }>()
+    const map = new Map<string, { tvlUsd?: number; volumeUsd?: number; feesUsd?: number; aprPct?: number }>()
     for (const row of poolDatas) {
       if (!row?.address) continue
       map.set(row.address.toLowerCase(), {
         tvlUsd: row.liquidityUSD,
         volumeUsd: row.volumeUSD,
         feesUsd: row.lpFees24h,
+        aprPct: row.lpApr7d != null && Number.isFinite(row.lpApr7d) && row.lpApr7d > 0 ? row.lpApr7d : undefined,
       })
     }
     // Prefer factual indexed Melega DEX volume when subgraph metrics are missing.
@@ -157,9 +158,11 @@ export function useLiquidityPoolDiscovery(options: {
     const activeFilter = availableFilters.includes(filter) ? filter : 'all'
     const activeSort = availableSorts.includes(sort)
       ? sort
-      : availableSorts.includes('market')
-        ? 'market'
-        : availableSorts[0] ?? 'market'
+      : availableSorts.includes('tvl')
+        ? 'tvl'
+        : availableSorts.includes('market')
+          ? 'market'
+          : availableSorts[0] ?? 'tvl'
 
     const filtered = filterDiscoveryCards(cards, activeFilter, myTokenAddresses)
     const sorted = availableSorts.length > 0 ? sortDiscoveryCards(filtered, activeSort) : filtered

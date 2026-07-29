@@ -325,11 +325,11 @@ export function useDexTrendingRankings() {
   const busdPrice = useBUSDPrice(BUSD[56])
   const { candles, status: candleStatus } = useIndexerCandles(MARCO_WBNB_PAIR_BSC, '1H')
   const { transactions, indexerState } = useProtocolTransactionsIndexer()
-  const { data: pairRows = [] } = useSWR('dex-trending-pairs', fetchTradeablePairs, {
+  const { data: pairRows = [], isValidating: pairsLoading } = useSWR('dex-trending-pairs', fetchTradeablePairs, {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
-  const { data: tierMetrics = [] } = useSWR('dex-trending-tier-metrics', fetchTierMetrics, {
+  const { data: tierMetrics = [], isValidating: tierLoading } = useSWR('dex-trending-tier-metrics', fetchTierMetrics, {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
@@ -337,16 +337,24 @@ export function useDexTrendingRankings() {
     revalidateOnFocus: false,
     dedupingInterval: 120_000,
   })
-  const { data: protocolActivity = [] } = useSWR('dex-trending-protocol-activity', fetchProtocolActivity, {
-    revalidateOnFocus: false,
-    refreshInterval: 30_000,
-    dedupingInterval: 15_000,
-  })
-  const { data: indexerSwaps = [] } = useSWR('dex-trending-indexer-swaps', fetchIndexerSwapEvents, {
-    revalidateOnFocus: false,
-    refreshInterval: 30_000,
-    dedupingInterval: 15_000,
-  })
+  const { data: protocolActivity = [], isValidating: activityLoading } = useSWR(
+    'dex-trending-protocol-activity',
+    fetchProtocolActivity,
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 60_000,
+      dedupingInterval: 45_000,
+    },
+  )
+  const { data: indexerSwaps = [], isValidating: swapsLoading } = useSWR(
+    'dex-trending-indexer-swaps',
+    fetchIndexerSwapEvents,
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 60_000,
+      dedupingInterval: 45_000,
+    },
+  )
 
   const effectiveBnbUsd = useMemo(() => {
     if (bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0) return bnbUsd
@@ -462,7 +470,7 @@ export function useDexTrendingRankings() {
       })
     }
 
-    // Priority 2: tier metrics when READY / EMPTY_VERIFIED (enrich %, not membership-only).
+    // Priority 2: tier metrics when READY / EMPTY_VERIFIED / SYNCING (enrich %, not membership-only).
     for (const row of tierMetrics) {
       if (!isTrendingTierStatus(row.status)) continue
 
@@ -675,11 +683,17 @@ export function useDexTrendingRankings() {
     return 'Indexed DEX activity · swap count · volume · recent trades'
   }, [rankedAssets.length])
 
+  const bootstrapping =
+    (pairsLoading && pairRows.length === 0) ||
+    (swapsLoading && indexerSwaps.length === 0 && protocolActivity.length === 0) ||
+    (activityLoading && protocolActivity.length === 0 && indexerSwaps.length === 0) ||
+    (tierLoading && tierMetrics.length === 0 && pairRows.length === 0)
+
   return {
     items: trendingTickerItems,
     indexedRibbonAssets,
     trendingEmpty,
-    isLoading: candleStatus === 'loading',
+    isLoading: candleStatus === 'loading' || bootstrapping,
     indexerScopeNote,
     rankedCount: rankedAssets.length,
     rankedAssets,

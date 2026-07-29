@@ -110,7 +110,7 @@ describe('LIQUIDITY_PIXEL_PERFECTION_001', () => {
 
   it('wizard steps stay in-card without navigation routes', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain("['Setup', 'Budget', 'Strategy', 'Review', 'Activate']")
+    expect(card).toContain("['Setup', 'Strategy', 'Review']")
     expect(card).not.toContain("router.push('/liquidity-studio?view=building&step=")
     expect(card).toContain('useLiquidityBuildingCard')
   })

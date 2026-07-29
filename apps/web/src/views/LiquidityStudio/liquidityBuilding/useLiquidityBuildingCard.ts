@@ -104,7 +104,7 @@ export type LiquidityBuildingCardState = {
   backToSetup: () => void
   openReview: () => boolean
   openStatus: () => void
-  requestDepositAndActivate: () => void
+  requestDepositAndActivate: () => { ok: true } | { ok: false; reason: string }
   pause: () => void
   resume: () => void
   stop: () => void
@@ -340,19 +340,33 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     },
     openStatus: () => setPhase('status'),
     requestDepositAndActivate: () => {
-      // Fail-closed — never fabricate ACTIVE without real authorization + on-chain program.
-      if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') {
+      // Fail-closed — never fabricate ACTIVE and never skip wallet authorization.
+      // Production LB bindings are null until deployment; do not invent success.
+      if (!mutateGate.ok) {
         setPhase('status')
-        return
+        return {
+          ok: false as const,
+          reason:
+            mutateGate.reason ??
+            'Activation gates are not ready. Connect wallet and wait for program authorization.',
+        }
       }
-      setStatus((s) => {
-        let next = transitionProgramStatus(s, 'REQUEST_APPROVAL')
-        next = transitionProgramStatus(next, 'APPROVAL_CONFIRMED')
-        next = transitionProgramStatus(next, 'DEPOSIT_CONFIRMED')
-        next = transitionProgramStatus(next, 'ACTIVATE')
-        return next
-      })
-      setPhase('active')
+      if (programRead.source !== 'ON_CHAIN') {
+        setPhase('status')
+        return {
+          ok: false as const,
+          reason:
+            'Liquidity Building program contracts are not bound on this deployment. Wallet activation cannot proceed until on-chain programs are live.',
+        }
+      }
+      // On-chain path ready — surface approval request. Do not fabricate confirmed deposits.
+      setStatus((s) => transitionProgramStatus(s, 'REQUEST_APPROVAL'))
+      setPhase('status')
+      return {
+        ok: false as const,
+        reason:
+          'Approval transaction preparation requires a bound program writer. Wallet will open when the deposit path is wired to the live LB program.',
+      }
     },
     pause: () => {
       if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') return

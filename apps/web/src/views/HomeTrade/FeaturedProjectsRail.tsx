@@ -1,9 +1,8 @@
 /**
- * Home Featured Projects — four premium founder cards (MM72, EYED, Young Degens, BLION).
- * No detached section title; cards communicate featured status. No fabricated metrics.
+ * Home Featured Projects — four equal premium cards.
+ * Soft pulsating gold glow (no yellow border). Logo / name / price / 24h / CTA only.
  */
 import React, { useCallback, useMemo } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styled, { keyframes, css } from 'styled-components'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -16,13 +15,25 @@ import {
 } from './useFeaturedProjectMarkets'
 
 const halo = keyframes`
-  0% { box-shadow: 0 0 0 0 rgba(244, 196, 48, 0.0), 0 10px 28px rgba(0, 0, 0, 0.28); }
-  50% { box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.18), 0 12px 32px rgba(0, 0, 0, 0.32); }
-  100% { box-shadow: 0 0 0 0 rgba(244, 196, 48, 0.0), 0 10px 28px rgba(0, 0, 0, 0.28); }
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(244, 196, 48, 0),
+      0 0 22px 4px rgba(244, 196, 48, 0.12),
+      0 14px 36px rgba(0, 0, 0, 0.36);
+  }
+  50% {
+    box-shadow:
+      0 0 0 0 rgba(244, 196, 48, 0),
+      0 0 36px 10px rgba(244, 196, 48, 0.28),
+      0 16px 40px rgba(0, 0, 0, 0.4);
+  }
 `
 
 const Shell = styled.section`
   min-width: 0;
+  /* Allow glow to extend outside cards */
+  padding: 10px 6px 14px;
+  margin: -10px -6px -14px;
 `
 
 const Grid = styled.div`
@@ -30,7 +41,9 @@ const Grid = styled.div`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   min-width: 0;
+  align-items: stretch;
 
+  /* Desktop ≥1440: one complete row of 4. Tablet: 2×2. Mobile: 1 column. */
   @media (max-width: 1439px) and (min-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -42,53 +55,30 @@ const Grid = styled.div`
 `
 
 const Card = styled.article`
-  min-height: 188px;
+  height: 168px;
+  min-height: 168px;
+  max-height: 168px;
   padding: 16px;
   border-radius: ${uxRebuildRadius.card};
-  background:
-    linear-gradient(165deg, rgba(28, 28, 28, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
-  border: 1px solid rgba(244, 196, 48, 0.42);
+  background: linear-gradient(165deg, rgba(22, 22, 22, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   box-sizing: border-box;
-  animation: ${halo} 4.8s ease-in-out infinite;
+  animation: ${halo} 3.6s ease-in-out infinite;
+  overflow: visible;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 0 22px 4px rgba(244, 196, 48, 0.14), 0 14px 36px rgba(0, 0, 0, 0.36);
   }
-`
-
-const Top = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-`
-
-const Badge = styled.span`
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: ${uxRebuildColors.gold};
-`
-
-const Network = styled.span`
-  font-size: 10px;
-  font-weight: 600;
-  color: ${uxRebuildColors.muted};
 `
 
 const Identity = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0;
-`
-
-const Names = styled.div`
   min-width: 0;
 `
 
@@ -102,24 +92,6 @@ const Name = styled.div`
   text-overflow: ellipsis;
 `
 
-const Symbol = styled.div`
-  font-size: 12px;
-  color: ${uxRebuildColors.muted};
-  margin-top: 2px;
-`
-
-const Desc = styled.p`
-  margin: 0;
-  font-size: 12px;
-  line-height: 16px;
-  color: ${uxRebuildColors.muted};
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 32px;
-`
-
 const Metrics = styled.div`
   display: flex;
   align-items: baseline;
@@ -129,7 +101,7 @@ const Metrics = styled.div`
 `
 
 const Price = styled.div`
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: ${uxRebuildColors.text};
 `
@@ -147,14 +119,9 @@ const Change = styled.div<{ $positive?: boolean; $empty?: boolean }>`
         `}
 `
 
-const Actions = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-`
-
 const TradeBtn = styled.button`
   height: 36px;
+  width: 100%;
   border: none;
   border-radius: 10px;
   background: ${uxRebuildColors.gold};
@@ -162,19 +129,12 @@ const TradeBtn = styled.button`
   font-size: 13px;
   font-weight: 750;
   cursor: pointer;
-`
+  flex: 0 0 auto;
 
-const ViewLink = styled(Link)`
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: ${uxRebuildColors.text};
-  font-size: 12px;
-  font-weight: 650;
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 `
 
 export const FeaturedProjectsRail: React.FC = () => {
@@ -196,7 +156,6 @@ export const FeaturedProjectsRail: React.FC = () => {
           input?.focus({ preventScroll: true })
         }, 280)
       })
-      // Seed swap query for HomeSwapPanel consumers that read router.query
       if (typeof window !== 'undefined') {
         const url = new URL(window.location.href)
         url.searchParams.set('outputCurrency', address)
@@ -216,44 +175,45 @@ export const FeaturedProjectsRail: React.FC = () => {
           const market = rowsBySlug[p.slug]
           const change = formatFeaturedChange(market)
           return (
-          <Card
-            key={p.slug}
-            data-featured-slug={p.slug}
-            data-featured-resolved={p.resolved ? '1' : '0'}
-            data-featured-market-status={market?.status ?? 'LOADING'}
-          >
-            <Top>
-              <Badge>Featured</Badge>
-              <Network>BNB Smart Chain</Network>
-            </Top>
-            <Identity>
-              <MelegaTokenAvatar
-                symbol={p.symbol}
-                name={p.displayName}
-                address={p.address}
-                chainId={p.chainId}
-                size={40}
-                radius="circle"
-              />
-              <Names>
+            <Card
+              key={p.slug}
+              data-featured-slug={p.slug}
+              data-featured-resolved={p.resolved ? '1' : '0'}
+              data-featured-market-status={market?.status ?? 'LOADING'}
+            >
+              <Identity>
+                <MelegaTokenAvatar
+                  symbol={p.symbol}
+                  name={p.displayName}
+                  address={p.address}
+                  chainId={p.chainId}
+                  size={40}
+                  radius="circle"
+                />
                 <Name>{p.displayName}</Name>
-                <Symbol>{p.symbol}</Symbol>
-              </Names>
-            </Identity>
-            <Desc>{p.description || p.category || 'Listed Melega DEX project'}</Desc>
-            <Metrics>
-              <Price title={market?.source === 'melega-factory-reserves' ? 'Reserve price · Melega Factory' : 'Melega DEX'}>
-                {formatFeaturedPrice(market)}
-              </Price>
-              <Change
-                $empty={change.empty}
-                $positive={change.positive}
-                title={change.empty ? 'Factual Melega DEX change unavailable' : `Melega DEX · ${market?.periodLabel ?? '24H'}`}
-              >
-                {change.text}
-              </Change>
-            </Metrics>
-            <Actions>
+              </Identity>
+              <Metrics>
+                <Price
+                  title={
+                    market?.source === 'melega-factory-reserves'
+                      ? 'Reserve price · Melega Factory'
+                      : 'Melega DEX'
+                  }
+                >
+                  {formatFeaturedPrice(market)}
+                </Price>
+                <Change
+                  $empty={change.empty}
+                  $positive={change.positive}
+                  title={
+                    change.empty
+                      ? 'Factual Melega DEX change unavailable'
+                      : `Melega DEX · ${market?.periodLabel ?? '24H'}`
+                  }
+                >
+                  {change.text}
+                </Change>
+              </Metrics>
               <TradeBtn
                 type="button"
                 disabled={!p.address}
@@ -262,11 +222,7 @@ export const FeaturedProjectsRail: React.FC = () => {
               >
                 Trade
               </TradeBtn>
-              <ViewLink href={p.href} data-testid={`featured-view-${p.slug}`}>
-                View Project
-              </ViewLink>
-            </Actions>
-          </Card>
+            </Card>
           )
         })}
       </Grid>

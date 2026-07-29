@@ -65,23 +65,29 @@ export function buildLiquidityMarketSnapshot(input: {
   pools: ClassifiedAmmPair[]
   factoryFreshness?: string | null
   nowIso?: string
+  /** Optional Factory-reserve TVL sum (factual) when protocol subgraph TVL is empty. */
+  factoryTvlUsd?: number | null
 }): LiquidityMarketSnapshotView {
   const now = input.nowIso ?? new Date().toISOString()
-  const tvlFormatted = formatSnapshotUsd(input.protocol?.liquidityUSD)
+  const protocolTvl = formatSnapshotUsd(input.protocol?.liquidityUSD)
+  const factoryTvl = formatSnapshotUsd(input.factoryTvlUsd)
+  const tvlFormatted = protocolTvl ?? factoryTvl
+  const tvlSource = protocolTvl
+    ? 'Verified protocol liquidity'
+    : factoryTvl
+      ? 'Factory reserves × quote USD'
+      : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable
   const volFormatted = formatSnapshotUsd(input.protocol?.volumeUSD)
 
   const tvl = card('tvl', {
     value: input.protocolLoading
       ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
       : tvlFormatted ?? LIQUIDITY_MARKET_SNAPSHOT_COPY.emptyMetric,
-    supporting: input.protocolLoading
-      ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
-      : tvlFormatted
-        ? 'Verified protocol liquidity'
-        : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
+    supporting: input.protocolLoading ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading : tvlSource,
     state: input.protocolLoading ? 'loading' : tvlFormatted ? 'available' : 'unavailable',
     timestamp: tvlFormatted ? now : null,
     status: input.protocolLoading ? 'loading' : tvlFormatted ? 'ok' : 'unavailable',
+    source: protocolTvl ? undefined : factoryTvl ? 'melega-factory-reserves' : undefined,
   })
 
   const activeCount = input.factoryReady ? countActivePools(input.pools) : null

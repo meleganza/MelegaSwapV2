@@ -5,7 +5,7 @@ import useDexTrendingTicker from './useDexTrendingTicker'
 import { useTrendingDisplayLimit } from './useTrendingDisplayLimit'
 
 export const TrendingRibbon: React.FC = () => {
-  const { items, indexedRibbonAssets, useMarquee, trendingEmpty } = useDexTrendingTicker()
+  const { items, indexedRibbonAssets, useMarquee, trendingEmpty, isLoading } = useDexTrendingTicker()
   const displayLimit = useTrendingDisplayLimit()
 
   const avatarBySlug = useMemo(
@@ -52,7 +52,13 @@ export const TrendingRibbon: React.FC = () => {
       items={enrichedItems}
       marqueeMinItems={useMarquee ? 2 : Number.MAX_SAFE_INTEGER}
       showLiveDot={!trendingEmpty && enrichedItems.length > 0}
-      emptyPrimary={trendingEmpty ? 'Market activity unavailable' : undefined}
+      emptyPrimary={
+        isLoading
+          ? 'Indexing market activity…'
+          : trendingEmpty
+            ? 'No verified 24h movers yet'
+            : undefined
+      }
     />
   )
 }

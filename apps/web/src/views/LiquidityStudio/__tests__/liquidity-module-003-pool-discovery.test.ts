@@ -65,7 +65,7 @@ describe('LIQUIDITY_MODULE_003 Pool Discovery', () => {
     expect(liquidityPoolDiscovery.contentMax).toBe('1376px')
     expect(liquidityPoolDiscovery.headerH).toBe('48px')
     expect(liquidityPoolDiscovery.columnGap).toBe('12px')
-    expect(liquidityPoolDiscovery.cardMinH).toBe('158px')
+    expect(liquidityPoolDiscovery.cardMinH).toBe('188px')
     expect(liquidityPoolDiscovery.cardPad).toBe('14px')
     expect(liquidityPoolDiscovery.ctaH).toBe('40px')
     expect(liquidityPoolDiscovery.desktopColumns).toBe(5)

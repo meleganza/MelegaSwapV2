@@ -43,7 +43,7 @@ const QUOTE_TOKEN_ADDRESSES = new Set([
   '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
 ])
 
-export const TRENDING_ELIGIBLE_STATUSES = new Set<TierMetricStatus>(['READY', 'EMPTY_VERIFIED'])
+export const TRENDING_ELIGIBLE_STATUSES = new Set<TierMetricStatus>(['READY', 'EMPTY_VERIFIED', 'SYNCING'])
 
 export function isTrendingTierStatus(status: string): status is TierMetricStatus {
   return TRENDING_ELIGIBLE_STATUSES.has(status as TierMetricStatus)

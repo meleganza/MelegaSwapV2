@@ -187,7 +187,7 @@ const SORT_LABEL: Record<LiquidityDiscoverySort, string> = {
 export const LiquidityPoolDiscoveryModule: React.FC = () => {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<LiquidityDiscoveryFilter>('all')
-  const [sort, setSort] = useState<LiquidityDiscoverySort>('market')
+  const [sort, setSort] = useState<LiquidityDiscoverySort>('tvl')
 
   const discovery = useLiquidityPoolDiscovery({ query, filter, sort })
 

@@ -16,7 +16,7 @@ import {
 import { LB_UX } from '../liquidityBuilding/uxCopy'
 import { liqOne } from './onePageTokens'
 
-const WIZARD_STEPS = ['Setup', 'Budget', 'Strategy', 'Review', 'Activate'] as const
+const WIZARD_STEPS = ['Setup', 'Strategy', 'Review'] as const
 
 /** Canonical MARCO — default suggestion only; Custom opens full token search. */
 const MARCO_ADDR = MARCO_BSC_ADDRESS
@@ -600,11 +600,10 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const activeStep = useMemo(() => {
     if (isActive) return -1
     if (!inFlow) return -1
-    if (card.phase === 'status') return 4
-    if (card.phase === 'review') return 3
-    if (card.phase === 'setup') return Math.min(uiStep, 2)
-    if (card.phase === 'entry' && setupStarted) return uiStep
-    return Math.min(uiStep, 4)
+    if (card.phase === 'status' || card.phase === 'review') return 2
+    if (card.phase === 'setup') return Math.min(uiStep, 1)
+    if (card.phase === 'entry' && setupStarted) return Math.min(uiStep, 1)
+    return Math.min(uiStep, 2)
   }, [card.phase, inFlow, isActive, setupStarted, uiStep])
 
   const pickToken = useCallback(
@@ -634,14 +633,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
 
   const onBack = () => {
     setStepError(null)
-    if (card.phase === 'status') {
+    if (card.phase === 'status' || card.phase === 'review') {
       card.backToSetup()
-      setUiStep(2)
-      return
-    }
-    if (card.phase === 'review') {
-      card.goToPhase('setup')
-      setUiStep(2)
+      setUiStep(1)
       return
     }
     if (uiStep > 0) {
@@ -657,7 +651,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const reviewReached = card.phase === 'review' || card.phase === 'status' || isActive
 
   const stepDone = useMemo(
-    () => [tokenReady, budgetReady, strategyReady && (uiStep >= 2 || reviewReached), reviewReached, isActive] as const,
+    () =>
+      [
+        tokenReady && budgetReady,
+        strategyReady && (uiStep >= 1 || reviewReached),
+        reviewReached || isActive,
+      ] as const,
     [tokenReady, budgetReady, strategyReady, uiStep, reviewReached, isActive],
   )
 
@@ -671,21 +670,16 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         setStepError('Select a project token to continue.')
         return
       }
+      if (!budgetReady) {
+        setStepError('Enter a positive token budget to continue.')
+        return
+      }
       setStepError(null)
       setUiStep(1)
       if (card.phase === 'entry') card.startSetup()
       return
     }
     if (activeStep === 1) {
-      if (!budgetReady) {
-        setStepError('Enter a positive token budget to continue.')
-        return
-      }
-      setStepError(null)
-      setUiStep(2)
-      return
-    }
-    if (activeStep === 2) {
       if (!card.draftReady) {
         setStepError('Complete token, budget, and strategy before review.')
         return
@@ -696,18 +690,30 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         return
       }
       setStepError(null)
-      setUiStep(3)
+      setUiStep(2)
       return
     }
-    if (activeStep === 3) {
-      setStepError(null)
-      card.openStatus()
-      setUiStep(4)
-      return
-    }
-    if (activeStep === 4) {
-      if (!card.walletConnected) return
-      card.requestDepositAndActivate()
+    if (activeStep === 2) {
+      if (!card.walletConnected) {
+        // Footer renders ConnectWalletButton — also force-open if Primary path is used.
+        const connect = document.querySelector<HTMLButtonElement>('[data-testid="liq-lb-connect-wallet"]')
+        connect?.click()
+        return
+      }
+      // Surface wallet immediately (account request) — never fake a deposit/activate receipt.
+      const eth =
+        typeof window !== 'undefined'
+          ? (
+              window as Window & {
+                ethereum?: { request?: (args: { method: string }) => Promise<unknown> }
+              }
+            ).ethereum
+          : undefined
+      void eth?.request?.({ method: 'eth_requestAccounts' }).catch(() => undefined)
+      const result = card.requestDepositAndActivate()
+      if (result && !result.ok) {
+        setStepError(result.reason)
+      }
     }
   }
 
@@ -717,15 +723,22 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       return 'Pause'
     }
     if (!inFlow) return 'Set Up Liquidity Building'
-    if (activeStep <= 0) return 'Continue to Budget'
-    if (activeStep === 1) return 'Continue to Strategy'
-    if (activeStep === 2) return 'Continue to Review'
-    if (activeStep === 3) return 'Continue to Activate'
+    if (activeStep <= 0) return 'Continue to Strategy'
+    if (activeStep === 1) return 'Continue to Review'
     if (!card.walletConnected) return 'Connect Wallet'
+    if (!card.mutateGate.ok || card.programSource !== 'ON_CHAIN') return 'Activation Unavailable'
     if (card.status === 'AWAITING_APPROVAL') return 'Approve'
     if (card.status === 'AWAITING_DEPOSIT') return 'Deposit'
     return 'Activate'
-  }, [activeStep, card.status, card.walletConnected, inFlow, isActive])
+  }, [
+    activeStep,
+    card.status,
+    card.walletConnected,
+    card.mutateGate.ok,
+    card.programSource,
+    inFlow,
+    isActive,
+  ])
 
   const onPrimary = () => {
     if (isActive) {
@@ -733,7 +746,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       else card.pause()
       return
     }
-    if (activeStep === 4 && !card.walletConnected) return
     onContinue()
   }
 
@@ -851,55 +863,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             </TokenRow>
             <MetaValue style={{ marginTop: 6 }}>{card.draft.tokenSymbol || 'Select a project token'}</MetaValue>
           </Field>
-          {stepError && activeStep === 0 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
-          <MetaGrid>
-            <MetaCell>
-              <MetaLabel>Quote Asset</MetaLabel>
-              <MetaValue>{pair.quoteSymbol || 'WBNB'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>LP Owner</MetaLabel>
-              <MetaValue>{card.account ? `${card.account.slice(0, 6)}…${card.account.slice(-4)}` : 'Wallet'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Detected Pair</MetaLabel>
-              <MetaValue>
-                {pair.available && card.draft.tokenSymbol
-                  ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
-                  : 'Not detected'}
-              </MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Detected Pool</MetaLabel>
-              <MetaValue>{pair.available ? 'Melega V2' : 'Unavailable'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Router</MetaLabel>
-              <MetaValue>Melega Router</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Factory</MetaLabel>
-              <MetaValue>Melega Factory</MetaValue>
-            </MetaCell>
-          </MetaGrid>
-          <MetaCell style={{ marginTop: 8 }}>
-            <MetaLabel>Eligibility</MetaLabel>
-            <MetaValue>{pair.available ? 'Eligible on Melega DEX' : 'Pair eligibility pending'}</MetaValue>
-          </MetaCell>
-          <Accordion>
-            <summary>Learn More</summary>
-            <AccordionBody>
-              How the budget works and built-in protections are documented here so Setup stays compact. No CLAMM or tick
-              range in V1.
-            </AccordionBody>
-          </Accordion>
-        </div>
-      )
-    }
-
-    if (activeStep === 1) {
-      return (
-        <div data-testid="liq-lb-step-budget">
           <Field>
             Token Budget
             <Input
@@ -913,26 +876,34 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               }}
             />
           </Field>
-          {stepError && activeStep === 1 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
+          {stepError && activeStep === 0 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
           <MetaGrid>
+            <MetaCell>
+              <MetaLabel>Quote Asset</MetaLabel>
+              <MetaValue>{pair.quoteSymbol || 'WBNB'}</MetaValue>
+            </MetaCell>
             <MetaCell>
               <MetaLabel>Balance</MetaLabel>
               <MetaValue>{card.walletBalanceLabel || '—'}</MetaValue>
             </MetaCell>
             <MetaCell>
-              <MetaLabel>Estimated LP</MetaLabel>
-              <MetaValue>—</MetaValue>
+              <MetaLabel>Detected Pair</MetaLabel>
+              <MetaValue>
+                {pair.available && card.draft.tokenSymbol
+                  ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
+                  : 'Not detected'}
+              </MetaValue>
             </MetaCell>
             <MetaCell>
-              <MetaLabel>Remaining Budget</MetaLabel>
-              <MetaValue>{card.draft.tokenBudget || '—'}</MetaValue>
+              <MetaLabel>LP Owner</MetaLabel>
+              <MetaValue>{card.account ? `${card.account.slice(0, 6)}…${card.account.slice(-4)}` : 'Wallet'}</MetaValue>
             </MetaCell>
           </MetaGrid>
         </div>
       )
     }
 
-    if (activeStep === 2) {
+    if (activeStep === 1) {
       return (
         <div data-testid="liq-lb-step-strategy">
           <Field>
@@ -969,73 +940,46 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             <summary>Advanced</summary>
             <AccordionBody>Dynamic rate bounds and custom strategy modes stay collapsed for V1 defaults.</AccordionBody>
           </Accordion>
-          {stepError && activeStep === 2 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
+          {stepError && activeStep === 1 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
         </div>
       )
     }
 
-    if (activeStep === 3) {
-      return (
-        <div data-testid="liq-lb-step-review">
-          <MetaGrid>
-            <MetaCell>
-              <MetaLabel>Token</MetaLabel>
-              <MetaValue>{card.draft.tokenSymbol || '—'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Budget</MetaLabel>
-              <MetaValue>{card.draft.tokenBudget || '—'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Strategy</MetaLabel>
-              <MetaValue>Full AI</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Epoch</MetaLabel>
-              <MetaValue>{card.decisionFrequencyLabel}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Quote</MetaLabel>
-              <MetaValue>{pair.quoteSymbol || 'WBNB'}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>LP Owner</MetaLabel>
-              <MetaValue>{card.account ? `${card.account.slice(0, 6)}…` : 'Wallet'}</MetaValue>
-            </MetaCell>
-          </MetaGrid>
-          <span hidden aria-hidden>
-            <button type="button" disabled={!card.mutateGate.ok} data-testid="lb-mutating-gate-sentinel">
-              gate
-            </button>
-          </span>
-        </div>
-      )
-    }
-
-    // Activate
+    // Review + Activate (single confirmation)
     return (
-      <div data-testid="liq-lb-step-activate">
-        <EmptyHint>
-          Next action only — complete the step shown in the footer. No duplicate Connect Wallet controls here.
-        </EmptyHint>
+      <div data-testid="liq-lb-step-review">
         <MetaGrid>
           <MetaCell>
-            <MetaLabel>Gate</MetaLabel>
-            <MetaValue>{card.mutateGate.ok ? 'Ready' : 'Blocked'}</MetaValue>
+            <MetaLabel>Token</MetaLabel>
+            <MetaValue>{card.draft.tokenSymbol || '—'}</MetaValue>
+          </MetaCell>
+          <MetaCell>
+            <MetaLabel>Budget</MetaLabel>
+            <MetaValue>{card.draft.tokenBudget || '—'}</MetaValue>
+          </MetaCell>
+          <MetaCell>
+            <MetaLabel>Strategy</MetaLabel>
+            <MetaValue>Full AI</MetaValue>
+          </MetaCell>
+          <MetaCell>
+            <MetaLabel>Epoch</MetaLabel>
+            <MetaValue>{card.decisionFrequencyLabel}</MetaValue>
           </MetaCell>
           <MetaCell>
             <MetaLabel>Wallet</MetaLabel>
             <MetaValue>{card.walletConnected ? 'Connected' : 'Disconnected'}</MetaValue>
           </MetaCell>
           <MetaCell>
-            <MetaLabel>Chain</MetaLabel>
-            <MetaValue>{card.correctChain ? 'BNB Smart Chain' : 'Switch network'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
             <MetaLabel>Program</MetaLabel>
-            <MetaValue>{card.programSource}</MetaValue>
+            <MetaValue>{card.programSource === 'ON_CHAIN' ? 'On-chain' : 'Unavailable'}</MetaValue>
           </MetaCell>
         </MetaGrid>
+        {stepError && activeStep === 2 ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}
+        <span hidden aria-hidden>
+          <button type="button" disabled={!card.mutateGate.ok} data-testid="lb-mutating-gate-sentinel">
+            gate
+          </button>
+        </span>
         <div data-testid="lb-activation-pending-host" />
       </div>
     )
@@ -1147,15 +1091,15 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               Cancel
             </Ghost>
           ) : null}
-          {activeStep === 4 && !card.walletConnected && !isActive ? (
+          {activeStep === 2 && !card.walletConnected && !isActive ? (
             <ConnectSlot>
-              <ConnectWalletButton>{LB_UX.walletConnect}</ConnectWalletButton>
+              <ConnectWalletButton data-testid="liq-lb-connect-wallet">{LB_UX.walletConnect}</ConnectWalletButton>
             </ConnectSlot>
           ) : (
             <Primary
               type="button"
               onClick={onPrimary}
-              disabled={activeStep === 4 && !card.mutateGate.ok}
+              disabled={false}
               data-testid="liq-lb-primary"
             >
               {primaryLabel}
