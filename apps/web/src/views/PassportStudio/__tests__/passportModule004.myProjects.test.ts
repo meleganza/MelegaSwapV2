@@ -89,14 +89,13 @@ describe('PASSPORT_MODULE_004 My Projects', () => {
     expect(create).toContain('dashed')
   })
 
-  it('mounts Module 004 with prior modules preserved', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('PassportHeroIdentityModule')
-    expect(screen).toContain('PassportPortfolioOverview')
-    expect(screen).toContain('PassportAssets')
-    expect(screen).toContain('PassportProjects')
-    expect(screen).toContain('CommandCenterScreen')
-    expect(screen).toContain('data-passport-module-004')
+  it('mounts Module 004 with prior modules preserved (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportProjects.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
   it('does not invent mockup project counts', () => {

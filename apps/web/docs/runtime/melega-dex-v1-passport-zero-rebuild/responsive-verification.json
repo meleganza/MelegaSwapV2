@@ -1,0 +1,31 @@
+{
+  "mission": "MELEGA_DEX_V1_PASSPORT_ZERO_REBUILD_V1",
+  "url": "http://127.0.0.1:3017/passport",
+  "viewports": [
+    { "width": 1920, "file": "screenshots/desktop/1920.png", "overflowX": false },
+    { "width": 1600, "file": "screenshots/desktop/1600.png", "overflowX": false },
+    { "width": 1440, "file": "screenshots/desktop/1440.png", "overflowX": false },
+    { "width": 1366, "file": "screenshots/desktop/1366.png", "overflowX": false },
+    { "width": 1024, "file": "screenshots/tablet/1024.png", "overflowX": false },
+    { "width": 430, "file": "screenshots/mobile/430.png", "overflowX": false },
+    { "width": 390, "file": "screenshots/mobile/390.png", "overflowX": false }
+  ],
+  "checks": {
+    "zeroHorizontalOverflow": true,
+    "noClippedHeader": true,
+    "noHiddenCtas": true,
+    "noOverlappingTopMovers": true,
+    "noGiantEmptyVerticalAreas": true,
+    "tablesAdaptOnMobile": true,
+    "positionActionsUsable": true,
+    "noDuplicateWalletControlsWhenConnected": true,
+    "mobileSectionOrder": [
+      "identity",
+      "portfolio",
+      "claimables",
+      "positions",
+      "projects"
+    ]
+  },
+  "method": "Chrome headless --screenshot against next start production build"
+}

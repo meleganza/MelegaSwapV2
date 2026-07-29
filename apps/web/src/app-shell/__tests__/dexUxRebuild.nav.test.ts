@@ -84,11 +84,11 @@ describe('DEX UX Rebuild navigation', () => {
 
   it('List and Passport routes exist', () => {
     expect(readFileSync(path.join(ROOT, 'pages/list/index.tsx'), 'utf8')).toMatch(/ListStudioScreen/)
-    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/PassportScreen/)
+    expect(readFileSync(path.join(ROOT, 'pages/passport/index.tsx'), 'utf8')).toMatch(/PassportV1Shell/)
     expect(readFileSync(path.join(ROOT, 'views/ListStudio/ListStudioScreen.tsx'), 'utf8')).toMatch(
       /ListPageHero/,
     )
-    expect(readFileSync(path.join(ROOT, 'views/Passport/PassportScreen.tsx'), 'utf8')).toMatch(
+    expect(readFileSync(path.join(ROOT, 'views/Passport/v1/PassportV1Shell.tsx'), 'utf8')).toMatch(
       /MARCO Passport/,
     )
   })

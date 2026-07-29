@@ -1,5 +1,5 @@
 {
-  "mission": "PASSPORT_V1_FINAL freezes MODULE_001_007",
+  "mission": "PASSPORT_V1_FINAL freezes MODULE_001_007 (screen archived; route = Passport V1)",
   "baseTip": "2961c097",
   "files": {
     "PassportHeroIdentityModule.tsx": "5bc8a6180cde2a1d6fd86c841c2d495b2488accec05b097d7cd2ec82e1a4d312",
@@ -42,7 +42,7 @@
     "PassportActivityRow.tsx": "ed4d58ce2253b98437029dd6a30141e6a0d021d5cc1a4a2f1e46f2f5117787d2",
     "PassportBottomGrid.tsx": "92cd7c5dc3f131b0cd87c25941293c9058e1ac1d0fa465a2e962a6dfb773eca8",
     "usePassportRecentActivity.ts": "429f7ad6ae9efe98ef3fe40e6407b82ddf32ac86b19fed247abef8258a656af2",
-    "buildPassportRecentActivityViewModel.ts": "f4323b96162ec08f314dffc015983f777913c4c070b7053478799e06990d3417",
+    "buildPassportRecentActivityViewModel.ts": "23805a14823525bfb716d57823333aa6f82e261e7831b4c7cec3d5229d6dc7a7",
     "passportActivityTypes.ts": "d74c94d835ba69c7991e8af93e2c9e6d65a1c049b400cfe7e253a3a861a86393",
     "PassportSecurity.tsx": "5b9fb36c5fbd1d691dd0746eb2dd87e4bd19f58953d56030e65efa30cdfbc8e0",
     "usePassportSecurity.ts": "342d3c6458ac3e197c6243c035af95a48e61470a1657e752d8df35335a36b985",
@@ -50,7 +50,7 @@
     "passportSecurityTypes.ts": "1c4fc699a8cf3aeda81f7b0eb8be3dab784d7ec5e98dc1bc572ccfd76c81a56f"
   },
   "shared": {
-    "views/Passport/PassportScreen.tsx": "e0483e0e04500dbf2cedb6933dcfccae0e22154e9cca0f5d1cbe43f0f6230a1b",
+    "views/Passport/_archived_wave04_consumer/PassportScreen.tsx": "dd23015d7f32f341e19d32c11720358716ddcdedfc65b36e1ab694a6c170a4e5",
     "passportTokens.ts": "10b848095b9dba77f474a4e16c8d1a3cdafe0eeae5afe56cf7cfbc156397c982"
   }
 }

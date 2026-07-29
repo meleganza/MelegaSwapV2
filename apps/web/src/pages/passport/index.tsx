@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic'
 import { NextPage } from 'next'
 
-const PassportScreen = dynamic(() => import('views/Passport/PassportScreen'), { ssr: false })
+const PassportV1Shell = dynamic(() => import('views/Passport/v1/PassportV1Shell'), { ssr: false })
 
-const PassportPage: NextPage = () => <PassportScreen />
+const PassportPage: NextPage = () => <PassportV1Shell />
 
 PassportPage.chains = []
 

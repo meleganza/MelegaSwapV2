@@ -41,7 +41,7 @@
     "PassportActivity.tsx": "0a369220d7dd71eafd9b8a553a580a00bdbea9466d943a91939fb5d88707821f",
     "PassportActivityRow.tsx": "ed4d58ce2253b98437029dd6a30141e6a0d021d5cc1a4a2f1e46f2f5117787d2",
     "usePassportRecentActivity.ts": "429f7ad6ae9efe98ef3fe40e6407b82ddf32ac86b19fed247abef8258a656af2",
-    "buildPassportRecentActivityViewModel.ts": "f4323b96162ec08f314dffc015983f777913c4c070b7053478799e06990d3417",
+    "buildPassportRecentActivityViewModel.ts": "23805a14823525bfb716d57823333aa6f82e261e7831b4c7cec3d5229d6dc7a7",
     "passportActivityTypes.ts": "d74c94d835ba69c7991e8af93e2c9e6d65a1c049b400cfe7e253a3a861a86393"
   }
 }

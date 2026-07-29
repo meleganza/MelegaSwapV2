@@ -31,18 +31,20 @@ describe('PASSPORT Wave 04 Continuation', () => {
   })
 
   it('enforces canonical terminology and removes Command Center', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('MARCO Passport')
-    expect(screen).not.toContain('Melega Passport')
-    expect(screen).not.toContain('Passport Wallet')
-    expect(screen).toContain('data-passport-architecture="wave-04-continuation"')
-    expect(screen).toContain('data-passport-command-center="removed"')
-    expect(screen).not.toContain('CommandCenterScreen')
-    expect(screen).toContain('passport-identity-card')
+    const archived = readFileSync(path.join(WEB, 'src/views/Passport/_archived_wave04_consumer/PassportScreen.tsx'), 'utf8')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(archived).toContain('MARCO Passport')
+    expect(v1).toContain('MARCO Passport')
+    expect(v1).not.toContain('Melega Passport')
+    expect(v1).not.toContain('Passport Wallet')
+    expect(v1).toContain('data-passport-command-center="removed"')
+    expect(v1).not.toContain('CommandCenterScreen')
+    expect(v1).not.toContain('Good morning')
   })
 
-  it('keeps /passport route on PassportScreen', () => {
+  it('keeps /passport route on Passport V1 zero-rebuild shell', () => {
     const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
-    expect(page).toContain('views/Passport/PassportScreen')
+    expect(page).toContain('views/Passport/v1/PassportV1Shell')
+    expect(page).not.toContain('PassportScreen')
   })
 })

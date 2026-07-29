@@ -1,0 +1,34 @@
+{
+  "mission": "MELEGA_DEX_V1_PASSPORT_ZERO_REBUILD_V1",
+  "suite": "apps/web/src/views/Passport/v1/__tests__/passportZeroRebuild.v1.test.ts",
+  "cases": [
+    {
+      "id": 14,
+      "name": "wallet change clears prior scope",
+      "result": "PASS",
+      "assert": "clearOnWalletChange(prev≠next) === true"
+    },
+    {
+      "id": 15,
+      "name": "stale response rejection",
+      "result": "PASS",
+      "assert": "shouldRejectStaleResponse on wallet/generation mismatch"
+    },
+    {
+      "id": 16,
+      "name": "last-good retention surface state",
+      "result": "PASS",
+      "assert": "ERROR_WITH_LAST_GOOD when domain error + last-good present"
+    },
+    {
+      "id": 17,
+      "name": "no cross-wallet leakage in cache keys",
+      "result": "PASS",
+      "assert": "passportCacheKey differs by wallet"
+    }
+  ],
+  "runtime": {
+    "file": "usePassportV1Runtime.ts",
+    "behavior": "generation bump + lastGoodFarms/Pools cleared on wallet or chain change; scoped arrays empty when disconnected"
+  }
+}

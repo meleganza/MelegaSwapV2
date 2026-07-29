@@ -1,0 +1,131 @@
+{
+  "mission": "MELEGA_DEX_V1_PASSPORT_ZERO_REBUILD_V1",
+  "fields": [
+    {
+      "field": "connectedWallet",
+      "source": "wagmi useAccount",
+      "endpointOrAdapter": "wagmi/useAccount",
+      "walletScoped": "yes",
+      "indexedOrLive": "live",
+      "freshness": "session",
+      "fallback": "Disconnected",
+      "unavailableBehavior": "Show Connect Wallet only when disconnected"
+    },
+    {
+      "field": "chain",
+      "source": "active chain id",
+      "endpointOrAdapter": "hooks/useActiveChainId + wagmi useNetwork",
+      "walletScoped": "yes",
+      "indexedOrLive": "live",
+      "freshness": "session",
+      "fallback": "—",
+      "unavailableBehavior": "Show chain label Unavailable/—"
+    },
+    {
+      "field": "passportExists / verification / tier / memberSince",
+      "source": "Passport identity runtime",
+      "endpointOrAdapter": "usePassportHeroIdentity → buildPassportHeroIdentityViewModel",
+      "walletScoped": "yes",
+      "indexedOrLive": "live",
+      "freshness": "on wallet change",
+      "fallback": "No Passport profile API in production — passportExists=false",
+      "unavailableBehavior": "sourceUnavailable → PARTIAL_WITH_FACTUAL_DATA; portfolio domains still load"
+    },
+    {
+      "field": "liquidityPositions",
+      "source": "AMM LP ownership + Liquidity Building",
+      "endpointOrAdapter": "usePassportLiquidityPositions → useLiquidityPositions + useProgramReadModel",
+      "walletScoped": "yes",
+      "indexedOrLive": "live/indexed",
+      "freshness": "wallet-scoped poll",
+      "fallback": "empty list",
+      "unavailableBehavior": "Section empty with precise copy; never invent LP rows"
+    },
+    {
+      "field": "farmPositions",
+      "source": "MasterBuilder/MasterChef portfolio farms",
+      "endpointOrAdapter": "useFarmsStakingRuntime + buildFarmsWalletPositionsViewModel",
+      "walletScoped": "yes",
+      "indexedOrLive": "live",
+      "freshness": "userDataLoaded",
+      "fallback": "last-good same wallet+chain",
+      "unavailableBehavior": "stale last-good or unavailable metric; never blank whole Passport"
+    },
+    {
+      "field": "poolPositions",
+      "source": "SmartChef portfolio pools",
+      "endpointOrAdapter": "usePoolsStakingRuntime + buildPoolsWalletPositionsViewModel",
+      "walletScoped": "yes",
+      "indexedOrLive": "live",
+      "freshness": "userDataLoaded",
+      "fallback": "last-good same wallet+chain",
+      "unavailableBehavior": "stale last-good or unavailable metric"
+    },
+    {
+      "field": "claimableRewards",
+      "source": "Farm pending + Pool claimable non-zero only",
+      "endpointOrAdapter": "buildClaimables(farms, pools)",
+      "walletScoped": "yes",
+      "indexedOrLive": "live",
+      "freshness": "derived from position reads",
+      "fallback": "empty list",
+      "unavailableBehavior": "Do not claim reward solely because a position exists"
+    },
+    {
+      "field": "estimatedPortfolioValue",
+      "source": "Sum of trusted USD observations on priced positions only",
+      "endpointOrAdapter": "buildPortfolioSummary",
+      "walletScoped": "yes",
+      "indexedOrLive": "derived",
+      "freshness": "domain-dependent",
+      "fallback": "$0.00 or — with partial note",
+      "unavailableBehavior": "Exclude unpriced assets, M-Credits, project ownership; show partial-valuation indicator"
+    },
+    {
+      "field": "controlledProjects",
+      "source": "Verified project ownership producer",
+      "endpointOrAdapter": "usePassportProjects → buildPassportProjectsViewModel",
+      "walletScoped": "yes",
+      "indexedOrLive": "indexed when available",
+      "freshness": "on wallet change",
+      "fallback": "empty — no Passport controlled-projects feed in production",
+      "unavailableBehavior": "Empty state + List claim/create deep links; never infer from holdings"
+    },
+    {
+      "field": "canonicalTokenLogos",
+      "source": "canonical token registry / logo resolver",
+      "endpointOrAdapter": "MelegaTokenAvatar → resolveTokenLogoSources",
+      "walletScoped": "no",
+      "indexedOrLive": "indexed",
+      "freshness": "static registry",
+      "fallback": "letter avatar",
+      "unavailableBehavior": "Render glyph fallback"
+    },
+    {
+      "field": "mCredits",
+      "source": "M-Credits runtime",
+      "endpointOrAdapter": "status row only in Passport Benefits",
+      "walletScoped": "yes",
+      "indexedOrLive": "unavailable",
+      "freshness": "n/a",
+      "fallback": "compact unavailable status",
+      "unavailableBehavior": "Never show as ERC-20 wallet balance"
+    },
+    {
+      "field": "bscScanContractLinks",
+      "source": "position contract addresses",
+      "endpointOrAdapter": "explorerAddressUrl(masterChef|poolContract)",
+      "walletScoped": "yes",
+      "indexedOrLive": "derived",
+      "freshness": "n/a",
+      "fallback": "omit link",
+      "unavailableBehavior": "Hide BscScan link when address invalid"
+    }
+  ],
+  "policies": {
+    "mockData": false,
+    "placeholderUserIdentity": false,
+    "fakePassportTier": false,
+    "fabricatedPortfolioValue": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "mission": "MELEGA_DEX_V1_PASSPORT_ZERO_REBUILD_V1",
+  "archivedAt": "2026-07-29",
+  "baseTip": "db431a78",
+  "archivedPath": "apps/web/src/views/Passport/_archived_wave04_consumer/",
+  "archivedFiles": [
+    "PassportScreen.tsx",
+    "README.md"
+  ],
+  "previousRouteMount": "views/Passport/PassportScreen",
+  "newRouteMount": "views/Passport/v1/PassportV1Shell",
+  "rejectionReasons": [
+    "disconnected modules",
+    "duplicate information",
+    "legacy Command Center concepts",
+    "unavailable values without useful context",
+    "excessive actions and vertical length",
+    "poor hierarchy",
+    "irrelevant security placeholders",
+    "confusing wallet / Passport / portfolio / projects separation"
+  ],
+  "reusableDataAdaptersRetained": [
+    "views/PassportStudio/usePassportHeroIdentity.ts",
+    "views/PassportStudio/usePassportLiquidityPositions.ts",
+    "views/PassportStudio/usePassportProjects.ts",
+    "views/FarmsStudio/farmsRuntime/useFarmsStakingRuntime.ts",
+    "views/FarmsStudio/modules/buildFarmsWalletPositions.ts",
+    "views/PoolsStudio/poolsRuntime/usePoolsStakingRuntime.ts",
+    "views/PoolsStudio/modules/buildPoolsWalletPositions.ts"
+  ],
+  "layoutWrappersReused": false
+}

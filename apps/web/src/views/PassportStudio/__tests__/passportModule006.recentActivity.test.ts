@@ -225,11 +225,13 @@ describe('PASSPORT_MODULE_006 Recent Activity', () => {
     expect(live.items).toHaveLength(0)
   })
 
-  it('mounts Module 006 with prior modules preserved', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Passport/PassportScreen.tsx'), 'utf8')
-    expect(screen).toContain('PassportLiquidity')
-    expect(screen).toContain('PassportBottomGrid')
-    expect(screen).toContain('data-passport-module-006')
+  it('mounts Module 006 with prior modules preserved (library retained; V1 owns route)', () => {
+    expect(existsSync(path.join(ROOT, 'PassportActivity.tsx'))).toBe(true)
+    const page = readFileSync(path.join(WEB, 'src/pages/passport/index.tsx'), 'utf8')
+    expect(page).toContain('PassportV1Shell')
+    const v1 = readFileSync(path.join(WEB, 'src/views/Passport/v1/PassportV1Shell.tsx'), 'utf8')
+    expect(v1).toContain('data-passport-rebuild')
+    expect(v1).not.toContain('PassportArchitectureShell')
   })
 
   it('does not invent mockup activity amounts', () => {
