@@ -3,7 +3,7 @@
 **Mission ID:** `MELEGA_DEX_V1_LIST_FINAL_FOUNDER_ACCEPTANCE_AND_FEATURED_CONVERSION`  
 **Base:** `melega-dex-v1-farms-final-founder-acceptance` @ `9190bf20`  
 **Branch:** `melega-dex-v1-list-final-founder-acceptance`  
-**Implementation commit:** `5f140abc`  
+**Implementation commit:** `5f140abc`
 
 ## Outcomes
 
@@ -25,5 +25,3 @@
 ## Verdict
 
 `MELEGA_DEX_V1_LIST_FINAL_FOUNDER_ACCEPTANCE_CERTIFIED`
-
-**Branch tip:** `94bd3da1`
