@@ -128,29 +128,29 @@ function MobileModal<T>({
   })
 
   return (
-    <AtomBox width="full" py="32px">
+    <AtomBox width="full" py="16px" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
       {error ? (
         <AtomBox
           display="flex"
           flexDirection="column"
           alignItems="center"
-          style={{ gap: '24px' }}
+          style={{ gap: '16px' }}
           textAlign="center"
-          p="24px"
+          p="16px"
         >
-          {selected && typeof selected.icon === 'string' && <Image src={selected.icon} width={108} height={108} />}
-          <div style={{ maxWidth: '246px' }}>
+          {selected && typeof selected.icon === 'string' && <Image src={selected.icon} width={72} height={72} />}
+          <div style={{ maxWidth: '280px' }}>
             <ErrorMessage message={error} />
           </div>
         </AtomBox>
       ) : (
-        <AtomBox px="48px">
-          <Heading color="primary" as="h4" pb="24px">
+        <AtomBox px="20px">
+          <Heading color="primary" as="h4" pb="12px" style={{ textAlign: 'left' }}>
             {t('Connect Wallet')}
           </Heading>
         </AtomBox>
       )}
-      <AtomBox flex={1} py="16px" style={{ maxHeight: '230px' }} overflow="auto">
+      <AtomBox flex={1} py="8px" style={{ maxHeight: 'min(320px, 48dvh)' }} overflow="auto">
         <WalletSelect
           displayCount={MOBILE_DEFAULT_DISPLAY_COUNT}
           wallets={walletsToShow}

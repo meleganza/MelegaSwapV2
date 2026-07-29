@@ -7,10 +7,10 @@ import { FARMS_FOUNDER_MOCKUP } from '../farmsArchitecture000Contracts'
 import { farmsHero } from './farmsHeroTokens'
 
 export const FARMS_MODULE_001_FREEZE_SHA256 = {
-  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
-  FarmsHeroArtwork: '6f595886f997d06a6e72e02a7195476438fe7fc6fe5981363e1ea4c2ecfa47b7',
+  FarmsHeroModule: 'e8c7068144f874915f481dc6c398cc862816d144421f17041b624f3f21445810',
+  FarmsHeroArtwork: '2aef0100d672662cc594cf74e85c6f35465cbf0b26e8c25986e149832c3a5a9a',
   FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
-  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+  farmsHeroTokens: '5ac42c58d6638d97140f798ea715a5763ca742f23553867b689d14c1cebd95c6',
 } as const
 
 export const farmsOverviewKpis = {

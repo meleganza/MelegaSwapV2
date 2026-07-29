@@ -306,6 +306,10 @@ const Field = styled.label`
   font-size: 11px;
   font-weight: 650;
   color: ${liqOne.muted};
+
+  @media (max-width: 767px) {
+    margin-bottom: 8px;
+  }
 `
 
 const Input = styled.input`
@@ -321,6 +325,10 @@ const Input = styled.input`
 
   &:focus {
     border-color: ${liqOne.goldBorder};
+  }
+
+  @media (max-width: 767px) {
+    height: 44px;
   }
 `
 
@@ -342,6 +350,11 @@ const TokenChip = styled.button<{ $on?: boolean }>`
   font-weight: 700;
   font-family: ${liqOne.font};
   cursor: pointer;
+
+  @media (max-width: 767px) {
+    height: 40px;
+    min-height: 40px;
+  }
 `
 
 const MetaGrid = styled.div`
@@ -449,6 +462,11 @@ const StepTrack = styled.ol`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+
+  @media (max-width: 767px) {
+    margin-bottom: 8px;
+    gap: 4px;
+  }
 `
 
 const StepItem = styled.li<{ $active?: boolean; $done?: boolean }>`
@@ -465,6 +483,16 @@ const StepItem = styled.li<{ $active?: boolean; $done?: boolean }>`
   font-size: 12px;
   font-weight: 700;
   color: ${({ $active, $done }) => ($active ? '#f2c84c' : $done ? '#6ddc8c' : 'rgba(255,255,255,0.55)')};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (max-width: 767px) {
+    gap: 4px;
+    padding: 6px 6px;
+    font-size: 11px;
+    border-radius: 8px;
+  }
 `
 
 const StepNum = styled.span`

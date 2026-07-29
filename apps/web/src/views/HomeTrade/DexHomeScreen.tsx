@@ -44,8 +44,8 @@ const Content = styled.div`
 
   @media (max-width: 767px) {
     width: 100%;
-    padding: 12px 16px 32px;
-    gap: 16px;
+    padding: 10px 0 24px;
+    gap: 14px;
   }
 `
 
@@ -227,6 +227,12 @@ const KpiCard = styled.div`
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    min-height: 96px;
+    padding: 10px 12px;
+  }
 `
 
 const KpiLabel = styled.div`
@@ -244,6 +250,16 @@ const KpiValue = styled.div`
   line-height: 27px;
   font-weight: 700;
   color: ${uxRebuildColors.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    margin-top: 6px;
+    font-size: 17px;
+    line-height: 22px;
+  }
 `
 
 const Discovery = styled.section`
@@ -268,6 +284,11 @@ const DiscCard = styled.section`
   border: 1px solid ${uxRebuildColors.border};
   box-shadow: ${uxRebuildShadow.card};
   box-sizing: border-box;
+
+  @media (max-width: 767px) {
+    min-height: 0;
+    padding: 12px;
+  }
 `
 
 const DiscIcon = styled.span`
@@ -325,6 +346,11 @@ const DiscRow = styled(Link)`
 
   &:first-of-type {
     border-top: 0;
+  }
+
+  @media (max-width: 767px) {
+    min-height: 48px;
+    padding: 8px 0;
   }
 `
 

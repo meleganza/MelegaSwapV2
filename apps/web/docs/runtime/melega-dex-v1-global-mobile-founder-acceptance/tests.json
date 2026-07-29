@@ -1,0 +1,17 @@
+{
+  "runner": "vitest",
+  "globalMobileFounderAcceptance": {
+    "tests": 15,
+    "result": "PASS"
+  },
+  "farmsModule001": "PASS",
+  "farmsModule002": "PASS",
+  "farmsModule004": "PASS",
+  "farmsModule006": "PASS",
+  "farmsFounderAcceptance": "PASS",
+  "combined": {
+    "files": 6,
+    "tests": 68,
+    "result": "PASS"
+  }
+}

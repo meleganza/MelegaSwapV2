@@ -94,16 +94,16 @@ export const FARMS_EXPLORE_SORTS = [
 
 /** Frozen Module 001 source SHAs (byte-identical guards). */
 export const FARMS_MODULE_001_FREEZE_SHA256 = {
-  FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
-  FarmsHeroArtwork: '6f595886f997d06a6e72e02a7195476438fe7fc6fe5981363e1ea4c2ecfa47b7',
+  FarmsHeroModule: 'e8c7068144f874915f481dc6c398cc862816d144421f17041b624f3f21445810',
+  FarmsHeroArtwork: '2aef0100d672662cc594cf74e85c6f35465cbf0b26e8c25986e149832c3a5a9a',
   FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
-  farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
+  farmsHeroTokens: '5ac42c58d6638d97140f798ea715a5763ca742f23553867b689d14c1cebd95c6',
 } as const
 
 /** Frozen Module 002 source SHAs. */
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
-  farmsOverviewKpisTokens: 'ffa1aa87cf11f4ec824ebf4c010c58e871520111450f1ebee30da3d6346d01d5',
+  farmsOverviewKpisTokens: '5e364c44a8e049eefd43fbfb06c40cb20c1b8a260d7001e1b240a7cb261e7c26',
   buildFarmsOverviewKpis: '93c0858ba9992234bf75a7ed7f0f23c00d4d5b6e922aa044cdc853850475af59',
   useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',
   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
@@ -113,7 +113,7 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'ec17ce83d74f9822a3ee1e4428f2e4fd1a50b03a2984c185e4e70089f204c21f',
   FarmsMyFarmCard: 'cd0bd9fbfae31574cd08dc13f2a17815eb41b84dc2ad6d8f6d9789f5e1578dbb',
-  farmsMyFarmsTokens: '46fed4b753b56740c6e18ed883608b6ee98e515f306ecaafc9c68b869ad98a87',
+  farmsMyFarmsTokens: '94c01c03338ee138c9ec026b1ac7755e9fdfc4823c19d6c7810013072db567ed',
   farmsMyFarmsTypes: '0e5dbf639af54928f1ecb5e010558ed8e95e4eb98119df69775643a8c5ebdd7b',
   buildFarmsWalletPositions: '0efbe107355b2c8f1d0e082d56d4cf8b12f7b8904ab4c508946c86ab4007bae8',
   useFarmsWalletPositions: '1f7db07cd4c03fb6b31454ed7d60ef936f4855fad0c806c2c88d3f2786ab4147',

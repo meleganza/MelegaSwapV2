@@ -1,0 +1,6 @@
+{
+  "shellOverflowX": "hidden",
+  "featuredCarousel": "internal overflow-x auto + overscroll-behavior-x contain",
+  "ticker": "internal ribbon overflow",
+  "kpiValues": "ellipsis containment"
+}

@@ -26,8 +26,8 @@ const Nav = styled.nav<{
   left: 0;
   right: 0;
   bottom: 0;
-  min-height: calc(68px + env(safe-area-inset-bottom, 0px));
-  padding: 6px 4px env(safe-area-inset-bottom, 0px);
+  min-height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding: 4px 4px env(safe-area-inset-bottom, 0px);
   background: #080808;
   backdrop-filter: blur(12px);
   border-top: 1px solid #1f1f1f;

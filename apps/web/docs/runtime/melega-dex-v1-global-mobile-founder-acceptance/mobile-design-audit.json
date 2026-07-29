@@ -1,0 +1,25 @@
+{
+  "missionId": "MELEGA_DEX_V1_GLOBAL_MOBILE_FOUNDER_ACCEPTANCE",
+  "assessedAt": "2026-07-29T22:27:35.575190Z",
+  "recoveredFrom": "5b692f5f",
+  "before": {
+    "headerContentH": "60px",
+    "tickerH": "40px",
+    "bottomNavH": "68px",
+    "fabBottom": "110px+safe",
+    "insightsMobileCols": 1,
+    "farmsHeroArtH": "190px",
+    "farmsHeroMaxH": "650px",
+    "farmsLogos": "pancakeswap CDN"
+  },
+  "after": {
+    "headerContentH": "56px",
+    "tickerH": "36px",
+    "bottomNavH": "64px",
+    "fabBottom": "72px+safe",
+    "insightsMobileCols": 2,
+    "farmsHeroArtH": "148px",
+    "farmsHeroMaxH": "520px",
+    "farmsLogos": "/images/56/tokens local + initials fallback"
+  }
+}

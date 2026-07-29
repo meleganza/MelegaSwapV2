@@ -1,0 +1,9 @@
+{
+  "component": "packages/uikit/src/components/ScrollToTopButton/ScrollToTopButtonV2.tsx",
+  "size": "48px",
+  "zIndex": 180,
+  "bottom": "calc(72px + env(safe-area-inset-bottom))",
+  "hideOnScrollDown": true,
+  "passiveListener": true,
+  "ariaLabel": "Back to top"
+}

@@ -1,42 +1,43 @@
 # Recovery Checkpoint — Global Mobile Founder Acceptance
 
 **Recovered at:** 2026-07-29T22:20:00Z  
+**Completed at:** 2026-07-29T22:40:00Z  
 **Branch:** `melega-dex-v1-global-mobile-founder-acceptance`  
 **Pre-recovery HEAD:** `e4390845` (Liquidity Builder mainnet activation tip)  
+**Recovery checkpoint commit:** `5b692f5f`  
 **Base confirmed:** `melega-dex-v1-liquidity-builder-mainnet-activation` @ `e4390845`  
-**Staged:** none  
+**Staged at recovery:** none  
 **Stash used:** none (legacy stashes left untouched)  
-**Evidence dir before recovery:** absent  
 **LB addresses:** still all `null` — untouched
 
-## Recovered files
+## Recovered files (pre-crash checkpoint)
 
 | Path | Changes already implemented | Mission part | Validation | Remaining |
 | --- | --- | --- | --- | --- |
-| `apps/web/src/design-system/melega/tokens/mobileDensity.ts` (untracked) | Shared mobile density tokens | A/B | source only | wire consumers where useful |
-| `apps/web/src/app-shell/MelegaAppShell.tsx` | Header 56px; page pad 16px; bottom clear 64px; `100dvh`/`100svh` | C/D/S | source only | align ticker header constant |
-| `apps/web/src/app-shell/GlobalTrendingBar.tsx` | Ticker mobile 36px | C | source only | sync `MOBILE_HEADER_H` to 56px |
-| `packages/uikit/.../ScrollToTopButtonV2.tsx` | 48px FAB; above nav; hide on scroll-down; passive listener; a11y label | E | source only | route capture |
-| `FarmsHeroArtwork.tsx` | Local `/images/56/tokens/...` logos; initials onError fallback | F/R | source only | live broken-image audit |
-| `farmsHeroTokens.ts` | Compact mobile title/artwork/hero max height | F | source only | — |
-| `FarmsHeroModule.tsx` | Compact mobile gaps/desc | F | source only | Featured/Top Farms rows |
-| `LiquidityInsightsModule.tsx` | 2×2 at ≤767; 1-col only ≤359; compact card/value | G | source only | capture 390/430 |
+| `apps/web/src/design-system/melega/tokens/mobileDensity.ts` | Shared mobile density tokens | A/B | PASS (unit + build) | none |
+| `apps/web/src/app-shell/MelegaAppShell.tsx` | Header 56px; page pad 16px; bottom clear 64px; `100dvh`/`100svh` | C/D/S | PASS | none |
+| `apps/web/src/app-shell/GlobalTrendingBar.tsx` | Ticker 36px; header sync 56px | C | PASS | none |
+| `packages/uikit/.../ScrollToTopButtonV2.tsx` | 48px FAB; above nav; hide on scroll-down; passive; a11y | E | PASS (capture) | none |
+| `FarmsHeroArtwork.tsx` | Local `/images/56/tokens/...`; initials onError | F/R | PASS (0 broken) | none |
+| `farmsHeroTokens.ts` | Compact mobile title/artwork/hero max | F | PASS | none |
+| `FarmsHeroModule.tsx` | Compact mobile gaps/desc | F | PASS | none |
+| `LiquidityInsightsModule.tsx` | 2×2 ≤767; 1-col ≤359; compact cards | G | PASS (390/430) | none |
 
-## Not yet started (resume priority)
+## Post-recovery completion
 
-| Area | Status |
-| --- | --- |
-| Bottom navigation height/tokens | incomplete |
-| AI Liquidity Builder mobile density | not started |
-| Add Liquidity mobile density | not started |
-| Wallet modal wrap/height | not started |
-| Home KPI compact height | not started |
-| Featured carousel clipping | not started |
-| Ecosystem cards (430 1-col → keep 2-col) | not started |
-| Top Farms compact rows | not started |
-| Pools / Passport / List / Project verify | not started |
-| Tests + evidence pack + screenshots | not started |
+| Path | Mission part | Validation |
+| --- | --- | --- |
+| `MelegaBottomNavigation.tsx` | bottom nav 64px + safe-area | PASS |
+| `DexHomeScreen.tsx` | KPI / Top Farms compact | PASS |
+| `ExploreMelegaEcosystem.tsx` | 2-col @430, 68px | PASS |
+| `FeaturedProjectsRail.tsx` | snap + contain | PASS |
+| `LiquidityBuildingCard.tsx` | mobile densify | PASS (source + build) |
+| `LiquidityAddModule.tsx` | mobile densify | PASS (source + build) |
+| `WalletModal.tsx` | compact wrap | PASS |
+| Farms freeze SHA cascade | keep farms suites green | PASS |
+| `globalMobileFounderAcceptance.test.ts` | locks | 15/15 PASS |
+| Evidence pack under `docs/runtime/...` | Part I | complete |
 
 ## Freeze confirmation
 
-No edits to contracts, deployment scripts, `liquidityBuildingDeployment.ts` addresses, indexing, or wallet signing.
+No edits to contracts, deployment scripts, `liquidityBuildingDeployment.ts` addresses, indexing semantics, or wallet signing.

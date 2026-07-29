@@ -48,14 +48,20 @@ const Grid = styled.div`
   @media (max-width: 1023px) {
     display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
     gap: 12px;
     scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
+    padding: 4px 2px 8px;
+    margin: 0;
+    overscroll-behavior-x: contain;
 
     & > * {
-      flex: 0 0 min(248px, 78vw);
+      flex: 0 0 min(260px, calc(100vw - 48px));
+      max-width: min(260px, calc(100vw - 48px));
       scroll-snap-align: start;
+      scroll-snap-stop: always;
     }
   }
 `

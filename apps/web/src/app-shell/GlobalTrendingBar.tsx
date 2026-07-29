@@ -5,7 +5,7 @@ import SafeTrendingRibbon from 'views/CommandCenter/components/SafeTrendingRibbo
 
 const TRENDING_BAR_DESKTOP_H = '44px'
 const TRENDING_BAR_MOBILE_H = '36px'
-const MOBILE_HEADER_H = '60px'
+const MOBILE_HEADER_H = '56px'
 
 /**
  * Shared global Trending Bar — sits directly beneath the fixed header.

@@ -110,6 +110,11 @@ const TokenBox = styled.div`
   background: rgba(8, 8, 8, 0.9);
   padding: 12px 14px;
   min-width: 0;
+
+  @media (max-width: ${liquidityAdd.mobileBreak}) {
+    margin-top: 10px;
+    padding: 10px 12px;
+  }
 `
 
 const TokenHead = styled.div`
@@ -156,6 +161,12 @@ const AmountInput = styled.input`
   &::placeholder {
     color: ${liquidityAdd.dim};
   }
+
+  @media (max-width: ${liquidityAdd.mobileBreak}) {
+    margin-top: 4px;
+    font-size: 22px;
+    line-height: 28px;
+  }
 `
 
 const BalanceRow = styled.div`
@@ -197,7 +208,9 @@ const Metrics = styled.div`
   gap: 10px;
 
   @media (max-width: ${liquidityAdd.mobileBreak}) {
-    grid-template-columns: 1fr;
+    margin-top: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
   }
 `
 

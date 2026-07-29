@@ -49,17 +49,14 @@ const Grid = styled.div`
 
   @media (max-width: 767px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 430px) {
-    grid-template-columns: 1fr;
+    gap: 8px;
   }
 `
 
 const cardCss = `
-  height: 72px;
-  min-height: 72px;
-  max-height: 72px;
+  height: 68px;
+  min-height: 68px;
+  max-height: 68px;
   padding: 8px 10px;
   border-radius: ${uxRebuildRadius.card};
   background: ${uxRebuildColors.card};

@@ -1,0 +1,7 @@
+{
+  "file": "packages/ui-wallets/src/WalletModal.tsx",
+  "titleAlign": "left",
+  "horizontalPad": "20px",
+  "maxListHeight": "min(320px, 48dvh)",
+  "safeAreaBottom": true
+}

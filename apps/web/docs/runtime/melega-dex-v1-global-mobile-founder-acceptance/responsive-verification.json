@@ -1,0 +1,367 @@
+{
+  "capturedAt": "2026-07-29T22:30:25.237Z",
+  "baseUrl": "http://127.0.0.1:3563",
+  "results": [
+    {
+      "viewport": "430",
+      "route": "home",
+      "file": "home-430.png",
+      "title": "Home | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "430",
+      "route": "liquidity",
+      "file": "liquidity-430.png",
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 1,
+      "farmsLogoSources": [],
+      "insightsCols": "178px 178px",
+      "fabPresent": false
+    },
+    {
+      "viewport": "430",
+      "route": "farms",
+      "file": "farms-430.png",
+      "title": "Farms | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        }
+      ],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "430",
+      "route": "pools",
+      "file": "pools-430.png",
+      "title": "Pools | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "430",
+      "route": "passport",
+      "file": "passport-430.png",
+      "title": "Melega DEX",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "430",
+      "route": "list",
+      "file": "list-430.png",
+      "title": "Melega DEX",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "390",
+      "route": "home",
+      "file": "home-390.png",
+      "title": "Home | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "390",
+      "route": "liquidity",
+      "file": "liquidity-390.png",
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 32,
+      "farmsLogoSources": [],
+      "insightsCols": "158px 158px",
+      "fabPresent": false
+    },
+    {
+      "viewport": "390",
+      "route": "farms",
+      "file": "farms-390.png",
+      "title": "Farms | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        }
+      ],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "390",
+      "route": "pools",
+      "file": "pools-390.png",
+      "title": "Pools | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "390",
+      "route": "passport",
+      "file": "passport-390.png",
+      "title": "Melega DEX",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "390",
+      "route": "list",
+      "file": "list-390.png",
+      "title": "Melega DEX",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "360",
+      "route": "home",
+      "file": "home-360.png",
+      "title": "Home | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "360",
+      "route": "liquidity",
+      "file": "liquidity-360.png",
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 1,
+      "farmsLogoSources": [],
+      "insightsCols": "143px 143px",
+      "fabPresent": false
+    },
+    {
+      "viewport": "360",
+      "route": "farms",
+      "file": "farms-360.png",
+      "title": "Farms | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        }
+      ],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "768",
+      "route": "home",
+      "file": "home-768.png",
+      "title": "Home | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "768",
+      "route": "liquidity",
+      "file": "liquidity-768.png",
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 29,
+      "farmsLogoSources": [],
+      "insightsCols": "342px 342px",
+      "fabPresent": false
+    },
+    {
+      "viewport": "768",
+      "route": "farms",
+      "file": "farms-768.png",
+      "title": "Farms | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        }
+      ],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "1440",
+      "route": "home",
+      "file": "home-1440.png",
+      "title": "Home | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [],
+      "insightsCols": "none",
+      "fabPresent": false
+    },
+    {
+      "viewport": "1440",
+      "route": "liquidity",
+      "file": "liquidity-1440.png",
+      "title": "Liquidity Studio | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 26,
+      "farmsLogoSources": [],
+      "insightsCols": "329px 329px 329px 329px",
+      "fabPresent": false
+    },
+    {
+      "viewport": "1440",
+      "route": "farms",
+      "file": "farms-1440.png",
+      "title": "Farms | Melega DEX | $0.0003",
+      "overflowX": false,
+      "brokenImages": 0,
+      "farmsLogoSources": [
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        },
+        {
+          "src": "/images/56/tokens/0x963556de0eb8138E97A85F0A86eE0acD159D210b.png",
+          "ok": true
+        }
+      ],
+      "insightsCols": "none",
+      "fabPresent": false
+    }
+  ],
+  "checks": {
+    "noPageOverflow": true,
+    "farmsLocalLogos": true,
+    "insightsTwoColAt390": true
+  }
+}

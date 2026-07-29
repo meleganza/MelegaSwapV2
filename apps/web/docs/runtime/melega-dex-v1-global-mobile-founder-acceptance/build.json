@@ -1,0 +1,6 @@
+{
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "logTail": "Done in 12.64s (incremental after prior full PASS)"
+}
