@@ -13,43 +13,52 @@ interface Props {
   evidencePack: ProjectEvidencePack
   readinessDocument: ProjectReadinessDocument
   machineDocument: ProjectMachineDocument
+  /** Wave 04 — dense long page shows audit/trust content immediately. */
+  forceExpanded?: boolean
 }
 
 const ProjectTransparencySummary: React.FC<Props> = ({
   evidencePack,
   readinessDocument,
   machineDocument,
+  forceExpanded = false,
 }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(forceExpanded)
 
   return (
     <Section aria-labelledby="trust-heading" data-testid="project-transparency-summary">
-      <SectionTitle id="trust-heading">Security & Transparency</SectionTitle>
+      <SectionTitle id="trust-heading">Audit & Transparency</SectionTitle>
       <SoftCard>
         <BodyText style={{ fontSize: 16 }}>
-          Registry-backed trust and readiness signals for this project. Open the technical report
-          when you need the full evidence trail.
+          Registry-backed trust and readiness signals for this project.
         </BodyText>
         <MutedText>
           Readiness {readinessDocument.readiness.score}/{readinessDocument.readiness.maxScore} ·{' '}
           {readinessDocument.readiness.stateLabel}
         </MutedText>
-        <Accordion
-          open={open}
-          onToggle={(event) => {
-            const next = (event.currentTarget as HTMLDetailsElement).open
-            setOpen(next)
-          }}
-        >
-          <AccordionSummary>View technical report</AccordionSummary>
-          {open ? (
-            <>
-              <ReadinessTrustSnapshot readiness={readinessDocument} />
-              <TrustEvidencePanel pack={evidencePack} />
-              <ProjectMachineSection machineDocument={machineDocument} />
-            </>
-          ) : null}
-        </Accordion>
+        {forceExpanded ? (
+          <>
+            <ReadinessTrustSnapshot readiness={readinessDocument} />
+            <TrustEvidencePanel pack={evidencePack} />
+          </>
+        ) : (
+          <Accordion
+            open={open}
+            onToggle={(event) => {
+              const next = (event.currentTarget as HTMLDetailsElement).open
+              setOpen(next)
+            }}
+          >
+            <AccordionSummary>View technical report</AccordionSummary>
+            {open ? (
+              <>
+                <ReadinessTrustSnapshot readiness={readinessDocument} />
+                <TrustEvidencePanel pack={evidencePack} />
+                <ProjectMachineSection machineDocument={machineDocument} />
+              </>
+            ) : null}
+          </Accordion>
+        )}
       </SoftCard>
     </Section>
   )

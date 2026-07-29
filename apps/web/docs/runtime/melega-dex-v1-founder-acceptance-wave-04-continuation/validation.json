@@ -1,0 +1,22 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_WAVE_04_CONTINUATION",
+  "verdict": "MELEGA_DEX_V1_FOUNDER_ACCEPTANCE_WAVE_04_CONTINUATION_CERTIFIED",
+  "gates": {
+    "tests": "PASS",
+    "nextBuild": "PASS",
+    "homeUntouched": true,
+    "listHeroUntouched": true,
+    "smartSwapUntouched": true,
+    "instantSwapUntouched": true
+  },
+  "surfaces": {
+    "projectPage": "rebuilt-dense-long-page + featured-home-promo-ux",
+    "passport": "rebuilt-identity-first-no-command-center",
+    "list": "featured-home-promo in claim+create only",
+    "pools": "view-contract CTA + flicker last-good/cta membership",
+    "farms": "activeFarmers=unique MasterChef Deposit wallets",
+    "liquidityBuilder": "DEPLOYMENT_INPUTS_BLOCKED measured — see lb-deployment-blockers.json",
+    "treasury": "Runtime authority language removed on project/query registry; canonical wallet referenced"
+  },
+  "melegaTreasuryWallet": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+}

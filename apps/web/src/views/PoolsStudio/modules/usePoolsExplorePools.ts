@@ -57,16 +57,34 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
   }, [vm.pools, chainId])
 
   const stableVm = useMemo(() => {
-    const loadingEmpty =
-      (runtime.phase === 'loading_pools' || vm.state === 'loading') && (!vm.pools || vm.pools.length === 0)
     const cached = lastGoodRef.current
-    if (loadingEmpty && cached && cached.chainId === chainId && cached.pools.length > 0) {
+    const emptyNow = !vm.pools || vm.pools.length === 0
+    const refreshing = runtime.phase === 'loading_pools' || vm.state === 'loading'
+    // Keep last-good while inventory reload returns empty — prevents appear/disappear flicker.
+    if (emptyNow && refreshing && cached && cached.chainId === chainId && cached.pools.length > 0) {
       return {
         ...vm,
         state: 'ready' as const,
         pools: cached.pools,
         totalActive: cached.pools.length,
         liveRegion: 'Showing last known active pools while refreshing.',
+      }
+    }
+    // Brief empty window after ready (CTA recompute) — hold last-good up to 45s.
+    if (
+      emptyNow &&
+      !refreshing &&
+      cached &&
+      cached.chainId === chainId &&
+      cached.pools.length > 0 &&
+      Date.now() - cached.updatedAt < 45_000
+    ) {
+      return {
+        ...vm,
+        state: 'ready' as const,
+        pools: cached.pools,
+        totalActive: cached.pools.length,
+        liveRegion: 'Stabilizing pool inventory…',
       }
     }
     return vm

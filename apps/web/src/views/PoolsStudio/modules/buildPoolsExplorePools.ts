@@ -23,8 +23,9 @@ export function isActiveStakeableExplorePool(card: PoolPreviewCard): boolean {
   if (card.id.startsWith('amm-')) return false
   if (card.status === 'ended' || card.displayStatus === 'ENDED') return false
   if (card.status !== 'live' && card.displayStatus !== 'LIVE') return false
-  // Currently enterable today
-  if (card.cta !== 'stake') return false
+  // Membership must not flicker when CTA briefly leaves 'stake' during reload.
+  // Stake button enablement is decided separately via stakeEnabled.
+  if (card.cta === 'none' || card.cta === 'emergency') return false
   if (card.discoveryClass === 'invalid_contract') return false
   return true
 }
@@ -174,6 +175,10 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     stakeLabel: stakeEnabled ? 'Stake' : 'Unavailable',
     // No canonical /pools/[id] detail route — omit Details per Architecture.
     detailsHref: null,
+    contractAddress: card.contractAddress || null,
+    contractExplorerUrl:
+      card.explorerUrl ||
+      (card.contractAddress ? `https://bscscan.com/address/${card.contractAddress}` : null),
     sourceCard: card,
     sortApr: apr.sort,
     sortTvl: tvl.sort,

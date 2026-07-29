@@ -75,6 +75,9 @@ export function buildFarmsOverviewKpisFromParts(input: {
   cakePriceUsd: number
   emissionPerDay?: number | null
   emissionPerDayLabel?: string | null
+  /** Unique MasterChef Deposit wallets (active + finished). Null = unavailable. */
+  uniqueFarmersCount?: number | null
+  uniqueFarmersLoading?: boolean
 }): FarmsOverviewKpisViewModel {
   const fetchedAt = new Date().toISOString()
   const { previewCards, farmsLoading, account, userDataLoaded, cakePriceUsd } = input
@@ -146,15 +149,29 @@ export function buildFarmsOverviewKpisFromParts(input: {
     )
   }
 
-  // —— Active Farmers — no unique-wallet index (never estimate / never use LP supply) ——
-  const activeFarmersCard = card(
-    'activeFarmers',
-    '—',
-    'Unique wallet data unavailable',
-    'unavailable',
-    'unavailable',
-    'No factual Deposit/Withdraw unique-wallet index; participants/LP supply must not be used as farmers',
-  )
+  // —— Active Farmers = unique wallets with MasterChef Deposit observations (active + finished) ——
+  let activeFarmersCard: FarmsOverviewKpiCardModel
+  if (input.uniqueFarmersLoading && (input.uniqueFarmersCount == null || input.uniqueFarmersCount < 0)) {
+    activeFarmersCard = card('activeFarmers', '—', 'Indexing unique wallets…', 'loading', 'loading')
+  } else if (input.uniqueFarmersCount != null && Number.isFinite(input.uniqueFarmersCount)) {
+    activeFarmersCard = card(
+      'activeFarmers',
+      String(input.uniqueFarmersCount),
+      'Unique wallets with farm positions · active + finished',
+      input.uniqueFarmersCount === 0 ? 'zero' : 'available',
+      'live',
+      'MasterChef Deposit index · never LP supply',
+    )
+  } else {
+    activeFarmersCard = card(
+      'activeFarmers',
+      '—',
+      'Unique wallet data unavailable',
+      'unavailable',
+      'unavailable',
+      'No factual MasterChef Deposit wallet index yet',
+    )
+  }
 
   // —— 24H Rewards — MasterChef dexTokenPerBlock × blocksPerDay (emitted amount) ——
   const emissionPerDay = input.emissionPerDay ?? null
@@ -290,8 +307,18 @@ export function buildFarmsOverviewKpisFromParts(input: {
       valuedFarmCount,
       farmUniverseCount: universe,
       activeFarmCount: lpCards.length > 0 || !farmsLoading ? activeCards.length : null,
-      activeFarmersCount: null,
-      activeFarmersState: 'unavailable',
+      activeFarmersCount:
+        input.uniqueFarmersCount != null && Number.isFinite(input.uniqueFarmersCount)
+          ? input.uniqueFarmersCount
+          : null,
+      activeFarmersState:
+        input.uniqueFarmersLoading
+          ? 'loading'
+          : input.uniqueFarmersCount != null
+            ? input.uniqueFarmersCount === 0
+              ? 'zero'
+              : 'available'
+            : 'unavailable',
       rewards24hUsd: emissionUsd,
       rewards24hState: emissionPerDay != null && emissionPerDay > 0 ? 'available' : 'unavailable',
       rewards24hSource:

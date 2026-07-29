@@ -36,11 +36,11 @@ export const PageFrame = styled.div`
 export const Shell = styled.main`
   display: flex;
   flex-direction: column;
-  gap: ${SECTION_GAP};
-  max-width: 720px;
+  gap: 12px;
+  max-width: 860px;
   margin: 0 auto;
   width: 100%;
-  padding: 0 16px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: 12px 16px calc(72px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 
   @media (prefers-reduced-motion: reduce) {

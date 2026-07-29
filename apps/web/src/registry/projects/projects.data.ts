@@ -82,7 +82,10 @@ const marco: StaticProjectRecord = {
     labs: { status: 'planned', notes: 'Labs experiments — Phase 2' },
     aiReport: { status: 'planned', notes: 'AI verification pipeline not live in MVP' },
     machineManifest: { status: 'live', notes: 'Static JSON at /registry/projects/marco.json' },
-    treasuryCompatible: { status: 'planned', notes: 'MARCO fee SKUs — Treasury Runtime Phase 2' },
+    treasuryCompatible: {
+      status: 'planned',
+      notes: 'MARCO fee SKUs settle to the canonical Melega Treasury Wallet',
+    },
   },
   primaryTokenRefs: [MARCO_BSC.ref, MARCO_ETH.ref, MARCO_POLYGON.ref, MARCO_BASE.ref],
   relatedProjectSlugs: ['melega-dex'],
@@ -152,7 +155,10 @@ const melegaDex: StaticProjectRecord = {
     labs: { status: 'planned', notes: 'Labs experiments — Phase 2' },
     aiReport: { status: 'planned', notes: 'AI verification pipeline not live in MVP' },
     machineManifest: { status: 'live', notes: 'Static JSON at /registry/projects/melega-dex.json' },
-    treasuryCompatible: { status: 'planned', notes: 'Treasury Runtime Phase 2' },
+    treasuryCompatible: {
+      status: 'planned',
+      notes: 'Fee SKUs settle to the canonical Melega Treasury Wallet',
+    },
   },
   primaryTokenRefs: [],
   relatedProjectSlugs: ['marco'],

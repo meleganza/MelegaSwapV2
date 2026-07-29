@@ -51,7 +51,7 @@ export const serializeQueryManifest = (): Record<string, unknown> => {
     })),
     treasury: {
       status: 'not_indexed',
-      notes: 'Treasury query attribution — Treasury Runtime Phase 2',
+      notes: 'Treasury query attribution — Melega Treasury Wallet',
     },
     disclaimer: QUERY_REGISTRY_DISCLAIMER,
     data_source: 'registry-query-static',

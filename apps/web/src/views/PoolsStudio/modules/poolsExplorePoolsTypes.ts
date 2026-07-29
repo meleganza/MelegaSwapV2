@@ -44,6 +44,9 @@ export interface PoolsExplorePoolCardModel {
   stakeEnabled: boolean
   stakeLabel: 'Stake' | 'Unavailable'
   detailsHref: string | null
+  /** SmartChef / staking contract — required for visible View Contract CTA. */
+  contractAddress: string | null
+  contractExplorerUrl: string | null
   sourceCard: PoolPreviewCard
   sortApr: number
   sortTvl: number

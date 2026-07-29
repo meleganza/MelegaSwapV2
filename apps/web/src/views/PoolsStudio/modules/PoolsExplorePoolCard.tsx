@@ -9,6 +9,7 @@ import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { poolsExplore } from './poolsExplorePoolsTokens'
 import type { PoolsExplorePoolCardModel } from './poolsExplorePoolsTypes'
+import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 
 const Card = styled.article`
   position: relative;
@@ -187,6 +188,12 @@ const Btn = styled.button<{ $primary?: boolean }>`
 
 export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }> = ({ pool }) => {
   const { requestModal } = usePoolsRuntime()
+  const contractAddress = resolvePoolContractAddress({
+    contractAddress: pool.contractAddress || pool.sourceCard.contractAddress,
+    explorerUrl: pool.contractExplorerUrl || pool.sourceCard.explorerUrl,
+    contractExplorerUrl: pool.sourceCard.analyzePreview?.contractExplorerUrl,
+  })
+  const contractUrl = poolBscScanContractUrl(contractAddress)
 
   return (
     <Card
@@ -265,6 +272,19 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         >
           {pool.stakeLabel}
         </Btn>
+        {contractUrl ? (
+          <Btn
+            type="button"
+            data-testid="pools-explore-view-contract"
+            data-ps-bscscan-btn
+            aria-label={`View contract for ${pool.title} on BscScan`}
+            onClick={() => {
+              window.open(contractUrl, '_blank', 'noopener,noreferrer')
+            }}
+          >
+            View Contract
+          </Btn>
+        ) : null}
         {pool.detailsHref ? (
           <Btn
             type="button"

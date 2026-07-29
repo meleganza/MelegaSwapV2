@@ -7,6 +7,7 @@ import styled, { css, keyframes } from 'styled-components'
 import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTokens'
 import { useListIntent } from './useListIntent'
 import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
+import { FeaturedHomePromotionCard } from 'views/shared/FeaturedHomePromotionCard'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -831,6 +832,14 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Project Preview notes" ok={filled(values.preview)} invalid={false} optional>
             <TextArea value={values.preview || ''} onChange={set('preview')} placeholder="Local claim notes" />
           </Field>
+          <FeaturedHomePromotionCard
+            testId="list-claim-featured-home-promotion"
+            selected={values.featuredHome === '1'}
+            onSelectedChange={(next) => setValues((v) => ({ ...v, featuredHome: next ? '1' : '' }))}
+            payAsset={(values.featuredPay as 'BNB' | 'USDT' | 'USDC' | 'MARCO') || 'BNB'}
+            onPayAssetChange={(asset) => setValues((v) => ({ ...v, featuredPay: asset }))}
+            compact
+          />
         </FormStack>
       )
     }
@@ -890,6 +899,16 @@ export const ListWorkspace: React.FC = () => {
           >
             <Input value={values.token || ''} onChange={set('token')} placeholder="Token contract if you have one" />
           </Field>
+          {listIntent === 'create-project' ? (
+            <FeaturedHomePromotionCard
+              testId="list-create-featured-home-promotion"
+              selected={values.featuredHome === '1'}
+              onSelectedChange={(next) => setValues((v) => ({ ...v, featuredHome: next ? '1' : '' }))}
+              payAsset={(values.featuredPay as 'BNB' | 'USDT' | 'USDC' | 'MARCO') || 'BNB'}
+              onPayAssetChange={(asset) => setValues((v) => ({ ...v, featuredPay: asset }))}
+              compact
+            />
+          ) : null}
         </FormStack>
       )
     }

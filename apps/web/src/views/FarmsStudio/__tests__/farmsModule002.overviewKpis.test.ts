@@ -130,7 +130,17 @@ describe('FARMS_MODULE_002 Overview KPIs', () => {
     })
     const farmers = vm.cards.find((c) => c.id === 'activeFarmers')!
     expect(farmers.value).toBe('—')
-    expect(farmers.supporting).toContain('Unique wallet data unavailable')
+    expect(farmers.supporting).toMatch(/Unique wallet data unavailable|Indexing unique wallets/)
+
+    const farmersLive = buildFarmsOverviewKpisFromParts({
+      previewCards: [farmCard({ status: 'live' })],
+      farmsLoading: false,
+      userDataLoaded: false,
+      cakePriceUsd: 1,
+      uniqueFarmersCount: 42,
+    }).cards.find((c) => c.id === 'activeFarmers')!
+    expect(farmersLive.value).toBe('42')
+    expect(farmersLive.supporting).toMatch(/active \+ finished/i)
     expect(vm.diagnostics.activeFarmersCount).toBeNull()
   })
 
