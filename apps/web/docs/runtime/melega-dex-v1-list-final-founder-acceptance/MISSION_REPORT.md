@@ -25,3 +25,5 @@
 ## Verdict
 
 `MELEGA_DEX_V1_LIST_FINAL_FOUNDER_ACCEPTANCE_CERTIFIED`
+
+**Branch tip:** `94bd3da1`
