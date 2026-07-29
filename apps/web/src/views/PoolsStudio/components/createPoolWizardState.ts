@@ -64,7 +64,7 @@ export function hasCompletePoolEstimateParams(state: CreatePoolWizardState): boo
 }
 
 export function computeEstimatedApr(state: CreatePoolWizardState): string {
-  if (!hasCompletePoolEstimateParams(state)) return 'Complete pool parameters to estimate APR'
+  if (!hasCompletePoolEstimateParams(state)) return 'Calculated after reward configuration.'
   const budget = parseNum(state.rewardBudget)
   const daily = parseNum(state.dailyRewards)
   const apr = (daily * 365 * 100) / budget

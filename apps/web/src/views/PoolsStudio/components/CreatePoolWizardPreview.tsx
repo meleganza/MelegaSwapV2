@@ -193,7 +193,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
       <Block>
         <BlockTitle>Estimated APR</BlockTitle>
         <AprValue data-ps-wizard-preview-apr $pending={aprPending}>
-          {apr}
+          {aprPending ? 'Calculated after reward configuration.' : apr}
         </AprValue>
       </Block>
 
@@ -201,7 +201,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
         <BlockTitle>Emission Graph</BlockTitle>
         {bars.length === 0 ? (
           <MetricRow>
-            <span data-ps-wizard-emission-empty>Calculated after configuration</span>
+            <span data-ps-wizard-emission-empty>Calculated after reward configuration.</span>
           </MetricRow>
         ) : (
           <GraphWrap data-ps-wizard-emission-graph>
@@ -217,7 +217,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
         <MetricRow>
           <span>Score</span>
           <strong data-ps-wizard-health-score>
-            {health == null ? 'Calculated after configuration' : `${health} / 100`}
+            {health == null ? 'Calculated after reward configuration.' : `${health} / 100`}
           </strong>
         </MetricRow>
         {health != null ? (
@@ -231,7 +231,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
         <BlockTitle>Reward Consumption</BlockTitle>
         {consumption == null ? (
           <MetricRow>
-            <span data-ps-wizard-consumption-empty>Calculated after configuration</span>
+            <span data-ps-wizard-consumption-empty>Calculated after reward configuration.</span>
           </MetricRow>
         ) : (
           <DonutRow>

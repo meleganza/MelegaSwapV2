@@ -435,12 +435,37 @@ export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[
   return listUsablePools(cards)
 }
 
+function parseCardTvlUsd(card: PoolPreviewCard): number {
+  const pool = card.rawPool
+  if (pool?.totalStaked && pool.stakingToken?.decimals && pool.stakingTokenPrice && pool.stakingTokenPrice > 0) {
+    return getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * pool.stakingTokenPrice
+  }
+  const label = String(card.tvl || '')
+  const n = Number(label.replace(/[^0-9.]/g, ''))
+  if (!Number.isFinite(n)) return 0
+  if (/m/i.test(label)) return n * 1_000_000
+  if (/k/i.test(label)) return n * 1_000
+  return n
+}
+
+/** Featured = highest-TVL active SmartChef pool (factual). Never invents TVL. */
 export function selectFeaturedPool(cards: PoolPreviewCard[]): PoolPreviewCard | undefined {
-  const rewarding = listRewardingPools(cards)
-  if (!rewarding.length) return undefined
-  return [...rewarding].sort((a, b) => {
-    const aprDiff = (b.sustainabilityScore ?? 0) - (a.sustainabilityScore ?? 0)
-    if (aprDiff !== 0) return aprDiff
+  const active = cards.filter((p) => {
+    if (!p.rawPool) return false
+    if (p.id.startsWith('amm-')) return false
+    if (p.status === 'ended' || p.displayStatus === 'ENDED') return false
+    if (p.discoveryClass === 'invalid_contract') return false
+    return (
+      Boolean(p.lifecycle?.active) ||
+      Boolean(p.lifecycle?.rewarding) ||
+      p.status === 'live' ||
+      p.displayStatus === 'LIVE'
+    )
+  })
+  if (!active.length) return undefined
+  return [...active].sort((a, b) => {
+    const tvlDiff = parseCardTvlUsd(b) - parseCardTvlUsd(a)
+    if (tvlDiff !== 0) return tvlDiff
     return (b.aprExact ?? 0) - (a.aprExact ?? 0)
   })[0]
 }

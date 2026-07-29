@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolsHeroArtwork } from './PoolsHeroArtwork'
 import { PoolsHeroTrustPanel } from './PoolsHeroTrustPanel'
-import { PoolsHeroFeaturedCompact } from './PoolsHeroFeaturedCompact'
 import { POOLS_HERO_COPY, poolsHero } from './poolsHeroTokens'
 
 const Module = styled.section`
@@ -299,7 +298,6 @@ export const PoolsHeroModule: React.FC = () => {
           <PoolsHeroArtwork />
         </ArtCol>
         <TrustCol>
-          <PoolsHeroFeaturedCompact />
           <PoolsHeroTrustPanel />
         </TrustCol>
       </Inner>

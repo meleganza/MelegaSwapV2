@@ -45,9 +45,9 @@ describe('POOLS_MODULE_002 Overview KPIs', () => {
       'claimable',
     ])
     expect(poolsOverviewKpis.moduleW).toBe('1376px')
-    expect(poolsOverviewKpis.moduleH).toBe('112px')
+    expect(poolsOverviewKpis.moduleH).toBe('96px')
     expect(poolsOverviewKpis.cardW).toBe('216px')
-    expect(poolsOverviewKpis.cardGap).toBe('16px')
+    expect(poolsOverviewKpis.cardGap).toBe('12px')
     const sum = 216 * 6 + 16 * 5
     expect(sum).toBe(1376)
   })

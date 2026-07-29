@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 import { poolsFinished } from './poolsFinishedPoolsTokens'
 import type { PoolsFinishedAction, PoolsFinishedPoolCardModel } from './poolsFinishedPoolsTypes'
 
@@ -193,6 +194,12 @@ function busyLabel(kind: PoolsFinishedAction['kind'], base: PoolsFinishedAction[
 export const PoolsFinishedPoolCard: React.FC<{ pool: PoolsFinishedPoolCardModel }> = ({ pool }) => {
   const { requestModal } = usePoolsRuntime()
   const [busy, setBusy] = useState<PoolsFinishedAction['kind'] | null>(null)
+  const contractAddress = resolvePoolContractAddress({
+    contractAddress: pool.sourceCard.contractAddress,
+    explorerUrl: pool.sourceCard.explorerUrl,
+    contractExplorerUrl: pool.sourceCard.analyzePreview?.contractExplorerUrl,
+  })
+  const contractUrl = poolBscScanContractUrl(contractAddress)
 
   return (
     <Card
@@ -241,34 +248,43 @@ export const PoolsFinishedPoolCard: React.FC<{ pool: PoolsFinishedPoolCardModel 
 
       <WithdrawalState>{pool.withdrawalState}</WithdrawalState>
 
-      {pool.actions.length > 0 ? (
-        <Actions>
-          {pool.actions.map((action, idx) => {
-            const isBusy = busy === action.kind
-            return (
-              <Btn
-                key={`${action.kind}-${action.label}`}
-                type="button"
-                $primary={idx === 0 && action.kind !== 'emergency_withdraw'}
-                $danger={action.kind === 'emergency_withdraw'}
-                disabled={!action.enabled || isBusy}
-                aria-label={action.accessibleName}
-                onClick={() => {
-                  if (!action.enabled || !action.modalAction) return
-                  setBusy(action.kind)
-                  try {
-                    requestModal(pool.sourceCard, action.modalAction)
-                  } finally {
-                    window.setTimeout(() => setBusy(null), 1200)
-                  }
-                }}
-              >
-                {isBusy ? busyLabel(action.kind, action.label) : action.label}
-              </Btn>
-            )
-          })}
-        </Actions>
-      ) : null}
+      <Actions>
+        {pool.actions.map((action, idx) => {
+          const isBusy = busy === action.kind
+          return (
+            <Btn
+              key={`${action.kind}-${action.label}`}
+              type="button"
+              $primary={idx === 0 && action.kind !== 'emergency_withdraw'}
+              $danger={action.kind === 'emergency_withdraw'}
+              disabled={!action.enabled || isBusy}
+              aria-label={action.accessibleName}
+              onClick={() => {
+                if (!action.enabled || !action.modalAction) return
+                setBusy(action.kind)
+                try {
+                  requestModal(pool.sourceCard, action.modalAction)
+                } finally {
+                  window.setTimeout(() => setBusy(null), 1200)
+                }
+              }}
+            >
+              {isBusy ? busyLabel(action.kind, action.label) : action.label}
+            </Btn>
+          )
+        })}
+        {contractUrl ? (
+          <Btn
+            type="button"
+            data-testid="pools-finished-view-contract"
+            data-ps-view-contract
+            aria-label={`View contract for ${pool.title} on BscScan`}
+            onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
+          >
+            View Contract ↗
+          </Btn>
+        ) : null}
+      </Actions>
     </Card>
   )
 }

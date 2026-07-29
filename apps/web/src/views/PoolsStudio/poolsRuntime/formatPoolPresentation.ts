@@ -43,16 +43,19 @@ function tokenPerBlockBn(tokenPerBlock: Pool.DeserializedPool<Token>['tokenPerBl
 }
 
 function safeBlocksRemaining(pool: Pool.DeserializedPool<Token>, currentBlock: number): number {
-  const endBlock = Number(pool.endBlock)
-  if (Number.isFinite(endBlock) && Number.isFinite(currentBlock)) {
-    if (pool.isFinished) return 0
-    const startBlock = Number(pool.startBlock)
-    if (Number.isFinite(startBlock) && currentBlock < startBlock) return 0
-    return Math.max(endBlock - currentBlock, 0)
+  if (pool.isFinished) return 0
+  const endBlock = Number(pool.endBlock ?? pool.bonusEndBlock)
+  const startBlock = Number(pool.startBlock)
+  if (Number.isFinite(startBlock) && Number.isFinite(currentBlock) && currentBlock < startBlock) {
+    return 0
   }
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
-  if (!pool.isFinished && perBlock.gt(0) && (pool.vaultKey || pool.sousId === 0)) {
-    return 0
+  // endBlock <= 0 means open-ended — do not treat as exhausted runway.
+  if (!Number.isFinite(endBlock) || endBlock <= 0) {
+    return !pool.isFinished && perBlock.gt(0) ? Number.POSITIVE_INFINITY : 0
+  }
+  if (Number.isFinite(currentBlock)) {
+    return Math.max(endBlock - currentBlock, 0)
   }
   return 0
 }
@@ -116,6 +119,10 @@ export function getRemainingRewardsRaw(
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
   if (!perBlock.gt(0) || !pool.earningToken?.decimals) return 0
   const blocksRemaining = safeBlocksRemaining(pool, currentBlock)
+  if (blocksRemaining === Number.POSITIVE_INFINITY) {
+    // Open-ended active emission — positive runway for lifecycle/indexing (not a USD invent).
+    return 1
+  }
   if (!Number.isFinite(blocksRemaining) || blocksRemaining <= 0) return 0
   const raw = getBalanceNumber(perBlock.times(blocksRemaining), pool.earningToken.decimals)
   return Number.isFinite(raw) && raw > 0 ? raw : 0
@@ -241,6 +248,10 @@ export function poolIsLive(pool: Pool.DeserializedPool<Token>, currentBlock: num
   if (!perBlock.gt(0)) return false
   const remaining = getRemainingRewardsRaw(pool, currentBlock)
   if (!Number.isFinite(remaining) || remaining <= 0) return false
+  const endBlock = Number(pool.endBlock ?? pool.bonusEndBlock)
+  const openEnded = !Number.isFinite(endBlock) || endBlock <= 0
+  // Open-ended emission uses a runway sentinel — do not apply USD budget gates on that sentinel.
+  if (openEnded) return true
   const price = pool.earningTokenPrice || pool.stakingTokenPrice || 0
   if (price > 0) {
     const budgetUsd = getRewardBudgetUsd(pool, currentBlock)
@@ -255,7 +266,8 @@ export function getPoolDisplayStatus(
   currentBlock: number,
 ): PoolDisplayStatus {
   if (runtimeStatus === 'indexing') return 'INDEXING'
-  if (!poolIsLive(pool, currentBlock) || runtimeStatus === 'ended') return 'ENDED'
+  if (runtimeStatus === 'ended') return 'ENDED'
+  if (!poolIsLive(pool, currentBlock)) return 'ENDED'
   return 'LIVE'
 }
 

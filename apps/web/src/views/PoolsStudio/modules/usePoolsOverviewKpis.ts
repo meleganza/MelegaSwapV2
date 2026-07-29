@@ -130,35 +130,44 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
       discoveredCard = card('discovered', '—', 'Pool index unavailable', 'unavailable', 'unavailable')
     }
 
-    // —— Rewarding ——
+    // —— Rewarding (prefer max of classification + live SmartChef card lifecycle; never invent) ——
+    const stakingCards = previewCards.filter((p) => p.rawPool && !p.id.startsWith('amm-'))
+    const liveRewardingCards = listRewardingPools(stakingCards)
+    const liveActiveCount = stakingCards.filter(
+      (p) =>
+        Boolean(p.lifecycle?.active) ||
+        Boolean(p.lifecycle?.rewarding) ||
+        p.status === 'live' ||
+        p.displayStatus === 'LIVE',
+    ).length
     let rewardingCard: PoolsOverviewKpiCardModel
-    if (classification.status === 'loading') {
+    if (classification.status === 'loading' && liveRewardingCards.length === 0 && liveActiveCount === 0) {
       rewardingCard = card('rewarding', '—', 'Loading reward state…', 'loading', 'loading')
-    } else if (classification.status === 'ready' && counts) {
-      const pct =
-        counts.discovered > 0 ? ((counts.rewarding / counts.discovered) * 100).toFixed(1) : null
+    } else {
+      const classified = counts?.rewarding ?? 0
+      const liveCount = liveRewardingCards.length
+      // When classification undercounts open-ended/active emission pools, prefer live card truth.
+      const rewardingCount = Math.max(classified, liveCount)
+      const source =
+        liveCount >= classified && liveCount > 0
+          ? 'Live SmartChef lifecycle'
+          : classification.status === 'ready'
+            ? 'On-chain classification'
+            : 'Live SmartChef lifecycle'
+      const supportParts = [
+        liveActiveCount > 0 ? `${liveActiveCount} active indexed` : null,
+        classification.status === 'ready' && counts
+          ? `${counts.rewarding} classified rewarding`
+          : null,
+      ].filter(Boolean)
       rewardingCard = card(
         'rewarding',
-        String(counts.rewarding),
-        pct != null ? `${pct}% of discovered pools` : 'On-chain emission active',
-        counts.rewarding === 0 ? 'zero' : 'available',
-        'live',
-        `Classification rewarding · ${classification.generatedAt ?? fetchedAt}`,
+        String(rewardingCount),
+        supportParts.length ? supportParts.join(' · ') : 'On-chain emission active',
+        rewardingCount === 0 ? 'zero' : liveCount !== classified && classification.status === 'ready' ? 'partial' : 'available',
+        liveCount !== classified && classification.status === 'ready' ? 'partial' : 'live',
+        `${source} · ${fetchedAt}`,
       )
-    } else {
-      // Fallback: lifecycle on preview cards (partial)
-      const rewardingCards = listRewardingPools(previewCards)
-      if (previewCards.length > 0) {
-        rewardingCard = card(
-          'rewarding',
-          String(rewardingCards.length),
-          'Partial · card lifecycle',
-          'partial',
-          'partial',
-        )
-      } else {
-        rewardingCard = card('rewarding', '—', 'Reward state unavailable', 'unavailable', 'unavailable')
-      }
     }
 
     // —— 24H rewards — no indexed distribution feed ——
@@ -171,13 +180,21 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
       'No indexed reward-distribution feed for rolling 24H; emission projections are not used as 24H rewards',
     )
 
-    // —— Highest sustainable APR (reuse poolsAprRules via card.sustainableAprDisplay) ——
-    const rewardingCards = listRewardingPools(previewCards)
+    // —— Highest sustainable APR among active SmartChef pools (not AMM) ——
+    const aprUniverse = stakingCards.filter(
+      (p) =>
+        p.status !== 'ended' &&
+        p.displayStatus !== 'ENDED' &&
+        (Boolean(p.lifecycle?.active) ||
+          Boolean(p.lifecycle?.rewarding) ||
+          p.status === 'live' ||
+          p.displayStatus === 'LIVE' ||
+          listRewardingPools([p]).length > 0),
+    )
     let best: { display: string; name: string; exact: number } | null = null
-    rewardingCards.forEach((p) => {
+    aprUniverse.forEach((p) => {
       const label = p.sustainableAprDisplay ?? p.apr
       if (!label || isForbiddenAprDisplay(label)) return
-      if (p.status === 'ended') return
       const exact = parseFloat(label.replace('%', '')) || p.aprExact || 0
       if (!Number.isFinite(exact) || exact <= 0) return
       if (!best || exact > best.exact) {
@@ -185,10 +202,18 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
       }
     })
     let aprCard: PoolsOverviewKpiCardModel
-    if (poolsLoading && previewCards.length === 0) {
+    if (poolsLoading && stakingCards.length === 0) {
       aprCard = card('sustainableApr', '—', 'Loading APR…', 'loading', 'loading')
     } else if (best) {
       aprCard = card('sustainableApr', best.display, best.name, 'available', 'live', 'poolsAprRules sustainable display')
+    } else if (liveActiveCount > 0) {
+      aprCard = card(
+        'sustainableApr',
+        '—',
+        `${liveActiveCount} active · APR not yet priced`,
+        'partial',
+        'partial',
+      )
     } else {
       aprCard = card('sustainableApr', '—', 'Sustainable APR unavailable', 'unavailable', 'unavailable')
     }

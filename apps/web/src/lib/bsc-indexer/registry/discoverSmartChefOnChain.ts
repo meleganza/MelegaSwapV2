@@ -130,7 +130,11 @@ async function verifyPool(
   const hasStarted = startBlock === 0 || currentBlock >= startBlock
   const notEnded = endBlock === 0 || currentBlock < endBlock
   const isActive = hasStarted && notEnded && rewardPerBlock > 0n
-  const isFunded = rewardBalance > 0n || (isActive && endBlock > currentBlock && rewardPerBlock > 0n)
+  // Open-ended pools (endBlock === 0) with active emission are funded when emitting;
+  // bounded pools remain funded while before bonusEndBlock or when reward balance > 0.
+  const isFunded =
+    rewardBalance > 0n ||
+    (isActive && rewardPerBlock > 0n && (endBlock === 0 || endBlock > currentBlock))
   const isRewarding = isActive && isFunded
 
   return {
@@ -176,9 +180,10 @@ export async function discoverSmartChefOnChain(
         return
       }
       verified += 1
+      // active includes rewarding (rewarding ⊆ active). Do not else-if away rewarding pools.
+      if (pool.active || pool.rewarding) active += 1
       if (pool.rewarding) rewarding += 1
-      else if (pool.active) active += 1
-      else ended += 1
+      if (!pool.active && !pool.rewarding) ended += 1
       if (pool.funded) funded += 1
       pools.push(pool)
     })

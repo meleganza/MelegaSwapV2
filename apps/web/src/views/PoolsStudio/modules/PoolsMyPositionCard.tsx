@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 import { poolsMyPositions } from './poolsMyPositionsTokens'
 import type { PoolsPositionAction, PoolsWalletPosition } from './poolsMyPositionsTypes'
 
@@ -230,6 +231,12 @@ export const PoolsMyPositionCard: React.FC<{
   const { requestModal } = usePoolsRuntime()
   const [busyKind, setBusyKind] = useState<PoolsPositionAction['kind'] | null>(null)
   const [txNote, setTxNote] = useState<string | null>(null)
+  const contractAddress = resolvePoolContractAddress({
+    contractAddress: position.poolContract || position.sourceCard.contractAddress,
+    explorerUrl: position.sourceCard.explorerUrl,
+    contractExplorerUrl: position.sourceCard.analyzePreview?.contractExplorerUrl,
+  })
+  const contractUrl = poolBscScanContractUrl(contractAddress)
 
   const sameToken =
     position.stakeToken.symbol &&
@@ -326,26 +333,35 @@ export const PoolsMyPositionCard: React.FC<{
         ))}
       </Metrics>
 
-      {position.actions.length > 0 ? (
-        <Actions>
-          {position.actions.map((action, idx) => {
-            const busy = busyKind === action.kind
-            const label = busy ? actionBusyLabel(action.kind, action.label) : action.label
-            return (
-              <ActionButton
-                key={`${action.kind}-${action.label}`}
-                type="button"
-                $primary={idx === 0}
-                disabled={!action.enabled || busy}
-                aria-label={action.accessibleName}
-                onClick={() => onAction(action)}
-              >
-                {label}
-              </ActionButton>
-            )
-          })}
-        </Actions>
-      ) : null}
+      <Actions>
+        {position.actions.map((action, idx) => {
+          const busy = busyKind === action.kind
+          const label = busy ? actionBusyLabel(action.kind, action.label) : action.label
+          return (
+            <ActionButton
+              key={`${action.kind}-${action.label}`}
+              type="button"
+              $primary={idx === 0}
+              disabled={!action.enabled || busy}
+              aria-label={action.accessibleName}
+              onClick={() => onAction(action)}
+            >
+              {label}
+            </ActionButton>
+          )
+        })}
+        {contractUrl ? (
+          <ActionButton
+            type="button"
+            data-testid="pools-position-view-contract"
+            data-ps-view-contract
+            aria-label={`View contract for ${position.title} on BscScan`}
+            onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
+          >
+            View Contract ↗
+          </ActionButton>
+        ) : null}
+      </Actions>
 
       <span
         aria-live="polite"

@@ -1,0 +1,54 @@
+{
+  "mission": "MELEGA_DEX_V1_POOLS_FINAL_FOUNDER_ACCEPTANCE_ZERO_REFINEMENT",
+  "rootCausesFixed": [
+    {
+      "id": "open-ended-endBlock-zero",
+      "problem": "endBlock/bonusEndBlock === 0 was treated as exhausted runway (remaining=0), so active emission pools were not classified as funded/rewarding",
+      "fix": [
+        "formatPoolPresentation.safeBlocksRemaining treats endBlock <= 0 as open-ended (POSITIVE_INFINITY)",
+        "derivePoolLifecycle funded/rewarding includes open-ended active emission",
+        "discoverSmartChefOnChain isFunded includes endBlock === 0"
+      ]
+    },
+    {
+      "id": "classification-active-tally",
+      "problem": "meta.active used else-if and excluded rewarding pools (active undercount)",
+      "fix": "active += 1 when pool.active || pool.rewarding; rewarding tallied separately"
+    },
+    {
+      "id": "kpi-rewarding-undercount",
+      "problem": "KPI Pools Rewarding trusted classification alone while Explore showed live SmartChef pools",
+      "fix": "usePoolsOverviewKpis uses Math.max(classified, live SmartChef lifecycle rewarding)"
+    }
+  ],
+  "sourcesAudited": [
+    "state/pools (usePoolsWithVault → realPreviewCards)",
+    "lib/data-truth/poolLifecycle.derivePoolLifecycle",
+    "pages/api/pools/classification → discoverSmartChefOnChain",
+    "modules/buildPoolsExplorePools.isActiveStakeableExplorePool",
+    "modules/usePoolsOverviewKpis"
+  ],
+  "fabrication": false,
+  "recovery": {
+    "mission": "MELEGA_DEX_V1_POOLS_FINAL_FOUNDER_ACCEPTANCE_RECOVERY",
+    "measuredAt": "2026-07-29T17:26:46.261Z",
+    "rootCause": {
+      "diagnosis": "A",
+      "detail": "View Contract count was 0 because Explore/Featured rendered zero pool cards. Open-ended SmartChef pools (endBlock/bonusEndBlock<=0) were incorrectly marked ended (currentBlock>0) and not started (getPoolBlockInfo blocksRemaining=0), and Explore required status/display LIVE without accepting lifecycle.active/rewarding. Not a selector bug; not merely above-the-fold timing.",
+      "repairedFiles": [
+        "apps/web/src/lib/data-truth/poolLifecycle.ts",
+        "apps/web/src/views/PoolsStudio/poolsRuntime/formatPoolPresentation.ts",
+        "apps/web/src/views/PoolsStudio/modules/buildPoolsExplorePools.ts"
+      ]
+    },
+    "liveProbe": {
+      "featuredState": "ready",
+      "featuredPoolId": "sous-0",
+      "exploreCount": "1",
+      "viewContractTextCount": 2,
+      "rewarding": "37",
+      "tvl": "$74.8K"
+    },
+    "note": "Classification API may 500 when all RPC endpoints fail; Explore/Featured use Redux SmartChef inventory with corrected open-ended lifecycle."
+  }
+}

@@ -40,29 +40,33 @@ describe('POOLS_V1 Final Integration & Certification', () => {
     }
   })
 
-  it('mounts Modules 001–008 in certified order on PoolsStudioScreen', () => {
+  it('mounts founder-acceptance modules in certified order on PoolsStudioScreen', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
+    // Import order may place VisualPolish before content; assert content IA + mount flags.
     const order = [
       'PoolsHeroModule',
       'PoolsOverviewKpisModule',
+      'PoolsFeaturedPoolBand',
       'PoolsMyPositionsModule',
       'PoolsExplorePoolsModule',
       'PoolsFinishedPoolsModule',
-      'PoolsRewardAdvisorModule',
       'PoolsAnalyticsModule',
-      'PoolsVisualPolishModule',
     ]
     let prev = -1
     for (const name of order) {
-      const idx = screen.indexOf(name)
+      const idx = screen.indexOf(`<${name}`)
       expect(idx, name).toBeGreaterThan(-1)
       expect(idx).toBeGreaterThan(prev)
       prev = idx
     }
-    for (let n = 1; n <= 8; n++) {
+    expect(screen).toContain('PoolsVisualPolishModule')
+    // Module 006 Reward Advisor demoted from founder IA; 001–005 + 007–008 remain mounted.
+    for (const n of [1, 2, 3, 4, 5, 7, 8]) {
       const id = String(n).padStart(3, '0')
       expect(screen).toContain(`data-pools-module-${id}="mounted"`)
     }
+    expect(screen).not.toContain('data-pools-module-006="mounted"')
+    expect(screen).not.toContain('<PoolsRewardAdvisorModule')
     expect(screen).toContain('PoolsRuntimeProvider')
     expect(screen).toContain('PoolsActionHost')
     // Single action host string occurrence as component mount

@@ -1,0 +1,11 @@
+{
+  "missionId": "MELEGA_DEX_V1_POOLS_FINAL_FOUNDER_ACCEPTANCE_RECOVERY",
+  "rule": "highest TVL among active SmartChef pools (selectFeaturedPool)",
+  "measured": {
+    "state": "ready",
+    "poolId": "sous-0"
+  },
+  "excludes": [
+    "amm-* factory discovery cards"
+  ]
+}

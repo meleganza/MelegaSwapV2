@@ -1,0 +1,20 @@
+{
+  "mission": "MELEGA_DEX_V1_POOLS_FINAL_FOUNDER_ACCEPTANCE_ZERO_REFINEMENT",
+  "fixes": [
+    {
+      "cause": "currentBlock dependency remapped every pool card each block",
+      "fix": "currentBlockRef + useMemo deps = [rawPools, chainId] only"
+    },
+    {
+      "cause": "empty rawPools flash cleared inventory",
+      "fix": "lastGoodStakingCardsRef retains last good cards for same chain"
+    },
+    {
+      "cause": "Explore reload empty flicker",
+      "status": "pre-existing lastGoodExploreByChain retained"
+    }
+  ],
+  "tests": [
+    "productIaPoolsRefinement.test.ts → runtime stabilizes card inventory against block-tick flicker"
+  ]
+}

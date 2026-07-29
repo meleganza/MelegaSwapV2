@@ -1,5 +1,5 @@
 /**
- * MELEGA_DEX_V1_PRODUCT_INFORMATION_ARCHITECTURE_REFINEMENT — Pools gates.
+ * MELEGA_DEX_V1_POOLS_FINAL_FOUNDER_ACCEPTANCE — Pools IA + flicker gates.
  */
 import { readFileSync } from 'fs'
 import path from 'path'
@@ -7,27 +7,29 @@ import { describe, expect, it } from 'vitest'
 
 const ROOT = path.resolve(__dirname, '..')
 
-describe('Product IA refinement — Pools', () => {
-  it('orders Hero → KPI → My Positions → Analytics → Explore → Finished → Create Pool', () => {
+describe('Product IA refinement — Pools Founder Acceptance', () => {
+  it('orders Hero → KPI → Featured → My Positions → Create → Explore → Finished → Analytics', () => {
     const screen = readFileSync(path.join(ROOT, 'PoolsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('data-pools-ia="wave-03-founder"')
+    expect(screen).toContain('data-pools-ia="founder-acceptance-v1"')
     expect(screen).not.toContain('PoolsRewardAdvisorModule')
     expect(screen).not.toContain('PoolsSidebar')
     expect(screen).not.toContain('PoolsBelowFold')
     const hero = screen.indexOf('<PoolsHeroModule')
     const kpis = screen.indexOf('<PoolsOverviewKpisModule')
+    const featured = screen.indexOf('<PoolsFeaturedPoolBand')
     const positions = screen.indexOf('<PoolsMyPositionsModule')
-    const analytics = screen.indexOf('<PoolsAnalyticsModule')
+    const create = screen.indexOf('data-ps-create-pool-section')
     const explore = screen.indexOf('<PoolsExplorePoolsModule')
     const finished = screen.indexOf('<PoolsFinishedPoolsModule')
-    const create = screen.indexOf('data-ps-create-pool-section')
+    const analytics = screen.indexOf('<PoolsAnalyticsModule')
     expect(hero).toBeGreaterThan(-1)
     expect(kpis).toBeGreaterThan(hero)
-    expect(positions).toBeGreaterThan(kpis)
-    expect(analytics).toBeGreaterThan(positions)
-    expect(explore).toBeGreaterThan(analytics)
+    expect(featured).toBeGreaterThan(kpis)
+    expect(positions).toBeGreaterThan(featured)
+    expect(create).toBeGreaterThan(positions)
+    expect(explore).toBeGreaterThan(create)
     expect(finished).toBeGreaterThan(explore)
-    expect(create).toBeGreaterThan(finished)
+    expect(analytics).toBeGreaterThan(finished)
   })
 
   it('Explore hook retains last-good pools during loading', () => {
@@ -36,10 +38,36 @@ describe('Product IA refinement — Pools', () => {
     expect(hook).toContain('Showing last known active pools while refreshing')
   })
 
+  it('runtime stabilizes card inventory against block-tick flicker', () => {
+    const runtime = readFileSync(path.join(ROOT, 'poolsRuntime/usePoolsStakingRuntime.ts'), 'utf8')
+    expect(runtime).toContain('currentBlockRef')
+    expect(runtime).toContain('lastGoodStakingCardsRef')
+    expect(runtime).toMatch(/mapPoolToPreviewCard\(p, currentBlockRef\.current/)
+  })
+
   it('pool cards expose View Contract ↗ SmartChef explorer link', () => {
-    const card = readFileSync(path.join(ROOT, 'components/PoolGridCard.tsx'), 'utf8')
-    expect(card).toContain('View Contract ↗')
-    expect(card).toContain('data-ps-view-contract')
-    expect(card).toContain('noopener,noreferrer')
+    const explore = readFileSync(path.join(ROOT, 'modules/PoolsExplorePoolCard.tsx'), 'utf8')
+    const finished = readFileSync(path.join(ROOT, 'modules/PoolsFinishedPoolCard.tsx'), 'utf8')
+    const positions = readFileSync(path.join(ROOT, 'modules/PoolsMyPositionCard.tsx'), 'utf8')
+    const featured = readFileSync(path.join(ROOT, 'modules/PoolsFeaturedPoolBand.tsx'), 'utf8')
+    for (const src of [explore, finished, positions, featured]) {
+      expect(src).toContain('View Contract ↗')
+      expect(src).toContain('poolBscScanContractUrl')
+      expect(src).toContain('noopener,noreferrer')
+    }
+  })
+
+  it('featured selection is highest-TVL active pool', () => {
+    const fmt = readFileSync(path.join(ROOT, 'poolsRuntime/formatPoolsRuntime.ts'), 'utf8')
+    expect(fmt).toContain('highest-TVL active SmartChef pool')
+    expect(fmt).toContain('parseCardTvlUsd')
+  })
+
+  it('Create Pool uses Reward Duration / Daily Reward Emission labels', () => {
+    const wizard = readFileSync(path.join(ROOT, 'components/CreatePoolCta.tsx'), 'utf8')
+    expect(wizard).toContain('Reward Duration (Days)')
+    expect(wizard).toContain('Daily Reward Emission')
+    expect(wizard).not.toMatch(/>\s*Emission Duration\s*</)
+    expect(wizard).not.toMatch(/>\s*Daily Rewards\s*</)
   })
 })

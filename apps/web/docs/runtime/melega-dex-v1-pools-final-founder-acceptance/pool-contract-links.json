@@ -1,0 +1,17 @@
+{
+  "missionId": "MELEGA_DEX_V1_POOLS_FINAL_FOUNDER_ACCEPTANCE_RECOVERY",
+  "surfaces": [
+    "Featured",
+    "Explore",
+    "Finished (wallet positions)",
+    "My Positions"
+  ],
+  "label": "View Contract ↗",
+  "measuredViewContractCount1440": 2,
+  "testIds": [
+    "pools-featured-view-contract",
+    "pools-explore-view-contract",
+    "pools-finished-view-contract",
+    "pools-position-view-contract"
+  ]
+}

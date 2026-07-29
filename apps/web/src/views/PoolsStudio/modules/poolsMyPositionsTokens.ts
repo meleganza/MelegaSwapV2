@@ -90,7 +90,7 @@ export const poolsMyPositions = {
 
 /** Frozen Module 001 / 002 source SHAs (byte-identical guard). */
 export const POOLS_MODULE_001_FREEZE_SHA256 = {
-  PoolsHeroModule: '59e9ebd1d22eddc2786a3edb9567ad3dbe1e27c756f1b11b3334ebcaf3a4644f',
+  PoolsHeroModule: '61aa5f9a5ac872f51373d4ef18aacac662c4a67bb580d16a6bf3e8a79031994f',
   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
   PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
   poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
@@ -98,7 +98,7 @@ export const POOLS_MODULE_001_FREEZE_SHA256 = {
 
 export const POOLS_MODULE_002_FREEZE_SHA256 = {
   PoolsOverviewKpisModule: '0720b1472bf8a821114e92cad1bdc1dde795c8a1a0f4d1119e009438a885d5d1',
-  usePoolsOverviewKpis: 'b902f2dad92d4d3ae3fa52b98c69f383fb068da90d7d409a5b4d0aecb47785d6',
-  poolsOverviewKpisTokens: 'f4180aebb935e53075be0f501d7a17be0eacf02caf000234dfe90cb34c9e75ba',
+  usePoolsOverviewKpis: '0b873985c479f44bc1b94fab679b40b8ac8cc76ea414d274e6cfc2f3f31fbcf9',
+  poolsOverviewKpisTokens: '66dc7fe4a6d8c9fe6e512a9704ccf9b55c488e0e6cae5982dfe51e3cd9f1d3e9',
   poolsOverviewKpisTypes: '6f13ae436ec3652714f241bc24e25d328e60be6147d42a2e60952a4bef973799',
 } as const

@@ -11,6 +11,7 @@ import { poolsStudioColors, poolsStudioLayout } from './poolsStudioTokens'
 import { isPoolsUxFixtureEnabled } from './poolsRuntime/poolsUxFixture'
 import { PoolsHeroModule } from './modules/PoolsHeroModule'
 import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
+import { PoolsFeaturedPoolBand } from './modules/PoolsFeaturedPoolBand'
 import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
 import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
 import { PoolsFinishedPoolsModule } from './modules/PoolsFinishedPoolsModule'
@@ -22,7 +23,7 @@ const Root = styled.div`
   color: ${poolsStudioColors.text};
   font-family: ${typography.fontFamily.body};
   background: ${poolsStudioColors.canvas};
-  padding: 0 0 32px;
+  padding: 0 0 28px;
   min-width: 0;
   overflow-x: hidden;
   width: 100%;
@@ -42,28 +43,25 @@ const Content = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: ${poolsStudioLayout.sectionGap};
+  /* ~30% denser above-the-fold: tighter section rhythm than constitution 32px. */
+  gap: 14px;
 
   @media (max-width: 767px) {
-    margin-top: 16px;
+    margin-top: 12px;
     padding: 0 4px ${poolsStudioLayout.mobileBottomPad};
+    gap: 12px;
   }
 `
 
 const CreatePoolSection = styled.div`
-  margin-top: 24px;
+  margin-top: 4px;
   min-width: 0;
   width: 100%;
-
-  @media (max-width: 767px) {
-    margin-top: 20px;
-  }
 `
 
 /**
- * Wave 03 IA:
- * Hero → KPI → My Positions → Analytics → Explore Active → Finished → Create Pool
- * Removed: Reward Advisor, How-it-works sidebar, donut / health guide side columns.
+ * Founder Acceptance IA:
+ * Hero → Compact KPI → Featured Pool → My Positions → Create Pool → Explore → Finished → Analytics
  */
 export const PoolsStudioScreen: React.FC = () => (
   <Root
@@ -76,7 +74,7 @@ export const PoolsStudioScreen: React.FC = () => (
     data-pools-module-007="mounted"
     data-pools-module-008="mounted"
     data-pools-architecture="000"
-    data-pools-ia="wave-03-founder"
+    data-pools-ia="founder-acceptance-v1"
     data-ps-wallet-first="true"
     data-pools-ux-fixture={isPoolsUxFixtureEnabled() ? 'true' : undefined}
   >
@@ -85,28 +83,31 @@ export const PoolsStudioScreen: React.FC = () => (
     <PoolsVisualPolishModule />
     <PoolsRuntimeProvider>
       <PoolsActionHost />
-      <Content data-ps-content data-pools-ia="wave-03-founder">
+      <Content data-ps-content data-pools-ia="founder-acceptance-v1">
         <PoolsHeroModule />
         <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
           <PoolsOverviewKpisModule />
         </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Featured Pool" userReason="Featured pool is temporarily unavailable.">
+          <PoolsFeaturedPoolBand />
+        </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
           <PoolsMyPositionsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
-          <PoolsAnalyticsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
-          <PoolsExplorePoolsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Finished Pools" userReason="Finished pool positions are temporarily unavailable.">
-          <PoolsFinishedPoolsModule />
         </DataSurfaceErrorBoundary>
         <CreatePoolSection data-ps-create-pool-section>
           <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
             <CreatePoolCta />
           </DataSurfaceErrorBoundary>
         </CreatePoolSection>
+        <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
+          <PoolsExplorePoolsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Finished Pools" userReason="Finished pool positions are temporarily unavailable.">
+          <PoolsFinishedPoolsModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
+          <PoolsAnalyticsModule />
+        </DataSurfaceErrorBoundary>
       </Content>
     </PoolsRuntimeProvider>
   </Root>

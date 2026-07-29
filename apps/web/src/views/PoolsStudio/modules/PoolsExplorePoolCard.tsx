@@ -113,10 +113,14 @@ const Status = styled.span<{ $tone: string }>`
 
 const Metrics = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
   flex: 1;
   min-width: 0;
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 `
 
 const Metric = styled.div`
@@ -238,6 +242,14 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
 
       <Metrics>
         <Metric>
+          <MetricLabel>Stake</MetricLabel>
+          <MetricValue>{pool.stakeToken.symbol}</MetricValue>
+        </Metric>
+        <Metric>
+          <MetricLabel>Reward</MetricLabel>
+          <MetricValue>{pool.rewardToken.symbol}</MetricValue>
+        </Metric>
+        <Metric>
           <MetricLabel>APR</MetricLabel>
           <MetricValue>{pool.aprDisplay}</MetricValue>
           {pool.aprSupport ? <MetricSupport>{pool.aprSupport}</MetricSupport> : null}
@@ -253,7 +265,9 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         </Metric>
       </Metrics>
 
-      <LockLine>Lock · {pool.lockType}</LockLine>
+      <LockLine>
+        Status · {pool.statusLabel} · Lock · {pool.lockType}
+      </LockLine>
 
       <Actions>
         <Btn
@@ -282,7 +296,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
               window.open(contractUrl, '_blank', 'noopener,noreferrer')
             }}
           >
-            View Contract
+            View Contract ↗
           </Btn>
         ) : null}
         {pool.detailsHref ? (

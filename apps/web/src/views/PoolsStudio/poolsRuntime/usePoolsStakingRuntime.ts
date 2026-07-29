@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 import { usePoolsPageFetch, usePoolsWithVault } from 'state/pools/hooks'
@@ -292,15 +292,35 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
 
   const performanceFee = 0
 
+  // Stabilize remaps: block ticks must not rebuild the entire card inventory (flicker root cause).
+  const currentBlockRef = useRef(currentBlock)
+  currentBlockRef.current = currentBlock
+  const lastGoodStakingCardsRef = useRef<{ chainId: number | null; cards: PoolPreviewCard[] }>({
+    chainId: null,
+    cards: [],
+  })
+
   /** Canonical pool cards from live producers — never fixture data. */
   const realPreviewCards = useMemo(() => {
-    if (!rawPools?.length) return []
+    const scopeChain = chainId ?? null
+    const cached =
+      lastGoodStakingCardsRef.current.chainId === scopeChain
+        ? lastGoodStakingCardsRef.current.cards
+        : []
+    if (!rawPools?.length) {
+      return cached
+    }
     const cards = rawPools
       .filter((p) => p.vaultKey !== VaultKey.IfoPool)
-      .map((p) => mapPoolToPreviewCard(p, currentBlock, performanceFee))
+      .map((p) => mapPoolToPreviewCard(p, currentBlockRef.current, performanceFee))
       .filter((c): c is PoolPreviewCard => c !== null)
-    return deduplicatePoolPreviewCards(cards, chainId ?? 56)
-  }, [rawPools, currentBlock, chainId])
+    const next = deduplicatePoolPreviewCards(cards, chainId ?? 56)
+    if (next.length > 0) {
+      lastGoodStakingCardsRef.current = { chainId: scopeChain, cards: next }
+      return next
+    }
+    return cached
+  }, [rawPools, chainId])
 
   const previewCards = useMemo(() => {
     if (isPoolsUxFixtureEnabled()) {
@@ -353,7 +373,8 @@ export function usePoolsStakingRuntime(): PoolsStakingRuntime {
     [previewCards],
   )
 
-  const featuredCard = useMemo(() => selectFeaturedPool(previewCards), [previewCards])
+  // Featured from SmartChef staking inventory only — never AMM factory discovery cards.
+  const featuredCard = useMemo(() => selectFeaturedPool(realPreviewCards), [realPreviewCards])
 
   const featured = useMemo((): PoolsFeaturedMetrics => {
     const card = featuredCard

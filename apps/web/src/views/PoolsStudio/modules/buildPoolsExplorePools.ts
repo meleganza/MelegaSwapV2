@@ -21,13 +21,18 @@ const HIGH_APR_THRESHOLD = 20
 export function isActiveStakeableExplorePool(card: PoolPreviewCard): boolean {
   if (!card.rawPool) return false
   if (card.id.startsWith('amm-')) return false
-  if (card.status === 'ended' || card.displayStatus === 'ENDED') return false
-  if (card.status !== 'live' && card.displayStatus !== 'LIVE') return false
+  if (card.discoveryClass === 'invalid_contract') return false
   // Membership must not flicker when CTA briefly leaves 'stake' during reload.
   // Stake button enablement is decided separately via stakeEnabled.
   if (card.cta === 'none' || card.cta === 'emergency') return false
-  if (card.discoveryClass === 'invalid_contract') return false
-  return true
+  const lifecycleLive = Boolean(card.lifecycle?.active || card.lifecycle?.rewarding)
+  // Prefer status/display LIVE; also accept factual lifecycle for open-ended emission pools
+  // that classification already counts as active/rewarding.
+  if (card.status === 'live' || card.displayStatus === 'LIVE' || lifecycleLive) {
+    if (card.status === 'ended' && card.displayStatus === 'ENDED' && !lifecycleLive) return false
+    return true
+  }
+  return false
 }
 
 export function resolveExploreLockType(card: PoolPreviewCard): PoolsExploreLockType {

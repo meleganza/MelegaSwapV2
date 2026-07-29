@@ -1048,20 +1048,28 @@ export const CreatePoolCta: React.FC = () => {
                     />
                   </Field>
                   <Field data-ps-create-field>
-                    <Label>Emission Duration</Label>
+                    <Label title="How many calendar days rewards are emitted. SmartChef schedules use day-length emission windows on BNB Chain.">
+                      Reward Duration (Days)
+                    </Label>
                     <InputBox
                       value={state.emissionDuration}
                       onChange={(e) => patch({ emissionDuration: e.target.value })}
-                      aria-label="Emission Duration"
+                      aria-label="Reward Duration in Days"
+                      placeholder="e.g. 30"
                       $compact
+                      inputMode="decimal"
                     />
                   </Field>
                   <Field data-ps-create-field>
-                    <Label>Daily Rewards</Label>
+                    <Label title="Total reward tokens emitted each day. Converted to per-block emission using ~28,800 BNB Chain blocks/day.">
+                      Daily Reward Emission
+                    </Label>
                     <InputBox
                       value={state.dailyRewards}
                       onChange={(e) => patch({ dailyRewards: e.target.value })}
-                      aria-label="Daily Rewards"
+                      aria-label="Daily Reward Emission in reward tokens per day"
+                      placeholder="tokens / day"
+                      inputMode="decimal"
                     />
                   </Field>
                   <Field data-ps-create-field>
