@@ -1,53 +1,67 @@
 import type { NextApiHandler } from 'next'
-import { listProtocolActivityEvents } from 'lib/bsc-indexer/indexer/protocolActivitySync'
+import {
+  advanceFarmerParticipantIndex,
+  getFarmerParticipantSnapshot,
+} from 'lib/bsc-indexer/indexer/farmerParticipantIndex'
 import { MELEGA_MASTERCHEF_BSC } from 'lib/bsc-indexer/constants'
+import { MASTERCHEF_CANONICAL } from 'lib/bsc-indexer/indexer/masterchefTopics'
 
 /**
- * Unique wallets observed on MasterChef Deposit/Withdraw/EmergencyWithdraw.
- * Factual lower-bound from durable protocol-activity index (active + finished pids).
- * Never estimates from LP supply.
+ * Unique MasterChef farm participants (factual durable index).
+ * GET — snapshot with provenance
+ * GET ?advance=1 — advance index by a bounded chunk (server-side backfill helper)
+ *
+ * Never returns status:ready with a fabricated zero while indexing is incomplete.
+ * While indexing, uniqueFarmers is null and status is "indexing".
  */
 const handler: NextApiHandler = async (req, res) => {
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET')
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    res.setHeader('Allow', 'GET, POST')
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const masterchef = MELEGA_MASTERCHEF_BSC.toLowerCase()
-  const events = await listProtocolActivityEvents(500)
-  const farmEvents = events.filter(
-    (e) =>
-      e.sourceType === 'masterchef' &&
-      e.contractAddress?.toLowerCase() === masterchef &&
-      e.wallet &&
-      /^0x[a-fA-F0-9]{40}$/i.test(e.wallet),
-  )
+  const advance =
+    req.method === 'POST' ||
+    req.query.advance === '1' ||
+    req.query.advance === 'true'
 
-  const deposits = new Set<string>()
-  const exits = new Set<string>()
-  for (const ev of farmEvents) {
-    const w = ev.wallet!.toLowerCase()
-    if (ev.eventType === 'Deposit') deposits.add(w)
-    if (ev.eventType === 'Withdraw' || ev.eventType === 'EmergencyWithdraw') exits.add(w)
+  if (advance) {
+    const maxBlocks = Math.min(
+      2_000_000,
+      Math.max(10_000, Number(req.query.maxBlocks ?? req.body?.maxBlocks ?? 500_000) || 500_000),
+    )
+    await advanceFarmerParticipantIndex({ maxBlocks, chunkSize: 10_000 })
   }
 
-  // Wallets with any Deposit observation count as farmers across active+finished pids.
-  // Withdraw-only wallets without Deposit in the indexed window are excluded.
-  const uniqueFarmers = deposits.size
-  const observedWallets = new Set([...deposits, ...exits]).size
+  const snap = getFarmerParticipantSnapshot()
 
   return res.status(200).json({
-    status: uniqueFarmers > 0 ? 'ready' : farmEvents.length ? 'ready' : 'unavailable',
-    uniqueFarmers,
-    observedWallets,
-    eventCount: farmEvents.length,
-    source: 'masterchef-protocol-activity',
+    status: snap.status === 'idle' ? 'indexing' : snap.status,
+    uniqueFarmers: snap.displayState === 'loading' || snap.displayState === 'unavailable' ? null : snap.primaryCount,
+    uniqueLpFarmers: snap.status === 'ready' ? snap.uniqueLpParticipants : null,
+    historicalParticipants: snap.status === 'ready' ? snap.historicalParticipants : null,
+    currentlyStakedWallets: snap.currentlyStakedWallets,
+    observedWallets: snap.status === 'ready' ? snap.uniqueParticipants : null,
+    eventCount:
+      snap.depositEventCount + snap.withdrawEventCount + snap.emergencyWithdrawEventCount,
+    depositEventCount: snap.depositEventCount,
+    withdrawEventCount: snap.withdrawEventCount,
+    emergencyWithdrawEventCount: snap.emergencyWithdrawEventCount,
+    deploymentBlock: snap.deploymentBlock,
+    creationTx: snap.creationTx,
+    lastIndexedBlock: snap.lastIndexedBlock,
+    chainHead: snap.chainHead,
+    coveragePct: snap.coveragePct,
+    rangesScanned: snap.rangesScanned,
+    updatedAt: snap.updatedAt,
+    source: snap.source,
     masterChef: MELEGA_MASTERCHEF_BSC,
+    topics: MASTERCHEF_CANONICAL.topics,
+    signatures: MASTERCHEF_CANONICAL.signatures,
     scope: 'active+finished',
-    note:
-      uniqueFarmers > 0
-        ? 'Unique wallets with indexed MasterChef Deposit events (active + finished pids).'
-        : 'No indexed MasterChef Deposit wallets yet.',
+    primaryLabel: snap.primaryLabel,
+    note: snap.note,
+    lastError: snap.lastError,
   })
 }
 

@@ -30,12 +30,12 @@ export const farmsExplore = {
   countLine: '15px',
   countColor: 'rgba(255,255,255,0.50)',
 
-  cardW: '446px',
-  cardH: '268px',
-  cardGapX: '19px',
-  cardGapY: '18px',
-  cardPad: '18px',
-  cardRadius: '14px',
+  cardW: '328px',
+  cardH: '292px',
+  cardGapX: '14px',
+  cardGapY: '14px',
+  cardPad: '14px',
+  cardRadius: '12px',
   cardBorder: '1px solid rgba(255,255,255,0.08)',
   cardBg: 'linear-gradient(145deg, rgba(19,19,19,0.98) 0%, rgba(13,13,13,0.98) 100%)',
   cardShadow: '0 14px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.025)',
@@ -87,17 +87,15 @@ export const FARMS_EXPLORE_FILTERS = [
 ] as const
 
 export const FARMS_EXPLORE_SORTS = [
-  'Highest Sustainable APR',
   'Highest TVL',
+  'Highest Sustainable APR',
   'Newest',
-  'Alphabetical',
-  'Wallet LP Balance',
 ] as const
 
 /** Frozen Module 001 source SHAs (byte-identical guards). */
 export const FARMS_MODULE_001_FREEZE_SHA256 = {
   FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
-  FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+  FarmsHeroArtwork: '6f595886f997d06a6e72e02a7195476438fe7fc6fe5981363e1ea4c2ecfa47b7',
   FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
   farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
 } as const
@@ -105,17 +103,17 @@ export const FARMS_MODULE_001_FREEZE_SHA256 = {
 /** Frozen Module 002 source SHAs. */
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
-  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
-  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
-  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+  farmsOverviewKpisTokens: 'ffa1aa87cf11f4ec824ebf4c010c58e871520111450f1ebee30da3d6346d01d5',
+  buildFarmsOverviewKpis: '93c0858ba9992234bf75a7ed7f0f23c00d4d5b6e922aa044cdc853850475af59',
+  useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',
   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
 } as const
 
 /** Frozen Module 003 source SHAs at tip 509e7119. */
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'ec17ce83d74f9822a3ee1e4428f2e4fd1a50b03a2984c185e4e70089f204c21f',
-  FarmsMyFarmCard: '26984d361450ee0dcb47735d61c20ade1e406508e5b142ed6625ff4771168596',
-  farmsMyFarmsTokens: '2c28ccc9e9264fc54dc8d92417734cf89385e15423106c29581496822b704c6f',
+  FarmsMyFarmCard: 'cd0bd9fbfae31574cd08dc13f2a17815eb41b84dc2ad6d8f6d9789f5e1578dbb',
+  farmsMyFarmsTokens: '46fed4b753b56740c6e18ed883608b6ee98e515f306ecaafc9c68b869ad98a87',
   farmsMyFarmsTypes: '0e5dbf639af54928f1ecb5e010558ed8e95e4eb98119df69775643a8c5ebdd7b',
   buildFarmsWalletPositions: '0efbe107355b2c8f1d0e082d56d4cf8b12f7b8904ab4c508946c86ab4007bae8',
   useFarmsWalletPositions: '1f7db07cd4c03fb6b31454ed7d60ef936f4855fad0c806c2c88d3f2786ab4147',

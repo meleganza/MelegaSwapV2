@@ -169,7 +169,11 @@ const Grid = styled.ul`
   padding: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, ${farmsExplore.cardW});
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @media (max-width: 1439px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   column-gap: ${farmsExplore.cardGapX};
   row-gap: ${farmsExplore.cardGapY};
   min-width: 0;

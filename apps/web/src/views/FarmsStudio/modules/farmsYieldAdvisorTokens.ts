@@ -59,41 +59,41 @@ export const farmsYieldAdvisor = {
 
 export const FARMS_MODULE_001_FREEZE_SHA256 = {
   FarmsHeroModule: 'b22879b18e899567942bc7db24339c2baf70c8997c579fcadef1ac90aa57de7b',
-  FarmsHeroArtwork: 'a0e3e58813fa642da6a5d8b9a18722e8b2b4efc40cb260f14cc102a10647bc16',
+  FarmsHeroArtwork: '6f595886f997d06a6e72e02a7195476438fe7fc6fe5981363e1ea4c2ecfa47b7',
   FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
   farmsHeroTokens: 'f4672464d452b42d3a045dcd397616432190245fc5618fbf0174d2b2f58e7d26',
 } as const
 
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
   FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
-  farmsOverviewKpisTokens: '90e937117f57aab418e096a2b7572fd259e524a6304493b0b832bc198a57e390',
-  buildFarmsOverviewKpis: '86bfed331f8a935ba3c1b0379142d845b09fd568c7ad0413c73ecfe075a76696',
-  useFarmsOverviewKpis: '3ccf7513fb70c538e4f0e8ef82a913f2c0a2119c57fc5022fa2fef721c6f5146',
+  farmsOverviewKpisTokens: 'ffa1aa87cf11f4ec824ebf4c010c58e871520111450f1ebee30da3d6346d01d5',
+  buildFarmsOverviewKpis: '93c0858ba9992234bf75a7ed7f0f23c00d4d5b6e922aa044cdc853850475af59',
+  useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',
   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
 } as const
 
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'ec17ce83d74f9822a3ee1e4428f2e4fd1a50b03a2984c185e4e70089f204c21f',
-  FarmsMyFarmCard: '26984d361450ee0dcb47735d61c20ade1e406508e5b142ed6625ff4771168596',
-  farmsMyFarmsTokens: '2c28ccc9e9264fc54dc8d92417734cf89385e15423106c29581496822b704c6f',
+  FarmsMyFarmCard: 'cd0bd9fbfae31574cd08dc13f2a17815eb41b84dc2ad6d8f6d9789f5e1578dbb',
+  farmsMyFarmsTokens: '46fed4b753b56740c6e18ed883608b6ee98e515f306ecaafc9c68b869ad98a87',
   farmsMyFarmsTypes: '0e5dbf639af54928f1ecb5e010558ed8e95e4eb98119df69775643a8c5ebdd7b',
   buildFarmsWalletPositions: '0efbe107355b2c8f1d0e082d56d4cf8b12f7b8904ab4c508946c86ab4007bae8',
   useFarmsWalletPositions: '1f7db07cd4c03fb6b31454ed7d60ef936f4855fad0c806c2c88d3f2786ab4147',
 } as const
 
 export const FARMS_MODULE_004_FREEZE_SHA256 = {
-  FarmsExploreFarmsModule: '7c2d2cf8852a97e5e16f4c45413f7088bf8c552a7ca7f420ccf18ca6d6743842',
-  FarmsExploreFarmCard: 'fe29452f96a35809893a0308b5248161096da9feefec9bfa4ec94893bdaaece7',
-  farmsExploreFarmsTokens: 'ce6be9e508d09c9b58d1a3854b24e21c245152dd78145c6dae89888c7b13e163',
-  farmsExploreFarmsTypes: '314564befa19bd0e5c0dbbb4ac082e282ae0541ff854a321628f5564644c37ee',
+  FarmsExploreFarmsModule: '1f8aa38066a0a83c8bf58028cf55305999a4d68fd0dac830081cf37b45fff6b6',
+  FarmsExploreFarmCard: '52e1fd0769fdf5f723c9f04871f9eae8ebda63db4a998e3137fc7960102f43d9',
+  farmsExploreFarmsTokens: '933e96872888056854e89dfc5e57bf7cd9a7c8c9f9de8fd990afb56a6b3069ac',
+  farmsExploreFarmsTypes: 'f7d40c5bbac21920a7c5c731eb828a395eda8421e9c6e6f9d9c98ccbc3ef24fb',
   buildFarmsExploreFarms: '64eda6a26b12412b1dd20ba3d3014da6a2961b1c5837c4237074173eb62ddc1e',
-  useFarmsExploreFarms: '0c3ca423e00dbf24037e82c14f1c6e3b5dd5931bbd944086bc6f6c79854ff8e0',
+  useFarmsExploreFarms: 'aa38a2322e6022f52c5f4aaa20f64da62376590cdfb3fa7d0e4d01d0da5a0696',
 } as const
 
 export const FARMS_MODULE_005_FREEZE_SHA256 = {
   FarmsFinishedFarmsModule: '0fb2efe12d6eeef7e7896c4071e356cfd4efe7f75054af3622f941e837364bcf',
-  FarmsFinishedFarmCard: '3d7f6ce136a9c469df142900add0712496cca4640d0e23a0dcc4efbd50366eaa',
-  farmsFinishedFarmsTokens: '2dde1a70f23406789afe1dc3879d09afc1c4d41ac605565adab297ccfcea6208',
+  FarmsFinishedFarmCard: '8db717eee8b4b356c192f009bad74e55c50cd007484b2131e8cc1a7be5f11abd',
+  farmsFinishedFarmsTokens: '14790b9748402c25c452bd90f68233fbaf5d4469546da02e42d0002e21562852',
   farmsFinishedFarmsTypes: '395114197f8c111479dd1486ea21df5707d16f2d480390a4a6adeb164757d4fc',
   buildFarmsFinishedFarms: '6507c580589af70bed9381fd242569dc824627df1a72a5f7f04a0d1f91b8a9fd',
   useFarmsFinishedFarms: '163703cb9671d3ea2bccac5a9f618f00993f53be3fbf009835315bc86cc3653d',

@@ -134,7 +134,7 @@ describe('FARMS_MODULE_001 Hero', () => {
     const art = load('modules/FarmsHeroArtwork.tsx')
     expect(art).toContain('LP Pair')
     expect(art).toContain('Farm')
-    expect(art).toContain('Reward Token')
+    expect(art).toMatch(/Reward Token|MARCO Rewards/)
     expect(art).not.toContain('PoolsStudio')
     expect(art).toContain('aria-hidden')
     // Ban readable fake yield figures (CSS % units are allowed).

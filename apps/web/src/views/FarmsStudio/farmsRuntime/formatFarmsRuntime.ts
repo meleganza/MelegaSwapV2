@@ -67,10 +67,32 @@ export function listRewardingFarms(cards: FarmPreviewCard[]): FarmPreviewCard[] 
   )
 }
 
+function farmLiquidityUsd(card: FarmPreviewCard): number {
+  const liq = card.rawFarm?.liquidity?.toNumber?.()
+  return Number.isFinite(liq) ? (liq as number) : 0
+}
+
+/** Featured = active + emission + TVL + sustainable APR; tie-break by lowest pid. */
 export function selectFeaturedFarm(cards: FarmPreviewCard[]): FarmPreviewCard | undefined {
-  const rewarding = listRewardingFarms(cards)
-  if (!rewarding.length) return undefined
-  return [...rewarding].sort((a, b) => parseFloat(b.apr || '0') - parseFloat(a.apr || '0'))[0]
+  const eligible = cards.filter((f) => {
+    if (f.status !== 'live') return false
+    if (f.rawFarm?.multiplier === '0X') return false
+    if (f.emissionState !== 'active') return false
+    // liquidity is a BigNumber on FarmWithStakedValue — never compare the object as a number
+    if (!(farmLiquidityUsd(f) > 0)) return false
+    if (!f.apr || isUnavailableFarmMetric(f.apr)) return false
+    const aprN = parseFloat(String(f.apr).replace('%', ''))
+    if (!Number.isFinite(aprN) || aprN <= 0 || aprN > 1_000_000) return false
+    return true
+  })
+  if (!eligible.length) return undefined
+  return [...eligible].sort((a, b) => {
+    const tvlDiff = farmLiquidityUsd(b) - farmLiquidityUsd(a)
+    if (tvlDiff !== 0) return tvlDiff
+    const aprDiff = parseFloat(String(b.apr || '0')) - parseFloat(String(a.apr || '0'))
+    if (aprDiff !== 0) return aprDiff
+    return (a.pid ?? 0) - (b.pid ?? 0)
+  })[0]
 }
 
 export function mapFarmToPreviewCard(

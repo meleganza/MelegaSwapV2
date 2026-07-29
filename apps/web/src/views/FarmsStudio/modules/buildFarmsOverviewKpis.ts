@@ -149,27 +149,34 @@ export function buildFarmsOverviewKpisFromParts(input: {
     )
   }
 
-  // —— Active Farmers = unique wallets with MasterChef Deposit observations (active + finished) ——
+  // —— Active Farmers = unique MasterChef participants (durable event index; never invent 0) ——
   let activeFarmersCard: FarmsOverviewKpiCardModel
   if (input.uniqueFarmersLoading && (input.uniqueFarmersCount == null || input.uniqueFarmersCount < 0)) {
-    activeFarmersCard = card('activeFarmers', '—', 'Indexing unique wallets…', 'loading', 'loading')
+    activeFarmersCard = card(
+      'activeFarmers',
+      'Indexing…',
+      'Unique wallets that participated in Melega DEX farms',
+      'loading',
+      'loading',
+      'MasterChef Deposit/Withdraw/EmergencyWithdraw index in progress',
+    )
   } else if (input.uniqueFarmersCount != null && Number.isFinite(input.uniqueFarmersCount)) {
     activeFarmersCard = card(
       'activeFarmers',
       String(input.uniqueFarmersCount),
-      'Unique wallets with farm positions · active + finished',
+      'Unique wallets that participated in Melega DEX farms',
       input.uniqueFarmersCount === 0 ? 'zero' : 'available',
       'live',
-      'MasterChef Deposit index · never LP supply',
+      'MasterChef event participant index · never LP supply',
     )
   } else {
     activeFarmersCard = card(
       'activeFarmers',
-      '—',
-      'Unique wallet data unavailable',
+      'Unavailable',
+      'Unique wallets that participated in Melega DEX farms',
       'unavailable',
       'unavailable',
-      'No factual MasterChef Deposit wallet index yet',
+      'MasterChef participant index not ready',
     )
   }
 

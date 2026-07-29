@@ -177,6 +177,22 @@ const Recovery = styled.p`
   color: rgba(255, 255, 255, 0.55);
 `
 
+const ContractLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+`
+
+const ContractLink = styled.a`
+  color: rgba(244, 196, 48, 0.92);
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
 const Actions = styled.div`
   display: flex;
   gap: 8px;
@@ -343,6 +359,29 @@ export const FarmsFinishedFarmCard: React.FC<{ position: FinishedFarmPosition }>
       </Metrics>
 
       <Recovery>{position.recoveryLine}</Recovery>
+
+      <ContractLinks>
+        {position.masterbuilder ? (
+          <ContractLink
+            href={`https://bscscan.com/address/${position.masterbuilder}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-finished-farm-contract"
+          >
+            Farm Contract ↗
+          </ContractLink>
+        ) : null}
+        {position.lpToken?.address ? (
+          <ContractLink
+            href={`https://bscscan.com/address/${position.lpToken.address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-finished-lp-contract"
+          >
+            LP Contract ↗
+          </ContractLink>
+        ) : null}
+      </ContractLinks>
 
       <Actions>
         {position.actions.map((action, i) =>

@@ -29,7 +29,7 @@ export function useExploreFarms(): FarmsExploreFarmsViewModel & {
   const { address: account } = useAccount()
   const { chainId: activeChainId } = useActiveChainId()
   const [filter, setFilter] = useState<FarmsExploreFilter>('All')
-  const [sort, setSort] = useState<FarmsExploreSort>('Highest Sustainable APR')
+  const [sort, setSort] = useState<FarmsExploreSort>('Highest TVL')
   const [search, setSearch] = useState('')
   const [visibleLimit, setVisibleLimit] = useState<number>(farmsExplore.initialLimit)
   const previousRef = useRef<ExploreFarmViewModel[] | null>(null)

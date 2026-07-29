@@ -202,6 +202,30 @@ const WalletLine = styled.p`
   text-overflow: ellipsis;
 `
 
+const ContractLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-width: 0;
+`
+
+const ContractLink = styled.a`
+  color: rgba(244, 196, 48, 0.92);
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: ${farmsExplore.focusRing};
+    outline-offset: ${farmsExplore.focusOffset};
+  }
+`
+
 const Actions = styled.div`
   display: flex;
   gap: 8px;
@@ -373,6 +397,29 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           ? ` · ${farm.allowanceState}`
           : ''}
       </WalletLine>
+
+      <ContractLinks>
+        {farm.masterbuilder ? (
+          <ContractLink
+            href={`https://bscscan.com/address/${farm.masterbuilder}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-explore-farm-contract"
+          >
+            Farm Contract ↗
+          </ContractLink>
+        ) : null}
+        {farm.lpToken?.address ? (
+          <ContractLink
+            href={`https://bscscan.com/address/${farm.lpToken.address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-explore-lp-contract"
+          >
+            LP Contract ↗
+          </ContractLink>
+        ) : null}
+      </ContractLinks>
 
       <Actions>
         {farm.primaryAction === 'Connect Wallet' ? (

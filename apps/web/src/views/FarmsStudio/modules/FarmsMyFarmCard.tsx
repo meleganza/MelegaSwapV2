@@ -19,6 +19,8 @@ const Label = styled.span`font-size:11px;color:rgba(255,255,255,.5)`
 const Value = styled.span`display:block;margin-top:2px;font-size:15px;line-height:20px;font-weight:700;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis`
 const Support = styled.span`font-size:11px;color:rgba(255,255,255,.45)`
 const State = styled.p`margin:0;font-size:11px;color:rgba(255,255,255,.55)`
+const ContractLinks = styled.div`display:flex;flex-wrap:wrap;gap:8px 12px`
+const ContractLink = styled.a`color:rgba(244,196,48,.92);font-size:11px;font-weight:650;text-decoration:none;&:hover{text-decoration:underline}`
 const Actions = styled.div`display:flex;gap:8px;margin-top:auto`
 const Button = styled.button<{ $primary?: boolean }>`flex:1;min-width:0;height:36px;min-height:${farmsMyFarms.touchMin};border-radius:10px;border:1px solid ${({ $primary }) => $primary ? 'rgba(244,196,48,.45)' : 'rgba(255,255,255,.12)'};background:${({ $primary }) => $primary ? 'rgba(244,196,48,.16)' : 'rgba(255,255,255,.04)'};color:${({ $primary }) => $primary ? farmsMyFarms.gold : '#f5f5f5'};font-size:12px;font-weight:700;cursor:pointer;&:disabled{opacity:.55;cursor:not-allowed}`
 
@@ -53,8 +55,20 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
         ) : null}
       </div>
       {position.apr && <div><Label>APR</Label><Value>{position.apr}</Value></div>}
-      <State>{position.farmStateLine}</State>
+      <State>{position.farmStateLine}{position.pid != null ? ` · pid ${position.pid}` : ''}</State>
     </Metrics>
+    <ContractLinks>
+      {position.masterChef ? (
+        <ContractLink href={`https://bscscan.com/address/${position.masterChef}`} target="_blank" rel="noopener noreferrer" data-testid="farms-my-farm-contract">
+          Farm Contract ↗
+        </ContractLink>
+      ) : null}
+      {position.lpToken?.address ? (
+        <ContractLink href={`https://bscscan.com/address/${position.lpToken.address}`} target="_blank" rel="noopener noreferrer" data-testid="farms-my-lp-contract">
+          LP Contract ↗
+        </ContractLink>
+      ) : null}
+    </ContractLinks>
     {position.actions.length > 0 && <Actions>{position.actions.map((action, i) => <Button key={`${action.kind}-${action.label}`} type="button" $primary={i === 0} disabled={busy === action.kind || !action.enabled} aria-label={action.accessibleName} onClick={() => onAction(action)}>{busy === action.kind ? busyLabel(action) : action.label}</Button>)}</Actions>}
   </Card>
 }

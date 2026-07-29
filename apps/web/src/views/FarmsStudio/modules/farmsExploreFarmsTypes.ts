@@ -19,11 +19,9 @@ export type FarmsExploreFilter =
   | 'Stakeable Now'
 
 export type FarmsExploreSort =
-  | 'Highest Sustainable APR'
   | 'Highest TVL'
+  | 'Highest Sustainable APR'
   | 'Newest'
-  | 'Alphabetical'
-  | 'Wallet LP Balance'
 
 export type FarmsExploreAllowanceState = 'Approval required' | 'Approved' | 'Unavailable' | 'Disconnected'
 

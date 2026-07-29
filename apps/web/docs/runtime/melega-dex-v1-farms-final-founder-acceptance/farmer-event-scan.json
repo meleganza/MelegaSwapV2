@@ -1,0 +1,15 @@
+{
+  "deploymentBlock": 20330833,
+  "headBlock": 112863552,
+  "lastIndexedBlock": 112863550,
+  "rangesScanned": 9254,
+  "chunkSize": 10000,
+  "events": {
+    "Deposit": 41779,
+    "Withdraw": 25180,
+    "EmergencyWithdraw": 3
+  },
+  "coveragePct": 100,
+  "remainingRanges": [],
+  "rpcLimit": "QuickNode eth_getLogs max 10000-block range"
+}

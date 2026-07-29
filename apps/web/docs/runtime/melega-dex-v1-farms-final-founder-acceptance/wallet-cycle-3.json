@@ -1,0 +1,182 @@
+{
+  "cycle": 3,
+  "wallet": "disconnected",
+  "nav": "hard-reload",
+  "title": "Farms | Melega DEX | $0.0003",
+  "overflowX": false,
+  "modules": {
+    "hero": {
+      "w": 1376,
+      "h": 448,
+      "left": 32,
+      "top": 140,
+      "bottom": 588
+    },
+    "kpis": {
+      "w": 1376,
+      "h": 96,
+      "left": 32,
+      "top": 604,
+      "bottom": 700
+    },
+    "myFarms": {
+      "w": 1376,
+      "h": 360,
+      "left": 32,
+      "top": 716,
+      "bottom": 1076
+    },
+    "explore": {
+      "w": 1376,
+      "h": 1127,
+      "left": 32,
+      "top": 1092,
+      "bottom": 2219
+    },
+    "finished": {
+      "w": 1376,
+      "h": 220,
+      "left": 32,
+      "top": 2235,
+      "bottom": 2455
+    },
+    "analytics": {
+      "w": 1376,
+      "h": 272,
+      "left": 32,
+      "top": 2471,
+      "bottom": 2743
+    }
+  },
+  "heroCopy": true,
+  "activeFarmersLabel": true,
+  "activeFarmersIndexing": false,
+  "activeFarmersUnavailable": true,
+  "kpiTextSample": [
+    {
+      "id": null,
+      "text": "Total Farm TVL$195.5KLP farming only"
+    },
+    {
+      "id": null,
+      "text": "Active Farms63Currently farmable LP farms"
+    },
+    {
+      "id": null,
+      "text": "Active Farmers318Unique wallets that participated in Melega DEX farms"
+    },
+    {
+      "id": null,
+      "text": "24H Rewards$49.98144,000 MARCO emitted / 24h · MasterChef dexTokenPerBlock"
+    },
+    {
+      "id": null,
+      "text": "Highest Sustainable APR36.21%ASTER / MARCO"
+    },
+    {
+      "id": null,
+      "text": "My Claimable—Connect wallet"
+    }
+  ],
+  "exploreCount": 9,
+  "myCount": 2,
+  "finishedCount": 1,
+  "exploreIds": [
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card",
+    "farms-explore-card"
+  ],
+  "farmContractLinks": [
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    },
+    {
+      "label": "Farm Contract ↗",
+      "href": "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+    }
+  ],
+  "lpContractLinks": [
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0xae2f0ef36a1b4b35021499b51ab2b43fb8b209d3"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0x2e608a635a7af675162f41cdb9b29d217010c9d3"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0x01db17c476ad6a4c119f559eab2d1ac9e340278e"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0xb1857b7a6650c5711ccfae451d79bf86c6cbaca4"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0x75e6e495a4bda582cbed52dbfcb6f69d39c2caea"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0x90ce2b7f74dbe3f3854b80fad4d433005cf32cbc"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0xe1ac7b27398a538c20cc7e0930b4a46aaa45aabe"
+    },
+    {
+      "label": "LP Contract ↗",
+      "href": "https://bscscan.com/address/0xede506ee698acd55fb522c57772c9db5f98ccfa2"
+    }
+  ],
+  "featuredPresent": false,
+  "artworkPresent": true,
+  "bodyHasZeroFarmersAsZero": false
+}
