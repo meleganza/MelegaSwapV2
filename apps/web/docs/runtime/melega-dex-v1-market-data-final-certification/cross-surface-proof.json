@@ -1,0 +1,7 @@
+{
+  "homeVolumeField": "snapshot.volume24hUsd",
+  "liquidityVolumeField": "snapshot.volume24hUsd",
+  "featuredSource": "snapshot.featured",
+  "listedProjects": 266,
+  "markets": 505
+}

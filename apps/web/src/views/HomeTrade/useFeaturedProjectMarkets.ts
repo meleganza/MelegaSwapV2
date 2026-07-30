@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
 import { formatUsdCompact, formatUsdPrice } from 'lib/bsc-indexer/usdValuation'
+import { useCanonicalMarketSnapshot } from 'lib/market-data'
+import type { CanonicalFeaturedObservation } from 'lib/market-data/types'
 
 type FeaturedMarketsResponse = {
   generatedAt?: string
@@ -8,19 +10,46 @@ type FeaturedMarketsResponse = {
   bnbUsd?: number
 }
 
+function featuredFromCanonical(row: CanonicalFeaturedObservation): FeaturedMarketRow {
+  return {
+    slug: row.slug,
+    symbol: row.symbol,
+    tokenAddress: row.tokenAddress,
+    pairAddress: row.pairAddress,
+    status: (row.status as FeaturedMarketRow['status']) || 'STALE',
+    latestPriceQuote: row.priceWbnb,
+    latestPriceUsd: row.priceUsd,
+    changePct: row.changePct,
+    periodLabel: '24H',
+    volume24hQuote: row.volume24hWbnb,
+    volume24hUsd: row.volume24hUsd,
+    liquidityUsd: row.liquidityUsd,
+    marketCapUsd: row.fdvUsd,
+    marketCapLabel: row.marketCapLabel,
+    bnbUsd: row.bnbUsd,
+    quoteSymbol: 'WBNB',
+    source: (row.source as FeaturedMarketRow['source']) || 'melega-factory-reserves',
+  }
+}
+
 /**
- * Fetches Featured Project market rows. Preserves last-good factual rows across
- * transient empty/error responses so cards stay visually stable.
+ * Featured Project market rows — prefer certified canonical snapshot; fall back to
+ * featured-markets API. Preserves last-good factual rows across transient failures.
  */
 export function useFeaturedProjectMarkets(): {
   rowsBySlug: Record<string, FeaturedMarketRow>
   loading: boolean
 } {
-  const [rowsBySlug, setRowsBySlug] = useState<Record<string, FeaturedMarketRow>>({})
+  const marketSnapshot = useCanonicalMarketSnapshot()
+  const [fallbackRows, setFallbackRows] = useState<Record<string, FeaturedMarketRow>>({})
   const [loading, setLoading] = useState(true)
   const lastGood = useRef<Record<string, FeaturedMarketRow>>({})
 
   useEffect(() => {
+    if (marketSnapshot.featured.length > 0) {
+      setLoading(false)
+      return
+    }
     let cancelled = false
     const load = async () => {
       try {
@@ -38,10 +67,10 @@ export function useFeaturedProjectMarkets(): {
             lastGood.current[row.slug] = row
           }
         }
-        setRowsBySlug(next)
+        setFallbackRows(next)
       } catch {
         if (!cancelled && Object.keys(lastGood.current).length) {
-          setRowsBySlug({ ...lastGood.current })
+          setFallbackRows({ ...lastGood.current })
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -53,9 +82,22 @@ export function useFeaturedProjectMarkets(): {
       cancelled = true
       window.clearInterval(id)
     }
-  }, [])
+  }, [marketSnapshot.featured.length])
 
-  return { rowsBySlug, loading }
+  const rowsBySlug = useMemo(() => {
+    if (marketSnapshot.featured.length > 0) {
+      const next: Record<string, FeaturedMarketRow> = { ...lastGood.current }
+      for (const row of marketSnapshot.featured) {
+        const mapped = featuredFromCanonical(row)
+        next[row.slug] = mapped
+        lastGood.current[row.slug] = mapped
+      }
+      return next
+    }
+    return fallbackRows
+  }, [marketSnapshot.featured, fallbackRows])
+
+  return { rowsBySlug, loading: loading && marketSnapshot.isLoading }
 }
 
 /** Human decimal string — never scientific notation. */

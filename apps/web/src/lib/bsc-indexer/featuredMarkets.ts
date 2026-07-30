@@ -16,6 +16,7 @@ import {
   tokenUsdFromWbnbQuote,
 } from './usdValuation'
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
+import { fetchBnbUsd as fetchBnbUsdShared } from 'lib/market-data/bnbUsd'
 import { rpcCall } from './rpc/chunkedLogs'
 
 export { FOUNDER_WBNB_PAIR_ADDRESSES }
@@ -61,71 +62,8 @@ export type FeaturedMarketRow = {
 }
 
 async function fetchBnbUsd(): Promise<number | undefined> {
-  // Multi-source — CoinGecko free-tier rate limits and some Binance endpoints are geo-blocked.
-  const sources: Array<() => Promise<number | undefined>> = [
-    async () => {
-      const res = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd',
-        { headers: { accept: 'application/json' } },
-      )
-      if (!res.ok) return undefined
-      const json = (await res.json()) as { binancecoin?: { usd?: number } }
-      return json.binancecoin?.usd
-    },
-    async () => {
-      const res = await fetch('https://api.coinbase.com/v2/prices/BNB-USD/spot', {
-        headers: { accept: 'application/json' },
-      })
-      if (!res.ok) return undefined
-      const json = (await res.json()) as { data?: { amount?: string } }
-      return json.data?.amount != null ? Number(json.data.amount) : undefined
-    },
-    async () => {
-      const res = await fetch('https://coins.llama.fi/prices/current/coingecko:binancecoin', {
-        headers: { accept: 'application/json' },
-      })
-      if (!res.ok) return undefined
-      const json = (await res.json()) as {
-        coins?: { 'coingecko:binancecoin'?: { price?: number } }
-      }
-      return json.coins?.['coingecko:binancecoin']?.price
-    },
-    async () => {
-      const res = await fetch('https://api.binance.us/api/v3/ticker/price?symbol=BNBUSDT', {
-        headers: { accept: 'application/json' },
-      })
-      if (!res.ok) return undefined
-      const json = (await res.json()) as { price?: string }
-      return json.price != null ? Number(json.price) : undefined
-    },
-    async () => {
-      const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT', {
-        headers: { accept: 'application/json' },
-      })
-      if (!res.ok) return undefined
-      const json = (await res.json()) as { price?: string }
-      return json.price != null ? Number(json.price) : undefined
-    },
-    async () => {
-      const res = await fetch('https://api.kraken.com/0/public/Ticker?pair=BNBUSD', {
-        headers: { accept: 'application/json' },
-      })
-      if (!res.ok) return undefined
-      const json = (await res.json()) as { result?: { BNBUSD?: { c?: string[] } } }
-      const last = json.result?.BNBUSD?.c?.[0]
-      return last != null ? Number(last) : undefined
-    },
-  ]
-
-  for (const source of sources) {
-    try {
-      const usd = await source()
-      if (typeof usd === 'number' && Number.isFinite(usd) && usd > 0) return usd
-    } catch {
-      // continue
-    }
-  }
-  return undefined
+  const { usd } = await fetchBnbUsdShared()
+  return usd
 }
 
 /** On-chain totalSupply → human units using tokenlist decimals (default 18). */

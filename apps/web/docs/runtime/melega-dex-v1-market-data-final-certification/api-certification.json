@@ -1,0 +1,52 @@
+{
+  "endpoints": [
+    {
+      "path": "/api/market-data/snapshot",
+      "status": 200,
+      "latencyNote": "see capture"
+    },
+    {
+      "path": "/api/indexer/featured-markets/",
+      "role": "embedded-builder"
+    },
+    {
+      "path": "/api/indexer/tier-metrics/",
+      "role": "raw-tier"
+    }
+  ],
+  "matrix": [
+    {
+      "endpoint": "/api/market-data/snapshot",
+      "status": "error",
+      "error": "HTTP Error 308: Permanent Redirect",
+      "latencyMs": 503
+    },
+    {
+      "endpoint": "/api/indexer/featured-markets/",
+      "status": 200,
+      "latencyMs": 1833,
+      "jsonOk": true,
+      "bytes": 2011
+    },
+    {
+      "endpoint": "/api/indexer/tier-metrics/",
+      "status": 200,
+      "latencyMs": 29,
+      "jsonOk": true,
+      "bytes": 7396
+    },
+    {
+      "endpoint": "/api/create-token/readiness",
+      "status": "error",
+      "error": "HTTP Error 308: Permanent Redirect",
+      "latencyMs": 2
+    },
+    {
+      "endpoint": "/api/liquidity-building/readiness",
+      "status": "error",
+      "error": "HTTP Error 308: Permanent Redirect",
+      "latencyMs": 0
+    }
+  ],
+  "allCriticalReachable": false
+}

@@ -1,0 +1,28 @@
+{
+  "featured": [
+    {
+      "slug": "mm72",
+      "liquidityUsd": 739.5982026015515,
+      "status": "STALE",
+      "confidence": "medium"
+    },
+    {
+      "slug": "eyed",
+      "liquidityUsd": 356.06345090773317,
+      "status": "STALE",
+      "confidence": "medium"
+    },
+    {
+      "slug": "young-degens",
+      "liquidityUsd": 241.2700747342659,
+      "status": "STALE",
+      "confidence": "medium"
+    },
+    {
+      "slug": "blion",
+      "liquidityUsd": 375.49106212771204,
+      "status": "STALE",
+      "confidence": "medium"
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import useSWR from 'swr'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
@@ -9,8 +8,6 @@ import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
 import { formatHomeActivityRows } from './formatHomeActivity'
 import { getCanonicalIndexedAssets, getTradeSurfaceAssets } from 'lib/canonical-token-registry'
-import useBUSDPrice from 'hooks/useBUSDPrice'
-import { WBNB } from '@pancakeswap/sdk'
 import { useCanonicalMarcoPrice } from 'lib/data-truth/useCanonicalMarcoPrice'
 import { buildDexTokenIndex, dexIndexToEnrichedProjects } from 'views/RadarStudio/radarRuntime/buildDexTokenIndex'
 import { Transaction, TransactionType } from 'state/info/types'
@@ -28,7 +25,7 @@ import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { getAprData } from 'views/Pools/helpers'
 import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
-import { wbnbVolumeFromPairSides } from 'lib/market-volume/canonical24hVolume'
+import { useCanonicalMarketSnapshot } from 'lib/market-data'
 import {
   formatFarmTrendingLabel,
   formatPoolMetaLabel,
@@ -180,7 +177,6 @@ export const useHomeTradeData = () => {
   } = useProtocolActivityFeed()
   const canonicalMarco = useCanonicalMarcoPrice()
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
-  const wbnbPrice = useBUSDPrice(WBNB[56])
   const { chainId } = useActiveChainId()
   usePollFarmsWithUserData()
   const { data: allFarms = [] } = useFarms()
@@ -192,41 +188,8 @@ export const useHomeTradeData = () => {
     pageSize: 24,
   })
   const currentBlock = useCurrentBlock()
-  const { data: tierVolumeWbnb } = useSWR(
-    'home-kpi-tier-volume-wbnb-v2',
-    async () => {
-      try {
-        const res = await fetch('/api/indexer/tier-metrics')
-        if (!res.ok) return 0
-        const json = (await res.json()) as {
-          rows?: Array<{
-            volume24hWbnb?: number
-            volume24hQuote?: number
-            volume24hBase?: number
-            token0?: string
-            token1?: string
-            volumePriced?: boolean
-          }>
-        }
-        // Prefer canonical WBNB-side field; fall back to side-aware reconstruction.
-        return (json.rows ?? []).reduce((sum, row) => {
-          if (row.volume24hWbnb != null && Number.isFinite(row.volume24hWbnb)) {
-            return sum + (Number(row.volume24hWbnb) || 0)
-          }
-          const { wbnbVolume } = wbnbVolumeFromPairSides({
-            token0: row.token0 ?? '',
-            token1: row.token1 ?? '',
-            baseVolume: Number(row.volume24hBase) || 0,
-            quoteVolume: Number(row.volume24hQuote) || 0,
-          })
-          return sum + wbnbVolume
-        }, 0)
-      } catch {
-        return 0
-      }
-    },
-    { revalidateOnFocus: false, dedupingInterval: 120_000 },
-  )
+  /** Certified protocol volume — do not independently re-sum tier-metrics on Home. */
+  const marketSnapshot = useCanonicalMarketSnapshot()
 
   const indexedTransactions = useMemo(
     () =>
@@ -406,24 +369,24 @@ export const useHomeTradeData = () => {
       })
     }
 
-    // Volume: canonical WBNB-side notional × BNB/USD (never treat raw token1 as WBNB).
-    const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
+    // Volume: certified canonical market snapshot (WBNB-side · rolling 24H).
     const tierUsd =
-      tierVolumeWbnb != null && tierVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0
-        ? tierVolumeWbnb * bnbUsd
+      marketSnapshot.volume24hUsd != null && marketSnapshot.volume24hUsd > 0
+        ? marketSnapshot.volume24hUsd
         : 0
-    // Absolute anomaly guard — retain empty rather than display implausible DEX totals.
-    const anomalous = tierUsd > 10_000_000_000
     const swapUsd = recentTransactions
       .filter((tx) => tx.type === TransactionType.SWAP)
       .reduce((sum, tx) => sum + (Number.isFinite(tx.amountUSD) ? tx.amountUSD : 0), 0)
-    const volLabel = anomalous ? undefined : formatUsd(Math.max(tierUsd, swapUsd))
+    const volLabel = formatUsd(Math.max(tierUsd, swapUsd))
     if (volLabel) {
       cards.push({
         id: 'volume-24h',
         label: '24H Volume',
         value: volLabel,
-        meta: tierUsd > 0 ? 'Indexed Melega DEX · WBNB-side · rolling 24H' : 'Partial · USD-valued indexed swaps',
+        meta:
+          tierUsd > 0
+            ? `Certified market snapshot · ${marketSnapshot.status ?? 'LIVE'}`
+            : 'Partial · USD-valued indexed swaps',
         href: '/trade',
       })
     }
@@ -474,7 +437,16 @@ export const useHomeTradeData = () => {
     }
 
     return cards.slice(0, 5)
-  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions, tierVolumeWbnb, wbnbPrice])
+  }, [
+    farms,
+    allFarms,
+    allPools,
+    currentBlock,
+    tradeablePairs,
+    recentTransactions,
+    marketSnapshot.volume24hUsd,
+    marketSnapshot.status,
+  ])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms

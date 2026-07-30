@@ -1,0 +1,45 @@
+{
+  "cards": [
+    {
+      "project": "mm72",
+      "price": 2.4432668510999703e-7,
+      "liquidity": 739.5982026015515,
+      "volume": "Unavailable",
+      "fdv": 24432.6685109997,
+      "status": "STALE"
+    },
+    {
+      "project": "eyed",
+      "price": 1.820042462885106e-7,
+      "liquidity": 356.06345090773317,
+      "volume": "Unavailable",
+      "fdv": 12558.292993907231,
+      "status": "STALE"
+    },
+    {
+      "project": "young-degens",
+      "price": 5.570453855852554e-8,
+      "liquidity": 241.2700747342659,
+      "volume": "Unavailable",
+      "fdv": 3843.613160538262,
+      "status": "STALE"
+    },
+    {
+      "project": "blion",
+      "price": 2.341288742604984e-9,
+      "liquidity": 375.49106212771204,
+      "volume": "Unavailable",
+      "fdv": 983.3412718940933,
+      "status": "STALE"
+    }
+  ],
+  "coverage": {
+    "trackedTokens": 20,
+    "pricedTokens": 4,
+    "featuredCoverage": "4/4",
+    "fdvCoverage": "4/4",
+    "volumeCoverage": "0/4",
+    "priceCoverage": "4/4",
+    "aprEnabledPools": 0
+  }
+}

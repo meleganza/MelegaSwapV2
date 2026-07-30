@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "schema": "melega.trending.durable-snapshot.v1",
+    "atomicPublish": true,
+    "minCompleteAbs": 4,
+    "minCompleteRatio": 0.6,
+    "minTenureMs": 12000,
+    "durableKey": "melega.trending.durable-snapshot.v1"
+  }
+}
