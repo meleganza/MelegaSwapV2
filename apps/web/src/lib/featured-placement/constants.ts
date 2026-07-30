@@ -1,16 +1,18 @@
 import { MELEGA_TREASURY_WALLET_ADDRESS } from 'config/dexEconomicAuthority'
+import { FEATURED_FEE_FROM_SCHEDULE } from 'config/constants/feeSchedule'
 
-/** Founder-canon Featured Home commercial offer. */
+/** Founder-canon Featured Home commercial offer — aligned to fee-schedule.json. */
 export const FEATURED_OFFER = {
   schema: 'melega.featured-home-offer.v1',
   title: 'Get Featured on the Melega DEX Home Page',
-  usdPrice: 99,
-  durationDays: 7,
+  usdPrice: FEATURED_FEE_FROM_SCHEDULE.usd,
+  durationDays: FEATURED_FEE_FROM_SCHEDULE.durationDays,
   visibilityModel: 'Rotating set used by the four Featured Project cards on Home',
-  acceptedAssets: ['BNB', 'USDT', 'USDC', 'MARCO'] as const,
-  marcoCashbackPct: 5,
+  acceptedAssets: ['BNB', 'USDT', 'USDC', 'MARCO'] as const, // must match fee-schedule.json
+  marcoCashbackPct: FEATURED_FEE_FROM_SCHEDULE.marcoCashbackPercent,
   marcoCashbackMCredits: 4.95, // 99 * 5%
   treasuryWallet: MELEGA_TREASURY_WALLET_ADDRESS,
+  feeScheduleRef: 'config/constants/fee-schedule.json#services.featuredProject',
   chainId: 56,
   quoteTtlMs: 10 * 60 * 1000,
   cardSlots: 4,

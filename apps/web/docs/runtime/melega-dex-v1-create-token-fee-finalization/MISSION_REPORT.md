@@ -1,3 +1,5 @@
+> **SUPERSEDED** by `MELEGA_DEX_V1_FEE_SCHEDULE_FOUNDER_GOVERNANCE_FINALIZATION` — Create Token fee is now **0.10 BNB** (`100000000000000000` wei) via `fee-schedule.json`.
+
 # MISSION REPORT — Create Token Factory Fee Finalization
 
 **Mission ID:** `MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION`  

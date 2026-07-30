@@ -8,7 +8,7 @@
 | System | Addresses | Fee | Frontend |
 |---|---|---|---|
 | AI Liquidity Builder | all LB core null | FeeReceiver not deployed | activation blocked / readiness BLOCKED |
-| Create Token Factory | factory null | fee later APPROVED at 0.05 BNB | execution disabled |
+| Create Token Factory | factory null | fee later APPROVED at 0.10 BNB | execution disabled |
 
 ## After (this mission)
 | System | Result | Independent blocker |

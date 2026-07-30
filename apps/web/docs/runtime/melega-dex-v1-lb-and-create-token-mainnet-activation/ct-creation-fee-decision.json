@@ -4,17 +4,17 @@
   "outcome": "APPROVED_VALUE_FOUND",
   "status": "APPROVED",
   "replaced": "CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED",
-  "CT_CREATION_FEE_WEI": "50000000000000000",
-  "humanReadableBnb": "0.05",
+  "CT_CREATION_FEE_WEI": "100000000000000000",
+  "humanReadableBnb": "0.10",
   "approvalSource": "Founder mission MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
   "approvalTimestampOrReference": "2026-07-30T13:00:00.000Z",
   "exactConstructorInput": {
     "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-    "creationFeeWei": "50000000000000000",
-    "solidity": "new MelegaTokenFactory(0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b, 50000000000000000)",
+    "creationFeeWei": "100000000000000000",
+    "solidity": "new MelegaTokenFactory(0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b, 100000000000000000)",
     "envGates": [
       "CT_FEE_FOUNDER_APPROVED=1",
-      "CT_CREATION_FEE_WEI=50000000000000000",
+      "CT_CREATION_FEE_WEI=100000000000000000",
       "CT_FEE_RECIPIENT=0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
       "CT_MAINNET_DEPLOY_AUTHORIZED=1"
     ]

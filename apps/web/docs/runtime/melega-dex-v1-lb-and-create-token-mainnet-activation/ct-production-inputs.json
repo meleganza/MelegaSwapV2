@@ -6,8 +6,8 @@
   "inputs": [
     {
       "name": "creationFeeWei",
-      "resolvedValue": "50000000000000000",
-      "humanReadableBnb": "0.05",
+      "resolvedValue": "100000000000000000",
+      "humanReadableBnb": "0.10",
       "status": "APPROVED",
       "source": "Founder mission MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
       "immutable": true

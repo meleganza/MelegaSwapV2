@@ -12,8 +12,8 @@ contract DryRunDeployMelegaTokenFactory is Script {
     address constant CANONICAL_TREASURY = 0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b;
 
     function run() external {
-        // Default matches Founder-approved mainnet fee (0.05 BNB) when env unset.
-        uint256 fee = vm.envOr("CT_CREATION_FEE_WEI", uint256(0.05 ether));
+        // Default matches Founder-approved mainnet fee (0.10 BNB) when env unset.
+        uint256 fee = vm.envOr("CT_CREATION_FEE_WEI", uint256(0.10 ether));
         vm.startBroadcast();
         MelegaTokenFactory factory = new MelegaTokenFactory(CANONICAL_TREASURY, fee);
         vm.stopBroadcast();

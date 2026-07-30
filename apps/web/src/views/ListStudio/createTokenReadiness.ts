@@ -57,7 +57,7 @@ export const CREATE_TOKEN_READINESS = {
   creationFeeDecision: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeDecision,
   blockerCode: 'CREATE_TOKEN_FACTORY_NOT_DEPLOYED',
   blockerSummary:
-    'Factory deployment pending. Creation fee is Founder-approved (0.05 BNB). Canonical MelegaTokenFactory + MelegaFixedSupplyToken are implemented and locally tested, but no verified mainnet factory address is bound. Create Token remains configuration/review only until authorized BSC mainnet deployment.',
+    'Factory deployment pending. Creation fee is Founder-approved (0.10 BNB per fee-schedule.json). Canonical MelegaTokenFactory + MelegaFixedSupplyToken are implemented and locally tested, but no verified mainnet factory address is bound. Create Token remains configuration/review only until authorized BSC mainnet deployment.',
   blockers: [
     'production deployment authority unavailable (MAINNET_DEPLOYER / CT_MAINNET_DEPLOY_AUTHORIZED / BNB_MAINNET_RPC_URL / BSCSCAN_API_KEY)',
     'factoryAddress is null in createTokenFactoryDeployment',

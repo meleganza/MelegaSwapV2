@@ -5,11 +5,11 @@
   "status": "BLOCKED",
   "reasons": [
     "production deployment authority unavailable (BNB_MAINNET_RPC_URL / MAINNET_DEPLOYER unset)",
-    "fee is APPROVED (0.05 BNB / 50000000000000000 wei) — fork still required before broadcast"
+    "fee is APPROVED (0.10 BNB / 100000000000000000 wei) — fork still required before broadcast"
   ],
   "proposedConstructorInputs": {
     "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-    "creationFeeWei": "50000000000000000"
+    "creationFeeWei": "100000000000000000"
   },
   "localForgeSubstitute": {
     "result": "PASS",

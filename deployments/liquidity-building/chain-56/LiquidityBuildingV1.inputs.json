@@ -41,6 +41,14 @@
       "note": "Linked-library bytecode hash deferred until production CREATE with library addresses fixed."
     }
   },
+  "founderFeeSchedule": {
+    "ref": "apps/web/src/config/constants/fee-schedule.json#services.liquidityBuilder",
+    "protocolFeePercentOfSwap": 10,
+    "protocolFeeBps": 1000,
+    "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "certifiedExecutionModelLockBps": 500,
+    "note": "Founder schedule is 10%. Certified factory bytecode still requires successFeeBps==500. No LB bytecode change in fee-schedule governance mission."
+  },
   "protocolParameters": {
     "successFeeBps": 500,
     "strategyCeilingBps": 5000,

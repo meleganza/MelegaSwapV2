@@ -1,14 +1,15 @@
 {
-  "policyReference": "Founder governance finalization — MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
+  "policyReference": "Founder fee schedule — MELEGA_DEX_V1_FEE_SCHEDULE_FOUNDER_GOVERNANCE_FINALIZATION",
+  "feeScheduleRef": "apps/web/src/config/constants/fee-schedule.json#services.createToken",
   "onChainFeeAsset": "BNB (msg.value)",
-  "onChainFeeWei": "50000000000000000",
-  "onChainFeeBnb": "0.05",
+  "onChainFeeWei": "100000000000000000",
+  "onChainFeeBnb": "0.10",
   "decision": "APPROVED",
   "status": "APPROVED",
-  "reason": "Founder finalized canonical Create Token creation fee at 0.05 BNB (18 decimals → 50000000000000000 wei). Immutable constructor input for MelegaTokenFactory.",
+  "reason": "Founder fee schedule sets Create Token creation fee at 0.10 BNB (18 decimals → 100000000000000000 wei), superseding prior 0.05 BNB. Immutable constructor input for MelegaTokenFactory.",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
   "forwarding": "immediate call{value} in createToken",
   "immutable": true,
-  "approvedAt": "2026-07-30T13:00:00.000Z",
-  "approvalSource": "Founder mission MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION"
+  "approvedAt": "2026-07-30T13:15:00.000Z",
+  "approvalSource": "Founder mission MELEGA_DEX_V1_FEE_SCHEDULE_FOUNDER_GOVERNANCE_FINALIZATION"
 }

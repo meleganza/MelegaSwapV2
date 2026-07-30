@@ -12,7 +12,7 @@
     "also": ["CONTRACTS_READY"],
     "factoryAddress": null,
     "creationFeeDecision": "APPROVED",
-    "creationFeeWei": "50000000000000000",
+    "creationFeeWei": "100000000000000000",
     "independentOfLiquidityBuilder": true,
     "primaryBlocker": "production_deployment_authority"
   },

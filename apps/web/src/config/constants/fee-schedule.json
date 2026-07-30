@@ -1,0 +1,134 @@
+{
+  "schema": "melega.dex.v1.founder-fee-schedule",
+  "schemaVersion": "1.0.0",
+  "missionId": "MELEGA_DEX_V1_FEE_SCHEDULE_FOUNDER_GOVERNANCE_FINALIZATION",
+  "status": "FOUNDER_APPROVED",
+  "approvedAt": "2026-07-30T13:15:00.000Z",
+  "chainId": 56,
+  "treasury": {
+    "label": "MELEGA TREASURY WALLET",
+    "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "settlement": "direct",
+    "treasuryRuntime": "FORBIDDEN_IN_DEX_FEE_PATH"
+  },
+  "supersedes": [
+    {
+      "ref": "MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
+      "priorCreateTokenFeeBnb": "0.05",
+      "priorCreateTokenFeeWei": "50000000000000000"
+    }
+  ],
+  "services": {
+    "smartRouter": {
+      "id": "smart_router",
+      "fee": {
+        "kind": "percent_of_dex_gas_fees",
+        "percent": 25,
+        "bps": 2500
+      },
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "notes": "25% of the DEX gas fees settle directly to MELEGA TREASURY WALLET."
+    },
+    "createToken": {
+      "id": "create_token",
+      "fee": {
+        "kind": "fixed_bnb",
+        "bnb": "0.10",
+        "wei": "100000000000000000",
+        "decimals": 18,
+        "immutableConstructorInput": true,
+        "env": "CT_CREATION_FEE_WEI"
+      },
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "decision": "APPROVED",
+      "notes": "Supersedes prior 0.10 BNB certification."
+    },
+    "createPool": {
+      "id": "create_pool",
+      "rules": [
+        {
+          "when": "staking_token_is_MARCO",
+          "fee": {
+            "kind": "free",
+            "bnb": "0",
+            "wei": "0"
+          }
+        },
+        {
+          "when": "otherwise",
+          "fee": {
+            "kind": "fixed_bnb",
+            "bnb": "0.25",
+            "wei": "2100000000000000000"
+          }
+        }
+      ],
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    },
+    "createFarm": {
+      "id": "create_farm",
+      "priorityRules": [
+        {
+          "priority": 1,
+          "when": "reward_token_is_MARCO",
+          "fee": {
+            "kind": "fixed_bnb",
+            "bnb": "1.00",
+            "wei": "1000000000000000000"
+          }
+        },
+        {
+          "priority": 2,
+          "when": "pair_contains_MARCO",
+          "fee": {
+            "kind": "free",
+            "bnb": "0",
+            "wei": "0"
+          }
+        },
+        {
+          "priority": 3,
+          "when": "otherwise",
+          "fee": {
+            "kind": "fixed_bnb",
+            "bnb": "0.25",
+            "wei": "2100000000000000000"
+          }
+        }
+      ],
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    },
+    "featuredProject": {
+      "id": "featured_project",
+      "fee": {
+        "kind": "fixed_usd",
+        "usd": 99,
+        "durationDays": 7,
+        "acceptedAssets": [
+          "BNB",
+          "USDT",
+          "USDC",
+          "MARCO"
+        ],
+        "marcoCashbackPercent": 5,
+        "marcoCashbackUnit": "M-Credits"
+      },
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    },
+    "liquidityBuilder": {
+      "id": "liquidity_builder",
+      "fee": {
+        "kind": "percent_of_lb_engine_swap",
+        "percent": 10,
+        "bps": 1000
+      },
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "certifiedExecutionModel": {
+        "lockedSuccessFeeBps": 500,
+        "lockEnforcedIn": "LiquidityBuildingFactoryV1 constructor (successFeeBps must equal 500)",
+        "note": "Founder schedule is 10%. Certified factory bytecode currently hard-requires 500 bps (5%). This mission records governance only \u2014 no LB bytecode change."
+      },
+      "notes": "Do not redesign LB execution. Governance SSOT = 10%; on-chain activation still uses certified 5% lock until a dedicated LB fee realignment mission."
+    }
+  }
+}

@@ -4,8 +4,8 @@
 
 | Field | Value |
 |---|---|
-| `creationFeeBnb` | `0.05` |
-| `CT_CREATION_FEE_WEI` | `50000000000000000` |
+| `creationFeeBnb` | `0.10` |
+| `CT_CREATION_FEE_WEI` | `100000000000000000` |
 | `creationFeeDecision` | `APPROVED` |
 | `CT_FEE_RECIPIENT` | `0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b` |
 
@@ -13,7 +13,7 @@
 
 ```bash
 export CT_FEE_FOUNDER_APPROVED=1
-export CT_CREATION_FEE_WEI=50000000000000000
+export CT_CREATION_FEE_WEI=100000000000000000
 export CT_FEE_RECIPIENT=0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b
 export CT_MAINNET_DEPLOY_AUTHORIZED=1
 export BNB_MAINNET_RPC_URL=<canonical-bsc-mainnet-rpc>

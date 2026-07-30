@@ -34,7 +34,7 @@
 |---|---|
 | Contracts | READY (Forge 16/16) |
 | Authority | Shared deployer/RPC unavailable |
-| Creation fee | **APPROVED** — 0.05 BNB / `50000000000000000` wei (fee finalization supersedes prior decision-required state) |
+| Creation fee | **APPROVED** — 0.10 BNB / `100000000000000000` wei (fee finalization supersedes prior decision-required state) |
 | Inputs | FAIL until fee approved |
 | Fork validation | NOT_RUN |
 | Deployment | **BLOCKED** — factory null |

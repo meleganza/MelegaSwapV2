@@ -11,7 +11,7 @@ import { MelegaTokenFactory } from "../../contracts/create-token/MelegaTokenFact
  *      - chainid == 56 at broadcast time
  *      - env CT_MAINNET_DEPLOY_AUTHORIZED=1
  *      - env CT_FEE_FOUNDER_APPROVED=1
- *      - env CT_CREATION_FEE_WEI=50000000000000000 (Founder-approved 0.05 BNB, 18 decimals)
+ *      - env CT_CREATION_FEE_WEI=100000000000000000 (Founder-approved 0.10 BNB, 18 decimals)
  *      - env CT_FEE_RECIPIENT (must equal canonical treasury)
  *      - forge --broadcast with MAINNET_DEPLOYER
  *

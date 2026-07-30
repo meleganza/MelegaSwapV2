@@ -6,12 +6,12 @@
   "deployer": null,
   "constructorArguments": {
     "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-    "creationFeeWei": "50000000000000000",
-    "creationFeeBnb": "0.05",
+    "creationFeeWei": "100000000000000000",
+    "creationFeeBnb": "0.10",
     "creationFeeDecision": "APPROVED"
   },
-  "creationFee": "50000000000000000",
-  "creationFeeBnb": "0.05",
+  "creationFee": "100000000000000000",
+  "creationFeeBnb": "0.10",
   "creationFeeDecision": "APPROVED",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
   "compiler": "0.8.20",

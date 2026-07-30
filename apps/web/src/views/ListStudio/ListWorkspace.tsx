@@ -825,7 +825,7 @@ export const ListWorkspace: React.FC = () => {
         >
           <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
             Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
-            (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.05 BNB (
+            (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.10 BNB (
             {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED.
           </Banner>
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
@@ -859,7 +859,7 @@ export const ListWorkspace: React.FC = () => {
             Review — Network: {review.network}. Factory: {review.factoryAddress ?? 'not deployed'}. Name:{' '}
             {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply: {review.totalSupply || '—'}. Decimals:{' '}
             {review.decimals}. Owner: {review.owner || '—'}. Fixed supply: yes. Mintability: {review.mintability}. Tax:{' '}
-            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: 0.05 BNB (
+            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: 0.10 BNB (
             {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED. Fee recipient:{' '}
             {review.feeRecipient}.
           </Banner>

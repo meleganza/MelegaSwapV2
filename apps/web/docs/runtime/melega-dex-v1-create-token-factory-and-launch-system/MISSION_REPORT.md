@@ -13,8 +13,8 @@
 - factoryAddress: **null** (not fabricated)
 - deploymentTx: **null**
 - creationFeeDecision: **APPROVED**
-- creationFeeBnb: **0.05**
-- creationFeeWei / `CT_CREATION_FEE_WEI`: **50000000000000000**
+- creationFeeBnb: **0.10**
+- creationFeeWei / `CT_CREATION_FEE_WEI`: **100000000000000000**
 - feeRecipient: `0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b`
 - LIST_CREATE_TOKEN_AVAILABLE: **false**
 - Frontend bound: **no** (factory null)
