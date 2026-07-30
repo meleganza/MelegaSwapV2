@@ -1,0 +1,120 @@
+{
+  "capturedAt": "2026-07-30T00:59:33.055Z",
+  "entries": [
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/candles?pair=0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e&interval=1H",
+      "status": 308,
+      "timingMs": 576
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/events?types=Swap&limit=500",
+      "status": 308,
+      "timingMs": 577
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/events?limit=80",
+      "status": 308,
+      "timingMs": 577
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/health",
+      "status": 308,
+      "timingMs": 577
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/pairs?pageSize=500&classification=tradeable",
+      "status": 308,
+      "timingMs": 577
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/tier-metrics",
+      "status": 308,
+      "timingMs": 577
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/tier-metrics",
+      "status": 308,
+      "timingMs": 577
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/protocol/activity?limit=100",
+      "status": 308,
+      "timingMs": 578
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/protocol/activity?limit=40",
+      "status": 308,
+      "timingMs": 579
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/pairs?pageSize=24&classification=tradeable",
+      "status": 308,
+      "timingMs": 579
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/candles/?pair=0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e&interval=1H",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/events/?types=Swap&limit=500",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/events/?limit=80",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/pairs/?pageSize=500&classification=tradeable",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/tier-metrics/",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/tier-metrics/",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/protocol/activity/?limit=100",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/protocol/activity/?limit=40",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/pairs/?pageSize=24&classification=tradeable",
+      "status": 200,
+      "timingMs": 1090
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/tier-metrics",
+      "status": 308,
+      "timingMs": 1953
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/tier-metrics/",
+      "status": 200,
+      "timingMs": 2193
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/health/",
+      "status": 200,
+      "timingMs": 2194
+    },
+    {
+      "url": "http://127.0.0.1:3577/api/indexer/featured-markets/",
+      "status": 200,
+      "timingMs": 2388
+    }
+  ]
+}

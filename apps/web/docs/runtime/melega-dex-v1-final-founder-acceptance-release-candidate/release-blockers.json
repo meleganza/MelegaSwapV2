@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "id": "LB_MAINNET",
+      "class": "DEPLOYMENT_BLOCKER",
+      "detail": "Liquidity Builder addresses null; UI honest"
+    },
+    {
+      "id": "CT_MAINNET_FEE",
+      "class": "DEPLOYMENT_BLOCKER",
+      "detail": "Create Token factory null; fee Founder approval pending; UI honest"
+    }
+  ],
+  "releaseBlockersP0Runtime": [],
+  "applicationReleaseReady": true
+}

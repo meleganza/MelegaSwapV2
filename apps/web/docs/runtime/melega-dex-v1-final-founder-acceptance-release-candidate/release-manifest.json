@@ -1,0 +1,93 @@
+{
+  "missionId": "MELEGA_DEX_V1_FINAL_CROSS_PRODUCT_FOUNDER_ACCEPTANCE_RELEASE_CANDIDATE",
+  "branch": "melega-dex-v1-final-founder-acceptance-release-candidate",
+  "base": "c8e2ab52",
+  "listedProjectsExact": 266,
+  "listedAddressesSha256": "95c124002b8f9b4b73022efbc818649ad8c8fd20384f29c3fe85c5b5dec0c2f6",
+  "trendingColdFirstMoverMs": 8313,
+  "trendingWarmFirstMoverMs": [
+    226,
+    267,
+    232,
+    238,
+    235
+  ],
+  "featuredUsdCoverage": "4/4",
+  "featuredFdvCoverage": "4/4",
+  "featuredLiquidityUsdCoverage": "4/4",
+  "featuredVolumeUsdCoverage": "0/4",
+  "featuredVolumeNote": "Field-level unavailable when no indexed 24h swaps; not card-wide failure",
+  "bnbUsdFailover": [
+    "coingecko",
+    "coinbase",
+    "defillama",
+    "binance.us",
+    "binance.com",
+    "kraken"
+  ],
+  "measuredFeaturedBnbUsd": 572.645,
+  "poolsFiveCyclePass": true,
+  "apiHealth": {
+    "measuredAt": "2026-07-30T01:01:20.953Z",
+    "matrix": [
+      {
+        "endpoint": "/api/indexer/pairs?pageSize=20&classification=tradeable",
+        "status": 200,
+        "latencyMs": 7,
+        "jsonOk": true,
+        "bytes": 7370
+      },
+      {
+        "endpoint": "/api/indexer/tier-metrics",
+        "status": 200,
+        "latencyMs": 9,
+        "jsonOk": true,
+        "bytes": 6174
+      },
+      {
+        "endpoint": "/api/indexer/featured-markets/",
+        "status": 200,
+        "latencyMs": 18,
+        "jsonOk": true,
+        "bytes": 1480
+      },
+      {
+        "endpoint": "/api/indexer/events?types=Swap&limit=50",
+        "status": 200,
+        "latencyMs": 11,
+        "jsonOk": true,
+        "bytes": 16193
+      },
+      {
+        "endpoint": "/api/create-token/readiness",
+        "status": 200,
+        "latencyMs": 6,
+        "jsonOk": true,
+        "bytes": 527
+      },
+      {
+        "endpoint": "/api/liquidity-building/readiness",
+        "status": 503,
+        "latencyMs": 55,
+        "jsonOk": true,
+        "bytes": 922
+      },
+      {
+        "endpoint": "/api/protocol/activity?limit=20",
+        "status": 200,
+        "latencyMs": 5,
+        "jsonOk": true,
+        "bytes": 13017
+      }
+    ]
+  },
+  "deploymentBlocked": [
+    "Liquidity Builder",
+    "Create Token"
+  ],
+  "evidenceDir": "apps/web/docs/runtime/melega-dex-v1-final-founder-acceptance-release-candidate",
+  "tagSuggestion": "melega-dex-v1-founder-rc1",
+  "tagCreated": false,
+  "measuredAt": "2026-07-30T01:09:08.801Z",
+  "buildId": "CvydSmESZWb6zG0QkRVRB"
+}

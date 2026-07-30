@@ -1,0 +1,12 @@
+{
+  "states": [
+    "disconnected",
+    "input",
+    "token-select",
+    "quote",
+    "wrong-chain",
+    "slippage"
+  ],
+  "mainnetTxExecuted": false,
+  "treasuryRuntime": false
+}

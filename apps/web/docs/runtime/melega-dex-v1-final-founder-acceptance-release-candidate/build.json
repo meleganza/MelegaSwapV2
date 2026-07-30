@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "command": "yarn next build",
+  "exitCode": 0,
+  "buildId": "CvydSmESZWb6zG0QkRVRB",
+  "featuredMarketsSha256": "614148df9a5ed09e72717e19883fa0eead74058fa62cd519cfb163325b41d79e",
+  "completedAt": "2026-07-30T01:09:10.987775Z",
+  "notes": "Rebuild after multi-source BNB/USD failover (CoinGecko/Coinbase/DefiLlama/Binance.US/Binance/Kraken)"
+}

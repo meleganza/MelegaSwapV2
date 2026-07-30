@@ -1,0 +1,48 @@
+{
+  "cycles": [
+    {
+      "cycle": 1,
+      "name": "direct-open",
+      "exploreCount": 2,
+      "viewContractCount": 2,
+      "featuredPresent": true
+    },
+    {
+      "cycle": 2,
+      "name": "after-refresh-wait",
+      "exploreCount": 2,
+      "viewContractCount": 2,
+      "featuredPresent": true
+    },
+    {
+      "cycle": 3,
+      "name": "pools-farms-pools",
+      "exploreCount": 2,
+      "viewContractCount": 2,
+      "featuredPresent": true
+    },
+    {
+      "cycle": 4,
+      "name": "hard-reload",
+      "exploreCount": 2,
+      "viewContractCount": 2,
+      "featuredPresent": true
+    },
+    {
+      "cycle": 5,
+      "name": "wallet-clear-reload",
+      "exploreCount": 2,
+      "viewContractCount": 2,
+      "featuredPresent": true
+    }
+  ],
+  "counts": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "populatedToEmpty": false,
+  "pass": true
+}

@@ -1,0 +1,12 @@
+{
+  "priceUsd": 99,
+  "days": 7,
+  "assets": [
+    "BNB",
+    "USDT",
+    "USDC",
+    "MARCO"
+  ],
+  "marcoCashbackPct": 5,
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+}
