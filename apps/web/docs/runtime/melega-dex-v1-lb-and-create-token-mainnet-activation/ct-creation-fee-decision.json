@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "melega.lb-and-ct.ct-creation-fee-decision.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "outcome": "NO_APPROVED_VALUE_FOUND",
+  "status": "CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED",
+  "CT_CREATION_FEE_WEI": null,
+  "humanReadableBnb": null,
+  "approvalSource": null,
+  "approvalTimestampOrReference": null,
+  "searchedSources": [
+    "process environment CT_CREATION_FEE_WEI / CT_FEE_FOUNDER_APPROVED",
+    "apps/web/.env and .env.production (key presence only)",
+    "deployments/create-token/chain-56/deployed-addresses.v1.json",
+    "apps/web/src/config/constants/createTokenFactoryDeployment.ts",
+    "apps/web/docs/runtime/melega-dex-v1-create-token-factory-and-launch-system/creation-fee-decision.json"
+  ],
+  "exactConstructorInputStillRequired": {
+    "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "creationFeeWei": "<FOUNDER_APPROVED_POSITIVE_WEI_INTEGER>",
+    "solidity": "new MelegaTokenFactory(feeRecipient, creationFeeWei)",
+    "envGates": [
+      "CT_FEE_FOUNDER_APPROVED=1",
+      "CT_CREATION_FEE_WEI=<approved>",
+      "CT_FEE_RECIPIENT=0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "CT_MAINNET_DEPLOY_AUTHORIZED=1"
+    ]
+  },
+  "forbiddenDerivationsRejected": [
+    "silent zero",
+    "Featured Projects $99 price copy",
+    "gas-derived fee",
+    "mutable fee to postpone decision"
+  ],
+  "priorDecisionArtifact": {
+    "path": "apps/web/docs/runtime/melega-dex-v1-create-token-factory-and-launch-system/creation-fee-decision.json",
+    "decision": "PENDING_FOUNDER_APPROVAL"
+  }
+}

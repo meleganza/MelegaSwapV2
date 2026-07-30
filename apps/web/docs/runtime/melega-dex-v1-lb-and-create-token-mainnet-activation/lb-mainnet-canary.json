@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "melega.lb-and-ct.lb-mainnet-canary.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "status": "NOT_RUN",
+  "classification": "DEPLOYMENT_BLOCKED_CANARY_NOT_APPLICABLE",
+  "reason": "No deployed bytecode; value-bearing canary unauthorized and impossible"
+}

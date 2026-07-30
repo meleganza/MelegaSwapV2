@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "melega.lb-and-ct.mainnet-activation.deployment-authority.v1",
+  "missionId": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_AND_CREATE_TOKEN_FACTORY_MAINNET_ACTIVATION",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "signerModel": "FOUNDATION_DEPLOYER_KEY_VIA_FOUNDRY_MAINNET_DEPLOYER_PLUS_LB_PRODUCTION_AUTHORITY_KMS_ADDRESS",
+  "authorityReady": false,
+  "deployerAddress": null,
+  "chainId": 56,
+  "balanceWei": null,
+  "nonce": null,
+  "kmsKeyReferencePresent": false,
+  "broadcastAuthorized": false,
+  "notes": [
+    "No raw private key requested or exposed.",
+    "Repo exposes DisabledLiquidityBuildingKmsSigner until production KMS authority is provisioned.",
+    "MAINNET_DEPLOYER is Foundry broadcast signer (vm.envUint); LB_PRODUCTION_AUTHORITY is on-chain authorizer owner address \u2014 distinct roles.",
+    "Browser wallet is not an approved production signer substitute."
+  ],
+  "environmentProbe": {
+    "MAINNET_DEPLOYER": "UNSET",
+    "BNB_MAINNET_RPC_URL": "UNSET",
+    "BSCSCAN_API_KEY": "UNSET",
+    "AWS_KMS_KEY_ID": "UNSET",
+    "LB_RELAY_URL": "UNSET",
+    "LB_MAINNET_DEPLOY_AUTHORIZED": "UNSET",
+    "CT_MAINNET_DEPLOY_AUTHORIZED": "UNSET",
+    "LB_PRODUCTION_AUTHORITY": "UNSET",
+    "CT_CREATION_FEE_WEI": "UNSET",
+    "CT_FEE_FOUNDER_APPROVED": "UNSET"
+  },
+  "blockers": [
+    "MAINNET_DEPLOYER unset",
+    "LB_PRODUCTION_AUTHORITY unset",
+    "LB_FEE_RECEIVER_GOVERNOR unset",
+    "LB_FEE_RECEIVER_BENEFICIARY unset",
+    "BNB_MAINNET_RPC_URL unset",
+    "LB_MAINNET_DEPLOY_AUTHORIZED unset or not 1",
+    "AWS_KMS_KEY_ID unset (no KMS key reference in environment)"
+  ]
+}

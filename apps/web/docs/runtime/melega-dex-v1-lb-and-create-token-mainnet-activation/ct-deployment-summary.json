@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "melega.lb-and-ct.ct-deployment-summary.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "status": "DEPLOYMENT_BLOCKED",
+  "factoryAddress": null,
+  "deploymentTransactionHash": null,
+  "deploymentBlock": null,
+  "deployer": null,
+  "nonce": null,
+  "gasUsed": null,
+  "effectiveGasPrice": null,
+  "constructorArguments": null,
+  "creationFee": null,
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "bytecodeHash": null,
+  "runtimeBytecodeHash": null,
+  "adminOwnerState": "N/A_NO_ADMIN_IN_CERTIFIED_MODEL",
+  "blockers": [
+    "CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED",
+    "CT_CREATION_FEE_WEI unresolved",
+    "CT_FEE_FOUNDER_APPROVED unset",
+    "CT_MAINNET_DEPLOY_AUTHORIZED unset",
+    "MAINNET_DEPLOYER unset",
+    "BNB_MAINNET_RPC_URL unset",
+    "BSCSCAN_API_KEY unset",
+    "shared-mainnet-preflight FAIL"
+  ],
+  "completedReadinessWork": [
+    "Forge 16/16 PASS including 3-token E2E and fee-forwarding",
+    "Frontend createTokenFactoryLaunch tests PASS",
+    "Fee decision gate enforced \u2014 no invented fee",
+    "Factory address remains null; execution disabled",
+    "Treasury fee recipient checksum validated"
+  ],
+  "exactResumeSequence": [
+    "Founder approve exact CT_CREATION_FEE_WEI (positive integer wei) and record approval source/timestamp",
+    "Export CT_FEE_FOUNDER_APPROVED=1 CT_CREATION_FEE_WEI=<approved> CT_FEE_RECIPIENT=0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "Export BNB_MAINNET_RPC_URL MAINNET_DEPLOYER BSCSCAN_API_KEY",
+    "Fork-validate factory deploy + 3 token creations against mainnet fork",
+    "Set CT_MAINNET_DEPLOY_AUTHORIZED=1",
+    "forge script script/create-token/DeployMelegaTokenFactoryMainnet.s.sol:DeployMelegaTokenFactoryMainnet --rpc-url $BNB_MAINNET_RPC_URL --broadcast --verify",
+    "Bind factory into deployments/create-token/chain-56/deployed-addresses.v1.json and createTokenFactoryDeployment.ts",
+    "Bytecode-validate readiness endpoint before enabling UI execution"
+  ]
+}

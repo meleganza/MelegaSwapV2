@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "melega.lb-and-ct.ct-production-inputs.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "result": "FAIL",
+  "reason": "Creation fee Founder decision required; deployment authority unavailable",
+  "inputs": [
+    {
+      "name": "creationFeeWei",
+      "resolvedValue": null,
+      "status": "UNRESOLVED",
+      "source": "Founder approval required"
+    },
+    {
+      "name": "feeRecipient",
+      "resolvedValue": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "status": "RESOLVED",
+      "source": "canonical Melega Treasury Wallet",
+      "immutable": true
+    },
+    {
+      "name": "chainId",
+      "resolvedValue": 56,
+      "status": "RESOLVED"
+    },
+    {
+      "name": "factoryAuthorityModel",
+      "resolvedValue": "immutable feeRecipient + creationFee; no admin; no upgradeability; fixed MelegaFixedSupplyToken template",
+      "status": "RESOLVED"
+    },
+    {
+      "name": "deployer",
+      "resolvedValue": null,
+      "status": "UNRESOLVED",
+      "source": "MAINNET_DEPLOYER"
+    },
+    {
+      "name": "CT_MAINNET_DEPLOY_AUTHORIZED",
+      "resolvedValue": null,
+      "status": "UNRESOLVED"
+    },
+    {
+      "name": "BscScan",
+      "resolvedValue": null,
+      "status": "UNRESOLVED",
+      "source": "BSCSCAN_API_KEY"
+    }
+  ]
+}

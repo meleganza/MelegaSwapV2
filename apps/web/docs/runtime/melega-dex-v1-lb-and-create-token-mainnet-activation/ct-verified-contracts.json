@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "melega.lb-and-ct.ct-verified-contracts.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "status": "NOT_APPLICABLE_NO_DEPLOYMENT",
+  "factory": null,
+  "tokenTemplateVerificationMethod": "Prepare standard-json / similar bytecode verification for MelegaFixedSupplyToken after factory LIVE; automatic child verification not claimed",
+  "blocker": "No factory deployed; BSCSCAN_API_KEY UNSET"
+}

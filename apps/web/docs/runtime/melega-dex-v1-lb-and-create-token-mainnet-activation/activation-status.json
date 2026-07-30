@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "melega.lb-and-ct.activation-status.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "LIQUIDITY_BUILDER": {
+    "state": "DEPLOYMENT_BLOCKED",
+    "also": [
+      "CONTRACTS_READY"
+    ],
+    "address": null,
+    "independentOfCreateToken": true
+  },
+  "CREATE_TOKEN_FACTORY": {
+    "state": "FEE_DECISION_REQUIRED",
+    "also": [
+      "CONTRACTS_READY",
+      "DEPLOYMENT_BLOCKED"
+    ],
+    "factoryAddress": null,
+    "independentOfLiquidityBuilder": true,
+    "primaryBlocker": "CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED"
+  },
+  "combination": "LB BLOCKED / CT BLOCKED",
+  "overallVerdict": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_AND_CREATE_TOKEN_FACTORY_MAINNET_ACTIVATION_BLOCKED"
+}

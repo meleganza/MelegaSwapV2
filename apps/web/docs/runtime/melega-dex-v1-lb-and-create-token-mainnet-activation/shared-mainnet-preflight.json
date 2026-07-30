@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "melega.lb-and-ct.mainnet-activation.shared-mainnet-preflight.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "result": "FAIL",
+  "checks": [
+    {
+      "name": "chainId",
+      "expected": 56,
+      "actual": null,
+      "status": "BLOCKED",
+      "reason": "BNB_MAINNET_RPC_URL unset \u2014 cannot observe chain"
+    },
+    {
+      "name": "canonicalRpcOperational",
+      "status": "FAIL",
+      "reason": "BNB_MAINNET_RPC_URL unset"
+    },
+    {
+      "name": "currentBlock",
+      "status": "UNAVAILABLE",
+      "value": null
+    },
+    {
+      "name": "gasEstimationAvailable",
+      "status": "UNAVAILABLE"
+    },
+    {
+      "name": "deployerFunded",
+      "status": "UNAVAILABLE",
+      "reason": "MAINNET_DEPLOYER unset"
+    },
+    {
+      "name": "canonicalTreasuryWallet",
+      "status": "PASS",
+      "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "checksumValid": true,
+      "validation": "EIP-55 to_checksum_address match"
+    },
+    {
+      "name": "compilerArtifactsReproducible",
+      "status": "PASS",
+      "evidence": "forge compile + DryRunDeployLiquidityBuildingV1 STRUCTURE_OK"
+    },
+    {
+      "name": "workingTreeCleanBeforeBroadcast",
+      "status": "N/A_NO_BROADCAST",
+      "note": "Broadcast not attempted; evidence commit follows measurement"
+    },
+    {
+      "name": "deploymentScriptsFailClosed",
+      "status": "PASS",
+      "evidence": "attempt-mainnet-activation.mjs DEPLOYMENT_BLOCKED; CT deploy reverts without flags"
+    },
+    {
+      "name": "noTestnetAddressInProductionConfig",
+      "status": "PASS",
+      "note": "chain-56 registries use mainnet Melega factory/router/treasury"
+    },
+    {
+      "name": "noNullRequiredConstructorArgsWhenBroadcasting",
+      "status": "BLOCKED",
+      "reason": "Required constructor inputs unresolved (LB authority/fee roles; CT creation fee)"
+    },
+    {
+      "name": "noUnapprovedMutableAdmin",
+      "status": "PASS",
+      "note": "CT factory has immutable fee model; LB authority is constructor-bound"
+    },
+    {
+      "name": "noTreasuryRuntimeDependency",
+      "status": "PASS",
+      "canonicalTreasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "treasuryRuntime": "decommissioned \u2014 neither track requires it for deploy"
+    }
+  ],
+  "blockers": [
+    "BNB_MAINNET_RPC_URL unset",
+    "MAINNET_DEPLOYER unset",
+    "Shared broadcast authority unavailable"
+  ]
+}

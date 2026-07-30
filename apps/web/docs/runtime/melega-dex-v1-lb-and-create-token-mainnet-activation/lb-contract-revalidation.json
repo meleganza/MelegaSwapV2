@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "melega.lb-and-ct.lb-contract-revalidation.v1",
+  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "result": "PASS",
+  "forge": {
+    "command": "forge test --match-path 'test/liquidity-building/*' --summary",
+    "suites": {
+      "LB003EconomicMathReference": {
+        "passed": 31,
+        "failed": 0
+      },
+      "LB005CoreContracts": {
+        "passed": 23,
+        "failed": 0
+      },
+      "LB006AuthorityTreasuryBoundaries": {
+        "passed": 76,
+        "failed": 0
+      },
+      "LB007AtomicExecutionEngine": {
+        "passed": 13,
+        "failed": 0
+      },
+      "LB007StatefulInvariants": {
+        "passed": 1,
+        "failed": 0
+      },
+      "LB008MainnetBinding": {
+        "passed": 11,
+        "failed": 0
+      },
+      "LBAct004TreasuryFeeReceiverTest": {
+        "passed": 4,
+        "failed": 0
+      }
+    },
+    "totalPassed": 159,
+    "totalFailed": 0
+  },
+  "dryRun": {
+    "script": "script/liquidity-building/DryRunDeployLiquidityBuildingV1.s.sol",
+    "result": "DRY_RUN_STRUCTURE_OK - PRODUCTION_BROADCAST_BLOCKED",
+    "gasUsed": 7986317
+  },
+  "contractCodeChanged": false,
+  "securityModelNotes": [
+    "Melega Treasury EOA/EIP-7702 rejected as LB fee intake; FeeReceiver+FeeSink required on deploy",
+    "No arbitrary liquidity seizure paths in certified suite",
+    "Reentrancy / replay / slippage / deadline covered in LB006/LB007"
+  ]
+}
