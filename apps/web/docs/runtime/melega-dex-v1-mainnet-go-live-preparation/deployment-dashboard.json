@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "melega.mainnet-go-live.deployment-dashboard.v1",
+  "missionId": "MELEGA_DEX_V1_MAINNET_GO_LIVE_PREPARATION",
+  "assessedAt": "2026-07-30T17:16:24.841747Z",
+  "overallStatus": "BLOCKED_AWAITING_PRODUCTION_AUTHORITY",
+  "deploymentReadiness": "NOT_READY",
+  "remainingBlockers": [
+    "MAINNET_DEPLOYER unset",
+    "AWS_KMS_KEY_ID unset",
+    "BNB_MAINNET_RPC_URL unset",
+    "BSCSCAN_API_KEY unset",
+    "LB_MAINNET_DEPLOY_AUTHORIZED unset",
+    "CT_MAINNET_DEPLOY_AUTHORIZED unset",
+    "LB_PRODUCTION_AUTHORITY unset",
+    "LB_FEE_RECEIVER_GOVERNOR unset",
+    "LB_FEE_RECEIVER_BENEFICIARY unset"
+  ],
+  "deploymentOrder": [
+    "LIQUIDITY_BUILDER",
+    "CREATE_TOKEN_FACTORY"
+  ],
+  "systems": {
+    "LIQUIDITY_BUILDER": {
+      "contractsReady": true,
+      "protocolFeeBps": 1000,
+      "addresses": {
+        "lbFactory": null,
+        "lbAuthorizer": null,
+        "lbFeeSink": null,
+        "lbFeeReceiver": null,
+        "lbProgramImplementation": null
+      },
+      "verificationStatus": "N/A_NOT_DEPLOYED",
+      "bindingStatus": "NOT_BOUND",
+      "frontendStatus": "BLOCKED_HONEST_NULL",
+      "runtimeStatus": "BLOCKED",
+      "canaryStatus": "NOT_APPLICABLE"
+    },
+    "CREATE_TOKEN_FACTORY": {
+      "contractsReady": true,
+      "creationFeeWei": "100000000000000000",
+      "creationFeeBnb": "0.10",
+      "creationFeeDecision": "APPROVED",
+      "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "addresses": {
+        "factory": null
+      },
+      "verificationStatus": "N/A_NOT_DEPLOYED",
+      "bindingStatus": "NOT_BOUND",
+      "frontendStatus": "BLOCKED_HONEST_NULL",
+      "runtimeStatus": "DEPLOYMENT_BLOCKED",
+      "canaryStatus": "NOT_APPLICABLE"
+    }
+  },
+  "treasury": {
+    "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "checksumValid": true,
+    "treasuryRuntimeInFeePath": false
+  },
+  "fabricatedAddresses": false,
+  "fabricatedVerification": false,
+  "broadcastExecuted": false
+}
