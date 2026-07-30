@@ -213,8 +213,8 @@
       "exists": true,
       "checksum": "sha256:656fcd142d0721163ce2768737dddb7104919ce35046e23bf0409edeeb000f1c",
       "compiler": null,
-      "testStatus": "PENDING_FOUNDER_APPROVAL",
-      "deploymentReadiness": "FEE_DECISION_REQUIRED",
+      "testStatus": "APPROVED 0.05 BNB / 50000000000000000 wei",
+      "deploymentReadiness": "FEE_APPROVED_DEPLOYMENT_AUTHORITY_PENDING",
       "bindingReadiness": "N/A",
       "verificationReadiness": "N/A"
     },

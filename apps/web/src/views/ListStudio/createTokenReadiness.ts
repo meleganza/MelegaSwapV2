@@ -5,6 +5,8 @@
 
 import {
   CREATE_TOKEN_CANONICAL_DEPLOYMENT,
+  CREATE_TOKEN_CREATION_FEE_BNB,
+  CREATE_TOKEN_CREATION_FEE_WEI,
   CREATE_TOKEN_FACTORY_CHAIN_ID,
   isCreateTokenFactoryBound,
 } from 'config/constants/createTokenFactoryDeployment'
@@ -51,21 +53,22 @@ export const CREATE_TOKEN_READINESS = {
   },
   feeRecipient: CREATE_TOKEN_CANONICAL_DEPLOYMENT.feeRecipient,
   creationFeeWei: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei,
+  creationFeeBnb: CREATE_TOKEN_CREATION_FEE_BNB,
   creationFeeDecision: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeDecision,
   blockerCode: 'CREATE_TOKEN_FACTORY_NOT_DEPLOYED',
   blockerSummary:
-    'Factory deployment pending. Canonical MelegaTokenFactory + MelegaFixedSupplyToken are implemented and locally tested, but no verified mainnet factory address is bound. Create Token remains configuration/review only until Founder fee approval and authorized BSC mainnet deployment.',
+    'Factory deployment pending. Creation fee is Founder-approved (0.05 BNB). Canonical MelegaTokenFactory + MelegaFixedSupplyToken are implemented and locally tested, but no verified mainnet factory address is bound. Create Token remains configuration/review only until authorized BSC mainnet deployment.',
   blockers: [
-    'CT_MAINNET_DEPLOY_AUTHORIZED not granted',
-    'CT_FEE_FOUNDER_APPROVED / creationFeeWei pending Founder decision',
+    'production deployment authority unavailable (MAINNET_DEPLOYER / CT_MAINNET_DEPLOY_AUTHORIZED / BNB_MAINNET_RPC_URL / BSCSCAN_API_KEY)',
     'factoryAddress is null in createTokenFactoryDeployment',
     'LIST_CREATE_TOKEN_AVAILABLE remains false until certified bind',
   ],
   nextActions: [
-    'Founder approve explicit CT_CREATION_FEE_WEI (BNB wei equivalent of creation fee policy)',
+    `Export CT_CREATION_FEE_WEI=${CREATE_TOKEN_CREATION_FEE_WEI} CT_FEE_FOUNDER_APPROVED=1 CT_FEE_RECIPIENT=${CREATE_TOKEN_CANONICAL_DEPLOYMENT.feeRecipient}`,
+    'Export MAINNET_DEPLOYER + BNB_MAINNET_RPC_URL + BSCSCAN_API_KEY',
     'Set CT_MAINNET_DEPLOY_AUTHORIZED=1 and broadcast DeployMelegaTokenFactoryMainnet',
     'Verify factory on BscScan',
-    'Bind factoryAddress + creationFeeWei in createTokenFactoryDeployment.ts',
+    'Bind factoryAddress in createTokenFactoryDeployment.ts (fee already approved)',
     'Flip LIST_CREATE_TOKEN_AVAILABLE only after certification',
   ],
   contracts: {
@@ -73,7 +76,7 @@ export const CREATE_TOKEN_READINESS = {
     token: 'contracts/create-token/MelegaFixedSupplyToken.sol',
     deployScript: 'script/create-token/DeployMelegaTokenFactoryMainnet.s.sol',
   },
-  updatedAt: '2026-07-29T00:00:00.000Z',
+  updatedAt: '2026-07-30T13:00:00.000Z',
 } as const
 
 export type CreateTokenReadiness = typeof CREATE_TOKEN_READINESS
@@ -98,6 +101,8 @@ export function getCreateTokenMachineReadableReadiness() {
     bytecodePresent: false,
     creationFeeConfigured: dep.creationFeeWei != null,
     feeRecipientConfigured: Boolean(dep.feeRecipient),
+    creationFeeDecision: dep.creationFeeDecision,
+    creationFeeWei: dep.creationFeeWei,
     deploymentAuthorityReady: false,
     verificationReady: false,
     blockers: [...CREATE_TOKEN_READINESS.blockers],

@@ -34,7 +34,7 @@
 |---|---|
 | Contracts | READY (Forge 16/16) |
 | Authority | Shared deployer/RPC unavailable |
-| Creation fee | **CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED** — no approved wei found |
+| Creation fee | **APPROVED** — 0.05 BNB / `50000000000000000` wei (fee finalization supersedes prior decision-required state) |
 | Inputs | FAIL until fee approved |
 | Fork validation | NOT_RUN |
 | Deployment | **BLOCKED** — factory null |
@@ -43,7 +43,7 @@
 | Verification | N/A |
 | Binding | NOT_BOUND |
 | Canary | N/A |
-| Frontend | Honest DEPLOYMENT_BLOCKED / PENDING_FOUNDER_APPROVAL |
+| Frontend | Honest DEPLOYMENT_BLOCKED / fee APPROVED / factory null |
 | Blockers | Primary: Founder fee decision. Also: CT_MAINNET_DEPLOY_AUTHORIZED, MAINNET_DEPLOYER, RPC, BscScan |
 
 ## Shared

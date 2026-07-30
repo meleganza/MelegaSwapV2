@@ -1,4 +1,7 @@
 {
+  "schemaVersion": "melega.create-token.fee-finalization.deployment-summary.v1",
+  "missionId": "MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
+  "assessedAt": "2026-07-30T13:00:00.000Z",
   "status": "NOT_DEPLOYED",
   "factoryAddress": null,
   "deploymentTx": null,
@@ -14,14 +17,8 @@
   "creationFeeBnb": "0.05",
   "creationFeeDecision": "APPROVED",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-  "compiler": "0.8.20",
-  "optimizer": {
-    "enabled": true,
-    "runs": 200,
-    "via_ir": true
-  },
-  "bytecodeHash": null,
-  "verificationStatus": "NOT_APPLICABLE",
+  "frontendBound": false,
+  "executionEnabled": false,
   "remainingBlocker": "production deployment authority (KMS / deploy authorization / RPC)",
-  "note": "No fabricated deployment. Fee governance finalized; factory address remains null."
+  "note": "Governance fee finalization only. No broadcast. No fabricated address or transaction."
 }

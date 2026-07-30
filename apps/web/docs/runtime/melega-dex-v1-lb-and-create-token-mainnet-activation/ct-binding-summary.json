@@ -1,11 +1,13 @@
 {
   "schemaVersion": "melega.lb-and-ct.ct-binding-summary.v1",
-  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "assessedAt": "2026-07-30T13:00:00.000Z",
   "status": "NOT_BOUND",
   "factoryAddress": null,
-  "creationFeeWei": null,
-  "creationFeeDecision": "PENDING_FOUNDER_APPROVAL",
+  "creationFeeWei": "50000000000000000",
+  "creationFeeBnb": "0.05",
+  "creationFeeDecision": "APPROVED",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
   "executionEnabled": false,
-  "readinessExpected": "DEPLOYMENT_BLOCKED"
+  "readinessExpected": "DEPLOYMENT_BLOCKED",
+  "note": "Fee metadata approved; factory address intentionally unbound until verified mainnet deploy"
 }

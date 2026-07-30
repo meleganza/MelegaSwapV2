@@ -11,7 +11,10 @@ import { ListFeaturedCheckout } from './ListFeaturedCheckout'
 import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
 import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
 import { buildReviewFacts } from './createToken/createTokenTx'
-import { CREATE_TOKEN_FEE_RECIPIENT } from 'config/constants/createTokenFactoryDeployment'
+import {
+  CREATE_TOKEN_CANONICAL_DEPLOYMENT,
+  CREATE_TOKEN_FEE_RECIPIENT,
+} from 'config/constants/createTokenFactoryDeployment'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -822,7 +825,8 @@ export const ListWorkspace: React.FC = () => {
         >
           <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
             Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
-            (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee wei: pending Founder approval.
+            (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.05 BNB (
+            {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED.
           </Banner>
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
             <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Sample Token" />
@@ -855,14 +859,15 @@ export const ListWorkspace: React.FC = () => {
             Review — Network: {review.network}. Factory: {review.factoryAddress ?? 'not deployed'}. Name:{' '}
             {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply: {review.totalSupply || '—'}. Decimals:{' '}
             {review.decimals}. Owner: {review.owner || '—'}. Fixed supply: yes. Mintability: {review.mintability}. Tax:{' '}
-            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: pending Founder
-            approval. Fee recipient: {review.feeRecipient}.
+            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: 0.05 BNB (
+            {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED. Fee recipient:{' '}
+            {review.feeRecipient}.
           </Banner>
           <Banner data-testid="list-create-token-cta-blocked">
             Create Token — execution blocked ({CREATE_TOKEN_READINESS.uiState} / CREATE_TOKEN_FACTORY_NOT_DEPLOYED /{' '}
-            {CREATE_TOKEN_READINESS.blockerCode}). Missing: physical mainnet deploy authority and Founder-approved
-            creationFeeWei. LIST_CREATE_TOKEN_AVAILABLE={String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain
-            autosaved.
+            {CREATE_TOKEN_READINESS.blockerCode}). Missing: production deployment authority (KMS / deploy
+            authorization / RPC). Creation fee APPROVED. LIST_CREATE_TOKEN_AVAILABLE=
+            {String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain autosaved.
           </Banner>
         </FormStack>
       )

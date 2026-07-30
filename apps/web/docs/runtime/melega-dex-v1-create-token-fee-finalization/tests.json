@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "melega.create-token.fee-finalization.tests.v1",
+  "assessedAt": "2026-07-30T13:00:00.000Z",
+  "result": "PASS",
+  "matrix": [
+    {
+      "name": "Create Token Forge",
+      "command": "forge test --match-path 'test/create-token/*' --summary",
+      "result": "PASS",
+      "detail": "16/16"
+    },
+    {
+      "name": "Create Token frontend readiness",
+      "command": "yarn vitest --run src/views/ListStudio/__tests__/createTokenFactoryLaunch.test.ts",
+      "result": "PASS",
+      "detail": "11/11"
+    }
+  ]
+}

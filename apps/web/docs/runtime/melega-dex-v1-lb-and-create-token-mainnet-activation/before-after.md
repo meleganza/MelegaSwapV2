@@ -8,13 +8,13 @@
 | System | Addresses | Fee | Frontend |
 |---|---|---|---|
 | AI Liquidity Builder | all LB core null | FeeReceiver not deployed | activation blocked / readiness BLOCKED |
-| Create Token Factory | factory null | `PENDING_FOUNDER_APPROVAL` | execution disabled |
+| Create Token Factory | factory null | fee later APPROVED at 0.05 BNB | execution disabled |
 
 ## After (this mission)
 | System | Result | Independent blocker |
 |---|---|---|
 | AI Liquidity Builder | **DEPLOYMENT_BLOCKED** | MAINNET_DEPLOYER, LB_PRODUCTION_AUTHORITY, fee governor/beneficiary, RPC, deploy auth, fork validation |
-| Create Token Factory | **FEE_DECISION_REQUIRED** (+ deployment blocked) | `CT_CREATION_FEE_WEI` Founder decision; also shared signer/RPC unset |
+| Create Token Factory | **DEPLOYMENT_BLOCKED** (fee APPROVED in follow-on mission) | production deployment authority only |
 
 ## What changed
 - Evidence pack under `apps/web/docs/runtime/melega-dex-v1-lb-and-create-token-mainnet-activation/`

@@ -6,14 +6,16 @@
   "factory": null,
   "tokenTemplate": "MelegaFixedSupplyToken (deployed per createToken call)",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-  "creationFeeWei": null,
-  "creationFeeDecision": "PENDING_FOUNDER_APPROVAL",
+  "creationFeeWei": "50000000000000000",
+  "creationFeeBnb": "0.05",
+  "creationFeeDecision": "APPROVED",
   "deploymentTx": null,
   "deploymentBlock": null,
   "deployer": null,
   "verified": false,
   "notes": [
     "No fabricated address. Bind only after authorized mainnet broadcast + BscScan verification.",
-    "Creation fee wei must be Founder-approved before CT_FEE_FOUNDER_APPROVED=1."
+    "Founder approved immutable creation fee: 0.05 BNB = 50000000000000000 wei.",
+    "Remaining blocker: production deployment authority (MAINNET_DEPLOYER / CT_MAINNET_DEPLOY_AUTHORIZED / RPC / BscScan)."
   ]
 }

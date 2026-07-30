@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "melega.create-token.fee-finalization.ct-creation-fee-decision.v1",
+  "missionId": "MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
+  "assessedAt": "2026-07-30T13:00:00.000Z",
+  "outcome": "APPROVED_VALUE_FOUND",
+  "status": "APPROVED",
+  "replaced": "CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED",
+  "CT_CREATION_FEE_WEI": "50000000000000000",
+  "humanReadableBnb": "0.05",
+  "decimals": 18,
+  "conversion": "0.05 * 10^18 = 50000000000000000",
+  "immutableConstructorInput": true,
+  "approvalSource": "Founder mission MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_FEE_FINALIZATION",
+  "approvalTimestampOrReference": "2026-07-30T13:00:00.000Z",
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "solidity": "new MelegaTokenFactory(0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b, 50000000000000000)",
+  "forbiddenDerivationsRejected": [
+    "silent zero",
+    "Featured Projects $99 price copy",
+    "gas-derived fee",
+    "mutable fee to postpone decision"
+  ]
+}

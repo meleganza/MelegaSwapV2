@@ -1,24 +1,21 @@
 {
   "schemaVersion": "melega.lb-and-ct.activation-status.v1",
-  "assessedAt": "2026-07-30T04:46:06.691854Z",
+  "assessedAt": "2026-07-30T13:00:00.000Z",
   "LIQUIDITY_BUILDER": {
     "state": "DEPLOYMENT_BLOCKED",
-    "also": [
-      "CONTRACTS_READY"
-    ],
+    "also": ["CONTRACTS_READY"],
     "address": null,
     "independentOfCreateToken": true
   },
   "CREATE_TOKEN_FACTORY": {
-    "state": "FEE_DECISION_REQUIRED",
-    "also": [
-      "CONTRACTS_READY",
-      "DEPLOYMENT_BLOCKED"
-    ],
+    "state": "DEPLOYMENT_BLOCKED",
+    "also": ["CONTRACTS_READY"],
     "factoryAddress": null,
+    "creationFeeDecision": "APPROVED",
+    "creationFeeWei": "50000000000000000",
     "independentOfLiquidityBuilder": true,
-    "primaryBlocker": "CT_CREATION_FEE_FOUNDER_DECISION_REQUIRED"
+    "primaryBlocker": "production_deployment_authority"
   },
   "combination": "LB BLOCKED / CT BLOCKED",
-  "overallVerdict": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_AND_CREATE_TOKEN_FACTORY_MAINNET_ACTIVATION_BLOCKED"
+  "note": "CT fee no longer FEE_DECISION_REQUIRED — only production deployment authority remains for CT"
 }

@@ -67,7 +67,7 @@
       "taxPowers": "n/a",
       "upgradeability": "n/a",
       "securityFindings": [
-        "Requires CT_MAINNET_DEPLOY_AUTHORIZED + CT_FEE_FOUNDER_APPROVED"
+        "Fee APPROVED (0.05 BNB / 50000000000000000 wei). Requires CT_MAINNET_DEPLOY_AUTHORIZED + production deployer/RPC; set CT_FEE_FOUNDER_APPROVED=1 with CT_CREATION_FEE_WEI=50000000000000000 at broadcast"
       ],
       "recommendedDisposition": "USE_FOR_MAINNET_ONLY"
     },
