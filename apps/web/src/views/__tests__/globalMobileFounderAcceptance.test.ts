@@ -113,7 +113,7 @@ describe('MELEGA_DEX_V1_GLOBAL_MOBILE_FOUNDER_ACCEPTANCE', () => {
     expect(card).toContain('BUILDER_STEPS')
     expect(card).toContain('LbDeployReadinessPanel')
     expect(card).toContain('@media (max-width: 767px)')
-    expect(card).toContain('Liquidity Building contracts not deployed')
+    expect(card).toContain('data-lb-surface="exploded"')
   })
 
   it('Add Liquidity densifies token boxes and metrics on mobile', () => {

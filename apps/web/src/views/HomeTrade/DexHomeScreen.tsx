@@ -13,6 +13,7 @@ import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
 import useHomeTradeData from './useHomeTradeData'
 import { getAllProjects } from 'registry/projects/getAllProjects'
+import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
 import {
@@ -404,10 +405,8 @@ export const DexHomeScreen: React.FC = () => {
   const swapRef = useRef<HTMLDivElement>(null)
   const discoveryRef = useRef<HTMLElement>(null)
   const data = useHomeTradeData()
-  const projectCount = useMemo(
-    () => getAllProjects().filter((p) => p.registryStatus === 'listed' && p.slug !== 'melega-dex').length,
-    [],
-  )
+  const listedProjects = useMemo(() => measureListedProjectsCount(), [])
+  const projectCount = listedProjects.finalCount
 
   const focusProjects =
     router.query.focus === 'projects' || router.query.view === 'projects' || router.asPath.includes('#projects')
@@ -460,7 +459,7 @@ export const DexHomeScreen: React.FC = () => {
       {
         label: 'Listed Projects',
         value: projectCount > 0 ? String(projectCount) : NA,
-        title: 'Unique canonical Project Pages / listed ecosystem projects (not raw token count).',
+        title: listedProjects.provenance,
       },
       {
         label: 'Active Farms',
@@ -478,7 +477,7 @@ export const DexHomeScreen: React.FC = () => {
         title: 'Unique tradeable Factory pairs / markets from canonical Factory indexing.',
       },
     ]
-  }, [data.liveEconomyMetrics, data.marketCards, projectCount])
+  }, [data.liveEconomyMetrics, data.marketCards, projectCount, listedProjects.provenance])
 
   const trendingRows = useMemo(() => {
     const assets = data.indexedRibbonAssets ?? []

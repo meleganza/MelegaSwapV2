@@ -1,0 +1,4 @@
+{
+  "symptom": "populated explore cards cleared on refresh/filter",
+  "mitigation": "unfiltered last-good inventory + shorter 8s hold"
+}

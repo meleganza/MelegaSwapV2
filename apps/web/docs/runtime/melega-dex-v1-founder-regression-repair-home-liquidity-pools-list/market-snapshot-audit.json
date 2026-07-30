@@ -1,0 +1,5 @@
+{
+  "sharedUsdPath": "lib/bsc-indexer/usdValuation.ts",
+  "featured": "featuredMarkets.ts emits USD fields",
+  "trending": "durable snapshot + rankings"
+}

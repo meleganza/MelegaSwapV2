@@ -36,6 +36,19 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
   const [search, setSearch] = useState('')
   const lastGoodRef = useRef<ExploreSnapshot | null>(lastGoodExploreByChain.get(chainId) ?? null)
 
+  // Unfiltered inventory snapshot — never let a filter/search empty overwrite last-good.
+  const inventoryVm = useMemo(() => {
+    return buildPoolsExplorePoolsViewModel({
+      portfolioPools: runtime.portfolioPools ?? [],
+      poolsLoading: runtime.phase === 'loading_pools',
+      chainId,
+      filter: 'All',
+      sort: 'Highest APR',
+      search: '',
+      sourcesFailed: runtime.phase === 'error',
+    })
+  }, [runtime.portfolioPools, runtime.phase, chainId])
+
   const vm = useMemo(() => {
     return buildPoolsExplorePoolsViewModel({
       portfolioPools: runtime.portfolioPools ?? [],
@@ -49,19 +62,18 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
   }, [runtime.portfolioPools, runtime.phase, chainId, filter, sort, search])
 
   useEffect(() => {
-    if (vm.pools?.length) {
-      const snap = { chainId, pools: vm.pools, updatedAt: Date.now() }
+    if (inventoryVm.pools?.length) {
+      const snap = { chainId, pools: inventoryVm.pools, updatedAt: Date.now() }
       lastGoodExploreByChain.set(chainId, snap)
       lastGoodRef.current = snap
     }
-  }, [vm.pools, chainId])
+  }, [inventoryVm.pools, chainId])
 
   const stableVm = useMemo(() => {
     const cached = lastGoodRef.current
-    const emptyNow = !vm.pools || vm.pools.length === 0
-    const refreshing = runtime.phase === 'loading_pools' || vm.state === 'loading'
-    // Keep last-good while inventory reload returns empty — prevents appear/disappear flicker.
-    if (emptyNow && refreshing && cached && cached.chainId === chainId && cached.pools.length > 0) {
+    const inventoryEmpty = !inventoryVm.pools || inventoryVm.pools.length === 0
+    const refreshing = runtime.phase === 'loading_pools' || inventoryVm.state === 'loading'
+    if (inventoryEmpty && refreshing && cached && cached.chainId === chainId && cached.pools.length > 0) {
       return {
         ...vm,
         state: 'ready' as const,
@@ -70,14 +82,13 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
         liveRegion: 'Showing last known active pools while refreshing.',
       }
     }
-    // Brief empty window after ready (CTA recompute) — hold last-good up to 45s.
     if (
-      emptyNow &&
+      inventoryEmpty &&
       !refreshing &&
       cached &&
       cached.chainId === chainId &&
       cached.pools.length > 0 &&
-      Date.now() - cached.updatedAt < 45_000
+      Date.now() - cached.updatedAt < 8_000
     ) {
       return {
         ...vm,
@@ -88,7 +99,7 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
       }
     }
     return vm
-  }, [vm, runtime.phase, chainId])
+  }, [vm, inventoryVm, runtime.phase, chainId])
 
   return { ...stableVm, setFilter, setSort, setSearch }
 }

@@ -1,0 +1,9 @@
+{
+  "module": "lib/market-registry/listedProjectsCount.ts",
+  "dedupe": "chainId+address",
+  "exclusions": [
+    "LP symbols",
+    "system contracts",
+    "quote infra"
+  ]
+}

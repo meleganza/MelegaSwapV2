@@ -1,0 +1,4 @@
+{
+  "cause": "last-good cached filtered empty + long 45s hold / inventory reload empty",
+  "fix": "cache All inventory; 8s stabilize"
+}

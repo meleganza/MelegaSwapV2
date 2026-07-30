@@ -11,8 +11,10 @@ import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/ux
 import { resolveFounderFeaturedProjects } from './featuredProjectsCatalog'
 import {
   formatFeaturedChange,
-  formatFeaturedMetric,
+  formatFeaturedLiquidity,
+  formatFeaturedMarketCap,
   formatFeaturedPrice,
+  formatFeaturedVolume,
   useFeaturedProjectMarkets,
 } from './useFeaturedProjectMarkets'
 
@@ -296,7 +298,7 @@ export const FeaturedProjectsRail: React.FC = () => {
                   $positive={change.positive}
                   title={
                     change.empty
-                      ? 'Insufficient credible Melega DEX observations'
+                      ? change.text
                       : `Melega DEX · ${market?.periodLabel ?? '24H'}`
                   }
                 >
@@ -306,15 +308,17 @@ export const FeaturedProjectsRail: React.FC = () => {
               <StatGrid>
                 <Stat>
                   <StatLabel>Liquidity</StatLabel>
-                  <StatValue>{formatFeaturedMetric(market?.liquidityQuote, 'BNB')}</StatValue>
+                  <StatValue>{formatFeaturedLiquidity(market)}</StatValue>
                 </Stat>
                 <Stat>
-                  <StatLabel>Volume</StatLabel>
-                  <StatValue>{formatFeaturedMetric(market?.volume24hQuote, 'BNB')}</StatValue>
+                  <StatLabel>24H Volume</StatLabel>
+                  <StatValue>{formatFeaturedVolume(market)}</StatValue>
                 </Stat>
                 <Stat>
-                  <StatLabel>Mkt Cap</StatLabel>
-                  <StatValue>{formatFeaturedMetric(market?.marketCapQuote, 'BNB')}</StatValue>
+                  <StatLabel>{market?.marketCapLabel === 'Fully Diluted Value' ? 'FDV' : 'Mkt Cap'}</StatLabel>
+                  <StatValue title={market?.marketCapLabel ?? 'Unavailable'}>
+                    {formatFeaturedMarketCap(market)}
+                  </StatValue>
                 </Stat>
               </StatGrid>
               <Actions>

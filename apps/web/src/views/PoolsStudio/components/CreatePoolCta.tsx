@@ -30,16 +30,18 @@ const Card = styled.section<{ $expanded?: boolean }>`
   border: 1px solid
     ${({ $expanded }) => ($expanded ? 'rgba(244, 196, 48, 0.45)' : 'rgba(244, 196, 48, 0.32)')};
   border-radius: 22px;
-  padding: ${({ $expanded }) => ($expanded ? '32px 36px 34px' : '28px 32px')};
+  padding: ${({ $expanded }) => ($expanded ? '32px 36px 34px' : '16px 20px')};
   display: flex;
   flex-direction: column;
   overflow: ${({ $expanded }) => ($expanded ? 'visible' : 'hidden')};
-  min-height: ${({ $expanded }) => ($expanded ? '0' : '188px')};
+  min-height: ${({ $expanded }) => ($expanded ? '0' : '140px')};
+  max-height: ${({ $expanded }) => ($expanded ? 'none' : '190px')};
   height: auto;
   transition: padding 220ms ease-out, border-color 220ms ease-out;
 
   @media (max-width: 767px) {
-    padding: ${({ $expanded }) => ($expanded ? '18px' : '28px 24px')};
+    padding: ${({ $expanded }) => ($expanded ? '18px' : '14px 16px')};
+    max-height: none;
     border-radius: 18px;
     width: 100%;
     max-width: 100%;
@@ -53,17 +55,17 @@ const Card = styled.section<{ $expanded?: boolean }>`
 const CompactTitle = styled.h2`
   margin: 0;
   font-family: Sora, sans-serif;
-  font-size: 30px;
-  line-height: 36px;
+  font-size: 22px;
+  line-height: 28px;
   font-weight: 700;
   color: #f7f7f7;
 `
 
 const CompactSubtitle = styled.p`
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-family: Inter, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 400;
   color: #9a9a9a;
 `
@@ -71,7 +73,7 @@ const CompactSubtitle = styled.p`
 const CompactCtaRow = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 14px;
   gap: 16px;
   min-width: 0;
 

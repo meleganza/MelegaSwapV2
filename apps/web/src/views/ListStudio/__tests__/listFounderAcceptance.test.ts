@@ -44,7 +44,7 @@ describe('List Founder Acceptance', () => {
     expect(hero).toContain('LIST_HERO_BNB_LOGO')
     expect(hero).toContain('LIST_HERO_USDT_LOGO')
     expect(hero).toContain('MELEGA_LOGO_URI')
-    expect(LIST_HERO_BNB_LOGO).toBe('/images/home/trade/BNB.png')
+    expect(LIST_HERO_BNB_LOGO).toBe('/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png')
     expect(LIST_HERO_USDT_LOGO).toContain('0x55d398326f99059fF775485246999027B3197955')
     expect(existsSync(path.join(WEB, 'public', LIST_HERO_BNB_LOGO))).toBe(true)
     expect(existsSync(path.join(WEB, 'public', LIST_HERO_USDT_LOGO))).toBe(true)

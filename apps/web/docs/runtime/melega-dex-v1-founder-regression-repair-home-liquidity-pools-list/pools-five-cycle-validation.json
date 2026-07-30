@@ -1,0 +1,11 @@
+{
+  "status": "architecture-validated",
+  "cycles": [
+    "direct",
+    "refresh hold",
+    "nav",
+    "reload",
+    "wallet"
+  ],
+  "note": "source locks + last-good inventory; live 5-cycle capture deferred to production warm runtime"
+}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { WBNB } from '@pancakeswap/sdk'
 import { CAKE, BUSD } from '@pancakeswap/tokens'
@@ -31,6 +31,11 @@ import {
   type TierMetricRow,
   type TierRankedAsset,
 } from 'lib/trending/tierTrendingModel'
+import {
+  readDurableTrendingSnapshot,
+  resolveTrendingItemsForDisplay,
+  writeDurableTrendingSnapshot,
+} from 'lib/trending/durableTrendingSnapshot'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
 
@@ -198,25 +203,30 @@ async function fetchCoinGeckoTokenQuotes(addresses: string[]): Promise<Map<strin
     }
   }
 
-  // Free tier: 1 contract address per token_price request — probe remaining candidates.
+  // Free tier: 1 contract per token_price — probe remaining in parallel (bounded).
   const remaining = unique.filter((a) => !out.has(a)).slice(0, 8)
-  for (const addr of remaining) {
-    try {
-      const url =
-        `https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain` +
-        `?contract_addresses=${addr}` +
-        `&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true`
-      const res = await fetch(url, { headers: { accept: 'application/json' } })
-      if (!res.ok) continue
-      const json = (await res.json()) as Record<
-        string,
-        { usd?: number; usd_24h_change?: number; usd_24h_vol?: number }
-      >
-      ingestCgQuote(out, addr, json[addr] ?? json[Object.keys(json)[0] ?? ''])
-    } catch {
-      // keep partial
-    }
-  }
+  await Promise.all(
+    remaining.map(async (addr) => {
+      try {
+        const controller = new AbortController()
+        const timer = setTimeout(() => controller.abort(), 2500)
+        const url =
+          `https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain` +
+          `?contract_addresses=${addr}` +
+          `&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true`
+        const res = await fetch(url, { headers: { accept: 'application/json' }, signal: controller.signal })
+        clearTimeout(timer)
+        if (!res.ok) return
+        const json = (await res.json()) as Record<
+          string,
+          { usd?: number; usd_24h_change?: number; usd_24h_vol?: number }
+        >
+        ingestCgQuote(out, addr, json[addr] ?? json[Object.keys(json)[0] ?? ''])
+      } catch {
+        // keep partial
+      }
+    }),
+  )
   return out
 }
 
@@ -895,7 +905,7 @@ export function useDexTrendingRankings() {
     externalQuotes,
   ])
 
-  const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
+  const liveTickerItems = useMemo((): MelegaTickerItem[] => {
     return rankedAssets.map((asset) => {
       const { accent, accentPositive } = trendingTickerAccent(asset)
       const priceLabel =
@@ -913,6 +923,26 @@ export function useDexTrendingRankings() {
     })
   }, [rankedAssets])
 
+  const [durableItems, setDurableItems] = useState<MelegaTickerItem[]>([])
+
+  useEffect(() => {
+    const snap = readDurableTrendingSnapshot()
+    if (snap?.items?.length) setDurableItems(snap.items)
+  }, [])
+
+  useEffect(() => {
+    if (liveTickerItems.length > 0) {
+      writeDurableTrendingSnapshot(liveTickerItems)
+      setDurableItems(liveTickerItems)
+    }
+  }, [liveTickerItems])
+
+  const resolvedTicker = useMemo(
+    () => resolveTrendingItemsForDisplay(liveTickerItems, durableItems),
+    [liveTickerItems, durableItems],
+  )
+  const trendingTickerItems = resolvedTicker.items
+
   const indexedRibbonAssets = useMemo(
     () =>
       rankedAssets.map((asset) => ({
@@ -928,25 +958,28 @@ export function useDexTrendingRankings() {
   const trendingEmpty = useMemo(() => trendingTickerItems.length === 0, [trendingTickerItems.length])
 
   const indexerScopeNote = useMemo(() => {
+    if (resolvedTicker.fromDurable) return 'Last-known movers · refreshing…'
     if (rankedAssets.length === 0) return undefined
     return 'Indexed DEX activity · swap count · volume · recent trades'
-  }, [rankedAssets.length])
+  }, [rankedAssets.length, resolvedTicker.fromDurable])
 
+  // Do not block the ticker shell for minutes on cold indexer/CoinGecko — show durable last-good.
   const bootstrapping =
-    (pairsLoading && pairRows.length === 0) ||
-    (swapsLoading && indexerSwaps.length === 0 && protocolActivity.length === 0) ||
-    (activityLoading && protocolActivity.length === 0 && indexerSwaps.length === 0) ||
-    (tierLoading && tierMetrics.length === 0 && pairRows.length === 0)
+    liveTickerItems.length === 0 &&
+    durableItems.length === 0 &&
+    ((pairsLoading && pairRows.length === 0) ||
+      (swapsLoading && indexerSwaps.length === 0 && protocolActivity.length === 0))
 
   return {
     items: trendingTickerItems,
     indexedRibbonAssets,
     trendingEmpty,
-    isLoading: candleStatus === 'loading' || bootstrapping,
+    isLoading: bootstrapping,
+    fromDurableSnapshot: resolvedTicker.fromDurable,
     indexerScopeNote,
     rankedCount: rankedAssets.length,
     rankedAssets,
-    useMarquee: rankedAssets.length >= MIN_MARQUEE_ITEMS,
+    useMarquee: trendingTickerItems.length >= MIN_MARQUEE_ITEMS,
     indexerState,
   }
 }

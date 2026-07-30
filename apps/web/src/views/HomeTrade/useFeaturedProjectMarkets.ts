@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FeaturedMarketRow } from 'lib/bsc-indexer/featuredMarkets'
+import { formatUsdCompact, formatUsdPrice } from 'lib/bsc-indexer/usdValuation'
 
 type FeaturedMarketsResponse = {
   generatedAt?: string
   rows?: FeaturedMarketRow[]
+  bnbUsd?: number
 }
 
 /**
@@ -70,13 +72,24 @@ export function formatHumanDecimal(value: number, maxDecimals = 12): string {
 }
 
 export function formatFeaturedPrice(row?: FeaturedMarketRow): string {
-  if (!row?.latestPriceQuote || !(row.latestPriceQuote > 0) || !Number.isFinite(row.latestPriceQuote)) {
-    return 'Price unavailable'
+  if (row?.latestPriceUsd != null && row.latestPriceUsd > 0) {
+    return formatUsdPrice(row.latestPriceUsd)
   }
-  return `${formatHumanDecimal(row.latestPriceQuote)} BNB`
+  if (row?.latestPriceQuote && row.latestPriceQuote > 0 && Number.isFinite(row.latestPriceQuote)) {
+    // Secondary provenance only when USD unavailable
+    return 'Price updating'
+  }
+  return 'Price updating'
 }
 
+export function formatFeaturedUsdMetric(value?: number | null, emptyLabel = '—'): string {
+  if (value == null || !Number.isFinite(value) || value < 0) return emptyLabel
+  return formatUsdCompact(value)
+}
+
+/** @deprecated Prefer formatFeaturedUsdMetric — kept for non-USD fixtures. */
 export function formatFeaturedMetric(value?: number, unit = 'BNB'): string {
+  if (unit === 'USD' || unit === '$') return formatFeaturedUsdMetric(value)
   if (value == null || !Number.isFinite(value) || value <= 0) return '—'
   if (value >= 1000) return `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} ${unit}`
   if (value >= 1) return `${value.toFixed(2)} ${unit}`
@@ -90,11 +103,36 @@ export function formatFeaturedChange(row?: FeaturedMarketRow): {
   empty: boolean
 } {
   if (row?.changePct == null || !Number.isFinite(row.changePct)) {
-    return { text: 'Insufficient observations', empty: true }
+    if (row?.status === 'NO_RECENT_TRADES') return { text: 'No recent swaps', empty: true }
+    if (row?.tradeCount24h === 0 || row?.tradeCount24h == null) {
+      return { text: 'No 24H baseline', empty: true }
+    }
+    return { text: 'New', empty: true }
   }
   const positive = row.changePct >= 0
   const arrow = positive ? '↑' : '↓'
   const base = `${arrow} ${Math.abs(row.changePct).toFixed(2)}%`
   const label = row.periodLabel && row.periodLabel !== '24H' ? ` · ${row.periodLabel}` : ''
   return { text: `${base}${label}`, positive, empty: false }
+}
+
+export function formatFeaturedMarketCap(row?: FeaturedMarketRow): string {
+  if (row?.marketCapUsd != null && row.marketCapUsd > 0) {
+    return formatUsdCompact(row.marketCapUsd)
+  }
+  return 'Unavailable'
+}
+
+export function formatFeaturedVolume(row?: FeaturedMarketRow): string {
+  if (row?.volume24hUsd != null) {
+    if (row.volume24hUsd === 0) return '$0.00'
+    return formatUsdCompact(row.volume24hUsd)
+  }
+  if (row?.tradeCount24h === 0 || row?.status === 'NO_RECENT_TRADES') return 'No recent swaps'
+  return '—'
+}
+
+export function formatFeaturedLiquidity(row?: FeaturedMarketRow): string {
+  if (row?.liquidityUsd != null && row.liquidityUsd > 0) return formatUsdCompact(row.liquidityUsd)
+  return '—'
 }

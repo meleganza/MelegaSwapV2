@@ -13,24 +13,27 @@ const Band = styled.section`
   width: 100%;
   max-width: ${poolsHero.contentMax};
   box-sizing: border-box;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid rgba(244, 196, 48, 0.28);
   background: linear-gradient(145deg, rgba(22, 20, 12, 0.98) 0%, rgba(12, 12, 12, 0.98) 100%);
-  padding: 14px 16px;
+  padding: 10px 12px;
   display: grid;
   grid-template-columns: auto minmax(0, 1.4fr) repeat(4, minmax(0, 0.7fr)) auto;
-  gap: 12px 14px;
+  gap: 8px 10px;
   align-items: center;
   font-family: ${typography.fontFamily.body};
   min-width: 0;
+  max-height: 120px;
 
   @media (max-width: 1199px) {
     grid-template-columns: auto minmax(0, 1fr) 1fr 1fr;
+    max-height: none;
   }
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr 1fr;
-    padding: 12px;
+    padding: 10px;
+    max-height: none;
   }
 `
 
@@ -107,15 +110,18 @@ const Actions = styled.div`
 `
 
 const Btn = styled.button<{ $primary?: boolean }>`
-  min-height: 36px;
-  padding: 0 14px;
+  min-height: 34px;
+  height: 34px;
+  padding: 0 12px;
   border-radius: 10px;
   border: 1px solid
     ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? '#F4C430' : '#F5F5F5')};
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
 
   &:disabled {

@@ -148,17 +148,19 @@ const LogoCore = styled.div`
   }
 `
 
-/** Canonical local token logos — no text chips, no external hotlinks. */
-export const LIST_HERO_BNB_LOGO = '/images/home/trade/BNB.png'
+/** Full-bleed canonical WBNB art — padded home/trade/BNB.png reads too small in orbit. */
+export const LIST_HERO_BNB_LOGO = '/images/56/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png'
 export const LIST_HERO_USDT_LOGO = '/images/56/tokens/0x55d398326f99059fF775485246999027B3197955.png'
+export const LIST_HERO_BNB_ORBIT_PX = 44
+export const LIST_HERO_BNB_IMG_PX = 36
 
 const Orbiter = styled.div<{ $variant: 'bnb' | 'usdt' }>`
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 36px;
-  height: 36px;
-  margin: -18px 0 0 -18px;
+  width: ${({ $variant }) => ($variant === 'bnb' ? '44px' : '36px')};
+  height: ${({ $variant }) => ($variant === 'bnb' ? '44px' : '36px')};
+  margin: ${({ $variant }) => ($variant === 'bnb' ? '-22px 0 0 -22px' : '-18px 0 0 -18px')};
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -176,9 +178,9 @@ const Orbiter = styled.div<{ $variant: 'bnb' | 'usdt' }>`
   z-index: 2;
 
   img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
+    width: ${({ $variant }) => ($variant === 'bnb' ? '36px' : '28px')};
+    height: ${({ $variant }) => ($variant === 'bnb' ? '36px' : '28px')};
+    object-fit: cover;
     display: block;
     background: transparent;
   }
@@ -226,7 +228,13 @@ export const ListPageHero: React.FC = () => {
           <img src={MELEGA_LOGO_URI} alt="" draggable={false} />
         </LogoCore>
         <Orbiter $variant="bnb" data-testid="list-hero-orbit-bnb" aria-label="BNB">
-          <img src={LIST_HERO_BNB_LOGO} alt="" draggable={false} width={28} height={28} />
+          <img
+            src={LIST_HERO_BNB_LOGO}
+            alt=""
+            draggable={false}
+            width={LIST_HERO_BNB_IMG_PX}
+            height={LIST_HERO_BNB_IMG_PX}
+          />
         </Orbiter>
         <Orbiter $variant="usdt" data-testid="list-hero-orbit-usdt" aria-label="USDT">
           <img src={LIST_HERO_USDT_LOGO} alt="" draggable={false} width={28} height={28} />

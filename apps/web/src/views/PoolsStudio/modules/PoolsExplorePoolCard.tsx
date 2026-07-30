@@ -176,8 +176,10 @@ const Btn = styled.button<{ $primary?: boolean }>`
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? poolsExplore.gold : '#F5F5F5')};
   font-family: ${typography.fontFamily.body};
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 
   &:focus-visible {
     outline: ${poolsExplore.focusRing};

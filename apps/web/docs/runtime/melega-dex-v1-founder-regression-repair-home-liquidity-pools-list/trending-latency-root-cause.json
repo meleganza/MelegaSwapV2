@@ -1,0 +1,7 @@
+{
+  "primary": "strict mover filter + sparse indexer + serial CG + no SWR last-good",
+  "files": [
+    "useDexTrendingRankings.ts",
+    "durableTrendingSnapshot.ts"
+  ]
+}
