@@ -1,0 +1,25 @@
+{
+  "schema": "melega.dex.v1.top-movers-ten-cycle-proof",
+  "result": "PASS",
+  "cycles": 10,
+  "methodology": "Deterministic unit cycles over buildTopMoversSharedSnapshot + homeTopMoversPrefix + assertIdenticalPrefix; same ordered input must yield IDENTICAL_PREFIX every cycle with stable addresses and percentages for the shared prefix.",
+  "cycleResults": [
+    { "cycle": 1, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 2, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 3, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 4, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 5, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 6, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 7, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 8, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 9, "result": "IDENTICAL_PREFIX" },
+    { "cycle": 10, "result": "IDENTICAL_PREFIX" }
+  ],
+  "invariants": [
+    "Home length ≤ ticker length",
+    "Home[i].address === ticker[i].address",
+    "Home[i].changeLabel === ticker[i].changeLabel",
+    "Home[i].accentPositive === ticker[i].accentPositive",
+    "Single ranking producer via TopMoversSnapshotProvider"
+  ]
+}

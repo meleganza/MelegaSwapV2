@@ -43,6 +43,11 @@ export const poolsExplore = {
   toolbarH: '52px',
   mobileBreak: '767px',
   tabletBreak: '1199px',
+  // Founder amendment P0-9 density breakpoints (mobile-first cascade, matches Farms).
+  smallTabletBreak: '768px',
+  tabletPortraitBreak: '1025px',
+  desktopBreak: '1200px',
+  ultraWideBreak: '1920px',
   mobile390CardW: '326px',
   mobile430CardW: '366px',
   mobileContent390: '358px',

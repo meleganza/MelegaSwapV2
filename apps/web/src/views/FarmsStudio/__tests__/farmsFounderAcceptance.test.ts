@@ -81,12 +81,8 @@ describe('Farms Founder Acceptance', () => {
     expect(kpi).toContain('Unavailable')
   })
 
-  it('Explore and position cards expose Farm Contract + LP Contract links', () => {
-    for (const rel of [
-      'modules/FarmsExploreFarmCard.tsx',
-      'modules/FarmsMyFarmCard.tsx',
-      'modules/FarmsFinishedFarmCard.tsx',
-    ]) {
+  it('Position and Finished cards expose Farm Contract + LP Contract links', () => {
+    for (const rel of ['modules/FarmsMyFarmCard.tsx', 'modules/FarmsFinishedFarmCard.tsx']) {
       const src = readFileSync(path.join(STUDIO, rel), 'utf8')
       expect(src).toContain('Farm Contract ↗')
       expect(src).toContain('LP Contract ↗')
@@ -96,6 +92,15 @@ describe('Farms Founder Acceptance', () => {
     expect(featured).toContain('Farm Contract ↗')
     expect(featured).toContain('LP Contract ↗')
     expect(featured).toContain('masterChefExplorerUrl')
+  })
+
+  // Founder amendment P0-6: Explore Farms density — contract links shortened to
+  // "Farm ↗ / LP ↗" (Explore's denser 4–5 up grid has no room for the long form).
+  it('Explore Farms card exposes compact Farm/LP contract links', () => {
+    const src = readFileSync(path.join(STUDIO, 'modules/FarmsExploreFarmCard.tsx'), 'utf8')
+    expect(src).toContain('Farm ↗')
+    expect(src).toContain('LP ↗')
+    expect(src).toContain('bscscan.com/address/')
   })
 
   it('featured selection prefers TVL then APR then pid and reads BigNumber liquidity', () => {

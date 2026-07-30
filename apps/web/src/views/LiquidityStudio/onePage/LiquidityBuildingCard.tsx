@@ -654,6 +654,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     if (!tokenReady) return 'Select a project token'
     if (pair.loading) return LB_UX.pairLoading
     if (!pair.available) return LB_UX.pairNotDetected
+    // Founder amendment P0-3: one canonical deployment message (see LbDeployReadinessPanel)
+    // — this cell stays short instead of repeating the full CONTRACTS_NOT_DEPLOYED sentence.
+    if (programBlockReason === CONTRACTS_NOT_DEPLOYED) return 'Pending mainnet deployment'
     if (programBlockReason) return programBlockReason
     if (!card.walletConnected) return 'Wallet required for activation'
     if (!card.correctChain) return LB_UX.switchNetwork
@@ -698,6 +701,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       return 'Continue to Review'
     }
     if (builderStep === 2) return 'Continue to Activate'
+    // Founder amendment P0-3: keep the CTA short — the full reason lives in the
+    // button's title tooltip and the single canonical panel message, not repeated here.
+    if (programBlockReason === CONTRACTS_NOT_DEPLOYED) return 'Pending Mainnet Deployment'
     if (programBlockReason) return programBlockReason
     if (!card.walletConnected) return 'Connect Wallet'
     if (!pairReady) return 'Pair Required'
@@ -1052,7 +1058,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           {/* Compatibility sentinel for prior wizard tests — activation is footer CTA only. */}
         </div>
 
-        {programBlockReason ? (
+        {/* Founder amendment P0-3: deployment-blocked state is already communicated once,
+            inside LbDeployReadinessPanel — no second banner repeating the same sentence. */}
+        {programBlockReason && programBlockReason !== CONTRACTS_NOT_DEPLOYED ? (
           <InlineError data-testid="liq-lb-deploy-block">{programBlockReason}</InlineError>
         ) : null}
         {stepError ? <InlineError data-testid="liq-lb-step-error">{stepError}</InlineError> : null}

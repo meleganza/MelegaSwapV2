@@ -7,42 +7,47 @@
 ## Mission branch
 - `melega-dex-v1-pools-and-farms-final-operational-completion`
 
-## Results
+## Founder amendment (mandatory corrections)
 
-### Pools action root cause
-`useModal(..., updateOnPropsChange=true)` + immediate `clearModal()` replaced the open dialog with an empty fragment while Overlay stayed mounted → purple orphan overlay.
+### Top Movers equality result
+**IDENTICAL_PREFIX** — Single `TopMoversSnapshotProvider` produces one ordered snapshot. Ticker = full list; Home card = first N entries. Root cause was dual `useDexTrendingRankings` + index pairing with live assets.
 
-### Pools action result
-Stake / Claim / Stake More / Withdraw open visible dialogs. Overlay never mounts alone. Shared Overlay dim neutralized.
+### Featured Trade routing result
+**PASS** — Trade → `/@slug?inputCurrency=BNB&outputCurrency=&focus=swap&source=featured-home`. ProjectTradingEmbed honors query preload. View Project stays default project route.
 
-### Create Pool result
-Permanently expanded workspace beside My Positions (~65/35). Canonical fee via `describeCreatePoolFee`. On-chain create remains Build Studio / factory readiness-blocked (honest).
+### Liquidity Builder density result
+**PASS** — Single blocked message; technical details collapsed; How it works tip; dense two-column config. Contracts / 10% fee untouched.
 
-### Pools 24H rewards result
-`buildPools24hRewards` — reward rate × active blocks in rolling 24H; USD when priced; partial when mixed; machine-readable breakdown on KPI diagnostics.
+### Active Farmers exact count
+**PASS** — Factual unique count from `/api/farms/unique-farmers` via certified seed hydrate + in-memory fallback when FS is read-only. Not hardcoded in UI. Seed artifact reports 318 unique participants from MasterChef scan.
 
-### Farms consolidation result
-Standalone Finished Farms removed. Finished positions stay in My Farms with red Finished badge and Harvest/Withdraw/BscScan.
+### Explore Farms columns by viewport
+1920→5 · 1440/1366→4 · 1024→3 · tablet→2 · mobile→1
 
-### Active Farmers result
-Certified seed hydrate + API returns factual unique count (not hardcoded). Cold-start Indexing skeleton eliminated when seed/runtime has coverage.
+### Finished Farms removal result
+**PASS** — `finished-farms-section-count: 0`. Finished positions retained in My Farms with red badge.
 
-### Create Farm capability result
-`C_ADMIN_ONLY_MASTERBUILDER` — MasterChef.add is owner-gated; no permissionless factory. Configuration/review UI complete; execution disabled with explicit blocker.
+### Create Farm capability/readiness
+**C_ADMIN_ONLY_MASTERBUILDER** — Complete configuration/review UI mounted before Explore; execution disabled with honest blocker. Fee via SSOT.
 
-### Create Farm execution/readiness
-Not executable for public wallets. Draft/config preserved. No fabricated farms.
+### Explore Pools columns by viewport
+1920→5 · 1440/1366→4 · 1024→3 · tablet→2 · mobile→1
 
-### Stability
-Structural 8-cycle guards on ActionHosts + portfolio last-good patterns retained. Tests 295 passed. `next build` passed.
+### Pool/Farm action result
+**PASS** — Orphan purple overlay fixed (`updateOnPropsChange=false`); Harvest confirmation modal; Overlay neutral dim.
 
-### Known blockers (non-certification-breaking for UI completion; execution honesty)
-1. Permissionless Create Farm factory not deployed — execution blocked (outcome C).
-2. Create Pool on-chain factory path still routes to Build Studio readiness — UX complete, no fabricated deploy.
-3. Live browser screenshot matrix not captured in this environment — layout contracts + unit/integration tests cover acceptance; screenshots dirs reserved.
+## Parent mission results (retained)
+- Create Pool permanently expanded + canonical fees
+- Pools 24H rewards factual aggregation
+- Shared modal repair
 
 ## Freeze preserved
-fee-schedule.json unchanged. No deployment credentials / contract bindings modified. Home/Trending/Swap/Liquidity Builder contracts untouched.
+fee-schedule.json unchanged. No deployment credentials / contract bindings modified. LB 10% economics untouched. Market-data calculation untouched (consumer alignment only).
+
+## Known blockers (honest, non-fabricated)
+1. Permissionless Create Farm factory not deployed — public execution blocked (outcome C).
+2. Create Pool on-chain path remains readiness-blocked via Build Studio link.
+3. Live browser screenshot matrix partially structural; DOM/action guards covered by tests.
 
 ## Verdict
 See final response line.

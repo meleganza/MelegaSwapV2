@@ -33,7 +33,7 @@ import {
   formatPoolTrendingLabel,
   POOL_APR_UNAVAILABLE_REASON,
 } from './formatTrendingLabels'
-import useDexTrendingRankings from './useDexTrendingRankings'
+import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
 
 export interface RibbonItem {
   id: string
@@ -245,7 +245,8 @@ export const useHomeTradeData = () => {
     return swaps.reduce((best, tx) => (tx.amountUSD > best.amountUSD ? tx : best), swaps[0])
   }, [recentTransactions])
 
-  const dexTrending = useDexTrendingRankings()
+  // Shared Top Movers snapshot (same instance as global ticker).
+  const dexTrending = useTopMoversSnapshot()
 
   const catalogRibbonAssets = useMemo((): IndexedRibbonAsset[] => {
     return getTradeSurfaceAssets()
@@ -274,9 +275,9 @@ export const useHomeTradeData = () => {
   }, [dexTrending.indexedRibbonAssets, catalogRibbonAssets])
 
   const trendingTickerItems = useMemo((): MelegaTickerItem[] => {
-    // Factual movers only — never pad with catalog symbols (no fabricated activity).
-    return dexTrending.items
-  }, [dexTrending.items])
+    // Exact shared snapshot entries — Home card must prefix-slice these.
+    return dexTrending.tickerItems
+  }, [dexTrending.tickerItems])
 
   const ribbonItems = useMemo((): RibbonItem[] => {
     const items: RibbonItem[] = []
@@ -658,6 +659,9 @@ export const useHomeTradeData = () => {
   return {
     ribbonItems,
     trendingTickerItems,
+    homeTopMoversEntries: dexTrending.homeEntries,
+    topMoversSnapshotId: dexTrending.snapshot.snapshotId,
+    topMoversPrefixResult: dexTrending.prefixResult,
     indexedRibbonAssets,
     marketCards,
     farmRows,

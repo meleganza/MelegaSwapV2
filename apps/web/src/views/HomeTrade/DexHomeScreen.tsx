@@ -480,52 +480,28 @@ export const DexHomeScreen: React.FC = () => {
     ]
   }, [data.liveEconomyMetrics, data.marketCards, projectCount, listedProjects.provenance])
 
+  // Exact prefix of the shared Top Movers snapshot (same snapshotId as ticker).
   const trendingRows = useMemo(() => {
-    const assets = data.indexedRibbonAssets ?? []
-    const seen = new Set<string>()
-    const rows: Array<{
-      id: string
-      rank: number
-      name: string
-      meta: string
-      metric?: string
-      tone?: 'up' | 'down' | 'flat'
-      href: string
-      srLabel?: string
-    }> = []
-    ;(data.trendingTickerItems ?? []).forEach((item, idx) => {
-      const asset = assets[idx]
-      const key = (asset?.address || asset?.slug || item.primary || item.id || '').toLowerCase()
-      if (!key || seen.has(key)) return
-      seen.add(key)
-      const slug = asset?.slug
-      const move = item.accent?.trim()
-      const positive = item.accentPositive
+    const entries = data.homeTopMoversEntries ?? []
+    return entries.map((entry, idx) => {
+      const move = entry.changeLabel?.trim()
+      const positive = entry.accentPositive
       const tone: 'up' | 'down' | 'flat' =
         positive === true ? 'up' : positive === false ? 'down' : 'flat'
       const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : ''
-      rows.push({
-        id: item.id ?? `trend-${idx}`,
-        rank: rows.length + 1,
-        name: item.primary ?? asset?.symbol ?? 'Token',
-        meta: asset?.displayName ?? asset?.symbol ?? '',
+      return {
+        id: entry.id ?? `trend-${idx}`,
+        rank: idx + 1,
+        name: entry.symbol,
+        meta: entry.address ? `${entry.address.slice(0, 6)}…${entry.address.slice(-4)}` : entry.symbol,
         metric: move ? `${arrow}${move}` : undefined,
         tone,
         srLabel:
-          tone === 'up'
-            ? `Up ${move}`
-            : tone === 'down'
-              ? `Down ${move}`
-              : move || 'Unchanged',
-        href: asset?.address
-          ? `/swap?outputCurrency=${asset.address}`
-          : slug
-            ? `/@${slug}`
-            : '/trade',
-      })
+          tone === 'up' ? `Up ${move}` : tone === 'down' ? `Down ${move}` : move || 'Unchanged',
+        href: entry.href,
+      }
     })
-    return rows.slice(0, 10)
-  }, [data.trendingTickerItems, data.indexedRibbonAssets])
+  }, [data.homeTopMoversEntries])
 
   const farmRows = (data.farmRows ?? []).slice(0, 5)
   const poolRows = (data.poolRows ?? []).slice(0, 5)
@@ -604,7 +580,11 @@ export const DexHomeScreen: React.FC = () => {
           </KpiRail>
 
           <Discovery ref={discoveryRef} id="projects" data-testid="dex-home-discovery" data-home-section="discovery">
-            <DiscCard>
+            <DiscCard
+              data-top-movers-snapshot-id={data.topMoversSnapshotId}
+              data-top-movers-surface="home-card"
+              data-top-movers-prefix={data.topMoversPrefixResult}
+            >
               <DiscHead>
                 <DiscIcon>
                   <TrendingUp size={14} color={uxRebuildColors.gold} aria-hidden />

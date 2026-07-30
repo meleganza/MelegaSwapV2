@@ -65,6 +65,11 @@ export const farmsExplore = {
 
   mobileBreak: '767px',
   tabletBreak: '1199px',
+  // Founder amendment P0-6 density breakpoints (mobile-first cascade).
+  smallTabletBreak: '768px',
+  tabletPortraitBreak: '1025px',
+  desktopBreak: '1200px',
+  ultraWideBreak: '1920px',
   mobile390CardW: '326px',
   mobile430CardW: '366px',
   mobileContent390: '358px',
@@ -102,7 +107,7 @@ export const FARMS_MODULE_001_FREEZE_SHA256 = {
 
 /** Frozen Module 002 source SHAs. */
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
-  FarmsOverviewKpisModule: '437c77f4c7e5a0e461031a9ae63ae7dd68b72ba609e5176ddff077d0cb1fe1b3',
+  FarmsOverviewKpisModule: '04d23c5fa731fda81cc8b16c6deebb2a3f25cf5e5cd350a41a6713950ece5877',
   farmsOverviewKpisTokens: '860bd89e305c98d363abf8ab3925cbb1ad4ae10acc9065f43caf010c7743c388',
   buildFarmsOverviewKpis: '93c0858ba9992234bf75a7ed7f0f23c00d4d5b6e922aa044cdc853850475af59',
   useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',
@@ -111,9 +116,9 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 
 /** Frozen Module 003 source SHAs at tip 509e7119. */
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
-  FarmsMyFarmsModule: 'ec17ce83d74f9822a3ee1e4428f2e4fd1a50b03a2984c185e4e70089f204c21f',
+  FarmsMyFarmsModule: 'af6a59567f70801b4271c18b8610338f00471f6b0d6a4b62cef4c2270a1cf92e',
   FarmsMyFarmCard: 'ecea059d917ec0a3bd21bc255ba391a53d751591f02db30ad83df14eb9991f8c',
-  farmsMyFarmsTokens: '13b99716071c6605260fb3b812caf8e4fff1385131957094f720329267ffc994',
+  farmsMyFarmsTokens: 'e487e46a520f27ba721a9ced1e21bd6ac58c632dfe4fde99ece10784b47a96a7',
   farmsMyFarmsTypes: 'eb94bd37b88a914231de28e51df2f8a67b08f0ac0fd7708a4a437d9ce1089151',
   buildFarmsWalletPositions: '44b4749cd72d477db0b7fc8d68d5010bc643dfd26cc9580a6dfff88143594711',
   useFarmsWalletPositions: '1f7db07cd4c03fb6b31454ed7d60ef936f4855fad0c806c2c88d3f2786ab4147',

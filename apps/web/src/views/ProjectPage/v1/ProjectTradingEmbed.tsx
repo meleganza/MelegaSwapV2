@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import { useWeb3React } from '@pancakeswap/wagmi'
@@ -79,6 +80,7 @@ function resolveDefaultPair(slug: string, marketsDocument: ProjectMarketsDocumen
 
 function ProjectSwapInner({ slug, marketsDocument }: Props) {
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const { chainId } = useActiveChainId()
   const native = useNativeCurrency()
   const swapBodyRef = useRef<HTMLDivElement>(null)
@@ -93,20 +95,51 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
 
+  // Founder amendment P0-2: an explicit ?inputCurrency=&outputCurrency= pair (e.g. from
+  // Home Featured Trade, source=featured-home) always wins over the project's default pair.
+  const queryInputCurrency =
+    typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
+  const queryOutputCurrency =
+    typeof router.query.outputCurrency === 'string' ? router.query.outputCurrency : undefined
+  const focusSwap = router.query.focus === 'swap'
+  const tradeSource = typeof router.query.source === 'string' ? router.query.source : undefined
+
+  const queryPair = useMemo(() => {
+    if (!queryInputCurrency || !queryOutputCurrency) return null
+    return { inputCurrencyId: queryInputCurrency, outputCurrencyId: queryOutputCurrency }
+  }, [queryInputCurrency, queryOutputCurrency])
+
   const defaultPair = useMemo(() => resolveDefaultPair(slug, marketsDocument), [slug, marketsDocument])
+  const effectivePair = queryPair ?? defaultPair
 
   useEffect(() => {
-    if (!chainId || !native || !defaultPair) return
+    if (!chainId || !native || !effectivePair) return
     dispatch(
       replaceSwapState({
         typedValue: '',
         field: Field.INPUT,
-        inputCurrencyId: defaultPair.inputCurrencyId,
-        outputCurrencyId: defaultPair.outputCurrencyId,
+        inputCurrencyId: effectivePair.inputCurrencyId,
+        outputCurrencyId: effectivePair.outputCurrencyId,
         recipient: null,
       }),
     )
-  }, [chainId, defaultPair, dispatch, native])
+    // Re-run only when the resolved pair identity changes (query wins over default).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, effectivePair?.inputCurrencyId, effectivePair?.outputCurrencyId, dispatch, native])
+
+  // Founder amendment P0-2: ?focus=swap (from Home Featured Trade) scrolls to and
+  // focuses the swap embed instead of leaving the shopper to find it manually.
+  useEffect(() => {
+    if (!focusSwap) return
+    const timer = window.setTimeout(() => {
+      const root = swapBodyRef.current
+      root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      const input =
+        root?.querySelector<HTMLElement>('input.token-amount-input') || root?.querySelector<HTMLElement>('input')
+      input?.focus({ preventScroll: true })
+    }, 280)
+    return () => window.clearTimeout(timer)
+  }, [focusSwap])
 
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
@@ -131,7 +164,7 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
     if (btn instanceof HTMLElement) btn.click()
   }, [])
 
-  if (!defaultPair) {
+  if (!effectivePair) {
     return <Muted>Buying is not available for this project on Melega DEX yet.</Muted>
   }
 
@@ -142,7 +175,7 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
   )
 
   return (
-    <QuietSwapShell data-testid="project-v1-trading-embed">
+    <QuietSwapShell data-testid="project-v1-trading-embed" data-trade-source={tradeSource}>
       <HomeSwapPanelShell
         pairIndicator={pairIndicator}
         toolbar={

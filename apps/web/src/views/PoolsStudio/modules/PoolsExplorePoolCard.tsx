@@ -24,7 +24,8 @@ const Card = styled.article`
   box-shadow: ${poolsExplore.cardShadow};
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* Founder amendment P0-9: tighter vertical rhythm for denser grids. */
+  gap: 8px;
   min-width: 0;
   font-family: ${typography.fontFamily.body};
 
@@ -86,17 +87,6 @@ const Title = styled.h3`
   text-overflow: ellipsis;
 `
 
-const Desc = styled.p`
-  margin: 0;
-  font-size: ${poolsExplore.descSize};
-  line-height: ${poolsExplore.descLine};
-  color: ${poolsExplore.descColor};
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`
-
 const Status = styled.span<{ $tone: string }>`
   display: inline-flex;
   align-items: center;
@@ -114,9 +104,13 @@ const Status = styled.span<{ $tone: string }>`
 const Metrics = styled.div`
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
   flex: 1;
   min-width: 0;
+
+  @media (max-width: 1439px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
   @media (max-width: 767px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -236,8 +230,9 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
             </RewardWrap>
           </LogoStack>
           <TextCol>
+            {/* Founder amendment P0-9: the description subtitle repeated the Stake/Reward
+                metrics below verbatim — dropped in favor of denser, non-redundant copy. */}
             <Title title={pool.title}>{pool.title}</Title>
-            <Desc>{pool.description}</Desc>
           </TextCol>
         </Identity>
         <Status $tone={pool.statusLabel} aria-label={`Status ${pool.statusLabel}`}>

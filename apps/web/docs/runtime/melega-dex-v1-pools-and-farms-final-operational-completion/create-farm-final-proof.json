@@ -1,0 +1,19 @@
+{
+  "schema": "melega.dex.v1.create-farm-final-proof",
+  "result": "PASS_WITH_HONEST_BLOCKER",
+  "presence": true,
+  "testid": "create-farm-workspace",
+  "placement": "My Farms → Yield Advisor → Create Farm → Explore Farms",
+  "capability": {
+    "outcome": "C_ADMIN_ONLY_MASTERBUILDER",
+    "file": "views/FarmsStudio/modules/createFarmCapability.ts",
+    "execution": "disabled for public wallets",
+    "blocker": "Create Farm execution blocked — protocol admin / factory deployment required"
+  },
+  "fee": {
+    "ssot": "config/constants/feeSchedule.ts describeCreateFarmFee",
+    "priority": ["MARCO reward → 1.00 BNB", "LP contains MARCO → FREE", "else → 0.25 BNB"],
+    "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
+  "treasuryRuntime": "absent"
+}

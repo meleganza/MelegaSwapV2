@@ -147,22 +147,36 @@ const Chip = styled.button<{ $active?: boolean }>`
   }
 `
 
+/**
+ * Founder amendment P0-9 — same density grid as Explore Farms, mobile-first so
+ * wider breakpoints simply override columns without depending on declaration order:
+ *   ≤767 mobile: 1 · 768–1024 (small tablet landscape): 3 · 1025–1199 (tablet): 2
+ *   1200–1919 (default/1440, ≤1366 safe): 4 · ≥1920 (ultra-wide): 5
+ */
 const Grid = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: ${poolsExplore.cardGap};
   min-width: 0;
 
-  @media (max-width: ${poolsExplore.tabletBreak}) {
+  @media (min-width: ${poolsExplore.smallTabletBreak}) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: ${poolsExplore.tabletPortraitBreak}) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (max-width: ${poolsExplore.mobileBreak}) {
-    grid-template-columns: 1fr;
+  @media (min-width: ${poolsExplore.desktopBreak}) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @media (min-width: ${poolsExplore.ultraWideBreak}) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 `
 

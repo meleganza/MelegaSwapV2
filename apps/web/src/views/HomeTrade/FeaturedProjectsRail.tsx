@@ -228,28 +228,14 @@ export const FeaturedProjectsRail: React.FC = () => {
   const cards = useMemo(() => resolveFounderFeaturedProjects(), [])
   const { rowsBySlug } = useFeaturedProjectMarkets()
 
+  // Founder amendment P0-2: Trade navigates to the project page swap embed —
+  // it must never keep the shopper on Home. `href`/slug is the canonical
+  // project identity; the destination carries the trade intent as a query.
   const onTrade = useCallback(
-    (address?: string) => {
-      if (!address) return
-      const q = `outputCurrency=${address}&inputCurrency=BNB`
-      void router.push(`/?focus=swap&${q}`, undefined, { shallow: true }).then(() => {
-        const root = document.querySelector<HTMLElement>('[data-home-section="swap"]')
-        root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        window.setTimeout(() => {
-          const input =
-            root?.querySelector<HTMLElement>('.home-trade-swap input.token-amount-input') ||
-            root?.querySelector<HTMLElement>('.home-trade-swap input')
-          input?.focus({ preventScroll: true })
-        }, 280)
-      })
-      if (typeof window !== 'undefined') {
-        const url = new URL(window.location.href)
-        url.searchParams.set('outputCurrency', address)
-        url.searchParams.set('inputCurrency', 'BNB')
-        url.searchParams.set('focus', 'swap')
-        window.history.replaceState({}, '', `${url.pathname}?${url.searchParams.toString()}`)
-        window.dispatchEvent(new Event('popstate'))
-      }
+    (p: (typeof cards)[number]) => {
+      if (!p.address || !p.href) return
+      const q = `inputCurrency=BNB&outputCurrency=${p.address}&focus=swap&source=featured-home`
+      void router.push(`${p.href}?${q}`)
     },
     [router],
   )
@@ -324,8 +310,8 @@ export const FeaturedProjectsRail: React.FC = () => {
               <Actions>
                 <TradeBtn
                   type="button"
-                  disabled={!p.address}
-                  onClick={() => onTrade(p.address)}
+                  disabled={!p.address || !p.href}
+                  onClick={() => onTrade(p)}
                   data-testid={`featured-trade-${p.slug}`}
                 >
                   Trade

@@ -19,6 +19,8 @@ export type FeaturedProjectResolved = {
   href: string
   resolved: boolean
   resolutionFailure?: string
+  /** True only when the entry has a genuine canonical project (slug + href resolve to a real project page). */
+  eligibleForRotation: boolean
 }
 
 type TokenListEntry = {
@@ -59,6 +61,8 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
   const description = project?.tagline ?? project?.description?.slice(0, 120)
   const category = project?.sectorTags?.[0] ?? project?.projectType
 
+  // No canonical registry project matched — the `/@slug` href would 404, so this
+  // entry can never be a real navigation target and must be excluded from rotation.
   if (!project && !tokenFromList) {
     return {
       slug,
@@ -68,6 +72,7 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
       href: `/@${slug}`,
       resolved: false,
       resolutionFailure: `No registry or token-list identity for ${slug}`,
+      eligibleForRotation: false,
     }
   }
 
@@ -83,6 +88,7 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
       href: project ? `/@${project.slug}` : `/@${slug}`,
       resolved: false,
       resolutionFailure: `Missing BSC token address for ${slug}`,
+      eligibleForRotation: Boolean(project),
     }
   }
 
@@ -97,11 +103,21 @@ export function resolveFeaturedProject(slug: (typeof FOUNDER_FEATURED_SLUGS)[num
     category,
     href: `/@${project?.slug ?? slug}`,
     resolved: true,
+    eligibleForRotation: Boolean(project),
   }
 }
 
-export function resolveFounderFeaturedProjects(): FeaturedProjectResolved[] {
+/** All founder slugs, resolved — including entries ineligible for rotation (diagnostic use only). */
+export function resolveFounderFeaturedProjectsUnfiltered(): FeaturedProjectResolved[] {
   return FOUNDER_FEATURED_SLUGS.map(resolveFeaturedProject)
+}
+
+/**
+ * Founder amendment P0-2 — Featured entries without a valid canonical project
+ * identity (no real registry slug/href) are never eligible for the Home rotation.
+ */
+export function resolveFounderFeaturedProjects(): FeaturedProjectResolved[] {
+  return resolveFounderFeaturedProjectsUnfiltered().filter((p) => p.eligibleForRotation)
 }
 
 /** Deterministic rotation offset for future eligibility catalogs (no hydration mismatch). */

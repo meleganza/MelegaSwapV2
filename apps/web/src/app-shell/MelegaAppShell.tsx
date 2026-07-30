@@ -23,6 +23,7 @@ import {
   MELEGA_TRENDING_BAR_MOBILE_HEIGHT,
 } from './GlobalTrendingBar'
 import { MelegaDexFooter } from 'views/HomeTrade/MelegaDexFooter'
+import { TopMoversSnapshotProvider } from 'views/HomeTrade/TopMoversSnapshotContext'
 
 const MOBILE_HEADER_H = '56px'
 const MOBILE_BOTTOM_NAV_H = '64px'
@@ -137,6 +138,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
   const activeBottomId = shellBottomNavItems.find((item) => item.match(pathname))?.id
 
   return (
+    <TopMoversSnapshotProvider>
     <Root data-melega-app-shell data-melega-shell-no-sidebar>
       <AppShellUIKitNeutralizer />
 
@@ -170,6 +172,7 @@ const MelegaAppShell: React.FC<MelegaAppShellProps> = ({ children }) => {
 
       <MelegaBottomNavigation items={bottomItems} activeId={activeBottomId} />
     </Root>
+    </TopMoversSnapshotProvider>
   )
 }
 

@@ -1,0 +1,8 @@
+{
+  "schema": "melega.dex.v1.finished-farms-removal-proof",
+  "finished-farms-section-count": 0,
+  "finished-position-preservation": "PASS",
+  "screen": "FarmsStudioScreen.tsx — FarmsFinishedFarmsModule unmounted",
+  "dataAttr": "data-farms-module-005=unmounted",
+  "retention": "Finished wallet positions remain in My Farms with red Finished badge + Harvest/Withdraw/BscScan"
+}

@@ -30,12 +30,15 @@ const Row = styled.section`
 const Surface = styled.div`
   width: 100%;
   max-width: ${farmsMyFarms.leftW};
-  height: ${farmsMyFarms.moduleH};
+  height: auto;
+  min-height: ${farmsMyFarms.moduleH};
   border-radius: ${farmsMyFarms.moduleRadius};
   border: ${farmsMyFarms.moduleBorder};
   background: ${farmsMyFarms.moduleBg};
   box-shadow: ${farmsMyFarms.moduleShadow};
-  overflow: hidden;
+  /* Founder amendment P0-5: card action buttons must never be clipped by a fixed-height,
+     overflow:hidden container — the surface grows with content instead. */
+  overflow: visible;
   display: flex;
   flex-direction: column;
   min-width: 0;

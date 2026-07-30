@@ -49,10 +49,39 @@ const Val = styled.span<{ $ok?: boolean; $warn?: boolean }>`
 
 const Note = styled.p`
   margin: 4px 0 0;
-  font-size: 11px;
-  line-height: 15px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 650;
+  color: #f2c84c;
 `
+
+const TechDetails = styled.details`
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  summary {
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+`
+
+const TechBody = styled.div`
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`
+
+/** Founder amendment P0-3 — canonical single blocked message (no duplicate prose elsewhere). */
+export const LB_MAINNET_PENDING_MESSAGE = 'Liquidity Builder activation is pending mainnet contract deployment.'
 
 export type LbDeployReadinessPanelProps = {
   pairLabel: string | null
@@ -96,14 +125,6 @@ export const LbDeployReadinessPanel: React.FC<LbDeployReadinessPanelProps> = ({
         <Val $ok={Boolean(pairAddress)}>{pairAddress ? shortAddr(pairAddress) : '—'}</Val>
       </Row>
       <Row>
-        <Key>Factory</Key>
-        <Val $ok>{shortAddr(MELEGA_FACTORY)} (Melega AMM)</Val>
-      </Row>
-      <Row>
-        <Key>Router</Key>
-        <Val $ok>{shortAddr(MELEGA_ROUTER)} (Melega AMM)</Val>
-      </Row>
-      <Row>
         <Key>Execution readiness</Key>
         <Val $ok={executionReady} $warn={!executionReady}>
           {executionReady ? 'Ready' : executionReason || 'Blocked'}
@@ -112,22 +133,36 @@ export const LbDeployReadinessPanel: React.FC<LbDeployReadinessPanelProps> = ({
       <Row>
         <Key>Deployment readiness</Key>
         <Val $ok={deploymentReady} $warn={!deploymentReady}>
-          {deploymentReady ? 'Bound' : 'BLOCKED — LB programs not deployed'}
-        </Val>
-      </Row>
-      <Row>
-        <Key>Required contracts</Key>
-        <Val $warn={missing.length > 0}>
-          {missing.length ? missing.join(', ') : 'LB Factory · Authorizer · FeeSink bound'}
+          {deploymentReady ? 'Bound' : 'Blocked'}
         </Val>
       </Row>
       {!deploymentReady ? (
-        <Note data-testid="lb-deploy-blocker-note">
-          Configuration can be completed now. Wallet activation stays unavailable until Liquidity Building
-          contracts are deployed and bound on BNB Smart Chain (chainId 56). Melega AMM Factory/Router already
-          exist for pair detection and manual Add Liquidity.
-        </Note>
+        <Note data-testid="lb-deploy-blocker-note">{LB_MAINNET_PENDING_MESSAGE}</Note>
       ) : null}
+      <TechDetails data-testid="lb-deploy-technical-details">
+        <summary>Technical details</summary>
+        <TechBody>
+          <Row>
+            <Key>Factory</Key>
+            <Val $ok>{shortAddr(MELEGA_FACTORY)} (Melega AMM)</Val>
+          </Row>
+          <Row>
+            <Key>Router</Key>
+            <Val $ok>{shortAddr(MELEGA_ROUTER)} (Melega AMM)</Val>
+          </Row>
+          <Row>
+            <Key>Required contracts</Key>
+            <Val $warn={missing.length > 0}>
+              {missing.length ? missing.join(', ') : 'LB Factory · Authorizer · FeeSink bound'}
+            </Val>
+          </Row>
+          <Note>
+            Melega AMM Factory/Router already exist for pair detection and manual Add Liquidity. Liquidity
+            Builder wallet activation requires the LB Factory, Authorizer, and FeeSink contracts to be deployed
+            and bound on BNB Smart Chain (chainId 56).
+          </Note>
+        </TechBody>
+      </TechDetails>
     </Panel>
   )
 }

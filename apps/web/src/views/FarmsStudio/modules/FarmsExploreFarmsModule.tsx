@@ -163,30 +163,41 @@ const Chip = styled.button<{ $active?: boolean }>`
   }
 `
 
+/**
+ * Founder amendment P0-6 — density grid, mobile-first so wider breakpoints simply
+ * override columns without depending on declaration order:
+ *   ≤767 mobile: 1 · 768–1024 (small tablet landscape): 3 · 1025–1199 (tablet): 2
+ *   1200–1919 (default/1440, ≤1366 safe): 4 · ≥1920 (ultra-wide): 5
+ */
 const Grid = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-
-  @media (max-width: 1439px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   column-gap: ${farmsExplore.cardGapX};
-  row-gap: ${farmsExplore.cardGapY};
+  row-gap: ${farmsExplore.mobileCardGap};
   min-width: 0;
   justify-content: start;
 
-  @media (max-width: ${farmsExplore.tabletBreak}) {
+  @media (min-width: ${farmsExplore.smallTabletBreak}) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: ${farmsExplore.cardGapY};
+  }
+
+  @media (min-width: ${farmsExplore.tabletPortraitBreak}) {
     grid-template-columns: repeat(2, minmax(${farmsExplore.tabletMinCardW}, 1fr));
     column-gap: 16px;
   }
 
-  @media (max-width: ${farmsExplore.mobileBreak}) {
-    grid-template-columns: 1fr;
-    row-gap: ${farmsExplore.mobileCardGap};
+  @media (min-width: ${farmsExplore.desktopBreak}) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: ${farmsExplore.cardGapX};
+  }
+
+  @media (min-width: ${farmsExplore.ultraWideBreak}) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 `
 

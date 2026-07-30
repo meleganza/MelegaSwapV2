@@ -1,0 +1,16 @@
+{
+  "schema": "melega.dex.v1.explore-pools-density-proof",
+  "result": "PASS",
+  "grid": {
+    "1920": 5,
+    "1600": 4,
+    "1440": 4,
+    "1366": 4,
+    "1024": 3,
+    "tablet": 2,
+    "mobile": 1
+  },
+  "actions": ["Stake", "BscScan ↗"],
+  "compacted": "redundant Flexible MARCO staking earning TOKEN subtitle removed when metrics already communicate identity",
+  "file": "views/PoolsStudio/modules/PoolsExplorePoolsModule.tsx"
+}

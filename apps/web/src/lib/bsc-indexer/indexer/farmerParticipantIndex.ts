@@ -77,31 +77,54 @@ function writeJson(file: string, data: unknown) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2))
 }
 
+function certifiedSeedFallbackState(): FarmerParticipantState | null {
+  const seedState = certifiedSeedState as FarmerParticipantState
+  const seedWallets = certifiedSeedWallets as { all?: string[]; lp?: string[] }
+  if (!seedState?.uniqueParticipants || !Array.isArray(seedWallets?.all) || seedWallets.all.length === 0) return null
+  return {
+    ...seedState,
+    note: `${seedState.note || ''} · certified seed (in-memory fallback)`.trim(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+function certifiedSeedFallbackWallets(): { all: string[]; lp: string[] } | null {
+  const seedWallets = certifiedSeedWallets as { all?: string[]; lp?: string[] }
+  if (!Array.isArray(seedWallets?.all) || seedWallets.all.length === 0) return null
+  return { all: seedWallets.all, lp: Array.isArray(seedWallets.lp) ? seedWallets.lp : [] }
+}
+
 /**
  * When runtime index files are missing (Vercel/serverless cold start), copy the
  * certified seed into the runtime directory so KPIs can resolve factually.
  * Does not invent counts — seed is a prior full MasterChef scan artifact.
+ *
+ * Founder amendment P0-4: on a read-only or otherwise failing filesystem (e.g. a
+ * frozen serverless bundle), the write is best-effort only — `loadFarmerParticipantState`
+ * / `loadFarmerWallets` fall back to the certified seed in-memory regardless of
+ * whether persistence succeeded, so a seed never degrades into a null skeleton.
  */
 function hydrateRuntimeFromSeedIfMissing(): void {
   if (fs.existsSync(STATE_FILE()) && fs.existsSync(WALLETS_FILE())) return
-  const seedState = certifiedSeedState as FarmerParticipantState
-  const seedWallets = certifiedSeedWallets as { all?: string[]; lp?: string[] }
-  if (!seedState?.uniqueParticipants || !Array.isArray(seedWallets?.all) || seedWallets.all.length === 0) return
-  ensureDir()
-  if (!fs.existsSync(STATE_FILE())) {
-    writeJson(STATE_FILE(), {
-      ...seedState,
-      note: `${seedState.note || ''} · hydrated from certified seed`.trim(),
-      updatedAt: new Date().toISOString(),
-    })
-  }
-  if (!fs.existsSync(WALLETS_FILE())) {
-    writeJson(WALLETS_FILE(), {
-      all: seedWallets.all,
-      lp: Array.isArray(seedWallets.lp) ? seedWallets.lp : [],
-      updatedAt: new Date().toISOString(),
-      source: 'certified-seed',
-    })
+  const seedState = certifiedSeedFallbackState()
+  const seedWallets = certifiedSeedFallbackWallets()
+  if (!seedState || !seedWallets) return
+  try {
+    ensureDir()
+    if (!fs.existsSync(STATE_FILE())) {
+      writeJson(STATE_FILE(), seedState)
+    }
+    if (!fs.existsSync(WALLETS_FILE())) {
+      writeJson(WALLETS_FILE(), {
+        all: seedWallets.all,
+        lp: seedWallets.lp,
+        updatedAt: seedState.updatedAt,
+        source: 'certified-seed',
+      })
+    }
+  } catch {
+    // Filesystem write failed (read-only volume) — in-memory fallback in
+    // loadFarmerParticipantState/loadFarmerWallets still serves the seed.
   }
 }
 
@@ -203,17 +226,23 @@ function finalizeStatus(state: FarmerParticipantState): FarmerParticipantState {
 export function loadFarmerParticipantState(): FarmerParticipantState {
   hydrateRuntimeFromSeedIfMissing()
   const existing = readJson<FarmerParticipantState>(STATE_FILE())
-  if (!existing) return emptyState()
-  return finalizeStatus(existing)
+  if (existing) return finalizeStatus(existing)
+  // Runtime file still missing (e.g. write failed on a read-only filesystem) —
+  // never fall back to an empty/null skeleton while a certified seed exists.
+  const seedFallback = certifiedSeedFallbackState()
+  if (seedFallback) return finalizeStatus(seedFallback)
+  return emptyState()
 }
 
 export function loadFarmerWallets(): { all: string[]; lp: string[] } {
   hydrateRuntimeFromSeedIfMissing()
   const raw = readJson<{ all?: string[]; lp?: string[] }>(WALLETS_FILE())
-  return {
-    all: Array.isArray(raw?.all) ? raw!.all : [],
-    lp: Array.isArray(raw?.lp) ? raw!.lp : [],
+  if (raw && Array.isArray(raw.all) && raw.all.length > 0) {
+    return { all: raw.all, lp: Array.isArray(raw.lp) ? raw.lp : [] }
   }
+  const seedFallback = certifiedSeedFallbackWallets()
+  if (seedFallback) return seedFallback
+  return { all: [], lp: [] }
 }
 
 function persist(state: FarmerParticipantState, wallets: { all: Set<string>; lp: Set<string> }) {

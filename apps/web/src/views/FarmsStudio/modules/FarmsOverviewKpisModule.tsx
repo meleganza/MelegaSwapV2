@@ -221,7 +221,11 @@ function KpiIcon({ id }: { id: string }) {
 }
 
 function KpiCardView({ model }: { model: FarmsOverviewKpiCardModel }) {
-  if (model.state === 'loading') {
+  // Founder amendment P0-4: Active Farmers has a factual "Indexing…" value while the
+  // durable participant index catches up — show that text, not a skeleton pulse
+  // forever. Other cards without a factual interim value keep the skeleton.
+  const hasFactualLoadingValue = model.id === 'activeFarmers' && Boolean(model.value) && model.value !== '—'
+  if (model.state === 'loading' && !hasFactualLoadingValue) {
     return (
       <Card
         data-testid={`farms-kpi-${model.id}`}

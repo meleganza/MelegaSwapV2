@@ -1,12 +1,16 @@
 {
+  "result": "PASS",
   "suites": [
-    "PoolsStudio",
-    "FarmsStudio",
-    "feeSchedule",
-    "createFarmFeePrecedence",
-    "founderRegressionRepair",
-    "poolsActionModalRepair"
+    "FarmsStudio/__tests__",
+    "PoolsStudio/__tests__",
+    "HomeTrade/__tests__",
+    "LiquidityStudio/founderAmendmentP03LbDensity",
+    "lib/trending/__tests__",
+    "lib/bsc-indexer/__tests__/farmerParticipantIndex",
+    "config/constants fee + createFarmFeePrecedence"
   ],
-  "result": "295 passed / 35 files",
-  "command": "yarn vitest run src/views/PoolsStudio/__tests__ src/views/FarmsStudio/__tests__ src/config/constants/__tests__ src/views/__tests__/founderRegressionRepair.test.ts"
+  "testFiles": 50,
+  "tests": 365,
+  "failed": 0,
+  "nextBuild": "PASS"
 }

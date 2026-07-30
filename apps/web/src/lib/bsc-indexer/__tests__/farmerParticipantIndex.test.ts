@@ -61,9 +61,12 @@ describe('farmer participant index contracts', () => {
 
   it('unique-farmers API never returns ready zero while indexing', () => {
     const src = readFileSync(path.join(ROOT, '../../pages/api/farms/unique-farmers.ts'), 'utf8')
-    expect(src).toContain('uniqueFarmers: snap.displayState === \'loading\'')
+    // Surfaces factual primaryCount when seed/runtime has a unique set; never fabricates ready zero.
+    expect(src).toContain('snap.primaryCount')
+    expect(src).toContain('uniqueFarmers:')
     expect(src).toContain('advanceFarmerParticipantIndex')
     expect(src).toContain('coveragePct')
+    expect(src).not.toContain('uniqueFarmers: 318')
   })
 
   it('index module persists checkpoint resume fields', () => {

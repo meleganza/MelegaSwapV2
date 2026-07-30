@@ -25,7 +25,8 @@ const Card = styled.article`
   box-shadow: ${farmsExplore.cardShadow};
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* Founder amendment P0-6: tighter vertical rhythm for denser grids. */
+  gap: 8px;
   min-width: 0;
   font-family: ${typography.fontFamily.body};
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
@@ -158,7 +159,7 @@ const MultiBadge = styled.span`
 const Metrics = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
   flex: 1;
   min-width: 0;
 `
@@ -205,7 +206,7 @@ const WalletLine = styled.p`
 const ContractLinks = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 6px 10px;
   min-width: 0;
 `
 
@@ -406,7 +407,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             rel="noopener noreferrer"
             data-testid="farms-explore-farm-contract"
           >
-            Farm Contract ↗
+            Farm ↗
           </ContractLink>
         ) : null}
         {farm.lpToken?.address ? (
@@ -416,7 +417,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             rel="noopener noreferrer"
             data-testid="farms-explore-lp-contract"
           >
-            LP Contract ↗
+            LP ↗
           </ContractLink>
         ) : null}
       </ContractLinks>

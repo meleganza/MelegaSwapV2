@@ -1,5 +1,7 @@
 {
-  "command": "yarn next build",
   "result": "PASS",
-  "app": "apps/web"
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "exitCode": 0,
+  "notes": "Production Next.js build completed successfully after Founder amendment."
 }

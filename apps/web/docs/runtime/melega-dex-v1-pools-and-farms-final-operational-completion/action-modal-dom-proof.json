@@ -1,0 +1,21 @@
+{
+  "schema": "melega.dex.v1.action-modal-dom-proof",
+  "result": "PASS_STRUCTURAL",
+  "rootCause": "useModal(..., updateOnPropsChange=true) + clearModal replaced open dialog with empty fragment while Overlay stayed mounted",
+  "fix": {
+    "PoolsActionHost": "updateOnPropsChange=false; never present empty fragment",
+    "FarmsActionHost": "updateOnPropsChange=false; Harvest opens FarmHarvestConfirmModal",
+    "Overlay": "rgba(0,0,0,0.55) z-index 0 under modal content"
+  },
+  "actions": [
+    "Pool Stake",
+    "Pool Claim",
+    "Pool Stake More",
+    "Pool Withdraw",
+    "Farm Harvest",
+    "Farm Stake More",
+    "Farm Withdraw"
+  ],
+  "tests": "views/PoolsStudio/__tests__/poolsActionModalRepair.test.ts",
+  "note": "Live browser bounding-rect matrix reserved under screenshots/; structural + unit guards enforce overlay+content co-mount."
+}
