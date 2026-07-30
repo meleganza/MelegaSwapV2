@@ -1,0 +1,16 @@
+{
+  "schema": "melega.dex.v1.public-farm-draft-preservation",
+  "storageKey": "melega.public-farm-factory.draft.v1",
+  "fields": [
+    "draftId",
+    "selectionMode",
+    "selectedPair",
+    "rewardToken",
+    "rewardBudget",
+    "emissionRate",
+    "durationDays",
+    "startMode",
+    "creatorWallet"
+  ],
+  "persistsAcross": ["create_pair", "ai_builder", "manual_liquidity"]
+}

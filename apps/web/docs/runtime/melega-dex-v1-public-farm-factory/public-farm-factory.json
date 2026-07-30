@@ -1,0 +1,32 @@
+{
+  "schema": "melega.dex.v1.public-farm-factory",
+  "missionId": "MELEGA_DEX_V1_PUBLIC_FARM_FACTORY_AND_ELIGIBILITY_ENGINE",
+  "branch": "melega-dex-v1-public-farm-factory",
+  "recoveredBase": "ad32627af69158c0ad0e2d4ce55fa180e5c0d45d",
+  "architectureOutcome": "B_FACTORY_DEPLOYMENT_REQUIRED",
+  "masterBuilderExposed": false,
+  "marcoRewardSupported": false,
+  "ui": {
+    "component": "PublicFarmFactoryWorkspace",
+    "mountAlias": "CreateFarmWorkspace",
+    "route": "/farms#create-farm",
+    "permanentlyExpanded": true
+  },
+  "deployment": {
+    "status": "BLOCKED",
+    "address": null,
+    "transaction": null,
+    "package": "contracts/public-farm-factory/",
+    "blockers": [
+      "PublicFarmFactoryV1 not deployed on BNB Chain",
+      "No deployer credentials authorized for this mission",
+      "Factory address must not be fabricated"
+    ],
+    "resumeSequence": [
+      "Deploy PublicFarmFactoryV1 with treasury + MARCO reject + pair factory + eligibility signer",
+      "Bind non-null address in apps/web config",
+      "Enable wallet execution after verification",
+      "Index FarmCreated into canonical farm discovery"
+    ]
+  }
+}

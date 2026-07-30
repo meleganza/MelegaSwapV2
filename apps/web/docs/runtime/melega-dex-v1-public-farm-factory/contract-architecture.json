@@ -1,0 +1,28 @@
+{
+  "schema": "melega.dex.v1.public-farm-factory-contract-architecture",
+  "auditOutcome": "B_NEW_PUBLIC_FARM_FACTORY_PACKAGE_REQUIRED",
+  "reusableFactoryFound": false,
+  "package": "contracts/public-farm-factory/",
+  "contracts": [
+    "PublicFarmFactoryV1.sol",
+    "PublicFarmTemplateV1.sol",
+    "interfaces/IPublicFarmFactoryV1.sol",
+    "interfaces/IMelegaPairFactoryMinimal.sol"
+  ],
+  "guarantees": [
+    "deploys only PublicFarmTemplateV1",
+    "does not expose MasterBuilder",
+    "does not require protocol-admin permissions for createFarm",
+    "rejects MARCO reward token",
+    "validates LP via Melega pair factory getPair",
+    "routes creation fee directly to Treasury",
+    "does not custody creation fee",
+    "creator funds reward budget",
+    "emits FarmCreated",
+    "no arbitrary farm seizure",
+    "no unrestricted reward recovery",
+    "no mutable template injection",
+    "no upgradeability"
+  ],
+  "deployment": { "status": "BLOCKED", "address": null, "transaction": null }
+}

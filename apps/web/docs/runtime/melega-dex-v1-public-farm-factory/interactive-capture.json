@@ -1,0 +1,17 @@
+{
+  "states": [
+    "1440-search-existing",
+    "1440-low-liquidity-remediation",
+    "1440-eligible-config",
+    "1440-marco-reward-rejection",
+    "1440-fee-free-marco-pair",
+    "1440-fee-0.25-bnb",
+    "1440-review-factory-blocked"
+  ],
+  "remediationVisible": true,
+  "builderBlocked": true,
+  "manualHandoff": true,
+  "marcoRejectVisible": true,
+  "feeTextFree": "FREE · LP pair contains MARCO · reward is not MARCO",
+  "feeTextPaid": "0.25 BNB · LP pair without MARCO · non-MARCO reward"
+}

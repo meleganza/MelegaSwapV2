@@ -13,24 +13,30 @@ export type CreateFarmCapabilityOutcome =
   | 'B_FACTORY_DEPLOYMENT_REQUIRED'
   | 'C_ADMIN_ONLY_MASTERBUILDER'
 
+/**
+ * @deprecated Prefer PUBLIC_FARM_FACTORY_CAPABILITY — Public Farm Factory supersedes
+ * the admin-only MasterBuilder create path for public users. Kept for historical
+ * evidence references; runtime Create Farm UI reads publicFarmFactoryCapability.
+ */
 export const CREATE_FARM_CONTRACT_CAPABILITY = {
   schema: 'melega.dex.v1.create-farm-contract-capability',
-  outcome: 'C_ADMIN_ONLY_MASTERBUILDER' as CreateFarmCapabilityOutcome,
+  outcome: 'B_FACTORY_DEPLOYMENT_REQUIRED' as CreateFarmCapabilityOutcome,
   summary:
-    'Create Farm execution is blocked. MasterChef.add() is owner-gated and there is no permissionless farm factory deployed for Melega DEX.',
-  blockerLabel: 'Create Farm execution blocked — protocol admin / factory deployment required',
+    'Public Create Farm execution is blocked pending PublicFarmFactoryV1 deployment. MasterChef.add() / MasterBuilder remain protocol-only and are never exposed publicly.',
+  blockerLabel: 'Create Farm execution blocked — Public Farm Factory deployment required',
   facts: [
-    'MasterChef.add(allocPoint, lpToken, withUpdate) is restricted to the contract owner (onlyOwner).',
-    'No permissionless CreateFarmFactory contract is deployed on BNB Chain for Melega DEX.',
-    'Farm creation currently requires a protocol admin transaction or a future factory deployment.',
+    'PublicFarmFactoryV1 package exists under contracts/public-farm-factory/ but is not deployed.',
+    'MasterChef.add(allocPoint, lpToken, withUpdate) remains owner-gated and is not a public Create Farm path.',
+    'MARCO reward farms stay protocol-managed and are rejected by the Public Farm Factory.',
   ],
   readiness: {
     walletCanExecute: false,
-    requiresAdminAction: true,
-    requiresFactoryDeployment: false,
+    requiresAdminAction: false,
+    requiresFactoryDeployment: true,
   },
   contracts: {
-    masterChef: 'MasterChef.add() — onlyOwner',
+    masterChef: 'MasterChef.add() — protocol-only (not exposed)',
+    publicFarmFactory: null as string | null,
   },
 } as const
 

@@ -1,0 +1,7 @@
+{
+  "schema": "melega.dex.v1.public-farm-pair-selection",
+  "modes": ["search_existing", "create_new"],
+  "searchFields": ["pair name", "token symbol", "token address", "pair contract", "LP token address"],
+  "module": "apps/web/src/views/FarmsStudio/modules/publicFarmPairSearch.ts",
+  "registry": "useAmmPairRegistry → GET /api/indexer/pairs"
+}

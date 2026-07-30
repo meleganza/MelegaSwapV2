@@ -1,0 +1,30 @@
+ad32627a HEAD@{0}: checkout: moving from melega-dex-v1-pools-and-farms-final-operational-completion to melega-dex-v1-public-farm-factory
+ad32627a HEAD@{1}: reset: moving to ad32627a
+ad32627a HEAD@{2}: checkout: moving from melega-dex-v1-pools-and-farms-final-operational-completion to melega-dex-v1-pools-and-farms-final-operational-completion
+ad32627a HEAD@{3}: commit: Mission: Pools and Farms Final Operational Completion
+c91dd6eb HEAD@{4}: reset: moving to HEAD
+c91dd6eb HEAD@{5}: reset: moving to HEAD
+c91dd6eb HEAD@{6}: commit: Mission: Pools and Farms Final Operational Completion
+e50f1076 HEAD@{7}: reset: moving to HEAD
+e50f1076 HEAD@{8}: checkout: moving from e50f1076a20f5f8d6b20e2803a091194690395be to melega-dex-v1-pools-and-farms-final-operational-completion
+e50f1076 HEAD@{9}: checkout: moving from melega-dex-v1-mainnet-go-live-preparation to e50f1076
+e50f1076 HEAD@{10}: commit: Mission: Mainnet Go-Live Preparation
+85e7ac65 HEAD@{11}: checkout: moving from 85e7ac65496d86acc7dc19e199e9a0082325f12a to melega-dex-v1-mainnet-go-live-preparation
+85e7ac65 HEAD@{12}: checkout: moving from melega-dex-v1-liquidity-builder-protocol-fee-finalization to 85e7ac65
+85e7ac65 HEAD@{13}: commit: Mission: Liquidity Builder Protocol Fee Finalization
+15d3aeaa HEAD@{14}: checkout: moving from 15d3aeaafda909dc0b801f2c93ee25fd40a13edf to melega-dex-v1-liquidity-builder-protocol-fee-finalization
+15d3aeaa HEAD@{15}: checkout: moving from melega-dex-v1-fee-schedule-founder-finalization to 15d3aeaa
+15d3aeaa HEAD@{16}: commit: Mission: Fee Schedule Founder Governance Finalization
+f425f80c HEAD@{17}: checkout: moving from f425f80c27e70129c699e7a5b02c460b36bb3530 to melega-dex-v1-fee-schedule-founder-finalization
+f425f80c HEAD@{18}: checkout: moving from melega-dex-v1-fee-schedule-founder-finalization to f425f80c
+f425f80c HEAD@{19}: checkout: moving from f425f80c27e70129c699e7a5b02c460b36bb3530 to melega-dex-v1-fee-schedule-founder-finalization
+f425f80c HEAD@{20}: checkout: moving from melega-dex-v1-create-token-fee-finalization to f425f80c
+f425f80c HEAD@{21}: commit: Mission: Create Token Factory Fee Finalization
+7a134b4c HEAD@{22}: checkout: moving from 7a134b4cbafcdd33fa76ce52da9988242cc46b3c to melega-dex-v1-create-token-fee-finalization
+7a134b4c HEAD@{23}: checkout: moving from melega-dex-v1-lb-and-create-token-mainnet-activation to 7a134b4c
+7a134b4c HEAD@{24}: commit: Mission: LB and Create Token Factory Mainnet Activation
+167b91ee HEAD@{25}: checkout: moving from 167b91ee4095a83a072ea7ce22b06cb4bd35c5bc to melega-dex-v1-lb-and-create-token-mainnet-activation
+167b91ee HEAD@{26}: checkout: moving from melega-dex-v1-market-data-final-certification to 167b91ee
+167b91ee HEAD@{27}: commit: Mission Market Data Final Certification: canonical snapshot API, shared BNB/USD, Home/Liquidity/Featured consumers
+acf0680f HEAD@{28}: checkout: moving from acf0680fc6306b03141a36db1602a4e2fd9ac88b to melega-dex-v1-market-data-final-certification
+acf0680f HEAD@{29}: checkout: moving from melega-dex-v1-pools-runtime-economics-and-home-market-truth-repair to acf0680f

@@ -1,0 +1,12 @@
+{
+  "schema": "melega.dex.v1.public-farm-create-pair-return-flow",
+  "out": "/add?return=create-farm&draftId=<id>&destination=/farms#create-farm",
+  "return": {
+    "path": "/farms#create-farm",
+    "restoresDraft": true,
+    "preselectsPair": "when pair present in draft after creation",
+    "rerunsEligibility": true,
+    "manualRestartRequired": false
+  },
+  "draftStorageKey": "melega.public-farm-factory.draft.v1"
+}

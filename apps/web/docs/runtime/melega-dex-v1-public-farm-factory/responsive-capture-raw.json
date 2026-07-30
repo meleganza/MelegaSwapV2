@@ -1,0 +1,288 @@
+{
+  "base": "http://127.0.0.1:3460",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "capturedAt": "2026-07-30T23:46:45.961Z",
+  "viewports": [
+    {
+      "name": "1920x1080",
+      "width": 1920,
+      "height": 1080,
+      "captured": true
+    },
+    {
+      "name": "1600x900",
+      "width": 1600,
+      "height": 900,
+      "captured": true
+    },
+    {
+      "name": "1440x900",
+      "width": 1440,
+      "height": 900,
+      "captured": true
+    },
+    {
+      "name": "1366x768",
+      "width": 1366,
+      "height": 768,
+      "captured": true
+    },
+    {
+      "name": "1024x768",
+      "width": 1024,
+      "height": 768,
+      "captured": true
+    },
+    {
+      "name": "768x1024",
+      "width": 768,
+      "height": 1024,
+      "captured": true
+    },
+    {
+      "name": "430x932",
+      "width": 430,
+      "height": 932,
+      "captured": true
+    },
+    {
+      "name": "390x844",
+      "width": 390,
+      "height": 844,
+      "captured": true
+    },
+    {
+      "name": "375x812",
+      "width": 375,
+      "height": 812,
+      "captured": true
+    }
+  ],
+  "states": [
+    {
+      "state": "create-farm-default",
+      "viewport": "1920x1080",
+      "file": "screenshots/1920x1080/create-farm-default.png",
+      "ok": false,
+      "status": null,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[15474:31178465:0730/164653.848953:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "1920x1080",
+      "file": "screenshots/1920x1080/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[16315:31182636:0730/164820.381891:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "1920x1080",
+      "file": "screenshots/1920x1080/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[16455:31183721:0730/164829.508554:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "1600x900",
+      "file": "screenshots/1600x900/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n6298 bytes written to file /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web/docs/runtime/melega-dex-v1-public"
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "1600x900",
+      "file": "screenshots/1600x900/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[16710:31185794:0730/164851.452412:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "1600x900",
+      "file": "screenshots/1600x900/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[16824:31186622:0730/164900.294183:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "1440x900",
+      "file": "screenshots/1440x900/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[16903:31187247:0730/164906.008573:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "1440x900",
+      "file": "screenshots/1440x900/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[16984:31187895:0730/164912.033535:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "1440x900",
+      "file": "screenshots/1440x900/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[17256:31189105:0730/164921.092693:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "1366x768",
+      "file": "screenshots/1366x768/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[17869:31191460:0730/164929.702719:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "1366x768",
+      "file": "screenshots/1366x768/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[17931:31192205:0730/164939.030673:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "1366x768",
+      "file": "screenshots/1366x768/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[17974:31192913:0730/164949.095293:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "1024x768",
+      "file": "screenshots/1024x768/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18017:31193584:0730/164956.888622:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "1024x768",
+      "file": "screenshots/1024x768/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18061:31194231:0730/165004.003776:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "1024x768",
+      "file": "screenshots/1024x768/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18148:31194967:0730/165011.740620:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "768x1024",
+      "file": "screenshots/768x1024/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18244:31195680:0730/165018.974489:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "768x1024",
+      "file": "screenshots/768x1024/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "[18279:31196347:0730/165025.078212:ERROR:base/process/process_mac.cc:53] task_policy_set TASK_CATEGORY_POLICY: (os/kern) invalid argument (4)\n[18279:31196347:0730/165025.078228:ERROR:base/process/proc"
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "768x1024",
+      "file": "screenshots/768x1024/factory-deployment-blocked.png",
+      "ok": false,
+      "status": null,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18318:31196917:0730/165035.987276:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "430x932",
+      "file": "screenshots/430x932/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18870:31201016:0730/165207.484041:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "430x932",
+      "file": "screenshots/430x932/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18948:31201972:0730/165216.050608:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "430x932",
+      "file": "screenshots/430x932/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[18988:31202673:0730/165224.542099:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "390x844",
+      "file": "screenshots/390x844/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[19027:31203290:0730/165232.852255:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "390x844",
+      "file": "screenshots/390x844/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[19065:31203984:0730/165241.172395:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "390x844",
+      "file": "screenshots/390x844/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[19105:31204680:0730/165250.691676:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "create-farm-default",
+      "viewport": "375x812",
+      "file": "screenshots/375x812/create-farm-default.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[19140:31205366:0730/165258.470062:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "search-existing-pair",
+      "viewport": "375x812",
+      "file": "screenshots/375x812/search-existing-pair.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[19181:31206006:0730/165306.180083:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    },
+    {
+      "state": "factory-deployment-blocked",
+      "viewport": "375x812",
+      "file": "screenshots/375x812/factory-deployment-blocked.png",
+      "ok": true,
+      "status": 0,
+      "stderr": "Trying to load the allocator multiple times. This is *not* supported.\n[19217:31206741:0730/165315.602136:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: "
+    }
+  ],
+  "domProbe": {
+    "publicFarmFactory": true,
+    "createFarmWorkspace": true,
+    "searchExisting": true,
+    "createNewPair": true,
+    "masterbuilderHidden": true,
+    "factoryBlocked": true,
+    "lowLiquidityRemediationPresentInSource": true
+  }
+}

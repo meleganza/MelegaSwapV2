@@ -1,0 +1,7 @@
+{
+  "schema": "melega.dex.v1.public-farm-marco-reward-rejection",
+  "message": "MARCO reward farms are protocol-managed and cannot be created through the Public Farm Factory.",
+  "exceptionPath": false,
+  "publicAdminBypass": false,
+  "module": "apps/web/src/views/FarmsStudio/modules/publicFarmEligibility.ts#rejectMarcoReward"
+}
