@@ -1,0 +1,19 @@
+{
+  "schema": "melega.create-token.deployed-addresses.v1",
+  "chainId": 56,
+  "network": "bnb-smart-chain-mainnet",
+  "status": "DEPLOYMENT_BLOCKED",
+  "factory": null,
+  "tokenTemplate": "MelegaFixedSupplyToken (deployed per createToken call)",
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "creationFeeWei": null,
+  "creationFeeDecision": "PENDING_FOUNDER_APPROVAL",
+  "deploymentTx": null,
+  "deploymentBlock": null,
+  "deployer": null,
+  "verified": false,
+  "notes": [
+    "No fabricated address. Bind only after authorized mainnet broadcast + BscScan verification.",
+    "Creation fee wei must be Founder-approved before CT_FEE_FOUNDER_APPROVED=1."
+  ]
+}

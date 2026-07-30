@@ -1,0 +1,10 @@
+{
+  "framework": "forge",
+  "suite": "test/create-token/MelegaTokenFactory.t.sol",
+  "result": "PASS",
+  "tests": 16,
+  "threeTokenE2E": "PASS",
+  "treasuryFeeReceived": true,
+  "factoryResidualBalance": 0,
+  "productionAddressInferred": false
+}

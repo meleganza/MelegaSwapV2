@@ -1,0 +1,9 @@
+{
+  "policyReference": "D87 token_creation 5 USDC / 4 USDC-eq MARCO (policy catalog)",
+  "onChainFeeAsset": "BNB (msg.value)",
+  "onChainFeeWei": null,
+  "decision": "PENDING_FOUNDER_APPROVAL",
+  "reason": "Do not invent production BNB wei silently; Founder must approve explicit CT_CREATION_FEE_WEI before mainnet broadcast",
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "forwarding": "immediate call{value} in createToken"
+}

@@ -1,0 +1,16 @@
+{
+  "status": "DEPLOYMENT_BLOCKED",
+  "chainId": 56,
+  "factoryAddress": null,
+  "bytecodePresent": false,
+  "creationFeeConfigured": false,
+  "feeRecipientConfigured": true,
+  "deploymentAuthorityReady": false,
+  "verificationReady": false,
+  "blockers": [
+    "CT_MAINNET_DEPLOY_AUTHORIZED not set",
+    "CT_CREATION_FEE_WEI pending Founder approval",
+    "factoryAddress null"
+  ],
+  "updatedAt": "2026-07-30T00:13:39Z"
+}

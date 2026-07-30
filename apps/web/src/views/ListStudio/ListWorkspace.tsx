@@ -10,6 +10,8 @@ import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
 import { ListFeaturedCheckout } from './ListFeaturedCheckout'
 import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
 import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
+import { buildReviewFacts } from './createToken/createTokenTx'
+import { CREATE_TOKEN_FEE_RECIPIENT } from 'config/constants/createTokenFactoryDeployment'
 
 type StatusKind = 'Autosaved' | 'Draft' | 'Ready' | 'Review Required'
 type FieldDef = { key: string; label: string; required: boolean }
@@ -804,11 +806,23 @@ export const ListWorkspace: React.FC = () => {
     }
 
     if (listIntent === 'create-token') {
+      const decimalsNum = Number.parseInt(values.decimals || '18', 10)
+      const review = buildReviewFacts({
+        name: values.name || '',
+        symbol: values.ticker || '',
+        supplyHuman: values.supply || '',
+        decimals: Number.isFinite(decimalsNum) ? decimalsNum : 18,
+        owner: values.owner || '',
+      })
       return (
-        <FormStack data-testid="list-workspace-form" data-create-token-status={CREATE_TOKEN_READINESS.status}>
+        <FormStack
+          data-testid="list-workspace-form"
+          data-create-token-status={CREATE_TOKEN_READINESS.status}
+          data-create-token-ui-state={CREATE_TOKEN_READINESS.uiState}
+        >
           <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
-            {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Factory: not deployed. Mintability: fixed
-            supply required. Fee recipient: unset until factory bind.
+            Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
+            (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee wei: pending Founder approval.
           </Banner>
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
             <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Sample Token" />
@@ -822,16 +836,33 @@ export const ListWorkspace: React.FC = () => {
           <Field label="Decimals" ok={filled(values.decimals)} invalid={invalid('decimals')} hint="Default 18">
             <Input value={values.decimals || '18'} onChange={set('decimals')} />
           </Field>
-          <Field label="Owner Wallet" ok={filled(values.owner)} invalid={invalid('owner')}>
-            <Input value={values.owner || ''} onChange={set('owner')} placeholder="0x… owner / admin disclosure" />
+          <Field label="Owner Wallet" ok={filled(values.owner)} invalid={invalid('owner')} hint="Defaults to your connected wallet when available">
+            <Input value={values.owner || ''} onChange={set('owner')} placeholder="0x… receives full fixed supply" />
           </Field>
-          <Field label="Logo / metadata (after deploy)" ok={filled(values.logo)} invalid={false} optional>
-            <Input value={values.logo || ''} onChange={set('logo')} placeholder="Optional — after deployment" />
+          <Field label="Logo (optional)" ok={filled(values.logo)} invalid={false} optional hint="Does not affect on-chain deployment">
+            <Input value={values.logo || ''} onChange={set('logo')} placeholder="Optional URL — metadata only" />
           </Field>
-          <Banner>
-            Deploy execution unavailable — CREATE_TOKEN_FACTORY_NOT_DEPLOYED ({CREATE_TOKEN_READINESS.blockerCode}).
-            Draft only until a certified factory is bound. LIST_CREATE_TOKEN_AVAILABLE=
-            {String(LIST_CREATE_TOKEN_AVAILABLE)}.
+          <Field label="Project description (optional)" ok={filled(values.description)} invalid={false} optional>
+            <TextArea value={values.description || ''} onChange={set('description')} placeholder="Optional — off-chain metadata" />
+          </Field>
+          <Field label="Website (optional)" ok={filled(values.website)} invalid={false} optional>
+            <Input value={values.website || ''} onChange={set('website')} placeholder="https://" />
+          </Field>
+          <Field label="Social links (optional)" ok={filled(values.social)} invalid={false} optional>
+            <Input value={values.social || ''} onChange={set('social')} placeholder="X / Telegram / Discord" />
+          </Field>
+          <Banner data-testid="list-create-token-review" data-review="factual">
+            Review — Network: {review.network}. Factory: {review.factoryAddress ?? 'not deployed'}. Name:{' '}
+            {review.tokenName || '—'}. Symbol: {review.symbol || '—'}. Supply: {review.totalSupply || '—'}. Decimals:{' '}
+            {review.decimals}. Owner: {review.owner || '—'}. Fixed supply: yes. Mintability: {review.mintability}. Tax:{' '}
+            {review.tax}. Blacklist: {review.blacklist}. Pause: {review.pause}. Creation fee: pending Founder
+            approval. Fee recipient: {review.feeRecipient}.
+          </Banner>
+          <Banner data-testid="list-create-token-cta-blocked">
+            Create Token — execution blocked ({CREATE_TOKEN_READINESS.uiState} / CREATE_TOKEN_FACTORY_NOT_DEPLOYED /{' '}
+            {CREATE_TOKEN_READINESS.blockerCode}). Missing: physical mainnet deploy authority and Founder-approved
+            creationFeeWei. LIST_CREATE_TOKEN_AVAILABLE={String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain
+            autosaved.
           </Banner>
         </FormStack>
       )
@@ -1029,10 +1060,13 @@ export const ListWorkspace: React.FC = () => {
                 Decimals <strong>{values.decimals || '18'}</strong>
               </ContextRow>
               <ContextRow>
-                Estimated Contract <strong>Not deployed</strong>
+                Factory <strong>{CREATE_TOKEN_READINESS.factoryAddress ?? 'Not deployed'}</strong>
               </ContextRow>
               <ContextRow>
-                Warnings <strong>{LIST_CREATE_TOKEN_AVAILABLE ? 'None' : 'Factory unavailable'}</strong>
+                Readiness <strong>{CREATE_TOKEN_READINESS.uiState}</strong>
+              </ContextRow>
+              <ContextRow>
+                Warnings <strong>{LIST_CREATE_TOKEN_AVAILABLE ? 'None' : 'Factory deployment pending'}</strong>
               </ContextRow>
             </ContextCard>
           ) : (

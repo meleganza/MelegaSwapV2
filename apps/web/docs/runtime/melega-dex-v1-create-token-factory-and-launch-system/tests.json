@@ -1,0 +1,16 @@
+{
+  "forgeCreateToken": {
+    "tests": 16,
+    "result": "PASS"
+  },
+  "vitestCreateTokenFactoryLaunch": {
+    "tests": 11,
+    "result": "PASS"
+  },
+  "vitestListFounderAcceptance": {
+    "result": "PASS"
+  },
+  "vitestListModule005": {
+    "result": "PASS"
+  }
+}

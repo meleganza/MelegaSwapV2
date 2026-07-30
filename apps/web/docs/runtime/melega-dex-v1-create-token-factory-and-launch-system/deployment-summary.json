@@ -1,0 +1,19 @@
+{
+  "status": "NOT_DEPLOYED",
+  "factoryAddress": null,
+  "deploymentTx": null,
+  "deploymentBlock": null,
+  "deployer": null,
+  "constructorArguments": null,
+  "creationFee": null,
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "compiler": "0.8.20",
+  "optimizer": {
+    "enabled": true,
+    "runs": 200,
+    "via_ir": true
+  },
+  "bytecodeHash": null,
+  "verificationStatus": "NOT_APPLICABLE",
+  "note": "No fabricated deployment"
+}
