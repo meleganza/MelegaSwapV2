@@ -5,10 +5,12 @@
 import { useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
+import { useCurrentBlock } from 'state/block/hooks'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { listRewardingPools } from '../poolsRuntime/formatPoolsRuntime'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import { resolveLifecycleCounts } from '../poolsRuntime/poolClassificationSummary'
+import { buildPools24hRewards } from './buildPools24hRewards'
 import {
   POOLS_OVERVIEW_KPI_LABELS,
   POOLS_OVERVIEW_KPI_ORDER,
@@ -51,6 +53,7 @@ function card(
 
 export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
   const runtime = usePoolsRuntime()
+  const currentBlock = useCurrentBlock()
 
   return useMemo(() => {
     const fetchedAt = new Date().toISOString()
@@ -170,14 +173,34 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
       )
     }
 
-    // —— 24H rewards — no indexed distribution feed ——
+    // —— 24H rewards — reward rate × active blocks in rolling 24H (not claim events) ——
+    const rewards24h = buildPools24hRewards({
+      pools: poolRows,
+      currentBlock: currentBlock || null,
+      loading: poolsLoading && poolRows.length === 0,
+      updatedAt: fetchedAt,
+    })
     const rewards24hCard = card(
       'rewards24h',
-      '—',
-      '24H reward data unavailable',
-      'unavailable',
-      'unavailable',
-      'No indexed reward-distribution feed for rolling 24H; emission projections are not used as 24H rewards',
+      rewards24h.displayValue,
+      rewards24h.supporting,
+      rewards24h.status === 'available'
+        ? 'available'
+        : rewards24h.status === 'partial'
+          ? 'partial'
+          : rewards24h.status === 'indexing'
+            ? 'loading'
+            : rewards24h.status === 'zero'
+              ? 'zero'
+              : 'unavailable',
+      rewards24h.status === 'available'
+        ? 'live'
+        : rewards24h.status === 'partial'
+          ? 'partial'
+          : rewards24h.status === 'indexing'
+            ? 'loading'
+            : 'unavailable',
+      rewards24h.provenance,
     )
 
     // —— Highest sustainable APR among active SmartChef pools (not AMM) ——
@@ -291,8 +314,9 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
         poolUniverseCount: universe,
         discoveredPoolCount: counts?.discovered ?? null,
         rewardingPoolCount: counts?.rewarding ?? null,
-        rewards24hUsd: null,
-        rewards24hState: 'unavailable',
+        rewards24hUsd: rewards24h.pricedUsd,
+        rewards24hState: rewards24h.status,
+        rewards24hBreakdown: rewards24h,
         sustainableApr: best?.display ?? null,
         sustainableAprPool: best?.name ?? null,
         claimableUsd:
@@ -308,19 +332,19 @@ export function usePoolsOverviewKpis(): PoolsOverviewKpisViewModel {
         walletState: !account ? 'disconnected' : runtime.userDataLoaded ? 'ready' : 'loading',
         classificationStatus: classification.status,
         factoryPairsNotUsed: true,
-        rewards24hSource: 'unavailable_no_indexed_distribution',
+        rewards24hSource: rewards24h.methodology,
         provenance: {
           tvl: 'rawPool.totalStaked × stakingTokenPrice (SmartChef/SousChef)',
           discovered: 'GET /api/pools/classification SmartChef counts.discovered',
           rewarding: 'classification counts.rewarding',
-          rewards24h: 'none — indexed 24H distribution not available',
+          rewards24h: rewards24h.provenance,
           sustainableApr: 'poolsAprRules via previewCard.sustainableAprDisplay',
           claimable: 'userData.pendingReward × earningTokenPrice',
         },
         fetchedAt,
       },
     }
-  }, [runtime])
+  }, [runtime, currentBlock])
 }
 
 /** Pure builder for unit tests (no React). */
@@ -407,7 +431,28 @@ export function buildPoolsOverviewKpisFromParts(input: {
           )
         : card('rewarding', '—', 'Reward state unavailable', 'unavailable', 'unavailable')
 
-  const rewards24hCard = card('rewards24h', '—', '24H reward data unavailable', 'unavailable', 'unavailable')
+  const rewards24h = buildPools24hRewards({
+    pools: poolRows as any,
+    currentBlock: null,
+    loading: poolsLoading && poolRows.length === 0,
+    updatedAt: fetchedAt,
+  })
+  const rewards24hCard = card(
+    'rewards24h',
+    rewards24h.displayValue,
+    rewards24h.supporting,
+    rewards24h.status === 'available'
+      ? 'available'
+      : rewards24h.status === 'partial'
+        ? 'partial'
+        : rewards24h.status === 'indexing'
+          ? 'loading'
+          : rewards24h.status === 'zero'
+            ? 'zero'
+            : 'unavailable',
+    rewards24h.status === 'available' ? 'live' : rewards24h.status === 'partial' ? 'partial' : 'unavailable',
+    rewards24h.provenance,
+  )
 
   const rewardingCards = previewCards.filter((p) => p.lifecycle?.rewarding)
   let best: { display: string; name: string; exact: number } | null = null
@@ -460,8 +505,9 @@ export function buildPoolsOverviewKpisFromParts(input: {
       poolUniverseCount: universe,
       discoveredPoolCount: counts?.discovered ?? null,
       rewardingPoolCount: counts?.rewarding ?? null,
-      rewards24hUsd: null,
-      rewards24hState: 'unavailable',
+      rewards24hUsd: rewards24h.pricedUsd,
+      rewards24hState: rewards24h.status,
+      rewards24hBreakdown: rewards24h,
       sustainableApr: best?.display ?? null,
       sustainableAprPool: best?.name ?? null,
       claimableUsd: null,
@@ -470,8 +516,8 @@ export function buildPoolsOverviewKpisFromParts(input: {
       walletState: !account ? 'disconnected' : userDataLoaded ? 'ready' : 'loading',
       classificationStatus: classification.status,
       factoryPairsNotUsed: true,
-      rewards24hSource: 'unavailable_no_indexed_distribution',
-      provenance: { test: fetchedAt },
+      rewards24hSource: rewards24h.methodology,
+      provenance: { test: fetchedAt, rewards24h: rewards24h.provenance },
       fetchedAt,
     },
   }

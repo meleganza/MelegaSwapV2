@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 import styled, { css, keyframes } from 'styled-components'
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { poolsStudioColors } from '../poolsStudioTokens'
 import CreatePoolWizardPreview from './CreatePoolWizardPreview'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
@@ -12,36 +14,38 @@ import {
   buildMachinePreviewJson,
   computeEstimatedApr,
   computeHealthScore,
+  computeRewardConsumptionPct,
   createDefaultWizardState,
+  describePoolSchedule,
+  describeWizardCreatePoolFee,
   type CreatePoolWizardState,
   type WizardStep,
 } from './createPoolWizardState'
+
+function shortAddr(addr: string): string {
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
 
 const WIZARD_TOKEN_META: Record<string, { address?: string; chainId: number }> = {
   MARCO: { address: MARCO_BSC_ADDRESS, chainId: 56 },
   BNB: { address: WBNB[56].address, chainId: 56 },
 }
 
-const Card = styled.section<{ $expanded?: boolean }>`
+const Card = styled.section`
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   background: #141414;
-  border: 1px solid
-    ${({ $expanded }) => ($expanded ? 'rgba(244, 196, 48, 0.45)' : 'rgba(244, 196, 48, 0.32)')};
+  border: 1px solid rgba(244, 196, 48, 0.45);
   border-radius: 22px;
-  padding: ${({ $expanded }) => ($expanded ? '32px 36px 34px' : '16px 20px')};
+  padding: 32px 36px 34px;
   display: flex;
   flex-direction: column;
-  overflow: ${({ $expanded }) => ($expanded ? 'visible' : 'hidden')};
-  min-height: ${({ $expanded }) => ($expanded ? '0' : '140px')};
-  max-height: ${({ $expanded }) => ($expanded ? 'none' : '190px')};
+  overflow: visible;
   height: auto;
-  transition: padding 220ms ease-out, border-color 220ms ease-out;
 
   @media (max-width: 767px) {
-    padding: ${({ $expanded }) => ($expanded ? '18px' : '14px 16px')};
-    max-height: none;
+    padding: 18px;
     border-radius: 18px;
     width: 100%;
     max-width: 100%;
@@ -49,79 +53,6 @@ const Card = styled.section<{ $expanded?: boolean }>`
     margin-bottom: 32px;
     scroll-margin-top: 16px;
     scroll-margin-bottom: 120px;
-  }
-`
-
-const CompactTitle = styled.h2`
-  margin: 0;
-  font-family: Sora, sans-serif;
-  font-size: 22px;
-  line-height: 28px;
-  font-weight: 700;
-  color: #f7f7f7;
-`
-
-const CompactSubtitle = styled.p`
-  margin: 6px 0 0;
-  font-family: Inter, sans-serif;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 400;
-  color: #9a9a9a;
-`
-
-const CompactCtaRow = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 14px;
-  gap: 16px;
-  min-width: 0;
-
-  @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-`
-
-const CompactCreateBtn = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 168px;
-  min-width: 168px;
-  height: 46px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #f0d050 0%, #F4C430 55%, #c9a227 100%);
-  color: #050505;
-  font-family: Inter, sans-serif;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: box-shadow 150ms ease;
-
-  &:hover {
-    box-shadow: 0 0 24px rgba(232, 196, 58, 0.22);
-  }
-
-  @media (max-width: 767px) {
-    width: 100%;
-    min-width: 0;
-  }
-`
-
-const CompactMicrocopy = styled.p`
-  margin: 0;
-  font-family: Inter, sans-serif;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 400;
-  color: #777777;
-
-  @media (max-width: 767px) {
-    text-align: center;
   }
 `
 
@@ -137,29 +68,35 @@ const ExpandedHeaderRow = styled.div`
   }
 `
 
-const CloseBtn = styled.button`
+const ReviewNowBtn = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  min-width: 72px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: transparent;
-  color: #b8b8b8;
+  min-width: 168px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  background: rgba(244, 196, 48, 0.1);
+  color: #F4C430;
   font-family: Inter, sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
   flex-shrink: 0;
+  white-space: nowrap;
   transition:
-    border-color 150ms ease,
-    color 150ms ease;
+    background 150ms ease,
+    border-color 150ms ease;
 
   &:hover {
+    background: rgba(244, 196, 48, 0.18);
     border-color: #F4C430;
-    color: #F4C430;
+  }
+
+  @media (max-width: 767px) {
+    width: 100%;
+    min-width: 0;
   }
 `
 
@@ -197,6 +134,143 @@ const Subtitle = styled.p`
     font-size: 12px;
     line-height: 18px;
   }
+`
+
+const FeeBlock = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(244, 196, 48, 0.28);
+  background: rgba(244, 196, 48, 0.06);
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+`
+
+const FeeItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+`
+
+const FeeLabel = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #8c7a3a;
+`
+
+const FeeValue = styled.span<{ $free?: boolean }>`
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 800;
+  color: ${({ $free }) => ($free ? '#18f089' : '#F4C430')};
+`
+
+const FeeMeta = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: #d8d0b0;
+  word-break: break-all;
+`
+
+const EssentialsSection = styled.div`
+  margin-bottom: 24px;
+
+  @media (max-width: 767px) {
+    margin-bottom: 18px;
+  }
+`
+
+const EssentialsTitle = styled.h3`
+  margin: 0 0 12px;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #7f7f7f;
+`
+
+const EssentialsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 20px;
+  row-gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #191919;
+  border: 1px solid #292929;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    row-gap: 10px;
+    padding: 14px;
+  }
+`
+
+const EssentialItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+`
+
+const EssentialLabel = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #7f7f7f;
+  white-space: nowrap;
+`
+
+const EssentialValue = styled.span`
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+  color: #f2f2f2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
+`
+
+const ReadinessNote = styled.p`
+  margin: 10px 0 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 196, 48, 0.22);
+  background: rgba(244, 196, 48, 0.05);
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  color: #c9bd8f;
 `
 
 const ProgressWizard = styled.div`
@@ -887,7 +961,7 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ label, value, onChange })
 }
 
 export const CreatePoolCta: React.FC = () => {
-  const [expanded, setExpanded] = useState(false)
+  const { address } = useAccount()
   const [step, setStep] = useState<WizardStep>(1)
   const [step3Page, setStep3Page] = useState<0 | 1>(0)
   const [showStep4Json, setShowStep4Json] = useState(false)
@@ -917,8 +991,24 @@ export const CreatePoolCta: React.FC = () => {
     setStep((s) => Math.max(1, s - 1) as WizardStep)
   }
 
+  const resetWizard = useCallback(() => {
+    setState(createDefaultWizardState())
+    setAnimDir('none')
+    setStep(1)
+    setStep3Page(0)
+    setShowStep4Json(false)
+  }, [])
+
+  const jumpToReview = useCallback(() => {
+    setAnimDir('next')
+    setStep(5)
+  }, [])
+
   const estimatedApr = useMemo(() => computeEstimatedApr(state), [state])
   const healthScore = useMemo(() => computeHealthScore(state), [state])
+  const rewardConsumptionPct = useMemo(() => computeRewardConsumptionPct(state), [state])
+  const schedule = useMemo(() => describePoolSchedule(state), [state])
+  const feeInfo = useMemo(() => describeWizardCreatePoolFee(state), [state])
   const machineJson = useMemo(() => buildMachinePreviewJson(state), [state])
 
   const machineStatus = state.rewardToken && state.stakeToken ? 'Ready' : 'Draft'
@@ -936,8 +1026,10 @@ export const CreatePoolCta: React.FC = () => {
       ['Pool Type', state.poolType],
       ['Health Score', healthScore == null ? 'Calculated after configuration' : `${healthScore} / 100`],
       ['Machine Status', machineStatus],
+      ['Creation Fee', feeInfo.display],
+      ['Treasury', feeInfo.recipientLabel],
     ],
-    [state, estimatedApr, healthScore, machineStatus],
+    [state, estimatedApr, healthScore, machineStatus, feeInfo],
   )
 
   return (
@@ -950,38 +1042,122 @@ export const CreatePoolCta: React.FC = () => {
       data-r712-create-pool
       data-r722-create-pool-wizard
       data-r723-create-pool
-      data-r723-create-pool-compact={!expanded || undefined}
-      data-r723-create-pool-expanded={expanded || undefined}
-      $expanded={expanded}
+      data-r723-create-pool-expanded
+      data-ps-create-pool-expanded="true"
+      data-ps-create-pool-permanently-expanded
     >
-      {!expanded ? (
-        <div data-ps-create-pool-compact>
-          <CompactTitle>Create Pool</CompactTitle>
-          <CompactSubtitle>
-            Launch a staking pool with guided reward, lock and emission setup.
-          </CompactSubtitle>
-          <CompactCtaRow>
-            <CompactCreateBtn
-              type="button"
-              data-ps-create-pool-expand
-              onClick={() => setExpanded(true)}
-            >
-              Create Pool
-            </CompactCreateBtn>
-            <CompactMicrocopy>Opens guided setup · ≈30 seconds</CompactMicrocopy>
-          </CompactCtaRow>
-        </div>
-      ) : (
-        <>
       <ExpandedHeaderRow>
         <Header style={{ marginBottom: 0, flex: 1, minWidth: 0 }}>
           <Title>Create Pool</Title>
           <Subtitle>Configure reward token, stake token, emission, lock and safety parameters.</Subtitle>
         </Header>
-        <CloseBtn type="button" data-ps-create-pool-close onClick={() => setExpanded(false)}>
-          Close
-        </CloseBtn>
+        <ReviewNowBtn type="button" data-ps-create-pool-review-now onClick={jumpToReview}>
+          Review Pool Creation
+        </ReviewNowBtn>
       </ExpandedHeaderRow>
+
+      <FeeBlock data-ps-create-pool-fee-block>
+        <FeeItem>
+          <FeeLabel>Creation Fee</FeeLabel>
+          <FeeValue $free={feeInfo.isFree} data-ps-create-pool-fee-amount>
+            {feeInfo.display}
+          </FeeValue>
+        </FeeItem>
+        <FeeItem>
+          <FeeLabel>Reason</FeeLabel>
+          <FeeMeta data-ps-create-pool-fee-reason>{feeInfo.reason}</FeeMeta>
+        </FeeItem>
+        <FeeItem style={{ flex: 1 }}>
+          <FeeLabel>Recipient</FeeLabel>
+          <FeeMeta data-ps-create-pool-fee-recipient>
+            {feeInfo.recipientLabel} / {feeInfo.recipient}
+          </FeeMeta>
+        </FeeItem>
+      </FeeBlock>
+
+      <EssentialsSection data-ps-create-pool-essentials>
+        <EssentialsTitle>Essentials</EssentialsTitle>
+        <EssentialsGrid data-ps-create-pool-essentials-grid>
+          <EssentialItem>
+            <EssentialLabel>Stake Token</EssentialLabel>
+            <EssentialValue data-ps-essential-stake-token>{state.stakeToken || '—'}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Reward Token</EssentialLabel>
+            <EssentialValue data-ps-essential-reward-token>{state.rewardToken || '—'}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Reward Budget</EssentialLabel>
+            <EssentialValue data-ps-essential-reward-budget>{state.rewardBudget || 'Not set'}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Reward Duration</EssentialLabel>
+            <EssentialValue data-ps-essential-reward-duration>
+              {state.emissionDuration ? `${state.emissionDuration} days` : 'Not set'}
+            </EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Emission Rate</EssentialLabel>
+            <EssentialValue data-ps-essential-emission-rate>
+              {state.dailyRewards ? `${state.dailyRewards} / day` : 'Not set'}
+            </EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Start</EssentialLabel>
+            <EssentialValue data-ps-essential-start>{schedule.start}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>End</EssentialLabel>
+            <EssentialValue data-ps-essential-end>{schedule.end}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Lock Type</EssentialLabel>
+            <EssentialValue data-ps-essential-lock-type>{state.lockType || '—'}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Lock Period</EssentialLabel>
+            <EssentialValue data-ps-essential-lock-period>{state.lockPeriod || '—'}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Cooldown</EssentialLabel>
+            <EssentialValue data-ps-essential-cooldown>{state.cooldown || '—'}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Pool Owner</EssentialLabel>
+            {address ? (
+              <EssentialValue data-ps-essential-pool-owner>{shortAddr(address)}</EssentialValue>
+            ) : (
+              <ConnectWalletButton scale="sm" data-ps-essential-pool-owner-connect>
+                Connect
+              </ConnectWalletButton>
+            )}
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Creation Fee</EssentialLabel>
+            <EssentialValue data-ps-essential-creation-fee>{feeInfo.display}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Treasury</EssentialLabel>
+            <EssentialValue data-ps-essential-treasury>{feeInfo.recipientLabel}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Estimated APR</EssentialLabel>
+            <EssentialValue data-ps-essential-apr>{estimatedApr}</EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Reward Consumption</EssentialLabel>
+            <EssentialValue data-ps-essential-reward-consumption>
+              {rewardConsumptionPct == null ? 'Calculated after configuration' : `${rewardConsumptionPct}%`}
+            </EssentialValue>
+          </EssentialItem>
+          <EssentialItem>
+            <EssentialLabel>Pool Health</EssentialLabel>
+            <EssentialValue data-ps-essential-pool-health>
+              {healthScore == null ? 'Calculated after configuration' : `${healthScore} / 100`}
+            </EssentialValue>
+          </EssentialItem>
+        </EssentialsGrid>
+      </EssentialsSection>
 
       <ProgressWizard data-r722-wizard-progress>
         <ProgressTrack>
@@ -1031,8 +1207,8 @@ export const CreatePoolCta: React.FC = () => {
                   <GoldBtn type="button" data-ps-wizard-next onClick={goNext}>
                     Next →
                   </GoldBtn>
-                  <GhostBtn type="button" data-ps-wizard-cancel onClick={() => setExpanded(false)}>
-                    Cancel
+                  <GhostBtn type="button" data-ps-wizard-cancel onClick={resetWizard}>
+                    Reset
                   </GhostBtn>
                 </StepActions>
               </>
@@ -1239,8 +1415,8 @@ export const CreatePoolCta: React.FC = () => {
             {step === 5 ? (
               <>
                 <ReviewStepHeader data-ps-wizard-pool-ready>
-                  <ReviewStepTitle>Pool Ready</ReviewStepTitle>
-                  <ReviewStepSubtitle>Review configuration before creating the pool.</ReviewStepSubtitle>
+                  <ReviewStepTitle>Review Pool Creation</ReviewStepTitle>
+                  <ReviewStepSubtitle>Review configuration and fee before continuing.</ReviewStepSubtitle>
                 </ReviewStepHeader>
                 <ReviewScroll data-ps-wizard-review>
                   <ReviewGrid>
@@ -1259,12 +1435,17 @@ export const CreatePoolCta: React.FC = () => {
                     $wide
                     data-ps-create-pool-btn
                   >
-                    Create Pool
+                    Continue in Build Studio →
                   </GoldBtn>
                   <GhostBtn type="button" $review data-ps-wizard-back onClick={goPrev}>
                     ← Back
                   </GhostBtn>
                 </StepActions>
+                <ReadinessNote data-ps-create-pool-readiness-note>
+                  Honest readiness note — on-chain pool creation is not yet executable from this wizard. This
+                  review captures your configuration and fee; continue in Build Studio to finalize deployment
+                  once the staking pool factory is on-chain.
+                </ReadinessNote>
               </>
             ) : null}
           </StepPanel>
@@ -1281,8 +1462,6 @@ export const CreatePoolCta: React.FC = () => {
         </FooterNote>
         <FooterNote data-ps-wizard-footer-eta>Estimated completion time · ≈30 seconds</FooterNote>
       </Footer>
-        </>
-      )}
     </Card>
   )
 }

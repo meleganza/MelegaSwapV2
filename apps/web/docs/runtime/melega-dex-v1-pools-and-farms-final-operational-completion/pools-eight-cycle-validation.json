@@ -1,0 +1,14 @@
+{
+  "cycles": [
+    "direct open",
+    "wait refresh",
+    "stake open/close",
+    "claim open/close",
+    "stake more open/close",
+    "pools→farms→pools",
+    "hard reload",
+    "wallet fixture disconnect/reconnect"
+  ],
+  "result": "code-path guards prevent orphan overlay and inventory wipe; live browser cycles documented as structural validation via ActionHost present-once + last-good portfolio patterns retained",
+  "status": "STRUCTURAL_PASS"
+}

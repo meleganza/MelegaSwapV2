@@ -1,0 +1,12 @@
+{
+  "suites": [
+    "PoolsStudio",
+    "FarmsStudio",
+    "feeSchedule",
+    "createFarmFeePrecedence",
+    "founderRegressionRepair",
+    "poolsActionModalRepair"
+  ],
+  "result": "295 passed / 35 files",
+  "command": "yarn vitest run src/views/PoolsStudio/__tests__ src/views/FarmsStudio/__tests__ src/config/constants/__tests__ src/views/__tests__/founderRegressionRepair.test.ts"
+}

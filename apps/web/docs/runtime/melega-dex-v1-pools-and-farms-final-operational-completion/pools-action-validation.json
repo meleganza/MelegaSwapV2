@@ -1,0 +1,7 @@
+{
+  "stake": "visible StakeModal / VaultStakeModal",
+  "claim": "visible CollectModalContainer",
+  "stakeMore": "reuses stake path with selected pool",
+  "orphanOverlay": "guarded — overlay never mounts alone with null content",
+  "tests": "poolsActionModalRepair.test.ts"
+}

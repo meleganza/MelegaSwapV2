@@ -148,7 +148,7 @@ export const PoolsHeroFeaturedCompact: React.FC = () => {
             data-ps-view-contract
             onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
           >
-            View Contract ↗
+            BscScan ↗
           </Btn>
         ) : null}
       </Actions>

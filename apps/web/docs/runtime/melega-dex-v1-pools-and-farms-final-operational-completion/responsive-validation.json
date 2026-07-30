@@ -1,0 +1,15 @@
+{
+  "viewports": [
+    "1920x1080",
+    "1600x900",
+    "1440x900",
+    "1366x768",
+    "1024x768",
+    "768x1024",
+    "430x932",
+    "390x844",
+    "375x812"
+  ],
+  "status": "LAYOUT_CONTRACTS_UPDATED",
+  "notes": "grid ratios, wrap actions, permanently expanded create surfaces, bottom-sheet ModalContainer retained"
+}

@@ -13,6 +13,8 @@ import {
   MASTERCHEF_EMERGENCY_WITHDRAW_TOPIC,
   MASTERCHEF_WITHDRAW_TOPIC,
 } from './masterchefTopics'
+import certifiedSeedState from '../seeds/farmer-participants/state.json'
+import certifiedSeedWallets from '../seeds/farmer-participants/wallets.json'
 
 const ZERO = '0x0000000000000000000000000000000000000000'
 const SYSTEM_EXCLUDE = new Set<string>([ZERO, MELEGA_MASTERCHEF_BSC.toLowerCase()])
@@ -73,6 +75,34 @@ function readJson<T>(file: string): T | null {
 function writeJson(file: string, data: unknown) {
   ensureDir()
   fs.writeFileSync(file, JSON.stringify(data, null, 2))
+}
+
+/**
+ * When runtime index files are missing (Vercel/serverless cold start), copy the
+ * certified seed into the runtime directory so KPIs can resolve factually.
+ * Does not invent counts — seed is a prior full MasterChef scan artifact.
+ */
+function hydrateRuntimeFromSeedIfMissing(): void {
+  if (fs.existsSync(STATE_FILE()) && fs.existsSync(WALLETS_FILE())) return
+  const seedState = certifiedSeedState as FarmerParticipantState
+  const seedWallets = certifiedSeedWallets as { all?: string[]; lp?: string[] }
+  if (!seedState?.uniqueParticipants || !Array.isArray(seedWallets?.all) || seedWallets.all.length === 0) return
+  ensureDir()
+  if (!fs.existsSync(STATE_FILE())) {
+    writeJson(STATE_FILE(), {
+      ...seedState,
+      note: `${seedState.note || ''} · hydrated from certified seed`.trim(),
+      updatedAt: new Date().toISOString(),
+    })
+  }
+  if (!fs.existsSync(WALLETS_FILE())) {
+    writeJson(WALLETS_FILE(), {
+      all: seedWallets.all,
+      lp: Array.isArray(seedWallets.lp) ? seedWallets.lp : [],
+      updatedAt: new Date().toISOString(),
+      source: 'certified-seed',
+    })
+  }
 }
 
 function topicToAddress(topic?: string): string | null {
@@ -136,10 +166,14 @@ function coveragePct(lastIndexed: number, deployment: number, head: number): num
 function finalizeStatus(state: FarmerParticipantState): FarmerParticipantState {
   const lag = Math.max(0, state.chainHead - state.lastIndexedBlock)
   const nearHead = lag <= 2048
+  // Catch-up lag after a complete prior scan: keep ready when we already have a
+  // full-coverage unique set so KPIs do not flap to a permanent skeleton.
+  const completeUniqueSet =
+    state.uniqueParticipants > 0 && state.coveragePct >= 99.5 && state.rangesScanned > 0
   let status: FarmerIndexStatus = state.status
   if (state.lastError && state.rangesScanned === 0 && state.uniqueParticipants === 0) {
     status = 'error'
-  } else if (nearHead && state.coveragePct >= 99.5) {
+  } else if ((nearHead || completeUniqueSet) && state.coveragePct >= 99.5) {
     status = 'ready'
   } else if (state.lastIndexedBlock >= state.deploymentBlock) {
     status = 'indexing'
@@ -148,7 +182,9 @@ function finalizeStatus(state: FarmerParticipantState): FarmerParticipantState {
   }
   const note =
     status === 'ready'
-      ? 'Unique wallets that participated in Melega DEX farms (MasterChef Deposit/Withdraw/EmergencyWithdraw).'
+      ? completeUniqueSet && !nearHead
+        ? `Unique wallets that participated in Melega DEX farms · catch-up from block ${state.lastIndexedBlock} (head ${state.chainHead}).`
+        : 'Unique wallets that participated in Melega DEX farms (MasterChef Deposit/Withdraw/EmergencyWithdraw).'
       : status === 'indexing'
         ? `Indexing… ${state.coveragePct}% coverage · block ${state.lastIndexedBlock} / ${state.chainHead}`
         : status === 'error'
@@ -165,12 +201,14 @@ function finalizeStatus(state: FarmerParticipantState): FarmerParticipantState {
 }
 
 export function loadFarmerParticipantState(): FarmerParticipantState {
+  hydrateRuntimeFromSeedIfMissing()
   const existing = readJson<FarmerParticipantState>(STATE_FILE())
   if (!existing) return emptyState()
   return finalizeStatus(existing)
 }
 
 export function loadFarmerWallets(): { all: string[]; lp: string[] } {
+  hydrateRuntimeFromSeedIfMissing()
   const raw = readJson<{ all?: string[]; lp?: string[] }>(WALLETS_FILE())
   return {
     all: Array.isArray(raw?.all) ? raw!.all : [],
@@ -327,13 +365,29 @@ export function getFarmerParticipantSnapshot(): FarmerParticipantState & {
 } {
   const state = loadFarmerParticipantState()
   const primaryLabel = 'Unique wallets that participated in Melega DEX farms'
+  // Surface a factual non-zero unique set even while catch-up indexing —
+  // never a fabricated zero, never a permanent null skeleton when seed/runtime has count.
+  if (
+    (state.status === 'indexing' || state.status === 'idle') &&
+    state.uniqueParticipants > 0 &&
+    state.coveragePct >= 99.5
+  ) {
+    return {
+      ...state,
+      status: 'ready',
+      primaryCount: state.uniqueParticipants,
+      primaryLabel,
+      displayValue: String(state.uniqueParticipants),
+      displayState: 'available',
+    }
+  }
   if (state.status === 'indexing' || state.status === 'idle') {
     return {
       ...state,
-      primaryCount: null,
+      primaryCount: state.uniqueParticipants > 0 ? state.uniqueParticipants : null,
       primaryLabel,
-      displayValue: null,
-      displayState: 'loading',
+      displayValue: state.uniqueParticipants > 0 ? String(state.uniqueParticipants) : null,
+      displayState: state.uniqueParticipants > 0 ? 'available' : 'loading',
     }
   }
   if (state.status === 'ready') {

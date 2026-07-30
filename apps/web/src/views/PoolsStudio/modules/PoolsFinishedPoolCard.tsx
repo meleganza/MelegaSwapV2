@@ -281,7 +281,7 @@ export const PoolsFinishedPoolCard: React.FC<{ pool: PoolsFinishedPoolCardModel 
             aria-label={`View contract for ${pool.title} on BscScan`}
             onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
           >
-            View Contract ↗
+            BscScan ↗
           </Btn>
         ) : null}
       </Actions>

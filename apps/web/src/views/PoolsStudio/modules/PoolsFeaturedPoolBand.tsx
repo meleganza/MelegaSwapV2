@@ -218,7 +218,7 @@ export const PoolsFeaturedPoolBand: React.FC = () => {
             aria-label={`View contract for ${featured.name} on BscScan`}
             onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
           >
-            View Contract ↗
+            BscScan ↗
           </Btn>
         ) : null}
       </Actions>

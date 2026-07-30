@@ -8,11 +8,11 @@ import { MASTERCHEF_CANONICAL } from 'lib/bsc-indexer/indexer/masterchefTopics'
 
 /**
  * Unique MasterChef farm participants (factual durable index).
- * GET — snapshot with provenance
- * GET ?advance=1 — advance index by a bounded chunk (server-side backfill helper)
+ * GET — snapshot with provenance (seed-hydrated on cold start)
+ * GET ?advance=1 / POST — advance index by a bounded chunk (server-side backfill helper)
  *
- * Never returns status:ready with a fabricated zero while indexing is incomplete.
- * While indexing, uniqueFarmers is null and status is "indexing".
+ * Never returns a fabricated zero while incomplete.
+ * When a certified unique set exists (seed or runtime), uniqueFarmers is the factual count.
  */
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') {
@@ -37,11 +37,12 @@ const handler: NextApiHandler = async (req, res) => {
 
   return res.status(200).json({
     status: snap.status === 'idle' ? 'indexing' : snap.status,
-    uniqueFarmers: snap.displayState === 'loading' || snap.displayState === 'unavailable' ? null : snap.primaryCount,
-    uniqueLpFarmers: snap.status === 'ready' ? snap.uniqueLpParticipants : null,
-    historicalParticipants: snap.status === 'ready' ? snap.historicalParticipants : null,
+    uniqueFarmers:
+      snap.primaryCount != null && Number.isFinite(snap.primaryCount) ? snap.primaryCount : null,
+    uniqueLpFarmers: snap.uniqueLpParticipants > 0 ? snap.uniqueLpParticipants : null,
+    historicalParticipants: snap.historicalParticipants > 0 ? snap.historicalParticipants : null,
     currentlyStakedWallets: snap.currentlyStakedWallets,
-    observedWallets: snap.status === 'ready' ? snap.uniqueParticipants : null,
+    observedWallets: snap.uniqueParticipants > 0 ? snap.uniqueParticipants : null,
     eventCount:
       snap.depositEventCount + snap.withdrawEventCount + snap.emergencyWithdrawEventCount,
     depositEventCount: snap.depositEventCount,

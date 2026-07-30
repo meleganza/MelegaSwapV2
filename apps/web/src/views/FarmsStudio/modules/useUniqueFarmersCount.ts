@@ -31,19 +31,19 @@ export function useUniqueFarmersCount(): {
 
   const status = data?.status ?? 'unavailable'
   const indexing = status === 'indexing' || status === 'idle'
+  // Prefer factual unique count whenever the API surfaces one (incl. seed/catch-up).
   // Never treat null / incomplete index as a factual zero.
   const count =
-    status === 'ready' &&
-    data?.uniqueFarmers != null &&
-    Number.isFinite(data.uniqueFarmers) &&
-    data.uniqueFarmers >= 0
+    data?.uniqueFarmers != null && Number.isFinite(data.uniqueFarmers) && data.uniqueFarmers > 0
       ? data.uniqueFarmers
-      : null
+      : status === 'ready' && data?.uniqueFarmers === 0
+        ? 0
+        : null
 
   return {
     count,
-    loading: (isValidating && count == null) || indexing,
-    indexing,
+    loading: isValidating && count == null && indexing,
+    indexing: indexing && count == null,
     note: data?.note ?? data?.primaryLabel ?? null,
     coveragePct: data?.coveragePct ?? null,
   }

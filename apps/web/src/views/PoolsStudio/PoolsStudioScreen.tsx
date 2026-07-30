@@ -52,7 +52,7 @@ const Content = styled.div`
 
 const PositionsCreateRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
+  grid-template-columns: minmax(0, 1.85fr) minmax(280px, 1fr);
   gap: 14px;
   align-items: start;
   min-width: 0;
@@ -68,7 +68,7 @@ const CreatePoolSide = styled.div`
   width: 100%;
   align-self: start;
 
-  /* Compact side card — suppress giant empty Create Pool chrome */
+  /* Permanently expanded Create Pool workspace — full-height side column */
   [data-ps-create-pool],
   [data-testid='create-pool-cta'] {
     max-width: 100%;

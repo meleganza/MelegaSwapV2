@@ -307,7 +307,7 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
               window.open(contractUrl, '_blank', 'noopener,noreferrer')
             }}
           >
-            View Contract ↗
+            BscScan ↗
           </Btn>
         ) : null}
         {pool.detailsHref ? (

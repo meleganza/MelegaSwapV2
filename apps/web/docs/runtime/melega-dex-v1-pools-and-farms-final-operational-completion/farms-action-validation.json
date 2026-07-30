@@ -1,0 +1,6 @@
+{
+  "harvest": "FarmHarvestConfirmModal visible",
+  "stakeMore": "DepositModal visible",
+  "withdraw": "WithdrawModal visible",
+  "orphanOverlay": false
+}

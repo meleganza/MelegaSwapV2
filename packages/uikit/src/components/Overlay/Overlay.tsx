@@ -26,7 +26,8 @@ const StyledOverlay = styled(Box)<{ isUnmounting?: boolean }>`
   left: 0px;
   width: 100%;
   height: 100%;
-  background-color: ${({ theme }) => `${theme.colors.text99}`};
+  /* Neutral dim — theme text99 reads purple/pink and looked like an orphan overlay when content failed. */
+  background-color: rgba(0, 0, 0, 0.55);
   /* Stay below modal content siblings (theme.zIndices.modal). Hardcoded 20 covered dialogs. */
   z-index: 0;
   will-change: opacity;

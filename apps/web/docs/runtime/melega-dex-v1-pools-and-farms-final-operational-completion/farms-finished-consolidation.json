@@ -1,0 +1,9 @@
+{
+  "standaloneFinishedSection": "REMOVED",
+  "finishedInMyFarms": true,
+  "badge": {
+    "active": "green Active",
+    "finished": "red Finished"
+  },
+  "copy": "Farm finished — harvest rewards and withdraw remaining LP."
+}

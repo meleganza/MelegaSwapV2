@@ -43,12 +43,12 @@ describe('Product IA refinement — Pools economics repair', () => {
     expect(runtime).toMatch(/mapPoolToPreviewCard\(p, currentBlockRef\.current/)
   })
 
-  it('pool cards expose View Contract ↗ SmartChef explorer link', () => {
+  it('pool cards expose BscScan ↗ SmartChef explorer link', () => {
     const explore = readFileSync(path.join(ROOT, 'modules/PoolsExplorePoolCard.tsx'), 'utf8')
     const positions = readFileSync(path.join(ROOT, 'modules/PoolsMyPositionCard.tsx'), 'utf8')
     const featured = readFileSync(path.join(ROOT, 'modules/PoolsHeroFeaturedCompact.tsx'), 'utf8')
     for (const src of [explore, positions, featured]) {
-      expect(src).toContain('View Contract ↗')
+      expect(src).toContain('BscScan ↗')
       expect(src).toContain('poolBscScanContractUrl')
       expect(src).toContain('noopener,noreferrer')
     }

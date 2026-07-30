@@ -52,8 +52,22 @@ describe('FARMS_MODULE_003 My Farms', () => {
   })
   it('limits actions and never formats raw uint256 amounts', () => {
     const position = cardToFarmsWalletPosition(card({ userStaked: new BigNumber('1000000000000000000'), pendingReward: new BigNumber('1000000000000000000') }), { wallet: '0x1', chainId: 56 })!
-    expect(position.actions).toHaveLength(2); expect(position.actions.map((a) => a.label)).toContain('Harvest')
+    // Active + staked + pending: Harvest, Stake More, and Withdraw (no generic "Manage").
+    expect(position.actions).toHaveLength(3)
+    expect(position.actions.map((a) => a.label)).toEqual(['Harvest', 'Stake More', 'Withdraw'])
     expect(formatFarmPositionAmount(new BigNumber('1250450000000000000000'), 18, 'MARCO', true).formatted).not.toContain('1250450000000000000000')
+  })
+  it('finished/withdraw-only positions never expose a generic Manage action', () => {
+    const withdrawOnly = cardToFarmsWalletPosition(card({ pid: 5, status: 'finished', userStaked: new BigNumber('1000000000000000000') }), { wallet: '0x1', chainId: 56 })!
+    expect(withdrawOnly.statusLabel).toBe('Finished')
+    expect(withdrawOnly.actions.map((a) => a.label)).not.toContain('Manage')
+    expect(withdrawOnly.actions.map((a) => a.label)).toContain('Withdraw')
+
+    const endedWithPending = cardToFarmsWalletPosition(card({ pid: 6, status: 'finished', pendingReward: new BigNumber('1000000000000000000') }), { wallet: '0x1', chainId: 56 })!
+    expect(endedWithPending.statusLabel).toBe('Finished')
+    expect(endedWithPending.actions.map((a) => a.label)).toContain('Harvest')
+    expect(endedWithPending.actions.map((a) => a.label)).not.toContain('Manage')
+    expect(endedWithPending.farmStateLine).toBe('Farm finished — harvest rewards and withdraw remaining LP.')
   })
   it('mounts after KPIs and excludes legacy My Farms and modules 004+', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import BigNumber from 'bignumber.js'
 import { useModal } from '@pancakeswap/uikit'
 import { useAccount } from 'wagmi'
@@ -11,11 +11,20 @@ import { CollectModalContainer, type PoolTxSuccessPayload } from 'views/Pools/co
 import { emitCivilizationEvent } from 'lib/civilization-runtime/event-bus'
 import { usePoolsRuntime } from './PoolsRuntimeContext'
 
+/**
+ * Bridges Studio requestModal → Pancake useModal.
+ * Critical: updateOnPropsChange must stay false. Clearing modalRequest must never
+ * replace an open dialog with <></> (orphan purple overlay).
+ */
 export const PoolsActionHost: React.FC = () => {
   const { modalRequest, clearModal } = usePoolsRuntime()
   const { address: account } = useAccount()
+  const presentedKeyRef = useRef<string | null>(null)
+
   const pool = modalRequest?.pool.rawPool
   const action = modalRequest?.action
+  const requestKey =
+    pool && action ? `${pool.sousId}:${action}:${pool.vaultKey ? 'vault' : 'std'}` : null
 
   const walletBalance = useTokenBalance(account ?? undefined, pool?.stakingToken)
   const stakingTokenBalance = walletBalance ? getBalanceNumber(walletBalance, pool?.stakingToken?.decimals) : 0
@@ -33,7 +42,7 @@ export const PoolsActionHost: React.FC = () => {
     emitCivilizationEvent('pool_claimed', 'pools', { sousId: payload.sousId, txHash: payload.txHash })
   }, [])
 
-  const [onPresentStake] = useModal(
+  const stakeNode =
     pool && action === 'stake' && !pool.vaultKey ? (
       <StakeModal
         isBnbPool={isBnbPool}
@@ -42,26 +51,14 @@ export const PoolsActionHost: React.FC = () => {
         stakingTokenPrice={pool.stakingTokenPrice}
         onTxSuccess={handlePoolTxSuccess}
       />
-    ) : (
-      <></>
-    ),
-    true,
-    true,
-    'poolsStudioStake',
-  )
+    ) : null
 
-  const [onPresentVaultStake] = useModal(
+  const vaultStakeNode =
     pool && action === 'stake' && pool.vaultKey ? (
       <VaultStakeModal stakingMax={walletBalance ?? BIG_ZERO} pool={pool} onTxSuccess={handlePoolTxSuccess} />
-    ) : (
-      <></>
-    ),
-    true,
-    true,
-    'poolsStudioVaultStake',
-  )
+    ) : null
 
-  const [onPresentUnstake] = useModal(
+  const unstakeNode =
     pool && action === 'unstake' && !pool.vaultKey ? (
       <StakeModal
         isBnbPool={isBnbPool}
@@ -71,15 +68,9 @@ export const PoolsActionHost: React.FC = () => {
         isRemovingStake
         onTxSuccess={handlePoolTxSuccess}
       />
-    ) : (
-      <></>
-    ),
-    true,
-    true,
-    'poolsStudioUnstake',
-  )
+    ) : null
 
-  const [onPresentVaultUnstake] = useModal(
+  const vaultUnstakeNode =
     pool && action === 'unstake' && pool.vaultKey ? (
       <VaultStakeModal
         stakingMax={pool.userData?.stakedBalance ?? BIG_ZERO}
@@ -87,15 +78,9 @@ export const PoolsActionHost: React.FC = () => {
         isRemovingStake
         onTxSuccess={handlePoolTxSuccess}
       />
-    ) : (
-      <></>
-    ),
-    true,
-    true,
-    'poolsStudioVaultUnstake',
-  )
+    ) : null
 
-  const [onPresentClaim] = useModal(
+  const claimNode =
     pool && action === 'claim' ? (
       <CollectModalContainer
         earningTokenSymbol={pool.earningToken.symbol}
@@ -103,29 +88,64 @@ export const PoolsActionHost: React.FC = () => {
         isBnbPool={isBnbPool}
         onTxSuccess={handlePoolTxSuccess}
       />
-    ) : (
-      <></>
-    ),
+    ) : null
+
+  // updateOnPropsChange=false — never swap open dialog for null/empty after clearModal
+  const [onPresentStake] = useModal(stakeNode ?? <StakeModalPlaceholder />, true, false, 'poolsStudioStake')
+  const [onPresentVaultStake] = useModal(
+    vaultStakeNode ?? <StakeModalPlaceholder />,
     true,
-    true,
-    'poolsStudioClaim',
+    false,
+    'poolsStudioVaultStake',
   )
+  const [onPresentUnstake] = useModal(unstakeNode ?? <StakeModalPlaceholder />, true, false, 'poolsStudioUnstake')
+  const [onPresentVaultUnstake] = useModal(
+    vaultUnstakeNode ?? <StakeModalPlaceholder />,
+    true,
+    false,
+    'poolsStudioVaultUnstake',
+  )
+  const [onPresentClaim] = useModal(claimNode ?? <StakeModalPlaceholder />, true, false, 'poolsStudioClaim')
 
   useEffect(() => {
-    if (!pool || !action) return
+    if (!requestKey || !pool || !action) return
+    if (presentedKeyRef.current === requestKey) return
+
     if (action === 'stake') {
-      if (pool.vaultKey) onPresentVaultStake()
-      else onPresentStake()
+      if (pool.vaultKey) {
+        if (!vaultStakeNode) return
+        onPresentVaultStake()
+      } else {
+        if (!stakeNode) return
+        onPresentStake()
+      }
     } else if (action === 'unstake') {
-      if (pool.vaultKey) onPresentVaultUnstake()
-      else onPresentUnstake()
+      if (pool.vaultKey) {
+        if (!vaultUnstakeNode) return
+        onPresentVaultUnstake()
+      } else {
+        if (!unstakeNode) return
+        onPresentUnstake()
+      }
     } else if (action === 'claim') {
+      if (!claimNode) return
       onPresentClaim()
+    } else {
+      return
     }
+
+    presentedKeyRef.current = requestKey
+    // Clear request so inventory re-renders do not re-fire; do not touch open modal node.
     clearModal()
   }, [
+    requestKey,
     pool,
     action,
+    stakeNode,
+    vaultStakeNode,
+    unstakeNode,
+    vaultUnstakeNode,
+    claimNode,
     onPresentStake,
     onPresentVaultStake,
     onPresentUnstake,
@@ -134,7 +154,21 @@ export const PoolsActionHost: React.FC = () => {
     clearModal,
   ])
 
+  useEffect(() => {
+    if (!modalRequest) {
+      // Allow a fresh open of the same pool/action after dismiss + new request
+      const t = window.setTimeout(() => {
+        presentedKeyRef.current = null
+      }, 300)
+      return () => window.clearTimeout(t)
+    }
+    return undefined
+  }, [modalRequest])
+
   return null
 }
+
+/** Never presented — satisfies useModal's ReactNode when idle. */
+const StakeModalPlaceholder = () => null
 
 export default PoolsActionHost

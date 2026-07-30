@@ -70,7 +70,7 @@ const Stage = styled.div`
   height: 94%;
   display: grid;
   grid-template-columns: 1fr 1.05fr 1fr;
-  align-items: center;
+  align-items: end;
   gap: 8px;
 
   @media (max-width: ${farmsHero.mobileBreak}) {
@@ -83,8 +83,21 @@ const Col = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   min-width: 0;
+  height: 100%;
+`
+
+/** Fixed icon row height keeps LP Pair / Farm / MARCO Rewards logos on a shared centerline. */
+const IconRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 78px;
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    height: 64px;
+  }
 `
 
 const Label = styled.span`
@@ -102,18 +115,19 @@ const Label = styled.span`
 const PairTrack = styled.div`
   position: relative;
   width: 96px;
-  height: 64px;
+  /** Matches the 40px token logos exactly so IconRow centers the drift track on the shared centerline. */
+  height: 40px;
 
   @media (max-width: ${farmsHero.mobileBreak}) {
     width: 80px;
-    height: 52px;
+    height: 40px;
   }
 `
 
 const PairMoving = styled.div`
   position: absolute;
   left: 0;
-  top: 8px;
+  top: 0;
   display: flex;
   align-items: center;
   will-change: transform;
@@ -211,15 +225,12 @@ const RewardStage = styled.div`
   }
 `
 
+/** Centered on RewardStage's own midpoint via transform (no magic offsets to drift out of alignment). */
 const MarcoCoreWrap = styled.div`
   position: absolute;
-  left: 34px;
-  top: 22px;
-
-  @media (max-width: ${farmsHero.mobileBreak}) {
-    left: 26px;
-    top: 18px;
-  }
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 `
 
 const SparkWrap = styled.div<{ $delay: string; $x: string; $y: string }>`
@@ -277,35 +288,41 @@ export const FarmsHeroArtwork: React.FC = () => (
     <Glow />
     <Stage>
       <Col>
-        <PairTrack>
-          <PairMoving>
-            <TokenMark src={MARCO_LOGO} initial="M" size={40} />
-            <TokenMark src={WBNB_LOGO} initial="B" size={40} offset />
-          </PairMoving>
-        </PairTrack>
+        <IconRow>
+          <PairTrack>
+            <PairMoving>
+              <TokenMark src={MARCO_LOGO} initial="M" size={40} />
+              <TokenMark src={WBNB_LOGO} initial="B" size={40} offset />
+            </PairMoving>
+          </PairTrack>
+        </IconRow>
         <Label>LP Pair</Label>
       </Col>
       <Col>
-        <FarmModule>
-          <FarmInner />
-        </FarmModule>
+        <IconRow>
+          <FarmModule>
+            <FarmInner />
+          </FarmModule>
+        </IconRow>
         <Label>Farm</Label>
       </Col>
       <Col>
-        <RewardStage>
-          <MarcoCoreWrap>
-            <TokenMark src={MARCO_LOGO} initial="M" size={40} accent="#22c55e" />
-          </MarcoCoreWrap>
-          <SparkWrap $delay="0s" $x="48px" $y="-20px">
-            <TokenMark src={MARCO_LOGO} initial="M" size={18} />
-          </SparkWrap>
-          <SparkWrap $delay="0.7s" $x="56px" $y="8px">
-            <TokenMark src={MARCO_LOGO} initial="M" size={18} />
-          </SparkWrap>
-          <SparkWrap $delay="1.4s" $x="40px" $y="22px">
-            <TokenMark src={MARCO_LOGO} initial="M" size={18} />
-          </SparkWrap>
-        </RewardStage>
+        <IconRow>
+          <RewardStage>
+            <MarcoCoreWrap>
+              <TokenMark src={MARCO_LOGO} initial="M" size={40} accent="#22c55e" />
+            </MarcoCoreWrap>
+            <SparkWrap $delay="0s" $x="48px" $y="-20px">
+              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
+            </SparkWrap>
+            <SparkWrap $delay="0.7s" $x="56px" $y="8px">
+              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
+            </SparkWrap>
+            <SparkWrap $delay="1.4s" $x="40px" $y="22px">
+              <TokenMark src={MARCO_LOGO} initial="M" size={18} />
+            </SparkWrap>
+          </RewardStage>
+        </IconRow>
         <Label>MARCO Rewards</Label>
       </Col>
     </Stage>

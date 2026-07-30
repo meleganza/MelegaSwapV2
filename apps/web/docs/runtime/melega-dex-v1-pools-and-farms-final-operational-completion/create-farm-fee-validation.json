@@ -1,0 +1,7 @@
+{
+  "marcoReward": "1.00 BNB",
+  "marcoPairNonMarcoReward": "FREE",
+  "otherwise": "0.25 BNB",
+  "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "tests": "createFarmFeePrecedence.test.ts"
+}

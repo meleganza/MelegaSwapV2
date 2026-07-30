@@ -1,0 +1,12 @@
+{
+  "marcoStaking": {
+    "fee": "FREE",
+    "rule": "createPool.marcoStakingFree"
+  },
+  "nonMarco": {
+    "fee": "0.25 BNB",
+    "rule": "createPool.defaultBnb"
+  },
+  "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "ssot": "apps/web/src/config/constants/fee-schedule.json via feeSchedule.ts"
+}

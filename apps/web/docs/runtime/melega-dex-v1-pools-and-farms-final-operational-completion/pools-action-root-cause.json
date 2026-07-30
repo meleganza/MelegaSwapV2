@@ -1,0 +1,10 @@
+{
+  "rootCause": "PoolsActionHost/FarmsActionHost called useModal(..., updateOnPropsChange=true) then clearModal() immediately after onPresent. Clearing modalRequest re-rendered hooks with <></>; updateOnPropsChange replaced open dialog with empty fragment while Overlay stayed open.",
+  "files": [
+    "apps/web/src/views/PoolsStudio/poolsRuntime/PoolsActionHost.tsx",
+    "apps/web/src/views/FarmsStudio/farmsRuntime/FarmsActionHost.tsx",
+    "packages/uikit/src/widgets/Modal/useModal.ts",
+    "packages/uikit/src/components/Overlay/Overlay.tsx"
+  ],
+  "fix": "updateOnPropsChange=false; never present empty fragment; present-once guard via presentedKeyRef; Overlay dim rgba(0,0,0,0.55); Farms Harvest uses FarmHarvestConfirmModal"
+}

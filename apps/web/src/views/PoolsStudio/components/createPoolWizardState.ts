@@ -1,5 +1,6 @@
 import { premiumUiValue } from 'design-system/melega/tokens/premiumStudio'
 import { STAKING_TEMPLATES } from 'views/BuildStudio/buildStudioData'
+import { describeCreatePoolFee, type CreateFeeDisplay } from 'config/constants/feeSchedule'
 
 export type WizardStep = 1 | 2 | 3 | 4 | 5
 
@@ -81,6 +82,34 @@ export function computeHealthScore(state: CreatePoolWizardState): number | null 
   if (parseNum(state.withdrawalFee) === 0) score += 4
   if (state.poolType === 'Official') score += 5
   return Math.min(98, Math.max(42, score))
+}
+
+/** Reward budget consumed as a percentage over the emission window — null until configured. */
+export function computeRewardConsumptionPct(state: CreatePoolWizardState): number | null {
+  if (!hasCompletePoolEstimateParams(state)) return null
+  const budget = parseNum(state.rewardBudget)
+  const daily = parseNum(state.dailyRewards)
+  const days = parseNum(state.emissionDuration)
+  if (budget <= 0) return null
+  const projected = daily * (days || 30)
+  return Math.min(96, Math.max(8, Math.round((projected / budget) * 100)))
+}
+
+/** Start/End schedule summary — derived from emission duration, never a fabricated calendar date. */
+export function describePoolSchedule(state: CreatePoolWizardState): { start: string; end: string } {
+  const days = parseNum(state.emissionDuration)
+  return {
+    start: 'Starts on pool creation',
+    end: days > 0 ? `Ends after ${state.emissionDuration} days` : 'Calculated after reward duration is set',
+  }
+}
+
+/**
+ * Create Pool fee display for the wizard — consumes describeCreatePoolFee from the
+ * Founder fee schedule (no duplicated fee literals or MARCO-comparison logic).
+ */
+export function describeWizardCreatePoolFee(state: CreatePoolWizardState): CreateFeeDisplay {
+  return describeCreatePoolFee(state.stakeToken === 'MARCO')
 }
 
 export function buildMachinePreviewJson(state: CreatePoolWizardState): string {

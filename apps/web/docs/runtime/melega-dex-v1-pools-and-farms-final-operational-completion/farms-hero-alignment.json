@@ -1,0 +1,8 @@
+{
+  "anchors": [
+    "LP Pair",
+    "Farm",
+    "MARCO Rewards"
+  ],
+  "fix": "fixed-height IconRow centerline; TrustPanel unmounted"
+}

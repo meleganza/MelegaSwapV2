@@ -45,15 +45,15 @@ function card(partial: Partial<FarmPreviewCard> & { pid: number; liq: number; ap
 }
 
 describe('Farms Founder Acceptance', () => {
-  it('IA order: Hero → KPI → My → Explore → Finished → Advisor → Analytics', () => {
+  it('IA order: Hero → KPI → My Farms → Advisor → Create Farm → Explore → Analytics (Finished Farms folded into My Farms)', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     const order = [
       'FarmsHeroModule',
       'FarmsOverviewKpisModule',
       'FarmsMyFarmsModule',
-      'FarmsExploreFarmsModule',
-      'FarmsFinishedFarmsModule',
       'FarmsYieldAdvisorModule',
+      'CreateFarmWorkspace',
+      'FarmsExploreFarmsModule',
       'FarmsAnalyticsModule',
     ]
     let prev = -1
@@ -63,6 +63,7 @@ describe('Farms Founder Acceptance', () => {
       expect(idx).toBeGreaterThan(prev)
       prev = idx
     }
+    expect(screen).not.toContain('<FarmsFinishedFarmsModule')
   })
 
   it('hero artwork is animated CSS/SVG with MARCO logo and reduced-motion', () => {
@@ -118,7 +119,9 @@ describe('Farms Founder Acceptance', () => {
     expect(api).toContain('coveragePct')
     expect(api).toContain('deploymentBlock')
     expect(api).toContain('advanceFarmerParticipantIndex')
-    expect(api).toContain('uniqueFarmers: snap.displayState === \'loading\'')
+    expect(api).toContain('uniqueFarmers:')
+    expect(api).toContain('snap.primaryCount')
+    expect(api).toContain('lastIndexedBlock')
   })
 
   it('MasterChef topics match Melega ABI keccak (not Pancake V2)', () => {

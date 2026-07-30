@@ -11,9 +11,9 @@ import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
 import { FarmsHeroModule } from './modules/FarmsHeroModule'
 import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
 import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
-import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
-import { FarmsFinishedFarmsModule } from './modules/FarmsFinishedFarmsModule'
 import { FarmsYieldAdvisorModule } from './modules/FarmsYieldAdvisorModule'
+import { CreateFarmWorkspace } from './modules/CreateFarmWorkspace'
+import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
 import { FarmsAnalyticsModule } from './modules/FarmsAnalyticsModule'
 import { FarmsVisualPolishModule } from './modules/FarmsVisualPolishModule'
 import { farmsHero } from './modules/farmsHeroTokens'
@@ -89,10 +89,11 @@ export const FarmsStudioScreen: React.FC = () => (
     data-farms-module-002="mounted"
     data-farms-module-003="mounted"
     data-farms-module-004="mounted"
-    data-farms-module-005="mounted"
+    data-farms-module-005="unmounted"
     data-farms-module-006="mounted"
     data-farms-module-007="mounted"
     data-farms-module-008="mounted"
+    data-farms-create-farm="mounted"
     data-farms-architecture="000"
     data-r200-premium="true"
     data-fs-wallet-first="true"
@@ -110,19 +111,19 @@ export const FarmsStudioScreen: React.FC = () => (
         <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
           <FarmsMyFarmsModule />
         </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
-          <FarmsExploreFarmsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Finished Farms" userReason="Finished farm positions are temporarily unavailable.">
-          <FarmsFinishedFarmsModule />
-        </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Yield Advisor" userReason="Yield advisor is temporarily unavailable.">
           <FarmsYieldAdvisorModule />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Create Farm" userReason="Create Farm configuration is temporarily unavailable.">
+          <CreateFarmWorkspace />
+        </DataSurfaceErrorBoundary>
+        <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
+          <FarmsExploreFarmsModule />
         </DataSurfaceErrorBoundary>
         <DataSurfaceErrorBoundary surface="Farms Analytics" userReason="Farm analytics are temporarily unavailable.">
           <FarmsAnalyticsModule />
         </DataSurfaceErrorBoundary>
-        {/* Featured Farm lives compactly in Hero; legacy bottom giant card unmounted. */}
+        {/* Featured Farm lives compactly in Hero; legacy bottom giant card unmounted. Standalone Finished Farms module removed — finished positions now surface inline within My Farms. */}
         <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="archived" aria-hidden="true" />
         <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
           <FarmsActivityTable />

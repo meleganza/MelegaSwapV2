@@ -1,4 +1,5 @@
 import type { PoolsOverviewKpiId } from './poolsOverviewKpisTokens'
+import type { Pools24hRewardsBreakdown } from './buildPools24hRewards'
 
 export type KpiMetricState = 'loading' | 'available' | 'partial' | 'unavailable' | 'stale' | 'zero'
 
@@ -26,7 +27,8 @@ export interface PoolsOverviewKpisViewModel {
     discoveredPoolCount: number | null
     rewardingPoolCount: number | null
     rewards24hUsd: number | null
-    rewards24hState: KpiMetricState
+    rewards24hState: string
+    rewards24hBreakdown?: Pools24hRewardsBreakdown
     sustainableApr: string | null
     sustainableAprPool: string | null
     claimableUsd: number | null
@@ -35,7 +37,7 @@ export interface PoolsOverviewKpisViewModel {
     walletState: 'disconnected' | 'loading' | 'ready'
     classificationStatus: string
     factoryPairsNotUsed: true
-    rewards24hSource: 'unavailable_no_indexed_distribution'
+    rewards24hSource: string
     provenance: Record<string, string>
     fetchedAt: string
   }

@@ -3,7 +3,7 @@ import type { FarmsCanonicalStatus } from '../farmsArchitecture000Contracts'
 
 export type FarmsPositionStatus = Extract<FarmsCanonicalStatus, 'ACTIVE' | 'ENDED' | 'WITHDRAW_ONLY' | 'EMERGENCY' | 'PARTIAL' | 'UNAVAILABLE' | 'LOADING'>
 export type FarmsPositionActionKind = 'claim' | 'unstake' | 'stake' | 'connect'
-export type FarmsPositionActionLabel = 'Harvest' | 'Harvesting…' | 'Withdraw' | 'Withdrawing…' | 'Manage' | 'Emergency Withdraw' | 'Connect Wallet' | 'Transaction Failed'
+export type FarmsPositionActionLabel = 'Harvest' | 'Harvesting…' | 'Withdraw' | 'Withdrawing…' | 'Stake More' | 'Manage' | 'Emergency Withdraw' | 'Connect Wallet' | 'Transaction Failed'
 
 export interface FarmsPositionTokenRef { symbol: string; address: string | null; decimals: number | null; chainId: number | null }
 export interface FarmsPositionAction {
@@ -21,7 +21,7 @@ export interface FarmsWalletPosition {
   pendingRaw: string | null; pendingFormatted: string; pendingValue: string | null
   farmStatus: 'ACTIVE' | 'ENDED' | 'INDEXING' | 'UNAVAILABLE'
   positionStatus: FarmsPositionStatus
-  statusLabel: 'Active' | 'Ended' | 'Withdraw' | 'Emergency' | 'Partial' | 'Unavailable'
+  statusLabel: 'Active' | 'Finished' | 'Emergency' | 'Partial' | 'Unavailable'
   apr: string | null; tvl: string | null; multiplier: string | null
   actions: FarmsPositionAction[]; source: 'masterchef' | 'historical'; freshness: 'live' | 'stale' | 'loading' | 'unavailable' | 'partial'
   partialData: boolean; partialReasons: string[]; provenance: string; sourceCard: FarmPreviewCard

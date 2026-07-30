@@ -130,7 +130,7 @@ describe('FARMS_ARCHITECTURE_000 Mockup Lock', () => {
 
   it('keeps Architecture 000 freeze: no ArchitectureShell cutover; legacy body retained under modular stack', () => {
     const screen = readFileSync(path.join(WEB, 'src/views/FarmsStudio/FarmsStudioScreen.tsx'), 'utf8')
-    // Modules 001–008 may mount; Integration 009 owns full modular shell cutover.
+    // Modules 001–004, 006–008 may mount; Integration 009 owns full modular shell cutover.
     expect(screen).toContain('FarmsYieldAdvisorModule')
     expect(screen).toContain('FarmsAnalyticsModule')
     expect(screen).toContain('FarmsVisualPolishModule')
@@ -146,5 +146,12 @@ describe('FARMS_ARCHITECTURE_000 Mockup Lock', () => {
     for (const id of ['009', '010']) {
       expect(screen).not.toContain(`data-farms-module="${id}"`)
     }
+    // Module 005 (standalone Finished Farms) unmounted — finished positions now surface inline within My Farms.
+    expect(screen).not.toContain('FarmsFinishedFarmsModule')
+    expect(screen).toContain('data-farms-module-005="unmounted"')
+    // Create Farm workspace is present, wired between Yield Advisor and Explore Farms.
+    expect(screen).toContain('CreateFarmWorkspace')
+    expect(screen.indexOf('FarmsYieldAdvisorModule')).toBeLessThan(screen.indexOf('CreateFarmWorkspace'))
+    expect(screen.indexOf('CreateFarmWorkspace')).toBeLessThan(screen.indexOf('FarmsExploreFarmsModule'))
   })
 })

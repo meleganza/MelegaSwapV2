@@ -4,6 +4,7 @@ import type { CreatePoolWizardState } from './createPoolWizardState'
 import {
   computeEstimatedApr,
   computeHealthScore,
+  computeRewardConsumptionPct,
   hasCompletePoolEstimateParams,
 } from './createPoolWizardState'
 
@@ -158,16 +159,6 @@ function computeHealth(state: CreatePoolWizardState): number | null {
   return computeHealthScore(state)
 }
 
-function computeConsumptionPct(state: CreatePoolWizardState): number | null {
-  if (!hasCompletePoolEstimateParams(state)) return null
-  const budget = parseNum(state.rewardBudget)
-  const daily = parseNum(state.dailyRewards)
-  const days = parseNum(state.emissionDuration)
-  if (budget <= 0) return null
-  const projected = daily * (days || 30)
-  return Math.min(96, Math.max(8, Math.round((projected / budget) * 100)))
-}
-
 type Props = {
   state: CreatePoolWizardState
 }
@@ -176,7 +167,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
   const apr = useMemo(() => computeApr(state), [state])
   const aprPending = !hasCompletePoolEstimateParams(state)
   const health = useMemo(() => computeHealth(state), [state])
-  const consumption = useMemo(() => computeConsumptionPct(state), [state])
+  const consumption = useMemo(() => computeRewardConsumptionPct(state), [state])
 
   const bars = useMemo(() => {
     if (!hasCompletePoolEstimateParams(state)) return []

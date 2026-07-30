@@ -524,7 +524,7 @@ export const PoolGridCard: React.FC<Props> = ({ pool }) => {
               data-ps-explorer-url={explorerUrl}
               aria-label="View SmartChef contract on BscScan"
             >
-              View Contract ↗
+              BscScan ↗
             </ChipBtn>
           </PrimaryExplorerRow>
         ) : null}

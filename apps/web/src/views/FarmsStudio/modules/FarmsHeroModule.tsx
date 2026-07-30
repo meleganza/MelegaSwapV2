@@ -6,7 +6,6 @@ import React, { useCallback } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { FarmsHeroArtwork } from './FarmsHeroArtwork'
-import { FarmsHeroTrustPanel } from './FarmsHeroTrustPanel'
 import { FarmsHeroFeaturedCompact } from './FarmsHeroFeaturedCompact'
 import { FARMS_HERO_COPY, farmsHero } from './farmsHeroTokens'
 
@@ -256,8 +255,8 @@ export const FarmsHeroModule: React.FC = () => {
           <FarmsHeroArtwork />
         </ArtCol>
         <TrustCol>
+          {/* FarmsHeroTrustPanel ("Why Farm on Melega DEX?") unmounted — kept Featured compact balanced without the second stacked card. */}
           <FarmsHeroFeaturedCompact />
-          <FarmsHeroTrustPanel />
         </TrustCol>
       </Inner>
     </Module>

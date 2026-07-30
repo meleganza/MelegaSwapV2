@@ -1,0 +1,11 @@
+{
+  "methodology": "reward_rate_x_active_blocks_in_rolling_24h",
+  "builder": "apps/web/src/views/PoolsStudio/modules/buildPools24hRewards.ts",
+  "behavior": {
+    "priced": "USD aggregate",
+    "partial": "priced USD + unpriced token amounts",
+    "indexing": "Indexing…",
+    "zero": "$0.00 when no rewarding pools"
+  },
+  "machineReadable": "diagnostics.rewards24hBreakdown"
+}

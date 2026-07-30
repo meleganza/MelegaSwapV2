@@ -73,13 +73,16 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
     expect(hook).toContain('8_000')
   })
 
-  it('Create Pool compact height is bounded and Featured band is denser', () => {
+  it('Create Pool is a permanently expanded operational workspace and Featured band is denser', () => {
     const create = readFileSync(
       path.join(SRC, 'views/PoolsStudio/components/CreatePoolCta.tsx'),
       'utf8',
     )
-    expect(create).toContain("min-height: ${({ $expanded }) => ($expanded ? '0' : '140px')}")
-    expect(create).toContain("max-height: ${({ $expanded }) => ($expanded ? 'none' : '190px')}")
+    expect(create).toContain('data-ps-create-pool-permanently-expanded')
+    expect(create).toContain('data-ps-create-pool-expanded="true"')
+    expect(create).not.toContain('data-ps-create-pool-compact')
+    expect(create).not.toMatch(/data-ps-create-pool-expand(?!ed)/)
+    expect(create).not.toContain('data-ps-create-pool-close')
     const featured = readFileSync(
       path.join(SRC, 'views/PoolsStudio/modules/PoolsFeaturedPoolBand.tsx'),
       'utf8',
