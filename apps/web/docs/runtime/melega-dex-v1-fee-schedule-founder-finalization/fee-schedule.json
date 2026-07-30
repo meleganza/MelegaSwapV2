@@ -124,11 +124,11 @@
       },
       "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
       "certifiedExecutionModel": {
-        "lockedSuccessFeeBps": 500,
-        "lockEnforcedIn": "LiquidityBuildingFactoryV1 constructor (successFeeBps must equal 500)",
-        "note": "Founder schedule is 10%. Certified factory bytecode currently hard-requires 500 bps (5%). This mission records governance only \u2014 no LB bytecode change."
+        "lockedSuccessFeeBps": 1000,
+        "lockEnforcedIn": "LiquidityBuildingFactoryV1 constructor (successFeeBps must equal 1000) + LiquidityBuildingExecutionMathV1.SUCCESS_FEE_BPS",
+        "note": "Founder finalized protocol fee at 1000 bps (10%). Supersedes prior 500 bps (5%) lock. Applied to every autonomous LB engine swap; settles via FeeReceiver/FeeSink to MELEGA TREASURY WALLET. Treasury Runtime forbidden."
       },
-      "notes": "Do not redesign LB execution. Governance SSOT = 10%; on-chain activation still uses certified 5% lock until a dedicated LB fee realignment mission."
+      "notes": "On-chain configuration, deployment package, and frontend metadata aligned to 10%."
     }
   }
 }

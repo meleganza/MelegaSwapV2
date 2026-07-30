@@ -27,12 +27,12 @@ contract LB008MainnetBinding is Test {
     address constant USDC = 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d;
 
     // Proposed floors from quote-policy-calculation.v1.json — NOT RATIFIED
-    uint256 constant WBNB_GROSS_FLOOR_PROPOSED = 41052631578947370;
-    uint256 constant WBNB_RESERVE_FLOOR_PROPOSED = 10263157894736842500;
+    uint256 constant WBNB_GROSS_FLOOR_PROPOSED = 43333333333333334;
+    uint256 constant WBNB_RESERVE_FLOOR_PROPOSED = 10833333333333333500;
 
     function _params() internal pure returns (LBTypes.ProtocolParameters memory p) {
         p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,
@@ -59,7 +59,7 @@ contract LB008MainnetBinding is Test {
         uint256 gasPrice = 3 gwei;
         uint256 gasCost = gas * gasPrice;
         uint256 minNet = (gasCost * 10_000 + 999) / 1000; // ceil gas share 10%
-        uint256 minGross = (minNet * 10_000 + 9499) / 9500; // after 5% fee
+        uint256 minGross = (minNet * 10_000 + 8999) / 9000; // after 10% fee
         uint256 selected = minGross * 2; // safety margin
         assertEq(selected, WBNB_GROSS_FLOOR_PROPOSED);
         assertEq(selected * 250, WBNB_RESERVE_FLOOR_PROPOSED);
@@ -169,7 +169,7 @@ contract LB008MainnetBinding is Test {
 
     function test_finalityDepth_remains15() public pure {
         LBTypes.ProtocolParameters memory p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,

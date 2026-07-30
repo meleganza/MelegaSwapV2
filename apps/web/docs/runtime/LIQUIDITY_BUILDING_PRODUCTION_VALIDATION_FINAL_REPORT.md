@@ -157,7 +157,7 @@ This is distinct from “ACTIVE with zero eligible flow”.
 
 ## 16. Treasury fee validation
 
-Certified model still encodes 5% success fee on quote acquired (`LB_SUCCESS_FEE_BPS = 500`).  
+Certified model still encodes 10% success fee on quote acquired (`LB_SUCCESS_FEE_BPS = 1000`).  
 Treasury sink/receiver addresses null → fee settlement path NOT_CONFIGURED live.
 
 ## 17. Budget accounting validation

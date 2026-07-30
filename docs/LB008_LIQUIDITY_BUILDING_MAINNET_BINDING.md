@@ -168,7 +168,7 @@ Observation block: `110937361`
 
 | Asset | Address | Decimals | Gross floor | Reserve floor | Gas mode | Ratification | Activation |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| WBNB | `0xbb4C…095c` | 18 (on-chain) | `41052631578947370` | `10263157894736842500` | NativeEquivalent | PROPOSED_FOR_FOUNDER_RATIFICATION | candidate only |
+| WBNB | `0xbb4C…095c` | 18 (on-chain) | `43333333333333334` | `10833333333333333500` | NativeEquivalent | PROPOSED_FOR_FOUNDER_RATIFICATION | candidate only |
 | USDT | `0x55d3…7955` | 18 | null | null | NotActive | CALCULATED | blocked |
 | USDC | `0x8AC7…580d` | 18 | null | null | NotActive | CALCULATED | blocked |
 
@@ -184,8 +184,8 @@ Method (WBNB / NativeEquivalent):
 2. `conservativeGasPrice = 3 gwei` (observed ~0.05 gwei; operational floor)
 3. `gasCost = 1.95e15 wei`
 4. `minNet = ceil(gasCost × 10000/1000)` → `1.95e16`
-5. `minGross = ceil(minNet × 10000/9500)` → `2.0526…e16`
-6. `selected = minGross × 2` safety → **`41052631578947370`**
+5. `minGross = ceil(minNet × 10000/9000)` → `2.0526…e16`
+6. `selected = minGross × 2` safety → **`43333333333333334`**
 
 Human: ~0.04105 WBNB.
 
@@ -195,7 +195,7 @@ Human: ~0.04105 WBNB.
 
 Operating target ≤ 40 bps impact ⇒ `G/Y ≤ 0.004` ⇒ `Y ≥ G/0.004 = 250G`.
 
-Selected: **`10263157894736842500`** (~10.26 WBNB) = `250 × gross floor`.
+Selected: **`10833333333333333500`** (~10.26 WBNB) = `250 × gross floor`.
 
 Hard 100 bps bound would allow `100G`; production selection uses operating headroom.
 

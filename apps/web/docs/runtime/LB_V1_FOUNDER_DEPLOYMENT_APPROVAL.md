@@ -83,7 +83,7 @@ CREATE2 salts: **NOT_APPLICABLE** until a deterministic pack is approved.
 - `melegaRouter_`: `0xc25033218D181b27D4a2944Fbb04FC055da4EAB3`  
 - `executionAuthorizer_`: Authorizer  
 - `treasuryFeeSink_`: FeeSink  
-- `ProtocolParameters`: from `LiquidityBuildingV1.inputs.json` (`successFeeBps=500`, `initialFinalityDepth=15`, …)  
+- `ProtocolParameters`: from `LiquidityBuildingV1.inputs.json` (`successFeeBps=1000`, `initialFinalityDepth=15`, …)  
 - `QuoteAssetPolicy[]`: only after Founder ratifies `LB_QUOTE_POLICY_FOUNDER_DECISION.md`
 
 ---
@@ -138,7 +138,7 @@ CREATE2 salts: **NOT_APPLICABLE** until a deterministic pack is approved.
 1. Bytecode verification on BscScan for all five contracts  
 2. FeeSink.treasuryReceiver() == FeeReceiver  
 3. Authorizer.signingAuthority() == KMS address  
-4. Factory.successFeeBps() == 500  
+4. Factory.successFeeBps() == 1000  
 5. Factory.initialFinalityDepth() == 15  
 6. Factory quote policy row matches ratified WBNB floors  
 7. Update `LiquidityBuildingV1.inputs.json` addresses + validator PASS  

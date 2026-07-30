@@ -6,7 +6,7 @@
   "summary": {
     "treasuryHttpApisCalledByLbExecution": false,
     "onChainFeeAtomic": true,
-    "feeBpsOnChain": 500,
+    "feeBpsOnChain": 1000,
     "treasuryRuntimeBlocksActivation": true,
     "treasuryRuntimeBlocksPerEpochExecutionHttp": false,
     "treasuryIngestionBlocksOffchainLoopSuccessClaim": true
@@ -139,7 +139,7 @@
       "classification": "REQUIRED_DEPLOYMENT_INPUT",
       "retain": true,
       "proposedBehavior": "Retain as versioned/on-chain policy. Not live Treasury quote API per epoch.",
-      "evidence": "quotePolicies=[]; Factory successFeeBps==500; quotePolicy checks in Program.execute"
+      "evidence": "quotePolicies=[]; Factory successFeeBps==1000; quotePolicy checks in Program.execute"
     },
     {
       "gateId": "LB-G09",

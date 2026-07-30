@@ -147,7 +147,7 @@ Planned consumption = swap input + desired matched tokens (incl. prior residual 
 
 ## 14. Atomic Treasury Settlement
 
-- Fee = `floor(actualGross × 500 / 10000)`
+- Fee = `floor(actualGross × 1000 / 10000)`
 - Approve Sink exact fee → `settleLiquidityBuildingFee(programId, executionId=digest, …)`
 - Program quote decrease == fee; receipt ≠ 0; allowance cleared
 - Sink failure reverts entire cycle

@@ -64,7 +64,7 @@ Open Project Page hidden on home (no selected token/project context).
 
 - No mock LP / fee / TVL / APR values
 - Runtime badge: Live only when readiness `runtimeReady`; else Runtime Pending
-- Success fee copy from `LB_SUCCESS_FEE_BPS` (5%)
+- Success fee copy from `LB_SUCCESS_FEE_BPS` (10%)
 
 ## 9. Accessibility
 

@@ -75,7 +75,7 @@ maximumRate <= protocolStrategyCeiling   // ceiling TBD later
 **5% success fee on quote assets acquired through Liquidity Building.**
 
 ```
-melegaFee = grossQuoteAcquired × 500 / 10_000
+melegaFee = grossQuoteAcquired × 1000 / 10_000
 ```
 
 Rounding policy: **required to be closed in smart-contract mission** (not fixed here).
@@ -787,7 +787,7 @@ Executor choice (permissionless vs worker) deferred to architecture mission — 
 | Tokens Sold | successful swap consumed | receipt-derived |
 | Tokens Matched | successful add-liq project token | receipt-derived |
 | Gross Quote Acquired | swap received | receipt/event/balance delta |
-| Melega Fee Paid | `gross × 500 / 10000` (+ rounding TBD) | settlement |
+| Melega Fee Paid | `gross × 1000 / 10000` (+ rounding TBD) | settlement |
 | Net Quote Available | gross − fee | derived |
 | Net Quote Added | quote in successful add-liq | receipt |
 | Liquidity built | **dual:** tokensMatched + netQuoteAdded | receipt |

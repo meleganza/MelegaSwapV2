@@ -95,7 +95,7 @@ contract LiquidityBuildingFactoryV1 is ILiquidityBuildingFactoryV1 {
         _requireCompatibleAuthorizer(executionAuthorizer_);
         _requireCompatibleTreasurySink(treasuryFeeSink_);
 
-        if (params_.successFeeBps != 500) revert InvalidQuotePolicy();
+        if (params_.successFeeBps != 1000) revert InvalidQuotePolicy();
         if (params_.strategyCeilingBps != 5000) revert InvalidQuotePolicy();
         if (params_.maxSuccessfulExecutionsPerEpoch != 1) revert InvalidQuotePolicy();
 

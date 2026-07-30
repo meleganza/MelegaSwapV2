@@ -342,7 +342,7 @@ Runtime-detected reorg → recommend `safetyPause` via **signed SafetyAttestatio
 9  approve Router exact maximumProjectTokenIn (forceApprove)
 10 swapTokensForExactTokens(G, amountInMax, path, program, deadline)
 11 measure dxActual, GActual (==G for exact-out success)
-12 fee = floor(GActual * 500 / 10000)
+12 fee = floor(GActual * 1000 / 10000)
 13 settle fee via Treasury sink (pull exact fee) — MUST succeed
 14 quoteForLiq = quoteResidual + (GActual - fee)
 15 compute matchedBound; approve Router

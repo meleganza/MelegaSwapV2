@@ -116,7 +116,7 @@ If `E = 0` → ordinary execution **must not** occur (`WAIT`/`SKIP`).
 
 **V1 freeze: Candidate B — `swapTokensForExactTokens`.**
 
-Motivation: minimizes target vs acquired quote gap, makes `melegaFee = floor(G × 500 / 10000)` exact on the intended gross acquisition, and bounds spend via `amountInMax`.  
+Motivation: minimizes target vs acquired quote gap, makes `melegaFee = floor(G × 1000 / 10000)` exact on the intended gross acquisition, and bounds spend via `amountInMax`.  
 Rejected A as primary because G slippage creates fee/accounting ambiguity.
 
 `amountInMax = getAmountIn(G, X_exec, Y_exec)` recomputed at execution against drift bounds (executor cannot raise G).
@@ -144,7 +144,7 @@ V1 execution uses exact-out: choose clamped **G**, then `dx = getAmountIn(G, X, 
 **Frozen:**
 
 ```
-melegaFee = floor(G_actual × 500 / 10_000)
+melegaFee = floor(G_actual × 1000 / 10_000)
 N = G_actual − melegaFee   // netQuoteAvailable
 ```
 

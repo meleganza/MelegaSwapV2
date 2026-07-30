@@ -36,7 +36,7 @@ Factory address remains `null`. No deploy. No bind.
 
 ## Liquidity Builder note
 
-Certified factory bytecode still hard-requires `successFeeBps == 500` (5%). Founder schedule records **10%**. This mission does **not** change LB bytecode / execution model. `LiquidityBuildingV1.inputs.json` records the Founder schedule alongside the certified lock.
+Certified factory bytecode still hard-requires `successFeeBps == 1000` (5%). Founder schedule records **10%**. This mission does **not** change LB bytecode / execution model. `LiquidityBuildingV1.inputs.json` records the Founder schedule alongside the certified lock.
 
 ## Treasury Runtime
 

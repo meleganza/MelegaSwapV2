@@ -61,7 +61,7 @@ Preferred purpose-specific receiver (not deployed):
 2. `LiquidityBuildingExecutionAuthorizerV1(signingAuthority)` — KMS-derived address only
 3. `LiquidityBuildingTreasuryFeeSinkV1(treasuryReceiver)` — receiver must have code
 4. `LiquidityBuildingProgramV1` implementation (+ library link)
-5. `LiquidityBuildingFactoryV1(factoryVersion, implementation, melegaFactory, melegaRouter, authorizer, feeSink, protocolParameters, quotePolicies)` with `successFeeBps == 500`
+5. `LiquidityBuildingFactoryV1(factoryVersion, implementation, melegaFactory, melegaRouter, authorizer, feeSink, protocolParameters, quotePolicies)` with `successFeeBps == 1000`
 6. Publish addresses into `LiquidityBuildingV1.inputs.json` + activation gate evidence rows
 
 ---
@@ -72,7 +72,7 @@ Preferred purpose-specific receiver (not deployed):
 
 1. consume eligible bounded project-token budget  
 2. swap into quote asset  
-3. `fee = grossQuote * 500 / 10000`  
+3. `fee = grossQuote * 1000 / 10000`  
 4. transfer fee through FeeSink to immutable Treasury receiver  
 5. add liquidity with net quote + matched project tokens  
 6. send LP ownership to configured owner  

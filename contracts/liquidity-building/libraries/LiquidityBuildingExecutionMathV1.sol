@@ -10,7 +10,7 @@ import { LBTypes } from "../interfaces/ILiquidityBuildingFactoryV1.sol";
 library LiquidityBuildingExecutionMathV1 {
     uint256 internal constant FEE_NUMERATOR = 9975;
     uint256 internal constant FEE_DENOMINATOR = 10_000;
-    uint256 internal constant SUCCESS_FEE_BPS = 500;
+    uint256 internal constant SUCCESS_FEE_BPS = 1000;
     uint256 internal constant BPS = 10_000;
 
     error MathZeroInput();

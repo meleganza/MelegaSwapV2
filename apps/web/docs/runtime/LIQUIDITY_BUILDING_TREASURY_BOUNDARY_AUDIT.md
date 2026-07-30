@@ -31,7 +31,7 @@ Relay/EOA submits Program.executeLiquidityBuilding(intent, signature)
   → Authorizer.validateExecutionIntent (EIP-712 vs signingAuthority)  [KMS, not Treasury HTTP]
   → validate bindings / epoch / strategy / quotePolicy / caps
   → swap project→quote on Melega Router
-  → Math.melegaSuccessFee(gross) == 500 bps
+  → Math.melegaSuccessFee(gross) == 1000 bps
   → FeeSink.settleLiquidityBuildingFee(... authRef ...)
        → transfer fee Program → treasuryReceiver (immutable)
        → emit LiquidityBuildingFeeSettled
@@ -72,7 +72,7 @@ loadAndConsumeActivationGates
 
 | Concern | Actual authority in code |
 |---------|---------------------------|
-| Fee rate 500 bps | On-chain `SUCCESS_FEE_BPS` / Factory ctor requires `successFeeBps == 500` |
+| Fee rate 1000 bps | On-chain `SUCCESS_FEE_BPS` / Factory ctor requires `successFeeBps == 1000` |
 | Fee destination | FeeSink immutable `treasuryReceiver` (must have code) |
 | Fee transfer | Program → FeeSink → receiver, atomic in `executeLiquidityBuilding` |
 | Execution permission | Authorizer EIP-712 signature from `signingAuthority` (KMS path) |
@@ -91,8 +91,8 @@ Treasury Runtime is **not** the authority for swap/liquidity permission in contr
 
 Evidence:
 
-- `LiquidityBuildingExecutionMathV1.sol`: `SUCCESS_FEE_BPS = 500`; `melegaSuccessFee(gross)`
-- `LiquidityBuildingFactoryV1.sol`: ctor rejects if `successFeeBps != 500`
+- `LiquidityBuildingExecutionMathV1.sol`: `SUCCESS_FEE_BPS = 1000`; `melegaSuccessFee(gross)`
+- `LiquidityBuildingFactoryV1.sol`: ctor rejects if `successFeeBps != 1000`
 - `LiquidityBuildingProgramV1._settleFee`: recomputes fee from **gross**, compares to plan, approves sink, calls `settleLiquidityBuildingFee`
 - `LiquidityBuildingTreasuryFeeSinkV1`: pulls fee to `treasuryReceiver`, emits `LiquidityBuildingFeeSettled`, returns settlement receipt hash
 

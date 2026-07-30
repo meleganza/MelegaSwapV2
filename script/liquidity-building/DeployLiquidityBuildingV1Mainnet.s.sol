@@ -69,8 +69,8 @@ contract DeployLiquidityBuildingV1Mainnet is Script {
             asset: WBNB,
             decimals: 18,
             enabled: true,
-            minimumGrossQuoteFloor: 41052631578947370,
-            minimumQuoteReserve: 10263157894736842500,
+            minimumGrossQuoteFloor: 43333333333333334,
+            minimumQuoteReserve: 10833333333333333500,
             gasConversionMode: LBTypes.GasConversionMode.NativeEquivalent,
             gasConversionReference: address(0)
         });
@@ -107,7 +107,7 @@ contract DeployLiquidityBuildingV1Mainnet is Script {
 
     function _params() internal pure returns (LBTypes.ProtocolParameters memory p) {
         p = LBTypes.ProtocolParameters({
-            successFeeBps: 500,
+            successFeeBps: 1000,
             strategyCeilingBps: 5000,
             operatingCurveImpactBps: 40,
             hardCurveImpactBps: 100,

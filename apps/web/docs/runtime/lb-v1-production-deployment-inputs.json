@@ -21,7 +21,7 @@
     "status": "VERIFIED",
     "evidence": "on-chain bytecode bytes=7309"
   },
-  "feeBps": { "value": 500, "status": "VERIFIED", "note": "Factory constructor hard-requires successFeeBps==500" },
+  "feeBps": { "value": 1000, "status": "VERIFIED", "note": "Factory constructor hard-requires successFeeBps==1000" },
   "TreasuryFeeReceiver": {
     "value": null,
     "status": "MISSING",

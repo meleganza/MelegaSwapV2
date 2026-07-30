@@ -40,7 +40,7 @@ Addresses below are resolved from canonical chain-56 token config and verified o
 | symbol | `WBNB` | Canonical |
 | decimals | `18` | On-chain verified |
 | enabled | `true` (after Founder ratification) | Pending |
-| minimum execution amount (`minimumGrossQuoteFloor`) | `41052631578947370` wei (~0.04105263157894737 WBNB) | quote-policy-calculation.v1.json |
+| minimum execution amount (`minimumGrossQuoteFloor`) | `43333333333333334` wei (~0.04105263157894737 WBNB) | quote-policy-calculation.v1.json |
 | maximum per-epoch amount | **MISSING — not in calculation artifact** | Requires Founder / protocol decision before bind |
 | slippage cap (operating) | `50` bps | `protocolParameters.swapSlippageOperatingBps` |
 | slippage hard cap | `100` bps | `protocolParameters.hardSlippageBps` |
@@ -52,7 +52,7 @@ Addresses below are resolved from canonical chain-56 token config and verified o
 | policy version | `melega.liquidity-building.quote-policy.v1` (proposed) | Pending |
 | approval provenance | Founder signature on this document + `ratificationStatus=RATIFIED` in inputs | Pending |
 | gasConversionMode | `NativeEquivalent` | Calculation artifact |
-| minimumQuoteReserve | `10263157894736842500` wei (~10.263 WBNB) | Calculation artifact |
+| minimumQuoteReserve | `10833333333333333500` wei (~10.263 WBNB) | Calculation artifact |
 | successFeeBps (context) | `500` (immutable economics; not a quote control) | Factory hard requirement |
 
 ### USDT / USDC (not proposed for first canary)
@@ -97,7 +97,7 @@ Relative epoch caps already in protocol parameters (not quote-asset absolute max
 
 ### Option A — Ratify WBNB-only canary policy
 
-- [ ] I approve WBNB floors: gross `41052631578947370`, reserve `10263157894736842500`
+- [ ] I approve WBNB floors: gross `43333333333333334`, reserve `10833333333333333500`
 - [ ] I approve enabling WBNB only; USDT/USDC remain `enabled=false`
 - [ ] I accept relative epoch caps above as the per-epoch economic bound (no separate absolute max for v1)
 - [ ] OR I specify absolute max per epoch: _________________ WBNB wei

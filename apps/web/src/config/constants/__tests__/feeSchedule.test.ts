@@ -64,6 +64,6 @@ describe('MELEGA_DEX_V1_FEE_SCHEDULE_FOUNDER_GOVERNANCE_FINALIZATION', () => {
     expect(FEATURED_OFFER.treasuryWallet).toBe(TREASURY)
     expect(s.liquidityBuilder.fee.percent).toBe(10)
     expect(s.liquidityBuilder.fee.bps).toBe(1000)
-    expect(s.liquidityBuilder.certifiedExecutionModel.lockedSuccessFeeBps).toBe(500)
+    expect(s.liquidityBuilder.certifiedExecutionModel.lockedSuccessFeeBps).toBe(1000)
   })
 })

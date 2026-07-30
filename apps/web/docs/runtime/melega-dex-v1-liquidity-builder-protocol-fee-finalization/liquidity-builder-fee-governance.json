@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "melega.liquidity-builder.protocol-fee-governance.v1",
+  "missionId": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_PROTOCOL_FEE_FINALIZATION",
+  "assessedAt": "2026-07-30T14:10:00.000Z",
+  "baseline": {
+    "branch": "melega-dex-v1-fee-schedule-founder-finalization",
+    "commit": "15d3aeaa"
+  },
+  "protocolFee": {
+    "percent": 10,
+    "basisPoints": 1000,
+    "priorBasisPoints": 500,
+    "priorPercent": 5,
+    "appliedTo": "every swap executed autonomously by the Liquidity Builder engine",
+    "recurring": true,
+    "asset": "quote token acquired (gross quote)"
+  },
+  "destination": {
+    "label": "MELEGA TREASURY WALLET",
+    "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "settlementPath": "LiquidityBuildingTreasuryFeeSinkV1 → LiquidityBuildingTreasuryFeeReceiverV1 → beneficiary (canonical Treasury)",
+    "treasuryRuntime": "FORBIDDEN"
+  },
+  "constructorImpact": {
+    "LiquidityBuildingFactoryV1": "requires params.successFeeBps == 1000 (was 500)",
+    "LiquidityBuildingExecutionMathV1": "SUCCESS_FEE_BPS constant = 1000 (was 500)",
+    "DeployLiquidityBuildingV1Mainnet": "ProtocolParameters.successFeeBps = 1000; WBNB quote floors recomputed for 10% fee"
+  },
+  "bytecodeDelta": {
+    "LiquidityBuildingFactoryV1": {
+      "previousDeployedBytecodeSha256": "0xd7574a777496df07e1c878c7baf23a2243e8785bba3ac6355dfa1a9ec258c2ff",
+      "deployedBytecodeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+      "changed": true
+    },
+    "LiquidityBuildingExecutionMathV1": {
+      "previousDeployedBytecodeSha256": "0x03b84d6ab2b43a50368ccdbc34eb4e2ae1a1b945b1736e713090cb19a89036d8",
+      "deployedBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+      "changed": true
+    },
+    "LiquidityBuildingProgramV1": {
+      "deployedBytecodeSha256": "0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c",
+      "deployedBytes": 22911,
+      "changed": true,
+      "note": "Program artifact recomputed after math library fee constant change (library placeholders zeroed for hash)."
+    },
+    "LiquidityBuildingExecutionAuthorizerV1": {
+      "changed": false
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "changed": false
+    }
+  },
+  "deploymentImpact": {
+    "mainnetDeployExecuted": false,
+    "factoryAddress": null,
+    "deploymentTx": null,
+    "frontendBound": false,
+    "note": "No broadcast. Null addresses retained. Deploy package and constructor docs aligned to 1000 bps."
+  },
+  "remainingBlockers": [
+    "production deployment authority (MAINNET_DEPLOYER / LB_PRODUCTION_AUTHORITY / LB_FEE_RECEIVER_GOVERNOR / LB_FEE_RECEIVER_BENEFICIARY / BNB_MAINNET_RPC_URL / LB_MAINNET_DEPLOY_AUTHORIZED / BSCSCAN_API_KEY)"
+  ],
+  "feeScheduleRef": "apps/web/src/config/constants/fee-schedule.json#services.liquidityBuilder",
+  "frontendMetadata": {
+    "LB_SUCCESS_FEE_BPS": 1000,
+    "module": "apps/web/src/lib/liquidity-building-runtime/types.ts"
+  },
+  "validation": {
+    "forgeLiquidityBuilder": "PASS 159/159",
+    "frontendRuntimeAndBinding": "PASS",
+    "nextBuild": "PASS"
+  }
+}

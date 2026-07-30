@@ -65,7 +65,7 @@ LB005 delivers the **immutable Factory + EIP-1167 Program clone** core: determin
 
 | Parameter | Value | Mutable |
 | --- | --- | --- |
-| successFeeBps | 500 | No |
+| successFeeBps | 1000 | No |
 | strategyCeilingBps | 5000 | No |
 | operatingCurveImpactBps | 40 | No |
 | hardCurveImpactBps | 100 | No |

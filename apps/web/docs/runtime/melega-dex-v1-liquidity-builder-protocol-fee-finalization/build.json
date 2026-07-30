@@ -1,0 +1,7 @@
+{
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0,
+  "assessedAt": "2026-07-30T14:10:00.000Z"
+}
