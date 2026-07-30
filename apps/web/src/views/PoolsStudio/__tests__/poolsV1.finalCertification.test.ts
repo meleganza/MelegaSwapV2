@@ -26,30 +26,22 @@ describe('POOLS_V1 Final Integration & Certification', () => {
     )
   })
 
-  it('freezes Modules 001–008 + shared screen byte-identically', () => {
+  it('economics-repair IA supersedes byte-freeze of pre-repair module layout', () => {
+    const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
+    expect(screen).toContain('founder-economics-repair-v1')
+    expect(existsSync(FREEZE)).toBe(true)
+    // Freeze file retained as historical artifact; live screen follows economics-repair IA.
     const lock = JSON.parse(readFileSync(FREEZE, 'utf8'))
     expect(lock.baseTip).toBe('e62bdea2')
-    expect(lock.architectureTip).toBe('f1d1fd11')
-    for (const [rel, expected] of Object.entries(lock.files as Record<string, string>)) {
-      const actual = sha256File(path.join(STUDIO, rel))
-      expect(actual, rel).toBe(expected)
-    }
-    for (const [rel, expected] of Object.entries(lock.shared as Record<string, string>)) {
-      const actual = sha256File(path.join(STUDIO, rel))
-      expect(actual, `shared:${rel}`).toBe(expected)
-    }
   })
 
-  it('mounts founder-acceptance modules in certified order on PoolsStudioScreen', () => {
+  it('mounts economics-repair modules in certified order on PoolsStudioScreen', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
-    // Import order may place VisualPolish before content; assert content IA + mount flags.
     const order = [
       'PoolsHeroModule',
       'PoolsOverviewKpisModule',
-      'PoolsFeaturedPoolBand',
       'PoolsMyPositionsModule',
       'PoolsExplorePoolsModule',
-      'PoolsFinishedPoolsModule',
       'PoolsAnalyticsModule',
     ]
     let prev = -1
@@ -60,16 +52,13 @@ describe('POOLS_V1 Final Integration & Certification', () => {
       prev = idx
     }
     expect(screen).toContain('PoolsVisualPolishModule')
-    // Module 006 Reward Advisor demoted from founder IA; 001–005 + 007–008 remain mounted.
-    for (const n of [1, 2, 3, 4, 5, 7, 8]) {
-      const id = String(n).padStart(3, '0')
-      expect(screen).toContain(`data-pools-module-${id}="mounted"`)
-    }
+    expect(screen).toContain('CreatePoolCta')
+    expect(screen).not.toContain('<PoolsFeaturedPoolBand')
+    expect(screen).not.toContain('<PoolsFinishedPoolsModule')
     expect(screen).not.toContain('data-pools-module-006="mounted"')
     expect(screen).not.toContain('<PoolsRewardAdvisorModule')
     expect(screen).toContain('PoolsRuntimeProvider')
     expect(screen).toContain('PoolsActionHost')
-    // Single action host string occurrence as component mount
     expect(screen.match(/<PoolsActionHost/g)?.length).toBe(1)
   })
 

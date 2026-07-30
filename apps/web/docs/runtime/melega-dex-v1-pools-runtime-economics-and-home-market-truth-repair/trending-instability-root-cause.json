@@ -1,0 +1,4 @@
+{
+  "rootCause": "resolveTrendingItemsForDisplay accepted any non-empty live set, allowing 2-token partial refreshes to clobber richer last-good snapshots",
+  "repair": "evaluateTrendingCandidateReplacement with MIN_COMPLETE_ABS=4, ratio 0.6, tenure hold 12s"
+}

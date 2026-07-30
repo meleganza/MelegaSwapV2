@@ -13,7 +13,13 @@ import { buildLiquidityMarketSnapshot, type LiquidityMarketSnapshotView } from '
 import { estimateReserveTvlUsd } from './liquidityPoolDiscoveryModel'
 
 type TierMetricsResponse = {
-  rows?: Array<{ volume24hQuote?: number | null }>
+  rows?: Array<{
+    volume24hWbnb?: number | null
+    volume24hQuote?: number | null
+    volume24hBase?: number | null
+    token0?: string
+    token1?: string
+  }>
 }
 
 async function fetchTierMetrics(url: string): Promise<TierMetricsResponse> {
@@ -48,16 +54,27 @@ export function useLiquidityMarketSnapshot(): LiquidityMarketSnapshotView {
 
   const indexerVolume24hUsd = useMemo(() => {
     if (!bnbUsd || !(bnbUsd > 0) || !tierMetrics?.rows?.length) return null
-    let quoteSum = 0
+    // Dynamic import avoided — inline WBNB side check matching canonical24hVolume.
+    const WBNB_ADDR = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+    let wbnbSum = 0
     let any = false
     for (const row of tierMetrics.rows) {
-      const q = row.volume24hQuote
-      if (q != null && Number.isFinite(q) && q > 0) {
-        quoteSum += q
+      let wbnb = Number(row.volume24hWbnb) || 0
+      if (!(wbnb > 0)) {
+        const t0 = (row.token0 || '').toLowerCase()
+        const t1 = (row.token1 || '').toLowerCase()
+        if (t1 === WBNB_ADDR) wbnb = Number(row.volume24hQuote) || 0
+        else if (t0 === WBNB_ADDR) wbnb = Number(row.volume24hBase) || 0
+      }
+      if (wbnb > 0) {
+        wbnbSum += wbnb
         any = true
       }
     }
-    return any ? quoteSum * bnbUsd : null
+    const usd = any ? wbnbSum * bnbUsd : null
+    // Reject implausible DEX totals (same guard as Home).
+    if (usd != null && usd > 10_000_000_000) return null
+    return usd
   }, [tierMetrics, bnbUsd])
 
   return useMemo(
@@ -74,6 +91,13 @@ export function useLiquidityMarketSnapshot(): LiquidityMarketSnapshotView {
         factoryTvlUsd,
         indexerVolume24hUsd,
       }),
-    [protocol, factory.discoveryState, factory.pools, factory.freshness, factoryTvlUsd, indexerVolume24hUsd],
+    [
+      protocol,
+      factory.discoveryState,
+      factory.pools,
+      factory.freshness,
+      factoryTvlUsd,
+      indexerVolume24hUsd,
+    ],
   )
 }

@@ -27,6 +27,8 @@ import { FetchStatus } from 'config/constants/types'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
 import { getAprData } from 'views/Pools/helpers'
+import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
+import { wbnbVolumeFromPairSides } from 'lib/market-volume/canonical24hVolume'
 import {
   formatFarmTrendingLabel,
   formatPoolMetaLabel,
@@ -190,14 +192,35 @@ export const useHomeTradeData = () => {
     pageSize: 24,
   })
   const currentBlock = useCurrentBlock()
-  const { data: tierVolumeQuote } = useSWR(
-    'home-kpi-tier-volume-quote',
+  const { data: tierVolumeWbnb } = useSWR(
+    'home-kpi-tier-volume-wbnb-v2',
     async () => {
       try {
         const res = await fetch('/api/indexer/tier-metrics')
         if (!res.ok) return 0
-        const json = (await res.json()) as { rows?: Array<{ volume24hQuote?: number }> }
-        return (json.rows ?? []).reduce((sum, row) => sum + (Number(row.volume24hQuote) || 0), 0)
+        const json = (await res.json()) as {
+          rows?: Array<{
+            volume24hWbnb?: number
+            volume24hQuote?: number
+            volume24hBase?: number
+            token0?: string
+            token1?: string
+            volumePriced?: boolean
+          }>
+        }
+        // Prefer canonical WBNB-side field; fall back to side-aware reconstruction.
+        return (json.rows ?? []).reduce((sum, row) => {
+          if (row.volume24hWbnb != null && Number.isFinite(row.volume24hWbnb)) {
+            return sum + (Number(row.volume24hWbnb) || 0)
+          }
+          const { wbnbVolume } = wbnbVolumeFromPairSides({
+            token0: row.token0 ?? '',
+            token1: row.token1 ?? '',
+            baseVolume: Number(row.volume24hBase) || 0,
+            quoteVolume: Number(row.volume24hQuote) || 0,
+          })
+          return sum + wbnbVolume
+        }, 0)
       } catch {
         return 0
       }
@@ -383,22 +406,24 @@ export const useHomeTradeData = () => {
       })
     }
 
-    // Volume: prefer tier-metrics quote volume × WBNB USD; never label swap-count as dollar volume.
+    // Volume: canonical WBNB-side notional × BNB/USD (never treat raw token1 as WBNB).
     const bnbUsd = wbnbPrice ? Number(wbnbPrice.toSignificant(6)) : undefined
     const tierUsd =
-      tierVolumeQuote != null && tierVolumeQuote > 0 && bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0
-        ? tierVolumeQuote * bnbUsd
+      tierVolumeWbnb != null && tierVolumeWbnb > 0 && bnbUsd != null && Number.isFinite(bnbUsd) && bnbUsd > 0
+        ? tierVolumeWbnb * bnbUsd
         : 0
+    // Absolute anomaly guard — retain empty rather than display implausible DEX totals.
+    const anomalous = tierUsd > 10_000_000_000
     const swapUsd = recentTransactions
       .filter((tx) => tx.type === TransactionType.SWAP)
       .reduce((sum, tx) => sum + (Number.isFinite(tx.amountUSD) ? tx.amountUSD : 0), 0)
-    const volLabel = formatUsd(Math.max(tierUsd, swapUsd))
+    const volLabel = anomalous ? undefined : formatUsd(Math.max(tierUsd, swapUsd))
     if (volLabel) {
       cards.push({
         id: 'volume-24h',
         label: '24H Volume',
         value: volLabel,
-        meta: tierUsd > 0 ? 'Indexed Melega DEX Swap volume · 24H' : 'Partial · USD-valued indexed swaps',
+        meta: tierUsd > 0 ? 'Indexed Melega DEX · WBNB-side · rolling 24H' : 'Partial · USD-valued indexed swaps',
         href: '/trade',
       })
     }
@@ -449,7 +474,7 @@ export const useHomeTradeData = () => {
     }
 
     return cards.slice(0, 5)
-  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions, tierVolumeQuote, wbnbPrice])
+  }, [farms, allFarms, allPools, currentBlock, tradeablePairs, recentTransactions, tierVolumeWbnb, wbnbPrice])
 
   const farmRows = useMemo((): EarnRow[] => {
     return farms
@@ -469,23 +494,52 @@ export const useHomeTradeData = () => {
   }, [farms])
 
   const poolRows = useMemo((): EarnRow[] => {
-    // Prefer rewarding pools; fall back to configured staking pools so Home is not empty.
-    const source = pools.length > 0 ? pools : allPools
-    return source
-      .slice(0, 5)
+    const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
+    const ranked = source
       .map((pool) => {
         const aprValue = poolApr(pool)
-        const apr = aprValue ? `${aprValue.toFixed(2)}%` : undefined
-        const tvl = poolTvl(pool)
-        return {
-          id: `pool-${pool.sousId}`,
-          name: pool.stakingToken?.symbol ? `${pool.stakingToken.symbol} Staking` : 'Pool',
-          apr,
-          tvl,
-          href: '/pools',
-        }
+        const staked =
+          pool.totalStaked && pool.stakingToken
+            ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
+            : 0
+        const tvlUsd = staked > 0 ? staked * (pool.stakingTokenPrice ?? 0) : 0
+        const life = derivePoolLifecycle(pool, currentBlock)
+        const eligibility = evaluateTopPoolsAprEligibility({
+          rewarding: life.rewarding,
+          emissionActive: life.rewarding,
+          apr: aprValue,
+          tvlUsd,
+          rewardPriceUsd: pool.earningTokenPrice ?? null,
+          stakePriceUsd: pool.stakingTokenPrice ?? null,
+        })
+        return { pool, aprValue, tvlUsd, eligibility }
       })
-  }, [pools, allPools])
+      .filter((row) => row.eligibility.eligible && row.aprValue != null)
+      .sort((a, b) => {
+        const aprDiff = (b.aprValue ?? 0) - (a.aprValue ?? 0)
+        if (aprDiff !== 0) return aprDiff
+        const tvlDiff = (b.tvlUsd ?? 0) - (a.tvlUsd ?? 0)
+        if (tvlDiff !== 0) return tvlDiff
+        const addrA = (a.pool.contractAddress || a.pool.sousId || '').toString().toLowerCase()
+        const addrB = (b.pool.contractAddress || b.pool.sousId || '').toString().toLowerCase()
+        return addrA.localeCompare(addrB)
+      })
+      .slice(0, 5)
+
+    return ranked.map(({ pool, aprValue, tvlUsd }) => {
+      const stake = pool.stakingToken?.symbol
+      const earn = pool.earningToken?.symbol
+      const name =
+        stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
+      return {
+        id: `pool-${pool.sousId}`,
+        name,
+        apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
+        tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
+        href: '/pools',
+      }
+    })
+  }, [pools, allPools, currentBlock])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
 

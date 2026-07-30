@@ -18,7 +18,7 @@ const pulse = keyframes`
   100% { opacity: 0.45; }
 `
 
-const Row = styled.section`
+const Row = styled.section<{ $solo?: boolean }>`
   width: 100%;
   max-width: ${poolsMyPositions.contentMax};
   /* Parent Content gap 32px → 16px after Overview KPIs */
@@ -26,7 +26,7 @@ const Row = styled.section`
   box-sizing: border-box;
   display: grid;
   /* 936:424 ratio — exact at 1376; scales on narrower desktop */
-  grid-template-columns: minmax(0, 2.207547fr) minmax(0, 1fr);
+  grid-template-columns: ${({ $solo }) => ($solo ? '1fr' : 'minmax(0, 2.207547fr) minmax(0, 1fr)')};
   column-gap: ${poolsMyPositions.columnGap};
   align-items: start;
   min-width: 0;
@@ -50,10 +50,11 @@ const Row = styled.section`
   }
 `
 
-const Surface = styled.div`
+const Surface = styled.div<{ $solo?: boolean }>`
   width: 100%;
-  max-width: ${poolsMyPositions.leftW};
-  height: ${poolsMyPositions.moduleH};
+  max-width: ${({ $solo }) => ($solo ? '100%' : poolsMyPositions.leftW)};
+  height: auto;
+  min-height: ${poolsMyPositions.moduleH};
   box-sizing: border-box;
   border-radius: ${poolsMyPositions.moduleRadius};
   border: ${poolsMyPositions.moduleBorder};
@@ -302,9 +303,12 @@ const ConnectWrap = styled.div`
   }
 `
 
-export const PoolsMyPositionsModule: React.FC = () => {
+export const PoolsMyPositionsModule: React.FC<{ variant?: 'default' | 'with-create-side' }> = ({
+  variant = 'default',
+}) => {
   const vm = usePoolsWalletPositions()
   const { setPortfolioViewMode, setPoolTab } = usePoolsRuntime()
+  const hideAdvisor = variant === 'with-create-side'
 
   const onViewAll = () => {
     setPortfolioViewMode('MY_POOLS')
@@ -326,13 +330,14 @@ export const PoolsMyPositionsModule: React.FC = () => {
 
   return (
     <Row
+      $solo={hideAdvisor}
       data-testid="pools-my-positions-module"
       data-pools-module="003"
       data-pools-module-003="mounted"
       data-module-state={vm.state}
       aria-labelledby="pools-my-positions-title"
     >
-      <Surface data-pools-my-positions-surface="true">
+      <Surface $solo={hideAdvisor} data-pools-my-positions-surface="true">
         <Header>
           <TitleRow>
             <Title id="pools-my-positions-title">My Positions</Title>
@@ -400,11 +405,13 @@ export const PoolsMyPositionsModule: React.FC = () => {
         <VisuallyHidden aria-live="polite">{vm.liveRegion}</VisuallyHidden>
       </Surface>
 
-      <AdvisorSlot
-        data-pools-module-006-slot="reserved"
-        aria-hidden="true"
-        title="Reserved for Module 006"
-      />
+      {!hideAdvisor ? (
+        <AdvisorSlot
+          data-pools-module-006-slot="reserved"
+          aria-hidden="true"
+          title="Reserved for Module 006"
+        />
+      ) : null}
     </Row>
   )
 }

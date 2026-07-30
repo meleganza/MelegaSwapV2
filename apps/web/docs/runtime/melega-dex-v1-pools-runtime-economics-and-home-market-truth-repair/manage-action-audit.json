@@ -1,0 +1,8 @@
+{
+  "before": "Manage opened stake modal (active) or unstake (ended) \u2014 opaque label",
+  "after": {
+    "active": "Stake More \u2192 stake modal",
+    "finished": "Claim + Withdraw (when principal) + View Contract; no Manage"
+  },
+  "manageRemovedAsDuplicateOfStake": true
+}

@@ -1,0 +1,20 @@
+{
+  "desktop": [
+    "1920x1080",
+    "1600x900",
+    "1440x900",
+    "1366x768"
+  ],
+  "mobile": [
+    "430x932",
+    "390x844",
+    "375x812"
+  ],
+  "checks": [
+    "hero featured compact",
+    "positions+create side",
+    "view contract containment",
+    "movers colors"
+  ],
+  "status": "code-level validated; screenshots directory prepared"
+}

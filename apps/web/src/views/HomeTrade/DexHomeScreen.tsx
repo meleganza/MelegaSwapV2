@@ -380,11 +380,12 @@ const RowMeta = styled.div`
   color: ${uxRebuildColors.muted};
 `
 
-const RowMetric = styled.div`
+const RowMetric = styled.div<{ $tone?: 'up' | 'down' | 'flat' }>`
   text-align: right;
   font-size: 13px;
   font-weight: 600;
-  color: ${uxRebuildColors.text};
+  color: ${({ $tone }) =>
+    $tone === 'up' ? '#00e676' : $tone === 'down' ? '#ff5252' : uxRebuildColors.text};
 `
 
 const GoldMetric = styled(RowMetric)`
@@ -488,7 +489,9 @@ export const DexHomeScreen: React.FC = () => {
       name: string
       meta: string
       metric?: string
+      tone?: 'up' | 'down' | 'flat'
       href: string
+      srLabel?: string
     }> = []
     ;(data.trendingTickerItems ?? []).forEach((item, idx) => {
       const asset = assets[idx]
@@ -497,12 +500,23 @@ export const DexHomeScreen: React.FC = () => {
       seen.add(key)
       const slug = asset?.slug
       const move = item.accent?.trim()
+      const positive = item.accentPositive
+      const tone: 'up' | 'down' | 'flat' =
+        positive === true ? 'up' : positive === false ? 'down' : 'flat'
+      const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : ''
       rows.push({
         id: item.id ?? `trend-${idx}`,
         rank: rows.length + 1,
         name: item.primary ?? asset?.symbol ?? 'Token',
         meta: asset?.displayName ?? asset?.symbol ?? '',
-        metric: move || undefined,
+        metric: move ? `${arrow}${move}` : undefined,
+        tone,
+        srLabel:
+          tone === 'up'
+            ? `Up ${move}`
+            : tone === 'down'
+              ? `Down ${move}`
+              : move || 'Unchanged',
         href: asset?.address
           ? `/swap?outputCurrency=${asset.address}`
           : slug
@@ -610,7 +624,13 @@ export const DexHomeScreen: React.FC = () => {
                       <RowName>{row.name}</RowName>
                       <RowMeta>{row.meta || '—'}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric ?? ''}</RowMetric>
+                    <RowMetric
+                      $tone={row.tone}
+                      aria-label={row.srLabel}
+                      data-tone={row.tone}
+                    >
+                      {row.metric ?? ''}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}

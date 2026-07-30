@@ -81,9 +81,10 @@ export function buildLiquidityMarketSnapshot(input: {
     : factoryTvl
       ? 'Factory reserves × quote USD'
       : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable
-  const protocolVol = formatSnapshotUsd(input.protocol?.volumeUSD)
   const indexerVol = formatSnapshotUsd(input.indexerVolume24hUsd)
-  const volFormatted = protocolVol ?? indexerVol
+  const protocolVol = formatSnapshotUsd(input.protocol?.volumeUSD)
+  // Canonical Melega indexer WBNB-side volume wins over external protocol totals.
+  const volFormatted = indexerVol ?? protocolVol
 
   const tvl = card('tvl', {
     value: input.protocolLoading
@@ -121,15 +122,15 @@ export function buildLiquidityMarketSnapshot(input: {
       : volFormatted ?? LIQUIDITY_MARKET_SNAPSHOT_COPY.emptyMetric,
     supporting: input.protocolLoading
       ? LIQUIDITY_MARKET_SNAPSHOT_COPY.loading
-      : protocolVol
-        ? 'Verified 24H swap volume'
-        : indexerVol
-          ? 'Durable market index · Melega DEX swaps'
+      : indexerVol
+        ? 'Melega DEX · WBNB-side · rolling 24H'
+        : protocolVol
+          ? 'Verified 24H swap volume'
           : LIQUIDITY_MARKET_SNAPSHOT_COPY.unavailable,
     state: input.protocolLoading ? 'loading' : volFormatted ? 'available' : 'unavailable',
     timestamp: volFormatted ? now : null,
     status: input.protocolLoading ? 'loading' : volFormatted ? 'ok' : 'unavailable',
-    source: protocolVol ? undefined : indexerVol ? 'melega-durable-market-index' : undefined,
+    source: indexerVol ? 'melega-durable-market-index' : protocolVol ? undefined : undefined,
   })
 
   const lpProviders = card('lpProviders', {

@@ -91,7 +91,7 @@ function resolvePositionStatus(card: PoolPreviewCard, poolStatus: PoolsWalletPos
     return { status: 'WITHDRAW_ONLY', label: 'Withdraw' }
   }
   if (poolStatus === 'ENDED' && !stakedPos && Boolean(card.pendingReward?.gt(0))) {
-    return { status: 'ENDED', label: 'Ended' }
+    return { status: 'ENDED', label: 'Finished' }
   }
   if (poolStatus === 'ACTIVE' || poolStatus === 'INDEXING') {
     if (stakedPos || Boolean(card.pendingReward?.gt(0))) {
@@ -198,11 +198,11 @@ function buildActions(
     }
     if (actions.length < 2 && hasRaw) {
       actions.push({
-        kind: 'manage',
-        label: 'Manage',
+        kind: 'withdraw',
+        label: 'Withdraw',
         modalAction: 'unstake',
         enabled: true,
-        accessibleName: `Manage ${stakeSymbol} pool position`,
+        accessibleName: `Withdraw ${stakeSymbol} from finished pool`,
       })
     }
     return actions.slice(0, 2)
@@ -230,20 +230,20 @@ function buildActions(
       })
       actions.push({
         kind: 'manage',
-        label: 'Manage',
+        label: 'Stake More',
         modalAction: 'stake',
         enabled: true,
-        accessibleName: `Manage ${stakeSymbol} pool position`,
+        accessibleName: `Stake more ${stakeSymbol} into pool`,
       })
       return actions.slice(0, 2)
     }
     if (hasPrincipal && hasRaw) {
       actions.push({
         kind: 'manage',
-        label: 'Manage',
+        label: 'Stake More',
         modalAction: 'stake',
         enabled: true,
-        accessibleName: `Manage ${stakeSymbol} pool position`,
+        accessibleName: `Stake more ${stakeSymbol} into pool`,
       })
       return actions
     }

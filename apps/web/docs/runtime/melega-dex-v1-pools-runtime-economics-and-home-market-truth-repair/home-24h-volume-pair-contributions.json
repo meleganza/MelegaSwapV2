@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-07-30T02:30:06.074Z",
+  "methodology": "wbnb-side-notional-once \u00b7 rolling-24h \u00b7 candle-aggregated",
+  "pairCount": 20,
+  "legacyQuoteSumAsIfWbnb": 0.0,
+  "legacyUsdIfMisapplied": 0.0,
+  "canonicalWbnbSum": 0.0,
+  "canonicalUsdAtApproxBnb570": 0.0,
+  "beforeDisplayExample": "$0.00",
+  "afterDisplayExample": "$0.00",
+  "topPairs": [
+    {
+      "pairAddress": "0x7286c16c3c05d4c17b689be7948ec4fa4e861d1e",
+      "token0": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x4c7a472c5356679bec7bb0b36038b2edc132255a",
+      "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "token1": "0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x93ca9862f9fea7636b7a143e54c6cd64d9585aef",
+      "token0": "0x7d1481568c72891bb87a964c3a6e6213bd73d114",
+      "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x7825da4753eb52d918dac368f59d1fb734dafb72",
+      "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "token1": "0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x0ca5da766a0d95a5b16abfb974071c29391d1581",
+      "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "token1": "0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0xb1857b7a6650c5711ccfae451d79bf86c6cbaca4",
+      "token0": "0x55d398326f99059ff775485246999027b3197955",
+      "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x75e6e495a4bda582cbed52dbfcb6f69d39c2caea",
+      "token0": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x6804d8b2be83f8e38b26552ad445906c696a671c",
+      "token0": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "token1": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x5b7abe34510ec0d0cdb062cc52a6399d40f81dfa",
+      "token0": "0x4034875250f797d00b819e9011c5bb9c2e799631",
+      "token1": "0x502eed71ffe313252cadc745fac1223e126e002e",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0x92015e7870af7c6c8eceebbe6176c2886b3f433b",
+      "token0": "0x52abb09ceb590f04c7d70be9d6aa420177e94744",
+      "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0xd656c120e843012c33187e8732b83f0c1fc1f858",
+      "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+      "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    },
+    {
+      "pairAddress": "0xa2d78f3f9df50adaa6f42fd9269a06a328ef94d4",
+      "token0": "0x502eed71ffe313252cadc745fac1223e126e002e",
+      "token1": "0x6effc3b9ea59a081e7132ad2e491d1ae523394f5",
+      "swapCount": 0,
+      "baseVolume": 0.0,
+      "quoteVolume": 0.0,
+      "wbnbVolume": 0.0,
+      "volumePriced": false
+    }
+  ]
+}

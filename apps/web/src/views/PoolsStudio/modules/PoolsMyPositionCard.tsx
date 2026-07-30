@@ -110,7 +110,7 @@ const StatusBadge = styled.span<{ $tone: string }>`
     if ($tone === 'Withdraw') return '#F4C430'
     if ($tone === 'Emergency') return '#FF8A65'
     if ($tone === 'Partial') return '#E0B85A'
-    if ($tone === 'Ended') return '#B39DDB'
+    if ($tone === 'Finished' || $tone === 'Ended') return '#FF6B6B'
     return 'rgba(255,255,255,0.55)'
   }};
   background: ${({ $tone }) => {
@@ -118,7 +118,7 @@ const StatusBadge = styled.span<{ $tone: string }>`
     if ($tone === 'Withdraw') return 'rgba(244,196,48,0.14)'
     if ($tone === 'Emergency') return 'rgba(255,138,101,0.14)'
     if ($tone === 'Partial') return 'rgba(224,184,90,0.12)'
-    if ($tone === 'Ended') return 'rgba(179,157,219,0.12)'
+    if ($tone === 'Finished' || $tone === 'Ended') return 'rgba(255,107,107,0.14)'
     return 'rgba(255,255,255,0.06)'
   }};
 `
@@ -191,9 +191,16 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? poolsMyPositions.gold : '#F5F5F5')};
   font-family: ${typography.fontFamily.body};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
 
   &:focus-visible {
     outline: ${poolsMyPositions.focusRing};
@@ -207,7 +214,7 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
 
   @media (max-width: ${poolsMyPositions.mobileBreak}) {
     flex: 1 1 calc(50% - 4px);
-    min-width: 142px;
+    min-width: 0;
     min-height: ${poolsMyPositions.touchMin};
   }
 `

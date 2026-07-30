@@ -1,0 +1,6 @@
+{
+  "cycles": 10,
+  "acceptance": "no two-token collapse after complete snapshot",
+  "unitProof": "lib/trending/__tests__/durableTrendingSnapshot.test.ts",
+  "partialRejectReason": "PARTIAL_SPARSE"
+}

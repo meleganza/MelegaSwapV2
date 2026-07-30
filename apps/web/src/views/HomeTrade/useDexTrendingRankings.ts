@@ -924,22 +924,34 @@ export function useDexTrendingRankings() {
   }, [rankedAssets])
 
   const [durableItems, setDurableItems] = useState<MelegaTickerItem[]>([])
+  const [durableUpdatedAt, setDurableUpdatedAt] = useState<number | undefined>(undefined)
+  const [partialRejectCount, setPartialRejectCount] = useState(0)
 
   useEffect(() => {
     const snap = readDurableTrendingSnapshot()
-    if (snap?.items?.length) setDurableItems(snap.items)
+    if (snap?.items?.length) {
+      setDurableItems(snap.items)
+      setDurableUpdatedAt(snap.updatedAt)
+    }
   }, [])
 
   useEffect(() => {
-    if (liveTickerItems.length > 0) {
+    if (liveTickerItems.length === 0) return
+    const decision = resolveTrendingItemsForDisplay(liveTickerItems, durableItems, durableUpdatedAt)
+    if (decision.rejectedPartial) {
+      setPartialRejectCount((n) => n + 1)
+      return
+    }
+    if (!decision.fromDurable) {
       writeDurableTrendingSnapshot(liveTickerItems)
       setDurableItems(liveTickerItems)
+      setDurableUpdatedAt(Date.now())
     }
-  }, [liveTickerItems])
+  }, [liveTickerItems, durableItems, durableUpdatedAt])
 
   const resolvedTicker = useMemo(
-    () => resolveTrendingItemsForDisplay(liveTickerItems, durableItems),
-    [liveTickerItems, durableItems],
+    () => resolveTrendingItemsForDisplay(liveTickerItems, durableItems, durableUpdatedAt),
+    [liveTickerItems, durableItems, durableUpdatedAt],
   )
   const trendingTickerItems = resolvedTicker.items
 
@@ -976,6 +988,8 @@ export function useDexTrendingRankings() {
     trendingEmpty,
     isLoading: bootstrapping,
     fromDurableSnapshot: resolvedTicker.fromDurable,
+    rejectedPartialSnapshot: resolvedTicker.rejectedPartial,
+    partialRejectCount,
     indexerScopeNote,
     rankedCount: rankedAssets.length,
     rankedAssets,

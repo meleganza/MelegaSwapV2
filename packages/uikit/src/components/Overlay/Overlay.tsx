@@ -27,7 +27,8 @@ const StyledOverlay = styled(Box)<{ isUnmounting?: boolean }>`
   width: 100%;
   height: 100%;
   background-color: ${({ theme }) => `${theme.colors.text99}`};
-  z-index: 20;
+  /* Stay below modal content siblings (theme.zIndices.modal). Hardcoded 20 covered dialogs. */
+  z-index: 0;
   will-change: opacity;
   animation: ${mountAnimation} 350ms ease forwards;
   ${({ isUnmounting }) =>

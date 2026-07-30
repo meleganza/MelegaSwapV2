@@ -62,7 +62,6 @@ export function getPoolTypeLabel(pool: Pool.DeserializedPool<Token>): string {
 export function getPoolDisplayName(pool: Pool.DeserializedPool<Token>): string {
   if (pool.vaultKey === VaultKey.CakeVault) return 'MARCO Locked'
   if (pool.vaultKey === VaultKey.CakeFlexibleSideVault) return 'MARCO Flexible'
-  if (pool.sousId === 0 && !pool.vaultKey) return 'MARCO Staking'
   if (pool.stakingToken?.symbol && pool.earningToken?.symbol) {
     return `${pool.stakingToken.symbol} → ${pool.earningToken.symbol}`
   }

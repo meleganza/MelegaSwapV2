@@ -169,17 +169,26 @@ const Btn = styled.button<{ $primary?: boolean }>`
   appearance: none;
   cursor: pointer;
   flex: 1 1 0;
+  min-width: 0;
   min-height: ${poolsExplore.touchMin};
   height: 40px;
+  padding: 0 10px;
   border-radius: 10px;
   border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? poolsExplore.gold : '#F5F5F5')};
   font-family: ${typography.fontFamily.body};
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
 
   &:focus-visible {
     outline: ${poolsExplore.focusRing};

@@ -71,7 +71,7 @@ export const ModalContainer = styled(MotionBox)<{ $minWidth: string }>`
 
   ${({ theme }) => theme.mediaQueries.md} {
     width: auto;
-    position: auto;
+    position: relative;
     bottom: auto;
     border-radius: 32px;
     max-height: 100vh;
@@ -95,7 +95,7 @@ export const ModalContainerForLaunchpad = styled(MotionBox)<{ $minWidth: string 
 
   ${({ theme }) => theme.mediaQueries.md} {
     width: auto;
-    position: auto;
+    position: relative;
     bottom: auto;
     // border-radius: 32px;
     border-radius: 8px;

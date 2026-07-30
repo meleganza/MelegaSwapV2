@@ -4,6 +4,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 import { poolsHero } from './poolsHeroTokens'
 
 const Card = styled.aside`
@@ -50,6 +51,48 @@ const Apr = styled.span`
   font-weight: 750;
 `
 
+const Badge = styled.span<{ $active: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
+  color: ${({ $active }) => ($active ? '#6ddc8c' : '#ff6b6b')};
+  background: ${({ $active }) => ($active ? 'rgba(109,220,140,0.12)' : 'rgba(255,107,107,0.12)')};
+`
+
+const Actions = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+`
+
+const Btn = styled.button<{ $primary?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
+  background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
+  color: ${({ $primary }) => ($primary ? '#f4c430' : '#f5f5f5')};
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+`
+
 const Empty = styled.p`
   margin: 0;
   font-size: 12px;
@@ -57,7 +100,7 @@ const Empty = styled.p`
 `
 
 export const PoolsHeroFeaturedCompact: React.FC = () => {
-  const { featured } = usePoolsRuntime()
+  const { featured, requestModal } = usePoolsRuntime()
   if (!featured) {
     return (
       <Card data-testid="pools-hero-featured-compact" data-featured="empty">
@@ -70,15 +113,45 @@ export const PoolsHeroFeaturedCompact: React.FC = () => {
     [featured.stakeToken, featured.rewardToken].filter(Boolean).join(' → ') ||
     featured.tokens?.join(' / ') ||
     'Pool'
+  const active = featured.displayStatus !== 'ENDED' && featured.status !== 'ended'
+  const contractAddress = resolvePoolContractAddress({
+    contractAddress: featured.contractAddress,
+    explorerUrl: featured.explorerUrl,
+    contractExplorerUrl: featured.analyzePreview?.contractExplorerUrl,
+  })
+  const contractUrl = poolBscScanContractUrl(contractAddress)
+
   return (
     <Card data-testid="pools-hero-featured-compact" data-featured="ready">
       <Eyebrow>Featured Pool</Eyebrow>
       <Pair title={title}>{title}</Pair>
       <Meta>
-        {featured.apr ? <Apr>{featured.apr}</Apr> : null}
+        <Badge $active={active}>{active ? 'Active' : 'Finished'}</Badge>
+        {featured.apr ? <Apr>{featured.apr}</Apr> : <span>APR unavailable</span>}
         {featured.tvl ? <span>TVL {featured.tvl}</span> : null}
         {featured.rewardToken ? <span>Earn {featured.rewardToken}</span> : null}
       </Meta>
+      <Actions>
+        <Btn
+          type="button"
+          $primary
+          data-testid="pools-hero-featured-stake"
+          disabled={!active}
+          onClick={() => requestModal(featured, 'stake')}
+        >
+          Stake
+        </Btn>
+        {contractUrl ? (
+          <Btn
+            type="button"
+            data-testid="pools-hero-featured-view-contract"
+            data-ps-view-contract
+            onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
+          >
+            View Contract ↗
+          </Btn>
+        ) : null}
+      </Actions>
     </Card>
   )
 }
