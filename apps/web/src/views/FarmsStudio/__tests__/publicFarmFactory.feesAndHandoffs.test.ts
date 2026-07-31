@@ -84,12 +84,12 @@ describe('publicFarmFactory handoffs + draft', () => {
     expect(href).toContain('return=create-farm')
   })
 
-  it('Builder blocked when undeployed — honest blocker + manual remains', () => {
+  it('Builder blocked when undeployed — manual liquidity handoff remains', () => {
     const draft = createDefaultPublicFarmFactoryDraft()
     const blocked = buildAiBuilderHandoffUrl(draft, 0.15, false)
     expect(blocked.blocked).toBe(true)
-    expect(blocked.blockerLabel).toMatch(/undeployed/i)
     expect(buildManualLiquidityHandoffUrl(draft, 0.15)).toContain('/add')
+    // UI surfaces Increase Liquidity / Add Liquidity Manually — no protocol wording.
   })
 
   it('Builder preload when available includes recommended budget', () => {

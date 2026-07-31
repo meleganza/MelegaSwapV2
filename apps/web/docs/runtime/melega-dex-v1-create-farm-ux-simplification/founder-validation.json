@@ -1,0 +1,61 @@
+{
+  "capturedAt": "2026-07-31T00:09:04.769Z",
+  "base": "http://127.0.0.1:3461",
+  "viewports": [
+    {
+      "label": "desktop-1440-step1",
+      "forbiddenHits": [],
+      "missingRequired": [],
+      "hasPairStatus": true,
+      "hasFeeNote": true,
+      "snippet": "Create Farm\n\nChoose a pair, make sure it has enough liquidity, then set your rewards.\n\nSTEP 1\n\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\n\nPick the pair you want to farm.\n\nSEARCH\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nContinue\n\nSelect a pair to continue.\n\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEm"
+    },
+    {
+      "label": "desktop-1440-step2",
+      "forbiddenHits": [],
+      "hasNotReady": true,
+      "hasIncrease": true,
+      "hasManual": true,
+      "hasTvl": true,
+      "snippet": "Create Farm\n\nChoose a pair, make sure it has enough liquidity, then set your rewards.\n\nSTEP 1\n\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\n\nPick the pair you want to farm.\n\nSEARCH\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\n\nSTEP 2\n\nPair Status\n✓\nPair exists\n✓\nIndexed\nTVL\n0.17 BNB\nMINIMUM REQUIRED\n0.25 BNB\nStatus\nNot ready yet\n\nYou need 0.08 BNB more liquidity.\n\nNot ready yet\n\nYou need 0.08 BNB more liqu"
+    },
+    {
+      "label": "desktop-1440-step3",
+      "forbiddenHits": [],
+      "marcoFriendly": true,
+      "noProtocolMarco": true,
+      "feeSimple": true,
+      "treasuryNote": true,
+      "snippet": "Create Farm\n\nChoose a pair, make sure it has enough liquidity, then set your rewards.\n\nSTEP 1\n\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\n\nPick the pair you want to farm.\n\nSEARCH\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\n\nSTEP 2\n\nPair Status\n✓\nPair exists\n✓\nIndexed\nTVL\n0.40 BNB\nMINIMUM REQUIRED\n0.25 BNB\nStatus\nReady\n\nSTEP 3\n\nFarm setup\nREWARD TOKEN\nREWARD BUDGET\nDURATION\nEMISSION\nCREATION FEE\n—\nPaid t"
+    },
+    {
+      "label": "mobile-390-step1",
+      "forbiddenHits": [],
+      "missingRequired": [],
+      "hasPairStatus": true,
+      "hasFeeNote": true,
+      "snippet": "Create Farm\n\nChoose a pair, make sure it has enough liquidity, then set your rewards.\n\nSTEP 1\n\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\n\nPick the pair you want to farm.\n\nSEARCH\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nContinue\n\nSelect a pair to continue.\n\nREVIEW\nPair\n—\nReward\n—\nBudget\n—\nDuration\n—\nEm"
+    },
+    {
+      "label": "mobile-390-step2",
+      "forbiddenHits": [],
+      "hasNotReady": true,
+      "hasIncrease": true,
+      "hasManual": true,
+      "hasTvl": true,
+      "snippet": "Create Farm\n\nChoose a pair, make sure it has enough liquidity, then set your rewards.\n\nSTEP 1\n\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\n\nPick the pair you want to farm.\n\nSEARCH\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\n\nSTEP 2\n\nPair Status\n✓\nPair exists\n✓\nIndexed\nTVL\n0.17 BNB\nMINIMUM REQUIRED\n0.25 BNB\nStatus\nNot ready yet\n\nYou need 0.08 BNB more liquidity.\n\nNot ready yet\n\nYou need 0.08 BNB more liqu"
+    },
+    {
+      "label": "mobile-390-step3",
+      "forbiddenHits": [],
+      "marcoFriendly": true,
+      "noProtocolMarco": true,
+      "feeSimple": true,
+      "treasuryNote": true,
+      "snippet": "Create Farm\n\nChoose a pair, make sure it has enough liquidity, then set your rewards.\n\nSTEP 1\n\nSelect LP Pair\n○ Use existing LP Pair\n○ Create a new LP Pair\n\nPick the pair you want to farm.\n\nSEARCH\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\nTKN0/TKN1\n\nSTEP 2\n\nPair Status\n✓\nPair exists\n✓\nIndexed\nTVL\n0.40 BNB\nMINIMUM REQUIRED\n0.25 BNB\nStatus\nReady\n\nSTEP 3\n\nFarm setup\nREWARD TOKEN\nREWARD BUDGET\nDURATION\nEMISSION\nCREATION FEE\n—\nPaid t"
+    }
+  ],
+  "forbiddenHits": [],
+  "requiredOk": true,
+  "pass": true
+}

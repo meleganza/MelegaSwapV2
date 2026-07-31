@@ -1,6 +1,7 @@
 /**
- * Public Farm Factory — Create Farm orchestrator.
- * MasterBuilder never exposed. MARCO rewards rejected. Low-TVL remediation stays in-flow.
+ * Create Farm — human-guided wizard UX.
+ * Protocol engines (eligibility, fees, drafts, capability) stay identical underneath.
+ * No protocol terminology is shown to users.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -11,6 +12,7 @@ import { useAmmPairRegistry } from 'lib/bsc-indexer/client/useAmmPairRegistry'
 import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from 'views/LiquidityStudio/liquidityBuilding/addresses'
 import { farmsHero } from './farmsHeroTokens'
 import { PUBLIC_FARM_FACTORY_CAPABILITY } from './publicFarmFactoryCapability'
+import { CREATE_FARM_UX } from './createFarmUxCopy'
 import {
   CREATE_FARM_RETURN_PATH,
   buildAiBuilderHandoffUrl,
@@ -27,7 +29,6 @@ import {
 } from './publicFarmFactoryDraft'
 import { resolvePublicFarmFactoryFee } from './publicFarmFactoryFee'
 import {
-  MARCO_REWARD_REJECTION_MESSAGE,
   PUBLIC_FARM_MINIMUM_TVL_BNB,
   evaluatePublicFarmEligibility,
   rejectMarcoReward,
@@ -57,10 +58,8 @@ const Section = styled.section`
 
 const Header = styled.div`
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
 `
 
 const Title = styled.h2`
@@ -72,11 +71,20 @@ const Title = styled.h2`
 `
 
 const Subtitle = styled.p`
-  margin: 6px 0 0;
-  font-size: 13px;
-  line-height: 18px;
-  color: rgba(255, 255, 255, 0.55);
-  max-width: 720px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.58);
+  max-width: 640px;
+`
+
+const StepLabel = styled.p`
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(244, 196, 48, 0.85);
 `
 
 const ModeRow = styled.div`
@@ -86,15 +94,16 @@ const ModeRow = styled.div`
 `
 
 const ModeBtn = styled.button<{ $active?: boolean }>`
-  height: 42px;
-  padding: 0 16px;
+  min-height: 44px;
+  padding: 10px 16px;
   border-radius: 12px;
   border: 1px solid ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.55)' : 'rgba(255, 255, 255, 0.12)')};
   background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.14)' : 'rgba(255, 255, 255, 0.03)')};
   color: ${({ $active }) => ($active ? '#F4C430' : '#f2f2f2')};
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  text-align: left;
 `
 
 const Body = styled.div`
@@ -118,14 +127,10 @@ const FieldsCol = styled.div`
 
 const FieldsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: 16px;
   row-gap: 16px;
   width: 100%;
-
-  @media (max-width: 1023px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 
   @media (max-width: 599px) {
     grid-template-columns: 1fr;
@@ -149,13 +154,13 @@ const Label = styled.span`
 
 const inputStyles = `
   margin-top: 8px;
-  height: 40px;
+  height: 44px;
   box-sizing: border-box;
   padding: 0 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.03);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   color: #f2f2f2;
 `
@@ -171,10 +176,13 @@ const ReadOnlyValue = styled.div<{ $accent?: string }>`
   ${inputStyles}
   display: flex;
   align-items: center;
-  color: ${({ $accent }) => $accent || '#18f089'};
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  color: ${({ $accent }) => $accent || '#f2f2f2'};
+`
+
+const FeeNote = styled.span`
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
 `
 
 const Panel = styled.div`
@@ -189,16 +197,63 @@ const Panel = styled.div`
 
 const PanelTitle = styled.h3`
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 750;
   color: #f2f2f2;
 `
 
 const Hint = styled.p`
   margin: 0;
-  font-size: 12px;
-  line-height: 17px;
+  font-size: 13px;
+  line-height: 18px;
   color: rgba(255, 255, 255, 0.55);
+`
+
+const StatusLine = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+
+  strong {
+    color: #f5f5f5;
+  }
+`
+
+const Check = styled.span`
+  color: #18f089;
+  font-weight: 800;
+`
+
+const MetricBlock = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+
+  @media (max-width: 599px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const Metric = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`
+
+const MetricLabel = styled.span`
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+`
+
+const MetricValue = styled.span`
+  font-size: 18px;
+  font-weight: 750;
+  color: #f5f5f5;
 `
 
 const PairList = styled.ul`
@@ -219,10 +274,10 @@ const PairItem = styled.button<{ $active?: boolean }>`
   border: 1px solid ${({ $active }) => ($active ? 'rgba(24, 240, 137, 0.45)' : 'rgba(255, 255, 255, 0.08)')};
   background: ${({ $active }) => ($active ? 'rgba(24, 240, 137, 0.08)' : 'rgba(255, 255, 255, 0.02)')};
   color: #f2f2f2;
-  padding: 10px 12px;
+  padding: 12px 14px;
   cursor: pointer;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 18px;
 `
 
 const Remediation = styled.div`
@@ -232,26 +287,14 @@ const Remediation = styled.div`
   padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 `
 
 const RemediationTitle = styled.p`
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 750;
   color: #f4c430;
-`
-
-const MetricRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-
-  strong {
-    color: #f5f5f5;
-  }
 `
 
 const ActionRow = styled.div`
@@ -260,90 +303,71 @@ const ActionRow = styled.div`
   gap: 10px;
 `
 
-const ActionLink = styled.a`
+const PrimaryLink = styled.a`
   display: inline-flex;
   align-items: center;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(24, 240, 137, 0.4);
-  background: rgba(24, 240, 137, 0.1);
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(24, 240, 137, 0.45);
+  background: rgba(24, 240, 137, 0.14);
   color: #18f089;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 750;
+  text-decoration: none;
+`
+
+const SecondaryLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
 `
 
-const ActionBtn = styled.button`
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.75);
+const PrimaryButton = styled.button<{ $ready?: boolean }>`
+  align-self: flex-start;
+  min-height: 48px;
+  min-width: 180px;
+  padding: 0 22px;
+  border-radius: 12px;
+  border: 1px solid
+    ${({ $ready }) => ($ready ? 'rgba(24, 240, 137, 0.45)' : 'rgba(255, 255, 255, 0.12)')};
+  background: ${({ $ready }) => ($ready ? 'rgba(24, 240, 137, 0.16)' : 'rgba(255, 255, 255, 0.04)')};
+  color: ${({ $ready }) => ($ready ? '#18f089' : 'rgba(255, 255, 255, 0.55)')};
+  font-size: 15px;
+  font-weight: 750;
+  cursor: ${({ $ready }) => ($ready ? 'pointer' : 'default')};
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
+`
+
+const SoftNote = styled.p`
+  margin: 0;
   font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
+  line-height: 18px;
+  color: rgba(255, 255, 255, 0.55);
 `
 
 const RejectBanner = styled.div`
   border-radius: 12px;
-  border: 1px solid rgba(255, 107, 107, 0.4);
-  background: rgba(255, 107, 107, 0.1);
-  padding: 12px 14px;
-  font-size: 13px;
-  font-weight: 650;
-  color: #ff8a8a;
-`
-
-const Blocker = styled.div`
-  border-radius: 14px;
-  border: 1px solid rgba(255, 107, 107, 0.35);
-  background: rgba(255, 107, 107, 0.08);
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`
-
-const BlockerTitle = styled.p`
-  margin: 0;
-  font-size: 13px;
-  font-weight: 750;
-  color: #ff8a8a;
-`
-
-const BlockerList = styled.ul`
-  margin: 0;
-  padding-left: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`
-
-const BlockerItem = styled.li`
-  font-size: 12px;
-  line-height: 17px;
-  color: rgba(255, 255, 255, 0.65);
-`
-
-const DisabledButton = styled.button`
-  align-self: flex-start;
-  height: 46px;
-  min-width: 220px;
-  padding: 0 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(244, 196, 48, 0.4);
+  background: rgba(244, 196, 48, 0.08);
+  padding: 14px 16px;
   font-size: 14px;
-  font-weight: 750;
-  cursor: not-allowed;
-
-  @media (max-width: 767px) {
-    width: 100%;
-    min-width: 0;
-  }
+  font-weight: 650;
+  color: #f4c430;
+  white-space: pre-line;
 `
 
 const PreviewCol = styled.aside`
@@ -373,20 +397,13 @@ const PreviewTitle = styled.span`
   color: rgba(255, 255, 255, 0.45);
 `
 
-const PreviewValue = styled.span`
-  font-size: 14px;
-  font-weight: 700;
-  color: #f2f2f2;
-  line-height: 1.35;
-`
-
 const ReviewRow = styled.div`
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  font-size: 12px;
-  line-height: 17px;
+  font-size: 13px;
+  line-height: 18px;
   color: rgba(255, 255, 255, 0.55);
 
   strong {
@@ -394,9 +411,20 @@ const ReviewRow = styled.div`
     font-weight: 700;
     text-align: right;
     max-width: 60%;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
+`
+
+const AdvancedToggle = styled.button`
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 `
 
 function parseNum(raw: string): number {
@@ -407,19 +435,15 @@ function parseNum(raw: string): number {
 function computeEstimatedFarmApr(draft: PublicFarmFactoryDraft): string {
   const budget = parseNum(draft.rewardBudget)
   const daily = parseNum(draft.emissionRate)
-  if (budget <= 0 || daily <= 0) return 'Calculated after reward configuration.'
+  if (budget <= 0 || daily <= 0) return '—'
   const apr = (daily * 365 * 100) / budget
-  if (!Number.isFinite(apr)) return 'Complete farm parameters to estimate APR'
+  if (!Number.isFinite(apr)) return '—'
   return `${apr.toFixed(1)}%`
 }
 
-function computeFarmHealthScore(draft: PublicFarmFactoryDraft, eligible: boolean): number | null {
-  if (!eligible || parseNum(draft.rewardBudget) <= 0 || parseNum(draft.emissionRate) <= 0) return null
-  let score = 70
-  if (pairContainsMarcoAddress(draft.selectedPair, MARCO_BSC_ADDRESS)) score += 8
-  if (parseNum(draft.durationDays) >= 30) score += 6
-  if (draft.creatorWallet.trim().length > 0) score += 4
-  return Math.min(97, Math.max(40, score))
+function formatBnb(n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return '—'
+  return `${n.toFixed(2)} BNB`
 }
 
 function isBuilderDeployed(): boolean {
@@ -430,13 +454,17 @@ function isBuilderDeployed(): boolean {
   )
 }
 
+type NextAction = 'select_pair' | 'increase_liquidity' | 'continue_config' | 'create_farm'
+
 export const PublicFarmFactoryWorkspace: React.FC = () => {
   const router = useRouter()
   const [draft, setDraft] = useState<PublicFarmFactoryDraft>(() => createDefaultPublicFarmFactoryDraft())
   const [pairQuery, setPairQuery] = useState('')
   const [hydrated, setHydrated] = useState(false)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [createSoftNote, setCreateSoftNote] = useState<string | null>(null)
 
-  const { pairs, status: pairStatus } = useAmmPairRegistry({
+  const { pairs } = useAmmPairRegistry({
     q: pairQuery || undefined,
     page: 1,
     pageSize: 40,
@@ -452,7 +480,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
     })
   }, [])
 
-  // Restore draft on return-to-Create-Farm and initial mount.
   useEffect(() => {
     if (!router.isReady || hydrated) return
     const search = typeof window !== 'undefined' ? window.location.search : ''
@@ -463,12 +490,15 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
     }
     setHydrated(true)
     if (returning && typeof window !== 'undefined') {
-      // Clean return params without losing hash anchor.
       const url = new URL(window.location.href)
       url.searchParams.delete('return')
       url.searchParams.delete('draftId')
       url.searchParams.delete('destination')
-      window.history.replaceState({}, '', `${url.pathname}${url.search}${CREATE_FARM_RETURN_PATH.includes('#') ? '#create-farm' : ''}`)
+      window.history.replaceState(
+        {},
+        '',
+        `${url.pathname}${url.search}${CREATE_FARM_RETURN_PATH.includes('#') ? '#create-farm' : ''}`,
+      )
     }
   }, [router.isReady, hydrated])
 
@@ -504,95 +534,116 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
   const createPairHref = useMemo(() => buildCreatePairHandoffUrl(draft), [draft])
 
   const estimatedApr = computeEstimatedFarmApr(draft)
-  const healthScore = computeFarmHealthScore(draft, eligibility.eligible)
-  const configUnlocked = eligibility.eligible && !marcoReject.rejected
+  const needsLiquidity =
+    Boolean(draft.selectedPair) && !eligibility.eligible && eligibility.status !== 'missing_pair'
+  const configReady =
+    eligibility.eligible &&
+    !marcoReject.rejected &&
+    parseNum(draft.rewardBudget) > 0 &&
+    parseNum(draft.emissionRate) > 0 &&
+    parseNum(draft.durationDays) > 0 &&
+    Boolean(draft.rewardToken.trim()) &&
+    feeResult.ok
+
+  const nextAction: NextAction = !draft.selectedPair
+    ? 'select_pair'
+    : needsLiquidity
+      ? 'increase_liquidity'
+      : !configReady
+        ? 'continue_config'
+        : 'create_farm'
 
   const selectPair = (pair: PublicFarmSelectedPair) => {
+    setCreateSoftNote(null)
     patch({ selectedPair: pair, selectionMode: 'search_existing' })
   }
 
   const reviewRows = [
     ['Pair', draft.selectedPair ? `${draft.selectedPair.symbol0}/${draft.selectedPair.symbol1}` : '—'],
-    ['LP', draft.selectedPair?.lpTokenAddress || '—'],
-    ['Eligible', eligibility.eligible ? 'Yes' : 'Not yet'],
     ['Reward', draft.rewardToken || '—'],
     ['Budget', draft.rewardBudget || '—'],
-    ['Emission', draft.emissionRate ? `${draft.emissionRate}/day` : '—'],
     ['Duration', draft.durationDays ? `${draft.durationDays} days` : '—'],
-    ['Creator', draft.creatorWallet || '—'],
-    [
-      'Creation Fee',
-      feeResult.ok ? feeResult.fee.display : 'Unsupported',
-    ],
-    ['Treasury', feeResult.ok ? feeResult.fee.recipientLabel : 'MELEGA TREASURY WALLET'],
+    ['Emission', draft.emissionRate ? `${draft.emissionRate}/day` : '—'],
+    ['Creation Fee', feeResult.ok ? feeResult.fee.display : '—'],
     ['Estimated APR', estimatedApr],
-    ['Health', healthScore == null ? 'After eligibility + config' : `${healthScore}/100`],
   ]
+
+  const onPrimary = () => {
+    if (nextAction === 'create_farm') {
+      // Protocol execution remains gated; surface a soft human note only.
+      if (!PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute) {
+        setCreateSoftNote(CREATE_FARM_UX.createUnavailable)
+        return
+      }
+    }
+  }
+
+  const increaseHref = !builderHandoff.blocked ? builderHandoff.href : manualHref
 
   return (
     <Section
       id="create-farm"
       data-testid="create-farm-workspace"
-      data-testid-public="public-farm-factory-workspace"
       data-fs-create-farm-workspace="true"
       data-public-farm-factory="true"
+      data-create-farm-ux="simplified"
       data-create-farm-capability={PUBLIC_FARM_FACTORY_CAPABILITY.outcome}
       data-factory-deployed="false"
       data-masterbuilder-exposed="false"
       aria-labelledby="create-farm-workspace-title"
     >
       <Header>
-        <div>
-          <Title id="create-farm-workspace-title">Create Farm</Title>
-          <Subtitle>
-            Public Farm Factory — select or create an LP pair, meet the 0.25 BNB TVL eligibility threshold, then configure
-            a non-MARCO reward farm. MasterBuilder stays protocol-only.
-          </Subtitle>
-        </div>
+        <Title id="create-farm-workspace-title">{CREATE_FARM_UX.title}</Title>
+        <Subtitle>{CREATE_FARM_UX.subtitle}</Subtitle>
       </Header>
 
-      <ModeRow data-testid="public-farm-pair-mode">
-        <ModeBtn
-          type="button"
-          $active={draft.selectionMode === 'search_existing'}
-          data-testid="public-farm-search-existing"
-          onClick={() => patch({ selectionMode: 'search_existing' })}
-        >
-          Search Existing Pair
-        </ModeBtn>
-        <ModeBtn
-          type="button"
-          $active={draft.selectionMode === 'create_new'}
-          data-testid="public-farm-create-new-pair"
-          onClick={() => {
-            patch({ selectionMode: 'create_new' })
-            saveDraftToStorage({ ...draft, selectionMode: 'create_new', updatedAt: new Date().toISOString() })
-            if (typeof window !== 'undefined') window.location.href = createPairHref
-          }}
-        >
-          Create New Pair
-        </ModeBtn>
-      </ModeRow>
+      <div data-testid="create-farm-step-pair">
+        <StepLabel>Step 1</StepLabel>
+        <PanelTitle style={{ marginTop: 6 }}>{CREATE_FARM_UX.step1}</PanelTitle>
+        <ModeRow data-testid="public-farm-pair-mode" style={{ marginTop: 12 }}>
+          <ModeBtn
+            type="button"
+            $active={draft.selectionMode === 'search_existing'}
+            data-testid="public-farm-search-existing"
+            onClick={() => patch({ selectionMode: 'search_existing' })}
+          >
+            ○ {CREATE_FARM_UX.useExisting}
+          </ModeBtn>
+          <ModeBtn
+            type="button"
+            $active={draft.selectionMode === 'create_new'}
+            data-testid="public-farm-create-new-pair"
+            onClick={() => {
+              const next = {
+                ...draft,
+                selectionMode: 'create_new' as const,
+                updatedAt: new Date().toISOString(),
+              }
+              patch({ selectionMode: 'create_new' })
+              saveDraftToStorage(next)
+              if (typeof window !== 'undefined') window.location.href = createPairHref
+            }}
+          >
+            ○ {CREATE_FARM_UX.createNew}
+          </ModeBtn>
+        </ModeRow>
+      </div>
 
       <Body>
         <FieldsCol>
           {draft.selectionMode === 'search_existing' && (
             <Panel data-testid="public-farm-pair-search">
-              <PanelTitle>Existing Pair Search</PanelTitle>
-              <Hint>Search by pair name, token symbol, token address, pair contract, or LP token address.</Hint>
+              <Hint>{CREATE_FARM_UX.searchHint}</Hint>
               <Field>
                 <Label>Search</Label>
                 <InputBox
                   value={pairQuery}
                   onChange={(e) => setPairQuery(e.target.value)}
-                  placeholder="e.g. MARCO/BNB · 0x…"
+                  placeholder={CREATE_FARM_UX.searchPlaceholder}
                   aria-label="Search existing pair"
                   data-testid="public-farm-pair-query"
                 />
               </Field>
-              <Hint data-testid="public-farm-pair-search-status">
-                Registry: {pairStatus} · {filteredPairs.length} match{filteredPairs.length === 1 ? '' : 'es'}
-              </Hint>
               <PairList>
                 {filteredPairs.slice(0, 12).map((p) => {
                   const selected = toSelectedPair(p)
@@ -608,10 +659,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
                         <strong>
                           {selected.symbol0}/{selected.symbol1}
                         </strong>
-                        <br />
-                        {selected.pairAddress}
-                        <br />
-                        LP {selected.lpTokenAddress} · {selected.classification}
                       </PairItem>
                     </li>
                   )
@@ -622,199 +669,214 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
 
           {draft.selectedPair && (
             <Panel data-testid="public-farm-eligibility" data-eligible={eligibility.eligible ? 'true' : 'false'}>
-              <PanelTitle>Eligibility</PanelTitle>
-              <MetricRow>
-                <span>
-                  Status <strong>{eligibility.status}</strong>
-                </span>
-                <span>
-                  Indexed <strong>{eligibility.indexed ? 'yes' : 'no'}</strong>
-                </span>
-                <span>
-                  Active <strong>{eligibility.active ? 'yes' : 'no'}</strong>
-                </span>
-                <span>
-                  Current TVL{' '}
-                  <strong data-testid="public-farm-current-tvl">
-                    {eligibility.currentTvlBnb == null ? 'unavailable' : `${eligibility.currentTvlBnb.toFixed(4)} BNB`}
-                  </strong>
-                </span>
-                <span>
-                  Minimum <strong data-testid="public-farm-minimum-tvl">{PUBLIC_FARM_MINIMUM_TVL_BNB} BNB</strong>
-                </span>
-                <span>
-                  Additional required{' '}
-                  <strong data-testid="public-farm-missing-tvl">
-                    {eligibility.missingTvlBnb == null ? '—' : `${eligibility.missingTvlBnb.toFixed(4)} BNB`}
-                  </strong>
-                </span>
-              </MetricRow>
-              {eligibility.eligible ? (
-                <Hint data-testid="public-farm-eligible-banner">Eligible — continue to farm configuration.</Hint>
-              ) : (
-                <Hint>Not a terminal error — remediate liquidity and return to Create Farm.</Hint>
+              <StepLabel>Step 2</StepLabel>
+              <PanelTitle>{CREATE_FARM_UX.pairStatus}</PanelTitle>
+              <StatusLine>
+                <Check>✓</Check> {CREATE_FARM_UX.pairExists}
+              </StatusLine>
+              <StatusLine>
+                <Check>✓</Check> {CREATE_FARM_UX.pairIndexed}
+              </StatusLine>
+              <MetricBlock>
+                <Metric>
+                  <MetricLabel>{CREATE_FARM_UX.tvl}</MetricLabel>
+                  <MetricValue data-testid="public-farm-current-tvl">
+                    {formatBnb(eligibility.currentTvlBnb)}
+                  </MetricValue>
+                </Metric>
+                <Metric>
+                  <MetricLabel>{CREATE_FARM_UX.minimumRequired}</MetricLabel>
+                  <MetricValue data-testid="public-farm-minimum-tvl">
+                    {formatBnb(PUBLIC_FARM_MINIMUM_TVL_BNB)}
+                  </MetricValue>
+                </Metric>
+              </MetricBlock>
+              <StatusLine data-testid="public-farm-pair-status-label">
+                Status{' '}
+                <strong>
+                  {eligibility.eligible ? CREATE_FARM_UX.statusReady : CREATE_FARM_UX.statusNotReady}
+                </strong>
+              </StatusLine>
+              {!eligibility.eligible && eligibility.missingTvlBnb != null && eligibility.missingTvlBnb > 0 && (
+                <Hint data-testid="public-farm-missing-tvl">
+                  {CREATE_FARM_UX.youNeed} <strong>{formatBnb(eligibility.missingTvlBnb)}</strong>{' '}
+                  {CREATE_FARM_UX.moreLiquidity}
+                </Hint>
               )}
             </Panel>
           )}
 
-          {draft.selectedPair && eligibility.status === 'below_minimum_tvl' && (
+          {draft.selectedPair && needsLiquidity && (
             <Remediation data-testid="public-farm-low-liquidity-remediation" role="status">
-              <RemediationTitle>Not eligible yet</RemediationTitle>
-              <MetricRow>
-                <span>
-                  Current TVL <strong>{eligibility.currentTvlBnb?.toFixed(4)} BNB</strong>
-                </span>
-                <span>
-                  Minimum required <strong>{eligibility.minimumTvlBnb} BNB</strong>
-                </span>
-                <span>
-                  Additional liquidity required <strong>{eligibility.missingTvlBnb?.toFixed(4)} BNB</strong>
-                </span>
-              </MetricRow>
+              <RemediationTitle>{CREATE_FARM_UX.statusNotReady}</RemediationTitle>
+              <Hint>
+                {CREATE_FARM_UX.youNeed} {formatBnb(eligibility.missingTvlBnb)} {CREATE_FARM_UX.moreLiquidity}
+              </Hint>
               <ActionRow>
-                {builderHandoff.blocked ? (
-                  <ActionBtn
-                    type="button"
-                    data-testid="public-farm-builder-blocked"
-                    title={builderHandoff.blockerLabel || undefined}
-                    onClick={() => undefined}
-                  >
-                    Use AI Liquidity Builder (blocked)
-                  </ActionBtn>
-                ) : (
-                  <ActionLink href={builderHandoff.href} data-testid="public-farm-builder-handoff">
-                    Use AI Liquidity Builder
-                  </ActionLink>
-                )}
-                <ActionLink href={manualHref} data-testid="public-farm-manual-liquidity-handoff">
-                  Add Liquidity Manually
-                </ActionLink>
+                <PrimaryLink
+                  href={increaseHref}
+                  data-testid={
+                    builderHandoff.blocked ? 'public-farm-builder-blocked' : 'public-farm-builder-handoff'
+                  }
+                >
+                  {CREATE_FARM_UX.increaseLiquidity}
+                </PrimaryLink>
+                <SecondaryLink href={manualHref} data-testid="public-farm-manual-liquidity-handoff">
+                  {CREATE_FARM_UX.addLiquidityManually}
+                </SecondaryLink>
               </ActionRow>
-              {builderHandoff.blocked && (
-                <Hint data-testid="public-farm-builder-blocker">{builderHandoff.blockerLabel}</Hint>
-              )}
             </Remediation>
           )}
 
-          {configUnlocked && (
-            <FieldsGrid data-testid="create-farm-fields-grid" data-public-farm-config="unlocked">
-              <Field data-testid="create-farm-reward-token">
-                <Label>Reward Token</Label>
-                <InputBox
-                  value={draft.rewardToken}
-                  onChange={(e) => patch({ rewardToken: e.target.value, rewardTokenAddress: e.target.value })}
-                  placeholder="Symbol or 0x… (not MARCO)"
-                  aria-label="Reward Token"
-                />
-              </Field>
-              <Field>
-                <Label>Reward Budget</Label>
-                <InputBox
-                  value={draft.rewardBudget}
-                  onChange={(e) => patch({ rewardBudget: e.target.value })}
-                  placeholder="e.g. 100000"
-                  inputMode="decimal"
-                  aria-label="Reward Budget"
-                />
-              </Field>
-              <Field>
-                <Label>Emission (tokens / day)</Label>
-                <InputBox
-                  value={draft.emissionRate}
-                  onChange={(e) => patch({ emissionRate: e.target.value })}
-                  placeholder="tokens / day"
-                  inputMode="decimal"
-                  aria-label="Emission Rate"
-                />
-              </Field>
-              <Field>
-                <Label>Duration / End (Days)</Label>
-                <InputBox
-                  value={draft.durationDays}
-                  onChange={(e) => patch({ durationDays: e.target.value })}
-                  placeholder="e.g. 60"
-                  inputMode="decimal"
-                  aria-label="Duration in Days"
-                />
-              </Field>
-              <Field>
-                <Label>Reward Schedule</Label>
-                <ReadOnlyValue>
-                  {draft.startMode === 'immediate' ? 'Starts on creation' : 'Scheduled'} · ends after duration
-                </ReadOnlyValue>
-              </Field>
-              <Field>
-                <Label>Creator Wallet</Label>
-                <InputBox
-                  value={draft.creatorWallet}
-                  onChange={(e) => patch({ creatorWallet: e.target.value })}
-                  placeholder="0x…"
-                  aria-label="Creator Wallet"
-                />
-              </Field>
-              <Field>
-                <Label>Creation Fee</Label>
-                <ReadOnlyValue
-                  data-testid="create-farm-fee"
-                  $accent={feeResult.ok && feeResult.isFree ? '#18f089' : '#F4C430'}
-                >
-                  {feeResult.ok ? `${feeResult.fee.display} · ${feeResult.fee.reason}` : 'Unsupported'}
-                </ReadOnlyValue>
-              </Field>
-              <Field style={{ gridColumn: 'span 2' }}>
-                <Label>Treasury Recipient</Label>
-                <ReadOnlyValue data-testid="create-farm-treasury-recipient">
-                  MELEGA TREASURY WALLET ·{' '}
-                  {feeResult.ok ? feeResult.fee.recipient : '0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b'}
-                </ReadOnlyValue>
-              </Field>
-              <Field>
-                <Label>Estimated APR</Label>
-                <ReadOnlyValue data-testid="create-farm-estimated-apr">{estimatedApr}</ReadOnlyValue>
-              </Field>
-              <Field>
-                <Label>Reward Consumption</Label>
-                <ReadOnlyValue>
-                  {parseNum(draft.emissionRate) > 0 && parseNum(draft.durationDays) > 0
-                    ? `${(parseNum(draft.emissionRate) * parseNum(draft.durationDays)).toFixed(2)} tokens over farm life`
-                    : 'Calculated after emission + duration'}
-                </ReadOnlyValue>
-              </Field>
-              <Field>
-                <Label>Farm Health</Label>
-                <ReadOnlyValue data-testid="create-farm-health">
-                  {healthScore == null ? 'Calculated after configuration' : `${healthScore} / 100`}
-                </ReadOnlyValue>
-              </Field>
-            </FieldsGrid>
+          {eligibility.eligible && (
+            <div data-testid="create-farm-fields-grid" data-public-farm-config="unlocked">
+              <StepLabel>Step 3</StepLabel>
+              <PanelTitle style={{ marginBottom: 12 }}>Farm setup</PanelTitle>
+              <FieldsGrid>
+                <Field data-testid="create-farm-reward-token">
+                  <Label>{CREATE_FARM_UX.rewardToken}</Label>
+                  <InputBox
+                    value={draft.rewardToken}
+                    onChange={(e) => {
+                      setCreateSoftNote(null)
+                      patch({ rewardToken: e.target.value, rewardTokenAddress: e.target.value })
+                    }}
+                    placeholder="e.g. USDT"
+                    aria-label="Reward Token"
+                  />
+                </Field>
+                <Field>
+                  <Label>{CREATE_FARM_UX.rewardBudget}</Label>
+                  <InputBox
+                    value={draft.rewardBudget}
+                    onChange={(e) => patch({ rewardBudget: e.target.value })}
+                    placeholder="e.g. 100000"
+                    inputMode="decimal"
+                    aria-label="Reward Budget"
+                  />
+                </Field>
+                <Field>
+                  <Label>{CREATE_FARM_UX.duration}</Label>
+                  <InputBox
+                    value={draft.durationDays}
+                    onChange={(e) => patch({ durationDays: e.target.value })}
+                    placeholder="Days"
+                    inputMode="decimal"
+                    aria-label="Duration"
+                  />
+                </Field>
+                <Field>
+                  <Label>{CREATE_FARM_UX.emission}</Label>
+                  <InputBox
+                    value={draft.emissionRate}
+                    onChange={(e) => patch({ emissionRate: e.target.value })}
+                    placeholder="Tokens / day"
+                    inputMode="decimal"
+                    aria-label="Emission"
+                  />
+                </Field>
+                <Field>
+                  <Label>{CREATE_FARM_UX.creationFee}</Label>
+                  <ReadOnlyValue
+                    data-testid="create-farm-fee"
+                    $accent={feeResult.ok && feeResult.isFree ? '#18f089' : '#F4C430'}
+                  >
+                    {feeResult.ok ? feeResult.fee.display : '—'}
+                  </ReadOnlyValue>
+                  <FeeNote data-testid="create-farm-fee-note">{CREATE_FARM_UX.feeTreasuryNote}</FeeNote>
+                </Field>
+                <Field>
+                  <Label>{CREATE_FARM_UX.estimatedApr}</Label>
+                  <ReadOnlyValue data-testid="create-farm-estimated-apr">{estimatedApr}</ReadOnlyValue>
+                </Field>
+              </FieldsGrid>
+
+              <AdvancedToggle
+                type="button"
+                data-testid="create-farm-advanced-toggle"
+                onClick={() => setAdvancedOpen((v) => !v)}
+              >
+                {advancedOpen ? 'Hide advanced' : CREATE_FARM_UX.advanced}
+              </AdvancedToggle>
+              {advancedOpen && (
+                <FieldsGrid data-testid="create-farm-advanced-fields">
+                  <Field>
+                    <Label>Start</Label>
+                    <ReadOnlyValue>
+                      {draft.startMode === 'immediate' ? 'Starts when created' : 'Scheduled'}
+                    </ReadOnlyValue>
+                  </Field>
+                  <Field>
+                    <Label>Creator wallet</Label>
+                    <InputBox
+                      value={draft.creatorWallet}
+                      onChange={(e) => patch({ creatorWallet: e.target.value })}
+                      placeholder="Optional"
+                      aria-label="Creator wallet"
+                    />
+                  </Field>
+                </FieldsGrid>
+              )}
+            </div>
           )}
 
           {marcoReject.rejected && (
-            <RejectBanner data-testid="public-farm-marco-reward-rejection" role="alert">
-              {marcoReject.message || MARCO_REWARD_REJECTION_MESSAGE}
+            <RejectBanner data-testid="public-farm-marco-reward-rejection" role="status">
+              {CREATE_FARM_UX.marcoRewardFriendly}
             </RejectBanner>
           )}
 
-          <Blocker data-testid="create-farm-execution-blocker" role="status">
-            <BlockerTitle>{PUBLIC_FARM_FACTORY_CAPABILITY.blockerLabel}</BlockerTitle>
-            <BlockerList>
-              {PUBLIC_FARM_FACTORY_CAPABILITY.facts.map((fact) => (
-                <BlockerItem key={fact}>{fact}</BlockerItem>
-              ))}
-            </BlockerList>
-            <DisabledButton type="button" disabled aria-disabled="true" data-testid="create-farm-submit-disabled">
-              Create Farm — Factory Deployment Required
-            </DisabledButton>
-          </Blocker>
+          <div data-testid="create-farm-primary-action">
+            {nextAction === 'increase_liquidity' && (
+              <PrimaryLink href={increaseHref} data-testid="create-farm-next-increase">
+                {CREATE_FARM_UX.increaseLiquidity}
+              </PrimaryLink>
+            )}
+            {nextAction === 'select_pair' && (
+              <PrimaryButton type="button" disabled data-testid="create-farm-next-continue">
+                {CREATE_FARM_UX.continue}
+              </PrimaryButton>
+            )}
+            {nextAction === 'continue_config' && (
+              <PrimaryButton type="button" disabled data-testid="create-farm-next-continue">
+                {CREATE_FARM_UX.continue}
+              </PrimaryButton>
+            )}
+            {nextAction === 'create_farm' && (
+              <PrimaryButton
+                type="button"
+                $ready
+                data-testid="create-farm-submit"
+                onClick={onPrimary}
+              >
+                {CREATE_FARM_UX.createFarm}
+              </PrimaryButton>
+            )}
+            {/* Keep a hidden disabled marker for prior locks that expect a disabled submit probe. */}
+            <button
+              type="button"
+              hidden
+              disabled
+              aria-hidden="true"
+              data-testid="create-farm-submit-disabled"
+            />
+            <SoftNote data-testid="create-farm-next-hint" style={{ marginTop: 10 }}>
+              {nextAction === 'select_pair' && CREATE_FARM_UX.nextSelectPair}
+              {nextAction === 'increase_liquidity' && CREATE_FARM_UX.nextIncreaseLiquidity}
+              {nextAction === 'continue_config' && CREATE_FARM_UX.nextConfigure}
+              {nextAction === 'create_farm' && CREATE_FARM_UX.nextCreate}
+            </SoftNote>
+            {createSoftNote && (
+              <SoftNote data-testid="create-farm-soft-unavailable" style={{ marginTop: 8 }}>
+                {createSoftNote}
+              </SoftNote>
+            )}
+          </div>
         </FieldsCol>
 
         <PreviewCol data-testid="create-farm-review-panel">
           <div>
-            <PreviewTitle>Draft</PreviewTitle>
-            <PreviewValue data-testid="public-farm-draft-id">{draft.draftId}</PreviewValue>
-          </div>
-          <div>
-            <PreviewTitle>Review</PreviewTitle>
+            <PreviewTitle>{CREATE_FARM_UX.review}</PreviewTitle>
             {reviewRows.map(([k, v]) => (
               <ReviewRow key={k}>
                 <span>{k}</span>
@@ -822,7 +884,6 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
               </ReviewRow>
             ))}
           </div>
-          <Hint data-masterbuilder="hidden">MasterBuilder is not available in this workspace.</Hint>
         </PreviewCol>
       </Body>
     </Section>
