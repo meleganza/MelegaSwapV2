@@ -1,0 +1,24 @@
+{
+  "schema": "melega.dex.v1.deployment-orchestrator.order",
+  "frozen": true,
+  "order": [
+    {
+      "sequence": 1,
+      "system": "LIQUIDITY_BUILDER",
+      "pipeline": ["Deploy", "Verify", "Bind", "Runtime READY"]
+    },
+    {
+      "sequence": 2,
+      "system": "CREATE_TOKEN_FACTORY",
+      "pipeline": ["Deploy", "Verify", "Bind", "Runtime READY"],
+      "dependsOn": "LIQUIDITY_BUILDER"
+    },
+    {
+      "sequence": 3,
+      "system": "PUBLIC_FARM_FACTORY",
+      "pipeline": ["Deploy", "Verify", "Bind", "Runtime READY"],
+      "dependsOn": "CREATE_TOKEN_FACTORY"
+    }
+  ],
+  "noAlternativeOrder": true
+}

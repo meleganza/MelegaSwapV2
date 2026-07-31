@@ -1,0 +1,10 @@
+{
+  "schema": "melega.public-farm-factory.deployed-addresses.v1",
+  "chainId": 56,
+  "status": "DEPLOYMENT_BLOCKED",
+  "factoryAddress": null,
+  "deploymentTx": null,
+  "deploymentBlock": null,
+  "verified": false,
+  "note": "Null until authorized mainnet deploy. Do not fabricate."
+}

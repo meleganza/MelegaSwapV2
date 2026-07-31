@@ -1,0 +1,8 @@
+{
+  "schema": "melega.dex.v1.deployment-orchestrator.dashboard",
+  "route": "/runtime/deployment",
+  "api": "/api/deployment/status",
+  "systems": ["Liquidity Builder", "Create Token", "Public Farm Factory"],
+  "lanes": ["Contracts", "Deploy", "Verify", "Bind", "Frontend", "Runtime", "Canary", "Current State", "Remaining Blockers"],
+  "component": "views/DeploymentOrchestrator/DeploymentDashboard.tsx"
+}
