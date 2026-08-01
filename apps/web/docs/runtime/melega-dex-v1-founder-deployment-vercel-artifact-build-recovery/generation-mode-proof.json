@@ -1,0 +1,5 @@
+{
+  "command": "yarn lb:manifest:generate",
+  "withForge": "PASS (byte-identical to committed)",
+  "withoutForge": "FAIL with clear message requiring forge build"
+}

@@ -1,0 +1,5 @@
+{
+  "status": "PENDING_AFTER_PUSH",
+  "branch": "melega-dex-v1-founder-deployment-vercel-artifact-build-recovery",
+  "note": "Push recovery branch; confirm Vercel preview build succeeds, then verify /runtime/deployment/"
+}

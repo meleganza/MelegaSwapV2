@@ -1,0 +1,10 @@
+{
+  "appsWebEngines": ">=16.0.0",
+  "rootEngines": ">=16.0.0",
+  "packageManagerNode": "16.18.0",
+  "vercelObserved": "Node 24.x selected because engines allows >=16",
+  "action": "LEFT UNCHANGED — secondary warning; not the measured build failure cause; pinning root engines risks unrelated workspace impact",
+  "tokenWarnings": [
+    "packages/tokens/src/56.ts duplicate keys twt/gmt — pre-existing non-blocking; not modified"
+  ]
+}

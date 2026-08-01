@@ -1,0 +1,10 @@
+{
+  "creationBytecodeChanged": false,
+  "runtimeHashesChanged": false,
+  "metadataAdded": [
+    "sourceFingerprint",
+    "treasuryDestination",
+    "successFeeBps"
+  ],
+  "diffs": []
+}

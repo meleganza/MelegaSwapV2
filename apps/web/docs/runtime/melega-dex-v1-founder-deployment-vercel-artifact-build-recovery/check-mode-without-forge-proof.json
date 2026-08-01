@@ -1,0 +1,6 @@
+{
+  "command": "yarn lb:manifest:check",
+  "forgeOut": "absent",
+  "result": "PASS",
+  "mutatesWorkingTree": false
+}

@@ -37,10 +37,10 @@ describe('certified bytecode autoload', () => {
     }
   })
 
-  it('manifest --check passes (stale/missing would fail build)', () => {
+  it('manifest --check-committed passes without requiring Forge out/', () => {
     const script = path.join(WEB, 'scripts/generate-lb-certified-manifest.mjs')
     expect(existsSync(script)).toBe(true)
-    execSync(`node ${script} --check`, { cwd: WEB, stdio: 'pipe' })
+    execSync(`node ${script} --check-committed`, { cwd: WEB, stdio: 'pipe' })
   })
 
   it('empty bytecode / wrong hash fails integrity gate', () => {
