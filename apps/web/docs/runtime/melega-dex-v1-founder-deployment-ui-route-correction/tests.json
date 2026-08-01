@@ -1,0 +1,6 @@
+{
+  "command": "yarn test src/lib/deployment-orchestrator src/pages/api/deployment",
+  "result": "PASS",
+  "tests": 30,
+  "capturedAt": "2026-08-01T07:58:11Z"
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "melega.dex.v1.founder-deployment-ui-route-correction.route-mount-diagnosis",
+  "capturedAt": "2026-08-01T07:58:11Z",
+  "productionUrl": "https://www.melega.finance/runtime/deployment/",
+  "productionApiUrl": "https://www.melega.finance/api/deployment/status",
+  "measuredProduction": {
+    "globalState": "BLOCKED",
+    "authority.productionAuthorityPresent": false,
+    "authority.blockersInclude": [
+      "Missing deploy authorization (MAINNET_DEPLOYER)",
+      "Missing KMS (AWS_KMS_KEY_ID)",
+      "Missing RPC (BNB_MAINNET_RPC_URL)"
+    ],
+    "hasFounderExecutionField": false,
+    "nextAction": "Provide production deployment authority, then deploy Liquidity Builder.",
+    "authorityModel": null,
+    "source": "GET https://www.melega.finance/api/deployment/status (2026-08-01 measured)"
+  },
+  "baselineCommit": "9ed1c43a",
+  "baselineBranch": "melega-dex-v1-founder-signed-mainnet-deployment-execution",
+  "isBaselineAncestorOfOriginMain": false,
+  "frontendDeployFromCommit9ed1c43aOccurred": false,
+  "reasonObsoleteUiRendered": "Production Vercel serves Deployment Orchestrator from pre-Founder authority model (matches mission 2b599658-era API shape). Founder-signed commits were never merged to origin/main and were not released to www.melega.finance.",
+  "routeMountChain": {
+    "beforeCorrection": {
+      "pageFile": "apps/web/src/pages/runtime/deployment.tsx",
+      "mountedComponent": "DeploymentDashboard",
+      "path": "apps/web/src/views/DeploymentOrchestrator/DeploymentDashboard.tsx",
+      "founderComponent": "FounderDeploymentPanel (secondary, only after /api/deployment/status loads)",
+      "founderPath": "apps/web/src/views/DeploymentOrchestrator/FounderDeploymentPanel.tsx",
+      "featureFlagSelectingWrongComponent": null,
+      "apiDependency": "GET /api/deployment/status \u2014 on production still uses KMS/MAINNET_DEPLOYER authority probe",
+      "conditionShowingObsoleteUi": "Production deployment artifact is stale branch code without FOUNDER_WALLET_SIGNED authority and without FounderDeploymentShell as primary"
+    },
+    "afterCorrection": {
+      "pageFile": "apps/web/src/pages/runtime/deployment/index.tsx",
+      "mountedComponent": "FounderDeploymentShell",
+      "path": "apps/web/src/views/DeploymentOrchestrator/FounderDeploymentShell.tsx",
+      "archiveStatusPage": "apps/web/src/pages/runtime/deployment/status.tsx \u2192 DeploymentDashboard read-only",
+      "founderApi": "GET /api/deployment/founder \u2014 browser session; server env does not authorize"
+    }
+  },
+  "intendedMountedComponent": "FounderDeploymentShell",
+  "currentMountedComponentInThisBranch": "FounderDeploymentShell",
+  "currentMountedComponentInProduction": "DeploymentDashboard (obsolete server-authority orchestrator)",
+  "staleCodeOrWrongBranch": "stale_production_release_not_containing_9ed1c43a"
+}

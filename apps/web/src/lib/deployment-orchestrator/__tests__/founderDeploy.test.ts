@@ -7,8 +7,12 @@ import {
   buildFounderExecutionSession,
   buildLiquidityBuilderTransactionReview,
   buildPublicFarmFactoryTransactionReview,
+  containsForbiddenServerAuthorityWording,
+  DEPLOY_BUTTON_LABEL,
   extractContractAddressFromReceipt,
+  FORBIDDEN_SERVER_AUTHORITY_PHRASES,
   isAuthorizedMelegaDeployer,
+  resolveFounderOperationalState,
   userOperationRequiresMelegaDeployer,
   validatePostDeployment,
 } from 'lib/deployment-orchestrator'
@@ -192,6 +196,78 @@ describe('user operation independence + no KMS', () => {
     expect(ui).toContain('ConnectWalletButton')
     expect(ui).toContain('Switch to BNB Smart Chain.')
     expect(ui).toContain('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
+  })
+
+  it('primary /runtime/deployment mounts FounderDeploymentShell', () => {
+    const page = readFileSync(
+      path.resolve(__dirname, '../../../pages/runtime/deployment/index.tsx'),
+      'utf8',
+    )
+    const shell = readFileSync(
+      path.resolve(__dirname, '../../../views/DeploymentOrchestrator/FounderDeploymentShell.tsx'),
+      'utf8',
+    )
+    expect(page).toContain('FounderDeploymentShell')
+    expect(page).not.toContain('DeploymentDashboard')
+    expect(shell).toContain('Permanent Contract Deployment')
+    expect(shell).toContain('DEPLOY_BUTTON_LABEL')
+    expect(shell).toContain('{DEPLOY_BUTTON_LABEL[active]}')
+    expect(DEPLOY_BUTTON_LABEL.liquidity_builder).toBe('Deploy Liquidity Builder')
+    expect(DEPLOY_BUTTON_LABEL.create_token).toBe('Deploy Create Token Factory')
+    expect(DEPLOY_BUTTON_LABEL.public_farm_factory).toBe('Deploy Public Farm Factory')
+    expect(shell).toContain('eth_sendTransaction')
+    expect(shell).toContain('Authorized MELEGA DEPLOYER connected')
+    expect(shell).not.toContain('Production authority missing')
+    expect(shell).not.toContain('MAINNET_DEPLOYER')
+    expect(shell).not.toMatch(/Missing KMS/i)
+    for (const phrase of FORBIDDEN_SERVER_AUTHORITY_PHRASES) {
+      expect(containsForbiddenServerAuthorityWording(phrase)).toBe(true)
+      expect(shell.includes(phrase)).toBe(false)
+    }
+  })
+
+  it('maps wallet/chain/funding to Founder operational states', () => {
+    expect(
+      resolveFounderOperationalState({
+        gates: assessFounderDeployGates({
+          connectedWallet: null,
+          chainId: null,
+          balanceWei: null,
+          artifactValid: true,
+          constructorValid: true,
+          subsystemReady: true,
+        }),
+        gas: assessFounderGasReadiness({ balanceWei: null }),
+      }),
+    ).toBe('CONNECT_WALLET')
+
+    expect(
+      resolveFounderOperationalState({
+        gates: assessFounderDeployGates({
+          connectedWallet: OTHER,
+          chainId: 56,
+          balanceWei: 10n ** 18n,
+          artifactValid: true,
+          constructorValid: true,
+          subsystemReady: true,
+        }),
+        gas: assessFounderGasReadiness({ balanceWei: 10n ** 18n }),
+      }),
+    ).toBe('WRONG_WALLET')
+
+    expect(
+      resolveFounderOperationalState({
+        gates: assessFounderDeployGates({
+          connectedWallet: DEPLOYER,
+          chainId: 56,
+          balanceWei: 10n ** 18n,
+          artifactValid: true,
+          constructorValid: true,
+          subsystemReady: true,
+        }),
+        gas: assessFounderGasReadiness({ balanceWei: 10n ** 18n }),
+      }),
+    ).toBe('READY_TO_DEPLOY')
   })
 })
 

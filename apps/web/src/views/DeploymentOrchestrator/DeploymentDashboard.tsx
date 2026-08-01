@@ -1,11 +1,13 @@
 /**
- * Production Deployment Dashboard — one view for LB / Create Token / Public Farm Factory.
+ * Read-only Deployment Status archive — not the primary Founder deploy surface.
+ * Primary interactive deploy: /runtime/deployment (FounderDeploymentShell).
  */
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import type { OrchestratorStatus, SubsystemSnapshot } from 'lib/deployment-orchestrator'
 import { AUTHORIZED_MELEGA_DEPLOYER } from 'lib/deployment-orchestrator'
-import FounderDeploymentPanel from './FounderDeploymentPanel'
+import { containsForbiddenServerAuthorityWording } from 'lib/deployment-orchestrator/founderOperationalState'
 
 const Root = styled.div`
   max-width: 1100px;
@@ -100,12 +102,33 @@ const Blockers = styled.ul`
   gap: 4px;
 `
 
+const PrimaryLink = styled(Link)`
+  display: inline-flex;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(24, 240, 137, 0.4);
+  background: rgba(24, 240, 137, 0.1);
+  color: #18f089;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+`
+
 function laneValue(ok: boolean | string): string {
   if (typeof ok === 'string') return ok
   return ok ? 'Yes' : 'No'
 }
 
+function sanitizeArchiveText(text: string): string {
+  if (containsForbiddenServerAuthorityWording(text)) {
+    return 'Awaiting Founder-signed deploy via MELEGA DEPLOYER (browser wallet).'
+  }
+  return text
+}
+
 function SubsystemCard({ snap }: { snap: SubsystemSnapshot }) {
+  const blockers = snap.blockers.map(sanitizeArchiveText).filter(Boolean)
   return (
     <Card data-testid={`deployment-card-${snap.id}`} data-state={snap.state}>
       <CardTitle>{snap.label}</CardTitle>
@@ -143,10 +166,10 @@ function SubsystemCard({ snap }: { snap: SubsystemSnapshot }) {
       <div>
         <Lane>
           <span>Remaining blockers</span>
-          <strong>{snap.blockers.length}</strong>
+          <strong>{blockers.length}</strong>
         </Lane>
         <Blockers data-testid={`deployment-blockers-${snap.id}`}>
-          {snap.blockers.slice(0, 6).map((b) => (
+          {blockers.slice(0, 6).map((b) => (
             <li key={b}>{b}</li>
           ))}
         </Blockers>
@@ -176,12 +199,17 @@ export const DeploymentDashboard: React.FC = () => {
     }
   }, [])
 
+  const nextAction = status?.nextAction ? sanitizeArchiveText(status.nextAction) : null
+
   return (
-    <Root data-testid="deployment-dashboard">
-      <Title>Deployment Dashboard</Title>
+    <Root data-testid="deployment-dashboard" data-archive="true">
+      <PrimaryLink href="/runtime/deployment" data-testid="go-founder-deploy">
+        ← Permanent Contract Deployment (Founder-signed)
+      </PrimaryLink>
+      <Title>Deployment Status (read-only)</Title>
       <Sub>
-        One pipeline for Liquidity Builder → Create Token → Public Farm Factory. Permanent contracts are signed by
-        MELEGA DEPLOYER ({AUTHORIZED_MELEGA_DEPLOYER}).
+        Archive view of Liquidity Builder → Create Token → Public Farm Factory. Deploy actions are on the Founder
+        wallet surface. Authorized deployer: {AUTHORIZED_MELEGA_DEPLOYER}.
       </Sub>
 
       {error && <Global role="status">{error}</Global>}
@@ -195,7 +223,7 @@ export const DeploymentDashboard: React.FC = () => {
             </Lane>
             <Lane>
               <span>Next action</span>
-              <strong>{status.nextAction}</strong>
+              <strong>{nextAction}</strong>
             </Lane>
             <Lane>
               <span>Updated</span>
@@ -211,13 +239,16 @@ export const DeploymentDashboard: React.FC = () => {
               <span>Authorized deployer</span>
               <strong>{status.authority.authorizedDeployer ?? AUTHORIZED_MELEGA_DEPLOYER}</strong>
             </Lane>
+            <Lane>
+              <span>Founder pause</span>
+              <strong>{status.founderExecution?.pauseState ?? '—'}</strong>
+            </Lane>
           </Global>
           <Grid>
             {status.subsystems.map((snap) => (
               <SubsystemCard key={snap.id} snap={snap} />
             ))}
           </Grid>
-          <FounderDeploymentPanel />
         </>
       )}
     </Root>
