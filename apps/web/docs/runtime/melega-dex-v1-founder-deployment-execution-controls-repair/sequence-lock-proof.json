@@ -1,0 +1,14 @@
+{
+  "order": [
+    "liquidity_builder",
+    "create_token",
+    "public_farm_factory"
+  ],
+  "createTokenLockedUntil": "Liquidity Builder DEPLOYED + VALIDATED + BOUND + READY",
+  "publicFarmLockedUntil": "Create Token Factory DEPLOYED + VALIDATED + BOUND + READY",
+  "ui": "founder-sequence-lock banner for CT/PFF while LB incomplete",
+  "tests": [
+    "isSubsystemReadyForFounderDeploy(create_token) false until LB ready",
+    "isSubsystemReadyForFounderDeploy(public_farm_factory) false until CT ready"
+  ]
+}

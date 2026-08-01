@@ -1,0 +1,12 @@
+{
+  "command": "yarn test src/lib/deployment-orchestrator",
+  "result": "passed",
+  "files": [
+    "orchestrator.test.ts (8)",
+    "founderDeploy.test.ts (20)",
+    "executionControls.test.ts (9)"
+  ],
+  "totalTests": 37,
+  "mainnetBroadcast": false,
+  "capturedAt": "2026-08-01T10:57:46.727Z"
+}

@@ -1,0 +1,65 @@
+{
+  "package": "apps/web/src/lib/deployment-orchestrator/artifacts/lb-v1-certified.json",
+  "schema": "melega.dex.v1.lb-certified-artifacts",
+  "chainId": 56,
+  "scriptRef": "script/liquidity-building/DeployLiquidityBuildingV1Mainnet.s.sol",
+  "certifiedHashesRef": "deployments/liquidity-building/chain-56/LiquidityBuildingV1.inputs.json#bytecode",
+  "deployOrder": [
+    "LiquidityBuildingExecutionMathV1",
+    "LiquidityBuildingTreasuryFeeReceiverV1",
+    "LiquidityBuildingExecutionAuthorizerV1",
+    "LiquidityBuildingTreasuryFeeSinkV1",
+    "LiquidityBuildingProgramV1",
+    "LiquidityBuildingFactoryV1"
+  ],
+  "contracts": {
+    "LiquidityBuildingExecutionMathV1": {
+      "creationBytecodeLength": 7556,
+      "expectedRuntimeBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+      "observedRuntimeBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+      "runtimeHashMatchesCertified": true,
+      "constructorArity": 0,
+      "hasLinkReferences": false
+    },
+    "LiquidityBuildingTreasuryFeeReceiverV1": {
+      "creationBytecodeLength": 1666,
+      "expectedRuntimeBytecodeSha256": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+      "observedRuntimeBytecodeSha256": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+      "runtimeHashMatchesCertified": true,
+      "constructorArity": 2,
+      "hasLinkReferences": false
+    },
+    "LiquidityBuildingExecutionAuthorizerV1": {
+      "creationBytecodeLength": 6124,
+      "expectedRuntimeBytecodeSha256": "0x3dad300b23fc1f31365aa3c47f073ec6279ff39ca4dfe2bda49a934c1adc1282",
+      "observedRuntimeBytecodeSha256": "0x3dad300b23fc1f31365aa3c47f073ec6279ff39ca4dfe2bda49a934c1adc1282",
+      "runtimeHashMatchesCertified": true,
+      "constructorArity": 1,
+      "hasLinkReferences": false
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "creationBytecodeLength": 6714,
+      "expectedRuntimeBytecodeSha256": "0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0",
+      "observedRuntimeBytecodeSha256": "0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0",
+      "runtimeHashMatchesCertified": true,
+      "constructorArity": 1,
+      "hasLinkReferences": false
+    },
+    "LiquidityBuildingProgramV1": {
+      "creationBytecodeLength": 46284,
+      "expectedRuntimeBytecodeSha256": "0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c",
+      "observedRuntimeBytecodeSha256": "0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c",
+      "runtimeHashMatchesCertified": true,
+      "constructorArity": 0,
+      "hasLinkReferences": true
+    },
+    "LiquidityBuildingFactoryV1": {
+      "creationBytecodeLength": 22708,
+      "expectedRuntimeBytecodeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+      "observedRuntimeBytecodeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+      "runtimeHashMatchesCertified": true,
+      "constructorArity": 8,
+      "hasLinkReferences": false
+    }
+  }
+}

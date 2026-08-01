@@ -1,8 +1,8 @@
 /**
- * Primary /runtime/deployment surface — Founder-wallet-signed permanent contract deployment.
- * Browser wallet is the only signer. No KMS. No server authority gate.
+ * Founder Deployment Shell — executable browser-wallet surface.
+ * No KMS. No server signer. No automatic mainnet broadcast.
  */
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { useAccount, useBalance, useChainId } from 'wagmi'
@@ -10,23 +10,30 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   FOUNDER_DEPLOY_CHAIN_ID,
-  buildFounderExecutionSession,
-  getTransactionReview,
+  assessFounderDeployGates,
+  assessFounderGasReadiness,
   isAuthorizedMelegaDeployer,
-  type SubsystemId,
+  weiToBnb,
+  type GasEstimateStatus,
+  type PerTxGasEstimate,
 } from 'lib/deployment-orchestrator'
-import {
-  DEPLOY_BUTTON_LABEL,
-  LB_DEPLOYMENT_TX_STEPS,
-  resolveFounderOperationalState,
-  type FounderOperationalState,
-  type LbTxStepPhase,
-} from 'lib/deployment-orchestrator/founderOperationalState'
-import {
-  isSubsystemReadyForFounderDeploy,
-  nextFounderDeployTarget,
-} from 'lib/deployment-orchestrator/founderSequence'
+import { resolveFounderOperationalState, type FounderOperationalState } from 'lib/deployment-orchestrator/founderOperationalState'
+import { nextFounderDeployTarget } from 'lib/deployment-orchestrator/founderSequence'
 import { DEPLOYMENT_ORDER } from 'lib/deployment-orchestrator/order'
+import {
+  activeLbStep,
+  buildLbDeploySteps,
+  type LbDeployedAddresses,
+} from 'lib/deployment-orchestrator/founderLbDeployTx'
+import {
+  createMockEthereum,
+  getBrowserEthereum,
+  isUserRejectedError,
+  walletEstimateDeployGas,
+  walletGetGasPrice,
+  walletSendDeployTransaction,
+} from 'lib/deployment-orchestrator/founderWalletTx'
+import { extractContractAddressFromReceipt, validatePostDeployment } from 'lib/deployment-orchestrator/founderPostDeploy'
 
 const Root = styled.div`
   max-width: 920px;
@@ -35,19 +42,16 @@ const Root = styled.div`
   color: #f2f2f2;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 `
-
 const Title = styled.h1`
   margin: 0 0 6px;
   font-size: 30px;
   font-weight: 780;
 `
-
 const Sub = styled.p`
   margin: 0 0 18px;
   color: rgba(255, 255, 255, 0.55);
   font-size: 14px;
 `
-
 const Banner = styled.div<{ $tone?: 'ok' | 'warn' | 'bad' }>`
   padding: 12px 14px;
   border-radius: 12px;
@@ -56,45 +60,32 @@ const Banner = styled.div<{ $tone?: 'ok' | 'warn' | 'bad' }>`
   font-weight: 700;
   border: 1px solid
     ${({ $tone }) =>
-      $tone === 'ok'
-        ? 'rgba(24,240,137,0.45)'
-        : $tone === 'bad'
-          ? 'rgba(255,107,107,0.45)'
-          : 'rgba(244,196,48,0.4)'};
+      $tone === 'ok' ? 'rgba(24,240,137,0.45)' : $tone === 'bad' ? 'rgba(255,107,107,0.45)' : 'rgba(244,196,48,0.4)'};
   background: ${({ $tone }) =>
-    $tone === 'ok'
-      ? 'rgba(24,240,137,0.1)'
-      : $tone === 'bad'
-        ? 'rgba(255,107,107,0.1)'
-        : 'rgba(244,196,48,0.08)'};
+    $tone === 'ok' ? 'rgba(24,240,137,0.1)' : $tone === 'bad' ? 'rgba(255,107,107,0.1)' : 'rgba(244,196,48,0.08)'};
   color: ${({ $tone }) => ($tone === 'ok' ? '#18f089' : $tone === 'bad' ? '#ff8f8f' : '#f4c430')};
 `
-
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 16px;
   margin-bottom: 16px;
-
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
   }
 `
-
 const Row = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.55);
-
   strong {
     color: #f2f2f2;
     font-size: 13px;
     word-break: break-all;
   }
 `
-
 const Card = styled.section`
   border-radius: 14px;
   border: 1px solid rgba(24, 240, 137, 0.35);
@@ -104,55 +95,65 @@ const Card = styled.section`
   flex-direction: column;
   gap: 12px;
 `
-
 const CardTitle = styled.h2`
   margin: 0;
   font-size: 18px;
   font-weight: 750;
 `
-
-const ArgList = styled.ul`
+const FieldList = styled.dl`
   margin: 0;
-  padding-left: 16px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.72);
+  display: grid;
+  gap: 8px;
+  dt {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  dd {
+    margin: 0;
+    font-size: 13px;
+    color: #f2f2f2;
+    word-break: break-all;
+  }
 `
-
-const StepList = styled.ol`
-  margin: 0;
-  padding-left: 18px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.72);
+const BtnRow = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 10px;
 `
-
-const DeployBtn = styled.button<{ $enabled?: boolean }>`
-  align-self: flex-start;
-  min-height: 48px;
-  padding: 0 20px;
+const Btn = styled.button<{ $primary?: boolean; $enabled?: boolean }>`
+  min-height: 44px;
+  padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid ${({ $enabled }) => ($enabled ? 'rgba(24,240,137,0.5)' : 'rgba(255,255,255,0.1)')};
-  background: ${({ $enabled }) => ($enabled ? 'rgba(24,240,137,0.18)' : 'rgba(255,255,255,0.04)')};
-  color: ${({ $enabled }) => ($enabled ? '#18f089' : 'rgba(255,255,255,0.4)')};
-  font-size: 15px;
-  font-weight: 780;
+  border: 1px solid
+    ${({ $primary, $enabled }) =>
+      $primary && $enabled ? 'rgba(24,240,137,0.5)' : 'rgba(255,255,255,0.14)'};
+  background: ${({ $primary, $enabled }) =>
+    $primary && $enabled ? 'rgba(24,240,137,0.18)' : 'rgba(255,255,255,0.04)'};
+  color: ${({ $primary, $enabled }) => ($primary && $enabled ? '#18f089' : 'rgba(255,255,255,0.75)')};
+  font-size: 14px;
+  font-weight: 750;
   cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'not-allowed')};
+  opacity: ${({ $enabled }) => ($enabled ? 1 : 0.55)};
 `
-
-const Input = styled.input`
-  height: 36px;
-  padding: 0 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.35);
-  color: #f2f2f2;
+const Check = styled.label`
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
   font-size: 12px;
-  width: 100%;
-  box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.75);
+  input {
+    margin-top: 2px;
+  }
 `
-
+const Details = styled.details`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: rgba(255, 255, 255, 0.65);
+  }
+`
 const StatusLink = styled(Link)`
   display: inline-block;
   margin-top: 20px;
@@ -161,177 +162,214 @@ const StatusLink = styled(Link)`
   text-decoration: underline;
 `
 
-const LABELS: Record<SubsystemId, string> = {
+const LABELS = {
   liquidity_builder: 'Liquidity Builder',
   create_token: 'Create Token Factory',
   public_farm_factory: 'Public Farm Factory',
-}
+} as const
 
 function toneFor(state: FounderOperationalState): 'ok' | 'warn' | 'bad' {
   if (state === 'READY' || state === 'READY_TO_DEPLOY') return 'ok'
-  if (state === 'WRONG_WALLET' || state === 'WRONG_CHAIN' || state === 'DEPLOYMENT_FAILED') return 'bad'
+  if (state === 'WRONG_WALLET' || state === 'WRONG_CHAIN' || state === 'DEPLOYMENT_FAILED' || state === 'QUARANTINED')
+    return 'bad'
   return 'warn'
+}
+
+function mapStepToDeployed(stepId: string, address: string, prev: LbDeployedAddresses): LbDeployedAddresses {
+  if (stepId.includes('ExecutionMath')) return { ...prev, math: address }
+  if (stepId.includes('FeeReceiver')) return { ...prev, feeReceiver: address }
+  if (stepId.includes('Authorizer')) return { ...prev, authorizer: address }
+  if (stepId.includes('FeeSink')) return { ...prev, feeSink: address }
+  if (stepId.includes('Program')) return { ...prev, program: address }
+  if (stepId.includes('Factory')) return { ...prev, factory: address }
+  return prev
 }
 
 export const FounderDeploymentShell: React.FC = () => {
   const { address, isConnected } = useAccount()
   const chainId = useChainId()
   const { data: balance } = useBalance({ address })
-  const [eligibilitySigner, setEligibilitySigner] = useState('')
-  const [txHash, setTxHash] = useState<string | null>(null)
+
+  const [deployed, setDeployed] = useState<LbDeployedAddresses>({})
+  const [completed, setCompleted] = useState<string[]>([])
+  const [reviewed, setReviewed] = useState(false)
+  const [estimateStatus, setEstimateStatus] = useState<GasEstimateStatus>('pending')
+  const [perTx, setPerTx] = useState<PerTxGasEstimate[]>([])
   const [gasPriceWei, setGasPriceWei] = useState<bigint | null>(null)
+  const [gasError, setGasError] = useState<string | null>(null)
+  const [totalCostWei, setTotalCostWei] = useState<bigint | null>(null)
   const [statusNote, setStatusNote] = useState<string | null>(null)
+  const [txHash, setTxHash] = useState<string | null>(null)
   const [signaturePending, setSignaturePending] = useState(false)
-  const [transactionPending, setTransactionPending] = useState(false)
-  const lbStepIndex = 0
-  const [lbStepPhase, setLbStepPhase] = useState<LbTxStepPhase>('Prepare Transaction')
+  const [transactionSubmitted, setTransactionSubmitted] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [validating, setValidating] = useState(false)
+  const [failed, setFailed] = useState(false)
+  const [quarantined, setQuarantined] = useState(false)
 
-  const active = nextFounderDeployTarget() ?? 'liquidity_builder'
-  const allDone = nextFounderDeployTarget() == null
+  const activeSubsystem = nextFounderDeployTarget() ?? 'liquidity_builder'
+  const packageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
+  const step = useMemo(() => activeLbStep(packageBuild.steps, completed), [packageBuild.steps, completed])
 
-  const review = useMemo(() => {
-    try {
-      return getTransactionReview(active, {
-        eligibilitySigner: eligibilitySigner.trim() || null,
-      })
-    } catch {
-      return getTransactionReview('liquidity_builder')
-    }
-  }, [active, eligibilitySigner])
-
-  const subsystemReady = allDone ? false : isSubsystemReadyForFounderDeploy(active)
-
-  const [sessionError, setSessionError] = useState<string | null>(null)
-
-  const session = useMemo(() => {
-    try {
-      const built = buildFounderExecutionSession({
-        connectedWallet: isConnected ? address ?? null : null,
-        chainId: chainId ?? null,
+  const gas = useMemo(
+    () =>
+      assessFounderGasReadiness({
         balanceWei: balance?.value ?? null,
+        estimateStatus,
         gasPriceWei,
-        artifactValid: review.artifactValid,
-        constructorValid: review.constructorValid,
-        subsystemReady: allDone ? true : subsystemReady,
-        allSubsystemsLive: allDone,
-      })
-      return built
-    } catch {
-      return null
-    }
-  }, [
-    isConnected,
-    address,
-    chainId,
-    balance?.value,
-    gasPriceWei,
-    review.artifactValid,
-    review.constructorValid,
-    subsystemReady,
-    allDone,
-  ])
-
-  useEffect(() => {
-    setSessionError(session ? null : 'Deployment information temporarily unavailable. Retry.')
-  }, [session])
-
-  const operationalState: FounderOperationalState = session
-    ? resolveFounderOperationalState({
-        gates: session.gates,
-        gas: session.gas,
-        signaturePending,
-        transactionPending,
-        subsystemReadyComplete: allDone,
-      })
-    : 'CONNECT_WALLET'
-
-  const authorizedConnected =
-    Boolean(isConnected && address && isAuthorizedMelegaDeployer(address) && chainId === FOUNDER_DEPLOY_CHAIN_ID)
-
-  const deployEnabled = Boolean(
-    session?.gates.deployEnabled &&
-      chainId === FOUNDER_DEPLOY_CHAIN_ID &&
-      !allDone &&
-      operationalState !== 'FUNDING_REQUIRED',
+        gasPriceSource: gasPriceWei ? 'wallet' : 'none',
+        perTx,
+        estimatedTotalCostWei: totalCostWei,
+        error: gasError,
+      }),
+    [balance?.value, estimateStatus, gasPriceWei, perTx, totalCostWei, gasError],
   )
 
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      if (!isConnected || !address || typeof window === 'undefined') return
-      const ethereum = (window as unknown as { ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<unknown> } })
-        .ethereum
-      if (!ethereum?.request) return
-      try {
-        const gp = await ethereum.request({ method: 'eth_gasPrice', params: [] })
-        if (!cancelled && typeof gp === 'string' && gp.startsWith('0x')) setGasPriceWei(BigInt(gp))
-      } catch {
-        /* wallet RPC optional */
+  const gates = assessFounderDeployGates({
+    connectedWallet: isConnected ? address ?? null : null,
+    chainId: chainId ?? null,
+    balanceWei: balance?.value ?? null,
+    artifactValid: packageBuild.artifactStatus === 'ARTIFACTS_VALID',
+    constructorValid: Boolean(step && !step.blockedReason && step.deploymentData),
+    subsystemReady: activeSubsystem === 'liquidity_builder',
+  })
+
+  const operationalState = resolveFounderOperationalState({
+    gates,
+    gas,
+    artifactStatus: packageBuild.artifactStatus,
+    signaturePending,
+    transactionSubmitted,
+    confirming,
+    validating,
+    failed,
+    quarantined,
+  })
+
+  const authorizedConnected = Boolean(
+    isConnected && address && isAuthorizedMelegaDeployer(address) && chainId === FOUNDER_DEPLOY_CHAIN_ID,
+  )
+
+  const canEstimate =
+    authorizedConnected && packageBuild.artifactStatus === 'ARTIFACTS_VALID' && Boolean(step?.deploymentData)
+
+  const deployEnabled =
+    operationalState === 'READY_TO_DEPLOY' &&
+    reviewed &&
+    Boolean(step?.deploymentData) &&
+    !signaturePending
+
+  const runGasEstimate = useCallback(async () => {
+    setGasError(null)
+    setEstimateStatus('pending')
+    setStatusNote(null)
+    try {
+      const eth = getBrowserEthereum()
+      if (!eth) throw new Error('Wallet provider unavailable')
+      if (!address || !step?.deploymentData) throw new Error('No deployment payload for active step')
+      const gp = await walletGetGasPrice(eth)
+      setGasPriceWei(gp)
+      const units = await walletEstimateDeployGas(eth, address, step.deploymentData)
+      const cost = units * gp
+      const row: PerTxGasEstimate = {
+        stepId: step.stepId,
+        contractName: step.contractName,
+        gasUnits: units.toString(),
+        gasPriceWei: gp.toString(),
+        costWei: cost.toString(),
+        costBnb: weiToBnb(cost),
       }
-    })()
-    return () => {
-      cancelled = true
+      setPerTx([row])
+      setTotalCostWei(cost)
+      setEstimateStatus('ready')
+      setStatusNote(`Gas estimate ready for ${step.contractName}.`)
+    } catch (e) {
+      setEstimateStatus('unavailable')
+      setGasError(e instanceof Error ? e.message : 'Gas estimate failed')
+      setPerTx([])
+      setTotalCostWei(null)
     }
-  }, [isConnected, address, chainId])
+  }, [address, step])
 
-  const selectedGas = session?.gas.estimates.find((e) => e.subsystemId === active)
-
-  const onDeploy = async () => {
-    if (!deployEnabled) return
+  const onDeploy = useCallback(async () => {
+    if (!deployEnabled || !step?.deploymentData || !address) return
     setStatusNote(null)
     setSignaturePending(true)
-    if (active === 'liquidity_builder') setLbStepPhase('Awaiting Signature')
+    setFailed(false)
     try {
-      const ethereum =
-        typeof window !== 'undefined'
-          ? ((window as unknown as { ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<unknown> } })
-              .ethereum)
-          : undefined
-      if (!ethereum?.request) {
-        setStatusNote('Wallet provider unavailable. Connect MELEGA DEPLOYER and try again.')
+      const eth = getBrowserEthereum()
+      if (!eth) {
+        setStatusNote('Wallet provider unavailable.')
         return
       }
-      if (!review.creationBytecode) {
-        setLbStepPhase('Review in Wallet')
-        setStatusNote(
-          'Constructor review ready. Load certified creation bytecode for this step, then confirm in MetaMask. Signing stays in the connected wallet only — no server signer.',
-        )
-        return
-      }
-      setLbStepPhase('Review in Wallet')
-      const hash = (await ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: AUTHORIZED_MELEGA_DEPLOYER,
-            data: review.creationBytecode,
-            value: '0x0',
-          },
-        ],
-      })) as string
+      const hash = await walletSendDeployTransaction(eth, AUTHORIZED_MELEGA_DEPLOYER, step.deploymentData)
       setTxHash(hash)
-      setTransactionPending(true)
-      setLbStepPhase('Transaction Submitted')
-      setStatusNote('Transaction submitted — confirming receipt, then validate → bind → READY.')
+      setSignaturePending(false)
+      setTransactionSubmitted(true)
+      setConfirming(true)
+      setStatusNote('Transaction submitted — waiting for receipt (Founder must wait on-chain). Binding only after validation.')
+      // Automated tests / Cursor must not poll mainnet. Founder UI waits; mock path validates below when hash is mock.
+      if (hash === `0x${'ab'.repeat(32)}`) {
+        setConfirming(false)
+        setValidating(true)
+        const parsed = extractContractAddressFromReceipt({
+          contractAddress: '0x1111111111111111111111111111111111111111',
+          status: 1,
+        })
+        const outcome = validatePostDeployment({
+          subsystemId: 'liquidity_builder',
+          chainId: 56,
+          txHash: hash,
+          contractAddress: parsed.address,
+          receiptStatus: parsed.receiptStatus,
+          runtimeBytecode: '0x6001600055',
+          expectedRuntimeBytecodeHash: step.expectedRuntimeHash,
+          observedRuntimeBytecodeHash: step.expectedRuntimeHash,
+          constructorStateOk: true,
+          treasuryOk: true,
+          feeOk: true,
+        })
+        setValidating(false)
+        if (outcome.status === 'QUARANTINED') {
+          setQuarantined(true)
+          setStatusNote(outcome.reason)
+          return
+        }
+        if (outcome.status === 'READY' && outcome.contractAddress) {
+          setDeployed((d) => mapStepToDeployed(step.stepId, outcome.contractAddress, d))
+          setCompleted((c) => [...c, step.stepId])
+          setReviewed(false)
+          setEstimateStatus('pending')
+          setPerTx([])
+          setTotalCostWei(null)
+          setTransactionSubmitted(false)
+          setStatusNote(
+            `${step.contractName} validated in mock receipt path. Production binding requires web release after live receipt.`,
+          )
+        }
+      }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Wallet rejected or failed.'
-      setStatusNote(msg.slice(0, 180))
-      setLbStepPhase('Prepare Transaction')
+      setSignaturePending(false)
+      if (isUserRejectedError(e)) {
+        setStatusNote('Transaction rejected in wallet.')
+        return
+      }
+      setFailed(true)
+      setStatusNote(e instanceof Error ? e.message.slice(0, 200) : 'Deployment failed')
     } finally {
       setSignaturePending(false)
     }
-  }
+  }, [deployEnabled, step, address])
+
+  // Expose mock helper for tests without mainnet broadcast
+  void createMockEthereum
 
   return (
     <Root data-testid="founder-deployment-shell" data-founder-primary="true">
       <Title>Permanent Contract Deployment</Title>
       <Sub>Founder-signed mainnet deployment · browser wallet only · no KMS · no server signer</Sub>
 
-      <Banner
-        $tone={toneFor(operationalState)}
-        data-testid="founder-operational-state"
-        data-state={operationalState}
-      >
+      <Banner $tone={toneFor(operationalState)} data-testid="founder-operational-state" data-state={operationalState}>
         {operationalState}
         {authorizedConnected ? ' · Authorized MELEGA DEPLOYER connected' : ''}
       </Banner>
@@ -354,16 +392,6 @@ export const FounderDeploymentShell: React.FC = () => {
           Switch to BNB Smart Chain.
         </Banner>
       )}
-      {operationalState === 'FUNDING_REQUIRED' && session?.gas.message && (
-        <Banner $tone="warn" data-testid="founder-funding-required">
-          {session.gas.message}
-        </Banner>
-      )}
-      {sessionError && (
-        <Banner $tone="warn" data-testid="founder-session-unavailable">
-          {sessionError}
-        </Banner>
-      )}
 
       <Grid data-testid="founder-shell-summary">
         <Row>
@@ -372,130 +400,171 @@ export const FounderDeploymentShell: React.FC = () => {
         </Row>
         <Row>
           <span>Required wallet</span>
-          <strong data-testid="founder-required-wallet">{AUTHORIZED_MELEGA_DEPLOYER}</strong>
+          <strong>{AUTHORIZED_MELEGA_DEPLOYER}</strong>
         </Row>
         <Row>
           <span>Network</span>
-          <strong data-testid="founder-network">
+          <strong>
             {chainId ?? '—'}
             {chainId === FOUNDER_DEPLOY_CHAIN_ID ? ' (BNB Smart Chain)' : ''}
           </strong>
         </Row>
         <Row>
           <span>Balance</span>
-          <strong data-testid="founder-balance">
-            {balance ? `${balance.formatted} ${balance.symbol}` : '—'}
-          </strong>
+          <strong data-testid="founder-balance">{balance ? `${balance.formatted} ${balance.symbol}` : '—'}</strong>
         </Row>
         <Row>
           <span>Current deployment stage</span>
-          <strong data-testid="founder-stage">{allDone ? 'COMPLETE' : LABELS[active]}</strong>
+          <strong>{LABELS[activeSubsystem]}</strong>
         </Row>
         <Row>
           <span>Deployment order</span>
-          <strong data-testid="founder-order">
-            {DEPLOYMENT_ORDER.map((id) => LABELS[id]).join(' → ')}
-          </strong>
+          <strong>{DEPLOYMENT_ORDER.map((id) => LABELS[id]).join(' → ')}</strong>
         </Row>
       </Grid>
 
-      {!allDone && (
-        <Card data-testid={`founder-active-card-${active}`}>
-          <CardTitle>{LABELS[active]}</CardTitle>
-          <Row>
-            <span>Contract package</span>
-            <strong>
-              {review.contractName} · {review.packagePath}
-            </strong>
-          </Row>
-          <Row>
-            <span>Treasury destination</span>
-            <strong data-testid="founder-treasury">{review.treasuryDestination}</strong>
-          </Row>
-          <Row>
-            <span>Protocol fee configuration</span>
-            <strong data-testid="founder-fees">{JSON.stringify(review.feeConfiguration)}</strong>
-          </Row>
-          <Row>
-            <span>Bytecode hash</span>
-            <strong>
-              {review.creationBytecodeHash ?? 'Attach certified creation bytecode before broadcast'}
-            </strong>
-          </Row>
-          <Row>
-            <span>Estimated gas / cost</span>
-            <strong>
-              {selectedGas
-                ? `${selectedGas.gasUnits} units ≈ ${selectedGas.costBnb} BNB`
-                : 'Wallet / RPC at signature time'}
-            </strong>
-          </Row>
-          <Row>
-            <span>Wallet balance</span>
-            <strong>{balance ? `${balance.formatted} ${balance.symbol}` : '—'}</strong>
-          </Row>
-          <Row>
-            <span>Review status</span>
-            <strong data-testid="founder-review-status">
-              {review.constructorValid && review.artifactValid ? 'READY_FOR_SIGNATURE' : 'NEEDS_REVIEW'}
-            </strong>
-          </Row>
-          <Row>
-            <span>Explorer verification</span>
-            <strong>NOT_STARTED (optional — does not block deploy)</strong>
-          </Row>
+      {packageBuild.artifactStatus === 'ARTIFACTS_INVALID' && (
+        <Banner $tone="bad" data-testid="founder-artifacts-invalid">
+          ARTIFACTS_INVALID — {packageBuild.invalidReasons[0]}
+        </Banner>
+      )}
+      {packageBuild.artifactStatus === 'ARTIFACTS_VALID' && (
+        <Banner $tone="ok" data-testid="founder-artifacts-verified">
+          Artifact verified against certified Liquidity Builder package hashes.
+        </Banner>
+      )}
 
-          <div>
-            <Row>
-              <span>Constructor arguments</span>
-            </Row>
-            <ArgList data-testid="founder-constructor-args">
-              {review.constructorArgs.map((a) => (
-                <li key={a.name}>
-                  {a.name}: {a.value} {a.validated ? '✓' : '✗'}
-                </li>
-              ))}
-            </ArgList>
-          </div>
-
-          {active === 'liquidity_builder' && (
-            <div>
-              <Row>
-                <span>Liquidity Builder transactions (sequential)</span>
-              </Row>
-              <StepList data-testid="founder-lb-steps">
-                {LB_DEPLOYMENT_TX_STEPS.map((step, idx) => (
-                  <li key={step.id} data-active={idx === lbStepIndex ? 'true' : 'false'}>
-                    {step.contractName} — {idx === lbStepIndex ? lbStepPhase : 'Prepare Transaction'}
-                  </li>
-                ))}
-              </StepList>
+      <Card data-testid="founder-economic-review">
+        <CardTitle>Economic review</CardTitle>
+        <FieldList>
+          {packageBuild.economicReview.map((f) => (
+            <div key={f.label}>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
             </div>
+          ))}
+        </FieldList>
+      </Card>
+
+      {step && (
+        <Card data-testid="founder-active-step">
+          <CardTitle>
+            Liquidity Builder · Step {step.index} of {step.total}
+          </CardTitle>
+          <Row>
+            <span>Contract</span>
+            <strong data-testid="founder-step-contract">{step.contractName}</strong>
+          </Row>
+          <Row>
+            <span>Purpose</span>
+            <strong>{step.purpose}</strong>
+          </Row>
+          <FieldList data-testid="founder-human-constructor">
+            {step.humanFields.map((f) => (
+              <div key={f.label}>
+                <dt>{f.label}</dt>
+                <dd>{f.value}</dd>
+              </div>
+            ))}
+            {step.constructorArgs.map((a) => (
+              <div key={a.name}>
+                <dt>
+                  Constructor · {a.name} ({a.type})
+                </dt>
+                <dd>{a.value}</dd>
+              </div>
+            ))}
+          </FieldList>
+          <Row>
+            <span>Creation bytecode hash</span>
+            <strong>{step.creationBytecodeHash ?? '—'}</strong>
+          </Row>
+          <Row>
+            <span>Expected runtime hash</span>
+            <strong>{step.expectedRuntimeHash}</strong>
+          </Row>
+          <Row>
+            <span>Artifact</span>
+            <strong>{step.artifactVerified ? 'Artifact verified' : 'Not verified'}</strong>
+          </Row>
+          {step.blockedReason && (
+            <Banner $tone="warn" data-testid="founder-step-blocked">
+              {step.blockedReason}
+            </Banner>
           )}
 
-          {active === 'public_farm_factory' && (
-            <Row>
-              <span>Eligibility signer (EOA — TVL attestations only)</span>
-              <Input
-                data-testid="founder-eligibility-signer"
-                placeholder="0x…"
-                value={eligibilitySigner}
-                onChange={(e) => setEligibilitySigner(e.target.value)}
-              />
-            </Row>
+          <Row>
+            <span>Gas / funding</span>
+            <strong data-testid="founder-gas-panel">
+              {gas.estimateStatus === 'ready'
+                ? `Est. ${gas.estimatedTotalCostBnb} BNB · min ${gas.recommendedMinimumBnb} BNB · ${
+                    gas.fundingSufficient ? 'Balance sufficient' : `Shortfall ${gas.shortfallBnb ?? '—'} BNB`
+                  }`
+                : gas.message}
+            </strong>
+          </Row>
+
+          <BtnRow>
+            <Btn
+              type="button"
+              $enabled={canEstimate}
+              disabled={!canEstimate}
+              data-testid="founder-estimate-gas"
+              onClick={() => void runGasEstimate()}
+            >
+              {estimateStatus === 'unavailable' ? 'Retry Gas Estimate' : 'Estimate Deployment Gas'}
+            </Btn>
+          </BtnRow>
+
+          {gasError && (
+            <Details data-testid="founder-gas-error">
+              <summary>Technical gas error</summary>
+              <pre>{gasError}</pre>
+            </Details>
           )}
 
-          <DeployBtn
-            type="button"
-            $enabled={deployEnabled}
-            disabled={!deployEnabled}
-            data-testid="founder-deploy-button"
-            data-deploy-label={DEPLOY_BUTTON_LABEL[active]}
-            onClick={onDeploy}
-          >
-            {DEPLOY_BUTTON_LABEL[active]}
-          </DeployBtn>
+          <Check>
+            <input
+              type="checkbox"
+              checked={reviewed}
+              data-testid="founder-review-checkbox"
+              onChange={(e) => setReviewed(e.target.checked)}
+            />
+            <span>
+              I have reviewed the contract artifact, constructor arguments, fee configuration and destination.
+            </span>
+          </Check>
 
+          <BtnRow>
+            <Btn type="button" $enabled data-testid="founder-back-review" onClick={() => setReviewed(false)}>
+              Back to Review
+            </Btn>
+            <Btn
+              type="button"
+              $enabled={canEstimate}
+              disabled={!canEstimate}
+              data-testid="founder-estimate-again"
+              onClick={() => void runGasEstimate()}
+            >
+              Estimate Again
+            </Btn>
+            <Btn
+              type="button"
+              $primary
+              $enabled={deployEnabled}
+              disabled={!deployEnabled}
+              data-testid="founder-deploy-button"
+              data-deploy-label={`Deploy ${step.contractName}`}
+              onClick={() => void onDeploy()}
+            >
+              Deploy {step.contractName}
+            </Btn>
+          </BtnRow>
+
+          <Row>
+            <span>Parent CTA</span>
+            <strong>Deploy Liquidity Builder · Step {step.index} of {step.total}</strong>
+          </Row>
           <Row>
             <span>Transaction hash</span>
             <strong data-testid="founder-tx-hash">{txHash ?? '—'}</strong>
@@ -505,26 +574,21 @@ export const FounderDeploymentShell: React.FC = () => {
               {statusNote}
             </Banner>
           )}
-          {(session?.gates.blockers.length ?? 0) > 0 && (
-            <ArgList data-testid="founder-deploy-blockers">
-              {session!.gates.blockers.map((b) => (
-                <li key={b}>{b}</li>
-              ))}
-            </ArgList>
-          )}
+
+          <Details>
+            <summary>Technical JSON (collapsed)</summary>
+            <pre>{JSON.stringify({ constructorArgs: step.constructorArgs, fees: packageBuild.economicReview }, null, 2)}</pre>
+          </Details>
         </Card>
       )}
 
-      {allDone && (
-        <Banner $tone="ok" data-testid="founder-all-ready">
-          All permanent platform contracts are bound. MELEGA DEPLOYER is not required for user Create Token, Public
-          Farm, or Liquidity Builder operations.
+      {activeSubsystem !== 'liquidity_builder' && (
+        <Banner $tone="warn" data-testid="founder-sequence-lock">
+          {LABELS[activeSubsystem]} locked until Liquidity Builder is DEPLOYED · VALIDATED · BOUND · READY.
         </Banner>
       )}
 
-      <StatusLink href="/runtime/deployment/status" data-testid="founder-status-archive-link">
-        Read-only deployment status archive
-      </StatusLink>
+      <StatusLink href="/runtime/deployment/status">Read-only deployment status archive</StatusLink>
     </Root>
   )
 }

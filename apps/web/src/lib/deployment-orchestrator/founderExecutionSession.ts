@@ -83,8 +83,14 @@ export function resolveFounderExecutionPauseState(input: {
   if (gates.codes.includes('WRONG_CHAIN')) {
     return 'WRONG_CHAIN'
   }
-  if (gas.pauseCode === 'FOUNDER_DEPLOYER_FUNDING_REQUIRED' || gates.codes.includes('INSUFFICIENT_BNB')) {
+  if (gas.pauseCode === 'FOUNDER_DEPLOYER_FUNDING_REQUIRED') {
     return 'FOUNDER_DEPLOYER_FUNDING_REQUIRED'
+  }
+  if (gas.estimateStatus === 'pending' || gas.estimateStatus === 'unavailable') {
+    // Operational pause awaiting estimate — still Founder-facing, not a code defect.
+    if (gates.codes.includes('AUTHORIZED_DEPLOYER_MATCH') && gates.codes.includes('CHAIN_56')) {
+      return 'AWAITING_FOUNDER_SIGNATURE'
+    }
   }
   if (gates.ok && gates.codes.includes('FOUNDER_SIGNATURE_REQUIRED')) {
     return 'AWAITING_FOUNDER_SIGNATURE'
@@ -116,10 +122,12 @@ export function buildFounderExecutionSession(input: {
           : [])] as SubsystemId[])
     : ([] as SubsystemId[])
 
+  void remaining
   const gas = assessFounderGasReadiness({
     balanceWei: input.balanceWei,
-    gasPriceWei: input.gasPriceWei,
-    remainingSubsystems: remaining.length ? remaining : undefined,
+    estimateStatus: 'pending',
+    gasPriceWei: input.gasPriceWei ?? null,
+    gasPriceSource: input.gasPriceWei ? 'wallet' : 'none',
   })
 
   const gates = assessFounderDeployGates({

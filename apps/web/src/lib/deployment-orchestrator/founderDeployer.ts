@@ -14,21 +14,16 @@ export const FOUNDER_DEPLOY_CHAIN_ID = 56 as const
 
 export const FOUNDER_TREASURY_DESTINATION = MELEGA_TREASURY_FEE_DESTINATION
 
-/** Minimum BNB (wei) soft gate for a platform deploy — review-only estimate floor. */
-export const FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI = 50_000_000_000_000_000n // 0.05 BNB
-
 export type FounderDeployGateCode =
   | 'FOUNDER_WALLET_CONNECTED'
   | 'AUTHORIZED_DEPLOYER_MATCH'
   | 'CHAIN_56'
-  | 'SUFFICIENT_BNB'
   | 'ARTIFACT_VALID'
   | 'CONSTRUCTOR_VALID'
   | 'SUBSYSTEM_READY'
   | 'FOUNDER_SIGNATURE_REQUIRED'
   | 'WRONG_WALLET'
   | 'WRONG_CHAIN'
-  | 'INSUFFICIENT_BNB'
   | 'ARTIFACT_INVALID'
   | 'CONSTRUCTOR_INVALID'
   | 'SUBSYSTEM_NOT_READY'
@@ -61,7 +56,7 @@ export function isAuthorizedMelegaDeployer(address: string | null | undefined): 
 export function assessFounderDeployGates(input: {
   connectedWallet: string | null | undefined
   chainId: number | null | undefined
-  balanceWei: bigint | null | undefined
+  balanceWei?: bigint | null | undefined
   artifactValid: boolean
   constructorValid: boolean
   subsystemReady: boolean
@@ -92,14 +87,8 @@ export function assessFounderDeployGates(input: {
     codes.push('CHAIN_56')
   }
 
-  if (balance == null || balance < FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI) {
-    codes.push('INSUFFICIENT_BNB')
-    blockers.push(
-      `FOUNDER_DEPLOYER_FUNDING_REQUIRED — fund ${AUTHORIZED_MELEGA_DEPLOYER} with sufficient BNB for gas (recommended ≥ 0.05 BNB floor; see gas readiness panel for exact estimate).`,
-    )
-  } else {
-    codes.push('SUFFICIENT_BNB')
-  }
+  // Funding is decided only by assessFounderGasReadiness after a real estimate.
+  // Do not emit INSUFFICIENT_BNB / FUNDING_REQUIRED from a fixed floor here.
 
   if (!input.artifactValid) {
     codes.push('ARTIFACT_INVALID')
@@ -125,7 +114,6 @@ export function assessFounderDeployGates(input: {
   const ok =
     codes.includes('AUTHORIZED_DEPLOYER_MATCH') &&
     codes.includes('CHAIN_56') &&
-    codes.includes('SUFFICIENT_BNB') &&
     codes.includes('ARTIFACT_VALID') &&
     codes.includes('CONSTRUCTOR_VALID') &&
     codes.includes('SUBSYSTEM_READY')

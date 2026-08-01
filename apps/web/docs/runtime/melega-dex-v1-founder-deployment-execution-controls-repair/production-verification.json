@@ -1,0 +1,23 @@
+{
+  "url": "https://www.melega.finance/runtime/deployment/",
+  "capturedAt": "2026-08-01T10:57:46.727Z",
+  "repairedBuildLive": false,
+  "productionStillPreRepair": true,
+  "productionSignals": {
+    "EstimateDeploymentGas": false,
+    "AttachCertifiedPlaceholder": true,
+    "rawFeeJsonPrimary": true,
+    "FUNDING_REQUIREDStringPresent": true
+  },
+  "localFixedVerified": true,
+  "localUrl": "http://127.0.0.1:3033/runtime/deployment/",
+  "localSignals": {
+    "EstimateDeploymentGas": true,
+    "ArtifactVerified": true,
+    "humanReadableEconomicReview": true,
+    "DeployLiquidityBuildingExecutionMathV1": true,
+    "TechnicalJsonCollapsed": true
+  },
+  "requiredReleaseAction": "Deploy branch melega-dex-v1-founder-deployment-execution-controls-repair to Vercel production for www.melega.finance, then re-verify /runtime/deployment/",
+  "verdictGate": "WEB_RELEASE_PENDING"
+}

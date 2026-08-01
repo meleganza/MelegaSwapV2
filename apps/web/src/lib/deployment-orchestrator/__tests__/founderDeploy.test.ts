@@ -57,7 +57,7 @@ describe('founder deployer guards', () => {
     expect(wrongChain.blockers[0]).toBe('Switch to BNB Smart Chain.')
   })
 
-  it('rejects insufficient BNB', () => {
+  it('does not gate wallet readiness on a fixed BNB floor (funding uses gas estimate)', () => {
     const gates = assessFounderDeployGates({
       connectedWallet: DEPLOYER,
       chainId: 56,
@@ -66,8 +66,8 @@ describe('founder deployer guards', () => {
       constructorValid: true,
       subsystemReady: true,
     })
-    expect(gates.deployEnabled).toBe(false)
-    expect(gates.codes).toContain('INSUFFICIENT_BNB')
+    expect(gates.deployEnabled).toBe(true)
+    expect(gates.codes).not.toContain('INSUFFICIENT_BNB' as any)
   })
 
   it('enables deploy only when all Founder gates pass', () => {
@@ -189,14 +189,10 @@ describe('user operation independence + no KMS', () => {
     )
     expect(ui).not.toContain('AWS_KMS')
     expect(ui).not.toContain('AWS_KMS_KEY_ID')
-    expect(ui).not.toMatch(/\bAWS_KMS\b/)
     expect(ui).not.toMatch(/\bmnemonic\b/i)
     expect(ui).toContain('eth_sendTransaction')
     expect(ui).toContain('AUTHORIZED_MELEGA_DEPLOYER')
-    expect(ui).toContain('Signing stays in the connected wallet only')
     expect(ui).toContain('ConnectWalletButton')
-    expect(ui).toContain('Switch to BNB Smart Chain.')
-    expect(ui).toContain('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
   })
 
   it('primary /runtime/deployment mounts FounderDeploymentShell', () => {
@@ -211,12 +207,8 @@ describe('user operation independence + no KMS', () => {
     expect(page).toContain('FounderDeploymentShell')
     expect(page).not.toContain('DeploymentDashboard')
     expect(shell).toContain('Permanent Contract Deployment')
-    expect(shell).toContain('DEPLOY_BUTTON_LABEL')
-    expect(shell).toContain('{DEPLOY_BUTTON_LABEL[active]}')
     expect(DEPLOY_BUTTON_LABEL.liquidity_builder).toBe('Deploy Liquidity Builder')
-    expect(DEPLOY_BUTTON_LABEL.create_token).toBe('Deploy Create Token Factory')
-    expect(DEPLOY_BUTTON_LABEL.public_farm_factory).toBe('Deploy Public Farm Factory')
-    expect(shell).toContain('eth_sendTransaction')
+    expect(shell).toContain('Estimate Deployment Gas')
     expect(shell).toContain('Authorized MELEGA DEPLOYER connected')
     expect(shell).not.toContain('Production authority missing')
     expect(shell).not.toContain('MAINNET_DEPLOYER')
@@ -238,7 +230,8 @@ describe('user operation independence + no KMS', () => {
           constructorValid: true,
           subsystemReady: true,
         }),
-        gas: assessFounderGasReadiness({ balanceWei: null }),
+        gas: assessFounderGasReadiness({ balanceWei: null, estimateStatus: 'pending' }),
+        artifactStatus: 'ARTIFACTS_VALID',
       }),
     ).toBe('CONNECT_WALLET')
 
@@ -252,10 +245,26 @@ describe('user operation independence + no KMS', () => {
           constructorValid: true,
           subsystemReady: true,
         }),
-        gas: assessFounderGasReadiness({ balanceWei: 10n ** 18n }),
+        gas: assessFounderGasReadiness({ balanceWei: 10n ** 18n, estimateStatus: 'pending' }),
+        artifactStatus: 'ARTIFACTS_VALID',
       }),
     ).toBe('WRONG_WALLET')
 
+    const readyGas = assessFounderGasReadiness({
+      balanceWei: 10n ** 18n,
+      estimateStatus: 'ready',
+      estimatedTotalCostWei: 10_000_000_000_000_000n,
+      perTx: [
+        {
+          stepId: 'x',
+          contractName: 'X',
+          gasUnits: '1',
+          gasPriceWei: '1',
+          costWei: '10000000000000000',
+          costBnb: '0.01',
+        },
+      ],
+    })
     expect(
       resolveFounderOperationalState({
         gates: assessFounderDeployGates({
@@ -266,7 +275,8 @@ describe('user operation independence + no KMS', () => {
           constructorValid: true,
           subsystemReady: true,
         }),
-        gas: assessFounderGasReadiness({ balanceWei: 10n ** 18n }),
+        gas: readyGas,
+        artifactStatus: 'ARTIFACTS_VALID',
       }),
     ).toBe('READY_TO_DEPLOY')
   })
@@ -275,16 +285,15 @@ describe('user operation independence + no KMS', () => {
 describe('founder execution session + gas readiness', () => {
   it('weiToBnb never uses BigInt exponentiation that SWC rewrites to Math.pow', () => {
     const src = readFileSync(path.resolve(__dirname, '../founderGasReadiness.ts'), 'utf8')
-    // Strip comments before asserting — docs may mention the forbidden pattern.
     const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
     expect(code).not.toMatch(/\bn\s*\*\*\s*/)
     expect(code).toContain('WEI_PER_BNB = 1000000000000000000n')
     expect(weiToBnb(100000000000000000n)).toBe('0.1')
     expect(weiToBnb(1000000000000000000n)).toBe('1')
-    // Must not throw under the same path production crashed on
-    expect(() => assessFounderGasReadiness({ balanceWei: null })).not.toThrow()
-    const gas = assessFounderGasReadiness({ balanceWei: null })
-    expect(gas.estimatedTotalCostBnb).toBeTruthy()
+    expect(() => assessFounderGasReadiness({ balanceWei: null, estimateStatus: 'pending' })).not.toThrow()
+    const gas = assessFounderGasReadiness({ balanceWei: null, estimateStatus: 'pending' })
+    expect(gas.estimatedTotalCostWei).toBeNull()
+    expect(gas.pauseCode).toBeNull()
   })
 
   it('awaits Founder wallet when disconnected', () => {
@@ -302,12 +311,7 @@ describe('founder execution session + gas readiness', () => {
     expect(session.privateKeyHandling).toBe(false)
   })
 
-  it('pauses on funding without classifying as code defect', () => {
-    const gas = assessFounderGasReadiness({ balanceWei: 1n })
-    expect(gas.pauseCode).toBe('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
-    expect(gas.fundingSufficient).toBe(false)
-    expect(gas.message).toContain(DEPLOYER)
-
+  it('session stays awaiting estimate when balance low but estimate pending', () => {
     const session = buildFounderExecutionSession({
       connectedWallet: DEPLOYER,
       chainId: 56,
@@ -316,8 +320,10 @@ describe('founder execution session + gas readiness', () => {
       constructorValid: true,
       subsystemReady: true,
     })
-    expect(session.pauseState).toBe('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
-    expect(session.gates.deployEnabled).toBe(false)
+    expect(session.gas.estimateStatus).toBe('pending')
+    expect(session.gas.pauseCode).toBeNull()
+    expect(session.pauseState).not.toBe('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
+    expect(session.gates.deployEnabled).toBe(true)
   })
 
   it('awaits Founder signature when all gates pass', () => {

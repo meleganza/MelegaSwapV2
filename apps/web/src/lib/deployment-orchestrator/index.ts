@@ -34,11 +34,11 @@ export {
 export { isSubsystemReadyForFounderDeploy, nextFounderDeployTarget } from './founderSequence'
 export {
   assessFounderGasReadiness,
-  estimateSubsystemDeployCostWei,
-  FOUNDER_GAS_UNITS_BY_SUBSYSTEM,
+  fundingRequiredAllowed,
   WEI_PER_BNB,
   weiToBnb,
 } from './founderGasReadiness'
+export type { FounderGasReadiness, GasEstimateStatus, PerTxGasEstimate } from './founderGasReadiness'
 export {
   buildFounderExecutionSession,
   buildServerFounderExecutionSession,
@@ -46,7 +46,6 @@ export {
   resolveFounderExecutionPauseState,
 } from './founderExecutionSession'
 export type { FounderExecutionPauseState, FounderExecutionSession, FounderDeploymentRecord } from './founderExecutionSession'
-export type { FounderGasReadiness } from './founderGasReadiness'
 export {
   DEPLOY_BUTTON_LABEL,
   FORBIDDEN_SERVER_AUTHORITY_PHRASES,
@@ -55,3 +54,13 @@ export {
   resolveFounderOperationalState,
 } from './founderOperationalState'
 export type { FounderOperationalState } from './founderOperationalState'
+export { loadCertifiedLbArtifacts, linkLibraryBytecode } from './founderLbArtifacts'
+export { buildLbDeploySteps, activeLbStep, buildLbEconomicReviewFields, LB_PROTOCOL_PARAMS } from './founderLbDeployTx'
+export {
+  createMockEthereum,
+  getBrowserEthereum,
+  isUserRejectedError,
+  walletEstimateDeployGas,
+  walletGetGasPrice,
+  walletSendDeployTransaction,
+} from './founderWalletTx'

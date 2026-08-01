@@ -1,0 +1,22 @@
+{
+  "source": "script/liquidity-building/DeployLiquidityBuildingV1Mainnet.s.sol + forge linkReferences",
+  "order": [
+    "LiquidityBuildingExecutionMathV1",
+    "LiquidityBuildingTreasuryFeeReceiverV1",
+    "LiquidityBuildingExecutionAuthorizerV1",
+    "LiquidityBuildingTreasuryFeeSinkV1",
+    "LiquidityBuildingProgramV1",
+    "LiquidityBuildingFactoryV1"
+  ],
+  "notes": [
+    "ExecutionMath deployed first as linked library for Program",
+    "FeeSink depends on FeeReceiver address from prior receipt",
+    "Program requires Math address for library linking before CREATE",
+    "Factory depends on Program + Authorizer + FeeSink"
+  ],
+  "parentSequenceLock": [
+    "Liquidity Builder",
+    "Create Token Factory",
+    "Public Farm Factory"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "controlLabels": [
+    "Estimate Deployment Gas",
+    "Retry Gas Estimate"
+  ],
+  "providerPath": "window.ethereum eth_estimateGas + eth_gasPrice (founderWalletTx.ts)",
+  "displaysPerTx": [
+    "contract name",
+    "gas units",
+    "gas price",
+    "estimated BNB cost"
+  ],
+  "totals": [
+    "estimatedTotalCostWei",
+    "safetyBuffer 1.35",
+    "recommendedMinimumWei",
+    "shortfallWei"
+  ],
+  "nullEstimateNeverFundingRequired": true,
+  "tests": [
+    "executionControls.test.ts · null / pending estimate never emits FUNDING_REQUIRED",
+    "executionControls.test.ts · known insufficient balance emits FUNDING_REQUIRED only after estimate ready",
+    "executionControls.test.ts · known sufficient balance emits READY_TO_DEPLOY"
+  ],
+  "noMainnetBroadcastInTests": true
+}

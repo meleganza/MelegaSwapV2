@@ -1,54 +1,49 @@
 /**
  * Gas readiness for Founder-signed mainnet deployment execution.
- * Estimates only — never auto-transfers BNB. Funding pauses are operational, not code blockers.
+ * FUNDING_REQUIRED only when estimate AND balance are both known and insufficient.
  */
 
-import {
-  AUTHORIZED_MELEGA_DEPLOYER,
-  FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI,
-} from './founderDeployer'
-import type { SubsystemId } from './types'
-
-/** Conservative gas units per subsystem (multi-tx packages use sum of CREATE txs). */
-export const FOUNDER_GAS_UNITS_BY_SUBSYSTEM: Record<SubsystemId, bigint> = {
-  liquidity_builder: 12_000_000n, // Authorizer + FeeSink + Factory + Program sequence
-  create_token: 4_500_000n,
-  public_farm_factory: 5_500_000n,
-}
-
-/** Default gas price when RPC unavailable (3 gwei). */
-export const FOUNDER_DEFAULT_GAS_PRICE_WEI = 3_000_000_000n
+import { AUTHORIZED_MELEGA_DEPLOYER } from './founderDeployer'
 
 /**
  * 1e18 as a decimal bigint literal (avoid bigint exponentiation operators).
- * Next/SWC rewrites bigint exponentiation to Math.pow, which throws:
- * TypeError: Cannot convert a BigInt value to a number
+ * Next/SWC rewrites bigint exponentiation to Math.pow, which throws.
  */
 export const WEI_PER_BNB = 1000000000000000000n
 
-/** Safety buffer multiplier numerator/denominator (1.35x). */
 export const FOUNDER_GAS_BUFFER_NUM = 135n
 export const FOUNDER_GAS_BUFFER_DEN = 100n
 
+export type GasEstimateStatus = 'pending' | 'unavailable' | 'ready'
+
+export type PerTxGasEstimate = {
+  stepId: string
+  contractName: string
+  gasUnits: string
+  gasPriceWei: string
+  costWei: string
+  costBnb: string
+}
+
 export type FounderGasReadiness = {
   deployer: typeof AUTHORIZED_MELEGA_DEPLOYER
+  estimateStatus: GasEstimateStatus
   balanceWei: string | null
   balanceBnb: string | null
-  gasPriceWei: string
-  gasPriceSource: 'rpc' | 'default'
-  estimates: Array<{
-    subsystemId: SubsystemId
-    gasUnits: string
-    costWei: string
-    costBnb: string
-  }>
-  estimatedTotalCostWei: string
-  estimatedTotalCostBnb: string
-  recommendedMinimumWei: string
-  recommendedMinimumBnb: string
+  gasPriceWei: string | null
+  gasPriceSource: 'rpc' | 'wallet' | 'none'
+  perTx: PerTxGasEstimate[]
+  estimatedTotalCostWei: string | null
+  estimatedTotalCostBnb: string | null
+  recommendedMinimumWei: string | null
+  recommendedMinimumBnb: string | null
+  shortfallWei: string | null
+  shortfallBnb: string | null
   safetyBufferMultiplier: string
-  fundingSufficient: boolean
+  fundingSufficient: boolean | null
+  /** Set only when estimateStatus=ready AND balance known AND balance < recommended. */
   pauseCode: 'FOUNDER_DEPLOYER_FUNDING_REQUIRED' | null
+  error: string | null
   message: string | null
 }
 
@@ -58,84 +53,102 @@ export function weiToBnb(wei: bigint): string {
   return frac.length ? `${whole}.${frac}` : whole.toString()
 }
 
-export function estimateSubsystemDeployCostWei(
-  subsystemId: SubsystemId,
-  gasPriceWei: bigint = FOUNDER_DEFAULT_GAS_PRICE_WEI,
-): bigint {
-  return FOUNDER_GAS_UNITS_BY_SUBSYSTEM[subsystemId] * gasPriceWei
+/** Invariant helper used by tests and UI. */
+export function fundingRequiredAllowed(input: {
+  estimateStatus: GasEstimateStatus
+  estimatedTotalCostWei: string | null
+  balanceWei: string | null
+}): boolean {
+  return (
+    input.estimateStatus === 'ready' &&
+    input.estimatedTotalCostWei != null &&
+    input.balanceWei != null
+  )
 }
 
 export function assessFounderGasReadiness(input: {
   balanceWei: bigint | null | undefined
+  estimateStatus: GasEstimateStatus
   gasPriceWei?: bigint | null
-  remainingSubsystems?: SubsystemId[]
+  gasPriceSource?: 'rpc' | 'wallet' | 'none'
+  perTx?: PerTxGasEstimate[]
+  estimatedTotalCostWei?: bigint | null
+  error?: string | null
 }): FounderGasReadiness {
-  try {
-    const gasPrice = input.gasPriceWei && input.gasPriceWei > 0n ? input.gasPriceWei : FOUNDER_DEFAULT_GAS_PRICE_WEI
-    const gasPriceSource: 'rpc' | 'default' =
-      input.gasPriceWei && input.gasPriceWei > 0n ? 'rpc' : 'default'
-    const remaining =
-      input.remainingSubsystems ??
-      (['liquidity_builder', 'create_token', 'public_farm_factory'] as SubsystemId[])
+  const balance = input.balanceWei ?? null
+  const estimateStatus = input.estimateStatus
+  const perTx = input.perTx ?? []
+  const total =
+    input.estimatedTotalCostWei != null
+      ? input.estimatedTotalCostWei
+      : estimateStatus === 'ready' && perTx.length
+        ? perTx.reduce((acc, t) => acc + BigInt(t.costWei), 0n)
+        : null
 
-    const estimates = remaining.map((subsystemId) => {
-      const gasUnits = FOUNDER_GAS_UNITS_BY_SUBSYSTEM[subsystemId]
-      const costWei = gasUnits * gasPrice
-      return {
-        subsystemId,
-        gasUnits: gasUnits.toString(),
-        costWei: costWei.toString(),
-        costBnb: weiToBnb(costWei),
-      }
-    })
-
-    const estimatedTotalCostWei = estimates.reduce((acc, e) => acc + BigInt(e.costWei), 0n)
-    const buffered = (estimatedTotalCostWei * FOUNDER_GAS_BUFFER_NUM) / FOUNDER_GAS_BUFFER_DEN
-    const recommendedMinimumWei =
-      buffered > FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI ? buffered : FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI
-
-    const balance = input.balanceWei ?? null
-    const fundingSufficient = balance != null && balance >= recommendedMinimumWei
-    const pauseCode =
-      balance != null && !fundingSufficient ? ('FOUNDER_DEPLOYER_FUNDING_REQUIRED' as const) : null
-
+  if (estimateStatus !== 'ready' || total == null) {
     return {
       deployer: AUTHORIZED_MELEGA_DEPLOYER,
+      estimateStatus,
       balanceWei: balance == null ? null : balance.toString(),
       balanceBnb: balance == null ? null : weiToBnb(balance),
-      gasPriceWei: gasPrice.toString(),
-      gasPriceSource,
-      estimates,
-      estimatedTotalCostWei: estimatedTotalCostWei.toString(),
-      estimatedTotalCostBnb: weiToBnb(estimatedTotalCostWei),
-      recommendedMinimumWei: recommendedMinimumWei.toString(),
-      recommendedMinimumBnb: weiToBnb(recommendedMinimumWei),
+      gasPriceWei: input.gasPriceWei != null ? input.gasPriceWei.toString() : null,
+      gasPriceSource: input.gasPriceSource ?? 'none',
+      perTx,
+      estimatedTotalCostWei: null,
+      estimatedTotalCostBnb: null,
+      recommendedMinimumWei: null,
+      recommendedMinimumBnb: null,
+      shortfallWei: null,
+      shortfallBnb: null,
       safetyBufferMultiplier: '1.35',
-      fundingSufficient,
-      pauseCode,
-      message: pauseCode
-        ? `Fund MELEGA DEPLOYER ${AUTHORIZED_MELEGA_DEPLOYER} with at least ${weiToBnb(
-            recommendedMinimumWei,
-          )} BNB (estimated deployment cost ${weiToBnb(estimatedTotalCostWei)} BNB + safety buffer). Do not auto-transfer.`
-        : null,
-    }
-  } catch {
-    // Never throw into React render — gas panel degrades gracefully.
-    return {
-      deployer: AUTHORIZED_MELEGA_DEPLOYER,
-      balanceWei: input.balanceWei == null ? null : input.balanceWei.toString(),
-      balanceBnb: null,
-      gasPriceWei: FOUNDER_DEFAULT_GAS_PRICE_WEI.toString(),
-      gasPriceSource: 'default',
-      estimates: [],
-      estimatedTotalCostWei: '0',
-      estimatedTotalCostBnb: '0',
-      recommendedMinimumWei: FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI.toString(),
-      recommendedMinimumBnb: weiToBnb(FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI),
-      safetyBufferMultiplier: '1.35',
-      fundingSufficient: false,
+      fundingSufficient: null,
       pauseCode: null,
-      message: 'Gas estimate temporarily unavailable.',
+      error: input.error ?? null,
+      message:
+        estimateStatus === 'pending'
+          ? 'Gas estimate pending — click Estimate Deployment Gas.'
+          : input.error
+            ? `Gas estimate unavailable: ${input.error}`
+            : 'Gas estimate unavailable. Retry Gas Estimate.',
     }
+  }
+
+  const buffered = (total * FOUNDER_GAS_BUFFER_NUM) / FOUNDER_GAS_BUFFER_DEN
+  const fundingSufficient = balance != null ? balance >= buffered : null
+  const pauseCode =
+    fundingRequiredAllowed({
+      estimateStatus,
+      estimatedTotalCostWei: total.toString(),
+      balanceWei: balance == null ? null : balance.toString(),
+    }) && fundingSufficient === false
+      ? ('FOUNDER_DEPLOYER_FUNDING_REQUIRED' as const)
+      : null
+  const shortfall = balance != null && balance < buffered ? buffered - balance : null
+
+  return {
+    deployer: AUTHORIZED_MELEGA_DEPLOYER,
+    estimateStatus: 'ready',
+    balanceWei: balance == null ? null : balance.toString(),
+    balanceBnb: balance == null ? null : weiToBnb(balance),
+    gasPriceWei: input.gasPriceWei != null ? input.gasPriceWei.toString() : null,
+    gasPriceSource: input.gasPriceSource ?? 'wallet',
+    perTx,
+    estimatedTotalCostWei: total.toString(),
+    estimatedTotalCostBnb: weiToBnb(total),
+    recommendedMinimumWei: buffered.toString(),
+    recommendedMinimumBnb: weiToBnb(buffered),
+    shortfallWei: shortfall == null ? null : shortfall.toString(),
+    shortfallBnb: shortfall == null ? null : weiToBnb(shortfall),
+    safetyBufferMultiplier: '1.35',
+    fundingSufficient,
+    pauseCode,
+    error: null,
+    message: pauseCode
+      ? `Additional BNB required. Fund ${AUTHORIZED_MELEGA_DEPLOYER}. Current shortfall ≈ ${weiToBnb(
+          shortfall ?? 0n,
+        )} BNB.`
+      : fundingSufficient
+        ? 'Balance sufficient for estimated deployment cost + safety buffer.'
+        : 'Gas estimate ready — connect wallet to compare balance.',
   }
 }
