@@ -45,6 +45,11 @@ describe('/api/deployment/status', () => {
     ])
     expect(res.body.subsystems).toHaveLength(3)
     expect(res.body.updatedAt).toBeTruthy()
+    expect(res.body.founderExecution.pauseState).toBe('AWAITING_FOUNDER_WALLET')
+    expect(res.body.founderExecution.kmsRequired).toBe(false)
+    expect(res.body.founderExecution.records.every((r: { status: string }) => r.status === 'NULL')).toBe(
+      true,
+    )
   })
 
   it('rejects non-GET', () => {

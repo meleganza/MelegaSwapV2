@@ -1,0 +1,31 @@
+{
+  "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "balanceWei": null,
+  "balanceBnb": null,
+  "gasPriceWei": "3000000000",
+  "gasPriceSource": "default",
+  "estimates": [
+    {
+      "subsystemId": "liquidity_builder",
+      "gasUnits": "12000000",
+      "costBnb": "0.036"
+    },
+    {
+      "subsystemId": "create_token",
+      "gasUnits": "4500000",
+      "costBnb": "0.0135"
+    },
+    {
+      "subsystemId": "public_farm_factory",
+      "gasUnits": "5500000",
+      "costBnb": "0.0165"
+    }
+  ],
+  "estimatedTotalCostBnb": "0.066",
+  "recommendedMinimumBnb": "0.0891",
+  "safetyBufferMultiplier": "1.35",
+  "fundingSufficient": null,
+  "pauseCode": null,
+  "note": "Live balance/gas price resolved in Founder UI when wallet connects. No auto-transfer.",
+  "capturedAt": "2026-08-01T07:06:00Z"
+}

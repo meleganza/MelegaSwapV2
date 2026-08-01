@@ -87,14 +87,16 @@ export function assessFounderDeployGates(input: {
 
   if (chainId !== FOUNDER_DEPLOY_CHAIN_ID) {
     codes.push('WRONG_CHAIN')
-    blockers.push('Switch to BNB Chain (chainId 56).')
+    blockers.push('Switch to BNB Smart Chain.')
   } else {
     codes.push('CHAIN_56')
   }
 
   if (balance == null || balance < FOUNDER_MINIMUM_DEPLOY_BALANCE_WEI) {
     codes.push('INSUFFICIENT_BNB')
-    blockers.push('Insufficient BNB for deployment gas.')
+    blockers.push(
+      `FOUNDER_DEPLOYER_FUNDING_REQUIRED — fund ${AUTHORIZED_MELEGA_DEPLOYER} with sufficient BNB for gas (recommended ≥ 0.05 BNB floor; see gas readiness panel for exact estimate).`,
+    )
   } else {
     codes.push('SUFFICIENT_BNB')
   }

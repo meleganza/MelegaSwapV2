@@ -1,0 +1,13 @@
+{
+  "expectedDeployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "connectedWallet": null,
+  "authorizedMatch": false,
+  "chainIdRequired": 56,
+  "chainIdObserved": null,
+  "pauseState": "AWAITING_FOUNDER_WALLET",
+  "privateKeyRequested": false,
+  "privateKeyStored": false,
+  "serverSideSigning": false,
+  "kmsRequired": false,
+  "capturedAt": "2026-08-01T07:06:00Z"
+}

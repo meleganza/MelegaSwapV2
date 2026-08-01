@@ -1,0 +1,11 @@
+{
+  "createTokenRequiresMelegaDeployer": false,
+  "publicFarmRequiresMelegaDeployer": false,
+  "liquidityBuilderRequiresMelegaDeployer": false,
+  "melegaDeployerIsFeeRecipient": false,
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "melegaDeployerIsCustodian": false,
+  "melegaDeployerIsUserOpApprover": false,
+  "proof": "userOperationRequiresMelegaDeployer(*) === false; fees settle to MELEGA TREASURY WALLET.",
+  "capturedAt": "2026-08-01T07:06:00Z"
+}

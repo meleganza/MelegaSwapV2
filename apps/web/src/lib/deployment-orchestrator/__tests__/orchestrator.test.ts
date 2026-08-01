@@ -32,6 +32,8 @@ describe('deployment orchestrator readiness', () => {
       expect(snap.lanes.contracts).toBe(true)
     }
     expect(status.nextAction).toMatch(/MELEGA DEPLOYER/i)
+    expect(status.founderExecution.pauseState).toBe('AWAITING_FOUNDER_WALLET')
+    expect(status.founderExecution.serverSideSigning).toBe(false)
   })
 
   it('exposes canary Pending for all subsystems before live runs', () => {

@@ -1,0 +1,15 @@
+{
+  "orchestratorAndFounder": {
+    "command": "yarn test src/lib/deployment-orchestrator src/pages/api/deployment src/config/constants/__tests__/feeSchedule.test.ts",
+    "result": "PASS",
+    "tests": 31
+  },
+  "lbCtPff": {
+    "command": "yarn test publicFarmFactory.* createTokenFactoryLaunch mainnetActivationBinding",
+    "result": "PASS",
+    "tests": 39
+  },
+  "totalTargetedTests": 70,
+  "failed": 0,
+  "capturedAt": "2026-08-01T07:06:00Z"
+}

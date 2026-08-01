@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   assessFounderDeployGates,
+  assessFounderGasReadiness,
   buildCreateTokenTransactionReview,
+  buildFounderExecutionSession,
   buildLiquidityBuilderTransactionReview,
   buildPublicFarmFactoryTransactionReview,
   extractContractAddressFromReceipt,
@@ -47,6 +49,7 @@ describe('founder deployer guards', () => {
     })
     expect(wrongChain.deployEnabled).toBe(false)
     expect(wrongChain.codes).toContain('WRONG_CHAIN')
+    expect(wrongChain.blockers[0]).toBe('Switch to BNB Smart Chain.')
   })
 
   it('rejects insufficient BNB', () => {
@@ -181,10 +184,74 @@ describe('user operation independence + no KMS', () => {
     )
     expect(ui).not.toContain('AWS_KMS')
     expect(ui).not.toContain('AWS_KMS_KEY_ID')
-    expect(ui).not.toMatch(/\bkms\b/i)
+    expect(ui).not.toMatch(/\bAWS_KMS\b/)
     expect(ui).not.toMatch(/\bmnemonic\b/i)
     expect(ui).toContain('eth_sendTransaction')
     expect(ui).toContain('AUTHORIZED_MELEGA_DEPLOYER')
     expect(ui).toContain('Signing stays in the connected wallet only')
+    expect(ui).toContain('ConnectWalletButton')
+    expect(ui).toContain('Switch to BNB Smart Chain.')
+    expect(ui).toContain('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
+  })
+})
+
+describe('founder execution session + gas readiness', () => {
+  it('awaits Founder wallet when disconnected', () => {
+    const session = buildFounderExecutionSession({
+      connectedWallet: null,
+      chainId: null,
+      balanceWei: null,
+      artifactValid: true,
+      constructorValid: true,
+      subsystemReady: true,
+    })
+    expect(session.pauseState).toBe('AWAITING_FOUNDER_WALLET')
+    expect(session.records.every((r) => r.status === 'NULL')).toBe(true)
+    expect(session.kmsRequired).toBe(false)
+    expect(session.privateKeyHandling).toBe(false)
+  })
+
+  it('pauses on funding without classifying as code defect', () => {
+    const gas = assessFounderGasReadiness({ balanceWei: 1n })
+    expect(gas.pauseCode).toBe('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
+    expect(gas.fundingSufficient).toBe(false)
+    expect(gas.message).toContain(DEPLOYER)
+
+    const session = buildFounderExecutionSession({
+      connectedWallet: DEPLOYER,
+      chainId: 56,
+      balanceWei: 1n,
+      artifactValid: true,
+      constructorValid: true,
+      subsystemReady: true,
+    })
+    expect(session.pauseState).toBe('FOUNDER_DEPLOYER_FUNDING_REQUIRED')
+    expect(session.gates.deployEnabled).toBe(false)
+  })
+
+  it('awaits Founder signature when all gates pass', () => {
+    const session = buildFounderExecutionSession({
+      connectedWallet: DEPLOYER,
+      chainId: 56,
+      balanceWei: 10n ** 18n,
+      artifactValid: true,
+      constructorValid: true,
+      subsystemReady: true,
+    })
+    expect(session.pauseState).toBe('AWAITING_FOUNDER_SIGNATURE')
+    expect(session.gates.deployEnabled).toBe(true)
+  })
+
+  it('wrong chain resolves to WRONG_CHAIN pause', () => {
+    const session = buildFounderExecutionSession({
+      connectedWallet: DEPLOYER,
+      chainId: 1,
+      balanceWei: 10n ** 18n,
+      artifactValid: true,
+      constructorValid: true,
+      subsystemReady: true,
+    })
+    expect(session.pauseState).toBe('WRONG_CHAIN')
+    expect(session.message).toBe('Switch to BNB Smart Chain.')
   })
 })

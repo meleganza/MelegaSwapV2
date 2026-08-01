@@ -1,6 +1,7 @@
 import { probeProductionAuthority } from './authority'
 import { getAllCanaryStatuses } from './canary'
 import { computeGlobalState, humanNextAction } from './computeState'
+import { buildServerFounderExecutionSession } from './founderExecutionSession'
 import { DEPLOYMENT_ORDER } from './order'
 import { buildAllRollbackPlans } from './rollback'
 import {
@@ -21,6 +22,7 @@ export function buildOrchestratorStatus(now: Date = new Date()): OrchestratorSta
   ]
   const globalState = computeGlobalState(subsystems.map((s) => s.state))
   const firstNonLive = subsystems.find((s) => s.state !== 'LIVE') ?? subsystems[0]
+  const founderExecution = buildServerFounderExecutionSession()
 
   return {
     schema: 'melega.dex.v1.deployment-orchestrator.status',
@@ -36,6 +38,7 @@ export function buildOrchestratorStatus(now: Date = new Date()): OrchestratorSta
       env: authority.env,
       notes: authority.notes,
     },
+    founderExecution,
     canary: getAllCanaryStatuses(),
     rollback: buildAllRollbackPlans(),
     nextAction: humanNextAction(

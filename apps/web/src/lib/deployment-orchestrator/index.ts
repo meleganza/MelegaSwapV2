@@ -32,3 +32,16 @@ export {
   validatePostDeployment,
 } from './founderPostDeploy'
 export { isSubsystemReadyForFounderDeploy, nextFounderDeployTarget } from './founderSequence'
+export {
+  assessFounderGasReadiness,
+  estimateSubsystemDeployCostWei,
+  FOUNDER_GAS_UNITS_BY_SUBSYSTEM,
+} from './founderGasReadiness'
+export {
+  buildFounderExecutionSession,
+  buildServerFounderExecutionSession,
+  emptyDeploymentRecords,
+  resolveFounderExecutionPauseState,
+} from './founderExecutionSession'
+export type { FounderExecutionPauseState, FounderExecutionSession, FounderDeploymentRecord } from './founderExecutionSession'
+export type { FounderGasReadiness } from './founderGasReadiness'

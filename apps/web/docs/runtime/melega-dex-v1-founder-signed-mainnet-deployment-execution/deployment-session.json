@@ -1,0 +1,14 @@
+{
+  "schema": "melega.dex.v1.founder-signed-mainnet-deployment-execution.session",
+  "pauseState": "AWAITING_FOUNDER_WALLET",
+  "nextSubsystem": "liquidity_builder",
+  "order": [
+    "liquidity_builder",
+    "create_token",
+    "public_farm_factory"
+  ],
+  "kmsRequired": false,
+  "serverSideSigning": false,
+  "message": "Connect the authorized MELEGA DEPLOYER.",
+  "capturedAt": "2026-08-01T07:06:00Z"
+}

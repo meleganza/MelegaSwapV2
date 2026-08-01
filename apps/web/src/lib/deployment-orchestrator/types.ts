@@ -3,6 +3,8 @@
  * Orchestrates LB + Create Token + Public Farm Factory. Does not duplicate readiness engines.
  */
 
+import type { FounderExecutionSession } from './founderExecutionSession'
+
 export type DeploymentLifecycleState =
   | 'NOT_READY'
   | 'READY'
@@ -63,6 +65,8 @@ export type OrchestratorStatus = {
     env: Record<string, 'SET' | 'UNSET'>
     notes?: string[]
   }
+  /** Founder mainnet execution pause — wallet/funding/signature are operational, not code blockers. */
+  founderExecution: FounderExecutionSession
   canary: Record<SubsystemId, CanaryStatus>
   rollback: RollbackPlan[]
   nextAction: string

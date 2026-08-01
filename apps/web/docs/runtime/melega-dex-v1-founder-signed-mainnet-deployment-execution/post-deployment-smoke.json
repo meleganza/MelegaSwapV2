@@ -1,0 +1,12 @@
+{
+  "executed": false,
+  "reason": "No factual deployments \u2014 smoke deferred until Founder signs and bindings exist.",
+  "plannedChecks": [
+    "LB readiness + 10% fee",
+    "Create Token 0.10 BNB fee",
+    "PFF MARCO rejection / FREE / 0.25 BNB",
+    "Treasury destination",
+    "no Treasury Runtime"
+  ],
+  "capturedAt": "2026-08-01T07:06:00Z"
+}
