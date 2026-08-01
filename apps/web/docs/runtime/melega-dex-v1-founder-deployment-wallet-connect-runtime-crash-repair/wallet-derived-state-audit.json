@@ -1,0 +1,5 @@
+{
+  "balance": "toSafeBigInt",
+  "provider": "async guarded",
+  "gas": "contained"
+}

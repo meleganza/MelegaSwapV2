@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "type": "TypeError",
+    "message": "value.lte is not a function",
+    "stack": [
+      "TypeError: value.lte is not a function",
+      "    at [eval]:5:13",
+      "    at runScriptInThisContext (node:internal/vm:219:10)",
+      "    at node:internal/process/execution:483:12",
+      "    at [eval]-wrapper:6:24",
+      "    at runScriptInContext (node:internal/process/execution:481:60)",
+      "    at evalFunction (node:internal/process/execution:315:30)",
+      "    at evalTypeScript (node:internal/process/execution:327:3)",
+      "    at node:internal/main/eval_string:71:3"
+    ],
+    "firstThrownExpression": "data.value.lte(LOW_NATIVE_BALANCE)",
+    "sourceFile": "apps/web/src/components/Menu/UserMenu/WalletModal.tsx",
+    "line": 75
+  }
+}

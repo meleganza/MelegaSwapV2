@@ -22,7 +22,7 @@ import { ChainLogo } from 'components/Logo/ChainLogo'
 // import { useProfile } from 'state/profile/hooks'
 
 import { getBlockExploreLink, getBlockExploreName } from 'utils'
-import { formatBigNumber } from '@pancakeswap/utils/formatBalance'
+import { formatWeiToDecimal } from 'utils/safeBigInt'
 import { useBalance } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 
@@ -109,7 +109,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
             {!nativeBalance.isFetched ? (
               <Skeleton height="22px" width="60px" />
             ) : (
-              <Text>{formatBigNumber(nativeBalance.data.value, 6)}</Text>
+              <Text>{formatWeiToDecimal(nativeBalance.data?.value, 6)}</Text>
             )}
           </Flex>
           {wNativeBalance.gt(0) && (
@@ -143,7 +143,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ onDismiss }) => {
           {!nativeBalance.isFetched ? (
             <Skeleton height="22px" width="60px" />
           ) : (
-            <Text>{formatBigNumber(nativeBalance?.data?.value, 6)}</Text>
+            <Text>{formatWeiToDecimal(nativeBalance?.data?.value, 6)}</Text>
           )}
         </Flex>
         {/* {chainId !== ChainId.ETHEREUM && <Flex alignItems="center" justifyContent="space-between">

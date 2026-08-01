@@ -1,0 +1,38 @@
+{
+  "schema": "melega.dex.v1.founder-deployment-wallet-connect-crash.reproduction",
+  "capturedAt": "2026-08-01T14:48:09Z",
+  "sequence": [
+    "Open /runtime/deployment/ disconnected \u2014 PASS",
+    "Click Connect Wallet",
+    "Authorize MELEGA DEPLOYER",
+    "Header UserMenu mounts with onClick=onPresentWalletModal",
+    "WalletModal mounts and useBalance resolves",
+    "data.value.lte(LOW_NATIVE_BALANCE) throws"
+  ],
+  "stateBeforeConnection": {
+    "account": null,
+    "page": "PASS"
+  },
+  "connectorEvent": "wagmi connect",
+  "accountValue": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "chainIdValue": 56,
+  "providerValue": "EIP-1193",
+  "balanceValue": "bigint",
+  "firstFailingRender": "WalletModal.hasLowNativeBalance",
+  "exceptionMessage": "value.lte is not a function",
+  "completeStackTrace": [
+    "TypeError: value.lte is not a function",
+    "    at [eval]:5:13",
+    "    at runScriptInThisContext (node:internal/vm:219:10)",
+    "    at node:internal/process/execution:483:12",
+    "    at [eval]-wrapper:6:24",
+    "    at runScriptInContext (node:internal/process/execution:481:60)",
+    "    at evalFunction (node:internal/process/execution:315:30)",
+    "    at evalTypeScript (node:internal/process/execution:327:3)",
+    "    at node:internal/main/eval_string:71:3"
+  ],
+  "sourceFile": "apps/web/src/components/Menu/UserMenu/WalletModal.tsx",
+  "line": 75,
+  "column": null,
+  "productionErrorTrackingId": "5b8e1204c7294a189eca7931f51336a4"
+}

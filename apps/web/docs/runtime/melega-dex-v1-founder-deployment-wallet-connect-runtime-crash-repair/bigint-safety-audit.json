@@ -1,0 +1,10 @@
+{
+  "before": [
+    "value.lte",
+    "formatBigNumber(bigint)"
+  ],
+  "after": [
+    "weiLte",
+    "formatWeiToDecimal"
+  ]
+}

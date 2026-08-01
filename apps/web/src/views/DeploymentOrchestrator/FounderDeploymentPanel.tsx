@@ -278,7 +278,11 @@ export const FounderDeploymentPanel: React.FC = () => {
   }
 
   const pauseDisplay = signaturePending ? 'AWAITING_FOUNDER_SIGNATURE' : session.pauseState
-  const selectedGas = session.gas.estimates.find((e) => e.subsystemId === selected)
+  // gas.estimates was removed; never throw on missing legacy field during connect.
+  const selectedGas =
+    Array.isArray((session.gas as { estimates?: { subsystemId: string }[] }).estimates)
+      ? (session.gas as { estimates: { subsystemId: string }[] }).estimates.find((e) => e.subsystemId === selected)
+      : undefined
 
   return (
     <Panel data-testid="founder-deployment-panel" data-founder-deploy="true">

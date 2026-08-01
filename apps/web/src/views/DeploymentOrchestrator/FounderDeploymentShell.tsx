@@ -17,6 +17,7 @@ import {
   type GasEstimateStatus,
   type PerTxGasEstimate,
 } from 'lib/deployment-orchestrator'
+import { toSafeBigInt } from 'utils/safeBigInt'
 import { resolveFounderOperationalState, type FounderOperationalState } from 'lib/deployment-orchestrator/founderOperationalState'
 import { nextFounderDeployTarget } from 'lib/deployment-orchestrator/founderSequence'
 import { DEPLOYMENT_ORDER } from 'lib/deployment-orchestrator/order'
@@ -187,10 +188,18 @@ function mapStepToDeployed(stepId: string, address: string, prev: LbDeployedAddr
   return prev
 }
 
+type ProviderUiStatus = 'idle' | 'loading' | 'ready' | 'unavailable'
+
 export const FounderDeploymentShell: React.FC = () => {
   const { address, isConnected, connector } = useAccount()
   const chainId = useChainId()
-  const { data: balance } = useBalance({ address })
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    isFetching: balanceFetching,
+    isError: balanceError,
+    isFetched: balanceFetched,
+  } = useBalance({ address, enabled: Boolean(address) })
 
   const [deployed, setDeployed] = useState<LbDeployedAddresses>({})
   const [completed, setCompleted] = useState<string[]>([])
@@ -209,42 +218,61 @@ export const FounderDeploymentShell: React.FC = () => {
   const [failed, setFailed] = useState(false)
   const [quarantined, setQuarantined] = useState(false)
   const [lastWalletRequest, setLastWalletRequest] = useState<Record<string, string> | null>(null)
+  const [providerStatus, setProviderStatus] = useState<ProviderUiStatus>('idle')
 
   const activeSubsystem = nextFounderDeployTarget() ?? 'liquidity_builder'
   const packageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
   const step = useMemo(() => activeLbStep(packageBuild.steps, completed), [packageBuild.steps, completed])
 
+  // Coerce at the boundary so ethers BigNumber / string never enter bigint arithmetic.
+  const balanceWei = useMemo(() => toSafeBigInt(balance?.value ?? null), [balance?.value])
+
   const resolveProvider = useCallback(async (): Promise<EthereumProvider | null> => {
+    setProviderStatus('loading')
     try {
       const fromConnector = connector ? await connector.getProvider() : null
+      if (fromConnector && typeof (fromConnector as { then?: unknown }).then === 'function') {
+        setProviderStatus('unavailable')
+        return null
+      }
       const preferred =
         fromConnector && typeof (fromConnector as EthereumProvider).request === 'function'
           ? (fromConnector as EthereumProvider)
           : null
-      return resolveWalletProvider(preferred)
+      const resolved = resolveWalletProvider(preferred)
+      setProviderStatus(resolved ? 'ready' : 'unavailable')
+      return resolved
     } catch {
-      return resolveWalletProvider(null)
+      const fallback = resolveWalletProvider(null)
+      setProviderStatus(fallback ? 'ready' : 'unavailable')
+      return fallback
     }
   }, [connector])
 
-  const gas = useMemo(
-    () =>
-      assessFounderGasReadiness({
-        balanceWei: balance?.value ?? null,
+  const gas = useMemo(() => {
+    try {
+      return assessFounderGasReadiness({
+        balanceWei,
         estimateStatus,
         gasPriceWei,
         gasPriceSource: gasPriceWei ? 'wallet' : 'none',
         perTx,
         estimatedTotalCostWei: totalCostWei,
         error: gasError,
-      }),
-    [balance?.value, estimateStatus, gasPriceWei, perTx, totalCostWei, gasError],
-  )
+      })
+    } catch (e) {
+      return assessFounderGasReadiness({
+        balanceWei: null,
+        estimateStatus: 'unavailable',
+        error: e instanceof Error ? e.message : 'Gas readiness evaluation failed',
+      })
+    }
+  }, [balanceWei, estimateStatus, gasPriceWei, perTx, totalCostWei, gasError])
 
   const gates = assessFounderDeployGates({
     connectedWallet: isConnected ? address ?? null : null,
     chainId: chainId ?? null,
-    balanceWei: balance?.value ?? null,
+    balanceWei,
     artifactValid: packageBuild.artifactStatus === 'ARTIFACTS_VALID',
     constructorValid: Boolean(step && !step.blockedReason && step.deploymentData),
     subsystemReady: activeSubsystem === 'liquidity_builder',
@@ -276,35 +304,41 @@ export const FounderDeploymentShell: React.FC = () => {
     !signaturePending
 
   const runGasEstimate = useCallback(async () => {
+    const estimateFor = address
+    const stepId = step?.stepId
+    const deploymentData = step?.deploymentData
+    const contractName = step?.contractName
     setGasError(null)
     setEstimateStatus('pending')
     setStatusNote('Encoding constructor · estimating exact deployment transaction…')
     try {
       const eth = await resolveProvider()
       if (!eth) throw new Error('Wallet provider unavailable')
-      if (!address || !step?.deploymentData) throw new Error('No deployment payload for active step')
+      if (!estimateFor || !deploymentData) throw new Error('No deployment payload for active step')
       const gp = await walletGetGasPrice(eth)
-      setGasPriceWei(gp)
-      const units = await walletEstimateDeployGas(eth, address, step.deploymentData)
+      const units = await walletEstimateDeployGas(eth, estimateFor, deploymentData)
+      if (estimateFor !== address || stepId !== step?.stepId) return
       const cost = units * gp
       const row: PerTxGasEstimate = {
-        stepId: step.stepId,
-        contractName: step.contractName,
+        stepId: stepId || 'unknown',
+        contractName: contractName || 'Unknown',
         gasUnits: units.toString(),
         gasPriceWei: gp.toString(),
         costWei: cost.toString(),
         costBnb: weiToBnb(cost),
       }
+      setGasPriceWei(gp)
       setPerTx([row])
       setTotalCostWei(cost)
       setEstimateStatus('ready')
-      setStatusNote(`Gas estimate ready for ${step.contractName}. Ready for Founder signature after review.`)
+      setStatusNote(`Gas estimate ready for ${contractName}. Ready for Founder signature after review.`)
     } catch (e) {
+      if (estimateFor !== address || stepId !== step?.stepId) return
       setEstimateStatus('unavailable')
       setGasError(e instanceof Error ? e.message : 'Gas estimate failed')
       setPerTx([])
       setTotalCostWei(null)
-      setStatusNote('Gas estimate unavailable. Certified artifact remains loaded — use Retry Gas Estimate.')
+      setStatusNote('Gas estimate temporarily unavailable. Certified artifact remains loaded — use Retry Gas Estimate.')
     }
   }, [address, step, resolveProvider])
 
@@ -312,9 +346,20 @@ export const FounderDeploymentShell: React.FC = () => {
   useEffect(() => {
     if (!canEstimate || estimateStatus === 'ready' || signaturePending) return
     if (estimateStatus === 'unavailable') return
+    if (providerStatus === 'unavailable') return
     void runGasEstimate()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canEstimate, step?.stepId, address, chainId])
+
+  useEffect(() => {
+    if (isConnected && address) return
+    setProviderStatus('idle')
+    setEstimateStatus('pending')
+    setGasError(null)
+    setPerTx([])
+    setTotalCostWei(null)
+    setGasPriceWei(null)
+  }, [isConnected, address])
 
   const onDeploy = useCallback(async () => {
     setFailed(false)
@@ -461,6 +506,26 @@ export const FounderDeploymentShell: React.FC = () => {
           Switch to BNB Smart Chain.
         </Banner>
       )}
+      {authorizedConnected && providerStatus === 'loading' && (
+        <Banner $tone="warn" data-testid="founder-provider-loading">
+          WALLET CONNECTED · PREPARING PROVIDER
+        </Banner>
+      )}
+      {authorizedConnected && providerStatus === 'unavailable' && (
+        <Banner $tone="bad" data-testid="founder-provider-unavailable">
+          Wallet provider unavailable. Open MetaMask / the connected browser wallet and retry.
+        </Banner>
+      )}
+      {authorizedConnected && (balanceLoading || balanceFetching) && !balanceFetched && (
+        <Banner $tone="warn" data-testid="founder-balance-loading">
+          LOADING BALANCE
+        </Banner>
+      )}
+      {authorizedConnected && balanceError && (
+        <Banner $tone="warn" data-testid="founder-balance-unavailable">
+          BALANCE UNAVAILABLE — gas funding check waits for a successful balance read.
+        </Banner>
+      )}
 
       <Grid data-testid="founder-shell-summary">
         <Row>
@@ -480,7 +545,15 @@ export const FounderDeploymentShell: React.FC = () => {
         </Row>
         <Row>
           <span>Balance</span>
-          <strong data-testid="founder-balance">{balance ? `${balance.formatted} ${balance.symbol}` : '—'}</strong>
+          <strong data-testid="founder-balance">
+            {balanceLoading || (balanceFetching && !balanceFetched)
+              ? 'Loading…'
+              : balanceError
+                ? 'Unavailable'
+                : balance?.formatted
+                  ? `${balance.formatted} ${balance.symbol}`
+                  : '—'}
+          </strong>
         </Row>
         <Row>
           <span>Current deployment stage</span>

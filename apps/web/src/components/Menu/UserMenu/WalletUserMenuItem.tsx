@@ -1,6 +1,7 @@
 import { Flex, UserMenuItem, WarningIcon } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import { useAccount, useBalance } from 'wagmi'
+import { weiLte } from 'utils/safeBigInt'
 import { LOW_NATIVE_BALANCE } from './WalletModal'
 
 interface WalletUserMenuItemProps {
@@ -15,7 +16,8 @@ const WalletUserMenuItem: React.FC<React.PropsWithChildren<WalletUserMenuItemPro
   const { t } = useTranslation()
   const { address: account } = useAccount()
   const { data, isFetched } = useBalance({ address: account })
-  const hasLowNativeBalance = isFetched && data && data.value.lte(LOW_NATIVE_BALANCE)
+  // wagmi returns bigint — never call ethers BigNumber .lte on it (crashes post-connect).
+  const hasLowNativeBalance = Boolean(isFetched && data && weiLte(data.value, LOW_NATIVE_BALANCE))
 
   return (
     <UserMenuItem as="button" onClick={onPresentWalletModal}>
