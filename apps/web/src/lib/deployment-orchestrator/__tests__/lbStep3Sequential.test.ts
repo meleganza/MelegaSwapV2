@@ -35,16 +35,16 @@ const STEP2_ADDR = LB_STEP2_FACTUAL.contractAddress
 const STEP2_TX = LB_STEP2_FACTUAL.txHash
 
 describe('LB Step 2 validation + Step 3 unlock', () => {
-  it('canonical binding records FeeReceiver only for Step 2 (Math unchanged, others null)', () => {
+  it('canonical binding records FeeReceiver (Authorizer also bound in later mission)', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary).toBe(LB_STEP1_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBe(STEP2_ADDR)
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBeTruthy()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink).toBeNull()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBeNull()
   })
 
-  it('deployed-addresses artifact binds Step 2 FeeReceiver', () => {
+  it('deployed-addresses artifact records Step 2 FeeReceiver validated', () => {
     const artifact = JSON.parse(
       readFileSync(
         path.resolve(__dirname, '../../../../../../deployments/liquidity-building/chain-56/deployed-addresses.v1.json'),
@@ -54,7 +54,6 @@ describe('LB Step 2 validation + Step 3 unlock', () => {
     expect(artifact.addresses.lbFeeReceiver).toBe(STEP2_ADDR)
     expect(artifact.deployments.LiquidityBuildingTreasuryFeeReceiverV1.transactionHash).toBe(STEP2_TX)
     expect(artifact.deployments.LiquidityBuildingTreasuryFeeReceiverV1.status).toBe('VALIDATED')
-    expect(artifact.addresses.lbAuthorizer).toBeNull()
   })
 
   it('constructor state verifier accepts deployer governor + treasury beneficiary', () => {

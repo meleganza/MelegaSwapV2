@@ -26,7 +26,9 @@ export {
 export {
   LB_STEP1_FACTUAL,
   LB_STEP2_FACTUAL,
+  LB_STEP3_FACTUAL,
   LB_STEP3_CONTRACT,
+  LB_STEP4_CONTRACT,
   FOUNDER_LB_SESSION_STORAGE_KEY,
   bindValidatedLbStep,
   emptyFounderLbSession,
@@ -35,10 +37,13 @@ export {
   runtimeHashForCertifiedCompare,
   seedSessionWithValidatedStep1,
   seedSessionWithValidatedStep2,
+  seedSessionWithValidatedStep3,
   sha256Bytecode,
   step1IsValidated,
   step2IsValidated,
+  step3IsValidated,
   validateLbStepFromOnChain,
+  verifyAuthorizerConstructorState,
   verifyFeeReceiverConstructorState,
 } from './founderLbSession'
 export type { FounderLbSession, LbStepBindingRecord, LbStepLifecycle } from './founderLbSession'

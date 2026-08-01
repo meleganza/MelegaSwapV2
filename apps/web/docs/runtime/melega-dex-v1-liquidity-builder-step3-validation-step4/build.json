@@ -1,0 +1,7 @@
+{
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "exitCode": 0,
+  "success": true,
+  "routeSpotCheck": true
+}

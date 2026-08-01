@@ -1,0 +1,14 @@
+{
+  "txHash": "0xd81e1a4172eb6a9a662d9f6a229fd6656b4fd59e63038fc18ae0145590383790",
+  "status": "0x1",
+  "statusSuccess": true,
+  "from": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "deployerMatch": true,
+  "contractAddress": "0xa0c48d603bd07a012666b003bd8089aa3dd49471",
+  "addressMatch": true,
+  "creationTx": true,
+  "blockNumber": "0x6c2aee5",
+  "blockNumberDecimal": 113422053,
+  "gasUsed": "0xa4f99",
+  "fetchedAt": "2026-08-01T16:11:23.219368+00:00"
+}

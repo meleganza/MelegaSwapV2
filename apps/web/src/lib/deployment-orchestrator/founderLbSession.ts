@@ -47,7 +47,24 @@ export const LB_STEP2_FACTUAL = {
   expectedRuntimeBytecodeSha256: '0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d',
 } as const
 
-export const LB_STEP3_CONTRACT = 'LiquidityBuildingExecutionAuthorizerV1' as const
+/** Step 3 — mainnet Authorizer (signingAuthority + authorityType immutables). */
+export const LB_STEP3_FACTUAL = {
+  stepId: 'LiquidityBuildingExecutionAuthorizerV1',
+  contractName: 'LiquidityBuildingExecutionAuthorizerV1',
+  chainId: FOUNDER_DEPLOY_CHAIN_ID,
+  txHash: '0xd81e1a4172eb6a9a662d9f6a229fd6656b4fd59e63038fc18ae0145590383790',
+  contractAddress: '0xA0c48D603BD07A012666b003Bd8089aA3dD49471',
+  deployer: AUTHORIZED_MELEGA_DEPLOYER,
+  signingAuthority: AUTHORIZED_MELEGA_DEPLOYER,
+  /** AuthorityType.ERC1271 — DEPLOYER address has on-chain code (not bare EOA). */
+  authorityType: 1 as const,
+  authorityTypeLabel: 'ERC1271' as const,
+  observedRuntimeBytecodeSha256: '0x653a5051cc669a0803a9c78a33fefd81f556c22a63c9343fa2ce9d3b9bc2460d',
+  expectedRuntimeBytecodeSha256: '0x3dad300b23fc1f31365aa3c47f073ec6279ff39ca4dfe2bda49a934c1adc1282',
+} as const
+
+export const LB_STEP3_CONTRACT = LB_STEP3_FACTUAL.contractName
+export const LB_STEP4_CONTRACT = 'LiquidityBuildingTreasuryFeeSinkV1' as const
 
 /**
  * Solc immutable byte ranges in deployed bytecode (from forge immutableReferences).
@@ -91,6 +108,12 @@ export type FounderLbSession = {
 export type FeeReceiverConstructorState = {
   governor: string | null
   beneficiary: string | null
+}
+
+export type AuthorizerConstructorState = {
+  signingAuthority: string | null
+  /** 0 = EOA, 1 = ERC1271 */
+  authorityType: number | null
 }
 
 export function sha256Bytecode(runtimeBytecode: string): string {
@@ -145,6 +168,29 @@ export function verifyFeeReceiverConstructorState(state: FeeReceiverConstructorS
     }
   }
   return { ok: true, governorMatch, beneficiaryMatch }
+}
+
+export function verifyAuthorizerConstructorState(state: AuthorizerConstructorState): {
+  ok: boolean
+  authorityMatch: boolean
+  authorityTypeMatch: boolean
+  reason?: string
+} {
+  const authority = normalizeAddress(state.signingAuthority)
+  const expected = normalizeAddress(AUTHORIZED_MELEGA_DEPLOYER)
+  const authorityMatch = Boolean(authority && expected && authority === expected)
+  // Canonical ctor: signingAuthority_ = MELEGA DEPLOYER. On BSC the deployer has bytecode,
+  // so constructor sets AuthorityType.ERC1271 (1). Require that factual configuration.
+  const authorityTypeMatch = state.authorityType === LB_STEP3_FACTUAL.authorityType
+  if (!authorityMatch || !authorityTypeMatch) {
+    return {
+      ok: false,
+      authorityMatch,
+      authorityTypeMatch,
+      reason: 'STEP3_VALIDATION_FAILED: signingAuthority/authorityType mismatch',
+    }
+  }
+  return { ok: true, authorityMatch, authorityTypeMatch }
 }
 
 export function mapStepIdToDeployedKey(stepId: string): keyof LbDeployedAddresses | null {
@@ -330,7 +376,22 @@ export function seedSessionWithValidatedStep2(base: FounderLbSession): FounderLb
   })
 }
 
-/** Prefer canonical constants, then factual Step 1+2 seeds. Upgrade storage when Step 2 binds. */
+/** Seed Step 3 Authorizer after mainnet validation (does not touch other null bindings). */
+export function seedSessionWithValidatedStep3(base: FounderLbSession): FounderLbSession {
+  const withStep2 = step2IsValidated(base) ? base : seedSessionWithValidatedStep2(base)
+  return bindValidatedLbStep(withStep2, {
+    stepId: LB_STEP3_FACTUAL.stepId,
+    contractName: LB_STEP3_FACTUAL.contractName,
+    contractAddress: LB_STEP3_FACTUAL.contractAddress,
+    txHash: LB_STEP3_FACTUAL.txHash,
+    chainId: LB_STEP3_FACTUAL.chainId,
+    runtimeBytecodeSha256: LB_STEP3_FACTUAL.observedRuntimeBytecodeSha256,
+    status: 'READY',
+    validatedAt: '2026-08-01T00:00:00.000Z',
+  })
+}
+
+/** Prefer canonical constants; upgrade storage when later steps bind. */
 export function loadInitialFounderLbSession(): FounderLbSession {
   let session = readFounderLbSessionFromStorage() ?? emptyFounderLbSession()
 
@@ -341,9 +402,15 @@ export function loadInitialFounderLbSession(): FounderLbSession {
   const feeMatches =
     normalizeAddress(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver) ===
     normalizeAddress(LB_STEP2_FACTUAL.contractAddress)
-
   if (feeMatches && !step2IsValidated(session)) {
     session = seedSessionWithValidatedStep2(session)
+  }
+
+  const authorizerMatches =
+    normalizeAddress(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer) ===
+    normalizeAddress(LB_STEP3_FACTUAL.contractAddress)
+  if (authorizerMatches && !step3IsValidated(session)) {
+    session = seedSessionWithValidatedStep3(session)
   }
 
   return session
@@ -388,5 +455,14 @@ export function step2IsValidated(session: FounderLbSession): boolean {
     b &&
       (b.status === 'VALIDATED' || b.status === 'READY') &&
       normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP2_FACTUAL.contractAddress),
+  )
+}
+
+export function step3IsValidated(session: FounderLbSession): boolean {
+  const b = session.bindings.find((x) => x.stepId === LB_STEP3_FACTUAL.stepId)
+  return Boolean(
+    b &&
+      (b.status === 'VALIDATED' || b.status === 'READY') &&
+      normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP3_FACTUAL.contractAddress),
   )
 }

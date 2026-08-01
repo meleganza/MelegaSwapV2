@@ -1,0 +1,18 @@
+{
+  "contract": "LiquidityBuildingExecutionAuthorizerV1",
+  "signingAuthorityOnChain": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "authorityTypeOnChain": 1,
+  "authorityTypeLabel": "ERC1271",
+  "expectedSigningAuthority": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "authorityMatch": true,
+  "authorityTypeMatch": true,
+  "deployerHasCode": true,
+  "deployerCodeBytes": 23,
+  "constructorArgsFromTx": {
+    "signingAuthority_": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0"
+  },
+  "linkedDependencies": [],
+  "treasuryReferences": null,
+  "validated": true,
+  "note": "authorityType=ERC1271 is correct because MELEGA DEPLOYER has on-chain bytecode on BSC."
+}

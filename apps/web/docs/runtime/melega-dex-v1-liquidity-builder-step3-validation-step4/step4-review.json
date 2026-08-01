@@ -1,0 +1,19 @@
+{
+  "labels": [
+    "Certified artifact loaded",
+    "Artifact hash verified",
+    "Gas estimate ready",
+    "Ready for Founder signature",
+    "Deploy LiquidityBuildingTreasuryFeeSinkV1"
+  ],
+  "contract": "LiquidityBuildingTreasuryFeeSinkV1",
+  "constructorHuman": [
+    {
+      "name": "treasuryReceiver_",
+      "value": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5"
+    }
+  ],
+  "artifactVerified": true,
+  "manualSignatureRequired": true,
+  "automaticBroadcast": false
+}
