@@ -1,0 +1,5 @@
+{
+  "rootCause": "SWC/Next compiled bigint exponentiation in weiToBnb to Math.pow(10n, 18n), throwing TypeError on every /runtime/deployment render.",
+  "fix": "WEI_PER_BNB decimal bigint literal; gas/session guards",
+  "capturedAt": "2026-08-01T09:47:48Z"
+}

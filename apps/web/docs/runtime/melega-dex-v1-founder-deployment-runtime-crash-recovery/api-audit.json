@@ -1,0 +1,12 @@
+{
+  "founderApi": {
+    "status": 200,
+    "blocksRender": false
+  },
+  "statusApi": {
+    "status": 200,
+    "globalState": "READY",
+    "blocksRender": false
+  },
+  "capturedAt": "2026-08-01T09:47:48Z"
+}

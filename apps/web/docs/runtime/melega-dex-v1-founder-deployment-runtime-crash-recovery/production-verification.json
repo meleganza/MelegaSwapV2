@@ -1,0 +1,7 @@
+{
+  "url": "https://www.melega.finance/runtime/deployment",
+  "stillCrashesOnProductionAtCapture": true,
+  "localFixedVerified": true,
+  "verdictGate": "WEB_RELEASE_PENDING",
+  "capturedAt": "2026-08-01T09:47:48Z"
+}
