@@ -1,0 +1,23 @@
+{
+  "linkedLibrary": "0xa6434254ef3c859230d1c46a03a5928979fa379f",
+  "expectedLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+  "slotCount": 12,
+  "slotsMatch": 12,
+  "allSlotsEmbedExecutionMath": true,
+  "creationInputEqualsCertifiedLinkedCreation": true,
+  "libraryLinkByteOffsets": [
+    7777,
+    7980,
+    8039,
+    8123,
+    8185,
+    8315,
+    8444,
+    8532,
+    8715,
+    8812,
+    8896,
+    9592
+  ],
+  "validated": true
+}

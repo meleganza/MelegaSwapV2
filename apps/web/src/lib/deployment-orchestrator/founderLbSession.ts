@@ -79,10 +79,25 @@ export const LB_STEP4_FACTUAL = {
 } as const
 
 export const LB_STEP4_CONTRACT = LB_STEP4_FACTUAL.contractName
-export const LB_STEP5_CONTRACT = 'LiquidityBuildingProgramV1' as const
+
+/** Step 5 — mainnet Program (ExecutionMath library-linked). */
+export const LB_STEP5_FACTUAL = {
+  stepId: 'LiquidityBuildingProgramV1',
+  contractName: 'LiquidityBuildingProgramV1',
+  chainId: FOUNDER_DEPLOY_CHAIN_ID,
+  txHash: '0xd04fd0d7b7e4844c6723173cdb74261f862e05f3ee0a5944b759d1347768285e',
+  contractAddress: '0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491',
+  deployer: AUTHORIZED_MELEGA_DEPLOYER,
+  linkedLibrary: LB_STEP1_FACTUAL.contractAddress,
+  observedRuntimeBytecodeSha256: '0xd810940146b89f2a619feb1d25d552ea7dd6a317224caf18f1899821d6b0e243',
+  expectedRuntimeBytecodeSha256: '0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c',
+} as const
+
+export const LB_STEP5_CONTRACT = LB_STEP5_FACTUAL.contractName
+export const LB_STEP6_CONTRACT = 'LiquidityBuildingFactoryV1' as const
 
 /**
- * Solc immutable byte ranges in deployed bytecode (from forge immutableReferences).
+ * Solc immutable / library-link byte ranges in deployed bytecode.
  * Zeroing these yields the certified template runtime hash for comparison.
  */
 export const LB_IMMUTABLE_BYTE_RANGES: Record<string, Array<{ start: number; length: number }>> = {
@@ -104,6 +119,21 @@ export const LB_IMMUTABLE_BYTE_RANGES: Record<string, Array<{ start: number; len
     { start: 1463, length: 32 },
     { start: 1881, length: 32 },
     { start: 2833, length: 32 },
+  ],
+  /** ExecutionMath library link slots (20-byte addresses). */
+  LiquidityBuildingProgramV1: [
+    { start: 7777, length: 20 },
+    { start: 7980, length: 20 },
+    { start: 8039, length: 20 },
+    { start: 8123, length: 20 },
+    { start: 8185, length: 20 },
+    { start: 8315, length: 20 },
+    { start: 8444, length: 20 },
+    { start: 8532, length: 20 },
+    { start: 8715, length: 20 },
+    { start: 8812, length: 20 },
+    { start: 8896, length: 20 },
+    { start: 9592, length: 20 },
   ],
 }
 
@@ -141,6 +171,11 @@ export type AuthorizerConstructorState = {
 
 export type FeeSinkConstructorState = {
   treasuryReceiver: string | null
+}
+
+export type ProgramLibraryLinkState = {
+  runtimeBytecode: string | null
+  expectedLibraryAddress?: string
 }
 
 export function sha256Bytecode(runtimeBytecode: string): string {
@@ -240,6 +275,51 @@ export function verifyFeeSinkConstructorState(state: FeeSinkConstructorState): {
     }
   }
   return { ok: true, treasuryReceiverMatch, notDirectTreasury }
+}
+
+/** Prove Program runtime embeds ExecutionMath at every certified library-link slot. */
+export function verifyProgramLibraryLink(state: ProgramLibraryLinkState): {
+  ok: boolean
+  linkedLibrary: string
+  slotCount: number
+  slotsMatch: number
+  reason?: string
+} {
+  const expected = (state.expectedLibraryAddress ?? LB_STEP1_FACTUAL.contractAddress)
+    .replace(/^0x/, '')
+    .toLowerCase()
+  const ranges = LB_IMMUTABLE_BYTE_RANGES.LiquidityBuildingProgramV1 || []
+  if (!state.runtimeBytecode || state.runtimeBytecode === '0x') {
+    return {
+      ok: false,
+      linkedLibrary: `0x${expected}`,
+      slotCount: ranges.length,
+      slotsMatch: 0,
+      reason: 'STEP5_VALIDATION_FAILED: empty Program runtime',
+    }
+  }
+  const bytes = arrayify(
+    state.runtimeBytecode.startsWith('0x') ? state.runtimeBytecode : `0x${state.runtimeBytecode}`,
+  )
+  let slotsMatch = 0
+  for (const range of ranges) {
+    if (range.length !== 20) continue
+    const slice = hexlify(bytes.slice(range.start, range.start + range.length))
+      .replace(/^0x/, '')
+      .toLowerCase()
+    if (slice === expected) slotsMatch += 1
+  }
+  const ok = slotsMatch === ranges.length && ranges.length > 0
+  if (!ok) {
+    return {
+      ok: false,
+      linkedLibrary: `0x${expected}`,
+      slotCount: ranges.length,
+      slotsMatch,
+      reason: 'STEP5_VALIDATION_FAILED: ExecutionMath library link mismatch',
+    }
+  }
+  return { ok: true, linkedLibrary: `0x${expected}`, slotCount: ranges.length, slotsMatch }
 }
 
 export function mapStepIdToDeployedKey(stepId: string): keyof LbDeployedAddresses | null {
@@ -455,6 +535,21 @@ export function seedSessionWithValidatedStep4(base: FounderLbSession): FounderLb
   })
 }
 
+/** Seed Step 5 Program after mainnet validation (does not touch other null bindings). */
+export function seedSessionWithValidatedStep5(base: FounderLbSession): FounderLbSession {
+  const withStep4 = step4IsValidated(base) ? base : seedSessionWithValidatedStep4(base)
+  return bindValidatedLbStep(withStep4, {
+    stepId: LB_STEP5_FACTUAL.stepId,
+    contractName: LB_STEP5_FACTUAL.contractName,
+    contractAddress: LB_STEP5_FACTUAL.contractAddress,
+    txHash: LB_STEP5_FACTUAL.txHash,
+    chainId: LB_STEP5_FACTUAL.chainId,
+    runtimeBytecodeSha256: LB_STEP5_FACTUAL.observedRuntimeBytecodeSha256,
+    status: 'READY',
+    validatedAt: '2026-08-01T00:00:00.000Z',
+  })
+}
+
 /** Prefer canonical constants; upgrade storage when later steps bind. */
 export function loadInitialFounderLbSession(): FounderLbSession {
   let session = readFounderLbSessionFromStorage() ?? emptyFounderLbSession()
@@ -482,6 +577,13 @@ export function loadInitialFounderLbSession(): FounderLbSession {
     normalizeAddress(LB_STEP4_FACTUAL.contractAddress)
   if (feeSinkMatches && !step4IsValidated(session)) {
     session = seedSessionWithValidatedStep4(session)
+  }
+
+  const programMatches =
+    normalizeAddress(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation) ===
+    normalizeAddress(LB_STEP5_FACTUAL.contractAddress)
+  if (programMatches && !step5IsValidated(session)) {
+    session = seedSessionWithValidatedStep5(session)
   }
 
   return session
@@ -544,5 +646,14 @@ export function step4IsValidated(session: FounderLbSession): boolean {
     b &&
       (b.status === 'VALIDATED' || b.status === 'READY') &&
       normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP4_FACTUAL.contractAddress),
+  )
+}
+
+export function step5IsValidated(session: FounderLbSession): boolean {
+  const b = session.bindings.find((x) => x.stepId === LB_STEP5_FACTUAL.stepId)
+  return Boolean(
+    b &&
+      (b.status === 'VALIDATED' || b.status === 'READY') &&
+      normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP5_FACTUAL.contractAddress),
   )
 }

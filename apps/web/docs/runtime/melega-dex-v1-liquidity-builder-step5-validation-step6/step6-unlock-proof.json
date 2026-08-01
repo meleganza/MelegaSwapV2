@@ -1,0 +1,22 @@
+{
+  "deployOrder": [
+    "LiquidityBuildingExecutionMathV1",
+    "LiquidityBuildingTreasuryFeeReceiverV1",
+    "LiquidityBuildingExecutionAuthorizerV1",
+    "LiquidityBuildingTreasuryFeeSinkV1",
+    "LiquidityBuildingProgramV1",
+    "LiquidityBuildingFactoryV1"
+  ],
+  "step": 6,
+  "total": 6,
+  "contract": "LiquidityBuildingFactoryV1",
+  "status": "Ready for Founder signature",
+  "dependenciesResolvedFromFactual": {
+    "implementation_/Program": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+    "executionAuthorizer_": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+    "treasuryFeeSink_": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "ExecutionMath_library": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+    "FeeReceiver_chain": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5"
+  },
+  "noBroadcast": true
+}

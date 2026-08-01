@@ -2,7 +2,7 @@
   "schemaVersion": "melega.liquidity-building.deployed-addresses.v1",
   "chainId": 56,
   "network": "bsc-mainnet",
-  "status": "STEP4_DEPLOYED_VALIDATED",
+  "status": "STEP5_DEPLOYED_VALIDATED",
   "mainnetDeployExecuted": true,
   "addresses": {
     "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
@@ -11,7 +11,7 @@
     "lbAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
     "lbFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
     "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
-    "lbProgramImplementation": null,
+    "lbProgramImplementation": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
     "lbExecutionMathLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
     "programAddress": null
   },
@@ -33,7 +33,7 @@
       "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
       "governor": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
       "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
-      "note": "Step 2 of 6 — verified on BNB mainnet; immutable slots match certified template when zeroed; constructor governor/beneficiary verified on-chain."
+      "note": "Step 2 of 6 — verified on BNB mainnet."
     },
     "LiquidityBuildingExecutionAuthorizerV1": {
       "address": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
@@ -45,7 +45,7 @@
       "signingAuthority": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
       "authorityType": 1,
       "authorityTypeLabel": "ERC1271",
-      "note": "Step 3 of 6 — verified on BNB mainnet; signingAuthority=DEPLOYER; authorityType=ERC1271 because DEPLOYER has on-chain code."
+      "note": "Step 3 of 6 — verified on BNB mainnet."
     },
     "LiquidityBuildingTreasuryFeeSinkV1": {
       "address": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
@@ -56,8 +56,20 @@
       "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
       "treasuryReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
       "feeChain": "FeeSink → FeeReceiver → MELEGA TREASURY WALLET",
-      "note": "Step 4 of 6 — verified on BNB mainnet; treasuryReceiver_=FeeReceiver (not Treasury EOA)."
+      "note": "Step 4 of 6 — verified on BNB mainnet."
+    },
+    "LiquidityBuildingProgramV1": {
+      "address": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+      "transactionHash": "0xd04fd0d7b7e4844c6723173cdb74261f862e05f3ee0a5944b759d1347768285e",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0xd810940146b89f2a619feb1d25d552ea7dd6a317224caf18f1899821d6b0e243",
+      "certifiedTemplateRuntimeSha256": "0xf606f42b03c58c4e3c18db03c43442e19f15a97fa5e49556e7c380c9fb0ed10c",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "linkedLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+      "libraryLinkSlots": 12,
+      "constructorArgs": [],
+      "note": "Step 5 of 6 — verified on BNB mainnet; creation bytecode equals certified Program with ExecutionMath linked; all 12 library slots embed Math; zeroing slots recovers certified template runtime hash."
     }
   },
-  "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. Steps 1–4 bound; never fabricate remaining addresses."
+  "note": "Canonical single source for LB addresses. Steps 1–5 bound; Factory remains null until validated — never fabricate."
 }

@@ -43,16 +43,16 @@ function seedThroughStep4() {
 }
 
 describe('LB Step 4 validation + Step 5 unlock', () => {
-  it('canonical binding records FeeSink only for Step 4 (priors unchanged, later null)', () => {
+  it('canonical binding records FeeSink (Program also bound in later mission)', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary).toBe(LB_STEP1_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBe(LB_STEP2_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBe(LB_STEP3_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink).toBe(STEP4_ADDR)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBeTruthy()
   })
 
-  it('deployed-addresses artifact binds Step 4 FeeSink', () => {
+  it('deployed-addresses artifact records Step 4 FeeSink validated', () => {
     const artifact = JSON.parse(
       readFileSync(
         path.resolve(__dirname, '../../../../../../deployments/liquidity-building/chain-56/deployed-addresses.v1.json'),
@@ -65,7 +65,6 @@ describe('LB Step 4 validation + Step 5 unlock', () => {
     expect(artifact.deployments.LiquidityBuildingTreasuryFeeSinkV1.treasuryReceiver).toBe(
       LB_STEP2_FACTUAL.contractAddress,
     )
-    expect(artifact.addresses.lbProgramImplementation).toBeNull()
   })
 
   it('constructor state verifier requires FeeReceiver (rejects Treasury wallet)', () => {

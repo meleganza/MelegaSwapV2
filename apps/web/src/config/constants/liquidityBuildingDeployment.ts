@@ -14,7 +14,7 @@ export const LB_MELEGA_AMM = {
 /**
  * Production LB program bindings.
  * Sync from deployments/liquidity-building/chain-56/deployed-addresses.v1.json after verified mainnet deploys.
- * Steps 1–4 bound (ExecutionMath + FeeReceiver + Authorizer + FeeSink). Remaining addresses stay null until validated — never fabricate.
+ * Steps 1–5 bound. Factory remains null until validated — never fabricate.
  */
 export const LB_CANONICAL_DEPLOYED_ADDRESSES = {
   lbFactory: null as string | null,
@@ -24,7 +24,8 @@ export const LB_CANONICAL_DEPLOYED_ADDRESSES = {
   lbFeeSink: '0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF' as string | null,
   /** Step 2 — LiquidityBuildingTreasuryFeeReceiverV1 @ tx 0x17770c7f…a9c5 */
   lbFeeReceiver: '0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5' as string | null,
-  lbProgramImplementation: null as string | null,
+  /** Step 5 — LiquidityBuildingProgramV1 @ tx 0xd04fd0d7…285e */
+  lbProgramImplementation: '0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491' as string | null,
   /** Step 1 — LiquidityBuildingExecutionMathV1 @ tx 0x04c394f9…950cbd */
   lbExecutionMathLibrary: '0xA6434254ef3c859230d1c46a03A5928979fa379f' as string | null,
   programAddress: null as string | null,

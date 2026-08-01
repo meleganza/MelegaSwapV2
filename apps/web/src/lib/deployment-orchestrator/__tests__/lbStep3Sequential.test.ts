@@ -40,7 +40,6 @@ describe('LB Step 2 validation + Step 3 unlock', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBe(STEP2_ADDR)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBeTruthy()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBeNull()
   })
 
   it('deployed-addresses artifact records Step 2 FeeReceiver validated', () => {
