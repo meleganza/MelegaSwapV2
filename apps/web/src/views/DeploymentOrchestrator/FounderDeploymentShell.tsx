@@ -27,6 +27,11 @@ import {
   type LbDeployedAddresses,
 } from 'lib/deployment-orchestrator/founderLbDeployTx'
 import {
+  buildCreateTokenDeployStep,
+  runtimeHashForCtCertifiedCompare,
+} from 'lib/deployment-orchestrator/founderCtDeployTx'
+import { CT_FACTORY_ALIAS } from 'lib/deployment-orchestrator/founderCtArtifacts'
+import {
   LB_STEP1_FACTUAL,
   LB_STEP2_FACTUAL,
   LB_STEP3_FACTUAL,
@@ -44,6 +49,7 @@ import {
   validateLbStepFromOnChain,
   type FounderLbSession,
 } from 'lib/deployment-orchestrator/founderLbSession'
+import { CREATE_TOKEN_CANONICAL_DEPLOYMENT } from 'config/constants/createTokenFactoryDeployment'
 import {
   buildContractCreationRequest,
   createMockEthereum,
@@ -270,8 +276,22 @@ export const FounderDeploymentShell: React.FC = () => {
   const [providerStatus, setProviderStatus] = useState<ProviderUiStatus>('idle')
 
   const activeSubsystem = nextFounderDeployTarget() ?? 'liquidity_builder'
-  const packageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
-  const step = useMemo(() => activeLbStep(packageBuild.steps, completed), [packageBuild.steps, completed])
+  const isCreateTokenStage = activeSubsystem === 'create_token'
+  const lbPackageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
+  const ctPackageBuild = useMemo(() => buildCreateTokenDeployStep(), [])
+  const packageBuild = isCreateTokenStage
+    ? {
+        artifactStatus: ctPackageBuild.artifactStatus,
+        invalidReasons: ctPackageBuild.invalidReasons,
+        steps: ctPackageBuild.steps,
+        economicReview: ctPackageBuild.economicReview,
+      }
+    : lbPackageBuild
+  const lbStep = useMemo(
+    () => activeLbStep(lbPackageBuild.steps, completed),
+    [lbPackageBuild.steps, completed],
+  )
+  const step = isCreateTokenStage ? ctPackageBuild.step : lbStep
   const step1Binding = session.bindings.find((b) => b.stepId === LB_STEP1_FACTUAL.stepId) ?? null
   const step2Binding = session.bindings.find((b) => b.stepId === LB_STEP2_FACTUAL.stepId) ?? null
   const step3Binding = session.bindings.find((b) => b.stepId === LB_STEP3_FACTUAL.stepId) ?? null
@@ -280,9 +300,10 @@ export const FounderDeploymentShell: React.FC = () => {
   const step6Binding = session.bindings.find((b) => b.stepId === LB_STEP6_FACTUAL.stepId) ?? null
   const lbMainnetReady = liquidityBuilderMainnetReady(session)
   const completedSteps = useMemo(
-    () => packageBuild.steps.filter((s) => completed.includes(s.stepId)),
-    [packageBuild.steps, completed],
+    () => lbPackageBuild.steps.filter((s) => completed.includes(s.stepId)),
+    [lbPackageBuild.steps, completed],
   )
+  const ctFactoryStillNull = CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress == null
 
   // Persist once on mount so Step 1 binding is available across reloads.
   useEffect(() => {
@@ -358,7 +379,7 @@ export const FounderDeploymentShell: React.FC = () => {
     balanceWei,
     artifactValid: packageBuild.artifactStatus === 'ARTIFACTS_VALID',
     constructorValid: Boolean(step && !step.blockedReason && step.deploymentData),
-    subsystemReady: activeSubsystem === 'liquidity_builder',
+    subsystemReady: activeSubsystem === 'liquidity_builder' || activeSubsystem === 'create_token',
   })
 
   const operationalState = resolveFounderOperationalState({
@@ -500,6 +521,13 @@ export const FounderDeploymentShell: React.FC = () => {
       if (hash === `0x${'ab'.repeat(32)}`) {
         setConfirming(false)
         setValidating(false)
+        if (isCreateTokenStage) {
+          // Prep mission: never fabricate SSOT factoryAddress; session-only mock note.
+          setStatusNote(
+            `${CT_FACTORY_ALIAS} mock receipt accepted · factoryAddress remains null until live validation + bind.`,
+          )
+          return
+        }
         applyValidatedBinding({
           stepId: step.stepId,
           contractName: step.contractName,
@@ -538,6 +566,23 @@ export const FounderDeploymentShell: React.FC = () => {
         return
       }
       const code = await walletGetCode(eth, codeAddr)
+      if (isCreateTokenStage) {
+        const masked = runtimeHashForCtCertifiedCompare(code)
+        const expected = step.expectedRuntimeHash
+        setValidating(false)
+        if (masked.toLowerCase() !== expected.toLowerCase()) {
+          setQuarantined(true)
+          setStatusNote(
+            `Create Token Factory runtime hash mismatch (masked ${masked}, expected ${expected}). No bind.`,
+          )
+          return
+        }
+        // SSOT factoryAddress stays null until explicit bind mission — never fabricate.
+        setStatusNote(
+          `${CT_FACTORY_ALIAS} DEPLOYED · VALIDATED at ${codeAddr}. Bind factoryAddress in a follow-up mission. User creation remains disabled.`,
+        )
+        return
+      }
       const validated = validateLbStepFromOnChain({
         stepId: step.stepId,
         contractName: step.contractName,
@@ -579,6 +624,7 @@ export const FounderDeploymentShell: React.FC = () => {
     perTx,
     resolveProvider,
     applyValidatedBinding,
+    isCreateTokenStage,
   ])
 
   // Keep mock helper referenced for tests without mainnet broadcast
@@ -786,9 +832,17 @@ export const FounderDeploymentShell: React.FC = () => {
         </Banner>
       )}
 
+      {isCreateTokenStage && (
+        <Banner $tone="ok" data-testid="founder-create-token-unlocked">
+          Create Token Factory unlocked after Liquidity Builder READY · factoryAddress remains null until Founder
+          deploy + bind
+        </Banner>
+      )}
+
       {step && (
         <Card
           data-testid="founder-active-step"
+          data-create-token-ready={isCreateTokenStage ? 'true' : 'false'}
           data-step3-ready={step.contractName === LB_STEP3_CONTRACT ? 'true' : 'false'}
           data-step4-ready={step.contractName === LB_STEP4_CONTRACT ? 'true' : 'false'}
           data-step5-ready={step.contractName === LB_STEP5_CONTRACT ? 'true' : 'false'}
@@ -796,22 +850,27 @@ export const FounderDeploymentShell: React.FC = () => {
         >
           <CardTitle
             data-testid={
-              step.contractName === LB_STEP6_CONTRACT
-                ? 'founder-step6-ready'
-                : step.contractName === LB_STEP5_CONTRACT
-                  ? 'founder-step5-ready'
-                  : step.contractName === LB_STEP4_CONTRACT
-                    ? 'founder-step4-ready'
-                    : 'founder-step3-ready'
+              isCreateTokenStage
+                ? 'founder-create-token-ready'
+                : step.contractName === LB_STEP6_CONTRACT
+                  ? 'founder-step6-ready'
+                  : step.contractName === LB_STEP5_CONTRACT
+                    ? 'founder-step5-ready'
+                    : step.contractName === LB_STEP4_CONTRACT
+                      ? 'founder-step4-ready'
+                      : 'founder-step3-ready'
             }
           >
-            Liquidity Builder · Step {step.index} of {step.total}
-            {step.contractName === LB_STEP6_CONTRACT ||
-            step.contractName === LB_STEP5_CONTRACT ||
-            step.contractName === LB_STEP4_CONTRACT ||
-            step.contractName === LB_STEP3_CONTRACT
-              ? ' · Ready for Founder signature'
-              : ''}
+            {isCreateTokenStage
+              ? `${CT_FACTORY_ALIAS} · Ready for Founder signature`
+              : `Liquidity Builder · Step ${step.index} of ${step.total}${
+                  step.contractName === LB_STEP6_CONTRACT ||
+                  step.contractName === LB_STEP5_CONTRACT ||
+                  step.contractName === LB_STEP4_CONTRACT ||
+                  step.contractName === LB_STEP3_CONTRACT
+                    ? ' · Ready for Founder signature'
+                    : ''
+                }`}
           </CardTitle>
           <Row>
             <span>Contract</span>
@@ -932,17 +991,31 @@ export const FounderDeploymentShell: React.FC = () => {
               $enabled={deployEnabled}
               disabled={!deployEnabled}
               data-testid="founder-deploy-button"
-              data-deploy-label={`Deploy ${step.contractName}`}
+              data-deploy-label={
+                isCreateTokenStage ? 'Deploy Create Token Factory' : `Deploy ${step.contractName}`
+              }
               onClick={() => void onDeploy()}
             >
-              Deploy {step.contractName}
+              {isCreateTokenStage ? 'Deploy Create Token Factory' : `Deploy ${step.contractName}`}
             </Btn>
           </BtnRow>
 
           <Row>
             <span>Parent CTA</span>
-            <strong>Deploy Liquidity Builder · Step {step.index} of {step.total}</strong>
+            <strong>
+              {isCreateTokenStage
+                ? 'Deploy Create Token Factory'
+                : `Deploy Liquidity Builder · Step ${step.index} of ${step.total}`}
+            </strong>
           </Row>
+          {isCreateTokenStage && (
+            <Row>
+              <span>Canonical factoryAddress</span>
+              <strong data-testid="founder-ct-factory-null">
+                {ctFactoryStillNull ? 'null (not fabricated)' : CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress}
+              </strong>
+            </Row>
+          )}
           <Row>
             <span>Transaction hash</span>
             <strong data-testid="founder-tx-hash">{txHash ?? '—'}</strong>
@@ -960,8 +1033,13 @@ export const FounderDeploymentShell: React.FC = () => {
         </Card>
       )}
 
-      {activeSubsystem !== 'liquidity_builder' && (
+      {activeSubsystem === 'public_farm_factory' && (
         <Banner $tone="warn" data-testid="founder-sequence-lock">
+          Public Farm Factory locked until Create Token Factory is DEPLOYED · VALIDATED · BOUND · READY.
+        </Banner>
+      )}
+      {!lbMainnetReady && activeSubsystem !== 'liquidity_builder' && (
+        <Banner $tone="warn" data-testid="founder-sequence-lock-lb">
           {LABELS[activeSubsystem]} locked until Liquidity Builder is DEPLOYED · VALIDATED · BOUND · READY.
         </Banner>
       )}

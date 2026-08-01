@@ -98,8 +98,8 @@ export function snapshotCreateToken(authorityPresent: boolean, now: string): Sub
     ...(bound
       ? []
       : [
-          'Missing factory address (Create Token unbound)',
-          'Awaiting Founder-signed deploy via MELEGA DEPLOYER after Liquidity Builder is READY',
+          'Missing factory address (Create Token unbound — not fabricated)',
+          'Certified Create Token package ready for Founder signature via MELEGA DEPLOYER',
         ]),
   ])
   void authorityPresent

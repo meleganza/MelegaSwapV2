@@ -35,7 +35,11 @@ export const CREATE_TOKEN_CANONICAL_DEPLOYMENT = {
   deploymentTx: null as string | null,
   deploymentBlock: null as number | null,
   verified: false,
-  status: 'DEPLOYMENT_BLOCKED' as const,
+  /**
+   * Package + Founder UI ready for MELEGA DEPLOYER signature.
+   * factoryAddress stays null until live mainnet deploy + validation + bind.
+   */
+  status: 'READY_FOR_FOUNDER_SIGNATURE' as const,
 } as const
 
 export type CreateTokenFactoryDeployment = typeof CREATE_TOKEN_CANONICAL_DEPLOYMENT

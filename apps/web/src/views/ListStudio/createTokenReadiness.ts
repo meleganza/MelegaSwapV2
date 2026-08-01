@@ -15,25 +15,30 @@ import { resolveCreateTokenUiState, type CreateTokenUiState } from './createToke
 
 export type CreateTokenReadinessStatus =
   | 'DEPLOYMENT_BLOCKED'
+  | 'READY_FOR_FOUNDER_SIGNATURE'
   | 'FACTORY_BOUND'
   | 'READY'
   | 'CONFIGURATION_INVALID'
 
+const factoryBound = isCreateTokenFactoryBound()
+
 export const CREATE_TOKEN_READINESS = {
   schema: 'melega.create-token-readiness.v2',
   capability: 'create_token',
-  status: 'DEPLOYMENT_BLOCKED' as CreateTokenReadinessStatus,
+  status: (factoryBound
+    ? 'FACTORY_BOUND'
+    : 'READY_FOR_FOUNDER_SIGNATURE') as CreateTokenReadinessStatus,
   listFlag: 'LIST_CREATE_TOKEN_AVAILABLE',
   listFlagValue: LIST_CREATE_TOKEN_AVAILABLE,
   chainId: CREATE_TOKEN_FACTORY_CHAIN_ID,
   factoryAddress: CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress,
-  factoryDeployed: isCreateTokenFactoryBound(),
-  bytecodePresent: false,
+  factoryDeployed: factoryBound,
+  bytecodePresent: true,
   creationFeeConfigured: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei != null,
   feeRecipientConfigured:
     CREATE_TOKEN_CANONICAL_DEPLOYMENT.feeRecipient.toLowerCase() ===
     '0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b',
-  deploymentAuthorityReady: false,
+  deploymentAuthorityReady: true,
   verificationReady: false,
   executionEnabled: false,
   uiMode: 'readiness_explanation' as const,
@@ -55,28 +60,32 @@ export const CREATE_TOKEN_READINESS = {
   creationFeeWei: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei,
   creationFeeBnb: CREATE_TOKEN_CREATION_FEE_BNB,
   creationFeeDecision: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeDecision,
-  blockerCode: 'CREATE_TOKEN_FACTORY_NOT_DEPLOYED',
+  blockerCode: 'CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE',
   blockerSummary:
-    'Factory deployment pending. Creation fee is Founder-approved (0.10 BNB per fee-schedule.json). Canonical MelegaTokenFactory + MelegaFixedSupplyToken are implemented and locally tested, but no verified mainnet factory address is bound. Create Token remains configuration/review only until authorized BSC mainnet deployment.',
+    'Create Token Factory package is certified and ready for Founder-signed mainnet deployment via MELEGA DEPLOYER on /runtime/deployment/. factoryAddress remains null. User token creation stays disabled until deploy, validate, and bind.',
   blockers: [
-    'production deployment authority unavailable (MAINNET_DEPLOYER / CT_MAINNET_DEPLOY_AUTHORIZED / BNB_MAINNET_RPC_URL / BSCSCAN_API_KEY)',
-    'factoryAddress is null in createTokenFactoryDeployment',
+    'factoryAddress is null in createTokenFactoryDeployment (not fabricated)',
+    'Awaiting Founder browser-wallet signature by MELEGA DEPLOYER (no KMS / no server signer)',
     'LIST_CREATE_TOKEN_AVAILABLE remains false until certified bind',
   ],
   nextActions: [
-    `Export CT_CREATION_FEE_WEI=${CREATE_TOKEN_CREATION_FEE_WEI} CT_FEE_FOUNDER_APPROVED=1 CT_FEE_RECIPIENT=${CREATE_TOKEN_CANONICAL_DEPLOYMENT.feeRecipient}`,
-    'Export MAINNET_DEPLOYER + BNB_MAINNET_RPC_URL + BSCSCAN_API_KEY',
-    'Set CT_MAINNET_DEPLOY_AUTHORIZED=1 and broadcast DeployMelegaTokenFactoryMainnet',
-    'Verify factory on BscScan',
-    'Bind factoryAddress in createTokenFactoryDeployment.ts (fee already approved)',
+    'Open /runtime/deployment/ as MELEGA DEPLOYER on BNB Smart Chain (56)',
+    'Review CreateTokenFactoryV1 constructor: feeRecipient=MELEGA TREASURY WALLET, creationFee=0.10 BNB',
+    'Estimate gas · Ready for Founder signature · Deploy Create Token Factory',
+    'Validate receipt + masked runtime hash, then bind factoryAddress',
     'Flip LIST_CREATE_TOKEN_AVAILABLE only after certification',
   ],
   contracts: {
     factory: 'contracts/create-token/MelegaTokenFactory.sol',
     token: 'contracts/create-token/MelegaFixedSupplyToken.sol',
     deployScript: 'script/create-token/DeployMelegaTokenFactoryMainnet.s.sol',
+    certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/ct-v1-certified.json',
   },
-  updatedAt: '2026-07-30T13:00:00.000Z',
+  authorityModel: 'FOUNDER_WALLET_SIGNED',
+  noKms: true,
+  noServerSigner: true,
+  noTreasuryRuntime: true,
+  updatedAt: '2026-08-02T00:00:00.000Z',
 } as const
 
 export type CreateTokenReadiness = typeof CREATE_TOKEN_READINESS
@@ -98,12 +107,12 @@ export function getCreateTokenMachineReadableReadiness() {
     status: CREATE_TOKEN_READINESS.status,
     chainId: CREATE_TOKEN_FACTORY_CHAIN_ID,
     factoryAddress: dep.factoryAddress,
-    bytecodePresent: false,
+    bytecodePresent: true,
     creationFeeConfigured: dep.creationFeeWei != null,
     feeRecipientConfigured: Boolean(dep.feeRecipient),
     creationFeeDecision: dep.creationFeeDecision,
     creationFeeWei: dep.creationFeeWei,
-    deploymentAuthorityReady: false,
+    deploymentAuthorityReady: true,
     verificationReady: false,
     blockers: [...CREATE_TOKEN_READINESS.blockers],
     uiState,

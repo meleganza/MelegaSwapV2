@@ -102,12 +102,27 @@ export {
   linkLibraryBytecode,
 } from './founderLbArtifacts'
 export {
+  assessCtArtifactIntegrity,
+  CT_FACTORY_ALIAS,
+  CT_FACTORY_CONTRACT,
+  keccakCtCreationBytecode,
+  loadCertifiedCtArtifacts,
+} from './founderCtArtifacts'
+export {
   buildLbDeploySteps,
   activeLbStep,
   buildLbEconomicReviewFields,
   encodeLbConstructor,
   LB_PROTOCOL_PARAMS,
 } from './founderLbDeployTx'
+export {
+  buildCreateTokenDeployStep,
+  buildCtEconomicReviewFields,
+  encodeCtConstructor,
+  maskCtImmutableRegions,
+  runtimeHashForCtCertifiedCompare,
+  verifyCtConstructorArgs,
+} from './founderCtDeployTx'
 export {
   buildContractCreationRequest,
   createMockEthereum,

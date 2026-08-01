@@ -39,7 +39,7 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
   })
 
   it('exposes FACTORY_NOT_DEPLOYED readiness and never READY while unbound', () => {
-    expect(CREATE_TOKEN_READINESS.status).toBe('DEPLOYMENT_BLOCKED')
+    expect(CREATE_TOKEN_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
     expect(CREATE_TOKEN_READINESS.uiState).toBe('FACTORY_NOT_DEPLOYED')
     expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(false)
     const ui = resolveCreateTokenUiState({
@@ -174,15 +174,15 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
 
   it('exposes machine-readable readiness API shape', () => {
     const body = getCreateTokenMachineReadableReadiness()
-    expect(body.status).toBe('DEPLOYMENT_BLOCKED')
+    expect(body.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
     expect(body.factoryAddress).toBeNull()
-    expect(body.bytecodePresent).toBe(false)
+    expect(body.bytecodePresent).toBe(true)
     expect(body.creationFeeConfigured).toBe(true)
     expect(body.creationFeeDecision).toBe('APPROVED')
     expect(body.creationFeeWei).toBe('100000000000000000')
-    expect(body.deploymentAuthorityReady).toBe(false)
+    expect(body.deploymentAuthorityReady).toBe(true)
     expect(body.blockers.length).toBeGreaterThan(0)
-    expect(body.blockers.some((b) => /deployment authority/i.test(b))).toBe(true)
+    expect(body.blockers.some((b) => /Founder browser-wallet|MELEGA DEPLOYER/i.test(b))).toBe(true)
     expect(body.blockers.some((b) => /Founder decision|FEE_DECISION/i.test(b))).toBe(false)
     expect(body.updatedAt).toBeTruthy()
   })

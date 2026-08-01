@@ -134,7 +134,7 @@ describe('certified bytecode autoload', () => {
     expect(panel).not.toMatch(/Attach certified creation bytecode to enable/i)
     expect(ui).toContain('Certified artifact loaded')
     expect(ui).toContain('Artifact hash verified')
-    expect(ui).toContain('Deploy {step.contractName}')
+    expect(ui).toMatch(/Deploy \$\{step\.contractName\}|Deploy Create Token Factory/)
     expect(ui).toContain('walletSendDeployTransaction')
     expect(ui).toContain('buildContractCreationRequest')
     expect(ui).toContain('connector.getProvider')

@@ -177,7 +177,7 @@ describe('browser wallet mock execution', () => {
     expect(ui).toContain('Estimate Deployment Gas')
     expect(ui).toContain('Retry Gas Estimate')
     expect(ui).toContain('founder-review-checkbox')
-    expect(ui).toContain('Deploy {step.contractName}')
+    expect(ui).toMatch(/Deploy \$\{step\.contractName\}|Deploy Create Token Factory/)
     expect(ui).toContain('walletSendDeployTransaction')
     expect(ui).not.toContain('MAINNET_DEPLOYER')
     expect(ui).not.toMatch(/Missing KMS/i)

@@ -74,9 +74,9 @@ describe('List Founder Acceptance', () => {
   })
 
   it('Create Token readiness is deployment-blocked with measured code', () => {
-    expect(CREATE_TOKEN_READINESS.status).toBe('DEPLOYMENT_BLOCKED')
+    expect(CREATE_TOKEN_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
     expect(CREATE_TOKEN_READINESS.factoryAddress).toBeNull()
-    expect(CREATE_TOKEN_READINESS.blockerCode).toBe('CREATE_TOKEN_FACTORY_NOT_DEPLOYED')
+    expect(CREATE_TOKEN_READINESS.blockerCode).toBe('CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE')
     const ws = load('ListWorkspace.tsx')
     expect(ws).toContain('list-create-token-blocker')
     expect(ws).toContain('CREATE_TOKEN_FACTORY_NOT_DEPLOYED')
