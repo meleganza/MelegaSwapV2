@@ -1,0 +1,7 @@
+{
+  "command": "yarn test src/lib/deployment-orchestrator",
+  "result": "passed",
+  "totalTests": 46,
+  "mainnetBroadcast": false,
+  "capturedAt": "2026-08-01T12:48:33.360Z"
+}

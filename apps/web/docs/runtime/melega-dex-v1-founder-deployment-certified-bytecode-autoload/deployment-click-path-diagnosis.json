@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-08-01T12:48:33.360Z",
+  "productionBuildIdObserved": "JH9hF30tbHijw99IKm87A",
+  "baselineCommit": "047bffeb",
+  "buttonComponent": "FounderDeploymentShell · data-testid=founder-deploy-button",
+  "clickHandler": "onDeploy (FounderDeploymentShell.tsx)",
+  "activeStepResolver": "activeLbStep(buildLbDeploySteps(deployed).steps, completed)",
+  "artifactSource": "apps/web/src/lib/deployment-orchestrator/artifacts/lb-v1-certified.json",
+  "historicalBlockingMessage": "Constructor review ready. Load certified creation bytecode for this step, then confirm in MetaMask. Signing stays in the connected wallet only — no server signer.",
+  "historicalRootCause": {
+    "file": "FounderDeploymentShell.tsx (pre-047bffeb) / FounderDeploymentPanel.tsx ~L247-251",
+    "branch": "if (!review.creationBytecode) { setStatusNote(...); return }",
+    "reasonWalletSkipped": "creationBytecode empty — getTransactionReview never wired to certified package",
+    "firstBlockingCondition": "review.creationBytecode falsy"
+  },
+  "residual047bffebRisk": {
+    "silentEarlyReturn": "onDeploy returned without status when !deployEnabled",
+    "providerPath": "window.ethereum only",
+    "gasGate": "READY_TO_DEPLOY required exact estimate before wallet request"
+  },
+  "repair": "Autoload certified deploymentData; connector.getProvider(); buildContractCreationRequest; remove Load/Attach bytecode UX"
+}

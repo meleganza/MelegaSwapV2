@@ -9,7 +9,9 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   FOUNDER_DEPLOY_CHAIN_ID,
+  activeLbStep,
   buildFounderExecutionSession,
+  buildLbDeploySteps,
   getTransactionReview,
   type SubsystemId,
 } from 'lib/deployment-orchestrator'
@@ -244,9 +246,14 @@ export const FounderDeploymentPanel: React.FC = () => {
         setStatusNote('Wallet provider unavailable. Connect MELEGA DEPLOYER and try again.')
         return
       }
-      if (!review.creationBytecode) {
+      // Autoload certified LB creation payload — Founder never pastes bytecode.
+      const lb = buildLbDeploySteps({})
+      const lbStep = activeLbStep(lb.steps, [])
+      const creationPayload =
+        selected === 'liquidity_builder' ? lbStep?.deploymentData || '' : review.creationBytecode
+      if (!creationPayload?.startsWith('0x')) {
         setStatusNote(
-          'Review complete. Attach certified creation bytecode to enable in-wallet broadcast, or sign the matching forge broadcast from MELEGA DEPLOYER. Signing stays in the connected wallet only.',
+          'Certified creation payload unavailable for this subsystem. Liquidity Builder artifacts autoload from the certified package; Create Token / Public Farm remain sequence-locked.',
         )
         return
       }
@@ -255,7 +262,7 @@ export const FounderDeploymentPanel: React.FC = () => {
         params: [
           {
             from: AUTHORIZED_MELEGA_DEPLOYER,
-            data: review.creationBytecode,
+            data: creationPayload,
             value: '0x0',
           },
         ],
@@ -391,7 +398,10 @@ export const FounderDeploymentPanel: React.FC = () => {
         <Row>
           <span>Artifact checksum</span>
           <strong data-testid="founder-artifact-checksum">
-            {review.creationBytecodeHash ?? 'Certified package review — attach creation bytecode before broadcast'}
+            {review.creationBytecodeHash ??
+              (selected === 'liquidity_builder'
+                ? 'Certified LB package autoloaded — see primary /runtime/deployment shell'
+                : 'Certified package review — bytecode bound after subsystem unlock')}
           </strong>
         </Row>
         <Row>

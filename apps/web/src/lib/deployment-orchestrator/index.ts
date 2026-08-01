@@ -17,6 +17,7 @@ export { assessSubsystemBinding, bindLiquidityBuilderCandidate } from './binding
 export {
   AUTHORIZED_MELEGA_DEPLOYER,
   FOUNDER_DEPLOY_CHAIN_ID,
+  FOUNDER_TREASURY_DESTINATION,
   assessFounderDeployGates,
   isAuthorizedMelegaDeployer,
   userOperationRequiresMelegaDeployer,
@@ -54,12 +55,25 @@ export {
   resolveFounderOperationalState,
 } from './founderOperationalState'
 export type { FounderOperationalState } from './founderOperationalState'
-export { loadCertifiedLbArtifacts, linkLibraryBytecode } from './founderLbArtifacts'
-export { buildLbDeploySteps, activeLbStep, buildLbEconomicReviewFields, LB_PROTOCOL_PARAMS } from './founderLbDeployTx'
 export {
+  assessLbArtifactIntegrity,
+  keccakCreationBytecode,
+  loadCertifiedLbArtifacts,
+  linkLibraryBytecode,
+} from './founderLbArtifacts'
+export {
+  buildLbDeploySteps,
+  activeLbStep,
+  buildLbEconomicReviewFields,
+  encodeLbConstructor,
+  LB_PROTOCOL_PARAMS,
+} from './founderLbDeployTx'
+export {
+  buildContractCreationRequest,
   createMockEthereum,
   getBrowserEthereum,
   isUserRejectedError,
+  resolveWalletProvider,
   walletEstimateDeployGas,
   walletGetGasPrice,
   walletSendDeployTransaction,

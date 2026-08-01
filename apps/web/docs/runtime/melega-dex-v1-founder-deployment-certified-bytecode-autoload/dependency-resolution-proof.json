@@ -1,0 +1,5 @@
+{
+  "rule": "factual receipt addresses only",
+  "feeSinkBlockedWithoutFeeReceiver": true,
+  "feeSinkUnlocksWhenFeeReceiverSet": true
+}

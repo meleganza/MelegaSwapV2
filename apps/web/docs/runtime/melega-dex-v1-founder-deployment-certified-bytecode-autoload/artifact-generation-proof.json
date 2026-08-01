@@ -1,0 +1,10 @@
+{
+  "command": "yarn generate:lb-certified / yarn verify:lb-certified / yarn prebuild",
+  "checkPasses": true,
+  "failsOn": [
+    "artifact missing",
+    "bytecode empty",
+    "runtime hash mismatch",
+    "manifest stale"
+  ]
+}

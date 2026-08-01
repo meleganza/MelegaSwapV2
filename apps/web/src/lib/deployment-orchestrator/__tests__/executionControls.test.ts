@@ -183,5 +183,7 @@ describe('browser wallet mock execution', () => {
     expect(ui).not.toMatch(/Missing KMS/i)
     expect(ui).not.toContain('Production authority missing')
     expect(ui).toContain('Technical JSON (collapsed)')
+    expect(ui).not.toMatch(/Load certified creation bytecode/i)
+    expect(ui).toContain('Certified artifact loaded')
   })
 })

@@ -1,0 +1,15 @@
+{
+  "feeReceiver": {
+    "args": [
+      "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    ],
+    "encodedConstructor": "0x000000000000000000000000b6eeb3ab9695979f5b2ef6df4112e63212e33ee0000000000000000000000000b6436ef4c7f76be0f26c0c5c9db72f2689abf65b",
+    "equalsInterfaceEncodeDeploy": true,
+    "fullDataLength": 1794
+  },
+  "step1": {
+    "constructorArgs": [],
+    "dataEqualsCreationBytecode": true
+  }
+}

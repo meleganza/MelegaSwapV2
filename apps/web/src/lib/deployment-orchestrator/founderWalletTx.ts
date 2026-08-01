@@ -7,10 +7,44 @@ export type EthereumProvider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
 }
 
+export type DeployTxRequest = {
+  from: string
+  data: string
+  value: '0x0'
+  /** Absent for contract creation */
+  to?: undefined
+  gas?: string
+}
+
 export function getBrowserEthereum(): EthereumProvider | null {
   if (typeof window === 'undefined') return null
   const eth = (window as unknown as { ethereum?: EthereumProvider }).ethereum
   return eth?.request ? eth : null
+}
+
+/** Prefer an injected/connector provider; fall back to window.ethereum. */
+export function resolveWalletProvider(preferred?: EthereumProvider | null): EthereumProvider | null {
+  if (preferred?.request) return preferred
+  return getBrowserEthereum()
+}
+
+export function buildContractCreationRequest(input: {
+  from: string
+  data: string
+  gasUnits?: bigint | null
+}): DeployTxRequest {
+  if (!input.data?.startsWith('0x') || input.data.length < 4) {
+    throw new Error('Missing certified creation payload')
+  }
+  const req: DeployTxRequest = {
+    from: input.from,
+    data: input.data,
+    value: '0x0',
+  }
+  if (input.gasUnits != null && input.gasUnits > 0n) {
+    req.gas = `0x${input.gasUnits.toString(16)}`
+  }
+  return req
 }
 
 export async function walletGetGasPrice(eth: EthereumProvider): Promise<bigint> {
@@ -36,10 +70,19 @@ export async function walletSendDeployTransaction(
   eth: EthereumProvider,
   from: string,
   data: string,
+  gasUnits?: bigint | null,
 ): Promise<string> {
+  const tx = buildContractCreationRequest({ from, data, gasUnits })
+  // Contract creation: no `to` field.
+  const params: Record<string, string> = {
+    from: tx.from,
+    data: tx.data,
+    value: tx.value,
+  }
+  if (tx.gas) params.gas = tx.gas
   const hash = await eth.request({
     method: 'eth_sendTransaction',
-    params: [{ from, data, value: '0x0' }],
+    params: [params],
   })
   if (typeof hash !== 'string' || !/^0x[a-fA-F0-9]{64}$/.test(hash)) {
     throw new Error('eth_sendTransaction did not return a transaction hash')
@@ -58,9 +101,10 @@ export function createMockEthereum(opts?: {
   gasPriceWei?: bigint
   estimateGasWei?: bigint
   rejectSend?: boolean
+  onSend?: (params: Record<string, string>) => void
 }): EthereumProvider {
   return {
-    async request({ method }) {
+    async request({ method, params }) {
       if (method === 'eth_gasPrice') return `0x${(opts?.gasPriceWei ?? 3_000_000_000n).toString(16)}`
       if (method === 'eth_estimateGas') return `0x${(opts?.estimateGasWei ?? 2_500_000n).toString(16)}`
       if (method === 'eth_sendTransaction') {
@@ -69,6 +113,9 @@ export function createMockEthereum(opts?: {
           e.code = 4001
           throw e
         }
+        const tx = (params?.[0] || {}) as Record<string, string>
+        opts?.onSend?.(tx)
+        if (tx.to) throw new Error('Contract creation must not set to')
         return `0x${'ab'.repeat(32)}`
       }
       throw new Error(`Unsupported mock method ${method}`)

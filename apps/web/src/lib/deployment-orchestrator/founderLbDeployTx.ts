@@ -3,9 +3,14 @@
  */
 import { Interface } from '@ethersproject/abi'
 import { id as keccakId } from '@ethersproject/hash'
-import { keccak256 } from '@ethersproject/keccak256'
 import { AUTHORIZED_MELEGA_DEPLOYER, FOUNDER_TREASURY_DESTINATION } from './founderDeployer'
-import { linkLibraryBytecode, loadCertifiedLbArtifacts, type LbArtifactRecord } from './founderLbArtifacts'
+import {
+  assessLbArtifactIntegrity,
+  keccakCreationBytecode,
+  linkLibraryBytecode,
+  loadCertifiedLbArtifacts,
+  type LbArtifactRecord,
+} from './founderLbArtifacts'
 import { LB_MELEGA_AMM } from 'config/constants/liquidityBuildingDeployment'
 
 export type LbHumanField = { label: string; value: string }
@@ -59,15 +64,14 @@ export type LbDeployedAddresses = {
   factory?: string | null
 }
 
-function creationHash(bytecode: string): string {
-  // Library placeholders are not valid hex — zero them before hashing (same as certified runtime hash policy).
-  const normalized = `0x${bytecode.replace(/^0x/, '').replace(/__\$[a-f0-9]{34}\$__/gi, '0'.repeat(40))}`
-  return keccak256(normalized)
-}
-
 function encodeDeployData(constructorInputs: unknown[], values: unknown[]): string {
   const iface = new Interface([{ type: 'constructor', inputs: constructorInputs as any }])
   return iface.encodeDeploy(values)
+}
+
+/** Canonical constructor encoding for proofs / tests. */
+export function encodeLbConstructor(constructorInputs: unknown[], values: unknown[]): string {
+  return encodeDeployData(constructorInputs, values)
 }
 
 export function buildLbEconomicReviewFields(): LbHumanField[] {
@@ -126,7 +130,7 @@ export function buildLbDeploySteps(deployed: LbDeployedAddresses = {}): {
           dependencies,
           humanFields,
           constructorArgs: [],
-          creationBytecodeHash: creationHash(bytecode),
+          creationBytecodeHash: keccakCreationBytecode(bytecode),
           expectedRuntimeHash: art.expectedRuntimeBytecodeSha256,
           artifactVerified: art.runtimeHashMatchesCertified,
           deploymentData: null,
@@ -152,6 +156,7 @@ export function buildLbDeploySteps(deployed: LbDeployedAddresses = {}): {
       }
     }
 
+    const integrity = assessLbArtifactIntegrity(art, contractName)
     const ctorArgs = (art.constructorInputs || []).map((inp, i) => ({
       name: inp.name || `arg${i}`,
       type: inp.type,
@@ -160,8 +165,8 @@ export function buildLbDeploySteps(deployed: LbDeployedAddresses = {}): {
 
     let deploymentData: string | null = null
     let block = blockedReason
-    if (!art.runtimeHashMatchesCertified) {
-      block = `Runtime hash mismatch for ${contractName}`
+    if (!integrity.ok) {
+      block = integrity.mismatches[0] || `Artifact integrity failed for ${contractName}`
     } else if (ctorValues && !block) {
       try {
         const encoded = encodeDeployData(art.constructorInputs as any, ctorValues)
@@ -180,9 +185,9 @@ export function buildLbDeploySteps(deployed: LbDeployedAddresses = {}): {
       dependencies,
       humanFields,
       constructorArgs: ctorArgs,
-      creationBytecodeHash: creationHash(bytecode),
+      creationBytecodeHash: keccakCreationBytecode(bytecode),
       expectedRuntimeHash: art.expectedRuntimeBytecodeSha256,
-      artifactVerified: art.runtimeHashMatchesCertified && !block,
+      artifactVerified: integrity.ok && !block,
       deploymentData,
       blockedReason: block,
     }

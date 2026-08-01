@@ -2,7 +2,7 @@
  * Founder Deployment Shell — executable browser-wallet surface.
  * No KMS. No server signer. No automatic mainnet broadcast.
  */
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { useAccount, useBalance, useChainId } from 'wagmi'
@@ -26,9 +26,11 @@ import {
   type LbDeployedAddresses,
 } from 'lib/deployment-orchestrator/founderLbDeployTx'
 import {
+  buildContractCreationRequest,
   createMockEthereum,
-  getBrowserEthereum,
   isUserRejectedError,
+  resolveWalletProvider,
+  type EthereumProvider,
   walletEstimateDeployGas,
   walletGetGasPrice,
   walletSendDeployTransaction,
@@ -186,7 +188,7 @@ function mapStepToDeployed(stepId: string, address: string, prev: LbDeployedAddr
 }
 
 export const FounderDeploymentShell: React.FC = () => {
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, connector } = useAccount()
   const chainId = useChainId()
   const { data: balance } = useBalance({ address })
 
@@ -206,10 +208,24 @@ export const FounderDeploymentShell: React.FC = () => {
   const [validating, setValidating] = useState(false)
   const [failed, setFailed] = useState(false)
   const [quarantined, setQuarantined] = useState(false)
+  const [lastWalletRequest, setLastWalletRequest] = useState<Record<string, string> | null>(null)
 
   const activeSubsystem = nextFounderDeployTarget() ?? 'liquidity_builder'
   const packageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
   const step = useMemo(() => activeLbStep(packageBuild.steps, completed), [packageBuild.steps, completed])
+
+  const resolveProvider = useCallback(async (): Promise<EthereumProvider | null> => {
+    try {
+      const fromConnector = connector ? await connector.getProvider() : null
+      const preferred =
+        fromConnector && typeof (fromConnector as EthereumProvider).request === 'function'
+          ? (fromConnector as EthereumProvider)
+          : null
+      return resolveWalletProvider(preferred)
+    } catch {
+      return resolveWalletProvider(null)
+    }
+  }, [connector])
 
   const gas = useMemo(
     () =>
@@ -262,9 +278,9 @@ export const FounderDeploymentShell: React.FC = () => {
   const runGasEstimate = useCallback(async () => {
     setGasError(null)
     setEstimateStatus('pending')
-    setStatusNote(null)
+    setStatusNote('Encoding constructor · estimating exact deployment transaction…')
     try {
-      const eth = getBrowserEthereum()
+      const eth = await resolveProvider()
       if (!eth) throw new Error('Wallet provider unavailable')
       if (!address || !step?.deploymentData) throw new Error('No deployment payload for active step')
       const gp = await walletGetGasPrice(eth)
@@ -282,33 +298,76 @@ export const FounderDeploymentShell: React.FC = () => {
       setPerTx([row])
       setTotalCostWei(cost)
       setEstimateStatus('ready')
-      setStatusNote(`Gas estimate ready for ${step.contractName}.`)
+      setStatusNote(`Gas estimate ready for ${step.contractName}. Ready for Founder signature after review.`)
     } catch (e) {
       setEstimateStatus('unavailable')
       setGasError(e instanceof Error ? e.message : 'Gas estimate failed')
       setPerTx([])
       setTotalCostWei(null)
+      setStatusNote('Gas estimate unavailable. Certified artifact remains loaded — use Retry Gas Estimate.')
     }
-  }, [address, step])
+  }, [address, step, resolveProvider])
+
+  // Auto-estimate once wallet + certified payload are ready (never blocks artifact load).
+  useEffect(() => {
+    if (!canEstimate || estimateStatus === 'ready' || signaturePending) return
+    if (estimateStatus === 'unavailable') return
+    void runGasEstimate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canEstimate, step?.stepId, address, chainId])
 
   const onDeploy = useCallback(async () => {
-    if (!deployEnabled || !step?.deploymentData || !address) return
-    setStatusNote(null)
-    setSignaturePending(true)
     setFailed(false)
+    if (!step?.deploymentData) {
+      setStatusNote('Certified creation payload unavailable for this step — artifact integrity failed.')
+      return
+    }
+    if (!address) {
+      setStatusNote('Connect the authorized MELEGA DEPLOYER.')
+      return
+    }
+    if (!deployEnabled) {
+      const blockers: string[] = []
+      if (operationalState !== 'READY_TO_DEPLOY') blockers.push(`state=${operationalState}`)
+      if (!reviewed) blockers.push('review checkbox required')
+      if (estimateStatus !== 'ready') blockers.push('exact gas estimate required')
+      setStatusNote(`Deploy blocked: ${blockers.join('; ')}.`)
+      return
+    }
+    setStatusNote('Ready for Founder signature — requesting browser wallet…')
+    setSignaturePending(true)
     try {
-      const eth = getBrowserEthereum()
+      const eth = await resolveProvider()
       if (!eth) {
-        setStatusNote('Wallet provider unavailable.')
+        setStatusNote('Wallet provider unavailable. Open MetaMask / the connected browser wallet and retry.')
         return
       }
-      const hash = await walletSendDeployTransaction(eth, AUTHORIZED_MELEGA_DEPLOYER, step.deploymentData)
+      const gasUnits = perTx[0]?.gasUnits ? BigInt(perTx[0].gasUnits) : null
+      const req = buildContractCreationRequest({
+        from: AUTHORIZED_MELEGA_DEPLOYER,
+        data: step.deploymentData,
+        gasUnits,
+      })
+      setLastWalletRequest({
+        from: req.from,
+        data: req.data.slice(0, 66) + '…',
+        dataLength: String(req.data.length),
+        value: req.value,
+        hasTo: 'false',
+        contract: step.contractName,
+      })
+      const hash = await walletSendDeployTransaction(
+        eth,
+        AUTHORIZED_MELEGA_DEPLOYER,
+        step.deploymentData,
+        gasUnits,
+      )
       setTxHash(hash)
       setSignaturePending(false)
       setTransactionSubmitted(true)
       setConfirming(true)
-      setStatusNote('Transaction submitted — waiting for receipt (Founder must wait on-chain). Binding only after validation.')
-      // Automated tests / Cursor must not poll mainnet. Founder UI waits; mock path validates below when hash is mock.
+      setStatusNote('Transaction submitted — waiting for receipt. Binding only after validation.')
+      // Automated tests / Cursor must not poll mainnet. Mock path validates below when hash is mock.
       if (hash === `0x${'ab'.repeat(32)}`) {
         setConfirming(false)
         setValidating(true)
@@ -344,14 +403,14 @@ export const FounderDeploymentShell: React.FC = () => {
           setTotalCostWei(null)
           setTransactionSubmitted(false)
           setStatusNote(
-            `${step.contractName} validated in mock receipt path. Production binding requires web release after live receipt.`,
+            `${step.contractName} validated (mock receipt). CONTRACTS_DEPLOYED_BINDING_RELEASE_PENDING until live app consumes addresses.`,
           )
         }
       }
     } catch (e) {
       setSignaturePending(false)
       if (isUserRejectedError(e)) {
-        setStatusNote('Transaction rejected in wallet.')
+        setStatusNote('Transaction rejected in wallet. No transaction was submitted.')
         return
       }
       setFailed(true)
@@ -359,10 +418,20 @@ export const FounderDeploymentShell: React.FC = () => {
     } finally {
       setSignaturePending(false)
     }
-  }, [deployEnabled, step, address])
+  }, [
+    deployEnabled,
+    step,
+    address,
+    operationalState,
+    reviewed,
+    estimateStatus,
+    perTx,
+    resolveProvider,
+  ])
 
-  // Expose mock helper for tests without mainnet broadcast
+  // Keep mock helper referenced for tests without mainnet broadcast
   void createMockEthereum
+  void lastWalletRequest
 
   return (
     <Root data-testid="founder-deployment-shell" data-founder-primary="true">
@@ -425,12 +494,13 @@ export const FounderDeploymentShell: React.FC = () => {
 
       {packageBuild.artifactStatus === 'ARTIFACTS_INVALID' && (
         <Banner $tone="bad" data-testid="founder-artifacts-invalid">
-          ARTIFACTS_INVALID — {packageBuild.invalidReasons[0]}
+          Artifact integrity failed — {packageBuild.invalidReasons[0]}
         </Banner>
       )}
       {packageBuild.artifactStatus === 'ARTIFACTS_VALID' && (
         <Banner $tone="ok" data-testid="founder-artifacts-verified">
-          Artifact verified against certified Liquidity Builder package hashes.
+          Certified artifact loaded · Artifact hash verified
+          {step?.artifactVerified ? ` · ${step.contractName} ready` : ''}
         </Banner>
       )}
 
@@ -484,8 +554,24 @@ export const FounderDeploymentShell: React.FC = () => {
             <strong>{step.expectedRuntimeHash}</strong>
           </Row>
           <Row>
-            <span>Artifact</span>
-            <strong>{step.artifactVerified ? 'Artifact verified' : 'Not verified'}</strong>
+            <span>Artifact status</span>
+            <strong data-testid="founder-artifact-status">
+              {step.artifactVerified
+                ? 'Certified artifact loaded · Artifact hash verified'
+                : step.blockedReason || 'Artifact integrity pending'}
+            </strong>
+          </Row>
+          <Row>
+            <span>Pipeline</span>
+            <strong data-testid="founder-pipeline-status">
+              {step.deploymentData
+                ? estimateStatus === 'ready'
+                  ? 'Gas estimate ready · Ready for Founder signature'
+                  : estimateStatus === 'unavailable'
+                    ? 'Certified artifact loaded · Gas estimate unavailable — retry'
+                    : 'Certified artifact loaded · Encoding constructor · Gas estimate pending'
+                : 'Waiting for certified creation payload'}
+            </strong>
           </Row>
           {step.blockedReason && (
             <Banner $tone="warn" data-testid="founder-step-blocked">

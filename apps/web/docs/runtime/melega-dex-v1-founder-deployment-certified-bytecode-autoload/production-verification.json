@@ -1,0 +1,8 @@
+{
+  "url": "https://www.melega.finance/runtime/deployment/",
+  "repairedBuildLive": false,
+  "localFixedVerified": true,
+  "verdictGate": "WEB_RELEASE_PENDING",
+  "requiredReleaseAction": "Promote branch melega-dex-v1-founder-deployment-certified-bytecode-autoload to Vercel production for www.melega.finance",
+  "capturedAt": "2026-08-01T12:48:33.360Z"
+}
