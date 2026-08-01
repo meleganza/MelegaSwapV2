@@ -2,10 +2,12 @@
  * Founder Liquidity Builder sequential session — validated step bindings.
  * Step progress is factual (receipt-validated). Never fabricate addresses.
  */
+import { arrayify, hexlify } from '@ethersproject/bytes'
 import { sha256 } from '@ethersproject/sha2'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
   FOUNDER_DEPLOY_CHAIN_ID,
+  FOUNDER_TREASURY_DESTINATION,
   normalizeAddress,
 } from './founderDeployer'
 import { loadCertifiedLbArtifacts } from './founderLbArtifacts'
@@ -29,6 +31,42 @@ export const LB_STEP1_FACTUAL = {
   expectedRuntimeBytecodeSha256: '0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e',
 } as const
 
+/** Step 2 — mainnet FeeReceiver (immutables baked into runtime; compare via mask). */
+export const LB_STEP2_FACTUAL = {
+  stepId: 'LiquidityBuildingTreasuryFeeReceiverV1',
+  contractName: 'LiquidityBuildingTreasuryFeeReceiverV1',
+  chainId: FOUNDER_DEPLOY_CHAIN_ID,
+  txHash: '0x17770c7f9390f1a02d08ef9d9d439192b3e4ef11a7850feb95900d510564a9c5',
+  contractAddress: '0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5',
+  deployer: AUTHORIZED_MELEGA_DEPLOYER,
+  governor: AUTHORIZED_MELEGA_DEPLOYER,
+  beneficiary: FOUNDER_TREASURY_DESTINATION,
+  /** On-chain runtime SHA-256 (immutables filled). */
+  observedRuntimeBytecodeSha256: '0xf9eecf584d14ea113933331a465e8f8bb426bc2cacbb44edb295b469f2fe0b3b',
+  /** Certified template runtime SHA-256 (immutable slots zeroed). */
+  expectedRuntimeBytecodeSha256: '0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d',
+} as const
+
+export const LB_STEP3_CONTRACT = 'LiquidityBuildingExecutionAuthorizerV1' as const
+
+/**
+ * Solc immutable byte ranges in deployed bytecode (from forge immutableReferences).
+ * Zeroing these yields the certified template runtime hash for comparison.
+ */
+export const LB_IMMUTABLE_BYTE_RANGES: Record<string, Array<{ start: number; length: number }>> = {
+  LiquidityBuildingTreasuryFeeReceiverV1: [
+    { start: 111, length: 32 },
+    { start: 176, length: 32 },
+    { start: 422, length: 32 },
+    { start: 493, length: 32 },
+  ],
+  LiquidityBuildingExecutionAuthorizerV1: [
+    { start: 435, length: 32 },
+    { start: 888, length: 32 },
+    { start: 1229, length: 32 },
+  ],
+}
+
 export type LbStepLifecycle = 'DEPLOYED' | 'VALIDATED' | 'READY'
 
 export type LbStepBindingRecord = {
@@ -50,12 +88,63 @@ export type FounderLbSession = {
   deployed: LbDeployedAddresses
 }
 
+export type FeeReceiverConstructorState = {
+  governor: string | null
+  beneficiary: string | null
+}
+
 export function sha256Bytecode(runtimeBytecode: string): string {
   if (!runtimeBytecode || runtimeBytecode === '0x') {
     throw new Error('Empty runtime bytecode')
   }
   const hex = runtimeBytecode.startsWith('0x') ? runtimeBytecode : `0x${runtimeBytecode}`
   return sha256(hex)
+}
+
+/** Zero solc immutable slots so on-chain runtime can match certified template hash. */
+export function maskImmutableRegions(
+  runtimeBytecode: string,
+  ranges: Array<{ start: number; length: number }>,
+): string {
+  const bytes = arrayify(runtimeBytecode.startsWith('0x') ? runtimeBytecode : `0x${runtimeBytecode}`)
+  const copy = new Uint8Array(bytes)
+  for (const range of ranges) {
+    for (let i = 0; i < range.length; i += 1) {
+      const idx = range.start + i
+      if (idx < copy.length) copy[idx] = 0
+    }
+  }
+  return hexlify(copy)
+}
+
+/** Hash used to compare against certified expectedRuntimeBytecodeSha256. */
+export function runtimeHashForCertifiedCompare(contractName: string, runtimeBytecode: string): string {
+  const ranges = LB_IMMUTABLE_BYTE_RANGES[contractName]
+  if (!ranges?.length) return sha256Bytecode(runtimeBytecode)
+  return sha256Bytecode(maskImmutableRegions(runtimeBytecode, ranges))
+}
+
+export function verifyFeeReceiverConstructorState(state: FeeReceiverConstructorState): {
+  ok: boolean
+  governorMatch: boolean
+  beneficiaryMatch: boolean
+  reason?: string
+} {
+  const governor = normalizeAddress(state.governor)
+  const beneficiary = normalizeAddress(state.beneficiary)
+  const expectedGovernor = normalizeAddress(AUTHORIZED_MELEGA_DEPLOYER)
+  const expectedBeneficiary = normalizeAddress(FOUNDER_TREASURY_DESTINATION)
+  const governorMatch = Boolean(governor && expectedGovernor && governor === expectedGovernor)
+  const beneficiaryMatch = Boolean(beneficiary && expectedBeneficiary && beneficiary === expectedBeneficiary)
+  if (!governorMatch || !beneficiaryMatch) {
+    return {
+      ok: false,
+      governorMatch,
+      beneficiaryMatch,
+      reason: 'STEP2_VALIDATION_FAILED: governor/beneficiary mismatch',
+    }
+  }
+  return { ok: true, governorMatch, beneficiaryMatch }
 }
 
 export function mapStepIdToDeployedKey(stepId: string): keyof LbDeployedAddresses | null {
@@ -128,12 +217,22 @@ export function validateLbStepFromOnChain(input: {
   runtimeBytecode: string | null
   expectedRuntimeBytecodeSha256: string
   requireDeployer?: string
+  constructorStateOk?: boolean
+  expectedContractAddress?: string
 }): { ok: true; record: LbStepBindingRecord; outcome: PostDeployOutcome } | { ok: false; reason: string } {
   const parsed = extractContractAddressFromReceipt(input.receipt)
   if (parsed.receiptStatus !== 'success') {
     return { ok: false, reason: `Receipt not successful (${parsed.receiptStatus})` }
   }
   if (!parsed.address) return { ok: false, reason: 'Missing contractAddress in receipt' }
+
+  if (input.expectedContractAddress) {
+    const got = normalizeAddress(parsed.address)
+    const want = normalizeAddress(input.expectedContractAddress)
+    if (!got || !want || got !== want) {
+      return { ok: false, reason: 'Contract address mismatch vs expected deployment address' }
+    }
+  }
 
   if (input.requireDeployer) {
     const from = normalizeAddress(input.receipt.from ?? null)
@@ -143,12 +242,18 @@ export function validateLbStepFromOnChain(input: {
     }
   }
 
-  let observed: string | null = null
+  let observedOnChain: string | null = null
+  let observedForCompare: string | null = null
   try {
-    observed = input.runtimeBytecode ? sha256Bytecode(input.runtimeBytecode) : null
+    if (input.runtimeBytecode) {
+      observedOnChain = sha256Bytecode(input.runtimeBytecode)
+      observedForCompare = runtimeHashForCertifiedCompare(input.contractName, input.runtimeBytecode)
+    }
   } catch {
     return { ok: false, reason: 'Failed to hash runtime bytecode' }
   }
+
+  const constructorStateOk = input.constructorStateOk !== false
 
   const outcome = validatePostDeployment({
     subsystemId: 'liquidity_builder',
@@ -158,8 +263,8 @@ export function validateLbStepFromOnChain(input: {
     receiptStatus: parsed.receiptStatus,
     runtimeBytecode: input.runtimeBytecode,
     expectedRuntimeBytecodeHash: input.expectedRuntimeBytecodeSha256,
-    observedRuntimeBytecodeHash: observed,
-    constructorStateOk: true,
+    observedRuntimeBytecodeHash: observedForCompare,
+    constructorStateOk,
     treasuryOk: true,
     feeOk: true,
   })
@@ -185,7 +290,7 @@ export function validateLbStepFromOnChain(input: {
       contractAddress: outcome.contractAddress,
       txHash: input.txHash,
       chainId: input.chainId,
-      runtimeBytecodeSha256: observed!,
+      runtimeBytecodeSha256: observedOnChain!,
       status: 'VALIDATED',
       validatedAt: new Date().toISOString(),
     },
@@ -210,21 +315,37 @@ export function seedSessionWithValidatedStep1(base: FounderLbSession = emptyFoun
   })
 }
 
-/** Prefer canonical constant, then factual Step 1 seed. */
+/** Seed Step 2 FeeReceiver after mainnet validation (does not touch other null bindings). */
+export function seedSessionWithValidatedStep2(base: FounderLbSession): FounderLbSession {
+  const withStep1 = step1IsValidated(base) ? base : seedSessionWithValidatedStep1(base)
+  return bindValidatedLbStep(withStep1, {
+    stepId: LB_STEP2_FACTUAL.stepId,
+    contractName: LB_STEP2_FACTUAL.contractName,
+    contractAddress: LB_STEP2_FACTUAL.contractAddress,
+    txHash: LB_STEP2_FACTUAL.txHash,
+    chainId: LB_STEP2_FACTUAL.chainId,
+    runtimeBytecodeSha256: LB_STEP2_FACTUAL.observedRuntimeBytecodeSha256,
+    status: 'READY',
+    validatedAt: '2026-08-01T00:00:00.000Z',
+  })
+}
+
+/** Prefer canonical constants, then factual Step 1+2 seeds. Upgrade storage when Step 2 binds. */
 export function loadInitialFounderLbSession(): FounderLbSession {
-  const fromStorage = readFounderLbSessionFromStorage()
-  if (fromStorage && fromStorage.completedStepIds.includes(LB_STEP1_FACTUAL.stepId)) {
-    return fromStorage
+  let session = readFounderLbSessionFromStorage() ?? emptyFounderLbSession()
+
+  if (!step1IsValidated(session)) {
+    session = seedSessionWithValidatedStep1(session)
   }
 
-  const canonicalMath = LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary
-  let session = emptyFounderLbSession()
-  if (canonicalMath && normalizeAddress(canonicalMath) === normalizeAddress(LB_STEP1_FACTUAL.contractAddress)) {
-    session = seedSessionWithValidatedStep1(session)
-  } else {
-    // Factual mainnet Step 1 is known and validated — seed so Step 2 unlocks.
-    session = seedSessionWithValidatedStep1(session)
+  const feeMatches =
+    normalizeAddress(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver) ===
+    normalizeAddress(LB_STEP2_FACTUAL.contractAddress)
+
+  if (feeMatches && !step2IsValidated(session)) {
+    session = seedSessionWithValidatedStep2(session)
   }
+
   return session
 }
 
@@ -258,5 +379,14 @@ export function step1IsValidated(session: FounderLbSession): boolean {
     b &&
       (b.status === 'VALIDATED' || b.status === 'READY') &&
       normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP1_FACTUAL.contractAddress),
+  )
+}
+
+export function step2IsValidated(session: FounderLbSession): boolean {
+  const b = session.bindings.find((x) => x.stepId === LB_STEP2_FACTUAL.stepId)
+  return Boolean(
+    b &&
+      (b.status === 'VALIDATED' || b.status === 'READY') &&
+      normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP2_FACTUAL.contractAddress),
   )
 }

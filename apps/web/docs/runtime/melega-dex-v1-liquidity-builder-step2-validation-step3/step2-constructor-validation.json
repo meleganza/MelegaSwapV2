@@ -1,0 +1,14 @@
+{
+  "contract": "LiquidityBuildingTreasuryFeeReceiverV1",
+  "governorOnChain": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "beneficiaryOnChain": "0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b",
+  "expectedGovernor": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "expectedBeneficiary": "0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b",
+  "governorMatch": true,
+  "beneficiaryMatch": true,
+  "constructorArgsFromTx": {
+    "governor_": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+    "beneficiary_": "0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b"
+  },
+  "validated": true
+}

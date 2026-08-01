@@ -25,15 +25,21 @@ export {
 } from './founderDeployer'
 export {
   LB_STEP1_FACTUAL,
+  LB_STEP2_FACTUAL,
+  LB_STEP3_CONTRACT,
   FOUNDER_LB_SESSION_STORAGE_KEY,
   bindValidatedLbStep,
   emptyFounderLbSession,
   loadInitialFounderLbSession,
   persistFounderLbSession,
+  runtimeHashForCertifiedCompare,
   seedSessionWithValidatedStep1,
+  seedSessionWithValidatedStep2,
   sha256Bytecode,
   step1IsValidated,
+  step2IsValidated,
   validateLbStepFromOnChain,
+  verifyFeeReceiverConstructorState,
 } from './founderLbSession'
 export type { FounderLbSession, LbStepBindingRecord, LbStepLifecycle } from './founderLbSession'
 export {

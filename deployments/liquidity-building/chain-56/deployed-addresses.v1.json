@@ -2,7 +2,7 @@
   "schemaVersion": "melega.liquidity-building.deployed-addresses.v1",
   "chainId": 56,
   "network": "bsc-mainnet",
-  "status": "STEP1_DEPLOYED_VALIDATED",
+  "status": "STEP2_DEPLOYED_VALIDATED",
   "mainnetDeployExecuted": true,
   "addresses": {
     "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
@@ -10,7 +10,7 @@
     "lbFactory": null,
     "lbAuthorizer": null,
     "lbFeeSink": null,
-    "lbFeeReceiver": null,
+    "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
     "lbProgramImplementation": null,
     "lbExecutionMathLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
     "programAddress": null
@@ -23,7 +23,18 @@
       "runtimeBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
       "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
       "note": "Step 1 of 6 — verified on BNB mainnet; remaining LB addresses stay null until validated."
+    },
+    "LiquidityBuildingTreasuryFeeReceiverV1": {
+      "address": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+      "transactionHash": "0x17770c7f9390f1a02d08ef9d9d439192b3e4ef11a7850feb95900d510564a9c5",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0xf9eecf584d14ea113933331a465e8f8bb426bc2cacbb44edb295b469f2fe0b3b",
+      "certifiedTemplateRuntimeSha256": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "governor": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "note": "Step 2 of 6 — verified on BNB mainnet; immutable slots match certified template when zeroed; constructor governor/beneficiary verified on-chain."
     }
   },
-  "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. Only ExecutionMath is bound; never fabricate remaining addresses."
+  "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. ExecutionMath + FeeReceiver bound; never fabricate remaining addresses."
 }

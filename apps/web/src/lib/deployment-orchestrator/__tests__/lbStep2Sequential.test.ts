@@ -28,13 +28,13 @@ const STEP1_ADDR = LB_STEP1_FACTUAL.contractAddress
 const STEP1_TX = LB_STEP1_FACTUAL.txHash
 
 describe('LB Step 1 factual validation + Step 2 unlock', () => {
-  it('canonical binding records ExecutionMath only', () => {
+  it('canonical binding records ExecutionMath (Step 2 also bound in later mission)', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary).toBe(STEP1_ADDR)
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBeTruthy()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
   })
 
-  it('deployed-addresses artifact binds Step 1 only', () => {
+  it('deployed-addresses artifact records Step 1 validated', () => {
     const artifact = JSON.parse(
       readFileSync(
         path.resolve(__dirname, '../../../../../../deployments/liquidity-building/chain-56/deployed-addresses.v1.json'),
@@ -44,7 +44,6 @@ describe('LB Step 1 factual validation + Step 2 unlock', () => {
     expect(artifact.addresses.lbExecutionMathLibrary).toBe(STEP1_ADDR)
     expect(artifact.deployments.LiquidityBuildingExecutionMathV1.transactionHash).toBe(STEP1_TX)
     expect(artifact.deployments.LiquidityBuildingExecutionMathV1.status).toBe('VALIDATED')
-    expect(artifact.addresses.lbFeeReceiver).toBeNull()
   })
 
   it('sha256 of mainnet runtime matches certified hash', () => {

@@ -1,0 +1,19 @@
+{
+  "labels": [
+    "Certified artifact loaded",
+    "Artifact hash verified",
+    "Gas estimate ready",
+    "Ready for Founder signature",
+    "Deploy LiquidityBuildingExecutionAuthorizerV1"
+  ],
+  "contract": "LiquidityBuildingExecutionAuthorizerV1",
+  "constructorHuman": [
+    {
+      "name": "signingAuthority_",
+      "value": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0"
+    }
+  ],
+  "artifactVerified": true,
+  "manualSignatureRequired": true,
+  "automaticBroadcast": false
+}

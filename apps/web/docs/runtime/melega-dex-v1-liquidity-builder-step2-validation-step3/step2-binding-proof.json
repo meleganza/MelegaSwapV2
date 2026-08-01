@@ -1,0 +1,25 @@
+{
+  "boundContract": "LiquidityBuildingTreasuryFeeReceiverV1",
+  "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+  "lbExecutionMathLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+  "unchangedNulls": {
+    "lbAuthorizer": null,
+    "lbFeeSink": null,
+    "lbFactory": null,
+    "lbProgramImplementation": null,
+    "programAddress": null
+  },
+  "deploymentRecord": {
+    "address": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "transactionHash": "0x17770c7f9390f1a02d08ef9d9d439192b3e4ef11a7850feb95900d510564a9c5",
+    "status": "VALIDATED",
+    "runtimeBytecodeSha256": "0xf9eecf584d14ea113933331a465e8f8bb426bc2cacbb44edb295b469f2fe0b3b",
+    "certifiedTemplateRuntimeSha256": "0x135465251bb03829f19b6677c239f2ab1efb4b3c4e3b8d30f8569bca5519c77d",
+    "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "governor": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "note": "Step 2 of 6 \u2014 verified on BNB mainnet; immutable slots match certified template when zeroed; constructor governor/beneficiary verified on-chain."
+  },
+  "status": "STEP2_DEPLOYED_VALIDATED",
+  "onlyFeeReceiverUpdated": true
+}

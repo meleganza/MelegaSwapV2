@@ -28,6 +28,8 @@ import {
 } from 'lib/deployment-orchestrator/founderLbDeployTx'
 import {
   LB_STEP1_FACTUAL,
+  LB_STEP2_FACTUAL,
+  LB_STEP3_CONTRACT,
   bindValidatedLbStep,
   loadInitialFounderLbSession,
   persistFounderLbSession,
@@ -220,13 +222,19 @@ export const FounderDeploymentShell: React.FC = () => {
   const [gasPriceWei, setGasPriceWei] = useState<bigint | null>(null)
   const [gasError, setGasError] = useState<string | null>(null)
   const [totalCostWei, setTotalCostWei] = useState<bigint | null>(null)
-  const [statusNote, setStatusNote] = useState<string | null>(() =>
-    boot.completedStepIds.includes(LB_STEP1_FACTUAL.stepId)
-      ? `Step 1 VALIDATED · ${LB_STEP1_FACTUAL.contractAddress} · Step 2 unlocked for Founder signature.`
-      : null,
-  )
+  const [statusNote, setStatusNote] = useState<string | null>(() => {
+    if (boot.completedStepIds.includes(LB_STEP2_FACTUAL.stepId)) {
+      return `Step 2 VALIDATED · BOUND · ${LB_STEP2_FACTUAL.contractAddress} · Step 3 ${LB_STEP3_CONTRACT} ready for Founder signature.`
+    }
+    if (boot.completedStepIds.includes(LB_STEP1_FACTUAL.stepId)) {
+      return `Step 1 VALIDATED · ${LB_STEP1_FACTUAL.contractAddress} · Step 2 unlocked for Founder signature.`
+    }
+    return null
+  })
   const [txHash, setTxHash] = useState<string | null>(() =>
-    boot.bindings.find((b) => b.stepId === LB_STEP1_FACTUAL.stepId)?.txHash ?? null,
+    boot.bindings.find((b) => b.stepId === LB_STEP2_FACTUAL.stepId)?.txHash ??
+      boot.bindings.find((b) => b.stepId === LB_STEP1_FACTUAL.stepId)?.txHash ??
+      null,
   )
   const [signaturePending, setSignaturePending] = useState(false)
   const [transactionSubmitted, setTransactionSubmitted] = useState(false)
@@ -241,6 +249,7 @@ export const FounderDeploymentShell: React.FC = () => {
   const packageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
   const step = useMemo(() => activeLbStep(packageBuild.steps, completed), [packageBuild.steps, completed])
   const step1Binding = session.bindings.find((b) => b.stepId === LB_STEP1_FACTUAL.stepId) ?? null
+  const step2Binding = session.bindings.find((b) => b.stepId === LB_STEP2_FACTUAL.stepId) ?? null
   const completedSteps = useMemo(
     () => packageBuild.steps.filter((s) => completed.includes(s.stepId)),
     [packageBuild.steps, completed],
@@ -670,7 +679,7 @@ export const FounderDeploymentShell: React.FC = () => {
                   <span>
                     Step {s.index} · {s.contractName}
                   </span>
-                  <strong data-testid="founder-step1-status">
+                  <strong data-testid={`founder-step${s.index}-status`}>
                     DEPLOYED · VALIDATED · READY
                     {binding ? ` · ${binding.contractAddress}` : ''}
                   </strong>
@@ -689,13 +698,24 @@ export const FounderDeploymentShell: React.FC = () => {
               Step 1 LiquidityBuildingExecutionMathV1 validated at {step1Binding.contractAddress}
             </Banner>
           )}
+          {step2Binding && (
+            <Banner $tone="ok" data-testid="founder-step2-validated">
+              Step 2 LiquidityBuildingTreasuryFeeReceiverV1 validated at {step2Binding.contractAddress}
+            </Banner>
+          )}
+          {step2Binding && (
+            <Banner $tone="ok" data-testid="founder-step2-bound">
+              Step 2 bound · lbFeeReceiver = {step2Binding.contractAddress}
+            </Banner>
+          )}
         </Card>
       )}
 
       {step && (
-        <Card data-testid="founder-active-step">
-          <CardTitle>
+        <Card data-testid="founder-active-step" data-step3-ready={step.contractName === LB_STEP3_CONTRACT ? 'true' : 'false'}>
+          <CardTitle data-testid="founder-step3-ready">
             Liquidity Builder · Step {step.index} of {step.total}
+            {step.contractName === LB_STEP3_CONTRACT ? ' · Ready for Founder signature' : ''}
           </CardTitle>
           <Row>
             <span>Contract</span>
