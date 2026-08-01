@@ -1,4 +1,11 @@
 {
   "status": "WEB_RELEASE_PENDING",
-  "url": "https://www.melega.finance/runtime/deployment/"
+  "productionUrl": "https://www.melega.finance/runtime/deployment/",
+  "productionStillBroken": "WalletModal still contains value.lte in live chunk 8651-42dffd460b2acaf9.js",
+  "previewUrl": "https://melega-swap-v2-ejyzxur00-melegazas-projects.vercel.app/runtime/deployment/",
+  "previewCommit": "3c645e052dffdd88362e52f0f095b852cb13ab73",
+  "previewVercel": "success",
+  "previewBundle": "WalletModal uses weiLte; value.lte absent",
+  "promoteBranch": "melega-dex-v1-founder-deployment-wallet-connect-runtime-crash-repair",
+  "manualProductionConnectRequiredAfterPromote": true
 }

@@ -15,3 +15,12 @@ Safe BigInt helpers + wallet menu balance formatting + Founder shell provider/ba
 ## Unchanged
 
 Contracts, bytecode, fees, Treasury, deployment order, certified manifest.
+
+
+## Preview
+
+- Vercel preview: SUCCESS
+- URL: https://melega-swap-v2-ejyzxur00-melegazas-projects.vercel.app/runtime/deployment/
+- Commit: `3c645e05`
+- Preview WalletModal bundle: `value.lte` absent (uses `weiLte`)
+- Production www.melega.finance: still pre-fix until promotion
