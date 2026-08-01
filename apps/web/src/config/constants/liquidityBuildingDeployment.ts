@@ -13,7 +13,8 @@ export const LB_MELEGA_AMM = {
 
 /**
  * Production LB program bindings.
- * Remain null until deployed-addresses.v1.json is updated from a verified mainnet deploy.
+ * Sync from deployments/liquidity-building/chain-56/deployed-addresses.v1.json after verified mainnet deploys.
+ * Only ExecutionMath is bound (Step 1). Remaining addresses stay null until validated — never fabricate.
  */
 export const LB_CANONICAL_DEPLOYED_ADDRESSES = {
   lbFactory: null as string | null,
@@ -21,7 +22,8 @@ export const LB_CANONICAL_DEPLOYED_ADDRESSES = {
   lbFeeSink: null as string | null,
   lbFeeReceiver: null as string | null,
   lbProgramImplementation: null as string | null,
-  lbExecutionMathLibrary: null as string | null,
+  /** Step 1 — LiquidityBuildingExecutionMathV1 @ tx 0x04c394f9…950cbd */
+  lbExecutionMathLibrary: '0xA6434254ef3c859230d1c46a03A5928979fa379f' as string | null,
   programAddress: null as string | null,
 } as const
 

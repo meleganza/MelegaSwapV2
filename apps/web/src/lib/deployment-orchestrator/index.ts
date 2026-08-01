@@ -20,8 +20,22 @@ export {
   FOUNDER_TREASURY_DESTINATION,
   assessFounderDeployGates,
   isAuthorizedMelegaDeployer,
+  normalizeAddress,
   userOperationRequiresMelegaDeployer,
 } from './founderDeployer'
+export {
+  LB_STEP1_FACTUAL,
+  FOUNDER_LB_SESSION_STORAGE_KEY,
+  bindValidatedLbStep,
+  emptyFounderLbSession,
+  loadInitialFounderLbSession,
+  persistFounderLbSession,
+  seedSessionWithValidatedStep1,
+  sha256Bytecode,
+  step1IsValidated,
+  validateLbStepFromOnChain,
+} from './founderLbSession'
+export type { FounderLbSession, LbStepBindingRecord, LbStepLifecycle } from './founderLbSession'
 export {
   buildCreateTokenTransactionReview,
   buildLiquidityBuilderTransactionReview,
@@ -75,6 +89,8 @@ export {
   isUserRejectedError,
   resolveWalletProvider,
   walletEstimateDeployGas,
+  walletGetCode,
   walletGetGasPrice,
+  walletGetTransactionReceipt,
   walletSendDeployTransaction,
 } from './founderWalletTx'

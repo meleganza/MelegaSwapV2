@@ -1,0 +1,8 @@
+{
+  "address": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+  "codeLengthHexChars": 7494,
+  "codeEmpty": false,
+  "observedRuntimeBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+  "certifiedExpectedRuntimeBytecodeSha256": "0x129f6c63f052b819b9565afd29ddfcce2cd413b344308a74127f79323ef3c94e",
+  "match": true
+}

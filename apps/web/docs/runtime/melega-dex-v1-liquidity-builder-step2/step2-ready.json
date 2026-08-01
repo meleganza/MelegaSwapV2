@@ -1,0 +1,9 @@
+{
+  "step1": "VALIDATED",
+  "step2Contract": "LiquidityBuildingTreasuryFeeReceiverV1",
+  "artifactVerified": true,
+  "readyForFounderSignature": true,
+  "deployCta": "Deploy LiquidityBuildingTreasuryFeeReceiverV1",
+  "autoSign": false,
+  "autoBroadcast": false
+}

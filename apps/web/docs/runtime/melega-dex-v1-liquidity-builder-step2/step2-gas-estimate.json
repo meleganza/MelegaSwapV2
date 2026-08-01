@@ -1,0 +1,6 @@
+{
+  "estimateMode": "browser wallet eth_estimateGas after Founder connect",
+  "autoEstimateOnAuthorizedConnect": true,
+  "failureUi": "Gas estimate temporarily unavailable + Retry",
+  "noAutoBroadcast": true
+}

@@ -27,16 +27,25 @@ import {
   type LbDeployedAddresses,
 } from 'lib/deployment-orchestrator/founderLbDeployTx'
 import {
+  LB_STEP1_FACTUAL,
+  bindValidatedLbStep,
+  loadInitialFounderLbSession,
+  persistFounderLbSession,
+  validateLbStepFromOnChain,
+  type FounderLbSession,
+} from 'lib/deployment-orchestrator/founderLbSession'
+import {
   buildContractCreationRequest,
   createMockEthereum,
   isUserRejectedError,
   resolveWalletProvider,
   type EthereumProvider,
   walletEstimateDeployGas,
+  walletGetCode,
   walletGetGasPrice,
+  walletGetTransactionReceipt,
   walletSendDeployTransaction,
 } from 'lib/deployment-orchestrator/founderWalletTx'
-import { extractContractAddressFromReceipt, validatePostDeployment } from 'lib/deployment-orchestrator/founderPostDeploy'
 
 const Root = styled.div`
   max-width: 920px;
@@ -201,16 +210,24 @@ export const FounderDeploymentShell: React.FC = () => {
     isFetched: balanceFetched,
   } = useBalance({ address, enabled: Boolean(address) })
 
-  const [deployed, setDeployed] = useState<LbDeployedAddresses>({})
-  const [completed, setCompleted] = useState<string[]>([])
+  const [boot] = useState(() => loadInitialFounderLbSession())
+  const [session, setSession] = useState<FounderLbSession>(boot)
+  const [deployed, setDeployed] = useState<LbDeployedAddresses>(boot.deployed)
+  const [completed, setCompleted] = useState<string[]>(boot.completedStepIds)
   const [reviewed, setReviewed] = useState(false)
   const [estimateStatus, setEstimateStatus] = useState<GasEstimateStatus>('pending')
   const [perTx, setPerTx] = useState<PerTxGasEstimate[]>([])
   const [gasPriceWei, setGasPriceWei] = useState<bigint | null>(null)
   const [gasError, setGasError] = useState<string | null>(null)
   const [totalCostWei, setTotalCostWei] = useState<bigint | null>(null)
-  const [statusNote, setStatusNote] = useState<string | null>(null)
-  const [txHash, setTxHash] = useState<string | null>(null)
+  const [statusNote, setStatusNote] = useState<string | null>(() =>
+    boot.completedStepIds.includes(LB_STEP1_FACTUAL.stepId)
+      ? `Step 1 VALIDATED · ${LB_STEP1_FACTUAL.contractAddress} · Step 2 unlocked for Founder signature.`
+      : null,
+  )
+  const [txHash, setTxHash] = useState<string | null>(() =>
+    boot.bindings.find((b) => b.stepId === LB_STEP1_FACTUAL.stepId)?.txHash ?? null,
+  )
   const [signaturePending, setSignaturePending] = useState(false)
   const [transactionSubmitted, setTransactionSubmitted] = useState(false)
   const [confirming, setConfirming] = useState(false)
@@ -223,9 +240,37 @@ export const FounderDeploymentShell: React.FC = () => {
   const activeSubsystem = nextFounderDeployTarget() ?? 'liquidity_builder'
   const packageBuild = useMemo(() => buildLbDeploySteps(deployed), [deployed])
   const step = useMemo(() => activeLbStep(packageBuild.steps, completed), [packageBuild.steps, completed])
+  const step1Binding = session.bindings.find((b) => b.stepId === LB_STEP1_FACTUAL.stepId) ?? null
+  const completedSteps = useMemo(
+    () => packageBuild.steps.filter((s) => completed.includes(s.stepId)),
+    [packageBuild.steps, completed],
+  )
+
+  // Persist once on mount so Step 1 binding is available across reloads.
+  useEffect(() => {
+    persistFounderLbSession(boot)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Coerce at the boundary so ethers BigNumber / string never enter bigint arithmetic.
   const balanceWei = useMemo(() => toSafeBigInt(balance?.value ?? null), [balance?.value])
+
+  const applyValidatedBinding = useCallback((record: Parameters<typeof bindValidatedLbStep>[1]) => {
+    setSession((prev) => {
+      const next = bindValidatedLbStep(prev, record)
+      setDeployed(next.deployed)
+      setCompleted(next.completedStepIds)
+      persistFounderLbSession(next)
+      return next
+    })
+    setReviewed(false)
+    setEstimateStatus('pending')
+    setPerTx([])
+    setTotalCostWei(null)
+    setTransactionSubmitted(false)
+    setConfirming(false)
+    setValidating(false)
+  }, [])
 
   const resolveProvider = useCallback(async (): Promise<EthereumProvider | null> => {
     setProviderStatus('loading')
@@ -412,46 +457,69 @@ export const FounderDeploymentShell: React.FC = () => {
       setTransactionSubmitted(true)
       setConfirming(true)
       setStatusNote('Transaction submitted — waiting for receipt. Binding only after validation.')
-      // Automated tests / Cursor must not poll mainnet. Mock path validates below when hash is mock.
+
+      // Mock path for automated tests (never broadcasts / never polls mainnet).
       if (hash === `0x${'ab'.repeat(32)}`) {
         setConfirming(false)
-        setValidating(true)
-        const parsed = extractContractAddressFromReceipt({
-          contractAddress: '0x1111111111111111111111111111111111111111',
-          status: 1,
-        })
-        const outcome = validatePostDeployment({
-          subsystemId: 'liquidity_builder',
-          chainId: 56,
-          txHash: hash,
-          contractAddress: parsed.address,
-          receiptStatus: parsed.receiptStatus,
-          runtimeBytecode: '0x6001600055',
-          expectedRuntimeBytecodeHash: step.expectedRuntimeHash,
-          observedRuntimeBytecodeHash: step.expectedRuntimeHash,
-          constructorStateOk: true,
-          treasuryOk: true,
-          feeOk: true,
-        })
         setValidating(false)
-        if (outcome.status === 'QUARANTINED') {
-          setQuarantined(true)
-          setStatusNote(outcome.reason)
-          return
-        }
-        if (outcome.status === 'READY' && outcome.contractAddress) {
-          setDeployed((d) => mapStepToDeployed(step.stepId, outcome.contractAddress, d))
-          setCompleted((c) => [...c, step.stepId])
-          setReviewed(false)
-          setEstimateStatus('pending')
-          setPerTx([])
-          setTotalCostWei(null)
-          setTransactionSubmitted(false)
-          setStatusNote(
-            `${step.contractName} validated (mock receipt). CONTRACTS_DEPLOYED_BINDING_RELEASE_PENDING until live app consumes addresses.`,
-          )
-        }
+        applyValidatedBinding({
+          stepId: step.stepId,
+          contractName: step.contractName,
+          contractAddress: '0x1111111111111111111111111111111111111111',
+          txHash: hash,
+          chainId: 56,
+          runtimeBytecodeSha256: step.expectedRuntimeHash,
+          status: 'VALIDATED',
+          validatedAt: new Date().toISOString(),
+        })
+        setStatusNote(`${step.contractName} validated (mock receipt). Next step unlocked.`)
+        return
       }
+
+      // Live mainnet: poll receipt + runtime hash, then bind.
+      setValidating(true)
+      let receipt = await walletGetTransactionReceipt(eth, hash)
+      for (let i = 0; i < 40 && !receipt; i += 1) {
+        await new Promise((r) => setTimeout(r, 1500))
+        receipt = await walletGetTransactionReceipt(eth, hash)
+      }
+      setConfirming(false)
+      if (!receipt) {
+        setValidating(false)
+        setStatusNote('Receipt not available yet. Re-check later — no binding performed.')
+        return
+      }
+      const codeAddr =
+        receipt.contractAddress && /^0x[a-fA-F0-9]{40}$/.test(receipt.contractAddress)
+          ? receipt.contractAddress
+          : null
+      if (!codeAddr) {
+        setValidating(false)
+        setQuarantined(true)
+        setStatusNote('Missing contract address in receipt — quarantined.')
+        return
+      }
+      const code = await walletGetCode(eth, codeAddr)
+      const validated = validateLbStepFromOnChain({
+        stepId: step.stepId,
+        contractName: step.contractName,
+        chainId: FOUNDER_DEPLOY_CHAIN_ID,
+        txHash: hash,
+        receipt,
+        runtimeBytecode: code,
+        expectedRuntimeBytecodeSha256: step.expectedRuntimeHash,
+        requireDeployer: AUTHORIZED_MELEGA_DEPLOYER,
+      })
+      setValidating(false)
+      if (!validated.ok) {
+        setQuarantined(true)
+        setStatusNote(validated.reason)
+        return
+      }
+      applyValidatedBinding(validated.record)
+      setStatusNote(
+        `${step.contractName} DEPLOYED · VALIDATED · READY at ${validated.record.contractAddress}. Next step unlocked.`,
+      )
     } catch (e) {
       setSignaturePending(false)
       if (isUserRejectedError(e)) {
@@ -472,11 +540,13 @@ export const FounderDeploymentShell: React.FC = () => {
     estimateStatus,
     perTx,
     resolveProvider,
+    applyValidatedBinding,
   ])
 
   // Keep mock helper referenced for tests without mainnet broadcast
   void createMockEthereum
   void lastWalletRequest
+  void mapStepToDeployed
 
   return (
     <Root data-testid="founder-deployment-shell" data-founder-primary="true">
@@ -588,6 +658,39 @@ export const FounderDeploymentShell: React.FC = () => {
           ))}
         </FieldList>
       </Card>
+
+      {completedSteps.length > 0 && (
+        <Card data-testid="founder-completed-steps">
+          <CardTitle>Validated steps</CardTitle>
+          {completedSteps.map((s) => {
+            const binding = session.bindings.find((b) => b.stepId === s.stepId)
+            return (
+              <div key={s.stepId} data-testid={`founder-completed-${s.stepId}`}>
+                <Row>
+                  <span>
+                    Step {s.index} · {s.contractName}
+                  </span>
+                  <strong data-testid="founder-step1-status">
+                    DEPLOYED · VALIDATED · READY
+                    {binding ? ` · ${binding.contractAddress}` : ''}
+                  </strong>
+                </Row>
+                {binding?.txHash && (
+                  <Row>
+                    <span>Transaction</span>
+                    <strong>{binding.txHash}</strong>
+                  </Row>
+                )}
+              </div>
+            )
+          })}
+          {step1Binding && (
+            <Banner $tone="ok" data-testid="founder-step1-validated">
+              Step 1 LiquidityBuildingExecutionMathV1 validated at {step1Binding.contractAddress}
+            </Banner>
+          )}
+        </Card>
+      )}
 
       {step && (
         <Card data-testid="founder-active-step">

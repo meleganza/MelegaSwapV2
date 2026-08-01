@@ -1,0 +1,21 @@
+{
+  "activeStep": "LiquidityBuildingTreasuryFeeReceiverV1",
+  "index": 2,
+  "total": 6,
+  "constructorArgs": [
+    {
+      "name": "governor_",
+      "type": "address",
+      "value": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0"
+    },
+    {
+      "name": "beneficiary_",
+      "type": "address",
+      "value": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    }
+  ],
+  "dependencies": [],
+  "note": "FeeReceiver does not take ExecutionMath in constructor. Math address is bound for Step 5 Program library link.",
+  "step1AddressBoundForLater": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+  "deploymentDataPresent": true
+}

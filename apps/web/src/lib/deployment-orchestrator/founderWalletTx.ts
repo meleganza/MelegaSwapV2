@@ -66,6 +66,27 @@ export async function walletEstimateDeployGas(
   return BigInt(est)
 }
 
+export async function walletGetTransactionReceipt(
+  eth: EthereumProvider,
+  txHash: string,
+): Promise<{ contractAddress?: string | null; status?: string | number | null; from?: string | null } | null> {
+  const receipt = await eth.request({
+    method: 'eth_getTransactionReceipt',
+    params: [txHash],
+  })
+  if (!receipt || typeof receipt !== 'object') return null
+  return receipt as { contractAddress?: string | null; status?: string | number | null; from?: string | null }
+}
+
+export async function walletGetCode(eth: EthereumProvider, address: string): Promise<string> {
+  const code = await eth.request({
+    method: 'eth_getCode',
+    params: [address, 'latest'],
+  })
+  if (typeof code !== 'string' || !code.startsWith('0x')) throw new Error('eth_getCode failed')
+  return code
+}
+
 export async function walletSendDeployTransaction(
   eth: EthereumProvider,
   from: string,
