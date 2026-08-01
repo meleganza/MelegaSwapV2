@@ -1,5 +1,19 @@
 {
-  "status": "PENDING_AFTER_PUSH",
+  "status": "SUCCESS",
+  "commit": "ab022fa58e485c054206235b7a0f6c67217662bd",
   "branch": "melega-dex-v1-founder-deployment-vercel-artifact-build-recovery",
-  "note": "Push recovery branch; confirm Vercel preview build succeeds, then verify /runtime/deployment/"
+  "vercelDeploymentUrl": "https://vercel.com/melegazas-projects/melega-swap-v2-web/12QmGYzmGMJU1jaAHuKMDmvV3V2w",
+  "previewUrl": "https://melega-swap-v2-7rf498bsr-melegazas-projects.vercel.app",
+  "founderPath": "/runtime/deployment/",
+  "checks": {
+    "vercelCommitStatus": "success",
+    "certifiedArtifactLoaded": true,
+    "artifactHashVerified": true,
+    "step1Contract": "LiquidityBuildingExecutionMathV1",
+    "deployCtaVisible": true,
+    "manualBytecodeLoadInstructionAbsent": true,
+    "manualUploadInstructionAbsent": true,
+    "noKmsNoServerSignerBanner": true
+  },
+  "screenshot": "screenshots/05-vercel-preview-founder-certified.png"
 }

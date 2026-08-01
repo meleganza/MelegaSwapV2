@@ -26,3 +26,14 @@ With `out/` absent: check PASS, generate FAIL, `next build` PASS, `turbo run bui
 ## Required release
 
 Confirm Vercel preview for `melega-dex-v1-founder-deployment-vercel-artifact-build-recovery`, then promote to production.
+
+## Preview verification (post-push)
+
+- Vercel commit status: **success**
+- Preview URL: https://melega-swap-v2-7rf498bsr-melegazas-projects.vercel.app/runtime/deployment/
+- Certified artifact loaded · Artifact hash verified · LiquidityBuildingExecutionMathV1 ready
+- Deploy CTA: Deploy LiquidityBuildingExecutionMathV1
+- Manual bytecode load instruction: absent
+- Production promotion: **pending**
+
+**Verdict:** `MELEGA_DEX_V1_FOUNDER_DEPLOYMENT_VERCEL_ARTIFACT_BUILD_WEB_RELEASE_PENDING`
