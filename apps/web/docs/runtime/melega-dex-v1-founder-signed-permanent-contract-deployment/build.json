@@ -1,0 +1,13 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_SIGNED_PERMANENT_CONTRACT_DEPLOYMENT",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0,
+  "durationSec": 37.77,
+  "notes": [
+    "Build includes /runtime/deployment with Founder Deployment Mode.",
+    "No contracts were broadcast during this mission."
+  ],
+  "capturedAt": "2026-08-01T06:49:00.000Z"
+}

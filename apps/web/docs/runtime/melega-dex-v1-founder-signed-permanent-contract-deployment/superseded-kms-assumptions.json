@@ -1,0 +1,23 @@
+{
+  "status": "SUPERSEDED",
+  "supersededBy": "FOUNDER_WALLET_SIGNED via MELEGA DEPLOYER",
+  "noLongerMandatory": [
+    "AWS_KMS_KEY_ID",
+    "LB_PRODUCTION_AUTHORITY",
+    "server-side MAINNET_DEPLOYER",
+    "KMS role assumption",
+    "automated broadcast authority"
+  ],
+  "replacementGates": [
+    "FOUNDER_WALLET_CONNECTED",
+    "AUTHORIZED_DEPLOYER_MATCH",
+    "CHAIN_56",
+    "SUFFICIENT_BNB",
+    "ARTIFACT_VALID",
+    "CONSTRUCTOR_VALID",
+    "SUBSYSTEM_READY",
+    "FOUNDER_SIGNATURE_REQUIRED"
+  ],
+  "historicalEvidencePreserved": true,
+  "note": "Prior KMS-oriented readiness probes remain in history; they are not blockers for this Founder-signed model."
+}

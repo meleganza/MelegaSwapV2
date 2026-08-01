@@ -1,0 +1,27 @@
+{
+  "mission": "MELEGA_DEX_V1_FOUNDER_SIGNED_PERMANENT_CONTRACT_DEPLOYMENT",
+  "command": "yarn test src/lib/deployment-orchestrator src/pages/api/deployment",
+  "result": "PASS",
+  "testFiles": 3,
+  "tests": 23,
+  "failed": 0,
+  "coverage": [
+    "authorized deployer exact match",
+    "wrong wallet rejected",
+    "wrong chain rejected",
+    "insufficient BNB",
+    "constructor review",
+    "receipt / contract-address extraction",
+    "bytecode validation",
+    "constructor-state validation",
+    "quarantine on mismatch",
+    "binding after validation only",
+    "sequential deployment order",
+    "user Create Token / Public Farm / LB ops do not require Melega deployer",
+    "no private-key handling",
+    "no KMS dependency",
+    "Treasury destination",
+    "fee values"
+  ],
+  "capturedAt": "2026-08-01T06:49:25.000Z"
+}

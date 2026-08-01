@@ -1,0 +1,15 @@
+{
+  "route": "/runtime/deployment",
+  "panel": "FounderDeploymentPanel",
+  "steps": [
+    "Connect MELEGA DEPLOYER on chain 56",
+    "Review constructor + fees + Treasury",
+    "Request wallet signature",
+    "Wait for receipt",
+    "Validate bytecode + constructor state",
+    "Bind or quarantine",
+    "Advance sequential order"
+  ],
+  "broadcast": "wallet eth_sendTransaction only",
+  "bindPolicy": "only after validatePostDeployment READY"
+}

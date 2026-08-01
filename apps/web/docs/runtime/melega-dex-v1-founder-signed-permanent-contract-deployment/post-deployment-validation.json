@@ -1,0 +1,6 @@
+{
+  "module": "founderPostDeploy.ts",
+  "requires": ["chainId 56", "receipt success", "runtime bytecode", "hash match when expected", "constructor/treasury/fee ok"],
+  "onMismatch": "QUARANTINED — do not bind",
+  "verificationWithoutBscScan": "VERIFICATION_PENDING allowed"
+}

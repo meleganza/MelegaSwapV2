@@ -40,15 +40,16 @@ export function humanNextAction(
   authorityPresent: boolean,
 ): string {
   if (globalState === 'LIVE') return 'All subsystems LIVE — monitor canaries.'
-  if (!authorityPresent) {
-    return `Provide production deployment authority, then deploy ${firstBlockedLabel}.`
+  if (globalState === 'READY') {
+    return `Connect MELEGA DEPLOYER and sign ${firstBlockedLabel} deployment.`
   }
-  if (globalState === 'READY') return `Deploy ${firstBlockedLabel}.`
-  if (globalState === 'DEPLOYED') return `Verify ${firstBlockedLabel} on BscScan.`
+  if (globalState === 'DEPLOYED') return `Validate bytecode for ${firstBlockedLabel}, then bind.`
   if (globalState === 'VERIFIED') return `Bind ${firstBlockedLabel} into frontend SSOT.`
-  if (globalState === 'BOUND') return `Confirm ${firstBlockedLabel} runtime READY and run canary.`
+  if (globalState === 'BOUND') return `Confirm ${firstBlockedLabel} runtime READY.`
   if (globalState === 'BLOCKED') {
-    return `Clear blockers for ${firstBlockedLabel} (production authority required).`
+    return authorityPresent
+      ? `Clear Founder deploy gates for ${firstBlockedLabel}.`
+      : `Connect authorized MELEGA DEPLOYER for ${firstBlockedLabel}.`
   }
   return `Complete package readiness for ${firstBlockedLabel}.`
 }

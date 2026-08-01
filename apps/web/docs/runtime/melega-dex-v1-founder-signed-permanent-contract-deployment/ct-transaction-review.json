@@ -1,0 +1,8 @@
+{
+  "subsystem": "create_token",
+  "creationFeeWei": "100000000000000000",
+  "creationFeeBnb": "0.10",
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "package": "contracts/create-token/",
+  "userOpsIndependent": true
+}

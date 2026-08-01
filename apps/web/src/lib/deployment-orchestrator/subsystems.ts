@@ -36,10 +36,14 @@ export function snapshotLiquidityBuilder(authorityPresent: boolean, now: string)
   const verified = bound // verification implied only after bind of verified registry
   const canary = getCanaryStatus('liquidity_builder')
   const blockers = sanitizeBlockers([
-    ...(exec.ready ? [] : ['Missing factory address (Liquidity Builder core contracts unbound)']),
-    ...(authorityPresent ? [] : ['Missing deploy authorization for Liquidity Builder']),
-    ...(!authorityPresent && !bound ? ['Missing KMS / RPC / BscScan keys for LB track'] : []),
+    ...(exec.ready
+      ? []
+      : [
+          'Missing factory address (Liquidity Builder unbound)',
+          'Awaiting Founder-signed deploy via MELEGA DEPLOYER',
+        ]),
   ])
+  void authorityPresent
 
   const state = computeSubsystemState({
     packageReady: true,
@@ -91,9 +95,14 @@ export function snapshotCreateToken(authorityPresent: boolean, now: string): Sub
   const verified = Boolean(dep.verified && dep.factoryAddress)
   const canary = getCanaryStatus('create_token')
   const blockers = sanitizeBlockers([
-    ...ct.blockers,
-    ...(authorityPresent ? [] : ['Missing deploy authorization for Create Token']),
+    ...(bound
+      ? []
+      : [
+          'Missing factory address (Create Token unbound)',
+          'Awaiting Founder-signed deploy via MELEGA DEPLOYER after Liquidity Builder is READY',
+        ]),
   ])
+  void authorityPresent
 
   const state = computeSubsystemState({
     packageReady: true,
@@ -144,11 +153,15 @@ export function snapshotPublicFarmFactory(authorityPresent: boolean, now: string
   const verified = Boolean(dep.verified && dep.factoryAddress)
   const canary = getCanaryStatus('public_farm_factory')
   const blockers = sanitizeBlockers([
-    ...cap.deployment.blockers,
-    ...(bound ? [] : ['Missing factory address (Public Farm Factory unbound)']),
-    ...(authorityPresent ? [] : ['Missing deploy authorization for Public Farm Factory']),
-    ...(dep.verified ? [] : ['Missing BscScan verification']),
+    ...(bound
+      ? []
+      : [
+          'Missing factory address (Public Farm Factory unbound)',
+          'Awaiting Founder-signed deploy via MELEGA DEPLOYER after Create Token is READY',
+        ]),
+    // BscScan auto-verify is optional — VERIFICATION_PENDING allowed after deploy.
   ])
+  void authorityPresent
 
   const state = computeSubsystemState({
     packageReady: Boolean(cap.contracts.package),

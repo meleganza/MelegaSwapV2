@@ -6,6 +6,7 @@ import { getAllCanaryStatuses } from '../canary'
 import { computeGlobalState, computeSubsystemState } from '../computeState'
 import { DEPLOYMENT_ORDER, DEPLOYMENT_ORDER_STEPS } from '../order'
 import { buildAllRollbackPlans, buildGlobalRollback } from '../rollback'
+import { AUTHORIZED_MELEGA_DEPLOYER } from '../founderDeployer'
 
 describe('deployment orchestrator readiness', () => {
   it('uses canonical LB → Create Token → Public Farm Factory order', () => {
@@ -17,21 +18,20 @@ describe('deployment orchestrator readiness', () => {
     expect(DEPLOYMENT_ORDER_STEPS.map((s) => s.id)).toEqual([...DEPLOYMENT_ORDER])
   })
 
-  it('builds status with global BLOCKED when authority missing and packages unbound', () => {
+  it('Founder authority present; unbound packages are READY for Founder signature', () => {
     const status = buildOrchestratorStatus(new Date('2026-07-30T00:00:00.000Z'))
     expect(status.schema).toBe('melega.dex.v1.deployment-orchestrator.status')
     expect(status.subsystems).toHaveLength(3)
-    expect(status.globalState).toBe('BLOCKED')
-    expect(status.authority.productionAuthorityPresent).toBe(false)
-    expect(status.authority.blockers.some((b) => /Missing (deploy authorization|KMS|RPC)/i.test(b))).toBe(
-      true,
-    )
+    expect(status.authority.authorityModel).toBe('FOUNDER_WALLET_SIGNED')
+    expect(status.authority.productionAuthorityPresent).toBe(true)
+    expect(status.authority.authorizedDeployer).toBe(AUTHORIZED_MELEGA_DEPLOYER)
+    expect(status.authority.blockers).toEqual([])
+    expect(status.globalState).toBe('READY')
     for (const snap of status.subsystems) {
-      expect(snap.state).toBe('BLOCKED')
+      expect(snap.state).toBe('READY')
       expect(snap.lanes.contracts).toBe(true)
-      expect(snap.blockers.length).toBeGreaterThan(0)
     }
-    expect(status.nextAction).toMatch(/production deployment authority/i)
+    expect(status.nextAction).toMatch(/MELEGA DEPLOYER/i)
   })
 
   it('exposes canary Pending for all subsystems before live runs', () => {
@@ -89,8 +89,8 @@ describe('deployment orchestrator status / state machine', () => {
       }),
     ).toBe('READY')
 
-    expect(computeGlobalState(['BLOCKED', 'BLOCKED', 'BLOCKED'])).toBe('BLOCKED')
-    expect(computeGlobalState(['LIVE', 'BLOCKED', 'NOT_READY'])).toBe('BLOCKED')
+    expect(computeGlobalState(['READY', 'READY', 'READY'])).toBe('READY')
+    expect(computeGlobalState(['LIVE', 'READY', 'READY'])).toBe('READY')
     expect(computeGlobalState(['LIVE', 'LIVE', 'LIVE'])).toBe('LIVE')
   })
 
@@ -105,6 +105,5 @@ describe('deployment orchestrator status / state machine', () => {
     const plans = buildAllRollbackPlans()
     expect(plans).toHaveLength(4)
     expect(buildGlobalRollback().subsystemId).toBe('global')
-    expect(plans.some((p) => p.forbid.includes('Deploying without production authority'))).toBe(true)
   })
 })

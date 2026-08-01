@@ -1,0 +1,14 @@
+{
+  "bindOnlyAfter": "validatePostDeployment.status === READY",
+  "registries": [
+    "deployments/liquidity-building/chain-56/deployed-addresses.v1.json",
+    "deployments/create-token/chain-56/deployed-addresses.v1.json",
+    "deployments/public-farm-factory/chain-56/deployed-addresses.v1.json"
+  ],
+  "frontendSsots": [
+    "liquidityBuildingDeployment.ts",
+    "createTokenFactoryDeployment.ts",
+    "publicFarmFactoryDeployment.ts"
+  ],
+  "currentBoundAddresses": { "lb": null, "ct": null, "pff": null }
+}

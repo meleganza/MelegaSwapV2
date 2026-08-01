@@ -1,0 +1,9 @@
+{
+  "privateKeyHandling": false,
+  "serverSideSigning": false,
+  "kmsDependency": false,
+  "autoSign": false,
+  "broadcastRequiresWalletConfirmation": true,
+  "deployerImpersonationForbidden": true,
+  "wrongWalletMessage": "Connect the authorized MELEGA DEPLOYER."
+}

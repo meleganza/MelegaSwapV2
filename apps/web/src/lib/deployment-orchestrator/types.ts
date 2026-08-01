@@ -57,8 +57,11 @@ export type OrchestratorStatus = {
   subsystems: SubsystemSnapshot[]
   authority: {
     productionAuthorityPresent: boolean
+    authorityModel: 'FOUNDER_WALLET_SIGNED'
+    authorizedDeployer: string
     blockers: string[]
     env: Record<string, 'SET' | 'UNSET'>
+    notes?: string[]
   }
   canary: Record<SubsystemId, CanaryStatus>
   rollback: RollbackPlan[]

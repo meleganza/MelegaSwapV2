@@ -1,0 +1,12 @@
+{
+  "schema": "melega.dex.v1.founder-signed-deployment.governance",
+  "authorityModel": "FOUNDER_WALLET_SIGNED",
+  "authorizedDeployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "chainId": 56,
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "treasuryRuntime": "DECOMMISSIONED",
+  "serverSideSigning": false,
+  "kmsRequired": false,
+  "userOperationsRequireDeployer": false,
+  "order": ["liquidity_builder", "create_token", "public_farm_factory"]
+}

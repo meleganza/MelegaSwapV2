@@ -4,6 +4,8 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import type { OrchestratorStatus, SubsystemSnapshot } from 'lib/deployment-orchestrator'
+import { AUTHORIZED_MELEGA_DEPLOYER } from 'lib/deployment-orchestrator'
+import FounderDeploymentPanel from './FounderDeploymentPanel'
 
 const Root = styled.div`
   max-width: 1100px;
@@ -177,7 +179,10 @@ export const DeploymentDashboard: React.FC = () => {
   return (
     <Root data-testid="deployment-dashboard">
       <Title>Deployment Dashboard</Title>
-      <Sub>One pipeline for Liquidity Builder → Create Token → Public Farm Factory.</Sub>
+      <Sub>
+        One pipeline for Liquidity Builder → Create Token → Public Farm Factory. Permanent contracts are signed by
+        MELEGA DEPLOYER ({AUTHORIZED_MELEGA_DEPLOYER}).
+      </Sub>
 
       {error && <Global role="status">{error}</Global>}
 
@@ -197,8 +202,14 @@ export const DeploymentDashboard: React.FC = () => {
               <strong>{status.updatedAt}</strong>
             </Lane>
             <Lane>
-              <span>Production authority</span>
-              <strong>{status.authority.productionAuthorityPresent ? 'Present' : 'Missing'}</strong>
+              <span>Authority model</span>
+              <strong data-testid="deployment-authority-model">
+                {status.authority.authorityModel ?? 'FOUNDER_WALLET_SIGNED'}
+              </strong>
+            </Lane>
+            <Lane>
+              <span>Authorized deployer</span>
+              <strong>{status.authority.authorizedDeployer ?? AUTHORIZED_MELEGA_DEPLOYER}</strong>
             </Lane>
           </Global>
           <Grid>
@@ -206,6 +217,7 @@ export const DeploymentDashboard: React.FC = () => {
               <SubsystemCard key={snap.id} snap={snap} />
             ))}
           </Grid>
+          <FounderDeploymentPanel />
         </>
       )}
     </Root>

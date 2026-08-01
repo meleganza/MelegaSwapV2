@@ -30,8 +30,11 @@ export function buildOrchestratorStatus(now: Date = new Date()): OrchestratorSta
     subsystems,
     authority: {
       productionAuthorityPresent: authority.productionAuthorityPresent,
+      authorityModel: authority.authorityModel,
+      authorizedDeployer: authority.authorizedDeployer,
       blockers: authority.blockers,
       env: authority.env,
+      notes: authority.notes,
     },
     canary: getAllCanaryStatuses(),
     rollback: buildAllRollbackPlans(),
