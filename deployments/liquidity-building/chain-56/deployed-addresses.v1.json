@@ -2,14 +2,14 @@
   "schemaVersion": "melega.liquidity-building.deployed-addresses.v1",
   "chainId": 56,
   "network": "bsc-mainnet",
-  "status": "STEP3_DEPLOYED_VALIDATED",
+  "status": "STEP4_DEPLOYED_VALIDATED",
   "mainnetDeployExecuted": true,
   "addresses": {
     "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
     "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
     "lbFactory": null,
     "lbAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
-    "lbFeeSink": null,
+    "lbFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
     "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
     "lbProgramImplementation": null,
     "lbExecutionMathLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
@@ -46,7 +46,18 @@
       "authorityType": 1,
       "authorityTypeLabel": "ERC1271",
       "note": "Step 3 of 6 — verified on BNB mainnet; signingAuthority=DEPLOYER; authorityType=ERC1271 because DEPLOYER has on-chain code."
+    },
+    "LiquidityBuildingTreasuryFeeSinkV1": {
+      "address": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+      "transactionHash": "0x14d7e29da9da96b701062d37ef04cf8a213595b506df86e61e2be1430ea9fa98",
+      "status": "VALIDATED",
+      "runtimeBytecodeSha256": "0x06ddf617a98e57e973d1c8ebda8246cd029ae214184deb8873b14ae0de9fbb19",
+      "certifiedTemplateRuntimeSha256": "0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0",
+      "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "treasuryReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+      "feeChain": "FeeSink → FeeReceiver → MELEGA TREASURY WALLET",
+      "note": "Step 4 of 6 — verified on BNB mainnet; treasuryReceiver_=FeeReceiver (not Treasury EOA)."
     }
   },
-  "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. ExecutionMath + FeeReceiver + Authorizer bound; never fabricate remaining addresses."
+  "note": "Canonical single source for LB addresses. Frontend binds only from this artifact after a verified mainnet deploy. Steps 1–4 bound; never fabricate remaining addresses."
 }

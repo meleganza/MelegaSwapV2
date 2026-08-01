@@ -1,0 +1,19 @@
+{
+  "deployOrder": [
+    "LiquidityBuildingExecutionMathV1",
+    "LiquidityBuildingTreasuryFeeReceiverV1",
+    "LiquidityBuildingExecutionAuthorizerV1",
+    "LiquidityBuildingTreasuryFeeSinkV1",
+    "LiquidityBuildingProgramV1",
+    "LiquidityBuildingFactoryV1"
+  ],
+  "step": 5,
+  "total": 6,
+  "contract": "LiquidityBuildingProgramV1",
+  "status": "Ready for Founder signature",
+  "constructor": [],
+  "dependenciesResolvedFromFactual": {
+    "linkedLibrary_ExecutionMath": "0xA6434254ef3c859230d1c46a03A5928979fa379f"
+  },
+  "noBroadcast": true
+}

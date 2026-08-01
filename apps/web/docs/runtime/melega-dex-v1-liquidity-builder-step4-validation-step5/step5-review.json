@@ -1,0 +1,19 @@
+{
+  "labels": [
+    "Certified artifact loaded",
+    "Artifact hash verified",
+    "Gas estimate ready",
+    "Ready for Founder signature",
+    "Deploy LiquidityBuildingProgramV1"
+  ],
+  "contract": "LiquidityBuildingProgramV1",
+  "constructorHuman": [
+    {
+      "name": "linked library",
+      "value": "0xA6434254ef3c859230d1c46a03A5928979fa379f"
+    }
+  ],
+  "artifactVerified": true,
+  "manualSignatureRequired": true,
+  "automaticBroadcast": false
+}

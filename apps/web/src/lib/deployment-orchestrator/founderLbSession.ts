@@ -64,7 +64,22 @@ export const LB_STEP3_FACTUAL = {
 } as const
 
 export const LB_STEP3_CONTRACT = LB_STEP3_FACTUAL.contractName
-export const LB_STEP4_CONTRACT = 'LiquidityBuildingTreasuryFeeSinkV1' as const
+
+/** Step 4 — mainnet FeeSink (treasuryReceiver_ = FeeReceiver, not Treasury EOA). */
+export const LB_STEP4_FACTUAL = {
+  stepId: 'LiquidityBuildingTreasuryFeeSinkV1',
+  contractName: 'LiquidityBuildingTreasuryFeeSinkV1',
+  chainId: FOUNDER_DEPLOY_CHAIN_ID,
+  txHash: '0x14d7e29da9da96b701062d37ef04cf8a213595b506df86e61e2be1430ea9fa98',
+  contractAddress: '0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF',
+  deployer: AUTHORIZED_MELEGA_DEPLOYER,
+  treasuryReceiver: '0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5',
+  observedRuntimeBytecodeSha256: '0x06ddf617a98e57e973d1c8ebda8246cd029ae214184deb8873b14ae0de9fbb19',
+  expectedRuntimeBytecodeSha256: '0xab5e113378bbc683a864672a2a5d1e08f6b046298adf2aa4c57d5aee60cea1f0',
+} as const
+
+export const LB_STEP4_CONTRACT = LB_STEP4_FACTUAL.contractName
+export const LB_STEP5_CONTRACT = 'LiquidityBuildingProgramV1' as const
 
 /**
  * Solc immutable byte ranges in deployed bytecode (from forge immutableReferences).
@@ -81,6 +96,14 @@ export const LB_IMMUTABLE_BYTE_RANGES: Record<string, Array<{ start: number; len
     { start: 435, length: 32 },
     { start: 888, length: 32 },
     { start: 1229, length: 32 },
+  ],
+  LiquidityBuildingTreasuryFeeSinkV1: [
+    { start: 1086, length: 32 },
+    { start: 1185, length: 32 },
+    { start: 1343, length: 32 },
+    { start: 1463, length: 32 },
+    { start: 1881, length: 32 },
+    { start: 2833, length: 32 },
   ],
 }
 
@@ -114,6 +137,10 @@ export type AuthorizerConstructorState = {
   signingAuthority: string | null
   /** 0 = EOA, 1 = ERC1271 */
   authorityType: number | null
+}
+
+export type FeeSinkConstructorState = {
+  treasuryReceiver: string | null
 }
 
 export function sha256Bytecode(runtimeBytecode: string): string {
@@ -191,6 +218,28 @@ export function verifyAuthorizerConstructorState(state: AuthorizerConstructorSta
     }
   }
   return { ok: true, authorityMatch, authorityTypeMatch }
+}
+
+export function verifyFeeSinkConstructorState(state: FeeSinkConstructorState): {
+  ok: boolean
+  treasuryReceiverMatch: boolean
+  notDirectTreasury: boolean
+  reason?: string
+} {
+  const receiver = normalizeAddress(state.treasuryReceiver)
+  const expectedFeeReceiver = normalizeAddress(LB_STEP2_FACTUAL.contractAddress)
+  const treasury = normalizeAddress(FOUNDER_TREASURY_DESTINATION)
+  const treasuryReceiverMatch = Boolean(receiver && expectedFeeReceiver && receiver === expectedFeeReceiver)
+  const notDirectTreasury = Boolean(receiver && treasury && receiver !== treasury)
+  if (!treasuryReceiverMatch || !notDirectTreasury) {
+    return {
+      ok: false,
+      treasuryReceiverMatch,
+      notDirectTreasury,
+      reason: 'STEP4_VALIDATION_FAILED: treasuryReceiver_ must be FeeReceiver (not Treasury wallet)',
+    }
+  }
+  return { ok: true, treasuryReceiverMatch, notDirectTreasury }
 }
 
 export function mapStepIdToDeployedKey(stepId: string): keyof LbDeployedAddresses | null {
@@ -391,6 +440,21 @@ export function seedSessionWithValidatedStep3(base: FounderLbSession): FounderLb
   })
 }
 
+/** Seed Step 4 FeeSink after mainnet validation (does not touch other null bindings). */
+export function seedSessionWithValidatedStep4(base: FounderLbSession): FounderLbSession {
+  const withStep3 = step3IsValidated(base) ? base : seedSessionWithValidatedStep3(base)
+  return bindValidatedLbStep(withStep3, {
+    stepId: LB_STEP4_FACTUAL.stepId,
+    contractName: LB_STEP4_FACTUAL.contractName,
+    contractAddress: LB_STEP4_FACTUAL.contractAddress,
+    txHash: LB_STEP4_FACTUAL.txHash,
+    chainId: LB_STEP4_FACTUAL.chainId,
+    runtimeBytecodeSha256: LB_STEP4_FACTUAL.observedRuntimeBytecodeSha256,
+    status: 'READY',
+    validatedAt: '2026-08-01T00:00:00.000Z',
+  })
+}
+
 /** Prefer canonical constants; upgrade storage when later steps bind. */
 export function loadInitialFounderLbSession(): FounderLbSession {
   let session = readFounderLbSessionFromStorage() ?? emptyFounderLbSession()
@@ -411,6 +475,13 @@ export function loadInitialFounderLbSession(): FounderLbSession {
     normalizeAddress(LB_STEP3_FACTUAL.contractAddress)
   if (authorizerMatches && !step3IsValidated(session)) {
     session = seedSessionWithValidatedStep3(session)
+  }
+
+  const feeSinkMatches =
+    normalizeAddress(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink) ===
+    normalizeAddress(LB_STEP4_FACTUAL.contractAddress)
+  if (feeSinkMatches && !step4IsValidated(session)) {
+    session = seedSessionWithValidatedStep4(session)
   }
 
   return session
@@ -464,5 +535,14 @@ export function step3IsValidated(session: FounderLbSession): boolean {
     b &&
       (b.status === 'VALIDATED' || b.status === 'READY') &&
       normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP3_FACTUAL.contractAddress),
+  )
+}
+
+export function step4IsValidated(session: FounderLbSession): boolean {
+  const b = session.bindings.find((x) => x.stepId === LB_STEP4_FACTUAL.stepId)
+  return Boolean(
+    b &&
+      (b.status === 'VALIDATED' || b.status === 'READY') &&
+      normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP4_FACTUAL.contractAddress),
   )
 }

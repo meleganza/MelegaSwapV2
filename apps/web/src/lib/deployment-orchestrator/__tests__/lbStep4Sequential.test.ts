@@ -34,16 +34,16 @@ const STEP3_ADDR = LB_STEP3_FACTUAL.contractAddress
 const STEP3_TX = LB_STEP3_FACTUAL.txHash
 
 describe('LB Step 3 validation + Step 4 unlock', () => {
-  it('canonical binding records Authorizer only for Step 3 (prior steps unchanged, later null)', () => {
+  it('canonical binding records Authorizer (FeeSink also bound in later mission)', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary).toBe(LB_STEP1_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBe(LB_STEP2_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBe(STEP3_ADDR)
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink).toBeTruthy()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBeNull()
   })
 
-  it('deployed-addresses artifact binds Step 3 Authorizer', () => {
+  it('deployed-addresses artifact records Step 3 Authorizer validated', () => {
     const artifact = JSON.parse(
       readFileSync(
         path.resolve(__dirname, '../../../../../../deployments/liquidity-building/chain-56/deployed-addresses.v1.json'),
@@ -57,7 +57,6 @@ describe('LB Step 3 validation + Step 4 unlock', () => {
       AUTHORIZED_MELEGA_DEPLOYER,
     )
     expect(artifact.deployments.LiquidityBuildingExecutionAuthorizerV1.authorityType).toBe(1)
-    expect(artifact.addresses.lbFeeSink).toBeNull()
   })
 
   it('constructor state verifier accepts DEPLOYER authority + ERC1271 type', () => {

@@ -1,0 +1,14 @@
+{
+  "suite": "src/lib/deployment-orchestrator",
+  "passed": 102,
+  "failed": 0,
+  "exitCode": 0,
+  "coverage": [
+    "Step 4 receipt validation",
+    "runtime hash validation",
+    "constructor validation",
+    "binding",
+    "Step 5 dependency resolution",
+    "sequence lock"
+  ]
+}
