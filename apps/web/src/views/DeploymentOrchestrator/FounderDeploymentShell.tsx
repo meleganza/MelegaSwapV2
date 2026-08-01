@@ -189,19 +189,23 @@ export const FounderDeploymentShell: React.FC = () => {
   const active = nextFounderDeployTarget() ?? 'liquidity_builder'
   const allDone = nextFounderDeployTarget() == null
 
-  const review = useMemo(
-    () =>
-      getTransactionReview(active, {
+  const review = useMemo(() => {
+    try {
+      return getTransactionReview(active, {
         eligibilitySigner: eligibilitySigner.trim() || null,
-      }),
-    [active, eligibilitySigner],
-  )
+      })
+    } catch {
+      return getTransactionReview('liquidity_builder')
+    }
+  }, [active, eligibilitySigner])
 
   const subsystemReady = allDone ? false : isSubsystemReadyForFounderDeploy(active)
 
-  const session = useMemo(
-    () =>
-      buildFounderExecutionSession({
+  const [sessionError, setSessionError] = useState<string | null>(null)
+
+  const session = useMemo(() => {
+    try {
+      const built = buildFounderExecutionSession({
         connectedWallet: isConnected ? address ?? null : null,
         chainId: chainId ?? null,
         balanceWei: balance?.value ?? null,
@@ -210,36 +214,46 @@ export const FounderDeploymentShell: React.FC = () => {
         constructorValid: review.constructorValid,
         subsystemReady: allDone ? true : subsystemReady,
         allSubsystemsLive: allDone,
-      }),
-    [
-      isConnected,
-      address,
-      chainId,
-      balance?.value,
-      gasPriceWei,
-      review.artifactValid,
-      review.constructorValid,
-      subsystemReady,
-      allDone,
-    ],
-  )
+      })
+      return built
+    } catch {
+      return null
+    }
+  }, [
+    isConnected,
+    address,
+    chainId,
+    balance?.value,
+    gasPriceWei,
+    review.artifactValid,
+    review.constructorValid,
+    subsystemReady,
+    allDone,
+  ])
 
-  const operationalState = resolveFounderOperationalState({
-    gates: session.gates,
-    gas: session.gas,
-    signaturePending,
-    transactionPending,
-    subsystemReadyComplete: allDone,
-  })
+  useEffect(() => {
+    setSessionError(session ? null : 'Deployment information temporarily unavailable. Retry.')
+  }, [session])
+
+  const operationalState: FounderOperationalState = session
+    ? resolveFounderOperationalState({
+        gates: session.gates,
+        gas: session.gas,
+        signaturePending,
+        transactionPending,
+        subsystemReadyComplete: allDone,
+      })
+    : 'CONNECT_WALLET'
 
   const authorizedConnected =
     Boolean(isConnected && address && isAuthorizedMelegaDeployer(address) && chainId === FOUNDER_DEPLOY_CHAIN_ID)
 
-  const deployEnabled =
-    session.gates.deployEnabled &&
-    chainId === FOUNDER_DEPLOY_CHAIN_ID &&
-    !allDone &&
-    operationalState !== 'FUNDING_REQUIRED'
+  const deployEnabled = Boolean(
+    session?.gates.deployEnabled &&
+      chainId === FOUNDER_DEPLOY_CHAIN_ID &&
+      !allDone &&
+      operationalState !== 'FUNDING_REQUIRED',
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -260,7 +274,7 @@ export const FounderDeploymentShell: React.FC = () => {
     }
   }, [isConnected, address, chainId])
 
-  const selectedGas = session.gas.estimates.find((e) => e.subsystemId === active)
+  const selectedGas = session?.gas.estimates.find((e) => e.subsystemId === active)
 
   const onDeploy = async () => {
     if (!deployEnabled) return
@@ -340,9 +354,14 @@ export const FounderDeploymentShell: React.FC = () => {
           Switch to BNB Smart Chain.
         </Banner>
       )}
-      {operationalState === 'FUNDING_REQUIRED' && session.gas.message && (
+      {operationalState === 'FUNDING_REQUIRED' && session?.gas.message && (
         <Banner $tone="warn" data-testid="founder-funding-required">
           {session.gas.message}
+        </Banner>
+      )}
+      {sessionError && (
+        <Banner $tone="warn" data-testid="founder-session-unavailable">
+          {sessionError}
         </Banner>
       )}
 
@@ -486,9 +505,9 @@ export const FounderDeploymentShell: React.FC = () => {
               {statusNote}
             </Banner>
           )}
-          {session.gates.blockers.length > 0 && (
+          {(session?.gates.blockers.length ?? 0) > 0 && (
             <ArgList data-testid="founder-deploy-blockers">
-              {session.gates.blockers.map((b) => (
+              {session!.gates.blockers.map((b) => (
                 <li key={b}>{b}</li>
               ))}
             </ArgList>

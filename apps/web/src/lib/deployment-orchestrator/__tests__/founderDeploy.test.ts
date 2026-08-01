@@ -15,6 +15,7 @@ import {
   resolveFounderOperationalState,
   userOperationRequiresMelegaDeployer,
   validatePostDeployment,
+  weiToBnb,
 } from 'lib/deployment-orchestrator'
 import { isSubsystemReadyForFounderDeploy } from '../founderSequence'
 import { SUPERSEDED_KMS_AUTHORITY_KEYS, probeProductionAuthority } from '../authority'
@@ -272,6 +273,20 @@ describe('user operation independence + no KMS', () => {
 })
 
 describe('founder execution session + gas readiness', () => {
+  it('weiToBnb never uses BigInt exponentiation that SWC rewrites to Math.pow', () => {
+    const src = readFileSync(path.resolve(__dirname, '../founderGasReadiness.ts'), 'utf8')
+    // Strip comments before asserting — docs may mention the forbidden pattern.
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+    expect(code).not.toMatch(/\bn\s*\*\*\s*/)
+    expect(code).toContain('WEI_PER_BNB = 1000000000000000000n')
+    expect(weiToBnb(100000000000000000n)).toBe('0.1')
+    expect(weiToBnb(1000000000000000000n)).toBe('1')
+    // Must not throw under the same path production crashed on
+    expect(() => assessFounderGasReadiness({ balanceWei: null })).not.toThrow()
+    const gas = assessFounderGasReadiness({ balanceWei: null })
+    expect(gas.estimatedTotalCostBnb).toBeTruthy()
+  })
+
   it('awaits Founder wallet when disconnected', () => {
     const session = buildFounderExecutionSession({
       connectedWallet: null,
