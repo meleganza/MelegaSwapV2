@@ -1,0 +1,29 @@
+{
+  "status": "ALL_SIX_DEPLOYED_VALIDATED_BOUND",
+  "lbFactory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+  "preserved": {
+    "lbMath": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+    "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "lbAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+    "lbFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "lbProgramImplementation": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491"
+  },
+  "factoryDeployment": {
+    "address": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+    "transactionHash": "0xb1b857778d0812be2ebcab8452e047eba5847ebc49522446941a7cdacd08ae8d",
+    "status": "VALIDATED",
+    "runtimeBytecodeSha256": "0x67d1d01154989e15eace4760ce5493b1377a7965ef04ff5f205fc04ca757dcb2",
+    "certifiedTemplateRuntimeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+    "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "implementation": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+    "executionAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+    "treasuryFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "successFeeBps": 1000,
+    "feeChain": "FeeSink → FeeReceiver → MELEGA TREASURY WALLET",
+    "note": "Step 6 of 6 — verified on BNB mainnet; all permanent LB contracts DEPLOYED · VALIDATED · BOUND."
+  },
+  "factoryOnlyUpdate": true,
+  "boundAt": "2026-08-01T19:59:28.683Z"
+}

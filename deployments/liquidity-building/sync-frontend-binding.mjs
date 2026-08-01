@@ -53,7 +53,7 @@ export const LB_MELEGA_AMM = {
 
 /**
  * Production LB program bindings.
- * Remain null until deployed-addresses.v1.json is updated from a verified mainnet deploy.
+ * Synced from deployments/liquidity-building/chain-56/deployed-addresses.v1.json after verified mainnet deploys.
  */
 export const LB_CANONICAL_DEPLOYED_ADDRESSES = {
   lbFactory: ${q(a.lbFactory)},

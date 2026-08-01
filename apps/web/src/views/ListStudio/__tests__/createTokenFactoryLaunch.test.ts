@@ -214,13 +214,13 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     expect(ws).toContain('CREATE_TOKEN_READINESS.uiState')
   })
 
-  it('does not alter Liquidity Builder null binding', () => {
+  it('does not alter Liquidity Builder mainnet binding', () => {
     const lb = readFileSync(
       path.join(ROOT, 'apps/web/src/config/constants/liquidityBuildingDeployment.ts'),
       'utf8',
     )
-    expect(lb).toContain('lbFactory: null')
-    expect(lb).toContain('lbAuthorizer: null')
-    expect(lb).toContain('lbFeeSink: null')
+    expect(lb).toContain("lbFactory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82'")
+    expect(lb).toContain("lbAuthorizer: '0xA0c48D603BD07A012666b003Bd8089aA3dD49471'")
+    expect(lb).toContain("lbFeeSink: '0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF'")
   })
 })

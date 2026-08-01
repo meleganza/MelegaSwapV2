@@ -18,7 +18,7 @@ describe('deployment orchestrator readiness', () => {
     expect(DEPLOYMENT_ORDER_STEPS.map((s) => s.id)).toEqual([...DEPLOYMENT_ORDER])
   })
 
-  it('Founder authority present; unbound packages are READY for Founder signature', () => {
+  it('Founder authority present; LB BOUND advances global state; CT/PFF await Founder signature', () => {
     const status = buildOrchestratorStatus(new Date('2026-07-30T00:00:00.000Z'))
     expect(status.schema).toBe('melega.dex.v1.deployment-orchestrator.status')
     expect(status.subsystems).toHaveLength(3)
@@ -26,12 +26,14 @@ describe('deployment orchestrator readiness', () => {
     expect(status.authority.productionAuthorityPresent).toBe(true)
     expect(status.authority.authorizedDeployer).toBe(AUTHORIZED_MELEGA_DEPLOYER)
     expect(status.authority.blockers).toEqual([])
-    expect(status.globalState).toBe('READY')
-    for (const snap of status.subsystems) {
-      expect(snap.state).toBe('READY')
-      expect(snap.lanes.contracts).toBe(true)
-    }
-    expect(status.nextAction).toMatch(/MELEGA DEPLOYER/i)
+    expect(status.globalState).toBe('BOUND')
+    const lb = status.subsystems.find((s) => s.id === 'liquidity_builder')
+    expect(lb?.state).toBe('BOUND')
+    expect(lb?.lanes.contracts).toBe(true)
+    expect(lb?.lanes.runtime).toBe(true)
+    const ct = status.subsystems.find((s) => s.id === 'create_token')
+    expect(ct?.state).toBe('READY')
+    expect(status.nextAction).toMatch(/Confirm Liquidity Builder runtime READY/i)
     expect(status.founderExecution.pauseState).toBe('AWAITING_FOUNDER_WALLET')
     expect(status.founderExecution.serverSideSigning).toBe(false)
   })
@@ -45,8 +47,8 @@ describe('deployment orchestrator readiness', () => {
 })
 
 describe('deployment orchestrator binding', () => {
-  it('reports all three subsystems unbound without fabricating addresses', () => {
-    expect(assessSubsystemBinding('liquidity_builder').bound).toBe(false)
+  it('reports LB bound; Create Token and Public Farm remain unbound', () => {
+    expect(assessSubsystemBinding('liquidity_builder').bound).toBe(true)
     expect(assessSubsystemBinding('create_token').bound).toBe(false)
     expect(assessSubsystemBinding('public_farm_factory').bound).toBe(false)
   })

@@ -35,8 +35,10 @@ import {
   LB_STEP4_CONTRACT,
   LB_STEP5_FACTUAL,
   LB_STEP5_CONTRACT,
+  LB_STEP6_FACTUAL,
   LB_STEP6_CONTRACT,
   bindValidatedLbStep,
+  liquidityBuilderMainnetReady,
   loadInitialFounderLbSession,
   persistFounderLbSession,
   validateLbStepFromOnChain,
@@ -229,6 +231,9 @@ export const FounderDeploymentShell: React.FC = () => {
   const [gasError, setGasError] = useState<string | null>(null)
   const [totalCostWei, setTotalCostWei] = useState<bigint | null>(null)
   const [statusNote, setStatusNote] = useState<string | null>(() => {
+    if (liquidityBuilderMainnetReady(boot)) {
+      return `Liquidity Builder MAINNET READY · Factory ${LB_STEP6_FACTUAL.contractAddress} · DEPLOYED · VALIDATED · BOUND · READY`
+    }
     if (boot.completedStepIds.includes(LB_STEP5_FACTUAL.stepId)) {
       return `Step 5 VALIDATED · BOUND · ${LB_STEP5_FACTUAL.contractAddress} · Step 6 ${LB_STEP6_CONTRACT} ready for Founder signature.`
     }
@@ -247,7 +252,8 @@ export const FounderDeploymentShell: React.FC = () => {
     return null
   })
   const [txHash, setTxHash] = useState<string | null>(() =>
-    boot.bindings.find((b) => b.stepId === LB_STEP5_FACTUAL.stepId)?.txHash ??
+    boot.bindings.find((b) => b.stepId === LB_STEP6_FACTUAL.stepId)?.txHash ??
+      boot.bindings.find((b) => b.stepId === LB_STEP5_FACTUAL.stepId)?.txHash ??
       boot.bindings.find((b) => b.stepId === LB_STEP4_FACTUAL.stepId)?.txHash ??
       boot.bindings.find((b) => b.stepId === LB_STEP3_FACTUAL.stepId)?.txHash ??
       boot.bindings.find((b) => b.stepId === LB_STEP2_FACTUAL.stepId)?.txHash ??
@@ -271,6 +277,8 @@ export const FounderDeploymentShell: React.FC = () => {
   const step3Binding = session.bindings.find((b) => b.stepId === LB_STEP3_FACTUAL.stepId) ?? null
   const step4Binding = session.bindings.find((b) => b.stepId === LB_STEP4_FACTUAL.stepId) ?? null
   const step5Binding = session.bindings.find((b) => b.stepId === LB_STEP5_FACTUAL.stepId) ?? null
+  const step6Binding = session.bindings.find((b) => b.stepId === LB_STEP6_FACTUAL.stepId) ?? null
+  const lbMainnetReady = liquidityBuilderMainnetReady(session)
   const completedSteps = useMemo(
     () => packageBuild.steps.filter((s) => completed.includes(s.stepId)),
     [packageBuild.steps, completed],
@@ -759,7 +767,23 @@ export const FounderDeploymentShell: React.FC = () => {
               Step 5 bound · lbProgramImplementation = {step5Binding.contractAddress}
             </Banner>
           )}
+          {step6Binding && (
+            <Banner $tone="ok" data-testid="founder-step6-validated">
+              Step 6 / Factory LiquidityBuildingFactoryV1 validated at {step6Binding.contractAddress}
+            </Banner>
+          )}
+          {step6Binding && (
+            <Banner $tone="ok" data-testid="founder-step6-bound">
+              Step 6 bound · lbFactory = {step6Binding.contractAddress}
+            </Banner>
+          )}
         </Card>
+      )}
+
+      {lbMainnetReady && (
+        <Banner $tone="ok" data-testid="founder-lb-mainnet-ready">
+          Liquidity Builder READY · DEPLOYED · VALIDATED · BOUND · no deployment blockers · canary not executed
+        </Banner>
       )}
 
       {step && (

@@ -123,11 +123,11 @@ describe('MELEGA_DEX_V1_GLOBAL_MOBILE_FOUNDER_ACCEPTANCE', () => {
     expect(add).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
   })
 
-  it('does not alter Liquidity Builder deployment binding nulls', () => {
+  it('Liquidity Builder deployment binding is mainnet-bound', () => {
     const cfg = load('src/config/constants/liquidityBuildingDeployment.ts')
-    expect(cfg).toContain('lbFactory: null')
-    expect(cfg).toContain('lbAuthorizer: null')
-    expect(cfg).toContain('lbFeeSink: null')
+    expect(cfg).toContain("lbFactory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82'")
+    expect(cfg).toContain("lbAuthorizer: '0xA0c48D603BD07A012666b003Bd8089aA3dD49471'")
+    expect(cfg).toContain("lbFeeSink: '0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF'")
   })
 
   it('respects prefers-reduced-motion on FAB and Farms artwork', () => {

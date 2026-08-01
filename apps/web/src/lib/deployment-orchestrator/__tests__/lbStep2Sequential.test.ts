@@ -31,7 +31,7 @@ describe('LB Step 1 factual validation + Step 2 unlock', () => {
   it('canonical binding records ExecutionMath (Step 2 also bound in later mission)', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary).toBe(STEP1_ADDR)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBeTruthy()
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeTruthy()
   })
 
   it('deployed-addresses artifact records Step 1 validated', () => {

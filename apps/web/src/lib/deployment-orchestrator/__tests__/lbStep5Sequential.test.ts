@@ -48,7 +48,7 @@ describe('LB Step 4 validation + Step 5 unlock', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBe(LB_STEP2_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBe(LB_STEP3_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink).toBe(STEP4_ADDR)
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeTruthy()
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBeTruthy()
   })
 

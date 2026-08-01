@@ -84,14 +84,14 @@
     ]
   },
   "authorizer": {
-    "address": null,
+    "address": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
     "schemaVersion": "LIQUIDITY_BUILDING_EXECUTION_INTENT_V1",
-    "status": "NOT_DEPLOYED"
+    "status": "DEPLOYED_VALIDATED"
   },
   "treasury": {
-    "feeSinkAddress": null,
-    "receiverAddress": null,
-    "receiverVerdict": "PRODUCTION_BINDING_NOT_FOUND",
+    "feeSinkAddress": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "receiverAddress": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "receiverVerdict": "FEE_RECEIVER_BOUND_TO_TREASURY_BENEFICIARY",
     "reprobeUtc": "2026-07-19T17:56:00Z",
     "rejectedCandidates": [
       {
@@ -104,13 +104,13 @@
         "label": "MELEGA_TREASURY_BSC",
         "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
         "codeBytes": 23,
-        "reason": "EIP-7702 designator \u2014 not durable intake"
+        "reason": "EIP-7702 designator — not durable intake"
       },
       {
         "label": "MELEGA_FEE_COLLECTOR_BSC",
         "address": "0xb5a8707FfA045E0FC7db6eFC63161e853C80139a",
         "codeBytes": 0,
-        "reason": "EOA \u2014 forbidden"
+        "reason": "EOA — forbidden"
       }
     ]
   },
@@ -176,7 +176,7 @@
     "LB-G11",
     "LB-G12"
   ],
-  "deploymentReadinessState": "BLOCKED",
+  "deploymentReadinessState": "DEPLOYED",
   "validatorExpectedResult": "DEPLOYMENT_INPUTS_BLOCKED",
   "activationAuthorized": false,
   "lbProtocolFeeFinalization": {
@@ -211,5 +211,10 @@
         "changed": true
       }
     }
+  },
+  "factory": {
+    "address": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+    "status": "DEPLOYED_VALIDATED",
+    "transactionHash": "0xb1b857778d0812be2ebcab8452e047eba5847ebc49522446941a7cdacd08ae8d"
   }
 }

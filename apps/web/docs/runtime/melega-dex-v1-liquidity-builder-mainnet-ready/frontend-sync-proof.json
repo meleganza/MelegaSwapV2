@@ -1,0 +1,23 @@
+{
+  "syncSource": "deployments/liquidity-building/chain-56/deployed-addresses.v1.json",
+  "frontendFile": "apps/web/src/config/constants/liquidityBuildingDeployment.ts",
+  "addresses": {
+    "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "lbFactory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+    "lbAuthorizer": "0xA0c48D603BD07A012666b003Bd8089aA3dD49471",
+    "lbFeeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "lbFeeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "lbProgramImplementation": "0x722EbCb0101CFFB585Be71B8B5d7c8fd6F73c491",
+    "lbExecutionMathLibrary": "0xA6434254ef3c859230d1c46a03A5928979fa379f",
+    "programAddress": null
+  },
+  "nullCoreAddresses": [],
+  "noNullCoreAddresses": true,
+  "frontendContainsFactory": true,
+  "frontendContainsAuthorizer": true,
+  "frontendContainsFeeSink": true,
+  "createTokenUntouched": true,
+  "publicFarmFactoryUntouched": true,
+  "syncedAt": "2026-08-01T19:59:28.683Z"
+}

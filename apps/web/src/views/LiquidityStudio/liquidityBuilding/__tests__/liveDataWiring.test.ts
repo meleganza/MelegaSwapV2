@@ -104,8 +104,8 @@ describe('LB017 live data wiring', () => {
     ).toHaveLength(1)
   })
 
-  it('deployed addresses remain null — no placeholders', () => {
-    expect(LB_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
+  it('deployed addresses are bound without placeholders; programAddress stays owner-lookup null', () => {
+    expect(LB_DEPLOYED_ADDRESSES.lbFactory).toBeTruthy()
     expect(LB_DEPLOYED_ADDRESSES.programAddress).toBeNull()
     expect(isDeployedAddress(null)).toBe(false)
     expect(isDeployedAddress(ZERO_ADDRESS)).toBe(false)

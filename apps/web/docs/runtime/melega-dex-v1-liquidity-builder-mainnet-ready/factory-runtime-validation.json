@@ -1,0 +1,14 @@
+{
+  "contract": "LiquidityBuildingFactoryV1",
+  "address": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+  "codeBytes": 8052,
+  "codeExists": true,
+  "observedRuntimeBytecodeSha256": "0x67d1d01154989e15eace4760ce5493b1377a7965ef04ff5f205fc04ca757dcb2",
+  "observedMatchesRecorded": true,
+  "certifiedTemplateRuntimeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+  "maskedRuntimeBytecodeSha256": "0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350",
+  "maskedMatchesCertifiedTemplate": true,
+  "immutableRangesMasked": 44,
+  "fetchedAt": "2026-08-01T19:58:57.860Z",
+  "verdict": "RUNTIME_VALIDATED"
+}

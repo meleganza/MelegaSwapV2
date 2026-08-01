@@ -1,0 +1,18 @@
+{
+  "txHash": "0xb1b857778d0812be2ebcab8452e047eba5847ebc49522446941a7cdacd08ae8d",
+  "status": "0x1",
+  "statusSuccess": true,
+  "from": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "deployerMatch": true,
+  "contractAddress": "0xb9f3e3020141157c215902acc1fdf65e49be4e82",
+  "addressMatch": true,
+  "creationTx": true,
+  "blockNumber": "0x6c32018",
+  "blockNumberDecimal": 113451032,
+  "gasUsed": "0x1e2ccd",
+  "to": null,
+  "inputPrefix": "0x610320604052346200…",
+  "inputBytes": 12281,
+  "fetchedAt": "2026-08-01T19:58:57.860Z",
+  "rpc": "https://bsc-dataseed.binance.org"
+}

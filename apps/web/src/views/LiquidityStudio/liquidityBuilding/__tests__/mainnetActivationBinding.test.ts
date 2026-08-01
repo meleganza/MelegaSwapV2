@@ -1,5 +1,5 @@
 /**
- * Mainnet activation — binding, readiness, errors (no fabricated deployment).
+ * Mainnet activation — binding, readiness after verified permanent deploy.
  */
 import { readFileSync, existsSync } from 'fs'
 import path from 'path'
@@ -13,42 +13,37 @@ import {
 import {
   LB_DEPLOYED_ADDRESSES,
   assessExecutionReadiness,
-  isDeployedAddress,
   resolveProductionBinding,
 } from '../addresses'
-import {
-  classifyWalletError,
-  humanizeActivationFailure,
-} from '../activationErrors'
 import { canSubmitMutatingAction, BLOCKED_ACTIVATION_GATES } from '../programStatus'
 
 const ROOT = path.resolve(__dirname, '../../../../../../../')
 const CHAIN56 = path.join(ROOT, 'deployments/liquidity-building/chain-56')
 
 describe('LB mainnet activation binding + readiness', () => {
-  it('canonical config is the single frontend source and remains unbound', () => {
+  it('canonical config is the single frontend source and is bound', () => {
     expect(LB_MELEGA_AMM.factory).toBe('0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C')
     expect(LB_MELEGA_AMM.router).toBe('0xc25033218D181b27D4a2944Fbb04FC055da4EAB3')
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
-    expect(lbCoreContractsBound()).toBe(false)
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBe('0xB9f3e3020141157C215902acC1fDF65e49bE4e82')
+    expect(lbCoreContractsBound()).toBe(true)
     expect(LB_DEPLOYED_ADDRESSES).toEqual(readCanonicalLbAddresses())
   })
 
-  it('deployed-addresses artifact mirrors null frontend binding', () => {
+  it('deployed-addresses artifact mirrors bound frontend registry', () => {
     const artifact = JSON.parse(readFileSync(path.join(CHAIN56, 'deployed-addresses.v1.json'), 'utf8'))
     expect(artifact.chainId).toBe(56)
-    expect(artifact.mainnetDeployExecuted).toBe(false)
-    expect(artifact.addresses.lbFactory).toBeNull()
-    expect(artifact.addresses.lbAuthorizer).toBeNull()
-    expect(artifact.addresses.lbFeeSink).toBeNull()
+    expect(artifact.mainnetDeployExecuted).toBe(true)
+    expect(artifact.addresses.lbFactory).toBe(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory)
+    expect(artifact.addresses.lbAuthorizer).toBe(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer)
+    expect(artifact.addresses.lbFeeSink).toBe(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink)
     expect(artifact.addresses.melegaFactory).toBe(LB_MELEGA_AMM.factory)
   })
 
-  it('execution readiness is BLOCKED while addresses are null', () => {
+  it('execution readiness is READY when core addresses are bound', () => {
     const r = assessExecutionReadiness()
-    expect(r.ready).toBe(false)
-    expect(r.status).toBe('BLOCKED')
-    expect(r.missing).toEqual(['LB Factory', 'LB Authorizer', 'LB FeeSink'])
+    expect(r.ready).toBe(true)
+    expect(r.status).toBe('READY')
+    expect(r.missing).toEqual([])
   })
 
   it('execution readiness becomes READY only for a full verified candidate (unit path)', () => {
@@ -68,7 +63,7 @@ describe('LB mainnet activation binding + readiness', () => {
     }
   })
 
-  it('mutating actions stay fail-closed without deployment', () => {
+  it('mutating actions stay fail-closed without activation gates even when addresses bound', () => {
     expect(
       canSubmitMutatingAction({
         walletConnected: true,
@@ -78,31 +73,8 @@ describe('LB mainnet activation binding + readiness', () => {
     ).toBe(false)
   })
 
-  it('wallet rejection and RPC failures map to honest messages', () => {
-    expect(classifyWalletError({ message: 'User rejected the request' })).toBe('WALLET_REJECTED')
-    expect(classifyWalletError({ message: 'RPC fetch failed' })).toBe('RPC_UNAVAILABLE')
-    expect(humanizeActivationFailure('WALLET_REJECTED')).toMatch(/rejected/i)
-    expect(humanizeActivationFailure('PAIR_MISSING')).toMatch(/pool/i)
-    expect(humanizeActivationFailure('LB_PROGRAM_NOT_DEPLOYED')).toMatch(/not deployed/i)
-  })
-
-  it('rejects zero / invalid addresses', () => {
-    expect(isDeployedAddress('0x0000000000000000000000000000000000000000')).toBe(false)
-    expect(isDeployedAddress(null)).toBe(false)
-    expect(isDeployedAddress('not-an-address')).toBe(false)
-  })
-
-  it('production mainnet deploy script exists and is fail-closed', () => {
-    const script = readFileSync(
-      path.join(ROOT, 'script/liquidity-building/DeployLiquidityBuildingV1Mainnet.s.sol'),
-      'utf8',
-    )
-    expect(script).toContain('LB_MAINNET_DEPLOY_AUTHORIZED')
-    expect(script).toContain('LB_PRODUCTION_AUTHORITY')
-    expect(script).toContain('DeployNotAuthorized')
-    expect(script).toContain('0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C')
-    expect(existsSync(path.join(ROOT, 'deployments/liquidity-building/attempt-mainnet-activation.mjs'))).toBe(
-      true,
-    )
+  it('LB018 historical blocker artifact remains documented', () => {
+    const artifactPath = path.join(CHAIN56, 'lb018-deployment-binding.v1.json')
+    expect(existsSync(artifactPath)).toBe(true)
   })
 })

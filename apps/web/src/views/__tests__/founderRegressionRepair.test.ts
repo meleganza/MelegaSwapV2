@@ -108,7 +108,7 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
       path.join(ROOT, 'apps/web/src/config/constants/liquidityBuildingDeployment.ts'),
       'utf8',
     )
-    expect(lb).toContain('lbFactory: null')
+    expect(lb).toContain("lbFactory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82'")
   })
 
   it('Featured markets builder emits USD fields', () => {

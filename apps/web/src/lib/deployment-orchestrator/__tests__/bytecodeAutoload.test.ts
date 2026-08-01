@@ -140,8 +140,8 @@ describe('certified bytecode autoload', () => {
     expect(ui).toContain('connector.getProvider')
   })
 
-  it('Create Token and Public Farm stay locked', () => {
-    expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(false)
+  it('Create Token unlocks after LB bind; Public Farm stays locked', () => {
+    expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(true)
     expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(false)
   })
 })

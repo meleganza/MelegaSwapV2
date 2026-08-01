@@ -94,7 +94,24 @@ export const LB_STEP5_FACTUAL = {
 } as const
 
 export const LB_STEP5_CONTRACT = LB_STEP5_FACTUAL.contractName
-export const LB_STEP6_CONTRACT = 'LiquidityBuildingFactoryV1' as const
+
+/** Step 6 — mainnet Factory (final permanent LB contract). */
+export const LB_STEP6_FACTUAL = {
+  stepId: 'LiquidityBuildingFactoryV1',
+  contractName: 'LiquidityBuildingFactoryV1',
+  chainId: FOUNDER_DEPLOY_CHAIN_ID,
+  txHash: '0xb1b857778d0812be2ebcab8452e047eba5847ebc49522446941a7cdacd08ae8d',
+  contractAddress: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82',
+  deployer: AUTHORIZED_MELEGA_DEPLOYER,
+  implementation: LB_STEP5_FACTUAL.contractAddress,
+  executionAuthorizer: '0xA0c48D603BD07A012666b003Bd8089aA3dD49471',
+  treasuryFeeSink: LB_STEP4_FACTUAL.contractAddress,
+  successFeeBps: 1000 as const,
+  observedRuntimeBytecodeSha256: '0x67d1d01154989e15eace4760ce5493b1377a7965ef04ff5f205fc04ca757dcb2',
+  expectedRuntimeBytecodeSha256: '0xb6e1ce2a49123374892bec1f0cdf7b390d6db145e56b76dd95c7b2c2bc750350',
+} as const
+
+export const LB_STEP6_CONTRACT = LB_STEP6_FACTUAL.contractName
 
 /**
  * Solc immutable / library-link byte ranges in deployed bytecode.
@@ -134,6 +151,52 @@ export const LB_IMMUTABLE_BYTE_RANGES: Record<string, Array<{ start: number; len
     { start: 8812, length: 20 },
     { start: 8896, length: 20 },
     { start: 9592, length: 20 },
+  ],
+  LiquidityBuildingFactoryV1: [
+    { start: 559, length: 32 },
+    { start: 598, length: 32 },
+    { start: 640, length: 32 },
+    { start: 682, length: 32 },
+    { start: 724, length: 32 },
+    { start: 766, length: 32 },
+    { start: 808, length: 32 },
+    { start: 850, length: 32 },
+    { start: 892, length: 32 },
+    { start: 935, length: 32 },
+    { start: 978, length: 32 },
+    { start: 1021, length: 32 },
+    { start: 1064, length: 32 },
+    { start: 1106, length: 32 },
+    { start: 1158, length: 32 },
+    { start: 1468, length: 32 },
+    { start: 1531, length: 32 },
+    { start: 1591, length: 32 },
+    { start: 1650, length: 32 },
+    { start: 1707, length: 32 },
+    { start: 1891, length: 32 },
+    { start: 1954, length: 32 },
+    { start: 2047, length: 32 },
+    { start: 2110, length: 32 },
+    { start: 2237, length: 32 },
+    { start: 2306, length: 32 },
+    { start: 2766, length: 32 },
+    { start: 3207, length: 32 },
+    { start: 3510, length: 32 },
+    { start: 3780, length: 32 },
+    { start: 4820, length: 32 },
+    { start: 4883, length: 32 },
+    { start: 5006, length: 32 },
+    { start: 5202, length: 32 },
+    { start: 5322, length: 32 },
+    { start: 5385, length: 32 },
+    { start: 5448, length: 32 },
+    { start: 5511, length: 32 },
+    { start: 5569, length: 32 },
+    { start: 5643, length: 32 },
+    { start: 7529, length: 32 },
+    { start: 7570, length: 32 },
+    { start: 7689, length: 32 },
+    { start: 7883, length: 32 },
   ],
 }
 
@@ -176,6 +239,13 @@ export type FeeSinkConstructorState = {
 export type ProgramLibraryLinkState = {
   runtimeBytecode: string | null
   expectedLibraryAddress?: string
+}
+
+export type FactoryConstructorState = {
+  implementation: string | null
+  executionAuthorizer: string | null
+  treasuryFeeSink: string | null
+  successFeeBps: number | null
 }
 
 export function sha256Bytecode(runtimeBytecode: string): string {
@@ -275,6 +345,31 @@ export function verifyFeeSinkConstructorState(state: FeeSinkConstructorState): {
     }
   }
   return { ok: true, treasuryReceiverMatch, notDirectTreasury }
+}
+
+export function verifyFactoryConstructorState(state: FactoryConstructorState): {
+  ok: boolean
+  reason?: string
+  checks: Record<string, boolean>
+} {
+  const implementation = normalizeAddress(state.implementation)
+  const authorizer = normalizeAddress(state.executionAuthorizer)
+  const feeSink = normalizeAddress(state.treasuryFeeSink)
+  const checks = {
+    implementationMatch: implementation === normalizeAddress(LB_STEP5_FACTUAL.contractAddress),
+    authorizerMatch: authorizer === normalizeAddress(LB_STEP3_FACTUAL.contractAddress),
+    feeSinkMatch: feeSink === normalizeAddress(LB_STEP4_FACTUAL.contractAddress),
+    successFeeBpsMatch: state.successFeeBps === 1000,
+  }
+  const ok = Object.values(checks).every(Boolean)
+  if (!ok) {
+    return {
+      ok: false,
+      checks,
+      reason: 'FACTORY_VALIDATION_FAILED: constructor dependency mismatch',
+    }
+  }
+  return { ok: true, checks }
 }
 
 /** Prove Program runtime embeds ExecutionMath at every certified library-link slot. */
@@ -550,6 +645,21 @@ export function seedSessionWithValidatedStep5(base: FounderLbSession): FounderLb
   })
 }
 
+/** Seed Step 6 Factory after mainnet validation (final permanent bind). */
+export function seedSessionWithValidatedStep6(base: FounderLbSession): FounderLbSession {
+  const withStep5 = step5IsValidated(base) ? base : seedSessionWithValidatedStep5(base)
+  return bindValidatedLbStep(withStep5, {
+    stepId: LB_STEP6_FACTUAL.stepId,
+    contractName: LB_STEP6_FACTUAL.contractName,
+    contractAddress: LB_STEP6_FACTUAL.contractAddress,
+    txHash: LB_STEP6_FACTUAL.txHash,
+    chainId: LB_STEP6_FACTUAL.chainId,
+    runtimeBytecodeSha256: LB_STEP6_FACTUAL.observedRuntimeBytecodeSha256,
+    status: 'READY',
+    validatedAt: '2026-08-01T00:00:00.000Z',
+  })
+}
+
 /** Prefer canonical constants; upgrade storage when later steps bind. */
 export function loadInitialFounderLbSession(): FounderLbSession {
   let session = readFounderLbSessionFromStorage() ?? emptyFounderLbSession()
@@ -584,6 +694,13 @@ export function loadInitialFounderLbSession(): FounderLbSession {
     normalizeAddress(LB_STEP5_FACTUAL.contractAddress)
   if (programMatches && !step5IsValidated(session)) {
     session = seedSessionWithValidatedStep5(session)
+  }
+
+  const factoryMatches =
+    normalizeAddress(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory) ===
+    normalizeAddress(LB_STEP6_FACTUAL.contractAddress)
+  if (factoryMatches && !step6IsValidated(session)) {
+    session = seedSessionWithValidatedStep6(session)
   }
 
   return session
@@ -655,5 +772,26 @@ export function step5IsValidated(session: FounderLbSession): boolean {
     b &&
       (b.status === 'VALIDATED' || b.status === 'READY') &&
       normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP5_FACTUAL.contractAddress),
+  )
+}
+
+export function step6IsValidated(session: FounderLbSession): boolean {
+  const b = session.bindings.find((x) => x.stepId === LB_STEP6_FACTUAL.stepId)
+  return Boolean(
+    b &&
+      (b.status === 'VALIDATED' || b.status === 'READY') &&
+      normalizeAddress(b.contractAddress) === normalizeAddress(LB_STEP6_FACTUAL.contractAddress),
+  )
+}
+
+/** All six permanent LB contracts validated and bound. */
+export function liquidityBuilderMainnetReady(session: FounderLbSession): boolean {
+  return (
+    step1IsValidated(session) &&
+    step2IsValidated(session) &&
+    step3IsValidated(session) &&
+    step4IsValidated(session) &&
+    step5IsValidated(session) &&
+    step6IsValidated(session)
   )
 }

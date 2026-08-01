@@ -102,8 +102,8 @@ describe('PP007 Liquidity Building attribution and capability', () => {
   it('4. activation states reflect deployment readiness', () => {
     const doc = loadProjectLiquidityBuildingDocument('melega-dex', FIXED_AT)!
     expect(['ACTIVE', 'ACTIVATION_PENDING', 'BLOCKED', 'UNAVAILABLE']).toContain(doc.activationState)
-    // Repository deployment inputs are currently BLOCKED — snapshot must match.
-    expect(CERTIFIED_LB_DEPLOYMENT_SNAPSHOT.deploymentReadinessState).toBe('BLOCKED')
+    // Permanent contracts DEPLOYED — snapshot must match inputs; production activation remains pending.
+    expect(CERTIFIED_LB_DEPLOYMENT_SNAPSHOT.deploymentReadinessState).toBe('DEPLOYED')
     const inputsPath = path.join(
       process.cwd(),
       '../../deployments/liquidity-building/chain-56/LiquidityBuildingV1.inputs.json',
@@ -117,7 +117,7 @@ describe('PP007 Liquidity Building attribution and capability', () => {
       const inputs = JSON.parse(readFileSync(resolvedPath, 'utf8')) as { deploymentReadinessState?: string }
       expect(CERTIFIED_LB_DEPLOYMENT_SNAPSHOT.deploymentReadinessState).toBe(inputs.deploymentReadinessState)
     }
-    expect(doc.activationState).toBe('BLOCKED')
+    expect(doc.activationState).toBe('ACTIVATION_PENDING')
     expect(doc.capability.status).toBe('PAUSED')
   })
 

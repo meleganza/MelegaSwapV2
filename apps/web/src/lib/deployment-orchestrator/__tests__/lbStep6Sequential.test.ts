@@ -59,16 +59,16 @@ function syntheticProgramRuntime(libraryAddress: string): string {
 }
 
 describe('LB Step 5 validation + Step 6 Factory unlock', () => {
-  it('canonical binding records Program only for Step 5 (priors unchanged, Factory null)', () => {
+  it('canonical binding records Program (Factory also bound in later mission)', () => {
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbExecutionMathLibrary).toBe(MATH)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeReceiver).toBe(LB_STEP2_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbAuthorizer).toBe(LB_STEP3_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFeeSink).toBe(LB_STEP4_FACTUAL.contractAddress)
     expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbProgramImplementation).toBe(STEP5_ADDR)
-    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeNull()
+    expect(LB_CANONICAL_DEPLOYED_ADDRESSES.lbFactory).toBeTruthy()
   })
 
-  it('deployed-addresses artifact binds Step 5 Program', () => {
+  it('deployed-addresses artifact records Step 5 Program validated', () => {
     const artifact = JSON.parse(
       readFileSync(
         path.resolve(__dirname, '../../../../../../deployments/liquidity-building/chain-56/deployed-addresses.v1.json'),
@@ -79,7 +79,6 @@ describe('LB Step 5 validation + Step 6 Factory unlock', () => {
     expect(artifact.deployments.LiquidityBuildingProgramV1.transactionHash).toBe(STEP5_TX)
     expect(artifact.deployments.LiquidityBuildingProgramV1.status).toBe('VALIDATED')
     expect(artifact.deployments.LiquidityBuildingProgramV1.linkedLibrary).toBe(MATH)
-    expect(artifact.addresses.lbFactory).toBeNull()
   })
 
   it('library link verifier requires ExecutionMath in all Program slots', () => {
