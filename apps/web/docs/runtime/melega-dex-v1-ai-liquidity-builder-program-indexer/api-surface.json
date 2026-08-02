@@ -1,0 +1,31 @@
+{
+  "ownerInventory": {
+    "method": "GET",
+    "path": "/api/liquidity-programs/:wallet",
+    "schema": "melega.dex.v1.lb-owner-programs",
+    "fields": [
+      "programAddress",
+      "token",
+      "quoteAsset",
+      "pair",
+      "reserve",
+      "remaining",
+      "status",
+      "strategy",
+      "goal",
+      "timestamps"
+    ]
+  },
+  "programDetail": {
+    "method": "GET",
+    "path": "/api/liquidity-program/:address",
+    "schema": "melega.dex.v1.lb-program-detail",
+    "includes": ["program", "events", "deepLink"]
+  },
+  "deepLink": {
+    "pattern": "/liquidity-studio?view=building&program=<address>",
+    "helpers": ["programFromQuery", "buildingHref"],
+    "readModelOverride": "useProgramReadModel.programAddress",
+    "singleProgramPathPreserved": true
+  }
+}

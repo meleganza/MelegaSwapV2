@@ -38,9 +38,11 @@ debug.log*
 
 # turbo
 .turbo
+
 .vercel
 
 # R768 durable indexer runtime data (never commit)
 data/bsc-indexer/
 data/melega-indexer/
 data/featured-orders/
+data/liquidity-builder-indexer/

@@ -21,7 +21,7 @@ import {
   availableManageActions,
 } from './uxCopy'
 import type { LbUxPhase } from './liquidityBuildingStep'
-import { phaseToStep, stepFromQuery, stepToPhase } from './liquidityBuildingStep'
+import { phaseToStep, programFromQuery, stepFromQuery, stepToPhase } from './liquidityBuildingStep'
 import { useActivationReadiness } from './useActivationReadiness'
 import { useMelegaPairDetection, type MelegaPairDetection } from './useMelegaPairDetection'
 import { useProgramReadModel } from './useProgramReadModel'
@@ -218,11 +218,13 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   const readiness = useActivationReadiness()
   const pairDetection = useMelegaPairDetection(selectedCurrency, draft.quoteAssetKey)
   const { activateProgram, factoryBound } = useFounderActivateWriter()
+  const deepLinkProgram = programFromQuery(router.query.program)
   const programRead = useProgramReadModel({
     owner: address ?? null,
     projectTokenAddress: draft.tokenAddress,
     quoteAssetAddress: pairDetection.quoteAddress,
     pairAddress: pairDetection.pairAddress,
+    programAddress: deepLinkProgram,
   })
 
   const factoryRead = useContract(
@@ -268,8 +270,17 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     const step = phaseToStep(phase)
     const nextQuery: Record<string, string> = { view: 'building' }
     if (step !== 'intro') nextQuery.step = step
+    const linked = programFromQuery(router.query.program)
+    if (linked) nextQuery.program = linked
     const currentStep = stepFromQuery(router.query.step) ?? 'intro'
-    if (currentStep === step && router.query.view === 'building') return
+    const currentProgram = programFromQuery(router.query.program)
+    if (
+      currentStep === step &&
+      router.query.view === 'building' &&
+      (currentProgram ?? null) === (linked ?? null)
+    ) {
+      return
+    }
     router.replace({ pathname: '/liquidity-studio', query: nextQuery }, undefined, { shallow: true })
   }, [phase, router])
 

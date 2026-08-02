@@ -1,7 +1,10 @@
 /**
  * DS001.4 — Liquidity Building product step query model.
  * Canonical: /liquidity-studio?view=building&step=setup
+ * Deep link: /liquidity-studio?view=building&program=0x…
  */
+
+import { isAddress } from '@ethersproject/address'
 
 export const LB_PRODUCT_STEPS = ['intro', 'setup', 'review', 'status', 'dashboard', 'manage'] as const
 
@@ -81,7 +84,16 @@ export function showProductStepper(phase: LbUxPhase): boolean {
 
 export const LB_BUILDING_HREF = '/liquidity-studio?view=building'
 
-export function buildingHref(step?: LbProductStep): string {
-  if (!step || step === 'intro') return LB_BUILDING_HREF
-  return `${LB_BUILDING_HREF}&step=${step}`
+export function programFromQuery(value: unknown): string | null {
+  if (Array.isArray(value)) return programFromQuery(value[0])
+  if (typeof value !== 'string' || !value) return null
+  return isAddress(value) ? value : null
+}
+
+export function buildingHref(step?: LbProductStep, programAddress?: string | null): string {
+  const params = new URLSearchParams()
+  params.set('view', 'building')
+  if (step && step !== 'intro') params.set('step', step)
+  if (programAddress && isAddress(programAddress)) params.set('program', programAddress)
+  return `/liquidity-studio?${params.toString()}`
 }

@@ -7,6 +7,7 @@ import { loadTierPairInventory } from './tierInventory'
 import { runTierPairSync } from './tierPairSync'
 import { loadTierSchedulerState, pickRotatingPair, saveTierSchedulerState } from './tierScheduler'
 import { PROTOCOL_ACTIVITY_MIN_REMAINING_MS, syncProtocolActivityRecent } from './protocolActivitySync'
+import { LB_PROGRAM_SYNC_MIN_REMAINING_MS, syncLbProgramInventory } from 'lib/liquidity-builder-indexer'
 import { isBootstrapWindowComplete } from './bootstrapWindow'
 import {
   resolveOrchestratorStageMode,
@@ -29,6 +30,7 @@ export interface IndexerRunReport {
   tier1Job: Awaited<ReturnType<typeof runTierPairSync>> | null
   tier2Job: Awaited<ReturnType<typeof runTierPairSync>> | null
   protocolActivity: Awaited<ReturnType<typeof syncProtocolActivityRecent>> | null
+  lbPrograms: Awaited<ReturnType<typeof syncLbProgramInventory>> | null
   cursorsBefore: Record<string, number | null>
   cursorsAfter: Record<string, number | null>
   nextWorkItem: string
@@ -93,6 +95,25 @@ export async function runIndexerOrchestrator(
     const protocolDeadline = resolveStageDeadline(deadline, stageMode)
     protocolActivity = await syncProtocolActivityRecent(protocolDeadline)
     deadline.markStage('protocol-activity')
+  }
+
+  if (!deadline.shouldStop() && deadline.remainingMs() > LB_PROGRAM_SYNC_MIN_REMAINING_MS) {
+    try {
+      lbPrograms = await syncLbProgramInventory({ deadline })
+      addedEvents += lbPrograms.added ?? 0
+      deadline.markStage('lb-programs')
+    } catch {
+      lbPrograms = {
+        ok: false,
+        reason: 'LB_SYNC_ERROR',
+        added: 0,
+        scannedBlocks: 0,
+        factoryLogs: 0,
+        programLogs: 0,
+        feeLogs: 0,
+        programCount: 0,
+      }
+    }
   }
 
   if (tierStagesEligible && !deadline.shouldStop()) {
@@ -169,6 +190,7 @@ export async function runIndexerOrchestrator(
     tier1Job,
     tier2Job,
     protocolActivity,
+    lbPrograms,
     cursorsBefore,
     cursorsAfter,
     nextWorkItem,

@@ -34,10 +34,15 @@ export function useProgramReadModel(input: {
   projectTokenAddress: string | null | undefined
   quoteAssetAddress?: string | null | undefined
   pairAddress?: string | null | undefined
+  /** Deep-link / portfolio override — keeps single-program activeProgram path when unset. */
+  programAddress?: string | null | undefined
 }): ProgramReadModelResult {
   const boundProgram = LB_DEPLOYED_ADDRESSES.programAddress
   const lbFactory = LB_DEPLOYED_ADDRESSES.lbFactory
   const factoryBound = isDeployedAddress(lbFactory)
+  const deepLinkedProgram = isDeployedAddress(input.programAddress ?? null)
+    ? String(input.programAddress)
+    : null
 
   const factoryContract = useContract(
     factoryBound ? lbFactory : undefined,
@@ -45,12 +50,14 @@ export function useProgramReadModel(input: {
     false,
   )
 
-  const activeArgs = activeProgramCallArgs(
-    input.owner,
-    input.projectTokenAddress,
-    input.quoteAssetAddress,
-    input.pairAddress,
-  )
+  const activeArgs = deepLinkedProgram
+    ? null
+    : activeProgramCallArgs(
+        input.owner,
+        input.projectTokenAddress,
+        input.quoteAssetAddress,
+        input.pairAddress,
+      )
 
   const activeProgramResult = useSingleCallResult(
     activeArgs ? factoryContract : undefined,
@@ -59,6 +66,7 @@ export function useProgramReadModel(input: {
   )
 
   const resolvedProgram =
+    deepLinkedProgram ||
     (isDeployedAddress(boundProgram) ? boundProgram : null) ||
     (activeProgramResult?.result?.[0] && isDeployedAddress(String(activeProgramResult.result[0]))
       ? String(activeProgramResult.result[0])
