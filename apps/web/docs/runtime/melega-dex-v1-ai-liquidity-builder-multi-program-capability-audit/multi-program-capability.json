@@ -1,0 +1,67 @@
+{
+  "missionId": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MULTI_PROGRAM_CAPABILITY_AUDIT",
+  "auditedAt": "2026-08-02",
+  "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+  "chainId": 56,
+  "verdict": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MULTI_PROGRAM_READY",
+  "summary": "Factory V1 already supports multiple simultaneous non-Stopped programs per owner when baseKeys differ. No contract architecture change required. Product UI and indexer remain single-program.",
+  "capabilities": {
+    "multipleProgramsPerOwner": {
+      "supported": true,
+      "constraint": "One non-Stopped program per baseKey = keccak256(owner, projectToken, quoteAsset, pair). Different baseKeys may be Active concurrently.",
+      "evidence": "contracts/liquidity-building/LiquidityBuildingFactoryV1.sol createProgram DuplicateActiveProgram gate + _activeByBaseKey"
+    },
+    "sameTokenMultipleQuoteAssets": {
+      "supportedOnContracts": true,
+      "examples": ["TOKEN/WBNB", "TOKEN/USDT", "TOKEN/USDC"],
+      "operationalGates": {
+        "quoteMustBeEnabled": true,
+        "melegaPairMustExist": true,
+        "pairReservesNonZero": true,
+        "notes": "USDT/USDC historically NotActive (LB-G09 gas path). WBNB is the production canary quote. Concurrent TOKEN/WBNB + TOKEN/USDT is allowed once both quotes are enabled and pairs exist."
+      }
+    },
+    "multipleTokensPerOwner": {
+      "supported": true,
+      "examples": ["MARCO", "MM72", "EYED"],
+      "notes": "Different projectToken → different baseKey. No per-owner program count cap. No project-token whitelist in Factory."
+    },
+    "programUniquenessRules": {
+      "key": ["owner", "projectToken", "quoteAsset", "pair"],
+      "baseKeyFormula": "keccak256(abi.encode(owner, projectToken, quoteAsset, pair))",
+      "programIdFormula": "keccak256(abi.encode(deploymentChainId, factory, factoryVersion, baseKey, generation))",
+      "duplicatePolicy": "Revert DuplicateActiveProgram if existing _activeByBaseKey[baseKey] is non-Stopped",
+      "recreateAfterStop": true,
+      "generationIncrementsOnRecreate": true
+    },
+    "lifecycle": {
+      "onChainEnum": ["Created", "Ready", "Active", "Paused", "SafetyPaused", "Stopped"],
+      "mappingToMissionTerms": {
+        "active": "Active",
+        "paused": "Paused | SafetyPaused",
+        "completed": "NOT an on-chain state — budget depletion does not auto-stop; remainingBudget may reach 0 while lifecycle stays Active",
+        "terminated": "Stopped (terminal)"
+      },
+      "frontendExtraStatuses": ["NOT_ACTIVE", "SETUP_REQUIRED", "AWAITING_APPROVAL", "AWAITING_DEPOSIT", "READY", "BUDGET_DEPLETED", "ERROR"]
+    }
+  },
+  "frontendSupport": {
+    "multiProgramReady": false,
+    "model": "single activeProgram lookup for selected owner+token+quote+pair",
+    "ownerInventory": false,
+    "programSwitcher": false,
+    "deepLinkProgramQuery": false
+  },
+  "indexerSupport": {
+    "lbProgramIndexing": false,
+    "programCreatedIndexed": false,
+    "ownerProgramsApi": false
+  },
+  "architectureChangeRequired": {
+    "contracts": false,
+    "fees": false,
+    "factory": false,
+    "frontendProduct": true,
+    "indexer": true
+  }
+}

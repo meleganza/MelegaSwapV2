@@ -1,0 +1,72 @@
+{
+  "missionId": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_MULTI_PROGRAM_CAPABILITY_AUDIT",
+  "productMultiProgramReady": false,
+  "today": {
+    "supports": [
+      "Resolve one activeProgram(owner, projectToken, quoteAsset, pair) for the selected draft market",
+      "Create → approve → deposit → activate for that single selection",
+      "Single-program dashboard / manage shell when that program is ON_CHAIN",
+      "Treat NO_ACTIVE_PROGRAM as create-entry when Factory is bound"
+    ],
+    "cannot": [
+      "List all LB programs for a connected wallet across tokens/quotes",
+      "Show multiple concurrent Active programs in Passport / Positions / Wallet overview",
+      "Switch between programs or honor ?program=<address> deep links",
+      "Activate a second baseKey without overwriting the single draft context",
+      "Enumerate historical generations for a baseKey in UI",
+      "Show multi-execution history (only latestExecution)",
+      "Discover programs via indexer APIs"
+    ],
+    "evidence": [
+      "apps/web/src/views/LiquidityStudio/liquidityBuilding/useProgramReadModel.ts",
+      "apps/web/src/views/LiquidityStudio/liquidityBuilding/activeProgramCallArgs.ts",
+      "apps/web/src/views/LiquidityStudio/liquidityBuilding/useLiquidityBuildingCard.ts",
+      "apps/web/src/views/LiquidityStudio/onePage/LiquidityBuildingCard.tsx",
+      "apps/web/src/views/LiquidityStudio/liquidityBuilding/abi/fragments.ts (no programAt/programCount)",
+      "apps/web/src/views/PassportStudio/usePassportLiquidityPositions.ts (projectTokenAddress: null → empty)",
+      "apps/web/src/views/LiquidityStudio/onePage/LiquidityPositions.tsx",
+      "apps/web/src/views/LiquidityStudio/onePage/WalletLiquidityOverview.tsx"
+    ]
+  },
+  "requiredFrontendChanges": [
+    "Add owner program inventory model (from ProgramCreated logs and/or indexer API + getProgramView multicall)",
+    "Accept explicit programAddress in read model; keep activeProgram as current-for-baseKey helper",
+    "Add list + switcher UX (“Your programs” / “Create another”)",
+    "Wire router.query.program so Passport deep links open the correct program",
+    "Fix Passport / Positions / WalletOverview to consume inventory instead of null-token activeProgram",
+    "Keep draft independence so creating token B does not hide token A without a list",
+    "Surface DuplicateActiveProgram clearly when recreating the same baseKey while non-Stopped",
+    "Expand activity beyond latestExecution",
+    "Extend factory ABI usage with programCount/programAt only if building a global explorer; prefer owner-filtered event index for wallet UX",
+    "Update copy away from first/only-program assumptions where multi is productized"
+  ],
+  "requiredIndexingChanges": [
+    "Index Factory ProgramCreated (indexed owner enables per-wallet queries)",
+    "Index program lifecycle/execution events (BudgetDeposited, ProgramActivated, executions, pause/stop)",
+    "Persist store keyed by owner, programAddress, programId, projectToken, quoteAsset, pair, lifecycle, generation",
+    "Expose GET /api/indexer/liquidity-building/programs?owner=… and GET …/programs/:address (+ activity)",
+    "Wire cron/orchestrator similar to pair sync using deployed Factory address",
+    "Do not treat project growth programCount / PP007 static docs as LB clone inventory"
+  ],
+  "indexerToday": {
+    "lbCoverage": "none",
+    "existingApis": [
+      "/api/indexer/pairs",
+      "/api/indexer/events",
+      "/api/indexer/candles",
+      "/api/indexer/featured-markets",
+      "/api/liquidity-building/activation-status",
+      "/api/liquidity-building/health",
+      "/api/liquidity-building/readiness",
+      "/api/public/projects/[slug]/liquidity-building"
+    ],
+    "note": "Existing /api/liquidity-building/* are activation/runtime gates, not program portfolio APIs. Public project liquidity-building is static orchestration docs."
+  },
+  "priorityPath": [
+    "Index ProgramCreated by owner",
+    "Owner programs API",
+    "Frontend inventory + switcher + deep link",
+    "Fix portfolio hooks",
+    "Activity ledger"
+  ]
+}
