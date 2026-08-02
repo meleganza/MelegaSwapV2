@@ -1,0 +1,4 @@
+{
+  "command": "yarn next build",
+  "passed": true
+}

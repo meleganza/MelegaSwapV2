@@ -11,6 +11,7 @@ import {
 } from './mapProgramView'
 import { activityFromLatestExecution } from './mapActivityEvents'
 import type { LbActivityItem } from './uxCopy'
+import { activeProgramCallArgs } from './activeProgramCallArgs'
 
 export type ProgramReadModelResult = {
   snapshot: ProgramReadSnapshot
@@ -18,6 +19,8 @@ export type ProgramReadModelResult = {
   source: 'ON_CHAIN' | 'UNAVAILABLE'
   reason: string | null
 }
+
+export { activeProgramCallArgs }
 
 /**
  * Live Program read model.
@@ -37,10 +40,12 @@ export function useProgramReadModel(input: {
     false,
   )
 
+  const activeArgs = activeProgramCallArgs(input.owner, input.projectTokenAddress)
+  // Skip contract when args missing — prevents 0-arg encode of activeProgram(address,address).
   const activeProgramResult = useSingleCallResult(
-    factoryContract,
+    activeArgs ? factoryContract : undefined,
     'activeProgram',
-    input.owner && input.projectTokenAddress ? [input.owner, input.projectTokenAddress] : undefined,
+    activeArgs ?? undefined,
   )
 
   const resolvedProgram =

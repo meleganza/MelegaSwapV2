@@ -1,0 +1,24 @@
+{
+  "schema": "melega.liquidity-page.crash-diagnosis.v1",
+  "productionUrl": "https://www.melega.finance/liquidity/",
+  "reportedTrackingId": "142b3127dbbd4b34b3e85d2a6f53f156",
+  "reproducedTrackingId": "181c2b091fe44e7ea297365bc5254ae4",
+  "exception": "Error: types/values length mismatch (code=INVALID_ARGUMENT, ethers abi/5.6.4)",
+  "function": "activeProgram(address owner, address projectToken)",
+  "component": "LiquidityBuildingCard → useLiquidityBuildingCard → useProgramReadModel",
+  "file": "apps/web/src/views/LiquidityStudio/liquidityBuilding/useProgramReadModel.ts",
+  "lineBefore": 40,
+  "rootCause": "useSingleCallResult treats inputs===undefined as valid zero-arg encode (isValidMethodArgs). When owner/projectToken missing, activeProgram was still encoded with [] → crash under Sentry Error Boundary on /liquidity/ mount.",
+  "minimalFix": "Skip factory contract when activeProgramCallArgs() returns null so encode is never invoked without both addresses.",
+  "ssotVerified": {
+    "lbFactory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+    "createTokenFactory": "0x6DbB5d7162842dA94ef9172AedC8D148d203d311",
+    "publicFarmFactory": "0x89Ffa439B197FE98f0F5388E00EdF1eBfD80D7E9"
+  },
+  "untouched": [
+    "LB contracts",
+    "Smart Swap",
+    "fee economics",
+    "business logic beyond crash guard"
+  ]
+}
