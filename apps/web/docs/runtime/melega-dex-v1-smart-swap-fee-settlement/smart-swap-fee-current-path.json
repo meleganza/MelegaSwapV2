@@ -1,0 +1,34 @@
+{
+  "mission": "MELEGA_DEX_V1_SMART_SWAP_PROTOCOL_FEE_SETTLEMENT_AUDIT_AND_IMPLEMENTATION",
+  "generatedAt": "2026-08-02T01:39:08.163106Z",
+  "flow": [
+    "User",
+    "Smart Swap UI (HomeSwapPanel / TradeCockpit)",
+    "Quote (Pancake/Melega smart-router discovery)",
+    "Route calculation",
+    "Transaction construction (useSwapCallArguments \u2192 router swap/swapMulti)",
+    "Confirmation: estimateGas \u2192 Founder 25% gas protocol fee plan",
+    "Wallet-signed native BNB transfer to MELEGA TREASURY WALLET",
+    "Wallet-signed Melega/Pancake Router swap execution",
+    "Fee settlement complete (direct treasury; no intermediary)"
+  ],
+  "layers": {
+    "frontend": [
+      "HomeSwapPanel",
+      "SmartSwapForm",
+      "SmartSwapExecutionPreviewModule",
+      "SmartSwapFeeTransparency"
+    ],
+    "api": "none required for fee settlement",
+    "sdk": [
+      "@pancakeswap/smart-router",
+      "ethers Contract.estimateGas"
+    ],
+    "router": "Melega/Pancake Smart Router 0xC666\u202628B0 / V2 router 0xc250\u2026EAB3",
+    "contracts": "No new contracts; native BNB value transfer to treasury EOA",
+    "events": "Native value transfer (no ERC-20 Transfer); swap events from underlying router",
+    "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
+  "priorState": "D87 20/30 bps amountIn metadata only; wrapper undeployed; Founder 25% gas schedule unused",
+  "currentState": "Founder 25% gas fee calculated + settled on-chain via wallet-signed native transfer"
+}

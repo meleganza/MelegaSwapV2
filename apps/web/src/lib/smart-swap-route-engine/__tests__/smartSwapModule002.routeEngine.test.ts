@@ -63,9 +63,11 @@ describe('SMART_SWAP_MODULE_002 Route Engine', () => {
     expect(existsSync(hero)).toBe(true)
 
     const status = execSync('git status --porcelain', { cwd: REPO }).toString()
-    // Core exchange/routing utils must remain untouched; UX defaults on index may change.
+    // Core exchange/routing utils must remain untouched.
+    // Fee settlement may touch useSwapCallback; quote/discovery hooks stay frozen.
     expect(status).not.toMatch(/views\/Swap\/SmartSwap\/utils\/exchange\.ts/)
-    expect(status).not.toMatch(/views\/Swap\/SmartSwap\/hooks\//)
+    expect(status).not.toMatch(/views\/Swap\/SmartSwap\/hooks\/useBestTrade/)
+    expect(status).not.toMatch(/views\/Swap\/SmartSwap\/hooks\/useSwapCallArguments/)
   })
 
   it('normalizes a direct route with impact, gas, and fee estimates', () => {
