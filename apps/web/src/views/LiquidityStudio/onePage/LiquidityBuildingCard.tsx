@@ -27,6 +27,8 @@ import {
 import { liqOne } from './onePageTokens'
 import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { LbDeployReadinessPanel } from './LbDeployReadinessPanel'
+import { formatLbTokenAmount } from '../liquidityBuilding/formatLbAmount'
+import type { ActivateProgressPhase } from '../liquidityBuilding/founderActivateFlow'
 
 const BUILDER_STEPS = [
   { n: 1, label: 'Set up' },
@@ -444,12 +446,12 @@ const TokenChip = styled.button<{ $on?: boolean }>`
 const MetaGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 2px;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 8px;
   }
 `
 
@@ -457,7 +459,7 @@ const MetaCell = styled.div`
   border: 1px solid ${liqOne.borderDefault};
   border-radius: 10px;
   background: ${liqOne.elevated};
-  padding: 12px 12px 10px;
+  padding: 8px 10px 8px;
   min-width: 0;
   overflow: hidden;
 `
@@ -529,7 +531,97 @@ const SummaryStrip = styled.div`
 const DashGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 6px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+`
+
+const ProductSummary = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+  margin-top: 2px;
+`
+
+const ProductTitle = styled.h3`
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 750;
+  color: ${liqOne.gold};
+`
+
+const ProductRow = styled.div`
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 13px;
+  line-height: 18px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+`
+
+const ProductKey = styled.span`
+  color: ${liqOne.muted};
+  font-weight: 650;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+`
+
+const ProductVal = styled.span`
+  color: ${liqOne.text};
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const ActivateGuide = styled.div`
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(221, 185, 47, 0.28);
+  background: rgba(221, 185, 47, 0.06);
+`
+
+const ActivateGuideTitle = styled.div`
+  font-size: 12px;
+  font-weight: 750;
+  color: ${liqOne.text};
+  margin-bottom: 6px;
+`
+
+const ActivateGuideList = styled.ol`
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 18px;
+  color: ${liqOne.secondary};
+`
+
+const ActivateLive = styled.ul`
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`
+
+const ActivateLiveItem = styled.li<{ $state: 'pending' | 'active' | 'done' }>`
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 650;
+  color: ${({ $state }) =>
+    $state === 'done' ? '#86efac' : $state === 'active' ? liqOne.gold : liqOne.muted};
 `
 
 const EmptyHint = styled.p`
@@ -697,6 +789,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
   const [activating, setActivating] = useState(false)
+  const [activatePhase, setActivatePhase] = useState<ActivateProgressPhase | null>(null)
+  const [activateDonePhases, setActivateDonePhases] = useState<ActivateProgressPhase[]>([])
+  const [activateHint, setActivateHint] = useState<string | null>(null)
   const [builderStep, setBuilderStep] = useState<BuilderStep>(1)
   const [addressInput, setAddressInput] = useState('')
 
@@ -751,7 +846,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   // IA workspace already titles the pane — keep LB header collapsed, body expanded.
   const heroCollapsed = forceExpanded || inFlow || isActive
   /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
+  // Product polish: auto-height for setup/active — avoid 860px empty laptop shells.
   const compactInactive = !forceExpanded && !inFlow && !isActive
+  const compactLayout = compactInactive || inFlow || isActive || forceExpanded
 
   const onStart = () => {
     card.startSetup()
@@ -843,7 +940,10 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const primaryLabel = useMemo(() => {
     if (stepError) return stepError
     if (isActive) return 'Program Active'
-    if (activating) return 'Activating'
+    if (activating) {
+      if (activateHint) return activateHint
+      return LB_UX.activationInProgress
+    }
     if (!inFlow) return LB_UX.startCta
     if (builderStep === 1) {
       if (!tokenReady) return 'Choose Token to Grow'
@@ -862,6 +962,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     stepError,
     isActive,
     activating,
+    activateHint,
     inFlow,
     builderStep,
     card.walletConnected,
@@ -901,14 +1002,28 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     }
 
     setActivating(true)
+    setActivatePhase(null)
+    setActivateDonePhases([])
+    setActivateHint(LB_UX.activationLiveCreating)
     setStepError(null)
     try {
-      const result = await card.requestDepositAndActivate()
+      const result = await card.requestDepositAndActivate({
+        onProgress: (event) => {
+          setActivatePhase(event.phase)
+          setActivateHint(event.label)
+          if (event.done) {
+            setActivateDonePhases((prev) =>
+              prev.includes(event.phase) ? prev : [...prev, event.phase],
+            )
+          }
+        },
+      })
       if (result && !result.ok) {
-        setStepError(result.reason)
+        setStepError(humanizeActivationFailure(result.reason) || result.reason)
       }
     } finally {
       setActivating(false)
+      setActivateHint(null)
     }
   }
 
@@ -966,69 +1081,112 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     if (isActive) {
       const s = card.programSnapshot
       const m = card.metrics
+      const decimals = card.selectedCurrency?.wrapped?.decimals ?? 18
+      const symbol = card.draft.tokenSymbol || s.tokenSymbol || null
+      const reserveLabel =
+        s.initialBudgetLabel ||
+        formatLbTokenAmount(card.draft.tokenBudget, decimals, symbol) ||
+        (card.draft.tokenBudget && symbol ? `${card.draft.tokenBudget} ${symbol}` : card.draft.tokenBudget) ||
+        '—'
+      const strategyLabel =
+        STRATEGY_PRESET_OPTIONS.find((o) => o.key === card.draft.strategyPreset)?.label ||
+        (card.draft.strategy === 'FULL_AI' ? LB_UX.strategyFullAiTitle : LB_UX.strategyRangeTitle)
+      const goalLabel =
+        LIQUIDITY_GOAL_OPTIONS.find((o) => o.key === card.draft.liquidityGoal)?.label || '—'
+      const statusLabel =
+        card.status === 'ACTIVE' ? LB_UX.activeStatusRunning : PROGRAM_STATUS_LABEL[card.status]
       return (
-        <DashGrid data-testid="liq-lb-dashboard">
-          <MetaCell>
-            <MetaLabel>Pair</MetaLabel>
-            <MetaValue>{s.pairLabel || s.tokenSymbol || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Status</MetaLabel>
-            <MetaValue data-testid="liq-lb-program-status">{PROGRAM_STATUS_LABEL[card.status]}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Budget</MetaLabel>
-            <MetaValue>{s.initialBudgetLabel || card.draft.tokenBudget || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Success Fee</MetaLabel>
-            <MetaValue data-testid="liq-lb-success-fee">{(card.successFeeBps / 100).toFixed(0)}%</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Program Address</MetaLabel>
-            <MetaValue data-testid="liq-lb-program-address" title={s.programAddress || undefined}>
-              {s.programAddress
-                ? `${s.programAddress.slice(0, 6)}…${s.programAddress.slice(-4)}`
-                : '—'}
-            </MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Remaining</MetaLabel>
-            <MetaValue>{s.remainingBudgetLabel || m.budgetRemainingLabel || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Liquidity Built</MetaLabel>
-            <MetaValue>{s.liquidityBuiltLabel || m.liquidityBuiltLabel || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Gross Quote</MetaLabel>
-            <MetaValue>{s.grossQuoteLabel || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Fee Paid</MetaLabel>
-            <MetaValue>{s.feePaidLabel || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>LP Owner</MetaLabel>
-            <MetaValue>{s.lpOwner || s.lpRecipient || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Executions</MetaLabel>
-            <MetaValue>{m.executionCount != null ? String(m.executionCount) : '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Last Epoch</MetaLabel>
-            <MetaValue>{s.lastDecisionLabel || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Next Epoch</MetaLabel>
-            <MetaValue>{s.nextDecisionLabel || '—'}</MetaValue>
-          </MetaCell>
-          <MetaCell>
-            <MetaLabel>Recent Tx</MetaLabel>
-            <MetaValue>{card.activity[0]?.title || 'None yet'}</MetaValue>
-          </MetaCell>
-        </DashGrid>
+        <ProductSummary data-testid="liq-lb-dashboard" data-lb-product-active="1">
+          <ProductTitle data-testid="liq-lb-active-title">{LB_UX.activeProductTitle}</ProductTitle>
+          <ProductRow>
+            <ProductKey>Pair</ProductKey>
+            <ProductVal data-testid="liq-lb-active-pair">{s.pairLabel || '—'}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Token Reserve</ProductKey>
+            <ProductVal data-testid="liq-lb-active-reserve">{reserveLabel}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Strategy</ProductKey>
+            <ProductVal data-testid="liq-lb-active-strategy">{strategyLabel}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Liquidity Goal</ProductKey>
+            <ProductVal data-testid="liq-lb-active-goal">{goalLabel}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Status</ProductKey>
+            <ProductVal data-testid="liq-lb-program-status">{statusLabel}</ProductVal>
+          </ProductRow>
+
+          <Accordion
+            open={advancedOpen}
+            onToggle={(e) => setAdvancedOpen((e.target as HTMLDetailsElement).open)}
+            data-testid="liq-lb-active-advanced"
+          >
+            <summary>{LB_UX.technicalTitle}</summary>
+            <AccordionBody>
+              <DashGrid>
+                <MetaCell>
+                  <MetaLabel>Program Address</MetaLabel>
+                  <MetaValue data-testid="liq-lb-program-address" title={s.programAddress || undefined}>
+                    {s.programAddress
+                      ? `${s.programAddress.slice(0, 6)}…${s.programAddress.slice(-4)}`
+                      : '—'}
+                  </MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Remaining</MetaLabel>
+                  <MetaValue data-testid="liq-lb-active-remaining">
+                    {s.remainingBudgetLabel || m.budgetRemainingLabel || '—'}
+                  </MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Liquidity Built</MetaLabel>
+                  <MetaValue>{s.liquidityBuiltLabel || m.liquidityBuiltLabel || '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Success Fee</MetaLabel>
+                  <MetaValue data-testid="liq-lb-success-fee">
+                    {(card.successFeeBps / 100).toFixed(0)}%
+                  </MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Gross Quote</MetaLabel>
+                  <MetaValue>{s.grossQuoteLabel || '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Fee Paid</MetaLabel>
+                  <MetaValue data-testid="liq-lb-fee-paid">{s.feePaidLabel || '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>LP Owner</MetaLabel>
+                  <MetaValue>{s.lpOwner || s.lpRecipient || '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Executions</MetaLabel>
+                  <MetaValue>{m.executionCount != null ? String(m.executionCount) : '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Last Epoch</MetaLabel>
+                  <MetaValue>{s.lastDecisionLabel || '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Next Epoch</MetaLabel>
+                  <MetaValue>{s.nextDecisionLabel || '—'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Recent Tx</MetaLabel>
+                  <MetaValue>{card.activity[0]?.title || 'None yet'}</MetaValue>
+                </MetaCell>
+                <MetaCell>
+                  <MetaLabel>Check frequency</MetaLabel>
+                  <MetaValue>{card.decisionFrequencyLabel}</MetaValue>
+                </MetaCell>
+              </DashGrid>
+            </AccordionBody>
+          </Accordion>
+        </ProductSummary>
       )
     }
 
@@ -1294,6 +1452,59 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           <SummaryStrip data-testid="liq-lb-summary">{summaryLine}</SummaryStrip>
         </div>
 
+        {(builderStep === 3 || activating) && !isActive ? (
+          <ActivateGuide data-testid="liq-lb-activation-guide">
+            <ActivateGuideTitle>{LB_UX.activationRequiresTitle}</ActivateGuideTitle>
+            <ActivateGuideList>
+              <li data-testid="liq-lb-wallet-step-1">{LB_UX.activationStepApprove}</li>
+              <li data-testid="liq-lb-wallet-step-2">{LB_UX.activationStepDeposit}</li>
+              <li data-testid="liq-lb-wallet-step-3">{LB_UX.activationStepActivate}</li>
+            </ActivateGuideList>
+            {activating ? (
+              <ActivateLive data-testid="liq-lb-activation-live" aria-live="polite">
+                {(
+                  [
+                    {
+                      phase: 'CREATE_PROGRAM' as const,
+                      label: LB_UX.activationLiveCreating,
+                      doneLabel: 'Program created',
+                    },
+                    {
+                      phase: 'APPROVE' as const,
+                      label: LB_UX.activationLiveApproved,
+                      doneLabel: LB_UX.activationLiveApproved,
+                    },
+                    {
+                      phase: 'DEPOSIT' as const,
+                      label: LB_UX.activationLiveDeposited,
+                      doneLabel: LB_UX.activationLiveDeposited,
+                    },
+                    {
+                      phase: 'ACTIVATE' as const,
+                      label: LB_UX.activationLiveActivated,
+                      doneLabel: LB_UX.activationLiveActivated,
+                    },
+                  ] as const
+                ).map((step) => {
+                  const done = activateDonePhases.includes(step.phase)
+                  const active = activatePhase === step.phase && !done
+                  const state = done ? 'done' : active ? 'active' : 'pending'
+                  return (
+                    <ActivateLiveItem
+                      key={step.phase}
+                      $state={state}
+                      data-testid={`liq-lb-live-${step.phase.toLowerCase()}`}
+                      data-state={state}
+                    >
+                      {done ? `✓ ${step.doneLabel}` : active ? `… ${activateHint || step.label}` : step.label}
+                    </ActivateLiveItem>
+                  )
+                })}
+              </ActivateLive>
+            ) : null}
+          </ActivateGuide>
+        ) : null}
+
         <div data-testid="liq-lb-step-activate" hidden aria-hidden>
           {/* Compatibility sentinel for prior wizard tests — activation is footer CTA only. */}
         </div>
@@ -1337,11 +1548,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       data-ds0014="true"
       data-liquidity-building-panel-surface="LiquidityBuildingPanel"
       data-lb-phase={card.phase}
-      data-pixel-lb-card={compactInactive ? 'compact' : '860'}
+      data-pixel-lb-card={compactLayout ? 'compact' : '860'}
       data-lb-module="002"
-      data-lb-compact={compactInactive ? '1' : '0'}
+      data-lb-compact={compactLayout ? '1' : '0'}
       data-lb-single-surface="1"
-      $compact={compactInactive}
+      $compact={compactLayout}
     >
       <Hero
         $tight={inFlow || isActive || compactInactive}
@@ -1371,9 +1582,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
 
       <Body
         $heroCollapsed={heroCollapsed}
-        $compact={compactInactive}
+        $compact={compactLayout}
         data-testid="liq-lb-body"
-        data-pixel-lb-body={compactInactive ? 'auto' : heroCollapsed ? '580' : '442'}
+        data-pixel-lb-body={compactLayout ? 'auto' : heroCollapsed ? '580' : '442'}
       >
         <BodyScroll key={`${card.phase}-${isActive ? 'active' : `step-${builderStep}`}`}>{content}</BodyScroll>
       </Body>

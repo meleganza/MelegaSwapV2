@@ -37,6 +37,8 @@ import {
   type QuoteAssetKey,
   type StrategyPreset,
 } from './strategyPresets'
+import { formatLbTokenAmount } from './formatLbAmount'
+import type { ActivateProgressEvent } from './founderActivateFlow'
 
 export type LiquiditySeriesPoint = { label: string; value: number; at: string }
 
@@ -119,7 +121,9 @@ export type LiquidityBuildingCardState = {
   backToSetup: () => void
   openReview: () => boolean
   openStatus: () => void
-  requestDepositAndActivate: () => Promise<{ ok: true; programAddress?: string } | { ok: false; reason: string }>
+  requestDepositAndActivate: (opts?: {
+    onProgress?: (event: ActivateProgressEvent) => void
+  }) => Promise<{ ok: true; programAddress?: string } | { ok: false; reason: string }>
   successFeeBps: number
   factoryBound: boolean
   pause: () => void
@@ -136,6 +140,8 @@ function buildSnapshot(
   programRead: ReturnType<typeof useProgramReadModel>,
   draftSymbol: string | null,
   pairLabel: string | null,
+  decimals: number,
+  quoteSymbol: string | null,
 ): ProgramSnapshotView {
   if (programRead.source !== 'ON_CHAIN') {
     return {
@@ -145,20 +151,29 @@ function buildSnapshot(
     }
   }
   const s = programRead.snapshot
+  const fmtProject = (raw: string | null | undefined) => formatLbTokenAmount(raw, decimals, draftSymbol)
+  const fmtQuote = (raw: string | null | undefined) => formatLbTokenAmount(raw, decimals, quoteSymbol)
   return {
     programAddress: s.programAddress,
     tokenSymbol: draftSymbol,
     pairLabel: s.pair ? pairLabel : pairLabel,
     lpOwner: s.owner,
     lpRecipient: s.lpRecipient,
-    initialBudgetLabel: s.view?.totalDepositedBudget != null ? String(s.view.totalDepositedBudget) : null,
-    remainingBudgetLabel: s.metrics.budgetRemainingLabel,
-    tokensSoldLabel: s.tokensSold,
-    tokensMatchedLabel: s.tokensMatched,
-    grossQuoteLabel: s.grossQuoteAcquired,
-    feePaidLabel: s.totalFeePaid,
-    netQuoteLabel: s.view?.totalQuoteAdded != null ? String(s.view.totalQuoteAdded) : null,
-    lpMintedLabel: s.totalLpMinted,
+    initialBudgetLabel:
+      s.view?.totalDepositedBudget != null
+        ? fmtProject(String(s.view.totalDepositedBudget))
+        : null,
+    remainingBudgetLabel:
+      s.view?.remainingBudget != null
+        ? fmtProject(String(s.view.remainingBudget))
+        : s.metrics.budgetRemainingLabel,
+    tokensSoldLabel: fmtProject(s.tokensSold),
+    tokensMatchedLabel: fmtProject(s.tokensMatched),
+    grossQuoteLabel: fmtQuote(s.grossQuoteAcquired),
+    feePaidLabel: fmtQuote(s.totalFeePaid),
+    netQuoteLabel:
+      s.view?.totalQuoteAdded != null ? fmtQuote(String(s.view.totalQuoteAdded)) : null,
+    lpMintedLabel: formatLbTokenAmount(s.totalLpMinted, decimals, null),
     inFlightLabel: null,
     availableToAddLabel: null,
     lastDecisionLabel: null,
@@ -298,9 +313,18 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
       ? `${draft.tokenSymbol}/${pairDetection.quoteSymbol}`
       : null
 
+  const tokenDecimals = selectedCurrency?.wrapped?.decimals ?? 18
+
   const programSnapshot = useMemo(
-    () => buildSnapshot(programRead, draft.tokenSymbol, pairLabel),
-    [programRead, draft.tokenSymbol, pairLabel],
+    () =>
+      buildSnapshot(
+        programRead,
+        draft.tokenSymbol,
+        pairLabel,
+        tokenDecimals,
+        pairDetection.quoteSymbol ?? null,
+      ),
+    [programRead, draft.tokenSymbol, pairLabel, tokenDecimals, pairDetection.quoteSymbol],
   )
 
   const walletBalanceLabel = useMemo(() => {
@@ -387,7 +411,7 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
       return true
     },
     openStatus: () => setPhase('status'),
-    requestDepositAndActivate: async () => {
+    requestDepositAndActivate: async (opts) => {
       // Fail-closed — never fabricate ACTIVE; browser wallet must sign each step.
       if (!mutateGate.ok) {
         setPhase('status')
@@ -428,6 +452,7 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
         epochDurationSeconds: draft.epochSeconds,
         quoteEnabled: quoteEnabled || pairDetection.quoteAddress.toLowerCase() === '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
         correctChain,
+        onProgress: opts?.onProgress,
       })
 
       if (!result.ok) {

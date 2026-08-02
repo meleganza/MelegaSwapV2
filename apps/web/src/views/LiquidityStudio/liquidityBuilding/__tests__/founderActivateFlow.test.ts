@@ -181,8 +181,34 @@ describe('founderActivateFlow', () => {
     expect(writer).toContain('depositBudget')
     expect(writer).toContain('activate')
     const card = fs.readFileSync(path.join(root, '../onePage/LiquidityBuildingCard.tsx'), 'utf8')
-    expect(card).toContain('await card.requestDepositAndActivate()')
+    expect(card).toContain('await card.requestDepositAndActivate({')
     expect(card).toContain("programReason === 'NO_ACTIVE_PROGRAM'")
+  })
+
+  it('emits live progress for each wallet confirmation step', async () => {
+    const wallet = mockWallet()
+    const args = buildCreateProgramArgs({
+      projectToken: LB_CANARY.marco,
+      quoteAsset: LB_CANARY.wbnb,
+      pair: LB_CANARY.marcoWbnbPair,
+    })
+    if ('error' in args) throw new Error(args.error)
+
+    const events: string[] = []
+    const result = await runFounderActivateFlow({
+      owner: LB_CANARY.signer,
+      createArgs: args,
+      amountWei: '1000000000000000000',
+      projectToken: args.projectToken,
+      wallet,
+      onProgress: (e) => events.push(`${e.phase}:${e.label}`),
+    })
+    expect(result.ok).toBe(true)
+    expect(events.some((e) => e.includes('CREATE_PROGRAM'))).toBe(true)
+    expect(events.some((e) => e.includes('1/3 Token approval'))).toBe(true)
+    expect(events.some((e) => e.includes('2/3 Reserve deposit'))).toBe(true)
+    expect(events.some((e) => e.includes('3/3 Program activation'))).toBe(true)
+    expect(events.some((e) => e.includes('Program activated'))).toBe(true)
   })
 })
 

@@ -49,6 +49,23 @@ export type FounderActivateStep =
   | 'REJECTED'
   | 'FAILED'
 
+/** Live progress for founder activation UX (wallet confirmations). */
+export type ActivateProgressPhase =
+  | 'CREATE_PROGRAM'
+  | 'APPROVE'
+  | 'DEPOSIT'
+  | 'ACTIVATE'
+  | 'DONE'
+
+export type ActivateProgressEvent = {
+  phase: ActivateProgressPhase
+  /** Human label shown during / after the step */
+  label: string
+  /** Wallet prompt about to open */
+  awaitingWallet?: boolean
+  done?: boolean
+}
+
 export type FounderActivateTxProof = {
   step: 'createProgram' | 'approve' | 'deposit' | 'activate'
   hash: string
@@ -190,10 +207,19 @@ export async function runFounderActivateFlow(input: {
   amountWei: string
   projectToken: string
   wallet: FounderActivateWallet
+  onProgress?: (event: ActivateProgressEvent) => void
 }): Promise<FounderActivateResult> {
   const txs: FounderActivateTxProof[] = []
+  const progress = (event: ActivateProgressEvent) => {
+    try {
+      input.onProgress?.(event)
+    } catch {
+      // UI progress must never break activation
+    }
+  }
 
   try {
+    progress({ phase: 'CREATE_PROGRAM', label: 'Creating program', awaitingWallet: true })
     const createTx = await input.wallet.createProgram(input.createArgs)
     const createReceipt = await createTx.wait()
     txs.push({ step: 'createProgram', hash: createTx.hash, status: createReceipt.status ?? null })
@@ -206,9 +232,11 @@ export async function runFounderActivateFlow(input: {
       return { ok: false, reason: 'PROGRAM_ADDRESS_NOT_IN_RECEIPT', step: 'FAILED', txs }
     }
     const programAddress = getAddress(created.program)
+    progress({ phase: 'CREATE_PROGRAM', label: 'Program created', done: true })
 
     const allowance = await input.wallet.readAllowance(input.projectToken, input.owner, programAddress)
     if (BigInt(allowance) < BigInt(input.amountWei)) {
+      progress({ phase: 'APPROVE', label: '1/3 Token approval', awaitingWallet: true })
       const approveTx = await input.wallet.approve(input.projectToken, programAddress, input.amountWei)
       if (!approveTx) {
         return { ok: false, reason: 'WALLET_REJECTED_APPROVE', step: 'REJECTED', txs }
@@ -218,21 +246,29 @@ export async function runFounderActivateFlow(input: {
       if (approveReceipt.status === 0) {
         return { ok: false, reason: 'APPROVE_REVERTED', step: 'FAILED', txs }
       }
+      progress({ phase: 'APPROVE', label: 'Token approved', done: true })
+    } else {
+      progress({ phase: 'APPROVE', label: 'Token approved', done: true })
     }
 
+    progress({ phase: 'DEPOSIT', label: '2/3 Reserve deposit', awaitingWallet: true })
     const depositTx = await input.wallet.depositBudget(programAddress, input.amountWei)
     const depositReceipt = await depositTx.wait()
     txs.push({ step: 'deposit', hash: depositTx.hash, status: depositReceipt.status ?? null })
     if (depositReceipt.status === 0) {
       return { ok: false, reason: 'DEPOSIT_REVERTED', step: 'FAILED', txs }
     }
+    progress({ phase: 'DEPOSIT', label: 'Reserve deposited', done: true })
 
+    progress({ phase: 'ACTIVATE', label: '3/3 Program activation', awaitingWallet: true })
     const activateTx = await input.wallet.activate(programAddress)
     const activateReceipt = await activateTx.wait()
     txs.push({ step: 'activate', hash: activateTx.hash, status: activateReceipt.status ?? null })
     if (activateReceipt.status === 0) {
       return { ok: false, reason: 'ACTIVATE_REVERTED', step: 'FAILED', txs }
     }
+    progress({ phase: 'ACTIVATE', label: 'Program activated', done: true })
+    progress({ phase: 'DONE', label: 'Program activated', done: true })
 
     return {
       ok: true,

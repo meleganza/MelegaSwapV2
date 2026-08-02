@@ -22,6 +22,7 @@ import {
   parseBudgetWei,
   resolveCanaryOrientation,
   runFounderActivateFlow,
+  type ActivateProgressEvent,
   type FounderActivateResult,
   type FounderActivateWallet,
   type StrategyModeInput,
@@ -109,6 +110,7 @@ export function useFounderActivateWriter() {
       epochDurationSeconds?: number
       quoteEnabled: boolean
       correctChain: boolean
+      onProgress?: (event: ActivateProgressEvent) => void
     }): Promise<FounderActivateResult> => {
       const gate = canSubmitFounderWalletActivate({
         walletConnected: Boolean(address),
@@ -160,6 +162,7 @@ export function useFounderActivateWriter() {
         amountWei,
         projectToken: args.projectToken,
         wallet,
+        onProgress: input.onProgress,
       })
     },
     [address, factoryBound, buildWallet],
