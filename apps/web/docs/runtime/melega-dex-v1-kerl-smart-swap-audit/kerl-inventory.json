@@ -1,0 +1,148 @@
+{
+  "schema": "melega.dex.v1.kerl-inventory",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "auditRoot": "MelegaSwapV2-post-recovery-truth",
+  "hitCountApprox": 203,
+  "summary": {
+    "hasKerlApi": false,
+    "hasKerlContracts": false,
+    "hasKerlDatabase": false,
+    "hasKerlCronOrWorker": false,
+    "kerlSigningGatePresent": false,
+    "activeLivePath": "chain-97-kerl-constitutional-smart-swap-ui",
+    "mainnetRoutingPath": "smart-swap-melega-pairs-via-pancakeswap-smart-router-sdk",
+    "inactiveOrGated": [
+      "dry-run-handoff-stack-under-TESTNET_EXECUTION_ONLY",
+      "treasury-runtime-intake",
+      "kerl-signing-gate-missing"
+    ]
+  },
+  "components": [
+    {
+      "component": "kerl-constitutional",
+      "path": "apps/web/src/lib/kerl-constitutional/",
+      "purpose": "KRMP constitutional routing/execution/settlement attestation for chain 97",
+      "activeInactive": "active_on_chain_97_inactive_on_56",
+      "runtimeDependency": "wallet + MelegaSmartRouterWrapper ABI + BSC testnet registry",
+      "consumer": "SmartSwap UI, TreasuryHandoffUpdater",
+      "producer": "ExecutionRequest / KerlSettlementReceipt",
+      "lastUsage": "wired_in_apps/web/src/index.tsx_Updaters_and_SmartSwap_hooks"
+    },
+    {
+      "component": "kerl-authority-gate",
+      "path": "apps/web/src/lib/kerl-constitutional/authority.ts",
+      "purpose": "isKerlRoutingAuthorityEnforced(chainId) — true only when chainId===97",
+      "activeInactive": "active",
+      "runtimeDependency": "KRMP_TESTNET_CHAIN_ID=97",
+      "consumer": "useBestTrade, useKerlConstitutionalSwap, SmartSwap",
+      "producer": "boolean gate",
+      "lastUsage": "continuous_ui"
+    },
+    {
+      "component": "kerl-producer",
+      "path": "apps/web/src/lib/kerl-constitutional/producer.ts",
+      "purpose": "Produce ExecutionRequest for certified testnet pairs",
+      "activeInactive": "active_on_97",
+      "runtimeDependency": "KRMP_TESTNET_REGISTRY",
+      "consumer": "useKerlConstitutionalSwap, civilization-router",
+      "producer": "ExecutionRequest",
+      "lastUsage": "certified_pair_swaps_on_97"
+    },
+    {
+      "component": "kerl-wrapper-executor",
+      "path": "apps/web/src/lib/kerl-constitutional/wrapperExecutor.ts",
+      "purpose": "Submit wrapper swaps from ExecutionRequest",
+      "activeInactive": "active_on_97",
+      "runtimeDependency": "MelegaSmartRouterWrapper",
+      "consumer": "useKerlConstitutionalSwap",
+      "producer": "txHash",
+      "lastUsage": "user_driven_testnet"
+    },
+    {
+      "component": "kerl-public-registry",
+      "path": "apps/web/public/registry/kerl/index.json",
+      "purpose": "Static handoff package index",
+      "activeInactive": "active_static",
+      "runtimeDependency": "static hosting",
+      "consumer": "kerlRegistry.ts, handoff-intake",
+      "producer": "registry JSON",
+      "lastUsage": "build_or_runtime_read"
+    },
+    {
+      "component": "kerl-gateway-ingress",
+      "path": "apps/web/src/lib/execution-ingress/kerl-gateway.ts",
+      "purpose": "KERL entry → dry_run / live_blocked / off",
+      "activeInactive": "lib_active_live_path_blocked_after_KRMP_boot",
+      "runtimeDependency": "execution-modes, dry-run gateway",
+      "consumer": "handoff-consumer tests/CLI",
+      "producer": "DryRunGatewayResult",
+      "lastUsage": "tests_and_CLI"
+    },
+    {
+      "component": "execution-handoff-consumer",
+      "path": "apps/web/src/lib/execution-handoff-consumer/",
+      "purpose": "Validate/consume KERL DryRunHandoffPackage",
+      "activeInactive": "lib_and_tests_no_public_API",
+      "runtimeDependency": "kerl-gateway",
+      "consumer": "tests/scripts",
+      "producer": "HandoffConsumerResult",
+      "lastUsage": "tests"
+    },
+    {
+      "component": "execution-tracker",
+      "path": "apps/web/src/lib/execution-tracker/",
+      "purpose": "Client evidence store (localStorage kerl_exec_tracker_*)",
+      "activeInactive": "active_client_storage",
+      "runtimeDependency": "localStorage",
+      "consumer": "gateway/ingress",
+      "producer": "tracker records",
+      "lastUsage": "dry_run_ux"
+    },
+    {
+      "component": "first-testnet-CLI",
+      "path": "apps/web/scripts/kerl-first-testnet-execution.ts",
+      "purpose": "Operator genesis testnet execution",
+      "activeInactive": "operator_CLI",
+      "runtimeDependency": "KERL_TESTNET_EXECUTOR_PRIVATE_KEY + handoff JSON",
+      "consumer": "humans",
+      "producer": "verdict JSON",
+      "lastUsage": "manual"
+    },
+    {
+      "component": "kerl-signing-gate",
+      "path": "apps/web/src/lib/kerl-signing-gate/ (MISSING)",
+      "purpose": "Documented KMS/HOT signer audit for LB — directory absent",
+      "activeInactive": "inactive_absent",
+      "runtimeDependency": "none",
+      "consumer": "LB docs only",
+      "producer": "none",
+      "lastUsage": "never_in_repo"
+    },
+    {
+      "component": "smart-swap-route-engine",
+      "path": "apps/web/src/lib/smart-swap-route-engine/",
+      "purpose": "Route presentation model; forbids KERL attribution claims",
+      "activeInactive": "active_lib_not_primary_executor",
+      "runtimeDependency": "trade snapshots",
+      "consumer": "execution-preview modules",
+      "producer": "route presentation",
+      "lastUsage": "preview_tests"
+    },
+    {
+      "component": "useBestTrade",
+      "path": "apps/web/src/views/Swap/SmartSwap/hooks/useBestTrade.ts",
+      "purpose": "Pancake smart-router quote hook; returns null when KERL enforced",
+      "activeInactive": "active_on_56_suppressed_on_97",
+      "runtimeDependency": "@pancakeswap/smart-router",
+      "consumer": "SmartSwap",
+      "producer": "Trade",
+      "lastUsage": "continuous_mainnet"
+    }
+  ],
+  "absences": {
+    "contracts": "no KERL-named Solidity under contracts/",
+    "apiRoutes": "no pages/api KERL routes",
+    "database": "none — localStorage only",
+    "cronWorkers": "none KERL-specific (Vercel indexer crons unrelated)"
+  }
+}

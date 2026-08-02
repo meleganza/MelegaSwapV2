@@ -1,0 +1,121 @@
+{
+  "schema": "melega.dex.v1.kerl-functional-analysis",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "measuredScope": {
+    "mainnetChainId": 56,
+    "testnetChainId": 97,
+    "kerlEnforcedOnlyOn": 97
+  },
+  "functions": [
+    {
+      "function": "calculate_routes",
+      "does": false,
+      "evidence": "On 97, useBestTrade returns null; KERL producer uses certified pair wrappers, not hop search. On 56 KERL unused.",
+      "valueAdded": "none_for_route_calculation",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "DECOMMISSION_FROM_ROUTING"
+    },
+    {
+      "function": "discover_liquidity",
+      "does": false,
+      "evidence": "No pool discovery; certified registry pairs only on 97. Mainnet discovery is useAllCommonPairs + Melega factory.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "store_pool_data",
+      "does": false,
+      "evidence": "No KERL database; tracker is localStorage execution evidence only.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "compare_DEX_prices",
+      "does": false,
+      "evidence": "No external DEX venue registry in KERL path.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "execute_swaps",
+      "does": true,
+      "evidence": "wrapperExecutor.ts submits MelegaSmartRouterWrapper txs on chain 97 via user wallet.",
+      "valueAdded": "testnet_wrapper_execution_path",
+      "duplicate": "partial_vs_SmartSwap_commit_on_56",
+      "required": "only_if_KRMP_testnet_model_retained",
+      "replaceable": true,
+      "recommendation": "OPTIONAL_TESTNET_ONLY"
+    },
+    {
+      "function": "select_routers",
+      "does": "limited",
+      "evidence": "Selects certified wrapper/underlying from KRMP registry — not competitive router selection across DEXes.",
+      "valueAdded": "constitutional_router_lock_on_97",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_STRATEGIC_FOR_MAINNET"
+    },
+    {
+      "function": "provide_quotes",
+      "does": false,
+      "evidence": "Does not run getBestTradeExactIn; suppresses Smart Router quotes when enforced.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "manage_fees",
+      "does": false,
+      "evidence": "Fee transparency modules explicitly forbid KERL attribution; protocol fee via dexEconomicAuthority / wrapper policy.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "manage_Treasury",
+      "does": false,
+      "evidence": "Settlement handoff decommissioned; beneficiary is MELEGA TREASURY WALLET.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "provide_AI_intelligence",
+      "does": false,
+      "evidence": "No AI/ML modules under kerl-constitutional or execution-ingress.",
+      "valueAdded": "none",
+      "duplicate": false,
+      "required": false,
+      "replaceable": true,
+      "recommendation": "NOT_NEEDED"
+    },
+    {
+      "function": "duplicate_Smart_Router_logic",
+      "does": "replaces_not_duplicates_on_97",
+      "evidence": "When enforced, Smart Router quote path is nullified; KERL does not reimplement hop search.",
+      "valueAdded": "constitutional_ownership_layer",
+      "duplicate": "conceptual_overlap_with_execution_handoff_stack",
+      "required": false,
+      "replaceable": true,
+      "recommendation": "DECOMMISSION_FOR_MAINNET_ARCHITECTURE"
+    }
+  ]
+}

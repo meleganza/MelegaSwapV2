@@ -1,0 +1,86 @@
+{
+  "schema": "melega.dex.v1.routing-responsibility-matrix",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "columns": [
+    "Capability",
+    "Smart Router",
+    "KERL",
+    "Both",
+    "Neither",
+    "Recommendation"
+  ],
+  "rows": [
+    {
+      "Capability": "Quote calculation",
+      "SmartRouter": true,
+      "KERL": false,
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "KEEP_SMART_ROUTER_REMOVE_KERL_FROM_QUOTES"
+    },
+    {
+      "Capability": "Path finding",
+      "SmartRouter": true,
+      "KERL": false,
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "KEEP_SMART_ROUTER"
+    },
+    {
+      "Capability": "Multi-hop routing",
+      "SmartRouter": true,
+      "KERL": false,
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "KEEP_SMART_ROUTER"
+    },
+    {
+      "Capability": "DEX aggregation",
+      "SmartRouter": false,
+      "KERL": false,
+      "Both": false,
+      "Neither": true,
+      "Recommendation": "NEITHER_PROVIDES_TRUE_AGGREGATION_TODAY"
+    },
+    {
+      "Capability": "Gas optimization",
+      "SmartRouter": "partial_via_better_output_heuristic",
+      "KERL": false,
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "KEEP_SMART_ROUTER"
+    },
+    {
+      "Capability": "Liquidity discovery",
+      "SmartRouter": "Melega_pairs_plus_static_stables",
+      "KERL": "certified_registry_only_on_97",
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "KEEP_SMART_ROUTER_FOR_MAINNET"
+    },
+    {
+      "Capability": "Execution",
+      "SmartRouter": true,
+      "KERL": "testnet_wrapper_only",
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "MAINNET_SMART_ROUTER_V2_KERL_OPTIONAL_TESTNET"
+    },
+    {
+      "Capability": "Analytics",
+      "SmartRouter": false,
+      "KERL": false,
+      "Both": false,
+      "Neither": true,
+      "Recommendation": "OUT_OF_SCOPE"
+    },
+    {
+      "Capability": "Constitutional routing ownership",
+      "SmartRouter": false,
+      "KERL": true,
+      "Both": false,
+      "Neither": false,
+      "Recommendation": "TESTNET_ONLY_NOT_REQUIRED_FOR_MAINNET_ACTIVATION"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "melega.dex.v1.smart-swap-product-truth",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "uiPromises": [
+    {
+      "claim": "Best Route Found",
+      "file": "apps/web/src/views/Trade/components/TradeSmartRouteBox.tsx",
+      "shown": true,
+      "backendSupportsAsMultiDexBest": false,
+      "truth": "Best of Melega Smart vs Melega V2 path — not best across external DEXes",
+      "mismatch": true
+    },
+    {
+      "claim": "SmartSwap Best Route",
+      "file": "apps/web/src/views/Trade/components/TradeRightRail.tsx",
+      "shown": true,
+      "backendSupportsAsMultiDexBest": false,
+      "truth": "Panel title over Melega-centric route",
+      "mismatch": true
+    },
+    {
+      "claim": "best available multichain route",
+      "file": "apps/web/src/views/Trade/TradeCockpit.tsx",
+      "shown": true,
+      "backendSupportsAsMultiDexBest": false,
+      "truth": "Single active chain quote; not multichain aggregation",
+      "mismatch": true
+    },
+    {
+      "claim": "Expected output / price impact / gas / minimum received",
+      "shown": true,
+      "backendSupportsAsMultiDexBest": "n/a",
+      "truth": "Derived from selected Melega trade — functionally real for that trade",
+      "mismatch": false
+    },
+    {
+      "claim": "DEX source disclosure of external venues",
+      "shown": false,
+      "backendSupportsAsMultiDexBest": false,
+      "truth": "No competing DEX sources to disclose",
+      "mismatch": false
+    }
+  ],
+  "productTruthSummary": "UI language implying cross-liquidity or multichain best-route exceeds measured backend capability (MELEGA_ONLY_ROUTER)."
+}

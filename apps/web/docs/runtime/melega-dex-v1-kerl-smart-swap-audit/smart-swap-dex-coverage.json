@@ -1,0 +1,87 @@
+{
+  "schema": "melega.dex.v1.smart-swap-dex-coverage",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "method": "code_inspection_of_router_registries_adapters_SDK_quote_providers_factory_pair_discovery",
+  "table": [
+    {
+      "DEX": "Melega DEX",
+      "Supported": true,
+      "Observed": true,
+      "Quoted": true,
+      "Executable": true,
+      "Adapter": "V2ExecutionAdapter / SmartRouterExecutionAdapter",
+      "Network": "BSC 56",
+      "LiquiditySource": "Melega V2 factory 0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C via useAllCommonPairs"
+    },
+    {
+      "DEX": "PancakeSwap",
+      "Supported": "partial_label_only",
+      "Observed": false,
+      "Quoted": "stable_pool_addresses_hardcoded_from_PCS_style_list_only",
+      "Executable": "via_Smart_Router_0xC666_if_stable_improves_route_not_general_PCS_V2/V3",
+      "Adapter": "SmartRouterExecutionAdapter (Melega-configured)",
+      "Network": "BSC 56",
+      "LiquiditySource": "packages/smart-router/evm/constants/stableSwap/56.ts (HAY/BUSD, USDT/BUSD, USDC/BUSD, USDT/USDC) — not full Pancake venue registry"
+    },
+    {
+      "DEX": "Uniswap",
+      "Supported": false,
+      "Observed": false,
+      "Quoted": false,
+      "Executable": false,
+      "Adapter": null,
+      "Network": "n/a",
+      "LiquiditySource": "none_in_swap_path"
+    },
+    {
+      "DEX": "Thena",
+      "Supported": false,
+      "Observed": false,
+      "Quoted": false,
+      "Executable": false,
+      "Adapter": null,
+      "Network": "n/a",
+      "LiquiditySource": "none_in_swap_path"
+    },
+    {
+      "DEX": "Biswap",
+      "Supported": false,
+      "Observed": false,
+      "Quoted": false,
+      "Executable": false,
+      "Adapter": null,
+      "Network": "n/a",
+      "LiquiditySource": "none_in_swap_path"
+    },
+    {
+      "DEX": "ApeSwap",
+      "Supported": false,
+      "Observed": false,
+      "Quoted": false,
+      "Executable": false,
+      "Adapter": null,
+      "Network": "n/a",
+      "LiquiditySource": "none_in_swap_path"
+    },
+    {
+      "DEX": "Sushi",
+      "Supported": false,
+      "Observed": false,
+      "Quoted": false,
+      "Executable": false,
+      "Adapter": null,
+      "Network": "n/a",
+      "LiquiditySource": "none_in_swap_path"
+    },
+    {
+      "DEX": "Other",
+      "Supported": false,
+      "Observed": false,
+      "Quoted": false,
+      "Executable": false,
+      "Adapter": null,
+      "Network": "n/a",
+      "LiquiditySource": "no_additional_aggregator_venues_registered"
+    }
+  ]
+}

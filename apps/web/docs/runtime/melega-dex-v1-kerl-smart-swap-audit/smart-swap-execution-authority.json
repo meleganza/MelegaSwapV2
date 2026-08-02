@@ -1,0 +1,29 @@
+{
+  "schema": "melega.dex.v1.smart-swap-execution-authority",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "routerCalled": [
+    "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "0xC6665d98Efd81f47B03801187eB46cbC63F328B0"
+  ],
+  "contractAddressSelection": "useTradeInfo.routerAddress",
+  "caller": "connected_user_wallet (from: account)",
+  "feePath": {
+    "lpFee": "~25 bps per hop (AMM)",
+    "protocolFee": "policy metadata on mainnet; on-chain collection requires undeployed MelegaSmartRouterWrapper",
+    "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
+  "recipient": "user_or_trade_recipient",
+  "approvalPath": "useApproveCallback(amount, tradeInfo.routerAddress) — spender is selected router",
+  "walletInteraction": "browser_wallet_signature_required",
+  "confirmations": {
+    "noTreasuryRuntime": true,
+    "noServerSigner": true,
+    "noManagedWallet": true,
+    "noHiddenExecutionAuthority": true
+  },
+  "evidenceFiles": [
+    "apps/web/src/views/Swap/SmartSwap/hooks/useSwapCallback.ts",
+    "apps/web/src/lib/melega-smart-router/smartRouterAdapter.ts",
+    "apps/web/src/lib/treasury-handoff/submitSettlementHandoff.ts"
+  ]
+}

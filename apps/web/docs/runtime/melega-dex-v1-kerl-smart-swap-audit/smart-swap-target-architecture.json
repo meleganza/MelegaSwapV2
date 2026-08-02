@@ -1,0 +1,30 @@
+{
+  "schema": "melega.dex.v1.smart-swap-target-architecture",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "selectedOption": "B_REMOVE_KERL",
+  "optionA_KEEP_KERL": {
+    "flow": [
+      "Smart Swap",
+      "KERL Intelligence Layer",
+      "DEX adapters",
+      "Execution Router",
+      "Wallet"
+    ],
+    "selected": false,
+    "reasonRejected": "KERL is not an intelligence/aggregation layer on measured mainnet path"
+  },
+  "optionB_REMOVE_KERL": {
+    "flow": [
+      "Smart Swap",
+      "Aggregator/Router (@pancakeswap/smart-router over Melega pairs)",
+      "Execution Router (V2 or Smart Router)",
+      "Wallet"
+    ],
+    "selected": true,
+    "notes": [
+      "Matches measured mainnet behavior today",
+      "True multi-DEX aggregation remains a future product decision — not provided by KERL today",
+      "No Treasury Runtime in path"
+    ]
+  }
+}

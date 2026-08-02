@@ -1,0 +1,70 @@
+{
+  "schema": "melega.dex.v1.smart-swap-route-selection",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "methodology": "Live output amounts intentionally not fabricated. Scenarios record measured route SOURCES and selection LOGIC from code. Conclusion from venue coverage + selection code.",
+  "selectionLogic": {
+    "file": "apps/web/src/views/Swap/SmartSwap/hooks/useIsSmartRouterBetter.ts + useTradeInfo.ts",
+    "behavior": "Compare Smart (V2±stable) vs Melega V2 on same Melega liquidity graph; pick better output when smart routeType non-V2",
+    "apiQuotePathEnabled": false
+  },
+  "scenarios": [
+    {
+      "pair": "BNB → MARCO",
+      "availableRoutes": "Melega V2 hops (+ optional hardcoded stable if on path); no Pancake/Uniswap/Thena/Biswap/Ape/Sushi venues",
+      "DEXSources": [
+        "Melega V2"
+      ],
+      "expectedOutput": "NOT_FABRICATED — determined at runtime from Melega pair reserves via RPC multicall",
+      "selectedRoute": "Smart Router or V2 per useIsSmartRouterBetter",
+      "reasonSelected": "internal_melega_smart_vs_v2_comparison",
+      "slippage": "user_setting",
+      "gasEstimate": "wallet_estimate_at_sign",
+      "priceImpact": "computeTradePriceBreakdown from selected trade"
+    },
+    {
+      "pair": "USDT → MARCO",
+      "availableRoutes": "Melega V2 multi-hop via common bases; stable overlay only if hardcoded pools apply",
+      "DEXSources": [
+        "Melega V2"
+      ],
+      "expectedOutput": "NOT_FABRICATED",
+      "selectedRoute": "Smart Router or V2",
+      "reasonSelected": "internal_melega_smart_vs_v2_comparison",
+      "slippage": "user_setting",
+      "gasEstimate": "wallet_estimate_at_sign",
+      "priceImpact": "computeTradePriceBreakdown"
+    },
+    {
+      "pair": "WBNB → random token",
+      "availableRoutes": "Only if Melega pair/path exists via useAllCommonPairs; otherwise no trade",
+      "DEXSources": [
+        "Melega V2"
+      ],
+      "expectedOutput": "NOT_FABRICATED_OR_NULL",
+      "selectedRoute": "Smart Router or V2 if path exists",
+      "reasonSelected": "melega_liquidity_graph_only",
+      "slippage": "user_setting",
+      "gasEstimate": "wallet_estimate_at_sign",
+      "priceImpact": "computeTradePriceBreakdown_or_unavailable"
+    },
+    {
+      "pair": "MARCO → token",
+      "availableRoutes": "Melega V2 hops",
+      "DEXSources": [
+        "Melega V2"
+      ],
+      "expectedOutput": "NOT_FABRICATED",
+      "selectedRoute": "Smart Router or V2",
+      "reasonSelected": "internal_melega_smart_vs_v2_comparison",
+      "slippage": "user_setting",
+      "gasEstimate": "wallet_estimate_at_sign",
+      "priceImpact": "computeTradePriceBreakdown"
+    }
+  ],
+  "conclusion": "MELEGA_ONLY_ROUTER",
+  "conclusionRationale": "No multi-DEX venue registry. Comparison is Smart-vs-V2 within Melega liquidity (+ limited hardcoded stable pool addresses). Not TRUE_AGGREGATOR. Stable overlay does not constitute LIMITED_AGGREGATOR across competing DEXes.",
+  "alternateLabelRejected": {
+    "LIMITED_AGGREGATOR": "rejected — hardcoded PCS-style stable addresses are not a competing DEX aggregator surface",
+    "TRUE_AGGREGATOR": "rejected — no cross-DEX quote competition"
+  }
+}

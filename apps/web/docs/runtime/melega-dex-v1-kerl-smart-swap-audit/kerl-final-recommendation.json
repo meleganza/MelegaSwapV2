@@ -1,0 +1,34 @@
+{
+  "schema": "melega.dex.v1.kerl-final-recommendation",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "recommendation": "DECOMMISSION_KERL",
+  "keepCriteria": {
+    "uniqueRoutingIntelligence": false,
+    "improvesExecutionQuality": false,
+    "enablesMultiDexAggregation": false,
+    "noTreasuryDependency": true,
+    "maintainable": false
+  },
+  "decommissionCriteria": {
+    "duplicatesSmartRouter": "replaces_on_97_unused_on_56",
+    "onlyRoutesMelegaLiquidity": true,
+    "addsComplexity": true,
+    "createsUnnecessaryDependencies": "dry_run_gateway_signing_gate_surface_yes_TR_no"
+  },
+  "keepScore": 1,
+  "keepRequiredAllUniqueValueGatesFailed": true,
+  "rationale": [
+    "Measured: KERL does not calculate competitive multi-DEX routes or provide quotes on mainnet (56).",
+    "Measured: On mainnet Smart Swap uses @pancakeswap/smart-router over Melega factory pairs; KERL authority is false.",
+    "Measured: On testnet (97) KERL replaces Smart Router quotes with certified-pair wrapper execution — still Melega-only liquidity.",
+    "Measured: ACTIVE Treasury Runtime dependencies = 0 (pass), but that alone does not satisfy KEEP criteria.",
+    "Measured: No unique routing intelligence, no multi-DEX aggregation, large inactive/gated surface (signing-gate missing, dry-run stack).",
+    "Decision rule: do not preserve KERL only because it exists; evidence fails KEEP gates and meets DECOMMISSION gates for production Smart Swap architecture."
+  ],
+  "scopeNote": "DECOMMISSION means remove KERL from production Smart Swap / mainnet activation architecture. Historical testnet KRMP artifacts may be archived; this audit does not delete code.",
+  "nextStepsIfAccepted": [
+    "Plan separate decommission mission (out of scope here)",
+    "Keep Smart Swap → Smart Router / V2 → wallet architecture",
+    "Do not expand Smart Swap aggregation in this mission"
+  ]
+}

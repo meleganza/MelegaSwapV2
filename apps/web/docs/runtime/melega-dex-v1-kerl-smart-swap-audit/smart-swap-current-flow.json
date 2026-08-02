@@ -1,0 +1,86 @@
+{
+  "schema": "melega.dex.v1.smart-swap-current-flow",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "flow": [
+    {
+      "step": 1,
+      "name": "User selects token",
+      "surface": "SmartSwapForm / TradeCockpit / HomeSwapPanel"
+    },
+    {
+      "step": 2,
+      "name": "Smart Swap UI",
+      "entry": "apps/web/src/views/Swap/SmartSwap/index.tsx (SmartSwapForm)"
+    },
+    {
+      "step": 3,
+      "name": "Quote request",
+      "path": "useDerivedSwapInfoWithStableSwap → useBestTrade",
+      "note": "HTTP /smartRouter API present but disabled in useBestTrade.ts"
+    },
+    {
+      "step": 4,
+      "name": "Route calculation",
+      "engines": [
+        "packages/smart-router/evm/getBestTrade.ts",
+        "packages/smart-router/evm/getBestTradeFromV2.ts",
+        "packages/smart-router/evm/getBestTradeWithStableSwap.ts"
+      ],
+      "liquidityInputs": "useAllCommonPairs (Melega factory) + hardcoded stable pools list"
+    },
+    {
+      "step": 5,
+      "name": "Router selection",
+      "path": "useIsSmartRouterBetter → useTradeInfo",
+      "choices": [
+        "Melega V2 Router 0xc250…EAB3",
+        "Smart Router 0xC666…28B0"
+      ]
+    },
+    {
+      "step": 6,
+      "name": "Transaction construction",
+      "path": "useSwapCallArguments → prepareMelegaSmartRouterSwap → useSwapCallback"
+    },
+    {
+      "step": 7,
+      "name": "Wallet signature",
+      "authority": "user_wallet_only"
+    },
+    {
+      "step": 8,
+      "name": "Execution",
+      "contracts": [
+        "Melega V2 Router",
+        "PancakeSwap-labeled Smart Router 0xC666…"
+      ]
+    }
+  ],
+  "frontendEntryPoints": [
+    "apps/web/src/pages/swap/index.tsx",
+    "apps/web/src/pages/trade/index.tsx",
+    "apps/web/src/views/HomeTrade/HomeSwapPanel.tsx",
+    "apps/web/src/views/ProjectPage/v1/ProjectTradingEmbed.tsx"
+  ],
+  "apiEndpoints": {
+    "liveQuoteHttp": "disabled",
+    "historicalSmartRouterPost": "state/swap/fetch/fetchBestPriceWithRouter.ts → POST /smartRouter"
+  },
+  "quoteEngines": [
+    "@pancakeswap/smart-router/evm getBestTradeExactIn/Out (client RPC)"
+  ],
+  "routerContracts": {
+    "melegaV2Factory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaV2Router": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "smartRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+    "melegaWrapperMainnet": null
+  },
+  "providers": [
+    "utils/wagmi provider for multicall reserves"
+  ],
+  "adapters": [
+    "lib/melega-smart-router/execution-adapter/adapters.ts (V2ExecutionAdapter, SmartRouterExecutionAdapter)"
+  ],
+  "fallbacks": "If smart not better or routeType===V2 → Melega V2 router",
+  "kerlBranch": "On chain 97 only — replaces useBestTrade with useKerlConstitutionalSwap"
+}

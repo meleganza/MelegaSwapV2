@@ -1,0 +1,63 @@
+{
+  "schema": "melega.dex.v1.kerl-treasury-dependency-audit",
+  "auditedAt": "2026-08-02T00:22:14.600Z",
+  "ACTIVE_DEPENDENCIES": 0,
+  "requiredResult": "ACTIVE_DEPENDENCIES = 0",
+  "resultMet": true,
+  "searches": [
+    "Treasury Runtime",
+    "treasuryRuntime",
+    "KERL",
+    "fee",
+    "authority",
+    "collector",
+    "settlement",
+    "treasury.melega.ai"
+  ],
+  "activeRuntimeCalls": [],
+  "decommissionedReferences": [
+    {
+      "file": "apps/web/src/lib/treasury-handoff/submitSettlementHandoff.ts",
+      "line": 37,
+      "purpose": "Documented no-op handoff; never HTTP to treasury.melega.ai",
+      "severity": "INFO_DECOMMISSIONED",
+      "migrationRequirement": "none — already no-op",
+      "active": false
+    },
+    {
+      "file": "apps/web/src/lib/treasury-handoff/config.ts",
+      "line": 11,
+      "purpose": "isTreasuryRuntimeConfigured always false",
+      "severity": "INFO_DECOMMISSIONED",
+      "migrationRequirement": "none",
+      "active": false
+    },
+    {
+      "file": "apps/web/src/pages/api/treasury/settlement-events.ts",
+      "line": 5,
+      "purpose": "API returns decommissioned; never forwards",
+      "severity": "INFO_DECOMMISSIONED",
+      "migrationRequirement": "none",
+      "active": false
+    },
+    {
+      "file": "apps/web/public/registry/melega-dex/smart-router-wrapper-v2-certificate.json",
+      "line": null,
+      "purpose": "Static certificate field treasury_runtime URL — not executed by KERL runtime",
+      "severity": "INFO_STATIC_METADATA",
+      "migrationRequirement": "optional cleanup of static cert metadata",
+      "active": false
+    },
+    {
+      "file": "apps/web/src/lib/kerl-constitutional/settlement.ts",
+      "line": null,
+      "purpose": "Builds settlement receipt then calls decommissioned submitSettlementHandoff",
+      "severity": "INFO_DECOMMISSIONED",
+      "migrationRequirement": "none for swap success",
+      "active": false
+    }
+  ],
+  "managedWallets": false,
+  "centralizedFeeRoutingViaTreasuryRuntime": false,
+  "conclusion": "KERL has ZERO active Treasury Runtime dependency. Swap success does not require treasury.melega.ai."
+}
