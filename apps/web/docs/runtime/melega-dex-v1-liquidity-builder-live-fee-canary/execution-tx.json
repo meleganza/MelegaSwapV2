@@ -1,0 +1,16 @@
+{
+  "schema": "melega.lb.live-fee-canary-execution.v1",
+  "status": "AWAITING_FOUNDER",
+  "executed": false,
+  "reason": "Mission forbids automated signing. Live canary requires Founder wallet approval.",
+  "transactionHash": null,
+  "block": null,
+  "sender": null,
+  "amount": null,
+  "generatedFee": null,
+  "feeSinkTransfer": null,
+  "feeReceiverTransfer": null,
+  "treasuryReceipt": null,
+  "requiredSigner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "requiredSignerLabel": "MELEGA DEPLOYER / Founder"
+}

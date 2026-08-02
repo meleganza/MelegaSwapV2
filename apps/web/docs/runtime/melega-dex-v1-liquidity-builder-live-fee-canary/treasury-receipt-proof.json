@@ -1,0 +1,11 @@
+{
+  "schema": "melega.lb.live-fee-canary-treasury-receipt-proof.v1",
+  "expectedTreasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "beneficiaryOnReceiver": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "beneficiaryMatch": true,
+  "preCanaryWbnbBalance": "0",
+  "liveReceiptTx": null,
+  "liveReceiptAmount": null,
+  "status": "AWAITING_FOUNDER",
+  "note": "After FeeReceiver intake, Founder/governor may recoverERC20 to MELEGA TREASURY WALLET for EOA receipt proof."
+}

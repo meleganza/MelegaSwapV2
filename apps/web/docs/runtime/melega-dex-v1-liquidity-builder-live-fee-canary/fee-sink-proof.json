@@ -1,0 +1,14 @@
+{
+  "schema": "melega.lb.live-fee-canary-fee-sink-proof.v1",
+  "address": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+  "codePresent": true,
+  "codeBytes": 3105,
+  "treasuryReceiver": "0x5F3B45ab1B4d149761F3749A3D7954A37A6A1Ff5",
+  "expectedTreasuryReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+  "match": true,
+  "factoryPointsToSink": true,
+  "preCanaryWbnbBalance": "0",
+  "settleFunction": "settleLiquidityBuildingFee",
+  "liveSettlementTx": null,
+  "status": "WIRING_VERIFIED_AWAITING_LIVE_SETTLEMENT_TX"
+}

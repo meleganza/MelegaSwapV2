@@ -1,0 +1,62 @@
+{
+  "schema": "melega.lb.live-fee-canary-config.v1",
+  "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_LIVE_FEE_CANARY_CERTIFICATION",
+  "preparationOnlyUntilFounderSignature": true,
+  "autoExecute": false,
+  "riskClass": "MINIMAL_NON_PRODUCTION",
+  "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+  "lifecycle": {
+    "DEPLOYED": true,
+    "VALIDATED": true,
+    "BOUND": true,
+    "READY": true,
+    "canaryExecuted": false
+  },
+  "inputToken": {
+    "symbol": "WBNB",
+    "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "role": "budgetAsset"
+  },
+  "amount": {
+    "human": "0.01",
+    "wei": "10000000000000000",
+    "asset": "WBNB",
+    "note": "Minimal budget — do not use significant funds"
+  },
+  "pair": {
+    "tokenA": "WBNB",
+    "tokenB": "USDT",
+    "tokenAAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "tokenBAddress": "0x55d398326f99059fF775485246999027B3197955",
+    "venue": "Melega AMM",
+    "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "createPublicLiquidity": false,
+    "affectUsers": false
+  },
+  "estimatedGas": {
+    "status": "FOUNDER_WALLET_ESTIMATE_AT_SIGNATURE",
+    "note": "Gas estimate finalized in Founder wallet at confirmation — not pre-broadcast by agent"
+  },
+  "expectedFee": {
+    "successFeeBps": 1000,
+    "successFeePercent": 10,
+    "amount": "0.001",
+    "asset": "WBNB",
+    "amountWei": "1000000000000000",
+    "formula": "floor(budget * 1000 / 10000) on protocol success fee path"
+  },
+  "expectedDestination": {
+    "path": "Program → FeeSink.settleLiquidityBuildingFee → FeeReceiver (intake) → beneficiary MELEGA TREASURY WALLET via governor recoverERC20",
+    "feeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "feeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "note": "Atomic settle moves ERC-20 Program→FeeReceiver via Sink; Sink retains zero fee balance. Treasury EOA receipt requires Founder/governor recoverERC20 after intake."
+  },
+  "founderRequirements": [
+    "MELEGA DEPLOYER / authorized Founder wallet signs in browser",
+    "No automated signing",
+    "No server signer / KMS / hidden wallet",
+    "Capture tx hash, block, fee events, FeeReceiver balance delta, optional recover to Treasury"
+  ]
+}

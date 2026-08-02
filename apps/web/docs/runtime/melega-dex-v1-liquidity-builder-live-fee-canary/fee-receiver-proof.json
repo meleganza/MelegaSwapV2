@@ -1,0 +1,13 @@
+{
+  "schema": "melega.lb.live-fee-canary-fee-receiver-proof.v1",
+  "address": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+  "codePresent": true,
+  "codeBytes": 594,
+  "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "expectedBeneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "match": true,
+  "preCanaryWbnbBalance": "0",
+  "recoverFunction": "recoverERC20(token, amount) → beneficiary",
+  "liveIntakeTx": null,
+  "status": "WIRING_VERIFIED_AWAITING_LIVE_INTAKE_TX"
+}

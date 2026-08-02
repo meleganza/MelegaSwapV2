@@ -1,0 +1,11 @@
+{
+  "schema": "melega.lb.live-fee-canary-fee-calculation.v1",
+  "onChainSuccessFeeBps": "1000",
+  "expectedBps": 1000,
+  "expectedPercent": 10,
+  "match": true,
+  "canaryBudgetWei": "10000000000000000",
+  "expectedFeeWei": "1000000000000000",
+  "expectedFeeHuman": "0.001 WBNB",
+  "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82"
+}
