@@ -1,0 +1,24 @@
+{
+  "proofType": "calculation_and_execution_wiring",
+  "historicalMainnetSmartSwapFeeTransfer": "NONE_PRE_IMPLEMENTATION",
+  "settlementMechanism": {
+    "type": "native_bnb_value_transfer",
+    "to": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+    "data": "0x",
+    "when": "confirmation_time_after_estimateGas_before_router_call",
+    "signer": "user_wallet"
+  },
+  "example": {
+    "gasEstimateUnits": 200000,
+    "gasPriceWei": 5000000000,
+    "estimatedGasCostWei": "1000000000000000",
+    "feeWei": "250000000000000",
+    "feeBnb": "0.00025",
+    "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
+  "eventLogs": {
+    "nativeTransfer": "value field on fee tx; no ERC-20 Transfer event",
+    "swapLogs": "underlying router Swap events unchanged"
+  },
+  "recipientExactMatch": true
+}

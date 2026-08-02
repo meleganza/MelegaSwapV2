@@ -80,11 +80,14 @@ function compactFeeRows(model: SmartSwapFeeTransparency): Array<{ label: string;
     model.flowSteps.find((s) => /execution/i.test(s.label))?.value ||
     DEX_ECONOMIC_AUTHORITY.executionModel
 
-  return [
+  const estimatedGas = model.flowSteps.find((s) => /estimated gas/i.test(s.label))?.value
+  const rows = [
+    ...(estimatedGas ? [{ label: 'Estimated gas', value: estimatedGas }] : []),
     { label: 'Protocol fee', value: protocol },
     { label: 'Fee destination', value: destination },
     { label: 'Execution', value: execution },
   ]
+  return rows
 }
 
 export type SmartSwapFeeTransparencyPanelProps = {

@@ -17,6 +17,7 @@ import {
   SmartSwapExecutionHandoffPanel,
   useSmartSwapExecutionHandoff,
 } from 'views/SmartSwapStudio/modules/SmartSwapExecutionHandoff'
+import { useSmartSwapGasProtocolFeePreview } from 'lib/smart-swap-gas-protocol-fee'
 
 export type SmartSwapIntelMode = 'instant' | 'smart'
 
@@ -116,6 +117,9 @@ const PanelBody = styled.div`
 function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
   const result = useSmartSwapExecutionPreview()
   const feeModel = useSmartSwapFeeTransparency(result)
+  const gasFeePlan = useSmartSwapGasProtocolFeePreview(
+    result.status === 'ok' ? result.preview?.gasEstimateUnits ?? null : null,
+  )
   const aiResult = useSmartSwapAIAssistance(result, feeModel)
   const handoff = useSmartSwapExecutionHandoff(result, feeModel)
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -148,10 +152,6 @@ function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
       : preview?.priceImpactSeverity === 'LOW'
         ? 'ok'
         : 'neutral'
-  const feeLabel =
-    preview?.protocolFee.availability === 'available' && preview.protocolFee.bps != null
-      ? preview.protocolFee.label
-      : '—'
   const confidenceTone =
     preview && preview.confidence >= 70 ? 'ok' : preview && preview.confidence < 40 ? 'warn' : 'neutral'
 
@@ -164,15 +164,22 @@ function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
       ? `${preview.minimumReceivedFormatted} ${preview.outputToken.symbol}`
       : '—'
 
+  const estimatedGas = gasFeePlan ? `${gasFeePlan.display.estimatedGasBnb} BNB` : '—'
+  const protocolFee = gasFeePlan
+    ? `${gasFeePlan.display.protocolFeeBnb} BNB`
+    : feeModel.feeAmount
+      ? `${feeModel.feeAmount} ${feeModel.feeAsset ?? 'BNB'}`
+      : '—'
+
   const metrics = [
     { label: 'Expected output', value: expected },
     { label: 'Minimum received', value: minimum },
     { label: 'Price impact', value: impact, tone: impactTone as 'ok' | 'warn' | 'neutral' },
-    { label: 'Protocol fee', value: feeLabel },
+    { label: 'Estimated gas', value: estimatedGas },
     {
-      label: 'Confidence',
-      value: preview ? `${preview.confidence}%` : '—',
-      tone: confidenceTone as 'ok' | 'warn' | 'neutral',
+      label: 'Protocol fee',
+      value: protocolFee,
+      sub: gasFeePlan ? '25% of estimated gas → Melega Treasury' : undefined,
     },
   ]
 
