@@ -1,0 +1,46 @@
+{
+  "schema": "melega.dex.v1.smart-swap-strategy-comparison",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "options": [
+    {
+      "id": "OPTION_1_EXISTING_AGGREGATOR_FRAMEWORK",
+      "description": "Integrate third-party aggregator (e.g. 1inch/OpenOcean-style) under Smart Swap UI",
+      "security": "High dependency on external solver/API trust + allowance surface",
+      "complexity": "High",
+      "maintenance": "High (vendor drift)",
+      "time": "High",
+      "benefit": "True multi-DEX quotes quickly",
+      "recommendation": "REJECT_FOR_NOW_TRUST_AND_FEE_CAPTURE_UNCERTAIN"
+    },
+    {
+      "id": "OPTION_2_EXTEND_PANCAKE_SMART_ROUTER",
+      "description": "Upgrade 0.6.1 fork to modern PCS V3/Universal Router and expand venue graph",
+      "security": "Med — large bytecode/SDK upgrade surface",
+      "complexity": "High",
+      "maintenance": "High",
+      "time": "High",
+      "benefit": "Broader Pancake liquidity",
+      "recommendation": "REJECT_FOR_NOW_UNTIL_QUOTE_EXEC_ASYMMETRY_FIXED"
+    },
+    {
+      "id": "OPTION_3_MELEGA_ADAPTER_REGISTRY",
+      "description": "Build first-party DEX Adapter Registry (V2 forks first) + route intelligence",
+      "security": "Med — controlled adapters, wallet still signs",
+      "complexity": "High",
+      "maintenance": "Med_High owned",
+      "time": "High",
+      "benefit": "Strategic Melega-owned aggregation + fee path via wrapper/adapters",
+      "recommendation": "DEFER_OPTIONAL_AFTER_MELEGA_ONLY_HARDENING"
+    },
+    {
+      "id": "OPTION_4_REMAIN_MELEGA_ONLY",
+      "description": "Keep Smart Swap on Melega liquidity; improve route quality, fee wrapper, product truth; decommission KERL",
+      "security": "Best — smallest attack surface",
+      "complexity": "Low_Med",
+      "maintenance": "Low owned",
+      "time": "Low_Med",
+      "benefit": "Reliable DEX activation, honest UX, deployable fee capture on Melega path",
+      "recommendation": "SELECTED"
+    }
+  ]
+}

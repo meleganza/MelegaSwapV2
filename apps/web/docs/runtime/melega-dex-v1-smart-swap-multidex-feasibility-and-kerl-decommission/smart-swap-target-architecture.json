@@ -1,0 +1,35 @@
+{
+  "schema": "melega.dex.v1.smart-swap-target-architecture",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "selected": "MELEGA_ONLY",
+  "melegaOnly": {
+    "flow": [
+      "Smart Swap",
+      "Melega Router (V2 and/or hardened Smart Router path)",
+      "Wallet"
+    ],
+    "selected": true,
+    "notes": [
+      "Matches measured production capability",
+      "Enables honest product truth",
+      "Enables wrapper fee capture on Melega V2 underlying when deployed",
+      "KERL removed from architecture"
+    ]
+  },
+  "multiDexDeferred": {
+    "flow": [
+      "Smart Swap",
+      "Route Intelligence Layer",
+      "DEX Adapter Registry",
+      "DEX Venues",
+      "Execution Router",
+      "Wallet"
+    ],
+    "selected": false,
+    "reopenWhen": [
+      "Mainnet fee capture working on Melega path",
+      "Quote/exec asymmetry resolved",
+      "Founder-approved volume case for external fills"
+    ]
+  }
+}

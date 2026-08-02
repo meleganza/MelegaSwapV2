@@ -1,0 +1,83 @@
+{
+  "schema": "melega.dex.v1.external-dex-coverage-matrix",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "table": [
+    {
+      "DEX": "PancakeSwap",
+      "Quote": "partial_stable_overlay_plus_melega_graph",
+      "Route": "partial_via_0xC666_when_STABLE_MIXED",
+      "Execute": "partial",
+      "AdapterAvailable": "partial_SmartRouterExecutionAdapter",
+      "DevelopmentEffort": "Med_to_harden_intentional_PCS_venue__High_for_V3_UR",
+      "Recommendation": "DEFER_FULL_VENUE_UNTIL_MELEGA_PATH_HARDENED",
+      "feeCapturePossibility": "Wrapper v1 cannot call swap/swapMulti; needs V2 bridge or wrapper redesign",
+      "maintenanceComplexity": "High_if_full_PCS_parity"
+    },
+    {
+      "DEX": "Thena",
+      "Quote": false,
+      "Route": false,
+      "Execute": false,
+      "AdapterAvailable": false,
+      "DevelopmentEffort": "High",
+      "Recommendation": "OUT_OF_SCOPE_NEAR_TERM",
+      "feeCapturePossibility": "only_after_new_adapter",
+      "maintenanceComplexity": "High"
+    },
+    {
+      "DEX": "Biswap",
+      "Quote": false,
+      "Route": false,
+      "Execute": false,
+      "AdapterAvailable": false,
+      "DevelopmentEffort": "Med",
+      "Recommendation": "OPTIONAL_LATER_V2_ADAPTER",
+      "feeCapturePossibility": "yes_if_V2_underlying_via_wrapper",
+      "maintenanceComplexity": "Med"
+    },
+    {
+      "DEX": "ApeSwap",
+      "Quote": false,
+      "Route": false,
+      "Execute": false,
+      "AdapterAvailable": false,
+      "DevelopmentEffort": "Med",
+      "Recommendation": "OPTIONAL_LATER_V2_ADAPTER",
+      "feeCapturePossibility": "yes_if_V2_underlying_via_wrapper",
+      "maintenanceComplexity": "Med"
+    },
+    {
+      "DEX": "Sushi",
+      "Quote": false,
+      "Route": false,
+      "Execute": false,
+      "AdapterAvailable": false,
+      "DevelopmentEffort": "Med_High",
+      "Recommendation": "LOW_PRIORITY_THIN_BSC_LIQUIDITY",
+      "feeCapturePossibility": "yes_if_V2_underlying_via_wrapper",
+      "maintenanceComplexity": "Med"
+    },
+    {
+      "DEX": "Uniswap",
+      "Quote": false,
+      "Route": false,
+      "Execute": false,
+      "AdapterAvailable": false,
+      "DevelopmentEffort": "High",
+      "Recommendation": "NOT_JUSTIFIED_ON_BSC",
+      "feeCapturePossibility": "n/a",
+      "maintenanceComplexity": "High"
+    },
+    {
+      "DEX": "Melega DEX",
+      "Quote": true,
+      "Route": true,
+      "Execute": true,
+      "AdapterAvailable": true,
+      "DevelopmentEffort": "Low_existing",
+      "Recommendation": "PRIMARY_VENUE_INVEST",
+      "feeCapturePossibility": "yes_via_wrapper_when_mainnet_deployed_to_V2_underlying",
+      "maintenanceComplexity": "Owned"
+    }
+  ]
+}

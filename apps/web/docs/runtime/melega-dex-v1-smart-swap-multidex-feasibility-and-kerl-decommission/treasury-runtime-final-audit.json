@@ -1,0 +1,20 @@
+{
+  "schema": "melega.dex.v1.treasury-runtime-final-audit",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "KERL": {
+    "ACTIVE_TREASURY_RUNTIME_DEPENDENCIES": 0
+  },
+  "SmartSwap": {
+    "ACTIVE_TREASURY_RUNTIME_DEPENDENCIES": 0
+  },
+  "DEX": {
+    "ACTIVE_TREASURY_RUNTIME_DEPENDENCIES": 0
+  },
+  "evidence": [
+    "apps/web/src/lib/treasury-handoff/submitSettlementHandoff.ts never HTTP",
+    "apps/web/src/lib/treasury-handoff/config.ts isTreasuryRuntimeConfigured → false",
+    "apps/web/src/pages/api/treasury/settlement-events.ts returns decommissioned",
+    "fee-schedule.json treasury.treasuryRuntime = FORBIDDEN_IN_DEX_FEE_PATH"
+  ],
+  "resultMet": true
+}

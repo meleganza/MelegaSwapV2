@@ -1,0 +1,41 @@
+{
+  "schema": "melega.dex.v1.smart-swap-business-opportunity",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "surfaces": [
+    {
+      "surface": "Melega Space widget",
+      "possible": "external_only_today",
+      "evidence": "No in-repo Space embed; links to melega.space / space.melega.io",
+      "technicalRequirements": "cross-origin embed + wallet session + CSP"
+    },
+    {
+      "surface": "Project Page BUY widget",
+      "possible": true,
+      "evidence": "ProjectTradingEmbed mounts SmartSwapForm today",
+      "technicalRequirements": "none_for_melega_only — already live pattern"
+    },
+    {
+      "surface": "cross-chain discovery tool",
+      "possible": false,
+      "evidence": "Single-chain quote path; no bridge aggregator in Smart Swap",
+      "technicalRequirements": "new product + bridges — out of scope"
+    },
+    {
+      "surface": "external token purchase widget",
+      "possible": "partial",
+      "evidence": "Works when Melega path exists; fails without Melega liquidity for random tokens",
+      "technicalRequirements": "multi-DEX OR deeper Melega liquidity — multi-DEX not required for MARCO/project pairs"
+    }
+  ],
+  "commissionModel": {
+    "currentMainnet": "protocol fee policy metadata only — MelegaSmartRouterWrapper undeployed on 56",
+    "melegaOnlyWithWrapper": "20–30 bps skim to MELEGA TREASURY WALLET on Melega V2 underlying (measured contract design)",
+    "multiDexWithCurrentWrapper": "blocked_for_Smart_Router_swap_swapMulti; possible for V2-ABI underlyings via adapter bridge"
+  },
+  "volumeOpportunity": {
+    "multiDex": "theoretically_higher_fill_rate_for_external_tokens",
+    "melegaOnly": "sufficient_for_DEX_native_pairs_and_Project_BUY; aligns with owned liquidity strategy",
+    "economicJustificationForMultiDexNow": false,
+    "reason": "Fee capture path unfinished on mainnet; quote/exec asymmetry; High build cost; Project BUY already embeds Melega Smart Swap"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "melega.dex.v1.pancake-capability-audit",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "package": {
+    "name": "@pancakeswap/smart-router",
+    "version": "0.6.1",
+    "path": "packages/smart-router",
+    "exportSurface": "./evm",
+    "notModernUniversalRouterStack": true
+  },
+  "usageClassification": "C_BOTH_ASYMMETRIC",
+  "classificationDetail": {
+    "A_routeCalculationLibrary": {
+      "used": true,
+      "evidence": "useBestTrade → getBestTradeExactIn/Out over Melega pairs + stable overlay"
+    },
+    "B_executableLiquiditySource": {
+      "used": "partial",
+      "evidence": "When STABLE/MIXED wins, execution targets Smart Router 0xC666… bound to pancakeswapV2 + stableswapFactory; V2-only path executes Melega 0xc250…",
+      "risk": "MIXED quote V2 legs use Melega Pair.getAddress reserves while Smart Router V2 hops use contract pancakeswapV2 binding — quote/exec venue asymmetry"
+    }
+  },
+  "support": {
+    "v2": true,
+    "stableSwap": true,
+    "v3": false,
+    "universalRouter": false,
+    "quoterV2": false,
+    "routeTypes": [
+      "V2",
+      "STABLE_SWAP",
+      "MIXED"
+    ]
+  },
+  "contracts": {
+    "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+    "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+    "labeledPancakeSmartRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0",
+    "stalePancakeV2RouterReplacedInConstants": "0x10ED… documented as replaced (LB-G07)"
+  },
+  "httpApiQuotePath": "present_but_disabled"
+}

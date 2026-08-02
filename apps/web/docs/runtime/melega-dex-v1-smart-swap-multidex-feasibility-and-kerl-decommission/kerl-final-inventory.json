@@ -1,0 +1,34 @@
+{
+  "schema": "melega.dex.v1.kerl-final-inventory",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "priorRecommendation": "DECOMMISSION_KERL",
+  "counts": {
+    "appsWebSrcFiles": 132,
+    "appsWebPublicFiles": 14,
+    "appsWebScriptsFiles": 5,
+    "docsFiles": 69
+  },
+  "categories": {
+    "activeRuntimeMainnet56": {
+      "count": 0,
+      "note": "isKerlRoutingAuthorityEnforced(56) === false; useBestTrade not suppressed by KERL on mainnet"
+    },
+    "activeRuntimeTestnet97": {
+      "paths": [
+        "apps/web/src/lib/kerl-constitutional/**",
+        "apps/web/src/views/Swap/SmartSwap/** (branch)",
+        "apps/web/src/state/transactions/treasuryHandoffUpdater.tsx"
+      ],
+      "note": "Live only when wallet on chain 97"
+    },
+    "deadOrGated": [
+      "apps/web/src/lib/execution-ingress/kerl-gateway.ts (live_blocked after KRMP boot)",
+      "apps/web/src/lib/execution-handoff-consumer/**",
+      "apps/web/src/lib/kerl-signing-gate (MISSING)",
+      "Treasury Runtime settlement intake (no-op)"
+    ],
+    "tests": "apps/web/src/lib/kerl-constitutional/__tests__/** and related architecture tests",
+    "documentation": "docs/kerl_*.md + LB KERL handoffs",
+    "api": "none dedicated; /api/treasury/settlement-events decommissioned"
+  }
+}

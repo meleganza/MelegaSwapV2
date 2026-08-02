@@ -1,0 +1,68 @@
+{
+  "schema": "melega.dex.v1.kerl-decommission-plan",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "doNotDeleteInThisMission": true,
+  "migrationOrder": [
+    {
+      "phase": 1,
+      "name": "Freeze",
+      "actions": [
+        "Document DECOMMISSION_KERL decision",
+        "Stop new KERL feature work",
+        "Keep Smart Swap Melega path untouched"
+      ],
+      "risk": "Low"
+    },
+    {
+      "phase": 2,
+      "name": "Detach mainnet UI branches",
+      "actions": [
+        "Ensure Smart Swap never imports KERL on chain 56 (already gated)",
+        "Remove/guard chain-97-only UI branches behind explicit testnet flag if retained for labs"
+      ],
+      "risk": "Med — testnet UX change",
+      "mustRemainTemporarily": [
+        "kerl-constitutional for chain 97 labs until Founder retires testnet KRMP"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Retire dry-run/gateway stack",
+      "actions": [
+        "Archive execution-ingress/kerl-gateway, handoff-consumer, handoff-intake, first-testnet CLI",
+        "Keep tests as historical or delete in dedicated PR"
+      ],
+      "risk": "Low — not on mainnet swap path",
+      "canRemoveSafely": true
+    },
+    {
+      "phase": 4,
+      "name": "Registry/static cleanup",
+      "actions": [
+        "Move public/registry/kerl to archive or mark deprecated",
+        "Strip KERL attribution from fee/ownership docs"
+      ],
+      "risk": "Low"
+    },
+    {
+      "phase": 5,
+      "name": "Code deletion PR",
+      "actions": [
+        "Delete kerl-constitutional after testnet retirement decision",
+        "Update imports/tests",
+        "next build + swap smoke"
+      ],
+      "risk": "Med",
+      "prerequisite": "Founder confirmation that chain-97 KRMP is retired"
+    }
+  ],
+  "safeToRemoveNowInFutureMission": [
+    "Dead signing-gate references in docs",
+    "Unused dry-run CLI if unused by operators"
+  ],
+  "mustRemainUntilPhase5": [
+    "apps/web/src/lib/kerl-constitutional (testnet)",
+    "Smart Swap KERL branch for chain 97"
+  ],
+  "riskSummary": "Mainnet Smart Swap does not depend on KERL today — decommission is low risk for production swaps if phased."
+}

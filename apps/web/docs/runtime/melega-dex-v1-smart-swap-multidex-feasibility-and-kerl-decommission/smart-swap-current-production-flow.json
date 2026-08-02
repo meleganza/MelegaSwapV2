@@ -1,0 +1,85 @@
+{
+  "schema": "melega.dex.v1.smart-swap-current-production-flow",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "continuityFrom": "melega-dex-v1-kerl-smart-swap-audit",
+  "priorRouteConclusion": "MELEGA_ONLY_ROUTER",
+  "flow": [
+    {
+      "step": "token_selection",
+      "files": [
+        "apps/web/src/views/Swap/SmartSwap/index.tsx",
+        "apps/web/src/views/Trade/TradeCockpit.tsx"
+      ]
+    },
+    {
+      "step": "quote_request",
+      "files": [
+        "apps/web/src/views/Swap/SmartSwap/hooks/useDerivedSwapInfoWithStableSwap.ts",
+        "apps/web/src/views/Swap/SmartSwap/hooks/useBestTrade.ts"
+      ],
+      "transport": "client_RPC_multicall — HTTP POST /smartRouter disabled"
+    },
+    {
+      "step": "route_calculation",
+      "libraries": [
+        "@pancakeswap/smart-router@0.6.1 (workspace packages/smart-router)"
+      ],
+      "functions": [
+        "getBestTradeExactIn",
+        "getBestTradeExactOut",
+        "getBestTradeFromV2*",
+        "getBestTradeWithStableSwap"
+      ],
+      "liquidityInputs": "useAllCommonPairs → Melega factory 0xb7E5848e… + hardcoded PCS-style stables in packages/smart-router/evm/constants/stableSwap/56.ts"
+    },
+    {
+      "step": "router_selection",
+      "files": [
+        "apps/web/src/views/Swap/SmartSwap/hooks/useIsSmartRouterBetter.tsx",
+        "apps/web/src/views/Swap/SmartSwap/hooks/useTradeInfo.ts"
+      ],
+      "choices": {
+        "melegaV2": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
+        "smartRouter": "0xC6665d98Efd81f47B03801187eB46cbC63F328B0"
+      }
+    },
+    {
+      "step": "transaction_construction",
+      "files": [
+        "apps/web/src/views/Swap/SmartSwap/hooks/useSwapCallArguments.ts",
+        "apps/web/src/lib/melega-smart-router/smartRouterAdapter.ts"
+      ],
+      "methods": [
+        "swapExact* via V2",
+        "swap/swapMulti via Smart Router"
+      ]
+    },
+    {
+      "step": "wallet_execution",
+      "files": [
+        "apps/web/src/views/Swap/SmartSwap/hooks/useSwapCallback.ts",
+        "SmartSwapCommitButton.tsx"
+      ],
+      "authority": "user_wallet_only"
+    }
+  ],
+  "backendApi": {
+    "liveQuoteApi": "disabled",
+    "treasurySettlementApi": "decommissioned_no_op"
+  },
+  "sdks": [
+    "@pancakeswap/smart-router",
+    "@pancakeswap/sdk",
+    "@pancakeswap/tokens",
+    "@pancakeswap/multicall"
+  ],
+  "providers": [
+    "utils/wagmi provider"
+  ],
+  "adapters": [
+    "apps/web/src/lib/melega-smart-router/execution-adapter/adapters.ts",
+    "contracts/adapters/V2ExecutionAdapter.sol",
+    "contracts/adapters/SmartRouterExecutionAdapter.sol"
+  ],
+  "kerlOnMainnet": false
+}

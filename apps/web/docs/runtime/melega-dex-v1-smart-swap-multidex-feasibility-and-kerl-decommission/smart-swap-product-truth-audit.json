@@ -1,0 +1,29 @@
+{
+  "schema": "melega.dex.v1.smart-swap-product-truth-audit",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "doNotModifyUiInThisMission": true,
+  "mismatches": [
+    {
+      "claim": "Best Route Found",
+      "file": "apps/web/src/views/Trade/components/TradeSmartRouteBox.tsx",
+      "present": true,
+      "backendTruth": "Best of Melega Smart vs Melega V2 — not multi-DEX best",
+      "mismatch": true
+    },
+    {
+      "claim": "SmartSwap Best Route",
+      "file": "apps/web/src/views/Trade/components/TradeRightRail.tsx",
+      "present": true,
+      "backendTruth": "Melega-centric route panel",
+      "mismatch": true
+    },
+    {
+      "claim": "best available multichain route",
+      "file": "apps/web/src/views/Trade/TradeCockpit.tsx",
+      "present": true,
+      "backendTruth": "Single-chain Melega quote",
+      "mismatch": true
+    }
+  ],
+  "recommendation": "Update copy in a dedicated product-truth mission after Melega-only decision acceptance — not in this audit."
+}

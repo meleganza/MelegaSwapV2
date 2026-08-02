@@ -1,0 +1,39 @@
+{
+  "schema": "melega.dex.v1.smart-swap-final-decision",
+  "auditedAt": "2026-08-02T00:39:02.175Z",
+  "decision": "IMPROVE_MELEGA_ONLY_SMART_SWAP",
+  "allowedValues": [
+    "BUILD_MULTI_DEX_AGGREGATOR",
+    "IMPROVE_MELEGA_ONLY_SMART_SWAP",
+    "KEEP_CURRENT"
+  ],
+  "technicalFeasibilityOfMultiDex": {
+    "feasible": true,
+    "economicallyJustifiedNow": false,
+    "blockers": [
+      "Wrapper v1 incompatible with Smart Router swap/swapMulti fee skim",
+      "No Thena/Biswap/Ape/Sushi/Uniswap adapters",
+      "Quote/exec venue asymmetry on MIXED routes",
+      "High maintenance vs owned-liquidity strategy"
+    ]
+  },
+  "whyNotKeepCurrent": [
+    "UI overclaims best/multichain route",
+    "KERL dead weight on mainnet",
+    "Mainnet protocol fee not collected on-chain",
+    "Known quote/exec asymmetry should be hardened"
+  ],
+  "whyNotBuildMultiDexNow": [
+    "Strategic fee capture not ready for external Smart Router path",
+    "Development cost High without proven volume",
+    "Do not build multi-DEX without strategic justification — unmet"
+  ],
+  "improveMelegaOnlyProgram": [
+    "Decommission KERL from production Smart Swap path (separate implementation mission)",
+    "Align product copy with MELEGA_ONLY_ROUTER truth",
+    "Harden Melega quote/exec factory binding consistency",
+    "Mainnet-ready MelegaSmartRouterWrapper fee path to Treasury wallet",
+    "Optional later: Adapter Registry for V2 forks if volume justifies"
+  ],
+  "deferredOption": "OPTION_3_MELEGA_ADAPTER_REGISTRY after Melega-only hardening"
+}
