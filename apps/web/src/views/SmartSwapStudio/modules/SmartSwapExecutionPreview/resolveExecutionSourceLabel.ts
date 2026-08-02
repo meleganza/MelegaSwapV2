@@ -10,7 +10,7 @@ export type ExecutionSourceKind =
   | 'melega_smart_router'
   | 'melega_v2'
   | 'stable_pool'
-  | 'external_liquidity'
+  | 'melega_liquidity'
   | 'idle'
   | 'unavailable'
 
@@ -31,9 +31,9 @@ export function resolveExecutionSourceLabel(preview: SmartSwapExecutionPreview |
 
   if (hasUnknown && !hasStable) {
     return {
-      kind: 'external_liquidity',
-      label: 'External liquidity source',
-      detail: hops === 1 ? 'Single-hop venue' : `${hops} hops`,
+      kind: 'melega_liquidity',
+      label: 'Melega liquidity',
+      detail: hops === 1 ? 'Single-hop pool' : `${hops} hops across Melega`,
     }
   }
 

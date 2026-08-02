@@ -1,0 +1,21 @@
+{
+  "command": "yarn test <mission-focused suite>",
+  "result": "PASS",
+  "counts": {
+    "files": 10,
+    "tests": 60,
+    "failed": 0
+  },
+  "suites": [
+    "melegaDexV1.smartSwapSingleExperience.test.ts",
+    "kerl-constitutional.test.ts",
+    "smartSwapModule002.routeEngine.test.ts",
+    "treasuryRuntimeDecommission.forbidden.test.ts",
+    "smartSwapTerminalUxRepair.test.ts",
+    "smartSwapLiveTerminalForensicRepair.test.ts",
+    "smartSwapMainnetExecutionHandoff.test.ts",
+    "homeSingleSwapCta.test.ts",
+    "finalPixelPresentation.test.ts",
+    "smartSwapArchitecture000.test.ts"
+  ]
+}

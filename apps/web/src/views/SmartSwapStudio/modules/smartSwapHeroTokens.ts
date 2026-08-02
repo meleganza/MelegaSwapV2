@@ -79,17 +79,17 @@ export const smartSwapHero = {
 export const SMART_SWAP_HERO_COPY = {
   title: 'Smart Swap',
   description:
-    'Find better execution routes with transparent pricing, liquidity paths and\nexecution details.',
+    'Smart Swap finds the best route across Melega liquidity — with transparent pricing, path preview, and execution details.',
   primaryCta: 'Go to Swap',
   secondaryCta: 'How It Works',
   relationship:
-    'Instant and Smart are modes over the same Melega DEX swap engine — pick a mode in the Swap terminal tabs.',
+    'One swap experience on Melega DEX — Smart Swap optimizes routes across Melega liquidity before you confirm in your wallet.',
   trustTitle: 'Why Smart Swap?',
   trustItems: [
     {
       id: 'route-visibility',
       title: 'Better Route Visibility',
-      body: 'See the liquidity path behind a quote before you confirm.',
+      body: 'See the Melega liquidity path behind a quote before you confirm.',
     },
     {
       id: 'transparent-fees',

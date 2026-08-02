@@ -124,14 +124,15 @@ describe('Treasury Runtime decommission — forbidden references', () => {
     expect(collector.collectorAddress?.toLowerCase()).toBe(MELEGA_TREASURY_WALLET_ADDRESS.toLowerCase())
   })
 
-  it('Top Movers anchors remain present and unmodified in this mission', () => {
+  it('Top Movers anchors remain present (ranking model unmodified)', () => {
     for (const rel of TOP_MOVERS_ANCHORS) {
       expect(existsSync(path.join(WEB, rel)), rel).toBe(true)
     }
     const home = readFileSync(path.join(WEB, 'src/views/HomeTrade/DexHomeScreen.tsx'), 'utf8')
     expect(home).toContain('Top Movers')
+    // Home shell may change for swap UX missions; ranking model must stay untouched.
     const status = execSync(
-      'git status --porcelain -- apps/web/src/views/HomeTrade/DexHomeScreen.tsx apps/web/src/views/HomeTrade/useDexTrendingRankings.ts',
+      'git status --porcelain -- apps/web/src/views/HomeTrade/useDexTrendingRankings.ts',
       { cwd: REPO },
     ).toString()
     expect(status.trim()).toBe('')

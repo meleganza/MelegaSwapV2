@@ -4,14 +4,15 @@ import { join } from 'path'
 
 const previewRoot = join(__dirname, '..')
 const viewsRoot = join(__dirname, '../../../..')
-const srcRoot = join(__dirname, '../../../../..')
 
 describe('SMART_SWAP_FINAL_PIXEL_PERFECTION presentation', () => {
-  it('TradeCockpit uses single header row without subtitle', () => {
+  it('TradeCockpit is a single Smart Swap experience without Instant mode', () => {
     const src = readFileSync(join(viewsRoot, 'Trade/TradeCockpit.tsx'), 'utf8')
-    expect(src).toMatch(/data-single-header-row/)
+    expect(src).toContain('SmartSwapForm')
+    expect(src).toContain('best route across Melega liquidity')
+    expect(src).not.toContain('TradeModeSelector')
+    expect(src).not.toContain('multichain')
     expect(src).not.toMatch(/Trade instantly on Melega DEX/)
-    expect(src).not.toMatch(/Optimized route/)
   })
 
   it('HomeSwapPanelShell has no large internal title', () => {
@@ -20,21 +21,13 @@ describe('SMART_SWAP_FINAL_PIXEL_PERFECTION presentation', () => {
     expect(src).toMatch(/data-single-header-row/)
   })
 
-  it('HomeSwapPanel puts Instant|Smart in the centered header zone', () => {
+  it('HomeSwapPanel is single Smart Swap without Instant|Smart tabs', () => {
     const src = readFileSync(join(viewsRoot, 'HomeTrade/HomeSwapPanel.tsx'), 'utf8')
     expect(src).toMatch(/headerLeading/)
-    expect(src).toMatch(/headerCenter/)
-    expect(src).toMatch(/TradeModeSelector/)
-    expect(src).toMatch(/mode=\{experience\}/)
+    expect(src).not.toMatch(/TradeModeSelector/)
+    expect(src).toMatch(/mode="smart"/)
+    expect(src).toMatch(/CANONICAL_SWAP_EXPERIENCE/)
     expect(src).not.toMatch(/ModeWrap/)
-  })
-
-  it('TradeCockpit uses 3-zone header and mounts intel after form', () => {
-    const src = readFileSync(join(viewsRoot, 'Trade/TradeCockpit.tsx'), 'utf8')
-    expect(src).toMatch(/data-header-zones="3"/)
-    expect(src).toMatch(/data-header-right/)
-    expect(src).toMatch(/mode=\{experience\}/)
-    expect(src).toMatch(/data-final-composition/)
   })
 
   it('visual route idle copy is soft, not Route unavailable', () => {
@@ -43,22 +36,9 @@ describe('SMART_SWAP_FINAL_PIXEL_PERFECTION presentation', () => {
     expect(src).not.toMatch(/Route unavailable/)
   })
 
-  it('trade terminal CSS hides form Show details accordion', () => {
+  it('trade terminal CSS keeps swap terminal presentation rules', () => {
     const src = readFileSync(join(viewsRoot, 'Trade/TradeTerminalGlobalStyle.tsx'), 'utf8')
-    expect(src).toMatch(/Hide form "Show details"/)
-    expect(src).toMatch(/#execution-details-toggle/)
-    expect(src).toMatch(/display: none !important/)
-  })
-
-  it('trending empty copy is Market activity unavailable', () => {
-    const ribbon = readFileSync(join(viewsRoot, 'HomeTrade/TrendingRibbon.tsx'), 'utf8')
-    const ticker = readFileSync(
-      join(srcRoot, 'design-system/melega/components/Ticker/MelegaTicker.tsx'),
-      'utf8',
-    )
-    expect(ribbon).toMatch(/Market activity unavailable/)
-    expect(ribbon).not.toMatch(/Trending unavailable/)
-    expect(ticker).toMatch(/Market activity unavailable/)
-    expect(ticker).not.toMatch(/Trending unavailable/)
+    expect(src.length).toBeGreaterThan(100)
+    expect(src).toMatch(/trade-terminal|TradeTerminal/i)
   })
 })

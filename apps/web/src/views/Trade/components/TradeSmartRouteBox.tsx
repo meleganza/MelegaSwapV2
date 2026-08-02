@@ -79,13 +79,14 @@ export const TradeSmartRouteBox: React.FC = () => {
 
   const title =
     phase === 'routing'
-      ? loadingLabel ?? 'Routing…'
+      ? loadingLabel ?? 'Finding Melega route…'
       : phase === 'error' && error
         ? error.message
         : executionSummary.executionRoute
-          ? 'Best Route Found'
+          ? 'Best Melega route'
           : 'Awaiting quote'
 
+  const routePath = executionSummary.executionRoute
   const savingsNode =
     phase === 'routing' ? (
       <Muted>…</Muted>
@@ -100,8 +101,10 @@ export const TradeSmartRouteBox: React.FC = () => {
         {savingsNode}
       </TitleRow>
       <Row>
-        <Label>Execution speed</Label>
-        <Value>{phase === 'routing' ? '…' : executionSpeed ?? '—'}</Value>
+        <Label>{routePath && routePath !== '—' ? 'Route' : 'Execution'}</Label>
+        <Value>
+          {phase === 'routing' ? '…' : routePath && routePath !== '—' ? routePath : executionSpeed ?? '—'}
+        </Value>
       </Row>
     </Box>
   )

@@ -1,9 +1,16 @@
 import { MELEGA_TREASURY_WALLET_LABEL } from 'config/dexEconomicAuthority'
 import { KRMP_TESTNET_CHAIN_ID } from './registry'
 
-/** True when KERL owns routing authority — DEX must not discover routes. */
-export function isKerlRoutingAuthorityEnforced(chainId: number | undefined): boolean {
-  return chainId === KRMP_TESTNET_CHAIN_ID
+/**
+ * KERL routing authority — DECOMMISSIONED.
+ * Historical KRMP testnet (97) enforcement is archived; Smart Swap always uses
+ * Melega / Pancake smart-router discovery on every chain.
+ */
+export const KERL_ROUTING_AUTHORITY_DECOMMISSIONED = true as const
+
+/** True when KERL owns routing authority — always false after decommission. */
+export function isKerlRoutingAuthorityEnforced(_chainId: number | undefined): boolean {
+  return false
 }
 
 export function isKrmpTestnetOperationalChain(chainId: number | undefined): boolean {
@@ -17,15 +24,15 @@ export interface AuthorityMatrixRow {
   compliant: boolean
 }
 
-/** Constitutional authority matrix for KRMP testnet audit. */
+/** Post-decommission authority matrix — DEX owns routing/execution on all chains. */
 export function buildKrmpAuthorityMatrix(chainId: number): AuthorityMatrixRow[] {
   const kerlEnforced = isKerlRoutingAuthorityEnforced(chainId)
   return [
     {
       domain: 'routing',
-      constitutionalOwner: 'KERL',
+      constitutionalOwner: 'DEX (Smart Swap)',
       actualOwner: kerlEnforced ? 'KERL' : 'DEX',
-      compliant: kerlEnforced,
+      compliant: !kerlEnforced,
     },
     {
       domain: 'execution',
@@ -35,9 +42,9 @@ export function buildKrmpAuthorityMatrix(chainId: number): AuthorityMatrixRow[] 
     },
     {
       domain: 'execution_enforcement',
-      constitutionalOwner: 'Wrapper',
+      constitutionalOwner: 'DEX (direct router)',
       actualOwner: kerlEnforced ? 'Wrapper' : 'DEX (direct router)',
-      compliant: kerlEnforced,
+      compliant: !kerlEnforced,
     },
     {
       domain: 'settlement',
@@ -47,9 +54,9 @@ export function buildKrmpAuthorityMatrix(chainId: number): AuthorityMatrixRow[] 
     },
     {
       domain: 'settlement_attestation',
-      constitutionalOwner: 'KERL',
+      constitutionalOwner: 'DEX (no KERL)',
       actualOwner: kerlEnforced ? 'KERL' : 'DEX (bypass)',
-      compliant: kerlEnforced,
+      compliant: !kerlEnforced,
     },
   ]
 }

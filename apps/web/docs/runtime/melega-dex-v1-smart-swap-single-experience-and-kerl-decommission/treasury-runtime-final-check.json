@@ -1,0 +1,18 @@
+{
+  "activeTreasuryRuntimeReferences": 0,
+  "definition": "ACTIVE = live HTTP/fetch to treasury.melega.ai or required runtime dependency in swap path",
+  "findings": {
+    "http_fetch_to_treasury_melega_ai": 0,
+    "swap_ux_surfaces_mentions": "decommissioned labels only / settlement metadata status fields",
+    "submitSettlementHandoff": "no-op",
+    "api_treasury_settlement_events": "returns decommissioned; never forwards"
+  },
+  "searchTerms": [
+    "Treasury Runtime",
+    "treasury.melega.ai",
+    "treasuryRuntime",
+    "KERL authority",
+    "managed fee routing"
+  ],
+  "status": "COMPLETE"
+}

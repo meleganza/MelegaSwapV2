@@ -69,7 +69,8 @@ export const SmartSwapForm: React.FC<{ handleOutputSelect: (newCurrencyOutput: C
 
   // get custom setting values for user
   const [allowedSlippage] = useUserSlippageTolerance()
-  const [allowUseSmartRouter, setAllowUseSmartRouter] = useState(() => false)
+  /** Prefer Smart Router (multi-hop / stable) when it improves output — single Smart Swap experience. */
+  const [allowUseSmartRouter, setAllowUseSmartRouter] = useState(() => true)
 
   // swap state & price data
 

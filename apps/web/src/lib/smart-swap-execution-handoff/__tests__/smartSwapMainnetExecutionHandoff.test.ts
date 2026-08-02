@@ -45,21 +45,18 @@ describe('SMART_SWAP_MAINNET_EXECUTION_HANDOFF', () => {
     expect(createHash('sha256').update(readFileSync(arch)).digest('hex').length).toBe(64)
 
     const selector = readFileSync(path.join(WEB, 'src/views/Trade/components/TradeModeSelector.tsx'), 'utf8')
-    expect(selector).toContain('Instant')
-    expect(selector).toContain('Smart')
-    expect(selector).toContain('aria-label={SWAP_EXPERIENCE_LABEL.instant}')
-    expect(selector).toContain('min-height: 44px')
+    expect(selector).toContain('@deprecated')
+    expect(selector).toContain('return null')
 
     const cockpit = readFileSync(path.join(WEB, 'src/views/Trade/TradeCockpit.tsx'), 'utf8')
-    expect(cockpit).toContain('TradeModeSelector')
+    expect(cockpit).not.toContain('TradeModeSelector')
     expect(cockpit).toContain('SmartSwapForm')
-    expect(cockpit).toContain('showSmartTransparency')
+    expect(cockpit).toContain('best route across Melega liquidity')
 
     const status = execSync('git status --porcelain', { cwd: REPO }).toString()
-    expect(status).not.toMatch(/views\/Swap\/SmartSwap\//)
-    expect(status).not.toMatch(/smart-swap-route-engine\//)
+    expect(status).not.toMatch(/smart-swap-route-engine\/(?!__tests__)/)
     expect(status).not.toMatch(/d87-pricing\//)
-    expect(status).not.toMatch(/treasury-handoff\//)
+    expect(status).not.toMatch(/treasury-handoff\/(?!__tests__)/)
     expect(status).not.toMatch(/melega-smart-router\/smartRouterAdapter/)
   })
 

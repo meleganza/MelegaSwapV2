@@ -100,8 +100,9 @@ describe('Founder acceptance — docs and audit pages', () => {
       'utf8',
     )
     expect(docs).toContain("title: 'Home'")
-    expect(docs).toContain("title: 'Instant Swap'")
+    expect(docs).not.toContain("title: 'Instant Swap'")
     expect(docs).toContain("title: 'Smart Swap'")
+    expect(docs).toContain('best route across Melega liquidity')
     expect(docs).toContain('MELEGA_FACTORY_BSC')
     expect(docs).toContain('MELEGA_ROUTER_BSC')
     expect(docs).toContain("from 'lib/bsc-indexer/constants'")

@@ -17,7 +17,7 @@ export interface SmartSwapIngressHandoffSnapshot {
 }
 
 const DEFAULT_SNAPSHOT: SmartSwapIngressHandoffSnapshot = {
-  experience: 'instant',
+  experience: 'smart',
   certified: false,
   handoffCompatible: false,
   failures: [],
@@ -57,22 +57,14 @@ export function readSmartSwapIngressHandoff(): Readonly<SmartSwapIngressHandoffS
 }
 
 /**
- * Instant mode: wallet confirmation itself is the certification signal.
- * Smart mode: requires evaluated handoff certificate.
+ * Single Smart Swap experience: requires evaluated handoff certificate.
+ * Legacy `instant` snapshots are coerced to smart (Instant UX decommissioned).
  */
-export function resolveIngressCertifiedHandoff(options?: {
-  /** When user has explicitly confirmed in the swap modal / commit path. */
+export function resolveIngressCertifiedHandoff(_options?: {
+  /** @deprecated Instant bypass removed — ignored. */
   userConfirmedExecution?: boolean
 }): { certifiedHandoff: boolean; handoffCompatible: boolean; experience: SwapExperienceMode } {
   const current = snapshot
-  if (current.experience === 'instant') {
-    const ok = options?.userConfirmedExecution !== false
-    return {
-      certifiedHandoff: ok,
-      handoffCompatible: ok,
-      experience: 'instant',
-    }
-  }
   return {
     certifiedHandoff: current.certified,
     handoffCompatible: current.handoffCompatible && current.certified,

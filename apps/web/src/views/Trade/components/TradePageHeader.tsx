@@ -10,7 +10,7 @@ export const TradePageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="trade"
     title={STUDIO_PAGE_TITLES.trade}
-    subtitle="Professional trading with best multichain routes."
+    subtitle="Smart Swap finds the best route across Melega liquidity."
     actions={
       <MelegaStudioGhostBtn as="a" href="/@marco/" style={{ textDecoration: 'none' }}>
         Open Project Page

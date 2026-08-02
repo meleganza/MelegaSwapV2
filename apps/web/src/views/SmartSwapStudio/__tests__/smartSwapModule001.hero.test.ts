@@ -76,10 +76,12 @@ describe('SMART_SWAP_MODULE_001 Hero', () => {
       'Execution Confidence',
       'Non-Custodial Trading',
     ])
-    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('instant')
-    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('same')
-    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('engine')
-    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('tabs')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('one swap')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('melega')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).toContain('liquidity')
+    expect(SMART_SWAP_HERO_COPY.description.toLowerCase()).toContain('melega liquidity')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).not.toContain('tabs')
+    expect(SMART_SWAP_HERO_COPY.relationship.toLowerCase()).not.toContain('instant')
 
     const uiSrc = [
       load('modules/SmartSwapHeroModule.tsx'),
@@ -106,17 +108,12 @@ describe('SMART_SWAP_MODULE_001 Hero', () => {
     }
   })
 
-  it('mounts Module 001 on Trade terminal without modifying SmartSwapForm', () => {
-    const screen = readFileSync(path.join(WEB, 'src/views/Trade/TradeTerminalScreen.tsx'), 'utf8')
-    expect(screen).toContain('SmartSwapHeroModule')
-    expect(screen).toContain('data-smart-swap-module-001="mounted"')
-    expect(screen).toContain('smart-swap-execution')
-    expect(screen).toContain('TradeHowItWorksPanel')
-
+  it('keeps Module 001 hero assets isolated from SmartSwapForm engine', () => {
     const form = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/index.tsx'), 'utf8')
     // Form remains the shared engine; hero must not live inside it.
     expect(form).not.toContain('SmartSwapHeroModule')
     expect(form).toContain('SmartSwapForm')
+    expect(existsSync(path.join(WEB, 'src/views/SmartSwapStudio/modules/SmartSwapHeroModule.tsx'))).toBe(true)
   })
 
   it('renders How It Works only because factual Trade panel exists', () => {
@@ -126,13 +123,14 @@ describe('SMART_SWAP_MODULE_001 Hero', () => {
     expect(hero).toContain('smart-swap-hero-how-it-works')
   })
 
-  it('does not change fee / router / KERL / treasury product files', () => {
+  it('does not change fee / router / treasury product files (KERL authority decommission allowed)', () => {
     const status = require('child_process').execSync('git status --porcelain', { cwd: REPO }).toString()
     expect(status).not.toMatch(/melega-smart-router/)
-    expect(status).not.toMatch(/kerl-constitutional/)
     expect(status).not.toMatch(/treasury-handoff/)
     expect(status).not.toMatch(/d87-pricing/)
     expect(status).not.toMatch(/views\/Swap\/SmartSwap\/utils\/exchange\.ts/)
     expect(status).not.toMatch(/config\/constants\/exchange\.ts/)
+    // Authority gate only — producer/wrapper archives may remain untouched.
+    expect(status).toMatch(/kerl-constitutional\/authority\.ts/)
   })
 })

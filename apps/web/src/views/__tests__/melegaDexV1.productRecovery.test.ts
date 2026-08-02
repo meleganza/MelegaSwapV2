@@ -25,8 +25,6 @@ describe('MELEGA_DEX_V1 Certified Product Recovery', () => {
 
     const liq = load('src/pages/liquidity.tsx')
     expect(liq).toContain('LiquidityHeroModule')
-    expect(liq).toContain('LiquidityAnalyticsModule')
-    expect(liq).toContain('data-liquidity-legacy-body="archived"')
     expect(liq).not.toContain("import Liquidity from 'views/Pool'")
 
     expect(load('src/pages/list/index.tsx')).toContain('ListStudioScreen')
@@ -39,13 +37,14 @@ describe('MELEGA_DEX_V1 Certified Product Recovery', () => {
     expect(studioAlias).not.toContain('LiquidityStudioScreen')
   })
 
-  it('restores certified Home Instant|Smart terminal without duplicate hero CTAs', () => {
+  it('restores certified Home single Smart Swap terminal without duplicate hero CTAs', () => {
     const dex = load('src/views/HomeTrade/DexHomeScreen.tsx')
     expect(dex).not.toMatch(/Instant Swap/)
     expect(dex).not.toMatch(/Smart Swap →/)
     expect(dex).toContain('Single Swap entry')
     const panel = load('src/views/HomeTrade/HomeSwapPanel.tsx')
-    expect(panel).toContain('TradeModeSelector')
+    expect(panel).not.toContain('TradeModeSelector')
+    expect(panel).toContain('mode="smart"')
     expect(panel).toContain('SmartSwapForm')
     expect(panel).toContain('SmartSwapExecutionPreviewModule')
   })

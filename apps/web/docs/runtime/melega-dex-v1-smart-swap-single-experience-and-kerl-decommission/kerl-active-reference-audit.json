@@ -1,0 +1,18 @@
+{
+  "gate": {
+    "isKerlRoutingAuthorityEnforced_56": false,
+    "isKerlRoutingAuthorityEnforced_97": false,
+    "isKerlRoutingAuthorityEnforced_undefined": false
+  },
+  "callSitesStillPresentButDead": [
+    "views/Swap/SmartSwap/hooks/useBestTrade.ts",
+    "views/Swap/SmartSwap/hooks/useDerivedSwapInfoWithStableSwap.ts",
+    "views/Swap/SmartSwap/hooks/useTradeInfo.ts",
+    "views/Swap/SmartSwap/components/SmartSwapCommitButton.tsx",
+    "views/Swap/SmartSwap/index.tsx",
+    "lib/kerl-constitutional/useKerlConstitutionalSwap.ts",
+    "lib/melega-smart-router/civilization-router/prepareCivilizationRoute.ts (library path; gate-off)"
+  ],
+  "activeRoutingAuthority": "DEX Smart Swap / Pancake smart-router over Melega pools",
+  "status": "COMPLETE"
+}

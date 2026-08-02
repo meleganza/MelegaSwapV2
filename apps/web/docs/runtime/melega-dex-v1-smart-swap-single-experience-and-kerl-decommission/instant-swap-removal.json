@@ -1,0 +1,26 @@
+{
+  "mission": "MELEGA_DEX_V1_SMART_SWAP_SINGLE_EXPERIENCE_AND_KERL_DECOMMISSION",
+  "generatedAt": "2026-08-02T01:09:35.687302Z",
+  "removedFromPublicUx": [
+    "TradeModeSelector Instant|Smart tabs (component archived to return null)",
+    "HomeSwapPanel Instant default experience",
+    "Docs Instant Swap section",
+    "Hero Instant Swap / mode CTA duplication",
+    "Misleading Instant vs Smart marketing copy"
+  ],
+  "retainedLowLevelCode": [
+    "views/Swap/SmartSwap/* engine (shared)",
+    "SwapExperienceMode type keeps 'instant' for handoff compat only",
+    "TradeModeSelector file kept as ARCHIVE no-op"
+  ],
+  "canonicalUx": {
+    "label": "Swap",
+    "experience": "smart",
+    "mounts": [
+      "HomeSwapPanel",
+      "TradeCockpit"
+    ],
+    "preview": "SmartSwapExecutionPreviewModule mode=smart"
+  },
+  "status": "COMPLETE"
+}

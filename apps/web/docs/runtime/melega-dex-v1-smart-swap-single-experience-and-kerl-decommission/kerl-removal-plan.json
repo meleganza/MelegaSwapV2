@@ -1,0 +1,22 @@
+{
+  "phase": "EXECUTED_GATE_OFF",
+  "strategy": "Force isKerlRoutingAuthorityEnforced() => false; archive KERL libs; do not delete historical producer/wrapper/settlement code or audit evidence",
+  "classification": {
+    "ACTIVE": [],
+    "DEAD": [
+      "isKerlRoutingAuthorityEnforced (always false)",
+      "useKerlConstitutionalSwap runtime path (enforced=false short-circuits)",
+      "SmartSwap KERL branches in useBestTrade / useDerivedSwapInfoWithStableSwap / SmartSwapCommitButton / useTradeInfo / SmartSwapForm"
+    ],
+    "ARCHIVE": [
+      "lib/kerl-constitutional/producer.ts",
+      "lib/kerl-constitutional/wrapperExecutor.ts",
+      "lib/kerl-constitutional/settlement.ts",
+      "lib/kerl-constitutional/registry.ts",
+      "lib/kerl-constitutional/tradeFacade.ts",
+      "historical KRMP testnet docs under docs/runtime"
+    ]
+  },
+  "flag": "KERL_ROUTING_AUTHORITY_DECOMMISSIONED=true",
+  "status": "COMPLETE"
+}

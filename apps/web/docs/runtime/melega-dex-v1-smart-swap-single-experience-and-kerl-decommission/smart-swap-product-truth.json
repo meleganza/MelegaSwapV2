@@ -1,0 +1,49 @@
+{
+  "productTruth": "Smart Swap finds the best route across Melega liquidity.",
+  "scope": "Melega liquidity optimization only",
+  "mustNotClaim": [
+    "all DEX aggregation",
+    "Pancake liquidity aggregation across external venues",
+    "external DEX best price",
+    "best multichain routes",
+    "External liquidity source"
+  ],
+  "copyUpdates": [
+    {
+      "file": "TradeSmartRouteBox.tsx",
+      "to": "Best Melega route"
+    },
+    {
+      "file": "TradeCockpit.tsx",
+      "to": "Smart Swap finds the best route across Melega liquidity."
+    },
+    {
+      "file": "TradePageHeader.tsx",
+      "to": "Smart Swap finds the best route across Melega liquidity."
+    },
+    {
+      "file": "TradeRightRail.tsx",
+      "to": "Melega Route"
+    },
+    {
+      "file": "smartSwapHeroTokens.ts",
+      "to": "Melega liquidity single experience"
+    },
+    {
+      "file": "resolveExecutionSourceLabel.ts",
+      "from": "External liquidity source",
+      "to": "Melega liquidity"
+    },
+    {
+      "file": "pages/docs/index.tsx",
+      "removed": "Instant Swap section"
+    }
+  ],
+  "optimizations": [
+    "allowUseSmartRouter defaults to true",
+    "Route path shown in TradeSmartRouteBox",
+    "TradeRouteLine hop preview retained",
+    "Smart transparency stack always shown on Home"
+  ],
+  "status": "COMPLETE"
+}

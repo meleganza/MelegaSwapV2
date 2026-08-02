@@ -234,7 +234,7 @@ export const TradeCockpit: React.FC<TradeCockpitProps> = ({ mode }) => {
         <CockpitHeader data-trade-cockpit-header>
           <TitleBlock>
             <Title>Swap</Title>
-            <Subtitle>Swap through the best available multichain route.</Subtitle>
+            <Subtitle>Smart Swap finds the best route across Melega liquidity.</Subtitle>
           </TitleBlock>
           <Toolbar data-trade-cockpit-toolbar>
             <IconBtn type="button" aria-label="Swap settings" onClick={onPresentSettingsModal}>

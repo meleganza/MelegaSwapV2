@@ -1,0 +1,11 @@
+{
+  "command": "yarn build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0,
+  "notes": [
+    "ESLint next/babel config warning (pre-existing)",
+    "Webpack import warnings for Liquidity/civilization-router (pre-existing)",
+    "Static generation completed 113/113"
+  ]
+}

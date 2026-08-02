@@ -42,8 +42,11 @@ describe('DEX_V1_FULL_INDEXING_SWAP_LIQUIDITY_RUNTIME_RECOVERY', () => {
     expect(tier).not.toMatch(/return \{\s*accent:\s*'Liquidity'\s*\}/)
     expect(home).toContain('dex-home-start-trading')
     expect(home).not.toContain('dex-home-smart-swap')
+    expect(home).toContain('dex-home-swap-terminal')
     expect(home).not.toContain('Trade Terminal')
-    expect(panel).toContain('TradeModeSelector')
+    expect(panel).not.toContain('TradeModeSelector')
+    expect(panel).toContain('CANONICAL_SWAP_EXPERIENCE')
+    expect(panel).toContain('mode="smart"')
     expect(style).toMatch(/is-disconnected \.token-amount-input[\s\S]*pointer-events:\s*auto/)
   })
 

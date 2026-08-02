@@ -552,7 +552,7 @@ export const DexHomeScreen: React.FC = () => {
                 Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance.
               </Description>
               <CtaRow>
-                {/* Single Swap entry — on-page terminal with Instant|Smart mode tabs. No duplicate Instant/Smart CTAs. */}
+                {/* Single Swap entry — one on-page terminal; no Instant vs Smart mode CTAs. */}
                 <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
                   Swap
                 </PrimaryCta>
@@ -562,7 +562,7 @@ export const DexHomeScreen: React.FC = () => {
               </Trust>
             </HeroLeft>
             <HeroRight ref={swapRef} id="swap" data-home-section="swap">
-              <SwapWrap data-testid="dex-home-instant-swap">
+              <SwapWrap data-testid="dex-home-swap-terminal">
                 <HomeSwapPanel />
               </SwapWrap>
             </HeroRight>

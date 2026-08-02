@@ -1,0 +1,17 @@
+{
+  "flow": [
+    "User",
+    "Smart Swap UI (HomeSwapPanel / TradeCockpit)",
+    "Pancake Smart Router / Melega routing layer",
+    "Melega Router",
+    "Wallet (user-signed)"
+  ],
+  "absent": [
+    "KERL",
+    "Treasury Runtime",
+    "server signer",
+    "managed wallet",
+    "multi-DEX aggregation"
+  ],
+  "status": "COMPLETE"
+}

@@ -362,7 +362,7 @@ export const TradeRightRail: React.FC = () => {
       <TopPanels>
         <Panel data-trade-best-route>
           <PanelHead>
-            <PanelTitle>SmartSwap Best Route</PanelTitle>
+            <PanelTitle>Melega Route</PanelTitle>
             <LiveBadge>Live</LiveBadge>
           </PanelHead>
           {phase === 'routing' && <EmptyLine>Routing…</EmptyLine>}

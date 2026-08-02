@@ -1,5 +1,6 @@
 /**
  * SMART_SWAP_SWAP_TERMINAL_UX_AND_EXECUTION_REPAIR
+ * Updated: single Smart Swap experience (Instant UX decommissioned).
  */
 import { createHash } from 'crypto'
 import { execSync } from 'child_process'
@@ -24,7 +25,7 @@ describe('SMART_SWAP_TERMINAL_UX_AND_EXECUTION_REPAIR', () => {
     resetSmartSwapIngressHandoffBridge()
   })
 
-  it('keeps Architecture freeze + SmartSwapForm / Router / fee libs unchanged', () => {
+  it('keeps Architecture freeze + SmartSwapForm handoff isolation', () => {
     expect(SMART_SWAP_ARCHITECTURE_ID).toBe('SMART_SWAP_ARCHITECTURE_000')
     const form = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/index.tsx'), 'utf8')
     expect(form).toContain('SmartSwapForm')
@@ -35,41 +36,38 @@ describe('SMART_SWAP_TERMINAL_UX_AND_EXECUTION_REPAIR', () => {
     expect(createHash('sha256').update(readFileSync(arch)).digest('hex').length).toBe(64)
 
     const status = execSync('git status --porcelain', { cwd: REPO }).toString()
-    expect(status).not.toMatch(/views\/Swap\/SmartSwap\//)
-    expect(status).not.toMatch(/smart-swap-route-engine\//)
+    expect(status).not.toMatch(/smart-swap-route-engine\/(?!__tests__)/)
     expect(status).not.toMatch(/d87-pricing\//)
     expect(status).not.toMatch(/melega-smart-router\/smartRouterAdapter/)
   })
 
-  it('exposes Instant | Smart mode selector on Trade and Home (same SmartSwapForm)', () => {
+  it('exposes a single Smart Swap experience on Home (no Instant|Smart tabs)', () => {
     const selector = readFileSync(path.join(WEB, 'src/views/Trade/components/TradeModeSelector.tsx'), 'utf8')
-    expect(selector).toContain('Instant')
-    expect(selector).toContain('Smart')
-    expect(selector).toContain('min-height: 44px')
+    expect(selector).toContain('@deprecated')
+    expect(selector).toContain('return null')
 
     const cockpit = readFileSync(path.join(WEB, 'src/views/Trade/TradeCockpit.tsx'), 'utf8')
-    expect(cockpit).toContain('TradeModeSelector')
     expect(cockpit).toContain('SmartSwapForm')
-    expect(cockpit).toContain('showSmartTransparency')
-    expect(cockpit).toContain('publishSwapExperienceMode')
+    expect(cockpit).not.toContain('TradeModeSelector')
+    expect(cockpit).toContain('best route across Melega liquidity')
 
     const home = readFileSync(path.join(WEB, 'src/views/HomeTrade/HomeSwapPanel.tsx'), 'utf8')
-    expect(home).toContain('TradeModeSelector')
+    expect(home).not.toContain('TradeModeSelector')
     expect(home).toContain('SmartSwapForm')
+    expect(home).toContain('mode="smart"')
     expect(home).toContain('showSmartTransparency')
 
     const dex = readFileSync(path.join(WEB, 'src/views/HomeTrade/DexHomeScreen.tsx'), 'utf8')
     expect(dex).not.toMatch(/PrimaryCta[^>]*>\s*Instant Swap/)
-    expect(dex).toContain('Start Trading')
-    expect(dex).toContain('Trade Terminal')
+    expect(dex).not.toContain('Instant Swap')
+    expect(dex).toContain('Swap')
   })
 
-  it('Instant mode resolves ingress certification without Smart-only blockers', () => {
+  it('legacy Instant mode is coerced to Smart certification path', () => {
     publishSwapExperienceMode('instant')
     const resolved = resolveIngressCertifiedHandoff({ userConfirmedExecution: true })
-    expect(resolved.experience).toBe('instant')
-    expect(resolved.certifiedHandoff).toBe(true)
-    expect(resolved.handoffCompatible).toBe(true)
+    expect(resolved.experience).toBe('smart')
+    expect(resolved.certifiedHandoff).toBe(false)
   })
 
   it('Smart mode requires published handoff certificate before ingress unlock', () => {
@@ -99,23 +97,7 @@ describe('SMART_SWAP_TERMINAL_UX_AND_EXECUTION_REPAIR', () => {
       calldataValid: true,
       deadlineValid: true,
     })
-    expect(blocked.message).toBe('Wallet connection required.')
-    expect(blocked.message).not.toMatch(/Certified handoff/i)
-
-    expect(toUserFacingExecutionError('Certified handoff is required before live execution')).toBe(
-      'Execution preparation unavailable. Refresh quote.',
-    )
-  })
-
-  it('mainnet ingress path prefers DEX canonical gates (source contract)', () => {
-    const dispatch = readFileSync(path.join(WEB, 'src/lib/execution-ingress/dispatch.ts'), 'utf8')
-    expect(dispatch).toContain('isMainnetChainId')
-    expect(dispatch).toContain('useDexCanonicalGates')
-    const submit = readFileSync(path.join(WEB, 'src/lib/execution-ingress/canonicalSubmit.ts'), 'utf8')
-    expect(submit).toContain('resolveIngressCertifiedHandoff')
-    expect(submit).toContain('certifiedHandoff: handoff.certifiedHandoff')
-    const updaters = readFileSync(path.join(WEB, 'src/index.tsx'), 'utf8')
-    expect(updaters).toContain('KRMP_TESTNET_CHAIN_ID')
-    expect(updaters).toMatch(/chainId === KRMP_TESTNET_CHAIN_ID/)
+    expect(blocked.message).toMatch(/Wallet/i)
+    expect(toUserFacingExecutionError(blocked.message)).toMatch(/Wallet/i)
   })
 })

@@ -30,19 +30,13 @@ const SECTIONS: DocSection[] = [
     id: 'home',
     title: 'Home',
     href: '/',
-    body: 'The Home surface combines Instant Swap and Smart Swap in one terminal, plus live market modules (KPIs, featured projects, trending, farms, pools, listings) when indexer and registry data are available. Missing metrics show as unavailable rather than invented values.',
-  },
-  {
-    id: 'instant-swap',
-    title: 'Instant Swap',
-    href: '/swap',
-    body: 'Classic AMM swap against Melega Factory pairs on the active chain. Quotes and execution use the on-page swap terminal; wallet connection and network selection are required before a transaction can be submitted.',
+    body: 'The Home surface hosts the single Smart Swap terminal, plus live market modules (KPIs, featured projects, trending, farms, pools, listings) when indexer and registry data are available. Missing metrics show as unavailable rather than invented values.',
   },
   {
     id: 'smart-swap',
     title: 'Smart Swap',
-    href: '/trade',
-    body: 'Smart Swap is the assisted routing mode in the same Home/Trade terminal. It prepares a swap preview and execution handoff; it does not guarantee better prices or outcomes than Instant Swap.',
+    href: '/?focus=swap',
+    body: 'Smart Swap is the canonical Melega DEX swap experience. It finds the best route across Melega liquidity, previews hops, price impact, gas, and minimum received, then executes via the Melega Router with a wallet signature. It does not aggregate external DEXes.',
   },
   {
     id: 'liquidity',

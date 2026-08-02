@@ -9,8 +9,8 @@ import { EXECUTION_REQUEST_SCHEMA, KERL_SETTLEMENT_RECEIPT_SCHEMA } from '../typ
 import { KRMP_TESTNET_REGISTRY } from '../registry'
 
 describe('kerl-constitutional R754', () => {
-  it('enforces KERL routing authority on chain 97 only', () => {
-    expect(isKerlRoutingAuthorityEnforced(97)).toBe(true)
+  it('KERL routing authority is decommissioned on all chains', () => {
+    expect(isKerlRoutingAuthorityEnforced(97)).toBe(false)
     expect(isKerlRoutingAuthorityEnforced(56)).toBe(false)
   })
 
@@ -95,9 +95,10 @@ describe('kerl-constitutional R754', () => {
     expect(kerlReceipt?.executionRequestRef).toBe(produced.request.requestId)
   })
 
-  it('authority matrix is compliant on chain 97', () => {
+  it('post-decommission authority matrix is compliant on chain 97', () => {
     expect(isKrmpAuthorityCompliant(97)).toBe(true)
     const matrix = buildKrmpAuthorityMatrix(97)
     expect(matrix.every((row) => row.compliant)).toBe(true)
+    expect(matrix.find((r) => r.domain === 'routing')?.actualOwner).toBe('DEX')
   })
 })

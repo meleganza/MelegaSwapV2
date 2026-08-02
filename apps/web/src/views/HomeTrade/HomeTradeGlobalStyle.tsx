@@ -235,7 +235,7 @@ const HomeTradeGlobalStyle = createGlobalStyle`
     left: auto !important;
     transform: none !important;
   }
-  /* Disconnected: allow amount entry + token selection so Instant Swap is usable
+  /* Disconnected: allow amount entry + token selection so Smart Swap is usable
    * before connect. Connect CTA remains the execution gate. */
   .home-trade-swap.is-disconnected .token-amount-input {
     pointer-events: auto !important;

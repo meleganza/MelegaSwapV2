@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -16,8 +16,7 @@ import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
-import TradeModeSelector from 'views/Trade/components/TradeModeSelector'
-import type { SwapExperienceMode } from 'views/Trade/swapExperience'
+import { CANONICAL_SWAP_EXPERIENCE } from 'views/Trade/swapExperience'
 import { publishSwapExperienceMode } from 'lib/smart-swap-execution-handoff'
 import { colors } from 'design-system/melega'
 import { HomeSwapIconButton, HomeSwapPanelShell } from './HomeSwapPanelShell'
@@ -104,7 +103,7 @@ const HomeSwapInner: React.FC = () => {
   const { account } = useWeb3React()
   const { address: wagmiAddress } = useAccount()
   const walletConnected = Boolean(account || wagmiAddress)
-  const [experience, setExperience] = useState<SwapExperienceMode>('instant')
+  const experience = CANONICAL_SWAP_EXPERIENCE
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -145,11 +144,6 @@ const HomeSwapInner: React.FC = () => {
     [],
   )
 
-  const headerCenter = useMemo(
-    () => <TradeModeSelector mode={experience} onChange={setExperience} />,
-    [experience],
-  )
-
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {
       onCurrencySelection(Field.OUTPUT, newCurrencyOutput)
@@ -177,7 +171,6 @@ const HomeSwapInner: React.FC = () => {
     <HomeSwapStack data-home-swap-stack data-swap-experience={experience} data-final-pixel="true">
       <HomeSwapPanelShell
         headerLeading={headerLeading}
-        headerCenter={headerCenter}
         pairIndicator={pairIndicator}
         toolbar={
           <>
@@ -214,8 +207,8 @@ const HomeSwapInner: React.FC = () => {
               <span className="home-trade-swap-execution-value is-slippage">0.5%</span>
             </div>
           )}
-          {/* After Swap button: Instant=Details only; Smart=Route/Metrics/Fee/AI/Details */}
-          <SmartSwapExecutionPreviewModule mode={experience} showSmartTransparency />
+          {/* Single Smart Swap experience: Route / Metrics / Fee / AI / Details */}
+          <SmartSwapExecutionPreviewModule mode="smart" showSmartTransparency />
         </div>
       </HomeSwapPanelShell>
     </HomeSwapStack>

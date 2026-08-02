@@ -21,38 +21,40 @@ export const SMART_SWAP_ARCHITECTURE_PHASE = {
   constantSource: 'lib/melega-smart-router/types.ts#MELEGA_SMART_ROUTER_ARCHITECTURE',
 } as const
 
-/** Instant Swap vs Smart Swap — product surfaces, not dual DEXes. */
+/** Single Smart Swap public surface — Instant mode archived from UX. */
 export const SMART_SWAP_SURFACES = {
-  instantSwap: {
-    id: 'instant-swap',
-    purpose: 'Fast direct execution with minimal explanation',
-    mount: 'Home Instant Swap widget (DexHomeScreen / HomeSwapPanel)',
-    routeEntry: '/?focus=swap',
-    engine: 'SmartSwapForm',
-    characteristics: ['simple route presentation', 'user-controlled', 'minimal explanation', 'standard swap UX'],
-  },
   smartSwap: {
     id: 'smart-swap',
-    purpose: 'Optimized execution with route explanation and economic attribution',
-    mount: 'Trade Terminal /swap (TradeCockpit) + ProjectSwapCard',
-    routeEntry: '/swap',
-    tradeRedirectNote: '/trade and /trade/ redirect to /?focus=swap (Instant Swap surface)',
+    purpose: 'Canonical Melega liquidity optimization with route explanation',
+    mount: 'Home Smart Swap widget (DexHomeScreen / HomeSwapPanel) + TradeCockpit',
+    routeEntry: '/?focus=swap',
+    tradeRedirectNote: '/trade and /trade/ redirect to /?focus=swap (Smart Swap surface)',
     engine: 'SmartSwapForm',
+    scope: 'Melega liquidity only — not external DEX aggregation',
     characteristics: [
-      'route discovery',
-      'liquidity comparison',
+      'route discovery across Melega pools',
+      'multi-hop Melega path selection',
       'price impact evaluation',
       'gas awareness',
-      'multi-hop possibility',
-      'execution explanation',
-      'economic attribution / treasury handoff status',
+      'minimum received / slippage',
+      'execution preview',
+      'wallet-signed Melega Router execution',
     ],
+  },
+  /** @deprecated ARCHIVE — Instant Swap removed from public UX (same engine historically). */
+  instantSwap: {
+    id: 'instant-swap',
+    purpose: 'ARCHIVED — no longer a public mode',
+    mount: 'none (TradeModeSelector no-op)',
+    routeEntry: 'n/a',
+    engine: 'SmartSwapForm',
+    characteristics: ['archived'],
   },
 } as const
 
 export const SMART_SWAP_CANONICAL_OWNERSHIP = {
   swapExecution: 'DEX contracts / Router (wallet-signed)',
-  routingIntelligence: 'Smart Swap runtime (DEX smart-router on mainnet; KERL on KRMP testnet)',
+  routingIntelligence: 'Smart Swap runtime (Melega / Pancake smart-router; KERL decommissioned)',
   tokenIdentity: 'Canonical Token Registry',
   liquidityDiscovery: 'DEX indexed liquidity + on-chain pair reserves',
   fees: 'Canonical fee engine (D87 protocol fee policy + on-chain LP fee)',

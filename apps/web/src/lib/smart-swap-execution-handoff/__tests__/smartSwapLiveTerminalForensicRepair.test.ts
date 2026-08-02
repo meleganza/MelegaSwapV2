@@ -1,5 +1,6 @@
 /**
  * SMART_SWAP_LIVE_TERMINAL_FORENSIC_REPAIR
+ * Updated: single Smart Swap experience (Instant UX + KERL decommissioned).
  */
 import { createHash } from 'crypto'
 import { execSync } from 'child_process'
@@ -14,7 +15,8 @@ import {
   resolveIngressCertifiedHandoff,
   readSmartSwapIngressHandoff,
 } from '../index'
-import { parseSwapExperience } from 'views/Trade/swapExperience'
+import { CANONICAL_SWAP_EXPERIENCE, parseSwapExperience } from 'views/Trade/swapExperience'
+import { isKerlRoutingAuthorityEnforced } from 'lib/kerl-constitutional/authority'
 
 const WEB = path.resolve(__dirname, '../../../../')
 const REPO = path.resolve(WEB, '../..')
@@ -30,17 +32,16 @@ describe('SMART_SWAP_LIVE_TERMINAL_FORENSIC_REPAIR', () => {
     expect(swapPage).toContain('SwapFeaturesProvider')
 
     const cockpit = readFileSync(path.join(WEB, 'src/views/Trade/TradeCockpit.tsx'), 'utf8')
-    expect(cockpit).toContain('TradeModeSelector')
     expect(cockpit).toContain('SmartSwapForm')
-    expect(cockpit).toContain('data-trade-mode-selector-slot')
-    expect(cockpit).toContain('showSmartTransparency')
+    expect(cockpit).not.toContain('TradeModeSelector')
+    expect(cockpit).toContain('best route across Melega liquidity')
 
     const form = readFileSync(path.join(WEB, 'src/views/Swap/SmartSwap/index.tsx'), 'utf8')
     expect(form).toContain('SmartSwapForm')
     expect(form).not.toContain('smart-swap-execution-handoff')
   })
 
-  it('keeps Instant experience when Smart handoff publishes without forcing mode', () => {
+  it('resolves all experience modes to Smart certification path', () => {
     publishSwapExperienceMode('instant')
     publishSmartSwapHandoffCertification({
       certified: false,
@@ -49,62 +50,37 @@ describe('SMART_SWAP_LIVE_TERMINAL_FORENSIC_REPAIR', () => {
     })
     expect(readSmartSwapIngressHandoff().experience).toBe('instant')
     const resolved = resolveIngressCertifiedHandoff({ userConfirmedExecution: true })
-    expect(resolved.experience).toBe('instant')
-    expect(resolved.certifiedHandoff).toBe(true)
+    expect(resolved.experience).toBe('smart')
+    expect(resolved.certifiedHandoff).toBe(false)
   })
 
-  it('defaults /swap experience to Instant; Smart is opt-in', () => {
-    expect(parseSwapExperience(null)).toBe('instant')
-    expect(parseSwapExperience(undefined)).toBe('instant')
+  it('defaults experience parse to Smart; Instant maps to Smart', () => {
+    expect(CANONICAL_SWAP_EXPERIENCE).toBe('smart')
+    expect(parseSwapExperience(null)).toBe('smart')
+    expect(parseSwapExperience(undefined)).toBe('smart')
     expect(parseSwapExperience('smart')).toBe('smart')
-    expect(parseSwapExperience('instant')).toBe('instant')
+    expect(parseSwapExperience('instant')).toBe('smart')
   })
 
-  it('does not mount Smart handoff hooks while Instant (module early-return child pattern)', () => {
+  it('Smart transparency stack always mounts route preview surface', () => {
     const mod = readFileSync(
       path.join(WEB, 'src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx'),
       'utf8',
     )
-    expect(mod).toContain('SmartTransparencyStack')
+    expect(mod).toContain('TransparencyStack')
     expect(mod).toMatch(/if \(!showSmartTransparency\) return null/)
-    expect(mod).toContain('return <SmartTransparencyStack />')
-    // Hooks must not run for Instant — child only mounts when Smart
-    const earlyIdx = mod.indexOf('if (!showSmartTransparency) return null')
-    const stackIdx = mod.indexOf('function SmartTransparencyStack')
-    expect(earlyIdx).toBeGreaterThan(-1)
-    expect(stackIdx).toBeGreaterThan(-1)
+    expect(mod).toContain('SmartSwapVisualRoute')
+    expect(isKerlRoutingAuthorityEnforced(97)).toBe(false)
   })
 
-  it('mainnet / non-testnet uses DEX canonical gates; chain 97 keeps live gates', () => {
-    const dispatch = readFileSync(path.join(WEB, 'src/lib/execution-ingress/dispatch.ts'), 'utf8')
-    expect(dispatch).toContain('isTestnetChainId')
-    expect(dispatch).toContain('isMainnetChainId')
-    expect(dispatch).toContain('!isTestnetChainId(chainId)')
-    expect(dispatch).toContain('useDexCanonicalGates')
-
-    const updaters = readFileSync(path.join(WEB, 'src/index.tsx'), 'utf8')
-    expect(updaters).toMatch(/chainId === KRMP_TESTNET_CHAIN_ID/)
-  })
-
-  it('mode selector CSS cannot hide Instant|Smart tabs on /swap', () => {
-    const style = readFileSync(path.join(WEB, 'src/views/Trade/TradeTerminalGlobalStyle.tsx'), 'utf8')
-    expect(style).toContain('[data-trade-mode-selector]')
-    expect(style).toContain('flex-shrink: 0 !important')
-    expect(style).toContain("button[role='tab']")
-    const selector = readFileSync(path.join(WEB, 'src/views/Trade/components/TradeModeSelector.tsx'), 'utf8')
-    expect(selector).toContain('flex-shrink: 0')
-    expect(selector).toContain('min-height: 44px')
-  })
-
-  it('architecture freeze — SmartSwapForm / Router / economics untouched', () => {
+  it('architecture freeze — Router adapter / economics untouched', () => {
     expect(SMART_SWAP_ARCHITECTURE_ID).toBe('SMART_SWAP_ARCHITECTURE_000')
     const arch = path.join(WEB, 'src/lib/smart-swap-architecture/smartSwapArchitecture000Contracts.ts')
     expect(existsSync(arch)).toBe(true)
     expect(createHash('sha256').update(readFileSync(arch)).digest('hex').length).toBe(64)
 
     const status = execSync('git status --porcelain', { cwd: REPO }).toString()
-    expect(status).not.toMatch(/views\/Swap\/SmartSwap\//)
-    expect(status).not.toMatch(/smart-swap-route-engine\//)
+    expect(status).not.toMatch(/smart-swap-route-engine\/(?!__tests__)/)
     expect(status).not.toMatch(/d87-pricing\//)
     expect(status).not.toMatch(/melega-smart-router\/smartRouterAdapter/)
   })

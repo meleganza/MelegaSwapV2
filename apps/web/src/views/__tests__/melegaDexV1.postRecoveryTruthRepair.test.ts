@@ -50,14 +50,16 @@ function pair(partial: Partial<ClassifiedAmmPair> = {}): ClassifiedAmmPair {
 }
 
 describe('Post-recovery Smart Swap labels', () => {
-  it('uses Instant | Smart without STANDARD / SMARTSWAP NEW', () => {
+  it('archives Instant|Smart selector; canonical experience is smart', () => {
     const sel = load('src/views/Trade/components/TradeModeSelector.tsx')
-    expect(sel).toContain('Instant')
-    expect(sel).toContain('Smart')
+    expect(sel).toContain('@deprecated')
+    expect(sel).toContain('return null')
     expect(sel).not.toContain('STANDARD')
     expect(sel).not.toContain('SMARTSWAP')
-    expect(sel).not.toContain('Finds the best available route')
-    expect(load('src/views/Trade/swapExperience.ts')).toContain("'instant' | 'smart'")
+    const exp = load('src/views/Trade/swapExperience.ts')
+    expect(exp).toContain("'instant' | 'smart'")
+    expect(exp).toContain('CANONICAL_SWAP_EXPERIENCE')
+    expect(exp).toContain("return 'smart'")
   })
 })
 

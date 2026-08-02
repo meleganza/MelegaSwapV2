@@ -108,10 +108,9 @@ const PanelBody = styled.div`
 `
 
 /**
- * Shared Instant/Smart intel surface.
- * Instant: Details accordion only (after Swap button).
- * Smart: Route → Metrics → Fee → AI → Details.
- * Details open state persists across Instant ↔ Smart switches (same mount).
+ * Smart Swap intel surface (canonical single experience).
+ * Route → Metrics → Fee → AI → Details.
+ * `mode` kept for API compat; Instant path is archived — always treat as smart when mounted.
  */
 function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
   const result = useSmartSwapExecutionPreview()
@@ -128,11 +127,10 @@ function TransparencyStack({ mode }: { mode: SmartSwapIntelMode }) {
   const idle = !typedValue || !String(typedValue).trim()
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
-  const isSmart = mode === 'smart'
+  const isSmart = true
 
-  // Keep accordion state when switching Instant ↔ Smart (do not reset).
   useEffect(() => {
-    /* intentional: mode changes must not clear detailsOpen */
+    /* intentional: mode prop must not clear detailsOpen */
   }, [mode])
 
   const preview = result.status === 'ok' ? result.preview : null
