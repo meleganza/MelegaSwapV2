@@ -1,10 +1,27 @@
 {
   "schema": "melega.public-farm-factory.deployed-addresses.v1",
   "chainId": 56,
-  "status": "DEPLOYMENT_BLOCKED",
+  "network": "bnb-smart-chain-mainnet",
+  "status": "READY_FOR_FOUNDER_SIGNATURE",
   "factoryAddress": null,
   "deploymentTx": null,
   "deploymentBlock": null,
   "verified": false,
-  "note": "Null until authorized mainnet deploy. Do not fabricate."
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "pairFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+  "eligibilitySigner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "feePolicy": {
+    "marcoPair": "FREE",
+    "otherwiseBnb": "0.25",
+    "minimumTvlBnb": "0.25",
+    "lowLiquidityAction": "REQUIRE_LIQUIDITY_INCREASE",
+    "marcoReward": "UNSUPPORTED"
+  },
+  "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "notes": [
+    "No fabricated address. Bind only after Founder-signed mainnet broadcast + runtime validation.",
+    "Certified package: apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json",
+    "Founder UI: /runtime/deployment/ · CTA Deploy Public Farm Factory · MELEGA DEPLOYER only"
+  ]
 }

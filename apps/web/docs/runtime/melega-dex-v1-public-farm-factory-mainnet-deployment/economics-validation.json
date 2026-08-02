@@ -1,0 +1,21 @@
+{
+  "schema": "melega.public-farm-factory.economics-validation.v1",
+  "createFarmFee": {
+    "marcoPair": "FREE",
+    "otherwiseBnb": "0.25",
+    "otherwiseWei": "250000000000000000"
+  },
+  "feeDestination": {
+    "label": "MELEGA TREASURY WALLET",
+    "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
+  "liquidityEligibility": {
+    "minimumTvlBnb": "0.25",
+    "lowLiquidityAction": "REQUIRE_LIQUIDITY_INCREASE",
+    "hardBlockPairCreation": false
+  },
+  "marcoReward": "UNSUPPORTED",
+  "treasuryRuntime": false,
+  "kms": false,
+  "serverSigner": false
+}

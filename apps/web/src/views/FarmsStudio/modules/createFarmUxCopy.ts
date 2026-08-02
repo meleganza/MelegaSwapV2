@@ -21,6 +21,9 @@ export const CREATE_FARM_UX = {
   youNeed: 'You need',
   moreLiquidity: 'more liquidity.',
   increaseLiquidity: 'Increase Liquidity',
+  /** Product code when TVL < 0.25 BNB — pair creation remains available. */
+  requireLiquidityIncrease: 'REQUIRE_LIQUIDITY_INCREASE',
+  increaseLiquidityRequired: 'Increase liquidity required',
   addLiquidityManually: 'Add Liquidity Manually',
   continue: 'Continue',
   createFarm: 'Create Farm',

@@ -707,8 +707,12 @@ export const PublicFarmFactoryWorkspace: React.FC = () => {
           )}
 
           {draft.selectedPair && needsLiquidity && (
-            <Remediation data-testid="public-farm-low-liquidity-remediation" role="status">
-              <RemediationTitle>{CREATE_FARM_UX.statusNotReady}</RemediationTitle>
+            <Remediation
+              data-testid="public-farm-low-liquidity-remediation"
+              data-action={CREATE_FARM_UX.requireLiquidityIncrease}
+              role="status"
+            >
+              <RemediationTitle>{CREATE_FARM_UX.increaseLiquidityRequired}</RemediationTitle>
               <Hint>
                 {CREATE_FARM_UX.youNeed} {formatBnb(eligibility.missingTvlBnb)} {CREATE_FARM_UX.moreLiquidity}
               </Hint>

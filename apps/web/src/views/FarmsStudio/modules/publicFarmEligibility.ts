@@ -6,6 +6,9 @@ import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 
 export const PUBLIC_FARM_MINIMUM_TVL_BNB = 0.25
 
+/** Product action when pair TVL is below the eligibility threshold — do not hard-block pair creation. */
+export const REQUIRE_LIQUIDITY_INCREASE = 'REQUIRE_LIQUIDITY_INCREASE' as const
+
 export const MARCO_REWARD_REJECTION_MESSAGE =
   'MARCO reward farms are protocol-managed and cannot be created through the Public Farm Factory.'
 
@@ -183,4 +186,15 @@ export function rejectMarcoReward(addressOrSymbol: string | null | undefined): {
 } {
   if (!isMarcoRewardToken(addressOrSymbol)) return { rejected: false, message: null }
   return { rejected: true, message: MARCO_REWARD_REJECTION_MESSAGE }
+}
+
+/** Map eligibility status → product action code (pair creation not hard-blocked). */
+export function publicFarmEligibilityAction(
+  result: PublicFarmEligibilityResult,
+): typeof REQUIRE_LIQUIDITY_INCREASE | 'ELIGIBLE' | 'PAIR_REQUIRED' | 'PAIR_INACTIVE' | 'TVL_UNAVAILABLE' {
+  if (result.status === 'below_minimum_tvl') return REQUIRE_LIQUIDITY_INCREASE
+  if (result.status === 'eligible') return 'ELIGIBLE'
+  if (result.status === 'missing_pair' || result.status === 'not_indexed') return 'PAIR_REQUIRED'
+  if (result.status === 'inactive') return 'PAIR_INACTIVE'
+  return 'TVL_UNAVAILABLE'
 }

@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   MARCO_REWARD_REJECTION_MESSAGE,
   PUBLIC_FARM_MINIMUM_TVL_BNB,
+  REQUIRE_LIQUIDITY_INCREASE,
   evaluatePublicFarmEligibility,
   estimatePairTvlBnb,
+  publicFarmEligibilityAction,
   rejectMarcoReward,
 } from '../modules/publicFarmEligibility'
 import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
@@ -61,6 +63,7 @@ describe('publicFarmEligibility', () => {
     expect(result.status).toBe('below_minimum_tvl')
     expect(result.currentTvlBnb).toBeCloseTo(0.1, 6)
     expect(result.missingTvlBnb).toBeCloseTo(0.15, 6)
+    expect(publicFarmEligibilityAction(result)).toBe(REQUIRE_LIQUIDITY_INCREASE)
   })
 
   it('rejects MARCO reward with canonical message', () => {

@@ -124,7 +124,9 @@ describe('publicFarmFactory capability + indexer', () => {
     expect(PUBLIC_FARM_FACTORY_CAPABILITY.outcome).toBe('B_FACTORY_DEPLOYMENT_REQUIRED')
     expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.masterBuilderExposed).toBe(false)
     expect(PUBLIC_FARM_FACTORY_CAPABILITY.contracts.publicFarmFactory).toBeNull()
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.deployment.status).toBe('BLOCKED')
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.deployment.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.readyForFounderSignature).toBe(true)
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute).toBe(false)
   })
 
   it('FarmCreated topic0 is deterministic and dedupe works', () => {
