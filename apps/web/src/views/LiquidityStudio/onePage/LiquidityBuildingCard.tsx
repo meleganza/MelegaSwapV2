@@ -4,6 +4,7 @@ import styled, { keyframes } from 'styled-components'
 import { Currency, ERC20Token } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { CurrencyLogo } from 'components/Logo'
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
 import { useCurrency, useIsTokenActive, useIsUserAddedToken } from 'hooks/Tokens'
@@ -83,25 +84,18 @@ const Card = styled.section<{ $compact?: boolean }>`
   }
 `
 
-const Hero = styled.div<{ $collapsed: boolean }>`
-  flex: 0 0 ${({ $collapsed }) => ($collapsed ? liqOne.lbHeaderCollapsed : liqOne.lbHeaderExpanded)};
-  height: ${({ $collapsed }) => ($collapsed ? liqOne.lbHeaderCollapsed : liqOne.lbHeaderExpanded)};
-  max-height: ${({ $collapsed }) => ($collapsed ? liqOne.lbHeaderCollapsed : liqOne.lbHeaderExpanded)};
-  padding: ${({ $collapsed }) => ($collapsed ? '8px 20px' : '12px 20px 10px')};
+const Hero = styled.div<{ $tight: boolean }>`
+  /* Product header packs title + lead tightly above Setup/Review/Activate — no empty band. */
+  flex: 0 0 auto;
+  height: auto;
+  max-height: none;
+  padding: ${({ $tight }) => ($tight ? '10px 20px 4px' : '12px 20px 8px')};
   box-sizing: border-box;
   display: flex;
-  align-items: ${({ $collapsed }) => ($collapsed ? 'center' : 'flex-start')};
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  overflow: hidden;
-
-  @media (max-width: 1375px) {
-    flex: 0 0 auto;
-    height: auto;
-    max-height: none;
-    overflow: visible;
-    align-items: flex-start;
-  }
+  overflow: visible;
 `
 
 const HeroCopy = styled.div`
@@ -140,26 +134,69 @@ const NewBadge = styled.span`
   text-transform: uppercase;
 `
 
-const Desc = styled.p<{ $collapsed: boolean }>`
-  display: ${({ $collapsed }) => ($collapsed ? 'none' : 'block')};
-  margin: 4px 0 0;
-  max-width: 420px;
+const Desc = styled.p`
+  display: block;
+  margin: 2px 0 0;
+  max-width: 480px;
   font-size: 13px;
   line-height: 18px;
   color: ${liqOne.bodySoft};
 `
 
-const Artwork = styled.div<{ $collapsed: boolean }>`
-  display: ${({ $collapsed }) => ($collapsed ? 'none' : 'block')};
+const Artwork = styled.div<{ $show: boolean }>`
+  display: ${({ $show }) => ($show ? 'block' : 'none')};
   position: relative;
-  width: 112px;
-  height: 88px;
+  width: 96px;
+  height: 72px;
   flex-shrink: 0;
   align-self: center;
 
   @media (max-width: 767px) {
     display: none;
   }
+`
+
+const TokenIdentity = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  min-width: 0;
+`
+
+const TokenIdentityText = styled.div`
+  min-width: 0;
+  flex: 1;
+`
+
+const TokenSymbol = styled.div`
+  font-size: 14px;
+  font-weight: 750;
+  color: ${liqOne.text};
+  line-height: 18px;
+`
+
+const TokenMeta = styled.div`
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 15px;
+  color: ${liqOne.secondary};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const VerifiedPill = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(109, 220, 140, 0.14);
+  color: #6ddc8c;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
 `
 
 const Orbit = styled.div`
@@ -215,7 +252,7 @@ const BodyScroll = styled.div`
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px ${liqOne.lbPadX} 8px;
+  padding: 4px ${liqOne.lbPadX} 8px;
   box-sizing: border-box;
 
   @media (max-width: 1375px) {
@@ -512,7 +549,7 @@ const InlineError = styled.p`
 
 const StepTrack = styled.ol`
   list-style: none;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -729,7 +766,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const listingStatus = !tokenReady
     ? LB_UX.listingNone
     : isListed
-      ? LB_UX.listingListed
+      ? `${LB_UX.listingListed} · ${LB_UX.listingVerified}`
       : isUserAdded
         ? LB_UX.listingUserAdded
         : LB_UX.listingExternal
@@ -1004,7 +1041,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           </EmptyHint>
           <EmptyHint style={{ marginTop: 6, opacity: 0.85 }}>{LB_UX.noActiveProgramBody}</EmptyHint>
           <DocsRow data-testid="liq-lb-docs-links-entry">
+            <Link href={LB_UX.docsOverview}>Overview</Link>
             <Link href={LB_UX.docsTokenReserve}>Token Reserve</Link>
+            <Link href={LB_UX.docsLiquidityGoals}>Liquidity Goals</Link>
             <Link href={LB_UX.docsStrategies}>Strategies</Link>
             <Link href={LB_UX.docsExecution}>Execution</Link>
             <Link href={LB_UX.docsFees}>Fees</Link>
@@ -1031,7 +1070,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         </StepTrack>
 
         <DocsRow data-testid="liq-lb-docs-links">
+          <Link href={LB_UX.docsOverview}>Overview</Link>
           <Link href={LB_UX.docsTokenReserve}>Token Reserve</Link>
+          <Link href={LB_UX.docsLiquidityGoals}>Liquidity Goals</Link>
           <Link href={LB_UX.docsStrategies}>Strategies</Link>
           <Link href={LB_UX.docsExecution}>Execution</Link>
           <Link href={LB_UX.docsFees}>Fees</Link>
@@ -1066,18 +1107,35 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                 data-testid="lb-token-address-input"
                 style={{ marginTop: 8 }}
               />
+              {tokenReady && selectedProjectToken ? (
+                <TokenIdentity data-testid="lb-token-identity">
+                  <CurrencyLogo currency={selectedProjectToken} size="28px" />
+                  <TokenIdentityText>
+                    <TokenSymbol data-testid="lb-token-selected-label">
+                      {card.draft.tokenSymbol}
+                      {isListed ? (
+                        <>
+                          {' '}
+                          <VerifiedPill data-testid="lb-token-verified">{LB_UX.listingVerified}</VerifiedPill>
+                        </>
+                      ) : null}
+                    </TokenSymbol>
+                    <TokenMeta data-testid="lb-token-contract">
+                      {card.draft.tokenAddress
+                        ? `${card.draft.tokenAddress.slice(0, 6)}…${card.draft.tokenAddress.slice(-4)}`
+                        : '—'}
+                      {isListed ? ` · ${LB_UX.listingListed}` : ` · ${LB_UX.listingExternal}`}
+                    </TokenMeta>
+                    {!isListed ? (
+                      <TokenMeta data-testid="lb-token-external-hint">{LB_UX.externalTokenHint}</TokenMeta>
+                    ) : null}
+                  </TokenIdentityText>
+                </TokenIdentity>
+              ) : null}
               <StatusRow data-testid="lb-token-detection-status">
                 <StatusLine>
                   <span>{LB_UX.tokenDetectedLabel}</span>
-                  <span data-testid="lb-token-selected-label">
-                    {card.draft.tokenSymbol
-                      ? `${card.draft.tokenSymbol}${
-                          card.draft.tokenAddress
-                            ? ` · ${card.draft.tokenAddress.slice(0, 6)}…${card.draft.tokenAddress.slice(-4)}`
-                            : ''
-                        }`
-                      : '—'}
-                  </span>
+                  <span>{card.draft.tokenSymbol || '—'}</span>
                 </StatusLine>
                 <StatusLine>
                   <span>{LB_UX.listingStatusLabel}</span>
@@ -1122,7 +1180,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <Input
                 type="text"
                 inputMode="decimal"
-                placeholder="e.g. 1000000"
+                placeholder={LB_UX.reserveExample}
                 value={card.draft.tokenBudget}
                 onChange={(e) => {
                   setStepError(null)
@@ -1285,7 +1343,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       data-lb-single-surface="1"
       $compact={compactInactive}
     >
-      <Hero $collapsed={heroCollapsed || compactInactive} data-testid="liq-lb-header" data-collapsed={heroCollapsed || compactInactive ? '1' : '0'}>
+      <Hero
+        $tight={inFlow || isActive || compactInactive}
+        data-testid="liq-lb-header"
+        data-collapsed={inFlow || isActive || compactInactive ? '1' : '0'}
+      >
         <HeroCopy>
           {!forceExpanded ? (
             <TitleRow>
@@ -1293,11 +1355,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <NewBadge data-testid="liq-lb-new-badge">NEW</NewBadge>
             </TitleRow>
           ) : null}
-          <Desc $collapsed={heroCollapsed || compactInactive} data-testid="liq-lb-header-desc">
-            {LB_UX.entryLead}
-          </Desc>
+          <Desc data-testid="liq-lb-header-desc">{LB_UX.entryLead}</Desc>
         </HeroCopy>
-        <Artwork $collapsed={heroCollapsed || compactInactive} aria-hidden>
+        <Artwork $show={!inFlow && !isActive && !compactInactive} aria-hidden>
           <Orbit />
           <Orbit2 />
           <Disc $x="12%" $y="18%" $c="rgba(221,185,47,0.7)" />

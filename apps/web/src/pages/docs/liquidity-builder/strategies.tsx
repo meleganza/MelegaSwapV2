@@ -6,7 +6,7 @@ const Page = () => (
     path="/docs/liquidity-builder/strategies"
     title="Liquidity Strategies"
     lead="Choose how aggressively Liquidity Builder grows your market from real demand."
-    body="Conservative grows carefully when markets are calm. Balanced uses moderate intensity. AI Optimized lets Melega decide timing and size from eligible demand. Aggressive builds faster when demand is strong. These presets map to existing on-chain strategy modes — they do not change fee economics."
+    body="Conservative: lower execution frequency; prioritizes stability. Balanced: balances liquidity growth and price stability. AI Optimized: AI dynamically adapts execution based on demand, volume and volatility. Aggressive: faster liquidity deployment with higher market impact tolerance. Presets map to existing on-chain strategy modes — they do not change fee economics."
   />
 )
 

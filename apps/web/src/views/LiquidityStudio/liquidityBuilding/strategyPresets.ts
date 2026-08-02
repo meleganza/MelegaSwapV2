@@ -24,27 +24,27 @@ export const STRATEGY_PRESET_OPTIONS: {
   {
     key: 'CONSERVATIVE',
     title: 'Conservative',
-    body: 'Slower, safer growth. Builds liquidity carefully when markets are calm.',
-    tooltip: 'Conservative: slower, safer growth. Builds liquidity carefully when markets are calm.',
+    body: 'Lower execution frequency and lower market impact.',
+    tooltip: 'Lower execution frequency and lower market impact.',
   },
   {
     key: 'BALANCED',
     title: 'Balanced',
-    body: 'Steady growth with moderate intensity across market conditions.',
-    tooltip: 'Balanced: steady growth with moderate intensity across market conditions.',
+    body: 'Balance between liquidity growth and price stability.',
+    tooltip: 'Balance between liquidity growth and price stability.',
   },
   {
     key: 'AI_OPTIMIZED',
     title: 'AI Optimized',
-    body: 'Melega decides when and how much to build from real market demand.',
-    tooltip: 'AI Optimized: Melega decides when and how much to build from real market demand.',
+    body: 'AI dynamically adapts execution based on demand, volume and volatility.',
+    tooltip: 'AI dynamically adapts execution based on demand, volume and volatility.',
     recommended: true,
   },
   {
     key: 'AGGRESSIVE',
     title: 'Aggressive',
-    body: 'Faster liquidity growth when eligible demand is strong.',
-    tooltip: 'Aggressive: faster liquidity growth when eligible demand is strong.',
+    body: 'Faster liquidity deployment with higher market impact tolerance.',
+    tooltip: 'Faster liquidity deployment with higher market impact tolerance.',
   },
 ]
 
@@ -52,20 +52,20 @@ export const LIQUIDITY_GOAL_OPTIONS = [
   {
     key: 'STEADY',
     label: 'Steady Growth',
-    hint: 'Build liquidity gradually over time',
-    tooltip: 'Steady Growth: build liquidity gradually over time with controlled steps.',
+    hint: 'Gradual liquidity expansion with lower market impact.',
+    tooltip: 'Gradual liquidity expansion with lower market impact.',
   },
   {
     key: 'DEPTH',
     label: 'Deeper Market',
-    hint: 'Focus on thicker, more resilient pools',
-    tooltip: 'Deeper Market: focus on thicker, more resilient pools for healthier trading.',
+    hint: 'Prioritizes liquidity depth and lower slippage for larger trades.',
+    tooltip: 'Prioritizes liquidity depth and lower slippage for larger trades.',
   },
   {
     key: 'LAUNCH',
     label: 'Launch Support',
-    hint: 'Support early trading with careful growth',
-    tooltip: 'Launch Support: support early trading with careful, founder-friendly growth.',
+    hint: 'Designed for new tokens requiring initial market formation.',
+    tooltip: 'Designed for new tokens requiring initial market formation.',
   },
 ] as const
 

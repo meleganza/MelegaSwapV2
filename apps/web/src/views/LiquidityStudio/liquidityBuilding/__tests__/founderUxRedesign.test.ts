@@ -18,7 +18,7 @@ describe('Liquidity Builder founder UX redesign', () => {
     expect(LB_UX.tokenToGrowLabel).toBe('Token to Grow')
     expect(LB_UX.noActiveProgramTitle).toBe('Create your first AI Liquidity Program')
     expect(LB_UX.noActiveProgramCta).toBe('Create Liquidity Program')
-    expect(LB_UX.entrySupport).toContain('deposit my tokens')
+    expect(LB_UX.entrySupport).toMatch(/token reserve/i)
   })
 
   it('exposes quote assets WBNB USDT USDC independently of token', () => {

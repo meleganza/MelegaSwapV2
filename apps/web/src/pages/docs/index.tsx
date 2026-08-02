@@ -53,14 +53,26 @@ const SECTIONS: DocSection[] = [
   {
     id: 'ai-liquidity-builder',
     title: 'AI Liquidity Builder',
-    href: '/liquidity',
-    body: 'Create an automated liquidity growth program for your token. Choose Token to Grow, Create Market Against, Token Reserve, goal, and strategy — then activate. Contextual guides: Token Reserve, Strategies, Execution, Fees under /docs/liquidity-builder/.',
+    href: '/docs/liquidity-builder/overview',
+    body: 'I provide my token reserve and AI Liquidity Builder automatically creates and improves market liquidity. Product surface: /liquidity. Guides under /docs/liquidity-builder/.',
+  },
+  {
+    id: 'lb-overview',
+    title: 'LB Overview',
+    href: '/docs/liquidity-builder/overview',
+    body: 'Founder overview of Token to Grow, Create Market Against, Token Reserve, goals, and strategies.',
   },
   {
     id: 'lb-token-reserve',
     title: 'Token Reserve',
     href: '/docs/liquidity-builder/token-reserve',
-    body: 'Token Reserve is the project-token amount deposited into Liquidity Builder. It is not a WBNB budget. Quote asset (Create Market Against) stays separate.',
+    body: 'Token Reserve is the project-token amount deposited into Liquidity Builder. It is not a WBNB budget. Create Market Against stays separate.',
+  },
+  {
+    id: 'lb-liquidity-goals',
+    title: 'Liquidity Goals',
+    href: '/docs/liquidity-builder/liquidity-goals',
+    body: 'Steady Growth, Deeper Market, and Launch Support — founder goals with plain-language tooltips.',
   },
   {
     id: 'lb-strategies',

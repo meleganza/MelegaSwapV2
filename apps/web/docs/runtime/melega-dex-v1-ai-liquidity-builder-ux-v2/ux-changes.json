@@ -1,0 +1,17 @@
+{
+  "mission": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_PRODUCT_UX_REDESIGN_V2",
+  "recovery": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_PRODUCT_UX_REDESIGN_V2_RECOVERY",
+  "baseline": "e9dac80a",
+  "layer": "UX/product only",
+  "untouched": ["contracts", "Factory", "10% fee", "Treasury", "Smart Swap", "KERL", "deployment bindings"],
+  "changes": [
+    "Hero: tight auto-height; title + concise lead immediately above Setup/Review/Activate",
+    "Token to Grow: search + paste address; logo/symbol/verified for listed; external not-listed hint",
+    "Create Market Against: WBNB/USDT/USDC with quote explanation",
+    "Token Reserve terminology + founder explanation",
+    "Liquidity Goal + Strategy tooltips",
+    "Technical Details collapsed for pair/deploy/execution readiness",
+    "Empty state: Create your first AI Liquidity Program",
+    "Docs: overview, token-reserve, liquidity-goals, strategies, execution, fees"
+  ]
+}

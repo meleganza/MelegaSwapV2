@@ -100,7 +100,13 @@ export function LbDocsPage({ title, lead, body, path }: Props) {
         </Card>
         <Related>
           <li>
+            <Link href="/docs/liquidity-builder/overview">Overview</Link>
+          </li>
+          <li>
             <Link href="/docs/liquidity-builder/token-reserve">Token Reserve</Link>
+          </li>
+          <li>
+            <Link href="/docs/liquidity-builder/liquidity-goals">Liquidity Goals</Link>
           </li>
           <li>
             <Link href="/docs/liquidity-builder/strategies">Strategies</Link>
