@@ -8,14 +8,24 @@ import { parseUnits } from '@ethersproject/units'
 
 export const LB_SUCCESS_FEE_BPS = 1000 as const
 
-/** Canonical canary references (mission config). */
+/**
+ * Canonical canary references (product-aligned).
+ * Token Reserve = projectToken amount deposited via depositBudget.
+ * Quote Asset = pair quote (Factory-enabled WBNB) — not the reserve asset.
+ */
 export const LB_CANARY = {
   signer: '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0',
+  marco: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
   wbnb: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
   usdt: '0x55d398326f99059fF775485246999027B3197955',
+  marcoWbnbPair: '0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E',
+  /** Historical / alternate Melega pair (not the preferred canary). */
   wbnbUsdtPair: '0x94FADf053BaD0c9d0a3874F82b1a09001926A548',
   factory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82',
-  budgetHuman: '0.01',
+  /** Small executable Token Reserve (project token units). */
+  tokenReserveHuman: '1',
+  /** Alias of tokenReserveHuman for deposit amount helpers. */
+  budgetHuman: '1',
   successFeeBps: LB_SUCCESS_FEE_BPS,
 } as const
 
@@ -112,9 +122,10 @@ export function buildCreateProgramArgs(input: {
 }
 
 /**
- * On-chain depositBudget pulls projectToken.
- * Mission pair WBNB/USDT is executable as projectToken=USDT, quote=WBNB
- * (USDT quote policy is disabled on Factory).
+ * Product model:
+ * - Token to Grow / Token Reserve = projectToken (depositBudget pulls this)
+ * - Quote Asset = liquidity pair quote (Factory quote policy; WBNB enabled)
+ * Preferred canary: MARCO + WBNB. Rejects WBNB-as-project + USDT-as-quote.
  */
 export function resolveCanaryOrientation(input: {
   projectToken: string
@@ -125,14 +136,14 @@ export function resolveCanaryOrientation(input: {
     return {
       ok: false,
       reason:
-        'UNSUPPORTED_QUOTE_ASSET — Factory quote policy disables this quote. Use WBNB as quoteAsset (enabled). For WBNB/USDT pair select USDT as project token.',
+        'UNSUPPORTED_QUOTE_ASSET — Factory quote policy disables this quote. Use WBNB as Quote Asset. Token Reserve stays the project token (Token to Grow).',
     }
   }
   try {
     const project = getAddress(input.projectToken)
     const quote = getAddress(input.quoteAsset)
     if (project === quote) return { ok: false, reason: 'PROJECT_EQUALS_QUOTE' }
-    // Reject WBNB-as-project with USDT quote (mission naive orientation).
+    // Reject legacy "WBNB budget" orientation (quote disabled + wrong roles).
     if (
       project.toLowerCase() === LB_CANARY.wbnb.toLowerCase() &&
       quote.toLowerCase() === LB_CANARY.usdt.toLowerCase()
@@ -140,7 +151,7 @@ export function resolveCanaryOrientation(input: {
       return {
         ok: false,
         reason:
-          'CANARY_ORIENTATION_INVALID — WBNB cannot be projectToken with USDT quote (USDT quote disabled). Select USDT as project token; WBNB is quote.',
+          'CANARY_ORIENTATION_INVALID — Token Reserve is projectToken, not WBNB. Preferred: Token to Grow = MARCO (or approved project token), Quote Asset = WBNB.',
       }
     }
     return { ok: true }

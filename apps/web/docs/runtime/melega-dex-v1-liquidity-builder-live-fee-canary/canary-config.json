@@ -1,6 +1,7 @@
 {
-  "schema": "melega.lb.live-fee-canary-config.v1",
+  "schema": "melega.lb.live-fee-canary-config.v2",
   "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_LIVE_FEE_CANARY_CERTIFICATION",
+  "alignedBy": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT",
   "preparationOnlyUntilFounderSignature": true,
   "autoExecute": false,
   "riskClass": "MINIMAL_NON_PRODUCTION",
@@ -12,27 +13,43 @@
     "READY": true,
     "canaryExecuted": false
   },
-  "inputToken": {
+  "productModel": {
+    "tokenToGrow": "projectToken",
+    "quoteAsset": "WBNB (Factory-enabled)",
+    "tokenReserve": "projectToken deposit via depositBudget"
+  },
+  "tokenToGrow": {
+    "symbol": "MARCO",
+    "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "role": "projectToken / Token Reserve asset"
+  },
+  "quoteAsset": {
     "symbol": "WBNB",
     "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    "role": "budgetAsset"
+    "role": "liquidity pair quote"
   },
-  "amount": {
-    "human": "0.01",
-    "wei": "10000000000000000",
-    "asset": "WBNB",
-    "note": "Minimal budget — do not use significant funds"
+  "tokenReserve": {
+    "human": "1",
+    "wei": "1000000000000000000",
+    "asset": "MARCO",
+    "label": "Token Reserve",
+    "note": "Small executable project-token reserve — not a WBNB budget"
   },
   "pair": {
-    "tokenA": "WBNB",
-    "tokenB": "USDT",
-    "tokenAAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    "tokenBAddress": "0x55d398326f99059fF775485246999027B3197955",
+    "tokenA": "MARCO",
+    "tokenB": "WBNB",
+    "tokenAAddress": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "tokenBAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "address": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
     "venue": "Melega AMM",
     "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
     "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
     "createPublicLiquidity": false,
     "affectUsers": false
+  },
+  "supersededWording": {
+    "was": { "budget": "0.01 WBNB", "pair": "WBNB/USDT" },
+    "status": "SUPERSEDED — Token Reserve is MARCO project token"
   },
   "estimatedGas": {
     "status": "FOUNDER_WALLET_ESTIMATE_AT_SIGNATURE",
@@ -41,10 +58,8 @@
   "expectedFee": {
     "successFeeBps": 1000,
     "successFeePercent": 10,
-    "amount": "0.001",
-    "asset": "WBNB",
-    "amountWei": "1000000000000000",
-    "formula": "floor(budget * 1000 / 10000) on protocol success fee path"
+    "formula": "floor(tokenReserve * 1000 / 10000) on protocol success fee path",
+    "note": "Fee economics unchanged (10%). Asset follows program accounting for projectToken reserve."
   },
   "expectedDestination": {
     "path": "Program → FeeSink.settleLiquidityBuildingFee → FeeReceiver (intake) → beneficiary MELEGA TREASURY WALLET via governor recoverERC20",
@@ -57,6 +72,8 @@
     "MELEGA DEPLOYER / authorized Founder wallet signs in browser",
     "No automated signing",
     "No server signer / KMS / hidden wallet",
+    "Use Token Reserve terminology — not Liquidity Budget / WBNB Budget",
     "Capture tx hash, block, fee events, FeeReceiver balance delta, optional recover to Treasury"
-  ]
+  ],
+  "ssot": "apps/web/docs/runtime/melega-dex-v1-liquidity-builder-canary-configuration-alignment/canary-config.json"
 }

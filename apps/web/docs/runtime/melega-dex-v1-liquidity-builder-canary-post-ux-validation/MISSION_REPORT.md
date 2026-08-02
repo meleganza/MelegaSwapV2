@@ -24,29 +24,27 @@ No contracts / fee economics modified in this mission.
 
 ## 3. Canary parameter mapping
 
-| Canonical field | Mission wording | Post-UX executable mapping |
-| --- | --- | --- |
-| Signer | `0xB6eEb3…3EE0` | unchanged |
-| Pair | WBNB/USDT `0x94FADf…` | same pair |
-| Fee | 10% / 1000 bps | unchanged (`LB_SUCCESS_FEE_BPS`) |
-| Budget | **0.01 WBNB** | **Token Reserve 0.01 USDT** (deposit asset = Token to Grow) |
-| Orientation | implied WBNB budget on WBNB/USDT | **Token to Grow = USDT**, **Quote Asset = WBNB** |
+Aligned by `MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT`:
 
-## 4. Mismatch captured
+| Field | Canonical (preferred) |
+| --- | --- |
+| Signer | `0xB6eEb3…3EE0` |
+| Token to Grow | **MARCO** |
+| Quote Asset | **WBNB** |
+| Token Reserve | **1 MARCO** (`depositBudget` = projectToken) |
+| Pair | MARCO/WBNB `0x7286c16c…` |
+| Fee | 10% / 1000 bps unchanged |
 
-**BUDGET_ASSET_ORIENTATION** (documented, not a wiring break):
+## 4. Prior mismatch — superseded
 
-- Factory enables **WBNB quote only** (USDT quote disabled on-chain).
-- `depositBudget` pulls **projectToken**, not an arbitrary “budget asset”.
-- Naive UI selection Token=WBNB + Quote=USDT is rejected by `resolveCanaryOrientation`.
-- Founder canary for the WBNB/USDT pool must use: **USDT grow / WBNB quote / 0.01 USDT reserve**.
+Legacy wording **Budget: 0.01 WBNB** is superseded. Token Reserve is always the project token; Quote Asset is separate. See configuration-alignment `canary-config.json`.
 
 ## Founder canary steps (post-UX)
 
 1. `/liquidity` — connect MELEGA DEPLOYER  
-2. Token to Grow: **USDT**  
+2. Token to Grow: **MARCO**  
 3. Quote Asset: **WBNB**  
-4. Token Reserve: **0.01**  
+4. Token Reserve: **1**  
 5. Goal + Strategy (AI Optimized)  
 6. Review → **Activate Liquidity Program** → sign create / approve / deposit / activate  
 

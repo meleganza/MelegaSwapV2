@@ -17,13 +17,19 @@
 | FeeReceiver ← FeeSink.treasuryReceiver | yes |
 | `beneficiary()` | `0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b` |
 
-## Part B — Canary config (READY)
+## Part B — Canary config (READY — aligned)
 
-- Input: **0.01 WBNB** (minimal)
-- Pair prep: WBNB/USDT on Melega AMM
-- Expected fee: **0.001 WBNB (10%)**
+Aligned by `MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT`:
+
+- Token to Grow: **MARCO** (project token)
+- Quote Asset: **WBNB**
+- Token Reserve: **1 MARCO** (not a WBNB budget)
+- Pair: MARCO/WBNB on Melega AMM
+- Fee schedule: **10% / 1000 bps** unchanged
 - Destination chain: FeeSink → FeeReceiver → Treasury beneficiary
 - No public liquidity / no user impact / no auto-execute
+
+> Supersedes prior wording “Budget: 0.01 WBNB”. `depositBudget` pulls projectToken.
 
 ## Part C — Execution (BLOCKED pending Founder)
 

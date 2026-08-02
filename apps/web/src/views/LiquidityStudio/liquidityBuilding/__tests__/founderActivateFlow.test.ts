@@ -40,23 +40,23 @@ function mockWallet(overrides: Partial<FounderActivateWallet> = {}): FounderActi
 }
 
 describe('founderActivateFlow', () => {
-  it('builds createProgram args for USDT project / WBNB quote', () => {
+  it('builds createProgram args for canonical MARCO / WBNB', () => {
     const args = buildCreateProgramArgs({
-      projectToken: LB_CANARY.usdt,
+      projectToken: LB_CANARY.marco,
       quoteAsset: LB_CANARY.wbnb,
-      pair: LB_CANARY.wbnbUsdtPair,
+      pair: LB_CANARY.marcoWbnbPair,
       strategyMode: 'FULL_AI',
       epochDurationSeconds: 300,
     })
     expect('error' in args).toBe(false)
     if ('error' in args) return
-    expect(args.projectToken).toBe(LB_CANARY.usdt)
+    expect(args.projectToken).toBe(LB_CANARY.marco)
     expect(args.quoteAsset).toBe(LB_CANARY.wbnb)
     expect(args.strategy.mode).toBe(0)
     expect(args.epochDurationSeconds).toBe(300)
   })
 
-  it('rejects WBNB project + USDT quote canary orientation', () => {
+  it('rejects WBNB project + USDT quote; accepts MARCO / WBNB', () => {
     const bad = resolveCanaryOrientation({
       projectToken: LB_CANARY.wbnb,
       quoteAsset: LB_CANARY.usdt,
@@ -65,23 +65,24 @@ describe('founderActivateFlow', () => {
     expect(bad.ok).toBe(false)
 
     const good = resolveCanaryOrientation({
-      projectToken: LB_CANARY.usdt,
+      projectToken: LB_CANARY.marco,
       quoteAsset: LB_CANARY.wbnb,
       quoteEnabled: true,
     })
     expect(good.ok).toBe(true)
   })
 
-  it('parses 0.01 budget wei at 18 decimals', () => {
+  it('parses Token Reserve wei at 18 decimals', () => {
+    expect(parseBudgetWei(LB_CANARY.tokenReserveHuman, 18)).toBe('1000000000000000000')
     expect(parseBudgetWei('0.01', 18)).toBe('10000000000000000')
   })
 
   it('runs createProgram → approve → deposit → activate sequence', async () => {
     const wallet = mockWallet()
     const args = buildCreateProgramArgs({
-      projectToken: LB_CANARY.usdt,
+      projectToken: LB_CANARY.marco,
       quoteAsset: LB_CANARY.wbnb,
-      pair: LB_CANARY.wbnbUsdtPair,
+      pair: LB_CANARY.marcoWbnbPair,
     })
     expect('error' in args).toBe(false)
     if ('error' in args) return
@@ -89,7 +90,7 @@ describe('founderActivateFlow', () => {
     const result = await runFounderActivateFlow({
       owner: LB_CANARY.signer,
       createArgs: args,
-      amountWei: parseBudgetWei('0.01', 18)!,
+      amountWei: parseBudgetWei(LB_CANARY.tokenReserveHuman, 18)!,
       projectToken: args.projectToken,
       wallet,
     })
@@ -106,19 +107,19 @@ describe('founderActivateFlow', () => {
 
   it('skips approve when allowance already sufficient', async () => {
     const wallet = mockWallet({
-      readAllowance: vi.fn(async () => '10000000000000000'),
+      readAllowance: vi.fn(async () => '1000000000000000000'),
     })
     const args = buildCreateProgramArgs({
-      projectToken: LB_CANARY.usdt,
+      projectToken: LB_CANARY.marco,
       quoteAsset: LB_CANARY.wbnb,
-      pair: LB_CANARY.wbnbUsdtPair,
+      pair: LB_CANARY.marcoWbnbPair,
     })
     if ('error' in args) throw new Error(args.error)
 
     const result = await runFounderActivateFlow({
       owner: LB_CANARY.signer,
       createArgs: args,
-      amountWei: '10000000000000000',
+      amountWei: '1000000000000000000',
       projectToken: args.projectToken,
       wallet,
     })
@@ -137,16 +138,16 @@ describe('founderActivateFlow', () => {
       }),
     })
     const args = buildCreateProgramArgs({
-      projectToken: LB_CANARY.usdt,
+      projectToken: LB_CANARY.marco,
       quoteAsset: LB_CANARY.wbnb,
-      pair: LB_CANARY.wbnbUsdtPair,
+      pair: LB_CANARY.marcoWbnbPair,
     })
     if ('error' in args) throw new Error(args.error)
 
     const result = await runFounderActivateFlow({
       owner: LB_CANARY.signer,
       createArgs: args,
-      amountWei: '10000000000000000',
+      amountWei: '1000000000000000000',
       projectToken: args.projectToken,
       wallet,
     })

@@ -23,27 +23,29 @@ Wired browser-wallet sequence:
 
 Also fixed `activeProgram` ABI to **4 args** and treat `NO_ACTIVE_PROGRAM` as create-entry state when Factory is bound.
 
-## Canary orientation (on-chain truth)
+## Canary orientation (product-aligned)
+
+Aligned by `MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT`:
 
 | Field | Value |
 | --- | --- |
 | Factory | `0xB9f3e3020141157C215902acC1fDF65e49bE4e82` |
-| Pair | WBNB/USDT `0x94FADf053BaD0c9d0a3874F82b1a09001926A548` |
-| **projectToken** | **USDT** (budget asset — `depositBudget` pulls projectToken) |
-| **quoteAsset** | **WBNB** (only enabled Factory quote) |
-| Budget | 0.01 USDT |
-| Fee | 1000 bps / 10% |
+| Token to Grow | **MARCO** (`projectToken` / Token Reserve asset) |
+| Quote Asset | **WBNB** (Factory-enabled quote) |
+| Token Reserve | **1 MARCO** (`depositBudget` pulls projectToken) |
+| Pair | MARCO/WBNB `0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E` |
+| Fee | 1000 bps / 10% (unchanged) |
 | Signer | MELEGA DEPLOYER `0xB6eEb3…3EE0` |
 
-Naive WBNB-as-project + USDT-as-quote is **rejected** (`UnsupportedQuoteAsset`).
+Legacy “WBNB Budget” orientation is **rejected**. Terminology: **Token Reserve** (not Liquidity Budget / WBNB Budget).
 
 ## Founder steps
 
 1. Open `/liquidity`
 2. Connect MELEGA DEPLOYER on BSC
-3. Select **USDT**, budget **0.01**, Full AI
-4. Confirm pair **USDT/WBNB**
-5. Click **Activate Liquidity Builder**
+3. Token to Grow **MARCO**, Quote Asset **WBNB**, Token Reserve **1**, Full AI
+4. Confirm pair **MARCO/WBNB**
+5. Click **Activate Liquidity Program**
 6. Sign create → approve → deposit → activate in wallet
 
 ## Verification

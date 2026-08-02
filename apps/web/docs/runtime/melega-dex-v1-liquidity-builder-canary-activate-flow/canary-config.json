@@ -1,38 +1,44 @@
 {
-  "schema": "melega.lb.canary-activate-flow-config.v1",
+  "schema": "melega.lb.canary-activate-flow-config.v2",
   "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_ACTIVATE_FLOW_WIRING",
+  "alignedBy": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT",
   "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
   "signer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
   "signerLabel": "MELEGA DEPLOYER",
   "route": "/liquidity",
-  "cta": "Activate Liquidity Builder",
+  "cta": "Activate Liquidity Program",
   "sequence": ["createProgram", "approve(projectToken)", "depositBudget", "activate"],
-  "pair": {
-    "label": "WBNB/USDT",
-    "address": "0x94FADf053BaD0c9d0a3874F82b1a09001926A548",
-    "venue": "Melega AMM"
+  "productModel": {
+    "tokenToGrow": "projectToken",
+    "quoteAsset": "pair quote (Factory-enabled WBNB)",
+    "tokenReserve": "projectToken amount for depositBudget — not a WBNB budget"
   },
-  "executableOrientation": {
-    "projectToken": {
-      "symbol": "USDT",
-      "address": "0x55d398326f99059fF775485246999027B3197955",
-      "role": "budgetAsset (depositBudget pulls projectToken)"
+  "canonical": {
+    "tokenToGrow": {
+      "symbol": "MARCO",
+      "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+      "role": "Token Reserve asset (depositBudget pulls projectToken)"
     },
     "quoteAsset": {
       "symbol": "WBNB",
       "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
       "enabledOnFactory": true
     },
-    "budget": {
-      "human": "0.01",
-      "asset": "USDT",
-      "note": "On-chain depositBudget always pulls projectToken. Factory only enables WBNB as quote — USDT-as-quote is UnsupportedQuoteAsset."
+    "tokenReserve": {
+      "human": "1",
+      "asset": "MARCO",
+      "label": "Token Reserve"
+    },
+    "pair": {
+      "label": "MARCO/WBNB",
+      "address": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+      "venue": "Melega AMM"
     }
   },
   "rejectedOrientation": {
     "projectToken": "WBNB",
     "quoteAsset": "USDT",
-    "reason": "USDT quote policy disabled on Factory; WBNB cannot be both projectToken and the only enabled quote"
+    "reason": "Legacy WBNB-budget wording — USDT quote disabled; Token Reserve is never WBNB under preferred canary"
   },
   "expectedFee": {
     "successFeeBps": 1000,
@@ -40,5 +46,6 @@
     "path": "Program → FeeSink.settleLiquidityBuildingFee → FeeReceiver → MELEGA TREASURY WALLET"
   },
   "autoSign": false,
-  "serverSigner": false
+  "serverSigner": false,
+  "ssot": "apps/web/docs/runtime/melega-dex-v1-liquidity-builder-canary-configuration-alignment/canary-config.json"
 }

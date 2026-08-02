@@ -1,42 +1,47 @@
 {
   "preparationOnly": true,
   "executed": false,
-  "note": "Operational readiness proof only. No liquidity build, swap, or fund spend.",
+  "alignedBy": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT",
+  "note": "Operational readiness proof only. No liquidity build, swap, or fund spend. Token Reserve = projectToken.",
   "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
-  "requiredToken": {
+  "tokenToGrow": {
+    "symbol": "MARCO",
+    "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "role": "projectToken"
+  },
+  "quoteAsset": {
     "symbol": "WBNB",
     "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    "role": "budgetAsset"
+    "role": "liquidity pair quote"
   },
-  "budget": {
-    "amount": "0.01",
-    "amountWei": "10000000000000000",
-    "asset": "WBNB"
+  "tokenReserve": {
+    "amount": "1",
+    "amountWei": "1000000000000000000",
+    "asset": "MARCO",
+    "label": "Token Reserve"
   },
   "pair": {
-    "tokenA": "WBNB",
-    "tokenB": "USDT",
-    "tokenAAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    "tokenBAddress": "0x55d398326f99059fF775485246999027B3197955",
+    "tokenA": "MARCO",
+    "tokenB": "WBNB",
+    "tokenAAddress": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+    "tokenBAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "address": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
     "venue": "Melega AMM",
     "melegaFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
     "melegaRouter": "0xc25033218D181b27D4a2944Fbb04FC055da4EAB3",
-    "note": "Preparation only — WBNB-primary path; USDT quote activation remains a separate gate (LB-G09)."
+    "note": "Preferred product canary — MARCO Token to Grow / WBNB Quote Asset"
   },
   "expectedFee": {
     "successFeeBps": 1000,
     "successFeePercent": 10,
-    "amount": "0.001",
-    "asset": "WBNB",
     "destinationChain": "FeeSink → FeeReceiver → MELEGA TREASURY WALLET",
     "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
   },
-  "expectedOutput": {
-    "description": "Factory would create Program clone; 10% protocol fee to fee chain; net 0.009 WBNB available to build path",
-    "netBudgetAfterFee": "0.009",
-    "asset": "WBNB",
-    "lpMint": "deferred_until_canary_execution"
+  "supersededWording": {
+    "was": { "budget": "0.01 WBNB", "pair": "WBNB/USDT" },
+    "status": "SUPERSEDED"
   },
   "blockersClearedForContractDeployment": true,
-  "autoExecute": false
+  "autoExecute": false,
+  "ssot": "apps/web/docs/runtime/melega-dex-v1-liquidity-builder-canary-configuration-alignment/canary-config.json"
 }

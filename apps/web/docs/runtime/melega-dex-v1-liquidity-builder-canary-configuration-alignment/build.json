@@ -1,0 +1,7 @@
+{
+  "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0
+}

@@ -1,0 +1,9 @@
+{
+  "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_CONFIGURATION_ALIGNMENT",
+  "command": "yarn vitest run src/views/LiquidityStudio/liquidityBuilding/__tests__/canaryConfigurationAlignment.test.ts src/views/LiquidityStudio/liquidityBuilding/__tests__/canaryPostUxValidation.test.ts src/views/LiquidityStudio/liquidityBuilding/__tests__/founderActivateFlow.test.ts src/views/LiquidityStudio/liquidityBuilding/__tests__/founderUxRedesign.test.ts",
+  "result": "PASS",
+  "testFiles": 4,
+  "tests": 21,
+  "passed": 21,
+  "failed": 0
+}
