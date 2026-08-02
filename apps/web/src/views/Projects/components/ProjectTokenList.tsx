@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { Flex, Text, Heading, Link } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
+import { useToken } from 'hooks/Tokens'
 import { CHAIN_EXPLORER_TOKEN_URL, CHAIN_LABELS } from 'registry/projects/constants'
 import { TokenRef } from 'registry/projects/types'
+import { SmartSwapTokenWalletActions } from 'views/SmartSwapStudio/modules/SmartSwapTokenActions'
 
 const Table = styled(Flex)`
   flex-direction: column;
@@ -34,17 +36,51 @@ interface ProjectTokenListProps {
   tokens: TokenRef[]
 }
 
+const ProjectTokenRow: React.FC<{ token: TokenRef }> = ({ token }) => {
+  const { t } = useTranslation()
+  const currency = useToken(token.address)
+  const explorer = CHAIN_EXPLORER_TOKEN_URL[token.chainId]?.(token.address)
+
+  return (
+    <Row alignItems="center" justifyContent="space-between">
+      <Flex flexDirection="column" style={{ minWidth: '120px' }}>
+        <Text fontWeight={600}>{token.symbol}</Text>
+        <Text fontSize="12px" color="textSubtle">
+          {CHAIN_LABELS[token.chainId] ?? `Chain ${token.chainId}`}
+        </Text>
+      </Flex>
+      <Mono color="textSubtle" style={{ flex: 1 }}>
+        {token.address}
+      </Mono>
+      <Flex alignItems="center" style={{ gap: '12px' }}>
+        <SmartSwapTokenWalletActions
+          currency={currency ?? undefined}
+          tokenRef={
+            currency
+              ? undefined
+              : {
+                  address: token.address,
+                  symbol: token.symbol,
+                  chainId: token.chainId,
+                }
+          }
+          size={16}
+          showLabels
+        />
+        {explorer && (
+          <Link href={explorer} external>
+            <Text fontSize="12px" color="primary">
+              {t('View on Explorer')}
+            </Text>
+          </Link>
+        )}
+      </Flex>
+    </Row>
+  )
+}
+
 const ProjectTokenList: React.FC<ProjectTokenListProps> = ({ tokens }) => {
   const { t } = useTranslation()
-  const [copied, setCopied] = useState<string | null>(null)
-
-  const copyAddress = (address: string) => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(address)
-      setCopied(address)
-      setTimeout(() => setCopied(null), 2000)
-    }
-  }
 
   if (!tokens.length) {
     return (
@@ -60,39 +96,9 @@ const ProjectTokenList: React.FC<ProjectTokenListProps> = ({ tokens }) => {
         {t('Linked tokens')}
       </Heading>
       <Table>
-        {tokens.map((token) => {
-          const explorer = CHAIN_EXPLORER_TOKEN_URL[token.chainId]?.(token.address)
-          return (
-            <Row key={token.ref} alignItems="center" justifyContent="space-between">
-              <Flex flexDirection="column" style={{ minWidth: '120px' }}>
-                <Text fontWeight={600}>{token.symbol}</Text>
-                <Text fontSize="12px" color="textSubtle">
-                  {CHAIN_LABELS[token.chainId] ?? `Chain ${token.chainId}`}
-                </Text>
-              </Flex>
-              <Mono color="textSubtle" style={{ flex: 1 }}>
-                {token.address}
-              </Mono>
-              <Flex style={{ gap: '12px' }}>
-                <Text
-                  fontSize="12px"
-                  color="primary"
-                  style={{ cursor: 'pointer', minHeight: '44px', display: 'flex', alignItems: 'center' }}
-                  onClick={() => copyAddress(token.address)}
-                >
-                  {copied === token.address ? t('Copied') : t('Copy')}
-                </Text>
-                {explorer && (
-                  <Link href={explorer} external>
-                    <Text fontSize="12px" color="primary">
-                      {t('View on Explorer')}
-                    </Text>
-                  </Link>
-                )}
-              </Flex>
-            </Row>
-          )
-        })}
+        {tokens.map((token) => (
+          <ProjectTokenRow key={token.ref} token={token} />
+        ))}
       </Table>
     </Flex>
   )

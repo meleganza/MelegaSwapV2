@@ -3,9 +3,11 @@
  * Secondary diagnostics live in the parent details accordion.
  */
 
+import type { ReactNode } from 'react'
 import styled from 'styled-components'
 import type { SmartSwapPreviewResult } from 'lib/smart-swap-execution-preview'
 import { formatImpactLabel } from 'lib/smart-swap-execution-preview'
+import { SmartSwapTokenWalletActions } from 'views/SmartSwapStudio/modules/SmartSwapTokenActions'
 import { formatGasEstimateDisplay } from './formatGasEstimateDisplay'
 
 const UNAVAILABLE = '—'
@@ -55,6 +57,10 @@ const Dd = styled.dd`
   text-align: right;
   color: #f8fafc;
   font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
 `
 
 const GasBlock = styled.div<{ $tone: 'ok' | 'muted' | 'warn' }>`
@@ -78,11 +84,22 @@ const GasDetail = styled.div`
   color: #9ca3af;
 `
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  actions,
+}: {
+  label: string
+  value: string
+  actions?: ReactNode
+}) {
   return (
     <>
       <Dt>{label}</Dt>
-      <Dd>{value}</Dd>
+      <Dd>
+        <span>{value}</span>
+        {actions}
+      </Dd>
     </>
   )
 }
@@ -160,7 +177,21 @@ export function SmartSwapExecutionPreviewPanel({
       {!embedded ? <Title>Execution preview</Title> : null}
       <Grid>
         <Row label="Input" value={`${p.inputAmount} ${p.inputToken.symbol}`} />
-        <Row label="Expected output" value={`${expectedDisplay} ${p.outputToken.symbol}`} />
+        <Row
+          label="Expected output"
+          value={`${expectedDisplay} ${p.outputToken.symbol}`}
+          actions={
+            <SmartSwapTokenWalletActions
+              tokenRef={{
+                address: p.outputToken.address,
+                symbol: p.outputToken.symbol,
+                decimals: p.outputToken.decimals,
+                chainId: p.outputToken.chainId,
+                isNative: p.outputToken.isNative,
+              }}
+            />
+          }
+        />
         <Row label="Minimum received" value={`${minDisplay} ${p.outputToken.symbol}`} />
         <Row label="Slippage" value={`${(p.slippageBips / 100).toFixed(2)}%`} />
         <Row label="Price impact" value={impactLabel} />

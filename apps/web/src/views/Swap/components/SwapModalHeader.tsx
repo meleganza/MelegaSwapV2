@@ -8,6 +8,7 @@ import { AutoColumn } from 'components/Layout/Column'
 import { CurrencyLogo } from 'components/Logo'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import truncateHash from '@pancakeswap/utils/truncateHash'
+import { SmartSwapTokenWalletActions } from 'views/SmartSwapStudio/modules/SmartSwapTokenActions'
 import { TruncatedText, SwapShowAcceptChanges } from './styleds'
 
 export default function SwapModalHeader({
@@ -104,10 +105,11 @@ export default function SwapModalHeader({
             {outputAmount.toSignificant(6)}
           </TruncatedText>
         </RowFixed>
-        <RowFixed>
+        <RowFixed style={{ gap: '6px' }}>
           <Text fontSize="24px" ml="10px">
             {outputAmount.currency.symbol}
           </Text>
+          <SmartSwapTokenWalletActions currency={outputAmount.currency} size={16} />
         </RowFixed>
       </RowBetween>
       {showAcceptChanges ? (

@@ -19,6 +19,7 @@ import { CurrencyLogo } from '../Logo'
 import CircleLoader from '../Loader/CircleLoader'
 import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
+import { SmartSwapTokenWalletActions } from 'views/SmartSwapStudio/modules/SmartSwapTokenActions'
 
 function currencyKey(currency: Currency): string {
   return currency?.isToken ? currency.address : currency?.isNative ? currency.symbol : ''
@@ -94,7 +95,8 @@ function CurrencyRow({
           {!isOnSelectedList && customAdded && `${t('Added by user')} •`} {currency.name}
         </Text>
       </Column>
-      <RowFixed style={{ justifySelf: 'flex-end' }}>
+      <RowFixed style={{ justifySelf: 'flex-end', gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+        <SmartSwapTokenWalletActions currency={currency} size={14} />
         {balance ? <Balance balance={balance} /> : account ? <CircleLoader /> : null}
       </RowFixed>
     </MenuItem>

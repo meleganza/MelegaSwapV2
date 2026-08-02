@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Currency, Pair, Token, CurrencyAmount, Percent } from '@pancakeswap/sdk'
-import { Button, ChevronDownIcon, Text, useModal, Flex, Box, NumericalInput, CopyButton } from '@pancakeswap/uikit'
+import { Button, ChevronDownIcon, Text, useModal, Flex, Box, NumericalInput } from '@pancakeswap/uikit'
 import styled, { css } from 'styled-components'
 import { isAddress } from 'utils'
 import { useTranslation } from '@pancakeswap/localization'
-import { WrappedTokenInfo } from '@pancakeswap/token-lists'
 import { melegaOperational as tokens } from 'ui/tokens'
 
 import { useBUSDCurrencyAmount } from 'hooks/useBUSDPrice'
@@ -16,7 +15,7 @@ import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
-import AddToWalletButton from '../AddToWallet/AddToWalletButton'
+import { SmartSwapTokenWalletActions } from 'views/SmartSwapStudio/modules/SmartSwapTokenActions'
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -253,51 +252,25 @@ export default function CurrencyInputPanel({
         </CurrencySelectButton>
       </Flex>
       <InputPanel>
-        {account && (
-          <Flex alignItems="center" justifyContent="space-between" p="0 1rem 0.75rem 0.75rem">
-            <Text
-              onClick={!disabled && onMax}
-              color="textSubtle"
-              fontSize="14px"
-              style={{ display: 'inline', cursor: 'pointer' }}
-            >
-              {!hideBalance && !!currency
-                ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
-                : ' -'}
-            </Text>
-            {token && tokenAddress ? (
-              <Flex style={{ gap: '4px' }} ml="4px" alignItems="center">
-                <CopyButton
-                  width="16px"
-                  buttonColor="textSubtle"
-                  text={tokenAddress}
-                  tooltipMessage={t('Token address copied')}
-                />
-                <AddToWalletButton
-                  variant="text"
-                  p="0"
-                  height="auto"
-                  width="fit-content"
-                  tokenAddress={tokenAddress}
-                  tokenSymbol={token.symbol}
-                  tokenDecimals={token.decimals}
-                  tokenLogo={token instanceof WrappedTokenInfo ? token.logoURI : undefined}
-                />
-              </Flex>
-            ) : (
-              <div />
-            )}
-            {/* {!!currency && showBUSD && Number.isFinite(amountInDollar) && (
-            <Flex justifyContent="flex-end">
-              <Flex maxWidth="200px">
-                <Text fontSize="12px" color="textSubtle">
-                  ~{formatNumber(amountInDollar)} USD
-                </Text>
-              </Flex>
+        <Flex alignItems="center" justifyContent="space-between" p="0 1rem 0.75rem 0.75rem">
+          <Text
+            onClick={account && !disabled ? onMax : undefined}
+            color="textSubtle"
+            fontSize="14px"
+            style={{ display: 'inline', cursor: account && !disabled ? 'pointer' : 'default' }}
+          >
+            {account && !hideBalance && !!currency
+              ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
+              : ' -'}
+          </Text>
+          {token && tokenAddress ? (
+            <Flex style={{ gap: '4px' }} ml="4px" alignItems="center" data-testid="currency-panel-token-actions">
+              <SmartSwapTokenWalletActions currency={currency} size={16} />
             </Flex>
-          )} */}
-          </Flex>
-        )}
+          ) : (
+            <div />
+          )}
+        </Flex>
         <InputRow selected={disableCurrencySelect}>
             {account && currency && selectedCurrencyBalance?.greaterThan(0) && !disabled && label !== 'To' && (
               <Flex alignItems="right" justifyContent="right">
