@@ -30,7 +30,7 @@ describe('Canary configuration alignment', () => {
       expect.arrayContaining(['Liquidity Budget', 'WBNB Budget']),
     )
     expect(config.whyReserveIsProjectToken).toMatch(/depositBudget/)
-    expect(config.whyQuoteIsSeparate).toMatch(/Quote Asset/)
+    expect(config.whyQuoteIsSeparate).toMatch(/Quote Asset|quote/i)
   })
 
   it('UX evidence forbids Liquidity Budget / WBNB Budget primary copy', () => {

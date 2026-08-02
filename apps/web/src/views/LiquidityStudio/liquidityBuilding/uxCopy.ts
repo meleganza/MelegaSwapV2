@@ -1,5 +1,5 @@
 /**
- * LB016 frozen UX copy — Liquidity Building production experience.
+ * LB016 / Product UX V2 — founder-facing Liquidity Builder copy.
  * Do not expose infrastructure jargon (KMS, Treasury internals, BC003S).
  */
 
@@ -7,9 +7,8 @@ export const LB_UX = {
   productName: 'Liquidity Builder',
   aiBadge: 'AI Powered',
   /** Founder UX — plain language product entry */
-  entryTitle: 'Create an automated liquidity growth program',
-  entryLead:
-    'Deposit your project tokens and Liquidity Builder automatically creates and improves market liquidity. You keep ownership of the LP.',
+  entryTitle: 'Create an automated liquidity growth program for your token.',
+  entryLead: 'Create an automated liquidity growth program for your token.',
   entrySupport:
     'I deposit my tokens and the Liquidity Builder automatically creates and improves market liquidity.',
   startCta: 'Create Liquidity Program',
@@ -34,9 +33,21 @@ export const LB_UX = {
   readinessReady: 'Ready',
   readinessPending: 'Pending',
   tokenToGrowLabel: 'Token to Grow',
-  tokenToGrowSupport: 'The project token whose market liquidity you want to grow.',
-  quoteAssetLabel: 'Quote Asset',
-  quoteAssetSupport: 'The market side paired with your token (WBNB, USDT, or USDC).',
+  tokenToGrowSupport: 'Search a listed token or paste a contract address.',
+  tokenSearchCta: 'Search token',
+  tokenPastePlaceholder: 'Paste contract address',
+  tokenDetectedLabel: 'Token detected',
+  listingStatusLabel: 'Listing status',
+  marketStatusLabel: 'Market status',
+  listingListed: 'Listed on Melega',
+  listingExternal: 'External / unlisted',
+  listingUserAdded: 'Added by you',
+  listingNone: 'Not selected',
+  marketPoolFound: 'Melega pool found',
+  marketPoolMissing: 'No Melega pool yet',
+  marketPoolLoading: 'Looking for pool…',
+  quoteAssetLabel: 'Create Market Against',
+  quoteAssetSupport: 'The quote side of your market (WBNB, USDT, or USDC).',
   reserveLabel: 'Token Reserve',
   reserveSupport: 'This reserve is used by AI Liquidity Builder to grow liquidity.',
   budgetLabel: 'Token Reserve',
@@ -67,12 +78,16 @@ export const LB_UX = {
   lpOwnedByOwner: 'Owned by you',
   activityTitle: 'Activity',
   manageTitle: 'Manage',
-  technicalTitle: 'Technical details',
+  technicalTitle: 'Advanced / Technical Details',
   emptyNoProgram: 'No liquidity growth yet.',
-  noActiveProgramTitle: 'No liquidity program exists for this token yet',
+  noActiveProgramTitle: 'Create your first AI Liquidity Program',
   noActiveProgramBody:
-    'Create a liquidity program: choose Token to Grow, Quote Asset, Token Reserve, goal, and strategy — then activate.',
+    'Choose Token to Grow, Create Market Against, Token Reserve, goal, and strategy — then activate.',
   noActiveProgramCta: 'Create Liquidity Program',
+  docsTokenReserve: '/docs/liquidity-builder/token-reserve',
+  docsStrategies: '/docs/liquidity-builder/strategies',
+  docsExecution: '/docs/liquidity-builder/execution',
+  docsFees: '/docs/liquidity-builder/fees',
   pairNotDetected: 'No Melega pool found for this token and quote yet.',
   pairDetected: 'Melega pool found',
   pairLoading: 'Looking for Melega pool…',
@@ -171,7 +186,7 @@ export function availableManageActions(status: string): ManageAction[] {
 }
 
 export const MANAGE_ACTION_LABEL: Record<ManageAction, string> = {
-  ADD_BUDGET: 'Add Budget',
+  ADD_BUDGET: 'Add Reserve',
   PAUSE: 'Pause',
   RESUME: 'Resume',
   STOP: 'Stop',

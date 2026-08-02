@@ -18,12 +18,13 @@ import {
 
 describe('LB016 Liquidity Building UX freeze', () => {
   it('initial card copy is founder-plain (no infra jargon)', () => {
-    expect(LB_UX.entryLead).toMatch(/deposit your project tokens/i)
-    expect(LB_UX.entryLead).toMatch(/improves market liquidity/i)
+    expect(LB_UX.entryLead).toBe('Create an automated liquidity growth program for your token.')
+    expect(LB_UX.entryTitle).toBe('Create an automated liquidity growth program for your token.')
     expect(LB_UX.startCta).toBe('Create Liquidity Program')
-    expect(LB_UX.entryTitle).toBe('Create an automated liquidity growth program')
     expect(LB_UX.aiBadge).toBe('AI Powered')
     expect(LB_UX.reserveLabel).toBe('Token Reserve')
+    expect(LB_UX.quoteAssetLabel).toBe('Create Market Against')
+    expect(LB_UX.entryLead).not.toMatch(/KMS|Treasury|BC003S/i)
   })
 
   it('blocked state uses plain readiness — not infra jargon', () => {

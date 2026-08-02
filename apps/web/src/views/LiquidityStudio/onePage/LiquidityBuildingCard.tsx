@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import styled, { keyframes } from 'styled-components'
-import { Currency } from '@pancakeswap/sdk'
+import { Currency, ERC20Token } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import CurrencySearchModal from 'components/SearchModal/CurrencySearchModal'
-import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
-import { useCurrency } from 'hooks/Tokens'
+import { useCurrency, useIsTokenActive, useIsUserAddedToken } from 'hooks/Tokens'
+import { isAddress } from 'utils'
 import { useLiquidityBuildingCard } from '../liquidityBuilding/useLiquidityBuildingCard'
 import {
   EPOCH_OPTIONS,
@@ -32,9 +33,6 @@ const BUILDER_STEPS = [
   { n: 3, label: 'Activate' },
 ] as const
 type BuilderStep = 1 | 2 | 3
-
-/** Canonical MARCO — default suggestion only; Custom opens full token search. */
-const MARCO_ADDR = MARCO_BSC_ADDRESS
 
 const CONTRACTS_NOT_DEPLOYED = 'Liquidity Building contracts not deployed on BNB Smart Chain'
 
@@ -89,12 +87,12 @@ const Hero = styled.div<{ $collapsed: boolean }>`
   flex: 0 0 ${({ $collapsed }) => ($collapsed ? liqOne.lbHeaderCollapsed : liqOne.lbHeaderExpanded)};
   height: ${({ $collapsed }) => ($collapsed ? liqOne.lbHeaderCollapsed : liqOne.lbHeaderExpanded)};
   max-height: ${({ $collapsed }) => ($collapsed ? liqOne.lbHeaderCollapsed : liqOne.lbHeaderExpanded)};
-  padding: ${({ $collapsed }) => ($collapsed ? '10px 20px' : '18px 20px 14px')};
+  padding: ${({ $collapsed }) => ($collapsed ? '8px 20px' : '12px 20px 10px')};
   box-sizing: border-box;
   display: flex;
-  align-items: ${({ $collapsed }) => ($collapsed ? 'center' : 'stretch')};
+  align-items: ${({ $collapsed }) => ($collapsed ? 'center' : 'flex-start')};
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   overflow: hidden;
 
   @media (max-width: 1375px) {
@@ -144,51 +142,23 @@ const NewBadge = styled.span`
 
 const Desc = styled.p<{ $collapsed: boolean }>`
   display: ${({ $collapsed }) => ($collapsed ? 'none' : 'block')};
-  margin: 6px 0 0;
-  max-width: 360px;
+  margin: 4px 0 0;
+  max-width: 420px;
   font-size: 13px;
   line-height: 18px;
   color: ${liqOne.bodySoft};
 `
 
-const Benefits = styled.ul<{ $collapsed: boolean }>`
-  display: ${({ $collapsed }) => ($collapsed ? 'none' : 'flex')};
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-  flex-direction: column;
-  gap: 4px;
-`
-
-const Benefit = styled.li`
-  font-size: 12px;
-  line-height: 16px;
-  color: ${liqOne.secondary};
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  &::before {
-    content: '';
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: ${liqOne.gold};
-    flex-shrink: 0;
-  }
-`
-
 const Artwork = styled.div<{ $collapsed: boolean }>`
   display: ${({ $collapsed }) => ($collapsed ? 'none' : 'block')};
   position: relative;
-  width: 148px;
-  height: 120px;
+  width: 112px;
+  height: 88px;
   flex-shrink: 0;
   align-self: center;
 
   @media (max-width: 767px) {
-    width: 110px;
-    height: 96px;
+    display: none;
   }
 `
 
@@ -306,14 +276,75 @@ const Primary = styled.button`
 const Field = styled.label`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 12px;
   font-size: 11px;
   font-weight: 650;
   color: ${liqOne.muted};
+  min-width: 0;
 
   @media (max-width: 767px) {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+  }
+`
+
+const FieldHint = styled.span`
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 15px;
+  color: ${liqOne.secondary};
+`
+
+const DocsRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 8px 0 4px;
+  font-size: 11px;
+  font-weight: 650;
+
+  a {
+    color: ${liqOne.gold};
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+`
+
+const StatusRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid ${liqOne.borderDefault};
+  background: rgba(0, 0, 0, 0.22);
+`
+
+const StatusLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  line-height: 16px;
+  min-width: 0;
+
+  span:first-child {
+    color: ${liqOne.muted};
+    flex: 0 0 auto;
+  }
+
+  span:last-child {
+    color: ${liqOne.text};
+    font-weight: 700;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 `
 
@@ -341,11 +372,14 @@ const TokenRow = styled.div`
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 2px;
 `
 
 const TokenChip = styled.button<{ $on?: boolean }>`
   appearance: none;
   height: 36px;
+  max-width: 100%;
   padding: 0 12px;
   border-radius: 10px;
   border: 1px solid ${({ $on }) => ($on ? liqOne.gold : liqOne.borderStrong)};
@@ -355,26 +389,40 @@ const TokenChip = styled.button<{ $on?: boolean }>`
   font-weight: 700;
   font-family: ${liqOne.font};
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  position: relative;
+  z-index: ${({ $on }) => ($on ? 1 : 0)};
 
   @media (max-width: 767px) {
     height: 40px;
     min-height: 40px;
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
   }
 `
 
 const MetaGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   margin-top: 4px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
 `
 
 const MetaCell = styled.div`
   border: 1px solid ${liqOne.borderDefault};
   border-radius: 10px;
   background: ${liqOne.elevated};
-  padding: 8px 10px;
+  padding: 12px 12px 10px;
   min-width: 0;
+  overflow: hidden;
 `
 
 const MetaLabel = styled.div`
@@ -383,6 +431,8 @@ const MetaLabel = styled.div`
   font-weight: 650;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  margin-bottom: 2px;
+  line-height: 14px;
 `
 
 const MetaValue = styled.div`
@@ -611,6 +661,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const [stepError, setStepError] = useState<string | null>(null)
   const [activating, setActivating] = useState(false)
   const [builderStep, setBuilderStep] = useState<BuilderStep>(1)
+  const [addressInput, setAddressInput] = useState('')
 
   React.useEffect(() => {
     if (!forceExpanded) return
@@ -622,17 +673,31 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceExpanded])
 
-  const marco = useCurrency(MARCO_ADDR)
   const selectedProjectToken = useCurrency(card.draft.tokenAddress ?? undefined)
+  const pastedAddress = isAddress(addressInput) || undefined
+  const pastedCurrency = useCurrency(pastedAddress)
+  const selectedErc20 = (
+    selectedProjectToken?.isToken ? selectedProjectToken : selectedProjectToken?.wrapped
+  ) as ERC20Token | undefined
+  const isListed = useIsTokenActive(selectedErc20)
+  const isUserAdded = useIsUserAddedToken(selectedProjectToken)
   const setTokenRef = useRef(card.setToken)
   useEffect(() => {
     setTokenRef.current = card.setToken
   }, [card.setToken])
 
+  useEffect(() => {
+    if (!pastedCurrency) return
+    setTokenRef.current(pastedCurrency)
+    setSetupStarted(true)
+    setStepError(null)
+  }, [pastedCurrency])
+
   const [onPresentCustomToken] = useModal(
     <CurrencySearchModal
       onCurrencySelect={(c: Currency) => {
         setTokenRef.current(c)
+        setAddressInput('')
         setSetupStarted(true)
         setStepError(null)
       }}
@@ -651,16 +716,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
   const compactInactive = !forceExpanded && !inFlow && !isActive
 
-  const pickToken = useCallback(
-    (currency: Currency | null | undefined) => {
-      if (!currency) return
-      card.setToken(currency)
-      setSetupStarted(true)
-      setStepError(null)
-    },
-    [card],
-  )
-
   const onStart = () => {
     card.startSetup()
     setSetupStarted(true)
@@ -671,6 +726,20 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const budgetReady = setupBudgetPositive(card.draft)
   const pair = card.pairDetection
   const pairReady = Boolean(tokenReady && pair.available && !pair.loading)
+  const listingStatus = !tokenReady
+    ? LB_UX.listingNone
+    : isListed
+      ? LB_UX.listingListed
+      : isUserAdded
+        ? LB_UX.listingUserAdded
+        : LB_UX.listingExternal
+  const tokenMarketStatus = !tokenReady
+    ? LB_UX.listingNone
+    : pair.loading
+      ? LB_UX.marketPoolLoading
+      : pair.available
+        ? LB_UX.marketPoolFound
+        : LB_UX.marketPoolMissing
   const programBlockReason = resolveProgramUnavailableReason({
     programSource: card.programSource,
     programReason: card.programReason,
@@ -929,31 +998,22 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     if (!inFlow) {
       return (
         <>
-          <EmptyHint data-testid="liq-lb-empty-hint">
-            {LB_UX.entryLead}
+          <EmptyHint data-testid="liq-lb-empty-hint">{LB_UX.entryLead}</EmptyHint>
+          <EmptyHint style={{ marginTop: 10, fontSize: 15, fontWeight: 700 }} data-testid="liq-lb-no-program-hint">
+            {LB_UX.noActiveProgramTitle}
           </EmptyHint>
-          <EmptyHint style={{ marginTop: 8, opacity: 0.85 }} data-testid="liq-lb-no-program-hint">
-            {LB_UX.noActiveProgramTitle}. {LB_UX.noActiveProgramBody}
-          </EmptyHint>
-          <Accordion>
-            <summary>Learn more</summary>
-            <AccordionBody>
-              <strong>How it works</strong>
-              <br />
-              Token Reserve → market activity → growing pool liquidity. Unused reserve stays yours. You keep LP
-              ownership.
-              <br />
-              <br />
-              <strong>Built-in protections</strong>
-              <br />
-              Controlled growth · Reserve limits · Ownership retained · Pause or stop anytime
-            </AccordionBody>
-          </Accordion>
+          <EmptyHint style={{ marginTop: 6, opacity: 0.85 }}>{LB_UX.noActiveProgramBody}</EmptyHint>
+          <DocsRow data-testid="liq-lb-docs-links-entry">
+            <Link href={LB_UX.docsTokenReserve}>Token Reserve</Link>
+            <Link href={LB_UX.docsStrategies}>Strategies</Link>
+            <Link href={LB_UX.docsExecution}>Execution</Link>
+            <Link href={LB_UX.docsFees}>Fees</Link>
+          </DocsRow>
         </>
       )
     }
 
-    const selectedTokenLabel = card.draft.tokenSymbol || 'Choose token'
+    const selectedTokenLabel = card.draft.tokenSymbol || LB_UX.tokenSearchCta
     const marketPair =
       card.draft.tokenSymbol && pair.quoteSymbol
         ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}`
@@ -970,18 +1030,18 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           ))}
         </StepTrack>
 
-        <Accordion data-testid="liq-lb-how-it-works">
-          <summary>ⓘ How Liquidity Builder works</summary>
-          <AccordionBody>
-            {LB_UX.entrySupport} Choose Token to Grow, Quote Asset, Token Reserve, goal, and strategy — then review and
-            activate. You confirm every step in your wallet.
-          </AccordionBody>
-        </Accordion>
+        <DocsRow data-testid="liq-lb-docs-links">
+          <Link href={LB_UX.docsTokenReserve}>Token Reserve</Link>
+          <Link href={LB_UX.docsStrategies}>Strategies</Link>
+          <Link href={LB_UX.docsExecution}>Execution</Link>
+          <Link href={LB_UX.docsFees}>Fees</Link>
+        </DocsRow>
 
         <div data-testid="liq-lb-step-configure" data-lb-exploded-form="1">
           <MetaGrid data-testid="liq-lb-exploded-grid">
-            <MetaCell>
+            <MetaCell style={{ gridColumn: '1 / -1' }}>
               <MetaLabel>{LB_UX.tokenToGrowLabel}</MetaLabel>
+              <FieldHint>{LB_UX.tokenToGrowSupport}</FieldHint>
               <TokenRow>
                 <TokenChip
                   type="button"
@@ -992,24 +1052,47 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                 >
                   {selectedTokenLabel}
                 </TokenChip>
-                <TokenChip
-                  type="button"
-                  $on={card.draft.tokenSymbol === 'MARCO'}
-                  onClick={() => pickToken(marco)}
-                  data-testid="lb-token-quick-marco"
-                >
-                  MARCO
-                </TokenChip>
               </TokenRow>
-              <MetaValue style={{ marginTop: 4 }} data-testid="lb-token-selected-label">
-                {card.draft.tokenSymbol
-                  ? `Token to Grow: ${card.draft.tokenSymbol}`
-                  : LB_UX.tokenToGrowSupport}
-              </MetaValue>
+              <Input
+                type="text"
+                spellCheck={false}
+                autoComplete="off"
+                placeholder={LB_UX.tokenPastePlaceholder}
+                value={addressInput}
+                onChange={(e) => {
+                  setAddressInput(e.target.value.trim())
+                  setStepError(null)
+                }}
+                data-testid="lb-token-address-input"
+                style={{ marginTop: 8 }}
+              />
+              <StatusRow data-testid="lb-token-detection-status">
+                <StatusLine>
+                  <span>{LB_UX.tokenDetectedLabel}</span>
+                  <span data-testid="lb-token-selected-label">
+                    {card.draft.tokenSymbol
+                      ? `${card.draft.tokenSymbol}${
+                          card.draft.tokenAddress
+                            ? ` · ${card.draft.tokenAddress.slice(0, 6)}…${card.draft.tokenAddress.slice(-4)}`
+                            : ''
+                        }`
+                      : '—'}
+                  </span>
+                </StatusLine>
+                <StatusLine>
+                  <span>{LB_UX.listingStatusLabel}</span>
+                  <span data-testid="lb-token-listing-status">{listingStatus}</span>
+                </StatusLine>
+                <StatusLine>
+                  <span>{LB_UX.marketStatusLabel}</span>
+                  <span data-testid="lb-token-market-status">{tokenMarketStatus}</span>
+                </StatusLine>
+              </StatusRow>
             </MetaCell>
 
             <MetaCell>
               <MetaLabel>{LB_UX.quoteAssetLabel}</MetaLabel>
+              <FieldHint>{LB_UX.quoteAssetSupport}</FieldHint>
               <TokenRow>
                 {QUOTE_ASSET_OPTIONS.map((q) => (
                   <TokenChip
@@ -1026,14 +1109,16 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                   </TokenChip>
                 ))}
               </TokenRow>
-              <MetaValue style={{ marginTop: 4 }} data-testid="lb-market-pair">
-                Market: {marketPair}
-                {!card.quoteEnabled && card.draft.quoteAssetKey !== 'WBNB' ? ` · ${LB_UX.quoteNotEnabled}` : ''}
-              </MetaValue>
+              {!card.quoteEnabled && card.draft.quoteAssetKey !== 'WBNB' ? (
+                <MetaValue style={{ marginTop: 6 }} data-testid="lb-quote-disabled-hint">
+                  {LB_UX.quoteNotEnabled}
+                </MetaValue>
+              ) : null}
             </MetaCell>
 
             <MetaCell>
               <MetaLabel>{LB_UX.reserveLabel}</MetaLabel>
+              <FieldHint>{LB_UX.reserveSupport}</FieldHint>
               <Input
                 type="text"
                 inputMode="decimal"
@@ -1045,10 +1130,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                 }}
                 data-testid="lb-budget-input"
               />
-              <MetaValue style={{ marginTop: 4 }}>{LB_UX.reserveSupport}</MetaValue>
             </MetaCell>
 
-            <MetaCell>
+            <MetaCell style={{ gridColumn: '1 / -1' }}>
               <MetaLabel>{LB_UX.liquidityGoalLabel}</MetaLabel>
               <TokenRow>
                 {LIQUIDITY_GOAL_OPTIONS.map((g) => (
@@ -1058,11 +1142,16 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                     $on={card.draft.liquidityGoal === g.key}
                     onClick={() => card.setLiquidityGoal(g.key)}
                     data-testid={`lb-goal-${g.key.toLowerCase()}`}
+                    title={g.tooltip}
+                    aria-label={`${g.label}. ${g.tooltip}`}
                   >
                     {g.label}
                   </TokenChip>
                 ))}
               </TokenRow>
+              <MetaValue style={{ marginTop: 6 }} data-testid="lb-goal-hint">
+                {LIQUIDITY_GOAL_OPTIONS.find((g) => g.key === card.draft.liquidityGoal)?.tooltip}
+              </MetaValue>
             </MetaCell>
 
             <MetaCell style={{ gridColumn: '1 / -1' }}>
@@ -1075,26 +1164,16 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                     $on={card.draft.strategyPreset === s.key}
                     onClick={() => card.setStrategyPreset(s.key)}
                     data-testid={`lb-strategy-${s.key.toLowerCase()}`}
-                    title={s.body}
+                    title={s.tooltip}
+                    aria-label={`${s.title}. ${s.tooltip}`}
                   >
                     {s.title}
                     {s.recommended ? ' · Rec' : ''}
                   </TokenChip>
                 ))}
               </TokenRow>
-              <MetaValue style={{ marginTop: 4 }}>
-                {STRATEGY_PRESET_OPTIONS.find((s) => s.key === card.draft.strategyPreset)?.body}
-              </MetaValue>
-            </MetaCell>
-
-            <MetaCell>
-              <MetaLabel>Market status</MetaLabel>
-              <MetaValue data-testid="liq-lb-eligibility">{eligibilityLabel}</MetaValue>
-            </MetaCell>
-            <MetaCell>
-              <MetaLabel>Ready to activate</MetaLabel>
-              <MetaValue>
-                {executionReady ? 'Yes — review and activate' : programBlockReason ? 'Not yet' : 'Finish setup'}
+              <MetaValue style={{ marginTop: 6 }} data-testid="lb-strategy-hint">
+                {STRATEGY_PRESET_OPTIONS.find((s) => s.key === card.draft.strategyPreset)?.tooltip}
               </MetaValue>
             </MetaCell>
           </MetaGrid>
@@ -1102,11 +1181,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           <Accordion
             open={advancedOpen}
             onToggle={(e) => setAdvancedOpen((e.target as HTMLDetailsElement).open)}
+            data-testid="liq-lb-advanced"
           >
-            <summary>Technical details (optional)</summary>
+            <summary>{LB_UX.technicalTitle}</summary>
             <AccordionBody>
               <Field>
-                Check frequency
+                {LB_UX.decisionFrequencyLabel}
                 <EpochRow>
                   {EPOCH_OPTIONS.map((o) => (
                     <TokenChip
@@ -1121,25 +1201,39 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                   ))}
                 </EpochRow>
               </Field>
-              <div style={{ marginTop: 10, fontSize: 12, opacity: 0.75 }}>
-                Pair {pair.pairAddress || '—'} · Pool {pairReady ? 'found' : 'not found'} · Strategy mode{' '}
+              <div style={{ marginTop: 10 }} data-testid="lb-market-pair">
+                Detected pair: {marketPair}
+              </div>
+              <div style={{ marginTop: 6 }} data-testid="liq-lb-eligibility">
+                Market status: {eligibilityLabel}
+              </div>
+              <div style={{ marginTop: 6 }}>
+                Deploy readiness:{' '}
+                {executionReady ? 'Ready' : programBlockReason ? 'Not ready' : 'Finish setup'}
+              </div>
+              <div style={{ marginTop: 6 }}>
+                Pool: {pairReady ? 'found' : 'not found'} · Pair address {pair.pairAddress || '—'} · Strategy mode{' '}
                 {card.draft.strategy}
               </div>
+              <div style={{ marginTop: 6 }}>
+                Execution readiness:{' '}
+                {executionReady ? 'Yes — review and activate' : programBlockReason || 'Finish setup'}
+              </div>
+              <LbDeployReadinessPanel
+                pairLabel={
+                  pairReady && card.draft.tokenSymbol ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}` : null
+                }
+                pairAddress={pair.pairAddress}
+                pairReady={pairReady}
+                executionReady={executionReady}
+                executionReason={programBlockReason || (!pairReady ? LB_UX.pairNotDetected : null)}
+              />
             </AccordionBody>
           </Accordion>
         </div>
 
         <div data-testid="liq-lb-step-review" data-lb-inline-review="1">
           <SummaryStrip data-testid="liq-lb-summary">{summaryLine}</SummaryStrip>
-          <LbDeployReadinessPanel
-            pairLabel={
-              pairReady && card.draft.tokenSymbol ? `${card.draft.tokenSymbol}/${pair.quoteSymbol}` : null
-            }
-            pairAddress={pair.pairAddress}
-            pairReady={pairReady}
-            executionReady={executionReady}
-            executionReason={programBlockReason || (!pairReady ? LB_UX.pairNotDetected : null)}
-          />
         </div>
 
         <div data-testid="liq-lb-step-activate" hidden aria-hidden>
@@ -1199,14 +1293,9 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <NewBadge data-testid="liq-lb-new-badge">NEW</NewBadge>
             </TitleRow>
           ) : null}
-          <Desc $collapsed={heroCollapsed || compactInactive}>
+          <Desc $collapsed={heroCollapsed || compactInactive} data-testid="liq-lb-header-desc">
             {LB_UX.entryLead}
           </Desc>
-          <Benefits $collapsed={heroCollapsed || compactInactive}>
-            <Benefit>Deposit a Token Reserve</Benefit>
-            <Benefit>AI grows market liquidity</Benefit>
-            <Benefit>You keep LP ownership</Benefit>
-          </Benefits>
         </HeroCopy>
         <Artwork $collapsed={heroCollapsed || compactInactive} aria-hidden>
           <Orbit />

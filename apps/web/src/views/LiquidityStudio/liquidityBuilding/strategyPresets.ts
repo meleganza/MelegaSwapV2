@@ -18,35 +18,55 @@ export const STRATEGY_PRESET_OPTIONS: {
   key: StrategyPreset
   title: string
   body: string
+  tooltip: string
   recommended?: boolean
 }[] = [
   {
     key: 'CONSERVATIVE',
     title: 'Conservative',
     body: 'Slower, safer growth. Builds liquidity carefully when markets are calm.',
+    tooltip: 'Conservative: slower, safer growth. Builds liquidity carefully when markets are calm.',
   },
   {
     key: 'BALANCED',
     title: 'Balanced',
     body: 'Steady growth with moderate intensity across market conditions.',
+    tooltip: 'Balanced: steady growth with moderate intensity across market conditions.',
   },
   {
     key: 'AI_OPTIMIZED',
     title: 'AI Optimized',
     body: 'Melega decides when and how much to build from real market demand.',
+    tooltip: 'AI Optimized: Melega decides when and how much to build from real market demand.',
     recommended: true,
   },
   {
     key: 'AGGRESSIVE',
     title: 'Aggressive',
     body: 'Faster liquidity growth when eligible demand is strong.',
+    tooltip: 'Aggressive: faster liquidity growth when eligible demand is strong.',
   },
 ]
 
 export const LIQUIDITY_GOAL_OPTIONS = [
-  { key: 'STEADY', label: 'Steady growth', hint: 'Build liquidity gradually over time' },
-  { key: 'DEPTH', label: 'Deeper market', hint: 'Focus on thicker, more resilient pools' },
-  { key: 'LAUNCH', label: 'Launch support', hint: 'Support early trading with careful growth' },
+  {
+    key: 'STEADY',
+    label: 'Steady Growth',
+    hint: 'Build liquidity gradually over time',
+    tooltip: 'Steady Growth: build liquidity gradually over time with controlled steps.',
+  },
+  {
+    key: 'DEPTH',
+    label: 'Deeper Market',
+    hint: 'Focus on thicker, more resilient pools',
+    tooltip: 'Deeper Market: focus on thicker, more resilient pools for healthier trading.',
+  },
+  {
+    key: 'LAUNCH',
+    label: 'Launch Support',
+    hint: 'Support early trading with careful growth',
+    tooltip: 'Launch Support: support early trading with careful, founder-friendly growth.',
+  },
 ] as const
 
 export type LiquidityGoalKey = (typeof LIQUIDITY_GOAL_OPTIONS)[number]['key']

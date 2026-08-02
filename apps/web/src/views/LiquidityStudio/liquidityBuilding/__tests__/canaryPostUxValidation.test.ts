@@ -24,7 +24,7 @@ function load(rel: string) {
 describe('Canary post-UX validation', () => {
   it('1. primary UX flow labels are present', () => {
     expect(LB_UX.tokenToGrowLabel).toBe('Token to Grow')
-    expect(LB_UX.quoteAssetLabel).toBe('Quote Asset')
+    expect(LB_UX.quoteAssetLabel).toBe('Create Market Against')
     expect(LB_UX.reserveLabel).toBe('Token Reserve')
     expect(LB_UX.liquidityGoalLabel).toBe('Liquidity Goal')
     const card = load('onePage/LiquidityBuildingCard.tsx')
@@ -35,6 +35,7 @@ describe('Canary post-UX validation', () => {
     expect(card).toContain('Liquidity Strategy')
     expect(card).toContain('Activate Liquidity Program')
     expect(card).toContain('liq-lb-step-review')
+    expect(card).toContain('lb-token-address-input')
     expect(card).not.toContain('Liquidity Budget')
   })
 

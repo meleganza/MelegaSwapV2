@@ -14,9 +14,9 @@ function load(rel: string) {
 describe('Liquidity Builder founder UX redesign', () => {
   it('uses founder terminology in primary copy', () => {
     expect(LB_UX.reserveLabel).toBe('Token Reserve')
-    expect(LB_UX.quoteAssetLabel).toBe('Quote Asset')
+    expect(LB_UX.quoteAssetLabel).toBe('Create Market Against')
     expect(LB_UX.tokenToGrowLabel).toBe('Token to Grow')
-    expect(LB_UX.noActiveProgramTitle).toBe('No liquidity program exists for this token yet')
+    expect(LB_UX.noActiveProgramTitle).toBe('Create your first AI Liquidity Program')
     expect(LB_UX.noActiveProgramCta).toBe('Create Liquidity Program')
     expect(LB_UX.entrySupport).toContain('deposit my tokens')
   })
@@ -52,7 +52,7 @@ describe('Liquidity Builder founder UX redesign', () => {
     expect(setupDraftReadyForReview(draft)).toBe(true)
   })
 
-  it('card surfaces selected token on chip and quote picker', () => {
+  it('card surfaces token search/paste and quote picker', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('LB_UX.tokenToGrowLabel')
     expect(card).toContain('LB_UX.quoteAssetLabel')
@@ -62,6 +62,7 @@ describe('Liquidity Builder founder UX redesign', () => {
     expect(card).toContain('Activate Liquidity Program')
     expect(card).toContain('data-selected-token')
     expect(card).toContain('lb-token-selected-label')
+    expect(card).toContain('lb-token-address-input')
     expect(card).toContain('setQuoteAssetKey')
     expect(card).toContain('setStrategyPreset')
     expect(card).not.toContain('Liquidity Budget')

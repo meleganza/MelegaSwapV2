@@ -53,8 +53,32 @@ const SECTIONS: DocSection[] = [
   {
     id: 'ai-liquidity-builder',
     title: 'AI Liquidity Builder',
-    href: '/liquidity-studio',
-    body: 'Liquidity Building (AI Liquidity Builder) guides pair/setup readiness and activation checks. It monitors contracts and runtime gates; it does not invent APR, TVL, or guaranteed launch outcomes.',
+    href: '/liquidity',
+    body: 'Create an automated liquidity growth program for your token. Choose Token to Grow, Create Market Against, Token Reserve, goal, and strategy — then activate. Contextual guides: Token Reserve, Strategies, Execution, Fees under /docs/liquidity-builder/.',
+  },
+  {
+    id: 'lb-token-reserve',
+    title: 'Token Reserve',
+    href: '/docs/liquidity-builder/token-reserve',
+    body: 'Token Reserve is the project-token amount deposited into Liquidity Builder. It is not a WBNB budget. Quote asset (Create Market Against) stays separate.',
+  },
+  {
+    id: 'lb-strategies',
+    title: 'Liquidity Strategies',
+    href: '/docs/liquidity-builder/strategies',
+    body: 'Conservative, Balanced, AI Optimized, and Aggressive presets map to existing on-chain strategy modes without changing fee economics.',
+  },
+  {
+    id: 'lb-execution',
+    title: 'Program Execution',
+    href: '/docs/liquidity-builder/execution',
+    body: 'Activation creates a program, deposits Token Reserve, and enables market-driven growth steps under your chosen strategy and check frequency.',
+  },
+  {
+    id: 'lb-fees',
+    title: 'Liquidity Builder Fees',
+    href: '/docs/liquidity-builder/fees',
+    body: 'Success fees follow on-chain Factory parameters (product docs only — UI does not change economics).',
   },
   {
     id: 'farms',
