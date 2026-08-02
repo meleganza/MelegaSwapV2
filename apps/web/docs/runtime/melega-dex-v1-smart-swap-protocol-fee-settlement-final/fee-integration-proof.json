@@ -1,0 +1,53 @@
+{
+  "schema": "melega.smart-swap.fee-integration-proof.v1",
+  "mission": "MELEGA_DEX_V1_SMART_SWAP_PROTOCOL_FEE_SETTLEMENT_LINEAGE_INTEGRATION",
+  "baseline": {
+    "branch": "melega-dex-v1-public-farm-factory-validation-and-ready",
+    "commit": "e12aac12caae54621bf8be32fe690ce2f208a35c"
+  },
+  "sourceImplementation": {
+    "branch": "melega-dex-v1-smart-swap-protocol-fee-settlement-audit-and-implementation",
+    "commit": "0ac7aa0ab6b15e188779a10202daa251883aa67e"
+  },
+  "integratedOn": {
+    "branch": "melega-dex-v1-smart-swap-protocol-fee-settlement-final",
+    "commit": "d623694539c5102251ce8cc9e301be692710edf8"
+  },
+  "method": "cherry-pick 0ac7aa0a onto e12aac12; conflict resolved in routeEngine freeze test only",
+  "formula": "feeWei = floor(gasEstimateUnits * gasPriceWei * 2500 / 10000)",
+  "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "alternativeCollector": false,
+  "module": "apps/web/src/lib/smart-swap-gas-protocol-fee/",
+  "executionHook": "apps/web/src/views/Swap/SmartSwap/hooks/useSwapCallback.ts",
+  "filesChangedFromBaseline": [
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/MISSION_REPORT.md",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/build.json",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/fee-settlement-proof.json",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/gas-fee-calculation-proof.json",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/smart-swap-fee-current-path.json",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/smart-swap-fee-status.json",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/tests.json",
+    "apps/web/docs/runtime/melega-dex-v1-smart-swap-fee-settlement/treasury-recipient-proof.json",
+    "apps/web/src/lib/smart-swap-gas-protocol-fee/__tests__/gasProtocolFee.test.ts",
+    "apps/web/src/lib/smart-swap-gas-protocol-fee/calculateGasProtocolFee.ts",
+    "apps/web/src/lib/smart-swap-gas-protocol-fee/index.ts",
+    "apps/web/src/lib/smart-swap-gas-protocol-fee/settleGasProtocolFee.ts",
+    "apps/web/src/lib/smart-swap-gas-protocol-fee/types.ts",
+    "apps/web/src/lib/smart-swap-gas-protocol-fee/useSmartSwapGasProtocolFeePreview.ts",
+    "apps/web/src/lib/smart-swap-route-engine/__tests__/smartSwapModule002.routeEngine.test.ts",
+    "apps/web/src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/SmartSwapExecutionPreviewModule.tsx",
+    "apps/web/src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/SmartSwapFeeTransparencyPanel.tsx",
+    "apps/web/src/views/SmartSwapStudio/modules/SmartSwapFeeTransparency/useSmartSwapFeeTransparency.ts",
+    "apps/web/src/views/Swap/SmartSwap/hooks/useSwapCallback.ts",
+    "apps/web/src/views/__tests__/melegaDexV1.smartSwapGasProtocolFee.test.ts"
+  ],
+  "untouched": {
+    "liquidityBuilder": true,
+    "createTokenFactory": true,
+    "publicFarmFactory": true,
+    "kerlDecision": true,
+    "treasuryRuntime": true,
+    "contracts": true,
+    "routerArchitecture": true
+  }
+}

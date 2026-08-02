@@ -1,0 +1,5 @@
+{
+  "schema": "melega.smart-swap.fee-settlement-final.build.v1",
+  "command": "yarn next build",
+  "passed": true
+}

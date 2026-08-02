@@ -1,0 +1,15 @@
+{
+  "schema": "melega.smart-swap.fee-settlement-final.tests.v1",
+  "passed": true,
+  "testFiles": 6,
+  "tests": 40,
+  "suites": [
+    "Smart Swap fee calculation",
+    "Treasury recipient",
+    "useSwapCallback wiring / failure order",
+    "route engine regression (freeze)",
+    "no Treasury Runtime",
+    "fee transparency",
+    "fee schedule"
+  ]
+}
