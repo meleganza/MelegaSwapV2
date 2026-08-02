@@ -1,0 +1,11 @@
+{
+  "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_CANARY_POST_UX_VALIDATION",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0,
+  "notes": [
+    "ESLint config next/babel warning (pre-existing)",
+    "Webpack import warnings for MELEGA_SMART_ROUTER_ADAPTER_VERSION and calculateGasMargin (pre-existing, out of mission scope)"
+  ]
+}
