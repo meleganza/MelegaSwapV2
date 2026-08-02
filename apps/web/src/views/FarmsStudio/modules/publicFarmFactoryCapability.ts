@@ -36,18 +36,19 @@ export const PUBLIC_FARM_FACTORY_CAPABILITY = {
     certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json',
   },
   deployment: {
-    status: 'READY_FOR_FOUNDER_SIGNATURE',
+    status: 'AWAITING_VALIDATION',
     address: null,
     transaction: null,
     completedPackage: 'contracts/public-farm-factory/',
     blockers: [
-      'PublicFarmFactoryV1 not yet deployed on BNB Chain',
-      'factoryAddress must not be fabricated',
-      'Awaiting MELEGA DEPLOYER browser-wallet signature (no KMS / no server signer)',
+      'PublicFarmFactoryV1 SSOT factoryAddress still null (not fabricated)',
+      'Awaiting Founder signature + receipt validation before bind',
+      'No KMS / no server signer / no automatic broadcast',
     ],
     resumeSequence: [
       'Open /runtime/deployment/ as MELEGA DEPLOYER',
       'Review constructor · estimate gas · Deploy Public Farm Factory',
+      'Capture transaction hash · receipt · contract address',
       'Validate receipt + masked runtime hash, then bind factoryAddress',
       'Enable walletCanExecute after deployment verification',
       'Index FarmCreated events into canonical farm discovery pipeline',

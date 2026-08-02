@@ -293,6 +293,8 @@ export const FounderDeploymentShell: React.FC = () => {
   const [quarantined, setQuarantined] = useState(false)
   const [lastWalletRequest, setLastWalletRequest] = useState<Record<string, string> | null>(null)
   const [providerStatus, setProviderStatus] = useState<ProviderUiStatus>('idle')
+  const [pffCapturedAddress, setPffCapturedAddress] = useState<string | null>(null)
+  const [pffReceiptStatus, setPffReceiptStatus] = useState<string | null>(null)
 
   const activeSubsystem = nextFounderDeployTarget() ?? 'liquidity_builder'
   const isCreateTokenStage = activeSubsystem === 'create_token'
@@ -571,8 +573,10 @@ export const FounderDeploymentShell: React.FC = () => {
           return
         }
         if (isPublicFarmStage) {
+          setPffReceiptStatus('mock')
+          setPffCapturedAddress(null)
           setStatusNote(
-            `${PFF_FACTORY_ALIAS} mock receipt accepted · factoryAddress remains null until live validation + bind.`,
+            `${PFF_FACTORY_ALIAS} mock path · AWAITING_VALIDATION · SSOT factoryAddress remains null (not fabricated).`,
           )
           return
         }
@@ -658,6 +662,8 @@ export const FounderDeploymentShell: React.FC = () => {
         return
       }
       if (isPublicFarmStage) {
+        setPffCapturedAddress(codeAddr)
+        setPffReceiptStatus(String(receipt.status ?? 'unknown'))
         const txMeta = await walletGetTransaction(eth, hash)
         const nonceRaw = txMeta?.nonce
         const nonce =
@@ -708,12 +714,15 @@ export const FounderDeploymentShell: React.FC = () => {
         setValidating(false)
         if (!validated.ok) {
           setQuarantined(true)
-          setStatusNote(`${PFF_FACTORY_ALIAS} quarantined — ${validated.reason}. No bind.`)
+          setStatusNote(
+            `${PFF_FACTORY_ALIAS} AWAITING_VALIDATION · quarantined — ${validated.reason}. Captured tx ${hash} · address ${codeAddr}. SSOT factoryAddress not bound.`,
+          )
           return
         }
+        // Session evidence only — SSOT factoryAddress stays null until validation mission commits factual bind.
         const bound = bindValidatedPublicFarmFactory(validated.evidence)
         setStatusNote(
-          `${PFF_FACTORY_ALIAS} DEPLOYED · VALIDATED · SESSION-BOUND at ${bound.factoryAddress}. Commit SSOT factoryAddress to unlock user Create Farm. User creation remains disabled until SSOT bind.`,
+          `${PFF_FACTORY_ALIAS} AWAITING_VALIDATION · receipt captured · session evidence at ${bound.factoryAddress}. SSOT factoryAddress remains null until validation bind. Tx ${hash}.`,
         )
         return
       }
@@ -1199,6 +1208,22 @@ export const FounderDeploymentShell: React.FC = () => {
             <span>Transaction hash</span>
             <strong data-testid="founder-tx-hash">{txHash ?? '—'}</strong>
           </Row>
+          {isPublicFarmStage && (
+            <>
+              <Row>
+                <span>Receipt status</span>
+                <strong data-testid="founder-pff-receipt-status">{pffReceiptStatus ?? '—'}</strong>
+              </Row>
+              <Row>
+                <span>Captured contract address</span>
+                <strong data-testid="founder-pff-captured-address">{pffCapturedAddress ?? '—'}</strong>
+              </Row>
+              <Banner $tone="ok" data-testid="founder-pff-awaiting-validation">
+                AWAITING_VALIDATION · capture tx hash / receipt / contract address after Founder signature · do not
+                fabricate · SSOT factoryAddress stays null until validation bind
+              </Banner>
+            </>
+          )}
           {statusNote && (
             <Banner $tone="warn" data-testid="founder-status-note">
               {statusNote}
@@ -1214,8 +1239,9 @@ export const FounderDeploymentShell: React.FC = () => {
 
       {isPublicFarmStage && pffFactoryStillNull && (
         <Banner $tone="ok" data-testid="founder-public-farm-ready">
-          PublicFarmFactoryV1 READY_FOR_SIGNATURE · certified artifact loaded · factoryAddress remains null until
-          Founder deploy + validate + bind · no automatic broadcast
+          PublicFarmFactoryV1 execution ready · Certified artifact loaded · Artifact hash verified · Constructor
+          review · Gas estimate → READY_FOR_SIGNATURE · CTA Deploy Public Farm Factory · factoryAddress null · no
+          automatic broadcast
         </Banner>
       )}
       {!lbMainnetReady && activeSubsystem !== 'liquidity_builder' && (

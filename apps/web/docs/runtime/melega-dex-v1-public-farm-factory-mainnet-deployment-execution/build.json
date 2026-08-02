@@ -1,0 +1,6 @@
+{
+  "schema": "melega.public-farm-factory.execution-build.v1",
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "passed"
+}

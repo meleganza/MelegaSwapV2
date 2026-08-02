@@ -1,0 +1,8 @@
+{
+  "schema": "melega.public-farm-factory.execution-tests.v1",
+  "command": "yarn vitest run src/lib/deployment-orchestrator src/views/FarmsStudio/__tests__/publicFarmFactory.feesAndHandoffs.test.ts src/views/FarmsStudio/__tests__/publicFarmFactory.eligibility.test.ts",
+  "result": "passed",
+  "testFiles": 19,
+  "tests": 184,
+  "failed": 0
+}

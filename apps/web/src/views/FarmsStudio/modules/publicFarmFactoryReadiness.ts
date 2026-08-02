@@ -1,6 +1,7 @@
 /**
  * Public Farm Factory deployment readiness — honest measured state.
  * factoryAddress remains null until live mainnet validation + bind.
+ * Execution mission: Founder signature path wired → AWAITING_VALIDATION.
  */
 
 import {
@@ -13,6 +14,7 @@ import { loadCertifiedPffArtifacts } from 'lib/deployment-orchestrator/founderPf
 export type PublicFarmFactoryReadinessStatus =
   | 'DEPLOYMENT_BLOCKED'
   | 'READY_FOR_FOUNDER_SIGNATURE'
+  | 'AWAITING_VALIDATION'
   | 'FACTORY_BOUND'
   | 'READY'
   | 'CONFIGURATION_INVALID'
@@ -22,12 +24,12 @@ const artifacts = loadCertifiedPffArtifacts()
 const packageValid = artifacts.status === 'ARTIFACTS_VALID'
 
 export const PUBLIC_FARM_FACTORY_READINESS = {
-  schema: 'melega.public-farm-factory-readiness.v1',
+  schema: 'melega.public-farm-factory-readiness.v2',
   capability: 'public_farm_factory',
   status: (bound
     ? 'FACTORY_BOUND'
     : packageValid
-      ? 'READY_FOR_FOUNDER_SIGNATURE'
+      ? 'AWAITING_VALIDATION'
       : 'DEPLOYMENT_BLOCKED') as PublicFarmFactoryReadinessStatus,
   chainId: PUBLIC_FARM_FACTORY_CHAIN_ID,
   factoryAddress: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress,
@@ -36,6 +38,8 @@ export const PUBLIC_FARM_FACTORY_READINESS = {
   packageValid,
   deploymentAuthorityReady: true,
   executionEnabled: false,
+  executionPathReady: packageValid && !bound,
+  readyForFounderSignature: packageValid && !bound,
   feeRecipient: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.feeRecipient,
   feePolicy: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.feePolicy,
   eligibilitySigner: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.eligibilitySigner,
@@ -46,30 +50,33 @@ export const PUBLIC_FARM_FACTORY_READINESS = {
   blockerCode: bound
     ? null
     : packageValid
-      ? 'PUBLIC_FARM_FACTORY_AWAITING_FOUNDER_SIGNATURE'
+      ? 'PUBLIC_FARM_FACTORY_AWAITING_VALIDATION'
       : 'PUBLIC_FARM_FACTORY_PACKAGE_INVALID',
   blockerSummary: bound
     ? 'Public Farm Factory bound — user create farm unlock pending certification flip.'
     : packageValid
-      ? 'Public Farm Factory package is certified and ready for Founder-signed mainnet deployment via MELEGA DEPLOYER on /runtime/deployment/. factoryAddress remains null. User farm creation stays disabled until deploy, validate, and bind.'
+      ? 'Public Farm Factory execution path is ready on /runtime/deployment/. Founder signs CREATE as MELEGA DEPLOYER. After receipt capture, validate runtime + constructor before any SSOT bind. factoryAddress remains null (not fabricated). User createFarm stays disabled.'
       : 'Public Farm Factory certified package invalid — deployment blocked.',
   blockers: bound
     ? ([] as string[])
     : packageValid
       ? [
           'factoryAddress is null in publicFarmFactoryDeployment (not fabricated)',
-          'Awaiting Founder browser-wallet signature by MELEGA DEPLOYER (no KMS / no server signer)',
+          'Awaiting Founder browser-wallet signature + receipt validation (no KMS / no server signer / no auto-broadcast)',
+          'SSOT bind only after validation mission — do not fabricate',
           'User createFarm remains disabled until certified bind',
         ]
       : [...artifacts.invalidReasons],
   nextActions: packageValid
     ? [
         'Open /runtime/deployment/ as MELEGA DEPLOYER on BNB Smart Chain (56)',
-        'Review PublicFarmFactoryV1 constructor: treasury, MARCO, pairFactory, eligibilitySigner',
+        'Confirm: Certified artifact loaded · Artifact hash verified · Constructor review',
         'Estimate gas · Ready for Founder signature · Deploy Public Farm Factory',
-        'Validate receipt + masked runtime hash, then bind factoryAddress',
+        'Capture transaction hash · receipt · contract address',
+        'Run validation mission before SSOT factoryAddress bind',
       ]
     : ['Repair certified artifact package'],
+  captureAfterSignature: ['transactionHash', 'receipt', 'contractAddress'],
   userFlowPrepared: [
     'Create Farm',
     'Select LP Pair',
@@ -84,7 +91,7 @@ export const PUBLIC_FARM_FACTORY_READINESS = {
     template: 'contracts/public-farm-factory/PublicFarmTemplateV1.sol',
     certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json',
   },
-  updatedAt: '2026-08-02T04:30:00.000Z',
+  updatedAt: '2026-08-02T05:30:00.000Z',
 } as const
 
 export type PublicFarmFactoryReadiness = typeof PUBLIC_FARM_FACTORY_READINESS

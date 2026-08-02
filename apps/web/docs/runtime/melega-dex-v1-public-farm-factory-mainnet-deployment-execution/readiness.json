@@ -1,0 +1,19 @@
+{
+  "verdict": "MELEGA_DEX_V1_PUBLIC_FARM_FACTORY_AWAITING_VALIDATION",
+  "publicFarmFactory": {
+    "DEPLOYED": false,
+    "VALIDATED": false,
+    "BOUND": false,
+    "READY": false,
+    "READY_FOR_SIGNATURE": true,
+    "AWAITING_VALIDATION": true
+  },
+  "userCreateFarmEnabled": false,
+  "ui": "/runtime/deployment/",
+  "cta": "Deploy Public Farm Factory",
+  "captureAfterSignature": [
+    "transactionHash",
+    "receipt",
+    "contractAddress"
+  ]
+}

@@ -124,10 +124,10 @@ describe('Public Farm Factory mainnet deployment preparation', () => {
 
   it('Part F — factoryAddress remains null; no fabricated ready', () => {
     expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
-    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
+    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.status).toBe('AWAITING_VALIDATION')
     expect(isPublicFarmFactoryBound()).toBe(false)
     expect(isPffExecutionAwaitingFounderSignature()).toBe(true)
-    expect(PUBLIC_FARM_FACTORY_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
+    expect(PUBLIC_FARM_FACTORY_READINESS.status).toBe('AWAITING_VALIDATION')
     expect(PUBLIC_FARM_FACTORY_READINESS.executionEnabled).toBe(false)
     expect(PUBLIC_FARM_FACTORY_READINESS.noTreasuryRuntime).toBe(true)
     expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute).toBe(false)

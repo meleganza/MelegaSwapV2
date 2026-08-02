@@ -1,0 +1,14 @@
+{
+  "contract": "PublicFarmFactoryV1",
+  "network": "BNB Smart Chain",
+  "chainId": 56,
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
+  "pairFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
+  "eligibilitySigner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "economics": {
+    "marcoPair": "FREE",
+    "otherwiseBnb": "0.25"
+  },
+  "constructorValid": true
+}

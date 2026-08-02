@@ -2,7 +2,7 @@
   "schema": "melega.public-farm-factory.deployed-addresses.v1",
   "chainId": 56,
   "network": "bnb-smart-chain-mainnet",
-  "status": "READY_FOR_FOUNDER_SIGNATURE",
+  "status": "AWAITING_VALIDATION",
   "factoryAddress": null,
   "deploymentTx": null,
   "deploymentBlock": null,
@@ -19,9 +19,16 @@
     "marcoReward": "UNSUPPORTED"
   },
   "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "execution": {
+    "cta": "Deploy Public Farm Factory",
+    "uiPath": "/runtime/deployment/",
+    "noAutomaticBroadcast": true,
+    "noKms": true,
+    "noServerSigner": true
+  },
   "notes": [
-    "No fabricated address. Bind only after Founder-signed mainnet broadcast + runtime validation.",
-    "Certified package: apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json",
-    "Founder UI: /runtime/deployment/ · CTA Deploy Public Farm Factory · MELEGA DEPLOYER only"
+    "No fabricated address. Capture tx hash / receipt / contract address from Founder wallet only.",
+    "Do not bind SSOT before validation mission.",
+    "Certified package: apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json"
   ]
 }

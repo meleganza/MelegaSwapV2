@@ -1,0 +1,14 @@
+{
+  "schema": "melega.public-farm-factory.artifact-validation.v1",
+  "artifact": "pff-v1-certified.json",
+  "contract": "PublicFarmFactoryV1",
+  "status": "VALID",
+  "creationBytecodeSha256": "0x0580aecb43e30edfadc66770ff05202e888ae8fbb9c2aac2d33dfb3bdde26363",
+  "expectedRuntimeBytecodeSha256": "0x02aab35245724fc9c8e756a0643c8dbbb1aef28a20d4e3ff111b5a183a36cee9",
+  "constructorInputs": [
+    "treasury_",
+    "marcoToken_",
+    "pairFactory_",
+    "eligibilitySigner_"
+  ]
+}

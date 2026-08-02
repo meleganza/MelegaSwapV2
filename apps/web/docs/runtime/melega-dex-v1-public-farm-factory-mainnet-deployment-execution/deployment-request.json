@@ -1,0 +1,10 @@
+{
+  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "chainId": 56,
+  "to": null,
+  "value": "0x0",
+  "data": "certified creationBytecode + encodeDeploy(treasury, marcoToken, pairFactory, eligibilitySigner)",
+  "dataSource": "buildPublicFarmDeployStep().step.deploymentData",
+  "broadcast": "wallet eth_sendTransaction only after Founder click",
+  "status": "PREPARED_AWAITING_FOUNDER_SIGNATURE"
+}

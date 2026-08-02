@@ -49,11 +49,20 @@ export const PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT = {
   deploymentBlock: null as number | null,
   verified: false,
   /**
-   * Package + Founder UI ready for MELEGA DEPLOYER signature.
-   * factoryAddress stays null until live mainnet deploy + validation + bind.
+   * Execution path wired for Founder-signed CREATE.
+   * factoryAddress stays null until live receipt validation + SSOT bind.
+   * After Founder signature + receipt capture → AWAITING_VALIDATION (no fabricate / no premature bind).
    */
-  status: 'READY_FOR_FOUNDER_SIGNATURE' as const,
+  status: 'AWAITING_VALIDATION' as const,
   certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json',
+  execution: {
+    founderSignatureRequired: true,
+    noKms: true,
+    noServerSigner: true,
+    noAutomaticBroadcast: true,
+    cta: 'Deploy Public Farm Factory',
+    uiPath: '/runtime/deployment/',
+  },
 } as const
 
 export type PublicFarmFactoryDeployment = typeof PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT
