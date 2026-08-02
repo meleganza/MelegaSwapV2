@@ -31,6 +31,12 @@ import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
 import { useContract } from 'hooks/useContract'
 import { useSingleCallResult } from 'state/multicall/hooks'
 import { LB_FACTORY_READ_ABI } from './abi/fragments'
+import {
+  mapStrategyPreset,
+  type LiquidityGoalKey,
+  type QuoteAssetKey,
+  type StrategyPreset,
+} from './strategyPresets'
 
 export type LiquiditySeriesPoint = { label: string; value: number; at: string }
 
@@ -96,14 +102,18 @@ export type LiquidityBuildingCardState = {
   liquiditySeries: LiquiditySeriesPoint[]
   manageActions: ManageAction[]
   technicalOpen: boolean
-  mutateGate: ReturnType<typeof canSubmitMutatingAction>
+  mutateGate: ReturnType<typeof canSubmitFounderWalletActivate>
   draftReady: boolean
   decisionFrequencyLabel: string
   setToken: (currency: Currency | null) => void
   setBudget: (value: string) => void
   setStrategy: (mode: StrategyMode) => void
+  setStrategyPreset: (preset: StrategyPreset) => void
+  setQuoteAssetKey: (key: QuoteAssetKey) => void
+  setLiquidityGoal: (goal: LiquidityGoalKey) => void
   setRateRange: (min: string, max: string) => void
   setEpoch: (seconds: EpochSeconds) => void
+  quoteEnabled: boolean
   startSetup: () => void
   backToEntry: () => void
   backToSetup: () => void
@@ -191,7 +201,7 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
   const urlReady = useRef(false)
 
   const readiness = useActivationReadiness()
-  const pairDetection = useMelegaPairDetection(selectedCurrency)
+  const pairDetection = useMelegaPairDetection(selectedCurrency, draft.quoteAssetKey)
   const { activateProgram, factoryBound } = useFounderActivateWriter()
   const programRead = useProgramReadModel({
     owner: address ?? null,
@@ -347,8 +357,21 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     },
     setBudget: (value) => setDraft((d) => ({ ...d, tokenBudget: value })),
     setStrategy: (mode) => setDraft((d) => ({ ...d, strategy: mode })),
+    setStrategyPreset: (preset) => {
+      const mapped = mapStrategyPreset(preset)
+      setDraft((d) => ({
+        ...d,
+        strategyPreset: preset,
+        strategy: mapped.strategy,
+        minimumRateBps: mapped.minimumRateBps,
+        maximumRateBps: mapped.maximumRateBps,
+      }))
+    },
+    setQuoteAssetKey: (key) => setDraft((d) => ({ ...d, quoteAssetKey: key })),
+    setLiquidityGoal: (goal) => setDraft((d) => ({ ...d, liquidityGoal: goal })),
     setRateRange: (min, max) => setDraft((d) => ({ ...d, minimumRateBps: min, maximumRateBps: max })),
     setEpoch: (seconds) => setDraft((d) => ({ ...d, epochSeconds: seconds })),
+    quoteEnabled,
     startSetup: () => {
       setStatus((s) => transitionProgramStatus(s, 'START_SETUP'))
       setPhase('setup')
@@ -383,7 +406,7 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
         }
       }
       if (!draft.tokenAddress || !pairDetection.pairAddress || !pairDetection.quoteAddress) {
-        return { ok: false as const, reason: 'Select a project token with a live Melega WBNB pair.' }
+        return { ok: false as const, reason: 'Choose Token to Grow with a live Melega market for your Quote Asset.' }
       }
       if (!setupDraftReadyForReview(draft)) {
         return { ok: false as const, reason: 'Complete token, budget, and strategy before Activate.' }

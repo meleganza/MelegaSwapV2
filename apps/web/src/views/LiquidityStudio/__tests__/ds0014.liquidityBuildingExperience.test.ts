@@ -252,6 +252,6 @@ describe('DS001.4 Liquidity Building experience', () => {
     expect(HEADER).toMatch(/MelegaAppShell|header|72/)
     expect(HOME).toMatch(/data-testid="ls-cta-liquidity-building"/)
     expect(HOME).toMatch(/Add Liquidity/)
-    expect(LB_UX.productName).toBe('Liquidity Building')
+    expect(LB_UX.productName).toBe('Liquidity Builder')
   })
 })

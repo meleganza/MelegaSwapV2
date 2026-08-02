@@ -53,6 +53,12 @@ export type SetupDraft = {
   minimumRateBps: string
   maximumRateBps: string
   epochSeconds: EpochSeconds
+  /** Founder UX — quote market preference (WBNB / USDT / USDC). */
+  quoteAssetKey: 'WBNB' | 'USDT' | 'USDC'
+  /** Founder UX — strategy preset label (maps to strategy + range). */
+  strategyPreset: 'CONSERVATIVE' | 'BALANCED' | 'AI_OPTIMIZED' | 'AGGRESSIVE'
+  /** Founder UX — liquidity goal (display / review; not a fee input). */
+  liquidityGoal: 'STEADY' | 'DEPTH' | 'LAUNCH'
 }
 
 export const EMPTY_SETUP_DRAFT: SetupDraft = {
@@ -63,6 +69,9 @@ export const EMPTY_SETUP_DRAFT: SetupDraft = {
   minimumRateBps: '',
   maximumRateBps: '',
   epochSeconds: 300,
+  quoteAssetKey: 'WBNB',
+  strategyPreset: 'AI_OPTIMIZED',
+  liquidityGoal: 'STEADY',
 }
 
 export type ActivationGateSummary = {

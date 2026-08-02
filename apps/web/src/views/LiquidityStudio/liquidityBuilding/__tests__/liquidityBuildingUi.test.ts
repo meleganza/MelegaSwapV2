@@ -87,9 +87,9 @@ describe('LB014 Liquidity Building UI domain', () => {
 
     const panel = readFileSync(path.join(__dirname, '../../components/LiquidityBuildingPanel.tsx'), 'utf8')
     const copy = readFileSync(path.join(__dirname, '../uxCopy.ts'), 'utf8')
-    expect(copy).toMatch(/Set Up Liquidity Building/)
+    expect(copy).toMatch(/Create Liquidity Program/)
     expect(panel).toMatch(/data-liquidity-building-panel/)
-    expect(copy).toMatch(/unavailable until production activation requirements are completed/i)
+    expect(copy).toMatch(/unavailable until production requirements are completed/i)
     expect(panel).not.toMatch(/Coming soon/i)
   })
 })

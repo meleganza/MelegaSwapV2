@@ -52,7 +52,7 @@ describe('Founder amendment P0-3 — Liquidity Builder density', () => {
   it('shows a concise "How it works" tip', () => {
     const card = load('onePage/LiquidityBuildingCard.tsx')
     expect(card).toContain('data-testid="liq-lb-how-it-works"')
-    expect(card).toMatch(/How .*Liquidity Building works/)
+    expect(card).toMatch(/How .*Liquidity Build(?:er|ing) works/)
   })
 
   it('keeps a dense two-column configuration grid on desktop', () => {

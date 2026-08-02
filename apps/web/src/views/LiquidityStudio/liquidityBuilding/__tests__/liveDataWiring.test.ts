@@ -123,7 +123,7 @@ describe('LB017 live data wiring', () => {
   })
 
   it('empty activity copy is honest', () => {
-    expect(LB_UX.emptyNoProgram).toBe('No liquidity executions yet.')
-    expect(LB_UX.programUnavailable).toMatch(/unavailable until Liquidity Building contracts are deployed/i)
+    expect(LB_UX.emptyNoProgram).toBe('No liquidity growth yet.')
+    expect(LB_UX.programUnavailable).toMatch(/not ready on BNB Smart Chain/i)
   })
 })
