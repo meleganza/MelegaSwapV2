@@ -1,0 +1,33 @@
+{
+  "mission": "MELEGA_DEX_V1_LIQUIDITY_BUILDER_LIVE_FEE_CANARY_EXECUTION",
+  "baselineAcceptance": "bb075a1e",
+  "signer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "signerLabel": "MELEGA DEPLOYER",
+  "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+  "route": "/liquidity",
+  "tokenToGrow": {
+    "symbol": "MARCO",
+    "address": "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+  },
+  "quoteAsset": {
+    "symbol": "WBNB",
+    "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+  },
+  "tokenReserve": {
+    "human": "1",
+    "wei": "1000000000000000000",
+    "asset": "MARCO"
+  },
+  "liquidityGoal": "Steady Growth",
+  "strategy": "AI Optimized",
+  "pair": "0x7286c16c3c05d4c17B689bE7948Ec4Fa4e861d1E",
+  "expectedFeeBps": 1000,
+  "expectedFeePercent": 10,
+  "feePath": {
+    "feeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+    "feeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+    "beneficiary": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+  },
+  "forbidden": ["KMS", "server signer", "Treasury Runtime", "manual contract calls"],
+  "executionMode": "browser wallet only"
+}
