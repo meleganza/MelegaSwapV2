@@ -10,7 +10,8 @@
     "commit": "0ac7aa0ab6b15e188779a10202daa251883aa67e"
   },
   "integratedOn": {
-    "branch": "melega-dex-v1-smart-swap-protocol-fee-settlement-final"
+    "branch": "melega-dex-v1-smart-swap-protocol-fee-settlement-final",
+    "commit": "107b043bc2af9343e37fc5ec7dabf2dd7f6688b8"
   },
   "method": "cherry-pick 0ac7aa0a onto e12aac12; conflict resolved in routeEngine freeze test only",
   "formula": "feeWei = floor(gasEstimateUnits * gasPriceWei * 2500 / 10000)",
