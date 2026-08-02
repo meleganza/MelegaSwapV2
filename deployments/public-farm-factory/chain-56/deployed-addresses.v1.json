@@ -2,11 +2,11 @@
   "schema": "melega.public-farm-factory.deployed-addresses.v1",
   "chainId": 56,
   "network": "bnb-smart-chain-mainnet",
-  "status": "AWAITING_VALIDATION",
-  "factoryAddress": null,
-  "deploymentTx": null,
-  "deploymentBlock": null,
-  "verified": false,
+  "status": "READY",
+  "factoryAddress": "0x89Ffa439B197FE98f0F5388E00EdF1eBfD80D7E9",
+  "deploymentTx": "0xe610b16eaf2b94a3b69fce7a684b099eaa4e9ffdb9200c1007df4f2544a61603",
+  "deploymentBlock": 113533796,
+  "verified": true,
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
   "marcoToken": "0x963556de0eb8138E97A85F0A86eE0acD159D210b",
   "pairFactory": "0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C",
@@ -14,21 +14,17 @@
   "feePolicy": {
     "marcoPair": "FREE",
     "otherwiseBnb": "0.25",
+    "otherwiseWei": "250000000000000000",
     "minimumTvlBnb": "0.25",
     "lowLiquidityAction": "REQUIRE_LIQUIDITY_INCREASE",
     "marcoReward": "UNSUPPORTED"
   },
   "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
-  "execution": {
-    "cta": "Deploy Public Farm Factory",
-    "uiPath": "/runtime/deployment/",
-    "noAutomaticBroadcast": true,
-    "noKms": true,
-    "noServerSigner": true
-  },
+  "lifecycle": ["DEPLOYED", "VALIDATED", "BOUND", "READY"],
   "notes": [
-    "No fabricated address. Capture tx hash / receipt / contract address from Founder wallet only.",
-    "Do not bind SSOT before validation mission.",
-    "Certified package: apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json"
+    "Bound after receipt success + masked runtime SHA-256 match vs pff-v1-certified.json.",
+    "Constructor on-chain: treasury=MELEGA TREASURY, FREE_FEE=0, DEFAULT_FEE=0.25 BNB, MARCO + pairFactory + eligibilitySigner match certified.",
+    "No proxy / no owner-admin / no Treasury Runtime authority.",
+    "Public Create Farm unlocked — Founder not required for user farm creation."
   ]
 }

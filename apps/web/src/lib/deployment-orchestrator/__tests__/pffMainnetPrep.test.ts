@@ -122,21 +122,23 @@ describe('Public Farm Factory mainnet deployment preparation', () => {
     expect(req.value).toBe('0x0')
   })
 
-  it('Part F — factoryAddress remains null; no fabricated ready', () => {
-    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
-    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.status).toBe('AWAITING_VALIDATION')
-    expect(isPublicFarmFactoryBound()).toBe(false)
-    expect(isPffExecutionAwaitingFounderSignature()).toBe(true)
-    expect(PUBLIC_FARM_FACTORY_READINESS.status).toBe('AWAITING_VALIDATION')
-    expect(PUBLIC_FARM_FACTORY_READINESS.executionEnabled).toBe(false)
+  it('Part F — factoryAddress bound READY; user create unlocked', () => {
+    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
+      '0x89ffa439b197fe98f0f5388e00edf1ebfd80d7e9',
+    )
+    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.status).toBe('READY')
+    expect(isPublicFarmFactoryBound()).toBe(true)
+    expect(isPffExecutionAwaitingFounderSignature()).toBe(false)
+    expect(PUBLIC_FARM_FACTORY_READINESS.status).toBe('READY')
+    expect(PUBLIC_FARM_FACTORY_READINESS.executionEnabled).toBe(true)
     expect(PUBLIC_FARM_FACTORY_READINESS.noTreasuryRuntime).toBe(true)
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute).toBe(false)
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute).toBe(true)
   })
 
-  it('sequence: CT READY unlocks PFF; LB/CT addresses untouched', () => {
+  it('sequence: PFF bound completes Founder deploy targets; LB/CT untouched', () => {
     expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.status).toBe('READY')
-    expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(true)
-    expect(nextFounderDeployTarget()).toBe('public_farm_factory')
+    expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(false)
+    expect(nextFounderDeployTarget()).toBeNull()
     const lb = readFileSync(path.join(WEB, 'src/config/constants/liquidityBuildingDeployment.ts'), 'utf8')
     expect(lb).toContain("lbFactory: '0xB9f3e3020141157C215902acC1fDF65e49bE4e82'")
     const ct = readFileSync(path.join(WEB, 'src/config/constants/createTokenFactoryDeployment.ts'), 'utf8')

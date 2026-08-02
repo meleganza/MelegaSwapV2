@@ -1,58 +1,80 @@
 /**
  * Public Farm Factory capability — factual readiness.
- * Outcome B until factoryAddress is bound after Founder-signed deploy.
+ * Outcome A when factoryAddress is bound after validated mainnet deploy.
  * MasterBuilder never exposed.
  */
+import {
+  PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT,
+  isPublicFarmFactoryBound,
+} from 'config/constants/publicFarmFactoryDeployment'
+
 export type PublicFarmFactoryCapabilityOutcome =
   | 'A_PERMISSIONLESS_FACTORY_AVAILABLE'
   | 'B_FACTORY_DEPLOYMENT_REQUIRED'
   | 'C_ADMIN_ONLY_MASTERBUILDER'
 
+const bound = isPublicFarmFactoryBound()
+const factory = PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress
+
 export const PUBLIC_FARM_FACTORY_CAPABILITY = {
   schema: 'melega.dex.v1.public-farm-factory-capability',
-  outcome: 'B_FACTORY_DEPLOYMENT_REQUIRED' as PublicFarmFactoryCapabilityOutcome,
-  summary:
-    'Public Farm Factory package is certified and ready for Founder-signed mainnet deployment. On-chain createFarm remains blocked until PublicFarmFactoryV1 is deployed, validated, and bound. MasterBuilder / MasterChef.add stay protocol-only.',
-  blockerLabel: 'Public Farm Factory awaiting Founder signature — create execution blocked',
-  facts: [
-    'Certified PublicFarmFactoryV1 artifact is loaded for Founder wallet deploy.',
-    'factoryAddress remains null until live mainnet validation + bind (not fabricated).',
-    'MasterChef.add() / MasterBuilder remain protocol-admin only and are never exposed to public users.',
-    'MARCO reward farms are rejected by the Public Farm Factory with no admin bypass.',
-    'MARCO LP pairs are FREE; other pairs pay 0.25 BNB to MELEGA TREASURY WALLET.',
-  ],
+  outcome: (bound
+    ? 'A_PERMISSIONLESS_FACTORY_AVAILABLE'
+    : 'B_FACTORY_DEPLOYMENT_REQUIRED') as PublicFarmFactoryCapabilityOutcome,
+  summary: bound
+    ? 'PublicFarmFactoryV1 is DEPLOYED · VALIDATED · BOUND · READY on BNB Chain. Users create eligible farms permissionlessly. MasterBuilder / MasterChef.add stay protocol-only.'
+    : 'Public Farm Factory package awaits Founder-signed mainnet deployment, validation, and bind.',
+  blockerLabel: bound
+    ? 'Public Farm Factory READY — create execution unlocked'
+    : 'Public Farm Factory deployment required — create execution blocked',
+  facts: bound
+    ? [
+        `PublicFarmFactoryV1 bound at ${factory}.`,
+        'MARCO LP pairs are FREE; other pairs pay 0.25 BNB to MELEGA TREASURY WALLET.',
+        'Minimum LP TVL 0.25 BNB — below threshold prompts REQUIRE_LIQUIDITY_INCREASE.',
+        'MARCO reward farms are rejected by the Public Farm Factory with no admin bypass.',
+        'MasterChef.add() / MasterBuilder remain protocol-admin only and are never exposed.',
+      ]
+    : [
+        'Certified PublicFarmFactoryV1 artifact is loaded for Founder wallet deploy.',
+        'factoryAddress remains null until live mainnet validation + bind (not fabricated).',
+        'MasterChef.add() / MasterBuilder remain protocol-admin only and are never exposed to public users.',
+        'MARCO reward farms are rejected by the Public Farm Factory with no admin bypass.',
+      ],
   readiness: {
-    walletCanExecute: false,
+    walletCanExecute: bound,
     requiresAdminAction: false,
-    requiresFactoryDeployment: true,
+    requiresFactoryDeployment: !bound,
     masterBuilderExposed: false,
-    readyForFounderSignature: true,
+    readyForFounderSignature: !bound,
   },
   contracts: {
-    publicFarmFactory: null as string | null,
-    publicFarmFactoryTx: null as string | null,
+    publicFarmFactory: factory,
+    publicFarmFactoryTx: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.deploymentTx,
     masterChef: 'MasterChef.add() — protocol-only (not exposed)',
     package: 'contracts/public-farm-factory/',
     certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json',
   },
   deployment: {
-    status: 'AWAITING_VALIDATION',
-    address: null,
-    transaction: null,
+    status: bound ? 'READY' : 'AWAITING_VALIDATION',
+    address: factory,
+    transaction: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.deploymentTx,
     completedPackage: 'contracts/public-farm-factory/',
-    blockers: [
-      'PublicFarmFactoryV1 SSOT factoryAddress still null (not fabricated)',
-      'Awaiting Founder signature + receipt validation before bind',
-      'No KMS / no server signer / no automatic broadcast',
-    ],
-    resumeSequence: [
-      'Open /runtime/deployment/ as MELEGA DEPLOYER',
-      'Review constructor · estimate gas · Deploy Public Farm Factory',
-      'Capture transaction hash · receipt · contract address',
-      'Validate receipt + masked runtime hash, then bind factoryAddress',
-      'Enable walletCanExecute after deployment verification',
-      'Index FarmCreated events into canonical farm discovery pipeline',
-    ],
+    blockers: bound
+      ? ([] as string[])
+      : [
+          'PublicFarmFactoryV1 SSOT factoryAddress still null (not fabricated)',
+          'Awaiting Founder signature + receipt validation before bind',
+        ],
+    resumeSequence: bound
+      ? [
+          'Users open Create Farm',
+          'Select LP pair · check liquidity · configure rewards · createFarm',
+        ]
+      : [
+          'Open /runtime/deployment/ as MELEGA DEPLOYER',
+          'Deploy · capture receipt · validate · bind factoryAddress',
+        ],
   },
 } as const
 

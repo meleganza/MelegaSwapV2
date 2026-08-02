@@ -167,7 +167,7 @@ describe('Create Token Factory mainnet validation · bind · READY', () => {
 
   it('sequence advances past Create Token to Public Farm Factory', () => {
     expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(false)
-    expect(nextFounderDeployTarget()).toBe('public_farm_factory')
+    expect(nextFounderDeployTarget()).toBeNull()
   })
 
   it('UI surfaces fee + treasury + READY without misleading KMS copy', () => {

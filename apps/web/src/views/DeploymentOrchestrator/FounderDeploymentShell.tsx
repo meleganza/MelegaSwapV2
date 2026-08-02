@@ -1237,6 +1237,12 @@ export const FounderDeploymentShell: React.FC = () => {
         </Card>
       )}
 
+      {!pffFactoryStillNull && (
+        <Banner $tone="ok" data-testid="founder-public-farm-mainnet-ready">
+          PublicFarmFactoryV1 DEPLOYED · VALIDATED · BOUND · READY at{' '}
+          {PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress} · Create Farm unlocked · no redeploy
+        </Banner>
+      )}
       {isPublicFarmStage && pffFactoryStillNull && (
         <Banner $tone="ok" data-testid="founder-public-farm-ready">
           PublicFarmFactoryV1 execution ready · Certified artifact loaded · Artifact hash verified · Constructor

@@ -1,0 +1,8 @@
+{
+  "marcoPair": "FREE",
+  "nonMarcoPairBnb": "0.25",
+  "treasury": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "treasuryRuntime": false,
+  "kms": false,
+  "serverSigner": false
+}

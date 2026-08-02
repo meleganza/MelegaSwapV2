@@ -77,8 +77,9 @@ describe('Public Farm Factory mainnet deployment execution', () => {
     expect('to' in req).toBe(false)
     expect(req.value).toBe('0x0')
     expect(req.data.startsWith('0x')).toBe(true)
-    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.status).toBe('AWAITING_VALIDATION')
-    expect(isPffExecutionAwaitingFounderSignature()).toBe(true)
+    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.status).toBe('READY')
+    // SSOT already bound — session await flag is false when factoryAddress is set
+    expect(isPffExecutionAwaitingFounderSignature()).toBe(false)
   })
 
   it('Part E — validation rejects bad constructor; does not fabricate SSOT bind', () => {
@@ -100,11 +101,14 @@ describe('Public Farm Factory mainnet deployment execution', () => {
     })
     expect(bad.ok).toBe(false)
     expect(getPffSessionBound()).toBeNull()
-    expect(isPublicFarmFactoryBound()).toBe(false)
-    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
+    // SSOT remains bound to factual mainnet factory regardless of failed session validation
+    expect(isPublicFarmFactoryBound()).toBe(true)
+    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
+      '0x89ffa439b197fe98f0f5388e00edf1ebfd80d7e9',
+    )
   })
 
-  it('Part F — quarantined evidence cannot bind; SSOT stays null', () => {
+  it('Part F — quarantined evidence cannot bind; SSOT factual address preserved', () => {
     expect(() =>
       bindValidatedPublicFarmFactory({
         schema: 'melega.public-farm-factory.deployment-evidence.v1',
@@ -130,30 +134,31 @@ describe('Public Farm Factory mainnet deployment execution', () => {
         quarantineReason: 'test',
       }),
     ).toThrow(/quarantined/i)
-    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
+    expect(PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
+      '0x89ffa439b197fe98f0f5388e00edf1ebfd80d7e9',
+    )
   })
 
-  it('Founder shell wires gas · READY_FOR_SIGNATURE · Deploy Public Farm Factory · capture · AWAITING_VALIDATION', () => {
+  it('Founder shell wires Deploy Public Farm Factory · capture · MAINNET READY', () => {
     const ui = readFileSync(SHELL, 'utf8')
     expect(ui).toContain('Deploy Public Farm Factory')
     expect(ui).toContain('READY_FOR_SIGNATURE')
     expect(ui).toContain('validatePffFactoryFromOnChain')
     expect(ui).toContain('bindValidatedPublicFarmFactory')
-    expect(ui).toContain('founder-pff-awaiting-validation')
-    expect(ui).toContain('founder-pff-captured-address')
-    expect(ui).toContain('founder-pff-receipt-status')
+    expect(ui).toContain('founder-public-farm-mainnet-ready')
     expect(ui).toContain('walletGetTransactionReceipt')
-    expect(ui).toContain('AWAITING_VALIDATION')
     expect(ui).not.toMatch(/Missing KMS|KMS signer|use KMS/i)
     expect(ui).not.toMatch(/Treasury Runtime/i)
   })
 
-  it('readiness is AWAITING_VALIDATION — user create disabled — factoryAddress null', () => {
-    expect(PUBLIC_FARM_FACTORY_READINESS.status).toBe('AWAITING_VALIDATION')
-    expect(PUBLIC_FARM_FACTORY_READINESS.executionEnabled).toBe(false)
-    expect(PUBLIC_FARM_FACTORY_READINESS.factoryAddress).toBeNull()
-    expect(PUBLIC_FARM_FACTORY_READINESS.blockerCode).toBe('PUBLIC_FARM_FACTORY_AWAITING_VALIDATION')
-    expect(PUBLIC_FARM_FACTORY_READINESS.readyForFounderSignature).toBe(true)
+  it('readiness is MAINNET READY — user create enabled', () => {
+    expect(PUBLIC_FARM_FACTORY_READINESS.status).toBe('READY')
+    expect(PUBLIC_FARM_FACTORY_READINESS.executionEnabled).toBe(true)
+    expect(PUBLIC_FARM_FACTORY_READINESS.factoryAddress?.toLowerCase()).toBe(
+      '0x89ffa439b197fe98f0f5388e00edf1ebfd80d7e9',
+    )
+    expect(PUBLIC_FARM_FACTORY_READINESS.blockerCode).toBeNull()
+    expect(PUBLIC_FARM_FACTORY_READINESS.readyForFounderSignature).toBe(false)
     expect(PUBLIC_FARM_FACTORY_READINESS.noTreasuryRuntime).toBe(true)
   })
 

@@ -1,6 +1,6 @@
 /**
  * Canonical Public Farm Factory binding — single source of truth.
- * Do not fabricate mainnet addresses. factoryAddress stays null until live validation + bind.
+ * Bound after mainnet receipt + masked runtime hash + constructor validation.
  */
 
 import { MELEGA_TREASURY_FEE_DESTINATION } from './feeSchedule'
@@ -25,11 +25,17 @@ export const PUBLIC_FARM_DEFAULT_FEE_BNB = '0.25' as const
 export const PUBLIC_FARM_DEFAULT_FEE_WEI = '250000000000000000' as const
 export const PUBLIC_FARM_MINIMUM_TVL_BNB = '0.25' as const
 
+/** Factual mainnet PublicFarmFactoryV1 — validated against pff-v1-certified.json. */
+export const PUBLIC_FARM_FACTORY_ADDRESS = '0x89Ffa439B197FE98f0F5388E00EdF1eBfD80D7E9' as const
+export const PUBLIC_FARM_FACTORY_DEPLOYMENT_TX =
+  '0xe610b16eaf2b94a3b69fce7a684b099eaa4e9ffdb9200c1007df4f2544a61603' as const
+export const PUBLIC_FARM_FACTORY_DEPLOYMENT_BLOCK = 113533796 as const
+
 export const PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT = {
   schema: 'melega.public-farm-factory.deployment.v1',
   chainId: PUBLIC_FARM_FACTORY_CHAIN_ID,
-  /** Null until authorized mainnet deploy + verification. Do not fabricate. */
-  factoryAddress: null as string | null,
+  /** Bound after receipt + masked runtime hash + constructor validation. */
+  factoryAddress: PUBLIC_FARM_FACTORY_ADDRESS as string | null,
   farmTemplate: 'PublicFarmTemplateV1',
   factoryContract: 'PublicFarmFactoryV1',
   packagePath: 'contracts/public-farm-factory/',
@@ -45,18 +51,18 @@ export const PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT = {
     marcoReward: 'UNSUPPORTED' as const,
     lowLiquidityAction: 'REQUIRE_LIQUIDITY_INCREASE' as const,
   },
-  deploymentTx: null as string | null,
-  deploymentBlock: null as number | null,
-  verified: false,
+  deploymentTx: PUBLIC_FARM_FACTORY_DEPLOYMENT_TX as string | null,
+  deploymentBlock: PUBLIC_FARM_FACTORY_DEPLOYMENT_BLOCK as number | null,
+  verified: true,
   /**
-   * Execution path wired for Founder-signed CREATE.
-   * factoryAddress stays null until live receipt validation + SSOT bind.
-   * After Founder signature + receipt capture → AWAITING_VALIDATION (no fabricate / no premature bind).
+   * Mainnet factory DEPLOYED · VALIDATED · BOUND · READY.
+   * Public Create Farm unlocked — Founder not involved in user farm creation.
    */
-  status: 'AWAITING_VALIDATION' as const,
+  status: 'READY' as const,
   certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json',
+  lifecycle: ['DEPLOYED', 'VALIDATED', 'BOUND', 'READY'] as const,
   execution: {
-    founderSignatureRequired: true,
+    founderSignatureRequired: false,
     noKms: true,
     noServerSigner: true,
     noAutomaticBroadcast: true,

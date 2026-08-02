@@ -140,8 +140,8 @@ describe('certified bytecode autoload', () => {
     expect(ui).toContain('connector.getProvider')
   })
 
-  it('Create Token bound advances to Public Farm Factory', () => {
+  it('Create Token + Public Farm Factory bound completes sequence', () => {
     expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(false)
-    expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(true)
+    expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(false)
   })
 })

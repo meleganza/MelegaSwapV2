@@ -86,7 +86,7 @@ describe('Create Token Factory mainnet deployment preparation', () => {
 
   it('deployment readiness: CT factory bound + READY; sequence advances to Public Farm Factory', () => {
     expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(false)
-    expect(nextFounderDeployTarget()).toBe('public_farm_factory')
+    expect(nextFounderDeployTarget()).toBeNull()
     expect(isCreateTokenFactoryBound()).toBe(true)
     expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
       '0x6dbb5d7162842da94ef9172aedc8d148d203d311',

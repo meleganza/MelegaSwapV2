@@ -176,10 +176,10 @@ describe('user operation independence + no KMS', () => {
     expect(SUPERSEDED_KMS_AUTHORITY_KEYS).toContain('MAINNET_DEPLOYER')
   })
 
-  it('sequential order: LB + CT bound unlocks Public Farm Factory', () => {
+  it('sequential order: LB + CT + PFF bound completes Founder deploy sequence', () => {
     expect(isSubsystemReadyForFounderDeploy('liquidity_builder')).toBe(false)
     expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(false)
-    expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(true)
+    expect(isSubsystemReadyForFounderDeploy('public_farm_factory')).toBe(false)
   })
 
   it('Founder UI has no private-key or KMS handling', () => {

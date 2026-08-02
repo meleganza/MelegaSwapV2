@@ -42,6 +42,7 @@ describe('publicFarmFactory UI locks', () => {
       'MARCO reward farms are protocol-managed and cannot be created through the Public Farm Factory.',
     )
     const capability = load('modules/publicFarmFactoryCapability.ts')
+    expect(capability).toContain('A_PERMISSIONLESS_FACTORY_AVAILABLE')
     expect(capability).toContain('B_FACTORY_DEPLOYMENT_REQUIRED')
   })
 

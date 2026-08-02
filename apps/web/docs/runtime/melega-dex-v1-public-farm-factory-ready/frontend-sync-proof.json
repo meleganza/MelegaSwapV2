@@ -1,0 +1,18 @@
+{
+  "before": {
+    "factoryAddress": null,
+    "walletCanExecute": false
+  },
+  "after": {
+    "factoryAddress": "0x89Ffa439B197FE98f0F5388E00EdF1eBfD80D7E9",
+    "walletCanExecute": true,
+    "status": "READY",
+    "lifecycle": [
+      "DEPLOYED",
+      "VALIDATED",
+      "BOUND",
+      "READY"
+    ],
+    "outcome": "A_PERMISSIONLESS_FACTORY_AVAILABLE"
+  }
+}

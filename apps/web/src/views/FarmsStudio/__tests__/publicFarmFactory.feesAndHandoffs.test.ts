@@ -121,12 +121,14 @@ describe('publicFarmFactory handoffs + draft', () => {
 
 describe('publicFarmFactory capability + indexer', () => {
   it('outcome B — MasterBuilder not exposed', () => {
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.outcome).toBe('B_FACTORY_DEPLOYMENT_REQUIRED')
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.outcome).toBe('A_PERMISSIONLESS_FACTORY_AVAILABLE')
     expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.masterBuilderExposed).toBe(false)
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.contracts.publicFarmFactory).toBeNull()
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.deployment.status).toBe('AWAITING_VALIDATION')
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.readyForFounderSignature).toBe(true)
-    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute).toBe(false)
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.contracts.publicFarmFactory?.toLowerCase()).toBe(
+      '0x89ffa439b197fe98f0f5388e00edf1ebfd80d7e9',
+    )
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.deployment.status).toBe('READY')
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.readyForFounderSignature).toBe(false)
+    expect(PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute).toBe(true)
   })
 
   it('FarmCreated topic0 is deterministic and dedupe works', () => {

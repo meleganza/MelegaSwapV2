@@ -1,7 +1,6 @@
 /**
  * Public Farm Factory deployment readiness — honest measured state.
- * factoryAddress remains null until live mainnet validation + bind.
- * Execution mission: Founder signature path wired → AWAITING_VALIDATION.
+ * Factory bound after mainnet validation against pff-v1-certified.json.
  */
 
 import {
@@ -10,6 +9,7 @@ import {
   isPublicFarmFactoryBound,
 } from 'config/constants/publicFarmFactoryDeployment'
 import { loadCertifiedPffArtifacts } from 'lib/deployment-orchestrator/founderPffArtifacts'
+import { PUBLIC_FARM_FACTORY_CAPABILITY } from './publicFarmFactoryCapability'
 
 export type PublicFarmFactoryReadinessStatus =
   | 'DEPLOYMENT_BLOCKED'
@@ -22,60 +22,62 @@ export type PublicFarmFactoryReadinessStatus =
 const bound = isPublicFarmFactoryBound()
 const artifacts = loadCertifiedPffArtifacts()
 const packageValid = artifacts.status === 'ARTIFACTS_VALID'
+const executionEnabled = bound && PUBLIC_FARM_FACTORY_CAPABILITY.readiness.walletCanExecute
 
 export const PUBLIC_FARM_FACTORY_READINESS = {
-  schema: 'melega.public-farm-factory-readiness.v2',
+  schema: 'melega.public-farm-factory-readiness.v3',
   capability: 'public_farm_factory',
-  status: (bound
-    ? 'FACTORY_BOUND'
-    : packageValid
-      ? 'AWAITING_VALIDATION'
-      : 'DEPLOYMENT_BLOCKED') as PublicFarmFactoryReadinessStatus,
+  status: (bound && executionEnabled
+    ? 'READY'
+    : bound
+      ? 'FACTORY_BOUND'
+      : packageValid
+        ? 'AWAITING_VALIDATION'
+        : 'DEPLOYMENT_BLOCKED') as PublicFarmFactoryReadinessStatus,
   chainId: PUBLIC_FARM_FACTORY_CHAIN_ID,
   factoryAddress: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.factoryAddress,
   factoryDeployed: bound,
   bytecodePresent: packageValid,
   packageValid,
   deploymentAuthorityReady: true,
-  executionEnabled: false,
-  executionPathReady: packageValid && !bound,
-  readyForFounderSignature: packageValid && !bound,
+  executionEnabled,
+  executionPathReady: packageValid,
+  readyForFounderSignature: !bound && packageValid,
   feeRecipient: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.feeRecipient,
   feePolicy: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.feePolicy,
   eligibilitySigner: PUBLIC_FARM_FACTORY_CANONICAL_DEPLOYMENT.eligibilitySigner,
+  lifecycle: bound
+    ? (['DEPLOYED', 'VALIDATED', 'BOUND', 'READY'] as const)
+    : (['AWAITING_VALIDATION'] as const),
   noKms: true,
   noServerSigner: true,
   noTreasuryRuntime: true,
   noAutomaticBroadcast: true,
-  blockerCode: bound
-    ? null
+  blockerCode: bound && executionEnabled ? null : bound ? null : 'PUBLIC_FARM_FACTORY_AWAITING_VALIDATION',
+  blockerSummary: bound && executionEnabled
+    ? 'Public Farm Factory is DEPLOYED · VALIDATED · BOUND · READY. Users create farms permissionlessly. Founder is not involved. MARCO rewards unsupported. Min TVL 0.25 BNB → REQUIRE_LIQUIDITY_INCREASE.'
     : packageValid
-      ? 'PUBLIC_FARM_FACTORY_AWAITING_VALIDATION'
-      : 'PUBLIC_FARM_FACTORY_PACKAGE_INVALID',
-  blockerSummary: bound
-    ? 'Public Farm Factory bound — user create farm unlock pending certification flip.'
-    : packageValid
-      ? 'Public Farm Factory execution path is ready on /runtime/deployment/. Founder signs CREATE as MELEGA DEPLOYER. After receipt capture, validate runtime + constructor before any SSOT bind. factoryAddress remains null (not fabricated). User createFarm stays disabled.'
+      ? 'Awaiting Founder deploy + validation + bind.'
       : 'Public Farm Factory certified package invalid — deployment blocked.',
-  blockers: bound
+  blockers: bound && executionEnabled
     ? ([] as string[])
     : packageValid
       ? [
           'factoryAddress is null in publicFarmFactoryDeployment (not fabricated)',
-          'Awaiting Founder browser-wallet signature + receipt validation (no KMS / no server signer / no auto-broadcast)',
-          'SSOT bind only after validation mission — do not fabricate',
-          'User createFarm remains disabled until certified bind',
+          'Awaiting Founder browser-wallet signature + receipt validation',
         ]
       : [...artifacts.invalidReasons],
-  nextActions: packageValid
+  nextActions: bound && executionEnabled
     ? [
-        'Open /runtime/deployment/ as MELEGA DEPLOYER on BNB Smart Chain (56)',
-        'Confirm: Certified artifact loaded · Artifact hash verified · Constructor review',
-        'Estimate gas · Ready for Founder signature · Deploy Public Farm Factory',
-        'Capture transaction hash · receipt · contract address',
-        'Run validation mission before SSOT factoryAddress bind',
+        'Open Create Farm',
+        'Select LP pair (existing or create)',
+        'If TVL < 0.25 BNB → increase liquidity',
+        'Configure non-MARCO reward token · Create Farm',
       ]
-    : ['Repair certified artifact package'],
+    : [
+        'Open /runtime/deployment/ as MELEGA DEPLOYER',
+        'Validate receipt + bind factoryAddress',
+      ],
   captureAfterSignature: ['transactionHash', 'receipt', 'contractAddress'],
   userFlowPrepared: [
     'Create Farm',
@@ -91,7 +93,7 @@ export const PUBLIC_FARM_FACTORY_READINESS = {
     template: 'contracts/public-farm-factory/PublicFarmTemplateV1.sol',
     certifiedArtifact: 'apps/web/src/lib/deployment-orchestrator/artifacts/pff-v1-certified.json',
   },
-  updatedAt: '2026-08-02T05:30:00.000Z',
+  updatedAt: '2026-08-02T06:10:00.000Z',
 } as const
 
 export type PublicFarmFactoryReadiness = typeof PUBLIC_FARM_FACTORY_READINESS

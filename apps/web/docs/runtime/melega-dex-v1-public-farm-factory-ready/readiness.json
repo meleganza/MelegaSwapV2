@@ -1,0 +1,15 @@
+{
+  "verdict": "MELEGA_DEX_V1_PUBLIC_FARM_FACTORY_MAINNET_READY",
+  "lifecycle": [
+    "DEPLOYED",
+    "VALIDATED",
+    "BOUND",
+    "READY"
+  ],
+  "factoryAddress": "0x89Ffa439B197FE98f0F5388E00EdF1eBfD80D7E9",
+  "deploymentTx": "0xe610b16eaf2b94a3b69fce7a684b099eaa4e9ffdb9200c1007df4f2544a61603",
+  "userCreateFarmUnlocked": true,
+  "founderInvolvedInUserCreation": false,
+  "noTreasuryRuntime": true,
+  "noRedeploy": true
+}
