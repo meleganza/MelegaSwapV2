@@ -33,7 +33,7 @@ describe('/api/deployment/status', () => {
     expect(res.statusCode).toBe(200)
     expect(res.headers['Cache-Control']).toBe('no-store')
     expect(res.body.schema).toBe('melega.dex.v1.deployment-orchestrator.status')
-    expect(res.body.globalState).toBe('READY')
+    expect(res.body.globalState).toBe('BOUND')
     expect(res.body.authority.authorityModel).toBe('FOUNDER_WALLET_SIGNED')
     expect(res.body.authority.authorizedDeployer).toBe(
       '0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0',

@@ -84,17 +84,19 @@ describe('Create Token Factory mainnet deployment preparation', () => {
     ).toBe(false)
   })
 
-  it('deployment readiness: LB unlocks CT; factoryAddress stays null; user creation disabled', () => {
-    expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(true)
-    expect(nextFounderDeployTarget()).toBe('create_token')
-    expect(isCreateTokenFactoryBound()).toBe(false)
-    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
-    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
-    expect(CREATE_TOKEN_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
+  it('deployment readiness: CT factory bound + READY; sequence advances to Public Farm Factory', () => {
+    expect(isSubsystemReadyForFounderDeploy('create_token')).toBe(false)
+    expect(nextFounderDeployTarget()).toBe('public_farm_factory')
+    expect(isCreateTokenFactoryBound()).toBe(true)
+    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
+      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
+    )
+    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.status).toBe('READY')
+    expect(CREATE_TOKEN_READINESS.status).toBe('READY')
     expect(CREATE_TOKEN_READINESS.bytecodePresent).toBe(true)
     expect(CREATE_TOKEN_READINESS.deploymentAuthorityReady).toBe(true)
-    expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(false)
-    expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(false)
+    expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(true)
+    expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(true)
   })
 
   it('wallet signature flow builds creation request without to / value / auto-broadcast', () => {

@@ -2,21 +2,22 @@
   "schema": "melega.create-token.deployed-addresses.v1",
   "chainId": 56,
   "network": "bnb-smart-chain-mainnet",
-  "status": "AWAITING_FOUNDER_SIGNATURE",
-  "factory": null,
+  "status": "READY",
+  "factory": "0x6DbB5d7162842dA94ef9172AedC8D148d203d311",
   "tokenTemplate": "MelegaFixedSupplyToken (deployed per createToken call)",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
   "creationFeeWei": "100000000000000000",
   "creationFeeBnb": "0.10",
   "creationFeeDecision": "APPROVED",
-  "deploymentTx": null,
-  "deploymentBlock": null,
+  "deploymentTx": "0x79fe42294e6a43f0e16d09101f4ba6846977c0267a0fc1e6d237fa1441de79d8",
+  "deploymentBlock": 113510808,
   "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
-  "verified": false,
+  "verified": true,
+  "lifecycle": ["DEPLOYED", "VALIDATED", "BOUND", "READY"],
   "notes": [
-    "No fabricated address. Bind only after Founder-signed mainnet broadcast + runtime validation.",
-    "Certified package: apps/web/src/lib/deployment-orchestrator/artifacts/ct-v1-certified.json",
-    "Founder UI: /runtime/deployment/ · CTA Deploy Create Token Factory · MELEGA DEPLOYER only",
-    "Post-deploy path validates receipt, masked runtime hash, creationFee, feeRecipient, then session-binds; SSOT factoryAddress committed only with factual address."
+    "Bound after receipt success + masked runtime SHA-256 match vs ct-v1-certified.json.",
+    "Constructor on-chain: creationFee=100000000000000000 wei (0.10 BNB), feeRecipient=MELEGA TREASURY WALLET.",
+    "No proxy / no owner-admin / no Treasury Runtime authority.",
+    "Fee path: user 0.10 BNB → CreateTokenFactoryV1 → MELEGA TREASURY WALLET."
   ]
 }

@@ -98,12 +98,12 @@ describe('MELEGA_DEX_V1_FOUNDER_REGRESSION_REPAIR', () => {
     expect(existsSync(path.join(WEB, 'public', LIST_HERO_BNB_LOGO.replace(/^\//, '')))).toBe(true)
   })
 
-  it('does not modify Create Token factory or LB deploy nulls', () => {
+  it('preserves Create Token factory bind and LB factory address', () => {
     const ct = readFileSync(
       path.join(ROOT, 'apps/web/src/config/constants/createTokenFactoryDeployment.ts'),
       'utf8',
     )
-    expect(ct).toContain('factoryAddress: null')
+    expect(ct).toContain('0x6DbB5d7162842dA94ef9172AedC8D148d203d311')
     const lb = readFileSync(
       path.join(ROOT, 'apps/web/src/config/constants/liquidityBuildingDeployment.ts'),
       'utf8',

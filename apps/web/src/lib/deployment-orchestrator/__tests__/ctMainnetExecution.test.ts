@@ -82,8 +82,9 @@ describe('Create Token Factory mainnet deployment execution', () => {
     expect('to' in req).toBe(false)
     expect(req.value).toBe('0x0')
     expect(req.data.startsWith('0x')).toBe(true)
-    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
-    expect(isCtExecutionAwaitingFounderSignature()).toBe(true)
+    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.status).toBe('READY')
+    // SSOT already bound — session await flag is false when factoryAddress is set
+    expect(isCtExecutionAwaitingFounderSignature()).toBe(false)
   })
 
   it('Part E — validation rejects wrong fee / recipient / deployer; accepts certified runtime', () => {
@@ -106,7 +107,8 @@ describe('Create Token Factory mainnet deployment execution', () => {
     })
     expect(bad.ok).toBe(false)
     expect(getCtSessionBound()).toBeNull()
-    expect(isCreateTokenFactoryBound()).toBe(false)
+    // SSOT remains bound to factual mainnet factory regardless of failed session validation
+    expect(isCreateTokenFactoryBound()).toBe(true)
   })
 
   it('Part F — bind only after VALIDATED evidence; never binds zero / quarantine', () => {
@@ -133,7 +135,9 @@ describe('Create Token Factory mainnet deployment execution', () => {
         quarantineReason: 'test',
       }),
     ).toThrow(/quarantined/i)
-    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
+    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
+      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
+    )
   })
 
   it('constructor view encoders round-trip fee + recipient', () => {
@@ -166,11 +170,13 @@ describe('Create Token Factory mainnet deployment execution', () => {
     expect(ui).not.toMatch(/Missing KMS|KMS signer|use KMS/i)
   })
 
-  it('frontend readiness remains awaiting Founder — user create disabled', () => {
-    expect(CREATE_TOKEN_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
-    expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(false)
-    expect(CREATE_TOKEN_READINESS.factoryAddress).toBeNull()
-    expect(CREATE_TOKEN_READINESS.blockerCode).toBe('CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE')
+  it('frontend readiness is MAINNET READY — user create enabled', () => {
+    expect(CREATE_TOKEN_READINESS.status).toBe('READY')
+    expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(true)
+    expect(CREATE_TOKEN_READINESS.factoryAddress?.toLowerCase()).toBe(
+      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
+    )
+    expect(CREATE_TOKEN_READINESS.blockerCode).toBeNull()
     expect(CREATE_TOKEN_READINESS.noTreasuryRuntime).toBe(true)
   })
 })

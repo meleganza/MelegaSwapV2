@@ -178,4 +178,5 @@ export const LIST_INTENTS: readonly ListIntent[] = [
 ] as const
 
 /** Create Token factory is not certified-operational on List — honest Coming Soon. */
-export const LIST_CREATE_TOKEN_AVAILABLE = false
+/** Unlocked after CreateTokenFactoryV1 mainnet validation + SSOT bind. */
+export const LIST_CREATE_TOKEN_AVAILABLE = true

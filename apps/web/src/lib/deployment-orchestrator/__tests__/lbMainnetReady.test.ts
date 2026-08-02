@@ -119,8 +119,8 @@ describe('LB Factory validation + MAINNET READY', () => {
     expect(getCanaryStatus('liquidity_builder')).toBe('Pending')
   })
 
-  it('Create Token and Public Farm Factory remain independently unbound', () => {
-    expect(assessSubsystemBinding('create_token').bound).toBe(false)
+  it('Create Token is independently bound; Public Farm Factory remains unbound', () => {
+    expect(assessSubsystemBinding('create_token').bound).toBe(true)
     expect(assessSubsystemBinding('public_farm_factory').bound).toBe(false)
   })
 

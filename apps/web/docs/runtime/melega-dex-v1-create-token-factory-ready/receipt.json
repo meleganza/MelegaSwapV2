@@ -1,0 +1,19 @@
+{
+  "schema": "melega.create-token.receipt.v1",
+  "rpc": "https://bsc-dataseed.binance.org",
+  "transactionHash": "0x79fe42294e6a43f0e16d09101f4ba6846977c0267a0fc1e6d237fa1441de79d8",
+  "status": "0x1",
+  "from": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "contractAddress": "0x6dbb5d7162842da94ef9172aedc8d148d203d311",
+  "blockNumber": "0x6c41598",
+  "blockNumberDecimal": 113510808,
+  "gasUsed": "0xf7931",
+  "gasUsedDecimal": 1014065,
+  "to": null,
+  "creationTransaction": true,
+  "checks": {
+    "receiptSuccess": true,
+    "senderIsMelegaDeployer": true,
+    "contractAddressMatch": true
+  }
+}

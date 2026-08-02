@@ -875,7 +875,14 @@ export const FounderDeploymentShell: React.FC = () => {
         </Banner>
       )}
 
-      {isCreateTokenStage && (
+      {!ctFactoryStillNull && (
+        <Banner $tone="ok" data-testid="founder-create-token-mainnet-ready">
+          CreateTokenFactoryV1 DEPLOYED · VALIDATED · BOUND · READY at{' '}
+          {CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress} · user Create Token unlocked · no redeploy
+        </Banner>
+      )}
+
+      {isCreateTokenStage && ctFactoryStillNull && (
         <Banner $tone="ok" data-testid="founder-create-token-unlocked">
           Create Token Factory unlocked after Liquidity Builder READY · factoryAddress remains null until Founder
           deploy + bind
@@ -1056,6 +1063,14 @@ export const FounderDeploymentShell: React.FC = () => {
               <span>Canonical factoryAddress</span>
               <strong data-testid="founder-ct-factory-null">
                 {ctFactoryStillNull ? 'null (not fabricated)' : CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress}
+              </strong>
+            </Row>
+          )}
+          {!ctFactoryStillNull && (
+            <Row>
+              <span>Create Token factory (bound)</span>
+              <strong data-testid="founder-ct-factory-bound">
+                {CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress}
               </strong>
             </Row>
           )}

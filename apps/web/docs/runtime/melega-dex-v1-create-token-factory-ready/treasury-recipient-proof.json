@@ -1,0 +1,8 @@
+{
+  "schema": "melega.create-token.treasury-recipient-proof.v1",
+  "label": "MELEGA TREASURY WALLET",
+  "address": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "onChainFeeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "match": true,
+  "source": "eth_call feeRecipient() @ CreateTokenFactoryV1"
+}

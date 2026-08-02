@@ -73,13 +73,15 @@ describe('List Founder Acceptance', () => {
     expect(checkout).not.toMatch(/TreasuryRuntime|treasury-runtime/i)
   })
 
-  it('Create Token readiness is deployment-blocked with measured code', () => {
-    expect(CREATE_TOKEN_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
-    expect(CREATE_TOKEN_READINESS.factoryAddress).toBeNull()
-    expect(CREATE_TOKEN_READINESS.blockerCode).toBe('CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE')
+  it('Create Token readiness is MAINNET READY with measured factory', () => {
+    expect(CREATE_TOKEN_READINESS.status).toBe('READY')
+    expect(CREATE_TOKEN_READINESS.factoryAddress?.toLowerCase()).toBe(
+      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
+    )
+    expect(CREATE_TOKEN_READINESS.blockerCode).toBeNull()
     const ws = load('ListWorkspace.tsx')
-    expect(ws).toContain('list-create-token-blocker')
-    expect(ws).toContain('CREATE_TOKEN_FACTORY_NOT_DEPLOYED')
+    expect(ws).toContain('list-create-token-ready')
+    expect(ws).toContain('list-create-token-cta-ready')
   })
 
   it('draft isolation keys include wallet + intent + chain', () => {

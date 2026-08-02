@@ -18,7 +18,7 @@ describe('deployment orchestrator readiness', () => {
     expect(DEPLOYMENT_ORDER_STEPS.map((s) => s.id)).toEqual([...DEPLOYMENT_ORDER])
   })
 
-  it('Founder authority present; LB BOUND advances global state; CT/PFF await Founder signature', () => {
+  it('Founder authority present; LB + CT BOUND; Public Farm Factory next', () => {
     const status = buildOrchestratorStatus(new Date('2026-07-30T00:00:00.000Z'))
     expect(status.schema).toBe('melega.dex.v1.deployment-orchestrator.status')
     expect(status.subsystems).toHaveLength(3)
@@ -32,7 +32,8 @@ describe('deployment orchestrator readiness', () => {
     expect(lb?.lanes.contracts).toBe(true)
     expect(lb?.lanes.runtime).toBe(true)
     const ct = status.subsystems.find((s) => s.id === 'create_token')
-    expect(ct?.state).toBe('READY')
+    expect(ct?.state).toBe('BOUND')
+    expect(ct?.lanes.bind).toBe(true)
     expect(status.nextAction).toMatch(/Confirm Liquidity Builder runtime READY/i)
     expect(status.founderExecution.pauseState).toBe('AWAITING_FOUNDER_WALLET')
     expect(status.founderExecution.serverSideSigning).toBe(false)
@@ -47,9 +48,9 @@ describe('deployment orchestrator readiness', () => {
 })
 
 describe('deployment orchestrator binding', () => {
-  it('reports LB bound; Create Token and Public Farm remain unbound', () => {
+  it('reports LB + Create Token bound; Public Farm remains unbound', () => {
     expect(assessSubsystemBinding('liquidity_builder').bound).toBe(true)
-    expect(assessSubsystemBinding('create_token').bound).toBe(false)
+    expect(assessSubsystemBinding('create_token').bound).toBe(true)
     expect(assessSubsystemBinding('public_farm_factory').bound).toBe(false)
   })
 

@@ -823,11 +823,24 @@ export const ListWorkspace: React.FC = () => {
           data-create-token-status={CREATE_TOKEN_READINESS.status}
           data-create-token-ui-state={CREATE_TOKEN_READINESS.uiState}
         >
-          <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
-            Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
-            (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.10 BNB (
-            {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED.
-          </Banner>
+          {LIST_CREATE_TOKEN_AVAILABLE ? (
+            <Banner
+              data-testid="list-create-token-ready"
+              data-lifecycle="DEPLOYED_VALIDATED_BOUND_READY"
+              data-blocker={CREATE_TOKEN_READINESS.blockerCode ?? 'none'}
+            >
+              Create Token READY — factory {CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress}. Creation fee: 0.10
+              BNB ({CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) paid to MELEGA TREASURY WALLET{' '}
+              {CREATE_TOKEN_FEE_RECIPIENT}. Connect wallet → configure token → factory creates token. No Founder
+              involvement. No Treasury Runtime.
+            </Banner>
+          ) : (
+            <Banner data-testid="list-create-token-blocker" data-blocker={CREATE_TOKEN_READINESS.blockerCode}>
+              Factory deployment pending. {CREATE_TOKEN_READINESS.blockerSummary} Network: BSC (56). Fee recipient
+              (canonical): {CREATE_TOKEN_FEE_RECIPIENT}. Creation fee: 0.10 BNB (
+              {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED.
+            </Banner>
+          )}
           <Field label="Token Name" ok={filled(values.name)} invalid={invalid('name')}>
             <Input value={values.name || ''} onChange={set('name')} placeholder="e.g. Sample Token" />
           </Field>
@@ -863,12 +876,19 @@ export const ListWorkspace: React.FC = () => {
             {CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei} wei) — APPROVED. Fee recipient:{' '}
             {review.feeRecipient}.
           </Banner>
-          <Banner data-testid="list-create-token-cta-blocked">
-            Create Token — execution blocked ({CREATE_TOKEN_READINESS.uiState} / CREATE_TOKEN_FACTORY_NOT_DEPLOYED /{' '}
-            {CREATE_TOKEN_READINESS.blockerCode}). Missing: production deployment authority (KMS / deploy
-            authorization / RPC). Creation fee APPROVED. LIST_CREATE_TOKEN_AVAILABLE=
-            {String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain autosaved.
-          </Banner>
+          {LIST_CREATE_TOKEN_AVAILABLE ? (
+            <Banner data-testid="list-create-token-cta-ready">
+              Create Token — user flow unlocked ({CREATE_TOKEN_READINESS.uiState} / READY). Pay 0.10 BNB to MELEGA
+              TREASURY WALLET via CreateTokenFactoryV1. LIST_CREATE_TOKEN_AVAILABLE=true. Drafts autosaved until
+              wallet confirm.
+            </Banner>
+          ) : (
+            <Banner data-testid="list-create-token-cta-blocked">
+              Create Token — execution blocked ({CREATE_TOKEN_READINESS.uiState} / CREATE_TOKEN_FACTORY_NOT_DEPLOYED /{' '}
+              {CREATE_TOKEN_READINESS.blockerCode}). Creation fee APPROVED. LIST_CREATE_TOKEN_AVAILABLE=
+              {String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain autosaved.
+            </Banner>
+          )}
         </FormStack>
       )
     }

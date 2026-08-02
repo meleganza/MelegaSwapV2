@@ -22,15 +22,16 @@ import {
 } from '../createToken/createTokenTx'
 
 const ROOT = path.resolve(__dirname, '../../../../../../')
+const FACTORY = '0x6DbB5d7162842dA94ef9172AedC8D148d203d311'
 
 describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
-  it('keeps canonical factory binding null (no fabricated mainnet address)', () => {
-    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
+  it('binds factual mainnet factory (no fabrication)', () => {
+    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(FACTORY.toLowerCase())
     expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei).toBe('100000000000000000')
     expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeBnb).toBe('0.10')
     expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeDecision).toBe('APPROVED')
-    expect(isCreateTokenFactoryBound()).toBe(false)
-    expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(false)
+    expect(isCreateTokenFactoryBound()).toBe(true)
+    expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(true)
   })
 
   it('routes fees to canonical treasury wallet only', () => {
@@ -38,26 +39,26 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     expect(CREATE_TOKEN_READINESS.feeRecipient).toBe(CREATE_TOKEN_FEE_RECIPIENT)
   })
 
-  it('exposes FACTORY_NOT_DEPLOYED readiness and never READY while unbound', () => {
-    expect(CREATE_TOKEN_READINESS.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
-    expect(CREATE_TOKEN_READINESS.uiState).toBe('FACTORY_NOT_DEPLOYED')
-    expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(false)
+  it('exposes READY readiness with user create unlocked', () => {
+    expect(CREATE_TOKEN_READINESS.status).toBe('READY')
+    expect(CREATE_TOKEN_READINESS.uiState).toBe('READY')
+    expect(CREATE_TOKEN_READINESS.executionEnabled).toBe(true)
     const ui = resolveCreateTokenUiState({
-      factoryAddress: null,
-      creationFeeWei: null,
+      factoryAddress: CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress,
+      creationFeeWei: CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeWei,
       feeRecipient: CREATE_TOKEN_FEE_RECIPIENT,
       chainId: 56,
       account: '0x1111111111111111111111111111111111111111',
+      walletBalanceWei: '100000000000000000',
     })
-    expect(ui).toBe('FACTORY_NOT_DEPLOYED')
-    expect(ui).not.toBe('READY')
+    expect(ui).toBe('READY')
   })
 
-  it('resolves wallet/chain/fee readiness states when factory is hypothetically bound', () => {
+  it('resolves wallet/chain/fee readiness states when factory is bound', () => {
     expect(
       resolveCreateTokenUiState({
-        factoryAddress: '0x2222222222222222222222222222222222222222',
-        creationFeeWei: '10000000000000000',
+        factoryAddress: FACTORY,
+        creationFeeWei: '100000000000000000',
         feeRecipient: CREATE_TOKEN_FEE_RECIPIENT,
         chainId: 97,
         account: '0x1111111111111111111111111111111111111111',
@@ -65,8 +66,8 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     ).toBe('WRONG_CHAIN')
     expect(
       resolveCreateTokenUiState({
-        factoryAddress: '0x2222222222222222222222222222222222222222',
-        creationFeeWei: '10000000000000000',
+        factoryAddress: FACTORY,
+        creationFeeWei: '100000000000000000',
         feeRecipient: CREATE_TOKEN_FEE_RECIPIENT,
         chainId: 56,
         account: null,
@@ -74,8 +75,8 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     ).toBe('WALLET_DISCONNECTED')
     expect(
       resolveCreateTokenUiState({
-        factoryAddress: '0x2222222222222222222222222222222222222222',
-        creationFeeWei: '10000000000000000',
+        factoryAddress: FACTORY,
+        creationFeeWei: '100000000000000000',
         feeRecipient: CREATE_TOKEN_FEE_RECIPIENT,
         chainId: 56,
         account: '0x1111111111111111111111111111111111111111',
@@ -84,12 +85,12 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     ).toBe('INSUFFICIENT_CREATION_FEE')
     expect(
       resolveCreateTokenUiState({
-        factoryAddress: '0x2222222222222222222222222222222222222222',
-        creationFeeWei: '10000000000000000',
+        factoryAddress: FACTORY,
+        creationFeeWei: '100000000000000000',
         feeRecipient: CREATE_TOKEN_FEE_RECIPIENT,
         chainId: 56,
         account: '0x1111111111111111111111111111111111111111',
-        walletBalanceWei: '10000000000000000',
+        walletBalanceWei: '100000000000000000',
       }),
     ).toBe('READY')
   })
@@ -116,7 +117,7 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('builds factual review + handoff without inventing factory address', () => {
+  it('builds factual review + handoff with bound factory address', () => {
     const review = buildReviewFacts({
       name: 'Alpha',
       symbol: 'ALP',
@@ -124,11 +125,11 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
       decimals: 18,
       owner: '0x1111111111111111111111111111111111111111',
     })
-    expect(review.factoryAddress).toBeNull()
+    expect(review.factoryAddress?.toLowerCase()).toBe(FACTORY.toLowerCase())
     expect(review.mintability).toBe('No future minting')
     expect(review.tax).toBe('None')
     const handoff = buildHandoffPayload({
-      factoryAddress: '0x2222222222222222222222222222222222222222',
+      factoryAddress: FACTORY,
       creationTx: '0xabc',
       event: {
         creator: '0x1111111111111111111111111111111111111111',
@@ -172,18 +173,16 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('exposes machine-readable readiness API shape', () => {
+  it('exposes machine-readable READY API shape', () => {
     const body = getCreateTokenMachineReadableReadiness()
-    expect(body.status).toBe('READY_FOR_FOUNDER_SIGNATURE')
-    expect(body.factoryAddress).toBeNull()
+    expect(body.status).toBe('READY')
+    expect(body.factoryAddress?.toLowerCase()).toBe(FACTORY.toLowerCase())
     expect(body.bytecodePresent).toBe(true)
     expect(body.creationFeeConfigured).toBe(true)
     expect(body.creationFeeDecision).toBe('APPROVED')
     expect(body.creationFeeWei).toBe('100000000000000000')
     expect(body.deploymentAuthorityReady).toBe(true)
-    expect(body.blockers.length).toBeGreaterThan(0)
-    expect(body.blockers.some((b) => /Founder browser-wallet|MELEGA DEPLOYER/i.test(b))).toBe(true)
-    expect(body.blockers.some((b) => /Founder decision|FEE_DECISION/i.test(b))).toBe(false)
+    expect(body.blockers).toEqual([])
     expect(body.updatedAt).toBeTruthy()
   })
 
@@ -206,11 +205,12 @@ describe('MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AND_LAUNCH_SYSTEM', () => {
     expect(token).not.toMatch(/function\s+blacklist\s*\(/)
   })
 
-  it('Create Token workspace shows deployment-pending CTA explanation', () => {
+  it('Create Token workspace shows READY CTA explanation', () => {
     const ws = readFileSync(path.join(__dirname, '../ListWorkspace.tsx'), 'utf8')
     expect(ws).toContain('list-create-token-review')
-    expect(ws).toContain('list-create-token-cta-blocked')
-    expect(ws).toContain('Factory deployment pending')
+    expect(ws).toContain('list-create-token-cta-ready')
+    expect(ws).toContain('list-create-token-ready')
+    expect(ws).toContain('0.10 BNB')
     expect(ws).toContain('CREATE_TOKEN_READINESS.uiState')
   })
 

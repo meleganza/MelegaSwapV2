@@ -36,7 +36,7 @@ describe('LIST Wave 04A Action Cards', () => {
       'create-project',
       'ai-assistant',
     ])
-    expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(false)
+    expect(LIST_CREATE_TOKEN_AVAILABLE).toBe(true)
     const cards = load('ListActionCards.tsx')
     expect(cards).toContain('Review readiness')
     expect(cards).toContain('Claim Project Page')

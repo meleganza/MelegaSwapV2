@@ -1,0 +1,50 @@
+{
+  "schema": "melega.create-token.runtime-validation.v1",
+  "factoryAddress": "0x6DbB5d7162842dA94ef9172AedC8D148d203d311",
+  "codeBytes": 4448,
+  "codePresent": true,
+  "rawRuntimeSha256": "0xa46af35e843512cfb3b27b1253ed8f6f1780985fe1e56dac78dc732cee78c58c",
+  "maskedRuntimeSha256": "0xfb743044873edfe222585c801213aaccde9db2ac9bbfb863ff33406d2bf57c3f",
+  "expectedRuntimeBytecodeSha256": "0xfb743044873edfe222585c801213aaccde9db2ac9bbfb863ff33406d2bf57c3f",
+  "certifiedArtifact": "apps/web/src/lib/deployment-orchestrator/artifacts/ct-v1-certified.json",
+  "immutableByteRanges": [
+    {
+      "start": 236,
+      "length": 32
+    },
+    {
+      "start": 529,
+      "length": 32
+    },
+    {
+      "start": 682,
+      "length": 32
+    },
+    {
+      "start": 750,
+      "length": 32
+    },
+    {
+      "start": 1119,
+      "length": 32
+    },
+    {
+      "start": 1195,
+      "length": 32
+    },
+    {
+      "start": 1311,
+      "length": 32
+    },
+    {
+      "start": 3300,
+      "length": 32
+    }
+  ],
+  "hashMatch": true,
+  "proxy": {
+    "eip1967ImplementationSlot": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "eip1967AdminSlot": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "isProxy": false
+  }
+}

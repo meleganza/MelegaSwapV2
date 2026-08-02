@@ -33,7 +33,9 @@ describe('MELEGA_DEX_V1_FEE_SCHEDULE_FOUNDER_GOVERNANCE_FINALIZATION', () => {
     expect(CREATE_TOKEN_CREATION_FEE_BNB).toBe('0.10')
     expect(CREATE_TOKEN_CREATION_FEE_WEI).toBe('100000000000000000')
     expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.creationFeeDecision).toBe('APPROVED')
-    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress).toBeNull()
+    expect(CREATE_TOKEN_CANONICAL_DEPLOYMENT.factoryAddress?.toLowerCase()).toBe(
+      '0x6dbb5d7162842da94ef9172aedc8d148d203d311',
+    )
     expect(getFounderFeeSchedule().supersedes[0].priorCreateTokenFeeBnb).toBe('0.05')
   })
 
