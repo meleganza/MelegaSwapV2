@@ -3,6 +3,7 @@ import { useContract } from 'hooks/useContract'
 import { useSingleCallResult } from 'state/multicall/hooks'
 import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
 import { LB_FACTORY_READ_ABI, LB_PROGRAM_VIEW_ABI } from './abi/fragments'
+import { activeProgramCallArgs } from './activeProgramCallArgs'
 import {
   emptyProgramSnapshot,
   snapshotFromProgramView,
@@ -17,30 +18,44 @@ export type ProgramReadModelResult = {
   activity: LbActivityItem[]
   source: 'ON_CHAIN' | 'UNAVAILABLE'
   reason: string | null
+  /** Factory bound and ready for createProgram even when no active clone yet. */
+  factoryBound: boolean
 }
+
+export { activeProgramCallArgs }
 
 /**
  * Live Program read model.
- * Without a verified deployed program/factory address → UNAVAILABLE (honest).
- * Never fills metrics from local draft state.
+ * Without a verified deployed factory → UNAVAILABLE (honest).
+ * NO_ACTIVE_PROGRAM means factory is live but this wallet/token has no clone yet.
  */
 export function useProgramReadModel(input: {
   owner: string | null | undefined
   projectTokenAddress: string | null | undefined
+  quoteAssetAddress?: string | null | undefined
+  pairAddress?: string | null | undefined
 }): ProgramReadModelResult {
   const boundProgram = LB_DEPLOYED_ADDRESSES.programAddress
   const lbFactory = LB_DEPLOYED_ADDRESSES.lbFactory
+  const factoryBound = isDeployedAddress(lbFactory)
 
   const factoryContract = useContract(
-    isDeployedAddress(lbFactory) ? lbFactory : undefined,
+    factoryBound ? lbFactory : undefined,
     LB_FACTORY_READ_ABI as unknown as any,
     false,
   )
 
+  const activeArgs = activeProgramCallArgs(
+    input.owner,
+    input.projectTokenAddress,
+    input.quoteAssetAddress,
+    input.pairAddress,
+  )
+
   const activeProgramResult = useSingleCallResult(
-    factoryContract,
+    activeArgs ? factoryContract : undefined,
     'activeProgram',
-    input.owner && input.projectTokenAddress ? [input.owner, input.projectTokenAddress] : undefined,
+    activeArgs ?? undefined,
   )
 
   const resolvedProgram =
@@ -59,12 +74,13 @@ export function useProgramReadModel(input: {
   const latestResult = useSingleCallResult(programContract, 'latestExecution')
 
   return useMemo(() => {
-    if (!isDeployedAddress(lbFactory) && !isDeployedAddress(boundProgram)) {
+    if (!factoryBound && !isDeployedAddress(boundProgram)) {
       return {
         snapshot: emptyProgramSnapshot(),
         activity: [],
         source: 'UNAVAILABLE' as const,
         reason: 'LB_PROGRAM_NOT_DEPLOYED',
+        factoryBound: false,
       }
     }
 
@@ -74,6 +90,7 @@ export function useProgramReadModel(input: {
         activity: [],
         source: 'UNAVAILABLE' as const,
         reason: 'NO_ACTIVE_PROGRAM',
+        factoryBound,
       }
     }
 
@@ -83,6 +100,7 @@ export function useProgramReadModel(input: {
         activity: [],
         source: 'UNAVAILABLE' as const,
         reason: 'LOADING',
+        factoryBound,
       }
     }
 
@@ -92,28 +110,20 @@ export function useProgramReadModel(input: {
         snapshot: emptyProgramSnapshot(),
         activity: [],
         source: 'UNAVAILABLE' as const,
-        reason: 'VIEW_UNAVAILABLE',
+        reason: 'PROGRAM_VIEW_UNAVAILABLE',
+        factoryBound,
       }
     }
 
     const snapshot = snapshotFromProgramView(resolvedProgram, raw)
-    const activity = activityFromLatestExecution({
-      executionCount: snapshot.executionCount,
-      latest: (latestResult.result?.[0] as any) ?? null,
-    })
+    const activity = activityFromLatestExecution(latestResult?.result?.[0] as any)
 
     return {
       snapshot,
       activity,
       source: 'ON_CHAIN' as const,
       reason: null,
+      factoryBound,
     }
-  }, [
-    boundProgram,
-    latestResult.result,
-    lbFactory,
-    resolvedProgram,
-    viewResult.loading,
-    viewResult.result,
-  ])
+  }, [factoryBound, boundProgram, resolvedProgram, viewResult.loading, viewResult.result, latestResult?.result])
 }

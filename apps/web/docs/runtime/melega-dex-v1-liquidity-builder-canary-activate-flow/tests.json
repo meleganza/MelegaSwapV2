@@ -1,0 +1,14 @@
+{
+  "schema": "melega.lb.canary-activate-tests.v1",
+  "command": "yarn vitest run src/views/LiquidityStudio/liquidityBuilding/__tests__ src/lib/deployment-orchestrator/__tests__/lbMainnetReady.test.ts",
+  "result": "PASS",
+  "totals": { "files": 8, "tests": 55 },
+  "coverage": [
+    "createProgram flow",
+    "deposit flow",
+    "activate flow",
+    "wallet rejection",
+    "program ACTIVE state",
+    "activeProgram 4-arg crash guard"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "melega.lb.canary-activate-activation-proof.v1",
+  "status": "AWAITING_FOUNDER",
+  "method": "activate",
+  "expectedLifecycle": "Active",
+  "uiStatus": "ACTIVE",
+  "successFeeBps": 1000,
+  "feeSink": "0xF984e1b1e9C35BF6E0cA801cd9dcea59faaA10AF",
+  "feeReceiver": "0x5f3b45ab1b4d149761f3749a3d7954a37a6a1ff5",
+  "treasuryPath": "Program → FeeSink → FeeReceiver → beneficiary MELEGA TREASURY WALLET",
+  "broadcastTxHash": null,
+  "route": "/liquidity",
+  "cta": "Activate Liquidity Builder",
+  "note": "UI wired to browser wallet sequence. No auto-sign. No server signer."
+}

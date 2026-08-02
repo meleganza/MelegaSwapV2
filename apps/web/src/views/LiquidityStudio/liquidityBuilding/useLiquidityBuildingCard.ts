@@ -9,7 +9,6 @@ import {
   type ProgramStatus,
   type SetupDraft,
   type StrategyMode,
-  canSubmitMutatingAction,
   setupDraftReadyForReview,
   transitionProgramStatus,
 } from './programStatus'
@@ -26,6 +25,12 @@ import { phaseToStep, stepFromQuery, stepToPhase } from './liquidityBuildingStep
 import { useActivationReadiness } from './useActivationReadiness'
 import { useMelegaPairDetection, type MelegaPairDetection } from './useMelegaPairDetection'
 import { useProgramReadModel } from './useProgramReadModel'
+import { useFounderActivateWriter } from './useFounderActivateWriter'
+import { canSubmitFounderWalletActivate, LB_SUCCESS_FEE_BPS } from './founderActivateFlow'
+import { LB_DEPLOYED_ADDRESSES, isDeployedAddress } from './addresses'
+import { useContract } from 'hooks/useContract'
+import { useSingleCallResult } from 'state/multicall/hooks'
+import { LB_FACTORY_READ_ABI } from './abi/fragments'
 
 export type LiquiditySeriesPoint = { label: string; value: number; at: string }
 
@@ -104,7 +109,9 @@ export type LiquidityBuildingCardState = {
   backToSetup: () => void
   openReview: () => boolean
   openStatus: () => void
-  requestDepositAndActivate: () => { ok: true } | { ok: false; reason: string }
+  requestDepositAndActivate: () => Promise<{ ok: true; programAddress?: string } | { ok: false; reason: string }>
+  successFeeBps: number
+  factoryBound: boolean
   pause: () => void
   resume: () => void
   stop: () => void
@@ -185,15 +192,31 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
 
   const readiness = useActivationReadiness()
   const pairDetection = useMelegaPairDetection(selectedCurrency)
+  const { activateProgram, factoryBound } = useFounderActivateWriter()
   const programRead = useProgramReadModel({
     owner: address ?? null,
     projectTokenAddress: draft.tokenAddress,
+    quoteAssetAddress: pairDetection.quoteAddress,
+    pairAddress: pairDetection.pairAddress,
   })
+
+  const factoryRead = useContract(
+    isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFactory) ? LB_DEPLOYED_ADDRESSES.lbFactory : undefined,
+    LB_FACTORY_READ_ABI as unknown as any,
+    false,
+  )
+  const quoteEnabledResult = useSingleCallResult(
+    pairDetection.quoteAddress ? factoryRead : undefined,
+    'isQuoteEnabled',
+    pairDetection.quoteAddress ? [pairDetection.quoteAddress] : undefined,
+  )
+  const quoteEnabled = Boolean(quoteEnabledResult?.result?.[0])
 
   const balance = useCurrencyBalance(address ?? undefined, selectedCurrency ?? undefined)
   const walletConnected = Boolean(address)
   const correctChain = chain?.id === ChainId.BSC
-  const activationPending = !readiness.gates.activationAuthorized
+  // Founder create/deposit/activate uses factory binding — not autonomous KMS/relay gates.
+  const activationPending = !factoryBound
 
   /** Hydrate phase from durable query step (refresh / back / forward). */
   useEffect(() => {
@@ -240,12 +263,12 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
 
   const mutateGate = useMemo(
     () =>
-      canSubmitMutatingAction({
+      canSubmitFounderWalletActivate({
         walletConnected,
         correctChain,
-        gates: readiness.gates,
+        factoryBound: factoryBound || isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFactory),
       }),
-    [walletConnected, correctChain, readiness.gates],
+    [walletConnected, correctChain, factoryBound],
   )
 
   const draftReady = setupDraftReadyForReview(draft)
@@ -310,6 +333,8 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     mutateGate,
     draftReady,
     decisionFrequencyLabel,
+    successFeeBps: LB_SUCCESS_FEE_BPS,
+    factoryBound: factoryBound || programRead.factoryBound,
     setToken: (currency) => {
       setSelectedCurrency(currency)
       setDraft((d) => ({
@@ -339,34 +364,57 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
       return true
     },
     openStatus: () => setPhase('status'),
-    requestDepositAndActivate: () => {
-      // Fail-closed — never fabricate ACTIVE and never skip wallet authorization.
-      // Production LB bindings are null until deployment; do not invent success.
+    requestDepositAndActivate: async () => {
+      // Fail-closed — never fabricate ACTIVE; browser wallet must sign each step.
       if (!mutateGate.ok) {
         setPhase('status')
         return {
           ok: false as const,
           reason:
             mutateGate.reason ??
-            'Activation gates are not ready. Connect wallet and wait for program authorization.',
+            'Connect MELEGA DEPLOYER on BNB Smart Chain with Liquidity Builder Factory bound.',
         }
       }
-      if (programRead.source !== 'ON_CHAIN') {
+      if (!factoryBound && !isDeployedAddress(LB_DEPLOYED_ADDRESSES.lbFactory)) {
         setPhase('status')
         return {
           ok: false as const,
-          reason:
-            'Liquidity Building program contracts are not bound on this deployment. Wallet activation cannot proceed until on-chain programs are live.',
+          reason: 'Liquidity Building Factory is not bound on this deployment.',
         }
       }
-      // On-chain path ready — surface approval request. Do not fabricate confirmed deposits.
-      setStatus((s) => transitionProgramStatus(s, 'REQUEST_APPROVAL'))
-      setPhase('status')
-      return {
-        ok: false as const,
-        reason:
-          'Approval transaction preparation requires a bound program writer. Wallet will open when the deposit path is wired to the live LB program.',
+      if (!draft.tokenAddress || !pairDetection.pairAddress || !pairDetection.quoteAddress) {
+        return { ok: false as const, reason: 'Select a project token with a live Melega WBNB pair.' }
       }
+      if (!setupDraftReadyForReview(draft)) {
+        return { ok: false as const, reason: 'Complete token, budget, and strategy before Activate.' }
+      }
+
+      setStatus((s) => transitionProgramStatus(s, 'REQUEST_APPROVAL'))
+
+      const decimals = selectedCurrency?.wrapped?.decimals ?? 18
+      const strategyMode = draft.strategy === 'DYNAMIC_RANGE' ? 'DYNAMIC_RANGE' : 'FULL_AI'
+      const result = await activateProgram({
+        projectToken: draft.tokenAddress,
+        quoteAsset: pairDetection.quoteAddress,
+        pair: pairDetection.pairAddress,
+        budgetHuman: draft.tokenBudget,
+        decimals,
+        strategyMode,
+        minimumRateBps: Number(draft.minimumRateBps) || 0,
+        maximumRateBps: Number(draft.maximumRateBps) || 0,
+        epochDurationSeconds: draft.epochSeconds,
+        quoteEnabled: quoteEnabled || pairDetection.quoteAddress.toLowerCase() === '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+        correctChain,
+      })
+
+      if (!result.ok) {
+        setPhase('status')
+        return { ok: false as const, reason: result.reason }
+      }
+
+      setStatus('ACTIVE')
+      setPhase('active')
+      return { ok: true as const, programAddress: result.programAddress }
     },
     pause: () => {
       if (!mutateGate.ok || programRead.source !== 'ON_CHAIN') return

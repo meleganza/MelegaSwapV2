@@ -555,15 +555,33 @@ function resolveProgramUnavailableReason(input: {
   programSource: 'ON_CHAIN' | 'UNAVAILABLE'
   programReason: string | null
   mutateGate: { ok: boolean; reason: string | null }
+  factoryBound?: boolean
 }): string | null {
+  const factoryBound =
+    input.factoryBound ||
+    Boolean(
+      LB_DEPLOYED_ADDRESSES.lbFactory &&
+        LB_DEPLOYED_ADDRESSES.lbAuthorizer &&
+        LB_DEPLOYED_ADDRESSES.lbFeeSink,
+    )
+
+  // Factory live + no clone yet is the createProgram entry state — do not block Activate.
+  if (factoryBound && input.programReason === 'NO_ACTIVE_PROGRAM') {
+    if (!input.mutateGate.ok) return humanizeGateReason(input.mutateGate.reason)
+    return null
+  }
+
   const addressesNull =
     !LB_DEPLOYED_ADDRESSES.lbFactory &&
     !LB_DEPLOYED_ADDRESSES.lbAuthorizer &&
     !LB_DEPLOYED_ADDRESSES.lbFeeSink &&
     !LB_DEPLOYED_ADDRESSES.programAddress
 
-  if (input.programSource !== 'ON_CHAIN' || addressesNull) {
+  if (!factoryBound || addressesNull) {
     return humanizeGateReason(input.programReason ?? 'LB_PROGRAM_NOT_DEPLOYED')
+  }
+  if (input.programSource !== 'ON_CHAIN' && input.programReason && input.programReason !== 'NO_ACTIVE_PROGRAM') {
+    return humanizeGateReason(input.programReason)
   }
   if (!input.mutateGate.ok) {
     return humanizeGateReason(input.mutateGate.reason)
@@ -648,6 +666,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     programSource: card.programSource,
     programReason: card.programReason,
     mutateGate: card.mutateGate,
+    factoryBound: card.factoryBound,
   })
 
   const eligibilityLabel = useMemo(() => {
@@ -726,7 +745,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const showConnectSlot =
     inFlow && !isActive && builderStep === 3 && !card.walletConnected && !stepError && !programBlockReason
 
-  const runActivate = () => {
+  const runActivate = async () => {
     if (programBlockReason) {
       setStepError(programBlockReason)
       return
@@ -751,10 +770,14 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     }
 
     setActivating(true)
-    const result = card.requestDepositAndActivate()
-    setActivating(false)
-    if (result && !result.ok) {
-      setStepError(result.reason)
+    setStepError(null)
+    try {
+      const result = await card.requestDepositAndActivate()
+      if (result && !result.ok) {
+        setStepError(result.reason)
+      }
+    } finally {
+      setActivating(false)
     }
   }
 
@@ -815,16 +838,28 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       return (
         <DashGrid data-testid="liq-lb-dashboard">
           <MetaCell>
-            <MetaLabel>Program</MetaLabel>
+            <MetaLabel>Pair</MetaLabel>
             <MetaValue>{s.pairLabel || s.tokenSymbol || '—'}</MetaValue>
           </MetaCell>
           <MetaCell>
             <MetaLabel>Status</MetaLabel>
-            <MetaValue>{PROGRAM_STATUS_LABEL[card.status]}</MetaValue>
+            <MetaValue data-testid="liq-lb-program-status">{PROGRAM_STATUS_LABEL[card.status]}</MetaValue>
           </MetaCell>
           <MetaCell>
             <MetaLabel>Budget</MetaLabel>
-            <MetaValue>{s.initialBudgetLabel || '—'}</MetaValue>
+            <MetaValue>{s.initialBudgetLabel || card.draft.tokenBudget || '—'}</MetaValue>
+          </MetaCell>
+          <MetaCell>
+            <MetaLabel>Success Fee</MetaLabel>
+            <MetaValue data-testid="liq-lb-success-fee">{(card.successFeeBps / 100).toFixed(0)}%</MetaValue>
+          </MetaCell>
+          <MetaCell>
+            <MetaLabel>Program Address</MetaLabel>
+            <MetaValue data-testid="liq-lb-program-address" title={s.programAddress || undefined}>
+              {s.programAddress
+                ? `${s.programAddress.slice(0, 6)}…${s.programAddress.slice(-4)}`
+                : '—'}
+            </MetaValue>
           </MetaCell>
           <MetaCell>
             <MetaLabel>Remaining</MetaLabel>
@@ -839,7 +874,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             <MetaValue>{s.grossQuoteLabel || '—'}</MetaValue>
           </MetaCell>
           <MetaCell>
-            <MetaLabel>Fee</MetaLabel>
+            <MetaLabel>Fee Paid</MetaLabel>
             <MetaValue>{s.feePaidLabel || '—'}</MetaValue>
           </MetaCell>
           <MetaCell>

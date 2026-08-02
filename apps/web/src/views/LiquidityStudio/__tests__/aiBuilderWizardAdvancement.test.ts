@@ -117,7 +117,7 @@ describe('AI Builder founder 3-step advancement', () => {
     expect(hook).toContain("programRead.source !== 'ON_CHAIN'")
     expect(hook).toContain('if (!mutateGate.ok)')
     const card = load('onePage/LiquidityBuildingCard.tsx')
-    expect(card).toContain('card.requestDepositAndActivate()')
+    expect(card).toMatch(/card\.requestDepositAndActivate\(\)/)
   })
 
   it('mounts founder deploy readiness panel without developer diagnostics strip', () => {

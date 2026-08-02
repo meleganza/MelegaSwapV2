@@ -1,0 +1,21 @@
+{
+  "schema": "melega.lb.canary-activate-program-creation-proof.v1",
+  "status": "ETH_CALL_VALIDATED_AWAITING_FOUNDER_SIGNATURE",
+  "factory": "0xB9f3e3020141157C215902acC1fDF65e49bE4e82",
+  "method": "createProgram",
+  "from": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "args": {
+    "projectToken": "0x55d398326f99059fF775485246999027B3197955",
+    "quoteAsset": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "pair": "0x94FADf053BaD0c9d0a3874F82b1a09001926A548",
+    "strategy": { "mode": 0, "minimumRateBps": 0, "maximumRateBps": 0 },
+    "epochDurationSeconds": 300
+  },
+  "ethCallResult": {
+    "program": "0xA15aDa28A9b7d4d9f6Ac781407bAf1A2CFB802EB",
+    "programId": "0x09226f9115be2fed60f647e89b5e5dcd9715a4d50f2344fbec347ca2b7333d8d",
+    "reverted": false
+  },
+  "broadcastTxHash": null,
+  "note": "eth_call succeeds. Live createProgram requires Founder wallet signature on /liquidity Activate."
+}

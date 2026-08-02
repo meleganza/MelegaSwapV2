@@ -1,0 +1,13 @@
+{
+  "schema": "melega.lb.canary-activate-deposit-proof.v1",
+  "status": "AWAITING_FOUNDER",
+  "method": "depositBudget",
+  "programAddress": "0xA15aDa28A9b7d4d9f6Ac781407bAf1A2CFB802EB",
+  "amountHuman": "0.01",
+  "amountWei": "10000000000000000",
+  "asset": "USDT",
+  "assetAddress": "0x55d398326f99059fF775485246999027B3197955",
+  "prerequisite": "createProgram receipt + ERC20 approve(program, amount)",
+  "broadcastTxHash": null,
+  "wiring": "apps/web/src/views/LiquidityStudio/liquidityBuilding/useFounderActivateWriter.ts"
+}
