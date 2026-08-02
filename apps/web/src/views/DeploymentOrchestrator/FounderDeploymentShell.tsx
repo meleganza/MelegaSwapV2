@@ -26,11 +26,16 @@ import {
   buildLbDeploySteps,
   type LbDeployedAddresses,
 } from 'lib/deployment-orchestrator/founderLbDeployTx'
-import {
-  buildCreateTokenDeployStep,
-  runtimeHashForCtCertifiedCompare,
-} from 'lib/deployment-orchestrator/founderCtDeployTx'
+import { buildCreateTokenDeployStep } from 'lib/deployment-orchestrator/founderCtDeployTx'
 import { CT_FACTORY_ALIAS } from 'lib/deployment-orchestrator/founderCtArtifacts'
+import {
+  bindValidatedCreateTokenFactory,
+  decodeCtCreationFee,
+  decodeCtFeeRecipient,
+  encodeCtCreationFeeCall,
+  encodeCtFeeRecipientCall,
+  validateCtFactoryFromOnChain,
+} from 'lib/deployment-orchestrator/founderCtSession'
 import {
   LB_STEP1_FACTUAL,
   LB_STEP2_FACTUAL,
@@ -57,8 +62,10 @@ import {
   resolveWalletProvider,
   type EthereumProvider,
   walletEstimateDeployGas,
+  walletEthCall,
   walletGetCode,
   walletGetGasPrice,
+  walletGetTransaction,
   walletGetTransactionReceipt,
   walletSendDeployTransaction,
 } from 'lib/deployment-orchestrator/founderWalletTx'
@@ -394,6 +401,12 @@ export const FounderDeploymentShell: React.FC = () => {
     quarantined,
   })
 
+  /** CT mission surface: READY_TO_DEPLOY → READY_FOR_SIGNATURE (same gate). */
+  const displayOperationalState =
+    isCreateTokenStage && operationalState === 'READY_TO_DEPLOY'
+      ? ('READY_FOR_SIGNATURE' as FounderOperationalState | 'READY_FOR_SIGNATURE')
+      : operationalState
+
   const authorizedConnected = Boolean(
     isConnected && address && isAuthorizedMelegaDeployer(address) && chainId === FOUNDER_DEPLOY_CHAIN_ID,
   )
@@ -567,19 +580,45 @@ export const FounderDeploymentShell: React.FC = () => {
       }
       const code = await walletGetCode(eth, codeAddr)
       if (isCreateTokenStage) {
-        const masked = runtimeHashForCtCertifiedCompare(code)
-        const expected = step.expectedRuntimeHash
+        const txMeta = await walletGetTransaction(eth, hash)
+        const nonceRaw = txMeta?.nonce
+        const nonce =
+          nonceRaw == null
+            ? null
+            : typeof nonceRaw === 'string'
+              ? Number.parseInt(nonceRaw, 16)
+              : Number(nonceRaw)
+
+        let creationFeeWeiOnChain: string | null = null
+        let feeRecipientOnChain: string | null = null
+        try {
+          const feeRaw = await walletEthCall(eth, codeAddr, encodeCtCreationFeeCall())
+          const recipRaw = await walletEthCall(eth, codeAddr, encodeCtFeeRecipientCall())
+          creationFeeWeiOnChain = decodeCtCreationFee(feeRaw)
+          feeRecipientOnChain = decodeCtFeeRecipient(recipRaw)
+        } catch {
+          creationFeeWeiOnChain = null
+          feeRecipientOnChain = null
+        }
+
+        const validated = validateCtFactoryFromOnChain({
+          txHash: hash,
+          nonce: Number.isFinite(nonce as number) ? (nonce as number) : null,
+          receipt,
+          runtimeBytecode: code,
+          creationFeeWeiOnChain,
+          feeRecipientOnChain,
+        })
         setValidating(false)
-        if (masked.toLowerCase() !== expected.toLowerCase()) {
+        if (!validated.ok) {
           setQuarantined(true)
-          setStatusNote(
-            `Create Token Factory runtime hash mismatch (masked ${masked}, expected ${expected}). No bind.`,
-          )
+          setStatusNote(`${CT_FACTORY_ALIAS} quarantined — ${validated.reason}. No bind.`)
           return
         }
-        // SSOT factoryAddress stays null until explicit bind mission — never fabricate.
+        // Session bind (in-memory). SSOT factoryAddress stays null until Founder commits the factual address.
+        const bound = bindValidatedCreateTokenFactory(validated.evidence)
         setStatusNote(
-          `${CT_FACTORY_ALIAS} DEPLOYED · VALIDATED at ${codeAddr}. Bind factoryAddress in a follow-up mission. User creation remains disabled.`,
+          `${CT_FACTORY_ALIAS} DEPLOYED · VALIDATED · SESSION-BOUND at ${bound.factoryAddress}. Commit SSOT factoryAddress to unlock user Create Token. User creation remains disabled until SSOT bind.`,
         )
         return
       }
@@ -637,8 +676,12 @@ export const FounderDeploymentShell: React.FC = () => {
       <Title>Permanent Contract Deployment</Title>
       <Sub>Founder-signed mainnet deployment · browser wallet only · no KMS · no server signer</Sub>
 
-      <Banner $tone={toneFor(operationalState)} data-testid="founder-operational-state" data-state={operationalState}>
-        {operationalState}
+      <Banner
+        $tone={toneFor(operationalState)}
+        data-testid="founder-operational-state"
+        data-state={displayOperationalState}
+      >
+        {displayOperationalState}
         {authorizedConnected ? ' · Authorized MELEGA DEPLOYER connected' : ''}
       </Banner>
 

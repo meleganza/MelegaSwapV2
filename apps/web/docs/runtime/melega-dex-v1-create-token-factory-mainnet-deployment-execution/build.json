@@ -1,0 +1,6 @@
+{
+  "command": "yarn build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "exitCode": 0
+}

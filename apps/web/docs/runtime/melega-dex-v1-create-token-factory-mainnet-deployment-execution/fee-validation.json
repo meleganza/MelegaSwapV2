@@ -1,0 +1,7 @@
+{
+  "creationFeeWei": "100000000000000000",
+  "creationFeeBnb": "0.10",
+  "source": "fee-schedule.json#services.createToken + ct-v1-certified.json",
+  "immutableConstructorInput": true,
+  "status": "CERTIFIED_PRE_DEPLOY"
+}

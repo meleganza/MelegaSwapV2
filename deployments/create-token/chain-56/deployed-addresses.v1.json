@@ -2,7 +2,7 @@
   "schema": "melega.create-token.deployed-addresses.v1",
   "chainId": 56,
   "network": "bnb-smart-chain-mainnet",
-  "status": "DEPLOYMENT_BLOCKED",
+  "status": "AWAITING_FOUNDER_SIGNATURE",
   "factory": null,
   "tokenTemplate": "MelegaFixedSupplyToken (deployed per createToken call)",
   "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
@@ -11,11 +11,12 @@
   "creationFeeDecision": "APPROVED",
   "deploymentTx": null,
   "deploymentBlock": null,
-  "deployer": null,
+  "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
   "verified": false,
   "notes": [
-    "No fabricated address. Bind only after authorized mainnet broadcast + BscScan verification.",
-    "Founder approved immutable creation fee: 0.10 BNB = 100000000000000000 wei.",
-    "Remaining blocker: production deployment authority (MAINNET_DEPLOYER / CT_MAINNET_DEPLOY_AUTHORIZED / RPC / BscScan)."
+    "No fabricated address. Bind only after Founder-signed mainnet broadcast + runtime validation.",
+    "Certified package: apps/web/src/lib/deployment-orchestrator/artifacts/ct-v1-certified.json",
+    "Founder UI: /runtime/deployment/ · CTA Deploy Create Token Factory · MELEGA DEPLOYER only",
+    "Post-deploy path validates receipt, masked runtime hash, creationFee, feeRecipient, then session-binds; SSOT factoryAddress committed only with factual address."
   ]
 }

@@ -1,0 +1,14 @@
+{
+  "contract": "CreateTokenFactoryV1",
+  "solidityName": "MelegaTokenFactory",
+  "network": "BNB Smart Chain",
+  "chainId": 56,
+  "creationFeeBnb": "0.10",
+  "creationFeeWei": "100000000000000000",
+  "feeRecipientLabel": "MELEGA TREASURY WALLET",
+  "feeRecipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "deployerLabel": "MELEGA DEPLOYER",
+  "deployer": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "mutableTreasuryRuntimeAuthority": false,
+  "proxy": false
+}

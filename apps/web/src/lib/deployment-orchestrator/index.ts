@@ -124,14 +124,29 @@ export {
   verifyCtConstructorArgs,
 } from './founderCtDeployTx'
 export {
+  bindValidatedCreateTokenFactory,
+  decodeCtCreationFee,
+  decodeCtFeeRecipient,
+  describeCtSSotBindPatch,
+  encodeCtCreationFeeCall,
+  encodeCtFeeRecipientCall,
+  getCtSessionBound,
+  getCtSessionEvidence,
+  isCtExecutionAwaitingFounderSignature,
+  resetCtSession,
+  validateCtFactoryFromOnChain,
+} from './founderCtSession'
+export {
   buildContractCreationRequest,
   createMockEthereum,
   getBrowserEthereum,
   isUserRejectedError,
   resolveWalletProvider,
   walletEstimateDeployGas,
+  walletEthCall,
   walletGetCode,
   walletGetGasPrice,
+  walletGetTransaction,
   walletGetTransactionReceipt,
   walletSendDeployTransaction,
 } from './founderWalletTx'

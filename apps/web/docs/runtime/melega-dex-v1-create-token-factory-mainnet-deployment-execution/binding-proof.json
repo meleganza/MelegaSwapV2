@@ -1,0 +1,7 @@
+{
+  "factoryAddress": null,
+  "ssot": "apps/web/src/config/constants/createTokenFactoryDeployment.ts",
+  "sessionBindPath": "bindValidatedCreateTokenFactory (in-memory after live validate)",
+  "ssotBound": false,
+  "reason": "Awaiting Founder-signed mainnet deployment \u2014 no fabricated bind"
+}

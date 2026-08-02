@@ -69,13 +69,50 @@ export async function walletEstimateDeployGas(
 export async function walletGetTransactionReceipt(
   eth: EthereumProvider,
   txHash: string,
-): Promise<{ contractAddress?: string | null; status?: string | number | null; from?: string | null } | null> {
+): Promise<{
+  contractAddress?: string | null
+  status?: string | number | null
+  from?: string | null
+  blockNumber?: string | number | null
+  gasUsed?: string | number | null
+} | null> {
   const receipt = await eth.request({
     method: 'eth_getTransactionReceipt',
     params: [txHash],
   })
   if (!receipt || typeof receipt !== 'object') return null
-  return receipt as { contractAddress?: string | null; status?: string | number | null; from?: string | null }
+  return receipt as {
+    contractAddress?: string | null
+    status?: string | number | null
+    from?: string | null
+    blockNumber?: string | number | null
+    gasUsed?: string | number | null
+  }
+}
+
+export async function walletGetTransaction(
+  eth: EthereumProvider,
+  txHash: string,
+): Promise<{ nonce?: string | number | null; from?: string | null; hash?: string } | null> {
+  const tx = await eth.request({
+    method: 'eth_getTransactionByHash',
+    params: [txHash],
+  })
+  if (!tx || typeof tx !== 'object') return null
+  return tx as { nonce?: string | number | null; from?: string | null; hash?: string }
+}
+
+export async function walletEthCall(
+  eth: EthereumProvider,
+  to: string,
+  data: string,
+): Promise<string> {
+  const result = await eth.request({
+    method: 'eth_call',
+    params: [{ to, data }, 'latest'],
+  })
+  if (typeof result !== 'string' || !result.startsWith('0x')) throw new Error('eth_call failed')
+  return result
 }
 
 export async function walletGetCode(eth: EthereumProvider, address: string): Promise<string> {

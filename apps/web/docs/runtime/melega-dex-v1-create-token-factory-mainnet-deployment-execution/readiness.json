@@ -1,0 +1,13 @@
+{
+  "verdict": "MELEGA_DEX_V1_CREATE_TOKEN_FACTORY_AWAITING_FOUNDER_SIGNATURE",
+  "createTokenFactory": {
+    "DEPLOYED": false,
+    "VALIDATED": false,
+    "BOUND": false,
+    "READY": false,
+    "READY_FOR_SIGNATURE": true
+  },
+  "userCreateTokenEnabled": false,
+  "founderRequiredAfterDeploy": false,
+  "ui": "/runtime/deployment/"
+}

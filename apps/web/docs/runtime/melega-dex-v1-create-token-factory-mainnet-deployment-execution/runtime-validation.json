@@ -1,0 +1,12 @@
+{
+  "status": "PENDING_DEPLOY",
+  "validator": "validateCtFactoryFromOnChain",
+  "checks": [
+    "receipt.status success",
+    "from == MELEGA DEPLOYER",
+    "masked runtime hash == certified expectedRuntimeBytecodeSha256",
+    "creationFee() == 100000000000000000",
+    "feeRecipient() == MELEGA TREASURY WALLET"
+  ],
+  "observed": null
+}
