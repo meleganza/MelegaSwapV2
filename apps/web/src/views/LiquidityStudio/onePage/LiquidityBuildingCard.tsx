@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styled, { keyframes } from 'styled-components'
 import { Currency, ERC20Token } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -29,6 +30,15 @@ import { sanitizeDecimalInput } from 'lib/input/decimalInput'
 import { LbDeployReadinessPanel } from './LbDeployReadinessPanel'
 import { formatLbTokenAmount } from '../liquidityBuilding/formatLbAmount'
 import type { ActivateProgressPhase } from '../liquidityBuilding/founderActivateFlow'
+import { useLbOwnerPrograms } from '../liquidityBuilding/useLbOwnerPrograms'
+import { useLbProgramDetail } from '../liquidityBuilding/useLbProgramDetail'
+import { LbPortfolioHome } from '../liquidityBuilding/product/LbPortfolioHome'
+import { programFromQuery } from '../liquidityBuilding/liquidityBuildingStep'
+import {
+  formatReserveLabel,
+  pairLabelForProgram,
+  statusDisplay,
+} from '../liquidityBuilding/portfolioDisplay'
 
 const BUILDER_STEPS = [
   { n: 1, label: 'Set up' },
@@ -784,7 +794,11 @@ type LiquidityBuildingCardProps = {
 
 export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuildingCardProps>(
   function LiquidityBuildingCard({ forceExpanded = false }, ref) {
+  const router = useRouter()
   const card = useLiquidityBuildingCard()
+  const inventory = useLbOwnerPrograms(card.account)
+  const deepLinkProgram = programFromQuery(router.query.program)
+  const indexedDetail = useLbProgramDetail(deepLinkProgram)
   const [setupStarted, setSetupStarted] = useState(forceExpanded)
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
@@ -794,6 +808,31 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const [activateHint, setActivateHint] = useState<string | null>(null)
   const [builderStep, setBuilderStep] = useState<BuilderStep>(1)
   const [addressInput, setAddressInput] = useState('')
+
+  const returnToPortfolio = () => {
+    setSetupStarted(false)
+    setBuilderStep(1)
+    setAdvancedOpen(false)
+    setStepError(null)
+    card.reset()
+    void router.replace({ pathname: '/liquidity-studio', query: { view: 'building' } }, undefined, {
+      shallow: true,
+    })
+    inventory.refetch()
+  }
+
+  const openProgramDetail = (programAddress: string) => {
+    setSetupStarted(false)
+    setStepError(null)
+    void router.replace(
+      {
+        pathname: '/liquidity-studio',
+        query: { view: 'building', program: programAddress, step: 'dashboard' },
+      },
+      undefined,
+      { shallow: true },
+    )
+  }
 
   React.useEffect(() => {
     if (!forceExpanded) return
@@ -843,17 +882,22 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
 
   const isActive = card.phase === 'active' || card.phase === 'manage'
   const inFlow = forceExpanded || setupStarted || (card.phase !== 'entry' && !isActive)
+  // Portfolio home when not creating and not viewing a program detail.
+  const showPortfolio = !forceExpanded && !setupStarted && !isActive && card.phase === 'entry' && !activating
   // IA workspace already titles the pane — keep LB header collapsed, body expanded.
-  const heroCollapsed = forceExpanded || inFlow || isActive
+  const heroCollapsed = forceExpanded || inFlow || isActive || showPortfolio
   /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
   // Product polish: auto-height for setup/active — avoid 860px empty laptop shells.
   const compactInactive = !forceExpanded && !inFlow && !isActive
-  const compactLayout = compactInactive || inFlow || isActive || forceExpanded
+  const compactLayout = compactInactive || inFlow || isActive || forceExpanded || showPortfolio
 
   const onStart = () => {
     card.startSetup()
     setSetupStarted(true)
     setStepError(null)
+    void router.replace({ pathname: '/liquidity-studio', query: { view: 'building', step: 'setup' } }, undefined, {
+      shallow: true,
+    })
   }
 
   const tokenReady = setupTokenResolved(card.draft)
@@ -939,6 +983,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
 
   const primaryLabel = useMemo(() => {
     if (stepError) return stepError
+    if (showPortfolio) return LB_UX.portfolioCreateCta
     if (isActive) return 'Program Active'
     if (activating) {
       if (activateHint) return activateHint
@@ -960,6 +1005,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     return 'Activate Liquidity Program'
   }, [
     stepError,
+    showPortfolio,
     isActive,
     activating,
     activateHint,
@@ -1020,6 +1066,15 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       })
       if (result && !result.ok) {
         setStepError(humanizeActivationFailure(result.reason) || result.reason)
+      } else if (result && result.ok) {
+        // Return to Portfolio after successful activation (multi-program home).
+        setSetupStarted(false)
+        setBuilderStep(1)
+        inventory.refetch()
+        card.reset()
+        void router.replace({ pathname: '/liquidity-studio', query: { view: 'building' } }, undefined, {
+          shallow: true,
+        })
       }
     } finally {
       setActivating(false)
@@ -1033,7 +1088,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       else if (card.status === 'ACTIVE') card.pause()
       return
     }
-    if (!inFlow) {
+    if (showPortfolio || !inFlow) {
       onStart()
       setBuilderStep(1)
       return
@@ -1078,33 +1133,88 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     activating || (builderStep === 3 && Boolean(programBlockReason)) || (isActive && false)
 
   const content = (() => {
+    if (showPortfolio) {
+      return (
+        <LbPortfolioHome
+          walletConnected={card.walletConnected}
+          loading={inventory.loading}
+          error={inventory.error}
+          programs={inventory.programs}
+          onCreate={() => {
+            onStart()
+            setBuilderStep(1)
+          }}
+          onManage={openProgramDetail}
+          onViewDetails={openProgramDetail}
+        />
+      )
+    }
+
     if (isActive) {
       const s = card.programSnapshot
       const m = card.metrics
       const decimals = card.selectedCurrency?.wrapped?.decimals ?? 18
       const symbol = card.draft.tokenSymbol || s.tokenSymbol || null
+      const indexed = indexedDetail.program
       const reserveLabel =
+        (indexed ? formatReserveLabel(indexed.reserve, indexed.token) : null) ||
         s.initialBudgetLabel ||
         formatLbTokenAmount(card.draft.tokenBudget, decimals, symbol) ||
         (card.draft.tokenBudget && symbol ? `${card.draft.tokenBudget} ${symbol}` : card.draft.tokenBudget) ||
         '—'
+      const remainingLabel =
+        (indexed ? formatReserveLabel(indexed.remaining, indexed.token) : null) ||
+        s.remainingBudgetLabel ||
+        m.budgetRemainingLabel ||
+        '—'
       const strategyLabel =
+        indexed?.strategy ||
         STRATEGY_PRESET_OPTIONS.find((o) => o.key === card.draft.strategyPreset)?.label ||
         (card.draft.strategy === 'FULL_AI' ? LB_UX.strategyFullAiTitle : LB_UX.strategyRangeTitle)
       const goalLabel =
-        LIQUIDITY_GOAL_OPTIONS.find((o) => o.key === card.draft.liquidityGoal)?.label || '—'
-      const statusLabel =
-        card.status === 'ACTIVE' ? LB_UX.activeStatusRunning : PROGRAM_STATUS_LABEL[card.status]
+        indexed?.goal ||
+        LIQUIDITY_GOAL_OPTIONS.find((o) => o.key === card.draft.liquidityGoal)?.label ||
+        LB_UX.portfolioGoalFallback
+      const statusLabel = indexed
+        ? statusDisplay(indexed.status)
+        : card.status === 'ACTIVE'
+          ? LB_UX.activeStatusRunning
+          : PROGRAM_STATUS_LABEL[card.status]
+      const pairLabel =
+        (indexed ? pairLabelForProgram(indexed) : null) || s.pairLabel || '—'
       return (
         <ProductSummary data-testid="liq-lb-dashboard" data-lb-product-active="1">
+          <Secondary
+            type="button"
+            data-testid="liq-lb-back-portfolio"
+            onClick={returnToPortfolio}
+            style={{ alignSelf: 'flex-start', height: 32, marginBottom: 4 }}
+          >
+            {LB_UX.portfolioBack}
+          </Secondary>
           <ProductTitle data-testid="liq-lb-active-title">{LB_UX.activeProductTitle}</ProductTitle>
+
           <ProductRow>
-            <ProductKey>Pair</ProductKey>
-            <ProductVal data-testid="liq-lb-active-pair">{s.pairLabel || '—'}</ProductVal>
+            <ProductKey>Token</ProductKey>
+            <ProductVal data-testid="liq-lb-active-token">
+              {symbol || (indexed ? pairLabel.split('/')[0] : '—')}
+            </ProductVal>
           </ProductRow>
           <ProductRow>
-            <ProductKey>Token Reserve</ProductKey>
+            <ProductKey>Pair</ProductKey>
+            <ProductVal data-testid="liq-lb-active-pair">{pairLabel}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Status</ProductKey>
+            <ProductVal data-testid="liq-lb-program-status">{statusLabel}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Allocated reserve</ProductKey>
             <ProductVal data-testid="liq-lb-active-reserve">{reserveLabel}</ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Remaining reserve</ProductKey>
+            <ProductVal data-testid="liq-lb-active-remaining">{remainingLabel}</ProductVal>
           </ProductRow>
           <ProductRow>
             <ProductKey>Strategy</ProductKey>
@@ -1115,9 +1225,46 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             <ProductVal data-testid="liq-lb-active-goal">{goalLabel}</ProductVal>
           </ProductRow>
           <ProductRow>
-            <ProductKey>Status</ProductKey>
-            <ProductVal data-testid="liq-lb-program-status">{statusLabel}</ProductVal>
+            <ProductKey>Executions</ProductKey>
+            <ProductVal data-testid="liq-lb-active-executions">
+              {indexed?.executionCount != null
+                ? String(indexed.executionCount)
+                : m.executionCount != null
+                  ? String(m.executionCount)
+                  : '—'}
+            </ProductVal>
           </ProductRow>
+          <ProductRow>
+            <ProductKey>Liquidity generated</ProductKey>
+            <ProductVal data-testid="liq-lb-active-liquidity">
+              {s.liquidityBuiltLabel || m.liquidityBuiltLabel || '—'}
+            </ProductVal>
+          </ProductRow>
+          <ProductRow>
+            <ProductKey>Fees generated</ProductKey>
+            <ProductVal data-testid="liq-lb-active-fees">
+              {indexed?.totalFeePaid
+                ? formatReserveLabel(indexed.totalFeePaid, indexed.quoteAsset)
+                : s.feePaidLabel || '—'}
+            </ProductVal>
+          </ProductRow>
+
+          {indexedDetail.events.length > 0 ? (
+            <div data-testid="liq-lb-active-events" style={{ marginTop: 6 }}>
+              <ProductKey style={{ display: 'block', marginBottom: 4 }}>Events</ProductKey>
+              {indexedDetail.events.slice(0, 6).map((ev) => (
+                <ProductVal
+                  key={`${ev.transactionHash}-${ev.logIndex}`}
+                  style={{ display: 'block', fontWeight: 650, fontSize: 12, marginBottom: 2 }}
+                >
+                  {ev.eventType}
+                  {ev.transactionHash
+                    ? ` · ${ev.transactionHash.slice(0, 6)}…${ev.transactionHash.slice(-4)}`
+                    : ''}
+                </ProductVal>
+              ))}
+            </div>
+          ) : null}
 
           <Accordion
             open={advancedOpen}
@@ -1129,21 +1276,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <DashGrid>
                 <MetaCell>
                   <MetaLabel>Program Address</MetaLabel>
-                  <MetaValue data-testid="liq-lb-program-address" title={s.programAddress || undefined}>
-                    {s.programAddress
-                      ? `${s.programAddress.slice(0, 6)}…${s.programAddress.slice(-4)}`
+                  <MetaValue data-testid="liq-lb-program-address" title={s.programAddress || deepLinkProgram || undefined}>
+                    {(s.programAddress || deepLinkProgram)
+                      ? `${(s.programAddress || deepLinkProgram)!.slice(0, 6)}…${(s.programAddress || deepLinkProgram)!.slice(-4)}`
                       : '—'}
                   </MetaValue>
-                </MetaCell>
-                <MetaCell>
-                  <MetaLabel>Remaining</MetaLabel>
-                  <MetaValue data-testid="liq-lb-active-remaining">
-                    {s.remainingBudgetLabel || m.budgetRemainingLabel || '—'}
-                  </MetaValue>
-                </MetaCell>
-                <MetaCell>
-                  <MetaLabel>Liquidity Built</MetaLabel>
-                  <MetaValue>{s.liquidityBuiltLabel || m.liquidityBuiltLabel || '—'}</MetaValue>
                 </MetaCell>
                 <MetaCell>
                   <MetaLabel>Success Fee</MetaLabel>
@@ -1162,10 +1299,6 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                 <MetaCell>
                   <MetaLabel>LP Owner</MetaLabel>
                   <MetaValue>{s.lpOwner || s.lpRecipient || '—'}</MetaValue>
-                </MetaCell>
-                <MetaCell>
-                  <MetaLabel>Executions</MetaLabel>
-                  <MetaValue>{m.executionCount != null ? String(m.executionCount) : '—'}</MetaValue>
                 </MetaCell>
                 <MetaCell>
                   <MetaLabel>Last Epoch</MetaLabel>
@@ -1191,22 +1324,20 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     }
 
     if (!inFlow) {
+      // Fallback empty — portfolio mode normally owns entry.
       return (
-        <>
-          <EmptyHint data-testid="liq-lb-empty-hint">{LB_UX.entryLead}</EmptyHint>
-          <EmptyHint style={{ marginTop: 10, fontSize: 15, fontWeight: 700 }} data-testid="liq-lb-no-program-hint">
-            {LB_UX.noActiveProgramTitle}
-          </EmptyHint>
-          <EmptyHint style={{ marginTop: 6, opacity: 0.85 }}>{LB_UX.noActiveProgramBody}</EmptyHint>
-          <DocsRow data-testid="liq-lb-docs-links-entry">
-            <Link href={LB_UX.docsOverview}>Overview</Link>
-            <Link href={LB_UX.docsTokenReserve}>Token Reserve</Link>
-            <Link href={LB_UX.docsLiquidityGoals}>Liquidity Goals</Link>
-            <Link href={LB_UX.docsStrategies}>Strategies</Link>
-            <Link href={LB_UX.docsExecution}>Execution</Link>
-            <Link href={LB_UX.docsFees}>Fees</Link>
-          </DocsRow>
-        </>
+        <LbPortfolioHome
+          walletConnected={card.walletConnected}
+          loading={inventory.loading}
+          error={inventory.error}
+          programs={inventory.programs}
+          onCreate={() => {
+            onStart()
+            setBuilderStep(1)
+          }}
+          onManage={openProgramDetail}
+          onViewDetails={openProgramDetail}
+        />
       )
     }
 
@@ -1555,20 +1686,29 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
       $compact={compactLayout}
     >
       <Hero
-        $tight={inFlow || isActive || compactInactive}
+        $tight={inFlow || isActive || compactInactive || showPortfolio}
         data-testid="liq-lb-header"
-        data-collapsed={inFlow || isActive || compactInactive ? '1' : '0'}
+        data-collapsed={inFlow || isActive || compactInactive || showPortfolio ? '1' : '0'}
+        data-lb-mode={showPortfolio ? 'portfolio' : isActive ? 'detail' : inFlow ? 'create' : 'entry'}
       >
         <HeroCopy>
           {!forceExpanded ? (
             <TitleRow>
-              <Title>AI Liquidity Builder</Title>
+              <Title data-testid="liq-lb-product-title">
+                {showPortfolio || isActive ? LB_UX.portfolioProductName : 'AI Liquidity Builder'}
+              </Title>
               <NewBadge data-testid="liq-lb-new-badge">NEW</NewBadge>
             </TitleRow>
           ) : null}
-          <Desc data-testid="liq-lb-header-desc">{LB_UX.entryLead}</Desc>
+          <Desc data-testid="liq-lb-header-desc">
+            {showPortfolio
+              ? LB_UX.portfolioTitle
+              : isActive
+                ? LB_UX.activeHero
+                : LB_UX.entryLead}
+          </Desc>
         </HeroCopy>
-        <Artwork $show={!inFlow && !isActive && !compactInactive} aria-hidden>
+        <Artwork $show={!inFlow && !isActive && !showPortfolio && !compactInactive} aria-hidden>
           <Orbit />
           <Orbit2 />
           <Disc $x="12%" $y="18%" $c="rgba(221,185,47,0.7)" />
@@ -1591,6 +1731,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
 
       <Footer data-testid="liq-lb-footer">
         <FooterRow>
+          {inFlow && !isActive && builderStep === 1 ? (
+            <Secondary type="button" data-testid="liq-lb-cancel-create" onClick={returnToPortfolio}>
+              {LB_UX.portfolioBack}
+            </Secondary>
+          ) : null}
           {inFlow && !isActive && builderStep > 1 ? (
             <Secondary
               type="button"
@@ -1603,7 +1748,16 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               Back
             </Secondary>
           ) : null}
+          {isActive ? (
+            <Secondary type="button" data-testid="liq-lb-footer-back-portfolio" onClick={returnToPortfolio}>
+              {LB_UX.portfolioBack}
+            </Secondary>
+          ) : null}
           {showConnectSlot ? (
+            <ConnectSlot>
+              <ConnectWalletButton data-testid="liq-lb-connect-wallet">{LB_UX.walletConnect}</ConnectWalletButton>
+            </ConnectSlot>
+          ) : showPortfolio && !card.walletConnected ? (
             <ConnectSlot>
               <ConnectWalletButton data-testid="liq-lb-connect-wallet">{LB_UX.walletConnect}</ConnectWalletButton>
             </ConnectSlot>
@@ -1611,7 +1765,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             <Primary
               type="button"
               onClick={onPrimary}
-              disabled={primaryDisabled}
+              disabled={primaryDisabled || (showPortfolio && !card.walletConnected)}
               data-testid="liq-lb-primary"
               title={builderStep === 3 && programBlockReason ? programBlockReason : undefined}
             >

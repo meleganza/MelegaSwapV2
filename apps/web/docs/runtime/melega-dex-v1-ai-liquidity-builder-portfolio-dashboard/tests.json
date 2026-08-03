@@ -1,0 +1,18 @@
+{
+  "suite": "src/views/LiquidityStudio/liquidityBuilding/__tests__/portfolioDashboardUx.test.ts",
+  "result": "passed",
+  "tests": 6,
+  "alsoPassed": [
+    "aiBuilderWizardAdvancement",
+    "productUxRedesignV2",
+    "liquidity-builder-indexer"
+  ],
+  "coverage": [
+    "portfolio inventory rendering",
+    "multiple programs",
+    "program switch / deep link",
+    "empty state",
+    "create new program redirect",
+    "responsive layout"
+  ]
+}

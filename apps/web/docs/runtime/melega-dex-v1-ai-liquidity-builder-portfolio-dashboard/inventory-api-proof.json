@@ -1,0 +1,18 @@
+{
+  "endpoint": "GET /api/liquidity-programs/:wallet",
+  "consumer": "useLbOwnerPrograms",
+  "fieldsRendered": [
+    "programAddress",
+    "token",
+    "quoteAsset",
+    "pair",
+    "reserve",
+    "status",
+    "strategy",
+    "goal",
+    "executionCount",
+    "totalFeePaid"
+  ],
+  "ui": "LbPortfolioHome program cards",
+  "testId": "liq-lb-portfolio-list"
+}
