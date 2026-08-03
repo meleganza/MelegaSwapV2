@@ -51,10 +51,10 @@ describe('MELEGASWAP_V2_ETHEREUM_LIVE', () => {
     expect(pkg).toContain(`[ChainId.ETHEREUM]: '${MELEGA_ETH_ROUTER}'`)
   })
 
-  it('switcher includes Ethereum LIVE; Arb/Avax remain PREPARING', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
-    expect(getMelegaPreparingChains().map((c) => c.chainId).sort((a, b) => a - b)).toEqual([42161, 43114])
+  it('switcher includes Ethereum LIVE; Avalanche remains PREPARING after Arb LIVE', () => {
+    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
+    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
+    expect(getMelegaPreparingChains().map((c) => c.chainId)).toEqual([43114])
   })
 
   it('fee settles native ETH at 25% to MELEGA TREASURY', () => {

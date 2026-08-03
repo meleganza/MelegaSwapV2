@@ -105,6 +105,12 @@ export function getBuyTokenHref(opts?: { chainId?: number | null; contract?: str
       params.set('inputCurrency', 'ETH')
       params.set('outputCurrency', opts.contract)
     }
+  } else if (opts?.chainId === 42161) {
+    params.set('chain', 'arbitrum')
+    if (opts.contract) {
+      params.set('inputCurrency', 'ETH')
+      params.set('outputCurrency', opts.contract)
+    }
   } else if (opts?.chainId === 56) {
     params.set('chain', 'bsc')
     if (opts.contract) {
@@ -142,6 +148,8 @@ export function explorerLabelFor(chainId: number | null): string {
       return 'Etherscan'
     case 137:
       return 'Polygonscan'
+    case 42161:
+      return 'Arbiscan'
     case 43114:
       return 'Snowtrace'
     default:

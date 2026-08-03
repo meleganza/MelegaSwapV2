@@ -1,0 +1,26 @@
+{
+  "chainId": 42161,
+  "rpc": "https://arbitrum-one.public.blastapi.io",
+  "bytecodeBytes": {
+    "factory": 10687,
+    "multicall": 3808,
+    "router": 17827,
+    "masterBuilder_founder": 7296,
+    "masterBuilder_farms": 8761,
+    "vault": 9734,
+    "poolDeploy": 8327,
+    "stale_router": 0,
+    "marco": 3556
+  },
+  "routerFactory": "0x816ddf4e751dfe6a5e65837f721c5fd971108ede",
+  "routerFactoryMatchesFounderFactory": true,
+  "routerWETH": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+  "staleRouterBytecode": 0,
+  "multicallResponds": true,
+  "gates": {
+    "codeExists": true,
+    "routerFunctional": true,
+    "routerFactoryCoherent": true,
+    "noStaleRouter": true
+  }
+}

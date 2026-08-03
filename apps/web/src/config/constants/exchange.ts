@@ -10,6 +10,7 @@ export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.BSC_TESTNET]: BSC_TESTNET_ADDRESSES.router,
   [ChainId.BASE]: '0x1B30D21354a082EeBC66c4C5E56320759f7994e5',
   [ChainId.POLYGON]: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe',
+  [ChainId.ARBITRUM]: '0x149ee9245e5ed52a89ea777d19ad3a5d87873680',
 }
 
 // used to construct intermediary pairs for trading

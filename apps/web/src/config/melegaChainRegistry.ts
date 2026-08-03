@@ -64,6 +64,18 @@ export const MELEGA_ETH_FACTORY = '0x149EE9245E5eD52a89Ea777d19AD3A5D87873680'
 export const MELEGA_ETH_MASTER_BUILDER = '0x585364c747CaF6cF6441656F803796230fb1d61c'
 export const MELEGA_ETH_VAULT = '0x4C11221D39FcE56D12E46deC799F73029859B974'
 
+/** Canonical Melega V2 on Arbitrum — Founder-supplied; router.factory() verified on-chain */
+export const MELEGA_ARB_FACTORY = '0x816ddf4e751dfe6a5e65837f721c5fd971108ede'
+export const MELEGA_ARB_ROUTER = '0x149ee9245e5ed52a89ea777d19ad3a5d87873680'
+export const MELEGA_ARB_MULTICALL = '0xcA11bde05977b3631167028862bE2a173976CA11'
+/** Factual farm MasterChef (poolLength=14) matching packages/farms/constants/42161.ts */
+export const MELEGA_ARB_MASTER_BUILDER = '0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894'
+/** Founder-supplied alternate MasterBuilder (poolLength=1) — verified code, incomplete inventory */
+export const MELEGA_ARB_MASTER_BUILDER_FOUNDER_ALT = '0xeF3E56e434e273dC84A58f02209c154216D005cb'
+export const MELEGA_ARB_VAULT = '0x2541DBEa199a22501D75EA141627776Bd4EefC80'
+export const MELEGA_ARB_POOL_DEPLOY = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
+export const MELEGA_ARB_MARCO = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
+
 /**
  * Product statuses — Multichain Execution Program.
  * LIVE: BNB, Base, Polygon (+ Ethereum when activated). PREPARING: remaining chains.
@@ -187,25 +199,29 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
     explorer: 'https://arbiscan.io',
     logo: '/images/chains/42161.png',
-    status: 'PREPARING',
+    status: 'LIVE',
     capabilities: {
-      swap: false,
-      farms: false,
-      pools: false,
-      tokens: false,
+      swap: true,
+      farms: true,
+      pools: true,
+      tokens: true,
       liquidityBuilder: false,
     },
     contracts: {
-      factory: null,
-      router: null,
-      multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      masterBuilder: '0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894',
-      vault: null,
-      poolDeploymentFactory: null,
+      factory: MELEGA_ARB_FACTORY,
+      router: MELEGA_ARB_ROUTER,
+      multicall: MELEGA_ARB_MULTICALL,
+      masterBuilder: MELEGA_ARB_MASTER_BUILDER,
+      vault: MELEGA_ARB_VAULT,
+      poolDeploymentFactory: MELEGA_ARB_POOL_DEPLOY,
     },
     notes: [
-      'MasterChef present on-chain; Factory + Router canonical addresses required from Founder before LIVE.',
-      'Stale router 0x3BC722… has no bytecode on Arbitrum.',
+      'Liquidity Builder remains BNB-only (BETA).',
+      'Smart Swap fee settles as native ETH to MELEGA TREASURY (same EOA; 25% of gas unchanged).',
+      'Router.factory() verified against Founder Arbitrum Factory on-chain.',
+      'Stale router 0x3BC722… has no bytecode — never use.',
+      'MARCO on Arbitrum verified at 0x963556… (name MELEGA, symbol MARCO, 18 decimals).',
+      `Farms MasterChef SSOT ${MELEGA_ARB_MASTER_BUILDER}; Founder alt ${MELEGA_ARB_MASTER_BUILDER_FOUNDER_ALT} (poolLength=1) not used for inventory.`,
     ],
   },
   {
@@ -224,14 +240,19 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
       liquidityBuilder: false,
     },
     contracts: {
-      factory: null,
+      factory: '0xFF8EBf8edf1C533A02d066f852788773BdCD631C',
       router: null,
-      multicall: null,
-      masterBuilder: null,
-      vault: null,
-      poolDeploymentFactory: null,
+      multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      masterBuilder: '0x2541DBEa199a22501D75EA141627776Bd4EefC80',
+      vault: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe',
+      poolDeploymentFactory: '0x585364c747CaF6cF6441656F803796230fb1d61c',
     },
-    notes: ['PREPARING / not LIVE — Coming soon. No half-enabled switch.'],
+    notes: [
+      'PREPARING — Founder-labeled Router 0x149ee924… is MRT (MARCO Reward Token), not a V2 router.',
+      'Candidate 0xeF3E56e4… exposes factory()/WETH() but factory() points to undeployed 0xabd7a070…',
+      'Factory 0xFF8EBf8… has code (allPairsLength=0); needs a coherent V2 Router bound to it.',
+      'MARCO recovered at vault.token() 0x8c880e839f3cacf60f11612087babd3307a33720.',
+    ],
   },
 ] as const
 

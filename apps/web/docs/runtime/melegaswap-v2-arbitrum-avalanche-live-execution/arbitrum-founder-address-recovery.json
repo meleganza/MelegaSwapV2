@@ -1,0 +1,27 @@
+{
+  "mission": "MELEGASWAP_V2_ARBITRUM_AND_AVALANCHE_FOUNDER_ADDRESS_RECOVERY_AND_LIVE_EXECUTION",
+  "chainId": 42161,
+  "founderSupplied": {
+    "factory": "0x816ddf4e751dfe6a5e65837f721c5fd971108ede",
+    "multicall": "0xcA11bde05977b3631167028862bE2a173976CA11",
+    "router": "0x149ee9245e5ed52a89ea777d19ad3a5d87873680",
+    "masterBuilder_founder": "0xeF3E56e434e273dC84A58f02209c154216D005cb",
+    "masterBuilder_farms": "0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894",
+    "vault": "0x2541DBEa199a22501D75EA141627776Bd4EefC80",
+    "poolDeploy": "0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe",
+    "stale_router": "0x3BC722f252C7bAE2f55647e49aDcB9d33Ff6eBcC",
+    "marco": "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+  },
+  "roleClassification": {
+    "factory": "Founder Factory \u2014 UniswapV2-style (allPairsLength readable)",
+    "router": "Founder Router \u2014 functional V2 (factory+WETH)",
+    "multicall": "Canonical Multicall3",
+    "masterBuilder_founder": "Founder MasterBuilder poolLength=1",
+    "masterBuilder_farms": "Repo/history MasterChef poolLength=14 \u2014 SSOT for farms inventory",
+    "vault": "Founder Vault \u2014 bytecode present",
+    "poolDeploy": "Founder SmartChefFactory \u2014 bytecode present",
+    "stale_router": "REJECT \u2014 zero bytecode",
+    "marco": "Verified on 42161 \u2014 not BSC fallback"
+  },
+  "timestamp": "2026-08-03T16:07:20.379443+00:00"
+}

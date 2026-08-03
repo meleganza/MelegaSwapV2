@@ -32,13 +32,14 @@ export const CAKE_POLYGON = new ERC20Token(
   'Meleta Token',
   ' https://www.melegaswap.finance/marco-token',
 )
+/** Arbitrum MARCO — same address as BSC; verified on 42161 (name MELEGA, symbol MARCO, 18). Not a BSC fallback. */
 export const CAKE_ARB = new ERC20Token(
   ChainId.ARBITRUM,
   '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
   18,
   'MARCO',
-  'Meleta Token',
-  ' https://www.melegaswap.finance/marco-token',
+  'MELEGA',
+  'https://melega.finance/',
 )
 
 export const CAKE_SMR = new ERC20Token(

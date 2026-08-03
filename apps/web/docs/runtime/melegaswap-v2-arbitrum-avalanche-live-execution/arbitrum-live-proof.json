@@ -1,0 +1,17 @@
+{
+  "verdict": "MELEGASWAP_V2_ARBITRUM_LIVE",
+  "status": "LIVE",
+  "capabilities": [
+    "swap",
+    "farms",
+    "pools",
+    "tokens"
+  ],
+  "liquidityBuilder": false,
+  "feeAsset": "ETH",
+  "feeBps": 2500,
+  "router": "0x149ee9245e5ed52a89ea777d19ad3a5d87873680",
+  "factory": "0x816ddf4e751dfe6a5e65837f721c5fd971108ede",
+  "masterBuilderFarms": "0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894",
+  "marco": "0x963556de0eb8138E97A85F0A86eE0acD159D210b"
+}

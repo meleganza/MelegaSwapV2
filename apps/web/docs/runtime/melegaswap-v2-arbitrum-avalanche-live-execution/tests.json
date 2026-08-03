@@ -1,0 +1,9 @@
+{
+  "phase": "arbitrum",
+  "command": "yarn vitest run melegaChainRegistry.*.test.ts gasProtocolFee projectPagesMultichain",
+  "result": "passed",
+  "testFiles": 6,
+  "tests": 47,
+  "failed": 0,
+  "timestamp": "2026-08-03T16:10:49.175393+00:00"
+}

@@ -35,6 +35,7 @@ describe('Multichain foundation + Base reactivation', () => {
     expect(byId[8453].status).toBe('LIVE')
     expect(byId[137].status).toBe('LIVE')
     expect(byId[1].status).toBe('LIVE')
+    expect(byId[42161].status).toBe('LIVE')
     expect(byId[43114].status).toBe('PREPARING')
     expect(byId[8453].capabilities.liquidityBuilder).toBe(false)
     expect(byId[56].capabilities.liquidityBuilder).toBe(true)
@@ -43,9 +44,9 @@ describe('Multichain foundation + Base reactivation', () => {
   })
 
   it('switcher LIVE set includes BNB + Base + Polygon + Ethereum; PREPARING are not switchable', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
-    expect(getMelegaPreparingChains().map((c) => c.chainId).sort((a, b) => a - b)).toEqual([42161, 43114])
+    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
+    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
+    expect(getMelegaPreparingChains().map((c) => c.chainId)).toEqual([43114])
   })
 
   it('resolves Base Router SSOT across web + smart-router package', () => {

@@ -13,6 +13,7 @@ export const MELEGA_EXPLORE_CHAIN_LABELS: Record<number, string> = {
   137: 'Polygon',
   8453: 'Base',
   43114: 'Avalanche',
+  42161: 'Arbitrum',
 }
 
 function chainLogoSrc(chainId: number): string {
