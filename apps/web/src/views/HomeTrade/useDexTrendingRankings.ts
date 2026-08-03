@@ -23,6 +23,7 @@ import useBUSDPrice from 'hooks/useBUSDPrice'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
 import {
+  compareTierRankedAssets,
   hasTrendingSwapActivity,
   isQuoteTokenAddress,
   isTrendingTierStatus,
@@ -59,7 +60,8 @@ const SECONDS_24H = 86_400
  * so real indexed movers are not dropped while 24h tier metrics remain empty.
  */
 const SECONDS_ACTIVITY = 90 * SECONDS_24H
-const TRENDING_LIMIT = 10
+/** Display cap for ticker / shared Top Movers snapshot (ranked from full indexed universe). */
+export const TRENDING_LIMIT = 40
 const MIN_MARQUEE_ITEMS = 2
 
 type ActivityBump = { trades: number; volumeUsd: number; lastTs: number; traders: Set<string> }
@@ -379,7 +381,13 @@ function resolveDisplayMeta(
       chainId: 56,
     }
   }
-  return null
+  // Indexed-universe fallback — short address label so ranking never drops unknown listed tokens.
+  return {
+    symbol: `${key.slice(0, 6)}…${key.slice(-4)}`,
+    slug: key,
+    displayName: `${key.slice(0, 6)}…${key.slice(-4)}`,
+    chainId: 56,
+  }
 }
 
 function marcoIndexerMetrics(
@@ -505,7 +513,8 @@ export function useDexTrendingRankings() {
     }
     set.add(MARCO_BSC_ADDRESS.toLowerCase())
     set.add(CAKE[56].address.toLowerCase())
-    return Array.from(set).slice(0, 120)
+    // Full indexed universe — never truncate candidate set (P0: ~266 listed tokens).
+    return Array.from(set)
   }, [pairRows])
 
   const { data: externalQuotes = new Map<string, ExternalTokenQuote>() } = useSWR(
@@ -865,8 +874,42 @@ export function useDexTrendingRankings() {
       }
     }
 
-    // Top Movers: factual % from any integrated source. Never fabricate history.
-    const movers = [...byAddress.values()]
+    // P0: seed complete indexed universe so ranking is never sparse-by-membership.
+    for (const asset of canonicalByAddress.values()) {
+      const addr = asset.address?.toLowerCase()
+      if (!addr || isQuoteTokenAddress(addr)) continue
+      if (byAddress.has(addr)) continue
+      const meta = resolveDisplayMeta(addr, canonicalByAddress)
+      if (!meta) continue
+      upsert({
+        symbol: meta.symbol,
+        slug: meta.slug,
+        pairSlug: meta.slug,
+        address: addr,
+        chainId: meta.chainId,
+        displayName: meta.displayName,
+        tierStatus: 'READY',
+        priceUsd: resolveTokenPriceUsd(
+          addr,
+          meta.symbol,
+          marcoUsd,
+          marcoMetrics.marcoUsdFromCandle,
+          wbnbUsd,
+          cakeUsd,
+          busdUsd,
+        ),
+        volume24h: 0,
+        liquidityScore: liquidityScoreForAddress(pairRows, addr),
+        tradeCount24h: 0,
+        rankingSignals: ['indexedUniverse'],
+      })
+    }
+
+    // Shared Top Movers + Trending Bar ranking over full universe.
+    // Prefer credible % movers first, then backfill by activity/liquidity — never pad with fabrications.
+    // Never fabricate history: only real abs% / activity / liquidity from the indexed universe.
+    const all = [...byAddress.values()]
+    const withCredibleMove = all
       .filter((c) => {
         const pct = c.change24h?.pct
         if (pct == null || !Number.isFinite(pct)) return false
@@ -889,7 +932,22 @@ export function useDexTrendingRankings() {
         return (b.lastActivityTs ?? 0) - (a.lastActivityTs ?? 0)
       })
 
-    return movers.slice(0, TRENDING_LIMIT)
+    const selected = new Map<string, TierRankedAsset>()
+    for (const m of withCredibleMove) {
+      selected.set(m.address.toLowerCase(), m)
+      if (selected.size >= TRENDING_LIMIT) break
+    }
+    if (selected.size < TRENDING_LIMIT) {
+      const backfill = all
+        .filter((c) => !selected.has(c.address.toLowerCase()))
+        .sort(compareTierRankedAssets)
+      for (const b of backfill) {
+        selected.set(b.address.toLowerCase(), b)
+        if (selected.size >= TRENDING_LIMIT) break
+      }
+    }
+
+    return [...selected.values()]
   }, [
     tierMetrics,
     pairRows,

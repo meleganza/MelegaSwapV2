@@ -1,0 +1,61 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ yarn lb:manifest:check
+$ node scripts/generate-lb-certified-manifest.mjs --check-committed
+OK: committed lb-v1-certified.json integrity PASS (6 contracts) · Forge out/ present locally
+$ next build
+info  - Loaded env from /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web/.env.production
+info  - Loaded env from /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web/.env
+warn  - You have enabled experimental features (scrollRestoration, transpilePackages) in next.config.mjs.
+warn  - Experimental features are not covered by semver, and may cause unexpected or broken application behavior. Use at your own risk.
+
+(node:81308) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+info  - Skipping validation of types
+info  - Linting...
+error - ESLint: Failed to load config "next/babel" to extend from. Referenced from: /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web/.eslintrc
+info  - Creating an optimized production build...
+... truncated ...
+├ ○ /projects                                              19.1 kB         716 kB
+├ ○ /query                                                 4.27 kB         502 kB
+├ ○ /radar                                                 22.2 kB         734 kB
+├ ● /remove/[[...currency]]                                14 kB           754 kB
+├ ○ /review (568 ms)                                       3.91 kB         368 kB
+├ ○ /runtime/deployment                                    12.8 kB         632 kB
+├ ○ /runtime/deployment/status                             2.52 kB         541 kB
+├ ○ /runtime/labs                                          8.38 kB         377 kB
+├ ○ /status                                                2.31 kB         663 kB
+├ ○ /submit                                                1.72 kB         365 kB
+├ ○ /support                                               2.81 kB         487 kB
+├ ○ /swap                                                  444 B           914 kB
+├ ○ /testnet/liquidity                                     10 kB           164 kB
+├ ○ /testnet/wrapper-deploy                                5.13 kB         149 kB
+├ ○ /testnet/wrapper-validate                              16.4 kB         171 kB
+├ ○ /trade                                                 444 B           914 kB
+├ ○ /trending                                              23.1 kB         724 kB
+├ ○ /venues                                                8.02 kB         495 kB
+├ ● /venues/[slug] (365 ms)                                6.41 kB         501 kB
+├   ├ /venues/marco-bnb-lp
+├   ├ /venues/marco-bnb-farm
+├   ├ /venues/marco-stake-sous-0
+├   └ /venues/melega-ilo-bsc
+├ ○ /viewNFTs                                              5.4 kB          582 kB
+└ ○ /workspace                                             1.95 kB         382 kB
++ First Load JS shared by all                              89.7 kB
+  ├ chunks/framework-d3fad5fdc0ffd4a1.js                   45.4 kB
+  ├ chunks/main-3dc53dd9bce36319.js                        37.4 kB
+  ├ chunks/pages/_app-f782598701d06da8.js                  2.55 kB
+  └ chunks/webpack-fc4659938f33886a.js                     4.34 kB
+
+ƒ Middleware                                               26.7 kB
+
+ℇ  (Streaming)  server-side renders with streaming (uses React 18 SSR streaming or Server Components)
+λ  (Server)     server-side renders at runtime (uses getInitialProps or getServerSideProps)
+○  (Static)     automatically rendered as static HTML (uses no initial props)
+●  (SSG)        automatically generated as static HTML + JSON (uses getStaticProps)
+
+Done in 31.21s.
+Done in 32.01s.

@@ -42,40 +42,40 @@ export const LIQUIDITY_MODULE_001_FREEZE_SHA256 = {
 } as const
 
 export const LIQUIDITY_MODULE_002_FREEZE_SHA256 = {
-  LiquidityActionsModule: 'e4026979e1dfe49150b26ef6e8f3a5d36ef4c0745a803e2452721b6871ae5462',
+  LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
   liquidityActionsTokens: '2913c12cc629f7eda2ca85ac1762ab5a760eedec6c09a7c776833b86b7fd6c54',
 } as const
 
 export const LIQUIDITY_MODULE_003_FREEZE_SHA256 = {
   LiquidityPoolDiscoveryModule: '574a3fc626f9219d5cdfa155b7daec2beffaacd8c1fd52211dac472c9ddaf2d9',
   LiquidityPoolDiscoveryCard: 'd2eeb8cf7a3af2b18d82ecbb22e1a3077a385bf3a582693bc9ef382f7363e8b1',
-  liquidityPoolDiscoveryTokens: '918dc3494a170209202d1552eaa582764df3f6c5012087234fb5a51e865632f8',
+  liquidityPoolDiscoveryTokens: '6b97bbabf738fd6044a89430cbc06374e1321e10542b05dd0b8be2dfbc557648',
   liquidityPoolDiscoveryModel: '7611bdbf9aad0ee8d53d615a82427282e8430e2f09500a5375211646c8b70bb0',
   useLiquidityPoolDiscovery: '63c17d0851fbd057875a7575be853a15631f16e1ba3b6d90f13a16d25dc38407',
 } as const
 
 export const LIQUIDITY_MODULE_004_FREEZE_SHA256 = {
-  LiquidityAddModule: 'e57645b8b56c5e5530e4e7f357357656a70db39821ccade18aaffcc95a61113c',
-  liquidityAddTokens: '3d591660bfe477b24346a0e350940a26701b3f06d1fbadea46385a6a2c453ccf',
+  LiquidityAddModule: '6faef32646de967f9ddf27bb5269785b031444e00c3c163521312d5b67752fe5',
+  liquidityAddTokens: '5377efc9eaa232b6aa891aca95739e6e14b5ed9cca998f376071e5412fdb0c4a',
   liquidityAddCta: '8e52413c0747a90d5efbc44d4a497ed0bd6e39fb22c51fbb690772c9fa17ddc8',
 } as const
 
 export const LIQUIDITY_MODULE_005_FREEZE_SHA256 = {
   LiquidityMarketSnapshotModule: '664ba26cc5e14b374ace4c35b87b4a0c3a25147880aea771f1c33fb7738bb1fa',
-  liquidityMarketSnapshotTokens: '61f54bc9353ab8e66f885153e5af5cd81f7f72d87a595ae57c2ce91cc423917b',
-  buildLiquidityMarketSnapshot: 'adf31f9621acc6536e5f7dc059e4dd9f453c0bda934b553c05d34b242b4209c9',
-  useLiquidityMarketSnapshot: 'a0ac70595000381a739cf289f48103fc20261a2a9b6397f406ecb5b979011bca',
+  liquidityMarketSnapshotTokens: '445f05ab34cd01a9d0c0bb872ca3366ab37caf9bf6a95de2319335d3e4849af3',
+  buildLiquidityMarketSnapshot: '462f558ff46095d01ecc4d66d60296526aafc89221d4529e7de10c94a963d6f3',
+  useLiquidityMarketSnapshot: 'f8713ef2a30e6a3b92ebad6db648888cae99b81bce9dc88c6d6c56b8716f3bf1',
 } as const
 
 export const LIQUIDITY_MODULE_006_FREEZE_SHA256 = {
   LiquidityMyPositionsModule: 'adf90fe72b8422d81675b916c44aba880df5f340d5c9aec00999fff0e17ad3dc',
-  liquidityMyPositionsTokens: '92a8e96174318070f3e474743e786480c8c61975e89154c91ea259d64431da1a',
+  liquidityMyPositionsTokens: '33b081dfd9552b681cde226f42ee838366a31fbe6fd7d4b7e3c6de85309c13b3',
   liquidityMyPositionsModel: 'd5d84e53426afb8d870aae39cd9e0633a544b5adebe7047282b4f4a507b19139',
 } as const
 
 export const LIQUIDITY_MODULE_007_FREEZE_SHA256 = {
   LiquidityAnalyticsModule: 'ba1c06bfa3d7bfd49e75e89e4d9dd1b1fbd6518e52e20e8fef07d69db569e7e1',
-  liquidityAnalyticsTokens: 'b717399ad48cd32e03b3245b897f588373ca84b2140a5a1eb23fb72ab491b7e2',
+  liquidityAnalyticsTokens: 'bd06da93133a521d17450f04e6f3a3f05669b7aacc929bdfb10ac98b2d0e1992',
   buildLiquidityAnalytics: '5e302f2204c34184e4e9a4da4467ad0c15d453299955f83dee297f2b46c0a5be',
   useLiquidityAnalytics: 'a80da07df2c00ceac70491bd860bec1068668f490a6b45abee27676572c46e27',
 } as const

@@ -614,7 +614,11 @@ export function buildFarmsExploreFarmsViewModel(input: {
   if (anyPartial) disclosures.push('Some farm metrics are temporarily unavailable.')
   if (walletFilterPending) disclosures.push('Wallet filters apply after LP balance reads complete.')
 
-  const visibleFarms = list.slice(0, visibleLimit)
+  // P0: All filter shows the complete inventory — no hard cap.
+  // Other filters keep Load More pagination (pageStep).
+  const showAllInventory = input.filter === 'All' && !input.search.trim()
+  const effectiveLimit = showAllInventory ? list.length : visibleLimit
+  const visibleFarms = list.slice(0, Math.max(effectiveLimit, 0))
 
   return {
     state: anyPartial ? 'partial' : 'ready',
@@ -626,8 +630,8 @@ export function buildFarmsExploreFarmsViewModel(input: {
     sort: input.sort,
     search: input.search,
     pageSize,
-    visibleLimit,
-    hasMore: list.length > visibleLimit,
+    visibleLimit: showAllInventory ? list.length : visibleLimit,
+    hasMore: showAllInventory ? false : list.length > visibleLimit,
     disclosure: disclosures.length ? disclosures.join(' ') : null,
     liveRegion: `${list.length} active farm${list.length === 1 ? '' : 's'}`,
     source: 'portfolioFarms',

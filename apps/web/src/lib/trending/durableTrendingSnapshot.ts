@@ -42,7 +42,7 @@ export function writeDurableTrendingSnapshot(items: MelegaTickerItem[], generati
     const snap: DurableTrendingSnapshot = {
       schema: 'melega.trending.durable-snapshot.v1',
       updatedAt: Date.now(),
-      items: items.slice(0, 10),
+      items: items.slice(0, 40),
       source: 'ranked-assets',
       generation,
     }

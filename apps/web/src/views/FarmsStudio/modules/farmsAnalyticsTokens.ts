@@ -90,17 +90,17 @@ export const FARMS_MODULE_003_FREEZE_SHA256 = {
 
 export const FARMS_MODULE_004_FREEZE_SHA256 = {
   FarmsExploreFarmsModule: 'fcd6d9b788ec9abd6a39f7d81d0585d7a31c47b692c9ac1308dc9400661a4dce',
-  FarmsExploreFarmCard: '1634ba125184a5835225d3f64eaed1d72ab3ab0b3ce5e222e3ed569927522a84',
+  FarmsExploreFarmCard: 'bb1a0416ba9c5f286a4293b4184bbc0aba7a29d2b6ba792648bdd71057aa1247',
   farmsExploreFarmsTokens: 'c96b8bec3e30ea6296e90d3e18fc13b6acbfc66adebb415d522a067218582681',
   farmsExploreFarmsTypes: 'f7d40c5bbac21920a7c5c731eb828a395eda8421e9c6e6f9d9c98ccbc3ef24fb',
-  buildFarmsExploreFarms: '64eda6a26b12412b1dd20ba3d3014da6a2961b1c5837c4237074173eb62ddc1e',
+  buildFarmsExploreFarms: '7adab453e64fa407d48851368b7d445f91a3b589773d665e2aea21d3adff1320',
   useFarmsExploreFarms: 'aa38a2322e6022f52c5f4aaa20f64da62376590cdfb3fa7d0e4d01d0da5a0696',
 } as const
 
 export const FARMS_MODULE_005_FREEZE_SHA256 = {
   FarmsFinishedFarmsModule: '0fb2efe12d6eeef7e7896c4071e356cfd4efe7f75054af3622f941e837364bcf',
   FarmsFinishedFarmCard: '8db717eee8b4b356c192f009bad74e55c50cd007484b2131e8cc1a7be5f11abd',
-  farmsFinishedFarmsTokens: 'e049d6d1d9a5dab0dba7d411e6f8051fc3a7270f18f2b5088f654bf0efb77eec',
+  farmsFinishedFarmsTokens: '02f5f84e408932a5ac68d6d2001190340ea3d88e42d36bcce02fc07f4a6ecdf2',
   farmsFinishedFarmsTypes: '395114197f8c111479dd1486ea21df5707d16f2d480390a4a6adeb164757d4fc',
   buildFarmsFinishedFarms: '6507c580589af70bed9381fd242569dc824627df1a72a5f7f04a0d1f91b8a9fd',
   useFarmsFinishedFarms: '163703cb9671d3ea2bccac5a9f618f00993f53be3fbf009835315bc86cc3653d',
@@ -109,7 +109,7 @@ export const FARMS_MODULE_005_FREEZE_SHA256 = {
 export const FARMS_MODULE_006_FREEZE_SHA256 = {
   FarmsYieldAdvisorModule: '38a249133e0d64841c517beccc7ea2df8dd4aba3ea96c1f06e1554443442d38d',
   FarmsYieldAdvisorCard: '28d318a28251cfa6f9340a244eb667b740d4f4aa1432ec6b470e2ba94a1d9b4d',
-  farmsYieldAdvisorTokens: '7f91b4afdda9f26057cf435f778931d0f14bd82e5f4d718bcd84558398b668c2',
+  farmsYieldAdvisorTokens: 'f865f74f7c8808c8167ced8a2cd0386e8f39d1a4cd955e83a16ec3240c8350b8',
   farmsYieldAdvisorTypes: 'ed9e30ac59809df0f62759cf9fa73ce4dbec07c5f498e49bac8263db3453ca61',
   buildFarmsYieldAdvisor: 'b23d0a2a064b92e717ccb2f71b2cab346ea66f6d64809b8e96ba6a8ba7714c05',
   useFarmsYieldAdvisor: 'e404ab29e946d22b4d1d40d2ca66f161c126adc0c92d61a67d8a5f9679ac3116',

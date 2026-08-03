@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { poolsExplore } from './poolsExplorePoolsTokens'
 import type { PoolsExplorePoolCardModel } from './poolsExplorePoolsTypes'
 import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
@@ -99,6 +100,14 @@ const Status = styled.span<{ $tone: string }>`
   color: ${({ $tone }) => ($tone === 'Active' ? '#6DDC8C' : $tone === 'Partial' ? '#E0B85A' : 'rgba(255,255,255,0.55)')};
   background: ${({ $tone }) =>
     $tone === 'Active' ? 'rgba(109,220,140,0.12)' : $tone === 'Partial' ? 'rgba(224,184,90,0.12)' : 'rgba(255,255,255,0.06)'};
+`
+
+const Badges = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 `
 
 const Metrics = styled.div`
@@ -235,9 +244,12 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
             <Title title={pool.title}>{pool.title}</Title>
           </TextCol>
         </Identity>
-        <Status $tone={pool.statusLabel} aria-label={`Status ${pool.statusLabel}`}>
-          {pool.statusLabel}
-        </Status>
+        <Badges>
+          <MelegaExploreChainBadge chainId={pool.stakeToken.chainId ?? 56} />
+          <Status $tone={pool.statusLabel} aria-label={`Status ${pool.statusLabel}`}>
+            {pool.statusLabel}
+          </Status>
+        </Badges>
       </Header>
 
       <span

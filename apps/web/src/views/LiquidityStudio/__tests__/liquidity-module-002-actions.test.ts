@@ -37,12 +37,12 @@ describe('LIQUIDITY_MODULE_002 Actions', () => {
     expect(liquidityActions.cardMinH).toBe('520px')
 
     const mod = load('modules/LiquidityActionsModule.tsx')
-    expect(mod).toContain('data-liquidity-actions-geometry="1376-24-50-50"')
-    expect(mod).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)')
+    expect(mod).toContain('data-liquidity-actions-geometry={lbSupported ? \'1376-24-50-50\' : \'single-manual\'}')
+    expect(mod).toContain("minmax(0, 1fr) minmax(0, 1fr)")
     expect(mod).toContain('align-items: stretch')
   })
 
-  it('embeds expanded Add Liquidity + AI Builder with NEW badge', () => {
+  it('embeds expanded Add Liquidity + AI Builder with BETA / BNB gating', () => {
     expect(LIQUIDITY_ACTIONS_COPY.manual.title).toBe('Add Liquidity')
     expect(LIQUIDITY_ACTIONS_COPY.aiBuilder.title).toBe('AI Liquidity Builder')
     expect(LIQUIDITY_ACTIONS_COPY.aiBuilder.cta).toBe('Create Plan')
@@ -52,7 +52,9 @@ describe('LIQUIDITY_MODULE_002 Actions', () => {
     expect(mod).toContain('liquidity-actions-ai')
     expect(mod).toContain('<LiquidityAddModule embedded')
     expect(mod).toContain('<LiquidityBuildingCard forceExpanded')
-    expect(mod).toContain('liquidity-actions-ai-new-badge')
+    expect(mod).toContain('liquidity-actions-ai-beta-badge')
+    expect(mod).toContain('BNB Chain only')
+    expect(mod).toContain('LB_SUPPORTED_CHAIN_ID')
     expect(mod).toContain('data-liquidity-actions-ia="expanded-workspace"')
   })
 

@@ -253,6 +253,35 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     expect(empty.state).toBe('empty')
   })
 
+  it('All filter returns the complete inventory without a hard card limit', () => {
+    const cards = Array.from({ length: 15 }, (_, i) =>
+      makeCard({
+        id: `sous-${i + 1}`,
+        name: `Pool ${i + 1}`,
+        sousId: i + 1,
+        status: 'live',
+        displayStatus: 'LIVE',
+        cta: 'stake',
+      }),
+    )
+    const vm = buildPoolsExplorePoolsViewModel({
+      portfolioPools: cards,
+      poolsLoading: false,
+      chainId: 56,
+      filter: 'All',
+      sort: 'Highest APR',
+      search: '',
+    })
+    expect(vm.pools).toHaveLength(15)
+    expect(vm.totalActive).toBe(15)
+  })
+
+  it('explore pool cards render explicit chain badges', () => {
+    const card = readFileSync(path.join(MODULES, 'PoolsExplorePoolCard.tsx'), 'utf8')
+    expect(card).toContain('MelegaExploreChainBadge')
+    expect(card).toContain('stakeToken.chainId')
+  })
+
   it('desktop geometry tokens match 430×248 / 18 gap / 3 columns', () => {
     expect(poolsExplore.cardW).toBe('430px')
     expect(poolsExplore.cardH).toBe('248px')

@@ -38,7 +38,8 @@ describe('LIQUIDITY_V1 Information Architecture Redesign', () => {
     expect(actions).toContain('embedded')
     expect(actions).toContain('LiquidityBuildingCard')
     expect(actions).toContain('forceExpanded')
-    expect(actions).toContain('liquidity-actions-ai-new-badge')
+    expect(actions).toContain('liquidity-actions-ai-beta-badge')
+    expect(actions).toContain('BNB Chain only')
     expect(actions).not.toContain('JourneySteps')
   })
 

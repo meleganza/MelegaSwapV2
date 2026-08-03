@@ -1,0 +1,35 @@
+{
+  "mission": "MELEGASWAP_V2_RELEASE_READINESS_P0_MARKET_AND_DISCOVERY",
+  "missionScopedTests": {
+    "result": "PASS",
+    "suites": [
+      "farmsModule004/008",
+      "poolsModule004/008",
+      "liquidity-module-002-actions",
+      "liquidityV1.informationArchitecture",
+      "liquidityV1.finalCertification",
+      "liquidity-module-008-visual-polish",
+      "farms/pools module 006-007 freezes",
+      "lib/trending",
+      "productIaHomeRefinement",
+      "trueTrendingRanking"
+    ]
+  },
+  "fullSuite": {
+    "result": "PARTIAL",
+    "passed": 2729,
+    "failed": 72,
+    "note": "Remaining failures are pre-existing (SmartSwap/CommandCenter/LB copy regressions unrelated to P0 explore/trending/gating). Mission-scoped suites green."
+  },
+  "nextBuild": {
+    "result": "PASS"
+  },
+  "tasks": {
+    "trendingFullUniverse": "DONE",
+    "farmsAllInventory": "DONE",
+    "poolsAllInventory": "DONE",
+    "chainBadges": "DONE",
+    "lbBetaBnbGating": "DONE"
+  },
+  "verdict": "MELEGASWAP_V2_RELEASE_READINESS_P0_COMPLETE"
+}

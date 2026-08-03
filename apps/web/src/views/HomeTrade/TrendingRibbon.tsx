@@ -21,7 +21,7 @@ export const TrendingRibbon: React.FC = () => {
 
   const enrichedItems = useMemo(
     () =>
-      (items ?? []).slice(0, Math.min(displayLimit, 10)).map((item) => {
+      (items ?? []).slice(0, displayLimit).map((item) => {
         // Identity comes only from the shared snapshot item — never rematch by live rank index.
         const address = extractAddressFromHref(item.href)
         const asset = address ? avatarByAddress.get(address) : undefined

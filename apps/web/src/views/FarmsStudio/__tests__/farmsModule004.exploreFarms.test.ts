@@ -287,21 +287,22 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       visibleLimit: 9,
     })
     expect(vm.totalActive).toBe(12)
-    expect(vm.visibleFarms).toHaveLength(9)
-    expect(vm.hasMore).toBe(true)
+    // P0: All means all — hard limit removed for the All filter.
+    expect(vm.visibleFarms).toHaveLength(12)
+    expect(vm.hasMore).toBe(false)
 
-    const more = buildFarmsExploreFarmsViewModel({
+    const filtered = buildFarmsExploreFarmsViewModel({
       portfolioFarms: cards,
       farmsLoading: false,
       chainId: 56,
       userDataLoaded: true,
-      filter: 'All',
+      filter: 'High APR',
       sort: 'Highest Sustainable APR',
       search: '',
-      visibleLimit: 18,
+      visibleLimit: 9,
     })
-    expect(more.visibleFarms).toHaveLength(12)
-    expect(more.hasMore).toBe(false)
+    expect(filtered.visibleFarms.length).toBeLessThanOrEqual(9)
+    expect(filtered.hasMore).toBe(filtered.farms.length > 9)
 
     const dupPid = makeCard({ pid: 1, id: 'farm-1-dup' })
     const dupLp = makeCard({
@@ -493,5 +494,6 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(src).not.toContain('fixtureFarm')
     expect(readFileSync(path.join(MODULES, 'FarmsExploreFarmCard.tsx'), 'utf8')).toContain('data-reward-token')
     expect(readFileSync(path.join(MODULES, 'FarmsExploreFarmCard.tsx'), 'utf8')).toContain('MelegaTokenAvatar')
+    expect(readFileSync(path.join(MODULES, 'FarmsExploreFarmCard.tsx'), 'utf8')).toContain('MelegaExploreChainBadge')
   })
 })

@@ -1,0 +1,61 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ LC_ALL="en_US.UTF-8" vitest --run
+
+ RUN  v0.27.2 /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web
+
+ ✓ src/views/Passport/v1/__tests__/passportZeroRebuild.v1.test.ts  (23 tests) 33ms
+ ✓ src/registry/projects/identity/walletRelationship/__tests__/pp004.walletRelationship.test.ts  (32 tests) 218ms
+ ✓ src/components/portfolio/__tests__/PositionCard.test.tsx  (26 tests) 1789ms
+ ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts  (14 tests | 1 failed) 60ms
+   ❯ src/views/FarmsStudio/__tests__/farmsModule006.yieldAdvisor.test.ts > FARMS_MODULE_006 Yield Advisor > freezes Modules 001–005 sources byte-identically
+     → expected '02f5f84e408932a5ac68d6d2001190340ea3d…' to be 'e049d6d1d9a5dab0dba7d411e6f8051fc3a72…' // Object.is equality
+ ✓ src/views/PoolsStudio/__tests__/poolsModule003.myPositions.test.ts  (21 tests) 23ms
+ ❯ src/views/PoolsStudio/__tests__/poolsModule006.rewardAdvisor.test.ts  (13 tests | 1 failed) 26ms
+   ❯ src/views/PoolsStudio/__tests__/poolsModule006.rewardAdvisor.test.ts > POOLS_MODULE_006 Reward Advisor > freezes Modules 001–005 sources byte-identically
+     → expected '07deb40ff491206cf3990fba9da56117074f5…' to be '461d18a152d8b7b0be43ff8063cb226e03cea…' // Object.is equality
+ ✓ src/views/CommandCenter/commandCenterRuntime/__tests__/commandCenterPortfolioActionOrchestration.test.ts  (12 tests) 13ms
+ ✓ src/views/FarmsStudio/__tests__/farmsModule004.exploreFarms.test.ts  (11 tests) 17ms
+ ✓ src/views/PoolsStudio/components/__tests__/PoolGridCard.test.tsx  (38 tests) 1639ms
+ ✓ src/registry/projects/identity/evidence/__tests__/pp002.evidence.test.ts  (25 tests) 46ms
+... truncated ...
+ ❯ getElementError ../../../MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:25:35
+ ❯ getMultipleElementsFoundError ../../../MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:29:10
+ ❯ ../../../MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:66:13
+ ❯ getByRole ../../../MelegaSwapV2/node_modules/@testing-library/dom/dist/query-helpers.js:111:19
+ ❯ src/views/Swap/index.test.tsx:8:14
+      6|     renderWithProvider(<Swap />, { preloadedState: { user: { isExchang…
+      7|     expect(
+      8|       screen.getByRole('heading', {
+       |              ^
+      9|         name: /swap/i,
+     10|       }),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[85/86]⎯
+
+ Test Files  58 failed | 316 passed (374)
+      Tests  79 failed | 2722 passed (2801)
+   Start at  15:41:45
+   Duration  77.75s (transform 38.27s, setup 40.80s, collect 249.25s, tests 52.79s)
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: No available storage method found.
+ ❯ ../../../MelegaSwapV2/node_modules/localforage/dist/localforage.js:2762:25
+
+This error originated in "src/views/Swap/index.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+error Command failed.
+Exit code: 1
+Command: /opt/homebrew/Cellar/node/26.0.0/bin/node
+Arguments: /opt/homebrew/lib/node_modules/yarn/lib/cli.js test
+Directory: /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web
+Output:
+
+info Visit https://yarnpkg.com/en/docs/cli/workspace for documentation about this command.

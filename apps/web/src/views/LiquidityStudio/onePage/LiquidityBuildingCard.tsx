@@ -146,6 +146,26 @@ const NewBadge = styled.span`
   text-transform: uppercase;
 `
 
+const ChainOnlyBadge = styled.span`
+  flex: 0 0 auto;
+  height: 14px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(243, 186, 47, 0.18);
+  color: #f3ba2f;
+  font-size: 8px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+`
+
+const TitleBadges = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+`
+
 const Desc = styled.p`
   display: block;
   margin: 2px 0 0;
@@ -1764,7 +1784,10 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
               <Title data-testid="liq-lb-product-title">
                 {showPortfolio || isActive ? LB_UX.portfolioProductName : 'AI Liquidity Builder'}
               </Title>
-              <NewBadge data-testid="liq-lb-new-badge">NEW</NewBadge>
+              <TitleBadges>
+                <NewBadge data-testid="liq-lb-new-badge">BETA</NewBadge>
+                <ChainOnlyBadge data-testid="liq-lb-bnb-badge">BNB Chain only</ChainOnlyBadge>
+              </TitleBadges>
             </TitleRow>
           ) : null}
           <Desc data-testid="liq-lb-header-desc">

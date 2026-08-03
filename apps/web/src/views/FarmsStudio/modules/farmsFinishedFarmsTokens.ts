@@ -90,10 +90,10 @@ export const FARMS_MODULE_003_FREEZE_SHA256 = {
 
 export const FARMS_MODULE_004_FREEZE_SHA256 = {
   FarmsExploreFarmsModule: 'fcd6d9b788ec9abd6a39f7d81d0585d7a31c47b692c9ac1308dc9400661a4dce',
-  FarmsExploreFarmCard: '1634ba125184a5835225d3f64eaed1d72ab3ab0b3ce5e222e3ed569927522a84',
+  FarmsExploreFarmCard: 'bb1a0416ba9c5f286a4293b4184bbc0aba7a29d2b6ba792648bdd71057aa1247',
   farmsExploreFarmsTokens: 'c96b8bec3e30ea6296e90d3e18fc13b6acbfc66adebb415d522a067218582681',
   farmsExploreFarmsTypes: 'f7d40c5bbac21920a7c5c731eb828a395eda8421e9c6e6f9d9c98ccbc3ef24fb',
-  buildFarmsExploreFarms: '64eda6a26b12412b1dd20ba3d3014da6a2961b1c5837c4237074173eb62ddc1e',
+  buildFarmsExploreFarms: '7adab453e64fa407d48851368b7d445f91a3b589773d665e2aea21d3adff1320',
   useFarmsExploreFarms: 'aa38a2322e6022f52c5f4aaa20f64da62376590cdfb3fa7d0e4d01d0da5a0696',
 } as const
 

@@ -79,6 +79,6 @@ export type LiquidityDiscoverySort = 'market' | 'tvl' | 'volume' | 'newest'
 /** Frozen Module 001 / 002 source SHAs. */
 export const LIQUIDITY_MODULE_001_002_FREEZE = {
   LiquidityHeroModule: 'a0f5c17340c453a93d91e1604be3018a2b714b32378733ab2bdfcf0854427ddf',
-  LiquidityActionsModule: 'e4026979e1dfe49150b26ef6e8f3a5d36ef4c0745a803e2452721b6871ae5462',
+  LiquidityActionsModule: '98a6bf8243c57841959b6fff3d2110fd03ee9a8065de2c30f95c7d9a65c36b80',
   liquidityActionsTokens: '2913c12cc629f7eda2ca85ac1762ab5a760eedec6c09a7c776833b86b7fd6c54',
 } as const

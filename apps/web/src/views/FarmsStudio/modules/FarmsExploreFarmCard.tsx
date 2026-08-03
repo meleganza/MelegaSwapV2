@@ -9,6 +9,7 @@ import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAv
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type { ExploreFarmViewModel } from './farmsExploreFarmsTypes'
 
@@ -365,6 +366,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           </TextCol>
         </Identity>
         <Badges>
+          <MelegaExploreChainBadge chainId={farm.chainId} />
           <Status $tone={farm.statusLabel} aria-label={`Status ${farm.statusLabel}`}>
             {farm.statusLabel}
           </Status>

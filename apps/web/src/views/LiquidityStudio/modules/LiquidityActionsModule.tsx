@@ -2,13 +2,17 @@
  * LIQUIDITY_MODULE_002_ACTIONS — primary workspace (IA redesign).
  * Two 50/50 expanded action surfaces: Add Liquidity form + AI Liquidity Builder.
  * Presentation composition only — reuses existing mint runtime + LB card.
+ * P0: AI Liquidity Builder is BETA / BNB Chain only — hidden on unsupported chains.
  */
 import React from 'react'
 import styled from 'styled-components'
 import { LiquidityAddModule } from './LiquidityAddModule'
 import { LiquidityBuildingCard } from '../onePage/LiquidityBuildingCard'
 import { uxRebuildColors } from 'design-system/melega/tokens/uxRebuild'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { LIQUIDITY_ACTIONS_COPY, liquidityActions } from './liquidityActionsTokens'
+
+const LB_SUPPORTED_CHAIN_ID = 56
 
 const Shell = styled.section`
   width: 100%;
@@ -24,10 +28,10 @@ const Shell = styled.section`
   }
 `
 
-const Grid = styled.div`
+const Grid = styled.div<{ $single?: boolean }>`
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: ${({ $single }) => ($single ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)')};
   column-gap: ${liquidityActions.columnGap};
   row-gap: ${liquidityActions.columnGap};
   align-items: stretch;
@@ -74,8 +78,15 @@ const PaneTitle = styled.h2`
   letter-spacing: -0.02em;
 `
 
-/** Compact purple NEW — matches GlobalHeader MelegaGlobalHeader NewBadge. */
-const NewBadge = styled.span`
+const BadgeRow = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+`
+
+/** Compact purple BETA — replaces NEW for release-readiness P0. */
+const BetaBadge = styled.span`
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
@@ -90,6 +101,23 @@ const NewBadge = styled.span`
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+`
+
+const ChainBadge = styled.span`
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(243, 186, 47, 0.18);
+  color: #f3ba2f;
+  font-size: 8px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 `
 
 const FormSlot = styled.div`
@@ -120,35 +148,50 @@ const FormSlot = styled.div`
   }
 `
 
-export const LiquidityActionsModule: React.FC = () => (
-  <Shell
-    data-testid="liquidity-actions-module"
-    data-liquidity-module="002-actions"
-    data-liquidity-module-002="mounted"
-    data-liquidity-actions-ia="expanded-workspace"
-    aria-label={LIQUIDITY_ACTIONS_COPY.sectionLabel}
-  >
-    <Grid data-testid="liquidity-actions-grid" data-liquidity-actions-geometry="1376-24-50-50">
-      <Pane data-testid="liquidity-actions-manual" data-liquidity-action="manual">
-        <PaneHeader>
-          <PaneTitle>{LIQUIDITY_ACTIONS_COPY.manual.title}</PaneTitle>
-        </PaneHeader>
-        <FormSlot data-testid="liquidity-actions-manual-form">
-          <LiquidityAddModule embedded />
-        </FormSlot>
-      </Pane>
+export const LiquidityActionsModule: React.FC = () => {
+  const { chainId } = useActiveChainId()
+  const lbSupported = (chainId ?? LB_SUPPORTED_CHAIN_ID) === LB_SUPPORTED_CHAIN_ID
 
-      <Pane data-testid="liquidity-actions-ai" data-liquidity-action="ai-builder">
-        <PaneHeader>
-          <PaneTitle>{LIQUIDITY_ACTIONS_COPY.aiBuilder.title}</PaneTitle>
-          <NewBadge data-testid="liquidity-actions-ai-new-badge">NEW</NewBadge>
-        </PaneHeader>
-        <FormSlot data-testid="liquidity-actions-ai-form">
-          <LiquidityBuildingCard forceExpanded />
-        </FormSlot>
-      </Pane>
-    </Grid>
-  </Shell>
-)
+  return (
+    <Shell
+      data-testid="liquidity-actions-module"
+      data-liquidity-module="002-actions"
+      data-liquidity-module-002="mounted"
+      data-liquidity-actions-ia="expanded-workspace"
+      data-lb-chain-gated={lbSupported ? 'bnb' : 'hidden'}
+      aria-label={LIQUIDITY_ACTIONS_COPY.sectionLabel}
+    >
+      <Grid
+        data-testid="liquidity-actions-grid"
+        data-liquidity-actions-geometry={lbSupported ? '1376-24-50-50' : 'single-manual'}
+        $single={!lbSupported}
+      >
+        <Pane data-testid="liquidity-actions-manual" data-liquidity-action="manual">
+          <PaneHeader>
+            <PaneTitle>{LIQUIDITY_ACTIONS_COPY.manual.title}</PaneTitle>
+          </PaneHeader>
+          <FormSlot data-testid="liquidity-actions-manual-form">
+            <LiquidityAddModule embedded />
+          </FormSlot>
+        </Pane>
+
+        {lbSupported ? (
+          <Pane data-testid="liquidity-actions-ai" data-liquidity-action="ai-builder">
+            <PaneHeader>
+              <PaneTitle>{LIQUIDITY_ACTIONS_COPY.aiBuilder.title}</PaneTitle>
+              <BadgeRow>
+                <BetaBadge data-testid="liquidity-actions-ai-beta-badge">BETA</BetaBadge>
+                <ChainBadge data-testid="liquidity-actions-ai-bnb-badge">BNB Chain only</ChainBadge>
+              </BadgeRow>
+            </PaneHeader>
+            <FormSlot data-testid="liquidity-actions-ai-form">
+              <LiquidityBuildingCard forceExpanded />
+            </FormSlot>
+          </Pane>
+        ) : null}
+      </Grid>
+    </Shell>
+  )
+}
 
 export default LiquidityActionsModule

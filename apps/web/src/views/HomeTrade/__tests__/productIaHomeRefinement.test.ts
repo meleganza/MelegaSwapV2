@@ -68,13 +68,16 @@ describe('Product IA refinement — Home', () => {
     }
   })
 
-  it('Top Movers ranking prefers abs% then swaps then volume; no activity-only fallback', () => {
+  it('Top Movers ranking prefers abs% then swaps then volume; ranks full indexed universe', () => {
     const rankings = load('useDexTrendingRankings.ts')
     expect(rankings).toContain('volume24h')
     expect(rankings).toContain('tradeCount24h')
     expect(rankings).toContain('Never fabricate')
     expect(rankings).toContain('computeChangeFromObservations')
+    expect(rankings).toContain('getCanonicalIndexedAssets')
+    expect(rankings).toContain('indexedUniverse')
     expect(rankings).not.toContain('return rankTierAssets(active')
+    expect(rankings).not.toContain('.slice(0, 120)')
   })
 
   it('Featured mounts above KPI rail in DexHomeScreen', () => {
