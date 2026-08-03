@@ -1,5 +1,5 @@
 import { ChainId, Token, WBNB, WNATIVE } from '@pancakeswap/sdk'
-import { bscTokens, BUSD, USDC, USDT } from '@pancakeswap/tokens'
+import { bscTokens, BUSD, USDC, USDT, DAI } from '@pancakeswap/tokens'
 
 import { ChainMap, ChainTokenList } from '../types'
 
@@ -14,7 +14,8 @@ export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.CRONOS]: '',
   [ChainId.PULSE]: '',
   [ChainId.OPTIMISM]: '',
-  [ChainId.BASE]: '',
+  // SSOT with apps/web config/constants/exchange.ts + melegaChainRegistry
+  [ChainId.BASE]: '0x1B30D21354a082EeBC66c4C5E56320759f7994e5',
   [ChainId.ZKSYNC]: ''
 }
 
@@ -67,7 +68,11 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.CRONOS]: [],
   [ChainId.PULSE]: [],
   [ChainId.OPTIMISM]: [],
-  [ChainId.BASE]: [],
+  [ChainId.BASE]: [
+    WNATIVE[ChainId.BASE],
+    USDC[ChainId.BASE],
+    DAI[ChainId.BASE],
+  ],
   [ChainId.ZKSYNC]: []
 }
 
@@ -107,7 +112,11 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.CRONOS]: [],
   [ChainId.PULSE]: [],
   [ChainId.OPTIMISM]: [],
-  [ChainId.BASE]: [],
+  [ChainId.BASE]: [
+    WNATIVE[ChainId.BASE],
+    USDC[ChainId.BASE],
+    DAI[ChainId.BASE],
+  ],
   [ChainId.ZKSYNC]: []
 }
 
@@ -137,7 +146,11 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.CRONOS]: [],
   [ChainId.PULSE]: [],
   [ChainId.OPTIMISM]: [],
-  [ChainId.BASE]: [],
+  [ChainId.BASE]: [
+    WNATIVE[ChainId.BASE],
+    USDC[ChainId.BASE],
+    DAI[ChainId.BASE],
+  ],
   [ChainId.ZKSYNC]: []
 }
 

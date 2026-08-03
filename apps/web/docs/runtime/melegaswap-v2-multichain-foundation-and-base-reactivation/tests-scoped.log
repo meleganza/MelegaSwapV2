@@ -1,0 +1,40 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ LC_ALL="en_US.UTF-8" vitest --run src/lib/__tests__/melegaChainRegistry.baseReactivation.test.ts src/lib/smart-swap-gas-protocol-fee/__tests__/gasProtocolFee.test.ts
+
+ RUN  v0.27.2 /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+(node:11076) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11076) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+ ✓ src/lib/smart-swap-gas-protocol-fee/__tests__/gasProtocolFee.test.ts  (9 tests) 2ms
+ ✓ src/lib/__tests__/melegaChainRegistry.baseReactivation.test.ts  (9 tests) 10ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  16:22:26
+   Duration  8.40s (transform 4.56s, setup 131ms, collect 10.87s, tests 12ms)
+
+Done in 10.01s.
+Done in 10.22s.

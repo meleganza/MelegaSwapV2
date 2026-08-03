@@ -6,6 +6,7 @@ export type RegistryResolutionSource =
   | 'kerl'
   | 'env'
   | 'static-dev'
+  | 'static-config'
 
 export interface RegistryResolutionMeta {
   source: RegistryResolutionSource

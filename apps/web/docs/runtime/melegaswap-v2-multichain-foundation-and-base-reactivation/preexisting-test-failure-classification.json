@@ -1,0 +1,57 @@
+{
+  "schema": "melega.preexisting-test-failure-classification.v1",
+  "source": "apps/web/docs/runtime/melegaswap-v2-release-readiness-p0/test-full-2.log (~72 failures)",
+  "classifiedAt": "2026-08-03",
+  "summary": {
+    "stale_assertion_obsolete_copy": 28,
+    "test_fixture_or_environment": 18,
+    "real_runtime_regression": 0,
+    "unrelated_legacy_surface": 26,
+    "mission_action": "No swap/wallet/chain-switch/farms/pools runtime regressions identified that block Base LIVE. Stale freezes and obsolete copy assertions left for later modernization."
+  },
+  "categories": {
+    "stale_assertion_obsolete_copy": [
+      "src/views/LiquidityStudio/__tests__/lb024.liquidityBuildingAccess.test.tsx (CTA copy / Activation Pending labels)",
+      "src/views/LiquidityStudio/__tests__/liquidityPixelPerfection001.test.ts (lbHeaderExpanded geometry tokens)",
+      "src/views/LiquidityStudio/__tests__/aiBuilderWizardAdvancement.test.ts (obsolete wizard CTA machine)",
+      "src/views/LiquidityStudio/__tests__/liquidityModule002.lbCard.test.ts (ConnectWalletButton count)",
+      "src/views/LiquidityStudio/__tests__/founderAmendmentP03LbDensity.test.ts (liq-lb-how-it-works removed by UX redesign)",
+      "src/views/LiquidityStudio/__tests__/legacyAssetLiquidityRecovery.test.ts (expects MARCO_BSC_ADDRESS string in card)",
+      "src/views/LiquidityStudio/__tests__/ds0013.liquidityStudioHome.test.ts (fee bps display copy)",
+      "src/views/SmartSwapStudio/modules/SmartSwapExecutionPreview/__tests__/* (expects TradeModeSelector / SmartTransparencyStack / cockpitWidth 560 — superseded IA)",
+      "src/views/HomeTrade/__tests__/productIaHomeRefinement.test.ts (prior activity-only assertion — updated in P0)",
+      "src/views/__tests__/founderRegressionRepair.test.ts (expects clean git / obsolete LB how-it-works)"
+    ],
+    "test_fixture_or_environment": [
+      "src/lib/smart-swap-architecture/__tests__/smartSwapMainnetExecutionReadiness.test.ts (git dirty / missing recovery-state.json)",
+      "src/lib/smart-swap-architecture/__tests__/smartSwapArchitecture000.test.ts (merge-base ancestor lock)",
+      "src/views/Swap/index.test.tsx (localforage storage in jsdom)",
+      "src/state/user/reducer.test.ts / multicall updater (env)",
+      ".next/server/pages/api/**/__tests__ (compiled .next artifacts scanned by vitest)",
+      "src/lib/bsc-indexer/__tests__/indexerLease.test.ts",
+      "src/lib/bsc-indexer/indexer/orchestratorStageBudget.test.ts"
+    ],
+    "real_runtime_regression": [],
+    "unrelated_legacy_surface": [
+      "src/views/CommandCenter/commandCenterRuntime/__tests__/* (disconnected wallet UI)",
+      "src/registry/projects/__tests__/discovery.test.ts",
+      "src/registry/graph/__tests__/graph.test.ts",
+      "src/views/RadarStudio/radarRuntime/__tests__/radarRuntime.test.ts",
+      "src/views/TrendingStudio/trendingRuntime/__tests__/trendingRuntime.test.ts",
+      "src/lib/melega-smart-router/__tests__/melega-smart-router-d87.test.ts (pre-existing address fixture expectations)",
+      "src/lib/melega-smart-router/__tests__/melega-smart-router-phase25.test.ts",
+      "src/views/Trade/tradeRuntime/__tests__/settlementStatus.test.ts",
+      "src/app-shell/__tests__/liquidityModule001.hero.test.ts"
+    ]
+  },
+  "swap_wallet_chain_farms_pools_gate": {
+    "realRegressionsFound": false,
+    "baseLiveAllowed": true,
+    "notes": [
+      "Farms/Pools explore inventory + chain badges fixed in prior P0 and extended for Base LIVE chains here.",
+      "Wallet switcher expanded to LIVE BNB+Base; PREPARING shown disabled.",
+      "getAddress no longer falls back to BSC for missing chain maps.",
+      "Base Router SSOT blank in smart-router package resolved."
+    ]
+  }
+}

@@ -25,7 +25,7 @@ export const DEX_ECONOMIC_AUTHORITY = {
     replacement_beneficiary: MELEGA_TREASURY_WALLET_ADDRESS,
   },
   /** Chains where the canonical beneficiary applies for DEX-owned application fees. */
-  chainIdsSupported: [56] as const,
+  chainIdsSupported: [56, 8453] as const,
   /** Testnet-only collectors remain documented separately; never substitute for mainnet. */
   testnetOnlyNote:
     'Chain 97 may use a published testnet collector; mainnet beneficiary is always MELEGA_TREASURY_WALLET.',
@@ -47,13 +47,13 @@ export function isCanonicalBeneficiary(address: string | null | undefined): bool
   return address.toLowerCase() === MELEGA_TREASURY_WALLET_ADDRESS.toLowerCase()
 }
 
-/** Mainnet (56) always resolves to the canonical wallet. */
+/** Mainnet (56) and Base (8453) resolve to the canonical wallet (native gas asset differs). */
 export function resolveCanonicalFeeBeneficiary(chainId: number): {
   label: typeof MELEGA_TREASURY_WALLET_LABEL
   address: string
   source: 'dex-economic-authority'
 } | null {
-  if (chainId === 56 || DEX_ECONOMIC_AUTHORITY.chainIdsSupported.includes(chainId as 56)) {
+  if ((DEX_ECONOMIC_AUTHORITY.chainIdsSupported as readonly number[]).includes(chainId)) {
     return {
       label: MELEGA_TREASURY_WALLET_LABEL,
       address: MELEGA_TREASURY_WALLET_ADDRESS,

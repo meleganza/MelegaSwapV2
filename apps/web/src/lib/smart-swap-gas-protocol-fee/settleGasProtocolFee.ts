@@ -26,6 +26,7 @@ export type GasProtocolFeeSettlementPlan = {
 export function buildGasProtocolFeeSettlementPlan(input: {
   gasEstimateUnits: string | number | bigint | BigNumber
   gasPriceWei: string | number | bigint | BigNumber
+  chainId?: number
 }): GasProtocolFeeSettlementPlan {
   const gasEstimateUnits =
     typeof input.gasEstimateUnits === 'object' && input.gasEstimateUnits && 'toString' in input.gasEstimateUnits
@@ -36,7 +37,12 @@ export function buildGasProtocolFeeSettlementPlan(input: {
       ? input.gasPriceWei.toString()
       : (input.gasPriceWei as string | number | bigint)
 
-  const fee = calculateSmartRouterGasProtocolFee({ gasEstimateUnits, gasPriceWei })
+  const fee = calculateSmartRouterGasProtocolFee({
+    gasEstimateUnits,
+    gasPriceWei,
+    chainId: input.chainId,
+  })
+  const nativeLabel = fee.feeAsset
   return {
     fee,
     transfer: {
@@ -47,7 +53,7 @@ export function buildGasProtocolFeeSettlementPlan(input: {
     display: {
       estimatedGasBnb: formatFeeWeiAsBnb(fee.estimatedGasCostWei),
       protocolFeeBnb: formatFeeWeiAsBnb(fee.feeWei),
-      protocolFeeLabel: `${fee.percent}% of estimated gas`,
+      protocolFeeLabel: `${fee.percent}% of estimated gas (${nativeLabel})`,
       destinationLabel: `${fee.recipientLabel} (${fee.recipient})`,
     },
   }

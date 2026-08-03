@@ -26,12 +26,14 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
+import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
 
 import { ChainLogo } from './Logo/ChainLogo'
 import { NetworkSwitchModal } from './Menu/UserMenu/NetworkSwitchModal'
 
 const NetworkSelect = ({ switchNetwork, chainId }) => {
   const visibleChains = filterMelegaVisibleSwitcherChains(chains)
+  const preparing = getMelegaPreparingChains()
   return (
     <>
       {visibleChains.map((chain) => (
@@ -46,24 +48,18 @@ const NetworkSelect = ({ switchNetwork, chainId }) => {
             </Text>
           </UserMenuItem>
         ))}
-      {/* <UserMenuItem
-        key={`aptos-${AptosChain.id}`}
-        style={{ justifyContent: 'flex-start' }}
-        as="a"
-        target="_blank"
-        href="https://aptos.pancakeswap.finance/swap"
-      >
-        <Image
-          src="https://aptos.pancakeswap.finance/images/apt.png"
-          width={24}
-          height={24}
-          unoptimized
-          alt={`chain-aptos-${AptosChain.id}`}
-        />{' '}
-        <Text color="text" pl="12px">
-          {AptosChain.name}
-        </Text>
-      </UserMenuItem> */}
+      {preparing.map((row) => (
+        <UserMenuItem
+          key={`preparing-${row.chainId}`}
+          style={{ justifyContent: 'flex-start', opacity: 0.55, cursor: 'not-allowed' }}
+          disabled
+        >
+          <ChainLogo chainId={row.chainId} />
+          <Text color="textSubtle" pl="12px">
+            {row.shortLabel} · Coming soon
+          </Text>
+        </UserMenuItem>
+      ))}
     </>
   )
 }

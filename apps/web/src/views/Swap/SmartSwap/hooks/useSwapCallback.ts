@@ -141,11 +141,12 @@ export function useSwapCallback(
         }
 
         // Founder Smart Router fee: 25% of estimated DEX gas → MELEGA TREASURY WALLET.
-        // Finalized at confirmation from estimateGas; wallet-signed native BNB transfer.
+        // Finalized at confirmation from estimateGas; wallet-signed native transfer (BNB on 56, ETH on Base).
         // No Treasury Runtime. No KERL. No server signer.
         const feePlan = buildGasProtocolFeeSettlementPlan({
           gasEstimateUnits: gasEstimate,
           gasPriceWei: gasPrice,
+          chainId,
         })
         if (feePlan.fee.feeWei !== '0') {
           const signer = contract.signer

@@ -1,0 +1,42 @@
+{
+  "rpc": "https://base-rpc.publicnode.com",
+  "verifiedAt": "2026-08-03T14:18:46.342041+00:00",
+  "contracts": {
+    "Factory": {
+      "address": "0x78fA7Fa39CF6544DD9768A75d8Ad8C45854aE530",
+      "bytecodeBytes": 19065,
+      "exists": true
+    },
+    "Router": {
+      "address": "0x1B30D21354a082EeBC66c4C5E56320759f7994e5",
+      "bytecodeBytes": 17845,
+      "exists": true
+    },
+    "Multicall": {
+      "address": "0x4fe5CBf4658d6Ca76431dD05D2D7aD6BbCD20891",
+      "bytecodeBytes": 5561,
+      "exists": true
+    },
+    "MasterBuilder": {
+      "address": "0x149EE9245E5eD52a89Ea777d19AD3A5D87873680",
+      "bytecodeBytes": 12116,
+      "exists": true
+    },
+    "Vault": {
+      "address": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+      "bytecodeBytes": 15543,
+      "exists": true
+    },
+    "PoolDeploy": {
+      "address": "0x9f421c4DEDD3B5C24EFff0FCB5AD2BEa0a577E83",
+      "bytecodeBytes": 13683,
+      "exists": true
+    }
+  },
+  "routerFactoryCall": {
+    "selector": "0xc45a0155",
+    "factoryReturned": "0x78fa7fa39cf6544dd9768a75d8ad8c45854ae530",
+    "matchesExpected": true
+  },
+  "verdict": "PASS"
+}

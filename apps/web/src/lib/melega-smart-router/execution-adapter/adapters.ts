@@ -17,6 +17,7 @@ const BSC_SMART_ROUTER = '0xC6665d98Efd81f47B03801187eB46cbC63F328B0'
 const V2_ROUTER_BY_CHAIN: Partial<Record<number, string>> = {
   [ChainId.BSC]: ROUTER_ADDRESS[ChainId.BSC],
   [ChainId.BSC_TESTNET]: BSC_TESTNET_ADDRESSES.router,
+  [ChainId.BASE]: ROUTER_ADDRESS[ChainId.BASE],
 }
 
 const SMART_ROUTER_BY_CHAIN: Partial<Record<number, string>> = {

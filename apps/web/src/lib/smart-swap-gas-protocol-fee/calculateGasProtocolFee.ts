@@ -1,9 +1,10 @@
 import { MELEGA_TREASURY_FEE_DESTINATION, SMART_ROUTER_FEE_FROM_SCHEDULE } from 'config/constants/feeSchedule'
-import { MELEGA_TREASURY_WALLET_LABEL } from 'config/dexEconomicAuthority'
+import { MELEGA_TREASURY_WALLET_LABEL, resolveCanonicalFeeBeneficiary } from 'config/dexEconomicAuthority'
 import {
   SMART_ROUTER_GAS_PROTOCOL_FEE_BPS,
   SMART_ROUTER_GAS_PROTOCOL_FEE_PERCENT,
   type CalculateSmartRouterGasProtocolFeeInput,
+  type SmartRouterFeeAsset,
   type SmartRouterGasProtocolFee,
 } from './types'
 
@@ -18,15 +19,29 @@ function toBigInt(value: string | number | bigint): bigint {
   return BigInt(trimmed)
 }
 
+function feeAssetForChain(chainId: number): SmartRouterFeeAsset {
+  if (chainId === 56) return 'BNB'
+  if (chainId === 8453) return 'ETH'
+  throw new Error(`Smart Router gas fee unsupported on chain ${chainId}`)
+}
+
 /**
  * Canonical Smart Router protocol fee at confirmation time.
  * feeWei = floor(gasEstimateUnits * gasPriceWei * 2500 / 10000)
  *
  * Final — no later adjustment, no refund vs actual gas used.
+ * Economics unchanged across chains; settlement asset is the chain native gas token.
  */
 export function calculateSmartRouterGasProtocolFee(
   input: CalculateSmartRouterGasProtocolFeeInput,
 ): SmartRouterGasProtocolFee {
+  const chainId = input.chainId ?? 56
+  const beneficiary = resolveCanonicalFeeBeneficiary(chainId)
+  if (!beneficiary) {
+    throw new Error(`No canonical fee beneficiary for chain ${chainId}`)
+  }
+  const feeAsset = feeAssetForChain(chainId)
+
   const gasEstimateUnits = toBigInt(input.gasEstimateUnits)
   const gasPriceWei = toBigInt(input.gasPriceWei)
   if (gasEstimateUnits < 0n || gasPriceWei < 0n) {
@@ -45,6 +60,9 @@ export function calculateSmartRouterGasProtocolFee(
   const feeWei = (estimatedGasCostWei * BigInt(SMART_ROUTER_GAS_PROTOCOL_FEE_BPS)) / 10_000n
 
   const recipient = MELEGA_TREASURY_FEE_DESTINATION
+  if (recipient.toLowerCase() !== beneficiary.address.toLowerCase()) {
+    throw new Error('Treasury recipient mismatch')
+  }
   if (recipient.toLowerCase() !== '0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b') {
     throw new Error('Treasury recipient mismatch')
   }
@@ -54,11 +72,12 @@ export function calculateSmartRouterGasProtocolFee(
     kind: 'percent_of_dex_gas_fees',
     bps: SMART_ROUTER_GAS_PROTOCOL_FEE_BPS,
     percent: SMART_ROUTER_GAS_PROTOCOL_FEE_PERCENT,
+    chainId,
     gasEstimateUnits: gasEstimateUnits.toString(),
     gasPriceWei: gasPriceWei.toString(),
     estimatedGasCostWei: estimatedGasCostWei.toString(),
     feeWei: feeWei.toString(),
-    feeAsset: 'BNB',
+    feeAsset,
     recipient,
     recipientLabel: MELEGA_TREASURY_WALLET_LABEL,
     finalizedAtConfirmation: true,
@@ -67,7 +86,7 @@ export function calculateSmartRouterGasProtocolFee(
   }
 }
 
-/** Human-readable BNB amount (up to 8 decimals, trimmed). */
+/** Human-readable native amount (up to 8 decimals, trimmed). */
 export function formatFeeWeiAsBnb(feeWei: string): string {
   const wei = toBigInt(feeWei)
   const whole = wei / 10n ** 18n
@@ -76,6 +95,8 @@ export function formatFeeWeiAsBnb(feeWei: string): string {
   const fracStr = frac.toString().padStart(18, '0').replace(/0+$/, '').slice(0, 8)
   return `${whole}.${fracStr}`
 }
+
+export const formatFeeWeiAsNative = formatFeeWeiAsBnb
 
 export function isCanonicalTreasuryRecipient(address: string | null | undefined): boolean {
   if (!address) return false

@@ -1,0 +1,18 @@
+{
+  "liveSwitchable": [
+    56,
+    8453
+  ],
+  "preparingComingSoonDisabled": [
+    1,
+    137,
+    43114
+  ],
+  "halfEnabledForbidden": true,
+  "files": [
+    "supportChains.ts",
+    "NetworkSwitcher.tsx",
+    "NetworkSwitchModal.tsx",
+    "melegaChainRegistry.ts"
+  ]
+}

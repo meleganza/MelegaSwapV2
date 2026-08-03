@@ -26,6 +26,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
+import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
 import { ChainLogo } from 'components/Logo/ChainLogo'
 
 // const ModalHeader = styled(UIKitModalHeader)`
@@ -83,6 +84,7 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
   const { switchNetwork, chainId, ...rest } = props
   const { t } = useTranslation()
   const visibleChains = filterMelegaVisibleSwitcherChains(chains)
+  const preparing = getMelegaPreparingChains()
   // const [view, setView] = useState(initialView)
   // const { t } = useTranslation()
   // const { address: account } = useAccount()
@@ -146,6 +148,22 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                   </Flex>
                 )
                 )}
+              {preparing.map((row) => (
+                <Flex key={`preparing-flex-${row.chainId}`} justifyContent="center">
+                  <UserMenuItem
+                    active={false}
+                    disabled
+                    style={{ flexDirection: 'column', justifyContent: 'flex-start', opacity: 0.55, cursor: 'not-allowed' }}
+                  >
+                    <ChainLogo chainId={row.chainId} width={36} height={36} />
+                    <Text fontSize={14} color="textSubtle" mt="10px" textAlign="center">
+                      {row.shortLabel}
+                      <br />
+                      Coming soon
+                    </Text>
+                  </UserMenuItem>
+                </Flex>
+              ))}
             </StyleGrid>
           </AtomBox>
         </AtomBox>

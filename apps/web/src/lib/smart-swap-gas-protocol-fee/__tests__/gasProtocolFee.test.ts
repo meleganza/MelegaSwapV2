@@ -51,7 +51,7 @@ describe('Smart Swap gas protocol fee (Founder 25%)', () => {
     expect(plan.transfer.to).toBe(MELEGA_TREASURY_FEE_DESTINATION)
     expect(plan.transfer.data).toBe('0x')
     expect(plan.transfer.value).toBe(plan.fee.feeWei)
-    expect(plan.display.protocolFeeLabel).toBe('25% of estimated gas')
+    expect(plan.display.protocolFeeLabel).toBe('25% of estimated gas (BNB)')
     expect(plan.display.destinationLabel).toContain('MELEGA TREASURY WALLET')
     expect(plan.display.destinationLabel).toContain(MELEGA_TREASURY_FEE_DESTINATION)
   })
@@ -75,5 +75,29 @@ describe('Smart Swap gas protocol fee (Founder 25%)', () => {
     // 1 * 3 * 2500 / 10000 = 0 (floor)
     const fee = calculateSmartRouterGasProtocolFee({ gasEstimateUnits: 1, gasPriceWei: 3 })
     expect(fee.feeWei).toBe('0')
+  })
+
+  it('settles Base fee as native ETH to the same treasury (25% economics unchanged)', () => {
+    const fee = calculateSmartRouterGasProtocolFee({
+      gasEstimateUnits: 200_000,
+      gasPriceWei: 5_000_000_000,
+      chainId: 8453,
+    })
+    expect(fee.feeAsset).toBe('ETH')
+    expect(fee.chainId).toBe(8453)
+    expect(fee.feeWei).toBe('250000000000000')
+    expect(fee.recipient.toLowerCase()).toBe('0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b')
+    const plan = buildGasProtocolFeeSettlementPlan({
+      gasEstimateUnits: 200_000,
+      gasPriceWei: 5_000_000_000,
+      chainId: 8453,
+    })
+    expect(plan.display.protocolFeeLabel).toContain('ETH')
+  })
+
+  it('rejects unsupported fee chains', () => {
+    expect(() =>
+      calculateSmartRouterGasProtocolFee({ gasEstimateUnits: 1, gasPriceWei: 1, chainId: 137 }),
+    ).toThrow(/No canonical fee beneficiary|unsupported/i)
   })
 })

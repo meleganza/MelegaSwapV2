@@ -7,8 +7,8 @@ export const SUPPORT_ILO = [ChainId.BSC]
 export const SUPPORT_CHAIN_NFT = [ChainId.BSC]
 export const SUPPORT_ZAP = [ChainId.BSC]
 
-/** R765 — network switcher shows BNB Smart Chain only until multichain activation. */
-export const MELEGA_VISIBLE_SWITCHER_CHAIN_IDS: readonly number[] = [ChainId.BSC]
+/** R765→multichain foundation — LIVE chains only (BNB + Base when gates pass). PREPARING shown separately. */
+export const MELEGA_VISIBLE_SWITCHER_CHAIN_IDS: readonly number[] = [ChainId.BSC, ChainId.BASE]
 
 export function filterMelegaVisibleSwitcherChains<T extends { id: number }>(chainList: T[]): T[] {
   return chainList.filter((chain) => MELEGA_VISIBLE_SWITCHER_CHAIN_IDS.includes(chain.id))

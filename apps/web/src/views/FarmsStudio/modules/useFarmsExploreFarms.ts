@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
 import { getMasterChefAddress } from 'utils/addressHelpers'
+import { isMelegaCapabilityEnabled } from 'config/melegaChainRegistry'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import { buildFarmsExploreFarmsViewModel } from './buildFarmsExploreFarms'
@@ -17,7 +18,7 @@ import type {
   FarmsExploreSort,
 } from './farmsExploreFarmsTypes'
 
-const SUPPORTED_CHAIN = 56
+const FALLBACK_CHAIN = 56
 
 export function useExploreFarms(): FarmsExploreFarmsViewModel & {
   setFilter: (f: FarmsExploreFilter) => void
@@ -35,8 +36,8 @@ export function useExploreFarms(): FarmsExploreFarmsViewModel & {
   const previousRef = useRef<ExploreFarmViewModel[] | null>(null)
   const previousChainRef = useRef<number | null>(null)
 
-  const chainId = activeChainId ?? SUPPORTED_CHAIN
-  const chainSupported = chainId === SUPPORTED_CHAIN
+  const chainId = activeChainId ?? FALLBACK_CHAIN
+  const chainSupported = isMelegaCapabilityEnabled(chainId, 'farms')
 
   useEffect(() => {
     setVisibleLimit(farmsExplore.initialLimit)
