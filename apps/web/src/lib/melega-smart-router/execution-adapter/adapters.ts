@@ -21,6 +21,7 @@ const V2_ROUTER_BY_CHAIN: Partial<Record<number, string>> = {
   [ChainId.POLYGON]: ROUTER_ADDRESS[ChainId.POLYGON],
   [ChainId.ETHEREUM]: ROUTER_ADDRESS[ChainId.ETHEREUM],
   [ChainId.ARBITRUM]: ROUTER_ADDRESS[ChainId.ARBITRUM],
+  [ChainId.AVAX]: ROUTER_ADDRESS[ChainId.AVAX],
 }
 
 const SMART_ROUTER_BY_CHAIN: Partial<Record<number, string>> = {

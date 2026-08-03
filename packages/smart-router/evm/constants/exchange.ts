@@ -1,5 +1,5 @@
 import { ChainId, Token, WBNB, WNATIVE } from '@pancakeswap/sdk'
-import { bscTokens, BUSD, USDC, USDT, DAI } from '@pancakeswap/tokens'
+import { avaxTokens, bscTokens, BUSD, USDC, USDT, DAI } from '@pancakeswap/tokens'
 
 import { ChainMap, ChainTokenList } from '../types'
 
@@ -9,7 +9,7 @@ export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.POLYGON]: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe', // Melega V2 Router — was stale 0x3BC722…
   [ChainId.BSC]: '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3', // Melega V2 Router — was stale Pancake V2 0x10ED…024E (LB-G07)
   [ChainId.SHIMMER2]: '',
-  [ChainId.AVAX]: '',
+  [ChainId.AVAX]: '0x5A38b0B75C2E199fD8098710594115A35ABb6c7F', // Melega V2 Router — Founder-deployed 0xd3185d5f…c23e
   [ChainId.FANTOM]: '',
   [ChainId.CRONOS]: '',
   [ChainId.PULSE]: '',
@@ -63,7 +63,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     bscTokens.usdc,
   ],
   [ChainId.SHIMMER2]: [],
-  [ChainId.AVAX]: [],
+  [ChainId.AVAX]: [WNATIVE[ChainId.AVAX], avaxTokens.usdc, avaxTokens.usdt, avaxTokens.marco],
   [ChainId.FANTOM]: [],
   [ChainId.CRONOS]: [],
   [ChainId.PULSE]: [],
@@ -107,7 +107,7 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.POLYGON]: [USDC[ChainId.POLYGON], USDT[ChainId.POLYGON]],
   [ChainId.BSC]: [bscTokens.busd, bscTokens.cake, bscTokens.btcb],
   [ChainId.SHIMMER2]: [],
-  [ChainId.AVAX]: [],
+  [ChainId.AVAX]: [WNATIVE[ChainId.AVAX], avaxTokens.usdc, avaxTokens.usdt, avaxTokens.marco],
   [ChainId.FANTOM]: [],
   [ChainId.CRONOS]: [],
   [ChainId.PULSE]: [],
@@ -141,7 +141,7 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ],
   [ChainId.BSC]: [bscTokens.wbnb, bscTokens.dai, bscTokens.busd, bscTokens.usdt, bscTokens.cake],
   [ChainId.SHIMMER2]: [],
-  [ChainId.AVAX]: [],
+  [ChainId.AVAX]: [WNATIVE[ChainId.AVAX], avaxTokens.usdc, avaxTokens.usdt, avaxTokens.marco],
   [ChainId.FANTOM]: [],
   [ChainId.CRONOS]: [],
   [ChainId.PULSE]: [],
@@ -169,4 +169,5 @@ export const PINNED_PAIRS: {
     [bscTokens.busd, bscTokens.usdt],
     [bscTokens.dai, bscTokens.usdt],
   ],
+  [ChainId.AVAX]: [[avaxTokens.marco, avaxTokens.weth]],
 }

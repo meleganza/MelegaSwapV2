@@ -7,7 +7,7 @@
 export const SMART_ROUTER_GAS_PROTOCOL_FEE_BPS = 2500 as const
 export const SMART_ROUTER_GAS_PROTOCOL_FEE_PERCENT = 25 as const
 
-export type SmartRouterFeeAsset = 'BNB' | 'ETH' | 'POL'
+export type SmartRouterFeeAsset = 'BNB' | 'ETH' | 'POL' | 'AVAX'
 
 export type SmartRouterGasProtocolFee = {
   schema: 'melega.smart-swap.gas-protocol-fee.v1'

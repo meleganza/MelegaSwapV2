@@ -2,7 +2,7 @@ import type { Signer } from '@ethersproject/abstract-signer'
 import type { Provider } from '@ethersproject/providers'
 import { provider } from 'utils/wagmi'
 import { Contract } from '@ethersproject/contracts'
-import poolsConfig, { livePools8453, livePools137, livePools42161, livePools1 } from 'config/constants/pools'
+import poolsConfig, { livePools8453, livePools137, livePools42161, livePools43114, livePools1 } from 'config/constants/pools'
 import { PoolCategory } from 'config/constants/types'
 import { CAKE } from '@pancakeswap/tokens'
 
@@ -162,7 +162,8 @@ export const getSouschefContract = (id: number, signer?: Signer | Provider, chai
       : chainId === 137 ? livePools137
         : chainId === 8453 ? livePools8453
           : chainId === 42161 ? livePools42161
-            : poolsConfig
+            : chainId === 43114 ? livePools43114
+              : poolsConfig
           
   const config = pools.find((pool) => pool.sousId === id)
   const abi = config?.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef

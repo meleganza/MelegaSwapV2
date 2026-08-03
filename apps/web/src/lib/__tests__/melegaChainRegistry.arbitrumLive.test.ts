@@ -57,10 +57,10 @@ describe('MELEGASWAP_V2_ARBITRUM_LIVE', () => {
     expect(getV2RouterAddress(42161)).not.toMatch(/0x3BC722/i)
   })
 
-  it('switcher includes Arbitrum LIVE; Avalanche remains PREPARING', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
-    expect(getMelegaPreparingChains().map((c) => c.chainId)).toEqual([43114])
+  it('switcher includes Arbitrum LIVE; Avalanche is LIVE', () => {
+    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161, 43114])
+    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161, 43114])
+    expect(getMelegaPreparingChains().map((c) => c.chainId)).toEqual([])
   })
 
   it('fee settles native ETH at 25% to MELEGA TREASURY', () => {

@@ -76,9 +76,21 @@ export const MELEGA_ARB_VAULT = '0x2541DBEa199a22501D75EA141627776Bd4EefC80'
 export const MELEGA_ARB_POOL_DEPLOY = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
 export const MELEGA_ARB_MARCO = '0x963556de0eb8138E97A85F0A86eE0acD159D210b'
 
+/** Canonical Melega V2 Router on Avalanche — Founder-deployed tx 0xd3185d5f…c23e; runtime SHA-256 verified */
+export const MELEGA_AVAX_ROUTER = '0x5A38b0B75C2E199fD8098710594115A35ABb6c7F'
+export const MELEGA_AVAX_FACTORY = '0xFF8EBf8edf1C533A02d066f852788773BdCD631C'
+export const MELEGA_AVAX_MULTICALL = '0xcA11bde05977b3631167028862bE2a173976CA11'
+export const MELEGA_AVAX_MASTER_BUILDER = '0x2541DBEa199a22501D75EA141627776Bd4EefC80'
+export const MELEGA_AVAX_VAULT = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
+export const MELEGA_AVAX_POOL_DEPLOY = '0x585364c747CaF6cF6441656F803796230fb1d61c'
+export const MELEGA_AVAX_MARCO = '0x8C880e839f3CAcf60F11612087BAbd3307A33720'
+export const MELEGA_AVAX_WAVAX = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+export const MELEGA_AVAX_ROUTER_DEPLOY_TX =
+  '0xd3185d5f458ca2c86a0d166799d8790c1a58e0f54d729bed109e04e12b84c23e'
+
 /**
  * Product statuses — Multichain Execution Program.
- * LIVE: BNB, Base, Polygon (+ Ethereum when activated). PREPARING: remaining chains.
+ * LIVE: BNB, Base, Polygon, Ethereum, Arbitrum, Avalanche.
  */
 export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
   {
@@ -231,27 +243,29 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
     explorer: 'https://snowtrace.io',
     logo: '/images/chains/43114.png',
-    status: 'PREPARING',
+    status: 'LIVE',
     capabilities: {
-      swap: false,
-      farms: false,
-      pools: false,
-      tokens: false,
+      swap: true,
+      farms: true,
+      pools: true,
+      tokens: true,
       liquidityBuilder: false,
     },
     contracts: {
-      factory: '0xFF8EBf8edf1C533A02d066f852788773BdCD631C',
-      router: null,
-      multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      masterBuilder: '0x2541DBEa199a22501D75EA141627776Bd4EefC80',
-      vault: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe',
-      poolDeploymentFactory: '0x585364c747CaF6cF6441656F803796230fb1d61c',
+      factory: MELEGA_AVAX_FACTORY,
+      router: MELEGA_AVAX_ROUTER,
+      multicall: MELEGA_AVAX_MULTICALL,
+      masterBuilder: MELEGA_AVAX_MASTER_BUILDER,
+      vault: MELEGA_AVAX_VAULT,
+      poolDeploymentFactory: MELEGA_AVAX_POOL_DEPLOY,
     },
     notes: [
-      'PREPARING — Founder-labeled Router 0x149ee924… is MRT (MARCO Reward Token), not a V2 router.',
-      'Candidate 0xeF3E56e4… exposes factory()/WETH() but factory() points to undeployed 0xabd7a070…',
-      'Factory 0xFF8EBf8… has code (allPairsLength=0); needs a coherent V2 Router bound to it.',
-      'MARCO recovered at vault.token() 0x8c880e839f3cacf60f11612087babd3307a33720.',
+      `Router ${MELEGA_AVAX_ROUTER} bound — Founder deploy ${MELEGA_AVAX_ROUTER_DEPLOY_TX}.`,
+      'router.factory() → Factory 0xFF8EBf8…; router.WETH() → WAVAX 0xB31f66…; runtime SHA-256 matches certified artifact.',
+      'Liquidity Builder remains BNB-only (BETA).',
+      'Smart Swap fee settles as native AVAX to MELEGA TREASURY (25% of estimated gas unchanged).',
+      `MARCO ${MELEGA_AVAX_MARCO}; farms MasterChef ${MELEGA_AVAX_MASTER_BUILDER} (poolLength≥1, pid0 MARCO stake).`,
+      'Founder seed: wrap AVAX → addLiquidityAVAX(MARCO) → controlled swap before volume claims.',
     ],
   },
 ] as const

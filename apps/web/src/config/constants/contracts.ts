@@ -7,6 +7,7 @@ export default {
     97: '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
     137: '0xD3e28c74177B812d1543A406aD1A97ee3C398AC2',
     8453: '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7',
+    43114: '0x8C880e839f3CAcf60F11612087BAbd3307A33720',
   },
   masterChef: {
     1: '0x585364c747CaF6cF6441656F803796230fb1d61c',
@@ -15,7 +16,7 @@ export default {
     8453: '0x149EE9245E5eD52a89Ea777d19AD3A5D87873680',
     148: '0x43bF3ff3f6374aDaA914e9657959FAcb4D6d110c',
     42161: '0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894',
-    /** Avalanche PREPARING — MasterBuilder recovered; farms capability remains disabled */
+    /** Avalanche LIVE — MasterBuilder; pid0 MARCO stake */
     43114: '0x2541DBEa199a22501D75EA141627776Bd4EefC80',
   },
   sousChef: {

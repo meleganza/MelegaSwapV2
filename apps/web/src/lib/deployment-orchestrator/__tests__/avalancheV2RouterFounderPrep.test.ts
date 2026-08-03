@@ -150,7 +150,7 @@ describe('Avalanche V2 Router Founder preparation', () => {
     expect(plan.encodeSmoke.getAmountsOut.length).toBeGreaterThan(10)
     expect(plan.encodeSmoke.addLiquidity.length).toBeGreaterThan(10)
     expect(plan.encodeSmoke.swapExactTokensForTokens.length).toBeGreaterThan(10)
-    expect(AVALANCHE_STATUS_UNTIL_ACTIVATION).toBe('PREPARING')
+    expect(AVALANCHE_STATUS_UNTIL_ACTIVATION).toBe('LIVE')
     expect(AVALANCHE_ACTIVATION_GATES.length).toBeGreaterThanOrEqual(7)
   })
 
@@ -204,14 +204,13 @@ describe('Avalanche V2 Router Founder preparation', () => {
     expect(avaxAsBsc.codes).toContain('WRONG_CHAIN')
   })
 
-  it('does not modify exchange.ts or bind Avalanche router; Avalanche stays PREPARING', () => {
+  it('activation mission binds Avalanche router; Avalanche is LIVE', () => {
     const exchange = readFileSync(EXCHANGE, 'utf8')
-    // This mission must not bind an Avalanche router address
-    expect(exchange).not.toMatch(/\[ChainId\.AVAX\]:\s*'0x[a-fA-F0-9]{40}'/)
+    expect(exchange).toMatch(/\[ChainId\.AVAX\]:\s*'0x5A38b0B75C2E199fD8098710594115A35ABb6c7F'/)
     const avax = MELEGA_CHAIN_REGISTRY.find((c) => c.chainId === 43114)
-    expect(avax?.status).toBe('PREPARING')
-    expect(avax?.contracts.router).toBeNull()
-    for (const id of [56, 8453, 137, 1, 42161]) {
+    expect(avax?.status).toBe('LIVE')
+    expect(avax?.contracts.router?.toLowerCase()).toBe('0x5a38b0b75c2e199fd8098710594115a35abb6c7f')
+    for (const id of [56, 8453, 137, 1, 42161, 43114]) {
       const row = MELEGA_CHAIN_REGISTRY.find((c) => c.chainId === id)
       expect(row?.status).toBe('LIVE')
     }

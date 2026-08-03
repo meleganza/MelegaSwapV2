@@ -283,6 +283,14 @@ export const USDT = {
   [ChainId.POLYGON]: USDT_POLYGON,
   [ChainId.ARBITRUM]: USDT_ARB,
   [ChainId.SHIMMER2]: USDT_SMR,
+  [ChainId.AVAX]: new ERC20Token(
+    ChainId.AVAX,
+    '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+    6,
+    'USDT',
+    'Tether USD',
+    'https://tether.to/',
+  ),
 }
 
 export const DAI = {

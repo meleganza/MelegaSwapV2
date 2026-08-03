@@ -97,4 +97,4 @@ export const AVALANCHE_ACTIVATION_GATES = [
   '25% estimated-gas fee paid in AVAX to 0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b',
 ] as const
 
-export const AVALANCHE_STATUS_UNTIL_ACTIVATION = 'PREPARING' as const
+export const AVALANCHE_STATUS_UNTIL_ACTIVATION = 'LIVE' as const

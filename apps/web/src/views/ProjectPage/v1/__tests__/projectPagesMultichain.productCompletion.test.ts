@@ -70,14 +70,15 @@ describe('Project Pages Multichain Product Completion', () => {
     expect(byId[56]?.swapTarget).toMatch(/BNB/)
     expect(byId[8453]?.swapTarget).toMatch(/ETH/)
 
-    // After Arbitrum LIVE: 42161 selectable; Avalanche remains Coming soon.
+    // After Avalanche LIVE: 43114 selectable.
     expect(byId[137]?.status).toBe('LIVE')
     expect(byId[137]?.comingSoon).toBe(false)
     expect(byId[1]?.status).toBe('LIVE')
     expect(byId[1]?.comingSoon).toBe(false)
     expect(byId[42161]?.status).toBe('LIVE')
     expect(byId[42161]?.comingSoon).toBe(false)
-    expect(byId[43114]?.comingSoon).toBe(true)
+    expect(byId[43114]?.comingSoon).toBe(false)
+    expect(byId[43114]?.status).toBe('LIVE')
 
     expect(isMelegaChainLive(defaultSelectedChainId(deployments))).toBe(true)
   })

@@ -88,6 +88,7 @@ import {
   walletSendDeployTransaction,
 } from 'lib/deployment-orchestrator/founderWalletTx'
 import { FounderAvalancheV2RouterPanel } from './FounderAvalancheV2RouterPanel'
+import { FounderAvalancheLiveSeedPanel } from './FounderAvalancheLiveSeedPanel'
 
 const Root = styled.div`
   max-width: 920px;
@@ -814,6 +815,7 @@ export const FounderDeploymentShell: React.FC = () => {
       <Sub>Founder-signed mainnet deployment · browser wallet only · no KMS · no server signer</Sub>
 
       <FounderAvalancheV2RouterPanel />
+      <FounderAvalancheLiveSeedPanel />
 
       <Banner
         $tone={

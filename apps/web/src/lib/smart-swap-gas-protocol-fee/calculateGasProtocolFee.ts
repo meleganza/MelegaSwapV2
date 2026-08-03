@@ -23,6 +23,7 @@ function feeAssetForChain(chainId: number): SmartRouterFeeAsset {
   if (chainId === 56) return 'BNB'
   if (chainId === 8453 || chainId === 1 || chainId === 42161) return 'ETH'
   if (chainId === 137) return 'POL'
+  if (chainId === 43114) return 'AVAX'
   throw new Error(`Smart Router gas fee unsupported on chain ${chainId}`)
 }
 

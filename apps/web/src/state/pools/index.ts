@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, isAnyOf } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import keyBy from 'lodash/keyBy'
-import poolsConfig, { livePools1, livePools56, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
+import poolsConfig, { livePools1, livePools56, livePools8453, livePools137, livePools42161, livePools43114 } from 'config/constants/pools'
 import {
   PoolsState,
   SerializedPool,
@@ -93,7 +93,8 @@ export const fetchCakePoolPublicDataAsync = (chainId?: number) => async (dispatc
       : chainId === 137 ? livePools137
         : chainId === 8453 ? livePools8453
           : chainId === 42161 ? livePools42161
-            : poolsConfig
+            : chainId === 43114 ? livePools43114
+              : poolsConfig
   const cakePool = pools.filter((p) => p.sousId === 0)[0]
 
   const stakingTokenAddress = isAddress(cakePool.stakingToken.address)
@@ -146,7 +147,8 @@ export const fetchPoolsPublicDataAsync =
           : chainId === 137 ? livePools137
             : chainId === 8453 ? livePools8453
               : chainId === 42161 ? livePools42161
-                : poolsConfig
+                : chainId === 43114 ? livePools43114
+                  : poolsConfig
       
       const [blockLimits, totalStakings, rewardPerBlocks, currentBlock] = await Promise.all([
         fetchPoolsBlockLimits(chainId),
@@ -290,7 +292,8 @@ export const fetchPoolsUserDataAsync = createAsyncThunk<
         : chainId === 137 ? livePools137
           : chainId === 8453 ? livePools8453
             : chainId === 42161 ? livePools42161
-              : poolsConfig
+              : chainId === 43114 ? livePools43114
+                : poolsConfig
             
     const userData = pools.map((pool) => ({
       sousId: pool.sousId,

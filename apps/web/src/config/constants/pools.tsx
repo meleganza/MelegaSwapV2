@@ -2627,6 +2627,9 @@ export const livePools8453: Pool.SerializedPoolConfig<SerializedWrappedToken>[] 
 /** Arbitrum — no fabricated sous pools; factual inventory empty until Founder supplies pool contracts. */
 export const livePools42161: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = []
 
+/** Avalanche — no fabricated sous pools; factual inventory empty until Founder supplies pool contracts. */
+export const livePools43114: Pool.SerializedPoolConfig<SerializedWrappedToken>[] = []
+
 // known finished pools
 const finishedPools = [
   {

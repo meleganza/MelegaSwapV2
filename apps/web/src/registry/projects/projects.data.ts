@@ -36,6 +36,13 @@ const MARCO_ARB = {
   ref: 'token://42161/0x963556de0eb8138E97A85F0A86eE0acD159D210b',
 } as const
 
+const MARCO_AVAX = {
+  chainId: 43114,
+  address: '0x8C880e839f3CAcf60F11612087BAbd3307A33720',
+  symbol: 'MARCO',
+  ref: 'token://43114/0x8C880e839f3CAcf60F11612087BAbd3307A33720',
+} as const
+
 /**
  * Canonical MARCO crypto-project / token identity.
  * Distinct immutable projectId from Melega DEX.
@@ -60,7 +67,7 @@ const marco: StaticProjectRecord = {
   isCanonical: true,
   mvpStatic: true,
   sectorTags: ['DeFi', 'Utility Token'],
-  supportedChains: [56, 1, 137, 8453, 42161],
+  supportedChains: [56, 1, 137, 8453, 42161, 43114],
   websiteUrl: 'https://www.melega.finance',
   docsUrl: 'https://www.melega.finance/about',
   spaceProfileUrl: 'https://melega.space/',
@@ -70,7 +77,7 @@ const marco: StaticProjectRecord = {
     { type: 'instagram', url: 'https://www.instagram.com/melega.finance/' },
   ],
   resources: {
-    tokens: [MARCO_BSC, MARCO_ETH, MARCO_POLYGON, MARCO_BASE, MARCO_ARB],
+    tokens: [MARCO_BSC, MARCO_ETH, MARCO_POLYGON, MARCO_BASE, MARCO_ARB, MARCO_AVAX],
     liquidityPools: [],
     farms: [],
     stakingPools: [],
@@ -94,7 +101,14 @@ const marco: StaticProjectRecord = {
       notes: 'MARCO fee SKUs settle to the canonical Melega Treasury Wallet',
     },
   },
-  primaryTokenRefs: [MARCO_BSC.ref, MARCO_ETH.ref, MARCO_POLYGON.ref, MARCO_BASE.ref, MARCO_ARB.ref],
+  primaryTokenRefs: [
+    MARCO_BSC.ref,
+    MARCO_ETH.ref,
+    MARCO_POLYGON.ref,
+    MARCO_BASE.ref,
+    MARCO_ARB.ref,
+    MARCO_AVAX.ref,
+  ],
   relatedProjectSlugs: ['melega-dex'],
   deepLinks: {
     swap: '/trade?chain=bsc&inputCurrency=BNB&outputCurrency=0x963556de0eb8138E97A85F0A86eE0acD159D210b',

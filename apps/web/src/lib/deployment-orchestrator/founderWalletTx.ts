@@ -180,6 +180,36 @@ export async function walletSendDeployTransaction(
   return hash
 }
 
+/** Generic wallet call (approve / addLiquidity / swap). Founder-signed only. */
+export async function walletSendCallTransaction(
+  eth: EthereumProvider,
+  input: {
+    from: string
+    to: string
+    data: string
+    valueWei?: bigint
+    gasUnits?: bigint | null
+  },
+): Promise<string> {
+  const params: Record<string, string> = {
+    from: input.from,
+    to: input.to,
+    data: input.data,
+    value: `0x${(input.valueWei ?? 0n).toString(16)}`,
+  }
+  if (input.gasUnits != null && input.gasUnits > 0n) {
+    params.gas = `0x${input.gasUnits.toString(16)}`
+  }
+  const hash = await eth.request({
+    method: 'eth_sendTransaction',
+    params: [params],
+  })
+  if (typeof hash !== 'string' || !/^0x[a-fA-F0-9]{64}$/.test(hash)) {
+    throw new Error('eth_sendTransaction did not return a transaction hash')
+  }
+  return hash
+}
+
 export function isUserRejectedError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err)
   const code = (err as { code?: number })?.code

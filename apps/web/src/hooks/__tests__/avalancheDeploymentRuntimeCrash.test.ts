@@ -1,5 +1,5 @@
 /**
- * Avalanche PREPARING must not crash /runtime/deployment.
+ * Avalanche LIVE /runtime/deployment must not crash (router bound; seed may be pending).
  */
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
@@ -18,10 +18,12 @@ const SWITCH_MODAL = path.resolve(WEB, 'components/Menu/UserMenu/NetworkSwitchMo
 const PANEL = path.resolve(WEB, 'views/DeploymentOrchestrator/FounderAvalancheV2RouterPanel.tsx')
 
 describe('Avalanche deployment runtime crash guards', () => {
-  it('Avalanche remains PREPARING with null router and does not imply LIVE', () => {
+  it('Avalanche is LIVE with bound Router and does not crash without liquidity', () => {
     const avax = getMelegaChain(43114)!
-    expect(avax.status).toBe('PREPARING')
-    expect(getMelegaRouterAddress(43114)).toBeNull()
+    expect(avax.status).toBe('LIVE')
+    expect(getMelegaRouterAddress(43114)?.toLowerCase()).toBe(
+      '0x5a38b0b75c2e199fd8098710594115a35abb6c7f',
+    )
     expect(avax.contracts.factory).toBeTruthy()
   })
 
@@ -38,10 +40,9 @@ describe('Avalanche deployment runtime crash guards', () => {
     expect(src).not.toMatch(/pageSupportedChains=\{Component\.chains\}(?!\s*\?\?)/)
   })
 
-  it('NetworkModal never blocks Avalanche PREPARING on /runtime/deployment', () => {
+  it('NetworkModal never blocks Avalanche on /runtime/deployment', () => {
     const src = readFileSync(NETWORK_MODAL, 'utf8')
     expect(src).toContain('isDeploymentRuntimePath')
-    expect(src).toContain('PREPARING')
     expect(src).toContain('/runtime/deployment')
   })
 
@@ -58,9 +59,8 @@ describe('Avalanche deployment runtime crash guards', () => {
     expect(CAKE[ChainId.AVAX]?.address.toLowerCase()).toBe('0x8c880e839f3cacf60f11612087babd3307a33720')
   })
 
-  it('Founder Avalanche panel renders pending Router CTA copy without requiring live router', () => {
+  it('Founder Avalanche panel renders Router CTA without requiring live liquidity', () => {
     const src = readFileSync(PANEL, 'utf8')
-    expect(src).toContain('Router deployment pending')
     expect(src).toContain('Deploy Avalanche V2 Router')
     expect(src).toContain('READY FOR FOUNDER SIGNATURE')
     const gates = assessAvalancheRouterDeployGates({

@@ -11,6 +11,7 @@ export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.BASE]: '0x1B30D21354a082EeBC66c4C5E56320759f7994e5',
   [ChainId.POLYGON]: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe',
   [ChainId.ARBITRUM]: '0x149ee9245e5ed52a89ea777d19ad3a5d87873680',
+  [ChainId.AVAX]: '0x5A38b0B75C2E199fD8098710594115A35ABb6c7F',
 }
 
 // used to construct intermediary pairs for trading
@@ -29,6 +30,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.BASE]: [WNATIVE[ChainId.BASE], USDC[ChainId.BASE], DAI_BASE],
   [ChainId.ARBITRUM]: [WNATIVE[ChainId.ARBITRUM], USDC[ChainId.ARBITRUM], USDT[ChainId.ARBITRUM], WBTC_ARB],
   [ChainId.POLYGON]: [WNATIVE[ChainId.POLYGON], USDC[ChainId.POLYGON], USDT[ChainId.POLYGON], WBTC_POLYGON],
+  [ChainId.AVAX]: [WNATIVE[ChainId.AVAX], avaxTokens.usdc, avaxTokens.usdt, avaxTokens.marco],
 }
 
 /**
