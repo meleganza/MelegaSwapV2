@@ -15,6 +15,8 @@ export default {
     8453: '0x149EE9245E5eD52a89Ea777d19AD3A5D87873680',
     148: '0x43bF3ff3f6374aDaA914e9657959FAcb4D6d110c',
     42161: '0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894',
+    /** Avalanche PREPARING — MasterBuilder recovered; farms capability remains disabled */
+    43114: '0x2541DBEa199a22501D75EA141627776Bd4EefC80',
   },
   sousChef: {
     97: '0xd3af5fe61dbaf8f73149bfcfa9fb653ff096029a',

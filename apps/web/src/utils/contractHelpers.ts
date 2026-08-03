@@ -108,9 +108,19 @@ export const getLpContract = (address: string, signer?: Signer | Provider, chain
 }
 
 export const getCakeContract = (signer?: Signer | Provider, chainId?: number) => {
+  const cake = chainId != null ? CAKE[chainId] : CAKE[ChainId.BSC]
+  if (!cake?.address) {
+    // PREPARING / unsupported fee-token chains must not throw during shell render
+    return getContract({
+      abi: cakeAbi,
+      address: CAKE[ChainId.BSC].address,
+      chainId: ChainId.BSC,
+      signer,
+    }) as Cake
+  }
   return getContract({
     abi: cakeAbi,
-    address: chainId ? CAKE[chainId].address : CAKE[ChainId.BSC].address,
+    address: cake.address,
     chainId,
     signer,
   }) as Cake

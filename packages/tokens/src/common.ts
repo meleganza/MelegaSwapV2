@@ -257,6 +257,14 @@ export const CAKE = {
   [ChainId.BASE]: CAKE_BASE,
   [ChainId.ETHEREUM]: CAKE_ETH,
   [ChainId.SHIMMER2]: CAKE_SMR,
+  [ChainId.AVAX]: new ERC20Token(
+    ChainId.AVAX,
+    '0x8c880e839f3cacf60f11612087babd3307a33720',
+    18,
+    'MARCO',
+    'MELEGA',
+    'https://melega.finance/',
+  ),
 }
 
 export const USDC = {

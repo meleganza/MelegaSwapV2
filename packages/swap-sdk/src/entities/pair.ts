@@ -56,7 +56,12 @@ export class Pair {
   private readonly tokenAmounts: [CurrencyAmount<ERC20Token>, CurrencyAmount<ERC20Token>]
 
   public static getAddress(tokenA: ERC20Token, tokenB: ERC20Token): string {
-    return computePairAddress({ factoryAddress: FACTORY_ADDRESS_MAP[tokenA.chainId], tokenA, tokenB })
+    const factoryAddress = FACTORY_ADDRESS_MAP[tokenA.chainId]
+    const initCodeHash = INIT_CODE_HASH_MAP[tokenA.chainId]
+    if (!factoryAddress || !initCodeHash) {
+      throw new Error(`Pair.getAddress: missing factory/init hash for chain ${tokenA.chainId}`)
+    }
+    return computePairAddress({ factoryAddress, tokenA, tokenB })
   }
 
   public constructor(currencyAmountA: CurrencyAmount<ERC20Token>, tokenAmountB: CurrencyAmount<ERC20Token>) {

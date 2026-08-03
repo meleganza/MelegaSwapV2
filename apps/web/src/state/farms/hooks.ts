@@ -108,7 +108,9 @@ export const usePollCoreFarmData = () => {
 
   useFastRefreshEffect(() => {
     if (chainId && farmFlag !== 'api') {
-      dispatch(fetchFarmsPublicDataAsync({ pids: coreFarmPIDs[chainId], chainId, flag: farmFlag }))
+      const pids = coreFarmPIDs[chainId]
+      if (!pids?.length) return
+      dispatch(fetchFarmsPublicDataAsync({ pids, chainId, flag: farmFlag }))
     }
   }, [dispatch, chainId, farmFlag])
 }

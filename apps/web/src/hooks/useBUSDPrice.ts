@@ -169,8 +169,12 @@ export const useBUSDCakeAmount = (amount: number): number | undefined => {
 export const useCakeBusdPrice = (
   { forceMainnet } = { forceMainnet: false },
 ): Price<ERC20Token, ERC20Token> | undefined => {
-  const { chainId } = useActiveChainId()
-  return usePriceByPairs(chainId == 56 ? USDT[chainId] : USDC[chainId], CAKE[chainId])
+  const { chainId: activeChainId } = useActiveChainId()
+  const chainId = forceMainnet ? ChainId.BSC : activeChainId
+  const cake = chainId != null ? CAKE[chainId] : undefined
+  const quote = chainId === ChainId.BSC ? USDT[ChainId.BSC] : chainId != null ? USDC[chainId] : undefined
+  // Always call hook; missing PREPARING-chain tokens resolve to undefined price without throw
+  return usePriceByPairs(quote, cake)
 }
 
 // @Note: only fetch from one pair

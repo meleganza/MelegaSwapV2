@@ -226,6 +226,10 @@ export const FounderAvalancheV2RouterPanel: React.FC = () => {
       <Status $ok={presentationReady} data-testid="founder-avalanche-router-status">
         {presentationReady ? 'READY FOR FOUNDER SIGNATURE' : 'NOT READY'}
       </Status>
+      <Note data-testid="founder-avalanche-router-pending" style={{ marginTop: 0, marginBottom: 12 }}>
+        Avalanche status: PREPARING · Router deployment pending · Factory already on-chain · no crash when Router is
+        unbound
+      </Note>
 
       <Row>
         <span>Network</span>

@@ -93,7 +93,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
       </ShowMenu>
       <EasterEgg iterations={2} />
       <ToastListener />
-      <NetworkModal pageSupportedChains={Component.chains} />
+      <NetworkModal pageSupportedChains={Component.chains ?? CHAIN_IDS} />
       <TransactionsDetailModal />
       {isShowScrollToTopButton && <ScrollToTopButtonV2 />}
     </ProductionErrorBoundary>

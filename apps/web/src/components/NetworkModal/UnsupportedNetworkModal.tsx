@@ -47,15 +47,18 @@ export function UnsupportedNetworkModal({ pageSupportedChains }: { pageSupported
         <Flex justifyContent="center">
           {supportedMainnetChains?.map((chain) => {
             const chainId_ = [1, 8453, 42161, 324, 10].includes(chain.id) ? `${chain.id}-1` : chain.id
-            return <Box p="5px" key={chain.name}>
-              <Image
-                layout="fixed"
-                width={194/supportedMainnetChains.length}
-                height={194/supportedMainnetChains.length}
-                src={`/images/chains/${chainId_}.png`}
-                alt="check your network"
-              />
-            </Box>
+            const size = Math.max(24, Math.floor(194 / Math.max(supportedMainnetChains.length, 1)))
+            return (
+              <Box p="5px" key={chain.name}>
+                <Image
+                  layout="fixed"
+                  width={size}
+                  height={size}
+                  src={`/images/chains/${chainId_}.png`}
+                  alt="check your network"
+                />
+              </Box>
+            )
           })}          
         </Flex>
         <Message variant="warning">

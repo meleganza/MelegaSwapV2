@@ -56,7 +56,7 @@ const NetworkSelect = ({ switchNetwork, chainId }) => {
         >
           <ChainLogo chainId={row.chainId} />
           <Text color={row.chainId === chainId ? 'secondary' : 'textSubtle'} bold={row.chainId === chainId} pl="12px">
-            {row.shortLabel} · PREPARING
+            {row.shortLabel} · COMING SOON
           </Text>
         </UserMenuItem>
       ))}

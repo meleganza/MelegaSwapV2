@@ -10,13 +10,13 @@ import { ChainLogo } from 'components/Logo/ChainLogo'
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 `
 
 const Section = styled.section`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 `
 
 const SectionLabel = styled.div`
@@ -28,9 +28,9 @@ const SectionLabel = styled.div`
 `
 
 const SectionTitle = styled(Text)`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.textSubtle};
 `
@@ -38,62 +38,72 @@ const SectionTitle = styled(Text)`
 const SectionHint = styled(Text)`
   font-size: 11px;
   color: ${({ theme }) => theme.colors.textSubtle};
-  opacity: 0.85;
+  opacity: 0.8;
 `
 
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 
-  @media screen and (min-width: 520px) {
+  @media screen and (min-width: 480px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media screen and (min-width: 640px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
 
-const ChainCard = styled.button<{ $active: boolean; $preparing?: boolean }>`
+const ChainCard = styled.button<{ $active: boolean }>`
   appearance: none;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 10px;
   width: 100%;
   margin: 0;
-  padding: 14px 12px;
-  border-radius: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
   border: 1px solid
     ${({ theme, $active }) => ($active ? theme.colors.secondary : theme.colors.cardBorder)};
   background: ${({ theme, $active }) =>
     $active ? theme.colors.backgroundAlt : theme.colors.background};
-  box-shadow: ${({ $active }) => ($active ? '0 0 0 1px rgba(118, 69, 217, 0.35)' : 'none')};
+  box-shadow: ${({ $active }) => ($active ? 'inset 0 0 0 1px rgba(118, 69, 217, 0.35)' : 'none')};
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+  min-height: 52px;
+  transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover:not(:disabled) {
     border-color: ${({ theme }) => theme.colors.secondary};
-    transform: translateY(-1px);
   }
+`
 
-  &:disabled {
-    cursor: default;
-    opacity: ${({ $preparing }) => ($preparing ? 1 : 0.55)};
-  }
+const ChainMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 `
 
 const ChainName = styled(Text)<{ $active: boolean }>`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: ${({ $active }) => ($active ? 700 : 600)};
   color: ${({ theme, $active }) => ($active ? theme.colors.secondary : theme.colors.text)};
-  line-height: 1.25;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
-const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
+const StatusPill = styled.span<{ $tone: 'live' | 'coming' | 'active' }>`
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
+  width: fit-content;
+  padding: 1px 6px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -116,18 +126,18 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
   const { switchNetwork, chainId, ...rest } = props
   const { t } = useTranslation()
   const liveChains = filterMelegaVisibleSwitcherChains(chains)
-  const preparing = getMelegaPreparingChains()
+  const comingSoon = getMelegaPreparingChains()
 
   return (
     <ModalV2 closeOnOverlayClick {...rest}>
       <ModalWrapper
         onDismiss={props.onDismiss}
-        style={{ overflow: 'visible', border: 'none', maxWidth: '420px', width: '100%' }}
+        style={{ overflow: 'visible', border: 'none', maxWidth: '700px', width: 'min(700px, 100%)' }}
         data-testid="network-switch-modal"
       >
         <AtomBox position="relative">
-          <AtomBox py="24px" px="20px">
-            <Heading color="text" as="h4" mb="18px" style={{ fontSize: 20 }}>
+          <AtomBox py="20px" px="18px">
+            <Heading color="text" as="h4" mb="14px" style={{ fontSize: 18 }}>
               {t('Switch Network')}
             </Heading>
 
@@ -154,37 +164,36 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                           }
                         }}
                       >
-                        <Flex justifyContent="space-between" width="100%" alignItems="center">
-                          <ChainLogo chainId={chain.id} width={32} height={32} />
-                          {active ? <StatusPill $tone="active">{t('Active')}</StatusPill> : (
-                            <StatusPill $tone="live">{t('LIVE')}</StatusPill>
-                          )}
-                        </Flex>
-                        <ChainName $active={active}>{chain.name}</ChainName>
+                        <ChainLogo chainId={chain.id} width={28} height={28} />
+                        <ChainMeta>
+                          <ChainName $active={active}>{chain.name}</ChainName>
+                          <StatusPill $tone={active ? 'active' : 'live'}>
+                            {active ? t('Active') : t('LIVE')}
+                          </StatusPill>
+                        </ChainMeta>
                       </ChainCard>
                     )
                   })}
                 </CardGrid>
               </Section>
 
-              {preparing.length > 0 && (
-                <Section data-testid="network-switch-preparing">
+              {comingSoon.length > 0 && (
+                <Section data-testid="network-switch-coming-soon">
                   <SectionLabel>
-                    <SectionTitle>{t('PREPARING')}</SectionTitle>
+                    <SectionTitle>{t('COMING SOON')}</SectionTitle>
                     <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
                   </SectionLabel>
                   <CardGrid>
-                    {preparing.map((row) => {
+                    {comingSoon.map((row) => {
                       const active = chainId === row.chainId
                       return (
                         <ChainCard
-                          key={`preparing-${row.chainId}`}
+                          key={`coming-${row.chainId}`}
                           type="button"
                           $active={active}
-                          $preparing
                           data-testid={`network-card-${row.chainId}`}
                           data-active={active ? 'true' : 'false'}
-                          data-status="PREPARING"
+                          data-status="COMING_SOON"
                           onClick={() => {
                             if (row.chainId !== chainId) {
                               switchNetwork(row.chainId)
@@ -192,15 +201,13 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                             }
                           }}
                         >
-                          <Flex justifyContent="space-between" width="100%" alignItems="center">
-                            <ChainLogo chainId={row.chainId} width={32} height={32} />
-                            {active ? (
-                              <StatusPill $tone="active">{t('Active')}</StatusPill>
-                            ) : (
-                              <StatusPill $tone="preparing">{t('PREPARING')}</StatusPill>
-                            )}
-                          </Flex>
-                          <ChainName $active={active}>{row.name}</ChainName>
+                          <ChainLogo chainId={row.chainId} width={28} height={28} />
+                          <ChainMeta>
+                            <ChainName $active={active}>{row.name}</ChainName>
+                            <StatusPill $tone={active ? 'active' : 'coming'}>
+                              {active ? t('Active') : t('COMING SOON')}
+                            </StatusPill>
+                          </ChainMeta>
                         </ChainCard>
                       )
                     })}
