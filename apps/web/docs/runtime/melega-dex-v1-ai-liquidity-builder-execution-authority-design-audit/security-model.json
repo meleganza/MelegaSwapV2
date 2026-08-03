@@ -1,0 +1,42 @@
+{
+  "coreRule": "AI authorizes ExecutionIntents only. AI never custodies Token Reserve, LP, or fee tokens.",
+  "trustBoundaries": [
+    {
+      "component": "AI Decision / Policy engines",
+      "trust": "May propose EXECUTE; must not bypass on-chain caps",
+      "compromiseImpact": "Could attempt bad intents — still constrained by Program math/caps; Founder revoke + pause"
+    },
+    {
+      "component": "AI Signer key",
+      "trust": "Produces signatures accepted by 1271 policy at signingAuthority",
+      "compromiseImpact": "Unauthorized intents within policy limits until revoke; no direct fund withdrawal",
+      "mitigations": ["key revoke list", "rate limits", "program allowlist", "Founder pause"]
+    },
+    {
+      "component": "Permissionless Relay",
+      "trust": "Broadcasts calldata only",
+      "compromiseImpact": "Griefing gas / delayed submit — cannot alter signed economics"
+    },
+    {
+      "component": "Program / Factory",
+      "trust": "Custody + atomic execution",
+      "compromiseImpact": "Out of AI scope if owner keys protected"
+    }
+  ],
+  "invariants": [
+    "signingAuthority address unchanged (immutable Authorizer)",
+    "Relayer msg.sender never economic authority",
+    "Fee path FeeSink → FeeReceiver without Treasury Runtime",
+    "Agent wallets hold no Program deposit role"
+  ],
+  "founderRecoveryControls": [
+    "Pause / SafetyPause / Stop program as owner",
+    "Revoke AI agent key in ERC-1271 policy module",
+    "Clear or replace EIP-7702 delegation",
+    "Fall back to Founder-only signing (option A) during incidents"
+  ],
+  "observationHonesty": {
+    "note": "On-chain does not recompute eligibleNetBuyFlow from raw swaps. Policy engine must attest observation integrity; optional future: commit reveal / multiple observers.",
+    "status": "ACCEPTED_OFFCHAIN_TRUST_WITH_POLICY"
+  }
+}

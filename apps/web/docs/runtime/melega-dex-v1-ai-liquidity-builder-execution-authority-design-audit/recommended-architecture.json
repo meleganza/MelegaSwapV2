@@ -1,0 +1,68 @@
+{
+  "recommendationId": "C_EIP7702_ERC1271_AI_POLICY",
+  "name": "AI Intent Authority via EIP-7702 ERC-1271 Policy Module",
+  "verdictSupport": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_EXECUTION_AUTHORITY_DESIGN_READY",
+  "prioritiesHonored": {
+    "noCustody": true,
+    "noKmsDependency": true,
+    "noTreasuryRuntime": true,
+    "autonomousAiOperation": true,
+    "noAuthorizerRedeploy": true
+  },
+  "rationale": [
+    "Live signingAuthority already has EIP-7702 code (ef0100…) so Authorizer already uses ERC-1271 path",
+    "AI never receives Program Token Reserve, owner keys, or FeeSink custody — only authorizes intent digests",
+    "No AWS KMS required: agent signing key is a dedicated non-custodial policy key validated by 1271 module",
+    "No Treasury Runtime: fees remain Program → FeeSink → FeeReceiver",
+    "Founder retains recovery: clear/change 7702 delegation, pause/stop programs, revoke AI key in policy module"
+  ],
+  "layers": {
+    "onChainUnchanged": [
+      "LiquidityBuildingFactoryV1",
+      "LiquidityBuildingExecutionAuthorizerV1",
+      "LiquidityBuildingProgramV1.executeLiquidityBuilding",
+      "ExecutionIntentV1 EIP-712 schema"
+    ],
+    "authoritySurface": {
+      "address": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+      "mechanism": "EIP-7702 delegate implementing IERC1271.isValidSignature",
+      "accepts": "AI agent signature (or session key) over the same EIP-712 intent digest Authorizer hashes",
+      "policyChecksSuggested": [
+        "program allowlist",
+        "max grossQuoteTarget / rate bps ceilings tighter than on-chain if desired",
+        "max executions per day",
+        "kill switch / revoked agent key list",
+        "optional Founder co-sign for first N executions (bootstrap)"
+      ]
+    },
+    "runtime": {
+      "decisionEngine": "observe eligible flow → EXECUTE|SKIP (existing library + production worker)",
+      "policyEngine": "off-chain + on-chain 1271 policy; reject unsafe intents before sign",
+      "signer": "AI agent key — signs digest only; never holds Program funds",
+      "relay": "permissionless submitter of (intent, signature); gas wallet only",
+      "scheduler": "epoch-aligned worker",
+      "monitoring": "ExecutionCompleted, fee, LP, pause alerts"
+    }
+  },
+  "rejectedNearTerm": {
+    "B": "requires replacing immutable signingAuthority via new Authorizer+Factory",
+    "E": "optional later generation; not needed to unlock AI on current canary Factory",
+    "A_alone": "not autonomous",
+    "D_as_default": "use as optional hardening, not default if full autonomy required"
+  },
+  "implementationSequenceFutureMissions": [
+    "Design/spec EIP-7702 ERC-1271 policy module interface (still no LB contract changes)",
+    "Wire production decision+policy worker against intent-builder",
+    "Provision AI agent signing key (non-KMS) + Founder revoke path",
+    "Enable permissionless relay wallet (gas only)",
+    "Canary: first signed execute on MARCO/WBNB Active program",
+    "Monitoring + pause drill"
+  ],
+  "explicitNonGoals": [
+    "Do not give AI Program owner role",
+    "Do not move Token Reserve to agent wallet",
+    "Do not introduce Treasury Runtime",
+    "Do not require AWS KMS for v1 AI authority",
+    "Do not redeploy Factory/Authorizer for first AI path"
+  ]
+}
