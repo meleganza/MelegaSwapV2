@@ -34,12 +34,12 @@ const WEB = path.resolve(__dirname, '../../..')
 const REPO = path.resolve(WEB, '../..')
 
 describe('Polygon full reactivation + Arbitrum registry', () => {
-  it('chain matrix: BNB+Base+Polygon LIVE; ETH+Arb+Avax PREPARING', () => {
+  it('chain matrix: BNB+Base+Polygon+Ethereum LIVE; Arb+Avax PREPARING', () => {
     const byId = Object.fromEntries(MELEGA_CHAIN_REGISTRY.map((c) => [c.chainId, c]))
     expect(byId[56].status).toBe('LIVE')
     expect(byId[8453].status).toBe('LIVE')
     expect(byId[137].status).toBe('LIVE')
-    expect(byId[1].status).toBe('PREPARING')
+    expect(byId[1].status).toBe('LIVE')
     expect(byId[42161].status).toBe('PREPARING')
     expect(byId[43114].status).toBe('PREPARING')
     expect(byId[137].capabilities.liquidityBuilder).toBe(false)
@@ -51,7 +51,7 @@ describe('Polygon full reactivation + Arbitrum registry', () => {
 
   it('Arbitrum registered on Coming Soon surfaces', () => {
     expect(getMelegaPreparingChains().map((c) => c.chainId).sort((a, b) => a - b)).toEqual([
-      1, 42161, 43114,
+      42161, 43114,
     ])
     expect(MELEGA_EXPLORE_CHAIN_LABELS[42161]).toBe('Arbitrum')
     expect(explorerLabelFor(42161)).toBe('Arbiscan')
@@ -86,9 +86,9 @@ describe('Polygon full reactivation + Arbitrum registry', () => {
     expect(pkg).toMatch(/\[ChainId\.ARBITRUM\]: ''/)
   })
 
-  it('switcher LIVE = BNB + Base + Polygon', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([56, 137, 8453])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([56, 137, 8453])
+  it('switcher LIVE = BNB + Base + Polygon + Ethereum', () => {
+    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
+    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
   })
 
   it('no cross-chain address fallback', () => {

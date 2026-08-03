@@ -105,6 +105,12 @@ export function getBuyTokenHref(opts?: { chainId?: number | null; contract?: str
       params.set('inputCurrency', 'ETH')
       params.set('outputCurrency', opts.contract)
     }
+  } else if (opts?.chainId === 1) {
+    params.set('chain', 'eth')
+    if (opts.contract) {
+      params.set('inputCurrency', 'ETH')
+      params.set('outputCurrency', opts.contract)
+    }
   } else if (opts?.chainId === 137) {
     params.set('chain', 'polygon')
     if (opts.contract) {

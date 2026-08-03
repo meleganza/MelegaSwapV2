@@ -21,7 +21,7 @@ function toBigInt(value: string | number | bigint): bigint {
 
 function feeAssetForChain(chainId: number): SmartRouterFeeAsset {
   if (chainId === 56) return 'BNB'
-  if (chainId === 8453) return 'ETH'
+  if (chainId === 8453 || chainId === 1) return 'ETH'
   if (chainId === 137) return 'POL'
   throw new Error(`Smart Router gas fee unsupported on chain ${chainId}`)
 }

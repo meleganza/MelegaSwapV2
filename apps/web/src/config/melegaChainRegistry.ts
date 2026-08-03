@@ -61,9 +61,17 @@ export const MELEGA_POLYGON_MASTER_BUILDER = '0x130d2BD998767B6091352dd71fEABa44
 export const MELEGA_POLYGON_VAULT = '0xd70bff1e6354c49adff9b0c9608364dcd2d5deb6'
 export const MELEGA_POLYGON_POOL_DEPLOY = '0x881428103f90c710bF22ccA76dEdDbb1DB2f7786'
 
+/** Canonical Melega V2 on Ethereum — router.factory() verified on-chain */
+export const MELEGA_ETH_ROUTER = '0xFF8EBf8edf1C533A02d066f852788773BdCD631C'
+export const MELEGA_ETH_FACTORY = '0x149EE9245E5eD52a89Ea777d19AD3A5D87873680'
+export const MELEGA_ETH_MULTICALL = '0xcA11bde05977b3631167028862bE2a173976CA11'
+export const MELEGA_ETH_MASTER_BUILDER = '0x585364c747CaF6cF6441656F803796230fb1d61c'
+export const MELEGA_ETH_VAULT = '0x4C11221D39FcE56D12E46deC799F73029859B974'
+export const MELEGA_ETH_MARCO = '0x5911Dc98a9E1A4FfFD802C3A57cdA6bbd26Cdb76'
+
 /**
- * Product matrix after Polygon full reactivation + Arbitrum registry completion.
- * LIVE: BNB, Base, Polygon. PREPARING: Ethereum, Arbitrum, Avalanche.
+ * Product matrix — Ethereum activation in progress from Polygon+Arb-registry baseline.
+ * LIVE: BNB, Base, Polygon (+ Ethereum when activated). PREPARING: remaining.
  */
 export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
   {
@@ -156,23 +164,28 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
     explorer: 'https://etherscan.io',
     logo: '/images/chains/1.png',
-    status: 'PREPARING',
+    status: 'LIVE',
     capabilities: {
-      swap: false,
-      farms: false,
-      pools: false,
-      tokens: false,
+      swap: true,
+      farms: true,
+      pools: true,
+      tokens: true,
       liquidityBuilder: false,
     },
     contracts: {
-      factory: null,
-      router: null,
-      multicall: null,
-      masterBuilder: null,
-      vault: null,
+      factory: MELEGA_ETH_FACTORY,
+      router: MELEGA_ETH_ROUTER,
+      multicall: MELEGA_ETH_MULTICALL,
+      masterBuilder: MELEGA_ETH_MASTER_BUILDER,
+      vault: MELEGA_ETH_VAULT,
       poolDeploymentFactory: null,
     },
-    notes: ['Visible as Coming soon — not switchable until activation mission.'],
+    notes: [
+      'Liquidity Builder remains BNB-only (BETA).',
+      'Smart Swap fee settles as native ETH to MELEGA TREASURY (same EOA; 25% of gas unchanged).',
+      'Router.factory() verified against Melega ETH Factory on-chain.',
+      `Canonical MARCO ${MELEGA_ETH_MARCO}.`,
+    ],
   },
   {
     chainId: ChainId.ARBITRUM,

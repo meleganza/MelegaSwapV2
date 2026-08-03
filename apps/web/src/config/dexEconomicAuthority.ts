@@ -25,7 +25,7 @@ export const DEX_ECONOMIC_AUTHORITY = {
     replacement_beneficiary: MELEGA_TREASURY_WALLET_ADDRESS,
   },
   /** Chains where the canonical beneficiary applies for DEX-owned application fees. */
-  chainIdsSupported: [56, 8453, 137] as const,
+  chainIdsSupported: [56, 8453, 137, 1] as const,
   /** Testnet-only collectors remain documented separately; never substitute for mainnet. */
   testnetOnlyNote:
     'Chain 97 may use a published testnet collector; mainnet beneficiary is always MELEGA_TREASURY_WALLET.',
