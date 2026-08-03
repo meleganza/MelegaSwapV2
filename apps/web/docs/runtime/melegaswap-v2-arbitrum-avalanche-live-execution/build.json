@@ -3,5 +3,11 @@
   "command": "yarn next build",
   "result": "passed",
   "exitCode": 0,
-  "timestamp": "2026-08-03T16:10:49.175614+00:00"
+  "timestamp": "2026-08-03T16:10:49.175614+00:00",
+  "avalanchePhase": {
+    "command": "yarn next build",
+    "result": "passed",
+    "exitCode": 0,
+    "timestamp": "2026-08-03T16:13:27.863027+00:00"
+  }
 }

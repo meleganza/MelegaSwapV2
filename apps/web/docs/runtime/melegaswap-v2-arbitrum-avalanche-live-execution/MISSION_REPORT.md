@@ -1,7 +1,8 @@
 # MELEGASWAP_V2_ARBITRUM_AND_AVALANCHE_FOUNDER_ADDRESS_RECOVERY_AND_LIVE_EXECUTION
 
 **Branch:** `melegaswap-v2-multichain-execution-program`  
-**Baseline:** Ethereum LIVE @ `b643369f`
+**Baseline:** Ethereum LIVE @ `b643369f`  
+**Arbitrum commit:** `17e339f7`
 
 ## Phase 1 — Arbitrum LIVE
 
@@ -32,11 +33,37 @@ BNB · Base · Polygon · Ethereum · **Arbitrum**
 
 ## Phase 2 — Avalanche (gates incomplete)
 
-See Avalanche evidence files. Narrow blocker after Founder-address verification:
+### Verdict
+**NOT LIVE** — narrow blocker:
 
 **AVALANCHE_ROUTER_ADDRESS_REQUIRED**
 
-Founder-labeled Router `0x149ee924…` on Avalanche is **MRT** (MARCO Reward Token), not a V2 router.  
-Candidate `0xeF3E56e4…` exposes `factory()`/`WETH()` but `factory()` points to undeployed `0xabd7a070…`.  
-Factory `0xFF8EBf8…` has code (`allPairsLength=0`) and needs a coherent V2 Router bound to it.  
-MARCO recovered at `0x8c880e839f3cacf60f11612087babd3307a33720` (vault.token()).
+### Founder addresses checked on 43114 (all have bytecode)
+| Founder label | Address | On-chain identity |
+|---------------|---------|-------------------|
+| Factory | `0xFF8EBf8…` | V2 Factory (`allPairsLength=0`) — kept |
+| Multicall | `0xcA11…CA11` | Multicall3 — OK |
+| Router | `0x149ee924…` | **MRT** (MARCO Reward Token) — **not a V2 router** |
+| MasterBuilder | `0x2541DBEa…` | MasterChef-like (`poolLength=1`) — kept |
+| Vault | `0x64935e2A…` | Vault; `token()` → MARCO — kept |
+| Pool deploy | `0x585364c7…` | code present — kept |
+
+### Router hunt
+- Candidate `0xeF3E56e4…` (same deployer) exposes `factory()` + `WETH()` (WAVAX) but `factory()` → `0xabd7a070…` with **0 bytecode**.
+- No Founder-supplied or historical address yields a coherent Router↔Factory pair on Avalanche.
+- Do **not** declare Avalanche LIVE with a broken Router.
+
+### MARCO
+Verified at `0x8c880e839f3cacf60f11612087babd3307a33720` (vault.token()) — name MELEGA, symbol MARCO, 18 decimals.  
+Bound in `packages/tokens/src/43114.ts` + tokenlist + logo. Farms/pools inventories not fabricated (none factual in repo).
+
+### Matrix after this mission
+| Chain | Status |
+|-------|--------|
+| BNB | LIVE |
+| Base | LIVE |
+| Polygon | LIVE |
+| Ethereum | LIVE |
+| Arbitrum | LIVE |
+| Avalanche | PREPARING (`AVALANCHE_ROUTER_ADDRESS_REQUIRED`) |
+| Liquidity Builder | BETA · BNB only |

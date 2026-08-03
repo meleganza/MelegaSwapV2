@@ -1,0 +1,10 @@
+{
+  "address": "0x8c880e839f3cacf60f11612087babd3307a33720",
+  "chainId": 43114,
+  "name": "MELEGA",
+  "symbol": "MARCO",
+  "decimals": 18,
+  "source": "vault.token() on Founder Vault",
+  "verdict": "AVALANCHE_MARCO_VERIFIED",
+  "farmsPoolsInventory": "none factual in repo \u2014 not fabricated"
+}

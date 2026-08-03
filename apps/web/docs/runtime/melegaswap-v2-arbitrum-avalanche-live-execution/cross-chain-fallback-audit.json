@@ -1,0 +1,12 @@
+{
+  "arbitrum": {
+    "noBnbBasePolygonEthFallback": true,
+    "staleRouterRejected": true,
+    "marcoVerifiedOn42161": true
+  },
+  "avalanche": {
+    "noCrossChainRouterReuse": true,
+    "founderRouterLabelIsMRT": true,
+    "ef3eNotBoundToLiveFactory": true
+  }
+}
