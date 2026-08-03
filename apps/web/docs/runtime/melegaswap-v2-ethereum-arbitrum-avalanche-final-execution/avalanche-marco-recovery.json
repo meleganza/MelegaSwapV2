@@ -1,0 +1,9 @@
+{
+  "address": "0x8C880e839f3CAcf60F11612087BAbd3307A33720",
+  "chainId": 43114,
+  "name": "MELEGA",
+  "symbol": "MARCO",
+  "decimals": 18,
+  "verdict": "AVALANCHE_MARCO_VERIFIED",
+  "source": "Founder-supplied canonical + on-chain verify"
+}

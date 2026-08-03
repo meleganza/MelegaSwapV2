@@ -1,7 +1,19 @@
 import { ChainId, WETH9, ERC20Token } from '@pancakeswap/sdk'
 
+/** Avalanche MARCO — Founder canonical; verified on 43114. */
+export const CAKE_AVAX = new ERC20Token(
+  ChainId.AVAX,
+  '0x8C880e839f3CAcf60F11612087BAbd3307A33720',
+  18,
+  'MARCO',
+  'MELEGA',
+  'https://melega.finance/',
+)
+
 export const avaxTokens = {
   weth: WETH9[ChainId.AVAX],
+  gtoken: CAKE_AVAX,
+  marco: CAKE_AVAX,
   usdt: new ERC20Token(
     ChainId.AVAX,
     '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',

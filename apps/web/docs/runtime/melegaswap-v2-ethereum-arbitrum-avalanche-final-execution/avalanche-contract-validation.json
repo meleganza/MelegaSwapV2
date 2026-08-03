@@ -1,0 +1,9 @@
+{
+  "chainId": 43114,
+  "gates": {
+    "founderAddressesHaveCode": true,
+    "routerFactoryCoherent": false,
+    "functionalV2RouterBoundToLiveFactory": false
+  },
+  "blocker": "AVALANCHE_ROUTER_ADDRESS_REQUIRED"
+}

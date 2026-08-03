@@ -14,6 +14,7 @@ const SLUG_BY_CHAIN: Record<number, string> = {
   137: 'marco-polygon',
   8453: 'marco-base',
   42161: 'marco-arbitrum',
+  43114: 'marco-avalanche',
 }
 
 const buildMarcoCapabilities = (): AssetCapabilities => ({

@@ -78,9 +78,21 @@ export const MELEGA_ARB_VAULT = '0x2541DBEa199a22501D75EA141627776Bd4EefC80'
 export const MELEGA_ARB_POOL_DEPLOY = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
 export const MELEGA_ARB_MARCO = '0x963556de0eb8138e97a85f0a86ee0acd159d210b'
 
+/** Avalanche Founder-supplied contracts — Router gap blocks LIVE */
+export const MELEGA_AVAX_FACTORY = '0xFF8EBf8edf1C533A02d066f852788773BdCD631C'
+export const MELEGA_AVAX_MULTICALL = '0xcA11bde05977b3631167028862bE2a173976CA11'
+export const MELEGA_AVAX_MASTER_BUILDER = '0x2541DBEa199a22501D75EA141627776Bd4EefC80'
+export const MELEGA_AVAX_VAULT = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
+export const MELEGA_AVAX_POOL_DEPLOY = '0x585364c747CaF6cF6441656F803796230fb1d61c'
+export const MELEGA_AVAX_MARCO = '0x8C880e839f3CAcf60F11612087BAbd3307A33720'
+/** Founder-labeled Router is MRT on-chain — not a V2 router. Do not bind. */
+export const MELEGA_AVAX_ROUTER_LABEL_REJECTED_MRT = '0x149ee9245e5ed52a89ea777d19ad3a5d87873680'
+/** Candidate V2-shaped contract — factory() points to undeployed address. Do not bind as LIVE. */
+export const MELEGA_AVAX_ROUTER_CANDIDATE_BROKEN_FACTORY = '0xeF3E56e434e273dC84A58f02209c154216D005cb'
+
 /**
  * Product matrix — multichain final execution.
- * LIVE: BNB, Base, Polygon, Ethereum (+ Arbitrum when activated).
+ * LIVE: BNB, Base, Polygon, Ethereum, Arbitrum. PREPARING: Avalanche (Router required).
  */
 export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
   {
@@ -243,14 +255,21 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
       liquidityBuilder: false,
     },
     contracts: {
-      factory: null,
+      factory: MELEGA_AVAX_FACTORY,
       router: null,
-      multicall: null,
-      masterBuilder: null,
-      vault: null,
-      poolDeploymentFactory: null,
+      multicall: MELEGA_AVAX_MULTICALL,
+      masterBuilder: MELEGA_AVAX_MASTER_BUILDER,
+      vault: MELEGA_AVAX_VAULT,
+      poolDeploymentFactory: MELEGA_AVAX_POOL_DEPLOY,
     },
-    notes: ['PREPARING / not LIVE — Coming soon. No half-enabled switch.'],
+    notes: [
+      'PREPARING — AVALANCHE_ROUTER_ADDRESS_REQUIRED.',
+      'Founder-labeled Router 0x149ee924… is MRT (MARCO Reward Token), not a V2 router.',
+      'Candidate 0xeF3E56e4… has factory()/WETH() but factory() → undeployed 0xabd7a070…',
+      `Factory ${MELEGA_AVAX_FACTORY} has code (allPairsLength=0).`,
+      `Canonical MARCO ${MELEGA_AVAX_MARCO} verified on 43114.`,
+      'No LIVE with broken Router / Router↔Factory incoherence.',
+    ],
   },
 ] as const
 
