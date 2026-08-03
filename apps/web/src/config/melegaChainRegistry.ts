@@ -53,9 +53,20 @@ export const MELEGA_BASE_POOL_DEPLOY = '0x9f421c4DEDD3B5C24EFff0FCB5AD2BEa0a577E
 export const MELEGA_BNB_ROUTER = '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3'
 export const MELEGA_BNB_FACTORY = '0xb7E5848e1d0CB457f2026670fCb9BbdB7e9E039C'
 
+/** Canonical Melega V2 on Polygon — router.factory() verified on-chain */
+export const MELEGA_POLYGON_ROUTER = '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe'
+export const MELEGA_POLYGON_FACTORY = '0x2541DBEa199a22501D75EA141627776Bd4EefC80'
+export const MELEGA_POLYGON_MASTER_BUILDER = '0x130d2BD998767B6091352dd71fEABa4460846D94'
+export const MELEGA_POLYGON_VAULT = '0xd70bff1e6354c49adff9b0c9608364dcd2d5deb6'
+
+export const MELEGA_ETH_ROUTER = '0xFF8EBf8edf1C533A02d066f852788773BdCD631C'
+export const MELEGA_ETH_FACTORY = '0x149EE9245E5eD52a89Ea777d19AD3A5D87873680'
+export const MELEGA_ETH_MASTER_BUILDER = '0x585364c747CaF6cF6441656F803796230fb1d61c'
+export const MELEGA_ETH_VAULT = '0x4C11221D39FcE56D12E46deC799F73029859B974'
+
 /**
- * Product statuses after Base reactivation mission.
- * Avalanche remains PREPARING (not DISABLED) per mission target — visible as Coming soon, not switchable.
+ * Product statuses — Multichain Execution Program.
+ * LIVE: BNB, Base, Polygon (+ Ethereum when activated). PREPARING: remaining chains.
  */
 export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
   {
@@ -118,23 +129,27 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
     explorer: 'https://polygonscan.com',
     logo: '/images/chains/137.png',
-    status: 'PREPARING',
+    status: 'LIVE',
     capabilities: {
-      swap: false,
-      farms: false,
-      pools: false,
-      tokens: false,
+      swap: true,
+      farms: true,
+      pools: true,
+      tokens: true,
       liquidityBuilder: false,
     },
     contracts: {
-      factory: null,
-      router: null,
-      multicall: null,
-      masterBuilder: null,
-      vault: null,
+      factory: MELEGA_POLYGON_FACTORY,
+      router: MELEGA_POLYGON_ROUTER,
+      multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      masterBuilder: MELEGA_POLYGON_MASTER_BUILDER,
+      vault: MELEGA_POLYGON_VAULT,
       poolDeploymentFactory: null,
     },
-    notes: ['Visible as Coming soon — not switchable until all gates pass.'],
+    notes: [
+      'Liquidity Builder remains BNB-only (BETA).',
+      'Smart Swap fee settles as native POL to MELEGA TREASURY (same EOA; 25% of gas unchanged).',
+      'Router SSOT: web exchange + smart-router package + registry (not stale 0x3BC722…).',
+    ],
   },
   {
     chainId: ChainId.ETHEREUM,
@@ -152,14 +167,45 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
       liquidityBuilder: false,
     },
     contracts: {
+      factory: MELEGA_ETH_FACTORY,
+      router: MELEGA_ETH_ROUTER,
+      multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      masterBuilder: MELEGA_ETH_MASTER_BUILDER,
+      vault: MELEGA_ETH_VAULT,
+      poolDeploymentFactory: null,
+    },
+    notes: [
+      'Contracts verified on-chain — awaiting LIVE flip in execution program step 2.',
+      'Visible as Coming soon until Ethereum LIVE commit.',
+    ],
+  },
+  {
+    chainId: ChainId.ARBITRUM,
+    name: 'Arbitrum One',
+    shortLabel: 'Arbitrum',
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    explorer: 'https://arbiscan.io',
+    logo: '/images/chains/42161.png',
+    status: 'PREPARING',
+    capabilities: {
+      swap: false,
+      farms: false,
+      pools: false,
+      tokens: false,
+      liquidityBuilder: false,
+    },
+    contracts: {
       factory: null,
       router: null,
-      multicall: null,
-      masterBuilder: null,
+      multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      masterBuilder: '0x0Ac09AbdC688fd67863bf0f62DD0e243dbdf6894',
       vault: null,
       poolDeploymentFactory: null,
     },
-    notes: ['Visible as Coming soon — not switchable until all gates pass.'],
+    notes: [
+      'MasterChef present on-chain; Factory + Router canonical addresses required from Founder before LIVE.',
+      'Stale router 0x3BC722… has no bytecode on Arbitrum.',
+    ],
   },
   {
     chainId: 43114,

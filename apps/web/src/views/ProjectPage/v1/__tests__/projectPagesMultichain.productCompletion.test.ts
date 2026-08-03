@@ -70,8 +70,11 @@ describe('Project Pages Multichain Product Completion', () => {
     expect(byId[56]?.swapTarget).toMatch(/BNB/)
     expect(byId[8453]?.swapTarget).toMatch(/ETH/)
 
+    // After Polygon LIVE: 137 is selectable; ETH/Arb/Avax remain Coming soon.
+    expect(byId[137]?.status).toBe('LIVE')
+    expect(byId[137]?.comingSoon).toBe(false)
     expect(byId[1]?.comingSoon).toBe(true)
-    expect(byId[137]?.comingSoon).toBe(true)
+    expect(byId[42161]?.comingSoon).toBe(true)
     expect(byId[43114]?.comingSoon).toBe(true)
 
     expect(isMelegaChainLive(defaultSelectedChainId(deployments))).toBe(true)

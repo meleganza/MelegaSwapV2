@@ -1,0 +1,52 @@
+yarn run v1.22.22
+$ /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/node_modules/.bin/vitest run src/lib/__tests__/melegaChainRegistry.polygonLive.test.ts src/lib/__tests__/melegaChainRegistry.baseReactivation.test.ts src/lib/smart-swap-gas-protocol-fee/__tests__/gasProtocolFee.test.ts src/views/ProjectPage/v1/__tests__/projectPagesMultichain.productCompletion.test.ts
+
+ RUN  v0.27.2 /Users/marcomelega/Projects/MelegaSwapV2-post-recovery-truth/apps/web
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+stderr | unknown test
+Warning: 0x88fd59e1dd3715a98bb66149da9c944d9e795c12 is not checksummed.
+Warning: 0xd5d0322b6bab6a762c79f8c81a0b674778e13aed is not checksummed.
+Warning: 0xad29abb318791d579433d831ed122afeaf29dcfe is not checksummed.
+Warning: 0x14a8d0ac8fc456899f2dd33c3f4e32403a78126c is not checksummed.
+
+ ✓ src/views/ProjectPage/v1/__tests__/projectPagesMultichain.productCompletion.test.ts  (8 tests) 15ms
+(node:89638) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:89638) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:89638) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+stderr | unknown test
+redux-persist localStorage test failed, persistence will be disabled.
+redux-persist failed to create sync storage. falling back to noop storage.
+
+ ✓ src/lib/smart-swap-gas-protocol-fee/__tests__/gasProtocolFee.test.ts  (10 tests) 5ms
+ ✓ src/lib/__tests__/melegaChainRegistry.polygonLive.test.ts  (6 tests) 4ms
+ ✓ src/lib/__tests__/melegaChainRegistry.baseReactivation.test.ts  (9 tests) 4ms
+
+ Test Files  4 passed (4)
+      Tests  33 passed (33)
+   Start at  17:47:17
+   Duration  7.18s (transform 4.53s, setup 787ms, collect 17.55s, tests 28ms)
+
+Done in 10.00s.
