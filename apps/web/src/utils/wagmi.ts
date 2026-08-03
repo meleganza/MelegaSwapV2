@@ -216,8 +216,29 @@ const bscTestnet: Chain = {
   },
 }
 
+/** Avalanche C-Chain — required for wallet chain detection + Founder Router deploy (PREPARING product). */
+const avalanche1: Chain = {
+  id: 43114,
+  name: 'Avalanche C-Chain',
+  network: 'avalanche',
+  nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://api.avax.network/ext/bc/C/rpc'] },
+  },
+  blockExplorers: {
+    etherscan: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+    default: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 11907934,
+    },
+  },
+}
+
 // const CHAINS = [bsc1, mainnet, polygon, base]
-const CHAINS = [bsc1, bscTestnet, base, polygon1, ethereum, arbitrum1]
+const CHAINS = [bsc1, bscTestnet, base, polygon1, ethereum, arbitrum1, avalanche1]
 
 const getNodeRealUrl = (networkName: string) => {
   let host = null

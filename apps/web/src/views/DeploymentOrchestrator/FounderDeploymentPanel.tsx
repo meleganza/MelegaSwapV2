@@ -4,7 +4,8 @@
  */
 import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useAccount, useBalance, useChainId } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
@@ -146,7 +147,7 @@ const LABELS: Record<SubsystemId, string> = {
 
 export const FounderDeploymentPanel: React.FC = () => {
   const { address, isConnected } = useAccount()
-  const chainId = useChainId()
+  const chainId = useWalletChainId()
   const { data: balance } = useBalance({ address })
   const [selected, setSelected] = useState<SubsystemId>('liquidity_builder')
   const [eligibilitySigner, setEligibilitySigner] = useState('')

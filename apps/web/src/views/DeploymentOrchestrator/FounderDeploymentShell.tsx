@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { useAccount, useBalance, useChainId } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import {
   AUTHORIZED_MELEGA_DEPLOYER,
@@ -17,6 +17,7 @@ import {
   type GasEstimateStatus,
   type PerTxGasEstimate,
 } from 'lib/deployment-orchestrator'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 import { toSafeBigInt } from 'utils/safeBigInt'
 import { resolveFounderOperationalState, type FounderOperationalState } from 'lib/deployment-orchestrator/founderOperationalState'
 import { nextFounderDeployTarget } from 'lib/deployment-orchestrator/founderSequence'
@@ -237,7 +238,7 @@ type ProviderUiStatus = 'idle' | 'loading' | 'ready' | 'unavailable'
 
 export const FounderDeploymentShell: React.FC = () => {
   const { address, isConnected, connector } = useAccount()
-  const chainId = useChainId()
+  const chainId = useWalletChainId()
   const {
     data: balance,
     isLoading: balanceLoading,

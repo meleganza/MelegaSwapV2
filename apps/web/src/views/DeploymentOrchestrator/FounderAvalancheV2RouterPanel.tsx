@@ -4,7 +4,7 @@
  */
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useAccount, useChainId } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { AUTHORIZED_MELEGA_DEPLOYER } from 'lib/deployment-orchestrator'
 import { buildAvalancheV2RouterDeployStep } from 'lib/deployment-orchestrator/founderAvalancheRouterDeployTx'
 import { assessAvalancheRouterDeployGates } from 'lib/deployment-orchestrator/founderAvalancheRouterGates'
@@ -14,6 +14,7 @@ import {
   AVAX_ROUTER_WAVAX,
 } from 'lib/deployment-orchestrator/founderAvalancheRouterArtifacts'
 import { AVALANCHE_STATUS_UNTIL_ACTIVATION } from 'lib/deployment-orchestrator/founderAvalancheRouterValidation'
+import { useWalletChainId } from 'hooks/useWalletChainId'
 import {
   isUserRejectedError,
   resolveWalletProvider,
@@ -114,7 +115,7 @@ const Banner = styled.div<{ $tone: 'ok' | 'warn' | 'bad' }>`
 
 export const FounderAvalancheV2RouterPanel: React.FC = () => {
   const { address, isConnected, connector } = useAccount()
-  const chainId = useChainId()
+  const chainId = useWalletChainId()
   const packageBuild = useMemo(() => buildAvalancheV2RouterDeployStep(), [])
   const step = packageBuild.step
 

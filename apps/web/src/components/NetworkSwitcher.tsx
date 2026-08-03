@@ -37,26 +37,26 @@ const NetworkSelect = ({ switchNetwork, chainId }) => {
   return (
     <>
       {visibleChains.map((chain) => (
-          <UserMenuItem
-            key={chain.id}
-            style={{ justifyContent: 'flex-start' }}
-            onClick={() => chain.id !== chainId && switchNetwork(chain.id)}
-          >
-            <ChainLogo chainId={chain.id} />
-            <Text color={chain.id === chainId ? 'secondary' : 'text'} bold={chain.id === chainId} pl="12px">
-              {chain.name}
-            </Text>
-          </UserMenuItem>
-        ))}
+        <UserMenuItem
+          key={chain.id}
+          style={{ justifyContent: 'flex-start' }}
+          onClick={() => chain.id !== chainId && switchNetwork(chain.id)}
+        >
+          <ChainLogo chainId={chain.id} />
+          <Text color={chain.id === chainId ? 'secondary' : 'text'} bold={chain.id === chainId} pl="12px">
+            {chain.name}
+          </Text>
+        </UserMenuItem>
+      ))}
       {preparing.map((row) => (
         <UserMenuItem
           key={`preparing-${row.chainId}`}
-          style={{ justifyContent: 'flex-start', opacity: 0.55, cursor: 'not-allowed' }}
-          disabled
+          style={{ justifyContent: 'flex-start' }}
+          onClick={() => row.chainId !== chainId && switchNetwork(row.chainId)}
         >
           <ChainLogo chainId={row.chainId} />
-          <Text color="textSubtle" pl="12px">
-            {row.shortLabel} · Coming soon
+          <Text color={row.chainId === chainId ? 'secondary' : 'textSubtle'} bold={row.chainId === chainId} pl="12px">
+            {row.shortLabel} · PREPARING
           </Text>
         </UserMenuItem>
       ))}
