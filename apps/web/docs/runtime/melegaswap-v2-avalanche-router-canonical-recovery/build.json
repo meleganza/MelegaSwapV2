@@ -1,0 +1,6 @@
+{
+  "phase": "avalanche-router-canonical-recovery",
+  "result": "skipped_no_product_code_change",
+  "reason": "Evidence-only recovery; no next build required for docs-only commit",
+  "timestamp": "2026-08-03T16:38:38.432327+00:00"
+}

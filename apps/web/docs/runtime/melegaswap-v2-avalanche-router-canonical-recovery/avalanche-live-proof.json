@@ -1,0 +1,13 @@
+{
+  "verdict": "NOT_LIVE",
+  "status": "PREPARING",
+  "blocker": "AVALANCHE_CANONICAL_ROUTER_ADDRESS_REQUIRED",
+  "liveChainsUntouched": [
+    56,
+    8453,
+    137,
+    1,
+    42161
+  ],
+  "reason": "Exhaustive recovery found zero Avalanche V2 Router with live factory() + WAVAX WETH()"
+}

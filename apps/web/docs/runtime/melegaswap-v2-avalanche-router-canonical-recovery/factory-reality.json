@@ -1,0 +1,10 @@
+{
+  "address": "0xff8ebf8edf1c533a02d066f852788773bdcd631c",
+  "bytecodeBytes": 10852,
+  "allPairsLength": 0,
+  "feeToSetter": "0xb6eeb3ab9695979f5b2ef6df4112e63212e33ee0",
+  "INIT_CODE_PAIR_HASH": "0x61d8b54c70e4fa58ec2fa33190002b375d3e6e19d891be1b158ba25e0886eea2",
+  "getPair_MARCO_WAVAX": "0x0",
+  "classification": "A_canonical_but_unused_empty_factory_no_bound_router",
+  "routersPointingToThis": []
+}

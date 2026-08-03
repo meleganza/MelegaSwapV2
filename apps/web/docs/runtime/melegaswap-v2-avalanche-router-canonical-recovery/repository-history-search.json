@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-08-03T16:38:38.431377+00:00",
+  "baselineBranch": "melegaswap-v2-multichain-execution-program",
+  "baselineCommits": {
+    "arbitrumLive": "17e339f7",
+    "avalancheBlocker": "ab1f41d2"
+  },
+  "searches": [
+    {
+      "scope": "packages/smart-router ROUTER_ADDRESS[AVAX]",
+      "result": "always empty string from first commit e3389a23 through HEAD \u2014 never a non-empty Avalanche router"
+    },
+    {
+      "scope": "apps/web exchange.ts ROUTER_ADDRESS",
+      "result": "AVAX never present as router key; only BASES token lists"
+    },
+    {
+      "scope": "FACTORY_ADDRESS_MAP",
+      "result": "no ChainId.AVAX entry ever"
+    },
+    {
+      "scope": "git branch -a for non-empty AVAX router",
+      "result": "zero branches"
+    },
+    {
+      "scope": "Avalanche deployer 0xe669\u2026 txlist contract creations",
+      "result": "7 contracts only \u2014 all previously classified; no additional router"
+    },
+    {
+      "scope": "runtime docs / prior missions",
+      "result": "AVALANCHE_ROUTER_ADDRESS_REQUIRED / empty Factory confirmed"
+    },
+    {
+      "scope": "Melega V1 / JoeRouter probe",
+      "result": "JoeRouter 0x60aE616a\u2026 exists on Avalanche but WETH() missing and is not Melega provenance"
+    }
+  ],
+  "addressesNeverBoundAsAvaxRouterInRepoHistory": true,
+  "conclusion": "No factual historical Melega Avalanche V2 Router address exists in repository or deployer creations with a coherent live Factory."
+}
