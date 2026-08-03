@@ -27,6 +27,7 @@ import {
   BandMeta,
   BandTitle,
   Btn,
+  ChainSelectBtn,
   Chip,
   DenseRow,
   DenseTable,
@@ -41,17 +42,21 @@ import {
 } from './theme'
 import { Metric, indexed, live, UNAVAILABLE } from './Metric'
 import {
+  buildProjectChainDeployments,
+  defaultSelectedChainId,
+  explorerLabelFor,
   explorerUrlFor,
-  getPreferredBuyHref,
-  getPrimaryAsset,
-  getPrimaryChainId,
-  getPrimaryChainLabel,
+  filterParticipationByChain,
+  getBuyTokenHref,
+  getPrimaryAssetForChain,
   getSocialResources,
-  getTradeHref,
+  shortenRouter,
 } from './helpers'
 import { useProjectLiveMarket } from './useProjectLiveMarket'
 import ProjectTradingEmbed from './ProjectTradingEmbed'
 import ProjectCharts from './ProjectCharts'
+import AddToWalletButton, { AddToWalletTextOptions } from 'components/AddToWallet/AddToWalletButton'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 
 const ProjectMachineSection = dynamic(() => import('../ProjectMachineSection'), {
   ssr: false,
@@ -149,6 +154,47 @@ const PrimaryButton = styled.button`
   color: #111;
 `
 
+const HeroActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+
+  @media (max-width: 479px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    a,
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+`
+
+const MetaStrip = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid ${pp.line};
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  color: ${pp.mute};
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  strong {
+    color: ${pp.text};
+    font-variant-numeric: tabular-nums;
+  }
+`
+
 interface Props {
   document: CanonicalProjectDocument
   evidencePack: ProjectEvidencePack
@@ -182,14 +228,21 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
   tokenomicsDocument = null,
   roadmapDocument = null,
 }) => {
-  const primary = getPrimaryAsset(document)
+  const deployments = useMemo(() => buildProjectChainDeployments(document), [document])
+  const [selectedChainId, setSelectedChainId] = useState(() => defaultSelectedChainId(deployments))
+  const selected =
+    deployments.find((d) => d.chainId === selectedChainId) ??
+    deployments.find((d) => d.status === 'LIVE') ??
+    deployments[0]
+  const primary = selected
+    ? getPrimaryAssetForChain(document, selected.chainId)
+    : null
   const symbol = primary?.symbol?.value ?? null
-  const chainLabel = getPrimaryChainLabel(document)
-  const chainId = getPrimaryChainId(document)
-  const contract =
-    primary?.contractAddress && /^0x[a-fA-F0-9]{40}$/.test(primary.contractAddress)
-      ? primary.contractAddress
-      : null
+  const chainId = selected?.chainId ?? 56
+  const chainLabel = selected?.shortLabel ?? 'BNB'
+  const contract = selected?.contractAddress ?? null
+  const routerAddress = selected?.routerAddress ?? null
+  const explorerLabel = selected?.explorerLabel ?? explorerLabelFor(chainId)
   const verified =
     document.identity.verificationState?.meta?.availability === 'AVAILABLE'
       ? humanEnumLabel(document.identity.verificationState.value)
@@ -200,12 +253,28 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       : undefined
   const socials = getSocialResources(document)
   const website = document.resources.find((r) => r.resourceType === 'website')
-  const github = document.resources.find((r) => r.resourceType === 'github')
-  const buyHref = getPreferredBuyHref(marketsDocument) ?? '/trade'
-  const tradeHref = getTradeHref(marketsDocument)
+  const buyHref = getBuyTokenHref({ chainId, contract })
   const market = useProjectLiveMarket(document.slug, marketsDocument.markets.length)
   const [pay, setPay] = useState<(typeof PAYMENTS)[number]>('BNB')
   const [copied, setCopied] = useState(false)
+
+  const chainFarms = useMemo(
+    () => filterParticipationByChain(participationDocument.farms, chainId),
+    [participationDocument.farms, chainId],
+  )
+  const chainPools = useMemo(
+    () => filterParticipationByChain(participationDocument.stakingPools, chainId),
+    [participationDocument.stakingPools, chainId],
+  )
+  const chainLiquidity = useMemo(
+    () => filterParticipationByChain(participationDocument.pools, chainId),
+    [participationDocument.pools, chainId],
+  )
+
+  const tokenDecimals =
+    primary?.decimals?.meta?.availability === 'AVAILABLE' && typeof primary.decimals.value === 'number'
+      ? primary.decimals.value
+      : 18
 
   const onCopy = useCallback(async () => {
     if (!contract) return
@@ -217,6 +286,14 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       setCopied(false)
     }
   }, [contract])
+
+  const onSelectChain = useCallback(
+    (nextId: number, disabled: boolean) => {
+      if (disabled) return
+      setSelectedChainId(nextId)
+    },
+    [],
+  )
 
   const ownerLabel = useMemo(() => {
     const g = governanceDocument as { ownership?: { status?: string }; owner?: { label?: string } }
@@ -238,7 +315,7 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
   const utilities =
     (document.identity.tags?.length ? document.identity.tags : document.identity.categories) ?? []
 
-  const largestPool = participationDocument.pools[0] ?? null
+  const largestPool = chainLiquidity[0] ?? null
   const readinessUpdated = formatRelativeTime(readinessDocument.generatedAt)
 
   return (
@@ -248,6 +325,8 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       data-project-rebuild="zero-rebuild-v1"
       data-project-nav="none"
       data-project-layout="dense-long-page"
+      data-project-chain-id={chainId}
+      data-project-multichain="ready"
     >
       {/* SECTION 1 — Identity Hero */}
       <Band aria-labelledby="pp-v1-identity" data-project-section="identity-hero">
@@ -257,7 +336,7 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               logoURI={logoUrl}
               symbol={symbol ?? document.identity.displayName.slice(0, 2)}
               address={contract ?? undefined}
-              chainId={chainId ?? 56}
+              chainId={chainId}
               size={56}
             />
           </LogoWrap>
@@ -265,23 +344,88 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
             <HeroName id="pp-v1-identity">{document.identity.displayName}</HeroName>
             <HeroSub>
               {symbol ? <Ticker>${symbol}</Ticker> : null}
-              <Chip $on>{chainLabel}</Chip>
-              <Chip $on={/verif/i.test(verified)}>{verified}</Chip>
+              <MelegaExploreChainBadge chainId={chainId} />
+              <Chip $on={/verif/i.test(verified)} data-testid="project-v1-verified">
+                {verified}
+              </Chip>
               <Chip>{market.status === 'LIVE' ? 'Live market' : market.status}</Chip>
             </HeroSub>
+
+            <HeroSub style={{ marginTop: 10 }} data-testid="project-v1-chain-deployments">
+              {deployments.map((d) => (
+                <ChainSelectBtn
+                  key={d.chainId}
+                  type="button"
+                  $on={d.chainId === chainId && !d.comingSoon}
+                  $disabled={d.comingSoon || d.status !== 'LIVE'}
+                  disabled={d.comingSoon || d.status !== 'LIVE'}
+                  aria-pressed={d.chainId === chainId}
+                  data-testid={`project-v1-chain-${d.chainId}`}
+                  data-chain-status={d.status}
+                  title={d.comingSoon ? `${d.shortLabel} — Coming soon` : d.label}
+                  onClick={() => onSelectChain(d.chainId, d.comingSoon || d.status !== 'LIVE')}
+                >
+                  {d.shortLabel}
+                  {d.comingSoon ? ' · Coming soon' : d.status === 'LIVE' ? ' · LIVE' : ''}
+                </ChainSelectBtn>
+              ))}
+            </HeroSub>
+
+            <MetaStrip data-testid="project-v1-chain-meta">
+              <div>
+                Contract{' '}
+                <strong>{contract ? shortenAddress(contract) : 'Unavailable'}</strong>
+              </div>
+              <div>
+                Router{' '}
+                <strong>{routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}</strong>
+              </div>
+              <div>
+                Explorer{' '}
+                <strong>{contract ? explorerLabel : '—'}</strong>
+              </div>
+              <div>
+                Swap target{' '}
+                <strong>{selected?.swapTarget ?? 'Unavailable'}</strong>
+              </div>
+            </MetaStrip>
+
             <ContractRow>
-              <span>Contract</span>
-              <strong style={{ color: pp.text }}>
-                {contract ? shortenAddress(contract) : 'Unavailable'}
-              </strong>
               {contract ? (
                 <>
                   <CopyBtn type="button" onClick={onCopy} data-testid="project-v1-copy-contract">
-                    {copied ? 'Copied' : 'Copy'}
+                    {copied ? 'Copied' : 'Copy Contract'}
                   </CopyBtn>
-                  <Btn $ghost href={explorerUrlFor(contract, chainId)} target="_blank" rel="noreferrer">
-                    BscScan
+                  <Btn
+                    $ghost
+                    href={explorerUrlFor(contract, chainId)}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="project-v1-explorer"
+                  >
+                    {explorerLabel}
                   </Btn>
+                  <span data-testid="project-v1-add-to-wallet">
+                    <AddToWalletButton
+                      variant="text"
+                      scale="sm"
+                      p="0 8px"
+                      height="28px"
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        border: `1px solid ${pp.line}`,
+                        borderRadius: 7,
+                        minHeight: 28,
+                      }}
+                      marginTextBetweenLogo="4px"
+                      textOptions={AddToWalletTextOptions.TEXT}
+                      tokenAddress={contract}
+                      tokenSymbol={symbol ?? 'TOKEN'}
+                      tokenDecimals={tokenDecimals}
+                      tokenLogo={logoUrl ?? `/images/${chainId}/tokens/${contract}.png`}
+                    />
+                  </span>
                 </>
               ) : null}
               {website ? (
@@ -318,14 +462,11 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
                 provenance={indexed('readiness', readinessUpdated)}
               />
             </Grid>
-            <Row style={{ marginTop: 12 }}>
+            <HeroActions>
               <Btn $primary href={buyHref} data-testid="project-v1-buy">
-                Buy{symbol ? ` ${symbol}` : ''}
+                Buy Token{symbol ? ` · ${symbol}` : ''}
               </Btn>
-              <Btn href={tradeHref} data-testid="project-v1-trade">
-                Trade
-              </Btn>
-            </Row>
+            </HeroActions>
           </div>
         </Row>
       </Band>
@@ -385,7 +526,12 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       </Band>
 
       {/* SECTION 3 — Trading */}
-      <ProjectTradingEmbed slug={document.slug} marketsDocument={marketsDocument} />
+      <ProjectTradingEmbed
+        slug={document.slug}
+        marketsDocument={marketsDocument}
+        projectChainId={chainId}
+        contractAddress={contract}
+      />
 
       {/* SECTION 4 — Charts */}
       <ProjectCharts slug={document.slug} marketsDocument={marketsDocument} />
@@ -462,15 +608,17 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       </Band>
 
       {/* SECTION 6 — Liquidity */}
-      <Band aria-labelledby="pp-v1-liquidity" data-project-section="liquidity">
+      <Band aria-labelledby="pp-v1-liquidity" data-project-section="liquidity" data-project-chain-id={chainId}>
         <BandHead>
           <BandTitle id="pp-v1-liquidity">Liquidity</BandTitle>
-          <BandMeta>{participationDocument.summary.liquidityPoolCount} pools</BandMeta>
+          <BandMeta>
+            <MelegaExploreChainBadge chainId={chainId} /> · {chainLiquidity.length} pools
+          </BandMeta>
         </BandHead>
         <Grid $cols={4} style={{ marginBottom: 8 }}>
           <Metric
             label="Pools"
-            value={String(participationDocument.summary.liquidityPoolCount)}
+            value={String(chainLiquidity.length)}
             provenance={indexed('venue-registry', participationDocument.generatedAt)}
           />
           <Metric
@@ -486,8 +634,8 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
           />
         </Grid>
         <DenseTable>
-          {participationDocument.pools.length ? (
-            participationDocument.pools.slice(0, 6).map((p) => (
+          {chainLiquidity.length ? (
+            chainLiquidity.slice(0, 6).map((p) => (
               <DenseRow key={p.participationId}>
                 <strong>{p.displayLabel}</strong>
                 <span>{humanEnumLabel(p.status)}</span>
@@ -502,11 +650,17 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               </DenseRow>
             ))
           ) : (
-            <Muted>No liquidity pools registered for this project.</Muted>
+            <Muted>
+              No liquidity pools registered for this project on {chainLabel}.
+            </Muted>
           )}
         </DenseTable>
         <Row style={{ marginTop: 10 }}>
-          <Btn href="/liquidity-studio">Create LP</Btn>
+          {chainId === 56 ? (
+            <Btn href="/liquidity-studio">Create LP</Btn>
+          ) : (
+            <Chip $disabled>Create LP · BNB only</Chip>
+          )}
           {liquidityBuildingDocument ? (
             <Chip>
               LB:{' '}
@@ -518,14 +672,16 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       </Band>
 
       {/* SECTION 7 — Farms */}
-      <Band aria-labelledby="pp-v1-farms" data-project-section="farms">
+      <Band aria-labelledby="pp-v1-farms" data-project-section="farms" data-project-chain-id={chainId}>
         <BandHead>
           <BandTitle id="pp-v1-farms">Farms</BandTitle>
-          <BandMeta>{participationDocument.summary.farmCount} active</BandMeta>
+          <BandMeta>
+            <MelegaExploreChainBadge chainId={chainId} /> · {chainFarms.length} active
+          </BandMeta>
         </BandHead>
         <DenseTable>
-          {participationDocument.farms.length ? (
-            participationDocument.farms.slice(0, 8).map((f) => (
+          {chainFarms.length ? (
+            chainFarms.slice(0, 8).map((f) => (
               <DenseRow key={f.participationId}>
                 <strong>{f.displayLabel}</strong>
                 <span>APR Unavailable</span>
@@ -540,20 +696,22 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               </DenseRow>
             ))
           ) : (
-            <Muted>No active farms registered for this project.</Muted>
+            <Muted>No active farms registered for this project on {chainLabel}.</Muted>
           )}
         </DenseTable>
       </Band>
 
       {/* SECTION 8 — Pools */}
-      <Band aria-labelledby="pp-v1-pools" data-project-section="pools">
+      <Band aria-labelledby="pp-v1-pools" data-project-section="pools" data-project-chain-id={chainId}>
         <BandHead>
           <BandTitle id="pp-v1-pools">Pools</BandTitle>
-          <BandMeta>{participationDocument.summary.stakingPoolCount} reward pools</BandMeta>
+          <BandMeta>
+            <MelegaExploreChainBadge chainId={chainId} /> · {chainPools.length} reward pools
+          </BandMeta>
         </BandHead>
         <DenseTable>
-          {participationDocument.stakingPools.length ? (
-            participationDocument.stakingPools.slice(0, 8).map((p) => (
+          {chainPools.length ? (
+            chainPools.slice(0, 8).map((p) => (
               <DenseRow key={p.participationId}>
                 <strong>{p.displayLabel}</strong>
                 <span>APR Unavailable</span>
@@ -568,7 +726,7 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               </DenseRow>
             ))
           ) : (
-            <Muted>No reward pools registered for this project.</Muted>
+            <Muted>No reward pools registered for this project on {chainLabel}.</Muted>
           )}
         </DenseTable>
       </Band>

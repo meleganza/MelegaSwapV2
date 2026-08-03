@@ -1,5 +1,6 @@
 /**
  * Section 3 — Trading embed. Reuses SmartSwapForm (do not modify Swap/Smart Swap sources).
+ * Chain is forced from the Project Page deployment — no manual chain picker.
  */
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
@@ -12,6 +13,7 @@ import { MARCO_BSC_ADDRESS } from 'design-system/melega/constants/brand'
 import SettingsModal from 'components/Menu/GlobalSettings/SettingsModal'
 import { SettingsMode } from 'components/Menu/GlobalSettings/types'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import useNativeCurrency from 'hooks/useNativeCurrency'
 import { useSwapActionHandlers } from 'state/swap/useSwapActionHandlers'
 import { Field, replaceSwapState } from 'state/swap/actions'
@@ -25,9 +27,17 @@ import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { HomeSwapIconButton, HomeSwapPanelShell } from 'views/HomeTrade/HomeSwapPanelShell'
 import type { ProjectMarketsDocument } from 'registry/projects/identity/markets'
-import { humanChainName } from '../presentation/humanLabels'
-import { Band, BandHead, BandMeta, BandTitle, Grid, Muted, pp } from './theme'
+import {
+  getMelegaChain,
+  getMelegaRouterAddress,
+  isMelegaCapabilityEnabled,
+  isMelegaChainLive,
+} from 'config/melegaChainRegistry'
+import { shortenRouter } from './helpers'
+import { Band, BandHead, BandMeta, BandTitle, Chip, Grid, Muted, pp } from './theme'
 import { Metric, indexed, UNAVAILABLE } from './Metric'
+
+const MARCO_BASE_ADDRESS = '0x56e46bE7714550A4Cb7bD0863BaB2680c099d8d7'
 
 const QuietSwapShell = styled.div`
   border-radius: 10px;
@@ -47,19 +57,65 @@ const SwapSkeleton = styled.div`
   border: 1px solid ${pp.line};
 `
 
+const ComingSoonBox = styled.div`
+  padding: 28px 16px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px dashed ${pp.line};
+  background: rgba(255, 255, 255, 0.02);
+`
+
 const SwapInner = dynamic(() => Promise.resolve({ default: ProjectSwapInner }), {
   ssr: false,
   loading: () => <SwapSkeleton aria-label="Loading trade form" />,
-}) as React.ComponentType<Props>
+}) as React.ComponentType<InnerProps>
 
 interface Props {
   slug: string
   marketsDocument: ProjectMarketsDocument
+  /** Project deployment chain — drives router + pair; no manual selection. */
+  projectChainId: number
+  contractAddress?: string | null
 }
 
-function resolveDefaultPair(slug: string, marketsDocument: ProjectMarketsDocument) {
+interface InnerProps extends Props {
+  projectChainId: number
+}
+
+function resolveDefaultPair(
+  slug: string,
+  marketsDocument: ProjectMarketsDocument,
+  projectChainId: number,
+  contractAddress?: string | null,
+) {
+  const native = getMelegaChain(projectChainId)?.nativeCurrency.symbol ?? 'BNB'
   if (slug === 'marco') {
+    if (projectChainId === 8453) {
+      return { inputCurrencyId: 'ETH', outputCurrencyId: MARCO_BASE_ADDRESS }
+    }
     return { inputCurrencyId: 'BNB', outputCurrencyId: MARCO_BSC_ADDRESS }
+  }
+  const onChainBuy =
+    marketsDocument.swapDestinations.find(
+      (d) =>
+        d.status === 'READY' &&
+        d.chainId === projectChainId &&
+        d.label.includes('buy'),
+    ) ||
+    marketsDocument.swapDestinations.find(
+      (d) => d.status === 'READY' && d.chainId === projectChainId,
+    )
+  if (onChainBuy) {
+    return {
+      inputCurrencyId: onChainBuy.inputCurrencyParam,
+      outputCurrencyId: onChainBuy.outputCurrencyParam,
+    }
+  }
+  if (contractAddress && isMelegaChainLive(projectChainId)) {
+    return {
+      inputCurrencyId: native,
+      outputCurrencyId: contractAddress,
+    }
   }
   const preferred = marketsDocument.preferredMarkets[0]
   const buy =
@@ -78,10 +134,11 @@ function resolveDefaultPair(slug: string, marketsDocument: ProjectMarketsDocumen
   return null
 }
 
-function ProjectSwapInner({ slug, marketsDocument }: Props) {
+function ProjectSwapInner({ slug, marketsDocument, projectChainId, contractAddress }: InnerProps) {
   const dispatch = useAppDispatch()
   const router = useRouter()
   const { chainId } = useActiveChainId()
+  const { switchNetworkAsync, canSwitch } = useSwitchNetwork()
   const native = useNativeCurrency()
   const swapBodyRef = useRef<HTMLDivElement>(null)
   const { account } = useWeb3React()
@@ -95,8 +152,14 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
   const outputCurrency = useCurrency(outputCurrencyId)
   const [onPresentSettingsModal] = useModal(<SettingsModal mode={SettingsMode.SWAP_LIQUIDITY} />)
 
-  // Founder amendment P0-2: an explicit ?inputCurrency=&outputCurrency= pair (e.g. from
-  // Home Featured Trade, source=featured-home) always wins over the project's default pair.
+  // Auto-align wallet/session chain to the project deployment (no manual picker).
+  useEffect(() => {
+    if (!isMelegaChainLive(projectChainId)) return
+    if (chainId === projectChainId) return
+    if (!canSwitch) return
+    void switchNetworkAsync(projectChainId)
+  }, [projectChainId, chainId, canSwitch, switchNetworkAsync])
+
   const queryInputCurrency =
     typeof router.query.inputCurrency === 'string' ? router.query.inputCurrency : undefined
   const queryOutputCurrency =
@@ -109,11 +172,15 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
     return { inputCurrencyId: queryInputCurrency, outputCurrencyId: queryOutputCurrency }
   }, [queryInputCurrency, queryOutputCurrency])
 
-  const defaultPair = useMemo(() => resolveDefaultPair(slug, marketsDocument), [slug, marketsDocument])
+  const defaultPair = useMemo(
+    () => resolveDefaultPair(slug, marketsDocument, projectChainId, contractAddress),
+    [slug, marketsDocument, projectChainId, contractAddress],
+  )
   const effectivePair = queryPair ?? defaultPair
 
   useEffect(() => {
     if (!chainId || !native || !effectivePair) return
+    if (chainId !== projectChainId && isMelegaChainLive(projectChainId)) return
     dispatch(
       replaceSwapState({
         typedValue: '',
@@ -123,19 +190,24 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
         recipient: null,
       }),
     )
-    // Re-run only when the resolved pair identity changes (query wins over default).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainId, effectivePair?.inputCurrencyId, effectivePair?.outputCurrencyId, dispatch, native])
+  }, [
+    chainId,
+    projectChainId,
+    effectivePair?.inputCurrencyId,
+    effectivePair?.outputCurrencyId,
+    dispatch,
+    native,
+  ])
 
-  // Founder amendment P0-2: ?focus=swap (from Home Featured Trade) scrolls to and
-  // focuses the swap embed instead of leaving the shopper to find it manually.
   useEffect(() => {
     if (!focusSwap) return
     const timer = window.setTimeout(() => {
       const root = swapBodyRef.current
       root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       const input =
-        root?.querySelector<HTMLElement>('input.token-amount-input') || root?.querySelector<HTMLElement>('input')
+        root?.querySelector<HTMLElement>('input.token-amount-input') ||
+        root?.querySelector<HTMLElement>('input')
       input?.focus({ preventScroll: true })
     }, 280)
     return () => window.clearTimeout(timer)
@@ -168,6 +240,14 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
     return <Muted>Buying is not available for this project on Melega DEX yet.</Muted>
   }
 
+  if (chainId !== projectChainId && isMelegaChainLive(projectChainId)) {
+    return (
+      <Muted data-testid="project-v1-swap-chain-aligning">
+        Aligning wallet to {getMelegaChain(projectChainId)?.shortLabel ?? 'project chain'}…
+      </Muted>
+    )
+  }
+
   const pairIndicator = (
     <span style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a' }}>
       {inputCurrency?.symbol ?? '—'} / {outputCurrency?.symbol ?? '—'}
@@ -197,37 +277,92 @@ function ProjectSwapInner({ slug, marketsDocument }: Props) {
   )
 }
 
-const ProjectTradingEmbed: React.FC<Props> = ({ slug, marketsDocument }) => {
-  const preferred = marketsDocument.preferredMarkets[0]
-  const chainName = humanChainName(preferred?.chainId ?? 56)
-  const ready = marketsDocument.swapDestinations.some((d) => d.status === 'READY') || slug === 'marco'
+const ProjectTradingEmbed: React.FC<Props> = ({
+  slug,
+  marketsDocument,
+  projectChainId,
+  contractAddress = null,
+}) => {
+  const chain = getMelegaChain(projectChainId)
+  const chainName = chain?.shortLabel ?? `Chain ${projectChainId}`
+  const live = isMelegaChainLive(projectChainId)
+  const swapReady = isMelegaCapabilityEnabled(projectChainId, 'swap')
+  const routerAddress = live ? getMelegaRouterAddress(projectChainId) : null
+  const ready =
+    (marketsDocument.swapDestinations.some(
+      (d) => d.status === 'READY' && (d.chainId == null || d.chainId === projectChainId),
+    ) ||
+      slug === 'marco') &&
+    swapReady
 
   return (
-    <Band aria-labelledby="pp-v1-trading" data-project-section="trading">
+    <Band
+      id="pp-v1-trading"
+      aria-labelledby="pp-v1-trading-title"
+      data-project-section="trading"
+      data-project-chain-id={projectChainId}
+      data-project-router={routerAddress ?? ''}
+    >
       <BandHead>
-        <BandTitle id="pp-v1-trading">Trading</BandTitle>
-        <BandMeta>{chainName}</BandMeta>
+        <BandTitle id="pp-v1-trading-title">Buy Token</BandTitle>
+        <BandMeta>
+          <Chip $on={live} $disabled={!live} data-testid="project-v1-trading-chain-badge">
+            {chainName}
+            {!live ? ' · Coming soon' : ''}
+          </Chip>
+        </BandMeta>
       </BandHead>
       <Grid $cols={4} style={{ marginBottom: 10 }}>
         <Metric
+          label="Chain"
+          value={chainName}
+          provenance={indexed('melega-chain-registry')}
+        />
+        <Metric
+          label="Router"
+          value={routerAddress ? shortenRouter(routerAddress) : 'Coming soon'}
+          provenance={routerAddress ? indexed('melega-chain-registry') : UNAVAILABLE}
+        />
+        <Metric
+          label="Swap target"
+          value={
+            contractAddress
+              ? `${chain?.nativeCurrency.symbol ?? '—'} → Token`
+              : 'Unavailable'
+          }
+          provenance={contractAddress ? indexed('project-registry') : UNAVAILABLE}
+        />
+        <Metric
           label="Best route"
-          value={ready ? 'Smart Swap' : 'Unavailable'}
+          value={ready ? 'Smart Swap' : live ? 'Unavailable' : 'Coming soon'}
           provenance={ready ? indexed('melega-smart-swap') : UNAVAILABLE}
         />
         <Metric label="Liquidity" value="See Live Market" provenance={indexed('project-page-cross-ref')} />
-        <Metric label="Spread" value="Unavailable" provenance={UNAVAILABLE} />
-        <Metric label="Slippage" value="Wallet settings" provenance={indexed('swap-settings')} />
-        <Metric label="Protocol fee" value="Policy — unproven on-chain" provenance={indexed('d87-display')} />
         <Metric
           label="Buy / Sell"
-          value={ready ? 'Available' : 'Unavailable'}
+          value={ready ? 'Available' : live ? 'Unavailable' : 'Coming soon'}
           tone={ready ? 'ok' : 'mute'}
           provenance={ready ? indexed('swap-destinations') : UNAVAILABLE}
         />
       </Grid>
-      <SwapFeaturesProvider>
-        <SwapInner slug={slug} marketsDocument={marketsDocument} />
-      </SwapFeaturesProvider>
+      {!live || !swapReady ? (
+        <ComingSoonBox data-testid="project-v1-trading-coming-soon">
+          <Muted style={{ marginBottom: 6, color: pp.gold }}>Coming soon on {chainName}</Muted>
+          <Muted>
+            Smart Swap for this network is preparing. Switch to a LIVE deployment (BNB or Base) to buy
+            now.
+          </Muted>
+        </ComingSoonBox>
+      ) : (
+        <SwapFeaturesProvider>
+          <SwapInner
+            slug={slug}
+            marketsDocument={marketsDocument}
+            projectChainId={projectChainId}
+            contractAddress={contractAddress}
+          />
+        </SwapFeaturesProvider>
+      )}
     </Band>
   )
 }

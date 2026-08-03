@@ -3,7 +3,11 @@ import type { CanonicalProjectDocument } from '../types'
 import { normalizeEvmAddress, toCaip2ChainId } from '../caip'
 import { getVenuesByProjectSlug } from 'registry/venues/getVenueBySlug'
 import type { StaticVenueRecord } from 'registry/venues/types'
-import { MELEGA_FACTORY_BSC, MELEGA_ROUTER_BSC } from 'lib/bsc-indexer/constants'
+import {
+  getMelegaFactoryAddress,
+  getMelegaRouterAddress,
+  isMelegaChainLive,
+} from 'config/melegaChainRegistry'
 import {
   MARKET_LIMITATIONS,
   MARKET_RESOLVER_REVISION,
@@ -61,13 +65,12 @@ function factoryRouterForChain(chainId: number): {
   factoryContractId: string | null
   routerContractId: string | null
 } {
-  if (chainId === 56) {
-    return {
-      factoryContractId: MELEGA_FACTORY_BSC.toLowerCase(),
-      routerContractId: MELEGA_ROUTER_BSC.toLowerCase(),
-    }
+  const factory = getMelegaFactoryAddress(chainId)
+  const router = getMelegaRouterAddress(chainId)
+  return {
+    factoryContractId: factory ? factory.toLowerCase() : null,
+    routerContractId: router ? router.toLowerCase() : null,
   }
-  return { factoryContractId: null, routerContractId: null }
 }
 
 function resolveAssetIdForAddress(
@@ -208,9 +211,15 @@ export function selectPreferredMarkets(
     if (onChain.length) pool = onChain
   }
 
+  // Prefer LIVE Melega chains (BNB + Base) over PREPARING deployments.
+  const livePool = pool.filter((m) => isMelegaChainLive(m.chainId))
+  if (livePool.length) pool = livePool
+
   const chains = [...new Set(pool.map((m) => m.chainId))].sort((a, b) => a - b)
   if (chains.length > 1 && chains.includes(56)) {
     pool = pool.filter((m) => m.chainId === 56)
+  } else if (chains.length > 1 && chains.includes(8453)) {
+    pool = pool.filter((m) => m.chainId === 8453)
   } else if (chains.length > 1) {
     const minChain = chains[0]
     pool = pool.filter((m) => m.chainId === minChain)

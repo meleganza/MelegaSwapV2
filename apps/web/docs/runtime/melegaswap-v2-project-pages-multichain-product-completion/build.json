@@ -1,0 +1,7 @@
+{
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "projectHqRoute": "/project-hq/[slug]",
+  "exitCode": 0
+}

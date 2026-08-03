@@ -31,7 +31,7 @@ export const Page = styled.main`
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 12px 14px 48px;
+  padding: 10px 12px 56px;
   color: ${pp.text};
   background:
     radial-gradient(ellipse 90% 40% at 50% -10%, rgba(242, 200, 76, 0.08), transparent 55%),
@@ -47,6 +47,10 @@ export const Page = styled.main`
 
   @media (min-width: 768px) {
     padding: 16px 20px 64px;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 20px 24px 72px;
   }
 `
 
@@ -168,17 +172,46 @@ export const Btn = styled.a<{ $primary?: boolean; $ghost?: boolean }>`
   }
 `
 
-export const Chip = styled.span<{ $on?: boolean }>`
+export const Chip = styled.span<{ $on?: boolean; $disabled?: boolean }>`
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   min-height: 22px;
   padding: 0 8px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  border: 1px solid ${({ $on }) => ($on ? pp.goldLine : pp.line)};
-  background: ${({ $on }) => ($on ? pp.goldDim : 'rgba(255,255,255,0.03)')};
-  color: ${({ $on }) => ($on ? pp.gold : pp.mute)};
+  border: 1px solid
+    ${({ $on, $disabled }) => ($disabled ? 'rgba(255,255,255,0.06)' : $on ? pp.goldLine : pp.line)};
+  background: ${({ $on, $disabled }) =>
+    $disabled ? 'rgba(255,255,255,0.02)' : $on ? pp.goldDim : 'rgba(255,255,255,0.03)'};
+  color: ${({ $on, $disabled }) => ($disabled ? pp.mute2 : $on ? pp.gold : pp.mute)};
+  opacity: ${({ $disabled }) => ($disabled ? 0.72 : 1)};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'default')};
+`
+
+export const ChainSelectBtn = styled.button<{ $on?: boolean; $disabled?: boolean }>`
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 750;
+  border: 1px solid
+    ${({ $on, $disabled }) => ($disabled ? 'rgba(255,255,255,0.06)' : $on ? pp.goldLine : pp.line)};
+  background: ${({ $on, $disabled }) =>
+    $disabled ? 'rgba(255,255,255,0.02)' : $on ? pp.goldDim : 'rgba(255,255,255,0.04)'};
+  color: ${({ $on, $disabled }) => ($disabled ? pp.mute2 : $on ? pp.gold : pp.text)};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ $disabled }) => ($disabled ? 0.7 : 1)};
+
+  &:focus-visible {
+    outline: 2px solid ${pp.gold};
+    outline-offset: 2px;
+  }
 `
 
 export const Muted = styled.p`
