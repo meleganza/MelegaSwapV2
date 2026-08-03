@@ -1942,6 +1942,14 @@
       "logoURI": "https://www.melega.finance/images/melega.png"
     },
     {
+      "name": "MELEGA",
+      "symbol": "MARCO",
+      "address": "0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+      "chainId": 42161,
+      "decimals": 18,
+      "logoURI": "https://www.melega.finance/images/melega.png"
+    },
+    {
       "name": "Inter Finance Network",
       "symbol": "IFNET",
       "address": "0x3fC84ecF9192bF6f2d12f204C50276aF0984267D",

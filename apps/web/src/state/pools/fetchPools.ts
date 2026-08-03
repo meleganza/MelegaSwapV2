@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import fromPairs from 'lodash/fromPairs'
 // import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber'
-import poolsConfig, { livePools1, livePools8453, livePools137 } from 'config/constants/pools'
+import poolsConfig, { livePools1, livePools8453, livePools137, livePools42161 } from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
 import multicall, { multicallv2 } from 'utils/multicall'
@@ -152,7 +152,8 @@ export const fetchPoolsTotalStaking = async (chainId: number) => {
     chainId === 1 ? livePools1
       : chainId === 137 ? livePools137
         : chainId === 8453 ? livePools8453
-          : poolsConfig
+          : chainId === 42161 ? livePools42161
+            : poolsConfig
 
   return pools.map((p, index) => ({
     sousId: p.sousId,

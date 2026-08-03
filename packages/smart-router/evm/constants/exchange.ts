@@ -5,7 +5,7 @@ import { ChainMap, ChainTokenList } from '../types'
 
 export const ROUTER_ADDRESS: ChainMap<string> = {
   [ChainId.ETHEREUM]: '0xFF8EBf8edf1C533A02d066f852788773BdCD631C',
-  [ChainId.ARBITRUM]: '', // PREPARING — no fabricated Router; prior 0x3BC722… has no Arbitrum bytecode
+  [ChainId.ARBITRUM]: '0x149ee9245e5ed52a89ea777d19ad3a5d87873680', // Melega V2 Router — Founder-supplied; not stale 0x3BC722…
   [ChainId.POLYGON]: '0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe', // Melega V2 Router SSOT (was stale 0x3BC722…)
   [ChainId.BSC]: '0xc25033218D181b27D4a2944Fbb04FC055da4EAB3', // Melega V2 Router — was stale Pancake V2 0x10ED…024E (LB-G07)
   [ChainId.SHIMMER2]: '',

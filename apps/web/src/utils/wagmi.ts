@@ -217,7 +217,7 @@ const bscTestnet: Chain = {
 }
 
 // const CHAINS = [bsc1, mainnet, polygon, base]
-const CHAINS = [bsc1, bscTestnet, base, polygon1, ethereum]
+const CHAINS = [bsc1, bscTestnet, base, polygon1, ethereum, arbitrum1]
 
 const getNodeRealUrl = (networkName: string) => {
   let host = null

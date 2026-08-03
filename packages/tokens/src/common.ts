@@ -32,13 +32,14 @@ export const CAKE_POLYGON = new ERC20Token(
   'Meleta Token',
   ' https://www.melegaswap.finance/marco-token',
 )
+/** Arbitrum MARCO — Founder canonical; verified on 42161 (not BSC fallback). */
 export const CAKE_ARB = new ERC20Token(
   ChainId.ARBITRUM,
-  '0x963556de0eb8138E97A85F0A86eE0acD159D210b',
+  '0x963556de0eb8138e97a85f0a86ee0acd159d210b',
   18,
   'MARCO',
-  'Meleta Token',
-  ' https://www.melegaswap.finance/marco-token',
+  'MELEGA',
+  'https://melega.finance/',
 )
 
 export const CAKE_SMR = new ERC20Token(

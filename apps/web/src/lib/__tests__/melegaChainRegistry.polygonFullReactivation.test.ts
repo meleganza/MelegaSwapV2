@@ -34,25 +34,23 @@ const WEB = path.resolve(__dirname, '../../..')
 const REPO = path.resolve(WEB, '../..')
 
 describe('Polygon full reactivation + Arbitrum registry', () => {
-  it('chain matrix: BNB+Base+Polygon+Ethereum LIVE; Arb+Avax PREPARING', () => {
+  it('chain matrix: BNB+Base+Polygon+Ethereum+Arbitrum LIVE; Avax PREPARING', () => {
     const byId = Object.fromEntries(MELEGA_CHAIN_REGISTRY.map((c) => [c.chainId, c]))
     expect(byId[56].status).toBe('LIVE')
     expect(byId[8453].status).toBe('LIVE')
     expect(byId[137].status).toBe('LIVE')
     expect(byId[1].status).toBe('LIVE')
-    expect(byId[42161].status).toBe('PREPARING')
+    expect(byId[42161].status).toBe('LIVE')
     expect(byId[43114].status).toBe('PREPARING')
     expect(byId[137].capabilities.liquidityBuilder).toBe(false)
     expect(byId[56].capabilities.liquidityBuilder).toBe(true)
-    expect(byId[42161].capabilities.swap).toBe(false)
-    expect(byId[42161].contracts.factory).toBeNull()
-    expect(byId[42161].contracts.router).toBeNull()
+    expect(byId[42161].capabilities.swap).toBe(true)
+    expect(byId[42161].contracts.factory).toBeTruthy()
+    expect(byId[42161].contracts.router).toBeTruthy()
   })
 
-  it('Arbitrum registered on Coming Soon surfaces', () => {
-    expect(getMelegaPreparingChains().map((c) => c.chainId).sort((a, b) => a - b)).toEqual([
-      42161, 43114,
-    ])
+  it('Avalanche remains Coming Soon', () => {
+    expect(getMelegaPreparingChains().map((c) => c.chainId)).toEqual([43114])
     expect(MELEGA_EXPLORE_CHAIN_LABELS[42161]).toBe('Arbitrum')
     expect(explorerLabelFor(42161)).toBe('Arbiscan')
     expect(explorerUrlFor('0x0000000000000000000000000000000000000001', 42161)).toContain('arbiscan.io')
@@ -83,12 +81,12 @@ describe('Polygon full reactivation + Arbitrum registry', () => {
     const pkg = readFileSync(path.join(REPO, 'packages/smart-router/evm/constants/exchange.ts'), 'utf8')
     expect(pkg).toContain(`[ChainId.POLYGON]: '${MELEGA_POLYGON_ROUTER}'`)
     expect(pkg).not.toMatch(/\[ChainId\.POLYGON\]: '0x3BC722/)
-    expect(pkg).toMatch(/\[ChainId\.ARBITRUM\]: ''/)
+    expect(pkg.toLowerCase()).toContain('0x149ee9245e5ed52a89ea777d19ad3a5d87873680')
   })
 
-  it('switcher LIVE = BNB + Base + Polygon + Ethereum', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453])
+  it('switcher LIVE = BNB + Base + Polygon + Ethereum + Arbitrum', () => {
+    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
+    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([1, 56, 137, 8453, 42161])
   })
 
   it('no cross-chain address fallback', () => {
