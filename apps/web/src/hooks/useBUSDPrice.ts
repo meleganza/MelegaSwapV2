@@ -43,7 +43,9 @@ export default function useBUSDPrice(currency?: Currency): Price<Currency, Curre
   const [[bnbPairState, bnbPair], [busdPairState, busdPair], [busdBnbPairState, busdBnbPair]] = usePairs(tokenPairs)
 
   return useMemo(() => {
-    if (!currency || !wrapped || !chainId || !wnative) {
+    // PREPARING / incomplete chain registries (e.g. Avalanche) may lack USDT.
+    // Token.equals(undefined) throws: Cannot read properties of undefined (reading 'isToken')
+    if (!currency || !wrapped || !chainId || !wnative || !stable) {
       return undefined
     }
 
