@@ -4,6 +4,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { useAccount, useBalance } from 'wagmi'
 import ConnectWalletButton from 'components/ConnectWalletButton'
@@ -17,6 +18,10 @@ import {
   type GasEstimateStatus,
   type PerTxGasEstimate,
 } from 'lib/deployment-orchestrator'
+import {
+  isFounderPackageChainMatch,
+  resolveFounderDeploymentPackage,
+} from 'lib/deployment-orchestrator/founderDeploymentPackage'
 import { useWalletChainId } from 'hooks/useWalletChainId'
 import { toSafeBigInt } from 'utils/safeBigInt'
 import { resolveFounderOperationalState, type FounderOperationalState } from 'lib/deployment-orchestrator/founderOperationalState'
@@ -239,6 +244,12 @@ type ProviderUiStatus = 'idle' | 'loading' | 'ready' | 'unavailable'
 export const FounderDeploymentShell: React.FC = () => {
   const { address, isConnected, connector } = useAccount()
   const chainId = useWalletChainId()
+  const router = useRouter()
+  const deploymentPackage = useMemo(
+    () => resolveFounderDeploymentPackage(router.query.chain),
+    [router.query.chain],
+  )
+  const packageChainMatch = isFounderPackageChainMatch(deploymentPackage, chainId)
   const {
     data: balance,
     isLoading: balanceLoading,
@@ -435,14 +446,33 @@ export const FounderDeploymentShell: React.FC = () => {
   })
 
   /** CT / PFF mission surface: READY_TO_DEPLOY → READY_FOR_SIGNATURE (same gate). */
-  const displayOperationalState =
-    (isCreateTokenStage || isPublicFarmStage) && operationalState === 'READY_TO_DEPLOY'
-      ? ('READY_FOR_SIGNATURE' as FounderOperationalState | 'READY_FOR_SIGNATURE')
-      : operationalState
+  const displayOperationalState = useMemo(() => {
+    // Avalanche V2 Router package: never inherit BNB-only WRONG_CHAIN from LB/CT/PFF gates.
+    if (deploymentPackage.isAvalancheRouterPackage) {
+      if (!isConnected) return 'CONNECT_WALLET' as const
+      if (!isAuthorizedMelegaDeployer(address)) return 'WRONG_WALLET' as const
+      if (!packageChainMatch) return 'WRONG_CHAIN' as const
+      return 'READY FOR FOUNDER SIGNATURE' as const
+    }
+    if ((isCreateTokenStage || isPublicFarmStage) && operationalState === 'READY_TO_DEPLOY') {
+      return 'READY_FOR_SIGNATURE' as FounderOperationalState | 'READY_FOR_SIGNATURE'
+    }
+    return operationalState
+  }, [
+    deploymentPackage.isAvalancheRouterPackage,
+    isConnected,
+    address,
+    packageChainMatch,
+    isCreateTokenStage,
+    isPublicFarmStage,
+    operationalState,
+  ])
 
   const authorizedConnected = Boolean(
     isConnected && address && isAuthorizedMelegaDeployer(address) && chainId === FOUNDER_DEPLOY_CHAIN_ID,
   )
+
+  const showPackageWrongChain = Boolean(isConnected && chainId != null && !packageChainMatch)
 
   const canEstimate =
     authorizedConnected && packageBuild.artifactStatus === 'ARTIFACTS_VALID' && Boolean(step?.deploymentData)
@@ -786,12 +816,27 @@ export const FounderDeploymentShell: React.FC = () => {
       <FounderAvalancheV2RouterPanel />
 
       <Banner
-        $tone={toneFor(operationalState)}
+        $tone={
+          deploymentPackage.isAvalancheRouterPackage && packageChainMatch && isAuthorizedMelegaDeployer(address)
+            ? 'ok'
+            : toneFor(
+                displayOperationalState === 'READY FOR FOUNDER SIGNATURE'
+                  ? 'READY_TO_DEPLOY'
+                  : (displayOperationalState as FounderOperationalState),
+              )
+        }
         data-testid="founder-operational-state"
         data-state={displayOperationalState}
+        data-package={deploymentPackage.packageId}
+        data-required-chain={deploymentPackage.requiredChainId}
       >
         {displayOperationalState}
-        {authorizedConnected ? ' · Authorized MELEGA DEPLOYER connected' : ''}
+        {isConnected &&
+        address &&
+        isAuthorizedMelegaDeployer(address) &&
+        packageChainMatch
+          ? ' · Authorized MELEGA DEPLOYER connected'
+          : ''}
       </Banner>
 
       {!isConnected && (
@@ -807,15 +852,10 @@ export const FounderDeploymentShell: React.FC = () => {
           Connect the authorized MELEGA DEPLOYER.
         </Banner>
       )}
-      {isConnected && chainId !== FOUNDER_DEPLOY_CHAIN_ID && chainId !== 43114 && (
+      {showPackageWrongChain && (
         <Banner $tone="bad" data-testid="founder-wrong-chain">
-          Switch to BNB Smart Chain for LB / Create Token / Public Farm, or Avalanche C-Chain (43114) for Avalanche
-          V2 Router.
-        </Banner>
-      )}
-      {isConnected && chainId === 43114 && (
-        <Banner $tone="warn" data-testid="founder-avalanche-chain-active">
-          Avalanche C-Chain connected · BNB Smart Chain Founder steps are paused on this network.
+          {deploymentPackage.switchNetworkCopy}
+          {` · required chain ${deploymentPackage.requiredChainId} (${deploymentPackage.requiredNetworkLabel})`}
         </Banner>
       )}
       {authorizedConnected && providerStatus === 'loading' && (
@@ -850,9 +890,16 @@ export const FounderDeploymentShell: React.FC = () => {
         </Row>
         <Row>
           <span>Network</span>
-          <strong>
+          <strong data-testid="founder-network">
             {chainId ?? '—'}
-            {chainId === FOUNDER_DEPLOY_CHAIN_ID ? ' (BNB Smart Chain)' : ''}
+            {chainId === FOUNDER_DEPLOY_CHAIN_ID
+              ? ' (BNB Smart Chain)'
+              : chainId === 43114
+                ? ' (Avalanche C-Chain)'
+                : ''}
+            {deploymentPackage.isAvalancheRouterPackage
+              ? ` · package requires ${deploymentPackage.requiredChainId}`
+              : ''}
           </strong>
         </Row>
         <Row>

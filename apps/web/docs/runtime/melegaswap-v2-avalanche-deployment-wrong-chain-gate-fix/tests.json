@@ -1,0 +1,5 @@
+{
+  "capturedAt": "2026-08-03T19:13:08Z",
+  "command": "yarn vitest run src/lib/deployment-orchestrator/__tests__/avalancheWrongChainGate.test.ts src/lib/deployment-orchestrator/__tests__/avalancheV2RouterFounderPrep.test.ts src/hooks/__tests__/runtimeDeploymentFatalCrash.test.ts",
+  "result": "19 passed"
+}

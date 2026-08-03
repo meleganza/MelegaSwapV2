@@ -1,0 +1,18 @@
+{
+  "capturedAt": "2026-08-03T19:13:08Z",
+  "bnbPackageOn56": {
+    "requiredChainId": 56,
+    "WRONG_CHAIN": false,
+    "gates": "CHAIN_56"
+  },
+  "bnbPackageOn43114": {
+    "requiredChainId": 56,
+    "copy": "Switch to BNB Smart Chain",
+    "BNB_gates_WRONG_CHAIN": true
+  },
+  "avalanchePackageOn56": {
+    "requiredChainId": 43114,
+    "copy": "Switch to Avalanche C-Chain"
+  },
+  "otherChainsPageRender": "Base/Polygon/Ethereum/Arbitrum query resolve to bnb_founder_packages; no Avalanche package false-positive"
+}

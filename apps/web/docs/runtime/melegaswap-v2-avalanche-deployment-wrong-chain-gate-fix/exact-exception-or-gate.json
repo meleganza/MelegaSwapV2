@@ -1,0 +1,19 @@
+{
+  "schema": "melegaswap.v2.avalanche-wrong-chain-gate",
+  "capturedAt": "2026-08-03T19:13:08Z",
+  "notException": true,
+  "gateBug": {
+    "symptom": "WRONG_CHAIN + BNB Smart Chain Founder steps are paused on this network",
+    "route": "/runtime/deployment/?chain=avalanche",
+    "wallet": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+    "walletChainId": 43114,
+    "detectionOk": "UI correctly showed Avalanche C-Chain connected"
+  },
+  "exactGate": {
+    "file": "apps/web/src/views/DeploymentOrchestrator/FounderDeploymentShell.tsx",
+    "mechanism": "BNB assessFounderDeployGates(chainId !== 56) \u2192 WRONG_CHAIN displayed as page operational state even when Avalanche V2 Router package was selected",
+    "hardcodedRequiredChain": "FOUNDER_DEPLOY_CHAIN_ID = 56 in founderDeployer.ts (BNB packages only \u2014 correct for LB/CT/PFF)",
+    "hardcodedPausedCopy": "isConnected && chainId === 43114 \u2192 Avalanche C-Chain connected \u00b7 BNB Smart Chain Founder steps are paused on this network."
+  },
+  "rootCause": "Page-level operational banner and paused copy were globally BNB-gated; they ignored package selection from ?chain=avalanche."
+}

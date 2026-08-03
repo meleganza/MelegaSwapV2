@@ -127,6 +127,14 @@ export {
 export { buildAvalancheV2RouterDeployStep } from './founderAvalancheRouterDeployTx'
 export { assessAvalancheRouterDeployGates } from './founderAvalancheRouterGates'
 export {
+  isFounderPackageChainMatch,
+  resolveFounderDeploymentPackage,
+} from './founderDeploymentPackage'
+export type {
+  FounderDeploymentPackageId,
+  FounderDeploymentPackageSelection,
+} from './founderDeploymentPackage'
+export {
   AVALANCHE_ACTIVATION_GATES,
   AVALANCHE_STATUS_UNTIL_ACTIVATION,
   buildAvalancheRouterPostDeployPlan,

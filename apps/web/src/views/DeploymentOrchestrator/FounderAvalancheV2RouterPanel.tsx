@@ -284,14 +284,14 @@ export const FounderAvalancheV2RouterPanel: React.FC = () => {
             Switch to Avalanche C-Chain
           </Btn>
         )}
-        <Btn type="button" onClick={() => void onEstimate()} disabled={busy || !presentationReady}>
+        <Btn type="button" onClick={() => void onEstimate()} disabled={busy || !presentationReady || chainId !== AVAX_ROUTER_CHAIN_ID}>
           Estimate Deployment Gas
         </Btn>
         <Btn
           type="button"
           $primary
           data-testid="founder-avalanche-deploy-cta"
-          disabled={busy || !gates.deployEnabled}
+          disabled={busy || !gates.deployEnabled || gasUnits == null}
           onClick={() => void onDeploy()}
           title={gates.message || 'Deploy Avalanche V2 Router'}
         >

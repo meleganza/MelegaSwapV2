@@ -1,0 +1,6 @@
+{
+  "capturedAt": "2026-08-03T19:14:02Z",
+  "command": "yarn next build",
+  "result": "PASS",
+  "route": "/runtime/deployment"
+}
