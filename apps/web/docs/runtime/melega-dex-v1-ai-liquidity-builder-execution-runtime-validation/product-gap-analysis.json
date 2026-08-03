@@ -1,0 +1,36 @@
+{
+  "verdict": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_EXECUTION_RUNTIME_GAP_IDENTIFIED",
+  "protocolReady": {
+    "factoryProgramAuthorizerFeeSinkFeeReceiver": true,
+    "atomicExecuteSwapFeeLp": true,
+    "successFeeBps1000": true,
+    "founderCreateDepositActivateUx": true,
+    "liveMarcoWbnbActiveProgram": true,
+    "programInventoryIndexerApis": true
+  },
+  "runtimeAutomationMissing": {
+    "kmsSignerProvisioned": false,
+    "relayBroadcastingExecutes": false,
+    "scheduledExecuteWorker": false,
+    "uiExecuteCta": false
+  },
+  "existsToday": [
+    "On-chain LB v1 contracts on BSC",
+    "Atomic executeLiquidityBuilding path",
+    "10% fee math locked at Factory + math lib",
+    "Founder wallet activate flow",
+    "Active MARCO/WBNB canary with 1 MARCO reserve",
+    "Portfolio / indexer read path",
+    "Runtime library (decision/intent) with fail-closed Disabled adapters"
+  ],
+  "missingForTrueAutonomousAiLiquidityBuilder": [
+    "Provisioned KMS signing authority",
+    "Provisioned relay/worker that submits signed executes",
+    "Live observation → decision → sign → submit loop",
+    "Product honesty: Active means funded+waiting until automation is live"
+  ],
+  "separation": {
+    "protocol": "READY",
+    "runtimeAutomation": "MISSING"
+  }
+}

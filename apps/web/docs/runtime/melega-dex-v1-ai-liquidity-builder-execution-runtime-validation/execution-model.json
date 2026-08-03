@@ -1,0 +1,33 @@
+{
+  "mission": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_PROGRAM_EXECUTION_RUNTIME_VALIDATION",
+  "baselineCommit": "659ee032",
+  "executionTriggerModel": {
+    "summary": "Permissionless submission of a KMS/authority-signed ExecutionIntent to Program.executeLiquidityBuilding. No on-chain scheduler, no UI execute button, no market auto-fire.",
+    "onChainEntrypoint": "LiquidityBuildingProgramV1.executeLiquidityBuilding(intent, signature)",
+    "entrypointFile": "contracts/liquidity-building/LiquidityBuildingProgramV1.sol",
+    "entrypointLines": "368-380",
+    "authorizer": "LiquidityBuildingExecutionAuthorizerV1.validateExecutionIntent (EIP-712 vs signingAuthority)",
+    "triggers": {
+      "userActionExecuteButton": false,
+      "ownerActivate": "eligibility only — sets lifecycle Active; does not swap/LP",
+      "keeperCronForExecute": false,
+      "indexerCron": "inventory sync only (/api/indexer/liquidity-building/run) — does not execute",
+      "marketConditionOnChain": false,
+      "scheduledEpochTick": false,
+      "epochDurationSeconds": "constraint / one-exec-per-epoch window — not a timer",
+      "autonomousLoop": "library stub only — Disabled KMS + Disabled relay",
+      "permissionlessRelayer": "designed: any msg.sender with valid signature — not provisioned"
+    },
+    "lifecycle": [
+      "Program Active (lifecycle=2)",
+      "Off-chain: observe eligible net-buy flow + build ExecutionIntent",
+      "Off-chain: sign intent with Authorizer signingAuthority (KMS)",
+      "Anyone submits executeLiquidityBuilding(intent, sig)",
+      "Authorizer validates; epoch/replay/strategy/cap checks",
+      "Swap project token for exact quote via Melega router",
+      "Settle 10% success fee via FeeSink → FeeReceiver",
+      "Add liquidity with remaining quote + project token; mint LP to lpRecipient",
+      "Update remainingBudget / accounting / latestExecution; emit ExecutionCompleted"
+    ]
+  }
+}

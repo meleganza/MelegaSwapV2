@@ -1,0 +1,50 @@
+{
+  "autonomousExecutorActive": false,
+  "keeperActive": false,
+  "scheduledWorkerForExecute": false,
+  "manualExecutionUi": false,
+  "components": [
+    {
+      "name": "Decision / intent builder",
+      "path": "apps/web/src/lib/liquidity-building-runtime/{eligible-flow,decision-engine,intent-builder}.ts",
+      "status": "CODE_ONLY"
+    },
+    {
+      "name": "KMS signer",
+      "path": "apps/web/src/lib/liquidity-building-runtime/signing-adapter.ts",
+      "class": "DisabledLiquidityBuildingKmsSigner",
+      "ready": false,
+      "status": "DISABLED"
+    },
+    {
+      "name": "Relay",
+      "path": "apps/web/src/lib/liquidity-building-runtime/relay.ts",
+      "class": "DisabledLiquidityBuildingRelay",
+      "ready": false,
+      "status": "DISABLED",
+      "reason": "Permissionless relay not provisioned (LB-G03C). No funded execution wallet fallback."
+    },
+    {
+      "name": "Autonomous loop",
+      "path": "apps/web/src/lib/liquidity-building-runtime/loop.ts",
+      "status": "STUB_FAIL_CLOSED",
+      "note": "runAutonomousLoopStep instantiates Disabled signer + Disabled relay"
+    },
+    {
+      "name": "Indexer cron",
+      "path": "apps/web/src/pages/api/indexer/liquidity-building/run.ts",
+      "status": "INVENTORY_SYNC_ONLY"
+    },
+    {
+      "name": "Founder wallet UX",
+      "path": "apps/web/src/views/LiquidityStudio/liquidityBuilding/founderActivateFlow.ts",
+      "status": "CREATE_DEPOSIT_ACTIVATE_PAUSE_RESUME_STOP_ONLY"
+    }
+  ],
+  "missingForTrueAutonomy": [
+    "Production KMS/HSM matching Authorizer signingAuthority",
+    "Funded permissionless/bounded relay submitting executeLiquidityBuilding",
+    "Running observer → decision → sign → submit worker scheduled per epoch",
+    "Finality/observation pipeline wired to live pair events"
+  ]
+}
