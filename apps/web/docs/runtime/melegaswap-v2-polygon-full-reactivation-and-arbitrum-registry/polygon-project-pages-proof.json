@@ -1,0 +1,12 @@
+{
+  "buyTokenHref": "?focus=swap&chain=polygon&inputCurrency=MATIC",
+  "explorer": "Polygonscan",
+  "routerFromRegistry": true,
+  "embedAutoChainSwitch": true,
+  "comingSoon": [
+    "Ethereum",
+    "Arbitrum",
+    "Avalanche"
+  ],
+  "lbOnPolygon": "BNB only chip / no Create LP for non-56"
+}

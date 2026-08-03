@@ -1,0 +1,42 @@
+{
+  "56": {
+    "status": "LIVE",
+    "caps": [
+      "swap",
+      "farms",
+      "pools",
+      "tokens",
+      "LB BETA"
+    ]
+  },
+  "8453": {
+    "status": "LIVE",
+    "caps": [
+      "swap",
+      "farms",
+      "pools",
+      "tokens"
+    ],
+    "lb": false
+  },
+  "137": {
+    "status": "LIVE",
+    "caps": [
+      "swap",
+      "farms",
+      "pools",
+      "tokens"
+    ],
+    "lb": false
+  },
+  "1": {
+    "status": "PREPARING"
+  },
+  "42161": {
+    "status": "PREPARING",
+    "registered": true
+  },
+  "43114": {
+    "status": "PREPARING"
+  }
+}

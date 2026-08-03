@@ -1,0 +1,8 @@
+{
+  "router": "0x64935e2A3d8F3840445fB2DdF37FBBfc3b292EFe",
+  "factory": "0x2541DBEa199a22501D75EA141627776Bd4EefC80",
+  "scope": "Melega Polygon V2 only",
+  "smartRouterAddressBlank": true,
+  "v2Adapter": "V2_ROUTER_BY_CHAIN[137]",
+  "projectPageEmbed": "auto switchNetworkAsync to 137"
+}

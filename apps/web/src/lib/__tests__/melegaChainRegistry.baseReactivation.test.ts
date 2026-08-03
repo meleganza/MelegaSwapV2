@@ -33,8 +33,9 @@ describe('Multichain foundation + Base reactivation', () => {
     const byId = Object.fromEntries(MELEGA_CHAIN_REGISTRY.map((c) => [c.chainId, c]))
     expect(byId[56].status).toBe('LIVE')
     expect(byId[8453].status).toBe('LIVE')
-    expect(byId[137].status).toBe('PREPARING')
+    expect(byId[137].status).toBe('LIVE')
     expect(byId[1].status).toBe('PREPARING')
+    expect(byId[42161].status).toBe('PREPARING')
     expect(byId[43114].status).toBe('PREPARING')
     expect(byId[8453].capabilities.liquidityBuilder).toBe(false)
     expect(byId[56].capabilities.liquidityBuilder).toBe(true)
@@ -42,10 +43,10 @@ describe('Multichain foundation + Base reactivation', () => {
     expect(byId[8453].contracts.factory).toBe(MELEGA_BASE_FACTORY)
   })
 
-  it('switcher LIVE set is BNB + Base only; PREPARING are not switchable', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort()).toEqual([56, 8453])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort()).toEqual([56, 8453])
-    expect(getMelegaPreparingChains().map((c) => c.chainId).sort()).toEqual([1, 137, 43114])
+  it('switcher LIVE set is BNB + Base + Polygon; PREPARING are not switchable', () => {
+    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([56, 137, 8453])
+    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([56, 137, 8453])
+    expect(getMelegaPreparingChains().map((c) => c.chainId).sort((a, b) => a - b)).toEqual([1, 42161, 43114])
   })
 
   it('resolves Base Router SSOT across web + smart-router package', () => {

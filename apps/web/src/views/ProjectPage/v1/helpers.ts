@@ -105,6 +105,13 @@ export function getBuyTokenHref(opts?: { chainId?: number | null; contract?: str
       params.set('inputCurrency', 'ETH')
       params.set('outputCurrency', opts.contract)
     }
+  } else if (opts?.chainId === 137) {
+    params.set('chain', 'polygon')
+    if (opts.contract) {
+      // SDK NATIVE[137].symbol remains MATIC (routing identity); POL is display rebrand.
+      params.set('inputCurrency', 'MATIC')
+      params.set('outputCurrency', opts.contract)
+    }
   } else if (opts?.chainId === 56) {
     params.set('chain', 'bsc')
     if (opts.contract) {
@@ -142,6 +149,8 @@ export function explorerLabelFor(chainId: number | null): string {
       return 'Etherscan'
     case 137:
       return 'Polygonscan'
+    case 42161:
+      return 'Arbiscan'
     case 43114:
       return 'Snowtrace'
     default:

@@ -65,13 +65,15 @@ describe('Project Pages Multichain Product Completion', () => {
 
     expect(byId[56]?.status).toBe('LIVE')
     expect(byId[8453]?.status).toBe('LIVE')
+    expect(byId[137]?.status).toBe('LIVE')
     expect(byId[56]?.routerAddress?.toLowerCase()).toBe(MELEGA_BNB_ROUTER.toLowerCase())
     expect(byId[8453]?.routerAddress?.toLowerCase()).toBe(MELEGA_BASE_ROUTER.toLowerCase())
     expect(byId[56]?.swapTarget).toMatch(/BNB/)
     expect(byId[8453]?.swapTarget).toMatch(/ETH/)
 
+    expect(byId[137]?.comingSoon).toBe(false)
     expect(byId[1]?.comingSoon).toBe(true)
-    expect(byId[137]?.comingSoon).toBe(true)
+    expect(byId[42161]?.comingSoon).toBe(true)
     expect(byId[43114]?.comingSoon).toBe(true)
 
     expect(isMelegaChainLive(defaultSelectedChainId(deployments))).toBe(true)

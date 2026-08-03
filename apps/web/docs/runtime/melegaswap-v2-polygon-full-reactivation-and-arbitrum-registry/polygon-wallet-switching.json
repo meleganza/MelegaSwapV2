@@ -1,0 +1,12 @@
+{
+  "liveSwitcherIncludes": [
+    56,
+    8453,
+    137
+  ],
+  "wagmiChain": "polygon1 id 137",
+  "explorer": "https://polygonscan.com",
+  "nativeDisplay": "POL (registry) / MATIC (SDK NATIVE symbol for routing)",
+  "switchNetwork": "useSwitchNetwork / wallet_switchEthereumChain via wagmi",
+  "halfEnabled": false
+}

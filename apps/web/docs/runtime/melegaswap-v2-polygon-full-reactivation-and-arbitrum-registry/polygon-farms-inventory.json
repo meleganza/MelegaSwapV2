@@ -1,0 +1,6 @@
+{
+  "file": "packages/farms/constants/137.ts",
+  "pidCount": 53,
+  "masterBuilder": "0x130d2BD998767B6091352dd71fEABa4460846D94",
+  "exploreGate": "isMelegaCapabilityEnabled(chainId,farms)"
+}

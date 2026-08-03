@@ -97,7 +97,19 @@ describe('Smart Swap gas protocol fee (Founder 25%)', () => {
 
   it('rejects unsupported fee chains', () => {
     expect(() =>
-      calculateSmartRouterGasProtocolFee({ gasEstimateUnits: 1, gasPriceWei: 1, chainId: 137 }),
+      calculateSmartRouterGasProtocolFee({ gasEstimateUnits: 1, gasPriceWei: 1, chainId: 999 }),
     ).toThrow(/No canonical fee beneficiary|unsupported/i)
+  })
+
+  it('settles Polygon fee as native POL to the same treasury (25% economics unchanged)', () => {
+    const fee = calculateSmartRouterGasProtocolFee({
+      gasEstimateUnits: 200_000,
+      gasPriceWei: 5_000_000_000,
+      chainId: 137,
+    })
+    expect(fee.feeAsset).toBe('POL')
+    expect(fee.chainId).toBe(137)
+    expect(fee.percent).toBe(25)
+    expect(fee.recipient.toLowerCase()).toBe('0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b')
   })
 })

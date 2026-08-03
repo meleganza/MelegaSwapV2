@@ -1,0 +1,7 @@
+{
+  "result": "PASS",
+  "testFiles": 4,
+  "tests": 38,
+  "failed": 0,
+  "command": "vitest mission-scoped"
+}

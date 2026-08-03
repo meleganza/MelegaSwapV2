@@ -12,6 +12,7 @@ export const MELEGA_EXPLORE_CHAIN_LABELS: Record<number, string> = {
   1: 'Ethereum',
   137: 'Polygon',
   8453: 'Base',
+  42161: 'Arbitrum',
   43114: 'Avalanche',
 }
 

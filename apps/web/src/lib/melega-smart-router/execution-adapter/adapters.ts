@@ -18,6 +18,7 @@ const V2_ROUTER_BY_CHAIN: Partial<Record<number, string>> = {
   [ChainId.BSC]: ROUTER_ADDRESS[ChainId.BSC],
   [ChainId.BSC_TESTNET]: BSC_TESTNET_ADDRESSES.router,
   [ChainId.BASE]: ROUTER_ADDRESS[ChainId.BASE],
+  [ChainId.POLYGON]: ROUTER_ADDRESS[ChainId.POLYGON],
 }
 
 const SMART_ROUTER_BY_CHAIN: Partial<Record<number, string>> = {

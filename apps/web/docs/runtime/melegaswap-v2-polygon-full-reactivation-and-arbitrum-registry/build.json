@@ -1,0 +1,5 @@
+{
+  "result": "PASS",
+  "exitCode": 0,
+  "command": "yarn next build"
+}
