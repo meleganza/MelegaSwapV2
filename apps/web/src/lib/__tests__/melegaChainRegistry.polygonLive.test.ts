@@ -55,9 +55,9 @@ describe('MELEGASWAP_V2_POLYGON_LIVE', () => {
   })
 
   it('switcher includes Polygon LIVE; ETH/Arb/Avax remain PREPARING', () => {
-    expect([...getMelegaLiveSwitcherChainIds()].sort((a, b) => a - b)).toEqual([56, 137, 8453])
-    expect([...MELEGA_VISIBLE_SWITCHER_CHAIN_IDS].sort((a, b) => a - b)).toEqual([56, 137, 8453])
-    expect(getMelegaPreparingChains().map((c) => c.chainId).sort((a, b) => a - b)).toEqual([1, 42161, 43114])
+    // Superseded by Ethereum LIVE — keep Polygon assertions; full LIVE set asserted in ethereumLive.
+    expect(isMelegaChainLive(137)).toBe(true)
+    expect(getMelegaRouterAddress(137)).toBe(MELEGA_POLYGON_ROUTER)
   })
 
   it('fee settles native POL at 25% to MELEGA TREASURY', () => {

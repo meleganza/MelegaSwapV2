@@ -12,6 +12,7 @@ export const MELEGA_VISIBLE_SWITCHER_CHAIN_IDS: readonly number[] = [
   ChainId.BSC,
   ChainId.BASE,
   ChainId.POLYGON,
+  ChainId.ETHEREUM,
 ]
 
 export function filterMelegaVisibleSwitcherChains<T extends { id: number }>(chainList: T[]): T[] {

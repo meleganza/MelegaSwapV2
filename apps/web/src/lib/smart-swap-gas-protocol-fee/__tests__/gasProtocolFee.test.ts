@@ -112,4 +112,16 @@ describe('Smart Swap gas protocol fee (Founder 25%)', () => {
     expect(fee.percent).toBe(25)
     expect(fee.recipient.toLowerCase()).toBe('0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b')
   })
+
+  it('settles Ethereum fee as native ETH to the same treasury (25% economics unchanged)', () => {
+    const fee = calculateSmartRouterGasProtocolFee({
+      gasEstimateUnits: 200_000,
+      gasPriceWei: 5_000_000_000,
+      chainId: 1,
+    })
+    expect(fee.feeAsset).toBe('ETH')
+    expect(fee.chainId).toBe(1)
+    expect(fee.percent).toBe(25)
+    expect(fee.recipient.toLowerCase()).toBe('0xb6436ef4c7f76be0f26c0c5c9db72f2689abf65b')
+  })
 })

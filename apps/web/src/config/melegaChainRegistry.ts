@@ -158,12 +158,12 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
     explorer: 'https://etherscan.io',
     logo: '/images/chains/1.png',
-    status: 'PREPARING',
+    status: 'LIVE',
     capabilities: {
-      swap: false,
-      farms: false,
-      pools: false,
-      tokens: false,
+      swap: true,
+      farms: true,
+      pools: true,
+      tokens: true,
       liquidityBuilder: false,
     },
     contracts: {
@@ -175,8 +175,9 @@ export const MELEGA_CHAIN_REGISTRY: readonly MelegaChainRecord[] = [
       poolDeploymentFactory: null,
     },
     notes: [
-      'Contracts verified on-chain — awaiting LIVE flip in execution program step 2.',
-      'Visible as Coming soon until Ethereum LIVE commit.',
+      'Liquidity Builder remains BNB-only (BETA).',
+      'Smart Swap fee settles as native ETH to MELEGA TREASURY (same EOA; 25% of gas unchanged).',
+      'Router.factory() verified against Melega ETH Factory on-chain.',
     ],
   },
   {
