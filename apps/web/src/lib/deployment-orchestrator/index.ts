@@ -116,6 +116,22 @@ export {
   PFF_FACTORY_CONTRACT,
 } from './founderPffArtifacts'
 export {
+  assessAvaxRouterArtifactIntegrity,
+  AVAX_ROUTER_ALIAS,
+  AVAX_ROUTER_CHAIN_ID,
+  AVAX_ROUTER_CONTRACT,
+  AVAX_ROUTER_FACTORY,
+  AVAX_ROUTER_WAVAX,
+  loadCertifiedAvaxRouterArtifacts,
+} from './founderAvalancheRouterArtifacts'
+export { buildAvalancheV2RouterDeployStep } from './founderAvalancheRouterDeployTx'
+export { assessAvalancheRouterDeployGates } from './founderAvalancheRouterGates'
+export {
+  AVALANCHE_ACTIVATION_GATES,
+  AVALANCHE_STATUS_UNTIL_ACTIVATION,
+  buildAvalancheRouterPostDeployPlan,
+} from './founderAvalancheRouterValidation'
+export {
   buildLbDeploySteps,
   activeLbStep,
   buildLbEconomicReviewFields,

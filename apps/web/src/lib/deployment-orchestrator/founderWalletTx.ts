@@ -124,6 +124,36 @@ export async function walletGetCode(eth: EthereumProvider, address: string): Pro
   return code
 }
 
+/** Request wallet switch to a target chain (e.g. Avalanche 43114). Does not broadcast. */
+export async function walletSwitchChain(eth: EthereumProvider, chainId: number): Promise<void> {
+  const hex = `0x${chainId.toString(16)}`
+  try {
+    await eth.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: hex }],
+    })
+  } catch (err) {
+    const code = (err as { code?: number })?.code
+    // 4902 = chain not added
+    if (code === 4902 && chainId === 43114) {
+      await eth.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: hex,
+            chainName: 'Avalanche C-Chain',
+            nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
+            rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+            blockExplorerUrls: ['https://snowtrace.io'],
+          },
+        ],
+      })
+      return
+    }
+    throw err
+  }
+}
+
 export async function walletSendDeployTransaction(
   eth: EthereumProvider,
   from: string,

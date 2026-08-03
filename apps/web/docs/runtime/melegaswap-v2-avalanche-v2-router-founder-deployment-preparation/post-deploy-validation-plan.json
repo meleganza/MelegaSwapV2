@@ -1,0 +1,17 @@
+{
+  "bindSsotAfterPass": false,
+  "markAvalancheLiveAfterPass": false,
+  "checks": [
+    "receipt status success",
+    "sender MELEGA DEPLOYER",
+    "bytecode present",
+    "runtime hash matches certified",
+    "factory() == 0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+    "WETH() == 0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+    "quote encode/respond",
+    "addLiquidity encode",
+    "swap encode",
+    "no proxy",
+    "no owner / unexpected authority"
+  ]
+}

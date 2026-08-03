@@ -1,0 +1,7 @@
+{
+  "command": "yarn next build",
+  "cwd": "apps/web",
+  "result": "PASS",
+  "runtimeDeploymentRoute": "/runtime/deployment",
+  "recordedAt": "2026-08-03T17:13:27.016679+00:00"
+}

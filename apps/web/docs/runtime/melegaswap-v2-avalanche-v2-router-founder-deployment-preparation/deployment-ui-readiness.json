@@ -1,0 +1,24 @@
+{
+  "route": "/runtime/deployment/",
+  "panel": "FounderAvalancheV2RouterPanel",
+  "statusPresentation": "READY FOR FOUNDER SIGNATURE",
+  "cta": "Deploy Avalanche V2 Router",
+  "shows": [
+    "Network Avalanche C-Chain",
+    "Chain ID 43114",
+    "Factory",
+    "WAVAX",
+    "Deployer",
+    "Artifact Loaded",
+    "Artifact hash Verified"
+  ],
+  "onClick": [
+    "request wallet chain 43114",
+    "estimate deployment gas in AVAX",
+    "verify MELEGA DEPLOYER",
+    "build CREATE tx with no to",
+    "open browser-wallet confirmation"
+  ],
+  "noAutomaticBroadcast": true,
+  "noManualBytecodeFields": true
+}

@@ -81,6 +81,7 @@ import {
   walletGetTransactionReceipt,
   walletSendDeployTransaction,
 } from 'lib/deployment-orchestrator/founderWalletTx'
+import { FounderAvalancheV2RouterPanel } from './FounderAvalancheV2RouterPanel'
 
 const Root = styled.div`
   max-width: 920px;
@@ -781,6 +782,8 @@ export const FounderDeploymentShell: React.FC = () => {
       <Title>Permanent Contract Deployment</Title>
       <Sub>Founder-signed mainnet deployment · browser wallet only · no KMS · no server signer</Sub>
 
+      <FounderAvalancheV2RouterPanel />
+
       <Banner
         $tone={toneFor(operationalState)}
         data-testid="founder-operational-state"
@@ -803,9 +806,15 @@ export const FounderDeploymentShell: React.FC = () => {
           Connect the authorized MELEGA DEPLOYER.
         </Banner>
       )}
-      {isConnected && chainId !== FOUNDER_DEPLOY_CHAIN_ID && (
+      {isConnected && chainId !== FOUNDER_DEPLOY_CHAIN_ID && chainId !== 43114 && (
         <Banner $tone="bad" data-testid="founder-wrong-chain">
-          Switch to BNB Smart Chain.
+          Switch to BNB Smart Chain for LB / Create Token / Public Farm, or Avalanche C-Chain (43114) for Avalanche
+          V2 Router.
+        </Banner>
+      )}
+      {isConnected && chainId === 43114 && (
+        <Banner $tone="warn" data-testid="founder-avalanche-chain-active">
+          Avalanche C-Chain connected · BNB Smart Chain Founder steps are paused on this network.
         </Banner>
       )}
       {authorizedConnected && providerStatus === 'loading' && (

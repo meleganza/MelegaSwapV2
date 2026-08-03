@@ -1,0 +1,19 @@
+{
+  "schema": [
+    {
+      "name": "_factory",
+      "type": "address"
+    },
+    {
+      "name": "_WETH",
+      "type": "address"
+    }
+  ],
+  "values": {
+    "_factory": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+    "_WETH": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+  },
+  "chainId": 43114,
+  "encoding": "ABI encodeDeploy appended to certified creation template",
+  "noExtraConstructorArgs": true
+}
