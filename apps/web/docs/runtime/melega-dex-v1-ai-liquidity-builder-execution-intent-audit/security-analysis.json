@@ -1,0 +1,44 @@
+{
+  "threatModelHighlights": [
+    {
+      "threat": "Malicious relayer alters intent after signing",
+      "mitigation": "EIP-712 digest covers all economic fields; Program re-validates binding + math; tampered fields invalidate signature or revert",
+      "status": "MITIGATED_ON_CHAIN"
+    },
+    {
+      "threat": "Replay same intent",
+      "mitigation": "_usedExecutionDigest[executionId]; executionNonce == executionCount+1; _executedEpoch[epochId]; one exec per epoch",
+      "status": "MITIGATED_ON_CHAIN"
+    },
+    {
+      "threat": "Stale market / sandwich via old observation",
+      "mitigation": "anchor finality depth, reserve drift/reduction caps, decisionDeadline, hard slippage/impact/deviation in plan",
+      "status": "MITIGATED_ON_CHAIN"
+    },
+    {
+      "threat": "Over-spend Token Reserve",
+      "mitigation": "remainingBudget checks + epoch remaining/total caps + rolling 24h cap + maximumProjectTokenIn in plan",
+      "status": "MITIGATED_ON_CHAIN"
+    },
+    {
+      "threat": "Authority key compromise",
+      "mitigation": "On-chain: pause/stop by owner; no authority rotation (immutable). Off-chain: KMS/HSM + monitoring required — NOT DESIGNED/PROVISIONED",
+      "status": "REQUIRES_OPERATIONAL_DESIGN"
+    },
+    {
+      "threat": "Dishonest eligibleNetBuyFlow / observationRoot from AI agent",
+      "mitigation": "On-chain enforces consistency of intent fields and caps vs anchors, but does NOT recompute eligible flow from raw swaps. Trust sits with signer + off-chain observation integrity.",
+      "status": "REQUIRES_DESIGN_FOR_AGENT_HONESTY"
+    },
+    {
+      "threat": "Agent gains custody of Token Reserve",
+      "mitigation": "Architecture separates signer from Program custody; agent should only sign. Do not grant agent owner keys or Program custody.",
+      "status": "ARCHITECTURE_SUPPORTS_SEPARATION"
+    }
+  ],
+  "immutableBindingsRisk": {
+    "signingAuthorityImmutable": true,
+    "factoryAuthorizerImmutable": true,
+    "implication": "Wrong authority choice at deploy time is permanent for this Factory generation. AI agent path must be designed against current Founder ERC-1271 authority or accept Factory redeploy."
+  }
+}

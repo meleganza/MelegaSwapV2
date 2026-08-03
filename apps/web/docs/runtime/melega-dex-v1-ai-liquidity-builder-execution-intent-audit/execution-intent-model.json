@@ -1,0 +1,85 @@
+{
+  "mission": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_EXECUTION_INTENT_ARCHITECTURE_AUDIT",
+  "baselineCommit": "e42bb6a5",
+  "onChainEntrypoint": {
+    "function": "executeLiquidityBuilding(ExecutionIntentV1 intent, bytes signature)",
+    "contract": "LiquidityBuildingProgramV1",
+    "file": "contracts/liquidity-building/LiquidityBuildingProgramV1.sol",
+    "lines": "368-380",
+    "caller": "permissionless — any msg.sender; no allowlist; no economic authority from caller"
+  },
+  "executionIntentV1": {
+    "interface": "contracts/liquidity-building/interfaces/ILiquidityBuildingExecutionAuthorizerV1.sol",
+    "schemaVersionConstant": "keccak256(LIQUIDITY_BUILDING_EXECUTION_INTENT_V1)",
+    "eip712Name": "Melega Liquidity Building",
+    "eip712Version": "1",
+    "fields": [
+      "schemaVersion",
+      "chainId",
+      "factory",
+      "factoryVersion",
+      "program",
+      "pair",
+      "projectToken",
+      "quoteAsset",
+      "epochId",
+      "epochStartTimestamp",
+      "epochEndTimestamp",
+      "observationStartBlock",
+      "observationEndBlock",
+      "anchorBlock",
+      "anchorProjectReserve",
+      "anchorQuoteReserve",
+      "eligibleNetBuyFlow",
+      "strategyMode",
+      "effectiveStrategyRateBps",
+      "grossQuoteTarget",
+      "maximumProjectTokenIn",
+      "configNonce",
+      "executionNonce",
+      "strategyEngineVersion",
+      "decisionDeadline",
+      "maximumGasPrice",
+      "observationRoot",
+      "excludedFlowCommitment",
+      "treasuryAuthorizationReference"
+    ],
+    "whatIsSigned": "EIP-712 digest = keccak256(0x1901 || domainSeparator || structHash). Domain: name/version/chainId/verifyingContract=program/salt=keccak256(authorizer,factory,factoryVersion). Struct: EXECUTION_INTENT_TYPEHASH + all intent fields in frozen order."
+  },
+  "authorizerStructuralChecks": [
+    "schemaVersion match",
+    "chainId == block.chainid",
+    "non-zero factory/program/pair/project/quote",
+    "projectToken != quoteAsset",
+    "epochStart < epochEnd",
+    "observationStart <= observationEnd <= anchorBlock",
+    "decisionDeadline >= block.timestamp",
+    "strategyMode <= 1",
+    "effectiveStrategyRateBps <= 10000",
+    "ECDSA or ERC-1271 signature vs immutable signingAuthority"
+  ],
+  "programAdditionalChecks": [
+    "_validateBinding: program/factory/version/pair/tokens/configNonce + Factory registration + Melega getPair",
+    "validateReplayAndEpoch: digest unused, epoch unused, nonce==count+1, UTC epoch identity, epoch finalized, deadline, finality depth",
+    "validateAnchorAndDrift: reserve price/reduction vs intent anchors",
+    "validateStrategyAndFlow: eligible flow, rate bounds, mode match, gross<=eligible*rate",
+    "validateQuotePolicy: enabled quote, floors",
+    "buildPlan + validateCaps: slippage/impact/budget epoch+rolling caps",
+    "atomic swap → 10% fee settle → addLiquidity → accounting"
+  ],
+  "parameterLimits": {
+    "epochDurationsSeconds": [300, 900, 1800, 3600],
+    "strategyModes": ["FullAi=0", "DynamicRange=1"],
+    "structuralRateBpsMax": 10000,
+    "successFeeBps": 1000,
+    "oneExecutionPerEpoch": true,
+    "executionNonce": "must equal executionCount + 1",
+    "finalityDepth": "Factory.initialFinalityDepth (15 documented)",
+    "budgetCaps": "epoch remaining/total bps + rolling 24h total budget bps"
+  },
+  "offChainBuilder": {
+    "path": "apps/web/src/lib/liquidity-building-runtime/intent-builder.ts",
+    "signs": false,
+    "requires": "FINALIZED observation + EXECUTE decision + non-zero treasury provenance reference"
+  }
+}
