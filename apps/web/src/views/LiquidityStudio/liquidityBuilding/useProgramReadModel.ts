@@ -124,7 +124,10 @@ export function useProgramReadModel(input: {
     }
 
     const snapshot = snapshotFromProgramView(resolvedProgram, raw)
-    const activity = activityFromLatestExecution(latestResult?.result?.[0] as any)
+    const activity = activityFromLatestExecution({
+      executionCount: snapshot.executionCount,
+      latest: (latestResult?.result?.[0] as any) ?? null,
+    })
 
     return {
       snapshot,

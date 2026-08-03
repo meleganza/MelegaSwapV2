@@ -33,7 +33,7 @@ import type { ActivateProgressPhase } from '../liquidityBuilding/founderActivate
 import { useLbOwnerPrograms } from '../liquidityBuilding/useLbOwnerPrograms'
 import { useLbProgramDetail } from '../liquidityBuilding/useLbProgramDetail'
 import { LbPortfolioHome } from '../liquidityBuilding/product/LbPortfolioHome'
-import { programFromQuery } from '../liquidityBuilding/liquidityBuildingStep'
+import { programFromQuery, stepFromQuery } from '../liquidityBuilding/liquidityBuildingStep'
 import {
   formatReserveLabel,
   pairLabelForProgram,
@@ -811,7 +811,8 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const inventory = useLbOwnerPrograms(card.account)
   const deepLinkProgram = programFromQuery(router.query.program)
   const indexedDetail = useLbProgramDetail(deepLinkProgram)
-  const [setupStarted, setSetupStarted] = useState(forceExpanded)
+  /** Intentional create flow only — never infer from forceExpanded when programs already exist. */
+  const [setupStarted, setSetupStarted] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
   const [activating, setActivating] = useState(false)
@@ -846,15 +847,46 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
     )
   }
 
+  /**
+   * IA forceExpanded: expand the shell, but only auto-open create when the portfolio is empty.
+   * Existing active programs must surface portfolio/detail — never a blank create setup.
+   */
   React.useEffect(() => {
     if (!forceExpanded) return
-    if (card.phase === 'entry') {
-      card.startSetup()
-      setSetupStarted(true)
-    }
-    // Intentionally once on mount for IA expanded workspace.
+    if (deepLinkProgram) return
+    if (inventory.loading) return
+    if (inventory.programs.length > 0) return
+    if (setupStarted) return
+    if (card.phase === 'active' || card.phase === 'manage') return
+    card.startSetup()
+    setSetupStarted(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forceExpanded])
+  }, [forceExpanded, deepLinkProgram, inventory.loading, inventory.programs.length, setupStarted, card.phase])
+
+  /**
+   * Guard: /liquidity-studio/?view=building&step=setup with an existing program must not stay on create.
+   * Clear setup query and return to portfolio inventory.
+   */
+  React.useEffect(() => {
+    if (!router.isReady) return
+    if (setupStarted || deepLinkProgram) return
+    if (inventory.loading || inventory.programs.length === 0) return
+    const step = stepFromQuery(router.query.step)
+    if (step === 'setup' || step === 'review' || step === 'status') {
+      card.backToEntry()
+      void router.replace({ pathname: '/liquidity-studio', query: { view: 'building' } }, undefined, {
+        shallow: true,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    router.isReady,
+    router.query.step,
+    setupStarted,
+    deepLinkProgram,
+    inventory.loading,
+    inventory.programs.length,
+  ])
 
   const selectedProjectToken = useCurrency(card.draft.tokenAddress ?? undefined)
   const pastedAddress = isAddress(addressInput) || undefined
@@ -893,9 +925,11 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   )
 
   const isActive = card.phase === 'active' || card.phase === 'manage'
-  const inFlow = forceExpanded || setupStarted || (card.phase !== 'entry' && !isActive)
+  /** Create wizard only when user intentionally started create (or empty auto-start). */
+  const inFlow = setupStarted && !isActive
   // Portfolio home when not creating and not viewing a program detail.
-  const showPortfolio = !forceExpanded && !setupStarted && !isActive && card.phase === 'entry' && !activating
+  // forceExpanded must NOT suppress portfolio when programs already exist.
+  const showPortfolio = !setupStarted && !isActive && !activating
   // IA workspace already titles the pane — keep LB header collapsed, body expanded.
   const heroCollapsed = forceExpanded || inFlow || isActive || showPortfolio
   /** Inactive summary: compact shell — avoid 860px empty body (geometry exception). */
@@ -996,7 +1030,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
   const primaryLabel = useMemo(() => {
     if (stepError) return stepError
     if (showPortfolio) return LB_UX.portfolioCreateCta
-    if (isActive) return 'Program Active'
+    if (isActive) return LB_UX.programActiveLabel
     if (activating) {
       if (activateHint) return activateHint
       return LB_UX.activationInProgress
@@ -1181,7 +1215,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         '—'
       const strategyLabel =
         indexed?.strategy ||
-        STRATEGY_PRESET_OPTIONS.find((o) => o.key === card.draft.strategyPreset)?.label ||
+        STRATEGY_PRESET_OPTIONS.find((o) => o.key === card.draft.strategyPreset)?.title ||
         (card.draft.strategy === 'FULL_AI' ? LB_UX.strategyFullAiTitle : LB_UX.strategyRangeTitle)
       const goalLabel =
         indexed?.goal ||
@@ -1202,7 +1236,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             onClick={returnToPortfolio}
             style={{ alignSelf: 'flex-start', height: 32, marginBottom: 4 }}
           >
-            {LB_UX.portfolioBack}
+            {LB_UX.portfolioViewPortfolio}
           </Secondary>
           <ProductTitle data-testid="liq-lb-active-title">{LB_UX.activeProductTitle}</ProductTitle>
 
@@ -1783,7 +1817,7 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
           ) : null}
           {isActive ? (
             <Secondary type="button" data-testid="liq-lb-footer-back-portfolio" onClick={returnToPortfolio}>
-              {LB_UX.portfolioBack}
+              {LB_UX.portfolioViewPortfolio}
             </Secondary>
           ) : null}
           {showConnectSlot ? (

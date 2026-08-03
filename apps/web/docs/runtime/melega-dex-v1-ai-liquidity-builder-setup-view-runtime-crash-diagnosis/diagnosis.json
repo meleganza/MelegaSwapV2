@@ -1,0 +1,15 @@
+{
+  "mission": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_SETUP_VIEW_RUNTIME_CRASH_DIAGNOSIS",
+  "errorTrackingId": "685d6e787ee34b0489ed4c2ef20857b0",
+  "route": "/liquidity-studio/?view=building&step=setup",
+  "exception": "TypeError: Cannot read properties of undefined (reading 'executionCount')",
+  "file": "apps/web/src/views/LiquidityStudio/liquidityBuilding/useProgramReadModel.ts",
+  "line": 127,
+  "callee": "activityFromLatestExecution(latestResult?.result?.[0] as any)",
+  "rootCause": "When an active Liquidity Program exists, getProgramView succeeds and useProgramReadModel builds the ON_CHAIN snapshot. latestExecution is often empty (0 executions / not yet returned), so result[0] is undefined. activityFromLatestExecution expected { executionCount, latest } and immediately read input.executionCount — crashing the setup/read-model render. Separately, forceExpanded + step=setup always opened create wizard even when inventory already had programs.",
+  "minimalFix": [
+    "Null-guard activityFromLatestExecution for undefined/null input",
+    "Pass structured { executionCount, latest } from useProgramReadModel",
+    "Do not auto-start create when inventory has programs; step=setup with existing programs returns to portfolio"
+  ]
+}
