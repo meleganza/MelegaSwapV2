@@ -4,9 +4,51 @@ import { CHAIN_IDS } from 'utils/wagmi'
 const Page = () => (
   <LbDocsPage
     path="/docs/liquidity-builder/strategies"
-    title="Liquidity Strategies"
-    lead="Choose how aggressively Liquidity Builder grows your market from real demand."
-    body="Conservative: lower execution frequency; prioritizes stability. Balanced: balances liquidity growth and price stability. AI Optimized: AI dynamically adapts execution based on demand, volume and volatility. Aggressive: faster liquidity deployment with higher market impact tolerance. Presets map to existing on-chain strategy modes — they do not change fee economics."
+    title="Strategies"
+    lead="Strategies control how assertively Token Reserve is used as markets move."
+    sections={[
+      {
+        title: 'Conservative',
+        body: (
+          <ul>
+            <li>Lower execution frequency</li>
+            <li>Stability focused</li>
+            <li>Prefer slower, careful liquidity deployment</li>
+          </ul>
+        ),
+      },
+      {
+        title: 'Balanced',
+        body: (
+          <ul>
+            <li>Liquidity growth + stability</li>
+            <li>Default middle path for most projects</li>
+          </ul>
+        ),
+      },
+      {
+        title: 'AI Optimized',
+        body: (
+          <>
+            <p>Dynamic adaptation based on:</p>
+            <ul>
+              <li>volume</li>
+              <li>volatility</li>
+              <li>liquidity conditions</li>
+            </ul>
+          </>
+        ),
+      },
+      {
+        title: 'Aggressive',
+        body: (
+          <ul>
+            <li>Faster liquidity deployment</li>
+            <li>Higher market impact tolerance</li>
+          </ul>
+        ),
+      },
+    ]}
   />
 )
 

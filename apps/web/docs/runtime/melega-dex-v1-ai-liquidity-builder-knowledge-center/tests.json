@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "suites": [
+    "knowledgeCenter.test.ts (8)",
+    "productUxRedesignV2.test.ts (7)",
+    "portfolioDashboardUx.test.ts (6)"
+  ],
+  "totalPassed": 21,
+  "command": "yarn vitest run src/views/LiquidityStudio/liquidityBuilding/__tests__/knowledgeCenter.test.ts src/views/LiquidityStudio/liquidityBuilding/__tests__/productUxRedesignV2.test.ts src/views/LiquidityStudio/liquidityBuilding/__tests__/portfolioDashboardUx.test.ts"
+}

@@ -53,14 +53,20 @@ const SECTIONS: DocSection[] = [
   {
     id: 'ai-liquidity-builder',
     title: 'AI Liquidity Builder',
-    href: '/docs/liquidity-builder/overview',
-    body: 'I provide my token reserve and AI Liquidity Builder automatically creates and improves market liquidity. Product surface: /liquidity. Guides under /docs/liquidity-builder/.',
+    href: '/docs/liquidity-builder',
+    body: 'Knowledge center for AI Liquidity Builder — automatically grow and optimize your token liquidity. Product surface: /liquidity-studio. Guides under /docs/liquidity-builder/.',
   },
   {
     id: 'lb-overview',
     title: 'LB Overview',
     href: '/docs/liquidity-builder/overview',
     body: 'Founder overview of Token to Grow, Create Market Against, Token Reserve, goals, and strategies.',
+  },
+  {
+    id: 'lb-how-it-works',
+    title: 'LB How it Works',
+    href: '/docs/liquidity-builder/how-it-works',
+    body: 'Seven steps from choosing a token to activating a program and monitoring the portfolio.',
   },
   {
     id: 'lb-token-reserve',
@@ -90,7 +96,19 @@ const SECTIONS: DocSection[] = [
     id: 'lb-fees',
     title: 'Liquidity Builder Fees',
     href: '/docs/liquidity-builder/fees',
-    body: 'Success fees follow on-chain Factory parameters (product docs only — UI does not change economics).',
+    body: '10% protocol fee path: Program → FeeSink → FeeReceiver → MELEGA TREASURY. No Treasury Runtime.',
+  },
+  {
+    id: 'lb-risk-safety',
+    title: 'LB Risk & Safety',
+    href: '/docs/liquidity-builder/risk-safety',
+    body: 'Liquidity does not guarantee price. Strategies optimize execution. Pause and safety controls.',
+  },
+  {
+    id: 'lb-examples',
+    title: 'LB Examples',
+    href: '/docs/liquidity-builder/examples',
+    body: 'New token launch and existing multi-market project setups.',
   },
   {
     id: 'farms',

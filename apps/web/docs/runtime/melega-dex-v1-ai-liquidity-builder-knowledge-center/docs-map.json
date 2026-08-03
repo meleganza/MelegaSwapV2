@@ -1,0 +1,45 @@
+{
+  "mission": "MELEGA_DEX_V1_AI_LIQUIDITY_BUILDER_KNOWLEDGE_CENTER",
+  "baselineCommit": "0058f1de",
+  "hub": "/docs/liquidity-builder",
+  "hero": {
+    "title": "AI Liquidity Builder",
+    "lead": "Automatically grow and optimize your token liquidity."
+  },
+  "sections": [
+    "Overview",
+    "How it Works",
+    "Token Reserve",
+    "Liquidity Goals",
+    "Strategies",
+    "Execution Model",
+    "Fees",
+    "Risk & Safety",
+    "Examples"
+  ],
+  "routes": [
+    "/docs/liquidity-builder",
+    "/docs/liquidity-builder/overview",
+    "/docs/liquidity-builder/how-it-works",
+    "/docs/liquidity-builder/token-reserve",
+    "/docs/liquidity-builder/liquidity-goals",
+    "/docs/liquidity-builder/strategies",
+    "/docs/liquidity-builder/execution",
+    "/docs/liquidity-builder/fees",
+    "/docs/liquidity-builder/risk-safety",
+    "/docs/liquidity-builder/examples"
+  ],
+  "pageFiles": [
+    "apps/web/src/pages/docs/liquidity-builder/index.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/overview.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/how-it-works.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/token-reserve.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/liquidity-goals.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/strategies.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/execution.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/fees.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/risk-safety.tsx",
+    "apps/web/src/pages/docs/liquidity-builder/examples.tsx"
+  ],
+  "shell": "apps/web/src/views/LiquidityStudio/liquidityBuilding/LbDocsPage.tsx"
+}

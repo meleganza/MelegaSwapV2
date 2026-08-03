@@ -362,6 +362,18 @@ const DocsRow = styled.div`
   }
 `
 
+const FieldDoc = styled(Link)`
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 650;
+  color: ${liqOne.gold};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
 const StatusRow = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -1283,7 +1295,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
                   </MetaValue>
                 </MetaCell>
                 <MetaCell>
-                  <MetaLabel>Success Fee</MetaLabel>
+                  <MetaLabel>
+                    Success Fee
+                    <FieldDoc href={LB_UX.docsFees} data-testid="lb-docs-link-fees">
+                      {LB_UX.docsFieldLink}
+                    </FieldDoc>
+                  </MetaLabel>
                   <MetaValue data-testid="liq-lb-success-fee">
                     {(card.successFeeBps / 100).toFixed(0)}%
                   </MetaValue>
@@ -1359,11 +1376,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
         </StepTrack>
 
         <DocsRow data-testid="liq-lb-docs-links">
-          <Link href={LB_UX.docsOverview}>Overview</Link>
+          <Link href={LB_UX.docsHub} data-testid="lb-docs-hub-link">
+            Documentation
+          </Link>
           <Link href={LB_UX.docsTokenReserve}>Token Reserve</Link>
-          <Link href={LB_UX.docsLiquidityGoals}>Liquidity Goals</Link>
-          <Link href={LB_UX.docsStrategies}>Strategies</Link>
-          <Link href={LB_UX.docsExecution}>Execution</Link>
+          <Link href={LB_UX.docsLiquidityGoals}>Goal</Link>
+          <Link href={LB_UX.docsStrategies}>Strategy</Link>
           <Link href={LB_UX.docsFees}>Fees</Link>
         </DocsRow>
 
@@ -1464,7 +1482,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             </MetaCell>
 
             <MetaCell>
-              <MetaLabel>{LB_UX.reserveLabel}</MetaLabel>
+              <MetaLabel>
+                {LB_UX.reserveLabel}
+                <FieldDoc href={LB_UX.docsTokenReserve} data-testid="lb-docs-link-reserve">
+                  {LB_UX.docsFieldLink}
+                </FieldDoc>
+              </MetaLabel>
               <FieldHint>{LB_UX.reserveSupport}</FieldHint>
               <Input
                 type="text"
@@ -1480,7 +1503,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             </MetaCell>
 
             <MetaCell style={{ gridColumn: '1 / -1' }}>
-              <MetaLabel>{LB_UX.liquidityGoalLabel}</MetaLabel>
+              <MetaLabel>
+                {LB_UX.liquidityGoalLabel}
+                <FieldDoc href={LB_UX.docsLiquidityGoals} data-testid="lb-docs-link-goal">
+                  {LB_UX.docsFieldLink}
+                </FieldDoc>
+              </MetaLabel>
               <TokenRow>
                 {LIQUIDITY_GOAL_OPTIONS.map((g) => (
                   <TokenChip
@@ -1502,7 +1530,12 @@ export const LiquidityBuildingCard = React.forwardRef<HTMLElement, LiquidityBuil
             </MetaCell>
 
             <MetaCell style={{ gridColumn: '1 / -1' }}>
-              <MetaLabel>Liquidity Strategy</MetaLabel>
+              <MetaLabel>
+                Liquidity Strategy
+                <FieldDoc href={LB_UX.docsStrategies} data-testid="lb-docs-link-strategy">
+                  {LB_UX.docsFieldLink}
+                </FieldDoc>
+              </MetaLabel>
               <TokenRow style={{ flexWrap: 'wrap' }}>
                 {STRATEGY_PRESET_OPTIONS.map((s) => (
                   <TokenChip

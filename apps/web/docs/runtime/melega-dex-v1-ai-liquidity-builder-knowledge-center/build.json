@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "command": "yarn next build",
+  "docsRoutesPresent": true,
+  "exitCode": 0,
+  "notes": "Pre-existing warnings (eslint next/babel, calculateGasMargin, SMART_ROUTER_ADAPTER) \u2014 build completed successfully."
+}

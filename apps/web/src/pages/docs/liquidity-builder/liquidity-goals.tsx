@@ -5,8 +5,36 @@ const Page = () => (
   <LbDocsPage
     path="/docs/liquidity-builder/liquidity-goals"
     title="Liquidity Goals"
-    lead="Choose how your program should prioritize market growth."
-    body="Steady Growth: gradual liquidity expansion with lower market impact. Deeper Market: prioritizes liquidity depth and lower slippage for larger trades. Launch Support: designed for new tokens requiring initial market formation. Goals guide presentation and strategy intensity mapping — they do not change on-chain fee economics."
+    lead="Goals describe the market intent of your program — how you want liquidity to grow."
+    sections={[
+      {
+        title: 'Steady Growth',
+        body: (
+          <p>
+            Gradual liquidity expansion with lower market impact. Best when you want consistent depth over time
+            without aggressive deployment.
+          </p>
+        ),
+      },
+      {
+        title: 'Deeper Market',
+        body: (
+          <p>
+            Prioritize liquidity depth to reduce slippage for traders. Useful for established tokens that need
+            thicker books on TOKEN/WBNB, TOKEN/USDT, or TOKEN/USDC.
+          </p>
+        ),
+      },
+      {
+        title: 'Launch Support',
+        body: (
+          <p>
+            Designed for initial market formation — helping a new token build its first usable trading market
+            with structured liquidity growth.
+          </p>
+        ),
+      },
+    ]}
   />
 )
 

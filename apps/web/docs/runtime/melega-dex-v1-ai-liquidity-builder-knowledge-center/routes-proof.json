@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "buildIncludedRoutes": [
+    "/docs/liquidity-builder",
+    "/docs/liquidity-builder/overview",
+    "/docs/liquidity-builder/how-it-works",
+    "/docs/liquidity-builder/token-reserve",
+    "/docs/liquidity-builder/liquidity-goals",
+    "/docs/liquidity-builder/strategies",
+    "/docs/liquidity-builder/execution",
+    "/docs/liquidity-builder/fees",
+    "/docs/liquidity-builder/risk-safety",
+    "/docs/liquidity-builder/examples"
+  ],
+  "staticPagesConfirmedInNextBuild": true,
+  "notes": "next build listed all /docs/liquidity-builder* routes as \u25cb Static"
+}

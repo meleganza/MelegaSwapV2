@@ -2,6 +2,7 @@
  * AI Liquidity Portfolio — home inventory + empty state.
  */
 import React from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import type { LbProgramApiRow } from 'lib/liquidity-builder-indexer/types'
 import { liqOne } from '../../onePage/onePageTokens'
@@ -27,6 +28,25 @@ const Heading = styled.h3`
   line-height: 22px;
   font-weight: 750;
   color: ${liqOne.gold};
+`
+
+const HeadingRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 12px;
+`
+
+const DocsLink = styled(Link)`
+  font-size: 12px;
+  font-weight: 650;
+  color: ${liqOne.gold};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 const SummaryGrid = styled.div`
@@ -224,7 +244,12 @@ export function LbPortfolioHome({
   if (!walletConnected) {
     return (
       <Root data-testid="liq-lb-portfolio" data-lb-portfolio="connect">
-        <Heading data-testid="liq-lb-portfolio-title">{LB_UX.portfolioTitle}</Heading>
+        <HeadingRow>
+          <Heading data-testid="liq-lb-portfolio-title">{LB_UX.portfolioTitle}</Heading>
+          <DocsLink href={LB_UX.docsHub} data-testid="liq-lb-portfolio-docs">
+            {LB_UX.portfolioViewDocs}
+          </DocsLink>
+        </HeadingRow>
         <Empty data-testid="liq-lb-portfolio-empty">
           <EmptyTitle>{LB_UX.portfolioEmptyTitle}</EmptyTitle>
           <EmptyBody>{LB_UX.portfolioConnectBody}</EmptyBody>
@@ -236,7 +261,12 @@ export function LbPortfolioHome({
   if (empty) {
     return (
       <Root data-testid="liq-lb-portfolio" data-lb-portfolio="empty">
-        <Heading data-testid="liq-lb-portfolio-title">{LB_UX.portfolioTitle}</Heading>
+        <HeadingRow>
+          <Heading data-testid="liq-lb-portfolio-title">{LB_UX.portfolioTitle}</Heading>
+          <DocsLink href={LB_UX.docsHub} data-testid="liq-lb-portfolio-docs">
+            {LB_UX.portfolioViewDocs}
+          </DocsLink>
+        </HeadingRow>
         <Empty data-testid="liq-lb-portfolio-empty">
           <EmptyTitle>{LB_UX.portfolioEmptyTitle}</EmptyTitle>
           <EmptyBody>{LB_UX.portfolioEmptyBody}</EmptyBody>
@@ -250,7 +280,12 @@ export function LbPortfolioHome({
 
   return (
     <Root data-testid="liq-lb-portfolio" data-lb-portfolio="inventory">
-      <Heading data-testid="liq-lb-portfolio-title">{LB_UX.portfolioTitle}</Heading>
+      <HeadingRow>
+        <Heading data-testid="liq-lb-portfolio-title">{LB_UX.portfolioTitle}</Heading>
+        <DocsLink href={LB_UX.docsHub} data-testid="liq-lb-portfolio-docs">
+          {LB_UX.portfolioViewDocs}
+        </DocsLink>
+      </HeadingRow>
 
       <SummaryGrid data-testid="liq-lb-portfolio-summary">
         <SummaryCell>

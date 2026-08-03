@@ -85,16 +85,21 @@ describe('AI Liquidity Builder product UX redesign V2', () => {
 
   it('ships all contextual docs routes', () => {
     const pages = [
+      'src/pages/docs/liquidity-builder/index.tsx',
       'src/pages/docs/liquidity-builder/overview.tsx',
+      'src/pages/docs/liquidity-builder/how-it-works.tsx',
       'src/pages/docs/liquidity-builder/token-reserve.tsx',
       'src/pages/docs/liquidity-builder/liquidity-goals.tsx',
       'src/pages/docs/liquidity-builder/strategies.tsx',
       'src/pages/docs/liquidity-builder/execution.tsx',
       'src/pages/docs/liquidity-builder/fees.tsx',
+      'src/pages/docs/liquidity-builder/risk-safety.tsx',
+      'src/pages/docs/liquidity-builder/examples.tsx',
     ]
     for (const p of pages) {
       expect(existsSync(path.join(WEB, p))).toBe(true)
     }
+    expect(LB_UX.docsHub).toBe('/docs/liquidity-builder')
     expect(LB_UX.docsOverview).toBe('/docs/liquidity-builder/overview')
     expect(LB_UX.docsTokenReserve).toBe('/docs/liquidity-builder/token-reserve')
     expect(LB_UX.docsLiquidityGoals).toBe('/docs/liquidity-builder/liquidity-goals')
