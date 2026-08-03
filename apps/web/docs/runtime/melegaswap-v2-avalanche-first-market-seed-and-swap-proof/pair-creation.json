@@ -1,0 +1,21 @@
+{
+  "schema": "melegaswap.v2.avalanche-first-market.pair-creation.v1",
+  "status": "BLOCKED",
+  "blocker": "FOUNDER_WALLET_SIGNATURE_REQUIRED",
+  "measuredAt": "2026-08-03T21:32:42.587Z",
+  "mode": "FOUNDER_SIGNED_LIVE_CANARY",
+  "requiredSigner": "0xB6eEb3ab9695979F5b2Ef6Df4112e63212E33EE0",
+  "createPairIfAbsent": true,
+  "tokens": {
+    "marco": "0x8C880e839f3CAcf60F11612087BAbd3307A33720",
+    "wavax": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+  },
+  "factory": "0xFF8EBf8edf1C533A02d066f852788773BdCD631C",
+  "observed": {
+    "allPairsLength": "0",
+    "getPair": "0x0000000000000000000000000000000000000000"
+  },
+  "transactionHash": null,
+  "pairAddress": null,
+  "note": "No pair-creation tx was Founder-signed in this session. Factory still reports 0 pairs. Agent has no private key and no browser wallet MCP."
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "melegaswap.v2.avalanche-first-market.swap-proof.v1",
+  "status": "BLOCKED",
+  "blocker": "FOUNDER_WALLET_SIGNATURE_REQUIRED",
+  "measuredAt": "2026-08-03T21:32:42.587Z",
+  "chainId": 43114,
+  "router": "0x5A38b0B75C2E199fD8098710594115A35ABb6c7F",
+  "pair": null,
+  "method": "swapExactETHForTokens",
+  "swapTxHash": null,
+  "actualInput": null,
+  "actualOutput": null,
+  "expectedOutput": null,
+  "minimumReceived": null,
+  "priceImpact": null,
+  "crossChainFallback": false,
+  "walletSigned": false,
+  "note": "Smart Swap canary not executed — market absent and Founder wallet not connected to agent session."
+}

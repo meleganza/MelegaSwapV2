@@ -4,6 +4,7 @@
  */
 import { Interface } from '@ethersproject/abi'
 import {
+  MELEGA_AVAX_FACTORY,
   MELEGA_AVAX_MARCO,
   MELEGA_AVAX_ROUTER,
   MELEGA_AVAX_WAVAX,
@@ -11,6 +12,7 @@ import {
 import { AUTHORIZED_MELEGA_DEPLOYER } from './founderDeployer'
 
 export const AVAX_LIVE_SEED_ROUTER = MELEGA_AVAX_ROUTER
+export const AVAX_LIVE_SEED_FACTORY = MELEGA_AVAX_FACTORY
 export const AVAX_LIVE_SEED_WAVAX = MELEGA_AVAX_WAVAX
 export const AVAX_LIVE_SEED_MARCO = MELEGA_AVAX_MARCO
 
@@ -19,6 +21,11 @@ const ERC20 = new Interface([
   'function allowance(address owner, address spender) view returns (uint256)',
   'function balanceOf(address) view returns (uint256)',
   'function deposit() payable',
+])
+
+const FACTORY = new Interface([
+  'function getPair(address,address) view returns (address)',
+  'function allPairsLength() view returns (uint256)',
 ])
 
 const ROUTER = new Interface([
@@ -70,10 +77,11 @@ export function encodeSwapExactAvaxForMarco(input: {
   avaxIn: bigint
   to: string
   deadline: number
+  amountOutMin?: bigint
 }): { data: string; valueWei: bigint } {
   return {
     data: ROUTER.encodeFunctionData('swapExactETHForTokens', [
-      0n,
+      input.amountOutMin ?? 0n,
       [AVAX_LIVE_SEED_WAVAX, AVAX_LIVE_SEED_MARCO],
       input.to,
       input.deadline,
@@ -89,9 +97,36 @@ export function encodeGetAmountsOut(avaxIn: bigint): string {
   ])
 }
 
+/** Decode Router getAmountsOut return → final path amount. */
+export function decodeGetAmountsOutFinal(ret: string): bigint {
+  const decoded = ROUTER.decodeFunctionResult('getAmountsOut', ret)
+  const amounts = decoded[0] as { toString(): string }[]
+  if (!amounts?.length) return 0n
+  return BigInt(amounts[amounts.length - 1].toString())
+}
+
+export function encodeFactoryGetPair(): string {
+  return FACTORY.encodeFunctionData('getPair', [AVAX_LIVE_SEED_MARCO, AVAX_LIVE_SEED_WAVAX])
+}
+
+export function encodeFactoryAllPairsLength(): string {
+  return FACTORY.encodeFunctionData('allPairsLength', [])
+}
+
+export function decodeAddressCallResult(ret: string): string {
+  if (!ret || ret === '0x') return '0x0000000000000000000000000000000000000000'
+  return `0x${ret.slice(-40)}`
+}
+
+export function decodeUintCallResult(ret: string): bigint {
+  if (!ret || ret === '0x') return 0n
+  return BigInt(ret)
+}
+
 export function avalancheLiveSeedTargets() {
   return {
     router: AVAX_LIVE_SEED_ROUTER,
+    factory: AVAX_LIVE_SEED_FACTORY,
     wavax: AVAX_LIVE_SEED_WAVAX,
     marco: AVAX_LIVE_SEED_MARCO,
     deployer: AUTHORIZED_MELEGA_DEPLOYER,

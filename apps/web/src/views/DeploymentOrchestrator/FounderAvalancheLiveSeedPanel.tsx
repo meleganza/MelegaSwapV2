@@ -1,5 +1,7 @@
 /**
- * Founder Avalanche LIVE seed — create factual WAVAX-MARCO pair, add liquidity, micro-swap.
+ * Founder Avalanche LIVE seed — create factual WAVAX-MARCO pair, add liquidity,
+ * settle Smart Swap protocol fee (25% estimated gas as AVAX), micro-swap.
+ * Browser-wallet only. No KMS. No automatic broadcast.
  */
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
@@ -8,11 +10,17 @@ import { useWalletChainId } from 'hooks/useWalletChainId'
 import { calculateSmartRouterGasProtocolFee } from 'lib/smart-swap-gas-protocol-fee'
 import {
   AVAX_SEED_DEFAULTS,
+  AVAX_LIVE_SEED_FACTORY,
   AVAX_LIVE_SEED_MARCO,
   AVAX_LIVE_SEED_ROUTER,
   AVAX_LIVE_SEED_WAVAX,
   avalancheLiveSeedTargets,
+  decodeAddressCallResult,
+  decodeGetAmountsOutFinal,
+  decodeUintCallResult,
   encodeAddLiquidityAvax,
+  encodeFactoryAllPairsLength,
+  encodeFactoryGetPair,
   encodeGetAmountsOut,
   encodeMarcoApprove,
   encodeSwapExactAvaxForMarco,
@@ -22,8 +30,11 @@ import {
   isUserRejectedError,
   resolveWalletProvider,
   walletEthCall,
+  walletGetGasPrice,
+  walletGetTransactionReceipt,
   walletSendCallTransaction,
   walletSwitchChain,
+  type EthereumProvider,
 } from 'lib/deployment-orchestrator/founderWalletTx'
 import { AVAX_ROUTER_CHAIN_ID } from 'lib/deployment-orchestrator/founderAvalancheRouterArtifacts'
 
@@ -76,6 +87,38 @@ const Banner = styled.div`
   word-break: break-all;
 `
 
+async function waitReceipt(eth: EthereumProvider, hash: string, attempts = 40): Promise<void> {
+  for (let i = 0; i < attempts; i += 1) {
+    const receipt = await walletGetTransactionReceipt(eth, hash)
+    if (receipt?.status != null) {
+      const ok = receipt.status === 1 || receipt.status === '0x1'
+      if (!ok) throw new Error(`Tx reverted ${hash}`)
+      return
+    }
+    await new Promise((r) => setTimeout(r, 1500))
+  }
+  throw new Error(`Receipt timeout ${hash}`)
+}
+
+async function walletEstimateCallGas(
+  eth: EthereumProvider,
+  input: { from: string; to: string; data: string; valueWei?: bigint },
+): Promise<bigint> {
+  const est = await eth.request({
+    method: 'eth_estimateGas',
+    params: [
+      {
+        from: input.from,
+        to: input.to,
+        data: input.data,
+        value: `0x${(input.valueWei ?? 0n).toString(16)}`,
+      },
+    ],
+  })
+  if (typeof est !== 'string' || !est.startsWith('0x')) throw new Error('eth_estimateGas failed')
+  return BigInt(est)
+}
+
 export const FounderAvalancheLiveSeedPanel: React.FC = () => {
   const { address, isConnected, connector } = useAccount()
   const chainId = useWalletChainId()
@@ -83,12 +126,12 @@ export const FounderAvalancheLiveSeedPanel: React.FC = () => {
   const [log, setLog] = useState<string[]>([])
   const targets = avalancheLiveSeedTargets()
 
-  const push = (line: string) => setLog((prev) => [...prev.slice(-12), line])
+  const push = (line: string) => setLog((prev) => [...prev.slice(-20), line])
 
   const runSeed = useCallback(async () => {
     setLog([])
     if (!address || !isAuthorizedMelegaDeployer(address)) {
-      push('Connect MELEGA DEPLOYER.')
+      push('Connect MELEGA DEPLOYER 0xB6eEb3…3EE0 on Avalanche.')
       return
     }
     try {
@@ -103,17 +146,16 @@ export const FounderAvalancheLiveSeedPanel: React.FC = () => {
       const deadline = Math.floor(Date.now() / 1000) + 1200
       const { liquidityAvaxWei, liquidityMarcoWei, swapAvaxWei } = AVAX_SEED_DEFAULTS
 
-      // 1) Approve MARCO to Router
-      push('1/4 Approve MARCO…')
+      push('1/6 Approve MARCO…')
       const approveHash = await walletSendCallTransaction(eth, {
         from: address,
         to: AVAX_LIVE_SEED_MARCO,
         data: encodeMarcoApprove(AVAX_LIVE_SEED_ROUTER, liquidityMarcoWei),
       })
       push(`Approve tx ${approveHash}`)
+      await waitReceipt(eth, approveHash)
 
-      // 2) addLiquidityETH — Router wraps AVAX; creates pair if missing
-      push('2/4 addLiquidityETH (creates factual pair + liquidity)…')
+      push('2/6 addLiquidityETH (creates factual pair + liquidity)…')
       const liq = encodeAddLiquidityAvax({
         marcoAmount: liquidityMarcoWei,
         avaxAmount: liquidityAvaxWei,
@@ -127,35 +169,92 @@ export const FounderAvalancheLiveSeedPanel: React.FC = () => {
         valueWei: liq.valueWei,
       })
       push(`Liquidity tx ${liqHash}`)
+      await waitReceipt(eth, liqHash)
 
-      // 3) Quote
-      push('3/4 getAmountsOut quote…')
+      push('3/6 Capture pair…')
+      const pairsLenRaw = await walletEthCall(eth, AVAX_LIVE_SEED_FACTORY, encodeFactoryAllPairsLength())
+      const pairRaw = await walletEthCall(eth, AVAX_LIVE_SEED_FACTORY, encodeFactoryGetPair())
+      const pair = decodeAddressCallResult(pairRaw)
+      push(`allPairsLength=${decodeUintCallResult(pairsLenRaw)} · pair=${pair}`)
+      if (pair === '0x0000000000000000000000000000000000000000') {
+        throw new Error('Factory getPair returned zero — liquidity did not create market')
+      }
+
+      push('4/6 getAmountsOut quote…')
       const amountsRaw = await walletEthCall(eth, AVAX_LIVE_SEED_ROUTER, encodeGetAmountsOut(swapAvaxWei))
-      push(`getAmountsOut ok · ${amountsRaw.slice(0, 66)}…`)
+      const amountOut = decodeGetAmountsOutFinal(amountsRaw)
+      if (amountOut <= 0n) throw new Error('getAmountsOut returned zero')
+      push(`expectedOut=${amountOut.toString()} wei MARCO`)
 
-      // 4) Micro swap
-      push('4/4 Controlled swapExactETHForTokens…')
-      const swap = encodeSwapExactAvaxForMarco({ avaxIn: swapAvaxWei, to: address, deadline })
+      const swapForEstimate = encodeSwapExactAvaxForMarco({
+        avaxIn: swapAvaxWei,
+        to: address,
+        deadline,
+        amountOutMin: 0n,
+      })
+      const gasEstimate = await walletEstimateCallGas(eth, {
+        from: address,
+        to: AVAX_LIVE_SEED_ROUTER,
+        data: swapForEstimate.data,
+        valueWei: swapForEstimate.valueWei,
+      })
+      const gasPrice = await walletGetGasPrice(eth)
+      const fee = calculateSmartRouterGasProtocolFee({
+        gasEstimateUnits: gasEstimate,
+        gasPriceWei: gasPrice,
+        chainId: 43114,
+      })
+
+      push(`5/6 Protocol fee ${fee.percent}% ${fee.feeAsset} → ${fee.recipient} (${fee.feeWei} wei)…`)
+      let feeHash: string | null = null
+      if (BigInt(fee.feeWei) > 0n) {
+        feeHash = await walletSendCallTransaction(eth, {
+          from: address,
+          to: fee.recipient,
+          data: '0x',
+          valueWei: BigInt(fee.feeWei),
+        })
+        push(`Fee tx ${feeHash}`)
+        await waitReceipt(eth, feeHash)
+      }
+
+      push('6/6 swapExactETHForTokens…')
+      const amountOutMin = (amountOut * 95n) / 100n
+      const swapExec = encodeSwapExactAvaxForMarco({
+        avaxIn: swapAvaxWei,
+        to: address,
+        deadline,
+        amountOutMin,
+      })
       const swapHash = await walletSendCallTransaction(eth, {
         from: address,
         to: AVAX_LIVE_SEED_ROUTER,
-        data: swap.data,
-        valueWei: swap.valueWei,
+        data: swapExec.data,
+        valueWei: swapExec.valueWei,
       })
       push(`Swap tx ${swapHash}`)
+      await waitReceipt(eth, swapHash)
 
-      const fee = calculateSmartRouterGasProtocolFee({
-        gasEstimateUnits: 180_000,
-        gasPriceWei: 25_000_000_000,
-        chainId: 43114,
-      })
       push(
-        `Smart Swap fee model: ${fee.percent}% ${fee.feeAsset} → ${fee.recipient} (settle on Smart Swap confirmation)`,
+        JSON.stringify({
+          pair,
+          approveHash,
+          liqHash,
+          feeHash,
+          swapHash,
+          router: AVAX_LIVE_SEED_ROUTER,
+          inputAvaxWei: swapAvaxWei.toString(),
+          expectedOutWei: amountOut.toString(),
+          amountOutMinWei: amountOutMin.toString(),
+          gasEstimate: gasEstimate.toString(),
+          gasPriceWei: gasPrice.toString(),
+          feeWei: fee.feeWei,
+        }),
       )
-      push('Avalanche LIVE seed complete · Factory pair + liquidity + swap proven.')
+      push('Avalanche LIVE seed complete · pair + liquidity + fee + swap proven.')
     } catch (e) {
       if (isUserRejectedError(e)) push('Wallet rejected — no broadcast.')
-      else push(e instanceof Error ? e.message.slice(0, 220) : 'Seed failed')
+      else push(e instanceof Error ? e.message.slice(0, 280) : 'Seed failed')
     } finally {
       setBusy(false)
     }
@@ -165,9 +264,9 @@ export const FounderAvalancheLiveSeedPanel: React.FC = () => {
     <Card data-testid="founder-avalanche-live-seed">
       <Title>Avalanche LIVE · Founder seed</Title>
       <Note>
-        Router {targets.router} is bound. Factory still needs a factual WAVAX–MARCO pair, real liquidity, and one
-        controlled swap. Fee settlement: {targets.feePercent}% estimated gas as {targets.feeAsset} →{' '}
-        {targets.treasury}.
+        Router {targets.router} is bound. Factory still needs a factual WAVAX–MARCO pair, real liquidity, fee
+        settlement ({targets.feePercent}% estimated gas as {targets.feeAsset} → {targets.treasury}), and one
+        controlled swap. Browser wallet only — no KMS, no auto-broadcast.
       </Note>
       <Actions>
         <Btn
@@ -177,7 +276,7 @@ export const FounderAvalancheLiveSeedPanel: React.FC = () => {
           onClick={() => void runSeed()}
           data-testid="founder-avalanche-seed-cta"
         >
-          Seed pair · liquidity · swap
+          Seed pair · liquidity · fee · swap
         </Btn>
       </Actions>
       {log.length > 0 && (

@@ -1,0 +1,14 @@
+{
+  "schema": "melegaswap.v2.avalanche-first-market.quote-proof.v1",
+  "status": "BLOCKED",
+  "measuredAt": "2026-08-03T21:32:42.587Z",
+  "router": "0x5A38b0B75C2E199fD8098710594115A35ABb6c7F",
+  "path": [
+    "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+    "0x8C880e839f3CAcf60F11612087BAbd3307A33720"
+  ],
+  "amountInWei": "1000000000000000",
+  "amountsOut": null,
+  "quoteOk": false,
+  "note": "getAmountsOut requires a seeded pair with reserves."
+}

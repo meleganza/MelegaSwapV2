@@ -1,0 +1,8 @@
+{
+  "schema": "melegaswap.v2.avalanche-first-market.build.v1",
+  "status": "PASS",
+  "passed": true,
+  "command": "yarn next build",
+  "capturedAt": "2026-08-03T21:34:00Z",
+  "note": "Compiled with pre-existing warnings unrelated to this mission (civilization-router / LiquidityStudio). Exit 0."
+}

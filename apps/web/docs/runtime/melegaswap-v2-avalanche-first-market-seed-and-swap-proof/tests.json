@@ -1,0 +1,12 @@
+{
+  "schema": "melegaswap.v2.avalanche-first-market.tests.v1",
+  "status": "PASS",
+  "passed": true,
+  "command": "yarn vitest run src/lib/__tests__/avalancheFirstMarketSeedAndSwapProof.test.ts src/lib/__tests__/melegaChainRegistry.avalancheLive.test.ts",
+  "results": {
+    "testFiles": 2,
+    "tests": 13,
+    "failed": 0
+  },
+  "capturedAt": "2026-08-03T21:33:01Z"
+}

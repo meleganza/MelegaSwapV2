@@ -1,0 +1,10 @@
+{
+  "schema": "melegaswap.v2.avalanche-first-market.treasury-receipt.v1",
+  "status": "BLOCKED",
+  "measuredAt": "2026-08-03T21:32:42.587Z",
+  "recipient": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+  "asset": "AVAX",
+  "transferTxHash": null,
+  "valueWei": null,
+  "recipientProof": null
+}
