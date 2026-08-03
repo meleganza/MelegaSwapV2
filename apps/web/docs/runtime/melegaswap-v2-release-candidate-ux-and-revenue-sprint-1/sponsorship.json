@@ -1,0 +1,15 @@
+{
+  "schema": "melegaswap.v2.rc-sprint-1.sponsorship.v1",
+  "capturedAt": "2026-08-03T21:54:45.063Z",
+  "labels": [
+    "Featured",
+    "Trending",
+    "Sponsored"
+  ],
+  "surfaces": [
+    "CurrencySearch",
+    "MelegaTokenSelector",
+    "FeaturedProjectsRail",
+    "SponsoredSuggestionsStrip"
+  ]
+}

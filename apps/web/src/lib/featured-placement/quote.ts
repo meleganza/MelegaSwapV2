@@ -1,6 +1,6 @@
-import { FEATURED_OFFER, FEATURED_PAYMENT_TOKENS, type FeaturedPayAsset } from './constants'
+import { FEATURED_OFFER, FEATURED_PAYMENT_TOKENS, getFeaturedPackage, type FeaturedPayAsset } from './constants'
 import type { FeaturedQuote } from './types'
-import { updateFeaturedOrder } from './orderStore'
+import { getFeaturedOrder, updateFeaturedOrder } from './orderStore'
 
 function toRawAmount(human: number, decimals: number): string {
   const [whole, frac = ''] = human.toFixed(decimals).split('.')
@@ -18,7 +18,9 @@ export function buildFeaturedQuote(input: {
   quoteSource: string
 }): FeaturedQuote {
   const meta = FEATURED_PAYMENT_TOKENS[input.paymentAsset]
-  const usd = FEATURED_OFFER.usdPrice
+  const order = getFeaturedOrder(input.orderId)
+  const pkg = getFeaturedPackage(order?.packageId)
+  const usd = order?.usdReferenceAmount ?? pkg.usdPrice
   let unit = input.unitPriceUsd
   let source = input.quoteSource
 

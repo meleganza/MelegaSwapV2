@@ -45,4 +45,5 @@ debug.log*
 data/bsc-indexer/
 data/melega-indexer/
 data/featured-orders/
+data/trend-boost-orders/
 data/liquidity-builder-indexer/

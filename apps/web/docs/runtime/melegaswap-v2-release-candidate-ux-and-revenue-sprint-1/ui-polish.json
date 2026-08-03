@@ -1,0 +1,7 @@
+{
+  "schema": "melegaswap.v2.rc-sprint-1.ui-polish.v1",
+  "capturedAt": "2026-08-03T21:54:45.063Z",
+  "spacingCardsSkeletons": "MonetizationStates + card gaps 10px + responsive package chips",
+  "loadingErrors": "MonetizationSkeleton / MonetizationError / WalletFlowStatus",
+  "responsive": "Package chips wrap; Featured rail keeps horizontal snap on tablet/mobile"
+}

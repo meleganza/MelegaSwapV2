@@ -26,8 +26,13 @@ export function isRotationEligible(order: FeaturedOrder, now = new Date()): bool
   return true
 }
 
-export function scheduleFeaturedWindow(from = new Date(), days = 7): { start: string; end: string } {
+export function scheduleFeaturedWindow(
+  from = new Date(),
+  daysOrMs: number = 7,
+  unit: 'days' | 'ms' = 'days',
+): { start: string; end: string } {
   const start = new Date(from)
-  const end = new Date(from.getTime() + days * 24 * 60 * 60 * 1000)
+  const durationMs = unit === 'ms' ? daysOrMs : daysOrMs * 24 * 60 * 60 * 1000
+  const end = new Date(from.getTime() + durationMs)
   return { start: start.toISOString(), end: end.toISOString() }
 }

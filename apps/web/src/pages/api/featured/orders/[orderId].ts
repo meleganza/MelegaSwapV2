@@ -77,6 +77,7 @@ const handler: NextApiHandler = async (req, res) => {
           tokenAmountRaw: quote.tokenAmountRaw,
           tokenAmount: quote.tokenAmount,
           quoteExpiration: quote.quoteExpiration,
+          usdReferenceAmount: quote.usdReferenceAmount,
         })
         updateFeaturedOrder(orderId, { state: 'AWAITING_WALLET' })
         return res.status(200).json({ quote, prepared })
@@ -121,7 +122,8 @@ const handler: NextApiHandler = async (req, res) => {
         })
         return res.status(400).json({ error: validation.reason, validation, order: failed })
       }
-      const window = scheduleFeaturedWindow(new Date(), FEATURED_OFFER.durationDays)
+      const durationMs = current.durationMs || FEATURED_OFFER.durationDays * 24 * 60 * 60 * 1000
+      const window = scheduleFeaturedWindow(new Date(), durationMs, 'ms')
       const confirmed = updateFeaturedOrder(orderId, {
         state: 'ELIGIBILITY_PENDING',
         paymentStatus: 'confirmed',

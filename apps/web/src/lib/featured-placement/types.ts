@@ -1,4 +1,4 @@
-import type { CashbackState, FeaturedOrderState, FeaturedPayAsset } from './constants'
+import type { CashbackState, FeaturedOrderState, FeaturedPackageId, FeaturedPayAsset } from './constants'
 
 export type FeaturedOrder = {
   schema: 'melega.featured-home-order.v1'
@@ -8,6 +8,8 @@ export type FeaturedOrder = {
   projectSlug: string | null
   projectContract: string | null
   buyerWallet: string
+  packageId?: FeaturedPackageId
+  durationMs?: number
   paymentAsset: FeaturedPayAsset
   usdReferenceAmount: number
   tokenAmount: string | null

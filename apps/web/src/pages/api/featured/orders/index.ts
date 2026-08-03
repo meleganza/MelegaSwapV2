@@ -28,6 +28,13 @@ const handler: NextApiHandler = async (req, res) => {
         durationDays: FEATURED_OFFER.durationDays,
         treasuryWallet: FEATURED_OFFER.treasuryWallet,
         acceptedAssets: FEATURED_OFFER.acceptedAssets,
+        packages: FEATURED_OFFER.packages.map((p) => ({
+          id: p.id,
+          label: p.shortLabel,
+          usdPrice: p.usdPrice,
+          durationLabel: p.durationLabel,
+          isDefault: Boolean(p.isDefault),
+        })),
       },
       orders,
     })
@@ -41,6 +48,7 @@ const handler: NextApiHandler = async (req, res) => {
     const projectContract = body.projectContract ? String(body.projectContract).trim() : null
     const projectSlug = body.projectSlug ? String(body.projectSlug).trim() : null
     const sourceFlow = body.sourceFlow || 'other'
+    const packageId = body.packageId ? String(body.packageId).trim() : FEATURED_OFFER.defaultPackageId
 
     if (!projectId || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
       return res.status(400).json({ error: 'projectId and buyerWallet (0x…) required' })
@@ -59,6 +67,7 @@ const handler: NextApiHandler = async (req, res) => {
       buyerWallet,
       paymentAsset,
       sourceFlow,
+      packageId,
     })
     return res.status(201).json({ order })
   }

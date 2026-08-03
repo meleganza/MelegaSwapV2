@@ -113,7 +113,34 @@
         "marcoCashbackPercent": 5,
         "marcoCashbackUnit": "M-Credits"
       },
+      "packages": [
+        { "id": "featured_24h", "durationLabel": "24 hours", "usd": 29 },
+        { "id": "featured_72h", "durationLabel": "72 hours", "usd": 59 },
+        { "id": "featured_1w", "durationLabel": "1 week", "usd": 99, "default": true },
+        { "id": "featured_1m", "durationLabel": "1 month", "usd": 249 }
+      ],
       "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b"
+    },
+    "trendBoost": {
+      "id": "trend_boost",
+      "fee": {
+        "kind": "fixed_usd_packages",
+        "acceptedAssets": [
+          "BNB",
+          "USDT",
+          "USDC",
+          "MARCO"
+        ]
+      },
+      "packages": [
+        { "id": "trend_1h", "durationLabel": "1 hour", "usd": 9 },
+        { "id": "trend_3h", "durationLabel": "3 hours", "usd": 19 },
+        { "id": "trend_6h", "durationLabel": "6 hours", "usd": 29, "default": true },
+        { "id": "trend_12h", "durationLabel": "12 hours", "usd": 49 },
+        { "id": "trend_24h", "durationLabel": "24 hours", "usd": 79 }
+      ],
+      "destination": "0xb6436EF4c7f76bE0f26c0C5C9dB72F2689abF65b",
+      "notes": "RC Sprint 1 commercial Trend Boost — treasury direct settlement. No protocol change."
     },
     "liquidityBuilder": {
       "id": "liquidity_builder",

@@ -8,6 +8,7 @@ import { LIST_CREATE_TOKEN_AVAILABLE, listOne, type ListIntent } from './listTok
 import { useListIntent } from './useListIntent'
 import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
 import { ListFeaturedCheckout } from './ListFeaturedCheckout'
+import { ListTrendBoostCheckout } from './ListTrendBoostCheckout'
 import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
 import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
 import { buildReviewFacts } from './createToken/createTokenTx'
@@ -928,6 +929,13 @@ export const ListWorkspace: React.FC = () => {
             onOrderId={(id) => setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))}
             onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
           />
+          <ListTrendBoostCheckout
+            testId="list-claim-trend-boost"
+            projectId={filled(values.contract) ? `claim:${values.contract.toLowerCase()}` : ''}
+            projectContract={values.contract || null}
+            buyerWallet={values.wallet || null}
+            identityReady={filled(values.contract) && filled(values.wallet)}
+          />
         </FormStack>
       )
     }
@@ -997,25 +1005,43 @@ export const ListWorkspace: React.FC = () => {
             <Input value={values.token || ''} onChange={set('token')} placeholder="Token contract if you have one" />
           </Field>
           {listIntent === 'create-project' ? (
-            <ListFeaturedCheckout
-              testId="list-create-featured-home-promotion"
-              sourceFlow="create-project"
-              projectId={
-                filled(values.name)
-                  ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-                  : ''
-              }
-              projectSlug={
-                filled(values.name)
-                  ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                  : null
-              }
-              projectContract={values.token || null}
-              buyerWallet={values.wallet || null}
-              identityReady={filled(values.name) && filled(values.category) && filled(values.description)}
-              onOrderId={(id) => setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))}
-              onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
-            />
+            <>
+              <ListFeaturedCheckout
+                testId="list-create-featured-home-promotion"
+                sourceFlow="create-project"
+                projectId={
+                  filled(values.name)
+                    ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+                    : ''
+                }
+                projectSlug={
+                  filled(values.name)
+                    ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                    : null
+                }
+                projectContract={values.token || null}
+                buyerWallet={values.wallet || null}
+                identityReady={filled(values.name) && filled(values.category) && filled(values.description)}
+                onOrderId={(id) => setValues((v) => ({ ...v, featuredOrderId: id || '', featuredHome: id ? '1' : '' }))}
+                onDeclined={() => setValues((v) => ({ ...v, featuredHome: '', featuredOrderId: '' }))}
+              />
+              <ListTrendBoostCheckout
+                testId="list-create-trend-boost"
+                projectId={
+                  filled(values.name)
+                    ? `create:${values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+                    : ''
+                }
+                projectSlug={
+                  filled(values.name)
+                    ? values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                    : null
+                }
+                projectContract={values.token || null}
+                buyerWallet={values.wallet || null}
+                identityReady={filled(values.name) && filled(values.category) && filled(values.description)}
+              />
+            </>
           ) : null}
         </FormStack>
       )

@@ -1,7 +1,14 @@
 import fs from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
-import { CASHBACK_STATES, FEATURED_OFFER, type FeaturedOrderState, type FeaturedPayAsset } from './constants'
+import {
+  CASHBACK_STATES,
+  FEATURED_OFFER,
+  getFeaturedPackage,
+  type FeaturedOrderState,
+  type FeaturedPackageId,
+  type FeaturedPayAsset,
+} from './constants'
 import type { FeaturedOrder, RotationCandidate } from './types'
 import { marcoCashbackAmount, resolveCashbackState } from './cashback'
 import { isRotationEligible } from './eligibility'
@@ -72,9 +79,11 @@ export function createFeaturedOrder(input: {
   buyerWallet: string
   paymentAsset: FeaturedPayAsset
   sourceFlow: FeaturedOrder['sourceFlow']
+  packageId?: FeaturedPackageId | string | null
 }): FeaturedOrder {
   const now = new Date().toISOString()
   const cashback = resolveCashbackState(input.paymentAsset)
+  const pkg = getFeaturedPackage(input.packageId)
   const order: FeaturedOrder = {
     schema: 'melega.featured-home-order.v1',
     orderId: `feat_${randomUUID().replace(/-/g, '').slice(0, 24)}`,
@@ -83,8 +92,10 @@ export function createFeaturedOrder(input: {
     projectSlug: input.projectSlug ?? null,
     projectContract: input.projectContract ?? null,
     buyerWallet: input.buyerWallet.toLowerCase(),
+    packageId: pkg.id as FeaturedPackageId,
+    durationMs: pkg.durationMs,
     paymentAsset: input.paymentAsset,
-    usdReferenceAmount: FEATURED_OFFER.usdPrice,
+    usdReferenceAmount: pkg.usdPrice,
     tokenAmount: null,
     tokenAmountRaw: null,
     quoteSource: null,

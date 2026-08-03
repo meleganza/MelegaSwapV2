@@ -17,6 +17,7 @@ import {
   formatFeaturedVolume,
   useFeaturedProjectMarkets,
 } from './useFeaturedProjectMarkets'
+import { PlacementLabel } from 'views/shared/monetization/PlacementLabel'
 
 const halo = keyframes`
   0%, 100% {
@@ -263,7 +264,10 @@ export const FeaturedProjectsRail: React.FC = () => {
                   radius="circle"
                 />
                 <Names>
-                  <Name>{p.displayName}</Name>
+                  <Name>
+                    {p.displayName}{' '}
+                    <PlacementLabel kind="featured" />
+                  </Name>
                   <Meta>
                     {p.symbol} · BNB Smart Chain
                   </Meta>

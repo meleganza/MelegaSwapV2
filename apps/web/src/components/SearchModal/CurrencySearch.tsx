@@ -21,6 +21,8 @@ import useTokenComparator from './sorting'
 import { getSwapSound } from './swapSound'
 
 import ImportRow from './ImportRow'
+import { SponsoredSuggestionsStrip } from 'views/shared/monetization/SponsoredSuggestionsStrip'
+import { RC_COPY } from 'lib/monetization/copy'
 
 interface CurrencySearchProps {
   selectedCurrency?: Currency | null
@@ -215,7 +217,7 @@ function CurrencySearch({
     ) : (
       <Column style={{ padding: '20px', height: '100%' }}>
         <Text color="textSubtle" textAlign="center" mb="20px">
-          {t('No results found.')}
+          {t(RC_COPY.noResults)}
         </Text>
       </Column>
     )
@@ -244,7 +246,7 @@ function CurrencySearch({
           <Row>
             <Input
               id="token-search-input"
-              placeholder={t('Search name or paste address')}
+              placeholder={t(RC_COPY.searchPlaceholder)}
               scale="lg"
               autoComplete="off"
               value={searchQuery}
@@ -254,6 +256,16 @@ function CurrencySearch({
             />
           </Row>
         )}
+        <SponsoredSuggestionsStrip
+          query={debouncedQuery}
+          onSelect={(s) => {
+            if (!s.address || !chainId) return
+            const match = filteredSortedTokens.find(
+              (tok) => tok.address.toLowerCase() === s.address!.toLowerCase(),
+            )
+            if (match) handleCurrencySelect(match)
+          }}
+        />
         {showCommonBases && (
           <CommonBases
             chainId={chainId}

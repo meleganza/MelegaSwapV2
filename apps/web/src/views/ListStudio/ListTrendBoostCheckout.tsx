@@ -1,23 +1,21 @@
 /**
- * Optional Featured Home checkout — RC Sprint 1 packages (24h / 72h / 1w / 1m).
- * Never blocks the parent flow when declined or payment fails.
+ * Optional Trend Boost checkout — packages 1h / 3h / 6h / 12h / 24h.
  */
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { FEATURED_OFFER, type FeaturedPayAsset } from 'lib/featured-placement/constants'
-import { cashbackUserMessage } from 'lib/featured-placement/cashback'
+import type { FeaturedPayAsset } from 'lib/featured-placement/constants'
 import { RC_COPY, type WalletFlowStage } from 'lib/monetization/copy'
-import { FEATURED_PACKAGES, type FeaturedPackageId } from 'lib/monetization/packages'
+import { TREND_BOOST_PACKAGES, type TrendBoostPackageId } from 'lib/monetization/packages'
 import { PaymentRouterPicker } from 'views/shared/monetization/PaymentRouterPicker'
 import { WalletFlowStatus } from 'views/shared/monetization/WalletFlowStatus'
 
 const Card = styled.section`
   box-sizing: border-box;
   border-radius: 14px;
-  border: 1px solid rgba(244, 196, 48, 0.28);
+  border: 1px solid rgba(125, 211, 252, 0.28);
   background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(244, 196, 48, 0.12), transparent 55%),
-    linear-gradient(165deg, rgba(22, 20, 12, 0.98) 0%, rgba(12, 12, 12, 0.98) 100%);
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+    linear-gradient(165deg, rgba(12, 20, 28, 0.98) 0%, rgba(12, 12, 12, 0.98) 100%);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -52,9 +50,9 @@ const Btn = styled.button<{ $primary?: boolean }>`
   padding: 0 14px;
   border-radius: 10px;
   border: 1px solid
-    ${({ $primary }) => ($primary ? 'rgba(244, 196, 48, 0.65)' : 'rgba(255,255,255,0.14)')};
-  background: ${({ $primary }) => ($primary ? 'rgba(244, 196, 48, 0.18)' : 'transparent')};
-  color: ${({ $primary }) => ($primary ? '#f2c84c' : '#ddd')};
+    ${({ $primary }) => ($primary ? 'rgba(125, 211, 252, 0.65)' : 'rgba(255,255,255,0.14)')};
+  background: ${({ $primary }) => ($primary ? 'rgba(56, 189, 248, 0.16)' : 'transparent')};
+  color: ${({ $primary }) => ($primary ? '#7dd3fc' : '#ddd')};
   font-size: 12px;
   font-weight: 700;
   &:disabled {
@@ -78,78 +76,66 @@ const Err = styled.p`
 
 type Props = {
   testId?: string
-  sourceFlow: 'claim-project' | 'create-project'
   projectId: string
   projectSlug?: string | null
   projectContract?: string | null
   buyerWallet?: string | null
-  identityReady: boolean
+  identityReady?: boolean
   onOrderId?: (orderId: string | null) => void
   onDeclined?: () => void
 }
 
-export const ListFeaturedCheckout: React.FC<Props> = ({
-  testId = 'list-featured-checkout',
-  sourceFlow,
+export const ListTrendBoostCheckout: React.FC<Props> = ({
+  testId = 'list-trend-boost-checkout',
   projectId,
   projectSlug,
   projectContract,
   buyerWallet,
-  identityReady,
+  identityReady = true,
   onOrderId,
   onDeclined,
 }) => {
-  const [wantFeatured, setWantFeatured] = useState<boolean | null>(null)
   const [pay, setPay] = useState<FeaturedPayAsset>('BNB')
-  const [packageId, setPackageId] = useState<FeaturedPackageId>(FEATURED_OFFER.defaultPackageId)
+  const [packageId, setPackageId] = useState<TrendBoostPackageId>('trend_6h')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [status, setStatus] = useState<string>('idle')
+  const [status, setStatus] = useState('idle')
   const [walletStage, setWalletStage] = useState<WalletFlowStage>('idle')
   const [orderId, setOrderId] = useState<string | null>(null)
   const [quoteSummary, setQuoteSummary] = useState<string | null>(null)
+  const [declined, setDeclined] = useState(false)
 
-  const selectedPkg = FEATURED_PACKAGES.find((p) => p.id === packageId) ?? FEATURED_PACKAGES[2]
+  const selectedPkg = TREND_BOOST_PACKAGES.find((p) => p.id === packageId) ?? TREND_BOOST_PACKAGES[2]
 
   const decline = () => {
-    setWantFeatured(false)
+    setDeclined(true)
     setOrderId(null)
     onOrderId?.(null)
     onDeclined?.()
     setStatus('declined')
-    setWalletStage('idle')
   }
 
   const runCheckout = useCallback(async () => {
     setError(null)
-    if (!identityReady) {
-      setError('Finish project identity before buying Featured placement.')
-      return
-    }
     if (!buyerWallet || !/^0x[a-fA-F0-9]{40}$/.test(buyerWallet)) {
       setWalletStage('connect')
       setError(RC_COPY.connectWallet)
       return
     }
-    if (!projectContract && !projectSlug) {
-      setError('Project contract or slug required.')
-      return
-    }
     setBusy(true)
-    setWantFeatured(true)
     try {
       setWalletStage('confirm')
-      const createRes = await fetch('/api/featured/orders', {
+      const createRes = await fetch('/api/trend-boost/orders', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
+          action: 'create',
           projectId,
           projectSlug,
           projectContract,
           buyerWallet,
           paymentAsset: pay,
           packageId,
-          sourceFlow,
         }),
       })
       const created = await createRes.json()
@@ -158,17 +144,15 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       setOrderId(id)
       onOrderId?.(id)
 
-      const quoteRes = await fetch(`/api/featured/orders/${id}`, {
+      const quoteRes = await fetch('/api/trend-boost/orders', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action: 'quote', paymentAsset: pay }),
+        body: JSON.stringify({ action: 'quote', orderId: id, paymentAsset: pay }),
       })
       const quoted = await quoteRes.json()
       if (!quoteRes.ok) throw new Error(quoted.error || 'QUOTE_FAILED')
       const { quote, prepared } = quoted
-      setQuoteSummary(
-        `${quote.tokenAmount} ${pay} → ${FEATURED_OFFER.treasuryWallet.slice(0, 6)}…${FEATURED_OFFER.treasuryWallet.slice(-4)} · expires ${new Date(quote.quoteExpiration).toLocaleTimeString()}`,
-      )
+      setQuoteSummary(`${quote.tokenAmount} ${pay} · ${selectedPkg.durationLabel}`)
       setStatus('awaiting_wallet')
 
       const eth = (window as unknown as { ethereum?: { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> } })
@@ -177,7 +161,6 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
         setWalletStage('error')
         throw new Error(RC_COPY.walletUnavailable)
       }
-
       const chainIdHex = (await eth.request({ method: 'eth_chainId' })) as string
       if (Number.parseInt(chainIdHex, 16) !== 56) {
         setWalletStage('switch_network')
@@ -201,71 +184,32 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e)
         if (/reject|denied|cancel/i.test(msg)) {
-          await fetch(`/api/featured/orders/${id}`, {
+          await fetch('/api/trend-boost/orders', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ action: 'cancel' }),
+            body: JSON.stringify({ action: 'cancel', orderId: id }),
           })
-          setStatus('cancelled')
           setWalletStage('cancelled')
+          setStatus('cancelled')
           setError(RC_COPY.paymentCancelled)
           return
         }
         throw e
       }
 
-      await fetch(`/api/featured/orders/${id}`, {
+      await fetch('/api/trend-boost/orders', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action: 'submit', transactionHash: txHash }),
+        body: JSON.stringify({ action: 'submit', orderId: id, transactionHash: txHash }),
       })
-      setStatus('submitted')
-
-      let receipt: Record<string, unknown> | null = null
-      for (let i = 0; i < 20; i += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        receipt = (await eth.request({
-          method: 'eth_getTransactionReceipt',
-          params: [txHash],
-        })) as Record<string, unknown> | null
-        if (receipt) break
-        // eslint-disable-next-line no-await-in-loop
-        await new Promise((r) => setTimeout(r, 1500))
-      }
-      if (!receipt) {
-        setError('Payment submitted — receipt not yet available. Featured stays pending.')
-        setStatus('submitted_pending_receipt')
-        return
-      }
-
-      const confirmRes = await fetch(`/api/featured/orders/${id}`, {
+      await fetch('/api/trend-boost/orders', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          action: 'confirm-receipt',
-          transactionHash: txHash,
-          receipt: {
-            to: receipt.to,
-            value: (receipt as { value?: string }).value ?? null,
-            status: receipt.status,
-            logs: receipt.logs,
-          },
-        }),
+        body: JSON.stringify({ action: 'confirm', orderId: id }),
       })
-      const confirmed = await confirmRes.json()
-      if (!confirmRes.ok) {
-        setStatus('payment_failed')
-        setWalletStage('error')
-        setError(confirmed.error || 'RECEIPT_INVALID — Featured not activated; flow may continue.')
-        return
-      }
       setStatus('confirmed')
       setWalletStage('success')
-      setQuoteSummary(
-        `Payment confirmed. Featured eligibility pending · order ${id}${
-          pay === 'MARCO' ? ` · ${cashbackUserMessage('ELIGIBLE_PENDING')}` : ''
-        }`,
-      )
+      setQuoteSummary(`Trend Boost active · ${selectedPkg.durationLabel} · ${txHash.slice(0, 10)}…`)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
       setStatus('error')
@@ -275,66 +219,54 @@ export const ListFeaturedCheckout: React.FC<Props> = ({
     }
   }, [
     buyerWallet,
-    identityReady,
     onOrderId,
     packageId,
     pay,
     projectContract,
     projectId,
     projectSlug,
-    sourceFlow,
+    selectedPkg.durationLabel,
   ])
 
   return (
     <Card
       data-testid={testId}
-      data-featured-home-promo="checkout"
-      data-featured-optional="1"
-      data-featured-status={status}
-      data-featured-order={orderId || undefined}
-      data-featured-package={packageId}
+      data-trend-boost="checkout"
+      data-trend-status={status}
+      data-trend-package={packageId}
+      data-trend-order={orderId || undefined}
     >
-      <Title>{RC_COPY.featuredTitle}</Title>
-      <Meta>{RC_COPY.featuredBody}</Meta>
+      <Title>{RC_COPY.trendBoostTitle}</Title>
+      <Meta>{RC_COPY.trendBoostBody}</Meta>
       <PaymentRouterPicker
-        packages={FEATURED_PACKAGES}
+        packages={TREND_BOOST_PACKAGES}
         packageId={packageId}
-        onPackageChange={(id) => setPackageId(id as FeaturedPackageId)}
+        onPackageChange={(id) => setPackageId(id as TrendBoostPackageId)}
         asset={pay}
         onAssetChange={(a) => setPay(a as FeaturedPayAsset)}
         testId={`${testId}-router`}
       />
-      {pay === 'MARCO' ? (
-        <Note data-testid={`${testId}-marco-cashback`}>
-          {FEATURED_OFFER.marcoCashbackPct}% M-Credits promotional cashback on MARCO payments (pending
-          fulfillment).
-        </Note>
-      ) : (
-        <Note>{RC_COPY.treasuryNote}</Note>
-      )}
+      <Note>{RC_COPY.treasuryNote}</Note>
       <WalletFlowStatus stage={walletStage} />
       <Row>
-        <Btn type="button" onClick={decline} data-testid={`${testId}-decline`} disabled={busy}>
-          {RC_COPY.continueWithoutFeatured}
+        <Btn type="button" onClick={decline} disabled={busy} data-testid={`${testId}-decline`}>
+          {RC_COPY.continueWithoutTrendBoost}
         </Btn>
         <Btn
           type="button"
           $primary
+          disabled={busy || !identityReady}
           onClick={() => void runCheckout()}
           data-testid={`${testId}-purchase`}
-          disabled={busy || !identityReady}
         >
-          {busy ? RC_COPY.loading : `Get Featured · $${selectedPkg.usdPrice}`}
+          {busy ? RC_COPY.loading : `Boost · $${selectedPkg.usdPrice}`}
         </Btn>
       </Row>
-      {wantFeatured === false ? (
-        <Note data-testid={`${testId}-declined`}>Featured declined — flow continues.</Note>
-      ) : null}
+      {declined ? <Note data-testid={`${testId}-declined`}>Trend Boost declined.</Note> : null}
       {quoteSummary ? <Note data-testid={`${testId}-quote`}>{quoteSummary}</Note> : null}
       {error ? <Err data-testid={`${testId}-error`}>{error}</Err> : null}
-      {!identityReady ? <Note>Complete project identity before Featured purchase.</Note> : null}
     </Card>
   )
 }
 
-export default ListFeaturedCheckout
+export default ListTrendBoostCheckout

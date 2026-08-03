@@ -31,12 +31,14 @@ export function prepareFeaturedPayment(input: {
   tokenAmountRaw: string
   tokenAmount: string
   quoteExpiration: string
+  usdReferenceAmount?: number
 }): PreparedFeaturedPayment {
   if (isQuoteExpired(input.quoteExpiration)) {
     throw new Error('QUOTE_EXPIRED')
   }
   const meta = FEATURED_PAYMENT_TOKENS[input.paymentAsset]
   const treasury = FEATURED_OFFER.treasuryWallet
+  const usdReferenceAmount = input.usdReferenceAmount ?? FEATURED_OFFER.usdPrice
 
   if (meta.kind === 'native') {
     return {
@@ -48,7 +50,7 @@ export function prepareFeaturedPayment(input: {
       tokenAddress: null,
       tokenAmount: input.tokenAmount,
       tokenAmountRaw: input.tokenAmountRaw,
-      usdReferenceAmount: FEATURED_OFFER.usdPrice,
+      usdReferenceAmount,
       quoteExpiration: input.quoteExpiration,
       kind: 'native',
     }
@@ -65,7 +67,7 @@ export function prepareFeaturedPayment(input: {
     tokenAddress: meta.address,
     tokenAmount: input.tokenAmount,
     tokenAmountRaw: input.tokenAmountRaw,
-    usdReferenceAmount: FEATURED_OFFER.usdPrice,
+    usdReferenceAmount,
     quoteExpiration: input.quoteExpiration,
     kind: 'erc20',
   }

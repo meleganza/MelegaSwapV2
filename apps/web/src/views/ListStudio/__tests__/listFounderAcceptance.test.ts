@@ -65,9 +65,10 @@ describe('List Founder Acceptance', () => {
 
   it('Featured offer is optional with canon terms in List checkout', () => {
     const checkout = load('ListFeaturedCheckout.tsx')
-    expect(checkout).toContain('Continue without Featured placement')
-    expect(checkout).toContain('Get Featured for $')
+    expect(checkout).toContain('continueWithoutFeatured')
+    expect(checkout).toContain('Get Featured · $')
     expect(checkout).toContain('data-featured-optional="1"')
+    expect(checkout).toContain('FEATURED_PACKAGES')
     expect(FEATURED_OFFER.usdPrice).toBe(99)
     expect(FEATURED_OFFER.durationDays).toBe(7)
     expect(checkout).not.toMatch(/TreasuryRuntime|treasury-runtime/i)

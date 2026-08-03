@@ -1,10 +1,15 @@
 import { MELEGA_TREASURY_WALLET_ADDRESS } from 'config/dexEconomicAuthority'
 import { FEATURED_FEE_FROM_SCHEDULE } from 'config/constants/feeSchedule'
+import {
+  FEATURED_PACKAGES,
+  getFeaturedPackage,
+  type FeaturedPackageId,
+} from 'lib/monetization/packages'
 
 /** Founder-canon Featured Home commercial offer — aligned to fee-schedule.json. */
 export const FEATURED_OFFER = {
   schema: 'melega.featured-home-offer.v1',
-  title: 'Get Featured on the Melega DEX Home Page',
+  title: 'Get Featured on Home',
   usdPrice: FEATURED_FEE_FROM_SCHEDULE.usd,
   durationDays: FEATURED_FEE_FROM_SCHEDULE.durationDays,
   visibilityModel: 'Rotating set used by the four Featured Project cards on Home',
@@ -16,7 +21,13 @@ export const FEATURED_OFFER = {
   chainId: 56,
   quoteTtlMs: 10 * 60 * 1000,
   cardSlots: 4,
+  /** RC Sprint 1 package catalog (default remains 1 week / $99). */
+  packages: FEATURED_PACKAGES,
+  defaultPackageId: 'featured_1w' as FeaturedPackageId,
 } as const
+
+export { getFeaturedPackage }
+export type { FeaturedPackageId }
 
 export type FeaturedPayAsset = (typeof FEATURED_OFFER.acceptedAssets)[number]
 
