@@ -1,0 +1,32 @@
+{
+  "mission": "MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH",
+  "compactLabels": {
+    "56": "BSC",
+    "8453": "Base",
+    "137": "POL",
+    "1": "ETH",
+    "42161": "ARB",
+    "43114": "AVAX"
+  },
+  "tooltipFullName": true,
+  "neverShowInPill": "BNB Smart Chain",
+  "modal": {
+    "maxWidthPx": 440,
+    "sections": [
+      "LIVE",
+      "PREPARING"
+    ],
+    "smallCards": true
+  },
+  "browser": {
+    "open": true,
+    "live": true,
+    "preparing": true,
+    "cards": 6,
+    "hasFullBnbInCards": false,
+    "hasBsc": true,
+    "hasPol": true,
+    "width": 440
+  },
+  "pass": true
+}

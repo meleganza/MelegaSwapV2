@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { MelegaSearchBar, colors, typography } from 'design-system/melega'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import {
   buildGlobalSearchIndex,
   globalSearchCategoryLabel,
@@ -16,7 +18,7 @@ const Root = styled.div`
   flex-shrink: 1;
 
   @media (max-width: 1279px) {
-    width: clamp(180px, 16vw, 210px);
+    width: clamp(160px, 15vw, 200px);
   }
 
   @media (max-width: 1023px) {
@@ -29,8 +31,9 @@ const Dropdown = styled.div`
   top: calc(100% + 8px);
   left: 0;
   right: 0;
+  min-width: min(360px, 92vw);
   z-index: 200;
-  max-height: 420px;
+  max-height: 460px;
   overflow: auto;
   background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -39,17 +42,13 @@ const Dropdown = styled.div`
   padding: 8px;
 `
 
-const ResultButton = styled.button<{ $active?: boolean }>`
+const ResultRow = styled.div<{ $active?: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  gap: 8px;
   width: 100%;
-  border: none;
   border-radius: 10px;
-  padding: 10px 12px;
-  text-align: left;
-  cursor: pointer;
+  padding: 10px 10px 8px;
   background: ${({ $active }) => ($active ? 'rgba(244, 196, 48, 0.12)' : 'transparent')};
   color: ${colors.textPrimary};
   font-family: ${typography.fontFamily.body};
@@ -59,25 +58,106 @@ const ResultButton = styled.button<{ $active?: boolean }>`
   }
 `
 
+const ResultMain = styled.button`
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+`
+
+const LogoWrap = styled.span`
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+`
+
+const TextCol = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`
+
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+`
+
 const ResultLabel = styled.span`
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const Verified = styled.span`
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #6ddc8c;
+  letter-spacing: 0.02em;
 `
 
 const ResultMeta = styled.span`
   font-size: 12px;
   color: #8f8f8f;
   line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const CategoryTag = styled.span`
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #F4C430;
+  color: #f4c430;
+`
+
+const Actions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 38px;
+`
+
+const ActionBtn = styled.button`
+  appearance: none;
+  cursor: pointer;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-size: 11px;
+  font-weight: 650;
+
+  &:hover {
+    border-color: rgba(244, 196, 48, 0.4);
+    color: #f4c430;
+  }
 `
 
 const EmptyState = styled.div`
@@ -98,10 +178,10 @@ const GlobalSearch: React.FC = () => {
   const results = useMemo(() => searchGlobal(index, query), [index, query])
 
   const navigateTo = useCallback(
-    (result: GlobalSearchResult) => {
+    (href: string) => {
       setOpen(false)
       setQuery('')
-      void router.push(result.href)
+      void router.push(href)
     },
     [router],
   )
@@ -156,7 +236,7 @@ const GlobalSearch: React.FC = () => {
     if (event.key === 'Enter') {
       event.preventDefault()
       const target = results[activeIndex] ?? results[0]
-      if (target) navigateTo(target)
+      if (target) navigateTo(target.href)
     }
   }
 
@@ -177,20 +257,55 @@ const GlobalSearch: React.FC = () => {
           {results.length === 0 ? (
             <EmptyState data-global-search-empty>No results found</EmptyState>
           ) : (
-            results.map((result, index) => (
-              <ResultButton
+            results.map((result: GlobalSearchResult, index) => (
+              <ResultRow
                 key={result.id}
-                type="button"
                 data-global-search-result
                 data-result-id={result.id}
+                data-result-chain={result.chainId ?? undefined}
+                data-result-address={result.address ?? undefined}
                 $active={index === activeIndex}
                 onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => navigateTo(result)}
               >
-                <ResultLabel>{result.label}</ResultLabel>
-                {result.subtitle && <ResultMeta>{result.subtitle}</ResultMeta>}
-                <CategoryTag>{globalSearchCategoryLabel(result.category)}</CategoryTag>
-              </ResultButton>
+                <ResultMain type="button" onClick={() => navigateTo(result.href)}>
+                  <LogoWrap aria-hidden>
+                    <MelegaTokenAvatar
+                      name={result.label}
+                      symbol={result.label}
+                      size={28}
+                      address={result.address ?? undefined}
+                      chainId={result.chainId ?? undefined}
+                      logoURI={result.logoUrl ?? undefined}
+                      radius="circle"
+                    />
+                  </LogoWrap>
+                  <TextCol>
+                    <TitleRow>
+                      <ResultLabel>{result.label}</ResultLabel>
+                      {result.chainId != null ? <MelegaExploreChainBadge chainId={result.chainId} /> : null}
+                      {result.verified ? <Verified>Verified</Verified> : null}
+                    </TitleRow>
+                    {result.subtitle ? <ResultMeta>{result.subtitle}</ResultMeta> : null}
+                    <CategoryTag>{globalSearchCategoryLabel(result.category)}</CategoryTag>
+                  </TextCol>
+                </ResultMain>
+                {result.actions && result.actions.length > 0 ? (
+                  <Actions data-global-search-actions>
+                    {result.actions.map((action) => (
+                      <ActionBtn
+                        key={`${result.id}-${action.label}`}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigateTo(action.href)
+                        }}
+                      >
+                        {action.label}
+                      </ActionBtn>
+                    ))}
+                  </Actions>
+                ) : null}
+              </ResultRow>
             ))
           )}
         </Dropdown>

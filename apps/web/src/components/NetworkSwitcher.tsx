@@ -30,21 +30,21 @@ import { getMelegaChain, getMelegaPreparingChains } from 'config/melegaChainRegi
 import { MELEGA_CHAIN_A11Y_LABELS } from 'components/Logo/MelegaExploreChainBadge'
 
 /** Compact header labels — never spill into search / language / wallet. */
-const HEADER_CHAIN_COMPACT: Record<number, string> = {
+export const HEADER_CHAIN_COMPACT: Record<number, string> = {
   56: 'BSC',
   97: 'BSC',
   8453: 'Base',
-  137: 'Polygon',
+  137: 'POL',
   1: 'ETH',
   42161: 'ARB',
   43114: 'AVAX',
 }
 
-function headerChainLabel(chainId: number): string {
+export function headerChainLabel(chainId: number): string {
   return HEADER_CHAIN_COMPACT[chainId] ?? getMelegaChain(chainId)?.shortLabel ?? String(chainId)
 }
 
-function headerChainTitle(chainId: number): string {
+export function headerChainTitle(chainId: number): string {
   return MELEGA_CHAIN_A11Y_LABELS[chainId] ?? getMelegaChain(chainId)?.name ?? `Chain ${chainId}`
 }
 
@@ -103,7 +103,8 @@ const WrongNetworkSelect = ({ switchNetwork, chainId }) => {
   const localChainId = useLocalNetworkChain() || ChainId.BSC
   const [, setSessionChainId] = useSessionChainId()
 
-  const localChainName = chains.find((c) => c.id === localChainId)?.name ?? 'BSC'
+  const localChainName = headerChainLabel(localChainId)
+  const localChainTitle = headerChainTitle(localChainId)
 
   const [ref1, isHover] = useHover<HTMLButtonElement>()
 
@@ -120,8 +121,8 @@ const WrongNetworkSelect = ({ switchNetwork, chainId }) => {
       {chain && (
         <UserMenuItem ref={ref1} onClick={() => setSessionChainId(chain.id)} style={{ justifyContent: 'flex-start' }}>
           <ChainLogo chainId={chain.id} />
-          <Text color="secondary" bold pl="12px">
-            {chain.name}
+          <Text color="secondary" bold pl="12px" title={headerChainTitle(chain.id)}>
+            {headerChainLabel(chain.id)}
           </Text>
         </UserMenuItem>
       )}
@@ -130,7 +131,9 @@ const WrongNetworkSelect = ({ switchNetwork, chainId }) => {
       </Box>
       <UserMenuItem onClick={() => switchNetwork(localChainId)} style={{ justifyContent: 'flex-start' }}>
         <ChainLogo chainId={localChainId} />
-        <Text pl="12px">{localChainName}</Text>
+        <Text pl="12px" title={localChainTitle}>
+          {localChainName}
+        </Text>
       </UserMenuItem>
       <Button mx="16px" my="8px" scale="sm" onClick={() => switchNetwork(localChainId)}>
         {t('Switch network in wallet')}
@@ -192,7 +195,7 @@ export const NetworkSwitcher = () => {
     return (
       <Box height="100%" px="16px" data-network-status-pill>
         <Button scale="sm" onClick={() => switchNetworkAsync(ChainId.BSC)}>
-          Switch wallet to BNB Smart Chain
+          Switch wallet to BSC
         </Button>
       </Box>
     )

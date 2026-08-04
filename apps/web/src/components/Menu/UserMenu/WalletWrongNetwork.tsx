@@ -3,6 +3,8 @@ import { useTranslation } from '@pancakeswap/localization'
 import { Button, Text, Link, HelpIcon, Message, MessageText } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
+import { useLocalNetworkChain } from 'hooks/useActiveChainId'
+import { headerChainLabel, headerChainTitle } from 'components/NetworkSwitcher'
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -18,18 +20,24 @@ interface WalletWrongNetworkProps {
 const WalletWrongNetwork: React.FC<React.PropsWithChildren<WalletWrongNetworkProps>> = ({ onDismiss }) => {
   const { t } = useTranslation()
   const { switchNetworkAsync, canSwitch } = useSwitchNetwork()
+  const localChainId = useLocalNetworkChain() || ChainId.BSC
+  const targetLabel = headerChainLabel(localChainId)
+  const targetTitle = headerChainTitle(localChainId)
 
   const handleSwitchNetwork = async (): Promise<void> => {
-    await switchNetworkAsync(ChainId.BSC)
+    await switchNetworkAsync(localChainId)
     onDismiss?.()
   }
 
   return (
     <>
-      <Text mb="24px">{t('You’re connected to the wrong network.')}</Text>
+      <Text mb="12px">{t('You’re connected to the wrong network.')}</Text>
+      <Text mb="16px" fontSize="13px" color="textSubtle">
+        {t('This page expects')} {targetLabel} ({targetTitle}). {t('Switch network to continue — do not assume BSC.')}
+      </Text>
       {canSwitch ? (
-        <Button onClick={handleSwitchNetwork} mb="24px">
-          {t('Switch Network')}
+        <Button onClick={handleSwitchNetwork} mb="24px" data-testid="wallet-wrong-network-switch">
+          {t('Switch to')} {targetLabel}
         </Button>
       ) : (
         <Message variant="danger">

@@ -77,17 +77,18 @@ describe('wallet chain detection', () => {
 })
 
 describe('Switch Network modal redesign', () => {
-  it('has LIVE and COMING SOON sections with active highlight and Avalanche switchable', () => {
+  it('has LIVE and PREPARING sections with active highlight and Avalanche switchable', () => {
     const src = readFileSync(MODAL, 'utf8')
     expect(src).toContain('network-switch-live')
-    expect(src).toContain('network-switch-coming-soon')
+    expect(src).toContain('network-switch-preparing')
     expect(src).toContain('LIVE')
-    expect(src).toContain('COMING SOON')
-    expect(src).toContain("maxWidth: '700px'")
+    expect(src).toContain('PREPARING')
+    expect(src).toContain("maxWidth: '440px'")
     expect(src).toContain('data-active')
     expect(src).toContain('ChainCard')
     expect(src).toContain('switchNetwork(row.chainId)')
     expect(src).not.toMatch(/grid-template-columns:\s*auto auto auto auto auto/)
+    expect(src).not.toContain('BNB Smart Chain')
   })
 
   it('wagmi source registers avalanche1', () => {

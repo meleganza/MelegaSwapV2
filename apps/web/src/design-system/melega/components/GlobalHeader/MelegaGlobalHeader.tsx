@@ -260,8 +260,13 @@ const RightCluster = styled.div`
   [data-testid='melega-header-chain'],
   [data-network-status-pill] {
     flex-shrink: 0;
-    max-width: 110px;
+    max-width: 78px;
     overflow: hidden;
+  }
+
+  [data-testid='melega-header-chain'] button,
+  [data-testid='melega-header-chain'] [role='button'] {
+    max-width: 78px;
   }
 `
 

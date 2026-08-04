@@ -1,0 +1,28 @@
+{
+  "mission": "MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH",
+  "order": [
+    "Logo",
+    "Navigation",
+    "Search",
+    "Chain selector",
+    "Language",
+    "Wallet",
+    "Menu"
+  ],
+  "chainCompactMaxWidthPx": 78,
+  "noOverlap": true,
+  "browser": {
+    "brand": true,
+    "nav": true,
+    "search": true,
+    "chain": true,
+    "chainText": "BSC",
+    "hasFullBnbSmartChain": false,
+    "connect": true,
+    "overflow": true,
+    "placeholder": "Search tokens, projects, pools...",
+    "overlap": false,
+    "oops": false
+  },
+  "pass": true
+}

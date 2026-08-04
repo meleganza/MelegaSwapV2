@@ -1,0 +1,11 @@
+{
+  "mission": "MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH",
+  "shows": [
+    "connected address",
+    "compact chain",
+    "status"
+  ],
+  "wrongNetwork": "targets local/expected chain \u2014 never hardcodes BSC for every failure",
+  "errorBoundary": "what happened + retry + technical details; no Switch to BSC Network",
+  "pass": true
+}

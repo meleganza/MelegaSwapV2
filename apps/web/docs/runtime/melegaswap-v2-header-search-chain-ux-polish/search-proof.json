@@ -1,0 +1,64 @@
+{
+  "mission": "MELEGASWAP_V2_HEADER_SEARCH_CHAIN_UX_POLISH",
+  "placeholder": "Search tokens, projects, pools...",
+  "categories": [
+    "Tokens",
+    "Projects",
+    "Pools",
+    "Farms",
+    "Contracts"
+  ],
+  "identity": "chainId + address",
+  "neverMergeBySymbol": true,
+  "resultFields": [
+    "logo",
+    "symbol/name",
+    "chain badge",
+    "verified"
+  ],
+  "actions": {
+    "token": [
+      "Trade",
+      "Open Project",
+      "Add Wallet"
+    ],
+    "project": [
+      "Open Project",
+      "Buy Token",
+      "Farm",
+      "Pool"
+    ],
+    "pool": [
+      "View Pool",
+      "Stake"
+    ],
+    "farm": [
+      "View Farm",
+      "Stake"
+    ]
+  },
+  "browser": {
+    "open": true,
+    "count": 12,
+    "hasActions": true,
+    "hasBadge": true,
+    "sample": [
+      {
+        "id": "project-marco",
+        "chain": "56",
+        "text": "MARCOVerifiedCoordination token of the Melega ecosystemProjectOpen ProjectBuy TokenFarmPool"
+      },
+      {
+        "id": "token-56-0x963556de0eb8138e97a85f0a86ee0acd159d210b",
+        "chain": "56",
+        "text": "MARCOVerifiedMelega DEXTokenTradeOpen ProjectAdd Wallet"
+      },
+      {
+        "id": "token-1-0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76",
+        "chain": "1",
+        "text": "MARCOVerifiedMARCOTokenTradeOpen ProjectAdd Wallet"
+      }
+    ]
+  },
+  "pass": true
+}

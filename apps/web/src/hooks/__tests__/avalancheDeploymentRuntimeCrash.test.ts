@@ -73,15 +73,16 @@ describe('Avalanche deployment runtime crash guards', () => {
   })
 })
 
-describe('Switch Network modal 700px redesign', () => {
-  it('is compact with LIVE + COMING SOON and maxWidth 700px', () => {
+describe('Switch Network modal compact redesign', () => {
+  it('is compact with LIVE + PREPARING and maxWidth 440px', () => {
     const src = readFileSync(SWITCH_MODAL, 'utf8')
-    expect(src).toContain("maxWidth: '700px'")
+    expect(src).toContain("maxWidth: '440px'")
     expect(src).toContain('network-switch-live')
-    expect(src).toContain('network-switch-coming-soon')
-    expect(src).toContain('COMING SOON')
+    expect(src).toContain('network-switch-preparing')
+    expect(src).toContain('PREPARING')
     expect(src).toContain('LIVE')
     expect(src).not.toMatch(/grid-template-columns:\s*auto auto auto auto auto/)
     expect(src).not.toContain('Coming soon')
+    expect(src).not.toContain('BNB Smart Chain')
   })
 })

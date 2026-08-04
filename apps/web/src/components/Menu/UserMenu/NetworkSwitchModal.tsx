@@ -1,16 +1,17 @@
 import { AtomBox } from '@pancakeswap/ui/components/AtomBox'
-import { Heading, ModalV2, ModalWrapper, Text, ModalV2Props, Flex } from '@pancakeswap/uikit'
+import { Heading, ModalV2, ModalWrapper, Text, ModalV2Props } from '@pancakeswap/uikit'
 import { useTranslation } from '@pancakeswap/localization'
 import styled from 'styled-components'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
 import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
 import { ChainLogo } from 'components/Logo/ChainLogo'
+import { headerChainLabel, headerChainTitle } from 'components/NetworkSwitcher'
 
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 `
 
 const Section = styled.section`
@@ -43,15 +44,11 @@ const SectionHint = styled(Text)`
 
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
 
-  @media screen and (min-width: 480px) {
+  @media screen and (min-width: 420px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @media screen and (min-width: 640px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `
 
@@ -60,23 +57,23 @@ const ChainCard = styled.button<{ $active: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   margin: 0;
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
   border: 1px solid
-    ${({ theme, $active }) => ($active ? theme.colors.secondary : theme.colors.cardBorder)};
+    ${({ theme, $active }) => ($active ? 'rgba(244, 196, 48, 0.55)' : theme.colors.cardBorder)};
   background: ${({ theme, $active }) =>
-    $active ? theme.colors.backgroundAlt : theme.colors.background};
-  box-shadow: ${({ $active }) => ($active ? 'inset 0 0 0 1px rgba(118, 69, 217, 0.35)' : 'none')};
+    $active ? 'rgba(244, 196, 48, 0.1)' : theme.colors.background};
+  box-shadow: ${({ $active }) => ($active ? 'inset 0 0 0 1px rgba(244, 196, 48, 0.25)' : 'none')};
   cursor: pointer;
   text-align: left;
-  min-height: 52px;
+  min-height: 44px;
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover:not(:disabled) {
-    border-color: ${({ theme }) => theme.colors.secondary};
+    border-color: rgba(244, 196, 48, 0.45);
   }
 `
 
@@ -88,16 +85,16 @@ const ChainMeta = styled.div`
 `
 
 const ChainName = styled(Text)<{ $active: boolean }>`
-  font-size: 13px;
+  font-size: 12px;
   font-weight: ${({ $active }) => ($active ? 700 : 600)};
-  color: ${({ theme, $active }) => ($active ? theme.colors.secondary : theme.colors.text)};
+  color: ${({ theme, $active }) => ($active ? '#F4C430' : theme.colors.text)};
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
-const StatusPill = styled.span<{ $tone: 'live' | 'coming' | 'active' }>`
+const StatusPill = styled.span<{ $tone: 'live' | 'preparing' | 'active' }>`
   display: inline-flex;
   align-items: center;
   width: fit-content;
@@ -108,12 +105,12 @@ const StatusPill = styled.span<{ $tone: 'live' | 'coming' | 'active' }>`
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: ${({ $tone }) =>
-    $tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#5b2aa8' : '#8a6a1a'};
+    $tone === 'live' ? '#0f7a3a' : $tone === 'active' ? '#8a6a00' : '#8a6a1a'};
   background: ${({ $tone }) =>
     $tone === 'live'
       ? 'rgba(34, 160, 80, 0.14)'
       : $tone === 'active'
-        ? 'rgba(118, 69, 217, 0.14)'
+        ? 'rgba(244, 196, 48, 0.16)'
         : 'rgba(200, 150, 40, 0.16)'};
 `
 
@@ -126,18 +123,18 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
   const { switchNetwork, chainId, ...rest } = props
   const { t } = useTranslation()
   const liveChains = filterMelegaVisibleSwitcherChains(chains)
-  const comingSoon = getMelegaPreparingChains()
+  const preparing = getMelegaPreparingChains()
 
   return (
     <ModalV2 closeOnOverlayClick {...rest}>
       <ModalWrapper
         onDismiss={props.onDismiss}
-        style={{ overflow: 'visible', border: 'none', maxWidth: '700px', width: 'min(700px, 100%)' }}
+        style={{ overflow: 'visible', border: 'none', maxWidth: '440px', width: 'min(440px, 100%)' }}
         data-testid="network-switch-modal"
       >
         <AtomBox position="relative">
-          <AtomBox py="20px" px="18px">
-            <Heading color="text" as="h4" mb="14px" style={{ fontSize: 18 }}>
+          <AtomBox py="16px" px="14px">
+            <Heading color="text" as="h4" mb="12px" style={{ fontSize: 16 }}>
               {t('Switch Network')}
             </Heading>
 
@@ -157,6 +154,7 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                         $active={active}
                         data-testid={`network-card-${chain.id}`}
                         data-active={active ? 'true' : 'false'}
+                        title={headerChainTitle(chain.id)}
                         onClick={() => {
                           if (chain.id !== chainId) {
                             switchNetwork(chain.id)
@@ -164,9 +162,9 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                           }
                         }}
                       >
-                        <ChainLogo chainId={chain.id} width={28} height={28} />
+                        <ChainLogo chainId={chain.id} width={22} height={22} />
                         <ChainMeta>
-                          <ChainName $active={active}>{chain.name}</ChainName>
+                          <ChainName $active={active}>{headerChainLabel(chain.id)}</ChainName>
                           <StatusPill $tone={active ? 'active' : 'live'}>
                             {active ? t('Active') : t('LIVE')}
                           </StatusPill>
@@ -177,23 +175,24 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                 </CardGrid>
               </Section>
 
-              {comingSoon.length > 0 && (
-                <Section data-testid="network-switch-coming-soon">
-                  <SectionLabel>
-                    <SectionTitle>{t('COMING SOON')}</SectionTitle>
-                    <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
-                  </SectionLabel>
+              <Section data-testid="network-switch-preparing" data-network-switch-coming-soon>
+                <SectionLabel>
+                  <SectionTitle>{t('PREPARING')}</SectionTitle>
+                  <SectionHint>{t('Wallet switchable · product locked')}</SectionHint>
+                </SectionLabel>
+                {preparing.length > 0 ? (
                   <CardGrid>
-                    {comingSoon.map((row) => {
+                    {preparing.map((row) => {
                       const active = chainId === row.chainId
                       return (
                         <ChainCard
-                          key={`coming-${row.chainId}`}
+                          key={`preparing-${row.chainId}`}
                           type="button"
                           $active={active}
                           data-testid={`network-card-${row.chainId}`}
                           data-active={active ? 'true' : 'false'}
-                          data-status="COMING_SOON"
+                          data-status="PREPARING"
+                          title={row.name}
                           onClick={() => {
                             if (row.chainId !== chainId) {
                               switchNetwork(row.chainId)
@@ -201,19 +200,23 @@ export function NetworkSwitchModal<T = unknown>(props: NetworkSwitchModalProps<T
                             }
                           }}
                         >
-                          <ChainLogo chainId={row.chainId} width={28} height={28} />
+                          <ChainLogo chainId={row.chainId} width={22} height={22} />
                           <ChainMeta>
-                            <ChainName $active={active}>{row.name}</ChainName>
-                            <StatusPill $tone={active ? 'active' : 'coming'}>
-                              {active ? t('Active') : t('COMING SOON')}
+                            <ChainName $active={active}>{headerChainLabel(row.chainId)}</ChainName>
+                            <StatusPill $tone={active ? 'active' : 'preparing'}>
+                              {active ? t('Active') : t('PREPARING')}
                             </StatusPill>
                           </ChainMeta>
                         </ChainCard>
                       )
                     })}
                   </CardGrid>
-                </Section>
-              )}
+                ) : (
+                  <Text fontSize="12px" color="textSubtle" px="2px">
+                    {t('All product chains are LIVE.')}
+                  </Text>
+                )}
+              </Section>
             </Body>
           </AtomBox>
         </AtomBox>
