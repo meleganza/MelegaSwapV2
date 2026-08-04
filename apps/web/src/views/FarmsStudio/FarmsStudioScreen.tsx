@@ -17,7 +17,6 @@ import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
 import { FarmsAnalyticsModule } from './modules/FarmsAnalyticsModule'
 import { FarmsVisualPolishModule } from './modules/FarmsVisualPolishModule'
 import { farmsHero } from './modules/farmsHeroTokens'
-import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 
 const Root = styled.div`
   color: ${farmsStudioColors.text};
@@ -105,22 +104,6 @@ export const FarmsStudioScreen: React.FC = () => (
       <FarmsVisualPolishModule />
       <FarmsActionHost />
       <Content data-fs-content>
-        <JourneyGuideRail
-          journeyId="founder"
-          currentStepId="create_farm"
-          nextHref="/list"
-          nextLabel="Next: Featured & Trend Boost"
-          testId="farms-founder-journey"
-          compact
-        />
-        <JourneyGuideRail
-          journeyId="investor"
-          currentStepId="farm"
-          nextHref="/pools"
-          nextLabel="Next: Explore Pools"
-          testId="farms-investor-journey"
-          compact
-        />
         <FarmsHeroModule />
         <DataSurfaceErrorBoundary surface="Farms Overview KPIs" userReason="Farm overview metrics are temporarily unavailable.">
           <FarmsOverviewKpisModule />

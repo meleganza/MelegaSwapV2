@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
 import { typography } from '../../tokens'
 import { layoutStyles } from '../../primitives'
@@ -42,7 +43,7 @@ const Nav = styled.nav<{
   ${({ $padding, $margin }) => layoutStyles({ padding: $padding, margin: $margin })}
 `
 
-const Item = styled.a<{ $active?: boolean }>`
+const Item = styled(Link)<{ $active?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -108,7 +109,14 @@ export const MelegaBottomNavigation: React.FC<MelegaBottomNavigationProps> = ({
     {items.map((item) => {
       const active = item.id === activeId
       return (
-        <Item key={item.id} href={disabled ? '#' : item.href} $active={active} aria-current={active ? 'page' : undefined}>
+        <Item
+          key={item.id}
+          href={disabled ? '#' : item.href}
+          $active={active}
+          aria-current={active ? 'page' : undefined}
+          prefetch
+          onClick={disabled ? (e) => e.preventDefault() : undefined}
+        >
           {active && <Indicator />}
           <Icon $active={active}>{item.icon}</Icon>
           <Label $active={active}>{item.label}</Label>

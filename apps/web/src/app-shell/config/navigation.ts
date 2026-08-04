@@ -133,13 +133,14 @@ export const shellNavigation: ShellNavSection[] = [
   },
 ]
 
-/** Mobile bottom rail — Home · Trending · Liquidity · Farms · List (RC2 journey discoverability) */
+/** Mobile bottom rail — Home · Liquidity · Farms · Pools · Passport */
 export const shellBottomNavItems = [
   {
     id: 'home',
     label: 'Home',
     href: '/',
     icon: 'swap' as MelegaNavIcon,
+    // Align with header: Home owns Discover + Trade; Project Pages under Discover.
     match: (p: string) =>
       p === '/' ||
       p === '/trade' ||
@@ -148,13 +149,6 @@ export const shellBottomNavItems = [
       p.startsWith('/swap/') ||
       p.startsWith('/project-hq') ||
       p.startsWith('/@'),
-  },
-  {
-    id: 'trending',
-    label: 'Trending',
-    href: '/trending',
-    icon: 'star' as MelegaNavIcon,
-    match: (p: string) => p === '/trending' || p.startsWith('/projects'),
   },
   {
     id: 'liquidity',
@@ -168,20 +162,24 @@ export const shellBottomNavItems = [
     label: 'Farms',
     href: '/farms',
     icon: 'coins' as MelegaNavIcon,
-    match: (p: string) => p.startsWith('/farms') || p.startsWith('/pools'),
+    match: (p: string) => p.startsWith('/farms'),
   },
   {
-    id: 'list',
-    label: 'List',
-    href: '/list',
-    icon: 'rocket' as MelegaNavIcon,
+    id: 'pools',
+    label: 'Pools',
+    href: '/pools',
+    icon: 'coins' as MelegaNavIcon,
+    match: (p: string) => p.startsWith('/pools'),
+  },
+  {
+    id: 'passport',
+    label: 'Passport',
+    href: '/passport',
+    icon: 'command' as MelegaNavIcon,
     match: (p: string) =>
-      p === '/list' ||
-      p.startsWith('/build-studio') ||
-      p === '/import-existing-token' ||
-      p === '/launch' ||
       p.startsWith('/passport') ||
       p.startsWith('/command-center') ||
-      p.startsWith('/portfolio'),
+      p.startsWith('/portfolio') ||
+      p.startsWith('/workspace'),
   },
 ]

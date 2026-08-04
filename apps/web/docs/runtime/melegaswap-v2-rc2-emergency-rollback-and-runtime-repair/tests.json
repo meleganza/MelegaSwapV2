@@ -1,0 +1,17 @@
+{
+  "command": "yarn vitest run src/lib/__tests__/rc2EmergencyRollbackRepair.test.ts src/app-shell/__tests__/dexUxRebuild.nav.test.ts src/views/HomeTrade/__tests__/founderAcceptanceFooter.test.ts src/views/HomeTrade/__tests__/trueTrendingRanking.test.ts src/lib/trending/__tests__/topMoversSharedSnapshot.test.ts",
+  "passed": true,
+  "totals": { "testFiles": 5, "tests": 36, "failed": 0 },
+  "finishedAt": "2026-08-04T04:50:25.000Z",
+  "browserAcceptance": {
+    "script": "browser-nav-proof.mjs",
+    "base": "http://127.0.0.1:3000",
+    "verdictHints": {
+      "navOk": true,
+      "journeyOk": true,
+      "ecoOk": true,
+      "avaxOk": true
+    },
+    "proof": "browser-navigation-proof.json"
+  }
+}

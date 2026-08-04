@@ -1,0 +1,41 @@
+{
+  "mission": "MELEGASWAP_V2_RC2_EMERGENCY_ROLLBACK_AND_RUNTIME_REPAIR",
+  "part": "C",
+  "trackingIdReported": "cbdc598a99d64ae89d29b3ac32668730",
+  "exceptionClass": "TypeError",
+  "historicalMessage": "Cannot read properties of undefined (reading 'isToken')",
+  "componentStackSuspects": [
+    {
+      "file": "apps/web/src/hooks/useBUSDPrice.ts",
+      "lineHint": "stable.equals / wrapped.equals when USDT[chainId] missing",
+      "status": "guarded early-return retained; USDC[AVAX] added; cake quote falls back USDT"
+    },
+    {
+      "file": "apps/web/src/utils/wrappedCurrency.ts",
+      "lineHint": "unwrappedToken token.equals(WNATIVE[chainId])",
+      "status": "guarded when WNATIVE missing"
+    },
+    {
+      "file": "apps/web/src/state/farms/hooks.ts",
+      "lineHint": "getMasterchefContract + poolLength on chains without MasterChef address",
+      "status": "gated on getMasterChefAddress(chainId); empty farm config short-circuit"
+    },
+    {
+      "file": "apps/web/src/views/Home/hooks/useGetTopFarmsByApr.tsx",
+      "lineHint": "chainId ternary collapsed Avalanche/Arbitrum → ChainId.BASE",
+      "status": "fixed to pass active chainId + getFarmConfig(chainId)"
+    },
+    {
+      "file": "packages/tokens/src/common.ts",
+      "lineHint": "USDC[ChainId.AVAX] missing",
+      "status": "added 0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
+    }
+  ],
+  "browserProof": {
+    "route": "/liquidity-studio/?view=add&chain=avalanche",
+    "healthy": true,
+    "noBscErrorCopy": true,
+    "networkSelectorShowsAvalanche": true,
+    "note": "Headless run cannot complete wallet-driven chain switch; Avalanche deep-link + selector visibility verified without Error Boundary"
+  }
+}

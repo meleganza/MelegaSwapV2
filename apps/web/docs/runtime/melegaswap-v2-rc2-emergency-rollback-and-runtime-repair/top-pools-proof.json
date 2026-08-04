@@ -1,0 +1,15 @@
+{
+  "mission": "MELEGASWAP_V2_RC2_EMERGENCY_ROLLBACK_AND_RUNTIME_REPAIR",
+  "part": "F-pools",
+  "priorEmptyCause": "APR eligibility filter excluded all pools when prices/APR unavailable",
+  "fix": [
+    "inventory fallback to rewarding/active pools",
+    "static LIVE pool inventory preview when runtime empty",
+    "UI APR unavailable / TVL unavailable labels"
+  ],
+  "browserObserved": {
+    "homeActivePoolsKpi": "195",
+    "homeTopPoolsEmptyCopyRemoved": true,
+    "certifiedPoolInventoryTotal": 195
+  }
+}

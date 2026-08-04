@@ -1,0 +1,16 @@
+{
+  "mission": "MELEGASWAP_V2_RC2_EMERGENCY_ROLLBACK_AND_RUNTIME_REPAIR",
+  "part": "F-farms",
+  "priorEmptyCause": "useGetTopFarmsByApr used BSC-only nonArchivedFarms + wrong chainId map + null placeholders filtered out",
+  "fix": [
+    "fetch via getFarmConfig(activeChainId)",
+    "inventory fallback from runtime allFarms then listLiveFarmInventoryPreview",
+    "UI shows APR unavailable / TVL unavailable instead of empty ranking copy"
+  ],
+  "browserObserved": {
+    "homeActiveFarmsKpi": "63",
+    "homeTopFarmsEmptyCopyRemoved": true,
+    "farmsPageActiveFarms": "63",
+    "farmsPageTvl": "$193.2K"
+  }
+}

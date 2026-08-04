@@ -34,6 +34,13 @@ import {
   POOL_APR_UNAVAILABLE_REASON,
 } from './formatTrendingLabels'
 import { useTopMoversSnapshot } from './TopMoversSnapshotContext'
+import {
+  countLiveActiveFarmConfigs,
+  countLivePoolConfigs,
+  listLiveFarmInventoryPreview,
+  listLivePoolInventoryPreview,
+  liveInventoryProvenance,
+} from 'lib/data-truth/liveInventoryCounts'
 
 export interface RibbonItem {
   id: string
@@ -450,7 +457,7 @@ export const useHomeTradeData = () => {
   ])
 
   const farmRows = useMemo((): EarnRow[] => {
-    return farms
+    const ranked = farms
       .filter((f) => f.pid !== 0)
       .slice(0, 5)
       .map((farm) => {
@@ -464,7 +471,29 @@ export const useHomeTradeData = () => {
           href: '/farms',
         }
       })
-  }, [farms])
+    if (ranked.length > 0) return ranked
+
+    // Inventory fallback — never show empty while LIVE farms exist (APR may be unavailable).
+    const fromRuntime = allFarms
+      .filter((f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X')
+      .slice(0, 5)
+      .map((farm) => ({
+        id: `farm-inv-${farm.pid}`,
+        name: farm.lpSymbol ?? `Farm #${farm.pid}`,
+        apr: undefined,
+        tvl: farmTvl(farm as FarmWithStakedValue),
+        href: '/farms',
+      }))
+    if (fromRuntime.length > 0) return fromRuntime
+
+    return listLiveFarmInventoryPreview(5).map((row) => ({
+      id: row.id,
+      name: row.name,
+      apr: undefined,
+      tvl: undefined,
+      href: '/farms',
+    }))
+  }, [farms, allFarms])
 
   const poolRows = useMemo((): EarnRow[] => {
     const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
@@ -485,7 +514,7 @@ export const useHomeTradeData = () => {
           rewardPriceUsd: pool.earningTokenPrice ?? null,
           stakePriceUsd: pool.stakingTokenPrice ?? null,
         })
-        return { pool, aprValue, tvlUsd, eligibility }
+        return { pool, aprValue, tvlUsd, eligibility, life }
       })
       .filter((row) => row.eligibility.eligible && row.aprValue != null)
       .sort((a, b) => {
@@ -499,19 +528,51 @@ export const useHomeTradeData = () => {
       })
       .slice(0, 5)
 
-    return ranked.map(({ pool, aprValue, tvlUsd }) => {
-      const stake = pool.stakingToken?.symbol
-      const earn = pool.earningToken?.symbol
-      const name =
-        stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
-      return {
-        id: `pool-${pool.sousId}`,
-        name,
-        apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
-        tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
-        href: '/pools',
-      }
-    })
+    if (ranked.length > 0) {
+      return ranked.map(({ pool, aprValue, tvlUsd }) => {
+        const stake = pool.stakingToken?.symbol
+        const earn = pool.earningToken?.symbol
+        const name =
+          stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
+        return {
+          id: `pool-${pool.sousId}`,
+          name,
+          apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
+          tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
+          href: '/pools',
+        }
+      })
+    }
+
+    // Inventory fallback when APR ranking is empty but live pools exist.
+    const fromRuntime = source
+      .filter((pool) => {
+        const life = derivePoolLifecycle(pool, currentBlock)
+        return life.rewarding || life.active
+      })
+      .slice(0, 5)
+      .map((pool) => {
+        const stake = pool.stakingToken?.symbol
+        const earn = pool.earningToken?.symbol
+        const name =
+          stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
+        return {
+          id: `pool-inv-${pool.sousId}`,
+          name,
+          apr: undefined,
+          tvl: poolTvl(pool),
+          href: '/pools',
+        }
+      })
+    if (fromRuntime.length > 0) return fromRuntime
+
+    return listLivePoolInventoryPreview(5).map((row) => ({
+      id: row.id,
+      name: row.name,
+      apr: undefined,
+      tvl: undefined,
+      href: '/pools',
+    }))
   }, [pools, allPools, currentBlock])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
@@ -591,15 +652,23 @@ export const useHomeTradeData = () => {
   const marcoPriceLabel = useMemo(() => canonicalMarco.label, [canonicalMarco.label])
 
   const liveEconomyMetrics = useMemo((): LiveEconomyMetric[] => {
-    const activeFarmCount = allFarms.filter((f) => f.pid !== 0 && f.multiplier !== '0X').length
+    const runtimeFarmCount = allFarms.filter(
+      (f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X',
+    ).length
+    const configFarmCount = countLiveActiveFarmConfigs()
+    // Prefer runtime when loaded; otherwise factual LIVE config inventory (never false zero).
+    const activeFarmCount = runtimeFarmCount > 0 ? runtimeFarmCount : configFarmCount
+
     const poolReconciliation = reconcilePoolLifecycle(allPools, currentBlock)
-    // Active SmartChef pools only — never substitute historical inventory totals.
-    const activePoolCount =
+    const runtimePoolCount =
       poolReconciliation.active > 0
         ? poolReconciliation.active
         : poolReconciliation.rewarding > 0
           ? poolReconciliation.rewarding
           : 0
+    const configPoolCount = countLivePoolConfigs()
+    const activePoolCount = runtimePoolCount > 0 ? runtimePoolCount : configPoolCount
+    const provenance = liveInventoryProvenance()
 
     const pushMetric = (built: ReturnType<(typeof LIVE_ECONOMY_METRIC_BUILDERS)['activeFarms']>) => {
       return {
@@ -616,11 +685,17 @@ export const useHomeTradeData = () => {
     }
 
     return [
-      pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
+      {
+        ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.activeFarms(String(activeFarmCount))),
+        source: runtimeFarmCount > 0 ? 'runtime-farms' : provenance.farmsSource,
+        asOf: provenance.asOf,
+      },
       {
         ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.rewardingPools(String(activePoolCount))),
         id: 'activePools',
         label: 'Active Pools',
+        source: runtimePoolCount > 0 ? 'runtime-pools' : provenance.poolsSource,
+        asOf: provenance.asOf,
       },
       {
         ...pushMetric(LIVE_ECONOMY_METRIC_BUILDERS.liquidPairs(String(liquidPairCount))),

@@ -29,13 +29,13 @@ describe('DEX UX Rebuild navigation', () => {
     }
   })
 
-  it('mobile bottom nav matches RC2 journey destinations', () => {
+  it('mobile bottom nav is Home · Liquidity · Farms · Pools · Passport', () => {
     expect(shellBottomNavItems.map((i) => i.label)).toEqual([
       'Home',
-      'Trending',
       'Liquidity',
       'Farms',
-      'List',
+      'Pools',
+      'Passport',
     ])
   })
 
@@ -71,7 +71,7 @@ describe('DEX UX Rebuild navigation', () => {
     expect(home).toMatch(/DexHomeScreen/)
     expect(dex).toMatch(/HomeSwapPanel/)
     expect(dex).toMatch(/dex-home-instant-swap|dex-home-start-trading/)
-    expect(dex).toMatch(/home-investor-journey/)
+    expect(dex).not.toMatch(/home-investor-journey|JourneyGuideRail|PageNextAction|Founder Path/)
     expect(dex).not.toMatch(/\$24\.58M|128\.45%|2,891/)
   })
 

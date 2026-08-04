@@ -16,7 +16,6 @@ import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
 import { PoolsAnalyticsModule } from './modules/PoolsAnalyticsModule'
 import { PoolsVisualPolishModule } from './modules/PoolsVisualPolishModule'
 import { poolsHero } from './modules/poolsHeroTokens'
-import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 
 const Root = styled.div`
   color: ${poolsStudioColors.text};
@@ -102,14 +101,6 @@ export const PoolsStudioScreen: React.FC = () => (
     <PoolsRuntimeProvider>
       <PoolsActionHost />
       <Content data-ps-content data-pools-ia="founder-economics-repair-v1">
-        <JourneyGuideRail
-          journeyId="investor"
-          currentStepId="pool"
-          nextHref="/passport"
-          nextLabel="Next: Open Passport"
-          testId="pools-investor-journey"
-          compact
-        />
         <PoolsHeroModule />
         <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
           <PoolsOverviewKpisModule />

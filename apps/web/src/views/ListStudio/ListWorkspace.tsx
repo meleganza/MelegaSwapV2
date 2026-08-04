@@ -9,7 +9,6 @@ import { useListIntent } from './useListIntent'
 import { ListAiCopilot, type CopilotSuggestion } from './ListAiCopilot'
 import { ListFeaturedCheckout } from './ListFeaturedCheckout'
 import { ListTrendBoostCheckout } from './ListTrendBoostCheckout'
-import { PageNextAction } from 'views/shared/journeys/PageNextAction'
 import { deleteListDraft, loadListDraft, saveListDraft } from './listDraftPersistence'
 import { CREATE_TOKEN_READINESS } from './createTokenReadiness'
 import { buildReviewFacts } from './createToken/createTokenTx'
@@ -891,14 +890,6 @@ export const ListWorkspace: React.FC = () => {
               {String(LIST_CREATE_TOKEN_AVAILABLE)}. Drafts remain autosaved.
             </Banner>
           )}
-          <PageNextAction
-            testId="list-create-token-next"
-            here="Finish Create Token in this workspace"
-            nextLabel="Add Liquidity"
-            nextHref="/liquidity-studio"
-            secondaryLabel="Then Create Farm"
-            secondaryHref="/farms"
-          />
           <ListFeaturedCheckout
             testId="list-create-token-featured"
             sourceFlow="create-project"

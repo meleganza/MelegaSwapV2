@@ -23,7 +23,6 @@ import useBUSDPrice from 'hooks/useBUSDPrice'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import defaultTokenList from 'config/constants/tokenLists/pancake-default.tokenlist.json'
 import {
-  compareTierRankedAssets,
   hasTrendingSwapActivity,
   isQuoteTokenAddress,
   isTrendingTierStatus,
@@ -905,11 +904,9 @@ export function useDexTrendingRankings() {
       })
     }
 
-    // Shared Top Movers + Trending Bar ranking over full universe.
-    // Prefer credible % movers first, then backfill by activity/liquidity — never pad with fabrications.
-    // Never fabricate history: only real abs% / activity / liquidity from the indexed universe.
-    const all = [...byAddress.values()]
-    const withCredibleMove = all
+    // Shared Top Movers + Trending Bar — only tokens with factual measured % change.
+    // Never fabricate history. Never pad empty slots with registry tokens lacking a valid percentage.
+    const withCredibleMove = [...byAddress.values()]
       .filter((c) => {
         const pct = c.change24h?.pct
         if (pct == null || !Number.isFinite(pct)) return false
@@ -932,22 +929,7 @@ export function useDexTrendingRankings() {
         return (b.lastActivityTs ?? 0) - (a.lastActivityTs ?? 0)
       })
 
-    const selected = new Map<string, TierRankedAsset>()
-    for (const m of withCredibleMove) {
-      selected.set(m.address.toLowerCase(), m)
-      if (selected.size >= TRENDING_LIMIT) break
-    }
-    if (selected.size < TRENDING_LIMIT) {
-      const backfill = all
-        .filter((c) => !selected.has(c.address.toLowerCase()))
-        .sort(compareTierRankedAssets)
-      for (const b of backfill) {
-        selected.set(b.address.toLowerCase(), b)
-        if (selected.size >= TRENDING_LIMIT) break
-      }
-    }
-
-    return [...selected.values()]
+    return withCredibleMove.slice(0, TRENDING_LIMIT)
   }, [
     tierMetrics,
     pairRows,

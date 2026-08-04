@@ -14,7 +14,6 @@ import {
   statusDisplay,
   symbolForAddress,
 } from '../portfolioDisplay'
-import { PageNextAction } from 'views/shared/journeys/PageNextAction'
 
 const Root = styled.div`
   display: flex;
@@ -251,14 +250,6 @@ export function LbPortfolioHome({
             {LB_UX.portfolioViewDocs}
           </DocsLink>
         </HeadingRow>
-        <PageNextAction
-          testId="lb-portfolio-next-connect"
-          here="Connect your wallet to see Liquidity Builder programs"
-          nextLabel="Read Documentation"
-          nextHref={LB_UX.docsHub}
-          secondaryLabel="Create Program"
-          secondaryHref="/liquidity-studio?view=building"
-        />
         <Empty data-testid="liq-lb-portfolio-empty">
           <EmptyTitle>{LB_UX.portfolioEmptyTitle}</EmptyTitle>
           <EmptyBody>{LB_UX.portfolioConnectBody}</EmptyBody>
@@ -276,14 +267,6 @@ export function LbPortfolioHome({
             {LB_UX.portfolioViewDocs}
           </DocsLink>
         </HeadingRow>
-        <PageNextAction
-          testId="lb-portfolio-next-empty"
-          here="No programs yet — read docs, then create"
-          nextLabel="Documentation"
-          nextHref={LB_UX.docsHub}
-          secondaryLabel="Create New Program"
-          secondaryHref="/liquidity-studio?view=building"
-        />
         <Empty data-testid="liq-lb-portfolio-empty">
           <EmptyTitle>{LB_UX.portfolioEmptyTitle}</EmptyTitle>
           <EmptyBody>{LB_UX.portfolioEmptyBody}</EmptyBody>

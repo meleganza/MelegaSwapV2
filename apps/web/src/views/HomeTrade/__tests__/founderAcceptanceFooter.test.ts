@@ -62,16 +62,18 @@ describe('Founder acceptance — MelegaDexFooter', () => {
 
 
 describe('Founder acceptance — ecosystem destinations', () => {
-  it('wires live destinations without false Coming soon', () => {
+  it('wires live destinations without Radar/Labs; includes BlackPump', () => {
     const live = ECOSYSTEM_DESTINATIONS.filter((d) => !d.disabled)
     expect(live.map((d) => d.id)).toEqual(
-      expect.arrayContaining(['passport', 'smartdrop', 'labs', 'space', 'radar']),
+      expect.arrayContaining(['passport', 'smartdrop', 'blackpump', 'space']),
     )
+    expect(live.map((d) => d.id)).not.toEqual(expect.arrayContaining(['labs', 'radar']))
+    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'labs')).toBeUndefined()
+    expect(ECOSYSTEM_DESTINATIONS.find((d) => d.id === 'radar')).toBeUndefined()
     expect(live.find((d) => d.id === 'passport')?.href).toBe('https://marco.melega.ai')
     expect(live.find((d) => d.id === 'smartdrop')?.href).toBe('https://smartdrop.melega.ai/dashboard')
-    expect(live.find((d) => d.id === 'labs')?.href).toBe('https://labs.melega.ai/labs')
+    expect(live.find((d) => d.id === 'blackpump')?.href).toBe('https://blackpump.fun/')
     expect(live.find((d) => d.id === 'space')?.href).toBe('https://melega.space/')
-    expect(live.find((d) => d.id === 'radar')?.href).toBe('/radar')
 
     for (const d of live) {
       expect(d.disabled).toBeFalsy()

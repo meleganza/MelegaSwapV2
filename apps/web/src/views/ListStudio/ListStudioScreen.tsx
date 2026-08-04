@@ -12,7 +12,6 @@ import { ListWhyBuildRail } from './ListWhyBuildRail'
 import { ListHowItWorks } from './ListHowItWorks'
 import { ListWorkspace } from './ListWorkspace'
 import { listOne } from './listTokens'
-import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 
 const Root = styled.div`
   color: ${uxRebuildColors.text};
@@ -38,20 +37,16 @@ const Content = styled.div`
     order: 1;
   }
 
-  & > [data-testid='list-founder-journey'] {
+  & > [data-testid='list-action-cards'] {
     order: 2;
   }
 
-  & > [data-testid='list-action-cards'] {
+  & > [data-testid='list-why-build'] {
     order: 3;
   }
 
-  & > [data-testid='list-why-build'] {
-    order: 4;
-  }
-
   & > [data-testid='list-workflow-bridge'] {
-    order: 5;
+    order: 4;
   }
 
   & > [data-testid='list-intent-placeholder'] {
@@ -106,13 +101,6 @@ export const ListStudioScreen: React.FC = () => {
       <PageMeta />
       <Content data-testid="list-one-content">
         <ListPageHero />
-        <JourneyGuideRail
-          journeyId="founder"
-          currentStepId="create_token"
-          nextHref="/liquidity-studio"
-          nextLabel="Next: Add Liquidity"
-          testId="list-founder-journey"
-        />
         <ListActionCards />
         <ListWhyBuildRail />
         <WorkflowBridge data-testid="list-workflow-bridge" data-list-connect="actions-to-workspace">

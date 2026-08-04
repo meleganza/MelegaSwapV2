@@ -1,0 +1,17 @@
+{
+  "mission": "MELEGASWAP_V2_RC2_EMERGENCY_ROLLBACK_AND_RUNTIME_REPAIR",
+  "part": "H",
+  "removed": ["radar", "labs"],
+  "added": {
+    "id": "blackpump",
+    "title": "BLACKPUMP",
+    "href": "https://blackpump.fun/",
+    "resolution": "Canonical Melega ecosystem launchpad URL (blackpump.fun); not present in prior repo config — resolved from public Melega ecosystem destination"
+  },
+  "retained": ["passport", "smartdrop", "space", "maiora(disabled/Unavailable)"],
+  "browserProof": {
+    "sectionHasBlackpump": true,
+    "sectionHasRadar": false,
+    "sectionHasLabs": false
+  }
+}

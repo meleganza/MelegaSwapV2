@@ -15,6 +15,7 @@ import Head from 'next/head'
 import Script from 'next/script'
 import { Fragment } from 'react'
 import { DefaultSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistor, useStore } from 'state'
@@ -22,6 +23,7 @@ import { usePollBlockNumber } from 'state/block/hooks'
 import { Blocklist, Updaters } from '..'
 import { SEO } from '../../next-seo.config'
 import { SentryErrorBoundary } from '../components/ErrorBoundary'
+import SuspenseWithChunkError from '../components/SuspenseWithChunkError'
 import Menu from '../components/Menu'
 import Providers from '../Providers'
 import GlobalStyle from '../style/Global'
@@ -30,6 +32,7 @@ import MelegaUIKitOverrides from '../style/MelegaUIKitOverrides'
 import MelegaTradingOverrides from '../style/MelegaTradingOverrides'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { CHAIN_IDS } from 'utils/wagmi'
+import { useRouteTransitionRecovery } from 'hooks/useRouteTransitionRecovery'
 import type { NextPageWithLayout } from './_app-types'
 
 const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
@@ -65,12 +68,18 @@ type AppPropsWithLayout = AppProps & {
 const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? SentryErrorBoundary : Fragment
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+  const router = useRouter()
+  useRouteTransitionRecovery()
   const hideMenu = Component.hideMenu || Component.pure
+  // Force remount on pathname change so client nav never leaves a stale Home tree mounted.
+  const routeKey = router.asPath.split('?')[0].split('#')[0] || '/'
 
   if (hideMenu) {
     return (
       <ProductionErrorBoundary>
-        <Component {...pageProps} />
+        <SuspenseWithChunkError fallback={null}>
+          <Component key={routeKey} {...pageProps} />
+        </SuspenseWithChunkError>
         <ToastListener />
         {!Component.hideNetworkModal && (
           <NetworkModal pageSupportedChains={Component.chains ?? CHAIN_IDS} />
@@ -88,7 +97,9 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     <ProductionErrorBoundary>
       <ShowMenu>
         <Layout>
-          <Component {...pageProps} />
+          <SuspenseWithChunkError fallback={null}>
+            <Component key={routeKey} {...pageProps} />
+          </SuspenseWithChunkError>
         </Layout>
       </ShowMenu>
       <EasterEgg iterations={2} />

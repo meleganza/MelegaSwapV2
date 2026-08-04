@@ -16,7 +16,6 @@ import { getAllProjects } from 'registry/projects/getAllProjects'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
-import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -446,40 +445,56 @@ export const DexHomeScreen: React.FC = () => {
       byLabel.markets ||
       NA
     const volumeValue = volCard?.value ?? NA
-    const compact = (v: string) => (/not available/i.test(v) ? NA : v)
+    const compact = (v: string) => {
+      if (/not available/i.test(v)) return 'Unavailable'
+      if (v === '0' || v === NA) return v === '0' ? '0' : 'Unavailable'
+      return v
+    }
+    const honestCount = (v: string | number | undefined) => {
+      const n = Number(v)
+      if (Number.isFinite(n) && n > 0) return String(n)
+      if (v === '0' || n === 0) return '0'
+      return 'Unavailable'
+    }
+    const tvlValue = tvlCard?.value
+      ? compact(tvlCard.value)
+      : data.marketCards.length === 0
+        ? 'Data syncing'
+        : 'Unavailable'
+    const volValue = volCard?.value ? compact(volumeValue) : 'Unavailable'
     return [
       {
         label: 'TVL',
-        value: compact(tvlCard?.value ?? NA),
+        value: tvlValue,
         title: 'Canonical Melega DEX liquidity TVL (factual farm/liquidity sources).',
       },
       {
         label: '24H Volume',
-        value: compact(volumeValue),
+        value: volValue,
         title: 'Aggregate factual Melega DEX swap volume over the last 24 hours (USD when valuation is supported).',
       },
       {
         label: 'Listed Projects',
-        value: projectCount > 0 ? String(projectCount) : NA,
+        value: projectCount > 0 ? String(projectCount) : 'Unavailable',
         title: listedProjects.provenance,
       },
       {
         label: 'Active Farms',
-        value: compact(String(farms)),
-        title: 'Canonical currently farmable MasterBuilder farms.',
+        value: honestCount(farms),
+        title: 'LIVE farm configurations across supported chains (runtime when loaded, else certified inventory).',
       },
       {
         label: 'Active Pools',
-        value: compact(String(pools)),
-        title: 'Canonical currently active SmartChef staking pools (not historical totals).',
+        value: honestCount(pools),
+        title: 'LIVE SmartChef pool configurations across supported chains (runtime when loaded, else certified inventory).',
       },
       {
         label: 'Markets',
-        value: compact(String(markets)),
+        value: honestCount(markets),
         title: 'Unique tradeable Factory pairs / markets from canonical Factory indexing.',
       },
     ]
-  }, [data.liveEconomyMetrics, data.marketCards, projectCount, listedProjects.provenance])
+  }, [data.liveEconomyMetrics, data.marketCards, data.marketCards.length, projectCount, listedProjects.provenance])
 
   // Exact prefix of the shared Top Movers snapshot (same snapshotId as ticker).
   const trendingRows = useMemo(() => {
@@ -542,14 +557,6 @@ export const DexHomeScreen: React.FC = () => {
           surface="Homepage"
           userReason="Homepage market modules are temporarily unavailable."
         >
-          <JourneyGuideRail
-            journeyId="investor"
-            currentStepId="landing"
-            nextHref="/trending"
-            nextLabel="Next: Explore Trending"
-            testId="home-investor-journey"
-            compact
-          />
           <Hero data-home-section="hero">
             <HeroLeft>
               <Badge>AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS</Badge>
@@ -642,16 +649,16 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/farms">View all →</ViewAll>
               </DiscHead>
               {farmRows.length === 0 ? (
-                <EmptyRow>No live farm rankings yet. Open Farms for the full inventory.</EmptyRow>
+                <EmptyRow>APR unavailable — open Farms for the full LIVE inventory.</EmptyRow>
               ) : (
                 farmRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/farms'}>
                     <Rank>·</Rank>
                     <RowMain>
                       <RowName>{row.name}</RowName>
-                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : null}
+                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
                     </RowMain>
-                    <GoldMetric>{row.apr ? `${row.apr}` : NA}</GoldMetric>
+                    <GoldMetric>{row.apr ? `${row.apr}` : 'APR unavailable'}</GoldMetric>
                   </DiscRow>
                 ))
               )}
@@ -666,16 +673,16 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/pools">View all →</ViewAll>
               </DiscHead>
               {poolRows.length === 0 ? (
-                <EmptyRow>No live pool rankings yet. Open Pools for the full inventory.</EmptyRow>
+                <EmptyRow>APR unavailable — open Pools for the full LIVE inventory.</EmptyRow>
               ) : (
                 poolRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/pools'}>
                     <Rank>·</Rank>
                     <RowMain>
                       <RowName>{row.name}</RowName>
-                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : null}
+                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
                     </RowMain>
-                    <RowMetric>{row.apr ? row.apr : NA}</RowMetric>
+                    <RowMetric>{row.apr ? row.apr : 'APR unavailable'}</RowMetric>
                   </DiscRow>
                 ))
               )}

@@ -11,7 +11,6 @@ import { WalletLiquidityOverview } from './WalletLiquidityOverview'
 import { LiquidityPositions } from './LiquidityPositions'
 import { LiquidityEducationRail } from './LiquidityEducationRail'
 import { LiquidityOnePagePolishStyle } from './LiquidityOnePagePolishStyle'
-import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 
 const Page = styled.div`
   width: 100%;
@@ -148,22 +147,6 @@ export const UnifiedLiquidityPage: React.FC = () => {
     <Page data-testid="liq-one-unified-page" data-liquidity-one-page="true" data-pixel-perfection="001">
       <LiquidityOnePagePolishStyle />
       <LiquidityPageHeader />
-      <JourneyGuideRail
-        journeyId="founder"
-        currentStepId="liquidity"
-        nextHref="/farms"
-        nextLabel="Next: Create Farm"
-        testId="liquidity-founder-journey"
-        compact
-      />
-      <JourneyGuideRail
-        journeyId="liquidity_manager"
-        currentStepId="portfolio"
-        nextHref="/docs/liquidity-builder"
-        nextLabel="Next: Documentation"
-        testId="liquidity-manager-journey"
-        compact
-      />
 
       <ProductGrid data-testid="liq-one-product-grid" data-pixel-main-row="860">
         <LiquidityBuildingCard

@@ -1,0 +1,18 @@
+{
+  "mission": "MELEGASWAP_V2_RC2_EMERGENCY_ROLLBACK_AND_RUNTIME_REPAIR",
+  "part": "D",
+  "sharedSource": "views/HomeTrade/useDexTrendingRankings.ts via TopMoversSnapshotContext",
+  "consumers": ["GlobalTrendingBar / ticker", "Home Top Movers card", "Trending page runtime"],
+  "eligibility": [
+    "canonical identity chainId + token address",
+    "finite measured change24h.pct",
+    "isCredibleMoverChange (activity/volume/external corroboration)",
+    "non-stale ranking inputs from indexed + external quotes"
+  ],
+  "forbiddenPaddingRemoved": true,
+  "backfillBlockRemoved": "const backfill = all … selected.set(b) for TRENDING_LIMIT padding",
+  "browserObserved": {
+    "ticker": "No verified 24h movers yet",
+    "interpretation": "Honest empty — no registry padding when no factual movers"
+  }
+}

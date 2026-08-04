@@ -1,0 +1,171 @@
+{
+  "base": "http://127.0.0.1:3000",
+  "startedAt": "2026-08-04T04:52:12.639Z",
+  "navigation": [
+    {
+      "name": "home",
+      "testId": "melega-header-nav-home",
+      "beforeUrl": "http://127.0.0.1:3000/",
+      "afterUrl": "http://127.0.0.1:3000/",
+      "routeOk": true,
+      "contentOk": true,
+      "healthy": true,
+      "journeyHits": [],
+      "usedClick": true
+    },
+    {
+      "name": "liquidity",
+      "testId": "melega-header-nav-liquidity",
+      "beforeUrl": "http://127.0.0.1:3000/",
+      "afterUrl": "http://127.0.0.1:3000/liquidity-studio/?view=building&step=setup",
+      "routeOk": true,
+      "contentOk": true,
+      "healthy": true,
+      "journeyHits": [],
+      "usedClick": true
+    },
+    {
+      "name": "farms",
+      "testId": "melega-header-nav-farms",
+      "beforeUrl": "http://127.0.0.1:3000/liquidity-studio/?view=building&step=setup",
+      "afterUrl": "http://127.0.0.1:3000/farms/",
+      "routeOk": true,
+      "contentOk": true,
+      "healthy": true,
+      "journeyHits": [],
+      "usedClick": true
+    },
+    {
+      "name": "pools",
+      "testId": "melega-header-nav-pools",
+      "beforeUrl": "http://127.0.0.1:3000/farms/",
+      "afterUrl": "http://127.0.0.1:3000/pools/",
+      "routeOk": true,
+      "contentOk": true,
+      "healthy": true,
+      "journeyHits": [],
+      "usedClick": true
+    },
+    {
+      "name": "list",
+      "testId": "melega-header-nav-list",
+      "beforeUrl": "http://127.0.0.1:3000/pools/",
+      "afterUrl": "http://127.0.0.1:3000/list/",
+      "routeOk": true,
+      "contentOk": true,
+      "healthy": true,
+      "journeyHits": [],
+      "usedClick": true
+    },
+    {
+      "name": "passport",
+      "testId": "melega-header-nav-passport",
+      "beforeUrl": "http://127.0.0.1:3000/list/",
+      "afterUrl": "http://127.0.0.1:3000/passport/",
+      "routeOk": true,
+      "contentOk": true,
+      "healthy": true,
+      "journeyHits": [],
+      "usedClick": true
+    }
+  ],
+  "journeyAbsent": {
+    "founderPath": true,
+    "investorPath": true,
+    "liquidityManager": true,
+    "noJourneyHits": true
+  },
+  "ecosystem": {
+    "blackpump": true,
+    "radarRemoved": true,
+    "labsRemoved": true,
+    "passport": true,
+    "smartdrop": true,
+    "sectionHasBlackpump": true,
+    "sectionHasRadar": false,
+    "sectionHasLabs": false
+  },
+  "chainRoutes": {
+    "avalancheLiquidity": {
+      "url": "http://127.0.0.1:3000/liquidity-studio/?view=add&chain=avalanche",
+      "healthy": true,
+      "noBscCopy": true,
+      "hasLiquiditySurface": true
+    },
+    "04-farms": {
+      "healthy": true,
+      "journeyHits": []
+    },
+    "05-pools": {
+      "healthy": true,
+      "journeyHits": []
+    },
+    "06-liquidity": {
+      "healthy": true,
+      "journeyHits": []
+    },
+    "selectorVisible": true
+  },
+  "consoleErrors": [
+    "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd&include_24hr_change=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/price?ids=melega,pancakeswap-token,floki,polkadot,ethereum,bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0xd1ff6de8297db3839dfc3356f020d63a2e72bbd2&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0xedd9f422bc4d8e55c93a4e2fe64615f8dab27223&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0x963556de0eb8138e97a85f0a86ee0acd159d210b&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0x7d1481568c72891bb87a964c3a6e6213bd73d114&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0xdf9e1a85db4f985d5bb5644ad07d9d7ee5673b5e&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0x7d48423feac5aa05380db98a1f24ce17d641754d&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0xe9e7cea3dedca5984780bafc599bd69add087d56&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Access to fetch at 'https://api.coingecko.com/api/v3/simple/token_price/binance-smart-chain?contract_addresses=0xbf55d5043d9998723087bf0bbcf9532f00ac1d68&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Access to fetch at 'https://eth.llamarpc.com/' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "macbookViewport": {
+    "heroTop": {
+      "top": 140,
+      "text": "AI-POWERED · MULTICHAIN · BUILT FOR BUILDERSDiscover. Trade. Earn.All in One DEX"
+    },
+    "meaningfulContentNearTop": true
+  },
+  "verdictHints": {
+    "navOk": true,
+    "journeyOk": true,
+    "ecoOk": true,
+    "avaxOk": true
+  },
+  "homeMetrics": {
+    "activeFarmsNotFalseZero": true,
+    "topFarmsNotEmptyRanking": true,
+    "topPoolsNotEmptyRanking": true,
+    "hasTopMoversOrHonestEmpty": true
+  },
+  "finishedAt": "2026-08-04T04:53:12.512Z"
+}

@@ -4,16 +4,15 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
-import { IdCard, Gift, FlaskConical, Orbit, Radar, Landmark } from 'lucide-react'
+import { IdCard, Gift, Rocket, Orbit, Landmark } from 'lucide-react'
 import { uxRebuildColors, uxRebuildRadius } from 'design-system/melega/tokens/uxRebuild'
 import { ECOSYSTEM_DESTINATIONS } from './ecosystemDestinations'
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string; 'aria-hidden'?: boolean }>> = {
   passport: IdCard,
   smartdrop: Gift,
-  labs: FlaskConical,
+  blackpump: Rocket,
   space: Orbit,
-  radar: Radar,
   maiora: Landmark,
 }
 
@@ -40,7 +39,7 @@ const Sub = styled.p`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 
   @media (max-width: 1023px) {

@@ -274,6 +274,14 @@ export const USDC = {
   [ChainId.ARBITRUM]: USDC_ARB,
   [ChainId.POLYGON]: USDC_POLYGON,
   [ChainId.SHIMMER2]: USDC_SMR,
+  [ChainId.AVAX]: new ERC20Token(
+    ChainId.AVAX,
+    '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+    6,
+    'USDC.e',
+    'USDCoin (Bridged from Ethereum)',
+    '',
+  ),
 }
 
 export const USDT = {

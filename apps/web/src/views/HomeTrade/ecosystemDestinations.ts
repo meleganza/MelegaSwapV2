@@ -1,6 +1,7 @@
 /**
- * Explore Melega Ecosystem destinations — live URLs only where known in product surface.
- * Maiora has no certified public URL in this codebase; keep disabled.
+ * Explore Melega Ecosystem destinations — public LIVE URLs only.
+ * Radar and Labs removed from Founder-facing Home (RC2 emergency repair).
+ * BlackPump canonical public URL: https://blackpump.fun/ (Melega launchpad).
  */
 export type EcosystemDestination = {
   id: string
@@ -29,10 +30,10 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     external: true,
   },
   {
-    id: 'labs',
-    title: 'LABS',
-    subtitle: 'Trade narratives before listing.',
-    href: 'https://labs.melega.ai/labs',
+    id: 'blackpump',
+    title: 'BLACKPUMP',
+    subtitle: 'Fair-launch meme launchpad.',
+    href: 'https://blackpump.fun/',
     external: true,
   },
   {
@@ -41,13 +42,6 @@ export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
     subtitle: 'Increase project visibility.',
     href: 'https://melega.space/',
     external: true,
-  },
-  {
-    id: 'radar',
-    title: 'RADAR',
-    subtitle: 'Discover trends and claim profiles.',
-    href: '/radar',
-    external: false,
   },
   {
     id: 'maiora',
