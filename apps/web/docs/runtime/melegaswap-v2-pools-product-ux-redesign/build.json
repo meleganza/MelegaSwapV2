@@ -1,0 +1,6 @@
+{
+  "mission": "MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN",
+  "result": "pass",
+  "command": "yarn next build",
+  "pass": true
+}

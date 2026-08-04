@@ -1,0 +1,45 @@
+{
+  "mission": "MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN",
+  "entry": {
+    "primaryCta": "Create Pool",
+    "placement": "Hero",
+    "testid": "pools-hero-create-pool",
+    "communityCta": "pools-hero-community-cta"
+  },
+  "stepperLabels": [
+    "Tokens",
+    "Budget",
+    "Schedule",
+    "Safety",
+    "Review"
+  ],
+  "requiredSections": [
+    "Stake Token",
+    "Reward Token",
+    "Reward Budget",
+    "Emission Schedule",
+    "Lock/Safety",
+    "Review",
+    "Create"
+  ],
+  "preview": {
+    "sticky": true,
+    "fields": [
+      "stake",
+      "reward",
+      "chain",
+      "estimated rewards",
+      "duration",
+      "fee",
+      "status"
+    ],
+    "compact": true
+  },
+  "feeVisible": true,
+  "browser": {
+    "open": true,
+    "preview": true,
+    "close": true
+  },
+  "pass": true
+}

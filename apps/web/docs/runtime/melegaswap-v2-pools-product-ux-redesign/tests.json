@@ -1,0 +1,14 @@
+{
+  "mission": "MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN",
+  "result": "pass",
+  "suites": 19,
+  "tests": 156,
+  "excludedPreexisting": {
+    "files": [
+      "poolsWalletFirst.test.tsx",
+      "poolsTerminologyAlignment.test.tsx"
+    ],
+    "reason": "Pre-existing dual-React invalid hook call on worktree (apps/web/node_modules symlink \u2192 main repo)."
+  },
+  "pass": true
+}

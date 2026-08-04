@@ -28,21 +28,20 @@ describe('POOLS_V1 Final Integration & Certification', () => {
 
   it('economics-repair IA supersedes byte-freeze of pre-repair module layout', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('founder-economics-repair-v1')
+    expect(screen).toContain('product-ux-redesign-v1')
     expect(existsSync(FREEZE)).toBe(true)
     // Freeze file retained as historical artifact; live screen follows economics-repair IA.
     const lock = JSON.parse(readFileSync(FREEZE, 'utf8'))
     expect(lock.baseTip).toBe('e62bdea2')
   })
 
-  it('mounts economics-repair modules in certified order on PoolsStudioScreen', () => {
+  it('mounts product-ux modules in certified order on PoolsStudioScreen', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     const order = [
       'PoolsHeroModule',
       'PoolsOverviewKpisModule',
       'PoolsMyPositionsModule',
       'PoolsExplorePoolsModule',
-      'PoolsAnalyticsModule',
     ]
     let prev = -1
     for (const name of order) {
@@ -51,6 +50,8 @@ describe('POOLS_V1 Final Integration & Certification', () => {
       expect(idx).toBeGreaterThan(prev)
       prev = idx
     }
+    expect(screen).not.toContain('<PoolsAnalyticsModule')
+    expect(screen).toContain('data-pools-module-007="unmounted"')
     expect(screen).toContain('PoolsVisualPolishModule')
     expect(screen).toContain('CreatePoolCta')
     expect(screen).not.toContain('<PoolsFeaturedPoolBand')

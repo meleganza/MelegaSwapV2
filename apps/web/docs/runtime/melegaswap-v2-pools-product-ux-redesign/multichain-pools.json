@@ -1,0 +1,20 @@
+{
+  "mission": "MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN",
+  "unifiedView": true,
+  "filters": [
+    "All",
+    "BNB",
+    "Base",
+    "Polygon",
+    "Ethereum",
+    "Arbitrum",
+    "Avalanche"
+  ],
+  "canonicalIdentity": "chainId + pool address",
+  "neverMergeBySymbol": true,
+  "myPositions": {
+    "aggregateAcrossChains": true,
+    "wrongChainPrompt": "This pool is on {Chain}. Switch network?"
+  },
+  "pass": true
+}

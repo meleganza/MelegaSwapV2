@@ -48,6 +48,8 @@ export const poolsHero = {
   secondaryCtaH: '44px',
   ctaRadius: '10px',
   ctaGap: '12px',
+  /** Contextual MARCO-holder CTA under primary Create Pool (not a giant banner). */
+  communityCtaMaxW: '340px',
 
   gold: '#F4C430',
   goldHover: '#FFD34D',
@@ -85,6 +87,8 @@ export const POOLS_HERO_COPY = {
   description: 'Stake tokens. Earn rewards. On your terms.',
   primaryCta: 'Create Pool',
   secondaryCta: 'How it Works',
+  communityCtaTitle: 'Create a staking pool for your community',
+  communityCtaBody: 'Reward your holders and increase token engagement.',
   trustTitle: 'Why Stake on Melega DEX?',
   trustItems: [
     {

@@ -97,14 +97,14 @@ describe('multichain pool inventory + layout', () => {
   it('Pools screen uses Create Pool modal instead of permanent side column', () => {
     const screen = load('views/PoolsStudio/PoolsStudioScreen.tsx')
     expect(screen).toContain('create-pool-modal')
-    expect(screen).toContain('multichain-product-repair-v1')
+    expect(screen).toContain('product-ux-redesign-v1')
     expect(screen).not.toContain('PositionsCreateRow')
     expect(screen).not.toContain('data-ps-create-pool-permanently-expanded')
   })
 
   it('Farms and Pools explore expose chain filters', () => {
     expect(LIVE_CHAIN_FILTERS.map((c) => c.label)).toEqual([
-      'All chains',
+      'All',
       'BNB',
       'Base',
       'Polygon',

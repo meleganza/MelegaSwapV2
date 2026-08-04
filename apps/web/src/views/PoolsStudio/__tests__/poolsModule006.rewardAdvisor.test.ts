@@ -148,13 +148,12 @@ describe('POOLS_MODULE_006 Reward Advisor', () => {
     )
   })
 
-  it('founder IA demotes Reward Advisor; Analytics follows Finished; 009–010 stay unmounted', () => {
+  it('founder IA demotes Reward Advisor and Analytics; 009–010 stay unmounted', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
-    // Founder acceptance hierarchy: … Explore → Finished → Analytics (no Reward Advisor band).
     expect(screen).not.toContain('<PoolsRewardAdvisorModule')
-    expect(screen).toContain('PoolsAnalyticsModule')
-    expect(screen).not.toContain('data-pools-module-006="mounted"')
-    expect(screen.indexOf('PoolsFinishedPoolsModule')).toBeLessThan(screen.indexOf('PoolsAnalyticsModule'))
+    expect(screen).not.toContain('<PoolsAnalyticsModule')
+    expect(screen).toContain('data-pools-module-006="unmounted"')
+    expect(screen).toContain('data-pools-module-007="unmounted"')
     expect(screen).not.toContain('data-pools-module="009"')
     expect(screen).not.toContain('PoolsIntegrationModule')
     expect(screen).not.toContain('PoolsTrendingModule')

@@ -341,7 +341,8 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         <Btn
           type="button"
           $primary
-          disabled={!pool.stakeEnabled || busy}
+          data-testid="pools-explore-stake"
+          disabled={!pool.stakeEnabled || busy || pool.primaryAction === 'Unavailable'}
           aria-label={
             pool.primaryAction === 'Switch Network'
               ? `Switch network to stake in ${pool.title}`
@@ -351,36 +352,67 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
           }
           onClick={onPrimary}
         >
-          {busy ? 'Staking…' : pool.primaryAction}
+          {busy
+            ? 'Staking…'
+            : pool.primaryAction === 'Switch Network'
+              ? 'Switch Network'
+              : pool.primaryAction === 'Connect Wallet'
+                ? 'Connect Wallet'
+                : 'Stake'}
+        </Btn>
+        <Btn
+          type="button"
+          data-testid="pools-explore-manage"
+          disabled={pool.primaryAction === 'Unavailable' || pool.primaryAction === 'Connect Wallet' || busy}
+          aria-label={`Manage ${pool.title}`}
+          onClick={() => {
+            if (pool.primaryAction === 'Switch Network') {
+              setSwitchOpen(true)
+              return
+            }
+            setBusy(true)
+            try {
+              requestModal(pool.sourceCard, 'stake')
+            } finally {
+              window.setTimeout(() => setBusy(false), 1200)
+            }
+          }}
+        >
+          Manage
         </Btn>
         {contractUrl && contractAddress ? (
           <Btn
             type="button"
-            data-testid="pools-explore-view-contract"
-            aria-label={`View contract for ${pool.title} on ${explorerName}`}
+            data-testid="pools-explore-view-pool"
+            aria-label={`View pool ${pool.title} on ${explorerName}`}
             onClick={() => {
               window.open(contractUrl, '_blank', 'noopener,noreferrer')
             }}
           >
-            {explorerName} ↗
+            View Pool
           </Btn>
-        ) : null}
-        {pool.detailsHref ? (
+        ) : pool.detailsHref ? (
           <Btn
             type="button"
-            aria-label={`Details for ${pool.title}`}
+            data-testid="pools-explore-view-pool"
+            aria-label={`View pool ${pool.title}`}
             onClick={() => {
               window.location.href = pool.detailsHref!
             }}
           >
-            Details
+            View Pool
           </Btn>
-        ) : null}
+        ) : (
+          <Btn type="button" disabled data-testid="pools-explore-view-pool">
+            View Pool
+          </Btn>
+        )}
       </Actions>
 
       <ChainSwitchConfirmDialog
         open={switchOpen}
         targetChainId={pool.chainId}
+        productLabel="This pool"
         busy={switching}
         onCancel={() => setSwitchOpen(false)}
         onConfirm={onConfirmSwitch}

@@ -14,7 +14,6 @@ import { PoolsHeroModule } from './modules/PoolsHeroModule'
 import { PoolsOverviewKpisModule } from './modules/PoolsOverviewKpisModule'
 import { PoolsMyPositionsModule } from './modules/PoolsMyPositionsModule'
 import { PoolsExplorePoolsModule } from './modules/PoolsExplorePoolsModule'
-import { PoolsAnalyticsModule } from './modules/PoolsAnalyticsModule'
 import { PoolsVisualPolishModule } from './modules/PoolsVisualPolishModule'
 import { poolsHero } from './modules/poolsHeroTokens'
 
@@ -64,7 +63,7 @@ const ModalOverlay = styled.div`
 `
 
 const ModalShell = styled.div`
-  width: min(720px, 100%);
+  width: min(960px, 100%);
   margin-top: 24px;
   position: relative;
 `
@@ -87,9 +86,9 @@ const CloseBtn = styled.button`
 `
 
 /**
- * Founder IA (multichain product repair):
- * Hero → KPI → My Positions (full width) → Explore → Analytics
- * Create Pool opens as a modal / ?create=1 — never a permanent side column.
+ * Pools product IA:
+ * Hero (Featured compact) → KPIs → My Positions → Explore Pools
+ * Create Pool opens as a modal / ?create=1 — never a permanent page column.
  */
 export const PoolsStudioScreen: React.FC = () => {
   const router = useRouter()
@@ -130,11 +129,13 @@ export const PoolsStudioScreen: React.FC = () => {
       data-pools-module-002="mounted"
       data-pools-module-003="mounted"
       data-pools-module-004="mounted"
-      data-pools-module-005="mounted"
-      data-pools-module-007="mounted"
+      data-pools-module-005="unmounted"
+      data-pools-module-006="unmounted"
+      data-pools-module-007="unmounted"
       data-pools-module-008="mounted"
       data-pools-architecture="000"
-      data-pools-ia="multichain-product-repair-v1"
+      data-pools-ia="product-ux-redesign-v1"
+      data-pools-create-pool="modal"
       data-ps-wallet-first="true"
       data-pools-create-modal={createOpen ? 'open' : 'closed'}
       data-pools-ux-fixture={isPoolsUxFixtureEnabled() ? 'true' : undefined}
@@ -144,7 +145,7 @@ export const PoolsStudioScreen: React.FC = () => {
       <PoolsVisualPolishModule />
       <PoolsRuntimeProvider>
         <PoolsActionHost />
-        <Content data-ps-content data-pools-ia="multichain-product-repair-v1">
+        <Content data-ps-content data-pools-ia="product-ux-redesign-v1">
           <PoolsHeroModule onRequestCreatePool={openCreate} />
           <DataSurfaceErrorBoundary
             surface="Pools Overview KPIs"
@@ -153,13 +154,10 @@ export const PoolsStudioScreen: React.FC = () => {
             <PoolsOverviewKpisModule />
           </DataSurfaceErrorBoundary>
           <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
-            <PoolsMyPositionsModule />
+            <PoolsMyPositionsModule variant="with-create-side" />
           </DataSurfaceErrorBoundary>
           <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
             <PoolsExplorePoolsModule />
-          </DataSurfaceErrorBoundary>
-          <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
-            <PoolsAnalyticsModule />
           </DataSurfaceErrorBoundary>
         </Content>
         {createOpen ? (

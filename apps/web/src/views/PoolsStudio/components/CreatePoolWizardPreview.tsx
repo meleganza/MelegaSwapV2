@@ -5,33 +5,35 @@ import {
   computeEstimatedApr,
   computeHealthScore,
   computeRewardConsumptionPct,
+  describeWizardCreatePoolFee,
   hasCompletePoolEstimateParams,
 } from './createPoolWizardState'
 
 const Panel = styled.aside`
-  width: 320px;
-  min-width: 320px;
+  width: 280px;
+  min-width: 280px;
   align-self: stretch;
   box-sizing: border-box;
   background: #181818;
-  border-radius: 18px;
-  padding: 20px 18px 18px;
+  border-radius: 14px;
+  padding: 14px 14px 12px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   @media (max-width: 767px) {
     width: 100%;
     min-width: 0;
-    margin-top: 18px;
+    margin-top: 12px;
   }
 `
 
 const Block = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 `
 
@@ -47,8 +49,8 @@ const BlockTitle = styled.span`
 
 const AprValue = styled.span<{ $pending?: boolean }>`
   font-family: ${({ $pending }) => ($pending ? 'Inter, sans-serif' : 'Sora, sans-serif')};
-  font-size: ${({ $pending }) => ($pending ? '14px' : '28px')};
-  line-height: ${({ $pending }) => ($pending ? '20px' : '32px')};
+  font-size: ${({ $pending }) => ($pending ? '12px' : '22px')};
+  line-height: ${({ $pending }) => ($pending ? '16px' : '26px')};
   font-weight: ${({ $pending }) => ($pending ? 600 : 700)};
   color: ${({ $pending }) => ($pending ? '#b0b0b0' : '#18f089')};
 `
@@ -66,15 +68,16 @@ const MetricRow = styled.div`
   strong {
     color: #f2f2f2;
     font-weight: 700;
+    text-align: right;
   }
 `
 
 const GraphWrap = styled.div`
-  height: 72px;
-  border-radius: 10px;
+  height: 48px;
+  border-radius: 8px;
   background: #141414;
   border: 1px solid #2a2a2a;
-  padding: 8px 10px;
+  padding: 6px 8px;
   box-sizing: border-box;
   display: flex;
   align-items: flex-end;
@@ -86,7 +89,7 @@ const GraphBar = styled.div<{ $h: number }>`
   min-width: 0;
   height: ${({ $h }) => $h}%;
   border-radius: 3px 3px 0 0;
-  background: linear-gradient(180deg, #F4C430 0%, #8a7020 100%);
+  background: linear-gradient(180deg, #f4c430 0%, #8a7020 100%);
   transition: height 180ms ease;
 `
 
@@ -103,30 +106,6 @@ const HealthFill = styled.div<{ $pct: number }>`
   border-radius: inherit;
   background: linear-gradient(90deg, #18f089 0%, #0fb86a 100%);
   transition: width 180ms ease;
-`
-
-const DonutRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`
-
-const Donut = styled.div`
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: conic-gradient(#F4C430 var(--pct), #2a2a2a 0);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-
-  &::after {
-    content: '';
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #181818;
-  }
 `
 
 const StatusPill = styled.span<{ $ok?: boolean }>`
@@ -151,23 +130,18 @@ function parseNum(raw: string): number {
   return Number.isFinite(n) ? n : 0
 }
 
-function computeApr(state: CreatePoolWizardState): string {
-  return computeEstimatedApr(state)
-}
-
-function computeHealth(state: CreatePoolWizardState): number | null {
-  return computeHealthScore(state)
-}
-
 type Props = {
   state: CreatePoolWizardState
+  chainLabel?: string
 }
 
-export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
-  const apr = useMemo(() => computeApr(state), [state])
+export const CreatePoolWizardPreview: React.FC<Props> = ({ state, chainLabel = 'BNB' }) => {
+  const apr = useMemo(() => computeEstimatedApr(state), [state])
   const aprPending = !hasCompletePoolEstimateParams(state)
-  const health = useMemo(() => computeHealth(state), [state])
+  const health = useMemo(() => computeHealthScore(state), [state])
   const consumption = useMemo(() => computeRewardConsumptionPct(state), [state])
+  const fee = useMemo(() => describeWizardCreatePoolFee(state), [state])
+  const ready = Boolean(state.rewardToken && state.stakeToken)
 
   const bars = useMemo(() => {
     if (!hasCompletePoolEstimateParams(state)) return []
@@ -180,7 +154,45 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
   }, [state])
 
   return (
-    <Panel data-r722-wizard-preview data-ps-create-wizard-preview>
+    <Panel data-r722-wizard-preview data-ps-create-wizard-preview data-ps-create-preview-compact>
+      <Block>
+        <BlockTitle>Pool Preview</BlockTitle>
+        <MetricRow>
+          <span>Stake</span>
+          <strong data-ps-preview-stake>{state.stakeToken || '—'}</strong>
+        </MetricRow>
+        <MetricRow>
+          <span>Reward</span>
+          <strong data-ps-preview-reward>{state.rewardToken || '—'}</strong>
+        </MetricRow>
+        <MetricRow>
+          <span>Chain</span>
+          <strong data-ps-preview-chain>{chainLabel}</strong>
+        </MetricRow>
+        <MetricRow>
+          <span>Est. rewards</span>
+          <strong data-ps-preview-rewards>
+            {state.dailyRewards ? `${state.dailyRewards} / day` : 'Not set'}
+          </strong>
+        </MetricRow>
+        <MetricRow>
+          <span>Duration</span>
+          <strong data-ps-preview-duration>
+            {state.emissionDuration ? `${state.emissionDuration} days` : 'Not set'}
+          </strong>
+        </MetricRow>
+        <MetricRow>
+          <span>Fee</span>
+          <strong data-ps-preview-fee>{fee.display}</strong>
+        </MetricRow>
+        <MetricRow>
+          <span>Status</span>
+          <StatusPill $ok={ready} data-ps-wizard-machine-status>
+            {ready ? 'Ready' : 'Draft'}
+          </StatusPill>
+        </MetricRow>
+      </Block>
+
       <Block>
         <BlockTitle>Estimated APR</BlockTitle>
         <AprValue data-ps-wizard-preview-apr $pending={aprPending}>
@@ -189,7 +201,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
       </Block>
 
       <Block>
-        <BlockTitle>Emission Graph</BlockTitle>
+        <BlockTitle>Emission</BlockTitle>
         {bars.length === 0 ? (
           <MetricRow>
             <span data-ps-wizard-emission-empty>Calculated after reward configuration.</span>
@@ -208,7 +220,7 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
         <MetricRow>
           <span>Score</span>
           <strong data-ps-wizard-health-score>
-            {health == null ? 'Calculated after reward configuration.' : `${health} / 100`}
+            {health == null ? 'Pending config' : `${health} / 100`}
           </strong>
         </MetricRow>
         {health != null ? (
@@ -218,45 +230,15 @@ export const CreatePoolWizardPreview: React.FC<Props> = ({ state }) => {
         ) : null}
       </Block>
 
-      <Block>
-        <BlockTitle>Reward Consumption</BlockTitle>
-        {consumption == null ? (
+      {consumption != null ? (
+        <Block>
+          <BlockTitle>Reward use</BlockTitle>
           <MetricRow>
-            <span data-ps-wizard-consumption-empty>Calculated after reward configuration.</span>
+            <span>Projected</span>
+            <strong data-ps-wizard-consumption-pct>{consumption}%</strong>
           </MetricRow>
-        ) : (
-          <DonutRow>
-            <Donut style={{ ['--pct' as string]: `${consumption}%` }} data-ps-wizard-consumption-donut />
-            <MetricRow style={{ flex: 1 }}>
-              <span>Projected use</span>
-              <strong data-ps-wizard-consumption-pct>{consumption}%</strong>
-            </MetricRow>
-          </DonutRow>
-        )}
-      </Block>
-
-      <Block>
-        <BlockTitle>Lock Summary</BlockTitle>
-        <MetricRow>
-          <span>Type</span>
-          <strong>{state.lockType || '—'}</strong>
-        </MetricRow>
-        <MetricRow>
-          <span>Period</span>
-          <strong>{state.lockPeriod || '—'}</strong>
-        </MetricRow>
-        <MetricRow>
-          <span>Cooldown</span>
-          <strong>{state.cooldown || '—'}</strong>
-        </MetricRow>
-      </Block>
-
-      <Block>
-        <BlockTitle>Machine Status</BlockTitle>
-        <StatusPill $ok={Boolean(state.rewardToken && state.stakeToken)} data-ps-wizard-machine-status>
-          {state.rewardToken && state.stakeToken ? 'Ready' : 'Draft'}
-        </StatusPill>
-      </Block>
+        </Block>
+      ) : null}
     </Panel>
   )
 }

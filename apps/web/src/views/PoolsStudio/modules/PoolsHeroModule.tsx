@@ -129,6 +129,39 @@ const Actions = styled.div`
   }
 `
 
+const CommunityHint = styled.button`
+  appearance: none;
+  margin-top: 12px;
+  max-width: ${poolsHero.communityCtaMaxW};
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &:focus-visible {
+    outline: ${poolsHero.focusRing};
+    outline-offset: ${poolsHero.focusOffset};
+  }
+`
+
+const CommunityTitle = styled.span`
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  color: rgba(244, 196, 48, 0.92);
+`
+
+const CommunityBody = styled.span`
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.52);
+`
+
 const PrimaryCta = styled.a`
   box-sizing: border-box;
   width: ${poolsHero.primaryCtaW};
@@ -303,6 +336,18 @@ export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = (
               </SecondaryCta>
             ) : null}
           </Actions>
+          <CommunityHint
+            type="button"
+            data-testid="pools-hero-community-cta"
+            onClick={(e) => {
+              e.preventDefault()
+              if (onRequestCreatePool) onRequestCreatePool()
+              else scrollToCreatePool()
+            }}
+          >
+            <CommunityTitle>{POOLS_HERO_COPY.communityCtaTitle}</CommunityTitle>
+            <CommunityBody>{POOLS_HERO_COPY.communityCtaBody}</CommunityBody>
+          </CommunityHint>
         </Left>
         <ArtCol>
           <PoolsHeroArtwork />

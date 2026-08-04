@@ -182,8 +182,10 @@ export function cardToExploreModel(
     statusLabel = 'Partial'
   }
 
-  const stakeSymbol = card.stakeToken || card.tokens?.[0] || 'TOKEN'
-  const rewardSymbol = card.rewardToken || 'REWARD'
+  const stakeSymbol =
+    (card.stakeToken || card.tokens?.[0] || card.rawPool?.stakingToken?.symbol || 'TOKEN').trim() || 'TOKEN'
+  const rewardSymbol =
+    (card.rewardToken || card.rawPool?.earningToken?.symbol || 'REWARD').trim() || 'REWARD'
   const isLp =
     Boolean(card.rawPool?.stakingToken?.symbol?.includes('LP')) ||
     /lp/i.test(stakeSymbol) ||

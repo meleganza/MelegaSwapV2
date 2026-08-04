@@ -249,23 +249,28 @@ export const PoolTokenIcon: React.FC<{
   offset?: boolean
   address?: string
   chainId?: number
-}> = ({ symbol, size = 24, offset, address, chainId }) => (
-  <span
-    style={{
-      marginLeft: offset ? -6 : 0,
-      position: 'relative',
-      zIndex: offset ? 1 : 2,
-      flexShrink: 0,
-      display: 'inline-flex',
-    }}
-  >
-    <MelegaTokenAvatar
-      name={symbol}
-      symbol={symbol}
-      size={size}
-      address={isMarcoSymbol(symbol) ? MARCO_BSC_ADDRESS : address}
-      chainId={isMarcoSymbol(symbol) ? MARCO_BSC_CHAIN_ID : chainId}
-      radius="circle"
-    />
-  </span>
-)
+}> = ({ symbol, size = 24, offset, address, chainId }) => {
+  const safeSymbol = (symbol || '').trim() || 'TOKEN'
+  return (
+    <span
+      style={{
+        marginLeft: offset ? -6 : 0,
+        position: 'relative',
+        zIndex: offset ? 1 : 2,
+        flexShrink: 0,
+        display: 'inline-flex',
+      }}
+      data-ps-token-icon={safeSymbol}
+      title={safeSymbol}
+    >
+      <MelegaTokenAvatar
+        name={safeSymbol}
+        symbol={safeSymbol}
+        size={size}
+        address={isMarcoSymbol(safeSymbol) ? MARCO_BSC_ADDRESS : address}
+        chainId={isMarcoSymbol(safeSymbol) ? MARCO_BSC_CHAIN_ID : chainId}
+        radius="circle"
+      />
+    </span>
+  )
+}

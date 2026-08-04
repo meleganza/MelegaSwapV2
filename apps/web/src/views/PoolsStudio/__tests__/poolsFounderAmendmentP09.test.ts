@@ -1,6 +1,6 @@
 /**
  * Founder amendment P0-9 — Explore Pools density: same column targets as Farms,
- * compact card with redundant subtitle copy removed, Stake + BscScan ↗ fit inside.
+ * compact card with redundant subtitle copy removed, Stake + View Pool fit inside.
  */
 import { readFileSync } from 'fs'
 import path from 'path'
@@ -28,12 +28,13 @@ describe('Founder amendment P0-9 — Explore Pools density grid', () => {
     expect(grid).toMatch(/min-width: \$\{poolsExplore\.ultraWideBreak\}\)\s*\{\s*grid-template-columns: repeat\(5/)
   })
 
-  it('removes the redundant description subtitle and keeps Stake + BscScan ↗ actions', () => {
+  it('removes the redundant description subtitle and keeps Stake + View Pool actions', () => {
     const card = load('modules/PoolsExplorePoolCard.tsx')
     expect(card).not.toContain('<Desc>')
     expect(card).not.toContain('pool.description')
-    expect(card).toContain('{pool.stakeLabel}')
-    expect(card).toContain('BscScan ↗')
+    expect(card).toContain('Stake')
+    expect(card).toContain('Manage')
+    expect(card).toContain('View Pool')
     // Actions remain flexible/ellipsis-safe so both fit in the denser 4–5 up cards.
     expect(card).toMatch(/flex: 1 1 0;/)
     expect(card).toContain('text-overflow: ellipsis')

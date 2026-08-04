@@ -1,0 +1,21 @@
+{
+  "mission": "MELEGASWAP_V2_POOLS_PRODUCT_UX_REDESIGN",
+  "order": [
+    "Hero (Featured compact)",
+    "KPI row",
+    "My Positions",
+    "Explore Pools"
+  ],
+  "createPool": "modal / ?create=1 / #create-pool \u2014 never a permanent page column",
+  "unmounted": [
+    "Analytics (007)",
+    "Reward Advisor (006)",
+    "Finished Pools standalone (005)",
+    "empty advisor slot"
+  ],
+  "iaMarker": "data-pools-ia=product-ux-redesign-v1",
+  "createMarker": "data-pools-create-pool=modal",
+  "macbookImmediateContent": true,
+  "noGiantEmptyAreas": true,
+  "pass": true
+}

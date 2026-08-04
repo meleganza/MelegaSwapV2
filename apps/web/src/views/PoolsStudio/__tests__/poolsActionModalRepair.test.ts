@@ -110,7 +110,7 @@ describe('Pools/Farms action modal repair', () => {
     const screen = readFileSync(path.join(STUDIO, '../FarmsStudio/FarmsStudioScreen.tsx'), 'utf8')
     expect(screen).not.toContain('<FarmsFinishedFarmsModule')
     expect(screen).toContain('CreateFarmWorkspace')
-    expect(screen).toContain('data-farms-create-farm="mounted"')
+    expect(screen).toContain('data-farms-create-farm="modal"')
   })
 
   it('Treasury Runtime remains absent from fee helpers', () => {

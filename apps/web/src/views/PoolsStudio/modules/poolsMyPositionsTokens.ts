@@ -90,10 +90,10 @@ export const poolsMyPositions = {
 
 /** Frozen Module 001 / 002 source SHAs (byte-identical guard). */
 export const POOLS_MODULE_001_FREEZE_SHA256 = {
-  PoolsHeroModule: 'be37dd431672468faf033738028f4550d85cdd54df5f5ca080ad0e3fe7f6370f',
+  PoolsHeroModule: 'd5195e2445d3bf795f17edac5019145510f5426242eeb27bf5223dd3427ff203',
   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
   PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
-  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+  poolsHeroTokens: '2b50e203ae405f28bbfd18da4304e72eb6875a4514db88fbf66ddf66d7b38d13',
 } as const
 
 export const POOLS_MODULE_002_FREEZE_SHA256 = {

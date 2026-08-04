@@ -37,20 +37,20 @@ const Card = styled.section`
   box-sizing: border-box;
   background: #141414;
   border: 1px solid rgba(244, 196, 48, 0.45);
-  border-radius: 22px;
-  padding: 32px 36px 34px;
+  border-radius: 16px;
+  padding: 20px 22px 18px;
   display: flex;
   flex-direction: column;
   overflow: visible;
   height: auto;
 
   @media (max-width: 767px) {
-    padding: 18px;
-    border-radius: 18px;
+    padding: 14px;
+    border-radius: 14px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     scroll-margin-top: 16px;
     scroll-margin-bottom: 120px;
   }
@@ -111,14 +111,14 @@ const Header = styled.div`
 const Title = styled.h2`
   margin: 0;
   font-family: Sora, sans-serif;
-  font-size: 32px;
-  line-height: 38px;
+  font-size: 22px;
+  line-height: 28px;
   font-weight: 700;
   color: #ffffff;
 
   @media (max-width: 767px) {
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 20px;
+    line-height: 26px;
   }
 `
 
@@ -411,8 +411,8 @@ const Body = styled.div`
 `
 
 const PreviewColumn = styled.div`
-  width: 320px;
-  min-width: 320px;
+  width: 280px;
+  min-width: 280px;
   align-self: flex-start;
   position: sticky;
   top: 24px;
@@ -422,7 +422,7 @@ const PreviewColumn = styled.div`
     min-width: 0;
     position: static;
     top: auto;
-    margin-top: 24px;
+    margin-top: 16px;
 
     & > aside {
       margin-top: 0;

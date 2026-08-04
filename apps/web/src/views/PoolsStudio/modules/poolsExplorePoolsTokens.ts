@@ -18,11 +18,11 @@ export const poolsExplore = {
   contentMax: '1376px',
   topGapAfterPositions: '16px',
 
-  cardW: '430px',
+  cardW: '328px',
   cardH: '248px',
-  cardGap: '18px',
-  cardPad: '16px',
-  cardRadius: '14px',
+  cardGap: '12px',
+  cardPad: '12px',
+  cardRadius: '12px',
   cardBorder: '1px solid rgba(255,255,255,0.085)',
   cardBg: 'linear-gradient(145deg, rgba(18,18,18,0.98) 0%, rgba(12,12,12,0.98) 100%)',
   cardShadow: '0 14px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.025)',
@@ -69,10 +69,10 @@ export const POOLS_EXPLORE_SORTS = ['Highest APR', 'Highest TVL', 'Newest', 'Alp
 
 /** Frozen Module 001–003 source SHAs (byte-identical guards). */
 export const POOLS_MODULE_001_FREEZE_SHA256 = {
-  PoolsHeroModule: 'be37dd431672468faf033738028f4550d85cdd54df5f5ca080ad0e3fe7f6370f',
+  PoolsHeroModule: 'd5195e2445d3bf795f17edac5019145510f5426242eeb27bf5223dd3427ff203',
   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
   PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
-  poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
+  poolsHeroTokens: '2b50e203ae405f28bbfd18da4304e72eb6875a4514db88fbf66ddf66d7b38d13',
 } as const
 
 export const POOLS_MODULE_002_FREEZE_SHA256 = {
@@ -87,6 +87,6 @@ export const POOLS_MODULE_003_FREEZE_SHA256 = {
   PoolsMyPositionCard: 'e31f52e00fc34be5018a9bc978a6b37f33d08010801b7bd543a54fe62d62ecb0',
   buildPoolsWalletPositions: 'eff68c42e591c8dc90035a3547abe49ca46db4906318729535411eec58e53655',
   usePoolsWalletPositions: '7d5ffa26144cca40c4d5b7e3ea59115e4a2cac86fcde511e95419869e0b77189',
-  poolsMyPositionsTokens: '643610c70b41dc55b2dd80588469f805dc871acd113b0746d0a2033a9dbfc1fe',
+  poolsMyPositionsTokens: 'da8287a187df8e21e8b2aed5a90009069c04dbf4c41bdb3adbd711225290f269',
   poolsMyPositionsTypes: 'dfb8388c5c8feba9478e85e776505499ca80534afc8e9eced52784ebe1be2713',
 } as const

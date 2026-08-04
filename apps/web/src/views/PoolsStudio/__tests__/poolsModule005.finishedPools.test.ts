@@ -80,7 +80,7 @@ describe('POOLS_MODULE_005 Finished Pools', () => {
   it('does not mount standalone Finished section on economics-repair IA', () => {
     const screen = readFileSync(path.join(STUDIO, 'PoolsStudioScreen.tsx'), 'utf8')
     expect(screen).not.toContain('<PoolsFinishedPoolsModule')
-    expect(screen).toContain('founder-economics-repair-v1')
+    expect(screen).toContain('product-ux-redesign-v1')
     expect(screen).not.toContain('data-pools-module="009"')
     expect(screen).not.toContain('PoolsIntegrationModule')
   })
