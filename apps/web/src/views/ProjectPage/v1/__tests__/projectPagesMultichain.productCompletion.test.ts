@@ -52,7 +52,9 @@ describe('Project Pages Multichain Product Completion', () => {
     const shell = readFileSync(path.join(V1, 'ProjectPageV1Shell.tsx'), 'utf8')
     expect(shell).toContain('Buy Token')
     expect(shell).toContain('data-testid="project-v1-buy"')
-    expect(shell).not.toContain('data-testid="project-v1-trade"')
+    // Trade is a secondary CTA; Buy Token must remain the primary conversion action.
+    expect(shell).toContain('data-testid="project-v1-trade"')
+    expect(shell.indexOf('project-v1-buy')).toBeLessThan(shell.indexOf('project-v1-trade'))
   })
 
   it('builds LIVE + Coming soon deployments for MARCO', () => {

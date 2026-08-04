@@ -1,0 +1,23 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_COMMERCIAL_CONVERSION_POLISH",
+  "verifiedAt": "2026-08-04T18:49:17.218Z",
+  "primaryCta": "Buy Token",
+  "secondaryCtas": [
+    "Add Wallet",
+    "Trade",
+    "Farm",
+    "Pool",
+    "Liquidity"
+  ],
+  "growCta": true,
+  "observed": {
+    "buy": true,
+    "addWallet": true,
+    "trade": true,
+    "farm": true,
+    "pool": true,
+    "liquidity": true,
+    "grow": true
+  },
+  "pass": true
+}

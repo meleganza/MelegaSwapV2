@@ -1,0 +1,8 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_COMMERCIAL_CONVERSION_POLISH",
+  "command": "yarn next build",
+  "result": "pass",
+  "pass": true,
+  "logTail": "project-hq/[slug] built; exit 0",
+  "verifiedAt": "2026-08-04T18:49:38.033629+00:00"
+}

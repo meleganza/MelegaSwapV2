@@ -1,0 +1,14 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_PAGE_COMMERCIAL_CONVERSION_POLISH",
+  "result": "pass",
+  "suites": [
+    "projectPageCommercialConversionPolish",
+    "projectPagesMultichain.productCompletion",
+    "projectPageZeroRebuild.v1",
+    "ux002.premiumMobileExperience",
+    "projectDiscoveryRestructure"
+  ],
+  "tests": 34,
+  "passed": 34,
+  "pass": true
+}

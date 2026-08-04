@@ -260,12 +260,13 @@ export const DenseTable = styled.div`
 
 export const DenseRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 0.7fr));
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 0.65fr));
   gap: 8px;
   padding: 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 12px;
   align-items: center;
+  min-width: 0;
 
   @media (max-width: 639px) {
     grid-template-columns: 1fr 1fr;
