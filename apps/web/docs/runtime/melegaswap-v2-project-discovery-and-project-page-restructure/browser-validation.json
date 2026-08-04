@@ -1,0 +1,66 @@
+{
+  "mission": "MELEGASWAP_V2_PROJECT_DISCOVERY_AND_PROJECT_PAGE_RESTRUCTURE",
+  "verifiedAt": "2026-08-04T17:23:59.260Z",
+  "base": "http://127.0.0.1:3014",
+  "steps": [
+    {
+      "step": "home",
+      "pass": true
+    },
+    {
+      "step": "projects",
+      "url": "/projects/?sort=trending",
+      "search": true,
+      "claim": true,
+      "cardCount": 274,
+      "chainBadges": 274,
+      "openHref": "/@marco/",
+      "pass": true
+    },
+    {
+      "step": "project-page",
+      "url": "/project-hq/marco/",
+      "buy": true,
+      "trade": true,
+      "farm": true,
+      "pool": true,
+      "liquidity": true,
+      "claim": true,
+      "chainBadge": true,
+      "wrong": false,
+      "pass": true
+    },
+    {
+      "step": "swap",
+      "url": "/?focus=swap",
+      "oops": false,
+      "pass": true
+    },
+    {
+      "step": "farm",
+      "pass": true
+    },
+    {
+      "step": "pool",
+      "pass": true
+    },
+    {
+      "step": "trending-redirect",
+      "url": "http://127.0.0.1:3014/projects/?sort=trending",
+      "pass": true
+    },
+    {
+      "step": "project-alias",
+      "url": "http://127.0.0.1:3014/project-hq/marco/?chain=ethereum",
+      "pass": true
+    },
+    {
+      "step": "mobile",
+      "cards": 274,
+      "search": true,
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "note": "Buy/Trade CTAs use getBuyTokenHref → /?focus=swap (Home Smart Swap surface). No dead end."
+}

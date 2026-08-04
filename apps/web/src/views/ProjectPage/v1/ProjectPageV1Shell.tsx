@@ -253,6 +253,7 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       : undefined
   const socials = getSocialResources(document)
   const website = document.resources.find((r) => r.resourceType === 'website')
+  const github = document.resources.find((r) => r.resourceType === 'github')
   const buyHref = getBuyTokenHref({ chainId, contract })
   const market = useProjectLiveMarket(document.slug, marketsDocument.markets.length)
   const [pay, setPay] = useState<(typeof PAYMENTS)[number]>('BNB')
@@ -466,11 +467,47 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
               <Btn $primary href={buyHref} data-testid="project-v1-buy">
                 Buy Token{symbol ? ` · ${symbol}` : ''}
               </Btn>
+              {contract ? (
+                <span data-testid="project-v1-add-wallet-secondary">
+                  <AddToWalletButton
+                    variant="text"
+                    scale="md"
+                    height="36px"
+                    style={{
+                      fontSize: '13px',
+                      fontWeight: 750,
+                      border: `1px solid ${pp.line}`,
+                      borderRadius: 9,
+                      minHeight: 36,
+                      padding: '0 14px',
+                    }}
+                    marginTextBetweenLogo="6px"
+                    textOptions={AddToWalletTextOptions.TEXT}
+                    tokenAddress={contract}
+                    tokenSymbol={symbol ?? 'TOKEN'}
+                    tokenDecimals={tokenDecimals}
+                    tokenLogo={logoUrl ?? `/images/${chainId}/tokens/${contract}.png`}
+                  />
+                </span>
+              ) : null}
+              <Btn href={buyHref} data-testid="project-v1-trade">
+                Trade
+              </Btn>
               <Btn href="/farms" data-testid="project-v1-next-farm">
                 Farm
               </Btn>
               <Btn href="/pools" data-testid="project-v1-next-pool">
                 Pool
+              </Btn>
+              <Btn href="/liquidity-studio" data-testid="project-v1-liquidity">
+                Liquidity
+              </Btn>
+              <Btn
+                $ghost
+                href={`/list?intent=claim-project&slug=${encodeURIComponent(document.slug)}`}
+                data-testid="project-v1-claim"
+              >
+                Claim Project
               </Btn>
             </HeroActions>
           </div>

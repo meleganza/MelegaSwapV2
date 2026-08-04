@@ -5,11 +5,13 @@ import { join } from 'path'
 describe('Home hero CTAs — founder acquisition', () => {
   const src = readFileSync(join(__dirname, '../DexHomeScreen.tsx'), 'utf8')
 
-  it('primary CTA lists projects; secondary opens trending projects', () => {
+  it('primary CTA lists projects; secondary opens Projects discovery (trending sort)', () => {
     expect(src).toMatch(/data-testid="dex-home-list-project"/)
     expect(src).toMatch(/List Your Project/)
     expect(src).toMatch(/data-testid="dex-home-open-trending"/)
     expect(src).toMatch(/Trending Projects/)
+    expect(src).toMatch(/router\.push\('\/projects\?sort=trending'\)/)
+    expect(src).not.toMatch(/router\.push\('\/trending'\)/)
   })
 
   it('does not render Instant Swap / Smart Swap hero buttons or Instant mode tabs on Home', () => {

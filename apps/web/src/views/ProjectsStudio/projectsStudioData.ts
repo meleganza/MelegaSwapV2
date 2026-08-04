@@ -1,5 +1,6 @@
-export const FILTER_CHAINS = ['BNB', 'Ethereum', 'Base', 'Polygon', 'Solana'] as const
+export const FILTER_CHAINS = ['BNB', 'Base', 'Polygon', 'Ethereum', 'Arbitrum', 'Avalanche'] as const
 export const FILTER_CATEGORIES = ['AI', 'DeFi', 'Gaming', 'Infrastructure', 'Meme', 'RWA'] as const
+export const FILTER_STATUS = ['Featured', 'Trending', 'Verified', 'New Listings'] as const
 export const FILTER_SORT = [
   'Trending',
   'Highest Rated',
@@ -10,13 +11,17 @@ export const FILTER_SORT = [
 
 export const PROJECT_FILTER_CHIPS = [
   'All',
-  'AI Verified',
+  'Featured',
   'Trending',
+  'Verified',
+  'New Listings',
+  'AI Verified',
   'BNB',
-  'Ethereum',
   'Base',
   'Polygon',
-  'Solana',
+  'Ethereum',
+  'Arbitrum',
+  'Avalanche',
   'Gaming',
   'AI',
   'DeFi',
@@ -33,6 +38,7 @@ export const PROJECT_FILTER_CHIPS = [
 export type ProjectRatingTier = 'exceptional' | 'strong' | 'active' | 'emerging' | 'high-risk' | 'unknown'
 export type MetricTone = 'green' | 'gold' | 'red' | 'gray'
 export type ProjectStatus = 'verified' | 'community' | 'new' | 'pending'
+export type ProjectRankingLayer = 'organic' | 'featured' | 'boosted' | null
 
 export interface ProjectsKpiItem {
   id: string
@@ -60,7 +66,15 @@ export interface ProjectPreviewCard {
   symbol?: string
   category: string
   chains: string[]
+  chainId?: number
   status: ProjectStatus
+  verified?: boolean
+  featured?: boolean
+  boosted?: boolean
+  rankingLayer?: ProjectRankingLayer
+  priceDisplay?: string
+  change24hDisplay?: string
+  change24hPct?: number | null
   rating: number
   ratingTier: ProjectRatingTier
   aiSummary: string

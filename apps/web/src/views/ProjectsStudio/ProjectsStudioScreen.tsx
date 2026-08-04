@@ -2,15 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import { PageMeta } from 'components/Layout/Page'
 import ProjectsStudioGlobalStyle from './ProjectsStudioGlobalStyle'
-import AIProjectAdvisorPanel from './components/AIProjectAdvisorPanel'
-import FeaturedProjectPanel from './components/FeaturedProjectPanel'
-import ProjectsActivityTable from './components/ProjectsActivityTable'
 import ProjectsFilterRow from './components/ProjectsFilterRow'
 import ProjectsGrid from './components/ProjectsGrid'
-import ProjectsKpiRow from './components/ProjectsKpiRow'
 import ProjectsStudioPageHeader from './components/ProjectsStudioPageHeader'
 import { ProjectsRuntimeProvider } from './projectsRuntime/ProjectsRuntimeContext'
-import ProjectsMachinePanel from './components/ProjectsMachinePanel'
 import { projectsStudioColors, projectsStudioLayout } from './projectsStudioTokens'
 
 const Root = styled.div`
@@ -44,20 +39,16 @@ const Content = styled.div`
   }
 `
 
+/** Canonical project discovery directory — compact cards, filters, ranking layers. */
 export const ProjectsStudioScreen: React.FC = () => (
   <ProjectsRuntimeProvider>
-    <Root data-projects-studio-screen data-pr-r111b-canonical>
+    <Root data-projects-studio-screen data-projects-directory="v2" data-pr-r111b-canonical>
       <PageMeta />
       <ProjectsStudioGlobalStyle />
       <Content>
         <ProjectsStudioPageHeader />
-        <ProjectsKpiRow />
-        <FeaturedProjectPanel />
-        <AIProjectAdvisorPanel />
         <ProjectsFilterRow />
         <ProjectsGrid />
-        <ProjectsActivityTable />
-        <ProjectsMachinePanel />
       </Content>
     </Root>
   </ProjectsRuntimeProvider>

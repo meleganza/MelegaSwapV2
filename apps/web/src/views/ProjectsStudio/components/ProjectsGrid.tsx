@@ -7,11 +7,28 @@ import ProjectGridCard from './ProjectGridCard'
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: ${projectsStudioLayout.cardGap};
+  gap: 12px;
   min-width: 0;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1600px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 `
 
 const EmptyPanel = styled.div`
+  grid-column: 1 / -1;
   min-height: 200px;
   padding: 32px 24px;
   border-radius: ${projectsStudioLayout.cardRadius};
@@ -40,20 +57,33 @@ const EmptyDesc = styled.p`
   max-width: 360px;
 `
 
+const Count = styled.p`
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${projectsStudioColors.muted};
+  grid-column: 1 / -1;
+`
+
 export const ProjectsGrid: React.FC = () => {
   const { projects } = useProjectsRuntime()
 
   return (
-    <Grid data-pr-grid>
-      {projects.length === 0 ? (
-        <EmptyPanel data-pr-grid-empty>
-          <EmptyTitle>No projects match this filter</EmptyTitle>
-          <EmptyDesc>Indexed listings appear here after import review. Adjust filters or list a new project.</EmptyDesc>
-        </EmptyPanel>
-      ) : (
-        projects.map((project) => <ProjectGridCard key={project.id} project={project} />)
-      )}
-    </Grid>
+    <div data-pr-grid data-testid="projects-directory-grid">
+      <Count data-testid="projects-directory-count">
+        {projects.length} project{projects.length === 1 ? '' : 's'}
+      </Count>
+      <Grid>
+        {projects.length === 0 ? (
+          <EmptyPanel data-pr-grid-empty>
+            <EmptyTitle>No projects match this filter</EmptyTitle>
+            <EmptyDesc>Adjust search or filters, or list a new project.</EmptyDesc>
+          </EmptyPanel>
+        ) : (
+          projects.map((project) => <ProjectGridCard key={project.id} project={project} />)
+        )}
+      </Grid>
+    </div>
   )
 }
 

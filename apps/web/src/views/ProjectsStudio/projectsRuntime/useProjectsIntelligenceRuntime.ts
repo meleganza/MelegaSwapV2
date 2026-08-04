@@ -7,12 +7,15 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 import { useTokenDataSWR } from 'state/info/hooks'
 import { useHolderCount } from 'lib/holder-count'
 import { buildProjectLiveMetrics } from 'lib/projects-data/projectLiveMetrics'
+import { useDexTrendingRankings } from 'views/HomeTrade/useDexTrendingRankings'
+import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
 import type { ProjectFilterChip, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
   aggregateKpis,
   buildFeaturedProject,
   buildMachineProfile,
   filterProjectsByChip,
+  mapIndexedAssetToPreviewCard,
   mapPendingToPreviewCard,
   mapProjectToPreviewCard,
 } from './formatProjectsRuntime'
@@ -49,6 +52,8 @@ export interface ProjectsIntelligenceRuntime {
   loadingLabel?: string
   filter: ProjectFilterChip
   setFilter: (chip: ProjectFilterChip) => void
+  searchQuery: string
+  setSearchQuery: (q: string) => void
   projects: ProjectPreviewCard[]
   pendingProjects: ProjectPreviewCard[]
   allProjects: EnrichedProjectRecord[]
@@ -63,13 +68,30 @@ export interface ProjectsIntelligenceRuntime {
   indexCoverage: { score: number; label: string }
 }
 
+function formatPriceUsd(priceUsd?: number): string | undefined {
+  if (priceUsd == null || !Number.isFinite(priceUsd) || priceUsd <= 0) return undefined
+  if (priceUsd >= 1000) return `$${priceUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+  if (priceUsd >= 1) return `$${priceUsd.toFixed(2)}`
+  if (priceUsd >= 0.0001) return `$${priceUsd.toFixed(6)}`.replace(/0+$/, '').replace(/\.$/, '')
+  return '$<0.0001'
+}
+
+function formatChangePct(pct?: number | null): string | undefined {
+  if (pct == null || !Number.isFinite(pct)) return undefined
+  const sign = pct > 0 ? '+' : ''
+  return `${sign}${pct.toFixed(2)}%`
+}
+
 export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   const [filter, setFilter] = useState<ProjectFilterChip>('All')
+  const [searchQuery, setSearchQuery] = useState('')
   const marcoPrice = usePriceCakeBusd({ forceMainnet: true })
+  const { rankedAssets } = useDexTrendingRankings()
 
   const enriched = useMemo(() => dexIndexToEnrichedProjects(buildDexTokenIndex()), [])
 
-  const primaryBscToken = enriched[0]?.resources.tokens.find((t) => t.chainId === 56) ?? enriched[0]?.resources.tokens[0]
+  const primaryBscToken =
+    enriched[0]?.resources.tokens.find((t) => t.chainId === 56) ?? enriched[0]?.resources.tokens[0]
   const tokenData = useTokenDataSWR(primaryBscToken?.address)
   const { data: holderCount } = useHolderCount(primaryBscToken?.chainId ?? 56, primaryBscToken?.address)
   const liveMetrics = useMemo(
@@ -85,31 +107,77 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
   }, [])
 
   const sorted = useMemo(
-    () =>
-      [...enriched].sort(
-        (a, b) => buildProjectRating(b).score - buildProjectRating(a).score,
-      ),
+    () => [...enriched].sort((a, b) => buildProjectRating(b).score - buildProjectRating(a).score),
     [enriched],
   )
 
+  const trendingByAddress = useMemo(() => {
+    const map = new Map<string, (typeof rankedAssets)[number]>()
+    for (const asset of rankedAssets) {
+      if (asset.address) map.set(asset.address.toLowerCase(), asset)
+    }
+    return map
+  }, [rankedAssets])
+
   const cards = useMemo(() => {
-    const canonical = sorted.map((project, index) =>
-      mapProjectToPreviewCard(
+    const canonical = sorted.map((project, index) => {
+      const base = mapProjectToPreviewCard(
         project,
         index + 1,
         project.slug === enriched[0]?.slug ? liveMetrics : undefined,
-      ),
-    )
-    const pending = pendingRecords.map((pending, index) =>
-      mapPendingToPreviewCard(pending, canonical.length + index + 1),
-    )
-    return [...canonical, ...pending]
-  }, [sorted, pendingRecords, enriched, liveMetrics])
+      )
+      const addr = base.contractAddress?.toLowerCase()
+      const mover = addr ? trendingByAddress.get(addr) : undefined
+      if (!mover) return base
+      const pct = mover.change24h?.pct
+      const hasOrganicMove = pct != null && Number.isFinite(pct) && Math.abs(pct) > 0.0001
+      return {
+        ...base,
+        priceDisplay: formatPriceUsd(mover.priceUsd) ?? base.priceDisplay,
+        change24hPct: hasOrganicMove ? pct : base.change24hPct,
+        change24hDisplay: hasOrganicMove ? formatChangePct(pct) : base.change24hDisplay,
+        rankingLayer: hasOrganicMove ? ('organic' as const) : base.rankingLayer,
+      }
+    })
 
-  const filtered = useMemo(
-    () => filterProjectsByChip(cards, sorted, filter),
-    [cards, sorted, filter],
-  )
+    const registryAddresses = new Set(
+      canonical.map((c) => c.contractAddress?.toLowerCase()).filter(Boolean) as string[],
+    )
+
+    const indexedExtras = getCanonicalIndexedAssets()
+      .map((asset, index) => {
+        if (!asset.address || registryAddresses.has(asset.address.toLowerCase())) return null
+        const card = mapIndexedAssetToPreviewCard(asset, canonical.length + index + 1)
+        if (!card) return null
+        const mover = trendingByAddress.get(asset.address.toLowerCase())
+        if (!mover) return card
+        const pct = mover.change24h?.pct
+        const hasOrganicMove = pct != null && Number.isFinite(pct) && Math.abs(pct) > 0.0001
+        return {
+          ...card,
+          priceDisplay: formatPriceUsd(mover.priceUsd) ?? card.priceDisplay,
+          change24hPct: hasOrganicMove ? pct : card.change24hPct,
+          change24hDisplay: hasOrganicMove ? formatChangePct(pct) : card.change24hDisplay,
+          rankingLayer: hasOrganicMove ? ('organic' as const) : card.rankingLayer,
+        }
+      })
+      .filter((c): c is ProjectPreviewCard => Boolean(c))
+
+    const pending = pendingRecords.map((pending, index) =>
+      mapPendingToPreviewCard(pending, canonical.length + indexedExtras.length + index + 1),
+    )
+    return [...canonical, ...indexedExtras, ...pending]
+  }, [sorted, pendingRecords, enriched, liveMetrics, trendingByAddress])
+
+  const filtered = useMemo(() => {
+    const byChip = filterProjectsByChip(cards, sorted, filter)
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return byChip
+    return byChip.filter((c) => {
+      const hay = `${c.name} ${c.symbol ?? ''} ${c.slug} ${c.contractAddress ?? ''} ${c.category}`.toLowerCase()
+      return hay.includes(q)
+    })
+  }, [cards, sorted, filter, searchQuery])
 
   const featuredProject = sorted[0] ?? enriched[0]
   const priceUsd = featuredProject?.slug === 'melega-dex' ? marcoPrice?.toNumber() : undefined
@@ -182,12 +250,10 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     [filter, enriched.length, pendingRecords.length, featuredProject],
   )
 
-  const pendingCards = useMemo(
-    () => cards.filter((c) => c.registryTier === 'pending'),
-    [cards],
-  )
+  const pendingCards = useMemo(() => cards.filter((c) => c.registryTier === 'pending'), [cards])
 
   const setFilterCb = useCallback((chip: ProjectFilterChip) => setFilter(chip), [])
+  const setSearchCb = useCallback((q: string) => setSearchQuery(q), [])
 
   useEffect(() => {
     emitCivilizationEvent('projects_intelligence_refreshed', 'projects', {
@@ -200,6 +266,8 @@ export function useProjectsIntelligenceRuntime(): ProjectsIntelligenceRuntime {
     phase: 'ready',
     filter,
     setFilter: setFilterCb,
+    searchQuery,
+    setSearchQuery: setSearchCb,
     projects: filtered,
     pendingProjects: pendingCards,
     allProjects: enriched,

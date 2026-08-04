@@ -75,12 +75,13 @@ describe('DEX UX Rebuild navigation', () => {
     expect(dex).not.toMatch(/\$24\.58M|128\.45%|2,891/)
   })
 
-  it('redirects consolidate trade and projects into Home', () => {
+  it('redirects consolidate trade into Home; trending into Projects discovery', () => {
     const cfg = readFileSync(path.join(ROOT, '../next.config.mjs'), 'utf8')
     expect(cfg).toMatch(/source:\s*'\/trade'/)
     expect(cfg).toMatch(/destination:\s*'\/\?focus=swap'/)
-    expect(cfg).toMatch(/source:\s*'\/projects'/)
-    expect(cfg).toMatch(/destination:\s*'\/\?focus=projects'/)
+    expect(cfg).toMatch(/source:\s*'\/trending'/)
+    expect(cfg).toMatch(/destination:\s*'\/projects\?sort=trending'/)
+    expect(cfg).not.toMatch(/destination:\s*'\/\?focus=projects'/)
   })
 
   it('List and Passport routes exist', () => {

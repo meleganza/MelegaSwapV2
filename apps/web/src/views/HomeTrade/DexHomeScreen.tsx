@@ -575,7 +575,7 @@ export const DexHomeScreen: React.FC = () => {
                 <PrimaryCta
                   type="button"
                   data-testid="dex-home-open-trending"
-                  onClick={() => void router.push('/trending')}
+                  onClick={() => void router.push('/projects?sort=trending')}
                   style={{ background: 'transparent', border: '1px solid rgba(244,196,48,0.45)', color: uxRebuildColors.gold }}
                 >
                   Trending Projects
@@ -614,7 +614,7 @@ export const DexHomeScreen: React.FC = () => {
                   <TrendingUp size={14} color={uxRebuildColors.gold} aria-hidden />
                 </DiscIcon>
                 <DiscTitle>Top Movers</DiscTitle>
-                <ViewAll href="/trending">
+                <ViewAll href="/projects?sort=trending">
                   View all <ArrowRight size={12} style={{ display: 'inline' }} />
                 </ViewAll>
               </DiscHead>

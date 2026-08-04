@@ -3,6 +3,8 @@ import type { PendingProjectRecord } from 'registry/projects/pending/types'
 import { formatPendingReviewStatusLabel } from 'registry/projects/pending/updatePendingReview'
 import type { EnrichedProjectRecord } from 'registry/projects/discovery'
 import type { StaticProjectRecord } from 'registry/projects/types'
+import type { DexAssetRecord } from 'lib/dex-asset-index'
+import { FOUNDER_FEATURED_SLUGS } from 'views/HomeTrade/featuredProjectsCatalog'
 import type {
   MetricTone,
   ProjectPreviewCard,
@@ -21,12 +23,68 @@ import { buildOnChainMetrics } from './onChainMetrics'
 import type { ProjectLiveMetricsSnapshot } from 'lib/projects-data/projectLiveMetrics'
 import { metricUiReasonLabel, type ProjectDataReasonCode } from 'lib/projects-data/dataReasonCodes'
 
+const FEATURED_SLUG_SET = new Set<string>(FOUNDER_FEATURED_SLUGS)
 const EMPTY = '—'
 
 function shortAddress(address?: string): string {
   if (!address) return '—'
   if (address.length < 12) return address
   return `${address.slice(0, 6)}…${address.slice(-4)}`
+}
+
+function chainLabel(chainId: number): string {
+  const label = CHAIN_LABELS[chainId] ?? `Chain ${chainId}`
+  if (label === 'BSC') return 'BNB'
+  return label.replace('Ethereum', 'ETH')
+}
+
+/** Indexed DEX asset without a claimed Project Page — temporary address destination. */
+export function mapIndexedAssetToPreviewCard(asset: DexAssetRecord, rank: number): ProjectPreviewCard | null {
+  if (!asset.address) return null
+  if (asset.symbol.includes('-') || asset.symbol.includes('/')) return null
+  const slug = asset.registrySlug
+  const featured = Boolean(slug && FEATURED_SLUG_SET.has(slug))
+  const verified = asset.status === 'canonical' || asset.sources.includes('registry')
+  const projectHref = slug ? `/@${slug}/` : `/project/${asset.address}`
+  return {
+    id: `indexed-${asset.chainId}-${asset.address.toLowerCase()}`,
+    rank,
+    name: asset.name?.trim() || asset.symbol,
+    slug: slug || asset.address.toLowerCase(),
+    symbol: asset.symbol,
+    category: asset.sources.includes('farm')
+      ? 'Farm'
+      : asset.sources.includes('pool')
+        ? 'Pool'
+        : asset.sources.includes('token-list')
+          ? 'Listed'
+          : 'Indexed',
+    chains: [chainLabel(asset.chainId)],
+    chainId: asset.chainId,
+    status: verified ? 'verified' : asset.status === 'listed' ? 'new' : 'community',
+    verified,
+    featured,
+    rankingLayer: featured ? 'featured' : null,
+    rating: verified ? 70 : 40,
+    ratingTier: verified ? 'active' : 'emerging',
+    aiSummary: 'Indexed Melega DEX listing.',
+    metrics: [
+      { label: 'Liquidity', value: EMPTY, tone: 'gray' },
+      { label: 'Volume', value: EMPTY, tone: 'gray' },
+      { label: 'Holders', value: EMPTY, tone: 'gray' },
+      { label: 'Age', value: EMPTY, tone: 'gray' },
+    ],
+    aiConfidence: '—',
+    melegaRating: verified ? 'Verified' : 'Indexed',
+    risk: '—',
+    riskTone: 'gray',
+    website: '—',
+    contract: shortAddress(asset.address),
+    contractAddress: asset.address,
+    tradeHref: `/swap?outputCurrency=${asset.address}`,
+    projectHref,
+    registryTier: slug ? 'canonical' : undefined,
+  }
 }
 
 function chainBadges(project: StaticProjectRecord): string[] {
@@ -88,6 +146,11 @@ export function mapProjectToPreviewCard(
   const symbol = token?.symbol ?? project.tickers[0]
   const muted = (value: string) => value === EMPTY
 
+  const featured = FEATURED_SLUG_SET.has(project.slug)
+  const verified =
+    project.verificationStatus === 'observed' || project.trustBadges.includes('canonical')
+  const status = projectStatus(project)
+
   return {
     id: project.slug,
     rank,
@@ -96,7 +159,11 @@ export function mapProjectToPreviewCard(
     symbol,
     category: project.sectorTags.slice(0, 2).join(' · ') || 'DeFi',
     chains: chainBadges(project),
-    status: projectStatus(project),
+    chainId: token?.chainId ?? project.supportedChains[0],
+    status,
+    verified,
+    featured,
+    rankingLayer: featured ? 'featured' : null,
     rating: rating.score,
     ratingTier: rating.tier,
     aiSummary: buildAiSummary(project),
@@ -122,7 +189,7 @@ export function mapProjectToPreviewCard(
     contractAddress: token?.address,
     tradeHref: token?.address
       ? `/swap?outputCurrency=${token.address}`
-      : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/trade',
+      : project.deepLinks.buyMarco ?? project.deepLinks.swap ?? '/swap',
     radarHref: token?.address ? `/radar?contract=${token.address}` : undefined,
     projectHref: `/@${project.slug}/`,
   }
@@ -438,26 +505,49 @@ export function filterProjectsByChip(
 
   switch (chip) {
     case 'AI Verified':
-      return cards.filter((c) => {
-        const p = projectBySlug.get(c.slug)
-        return p?.trustBadges.includes('canonical')
-      })
+    case 'Verified':
+      return cards.filter((c) => c.verified || projectBySlug.get(c.slug)?.trustBadges.includes('canonical'))
+    case 'Featured':
+      return cards.filter((c) => c.featured || c.rankingLayer === 'featured')
     case 'Trending':
-      return cards.filter((c) => c.rating >= 70)
+      // Ranking layer applied by runtime (organic movers first). Chip alone does not invent movers.
+      return [...cards].sort((a, b) => {
+        const aRank = a.rankingLayer === 'organic' ? 0 : a.featured ? 1 : a.boosted ? 2 : 3
+        const bRank = b.rankingLayer === 'organic' ? 0 : b.featured ? 1 : b.boosted ? 2 : 3
+        if (aRank !== bRank) return aRank - bRank
+        const aPct = Math.abs(a.change24hPct ?? 0)
+        const bPct = Math.abs(b.change24hPct ?? 0)
+        if (aPct !== bPct) return bPct - aPct
+        return b.rating - a.rating
+      })
+    case 'New Listings':
+    case 'Recently Listed':
+    case 'Newest':
+      return cards.filter((c) => c.status === 'new' || c.registryTier === 'pending').length
+        ? cards.filter((c) => c.status === 'new' || c.registryTier === 'pending')
+        : [...cards].sort((a, b) => b.rank - a.rank)
     case 'BNB':
-      return cards.filter((c) => c.chains.includes('BNB'))
+      return cards.filter((c) => c.chains.includes('BNB') || c.chainId === 56)
     case 'Ethereum':
-      return cards.filter((c) => c.chains.includes('ETH') || c.chains.includes('Ethereum'))
+      return cards.filter(
+        (c) => c.chains.includes('ETH') || c.chains.includes('Ethereum') || c.chainId === 1,
+      )
     case 'Base':
-      return cards.filter((c) => c.chains.includes('Base'))
+      return cards.filter((c) => c.chains.includes('Base') || c.chainId === 8453)
     case 'Polygon':
-      return cards.filter((c) => c.chains.includes('Polygon'))
+      return cards.filter((c) => c.chains.includes('Polygon') || c.chainId === 137)
+    case 'Arbitrum':
+      return cards.filter(
+        (c) => c.chains.includes('Arbitrum') || c.chains.includes('ARB') || c.chainId === 42161,
+      )
+    case 'Avalanche':
+      return cards.filter(
+        (c) => c.chains.includes('Avalanche') || c.chains.includes('AVAX') || c.chainId === 43114,
+      )
     case 'Highest Rated':
       return [...cards].sort((a, b) => b.rating - a.rating)
-    case 'Newest':
-      return [...cards].sort((a, b) => b.rank - a.rank)
-    case 'Recently Listed':
-      return cards
+    case 'Highest Liquidity':
+      return [...cards].sort((a, b) => b.rating - a.rating)
     default:
       return cards.filter((c) => {
         const p = projectBySlug.get(c.slug)

@@ -6,21 +6,27 @@ import {
   STUDIO_PAGE_TITLES,
 } from 'design-system/melega'
 
+/** Claim Project → ownership-gated customize flow (List Studio claim intent). */
+export const CLAIM_PROJECT_HREF = '/list?intent=claim-project'
+
 export const ProjectsStudioPageHeader: React.FC = () => (
   <MelegaStudioPageHeader
     data-studio-header="projects"
+    data-testid="projects-directory-header"
     title={STUDIO_PAGE_TITLES.projects}
-    subtitle="Discover AI-indexed crypto projects. Find verified ecosystems. Trade with confidence."
+    subtitle="Discover trending and listed projects. Open a project page. Trade with confidence."
     actions={
       <>
-        <MelegaStudioPrimaryBtn as="a" href="/import-existing-token" style={{ textDecoration: 'none' }}>
-          Import Existing Token
+        <MelegaStudioPrimaryBtn as="a" href="/list" style={{ textDecoration: 'none' }} data-testid="projects-list-cta">
+          List Your Project
         </MelegaStudioPrimaryBtn>
-        <MelegaStudioGhostBtn as="a" href="/import-existing-token?mode=claim" style={{ textDecoration: 'none' }}>
-          Claim Existing Project
-        </MelegaStudioGhostBtn>
-        <MelegaStudioGhostBtn as="a" href="/@marco/" style={{ textDecoration: 'none' }}>
-          Open Project Page
+        <MelegaStudioGhostBtn
+          as="a"
+          href={CLAIM_PROJECT_HREF}
+          style={{ textDecoration: 'none' }}
+          data-testid="projects-claim-cta"
+        >
+          Claim Project
         </MelegaStudioGhostBtn>
       </>
     }

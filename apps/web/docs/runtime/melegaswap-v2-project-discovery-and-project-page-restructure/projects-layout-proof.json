@@ -1,0 +1,9 @@
+{
+  "compactDirectory": true,
+  "multiColumnDesktop": true,
+  "mobileStacked": true,
+  "cardCountDesktop": 274,
+  "cardCountMobile": 274,
+  "search": true,
+  "chainBadgeTopRight": true
+}

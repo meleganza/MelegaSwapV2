@@ -1,0 +1,7 @@
+{
+  "canonical": "/@{slug}",
+  "alias": "/project/{slug}",
+  "addressTemporary": "/project/0x…",
+  "trendingSoftRedirect": "/trending → /projects?sort=trending",
+  "projectsDirectoryRestored": true
+}

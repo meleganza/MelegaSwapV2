@@ -122,7 +122,7 @@ export const POOLS_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
 
 /** Secondary surfaces — available via search / deep links, not primary nav. */
 export const MORE_DROPDOWN_ITEMS: HeaderDropdownItem[] = [
-  { id: 'trending', label: 'Trending', href: '/trending', match: (p) => p === '/trending' },
+  { id: 'trending', label: 'Trending', href: '/projects?sort=trending', match: (p) => p === '/projects' || p.startsWith('/projects') },
   { id: 'radar', label: 'DEX Intelligence', href: '/radar', match: (p) => p === '/radar' },
   {
     id: 'collectibles',

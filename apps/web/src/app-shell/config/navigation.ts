@@ -66,7 +66,7 @@ export const shellNavigation: ShellNavSection[] = [
     label: 'FIND',
     visibleCount: 5,
     items: [
-      { id: 'trending', label: 'Trending', href: '/trending', icon: 'star', match: (p) => p === '/trending' },
+      { id: 'trending', label: 'Trending', href: '/projects?sort=trending', icon: 'star', match: (p) => p === '/projects' || p.startsWith('/projects') },
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder', match: (p) => p.startsWith('/projects') },
       { id: 'radar', label: 'DEX Intelligence', href: '/radar', icon: 'brain', match: (p) => p === '/radar' },
       {

@@ -127,15 +127,15 @@ const config = {
         destination: '/?focus=swap',
         permanent: false,
       },
-      // UX Rebuild: Projects directory consolidates into Home discovery
+      // Project discovery: Trending is a ranking layer inside Projects (not a primary destination)
       {
-        source: '/projects',
-        destination: '/?focus=projects',
+        source: '/trending',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       {
-        source: '/projects/',
-        destination: '/?focus=projects',
+        source: '/trending/',
+        destination: '/projects?sort=trending',
         permanent: false,
       },
       // PP001: legacy project detail → canonical `/@{slug}`
