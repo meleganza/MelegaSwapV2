@@ -49,16 +49,7 @@ describe('FARMS_V1 Final Integration & Certification', () => {
 
   it('mounts Modules 001–004, 006–008 + Create Farm in certified order on FarmsStudioScreen (Module 005 Finished Farms unmounted — folded into My Farms)', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
-    const order = [
-      'FarmsHeroModule',
-      'FarmsOverviewKpisModule',
-      'FarmsMyFarmsModule',
-      'FarmsYieldAdvisorModule',
-      'CreateFarmWorkspace',
-      'FarmsExploreFarmsModule',
-      'FarmsAnalyticsModule',
-      'FarmsVisualPolishModule',
-    ]
+    const order = ['FarmsHeroModule','FarmsOverviewKpisModule','FarmsMyFarmsModule','FarmsExploreFarmsModule']
     let prev = -1
     for (const name of order) {
       const idx = screen.indexOf(name)
@@ -67,12 +58,14 @@ describe('FARMS_V1 Final Integration & Certification', () => {
       prev = idx
     }
     expect(screen).not.toContain('FarmsFinishedFarmsModule')
-    for (const n of [1, 2, 3, 4, 6, 7, 8]) {
+    for (const n of [1, 2, 3, 4, 8]) {
       const id = String(n).padStart(3, '0')
       expect(screen).toContain(`data-farms-module-${id}="mounted"`)
     }
+    expect(screen).toContain('data-farms-module-006="unmounted"')
+    expect(screen).toContain('data-farms-module-007="unmounted"')
     expect(screen).toContain('data-farms-module-005="unmounted"')
-    expect(screen).toContain('data-farms-create-farm="mounted"')
+    expect(screen).toContain('data-farms-create-farm="modal"')
     expect(screen).toContain('FarmsRuntimeProvider')
     expect(screen).toContain('FarmsActionHost')
     expect(screen.match(/<FarmsActionHost/g)?.length).toBe(1)
@@ -121,9 +114,7 @@ describe('FARMS_V1 Final Integration & Certification', () => {
 
   it('integration flow contracts are present (wallet / advisor / analytics / actions)', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('FarmsYieldAdvisorModule')
-    expect(screen).toContain('FarmsAnalyticsModule')
-    expect(screen).toContain('FarmsActionHost')
+            expect(screen).toContain('FarmsActionHost')
 
     const advisor = readFileSync(path.join(STUDIO, 'modules/buildFarmsYieldAdvisor.ts'), 'utf8')
     expect(advisor).toContain('emergency_withdraw')

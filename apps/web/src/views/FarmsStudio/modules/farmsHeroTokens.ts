@@ -91,8 +91,11 @@ export const farmsHero = {
 export const FARMS_HERO_COPY = {
   title: 'Farms',
   description: 'Stake LP tokens.\nEarn farming rewards.\nGrow liquidity.',
-  primaryCta: 'Explore Farms',
-  secondaryCta: 'How Farming Works',
+  primaryCta: 'Create Farm',
+  secondaryCta: 'Explore Farms',
+  createFarmHref: '/farms?create=1',
+  exploreFarmsHref: '#explore-farms',
+  exploreFarmsLegacyFallback: '/farms#explore-farms',
   trustTitle: 'Why Farm on Melega DEX?',
   trustItems: [
     {

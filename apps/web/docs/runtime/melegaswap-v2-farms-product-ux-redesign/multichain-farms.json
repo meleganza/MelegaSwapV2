@@ -1,0 +1,46 @@
+{
+  "mission": "MELEGASWAP_V2_FARMS_PRODUCT_UX_REDESIGN",
+  "unifiedView": true,
+  "filters": [
+    "All",
+    "BNB",
+    "Base",
+    "Polygon",
+    "Ethereum",
+    "Arbitrum",
+    "Avalanche"
+  ],
+  "canonicalIdentity": "chainId + farm address + pid",
+  "neverMergeBySymbol": true,
+  "myFarms": {
+    "aggregateAcrossChains": true,
+    "fields": [
+      "chain",
+      "farm",
+      "deposited LP",
+      "pending rewards",
+      "status"
+    ],
+    "wrongChainPrompt": "This farm is on {Chain}. Switch network?",
+    "readOnlyCrossChain": true
+  },
+  "metricsPolicy": {
+    "showOnlyWhenFactual": [
+      "APR",
+      "TVL",
+      "Rewards"
+    ],
+    "unavailableLabel": "Unavailable",
+    "neverFakeZeroApr": true
+  },
+  "browserFiltersClicked": [
+    "All",
+    "BNB",
+    "Base",
+    "Polygon",
+    "Ethereum",
+    "Arbitrum",
+    "Avalanche"
+  ],
+  "pass": true
+}

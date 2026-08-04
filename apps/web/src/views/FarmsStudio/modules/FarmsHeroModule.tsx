@@ -1,6 +1,6 @@
 /**
  * FARMS_MODULE_001 — Farms Hero (orientation only).
- * Runtime-independent. Does not mount Modules 002–010. No live farm queries.
+ * Primary CTA: Create Farm (modal). Secondary: Explore Farms.
  */
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
@@ -137,7 +137,7 @@ const Actions = styled.div`
   }
 `
 
-const PrimaryCta = styled.a`
+const PrimaryCta = styled.button`
   box-sizing: border-box;
   width: ${farmsHero.primaryCtaW};
   height: ${farmsHero.primaryCtaH};
@@ -153,9 +153,42 @@ const PrimaryCta = styled.a`
   text-decoration: none;
   border: none;
   cursor: pointer;
+  font-family: ${typography.fontFamily.body};
 
   &:hover {
     background: ${farmsHero.goldHover};
+  }
+
+  &:focus-visible {
+    outline: ${farmsHero.focusRing};
+    outline-offset: ${farmsHero.focusOffset};
+  }
+
+  @media (max-width: ${farmsHero.mobileBreak}) {
+    width: 100%;
+    min-width: 0;
+  }
+`
+
+const SecondaryCta = styled.a`
+  box-sizing: border-box;
+  width: ${farmsHero.secondaryCtaW};
+  height: ${farmsHero.secondaryCtaH};
+  min-height: 44px;
+  border-radius: ${farmsHero.ctaRadius};
+  background: transparent;
+  color: ${farmsHero.gold};
+  font-size: 14px;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid rgba(244, 196, 48, 0.45);
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${farmsHero.gold};
   }
 
   &:focus-visible {
@@ -222,12 +255,18 @@ function scrollToExploreFarms() {
   return true
 }
 
-export const FarmsHeroModule: React.FC = () => {
+export const FarmsHeroModule: React.FC<{ onRequestCreateFarm?: () => void }> = ({
+  onRequestCreateFarm,
+}) => {
   const onExploreFarms = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     if (scrollToExploreFarms()) {
       e.preventDefault()
     }
   }, [])
+
+  const onCreateFarm = useCallback(() => {
+    onRequestCreateFarm?.()
+  }, [onRequestCreateFarm])
 
   return (
     <Module
@@ -242,20 +281,22 @@ export const FarmsHeroModule: React.FC = () => {
           <Title id="farms-hero-title">{FARMS_HERO_COPY.title}</Title>
           <Description>{FARMS_HERO_COPY.description}</Description>
           <Actions>
-            <PrimaryCta
+            <PrimaryCta type="button" onClick={onCreateFarm} data-testid="farms-hero-create-farm">
+              {FARMS_HERO_COPY.primaryCta}
+            </PrimaryCta>
+            <SecondaryCta
               href={farmsHero.exploreFarmsHref}
               onClick={onExploreFarms}
               data-testid="farms-hero-explore-farms"
             >
-              {FARMS_HERO_COPY.primaryCta}
-            </PrimaryCta>
+              {FARMS_HERO_COPY.secondaryCta}
+            </SecondaryCta>
           </Actions>
         </Left>
         <ArtCol>
           <FarmsHeroArtwork />
         </ArtCol>
         <TrustCol>
-          {/* FarmsHeroTrustPanel ("Why Farm on Melega DEX?") unmounted — kept Featured compact balanced without the second stacked card. */}
           <FarmsHeroFeaturedCompact />
         </TrustCol>
       </Inner>

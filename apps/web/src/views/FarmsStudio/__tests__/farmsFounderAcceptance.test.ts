@@ -45,16 +45,13 @@ function card(partial: Partial<FarmPreviewCard> & { pid: number; liq: number; ap
 }
 
 describe('Farms Founder Acceptance', () => {
-  it('IA order: Hero → KPI → My Farms → Advisor → Create Farm → Explore → Analytics (Finished Farms folded into My Farms)', () => {
+  it('IA order: Hero → KPI → My Farms → Explore; Create Farm is modal-only', () => {
     const screen = readFileSync(path.join(STUDIO, 'FarmsStudioScreen.tsx'), 'utf8')
     const order = [
       'FarmsHeroModule',
       'FarmsOverviewKpisModule',
       'FarmsMyFarmsModule',
-      'FarmsYieldAdvisorModule',
-      'CreateFarmWorkspace',
       'FarmsExploreFarmsModule',
-      'FarmsAnalyticsModule',
     ]
     let prev = -1
     for (const name of order) {
@@ -63,9 +60,12 @@ describe('Farms Founder Acceptance', () => {
       expect(idx).toBeGreaterThan(prev)
       prev = idx
     }
+    expect(screen).toContain('create-farm-modal')
+    expect(screen).toContain('<CreateFarmWorkspace')
     expect(screen).not.toContain('<FarmsFinishedFarmsModule')
+    expect(screen).not.toContain('<FarmsYieldAdvisorModule')
+    expect(screen).not.toContain('<FarmsAnalyticsModule')
   })
-
   it('hero artwork is animated CSS/SVG with MARCO logo and reduced-motion', () => {
     const art = readFileSync(path.join(STUDIO, 'modules/FarmsHeroArtwork.tsx'), 'utf8')
     expect(art).toContain('keyframes')
@@ -81,28 +81,23 @@ describe('Farms Founder Acceptance', () => {
     expect(kpi).toContain('Unavailable')
   })
 
-  it('Position and Finished cards expose Farm Contract + LP Contract links', () => {
-    for (const rel of ['modules/FarmsMyFarmCard.tsx', 'modules/FarmsFinishedFarmCard.tsx']) {
-      const src = readFileSync(path.join(STUDIO, rel), 'utf8')
-      expect(src).toContain('Farm Contract ↗')
-      expect(src).toContain('LP Contract ↗')
-      expect(src).toContain('bscscan.com/address/')
-    }
+  it('Position cards expose chain-aware View Farm / View LP explorer links', () => {
+    const my = readFileSync(path.join(STUDIO, 'modules/FarmsMyFarmCard.tsx'), 'utf8')
+    expect(my).toContain('View Farm')
+    expect(my).toContain('View LP')
+    expect(my).toContain('getBlockExploreLink')
+    expect(my).not.toContain('bscscan.com/address/')
     const featured = readFileSync(path.join(STUDIO, 'modules/FarmsHeroFeaturedCompact.tsx'), 'utf8')
     expect(featured).toContain('Farm Contract ↗')
     expect(featured).toContain('LP Contract ↗')
     expect(featured).toContain('masterChefExplorerUrl')
   })
-
-  // Founder amendment P0-6: Explore Farms density — contract links shortened to
-  // "Farm ↗ / LP ↗" (Explore's denser 4–5 up grid has no room for the long form).
   it('Explore Farms card exposes compact Farm/LP contract links', () => {
     const src = readFileSync(path.join(STUDIO, 'modules/FarmsExploreFarmCard.tsx'), 'utf8')
-    expect(src).toContain('Farm ↗')
-    expect(src).toContain('LP ↗')
-    expect(src).toContain('bscscan.com/address/')
+    expect(src).toContain('View Farm')
+    expect(src).toContain('View LP')
+    expect(src).toContain('getBlockExploreLink')
   })
-
   it('featured selection prefers TVL then APR then pid and reads BigNumber liquidity', () => {
     const fmt = readFileSync(path.join(STUDIO, 'farmsRuntime/formatFarmsRuntime.ts'), 'utf8')
     expect(fmt).toContain('tie-break by lowest pid')

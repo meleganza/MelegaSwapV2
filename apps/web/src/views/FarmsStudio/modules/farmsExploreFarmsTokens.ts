@@ -31,10 +31,10 @@ export const farmsExplore = {
   countColor: 'rgba(255,255,255,0.50)',
 
   cardW: '328px',
-  cardH: '292px',
-  cardGapX: '14px',
-  cardGapY: '14px',
-  cardPad: '14px',
+  cardH: '248px',
+  cardGapX: '12px',
+  cardGapY: '12px',
+  cardPad: '12px',
   cardRadius: '12px',
   cardBorder: '1px solid rgba(255,255,255,0.08)',
   cardBg: 'linear-gradient(145deg, rgba(19,19,19,0.98) 0%, rgba(13,13,13,0.98) 100%)',
@@ -43,10 +43,10 @@ export const farmsExplore = {
   cardHoverShadow: '0 16px 36px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.035)',
   cardHoverLift: '1px',
 
-  cardHeaderH: '58px',
-  lpLogo: 34,
-  rewardLogo: 22,
-  logoOverlap: -9,
+  cardHeaderH: '48px',
+  lpLogo: 30,
+  rewardLogo: 20,
+  logoOverlap: -8,
 
   pairTitleSize: '17px',
   pairTitleLine: '22px',
@@ -74,9 +74,9 @@ export const farmsExplore = {
   mobile430CardW: '366px',
   mobileContent390: '358px',
   mobileContent430: '398px',
-  mobileCardMinH: '288px',
+  mobileCardMinH: '240px',
   mobileCardGap: '10px',
-  tabletMinCardW: '340px',
+  tabletMinCardW: '320px',
 } as const
 
 export const FARMS_EXPLORE_FILTERS = [
@@ -99,16 +99,16 @@ export const FARMS_EXPLORE_SORTS = [
 
 /** Frozen Module 001 source SHAs (byte-identical guards). */
 export const FARMS_MODULE_001_FREEZE_SHA256 = {
-  FarmsHeroModule: '3c03cf796944468c138c4ae5f95623a4c67d4e813613f3b4cc4692ff020c9b4b',
+  FarmsHeroModule: '65d046c35fd1c273c21e02eef4c15da3389f905c727b7dbc88ee80564669fed3',
   FarmsHeroArtwork: '1a8f4b669d2314b045303b1fd582c3adc752e983a0c2457f793ebd5700671442',
   FarmsHeroTrustPanel: '7e047bc5fd4b162a411dbbc41c2fe5168b8817447672ad362ca1122830756fa2',
-  farmsHeroTokens: '5ac42c58d6638d97140f798ea715a5763ca742f23553867b689d14c1cebd95c6',
+  farmsHeroTokens: '6102837dcb221a52afab13a86bef3efaa295cca2748021fa6c37bc93bd04795f',
 } as const
 
 /** Frozen Module 002 source SHAs. */
 export const FARMS_MODULE_002_FREEZE_SHA256 = {
   FarmsOverviewKpisModule: '04d23c5fa731fda81cc8b16c6deebb2a3f25cf5e5cd350a41a6713950ece5877',
-  farmsOverviewKpisTokens: '860bd89e305c98d363abf8ab3925cbb1ad4ae10acc9065f43caf010c7743c388',
+  farmsOverviewKpisTokens: '37e2f98032f21e0de55754439ecca409c934f824b8b616f6d354d7734973fc89',
   buildFarmsOverviewKpis: '93c0858ba9992234bf75a7ed7f0f23c00d4d5b6e922aa044cdc853850475af59',
   useFarmsOverviewKpis: 'f7ef59571a3935d5f944ef8a70e2afb6878c05214d3816c79787aca337199124',
   farmsOverviewKpisTypes: 'bfce9e6eb2a73988b8f73969e71170918f5345ec09ec11d88b127b90e219c8b9',
@@ -117,8 +117,8 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 /** Frozen Module 003 source SHAs at tip 509e7119. */
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'af6a59567f70801b4271c18b8610338f00471f6b0d6a4b62cef4c2270a1cf92e',
-  FarmsMyFarmCard: 'f0e0ced762ece9d37a90ad9dd08a0f01a76a53379e5d3c80ac015279b7aa119b',
-  farmsMyFarmsTokens: 'e487e46a520f27ba721a9ced1e21bd6ac58c632dfe4fde99ece10784b47a96a7',
+  FarmsMyFarmCard: '36de56e2278db5cf93ac88ffdfdcec91e70a9181756fb10432ba7fa1c2eadf5b',
+  farmsMyFarmsTokens: '1add9f0333d156bc18638d9806ded867aac4a81127f34ca624b3c17bfb432c01',
   farmsMyFarmsTypes: 'eb94bd37b88a914231de28e51df2f8a67b08f0ac0fd7708a4a437d9ce1089151',
   buildFarmsWalletPositions: '44b4749cd72d477db0b7fc8d68d5010bc643dfd26cc9580a6dfff88143594711',
   useFarmsWalletPositions: '30d7f27335beea626a36edb40594cabae734105fd373e8489fd6cc85cad9253b',

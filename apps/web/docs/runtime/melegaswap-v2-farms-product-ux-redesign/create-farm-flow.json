@@ -1,0 +1,26 @@
+{
+  "mission": "MELEGASWAP_V2_FARMS_PRODUCT_UX_REDESIGN",
+  "entry": {
+    "primaryCta": "Create Farm",
+    "placement": "Farms hero",
+    "testid": "farms-hero-create-farm",
+    "opens": "create-farm-modal"
+  },
+  "workspace": "CreateFarmWorkspace \u2192 PublicFarmFactoryWorkspace",
+  "requiredSections": [
+    "Farm pair/token",
+    "Reward token",
+    "Reward budget",
+    "Emission schedule",
+    "Lock/safety parameters",
+    "Review",
+    "Create"
+  ],
+  "pricing": "Creation fee shown before confirmation (not hidden)",
+  "browser": {
+    "open": true,
+    "feeVisible": true,
+    "close": true
+  },
+  "pass": true
+}

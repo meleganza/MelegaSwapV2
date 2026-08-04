@@ -17,7 +17,7 @@ export const LIVE_YIELD_CHAIN_IDS = [56, 8453, 137, 1, 42161, 43114] as const
 export type LiveYieldChainId = (typeof LIVE_YIELD_CHAIN_IDS)[number]
 
 export const LIVE_CHAIN_FILTERS: Array<{ id: 'all' | LiveYieldChainId; label: string }> = [
-  { id: 'all', label: 'All chains' },
+  { id: 'all', label: 'All' },
   { id: 56, label: 'BNB' },
   { id: 8453, label: 'Base' },
   { id: 137, label: 'Polygon' },

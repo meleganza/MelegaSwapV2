@@ -49,7 +49,7 @@ describe('FARMS_MODULE_001 Hero', () => {
   it('ships locked factual copy without runtime KPIs or forbidden claims', () => {
     expect(FARMS_HERO_COPY.title).toBe('Farms')
     expect(FARMS_HERO_COPY.description).toBe('Stake LP tokens.\nEarn farming rewards.\nGrow liquidity.')
-    expect(FARMS_HERO_COPY.primaryCta).toBe('Explore Farms')
+    expect(FARMS_HERO_COPY.primaryCta).toBe('Create Farm')
     expect(FARMS_HERO_COPY.trustTitle).toBe('Why Farm on Melega DEX?')
     expect(FARMS_HERO_COPY.trustItems).toHaveLength(4)
     expect(FARMS_HERO_COPY.trustItems.map((i) => i.title)).toEqual([
@@ -89,7 +89,7 @@ describe('FARMS_MODULE_001 Hero', () => {
     expect(screen).toContain('FarmsHeroModule')
     expect(screen).toContain('data-farms-module-001="mounted"')
     expect(screen).toContain('FarmsMyFarmsModule')
-    expect(screen).toContain('FarmsYieldAdvisorModule')
+    expect(screen).toContain('FarmsExploreFarmsModule')
     expect(screen).not.toContain('AIYieldAdvisorPanel')
     expect(screen).not.toContain('FarmsStudioPageHeader')
     // Modules 002–008 may mount after Hero; Modules 009+ remain forbidden here.

@@ -81,7 +81,7 @@ describe('Founder amendment P0-5 — My Farms containment', () => {
     expect(src).toContain("label: 'Withdraw'")
     expect(src).not.toContain("label: 'Manage'")
     const card = load('modules/FarmsMyFarmCard.tsx')
-    expect(card).toContain('BscScan ↗')
+    expect(card).toContain('Explorer ↗')
     expect(card).not.toContain('>Manage<')
   })
 })
@@ -102,10 +102,10 @@ describe('Founder amendment P0-6 — Explore Farms density grid', () => {
     expect(grid).toMatch(/min-width: \$\{farmsExplore\.ultraWideBreak\}\)\s*\{\s*grid-template-columns: repeat\(5/)
   })
 
-  it('compacts the Explore Farms card with short Farm ↗ / LP ↗ contract labels', () => {
+  it('compacts the Explore Farms card with short View Farm / View LP contract labels', () => {
     const card = load('modules/FarmsExploreFarmCard.tsx')
-    expect(card).toContain('Farm ↗')
-    expect(card).toContain('LP ↗')
+    expect(card).toContain('View Farm')
+    expect(card).toContain('View LP')
     expect(card).not.toContain('Farm Contract ↗')
     expect(card).not.toContain('LP Contract ↗')
   })
@@ -119,12 +119,12 @@ describe('Founder amendment P0-7 — Finished Farms fully unmounted', () => {
   })
 })
 
-describe('Founder amendment P0-8 — Create Farm mounted before Explore', () => {
-  it('CreateFarmWorkspace mounts before FarmsExploreFarmsModule with the required test id', () => {
+describe('Founder amendment P0-8 — Create Farm modal IA', () => {
+  it('CreateFarmWorkspace mounts inside Create Farm modal with the required test id', () => {
     const screen = load('FarmsStudioScreen.tsx')
-    expect(screen.indexOf('<CreateFarmWorkspace')).toBeGreaterThan(-1)
-    expect(screen.indexOf('<CreateFarmWorkspace')).toBeLessThan(screen.indexOf('<FarmsExploreFarmsModule'))
-    expect(screen).toContain('data-farms-create-farm="mounted"')
+    expect(screen).toContain('create-farm-modal')
+    expect(screen).toContain('<CreateFarmWorkspace')
+    expect(screen).toContain('data-farms-create-farm="modal"')
     const workspace = load('modules/CreateFarmWorkspace.tsx')
     expect(workspace).toContain('data-testid="create-farm-workspace"')
   })

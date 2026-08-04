@@ -120,7 +120,7 @@ export function clearDraftStorage(): void {
   }
 }
 
-export const CREATE_FARM_RETURN_PATH = '/farms#create-farm'
+export const CREATE_FARM_RETURN_PATH = '/farms?create=1'
 
 export type FarmFactoryHandoffKind = 'create_pair' | 'ai_builder' | 'manual_liquidity'
 

@@ -231,23 +231,23 @@ const ContractLink = styled.a`
 `
 
 const Actions = styled.div`
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
   margin-top: auto;
 `
 
 const Btn = styled.button<{ $primary?: boolean }>`
   appearance: none;
   cursor: pointer;
-  flex: 1 1 0;
-  min-height: ${farmsExplore.touchMin};
-  height: 40px;
-  border-radius: 10px;
+  min-height: 36px;
+  height: 36px;
+  border-radius: 9px;
   border: 1px solid ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.45)' : 'rgba(255,255,255,0.12)')};
   background: ${({ $primary }) => ($primary ? 'rgba(244,196,48,0.16)' : 'rgba(255,255,255,0.04)')};
   color: ${({ $primary }) => ($primary ? farmsExplore.gold : '#F5F5F5')};
   font-family: ${typography.fontFamily.body};
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 
   &:focus-visible {
@@ -261,13 +261,88 @@ const Btn = styled.button<{ $primary?: boolean }>`
   }
 `
 
+const LinkBtn = styled.a<{ $primary?: boolean }>`
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f5f5;
+  font-family: ${typography.fontFamily.body};
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: ${farmsExplore.focusRing};
+    outline-offset: ${farmsExplore.focusOffset};
+  }
+`
+
 const ConnectWrap = styled.div`
-  flex: 1 1 0;
+  grid-column: 1 / -1;
   min-width: 0;
   & > button {
     width: 100%;
-    min-height: ${farmsExplore.touchMin};
-    height: 40px;
+    min-height: 36px;
+    height: 36px;
+  }
+`
+
+const ActivityPulse = styled.span<{ $tone: 'live' | 'partial' | 'neutral' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 650;
+  color: ${({ $tone }) =>
+    $tone === 'live' ? '#6ee7b7' : $tone === 'partial' ? 'rgba(244,196,48,0.85)' : 'rgba(255,255,255,0.42)'};
+
+  &::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    border-radius: 999px;
+    background: ${({ $tone }) =>
+      $tone === 'live'
+        ? 'linear-gradient(90deg, transparent, #6ee7b7, transparent)'
+        : $tone === 'partial'
+          ? 'linear-gradient(90deg, transparent, rgba(244,196,48,0.7), transparent)'
+          : 'rgba(255,255,255,0.18)'};
+    ${({ $tone }) =>
+      $tone === 'neutral'
+        ? ''
+        : `
+      background-size: 200% 100%;
+      animation: farms-activity-beat 1.8s ease-in-out infinite;
+    `}
+  }
+
+  @keyframes farms-activity-beat {
+    0% {
+      background-position: 100% 0;
+      opacity: 0.55;
+    }
+    50% {
+      background-position: 0% 0;
+      opacity: 1;
+    }
+    100% {
+      background-position: -100% 0;
+      opacity: 0.55;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+    }
   }
 `
 
@@ -430,30 +505,38 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           : ''}
       </WalletLine>
 
-      <ContractLinks>
-        {farm.masterbuilder ? (
-          <ContractLink
-            href={getBlockExploreLink(farm.masterbuilder, 'address', farm.chainId)}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="farms-explore-farm-contract"
-          >
-            Farm ↗
-          </ContractLink>
-        ) : null}
-        {farm.lpToken?.address ? (
-          <ContractLink
-            href={getBlockExploreLink(farm.lpToken.address, 'address', farm.chainId)}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="farms-explore-lp-contract"
-          >
-            LP ↗
-          </ContractLink>
-        ) : null}
-      </ContractLinks>
+      <ActivityPulse
+        data-testid="farms-explore-activity"
+        data-activity-tone={
+          farm.freshness === 'live' && farm.aprState === 'Live'
+            ? 'live'
+            : farm.freshness === 'partial' || farm.aprState === 'Partial'
+              ? 'partial'
+              : 'neutral'
+        }
+        $tone={
+          farm.freshness === 'live' && farm.aprState === 'Live'
+            ? 'live'
+            : farm.freshness === 'partial' || farm.aprState === 'Partial'
+              ? 'partial'
+              : 'neutral'
+        }
+        aria-label={
+          farm.freshness === 'live' && farm.aprState === 'Live'
+            ? 'Live farm activity'
+            : farm.freshness === 'partial' || farm.aprState === 'Partial'
+              ? 'Partial farm activity signal'
+              : 'No live activity signal'
+        }
+      >
+        {farm.freshness === 'live' && farm.aprState === 'Live'
+          ? 'Live activity'
+          : farm.freshness === 'partial' || farm.aprState === 'Partial'
+            ? 'Partial signal'
+            : 'Neutral'}
+      </ActivityPulse>
 
-      <Actions>
+      <Actions data-testid="farms-explore-actions">
         {farm.primaryAction === 'Connect Wallet' ? (
           <ConnectWrap>
             <ConnectWalletButton scale="sm">Connect Wallet</ConnectWalletButton>
@@ -464,29 +547,83 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
             $primary
             disabled={farm.primaryAction === 'Farm Unavailable' || busy != null}
             aria-label={accessibleName}
+            data-testid="farms-explore-stake"
             onClick={() => {
               void onPrimary()
             }}
           >
-            {primaryLabel}
+            {farm.primaryAction === 'Switch Network'
+              ? 'Switch Network'
+              : farm.primaryAction === 'Approve LP'
+                ? 'Approve LP'
+                : farm.primaryAction === 'Farm Unavailable'
+                  ? 'Unavailable'
+                  : primaryLabel.includes('Stake')
+                    ? 'Stake'
+                    : primaryLabel}
           </Btn>
         )}
-        {farm.detailsHref ? (
-          <Btn
-            type="button"
-            aria-label={`Details for ${farm.title}`}
-            onClick={() => {
-              window.location.href = farm.detailsHref!
-            }}
+        <Btn
+          type="button"
+          disabled={farm.primaryAction === 'Farm Unavailable' || farm.primaryAction === 'Connect Wallet'}
+          data-testid="farms-explore-manage"
+          onClick={() => {
+            if (farm.primaryAction === 'Switch Network') {
+              setSwitchOpen(true)
+              return
+            }
+            requestModal(farm.sourceCard, 'stake')
+          }}
+        >
+          Manage
+        </Btn>
+        {farm.masterbuilder ? (
+          <LinkBtn
+            href={getBlockExploreLink(farm.masterbuilder, 'address', farm.chainId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-explore-view-farm"
           >
-            Details
+            View Farm
+          </LinkBtn>
+        ) : (
+          <Btn type="button" disabled data-testid="farms-explore-view-farm">
+            View Farm
           </Btn>
-        ) : null}
+        )}
+        {farm.lpToken?.address ? (
+          <LinkBtn
+            href={getBlockExploreLink(farm.lpToken.address, 'address', farm.chainId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="farms-explore-view-lp"
+          >
+            View LP
+          </LinkBtn>
+        ) : (
+          <Btn type="button" disabled data-testid="farms-explore-view-lp">
+            View LP
+          </Btn>
+        )}
       </Actions>
       <ChainSwitchConfirmDialog
         open={switchOpen}
         targetChainId={farm.chainId}
-        productLabel={`This farm (${farm.title})`}
+        productLabel={`This farm is on ${
+          farm.chainId === 56
+            ? 'BNB'
+            : farm.chainId === 8453
+              ? 'Base'
+              : farm.chainId === 137
+                ? 'Polygon'
+                : farm.chainId === 1
+                  ? 'Ethereum'
+                  : farm.chainId === 42161
+                    ? 'Arbitrum'
+                    : farm.chainId === 43114
+                      ? 'Avalanche'
+                      : `chain ${farm.chainId}`
+        }. Switch network?`}
         busy={switching}
         onCancel={() => {
           pendingActionRef.current = null

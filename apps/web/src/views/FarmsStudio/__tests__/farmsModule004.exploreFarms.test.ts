@@ -112,9 +112,9 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
 
   it('locks denser desktop card geometry for 4-up founder layout', () => {
     expect(farmsExplore.cardW).toBe('328px')
-    expect(farmsExplore.cardH).toBe('292px')
-    expect(farmsExplore.cardGapX).toBe('14px')
-    expect(farmsExplore.cardGapY).toBe('14px')
+    expect(farmsExplore.cardH).toBe('248px')
+    expect(farmsExplore.cardGapX).toBe('12px')
+    expect(farmsExplore.cardGapY).toBe('12px')
     expect(farmsExplore.initialLimit).toBe(9)
   })
 

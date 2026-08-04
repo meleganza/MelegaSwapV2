@@ -9,11 +9,10 @@ function load(rel: string) {
 }
 
 describe('publicFarmFactory UI locks', () => {
-  it('FarmsStudioScreen still mounts CreateFarmWorkspace before Explore', () => {
+  it('FarmsStudioScreen mounts CreateFarmWorkspace inside Create Farm modal', () => {
     const screen = load('FarmsStudioScreen.tsx')
     expect(screen.indexOf('<CreateFarmWorkspace')).toBeGreaterThan(-1)
-    expect(screen.indexOf('<CreateFarmWorkspace')).toBeLessThan(screen.indexOf('<FarmsExploreFarmsModule'))
-    expect(screen).toContain('data-farms-create-farm="mounted"')
+    expect(screen).toContain('data-farms-create-farm="modal"')
   })
 
   it('CreateFarmWorkspace re-exports PublicFarmFactoryWorkspace', () => {

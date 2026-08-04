@@ -1,20 +1,18 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography } from 'design-system/melega'
 import FarmsStudioGlobalStyle from './FarmsStudioGlobalStyle'
 import { FarmsRuntimeProvider } from './farmsRuntime/FarmsRuntimeContext'
 import FarmsActionHost from './farmsRuntime/FarmsActionHost'
-import FarmsActivityTable from './components/FarmsActivityTable'
 import { farmsStudioColors, farmsStudioLayout } from './farmsStudioTokens'
 import { FarmsHeroModule } from './modules/FarmsHeroModule'
 import { FarmsOverviewKpisModule } from './modules/FarmsOverviewKpisModule'
 import { FarmsMyFarmsModule } from './modules/FarmsMyFarmsModule'
-import { FarmsYieldAdvisorModule } from './modules/FarmsYieldAdvisorModule'
 import { CreateFarmWorkspace } from './modules/CreateFarmWorkspace'
 import { FarmsExploreFarmsModule } from './modules/FarmsExploreFarmsModule'
-import { FarmsAnalyticsModule } from './modules/FarmsAnalyticsModule'
 import { FarmsVisualPolishModule } from './modules/FarmsVisualPolishModule'
 import { farmsHero } from './modules/farmsHeroTokens'
 
@@ -33,11 +31,6 @@ const Root = styled.div`
 `
 
 const Content = styled.div`
-  /*
-   * App shell supplies horizontal page padding (32px @ ≥1024).
-   * Module 001 requires 24px top gap after Trending Bar and 1376 content width.
-   * Legacy Studio body remains mounted beneath the Hero until Integration 009.
-   */
   max-width: ${farmsHero.contentMax};
   width: 100%;
   margin: ${farmsHero.topAfterTrending} auto 0;
@@ -47,90 +40,145 @@ const Content = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: ${farmsStudioLayout.sectionGap};
+  gap: 14px;
 
   @media (max-width: 767px) {
     margin-top: 16px;
     padding: 0 4px ${farmsStudioLayout.mobileBottomPad};
+    gap: 12px;
   }
 `
 
-export const PageColumnGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, calc(66.666% + ${farmsStudioLayout.featuredGridAdjust}))
-    minmax(0, calc(33.333% - ${farmsStudioLayout.featuredGridAdjust}));
-  column-gap: ${farmsStudioLayout.pageGridGap};
-  row-gap: ${farmsStudioLayout.pageGridGap};
-  width: 100%;
-  min-width: 0;
-
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 10040;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px 12px 40px;
 `
 
-export const FeaturedSlot = styled.div`
-  min-width: 0;
-
-  @media (max-width: 767px) {
-    grid-column: span 1;
-  }
+const ModalShell = styled.div`
+  width: min(720px, 100%);
+  margin-top: 24px;
+  position: relative;
 `
 
-export const AdvisorSlot = styled.div`
-  min-width: 0;
-  /* Legacy AI Yield Advisor superseded by Module 006 (portaled into My Farms slot). */
+const CloseBtn = styled.button`
+  appearance: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.55);
+  color: #f5f5f5;
+  font-size: 12px;
+  font-weight: 700;
 `
 
-export const FarmsStudioScreen: React.FC = () => (
-  <Root
-    data-farms-studio-screen="true"
-    data-farms-module-001="mounted"
-    data-farms-module-002="mounted"
-    data-farms-module-003="mounted"
-    data-farms-module-004="mounted"
-    data-farms-module-005="unmounted"
-    data-farms-module-006="mounted"
-    data-farms-module-007="mounted"
-    data-farms-module-008="mounted"
-    data-farms-create-farm="mounted"
-    data-farms-architecture="000"
-    data-r200-premium="true"
-    data-fs-wallet-first="true"
-  >
-    <PageMeta />
-    <FarmsStudioGlobalStyle />
-    <FarmsRuntimeProvider>
-      <FarmsVisualPolishModule />
-      <FarmsActionHost />
-      <Content data-fs-content>
-        <FarmsHeroModule />
-        <DataSurfaceErrorBoundary surface="Farms Overview KPIs" userReason="Farm overview metrics are temporarily unavailable.">
-          <FarmsOverviewKpisModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
-          <FarmsMyFarmsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Yield Advisor" userReason="Yield advisor is temporarily unavailable.">
-          <FarmsYieldAdvisorModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Create Farm" userReason="Create Farm configuration is temporarily unavailable.">
-          <CreateFarmWorkspace />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
-          <FarmsExploreFarmsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Farms Analytics" userReason="Farm analytics are temporarily unavailable.">
-          <FarmsAnalyticsModule />
-        </DataSurfaceErrorBoundary>
-        {/* Featured Farm lives compactly in Hero; legacy bottom giant card unmounted. Standalone Finished Farms module removed — finished positions now surface inline within My Farms. */}
-        <PageColumnGrid data-fs-page-grid data-fs-featured-advisor="archived" aria-hidden="true" />
-        <DataSurfaceErrorBoundary surface="Farms Activity" userReason="Farm activity is temporarily unavailable.">
-          <FarmsActivityTable />
-        </DataSurfaceErrorBoundary>
-      </Content>
-    </FarmsRuntimeProvider>
-  </Root>
-)
+/**
+ * Farms product IA:
+ * Hero (Featured compact) → KPIs → My Farms → Explore Farms
+ * Create Farm opens as a modal / ?create=1 — never a permanent page column.
+ */
+export const FarmsStudioScreen: React.FC = () => {
+  const router = useRouter()
+  const [createOpen, setCreateOpen] = useState(false)
+
+  useEffect(() => {
+    const q = router.query.create
+    const hash = typeof window !== 'undefined' ? window.location.hash : ''
+    if (q === '1' || q === 'true' || hash === '#create-farm') {
+      setCreateOpen(true)
+    }
+  }, [router.query.create])
+
+  const openCreate = useCallback(() => {
+    setCreateOpen(true)
+    void router.replace({ pathname: router.pathname, query: { ...router.query, create: '1' } }, undefined, {
+      shallow: true,
+    })
+  }, [router])
+
+  const closeCreate = useCallback(() => {
+    setCreateOpen(false)
+    const nextQuery = { ...router.query }
+    delete nextQuery.create
+    void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
+  }, [router])
+
+  useEffect(() => {
+    const onOpen = () => openCreate()
+    window.addEventListener('melega:open-create-farm', onOpen)
+    return () => window.removeEventListener('melega:open-create-farm', onOpen)
+  }, [openCreate])
+
+  return (
+    <Root
+      data-farms-studio-screen="true"
+      data-farms-module-001="mounted"
+      data-farms-module-002="mounted"
+      data-farms-module-003="mounted"
+      data-farms-module-004="mounted"
+      data-farms-module-005="unmounted"
+      data-farms-module-006="unmounted"
+      data-farms-module-007="unmounted"
+      data-farms-module-008="mounted"
+      data-farms-create-farm="modal"
+      data-farms-architecture="000"
+      data-farms-ia="product-ux-redesign-v1"
+      data-r200-premium="true"
+      data-fs-wallet-first="true"
+      data-farms-create-modal={createOpen ? 'open' : 'closed'}
+    >
+      <PageMeta />
+      <FarmsStudioGlobalStyle />
+      <FarmsRuntimeProvider>
+        <FarmsVisualPolishModule />
+        <FarmsActionHost />
+        <Content data-fs-content data-farms-ia="product-ux-redesign-v1">
+          <FarmsHeroModule onRequestCreateFarm={openCreate} />
+          <DataSurfaceErrorBoundary
+            surface="Farms Overview KPIs"
+            userReason="Farm overview metrics are temporarily unavailable."
+          >
+            <FarmsOverviewKpisModule />
+          </DataSurfaceErrorBoundary>
+          <DataSurfaceErrorBoundary surface="Farms My Farms" userReason="Farm positions are temporarily unavailable.">
+            <FarmsMyFarmsModule />
+          </DataSurfaceErrorBoundary>
+          <DataSurfaceErrorBoundary surface="Explore Farms" userReason="Active farms are temporarily unavailable.">
+            <FarmsExploreFarmsModule />
+          </DataSurfaceErrorBoundary>
+        </Content>
+        {createOpen ? (
+          <ModalOverlay data-testid="create-farm-modal" role="dialog" aria-modal="true" aria-label="Create Farm">
+            <ModalShell>
+              <CloseBtn type="button" data-testid="create-farm-modal-close" onClick={closeCreate}>
+                Close
+              </CloseBtn>
+              <div id="create-farm" data-fs-create-farm-section>
+                <DataSurfaceErrorBoundary
+                  surface="Create Farm"
+                  userReason="Create Farm configuration is temporarily unavailable."
+                >
+                  <CreateFarmWorkspace />
+                </DataSurfaceErrorBoundary>
+              </div>
+            </ModalShell>
+          </ModalOverlay>
+        ) : null}
+      </FarmsRuntimeProvider>
+    </Root>
+  )
+}
 
 export default FarmsStudioScreen
