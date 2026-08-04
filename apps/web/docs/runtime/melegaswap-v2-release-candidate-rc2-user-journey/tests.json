@@ -1,0 +1,8 @@
+{
+  "schema": "melegaswap.v2.rc2.tests.v1",
+  "status": "PASS",
+  "passed": true,
+  "command": "yarn vitest run src/lib/__tests__/rc2UserJourneyOptimization.test.ts src/app-shell/__tests__/dexUxRebuild.nav.test.ts src/views/ListStudio/__tests__/listFounderAcceptance.test.ts",
+  "results": { "testFiles": 3, "tests": 24, "failed": 0 },
+  "capturedAt": "2026-08-04T04:16:55Z"
+}

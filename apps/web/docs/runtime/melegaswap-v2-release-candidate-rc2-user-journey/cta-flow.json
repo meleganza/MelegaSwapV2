@@ -1,0 +1,18 @@
+{
+  "schema": "melegaswap.v2.rc2.cta-flow.v1",
+  "capturedAt": "2026-08-04T04:16:24.493Z",
+  "component": "JourneyGuideRail + PageNextAction",
+  "rule": "Every rail answers What can I do here? and What should I do next?",
+  "mounts": [
+    "ListStudioScreen",
+    "ListWorkspace create-token",
+    "DexHomeScreen",
+    "TrendingStudioPageHeader",
+    "UnifiedLiquidityPage",
+    "FarmsStudioScreen",
+    "PoolsStudioScreen",
+    "ProjectPageV1Shell",
+    "LbPortfolioHome",
+    "LbDocsPage"
+  ]
+}

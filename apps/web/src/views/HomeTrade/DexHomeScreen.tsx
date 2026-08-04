@@ -16,6 +16,7 @@ import { getAllProjects } from 'registry/projects/getAllProjects'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
+import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -541,6 +542,14 @@ export const DexHomeScreen: React.FC = () => {
           surface="Homepage"
           userReason="Homepage market modules are temporarily unavailable."
         >
+          <JourneyGuideRail
+            journeyId="investor"
+            currentStepId="landing"
+            nextHref="/trending"
+            nextLabel="Next: Explore Trending"
+            testId="home-investor-journey"
+            compact
+          />
           <Hero data-home-section="hero">
             <HeroLeft>
               <Badge>AI-POWERED · MULTICHAIN · BUILT FOR BUILDERS</Badge>
@@ -555,6 +564,14 @@ export const DexHomeScreen: React.FC = () => {
                 {/* Single Swap entry — on-page terminal with Instant|Smart mode tabs. No duplicate Instant/Smart CTAs. */}
                 <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
                   Swap
+                </PrimaryCta>
+                <PrimaryCta
+                  type="button"
+                  data-testid="dex-home-open-trending"
+                  onClick={() => void router.push('/trending')}
+                  style={{ background: 'transparent', border: '1px solid rgba(244,196,48,0.45)', color: uxRebuildColors.gold }}
+                >
+                  Trending
                 </PrimaryCta>
               </CtaRow>
               <Trust>

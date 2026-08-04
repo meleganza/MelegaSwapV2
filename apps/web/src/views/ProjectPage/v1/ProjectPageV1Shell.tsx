@@ -21,6 +21,8 @@ import type { ProjectMachineDocument } from 'registry/projects/identity/machine'
 import type { ProjectTokenomicsDocument } from 'registry/projects/identity/tokenomics/schema'
 import type { ProjectRoadmapDocument } from 'registry/projects/identity/roadmap/schema'
 import { shortenAddress, humanEnumLabel, formatRelativeTime } from '../presentation/humanLabels'
+import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
+import { PageNextAction } from 'views/shared/journeys/PageNextAction'
 import {
   Band,
   BandHead,
@@ -328,6 +330,22 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
       data-project-chain-id={chainId}
       data-project-multichain="ready"
     >
+      <JourneyGuideRail
+        journeyId="investor"
+        currentStepId="project_page"
+        nextHref={buyHref}
+        nextLabel="Next: Buy Token"
+        testId="project-investor-journey"
+        compact
+      />
+      <PageNextAction
+        testId="project-page-next"
+        here="Review this project’s market and identity"
+        nextLabel="Buy Token"
+        nextHref={buyHref}
+        secondaryLabel="Earn in Farms"
+        secondaryHref="/farms"
+      />
       {/* SECTION 1 — Identity Hero */}
       <Band aria-labelledby="pp-v1-identity" data-project-section="identity-hero">
         <Row style={{ alignItems: 'flex-start', gap: 12 }}>
@@ -465,6 +483,12 @@ export const ProjectPageV1Shell: React.FC<Props> = ({
             <HeroActions>
               <Btn $primary href={buyHref} data-testid="project-v1-buy">
                 Buy Token{symbol ? ` · ${symbol}` : ''}
+              </Btn>
+              <Btn href="/farms" data-testid="project-v1-next-farm">
+                Farm
+              </Btn>
+              <Btn href="/pools" data-testid="project-v1-next-pool">
+                Pool
               </Btn>
             </HeroActions>
           </div>

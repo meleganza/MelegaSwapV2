@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { trendingStudioColors } from '../trendingStudioTokens'
 import { TrGhostBtn } from './trendingStudioPrimitives'
+import { JourneyGuideRail } from 'views/shared/journeys/JourneyGuideRail'
 
 const Row = styled.div`
   display: flex;
@@ -82,11 +83,24 @@ export const TrendingStudioPageHeader: React.FC = () => {
       </Left>
       <Right>
         <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }} onClick={() => router.push('/projects')}>
-          ✦ AI Discovery Engine
+          Open Projects
+        </TrGhostBtn>
+        <TrGhostBtn type="button" style={{ whiteSpace: 'nowrap' }} onClick={() => router.push('/trade')}>
+          Buy Token
         </TrGhostBtn>
         <LivePill>Tier metrics live</LivePill>
       </Right>
     </Row>
+    <div style={{ marginTop: 12 }}>
+      <JourneyGuideRail
+        journeyId="investor"
+        currentStepId="trending"
+        nextHref="/projects"
+        nextLabel="Next: Open a Project Page"
+        testId="trending-investor-journey"
+        compact
+      />
+    </div>
   </div>
   )
 }

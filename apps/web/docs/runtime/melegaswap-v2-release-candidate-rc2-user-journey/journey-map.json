@@ -1,0 +1,31 @@
+{
+  "schema": "melegaswap.v2.rc2.journey-map.v1",
+  "capturedAt": "2026-08-04T04:16:24.493Z",
+  "founder": [
+    "Landing",
+    "Create Token",
+    "Liquidity",
+    "Create Farm",
+    "Featured",
+    "Trend Boost",
+    "Project Page",
+    "Done"
+  ],
+  "investor": [
+    "Landing",
+    "Trending",
+    "Project Page",
+    "Buy Token",
+    "Add to Wallet",
+    "Farm",
+    "Pool",
+    "Done"
+  ],
+  "liquidityManager": [
+    "Portfolio",
+    "Programs",
+    "Analytics",
+    "Documentation",
+    "Create New Program"
+  ]
+}

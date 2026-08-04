@@ -13,6 +13,7 @@ import {
   uxRebuildLayout,
   uxRebuildRadius,
 } from 'design-system/melega/tokens/uxRebuild'
+import { PageNextAction } from 'views/shared/journeys/PageNextAction'
 
 export const LB_DOCS_NAV: { href: string; label: string }[] = [
   { href: '/docs/liquidity-builder', label: 'Overview hub' },
@@ -320,14 +321,21 @@ export function LbDocsPage({
         </SideNav>
 
         <Main>
+          <PageNextAction
+            testId="lb-docs-next"
+            here="Learn how Liquidity Builder works"
+            nextLabel="Create New Program"
+            nextHref="/liquidity-studio?view=building"
+            secondaryLabel="Open Portfolio"
+            secondaryHref="/liquidity-studio?view=building"
+          />
           <Crumb data-testid="lb-docs-crumb">
             <Link href="/docs">Docs</Link>
             {' / '}
             <Link href="/docs/liquidity-builder">AI Liquidity Builder</Link>
             {path !== '/docs/liquidity-builder' ? (
               <>
-                {' / '}
-                {title}
+                {' / '}                {title}
               </>
             ) : null}
           </Crumb>

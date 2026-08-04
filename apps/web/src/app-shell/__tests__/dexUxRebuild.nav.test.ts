@@ -29,13 +29,13 @@ describe('DEX UX Rebuild navigation', () => {
     }
   })
 
-  it('mobile bottom nav matches canonical destinations', () => {
+  it('mobile bottom nav matches RC2 journey destinations', () => {
     expect(shellBottomNavItems.map((i) => i.label)).toEqual([
       'Home',
+      'Trending',
       'Liquidity',
       'Farms',
-      'Pools',
-      'Passport',
+      'List',
     ])
   })
 
@@ -65,12 +65,13 @@ describe('DEX UX Rebuild navigation', () => {
     )
   })
 
-  it('Home uses DexHomeScreen and Instant Swap reuses HomeSwapPanel', () => {
+  it('Home uses DexHomeScreen and on-page Swap reuses HomeSwapPanel', () => {
     const home = readFileSync(path.join(ROOT, 'views/HomeTrade/HomeTradeScreen.tsx'), 'utf8')
     const dex = readFileSync(path.join(ROOT, 'views/HomeTrade/DexHomeScreen.tsx'), 'utf8')
     expect(home).toMatch(/DexHomeScreen/)
     expect(dex).toMatch(/HomeSwapPanel/)
-    expect(dex).toMatch(/Instant Swap/)
+    expect(dex).toMatch(/dex-home-instant-swap|dex-home-start-trading/)
+    expect(dex).toMatch(/home-investor-journey/)
     expect(dex).not.toMatch(/\$24\.58M|128\.45%|2,891/)
   })
 
