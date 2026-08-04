@@ -1,0 +1,12 @@
+{
+  "labels": [
+    "BSC",
+    "Base",
+    "Polygon",
+    "ETH",
+    "ARB",
+    "AVAX"
+  ],
+  "overlap": false,
+  "chainHeader": "BSC"
+}

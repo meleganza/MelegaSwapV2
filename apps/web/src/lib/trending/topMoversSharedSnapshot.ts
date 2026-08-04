@@ -5,7 +5,8 @@
 
 import type { MelegaTickerItem } from 'design-system/melega'
 
-export const HOME_TOP_MOVERS_LIMIT = 3
+/** Home Top Movers card shows at least 5 factual movers (prefix of shared ticker snapshot). */
+export const HOME_TOP_MOVERS_LIMIT = 5
 
 function fnv1aHex(input: string): string {
   let h = 0x811c9dc5
@@ -20,6 +21,7 @@ export type TopMoverEntry = {
   id: string
   symbol: string
   address: string | null
+  chainId?: number | null
   changeLabel: string | null
   changePct: number | null
   accentPositive?: boolean

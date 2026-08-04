@@ -1,6 +1,6 @@
 /**
  * Melega DEX Complete UX Rebuild — canonical top-level navigation.
- * Home · Liquidity · Farms · Pools · List · Passport
+ * Home · Liquidity · Farms · Pools · List · Portfolio
  */
 import { COLLECTIBLES_ROUTE, IDENTITY_CONSOLE_ROUTE } from './navigation'
 
@@ -205,7 +205,7 @@ export const GLOBAL_HEADER_NAV: HeaderNavItem[] = [
   },
   {
     id: 'passport',
-    label: 'Passport',
+    label: 'Portfolio',
     kind: 'link',
     href: '/passport',
     match: (p) =>

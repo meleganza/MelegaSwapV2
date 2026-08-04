@@ -226,20 +226,25 @@ const Chevron = styled.span<{ $open?: boolean }>`
 
 const SearchRegion = styled.div`
   flex: 1 1 auto;
-  min-width: 220px;
+  min-width: 160px;
+  max-width: min(280px, 28vw);
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-left: 12px;
-  margin-right: 8px;
+  margin-left: 8px;
+  margin-right: 6px;
+  overflow: hidden;
 
   [data-melega-global-search] {
-    width: clamp(190px, 18vw, 300px);
+    width: 100%;
+    max-width: 260px;
   }
 
   @media (max-width: 1279px) {
+    min-width: 120px;
+    max-width: 180px;
     [data-melega-global-search] {
-      width: clamp(180px, 16vw, 210px);
+      max-width: 180px;
     }
   }
 `
@@ -247,9 +252,17 @@ const SearchRegion = styled.div`
 const RightCluster = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: ${ds001Layout.headerHeight};
   flex-shrink: 0;
+  min-width: 0;
+
+  [data-testid='melega-header-chain'],
+  [data-network-status-pill] {
+    flex-shrink: 0;
+    max-width: 110px;
+    overflow: hidden;
+  }
 `
 
 const OverflowBtn = styled.button`

@@ -112,7 +112,7 @@ export const shellNavigation: ShellNavSection[] = [
     items: [
       {
         id: 'command-center',
-        label: 'Passport',
+        label: 'Portfolio',
         href: '/passport',
         icon: 'command',
         match: (p) =>
@@ -133,7 +133,7 @@ export const shellNavigation: ShellNavSection[] = [
   },
 ]
 
-/** Mobile bottom rail — Home · Liquidity · Farms · Pools · Passport */
+/** Mobile bottom rail — Home · Liquidity · Farms · Pools · Portfolio */
 export const shellBottomNavItems = [
   {
     id: 'home',
@@ -173,7 +173,7 @@ export const shellBottomNavItems = [
   },
   {
     id: 'passport',
-    label: 'Passport',
+    label: 'Portfolio',
     href: '/passport',
     icon: 'command' as MelegaNavIcon,
     match: (p: string) =>

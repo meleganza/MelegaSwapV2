@@ -26,7 +26,27 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { chains } from 'utils/wagmi'
 import { filterMelegaVisibleSwitcherChains } from 'config/constants/supportChains'
-import { getMelegaPreparingChains } from 'config/melegaChainRegistry'
+import { getMelegaChain, getMelegaPreparingChains } from 'config/melegaChainRegistry'
+import { MELEGA_CHAIN_A11Y_LABELS } from 'components/Logo/MelegaExploreChainBadge'
+
+/** Compact header labels — never spill into search / language / wallet. */
+const HEADER_CHAIN_COMPACT: Record<number, string> = {
+  56: 'BSC',
+  97: 'BSC',
+  8453: 'Base',
+  137: 'Polygon',
+  1: 'ETH',
+  42161: 'ARB',
+  43114: 'AVAX',
+}
+
+function headerChainLabel(chainId: number): string {
+  return HEADER_CHAIN_COMPACT[chainId] ?? getMelegaChain(chainId)?.shortLabel ?? String(chainId)
+}
+
+function headerChainTitle(chainId: number): string {
+  return MELEGA_CHAIN_A11Y_LABELS[chainId] ?? getMelegaChain(chainId)?.name ?? `Chain ${chainId}`
+}
 
 import { ChainLogo } from './Logo/ChainLogo'
 import { NetworkSwitchModal } from './Menu/UserMenu/NetworkSwitchModal'
@@ -44,7 +64,7 @@ const NetworkSelect = ({ switchNetwork, chainId }) => {
         >
           <ChainLogo chainId={chain.id} />
           <Text color={chain.id === chainId ? 'secondary' : 'text'} bold={chain.id === chainId} pl="12px">
-            {chain.name}
+            {headerChainLabel(chain.id)}
           </Text>
         </UserMenuItem>
       ))}
@@ -193,9 +213,16 @@ export const NetworkSwitcher = () => {
           px="16px"
           style={{ cursor: 'default', userSelect: 'none' }}
         >
-          <ChainLogo chainId={ChainId.BSC} width={24} height={24} />
-          <Text ml="8px" fontSize="14px" fontWeight={600} color="text" lineHeight={1.2}>
-            BNB Smart Chain
+          <ChainLogo chainId={ChainId.BSC} width={20} height={20} />
+          <Text
+            ml="6px"
+            fontSize="13px"
+            fontWeight={600}
+            color="text"
+            lineHeight={1.2}
+            title={headerChainTitle(ChainId.BSC)}
+          >
+            BSC
           </Text>
         </Flex>
       </Box>
@@ -218,10 +245,7 @@ export const NetworkSwitcher = () => {
           ) : isWrongNetwork ? (
             t('Network')
           ) : foundChain ? (
-            <>
-              <Box display={['none', null, null, null, null, 'block']}>{foundChain.name}</Box>
-              <Box display={['block', null, null, null, null, 'none']}>{chainId === 42161 ? 'ARB' : symbol}</Box>
-            </>
+            <Box title={headerChainTitle(foundChain.id)}>{headerChainLabel(foundChain.id)}</Box>
           ) : (
             t('Select a Network')
           ))

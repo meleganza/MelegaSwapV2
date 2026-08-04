@@ -65,7 +65,7 @@ describe('DS001.2 global header shell contracts', () => {
       'Farms',
       'Pools',
       'List',
-      'Passport',
+      'Portfolio',
     ])
   })
 

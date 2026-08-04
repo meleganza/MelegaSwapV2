@@ -18,6 +18,7 @@ import {
   useFeaturedProjectMarkets,
 } from './useFeaturedProjectMarkets'
 import { PlacementLabel } from 'views/shared/monetization/PlacementLabel'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 
 const halo = keyframes`
   0%, 100% {
@@ -90,9 +91,34 @@ const Card = styled.article`
 
 const Identity = styled.div`
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+`
+
+const IdentityMain = styled.div`
+  display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
+  flex: 1;
+`
+
+const CardBadges = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+`
+
+const Verified = styled.span`
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6ddc8c;
 `
 
 const Names = styled.div`
@@ -255,23 +281,27 @@ export const FeaturedProjectsRail: React.FC = () => {
               data-featured-market-status={market?.status ?? 'LOADING'}
             >
               <Identity>
-                <MelegaTokenAvatar
-                  symbol={p.symbol}
-                  name={p.displayName}
-                  address={p.address}
-                  chainId={p.chainId}
-                  size={30}
-                  radius="circle"
-                />
-                <Names>
-                  <Name>
-                    {p.displayName}{' '}
-                    <PlacementLabel kind="featured" />
-                  </Name>
-                  <Meta>
-                    {p.symbol} · BNB Smart Chain
-                  </Meta>
-                </Names>
+                <IdentityMain>
+                  <MelegaTokenAvatar
+                    symbol={p.symbol}
+                    name={p.displayName}
+                    address={p.address}
+                    chainId={p.chainId}
+                    size={30}
+                    radius="circle"
+                  />
+                  <Names>
+                    <Name>
+                      {p.displayName}{' '}
+                      <PlacementLabel kind="featured" />
+                    </Name>
+                    <Meta>{p.symbol}</Meta>
+                  </Names>
+                </IdentityMain>
+                <CardBadges>
+                  <MelegaExploreChainBadge chainId={p.chainId} />
+                  {p.resolved ? <Verified title="Canonical identity resolved">Verified</Verified> : null}
+                </CardBadges>
               </Identity>
               <Metrics>
                 <Price

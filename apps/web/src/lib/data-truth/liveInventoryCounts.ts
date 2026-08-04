@@ -74,6 +74,28 @@ export function listLiveFarmInventoryPreview(limit = 5): Array<{ id: string; nam
 export function listLivePoolInventoryPreview(
   limit = 5,
 ): Array<{ id: string; name: string; chainId: number }> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const generated = require('./poolsLiveInventory.generated.json') as Record<
+      string,
+      Array<{ sousId: number; chainId: number; contractAddress: string; stakeSymbol: string; rewardSymbol: string }>
+    >
+    const out: Array<{ id: string; name: string; chainId: number }> = []
+    for (const chainId of [56, 8453, 137, 1, 42161, 43114]) {
+      const rows = generated[String(chainId)] ?? []
+      for (const row of rows) {
+        out.push({
+          id: `${row.chainId}:${row.contractAddress}`,
+          name: `${row.stakeSymbol} → ${row.rewardSymbol}`,
+          chainId: row.chainId,
+        })
+        if (out.length >= limit) return out
+      }
+    }
+    if (out.length > 0) return out
+  } catch {
+    /* fall through to certified count labels */
+  }
   const total = countLivePoolConfigs()
   if (total <= 0) return []
   const rows: Array<{ id: string; name: string; chainId: number }> = [
@@ -89,7 +111,6 @@ export function listLivePoolInventoryPreview(
       chainId: 137,
     },
     { id: 'cfg-pool-eth', name: `Ethereum LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[1]})`, chainId: 1 },
-    { id: 'cfg-pool-total', name: `${total} configured LIVE pools`, chainId: 56 },
   ]
   return rows.slice(0, limit)
 }

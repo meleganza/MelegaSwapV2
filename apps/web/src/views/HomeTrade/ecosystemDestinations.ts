@@ -17,7 +17,7 @@ export type EcosystemDestination = {
 export const ECOSYSTEM_DESTINATIONS: EcosystemDestination[] = [
   {
     id: 'passport',
-    title: 'PASSPORT',
+    title: 'PORTFOLIO',
     subtitle: 'Identity and portfolio hub.',
     href: 'https://marco.melega.ai',
     external: true,

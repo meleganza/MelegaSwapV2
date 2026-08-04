@@ -65,6 +65,7 @@ export interface EarnRow {
   name: string
   apr?: string
   tvl?: string
+  rewards?: string
   href: string
   chainId?: number
 }
@@ -458,7 +459,49 @@ export const useHomeTradeData = () => {
   ])
 
   const farmRows = useMemo((): EarnRow[] => {
-    // Multichain inventory first — never empty while LIVE farm configs exist.
+    // Prefer active-chain ranked farms with factual APR/TVL when available.
+    const ranked = farms
+      .filter((f) => f.pid !== 0)
+      .map((farm) => {
+        const apr = farmApr(farm)
+        const tvl = farmTvl(farm)
+        return {
+          id: `farm-${chainId}-${farm.pid}`,
+          name: farm.lpSymbol ?? 'Farm',
+          apr: apr ? `${apr.toFixed(2)}%` : undefined,
+          tvl,
+          rewards: 'MARCO',
+          href: '/farms',
+          chainId,
+          sortApr: apr ?? -1,
+          sortTvl: tvl ? Number(String(tvl).replace(/[^0-9.]/g, '')) || 0 : 0,
+        }
+      })
+      .sort((a, b) => b.sortTvl - a.sortTvl || b.sortApr - a.sortApr)
+      .slice(0, 5)
+      .map(({ sortApr: _a, sortTvl: _t, ...row }) => row)
+
+    const rankedWithMetric = ranked.filter((r) => r.apr || r.tvl)
+    if (rankedWithMetric.length >= 3) return rankedWithMetric.slice(0, 5)
+    if (ranked.length > 0 && rankedWithMetric.length > 0) {
+      // Keep ranked first, fill from inventory for other chains.
+      const seen = new Set(ranked.map((r) => r.id))
+      const fill = listLiveFarmInventoryPreview(12)
+        .filter((row) => !seen.has(row.id) && row.chainId !== chainId)
+        .slice(0, 5 - ranked.length)
+        .map((row) => ({
+          id: row.id,
+          name: row.name,
+          apr: undefined,
+          tvl: undefined,
+          rewards: 'MARCO',
+          href: '/farms',
+          chainId: row.chainId,
+        }))
+      return [...ranked, ...fill].slice(0, 5)
+    }
+
+    // Multichain inventory when runtime ranking empty — never blank while configs exist.
     const preview = listLiveFarmInventoryPreview(8)
     if (preview.length > 0) {
       return preview.slice(0, 5).map((row) => {
@@ -473,28 +516,12 @@ export const useHomeTradeData = () => {
           name: row.name,
           apr: apr ? `${apr.toFixed(2)}%` : undefined,
           tvl,
+          rewards: 'MARCO',
           href: '/farms',
           chainId: row.chainId,
         }
       })
     }
-
-    const ranked = farms
-      .filter((f) => f.pid !== 0)
-      .slice(0, 5)
-      .map((farm) => {
-        const apr = farmApr(farm)
-        const tvl = farmTvl(farm)
-        return {
-          id: `farm-${farm.pid}`,
-          name: farm.lpSymbol ?? 'Farm',
-          apr: apr ? `${apr.toFixed(2)}%` : undefined,
-          tvl,
-          href: '/farms',
-          chainId,
-        }
-      })
-    if (ranked.length > 0) return ranked
 
     return allFarms
       .filter((f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X')
@@ -504,6 +531,7 @@ export const useHomeTradeData = () => {
         name: farm.lpSymbol ?? `Farm #${farm.pid}`,
         apr: undefined,
         tvl: farmTvl(farm as FarmWithStakedValue),
+        rewards: 'MARCO',
         href: '/farms',
         chainId,
       }))
@@ -549,17 +577,18 @@ export const useHomeTradeData = () => {
         const name =
           stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
         return {
-          id: `pool-${pool.sousId}`,
+          id: `pool-${chainId}-${pool.sousId}`,
           name,
           apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
           tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
+          rewards: earn || undefined,
           href: '/pools',
           chainId,
         }
       })
     }
 
-    // Inventory fallback when APR ranking is empty but live pools exist.
+    // Prefer rewarding/active pools with honest Unavailable APR over blank cards.
     const fromRuntime = source
       .filter((pool) => {
         const life = derivePoolLifecycle(pool, currentBlock)
@@ -571,11 +600,13 @@ export const useHomeTradeData = () => {
         const earn = pool.earningToken?.symbol
         const name =
           stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
+        const aprValue = poolApr(pool)
         return {
-          id: `pool-inv-${pool.sousId}`,
+          id: `pool-inv-${chainId}-${pool.sousId}`,
           name,
-          apr: undefined,
+          apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
           tvl: poolTvl(pool),
+          rewards: earn || undefined,
           href: '/pools',
           chainId,
         }
@@ -587,10 +618,11 @@ export const useHomeTradeData = () => {
       name: row.name,
       apr: undefined,
       tvl: undefined,
+      rewards: undefined,
       href: '/pools',
       chainId: row.chainId,
     }))
-  }, [pools, allPools, currentBlock])
+  }, [pools, allPools, currentBlock, chainId])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
 

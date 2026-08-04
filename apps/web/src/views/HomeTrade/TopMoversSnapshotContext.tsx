@@ -39,6 +39,21 @@ export const TopMoversSnapshotProvider: React.FC<React.PropsWithChildren> = ({ c
       fromDurable: rankings.fromDurableSnapshot,
       sourceBlock: null,
     })
+    // Enrich chainId from ranked assets (same producer — no second ranking).
+    const byAddr = new Map(
+      (rankings.rankedAssets ?? [])
+        .filter((a) => a.address)
+        .map((a) => [a.address!.toLowerCase(), a.chainId] as const),
+    )
+    const bySym = new Map((rankings.rankedAssets ?? []).map((a) => [a.symbol.toUpperCase(), a.chainId] as const))
+    snapshot.entries = snapshot.entries.map((e) => ({
+      ...e,
+      chainId:
+        e.chainId ??
+        (e.address ? byAddr.get(e.address.toLowerCase()) : undefined) ??
+        bySym.get(e.symbol.toUpperCase()) ??
+        56,
+    }))
     const homeEntries = homeTopMoversPrefix(snapshot, HOME_TOP_MOVERS_LIMIT)
     const tickerItems = entriesToTickerItems(snapshot.entries)
     return {

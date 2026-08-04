@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@pancakeswap/sdk'
 import { useModal } from '@pancakeswap/uikit'
@@ -16,7 +16,6 @@ import useWarningImport from 'views/Swap/hooks/useWarningImport'
 import { SmartSwapForm } from 'views/Swap/SmartSwap'
 import { SwapFeaturesProvider } from 'views/Swap/SwapFeaturesContext'
 import { SmartSwapExecutionPreviewModule } from 'views/SmartSwapStudio/modules/SmartSwapExecutionPreview'
-import TradeModeSelector from 'views/Trade/components/TradeModeSelector'
 import type { SwapExperienceMode } from 'views/Trade/swapExperience'
 import { publishSwapExperienceMode } from 'lib/smart-swap-execution-handoff'
 import { colors } from 'design-system/melega'
@@ -104,7 +103,8 @@ const HomeSwapInner: React.FC = () => {
   const { account } = useWeb3React()
   const { address: wagmiAddress } = useAccount()
   const walletConnected = Boolean(account || wagmiAddress)
-  const [experience, setExperience] = useState<SwapExperienceMode>('instant')
+  // Home promotes Smart Swap only — Instant mode selector removed from this surface.
+  const experience: SwapExperienceMode = 'smart'
   const warningSwapHandler = useWarningImport()
   const { onCurrencySelection } = useSwapActionHandlers()
   const {
@@ -139,16 +139,13 @@ const HomeSwapInner: React.FC = () => {
     () => (
       <Title>
         <Bolt aria-hidden>⚡</Bolt>
-        Swap
+        Smart Swap
       </Title>
     ),
     [],
   )
 
-  const headerCenter = useMemo(
-    () => <TradeModeSelector mode={experience} onChange={setExperience} />,
-    [experience],
-  )
+  const headerCenter = null
 
   const handleOutputSelect = useCallback(
     (newCurrencyOutput: Currency) => {

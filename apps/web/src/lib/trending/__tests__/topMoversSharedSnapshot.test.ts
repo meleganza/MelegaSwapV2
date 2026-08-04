@@ -24,11 +24,14 @@ describe('Top Movers shared snapshot', () => {
       item('BLION', '0x2222222222222222222222222222222222222222', '+8.1%'),
       item('MM72', '0x3333333333333333333333333333333333333333', '-3.2%', false),
       item('CAKE', '0x4444444444444444444444444444444444444444', '+2.0%'),
+      item('DOT', '0x5555555555555555555555555555555555555555', '+1.5%'),
+      item('BTCB', '0x6666666666666666666666666666666666666666', '-0.8%', false),
     ]
     const snap = buildTopMoversSharedSnapshot({ items, generatedAt: '2026-07-30T00:00:00.000Z' })
     const home = homeTopMoversPrefix(snap, HOME_TOP_MOVERS_LIMIT)
-    expect(home).toHaveLength(3)
-    expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72'])
+    expect(HOME_TOP_MOVERS_LIMIT).toBeGreaterThanOrEqual(5)
+    expect(home).toHaveLength(5)
+    expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72', 'CAKE', 'DOT'])
     expect(assertIdenticalPrefix(snap.entries, home)).toBe('IDENTICAL_PREFIX')
     expect(home.every((h, i) => h.changeLabel === snap.entries[i].changeLabel)).toBe(true)
     expect(home.every((h, i) => h.address === snap.entries[i].address)).toBe(true)
@@ -48,6 +51,7 @@ describe('Top Movers shared snapshot', () => {
       item('BLION', '0x2222222222222222222222222222222222222222', '+8.1%'),
       item('MM72', '0x3333333333333333333333333333333333333333', '-3.2%', false),
       item('CAKE', '0x4444444444444444444444444444444444444444', '+2.0%'),
+      item('DOT', '0x5555555555555555555555555555555555555555', '+1.5%'),
     ]
     for (let cycle = 1; cycle <= 10; cycle += 1) {
       const snap = buildTopMoversSharedSnapshot({
@@ -56,8 +60,8 @@ describe('Top Movers shared snapshot', () => {
       })
       const home = homeTopMoversPrefix(snap)
       expect(assertIdenticalPrefix(snap.entries, home)).toBe('IDENTICAL_PREFIX')
-      expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72'])
-      expect(home.map((e) => e.changeLabel)).toEqual(['+12.4%', '+8.1%', '-3.2%'])
+      expect(home.map((e) => e.symbol)).toEqual(['FLOKI', 'BLION', 'MM72', 'CAKE', 'DOT'])
+      expect(home.map((e) => e.changeLabel)).toEqual(['+12.4%', '+8.1%', '-3.2%', '+2.0%', '+1.5%'])
     }
   })
 

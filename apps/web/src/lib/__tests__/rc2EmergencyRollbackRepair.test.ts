@@ -51,7 +51,7 @@ describe('RC2 emergency — header / bottom nav', () => {
       'Farms',
       'Pools',
       'List',
-      'Passport',
+      'Portfolio',
     ])
   })
 
@@ -61,7 +61,7 @@ describe('RC2 emergency — header / bottom nav', () => {
       'Liquidity',
       'Farms',
       'Pools',
-      'Passport',
+      'Portfolio',
     ])
   })
 

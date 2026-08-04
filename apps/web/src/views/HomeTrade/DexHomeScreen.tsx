@@ -500,16 +500,25 @@ export const DexHomeScreen: React.FC = () => {
   // Exact prefix of the shared Top Movers snapshot (same snapshotId as ticker).
   const trendingRows = useMemo(() => {
     const entries = data.homeTopMoversEntries ?? []
+    const ribbon = data.indexedRibbonAssets ?? []
     return entries.map((entry, idx) => {
       const move = entry.changeLabel?.trim()
       const positive = entry.accentPositive
       const tone: 'up' | 'down' | 'flat' =
         positive === true ? 'up' : positive === false ? 'down' : 'flat'
       const arrow = tone === 'up' ? '▲' : tone === 'down' ? '▼' : ''
+      const ribbonMatch = ribbon.find(
+        (a) =>
+          (entry.address && a.address?.toLowerCase() === entry.address.toLowerCase()) ||
+          a.symbol?.toUpperCase() === entry.symbol?.toUpperCase(),
+      )
+      const chainId = entry.chainId ?? ribbonMatch?.chainId ?? 56
       return {
         id: entry.id ?? `trend-${idx}`,
         rank: idx + 1,
         name: entry.symbol,
+        address: entry.address,
+        chainId,
         meta: entry.address ? `${entry.address.slice(0, 6)}…${entry.address.slice(-4)}` : entry.symbol,
         metric: move ? `${arrow}${move}` : undefined,
         tone,
@@ -518,7 +527,7 @@ export const DexHomeScreen: React.FC = () => {
         href: entry.href,
       }
     })
-  }, [data.homeTopMoversEntries])
+  }, [data.homeTopMoversEntries, data.indexedRibbonAssets])
 
   const farmRows = (data.farmRows ?? []).slice(0, 5)
   const poolRows = (data.poolRows ?? []).slice(0, 5)
@@ -535,19 +544,6 @@ export const DexHomeScreen: React.FC = () => {
         metric: 'Indexed',
       }))
   }, [])
-
-  const scrollToSwap = () => {
-    const root = swapRef.current
-    root?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    // Focus the on-page terminal input — no second Swap surface.
-    window.setTimeout(() => {
-      const input =
-        root?.querySelector<HTMLElement>('.home-trade-swap input.token-amount-input') ||
-        root?.querySelector<HTMLElement>('.home-trade-swap input') ||
-        root?.querySelector<HTMLElement>('[data-home-swap-panel] input')
-      input?.focus({ preventScroll: true })
-    }, 280)
-  }
 
   return (
     <Root data-dex-home-screen data-ux-rebuild-home>
@@ -569,9 +565,12 @@ export const DexHomeScreen: React.FC = () => {
                 Melega DEX is the next-gen decentralized exchange built for the new era of on-chain finance.
               </Description>
               <CtaRow>
-                {/* Single Swap entry — on-page terminal with Instant|Smart mode tabs. No duplicate Instant/Smart CTAs. */}
-                <PrimaryCta type="button" data-testid="dex-home-start-trading" onClick={scrollToSwap}>
-                  Swap
+                <PrimaryCta
+                  type="button"
+                  data-testid="dex-home-list-project"
+                  onClick={() => void router.push('/list')}
+                >
+                  List Your Project
                 </PrimaryCta>
                 <PrimaryCta
                   type="button"
@@ -579,7 +578,7 @@ export const DexHomeScreen: React.FC = () => {
                   onClick={() => void router.push('/trending')}
                   style={{ background: 'transparent', border: '1px solid rgba(244,196,48,0.45)', color: uxRebuildColors.gold }}
                 >
-                  Trending
+                  Trending Projects
                 </PrimaryCta>
               </CtaRow>
               <Trust>
@@ -623,10 +622,15 @@ export const DexHomeScreen: React.FC = () => {
                 <EmptyRow>No verified 24h movers yet</EmptyRow>
               ) : (
                 trendingRows.map((row) => (
-                  <DiscRow key={row.id} href={row.href}>
+                  <DiscRow key={row.id} href={row.href} data-testid="home-top-mover-row" data-mover-symbol={row.name}>
                     <Rank>{row.rank}</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        <MelegaExploreChainBadge chainId={row.chainId} />
+                      </RowName>
                       <RowMeta>{row.meta || '—'}</RowMeta>
                     </RowMain>
                     <RowMetric
@@ -650,7 +654,7 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/farms">View all →</ViewAll>
               </DiscHead>
               {farmRows.length === 0 ? (
-                <EmptyRow>APR unavailable — open Farms for the full LIVE inventory.</EmptyRow>
+                <EmptyRow>Open Farms for the full LIVE inventory.</EmptyRow>
               ) : (
                 farmRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/farms'} style={{ position: 'relative' }}>
@@ -665,6 +669,7 @@ export const DexHomeScreen: React.FC = () => {
                         ) : null}
                       </RowName>
                       {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
+                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : null}
                     </RowMain>
                     <GoldMetric>{row.apr ? `${row.apr}` : 'APR unavailable'}</GoldMetric>
                   </DiscRow>
@@ -681,7 +686,7 @@ export const DexHomeScreen: React.FC = () => {
                 <ViewAll href="/pools">View all →</ViewAll>
               </DiscHead>
               {poolRows.length === 0 ? (
-                <EmptyRow>APR unavailable — open Pools for the full LIVE inventory.</EmptyRow>
+                <EmptyRow>Open Pools for the full LIVE inventory.</EmptyRow>
               ) : (
                 poolRows.map((row) => (
                   <DiscRow key={row.id} href={row.href || '/pools'}>
@@ -696,6 +701,7 @@ export const DexHomeScreen: React.FC = () => {
                         ) : null}
                       </RowName>
                       {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
+                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : null}
                     </RowMain>
                     <RowMetric>{row.apr ? row.apr : 'APR unavailable'}</RowMetric>
                   </DiscRow>
