@@ -108,13 +108,29 @@ export function isResolvedDiscoverySymbol(symbol: string): boolean {
  * Resolve a human token symbol for discovery cards.
  * Never returns a contract address as the primary label.
  */
-export function resolveDiscoverySymbol(address: string, pairSymbol?: string): string {
+function shortAddressLabel(address: string): string {
+  const a = address.trim()
+  if (!/^0x[a-fA-F0-9]{40}$/.test(a)) return 'Token'
+  return `${a.slice(0, 6)}…${a.slice(-4)}`
+}
+
+/**
+ * Resolve a human token symbol for discovery cards.
+ * Order: pair metadata → canonical registry → asset index → short address.
+ * Never invent cross-chain metadata; only return "Unknown" when address is invalid.
+ */
+export function resolveDiscoverySymbol(address: string, pairSymbol?: string, chainId = MELEGA_CHAIN_ID): string {
   const trimmed = pairSymbol?.trim()
-  if (trimmed && !/^0x/i.test(trimmed) && !trimmed.includes('…')) return trimmed
-  const canonical = lookupCanonicalToken(MELEGA_CHAIN_ID, address)
-  if (canonical?.symbol && !/^0x/i.test(canonical.symbol)) return canonical.symbol
+  if (trimmed && !/^0x/i.test(trimmed) && !trimmed.includes('…') && trimmed.toLowerCase() !== 'unknown') {
+    return trimmed
+  }
+  const canonical = lookupCanonicalToken(chainId, address)
+  if (canonical?.symbol && !/^0x/i.test(canonical.symbol) && canonical.symbol.toLowerCase() !== 'unknown') {
+    return canonical.symbol
+  }
   const fromAssets = ASSET_SYMBOL_BY_ADDRESS.get(address.toLowerCase())
-  if (fromAssets) return fromAssets
+  if (fromAssets && fromAssets.toLowerCase() !== 'unknown') return fromAssets
+  if (/^0x[a-fA-F0-9]{40}$/.test(address.trim())) return shortAddressLabel(address)
   return 'Unknown'
 }
 

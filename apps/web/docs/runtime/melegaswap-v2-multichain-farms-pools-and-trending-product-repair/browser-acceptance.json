@@ -1,0 +1,49 @@
+{
+  "mission": "MELEGASWAP_V2_MULTICHAIN_FARMS_POOLS_AND_TRENDING_PRODUCT_REPAIR",
+  "base": "http://127.0.0.1:3010",
+  "viewport": "1440x900",
+  "verifiedAt": "2026-08-04T06:10:30.375Z",
+  "checks": {
+    "farmsDesktop": {
+      "farmCards": 150,
+      "farmChainFilters": true,
+      "farmChainBadges": 750,
+      "farmChains": [
+        "56",
+        "1",
+        "137",
+        "42161",
+        "8453"
+      ],
+      "multiChainCards": true,
+      "oops": true
+    },
+    "farmsPolygonFilter": true,
+    "farmsMyPositions": true,
+    "switchDialog": "no-cross-chain-cta-visible-on-active-chain",
+    "poolsDesktop": {
+      "poolsIa": true,
+      "noPermanentCreateColumn": true,
+      "poolCards": 188,
+      "poolChainFilters": true,
+      "noHorizontalOverflow": true,
+      "oops": true
+    },
+    "poolsMyPositions": true,
+    "trending": {
+      "sample": [],
+      "organicOrPaidCount": 0,
+      "totalSampled": 0
+    },
+    "topMovers": {
+      "found": true,
+      "hasPct": true,
+      "snippet": "Top MoversView all 1DOT0x7083…3402▲↑ 4.8%2FLOKI0xfb5b…d37e▲↑ 1.7%3BTCB0x7130…ad9c▲↑ 1.6%"
+    },
+    "pageErrorsEmpty": true,
+    "createPoolFlow": true,
+    "createPoolUrl": "http://127.0.0.1:3010/pools/?create=1"
+  },
+  "pageErrors": [],
+  "pass": true
+}

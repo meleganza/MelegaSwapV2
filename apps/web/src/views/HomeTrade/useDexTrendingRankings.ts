@@ -36,6 +36,7 @@ import {
   resolveTrendingItemsForDisplay,
   writeDurableTrendingSnapshot,
 } from 'lib/trending/durableTrendingSnapshot'
+import { mergeTickerWithPaidPlacements } from 'lib/trending/paidTickerPlacements'
 
 type TokenListEntry = { chainId?: number; address?: string; symbol?: string; name?: string }
 
@@ -993,7 +994,17 @@ export function useDexTrendingRankings() {
     () => resolveTrendingItemsForDisplay(liveTickerItems, durableItems, durableUpdatedAt),
     [liveTickerItems, durableItems, durableUpdatedAt],
   )
-  const trendingTickerItems = resolvedTicker.items
+  // Paid Boosted/Featured slots are injected only when active placements exist.
+  // Empty arrays → organic movers only (never registry padding).
+  const trendingTickerItems = useMemo(
+    () =>
+      mergeTickerWithPaidPlacements({
+        organic: resolvedTicker.items,
+        boosted: [],
+        featured: [],
+      }),
+    [resolvedTicker.items],
+  )
 
   const indexedRibbonAssets = useMemo(
     () =>

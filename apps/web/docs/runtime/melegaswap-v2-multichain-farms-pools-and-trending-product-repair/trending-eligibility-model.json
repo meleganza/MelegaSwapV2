@@ -1,0 +1,12 @@
+{
+  "allowed": [
+    "factual movers with %",
+    "active Trend Boost labelled Boosted",
+    "active Featured labelled Featured"
+  ],
+  "forbidden": [
+    "registry padding without %",
+    "silent sponsored organic"
+  ],
+  "mergeHelper": "lib/trending/paidTickerPlacements.ts"
+}

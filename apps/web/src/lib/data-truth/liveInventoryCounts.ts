@@ -71,15 +71,25 @@ export function listLiveFarmInventoryPreview(limit = 5): Array<{ id: string; nam
 }
 
 /** Top pool labels from static LIVE config when runtime ranking is empty. */
-export function listLivePoolInventoryPreview(limit = 5): Array<{ id: string; name: string }> {
+export function listLivePoolInventoryPreview(
+  limit = 5,
+): Array<{ id: string; name: string; chainId: number }> {
   const total = countLivePoolConfigs()
   if (total <= 0) return []
-  const rows: Array<{ id: string; name: string }> = [
-    { id: 'cfg-pool-bsc', name: `BSC LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[56]})` },
-    { id: 'cfg-pool-base', name: `Base LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[8453]})` },
-    { id: 'cfg-pool-polygon', name: `Polygon LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[137]})` },
-    { id: 'cfg-pool-eth', name: `Ethereum LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[1]})` },
-    { id: 'cfg-pool-total', name: `${total} configured LIVE pools` },
+  const rows: Array<{ id: string; name: string; chainId: number }> = [
+    { id: 'cfg-pool-bsc', name: `BSC LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[56]})`, chainId: 56 },
+    {
+      id: 'cfg-pool-base',
+      name: `Base LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[8453]})`,
+      chainId: 8453,
+    },
+    {
+      id: 'cfg-pool-polygon',
+      name: `Polygon LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[137]})`,
+      chainId: 137,
+    },
+    { id: 'cfg-pool-eth', name: `Ethereum LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[1]})`, chainId: 1 },
+    { id: 'cfg-pool-total', name: `${total} configured LIVE pools`, chainId: 56 },
   ]
   return rows.slice(0, limit)
 }

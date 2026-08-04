@@ -2,14 +2,16 @@
  * FARMS_MODULE_004 — Explore farm card (446×268 desktop).
  */
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
+import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { getBlockExploreLink } from 'utils'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type { ExploreFarmViewModel } from './farmsExploreFarmsTypes'
 
@@ -292,18 +294,28 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
   const { requestModal } = useFarmsRuntime()
   const { switchNetworkAsync } = useSwitchNetwork()
   const [busy, setBusy] = useState<'approve' | 'stake' | null>(null)
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [switching, setSwitching] = useState(false)
+  const pendingActionRef = useRef<'approve' | 'stake' | null>(null)
 
   const accessibleName = `Stake ${farm.token0.symbol} ${farm.token1.symbol} LP in farm earning ${farm.rewardToken.symbol}`
   const logoDesc = `${farm.token0.symbol} and ${farm.token1.symbol} LP earning ${farm.rewardToken.symbol}`
 
+  const resumeStake = () => {
+    const next = pendingActionRef.current ?? 'stake'
+    pendingActionRef.current = null
+    setBusy(next)
+    try {
+      requestModal(farm.sourceCard, 'stake')
+    } finally {
+      window.setTimeout(() => setBusy(null), 1200)
+    }
+  }
+
   const onPrimary = async () => {
     if (farm.primaryAction === 'Farm Unavailable') return
     if (farm.primaryAction === 'Switch Network') {
-      try {
-        await switchNetworkAsync?.(farm.chainId)
-      } catch {
-        /* user rejected — keep card stable */
-      }
+      setSwitchOpen(true)
       return
     }
     if (farm.primaryAction === 'Approve LP' || farm.primaryAction === 'Stake LP') {
@@ -313,6 +325,23 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       } finally {
         window.setTimeout(() => setBusy(null), 1200)
       }
+    }
+  }
+
+  const onConfirmSwitch = async () => {
+    setSwitching(true)
+    pendingActionRef.current = 'stake'
+    try {
+      await switchNetworkAsync?.(farm.chainId)
+      setSwitchOpen(false)
+      // Preserve selected farm — reopen stake after switch when wallet lands on target.
+      window.setTimeout(() => resumeStake(), 400)
+    } catch {
+      pendingActionRef.current = null
+      /* user rejected — keep card + dialog cancel path */
+      setSwitchOpen(false)
+    } finally {
+      setSwitching(false)
     }
   }
 
@@ -404,7 +433,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
       <ContractLinks>
         {farm.masterbuilder ? (
           <ContractLink
-            href={`https://bscscan.com/address/${farm.masterbuilder}`}
+            href={getBlockExploreLink(farm.masterbuilder, 'address', farm.chainId)}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="farms-explore-farm-contract"
@@ -414,7 +443,7 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
         ) : null}
         {farm.lpToken?.address ? (
           <ContractLink
-            href={`https://bscscan.com/address/${farm.lpToken.address}`}
+            href={getBlockExploreLink(farm.lpToken.address, 'address', farm.chainId)}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="farms-explore-lp-contract"
@@ -454,6 +483,19 @@ export const FarmsExploreFarmCard: React.FC<{ farm: ExploreFarmViewModel }> = ({
           </Btn>
         ) : null}
       </Actions>
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={farm.chainId}
+        productLabel={`This farm (${farm.title})`}
+        busy={switching}
+        onCancel={() => {
+          pendingActionRef.current = null
+          setSwitchOpen(false)
+        }}
+        onConfirm={() => {
+          void onConfirmSwitch()
+        }}
+      />
     </Card>
   )
 }

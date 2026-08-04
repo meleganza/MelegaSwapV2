@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import { useFarmsRuntime } from '../farmsRuntime/FarmsRuntimeContext'
 import { farmsMyFarms } from './farmsMyFarmsTokens'
 import type { FarmsPositionAction, FarmsWalletPosition } from './farmsMyFarmsTypes'
@@ -39,7 +40,7 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
       <Logo><MelegaTokenAvatar name={position.token0.symbol} symbol={position.token0.symbol} address={position.token0.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.stakeLogo} radius="circle" /></Logo>
       <Logo $offset><MelegaTokenAvatar name={position.token1.symbol} symbol={position.token1.symbol} address={position.token1.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.stakeLogo} radius="circle" /></Logo>
       <Logo $offset $reward><MelegaTokenAvatar name={position.rewardToken.symbol} symbol={position.rewardToken.symbol} address={position.rewardToken.address ?? undefined} chainId={position.chainId} size={farmsMyFarms.rewardLogo} radius="circle" /></Logo>
-    </Logos><div style={{ minWidth: 0 }}><Title title={position.title}>{position.title}</Title><Subtitle>{position.subtitle}</Subtitle></div></Identity><Badge $tone={position.statusLabel}>{position.statusLabel}</Badge></Header>
+    </Logos><div style={{ minWidth: 0 }}><Title title={position.title}>{position.title}</Title><Subtitle>{position.subtitle}</Subtitle></div></Identity><div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}><MelegaExploreChainBadge chainId={position.chainId} /><Badge $tone={position.statusLabel}>{position.statusLabel}</Badge></div></Header>
     <Metrics>
       <div>
         <Label>Position value</Label>

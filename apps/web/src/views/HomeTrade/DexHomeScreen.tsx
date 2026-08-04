@@ -16,6 +16,7 @@ import { getAllProjects } from 'registry/projects/getAllProjects'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -652,10 +653,17 @@ export const DexHomeScreen: React.FC = () => {
                 <EmptyRow>APR unavailable — open Farms for the full LIVE inventory.</EmptyRow>
               ) : (
                 farmRows.map((row) => (
-                  <DiscRow key={row.id} href={row.href || '/farms'}>
+                  <DiscRow key={row.id} href={row.href || '/farms'} style={{ position: 'relative' }}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
+                      <RowName>
+                        {row.name}
+                        {row.chainId != null ? (
+                          <span style={{ marginLeft: 6, display: 'inline-flex', verticalAlign: 'middle' }}>
+                            <MelegaExploreChainBadge chainId={row.chainId} />
+                          </span>
+                        ) : null}
+                      </RowName>
                       {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
                     </RowMain>
                     <GoldMetric>{row.apr ? `${row.apr}` : 'APR unavailable'}</GoldMetric>
@@ -679,7 +687,14 @@ export const DexHomeScreen: React.FC = () => {
                   <DiscRow key={row.id} href={row.href || '/pools'}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>{row.name}</RowName>
+                      <RowName>
+                        {row.name}
+                        {row.chainId != null ? (
+                          <span style={{ marginLeft: 6, display: 'inline-flex', verticalAlign: 'middle' }}>
+                            <MelegaExploreChainBadge chainId={row.chainId} />
+                          </span>
+                        ) : null}
+                      </RowName>
                       {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
                     </RowMain>
                     <RowMetric>{row.apr ? row.apr : 'APR unavailable'}</RowMetric>

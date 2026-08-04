@@ -156,7 +156,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
       }),
       56,
     )!
-    expect(noApr.aprDisplay).toBe('—')
+    expect(noApr.aprDisplay).toBe('Unavailable')
     expect(noApr.aprSupport).toBe('APR unavailable')
 
     const noTvl = cardToExploreModel(
@@ -172,7 +172,7 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
       }),
       56,
     )!
-    expect(noTvl.tvlDisplay).toBe('—')
+    expect(noTvl.tvlDisplay).toBe('Unavailable')
     expect(noTvl.tvlDisplay).not.toBe('$0.00')
     expect(noTvl.status).toBe('PARTIAL')
   })
@@ -221,10 +221,10 @@ describe('POOLS_MODULE_004 Explore Pools', () => {
     )!
     const pools = [a, b]
     expect(filterExplorePools(pools, 'Flexible')).toHaveLength(1)
-    expect(filterExplorePools(pools, 'LP')[0].poolId).toBe('sous-2')
-    expect(filterExplorePools(pools, 'High APR')[0].poolId).toBe('sous-2')
+    expect(filterExplorePools(pools, 'LP')[0].poolId).toBe('56:sous-2')
+    expect(filterExplorePools(pools, 'High APR')[0].poolId).toBe('56:sous-2')
     expect(sortExplorePools(pools, 'Alphabetical')[0].title).toBe('Alpha Pool')
-    expect(sortExplorePools(pools, 'Highest APR')[0].poolId).toBe('sous-2')
+    expect(sortExplorePools(pools, 'Highest APR')[0].poolId).toBe('56:sous-2')
     expect(searchExplorePools(pools, 'beta')).toHaveLength(1)
     expect(searchExplorePools(pools, '0xlp')).toHaveLength(1)
   })

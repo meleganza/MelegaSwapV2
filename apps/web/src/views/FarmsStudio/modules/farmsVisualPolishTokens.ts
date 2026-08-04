@@ -63,11 +63,11 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'af6a59567f70801b4271c18b8610338f00471f6b0d6a4b62cef4c2270a1cf92e',
-  FarmsMyFarmCard: 'ecea059d917ec0a3bd21bc255ba391a53d751591f02db30ad83df14eb9991f8c',
+  FarmsMyFarmCard: 'f0e0ced762ece9d37a90ad9dd08a0f01a76a53379e5d3c80ac015279b7aa119b',
   farmsMyFarmsTokens: 'e487e46a520f27ba721a9ced1e21bd6ac58c632dfe4fde99ece10784b47a96a7',
   farmsMyFarmsTypes: 'eb94bd37b88a914231de28e51df2f8a67b08f0ac0fd7708a4a437d9ce1089151',
   buildFarmsWalletPositions: '44b4749cd72d477db0b7fc8d68d5010bc643dfd26cc9580a6dfff88143594711',
-  useFarmsWalletPositions: '1f7db07cd4c03fb6b31454ed7d60ef936f4855fad0c806c2c88d3f2786ab4147',
+  useFarmsWalletPositions: '30d7f27335beea626a36edb40594cabae734105fd373e8489fd6cc85cad9253b',
 } as const
 
 export const FARMS_MODULE_004_FREEZE_SHA256 = {

@@ -1,10 +1,13 @@
 /**
  * POOLS_MODULE_004 — pure Explore Pools builder.
  * ACTIVE stakeable SmartChef pools only. No Farms / AMM / Finished.
+ * Multichain: cards carry their own chainId; filter by chain without cross-chain merge.
  */
 
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
+import { poolIdentity } from 'lib/data-truth/globalYieldInventory'
+import { getBlockExploreLink } from 'utils'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
 import type {
@@ -12,6 +15,7 @@ import type {
   PoolsExploreLockType,
   PoolsExplorePoolCardModel,
   PoolsExplorePoolsViewModel,
+  PoolsExplorePrimaryAction,
   PoolsExploreSort,
   PoolsExploreStatus,
 } from './poolsExplorePoolsTypes'
@@ -71,7 +75,7 @@ function resolveApr(card: PoolPreviewCard): { display: string; support: string |
       ok: true,
     }
   }
-  return { display: '—', support: 'APR unavailable', sort: 0, ok: false }
+  return { display: 'Unavailable', support: 'APR unavailable', sort: 0, ok: false }
 }
 
 function resolveTvl(card: PoolPreviewCard): {
@@ -89,7 +93,7 @@ function resolveTvl(card: PoolPreviewCard): {
   const price = pool?.stakingTokenPrice || 0
   if (staked > 0 && price <= 0) {
     return {
-      display: '—',
+      display: 'Unavailable',
       support: 'Valuation unavailable',
       sort: 0,
       partial: true,
@@ -100,7 +104,7 @@ function resolveTvl(card: PoolPreviewCard): {
   if (usd <= 0) {
     const label = card.tvl
     if (!label || label === '—' || label === RUNTIME_UNAVAILABLE_LABEL || label === '$0' || label === '$0.00') {
-      return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
+      return { display: 'Unavailable', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
     }
   }
   if (usd > 0) {
@@ -112,7 +116,7 @@ function resolveTvl(card: PoolPreviewCard): {
           : `$${usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
     return { display, support: null, sort: usd, partial: false, ok: true }
   }
-  return { display: '—', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
+  return { display: 'Unavailable', support: 'TVL unavailable', sort: 0, partial: false, ok: false }
 }
 
 function resolveParticipants(card: PoolPreviewCard): string {
@@ -128,8 +132,41 @@ function buildDescription(card: PoolPreviewCard, lock: PoolsExploreLockType): st
   return `${lock} ${stake} staking earning ${reward}.`
 }
 
-export function cardToExploreModel(card: PoolPreviewCard, chainId: number): PoolsExplorePoolCardModel | null {
+function resolvePoolChainId(card: PoolPreviewCard, fallbackChainId: number): number {
+  const fromId = String(card.id ?? '')
+  const m = fromId.match(/^(\d+):/)
+  if (m) return Number(m[1])
+  const fromStake = card.rawPool?.stakingToken?.chainId
+  if (typeof fromStake === 'number' && Number.isFinite(fromStake)) return fromStake
+  const fromEarn = card.rawPool?.earningToken?.chainId
+  if (typeof fromEarn === 'number' && Number.isFinite(fromEarn)) return fromEarn
+  return fallbackChainId
+}
+
+function resolvePrimaryAction(input: {
+  depositEnabled: boolean
+  account?: string | null
+  poolChainMatchesWallet: boolean
+}): PoolsExplorePrimaryAction {
+  if (!input.depositEnabled) return 'Unavailable'
+  if (!input.account) return 'Connect Wallet'
+  if (!input.poolChainMatchesWallet) return 'Switch Network'
+  return 'Stake'
+}
+
+export function cardToExploreModel(
+  card: PoolPreviewCard,
+  chainId: number,
+  opts?: {
+    account?: string | null
+    walletChainId?: number
+  },
+): PoolsExplorePoolCardModel | null {
   if (!isActiveStakeableExplorePool(card)) return null
+
+  const poolChainId = resolvePoolChainId(card, chainId)
+  const walletChainId = opts?.walletChainId ?? chainId
+  const poolChainMatchesWallet = walletChainId === poolChainId
 
   const apr = resolveApr(card)
   const tvl = resolveTvl(card)
@@ -152,10 +189,31 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     /lp/i.test(stakeSymbol) ||
     Boolean(card.poolTypeLabel?.toLowerCase().includes('lp'))
 
-  const stakeEnabled = card.cta === 'stake' && Boolean(card.rawPool)
+  const depositEnabled = card.cta === 'stake' && Boolean(card.rawPool)
+  const primaryAction = resolvePrimaryAction({
+    depositEnabled,
+    account: opts?.account,
+    poolChainMatchesWallet,
+  })
+  const stakeEnabled = primaryAction === 'Stake' || primaryAction === 'Switch Network' || primaryAction === 'Connect Wallet'
+
+  const contractAddress =
+    card.contractAddress ||
+    (typeof (card.rawPool as any)?.contractAddress === 'object'
+      ? (card.rawPool as any).contractAddress?.[poolChainId]
+      : null) ||
+    null
+  const normalizedAddr = contractAddress && /^0x[a-fA-F0-9]{40}$/.test(contractAddress) ? contractAddress : null
+  const identity =
+    normalizedAddr != null
+      ? poolIdentity(poolChainId, normalizedAddr)
+      : card.id?.includes(':')
+        ? card.id
+        : `${poolChainId}:${card.id}`
 
   return {
-    poolId: card.id,
+    poolId: identity,
+    chainId: poolChainId,
     title: card.name,
     description: buildDescription(card, lockType),
     status,
@@ -169,21 +227,21 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     stakeToken: {
       symbol: stakeSymbol,
       address: card.stakeContractAddress || card.rawPool?.stakingToken?.address || null,
-      chainId,
+      chainId: poolChainId,
     },
     rewardToken: {
       symbol: rewardSymbol,
       address: card.rewardContractAddress || card.rawPool?.earningToken?.address || null,
-      chainId,
+      chainId: poolChainId,
     },
     stakeEnabled,
-    stakeLabel: stakeEnabled ? 'Stake' : 'Unavailable',
-    // No canonical /pools/[id] detail route — omit Details per Architecture.
+    stakeLabel: primaryAction,
+    primaryAction,
     detailsHref: null,
-    contractAddress: card.contractAddress || null,
-    contractExplorerUrl:
-      card.explorerUrl ||
-      (card.contractAddress ? `https://bscscan.com/address/${card.contractAddress}` : null),
+    contractAddress: normalizedAddr,
+    contractExplorerUrl: normalizedAddr
+      ? getBlockExploreLink(normalizedAddr, 'address', poolChainId)
+      : card.explorerUrl || null,
     sourceCard: card,
     sortApr: apr.sort,
     sortTvl: tvl.sort,
@@ -194,6 +252,14 @@ export function cardToExploreModel(card: PoolPreviewCard, chainId: number): Pool
     isLocked: lockType !== 'Flexible',
     partialReasons,
   }
+}
+
+export function dedupeExplorePools(pools: PoolsExplorePoolCardModel[]): PoolsExplorePoolCardModel[] {
+  const byId = new Map<string, PoolsExplorePoolCardModel>()
+  for (const p of pools) {
+    if (!byId.has(p.poolId)) byId.set(p.poolId, p)
+  }
+  return [...byId.values()]
 }
 
 export function filterExplorePools(
@@ -263,10 +329,13 @@ export function buildPoolsExplorePoolsViewModel(input: {
   portfolioPools: PoolPreviewCard[]
   poolsLoading: boolean
   chainId: number
+  account?: string | null
+  walletChainId?: number
   filter: PoolsExploreFilter
   sort: PoolsExploreSort
   search: string
   sourcesFailed?: boolean
+  chainFilter?: 'all' | number
 }): PoolsExplorePoolsViewModel {
   if (input.poolsLoading && !input.portfolioPools.length) {
     return {
@@ -294,9 +363,19 @@ export function buildPoolsExplorePoolsViewModel(input: {
     }
   }
 
-  const built = input.portfolioPools
-    .map((c) => cardToExploreModel(c, input.chainId))
-    .filter((p): p is PoolsExplorePoolCardModel => Boolean(p))
+  const built = dedupeExplorePools(
+    input.portfolioPools
+      .map((c) =>
+        cardToExploreModel(c, input.chainId, {
+          account: input.account,
+          walletChainId: input.walletChainId ?? input.chainId,
+        }),
+      )
+      .filter((p): p is PoolsExplorePoolCardModel => Boolean(p)),
+  ).filter((p) => {
+    if (input.chainFilter == null || input.chainFilter === 'all') return true
+    return p.chainId === input.chainFilter
+  })
 
   if (!built.length) {
     return {
@@ -313,7 +392,6 @@ export function buildPoolsExplorePoolsViewModel(input: {
 
   let list = filterExplorePools(built, input.filter)
   list = searchExplorePools(list, input.search)
-  // Highest TVL / Newest filters already sorted; still apply explicit sort unless filter owns order
   if (input.filter !== 'Highest TVL' && input.filter !== 'Newest') {
     list = sortExplorePools(list, input.sort)
   }

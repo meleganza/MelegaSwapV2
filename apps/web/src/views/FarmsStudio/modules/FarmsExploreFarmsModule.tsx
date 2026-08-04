@@ -6,6 +6,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import { LIVE_CHAIN_FILTERS } from 'lib/data-truth/globalYieldInventory'
 import { farmsExplore, FARMS_EXPLORE_FILTERS, FARMS_EXPLORE_SORTS } from './farmsExploreFarmsTokens'
 import { useExploreFarms } from './useFarmsExploreFarms'
 import { FarmsExploreFarmCard } from './FarmsExploreFarmCard'
@@ -315,13 +316,16 @@ export const FarmsExploreFarmsModule: React.FC = () => {
       data-testid="farms-explore-farms-module"
       data-farms-module-004="mounted"
       data-fs-explore-farms="true"
+      data-multichain-inventory="true"
       data-module-state={vm.state}
       aria-labelledby="farms-explore-farms-title"
     >
       <Header>
         <TitleRow>
           <Title id="farms-explore-farms-title">Explore Farms</Title>
-          {showCount ? <Count aria-label={`${vm.totalActive} active farms`}>{vm.totalActive} active farms</Count> : null}
+          {showCount ? (
+            <Count aria-label={`${vm.totalActive} active farms`}>{vm.totalActive} farms · all LIVE chains</Count>
+          ) : null}
         </TitleRow>
         {vm.freshness ? (
           <Freshness aria-label={`Source freshness ${vm.freshness}`}>
@@ -350,6 +354,20 @@ export const FarmsExploreFarmsModule: React.FC = () => {
             </option>
           ))}
         </Select>
+        <FilterRow role="toolbar" aria-label="Chain filters" data-testid="farms-chain-filters">
+          {LIVE_CHAIN_FILTERS.map((c) => (
+            <Chip
+              key={String(c.id)}
+              type="button"
+              $active={vm.chainFilter === c.id}
+              aria-pressed={vm.chainFilter === c.id}
+              data-testid={`farms-chain-filter-${c.id}`}
+              onClick={() => vm.setChainFilter(c.id)}
+            >
+              {c.label}
+            </Chip>
+          ))}
+        </FilterRow>
         <FilterRow role="toolbar" aria-label="Explore farm filters">
           {FARMS_EXPLORE_FILTERS.map((f) => (
             <Chip

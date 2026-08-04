@@ -1,0 +1,12 @@
+{
+  "order": [
+    "registry",
+    "tokenlist",
+    "indexed",
+    "erc20",
+    "short address"
+  ],
+  "helper": "lib/data-truth/tokenMetadataResolution.ts",
+  "neverCrossChain": true,
+  "unknownOnlyIfAllFail": true
+}

@@ -1,11 +1,13 @@
 /**
  * POOLS_MODULE_004 — Explore Pools hook.
- * Composes portfolioPools (SmartChef) — never Factory AMM merge.
- * Retains last-good pool snapshot while runtime reloads to prevent flicker.
+ * Multichain inventory: merge active-chain runtime pools with global LIVE config inventory.
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { useActiveChainId } from 'hooks/useActiveChainId'
+import { mergePoolPreviewCards } from 'lib/data-truth/poolConfigPreviewCards'
+import type { LiveYieldChainId } from 'lib/data-truth/globalYieldInventory'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { buildPoolsExplorePoolsViewModel } from './buildPoolsExplorePools'
 import type {
@@ -27,39 +29,54 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
   setFilter: (f: PoolsExploreFilter) => void
   setSort: (s: PoolsExploreSort) => void
   setSearch: (q: string) => void
+  setChainFilter: (c: 'all' | LiveYieldChainId) => void
+  chainFilter: 'all' | LiveYieldChainId
 } {
   const runtime = usePoolsRuntime()
+  const { address: account } = useAccount()
   const { chainId: activeChainId } = useActiveChainId()
   const chainId = activeChainId ?? 56
   const [filter, setFilter] = useState<PoolsExploreFilter>('All')
   const [sort, setSort] = useState<PoolsExploreSort>('Highest APR')
   const [search, setSearch] = useState('')
+  const [chainFilter, setChainFilter] = useState<'all' | LiveYieldChainId>('all')
   const lastGoodRef = useRef<ExploreSnapshot | null>(lastGoodExploreByChain.get(chainId) ?? null)
+
+  const portfolioPools = useMemo(
+    () => mergePoolPreviewCards(runtime.portfolioPools ?? [], chainId),
+    [runtime.portfolioPools, chainId],
+  )
 
   // Unfiltered inventory snapshot — never let a filter/search empty overwrite last-good.
   const inventoryVm = useMemo(() => {
     return buildPoolsExplorePoolsViewModel({
-      portfolioPools: runtime.portfolioPools ?? [],
-      poolsLoading: runtime.phase === 'loading_pools',
+      portfolioPools,
+      poolsLoading: runtime.phase === 'loading_pools' && !(runtime.portfolioPools?.length),
       chainId,
+      account,
+      walletChainId: chainId,
       filter: 'All',
       sort: 'Highest APR',
       search: '',
-      sourcesFailed: runtime.phase === 'error',
+      sourcesFailed: runtime.phase === 'error' && portfolioPools.length === 0,
+      chainFilter: 'all',
     })
-  }, [runtime.portfolioPools, runtime.phase, chainId])
+  }, [portfolioPools, runtime.phase, runtime.portfolioPools, chainId, account])
 
   const vm = useMemo(() => {
     return buildPoolsExplorePoolsViewModel({
-      portfolioPools: runtime.portfolioPools ?? [],
-      poolsLoading: runtime.phase === 'loading_pools',
+      portfolioPools,
+      poolsLoading: runtime.phase === 'loading_pools' && !(runtime.portfolioPools?.length),
       chainId,
+      account,
+      walletChainId: chainId,
       filter,
       sort,
       search,
-      sourcesFailed: runtime.phase === 'error',
+      sourcesFailed: runtime.phase === 'error' && portfolioPools.length === 0,
+      chainFilter,
     })
-  }, [runtime.portfolioPools, runtime.phase, chainId, filter, sort, search])
+  }, [portfolioPools, runtime.phase, runtime.portfolioPools, chainId, account, filter, sort, search, chainFilter])
 
   useEffect(() => {
     if (inventoryVm.pools?.length) {
@@ -73,7 +90,7 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
     const cached = lastGoodRef.current
     const inventoryEmpty = !inventoryVm.pools || inventoryVm.pools.length === 0
     const refreshing = runtime.phase === 'loading_pools' || inventoryVm.state === 'loading'
-    if (inventoryEmpty && refreshing && cached && cached.chainId === chainId && cached.pools.length > 0) {
+    if (inventoryEmpty && refreshing && cached && cached.pools.length > 0) {
       return {
         ...vm,
         state: 'ready' as const,
@@ -82,24 +99,8 @@ export function usePoolsExplorePools(): PoolsExplorePoolsViewModel & {
         liveRegion: 'Showing last known active pools while refreshing.',
       }
     }
-    if (
-      inventoryEmpty &&
-      !refreshing &&
-      cached &&
-      cached.chainId === chainId &&
-      cached.pools.length > 0 &&
-      Date.now() - cached.updatedAt < 8_000
-    ) {
-      return {
-        ...vm,
-        state: 'ready' as const,
-        pools: cached.pools,
-        totalActive: cached.pools.length,
-        liveRegion: 'Stabilizing pool inventory…',
-      }
-    }
     return vm
-  }, [vm, inventoryVm, runtime.phase, chainId])
+  }, [vm, inventoryVm, runtime.phase])
 
-  return { ...stableVm, setFilter, setSort, setSearch }
+  return { ...stableVm, setFilter, setSort, setSearch, setChainFilter, chainFilter }
 }

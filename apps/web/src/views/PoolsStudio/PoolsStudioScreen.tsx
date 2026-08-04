@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useRouter } from 'next/router'
 import { PageMeta } from 'components/Layout/Page'
 import { DataSurfaceErrorBoundary } from 'components/ErrorBoundary'
 import { typography } from 'design-system/melega'
@@ -50,80 +51,134 @@ const Content = styled.div`
   }
 `
 
-const PositionsCreateRow = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(280px, 1fr);
-  gap: 14px;
-  align-items: start;
-  min-width: 0;
-  width: 100%;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 10040;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px 12px 40px;
 `
 
-const CreatePoolSide = styled.div`
-  min-width: 0;
-  width: 100%;
-  align-self: start;
+const ModalShell = styled.div`
+  width: min(720px, 100%);
+  margin-top: 24px;
+  position: relative;
+`
 
-  /* Permanently expanded Create Pool workspace — full-height side column */
-  [data-ps-create-pool],
-  [data-testid='create-pool-cta'] {
-    max-width: 100%;
-  }
+const CloseBtn = styled.button`
+  appearance: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.55);
+  color: #f5f5f5;
+  font-size: 12px;
+  font-weight: 700;
 `
 
 /**
- * Founder IA (economics repair):
- * Hero (with compact Featured) → KPI → My Positions + Create Pool → Explore → Analytics
- * No standalone Finished section; no full-width Featured band below KPIs.
+ * Founder IA (multichain product repair):
+ * Hero → KPI → My Positions (full width) → Explore → Analytics
+ * Create Pool opens as a modal / ?create=1 — never a permanent side column.
  */
-export const PoolsStudioScreen: React.FC = () => (
-  <Root
-    data-pools-studio-screen="true"
-    data-pools-module-001="mounted"
-    data-pools-module-002="mounted"
-    data-pools-module-003="mounted"
-    data-pools-module-004="mounted"
-    data-pools-module-005="mounted"
-    data-pools-module-007="mounted"
-    data-pools-module-008="mounted"
-    data-pools-architecture="000"
-    data-pools-ia="founder-economics-repair-v1"
-    data-ps-wallet-first="true"
-    data-pools-ux-fixture={isPoolsUxFixtureEnabled() ? 'true' : undefined}
-  >
-    <PageMeta />
-    <PoolsStudioGlobalStyle />
-    <PoolsVisualPolishModule />
-    <PoolsRuntimeProvider>
-      <PoolsActionHost />
-      <Content data-ps-content data-pools-ia="founder-economics-repair-v1">
-        <PoolsHeroModule />
-        <DataSurfaceErrorBoundary surface="Pools Overview KPIs" userReason="Pool overview metrics are temporarily unavailable.">
-          <PoolsOverviewKpisModule />
-        </DataSurfaceErrorBoundary>
-        <PositionsCreateRow data-ps-positions-create-row>
-          <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
-            <PoolsMyPositionsModule variant="with-create-side" />
+export const PoolsStudioScreen: React.FC = () => {
+  const router = useRouter()
+  const [createOpen, setCreateOpen] = useState(false)
+
+  useEffect(() => {
+    const q = router.query.create
+    const hash = typeof window !== 'undefined' ? window.location.hash : ''
+    if (q === '1' || q === 'true' || hash === '#create-pool') {
+      setCreateOpen(true)
+    }
+  }, [router.query.create])
+
+  const openCreate = useCallback(() => {
+    setCreateOpen(true)
+    void router.replace({ pathname: router.pathname, query: { ...router.query, create: '1' } }, undefined, {
+      shallow: true,
+    })
+  }, [router])
+
+  const closeCreate = useCallback(() => {
+    setCreateOpen(false)
+    const nextQuery = { ...router.query }
+    delete nextQuery.create
+    void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
+  }, [router])
+
+  useEffect(() => {
+    const onOpen = () => openCreate()
+    window.addEventListener('melega:open-create-pool', onOpen)
+    return () => window.removeEventListener('melega:open-create-pool', onOpen)
+  }, [openCreate])
+
+  return (
+    <Root
+      data-pools-studio-screen="true"
+      data-pools-module-001="mounted"
+      data-pools-module-002="mounted"
+      data-pools-module-003="mounted"
+      data-pools-module-004="mounted"
+      data-pools-module-005="mounted"
+      data-pools-module-007="mounted"
+      data-pools-module-008="mounted"
+      data-pools-architecture="000"
+      data-pools-ia="multichain-product-repair-v1"
+      data-ps-wallet-first="true"
+      data-pools-create-modal={createOpen ? 'open' : 'closed'}
+      data-pools-ux-fixture={isPoolsUxFixtureEnabled() ? 'true' : undefined}
+    >
+      <PageMeta />
+      <PoolsStudioGlobalStyle />
+      <PoolsVisualPolishModule />
+      <PoolsRuntimeProvider>
+        <PoolsActionHost />
+        <Content data-ps-content data-pools-ia="multichain-product-repair-v1">
+          <PoolsHeroModule onRequestCreatePool={openCreate} />
+          <DataSurfaceErrorBoundary
+            surface="Pools Overview KPIs"
+            userReason="Pool overview metrics are temporarily unavailable."
+          >
+            <PoolsOverviewKpisModule />
           </DataSurfaceErrorBoundary>
-          <CreatePoolSide data-ps-create-pool-section id="create-pool">
-            <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
-              <CreatePoolCta />
-            </DataSurfaceErrorBoundary>
-          </CreatePoolSide>
-        </PositionsCreateRow>
-        <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
-          <PoolsExplorePoolsModule />
-        </DataSurfaceErrorBoundary>
-        <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
-          <PoolsAnalyticsModule />
-        </DataSurfaceErrorBoundary>
-      </Content>
-    </PoolsRuntimeProvider>
-  </Root>
-)
+          <DataSurfaceErrorBoundary surface="Pools My Positions" userReason="Pool positions are temporarily unavailable.">
+            <PoolsMyPositionsModule />
+          </DataSurfaceErrorBoundary>
+          <DataSurfaceErrorBoundary surface="Explore Pools" userReason="Active staking pools are temporarily unavailable.">
+            <PoolsExplorePoolsModule />
+          </DataSurfaceErrorBoundary>
+          <DataSurfaceErrorBoundary surface="Pools Analytics" userReason="Pool analytics are temporarily unavailable.">
+            <PoolsAnalyticsModule />
+          </DataSurfaceErrorBoundary>
+        </Content>
+        {createOpen ? (
+          <ModalOverlay data-testid="create-pool-modal" role="dialog" aria-modal="true" aria-label="Create Pool">
+            <ModalShell>
+              <CloseBtn type="button" data-testid="create-pool-modal-close" onClick={closeCreate}>
+                Close
+              </CloseBtn>
+              <div id="create-pool" data-ps-create-pool-section>
+                <DataSurfaceErrorBoundary surface="Create Pool" userReason="Create pool preview is temporarily unavailable.">
+                  <CreatePoolCta />
+                </DataSurfaceErrorBoundary>
+              </div>
+            </ModalShell>
+          </ModalOverlay>
+        ) : null}
+      </PoolsRuntimeProvider>
+    </Root>
+  )
+}
 
 export default PoolsStudioScreen

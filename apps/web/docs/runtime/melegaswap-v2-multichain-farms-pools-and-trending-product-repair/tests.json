@@ -1,0 +1,9 @@
+{
+  "suites": [
+    "multichainFarmsPoolsTrendingRepair",
+    "farmsModule004.exploreFarms",
+    "poolsModule004.explorePools",
+    "productIaPoolsRefinement"
+  ],
+  "result": "pass"
+}

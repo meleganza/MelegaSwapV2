@@ -1,0 +1,10 @@
+{
+  "producer": "useDexTrendingRankings",
+  "noRegistryBackfill": true,
+  "mergeTickerWithPaidPlacements": true,
+  "browserTickerSample": {
+    "sample": [],
+    "organicOrPaidCount": 0,
+    "totalSampled": 0
+  }
+}

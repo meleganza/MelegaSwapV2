@@ -27,8 +27,11 @@ export type PoolsExploreLockType =
   | '365 Days'
   | 'Custom'
 
+export type PoolsExplorePrimaryAction = 'Stake' | 'Unavailable' | 'Connect Wallet' | 'Switch Network'
+
 export interface PoolsExplorePoolCardModel {
   poolId: string
+  chainId: number
   title: string
   description: string
   status: PoolsExploreStatus
@@ -42,7 +45,8 @@ export interface PoolsExplorePoolCardModel {
   stakeToken: { symbol: string; address: string | null; chainId: number | null }
   rewardToken: { symbol: string; address: string | null; chainId: number | null }
   stakeEnabled: boolean
-  stakeLabel: 'Stake' | 'Unavailable'
+  stakeLabel: PoolsExplorePrimaryAction
+  primaryAction: PoolsExplorePrimaryAction
   detailsHref: string | null
   /** SmartChef / staking contract — required for visible View Contract CTA. */
   contractAddress: string | null

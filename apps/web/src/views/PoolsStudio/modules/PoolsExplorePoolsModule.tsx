@@ -6,6 +6,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { typography } from 'design-system/melega'
+import { LIVE_CHAIN_FILTERS } from 'lib/data-truth/globalYieldInventory'
 import { poolsExplore, POOLS_EXPLORE_FILTERS, POOLS_EXPLORE_SORTS } from './poolsExplorePoolsTokens'
 import { usePoolsExplorePools } from './usePoolsExplorePools'
 import { PoolsExplorePoolCard } from './PoolsExplorePoolCard'
@@ -283,6 +284,20 @@ export const PoolsExplorePoolsModule: React.FC = () => {
           ))}
         </Select>
       </Toolbar>
+
+      <FilterRow role="toolbar" aria-label="Explore pool chains" data-testid="pools-chain-filters">
+        {LIVE_CHAIN_FILTERS.map((c) => (
+          <Chip
+            key={String(c.id)}
+            type="button"
+            $active={vm.chainFilter === c.id}
+            aria-pressed={vm.chainFilter === c.id}
+            onClick={() => vm.setChainFilter(c.id)}
+          >
+            {c.label}
+          </Chip>
+        ))}
+      </FilterRow>
 
       <FilterRow role="toolbar" aria-label="Explore pool filters">
         {POOLS_EXPLORE_FILTERS.map((f) => (

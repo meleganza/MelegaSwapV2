@@ -2,15 +2,18 @@
  * POOLS_MODULE_004 — Explore pool card (430×248 desktop).
  */
 
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
+import { getBlockExploreName } from 'utils'
 import { poolsExplore } from './poolsExplorePoolsTokens'
 import type { PoolsExplorePoolCardModel } from './poolsExplorePoolsTypes'
-import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
+import { resolvePoolContractAddress } from './poolContractLink'
 
 const Card = styled.article`
   position: relative;
@@ -25,7 +28,6 @@ const Card = styled.article`
   box-shadow: ${poolsExplore.cardShadow};
   display: flex;
   flex-direction: column;
-  /* Founder amendment P0-9: tighter vertical rhythm for denser grids. */
   gap: 8px;
   min-width: 0;
   font-family: ${typography.fontFamily.body};
@@ -206,19 +208,69 @@ const Btn = styled.button<{ $primary?: boolean }>`
 
 export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }> = ({ pool }) => {
   const { requestModal } = usePoolsRuntime()
+  const { switchNetworkAsync } = useSwitchNetwork()
+  const [busy, setBusy] = useState(false)
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [switching, setSwitching] = useState(false)
+  const pendingActionRef = useRef(false)
+
   const contractAddress = resolvePoolContractAddress({
     contractAddress: pool.contractAddress || pool.sourceCard.contractAddress,
     explorerUrl: pool.contractExplorerUrl || pool.sourceCard.explorerUrl,
     contractExplorerUrl: pool.sourceCard.analyzePreview?.contractExplorerUrl,
   })
-  const contractUrl = poolBscScanContractUrl(contractAddress)
+  const contractUrl = pool.contractExplorerUrl
+  const explorerName = getBlockExploreName(pool.chainId)
+
+  const resumeStake = () => {
+    pendingActionRef.current = false
+    setBusy(true)
+    try {
+      requestModal(pool.sourceCard, 'stake')
+    } finally {
+      window.setTimeout(() => setBusy(false), 1200)
+    }
+  }
+
+  const onPrimary = () => {
+    if (pool.primaryAction === 'Unavailable') return
+    if (pool.primaryAction === 'Switch Network') {
+      setSwitchOpen(true)
+      return
+    }
+    if (pool.primaryAction === 'Connect Wallet' || pool.primaryAction === 'Stake') {
+      setBusy(true)
+      try {
+        requestModal(pool.sourceCard, 'stake')
+      } finally {
+        window.setTimeout(() => setBusy(false), 1200)
+      }
+    }
+  }
+
+  const onConfirmSwitch = async () => {
+    setSwitching(true)
+    pendingActionRef.current = true
+    try {
+      await switchNetworkAsync?.(pool.chainId)
+      setSwitchOpen(false)
+      window.setTimeout(() => resumeStake(), 400)
+    } catch {
+      pendingActionRef.current = false
+      setSwitchOpen(false)
+    } finally {
+      setSwitching(false)
+    }
+  }
 
   return (
     <Card
       data-testid="pools-explore-card"
       data-pool-id={pool.poolId}
+      data-pool-chain={pool.chainId}
       data-explore-status={pool.status}
       data-stake-enabled={pool.stakeEnabled ? 'true' : 'false'}
+      data-primary-action={pool.primaryAction}
     >
       <Header>
         <Identity>
@@ -239,13 +291,11 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
             </RewardWrap>
           </LogoStack>
           <TextCol>
-            {/* Founder amendment P0-9: the description subtitle repeated the Stake/Reward
-                metrics below verbatim — dropped in favor of denser, non-redundant copy. */}
             <Title title={pool.title}>{pool.title}</Title>
           </TextCol>
         </Identity>
         <Badges>
-          <MelegaExploreChainBadge chainId={pool.stakeToken.chainId ?? 56} />
+          <MelegaExploreChainBadge chainId={pool.chainId} />
           <Status $tone={pool.statusLabel} aria-label={`Status ${pool.statusLabel}`}>
             {pool.statusLabel}
           </Status>
@@ -291,30 +341,28 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
         <Btn
           type="button"
           $primary
-          disabled={!pool.stakeEnabled}
+          disabled={!pool.stakeEnabled || busy}
           aria-label={
-            pool.stakeEnabled
-              ? `Stake in ${pool.title}`
-              : `Stake unavailable for ${pool.title}`
+            pool.primaryAction === 'Switch Network'
+              ? `Switch network to stake in ${pool.title}`
+              : pool.stakeEnabled
+                ? `Stake in ${pool.title}`
+                : `Stake unavailable for ${pool.title}`
           }
-          onClick={() => {
-            if (!pool.stakeEnabled) return
-            requestModal(pool.sourceCard, 'stake')
-          }}
+          onClick={onPrimary}
         >
-          {pool.stakeLabel}
+          {busy ? 'Staking…' : pool.primaryAction}
         </Btn>
-        {contractUrl ? (
+        {contractUrl && contractAddress ? (
           <Btn
             type="button"
             data-testid="pools-explore-view-contract"
-            data-ps-bscscan-btn
-            aria-label={`View contract for ${pool.title} on BscScan`}
+            aria-label={`View contract for ${pool.title} on ${explorerName}`}
             onClick={() => {
               window.open(contractUrl, '_blank', 'noopener,noreferrer')
             }}
           >
-            BscScan ↗
+            {explorerName} ↗
           </Btn>
         ) : null}
         {pool.detailsHref ? (
@@ -329,6 +377,14 @@ export const PoolsExplorePoolCard: React.FC<{ pool: PoolsExplorePoolCardModel }>
           </Btn>
         ) : null}
       </Actions>
+
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={pool.chainId}
+        busy={switching}
+        onCancel={() => setSwitchOpen(false)}
+        onConfirm={onConfirmSwitch}
+      />
     </Card>
   )
 }

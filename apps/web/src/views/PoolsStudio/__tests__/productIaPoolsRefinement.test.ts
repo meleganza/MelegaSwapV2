@@ -8,14 +8,16 @@ import { describe, expect, it } from 'vitest'
 const ROOT = path.resolve(__dirname, '..')
 
 describe('Product IA refinement — Pools economics repair', () => {
-  it('orders Hero(+Featured) → KPI → My Positions+Create → Explore → Analytics', () => {
+  it('orders Hero(+Featured) → KPI → My Positions → Explore → Analytics; Create Pool is modal', () => {
     const screen = readFileSync(path.join(ROOT, 'PoolsStudioScreen.tsx'), 'utf8')
-    expect(screen).toContain('data-pools-ia="founder-economics-repair-v1"')
+    expect(screen).toContain('data-pools-ia="multichain-product-repair-v1"')
+    expect(screen).toContain('create-pool-modal')
     expect(screen).not.toContain('PoolsRewardAdvisorModule')
     expect(screen).not.toContain('PoolsSidebar')
     expect(screen).not.toContain('PoolsBelowFold')
     expect(screen).not.toContain('PoolsFinishedPoolsModule')
     expect(screen).not.toContain('PoolsFeaturedPoolBand')
+    expect(screen).not.toContain('PositionsCreateRow')
     const hero = screen.indexOf('<PoolsHeroModule')
     const kpis = screen.indexOf('<PoolsOverviewKpisModule')
     const positions = screen.indexOf('<PoolsMyPositionsModule')
@@ -25,9 +27,9 @@ describe('Product IA refinement — Pools economics repair', () => {
     expect(hero).toBeGreaterThan(-1)
     expect(kpis).toBeGreaterThan(hero)
     expect(positions).toBeGreaterThan(kpis)
-    expect(create).toBeGreaterThan(positions)
-    expect(explore).toBeGreaterThan(create)
+    expect(explore).toBeGreaterThan(positions)
     expect(analytics).toBeGreaterThan(explore)
+    expect(create).toBeGreaterThan(-1)
   })
 
   it('Explore hook retains last-good pools during loading', () => {
@@ -43,15 +45,17 @@ describe('Product IA refinement — Pools economics repair', () => {
     expect(runtime).toMatch(/mapPoolToPreviewCard\(p, currentBlockRef\.current/)
   })
 
-  it('pool cards expose BscScan ↗ SmartChef explorer link', () => {
+  it('pool cards expose SmartChef explorer link (chain-aware)', () => {
     const explore = readFileSync(path.join(ROOT, 'modules/PoolsExplorePoolCard.tsx'), 'utf8')
     const positions = readFileSync(path.join(ROOT, 'modules/PoolsMyPositionCard.tsx'), 'utf8')
     const featured = readFileSync(path.join(ROOT, 'modules/PoolsHeroFeaturedCompact.tsx'), 'utf8')
-    for (const src of [explore, positions, featured]) {
-      expect(src).toContain('BscScan ↗')
-      expect(src).toContain('poolBscScanContractUrl')
-      expect(src).toContain('noopener,noreferrer')
-    }
+    expect(explore).toMatch(/getBlockExploreName|getBlockExploreLink/)
+    expect(explore).toContain('noopener,noreferrer')
+    expect(positions).toMatch(/getBlockExploreName|BscScan ↗/)
+    expect(positions).toContain('noopener,noreferrer')
+    expect(featured).toContain('BscScan ↗')
+    expect(featured).toContain('poolBscScanContractUrl')
+    expect(featured).toContain('noopener,noreferrer')
   })
 
   it('featured selection is highest-TVL active pool', () => {

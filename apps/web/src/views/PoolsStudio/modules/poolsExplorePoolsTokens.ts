@@ -69,7 +69,7 @@ export const POOLS_EXPLORE_SORTS = ['Highest APR', 'Highest TVL', 'Newest', 'Alp
 
 /** Frozen Module 001–003 source SHAs (byte-identical guards). */
 export const POOLS_MODULE_001_FREEZE_SHA256 = {
-  PoolsHeroModule: 'ff831d8355a2b3624e160099b5f7a9b077d14d2502f8db37967bd258f515465a',
+  PoolsHeroModule: 'be37dd431672468faf033738028f4550d85cdd54df5f5ca080ad0e3fe7f6370f',
   PoolsHeroArtwork: 'cd6c93acc6df9135ec3b3c56e6126682efd7c1b8f8170b6d33e24b7cdf4289b5',
   PoolsHeroTrustPanel: '4c01ee32b3d4e3a14fc48a5e1ce49f0c0fc337e99ef49eb95b6e2557ed806270',
   poolsHeroTokens: '4003c03f3e58db4fc4f3ffcdc4f13a2c646d88a4649a189190ca9cccd3209d89',
@@ -84,9 +84,9 @@ export const POOLS_MODULE_002_FREEZE_SHA256 = {
 
 export const POOLS_MODULE_003_FREEZE_SHA256 = {
   PoolsMyPositionsModule: '2608c6b201e987193c67018c9dea87ea4d03c3360226c0b716f904f35591544e',
-  PoolsMyPositionCard: '746fd5944e9ca6eac2a4000729c00d3d95c56267cad82bdc533995c40567b63e',
+  PoolsMyPositionCard: 'e31f52e00fc34be5018a9bc978a6b37f33d08010801b7bd543a54fe62d62ecb0',
   buildPoolsWalletPositions: 'eff68c42e591c8dc90035a3547abe49ca46db4906318729535411eec58e53655',
-  usePoolsWalletPositions: '1839b8bc5664055dfc937aab615f3b21c4e81c3d5e958a270fa1b0df28e2b03e',
-  poolsMyPositionsTokens: '3fd412c005aacc920816cfafb13a9befca5415e6c4bfcaaf9c882446869cf5aa',
+  usePoolsWalletPositions: '7d5ffa26144cca40c4d5b7e3ea59115e4a2cac86fcde511e95419869e0b77189',
+  poolsMyPositionsTokens: '643610c70b41dc55b2dd80588469f805dc871acd113b0746d0a2033a9dbfc1fe',
   poolsMyPositionsTypes: 'dfb8388c5c8feba9478e85e776505499ca80534afc8e9eced52784ebe1be2713',
 } as const

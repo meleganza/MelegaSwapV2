@@ -7,6 +7,11 @@ import styled from 'styled-components'
 import { typography } from 'design-system/melega'
 import { PoolTokenIcon } from '../components/poolsStudioPrimitives'
 import { usePoolsRuntime } from '../poolsRuntime/PoolsRuntimeContext'
+import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { ChainSwitchConfirmDialog } from 'components/ChainSwitchConfirmDialog'
+import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
+import { useActiveChainId } from 'hooks/useActiveChainId'
+import { getBlockExploreLink, getBlockExploreName } from 'utils'
 import { poolBscScanContractUrl, resolvePoolContractAddress } from './poolContractLink'
 import { poolsMyPositions } from './poolsMyPositionsTokens'
 import type { PoolsPositionAction, PoolsWalletPosition } from './poolsMyPositionsTypes'
@@ -236,21 +241,29 @@ export const PoolsMyPositionCard: React.FC<{
   position: PoolsWalletPosition
 }> = ({ position }) => {
   const { requestModal } = usePoolsRuntime()
+  const { chainId: walletChainId } = useActiveChainId()
+  const { switchNetworkAsync } = useSwitchNetwork()
   const [busyKind, setBusyKind] = useState<PoolsPositionAction['kind'] | null>(null)
   const [txNote, setTxNote] = useState<string | null>(null)
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [switching, setSwitching] = useState(false)
+  const [pendingAction, setPendingAction] = useState<PoolsPositionAction | null>(null)
   const contractAddress = resolvePoolContractAddress({
     contractAddress: position.poolContract || position.sourceCard.contractAddress,
     explorerUrl: position.sourceCard.explorerUrl,
     contractExplorerUrl: position.sourceCard.analyzePreview?.contractExplorerUrl,
   })
-  const contractUrl = poolBscScanContractUrl(contractAddress)
+  const contractUrl =
+    (contractAddress && getBlockExploreLink(contractAddress, 'address', position.chainId)) ||
+    poolBscScanContractUrl(contractAddress)
+  const explorerName = getBlockExploreName(position.chainId)
 
   const sameToken =
     position.stakeToken.symbol &&
     position.rewardToken.symbol &&
     position.stakeToken.symbol === position.rewardToken.symbol
 
-  const onAction = (action: PoolsPositionAction) => {
+  const runAction = (action: PoolsPositionAction) => {
     if (!action.enabled || !action.modalAction) return
     setBusyKind(action.kind)
     setTxNote(`Opening ${action.label}…`)
@@ -263,6 +276,32 @@ export const PoolsMyPositionCard: React.FC<{
         setBusyKind(null)
         setTxNote(null)
       }, 1200)
+    }
+  }
+
+  const onAction = (action: PoolsPositionAction) => {
+    if (!action.enabled || !action.modalAction) return
+    if (walletChainId != null && walletChainId !== position.chainId) {
+      setPendingAction(action)
+      setSwitchOpen(true)
+      return
+    }
+    runAction(action)
+  }
+
+  const onConfirmSwitch = async () => {
+    setSwitching(true)
+    try {
+      await switchNetworkAsync?.(position.chainId)
+      setSwitchOpen(false)
+      const next = pendingAction
+      setPendingAction(null)
+      if (next) window.setTimeout(() => runAction(next), 400)
+    } catch {
+      setPendingAction(null)
+      setSwitchOpen(false)
+    } finally {
+      setSwitching(false)
     }
   }
 
@@ -298,9 +337,12 @@ export const PoolsMyPositionCard: React.FC<{
             <Subtitle>{position.subtitle}</Subtitle>
           </IdentityText>
         </Identity>
-        <StatusBadge $tone={position.statusLabel} aria-label={`Status ${position.statusLabel}`}>
-          {position.statusLabel}
-        </StatusBadge>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <MelegaExploreChainBadge chainId={position.chainId} />
+          <StatusBadge $tone={position.statusLabel} aria-label={`Status ${position.statusLabel}`}>
+            {position.statusLabel}
+          </StatusBadge>
+        </div>
       </Header>
 
       <span
@@ -362,13 +404,25 @@ export const PoolsMyPositionCard: React.FC<{
             type="button"
             data-testid="pools-position-view-contract"
             data-ps-view-contract
-            aria-label={`View contract for ${position.title} on BscScan`}
+            aria-label={`View contract for ${position.title} on ${explorerName}`}
             onClick={() => window.open(contractUrl, '_blank', 'noopener,noreferrer')}
           >
-            BscScan ↗
+            {explorerName} ↗
           </ActionButton>
         ) : null}
       </Actions>
+
+      <ChainSwitchConfirmDialog
+        open={switchOpen}
+        targetChainId={position.chainId}
+        productLabel="This pool"
+        busy={switching}
+        onCancel={() => {
+          setPendingAction(null)
+          setSwitchOpen(false)
+        }}
+        onConfirm={onConfirmSwitch}
+      />
 
       <span
         aria-live="polite"

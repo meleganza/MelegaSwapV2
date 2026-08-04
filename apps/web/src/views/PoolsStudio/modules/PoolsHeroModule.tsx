@@ -245,19 +245,29 @@ function scrollToCreatePool() {
   return true
 }
 
-export const PoolsHeroModule: React.FC = () => {
-  const onCreatePool = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (scrollToCreatePool()) {
-      e.preventDefault()
-    }
-  }, [])
+export const PoolsHeroModule: React.FC<{ onRequestCreatePool?: () => void }> = ({
+  onRequestCreatePool,
+}) => {
+  const onCreatePool = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (onRequestCreatePool) {
+        e.preventDefault()
+        onRequestCreatePool()
+        return
+      }
+      if (scrollToCreatePool()) {
+        e.preventDefault()
+      }
+    },
+    [onRequestCreatePool],
+  )
 
   const onHowItWorks = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Reserved Hero CTA — factual destination is the on-page Create Pool builder.
-    if (scrollToCreatePool()) {
+    // How it works → docs; Create Pool uses dedicated modal.
+    if (!onRequestCreatePool && scrollToCreatePool()) {
       e.preventDefault()
     }
-  }, [])
+  }, [onRequestCreatePool])
 
   return (
     <Module

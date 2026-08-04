@@ -1,0 +1,9 @@
+{
+  "myFarms": "unionPositionsByWallet over lastGoodByScope Map",
+  "myPools": "unionPositionsByWallet over lastGoodByScope Map",
+  "rules": [
+    "read-only browse without switch",
+    "one failed chain does not blank portfolio",
+    "actions require matching chain or switch dialog"
+  ]
+}

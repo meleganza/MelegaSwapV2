@@ -1,0 +1,12 @@
+{
+  "createPool": "modal/route via CTA — not permanent side column",
+  "ia": "multichain-product-repair-v1",
+  "browser": {
+    "poolsIa": true,
+    "noPermanentCreateColumn": true,
+    "poolCards": 188,
+    "poolChainFilters": true,
+    "noHorizontalOverflow": true,
+    "oops": true
+  }
+}

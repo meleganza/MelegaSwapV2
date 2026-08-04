@@ -252,8 +252,8 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
       search: '',
     })
     expect(partial.state).toBe('partial')
-    expect(partial.farms[0].apr).toBe('—')
-    expect(partial.farms[0].tvl).toBe('—')
+    expect(partial.farms[0].apr).toBe('Unavailable')
+    expect(partial.farms[0].tvl).toBe('Unavailable')
     expect(partial.farms[0].tvl).not.toBe('$0')
   })
 
@@ -321,7 +321,8 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
         .map((c) => cardToExploreFarmModel(c, { chainId: 56, userDataLoaded: true, chainSupported: true }))
         .filter(Boolean) as ExploreFarmViewModel[],
     )
-    expect(deduped).toHaveLength(1)
+    // Canonical identity is chainId+masterChef+pid — pid1 dup collapses; pid99 remains.
+    expect(deduped).toHaveLength(2)
   })
 
   it('searches symbols, names, addresses, farm id and pid exactly for addresses', () => {
@@ -351,7 +352,7 @@ describe('FARMS_MODULE_004 Explore Farms', () => {
     expect(searchExploreFarms(farms, 'Wrapped BNB').map((f) => f.pid)).toEqual([2])
     expect(searchExploreFarms(farms, '0x1111111111111111111111111111111111111111')).toHaveLength(1)
     expect(searchExploreFarms(farms, '0xEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')).toHaveLength(1)
-    expect(searchExploreFarms(farms, 'farm-2')).toHaveLength(1)
+    expect(searchExploreFarms(farms, b.farmId)).toHaveLength(1)
     expect(searchExploreFarms(farms, '2')).toHaveLength(1)
     // Partial address must not fuzzy-match
     expect(searchExploreFarms(farms, '0x111111')).toHaveLength(0)

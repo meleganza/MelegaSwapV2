@@ -1,0 +1,11 @@
+{
+  "component": "MelegaExploreChainBadge compact",
+  "requiredOn": [
+    "Farm cards",
+    "Pool cards",
+    "My Farms",
+    "My Pools",
+    "Home Top Farms/Pools"
+  ],
+  "browserFarmBadges": 750
+}

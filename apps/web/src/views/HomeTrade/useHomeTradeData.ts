@@ -66,6 +66,7 @@ export interface EarnRow {
   apr?: string
   tvl?: string
   href: string
+  chainId?: number
 }
 
 export interface ActivityRow {
@@ -457,6 +458,27 @@ export const useHomeTradeData = () => {
   ])
 
   const farmRows = useMemo((): EarnRow[] => {
+    // Multichain inventory first — never empty while LIVE farm configs exist.
+    const preview = listLiveFarmInventoryPreview(8)
+    if (preview.length > 0) {
+      return preview.slice(0, 5).map((row) => {
+        const runtimeMatch =
+          row.chainId === chainId
+            ? farms.find((f) => f.pid === Number(String(row.id).split('-').pop()))
+            : undefined
+        const apr = runtimeMatch ? farmApr(runtimeMatch) : undefined
+        const tvl = runtimeMatch ? farmTvl(runtimeMatch) : undefined
+        return {
+          id: row.id,
+          name: row.name,
+          apr: apr ? `${apr.toFixed(2)}%` : undefined,
+          tvl,
+          href: '/farms',
+          chainId: row.chainId,
+        }
+      })
+    }
+
     const ranked = farms
       .filter((f) => f.pid !== 0)
       .slice(0, 5)
@@ -469,12 +491,12 @@ export const useHomeTradeData = () => {
           apr: apr ? `${apr.toFixed(2)}%` : undefined,
           tvl,
           href: '/farms',
+          chainId,
         }
       })
     if (ranked.length > 0) return ranked
 
-    // Inventory fallback — never show empty while LIVE farms exist (APR may be unavailable).
-    const fromRuntime = allFarms
+    return allFarms
       .filter((f) => f.pid !== 0 && String(f.multiplier ?? '1X').toUpperCase() !== '0X')
       .slice(0, 5)
       .map((farm) => ({
@@ -483,17 +505,9 @@ export const useHomeTradeData = () => {
         apr: undefined,
         tvl: farmTvl(farm as FarmWithStakedValue),
         href: '/farms',
+        chainId,
       }))
-    if (fromRuntime.length > 0) return fromRuntime
-
-    return listLiveFarmInventoryPreview(5).map((row) => ({
-      id: row.id,
-      name: row.name,
-      apr: undefined,
-      tvl: undefined,
-      href: '/farms',
-    }))
-  }, [farms, allFarms])
+  }, [farms, allFarms, chainId])
 
   const poolRows = useMemo((): EarnRow[] => {
     const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
@@ -540,6 +554,7 @@ export const useHomeTradeData = () => {
           apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
           tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
           href: '/pools',
+          chainId,
         }
       })
     }
@@ -562,6 +577,7 @@ export const useHomeTradeData = () => {
           apr: undefined,
           tvl: poolTvl(pool),
           href: '/pools',
+          chainId,
         }
       })
     if (fromRuntime.length > 0) return fromRuntime
@@ -572,6 +588,7 @@ export const useHomeTradeData = () => {
       apr: undefined,
       tvl: undefined,
       href: '/pools',
+      chainId: row.chainId,
     }))
   }, [pools, allPools, currentBlock])
 
