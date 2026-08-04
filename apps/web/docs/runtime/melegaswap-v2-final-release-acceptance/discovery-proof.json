@@ -1,0 +1,22 @@
+{
+  "mission": "MELEGASWAP_V2_FINAL_RELEASE_ACCEPTANCE_CERTIFICATION",
+  "home": {
+    "featured": true,
+    "featuredLabel": true,
+    "boostedLabel": false,
+    "movers": true,
+    "moverLinks": 6,
+    "randomPadding": false,
+    "oops": false
+  },
+  "projects": {
+    "search": true,
+    "filters": true,
+    "chainIdentity": true,
+    "oops": false,
+    "blank": false
+  },
+  "pass": true,
+  "verifiedAt": "2026-08-04T20:55:56.987Z",
+  "base": "http://127.0.0.1:3020"
+}

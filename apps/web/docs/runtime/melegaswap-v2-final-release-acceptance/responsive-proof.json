@@ -1,0 +1,122 @@
+{
+  "mission": "MELEGASWAP_V2_FINAL_RELEASE_ACCEPTANCE_CERTIFICATION",
+  "viewports": [
+    {
+      "label": "macbook-1280",
+      "width": 1280,
+      "height": 800,
+      "pages": [
+        {
+          "url": "/",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/farms",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/pools",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/projects",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/project-hq/marco",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        }
+      ],
+      "pass": true
+    },
+    {
+      "label": "tablet-1024",
+      "width": 1024,
+      "height": 768,
+      "pages": [
+        {
+          "url": "/",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/farms",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/pools",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/projects",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/project-hq/marco",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        }
+      ],
+      "pass": true
+    },
+    {
+      "label": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "pages": [
+        {
+          "url": "/",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/farms",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/pools",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/projects",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        },
+        {
+          "url": "/project-hq/marco",
+          "pass": true,
+          "overflow": false,
+          "oops": false
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "verifiedAt": "2026-08-04T20:55:56.987Z",
+  "base": "http://127.0.0.1:3020"
+}

@@ -1,0 +1,488 @@
+{
+  "mission": "MELEGASWAP_V2_FINAL_RELEASE_ACCEPTANCE_CERTIFICATION",
+  "chains": [
+    {
+      "chain": "BNB",
+      "chainId": 56,
+      "native": "BNB",
+      "surfaces": {
+        "project": {
+          "url": "http://127.0.0.1:3020/project-hq/marco/?chain=ethereum",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.8% ETH ↑",
+          "textLen": 5534,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "ETH",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://etherscan.io/address/0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "farms": {
+          "url": "http://127.0.0.1:3020/farms/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.8% ETH ↑",
+          "textLen": 37164,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794",
+            "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3",
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "pools": {
+          "url": "http://127.0.0.1:3020/pools/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 45564,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "swap": {
+          "url": "http://127.0.0.1:3020/swap/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 1396,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        }
+      },
+      "modalOpened": true,
+      "selected": true,
+      "pass": true
+    },
+    {
+      "chain": "Base",
+      "chainId": 8453,
+      "native": "ETH",
+      "surfaces": {
+        "project": {
+          "url": "http://127.0.0.1:3020/project-hq/marco/?chain=ethereum",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 5534,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "ETH",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://etherscan.io/address/0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "farms": {
+          "url": "http://127.0.0.1:3020/farms/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 37164,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794",
+            "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3",
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "pools": {
+          "url": "http://127.0.0.1:3020/pools/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 45564,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "swap": {
+          "url": "http://127.0.0.1:3020/swap/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 1396,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        }
+      },
+      "modalOpened": true,
+      "selected": true,
+      "pass": true
+    },
+    {
+      "chain": "Polygon",
+      "chainId": 137,
+      "native": "POL",
+      "surfaces": {
+        "project": {
+          "url": "http://127.0.0.1:3020/project-hq/marco/?chain=ethereum",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 5534,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "ETH",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://etherscan.io/address/0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "farms": {
+          "url": "http://127.0.0.1:3020/farms/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 37164,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794",
+            "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3",
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "pools": {
+          "url": "http://127.0.0.1:3020/pools/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 45564,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "swap": {
+          "url": "http://127.0.0.1:3020/swap/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.2% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 1396,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        }
+      },
+      "modalOpened": true,
+      "selected": true,
+      "pass": true
+    },
+    {
+      "chain": "Ethereum",
+      "chainId": 1,
+      "native": "ETH",
+      "surfaces": {
+        "project": {
+          "url": "http://127.0.0.1:3020/project-hq/marco/?chain=ethereum",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 5534,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "ETH",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://etherscan.io/address/0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "farms": {
+          "url": "http://127.0.0.1:3020/farms/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 37164,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794",
+            "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3",
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "pools": {
+          "url": "http://127.0.0.1:3020/pools/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 45564,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "swap": {
+          "url": "http://127.0.0.1:3020/swap/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 1396,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        }
+      },
+      "modalOpened": true,
+      "selected": true,
+      "pass": true
+    },
+    {
+      "chain": "Arbitrum",
+      "chainId": 42161,
+      "native": "ETH",
+      "surfaces": {
+        "project": {
+          "url": "http://127.0.0.1:3020/project-hq/marco/?chain=ethereum",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 5534,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "ETH",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://etherscan.io/address/0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "farms": {
+          "url": "http://127.0.0.1:3020/farms/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 37164,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794",
+            "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3",
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "pools": {
+          "url": "http://127.0.0.1:3020/pools/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 45564,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        },
+        "swap": {
+          "url": "http://127.0.0.1:3020/swap/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 1396,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        }
+      },
+      "modalOpened": true,
+      "selected": true,
+      "pass": true
+    },
+    {
+      "chain": "Avalanche",
+      "chainId": 43114,
+      "native": "AVAX",
+      "surfaces": {
+        "project": {
+          "url": "http://127.0.0.1:3020/project-hq/marco/?chain=ethereum",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K ETH EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 5534,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "ETH",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://etherscan.io/address/0x5911dc98a9e1a4fffd802c3a57cda6bbd26cdb76"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": true
+        },
+        "farms": {
+          "url": "http://127.0.0.1:3020/farms/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 37164,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794",
+            "https://bscscan.com/address/0x2e608A635A7af675162F41cDB9B29d217010c9d3",
+            "https://bscscan.com/address/0x41D5487836452d23f2c467070244E5842B412794"
+          ],
+          "crossFallback": false,
+          "hasChainAttr": false
+        },
+        "pools": {
+          "url": "http://127.0.0.1:3020/pools/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 45564,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        },
+        "swap": {
+          "url": "http://127.0.0.1:3020/swap/",
+          "pass": true,
+          "textSample": "Melega DEX Home Liquidity Farms Pools List NEW Portfolio ⌕ ⌘K BSC EN العربية বাংলা English Deutsch Ελληνικά Español Suomalainen Filipino Français हिंदी Magyar Bahasa Indonesia Italiano 日本語 한국어 Nederlands Polski Português (Brazil) Português Română Русский Svenska தமிழ் Türkçe Українська Tiếng Việt 简体中文 繁體中文 Connect Wallet TOP MOVERS DOT ↑ 3.1% MARCO ↓ 1.4% CAKE ↓ 1.2% BTCB ↑ 0.9% FLOKI ↑ 0.6% ETH ↑",
+          "textLen": 1396,
+          "overflow": false,
+          "hasHeader": true,
+          "chainText": "BSC",
+          "oops": false,
+          "errorBoundary": false,
+          "blank": false,
+          "switchToBscGeneric": false,
+          "explorer": [],
+          "crossFallback": false,
+          "hasChainAttr": false
+        }
+      },
+      "modalOpened": true,
+      "selected": true,
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "verifiedAt": "2026-08-04T20:55:56.987Z",
+  "base": "http://127.0.0.1:3020"
+}

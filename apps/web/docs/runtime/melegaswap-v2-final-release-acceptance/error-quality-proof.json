@@ -1,0 +1,51 @@
+{
+  "mission": "MELEGASWAP_V2_FINAL_RELEASE_ACCEPTANCE_CERTIFICATION",
+  "scans": [
+    {
+      "url": "/",
+      "switchToBscGeneric": false,
+      "hasRetryCopy": false,
+      "misleading": false,
+      "pass": true
+    },
+    {
+      "url": "/swap",
+      "switchToBscGeneric": false,
+      "hasRetryCopy": false,
+      "misleading": false,
+      "pass": true
+    },
+    {
+      "url": "/farms",
+      "switchToBscGeneric": false,
+      "hasRetryCopy": false,
+      "misleading": false,
+      "pass": true
+    },
+    {
+      "url": "/pools",
+      "switchToBscGeneric": false,
+      "hasRetryCopy": false,
+      "misleading": false,
+      "pass": true
+    },
+    {
+      "url": "/project-hq/marco",
+      "switchToBscGeneric": false,
+      "hasRetryCopy": false,
+      "misleading": false,
+      "pass": true
+    },
+    {
+      "url": "/list",
+      "switchToBscGeneric": false,
+      "hasRetryCopy": false,
+      "misleading": false,
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "note": "Wallet-connected wrong-chain paths require a live wallet; static surfaces must not show generic Switch to BSC Network.",
+  "verifiedAt": "2026-08-04T20:55:56.987Z",
+  "base": "http://127.0.0.1:3020"
+}

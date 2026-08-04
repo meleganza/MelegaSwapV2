@@ -1,0 +1,28 @@
+{
+  "mission": "MELEGASWAP_V2_FINAL_RELEASE_ACCEPTANCE_CERTIFICATION",
+  "home": {
+    "smartSwap": true,
+    "hasInstantTab": false,
+    "tokenSelector": true,
+    "priceImpact": true,
+    "minimumReceived": true,
+    "protocolFee": true,
+    "fee25": false,
+    "connectOrSwap": true,
+    "oops": false
+  },
+  "swapPage": {
+    "smartSwap": false,
+    "tokenSelector": true,
+    "priceImpact": false,
+    "minimumReceived": false,
+    "protocolFeeOrGas": true,
+    "fee25": false,
+    "oops": false,
+    "errorBoundary": false
+  },
+  "walletConfirmation": "Wallet confirmation requires connected wallet — UI exposes Connect/Swap commit; not exercised on-chain in acceptance.",
+  "pass": true,
+  "verifiedAt": "2026-08-04T20:55:56.987Z",
+  "base": "http://127.0.0.1:3020"
+}

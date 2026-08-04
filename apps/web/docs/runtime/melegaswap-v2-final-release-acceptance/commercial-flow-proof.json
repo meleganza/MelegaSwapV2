@@ -1,0 +1,123 @@
+{
+  "mission": "MELEGASWAP_V2_FINAL_RELEASE_ACCEPTANCE_CERTIFICATION",
+  "flows": [
+    {
+      "name": "Create Token",
+      "url": "/list?intent=create-token",
+      "oops": false,
+      "errorBoundary": false,
+      "assets": {
+        "BNB": true,
+        "USDT": true,
+        "USDC": true,
+        "MARCO": true
+      },
+      "hasCreateToken": true,
+      "hasCreateFarm": false,
+      "hasCreatePool": false,
+      "hasFeatured": true,
+      "hasBoost": true,
+      "relevant": true,
+      "pass": true
+    },
+    {
+      "name": "Create Farm",
+      "url": "/farms",
+      "oops": false,
+      "errorBoundary": false,
+      "assets": {
+        "BNB": true,
+        "USDT": true,
+        "USDC": true,
+        "MARCO": true
+      },
+      "hasCreateToken": false,
+      "hasCreateFarm": true,
+      "hasCreatePool": false,
+      "hasFeatured": true,
+      "hasBoost": false,
+      "relevant": true,
+      "pass": true
+    },
+    {
+      "name": "Create Pool",
+      "url": "/pools",
+      "oops": false,
+      "errorBoundary": false,
+      "assets": {
+        "BNB": true,
+        "USDT": false,
+        "USDC": false,
+        "MARCO": true
+      },
+      "hasCreateToken": false,
+      "hasCreateFarm": false,
+      "hasCreatePool": true,
+      "hasFeatured": true,
+      "hasBoost": false,
+      "relevant": true,
+      "pass": true
+    },
+    {
+      "name": "Featured",
+      "url": "/project-hq/marco",
+      "oops": false,
+      "errorBoundary": false,
+      "assets": {
+        "BNB": true,
+        "USDT": true,
+        "USDC": true,
+        "MARCO": true
+      },
+      "hasCreateToken": true,
+      "hasCreateFarm": false,
+      "hasCreatePool": false,
+      "hasFeatured": true,
+      "hasBoost": true,
+      "relevant": true,
+      "pass": true
+    },
+    {
+      "name": "Trend Boost",
+      "url": "/project-hq/marco",
+      "oops": false,
+      "errorBoundary": false,
+      "assets": {
+        "BNB": true,
+        "USDT": true,
+        "USDC": true,
+        "MARCO": true
+      },
+      "hasCreateToken": true,
+      "hasCreateFarm": false,
+      "hasCreatePool": false,
+      "hasFeatured": true,
+      "hasBoost": true,
+      "relevant": true,
+      "pass": true
+    },
+    {
+      "name": "List Studio",
+      "url": "/list",
+      "oops": false,
+      "errorBoundary": false,
+      "assets": {
+        "BNB": false,
+        "USDT": false,
+        "USDC": false,
+        "MARCO": true
+      },
+      "hasCreateToken": true,
+      "hasCreateFarm": false,
+      "hasCreatePool": false,
+      "hasFeatured": true,
+      "hasBoost": false,
+      "relevant": true,
+      "pass": true
+    }
+  ],
+  "paymentAssetsObserved": true,
+  "pass": true,
+  "verifiedAt": "2026-08-04T20:55:56.987Z",
+  "base": "http://127.0.0.1:3020"
+}
