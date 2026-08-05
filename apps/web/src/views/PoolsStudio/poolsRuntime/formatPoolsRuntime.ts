@@ -15,6 +15,12 @@ import { getAprData, getPoolBlockInfo } from 'views/Pools/helpers'
 import type { PoolAnalyzePreview, PoolPreviewCard, PoolStatus, PoolsKpiItem } from '../poolsStudioData'
 import { formatDisplayApr, formatRewardBudgetUsd, getAutoCompound, getContractRef, getCooldown, getEstimatedDailyReward, getEstimatedDuration, getLockPeriod, getPoolDisplayStatus, getPoolSafetyRisk, getPoolVisualType, getRemainingRewards, getRemainingRewardsRaw, getRewardBadge, getRewardBudgetUsd, getRewardSustainability, getTokenExplorerUrl, getWeeklyMonthlyRewards, normalizeAddress, poolIsLive } from './formatPoolPresentation'
 import { isForbiddenAprDisplay, resolveSustainableApr } from './poolsAprRules'
+import {
+  resolvePoolChainId,
+  resolvePoolFeesDisplay,
+  resolvePoolTvlUsd,
+  resolvePoolVolumeDisplay,
+} from 'lib/data-truth/yieldMetricHelpers'
 
 const BLOCKS_PER_DAY = 28800
 
@@ -202,8 +208,8 @@ export function mapPoolToPreviewCard(
   if (!pool?.earningToken?.decimals || !pool?.stakingToken?.decimals) return null
 
   const { apr } = getAprData(pool, performanceFee)
+  const tvlUsd = resolvePoolTvlUsd(pool)
   const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-  const tvlUsd = staked * (pool.stakingTokenPrice || 0)
   const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
   const status = poolStatus(pool, currentBlock)
   const aprDisplay = displayPoolApr(pool, apr, status, currentBlock)
@@ -285,9 +291,9 @@ export function mapPoolToPreviewCard(
     rewardBadge: getRewardBadge(pool),
     visualType: getPoolVisualType(pool),
     tvl: formatUsd(tvlUsd),
-    volume24h: RUNTIME_UNAVAILABLE_LABEL,
-    fees: analyzePreview.depositFee === '0%' ? '0%' : RUNTIME_UNAVAILABLE_LABEL,
-    chainId: pool.stakingToken?.chainId ?? pool.earningToken?.chainId,
+    volume24h: resolvePoolVolumeDisplay(pool),
+    fees: resolvePoolFeesDisplay(pool),
+    chainId: resolvePoolChainId(pool),
     rewardToken: pool.earningToken.symbol ?? RUNTIME_UNAVAILABLE_LABEL,
     dailyRewards:
       perBlock.gt(0) ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
@@ -341,8 +347,7 @@ export function aggregateKpis(
   pools.forEach((pool) => {
     if (!pool?.stakingToken?.decimals || !pool?.earningToken?.decimals) return
     const lc = derivePoolLifecycle(pool, currentBlock)
-    const staked = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-    totalStakedUsd += staked * (pool.stakingTokenPrice || 0)
+    totalStakedUsd += resolvePoolTvlUsd(pool)
     if (pool.userData?.stakedBalance?.gt(0)) stakerPositions += 1
     const perBlock = tokenPerBlockBn(pool.tokenPerBlock)
     if (perBlock.gt(0) && lc.rewarding) {
@@ -438,10 +443,7 @@ export function listDisplayablePools(cards: PoolPreviewCard[]): PoolPreviewCard[
 }
 
 function parseCardTvlUsd(card: PoolPreviewCard): number {
-  const pool = card.rawPool
-  if (pool?.totalStaked && pool.stakingToken?.decimals && pool.stakingTokenPrice && pool.stakingTokenPrice > 0) {
-    return getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * pool.stakingTokenPrice
-  }
+  if (card.rawPool) return resolvePoolTvlUsd(card.rawPool)
   const label = String(card.tvl || '')
   const n = Number(label.replace(/[^0-9.]/g, ''))
   if (!Number.isFinite(n)) return 0

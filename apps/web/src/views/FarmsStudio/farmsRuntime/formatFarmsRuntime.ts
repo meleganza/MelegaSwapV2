@@ -9,6 +9,13 @@ import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 import type { FarmEmissionState } from 'lib/data-truth/masterChefEmissionMath'
 import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
+import {
+  formatFarmAprDisplay,
+  resolveFarmAprPercent,
+  resolveFarmChainId,
+  resolveFarmLiquidityUsd,
+  resolveFarmRewardToken,
+} from 'lib/data-truth/yieldMetricHelpers'
 
 export const formatUsd = (value?: number | null): string => {
   if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {
@@ -55,9 +62,9 @@ function formatFarmDailyRewards(
 export function formatFarmDisplayApr(farm: FarmWithStakedValue, status: FarmStatus): string | undefined {
   if (status === 'finished') return undefined
   if (status !== 'live' && status !== 'indexing') return undefined
-  const totalApr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
-  if (!Number.isFinite(totalApr) || totalApr <= 0) return APR_UNAVAILABLE_LABEL
-  return formatApr(totalApr)
+  const apr = resolveFarmAprPercent(farm)
+  if (apr == null) return APR_UNAVAILABLE_LABEL
+  return formatFarmAprDisplay(farm)
 }
 
 export function listRewardingFarms(cards: FarmPreviewCard[]): FarmPreviewCard[] {
@@ -72,8 +79,8 @@ export function listRewardingFarms(cards: FarmPreviewCard[]): FarmPreviewCard[] 
 }
 
 function farmLiquidityUsd(card: FarmPreviewCard): number {
-  const liq = card.rawFarm?.liquidity?.toNumber?.()
-  return Number.isFinite(liq) ? (liq as number) : 0
+  if (!card.rawFarm) return 0
+  return resolveFarmLiquidityUsd(card.rawFarm)
 }
 
 /** Featured = active + emission + TVL + sustainable APR; tie-break by lowest pid. */
@@ -104,24 +111,24 @@ export function mapFarmToPreviewCard(
   emission: MasterChefEmission,
 ): FarmPreviewCard {
   const status = farmStatus(farm)
-  const liquidityUsd = farm.liquidity?.toNumber() ?? 0
+  const liquidityUsd = resolveFarmLiquidityUsd(farm)
   const aprDisplay = formatFarmDisplayApr(farm, status)
 
   const pid = farm.pid ?? -1
   const poolWeight = farm.poolWeight ? new BigNumber(farm.poolWeight).toNumber() : undefined
   const { dailyMarco, state: emissionState } = resolveFarmEmissionState(emission, pid, poolWeight)
-  const rewardSymbol = farm.earningToken?.symbol ?? 'MARCO'
+  const rewardSymbol = resolveFarmRewardToken(farm)
 
   const token0 = farm.token?.symbol ?? '?'
   const token1 = farm.quoteToken?.symbol ?? '?'
 
-  const chainId = farm.token?.chainId ?? 56
+  const chainId = resolveFarmChainId(farm, 56)
   const lpExplorerUrl = farm.lpAddress ? getAddressExplorerUrl(farm.lpAddress, chainId) : undefined
   const masterChefExplorerUrl = getAddressExplorerUrl(getMasterChefAddress(chainId), chainId)
 
   const analyzePreview: FarmAnalyzePreview = {
     aprHistory: aprDisplay && aprDisplay !== APR_UNAVAILABLE_LABEL ? aprDisplay : METRIC_STATUS.UNAVAILABLE,
-    rewardToken: farm.earningToken?.symbol ?? 'MARCO',
+    rewardToken: rewardSymbol,
     emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : METRIC_STATUS.UNAVAILABLE,
     contract: farm.lpAddress ?? 'On-chain',
     contractExplorerUrl: lpExplorerUrl,
@@ -141,7 +148,7 @@ export function mapFarmToPreviewCard(
     liquidity: formatUsd(liquidityUsd),
     dailyRewards: formatFarmDailyRewards(emissionState, dailyMarco, rewardSymbol),
     multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : METRIC_STATUS.UNAVAILABLE,
-    rewardToken: farm.earningToken?.symbol ?? 'MARCO',
+    rewardToken: rewardSymbol,
     participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : METRIC_STATUS.UNAVAILABLE,
     cta: status === 'finished' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
@@ -167,9 +174,8 @@ export function aggregateKpis(
 
   farms.forEach((farm) => {
     if (farm.multiplier !== '0X' && farm.pid !== 0) activeFarms += 1
-    const liq = farm.liquidity?.toNumber() ?? 0
-    totalTvl += liq
-    const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
+    totalTvl += resolveFarmLiquidityUsd(farm)
+    const apr = resolveFarmAprPercent(farm) ?? 0
     if (apr > highestApr) highestApr = apr
   })
 

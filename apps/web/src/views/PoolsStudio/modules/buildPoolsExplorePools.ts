@@ -7,6 +7,7 @@
 import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import { poolIdentity } from 'lib/data-truth/globalYieldInventory'
+import { resolvePoolTvlUsd } from 'lib/data-truth/yieldMetricHelpers'
 import { getBlockExploreLink } from 'utils'
 import type { PoolPreviewCard } from '../poolsStudioData'
 import { isForbiddenAprDisplay } from '../poolsRuntime/poolsAprRules'
@@ -54,10 +55,7 @@ export function resolveExploreLockType(card: PoolPreviewCard): PoolsExploreLockT
 }
 
 function parseTvlUsd(card: PoolPreviewCard): number {
-  const pool = card.rawPool
-  if (pool?.totalStaked && pool.stakingToken?.decimals && pool.stakingTokenPrice && pool.stakingTokenPrice > 0) {
-    return getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals) * pool.stakingTokenPrice
-  }
+  if (card.rawPool) return resolvePoolTvlUsd(card.rawPool)
   const fromLabel = Number(String(card.tvl || '').replace(/[^0-9.]/g, ''))
   if (String(card.tvl || '').includes('M')) return fromLabel * 1_000_000
   if (String(card.tvl || '').includes('K')) return fromLabel * 1_000

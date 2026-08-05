@@ -57,8 +57,9 @@ describe('Project Page V2 — conversion audit', () => {
     expect(shell).toContain('TVL · {market.liquidity}')
     expect(shell).toContain('Volume · {market.volume24h}')
     expect(shell).toContain('Pools · {poolsCount}')
-    expect(shell).toContain('APR · Unavailable')
-    expect(shell).toContain('Rewards · Unavailable')
+    expect(shell).toContain('APR_UNAVAILABLE_LABEL')
+    expect(shell).toContain('METRIC_STATUS.UNAVAILABLE')
+    expect(shell).toContain('farmRewardHint')
   })
 
   it('Grow CTAs complete to checkout / liquidity create / farm create', () => {

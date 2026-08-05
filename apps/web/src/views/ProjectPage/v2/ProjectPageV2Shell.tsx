@@ -35,6 +35,7 @@ import {
   pp,
 } from '../v1/theme'
 import { Metric, indexed, UNAVAILABLE } from '../v1/Metric'
+import { METRIC_STATUS, APR_UNAVAILABLE_LABEL } from 'lib/data-policy/metricStatus'
 import {
   buildProjectChainDeployments,
   defaultSelectedChainId,
@@ -330,8 +331,12 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
 
   const priceValue = market.priceUsd !== 'Unavailable' ? market.priceUsd : market.priceBnb
   const poolsCount = chainLiquidity.length > 0 ? String(chainLiquidity.length) : 'Unavailable'
-  const farmsCount = chainFarms.length > 0 ? String(chainFarms.length) : 'Unavailable'
-  const stakePoolsCount = chainPools.length > 0 ? String(chainPools.length) : 'Unavailable'
+  const farmsCount = chainFarms.length > 0 ? String(chainFarms.length) : METRIC_STATUS.UNAVAILABLE
+  const stakePoolsCount = chainPools.length > 0 ? String(chainPools.length) : METRIC_STATUS.UNAVAILABLE
+  // Farm/pool APR·TVL require live MasterChef/SmartChef enrichment — same helpers as Home/Farms.
+  // Registry participation alone does not certify USD/APR metrics; never invent values.
+  const farmRewardHint = METRIC_STATUS.UNAVAILABLE
+  const poolRewardHint = METRIC_STATUS.UNAVAILABLE
 
   return (
     <Page id="project-page-v2" data-testid="project-page-v2" data-project-page="v2" data-project-slug={document.slug}>
@@ -511,10 +516,10 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
           <EconomyCard data-testid="project-v2-economy-farm">
             <EconomyTitle>Farm</EconomyTitle>
             <EconomyMeta>
-              <span>APR · Unavailable</span>
-              <span>TVL · Unavailable</span>
-              <span>Rewards · Unavailable</span>
-              {farmsCount !== 'Unavailable' ? <span>Farms · {farmsCount}</span> : null}
+              <span>APR · {APR_UNAVAILABLE_LABEL}</span>
+              <span>TVL · {METRIC_STATUS.UNAVAILABLE}</span>
+              <span>Rewards · {farmRewardHint}</span>
+              {farmsCount !== METRIC_STATUS.UNAVAILABLE ? <span>Farms · {farmsCount}</span> : null}
             </EconomyMeta>
             <Btn href={`/farms?create=1&chain=${chainId}`} data-testid="project-v2-farm">
               Create Farm
@@ -523,10 +528,10 @@ export const ProjectPageV2Shell: React.FC<ProjectPageV2Props> = ({
           <EconomyCard data-testid="project-v2-economy-pool">
             <EconomyTitle>Pool</EconomyTitle>
             <EconomyMeta>
-              <span>TVL · Unavailable</span>
-              <span>Rewards · Unavailable</span>
-              <span>APR · Unavailable</span>
-              {stakePoolsCount !== 'Unavailable' ? <span>Pools · {stakePoolsCount}</span> : null}
+              <span>TVL · {METRIC_STATUS.UNAVAILABLE}</span>
+              <span>Rewards · {poolRewardHint}</span>
+              <span>APR · {APR_UNAVAILABLE_LABEL}</span>
+              {stakePoolsCount !== METRIC_STATUS.UNAVAILABLE ? <span>Pools · {stakePoolsCount}</span> : null}
             </EconomyMeta>
             <Btn href={`/pools?chain=${chainId}`} data-testid="project-v2-stake">
               Stake

@@ -1,9 +1,7 @@
 import { useMemo } from 'react'
-import BigNumber from 'bignumber.js'
 import { FarmWithStakedValue } from '@pancakeswap/farms'
 import { Pool } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
-import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import type { MelegaTickerItem } from 'design-system/melega'
 import { buildIndexerActivityDiagnostic } from 'lib/runtime-integrity'
 import { useProtocolActivityFeed } from 'lib/protocol-activity/useProtocolActivityFeed'
@@ -24,7 +22,6 @@ import { useActiveChainId } from 'hooks/useActiveChainId'
 import { FetchStatus } from 'config/constants/types'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
-import { getAprData } from 'views/Pools/helpers'
 import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
 import { useCanonicalMarketSnapshot } from 'lib/market-data'
 import {
@@ -42,6 +39,22 @@ import {
   listLivePoolInventoryPreview,
   liveInventoryProvenance,
 } from 'lib/data-truth/liveInventoryCounts'
+import {
+  farmPairLabel,
+  formatFarmTvlDisplay,
+  formatYieldUsd,
+  poolPairLabel,
+  resolveFarmAprPercent,
+  resolveFarmChainId,
+  resolveFarmLiquidityUsd,
+  resolveFarmRewardToken,
+  resolvePoolAprPercent,
+  resolvePoolChainId,
+  resolvePoolFeesDisplay,
+  resolvePoolRewardToken,
+  resolvePoolTvlUsd,
+  resolvePoolVolumeDisplay,
+} from 'lib/data-truth/yieldMetricHelpers'
 
 export interface RibbonItem {
   id: string
@@ -67,6 +80,10 @@ export interface EarnRow {
   apr?: string
   tvl?: string
   rewards?: string
+  /** Pool volume when indexed — Unavailable for SmartChef when not certified. */
+  volume?: string
+  /** Pool fees when known (e.g. 0% deposit). */
+  fees?: string
   href: string
   chainId?: number
   /** Token symbols for logos (pair / stake→earn). */
@@ -152,36 +169,14 @@ const sanitizeRibbonText = (value?: string): string | undefined => {
   return trimmed
 }
 
-const farmApr = (farm: FarmWithStakedValue): number | undefined => {
-  const apr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
-  return apr > 0 ? apr : undefined
-}
+const farmApr = (farm: FarmWithStakedValue): number | undefined => resolveFarmAprPercent(farm)
 
-const farmTvl = (farm: FarmWithStakedValue): string | undefined => {
-  if (farm.liquidity?.gt(0)) return formatUsd(farm.liquidity.toNumber())
-  // Fallback when liquidity not attached yet but reserve × quote price is factual.
-  if (farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) {
-    const usd = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
-    if (usd.gt(0)) return formatUsd(usd.toNumber())
-  }
-  return undefined
-}
+const farmTvl = (farm: FarmWithStakedValue): string | undefined => formatFarmTvlDisplay(farm)
 
-const farmTvlUsd = (farm: FarmWithStakedValue): number => {
-  if (farm.liquidity?.gt(0)) return farm.liquidity.toNumber()
-  if (farm.lpTotalInQuoteToken && farm.quoteTokenPriceBusd) {
-    const usd = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
-    return usd.gt(0) ? usd.toNumber() : 0
-  }
-  return 0
-}
+const farmTvlUsd = (farm: FarmWithStakedValue): number => resolveFarmLiquidityUsd(farm)
 
 /** Factual farm reward label — dual earnLabel when present, else MARCO (MasterChef). */
-const farmRewards = (farm: FarmWithStakedValue): string | undefined => {
-  const dual = farm.dual?.earnLabel?.trim()
-  if (dual) return dual
-  return 'MARCO'
-}
+const farmRewards = (farm: FarmWithStakedValue): string => resolveFarmRewardToken(farm)
 
 const poolRewardFromName = (name: string): string | undefined => {
   const parts = name.split('→')
@@ -190,17 +185,12 @@ const poolRewardFromName = (name: string): string | undefined => {
   return reward || undefined
 }
 
-const poolTvl = (pool: Pool.DeserializedPool<Token>): string | undefined => {
-  if (!pool.totalStaked?.gt(0) || !pool.stakingToken) return undefined
-  const bal = getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-  return bal > 0 ? formatUsd(bal * (pool.stakingTokenPrice ?? 0)) : undefined
-}
+const poolTvl = (
+  pool: Pool.DeserializedPool<Token>,
+  hints?: { marcoUsd?: number },
+): string | undefined => formatYieldUsd(resolvePoolTvlUsd(pool, hints))
 
-const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => {
-  if (pool.apr && pool.apr > 0) return pool.apr
-  const { apr } = getAprData(pool, 0)
-  return apr > 0 ? apr : undefined
-}
+const poolApr = (pool: Pool.DeserializedPool<Token>): number | undefined => resolvePoolAprPercent(pool)
 
 export const useHomeTradeData = () => {
   const {
@@ -495,6 +485,7 @@ export const useHomeTradeData = () => {
   const farmRows = useMemo((): EarnRow[] => {
     // Prefer active-chain farms (same runtime as Farms page), then pad with multichain inventory.
     // Ranking: TVL → APR → volume (LP fee APR proxy) → activity (multiplier weight).
+    // Metrics via shared yieldMetricHelpers (same formulas as FarmsStudio enrichment).
     const ranked = farms
       .filter((f) => f.pid !== 0)
       .map((farm) => {
@@ -504,17 +495,18 @@ export const useHomeTradeData = () => {
         const volumeProxy = farm.lpRewardsApr && farm.lpRewardsApr > 0 ? farm.lpRewardsApr : 0
         const mult = Number.parseFloat(String(farm.multiplier ?? '0').replace(/x/i, ''))
         const activity = Number.isFinite(mult) ? mult : 0
+        const farmChain = resolveFarmChainId(farm, chainId)
         const token0 = farm.token?.symbol
         const token1 = farm.quoteToken?.symbol
         return {
-          id: `farm-${chainId}-${farm.pid}`,
-          name: farm.lpSymbol ?? 'Farm',
+          id: `farm-${farmChain}-${farm.pid}`,
+          name: farmPairLabel(farm),
           apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
           aprUnavailable: !(apr && apr > 0),
           tvl: tvl || undefined,
           rewards: farmRewards(farm),
           href: '/farms',
-          chainId,
+          chainId: farmChain,
           tokenSymbols: [token0, token1].filter(Boolean) as string[],
           tokenAddresses: [farm.token?.address, farm.quoteToken?.address].filter(Boolean) as string[],
           sortTvl: tvlUsd,
@@ -554,7 +546,6 @@ export const useHomeTradeData = () => {
         apr: apr && apr > 0 ? `${apr.toFixed(2)}%` : undefined,
         aprUnavailable: !(apr && apr > 0),
         tvl: tvl || undefined,
-        // MasterChef farms reward MARCO — factual even without live APR/TVL.
         rewards: runtimeMatch ? farmRewards(runtimeMatch) : 'MARCO',
         href: '/farms',
         chainId: row.chainId,
@@ -571,28 +562,27 @@ export const useHomeTradeData = () => {
       .slice(0, 5)
       .map((farm) => ({
         id: `farm-inv-${farm.pid}`,
-        name: farm.lpSymbol ?? `Farm #${farm.pid}`,
+        name: farmPairLabel(farm),
         apr: undefined,
         aprUnavailable: true,
-        tvl: undefined,
+        tvl: farmTvl(farm),
         rewards: farmRewards(farm),
         href: '/farms',
-        chainId,
+        chainId: resolveFarmChainId(farm, chainId),
         tokenSymbols: [farm.token?.symbol, farm.quoteToken?.symbol].filter(Boolean) as string[],
       }))
   }, [farms, allFarms, chainId])
 
   const poolRows = useMemo((): EarnRow[] => {
     // Prefer factual TVL/rewards even when APR cannot be certified. Rank: TVL → volume → fees → APR.
+    // Shared resolvePoolTvlUsd (stake × trusted price) — same helper as useGetTopPoolsByApr.
+    const marcoUsd = marcoPrice?.toNumber?.()
+    const hints = { marcoUsd: marcoUsd && marcoUsd > 0 ? marcoUsd : undefined }
     const source = (pools.length > 0 ? pools : allPools).filter(Boolean)
     const ranked = source
       .map((pool) => {
         const aprValue = poolApr(pool)
-        const staked =
-          pool.totalStaked && pool.stakingToken
-            ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-            : 0
-        const tvlUsd = staked > 0 ? staked * (pool.stakingTokenPrice ?? 0) : 0
+        const tvlUsd = resolvePoolTvlUsd(pool, hints)
         const life = derivePoolLifecycle(pool, currentBlock)
         const eligibility = evaluateTopPoolsAprEligibility({
           rewarding: life.rewarding,
@@ -600,9 +590,8 @@ export const useHomeTradeData = () => {
           apr: aprValue,
           tvlUsd,
           rewardPriceUsd: pool.earningTokenPrice ?? null,
-          stakePriceUsd: pool.stakingTokenPrice ?? null,
+          stakePriceUsd: pool.stakingTokenPrice ?? hints.marcoUsd ?? null,
         })
-        // Volume/fees not generally available for SmartChef — keep 0 (never invent).
         const volumeUsd = 0
         const feesUsd = 0
         return { pool, aprValue, tvlUsd, eligibility, life, volumeUsd, feesUsd }
@@ -627,29 +616,32 @@ export const useHomeTradeData = () => {
       })
       .slice(0, 5)
 
+    const toEarnRow = (pool: Pool.DeserializedPool<Token>, tvlUsd: number, aprValue?: number): EarnRow => {
+      const stake = pool.stakingToken?.symbol
+      const earn = resolvePoolRewardToken(pool)
+      const poolChain = resolvePoolChainId(pool, chainId)
+      const showApr = aprValue != null && aprValue > 0
+      return {
+        id: `pool-${poolChain}-${pool.sousId}`,
+        name: poolPairLabel(pool),
+        apr: showApr ? `${aprValue.toFixed(2)}%` : undefined,
+        aprUnavailable: !showApr,
+        tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool, hints),
+        volume: resolvePoolVolumeDisplay(pool),
+        fees: resolvePoolFeesDisplay(pool),
+        rewards: earn || undefined,
+        href: '/pools',
+        chainId: poolChain,
+        tokenSymbols: [stake, earn].filter(Boolean) as string[],
+        tokenAddresses: [pool.stakingToken?.address, pool.earningToken?.address].filter(
+          Boolean,
+        ) as string[],
+      }
+    }
+
     const fromRuntime: EarnRow[] =
       ranked.length > 0
-        ? ranked.map(({ pool, aprValue, tvlUsd, eligibility }) => {
-            const stake = pool.stakingToken?.symbol
-            const earn = pool.earningToken?.symbol
-            const name =
-              stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
-            const showApr = eligibility.eligible && aprValue != null
-            return {
-              id: `pool-${chainId}-${pool.sousId}`,
-              name,
-              apr: showApr ? `${aprValue.toFixed(2)}%` : undefined,
-              aprUnavailable: !showApr,
-              tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool),
-              rewards: earn || undefined,
-              href: '/pools',
-              chainId,
-              tokenSymbols: [stake, earn].filter(Boolean) as string[],
-              tokenAddresses: [pool.stakingToken?.address, pool.earningToken?.address].filter(
-                Boolean,
-              ) as string[],
-            }
-          })
+        ? ranked.map(({ pool, aprValue, tvlUsd }) => toEarnRow(pool, tvlUsd, aprValue))
         : []
 
     if (fromRuntime.length >= 5) return fromRuntime
@@ -678,6 +670,8 @@ export const useHomeTradeData = () => {
           apr: undefined,
           aprUnavailable: true,
           tvl: undefined,
+          volume: undefined,
+          fees: undefined,
           rewards: poolRewardFromName(row.name),
           href: '/pools',
           chainId: row.chainId,
@@ -688,35 +682,12 @@ export const useHomeTradeData = () => {
         continue
       }
       const aprValue = poolApr(pool)
-      const staked =
-        pool.totalStaked && pool.stakingToken
-          ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-          : 0
-      const tvlUsd = staked > 0 ? staked * (pool.stakingTokenPrice ?? 0) : 0
-      const life = derivePoolLifecycle(pool, currentBlock)
-      const eligibility = evaluateTopPoolsAprEligibility({
-        rewarding: life.rewarding,
-        emissionActive: life.rewarding,
-        apr: aprValue,
-        tvlUsd,
-        rewardPriceUsd: pool.earningTokenPrice ?? null,
-        stakePriceUsd: pool.stakingTokenPrice ?? null,
-      })
-      const stake = pool.stakingToken?.symbol
-      const earn = pool.earningToken?.symbol
-      const name =
-        stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : row.name
-      const showApr = eligibility.eligible && aprValue != null
+      const tvlUsd = resolvePoolTvlUsd(pool, hints)
       padded.push({
+        ...toEarnRow(pool, tvlUsd, aprValue),
         id: row.id,
-        name,
-        apr: showApr ? `${aprValue.toFixed(2)}%` : undefined,
-        aprUnavailable: !showApr,
-        tvl: tvlUsd > 0 ? formatUsd(tvlUsd) : poolTvl(pool) || undefined,
-        rewards: earn || poolRewardFromName(row.name),
-        href: '/pools',
         chainId: row.chainId,
-        tokenSymbols: [stake, earn].filter(Boolean) as string[],
+        rewards: resolvePoolRewardToken(pool) || poolRewardFromName(row.name),
       })
     }
 
@@ -729,24 +700,10 @@ export const useHomeTradeData = () => {
       })
       .slice(0, 5)
       .map((pool) => {
-        const stake = pool.stakingToken?.symbol
-        const earn = pool.earningToken?.symbol
-        const name =
-          stake && earn ? `${stake} → ${earn}` : stake ? `${stake} Pool` : `Pool #${pool.sousId}`
-        const aprValue = poolApr(pool)
-        return {
-          id: `pool-inv-${chainId}-${pool.sousId}`,
-          name,
-          apr: aprValue != null ? `${aprValue.toFixed(2)}%` : undefined,
-          aprUnavailable: aprValue == null,
-          tvl: poolTvl(pool),
-          rewards: earn || undefined,
-          href: '/pools',
-          chainId,
-          tokenSymbols: [stake, earn].filter(Boolean) as string[],
-        }
+        const tvlUsd = resolvePoolTvlUsd(pool, hints)
+        return toEarnRow(pool, tvlUsd, poolApr(pool))
       })
-  }, [pools, allPools, currentBlock, chainId])
+  }, [pools, allPools, currentBlock, chainId, marcoPrice])
 
   const homeActivityRows = useMemo(() => formatHomeActivityRows(protocolRows), [protocolRows])
 

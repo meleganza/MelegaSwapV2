@@ -16,6 +16,8 @@ export type HomeNewListingRow = {
   logoUrl?: string
   /** ISO date when a certified updates registry timestamp exists. */
   listedAt?: string
+  /** Alias for listedAt — sorting / data-listing-timestamp. */
+  listingTimestamp?: string
   /** User metric: date label or Indexed. */
   metric: string
 }
@@ -64,6 +66,7 @@ export function buildHomeNewListings(limit = 5): HomeNewListingRow[] {
         address: token?.address,
         logoUrl: p.logoUrl,
         listedAt: publishedAt,
+        listingTimestamp: publishedAt,
         metric: publishedAt ? formatListingDate(publishedAt) : METRIC_STATUS.INDEXED,
         sortTs,
         sortLegacy: p.legacyImport ? 1 : 0,

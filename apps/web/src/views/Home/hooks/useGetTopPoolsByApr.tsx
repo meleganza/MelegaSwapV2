@@ -5,22 +5,20 @@ import { fetchCakeVaultFees, fetchPoolsPublicDataAsync, fetchCakeVaultPublicData
 import { usePoolsWithVault } from 'state/pools/hooks'
 import { useInitialBlock } from 'state/block/hooks'
 import { FetchStatus } from 'config/constants/types'
-import { Pool } from '@pancakeswap/uikit'
-import { Token } from '@pancakeswap/sdk'
-import { getBalanceNumber } from '@pancakeswap/utils/formatBalance'
 import { useActiveChainId } from 'hooks/useActiveChainId'
-import { usePollFarmsWithUserData } from 'state/farms/hooks'
+import { usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import { useCurrentBlock } from 'state/block/hooks'
 import { derivePoolLifecycle } from 'lib/data-truth/poolLifecycle'
-import { evaluateTopPoolsAprEligibility } from 'views/PoolsStudio/poolsRuntime/poolsAprRules'
-import { getAprData } from 'views/Pools/helpers'
+import {
+  resolvePoolAprPercent,
+  resolvePoolTvlUsd,
+} from 'lib/data-truth/yieldMetricHelpers'
 
-function factualPoolApr(pool: Pool.DeserializedPool<Token>): number | undefined {
-  if (pool.apr && pool.apr > 0) return pool.apr
-  const { apr } = getAprData(pool, 0)
-  return apr > 0 ? apr : undefined
-}
-
+/**
+ * Top pools for Home — factual ranking by TVL → APR.
+ * Includes pools with certified TVL even when APR is unavailable (eligibility
+ * is not required for listing; APR display stays gated separately on Home).
+ */
 const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   const dispatch = useAppDispatch()
   const { chainId } = useActiveChainId()
@@ -30,6 +28,8 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   const initialBlock = useInitialBlock()
   const currentBlock = useCurrentBlock()
   const { pools } = usePoolsWithVault(chainId)
+  const cakePriceBusd = usePriceCakeBusd({ forceMainnet: true })
+  const marcoUsd = cakePriceBusd?.toNumber?.()
 
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
@@ -53,43 +53,37 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   }, [dispatch, fetchStatus, isIntersecting, initialBlock, chainId])
 
   const topPools = useMemo(() => {
+    const hints = { marcoUsd: marcoUsd && marcoUsd > 0 ? marcoUsd : undefined }
     const candidates = (pools ?? []).filter(
       (pool) => pool && pool.sousId !== 0 && pool.vaultKey !== VaultKey.CakeVault,
     )
     const ranked = candidates
       .map((pool) => {
-        const apr = factualPoolApr(pool)
-        const staked =
-          pool.totalStaked && pool.stakingToken
-            ? getBalanceNumber(pool.totalStaked, pool.stakingToken.decimals)
-            : 0
-        const tvlUsd = staked > 0 ? staked * (pool.stakingTokenPrice ?? 0) : 0
+        const apr = resolvePoolAprPercent(pool) ?? 0
+        const tvlUsd = resolvePoolTvlUsd(pool, hints)
         const life = derivePoolLifecycle(pool, currentBlock)
-        const eligibility = evaluateTopPoolsAprEligibility({
-          rewarding: life.rewarding,
-          emissionActive: life.rewarding,
-          apr,
-          tvlUsd,
-          rewardPriceUsd: pool.earningTokenPrice ?? null,
-          stakePriceUsd: pool.stakingTokenPrice ?? null,
-        })
-        return { pool, apr: apr ?? 0, tvlUsd, eligibility }
+        return { pool, apr, tvlUsd, life }
       })
-      .filter((row) => row.eligibility.eligible)
+      .filter(
+        (row) =>
+          row.tvlUsd > 0 ||
+          row.apr > 0 ||
+          row.life.rewarding ||
+          row.life.active ||
+          Boolean(row.pool.earningToken?.symbol),
+      )
       .sort((a, b) => {
-        const aprDiff = b.apr - a.apr
-        if (aprDiff !== 0) return aprDiff
-        const tvlDiff = b.tvlUsd - a.tvlUsd
-        if (tvlDiff !== 0) return tvlDiff
+        if (b.tvlUsd !== a.tvlUsd) return b.tvlUsd - a.tvlUsd
+        if (b.apr !== a.apr) return b.apr - a.apr
         const idA = String(a.pool.contractAddress || a.pool.sousId).toLowerCase()
         const idB = String(b.pool.contractAddress || b.pool.sousId).toLowerCase()
         return idA.localeCompare(idB)
       })
-      .slice(0, 5)
+      .slice(0, 8)
       .map((row) => row.pool)
 
     return ranked
-  }, [pools, currentBlock])
+  }, [pools, currentBlock, marcoUsd])
 
   return { setTopPools: () => undefined, topPools, fetchStatus }
 }

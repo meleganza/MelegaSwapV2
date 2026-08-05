@@ -652,15 +652,16 @@ export const DexHomeScreen: React.FC = () => {
                     <Rank>·</Rank>
                     <RowMain>
                       <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                        {row.tokenSymbols?.[0] ? (
+                        {(row.tokenSymbols ?? []).slice(0, 2).map((sym, i) => (
                           <MelegaTokenAvatar
-                            symbol={row.tokenSymbols[0]}
-                            address={row.tokenAddresses?.[0]}
+                            key={`${row.id}-tok-${i}`}
+                            symbol={sym}
+                            address={row.tokenAddresses?.[i]}
                             chainId={row.chainId ?? 56}
                             size={18}
                             radius="circle"
                           />
-                        ) : null}
+                        ))}
                         <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {row.name}
                         </span>
@@ -701,15 +702,16 @@ export const DexHomeScreen: React.FC = () => {
                     <Rank>·</Rank>
                     <RowMain>
                       <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                        {row.tokenSymbols?.[0] ? (
+                        {(row.tokenSymbols ?? []).slice(0, 2).map((sym, i) => (
                           <MelegaTokenAvatar
-                            symbol={row.tokenSymbols[0]}
-                            address={row.tokenAddresses?.[0]}
+                            key={`${row.id}-tok-${i}`}
+                            symbol={sym}
+                            address={row.tokenAddresses?.[i]}
                             chainId={row.chainId ?? 56}
                             size={18}
                             radius="circle"
                           />
-                        ) : null}
+                        ))}
                         <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {row.name}
                         </span>
@@ -720,6 +722,8 @@ export const DexHomeScreen: React.FC = () => {
                       ) : (
                         <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
                       )}
+                      {row.volume ? <RowMeta>{`Volume ${row.volume}`}</RowMeta> : null}
+                      {row.fees ? <RowMeta>{`Fees ${row.fees}`}</RowMeta> : null}
                       {row.rewards ? (
                         <RowMeta>{`Rewards ${row.rewards}`}</RowMeta>
                       ) : (
@@ -766,7 +770,11 @@ export const DexHomeScreen: React.FC = () => {
                       </RowName>
                       <RowMeta>{row.symbol}</RowMeta>
                     </RowMain>
-                    <RowMetric>{row.metric}</RowMetric>
+                    <RowMetric
+                      data-listing-timestamp={row.listingTimestamp ?? row.listedAt ?? undefined}
+                    >
+                      {row.metric}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}

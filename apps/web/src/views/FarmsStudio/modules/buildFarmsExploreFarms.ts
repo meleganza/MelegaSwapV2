@@ -9,6 +9,7 @@ import { RUNTIME_UNAVAILABLE_LABEL } from 'lib/runtime-truth'
 import type { FarmPreviewCard } from '../farmsStudioData'
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import { formatUsd } from '../farmsRuntime/formatFarmsRuntime'
+import { resolveFarmLiquidityUsd } from 'lib/data-truth/yieldMetricHelpers'
 import { farmsExplore } from './farmsExploreFarmsTokens'
 import type {
   ExploreFarmViewModel,
@@ -111,8 +112,8 @@ function resolveTvl(card: FarmPreviewCard): {
   sort: number
   available: boolean
 } {
-  const liq = card.rawFarm?.liquidity?.toNumber?.()
-  if (liq != null && Number.isFinite(liq) && liq > 0) {
+  const liq = card.rawFarm ? resolveFarmLiquidityUsd(card.rawFarm) : 0
+  if (liq > 0) {
     return { display: formatUsd(liq), state: 'Live', sort: liq, available: true }
   }
   const label = card.tvl || card.liquidity
@@ -124,10 +125,6 @@ function resolveTvl(card: FarmPreviewCard): {
     label === '$0' ||
     label === '$0.00'
   ) {
-    return { display: 'Unavailable', state: 'TVL unavailable', sort: 0, available: false }
-  }
-  // Label present but no verified USD number — partial valuation disclosure.
-  if (liq != null && Number.isFinite(liq) && liq === 0) {
     return { display: 'Unavailable', state: 'TVL unavailable', sort: 0, available: false }
   }
   return { display: 'Unavailable', state: 'Partial valuation', sort: 0, available: false }
