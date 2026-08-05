@@ -285,7 +285,10 @@ export function mapPoolToPreviewCard(
     rewardBadge: getRewardBadge(pool),
     visualType: getPoolVisualType(pool),
     tvl: formatUsd(tvlUsd),
-    rewardToken: pool.earningToken.symbol ?? '—',
+    volume24h: RUNTIME_UNAVAILABLE_LABEL,
+    fees: analyzePreview.depositFee === '0%' ? '0%' : RUNTIME_UNAVAILABLE_LABEL,
+    chainId: pool.stakingToken?.chainId ?? pool.earningToken?.chainId,
+    rewardToken: pool.earningToken.symbol ?? RUNTIME_UNAVAILABLE_LABEL,
     dailyRewards:
       perBlock.gt(0) ? formatTokenAmount(perBlock.times(BLOCKS_PER_DAY), pool.earningToken.decimals) : '—',
     estimatedDailyReward: getEstimatedDailyReward(pool),

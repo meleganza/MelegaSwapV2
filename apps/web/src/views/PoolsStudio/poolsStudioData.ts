@@ -82,6 +82,11 @@ export interface PoolPreviewCard {
   rewardBadge?: 'Official' | 'Partner' | 'Community'
   visualType?: string
   tvl: string
+  /** Swap volume when indexed — Unavailable when not certified for SmartChef pools. */
+  volume24h?: string
+  /** Protocol fees when indexed — Unavailable when not certified. */
+  fees?: string
+  chainId?: number
   rewardToken: string
   dailyRewards: string
   estimatedDailyReward?: string

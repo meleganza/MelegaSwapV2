@@ -16,6 +16,7 @@ import {
   useFeaturedProjectMarkets,
 } from 'views/HomeTrade/useFeaturedProjectMarkets'
 import { formatUsdCompact } from 'lib/bsc-indexer/usdValuation'
+import { FOUNDER_WBNB_PAIR_ADDRESSES } from 'lib/bsc-indexer/founderWbnbPairs'
 import { getCanonicalIndexedAssets } from 'lib/dex-asset-index'
 import type { ProjectFilterChip, ProjectMetric, ProjectPreviewCard, ProjectsKpiItem } from '../projectsStudioData'
 import {
@@ -90,6 +91,13 @@ function formatChangePct(pct?: number | null): string | undefined {
   return `${sign}${pct.toFixed(2)}%`
 }
 
+const FOUNDER_PAIR_BY_SLUG: Record<string, string> = {
+  mm72: FOUNDER_WBNB_PAIR_ADDRESSES[0],
+  eyed: FOUNDER_WBNB_PAIR_ADDRESSES[1],
+  'young-degens': FOUNDER_WBNB_PAIR_ADDRESSES[2],
+  blion: FOUNDER_WBNB_PAIR_ADDRESSES[3],
+}
+
 function patchMetric(metrics: ProjectMetric[], label: string, value: string): ProjectMetric[] {
   if (!value || value === '—' || value === 'Unavailable') return metrics
   let found = false
@@ -152,6 +160,8 @@ function enrichCardMetrics(
     change24hPct,
     change24hDisplay,
     rankingLayer,
+    pairAddress:
+      opts.featured?.pairAddress ?? FOUNDER_PAIR_BY_SLUG[base.slug] ?? base.pairAddress,
   }
 }
 

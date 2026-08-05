@@ -75,6 +75,8 @@ export interface ProjectPreviewCard {
   priceDisplay?: string
   change24hDisplay?: string
   change24hPct?: number | null
+  /** Indexed pair for factual sparkline when available. */
+  pairAddress?: string
   rating: number
   ratingTier: ProjectRatingTier
   aiSummary: string

@@ -12,11 +12,13 @@ import { TrendingUp, Sprout, Droplets, Sparkles, ArrowRight } from 'lucide-react
 import HomeTradeGlobalStyle from './HomeTradeGlobalStyle'
 import HomeSwapPanel from './HomeSwapPanel'
 import useHomeTradeData from './useHomeTradeData'
-import { getAllProjects } from 'registry/projects/getAllProjects'
+import { buildHomeNewListings } from './buildHomeNewListings'
 import { measureListedProjectsCount } from 'lib/market-registry/listedProjectsCount'
 import { FeaturedProjectsRail } from './FeaturedProjectsRail'
 import { ExploreMelegaEcosystem } from './ExploreMelegaEcosystem'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { MelegaTokenAvatar } from 'design-system/melega/components/MelegaTokenAvatar/MelegaTokenAvatar'
+import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
 import {
   uxRebuildColors,
   uxRebuildFont,
@@ -532,19 +534,7 @@ export const DexHomeScreen: React.FC = () => {
   const farmRows = (data.farmRows ?? []).slice(0, 5)
   const poolRows = (data.poolRows ?? []).slice(0, 5)
 
-  const newListings = useMemo(() => {
-    return getAllProjects()
-      .filter((p) => p.slug && p.slug !== 'melega-dex')
-      .slice(0, 5)
-      .map((p) => ({
-        id: p.slug,
-        name: p.displayName || p.slug,
-        meta: p.resources?.tokens?.[0]?.symbol || p.slug,
-        href: `/@${p.slug}`,
-        metric: 'Indexed',
-        chainId: p.supportedChains?.[0] ?? p.resources?.tokens?.[0]?.chainId ?? 56,
-      }))
-  }, [])
+  const newListings = useMemo(() => buildHomeNewListings(5), [])
 
   return (
     <Root data-dex-home-screen data-ux-rebuild-home>
@@ -661,18 +651,35 @@ export const DexHomeScreen: React.FC = () => {
                   <DiscRow key={row.id} href={row.href || '/farms'} style={{ position: 'relative' }}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>
-                        {row.name}
-                        {row.chainId != null ? (
-                          <span style={{ marginLeft: 6, display: 'inline-flex', verticalAlign: 'middle' }}>
-                            <MelegaExploreChainBadge chainId={row.chainId} />
-                          </span>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        {row.tokenSymbols?.[0] ? (
+                          <MelegaTokenAvatar
+                            symbol={row.tokenSymbols[0]}
+                            address={row.tokenAddresses?.[0]}
+                            chainId={row.chainId ?? 56}
+                            size={18}
+                            radius="circle"
+                          />
                         ) : null}
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
-                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
-                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
+                      {row.tvl ? (
+                        <RowMeta>{`TVL ${row.tvl}`}</RowMeta>
+                      ) : (
+                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
+                      )}
+                      {row.rewards ? (
+                        <RowMeta>{`Rewards ${row.rewards}`}</RowMeta>
+                      ) : (
+                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
+                      )}
                     </RowMain>
-                    <GoldMetric>{row.apr ? `${row.apr}` : 'Unavailable'}</GoldMetric>
+                    <GoldMetric>
+                      {row.apr ?? (row.aprUnavailable !== false ? APR_UNAVAILABLE_LABEL : METRIC_STATUS.UNAVAILABLE)}
+                    </GoldMetric>
                   </DiscRow>
                 ))
               )}
@@ -693,18 +700,35 @@ export const DexHomeScreen: React.FC = () => {
                   <DiscRow key={row.id} href={row.href || '/pools'}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>
-                        {row.name}
-                        {row.chainId != null ? (
-                          <span style={{ marginLeft: 6, display: 'inline-flex', verticalAlign: 'middle' }}>
-                            <MelegaExploreChainBadge chainId={row.chainId} />
-                          </span>
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        {row.tokenSymbols?.[0] ? (
+                          <MelegaTokenAvatar
+                            symbol={row.tokenSymbols[0]}
+                            address={row.tokenAddresses?.[0]}
+                            chainId={row.chainId ?? 56}
+                            size={18}
+                            radius="circle"
+                          />
                         ) : null}
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        {row.chainId != null ? <MelegaExploreChainBadge chainId={row.chainId} /> : null}
                       </RowName>
-                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
-                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
+                      {row.tvl ? (
+                        <RowMeta>{`TVL ${row.tvl}`}</RowMeta>
+                      ) : (
+                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
+                      )}
+                      {row.rewards ? (
+                        <RowMeta>{`Rewards ${row.rewards}`}</RowMeta>
+                      ) : (
+                        <RowMeta>{METRIC_STATUS.UNAVAILABLE}</RowMeta>
+                      )}
                     </RowMain>
-                    <RowMetric>{row.apr ? row.apr : 'Unavailable'}</RowMetric>
+                    <RowMetric>
+                      {row.apr ?? (row.aprUnavailable !== false ? APR_UNAVAILABLE_LABEL : METRIC_STATUS.UNAVAILABLE)}
+                    </RowMetric>
                   </DiscRow>
                 ))
               )}
@@ -725,15 +749,22 @@ export const DexHomeScreen: React.FC = () => {
                   <DiscRow key={row.id} href={row.href}>
                     <Rank>·</Rank>
                     <RowMain>
-                      <RowName>
-                        {row.name}
-                        {row.chainId != null ? (
-                          <span style={{ marginLeft: 6, display: 'inline-flex', verticalAlign: 'middle' }}>
-                            <MelegaExploreChainBadge chainId={row.chainId} />
-                          </span>
-                        ) : null}
+                      <RowName style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                        <MelegaTokenAvatar
+                          symbol={row.symbol}
+                          name={row.name}
+                          address={row.address}
+                          chainId={row.chainId}
+                          logoURI={row.logoUrl}
+                          size={18}
+                          radius="circle"
+                        />
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {row.name}
+                        </span>
+                        <MelegaExploreChainBadge chainId={row.chainId} />
                       </RowName>
-                      <RowMeta>{row.meta}</RowMeta>
+                      <RowMeta>{row.symbol}</RowMeta>
                     </RowMain>
                     <RowMetric>{row.metric}</RowMetric>
                   </DiscRow>

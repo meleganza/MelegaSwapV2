@@ -8,16 +8,19 @@ import { resolveFarmEmissionState, formatTotalDailyEmissionKpi, formatHumanMarco
 import { isUnavailableFarmMetric } from '../farmsStudioDisplay'
 import type { FarmAnalyzePreview, FarmPreviewCard, FarmStatus, FarmsKpiItem } from '../farmsStudioData'
 import type { FarmEmissionState } from 'lib/data-truth/masterChefEmissionMath'
+import { APR_UNAVAILABLE_LABEL, METRIC_STATUS } from 'lib/data-policy/metricStatus'
 
 export const formatUsd = (value?: number | null): string => {
-  if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) return '—'
+  if (value === undefined || value === null || !Number.isFinite(value) || value <= 0) {
+    return METRIC_STATUS.UNAVAILABLE
+  }
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
   return `$${value.toFixed(2)}`
 }
 
 export const formatApr = (apr?: number | null): string => {
-  if (apr === undefined || apr === null || !Number.isFinite(apr)) return '—'
+  if (apr === undefined || apr === null || !Number.isFinite(apr)) return APR_UNAVAILABLE_LABEL
   return `${apr.toFixed(2)}%`
 }
 
@@ -42,17 +45,18 @@ function formatFarmDailyRewards(
   dailyMarco: number,
   rewardSymbol: string,
 ): string {
-  if (emissionState === 'unavailable') return '—'
+  if (emissionState === 'unavailable') return METRIC_STATUS.UNAVAILABLE
   if (emissionState === 'active' && dailyMarco > 0) {
     return formatHumanTokenAmount(dailyMarco, rewardSymbol)
   }
-  return 'Unavailable'
+  return METRIC_STATUS.UNAVAILABLE
 }
 
 export function formatFarmDisplayApr(farm: FarmWithStakedValue, status: FarmStatus): string | undefined {
-  if (status !== 'live') return undefined
+  if (status === 'finished') return undefined
+  if (status !== 'live' && status !== 'indexing') return undefined
   const totalApr = (farm.apr ?? 0) + (farm.lpRewardsApr ?? 0)
-  if (!Number.isFinite(totalApr) || totalApr <= 0) return undefined
+  if (!Number.isFinite(totalApr) || totalApr <= 0) return APR_UNAVAILABLE_LABEL
   return formatApr(totalApr)
 }
 
@@ -116,9 +120,9 @@ export function mapFarmToPreviewCard(
   const masterChefExplorerUrl = getAddressExplorerUrl(getMasterChefAddress(chainId), chainId)
 
   const analyzePreview: FarmAnalyzePreview = {
-    aprHistory: aprDisplay ?? '—',
+    aprHistory: aprDisplay && aprDisplay !== APR_UNAVAILABLE_LABEL ? aprDisplay : METRIC_STATUS.UNAVAILABLE,
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
-    emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : '—',
+    emission: dailyMarco > 0 ? `${formatHumanTokenAmount(dailyMarco, rewardSymbol)} / day` : METRIC_STATUS.UNAVAILABLE,
     contract: farm.lpAddress ?? 'On-chain',
     contractExplorerUrl: lpExplorerUrl,
     risk: farm.isStable ? 'Stable pair' : 'Standard',
@@ -136,9 +140,9 @@ export function mapFarmToPreviewCard(
     tvl: formatUsd(liquidityUsd),
     liquidity: formatUsd(liquidityUsd),
     dailyRewards: formatFarmDailyRewards(emissionState, dailyMarco, rewardSymbol),
-    multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : '—',
+    multiplier: farm.multiplier && farm.multiplier !== '0X' ? farm.multiplier.toLowerCase() : METRIC_STATUS.UNAVAILABLE,
     rewardToken: farm.earningToken?.symbol ?? 'MARCO',
-    participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : '—',
+    participants: lpStaked > 0 ? formatTokenAmount(farm.lpTotalSupply) : METRIC_STATUS.UNAVAILABLE,
     cta: status === 'finished' ? 'none' : status === 'indexing' ? 'analyze' : 'stake',
     analyzePreview,
     rawFarm: farm,
@@ -180,8 +184,13 @@ export function aggregateKpis(
       label: 'MARCO Emitted Today',
       value: emissionValue,
     },
-    { id: 'apr', label: 'Highest APR', value: highestApr > 0 ? formatApr(highestApr) : '—', gold: true },
-    { id: 'ai', label: 'Featured Farm', value: featuredPair ?? '—', gold: true },
+    {
+      id: 'apr',
+      label: 'Highest APR',
+      value: highestApr > 0 ? formatApr(highestApr) : APR_UNAVAILABLE_LABEL,
+      gold: true,
+    },
+    { id: 'ai', label: 'Featured Farm', value: featuredPair ?? METRIC_STATUS.UNAVAILABLE, gold: true },
   ]
 }
 

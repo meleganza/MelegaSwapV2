@@ -2,9 +2,12 @@
  * Compact project directory card — Farms/Pools density.
  * Chain badge top-right · Open Project · Trade.
  */
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { MelegaExploreChainBadge } from 'components/Logo/MelegaExploreChainBadge'
+import { useIndexerCandles } from 'lib/bsc-indexer/client/useIndexerCandles'
+import { AnimatedSparkline } from 'views/TrendingStudio/components/trendingStudioPrimitives'
+import { METRIC_STATUS } from 'lib/data-policy/metricStatus'
 import type { ProjectPreviewCard } from '../projectsStudioData'
 import { PR_FONT_BODY, projectsStudioColors, projectsStudioLayout } from '../projectsStudioTokens'
 import { ProjectLogo } from './projectsStudioPrimitives'
@@ -223,6 +226,33 @@ const SparkUnavailable = styled.div`
   color: rgba(255, 255, 255, 0.38);
 `
 
+/** Real indexed sparkline only — never invents points from 24h %. */
+const CardSpark: React.FC<{ pairAddress?: string }> = ({ pairAddress }) => {
+  const { chartEntries, status } = useIndexerCandles(
+    pairAddress && /^0x[a-fA-F0-9]{40}$/.test(pairAddress) ? pairAddress : undefined,
+    '1H',
+  )
+  const points = useMemo(
+    () => chartEntries.slice(-24).map((c) => c.close).filter((n) => Number.isFinite(n) && n > 0),
+    [chartEntries],
+  )
+  if (!pairAddress) {
+    return <SparkUnavailable data-testid="project-card-spark-empty">{METRIC_STATUS.UNAVAILABLE}</SparkUnavailable>
+  }
+  if (points.length < 2) {
+    return (
+      <SparkUnavailable data-testid="project-card-spark-empty">
+        {status === 'loading' ? '…' : METRIC_STATUS.UNAVAILABLE}
+      </SparkUnavailable>
+    )
+  }
+  return (
+    <div data-testid="project-card-spark" style={{ display: 'flex', justifyContent: 'center' }}>
+      <AnimatedSparkline points={points} width={100} height={28} />
+    </div>
+  )
+}
+
 interface Props {
   project: ProjectPreviewCard
 }
@@ -241,8 +271,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
   const featured = project.featured === true
   const boosted = project.boosted === true
   const rankingLayer = project.rankingLayer
-  // Directory cards never invent sparklines — real series only on Featured rail.
-
+  // Directory cards never invent sparklines — real series only when pair is indexed.
   return (
     <Card data-pr-project-card data-testid="project-directory-card" data-project-slug={project.slug} data-project-card="canonical">
       <ChainCorner>
@@ -271,7 +300,7 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
       <Metrics>
         <MetricCell>
           <MetricLabel>Price</MetricLabel>
-          <MetricValue $muted={isEmpty(price)}>{isEmpty(price) ? 'Unavailable' : price}</MetricValue>
+          <MetricValue $muted={isEmpty(price)}>{isEmpty(price) ? METRIC_STATUS.UNAVAILABLE : price}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>24h</MetricLabel>
@@ -280,24 +309,26 @@ export const ProjectGridCard: React.FC<Props> = ({ project }) => {
             $pos={typeof changePct === 'number' && changePct > 0}
             $neg={typeof changePct === 'number' && changePct < 0}
           >
-            {isEmpty(change) ? 'Unavailable' : change}
+            {isEmpty(change) ? METRIC_STATUS.UNAVAILABLE : change}
           </MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Liquidity</MetricLabel>
-          <MetricValue $muted={isEmpty(liquidity)}>{isEmpty(liquidity) ? 'Unavailable' : liquidity}</MetricValue>
+          <MetricValue $muted={isEmpty(liquidity)}>
+            {isEmpty(liquidity) ? METRIC_STATUS.UNAVAILABLE : liquidity}
+          </MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Volume</MetricLabel>
-          <MetricValue $muted={isEmpty(volume)}>{isEmpty(volume) ? 'Unavailable' : volume}</MetricValue>
+          <MetricValue $muted={isEmpty(volume)}>{isEmpty(volume) ? METRIC_STATUS.UNAVAILABLE : volume}</MetricValue>
         </MetricCell>
         <MetricCell>
           <MetricLabel>Holders</MetricLabel>
-          <MetricValue $muted={isEmpty(holders)}>{isEmpty(holders) ? 'Unavailable' : holders}</MetricValue>
+          <MetricValue $muted={isEmpty(holders)}>{isEmpty(holders) ? METRIC_STATUS.UNAVAILABLE : holders}</MetricValue>
         </MetricCell>
       </Metrics>
 
-      <SparkUnavailable data-testid="project-card-spark-empty">Unavailable</SparkUnavailable>
+      <CardSpark pairAddress={project.pairAddress} />
 
       <Actions data-pr-action-bar>
         <OutlineBtn href={projectHref} data-testid="project-card-open">

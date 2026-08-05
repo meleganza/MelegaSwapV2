@@ -6,11 +6,11 @@ export type ProjectDataReasonCode =
   | 'EXPLORER_SOURCE_MISSING'
 
 export const PROJECT_DATA_REASON_LABELS: Record<ProjectDataReasonCode, string> = {
-  DATA_SOURCE_NOT_CONFIGURED: 'Data source not configured',
-  NO_POOL_FOUND: 'No pool found',
-  NO_EVENTS_INDEXED: 'No events indexed',
-  TOKEN_NOT_CANONICAL: 'Token not canonical',
-  EXPLORER_SOURCE_MISSING: 'Explorer source missing',
+  DATA_SOURCE_NOT_CONFIGURED: 'Unavailable',
+  NO_POOL_FOUND: 'Unavailable',
+  NO_EVENTS_INDEXED: 'Unavailable',
+  TOKEN_NOT_CANONICAL: 'Unavailable',
+  EXPLORER_SOURCE_MISSING: 'Unavailable',
 }
 
 export interface ResolvedMetricValue {

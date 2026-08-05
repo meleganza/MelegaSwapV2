@@ -8,13 +8,13 @@ export type DataReasonCode =
   | 'PAIR_NOT_INDEXED'
 
 export const DATA_REASON_LABELS: Record<DataReasonCode, string> = {
-  DATA_SOURCE_NOT_CONFIGURED: 'Explorer API not configured',
-  SUBGRAPH_LOADING: 'Subgraph request in progress',
-  NO_EVENTS_INDEXED: 'No swap events indexed for this pair',
-  NO_POOL_FOUND: 'No liquidity pool indexed for this token',
-  TOKEN_NOT_CANONICAL: 'Token not in canonical registry',
-  EXPLORER_SOURCE_MISSING: 'BscScan holder API not configured',
-  PAIR_NOT_INDEXED: 'Pair not indexed in Melega subgraph',
+  DATA_SOURCE_NOT_CONFIGURED: 'Unavailable',
+  SUBGRAPH_LOADING: 'Unavailable',
+  NO_EVENTS_INDEXED: 'Unavailable',
+  NO_POOL_FOUND: 'Unavailable',
+  TOKEN_NOT_CANONICAL: 'Unavailable',
+  EXPLORER_SOURCE_MISSING: 'Unavailable',
+  PAIR_NOT_INDEXED: 'Unavailable',
 }
 
 export interface ResolvedDataField<T = string> {
