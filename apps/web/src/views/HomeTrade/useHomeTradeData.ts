@@ -646,9 +646,39 @@ export const useHomeTradeData = () => {
 
     if (fromRuntime.length >= 5) return fromRuntime
 
+    // Prefer same-chain runtime pools before multichain config inventory (inventory has no TVL).
     const seen = new Set(fromRuntime.map((r) => r.name.toLowerCase()))
-    const preview = listLivePoolInventoryPreview(12)
     const padded = [...fromRuntime]
+    const sameChainExtras = source
+      .filter((pool) => resolvePoolChainId(pool, chainId) === chainId && pool.sousId !== 0)
+      .map((pool) => {
+        const aprValue = poolApr(pool)
+        const tvlUsd = resolvePoolTvlUsd(pool, hints)
+        const life = derivePoolLifecycle(pool, currentBlock)
+        return { pool, aprValue, tvlUsd, life }
+      })
+      .filter(
+        (row) =>
+          !seen.has(poolPairLabel(row.pool).toLowerCase()) &&
+          (row.tvlUsd > 0 ||
+            row.aprValue != null ||
+            row.life.rewarding ||
+            row.life.active ||
+            Boolean(row.pool.earningToken?.symbol)),
+      )
+      .sort((a, b) => b.tvlUsd - a.tvlUsd || (b.aprValue ?? -1) - (a.aprValue ?? -1))
+
+    for (const row of sameChainExtras) {
+      if (padded.length >= 5) break
+      const name = poolPairLabel(row.pool).toLowerCase()
+      if (seen.has(name)) continue
+      seen.add(name)
+      padded.push(toEarnRow(row.pool, row.tvlUsd, row.aprValue))
+    }
+
+    if (padded.length >= 5) return padded
+
+    const preview = listLivePoolInventoryPreview(12)
     for (const row of preview) {
       if (padded.length >= 5) break
       if (seen.has(row.name.toLowerCase())) continue
@@ -664,6 +694,7 @@ export const useHomeTradeData = () => {
             )
           : undefined
       if (!pool) {
+        // Inventory-only pad: names + logos/chain — never invent TVL/APR.
         padded.push({
           id: row.id,
           name: row.name,

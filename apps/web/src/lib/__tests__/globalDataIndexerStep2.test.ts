@@ -55,6 +55,24 @@ describe('Global data indexer Step 2', () => {
     expect(hook).toContain('liquidity: totalLiquidity')
   })
 
+  it('Top Pools hook farm-prefetches prices before pool public data', () => {
+    const hook = load('Home/hooks/useGetTopPoolsByApr.tsx')
+    expect(hook).toContain('fetchFarmsPublicDataAsync')
+    expect(hook).toContain('resolvePriceHelperFarmPids')
+    expect(hook).toContain('fetchPoolsPublicDataAsync')
+    // Await farm prices before pool public fetch (call-site order inside effect).
+    const farmCall = hook.indexOf('await dispatch(fetchFarmsPublicDataAsync')
+    const poolCall = hook.indexOf('dispatch(fetchPoolsPublicDataAsync')
+    expect(farmCall).toBeGreaterThan(0)
+    expect(poolCall).toBeGreaterThan(farmCall)
+  })
+
+  it('Home poolRows prefer same-chain runtime before inventory pad', () => {
+    const data = load('HomeTrade/useHomeTradeData.ts')
+    expect(data).toContain('sameChainExtras')
+    expect(data).toContain('Prefer same-chain runtime pools')
+  })
+
   it('Explore farms/pools use shared liquidity TVL resolver', () => {
     const farms = load('FarmsStudio/modules/buildFarmsExploreFarms.ts')
     expect(farms).toContain('resolveFarmLiquidityUsd')

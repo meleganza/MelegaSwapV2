@@ -45,6 +45,15 @@ Continued global data integrity repair after Home Top Farms TVL propagation (Ste
 
 - Shared helpers replace duplicated stake×price / liquidity×quote formulas across Home / Farms / Pools
 
+### Follow-up (audit)
+
+[Audit Top Pools data gaps](47ab184e-2c3f-4425-a9df-2eb0f04591bf) identified Home still fetching pools without farm price bootstrap.
+
+Applied:
+
+- `useGetTopPoolsByApr` now awaits `fetchFarmsPublicDataAsync` (price-helper PIDs) **before** `fetchPoolsPublicDataAsync` — same order as Pools Studio
+- Home `poolRows` pads from same-chain runtime pools before config inventory
+
 ## Forbidden surfaces
 
 Untouched: Smart Swap, AMM, contracts, Treasury, fee logic.
