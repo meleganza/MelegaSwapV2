@@ -52,25 +52,40 @@ export function countLivePoolConfigs(): number {
   return Object.values(LIVE_POOL_INVENTORY_BY_CHAIN).reduce((a, b) => a + b, 0)
 }
 
-/** Top farm labels from static LIVE config when runtime ranking is empty. */
+/** Top farm labels from static LIVE config — round-robin across chains (not BSC-first). */
 export function listLiveFarmInventoryPreview(limit = 5): Array<{ id: string; name: string; chainId: number }> {
-  const out: Array<{ id: string; name: string; chainId: number }> = []
+  const byChain: Array<Array<{ id: string; name: string; chainId: number }>> = []
   for (const { chainId, farms } of LIVE_FARM_CONFIGS) {
+    const rows: Array<{ id: string; name: string; chainId: number }> = []
     for (const f of farms) {
       if (f.pid === 0) continue
       if (String(f.multiplier ?? '1X').toUpperCase() === '0X') continue
-      out.push({
+      rows.push({
         id: `cfg-farm-${chainId}-${f.pid}`,
         name: f.lpSymbol ?? `Farm #${f.pid}`,
         chainId,
       })
-      if (out.length >= limit) return out
     }
+    if (rows.length) byChain.push(rows)
+  }
+  const out: Array<{ id: string; name: string; chainId: number }> = []
+  let idx = 0
+  while (out.length < limit) {
+    let added = false
+    for (const rows of byChain) {
+      if (idx < rows.length) {
+        out.push(rows[idx])
+        added = true
+        if (out.length >= limit) break
+      }
+    }
+    if (!added) break
+    idx += 1
   }
   return out
 }
 
-/** Top pool labels from static LIVE config when runtime ranking is empty. */
+/** Top pool labels from static LIVE config — round-robin across chains. */
 export function listLivePoolInventoryPreview(
   limit = 5,
 ): Array<{ id: string; name: string; chainId: number }> {
@@ -80,17 +95,27 @@ export function listLivePoolInventoryPreview(
       string,
       Array<{ sousId: number; chainId: number; contractAddress: string; stakeSymbol: string; rewardSymbol: string }>
     >
+    const chainOrder = [56, 8453, 137, 1, 42161, 43114]
+    const byChain = chainOrder.map((chainId) =>
+      (generated[String(chainId)] ?? []).map((row) => ({
+        id: `${row.chainId}:${row.contractAddress}`,
+        name: `${row.stakeSymbol} → ${row.rewardSymbol}`,
+        chainId: row.chainId,
+      })),
+    )
     const out: Array<{ id: string; name: string; chainId: number }> = []
-    for (const chainId of [56, 8453, 137, 1, 42161, 43114]) {
-      const rows = generated[String(chainId)] ?? []
-      for (const row of rows) {
-        out.push({
-          id: `${row.chainId}:${row.contractAddress}`,
-          name: `${row.stakeSymbol} → ${row.rewardSymbol}`,
-          chainId: row.chainId,
-        })
-        if (out.length >= limit) return out
+    let idx = 0
+    while (out.length < limit) {
+      let added = false
+      for (const rows of byChain) {
+        if (idx < rows.length) {
+          out.push(rows[idx])
+          added = true
+          if (out.length >= limit) break
+        }
       }
+      if (!added) break
+      idx += 1
     }
     if (out.length > 0) return out
   } catch {
@@ -111,7 +136,17 @@ export function listLivePoolInventoryPreview(
       chainId: 137,
     },
     { id: 'cfg-pool-eth', name: `Ethereum LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[1]})`, chainId: 1 },
-  ]
+    {
+      id: 'cfg-pool-arb',
+      name: `Arbitrum LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[42161] ?? 0})`,
+      chainId: 42161,
+    },
+    {
+      id: 'cfg-pool-avax',
+      name: `Avalanche LIVE pools (${LIVE_POOL_INVENTORY_BY_CHAIN[43114] ?? 0})`,
+      chainId: 43114,
+    },
+  ].filter((r) => !r.name.includes('(0)'))
   return rows.slice(0, limit)
 }
 

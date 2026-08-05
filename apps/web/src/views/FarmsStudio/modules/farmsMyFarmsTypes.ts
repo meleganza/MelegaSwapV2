@@ -17,7 +17,8 @@ export interface FarmsPositionAction {
 export interface FarmsWalletPosition {
   positionId: string; farmId: string; pid: number | null; masterChef: string | null; chainId: number; lpToken: FarmsPositionTokenRef
   token0: FarmsPositionTokenRef; token1: FarmsPositionTokenRef; rewardToken: FarmsPositionTokenRef
-  stakedRaw: string | null; stakedFormatted: string; stakedValue: string | null
+  stakedRaw: string | null; stakedFormatted: string; stakedLpFormatted?: string; stakedValue: string | null
+  depositedUsdAvailable?: boolean
   pendingRaw: string | null; pendingFormatted: string; pendingValue: string | null
   farmStatus: 'ACTIVE' | 'ENDED' | 'INDEXING' | 'UNAVAILABLE'
   positionStatus: FarmsPositionStatus

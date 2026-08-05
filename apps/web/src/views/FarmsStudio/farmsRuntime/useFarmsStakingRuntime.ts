@@ -274,11 +274,9 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     const dailyRewards =
       dailyRewardsRaw === '—'
         ? RUNTIME_UNAVAILABLE_LABEL
-        : dailyRewardsRaw && !isUnavailableFarmMetric(dailyRewardsRaw)
+        : dailyRewardsRaw && !isUnavailableFarmMetric(dailyRewardsRaw) && dailyRewardsRaw !== '0.00'
           ? stripTokenSymbol(dailyRewardsRaw, card?.rewardToken ?? 'MARCO')
-          : dailyRewardsRaw === '0.00'
-            ? '0.00'
-            : RUNTIME_UNAVAILABLE_LABEL
+          : RUNTIME_UNAVAILABLE_LABEL
     return {
       pair: displayFarmMetric(card?.pair),
       tokens: card?.tokens ?? ['', ''],
@@ -310,8 +308,8 @@ export function useFarmsStakingRuntime(): FarmsStakingRuntime {
     const dailyReward =
       top?.dailyRewards === '—'
         ? RUNTIME_UNAVAILABLE_LABEL
-        : top?.dailyRewards === '0.00'
-          ? '0.00'
+        : top?.dailyRewards === '0.00' || top?.dailyRewards === 'Unavailable'
+          ? RUNTIME_UNAVAILABLE_LABEL
           : top?.dailyRewards && !isUnavailableFarmMetric(top.dailyRewards)
             ? stripTokenSymbol(top.dailyRewards, top.rewardToken ?? 'MARCO')
             : RUNTIME_UNAVAILABLE_LABEL

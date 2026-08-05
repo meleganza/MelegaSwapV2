@@ -129,7 +129,7 @@ export const EarnOpportunities: React.FC<{
           <Pair>{row.name}</Pair>
           <AprWrap>
             <AprDot aria-hidden />
-            {row.apr || 'APR unavailable'}
+            {row.apr || 'Unavailable'}
           </AprWrap>
         </Row>
       ))}

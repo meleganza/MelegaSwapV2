@@ -1,0 +1,62 @@
+{
+  "missionId": "MELEGASWAP_V2_POST_RELEASE_DATA_INTEGRITY_AND_RUNTIME_FIX",
+  "verdict": "MELEGASWAP_V2_DATA_INTEGRITY_RUNTIME_FIXED",
+  "branch": "mission-post-release-data-integrity-runtime-fix",
+  "timestamp": "2026-08-05T06:05:00.000Z",
+  "parts": {
+    "A_myFarmsDeposited": {
+      "status": "fixed",
+      "summary": "LP decimals default to 18 (not token0). USD primary when lpTokenPrice available; secondary LP tokens line. Never raw bigint.",
+      "files": [
+        "apps/web/src/views/FarmsStudio/modules/buildFarmsWalletPositions.ts",
+        "apps/web/src/views/FarmsStudio/modules/FarmsMyFarmCard.tsx",
+        "apps/web/src/views/FarmsStudio/modules/farmsMyFarmsTypes.ts"
+      ]
+    },
+    "B_inventoryUnavailable": {
+      "status": "fixed",
+      "summary": "Daily rewards and zero placeholders surface as Unavailable. Farm/pool explore already refuse invented APR/TVL.",
+      "chainsVerified": [56, 8453, 137, 1, 42161, 43114],
+      "files": [
+        "apps/web/src/views/FarmsStudio/farmsRuntime/formatFarmsRuntime.ts",
+        "apps/web/src/views/FarmsStudio/farmsRuntime/useFarmsStakingRuntime.ts",
+        "apps/web/src/views/FarmsStudio/components/FarmGridCard.tsx",
+        "apps/web/src/lib/data-truth/liveInventoryCounts.ts"
+      ]
+    },
+    "C_homeTopFarmsPoolsMultichain": {
+      "status": "fixed",
+      "summary": "Home Top Farms/Pools use round-robin multichain inventory previews; chain badges retained; no fake MARCO rewards ranking.",
+      "files": [
+        "apps/web/src/views/HomeTrade/useHomeTradeData.ts",
+        "apps/web/src/views/HomeTrade/DexHomeScreen.tsx",
+        "apps/web/src/lib/data-truth/liveInventoryCounts.ts"
+      ]
+    },
+    "D_poolMetricsSharedSource": {
+      "status": "fixed",
+      "summary": "Home Top Pools attach factual APR/TVL only from deserialized pool runtime (same poolApr/poolTvl helpers); else Unavailable.",
+      "files": [
+        "apps/web/src/views/HomeTrade/useHomeTradeData.ts",
+        "apps/web/src/views/HomeTrade/DexHomeScreen.tsx",
+        "apps/web/src/views/HomeTrade/EarnOpportunities.tsx"
+      ]
+    },
+    "E_liquidityStudioLoop": {
+      "status": "fixed",
+      "summary": "Removed Add Liquidity mount setMode(view=add). Building card no longer forces view=building when not already on building surface.",
+      "files": [
+        "apps/web/src/views/LiquidityStudio/modules/LiquidityAddModule.tsx",
+        "apps/web/src/views/LiquidityStudio/liquidityBuilding/useLiquidityBuildingCard.ts",
+        "apps/web/src/views/LiquidityStudio/__tests__/liquidityRouteOscillationGuard.test.ts"
+      ],
+      "browser": "local 3010 unavailable during evidence; guarded by source + vitest"
+    }
+  },
+  "gates": {
+    "tests": "passed (farms module 003-008, farms V1 certification, founder acceptance, liquidity oscillation guard, inventory counts)",
+    "nextBuild": "passed",
+    "forbiddenUntouched": true,
+    "noBlockchainWrites": true
+  }
+}

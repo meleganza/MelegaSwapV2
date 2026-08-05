@@ -390,7 +390,6 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
   const router = useRouter()
   const { chainId } = useActiveChainId()
   const {
-    setMode,
     pairLabel,
     currencyA,
     currencyB,
@@ -414,9 +413,8 @@ const LiquidityAddForm: React.FC<{ embedded?: boolean }> = ({ embedded = false }
   const [seeded, setSeeded] = useState(false)
   const [completedFlash, setCompletedFlash] = useState(false)
 
-  useEffect(() => {
-    setMode('Add Liquidity')
-  }, [setMode])
+  // Do NOT call setMode('Add Liquidity') on mount — that router.replace(view=add)
+  // fights LiquidityBuildingCard's view=building writer and causes route oscillation.
 
   const token0Q = queryTokenId(router.query.token0)
   const token1Q = queryTokenId(router.query.token1)

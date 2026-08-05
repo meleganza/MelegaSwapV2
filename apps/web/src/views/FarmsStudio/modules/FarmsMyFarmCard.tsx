@@ -253,9 +253,15 @@ export const FarmsMyFarmCard: React.FC<{ position: FarmsWalletPosition }> = ({ p
       </Header>
       <Metrics>
         <div>
-          <Label>Deposited LP</Label>
-          <Value>{position.stakedFormatted || 'Unavailable'}</Value>
-          <Support>{position.stakedValue ? position.stakedValue.replace(/[()]/g, '') : 'USD unavailable'}</Support>
+          <Label>{position.depositedUsdAvailable ? 'Deposited Value' : 'LP amount'}</Label>
+          <Value data-testid="farms-my-deposited-primary">{position.stakedFormatted || 'Unavailable'}</Value>
+          <Support data-testid="farms-my-deposited-secondary">
+            {position.depositedUsdAvailable
+              ? position.stakedLpFormatted
+                ? `LP tokens: ${position.stakedLpFormatted}`
+                : position.stakedValue
+              : 'USD unavailable'}
+          </Support>
         </div>
         <div>
           <Label>Pending rewards</Label>

@@ -63,17 +63,17 @@ export const FARMS_MODULE_002_FREEZE_SHA256 = {
 
 export const FARMS_MODULE_003_FREEZE_SHA256 = {
   FarmsMyFarmsModule: 'af6a59567f70801b4271c18b8610338f00471f6b0d6a4b62cef4c2270a1cf92e',
-  FarmsMyFarmCard: '36de56e2278db5cf93ac88ffdfdcec91e70a9181756fb10432ba7fa1c2eadf5b',
+  FarmsMyFarmCard: 'f6948da196b85bd96f97055db9e9e1acf63fa3982704039da99d6301ad7ca629',
   farmsMyFarmsTokens: '1add9f0333d156bc18638d9806ded867aac4a81127f34ca624b3c17bfb432c01',
-  farmsMyFarmsTypes: 'eb94bd37b88a914231de28e51df2f8a67b08f0ac0fd7708a4a437d9ce1089151',
-  buildFarmsWalletPositions: '44b4749cd72d477db0b7fc8d68d5010bc643dfd26cc9580a6dfff88143594711',
+  farmsMyFarmsTypes: '59e1dc2b025d2fcdd1c37b7b7326baea1508458b7af42c523e4acffa265cf8fc',
+  buildFarmsWalletPositions: '01c57977914530f4ad941645c3f2f516ad02af875019c0bb05f68ddd26e32ee5',
   useFarmsWalletPositions: '30d7f27335beea626a36edb40594cabae734105fd373e8489fd6cc85cad9253b',
 } as const
 
 export const FARMS_MODULE_004_FREEZE_SHA256 = {
   FarmsExploreFarmsModule: 'bca1bb7a334d36fe8824523c0016f18427473f9c6617125336d60e8f764b41c6',
   FarmsExploreFarmCard: 'f0df89cf453f2ab40bed243225755ef1061b35cfbb1323b911c5d17ddde00a84',
-  farmsExploreFarmsTokens: 'b7c07110bbad4b782aaf2c2552b4f4cc02508da362e34220eca7184c12cb2d28',
+  farmsExploreFarmsTokens: 'c4dbd557892c0517549148f65da75e54583b29eb592643519b52fd151f686ea6',
   farmsExploreFarmsTypes: 'f7d40c5bbac21920a7c5c731eb828a395eda8421e9c6e6f9d9c98ccbc3ef24fb',
   buildFarmsExploreFarms: '1a2d7730e7430e1cc1e83860b0a28451ed8d6e5cbc1536f676effcf4cfbceccc',
   useFarmsExploreFarms: '489389398f3b714515e6ff1d1aa3cd0bb828950f76643584ec6b9d4772523deb',
@@ -82,16 +82,16 @@ export const FARMS_MODULE_004_FREEZE_SHA256 = {
 export const FARMS_MODULE_005_FREEZE_SHA256 = {
   FarmsFinishedFarmsModule: '0fb2efe12d6eeef7e7896c4071e356cfd4efe7f75054af3622f941e837364bcf',
   FarmsFinishedFarmCard: '8db717eee8b4b356c192f009bad74e55c50cd007484b2131e8cc1a7be5f11abd',
-  farmsFinishedFarmsTokens: 'bb16e9e0133b1332d622e213cbe5e4ab1bfc8501bb81a8d8d6d79d88b80bb76a',
+  farmsFinishedFarmsTokens: '495afb520b34df2abf469e23998a00947c15747b582f7c28d081209dc91084aa',
   farmsFinishedFarmsTypes: '395114197f8c111479dd1486ea21df5707d16f2d480390a4a6adeb164757d4fc',
-  buildFarmsFinishedFarms: '6507c580589af70bed9381fd242569dc824627df1a72a5f7f04a0d1f91b8a9fd',
+  buildFarmsFinishedFarms: 'b058737f8699b75d8b2baa5bb1c823ce280de41ec7d87665468cef81f2d548d8',
   useFarmsFinishedFarms: '163703cb9671d3ea2bccac5a9f618f00993f53be3fbf009835315bc86cc3653d',
 } as const
 
 export const FARMS_MODULE_006_FREEZE_SHA256 = {
   FarmsYieldAdvisorModule: '38a249133e0d64841c517beccc7ea2df8dd4aba3ea96c1f06e1554443442d38d',
   FarmsYieldAdvisorCard: '28d318a28251cfa6f9340a244eb667b740d4f4aa1432ec6b470e2ba94a1d9b4d',
-  farmsYieldAdvisorTokens: '93ce9de4dd93532f76ba9214ee3bca2fb7cf60d397952e13d5fe6b4288d40da3',
+  farmsYieldAdvisorTokens: '3cfb4c75805b1fa2bc6ad578a742ec8a75812f20e97ff12be8ad7b331cc48aa3',
   farmsYieldAdvisorTypes: 'ed9e30ac59809df0f62759cf9fa73ce4dbec07c5f498e49bac8263db3453ca61',
   buildFarmsYieldAdvisor: 'b23d0a2a064b92e717ccb2f71b2cab346ea66f6d64809b8e96ba6a8ba7714c05',
   useFarmsYieldAdvisor: 'e404ab29e946d22b4d1d40d2ca66f161c126adc0c92d61a67d8a5f9679ac3116',
@@ -102,7 +102,7 @@ export const FARMS_MODULE_007_FREEZE_SHA256 = {
   FarmsAnalyticsPanel: '20f763f751042af96d9333bba020ef554a6f2802b3b91fc2601dd5acda051f30',
   buildFarmsAnalytics: '7f59ff1638f5943377781a4b5ae5d11ce98e19c199597588ca90cdec2b82987d',
   useFarmsAnalytics: '4efae2eeb1e70a154753d54eb27001ec311806c7ede74545627972c356757a9b',
-  farmsAnalyticsTokens: '0b12548ad1ad7b3982c35dbbb5cee47129ee0afdf0f4e17b77fc33757c4d8725',
+  farmsAnalyticsTokens: '65c34734905b5fa03f2a0ac135cdbcc0012a7630fae233c7000834db481d9a8e',
   farmsAnalyticsTypes: '5008b24c7b411899d8a782575672613321fa4299b4a17a64d638cf18dbf055f4',
 } as const
 

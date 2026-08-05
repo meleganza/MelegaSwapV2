@@ -668,10 +668,10 @@ export const DexHomeScreen: React.FC = () => {
                           </span>
                         ) : null}
                       </RowName>
-                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
-                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : null}
+                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
+                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
                     </RowMain>
-                    <GoldMetric>{row.apr ? `${row.apr}` : 'APR unavailable'}</GoldMetric>
+                    <GoldMetric>{row.apr ? `${row.apr}` : 'Unavailable'}</GoldMetric>
                   </DiscRow>
                 ))
               )}
@@ -700,10 +700,10 @@ export const DexHomeScreen: React.FC = () => {
                           </span>
                         ) : null}
                       </RowName>
-                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>TVL unavailable</RowMeta>}
-                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : null}
+                      {row.tvl ? <RowMeta>{`TVL ${row.tvl}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
+                      {row.rewards ? <RowMeta>{`Rewards ${row.rewards}`}</RowMeta> : <RowMeta>Unavailable</RowMeta>}
                     </RowMain>
-                    <RowMetric>{row.apr ? row.apr : 'APR unavailable'}</RowMetric>
+                    <RowMetric>{row.apr ? row.apr : 'Unavailable'}</RowMetric>
                   </DiscRow>
                 ))
               )}

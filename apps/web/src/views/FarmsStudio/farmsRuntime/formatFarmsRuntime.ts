@@ -46,7 +46,7 @@ function formatFarmDailyRewards(
   if (emissionState === 'active' && dailyMarco > 0) {
     return formatHumanTokenAmount(dailyMarco, rewardSymbol)
   }
-  return '0.00'
+  return 'Unavailable'
 }
 
 export function formatFarmDisplayApr(farm: FarmWithStakedValue, status: FarmStatus): string | undefined {

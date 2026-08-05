@@ -260,28 +260,37 @@ export function useLiquidityBuildingCard(): LiquidityBuildingCardState {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, router.query.step])
 
-  /** Persist phase into query string for browser history. */
+  /** Persist phase into query string for browser history — only when already on building view. */
   useEffect(() => {
     if (!router.isReady || !urlReady.current) return
     if (applyingUrl.current) {
       applyingUrl.current = false
       return
     }
+    // Never force view=building from the dual-pane Liquidity Studio home.
+    // That competes with Add Liquidity's view=add and causes URL oscillation.
+    const currentView = Array.isArray(router.query.view) ? router.query.view[0] : router.query.view
+    if (currentView !== 'building' && phase === 'intro') return
+    if (currentView !== 'building' && currentView != null && currentView !== '') return
+
     const step = phaseToStep(phase)
-    const nextQuery: Record<string, string> = { view: 'building' }
+    const nextQuery: Record<string, string | string[] | undefined> = { ...router.query, view: 'building' }
     if (step !== 'intro') nextQuery.step = step
+    else delete nextQuery.step
     const linked = programFromQuery(router.query.program)
     if (linked) nextQuery.program = linked
     const currentStep = stepFromQuery(router.query.step) ?? 'intro'
     const currentProgram = programFromQuery(router.query.program)
     if (
       currentStep === step &&
-      router.query.view === 'building' &&
+      currentView === 'building' &&
       (currentProgram ?? null) === (linked ?? null)
     ) {
       return
     }
-    router.replace({ pathname: '/liquidity-studio', query: nextQuery }, undefined, { shallow: true })
+    // Only rewrite when the user is already on (or entering) the building surface.
+    if (currentView !== 'building' && phase === 'intro') return
+    void router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: true })
   }, [phase, router])
 
   /** When on-chain program exists, surface active/manage phases from live lifecycle. */
